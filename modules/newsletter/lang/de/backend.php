@@ -446,5 +446,6 @@ $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_MAIL_SEND_SUCCESSFULLY'] = "Das E-Mail %s 
 $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'] = "Oberfläche";
 $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL'] = "Wählen Sie ein E-Mail aus, welches nach dem Speichern an den Empfänger gesendet werden soll. ";
 $_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD'] = "Pflichtfeld";
-$_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD_ERROR'] = "Bitte überprüfen Sie ihre Eingabe!";
+$_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD_ERROR'] = "Bitte überprüfen Sie Ihre Eingabe!";
+$_ARRAYLANG['TXT_NEWSLETTER_DO_NOT_SEND_EMAIL'] = "Kein E-Mail versenden";
 ?>

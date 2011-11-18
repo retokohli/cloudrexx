@@ -4625,7 +4625,7 @@ $WhereStatement = '';
                 }
             }
         }
-        
+
         // Get interface settings
         $objInterface = $objDatabase->Execute('SELECT `setvalue` 
                                                 FROM `'.DBPREFIX.'module_newsletter_settings`
@@ -4648,7 +4648,7 @@ $WhereStatement = '';
                             if ($this->_addRecipient($recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage)) {
                                 if (!empty($recipientSendEmailId)) {                                
                                     $objRecipient = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_input2db($recipientEmail)."'", 1);
-                                    $recipientId  = $objRecipient->fields[id];
+                                    $recipientId  = $objRecipient->fields['id'];
 
                                     $this->insertTmpEmail($recipientSendEmailId, $recipientEmail, 'newsletter');
                                     if ($this->SendEmail($recipientId, $recipientSendEmailId, $recipientEmail, 1) == false) {
@@ -4671,8 +4671,25 @@ $WhereStatement = '';
                     } else {
                         self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD_ERROR'];                        
                     }
+                } elseif (empty($recipientId)) {
+                    $objRecipient      = $objDatabase->SelectLimit("SELECT id, language, status FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_input2db($recipientEmail)."'", 1);
+                    $recipientId       = $objRecipient->fields['id'];
+                    $recipientLanguage = $objRecipient->fields['language'];
+                    $recipientStatus   = $objRecipient->fields['status'];
+                    
+                    // set all attributes status to false to set the omitEmpty value to true
+                    foreach ($recipientAttributeStatus as $attribute => $value) {
+                        $recipientAttributeStatus[$attribute]['active'] = false;                                                
+                    }
+                    
+                    if ($this->_updateRecipient($recipientAttributeStatus, $recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage)) {
+                        self::$strOkMessage .= $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_UPDATED_SUCCESSFULLY'];
+                        return $this->_userList();
+                    } else {
+                        self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_ERROR_UPDATE_RECIPIENT'];
+                    }                    
                 } else {
-                    self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_DUPLICATE_EMAIL_ADDRESS'];
+                    self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_ERROR_SAVE_RECIPIENT'];
                 }
             } else {
                 self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_INVALIDE_EMAIL_ADDRESS'];
@@ -4775,7 +4792,7 @@ $WhereStatement = '';
             $this->_objTpl->hideBlock('sendEmail');
         }
         
-        // Display seetings recipient general attributes
+        // Display settings recipient general attributes
         
         $sendMailRowClass = ($languageOptionDisplay) ? 'row2' : 'row1';
         
@@ -4897,7 +4914,7 @@ $WhereStatement = '';
             'TXT_NEWSLETTER_PHONE'          => $_ARRAYLANG['TXT_NEWSLETTER_PHONE'],
             'TXT_NEWSLETTER_BIRTHDAY'       => $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'],
             'TXT_NEWSLETTER_SAVE'           => $_ARRAYLANG['TXT_NEWSLETTER_SAVE'],
-            'TXT_NEWSLETTER_NONE'           => $_ARRAYLANG['TXT_NEWSLETTER_NONE'],
+            'TXT_NEWSLETTER_DO_NOT_SEND_EMAIL'     => $_ARRAYLANG['TXT_NEWSLETTER_DO_NOT_SEND_EMAIL'],
             'TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL']
 //            'JAVASCRIPTCODE' => $this->JSadduser(),
         ));
@@ -4905,18 +4922,6 @@ $WhereStatement = '';
         return true;
     }
 
-    function _validateRecipientAttributes($recipientAttributeStatus, $recipient_website, $recipient_sex, $recipient_salutation, $recipient_title, $recipient_lastname, $recipient_firstname, $recipient_position, $recipient_company, $recipient_industry, $recipient_address, $recipient_zip, $recipient_city, $recipient_country, $recipient_phone, $recipient_private, $recipient_mobile, $recipient_fax, $recipient_birthday) 
-    {        
-        foreach ($recipientAttributeStatus as $attributeName => $recipientStatusArray) {
-            if ($recipientStatusArray['active'] && $recipientStatusArray['required']) {
-                $value = trim(${$attributeName});
-                if (empty($value)) {
-                    return false;
-                }
-            }        
-        }
-        return true;
-    }
     /**
      * @todo instead of just not linking the access users probably link to
      *       the access module in case the user has the appropriate rights
