@@ -41,7 +41,7 @@ $_ARRAYLANG['TXT_NEWS_MESSAGES'] = "Newsmeldungen";
 $_ARRAYLANG['TXT_SETTINGS'] = "Einstellungen";
 $_ARRAYLANG['TXT_NEWSLETTER'] = "Newsletter";
 $_ARRAYLANG['TXT_SELECT_ALL'] = "Alles markieren";
-$_ARRAYLANG['TXT_EMAIL_ADDRESS'] = "Email Adresse";
+$_ARRAYLANG['TXT_EMAIL_ADDRESS'] = "E-Mail";
 $_ARRAYLANG['TXT_LIST'] = "Listen";
 $_ARRAYLANG['TXT_WILDCART_INFOS'] = "Platzhalter-Informationen";
 $_ARRAYLANG['TXT_LIST_NAME'] = "Name der Liste";
@@ -448,4 +448,5 @@ $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL'] = "Wählen Sie ein E-Mail au
 $_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD'] = "Pflichtfeld";
 $_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD_ERROR'] = "Bitte überprüfen Sie Ihre Eingabe!";
 $_ARRAYLANG['TXT_NEWSLETTER_DO_NOT_SEND_EMAIL'] = "Kein E-Mail versenden";
+$_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_NO_EMAIL_SENT'] = "Es wurde kein E-Mail an den Benutzer gesendet, da dieser bereits im System eingetragen war.";
 ?>

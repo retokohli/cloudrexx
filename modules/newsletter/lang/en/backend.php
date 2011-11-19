@@ -41,7 +41,7 @@ $_ARRAYLANG['TXT_NEWS_MESSAGES'] = "News messages";
 $_ARRAYLANG['TXT_SETTINGS'] = "Settings";
 $_ARRAYLANG['TXT_NEWSLETTER'] = "Newsletter";
 $_ARRAYLANG['TXT_SELECT_ALL'] = "Select all";
-$_ARRAYLANG['TXT_EMAIL_ADDRESS'] = "Email address";
+$_ARRAYLANG['TXT_EMAIL_ADDRESS'] = "E-mail";
 $_ARRAYLANG['TXT_LIST'] = "Lists";
 $_ARRAYLANG['TXT_WILDCART_INFOS'] = "Placeholder informaion";
 $_ARRAYLANG['TXT_LIST_NAME'] = "Name of the list";
@@ -449,4 +449,5 @@ $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL'] = "Choose an e-mail to be se
 $_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD'] = "Mandatory field";
 $_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD_ERROR'] = "Please Enter all required fields!";
 $_ARRAYLANG['TXT_NEWSLETTER_DO_NOT_SEND_EMAIL'] = "Do not send an e-mail";
+$_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_NO_EMAIL_SENT'] = "No e-mail had been sent to the recipient, due that he had already been a subscriber.";
 ?>
