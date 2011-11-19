@@ -1365,12 +1365,23 @@ table.news_meta td {
 	color: #ff0000;
 }
 
-#newsletter_home input[type=radio],
-#newsletter_home input[type=checkbox]{
-        float: none;
+#newsletter form label.description {
+    float: left;
+    margin: 2px 0px 0px 10px;
+    padding:  0px 0px 0px 0px;
+    width: 300px;
 }
 
+#newsletter form p {
+    clear: left;
+    margin: 0;
+    padding: 2px 0 3px 5px;
+    height: 1%;
+}
 
+#newsletter form label {
+    clear: none;
+}
 /***************************************************/
 /* CSS DEFINITIONS FOR EGOV MODULE                 */
 /***************************************************/

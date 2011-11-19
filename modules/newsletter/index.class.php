@@ -583,7 +583,7 @@ class newsletter extends NewsletterLib
                 'NEWSLETTER_URI'          => htmlentities($recipientUri, ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_SEX_F'        => $recipientSex == 'f' ? 'checked="checked"' : '',
                 'NEWSLETTER_SEX_M'        => $recipientSex == 'm' ? 'checked="checked"' : '',                
-                'NEWSLETTER_SALUTATION'        => $this->_getRecipientTitleMenu($recipientSalutation, 'name="salutation" style="width:296px" size="1"'),
+                'NEWSLETTER_SALUTATION'        => $this->_getRecipientTitleMenu($recipientSalutation, 'name="salutation" size="1"'),
                 'NEWSLETTER_TITLE'    => htmlentities($recipientTitle, ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_LASTNAME'    => htmlentities($recipientLastname, ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_FIRSTNAME'    => htmlentities($recipientFirstname, ENT_QUOTES, CONTREXX_CHARSET),

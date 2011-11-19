@@ -4171,10 +4171,13 @@ $WhereStatement = '';
         } elseif (isset($_POST['fieldsSelected'])) {
             // Speichern der Daten. Siehe Final weiter unten.
             $arrRecipients = $objImport->getFinalData($arrFields);
-            if ($_POST['category'] == '') {
-                $arrLists = array_keys(self::getLists());
-            } else {
-                $arrLists = array(intval($_POST['category']));
+            
+            $arrLists = array();
+            if (isset($_POST['newsletter_recipient_associated_list'])) {
+                $listArr = explode(',',$_POST['newsletter_recipient_associated_list']);
+                foreach ($listArr as $listId) {                    
+                    array_push($arrLists, intval($listId));             
+                }
             }
             $EmailCount = 0;
             $arrBadEmails = array();
@@ -4227,7 +4230,7 @@ $WhereStatement = '';
                 'TXT_FILETYPE' => $_ARRAYLANG['TXT_NEWSLETTER_FILE_TYPE'],
                 'TXT_HELP' => $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_HELP'],
                 'IMPORT_ADD_NAME' => $_ARRAYLANG['TXT_NEWSLETTER_LIST'],
-                'IMPORT_ADD_VALUE' => $this->CategoryDropDown(),
+                'IMPORT_ADD_VALUE' => $this->_getAssociatedListSelection(),
                 'IMPORT_ROWCLASS' => 'row2',
             ));
             $objTpl->parse("additional");
@@ -4235,7 +4238,7 @@ $WhereStatement = '';
         } elseif (   (   empty($_FILES['importfile'])
                       || $_FILES['importfile']['size'] == 0)
                   || (   isset($_POST['imported'])
-                      && $_REQUEST['category'] == 'selectcategory')) {
+                      && empty($_POST['newsletter_recipient_associated_list']))) {
             // Dateiauswahldialog. Siehe Fileselect
             $this->_pageTitle = $_ARRAYLANG['TXT_IMPORT'];
             $this->_objTpl->addBlockfile('NEWSLETTER_USER_FILE', 'module_newsletter_user_import', 'module_newsletter_user_import.html');
@@ -4250,7 +4253,8 @@ $WhereStatement = '';
                 'TXT_FILETYPE' => 'Dateityp',
                 'TXT_HELP' => $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_HELP'],
                 'IMPORT_ADD_NAME' => 'Liste',
-                'IMPORT_ADD_VALUE' => $this->CategoryDropDown(),
+                //'IMPORT_ADD_VALUE' => $this->CategoryDropDown(),
+                'IMPORT_ADD_VALUE' => $this->_getAssociatedListSelection(),
                 'IMPORT_ROWCLASS' => 'row2'
             ));
             $objTpl->parse("additional");
@@ -4317,19 +4321,28 @@ $WhereStatement = '';
             // Felderzuweisungsdialog. Siehe Fieldselect
             $objImport->initFieldSelectTemplate($objTpl, $arrFields);
 
+            $arrLists = array();
+            if (isset($_POST['newsletter_recipient_associated_list'])) {                
+                foreach ($_POST['newsletter_recipient_associated_list'] as $listId => $status) {
+                    if (intval($status) == 1) {
+                        array_push($arrLists, intval($listId));
+                    }
+                }
+            }
+
             $objTpl->setVariable(array(
-                'IMPORT_HIDDEN_NAME' => 'category',
+                'IMPORT_HIDDEN_NAME' => 'newsletter_recipient_associated_list',
                 'IMPORT_HIDDEN_VALUE' =>
-                    (empty($_POST['category']) ? '' : intval($_POST['category'])),
+                    (!empty($arrLists) ? implode(',', $arrLists) : ''),
             ));
 
             $this->_objTpl->setVariable(array(
                 'TXT_REMOVE_PAIR' => $_ARRAYLANG['TXT_REMOVE_PAIR'],
-                'IMPORT_HIDDEN_NAME' => 'category',
+                'IMPORT_HIDDEN_NAME' => 'newsletter_recipient_associated_list',
                 'IMPORT_HIDDEN_VALUE' =>
-                    (empty($_POST['category']) ? '' : intval($_POST['category'])),
+                    (!empty($arrLists) ? implode(',', $arrLists) : ''),
                 'NEWSLETTER_USER_FILE' => $objTpl->get(),
-            ));
+            ));            
         }
     }
 
@@ -4387,6 +4400,26 @@ $WhereStatement = '';
     }
 
 
+    function _getAssociatedListSelection()
+    {
+        
+        $arrLists = self::getLists();
+        $listNr = 1;
+        foreach ($arrLists as $listId => $arrList) {
+            $column = $listNr % 3;
+            $lists .= ' <div style="float:left;width:33%;">
+                            <input type="checkbox" 
+                                 name="newsletter_recipient_associated_list['.intval($listId).']" 
+                                 id="newsletter_mail_associated_list_'.intval($listId).'"
+                                 value="1" />
+                            <a href="index.php?cmd=newsletter&amp;act=users&amp;newsletterListId='.intval($listId).'"
+                               target="_blank" title="'.sprintf($_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_LIST'], contrexx_raw2xhtml($arrList['name'])).'">
+                                   '.contrexx_raw2xhtml($arrList['name']).'
+                            </a>
+                        </div>';            
+        }        
+        return $lists;
+    }
     /**
      * delete all inactice recipients
      * @return void
@@ -4684,6 +4717,7 @@ $WhereStatement = '';
                     
                     if ($this->_updateRecipient($recipientAttributeStatus, $recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage)) {
                         self::$strOkMessage .= $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_UPDATED_SUCCESSFULLY'];
+                        self::$strOkMessage .= $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_NO_EMAIL_SENT'];
                         return $this->_userList();
                     } else {
                         self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_ERROR_UPDATE_RECIPIENT'];
