@@ -183,16 +183,19 @@ Text[0]=["","{TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL}"];
       <td width="17%">{TXT_NEWSLETTER_BIRTHDAY}&nbsp;{NEWSLETTER_RECIPIENT_BIRTHDAY_MANDATORY}</td>
       <td width="83%" colspan="3">
         <select  name="day" style="width:60px">
+        <option value="0">{TXT_NEWSLETTER_RECIPIENT_DATE}</option>    
         <!-- BEGIN birthday_day -->
           <option value="{USERS_BIRTHDAY_DAY}" {SELECTED_DAY}> {USERS_BIRTHDAY_DAY_NAME} </option>
         <!-- END birthday_day -->
         </select>
         <select  name="month" style="width:170px">
+        <option value="0">{TXT_NEWSLETTER_RECIPIENT_MONTH}</option>
         <!-- BEGIN birthday_month -->
           <option value="{USERS_BIRTHDAY_MONTH}" {SELECTED_MONTH}> {USERS_BIRTHDAY_MONTH_NAME} </option>
         <!-- END birthday_month -->
         </select>
         <select  name="year" style="width:60px">
+        <option value="0">{TXT_NEWSLETTER_RECIPIENT_YEAR}</option>    
         <!-- BEGIN birthday_year -->
           <option value="{USERS_BIRTHDAY_YEAR}" {SELECTED_YEAR}> {USERS_BIRTHDAY_YEAR} </option>
         <!-- END birthday_year -->

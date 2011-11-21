@@ -549,16 +549,63 @@ class NewsletterLib
         }
     }
 
+    /**
+     * Create and select the date dropdowns for choosing the birthday
+     *
+     * @param (array|string) $birthday
+     */    
+    function _createDatesDropdown($birthday = '') {
+        if (!empty($birthday)) {
+            $birthday = (is_array($birthday)) ? $birthday : explode('-', $birthday);
+            $day = !empty($birthday[0]) ? $birthday[0] : '';
+            $month = !empty($birthday[1]) ? $birthday[1] : '';
+            $year = !empty($birthday[2]) ? $birthday[2] : '';
+        } else {
+            $day = '';
+            $month = '';
+            $year = '';
+        }
 
-    protected function getCountryMenu($selectedCountry = 0)
+        for($i=1;$i<=31;$i++) {
+            $selected = ($day == str_pad($i,2,'0',STR_PAD_LEFT)) ? 'selected="selected"' : '' ;
+            $this->_objTpl->setVariable(array(
+                'USERS_BIRTHDAY_DAY' => str_pad($i,2,'0', STR_PAD_LEFT),
+                'USERS_BIRTHDAY_DAY_NAME' => $i,
+                'SELECTED_DAY' => $selected
+            ));
+            $this->_objTpl->parse('birthday_day');
+        }
+
+        for($i=1;$i<=12;$i++) {
+            $selected = ($month == str_pad($i,2,'0',STR_PAD_LEFT)) ? 'selected="selected"' : '' ;
+            $this->_objTpl->setVariable(array(
+                'USERS_BIRTHDAY_MONTH' => str_pad($i, 2, '0', STR_PAD_LEFT),
+                'USERS_BIRTHDAY_MONTH_NAME' => $this->months[$i],
+                'SELECTED_MONTH' => $selected
+            ));
+            $this->_objTpl->parse('birthday_month');
+        }
+
+        for($i=date("Y");$i>=1900;$i--) {
+            $selected = ($year == $i) ? 'selected="selected"' : '' ;
+            $this->_objTpl->setVariable(array(
+                'USERS_BIRTHDAY_YEAR' => $i,
+                'SELECTED_YEAR' => $selected
+            ));
+            $this->_objTpl->parse('birthday_year');
+        }
+    }
+  
+    protected function getCountryMenu($selectedCountry = 0, $mantatory = false)
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
         $objResult = $objDatabase->Execute("
             SELECT `id`, `name`
               FROM ".DBPREFIX."lib_country
              ORDER BY `name`");
-        $menu ='<select name="newsletter_country_id" size="1">';
+        $menu  = '<select name="newsletter_country_id" size="1">';
+        $menu .= "<option value='0'>".(($mantatory) ? $_ARRAYLANG['TXT_NEWSLETTER_PLEASE_SELECT'] : $_ARRAYLANG['TXT_NEWSLETTER_NOT_SPECIFIED'])."</option>";        
         while (!$objResult->EOF) {
             $menu .= '<option value="'.$objResult->fields['id'].'"'.($objResult->fields['id'] == $selectedCountry ? ' selected="selected"' : '').'>'.htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
             $objResult->MoveNext();

@@ -3279,50 +3279,6 @@ class newsletter extends NewsletterLib
         return $TemplateSource;
     }
 
-
-    function _createDatesDropdown($birthday = '') {
-        if (!empty($birthday)) {
-            $birthday = (is_array($birthday)) ? $birthday : explode('-', $birthday);
-            $day = !empty($birthday[0]) ? $birthday[0] : '01';
-            $month = !empty($birthday[1]) ? $birthday[1] : '01';
-            $year = !empty($birthday[2]) ? $birthday[2] : date("Y");
-        } else {
-            $day = '01';
-            $month = '01';
-            $year = date("Y");
-        }
-
-        for($i=1;$i<=31;$i++) {
-            $selected = ($day == str_pad($i,2,'0',STR_PAD_LEFT)) ? 'selected="selected"' : '' ;
-            $this->_objTpl->setVariable(array(
-                'USERS_BIRTHDAY_DAY' => str_pad($i,2,'0', STR_PAD_LEFT),
-                'USERS_BIRTHDAY_DAY_NAME' => $i,
-                'SELECTED_DAY' => $selected
-            ));
-            $this->_objTpl->parse('birthday_day');
-        }
-
-        for($i=1;$i<=12;$i++) {
-            $selected = ($month == str_pad($i,2,'0',STR_PAD_LEFT)) ? 'selected="selected"' : '' ;
-            $this->_objTpl->setVariable(array(
-                'USERS_BIRTHDAY_MONTH' => str_pad($i, 2, '0', STR_PAD_LEFT),
-                'USERS_BIRTHDAY_MONTH_NAME' => $this->months[$i],
-                'SELECTED_MONTH' => $selected
-            ));
-            $this->_objTpl->parse('birthday_month');
-        }
-
-        for($i=date("Y");$i>=1900;$i--) {
-            $selected = ($year == $i) ? 'selected="selected"' : '' ;
-            $this->_objTpl->setVariable(array(
-                'USERS_BIRTHDAY_YEAR' => $i,
-                'SELECTED_YEAR' => $selected
-            ));
-            $this->_objTpl->parse('birthday_year');
-        }
-    }
-
-
     /**
      * Parse the newsletter
      * @author      Comvation AG
@@ -4172,69 +4128,95 @@ $WhereStatement = '';
             // Speichern der Daten. Siehe Final weiter unten.
             $arrRecipients = $objImport->getFinalData($arrFields);
             
-            $arrLists = array();
-            if (isset($_POST['newsletter_recipient_associated_list'])) {
-                $listArr = explode(',',$_POST['newsletter_recipient_associated_list']);
-                foreach ($listArr as $listId) {                    
-                    array_push($arrLists, intval($listId));             
-                }
-            }
-            $EmailCount = 0;
-            $arrBadEmails = array();
-            $ExistEmails = 0;
-            $NewEmails = 0;
-            foreach ($arrRecipients as $arrRecipient) {
-                if (empty($arrRecipient['email'])) {
-                    continue;
-                }
-                if (!strpos($arrRecipient['email'],'@')) {
-                    continue;
-                }
+            if (empty($_POST['newsletter_recipient_associated_list'])) {
+                self::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_SELECT_CATEGORY'];
+            } else {
+                $arrLists = array();
+                
+                if (isset($_POST['newsletter_recipient_associated_list'])) {
+                    $listArr = explode(',',$_POST['newsletter_recipient_associated_list']);
+                    foreach ($listArr as $listId) {                    
+                        array_push($arrLists, intval($listId));             
+                    }                
+                }                
+                
+                $EmailCount = 0;
+                $arrBadEmails = array();
+                $ExistEmails = 0;
+                $NewEmails = 0;
+                $recipientSendEmailId = (isset($_POST['sendEmail'])) ? intval($_POST['sendEmail']) : 0;
+                foreach ($arrRecipients as $arrRecipient) {
+                    if (empty($arrRecipient['email'])) {
+                        continue;
+                    }
+                    if (!strpos($arrRecipient['email'],'@')) {
+                        continue;
+                    }
 
-                $arrRecipient['email'] = trim($arrRecipient['email']);
-                if (!FWValidator::isEmail($arrRecipient['email'])) {
-                    array_push($arrBadEmails, $arrRecipient['email']);
-                } else {
-                    $EmailCount++;
-                    $objRecipient = $objDatabase->SelectLimit("SELECT `id` FROM `".DBPREFIX."module_newsletter_user` WHERE `email` = '".addslashes($arrRecipient['email'])."'", 1);
-                    if ($objRecipient->RecordCount() == 1) {
-                        foreach ($arrLists as $listId) {
-                            $this->_addRecipient2List($objRecipient->fields['id'], $listId);
-                        }
-                        $ExistEmails++;
+                    $arrRecipient['email'] = trim($arrRecipient['email']);
+                    if (!FWValidator::isEmail($arrRecipient['email'])) {
+                        array_push($arrBadEmails, $arrRecipient['email']);
                     } else {
-                        $NewEmails ++;
-
-                        if (in_array($arrRecipient['salutation'], $this->_getRecipientTitles())) {
-                            $arrRecipientTitles = array_flip($this->_getRecipientTitles());
-                            $recipientSalutationId = $arrRecipientTitles[$arrRecipient['salutation']];
+                        $EmailCount++;
+                        $objRecipient = $objDatabase->SelectLimit("SELECT `id` FROM `".DBPREFIX."module_newsletter_user` WHERE `email` = '".addslashes($arrRecipient['email'])."'", 1);
+                        if ($objRecipient->RecordCount() == 1) {
+                            foreach ($arrLists as $listId) {
+                                $this->_addRecipient2List($objRecipient->fields['id'], $listId);
+                            }
+                            $ExistEmails++;
                         } else {
-                            $recipientSalutationId = $this->_addRecipientTitle($arrRecipient['salutation']);
-                        }
+                            $NewEmails ++;
 
-                        if (!$this->_addRecipient($arrRecipient['email'], $arrRecipient['uri'], $arrRecipient['sex'], $recipientSalutationId, $arrRecipient['title'], $arrRecipient['lastname'], $arrRecipient['firstname'], $arrRecipient['position'], $arrRecipient['company'], $arrRecipient['industry_sector'], $arrRecipient['address'], $arrRecipient['zip'], $arrRecipient['city'], $arrRecipient['country_id'], $arrRecipient['phone_office'], $arrRecipient['phone_private'], $arrRecipient['phone_mobile'], $arrRecipient['fax'], $arrRecipient['notes'], $arrRecipient['birthday'], 1, $arrLists, $arrRecipient['language'])) {
-                            array_push($arrBadEmails, $arrRecipient['email']);
+                            if (in_array($arrRecipient['salutation'], $this->_getRecipientTitles())) {
+                                $arrRecipientTitles = array_flip($this->_getRecipientTitles());
+                                $recipientSalutationId = $arrRecipientTitles[$arrRecipient['salutation']];
+                            } else {
+                                $recipientSalutationId = $this->_addRecipientTitle($arrRecipient['salutation']);
+                            }
+
+                            if (!$this->_addRecipient($arrRecipient['email'], $arrRecipient['uri'], $arrRecipient['sex'], $recipientSalutationId, $arrRecipient['title'], $arrRecipient['lastname'], $arrRecipient['firstname'], $arrRecipient['position'], $arrRecipient['company'], $arrRecipient['industry_sector'], $arrRecipient['address'], $arrRecipient['zip'], $arrRecipient['city'], $arrRecipient['country_id'], $arrRecipient['phone_office'], $arrRecipient['phone_private'], $arrRecipient['phone_mobile'], $arrRecipient['fax'], $arrRecipient['notes'], $arrRecipient['birthday'], 1, $arrLists, $arrRecipient['language'])) {
+                                array_push($arrBadEmails, $arrRecipient['email']);
+                            } elseif (!empty($recipientSendEmailId)) {
+                                $objRecipient = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_input2db($recipientEmail)."'", 1);
+                                $recipientId  = $objRecipient->fields['id'];
+                                
+                                $this->insertTmpEmail($recipientSendEmailId, $arrRecipient['email'], 'newsletter');
+                                if ($this->SendEmail($recipientId, $recipientSendEmailId, $arrRecipient['email'], 1) == false) {
+                                    self::$strErrMessage .= $_ARRAYLANG['TXT_SENDING_MESSAGE_ERROR'];
+                                } else {
+                                    $objUpdateCount    = $objDatabase->execute('UPDATE '.DBPREFIX.'module_newsletter 
+                                                                                      SET recipient_count = recipient_count+1
+                                                                                WHERE id='.intval($recipientSendEmailId));                                    
+                                }
+                            }
                         }
                     }
                 }
-            }
-            self::$strOkMessage = $_ARRAYLANG['TXT_DATA_IMPORT_SUCCESSFUL']."<br/>"
-                                    .$_ARRAYLANG['TXT_CORRECT_EMAILS'].": ".$EmailCount."<br/>"
-                                    .$_ARRAYLANG['TXT_NOT_VALID_EMAILS'].": ".implode(', ', $arrBadEmails)."<br/>"
-                                    .$_ARRAYLANG['TXT_EXISTING_EMAILS'].": ".$ExistEmails."<br/>"
-                                    .$_ARRAYLANG['TXT_NEW_ADDED_EMAILS'].": ".$NewEmails;
+                self::$strOkMessage = $_ARRAYLANG['TXT_DATA_IMPORT_SUCCESSFUL']."<br/>"
+                                        .$_ARRAYLANG['TXT_CORRECT_EMAILS'].": ".$EmailCount."<br/>"
+                                        .$_ARRAYLANG['TXT_NOT_VALID_EMAILS'].": ".implode(', ', $arrBadEmails)."<br/>"
+                                        .$_ARRAYLANG['TXT_EXISTING_EMAILS'].": ".$ExistEmails."<br/>"
+                                        .$_ARRAYLANG['TXT_NEW_ADDED_EMAILS'].": ".$NewEmails;
 
-            $objImport->initFileSelectTemplate($objTpl);
-            $objTpl->setVariable(array(
-                "IMPORT_ACTION" => "index.php?cmd=newsletter&amp;act=users&amp;tpl=import",
-                'TXT_FILETYPE' => $_ARRAYLANG['TXT_NEWSLETTER_FILE_TYPE'],
-                'TXT_HELP' => $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_HELP'],
-                'IMPORT_ADD_NAME' => $_ARRAYLANG['TXT_NEWSLETTER_LIST'],
-                'IMPORT_ADD_VALUE' => $this->_getAssociatedListSelection(),
-                'IMPORT_ROWCLASS' => 'row2',
-            ));
-            $objTpl->parse("additional");
-            $this->_objTpl->setVariable('NEWSLETTER_USER_FILE', $objTpl->get());
+                $objImport->initFileSelectTemplate($objTpl);
+                $objTpl->setVariable(array(
+                    "IMPORT_ACTION" => "index.php?cmd=newsletter&amp;act=users&amp;tpl=import",
+                    'TXT_FILETYPE' => 'Dateityp',
+                    'TXT_HELP' => $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_HELP'],
+                    'IMPORT_ADD_NAME' => $_ARRAYLANG['TXT_NEWSLETTER_SEND_EMAIL'],
+                    //'IMPORT_ADD_VALUE' => $this->CategoryDropDown(),
+                    'IMPORT_ADD_VALUE' => $this->_getEmailsDropDown(),
+                    'IMPORT_ROWCLASS' => 'row2'
+                ));
+                $objTpl->parse("additional");            
+                $objTpl->setVariable(array(
+                    'IMPORT_ADD_NAME' => 'Liste',
+                    'IMPORT_ADD_VALUE' => $this->_getAssociatedListSelection(),
+                    'IMPORT_ROWCLASS' => 'row1'
+                ));
+                $objTpl->parse("additional");
+                $this->_objTpl->setVariable('NEWSLETTER_USER_FILE', $objTpl->get());                
+            }
         } elseif (   (   empty($_FILES['importfile'])
                       || $_FILES['importfile']['size'] == 0)
                   || (   isset($_POST['imported'])
@@ -4243,7 +4225,7 @@ $WhereStatement = '';
             $this->_pageTitle = $_ARRAYLANG['TXT_IMPORT'];
             $this->_objTpl->addBlockfile('NEWSLETTER_USER_FILE', 'module_newsletter_user_import', 'module_newsletter_user_import.html');
 
-            if (isset($_POST['imported']) && $_REQUEST['category'] == 'selectcategory') {
+            if (isset($_POST['imported']) && empty($_POST['newsletter_recipient_associated_list'])) {
                 self::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_SELECT_CATEGORY'];
             }
 
@@ -4252,10 +4234,16 @@ $WhereStatement = '';
                 "IMPORT_ACTION" => "index.php?cmd=newsletter&amp;act=users&amp;tpl=import",
                 'TXT_FILETYPE' => 'Dateityp',
                 'TXT_HELP' => $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_HELP'],
-                'IMPORT_ADD_NAME' => 'Liste',
+                'IMPORT_ADD_NAME' => $_ARRAYLANG['TXT_NEWSLETTER_SEND_EMAIL'],
                 //'IMPORT_ADD_VALUE' => $this->CategoryDropDown(),
-                'IMPORT_ADD_VALUE' => $this->_getAssociatedListSelection(),
+                'IMPORT_ADD_VALUE' => $this->_getEmailsDropDown(),
                 'IMPORT_ROWCLASS' => 'row2'
+            ));
+            $objTpl->parse("additional");            
+            $objTpl->setVariable(array(
+                'IMPORT_ADD_NAME' => 'Liste',                
+                'IMPORT_ADD_VALUE' => $this->_getAssociatedListSelection(),
+                'IMPORT_ROWCLASS' => 'row1'
             ));
             $objTpl->parse("additional");
             $this->_objTpl->setVariable(array(
@@ -4335,17 +4323,43 @@ $WhereStatement = '';
                 'IMPORT_HIDDEN_VALUE' =>
                     (!empty($arrLists) ? implode(',', $arrLists) : ''),
             ));
-
+            $objTpl->parse('hidden_fields');            
+            $objTpl->setVariable(array(
+                'IMPORT_HIDDEN_NAME' => 'sendEmail',
+                'IMPORT_HIDDEN_VALUE' => (isset($_POST['sendEmail']) ? intval($_POST['sendEmail']) : 0),
+            ));            
+            $objTpl->parse('hidden_fields');
             $this->_objTpl->setVariable(array(
-                'TXT_REMOVE_PAIR' => $_ARRAYLANG['TXT_REMOVE_PAIR'],
-                'IMPORT_HIDDEN_NAME' => 'newsletter_recipient_associated_list',
-                'IMPORT_HIDDEN_VALUE' =>
-                    (!empty($arrLists) ? implode(',', $arrLists) : ''),
+                'TXT_REMOVE_PAIR' => $_ARRAYLANG['TXT_REMOVE_PAIR'],                
                 'NEWSLETTER_USER_FILE' => $objTpl->get(),
             ));            
         }
     }
 
+    function _getEmailsDropDown($name='sendEmail', $selected=0, $attrs='') 
+    {
+        global $objDatabase, $_ARRAYLANG;
+        
+        $objNewsletterMails = $objDatabase->Execute('SELECT
+                                                      id,
+                                                      subject
+                                                      FROM '.DBPREFIX.'module_newsletter                                                      
+                                                      ORDER BY status, id DESC');
+            
+            
+        $ReturnVar = '<select name="'.$name.'"'.(!empty($attrs) ? ' '.$attrs : '').'>
+        <option value="0">'.$_ARRAYLANG['TXT_NEWSLETTER_DO_NOT_SEND_EMAIL'].'</option>';
+        
+        if ($objNewsletterMails !== false) {
+            while (!$objNewsletterMails->EOF) {
+                $ReturnVar .= '<option value="'.$objNewsletterMails->fields['id'].'"'.($objNewsletterMails->fields['id'] == $selected ? 'selected="selected"' : '').'>'.htmlentities($objNewsletterMails->fields['subject'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
+                $objNewsletterMails->MoveNext();
+            }
+        }
+        $ReturnVar .= '</select>';
+
+        return $ReturnVar;
+    }
 
     /**
      * Sets the list-categories for an User
@@ -4626,7 +4640,7 @@ $WhereStatement = '';
         if (isset($_POST['newsletter_recipient_notes'])) {
             $recipientNotes = $_POST['newsletter_recipient_notes'];
         }
-        if (isset($_POST['day']) && isset($_POST['month']) && isset($_POST['year'])) {
+        if (!empty($_POST['day']) && !empty($_POST['month']) && !empty($_POST['year'])) {
             $recipientBirthday = str_pad(intval($_POST['day']),2,'0',STR_PAD_LEFT).'-'.str_pad(intval($_POST['month']),2,'0',STR_PAD_LEFT).'-'.intval($_POST['year']);
         }
         if (isset($_POST['newsletter_recipient_title'])) {
@@ -4658,7 +4672,7 @@ $WhereStatement = '';
                 }
             }
         }
-
+        
         // Get interface settings
         $objInterface = $objDatabase->Execute('SELECT `setvalue` 
                                                 FROM `'.DBPREFIX.'module_newsletter_settings`
@@ -4668,8 +4682,8 @@ $WhereStatement = '';
         if (isset($_POST['newsletter_recipient_save'])) {
             $objValidator = new FWValidator();
             if ($objValidator->isEmail($recipientEmail)) {
-                if ($this->_isUniqueRecipientEmail($recipientEmail, $recipientId)) {
-                    if ($this->_validateRecipientAttributes($recipientAttributeStatus, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientBirthday)) {
+                if ($this->_validateRecipientAttributes($recipientAttributeStatus, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientBirthday)) {
+                    if ($this->_isUniqueRecipientEmail($recipientEmail, $recipientId)) {
                         if ($recipientId > 0) {
                             if ($this->_updateRecipient($recipientAttributeStatus, $recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage)) {
                                 self::$strOkMessage .= $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_UPDATED_SUCCESSFULLY'];
@@ -4701,29 +4715,29 @@ $WhereStatement = '';
                                 self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_ERROR_SAVE_RECIPIENT'];
                             }
                         }
+                    } elseif (empty($recipientId)) {
+                        $objRecipient      = $objDatabase->SelectLimit("SELECT id, language, status FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_input2db($recipientEmail)."'", 1);
+                        $recipientId       = $objRecipient->fields['id'];
+                        $recipientLanguage = $objRecipient->fields['language'];
+                        $recipientStatus   = $objRecipient->fields['status'];
+
+                        // set all attributes status to false to set the omitEmpty value to true
+                        foreach ($recipientAttributeStatus as $attribute => $value) {
+                            $recipientAttributeStatus[$attribute]['active'] = false;                                                
+                        }
+
+                        if ($this->_updateRecipient($recipientAttributeStatus, $recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage)) {
+                            self::$strOkMessage .= $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_UPDATED_SUCCESSFULLY'];
+                            self::$strOkMessage .= $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_NO_EMAIL_SENT'];
+                            return $this->_userList();
+                        } else {
+                            self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_ERROR_UPDATE_RECIPIENT'];
+                        }                    
                     } else {
-                        self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD_ERROR'];                        
+                        self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_ERROR_SAVE_RECIPIENT'];
                     }
-                } elseif (empty($recipientId)) {
-                    $objRecipient      = $objDatabase->SelectLimit("SELECT id, language, status FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_input2db($recipientEmail)."'", 1);
-                    $recipientId       = $objRecipient->fields['id'];
-                    $recipientLanguage = $objRecipient->fields['language'];
-                    $recipientStatus   = $objRecipient->fields['status'];
-                    
-                    // set all attributes status to false to set the omitEmpty value to true
-                    foreach ($recipientAttributeStatus as $attribute => $value) {
-                        $recipientAttributeStatus[$attribute]['active'] = false;                                                
-                    }
-                    
-                    if ($this->_updateRecipient($recipientAttributeStatus, $recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage)) {
-                        self::$strOkMessage .= $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_UPDATED_SUCCESSFULLY'];
-                        self::$strOkMessage .= $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_NO_EMAIL_SENT'];
-                        return $this->_userList();
-                    } else {
-                        self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_ERROR_UPDATE_RECIPIENT'];
-                    }                    
-                } else {
-                    self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_ERROR_SAVE_RECIPIENT'];
+                } else {                    
+                    self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD_ERROR'];                        
                 }
             } else {
                 self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_INVALIDE_EMAIL_ADDRESS'];
@@ -4893,7 +4907,7 @@ $WhereStatement = '';
         } else {
             $this->_objTpl->hideBlock('recipientProfileAttributes');
         }
-        
+
         $this->_objTpl->setVariable(array(
             'NEWSLETTER_RECIPIENT_ID'           => $recipientId,
             'NEWSLETTER_RECIPIENT_EMAIL'        => htmlentities($recipientEmail, ENT_QUOTES, CONTREXX_CHARSET),
@@ -4924,7 +4938,7 @@ $WhereStatement = '';
             'NEWSLETTER_RECIPIENT_ADDRESS'      => htmlentities($recipientAddress, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_RECIPIENT_ZIP'          => htmlentities($recipientZip, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_RECIPIENT_CITY'         => htmlentities($recipientCity, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_RECIPIENT_COUNTRY'      => $this->getCountryMenu($recipientCountry),
+            'NEWSLETTER_RECIPIENT_COUNTRY'      => $this->getCountryMenu($recipientCountry, ($recipientAttributeStatus['recipient_country']['active']  && $recipientAttributeStatus['recipient_country']['required'])),
             'NEWSLETTER_RECIPIENT_PHONE'        => htmlentities($recipientPhoneOffice, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_RECIPIENT_PHONE_MOBILE' => htmlentities($recipientPhoneMobile, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_RECIPIENT_PHONE_PRIVATE' => htmlentities($recipientPhonePrivate, ENT_QUOTES, CONTREXX_CHARSET),
@@ -4949,7 +4963,10 @@ $WhereStatement = '';
             'TXT_NEWSLETTER_BIRTHDAY'       => $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'],
             'TXT_NEWSLETTER_SAVE'           => $_ARRAYLANG['TXT_NEWSLETTER_SAVE'],
             'TXT_NEWSLETTER_DO_NOT_SEND_EMAIL'     => $_ARRAYLANG['TXT_NEWSLETTER_DO_NOT_SEND_EMAIL'],
-            'TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL']
+            'TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL'],
+            'TXT_NEWSLETTER_RECIPIENT_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_DATE'],
+            'TXT_NEWSLETTER_RECIPIENT_MONTH'=> $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_MONTH'],
+            'TXT_NEWSLETTER_RECIPIENT_YEAR' => $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_YEAR'],
 //            'JAVASCRIPTCODE' => $this->JSadduser(),
         ));
         $this->_objTpl->parse('module_newsletter_user_edit');        

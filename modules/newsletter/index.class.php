@@ -198,60 +198,6 @@ class newsletter extends NewsletterLib
         }
     }
 
-    /**
-     * Create and select the date dropdowns for choosing the birthday
-     *
-     * @param (array|string) $birthday
-     */
-    function _createDatesDropdown($birthday = '')
-    {
-        if(!empty($birthday)){
-            $birthday = (is_array($birthday)) ? $birthday : explode('-', $birthday);
-            $day = !empty($birthday[0]) ? $birthday[0] : '01';
-            $month = !empty($birthday[1]) ? $birthday[1] : '01';
-            $year = !empty($birthday[2]) ? $birthday[2] : date("Y");
-        }else{
-            $day     = '01';
-            $month     = '01';
-            $year     = date("Y");
-        }
-
-        for($i=1;$i<=31;$i++){
-            $selected = ($day == str_pad($i,2,'0',STR_PAD_LEFT)) ? 'selected="selected"' : '' ;
-            $this->_objTpl->setVariable(array(
-                'USERS_BIRTHDAY_DAY'        => str_pad($i,2,'0', STR_PAD_LEFT),
-                'USERS_BIRTHDAY_DAY_NAME'    => $i,
-                'SELECTED_DAY'                => $selected
-            ));
-            if($this->_objTpl->blockExists('birthday_day')){
-                $this->_objTpl->parse('birthday_day');
-            }
-        }
-
-        for($i=1;$i<=12;$i++){
-            $selected = ($month == str_pad($i,2,'0',STR_PAD_LEFT)) ? 'selected="selected"' : '' ;
-            $this->_objTpl->setVariable(array(
-                'USERS_BIRTHDAY_MONTH'        => str_pad($i, 2, '0', STR_PAD_LEFT),
-                'USERS_BIRTHDAY_MONTH_NAME'    => $this->months[$i],
-                'SELECTED_MONTH'            => $selected
-            ));
-            if($this->_objTpl->blockExists('birthday_month')){
-                $this->_objTpl->parse('birthday_month');
-            }
-        }
-
-        for($i=date("Y");$i>=1900;$i--){
-            $selected = ($year == $i) ? 'selected="selected"' : '' ;
-            $this->_objTpl->setVariable(array(
-                'USERS_BIRTHDAY_YEAR'         => $i,
-                'SELECTED_YEAR'                => $selected
-            ));
-            if($this->_objTpl->blockExists('birthday_year')){
-                $this->_objTpl->parse('birthday_year');
-            }
-        }
-    }
-
     function _unsubscribe()
     {
         global $objDatabase, $_ARRAYLANG;
@@ -424,8 +370,8 @@ class newsletter extends NewsletterLib
 
             $objValidator = new FWValidator();
             if ($objValidator->isEmail($recipientEmail)) {
-                if ($this->_isUniqueRecipientEmail($recipientEmail, $recipientId)) {
-                    if ($this->_validateRecipientAttributes($recipientAttributeStatus, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientBirthday)) {                        
+                if ($this->_validateRecipientAttributes($recipientAttributeStatus, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientBirthday)) {
+                    if ($this->_isUniqueRecipientEmail($recipientEmail, $recipientId)) {                    
                         if (!empty($arrAssociatedInactiveLists) || !empty($arrAssociatedLists) && ($objList = $objDatabase->SelectLimit('SELECT id FROM '.DBPREFIX.'module_newsletter_category WHERE status=1 AND (id='.implode(' OR id=', $arrAssociatedLists).')' , 1)) && $objList->RecordCount() > 0) {
                             if ($recipientId > 0) {
                                 if ($this->_updateRecipient($recipientAttributeStatus, $recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage)) {
@@ -449,12 +395,30 @@ class newsletter extends NewsletterLib
                             }
                         } else {
                             array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_MUST_SELECT_LIST']);
+                        }                       
+                    } elseif (empty($recipientId)) {
+                        $objRecipient      = $objDatabase->SelectLimit("SELECT id, language, status FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_input2db($recipientEmail)."'", 1);
+                        $recipientId       = $objRecipient->fields['id'];
+                        $recipientLanguage = $objRecipient->fields['language'];
+                        $recipientStatus   = $objRecipient->fields['status'];
+
+                        // set all attributes status to false to set the omitEmpty value to true
+                        foreach ($recipientAttributeStatus as $attribute => $value) {
+                            $recipientAttributeStatus[$attribute]['active'] = false;                                                
                         }
+
+                        if ($this->_updateRecipient($recipientAttributeStatus, $recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage)) {
+                            array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_UPDATED_SUCCESSFULLY']);
+                            array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_NO_EMAIL_SENT']);
+                            $showForm = false;
+                        } else {
+                            array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_ERROR_UPDATE_RECIPIENT']);                        
+                        }                    
                     } else {
-                        array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD_ERROR']);
+                        array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_ERROR_SAVE_RECIPIENT']);                    
                     }
-                } else {
-                    array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBER_ALREADY_INSERTED']);
+                } else {                    
+                    array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD_ERROR']);
                 }
             } else {
                 array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NOT_VALID_EMAIL']);
@@ -563,7 +527,7 @@ class newsletter extends NewsletterLib
             'recipient_birthday',
             'recipient_website'
             );
-            foreach ($recipientAttributesArray as $attribute) {                
+            foreach ($recipientAttributesArray as $attribute) {
                 if ($this->_objTpl->blockExists($attribute)) {
                     if ($recipientAttributeStatus[$attribute]['active']) {
                         $this->_objTpl->touchBlock($attribute);
@@ -593,7 +557,7 @@ class newsletter extends NewsletterLib
                 'NEWSLETTER_ADDRESS'        => htmlentities($recipientAddress, ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_ZIP'        => htmlentities($recipientZip, ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_CITY'        => htmlentities($recipientCity, ENT_QUOTES, CONTREXX_CHARSET),
-                'NEWSLETTER_COUNTRY'    => $this->getCountryMenu($recipientCountry),
+                'NEWSLETTER_COUNTRY'    => $this->getCountryMenu($recipientCountry, ($recipientAttributeStatus['recipient_country']['active']  && $recipientAttributeStatus['recipient_country']['required'])),
                 'NEWSLETTER_PHONE'        => htmlentities($recipientPhoneOffice, ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_PHONE_PRIVATE'        => htmlentities($recipientPhonePrivate, ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_PHONE_MOBILE'        => htmlentities($recipientPhoneMobile, ENT_QUOTES, CONTREXX_CHARSET),
@@ -629,6 +593,9 @@ class newsletter extends NewsletterLib
                 'TXT_NEWSLETTER_SAVE'          => $_ARRAYLANG['TXT_NEWSLETTER_SAVE'],
                 'TXT_NEWSLETTER_LANGUAGE'      => $_ARRAYLANG['TXT_NEWSLETTER_LANGUAGE'],
                 'TXT_NEWSLETTER_WEBSITE'        => $_ARRAYLANG['TXT_NEWSLETTER_WEBSITE'],
+                'TXT_NEWSLETTER_RECIPIENT_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_DATE'],
+                'TXT_NEWSLETTER_RECIPIENT_MONTH'=> $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_MONTH'],
+                'TXT_NEWSLETTER_RECIPIENT_YEAR' => $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_YEAR'],                
             ));
 
             $this->_objTpl->parse('newsletterForm');
