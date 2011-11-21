@@ -104,7 +104,7 @@ class JSONNode {
                     )  
                 );
                 $metadata[$page->getId()] = array(
-                    "visibility"=> $page->getDisplay() ? 'active' : 'inactive',
+                    "visibility"=> $page->getStatus(),
                     "publishing"=> $page->isActive() ? 'published' : 'unpublished',
                 );
                 $last_resort = FWLanguage::getLanguageCodeById($page->getLang());

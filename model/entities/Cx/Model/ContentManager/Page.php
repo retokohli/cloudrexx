@@ -514,7 +514,7 @@ class Page extends \Cx\Model\Base\EntityBase
     {
         $status = "";
         if ($this->active) $status .= "active ";
-        else $status .= "hidden ";
+        else $status .= "inactive ";
 
         if ($this->protection) $status .= "protected ";
         if ($this->module) {
