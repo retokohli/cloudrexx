@@ -12,4 +12,4 @@
 ****************************************
 
 Aliasverwaltung
-- Aliase mit dem Wort "require" nun auch möglich.
+- Es können nun Aliase für Inhaltsseiten mit dem Schlüsselwort "require" definiert werden.
