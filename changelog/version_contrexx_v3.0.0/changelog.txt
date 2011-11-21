@@ -12,3 +12,6 @@ Layout & Design
 ****************************************
 * Behobene Fehler **********************
 ****************************************
+
+Aliasverwaltung
+- Aliase mit dem Wort "require" nun auch möglich.
