@@ -3,7 +3,7 @@
 ////////////////////////////////////////
 
 ****************************************
-* Neue Funktionen / �nderungen *********
+* Neue Funktionen / Änderungen *********
 ****************************************
 
 
@@ -12,7 +12,7 @@
 ****************************************
 
 Aliasverwaltung
-- Es k�nnen nun Aliase f�r Inhaltsseiten mit dem Schl�sselwort "require" definiert werden.
+- Es können nun Aliase für Inhaltsseiten mit dem Schlüsselwort "require" definiert werden.
 
 Shop
 - Die Versandart wird im Frontend korrekt gesetzt, wenn nur eine definiert ist
