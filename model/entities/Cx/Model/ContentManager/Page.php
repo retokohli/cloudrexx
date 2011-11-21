@@ -141,6 +141,7 @@ class Page extends \Cx\Model\Base\EntityBase
         $this->active = false;
         $this->display = true;
         $this->caching = false;
+        $this->sourceMode = false;
 
         $this->frontendAccessId = 0;
         $this->protection = 0;
