@@ -138,10 +138,10 @@ class File_HtAccess {
                     } elseif (preg_match('/AuthDigestGroupFile/i', $data[0])) {
                        $this->setAuthDigestGroupFile($data[1]);
 
-                    } elseif (preg_match('/Require/i', $buffer)) {
+                    } elseif (preg_match('/^Require/i', $buffer)) {
                        $require = split(' ', $data[1]);
                        $this->addRequire($require);
-                    } elseif (trim($buffer)) {
+                    } else {
                        $this->addAdditional($buffer);
                     }
                 }
