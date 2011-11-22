@@ -347,7 +347,7 @@ class newsletter extends NewsletterLib
             if (isset($_POST['fax'])) {
                 $recipientFax = $_POST['fax'];
             }
-            if (isset($_POST['day']) && isset($_POST['month']) && isset($_POST['year'])) {
+            if (!empty($_POST['day']) && !empty($_POST['month']) && !empty($_POST['year'])) {
                 $recipientBirthday = str_pad(intval($_POST['day']),2,'0',STR_PAD_LEFT).'-'.str_pad(intval($_POST['month']),2,'0',STR_PAD_LEFT).'-'.intval($_POST['year']);
             }
             if (isset($_POST['language'])) {
@@ -532,9 +532,9 @@ class newsletter extends NewsletterLib
                     if ($recipientAttributeStatus[$attribute]['active']) {
                         $this->_objTpl->touchBlock($attribute);
                         $this->_objTpl->setVariable(array(
-                            'NEWSLETTER_'.strtoupper($attribute).'_MANDATORY' => ($recipientAttributeStatus[$attribute]['active'] && $recipientAttributeStatus[$attribute]['required']) ? '*' : '',
+                            'NEWSLETTER_'.strtoupper($attribute).'_MANDATORY' => ($recipientAttributeStatus[$attribute]['required']) ? '*' : '',
                         ));
-                    } else {                    
+                    } else {
                         $this->_objTpl->hideBlock($attribute);
                     }
                 }
