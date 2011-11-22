@@ -177,6 +177,7 @@ var ComboUploader = function(theConfig) {
         refresh: function() {
             switchUploader(curType);
         },
+	//the finish button is used for exposedCombo-uploaders only, so they have to call this function.
         displayFinishButton: function(callback) {
             div.find('.finishButton').bind('click', callback).show();
         }
