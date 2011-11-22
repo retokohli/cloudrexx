@@ -4206,13 +4206,13 @@ $WhereStatement = '';
                     'IMPORT_ADD_NAME' => $_ARRAYLANG['TXT_NEWSLETTER_SEND_EMAIL'],
                     //'IMPORT_ADD_VALUE' => $this->CategoryDropDown(),
                     'IMPORT_ADD_VALUE' => $this->_getEmailsDropDown(),
-                    'IMPORT_ROWCLASS' => 'row2'
+                    'IMPORT_ROWCLASS' => 'row1'
                 ));
                 $objTpl->parse("additional");            
                 $objTpl->setVariable(array(
                     'IMPORT_ADD_NAME' => 'Liste',
                     'IMPORT_ADD_VALUE' => $this->_getAssociatedListSelection(),
-                    'IMPORT_ROWCLASS' => 'row1'
+                    'IMPORT_ROWCLASS' => 'row2'
                 ));
                 $objTpl->parse("additional");
                 $this->_objTpl->setVariable('NEWSLETTER_USER_FILE', $objTpl->get());                
@@ -4237,13 +4237,13 @@ $WhereStatement = '';
                 'IMPORT_ADD_NAME' => $_ARRAYLANG['TXT_NEWSLETTER_SEND_EMAIL'],
                 //'IMPORT_ADD_VALUE' => $this->CategoryDropDown(),
                 'IMPORT_ADD_VALUE' => $this->_getEmailsDropDown(),
-                'IMPORT_ROWCLASS' => 'row2'
+                'IMPORT_ROWCLASS' => 'row1'
             ));
             $objTpl->parse("additional");            
             $objTpl->setVariable(array(
                 'IMPORT_ADD_NAME' => 'Liste',                
                 'IMPORT_ADD_VALUE' => $this->_getAssociatedListSelection(),
-                'IMPORT_ROWCLASS' => 'row1'
+                'IMPORT_ROWCLASS' => 'row2'
             ));
             $objTpl->parse("additional");
             $this->_objTpl->setVariable(array(
@@ -4897,7 +4897,7 @@ $WhereStatement = '';
                     $this->_objTpl->touchBlock($attribute);
                     $this->_objTpl->setVariable(array(
                         'NEWSLETTER_'.strtoupper($attribute).'_ROW_CLASS' => ($profileRowCount%2 == 0) ? 'row2' : 'row1',
-                        'NEWSLETTER_'.strtoupper($attribute).'_MANDATORY' => ($recipientAttributeStatus[$attribute]['active'] && $recipientAttributeStatus[$attribute]['required']) ? '*' : '',
+                        'NEWSLETTER_'.strtoupper($attribute).'_MANDATORY' => ($recipientAttributeStatus[$attribute]['required']) ? '*' : '',
                     ));                    
                     $profileRowCount++;
                 } else {                    
