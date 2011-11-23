@@ -4201,7 +4201,7 @@ $WhereStatement = '';
                 $objImport->initFileSelectTemplate($objTpl);
                 $objTpl->setVariable(array(
                     "IMPORT_ACTION" => "index.php?cmd=newsletter&amp;act=users&amp;tpl=import",
-                    'TXT_FILETYPE' => 'Dateityp',
+                    'TXT_FILETYPE' => $_ARRAYLANG['TXT_NEWSLETTER_FILE_TYPE'],
                     'TXT_HELP' => $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_HELP'],
                     'IMPORT_ADD_NAME' => $_ARRAYLANG['TXT_NEWSLETTER_SEND_EMAIL'],
                     //'IMPORT_ADD_VALUE' => $this->CategoryDropDown(),
@@ -4210,7 +4210,7 @@ $WhereStatement = '';
                 ));
                 $objTpl->parse("additional");            
                 $objTpl->setVariable(array(
-                    'IMPORT_ADD_NAME' => 'Liste',
+                    'IMPORT_ADD_NAME' => $_ARRAYLANG['TXT_NEWSLETTER_LIST'],
                     'IMPORT_ADD_VALUE' => $this->_getAssociatedListSelection(),
                     'IMPORT_ROWCLASS' => 'row2'
                 ));
@@ -4232,7 +4232,7 @@ $WhereStatement = '';
             $objImport->initFileSelectTemplate($objTpl);
             $objTpl->setVariable(array(
                 "IMPORT_ACTION" => "index.php?cmd=newsletter&amp;act=users&amp;tpl=import",
-                'TXT_FILETYPE' => 'Dateityp',
+                'TXT_FILETYPE' => $_ARRAYLANG['TXT_NEWSLETTER_FILE_TYPE'],
                 'TXT_HELP' => $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_HELP'],
                 'IMPORT_ADD_NAME' => $_ARRAYLANG['TXT_NEWSLETTER_SEND_EMAIL'],
                 //'IMPORT_ADD_VALUE' => $this->CategoryDropDown(),
@@ -4241,7 +4241,7 @@ $WhereStatement = '';
             ));
             $objTpl->parse("additional");            
             $objTpl->setVariable(array(
-                'IMPORT_ADD_NAME' => 'Liste',                
+                'IMPORT_ADD_NAME' => $_ARRAYLANG['TXT_NEWSLETTER_LIST'],                
                 'IMPORT_ADD_VALUE' => $this->_getAssociatedListSelection(),
                 'IMPORT_ROWCLASS' => 'row2'
             ));
@@ -4352,7 +4352,7 @@ $WhereStatement = '';
         
         if ($objNewsletterMails !== false) {
             while (!$objNewsletterMails->EOF) {
-                $ReturnVar .= '<option value="'.$objNewsletterMails->fields['id'].'"'.($objNewsletterMails->fields['id'] == $selected ? 'selected="selected"' : '').'>'.htmlentities($objNewsletterMails->fields['subject'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
+                $ReturnVar .= '<option value="'.$objNewsletterMails->fields['id'].'"'.($objNewsletterMails->fields['id'] == $selected ? 'selected="selected"' : '').'>'.contrexx_raw2xhtml($objNewsletterMails->fields['subject']).'</option>';
                 $objNewsletterMails->MoveNext();
             }
         }
