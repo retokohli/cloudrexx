@@ -58,14 +58,12 @@ class Resolver {
         $this->forceInternalRedirection = $forceInternalRedirection;
 
         $this->fallbackLanguages = $fallbackLanguages;
-
-        $this->resolve();
     }
 
     /**
      * Does the resolving work, extends $this->url with targetPath and params.
      */
-    protected function resolve() {
+    public function resolve() {
         $path = $this->url->getSuggestedTargetPath();
 
         //(I) see what the model has for us.
@@ -140,14 +138,23 @@ class Resolver {
             die();
         }
 
+        $this->handleFallbackContent($this->page);
+    }
+
+    /**
+     * Checks whether $page is of type 'useFallback'. Loads fallback content if yes.
+     * @param Cx\Model\ContentManager $page
+     * @throws ResolverException
+     */
+    public function handleFallbackContent($page) {
         //handle untranslated pages - replace them by the right language version.
-        if($this->page->getType() == 'useFallback') {
-            $langId = $this->fallbackLanguages[$this->page->getLang()];
-            $fallbackPage = $this->page->getNode()->getPage($langId);
+        if($page->getType() == 'useFallback') {
+            $langId = $this->fallbackLanguages[$page->getLang()];
+            $fallbackPage = $page->getNode()->getPage($langId);
             if(!$fallbackPage)
                 throw new ResolverException('Followed fallback page, but couldn\'t find content of fallback Language');
 
-            $this->page->getFallbackContentFrom($fallbackPage);
+            $page->getFallbackContentFrom($fallbackPage);
         }
     }
 
