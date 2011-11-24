@@ -326,6 +326,28 @@ $page_content = $page_template = $page_title = $page_metatitle =
 $page_catname = $page_keywords = $page_desc = $page_robots =
 $pageCssName = $page_modified = null;
 
+function setModuleIndexAndPlainSection() {
+    // To clone any module, use an optional integer cmd suffix.
+    // E.g.: "shop2", "gallery5", etc.
+    // Mind that you *MUST* copy all necessary database tables, and fix any
+    // references to your module (section and cmd parameters, database tables)
+    // using the MODULE_INDEX constant in the right place both in your code
+    // *AND* templates!
+    // See the Shop module for an example.
+    $arrMatch = array();
+    if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
+        // The plain section/module name, used below
+        $plainSection = $arrMatch[1];
+    } else {
+        $plainSection = $section;
+    }
+    // The module index.
+    // An empty or 1 (one) index represents the same (default) module,
+    // values 2 (two) and larger represent distinct instances.
+    $moduleIndex = (empty($arrMatch[2]) || $arrMatch[2] == 1 ? '' : $arrMatch[2]);
+    define('MODULE_INDEX', $moduleIndex);
+}
+
 
 // If standalone is set, then we will not have to initialize/load any content page related stuff
 $isRegularPageRequest = !isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false';
@@ -338,8 +360,9 @@ if ($isRegularPageRequest) {
     /** @ignore */
     require_once ASCMS_CORE_PATH.'/routing/Resolver.class.php';
 
+    $resolver = new \Cx\Core\Routing\Resolver($url, FRONTEND_LANG_ID, Env::em(), ASCMS_PATH_OFFSET.Env::get('virtualLanguageDirectory'), FWLanguage::getFallbackLanguageArray());
     try {
-        $resolver = new \Cx\Core\Routing\Resolver($url, FRONTEND_LANG_ID, Env::em(), ASCMS_PATH_OFFSET.Env::get('virtualLanguageDirectory'), FWLanguage::getFallbackLanguageArray());
+        $resolver->resolve();
         $page = $resolver->getPage();
         $command = $page->getCmd();
         $section = $page->getModule();
@@ -377,6 +400,18 @@ if ($isRegularPageRequest) {
             $page = $pageRepo->findOneBy($crit);
         }
 
+        //fallback content
+        if($page) {
+            try {
+                $resolver->handleFallbackContent($page);
+            }
+            catch(ResolverException $e) {
+                //page should have fallback content, none found.
+                //provoke a 404
+                $page = null;
+            }
+        }
+
         // c: inexistant page gets catched below.
     }
 
@@ -393,6 +428,12 @@ if ($isRegularPageRequest) {
         }
     }
 
+    //legacy: re-populate cmd and section into $_GET
+    $_GET['cmd'] = $command;
+    $_GET['section'] = $section;
+
+    setModuleIndexAndPlainSection();
+
     //check whether the page is active
     $now = new DateTime('now');
     $start = $page->getStart();
@@ -408,9 +449,7 @@ if ($isRegularPageRequest) {
         $pageAccessId = $page->getBackendAccessId();
         $logRepo = Env::em()->getRepository('Gedmo\Loggable\Entity\LogEntry');
         try {
-// TODO: $version is not defined!
-$version = null;
-            $logRepo->revert($page, $version);
+            $logRepo->revert($page, $history);
         }
         catch(\Gedmo\Exception\UnexpectedValueException $e) {
         }
@@ -494,26 +533,7 @@ $_GET['cmd']     = $_POST['cmd']     = $_REQUEST['cmd']     = $command;
 $_GET['section'] = $_POST['section'] = $_REQUEST['section'] = $section;
 
 
-// To clone any module, use an optional integer cmd suffix.
-// E.g.: "shop2", "gallery5", etc.
-// Mind that you *MUST* copy all necessary database tables, and fix any
-// references to your module (section and cmd parameters, database tables)
-// using the MODULE_INDEX constant in the right place both in your code
-// *AND* templates!
-// See the Shop module for an example.
-$arrMatch = array();
-if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
-    // The plain section/module name, used below
-    $plainSection = $arrMatch[1];
-} else {
-    $plainSection = $section;
-}
-// The module index.
-// An empty or 1 (one) index represents the same (default) module,
-// values 2 (two) and larger represent distinct instances.
-$moduleIndex = (empty($arrMatch[2]) || $arrMatch[2] == 1 ? '' : $arrMatch[2]);
-define('MODULE_INDEX', $moduleIndex);
-
+setModuleIndexAndPlainSection();
 
 // Authentification for protected pages
 if (   (   $page_protected
