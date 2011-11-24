@@ -1,5 +1,14 @@
 <?php
 set_time_limit(0);
+
+// TODO: clean DB
+/*
+delete tc, tcn from contrexx_content_navigation as tcn inner join contrexx_content as tc on tc.id=tcn.catid where tcn.lang not in (LANG_IDS_TO_KEEP);
+
+delete tc, tcn, tl from contrexx_content_navigation_history as tcn inner join contrexx_content_history as tc on tc.id=tcn.id inner join contrexx_content_logfile as tl on tl.history_id = tcn.id where tcn.lang not in (LANG_IDS_TO_KEEP);
+*/
+
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -8,11 +17,11 @@ require_once '../../../lib/DBG.php';
 require_once '../../../config/configuration.php';
 require_once '../../../core/API.php';
 require_once '../../../config/doctrine.php';
-DBG::activate();
+DBG::activate(DBG_ADODB_ERROR | DBG_PHP);
 
 $m = new Contrexx_Content_migration;
 $m->migrate();
-$m->pageGrouping();
+//$m->pageGrouping();
 print 'DONE';
 
 class Contrexx_Content_migration
@@ -29,6 +38,15 @@ class Contrexx_Content_migration
         if (!$objDatabase) {
             die($errorMsg);
         }
+
+        if (DBG::getMode() & DBG_ADODB_TRACE) {
+            DBG::enable_adodb_debug(true);
+        } elseif (DBG::getMode() & DBG_ADODB || DBG::getMode() & DBG_ADODB_ERROR) {
+            DBG::enable_adodb_debug();
+        } else {
+            DBG::disable_adodb_debug();
+        }
+
         self::$em = Env::em();
     }
 
@@ -73,11 +91,16 @@ class Contrexx_Content_migration
 
         $visiblePageIDs = $this->getVisiblePageIDs();
 
+        // join content tables to prevent to migrate body-less pages
         $objNodeResult = $objDatabase->Execute('SELECT `catid`
-                                                  FROM `'.DBPREFIX.'content_navigation_history`
+                                                  FROM `'.DBPREFIX.'content_navigation_history` AS tnh
+                                                INNER JOIN `'.DBPREFIX.'content_history` AS tch
+                                                    ON tch.`id` = tnh.`id`
                                         UNION DISTINCT
                                                 SELECT `catid`
-                                                  FROM `'.DBPREFIX.'content_navigation`
+                                                  FROM `'.DBPREFIX.'content_navigation` AS tn
+                                                INNER JOIN `'.DBPREFIX.'content` AS tc
+                                                 ON tc.`id` = tn.`catid`
                                               ORDER BY `catid` ASC');
 
         $this->createNodesFromResults($objNodeResult, $visiblePageIDs);
@@ -104,9 +127,13 @@ class Contrexx_Content_migration
                 continue;
             }
 
+// TODO: create a LOST&FOUND node in case a certain parent node doesn't exist
             if ($objResult->fields['parcat'] == 0) {
                 $this->nodeArr[$objResult->fields['catid']]->setParent($root);
             } else {
+                if (!isset($this->nodeArr[$objResult->fields['parcat']])) {
+                    die("Parent missing: {$objResult->fields['parcat']}");
+                }
                 $this->nodeArr[$objResult->fields['catid']]->setParent($this->nodeArr[$objResult->fields['parcat']]);
             }
 
@@ -206,6 +233,7 @@ class Contrexx_Content_migration
         $page->setUpdatedAt(new DateTime($updatedDate));
         $page->setTitle($objResult->fields['catname']);
         $page->setContentTitle($objResult->fields['title']);
+        $page->setSlug($objResult->fields['catname']);
         $page->setContent($objResult->fields['content']);            
         $page->setCustomContent($objResult->fields['custom_content']);
         $page->setCssName($objResult->fields['css_name']);
@@ -213,16 +241,19 @@ class Contrexx_Content_migration
         $page->setMetadesc($objResult->fields['metadesc']);
         $page->setMetakeys($objResult->fields['metakeys']);
         $page->setMetarobots($objResult->fields['metarobots']);
+        $page->setStart($objResult->fields['startdate']);
+        $page->setEnd($objResult->fields['enddate']);
         //$page->setStart(new DateTime($objResult->fields['startdate']));
         //$page->setEnd(new DateTime($objResult->fields['enddate']));
         $page->setStart(new DateTime());
         $page->setEnd(new DateTime());
         $page->setUsername($objResult->fields['username']);
-        $page->setDisplay(($objResult->fields['displaystatus'] === 'on' ? 1 : 0));
+        $page->setDisplay($objResult->fields['displaystatus'] === 'on' ? 1 : 0);
         $page->setActive($objResult->fields['activestatus']);
+        $page->setSourceMode($objResult->fields['expertmode'] == 'y');
 
 //TODO: migrate targets
-//        $page->setTarget($objResult->fields['redirect']);
+        $page->setTarget($objResult->fields['redirect']);
 
         $linkTarget = $objResult->fields['target'];
         if(!$linkTarget)
@@ -238,8 +269,8 @@ class Contrexx_Content_migration
         if($page->getModule())
             $page->setType('application');
 //TODO: migrate targets
-//        if($page->getTarget())
-//    $page->setType('redirect');
+        if($page->getTarget())
+            $page->setType('redirect');
     }
     
     function pageGrouping()
