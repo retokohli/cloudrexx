@@ -1006,7 +1006,7 @@ die("Failed to update the Cart!");
                     // No need to show "no picture" three times!
                     if ($havePicture) { continue; }
                     $thumbnailPath = self::$defaultImage;
-                    $pictureLink = ''; //"javascript:alert('".$_ARRAYLANG['TXT_NO_PICTURE_AVAILABLE']."');";
+                    $pictureLink = '#'; //"javascript:alert('".$_ARRAYLANG['TXT_NO_PICTURE_AVAILABLE']."');";
                     if (empty($arrDefaultImageSize)) {
                         $arrDefaultImageSize = getimagesize(ASCMS_PATH.self::$defaultImage);
                         self::scaleImageSizeToThumbnail($arrDefaultImageSize);
@@ -1023,7 +1023,7 @@ die("Failed to update the Cart!");
                         // Thumbnail display size
                         $arrSize = array($image['width'], $image['height']);
                     } else {
-                        $pictureLink = '';
+                        $pictureLink = '#';
                         $arrSize = getimagesize(ASCMS_PATH.$thumbnailPath);
                     }
                     self::scaleImageSizeToThumbnail($arrSize);
@@ -1308,6 +1308,40 @@ die("Failed to update the Cart!");
             }
         }
         return true;
+    }
+
+
+    /**
+     * Sets up a Product list in the given template string with all Products
+     * taken from the Category with the given ID
+     *
+     * Changes the $_REQUEST array temporarily and calls
+     * {@see view_product_overview()}, then restores the original request.
+     * On failure, the empty string is returned.
+     * @param   string      $objTemplate    The template string
+     * @param   integer     $category_id    The Category ID
+     * @return  string                      The filled template string
+     *                                      on success, the empty string
+     *                                      otherwise
+     */
+    static function get_products_block($content, $category_id)
+    {
+        global $objInit, $_ARRAYLANG;
+
+        $_ARRAYLANG += $objInit->loadLanguageData('shop');
+        if (!SettingDb::init('shop', 'config')) return false;
+        $original_REQUEST = &$_REQUEST;
+        self::$objTemplate = new HTML_Template_Sigma();
+        self::$objTemplate->setTemplate($content);
+        // You might add more parameters here!
+        $_REQUEST = array('catId' => $category_id);
+        $result = self::view_product_overview();
+        $_REQUEST = &$original_REQUEST;
+        if (!$result) {
+            return ''; // You might want the original $content back, maybe?
+        }
+        $content = self::$objTemplate->get();
+        return $content;
     }
 
 
@@ -2129,6 +2163,7 @@ function centerY(height)
             self::$objCustomer = Customer::getById($objUser->getId());
             if (self::$objCustomer) {
                 // This is still required in confirm() (TODO: remove)
+                $_SESSION['shop']['username'] = self::$objCustomer->username();
                 $_SESSION['shop']['email'] = self::$objCustomer->email();
 //DBG::log("Shop::_authenticate(): Success! (".self::$objCustomer->firstname().' '.self::$objCustomer->lastname().', '.self::$objCustomer->username().")");
                 $sessionObj->cmsSessionUserUpdate(self::$objCustomer->id());

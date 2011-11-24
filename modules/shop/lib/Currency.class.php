@@ -311,7 +311,6 @@ class Currency
         $rate = self::$arrCurrency[self::$activeCurrencyId]['rate'];
         $increment = self::$arrCurrency[self::$activeCurrencyId]['increment'];
         return self::formatPrice(round($price*$rate/$increment)*$increment);
-        ;
     }
 
 
