@@ -41,7 +41,7 @@ class newsletter extends NewsletterLib
     public $_objTpl;
     public $_pageTitle;
     public static $strErrMessage = '';
-    public static $strOkMessage = '';
+    public static $strOkMessage = '';     
     public $months = array();
     public $_arrMailFormat = array(
         'text' => 'TXT_NEWSLETTER_ONLY_TEXT',
@@ -4640,7 +4640,7 @@ $WhereStatement = '';
         if (isset($_POST['newsletter_recipient_notes'])) {
             $recipientNotes = $_POST['newsletter_recipient_notes'];
         }
-        if (!empty($_POST['day']) && !empty($_POST['month']) && !empty($_POST['year'])) {
+        if (isset($_POST['day']) && isset($_POST['month']) && isset($_POST['year'])) {
             $recipientBirthday = str_pad(intval($_POST['day']),2,'0',STR_PAD_LEFT).'-'.str_pad(intval($_POST['month']),2,'0',STR_PAD_LEFT).'-'.intval($_POST['year']);
         }
         if (isset($_POST['newsletter_recipient_title'])) {
@@ -4716,11 +4716,21 @@ $WhereStatement = '';
                             }
                         }
                     } elseif (empty($recipientId)) {
-                        $objRecipient      = $objDatabase->SelectLimit("SELECT id, language, status FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_input2db($recipientEmail)."'", 1);
+                        $objRecipient      = $objDatabase->SelectLimit("SELECT id, language, status, notes FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_input2db($recipientEmail)."'", 1);
                         $recipientId       = $objRecipient->fields['id'];
                         $recipientLanguage = $objRecipient->fields['language'];
                         $recipientStatus   = $objRecipient->fields['status'];
+                        $recipientNotes   .= $objRecipient->fields['notes'];
 
+                        $objList = $objDatabase->Execute("SELECT category FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE user=".$recipientId);
+                        if ($objList !== false) {
+                            while (!$objList->EOF) {
+                                array_push($arrAssociatedLists, $objList->fields['category']);
+                                $objList->MoveNext();
+                            }
+                        }      
+                        $arrAssociatedLists = array_unique($arrAssociatedLists);
+                        
                         // set all attributes status to false to set the omitEmpty value to true
                         foreach ($recipientAttributeStatus as $attribute => $value) {
                             $recipientAttributeStatus[$attribute]['active'] = false;                                                

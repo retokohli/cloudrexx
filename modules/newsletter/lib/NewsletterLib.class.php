@@ -30,7 +30,7 @@
 class NewsletterLib
 {
     public $_arrRecipientTitles = null;
-
+   
     /**
      * List of present Lists
      * @see     getListIdByName()
@@ -670,6 +670,15 @@ class NewsletterLib
     {        
         foreach ($recipientAttributeStatus as $attributeName => $recipientStatusArray) {
             if ($recipientStatusArray['active'] && $recipientStatusArray['required']) {
+                if ($attributeName == 'recipient_birthday') {
+                    $birthday = explode("-", ${$attributeName});
+                    
+                    if (checkdate($birthday[1], $birthday[0], $birthday[2])) {
+                        continue;
+                    } else {
+                        return false;
+                    }                    
+                }
                 $value = trim(${$attributeName});
                 if (empty($value)) {
                     return false;
