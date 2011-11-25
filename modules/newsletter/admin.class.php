@@ -4720,7 +4720,7 @@ $WhereStatement = '';
                         $recipientId       = $objRecipient->fields['id'];
                         $recipientLanguage = $objRecipient->fields['language'];
                         $recipientStatus   = $objRecipient->fields['status'];
-                        $recipientNotes   .= $objRecipient->fields['notes'];
+                        $recipientNotes    = (!empty($objRecipient->fields['notes']) ? $objRecipient->fields['notes'].' '.$recipientNotes : $recipientNotes);
 
                         $objList = $objDatabase->Execute("SELECT category FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE user=".$recipientId);
                         if ($objList !== false) {
