@@ -326,7 +326,7 @@ $page_content = $page_template = $page_title = $page_metatitle =
 $page_catname = $page_keywords = $page_desc = $page_robots =
 $pageCssName = $page_modified = null;
 
-function setModuleIndexAndPlainSection() {
+function setModuleIndexAndReturnPlainSection($section) {
     // To clone any module, use an optional integer cmd suffix.
     // E.g.: "shop2", "gallery5", etc.
     // Mind that you *MUST* copy all necessary database tables, and fix any
@@ -346,6 +346,8 @@ function setModuleIndexAndPlainSection() {
     // values 2 (two) and larger represent distinct instances.
     $moduleIndex = (empty($arrMatch[2]) || $arrMatch[2] == 1 ? '' : $arrMatch[2]);
     define('MODULE_INDEX', $moduleIndex);
+
+    return $plainSection;
 }
 
 
@@ -428,11 +430,11 @@ if ($isRegularPageRequest) {
         }
     }
 
+// TODO: question: what do we need this for? I think there is no need for this (had been added in r15026)
     //legacy: re-populate cmd and section into $_GET
     $_GET['cmd'] = $command;
     $_GET['section'] = $section;
-
-    setModuleIndexAndPlainSection();
+// END of TODO question
 
     //check whether the page is active
     $now = new DateTime('now');
@@ -533,7 +535,7 @@ $_GET['cmd']     = $_POST['cmd']     = $_REQUEST['cmd']     = $command;
 $_GET['section'] = $_POST['section'] = $_REQUEST['section'] = $section;
 
 
-setModuleIndexAndPlainSection();
+$plainSection = setModuleIndexAndReturnPlainSection($section);
 
 // Authentification for protected pages
 if (   (   $page_protected
