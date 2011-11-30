@@ -5,7 +5,8 @@
 ****************************************
 * Neue Funktionen / Änderungen *********
 ****************************************
-
+PDF-Ansicht
+- Block-Elemente (DIV, TABLE, TR, TH, TD) können mittels CSS-Eigenschaft 'display:none' ausgeblendet werden.
 
 ****************************************
 * Behobene Fehler **********************
