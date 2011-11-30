@@ -145,131 +145,134 @@ var $shownoimg; //! bool
 var $noimgsrc;
 var $noimgtype;
 
+var $isInHiddenTag = false;
+var $hiddenTagNestedDimensionPosition = 0;
+
 function HTML2FPDF($orientation='P',$unit='mm',$format='A4')
 {
 //! @desc Constructor
 //! @return An object (a class instance)
-	//Call parent constructor
-	$this->FPDF($orientation,$unit,$format);
-	//To make the function Footer() work properly
-	$this->AliasNbPages();
-	//Enable all tags as default
-	$this->DisableTags();
-  //Set default display preferences
-  $this->DisplayPreferences('');
-	//Initialization of the attributes
-	$this->SetFont('Arial','',11); // Changeable?(not yet...)
-  $this->lineheight = 5; // Related to FontSizePt == 11
-  $this->pgwidth = $this->fw - $this->lMargin - $this->rMargin ;
-  $this->SetFillColor(255);
-	$this->HREF='';
-	$this->titulo='';
-	$this->oldx=-1;
-	$this->oldy=-1;
-	$this->B=0;
-	$this->U=0;
-	$this->I=0;
+    //Call parent constructor
+    $this->FPDF($orientation,$unit,$format);
+    //To make the function Footer() work properly
+    $this->AliasNbPages();
+    //Enable all tags as default
+    $this->DisableTags();
+    //Set default display preferences
+    $this->DisplayPreferences('');
+    //Initialization of the attributes
+    $this->SetFont('Arial','',11); // Changeable?(not yet...)
+    $this->lineheight = 5; // Related to FontSizePt == 11
+    $this->pgwidth = $this->fw - $this->lMargin - $this->rMargin ;
+    $this->SetFillColor(255);
+    $this->HREF='';
+    $this->titulo='';
+    $this->oldx=-1;
+    $this->oldy=-1;
+    $this->B=0;
+    $this->U=0;
+    $this->I=0;
 
-  $this->listlvl=0;
-  $this->listnum=0; 
-  $this->listtype='';
-  $this->listoccur=array();
-  $this->listlist=array();
-  $this->listitem=array();
+    $this->listlvl=0;
+    $this->listnum=0; 
+    $this->listtype='';
+    $this->listoccur=array();
+    $this->listlist=array();
+    $this->listitem=array();
 
-  $this->tablestart=false;
-  $this->tdbegin=false; 
-  $this->table=array(); 
-  $this->cell=array();  
-  $this->col=-1; 
-  $this->row=-1; 
+    $this->tablestart=false;
+    $this->tdbegin=false; 
+    $this->table=array(); 
+    $this->cell=array();  
+    $this->col=-1; 
+    $this->row=-1; 
 
-	$this->divbegin=false;
-	$this->divalign="L";
-	$this->divwidth=0; 
-	$this->divheight=0; 
-	$this->divbgcolor=false;
-	$this->divcolor=false;
-	$this->divborder=0;
-	$this->divrevert=false;
+    $this->divbegin=false;
+    $this->divalign="L";
+    $this->divwidth=0; 
+    $this->divheight=0; 
+    $this->divbgcolor=false;
+    $this->divcolor=false;
+    $this->divborder=0;
+    $this->divrevert=false;
 
-	$this->fontlist=array("arial","times","courier","helvetica","symbol","monospace","serif","sans");
-	$this->issetfont=false;
-	$this->issetcolor=false;
+    $this->fontlist=array("arial","times","courier","helvetica","symbol","monospace","serif","sans");
+    $this->issetfont=false;
+    $this->issetcolor=false;
 
-  $this->pbegin=false;
-  $this->pjustfinished=false;
-  $this->blockjustfinished = true; //in order to eliminate exceeding left-side spaces
-  $this->toupper=false;
-  $this->tolower=false;
-	$this->dash_on=false;
-	$this->dotted_on=false;
-  $this->SUP=false;
-  $this->SUB=false;
-  $this->buffer_on=false;
-  $this->strike=false;
+    $this->pbegin=false;
+    $this->pjustfinished=false;
+    $this->blockjustfinished = true; //in order to eliminate exceeding left-side spaces
+    $this->toupper=false;
+    $this->tolower=false;
+    $this->dash_on=false;
+    $this->dotted_on=false;
+    $this->SUP=false;
+    $this->SUB=false;
+    $this->buffer_on=false;
+    $this->strike=false;
 
-	$this->currentfont='';
-	$this->currentstyle='';
-  $this->colorarray=array();
-  $this->bgcolorarray=array();
-	$this->cssbegin=false;
-  $this->textbuffer=array();
-	$this->CSS=array();
-	$this->backupcss=array();
-	$this->internallink=array();
+    $this->currentfont='';
+    $this->currentstyle='';
+    $this->colorarray=array();
+    $this->bgcolorarray=array();
+    $this->cssbegin=false;
+    $this->textbuffer=array();
+    $this->CSS=array();
+    $this->backupcss=array();
+    $this->internallink=array();
 
-  $this->basepath = "";
-  
-  $this->outlineparam = array();
-  $this->outline_on = false;
+    $this->basepath = "";
 
-  $this->specialcontent = '';
-  $this->selectoption = array();
+    $this->outlineparam = array();
+    $this->outline_on = false;
 
-  $this->shownoimg=false;
-  $this->usetableheader=false;
-  $this->usecss=true;
-  $this->usepre=true;
+    $this->specialcontent = '';
+    $this->selectoption = array();
+
+    $this->shownoimg=false;
+    $this->usetableheader=false;
+    $this->usecss=true;
+    $this->usepre=true;
 }
 
 function setBasePath($str)
 {
 //! @desc Inform the script where the html file is (full path - e.g. http://www.google.com/dir1/dir2/dir3/file.html ) in order to adjust HREF and SRC links. No-Parameter: The directory where this script is.
 //! @return void
-  $this->basepath = dirname($str) . "/";
-  $this->basepath = str_replace("\\","/",$this->basepath); //If on Windows
+    $this->basepath = dirname($str) . "/";
+    $this->basepath = str_replace("\\","/",$this->basepath); //If on Windows
 }
 
 function ShowNOIMG_GIF($opt=true)
 {
 //! @desc Enable/Disable Displaying the no_img.gif when an image is not found. No-Parameter: Enable
 //! @return void
-  $this->shownoimg=$opt;
-  $this->noimgsrc = str_replace("\\","/",dirname(__FILE__)) . "/";
-  $this->noimgsrc .= 'no_img.gif';
-  $this->noimgtype = 'gif';
+    $this->shownoimg=$opt;
+    $this->noimgsrc = str_replace("\\","/",dirname(__FILE__)) . "/";
+    $this->noimgsrc .= 'no_img.gif';
+    $this->noimgtype = 'gif';
 }
 
 function UseCSS($opt=true)
 {
 //! @desc Enable/Disable CSS recognition. No-Parameter: Enable
 //! @return void
-  $this->usecss=$opt;
+    $this->usecss=$opt;
 }
 
 function UseTableHeader($opt=true)
 {
 //! @desc Enable/Disable Table Header to appear every new page. No-Parameter: Enable
 //! @return void
-  $this->usetableheader=$opt;
+    $this->usetableheader=$opt;
 }
 
 function UsePRE($opt=true)
 {
 //! @desc Enable/Disable pre tag recognition. No-Parameter: Enable
 //! @return void
-  $this->usepre=$opt;
+    $this->usepre=$opt;
 }
 
 //Page header
@@ -277,45 +280,45 @@ function Header($content='')
 {
 //! @return void
 //! @desc The header is printed in every page.
-  if($this->usetableheader and $content != '')
-  {
-    $y = $this->y;
-    foreach($content as $tableheader)
+    if($this->usetableheader and $content != '')
     {
-      $this->y = $y;
-      //Set some cell values
-      $x = $tableheader['x'];
-      $w = $tableheader['w'];
-      $h = $tableheader['h'];
-      $va = $tableheader['va'];
-      $mih = $tableheader['mih'];
-      $fill = $tableheader['bgcolor'];
-      $border = $tableheader['border'];
-      $align = $tableheader['a'];
-      //Align
-      $this->divalign=$align;
-			$this->x = $x;
-		  //Vertical align
-		  if (!isset($va) || $va=='M') $this->y += ($h-$mih)/2;
-      elseif (isset($va) && $va=='B') $this->y += $h-$mih;
-			if ($fill)
-      {
- 					$color = ConvertColor($fill);
- 					$this->SetFillColor($color['R'],$color['G'],$color['B']);
- 					$this->Rect($x, $y, $w, $h, 'F');
-			}
-   		//Border
-  		if (isset($border) and $border != 'all') $this->_tableRect($x, $y, $w, $h, $border);
-  		elseif (isset($border) && $border == 'all') $this->Rect($x, $y, $w, $h);
-  		//Print cell content
-      $this->divwidth = $w-2;
-      $this->divheight = 1.1*$this->lineheight;
-      $textbuffer = $tableheader['textbuffer'];
-      if (!empty($textbuffer)) $this->printbuffer($textbuffer,false,true/*inside a table*/);
-      $textbuffer = array();
-    }
-    $this->y = $y + $h; //Update y coordinate
-  }//end of 'if usetableheader ...'
+        $y = $this->y;
+        foreach($content as $tableheader)
+        {
+            $this->y = $y;
+            //Set some cell values
+            $x = $tableheader['x'];
+            $w = $tableheader['w'];
+            $h = $tableheader['h'];
+            $va = $tableheader['va'];
+            $mih = $tableheader['mih'];
+            $fill = $tableheader['bgcolor'];
+            $border = $tableheader['border'];
+            $align = $tableheader['a'];
+            //Align
+            $this->divalign=$align;
+            $this->x = $x;
+            //Vertical align
+            if (!isset($va) || $va=='M') $this->y += ($h-$mih)/2;
+            elseif (isset($va) && $va=='B') $this->y += $h-$mih;
+            if ($fill)
+            {
+                $color = ConvertColor($fill);
+                $this->SetFillColor($color['R'],$color['G'],$color['B']);
+                $this->Rect($x, $y, $w, $h, 'F');
+            }
+            //Border
+            if (isset($border) and $border != 'all') $this->_tableRect($x, $y, $w, $h, $border);
+            elseif (isset($border) && $border == 'all') $this->Rect($x, $y, $w, $h);
+            //Print cell content
+            $this->divwidth = $w-2;
+            $this->divheight = 1.1*$this->lineheight;
+            $textbuffer = $tableheader['textbuffer'];
+            if (!empty($textbuffer)) $this->printbuffer($textbuffer,false,true/*inside a table*/);
+            $textbuffer = array();
+        }
+        $this->y = $y + $h; //Update y coordinate
+    }//end of 'if usetableheader ...'
 }
 
 //Page footer
@@ -360,6 +363,10 @@ function WriteHTML($html)
         if($i%2==0)
         {
             //TEXT
+            if ($this->isInHiddenTag) {
+                // skip if encapsulating tag is hidden (through display:none)
+                continue;
+            }
 
             //Adjust lineheight
             //			$this->lineheight = (5*$this->FontSizePt)/11; //should be inside printbuffer?
@@ -471,9 +478,11 @@ function WriteHTML($html)
                         }
                     }
                 }
+
                 $this->OpenTag($tag,$attr);
             }
         }
+
     }//end of	foreach($a as $i=>$e)
     //Create Internal Links, if needed
     if (!empty($this->internallink) )
@@ -494,10 +503,76 @@ function WriteHTML($html)
     }
 }
 
+function isBlockTag($tag)
+{
+    return in_array($tag, array('DIV','TABLE','TH','TR','TD'));
+}
+
+function mergeCSSProperties($classAndTagBasedCSSProperties, $inlineCSSProperties)
+{
+    foreach ($inlineCSSProperties as $property => $value) {
+        if (   // inline CSS definition uses !important FLAG  
+               preg_match('/!important\s*$/i', $value)
+               // CSS property is not set through CLASS or HTML-tag 
+            || !isset($classAndTagBasedCSSProperties[$property])
+               // CSS property is already set by CLASS or HTML-tag with !important FLAG
+            || !preg_match('/!important\s*$/i', $classAndTagBasedCSSProperties[$property])
+        ) { 
+            $classAndTagBasedCSSProperties[$property] = $value;
+        }
+    }
+
+    return $classAndTagBasedCSSProperties;
+}
+
 function OpenTag($tag,$attr)
 {
-    //! @return void
-    // What this gets: < $tag $attr['WIDTH']="90px" > does not get content here </closeTag here>
+//! @return void
+// What this gets: < $tag $attr['WIDTH']="90px" > does not get content here </closeTag here>
+
+    // check if the current tag is hidden and shall therefore be hidden
+    if (!$this->isInHiddenTag) {
+        $classAndTagBasedCSSProperties = array();
+        $inlineCSSProperties = array();
+
+        // get html-tag CSS definitions
+        if (isset($this->CSS[strtolower($tag)])) {
+            $classAndTagBasedCSSProperties = $this->CSS[strtolower($tag)];
+        }
+
+        // get class CSS definitions
+        if (!empty($attr['CLASS'])) {
+            $assignedCssClasses = array_map('trim', explode(' ', $attr['CLASS']));
+            foreach ($assignedCssClasses as $assignedCssClass) {
+                if (isset($this->CSS[$assignedCssClass])) {
+                    $classAndTagBasedCSSProperties = array_merge($classAndTagBasedCSSProperties, $this->CSS[$assignedCssClass]);
+                }
+            }
+        }
+
+        // get inline CSS definitions
+        if (!empty($attr['STYLE'])) {
+            $inlineCSSProperties = $this->readInlineCSS($attr['STYLE']);
+        }
+
+        $cssProperties = $this->mergeCSSProperties($classAndTagBasedCSSProperties, $inlineCSSProperties);
+
+        // check if tag is hidden (through display:none)
+        if (isset($cssProperties['DISPLAY']) && preg_match('/none/i', $cssProperties['DISPLAY'])) {
+            $this->isInHiddenTag=true;
+            $this->hiddenTagNestedDimensionPosition = 0;
+        }
+    }
+
+    // don't draw hidden stuff
+    if ($this->isInHiddenTag) {
+        if ($this->isBlockTag($tag)) {
+            $this->hiddenTagNestedDimensionPosition++;
+        }
+
+        return;
+    }
+
 
     $align = array('left'=>'L','center'=>'C','right'=>'R','top'=>'T','middle'=>'M','bottom'=>'B','justify'=>'J');
 
@@ -1256,6 +1331,19 @@ function OpenTag($tag,$attr)
 
 function CloseTag($tag)
 {
+    // don't draw hidden staff
+    if ($this->isInHiddenTag) {
+        if ($this->isBlockTag($tag)) {
+            $this->hiddenTagNestedDimensionPosition--;
+        }
+
+        if (!$this->hiddenTagNestedDimensionPosition) {
+            $this->isInHiddenTag = false;
+        }
+
+        return;
+    }
+
 //! @return void
 	//Closing tag
 	if($tag=='OPTION') $this->selectoption['ACTIVE'] = false;
@@ -2255,7 +2343,8 @@ function ReadCSS($html)
     $CSSextblock = str_replace('h3', '.h3', $CSSextblock);
     $CSSextblock = str_replace('h4', '.h4', $CSSextblock);
     $CSSextblock = str_replace('body', '.body', $CSSextblock);
-    $CSSextblock = str_replace('p', '.p', $CSSextblock);
+    // only match P-tag not classes that start with 'p'
+    $CSSextblock = preg_replace('/p(\s*\{)/', '.p\1', $CSSextblock);
     
     //Get class/id name and its characteristics from $CSSblock[1]
 	  $regexp = '/[.# ]([^.]+?)\\s*?\{(.+?)\}/s'; // '/s' PCRE_DOTALL including \n
