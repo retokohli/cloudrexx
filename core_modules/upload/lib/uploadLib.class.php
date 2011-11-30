@@ -1,5 +1,8 @@
 <?php
-include_once 'uploadResponse.class.php';
+/**
+ * @ignore
+ */
+include_once ASCMS_CORE_MODULE_PATH.'/upload/lib/uploadResponse.class.php';
 
 /**
  * Once an Upload is approved, we get here.
