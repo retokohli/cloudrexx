@@ -1419,7 +1419,7 @@ class Market extends marketLibrary
             $objResult = $objDatabase->Execute('SELECT type, title, description, premium, picture, catid, price, regdate, enddate, userid, name, email, userdetails, spez_field_1, spez_field_2, spez_field_3, spez_field_4, spez_field_5 FROM '.DBPREFIX.'module_market WHERE id = '.$entryId.' LIMIT 1');
             if ($objResult !== false) {
                 while (!$objResult->EOF) {
-                    if ($objFWUser->objUser->login() && $objFWUser->objUser->getId()==$objResult->fields['userid']) {
+                    if ($objFWUser->objUser->login() && $objFWUser->objUser->getId()==$objResult->fields['userid'] || Permission::hasAllAccess()) {
                         //entry type
                         if ($objResult->fields['type'] == 'offer') {
                             $offer     = 'checked';
@@ -1624,7 +1624,7 @@ class Market extends marketLibrary
             $objResult = $objDatabase->Execute('SELECT id, userid, catid FROM '.DBPREFIX.'module_market WHERE id = '.$entryId.' LIMIT 1');
             if ($objResult !== false) {
                 while (!$objResult->EOF) {
-                    if ($objFWUser->objUser->login() && $objFWUser->objUser->getId()==$objResult->fields['userid']) {
+                    if ($objFWUser->objUser->login() && $objFWUser->objUser->getId()==$objResult->fields['userid'] || Permission::hasAllAccess()) {
                         $this->_objTpl->setVariable(array(
                             'MARKET_ENTRY_ID'                    =>    $entryId,
                             'TXT_MARKET_DEL'                    =>    $_ARRAYLANG['TXT_MARKET_DELETE_ADVERTISEMENT'],
