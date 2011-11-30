@@ -2,7 +2,7 @@
 /**
  * @ignore
  */
-include_once 'uploadResponse.class.php';
+include_once ASCMS_CORE_MODULE_PATH.'/upload/lib/uploadResponse.class.php';
 
 /**
  * Exceptions thrown by uploader
@@ -268,8 +268,11 @@ abstract class Uploader
             require_once $this->callbackData[0];
         }
 
+        $originalFileNames = array();
         $sessionKey = 'upload_originalFileNames_'.$this->uploadId;
-        $originalFileNames = $_SESSION[$sessionKey];
+        if (isset($_SESSION[$sessionKey])) {
+            $originalFileNames = $_SESSION[$sessionKey];
+        }
         //various file infos are passed via this array
         $fileInfos = array(
             'originalFileNames' => $originalFileNames
@@ -283,7 +286,7 @@ abstract class Uploader
         else
             $response = new UploadResponse();
        
-        $ret = call_user_func(array($this->callbackData[1],$this->callbackData[2]),$tempPath,$tempWebPath,$this->getData(), $this->uploadId, $fileInfos, &$response);
+        $ret = call_user_func(array($this->callbackData[1],$this->callbackData[2]),$tempPath,$tempWebPath,$this->getData(), $this->uploadId, $fileInfos, $response);
       
         //clean up session: we do no longer need the array with the original file names
         unset($_SESSION[$sessionKey]);
