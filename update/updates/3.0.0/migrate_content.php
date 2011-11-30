@@ -21,7 +21,7 @@ DBG::activate(DBG_ADODB_ERROR | DBG_PHP);
 
 $m = new Contrexx_Content_migration;
 $m->migrate();
-//$m->pageGrouping();
+$m->pageGrouping();
 print 'DONE';
 
 class Contrexx_Content_migration
@@ -277,10 +277,14 @@ class Contrexx_Content_migration
     {
         // fetch all pages
         $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
+        $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
         $pages = $pageRepo->findAll();
         $group = array();
         $nodeToRemove = array();
+        
         foreach ($pages as $page) {
+            $nodeRepo->moveUp($page->getNode()->getId(), true);
+            
             // don't group regular pages
             if (!$page->getModule()) continue;
 
@@ -292,10 +296,10 @@ class Contrexx_Content_migration
                     $nodeToRemove[] = $page->getNode()->getId();
                     $src = $group[$page->getModule()][$page->getCmd()];
                     
-                    $t = $pageRepo->translate($src, $page->getLang(), true, false, true);
+                    $t = $pageRepo->translate($src, $page->getLang(), true, false, true);                    
                     $t->setContent($page->getContent());
-                    $t->setTitle($page->getTitle());
-
+                    $t->setTitle($page->getTitle());     
+                    
                     self::$em->remove($page);
                     self::$em->persist($t);
                 }
