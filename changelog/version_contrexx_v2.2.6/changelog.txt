@@ -8,6 +8,9 @@
 PDF-Ansicht
 - Block-Elemente (DIV, TABLE, TR, TH, TD) können mittels CSS-Eigenschaft 'display:none' ausgeblendet werden.
 
+Modul: Inseratemarkt
+- Administratoren können alle Inserate im Frontend verwalten.
+
 ****************************************
 * Behobene Fehler **********************
 ****************************************
