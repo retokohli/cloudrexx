@@ -142,13 +142,13 @@ class Resolver {
     }
 
     /**
-     * Checks whether $page is of type 'useFallback'. Loads fallback content if yes.
+     * Checks whether $page is of type 'fallback'. Loads fallback content if yes.
      * @param Cx\Model\ContentManager $page
      * @throws ResolverException
      */
     public function handleFallbackContent($page) {
         //handle untranslated pages - replace them by the right language version.
-        if($page->getType() == 'useFallback') {
+        if($page->getType() == 'fallback') {
             $langId = $this->fallbackLanguages[$page->getLang()];
             $fallbackPage = $page->getNode()->getPage($langId);
             if(!$fallbackPage)

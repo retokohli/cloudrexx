@@ -145,7 +145,7 @@ class ResolverTest extends DoctrineTestCase
         $p2->setTitle('pageThatsFallingBack');
         $p2->setNode($n1);
         $p2->setUsername('user');
-        $p2->setType('useFallback');
+        $p2->setType('fallback');
 
         //... will yield contents of this page as result.
         $p1 = new \Cx\Model\ContentManager\Page();     
