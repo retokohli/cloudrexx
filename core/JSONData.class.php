@@ -92,7 +92,7 @@ class JSONData {
 
             $page->setUpdatedAtToNow();
             $page->setLang(FWLanguage::getLanguageIdByCode($updated_page['lang']));
-            $page->setUsername('system');
+            $page->setUsername(FWUser::getFWUserObject()->objUser->getUsername());
             $page->setStart(null);
             $page->setEnd(null);
             $page->setContentTitle($updated_page['title']);
