@@ -355,6 +355,7 @@ class ContentManager extends Module {
                         $page = new \Cx\Model\ContentManager\Page();
                         $page->setLang($langId);
                         $page->setNode($node);
+                        $page->setUsername(FWUser::getFWUserObject()->objUser->getUsername());
                         $fbPage = $node->getPage($fbLang);
                         if ($fbPage) {
                             $page->setType('fallback');
