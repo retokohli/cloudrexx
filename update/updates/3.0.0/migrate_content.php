@@ -276,15 +276,11 @@ class Contrexx_Content_migration
     function pageGrouping()
     {
         // fetch all pages
-        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');        
-        $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
+        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');                
         $pages = $pageRepo->findAll();
         $group = array();
-        $nodeToRemove = array();   
-             
-        foreach ($pages as $page) {            
-            $nodeRepo->moveUp($page->getNode()->getId(), true);
-                    
+        $nodeToRemove = array();                
+        foreach ($pages as $page) {                    
             // don't group regular pages
             if (!$page->getModule()) continue;
 
