@@ -45,7 +45,7 @@ class FWLanguage
 
          $objResult = $objDatabase->Execute("
             SELECT id, lang, name, charset, themesid,
-                   frontend, backend, is_default
+                   frontend, backend, is_default, fallback
               FROM ".DBPREFIX."languages
              ORDER BY id ASC");
          if ($objResult) {
@@ -59,6 +59,7 @@ class FWLanguage
                     'frontend'   => $objResult->fields['frontend'],
                     'backend'    => $objResult->fields['backend'],
                     'is_default' => $objResult->fields['is_default'],
+                    'fallback'   => $objResult->fields['fallback'],
                 );
                 if ($objResult->fields['is_default'] == 'true') {
                     self::$defaultLangId = $objResult->fields['id'];
@@ -321,7 +322,6 @@ class FWLanguage
      * Return the language code from the database for the given ID
      *
      * Returns false on failure, or if the ID is invalid
-     * @global  ADONewConnection
      * @param   integer $langId         The language ID
      * @return  mixed                   The two letter code, or false
      * @static
@@ -337,7 +337,6 @@ class FWLanguage
      * Return the language ID for the given code
      *
      * Returns false on failure, or if the code is unknown
-     * @global  ADONewConnection
      * @param   string                    The two letter code
      * @return  integer   $langId         The language ID, or false
      * @static
@@ -349,6 +348,21 @@ class FWLanguage
             if ($arrLanguage['lang'] == $code) return $id;
         }
         return false;
+    }
+
+
+    /**
+     * Return the fallback language ID for the given ID
+     *
+     * Returns false on failure, or if the ID is invalid
+     * @param   integer $langId         The language ID
+     * @return  integer   $langId         The language ID, or false
+     * @static
+     */
+    static function getFallbackLanguageIdById($langId)
+    {
+        if (empty(self::$arrLanguages)) self::init();
+        return self::getLanguageParameter($langId, 'fallback');
     }
 
     /**

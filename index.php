@@ -400,6 +400,29 @@ if ($isRegularPageRequest) {
                 $crit['cmd'] = $command;
 
             $page = $pageRepo->findOneBy($crit);
+
+            // if no page was found so far,
+            // but, because the request was done using the legacy module request notation (?section=module)
+            // there might be a chance that there exists a version of the requested page in the fallback language
+            if (!$page) {
+                $crit = array(
+                     'module' => $section,
+                     'lang' => FWLanguage::getFallbackLanguageIdById(FRONTEND_LANG_ID),
+                     'cmd' => NULL
+                );
+                if(!empty($command))
+                    $crit['cmd'] = $command;
+
+                $page = $pageRepo->findOneBy($crit);
+
+                // check if, we did find the requested module page in the fallback language
+                if ($page) {
+                    // we did find the requested module page in the fallback language,
+                    // now let's try to load its associated page of the requested language
+                    $node = $page->getNode();
+                    $page = $node->getPage(FRONTEND_LANG_ID);
+                }
+            }
         }
 
         //fallback content
