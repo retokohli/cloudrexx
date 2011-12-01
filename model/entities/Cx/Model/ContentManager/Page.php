@@ -514,7 +514,7 @@ class Page extends \Cx\Model\Base\EntityBase
     public function getStatus()
     {
         $status = "";
-        if ($this->active) $status .= "active ";
+        if ($this->getDisplay()) $status .= "active ";
         else $status .= "inactive ";
 
         if ($this->protection) $status .= "protected ";

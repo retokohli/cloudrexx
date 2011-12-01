@@ -90,6 +90,7 @@ class JSONPage {
             'accessData'    =>  $accessData,
             // Advanced Settings
             'slug'          =>  $page->getSlug(),
+            'sourceMode'    =>  $page->getSourceMode(),
         );
 
         return $pageArray;
