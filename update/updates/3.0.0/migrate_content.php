@@ -21,7 +21,7 @@ DBG::activate(DBG_ADODB_ERROR | DBG_PHP);
 
 $m = new Contrexx_Content_migration;
 $m->migrate();
-$m->pageGrouping();
+//$m->pageGrouping();
 print 'DONE';
 
 class Contrexx_Content_migration
@@ -172,7 +172,7 @@ class Contrexx_Content_migration
                                              INNER JOIN `'.DBPREFIX.'content_navigation` AS nav
                                              ON cn.id = nav.catid
                                              WHERE cn.id
-                                             ORDER BY nav.parcat ASC, nav.displayorder ASC'
+                                             ORDER BY nav.parcat ASC, nav.displayorder DESC'
                                             );
         
         if (!$objRecords) {
@@ -276,15 +276,15 @@ class Contrexx_Content_migration
     function pageGrouping()
     {
         // fetch all pages
-        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
+        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');        
         $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
         $pages = $pageRepo->findAll();
         $group = array();
-        $nodeToRemove = array();
-        
-        foreach ($pages as $page) {
+        $nodeToRemove = array();   
+             
+        foreach ($pages as $page) {            
             $nodeRepo->moveUp($page->getNode()->getId(), true);
-            
+                    
             // don't group regular pages
             if (!$page->getModule()) continue;
 
