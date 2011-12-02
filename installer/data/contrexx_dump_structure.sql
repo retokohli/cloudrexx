@@ -3127,6 +3127,7 @@ CREATE TABLE `contrexx_pages` (
   `module` varchar(255) DEFAULT NULL,
   `cmd` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `node_id` (`node_id`,`lang`),
   KEY `IDX_D8E86F54460D9FD7` (`node_id`),
   CONSTRAINT `contrexx_pages_ibfk_1` FOREIGN KEY (`node_id`) REFERENCES `contrexx_nodes` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=702;
