@@ -831,7 +831,8 @@ CREATE TABLE `contrexx_module_directory_categories` (
   KEY `name` (`name`),
   KEY `parentid` (`parentid`),
   KEY `displayorder` (`displayorder`),
-  KEY `status` (`status`)
+  KEY `status` (`status`),
+  FULLTEXT KEY `directoryindex` (`name`,`description`)
 ) ENGINE=MyISAM AUTO_INCREMENT=10;
 CREATE TABLE `contrexx_module_directory_dir` (
   `id` int(7) unsigned NOT NULL AUTO_INCREMENT,
@@ -2242,9 +2243,7 @@ CREATE TABLE `contrexx_module_news_locale` (
   `text` mediumtext NOT NULL,
   `teaser_text` text NOT NULL,
   PRIMARY KEY (`news_id`,`lang_id`),
-  FULLTEXT KEY `title` (`title`),
-  FULLTEXT KEY `text` (`text`),
-  FULLTEXT KEY `teaser_text` (`teaser_text`)
+  FULLTEXT KEY `newsindex` (`text`,`title`,`teaser_text`)
 ) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_news_settings` (
   `name` varchar(50) NOT NULL DEFAULT '',
