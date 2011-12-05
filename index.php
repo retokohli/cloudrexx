@@ -225,6 +225,11 @@ define('LANG_ID', $_LANGID);
 $virtualLanguageDirectory = '/'.$languageExtractor->getShortNameOfLanguage(FRONTEND_LANG_ID);
 Env::set('virtualLanguageDirectory', $virtualLanguageDirectory);
 
+// TODO: this constanst used to be located in config/set_constants.php, but needed to be relocated to this very place,
+// because it depends on Env::get('virtualLanguageDirectory').
+// Find an other solution; probably best is to replace CONTREXX_SCRIPT_PATH by a prettier method
+define('CONTREXX_SCRIPT_PATH', ASCMS_PATH_OFFSET.Env::get('virtualLanguageDirectory').'/'.CONTREXX_DIRECTORY_INDEX);
+
 // Caching-System
 /**
  * Include the cache module.  The cache is initialized right afterwards.
