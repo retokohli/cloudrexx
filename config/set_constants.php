@@ -23,8 +23,6 @@ define('CONTREXX_ESCAPE_GPC',               get_magic_quotes_gpc());
 define('CONTREXX_CHARSET',                  $_CONFIG['coreCharacterEncoding']);
 define('CONTREXX_PHP5',                     version_compare(PHP_VERSION, '5', '>='));
 define('CONTREXX_DIRECTORY_INDEX',          'index.php');
-define('CONTREXX_VIRTUAL_LANGUAGE_PATH',    !empty($_SERVER['REDIRECT_CONTREXX_LANG_PREFIX']) ? '/'.$_SERVER['REDIRECT_CONTREXX_LANG_PREFIX'] : '');
-define('CONTREXX_SCRIPT_PATH',              ASCMS_PATH_OFFSET.CONTREXX_VIRTUAL_LANGUAGE_PATH.'/'.CONTREXX_DIRECTORY_INDEX);
 
 define('DBPREFIX',                          $_DBCONFIG['tablePrefix']);
 define('ASCMS_DOCUMENT_ROOT',               ASCMS_PATH.ASCMS_PATH_OFFSET);
