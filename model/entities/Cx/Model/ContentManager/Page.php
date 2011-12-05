@@ -1157,6 +1157,12 @@ class Page extends \Cx\Model\Base\EntityBase
     public function getFallbackContentFrom($page) {
         $this->containsFallbackContent = true;
         $this->content = $page->getContent();
+        $this->module = $page->getModule();
+        $this->cmd = $page->getCmd();
+        $this->skin = $page->getSkin();
+        $this->customContent = $page->getCustomContent();
+        $this->cssName = $page->getCssName();
+        $this->cssNavName = $page->getCssNavName();
     }
     /**
      * @var string $cssNavName
