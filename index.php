@@ -371,8 +371,12 @@ if ($isRegularPageRequest) {
     try {
         $resolver->resolve();
         $page = $resolver->getPage();
-        $command = $page->getCmd();
-        $section = $page->getModule();
+// TODO: should this check (for type 'application') moved to \Cx\Model\ContentManager\Page::getCmd()|getModule() ?
+        // only set $section and $command if the requested page is an application
+        if ($page->getType() == 'application') {
+            $command = $page->getCmd();
+            $section = $page->getModule();
+        }
     }
     catch (\Cx\Core\Routing\ResolverException $e) {
         /*
