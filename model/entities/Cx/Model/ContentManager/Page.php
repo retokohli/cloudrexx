@@ -1189,4 +1189,12 @@ class Page extends \Cx\Model\Base\EntityBase
     {
         return $this->cssNavName;
     }
+
+    public function updateFromArray($newData) {
+        foreach ($newData as $key => $value) {
+            if ($this->{$key}) {
+                call_user_func(array($this, "set".ucfirst($key)), $value);
+            }
+        }
+    }
 }
