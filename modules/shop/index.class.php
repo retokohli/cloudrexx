@@ -140,13 +140,11 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
      */
     static function getPage($template)
     {
-DBG::activate(DBG_ERROR_FIREPHP);
-
-// TODO: Temporary, for developing only. Remove for production.
-if (isset ($_REQUEST['content'])) {
-    self::update_content();
-}
-
+//DBG::activate(DBG_ERROR_FIREPHP);
+// Temporary, for developing only. Remove for production.
+//if (isset ($_REQUEST['content'])) {
+//    self::update_content();
+//}
         self::init();
         self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
 
@@ -268,6 +266,7 @@ if (isset ($_REQUEST['content'])) {
                 DBG::log(var_export($arrMailTemplate, true));
                 DBG::log(MailTemplate::send($arrMailTemplate) ? "Sent successfully" : "Sending FAILED!");
                 DBG::deactivate(DBG_LOG_FILE);
+                break;
             case 'pricelist':
                 self::send_pricelist();
                 break;
@@ -953,10 +952,10 @@ die("Failed to update the Cart!");
         );
 //DBG::log("Count: $count, term $term, manufacturer $manufacturer_id, special$flagSpecialoffer");
         if ($count == 0
-        ) {
-            if ($term != '' || $manufacturer_id != 0 || $flagSpecialoffer) {
+         && !ShopCategories::getChildCategoryIdArray($category_id)) {
+            //if ($term != '' || $manufacturer_id != 0 || $flagSpecialoffer) {
                 self::$objTemplate->touchBlock('no_product');
-            }
+            //}
 //DBG::log("No Product");
             return true;
         }
@@ -2259,7 +2258,6 @@ function centerY(height)
             $_SESSION['shop']['password'] = contrexx_input2raw($_POST['password']);
             $loginUsername = $_SESSION['shop']['username'];
             if (self::_authenticate()) {
-DBG::log("Shop::login(): Success!");
                 self::$objCustomer = &$objUser;
                 // Initialize the Customer data in the session, so that the account
                 // page may be skipped
@@ -3319,9 +3317,9 @@ die("Trouble! No Shipper ID defined");
         $customer_host = substr(@gethostbyaddr($_SERVER['REMOTE_ADDR']), 0, 100);
         $customer_browser = substr(getenv('HTTP_USER_AGENT'), 0, 100);
         $new_customer = false;
-DBG::log("Shop::process(): E-Mail: ".$_SESSION['shop']['email']);
+//DBG::log("Shop::process(): E-Mail: ".$_SESSION['shop']['email']);
         if (self::$objCustomer) {
-DBG::log("Shop::process(): Existing User username ".$_SESSION['shop']['username'].", email ".$_SESSION['shop']['email']);
+//DBG::log("Shop::process(): Existing User username ".$_SESSION['shop']['username'].", email ".$_SESSION['shop']['email']);
         } else {
             // Registered Customers are required to be logged in!
             self::$objCustomer = Customer::getRegisteredByEmail(
@@ -3636,6 +3634,8 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
         $order_id = (empty($_SESSION['shop']['order_id_checkin'])
             ? PaymentProcessing::getOrderId()
             : $_SESSION['shop']['order_id_checkin']);
+//DBG::deactivate();
+//DBG::activate(DBG_LOG_FILE);
 //DBG::log("success(): Restored Order ID ".var_export($order_id, true));
 
         // Default new order status: As long as it's pending (0, zero),

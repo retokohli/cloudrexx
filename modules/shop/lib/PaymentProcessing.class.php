@@ -277,6 +277,11 @@ class PaymentProcessing
                 break;
             case 'yellowpay': // was: 'PostFinance_DebitDirect'
                 $return = self::_YellowpayProcessor();
+if (empty ($return)) {
+    foreach (Yellowpay::$arrError as $error) {
+        DBG::log("Yellowpay Error: $error");
+    }
+}
                 break;
             // Added 20100222 -- Reto Kohli
             case 'mobilesolutions':
@@ -369,7 +374,7 @@ DBG::log($error);
             $arrShopOrder['PROVIDERSET'] = $arrCards;
         }
         $payInitUrl = $objSaferpay->payInit($arrShopOrder);
-DBG::log("PaymentProcessing::_SaferpayProcessor(): payInit URL: $payInitUrl");
+//DBG::log("PaymentProcessing::_SaferpayProcessor(): payInit URL: $payInitUrl");
         // Fixed: Added check for empty return string,
         // i.e. on connection problems
         if (   !$payInitUrl
@@ -429,11 +434,13 @@ DBG::log("PaymentProcessing::_SaferpayProcessor(): payInit URL: $payInitUrl");
         $language = FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
         $language = strtolower($language).'_'.strtoupper($language);
         $arrShopOrder = array(
+// 20111227 - Note that all parameter names should now be uppercase only
             'PSPID'    => SettingDb::getValue('postfinance_shop_id'),
-            'orderID'  => $_SESSION['shop']['order_id'],
-            'amount'   => intval($_SESSION['shop']['grand_total_price']*100),
-            'language' => $language,
-            'currency' => Currency::getActiveCurrencyCode(),
+            'ORDERID'   => $_SESSION['shop']['order_id'],
+            'AMOUNT'    => intval($_SESSION['shop']['grand_total_price']*100),
+            'LANGUAGE'  => $language,
+            'CURRENCY'  => Currency::getActiveCurrencyCode(),
+            'OPERATION' => SettingDb::getValue('postfinance_authorization_type'),
         );
         $yellowpayForm = Yellowpay::getForm(
             $arrShopOrder, $_ARRAYLANG['TXT_ORDER_NOW']
@@ -586,7 +593,10 @@ DBG::log("PaymentProcessing::checkIn(): mobilesolutions: Payment verification fa
 
     static function getOrderId()
     {
-        if (empty($_GET['handler'])) return false;
+        if (empty($_GET['handler'])) {
+//DBG::log("PaymentProcessing::getOrderId(): No handler, fail");
+            return false;
+        }
         switch ($_GET['handler']) {
             case 'saferpay':
                 return Saferpay::getOrderId();
