@@ -798,7 +798,7 @@ class Customer extends User
                 $objCustomer->setFrontendLanguage($lang_id);
             }
             if (!$objCustomer->store()) {
-DBG::log(var_export($objCustomer, true));
+//DBG::log(var_export($objCustomer, true));
                 throw new Update_DatabaseException(
                    "Failed to migrate existing Customer ID ".
                    $old_customer_id.

@@ -42,7 +42,7 @@ class Yellowpay
      * Return string of the function getForm()
      * @access  private
      * @var     string
-     * @see     getForm(), addToForm()
+     * @see     getForm()
      */
     private static $form;
 
@@ -51,7 +51,7 @@ class Yellowpay
      * @access  private
      * @var     array
      * @see     Yellowpay(), __construct(), addPaymentTypeKeys(),
-     *          addOtherKeys(), verifyParameter(), addToForm()
+     *          addOtherKeys(), verifyParameter()
      */
     private static $arrField = array();
 
@@ -70,42 +70,6 @@ class Yellowpay
      * @see     addPaymentTypeKeys(), verifyParameter()
      */
     public static $arrWarning = array();
-
-    /**
-     * Language codes
-     * @access  private
-     * @var     array
-     * @see     verifyParameter()
-     */
-    private static $arrLangVersion = array(
-        'DE' => 2055,
-        'US' => 2057, 'EN' => 2057,
-        'IT' => 2064,
-        'FR' => 4108,
-    );
-
-    /**
-     * Currency codes
-     * @access  private
-     * @var     array
-     * @see     verifyParameter()
-     */
-    private static $arrArtCurrency = array(
-        'CHF',
-        'USD',
-        'EUR',
-    );
-
-    /**
-     * Known authorization types
-     * @access  private
-     * @var     array
-     * @see     verifyParameter()
-     */
-    private static $arrKnownAuthorization = array(
-        'RES',
-        'SAL',
-    );
 
     /**
      * Current authorization type, defaults to 'immediate'
@@ -163,83 +127,18 @@ class Yellowpay
 
     private static $arrFieldMandatory = array(
         'PSPID',
-        'orderID',
-        'amount',
-        'currency',
+        'ORDERID',
+        'AMOUNT',
+        'CURRENCY',
         // Not mandatory, but needed for SHA-1 anyway
-        'Operation',
-        // check before the payment: see chapter 6.2
-        'SHASign',
+        'OPERATION',
         // The following  parameters are not mandatory, but we're being nice to customers
-        'language',
+        'LANGUAGE',
         // post payment redirection: see chapter 8.2
-        'accepturl',
-        'declineurl',
-        'exceptionurl',
-        'cancelurl',
-    );
-
-    private static $arrFieldOptional = array(
-        // optional customer details, highly recommended for fraud prevention: see chapter 5.2
-        'CN',
-        'EMAIL',
-        'ownerZIP',
-        'owneraddress',
-        'ownercty',
-        'ownertown',
-        'ownertelno',
-        'COM',
-        // payment methods/page specifics: see chapter 9.1
-        'PM',
-        'BRAND',
-        'WIN3DS',
-        'PM list type',
-        'PMListType',
-        // link to your website: see chapter 8.1
-        'homeurl',
-        'catalogurl',
-        // post payment parameters: see chapter 8.2
-        'COMPLUS',
-        'PARAMPLUS',
-        // post payment parameters: see chapter 8.3
-        'PARAMVAR',
-        // optional extra login field: see chapter 9.3
-        'USERID',
-        // Alias details: see Alias Management documentation
-        'Alias',
-        'AliasUsage',
-        'AliasOperation',
-        'PMLIST',
-        'WIN3DS',
-        // layout information: see chapter 7.1
-        'TITLE',
-        'BGCOLOR',
-        'TXTCOLOR',
-        'TBLBGCOLOR',
-        'TBLTXTCOLOR',
-        'BUTTONBGCOLOR',
-        'BUTTONTXTCOLOR',
-        'LOGO',
-        'FONTTYPE',
-        // dynamic template page: see chapter 7.2
-        'TP',
-    );
-
-    /**
-     * Mandatory fields required to confirm the SHA-1-OUT hash validity
-     * @var   array
-     */
-    private static $arrFieldShaOut = array(
-        'orderID',
-        'currency',
-        'amount',
-        'PM',
-        'ACCEPTANCE',
-        'STATUS',
-        'CARDNO',
-        'PAYID',
-        'NCERROR',
-        'BRAND',
+        'ACCEPTURL',
+        'DECLINEURL',
+        'EXCEPTIONURL',
+        'CANCELURL',
     );
 
 
@@ -256,8 +155,11 @@ class Yellowpay
 
         $strAcceptedPaymentMethods =
             SettingDb::getValue('postfinance_accepted_payment_methods');
+        if (empty ($arrField['OPERATION'])) {
         self::$strAuthorization =
             SettingDb::getValue('postfinance_authorization_type');
+            $arrField['OPERATION'] = self::$strAuthorization;
+        }
         // There needs to be at least one accepted payment method,
         // if there is none, accept all.
         if (!empty($strAcceptedPaymentMethods)) {
@@ -267,10 +169,6 @@ class Yellowpay
                     unset(self::$arrAcceptedPaymentMethod[$strPaymentMethod]);
                 }
             }
-        }
-        if (!self::setFields($arrField)) {
-            self::$arrError[] = 'ERROR: Failed to verify keys';
-            return false;
         }
         // Build the base URI from the referrer, which also includes the
         // protocol (http:// or https://)
@@ -283,42 +181,36 @@ class Yellowpay
             return '';
         }
         $base_uri = $base_uri.'&cmd=success&handler=yellowpay&result=';
-        if (empty(self::$arrField['accepturl'])) {
-            self::$arrField['accepturl'] = $base_uri.'1';
+        if (empty(self::$arrField['ACCEPTURL'])) {
+            $arrField['ACCEPTURL'] = $base_uri.'1';
         }
-        if (empty(self::$arrField['declineurl'])) {
-            self::$arrField['declineurl'] = $base_uri.'2';
+        if (empty(self::$arrField['DECLINEURL'])) {
+            $arrField['DECLINEURL'] = $base_uri.'2';
         }
-        if (empty(self::$arrField['exceptionurl'])) {
-            self::$arrField['exceptionurl'] = $base_uri.'2';
+        if (empty(self::$arrField['EXCEPTIONURL'])) {
+            $arrField['EXCEPTIONURL'] = $base_uri.'2';
         }
-        if (empty(self::$arrField['cancelurl'])) {
-            self::$arrField['cancelurl'] = $base_uri.'0';
+        if (empty(self::$arrField['CANCELURL'])) {
+            $arrField['CANCELURL'] = $base_uri.'0';
         }
         self::$form =
             $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n".
             // The real yellowpay server or the test server
             '<form name="yellowpay" method="post" '.
-// OLD yellowpay URI
-//            'action="https://yellowpay'.($isTest ? 'test' : '').
-//            '.postfinance.ch/checkout/Yellowpay.aspx?userctrl=Invisible"'.
-// CURRENT Postfinance E-Commerce URI
+            // Yellowpay dummy, for testing only
+            //'action="modules/shop/payments/yellowpay/YellowpayDummy.class.php"'.
+            // Current Postfinance E-Commerce URI, as of 2011
             'action="https://e-payment.postfinance.ch/ncol/'.
             (SettingDb::getValue('postfinance_use_testserver') ? 'test' : 'prod').
             '/orderstandard.asp"'.
             ">\n";
-/*
-            // Yellowpay dummy
-            '<form name="yellowpay" method="post" '.
-            'action="http://localhost/c_trunk/modules/shop/payments/yellowpay/YellowpayDummy.class.php"'.
-            ">\n";
-*/
-// OLD
-//        if (!self::addHash()) {
-// CURRENT
-        self::$arrField['SHASign'] = self::signature();
+        if (!self::setFields($arrField)) {
+            self::$arrError[] = 'ERROR: Failed to verify keys';
+            return false;
+        }
+        self::$arrField['SHASIGN'] = self::signature(self::$arrField);
         foreach (self::$arrField as $name => $value) {
-            self::addToForm($name, $value);
+            self::$form .= Html::getHidden($name, $value)."\n";
         }
         if ($autopost) {
             self::$form .=
@@ -332,19 +224,6 @@ class Yellowpay
         self::$form .= "</form>";
 //self::$arrError[] = "Test for error handling";
         return self::$form;
-    }
-
-
-    /**
-     * Adds a parameter to the HTML form
-     * @param   string    $name     Name of the parameter
-     * @param   string    $value    Value of the parameter
-     * @return  boolean             True on success, false otherwise
-     */
-    static function addToForm($name, $value)
-    {
-        self::$form .= Html::getHidden($name, $value)."\n";
-        return true;
     }
 
 
@@ -372,6 +251,7 @@ class Yellowpay
             }
         }
         foreach ($arrField as $name => $value) {
+            $name = strtoupper($name);
             if (!self::addField($name, $value)) {
 //DBG::log("Yellowpay::setFields(): Failed to add '$name' (value '$value')");
                 return false;
@@ -410,43 +290,42 @@ class Yellowpay
      * @param   string    $value    The value of the parameter
      * @return  boolean             The verified value on success,
      *                              null otherwise
-     * @see     addToForm()
      */
     static function verifyParameter($name, $value)
     {
         switch ($name) {
             // Mandatory
-            case 'orderID':
+            case 'ORDERID':
                 if (intval($value)) return intval($value);
                 break;
-            case 'amount':
+            case 'AMOUNT':
                 // Fix cents, like "1.23" to "123"
                 if (preg_match('/\./', $value)) {
                     $value = intval($value * 100);
                 }
                 if ($value === intval($value)) return $value;
                 break;
-            case 'currency':
+            case 'CURRENCY':
                 if (preg_match('/^\w{3}$/', $value)) return $value;
                 break;
             case 'PSPID':
                 if (preg_match('/.+/', $value)) return $value;
                 break;
             // The above four are needed to form the hash:
-            case 'SHASign':
+            case 'SHASIGN':
                 // 40 digit hexadecimal string, like
                 // 4d0a445beac3561528dc26023e9ecb2d38fadc61
                 if (preg_match('/^[0-9a-z]{40}$/i', $value)) return $value;
-            case 'language':
+            case 'LANGUAGE':
                 if (preg_match('/^\w{2}(?:_\w{2})?$/', $value)) return $value;
                 break;
-            case 'Operation':
+            case 'OPERATION':
                 if ($value == 'RES' || $value == 'SAL') return $value;
                 break;
-            case 'accepturl':
-            case 'declineurl':
-            case 'exceptionurl':
-            case 'cancelurl':
+            case 'ACCEPTURL':
+            case 'DECLINEURL':
+            case 'EXCEPTIONURL':
+            case 'CANCELURL':
 //                if (FWValidator::isUri($value)) return $value;
 // *SHOULD* verify the URIs, but the expression is not fit
                 if ($value) return $value;
@@ -454,11 +333,11 @@ class Yellowpay
             // Optional
             // optional customer details, highly recommended for fraud prevention: see chapter 5.2
             case 'CN':
-            case 'owneraddress':
-            case 'ownercty':
-            case 'ownerZIP':
-            case 'ownertown':
-            case 'ownertelno':
+            case 'OWNERADDRESS':
+            case 'OWNERCTY':
+            case 'OWNERZIP':
+            case 'OWNERTOWN':
+            case 'OWNERTELNO':
             case 'COM':
                 if (preg_match('/.*/', $value)) return $value;
                 break;
@@ -501,22 +380,20 @@ class Yellowpay
                 if (preg_match('/.+/', $value)) return $value;
                 break;
 
-            // Contrexx does neither supply nor support the following:
-            //
+            // Contrexx does not yet supply nor support the following:
             // payment methods/page specifics: see chapter 9.1
             case 'PM':
             case 'BRAND':
-            case 'PM list type':
-            case 'PMListType':
+            case 'PMLISTTYPE':
             // link to your website: see chapter 8.1
-            case 'homeurl':
-            case 'catalogurl':
+            case 'HOMEURL':
+            case 'CATALOGURL':
             // optional extra login field: see chapter 9.3
             case 'USERID':
             // Alias details: see Alias Management documentation
-            case 'Alias':
-            case 'AliasUsage':
-            case 'AliasOperation':
+            case 'ALIAS':
+            case 'ALIASUSAGE':
+            case 'ALIASOPERATION':
                 break;
         }
         self::$arrError[] = "Invalid field '$name', value '$value'";
@@ -527,17 +404,18 @@ class Yellowpay
     /**
      * Returns the current SHA signature
      *
-     * Concatenates the values of all fields sent in a request, separating
-     * them with the secret passphrase (in or out)
+     * Concatenates the values of all fields, separating them with the secret
+     * passphrase (in or out).
+     * @param   array     $fields   The parameter array
      * @param   boolean   $out  Use the 'out' passphrase if true.
      *                          Defaults to false (for 'in').
-     * @return  string          The signature hash on success, null otherwise
+     * @return  string              The signature hash on success,
+     *                              null otherwise
      */
-    static function signature($out=false)
+    static function signature($fields, $out=false)
     {
-        $hash_string = self::concatenateFields($out);
-        self::$arrField['SHASign'] = strtoupper(sha1($hash_string));
-        return true;
+        $hash_string = self::concatenateFields($fields, $out);
+        return strtoupper(sha1($hash_string));
     }
 
 
@@ -545,26 +423,45 @@ class Yellowpay
      * Returns a string formed by concatenating all fields
      *
      * Name/value pairs are separated by an equals sign, and individual pairs
-     * separated by the passphrase (in or out)
+     * separated by the passphrase (in or out).
+     * Mind that according to the new specification, all field names must be
+     * all uppercase, thus the array is reindexed using uppercase only keys
+     * before it is sorted and concatenated.
+     * @todo    Currently, all fields present in the $fields array are added
+     *          to the string with SHASIGN being the only exception that is
+     *          skipped.  It will probably be necessary to exclude further
+     *          keys that are not used for computing the hash.
+     * @param   array     $fields   The parameter array
      * @param   boolean   $out  Use the 'out' passphrase if true.
      *                          Defaults to false (for 'in').
-     * @return  string          The signature string on success, null otherwise
+     * @return  string              The signature string on success,
+     *                              null otherwise
      */
-    static function concatenateFields($out=false)
+    static function concatenateFields($fields, $out=false)
     {
         $passphrase = SettingDb::getValue('postfinance_hash_signature_'.
             ($out ? 'out' : 'in'));
         $hash_string = '';
-        ksort(self::$arrField);
-        foreach (self::$arrField as $name => $value) {
-            if ($name == 'SHASIGN') continue;
-            if ($value == '') {
-                self::$arrError[] = "ERROR: Empty value for name $name!";
-DBG::log("Yellowpay::concatenateFields($out): ERROR: Empty value for name $name!");
-                return null;
+        foreach ($fields as $name => $value) {
+            unset($fields[$name]);
+            $name = strtoupper($name);
+            $fields[$name] = $value;
+        }
+        ksort($fields);
+        foreach ($fields as $name => $value) {
+            if ($name == 'SHASIGN') {
+//DBG::log("Skipping SHASIGN");
+                continue;
             }
+            if ($value === '') {
+                continue;
+//DBG::log("Skipping empty string value");
+            }
+//DBG::log("Adding $name={$fields[$name]}");
             $hash_string .=
-                strtoupper($name).'='.self::$arrField[$name].
+                $name.
+                '='.
+                $fields[$name].
                 $passphrase;
         }
         return $hash_string;
@@ -577,29 +474,29 @@ DBG::log("Yellowpay::concatenateFields($out): ERROR: Empty value for name $name!
      */
     static function checkIn()
     {
+//DBG::activate(DBG_LOG_FILE);
+//DBG::log("Yellowpay::checkIn(): POST: ".var_export($_POST, true));
+//DBG::log("Yellowpay::checkIn(): GET: ".var_export($_GET, true));
         if (empty($_POST['SHASIGN'])) {
-            self::$arrWarning[] = 'No SHASIGN value in request';
+            self::$arrError[] = 'No SHASIGN value in request';
             return false;
         }
         self::$arrField = contrexx_input2raw($_POST);
         $shasign_request = self::$arrField['SHASIGN'];
         // If the hash is correct, so is the Order (and ID)
-        return ($shasign_request == self::signature(true));
+        $shasign_computed = self::signature(self::$arrField, true);
+//DBG::log("Yellowpay::checkIn(): SHA Request $shasign_request <> $shasign_computed ?");
+        return ($shasign_request == $shasign_computed);
     }
 
 
     /**
-     * Returns the Order ID from the GET request, if present
+     * Returns the Order ID from the POST request, if present
      * @return  integer           The order ID, or false
      */
     static function getOrderId()
     {
-// NOTE:  txtOrderIDShop is left here for backwards compatibility.
-// However, it's probably obsolete by now and could be removed.
-        if (isset($_POST['txtOrderIDShop']))
-            return $_POST['txtOrderIDShop'];
-        if (isset($_GET['orderID']))
-            return $_GET['orderID'];
+        if (isset($_POST['orderID'])) return $_POST['orderID'];
         return false;
     }
 

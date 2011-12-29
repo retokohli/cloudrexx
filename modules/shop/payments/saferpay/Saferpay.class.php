@@ -374,9 +374,9 @@ class Saferpay
      */
     function payConfirm()
     {
-DBG::log("Saferpay::payConfirm():");
-DBG::log("POST: ".var_export($_POST, true));
-DBG::log("GET: ".var_export($_GET, true));
+//DBG::log("Saferpay::payConfirm():");
+//DBG::log("POST: ".var_export($_POST, true));
+//DBG::log("GET: ".var_export($_GET, true));
         // Predefine the variables parsed by parse_str() to avoid
         // code analyzer warnings
         $DATA = '';
@@ -388,24 +388,24 @@ DBG::log("GET: ".var_export($_GET, true));
         $this->attributes = $this->getAttributeList('payConfirm');
 // TODO: This won't work without allow_url_fopen
         $confirmUrl = $this->gateway['payConfirm'].'?'.$this->attributes;
-DBG::log("payConfirm: URL: $confirmUrl");
+//DBG::log("payConfirm: URL: $confirmUrl");
         $this->arrTemp['result'] = file_get_contents($confirmUrl);
         if (!$this->arrTemp['result']) {
             // Try socket connection as well
             $this->arrTemp['result'] = Socket::getHttp10Response($confirmUrl);
         }
-DBG::log("payConfirm: Result: ".$this->arrTemp['result']);
+//DBG::log("payConfirm: Result: ".$this->arrTemp['result']);
         if (substr($this->arrTemp['result'], 0, 2) == 'OK') {
             $ID = '';
             $TOKEN = '';
             parse_str(substr($this->arrTemp['result'], 3));
             $this->arrTemp['id'] = $ID;
             $this->arrTemp['token'] = $TOKEN;
-DBG::log("Saferpay::payConfirm(): SUCCESS");
+//DBG::log("Saferpay::payConfirm(): SUCCESS");
             return true;
         }
         $this->arrError[] = $this->arrTemp['result'];
-DBG::log("Saferpay::payConfirm(): FAIL, Error: ".join("\n", $this->arrError));
+//DBG::log("Saferpay::payConfirm(): FAIL, Error: ".join("\n", $this->arrError));
         return false;
     }
 
