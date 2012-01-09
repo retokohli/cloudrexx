@@ -4096,27 +4096,27 @@ $WhereStatement = '';
         require_once ASCMS_LIBRARY_PATH."/importexport/import.class.php";
         $objImport = new Import();
         $arrFields = array(
-            'email' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
-            'sex' => $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
-            'salutation' => $_ARRAYLANG['TXT_NEWSLETTER_SALUTATION'],
-            'title' => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
-            'lastname' => $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
-            'firstname' => $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'],
-            'position' => $_ARRAYLANG['TXT_NEWSLETTER_POSITION'],
-            'company' => $_ARRAYLANG['TXT_NEWSLETTER_COMPANY'],
+            'email'           => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
+            'sex'             => $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
+            'salutation'      => $_ARRAYLANG['TXT_NEWSLETTER_SALUTATION'],
+            'title'           => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
+            'lastname'        => $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
+            'firstname'       => $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'],
+            'position'        => $_ARRAYLANG['TXT_NEWSLETTER_POSITION'],
+            'company'         => $_ARRAYLANG['TXT_NEWSLETTER_COMPANY'],
             'industry_sector' => $_ARRAYLANG['TXT_NEWSLETTER_INDUSTRY_SECTOR'],
-            'address' => $_ARRAYLANG['TXT_NEWSLETTER_ADDRESS'],
-            'zip' => $_ARRAYLANG['TXT_NEWSLETTER_ZIP'],
-            'city' => $_ARRAYLANG['TXT_NEWSLETTER_CITY'],
-            'country_id'=> $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY'],
-            'phone_office' => $_ARRAYLANG['TXT_NEWSLETTER_PHONE'],
-            'phone_private' => $_ARRAYLANG['TXT_NEWSLETTER_PHONE_PRIVATE'],
-            'phone_mobile' => $_ARRAYLANG['TXT_NEWSLETTER_PHONE_MOBILE'],
-            'fax'  => $_ARRAYLANG['TXT_NEWSLETTER_FAX'],
-            'birthday' => $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'],
-            'uri' => $_ARRAYLANG['TXT_NEWSLETTER_WEBSITE'],
-            'notes'  => $_ARRAYLANG['TXT_NEWSLETTER_NOTES'],
-            'language'  => $_ARRAYLANG['TXT_NEWSLETTER_LANGUAGE']
+            'address'         => $_ARRAYLANG['TXT_NEWSLETTER_ADDRESS'],
+            'zip'             => $_ARRAYLANG['TXT_NEWSLETTER_ZIP'],
+            'city'            => $_ARRAYLANG['TXT_NEWSLETTER_CITY'],
+            'country_id'      => $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY'],
+            'phone_office'    => $_ARRAYLANG['TXT_NEWSLETTER_PHONE'],
+            'phone_private'   => $_ARRAYLANG['TXT_NEWSLETTER_PHONE_PRIVATE'],
+            'phone_mobile'    => $_ARRAYLANG['TXT_NEWSLETTER_PHONE_MOBILE'],
+            'fax'             => $_ARRAYLANG['TXT_NEWSLETTER_FAX'],
+            'birthday'        => $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'],
+            'uri'             => $_ARRAYLANG['TXT_NEWSLETTER_WEBSITE'],
+            'notes'           => $_ARRAYLANG['TXT_NEWSLETTER_NOTES'],
+            'language'        => $_ARRAYLANG['TXT_NEWSLETTER_LANGUAGE']
         );
 
         if (isset($_POST['import_cancel'])) {
@@ -4158,21 +4158,48 @@ $WhereStatement = '';
                         array_push($arrBadEmails, $arrRecipient['email']);
                     } else {
                         $EmailCount++;
-                        $objRecipient = $objDatabase->SelectLimit("SELECT `id` FROM `".DBPREFIX."module_newsletter_user` WHERE `email` = '".addslashes($arrRecipient['email'])."'", 1);
-                        if ($objRecipient->RecordCount() == 1) {
-                            foreach ($arrLists as $listId) {
-                                $this->_addRecipient2List($objRecipient->fields['id'], $listId);
-                            }
+                        
+                        if (in_array($arrRecipient['salutation'], $this->_getRecipientTitles())) {
+                            $arrRecipientTitles = array_flip($this->_getRecipientTitles());
+                            $recipientSalutationId = $arrRecipientTitles[$arrRecipient['salutation']];
+                        } else {
+                            $recipientSalutationId = $this->_addRecipientTitle($arrRecipient['salutation']);
+                        }                        
+                        
+                        $objRecipient = $objDatabase->SelectLimit("SELECT `id`,
+                                                                          `language`,
+                                                                          `status`,
+                                                                          `notes`
+                                                                   FROM `".DBPREFIX."module_newsletter_user`
+                                                                   WHERE `email` = '".addslashes($arrRecipient['email'])."'", 1);
+                        if ($objRecipient->RecordCount() == 1) {   
+
+                            $recipientId       = $objRecipient->fields['id'];
+                            $recipientLanguage = $objRecipient->fields['language'];
+                            $recipientStatus   = $objRecipient->fields['status'];
+                            $recipientNotes    = (!empty($objRecipient->fields['notes']) ? $objRecipient->fields['notes'].' '.$arrRecipient['notes'] : $arrRecipient['notes']);
+
+                            $objList = $objDatabase->Execute("SELECT `category` FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE user=".$recipientId);
+                            if ($objList !== false) {
+                                while (!$objList->EOF) {
+                                    array_push($arrLists, $objList->fields['category']);
+                                    $objList->MoveNext();
+                                }
+                            }      
+                            $arrAssociatedLists = array_unique($arrAssociatedLists);
+                            
+                            $recipientAttributeStatus = array();
+                            $this->_updateRecipient($recipientAttributeStatus, $recipientId, $arrRecipient['email'], $arrRecipient['uri'], $arrRecipient['sex'],
+                                            $recipientSalutationId, $arrRecipient['title'], $arrRecipient['lastname'], $arrRecipient['firstname'],
+                                            $arrRecipient['position'], $arrRecipient['company'], $arrRecipient['industry_sector'],
+                                            $arrRecipient['address'], $arrRecipient['zip'], $arrRecipient['city'], $arrRecipient['country_id'],
+                                            $arrRecipient['phone_office'], $arrRecipient['phone_private'], $arrRecipient['phone_mobile'],
+                                            $arrRecipient['fax'], $recipientNotes, $arrRecipient['birthday'], $recipientStatus, $arrLists,
+                                            $recipientLanguage);
+
                             $ExistEmails++;
                         } else {
                             $NewEmails ++;
-
-                            if (in_array($arrRecipient['salutation'], $this->_getRecipientTitles())) {
-                                $arrRecipientTitles = array_flip($this->_getRecipientTitles());
-                                $recipientSalutationId = $arrRecipientTitles[$arrRecipient['salutation']];
-                            } else {
-                                $recipientSalutationId = $this->_addRecipientTitle($arrRecipient['salutation']);
-                            }
 
                             if (!$this->_addRecipient($arrRecipient['email'], $arrRecipient['uri'], $arrRecipient['sex'], $recipientSalutationId, $arrRecipient['title'], $arrRecipient['lastname'], $arrRecipient['firstname'], $arrRecipient['position'], $arrRecipient['company'], $arrRecipient['industry_sector'], $arrRecipient['address'], $arrRecipient['zip'], $arrRecipient['city'], $arrRecipient['country_id'], $arrRecipient['phone_office'], $arrRecipient['phone_private'], $arrRecipient['phone_mobile'], $arrRecipient['fax'], $arrRecipient['notes'], $arrRecipient['birthday'], 1, $arrLists, $arrRecipient['language'])) {
                                 array_push($arrBadEmails, $arrRecipient['email']);
@@ -4416,6 +4443,7 @@ $WhereStatement = '';
 
     function _getAssociatedListSelection()
     {
+        global $_ARRAYLANG;
         
         $arrLists = self::getLists();
         $listNr = 1;
