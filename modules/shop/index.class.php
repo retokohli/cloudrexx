@@ -2789,7 +2789,7 @@ die("Shop::processRedirect(): This method is obsolete!");
     static function get_payment_menu()
     {
         if (   !Cart::needs_shipment()
-            || Cart::get_price() <= 0) {
+            && Cart::get_price() <= 0) {
             $_SESSION['shop']['paymentId'] = null;
             return '';
         }
@@ -3127,7 +3127,13 @@ right after the customer logs in!
                         $productOptionsValues = '';
                         foreach ($arrOptionIds as $option_id) {
                             $optionValue = '';
-                            if (intval($option_id)) {
+                            if (   preg_match('/^\d+$/', $option_id)
+                                && in_array(Attribute::getById($attribute_id)->getType(),
+                                            array(Attribute::TYPE_MENU_OPTIONAL,
+                                                  Attribute::TYPE_MENU_MANDATORY,
+                                                  Attribute::TYPE_RADIOBUTTON,
+                                                  Attribute::TYPE_CHECKBOX))
+                            ) {
                                 $optionValue =
                                     Attributes::getOptionNameById($option_id);
                             } else {
