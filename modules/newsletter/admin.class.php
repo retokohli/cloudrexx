@@ -4166,6 +4166,12 @@ $WhereStatement = '';
                             $recipientSalutationId = $this->_addRecipientTitle($arrRecipient['salutation']);
                         }                        
                         
+                        // try to parse the imported birthday in a usable format
+                        if (!empty($arrRecipient['birthday'])) {
+                            $arrDate = date_parse($arrRecipient['birthday']);
+                            $arrRecipient['birthday'] = $arrDate['day'].'-'.$arrDate['month'].'-'.$arrDate['year'];
+                        }
+
                         $objRecipient = $objDatabase->SelectLimit("SELECT `id`,
                                                                           `language`,
                                                                           `status`,
