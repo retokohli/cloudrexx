@@ -107,4 +107,6 @@ define('ASCMS_ECARD_THUMBNAIL_PATH',	    ASCMS_DOCUMENT_ROOT.'/images/modules/ec
 define('ASCMS_ECARD_THUMBNAIL_WEB_PATH',	ASCMS_PATH_OFFSET.'/images/modules/ecard/thumbnails');
 define('ASCMS_PARTNERS_IMAGES_PATH',        ASCMS_DOCUMENT_ROOT.'/images/partners');
 define('ASCMS_PARTNERS_IMAGES_WEB_PATH',    ASCMS_PATH_OFFSET.'/images/partners');
+define('ASCMS_MEDIADIR_IMAGES_PATH',        ASCMS_DOCUMENT_ROOT.'/images/mediadir');
+define('ASCMS_MEDIADIR_IMAGES_WEB_PATH',    ASCMS_PATH_OFFSET.'/images/mediadir');
 ?>
