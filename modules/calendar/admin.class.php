@@ -951,7 +951,8 @@ class calendarManager extends calendarLibrary
         $mailSendAgain  = !empty($_POST['inputSendMailAgain']);
 
         //notification
-        $notification   = intval($_POST['inputNotification']);
+        $notification        = intval($_POST['inputNotification']);
+        $notificationAddress = contrexx_input2raw($_POST['inputNotificationAddress']);
 
 		//series pattern
 		$seriesStatus 				= intval(!empty($_POST['inputSeriesStatus']));
@@ -1068,10 +1069,6 @@ class calendarManager extends calendarLibrary
 					}
 				}
 			break;
-		}
-
-		if ($notification == 1) {
-			$notificationAddress = contrexx_addslashes(contrexx_strip_tags($_POST['inputNotificationAddress']));
 		}
 
         if (!empty($link)) {
