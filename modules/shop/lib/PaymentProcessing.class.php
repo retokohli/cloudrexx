@@ -503,7 +503,7 @@ DBG::log($error);
     static function checkIn()
     {
         if (   isset($_GET['result'])
-            && $_GET['result'] == 0 || $_GET['result'] == 2
+            && $_GET['result'] <= 0 || $_GET['result'] == 2
         ) return false;
         if (empty($_GET['handler'])) return false;
         switch ($_GET['handler']) {
