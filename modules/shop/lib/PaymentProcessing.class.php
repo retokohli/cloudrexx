@@ -74,6 +74,7 @@ require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
  *      Successful payments, silent *:  result=-1
  *      Failed payments:                result=0
  *      Aborted payments:               result=2
+ *      Aborted payments, silent *:     result=-2
  *   * Some payment services do not only redirect the customer after a
  *     successful payment has completed, but already after the payment
  *     has been authorized.  Yellowpay, as an example, expects an empty
@@ -502,9 +503,10 @@ DBG::log($error);
      */
     static function checkIn()
     {
-        if (   isset($_GET['result'])
-            && $_GET['result'] <= 0 || $_GET['result'] == 2
-        ) return false;
+        if (isset($_GET['result'])) {
+            $result = abs(intval($_GET['result']));
+            if ($result == 0 || $result == 2) return false;
+        }
         if (empty($_GET['handler'])) return false;
         switch ($_GET['handler']) {
             case 'saferpay':
@@ -527,7 +529,6 @@ DBG::log($error);
                 return $transaction;
             case 'paypal':
                 return PayPal::ipnCheck();
-
             case 'yellowpay':
                 return Yellowpay::checkIn();
 //                    if (Yellowpay::$arrError || Yellowpay::$arrWarning) {
@@ -541,7 +542,6 @@ DBG::log($error);
 //                        join('<br />', Yellowpay::$arrWarning).
 //                        '</font>');
 //                    }
-
             // Added 20100222 -- Reto Kohli
             case 'mobilesolutions':
                 // A return value of null means:  Do not change the order status
@@ -558,7 +558,6 @@ if ($result) {
 DBG::log("PaymentProcessing::checkIn(): mobilesolutions: Payment verification failed; errors: ".var_export(PostfinanceMobile::getErrors(), true));
 }
                 return $result;
-
             // Added 20081117 -- Reto Kohli
             case 'datatrans':
                 require_once(ASCMS_MODULE_PATH.'/shop/payments/datatrans/Datatrans.class.php');
