@@ -2,8 +2,7 @@
 <script language="JavaScript" type="text/JavaScript">
 function mediaCheckNewDir()
 {
-    if(document.create_dir.dirName.value == '')
-    {
+    if(document.create_dir.dirName.value == '') {
         alert("{TXT_MEDIA_CHECK_NAME}");
         document.create_dir.dirName.focus();
         return false;
@@ -11,62 +10,39 @@ function mediaCheckNewDir()
 }
 
 
-function mediaCheckUploadFiles()
-{
+function mediaCheckUploadFiles() {
     var x = 0;
-    for(var i = 0; i < document.upload_files.elements.length; i++)
-    {
+    for (var i = 0; i < document.upload_files.elements.length; i++) {
         var e = document.upload_files.elements[i];
-        if(e.name == "fileName[]" && e.value != "")
-        {
+        if (e.name == "fileName[]" && e.value != "") {
             x++;
         }
     }
-    if(x > 0)
-    {
+    if (x > 0) {
         return true;
-    }
-    else
-    {
+    } else {
         alert("{TXT_MEDIA_SELECT_UPLOAD_FILE}");
         return false;
     }
 }
 
 
-function mediaConfirmDelete()
-{
-    if(!confirm("{TXT_MEDIA_CONFIRM_DELETE_2}"))
-    {
-        return false;
-    }
-}
-
-
-function mediaSelectAll(e)
-{
-    if(e.checked)
-    {  // check all
+function mediaSelectAll(e) {
+    if (e.checked) {  // check all
         var ml  = document.fileList;
-      var len = ml.elements.length;
-      for(var i = 0; i < len; i++)
-      {
-          var e = ml.elements[i];
-          if(e.name == "formSelected[]")
-          {
-            e.checked = true;
-          }
-      }
-  }
-  else
-  {  // uncheck all
+        var len = ml.elements.length;
+        for (var i = 0; i < len; i++) {
+            var e = ml.elements[i];
+            if (e.name == "formSelected[]") {
+                e.checked = true;
+            }
+        }
+    } else {  // uncheck all
       var ml  = document.fileList;
       var len = ml.elements.length;
-      for(var i = 0; i < len; i++)
-      {
+      for (var i = 0; i < len; i++) {
           var e = ml.elements[i];
-          if(e.name == "formSelected[]")
-          {
+          if (e.name == "formSelected[]") {
             e.checked = false;
           }
       }
@@ -77,20 +53,15 @@ function mediaSelectAll(e)
 function mediaIsChecked(fieldName)
 {
     var x = 0;
-    for(var i = 0; i < document.fileList.elements.length; i++)
-    {
+    for (var i = 0; i < document.fileList.elements.length; i++) {
         var e = document.fileList.elements[i];
-        if(e.name == fieldName && e.checked == true)
-        {
+        if (e.name == fieldName && e.checked == true) {
             x++;
         }
     }
-    if(x > 0)
-    {
+    if (x > 0) {
         return true;
-    }
-    else
-    {
+    } else {
         return false;
     }
 }
@@ -98,29 +69,22 @@ function mediaIsChecked(fieldName)
 
 function mediaDoAction()
 {
-    if(mediaIsChecked("formSelected[]") == true)
-    {
-      if(document.fileList.selectAction.value == "cut")
-      {
-          document.fileList.action = "index.php?cmd=media&act=cut&archive={MEDIA_ARCHIVE}&path={MEDIA_DO_ACTION_PATH}";
-          document.fileList.submit();
-      }
-      if(document.fileList.selectAction.value == "copy")
-      {
-          document.fileList.action = "index.php?cmd=media&act=copy&archive={MEDIA_ARCHIVE}&path={MEDIA_DO_ACTION_PATH}";
-          document.fileList.submit();
-      }
-        if(document.fileList.selectAction.value == "delete")
-      {
-          if(confirm("{TXT_MEDIA_CONFIRM_DELETE_2}"))
-            {
-              document.fileList.action = "index.php?cmd=media&act=delete&archive={MEDIA_ARCHIVE}&path={MEDIA_DO_ACTION_PATH}";
-              document.fileList.submit();
-          }
-      }
-    }
-    else
-    {
+    if (mediaIsChecked("formSelected[]") == true) {
+        if (document.fileList.selectAction.value == "cut") {
+            document.fileList.action = "index.php?cmd=media&act=cut&archive={MEDIA_ARCHIVE}&path={MEDIA_DO_ACTION_PATH}";
+            document.fileList.submit();
+        }
+        if (document.fileList.selectAction.value == "copy") {
+            document.fileList.action = "index.php?cmd=media&act=copy&archive={MEDIA_ARCHIVE}&path={MEDIA_DO_ACTION_PATH}";
+            document.fileList.submit();
+        }
+        if (document.fileList.selectAction.value == "delete") {
+            if (confirm("{TXT_MEDIA_CONFIRM_DELETE_2}")) {
+                document.fileList.action = "index.php?cmd=media&act=delete&archive={MEDIA_ARCHIVE}&path={MEDIA_DO_ACTION_PATH}";
+                document.fileList.submit();
+            }
+        }
+    } else {
         alert("{TXT_MEDIA_MAKE_SELECTION}");
     }
     document.fileList.selectAction.value = "0";
@@ -186,6 +150,8 @@ function openWindow(theURL,winName,features)
 </div>
 
 <form name="fileList" method="post" action="index.php?cmd=media">
+    <input type="hidden" name="deleteMedia" value="0" />
+    <input type="hidden" name="file"   value="" />
     <table width="100%" cellspacing="0" cellpadding="5" border="0" align="center" class="adminlist">
       <tr>
           <th width="16"><div align="center">#</div></th>
@@ -263,7 +229,7 @@ function openWindow(theURL,winName,features)
           <td width="90" style="text-align: right;" nowrap="nowrap">{MEDIA_FILE_TYPE}&nbsp;</td>
             <td width="130" style="text-align: right;" nowrap="nowrap">{MEDIA_FILE_DATE}&nbsp;</td>
             <td width="110" style="text-align: right;" nowrap="nowrap">{MEDIA_FILE_PERM}&nbsp;</td>
-            <td width="50" style="text-align: right;" nowrap="nowrap"><a href="{MEDIA_FILE_EDIT_HREF}" title="{MEDIA_EDIT}"><img src="images/icons/edit.gif" width="16" height="16" alt="edit" style="border: 0px;" /></a>&nbsp;<a href="{MEDIA_FILE_DELETE_HREF}" onclick="return mediaConfirmDelete();" title="{MEDIA_DELETE}"><img src="images/icons/delete.gif" width="16" height="16" alt="delete" style="border: 0px;" /></a></td>
+            <td width="50" style="text-align: right;" nowrap="nowrap"><a href="{MEDIA_FILE_EDIT_HREF}" title="{MEDIA_EDIT}"><img src="images/icons/edit.gif" width="16" height="16" alt="edit" style="border: 0px;" /></a>&nbsp;<a href="javascript:mediaConfirmDelete('{MEDIA_FILE_NAME}');" title="{MEDIA_DELETE}"><img src="images/icons/delete.gif" width="16" height="16" alt="delete" style="border: 0px;" /></a></td>
         </tr>
       <!-- END mediaDirectoryTree -->
       <!-- BEGIN mediaEmptyDirectory -->
