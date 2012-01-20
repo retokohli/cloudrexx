@@ -22,3 +22,6 @@ Shop
 
 Dateiupload
 - Jede Statusmeldung wird pro Datei nur einmal ausgegeben.
+
+News Manager
+- Die Ausgabe des Teaser Texts einer News Meldung erfolgt korrekt. Erfasste Zeilenumbrüche, wie auch hinterlegter HTML-Code wird entsprechend ausgegeben.

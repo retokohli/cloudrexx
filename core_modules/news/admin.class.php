@@ -1063,7 +1063,7 @@ class newsManager extends newsLibrary {
                 'NEWS_STARTDATE'                => $this->valueFromDate($startDate),
                 'NEWS_ENDDATE'                  => $this->valueFromDate($endDate),
                 'NEWS_STATUS'                   => isset($_GET['validate']) ? "checked=\"checked\"" : $status,
-                'NEWS_TEASER_TEXT'              => htmlentities($teaserText, ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWS_TEASER_TEXT'              => contrexx_raw2xhtml($teaserText),
                 'NEWS_TEASER_SHOW_LINK_CHECKED' => $teaserShowLink ? 'checked="checked"' : '',
                 'NEWS_TEASER_TEXT_LENGTH'       => strlen($teaserText),
                 'NEWS_TEASER_IMAGE_PATH'        => htmlentities($objResult->fields['teaser_image_path'], ENT_QUOTES, CONTREXX_CHARSET),

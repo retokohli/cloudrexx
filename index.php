@@ -625,7 +625,7 @@ if (MODULE_INDEX < 2) {
         $calHeadlines = $calHeadlinesObj->getHeadlines();
         $page_content = str_replace('{EVENTS_FILE}', $calHeadlines, $page_content);
         $themesPages['index'] = str_replace('{EVENTS_FILE}', $calHeadlines, $themesPages['index']);
-            $themesPages['sidebar'] = str_replace('{EVENTS_FILE}', $calHeadlines, $themesPages['sidebar']);
+        $themesPages['sidebar'] = str_replace('{EVENTS_FILE}', $calHeadlines, $themesPages['sidebar']);
         $themesPages['home'] = str_replace('{EVENTS_FILE}', $calHeadlines, $themesPages['home']);
         $page_template = str_replace('{EVENTS_FILE}', $calHeadlines, $page_template);
     }
@@ -1107,7 +1107,7 @@ switch ($plainSection) {
         // Set the meta page description to the teaser text if displaying news details
         $teaser = $newsObj->getTeaser();
         if ($teaser !== null) //news details, else getTeaser would return null
-            $page_desc = $teaser;
+            $page_desc = contrexx_raw2xhtml(contrexx_strip_tags($teaser));
         $page_title = $newsObj->newsTitle;
         $page_metatitle = $page_title;
         break;
