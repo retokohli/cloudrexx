@@ -199,7 +199,7 @@ class news extends newsLibrary {
                     }
 
                     $newstitle = contrexx_raw2xhtml($objResult->fields['title']);
-		            $newsTeaser = nl2br(contrexx_raw2xhtml($objResult->fields['teasertext']));
+		            $newsTeaser = nl2br($objResult->fields['teasertext']);
                     $this->_objTpl->setVariable(array(
                        'NEWS_DATE'          => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
                        'NEWS_TITLE'         => $newstitle,
@@ -383,7 +383,7 @@ class news extends newsLibrary {
 
                 $this->_objTpl->setVariable(array(
                            'NEWS_CSS'           => $class,
-                           'NEWS_TEASER'        => contrexx_raw2xhtml($objResult->fields['teasertext']),
+                           'NEWS_TEASER'        => nl2br($objResult->fields['teasertext']),
                            'NEWS_TITLE'         => $newstitle,
                            'NEWS_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
                            'NEWS_DATE'          => date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['newsdate']),
