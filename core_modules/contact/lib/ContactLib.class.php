@@ -67,28 +67,35 @@ class ContactLib
         global $objDatabase;
 
         $formId = intval($formId);
-        if ($formId > 0 && isset($this->_arrRecipients[$formId]) && !$refresh){
-            return $this->_arrRecipients;
+        
+        if ($formId != 0) {
+            if (!empty($this->_arrRecipients[$formId]) && !$refresh) {
+                return $this->_arrRecipients[$formId];
+            }
+        } else {
+            return array();
         }
-        if ($formId == 0 && !empty($this->_arrRecipients) && !$refresh ){
-            return $this->_arrRecipients;
-        }
+        
 		$this->_arrRecipients = array();
-        $objRS = $objDatabase->Execute("
+        
+        $objRS = $objDatabase->Execute('
             SELECT `id`, `id_form`, `name`, `email`, `sort`
-            FROM `".DBPREFIX."module_contact_recipient`".
-            (($formId == 0) ? "" : " WHERE `id_form` = ".$formId).
-            " ORDER BY `sort` ASC");
+            FROM `'.DBPREFIX.'module_contact_recipient`
+            WHERE `id_form` = '.$formId.'
+            ORDER BY `sort` ASC
+        ');
+        
         while (!$objRS->EOF){
-            $this->_arrRecipients[$objRS->fields['id']] = array(
-                'id_form' 	=>  $objRS->fields['id_form'],
-                'name'  	=>  $objRS->fields['name'],
-                'email' 	=>  $objRS->fields['email'],
-                'sort'  	=>  $objRS->fields['sort'],
+            $this->_arrRecipients[$objRS->fields['id_form']][$objRS->fields['id']] = array(
+                'id_form'   =>  $objRS->fields['id_form'],
+                'name'      =>  $objRS->fields['name'],
+                'email'     =>  $objRS->fields['email'],
+                'sort'      =>  $objRS->fields['sort'],
             );
             $objRS->MoveNext();
         }
-        return $this->_arrRecipients;
+        
+        return $this->_arrRecipients[$formId];
     }
 
     function initContactForms($allLanguages = false)
@@ -114,19 +121,19 @@ class ContactLib
         if ($objContactForms !== false) {
             while (!$objContactForms->EOF) {
                 $this->arrForms[$objContactForms->fields['id']] = array(
-                    'name'  => $objContactForms->fields['name'],
-                    'emails'    => $objContactForms->fields['mails'],
-                    'number'    => intval($objContactForms->fields['number']),
-                    'subject'   => $objContactForms->fields['subject'],
-                    'last'      => intval($objContactForms->fields['last']),
-                    'text'      => $objContactForms->fields['text'],
-                    'lang'      => $objContactForms->fields['langId'],
-                    'feedback'  => $objContactForms->fields['feedback'],
-                    'showForm'  => $objContactForms->fields['showForm'],
-                    'useCaptcha'    => $objContactForms->fields['use_captcha'],
+                    'name'              => $objContactForms->fields['name'],
+                    'emails'            => $objContactForms->fields['mails'],
+                    'number'            => intval($objContactForms->fields['number']),
+                    'subject'           => $objContactForms->fields['subject'],
+                    'last'              => intval($objContactForms->fields['last']),
+                    'text'              => $objContactForms->fields['text'],
+                    'lang'              => $objContactForms->fields['langId'],
+                    'feedback'          => $objContactForms->fields['feedback'],
+                    'showForm'          => $objContactForms->fields['showForm'],
+                    'useCaptcha'        => $objContactForms->fields['use_captcha'],
                     'useCustomStyle'    => $objContactForms->fields['use_custom_style'],
-                    'sendCopy'  => $objContactForms->fields['send_copy'],
-                    'recipients' => $this->getRecipients($objContactForms->fields['id'], true)
+                    'sendCopy'          => $objContactForms->fields['send_copy'],
+                    'recipients'        => $this->getRecipients($objContactForms->fields['id'], true)
                 );
 
                 $objContactForms->MoveNext();
