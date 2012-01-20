@@ -68,7 +68,7 @@ class ContactLib
 
         $formId = intval($formId);
         if ($formId > 0 && isset($this->_arrRecipients[$formId]) && !$refresh){
-            return $this->_arrRecipients[];
+            return $this->_arrRecipients;
         }
         if ($formId == 0 && !empty($this->_arrRecipients) && !$refresh ){
             return $this->_arrRecipients;
