@@ -15,3 +15,6 @@ Layout & Design
 
 Aliasverwaltung
 - Es können nun Aliase für Inhaltsseiten mit dem Schlüsselwort "require" definiert werden.
+
+Shop
+- Bestellungen, welche beim Online-Zahlungsvorgang abgebrochen werden, sind nun im Shop Backend mit dem richtigen Status "annulliert" versehen.
