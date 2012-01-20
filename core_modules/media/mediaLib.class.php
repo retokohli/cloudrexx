@@ -289,11 +289,11 @@ class MediaLibrary
     {
         global $objTemplate;
 
-        if (isset($this->getFile) && !empty($this->getFile)) {
-            $objTemplate->setVariable('CONTENT_OK_MESSAGE',$this->_deleteMedia2($this->getFile));
-        } elseif (isset($_POST['formSelected']) && !empty($_POST['formSelected'])) {
+        if (!empty($this->getFile)) {
+            $objTemplate->setVariable('CONTENT_OK_MESSAGE', $this->_deleteMedia2($this->getFile));
+        } elseif (!empty($_POST['formSelected'])) {
             foreach ($_POST['formSelected'] as $file) {
-                $objTemplate->setVariable('CONTENT_OK_MESSAGE',$this->_deleteMedia2($file));
+                $objTemplate->setVariable('CONTENT_OK_MESSAGE', $this->_deleteMedia2($file));
             }
         }
     }
@@ -835,7 +835,7 @@ class MediaLibrary
 
         JS::activate('jquery');
 
-        $delete_msg = $_ARRAYLANG['TXT_MEDIA_DELETE_MSG'];
+        $delete_msg = $_ARRAYLANG['TXT_MEDIA_CONFIRM_DELETE_2'];
         $code       = <<<END
                     <script language="JavaScript" type="text/javascript">
                     /* <![CDATA[ */
@@ -855,12 +855,14 @@ class MediaLibrary
                             prev.focus();
                         }
 
-                        function mediaConfirmDelete()
+                        function mediaConfirmDelete(file)
                         {
                             if(confirm('$delete_msg')) {
-                                return true;
+                                \$J(document.fileList.deleteMedia).attr('value', '1');
+                                \$J(document.fileList.file).attr('value', file);
+                                document.fileList.action = 'index.php?cmd=media&archive=$this->archive&path=$this->webPath';
+                                document.fileList.submit();
                             }
-                            return false;
                         }
         
                         /*
