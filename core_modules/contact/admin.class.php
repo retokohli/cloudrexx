@@ -1667,6 +1667,7 @@ class ContactManager extends ContactLib
                 $required = "";
             }
 
+	    $sourcecode[] = '<div class="contact row">';
             switch ($arrField['type']) {
                 case 'hidden':
                 case 'horizontalLine':
@@ -1809,6 +1810,8 @@ class ContactManager extends ContactLib
                     $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['value']) : '{'.$fieldId.'_VALUE}').'" />';
                     break;
                 }
+
+		$sourcecode[] = '</div>';
         }
 
         if ($preview) {
