@@ -59,6 +59,8 @@ define('ASCMS_MEDIA4_PATH',                 ASCMS_DOCUMENT_ROOT.'/media/archive4
 define('ASCMS_MEDIA4_WEB_PATH',             ASCMS_PATH_OFFSET.'/media/archive4');
 define('ASCMS_MEDIA_PATH',                  ASCMS_DOCUMENT_ROOT.'/media');
 define('ASCMS_MEDIA_WEB_PATH',              ASCMS_PATH_OFFSET.'/media');
+define('ASCMS_MEDIADIR_IMAGES_PATH',        ASCMS_DOCUMENT_ROOT.'/images/mediadir');
+define('ASCMS_MEDIADIR_IMAGES_WEB_PATH',    ASCMS_PATH_OFFSET.'/images/mediadir');
 define('ASCMS_MODULE_PATH',                 ASCMS_DOCUMENT_ROOT.'/modules');
 define('ASCMS_MODULE_WEB_PATH',             ASCMS_PATH_OFFSET.'/modules');
 define('ASCMS_CORE_MODULE_PATH',            ASCMS_DOCUMENT_ROOT.'/core_modules');
