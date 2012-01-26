@@ -787,12 +787,6 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         $strUpdateDate = mktime();
         $intUserId = intval($objFWUser->objUser->getId());
         $strLastIp = contrexx_addslashes($_SERVER['REMOTE_ADDR']);
-
-
-        // add default language english
-        if (!in_array(2, $arrData['translationStatus'])) {
-            $arrData['translationStatus'][] = 2;
-        }
         $strTransStatus = contrexx_addslashes(join(",", $arrData['translationStatus']));
 
 
@@ -848,36 +842,31 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
             $strValidateDate = $intConfirmed == 1 ? mktime() : 0;
 
             //insert new entry
-            $objInsertEntry = $objDatabase->Execute("
-                INSERT INTO
-                    ".DBPREFIX."module_".$this->moduleTablePrefix."_entries
-                SET
-                    `form_id`='".$intFormId."',
-                    `create_date`='".$strCreateDate."',
-                    `validate_date`='".$strValidateDate."',
-                    `update_date`='".$strValidateDate."',
-                    `added_by`='".$intUserId."',
-                    `lang_id`='".$_LANGID."',
-                    `hits`='0',
-                    `last_ip`='".$strLastIp."',
-                    `confirmed`='".$intConfirmed."',
-                    `active`='".$intActive."',
-                    `duration_type`='".$intDurationType."',
-                    `duration_start`='".$intDurationStart."',
-                    `duration_end`='".$intDurationEnd."',
-                    `duration_notification`='0',
-                    `translation_status`='".$strTransStatus."',
-                    `ready_to_confirm`='".$intReadyToConfirm."',
-                    updated_by=".$intUserId.",
-                    popular_hits=0,
-                    popular_date='".$strValidateDate."'
-            ");
-
-            if($objInsertEntry !== false) {
-                $intId = $objDatabase->Insert_ID();
-            } else {
+            $objResult = $objDatabase->Execute("
+                INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_entries
+                   SET `form_id`='".$intFormId."',
+                       `create_date`='".$strCreateDate."',
+                       `validate_date`='".$strValidateDate."',
+                       `update_date`='".$strValidateDate."',
+                       `added_by`='".$intUserId."',
+                       `lang_id`='".$_LANGID."',
+                       `hits`='0',
+                       `last_ip`='".$strLastIp."',
+                       `confirmed`='".$intConfirmed."',
+                       `active`='".$intActive."',
+                       `duration_type`='".$intDurationType."',
+                       `duration_start`='".$intDurationStart."',
+                       `duration_end`='".$intDurationEnd."',
+                       `duration_notification`='0',
+                       `translation_status`='".$strTransStatus."',
+                       `ready_to_confirm`='".$intReadyToConfirm."',
+                       `updated_by`=".$intUserId.",
+                       `popular_hits`=0,
+                       `popular_date`='".$strValidateDate."'");
+            if (!$objResult) {
                 return false;
             }
+            $intId = $objDatabase->Insert_ID();
         } else {
         	self::getEntries($intId);
         	$intOldReadyToConfirm = $this->arrEntries[$intId]['entryReadyToConfirm'];
@@ -902,7 +891,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 $arrAdditionalQuery[] = "`added_by`='".intval($arrData['userId'])."'";
             }
 
-            if(intval($arrData['durationResetNotification']) == 1) {
+            if (!empty($arrData['durationResetNotification'])) {
                 $arrAdditionalQuery[] = "`duration_notification`='0'";
             }
 
@@ -910,200 +899,223 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
             $strValidateDate = $intConfirmed == 1 ? mktime() : 0;
 
             $objUpdateEntry = $objDatabase->Execute("
-                UPDATE
-                    ".DBPREFIX."module_".$this->moduleTablePrefix."_entries
-                SET
-                    `update_date`='".$strUpdateDate."',
-                    `translation_status`='".$strTransStatus."',
-                    `ready_to_confirm`='".$intReadyToConfirm."',
-                    ".$strAdditionalQuery."
-                WHERE
-                    `id`='".$intId."'
-            ");
+                UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_entries
+                   SET `update_date`='".$strUpdateDate."',
+                       `translation_status`='".$strTransStatus."',
+                       `ready_to_confirm`='".$intReadyToConfirm."',
+                       $strAdditionalQuery
+                 WHERE `id`='$intId'");
 
-            if($objUpdateEntry !== false) {
-            	$objShowIn = $objDatabase->Execute("SELECT inputfield.`id` AS `id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS inputfield WHERE (inputfield.`type` != 16 AND inputfield.`type` != 17) AND (inputfield.`show_in` = '".$intShowIn."' OR inputfield.`show_in` = '1')");
-            	if($objShowIn !== false) {
-                    while (!$objShowIn->EOF) {
-                    	$arrDeletableIds[] = $objShowIn->fields['id'];
-                    	$objShowIn->MoveNext();
-                    }
-            	}
-
-                $objDeleteNames = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE entry_id='".$intId."' AND field_id IN (".join(",",$arrDeletableIds).")");
-                if($objDeleteNames !== false) {
-                    $objDeleteCategories = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories WHERE entry_id='".$intId."'");
-                    if($objDeleteCategories !== false) {
-                        $objDeleteLevels = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels WHERE entry_id='".$intId."'");
-                        if($objDeleteLevels === false) {
-                            return false;
-                        }
-                    } else {
-                       return false;
-                    }
-                } else {
-                    return false;
-                }
-            } else {
+            if (!$objUpdateEntry) {
                 return false;
             }
+            $objDeleteCategories = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories WHERE entry_id='".$intId."'");
+            $objDeleteLevels = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels WHERE entry_id='".$intId."'");
         }
 
-        foreach ($this->getInputfields() as $key => $arrInputfield) {
-            if($arrInputfield['id'] != 1 && $arrInputfield['id'] != 2 && $arrInputfield['type'] != 16 && $arrInputfield['type'] != 18 && $arrInputfield['type'] != 30  && ($arrInputfield['show_in'] == $intShowIn || $arrInputfield['show_in'] == 1)) {
-                if(!empty($arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']]) && $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']] != $arrInputfield['default_value'][$_LANGID]) {
-                    $strType = $arrInputfield['type_name'];
-                    $strInputfieldClass = "mediaDirectoryInputfield".ucfirst($strType);
 
-                    try {
-                        $objInputfield = safeNew($strInputfieldClass);
-                        if($arrInputfield['type_multi_lang'] == 1) {  
-                            foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-                                $intLangId = $arrLang['id'];         
-                                
-                                if((empty($arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$intLangId])) || $intLangId == $_LANGID || $arrInputfield['type_dynamic'] == 1) {  
-                                    if($arrInputfield['type_dynamic'] == 1) {
-                                        $arrDefault = array();     
-                                        
-                                        foreach($arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][0] as $intKey => $arrValues) {           
-                                            $arrNewDefault = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$_LANGID][$intKey];
-                                            $arrOldDefault = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']]['old'][$intKey];  
-                                            $arrNewValues = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$intLangId][$intKey];      
-                                            
-                                            foreach($arrValues as $strKey => $strMasterValue) {        
-                                                if($intLangId == $_LANGID) {     
-                                                    if($arrNewDefault[$strKey] != $strMasterValue) {     
-                                                        if($strMasterValue != $arrOldDefault[$strKey] && $arrNewDefault[$strKey] == $arrOldDefault[$strKey]) {      
-                                                            $arrDefault[$intKey][$strKey] = $strMasterValue;                                  
-                                                        } else { 
-                                                            $arrDefault[$intKey][$strKey] = $arrNewDefault[$strKey];                                  
-                                                        }
-                                                    } else {                                                                                      
-                                                        $arrDefault[$intKey][$strKey] = $arrNewDefault[$strKey];  
-                                                    }
-                                                } else {      
-                                                    if($arrNewValues[$strKey] == '') {      
-                                                        $arrDefault[$intKey][$strKey] = $strMasterValue;  
-                                                    } else {    
-                                                        $arrDefault = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$intLangId]; 
-                                                    }
-                                                }
-                                                
-                                                
-                                            }
-                                            
-                                            $strDefault = $arrDefault;             
-                                        }      
-                                    } else {
-                                        $strMaster = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][0];
-                                        $strOldDefault = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']]['old'];
-                                        $strNewDefault = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$_LANGID]; 
-                                        
-                                        if($strNewDefault != $strMaster) {
-                                            if($strMaster != $strOldDefault && $strNewDefault == $strOldDefault) {
-                                                $strDefault = $strMaster;
-                                            } else {
-                                                $strDefault = $strNewDefault;
-                                            }
-                                        } else {
-                                            $strDefault = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$_LANGID];
-                                        }
-                                    }  
-                                    if($arrInputfield['type_dynamic'] == 1) {
-                                        $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault, $intLangId);    
-                                    } else {
-                                        $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault);
-                                    }
-									
-                                } else {       
-                                    $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$intLangId]);
-                                }                                           
-                                
-                                $objInsertInputfieldData = $objDatabase->Execute("
-                                    INSERT INTO
-                                        ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
-                                    SET
-                                        `entry_id`='".intval($intId)."',
-                                        `lang_id`='".intval($intLangId)."',
-                                        `form_id`='".intval($intFormId)."',
-                                        `field_id`='".intval($arrInputfield['id'])."',
-                                        `value`='".$strInputfieldValue."'
-                                    ");
+        //////////////////////
+        // STORE ATTRIBUTES //
+        //////////////////////
 
-                                if($objInsertInputfieldData === false) {
-                                    return false;
-                                }
-                            }
-                        } else {
-                            $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']]);
+        $error = false;
 
-                            $objInsertInputfieldData = $objDatabase->Execute("
-                                INSERT INTO
-                                    ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
-                                SET
-                                    `entry_id`='".intval($intId)."',
-                                    `lang_id`='".intval($_LANGID)."',
-                                    `form_id`='".intval($intFormId)."',
-                                    `field_id`='".intval($arrInputfield['id'])."',
-                                    `value`='".$strInputfieldValue."'
-                                ");
-
-                            if($objInsertInputfieldData === false) {
-                                return false;
-                            }
-                        }
-                    } catch (Exception $e) {
-                        echo "Error: ".$e->getMessage();
+        foreach ($this->getInputfields() as $arrInputfield) {
+            // store selected category (field = category)
+            if ($arrInputfield['id'] == 1) {
+                foreach ($arrData['selectedCategories'] as $intCategoryId) {
+                    $objResult = $objDatabase->Execute("
+                    INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories
+                       SET `entry_id`='".intval($intId)."',
+                           `category_id`='".intval($intCategoryId)."'");
+                    if (!$objResult) {
+                        DBG::msg($objDatabase->ErrorMsg());
+                        $error = true;
                     }
                 }
-            } else {
-                if($arrInputfield['id'] == 2) {
-                    if($this->arrSettings['settingsShowLevels'] == 1) {
-                        foreach ($arrData['selectedLevels'] as $key => $intLevelId) {
-                            $objInsertLevel = $objDatabase->Execute("
-                            INSERT INTO
-                                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels
-                            SET
-                                `entry_id`='".intval($intId)."',
-                                `level_id`='".intval($intLevelId)."'
-                            ");
 
-                            if($objInsertLevel === false) {
-                                return false;
+                continue;
+            }
+
+            // store selected level (field = level)
+            if ($arrInputfield['id'] == 2) {
+                if ($this->arrSettings['settingsShowLevels'] == 1) {
+                    foreach ($arrData['selectedLevels'] as $intLevelId) {
+                        $objResult = $objDatabase->Execute("
+                        INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels
+                           SET `entry_id`='".intval($intId)."',
+                               `level_id`='".intval($intLevelId)."'");
+                        if (!$objResult) {
+                            DBG::msg($objDatabase->ErrorMsg());
+                            $error = true;
+                        }
+                    }
+                }
+
+                continue;
+            }
+
+            // skip meta attributes or ones that are out of scope (frontend/backend)
+            if (   // type = 'add_step'
+                   $arrInputfield['type'] == 16 
+                   // type = 'label'
+                || $arrInputfield['type'] == 18 
+                   // type = 'title'
+                || $arrInputfield['type'] == 30 
+                   // show_in is neither FRONTEND or BACKEND ($intShowIn = 2|3) nor FRONTEND AND BACKEND (show_in=1)
+                || ($arrInputfield['show_in'] != $intShowIn && $arrInputfield['show_in'] != 1)
+            ) {
+                continue;
+            }
+
+            // truncate attribute's data ($arrInputfield) from database if it's VALUE is not set (empty) or set to it's default value
+            if (   empty($arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']])
+                || $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']] == $arrInputfield['default_value'][$_LANGID]
+            ) {
+                $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE entry_id='".$intId."' AND field_id='".intval($arrInputfield['id'])."'");
+                if (!$objResult) {
+                    DBG::msg($objDatabase->ErrorMsg());
+                    $error = true;
+                }
+
+                continue;
+            }
+
+            // initialize attribute
+            $strType = $arrInputfield['type_name'];
+            $strInputfieldClass = "mediaDirectoryInputfield".ucfirst($strType);
+            try {
+                $objInputfield = safeNew($strInputfieldClass);
+            } catch (Exception $e) {
+                DBG::msg($e->getMessage());
+                $error = true;
+
+                continue;
+            }
+
+            // attribute is non-i18n
+            if ($arrInputfield['type_multi_lang'] == 0) {
+                try {
+                    $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']]);
+                    $objResult = $objDatabase->Execute("
+                        INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
+                           SET `entry_id`='".intval($intId)."',
+                               `lang_id`='".intval($_LANGID)."',
+                               `form_id`='".intval($intFormId)."',
+                               `field_id`='".intval($arrInputfield['id'])."',
+                               `value`='".contrexx_raw2db($strInputfieldValue)."'
+              ON DUPLICATE KEY
+                        UPDATE `value`='".contrexx_raw2db($strInputfieldValue)."'");
+                    if (!$objResult) {
+                        throw new Exception($objDatabase->ErrorMsg());
+                    }
+                } catch (Exception $e) {
+                    DBG::msg($e->getMessage());
+                    $error = true;
+                }
+
+                continue;
+            }
+
+            // delete attribute's data of languages that are no longer in use
+            $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE entry_id='".$intId."' AND field_id = '".intval($arrInputfield['id'])."' AND lang_id NOT IN (".join(",", array_keys($this->arrFrontendLanguages)).")");
+
+            // attribute is i18n
+            foreach ($this->arrFrontendLanguages as $arrLang) {
+                try {
+                    $intLangId = $arrLang['id'];
+
+                    // if the attribute is of type dynamic (meaning it can have an unlimited set of childs (references))
+                    if ($arrInputfield['type_dynamic'] == 1) {
+                        $arrDefault = array();
+                        foreach ($arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][0] as $intKey => $arrValues) {
+                            $arrNewDefault = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$_LANGID][$intKey];
+                            $arrOldDefault = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']]['old'][$intKey];
+                            $arrNewValues = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$intLangId][$intKey];
+                            foreach ($arrValues as $strKey => $strMasterValue) {
+                                if ($intLangId == $_LANGID) {
+                                    if ($arrNewDefault[$strKey] != $strMasterValue) {
+                                        if ($strMasterValue != $arrOldDefault[$strKey] && $arrNewDefault[$strKey] == $arrOldDefault[$strKey]) {
+                                            $arrDefault[$intKey][$strKey] = $strMasterValue;
+                                        } else {
+                                            $arrDefault[$intKey][$strKey] = $arrNewDefault[$strKey];
+                                        }
+                                    } else {
+                                        $arrDefault[$intKey][$strKey] = $arrNewDefault[$strKey];
+                                    }
+                                } else {
+                                    if ($arrNewValues[$strKey] == '') {
+                                        $arrDefault[$intKey][$strKey] = $strMasterValue;
+                                    } else {
+                                        $arrDefault = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$intLangId];
+                                    }
+                                }
                             }
+                            $strDefault = $arrDefault;
                         }
+                        $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault, $intLangId);
+                    } elseif (
+                        // attribute's VALUE of certain frontend language ($intLangId) is empty
+                        empty($arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$intLangId])
+                        // or the process is parsing the user's current interface language
+                        || $intLangId == $_LANGID
+                    ) {
+                            $strMaster =
+                                (isset($arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][0])
+                                  ? $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][0]
+                                  : null);
+                            $strOldDefault =
+                                (isset($arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']]['old'])
+                                  ? $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']]['old']
+                                  : null);
+                            $strNewDefault = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$_LANGID];
+                            if ($strNewDefault != $strMaster) {
+                                if ($strMaster != $strOldDefault && $strNewDefault == $strOldDefault) {
+                                    $strDefault = $strMaster;
+                                } else {
+                                    $strDefault = $strNewDefault;
+                                }
+                            } else {
+                                $strDefault = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$_LANGID];
+                            }
+                            $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault);
+                    } else {
+                        // regular attribute get parsed
+                        $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$intLangId]);
                     }
-                } else if ($arrInputfield['id'] == 1) {
-                    foreach ($arrData['selectedCategories'] as $key => $intCategoryId) {
-                        $objInsertCategory = $objDatabase->Execute("
-                        INSERT INTO
-                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories
-                        SET
-                            `entry_id`='".intval($intId)."',
-                            `category_id`='".intval($intCategoryId)."'
-                        ");
 
-                        if($objInsertCategory === false) {
-                            return false;
-                        }
+                    $objResult = $objDatabase->Execute("
+                        INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
+                           SET `entry_id`='".intval($intId)."',
+                               `lang_id`='".intval($intLangId)."',
+                               `form_id`='".intval($intFormId)."',
+                               `field_id`='".intval($arrInputfield['id'])."',
+                               `value`='".contrexx_raw2db($strInputfieldValue)."'
+              ON DUPLICATE KEY
+                        UPDATE `value`='".contrexx_raw2db($strInputfieldValue)."'");
+                    if (!$objResult) {
+                        throw new Exception($objDatabase->ErrorMsg());
                     }
+                } catch (Exception $e) {
+                    DBG::msg($e->getMessage());
+                    $error = true;
                 }
             }
         }
 
         if(empty($intEntryId)) {
         	if($intReadyToConfirm == 1) {
-                $objMail = new mediaDirectoryMail(1, $intId);
+                new mediaDirectoryMail(1, $intId);
         	}
-            $objMail = new mediaDirectoryMail(2, $intId);
+            new mediaDirectoryMail(2, $intId);
         } else {
             if($intReadyToConfirm == 1 && $intOldReadyToConfirm == 0) {
-                $objMail = new mediaDirectoryMail(1, $intId);
+                new mediaDirectoryMail(1, $intId);
             }
-            $objMail = new mediaDirectoryMail(6, $intId);
+            new mediaDirectoryMail(6, $intId);
         }
 
-        return true;
+        return $intId;
     }
 
 

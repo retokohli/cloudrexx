@@ -313,7 +313,7 @@ class mediaDirectoryLibrary
 	                $arrData['frontend'] = intval($objLanguages->fields['frontend']);
 	                $arrData['is_default'] = htmlspecialchars($objLanguages->fields['is_default'], ENT_QUOTES, CONTREXX_CHARSET);
 
-	                $arrLanguages[] = $arrData;
+                    $arrLanguages[$objLanguages->fields['id']] = $arrData;
             	}
 
                 $objLanguages->MoveNext();

@@ -17,7 +17,7 @@ Modul: Inseratemarkt
 Aliasverwaltung
 - Es können nun Aliase für Inhaltsseiten mit dem Schlüsselwort "require" definiert werden.
 
-Shop
+Modul: Shop
 - Die Versandart wird im Frontend korrekt gesetzt, wenn nur eine definiert ist.
 
 Dateiupload
@@ -26,14 +26,15 @@ Dateiupload
 News Manager
 - Die Ausgabe des Teaser Texts einer News Meldung erfolgt korrekt. Erfasste Zeilenumbrüche, wie auch hinterlegter HTML-Code wird entsprechend ausgegeben.
 
-Kontakte
+Kontakte Manager
 - Die Benachrichtigung wird nun korrekt an die Empfängeradressen der Auswahlliste versendet.
 
-Medienverzeichnis
+Modul: Medienverzeichnis
 - Der Dateiupload funktioniert nun auch im Frontend.
+- Tritt ein Fehler während der Aktualisierung eines Eintrages auf, gehen die Daten nicht verloren.
 
-Kalender
+Modul: Kalender
 - Der Eintrag wird nun auch gespeichert, wenn die Option "Benachrichtigung aktivieren" nicht gewählt ist.
 
-Media
+Media Manager
 - Optimierter Dateiupload im Media Manager.
