@@ -362,19 +362,21 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                 //save entry data
                 if(isset($_POST['submitEntryModfyForm']) && intval($_POST['formId']) != 0) {
                     $objEntry = new mediaDirectoryEntry();
-                    $status = $objEntry->saveEntry($_POST, intval($_POST['entryId']));
+                    $intEntryId = intval($_POST['entryId']);
+                    $intEntryId = $objEntry->saveEntry($_POST, $intEntryId);
 
                     if(!empty($_POST['entryId'])) {
-                        if($status == true) {
-                            $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_EDITED'];
+                        if($intEntryId) {
+                            $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY'].' '.$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_EDITED'];
                         } else {
-                            $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_EDITED'];
+                            $intEntryId = intval($_POST['entryId']);
+                            $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY'].' '.$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_EDITED'];
                         }
                     } else {
-                        if($status == true) {
-                            $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_ADDED'];
+                        if($intEntryId) {
+                            $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY'].' '.$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_ADDED'];
                         } else {
-                            $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_ADDED'];
+                            $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY'].' '.$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_ADDED'];
                         }
                     }
                 }
