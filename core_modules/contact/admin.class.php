@@ -104,7 +104,7 @@ class ContactManager extends ContactLib
             'recipient'     => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'],
         );
 
-	$this->_arrUserAccountData = array(
+        $this->_arrUserAccountData = array(
             'access_picture'       => $_ARRAYLANG['TXT_CONTACT_PICTURE'],
             'access_gender'        => $_ARRAYLANG['TXT_CONTACT_GENDER'],
             'access_title'         => $_ARRAYLANG['TXT_CONTACT_TITLE'],
@@ -124,7 +124,7 @@ class ContactManager extends ContactLib
             'access_profession'    => $_ARRAYLANG['TXT_CONTACT_PROFESSION'],
             'access_interests'     => $_ARRAYLANG['TXT_CONTACT_INTERESTS'],
             'access_signature'     => $_ARRAYLANG['TXT_CONTACT_SIGNATURE']
-	);
+        );
 
         $this->initContactForms();
         $this->initCheckTypes();
@@ -1433,8 +1433,8 @@ class ContactManager extends ContactLib
                     }
 
                     $arrFields[$id]['lang'][$langId] = array(
-                        'name'	=> contrexx_input2raw($fieldNames[$id][$langId]),
-                        'value'	=> $fieldValue
+                        'name'  => contrexx_input2raw($fieldNames[$id][$langId]),
+                        'value' => $fieldValue
                     );
                 }
             }
@@ -1667,7 +1667,7 @@ class ContactManager extends ContactLib
                 $required = "";
             }
 
-	    $sourcecode[] = '<div class="contact row">';
+            $sourcecode[] = '<div class="contact row">';
             switch ($arrField['type']) {
                 case 'hidden':
                 case 'horizontalLine':
@@ -1811,7 +1811,7 @@ class ContactManager extends ContactLib
                     break;
                 }
 
-		$sourcecode[] = '</div>';
+                $sourcecode[] = '</div>';
         }
 
         if ($preview) {
@@ -2305,4 +2305,3 @@ class ContactManager extends ContactLib
         $this->em->flush();
     }
 }
-
