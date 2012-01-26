@@ -128,7 +128,7 @@ class mediaDirectoryInputfieldReferences extends mediaDirectoryLibrary
                 $strElementId =  $this->moduleName.'ReferencesElement_'.$intId.'_'; 
                 
                 $strInputfield = <<< EOF
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
 /* <![CDATA[ */                      
   
 var nextReferenceId = $intNextElementId;
@@ -167,7 +167,7 @@ EOF;
                         $strInputfield .= '<div id="'.$this->moduleName.'Inputfield_'.$intId.'_'.$intKey.'_Minimized" style="display: block;">';
                         $strInputfield .= '<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][0]['.$intKey.'][\'title\']" id="'.$this->moduleName.'Inputfield_'.$intId.'_'.$intKey.'_0_title" value="'.$arrValue[0][$intKey]['title'].'" style="width: 300px" onfocus="this.select();" />'; 
                         $strInputfield .= '<br />'; 
-                        $strInputfield .= '<textarea name="'.$this->moduleName.'Inputfield['.$intId.'][0]['.$intKey.'][\'desc\']" id="'.$this->moduleName.'Inputfield_'.$intId.'_'.$intKey.'_0_title" style="width: 300px; height: 60px;" onfocus="this.select();" />'.$arrValue[0][$intKey]['desc'].'</textarea>&nbsp;<a href="javascript:ExpandMinimizeMultiple(\''.$intId.'\', \''.$intKey.'\');">'.$_ARRAYLANG['TXT_MEDIADIR_MORE'].'&nbsp;&raquo;</a>';  
+                        $strInputfield .= '<textarea name="'.$this->moduleName.'Inputfield['.$intId.'][0]['.$intKey.'][\'desc\']" id="'.$this->moduleName.'Inputfield_'.$intId.'_'.$intKey.'_0_title" style="width: 300px; height: 60px;" onfocus="this.select();" />'.$arrValue[0][$intKey]['desc'].'</textarea>&nbsp;<a href="javascript:ExpandMinimizeMultiple(\''.$intId.'\', \''.$intKey.'\');">'.$_ARRAYLANG['TXT_MEDIADIR_MORE'].'&nbsp;&raquo;</a>';
                         $strInputfield .= '</div>';  
 
                         $strInputfield .= '<div id="'.$this->moduleName.'Inputfield_'.$intId.'_'.$intKey.'_Expanded" style="display: none;">';
@@ -251,7 +251,7 @@ EOF;
             $arrValues[] = join("##", $arrValuesTmp);
         }
                  
-        $strValue = contrexx_addslashes(contrexx_strip_tags(join("||", $arrValues)));
+        $strValue = contrexx_strip_tags(contrexx_input2raw(join("||", $arrValues)));
         return $strValue;
     }
 

@@ -132,7 +132,7 @@ class mediaDirectoryInputfieldDropdown extends mediaDirectoryLibrary implements 
 
     function saveInputfield($intInputfieldId, $strValue)
     {
-        $strValue = contrexx_addslashes($strValue);
+        $strValue = contrexx_input2raw($strValue);
         return $strValue;
     }
 

@@ -9,15 +9,28 @@
  */
 
 /**
- * Includes
+ * @ignore
  */
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface.php';
+/**
+ * @ignore
+ */
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
 
+/**
+ * Media  Directory Inputfield Accounts Class
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_mediadir
+ * @todo        Edit PHP DocBlocks!
+ */
 class mediaDirectoryInputfieldAccounts extends mediaDirectoryLibrary implements inputfield
 {
-    public $arrPlaceholders = array('TXT_MEDIADIR_INPUTFIELD_NAME','MARKETPLACE_INPUTFIELD_VALUE');
-
+    public $arrPlaceholders = array(
+        'TXT_MEDIADIR_INPUTFIELD_NAME',
+        'MARKETPLACE_INPUTFIELD_VALUE'
+    );
 
 
     /**
@@ -33,7 +46,7 @@ class mediaDirectoryInputfieldAccounts extends mediaDirectoryLibrary implements 
 
     function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
-        global $objDatabase, $_LANGID, $objInit, $_ARRAYLANG;
+        global $objDatabase, $objInit, $_ARRAYLANG;
 
         $intId = intval($arrInputfield['id']);
 
@@ -61,8 +74,8 @@ class mediaDirectoryInputfieldAccounts extends mediaDirectoryLibrary implements 
 
 				$arrValue = explode(',',$strValue);
 
-                $strFormType = empty($arrInputfield['default_value'][$_LANGID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$_LANGID];
-                $arrSelectorOptions = array();
+                //$strFormType = empty($arrInputfield['default_value'][$_LANGID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$_LANGID];
+                //$arrSelectorOptions = array();
 
                 $strSelectorSelected = "";
                 $strSelectorNotSelected = "";
@@ -73,8 +86,9 @@ class mediaDirectoryInputfieldAccounts extends mediaDirectoryLibrary implements 
                     //$userFilter = array('contact_user_id' => FWUser::getFWUserObject()->objUser->getId(), 'id' => FWUser::getFWUserObject()->objUser->getId());
                 }
 
-                $arrSelectedList = array();
-                if ($objUser = FWUser::getFWUserObject()->objUser->getUsers($userFilter)) {
+                //$arrSelectedList = array();
+                $objUser = FWUser::getFWUserObject()->objUser->getUsers($userFilter, null, null, array('company', 'firstname', 'lastname'));
+                if ($objUser) {
                     while (!$objUser->EOF) {
                         $userName = $objUser->getProfileAttribute('company').', '
                                     .$objUser->getProfileAttribute('lastname').' '
@@ -111,11 +125,11 @@ class mediaDirectoryInputfieldAccounts extends mediaDirectoryLibrary implements 
 
                 if($objInit->mode == 'backend') {
                     $strAddNewButton = '';
-                    $strRefreshNewButton = '';
+                    //$strRefreshNewButton = '';
                     //$strStyle = 'style="overflow: auto; border: 1px solid #0A50A1; background-color: #ffffff; width: 298px; height: 200px; float: left; list-style: none; padding: 0px; margin: 0px 5px 0px 0px;"';
                 } else {
                     $strAddNewButton = '<a rel="shadowbox['.$intId.'];height=500;width=650;options={onClose:new Function(\'refreshSelector_'.$intId.'(\\\''.$intId.'\\\', \\\''.$this->moduleName.'Inputfield_deselected_'.$intId.'\\\', \\\''.$this->moduleName.'Inputfield_'.$intId.'\\\',  \\\''.$_GET['section'].'\\\', \\\''.$_GET['cmd'].'\\\', \\\''.$intEntryId.'\\\')\')}" href="index.php?section=marketplace&amp;cmd=adduser"><img src="cadmin/images/icons/user_add.gif" style="cursor: pointer;  border: 0px;" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_ADD_ENTRY'].'</a>';
-                    $strRefreshNewButton = '<br /><a href="javascript:refreshSelector_'.$intId.'(\''.$intId.'\', \''.$this->moduleName.'Inputfield_deselected_'.$intId.'\', \''.$this->moduleName.'Inputfield_'.$intId.'\', \''.$_GET['section'].'\', \''.$_GET['cmd'].'\', \''.$intEntryId.'\');"><img src="cadmin/images/icons/refresh.gif" style="cursor: pointer;  border: 0px;" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_REFRESH'].'</a>';
+                    //$strRefreshNewButton = '<br /><a href="javascript:refreshSelector_'.$intId.'(\''.$intId.'\', \''.$this->moduleName.'Inputfield_deselected_'.$intId.'\', \''.$this->moduleName.'Inputfield_'.$intId.'\', \''.$_GET['section'].'\', \''.$_GET['cmd'].'\', \''.$intEntryId.'\');"><img src="cadmin/images/icons/refresh.gif" style="cursor: pointer;  border: 0px;" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_REFRESH'].'</a>';
                     //$strStyle = 'style="overflow: auto; float: left; list-style: none; padding: 0px; margin: 0px 5px 0px 0px;"';
                 }
 
@@ -262,9 +276,9 @@ EOF;
                 $strInputfield .= '</div>';
                 //$strInputfield .= '</select><br /><input class="'.$this->moduleName.'SelectorSearch" type="text" onclick="this.value=\'\';" onkeyup="searchElement(\''.$this->moduleName.'Inputfield_deselected_'.$intId.'\', this.value);" value="Suchbegriff..."  style="width: 178px;"/></div>';
                 $strInputfield .= '<div class="'.$this->moduleName.'SelectorCenter" style="float: left; height: 100px; padding: 60px 10px 0px 10px;">';
-                $strInputfield .= '<input style="width: 40px; min-width: 40px;" value=" &gt;&gt; " name="addElement" onclick="moveElement(document.entryModfyForm.elements[\''.$this->moduleName.'Inputfield_deselected_'.$intId.'\'],document.entryModfyForm.elements[\''.$this->moduleName.'Inputfield_'.$intId.'\'],addElement,removeElement);" type="button">';
+                $strInputfield .= '<input style="width: 40px; min-width: 40px;" value=" &gt;&gt; " name="addElement" onclick="moveElement(document.entryModfyForm.elements[\''.$this->moduleName.'Inputfield_deselected_'.$intId.'\'],document.entryModfyForm.elements[\''.$this->moduleName.'Inputfield_'.$intId.'\'],addElement,removeElement);" type="button" />';
                 $strInputfield .= '<br />';
-                $strInputfield .= '<input style="width: 40px; min-width: 40px;" value=" &lt;&lt; " name="removeElement" onclick="moveElement(document.entryModfyForm.elements[\''.$this->moduleName.'Inputfield_'.$intId.'\'],document.entryModfyForm.elements[\''.$this->moduleName.'Inputfield_deselected_'.$intId.'\'],removeElement,addElement);" type="button">';
+                $strInputfield .= '<input style="width: 40px; min-width: 40px;" value=" &lt;&lt; " name="removeElement" onclick="moveElement(document.entryModfyForm.elements[\''.$this->moduleName.'Inputfield_'.$intId.'\'],document.entryModfyForm.elements[\''.$this->moduleName.'Inputfield_deselected_'.$intId.'\'],removeElement,addElement);" type="button" />';
                 $strInputfield .= '</div>';
                 $strInputfield .= '<div id="'.$this->moduleName.'Selector_'.$intId.'_Right" class="'.$this->moduleName.'SelectorRight" style="float: left; height: auto !important;"><select id="'.$this->moduleName.'Inputfield_'.$intId.'" name="'.$this->moduleName.'Inputfield['.$intId.'][]" size="12" multiple="multiple" style="width: 240px;">';
                 $strInputfield .= $strSelectorSelected;
@@ -272,7 +286,7 @@ EOF;
                 $strInputfield .= '</div>';
 
                 $strInputfield .= <<<EOF
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
 </script>
 EOF;
                
@@ -308,8 +322,8 @@ EOF;
 
                 $arrValue = explode(',',$strValue);
 
-                $strFormType = empty($arrInputfield['default_value'][$_LANGID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$_LANGID];
-                $arrSelectorOptions = array();
+                //$strFormType = empty($arrInputfield['default_value'][$_LANGID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$_LANGID];
+                //$arrSelectorOptions = array();
 
                 $strSelectorNotSelected = "";
                 $strSelectorSelected = "";
@@ -320,8 +334,9 @@ EOF;
                     //$userFilter = array('contact_user_id' => FWUser::getFWUserObject()->objUser->getId(), 'id' => FWUser::getFWUserObject()->objUser->getId());
                 }
 
-                $arrSelectedList = array();
-                if ($objUser = FWUser::getFWUserObject()->objUser->getUsers($userFilter)) {
+                //$arrSelectedList = array();
+                $objUser = FWUser::getFWUserObject()->objUser->getUsers($userFilter, null, null, array('company', 'firstname', 'lastname'));
+                if ($objUser) {
                     while (!$objUser->EOF) {
                         $userName = $objUser->getProfileAttribute('company').', '
                                     .$objUser->getProfileAttribute('lastname').' '
@@ -354,7 +369,6 @@ EOF;
     }
 
 
-
     /*function saveInputfield($intInputfieldId, $strValue)
     {
         $strValue = join(',', array_map('intval', split(',', $strValue)));
@@ -362,7 +376,7 @@ EOF;
     }*/
     function saveInputfield($intInputfieldId, $arrValue)
     {
-        $strValue = contrexx_addslashes(contrexx_strip_tags(join(",", $arrValue)));
+        $strValue = contrexx_strip_tags(contrexx_input2raw(join(",", $arrValue)));
         return $strValue;
     }
 
@@ -371,15 +385,11 @@ EOF;
     {
         global $objDatabase;
 
-        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
-
-        if($objDeleteEntry !== false) {
-            return true;
-        } else {
-            return false;
-        }
+        return (boolean)$objDatabase->Execute("
+            DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
+             WHERE `entry_id`='".intval($intEntryId)."'
+               AND  `field_id`='".intval($intIputfieldId)."'");
     }
-
 
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
@@ -387,12 +397,12 @@ EOF;
         global $objDatabase, $_LANGID, $_ARRAYLANG;
 
         $intId = intval($arrInputfield['id']);
-        $objEntryDefaultLang = $objDatabase->Execute("SELECT `lang_id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE id=".intval($intEntryId)." LIMIT 1");
-        $intEntryDefaultLang = intval($objEntryDefaultLang->fields['lang_id']);
-	$strValueOutputCustom = '';
-	$strValueOutput = '';
+        //$objEntryDefaultLang = $objDatabase->Execute("SELECT `lang_id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE id=".intval($intEntryId)." LIMIT 1");
+        //$intEntryDefaultLang = intval($objEntryDefaultLang->fields['lang_id']);
+        $strValueOutputCustom = '';
+        $strValueOutput = '';
 
-        if($this->arrSettings['settingsTranslationStatus'] == 1) {
+        /*if($this->arrSettings['settingsTranslationStatus'] == 1) {
 	        if(in_array($_LANGID, $arrTranslationStatus)) {
 	        	$intLangId = $_LANGID;
 	        } else {
@@ -400,7 +410,7 @@ EOF;
 	        }
         } else {
         	$intLangId = $_LANGID;
-        }
+        }*/
 
        $objInputfield = $objDatabase->Execute("
           SELECT
@@ -422,8 +432,8 @@ EOF;
             $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = $_ARRAYLANG['TXT_'.$this->moduleLangVar.'_CONTACTPERSON'];
 
             foreach($arrValue as $intUserId) {
-               if ($objUser = FWUser::getFWUserObject()->objUser->getUser($intUserId)) {
-
+                $objUser = FWUser::getFWUserObject()->objUser->getUser($intUserId);
+                if ($objUser) {
                	  if($objUser->getProfileAttribute('firstname') != "" && $objUser->getProfileAttribute('lastname') != "") {
                	  	 $strValueOutput .= '<li><a href="index.php?section=access&amp;cmd=user&amp;id='.$intUserId.'">'.contrexx_raw2xhtml($objUser->getProfileAttribute('firstname').' '.$objUser->getProfileAttribute('lastname')).'</a></li>';
 		             $strValueOutputCustom .= contrexx_raw2xhtml($objUser->getProfileAttribute('firstname').' '.$objUser->getProfileAttribute('lastname')).'<br />';
