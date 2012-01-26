@@ -9,12 +9,26 @@
  */
 
 /**
- * Includes
+ * @ignore
  */
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
+/**
+ * @ignore
+ */
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface.php';
+/**
+ * @ignore
+ */
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/placeholder.class.php';
 
+/**
+ * Media  Directory Inputfield Textarea Class
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_marketplace
+ * @todo        Edit PHP DocBlocks!
+ */
 class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements inputfield
 {
     public $arrPlaceholders = array('TXT_MEDIADIR_INPUTFIELD_NAME','MEDIADIR_INPUTFIELD_VALUE','MEDIADIR_INPUTFIELD_VALUE_SHORT','MEDIADIR_INPUTFIELD_VALUE_ALLOW_TAGS');
@@ -147,7 +161,7 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
 
     function saveInputfield($intInputfieldId, $strValue)
     {
-        $strValue = contrexx_addslashes($strValue);
+        $strValue = contrexx_input2raw($strValue);
         return $strValue;
     }
 
@@ -156,13 +170,10 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
     {
         global $objDatabase;
 
-        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
-
-        if($objDeleteEntry !== false) {
-            return true;
-        } else {
-            return false;
-        }
+        return (boolean)$objDatabase->Execute("
+            DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
+             WHERE `entry_id`='".intval($intEntryId)."'
+               AND `field_id`='".intval($intIputfieldId)."'");
     }
 
 
@@ -217,12 +228,17 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
 
         $strValueAllowTags = $objInputfieldValue->fields['value'];
 
-        $strValue = $objInputfieldValue->fields['value'];
+        $strValue = nl2br(contrexx_strip_tags($objInputfieldValue->fields['value']));
 
         if(!empty($strValue)) {
+            if (strlen($strValue) > 200) {
+                $strShortValue = preg_replace('/[^ ]*$/', '', substr($strValue, 0, 200)) . ' [...]';
+            } else {
+                $strShortValue = $strValue;
+            }
             $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
             $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = contrexx_raw2xml($strValue);
-            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_SHORT'] = contrexx_raw2xml(substr($strValue,0,200)) . (strlen($strValue) > 200 ? ' [...]' : '');
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_SHORT'] = contrexx_raw2xml($strShortValue);
             $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_ALLOW_TAGS'] = $strValueAllowTags;
         } else {
             $arrContent = null;

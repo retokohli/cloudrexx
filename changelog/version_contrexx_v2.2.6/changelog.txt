@@ -32,6 +32,7 @@ Kontakte Manager
 Modul: Medienverzeichnis
 - Der Dateiupload funktioniert nun auch im Frontend.
 - Tritt ein Fehler während der Aktualisierung eines Eintrages auf, gehen die Daten nicht verloren.
+- Anführungszeichen werden bei der Eingabe als Fliesstext korrekt behandelt.
 
 Modul: Kalender
 - Der Eintrag wird nun auch gespeichert, wenn die Option "Benachrichtigung aktivieren" nicht gewählt ist.

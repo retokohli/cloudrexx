@@ -152,7 +152,7 @@ class mediaDirectoryInputfieldResponsibles extends mediaDirectoryLibrary
                 $strElementId =  $this->moduleName.'ResponsiblesElement_'.$intId.'_'; 
                 
                 $strInputfield = <<< EOF
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
 /* <![CDATA[ */                      
   
 var nextResponsibleId = $intNextElementId;
@@ -269,7 +269,7 @@ EOF;
             $arrValues[] = join("##", $arrValuesTmp);
         }
                  
-        $strValue = contrexx_addslashes(contrexx_strip_tags(join("||", $arrValues)));
+        $strValue = contrexx_strip_tags(contrexx_input2raw(join("||", $arrValues)));
         return $strValue;
     }
 

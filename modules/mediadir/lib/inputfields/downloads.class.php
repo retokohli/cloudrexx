@@ -44,6 +44,7 @@ class mediaDirectoryInputfieldDownloads extends mediaDirectoryLibrary
         switch ($intView) {
             default:
             case 1:
+                $arrValue = null;
                 //modify (add/edit) View
                 if(isset($intEntryId) && $intEntryId != 0) {
                     $objInputfieldValue = $objDatabase->Execute("
@@ -58,14 +59,14 @@ class mediaDirectoryInputfieldDownloads extends mediaDirectoryLibrary
                             entry_id=".$intEntryId."
                     ");
                     if ($objInputfieldValue !== false) {
+                        $arrParents = null;
                         while (!$objInputfieldValue->EOF) {
                             $strValue = htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET);
-                            $arrParents = array();
                             $arrParents = explode("||", $strValue);  
                             
                             foreach($arrParents as $intKey => $strChildes) {
                                 $arrChildes = array();  
-                                $arrChildes = explode("##", $strChildes);                        
+                                $arrChildes = explode("##", $strChildes);
                                 
                                 $arrValue[intval($objInputfieldValue->fields['lang_id'])][$intKey]['title'] = $arrChildes[0];  
                                 $arrValue[intval($objInputfieldValue->fields['lang_id'])][$intKey]['desc'] = $arrChildes[1];   
@@ -75,7 +76,19 @@ class mediaDirectoryInputfieldDownloads extends mediaDirectoryLibrary
                                     $arrFileInfo    = pathinfo($arrChildes[2]);
                                     $strFileName    = htmlspecialchars($arrFileInfo['basename'], ENT_QUOTES, CONTREXX_CHARSET);       
 
-                                    $strFilePreview = '<a href="'.urldecode($arrChildes[2]).'" target="_blank">'.$strFileName.'</a><br />';
+                                    $pos = strrpos($arrChildes[2], ".");
+
+                                    if ($pos != false) {
+                                        $ext = strtolower(trim(substr($arrChildes[2], $pos)));
+                                        $imgExts = array(".gif", ".jpg", ".jpeg", ".png", ".tiff", ".tif"); // this is far from complete but that's always going to be the case...
+                                        if (in_array($ext, $imgExts)) {
+                                            $strFilePreview = '<img src="'.urldecode($arrChildes[2]).'" />';
+                                        } else {
+                                            $strFilePreview = '<a href="'.urldecode($arrChildes[2]).'" target="_blank">'.$strFileName.'</a><br />';
+                                        }
+                                    } else {
+                                        $strFilePreview = '<a href="'.urldecode($arrChildes[2]).'" target="_blank">'.$strFileName.'</a><br />';
+                                    }
                                 } else {
                                     $strFilePreview = null;
                                 }
@@ -87,7 +100,7 @@ class mediaDirectoryInputfieldDownloads extends mediaDirectoryLibrary
                                     $arrChildes[2] = "";
                                 } else {
                                     $strValueHidden = $arrChildes[2];
-                                }; 
+                                }
                                 
                                 $arrValue[intval($objInputfieldValue->fields['lang_id'])][$intKey]['hidden'] = $strValueHidden;  
                             } 
@@ -102,7 +115,7 @@ class mediaDirectoryInputfieldDownloads extends mediaDirectoryLibrary
                     $intNumElements = 0;
                 }
                 
-                $arrInfoValue = array();
+                /*$arrInfoValue = array();
                 
                 if(!empty($arrInputfield['info'][0])){
                     $arrInfoValue[0] = 'title="'.$arrInputfield['info'][0].'"';
@@ -113,7 +126,7 @@ class mediaDirectoryInputfieldDownloads extends mediaDirectoryLibrary
                 } else {
                     $arrInfoValue = null;
                     $strInfoClass = '';
-                }
+                }*/
                    
                 $intNextElementId = $intNumElements;   
                 
@@ -135,11 +148,14 @@ class mediaDirectoryInputfieldDownloads extends mediaDirectoryLibrary
                     $strDeleteImagePath = 'cadmin/images/icons/delete.gif';  
                 }                
                 
-                $strBlankElement .= '<fieldset style="'.$strFieldsetStyle.'"  id="'.$this->moduleName.'DownloadsElement_'.$intId.'_ELEMENT-KEY">';
-                $strBlankElement .= '<img src="'.$strDeleteImagePath.'" onclick="downloadsDeleteElement_'.$intId.'(ELEMENT-KEY);" style="cursor: pointer; position: absolute; top: -7px; right: 10px; z-index: 1000;"/>';  
-                $strBlankElement .= '<legend style="'.$strLegendStyle.'">'.$arrInputfield['name'][0].' #ELEMENT-NR</legend>';   
-                $strBlankElement .= '<div id="'.$this->moduleName.'Inputfield_'.$intId.'_ELEMENT-KEY_Minimized" style="display: block;">';                                                                                                                                                                           
-                $strBlankElement .= '<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][0][ELEMENT-KEY][title]" id="'.$this->moduleName.'Inputfield_'.$intId.'_ELEMENT-KEY_0_title" value="'.$_ARRAYLANG['TXT_MEDIADIR_TITLE'].'"  style="'.$strInputStyle.'" onfocus="this.select();" />&nbsp;'.$arrLang['name'].'<br />';        
+                $strBlankElement =
+                    '<fieldset style="'.$strFieldsetStyle.'"  id="'.$this->moduleName.'DownloadsElement_'.$intId.'_ELEMENT-KEY">'.
+                    '<img src="'.$strDeleteImagePath.'" onclick="downloadsDeleteElement_'.$intId.'(ELEMENT-KEY);" style="cursor: pointer; position: absolute; top: -7px; right: 10px; z-index: 1000;"/>'.
+                    '<legend style="'.$strLegendStyle.'">'.$arrInputfield['name'][0].' #ELEMENT-NR</legend>'.
+                    '<div id="'.$this->moduleName.'Inputfield_'.$intId.'_ELEMENT-KEY_Minimized" style="display: block;">'.
+                    '<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][0][ELEMENT-KEY][title]" id="'.$this->moduleName.'Inputfield_'.$intId.'_ELEMENT-KEY_0_title" value="'.$_ARRAYLANG['TXT_MEDIADIR_TITLE'].'"  style="'.$strInputStyle.'" onfocus="this.select();" />&nbsp;'.
+                    $arrLang['name'].
+                    '<br />';        
                 $strBlankElement .= '<textarea name="'.$this->moduleName.'Inputfield['.$intId.'][0][ELEMENT-KEY][desc]" id="'.$this->moduleName.'Inputfield_'.$intId.'_ELEMENT-KEY_0_title" style="'.$strTextAreaStyle.'" onfocus="this.select();">'.$_CORELANG['TXT_CORE_SETTING_NAME'].'</textarea><br />';    
                 
                 if($objInit->mode == 'backend') {
@@ -166,7 +182,7 @@ class mediaDirectoryInputfieldDownloads extends mediaDirectoryLibrary
                         $strBlankElement .= '<textarea name="'.$this->moduleName.'Inputfield['.$intId.']['.$intLangId.'][ELEMENT-KEY][desc]" id="'.$this->moduleName.'Inputfield_'.$intId.'_ELEMENT-KEY_'.$intLangId.'_title" style="'.$strTextAreaFlagStyle.' background: #ffffff url(images/flags/flag_'.$arrLang['lang'].'.gif) no-repeat 3px 3px;" onfocus="this.select();" /></textarea><br />';
                         
                         if($objInit->mode == 'backend') {
-                            $strBlankElement .= '<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.']['.$intLangId.'][ELEMENT-KEY][file]" id="'.$this->moduleName.'Inputfield_'.$intId.'_ELEMENT-KEY_'.$intLangId.'_file" style="width: 192px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url(images/flags/flag_'.$arrLang['lang'].'.gif) no-repeat 3px 3px;" onfocus="this.select();" />&nbsp;<input type="button" value="Durchsuchen" onClick="getFileBrowser(\\\''.$this->moduleName.'Inputfield_'.$intId.'_ELEMENT-KEY_'.$intLangId.'_file\\\', \\\''.$this->moduleName.'\\\', \\\'/uploads\\\')" />'.$minimize.'<br /><br />';  
+                            $strBlankElement .= '<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.']['.$intLangId.'][ELEMENT-KEY][file]" id="'.$this->moduleName.'Inputfield_'.$intId.'_ELEMENT-KEY_'.$intLangId.'_file" style="width: 192px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url(images/flags/flag_'.$arrLang['lang'].'.gif) no-repeat 3px 3px;" onfocus="this.select();" />&nbsp;<input type="button" value="Durchsuchen" onClick="getFileBrowser(\\\''.$this->moduleName.'Inputfield_'.$intId.'_ELEMENT-KEY_'.$intLangId.'_file\\\', \\\''.$this->moduleName.'\\\', \\\'/uploads\\\')" />'.$minimize.'<br /><br />';
                         } else {
                             $strBlankElement .= '<input type="file" name="fileUpload_'.$intId.'['.$intLangId.'][ELEMENT-KEY]" id="'.$this->moduleName.'Inputfield_'.$intId.'_'.$intLangId.'_ELEMENT-KEY" onfocus="this.select();" />'.$minimize.'<br /><br />';  
                         }
@@ -182,22 +198,21 @@ class mediaDirectoryInputfieldDownloads extends mediaDirectoryLibrary
                 $strElementId =  $this->moduleName.'DownloadsElement_'.$intId.'_'; 
                 
                 $strInputfield = <<< EOF
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
 /* <![CDATA[ */                      
   
-var nextDownloadId = $intNextElementId;
-var blankDownload  = '$strBlankElement';     
+var nextDownloadId_$intId = $intNextElementId;
+var blankDownload_$intId  = '$strBlankElement';
 
 function downloadsAddElement_$intId(){       
+    var replace1BlankDownload_$intId = blankDownload_$intId.replace(/ELEMENT-KEY/g, nextDownloadId_$intId);
+    var replace2BlankDownload_$intId = replace1BlankDownload_$intId.replace(/ELEMENT-NR/g, nextDownloadId_$intId+1);
                                             
-    var blankDownloadReplace1 = blankDownload.replace(/ELEMENT-KEY/g, nextDownloadId);    
-    var blankDownloadReplace2 = blankDownloadReplace1.replace(/ELEMENT-NR/g, nextDownloadId+1);    
+    \$J('#$strElementSetId').append(replace2BlankDownload_$intId);
+    \$J('#$strElementId' + nextDownloadId_$intId).css('display', 'none');
+    \$J('#$strElementId' + nextDownloadId_$intId).fadeIn("fast");
     
-    \$J('#$strElementSetId').append(blankDownloadReplace2);     
-    \$J('#$strElementId' + nextDownloadId).css('display', 'none');
-    \$J('#$strElementId' + nextDownloadId).fadeIn("fast");               
-    
-    nextDownloadId = nextDownloadId + 1; 
+    nextDownloadId_$intId = nextDownloadId_$intId + 1;
 }
 
 function downloadsDeleteElement_$intId(key){     
@@ -298,6 +313,7 @@ EOF;
                 //search View  
                 break;
         }
+        return null;
     }
 
 
@@ -332,7 +348,7 @@ EOF;
             }    
         }           
         
-        $strValue = contrexx_addslashes(contrexx_strip_tags(join("||", $arrValues)));
+        $strValue = contrexx_input2raw(contrexx_strip_tags(join("||", $arrValues)));
         return $strValue;
     }
     
@@ -344,8 +360,8 @@ EOF;
         if (isset($_FILES)) {     
             $tmpFile   = $_FILES['fileUpload_'.$intInputfieldId]['tmp_name'][$intLangId][$intKey];
             $fileName  = $_FILES['fileUpload_'.$intInputfieldId]['name'][$intLangId][$intKey];
-            $fileType  = $_FILES['fileUpload_'.$intInputfieldId]['type'][$intLangId][$intKey];
-            $fileSize  = $_FILES['fileUpload_'.$intInputfieldId]['size'][$intLangId][$intKey];   
+            //$fileType  = $_FILES['fileUpload_'.$intInputfieldId]['type'][$intLangId][$intKey];
+            //$fileSize  = $_FILES['fileUpload_'.$intInputfieldId]['size'][$intLangId][$intKey];   
             
             if ($fileName != "") {      
                 //get extension
@@ -369,7 +385,7 @@ EOF;
                     $objFile = new File();
                     $objFile->setChmod($this->imagePath, $this->imageWebPath, 'uploads/'.$fileName);
 
-                    return contrexx_addslashes($this->imageWebPath.'uploads/'.$fileName);
+                    return $this->imageWebPath.'uploads/'.$fileName;
                 } else {
                     return false;
                 }
@@ -402,13 +418,10 @@ EOF;
     {
         global $objDatabase;
 
-        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
-
-        if($objDeleteEntry !== false) {
-            return true;
-        } else {
-            return false;
-        }
+        return (boolean)$objDatabase->Execute("
+            DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
+             WHERE `entry_id`='".intval($intEntryId)."'
+               AND  `field_id`='".intval($intIputfieldId)."'");
     }
 
 
@@ -469,7 +482,7 @@ EOF;
             $arrParents = explode("||", $strValue); 
             $strValue = null;      
             
-            foreach($arrParents as $intKey => $strChildes) {
+            foreach($arrParents as $strChildes) {
                 $arrChildes = array();  
                 $arrChildes = explode("##", $strChildes);    
                 
@@ -494,7 +507,7 @@ EOF;
 
     function getJavascriptCheck()
     {
-        $fieldName = $this->moduleName."Inputfield_";
+        //$fieldName = $this->moduleName."Inputfield_";
         $strJavascriptCheck = <<<EOF
 
             case 'downloads':  
