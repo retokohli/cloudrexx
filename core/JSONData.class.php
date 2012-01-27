@@ -51,7 +51,10 @@ class JSONData {
             $csrf_tags = ini_get('url_rewriter.tags');
             ini_set('url_rewriter.tags', '');
 
-            return call_user_func(array($this->adapters[$_GET['object']], $_GET['act']), array('get' => $_GET, 'post' => $_POST));
+            return call_user_func(
+				  array($this->adapters[$_GET['object']], $_GET['act']),
+				  array('get' => $_GET, 'post' => $_POST)
+				  );
 
             // Just a reminder to switch csrf prot back on after being done outputting json. This
             // will never get called
