@@ -42,3 +42,6 @@ Media Manager
 
 Verzeichnis
 - Beim Speichern von Änderungen in einem bestehenden Eintrag wird nun ein zuvor bereits heraufgeladenes Bild mitgespeichert.
+
+Newsletter
+- In der Empfängerübersicht funktioniert die Sortierung nun korrekt.

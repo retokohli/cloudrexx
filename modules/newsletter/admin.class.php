@@ -2778,42 +2778,42 @@ class newsletter extends NewsletterLib
     {
         global $_CONFIG, $objDatabase;
         $output = '';
-        $fieldValues = array('status', 'email', 'uri', 'lastname', 'firstname', 'street', 'zip', 'city', 'country', 'emaildate', );
+        $fieldValues = array('status', 'email', 'lastname', 'firstname', 'street', 'zip', 'city', 'country', 'emaildate');
         $field  = (!empty($_REQUEST['field'])) ? contrexx_addslashes($_REQUEST['field']) : 'emaildate';
         $order  = (!empty($_REQUEST['order'])) ? contrexx_addslashes($_REQUEST['order']) : 'asc';
         $listId = (!empty($_REQUEST['list']))  ? intval($_REQUEST['list']) : '';
         $limit  = (!empty($_REQUEST['limit'])) ? intval($_REQUEST['limit']) : $_CONFIG['corePagingLimit'];
 
-		$keyword      = contrexx_addslashes($_SESSION['backend_newsletter_users_search_keyword']);
-		$searchfield  = contrexx_addslashes($_SESSION['backend_newsletter_users_search_SearchFields']);
-		$searchstatus = contrexx_addslashes($_SESSION['backend_newsletter_users_search_SearchStatus']) . '';
+        $keyword      = contrexx_addslashes($_SESSION['backend_newsletter_users_search_keyword']);
+        $searchfield  = contrexx_addslashes($_SESSION['backend_newsletter_users_search_SearchFields']);
+        $searchstatus = contrexx_addslashes($_SESSION['backend_newsletter_users_search_SearchStatus']) . '';
 
-		// don't ignore search stuff
-		$search_where = '';
-		if ( (!empty($searchfield)) && (!empty($keyword)) ) {
-			$search_where = "AND `$searchfield` LIKE '%$keyword%'";
-		}
-		// PHP sucks. empty() doesn't work for numbers, even if they're
-		// strings. PHP considers "0" to be empty.
-		if (strlen("$searchstatus") != 0) {
-			$search_where .= " AND `status` = $searchstatus ";
-		}
+        // don't ignore search stuff
+        $search_where = '';
+        if ( (!empty($searchfield)) && (!empty($keyword)) ) {
+            $search_where = "AND `$searchfield` LIKE '%$keyword%'";
+        }
+        // PHP sucks. empty() doesn't work for numbers, even if they're
+        // strings. PHP considers "0" to be empty.
+        if (strlen("$searchstatus") != 0) {
+            $search_where .= " AND `status` = $searchstatus ";
+        }
 
 
         if(!in_array($field, $fieldValues) && ( $order != 'asc' || $order != 'desc' )){
             return false;
         }
         if($listId == ''){
-            $query = "SELECT id, email, uri, lastname, firstname, street, zip, city, country, `status`, emaildate
+            $query = "SELECT id, email, lastname, firstname, street, zip, city, country, `status`, emaildate
             FROM ".DBPREFIX."module_newsletter_user
-			WHERE 1 = 1 $search_where
+            WHERE 1 = 1 $search_where
             ORDER BY $field $order";
         }else{
-            $query = "SELECT tblUser.id, email, uri, lastname, firstname, street, zip, city, country, `status`, emaildate
+            $query = "SELECT tblUser.id, email, lastname, firstname, street, zip, city, country, `status`, emaildate
             FROM ".DBPREFIX."module_newsletter_user AS tblUser, "
                   .DBPREFIX."module_newsletter_rel_user_cat AS tblRel
             WHERE tblUser.id=tblRel.user and tblRel.category=".$listId."
-				 $search_where
+                 $search_where
             ORDER BY $field $order";
         }
 
@@ -2823,7 +2823,6 @@ class newsletter extends NewsletterLib
             $output .= $objRS->fields['id'];
             $output .= '#'.$objRS->fields['status'];
             $output .= '#'.$objRS->fields['email'];
-            $output .= '#'.$objRS->fields['uri'];
             $output .= '#'.$objRS->fields['lastname'];
             $output .= '#'.$objRS->fields['firstname'];
             $output .= '#'.$objRS->fields['street'];
