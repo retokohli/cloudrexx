@@ -155,21 +155,23 @@ class ContactLib
                 'name'  => 'TXT_CONTACT_REGEX_EVERYTHING'
             ),
             2   => array(
-                'regex' => '^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$',
+                'regex' => VALIDATOR_REGEX_EMAIL_JS,
                 'name'  => 'TXT_CONTACT_REGEX_EMAIL',
                 'modifiers' => 'i'
             ),
             3   => array(
-                'regex' => '^(ht|f)tp[s]?\:\/\/[A-Za-z0-9\-\:\.\?\&\=\/\#\%]*$',
-                'name'  => 'TXT_CONTACT_REGEX_URL'
+                'regex' => VALIDATOR_REGEX_URI_JS,
+                'name'  => 'TXT_CONTACT_REGEX_URL',
+                'modifiers' => 'i'
             ),
 	    /*a bit redundant, because we want a minimum of one non-space character.
 	      the query does a ^[spaceorchar]*[char]+[spaceorchar]*$ to ensure this. */
             4   => array(
-	        'regex' => '^[A-Za-zäàáüâûôñèöéè\ ]*'.
-        	'[A-Za-zäàáüâûôñèöéè]+'.
-	        '[A-Za-zäàáüâûôñèöéè\ ]*$',
-                'name'  => 'TXT_CONTACT_REGEX_TEXT'
+	        'regex' => '^[a-zäàáüâûôñèöéè\ ]*'.
+                        '[a-zäàáüâûôñèöéè]+'.
+                        '[a-zäàáüâûôñèöéè\ ]*$',
+                'name'  => 'TXT_CONTACT_REGEX_TEXT',
+                'modifiers' => 'i'
             ),
             5   => array(
                 'regex' => '^[0-9]*$',

@@ -900,7 +900,7 @@ class Contact extends ContactLib
     function _getEmailAdressOfString($string)
     {
         $arrMatch = array();
-        if (preg_match('/[a-z0-9]+(?:[_\.-][a-z0-9]+)*@[a-z0-9]+(?:[\.-][a-z0-9]+)*\.[a-z]{2,6}/', $string, $arrMatch)) {
+        if (preg_match('/'.VALIDATOR_REGEX_EMAIL.'/', $string, $arrMatch)) {
             return $arrMatch[0];
         } else {
             return false;
