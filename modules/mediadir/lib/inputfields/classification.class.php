@@ -110,7 +110,7 @@ class mediaDirectoryInputfieldClassification extends mediaDirectoryLibrary imple
                 $strImageName = $this->moduleName."rClassificationImage_";
 
                 $strInputfield = <<<EOF
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
 /* <![CDATA[ */
 function classification_$intId(num) {
     var intFieldId = $intId;
@@ -162,7 +162,7 @@ EOF;
 
     function saveInputfield($intInputfieldId, $strValue)
     {
-        $strValue = contrexx_addslashes(contrexx_strip_tags($strValue));
+        $strValue = contrexx_strip_tags(contrexx_input2raw($strValue));
         return $strValue;
     }
 

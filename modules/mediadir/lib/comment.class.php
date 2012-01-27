@@ -112,25 +112,27 @@ var $strFunctionRefreshComment = function(entry,section,cmd)
 var $strFunctionCheckCommentForm = function(entry)
 {
     var isOk = true;
-    var commentName = $('commentName').value;
-    var commentComment = $('commentComment').value;
+    var commentName = jQuery('#commentName').val();
+    var commentComment = jQuery('#commentComment').val();
 
-    if(commentName == "") {
+    errorCSSBorderStyle = '#ff0000 1px solid';
+
+    if (commentName == '') {
     	isOk = false;
-    	$('commentName').style.border = "#ff0000 1px solid";
+    	jQuery('#commentName').css({'border': errorCSSBorderStyle});
     } else {
-        $('commentName').style.borderColor = '';
+        jQuery('#commentName').css({'border': ''});
     }
 
-    if(commentComment == "") {
+    if(commentComment == '') {
     	isOk = false;
-    	$('commentComment').style.border = "#ff0000 1px solid";
+    	jQuery('#commentComment').css({'border': errorCSSBorderStyle});
     } else {
-        $('commentComment').style.borderColor = '';
+        jQuery('#commentComment').css({'border': ''});
     }
 
     if (!isOk) {
-		$('$strCommentErrMessage').style.display = "block";
+		jQuery('#$strCommentErrMessage').css({'display': 'block'});
 	} else {
 	   $strFunctionComment(entry);
 	}
@@ -248,7 +250,7 @@ EOF;
                             $this->moduleLangVar.'_ENTRY_COMMENT_ROW_CLASS' => $i%2==0 ? 'row1' : 'row2',
                             $this->moduleLangVar.'_ENTRY_COMMENT_ENTRY_ID' => intval($intEnrtyId),
                             $this->moduleLangVar.'_ENTRY_COMMENT_ID' => intval($objRSGetComments->fields['id']),
-                            $this->moduleLangVar.'_ENTRY_COMMENT_ADDED_BY' => $strAddedBy,
+                            $this->moduleLangVar.'_ENTRY_COMMENT_ADDED_BY' => contrexx_raw2xhtml($strAddedBy),
                             $this->moduleLangVar.'_ENTRY_COMMENT_NAME' => strip_tags(htmlspecialchars($objRSGetComments->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)),
                             $this->moduleLangVar.'_ENTRY_COMMENT_MAIL' => $strMail,
                             $this->moduleLangVar.'_ENTRY_COMMENT_MAIL_SRC' => strip_tags(htmlspecialchars($objRSGetComments->fields['mail'], ENT_QUOTES, CONTREXX_CHARSET)),
@@ -409,7 +411,7 @@ EOF;
 
             $arrComment['{'.$this->moduleLangVar.'_ENTRY_COMMENT_ENTRY_ID}'] = intval($intEnrtyId);
             $arrComment['{'.$this->moduleLangVar.'_ENTRY_COMMENT_ID}'] = intval($objRSGetComment->fields['id']);
-            $arrComment['{'.$this->moduleLangVar.'_ENTRY_COMMENT_ADDED_BY}'] = $strAddedBy;
+            $arrComment['{'.$this->moduleLangVar.'_ENTRY_COMMENT_ADDED_BY}'] = contrexx_raw2xhtml($strAddedBy);
             $arrComment['{'.$this->moduleLangVar.'_ENTRY_COMMENT_NAME}'] = strip_tags(htmlspecialchars($objRSGetComment->fields['name'], ENT_QUOTES, CONTREXX_CHARSET));
             $arrComment['{'.$this->moduleLangVar.'_ENTRY_COMMENT_MAIL}'] = $strMail;
             $arrComment['{'.$this->moduleLangVar.'_ENTRY_COMMENT_MAIL_SRC}'] = strip_tags(htmlspecialchars($objRSGetComment->fields['mail'], ENT_QUOTES, CONTREXX_CHARSET));

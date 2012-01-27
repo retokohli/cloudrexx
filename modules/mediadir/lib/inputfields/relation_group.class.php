@@ -9,17 +9,32 @@
  */
 
 /**
- * Includes
+ * @ignore
  */
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface.php';
+/**
+ * @ignore
+ */
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
 
+/**
+ * Media  Directory Inputfield Relation Class
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_marketplace
+ * @todo        Edit PHP DocBlocks!
+ */
 class mediaDirectoryInputfieldRelation_group extends mediaDirectoryLibrary implements inputfield
 {
-    public $arrPlaceholders = array('TXT_MEDIADIR_INPUTFIELD_NAME','MEDIADIR_INPUTFIELD_VALUE','MEDIADIR_INPUTFIELD_CUSTOM');
+    public $arrPlaceholders = array(
+        'TXT_MEDIADIR_INPUTFIELD_NAME',
+        'MEDIADIR_INPUTFIELD_VALUE',
+        'MEDIADIR_INPUTFIELD_CUSTOM'
+    );
 
 
-/**
+    /**
      * Constructor
      */
     function __construct()
@@ -127,9 +142,9 @@ class mediaDirectoryInputfieldRelation_group extends mediaDirectoryLibrary imple
 
                 if($objInit->mode == 'backend') {
                 	$strAddNewButton = '';
-                    $strEditButton = '';
+                    //$strEditButton = '';
                     //$strStyle = 'style="overflow: auto; border: 1px solid #0A50A1; background-color: #ffffff; width: 298px; height: 200px; float: left; list-style: none; padding: 0px; margin: 0px 5px 0px 0px;"';
-                    $strRefreshNewButton = '';
+                    //$strRefreshNewButton = '';
                 } else {
 		            //get user attributes
 		            /*$objFWUser      = FWUser::getFWUserObject();
@@ -138,7 +153,7 @@ class mediaDirectoryInputfieldRelation_group extends mediaDirectoryLibrary imple
                     $intUserIsAdmin = $objUser->getAdminStatus();
 
                     $arrUserGroups  = array();
-                    $objGroup = $objFWUser->objGroup->getGroups($filter = array('is_active' => true, 'type' => 'frontend'));
+                    $objGroup = $objFWUser->objGroup->getGroups(array('is_active' => true, 'type' => 'frontend'));
 
                     while (!$objGroup->EOF) {
                         if(in_array($objGroup->getId(), $objUser->getAssociatedGroupIds())) {
@@ -165,11 +180,11 @@ class mediaDirectoryInputfieldRelation_group extends mediaDirectoryLibrary imple
                         $strEditFunction = '';
                     }
 
-                    $strRefreshNewButton = '<br /><a href="javascript:refreshSelector_'.$intId.'(\''.$intId.'\', \''.$this->moduleName.'Inputfield_deselected_'.$intId.'\', \''.$this->moduleName.'Inputfield_'.$intId.'\', \''.$_GET['section'].'\', \''.$_GET['cmd'].'\', \''.$intEntryId.'\');"><img src="cadmin/images/icons/refresh.gif" style="cursor: pointer;  border: 0px;" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_REFRESH'].'</a>';
+                    //$strRefreshNewButton = '<br /><a href="javascript:refreshSelector_'.$intId.'(\''.$intId.'\', \''.$this->moduleName.'Inputfield_deselected_'.$intId.'\', \''.$this->moduleName.'Inputfield_'.$intId.'\', \''.$_GET['section'].'\', \''.$_GET['cmd'].'\', \''.$intEntryId.'\');"><img src="cadmin/images/icons/refresh.gif" style="cursor: pointer;  border: 0px;" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_REFRESH'].'</a>';
                     //$strStyle = 'style="overflow: auto; float: left; list-style: none; padding: 0px; margin: 0px 5px 0px 0px;"';
                 }
 
-                $moduleName = $this->moduleName;
+                //$moduleName = $this->moduleName;
                 $moduleNameDeselected = $this->moduleName.'Inputfield_deselected_'.$intId;
                 $moduleNameSelected = $this->moduleName.'Inputfield_'.$intId;
                 $pageSection = $_GET['section'];
@@ -270,22 +285,18 @@ function searchElement(elementId, term){
 
 function refreshSelector_$intId(fieldId,elementDeselectedId,elementSelectedId,pageSection,pageCmd,entryId){
     if(new Ajax.Request('index.php', {
-            method: 'get',
-            parameters: {section : pageSection, cmd : pageCmd,  inputfield : "refresh", field : fieldId, eid : entryId},
-            onSuccess: function (transport){
-                var response = transport.responseText;
-                var arrResponse = response.split(",");
+        method: 'get',
+        parameters: {section : pageSection, cmd : pageCmd,  inputfield : "refresh", field : fieldId, eid : entryId},
+        onSuccess: function (transport){
+            var response = transport.responseText;
+            var arrResponse = response.split(",");
 
-                $(elementDeselectedId).update(arrResponse[0]);
-                $(elementSelectedId).update(arrResponse[1]);
-            },
-            onFailure: function(){
-            }
-        })) {
-    }
+            jQuery(elementDeselectedId).update(arrResponse[0]);
+            jQuery(elementSelectedId).update(arrResponse[1]);
+        },
+        onFailure: function(){}
+    })) {}
 }
-
-
 
 function editSelectedElement_$intId(elmSelector){
     var editLink = 'index.php?section=marketplace&cmd=$strEditCmd&eid=' + elmSelector.value;
@@ -299,9 +310,6 @@ function editSelectedElement_$intId(elmSelector){
 
     });
 }
-
-
-
 /* ]]> */
 </script>
 EOF;
@@ -314,9 +322,9 @@ EOF;
                 $strInputfield .= '</div>';
                 //$strInputfield .= '<br /><input class="'.$this->moduleName.'SelectorSearch" type="text" onclick="this.value=\'\';" onkeyup="searchElement(\''.$this->moduleName.'Inputfield_deselected_'.$intId.'\', this.value);" value="Suchbegriff..."  style="width: 150px;"/></div>';
                 $strInputfield .= '<div class="'.$this->moduleName.'SelectorCenter" style="float: left; height: 100px; padding: 60px 10px 0px 10px;">';
-                $strInputfield .= '<input style="width: 40px; min-width: 40px;" value=" &gt;&gt; " name="addElement" onclick="moveElement(document.entryModfyForm.elements[\''.$this->moduleName.'Inputfield_deselected_'.$intId.'\'],document.entryModfyForm.elements[\''.$this->moduleName.'Inputfield_'.$intId.'\'],addElement,removeElement);" type="button">';
+                $strInputfield .= '<input style="width: 40px; min-width: 40px;" value=" &gt;&gt; " name="addElement" onclick="moveElement(document.entryModfyForm.elements[\''.$this->moduleName.'Inputfield_deselected_'.$intId.'\'],document.entryModfyForm.elements[\''.$this->moduleName.'Inputfield_'.$intId.'\'],addElement,removeElement);" type="button" />';
                 $strInputfield .= '<br />';
-                $strInputfield .= '<input style="width: 40px; min-width: 40px;" value=" &lt;&lt; " name="removeElement" onclick="moveElement(document.entryModfyForm.elements[\''.$this->moduleName.'Inputfield_'.$intId.'\'],document.entryModfyForm.elements[\''.$this->moduleName.'Inputfield_deselected_'.$intId.'\'],removeElement,addElement);" type="button">';
+                $strInputfield .= '<input style="width: 40px; min-width: 40px;" value=" &lt;&lt; " name="removeElement" onclick="moveElement(document.entryModfyForm.elements[\''.$this->moduleName.'Inputfield_'.$intId.'\'],document.entryModfyForm.elements[\''.$this->moduleName.'Inputfield_deselected_'.$intId.'\'],removeElement,addElement);" type="button" />';
                 $strInputfield .= '</div>';
                 $strInputfield .= '<div id="'.$this->moduleName.'Selector_'.$intId.'_Right" class="'.$this->moduleName.'SelectorRight" style="float: left; height: auto !important;"><select '.$strEditFunction.' id="'.$this->moduleName.'Inputfield_'.$intId.'"  name="'.$this->moduleName.'Inputfield['.$intId.'][]" size="12" multiple="multiple" style="width: 240px;">';
                 $strInputfield .= $strSelectorSelected;
@@ -462,7 +470,7 @@ EOF;
     function saveInputfield($intInputfieldId, $arrValue)
     {
         //$strValue = join(',', array_map('intval', split(',', $strValue)));
-        $strValue = contrexx_addslashes(contrexx_strip_tags(join(",", $arrValue)));
+        $strValue = contrexx_strip_tags(contrexx_input2raw(join(",", $arrValue)));
         return $strValue;
     }
 
@@ -471,13 +479,10 @@ EOF;
     {
         global $objDatabase;
 
-        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
-
-        if($objDeleteEntry !== false) {
-            return true;
-        } else {
-            return false;
-        }
+        return (boolean)$objDatabase->Execute("
+            DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
+             WHERE `entry_id`='".intval($intEntryId)."'
+               AND `field_id`='".intval($intIputfieldId)."'");
     }
 
 
@@ -512,18 +517,18 @@ EOF;
             $strList = '<ul class="mediadirInputfieldRellation_group">';
 
             //make relation elements
-            foreach ($arrRelationGroup as $intKey => $intRelationId) {
+            foreach ($arrRelationGroup as $intRelationId) {
             	$objEntry = new mediaDirectoryEntry;
 		        $objEntry->getEntries($intRelationId);
 
 		        $strRelationValue = $objEntry->arrEntries[$intRelationId]['entryFields'][0];
-		        $strRelationFormId = $objEntry->arrEntries[$intRelationId]['entryFormId'];
+		        //$strRelationFormId = $objEntry->arrEntries[$intRelationId]['entryFormId'];
 
-                if($this->checkPageCmd('detail'.intval($strRelationFormId))) {
+                /*if($this->checkPageCmd('detail'.intval($strRelationFormId))) {
                     $strDetailCmd = 'detail'.intval($strRelationFormId);
                 } else {
                     $strDetailCmd = 'detail';
-                }
+                }*/
 
             	//make hyperlink with <a> and <li> tag
                 //$strList .= '<li><a href="index.php?section='.$this->moduleName.'&amp;cmd='.$strDetailCmd.'&amp;eid='.$intRelationId.'" target="_blank">'.$strRelationValue.'</a></li>';
@@ -568,8 +573,8 @@ EOF;
 
                 $strUsers = '';
 	            foreach($arrUsers as $intUserId) {
-	               if ($objUser = FWUser::getFWUserObject()->objUser->getUser($intUserId)) {
-
+                    $objUser = FWUser::getFWUserObject()->objUser->getUser($intUserId);
+                    if ($objUser) {
 	                  if($objUser->getProfileAttribute('firstname') != "" && $objUser->getProfileAttribute('lastname') != "") {
 	                     $strUsers .= htmlentities($objUser->getProfileAttribute('firstname').' '.$objUser->getProfileAttribute('lastname'), ENT_QUOTES, CONTREXX_CHARSET).'<br />';
                          $strUsers .= $objUser->getProfileAttribute('1') ? htmlentities($objUser->objAttribute->getById($objUser->getProfileAttribute('1'))->getName(), ENT_QUOTES, CONTREXX_CHARSET).'<br />' : '';
@@ -628,22 +633,13 @@ EOF;
             AND
                 module.`name` = '".$this->moduleName."'
             AND
-                content.`module` = module.`id`
-        ";
-
-        $objCheckPageCmd = $objDatabase->Execute($query);
-
-        if($objCheckPageCmd !== false) {
-            if($objCheckPageCmd->RecordCount() > 0){
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
+                content.`module` = module.`id`";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && $objResult->RecordCount()) {
+            return true;
         }
+        return false;
     }
-
 
 
     function getJavascriptCheck()

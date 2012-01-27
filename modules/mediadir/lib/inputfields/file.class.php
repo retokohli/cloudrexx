@@ -120,16 +120,14 @@ class mediaDirectoryInputfieldFile extends mediaDirectoryLibrary implements inpu
         global $objInit;
         
         
-        $strValue = contrexx_addslashes($_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['file']);
+        $strValue = contrexx_input2raw($_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['file']);
         
         if(!empty($_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['name'])) {
-        	$strName = ",".contrexx_addslashes($_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['name']);
+        	$strName = ",".contrexx_input2raw($_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['name']);
         }
 
         if($objInit->mode == 'backend') {
-            if ($_POST["deleteMedia"][$intInputfieldId] != 1) {
-                $strValue = contrexx_addslashes($strValue);
-            } else {
+            if ($_POST["deleteMedia"][$intInputfieldId] == 1) {
                 $strValue = null;
             }
         } else {
@@ -143,8 +141,6 @@ class mediaDirectoryInputfieldFile extends mediaDirectoryLibrary implements inpu
                 } else {
                     $strValue = null;
                 }
-            } else {
-                $strValue = contrexx_addslashes($strValue);
             }
         }
 
@@ -200,7 +196,7 @@ class mediaDirectoryInputfieldFile extends mediaDirectoryLibrary implements inpu
                     $objFile = new File();
                     $objFile->setChmod($this->imagePath, $this->imageWebPath, 'uploads/'.$fileName);
 
-                    return contrexx_addslashes($this->imageWebPath.'uploads/'.$fileName);
+                    return $this->imageWebPath.'uploads/'.$fileName;
                 } else {
                     return false;
                 }

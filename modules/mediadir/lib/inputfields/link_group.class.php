@@ -9,10 +9,18 @@
  */
 
 /**
- * Includes
+ * @ignore
  */
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface.php';
 
+/**
+ * Media  Directory Inputfield Text Class
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_marketplace
+ * @todo        Edit PHP DocBlocks!
+ */
 class mediaDirectoryInputfieldLink_group implements inputfield
 {
     public $arrPlaceholders = array('TXT_MEDIADIR_INPUTFIELD_NAME','MEDIADIR_INPUTFIELD_VALUE');
@@ -80,13 +88,14 @@ class mediaDirectoryInputfieldLink_group implements inputfield
                 //search View
                 break;
         }
+        return null;
     }
 
 
 
     function saveInputfield($intInputfieldId, $strValue)
     {
-        $strValue = contrexx_addslashes(contrexx_strip_tags($strValue));
+        $strValue = contrexx_strip_tags(contrexx_input2raw($strValue));
         return $strValue;
     }
 
@@ -95,13 +104,10 @@ class mediaDirectoryInputfieldLink_group implements inputfield
     {
         global $objDatabase;
 
-        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
-
-        if($objDeleteEntry !== false) {
-            return true;
-        } else {
-            return false;
-        }
+        return (boolean)$objDatabase->Execute("
+            DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
+             WHERE `entry_id`='".intval($intEntryId)."'
+               AND  `field_id`='".intval($intIputfieldId)."'");
     }
 
 
@@ -136,7 +142,7 @@ class mediaDirectoryInputfieldLink_group implements inputfield
             $strValue = '<ul class="mediadirInputfieldLink_group">';
     
             //make list elements
-            foreach ($arrLinkGroup as $intKey => $strLink) {
+            foreach ($arrLinkGroup as $strLink) {
     
                 //make link name without "http://"
                 $strValueName = $strLink;

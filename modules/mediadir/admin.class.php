@@ -362,19 +362,21 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                 //save entry data
                 if(isset($_POST['submitEntryModfyForm']) && intval($_POST['formId']) != 0) {
                     $objEntry = new mediaDirectoryEntry();
-                    $status = $objEntry->saveEntry($_POST, intval($_POST['entryId']));
+                    $intEntryId = intval($_POST['entryId']);
+                    $intEntryId = $objEntry->saveEntry($_POST, $intEntryId);
 
                     if(!empty($_POST['entryId'])) {
-                        if($status == true) {
-                            $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_EDITED'];
+                        if($intEntryId) {
+                            $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY'].' '.$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_EDITED'];
                         } else {
-                            $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_EDITED'];
+                            $intEntryId = intval($_POST['entryId']);
+                            $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY'].' '.$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_EDITED'];
                         }
                     } else {
-                        if($status == true) {
-                            $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_ADDED'];
+                        if($intEntryId) {
+                            $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY'].' '.$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_ADDED'];
                         } else {
-                            $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_ADDED'];
+                            $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY'].' '.$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_ADDED'];
                         }
                     }
                 }
@@ -456,7 +458,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                     $objFWUser  = FWUser::getFWUserObject();
                     $objUser    = $objFWUser->objUser;
                     $intUserId  = intval($objUser->getId());
-                    $strUserMail  = '<a href="mailto:'.$objUser->getEmail().'">'.$objUser->getEmail().'</a>';
+                    $strUserMail  = '<a href="mailto:'.contrexx_raw2xhtml($objUser->getEmail()).'">'.contrexx_raw2xhtml($objUser->getEmail()).'</a>';
                     $intUserLang  = intval($objUser->getFrontendLanguage());
 		            
 					if ($objUser = $objUser->getUser($id = $intUserId)) {
@@ -477,17 +479,17 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
 						
 	                    $this->_objTpl->setVariable(array(
 	                        'TXT_'.$this->moduleLangVar.'_CONTACT_DATA' => "Kontaktangaben",
-	                        $this->moduleLangVar.'_CONTACT_ATTRIBUT_TITLE' => $strTitle,
-	                        $this->moduleLangVar.'_CONTACT_ATTRIBUT_FIRSTNAME' => $objUser->getProfileAttribute('firstname'),
-                            $this->moduleLangVar.'_CONTACT_ATTRIBUT_LASTNAME' => $objUser->getProfileAttribute('lastname'),
-                            $this->moduleLangVar.'_CONTACT_ATTRIBUT_COMPANY' => $objUser->getProfileAttribute('company'),
-                            $this->moduleLangVar.'_CONTACT_ATTRIBUT_ADRESS' => $objUser->getProfileAttribute('address'),
-                            $this->moduleLangVar.'_CONTACT_ATTRIBUT_CITY' => $objUser->getProfileAttribute('city'),
-                            $this->moduleLangVar.'_CONTACT_ATTRIBUT_ZIP' => $objUser->getProfileAttribute('zip'),
-                            $this->moduleLangVar.'_CONTACT_ATTRIBUT_COUNTRY' => $strCountry,
-                            $this->moduleLangVar.'_CONTACT_ATTRIBUT_PHONE' => $objUser->getProfileAttribute('phone_office'),
-                            $this->moduleLangVar.'_CONTACT_ATTRIBUT_FAX' => $objUser->getProfileAttribute('phone_fax'),
-                            $this->moduleLangVar.'_CONTACT_ATTRIBUT_WEBSITE' => '<a href="'.$objUser->getProfileAttribute('website').'" target="_blank">'.$objUser->getProfileAttribute('website').'</a>',
+	                        $this->moduleLangVar.'_CONTACT_ATTRIBUT_TITLE' => contrexx_raw2xhtml($strTitle),
+	                        $this->moduleLangVar.'_CONTACT_ATTRIBUT_FIRSTNAME' => contrexx_raw2xhtml($objUser->getProfileAttribute('firstname')),
+                            $this->moduleLangVar.'_CONTACT_ATTRIBUT_LASTNAME' => contrexx_raw2xhtml($objUser->getProfileAttribute('lastname')),
+                            $this->moduleLangVar.'_CONTACT_ATTRIBUT_COMPANY' => contrexx_raw2xhtml($objUser->getProfileAttribute('company')),
+                            $this->moduleLangVar.'_CONTACT_ATTRIBUT_ADRESS' => contrexx_raw2xhtml($objUser->getProfileAttribute('address')),
+                            $this->moduleLangVar.'_CONTACT_ATTRIBUT_CITY' => contrexx_raw2xhtml($objUser->getProfileAttribute('city')),
+                            $this->moduleLangVar.'_CONTACT_ATTRIBUT_ZIP' => contrexx_raw2xhtml($objUser->getProfileAttribute('zip')),
+                            $this->moduleLangVar.'_CONTACT_ATTRIBUT_COUNTRY' => contrexx_raw2xhtml($strCountry),
+                            $this->moduleLangVar.'_CONTACT_ATTRIBUT_PHONE' => contrexx_raw2xhtml($objUser->getProfileAttribute('phone_office')),
+                            $this->moduleLangVar.'_CONTACT_ATTRIBUT_FAX' => contrexx_raw2xhtml($objUser->getProfileAttribute('phone_fax')),
+                            $this->moduleLangVar.'_CONTACT_ATTRIBUT_WEBSITE' => '<a href="'.contrexx_raw2xhtml($objUser->getProfileAttribute('website')).'" target="_blank">'.contrexx_raw2xhtml($objUser->getProfileAttribute('website')).'</a>',
                             $this->moduleLangVar.'_CONTACT_ATTRIBUT_MAIL' => $strUserMail,
                             $this->moduleLangVar.'_CONTACT_ATTRIBUT_LANG' => $strUserLang,
 	                    ));
