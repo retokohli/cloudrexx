@@ -39,3 +39,6 @@ Modul: Kalender
 
 Media Manager
 - Optimierter Dateiupload im Media Manager.
+
+Verzeichnis
+- Fehler bei einzelnen Upload-Feldern behoben: Beim Speichern von Änderungen in einem bestehenden Eintrag wurde ein zuvor bereits heraufgeladenes Bild nicht mehr mitgespeichert.

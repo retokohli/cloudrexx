@@ -2112,12 +2112,8 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
                 }
 
                 //check uploads
-                if ($inputName == "attachment" ||
-                    $inputName == "spez_field_25" ||
-                    $inputName == "spez_field_26" ||
-                    $inputName == "spez_field_27" ||
-                    $inputName == "spez_field_28" ||
-                    $inputName == "spez_field_29") {
+                $arrSpezialUploadFields = array('attachment', 'spez_field_25', 'spez_field_26', 'spez_field_27', 'spez_field_28', 'spez_field_29');
+                if (in_array($inputName, $arrSpezialUploadFields)) {
 
                     if (!empty($_FILES[$inputName]['name']) || $_POST["deleteMedia"][$inputName] == 1) {
                         $obj_file = new File();
@@ -2142,12 +2138,12 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
                 }
 
                 /*
-                 * 'attachment' coulmn must be updated only when new file is uploaded or old one is deleted
+                 * spezial upload fields must be updated only when new file is uploaded or old one is deleted
                  * other input types must be updated unconditionally.
                  */
-                if ($inputName != "attachment") {
+                if (!in_array($inputName, $arrSpezialUploadFields)) {
                     $query .= contrexx_addslashes($inputName)." ='".contrexx_strip_tags(contrexx_addslashes($inputValue))."', ";
-                } else if ($inputName == "attachment" && (!empty($_FILES[$inputName]['name']) || $_POST["deleteMedia"][$inputName] == 1)) {
+                } else if (in_array($inputName, $arrSpezialUploadFields) && (!empty($_FILES[$inputName]['name']) || $_POST["deleteMedia"][$inputName] == 1)) {
                     $query .= contrexx_addslashes($inputName)." ='".contrexx_strip_tags(contrexx_addslashes($inputValue))."', ";
                 }
             }
