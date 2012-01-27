@@ -119,7 +119,7 @@ class mediaDirectoryInputfieldCheckbox extends mediaDirectoryLibrary implements 
         $arrValue = $strValue;
 
         foreach($arrValue as $intKey => $strValue) {
-            $arrValue[$intKey] = $strValue = contrexx_addslashes(contrexx_strip_tags($strValue));
+            $arrValue[$intKey] = $strValue = contrexx_strip_tags(contrexx_input2raw($strValue));
         }
 
         $strValue = join(",",$arrValue);

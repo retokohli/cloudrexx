@@ -9,7 +9,7 @@
  */
 
 /**
- * Includes
+ * @ignore
  */
 require_once(ASCMS_FRAMEWORK_PATH.DIRECTORY_SEPARATOR.'Image.class.php');
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface.php';
@@ -18,7 +18,16 @@ require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
 
 class mediaDirectoryInputfieldImage extends mediaDirectoryLibrary implements inputfield
 {
-    public $arrPlaceholders = array('TXT_MEDIADIR_INPUTFIELD_NAME','MEDIADIR_INPUTFIELD_VALUE','MEDIADIR_INPUTFIELD_VALUE_SRC','MEDIADIR_INPUTFIELD_VALUE_SRC_THUMB','MEDIADIR_INPUTFIELD_VALUE_POPUP','MEDIADIR_INPUTFIELD_VALUE_IMAGE','MEDIADIR_INPUTFIELD_VALUE_THUMB', 'MEDIADIR_INPUTFIELD_VALUE_FILENAME');
+    public $arrPlaceholders = array(
+        'TXT_MEDIADIR_INPUTFIELD_NAME',
+        'MEDIADIR_INPUTFIELD_VALUE',
+        'MEDIADIR_INPUTFIELD_VALUE_SRC',
+        'MEDIADIR_INPUTFIELD_VALUE_SRC_THUMB',
+        'MEDIADIR_INPUTFIELD_VALUE_POPUP',
+        'MEDIADIR_INPUTFIELD_VALUE_IMAGE',
+        'MEDIADIR_INPUTFIELD_VALUE_THUMB',
+        'MEDIADIR_INPUTFIELD_VALUE_FILENAME'
+    );
 
     private $imagePath;
     private $imageWebPath;
@@ -37,7 +46,7 @@ class mediaDirectoryInputfieldImage extends mediaDirectoryLibrary implements inp
 
 function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
-        global $objDatabase, $_ARRAYLANG, $_LANGID, $objInit;
+        global $objDatabase, $_ARRAYLANG, $objInit;
 
         switch ($intView) {
             default:
@@ -46,25 +55,19 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
                 $intId = intval($arrInputfield['id']);
 
                 if(isset($intEntryId) && $intEntryId != 0) {
-                    $objInputfieldValue = $objDatabase->Execute("
-                        SELECT
-                            `value`
-                        FROM
-                            ".DBPREFIX."module_mediadir_rel_entry_inputfields
-                        WHERE
-                            field_id=".$intId."
-                        AND
-                            entry_id=".$intEntryId."
-                        LIMIT 1
-                    ");
-                    $strValue = htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET);
+                    $objResult = $objDatabase->Execute("
+                        SELECT `value`
+                          FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                         WHERE field_id=$intId
+                           AND entry_id=$intEntryId");
+                    $strValue = htmlspecialchars($objResult->fields['value'], ENT_QUOTES, CONTREXX_CHARSET);
                 } else {
                     $strValue = null;
                 }
 
                 if(!empty($strValue) && file_exists(ASCMS_PATH.$strValue.".thumb")) {
                     $objInit->mode == 'backend' ? $style = 'style="border: 1px solid rgb(10, 80, 161); margin: 0px 0px 3px;"' : '';
-                    $strImagePreview = '<img src="'.$strValue.'.thumb" alt="" '.$style.'  width="'.intval($this->arrSettings['settingsThumbSize']).'"/>&nbsp;<input type="checkbox" value="1" name="deleteMedia['.$intId.']" />'.$_ARRAYLANG['TXT_MEDIADIR_DELETE'].'<br />';
+                    $strImagePreview = '<img src="'.$strValue.'.thumb" alt="" '.$style.'  width="'.intval($this->arrSettings['settingsThumbSize']).'" />&nbsp;<input type="checkbox" value="1" name="deleteMedia['.$intId.']" />'.$_ARRAYLANG['TXT_MEDIADIR_DELETE'].'<br />';
                 } else {
                     $strImagePreview = null;
                 }
@@ -77,18 +80,40 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
                 }
 
         if($objInit->mode == 'backend') {
-                    $strInputfield = $strImagePreview.'<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.']" value="'.$strValue.'" id="'.$this->moduleName.'Inputfield_'.$intId.'" style="width: 300px;" onfocus="this.select();" />&nbsp;<input type="button" value="Durchsuchen" onClick="getFileBrowser(\''.$this->moduleName.'Inputfield_'.$intId.'\', \''.$this->moduleName.'\', \'/\')" />';
+                    $strInputfield =
+                        $strImagePreview.'<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.']"'.
+                        ' value="'.$strValue.'" id="'.$this->moduleName.'Inputfield_'.$intId.'"'.
+                        ' style="width: 300px;" onfocus="this.select();" />'.
+                        '&nbsp;<input type="button" value="Durchsuchen"'.
+                        ' onClick="getFileBrowser(\''.$this->moduleName.'Inputfield_'.$intId.'\', \''.$this->moduleName.'\', \'/uploads\')" />';
                 } else {
-                    $strInputfield = $strImagePreview.'<input type="file" name="imageUpload_'.$intId.'" id="'.$this->moduleName.'Inputfield_'.$intId.'" class="'.$this->moduleName.'InputfieldImage '.$strInfoClass.'" '.$strInfoValue.' value="'.$strValue.'" onfocus="this.select();" /><input id="'.$this->moduleName.'Inputfield_'.$intId.'_hidden" name="'.$this->moduleName.'Inputfield['.$intId.']" value="'.$strValueHidden.'" type="hidden"><span class="'.$this->moduleName.'InputfieldFilesize">'.$_ARRAYLANG['TXT_MEDIADIR_MAX_FILESIZE'].' '.intval($this->arrSettings['settingsImageFilesize']).' KB</span>';
+                    $strInputfield =
+                        $strImagePreview.
+                        '<input type="file" name="imageUpload_'.$intId.'"'.
+                        ' id="'.$this->moduleName.'Inputfield_'.$intId.'"'.
+                        ' class="'.$this->moduleName.'InputfieldImage '.
+// TODO: Not defined
+//                        $strInfoClass.
+                        '" '.
+//                        $strInfoValue.
+                        ' value="'.$strValue.'" onfocus="this.select();" />'.
+                        '<input id="'.$this->moduleName.'Inputfield_'.$intId.'_hidden"'.
+                        ' name="'.$this->moduleName.'Inputfield['.$intId.']"'.
+                        ' value="'.$strValueHidden.'" type="hidden">'.
+                        '<span class="'.$this->moduleName.'InputfieldFilesize">'.
+                        $_ARRAYLANG['TXT_MEDIADIR_MAX_FILESIZE'].
+                        ' '.intval($this->arrSettings['settingsImageFilesize']).
+                        ' KB</span>';
                 }
 
                 return $strInputfield;
 
                 break;
             case 2:
-                //search View
+                // search view
                 break;
         }
+        return null;
     }
 
 
@@ -98,9 +123,10 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
         global $objInit;
 
         if($objInit->mode == 'backend') {
-            if ($_POST["deleteMedia"][$intInputfieldId] != 1) {
+            if (   empty($_POST["deleteMedia"][$intInputfieldId])
+                || $_POST["deleteMedia"][$intInputfieldId] != 1) {
                 $this->checkThumbnail($strValue);
-                $strValue = contrexx_addslashes($strValue);
+                $strValue = contrexx_input2raw($strValue);
             } else {
                 $strValue = null;
             }
@@ -120,7 +146,7 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
                     $strValue = null;
                 }
             } else {
-                $strValue = contrexx_addslashes($strValue);
+                $strValue = contrexx_input2raw($strValue);
             }
         }
 
@@ -159,77 +185,60 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
         global $objDatabase;
 
-        if (isset($_FILES)) {
-            $tmpImage   = $_FILES['imageUpload_'.$intInputfieldId]['tmp_name'];
-            $imageName  = $_FILES['imageUpload_'.$intInputfieldId]['name'];
-            $imageType  = $_FILES['imageUpload_'.$intInputfieldId]['type'];
-            $imageSize  = $_FILES['imageUpload_'.$intInputfieldId]['size'];
-
-            if ($imageName != "") {
-                //get extension
-                $arrImageInfo   = pathinfo($imageName);
-                $imageExtension = !empty($arrImageInfo['extension']) ? '.'.$arrImageInfo['extension'] : '';
-                $imageBasename  = $arrImageInfo['filename'];
-                $randomSum      = rand(10, 99);
-
-                //encode filename
-                if ($this->arrSettings['settingsEncryptFilenames'] == 1) {
-                    $imageName = md5($randomSum.$imageBasename).$imageExtension;
-                }
-
-                //check filename
-                if (file_exists($this->imagePath.'images/'.$imageName)) {
-                    $imageName = $imageBasename.'_'.time().$imageExtension;
-                }
-
-                //upload file
-                if (move_uploaded_file($tmpImage, $this->imagePath.'images/'.$imageName)) {
-
-                	$imageDimension = getimagesize($this->imagePath.'images/'.$imageName);
-                	$intNewWidth = $imageDimension[0];
-                	$intNewHeight = $imageDimension[1];
-					$imageFormat = ($imageDimension[0] > $imageDimension[1]) ? 1 : 0;
-
-					$setNewSize = 0;
-                	if($imageDimension[0] > 640 && $imageFormat == 1) {
-
-                		$doubleFactorDimension = 640 / $imageDimension[0];
-                		$intNewWidth = 640;
-                		$intNewHeight = round($doubleFactorDimension * $imageDimension[1],0);
-                		$setNewSize = 1;
-                	} elseif($imageDimension[1] > 480) {
-
-                		$doubleFactorDimension = 480 / $imageDimension[1];
-                		$intNewHeight = 480;
-                		$intNewWidth = round($doubleFactorDimension * $imageDimension[0],0);
-                		$setNewSize = 1;
-                	}
-
-                	if($setNewSize == 1) {
-
-						$objImage = new ImageManager();
-			            $objImage->loadImage($this->imagePath.'images/'.$imageName);
-			            $objImage->resizeImage($intNewWidth, $intNewHeight, 100);
-			            $objImage->saveNewImage($this->imagePath.'images/'.$imageName, true);
-                	}
-
-
-                    $objFile = new File();
-                    $objFile->setChmod($this->imagePath, $this->imageWebPath, 'images/'.$imageName);
-
-                    //create thumbnail
-                    $this->checkThumbnail($this->imageWebPath.'images/'.$imageName);
-
-                    return contrexx_addslashes($this->imageWebPath.'images/'.$imageName);
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        } else {
+        if (empty($_FILES)) {
             return false;
         }
+        $tmpImage   = $_FILES['imageUpload_'.$intInputfieldId]['tmp_name'];
+        $imageName  = $_FILES['imageUpload_'.$intInputfieldId]['name'];
+//        $imageType  = $_FILES['imageUpload_'.$intInputfieldId]['type'];
+//        $imageSize  = $_FILES['imageUpload_'.$intInputfieldId]['size'];
+        if ($imageName == '') {
+            return false;
+        }
+        // get extension
+        $arrImageInfo   = pathinfo($imageName);
+        $imageExtension = !empty($arrImageInfo['extension']) ? '.'.$arrImageInfo['extension'] : '';
+        $imageBasename  = $arrImageInfo['filename'];
+        $randomSum      = rand(10, 99);
+        // encode filename
+        if ($this->arrSettings['settingsEncryptFilenames'] == 1) {
+            $imageName = md5($randomSum.$imageBasename).$imageExtension;
+        }
+        // check filename
+        if (file_exists($this->imagePath.'images/'.$imageName)) {
+            $imageName = $imageBasename.'_'.time().$imageExtension;
+        }
+        // upload file
+        if (!move_uploaded_file($tmpImage, $this->imagePath.'images/'.$imageName)) {
+            return false;
+        }
+        $imageDimension = getimagesize($this->imagePath.'images/'.$imageName);
+        $intNewWidth = $imageDimension[0];
+        $intNewHeight = $imageDimension[1];
+        $imageFormat = ($imageDimension[0] > $imageDimension[1]) ? 1 : 0;
+        $setNewSize = 0;
+        if ($imageDimension[0] > 640 && $imageFormat == 1) {
+            $doubleFactorDimension = 640 / $imageDimension[0];
+            $intNewWidth = 640;
+            $intNewHeight = round($doubleFactorDimension * $imageDimension[1], 0);
+            $setNewSize = 1;
+        } elseif($imageDimension[1] > 480) {
+            $doubleFactorDimension = 480 / $imageDimension[1];
+            $intNewHeight = 480;
+            $intNewWidth = round($doubleFactorDimension * $imageDimension[0], 0);
+            $setNewSize = 1;
+        }
+        if ($setNewSize == 1) {
+            $objImage = new ImageManager();
+            $objImage->loadImage($this->imagePath.'images/'.$imageName);
+            $objImage->resizeImage($intNewWidth, $intNewHeight, 100);
+            $objImage->saveNewImage($this->imagePath.'images/'.$imageName, true);
+        }
+        $objFile = new File();
+        $objFile->setChmod($this->imagePath, $this->imageWebPath, 'images/'.$imageName);
+        // create thumbnail
+        $this->checkThumbnail($this->imageWebPath.'images/'.$imageName);
+        return $this->imageWebPath.'images/'.$imageName;
     }
 
 
@@ -239,7 +248,10 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
 
         $arrImageInfo = getimagesize(ASCMS_PATH.$strPathImage);
 
-        if ($arrImageInfo['mime'] == "image/gif" || $arrImageInfo['mime'] == "image/jpeg" || $arrImageInfo['mime'] == "image/jpg" || $arrImageInfo['mime'] == "image/png") {
+        if (   $arrImageInfo['mime'] == "image/gif"
+            || $arrImageInfo['mime'] == "image/jpeg"
+            || $arrImageInfo['mime'] == "image/jpg"
+            || $arrImageInfo['mime'] == "image/png") {
             $objImage = new ImageManager();
 
             $arrImageInfo = array_merge($arrImageInfo, pathinfo($strPathImage));
@@ -259,19 +271,24 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
         global $objDatabase;
 
         //get image path
-        $objImagePathRS = $objDatabase->Execute("SELECT value FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
-        $strImagePath   = $objImagePathRS->fields['value'];
+        /*$objDatabase->Execute("
+            SELECT value
+              FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
+             WHERE `entry_id`='".intval($intEntryId)."'
+               AND `field_id`='".intval($intIputfieldId)."'");
+        $strImagePath = $objResult->fields['value'];*/
 
         //delete relation
-        $objDeleteInputfieldRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
-
-        if($objDeleteInputfieldRS !== false) {
+        $objResult = $objDatabase->Execute("
+            DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
+             WHERE `entry_id`='".intval($intEntryId)."'
+               AND  `field_id`='".intval($intIputfieldId)."'");
+        if ($objResult) {
             //delete image
             //$this->deleteImage($strImagePath);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
 
@@ -282,40 +299,46 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
 
         $intId = intval($arrInputfield['id']);
 
-        $objInputfieldValue = $objDatabase->Execute("
-            SELECT
-                `value`
-            FROM
-                ".DBPREFIX."module_mediadir_rel_entry_inputfields
-            WHERE
-                field_id=".$intId."
-            AND
-                entry_id=".$intEntryId."
-            LIMIT 1
-        ");
-
-        $strValue = strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
-
-        if(!empty($strValue) && $strValue != 'new_image') {
-            $arrImageInfo   = getimagesize(ASCMS_PATH.$strValue);
-            $imageWidth     = $arrImageInfo[0]+20;
-            $imageHeight    = $arrImageInfo[1]+20;
-            $arrImageInfo   = pathinfo($strValue);
-            $strImageName    = $arrImageInfo['basename'];
-
-            $arrContent['TXT_MEDIADIR_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE'] = '<a rel="shadowbox[1];options={slideshowDelay:5}"  href="'.$strValue.'"><img src="'.$strValue.'.thumb" alt="" border="0" title=""  width="'.intval($this->arrSettings['settingsThumbSize']).'" /></a>';
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE_SRC'] = $strValue;
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE_FILENAME'] = $strImageName;
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE_SRC_THUMB'] = $strValue.".thumb";
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE_POPUP'] = '<a href="'.$strValue.'" onclick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$imageWidth.',height='.$imageHeight.',status\'); return false"><img src="'.$strValue.'.thumb" title="'.$arrInputfield['name'][0].'" width="'.intval($this->arrSettings['settingsThumbSize']).'" alt="'.$arrInputfield['name'][0].'" border="0" /></a>';
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE_IMAGE'] = '<img src="'.$strValue.'" title="'.$arrInputfield['name'][0].'" alt="'.$arrInputfield['name'][0].'" />';
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE_THUMB'] = '<img src="'.$strValue.'.thumb" width="'.intval($this->arrSettings['settingsThumbSize']).'" title="'.$arrInputfield['name'][0].'" alt="'.$arrInputfield['name'][0].'" />';
-        } else {
-            $arrContent = null;
+        $objResult = $objDatabase->Execute("
+            SELECT `value`
+              FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields
+             WHERE field_id=$intId
+               AND entry_id=$intEntryId");
+        $strValue = strip_tags(htmlspecialchars($objResult->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
+        if (empty($strValue) || $strValue == 'new_image') {
+            return null;
         }
+        $arrImageInfo   = getimagesize(ASCMS_PATH.$strValue);
+        $imageWidth     = $arrImageInfo[0]+20;
+        $imageHeight    = $arrImageInfo[1]+20;
+        $arrImageInfo   = pathinfo($strValue);
+        $strImageName    = $arrImageInfo['basename'];
 
-        return $arrContent;
+        return array(
+            'TXT_MEDIADIR_INPUTFIELD_NAME' => htmlspecialchars(
+                $arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET),
+            'MEDIADIR_INPUTFIELD_VALUE' =>
+                '<a rel="shadowbox[1];options={slideshowDelay:5}" href="'.$strValue.'">'.
+                '<img src="'.$strValue.'.thumb" alt="" border="0" title="" '.
+                'width="'.intval($this->arrSettings['settingsThumbSize']).'" /></a>',
+            'MEDIADIR_INPUTFIELD_VALUE_SRC' => $strValue,
+            'MEDIADIR_INPUTFIELD_VALUE_FILENAME' => $strImageName,
+            'MEDIADIR_INPUTFIELD_VALUE_SRC_THUMB' => $strValue.".thumb",
+            'MEDIADIR_INPUTFIELD_VALUE_POPUP' =>
+                '<a href="'.$strValue.'"'.
+                ' onclick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$imageWidth.',height='.$imageHeight.',status\');return false">'.
+                '<img src="'.$strValue.'.thumb" title="'.$arrInputfield['name'][0].'"'.
+                ' width="'.intval($this->arrSettings['settingsThumbSize']).'"'.
+                ' alt="'.$arrInputfield['name'][0].'" border="0" /></a>',
+            'MEDIADIR_INPUTFIELD_VALUE_IMAGE' =>
+                '<img src="'.$strValue.'" title="'.$arrInputfield['name'][0].'"'.
+                ' alt="'.$arrInputfield['name'][0].'" />',
+            'MEDIADIR_INPUTFIELD_VALUE_THUMB' =>
+                '<img src="'.$strValue.'.thumb"'.
+                ' width="'.intval($this->arrSettings['settingsThumbSize']).'"'.
+                ' title="'.$arrInputfield['name'][0].'"'.
+                ' alt="'.$arrInputfield['name'][0].'" />',
+        );
     }
 
 

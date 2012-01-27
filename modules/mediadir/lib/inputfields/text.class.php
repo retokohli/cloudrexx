@@ -9,12 +9,26 @@
  */
 
 /**
- * Includes
+ * @ignore
  */
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface.php';
+/**
+ * @ignore
+ */
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
+/**
+ * @ignore
+ */
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/placeholder.class.php';
 
+/**
+ * Media  Directory Inputfield Text Class
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_marketplace
+ * @todo        Edit PHP DocBlocks!
+ */
 class mediaDirectoryInputfieldText extends mediaDirectoryLibrary implements inputfield
 {
     public $arrPlaceholders = array('TXT_MEDIADIR_INPUTFIELD_NAME','MEDIADIR_INPUTFIELD_VALUE');
@@ -143,7 +157,7 @@ class mediaDirectoryInputfieldText extends mediaDirectoryLibrary implements inpu
 
     function saveInputfield($intInputfieldId, $strValue)
     {
-        $strValue = contrexx_raw2db(contrexx_input2raw($strValue));
+        $strValue = contrexx_strip_tags(contrexx_input2raw($strValue));
         return $strValue;
     }
 
@@ -152,13 +166,10 @@ class mediaDirectoryInputfieldText extends mediaDirectoryLibrary implements inpu
     {
         global $objDatabase;
 
-        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
-
-        if($objDeleteEntry !== false) {
-            return true;
-        } else {
-            return false;
-        }
+        return (boolean)$objDatabase->Execute("
+            DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
+             WHERE `entry_id`='".intval($intEntryId)."'
+               AND `field_id`='".intval($intIputfieldId)."'");
     }
 
 

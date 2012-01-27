@@ -22,6 +22,7 @@ class mediaDirectoryPlaceholder extends mediaDirectoryLibrary
     function getPlaceholder($strPlaceHolder)
     {
         if(substr($strPlaceHolder,0,14) == '[[ACCESS_USER_'){
+// TODO: seams not to be working in the frontend right now
         	$strValue = self::__getAccessUserPlaceholder($strPlaceHolder);
         }
         

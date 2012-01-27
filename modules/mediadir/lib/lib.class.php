@@ -104,7 +104,6 @@ class mediaDirectoryLibrary
             //get user attributes
             $objUser 		= $objFWUser->objUser;
             $intUserId      = intval($objUser->getId());
-            $intUserName    = $objUser->getUsername();
             $bolUserLogin   = $objUser->login();
             $intUserIsAdmin = $objUser->getAdminStatus();
             $intSelectedFormId = empty($_REQUEST['selectedFormId']) ? substr($_REQUEST['cmd'],3) : intval($_REQUEST['selectedFormId']);
@@ -314,7 +313,7 @@ class mediaDirectoryLibrary
 	                $arrData['frontend'] = intval($objLanguages->fields['frontend']);
 	                $arrData['is_default'] = htmlspecialchars($objLanguages->fields['is_default'], ENT_QUOTES, CONTREXX_CHARSET);
 
-	                $arrLanguages[] = $arrData;
+                    $arrLanguages[$objLanguages->fields['id']] = $arrData;
             	}
 
                 $objLanguages->MoveNext();
@@ -466,7 +465,6 @@ class mediaDirectoryLibrary
                 $objFWUser  	= FWUser::getFWUserObject();
                 $objUser 		= $objFWUser->objUser;
                 $intUserId      = intval($objUser->getId());
-                $intUserName    = $objUser->getUsername();
                 $bolUserLogin   = $objUser->login();
                 $bolUserIsAdmin = $objUser->getAdminStatus();
 

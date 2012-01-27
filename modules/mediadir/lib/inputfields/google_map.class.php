@@ -266,7 +266,7 @@ EOF;
 
         if($objInit->mode == 'backend') {
             if ($_POST["deleteMedia"][$intInputfieldId] != 1) {
-                $strGeoXml = contrexx_addslashes($_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['kml']);
+                $strGeoXml = contrexx_input2raw($_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['kml']);
             } else {
                 $strGeoXml = null;
             }
@@ -280,11 +280,11 @@ EOF;
                     $strGeoXml = null;
                 }
             } else {
-                $strGeoXml = contrexx_addslashes($_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['kml']);
+                $strGeoXml = contrexx_input2raw($_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['kml']);
             }
         }
 
-        $strValue = contrexx_addslashes($lon.','.$lat.','.$zoom.','.$strGeoXml);
+        $strValue = $lon.','.$lat.','.$zoom.','.$strGeoXml;
 
         return $strValue;
     }
@@ -331,7 +331,7 @@ EOF;
                 if (move_uploaded_file($tmpKml, $this->imagePath.'uploads/'.$kmlName)) {
                     $objFile = new File();
                     $objFile->setChmod($this->imagePath, $this->imageWebPath, 'uploads/'.$kmlName);
-                    return contrexx_addslashes($this->imageWebPath.'uploads/'.$kmlName);
+                    return $this->imageWebPath.'uploads/'.$kmlName;
                 } else {
                     return false;
                 }

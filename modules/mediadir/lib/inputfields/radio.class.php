@@ -127,7 +127,7 @@ class mediaDirectoryInputfieldRadio extends mediaDirectoryLibrary implements inp
 
     function saveInputfield($intInputfieldId, $strValue)
     {
-        $strValue = contrexx_addslashes(contrexx_strip_tags($strValue));
+        $strValue = contrexx_strip_tags(contrexx_input2raw($strValue));
         return $strValue;
     }
 
