@@ -1091,11 +1091,11 @@ class ContactManager extends ContactLib
                 $recipientEmail = strip_tags(contrexx_stripslashes($_POST['contactFormRecipientEmail'][$id]));
                 if(strpos($recipientEmail, ',')){
                     foreach (explode(',', $recipientEmail) as $email) {
-                        if ($logErrors && $email != $_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL']  && !preg_match('/[a-z0-9]+(?:[_\.-][a-z0-9]+)*?@[a-z0-9]+(?:[\.-][a-z0-9]+)*?\.[a-z]{2,6}/', $email)){
+                        if ($logErrors && $email != $_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL']  && !preg_match('/'.VALIDATOR_REGEX_EMAIL.'/', $email)){
                             $arrErrors[] = sprintf($_ARRAYLANG['TXT_CONTACT_INVALID_EMAIL'], $email);
                         }
                     }
-                }elseif ($logErrors && $email != $_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL'] && !preg_match('/[a-z0-9]+(?:[_\.-][a-z0-9]+)*?@[a-z0-9]+(?:[\.-][a-z0-9]+)*?\.[a-z]{2,6}/', $recipientEmail)){
+                }elseif ($logErrors && $email != $_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL'] && !preg_match('/'.VALIDATOR_REGEX_EMAIL.'/', $recipientEmail)){
                     $arrErrors[] = sprintf($_ARRAYLANG['TXT_CONTACT_INVALID_EMAIL'], $recipientEmail);
                 }
 

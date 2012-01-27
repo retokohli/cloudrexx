@@ -28,6 +28,7 @@ News Manager
 
 Kontakte Manager
 - Die Benachrichtigung wird nun korrekt an die Empfängeradressen der Auswahlliste versendet.
+- E-Mail und Web-Adressen dürfen nun Umlaute enthalten.
 
 Modul: Medienverzeichnis
 - Der Dateiupload funktioniert nun auch im Frontend.
