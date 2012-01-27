@@ -22,6 +22,7 @@
             </div>
             <a id="toggle_type" class="heading toggle">{TXT_CORE_CM_TYPE}</a>
             <div id="type" class="clearfix">
+	      <input type="hidden" name="page[type]" value="off" />
                 <input type="radio" name="page[type]" value="content" id="type_content" class="radio" checked="checked" />
                 <label for="type_content">{TXT_CORE_CM_TYPE_CONTENT}</label>
                 <input type="radio" name="page[type]" value="redirect" id="type_redirect" class="radio" />
@@ -48,6 +49,7 @@
 
                 <span class="info type_hidable type_fallback">{TXT_CORE_CM_TYPE_FALLBACK_INFO}</span>
             </div>
+	    <input type="hidden" name="page[scheduled_publishing]" value="off" />
             <a class="heading toggle_checkbox" id="page[scheduled_publishing]">{TXT_CORE_CM_SCHEDULED_PUBLISHING}</a>
             <div id="scheduled_publishing" style="display: none;">
                 Von: <input type="text" name="page[start]" value="von" class="date" />
@@ -59,6 +61,7 @@
             </div>
         </div>
         <div id="page_meta">
+	  <input type="hidden" name="page[metarobots]" value="off" />
             <a class="heading toggle_checkbox" id="page[metarobots]">{TXT_CORE_CM_SE_INDEX}</a>
             <div id="metadata" style="display: none;">
                 <label for="page_metatitle">{TXT_CORE_CM_METATITLE}</label>
@@ -75,6 +78,7 @@
             </div>
         </div>
         <div id="page_access">
+	  <input type="hidden" name="page[protection_frontend]" value="off" />
             <a class="heading toggle_checkbox" id="page[protection_frontend]">{TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND}</a>
             <div id="access_protection_backend" style="display: none;">
                 <select style="width: 300px; height: 250px" id="frontendAccessGroups" class="multiselect" multiple="multiple" name="groups[]">
@@ -82,6 +86,7 @@
                   <option value="test2" selected="selected">selected</option>
                 </select>
             </div>
+	    <input type="hidden" name="page[protection_backend]" value="off" />
             <a class="heading toggle_checkbox" id="page[protection_backend]">{TXT_CORE_CM_ACCESS_PROTECTION_BACKEND}</a>
             <div id="access_protection_backend" style="display: none;">
                 <select style="width: 300px; height: 250px" id="backendAccessGroups" class="multiselect" multiple="multiple" name="groups[]">
@@ -107,6 +112,7 @@
                 <input type="text" name="page[cssName]" id="page_css_class" />
                 <span class="info">{TXT_CORE_CM_CSS_CLASS_INFO}</span>
             </div>
+	    <input type="hidden" name="page[caching]" value="off" />
             <a class="heading toggle_checkbox" id="page[caching]">{TXT_CORE_CM_CACHE}</a>
             <a href="#" class="heading toggle">{TXT_CORE_CM_NAVIGATION}</a>
             <div id="navigation">
@@ -127,6 +133,7 @@
                 <input type="text" name="page[cssNavName]" id="page_css_nav_class" />
                 <span class="info">{TXT_CORE_CM_CSS_NAV_CLASS_INFO}</span>
             </div>
+	    <input type="hidden" name="page[sourceMode]" value="off" />
             <a class="heading toggle_checkbox" id="page[sourceMode]">{TXT_CORE_CM_SOURCE_MODE}</a>
         </div>
       </form>

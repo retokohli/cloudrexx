@@ -1192,8 +1192,11 @@ class Page extends \Cx\Model\Base\EntityBase
 
     public function updateFromArray($newData) {
         foreach ($newData as $key => $value) {
-            if ($this->{$key}) {
+            try {
                 call_user_func(array($this, "set".ucfirst($key)), $value);
+	    }
+	    catch (Exception $e) {
+		DBG::log("\r\nskipped ".$key);
             }
         }
     }
