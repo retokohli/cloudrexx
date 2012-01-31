@@ -48,3 +48,6 @@ Verzeichnis
 
 Newsletter
 - In der Empfängerübersicht funktioniert die Sortierung nun korrekt.
+
+Bildergalerie
+- Der Platzhalter {GALLERY_LATEST} verlinkt nun innerhalb der entsprechenden Kategorie auf die richtige Seite.
