@@ -32,6 +32,7 @@ Kontakte Manager
 
 Modul: Medienverzeichnis
 - Der Dateiupload funktioniert nun auch im Frontend.
+- Der Dateiupload im Frontend und Backend erlaubt nun auch das Heraufladen von Dateien mit grossgeschriebener Dateiendung.
 - Tritt ein Fehler während der Aktualisierung eines Eintrages auf, gehen die Daten nicht verloren.
 - Anführungszeichen werden bei der Eingabe als Fliesstext korrekt behandelt.
 - E-Mail und Web-Adressen dürfen nun Umlaute enthalten.
