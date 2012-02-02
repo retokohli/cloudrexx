@@ -108,8 +108,7 @@ class Navigation
               INNER JOIN ".DBPREFIX."modules                AS m    ON m.id = n.module
          LEFT OUTER JOIN ".DBPREFIX."module_alias_target    AS a_t  ON a_t.url = n.catid
          LEFT OUTER JOIN ".DBPREFIX."module_alias_source    AS a_s  ON a_s.target_id = a_t.id AND a_s.isdefault = 1
-                   WHERE (n.displaystatus = 'on' OR n.catid='".$this->pageId."')
-                     AND n.activestatus='1'
+                   WHERE n.activestatus='1'
                      AND n.is_validated='1'
                      AND n.lang='".$this->langId."'
                          ".(
