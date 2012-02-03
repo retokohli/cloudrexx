@@ -2600,7 +2600,7 @@ CREATE TABLE `contrexx_module_mediadir_votes` (
   `ip` varchar(100) NOT NULL,
   `vote` int(11) NOT NULL,
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
