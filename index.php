@@ -1609,8 +1609,7 @@ switch ($plainSection) {
 if (   isset($_CONFIGURATION['custom']['shopnavbar'])
     && $_CONFIGURATION['custom']['shopnavbar']
     && !is_object($shopObj)
-// Optionally limit to the first instance
-//    && MODULE_INDEX < 2
+    && MODULE_INDEX < 2
     /** @ignore */
     && @include_once(ASCMS_MODULE_PATH.'/shop/index.class.php')) {
     if (shopUseSession() && empty($sessionObj)) $sessionObj = new cmsSession();
