@@ -49,12 +49,14 @@ class FileBrowser {
         'shop'      => 'TXT_FILEBROWSER_SHOP',
         'blog'      => 'TXT_FILEBROWSER_BLOG',
         'podcast'   => 'TXT_FILEBROWSER_PODCAST',
-        'downloads' => 'TXT_FILEBROWSER_DOWNLOADS'
+        'downloads' => 'TXT_FILEBROWSER_DOWNLOADS',
+        'mediadir'  => 'TXT_FILEBROWSER_MEDIADIR',
     );
     public $_shopEnabled;
     public $_blogEnabled;
     public $_podcastEnabled;
     public $_downloadsEnabled;
+    public $_mediadirEnabled;
     public $highlightedFiles     = array(); // added files
     public $highlightColor    = '#D8FFCA'; // highlight added files [#d8ffca]
 
@@ -78,6 +80,7 @@ class FileBrowser {
         $this->_blogEnabled = $this->_checkForModule('blog');
         $this->_podcastEnabled = $this->_checkForModule('podcast');
         $this->_downloadsEnabled = $this->_checkForModule('downloads');
+        $this->_mediadirEnabled = $this->_checkForModule('mediadir');
 
         $this->checkMakeDir();
         $this->_initFiles();
@@ -176,6 +179,9 @@ class FileBrowser {
                 break;
             case 'downloads':
                 $strWebPath = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
+                break;
+            case 'mediadir':
+                $strWebPath = ASCMS_MEDIADIR_IMAGES_WEB_PATH.$this->_path;
                 break;
             default:
                 $strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
@@ -278,6 +284,10 @@ class FileBrowser {
             case 'downloads':
                 $strPath    = ASCMS_DOWNLOADS_IMAGES_PATH.$this->_path;
                 $strWebPath = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
+            break;
+            case 'mediadir':
+                $strPath = ASCMS_MEDIADIR_IMAGES_PATH.$this->_path;
+                $strWebPath = ASCMS_MEDIADIR_IMAGES_WEB_PATH.$this->_path;
             break;
             default:
                 $strPath    = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
@@ -460,6 +470,9 @@ class FileBrowser {
                 case 'downloads':
                     $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_DOWNLOADS_IMAGES_WEB_PATH);
                     break;
+                case 'mediadir':
+                    $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIADIR_IMAGES_WEB_PATH);
+                    break;
                 default:
                     $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_CONTENT_IMAGE_WEB_PATH);
             }
@@ -514,6 +527,10 @@ class FileBrowser {
             case 'downloads':
                 $data['path']    = ASCMS_DOWNLOADS_IMAGES_PATH.$this->_path;
                 $data['webPath'] = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
+            break;
+            case 'mediadir':
+                $data['path']    = ASCMS_MEDIADIR_IMAGES_PATH.$this->_path;
+                $data['webPath'] = ASCMS_MEDIADIR_IMAGES_WEB_PATH.$this->_path;
             break;
             default:
                 $data['path']    = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
@@ -641,7 +658,7 @@ class FileBrowser {
         // replace $change with ''
         $change = array('+');
         // replace $signs1 with $signs
-        $signs1 = array(' ', '�', '�', '�', '�');
+        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
         $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
 
         foreach ($change as $str) {
@@ -692,6 +709,9 @@ class FileBrowser {
             break;
             case 'downloads':
                 $strPath = ASCMS_DOWNLOADS_IMAGES_PATH.$this->_path;
+            break;
+            case 'mediadir':
+                $strPath = ASCMS_MEDIADIR_IMAGES_PATH.$this->_path;
             break;
             default:
                 $strPath = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
