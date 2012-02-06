@@ -2539,6 +2539,7 @@ CREATE TABLE `contrexx_module_mediadir_rel_entry_inputfields` (
   `form_id` int(7) NOT NULL,
   `field_id` int(7) NOT NULL,
   `value` longtext NOT NULL,
+  UNIQUE KEY `entry_id` (`entry_id`,`lang_id`,`form_id`,`field_id`),
   FULLTEXT KEY `value` (`value`)
 ) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
