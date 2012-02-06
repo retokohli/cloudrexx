@@ -988,9 +988,15 @@ JS_CODE;
         $objDownload = new Download();
         $objDownload->loadDownloads(array('category_id' => $objCategory->getId(), 'expiration' => array('=' => 0, '>' => time())), $this->searchKeyword, null, null, $_CONFIG['corePagingLimit'], $limitOffset);
         $categoryId = $objCategory->getId();
-        $allowdDeleteFiles = !$objCategory->getManageFilesAccessId()
-                            || Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true)
-                            || $objCategory->getOwnerId() == $this->userId;
+        $allowdDeleteFiles = false;
+        if (!$objCategory->EOF) {
+            $allowdDeleteFiles =    !$objCategory->getManageFilesAccessId()
+                                 || Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true)
+                                 || (   $this->userId
+                                     && $objCategory->getOwnerId() == $this->userId);
+        } elseif (Permission::hasAllAccess()) {
+            $allowdDeleteFiles = true;
+        }
 
         if ($objDownload->EOF) {
             $this->objTemplate->hideBlock('downloads_file_list');
@@ -1107,7 +1113,7 @@ JS_CODE;
         }
 
         // parse delete icon link
-        if ($allowDeleteFilesFromCategory || $objDownload->getOwnerId() == $this->userId) {
+        if ($allowDeleteFilesFromCategory || ($this->userId && $objDownload->getOwnerId() == $this->userId)) {
             $deleteIcon = $this->getHtmlDeleteLinkIcon(
                 $objDownload->getId(),
                 htmlspecialchars(str_replace("'", "\\'", $objDownload->getName($_LANGID)), ENT_QUOTES, CONTREXX_CHARSET),
