@@ -1,5 +1,4 @@
 <?php
-
 function _mediadirUpdate()
 {
     global $_ARRAYLANG, $_CORELANG, $objUpdate, $_CONFIG;
@@ -257,7 +256,8 @@ function _mediadirUpdate()
               'value'          => array('type' => 'longtext', 'after' => 'field_id')
           ),
           array(
-              'value'          => array('fields' => array('value'), 'type' => 'FULLTEXT')
+                'entry_id'       => array('fields' => array('entry_id','lang_id','form_id','field_id'), 'type' => 'UNIQUE'),
+                'value'          => array('fields' => array('value'), 'type' => 'FULLTEXT')
           )
       );
 
