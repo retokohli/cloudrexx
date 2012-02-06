@@ -5,6 +5,9 @@
 ****************************************
 * Neue Funktionen / Änderungen *********
 ****************************************
+Allgemein
+- Beim Zugriff mittels einem Tablet Computer wird dem Besucher die normale Ansicht angezeigt und nicht die Ansicht für mobile Endgeräte (Mobile-Template).
+
 PDF-Ansicht
 - Block-Elemente (DIV, TABLE, TR, TH, TD) können mittels CSS-Eigenschaft 'display:none' ausgeblendet werden.
 
