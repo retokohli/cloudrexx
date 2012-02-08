@@ -67,13 +67,144 @@ class Navigation
         $this->langId = $_LANGID;
         $this->pageId = $pageId;
         $this->page = $page;
-        $this->_initialize();
-        $this->_getParents();
+        //$this->_initialize();
+        //$this->_getParents();
         // $parcat is the starting parent id
         // optional $maxLevel is the maximum level, set to 0 to show all levels
-        $this->_buildTree();
+        //$this->_buildTree();
     }
 
+
+
+    public function getSubnavigation($templateContent, $boolShop=false)
+    {
+        return $this->parseNavigation($templateContent, $boolShop, true);
+    }
+    
+
+    public function getNavigation($templateContent, $boolShop=false)
+    {
+        return $this->parseNavigation($templateContent, $boolShop, false);
+    }
+
+    /**
+     * @param   string  $templateContent
+     * @param   boolean $boolShop         If true, parse the shop navigation
+     *                                    into {SHOPNAVBAR_FILE}
+     * @param   \Cx\Model\ContentManager\Page requestedPage
+     * @access  private
+    * @return mixed parsed navigation
+    */
+    private function parseNavigation($templateContent, $boolShop=false, $parseSubnavigation=false)
+    {
+        // only proceed if a navigation template had been set
+        if (empty($templateContent)) {
+            return;
+        }
+
+        $this->_objTpl = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
+        $this->_objTpl->setTemplate($templateContent);
+
+        if ($boolShop) {
+            $this->_objTpl->setVariable('SHOPNAVBAR_FILE', Shop::getNavbar());
+        }
+
+        $rootNode = null;
+        if ($parseSubnavigation) {
+// TODO: add comment to why the subnavigation will need the rootNode
+            $rootNode = $this->page->getNode();
+            while($rootNode->getLvl() > 1) {
+                $rootNode = $rootNode->getParent();
+            }
+        }
+
+        if (isset($this->_objTpl->_blocks['navigation_dropdown'])) {
+            // set submenu tag
+            if ($this->_objTpl->blockExists('sub_menu')) {
+                $this->subNavTag = trim($this->_objTpl->_blocks['sub_menu']);
+                $templateContent = ereg_replace('<!-- BEGIN sub_menu -->.*<!-- END sub_menu -->', NULL, $templateContent);
+            }
+            $navi = new DropdownNavigationPageTree(Env::em(), 0, $rootNode, $this->langId, $this->page);
+            $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
+            $navi->setTemplate($this->_objTpl);
+            $renderedNavi = $navi->render();
+            return ereg_replace('<!-- BEGIN level_. -->.*<!-- END level_. -->', $renderedNavi, $templateContent);
+        }
+
+        if (isset($this->_objTpl->_blocks['navigation'])) {
+            $navi = new NavigationPageTree(Env::em(), 0, $rootNode, $this->langId, $this->page);
+            $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
+            $navi->setTemplate($this->_objTpl);
+            return $navi->render();
+        }
+
+        // Create a nested list, formatted with ul and li-Tags
+        if (isset($this->_objTpl->_blocks['nested_navigation'])) {
+            $navi = new NestedNavigationPageTree(Env::em(), 0, null, $this->langId, $this->page);
+            $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
+            $navi->setTemplate($this->_objTpl);
+            $renderedNavi = $navi->render();
+            return preg_replace('/<!--\s+BEGIN\s+nested_navigation\s+-->.*<!--\s+END\s+nested_navigation\s+-->/ms', $renderedNavi, $templateContent);
+        }
+    }
+
+
+
+
+    /**
+     * Get trail
+     * @return    string     The trail with links
+     */
+    function getTrail()
+    {
+        $lang = $this->page->getLang();
+        $node = $this->page->getNode()->getParent();
+        $result = '';
+        while($node->getLvl() > 0) {
+            $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
+
+            $page = $node->getPage($lang);
+            $title = $page->getTitle();
+            $path = $pageRepo->getPath($page);
+            $result = '<a href="'.$path.'" title="'.contrexx_raw2xhtml($title).'">'.contrexx_raw2xhtml($title).'</a>'.$this->separator.' '.$result;
+            $node = $node->getParent();
+        }
+        return $result;
+    }
+
+
+    /**
+     * getFrontendLangNavigation()
+     * @access public
+     * @global InitCMS
+     * @todo Use URLTranslator::getUrlInAllLanguages() for building the menu
+     */
+    function getFrontendLangNavigation()
+    {
+        global $objInit;
+
+        $this->arrLang = $objInit->getLanguageArray();
+        $langNavigation = '';
+        if (count($this->arrLang)>1) {
+            foreach ($this->arrLang as $id => $value) {
+                if ($this->arrLang[$id]['frontend'] == 1) {
+                    $uri = ASCMS_PATH_OFFSET.'/'.$this->arrLang[$id]['lang'].'/';
+                    $langNavigation .= " [ <a href='".$uri."' title='".contrexx_raw2xhtml($value['name'])."' >".contrexx_raw2xhtml($value['name'])."</a> ] ";
+                }
+            }
+        }
+        return $langNavigation;
+    }
+
+
+
+
+
+/*********************************************************************************
+** LEGACY CODE *******************************************************************
+*********************************************************************************/
 
     /**
     * Initialize the data hash from the database
@@ -278,80 +409,6 @@ class Navigation
                     $this->_buildTree($id,$maxlevel,$level+1);
                 }
             }
-        }
-    }
-
-    public function getSubnavigation($templateContent, $boolShop=false)
-    {
-        return $this->parseNavigation($templateContent, $boolShop, true);
-    }
-    
-
-    public function getNavigation($templateContent, $boolShop=false)
-    {
-        return $this->parseNavigation($templateContent, $boolShop, false);
-    }
-
-    /**
-     * @param   string  $templateContent
-     * @param   boolean $boolShop         If true, parse the shop navigation
-     *                                    into {SHOPNAVBAR_FILE}
-     * @param   \Cx\Model\ContentManager\Page requestedPage
-     * @access  private
-    * @return mixed parsed navigation
-    */
-    private function parseNavigation($templateContent, $boolShop=false, $parseSubnavigation=false)
-    {
-        // only proceed if a navigation template had been set
-        if (empty($templateContent)) {
-            return;
-        }
-
-        $this->_objTpl = new HTML_Template_Sigma('.');
-        CSRF::add_placeholder($this->_objTpl);
-        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-        $this->_objTpl->setTemplate($templateContent);
-
-        if ($boolShop) {
-            $this->_objTpl->setVariable('SHOPNAVBAR_FILE', Shop::getNavbar());
-        }
-
-        $rootNode = null;
-        if ($parseSubnavigation) {
-// TODO: add comment to why the subnavigation will need the rootNode
-            $rootNode = $this->page->getNode();
-            while($rootNode->getLvl() > 1) {
-                $rootNode = $rootNode->getParent();
-            }
-        }
-
-        if (isset($this->_objTpl->_blocks['navigation_dropdown'])) {
-            // set submenu tag
-            if ($this->_objTpl->blockExists('sub_menu')) {
-                $this->subNavTag = trim($this->_objTpl->_blocks['sub_menu']);
-                $templateContent = ereg_replace('<!-- BEGIN sub_menu -->.*<!-- END sub_menu -->', NULL, $templateContent);
-            }
-            $navi = new DropdownNavigationPageTree(Env::em(), 0, $rootNode, $this->langId, $this->page);
-            $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
-            $navi->setTemplate($this->_objTpl);
-            $renderedNavi = $navi->render();
-            return ereg_replace('<!-- BEGIN level_. -->.*<!-- END level_. -->', $renderedNavi, $templateContent);
-        }
-
-        if (isset($this->_objTpl->_blocks['navigation'])) {
-            $navi = new NavigationPageTree(Env::em(), 0, $rootNode, $this->langId, $this->page);
-            $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
-            $navi->setTemplate($this->_objTpl);
-            return $navi->render();
-        }
-
-        // Create a nested list, formatted with ul and li-Tags
-        if (isset($this->_objTpl->_blocks['nested_navigation'])) {
-            $navi = new NestedNavigationPageTree(Env::em(), 0, null, $this->langId, $this->page);
-            $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
-            $navi->setTemplate($this->_objTpl);
-            $renderedNavi = $navi->render();
-            return preg_replace('/<!--\s+BEGIN\s+nested_navigation\s+-->.*<!--\s+END\s+nested_navigation\s+-->/ms', $renderedNavi, $templateContent);
         }
     }
 
@@ -615,7 +672,6 @@ class Navigation
         return $navigation;
     }
 
-
     /**
      * Builds the array containing all parent IDs of the current page
      *
@@ -642,57 +698,6 @@ class Navigation
         array_push($this->parents, $this->pageId, 0);
     }
 
-
-    /**
-     * Get trail
-     * @return    string     The trail with links
-     */
-    function getTrail()
-    {
-        $lang = $this->page->getLang();
-        $node = $this->page->getNode()->getParent();
-        $result = '';
-        while($node->getLvl() > 0) {
-            $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
-
-            $page = $node->getPage($lang);
-            $title = $page->getTitle();
-            $path = $pageRepo->getPath($page);
-            $result = '<a href="'.$path.'" title="'.contrexx_raw2xhtml($title).'">'.contrexx_raw2xhtml($title).'</a>'.$this->separator.' '.$result;
-            $node = $node->getParent();
-        }
-        return $result;
-    }
-
-
-    /**
-     * getFrontendLangNavigation()
-     * @access public
-     * @global InitCMS
-     * @global array
-     */
-    function getFrontendLangNavigation()
-    {
-        global $objInit, $_CONFIG;
-
-        $this->arrLang = $objInit->getLanguageArray();
-        $langNavigation = '';
-        if (count($this->arrLang)>1) {
-            foreach ($this->arrLang as $id => $value) {
-                if ($this->arrLang[$id]['frontend'] == 1) {
-                    if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
-                        $uri = ASCMS_PATH_OFFSET.'/'.$this->arrLang[$id]['lang'].'/';
-                    } else {
-                        $uri = CONTREXX_SCRIPT_PATH."?setLang=".$id;
-                    }
-                    $langNavigation .= " [ <a href='".$uri."' title='".$value['name']."' >".$value['name']."</a> ] ";
-                }
-            }
-        }
-        return $langNavigation;
-    }
-
-
     static function is_local_url($url)
     {
         $url = strtolower($url);
@@ -709,5 +714,8 @@ class Navigation
         print_r($obj);
         echo "</pre>";
     }
+
+
+
 
 }
