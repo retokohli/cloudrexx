@@ -552,6 +552,8 @@ class DBG
                 $text."\n");
         } else {
             echo $text;
+            // force log message output
+            ob_flush();
         }
     }
 
