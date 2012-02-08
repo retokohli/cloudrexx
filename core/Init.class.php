@@ -224,7 +224,7 @@ class InitCMS
         }
         else {
             // auto detection
-            if ($this->_is_mobile_phone() && $this->arrLang[$this->frontendLangId]['mobile_themes_id']) {
+            if (self::_is_mobile_phone() && !self::_is_tablet() && $this->arrLang[$this->frontendLangId]['mobile_themes_id']) {
                 // same here: only set smallscreen mode if there IS a smallscreen theme
                 setcookie('smallscreen', 1, 0, ASCMS_PATH_OFFSET.'/');
                 $this->isMobileDevice = 1;
@@ -862,15 +862,12 @@ class InitCMS
      * Returns true if the user agent is a mobile device (smart phone, PDA etc.)
      * @todo    Maybe put this in a separate class?
      */
-    function _is_mobile_phone()
+    public static function _is_mobile_phone()
     {
         $isMobile = false;
-        $old_er = error_reporting(0);
         $op = isset($_SERVER['HTTP_X_OPERAMINI_PHONE']) ? strtolower($_SERVER['HTTP_X_OPERAMINI_PHONE']) : '';
         $ua = isset($_SERVER['HTTP_USER_AGENT']) ? strtolower($_SERVER['HTTP_USER_AGENT']) : '';
         $ac = isset($_SERVER['HTTP_ACCEPT']) ? strtolower($_SERVER['HTTP_ACCEPT']) : '';
-
-        error_reporting($old_er);
 
         $isMobile = strpos($ac, 'application/vnd.wap.xhtml+xml') !== false
             || $op != ''
@@ -922,6 +919,27 @@ class InitCMS
 
 
     /**
+     * Returns true if the user agent is a tablet
+     */
+    public static function _is_tablet()
+    {
+        $isTablet = false;
+        $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
+
+        $isTablet = strpos($ua, 'tablet') !== false
+            || strpos($ua, 'ipad') !== false
+            || strpos($ua, 'sch-i800') !== false
+            || strpos($ua, 'gt-p1000') !== false
+            || strpos($ua, 'a500') !== false
+            || strpos($ua, 'gt-p7100') !== false
+            || strpos($ua, 'gt-p1000') !== false
+            || strpos($ua, 'at100') !== false
+            || strpos($ua, 'a43') !== false;
+        return $isTablet;
+    }
+
+
+    /**
      * Returns true if there is custom content for this page
      * @return  boolean       True if there is custom content,
      *                        false otherwise
@@ -930,5 +948,4 @@ class InitCMS
     {
         return strlen($this->customContentTemplate) > 0 ? true : false;
     }
-
 }

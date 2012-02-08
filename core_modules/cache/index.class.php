@@ -43,6 +43,18 @@ class Cache extends cacheLib {
 	{
 		global $_CONFIG;
 
+        // in case the request's origin is from a mobile devie
+        // and this is the first request (the InitCMS object wasn't yet
+        // able to determine of the mobile device wishes to be served
+        // with the system's mobile view), we shall deactivate the caching system
+        if (InitCMS::_is_mobile_phone()
+            && !InitCMS::_is_tablet()
+            && !isset($_REQUEST['smallscreen'])
+        ) {
+            $this->boolIsEnabled = false;
+            return;
+        }
+
 		if($_CONFIG['cacheEnabled'] == 'on' && (!isset($_REQUEST['caching']) || $_REQUEST['caching'] != '0')) {
 			if (is_dir(ASCMS_CACHE_PATH)) {
 				if (is_writable(ASCMS_CACHE_PATH)) {
