@@ -430,10 +430,8 @@ function search_getResultArray($query,$section,$command,$pagevar,$term)
     $crit = array(
          'module' => $section,
          'lang'   => FRONTEND_LANG_ID,
-         'cmd'    => NULL
+         'cmd'    => $command
     );
-    if(!empty($command))
-        $crit['cmd'] = $command;
 
     $page = $pageRepo->findOneBy($crit);
     if(!$page || !$page->isActive()) {
