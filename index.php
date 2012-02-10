@@ -403,10 +403,8 @@ if ($isRegularPageRequest) {
             $crit = array(
                  'module' => $section,
                  'lang' => FRONTEND_LANG_ID,
-                 'cmd' => NULL
+                 'cmd' => $command
             );
-            if(!empty($command))
-                $crit['cmd'] = $command;
 
             $page = $pageRepo->findOneBy($crit);
 
@@ -417,10 +415,8 @@ if ($isRegularPageRequest) {
                 $crit = array(
                      'module' => $section,
                      'lang' => FWLanguage::getFallbackLanguageIdById(FRONTEND_LANG_ID),
-                     'cmd' => NULL
+                     'cmd' => $command
                 );
-                if(!empty($command))
-                    $crit['cmd'] = $command;
 
                 $page = $pageRepo->findOneBy($crit);
 
