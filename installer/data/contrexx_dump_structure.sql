@@ -3125,7 +3125,7 @@ CREATE TABLE `contrexx_pages` (
   `active` tinyint(1) NOT NULL,
   `target` varchar(255) DEFAULT NULL,
   `module` varchar(255) DEFAULT NULL,
-  `cmd` varchar(50) DEFAULT NULL,
+  `cmd` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `node_id` (`node_id`,`lang`),
   KEY `IDX_D8E86F54460D9FD7` (`node_id`),
