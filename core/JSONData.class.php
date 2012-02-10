@@ -41,26 +41,25 @@ class JSONData {
     // get_children will probably have to stick with the json format from renderTree, for reasonable
     // jsTree compat.
 	function jsondata() {
-        if (array_key_exists($_GET['object'], $this->adapters)) {
-            // browsers will pass rendering of application/* MIMEs to other applications, usually.
-            // Skip the following line for debugging, if so desired
-            header('Content-Type: application/json');
+	    if (array_key_exists($_GET['object'], $this->adapters)) {
+		// browsers will pass rendering of application/* MIMEs to other applications, usually.
+		// Skip the following line for debugging, if so desired
+		//header('Content-Type: application/json');
 
-            // CSRF protection adds CSRF info to anything it's able to find. Disable it whenever
-            // outputting json
-            $csrf_tags = ini_get('url_rewriter.tags');
-            ini_set('url_rewriter.tags', '');
+		// CSRF protection adds CSRF info to anything it's able to find. Disable it whenever
+		// outputting json
+		$csrf_tags = ini_get('url_rewriter.tags');
+		ini_set('url_rewriter.tags', '');
 
-            return call_user_func(
-				  array($this->adapters[$_GET['object']], $_GET['act']),
-				  array('get' => $_GET, 'post' => $_POST)
-				  );
+		return call_user_func(
+				      array($this->adapters[$_GET['object']], $_GET['act']),
+				      array('get' => $_GET, 'post' => $_POST)
+				      );
 
-            // Just a reminder to switch csrf prot back on after being done outputting json. This
-            // will never get called
-            ini_set('url_rewriter.tags', $csrf_tags);
-        }
-
+		// Just a reminder to switch csrf prot back on after being done outputting json. This
+		// will never get called
+		ini_set('url_rewriter.tags', $csrf_tags);
+	    }
 	}
 }
 

@@ -27,7 +27,7 @@ class ActionsRenderer
             $actions[] = sprintf(self::$actionItem, "index.php?cmd=content&act=pageStatus&action=visible&page={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_SHOW']);
         }
 
-        $actions[] = sprintf(self::$actionItem, "index.php?cmd=jsondata&object=node&act=delete", $_ARRAYLANG['TXT_CORE_CM_DELETE']);
+        $actions[] = sprintf(self::$actionItem, "index.php?cmd=jsondata&object=node&act=delete&id={$page->getNode()->getId()}", $_ARRAYLANG['TXT_CORE_CM_DELETE']);
 
         return self::$header.implode("\n",$actions).self::$footer;
     }

@@ -488,6 +488,15 @@ input.toggle_indicator {
     text-shadow: #fff 1px 1px;
     padding: 0 10px
 }
+.cxDialog {
+    border: 1px solid #333;
+    border-top: 0px solid #333;
+    text-align: center;
+}
+.cxDialog.noTitle .ui-dialog-titlebar {
+    height: 0px;
+    display: none;
+}
 /* 4) CHOSEN PLUGIN */
 /* @group Base */
 select.chzn-select{
