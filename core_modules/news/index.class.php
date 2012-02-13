@@ -125,6 +125,10 @@ class news extends newsLibrary {
             exit;
         }
 
+// TODO: add error handler to load the fallback-language version of the news message
+//       in case the message doesn't exist in the requested language. But only try load the
+//       the message in the fallback-language in case the associated news-detail content page
+//       is setup to use the content of the fallback-language
         $objResult = $objDatabase->SelectLimit('SELECT  news.id                 AS id,
                                                         news.userid             AS userid,
                                                         news.source             AS source,
@@ -150,6 +154,7 @@ class news extends newsLibrary {
                                             INNER JOIN  '.DBPREFIX.'module_news_categories_locale AS cat ON cat.category_id = news.catid
                                                 WHERE   news.status = 1 AND
                                                         news.id = '.$newsid.' AND
+                                                        locale.is_active=1 AND
                                                         locale.lang_id ='.FRONTEND_LANG_ID.' AND
                                                         cat.lang_id ='.FRONTEND_LANG_ID.' AND
                                                         (news.startdate <= \''.date('Y-m-d H:i:s').'\' OR news.startdate="0000-00-00 00:00:00") AND
@@ -537,6 +542,7 @@ class news extends newsLibrary {
                 INNER JOIN  '.DBPREFIX.'module_news_locale AS nl ON nl.news_id = n.id
                 INNER JOIN  '.DBPREFIX.'module_news_categories_locale AS nc ON nc.category_id=n.catid
                 WHERE       status = 1
+                            AND nl.is_active=1
                             AND nl.lang_id='.FRONTEND_LANG_ID.'
                             AND nc.lang_id='.FRONTEND_LANG_ID.'
                             '.($relatedByKind == 'category'  ? 'AND n.catid        ='.$relatedKindId : null)
@@ -857,6 +863,7 @@ class news extends newsLibrary {
                     INNER JOIN  '.DBPREFIX.'module_news_locale AS nl ON nl.news_id = n.id
                     INNER JOIN  '.DBPREFIX.'module_news_categories_locale AS nc ON nc.category_id=n.catid
                     WHERE       status = 1
+                                AND nl.is_active=1
                                 AND nl.lang_id='.FRONTEND_LANG_ID.'
                                 AND nc.lang_id='.FRONTEND_LANG_ID.'
                                 AND (n.startdate<=\''.date('Y-m-d H:i:s').'\' OR n.startdate="0000-00-00 00:00:00")
@@ -1089,6 +1096,7 @@ class news extends newsLibrary {
                     INNER JOIN  '.DBPREFIX.'module_news_locale AS nl ON nl.news_id = n.id
                     INNER JOIN  '.DBPREFIX.'module_news_categories_locale AS nc ON nc.category_id=n.catid
                     WHERE       status = 1
+                                AND nl.is_active=1
                                 AND nl.lang_id='.FRONTEND_LANG_ID.'
                                 AND nc.lang_id='.FRONTEND_LANG_ID.'
                                 AND (n.startdate<=\''.date('Y-m-d H:i:s').'\' OR n.startdate="0000-00-00 00:00:00")
@@ -1838,6 +1846,7 @@ RSS2JSCODE;
                             WHERE  n.validated='1'
                                    AND nl.lang_id=".FRONTEND_LANG_ID."
                                    AND n.status = 1
+                                   AND nl.is_active=1
                                    " .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
                                     ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
                                         " AND (frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR userid = ".$objFWUser->objUser->getId().") "
