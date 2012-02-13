@@ -38,7 +38,7 @@ class ActionsRenderer
         
         $actions = array();
         $actions[] = sprintf(self::$actionItem, "index.php?cmd=content&act=pageStatus&action=publish&node=$nodeId&lang=$langId", $_ARRAYLANG['TXT_CORE_CM_PUBLISH']);
-        $actions[] = sprintf(self::$actionItem, "index.php?cmd=jsondata&object=node&act=delete", $_ARRAYLANG['TXT_CORE_CM_DELETE']);
+        $actions[] = sprintf(self::$actionItem, "index.php?cmd=jsondata&object=node&act=delete&id={$nodeId}", $_ARRAYLANG['TXT_CORE_CM_DELETE']);
 
         return self::$header.implode("\n",$actions).self::$footer;
     }
