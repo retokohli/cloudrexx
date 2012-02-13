@@ -484,7 +484,8 @@ class newsManager extends newsLibrary {
                          FROM ".DBPREFIX."module_news AS n
                          WHERE n.validated='1'"
                          .$monthLimitQuery
-                         .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? " AND (n.backend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR n.userid = ".$objFWUser->objUser->getId().") " : '');
+                         .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? " AND (n.backend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR n.userid = ".$objFWUser->objUser->getId().") " : '')
+			 .' ORDER BY date DESC';
         $objResult = $objDatabase->Execute($query);        
         
         if ($objResult != false) {
