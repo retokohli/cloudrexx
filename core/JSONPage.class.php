@@ -51,7 +51,7 @@ class JSONPage {
       echo 'cannot find that page';
     }
 
-    return json_encode($pageArray);
+    return $pageArray;
   }
 
   public function set($params) {
@@ -61,26 +61,31 @@ class JSONPage {
     $page = $params['post']['page'];
 
     $fields = array(
-		    'type'          => array('type' => 'String'),
-		    'name'          => array('type' => 'String', 'map_to' => 'title'),
-		    'title'         => array('type' => 'String', 'map_to' => 'contentTitle'),
-		    'start'         => array('type' => 'DateTime'),
-		    'end'           => array('type' => 'DateTime'),
-		    'metatitle'     => array('type' => 'String'),
-		    'metakeys'      => array('type' => 'String'),
-		    'metadesc'      => array('type' => 'String'),
-		    'metarobots'    => array('type' => 'boolean'),
-		    'content'       => array('type' => 'String'),
-		    'sourceMode'    => array('type' => 'boolean'),
-		    'application'   => array('type' => 'String', 'map_to' => 'module'),
-		    'area'          => array('type' => 'String', 'map_to' => 'cmd'),
-		    'target'        => array('type' => 'String'),
-		    'slug'          => array('type' => 'String'),
-		    'caching'       => array('type' => 'boolean'),
-		    'skin'          => array('type' => 'integer'),
-		    'customContent' => array('type' => 'String'),
-		    'cssName'       => array('type' => 'String'),
-                    'cssNavName'    => array('type' => 'String')
+		    'type'          	   => array('type' => 'String'),
+		    'name'          	   => array('type' => 'String', 'map_to' => 'title'),
+		    'title'         	   => array('type' => 'String', 'map_to' => 'contentTitle'),
+		    // the model can take advantage of proper NULLing, so this needn't be set
+		    //		    'scheduled_publishing' => array('type' => 'boolean'),
+		    'start'         	   => array('type' => 'DateTime', 'require' => 'scheduled_publishing'),
+		    'end'           	   => array('type' => 'DateTime', 'require' => 'scheduled_publishing'),
+		    'metatitle'     	   => array('type' => 'String'),
+		    'metakeys'      	   => array('type' => 'String'),
+		    'metadesc'      	   => array('type' => 'String'),
+		    'metarobots'    	   => array('type' => 'boolean'),
+		    'content'       	   => array('type' => 'String'),
+		    'sourceMode'    	   => array('type' => 'boolean'),
+		    //'protection_frontend'  => array('type' => 'boolean'),
+		    //'protection_backend'   => array('type' => 'boolean'),
+		    'application'   	   => array('type' => 'String', 'map_to' => 'module'),
+		    'area'          	   => array('type' => 'String', 'map_to' => 'cmd'),
+		    'target'        	   => array('type' => 'String'),
+		    'link_target'     	   => array('type' => 'String', 'map_to' => 'linkTarget'),
+		    'slug'          	   => array('type' => 'String'),
+		    'caching'       	   => array('type' => 'boolean'),
+		    'skin'          	   => array('type' => 'integer'),
+		    'customContent' 	   => array('type' => 'String'),
+		    'cssName'       	   => array('type' => 'String'),
+                    'cssNavName'    	   => array('type' => 'String')
 		    );
 		    
 
@@ -115,8 +120,15 @@ class JSONPage {
 	    $value = $page[$field];
 	}
 
+	if (isset($meta['require']) && !$page[$meta['require']]) {
+	    $value = null;
+	}
+
 	$output[$target] = $value;
     }
+
+    // Protection is one combined DB field, so build that from scratch:
+    $output['protection'] = 0;
 
     //TODO: should we allow filter/callback fns in field processing above?
     $output['content'] = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $output['content']);
@@ -133,11 +145,11 @@ class JSONPage {
 
       foreach ($node->getPages() as $pageCandidate) {
         $source_page = $pageCandidate;
-        if ($source_page->getLang() == FWLanguage::getLanguageIdByCode($params['get']['page']['lang'])) break;
+        if ($source_page->getLang() == FWLanguage::getLanguageIdByCode($params['post']['page']['lang'])) break;
       }
       $page = $pageRepo->translate($source_page, FWLanguage::getLanguageIdByCode($page['lang']), true, true, true);
 
-    }
+    } 
     else {
       // create a new node/page combination
 	$node = new \Cx\Model\ContentManager\Node();
@@ -149,6 +161,7 @@ class JSONPage {
 	$page->setNode($node);
 	$page->setLang(FWLanguage::getLanguageIdByCode($params['post']['page']['lang']));
 
+	$createdNewPage = true;
     }
 
     $page->updateFromArray($output);
@@ -156,11 +169,15 @@ class JSONPage {
     $page->setUsername('foo');
     $page->setUpdatedAtToNow();
 
-    echo DoctrineDebug::dump($page);
-
     $this->em->persist($page);
     $this->em->flush();
-    
+
+    if (isset($createdNewPage)) {
+	return array(
+		     'reload' => 'true', 
+		     'id' => $page->getId()
+		     );
+    }
   }
 
   private function getFallbackPageArray($node, $lang) {
