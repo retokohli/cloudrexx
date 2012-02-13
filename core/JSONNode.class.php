@@ -76,7 +76,7 @@ class JSONNode {
 
 		$jsondata = $this->tree_to_jstree_array($root);
 
-		return json_encode($jsondata);
+		return $jsondata;
 	}
 
     private function tree_to_jstree_array($root) {
