@@ -96,11 +96,13 @@ class JSONNode {
             $last_resort = 0;
 
             foreach ($node->getPages() as $page) {
+		// 
+		if ($page->getType() == "alias") continue 2;
                 $data[FWLanguage::getLanguageCodeById($page->getLang())] = array(
                     "language"  => FWLanguage::getLanguageCodeById($page->getLang()),
                     "title"     => $page->getTitle(),
                     "attr"      => array(
-                        "id"    => $page->getId()
+                    "id"        => $page->getId()
                     )  
                 );
                 $metadata[$page->getId()] = array(
