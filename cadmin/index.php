@@ -328,6 +328,7 @@ if (isset($_POST['redirect']) && preg_match('/\.php/', $_POST['redirect'])) {
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     $objTemplate->loadTemplateFile('index.html');
     $objTemplate->addBlockfile('CONTENT_FILE', 'index_content', 'index_content.html');
+    $objTemplate->touchBlock('backend_metanavigation');
     JS::activate('backend');
     JS::activate('tipmessage');
     
@@ -339,6 +340,8 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     $objTemplate->setVariable(array(
         'TXT_PAGE_ID'      => $_CORELANG['TXT_PAGE_ID'],
         'CONTREXX_CHARSET' => CONTREXX_CHARSET,
+        'CONTAINER_CLASS'  => 'backend',
+        'USER_ID'          => $objFWUser->objUser->getId(),
     ));
     
     // Skip the nav/language bar for modules which don't make use of either.
