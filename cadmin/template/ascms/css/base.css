@@ -105,6 +105,10 @@ a:focus {
     min-height: 100%;
 }
 
+#container.backend {
+    background: url('../images/bg_navigation_wrapper.jpg') repeat-y;
+}
+
 * html #container {
     height: 100%; /* for ie6 */
 }
@@ -116,14 +120,26 @@ a:focus {
     background: #206eaa url(../images/login_header.jpg) left top no-repeat;
 }
 
-#header a {
+#header a.logo {
     position: absolute;
     left: 12px;
-    top: 15px;
+    top: 14px;
     width: 137px;
     height: 25px;
     background: url(../images/login_contrexx_logo.png) no-repeat;
     outline: 0;
+}
+
+#metanavigation {
+    position: absolute;
+    right: 20px;
+    bottom: 14px;
+}
+
+#metanavigation  a {
+    float: left;
+    padding: 0 0 0 20px;
+    color: #C5DBE8;
 }
 
 #content_wrapper {
@@ -193,11 +209,10 @@ a:focus {
 #navigation_wrapper {
     width: 200px;
     float: left;
-    background: url('../images/bg_navigation.jpg') repeat-y;
 }
 
 #content {
-    width: 100%;
+    overflow: hidden;
 }
 
 #content textarea,
@@ -249,83 +264,54 @@ a:focus {
 }
 
 table.navbar {
-  border-right: 0px;
-  padding-right: 0px;
-  border-top: 0px;
-  padding-left: 0px;
-  padding-bottom: 0px;
-  margin: 0px;
-  border-left: 0px;
-  width: 100%;
-  padding-top: 0px;
-  border-bottom: 0px;
+    width: 200px;
+    float: left;
 }
 
 table.navbar th {
-  padding-right: 0px;
-  padding-left: 0px;
+  width: 180px;
+  height: 16px;
+  float: left;
+  padding: 10px;
+  color: #FFFFFF;
+  font-size: 12px;
   font-weight: bold;
-  font-size: 11px;
-  padding-bottom: 0px;
-  margin: 0px;
-  color: white;
-  padding-top: 0px;
-  border-bottom: white 1px solid;
-  background-color: #0a50a1;
+  background: url('../images/bg_navigation.jpg') repeat-x;
 }
 
-table.navbar td{
-  padding-right: 0px;
-  padding-left: 0px;
-  padding-bottom: 0px;
-  color: #3a6aa9;
-  padding-top: 0px;
-  background-color: white;
+table.navbar td {
+  width: 200px;
+  float: left;
+  padding: 0;
+  color: #3A6AA9;
   vertical-align: top;
 }
 
 .navigation {
-  padding-right: 0px;
-  padding-left: 0px;
-  padding-bottom: 0px;
-  margin: 0px;
   width: 100%;
-  padding-top: 0px;
-  list-style-type: none;
+  float: left;
+  padding: 0;
+  margin: 0;
 }
+
 .navigation li {
-  border-right: 0px;
-  padding-right: 0px;
-  border-top: 0px;
-  padding-left: 0px;
-  padding-bottom: 0px;
-  margin: 0px;
-  border-left: 0px;
-  padding-top: 0px;
-  border-bottom: #dde4ff 1px solid;
-  background-color: white;
+  width: 200px;
+  float: left;
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
+
 .navigation li a {
-  display: block;
-  padding-left: 8px;
+  width: 180px;
+  float: left;
+  padding: 6px 10px 6px 10px;
   font-size: 11px;
-  padding-bottom: 2px;
-  color: black;
-  padding-top: 2px;
-  background-color: white;
+  color: #000000;
 }
-.navigation li a:active {
-  color: black;
-}
-.navigation li a:link {
-  color: black;
-}
-.navigation li a:visited {
-  color: black;
-}
+
 .navigation li a:hover {
-  color: black;
-  background-color: #f4f7ff
+  background-color: #CFE3EE;
 }
 
 div.infobox_head{
@@ -355,6 +341,7 @@ table.adminlist th {
   background-color: #0a50a1;
   padding: 0px 0px 0px 5px;
   margin: 0px 0px 0px 0px;
+  text-align: left;
   vertical-align: middle;
 }
 table.adminlist th a {

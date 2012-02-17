@@ -20,8 +20,16 @@
         <div id="tipMessageLayer" style="visibility:hidden;position:absolute;z-index:1000;top:-100;"></div>
         <div id="loading" style="display: none;"><img src="../lib/javascript/jquery/jstree/themes/default/throbber.gif" />&nbsp;&nbsp;Loading...</div>
         
-        <div id="container">
-            <div id="header"><a href="http://contrexx.com" target="_blank"></a></div>
+        <div id="container" class="{CONTAINER_CLASS}">
+            <div id="header">
+                <a class="logo" href="http://contrexx.com" target="_blank"></a>
+                <!-- BEGIN backend_metanavigation -->
+                <div id="metanavigation">
+                    <a href="index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id={USER_ID}">Profil</a>
+                    <a href="javascript:logout()">Abmelden</a>
+                </div>
+                <!-- END backend_metanavigation -->
+            </div>
             <div id="content_wrapper">{CONTENT_FILE}</div>
             <div id="footer"><a href="http://contrexx.com" target="_blank">&copy COMVATION AG, Switzerland</a></div>
         </div>

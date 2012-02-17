@@ -25,14 +25,12 @@ h1{ font-size: 20px }
 
 /* 2.2 Content Manager */
 #content-manager{
-    border-bottom: 1px solid #e1e1e1; /* light grey */
+    position: relative;
     font-size: 12px;
     overflow: hidden;
-    padding: 0;
-    position: relative;
-    top: -1px;
-    left:0;
-    width: auto
+    border-top: 1px solid #CCCCCC;
+    border-bottom: 1px solid #e1e1e1; /* light grey */
+    background: url(../images/gradient.png) top left repeat-x;
 }
 
 /*#content-manager.ie7{
@@ -76,10 +74,12 @@ h1{ font-size: 20px }
 }
 
 #site-structure {
-    border-right: 1px solid #d3d3d3; /* grey */
+    position: relative;
+    bottom: 1px;
     float: left;
-    width: 330px;
+    width: 350px;
     overflow: hidden;
+    border-right: 1px solid #d3d3d3; /* grey */
 }
 
 #site-structure li select {
@@ -103,30 +103,35 @@ h1{ font-size: 20px }
     background: url(../images/contrexx_icon.png) no-repeat scroll 25px 3px transparent
 }
 
-#page{
-    border-left: 1px solid #cccccc;
-    border-top: 1px solid #cccccc;
+#page {
+    width: 70%;
     float: left;
     overflow: hidden;
-    width: 70%;
-    margin: 0 -1px
+    padding: 0 0 20px 0;
+    margin: 0 0 0 -1px;
+    border-left: 1px solid #cccccc;
 }
+
 #site-language{
 }
+
 #site-tree{
-    width: 332px;
     overflow: hidden;
     margin-top: -9px;
     padding: 4px 0px 70px 30px;
 }
+
 #site-tree li {
     padding: 4px 0px 4px 0px;
 }
+
 #site-tree ul {
     margin: 4px 0px -4px 0px;
 }
+
 #site-tree li a {
 }
+
 #site-tree li a ins {
     width: 18px;
     height: 18px;
@@ -136,7 +141,7 @@ h1{ font-size: 20px }
 
 #site-tree div.actions, div.actions-expanded {
     position: absolute;
-    left: 270px;
+    left: 290px;
     margin-top: -22px;
     background-color: #fff;
 }
@@ -244,18 +249,20 @@ h1{ font-size: 20px }
 #site-tree div.jstree-wrapper {
     position: absolute;
     left: 0px;
-    width: 325px;
+    width: 350px;
     margin-top: 22px;
     border-bottom: 1px solid #ccc;
 }
 
 #cm-tabs{
-    font-size: 12px;
-    left: -1px;
-    line-height: 35px;
     position: relative;
     top: 0;
-    width: 100%; min-width: 880px;
+    left: -1px;
+    width: 100%;
+    min-width: 880px;
+    font-size: 12px;
+    line-height: 35px;
+
 }
 
 #cm-tabs li{ padding: 0 0 0 10px; float: left; height: 34px }
@@ -268,8 +275,9 @@ h1{ font-size: 20px }
 #cm-tabs li .page_history{ background-position: -5px -162px; }
 
 
-#buttons{
-    margin: 10px 0 0
+#buttons {
+    padding: 0 19px 0 32px;
+    margin: 10px 0 0 0;
 }
 
 #buttons span{
