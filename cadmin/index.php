@@ -331,22 +331,22 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     JS::activate('backend');
     JS::activate('tipmessage');
     
-    if (Permission::checkAccess(35, 'static', true)) {
+    // No longer needed in v3.0
+    /*if (Permission::checkAccess(35, 'static', true)) {
         $objTemplate->addBlockfile('QUICKLINKS_CONTENT', 'quicklinks', 'quicklinks.html');
-    }
-    $objTemplate->setVariable(
-        array(
-            'TXT_PAGE_ID' => $_CORELANG['TXT_PAGE_ID'],
-            'CONTREXX_CHARSET' => CONTREXX_CHARSET,
-        )
-    );
-// Skip the nav/language bar for modules which don't make use of either.
-// TODO: Remove language selector for modules which require navigation but bring their own language management.
+    }*/
+    
+    $objTemplate->setVariable(array(
+        'TXT_PAGE_ID'      => $_CORELANG['TXT_PAGE_ID'],
+        'CONTREXX_CHARSET' => CONTREXX_CHARSET,
+    ));
+    
+    // Skip the nav/language bar for modules which don't make use of either.
+    // TODO: Remove language selector for modules which require navigation but bring their own language management.
     $skipMaster = array('content');
     if (in_array($plainCmd, $skipMaster)) {
         $objTemplate->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master_stripped.html');
-    }
-    else {
+    } else {
         $objTemplate->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
     }
 }

@@ -51,21 +51,6 @@ form {
   margin: 0px;
 }
 
-#content textarea,
-#content input,
-#content object,
-#content select {
-  border-right: 1px solid;
-  margin-bottom: 2px;
-  border-top: 1px solid;
-  font-size: 11px;
-  border-left: 1px solid;
-  color: black;
-  border-bottom: 1px solid;
-  background-color: white;
-  border-color: #0a50a1;
-}
-
 h1 {
   padding-right: 0px;
   padding-left: 0px;
@@ -136,13 +121,12 @@ a:focus {
     outline: 0;
 }
 
-#content,
-#content_login {
+#content_wrapper {
     width: 100%;
     padding: 0 0 24px 0;
 }
 
-#content_login_center {
+#content_login {
     width: 300px;
     margin: 0 auto 0 auto;
     padding: 100px 0 124px 0;
@@ -180,6 +164,35 @@ a:focus {
 
 #content_login form div input[type=submit] {
     margin: 0;
+}
+
+#navigation_wrapper {
+    width: 200px;
+    float: left;
+    background: url('../images/bg_navigation.jpg') repeat-y;
+}
+
+#content {
+    width: 100%;
+}
+
+#content textarea,
+#navigation_wrapper textarea,
+#content input,
+#navigation_wrapper input,
+#content object,
+#navigation_wrapper object,
+#content select,
+#navigation_wrapper select {
+  border-right: 1px solid;
+  margin-bottom: 2px;
+  border-top: 1px solid;
+  font-size: 11px;
+  border-left: 1px solid;
+  color: black;
+  border-bottom: 1px solid;
+  background-color: white;
+  border-color: #0a50a1;
 }
 
 #footer {
