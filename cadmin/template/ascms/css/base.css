@@ -8,8 +8,16 @@
 
 @import url(navbar.css);  /* CSS for navigation menu. */
 
-
 html, body {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    font-size: 11px;
+    font-family: arial, helvetica, sans-serif;
+}
+
+/*html, body {
   color: black;
   background: #ffffff;
   font-weight: normal;
@@ -32,7 +40,7 @@ body {
   scrollbar-track-color: #dadada;
   scrollbar-darkshadow-color: #2f4f4f;
   scrollbar-base-color: #dadada;
-}
+}*/
 
 td {
   font-size: 11px;
@@ -43,10 +51,10 @@ form {
   margin: 0px;
 }
 
-textarea,
-input,
-object,
-select {
+#content textarea,
+#content input,
+#content object,
+#content select {
   border-right: 1px solid;
   margin-bottom: 2px;
   border-top: 1px solid;
@@ -66,38 +74,141 @@ h1 {
   margin: 0px;
   padding-top: 0px;
 }
-a {
+
+/*a {
   font-size: 11px;
   color: #000099;
   text-decoration: none;
 }
+
 a:link {
   color: #000099;
   text-decoration: none;
 }
+
 a:visited {
   color: #000099;
   text-decoration: none;
 }
+
 a:hover {
   color: #000099;
   background-color: #ffffcc;
   text-decoration: none;
 }
+
 a:active {
   color: #000099;
   text-decoration: none;
+}*/
+
+a {
+    color: #206FAB;
+    text-decoration: none;
+}
+
+a:hover,
+a:focus {
+    text-decoration: none;
+}
+
+#container {
+    position: relative;
+    height: auto !important;
+    min-height: 100%;
+    height: 100%; /*FOR IE*/
+}
+
+#header {
+    position: relative;
+    width: 100%;
+    height: 53px;
+    background: #206eaa url(../images/login_header.jpg) left top no-repeat;
+}
+
+#header a {
+    position: absolute;
+    left: 12px;
+    top: 15px;
+    width: 137px;
+    height: 25px;
+    background: url(../images/login_contrexx_logo.png) no-repeat;
+    outline: 0;
+}
+
+#content,
+#content_login {
+    width: 100%;
+    padding: 0 0 24px 0;
+}
+
+#content_login_center {
+    width: 300px;
+    margin: 0 auto 0 auto;
+    padding: 100px 0 124px 0;
+}
+
+#content_login h1 {
+    font-size: 32px;
+    font-weight: normal;
+    margin: 0 0 50px 0;
+}
+
+#content_login form {
+    float: left;
+    width: 300px;
+}
+
+#content_login form div {
+    float: left;
+    width: 300px;
+    padding: 0 0 10px 0;
+}
+
+#content_login form div input[type=text],
+#content_login form div input[type=password] {
+    float: left;
+    width: 296px;
+    height: 23px;
+    line-height: 23px;
+}
+
+#content_login form div input[type=checkbox] {
+    margin-top: 0;
+    margin-left: 0;
+}
+
+#content_login form div input[type=submit] {
+    margin: 0;
+}
+
+#footer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 24px;
+    background: #2170ac url(../images/login_footer.jpg) left top no-repeat;
+}
+
+#footer a {
+    position: absolute;
+    left: 12px;
+    top: 5px;
+    width: auto;
+    font-size: 11px;
+    color: #ffffff;
+    outline: 0;
+}
+
+#footer a:hover,
+#footer a:focus {
+    background: transparent;
 }
 
 /* inline instruction */
 .status_message {
   background: #faf0e6;
-}
-
-div#footer {
-  font-size: 11px;
-  margin-right: 4px;
-  text-align: right;
 }
 
 table.navbar {
