@@ -90,6 +90,7 @@ a:active {
 a {
     color: #206FAB;
     text-decoration: none;
+    outline: 0;
 }
 
 a:hover,
@@ -160,6 +161,17 @@ a:focus {
     padding: 0 0 10px 0;
 }
 
+#content_login form div.error {
+    width: auto;
+    height: auto;
+    padding: 0;
+    color: #E00500;
+}
+
+#content_login form div label[for] {
+    cursor: pointer;
+}
+
 #content_login form div input[type=text],
 #content_login form div input[type=password] {
     float: left;
@@ -171,6 +183,7 @@ a:focus {
 #content_login form div input[type=checkbox] {
     margin-top: 0;
     margin-left: 0;
+    outline: 0;
 }
 
 #content_login form div input[type=submit] {
