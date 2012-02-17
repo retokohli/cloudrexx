@@ -1,57 +1,59 @@
 <!-- START login.html -->
-<div id="content_login">
-    <h1>Anmelden</h1>
-    <form method="post" action="index.php" name="login_form" onsubmit="return ValidateForm(this)">
-        <input type="hidden" name="redirect" value="{REDIRECT_URL}" />
-        <script language="JavaScript" type="text/javascript" defer="defer">
-        <!--
-        form_submitted=false;
-        function ValidateForm(theform)
-        {
-            if(theform.USERNAME.value=='')
+<div id="content_login_center">
+    <div id="content_login">
+        <h1>Anmelden</h1>
+        <form method="post" action="index.php" name="login_form" onsubmit="return ValidateForm(this)">
+            <input type="hidden" name="redirect" value="{REDIRECT_URL}" />
+            <script language="JavaScript" type="text/javascript" defer="defer">
+            <!--
+            form_submitted=false;
+            function ValidateForm(theform)
             {
-                if(theform.USERNAME.focus)
-                    theform.USERNAME.focus()
-                alert('It was not specified a valid username.')
-                form_submitted=false
-                return false
+                if(theform.USERNAME.value=='')
+                {
+                    if(theform.USERNAME.focus)
+                        theform.USERNAME.focus()
+                    alert('It was not specified a valid username.')
+                    form_submitted=false
+                    return false
+                }
+                if(theform.hash.value=='')
+                {
+                    if(theform.hash.focus)
+                        theform.hash.focus()
+                    alert('It was not specified a valid password.')
+                    form_submitted=false
+                    return false
+                }
+                //theform.PASSWORD.value=MD5(theform.hash.value)
+                theform.PASSWORD.value=theform.hash.value
+                theform.hash.value=''
+                return true
             }
-            if(theform.hash.value=='')
-            {
-                if(theform.hash.focus)
-                    theform.hash.focus()
-                alert('It was not specified a valid password.')
-                form_submitted=false
-                return false
-            }
-            //theform.PASSWORD.value=MD5(theform.hash.value)
-            theform.PASSWORD.value=theform.hash.value
-            theform.hash.value=''
-            return true
-        }
-        //-->
-        </script>
+            //-->
+            </script>
 
-        <div>
-            <label for="USERNAME">{TXT_USER_NAME}:</label>
-            <input tabindex="1" type="text" name="USERNAME" value="{UID}" />
-        </div>
-        <div>
-            <label for="PASSWORD">{TXT_PASSWORD}:</label>
-            <input tabindex="2" type="password" name="hash" value="" />
-            <input type="hidden" name="PASSWORD" value="" />
-            <a href="index.php?cmd=lostpw"><br />&raquo;&nbsp;{TXT_PASSWORD_LOST}</a>
-        </div>
-        <div>
-            <input type="checkbox" value="1" />
-            <label>Anmeldeinformationen speichern</label><br />
-            <input type="checkbox" value="1" />
-            <label>Angemeldet bleiben</label>
-        </div>
-        <div>
-            <input tabindex="3" type="submit" name="submit_button" value="{TXT_LOGIN}" onclick="if(this.disabled || typeof(this.disabled)=='boolean') this.disabled=true ; form_submitted_test=form_submitted ; form_submitted=true ; form_submitted=(!form_submitted_test || confirm('Are you sure you want to submit this form again?')) ; if(this.disabled || typeof(this.disabled)=='boolean') this.disabled=false ; sub_form='' ; return true" />
-        </div>
-        <div style="color: #ff0000; font-weight: bold;"><br />{LOGIN_ERROR_MESSAGE}{CAPTCHA_ERROR}</div>
-    </form>
+            <div>
+                <label for="USERNAME">{TXT_USER_NAME}:</label>
+                <input tabindex="1" type="text" name="USERNAME" value="{UID}" />
+            </div>
+            <div>
+                <label for="PASSWORD">{TXT_PASSWORD}:</label>
+                <input tabindex="2" type="password" name="hash" value="" />
+                <input type="hidden" name="PASSWORD" value="" />
+                <a href="index.php?cmd=lostpw"><br />&raquo;&nbsp;{TXT_PASSWORD_LOST}</a>
+            </div>
+            <div>
+                <input type="checkbox" value="1" />
+                <label>Anmeldeinformationen speichern</label><br />
+                <input type="checkbox" value="1" />
+                <label>Angemeldet bleiben</label>
+            </div>
+            <div>
+                <input tabindex="3" type="submit" name="submit_button" value="{TXT_LOGIN}" onclick="if(this.disabled || typeof(this.disabled)=='boolean') this.disabled=true ; form_submitted_test=form_submitted ; form_submitted=true ; form_submitted=(!form_submitted_test || confirm('Are you sure you want to submit this form again?')) ; if(this.disabled || typeof(this.disabled)=='boolean') this.disabled=false ; sub_form='' ; return true" />
+            </div>
+            <div style="float: none; height: auto; padding: 0; color: #ff0000; font-weight: bold;"><br />{LOGIN_ERROR_MESSAGE}{CAPTCHA_ERROR}</div>
+        </form>
+    </div>
 </div>
 <!-- END login.html -->
