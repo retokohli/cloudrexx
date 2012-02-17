@@ -102,6 +102,9 @@ a:focus {
     float: left;
     width: 100%;
     min-height: 100%;
+}
+
+* html #container {
     height: 100%; /* for ie6 */
 }
 
