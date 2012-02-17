@@ -221,6 +221,28 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             ),
             'dependencies' => array('cx')
         ),
+        'backend' => array(
+            'jsfiles' => array(
+                'cadmin/javascript/switching_content.js',
+                'cadmin/javascript/tabs.js',
+                'cadmin/javascript/set_checkboxes.js'
+            )
+        ),
+        'tipmessage' => array(
+            'jsfiles' => array(
+                'lib/tipmessage1.5/main15.js'
+            ),
+            'dependencies'  => array(
+                'jquery'
+            ),
+            'specialcode'  => '
+                $J(document).ready(function() {
+                    TipId = "tipMessageLayer";
+                    FiltersEnabled = 0;
+                    mig_clay();
+                });
+            '
+        ),
     );
 
     /**

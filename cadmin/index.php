@@ -208,7 +208,7 @@ if (!empty($_POST) && !$loggedIn) { //not logged in already - do captcha and pas
 if (!$objFWUser->objUser->login(true)) {
     switch ($plainCmd) {
         case "lostpw":
-            $objTemplate->loadTemplateFile('login_index.html');
+            $objTemplate->loadTemplateFile('index.html');
             $objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', 'login_lost_password.html');
             $objTemplate->setVariable(array(
                 'TITLE' => $_CORELANG['TXT_RESET_PASSWORD'],
@@ -231,7 +231,7 @@ if (!$objFWUser->objUser->login(true)) {
             $objTemplate->show();
             exit;
         case "resetpw":
-            $objTemplate->loadTemplateFile('login_index.html');
+            $objTemplate->loadTemplateFile('index.html');
             $objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', 'login_reset_password.html');
             $objTemplate->setVariable('TITLE', $_CORELANG['TXT_SET_NEW_PASSWORD']);
 // TODO: Why oh why isn't function resetPassword() located in the AccessLibrary?
@@ -292,7 +292,7 @@ if (!$objFWUser->objUser->login(true)) {
             exit;
         default:
             $loginSecurityCode = FWCaptcha::getInstance()->getCode(1);
-            $objTemplate->loadTemplateFile('login_index.html',true,true);
+            $objTemplate->loadTemplateFile('index.html',true,true);
             $objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', 'login.html');
             $objTemplate->setVariable(array(
                 'REDIRECT_URL' => (!empty($_POST['redirect'])) ? $_POST['redirect'] : basename(getenv('REQUEST_URI')),
@@ -327,8 +327,12 @@ if (isset($_POST['redirect']) && preg_match('/\.php/', $_POST['redirect'])) {
 // Site start
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     $objTemplate->loadTemplateFile('index.html');
+    $objTemplate->addBlockfile('CONTENT_FILE', 'index_content', 'index_content.html');
+    JS::activate('backend');
+    JS::activate('tipmessage');
+    
     if (Permission::checkAccess(35, 'static', true)) {
-    $objTemplate->addBlockfile('QUICKLINKS_CONTENT', 'quicklinks', 'quicklinks.html');
+        $objTemplate->addBlockfile('QUICKLINKS_CONTENT', 'quicklinks', 'quicklinks.html');
     }
     $objTemplate->setVariable(
         array(
