@@ -227,6 +227,7 @@ a:focus {
 
 #content {
     overflow: hidden;
+    padding: 5px 0 0 7px;
 }
 
 #content textarea,
