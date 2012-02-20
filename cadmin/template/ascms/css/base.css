@@ -136,10 +136,19 @@ a:focus {
     bottom: 14px;
 }
 
-#metanavigation  a {
+#metanavigation a {
     float: left;
-    padding: 0 0 0 20px;
+    padding: 0 0 0 16px;
+    margin: 0 0 0 20px;
     color: #C5DBE8;
+}
+
+#metanavigation a.profil {
+    background: url(../images/profil_icon.png) no-repeat;
+}
+
+#metanavigation a.logout {
+    background: url(../images/logout_icon.png) no-repeat;
 }
 
 #content_wrapper {
@@ -281,7 +290,18 @@ table.navbar th {
   color: #FFFFFF;
   font-size: 12px;
   font-weight: bold;
+  cursor: pointer;
   background: url('../images/bg_navigation.jpg') repeat-x;
+}
+
+table.navbar th div {
+    float: left;
+    padding: 0 0 0 20px;
+    background: url('../images/nav_arrows.png') no-repeat 0 2px;
+}
+
+table.navbar th div.block {
+    background-position: 0 -16px;
 }
 
 table.navbar td {
