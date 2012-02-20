@@ -297,6 +297,8 @@ if (!$objFWUser->objUser->login(true)) {
             $objTemplate->setVariable(array(
                 'REDIRECT_URL' => (!empty($_POST['redirect'])) ? $_POST['redirect'] : basename(getenv('REQUEST_URI')),
                 'TXT_SECURITY_CODE' => $_CORELANG['TXT_SECURITY_CODE'],
+                'TXT_ENTER_A_USERNAME' => $_CORELANG['TXT_ENTER_A_USERNAME'],
+                'TXT_ENTER_A_PASSWORD' => $_CORELANG['TXT_ENTER_A_PASSWORD'],
                 'TXT_USER_NAME' => $_CORELANG['TXT_USER_NAME'],
                 'TXT_PASSWORD' => $_CORELANG['TXT_PASSWORD'],
                 'TXT_LOGIN' => $_CORELANG['TXT_LOGIN'],
