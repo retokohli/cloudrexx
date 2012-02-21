@@ -309,6 +309,7 @@ $_ARRAYLANG['TXT_ENTER_SECURITY_CODE'] = "Sicherheitscode eingeben";
 $_ARRAYLANG['TXT_ENTER_A_USERNAME'] = "Bitte geben Sie einen Benutzernamen an";
 $_ARRAYLANG['TXT_ENTER_A_PASSWORD'] = "Bitte geben Sie Ihr Passwort an";
 $_ARRAYLANG['TXT_LOGIN'] = "Anmelden";
+$_ARRAYLANG['TXT_BACK_TO_LOGIN'] = "Zurück zum Login";
 $_ARRAYLANG['TXT_SHOP_ADMINISTRATION'] = "Shop Administration";
 $_ARRAYLANG['TXT_STATISTIC'] = "Statistik";
 $_ARRAYLANG['TXT_SEARCH_STATISTIC'] = "Statistik-Suche";

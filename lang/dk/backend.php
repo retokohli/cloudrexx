@@ -308,6 +308,7 @@ $_ARRAYLANG['TXT_ENTER_SECURITY_CODE'] = "Indsæt sikkerheds koden";
 $_ARRAYLANG['TXT_ENTER_A_USERNAME'] = "Please enter a username";
 $_ARRAYLANG['TXT_ENTER_A_PASSWORD'] = "Please enter your password";
 $_ARRAYLANG['TXT_LOGIN'] = "Log ind";
+$_ARRAYLANG['TXT_BACK_TO_LOGIN'] = "Back to login";
 $_ARRAYLANG['TXT_SHOP_ADMINISTRATION'] = "Shop administration";
 $_ARRAYLANG['TXT_STATISTIC'] = "Statistik";
 $_ARRAYLANG['TXT_SEARCH_STATISTIC'] = "Statistik-søgnig";

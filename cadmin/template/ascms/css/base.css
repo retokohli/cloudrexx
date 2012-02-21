@@ -216,8 +216,15 @@ a:focus {
     outline: 0;
 }
 
-#content_login form div input[type=submit] {
+#content_login form div input[type=submit],
+#content_login form div input[type=button] {
     margin: 0;
+}
+
+*+html #content_login form div input[type=submit],
+*+html #content_login form div input[type=button] {/* for ie7 */
+    overflow: visible;
+    padding: 0 9px 0 9px;
 }
 
 #navigation_wrapper {
