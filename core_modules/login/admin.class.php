@@ -74,6 +74,7 @@ class LoginManager {
             'TXT_LOST_PASSWORD_TEXT' => $_CORELANG['TXT_LOST_PASSWORD_TEXT'],
             'TXT_EMAIL' => $_CORELANG['TXT_EMAIL'],
             'TXT_RESET_PASSWORD' => $_CORELANG['TXT_RESET_PASSWORD'],
+            'TXT_BACK_TO_LOGIN' => $_CORELANG['TXT_BACK_TO_LOGIN'],
         ));
         if (isset($_POST['email'])) {
             $email = contrexx_stripslashes($_POST['email']);
@@ -124,6 +125,7 @@ class LoginManager {
                     'TXT_PASSWORD_MINIMAL_CHARACTERS' => $_CORELANG['TXT_PASSWORD_MINIMAL_CHARACTERS'],
                     'TXT_SET_PASSWORD_TEXT' => $_CORELANG['TXT_SET_PASSWORD_TEXT'],
                     'TXT_SET_NEW_PASSWORD' => $_CORELANG['TXT_SET_NEW_PASSWORD'],
+                    'TXT_BACK_TO_LOGIN' => $_CORELANG['TXT_BACK_TO_LOGIN'],
                 ));
                 $this->objTemplate->parse('login_reset_password');
             }
@@ -140,6 +142,7 @@ class LoginManager {
                 'TXT_PASSWORD_MINIMAL_CHARACTERS' => $_CORELANG['TXT_PASSWORD_MINIMAL_CHARACTERS'],
                 'TXT_SET_PASSWORD_TEXT' => $_CORELANG['TXT_SET_PASSWORD_TEXT'],
                 'TXT_SET_NEW_PASSWORD' => $_CORELANG['TXT_SET_NEW_PASSWORD'],
+                'TXT_BACK_TO_LOGIN' => $_CORELANG['TXT_BACK_TO_LOGIN'],
             ));
             $this->objTemplate->parse('login_reset_password');
         }

@@ -361,7 +361,7 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
                 $objMail->Subject = $objUserMail->getSubject();
 
                 if ($this->isBackendMode()) {
-                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=resetpw&username=".urlencode($objUser->getUsername())."&restoreKey=".$objUser->getRestoreKey();
+                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=login&act=resetpw&username=".urlencode($objUser->getUsername())."&restoreKey=".$objUser->getRestoreKey();
                 } else {
                     $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH."?section=login&cmd=resetpw&username=".urlencode($objUser->getUsername())."&restoreKey=".$objUser->getRestoreKey();
                 }
