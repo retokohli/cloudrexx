@@ -198,7 +198,7 @@ $loggedIn = $objFWUser->objUser->login(true); //check if the user is already log
 if (!empty($_POST) && !$loggedIn) { //not logged in already - do captcha and password checks
     // Captcha check
 // TODO: Captcha is activated only after an incorrect login
-    /*if (FWCaptcha::getInstance()->check()) {*/
+    //if (FWCaptcha::getInstance()->check()) {
         // Captcha passed, let's autenticate
         $objFWUser->checkAuth();
     //}
@@ -206,114 +206,11 @@ if (!empty($_POST) && !$loggedIn) { //not logged in already - do captcha and pas
 
 // User only gets the backend if he's logged in
 if (!$objFWUser->objUser->login(true)) {
-    switch ($plainCmd) {
-        case "lostpw":
-            $objTemplate->loadTemplateFile('index.html');
-            $objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', 'login_lost_password.html');
-            $objTemplate->setVariable(array(
-                'TITLE' => $_CORELANG['TXT_RESET_PASSWORD'],
-                'TXT_LOST_PASSWORD_TEXT' => $_CORELANG['TXT_LOST_PASSWORD_TEXT'],
-                'TXT_EMAIL' => $_CORELANG['TXT_EMAIL'],
-                'TXT_RESET_PASSWORD' => $_CORELANG['TXT_RESET_PASSWORD'],
-            ));
-            if (isset($_POST['email'])) {
-                $email = contrexx_stripslashes($_POST['email']);
-                if (($objFWUser->restorePassword($email))) {
-                    $statusMessage = str_replace("%EMAIL%", $email, $_CORELANG['TXT_LOST_PASSWORD_MAIL_SENT']);
-                    if ($objTemplate->blockExists('login_lost_password')) {
-                        $objTemplate->hideBlock('login_lost_password');
-                    }
-                } else {
-                    $statusMessage = $objFWUser->getErrorMsg();
-                }
-                $objTemplate->setVariable('LOGIN_STATUS_MESSAGE', $statusMessage);
-            }
-            $objTemplate->show();
-            exit;
-        case "resetpw":
-            $objTemplate->loadTemplateFile('index.html');
-            $objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', 'login_reset_password.html');
-            $objTemplate->setVariable('TITLE', $_CORELANG['TXT_SET_NEW_PASSWORD']);
-// TODO: Why oh why isn't function resetPassword() located in the AccessLibrary?
-            function resetPassword($objTemplate)
-            {
-                global $_CORELANG, $objFWUser, $objTemplate;
-
-                $username = isset($_POST['username']) ? contrexx_stripslashes($_POST['username']) : (isset($_GET['username']) ? contrexx_stripslashes($_GET['username']) : '');
-                $restoreKey = isset($_POST['restore_key']) ? contrexx_stripslashes($_POST['restore_key']) : (isset($_GET['restoreKey']) ? contrexx_stripslashes($_GET['restoreKey']) : '');
-                $password = isset($_POST['password']) ? trim(contrexx_stripslashes($_POST['password'])) : '';
-                $confirmedPassword = isset($_POST['password2']) ? trim(contrexx_stripslashes($_POST['password2'])) : '';
-                $statusMessage = '';
-                if (isset($_POST['reset_password'])) {
-                    if ($objFWUser->resetPassword($username, $restoreKey, $password, $confirmedPassword, true)) {
-                        $statusMessage = $_CORELANG['TXT_PASSWORD_CHANGED_SUCCESSFULLY'];
-                        if ($objTemplate->blockExists('login_reset_password')) {
-                            $objTemplate->hideBlock('login_reset_password');
-                        }
-                    } else {
-                        $statusMessage = $objFWUser->getErrorMsg();
-                        $objTemplate->setVariable(array(
-                            'TXT_USERNAME' => $_CORELANG['TXT_USERNAME'],
-                            'TXT_PASSWORD' => $_CORELANG['TXT_PASSWORD'],
-                            'TXT_VERIFY_PASSWORD' => $_CORELANG['TXT_VERIFY_PASSWORD'],
-                            'TXT_PASSWORD_MINIMAL_CHARACTERS' => $_CORELANG['TXT_PASSWORD_MINIMAL_CHARACTERS'],
-                            'TXT_SET_PASSWORD_TEXT' => $_CORELANG['TXT_SET_PASSWORD_TEXT'],
-                            'TXT_SET_NEW_PASSWORD' => $_CORELANG['TXT_SET_NEW_PASSWORD'],
-                        ));
-                        $objTemplate->parse('login_reset_password');
-                    }
-                } elseif (!$objFWUser->resetPassword($username, $restoreKey, $password, $confirmedPassword)) {
-                    $statusMessage = $objFWUser->getErrorMsg();
-                    if ($objTemplate->blockExists('login_reset_password')) {
-                        $objTemplate->hideBlock('login_reset_password');
-                    }
-                } else {
-                    $objTemplate->setVariable(array(
-                        'TXT_USERNAME' => $_CORELANG['TXT_USERNAME'],
-                        'TXT_PASSWORD' => $_CORELANG['TXT_PASSWORD'],
-                        'TXT_VERIFY_PASSWORD' => $_CORELANG['TXT_VERIFY_PASSWORD'],
-                        'TXT_PASSWORD_MINIMAL_CHARACTERS' => $_CORELANG['TXT_PASSWORD_MINIMAL_CHARACTERS'],
-                        'TXT_SET_PASSWORD_TEXT' => $_CORELANG['TXT_SET_PASSWORD_TEXT'],
-                        'TXT_SET_NEW_PASSWORD' => $_CORELANG['TXT_SET_NEW_PASSWORD'],
-                    ));
-                    $objTemplate->parse('login_reset_password');
-                }
-                $objTemplate->setVariable(array(
-                    'LOGIN_STATUS_MESSAGE' => $statusMessage,
-                    'LOGIN_USERNAME' => htmlentities($username, ENT_QUOTES, CONTREXX_CHARSET),
-                    'LOGIN_RESTORE_KEY' => htmlentities($restoreKey, ENT_QUOTES, CONTREXX_CHARSET),
-                ));
-            }
-            resetPassword($objTemplate);
-            $objTemplate->show();
-            exit;
-        case "captcha":
-            FWCaptcha::getInstance()->getPage();
-            exit;
-        default:
-            $loginSecurityCode = FWCaptcha::getInstance()->getCode(1);
-            $objTemplate->loadTemplateFile('index.html',true,true);
-            $objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', 'login.html');
-            $objTemplate->setVariable(array(
-                'REDIRECT_URL' => (!empty($_POST['redirect'])) ? $_POST['redirect'] : basename(getenv('REQUEST_URI')),
-                'TXT_SECURITY_CODE' => $_CORELANG['TXT_SECURITY_CODE'],
-                'TXT_ENTER_A_USERNAME' => $_CORELANG['TXT_ENTER_A_USERNAME'],
-                'TXT_ENTER_A_PASSWORD' => $_CORELANG['TXT_ENTER_A_PASSWORD'],
-                'TXT_USER_NAME' => $_CORELANG['TXT_USER_NAME'],
-                'TXT_PASSWORD' => $_CORELANG['TXT_PASSWORD'],
-                'TXT_LOGIN' => $_CORELANG['TXT_LOGIN'],
-                'TXT_PASSWORD_LOST' => $_CORELANG['TXT_PASSWORD_LOST'],
-                'UID' => isset($_COOKIE['username']) ? $_COOKIE['username'] : '',
-                'TITLE' => $_CORELANG['TXT_LOGIN'],
-                'LOGIN_IMAGE' => $loginSecurityCode,
-                'LOGIN_ERROR_MESSAGE' => $objFWUser->getErrorMsg(),
-                'CAPTCHA_ERROR' => contrexx_raw2xhtml(FWCaptcha::getInstance()->getError()),
-                'JAVASCRIPT' => JS::getCode(),
-            ));
-
-            $objTemplate->show();
-            exit;
-    }
+    $plainCmd = 'login';
+    if (!include_once(ASCMS_CORE_MODULE_PATH.'/login/admin.class.php'))
+        die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+    $objLoginManager = new LoginManager();
+    $objLoginManager->getPage();
 }
 
 // CSRF code needs to be even in the login form. otherwise, we
