@@ -49,14 +49,14 @@
                 <div id="nav-add">
                     <ul>
                         <li><a href="index.php?section=sitemap" title="Sitemap">Sitemap</a></li>
-                        <li><a href="index.php?section=contact&amp;cmd=7" title="Contact">Contact</a></li>
-                        <li><a href="javascript:popdown('lang_navigation');" id="select_lang" title="Language">Language</a></li>
+                        <li><a href="index.php?section=contact&amp;cmd=7" title="Kontakt">Kontakt</a></li>
+                        <li><a href="javascript:popdown('lang_navigation');" id="select_lang" title="Sprache">Sprache</a></li>
                         <!-- BEGIN access_logged_out -->
-                        <li id="n-register"><a href="index.php?section=access&amp;cmd=signup" class="register inactive" title="Register">Register</a></li>
+                        <li id="n-register"><a href="index.php?section=access&amp;cmd=signup" class="register inactive" title="Registrieren">Registrieren</a></li>
                         <li id="n-login"><a href="index.php?section=login" class="login inactive" title="Login">Login</a></li>
                         <!-- END access_logged_out --> <!-- BEGIN access_logged_in -->
                         <li id="n-user"><a href="index.php?section=access" class="user inactive" title="logged in as {ACCESS_USER_USERNAME}">{ACCESS_USER_USERNAME}</a></li>
-                        <li id="n-logout"><a href="index.php?section=logout" class="logout inactive" title="logout">logout</a></li>
+                        <li id="n-logout"><a href="index.php?section=logout" class="logout inactive" title="Logout">Logout</a></li>
                         <!-- END access_logged_in --> <!-- Loginbox END --> </ul>
                 </div>
             </div>
@@ -70,8 +70,9 @@
                             <div>
                                 <span id="searchField_left"></span>
                                 <input value="search" name="section" type="hidden"/>
-                                <input name="term" onblur="resetText(this)" onfocus="clearText(this)" value="Search..." id="term" type="text"/>
-                                <input class="search-button" type="image" alt="suchen" src="themes/contrexx_theme_3_0/images/search_button.jpg" /></div>
+                                <input name="term" onblur="resetText(this)" onfocus="clearText(this)" value="Suche..." id="term" type="text"/>
+                                <input class="search-button" type="image" alt="suchen" src="themes/contrexx_theme_3_0/images/search_button.jpg" />
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -90,18 +91,17 @@
                             • Fax: +1 (0) 44 418 6999 • E-Mail: <a href="#">example@yourcompany.com</a></span>
                     </p>
                     <div id="footer_bottom">
-                        <p id="facebook"><a href="http://www.facebook.com/pages/Contrexx/137997176253509" title="Contrexx on Facebook">Contrexx on Facebook</a></p>
-                        <p id="twitter"><a href="http://www.twitter.com/contrexx" title="Contrexx on Twitter">Contrexx on Twitter</a></p>
+                        <p id="facebook"><a href="http://www.facebook.com/pages/Contrexx/137997176253509" title="Contrexx auf Facebook">Contrexx auf Facebook</a></p>
+                        <p id="twitter"><a href="http://www.twitter.com/contrexx" title="Contrexx auf Twitter">Contrexx auf Twitter</a></p>
                         <!--<p id="powered"><a href="http://www.contrexx.com/" title="Powered by Contrexx&reg; Software">This website is powered by Contrexx Web Content Management System
          Information and contribution at  http://www.contrexx.com/</a></p>-->
                     </div>
                 </div>
             </div>
         </div>
-        <ul id="lang_navigation" style="display: none;">
-            <li><a class="de" href="index.php?setLang=1">Deutsch</a></li>
-            <li><a class="en" href="index.php?setLang=2">English</a></li>
-        </ul>
+        <div id="lang_navigation" style="display: none;">
+            {LANGUAGE_NAVBAR}
+        </div>
         {COUNTER}
         {LOGIN_CONTENT}
     </body>
