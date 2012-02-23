@@ -26,40 +26,45 @@
 </div>
 <div id="wrapper_content">
     <div id="content">
-        <div id="inner_banner">
-            <div id="left_box">
-                <div class="bottom_left_curve_bg">
-                    <div class="bottom_right_curve_bg">
-                        <div class="content_box" id="events_block">
-                            <div class="box-title"><p>Events</p></div>
-                            <div class="newsText">{EVENTS_FILE}</div>
+        <div id="frame_content">
+            <div id="home_boxes">
+                <div id="left_box">
+                    <div class="bottom_left_curve_bg">
+                        <div class="bottom_right_curve_bg">
+                            <div class="content_box" id="events_block">
+                                <div class="box-title"><p>Veranstaltungen</p></div>
+                                <div class="box_text">{EVENTS_FILE}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div id="center_box">
-                <div class="bottom_left_curve_bg">
-                    <div class="bottom_right_curve_bg">
-                        <div class="content_box box_center" id="newsletter_block">
-                            <div class="box-title"><p>Contrexx</p></div>
-                            <div id="scrollableContainer">
-                                <div class="newsText_center_box">{CONTENT_TEXT}</div>
+                <div id="center_box">
+                    <div class="bottom_left_curve_bg">
+                        <div class="bottom_right_curve_bg">
+                            <div class="content_box box_center" id="newsletter_block">
+                                <div class="box-title"><p>Newsmeldungen</p></div>
+                                <div id="scrollableContainer">
+                                    <div class="box_text_center">{HEADLINES_FILE}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="right_box">
+                    <div class="bottom_left_curve_bg">
+                        <div class="bottom_right_curve_bg">
+                            <div class="content_box box_right" id="news_block">
+                                <div class="box-title"><p>Podcast</p></div>
+                                <div class="box_text">{PODCAST_FILE}</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div id="right_box">
-                <div class="bottom_left_curve_bg">
-                    <div class="bottom_right_curve_bg">
-                        <div class="content_box box_right" id="news_block">
-                            <div class="box-title"><p>News</p></div>
-                            <div class="newsText">{HEADLINES_FILE}</div>
-                        </div>
-                    </div>
-                </div>
+            <div id="main" class="main_home">
+                <h1>{CONTENT_TITLE}</h1>
+                {CONTENT_TEXT}
             </div>
-            <br style="clear: both;"/>
         </div>
     </div>
 </div>

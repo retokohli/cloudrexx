@@ -83,17 +83,32 @@ body {
   margin: 0 auto;
   width: 960px;
 }
+#content_home {
+    width: 920px;
+    float: left;
+    padding: 20px;
+    margin: 20px 0 0 0;
+    background: #FFFFFF;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
 #main {
   background: none repeat scroll 0 0 #FFFFFF;
   border: 1px solid #D4D4D4;
   float: left;
   min-height: 535px;
-  padding: 11px 20px 20px;
+  padding: 11px 20px 20px 20px;
   position: relative;
   width: 665px;
 }
 #main h1 cufon {
   padding-top: 8px;
+}
+#main.main_home {
+    width: 920px;
+    min-height: 200px;
+    margin: 20px 0 0 0;
 }
 #aside {
   float: right;
@@ -726,9 +741,10 @@ div#navigation ul {
   width: 960px;
 }
 div.box-title {
-  background: url("images/box_title_bg.jpg") repeat-x scroll 0 0 transparent;
-  display: block;
+  width: 100%;
   height: 36px;
+  float: left;
+  background: url("images/box_title_bg.jpg") repeat-x scroll 0 0 transparent;
 }
 div.box-title p {
   color: #FFFFFF;
@@ -739,17 +755,48 @@ div.box-title p {
   padding-left: 10px;
   padding-top: 8px;
 }
+#scrollableContainer {
+  width: 100%;
+  float: left;
+}
 p {
   margin: 0 0 1.5em;
 }
-.newsText{
+.box_text {
   padding: 15px;
   float: left;
 }
-#inner_banner h2 a{
+.box_text .more_news {
+  float: left;
+  padding-top: 50px;
+}
+.box_text .more_events {
+  float: left;
+}
+.box_text p.more,
+.box_text_center p.more {
+  float: left;
+  font-size: 12px;
+  margin: 0;
+  padding: 0;
+}
+.box_text_center {
+  padding: 15px 15px 15px;
+}
+.box_text .content,
+.box_text_center .content {
+  width: 100%;
+  float: left;
+  padding: 0 0 10px 0;
+}
+#home_boxes {
+  width: 100%;
+  float: left;
+}
+#home_boxes h2 a{
   font-size: 12px;
 }
-#inner_banner h2 a:hover{
+#home_boxes h2 a:hover{
   color: #3891E8;
   text-decoration: none;
 }
@@ -834,8 +881,10 @@ html body div#page div#container.group div#content-wrap.group div#wrapper_conten
   display: block;
 }
 .bottom_left_curve_bg{
-  background: url("images/bottom_left_curve_bg.jpg") no-repeat scroll left bottom #FFFFFF;
+  width: 100%;
   min-height: 220px;
+  float: left;
+  background: url("images/bottom_left_curve_bg.jpg") no-repeat scroll left bottom #FFFFFF;
 }
 .bottom_right_curve_bg{
   background: url("images/bottom_right_curve_bg.jpg") no-repeat scroll right bottom transparent;
@@ -864,22 +913,9 @@ html body div#page div#container.group div#content-wrap.group div#wrapper_conten
 #mediadir h2{
   border-bottom: none;
 }
-.newsText_center_box {
-  padding: 15px 15px 15px;
-}
 #nav-main form {
   height: 27px;
   margin-top: 13px;
-}
-.newsText p.more {
-  float: left;
-  font-size: 12px;
-  margin: 0 0 0.25em;
-  padding: 0;
-}
-.newsText .content{
-  float: left;
-  width: 100%;
 }
 #nav-main{
   width:960px;
@@ -890,19 +926,23 @@ html body div#page div#container.group div#content-wrap.group div#wrapper_conten
   margin: 0 auto;
 }
 #lang_navigation {
-  padding: 4px 28px 4px 8px;
-  border: 1px solid #999;
+  width: 100px;
+  float: left;
+  padding: 5px 10px 5px 10px;
   z-index: 99;
   background: #ECECEC;
+  border: 1px solid #999999;
   -moz-box-shadow: 1px 1px 3px #ccc;
   -webkit-box-shadow: 1px 1px 3px #ccc;
   box-shadow: 1px 1px 3px #ccc;
 }
 #lang_navigation a {
-  padding-left: 20px;
-  color: #444;
-  background: url(images/flag_de.gif) 0 50% no-repeat;
+  width: 80px;
+  float: left;
+  padding: 0 0 0 20px;
+  color: #444444;
   font-weight: normal;
+  background: url(images/flag_de.gif) 0 50% no-repeat;
 }
 #lang_navigation a:hover{
   text-decoration: underline;
@@ -944,19 +984,15 @@ html body div#page div#container.group div#content-wrap.group div#wrapper_conten
   height: 27px;
   width: 10px;
 }
-.newsText .more_news{
-  float: left;
-  padding-top: 50px;
-}
-.newsText .more_events{
-  float: left;
-  padding-top: 68px;
-}
-#news_date,#events_date{
+#news_date,#events_date,#podcast_date {
   margin-bottom: 0.25em;
 }
-#news_heading{
+#news_heading ,
+#events_heading{
   margin-bottom: 0;
+}
+#podcast_heading {
+  margin-bottom: 5px;
 }
 #banner_home {
   color: #FFFFFD;
