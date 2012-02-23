@@ -948,6 +948,7 @@ html body div#page div#container.group div#content-wrap.group div#wrapper_conten
   text-decoration: underline;
 }
 #lang_navigation a.en {background-image: url(images/flag_en.gif);}
+#lang_navigation a.fr {background-image: url(images/flag_fr.gif);}
 #contactFormCaptcha{
   clear:both;
   float:left;
