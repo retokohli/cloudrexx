@@ -191,7 +191,7 @@ class Navigation
             foreach ($this->arrLang as $id => $value) {
                 if ($this->arrLang[$id]['frontend'] == 1) {
                     $uri = ASCMS_PATH_OFFSET.'/'.$this->arrLang[$id]['lang'].'/';
-                    $langNavigation .= " [ <a href='".$uri."' title='".contrexx_raw2xhtml($value['name'])."' >".contrexx_raw2xhtml($value['name'])."</a> ] ";
+                    $langNavigation .= '<a class="'.$this->arrLang[$id]['lang'].'" href="'.$uri.'" title="'.contrexx_raw2xhtml($value['name']).'">'.contrexx_raw2xhtml($value['name']).'</a>';
                 }
             }
         }
