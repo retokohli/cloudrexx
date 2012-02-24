@@ -12,12 +12,12 @@
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 
 class JSONNode {
-	
-	var $em = null;
+        
+        var $em = null;
     var $fallbacks;
 
-	function __construct() {
-		$this->em = Env::em();
+        function __construct() {
+                $this->em = Env::em();
         $this->tz = new DateTimeZone('Europe/Berlin');
 
         $fallback_lang_codes = FWLanguage::getFallbackLanguageArray();
@@ -27,7 +27,7 @@ class JSONNode {
         foreach ($active_langs as $lang) {
             $this->fallbacks[FWLanguage::getLanguageCodeById($lang['id'])] = ((array_key_exists($lang['id'], $fallback_lang_codes)) ? FWLanguage::getLanguageCodeById($fallback_lang_codes[$lang['id']]) : null);
         }
-	}
+        }
 
     public function getTree() {
         return $this->renderTree();
@@ -68,16 +68,16 @@ class JSONNode {
     }
 
     // Renders a jsTree friendly representation of the Node tree (in json)
-	private function renderTree() {
-		$pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
-		$nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
+        private function renderTree() {
+                $pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
+                $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
 
-		$root = $nodeRepo->getRoot();
+                $root = $nodeRepo->getRoot();
 
-		$jsondata = $this->tree_to_jstree_array($root);
+                $jsondata = $this->tree_to_jstree_array($root);
 
-		return $jsondata;
-	}
+                return $jsondata;
+        }
 
     private function tree_to_jstree_array($root) {
         $fallback_langs = $this->fallbacks;
@@ -96,14 +96,13 @@ class JSONNode {
             $last_resort = 0;
 
             foreach ($node->getPages() as $page) {
-		// 
-		if ($page->getType() == "alias") continue 2;
+                // don't display aliases in cm's tree
+                if ($page->getType() == "alias") continue 2;
+
                 $data[FWLanguage::getLanguageCodeById($page->getLang())] = array(
                     "language"  => FWLanguage::getLanguageCodeById($page->getLang()),
                     "title"     => $page->getTitle(),
-                    "attr"      => array(
-                    "id"        => $page->getId()
-                    )  
+                    "attr"      => array("id" => $page->getId()) 
                 );
                 $metadata[$page->getId()] = array(
                     "visibility"=> $page->getStatus(),
@@ -153,4 +152,4 @@ class JSONNode {
         return($output);
     }
 }
-?>
+
