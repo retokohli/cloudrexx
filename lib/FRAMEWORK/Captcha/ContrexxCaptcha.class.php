@@ -241,14 +241,14 @@ class ContrexxCaptcha implements CaptchaInterface {
         $isBackend = $objInit->mode == "backend";
         $url = ASCMS_PATH_OFFSET;
         if($isBackend) {
-            $url .= ASCMS_BACKEND_PATH.'/index.php?cmd=login&act=captcha';
+            $url .= ASCMS_BACKEND_PATH.'/index.php?cmd=login&amp;act=captcha';
         }
         else {
             $url .= '/index.php?section=captcha';
         }
         
         //add no cache param
-        $url .= '&nc='.md5(''.time());
+        $url .= '&amp;nc='.md5(''.time());
         return $url;
     }
 

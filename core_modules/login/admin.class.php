@@ -50,6 +50,7 @@ class LoginManager {
                 break;
             default:
                 $this->showLogin();
+                break;
         }
 
         $this->objTemplate->show();
@@ -194,8 +195,14 @@ class LoginManager {
             $this->objTemplate->setVariable(array(
                 'TXT_SECURITY_CODE' => $_CORELANG['TXT_SECURITY_CODE'],
                 'CAPTCHA_CODE' => FWCaptcha::getInstance()->getCode(3),
-                'CAPTCHA_ERROR' => contrexx_raw2xhtml(FWCaptcha::getInstance()->getError()),
+                'SAVE_LOGIN_CHECKED' => !empty($_POST['save_login']) ? 'checked="checked"' : '',
+                'REMEMBER_ME_CHECKED' => !empty($_POST['remember_me']) ? 'checked="checked"' : '',
             ));
+            if (!FWCaptcha::getInstance()->check() && !empty($_POST['coreCaptchaCode'])) {
+                $this->objTemplate->setVariable(array(
+                    'CAPTCHA_ERROR' => contrexx_raw2xhtml(FWCaptcha::getInstance()->getError()),
+                ));
+            }
             $this->objTemplate->parse('captcha');
         } else {
             $this->objTemplate->hideBlock('captcha');
