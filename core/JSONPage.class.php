@@ -149,6 +149,7 @@ class JSONPage {
       }
       $page = $pageRepo->translate($source_page, FWLanguage::getLanguageIdByCode($page['lang']), true, true, true);
 
+      $reload = true;
     } 
     else {
       // create a new node/page combination
@@ -161,7 +162,7 @@ class JSONPage {
 	$page->setNode($node);
 	$page->setLang(FWLanguage::getLanguageIdByCode($params['post']['page']['lang']));
 
-	$createdNewPage = true;
+	$reload = true;
     }
 
     $page->updateFromArray($output);
@@ -172,7 +173,7 @@ class JSONPage {
     $this->em->persist($page);
     $this->em->flush();
 
-    if (isset($createdNewPage)) {
+    if (isset($reload) && $reload) {
 	return array(
 		     'reload' => 'true', 
 		     'id' => $page->getId()
