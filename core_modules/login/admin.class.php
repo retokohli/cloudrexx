@@ -189,6 +189,17 @@ class LoginManager {
             'LOGIN_ERROR_MESSAGE' => $objFWUser->getErrorMsg(),
             'JAVASCRIPT' => JS::getCode(),
         ));
+
+        if (isset($_SESSION['last_auth_failed'])) {
+            $this->objTemplate->setVariable(array(
+                'TXT_SECURITY_CODE' => $_CORELANG['TXT_SECURITY_CODE'],
+                'CAPTCHA_CODE' => FWCaptcha::getInstance()->getCode(3),
+                'CAPTCHA_ERROR' => contrexx_raw2xhtml(FWCaptcha::getInstance()->getError()),
+            ));
+            $this->objTemplate->parse('captcha');
+        } else {
+            $this->objTemplate->hideBlock('captcha');
+        }
     }
 
 }

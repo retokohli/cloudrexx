@@ -54,10 +54,10 @@
                 <a href="index.php?cmd=login&amp;act=lostpw">{TXT_PASSWORD_LOST}</a>
             </div>
             <!-- BEGIN captcha -->
+            <div class="error">{CAPTCHA_ERROR}</div>
             <div>
-                <label for="captchaCode">{TXT_SECURITY_CODE}</label>
-                {LOGIN_IMAGE}<br />
-                <input type="text" value="" name="captchaCode" tabindex="3" maxlength="5" onchange="this.value=this.value.toUpperCase();" id="captchaCode" />
+                <label for="captchaCode">{TXT_SECURITY_CODE}</label><br />
+                {CAPTCHA_CODE}
             </div>
             <!-- END captcha -->
             <div>
@@ -67,7 +67,7 @@
             <div>
                 <input tabindex="5" type="submit" name="submit_button" value="{TXT_LOGIN}" onclick="if(this.disabled || typeof(this.disabled)=='boolean') this.disabled=true ; form_submitted_test=form_submitted ; form_submitted=true ; form_submitted=(!form_submitted_test || confirm('Are you sure you want to submit this form again?')) ; if(this.disabled || typeof(this.disabled)=='boolean') this.disabled=false ; sub_form='' ; return true" />
             </div>
-            <div class="error">{LOGIN_ERROR_MESSAGE}<br />{CAPTCHA_ERROR}</div>
+            <div class="error">{LOGIN_ERROR_MESSAGE}</div>
 
             <script type="text/javascript">
             /* <![CDATA[ */

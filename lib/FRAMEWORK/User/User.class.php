@@ -299,16 +299,18 @@ class User extends User_Profile
      *                                if true, false otherwise
      * @return  boolean               True on success, false otherwise
      */
-    public function auth($username, $password, $backend = false)
+    public function auth($username, $password, $backend = false, $captchaCheckResult)
     {
         global $objDatabase;
 
+        $loginStatusCondition = $captchaCheckResult == false ? 'AND `last_auth_status`=1' : '';
         $objResult = $objDatabase->SelectLimit("
             SELECT `id`
               FROM `".DBPREFIX."access_users`
              WHERE `username`='".addslashes($username)."'
                AND `password`='".addslashes($password)."'
                AND `active`=1
+             ".$loginStatusCondition."
                AND (`expiration`=0 OR `expiration`>".time().")", 1);
         if (!$objResult) {
 //DBG::log("User::auth($username, $password, $backend): Query error");
@@ -1722,6 +1724,46 @@ class User extends User_Profile
             UPDATE `".DBPREFIX."access_users`
                SET `last_auth`='".time()."'
              WHERE `id`=$this->id");
+    }
+
+
+    /**
+     * Register a successful login.
+     *
+     * @static
+     * @access  public
+     * @param   string              $username
+     * @global  ADONewConnection    $objDatabase
+     */
+    public function registerSuccessfulLogin()
+    {
+        global $objDatabase;
+
+        return $objDatabase->Execute("
+            UPDATE `".DBPREFIX."access_users`
+               SET `last_auth_status`=1
+             WHERE `id`=$this->id");
+    }
+
+
+    /**
+     * Register a failed login.
+     * This causes that the user needs to fill out
+     * the captcha the next time he logs on.
+     *
+     * @static
+     * @access  public
+     * @param   string              $username
+     * @global  ADONewConnection    $objDatabase
+     */
+    public static function registerFailedLogin($username)
+    {
+        global $objDatabase;
+
+        return $objDatabase->Execute("
+            UPDATE `".DBPREFIX."access_users`
+               SET `last_auth_status`=0
+             WHERE `username`='".$username."'");
     }
 
 

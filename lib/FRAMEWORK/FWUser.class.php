@@ -111,13 +111,15 @@ class FWUser extends User_Setting
 
         if (isset($username) && isset($password)) {
             if (empty($sessionObj)) $sessionObj = new cmsSession();
-            if ($this->objUser->auth($username, $password, $this->isBackendMode())) {
+            if ($this->objUser->auth($username, $password, $this->isBackendMode(), FWCaptcha::getInstance()->check())) {
                 if ($this->isBackendMode()) {
                     // sets cookie for 30 days
                     setcookie("username", $this->objUser->getUsername(), time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
                     $this->log();
                 }
                 $sessionObj->cmsSessionUserUpdate($this->objUser->getId());
+                $this->objUser->registerSuccessfulLogin();
+                unset($_SESSION['last_auth_failed']);
                 // Store frontend lang_id in cookie
                 if (empty($_COOKIE['langId'])) {
 // TODO: Seems that this method returns zero at first when the Users' language is set to "default"!
@@ -130,6 +132,8 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
                 }
                 return true;
             }
+            $_SESSION['last_auth_failed'] = 1;
+            User::registerFailedLogin($username);
             $this->arrStatusMsg['error'][] = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];
             $sessionObj->cmsSessionUserUpdate();
             $sessionObj->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');

@@ -115,6 +115,7 @@ CREATE TABLE `contrexx_access_users` (
   `expiration` int(14) unsigned NOT NULL DEFAULT '0',
   `validity` int(10) unsigned NOT NULL DEFAULT '0',
   `last_auth` int(14) unsigned NOT NULL DEFAULT '0',
+  `last_auth_status` int(1) NOT NULL DEFAULT '1',
   `last_activity` int(14) unsigned NOT NULL DEFAULT '0',
   `email` varchar(255) DEFAULT NULL,
   `email_access` enum('everyone','members_only','nobody') NOT NULL DEFAULT 'nobody',
