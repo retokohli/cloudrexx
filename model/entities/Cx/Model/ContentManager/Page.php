@@ -149,31 +149,26 @@ class Page extends \Cx\Model\Base\EntityBase
 
         $this->setUpdatedAtToNow();
 
-        $typeValidator = new \Zend_Validate();
-        $typeValidator->addValidator(new \Zend_Validate_StringLength(array('max' => 16)));
-        $typeValidator->addValidator(new \Zend_Validate_Alnum());
-        
         $this->validators = array(
-            'lang' => new \Zend_Validate_Int(),
-            'type' => $typeValidator,
+            'lang' => new \CxValidateInteger(),
+            'type' => new \CxValidateString(array('alphanumeric' => true, 'maxlength' => 255)),
             //caching is boolean, not checked
-
-            'title' => new \Zend_Validate_StringLength(array('max' => 255)),
-            'customContent' => new \Zend_Validate_StringLength(array('max' => 64)),
-            'cssName' => new \Zend_Validate_StringLength(array('max' => 255)),
-            'metatitle' => new \Zend_Validate_StringLength(array('max' => 255)),
-            'metadesc' => new \Zend_Validate_StringLength(array('max' => 255)),
-            'metakeys' => new \Zend_Validate_StringLength(array('max' => 255)),
-            'metarobots' => new \Zend_Validate_StringLength(array('max' => 255)),
+            'title' => new \CxValidateString(array('maxlength' => 255)),
+            'customContent' => new \CxValidateString(array('maxlength' => 64)),
+            'cssName' => new \CxValidateString(array('maxlength' => 255)),
+            'metatitle' => new \CxValidateString(array('maxlength' => 255)),
+            'metadesc' => new \CxValidateString(array('maxlength' => 255)),
+            'metakeys' => new \CxValidateString(array('maxlength' => 255)),
+            'metarobots' => new \CxValidateString(array('maxlength' => 255)),
             //'start' => maybe date? format?
             //'end' => maybe date? format?
-            'editingStatus'  => new \Zend_Validate_StringLength(array('max' => 16)),
-            'username' => new \Zend_Validate_StringLength(array('max' => 64)),
+            'editingStatus' => new \CxValidateString(array('maxlength' => 16)),
+            'username' => new \CxValidateString(array('maxlength' => 64)),
             //display is boolean, not checked
             //active is boolean, not checked
-            'target' => new \Zend_Validate_StringLength(array('max' => 255)),
-            'module' => new \Zend_Validate_Alnum(),
-            'cmd' => new \Zend_Validate_Regex(array('pattern' => '/^[A-Za-z0-9_]+$/')),            
+            'target' => new \CxValidateString(array('maxlength' => 255)),
+            'module' => new \CxValidateString(array('alphanumeric' => true)),
+            'cmd' => new \CxValidateRegexp(array('pattern' => '/^[A-Za-z0-9_]+$/')),            
         );
     }
 
@@ -1199,5 +1194,7 @@ class Page extends \Cx\Model\Base\EntityBase
 		DBG::log("\r\nskipped ".$key);
             }
         }
+	
+	    $this->validate();
     }
 }
