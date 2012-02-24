@@ -29,6 +29,18 @@
                     document.getElementById('no_password').style.display = 'none';
                     document.getElementById('password').className = '';
                 }
+                if (form.coreCaptchaCode) {
+                    if (form.coreCaptchaCode.value == '') {
+                        if (form.coreCaptchaCode.focus && form_submitted == true)
+                            form.coreCaptchaCode.focus();
+                        document.getElementById('no_captcha_code').style.display = 'block';
+                        document.getElementById('coreCaptchaCode').className = 'error';
+                        form_submitted = false;
+                    } else {
+                        document.getElementById('no_captcha_code').style.display = 'none';
+                        document.getElementById('coreCaptchaCode').className = '';
+                    }
+                }
 
                 if (form_submitted == false) {
                     return false;
@@ -41,6 +53,7 @@
             }
             /* ]]> */
             </script>
+            <div class="error">{LOGIN_ERROR_MESSAGE}</div>
             <div class="error" id="no_username" style="display: none;">{TXT_ENTER_A_USERNAME}</div>
             <div>
                 <label for="username">{TXT_USER_NAME}:</label>
@@ -55,19 +68,19 @@
             </div>
             <!-- BEGIN captcha -->
             <div class="error">{CAPTCHA_ERROR}</div>
+            <div class="error" id="no_captcha_code" style="display: none;">Bitte tippen Sie die Zeichenfolge ab.</div>
             <div>
-                <label for="captchaCode">{TXT_SECURITY_CODE}</label><br />
+                <label for="coreCaptchaCode">{TXT_SECURITY_CODE}</label><br />
                 {CAPTCHA_CODE}
             </div>
             <!-- END captcha -->
             <div>
-                <input tabindex="3" type="checkbox" value="1" name="save_login" id="save_login" /><label for="save_login">Anmeldeinformationen speichern</label><br />
-                <input tabindex="4" type="checkbox" value="1" name="remember_me" id="remember_me" /><label for="remember_me">Angemeldet bleiben</label>
+                <input tabindex="3" type="checkbox" {SAVE_LOGIN_CHECKED} value="1" name="save_login" id="save_login" /><label for="save_login">Anmeldeinformationen speichern</label><br />
+                <input tabindex="4" type="checkbox" {REMEMBER_ME_CHECKED} value="1" name="remember_me" id="remember_me" /><label for="remember_me">Angemeldet bleiben</label>
             </div>
             <div>
                 <input tabindex="5" type="submit" name="submit_button" value="{TXT_LOGIN}" onclick="if(this.disabled || typeof(this.disabled)=='boolean') this.disabled=true ; form_submitted_test=form_submitted ; form_submitted=true ; form_submitted=(!form_submitted_test || confirm('Are you sure you want to submit this form again?')) ; if(this.disabled || typeof(this.disabled)=='boolean') this.disabled=false ; sub_form='' ; return true" />
             </div>
-            <div class="error">{LOGIN_ERROR_MESSAGE}</div>
 
             <script type="text/javascript">
             /* <![CDATA[ */
