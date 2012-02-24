@@ -196,12 +196,7 @@ $objFWUser = FWUser::getFWUserObject();
 /* authentification */
 $loggedIn = $objFWUser->objUser->login(true); //check if the user is already logged in
 if (!empty($_POST) && !$loggedIn) { //not logged in already - do captcha and password checks
-    // Captcha check
-// TODO: Captcha is activated only after an incorrect login
-    //if (FWCaptcha::getInstance()->check()) {
-        // Captcha passed, let's autenticate
-        $objFWUser->checkAuth();
-    //}
+    $objFWUser->checkAuth();
 }
 
 // User only gets the backend if he's logged in
