@@ -48,9 +48,11 @@ class PageGuard {
             throw new PageGuardException('Could not delete group assignments for page "'.$page->getTitle().'" with id "'.$page->getId().'" (access id "'.$accessId.')"');
         
         $query = 'INSERT INTO '.DBPREFIX.'access_group_dynamic_ids (access_id, group_id) ' .
-                 'VALUES ';
-        $query .= '(' . join('),(', $ids) . ');';
-        $result = $this->db->Execute($query);
+                 'VALUES (?, ?);';
+	foreach ($ids as $groupId) {
+	    $result = $this->db->Execute($query, array($accessId, $groupId));
+	}
+	
         if($result === false)
             throw new PageGuardException('Could not delete group assignments for page "'.$page->getTitle().'" with id "'.$page->getId().'" (access id "'.$accessId.')"');
     }

@@ -81,7 +81,7 @@
 	  <input type="hidden" name="page[protection_frontend]" value="off" />
             <a class="heading toggle_checkbox" id="page[protection_frontend]">{TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND}</a>
             <div id="access_protection_backend" style="display: none;">
-                <select style="width: 300px; height: 250px" id="frontendAccessGroups" class="multiselect" multiple="multiple" name="groups[]">
+                <select style="width: 300px; height: 250px" id="frontendAccessGroups" class="multiselect" multiple="multiple" name="frontendGroups[]">
                   <option value="test">unselected</option>
                   <option value="test2" selected="selected">selected</option>
                 </select>
@@ -89,7 +89,7 @@
 	    <input type="hidden" name="page[protection_backend]" value="off" />
             <a class="heading toggle_checkbox" id="page[protection_backend]">{TXT_CORE_CM_ACCESS_PROTECTION_BACKEND}</a>
             <div id="access_protection_backend" style="display: none;">
-                <select style="width: 300px; height: 250px" id="backendAccessGroups" class="multiselect" multiple="multiple" name="groups[]">
+                <select style="width: 300px; height: 250px" id="backendAccessGroups" class="multiselect" multiple="multiple" name="backendGroups[]">
                   <option value="test">unselected</option>
                   <option value="test2" selected="selected">selected</option>
                 </select>
@@ -146,6 +146,6 @@
       <div id="buttons">
         <!--<button id="preview" class="btn left"><span>{TXT_CORE_PREVIEW}</span></button>-->
         <button id="publish" class="btn right"><span>{TXT_CORE_SAVE_PUBLISH}</span></button>
-        <!--<button id="save" class="btn right"><span>{TXT_CORE_SAVE}</span></button>-->
+	<button id="save" class="btn right"><span>{TXT_CORE_SAVE}</span></button>
       </div>
 

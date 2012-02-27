@@ -287,7 +287,7 @@ class CxValidateRegexp extends CxValidate {
 }
 
 class CxValidateInteger extends CxValidate {
-    public function __construct($constraints) {
+    public function __construct($constraints = array()) {
 	parent::__construct($constraints);
     }
 

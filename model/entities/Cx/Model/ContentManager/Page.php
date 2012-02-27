@@ -875,7 +875,7 @@ class Page extends \Cx\Model\Base\EntityBase
         return $accessId;            
     }
     protected function eraseAccessId($id) {
-        Permission::removeAccess($id, 'dynamic');        
+        \Permission::removeAccess($id, 'dynamic');        
     }
 
     /**
@@ -890,11 +890,13 @@ class Page extends \Cx\Model\Base\EntityBase
 
             $accessId = $this->createAccessId();
             $this->setFrontendAccessId($accessId);
+	    $this->protection = $this->protection | FRONTEND_PROTECTION;
         }
         else {
             $accessId = $this->getFrontendAccessId();
             $this->eraseAccessId($accessId);
             $this->setFrontendAccessId(0);
+	    $this->protection = $this->protection ^ FRONTEND_PROTECTION;
         }
     }
 
@@ -910,11 +912,13 @@ class Page extends \Cx\Model\Base\EntityBase
 
             $accessId = $this->createAccessId();
             $this->setBackendAccessId($accessId);
+	    $this->protection = $this->protection | BACKEND_PROTECTION;
         }
         else {
             $accessId = $this->getBackendAccessId();
             $this->eraseAccessId($accessId);            
             $this->setFrontendAccessId(0);
+	    $this->protection = $this->protection ^ BACKEND_PROTECTION;
         }
     }
 
@@ -1121,10 +1125,11 @@ class Page extends \Cx\Model\Base\EntityBase
      *
      * @param integer $protection
      */
-    public function setProtection($protection)
-    {
+    // DO NOT set protection directly, use setFrontend/BackendProtected instead.
+    /*public function setProtection($protection)
+    {	
         $this->protection = $protection;
-    }
+	}*/
 
     /**
      * Get protection
@@ -1194,7 +1199,5 @@ class Page extends \Cx\Model\Base\EntityBase
 		DBG::log("\r\nskipped ".$key);
             }
         }
-	
-	    $this->validate();
     }
 }
