@@ -524,7 +524,7 @@ class settingsManager
                 foreach ($arrValues as $intModule => $arrInner) {
                     @fwrite($handleFile,"/**\n");
                     @fwrite($handleFile,"* -------------------------------------------------------------------------\n");
-                    @fwrite($handleFile,"* ".ucfirst($arrModules[$intModule])."\n");
+                    @fwrite($handleFile,"* ".ucfirst(isset($arrModules[$intModule]) ? $arrModules[$intModule] : '')."\n");
                     @fwrite($handleFile,"* -------------------------------------------------------------------------\n");
                     @fwrite($handleFile,"*/\n");
 
