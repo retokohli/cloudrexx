@@ -20,7 +20,28 @@ class PageGuard {
             return array();
         }
 
-        $accessId = $this->getAccessId($page, $frontend);
+	try {
+	    $accessId = $this->getAccessId($page, $frontend);
+	}
+	catch (PageGuardException $e) {
+	    // the selected page is listed as protected but does not have an access id.
+	    // this is probably due to a db inconsistency, which we should be able to handle gracefully:
+	    $accessId = \Permission::createNewDynamicAccessId();
+
+	    if ($frontend && $accessId) {
+		$page->setFrontendAccessId($accessId);
+	    }
+	    elseif (!$frontend && $accessId) {
+		$page->setBackendAccessId($accessId);
+	    }
+	    else {
+		// cannot create a new dynamic access id.
+		throw new PageGuardException('This protected page doesn\'t have an access id associated with
+it. Contrexx encountered an error while generating a new access id.');
+	    }
+	    Env::get('em')->persist($page);
+	    Env::get('em')->flush();
+	}
 
         $query = 'SELECT group_id
             FROM '.DBPREFIX.'access_group_dynamic_ids
