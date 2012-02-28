@@ -63,10 +63,9 @@ class JSONData {
 					     ));
 		}
 		catch (Exception $e) {
-		    throw $e;
 		    return json_encode(array(
 					     'status' => 'error',
-					     'message'   => $e->stackTrace()
+					     'message'   => $e->getMessage()
 					     ));
 		}
 
