@@ -26,10 +26,12 @@ class adminMenu
     public $statusMessage;
     public $arrUserRights = array();
     public $arrUserGroups = array();
+    private $activeCmd = null;
 
 
-    public function __construct()
+    public function __construct($activeCmd)
     {
+        $this->activeCmd = $activeCmd;
         $this->init();
     }
 
@@ -127,10 +129,76 @@ class adminMenu
                 //(2/3) sort entries by captions
                 array_multisort($arrMatchingItemCaptions, $arrMatchingItems);
             }
+
             //(3/3) display a nice ordered menu.
             foreach ($arrMatchingItems as $link_data) {
                 if ($group_id != 2 ||  $this->moduleExists($link_data[4])) {
-                    $navigation.= "<li><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>&raquo;&nbsp;".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
+
+                    // active exceptions for media and content module
+                    // ask: thomas.daeppen@comvation.com
+                    if (preg_match('/cmd=(.+?)(?:&amp;(.+))?$/', $link_data[2], $arrMatch)) {
+                        $linkCmd = $arrMatch[1];
+
+                        $linkCmdSection = '';
+                        if (isset($arrMatch[2])) {
+                            $linkCmdSection = $arrMatch[2];
+                        }
+
+                        switch ($linkCmd) {
+                            case 'content';
+                                if (   empty($_REQUEST['act']) && !empty($linkCmdSection)
+                                    || !empty($_REQUEST['act']) && empty($linkCmdSection)
+                                ) {
+
+                                    $linkCmd = '';
+                                }
+                                break;
+                            case 'skins':
+                                if ($this->activeCmd == 'skins') {
+                                    break;
+                                }
+                                $linkCmdSection = 'archive=themes';
+                            case 'media':
+                                $isRequestedMediaArchive = false;
+                                $requestedArchive = '';
+                                if (isset($_REQUEST['archive'])) {
+                                    $requestedArchive = preg_replace('/\d+$/', '', $_REQUEST['archive']);
+                                }
+
+                                switch ($requestedArchive) {
+                                    case 'shop':
+                                        $requestedArchive = 'content';
+                                        break;
+                                    case 'themes':
+                                        $linkCmd = 'media';
+                                        break;
+                                    case 'archive':
+                                        $requestedArchive = 'archive';
+                                        break;
+                                }
+
+                                if (!empty($requestedArchive)) {
+                                    if (preg_match('/archive=(.+?)\d*$/', $linkCmdSection, $arrMatch)) {
+                                        $mediaArchive = $arrMatch[1];
+                                        if ($mediaArchive == $requestedArchive) {
+                                            $isRequestedMediaArchive = true;
+                                        }
+                                    }
+
+                                }
+
+                                if (!$isRequestedMediaArchive) {
+                                    $linkCmd = '';
+                                }
+
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+                    $cssClass = $this->activeCmd == $linkCmd ? 'active' : '';
+                    $navigation.= "<li><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."' class='$cssClass'>&raquo;&nbsp;".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
                 }
             }
 
