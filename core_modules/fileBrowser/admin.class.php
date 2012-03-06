@@ -306,9 +306,11 @@ class FileBrowser {
     {
         global $_ARRAYLANG;
 
+        $ckEditorFuncNum = isset($_GET['CKEditorFuncNum']) ? '&amp;CKEditorFuncNum='.contrexx_raw2xhtml($_GET['CKEditorFuncNum']) : '';
+
         $this->_objTpl->addBlockfile('FILEBROWSER_NAVIGATION', 'fileBrowser_navigation', 'module_fileBrowser_navigation.html');
         $this->_objTpl->setVariable(array(
-            'FILEBROWSER_MEDIA_TYPE_MENU'   => $this->_getMediaTypeMenu('fileBrowserType', $this->_mediaType, 'onchange="window.location.replace(\''.CSRF::enhanceURI('index.php?cmd=fileBrowser').'&amp;standalone=true&amp;langId='.$this->_frontendLanguageId.'&amp;absoluteURIs='.$this->_absoluteURIs.'&amp;type=\'+this.value+\'&amp;CKEditorFuncNum='.contrexx_raw2xhtml($_GET['CKEditorFuncNum']).'\')" style="width:180px;"'),
+            'FILEBROWSER_MEDIA_TYPE_MENU'   => $this->_getMediaTypeMenu('fileBrowserType', $this->_mediaType, 'onchange="window.location.replace(\''.CSRF::enhanceURI('index.php?cmd=fileBrowser').'&amp;standalone=true&amp;langId='.$this->_frontendLanguageId.'&amp;absoluteURIs='.$this->_absoluteURIs.'&amp;type=\'+this.value+\''.$ckEditorFuncNum.'\')" style="width:180px;"'),
             'TXT_FILEBROWSER_PREVIEW'       => $_ARRAYLANG['TXT_FILEBROWSER_PREVIEW']
         ));
 
@@ -339,6 +341,7 @@ class FileBrowser {
         $this->_objTpl->addBlockfile('FILEBROWSER_CONTENT', 'fileBrowser_content', 'module_fileBrowser_content.html');
         $this->_objTpl->setVariable('FILEBROWSER_NOT_ABSOLUTE_URI', !$this->_absoluteURIs ? 'true' : 'false');
 
+        $ckEditorFuncNum = isset($_GET['CKEditorFuncNum']) ? '&amp;CKEditorFuncNum='.contrexx_raw2xhtml($_GET['CKEditorFuncNum']) : '';
         $rowNr = 0;
 
         switch ($this->_mediaType) {
@@ -403,7 +406,7 @@ class FileBrowser {
                 foreach ($this->_arrDirectories as $arrDirectory) {
                     $this->_objTpl->setVariable(array(
                         'FILEBROWSER_ROW_CLASS'         => $rowNr%2 == 0 ? "row1" : "row2",
-                        'FILEBROWSER_FILE_PATH_CLICK'   => "index.php?cmd=fileBrowser&amp;standalone=true&amp;langId={$this->_frontendLanguageId}&amp;absoluteURIs={$this->_absoluteURIs}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}&amp;CKEditor=".contrexx_raw2xhtml($_GET['CKEditor'])."&amp;CKEditorFuncNum=".contrexx_raw2xhtml($_GET['CKEditorFuncNum']),
+                        'FILEBROWSER_FILE_PATH_CLICK'   => "index.php?cmd=fileBrowser&amp;standalone=true&amp;langId={$this->_frontendLanguageId}&amp;absoluteURIs={$this->_absoluteURIs}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}&amp;CKEditor=".contrexx_raw2xhtml($_GET['CKEditor']).$ckEditorFuncNum,
                         'FILEBROWSER_FILE_NAME'         => $arrDirectory['name'],
                         'FILEBROWSER_FILESIZE'          => '&nbsp;',
                         'FILEBROWSER_FILE_ICON'         => $arrDirectory['icon'],
