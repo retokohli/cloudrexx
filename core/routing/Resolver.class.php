@@ -39,6 +39,17 @@ class Resolver {
      */
     protected $fallbackLanguages = null;
 
+    
+    /**
+     * @param URL $url the url to resolve
+     * @param integer $lang the language Id
+     * @param $entityManager
+     * @param string $pathOffset ASCMS_PATH_OFFSET
+     * @param array $fallbackLangauges (languageId => fallbackLanguageId)
+     * @param boolean $forceInternalRedirection does not redirect by 302 for internal redirections if set to true.
+     *                this is used mainly for testing currently. 
+     *                IMPORTANT: Do insert new parameters before this one if you need to and correct the tests.
+     */
     public function __construct($url, $lang, $entityManager, $pathOffset, $fallbackLanguages, $forceInternalRedirection=false) {
         $this->init($url, $lang, $entityManager, $pathOffset, $fallbackLanguages, $forceInternalRedirection);
     }
@@ -67,10 +78,9 @@ class Resolver {
     
     /**
      * Checks for alias request
-     * @param type $lang 
      * @return Page or null
      */
-    public function resolveAlias(&$lang) {
+    public function resolveAlias() {
         // todo: implement!
         return null;
     }
