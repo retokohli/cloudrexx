@@ -39,6 +39,11 @@ class Resolver {
      */
     protected $fallbackLanguages = null;
 
+    public function __construct($url, $lang, $entityManager, $pathOffset, $fallbackLanguages, $forceInternalRedirection=false) {
+        $this->init($url, $lang, $entityManager, $pathOffset, $fallbackLanguages, $forceInternalRedirection);
+    }
+    
+    
     /**
      * @param URL $url the url to resolve
      * @param integer $lang the language Id
@@ -49,7 +54,7 @@ class Resolver {
      *                this is used mainly for testing currently. 
      *                IMPORTANT: Do insert new parameters before this one if you need to and correct the tests.
      */
-    public function __construct($url, $lang, $entityManager, $pathOffset, $fallbackLanguages, $forceInternalRedirection=false) {
+    public function init($url, $lang, $entityManager, $pathOffset, $fallbackLanguages, $forceInternalRedirection=false) {
         $this->url = $url;
         $this->em = $entityManager;
         $this->lang = $lang;
@@ -59,6 +64,16 @@ class Resolver {
 
         $this->fallbackLanguages = $fallbackLanguages;
     }
+    
+    /**
+     * Checks for alias request
+     * @param type $lang 
+     * @return boolean
+     */
+    public function resolveAlias(&$lang) {
+        // todo: implement!
+        return false;
+    }
 
     /**
      * Does the resolving work, extends $this->url with targetPath and params.
@@ -66,15 +81,17 @@ class Resolver {
     public function resolve() {
         $path = $this->url->getSuggestedTargetPath();
 
-        //(I) see what the model has for us.
-        $result = $this->pageRepo->getPagesAtPath($path, null, $this->lang);
+        //(I) see what the model has for us, including aliasses.
+        $result = $this->pageRepo->getPagesAtPath($path, null, $this->lang, false, true);
 
         //(II) sort out errors
-        if(!$result)
+        if(!$result) {
             throw new ResolverException('Unable to locate page (tried path ' . $path .').');
+        }
 
-        if(!$result['page'])
+        if(!$result['page']) {
             throw new ResolverException('Unable to locate page for this language. (tried path ' . $path .').');
+        }
 
         //(III) extend our url object with matched path / params
         $this->url->setTargetPath($result['matchedPath']);
@@ -89,7 +106,12 @@ class Resolver {
          */
         $target = $this->page->getTarget();
         $isRedirection = $this->page->getType() == 'redirect';
-        if($target && $isRedirection) {
+        $isAlias = $this->page->getType() == 'alias';
+        
+        //handles alias redirections internal / disables external redirection
+        $this->forceInternalRedirection = $this->forceInternalRedirection || $isAlias;
+        
+        if($target && ($isRedirection || $isAlias)) {
             if($this->page->isTargetInternal()) {
 //TODO: add check for endless/circular redirection (a -> b -> a -> b ... and more complex)
                 $nId = $this->page->getTargetNodeId();
