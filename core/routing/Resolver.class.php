@@ -68,11 +68,11 @@ class Resolver {
     /**
      * Checks for alias request
      * @param type $lang 
-     * @return boolean
+     * @return Page or null
      */
     public function resolveAlias(&$lang) {
         // todo: implement!
-        return false;
+        return null;
     }
 
     /**

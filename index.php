@@ -72,7 +72,7 @@
  * will either activate or deactivate all levels.
  */
 require_once dirname(__FILE__).'/lib/DBG.php';
-DBG::activate(DBG_PHP | DBG_ADODB_ERROR | DBG_LOG_FIREPHP);
+//DBG::activate(DBG_PHP | DBG_ADODB_ERROR | DBG_LOG_FIREPHP);
 
 //iconv_set_encoding('output_encoding', 'utf-8');
 //iconv_set_encoding('input_encoding', 'utf-8');
@@ -182,9 +182,9 @@ require_once(ASCMS_CORE_PATH.'/routing/URLTranslator.class.php');
 require_once(ASCMS_CORE_PATH.'/routing/Resolver.class.php');
 
 $resolver = new \Cx\Core\Routing\Resolver($url, null, Env::em(), null, null);
-$lang = "";
-if ($resolver->resolveAlias($lang)) {
-    $_LANGID = $lang;
+$aliaspage = $resolver->resolveAlias();
+if ($aliaspage != null) {
+    $_LANGID = $aliaspage->getTargetLangId();
 } else {
     /**
      * Frontend language ID
