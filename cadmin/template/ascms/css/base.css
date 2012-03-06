@@ -88,7 +88,7 @@ a:active {
 }*/
 
 a {
-    color: #206FAB;
+    color: #1A74B1;
     text-decoration: none;
     outline: 0;
 }
@@ -246,6 +246,7 @@ a:focus {
 
 #content {
     overflow: hidden;
+padding: 14px;
 }
 
 #content textarea,
@@ -380,13 +381,13 @@ table.adminlist {
   background-color: #ffffff;
 }
 table.adminlist th {
-  color: white;
-  height: 22px;
-  background-color: #0a50a1;
-  padding: 0px 0px 0px 5px;
-  margin: 0px 0px 0px 0px;
-  text-align: left;
-  vertical-align: middle;
+ background: url("../images/table_header.png") repeat-x scroll 0 0 transparent;
+color: white;
+height: 27px;
+margin: 0;
+padding: 0 0 0 5px;
+text-align: left;
+vertical-align: middle;
 }
 table.adminlist th a {
   color: white;
@@ -410,13 +411,13 @@ table.adminlist th.title {
   text-align: left;
 }
 table.adminlist tr.row1 {
-  background-color: #f4f7ff;
+  background-color: #FFFFFF;
 }
 table.adminlist tr.row2 {
-  background-color: #ffffff;
+  background-color: #F5F5F5;
 }
 table.adminlist tr.row3 {
-  background-color: #dde4ff;
+  background-color: #D8EAFE;
 }
 table.adminlist thead tr.row3 {
   background-color: #dde4ff;
