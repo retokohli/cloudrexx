@@ -531,7 +531,8 @@ class FileBrowser {
 
         $this->_objTpl->setVariable(array(
               'COMBO_UPLOADER_CODE' => $comboUp->getXHtml(true),
-			  'REDIRECT_URL'		=> $redirectUrl
+// TODO: what is this for?
+			  //'REDIRECT_URL'		=> $redirectUrl
         ));
         //end of uploader button handling
         //check if a finished upload caused reloading of the page.
