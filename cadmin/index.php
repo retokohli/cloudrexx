@@ -739,7 +739,7 @@ switch ($plainCmd) {
 $finishTime = explode(' ', microtime());
 $parsingTime = round(((float)$finishTime[0] + (float)$finishTime[1]) - ((float)$startTime[0] + (float)$startTime[1]), 5);
 
-$objAdminNav = new adminMenu();
+$objAdminNav = new adminMenu($plainCmd);
 $objAdminNav->getAdminNavbar();
 $objTemplate->setVariable(array(
     'SUB_MENU_TITLE' => $subMenuTitle,
