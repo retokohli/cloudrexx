@@ -72,7 +72,7 @@
  * will either activate or deactivate all levels.
  */
 require_once dirname(__FILE__).'/lib/DBG.php';
-//DBG::activate(DBG_PHP | DBG_ADODB_ERROR | DBG_LOG_FIREPHP);
+DBG::activate(DBG_PHP | DBG_ADODB_ERROR | DBG_LOG_FIREPHP);
 
 //iconv_set_encoding('output_encoding', 'utf-8');
 //iconv_set_encoding('input_encoding', 'utf-8');
@@ -178,41 +178,49 @@ require_once ASCMS_CORE_PATH.'/routing/URL.class.php';
 require_once ASCMS_CORE_PATH.'/routing/LanguageExtractor.class.php';
 /** @ignore */
 require_once(ASCMS_CORE_PATH.'/routing/URLTranslator.class.php');
+/** @ignore */
+require_once(ASCMS_CORE_PATH.'/routing/Resolver.class.php');
 
-/**
- * Frontend language ID
- * @global integer $_LANGID
- * @todo    Globally replace this with either the FRONTEND_LANG_ID, or LANG_ID constant
- */
-$_LANGID = $objInit->getFallbackFrontendLangId();
+$resolver = new \Cx\Core\Routing\Resolver($url, null, Env::em(), null, null);
+$lang = "";
+if ($resolver->resolveAlias($lang)) {
+    $_LANGID = $lang;
+} else {
+    /**
+     * Frontend language ID
+     * @global integer $_LANGID
+     * @todo    Globally replace this with either the FRONTEND_LANG_ID, or LANG_ID constant
+     */
+    $_LANGID = $objInit->getFallbackFrontendLangId();
 
-//try to find the language in the url
-$url = \Cx\Core\Routing\URL::fromCapturedRequest($_GET['__cap'], ASCMS_PATH_OFFSET, $_GET);
-$languageExtractor = new \Cx\Core\Routing\URLTranslator($objDatabase, DBPREFIX, Env::em());
-$extractedLanguage = 0;
+    //try to find the language in the url
+    $url = \Cx\Core\Routing\URL::fromCapturedRequest($_GET['__cap'], ASCMS_PATH_OFFSET, $_GET);
+    $languageExtractor = new \Cx\Core\Routing\URLTranslator($objDatabase, DBPREFIX, Env::em());
+    $extractedLanguage = 0;
 
-$redirectToCorrectLanguageDir = function() use ($languageExtractor, $url, $_LANGID, $_CONFIG) {
-    $languageExtractor->addLanguageDir($url, $_LANGID);
+    $redirectToCorrectLanguageDir = function() use ($languageExtractor, $url, $_LANGID, $_CONFIG) {
+        $languageExtractor->addLanguageDir($url, $_LANGID);
 
-    CSRF::header('Location: http://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET. '/' . $url->getPath() . $url->getSuggestedParams());
-    die();
-};
+        CSRF::header('Location: http://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET. '/' . $url->getPath() . $url->getSuggestedParams());
+        die();
+    };
 
-try {
-    $extractedLanguage = $languageExtractor->extractLanguage($url);
-}
-catch(\Cx\Core\Routing\LanguageExtractorException $e) {
-    //we could not extract any language information - rely on $_LANGID
-    //to redirect the user to an url with prepended virtual language directory
-    $redirectToCorrectLanguageDir();
-}
+    try {
+        $extractedLanguage = $languageExtractor->extractLanguage($url);
+    }
+    catch(\Cx\Core\Routing\LanguageExtractorException $e) {
+        //we could not extract any language information - rely on $_LANGID
+        //to redirect the user to an url with prepended virtual language directory
+        $redirectToCorrectLanguageDir();
+    }
 
-//only set langid according to url if the user has not explicitly requested a language change.
-if(!isset($_REQUEST['setLang'])) {
-    $_LANGID = $extractedLanguage;
-}
-else if($_LANGID != $extractedLanguage) { //the user wants to change the language, but we're still inside the wrong language directory.
-    $redirectToCorrectLanguageDir();
+    //only set langid according to url if the user has not explicitly requested a language change.
+    if(!isset($_REQUEST['setLang'])) {
+        $_LANGID = $extractedLanguage;
+    }
+    else if($_LANGID != $extractedLanguage) { //the user wants to change the language, but we're still inside the wrong language directory.
+        $redirectToCorrectLanguageDir();
+    }
 }
 
 // Post-2.1
@@ -364,10 +372,8 @@ $isRegularPageRequest = !isset($_REQUEST['standalone']) || $_REQUEST['standalone
 if ($isRegularPageRequest) {
 // TODO: history (empty($history) ? )
 
-    /** @ignore */
-    require_once ASCMS_CORE_PATH.'/routing/Resolver.class.php';
 
-    $resolver = new \Cx\Core\Routing\Resolver($url, FRONTEND_LANG_ID, Env::em(), ASCMS_PATH_OFFSET.Env::get('virtualLanguageDirectory'), FWLanguage::getFallbackLanguageArray());
+    $resolver->init($url, FRONTEND_LANG_ID, Env::em(), ASCMS_PATH_OFFSET.Env::get('virtualLanguageDirectory'), FWLanguage::getFallbackLanguageArray());
     try {
         $resolver->resolve();
         $page = $resolver->getPage();

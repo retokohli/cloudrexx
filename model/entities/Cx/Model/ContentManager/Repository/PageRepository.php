@@ -59,7 +59,7 @@ class PageRepository extends EntityRepository {
      * @param boolean $titlesOnly fetch titles only. You may want to use @link getTreeByTitle()
      * @return array
      */
-    public function getTree($rootNode = null, $titlesOnly = false) {
+    public function getTree($rootNode = null, $titlesOnly = false, $includeAliasses = false) {
         $repo = $this->em->getRepository('Cx\Model\ContentManager\Node');
         $qb = $this->em->createQueryBuilder();
 
@@ -67,25 +67,28 @@ class PageRepository extends EntityRepository {
         $joinCondition = null;
 
         $qb->addSelect('p');
-
+        
         //join the pages
         $qb->leftJoin('node.pages', 'p', $joinConditionType, $joinCondition);
-        $qb->andWhere($qb->expr()->gt('node.lvl', 0)); //exclude root node
-
+        $qb->where($qb->expr()->gt('node.lvl', 0)); //exclude root node
+        if (!$includeAliasses) {
+            $qb->andWhere("p.type != 'alias'"); //exclude alias nodes
+        }
+        
         //get all nodes
         $tree = $repo->children($rootNode, false, 'lft', 'ASC', $qb);
 
         return $tree;
     }
-
+    
     /**
      * Get a tree mapping titles to Page, Node and language.
      *
      * @see getTree()
      * @return array ( title => array( '__data' => array(lang => langId, page =>), child1Title => array, child2Title => array, ... ) ) recursively array-mapped tree.
      */
-    public function getTreeByTitle($rootNode = null, $lang = null, $titlesOnly = false, $useSlugsAsTitle=false) {
-        $tree = $this->getTree($rootNode, true);
+    public function getTreeByTitle($rootNode = null, $lang = null, $titlesOnly = false, $useSlugsAsTitle=false, $includeAliasses = false) {
+        $tree = $this->getTree($rootNode, true, $includeAliasses);
 
         $result = array();
 
@@ -198,8 +201,8 @@ class PageRepository extends EntityRepository {
      *     [ page => Page ] #langId != null only
      * )
      */
-    public function getPagesAtPath($path, $root = null, $lang = null, $exact = false) {
-        $tree = $this->getTreeByTitle($root, $lang, true, true);
+    public function getPagesAtPath($path, $root = null, $lang = null, $exact = false, $includeAliasses = false) {
+        $tree = $this->getTreeByTitle($root, $lang, true, true, $includeAliasses);
 
         //this is a mock strategy. if we use this method, it should be rewritten to use bottom up
         $pathParts = explode('/', $path);
