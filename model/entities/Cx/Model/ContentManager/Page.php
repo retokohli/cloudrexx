@@ -150,26 +150,26 @@ class Page extends \Cx\Model\Base\EntityBase
         $this->setUpdatedAtToNow();
 
         $this->validators = array(
-            'lang' => new \CxValidateInteger(),
-            'type' => new \CxValidateString(array('alphanumeric' => true, 'maxlength' => 255)),
-            //caching is boolean, not checked
-            'title' => new \CxValidateString(array('maxlength' => 255)),
-            'customContent' => new \CxValidateString(array('maxlength' => 64)),
-            'cssName' => new \CxValidateString(array('maxlength' => 255)),
-            'metatitle' => new \CxValidateString(array('maxlength' => 255)),
-            'metadesc' => new \CxValidateString(array('maxlength' => 255)),
-            'metakeys' => new \CxValidateString(array('maxlength' => 255)),
-            'metarobots' => new \CxValidateString(array('maxlength' => 255)),
-            //'start' => maybe date? format?
-            //'end' => maybe date? format?
-            'editingStatus' => new \CxValidateString(array('maxlength' => 16)),
-            'username' => new \CxValidateString(array('maxlength' => 64)),
-            //display is boolean, not checked
-            //active is boolean, not checked
-            'target' => new \CxValidateString(array('maxlength' => 255)),
-            'module' => new \CxValidateString(array('alphanumeric' => true)),
-            'cmd' => new \CxValidateRegexp(array('pattern' => '/^[A-Za-z0-9_]+$/')),            
-        );
+                                  'lang' => new \CxValidateInteger(),
+                                  'type' => new \CxValidateString(array('alphanumeric' => true, 'maxlength' => 255)),
+                                  //caching is boolean, not checked
+                                  'title' => new \CxValidateString(array('maxlength' => 255)),
+                                  'customContent' => new \CxValidateString(array('maxlength' => 64)),
+                                  'cssName' => new \CxValidateString(array('maxlength' => 255)),
+                                  'metatitle' => new \CxValidateString(array('maxlength' => 255)),
+                                  'metadesc' => new \CxValidateString(array('maxlength' => 255)),
+                                  'metakeys' => new \CxValidateString(array('maxlength' => 255)),
+                                  'metarobots' => new \CxValidateString(array('maxlength' => 255)),
+                                  //'start' => maybe date? format?
+                                  //'end' => maybe date? format?
+                                  'editingStatus' => new \CxValidateString(array('maxlength' => 16)),
+                                  'username' => new \CxValidateString(array('maxlength' => 64)),
+                                  //display is boolean, not checked
+                                  //active is boolean, not checked
+                                  'target' => new \CxValidateString(array('maxlength' => 255)),
+                                  'module' => new \CxValidateString(array('alphanumeric' => true)),
+                                  'cmd' => new \CxValidateRegexp(array('pattern' => '/^[A-Za-z0-9_]+$/')),            
+                                  );
     }
 
     /**
@@ -528,7 +528,7 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function setStatus($status)
     {
-// TODO: this needs to be read-only; values are set through active/display setters
+        // TODO: this needs to be read-only; values are set through active/display setters
         if ($status == "active") {
             $this->active = true;
             $this->display = true;
@@ -601,10 +601,10 @@ class Page extends \Cx\Model\Base\EntityBase
         
         preg_match('#(\d+)(-(\d+))?\|(.*)#', $t, $matches);
         return array(
-            'nodeId' => $matches[1],
-            'langId' => $matches[3],
-            'queryString' => $matches[4],
-        );
+                     'nodeId' => $matches[1],
+                     'langId' => $matches[3],
+                     'queryString' => $matches[4],
+                     );
     }
 
     /**
@@ -864,7 +864,7 @@ class Page extends \Cx\Model\Base\EntityBase
      * @return boolean
      */
     public function isBackendProtected() {
-       return ($this->protection & BACKEND_PROTECTION) >= 1;
+        return ($this->protection & BACKEND_PROTECTION) >= 1;
     }
 
     protected function createAccessId() {
@@ -890,13 +890,15 @@ class Page extends \Cx\Model\Base\EntityBase
 
             $accessId = $this->createAccessId();
             $this->setFrontendAccessId($accessId);
-	    $this->protection = $this->protection | FRONTEND_PROTECTION;
+            $this->protection = $this->protection | FRONTEND_PROTECTION;
         }
         else {
-            $accessId = $this->getFrontendAccessId();
-            $this->eraseAccessId($accessId);
+            if ($this->isFrontendProtected()) {
+                $accessId = $this->getFrontendAccessId();
+                $this->eraseAccessId($accessId);
+            }
             $this->setFrontendAccessId(0);
-	    $this->protection = $this->protection ^ FRONTEND_PROTECTION;
+            $this->protection = $this->protection & ~FRONTEND_PROTECTION;
         }
     }
 
@@ -912,13 +914,15 @@ class Page extends \Cx\Model\Base\EntityBase
 
             $accessId = $this->createAccessId();
             $this->setBackendAccessId($accessId);
-	    $this->protection = $this->protection | BACKEND_PROTECTION;
+            $this->protection = $this->protection | BACKEND_PROTECTION;
         }
         else {
-            $accessId = $this->getBackendAccessId();
-            $this->eraseAccessId($accessId);            
+            if ($this->isBackendProtected()) {
+                $accessId = $this->getBackendAccessId();
+                $this->eraseAccessId($accessId);
+            }
             $this->setFrontendAccessId(0);
-	    $this->protection = $this->protection ^ BACKEND_PROTECTION;
+            $this->protection = $this->protection & ~BACKEND_PROTECTION;
         }
     }
 
@@ -1012,7 +1016,7 @@ class Page extends \Cx\Model\Base\EntityBase
         $this->setEnd($source->getEnd());
         $this->setEditingStatus($source->getEditingStatus());
         $this->setTarget($source->getTarget());
-//TODO: copy access protection
+        //TODO: copy access protection
     }
     /**
      * @var string $contentTitle
@@ -1127,9 +1131,9 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     // DO NOT set protection directly, use setFrontend/BackendProtected instead.
     /*public function setProtection($protection)
-    {	
-        $this->protection = $protection;
-	}*/
+      { 
+      $this->protection = $protection;
+      }*/
 
     /**
      * Get protection
@@ -1194,9 +1198,9 @@ class Page extends \Cx\Model\Base\EntityBase
         foreach ($newData as $key => $value) {
             try {
                 call_user_func(array($this, "set".ucfirst($key)), $value);
-	    }
-	    catch (Exception $e) {
-		DBG::log("\r\nskipped ".$key);
+            }
+            catch (Exception $e) {
+                DBG::log("\r\nskipped ".$key);
             }
         }
     }
