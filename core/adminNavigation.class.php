@@ -146,8 +146,9 @@ class adminMenu
 
                         switch ($linkCmd) {
                             case 'content';
-                                if (   empty($_REQUEST['act']) && !empty($linkCmdSection)
-                                    || !empty($_REQUEST['act']) && empty($linkCmdSection)
+                                if (   $this->activeCmd == 'content'
+                                    && (   empty($_REQUEST['act']) && !empty($linkCmdSection)
+                                        || !empty($_REQUEST['act']) && empty($linkCmdSection))
                                 ) {
 
                                     $linkCmd = '';
@@ -159,6 +160,10 @@ class adminMenu
                                 }
                                 $linkCmdSection = 'archive=themes';
                             case 'media':
+                                if ($this->activeCmd != 'media') {
+                                    break;
+                                }
+
                                 $isRequestedMediaArchive = false;
                                 $requestedArchive = '';
                                 if (isset($_REQUEST['archive'])) {
