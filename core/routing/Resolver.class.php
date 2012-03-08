@@ -81,34 +81,57 @@ class Resolver {
      * @return Page or null
      */
     public function resolveAlias() {
-        // todo: implement!
-        return null;
+        // This is our alias, if any
+        $path = $this->url->getSuggestedTargetPath();
+
+        //(I) see what the model has for us, aliasses only.
+        $result = $this->pageRepo->getPagesAtPath($path, null, null, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_ALIAS_ONLY);
+        
+        //(II) sort out errors
+        if(!$result) {
+            // no alias
+            return null;
+        }
+
+        if(!$result['pages']) {
+            // no alias
+            return null;
+        }
+        if (count($result['pages']) != 1) {
+            throw new ResolverException('Unable to match a single page for this alias (tried path ' . $path . ').');
+        }
+        $page = current($result['pages']);
+
+        $this->page = $page;
+
+        return $this->page;
     }
 
     /**
      * Does the resolving work, extends $this->url with targetPath and params.
      */
-    public function resolve() {
+    public function resolve($intern = false) {
         $path = $this->url->getSuggestedTargetPath();
 
-        //(I) see what the model has for us, including aliasses.
-        $result = $this->pageRepo->getPagesAtPath($path, null, $this->lang, false, true);
+        if (!$this->page || $intern) {
+            //(I) see what the model has for us, including aliasses.
+            $result = $this->pageRepo->getPagesAtPath($path, null, $this->lang, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
 
-        //(II) sort out errors
-        if(!$result) {
-            throw new ResolverException('Unable to locate page (tried path ' . $path .').');
+            //(II) sort out errors
+            if(!$result) {
+                throw new ResolverException('Unable to locate page (tried path ' . $path .').');
+            }
+
+            if(!$result['page']) {
+                throw new ResolverException('Unable to locate page for this language. (tried path ' . $path .').');
+            }
+
+            //(III) extend our url object with matched path / params
+            $this->url->setTargetPath($result['matchedPath']);
+            $this->url->setParams($result['unmatchedPath'] . $this->url->getSuggestedParams());
+
+            $this->page = $result['page'];
         }
-
-        if(!$result['page']) {
-            throw new ResolverException('Unable to locate page for this language. (tried path ' . $path .').');
-        }
-
-        //(III) extend our url object with matched path / params
-        $this->url->setTargetPath($result['matchedPath']);
-        $this->url->setParams($result['unmatchedPath'] . $this->url->getSuggestedParams());
-
-        $this->page = $result['page'];
-
         /*
           the page we found could be a redirection.
           in this case, the URL object is overwritten with the target details and
@@ -156,20 +179,20 @@ class Resolver {
 
                 $this->url->setPath($targetPath.$qs);
                 $this->isRedirection = true;
-                $this->resolve();
+                $this->resolve(true);
             }
             else { //external target - redirect via HTTP 302
                 header('Location: '.$target);
                 die();
             }
         }
-       
+        
         //if we followed one or more redirections, the user shall be redirected by 302.
         if($this->isRedirection && !$this->forceInternalRedirection) {
             header('Location: '.$this->pageRepo->getURL($this->page, $this->pathOffset, $params));
             die();
         }
-
+        
         $this->handleFallbackContent($this->page);
     }
 

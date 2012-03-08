@@ -179,18 +179,24 @@ class Navigation
      * getFrontendLangNavigation()
      * @access public
      * @global InitCMS
-     * @todo Use URLTranslator::getUrlInAllLanguages() for building the menu
      */
-    function getFrontendLangNavigation()
+    function getFrontendLangNavigation($URLTranslator, $page, $pageURL)
     {
         global $objInit;
-
+        
+        $urls = $URLTranslator->getUrlInAllLanguages($page, $pageURL);
+        
         $this->arrLang = $objInit->getLanguageArray();
         $langNavigation = '';
         if (count($this->arrLang)>1) {
             foreach ($this->arrLang as $id => $value) {
                 if ($this->arrLang[$id]['frontend'] == 1) {
-                    $uri = ASCMS_PATH_OFFSET.'/'.$this->arrLang[$id]['lang'].'/';
+                    // only urls for languages other than the actual one are set
+                    if (isset($urls[$id])) {
+                        $uri = ASCMS_PATH_OFFSET.'/'.$urls[$id]->getPath();
+                    } else {
+                        $uri = ASCMS_PATH_OFFSET.'/'.$this->arrLang[$id]['lang'].'/'.$pageURL->getPath();
+                    }
                     $langNavigation .= '<a class="'.$this->arrLang[$id]['lang'].'" href="'.$uri.'" title="'.contrexx_raw2xhtml($value['name']).'">'.contrexx_raw2xhtml($value['name']).'</a>';
                 }
             }

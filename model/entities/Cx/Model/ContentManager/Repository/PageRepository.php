@@ -12,6 +12,9 @@ class PageRepositoryException extends \Exception {};
 class TranslateException extends \Exception {};
 
 class PageRepository extends EntityRepository {
+    const SEARCH_MODE_PAGES_ONLY = 1;
+    const SEARCH_MODE_ALIAS_ONLY = 2;
+    const SEARCH_MODE_ALL = 3;
     protected $em = null;
     const DataProperty = '__data';
 
@@ -59,7 +62,7 @@ class PageRepository extends EntityRepository {
      * @param boolean $titlesOnly fetch titles only. You may want to use @link getTreeByTitle()
      * @return array
      */
-    public function getTree($rootNode = null, $titlesOnly = false, $includeAliasses = false) {
+    public function getTree($rootNode = null, $titlesOnly = false, $search_mode = self::SEARCH_MODE_PAGES_ONLY) {
         $repo = $this->em->getRepository('Cx\Model\ContentManager\Node');
         $qb = $this->em->createQueryBuilder();
 
@@ -71,8 +74,16 @@ class PageRepository extends EntityRepository {
         //join the pages
         $qb->leftJoin('node.pages', 'p', $joinConditionType, $joinCondition);
         $qb->where($qb->expr()->gt('node.lvl', 0)); //exclude root node
-        if (!$includeAliasses) {
-            $qb->andWhere("p.type != 'alias'"); //exclude alias nodes
+        switch ($search_mode) {
+            case self::SEARCH_MODE_ALIAS_ONLY:
+                $qb->andWhere("p.type = 'alias'"); //exclude non alias nodes
+                continue;
+            case self::SEARCH_MODE_ALL:
+                continue;
+            case self::SEARCH_MODE_PAGES_ONLY:
+            default:
+                $qb->andWhere("p.type != 'alias'"); //exclude alias nodes
+                continue;
         }
         
         //get all nodes
@@ -87,8 +98,8 @@ class PageRepository extends EntityRepository {
      * @see getTree()
      * @return array ( title => array( '__data' => array(lang => langId, page =>), child1Title => array, child2Title => array, ... ) ) recursively array-mapped tree.
      */
-    public function getTreeByTitle($rootNode = null, $lang = null, $titlesOnly = false, $useSlugsAsTitle=false, $includeAliasses = false) {
-        $tree = $this->getTree($rootNode, true, $includeAliasses);
+    public function getTreeByTitle($rootNode = null, $lang = null, $titlesOnly = false, $useSlugsAsTitle=false, $search_mode = self::SEARCH_MODE_PAGES_ONLY) {
+        $tree = $this->getTree($rootNode, true, $search_mode);
 
         $result = array();
 
@@ -201,8 +212,8 @@ class PageRepository extends EntityRepository {
      *     [ page => Page ] #langId != null only
      * )
      */
-    public function getPagesAtPath($path, $root = null, $lang = null, $exact = false, $includeAliasses = false) {
-        $tree = $this->getTreeByTitle($root, $lang, true, true, $includeAliasses);
+    public function getPagesAtPath($path, $root = null, $lang = null, $exact = false, $search_mode = self::SEARCH_MODE_PAGES_ONLY) {
+        $tree = $this->getTreeByTitle($root, $lang, true, true, $search_mode);
 
         //this is a mock strategy. if we use this method, it should be rewritten to use bottom up
         $pathParts = explode('/', $path);
