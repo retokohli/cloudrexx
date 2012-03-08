@@ -130,6 +130,13 @@ class Resolver {
             $this->url->setTargetPath($result['matchedPath']);
             $this->url->setParams($result['unmatchedPath'] . $this->url->getSuggestedParams());
 
+            // If an older revision was requested, revert to that in-place:
+            if (isset($_GET['history']) && \Permission::checkAccess(6, 'static', true)) {
+                $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
+
+                $logRepo->revert($result['page'], $_GET['history']);
+            }
+
             $this->page = $result['page'];
         }
         /*
