@@ -72,7 +72,7 @@
  * will either activate or deactivate all levels.
  */
 require_once dirname(__FILE__).'/lib/DBG.php';
-//DBG::activate(DBG_PHP | DBG_ADODB_ERROR | DBG_LOG_FIREPHP);
+DBG::activate(DBG_PHP | DBG_ADODB_ERROR | DBG_LOG_FIREPHP);
 
 //iconv_set_encoding('output_encoding', 'utf-8');
 //iconv_set_encoding('input_encoding', 'utf-8');
@@ -181,6 +181,9 @@ require_once(ASCMS_CORE_PATH.'/routing/URLTranslator.class.php');
 /** @ignore */
 require_once(ASCMS_CORE_PATH.'/routing/Resolver.class.php');
 
+$languageExtractor = new \Cx\Core\Routing\URLTranslator($objDatabase, DBPREFIX, Env::em());
+
+$url = \Cx\Core\Routing\URL::fromCapturedRequest($_GET['__cap'], ASCMS_PATH_OFFSET, $_GET);
 $resolver = new \Cx\Core\Routing\Resolver($url, null, Env::em(), null, null);
 $aliaspage = $resolver->resolveAlias();
 if ($aliaspage != null) {
@@ -194,8 +197,6 @@ if ($aliaspage != null) {
     $_LANGID = $objInit->getFallbackFrontendLangId();
 
     //try to find the language in the url
-    $url = \Cx\Core\Routing\URL::fromCapturedRequest($_GET['__cap'], ASCMS_PATH_OFFSET, $_GET);
-    $languageExtractor = new \Cx\Core\Routing\URLTranslator($objDatabase, DBPREFIX, Env::em());
     $extractedLanguage = 0;
 
     $redirectToCorrectLanguageDir = function() use ($languageExtractor, $url, $_LANGID, $_CONFIG) {
@@ -1778,7 +1779,7 @@ $objTemplate->setVariable(array(
     'COUNTER'                        => $objCounter->getCounterTag(),
     'BANNER'                         => isset($objBanner) ? $objBanner->getBannerJS() : '',
     'VERSION'                        => $contrexxCmsName,
-    'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation(),
+    'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($languageExtractor, $page, $url),
     'ACTIVE_LANGUAGE_NAME'           => $objInit->getFrontendLangName(),
     'RANDOM'                         => md5(microtime()),
     'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],
