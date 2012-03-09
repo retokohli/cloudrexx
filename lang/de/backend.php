@@ -1407,6 +1407,11 @@ $_ARRAYLANG['TXT_CORE_SAVE'] = "Speichern";
 
 $_ARRAYLANG['TXT_CORE_LOAD'] = "Laden";
 $_ARRAYLANG['TXT_CORE_CURRENT'] = "jetzige";
+$_ARRAYLANG['TXT_CORE_DRAFT'] = "Entwurf";
+
+$_ARRAYLANG['TXT_CORE_SAVED_AS_DRAFT'] = "Seite als Entwurf gespeichert";
+$_ARRAYLANG['TXT_CORE_SAVED'] = "Seite gespeichert";
+$_ARRAYLANG['TXT_CORE_DRAFT_SUBMITTED'] = "Entwurf zur Ver&ouml;ffentlichung freigegeben";
 
 $_ARRAYLANG['TXT_CACHING_STATUS'] = "Caching aktiviert";
 $_ARRAYLANG['TXT_CONTENT_TYPE_REDIRECT'] = "Weiterleitung";

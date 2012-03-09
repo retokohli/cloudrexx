@@ -115,6 +115,8 @@ Cx\Model\ContentManager\Page:
     editingStatus:
       type: string
       length: 16
+#      gedmo:
+#        - versioned
 
     username:
       type: string

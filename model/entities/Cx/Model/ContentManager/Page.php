@@ -1204,4 +1204,14 @@ class Page extends \Cx\Model\Base\EntityBase
             }
         }
     }
+
+    /**
+     * Set protection
+     *
+     * @param integer $protection
+     */
+    public function setProtection($protection)
+    {
+        $this->protection = $protection;
+    }
 }

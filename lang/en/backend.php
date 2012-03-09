@@ -1099,6 +1099,11 @@ $_ARRAYLANG['TXT_CORE_SAVE'] = "Save";
 $_ARRAYLANG['TXT_CORE_LOAD'] = "Load";
 
 $_ARRAYLANG['TXT_CORE_CURRENT'] = "current";
+$_ARRAYLANG['TXT_CORE_DRAFT'] = "draft";
+
+$_ARRAYLANG['TXT_CORE_SAVED_AS_DRAFT'] = "Saved as draft";
+$_ARRAYLANG['TXT_CORE_SAVED'] = "Saved";
+$_ARRAYLANG['TXT_CORE_DRAFT_SUBMITTED'] = "Draft submitted for publishing";
 
 $_ARRAYLANG['TXT_ACCESS_GROUP_NAME_INVALID'] = "Der gewählte Gruppenname ist nicht gültig! Wählen Sie bitte einen anderen Namen für die Gruppe.";
 $_ARRAYLANG['TXT_ACCESS_MENU_MULTI'] = "Menu mit Mehrfachauswahl";
