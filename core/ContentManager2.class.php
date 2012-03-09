@@ -19,7 +19,7 @@ class ContentManagerException extends ModuleException {}
 
 class ContentManager extends Module {
     //doctrine entity manager
-	protected $em = null;
+    protected $em = null;
     //the mysql connection
     protected $db = null;
     //the init object
@@ -222,6 +222,7 @@ class ContentManager extends Module {
 
         //(III) collect page informations - path, virtual language directory
         $path = $this->getPageRepository()->getPath($page);
+        $pageHasDraft = $page->getEditingStatus() ? true : false;
 
         $le = new \Cx\Core\Routing\LanguageExtractor($this->db, DBPREFIX);
         $langDir = $le->getShortNameOfLanguage($page->getLang());
@@ -242,7 +243,7 @@ class ContentManager extends Module {
             }
             catch(\Gedmo\Exception\UnexpectedValueException $e) {
             }
-            $this->addHistoryEntries($page, $table, $row, $version, $langDir.'/'.$path);
+            $this->addHistoryEntries($page, $table, $row, $version, $langDir.'/'.$path, $pageHasDraft);
  
                 
         }
@@ -251,11 +252,14 @@ class ContentManager extends Module {
         die($table->toHtml());
     }
 
-    protected function addHistoryEntries($page, $table, $row, $version='', $path='') {
+    protected function addHistoryEntries($page, $table, $row, $version='', $path='', $pageHasDraft=true) {
         global $_ARRAYLANG;
 
         $dateString = $page->getUpdatedAt()->format(ASCMS_DATE_FORMAT);
 
+        if ($row == 2 && $pageHasDraft) {
+            $dateString .= ' ('.$_ARRAYLANG['TXT_CORE_DRAFT'].')';
+        }
         if($row > 1) { //not the current page
             $table->setCellContents($row, 3, '<a href="javascript:loadHistoryVersion('.$page->getId().','.$version.')">'.$_ARRAYLANG['TXT_CORE_LOAD'].'</a>');
             $historyLink = ASCMS_PATH_OFFSET."/$path?history=$version";

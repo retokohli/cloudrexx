@@ -59,7 +59,8 @@ class JSONData {
 
 		    return json_encode(array(
 					     'status' => 'success',
-					     'data'   => $output
+					     'data'   => $output,
+                                             'message' => $this->adapters[$_GET['object']]->getMessagesAsString()
 					     ));
 		}
 		catch (Exception $e) {

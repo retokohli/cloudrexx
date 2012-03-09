@@ -13,11 +13,13 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
 
 class JSONNode {
         
-        var $em = null;
+    var $em = null;
     var $fallbacks;
+    var $messages;
 
-        function __construct() {
-                $this->em = Env::em();
+    function __construct() {
+        $this->em = Env::em();
+        $this->messages = array();
         $this->tz = new DateTimeZone('Europe/Berlin');
 
         $fallback_lang_codes = FWLanguage::getFallbackLanguageArray();
@@ -27,7 +29,11 @@ class JSONNode {
         foreach ($active_langs as $lang) {
             $this->fallbacks[FWLanguage::getLanguageCodeById($lang['id'])] = ((array_key_exists($lang['id'], $fallback_lang_codes)) ? FWLanguage::getLanguageCodeById($fallback_lang_codes[$lang['id']]) : null);
         }
-        }
+    }
+
+   public function getMessagesAsString() {
+        return implode("<br />", $this->messages);
+    }
 
     public function getTree() {
         return $this->renderTree();
@@ -104,9 +110,34 @@ class JSONNode {
                     "title"     => $page->getTitle(),
                     "attr"      => array("id" => $page->getId()) 
                 );
+
+                $editingStatus = $page->getEditingStatus();
+                if ($page->isActive()) {
+                    if ($editingStatus == 'hasDraft') {
+                        $publishingStatus = 'publishedwait';
+                    }
+                    else if ($editingStatus == 'hasDraftWaiting') {
+                        $publishingStatus = 'publishedwait';
+                    }
+                    else {
+                        $publishingStatus = 'published';
+                    }
+                }
+                else {
+                    if ($editingStatus == 'hasDraft') {
+                        $publishingStatus = 'draft';
+                    }
+                    else if ($editingStatus == 'hasDraftWaiting') {
+                        $publishingStatus = 'draftwait';
+                    }
+                    else {
+                        $publishingStatus = 'unpublished';
+                    }
+                }
+
                 $metadata[$page->getId()] = array(
                     "visibility"=> $page->getStatus(),
-                    "publishing"=> $page->isActive() ? 'published' : 'unpublished',
+                    "publishing"=> $publishingStatus,
                 );
                 $last_resort = FWLanguage::getLanguageCodeById($page->getLang());
             }

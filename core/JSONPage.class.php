@@ -15,9 +15,11 @@ class JSONPage {
         
     var $em = null;
     var $fallbacks;
+    public $messages;
 
     function __construct() {
         $this->em = Env::em();
+        $this->messages = array();
         $this->tz = new DateTimeZone('Europe/Berlin');
 
         $fallback_lang_codes = FWLanguage::getFallbackLanguageArray();
@@ -29,7 +31,11 @@ class JSONPage {
         }
     }
 
-    public function get() {
+    public function getMessagesAsString() {
+        return implode("<br />", $this->messages);
+    }
+
+    public function get($params) {
         $pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
         $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
 
@@ -41,21 +47,37 @@ class JSONPage {
         }
 
         if (isset($page)) {
-            $pageArray = $this->getPageArray($page);
+            // All is well, continue
         }
         elseif (isset($_GET['node']) && isset($_GET['lang'])) {
             $node = $nodeRepo->find($_GET['node']);
             $pageArray = $this->getFallbackPageArray($node, $_GET['lang']);
         }
         else {
-            echo 'cannot find that page';
+            throw new Exception('cannot find that page');
         }
+
+        // load an older revision if asked to do so:
+        if (isset($params['get']) && isset($params['get']['history'])) {
+            $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
+
+            $logRepo->revert($page, $params['get']['history']);
+        }
+        // load the draft revision if one is available and we're not loading historic data:
+        elseif ($page->getEditingStatus() == 'hasDraft' || $page->getEditingStatus() == 'hasDraftWaiting') {
+            $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
+
+            $availableRevisions = $logRepo->getLogEntries($page);
+            $logRepo->revert($page, $availableRevisions[1]->getVersion());
+        }
+        
+        $pageArray = $this->getPageArray($page);
 
         return $pageArray;
     }
 
     public function set($params) {
-        global $objFWUser;
+        global $objFWUser, $_CORELANG;
 	$pg = Env::get('pageguard');
 
         $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
@@ -90,7 +112,6 @@ class JSONPage {
                         'cssName'                  => array('type' => 'String'),
                         'cssNavName'               => array('type' => 'String')
                         );
-                    
 
         $output = array();
 
@@ -167,7 +188,6 @@ class JSONPage {
         $page->updateFromArray($output);
         $page->setUsername($objFWUser->objUser->getUsername());
         $page->setUpdatedAtToNow();
-	
 
         if (isset($params['get']['publish']) && $params['get']['publish']) {
             $page->setActive(true);
@@ -181,6 +201,49 @@ class JSONPage {
 	if ($page->isBackendProtected() && isset($params['post']['backendGroups'])) {
 	    $pg->setAssignedGroupIds($page, $params['post']['backendGroups'], false);
 	}
+
+        if ((isset($params['get']['publish']) && $params['get']['publish']) && \Permission::checkAccess(78, 'static', true)) {
+            // user clicked save&publish. 
+            if ($page->getEditingStatus() != '') {
+                // we had a draft before, we don't now:
+                $page->setEditingStatus('');
+                $this->messages[] = $_CORELANG['TXT_CORE_SAVED'];
+                // TODO: define what log data we want to keep in a case like this.
+                //       make adjustments, if necessary.
+            }
+        }
+        else {
+            // user clicked save [as draft], so let's do that
+            $updatingDraft = $page->getEditingStatus() != '' ? true : false;
+            $page->setEditingStatus("hasDraft");
+
+            $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
+            // gedmo-loggable generates a LogEntry (i.e. revision) on persist, so we'll have to 
+            // store the draft first, then revert the current version to what it previously was.
+            // in the end, we'll have the current [published] version properly stored as a page
+            // and the draft version stored as a gedmo LogEntry
+
+            $this->em->persist($page);
+            // gedmo hooks in on persist/flush, so we unfortunately need to flush our em in
+            // order to get a clean set of logEntries
+            $this->em->flush();
+            $logEntries = $logRepo->getLogEntries($page);
+            // $logEntries holds an array of Gedmo LogEntries, the most recent one listed first
+
+            // revert to the published version
+            $logRepo->revert($page, $logEntries[1]->getVersion());
+            $this->em->persist($page);
+
+            // gedmo auto-logs slightly too much data. clean up unnecessary revisions:
+            if ($updatingDraft) {
+                $this->em->flush();
+
+                $logEntries = $logRepo->getLogEntries($page);
+                $this->em->remove($logEntries[2]);
+                $this->em->remove($logEntries[3]);
+            }
+            $this->messages[] = $_CORELANG['TXT_CORE_SAVED_AS_DRAFT'];
+        }
 
         $this->em->persist($page);
         $this->em->flush();
