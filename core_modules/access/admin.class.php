@@ -1735,7 +1735,7 @@ class AccessManager extends AccessLib
 
         $arrSettings = User_Setting::getSettings();
         $uriTos = ASCMS_PATH_OFFSET
-            .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter(FRONTEND_LANG_ID, 'lang') : NULL)
+            .'/'.FWLanguage::getLanguageParameter(FRONTEND_LANG_ID, 'lang')
             .'/'.CONTREXX_DIRECTORY_INDEX
             .'?section=agb';
         $this->_objTpl->addBlockfile('ACCESS_CONFIG_TEMPLATE', 'module_access_config_community', 'module_access_config_community.html');

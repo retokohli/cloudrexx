@@ -1573,7 +1573,7 @@ class calendarLibrary
                 $date        = date(ASCMS_DATE_FORMAT);
                 $firstname    = $objUser->getProfileAttribute('firstname');
                 $lastname    = $objUser->getProfileAttribute('lastname');
-                $link        = "http://".$url."/".($_CONFIG['useVirtualLanguagePath'] == 'on' ? FWLanguage::getLanguageParameter($languageId, 'lang').'/' : null).CONTREXX_DIRECTORY_INDEX."?section=calendar".$this->mandateLink."&cmd=sign&key=".$key;
+                $link        = "http://".$url."/".FWLanguage::getLanguageParameter($languageId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX."?section=calendar".$this->mandateLink."&cmd=sign&key=".$key;
                 $title        = $objResultNote->fields['name'];
                 $startdate    = date("Y-m-d H:i", $objResultNote->fields['startdate']);
                 $enddate     = date("Y-m-d H:i", $objResultNote->fields['enddate']);

@@ -304,35 +304,27 @@ class Navigation
                 $useAlias = false;
                 if (   $_CONFIG['aliasStatus']
                     && (   $objResult->fields['alias_url']
-                        || $_CONFIG['useVirtualLanguagePath'] == 'on' && $s == 'home')
+                        || $s == 'home')
                 ) {
                     $useAlias = true;
                 }
                 // Create alias link if alias is present for this page...
                 if ($useAlias) {
-                    if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
-                        // the homepage should not use an alias, but only a slash
-                        if ($s == 'home') {
-                            if ($this->langId == $objInit->getDefaultFrontendLangId()) {
-                                // the default language should not use the virtual language path
-                                $menu_url = '/';
-                            } else {
-                                $menu_url = $langPrefix.'/';
-                            }
+                    // the homepage should not use an alias, but only a slash
+                    if ($s == 'home') {
+                        if ($this->langId == $objInit->getDefaultFrontendLangId()) {
+                            // the default language should not use the virtual language path
+                            $menu_url = '/';
                         } else {
-                            $menu_url = $langPrefix.'/'.$objResult->fields['alias_url'];
+                            $menu_url = $langPrefix.'/';
                         }
                     } else {
-                        $menu_url = '/'.$objResult->fields['alias_url'];
+                        $menu_url = $langPrefix.'/'.$objResult->fields['alias_url'];
                     }
                     $menu_url = FWSystem::mkurl($menu_url);
                 } elseif (!empty($objResult->fields['redirect'])) {
                     if (self::is_local_url($objResult->fields['redirect'])) {
-                        if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
-                            $menu_url = ASCMS_PATH_OFFSET.$langPrefix.'/'.htmlspecialchars($objResult->fields['redirect']);
-                        } else {
-                            $menu_url = ASCMS_PATH_OFFSET.'/'.htmlspecialchars($objResult->fields['redirect']);
-                        }
+                        $menu_url = ASCMS_PATH_OFFSET.$langPrefix.'/'.htmlspecialchars($objResult->fields['redirect']);
                     }
                     else {
                         $menu_url = htmlspecialchars($objResult->fields['redirect']);

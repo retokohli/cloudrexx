@@ -3534,8 +3534,7 @@ class newsletter extends NewsletterLib
             ($_SERVER['SERVER_PORT'] == 80
               ? '' : ':'.intval($_SERVER['SERVER_PORT'])).
             ASCMS_PATH_OFFSET.
-            ($_CONFIG['useVirtualLanguagePath'] == 'on'
-              ? '/'.FWLanguage::getLanguageParameter(FWLanguage::getDefaultLangId(), 'lang') : NULL).
+            '/'.FWLanguage::getLanguageParameter(FWLanguage::getDefaultLangId(), 'lang').
             '/'.CONTREXX_DIRECTORY_INDEX.$profileURI;
 
         if ($format=="html") {
@@ -3564,9 +3563,8 @@ class newsletter extends NewsletterLib
             ($_SERVER['SERVER_PORT'] == 80
               ? NULL : ':'.intval($_SERVER['SERVER_PORT'])).
             ASCMS_PATH_OFFSET.
-            ($_CONFIG['useVirtualLanguagePath'] == 'on'
 // TODO: use the recipient's language instead of the default language
-              ? '/'.FWLanguage::getLanguageParameter(FWLanguage::getDefaultLangId(), 'lang') : NULL).
+            '/'.FWLanguage::getLanguageParameter(FWLanguage::getDefaultLangId(), 'lang').
 // TODO: if useVirtualLanguagePath is not turned on, we shall add the url modificator langId to the profile URI
             '/'.CONTREXX_DIRECTORY_INDEX.$profileURI;
         if ($format == "html") {
