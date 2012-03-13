@@ -103,17 +103,17 @@ class Resolver {
         $page = current($result['pages']);
 
         $this->page = $page;
-
+        
         return $this->page;
     }
 
     /**
      * Does the resolving work, extends $this->url with targetPath and params.
      */
-    public function resolve($intern = false) {
+    public function resolve($internal = false) {
         $path = $this->url->getSuggestedTargetPath();
 
-        if (!$this->page || $intern) {
+        if (!$this->page || $internal) {
             //(I) see what the model has for us, including aliasses.
             $result = $this->pageRepo->getPagesAtPath($path, null, $this->lang, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
 
