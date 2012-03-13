@@ -246,7 +246,7 @@ a:focus {
 
 #content {
     overflow: hidden;
-    padding: 14px;
+    /*padding: 14px;*/
 }
 
 #content textarea,
@@ -370,6 +370,7 @@ table.navbar td {
 .navigation li a:hover {
     /*  background-color: #CFE3EE;*/
     background-color: #E0F2FF;
+    text-shadow: 1px 1px 1px #B4BEC8;
 }
 
 div.infobox_head{
@@ -616,6 +617,10 @@ a.active  {
     margin: 0px;
     text-decoration: none;
     border-bottom: 0 none;
+
+}
+a.active{
+    text-shadow: 1px 1px 1px #B4BEC8;
 }
 
 #tabsubmenu a.active {
@@ -740,12 +745,21 @@ body #content input[type=submit]{
     border: 1px solid #BBBBBB;
     color: #333333;
     font-size: 11px;
-    height: 30px;
+    height: 23px;
     line-height: 30px;
     margin-bottom: 2px;
     padding: 0 10px;
     text-shadow: 1px 1px #FFFFFF;
+    vertical-align: middle
 }
-body #content input[value=Search]{
-     height: 24px;
+/*body #content input[value="Search"],
+body #content input[value="Whois request"],
+body #content input[value="Go"]{
+    height: 23px;
+    vertical-align: middle;
 }
+#knowledge_articles input[type=submit]{
+    height: 22px;
+    vertical-align: middle;
+
+}*/
