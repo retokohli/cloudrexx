@@ -18,12 +18,11 @@ function alias_get_fileBrowser()
 	aliasPopup.focus();
 }
 
-function SetUrl(url)
+function SetUrl(node, nul1, nul2, url)
 {
-        var matches = /\[\[NODE_(\d+)_(\d+)\]\]/.exec(url);
+        var matches = /\[\[NODE_(\d+)_(\d+)\]\]/.exec(node);
         var node = matches[1];
         var lang = matches[2];
-        var url = "";
         // hidden input
 	document.getElementById('alias_local_page_url').value = url;
         // visible text box
