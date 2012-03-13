@@ -2109,7 +2109,7 @@ class downloads extends DownloadsLibrary
 
         if ($objCategory->getId()) {
             $categoryFrontendURI = ASCMS_PATH_OFFSET
-                .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($objInit->getFrontendLangId(), 'lang') : null)
+                .'/'.FWLanguage::getLanguageParameter($objInit->getFrontendLangId(), 'lang')
                 .'/'.CONTREXX_DIRECTORY_INDEX
                 .'?section=downloads&amp;category='.$objCategory->getId();
             $this->objTemplate->setVariable(array(

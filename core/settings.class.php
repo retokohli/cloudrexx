@@ -225,7 +225,7 @@ class settingsManager
             'TXT_CORE_LIST_PROTECTED_PAGES'              => $_CORELANG['TXT_CORE_LIST_PROTECTED_PAGES'],
             'TXT_CORE_LIST_PROTECTED_PAGES_HELP'         => $_CORELANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP'],
             'TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH'         => $_CORELANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH'],
-            'TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH_HELP'    => sprintf($_CORELANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH_HELP'], htmlentities(FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'name'), ENT_QUOTES, CONTREXX_CHARSET), ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang').'/').($arrSettings['useVirtualLanguagePath'] == 'on' || $this->checkForVirtualLanguagePathSupport() ? '' : '<br /><strong>'.$_CORELANG['TXT_CORE_APACHE_MOD_REWRITE_REQUIRED'].'</strong>'),
+            'TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH_HELP'    => sprintf($_CORELANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH_HELP'], htmlentities(FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'name'), ENT_QUOTES, CONTREXX_CHARSET), ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang').'/'),
             'TXT_LICENSE_KEY'                            => $_CORELANG['TXT_LICENSE_KEY'],
             'TXT_LICENSE_KEY_HELP'                       => $_CORELANG['TXT_LICENSE_KEY_HELP'],
         ));
@@ -275,7 +275,7 @@ class settingsManager
             'SETTINGS_LIST_PROTECTED_PAGES_OFF'              => ($arrSettings['coreListProtectedPages'] == 'off') ? 'checked="checked"' : '',
             'SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_ON'          => ($arrSettings['useVirtualLanguagePath'] == 'on') ? 'checked="checked"' : '',
             'SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_OFF'         => ($arrSettings['useVirtualLanguagePath'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_DISABLED'    => (($arrSettings['useVirtualLanguagePath'] == 'on') || $this->checkForVirtualLanguagePathSupport()) ? '' : 'disabled="disabled"',
+            'SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_DISABLED'    => '',
             'SETTINGS_LICENSE_KEY'                           => stripslashes($arrSettings['licenseKey']),
         ));
 
@@ -300,8 +300,6 @@ class settingsManager
     function updateSettings()
     {
         global $objDatabase, $_CORELANG, $_CONFIG;
-
-        $formerUseVirtualLanguagePathValue = $_CONFIG['useVirtualLanguagePath'];
 
         foreach ($_POST['setvalue'] as $intId => $strValue) {
             if (intval($intId) == 43 ||
@@ -332,17 +330,6 @@ class settingsManager
                 case 71:
                     $_CONFIG['coreListProtectedPages'] = $strValue;
                     break;
-                case 67:
-                    $_CONFIG['useVirtualLanguagePath'] = $strValue;
-                    // update the .htaccess rewrite rules in case the function was de-/activated
-                    if ($formerUseVirtualLanguagePathValue != $_CONFIG['useVirtualLanguagePath']) {
-						// deactivate the function in case the .htaccess file couldn't be written
-                        if (!$this->setVirtualLanguagePath($_CONFIG['useVirtualLanguagePath'] == 'on')) {
-                            $_CONFIG['useVirtualLanguagePath'] = 'off';
-                            $strValue = 'off';
-                        }
-                    }
-                    break;
             }
 
             $val = contrexx_addslashes(htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET));
@@ -356,117 +343,6 @@ class settingsManager
         }
 
         $this->strOkMessage = $_CORELANG['TXT_SETTINGS_UPDATED'];
-    }
-
-    /**
-     * Check if the usage of virtual language paths is supported
-     *
-     * Checks if the system is running on an Apache webserver and if the mod_rewrite modul is loaded.
-     *
-     * @return boolean
-     */
-    private function checkForVirtualLanguagePathSupport()
-    {
-        $objFWHtAccess = new FWHtAccess();
-
-        if ($objFWHtAccess->loadHtAccessFile('/.htaccess', false) === true && $objFWHtAccess->isRewriteEngineInUse()) {
-            return true;
-        } elseif ($objFWHtAccess->checkForApacheServer() && $objFWHtAccess->checkForModRewriteModul()) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Set virtual language path
-     *
-     * If $use is set to TRUE, it creates the required RewriteRules in the HtAccess file .htaccess
-     * which are needed for a working path translation of the virtual language paths.
-     * Otherwise if $use is set to FALSE, it removes the associated RewriteRules form the HtAccess file.
-     *
-     * This is public, as it needs to be set from core/language.class.php as well (when enabling or
-     * disabling languages etc.)
-     *
-     * @param boolean $use
-     * @access public
-     */
-    public function setVirtualLanguagePath($use)
-    {
-        global $_CONFIG;
-
-        // load HtAccess file
-        $objFWHtAccess = new FWHtAccess();
-        if (($result = $objFWHtAccess->loadHtAccessFile('/.htaccess')) !== true) {
-            $this->strErrMessage[] = $result;
-            return false;
-        }
-
-        // remove RewriteRules from HtAccess file if the function has been disabled
-        if (!$use) {
-            $objFWHtAccess->removeSection('core__language');
-            $objFWHtAccess->write();
-
-            aliasLib::switch2virtualLanguagePaths($use);
-
-            return true;
-        }
-
-        $arrLanguages = FWLanguage::getLanguageArray();
-        $arrLanguageCodes = array();
-        $arrLanguageRules = array();
-
-        $arrRules['cookie'] = array(
-            'RewriteCond %{REQUEST_URI} ^'.ASCMS_PATH_OFFSET.'/$',
-            'RewriteCond %{HTTP_COOKIE} langId=([a-z]{2})',
-            'RewriteRule ^.*$ '.ASCMS_PATH_OFFSET.'/%1%{QUERY_STRING} [L,NC,R=301]'
-        );
-
-        foreach ($arrLanguages as $arrLanguage) {
-            if (!$arrLanguage['frontend']) {
-                continue;
-            }
-
-            $arrLanguageCodes[] = $arrLanguage['lang'];
-            $arrLanguageRules[$arrLanguage['lang']] = array(
-                'RewriteCond %{REQUEST_URI} ^'.ASCMS_PATH_OFFSET.'/'.$arrLanguage['lang'].'/'.CONTREXX_DIRECTORY_INDEX.'|^'.ASCMS_PATH_OFFSET.'/'.$arrLanguage['lang'].'(/)?$',
-                'RewriteCond %{QUERY_STRING} !langId [OR]',
-                'RewriteCond %{QUERY_STRING} langId='.$arrLanguage['id'],
-                'RewriteRule ^'.$arrLanguage['lang'].'/?.*$ '.ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.'?%{QUERY_STRING}&langId='.$arrLanguage['id'].' [L,NC,E=CONTREXX_LANG_PREFIX:'.$arrLanguage['lang'].']'
-            );
-        }
-
-        $arrRules['trailing_slash'] = array(
-            'RewriteCond %{REQUEST_URI} ^'.ASCMS_PATH_OFFSET.'/('.implode('|', $arrLanguageCodes).')$',
-            'RewriteRule ^.*$ '.ASCMS_PATH_OFFSET.'/%1/ [L,NC,R=301]'
-        );
-
-        $arrRules['language'] = $arrLanguageRules;
-
-        $arrRules['sitemap'] = array(
-            'RewriteCond %{REQUEST_URI} ^'.ASCMS_PATH_OFFSET.'/('.implode('|', $arrLanguageCodes).')/sitemap.xml$',
-            'RewriteRule ^('.implode('|', $arrLanguageCodes).')/.*$ '.ASCMS_PATH_OFFSET.'/sitemap_$1.xml [L,NC]'
-        );
-
-        // can't use 301 here, as it would fuck up all the tiny little services that
-        // POST to something else than index.php (frontend editing, ...)
-        $arrRules['normal_files'] = array(
-            'RewriteCond %{IS_SUBREQ} false',
-            'RewriteRule ^('.implode('|', $arrLanguageCodes).')/(.*)$ '.ASCMS_PATH_OFFSET.'/$2 [L,NC]'
-        );
-
-        $arrRules['fallback'] = array(
-            'RewriteCond %{REQUEST_FILENAME} !-f',
-            'RewriteCond %{REQUEST_FILENAME} !-d',
-            'RewriteRule ^.*$ '.ASCMS_PATH_OFFSET.'/ [L,NC,R=301]'
-        );
-
-        $objFWHtAccess->setSection('core__language', $arrRules);
-        $objFWHtAccess->write();
-
-        aliasLib::switch2virtualLanguagePaths($use);
-
-        return true;
     }
 
     /**

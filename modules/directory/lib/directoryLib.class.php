@@ -1067,9 +1067,8 @@ class directoryLibrary
         } else {
             $link =
                 "http://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.
-                ($_CONFIG['useVirtualLanguagePath'] == 'on'
-                  ? FWLanguage::getLanguageParameter($languageId, 'lang').'/' : '').
-                  CONTREXX_DIRECTORY_INDEX."?section=directory&cmd=detail&id=".$feedId;
+                    FWLanguage::getLanguageParameter($languageId, 'lang').'/'.
+                    CONTREXX_DIRECTORY_INDEX."?section=directory&cmd=detail&id=".$feedId;
         }
 
         // replace placeholders

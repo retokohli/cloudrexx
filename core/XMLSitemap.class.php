@@ -41,21 +41,15 @@ class XMLSitemap {
                 }
             }
 
-            if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
-                $arrFailed = array();
-                foreach ($arrActiveLanguages as $langId => $langCode) {
-                    if (!XMLSitemap::writeXML(array($langId), $langCode)) {
-                        $arrFailed[] = sprintf($_CORELANG['TXT_CORE_XML_SITEMAP_NOT_WRITABLE'], sprintf(XMLSitemap::$strFileNameWithLang, $langCode));
-                    }
+            $arrFailed = array();
+            foreach ($arrActiveLanguages as $langId => $langCode) {
+                if (!XMLSitemap::writeXML(array($langId), $langCode)) {
+                    $arrFailed[] = sprintf($_CORELANG['TXT_CORE_XML_SITEMAP_NOT_WRITABLE'], sprintf(XMLSitemap::$strFileNameWithLang, $langCode));
                 }
+            }
 
-                if (count($arrFailed)) {
-                    return implode('<br />', $arrFailed);
-                }
-            } else {
-               if (!XMLSitemap::writeXML(array_keys($arrActiveLanguages))) {
-                   return sprintf($_CORELANG['TXT_CORE_XML_SITEMAP_NOT_WRITABLE'], XMLSitemap::$strFileName);
-               }
+            if (count($arrFailed)) {
+                return implode('<br />', $arrFailed);
             }
         }
 
@@ -158,7 +152,7 @@ class XMLSitemap {
                             .$_CONFIG['domainUrl']
                             .($_SERVER['SERVER_PORT'] == 80 ? null : ':'.intval($_SERVER['SERVER_PORT']))
                             .ASCMS_PATH_OFFSET
-                            .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$code : null)
+                            .'/'.$code
                             .'/'.stripslashes($objResult->fields['aliasName']);
                     } else {
                         //No alias
@@ -188,7 +182,7 @@ class XMLSitemap {
                                     .$_CONFIG['domainUrl']
                                     .($_SERVER['SERVER_PORT'] == 80 ? null : ':'.intval($_SERVER['SERVER_PORT']))
                                     .ASCMS_PATH_OFFSET
-                                    .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$code : null)
+                                    .'/'.$code
                                     .'/'.htmlentities($objResult->fields['redirect'], ENT_QUOTES, CONTREXX_CHARSET);
                             }
                         } elseif ($objResult->fields['module'] == 0) {
@@ -198,16 +192,15 @@ class XMLSitemap {
                                     .$_CONFIG['domainUrl']
                                     .($_SERVER['SERVER_PORT'] == 80 ? null : ':'.intval($_SERVER['SERVER_PORT']))
                                     .ASCMS_PATH_OFFSET
-                                    .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$code : null)
+                                    .'/'.$code
                                     .'/'.CONTREXX_DIRECTORY_INDEX
-                                    .'?cmd='.$objResult->fields['cmd']
-                                    .($_CONFIG['useVirtualLanguagePath'] == 'off' ? '&amp;langId='.$objResult->fields['langid'] : '');
+                                    .'?cmd='.$objResult->fields['cmd'];
                             } else {
                                 $location = ASCMS_PROTOCOL.'://'
                                     .$_CONFIG['domainUrl']
                                     .($_SERVER['SERVER_PORT'] == 80 ? null : ':'.intval($_SERVER['SERVER_PORT']))
                                     .ASCMS_PATH_OFFSET
-                                    .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$code : null)
+                                    .'/'.$code
                                     .'/'.CONTREXX_DIRECTORY_INDEX
                                     .'?page='.$objResult->fields['catid'];
                                     //No addition of language-id needed because a pageId is always unique!
@@ -217,11 +210,10 @@ class XMLSitemap {
                             $location = ASCMS_PROTOCOL.'://'
                                 .$_CONFIG['domainUrl']
                                 .ASCMS_PATH_OFFSET
-                                .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$code : null)
+                                .'/'.$code
                                 .'/'.CONTREXX_DIRECTORY_INDEX
                                 .'?section='.$arrModules[$objResult->fields['module']]
-                                .(!empty($objResult->fields['cmd']) ? '&amp;cmd='.contrexx_raw2xml($objResult->fields['cmd']) : '')
-                                .($_CONFIG['useVirtualLanguagePath'] == 'off' ? '&amp;langId='.$objResult->fields['langid'] : '');
+                                .(!empty($objResult->fields['cmd']) ? '&amp;cmd='.contrexx_raw2xml($objResult->fields['cmd']) : '');
                         }
                     }
 

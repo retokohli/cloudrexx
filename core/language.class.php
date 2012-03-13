@@ -1057,10 +1057,6 @@ class LanguageManager
             }
             $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             FWLanguage::init();
-             if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
-                $settings = new settingsManager();
-                $settings->setVirtualLanguagePath(true);
-            }
             return true;
         }
         return false;

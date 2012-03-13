@@ -2713,7 +2713,7 @@ class newsManager extends newsLibrary {
                         $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                         $objRSSWriter->channelTitle = contrexx_raw2xml($this->arrSettings['news_feed_title'][$LangId]);
                         $objRSSWriter->channelDescription = contrexx_raw2xml($this->arrSettings['news_feed_description'][$LangId]);
-                        $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($LangId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news';
+                        $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageParameter($LangId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=news';
                         $objRSSWriter->channelLanguage = FWLanguage::getLanguageParameter($LangId, 'lang');
                         $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
 
@@ -2724,7 +2724,7 @@ class newsManager extends newsLibrary {
                         }
                         $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
-                        $itemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($LangId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;cmd=details&amp;newsid=';
+                        $itemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageParameter($LangId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;cmd=details&amp;newsid=';
                         
                         // create rss feed
                         $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
@@ -2734,7 +2734,7 @@ class newsManager extends newsLibrary {
                                 (empty($arrNewsItem['redirect'])) ? ($itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? '&amp;teaserId='.$arrNewsItem['teaser_frames'][0] : '')) : htmlspecialchars($arrNewsItem['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
                                 contrexx_raw2xml($arrNewsItem['text']),
                                 '',
-                                array('domain' => 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($LangId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => contrexx_raw2xml($arrNewsItem['category'])),
+                                array('domain' => 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageParameter($LangId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => contrexx_raw2xml($arrNewsItem['category'])),
                                 '',
                                 '',
                                 '',
@@ -2753,7 +2753,7 @@ class newsManager extends newsLibrary {
                                 $itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? '&amp;teaserId='.$arrNewsItem['teaser_frames'][0] : ''),
                                 '',
                                 '',
-                                array('domain' => 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($LangId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => contrexx_raw2xml($arrNewsItem['category'])),
+                                array('domain' => 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageParameter($LangId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => contrexx_raw2xml($arrNewsItem['category'])),
                                 '',
                                 '',
                                 '',

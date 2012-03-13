@@ -128,24 +128,20 @@ class sitemap
 
                 if ($_CONFIG['aliasStatus']
                     && ($objResult->fields['alias_url']
-                        || $_CONFIG['useVirtualLanguagePath'] == 'on' && $s == 'home'
+                        || $s == 'home'
                     )
                 ) {
                     $useAlias = true;
                 }
 
                 if ($useAlias) {
-                    if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
-                        // the homepage should not use an alias, but only a slash
-                        if ($s == 'home') {
-                            if ($_LANGID == $objInit->defaultFrontendLangId) {
-                                // the default language should not use the virtual language path
-                                $menu_url = '/';
-                            } else {
-                                $menu_url = CONTREXX_VIRTUAL_LANGUAGE_PATH.'/';
-                            }
+                    // the homepage should not use an alias, but only a slash
+                    if ($s == 'home') {
+                        if ($_LANGID == $objInit->defaultFrontendLangId) {
+                            // the default language should not use the virtual language path
+                            $menu_url = '/';
                         } else {
-                            $menu_url = CONTREXX_VIRTUAL_LANGUAGE_PATH.'/'.rawurlencode(stripslashes($objResult->fields['alias_url']));
+                            $menu_url = CONTREXX_VIRTUAL_LANGUAGE_PATH.'/';
                         }
                     } else {
                         $menu_url = CONTREXX_VIRTUAL_LANGUAGE_PATH.'/'.rawurlencode(stripslashes($objResult->fields['alias_url']));

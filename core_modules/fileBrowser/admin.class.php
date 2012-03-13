@@ -1,4 +1,4 @@
-<?php
+ï»¿<?php
 
 /**
  * File browser
@@ -136,7 +136,7 @@ class FileBrowser {
     }
 
     function getPage() {
-		$this->_showFileBrowser();
+        $this->_showFileBrowser();
     }
 
     /**
@@ -359,9 +359,8 @@ class FileBrowser {
             $objContentTree = new ContentTree($this->_frontendLanguageId);
 
             $scriptPath = ($this->_absoluteURIs ?
-                $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.($_CONFIG['useVirtualLanguagePath'] == 'on' ?
+                $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.
                     FWLanguage::getLanguageParameter($this->_frontendLanguageId, 'lang').'/'
-                :   null)
             :   null);
             foreach ($objContentTree->getTree() as $arrPage) {
                 $s = isset($arrModules[$arrPage['moduleid']]) ? $arrModules[$arrPage['moduleid']] : '';
@@ -375,10 +374,10 @@ class FileBrowser {
                 if($arrPage['alias'] && !$noAliases) {
                     $url = "'" . '[[NODE_' . $arrPage['node_id'] . '_' . $this->_frontendLanguageId . "]]'";
                 }
-
+                
                 $this->_objTpl->setVariable(array(
                     'FILEBROWSER_ROW_CLASS'         => $rowNr%2 == 0 ? "row1" : "row2",
-                    'FILEBROWSER_FILE_PATH_CLICK'   => "javascript:{setUrl($url,null,null,null,'page')}",
+                    'FILEBROWSER_FILE_PATH_CLICK'   => "javascript:{setUrl($url,null,null,'".$arrPage['alias']."','page')}",
                     'FILEBROWSER_FILE_NAME'         => $arrPage['catname'],
                     'FILEBROWSER_FILESIZE'          => '&nbsp;',
                     'FILEBROWSER_FILE_ICON'         => $this->_iconPath.'htm.gif',
@@ -547,7 +546,12 @@ class FileBrowser {
                 $this->highlightedFiles = $sessionHighlightCandidates;
         }
 
-		$objFWSystem = new FWSystem();
+        $objFWSystem = new FWSystem();
+        
+        // cannot upload or mkdir in webpages view
+        if ($this->_mediaType == "webpages") {
+            return;
+        }
         $this->_objTpl->addBlockfile('FILEBROWSER_UPLOAD', 'fileBrowser_upload', 'module_fileBrowser_upload.html');
         $this->_objTpl->setVariable(array(
             'FILEBROWSER_UPLOAD_TYPE'   => $this->_mediaType,
@@ -555,7 +559,7 @@ class FileBrowser {
             'FILEBROWSER_MAX_FILE_SIZE' => $objFWSystem->getMaxUploadFileSize(),
             'TXT_CREATE_DIRECTORY'      => $_ARRAYLANG['TXT_FILEBROWSER_CREATE_DIRECTORY'],
             'TXT_UPLOAD_FILE'           => $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FILE'],
-			'JAVASCRIPT'            	=> JS::getCode(),
+                        'JAVASCRIPT'            	=> JS::getCode(),
         ));
 
         $this->_objTpl->parse('fileBrowser_upload');
@@ -643,7 +647,7 @@ class FileBrowser {
         // replace $change with ''
         $change = array('+');
         // replace $signs1 with $signs
-        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
+        $signs1 = array(' ', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½');
         $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
 
         foreach ($change as $str) {
