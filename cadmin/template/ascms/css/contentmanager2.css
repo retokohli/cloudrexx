@@ -37,6 +37,9 @@ h1{ font-size: 20px }
     top: -5px;
     left: -5px;
 }*/
+#content {
+    padding: 0px;
+}
 
 .ie7 #input1{ float:left; }
 .ie7 .space{ margin-bottom: 10px; }
