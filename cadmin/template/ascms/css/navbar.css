@@ -35,7 +35,8 @@ table.subnavbar_level1 a{
 table.subnavbar_level1 a:hover {
 	background-color: #E0F2FF;
 /*	border: #ffcc33 1px solid;*/
-	color: black
+	color: black;
+        text-shadow: 1px 1px 1px #B4BEC8;
 }
 
 
