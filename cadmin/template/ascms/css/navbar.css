@@ -8,35 +8,36 @@
 
 
 table.subnavbar_level1 {
-	/*border-top: 1px solid #ffcc33;*/
-	WIDTH: 100%;
-        margin-bottom: 8px;
+    /*border-top: 1px solid #ffcc33;*/
+    WIDTH: 100%;
+    margin-bottom: 8px;
+    border-left: 1px solid #DEDEDE;
+    border-right: 1px solid #DEDEDE;
 }
 
 table.subnavbar_level1 td{
-	color: black;
-	background: url("../images/bg_table_td_top.png") repeat scroll 0 0 transparent;
-	vertical-align: middle;
-	height: 31px;
-	padding: 0px 0px 0px 0pc;
+    color: black;
+    background: url("../images/bg_table_td_top.png") repeat scroll 0 0 transparent;
+    vertical-align: middle;
+    height: 31px;
+    padding: 0px 0px 0px 0pc;
 }
 
 table.subnavbar_level1 a{
-	padding-left: 7px;
-	padding-right: 6px;
-	padding-bottom: 8px;
-	padding-top: 8px;
-	color: black;
-	text-decoration: none;
-	/*background-color: #fff4c2;
+    padding-left: 7px;
+    padding-right: 6px;
+    padding-bottom: 8px;
+    padding-top: 8px;
+    color: black;
+    text-decoration: none;
+    /*background-color: #fff4c2;
 	border: #fff4c2 1px solid;*/
 }
 
 table.subnavbar_level1 a:hover {
-	background-color: #E0F2FF;
-/*	border: #ffcc33 1px solid;*/
-	color: black;
-        text-shadow: 1px 1px 1px #B4BEC8;
+    background-color: #E0F2FF;
+    /*	border: #ffcc33 1px solid;*/
+    color: black;
 }
 
 
@@ -44,36 +45,36 @@ table.subnavbar_level1 a:hover {
 
 /* subnavbar_level2 menu top container */
 #subnavbar_level2 {
-	margin:10px 0 0;
-	padding:0;
-	vertical-align: top;
-	text-align:left;
-	padding-left: 0px
+    background: none repeat scroll 0 0 #AEDAFD;
+margin: 10px 0 0;
+padding: 9px 6px;
+text-align: left;
+vertical-align: top;
 }
 
 /* subnavbar_level2 menu sub container */
 #subnavbar_level2 ul {
-	background-color:#AEDAFD;
-	margin:0;
-	padding:.3em 1em
+   
+    margin:0;
+    padding:0 1em 0 0;
 }
 
 /* subnavbar_level2 menu item */
 #subnavbar_level2 li {
-	list-style-type:none;
-	display: inline;
+    list-style-type:none;
+    display: inline;
 }
 
 /* subnavbar_level2 menu hyperlink */
 #subnavbar_level2 a {
-	font-size:1em;
-	color:black;
-	text-decoration:none;
-	padding:.3em 1em
+    font-size:1em;
+    color:black;
+    text-decoration:none;
+    padding:9px 5px
 }
 
 /* subnavbar_level2 menu hyperlink hover */
 #subnavbar_level2 a:hover {
-	background-color: #88CAFE;
-color: black;
+    background-color: #88CAFE;
+    color: black;
 }

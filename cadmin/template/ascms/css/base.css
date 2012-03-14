@@ -359,7 +359,7 @@ table.navbar td {
 }
 
 .navigation li a {
-    width: 180px;
+    width: 181px;
     float: left;
     /*padding: 6px 10px 6px 10px;*/
     padding: 6px 9px 6px 10px;
@@ -369,8 +369,7 @@ table.navbar td {
 
 .navigation li a:hover {
     /*  background-color: #CFE3EE;*/
-    background-color: #E0F2FF;
-    text-shadow: 1px 1px 1px #B4BEC8;
+    background: url("../images/nav_hover.png") repeat scroll 0 0 transparent;
 }
 
 div.infobox_head{
@@ -610,17 +609,16 @@ a.active  {
 #tabsubmenu a, a.active {
     color: black;
     /*  background: white;*/
-    background: none repeat scroll 0 0 #AEDAFD;
+    background: url("../images/nav_active.png") repeat scroll 0 0 transparent;
     font-weight: normal;
-    border: 1px solid #dde4ff;
+    border: 0px solid #dde4ff;
     padding: 2px 5px 2px 5px;
     margin: 0px;
     text-decoration: none;
     border-bottom: 0 none;
 
 }
-a.active{
-    text-shadow: 1px 1px 1px #B4BEC8;
+a.active{    
 }
 
 #tabsubmenu a.active {
@@ -737,15 +735,3 @@ body #content input[type=submit] {
     padding: 2px 10px;
     text-shadow: 1px 1px #FFFFFF;
 }
-
-/*body #content input[value="Search"],
-body #content input[value="Whois request"],
-body #content input[value="Go"]{
-    height: 23px;
-    vertical-align: middle;
-}
-#knowledge_articles input[type=submit]{
-    height: 22px;
-    vertical-align: middle;
-
-}*/
