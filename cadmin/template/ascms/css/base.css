@@ -372,6 +372,10 @@ table.navbar td {
     background: url("../images/nav_hover.png") repeat scroll 0 0 transparent;
 }
 
+.navigation li a.active:hover {
+    background: url("../images/nav_active.png") repeat-x scroll 0 0 transparent;
+}
+
 div.infobox_head{
     padding: 5px;
     font-size: 11px;
@@ -618,7 +622,8 @@ a.active  {
     border-bottom: 0 none;
 
 }
-a.active{    
+a.active{
+
 }
 
 #tabsubmenu a.active {
@@ -734,4 +739,33 @@ body #content input[type=submit] {
     margin-bottom: 2px;
     padding: 2px 10px;
     text-shadow: 1px 1px #FFFFFF;
+}
+#content #access select,
+#content .data select {
+    width: 258px !important
+}
+select#jobsCat,
+#content #template_form select {
+    width: 408px !important;
+}
+#content #categoryGeneral select,
+#content #downloadGeneral select,
+#content #auction select,
+#content #news1 select,
+#content #AddForum select,
+#content #template select,
+#content #newsletter_mail_form select,
+#content #paypaltemplate select {
+    width: 308px !important
+}
+#content #Content2.zoneTab select{
+    width: 208px !important
+}
+#content #content2.categoryTab select,
+#content #content1.productManageTab select{
+    width: 303px !important
+}
+#content #content1.generalTab select,
+#content #Backup.setTab select{
+    width: 373px !important
 }
