@@ -38,6 +38,7 @@ class serverSettings
     var $ftpConnection;
     var $ftpSupport;
 
+    private $act = '';
 
     /**
      * Constructor
@@ -46,11 +47,15 @@ class serverSettings
     function __construct()
     {
         global  $_CORELANG, $objTemplate, $_FTPCONFIG;
-
-        $objTemplate->setVariable('CONTENT_NAVIGATION',"<a href='?cmd=server'>".$_CORELANG['TXT_OVERVIEW']."</a>
-                                                <a href='?cmd=server&amp;act=phpinfo'>".$_CORELANG['TXT_PHP_INFO']."</a>");
     }
 
+    public function setNavigation()
+    {
+        global $objTemplate, $_CORELANG;
+
+        $objTemplate->setVariable('CONTENT_NAVIGATION',"<a href='?cmd=server' class='".($this->act == '' ? 'active' : '')."'>".$_CORELANG['TXT_OVERVIEW']."</a>
+                                                <a href='?cmd=server&amp;act=phpinfo' class='".($this->act == 'phpinfo' ? 'active' : '')."'>".$_CORELANG['TXT_PHP_INFO']."</a>");
+    }
 
     /**
      * Sets the requested content
@@ -88,6 +93,9 @@ class serverSettings
             'CONTENT_TITLE'    => $this->pageTitle,
             'CONTENT_STATUS_MESSAGE'    => $this->statusMessage
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 
