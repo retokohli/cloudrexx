@@ -29,10 +29,6 @@ require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
 /**
  * @ignore
  */
-require_once ASCMS_FRAMEWORK_PATH.'/FWHtAccess.class.php';
-/**
- * @ignore
- */
 require_once ASCMS_CORE_MODULE_PATH.'/alias/lib/aliasLib.class.php';
 
 /**
