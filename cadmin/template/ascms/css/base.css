@@ -769,3 +769,13 @@ select#jobsCat,
 #content #Backup.setTab select{
     width: 373px !important
 }
+#content #content4 select{
+    width: 373px !important;
+}
+#content1.productManageTab textarea
+{
+    width: 296px !important;
+}
+#content1.generalTab textarea{
+    width: 365px !important;
+}
