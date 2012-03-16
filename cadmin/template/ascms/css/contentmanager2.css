@@ -54,6 +54,26 @@ h1{ font-size: 20px }
     width: 700px;
     display: block;
 }
+
+#page div.page_alias * {
+    float: left;
+    margin: 2px;
+}
+
+#page div.page_alias input {
+    display: inline !important;
+    margin: 0;
+}
+
+#page div.page_alias input {
+    display: inline !important;
+    width: 200px !important;
+}
+
+#page div.page_alias input.warning {
+    background-color: #ff9c1b;
+}
+
 #page textarea {
     height: 100px;
 }
