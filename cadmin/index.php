@@ -27,7 +27,7 @@
 include_once '../lib/DBG.php';
 //DBG::deactivate(DBG_PHP | DBG_ADODB_ERROR);
 $startTime = explode(' ', microtime());
-
+DBG::activate(DBG_PHP);
 //enable gzip compressing of the output - up to 75% smaller responses!
 //commented out with java uploader l10n using pear http_download
 //ob_start("ob_gzhandler");
