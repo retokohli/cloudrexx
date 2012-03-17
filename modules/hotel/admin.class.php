@@ -80,6 +80,8 @@ class HotelManager extends HotelLib {
         'spez7'        =>         24,
     );
 
+    private $act = '';
+
     /**
     * PHP5 constructor
     *
@@ -91,19 +93,23 @@ class HotelManager extends HotelLib {
         global $objTemplate, $_ARRAYLANG;
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/hotel/template');
         CSRF::add_placeholder($this->_objTpl);
-        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
-        $objTemplate->setVariable("CONTENT_NAVIGATION", "
-            <a href='?cmd=hotel'>".$_ARRAYLANG['TXT_HOTEL_OVERVIEW']."</a>
-            <a href='?cmd=hotel&amp;act=add'>".$_ARRAYLANG['TXT_HOTEL_ADD']."</a>
-            <a href='?cmd=hotel&amp;act=interests'>Buchungen</a>
-            <a href='?cmd=hotel&amp;act=travel'>".$_ARRAYLANG['TXT_HOTEL_TRAVEL']."</a>
-            <a href='?cmd=hotel&amp;act=settings'>".$_ARRAYLANG['TXT_HOTEL_SETTINGS']."</a>"
-
-        );
-
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);     
         $this->_objFile = new File();
         parent::__construct();
+    }
+
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
+
+         $objTemplate->setVariable("CONTENT_NAVIGATION", "
+            <a href='?cmd=hotel' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_HOTEL_OVERVIEW']."</a>
+            <a href='?cmd=hotel&amp;act=add' class='".($this->act == 'add' ? 'active' : '')."'>".$_ARRAYLANG['TXT_HOTEL_ADD']."</a>
+            <a href='?cmd=hotel&amp;act=interests' class='".($this->act == 'interests' ? 'active' : '')."'>Buchungen</a>
+            <a href='?cmd=hotel&amp;act=travel' class='".($this->act == 'travel' ? 'active' : '')."'>".$_ARRAYLANG['TXT_HOTEL_TRAVEL']."</a>
+            <a href='?cmd=hotel&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_HOTEL_SETTINGS']."</a>"
+
+        );        
     }
 
     /**
@@ -181,10 +187,10 @@ class HotelManager extends HotelLib {
                 break;
             case 'stats':
                 $this->_showStats();
-                    break;
-                case 'downloads':
+                break;
+            case 'downloads':
                 $this->_showDownloads();
-                    break;
+                 break;
             case 'export':
                 $this->_exportContacts();
                     break;
@@ -224,6 +230,8 @@ class HotelManager extends HotelLib {
             'CONTENT_STATUS_MESSAGE'    => $this->_strErrMessage,
             'ADMIN_CONTENT'                => $this->_objTpl->get()
         ));
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
     function _zipTest(){
