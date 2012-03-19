@@ -66,6 +66,7 @@ class ContactManager extends ContactLib
     </tbody>
 </table>';
 
+    private $act = '';
 
     /**
      * PHP5 constructor
@@ -82,10 +83,7 @@ class ContactManager extends ContactLib
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/contact/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
-        $objTemplate->setVariable("CONTENT_NAVIGATION", "   <a href='index.php?cmd=contact' title=".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'].">".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS']."</a>
-                                                            <a href='index.php?cmd=contact&amp;act=settings' title=".$_ARRAYLANG['TXT_CONTACT_SETTINGS'].">".$_ARRAYLANG['TXT_CONTACT_SETTINGS']."</a>");
-
+        
         $this->_arrFormFieldTypes = array(
             'text'          => $_ARRAYLANG['TXT_CONTACT_TEXTBOX'],
             'label'         => $_ARRAYLANG['TXT_CONTACT_TEXT'],
@@ -135,6 +133,14 @@ class ContactManager extends ContactLib
             $this->boolHistoryActivate = true;
         }
     }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
+
+        $objTemplate->setVariable("CONTENT_NAVIGATION", "
+            <a href='index.php?cmd=contact' title=".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS']." class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS']."</a>
+            <a href='index.php?cmd=contact&amp;act=settings' title=".$_ARRAYLANG['TXT_CONTACT_SETTINGS']." class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CONTACT_SETTINGS']."</a>");
+    }
 
     /**
      * Get page
@@ -177,6 +183,9 @@ class ContactManager extends ContactLib
                 'CONTENT_STATUS_MESSAGE'    => $this->_statusMessageErr,
                 'ADMIN_CONTENT'             => $this->_objTpl->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
     function _getEntriesPage()

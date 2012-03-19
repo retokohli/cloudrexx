@@ -14,7 +14,8 @@
 require_once ASCMS_MODULE_PATH.'/partners/lib/partnersLib.class.php';
 
 
-class PartnersAdmin extends PartnersLibrary {
+class PartnersAdmin extends PartnersLibrary
+{
 
     var $_objTpl;
     var $_strPageTitle  = '';
@@ -22,13 +23,15 @@ class PartnersAdmin extends PartnersLibrary {
     var $_strOkMessage  = '';
 
     private $act = '';
+
     /**
      * Constructor   -> Create the module-menu and an internal template-object
      * @global   object      $objInit
      * @global   object      $objTemplate
      * @global   array       $_CORELANG
      */
-    function __construct() {
+    function __construct()
+    {
         global $objInit, $objTemplate, $_ARRAYLANG;
 
         PartnersLibrary::__construct();
@@ -42,16 +45,16 @@ class PartnersAdmin extends PartnersLibrary {
         $this->_intCurrentUserId = $objFWUser->objUser->getId();
 
     }
-    private function setNavigation() {
+    private function setNavigation()
+    {
         global $objTemplate, $_ARRAYLANG;
-
+        
         $objTemplate->setVariable('CONTENT_NAVIGATION','
             <a href="?cmd=partners" class="'.($this->act == '' ? 'active' : '').'">'.$_ARRAYLANG['TXT_PARTNERS_OVERVIEW_TITLE'].'</a>
-                                                            <a href="?cmd=partners&amp;act=addPartners" class="'.($this->act == 'addPartners' ? 'active' : '').'">'.$_ARRAYLANG['TXT_PARTNERS_SETTINGS_CPARTNERS'].'</a>
-                                                            <a href="?cmd=partners&amp;act=manageCategory" class="'.($this->act == 'manageCategory' ? 'active' : '').'">'.$_ARRAYLANG['TXT_PARTNERS_SETTINGS_CATEGORY'].'</a>
-                                                            <a href="?cmd=partners&amp;act=settings" class="'.($this->act == 'settings' ? 'active' : '').'">'.$_ARRAYLANG['TXT_PARTNERS_SETTINGS_TITLE'].'</a>
-                                                            <a href="?cmd=partners&amp;act=users" class="'.($this->act == 'users' ? 'active' : '').'">'.$_ARRAYLANG['TXT_PARTNERS_IMPORT_TITLE'].'</a>
-                                                            ');
+            <a href="?cmd=partners&amp;act=addPartners" class="'.($this->act == 'addPartners' ? 'active' : '').'">'.$_ARRAYLANG['TXT_PARTNERS_SETTINGS_CPARTNERS'].'</a>
+            <a href="?cmd=partners&amp;act=manageCategory" class="'.($this->act == 'manageCategory' ? 'active' : '').'">'.$_ARRAYLANG['TXT_PARTNERS_SETTINGS_CATEGORY'].'</a>
+            <a href="?cmd=partners&amp;act=settings" class="'.($this->act == 'settings' ? 'active' : '').'">'.$_ARRAYLANG['TXT_PARTNERS_SETTINGS_TITLE'].'</a>
+            <a href="?cmd=partners&amp;act=users" class="'.($this->act == 'users' ? 'active' : '').'">'.$_ARRAYLANG['TXT_PARTNERS_IMPORT_TITLE'].'</a>');
     }
 
     /**
@@ -59,7 +62,8 @@ class PartnersAdmin extends PartnersLibrary {
      *
      * @global   object      $objTemplate
      */
-    function getPage() {
+    function getPage()
+    {
         global $objTemplate;
 
         if(!isset($_GET['act'])) {
@@ -202,6 +206,7 @@ class PartnersAdmin extends PartnersLibrary {
                 'CONTENT_STATUS_MESSAGE'    => $this->_strErrMessage,
                 'ADMIN_CONTENT'             => $this->_objTpl->get()
         ));
+
         $this->act = $_REQUEST['act'];
         $this->setNavigation();
     }

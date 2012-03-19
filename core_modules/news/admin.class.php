@@ -160,6 +160,8 @@ class newsManager extends newsLibrary {
         $this->__construct();
     }
 
+    private $act = '';
+    
     /**
     * PHP5 Constructor
     *
@@ -175,19 +177,23 @@ class newsManager extends newsLibrary {
 
         $this->_saveSettings();
         $this->langId = $objInit->userFrontendLangId;
-        $this->getSettings();
-
-        $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='index.php?cmd=news'>".$_ARRAYLANG['TXT_NEWS_MANAGER']."</a>
-            <a href='index.php?cmd=news&amp;act=add'>".$_ARRAYLANG['TXT_CREATE_NEWS']."</a>
-            <a href='index.php?cmd=news&amp;act=newscat'>".$_ARRAYLANG['TXT_CATEGORY_MANAGER']."</a>
-            ".($this->arrSettings['news_use_types'] == '1' ? "<a href='index.php?cmd=news&amp;act=newstype'>".$_ARRAYLANG['TXT_TYPES_MANAGER']."</a>" : "")."
-            <a href='index.php?cmd=news&amp;act=ticker'>".$_ARRAYLANG['TXT_NEWS_NEWSTICKER']."</a>
-            ".($_CONFIG['newsTeasersStatus'] == '1' ? "<a href='index.php?cmd=news&amp;act=teasers'>".$_ARRAYLANG['TXT_TEASERS']."</a>" : "")."
-            <a href='index.php?cmd=news&amp;act=placeholders'>".$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY']."</a>
-            <a href='index.php?cmd=news&amp;act=settings'>".$_ARRAYLANG['TXT_NEWS_SETTINGS']."</a>"
-        );
+        $this->getSettings();        
 
         $this->pageTitle = $_ARRAYLANG['TXT_NEWS_MANAGER'];
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG,$_CONFIG;
+        
+        $objTemplate->setVariable("CONTENT_NAVIGATION","
+            <a href='index.php?cmd=news' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWS_MANAGER']."</a>
+            <a href='index.php?cmd=news&amp;act=add' class='".($this->act == 'add' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CREATE_NEWS']."</a>
+            <a href='index.php?cmd=news&amp;act=newscat' class='".($this->act == 'newscat' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CATEGORY_MANAGER']."</a>
+            ".($this->arrSettings['news_use_types'] == '1' ? "<a href='index.php?cmd=news&amp;act=newstype' class='".($this->act == 'newstype' ? 'active' : '')."'>".$_ARRAYLANG['TXT_TYPES_MANAGER']."</a>" : "")."
+            <a href='index.php?cmd=news&amp;act=ticker' class='".($this->act == 'ticker' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWS_NEWSTICKER']."</a>
+            ".($_CONFIG['newsTeasersStatus'] == '1' ? "<a href='index.php?cmd=news&amp;act=teasers' class='".($this->act == 'teasers' ? 'active' : '')."'>".$_ARRAYLANG['TXT_TEASERS']."</a>" : "")."
+            <a href='index.php?cmd=news&amp;act=placeholders' class='".($this->act == 'placeholders' ? 'active' : '')."'>".$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY']."</a>
+            <a href='index.php?cmd=news&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWS_SETTINGS']."</a>");   
     }
 
     /**
@@ -322,6 +328,9 @@ class newsManager extends newsLibrary {
             'CONTENT_STATUS_MESSAGE'    => $this->strErrMessage,
             'ADMIN_CONTENT'             => $this->_objTpl->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 
