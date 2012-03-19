@@ -16,7 +16,8 @@
 
 require_once ASCMS_MODULE_PATH . "/reservation/lib/reservationLib.class.php";
 
-class reservationManager extends reservationLib {
+class reservationManager extends reservationLib
+{
     var $okMessage='';
     var $_objTpl;
     var $pageTitle='';
@@ -28,16 +29,19 @@ class reservationManager extends reservationLib {
      *
      * @return MemberDirManager
      */
-    function reservationManager() {
+    function reservationManager()
+    {
         $this->__construct();
     }
 
     private $act = '';
+
     /**
      * Constructor
      *
      */
-    function __construct() {
+    function __construct()
+    {
         global $_ARRAYLANG, $objTemplate, $_FRONTEND_LANGID;
 
         $objTemplate->setVariable("CONTENT_TITLE", $_ARRAYLANG['TXT_RESERVATION']);
@@ -55,16 +59,17 @@ class reservationManager extends reservationLib {
         parent::__construct();
     }
 
-    private function setNavigation() {
+    private function setNavigation()
+    {
         global $objTemplate, $_ARRAYLANG;
-
+        
         $objTemplate->setVariable("CONTENT_NAVIGATION","
             <a href='?cmd=reservation' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_OVERVIEW']."</a>
     	    <a href='?cmd=reservation&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
-
     }
 
-    function getPage() {
+    function getPage()
+    {
         global $objTemplate;
 
         if (empty($_GET['act'])) {
@@ -99,6 +104,7 @@ class reservationManager extends reservationLib {
                 'CONTENT_OK_MESSAGE'	 => $this->okMessage,
                 'ADMIN_CONTENT'	=> $this->_objTpl->get()
         ));
+        
         $this->act = $_REQUEST['act'];
         $this->setNavigation();
     }

@@ -39,6 +39,8 @@ class AccessManager extends AccessLib
      */
     private $_pageTitle = '';
 
+    private $act = '';
+
     /**
     * Constructor
     *
@@ -52,23 +54,27 @@ class AccessManager extends AccessLib
         parent::__construct();
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/access/template');
         CSRF::add_placeholder($this->_objTpl);
-        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);        
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
+        
         $objTemplate->setVariable('CONTENT_NAVIGATION',
             /*' <a href="index.php?cmd=access" title="'.
-              $_ARRAYLANG['TXT_ACCESS_OVERVIEW'].'">'.
+              $_ARRAYLANG['TXT_ACCESS_OVERVIEW'].'" class="'.($this->act == '' ? 'active' : '').'">'.
               $_ARRAYLANG['TXT_ACCESS_OVERVIEW'].'</a>'.*/
             (Permission::checkAccess(18, 'static', true)
               ? '<a href="index.php?cmd=access&amp;act=user" title="'.
-              $_ARRAYLANG['TXT_ACCESS_USERS'].'">'.
+              $_ARRAYLANG['TXT_ACCESS_USERS'].'" class="'.($this->act == 'user' ? 'active' : '').'">'.
               $_ARRAYLANG['TXT_ACCESS_USERS'].'</a>' : '').
             (Permission::checkAccess(18, 'static', true)
               ? '<a href="index.php?cmd=access&amp;act=group" title="'.
-              $_ARRAYLANG['TXT_ACCESS_GROUPS'].'">'.
+              $_ARRAYLANG['TXT_ACCESS_GROUPS'].'" class="'.($this->act == 'group' ? 'active' : '').'">'.
               $_ARRAYLANG['TXT_ACCESS_GROUPS'].'</a>' : '').
             (Permission::checkAccess(18, 'static', true)
               ? '<a href="index.php?cmd=access&amp;act=config" title="'.
-              $_ARRAYLANG['TXT_ACCESS_SETTINGS'].'">'.
+              $_ARRAYLANG['TXT_ACCESS_SETTINGS'].'" class="'.($this->act == 'config' ? 'active' : '').'">'.
               $_ARRAYLANG['TXT_ACCESS_SETTINGS'].'</a>' : ''));
     }
 
@@ -254,6 +260,9 @@ class AccessManager extends AccessLib
             'CONTENT_STATUS_MESSAGE' => implode("<br />\n", self::$arrStatusMsg['error']),
             'ADMIN_CONTENT'          => $this->_objTpl->get(),
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 

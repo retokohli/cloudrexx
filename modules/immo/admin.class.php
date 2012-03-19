@@ -26,7 +26,8 @@ include(dirname(__FILE__).'/ImmoLib.class.php');
  * @package     contrexx
  * @subpackage  module_immo
  */
-class Immo extends ImmoLib {
+class Immo extends ImmoLib
+{
     /**
      * Template object
      *
@@ -67,17 +68,21 @@ class Immo extends ImmoLib {
     /**
      * Constructor
      */
-    function Immo() {
+    function Immo()
+    {
         $this->__construct();
     }
+
     private $act = '';
+
     /**
      * PHP5 constructor
      *
      * @global object $objTemplate
      * @global array $_ARRAYLANG
      */
-    function __construct() {
+    function __construct()
+    {
         global $objTemplate, $_ARRAYLANG, $objDatabase;
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/immo/template');
         CSRF::add_placeholder($this->_objTpl);
@@ -94,19 +99,17 @@ class Immo extends ImmoLib {
         parent::__construct();
     }
 
-    private function setNavigation() {
+    private function setNavigation()
+    {
         global $objTemplate, $_ARRAYLANG;
-
-        $objTemplate->setVariable("CONTENT_NAVIGATION", "<a href='?cmd=immo' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_IMMO_OVERVIEW']."</a>
-    		<a href='?cmd=immo&amp;act=add' class='".($this->act == 'add' ? 'active' : '')."'>".$_ARRAYLANG['TXT_IMMO_ADD']."</a>
-    <!--	<a href='?cmd=immo&amp;act=downloads' class='".($this->act == 'downloads' ? 'active' : '')."'>".$_ARRAYLANG['TXT_IMMO_DOWNLOADS']."</a> -->
-    		<a href='?cmd=immo&amp;act=stats' class='".($this->act == 'stats' ? 'active' : '')."'>".$_ARRAYLANG['TXT_IMMO_STATS']."</a>
-    		<a href='?cmd=immo&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_IMMO_SETTINGS']."</a>
-    <!--	<a href='?cmd=immo&amp;act=export' class='".($this->act == 'export' ? 'active' : '')."'>".$_ARRAYLANG['TXT_IMMO_EXPORT']."</a> -->"
-
-        );
-
-
+        
+        $objTemplate->setVariable("CONTENT_NAVIGATION","
+            <a href='?cmd=immo' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_IMMO_OVERVIEW']."</a>
+            <a href='?cmd=immo&amp;act=add' class='".($this->act == 'add' ? 'active' : '')."'>".$_ARRAYLANG['TXT_IMMO_ADD']."</a>
+    <!--    <a href='?cmd=immo&amp;act=downloads' class='".($this->act == 'downloads' ? 'active' : '')."'>".$_ARRAYLANG['TXT_IMMO_DOWNLOADS']."</a> -->
+            <a href='?cmd=immo&amp;act=stats' class='".($this->act == 'stats' ? 'active' : '')."'>".$_ARRAYLANG['TXT_IMMO_STATS']."</a>
+            <a href='?cmd=immo&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_IMMO_SETTINGS']."</a>
+    <!--    <a href='?cmd=immo&amp;act=export' class='".($this->act == 'export' ? 'active' : '')."'>".$_ARRAYLANG['TXT_IMMO_EXPORT']."</a> -->");
     }
 
     /**
@@ -116,7 +119,8 @@ class Immo extends ImmoLib {
      * @global object $objTemplate
      * @global array $_ARRAYLANG
      */
-    function getPage() {
+    function getPage()
+    {
         global $objTemplate, $_ARRAYLANG;
         if (!isset($_GET['act'])) {
             $_GET['act']="";
@@ -220,6 +224,7 @@ class Immo extends ImmoLib {
                 'CONTENT_STATUS_MESSAGE'	=> $this->_strErrMessage,
                 'ADMIN_CONTENT'				=> $this->_objTpl->get()
         ));
+
         $this->act = $_REQUEST['act'];
         $this->setNavigation();
     }

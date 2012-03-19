@@ -68,6 +68,7 @@ class blockManager extends blockLibrary
      */
     var $_index = 0;
 
+    private $act = '';
 
     /**
     * PHP5 constructor
@@ -93,14 +94,19 @@ class blockManager extends blockLibrary
             $this->_saveSettings($arrSettings);
             $this->_strOkMessage = $_CORELANG['TXT_SETTINGS_UPDATED'];
         }
+        
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", "   "
             .($_CONFIG['blockStatus'] == '1'
-                 ? "<a href='index.php?cmd=block&amp;act=overview'>".$_ARRAYLANG['TXT_BLOCK_OVERVIEW']."</a>
-                    <a href='index.php?cmd=block&amp;act=modify'>".$_ARRAYLANG['TXT_BLOCK_ADD_BLOCK']."</a>"
+                 ? "<a href='index.php?cmd=block&amp;act=overview' class='".($this->act == 'overview' ? 'active' : '')."'>".$_ARRAYLANG['TXT_BLOCK_OVERVIEW']."</a>
+                    <a href='index.php?cmd=block&amp;act=modify' class='".($this->act == 'modify' ? 'active' : '')."'>".$_ARRAYLANG['TXT_BLOCK_ADD_BLOCK']."</a>"
                  : "")
-            ."<a href='index.php?cmd=block&amp;act=categories'>".$_ARRAYLANG['TXT_BLOCK_CATEGORIES']."</a>"
-     	    ."<a href='index.php?cmd=block&amp;act=settings'>".$_ARRAYLANG['TXT_BLOCK_SETTINGS']."</a>");
+            ."<a href='index.php?cmd=block&amp;act=categories' class='".($this->act == 'categories' ? 'active' : '')."'>".$_ARRAYLANG['TXT_BLOCK_CATEGORIES']."</a>"
+     	    ."<a href='index.php?cmd=block&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_BLOCK_SETTINGS']."</a>");
     }
 
     /**
@@ -191,6 +197,9 @@ class blockManager extends blockLibrary
             'CONTENT_STATUS_MESSAGE'    => $this->_strErrMessage,
             'ADMIN_CONTENT'             => $this->_objTpl->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
     /**

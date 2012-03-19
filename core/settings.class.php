@@ -51,10 +51,23 @@ class settingsManager
     var $strOkMessage;
     private $writable;
 
+    private $act = '';
+     
     function __construct()
     {
         $this->strSettingsFile = ASCMS_DOCUMENT_ROOT.'/config/settings.php';
         $this->checkWritePermissions();
+    }
+
+    private function setNavigation()
+    {
+        global $objTemplate, $_CORELANG;
+
+        $objTemplate->setVariable('CONTENT_NAVIGATION','
+            <a href="?cmd=settings" class="'.($this->act == '' ? 'active' : '').'">'.$_CORELANG['TXT_SETTINGS_MENU_SYSTEM'].'</a>'.'
+            <a href="?cmd=settings&amp;act=cache" class="'.($this->act == 'cache' ? 'active' : '').'">'.$_CORELANG['TXT_SETTINGS_MENU_CACHE'].'</a>'.'
+            <a href="?cmd=settings&amp;act=smtp" class="'.($this->act == 'smtp' ? 'active' : '').'">'.$_CORELANG['TXT_SETTINGS_EMAIL'].'</a>'
+        );
     }
 
     private function checkWritePermissions()
@@ -87,12 +100,7 @@ class settingsManager
      */
     function getPage()
     {
-           global $_CORELANG, $objTemplate;
-
-        $objTemplate->setVariable('CONTENT_NAVIGATION',    '<a href="?cmd=settings">'.$_CORELANG['TXT_SETTINGS_MENU_SYSTEM'].'</a>'.
-                                                        '<a href="?cmd=settings&amp;act=cache">'.$_CORELANG['TXT_SETTINGS_MENU_CACHE'].'</a>'.
-                                                        '<a href="?cmd=settings&amp;act=smtp">'.$_CORELANG['TXT_SETTINGS_EMAIL'].'</a>'
-        );
+           global $_CORELANG, $objTemplate;        
 
         if(!isset($_GET['act'])){
             $_GET['act']='';
@@ -144,6 +152,9 @@ class settingsManager
                 'CONTENT_STATUS_MESSAGE'    =>     implode("<br />\n", $this->strErrMessage)
             ));
         }
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 

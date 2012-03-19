@@ -33,6 +33,8 @@ class LanguageManager
     public $hideVariables = true;
     public $langIDs = array();
 
+    private $act = '';
+    
     /**
      * Constructor
      * @global  ADONewConnection
@@ -59,12 +61,7 @@ class LanguageManager
         }
         if (in_array(DBPREFIX."language_variable_names",$arrTables) && in_array(DBPREFIX."language_variable_content",$arrTables)) {
             $this->hideVariables = false;
-        }
-        $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='index.php?cmd=language'>".$_CORELANG['TXT_LANGUAGE_LIST']."</a>"
-                                                 .($this->hideVariables == false ? "<a href='index.php?cmd=language&amp;act=vars'>".$_CORELANG['TXT_VARIABLE_LIST']."</a>
-                                                 <a href='index.php?cmd=language&amp;act=mod'>".$_CORELANG['TXT_ADD_LANGUAGE_VARIABLES']."</a>
-                                                 <a href='index.php?cmd=language&amp;act=writefiles' title='".$_CORELANG['TXT_WRITE_VARIABLES_TO_FILES']."'>".$_CORELANG['TXT_WRITE_VARIABLES_TO_FILES']."</a>"
-                                                 : ""));
+        }        
         $objResult = $objDatabase->Execute("SELECT id,name FROM ".DBPREFIX."languages");
         if ($objResult !== false) {
             while (!$objResult->EOF) {
@@ -75,6 +72,16 @@ class LanguageManager
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."languages");
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."language_variable_content");
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."language_variable_names");
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_CORELANG;
+
+        $objTemplate->setVariable("CONTENT_NAVIGATION","
+            <a href='index.php?cmd=language' class='".($this->act == '' ? 'active' : '')."'>".$_CORELANG['TXT_LANGUAGE_LIST']."</a>"
+            .($this->hideVariables == false ? "<a href='index.php?cmd=language&amp;act=vars' class='".($this->act == 'vars' ? 'active' : '')."'>".$_CORELANG['TXT_VARIABLE_LIST']."</a>
+            <a href='index.php?cmd=language&amp;act=mod' class='".($this->act == 'mod' ? 'active' : '')."'>".$_CORELANG['TXT_ADD_LANGUAGE_VARIABLES']."</a>
+            <a href='index.php?cmd=language&amp;act=writefiles' class='".($this->act == 'writefiles' ? 'active' : '')."' title='".$_CORELANG['TXT_WRITE_VARIABLES_TO_FILES']."'>".$_CORELANG['TXT_WRITE_VARIABLES_TO_FILES']."</a>": ""));
     }
 
 
@@ -135,6 +142,9 @@ class LanguageManager
             'CONTENT_OK_MESSAGE'     => $this->strOkMessage,
             'CONTENT_STATUS_MESSAGE' => $this->strErrMessage,
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 

@@ -16,7 +16,8 @@
 require_once(ASCMS_FRAMEWORK_PATH."/File.class.php");
 include(dirname(__FILE__).'/HotelLib.class.php');
 
-class HotelManager extends HotelLib {
+class HotelManager extends HotelLib
+{
     /**
     * Template object
     *
@@ -101,15 +102,13 @@ class HotelManager extends HotelLib {
     private function setNavigation()
     {
         global $objTemplate, $_ARRAYLANG;
-
-         $objTemplate->setVariable("CONTENT_NAVIGATION", "
+        
+        $objTemplate->setVariable("CONTENT_NAVIGATION", "
             <a href='?cmd=hotel' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_HOTEL_OVERVIEW']."</a>
             <a href='?cmd=hotel&amp;act=add' class='".($this->act == 'add' ? 'active' : '')."'>".$_ARRAYLANG['TXT_HOTEL_ADD']."</a>
             <a href='?cmd=hotel&amp;act=interests' class='".($this->act == 'interests' ? 'active' : '')."'>Buchungen</a>
             <a href='?cmd=hotel&amp;act=travel' class='".($this->act == 'travel' ? 'active' : '')."'>".$_ARRAYLANG['TXT_HOTEL_TRAVEL']."</a>
-            <a href='?cmd=hotel&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_HOTEL_SETTINGS']."</a>"
-
-        );        
+            <a href='?cmd=hotel&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_HOTEL_SETTINGS']."</a>");        
     }
 
     /**
@@ -230,6 +229,7 @@ class HotelManager extends HotelLib {
             'CONTENT_STATUS_MESSAGE'    => $this->_strErrMessage,
             'ADMIN_CONTENT'                => $this->_objTpl->get()
         ));
+        
         $this->act = $_REQUEST['act'];
         $this->setNavigation();
     }
