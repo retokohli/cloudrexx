@@ -119,12 +119,7 @@ class aliasLib
     
     function _getAliassesWithSameTarget($page)
     {
-        $target = $page->getTarget();
-        $crit = array(
-            'type' => 'alias',
-            'target' => $target,
-        );
-        return $this->pageRepository->findBy($crit);
+        return $page->getAliasses();
     }
     
 
@@ -168,6 +163,9 @@ class aliasLib
 
     function _saveAlias($slug, $target, $is_local, $id = "")
     {
+        if ($slug == "") {
+            return false;
+        }
         if ($id == "") {
             // create new node
             $node = new \Cx\Model\ContentManager\Node();
@@ -210,6 +208,10 @@ class aliasLib
     function _deleteAlias($aliasId)
     {
         $alias = $this->_getAlias($aliasId);
+        if (!is_object($alias)) {
+            die ("ALIAS NOT FOUND: ID=".$aliasId);
+            return false;
+        }
         $this->em->remove($alias->getNode());
         $this->em->remove($alias);
         $this->em->flush();

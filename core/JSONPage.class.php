@@ -110,7 +110,7 @@ class JSONPage {
                         'skin'                     => array('type' => 'integer'),
                         'customContent'            => array('type' => 'String'),
                         'cssName'                  => array('type' => 'String'),
-                        'cssNavName'               => array('type' => 'String')
+                        'cssNavName'               => array('type' => 'String'),
                         );
 
         $output = array();
@@ -247,6 +247,14 @@ class JSONPage {
 
         $this->em->persist($page);
         $this->em->flush();
+        
+        // aliasses are updated after persist!
+        $data['alias'] = $params['post']['page']['alias'];
+        $aliasses = $page->getAliasses();
+        $page->updateFromArray($data);
+        if ($aliasses != $page->getAliasses()) {
+            $reload = true;
+        }
 
         if (isset($reload) && $reload) {
             return array(
@@ -369,27 +377,12 @@ class JSONPage {
      */
     private function getAliasArray($page)
     {
-        $pages = $this->getAliasses($page);
+        $pages = $page->getAliasses();
         $aliasses = array();
         foreach ($pages as $alias) {
             $aliasses[] = $alias->getSlug();
         }
         return $aliasses;
-    }
-    
-    /**
-     * Returns an array of alias pages for a page
-     * @param Cx\Model\ContentManager\Page $page Page to get the aliasses of
-     * @return Array<Cx\Model\ContentManager\Page>
-     */
-    private function getAliasses($page)
-    {
-        $target = $page->getNode()->getId() . '-' . $page->getLang() . '|';
-        $crit = array(
-            'type' => 'alias',
-            'target' => $target,
-        );
-        return $this->em->getRepository("Cx\Model\ContentManager\Page")->findBy($crit);
     }
 }
 ?>
