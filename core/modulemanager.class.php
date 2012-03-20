@@ -28,6 +28,8 @@ class modulemanager
     var $langId;
     var $defaultOrderValue = 111;
 
+    private $act = '';
+    
     /**
      * Constructor
      */
@@ -37,17 +39,21 @@ class modulemanager
 
         $this->langId = $objInit->userFrontendLangId;
     }
+    private function setNavigation()
+    {
+        global $objTemplate, $_CORELANG;
+
+        $objTemplate->setVariable(array(
+            'CONTENT_TITLE'      => $_CORELANG['TXT_MODULE_MANAGER'],
+            'CONTENT_NAVIGATION' => "<a href='index.php?cmd=modulemanager' class='".($this->act == '' ? 'active' : '')."'>".$_CORELANG['TXT_MODULE_MANAGER']."</a>"
+                                     //<a href='index.php?cmd=modulemanager&act=manage' class='".($this->act == 'manage' ? 'active' : '')."'>[".$_CORELANG['TXT_MODULE_ACTIVATION']."]</a>"
+        ));
+    }
 
 
     function getModulesPage()
     {
-        global $_CORELANG, $objTemplate;
-
-        $objTemplate->setVariable(array(
-            'CONTENT_TITLE'      => $_CORELANG['TXT_MODULE_MANAGER'],
-            'CONTENT_NAVIGATION' => "<a href='index.php?cmd=modulemanager'>".$_CORELANG['TXT_MODULE_MANAGER']."</a>"
-                                     //<a href='index.php?cmd=modulemanager&act=manage'>[".$_CORELANG['TXT_MODULE_ACTIVATION']."]</a>"
-        ));
+        global $_CORELANG, $objTemplate;        
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'module_manager', 'module_manager.html');
 
@@ -88,6 +94,9 @@ class modulemanager
             'CONTENT_OK_MESSAGE'        => $this->strOkMessage,
             'CONTENT_STATUS_MESSAGE'    => $this->strErrMessage,
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 

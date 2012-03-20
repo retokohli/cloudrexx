@@ -75,7 +75,8 @@ class Shopmanager extends ShopLibrary
     private static $pageTitle = '';
     private static $defaultImage = '';
 
-
+    private $act = '';
+    
     /**
      * Constructor
      * @access  public
@@ -86,25 +87,7 @@ class Shopmanager extends ShopLibrary
         global $_ARRAYLANG, $objTemplate;
 
         SettingDb::init('shop', 'config');
-        self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
-        $objTemplate->setVariable(
-            'CONTENT_NAVIGATION',
-            "<a href='index.php?cmd=shop".MODULE_INDEX."'>".$_ARRAYLANG['TXT_SHOP_INDEX']."</a>".
-            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=categories'>".$_ARRAYLANG['TXT_CATEGORIES']."</a>".
-            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=products'>".$_ARRAYLANG['TXT_PRODUCTS']."</a>".
-            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=manufacturer'>".$_ARRAYLANG['TXT_SHOP_MANUFACTURER']."</a>".
-            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=customers'>".$_ARRAYLANG['TXT_CUSTOMERS_PARTNERS']."</a>".
-            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=orders'>".$_ARRAYLANG['TXT_ORDERS']."</a>".
-            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=statistics'>".$_ARRAYLANG['TXT_STATISTIC']."</a>".
-            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=import'>".$_ARRAYLANG['TXT_IMPORT_EXPORT']."</a>".
-            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=pricelists'>".$_ARRAYLANG['TXT_PDF_OVERVIEW']."</a>".
-            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>"
-// TODO: Workaround for the language selection.  Remove when the new UI
-// is introduced in the shop.
-//            .
-//            '<div style="float: right;">'.
-//            $objInit->getUserFrontendLangMenu()
-        );
+        self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;        
         self::$objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/shop/template');
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 //DBG::log("ARRAYLANG: ".var_export($_ARRAYLANG, true));
@@ -114,6 +97,28 @@ class Shopmanager extends ShopLibrary
             'SHOP_CURRENCY' => Currency::getActiveCurrencySymbol(),
             'CSRF_PARAM' => CSRF::param()
         ));
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
+
+        $objTemplate->setVariable('CONTENT_NAVIGATION',
+            "<a href='index.php?cmd=shop".MODULE_INDEX."' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SHOP_INDEX']."</a>".
+            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=categories' class='".($this->act == 'categories' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CATEGORIES']."</a>".
+            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=products' class='".($this->act == 'products' ? 'active' : '')."'>".$_ARRAYLANG['TXT_PRODUCTS']."</a>".
+            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=manufacturer' class='".($this->act == 'manufacturer' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SHOP_MANUFACTURER']."</a>".
+            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=customers' class='".($this->act == 'customers' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CUSTOMERS_PARTNERS']."</a>".
+            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=orders' class='".($this->act == 'orders' ? 'active' : '')."'>".$_ARRAYLANG['TXT_ORDERS']."</a>".
+            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=statistics' class='".($this->act == 'statistics' ? 'active' : '')."'>".$_ARRAYLANG['TXT_STATISTIC']."</a>".
+            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=import' class='".($this->act == 'import' ? 'active' : '')."'>".$_ARRAYLANG['TXT_IMPORT_EXPORT']."</a>".
+            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=pricelists' class='".($this->act == 'pricelists' ? 'active' : '')."'>".$_ARRAYLANG['TXT_PDF_OVERVIEW']."</a>".
+            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SETTINGS']."</a>"
+// TODO: Workaround for the language selection.  Remove when the new UI
+// is introduced in the shop.
+//            .
+//            '<div style="float: right;">'.
+//            $objInit->getUserFrontendLangMenu()
+        );
     }
 
 
@@ -215,6 +220,9 @@ class Shopmanager extends ShopLibrary
             'CONTENT_TITLE' => self::$pageTitle,
             'ADMIN_CONTENT' => self::$objTemplate->get(),
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 

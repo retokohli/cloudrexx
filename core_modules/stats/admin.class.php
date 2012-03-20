@@ -52,6 +52,8 @@ class stats extends statsLibrary
     );
 
 
+    private $act = '';
+    
     /**
     * constructor
     *
@@ -64,19 +66,24 @@ class stats extends statsLibrary
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/stats/template');
         CSRF::add_placeholder($this->_objTpl);
-        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
-        $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='index.php?cmd=stats&amp;stat=visitorDetails'>".$_ARRAYLANG['TXT_VISITOR_DETAILS']."</a>
-                                                <a href='index.php?cmd=stats&amp;stat=requests'>".$_ARRAYLANG['TXT_VISITORS_AND_PAGE_VIEWS']."</a>
-                                                <a href='index.php?cmd=stats&amp;stat=referer'>".$_ARRAYLANG['TXT_REFERER']."</a>
-                                                <a href='index.php?cmd=stats&amp;stat=mvp'>".$_ARRAYLANG['TXT_MOST_POPULAR_PAGES']."</a>
-                                                <a href='index.php?cmd=stats&amp;stat=spiders'>".$_ARRAYLANG['TXT_SEARCH_ENGINES']."</a>
-                                                <a href='index.php?cmd=stats&amp;stat=clients'>".$_ARRAYLANG['TXT_USER_INFORMATION']."</a>
-                                                <a href='index.php?cmd=stats&amp;stat=search'>".$_ARRAYLANG['TXT_SEARCH_TERMS']."</a>
-                                                <a href='index.php?cmd=stats&amp;stat=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);       
 
         $this->firstDate = time();
         $this->_initConfiguration();
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
+
+        $objTemplate->setVariable("CONTENT_NAVIGATION","
+            <a href='index.php?cmd=stats&amp;stat=visitorDetails' class='".($this->act == 'visitorDetails' ? 'active' : '')."'>".$_ARRAYLANG['TXT_VISITOR_DETAILS']."</a>
+            <a href='index.php?cmd=stats&amp;stat=requests' class='".($this->act == 'requests' ? 'active' : '')."'>".$_ARRAYLANG['TXT_VISITORS_AND_PAGE_VIEWS']."</a>
+            <a href='index.php?cmd=stats&amp;stat=referer' class='".($this->act == 'referer' ? 'active' : '')."'>".$_ARRAYLANG['TXT_REFERER']."</a>
+            <a href='index.php?cmd=stats&amp;stat=mvp' class='".($this->act == 'mvp' ? 'active' : '')."'>".$_ARRAYLANG['TXT_MOST_POPULAR_PAGES']."</a>
+            <a href='index.php?cmd=stats&amp;stat=spiders' class='".($this->act == 'spiders' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SEARCH_ENGINES']."</a>
+            <a href='index.php?cmd=stats&amp;stat=clients' class='".($this->act == 'clients' ? 'active' : '')."'>".$_ARRAYLANG['TXT_USER_INFORMATION']."</a>
+            <a href='index.php?cmd=stats&amp;stat=search' class='".($this->act == 'search' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SEARCH_TERMS']."</a>
+            <a href='index.php?cmd=stats&amp;stat=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
     }
 
 
@@ -141,6 +148,9 @@ class stats extends statsLibrary
             'CONTENT_STATUS_MESSAGE'    => $this->strErrMessage,
             'ADMIN_CONTENT'                => $this->_objTpl->get()
         ));
+
+        $this->act = $_REQUEST['stat'];
+        $this->setNavigation();
     }
 
     function _optimizeTables() {
