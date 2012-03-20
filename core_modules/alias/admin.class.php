@@ -56,6 +56,8 @@ class AliasAdmin extends aliasLib
     */
     var $arrStatusMsg = array('ok' => array(), 'error' => array());
 
+    private $act = '';
+    
     /**
     * PHP5 constructor
     *
@@ -71,11 +73,15 @@ class AliasAdmin extends aliasLib
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/alias/template');
         CSRF::add_placeholder($this->_objTpl);
-        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);        
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
 
         $objTemplate->setVariable("CONTENT_NAVIGATION",
-            ("<a href='index.php?cmd=alias'>".$_ARRAYLANG['TXT_ALIAS_ALIASES']."</a>"
-            ."<a href='index.php?cmd=alias&amp;act=modify'>".$_ARRAYLANG['TXT_ALIAS_ADD_ALIAS']."</a>")
+            ("<a href='index.php?cmd=alias' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_ALIAS_ALIASES']."</a>"
+            ."<a href='index.php?cmd=alias&amp;act=modify' class='".($this->act == 'modify' ? 'active' : '')."'>".$_ARRAYLANG['TXT_ALIAS_ADD_ALIAS']."</a>")
         );
     }
 
@@ -115,6 +121,9 @@ class AliasAdmin extends aliasLib
             'CONTENT_STATUS_MESSAGE'            => implode("<br />\n", $this->arrStatusMsg['error']),
             'ADMIN_CONTENT'                     => $this->_objTpl->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
     function _list()

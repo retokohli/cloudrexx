@@ -73,6 +73,8 @@ class DatabaseManager
      */
     public $_arrMimeTypes;
 
+    private $act = '';
+    
     /**
      * Constructor
      * @global  HTML_Template_Sigma
@@ -90,16 +92,20 @@ class DatabaseManager
         $this->_arrMimeTypes = array(
             'sql' => 'application/x-unknown',
             'csv' => 'text/comma-separated-values',
-        );
-        $objTemplate->setVariable(
-            'CONTENT_NAVIGATION',
-            '<a href="index.php?cmd=dbm">'.$_CORELANG['TXT_DBM_MAINTENANCE_TITLE'].'</a>'.
+        );        
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_CORELANG;
+
+        $objTemplate->setVariable('CONTENT_NAVIGATION',
+            '<a href="index.php?cmd=dbm" class="'.($this->act == '' ? 'active' : '').'">'.$_CORELANG['TXT_DBM_MAINTENANCE_TITLE'].'</a>'.
             (Permission::hasAllAccess()
-              ? '<a href="index.php?cmd=dbm&amp;act=sql">'.$_CORELANG['TXT_DBM_SQL_TITLE'].'</a>'.
-                '<a href="index.php?cmd=dbm&amp;act=csv">'.$_CORELANG['TXT_DBM_CSV'].'</a>'.
-                '<a href="index.php?cmd=dbm&amp;act=status">'.$_CORELANG['TXT_DBM_STATUS_TITLE'].'</a>'.
-                '<a href="index.php?cmd=dbm&amp;act=ie">'.$_CORELANG['TXT_DBM_BACKUP_TITLE'].'</a>'
-              : ''
+            ? '<a href="index.php?cmd=dbm&amp;act=sql" class="'.($this->act == 'sql' ? 'active' : '').'">'.$_CORELANG['TXT_DBM_SQL_TITLE'].'</a>'.
+            '<a href="index.php?cmd=dbm&amp;act=csv" class="'.($this->act == 'csv' ? 'active' : '').'">'.$_CORELANG['TXT_DBM_CSV'].'</a>'.
+            '<a href="index.php?cmd=dbm&amp;act=status" class="'.($this->act == 'status' ? 'active' : '').'">'.$_CORELANG['TXT_DBM_STATUS_TITLE'].'</a>'.
+            '<a href="index.php?cmd=dbm&amp;act=ie" class="'.($this->act == 'ie' ? 'active' : '').'">'.$_CORELANG['TXT_DBM_BACKUP_TITLE'].'</a>'
+            : ''
             )
         );
     }
@@ -223,6 +229,9 @@ class DatabaseManager
             'CONTENT_OK_MESSAGE' => self::$strOkMessage,
             'CONTENT_STATUS_MESSAGE' => self::$strErrMessage,
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 

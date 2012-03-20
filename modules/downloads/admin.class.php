@@ -56,7 +56,8 @@ class downloads extends DownloadsLibrary
     );
     private $parentCategoryId = 0;
 
-
+    private $act = '';
+    
     /**
      * PHP5 constructor
      * @global object $objTemplate
@@ -69,22 +70,26 @@ class downloads extends DownloadsLibrary
         $this->objTemplate =
             new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/downloads/template');
         CSRF::add_placeholder($this->objTemplate);
-        $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-        $objTemplate->setVariable(
-            'CONTENT_NAVIGATION',
-            '<a href="index.php?cmd=downloads">'.
+        $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);        
+        parent::__construct();
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
+
+        $objTemplate->setVariable('CONTENT_NAVIGATION',
+            '<a href="index.php?cmd=downloads" class="'.($this->act == '' ? 'active' : '').'">'.
             $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'].'</a>'.
-            '<a href="index.php?cmd=downloads&amp;act=download">'.
+            '<a href="index.php?cmd=downloads&amp;act=download" class="'.($this->act == 'download' ? 'active' : '').'">'.
             $_ARRAYLANG['TXT_DOWNLOADS_NEW'].'</a>'.
-            '<a href="index.php?cmd=downloads&amp;act=categories">'.
+            '<a href="index.php?cmd=downloads&amp;act=categories" class="'.($this->act == 'categories' ? 'active' : '').'">'.
             $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'].'</a>'.
             (Permission::checkAccess(142, 'static', true) ?
-                '<a href="index.php?cmd=downloads&amp;act=groups">'.
-                $_ARRAYLANG['TXT_DOWNLOADS_GROUPS'].'</a>'.
-                '<a href="index.php?cmd=downloads&amp;act=settings">'.
+            '<a href="index.php?cmd=downloads&amp;act=groups" class="'.($this->act == 'groups' ? 'active' : '').'">'.
+            $_ARRAYLANG['TXT_DOWNLOADS_GROUPS'].'</a>'.
+            '<a href="index.php?cmd=downloads&amp;act=settings" class="'.($this->act == 'settings' ? 'active' : '').'">'.
             $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'].'</a>' : '')
         );
-        parent::__construct();
     }
 
 
@@ -201,6 +206,9 @@ class downloads extends DownloadsLibrary
             'CONTENT_STATUS_MESSAGE'    => implode("<br />\n", $this->arrStatusMsg['error']),
             'ADMIN_CONTENT'             => $this->objTemplate->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 
