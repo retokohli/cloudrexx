@@ -102,7 +102,7 @@ class AliasAdmin extends aliasLib
 
         switch ($_REQUEST['act']) {
             case 'modify':
-                $this->_modifyAlias();
+                $this->_modifyAlias($_POST);
                 break;
 
             case 'delete':
@@ -198,7 +198,7 @@ class AliasAdmin extends aliasLib
         }
     }
 
-    function _modifyAlias()
+    function _modifyAlias($array, $page = null)
     {
         global $_ARRAYLANG, $_CONFIG;
 
@@ -215,21 +215,21 @@ class AliasAdmin extends aliasLib
         }
 
         // handle form submit
-        if (isset($_POST['alias_save'])) {
+        if (isset($array['alias_save'])) {
             // set target and -type
-            $newtype = in_array($_POST['alias_source_type'], $this->_arrAliasTypes) ? $_POST['alias_source_type'] : $this->_arrAliasTypes[0];
+            $newtype = in_array($array['alias_source_type'], $this->_arrAliasTypes) ? $array['alias_source_type'] : $this->_arrAliasTypes[0];
             
             if ($newtype == 'local') {
-                $newtarget = !empty($_POST['alias_local_source']) ? $_POST['alias_local_source'] : 0;
+                $newtarget = !empty($array['alias_local_source']) ? $array['alias_local_source'] : 0;
             } else {
-                $newtarget = !empty($_POST['alias_url_source']) ? trim(contrexx_stripslashes($_POST['alias_url_source'])) : '';
+                $newtarget = !empty($array['alias_url_source']) ? trim(contrexx_stripslashes($array['alias_url_source'])) : '';
             }
 
             // handle existing slugs pointing to the target
             $aliasses = array();
-            if (!empty($_POST['alias_aliases']) && is_array($_POST['alias_aliases'])) {
+            if (!empty($array['alias_aliases']) && is_array($array['alias_aliases'])) {
                 $nr = 0;
-                foreach ($_POST['alias_aliases'] as $sourceId => $aliasSource) {
+                foreach ($array['alias_aliases'] as $sourceId => $aliasSource) {
                     if (!empty($aliasSource)) {
                         $aliasses[intval($sourceId)] = $aliasSource;
                     }
@@ -248,8 +248,8 @@ class AliasAdmin extends aliasLib
 
             // handle enw slugs pointing to the target
             $newaliasses = array();
-            if (!empty($_POST['alias_aliases_new']) && is_array($_POST['alias_aliases_new'])) {
-                foreach ($_POST['alias_aliases_new'] as $id => $newAliasSource) {
+            if (!empty($array['alias_aliases_new']) && is_array($array['alias_aliases_new'])) {
+                foreach ($array['alias_aliases_new'] as $id => $newAliasSource) {
                     if (!empty($newAliasSource)) {
                         $newaliasses[] = $newAliasSource;
                     }
