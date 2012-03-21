@@ -213,10 +213,16 @@ class news extends newsLibrary {
         $this->newsTitle = strip_tags($newstitle);
         $newsTeaser = nl2br($objResult->fields['teaser_text']);
 
+        $text = $objResult->fields['text'];
+        $text = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $text);
+        $newsTeaser = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $newsTeaser);
+        LinkGenerator::parseTemplate($text);
+        LinkGenerator::parseTemplate($newsTeaser);
+
         $this->_objTpl->setVariable(array(
            'NEWS_DATE'          => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
            'NEWS_TITLE'         => $newstitle,
-           'NEWS_TEXT'          => $objResult->fields['text'],
+           'NEWS_TEXT'          => $text,
            'NEWS_TEASER_TEXT'   => $newsTeaser,
            'NEWS_LASTUPDATE'    => $newsLastUpdate,
            'NEWS_SOURCE'        => $newsSource,
