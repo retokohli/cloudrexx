@@ -3127,7 +3127,7 @@ right after the customer logs in!
                         $productOptionsValues = '';
                         foreach ($arrOptionIds as $option_id) {
                             $optionValue = '';
-                            if (   preg_match('/^\d+$/', $option_id)
+                            if (   is_integer($option_id)
                                 && in_array(Attribute::getById($attribute_id)->getType(),
                                             array(Attribute::TYPE_MENU_OPTIONAL,
                                                   Attribute::TYPE_MENU_MANDATORY,

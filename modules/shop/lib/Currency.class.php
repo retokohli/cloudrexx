@@ -310,6 +310,7 @@ class Currency
         if (!is_array(self::$arrCurrency)) self::init();
         $rate = self::$arrCurrency[self::$activeCurrencyId]['rate'];
         $increment = self::$arrCurrency[self::$activeCurrencyId]['increment'];
+        if ($increment <= 0) $increment = 0.01;
         return self::formatPrice(round($price*$rate/$increment)*$increment);
     }
 
@@ -603,6 +604,7 @@ class Currency
             $symbol = contrexx_input2raw($_POST['currencySymbol'][$currency_id]);
             $rate = floatval($_POST['currencyRate'][$currency_id]);
             $increment = floatval($_POST['currencyIncrement'][$currency_id]);
+            if ($increment <= 0) $increment = 0.01;
             $default = ($default_id == $currency_id ? 1 : 0);
             $active = (empty ($_POST['currencyActive'][$currency_id]) ? 0 : 1);
             // The default currency must be activated
@@ -962,13 +964,13 @@ class Currency
 
         // If the table did not exist, insert defaults
         $arrCurrencies = array(
-            'Schweizer Franken' => array('CHF', 'sFr.', 1.000000, 1, 1, 1),
+            'Schweizer Franken' => array('CHF', 'sFr.', 1.000000, '0.05', 1, 1, 1),
 // TODO: I dunno if I'm just lucky, or if this will work with any charsets
 // configured for PHP and mySQL?
 // Anyway, neither entering the Euro-E literally nor various hacks involving
 // utf8_decode()/utf8_encode() did the trick...
-            'Euro' => array('EUR', html_entity_decode("&euro;"), 1.180000, 2, 1, 0),
-            'United States Dollars' => array('USD', '$', 0.880000, 3, 1, 0),
+            'Euro' => array('EUR', html_entity_decode("&euro;"), 1.180000, '0.01', 2, 1, 0),
+            'United States Dollars' => array('USD', '$', 0.880000, '0.01', 3, 1, 0),
         );
         // There is no previous version, so don't use DbTools::table()
         if (!UpdateUtil::create_table($table_name, $table_structure)) {

@@ -76,7 +76,7 @@ class Shopmanager extends ShopLibrary
     private static $defaultImage = '';
 
     private $act = '';
-    
+
     /**
      * Constructor
      * @access  public
@@ -87,7 +87,7 @@ class Shopmanager extends ShopLibrary
         global $_ARRAYLANG, $objTemplate;
 
         SettingDb::init('shop', 'config');
-        self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;        
+        self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
         self::$objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/shop/template');
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 //DBG::log("ARRAYLANG: ".var_export($_ARRAYLANG, true));
@@ -220,8 +220,7 @@ class Shopmanager extends ShopLibrary
             'CONTENT_TITLE' => self::$pageTitle,
             'ADMIN_CONTENT' => self::$objTemplate->get(),
         ));
-
-        $this->act = $_REQUEST['act'];
+        $this->act = (isset ($_REQUEST['act']) ? $_REQUEST['act'] : '');
         $this->setNavigation();
     }
 
