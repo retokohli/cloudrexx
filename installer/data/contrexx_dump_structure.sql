@@ -2718,12 +2718,12 @@ CREATE TABLE `contrexx_module_repository` (
 CREATE TABLE `contrexx_module_shop_article_group` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=2;
+) ENGINE=MyISAM AUTO_INCREMENT=2;
 CREATE TABLE `contrexx_module_shop_attribute` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `type` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=2;
+) ENGINE=MyISAM AUTO_INCREMENT=2;
 CREATE TABLE `contrexx_module_shop_categories` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `parent_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -2733,7 +2733,7 @@ CREATE TABLE `contrexx_module_shop_categories` (
   `flags` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   FULLTEXT KEY `flags` (`flags`)
-) TYPE=MyISAM AUTO_INCREMENT=4;
+) ENGINE=MyISAM AUTO_INCREMENT=4;
 CREATE TABLE `contrexx_module_shop_countries` (
   `countries_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `countries_name` varchar(64) NOT NULL DEFAULT '',
@@ -2742,7 +2742,7 @@ CREATE TABLE `contrexx_module_shop_countries` (
   `activation_status` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`countries_id`),
   KEY `INDEX_COUNTRIES_NAME` (`countries_name`)
-) TYPE=MyISAM AUTO_INCREMENT=240;
+) ENGINE=MyISAM AUTO_INCREMENT=240;
 CREATE TABLE `contrexx_module_shop_currencies` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `code` char(3) NOT NULL DEFAULT '',
@@ -2753,11 +2753,11 @@ CREATE TABLE `contrexx_module_shop_currencies` (
   `default` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `increment` decimal(3,2) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=6;
+) ENGINE=MyISAM AUTO_INCREMENT=6;
 CREATE TABLE `contrexx_module_shop_customer_group` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=4;
+) ENGINE=MyISAM AUTO_INCREMENT=4;
 CREATE TABLE `contrexx_module_shop_discount_coupon` (
   `code` varchar(20) NOT NULL DEFAULT '',
   `customer_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -2771,17 +2771,17 @@ CREATE TABLE `contrexx_module_shop_discount_coupon` (
   `discount_amount` decimal(9,2) unsigned NOT NULL DEFAULT '0.00',
   `discount_rate` decimal(3,0) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`code`,`customer_id`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_shop_discountgroup_count_name` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=2;
+) ENGINE=MyISAM AUTO_INCREMENT=2;
 CREATE TABLE `contrexx_module_shop_discountgroup_count_rate` (
   `group_id` int(10) unsigned NOT NULL DEFAULT '0',
   `count` int(10) unsigned NOT NULL DEFAULT '1',
   `rate` decimal(5,2) unsigned NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`group_id`,`count`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_shop_importimg` (
   `img_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `img_name` varchar(255) NOT NULL DEFAULT '',
@@ -2789,20 +2789,20 @@ CREATE TABLE `contrexx_module_shop_importimg` (
   `img_fields_file` text NOT NULL,
   `img_fields_db` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`img_id`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_shop_lsv` (
   `order_id` int(10) unsigned NOT NULL,
   `holder` tinytext NOT NULL,
   `bank` tinytext NOT NULL,
   `blz` tinytext NOT NULL,
   PRIMARY KEY (`order_id`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_shop_mail` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `tplname` varchar(60) NOT NULL DEFAULT '',
   `protected` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=5;
+) ENGINE=MyISAM AUTO_INCREMENT=5;
 CREATE TABLE `contrexx_module_shop_mail_content` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `tpl_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -2812,17 +2812,17 @@ CREATE TABLE `contrexx_module_shop_mail_content` (
   `subject` varchar(255) NOT NULL DEFAULT '',
   `message` text NOT NULL,
   PRIMARY KEY (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=13;
+) ENGINE=MyISAM AUTO_INCREMENT=13;
 CREATE TABLE `contrexx_module_shop_manufacturer` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=3;
+) ENGINE=MyISAM AUTO_INCREMENT=3;
 CREATE TABLE `contrexx_module_shop_option` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `attribute_id` int(10) unsigned NOT NULL,
   `price` decimal(9,2) NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=3;
+) ENGINE=MyISAM AUTO_INCREMENT=3;
 CREATE TABLE `contrexx_module_shop_order_attributes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `item_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -2831,7 +2831,7 @@ CREATE TABLE `contrexx_module_shop_order_attributes` (
   `price` decimal(9,2) unsigned NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`id`),
   KEY `item_id` (`item_id`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_shop_order_items` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `order_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -2843,7 +2843,7 @@ CREATE TABLE `contrexx_module_shop_order_items` (
   `weight` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `order` (`order_id`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_shop_orders` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `customer_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -2885,7 +2885,7 @@ CREATE TABLE `contrexx_module_shop_orders` (
   `billing_email` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `status` (`status`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_shop_payment` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `processor_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -2894,7 +2894,7 @@ CREATE TABLE `contrexx_module_shop_payment` (
   `ord` int(5) unsigned NOT NULL DEFAULT '0',
   `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=16;
+) ENGINE=MyISAM AUTO_INCREMENT=16;
 CREATE TABLE `contrexx_module_shop_payment_processors` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `type` enum('internal','external') NOT NULL DEFAULT 'internal',
@@ -2905,7 +2905,7 @@ CREATE TABLE `contrexx_module_shop_payment_processors` (
   `picture` varchar(100) NOT NULL DEFAULT '',
   `text` text NOT NULL,
   PRIMARY KEY (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=11;
+) ENGINE=MyISAM AUTO_INCREMENT=11;
 CREATE TABLE `contrexx_module_shop_pricelists` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(25) NOT NULL DEFAULT '',
@@ -2919,7 +2919,7 @@ CREATE TABLE `contrexx_module_shop_pricelists` (
   `footer_right` text,
   `categories` text NOT NULL,
   PRIMARY KEY (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=2;
+) ENGINE=MyISAM AUTO_INCREMENT=2;
 CREATE TABLE `contrexx_module_shop_products` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `picture` varchar(4096) DEFAULT NULL,
@@ -2948,7 +2948,7 @@ CREATE TABLE `contrexx_module_shop_products` (
   KEY `group_id` (`group_id`),
   KEY `article_id` (`article_id`),
   FULLTEXT KEY `flags` (`flags`)
-) TYPE=MyISAM AUTO_INCREMENT=7;
+) ENGINE=MyISAM AUTO_INCREMENT=7;
 CREATE TABLE `contrexx_module_shop_products_downloads` (
   `products_downloads_id` int(10) unsigned NOT NULL DEFAULT '0',
   `products_downloads_name` varchar(255) NOT NULL DEFAULT '',
@@ -2956,12 +2956,12 @@ CREATE TABLE `contrexx_module_shop_products_downloads` (
   `products_downloads_maxdays` int(10) unsigned DEFAULT '0',
   `products_downloads_maxcount` int(10) unsigned DEFAULT '0',
   PRIMARY KEY (`products_downloads_id`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_shop_rel_countries` (
   `zone_id` int(10) unsigned NOT NULL DEFAULT '0',
   `country_id` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`country_id`,`zone_id`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_shop_rel_customer_coupon` (
   `code` varchar(20) NOT NULL DEFAULT '',
   `customer_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -2969,29 +2969,29 @@ CREATE TABLE `contrexx_module_shop_rel_customer_coupon` (
   `count` int(10) unsigned NOT NULL DEFAULT '0',
   `amount` decimal(9,2) unsigned NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`code`,`customer_id`,`order_id`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_shop_rel_discount_group` (
   `customer_group_id` int(10) unsigned NOT NULL DEFAULT '0',
   `article_group_id` int(10) unsigned NOT NULL DEFAULT '0',
   `rate` decimal(9,2) NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`customer_group_id`,`article_group_id`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_shop_rel_payment` (
   `zone_id` int(10) unsigned NOT NULL DEFAULT '0',
   `payment_id` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`zone_id`,`payment_id`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_shop_rel_product_attribute` (
   `product_id` int(10) unsigned NOT NULL DEFAULT '0',
   `option_id` int(10) unsigned NOT NULL,
   `ord` int(10) NOT NULL DEFAULT '0',
   PRIMARY KEY (`product_id`,`option_id`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_shop_rel_shipper` (
   `zone_id` int(10) unsigned NOT NULL DEFAULT '0',
   `shipper_id` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`shipper_id`)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_shop_shipment_cost` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `shipper_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -2999,23 +2999,23 @@ CREATE TABLE `contrexx_module_shop_shipment_cost` (
   `fee` decimal(9,2) unsigned DEFAULT NULL,
   `free_from` decimal(9,2) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=5;
+) ENGINE=MyISAM AUTO_INCREMENT=5;
 CREATE TABLE `contrexx_module_shop_shipper` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `ord` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=5;
+) ENGINE=MyISAM AUTO_INCREMENT=5;
 CREATE TABLE `contrexx_module_shop_vat` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `rate` decimal(5,2) unsigned NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=15;
+) ENGINE=MyISAM AUTO_INCREMENT=15;
 CREATE TABLE `contrexx_module_shop_zones` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=4;
+) ENGINE=MyISAM AUTO_INCREMENT=4;
 CREATE TABLE `contrexx_module_u2u_address_list` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL DEFAULT '0',
