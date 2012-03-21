@@ -15,7 +15,7 @@ function refreshIframe() {
 	$J('#iframe_data_form').submit();
 }
 
-document.observe('dom:loaded', function() {
+jQuery(document).ready(function() {
 	refreshIframe();
 });
 
