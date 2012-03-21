@@ -55,6 +55,8 @@ class rssDirectory extends directoryLibrary
     var $rssWebPath;
     var $countFeeds;
 
+    private $act = '';
+    
     /**
     * Constructor
     *
@@ -89,13 +91,19 @@ class rssDirectory extends directoryLibrary
 
         //get settings
         $this->settings = $this->getSettings();
+        
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
 
-        $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='index.php?cmd=directory'>".$_ARRAYLANG['TXT_DIR_CATEGORIES']."</a>
-                                                        ".($this->settings['levels']['value'] == '1' ? "<a href='index.php?cmd=directory&amp;act=levels'>".$_ARRAYLANG['TXT_LEVELS']."</a>" : "")."
-                                                        <a href='index.php?cmd=directory&amp;act=new'>".$_ARRAYLANG['TXT_DIR_CREATE_ENTREE']."</a>
-                                                        <a href='index.php?cmd=directory&amp;act=confirm'>".$_ARRAYLANG['TXT_DIR_CONFIRM_ENTREE']."</a>
-                                                        <a href='index.php?cmd=directory&amp;act=files'>".$_ARRAYLANG['TXT_DIR_FILE_MANAGEMENT']."</a>
-                                                        <a href='index.php?cmd=directory&amp;act=settings'>".$_ARRAYLANG['TXT_DIR_SETTINGS']."</a>");
+        $objTemplate->setVariable("CONTENT_NAVIGATION","
+            <a href='index.php?cmd=directory' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DIR_CATEGORIES']."</a>
+            ".($this->settings['levels']['value'] == '1' ? "<a href='index.php?cmd=directory&amp;act=levels' class='".($this->act == 'levels' ? 'active' : '')."'>".$_ARRAYLANG['TXT_LEVELS']."</a>" : "")."
+            <a href='index.php?cmd=directory&amp;act=new' class='".($this->act == 'new' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DIR_CREATE_ENTREE']."</a>
+            <a href='index.php?cmd=directory&amp;act=confirm' class='".($this->act == 'confirm' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DIR_CONFIRM_ENTREE']."</a>
+            <a href='index.php?cmd=directory&amp;act=files' class='".($this->act == 'files' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DIR_FILE_MANAGEMENT']."</a>
+            <a href='index.php?cmd=directory&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DIR_SETTINGS']."</a>");
     }
 
 
@@ -236,6 +244,8 @@ class rssDirectory extends directoryLibrary
             'ADMIN_CONTENT'             => $this->_objTpl->get(),
             'CONTENT_TITLE'             => $this->pageTitle,
         ));
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
         return $this->_objTpl->get();
     }
 

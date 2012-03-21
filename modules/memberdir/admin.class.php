@@ -38,6 +38,8 @@ class MemberDirManager extends MemberDirLibrary
     var $okMessage='';
     //var $arrSettings = array();
 
+    private $act = '';
+    
     /**
      * Constructor
      *
@@ -62,14 +64,20 @@ class MemberDirManager extends MemberDirLibrary
         $this->langId=$objInit->userFrontendLangId;
 
         parent::__construct();
+        
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
 
-        $objTemplate->setVariable("CONTENT_NAVIGATION","<a href=\"?cmd=memberdir\">".$_ARRAYLANG['TXT_OVERVIEW']."</a>
-                                                        <a href=\"?cmd=memberdir&amp;act=newDir\">".$_ARRAYLANG['TXT_NEW_DIR']."</a>
-                                                        <a href=\"?cmd=memberdir&amp;act=new\">".$_ARRAYLANG['TXT_NEW_MEMBER_SHORT']."</a>
-                                                        <a href=\"?cmd=memberdir&amp;act=import\">".$_ARRAYLANG['TXT_IMPORT']."</a>
-                                                        <a href=\"?cmd=memberdir&amp;act=export&amp;everything=1\">".$_ARRAYLANG['TXT_DOWNLOAD']."</a>
-                                                        <a href=\"?cmd=memberdir&amp;act=placeholders\">".$_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR']."</a>
-                                                        <a href=\"?cmd=memberdir&amp;act=settings\">".$_ARRAYLANG['TXT_SETTINGS']."</a>");
+        $objTemplate->setVariable("CONTENT_NAVIGATION","
+            <a href=\"?cmd=memberdir\" class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_OVERVIEW']."</a>
+            <a href=\"?cmd=memberdir&amp;act=newDir\" class='".($this->act == 'newDir' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEW_DIR']."</a>
+            <a href=\"?cmd=memberdir&amp;act=new\" class='".($this->act == 'new' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEW_MEMBER_SHORT']."</a>
+            <a href=\"?cmd=memberdir&amp;act=import\" class='".($this->act == 'import' ? 'active' : '')."'>".$_ARRAYLANG['TXT_IMPORT']."</a>
+            <a href=\"?cmd=memberdir&amp;act=export&amp;everything=1\" class='".($this->act == 'export' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DOWNLOAD']."</a>
+            <a href=\"?cmd=memberdir&amp;act=placeholders\" class='".($this->act == 'placeholders' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR']."</a>
+            <a href=\"?cmd=memberdir&amp;act=settings\" class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
     }
 
     /**
@@ -202,6 +210,9 @@ class MemberDirManager extends MemberDirLibrary
             'CONTENT_OK_MESSAGE'     => $this->okMessage,
             'ADMIN_CONTENT' => $this->_objTpl->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
     /**

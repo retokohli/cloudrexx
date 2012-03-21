@@ -33,12 +33,25 @@ class calendarManager extends calendarLibrary
     var $pageTitle;
     var $_csvSeparator = ';';
 
+    private $act = '';
+    
     /**
      * PHP 5 Constructor
      */
     function __construct()
     {
         $this->calendarManager();
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
+
+        $objTemplate->setVariable("CONTENT_NAVIGATION","
+            <a href='index.php?cmd=calendar".$this->mandateLink."' class='".($this->act == '' ? 'active' : '')."'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW']." </a>
+            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=new' class='".($this->act == 'new' ? 'active' : '')."'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_ENTRY']." </a>
+            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=cat' class='".($this->act == 'cat' ? 'active' : '')."'> ".$_ARRAYLANG['TXT_CALENDAR_CATEGORIES']." </a>
+            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=placeholder' class='".($this->act == 'placeholder' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER']."</a>
+            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_SETTINGS']." </a>");
     }
 
     /**
@@ -51,13 +64,7 @@ class calendarManager extends calendarLibrary
         parent::__construct($_SERVER["SCRIPT_NAME"]."?cmd=calendar".$this->mandateLink);
         // links
         $this->pageTitle = $_ARRAYLANG['TXT_CALENDAR'];
-
-        $objTemplate->setVariable("CONTENT_NAVIGATION","
-            <a href='index.php?cmd=calendar".$this->mandateLink."'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW']." </a>
-            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=new'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_ENTRY']." </a>
-            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=cat'> ".$_ARRAYLANG['TXT_CALENDAR_CATEGORIES']." </a>
-            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=placeholder'>".$_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER']."</a>
-            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=settings'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_SETTINGS']." </a>");
+        
         $this->showOnlyActive = false;
     }
 
@@ -185,6 +192,9 @@ class calendarManager extends calendarLibrary
             'ADMIN_CONTENT'             => $this->_objTpl->get(),
             'CONTENT_TITLE'             => $this->pageTitle,
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 

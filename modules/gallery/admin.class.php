@@ -45,6 +45,8 @@ class galleryManager extends GalleryLibrary
     var $intMaxEntries = 50;
 
 
+    private $act = '';
+
     /**
      * Constructor    -> Create the menu and copy the template
      *
@@ -83,14 +85,20 @@ class galleryManager extends GalleryLibrary
 
         $this->getSettings();
         $this->checkImages();
-
-        $objTemplate->setVariable('CONTENT_NAVIGATION','    <a href="index.php?cmd=gallery">'.$_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'].'</a>
-                                                            <a href="index.php?cmd=gallery&amp;act=new_cat">'.$_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'].'</a>
-                                                            <a href="index.php?cmd=gallery&amp;act=upload_form">'.$_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD'].'</a>
-                                                            <a href="index.php?cmd=gallery&amp;act=import_picture">'.$_ARRAYLANG['TXT_GALLERY_MENU_IMPORT'].'</a>
-                                                            <a href="index.php?cmd=gallery&amp;act=validate_form&amp;type='.$this->arrSettings['validation_standard_type'].'">'.$_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'].'</a>
-                                                            <a href="index.php?cmd=gallery&amp;act=settings">'.$_ARRAYLANG['TXT_GALLERY_MENU_SETTINGS'].'</a>');
+        
         parent::__construct();
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
+
+        $objTemplate->setVariable('CONTENT_NAVIGATION','
+            <a href="index.php?cmd=gallery" class="'.($this->act == '' ? 'active' : '').'">'.$_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'].'</a>
+            <a href="index.php?cmd=gallery&amp;act=new_cat" class="'.($this->act == 'new_cat' ? 'active' : '').'">'.$_ARRAYLANG['TXT_GALLERY_MENU_NEW_CATEGORY'].'</a>
+            <a href="index.php?cmd=gallery&amp;act=upload_form" class="'.($this->act == 'upload_form' ? 'active' : '').'">'.$_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD'].'</a>
+            <a href="index.php?cmd=gallery&amp;act=import_picture" class="'.($this->act == 'import_picture' ? 'active' : '').'">'.$_ARRAYLANG['TXT_GALLERY_MENU_IMPORT'].'</a>
+            <a href="index.php?cmd=gallery&amp;act=validate_form&amp;type='.$this->arrSettings['validation_standard_type'].'" class="'.($this->act == 'validate_form' ? 'active' : '').'">'.$_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'].'</a>
+            <a href="index.php?cmd=gallery&amp;act=settings" class="'.($this->act == 'settings' ? 'active' : '').'">'.$_ARRAYLANG['TXT_GALLERY_MENU_SETTINGS'].'</a>');
     }
 
 
@@ -352,6 +360,9 @@ class galleryManager extends GalleryLibrary
             'CONTENT_STATUS_MESSAGE'    => $this->strErrMessage,
             'ADMIN_CONTENT'             => $this->_objTpl->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 
@@ -2280,7 +2291,7 @@ class galleryManager extends GalleryLibrary
         // replace $change with ''
         $change = array('+');
         // replace $signs1 with $signs
-        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
+        $signs1 = array(' ', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½');
         $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
 
         foreach ($change as $str) {

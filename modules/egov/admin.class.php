@@ -85,7 +85,8 @@ class eGov extends eGovLibrary
     private $_strErrMessage = '';
     private $_strOkMessage = '';
 
-
+    private $act = '';
+    
     function __construct()
     {
         global $_ARRAYLANG, $objTemplate, $objInit;
@@ -109,11 +110,16 @@ class eGov extends eGovLibrary
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->imagePath = ASCMS_MODULE_IMAGE_WEB_PATH;
-        $this->langId=$objInit->userFrontendLangId;
+        $this->langId=$objInit->userFrontendLangId;        
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
 
-        $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='index.php?cmd=egov'>".$_ARRAYLANG['TXT_ORDERS']."</a>
-                                                        <a href='index.php?cmd=egov&amp;act=products'>".$_ARRAYLANG['TXT_PRODUCTS']."</a>
-                                                        <a href='index.php?cmd=egov&amp;act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
+        $objTemplate->setVariable("CONTENT_NAVIGATION","
+            <a href='index.php?cmd=egov' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_ORDERS']."</a>
+            <a href='index.php?cmd=egov&amp;act=products' class='".($this->act == 'products' ? 'active' : '')."'>".$_ARRAYLANG['TXT_PRODUCTS']."</a>
+            <a href='index.php?cmd=egov&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
     }
 
 
@@ -164,6 +170,9 @@ class eGov extends eGovLibrary
             'CONTENT_STATUS_MESSAGE' => $this->_strErrMessage,
             'ADMIN_CONTENT' => $this->objTemplate->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 
