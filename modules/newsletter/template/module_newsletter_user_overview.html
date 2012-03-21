@@ -122,7 +122,8 @@ var cxDataList = function() {
         htmlList = $('#tbluserlist tbody');
         htmlList.empty();
 
-        response.user.each(function(user,i){
+        $(response.user).each(function(i){
+            user = response.user[i];
             userFunctions = $(htmlUserFunctions);
     
             if (user.type == 'newsletter') {
