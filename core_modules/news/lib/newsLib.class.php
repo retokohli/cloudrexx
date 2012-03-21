@@ -575,7 +575,7 @@ class newsLibrary
         return sprintf($htmlImgTag, contrexx_raw2xhtml($src), $alt);
     }
 
-    protected function parseImageThumbnail($imageSource, $thumbnailSource, $altText, $newsUrl)
+    public function parseImageThumbnail($imageSource, $thumbnailSource, $altText, $newsUrl)
     {
         $image = '';
         $imageLink = '';
