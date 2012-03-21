@@ -45,17 +45,17 @@
     <body>
         <div id="page">
             <div id="header">
-                <div id="logo_part"><a id="logo" href="index.php?section=home" title="Contrexx"></a></div>
+                <div id="logo_part"><a id="logo" href="{NODE_2}" title="Contrexx"></a></div>
                 <div id="nav-add">
                     <ul>
-                        <li><a href="index.php?section=sitemap" title="Sitemap">Sitemap</a></li>
-                        <li><a href="index.php?section=contact&amp;cmd=7" title="Kontakt">Kontakt</a></li>
+                        <li><a href="{NODE_11}">Sitemap</a></li>
+                        <li><a href="{NODE_27}" title="Kontakt">Kontakt</a></li>
                         <li><a href="javascript:popdown('lang_navigation');" id="select_lang" title="Sprache">Sprache</a></li>
                         <!-- BEGIN access_logged_out -->
-                        <li id="n-register"><a href="index.php?section=access&amp;cmd=signup" class="register inactive" title="Registrieren">Registrieren</a></li>
-                        <li id="n-login"><a href="index.php?section=login" class="login inactive" title="Login">Login</a></li>
+                        <li id="n-register"><a href="{NODE_18}" class="register inactive" title="Registrieren">Registrieren</a></li>
+                        <li id="n-login"><a href="{NODE_6}" class="login inactive" title="Login">Login</a></li>
                         <!-- END access_logged_out --> <!-- BEGIN access_logged_in -->
-                        <li id="n-user"><a href="index.php?section=access" class="user inactive" title="logged in as {ACCESS_USER_USERNAME}">{ACCESS_USER_USERNAME}</a></li>
+                        <li id="n-user"><a href="{NODE_29}" class="user inactive" title="logged in as {ACCESS_USER_USERNAME}">{ACCESS_USER_USERNAME}</a></li>
                         <li id="n-logout"><a href="index.php?section=logout" class="logout inactive" title="Logout">Logout</a></li>
                         <!-- END access_logged_in --> <!-- Loginbox END --> </ul>
                 </div>
