@@ -38,6 +38,7 @@ class LivecamManager extends LivecamLibrary
         $this->__construct();
     }
 
+    private $act = '';
     /**
     * PHP5 constructor
     *
@@ -65,9 +66,14 @@ class LivecamManager extends LivecamLibrary
         }
         */
 
-        $objTemplate->setVariable("CONTENT_NAVIGATION", "<a href='index.php?cmd=livecam'>".$_ARRAYLANG['TXT_CAMS']."</a>".
-                                   "<a href='index.php?cmd=livecam&amp;act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
 
+        $objTemplate->setVariable("CONTENT_NAVIGATION", "
+            <a href='index.php?cmd=livecam' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CAMS']."</a>"."
+            <a href='index.php?cmd=livecam&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
     }
 
     /**
@@ -115,6 +121,9 @@ class LivecamManager extends LivecamLibrary
             'CONTENT_STATUS_MESSAGE'    => $this->_strErrMessage,
             'ADMIN_CONTENT'                => $this->_objTpl->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
     /**

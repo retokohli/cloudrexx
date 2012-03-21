@@ -50,6 +50,8 @@ class Market extends marketLibrary
         $this->__construct();
     }
 
+    private $act = '';
+    
     /**
     * PHP5 constructor
     *
@@ -66,13 +68,18 @@ class Market extends marketLibrary
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->mediaPath = ASCMS_MARKET_MEDIA_PATH . '/';
         $this->mediaWebPath = ASCMS_MARKET_MEDIA_WEB_PATH . '/';
-        $this->settings = $this->getSettings();
+        $this->settings = $this->getSettings();        
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG, $_CORELANG;
 
-        $objTemplate->setVariable("CONTENT_NAVIGATION", "<a href='index.php?cmd=market'>".$_CORELANG['TXT_OVERVIEW']."</a>
-                                                        <a href='index.php?cmd=market&act=addCategorie'>".$_CORELANG['TXT_NEW_CATEGORY']."</a>
-                                                        <a href='index.php?cmd=market&act=addEntry'>".$_ARRAYLANG['TXT_NEW_ENTRY']."</a>
-                                                        <a href='index.php?cmd=market&act=entries'>".$_ARRAYLANG['TXT_ENTRIES']."</a>
-                                                        <a href='index.php?cmd=market&act=settings'>".$_CORELANG['TXT_SETTINGS']."</a>");
+        $objTemplate->setVariable("CONTENT_NAVIGATION", "
+            <a href='index.php?cmd=market' class='".($this->act == '' ? 'active' : '')."'>".$_CORELANG['TXT_OVERVIEW']."</a>
+            <a href='index.php?cmd=market&act=addCategorie' class='".($this->act == 'addCategorie' ? 'active' : '')."'>".$_CORELANG['TXT_NEW_CATEGORY']."</a>
+            <a href='index.php?cmd=market&act=addEntry' class='".($this->act == 'addEntry' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEW_ENTRY']."</a>
+            <a href='index.php?cmd=market&act=entries' class='".($this->act == 'entries' ? 'active' : '')."'>".$_ARRAYLANG['TXT_ENTRIES']."</a>
+            <a href='index.php?cmd=market&act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_CORELANG['TXT_SETTINGS']."</a>");
     }
 
     /**
@@ -161,6 +168,8 @@ class Market extends marketLibrary
             'ADMIN_CONTENT'                => $this->_objTpl->get(),
             'CONTENT_TITLE'                => $this->_pageTitle,
         ));
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
         return $this->_objTpl->get();
     }
 

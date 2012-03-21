@@ -45,7 +45,9 @@ class RecommendManager extends RecommendLibrary
     {
         $this->__construct();
     }
-    
+
+    private $act = '';
+
     /**
      * PHP5 constructor
      *
@@ -58,9 +60,13 @@ class RecommendManager extends RecommendLibrary
         
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/recommend/template');
         CSRF::add_placeholder($this->_objTpl);
-        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);  
-        
-        $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=recommend'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);       
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
+
+        $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=recommend' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
     }
     
     /**
@@ -88,7 +94,8 @@ class RecommendManager extends RecommendLibrary
             'ADMIN_CONTENT'             => $this->_objTpl->get()
         ));
 
-
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
     
     /**
