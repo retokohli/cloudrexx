@@ -251,6 +251,21 @@ CREATE TABLE `contrexx_content_navigation_history` (
   PRIMARY KEY (`id`),
   KEY `catid` (`catid`)
 ) ENGINE=MyISAM;
+CREATE TABLE `contrexx_core_country` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `alpha2` char(2) NOT NULL DEFAULT '',
+  `alpha3` char(3) NOT NULL DEFAULT '',
+  `ord` int(5) unsigned NOT NULL DEFAULT '0',
+  `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=240;
+CREATE TABLE `contrexx_core_mail_template` (
+  `key` tinytext NOT NULL,
+  `section` tinytext,
+  `text_id` int(10) unsigned NOT NULL,
+  `html` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `protected` tinyint(1) unsigned NOT NULL DEFAULT '0'
+) ENGINE=MyISAM;
 CREATE TABLE `contrexx_core_setting` (
   `section` tinytext NOT NULL,
   `name` tinytext NOT NULL,
