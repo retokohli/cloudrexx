@@ -611,7 +611,8 @@ class newsletter extends NewsletterLib
 						$newstext = substr(ltrim(strip_tags($objNews->fields['newscontent'])), 0, 800);
 						$newstext .= "[....]";
 						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
-						$newslink = $this->newsletterUri.ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET."/index.php?section=news&cmd=details&newsid=".$objNews->fields['newsid'];
+// TODO: use new URL-format
+						$newslink = $this->newsletterUri.ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET."/de/index.php?section=news&cmd=details&newsid=".$objNews->fields['newsid'];
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {
 							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 						} else {
@@ -664,7 +665,8 @@ class newsletter extends NewsletterLib
 						$newstext = substr(ltrim(strip_tags($objNews->fields['newscontent'])), 0, 800);
 						$newstext .= "[....]";
 						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
-						$newslink = $this->newsletterUri.ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET."/index.php?section=news&cmd=details&newsid=".$objNews->fields['newsid'];
+// TODO: use new URL-format
+						$newslink = $this->newsletterUri.ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET."/de/index.php?section=news&cmd=details&newsid=".$objNews->fields['newsid'];
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {
 							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 						} else {
@@ -741,7 +743,8 @@ class newsletter extends NewsletterLib
 						$newstext = substr(ltrim(strip_tags($objNews->fields['text'])), 0, 800);
 						$newstext .= "[....]";
 						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
-						$newslink = $this->newsletterUri.ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET."/index.php?section=news&cmd=details&newsid=".$objNews->fields['id'];
+// TODO: use new URL-format
+						$newslink = $this->newsletterUri.ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET."/de/index.php?section=news&cmd=details&newsid=".$objNews->fields['id'];
 						if ($objNews->fields['userid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['userid']))) {
 							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 						} else {
@@ -773,7 +776,8 @@ class newsletter extends NewsletterLib
 						$newstext = substr(ltrim(strip_tags($objNews->fields['text'])), 0, 800);
 						$newstext .= "[....]";
 						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
-						$newslink = $this->newsletterUri.ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET."/index.php?section=news&cmd=details&newsid=".$objNews->fields['id'];
+// TODO: use new URL-format
+						$newslink = $this->newsletterUri.ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET."/de/index.php?section=news&cmd=details&newsid=".$objNews->fields['id'];
 						if ($objNews->fields['userid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['userid']))) {
 							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 						} else {
@@ -3052,6 +3056,8 @@ class newsletter extends NewsletterLib
             $newsletterUserData,
             $NewsletterID
         );
+        LinkGenerator::parseTemplate($NewsletterBody_HTML);
+
         $NewsletterBody_TEXT = $this->ParseNewsletter(
             $subject,
             $content_text,
@@ -3062,6 +3068,7 @@ class newsletter extends NewsletterLib
             $NewsletterID
         );
         $NewsletterBody_TEXT = wordwrap($NewsletterBody_TEXT, $break);
+        LinkGenerator::parseTemplate($NewsletterBody_TEXT);
 
         // Work around an oddity in phpmailer: it detects
         // whether it's multipart/alternative by checking
@@ -3084,6 +3091,7 @@ class newsletter extends NewsletterLib
                 $newsletterUserData,
                 $NewsletterID
             );
+            LinkGenerator::parseTemplate($NewsletterBody_TEXT);
         }
 
         $mail = new phpmailer();
@@ -3362,7 +3370,8 @@ class newsletter extends NewsletterLib
         }
         // lets prepare all links for tracker before we replace placeholders
         if ($format == 'html') {
-            $content_text = $this->_prepareNewsletterLinksForSend($NewsletterID, $content_text, ($userData['type'] == 'access' ? $userData['id'] : $userData['email']));
+// TODO: migrate tracker to new URL-format
+            //$content_text = $this->_prepareNewsletterLinksForSend($NewsletterID, $content_text, ($userData['type'] == 'access' ? $userData['id'] : $userData['email']));
         }
 
 // TODO: Both $arrRecipientTitles and $title are never used
@@ -3785,7 +3794,8 @@ class newsletter extends NewsletterLib
 						$newstext = substr(ltrim(strip_tags($objNews->fields['newscontent'])), 0, 800);
 						$newstext .= "[....]";
 						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
-						$newslink = /*$this->newsletterUri.*/ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET."/index.php?section=news&cmd=details&newsid=".$objNews->fields['newsid'];
+// TODO: use new URL-format
+						$newslink = /*$this->newsletterUri.*/ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET."/de/index.php?section=news&cmd=details&newsid=".$objNews->fields['newsid'];
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {
 							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 						} else {
@@ -3840,7 +3850,8 @@ class newsletter extends NewsletterLib
 						$newstext = substr(ltrim(strip_tags($objNews->fields['newscontent'])), 0, 800);
 						$newstext .= "[....]";
 						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
-						$newslink = $this->newsletterUri.ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET."/index.php?section=news&cmd=details&newsid=".$objNews->fields['newsid'];
+// TODO: use new URL-format
+						$newslink = $this->newsletterUri.ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET."/de/index.php?section=news&cmd=details&newsid=".$objNews->fields['newsid'];
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {
 							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 						} else {
@@ -5787,7 +5798,8 @@ function MultiAction() {
                     $matches[$attrKey][$i] = preg_replace("/=\"\s*/i", "=\"", $matches[$attrKey][$i]);
                     // replace href attribute
                     if (isset($arrLinks[$linkId])) {
-                        $newUrl = $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/index.php?section=newsletter&cmd=tracker&n='.$MailId.'&l='.$linkId.'&r='.urlencode($UserId).'&s='.urlencode($url);
+// TODO: use new URL-format
+                        $newUrl = $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/de/index.php?section=newsletter&cmd=tracker&n='.$MailId.'&l='.$linkId.'&r='.urlencode($UserId).'&s='.urlencode($url);
                         $matches[$attrKey][$i] = preg_replace("/href=\"https?:\/\/[^\"]+\"/i", "href=\"http://".$newUrl."\"", $matches[$attrKey][$i]);
                     }
                     $result = preg_replace("/".self::_prepareForRegExp($matches[$fullKey][$i])."/i", "<a ".$matches[$attrKey][$i].">".$matches[$textKey][$i]."</a>", $result, 1);
