@@ -1941,3 +1941,23 @@ textarea {
 .char_list a{
     font-weight: normal;
 }
+
+form label {
+    float: left;
+    width: 200px;
+    clear: left;
+    font-weight: bold;
+}
+
+form input[type="text"],
+form input[type="password"],
+form textarea,
+form select {
+    border: 1px #c5c5c5 solid;
+    width: 230px;
+    margin-top: 10px;
+    padding: 6px;
+    resize: none;
+    float: none;
+    clear: right;
+}
