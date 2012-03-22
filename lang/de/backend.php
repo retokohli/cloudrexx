@@ -1412,6 +1412,7 @@ $_ARRAYLANG['TXT_CORE_DRAFT'] = "Entwurf";
 $_ARRAYLANG['TXT_CORE_SAVED_AS_DRAFT'] = "Seite als Entwurf gespeichert";
 $_ARRAYLANG['TXT_CORE_SAVED'] = "Seite gespeichert";
 $_ARRAYLANG['TXT_CORE_DRAFT_SUBMITTED'] = "Entwurf zur Ver&ouml;ffentlichung freigegeben";
+$_ARRAYLANG['TXT_CORE_PUBLISH_DRAFT'] = "Entwurf ver&ouml;ffentlichen";
 
 $_ARRAYLANG['TXT_CACHING_STATUS'] = "Caching aktiviert";
 $_ARRAYLANG['TXT_CONTENT_TYPE_REDIRECT'] = "Weiterleitung";
@@ -1469,7 +1470,7 @@ $_ARRAYLANG['TXT_CORE_CM_NAVIGATION'] = 'Navigation';
 $_ARRAYLANG['TXT_CORE_CM_LINK_TARGET'] = 'Linkziel';
 $_ARRAYLANG['TXT_CORE_CM_LINK_TARGET_INO'] = 'Seite aus der Navigation in einem neuen/angegebenen Fenster &ouml;ffnen.';
 $_ARRAYLANG['TXT_CORE_CM_SLUG'] = 'URI-Slug';
-$_ARRAYLANG['TXT_CORE_CM_SLUG_INFO'] = 'Wird zum Aufbau des Seitenlinks verwendet. Beispiel: example.org/Leistungen/<strong>Expressversand</strong>';
+$_ARRAYLANG['TXT_CORE_CM_SLUG_INFO'] = 'Wird zum Aufbau des Seitenlinks verwendet. Beispiel: %1$s/<strong id="liveSlug">Expressversand</strong>';
 $_ARRAYLANG['TXT_CORE_CM_ALIAS'] = 'Aliasse';
 $_ARRAYLANG['TXT_CORE_CM_ALIAS_INFO'] = 'URLs unter welchen diese Seite zusätzlich (z.B. als Landing-page) erreichbar ist';
 $_ARRAYLANG['TXT_CORE_CM_CSS_NAV_CLASS'] = 'Zus&auml;tzliche CSS-Navigationsklasse';

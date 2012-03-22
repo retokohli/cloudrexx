@@ -1104,6 +1104,7 @@ $_ARRAYLANG['TXT_CORE_DRAFT'] = "draft";
 $_ARRAYLANG['TXT_CORE_SAVED_AS_DRAFT'] = "Saved as draft";
 $_ARRAYLANG['TXT_CORE_SAVED'] = "Saved";
 $_ARRAYLANG['TXT_CORE_DRAFT_SUBMITTED'] = "Draft submitted for publishing";
+$_ARRAYLANG['TXT_CORE_PUBLISH_DRAFT'] = "Publish draft";
 
 $_ARRAYLANG['TXT_ACCESS_GROUP_NAME_INVALID'] = "Der gewählte Gruppenname ist nicht gültig! Wählen Sie bitte einen anderen Namen für die Gruppe.";
 $_ARRAYLANG['TXT_ACCESS_MENU_MULTI'] = "Menu mit Mehrfachauswahl";
@@ -1398,7 +1399,7 @@ $_ARRAYLANG['TXT_CORE_CM_NAVIGATION'] = 'Navigation';
 $_ARRAYLANG['TXT_CORE_CM_LINK_TARGET'] = 'Link Target';
 $_ARRAYLANG['TXT_CORE_CM_LINK_TARGET_INO'] = 'Open the page in a new/specified window.';
 $_ARRAYLANG['TXT_CORE_CM_SLUG'] = 'URI-Slug';
-$_ARRAYLANG['TXT_CORE_CM_SLUG_INFO'] = 'Used as the page\'s name in its URI. Example: example.com/Services/<strong>ExpressDelivery</strong>';
+$_ARRAYLANG['TXT_CORE_CM_SLUG_INFO'] = 'Used as the page\'s name in its URI. Example: %1$s/<strong id="liveSlug">ExpressDelivery</strong>';
 $_ARRAYLANG['TXT_CORE_CM_CSS_NAV_CLASS'] = 'Additional CSS Navigation Class';
 $_ARRAYLANG['TXT_CORE_CM_CSS_NAV_CLASS_INFO'] = 'The specified value can be accessed as [[CSS_NAME]] in navigation contexts.';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND'] = 'Restrict Read (Frontend) Access to This Page';
