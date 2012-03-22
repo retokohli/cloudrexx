@@ -36,6 +36,7 @@ class GuestbookManager extends GuestbookLibrary
     public $langId;
     public $arrSettings = array();
 
+    private $act = '';
 
     /**
      * constructor
@@ -48,12 +49,18 @@ class GuestbookManager extends GuestbookLibrary
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->imagePath = ASCMS_MODULE_IMAGE_WEB_PATH;
-        $this->langId=$objInit->userFrontendLangId;
-        $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=guestbook'>".$_ARRAYLANG['TXT_OVERVIEW']."</a>
-                                                        <a href='?cmd=guestbook&amp;act=add'>".$_ARRAYLANG['TXT_ADD_GUESTBOOK_ENTRY']."</a>
-                                                        <a href='?cmd=guestbook&amp;act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
+        $this->langId=$objInit->userFrontendLangId;        
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_guestbook");
         $this->getSettings();
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
+
+        $objTemplate->setVariable("CONTENT_NAVIGATION","
+            <a href='?cmd=guestbook' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_OVERVIEW']."</a>
+            <a href='?cmd=guestbook&amp;act=add' class='".($this->act == 'add' ? 'active' : '')."'>".$_ARRAYLANG['TXT_ADD_GUESTBOOK_ENTRY']."</a>
+            <a href='?cmd=guestbook&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
     }
 
 
@@ -120,6 +127,9 @@ class GuestbookManager extends GuestbookLibrary
             'CONTENT_STATUS_MESSAGE'    => $this->strErrMessage,
             'ADMIN_CONTENT' => $this->_objTpl->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 

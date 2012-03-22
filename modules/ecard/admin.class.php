@@ -35,6 +35,8 @@ class ecard
     public $strErrMessage = '';
     public $strOkMessage = '';
 
+    private $act = '';
+    
     /**
      * PHP5 constructor
      *
@@ -47,11 +49,16 @@ class ecard
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/ecard/template');
         CSRF::add_placeholder($this->_objTpl);
-        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);        
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
+
         $objTemplate->setVariable(
             'CONTENT_NAVIGATION',
-            '<a href="index.php?cmd=ecard">'.$_ARRAYLANG['TXT_MOTIVE_SELECTION'].
-            '</a><a href="index.php?cmd=ecard&amp;act=settings">'.$_ARRAYLANG['TXT_SETTINGS'].'</a>'
+            '<a href="index.php?cmd=ecard" class="'.($this->act == '' ? 'active' : '').'">'.$_ARRAYLANG['TXT_MOTIVE_SELECTION'].
+            '</a><a href="index.php?cmd=ecard&amp;act=settings" class="'.($this->act == 'settings' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS'].'</a>'
         );
     }
 
@@ -84,7 +91,10 @@ class ecard
             'ADMIN_CONTENT' => $this->_objTpl->get(),
             'CONTENT_TITLE' => $this->_pageTitle,
         ));
-
+        
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
+        
         return $this->_objTpl->get();
     }
 

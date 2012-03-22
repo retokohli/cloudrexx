@@ -44,6 +44,8 @@ class feedManager extends feedLibrary
      */
     public $_objNewsML;
 
+    private $act = '';
+    
     function __construct()
     {
         global  $_ARRAYLANG, $objTemplate, $_CONFIG;
@@ -54,18 +56,22 @@ class feedManager extends feedLibrary
 
         if (isset($_GET['act']) && $_GET['act'] == 'settings' && isset($_POST['save'])) {
             $this->_saveSettings();
-        }
-
-        // links
-        $objTemplate->setVariable("CONTENT_NAVIGATION", "
-            <a href='?cmd=feed' >".$_ARRAYLANG['TXT_FEED_NEWS_FEED']."</a>
-            ".($_CONFIG['feedNewsMLStatus'] == '1' ? "<a href='?cmd=feed&amp;act=newsML'>NewsML</a>" : "")."
-            <a href='?cmd=feed&amp;act=category'>".$_ARRAYLANG['TXT_FEED_CATEGORIES']."</a>
-            <a href='?cmd=feed&amp;act=settings'>".$_ARRAYLANG['TXT_FEED_SETTINGS']."</a>
-        ");
+        }       
 
         //feed path
         $this->feedpath = ASCMS_FEED_PATH . '/';
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG, $_CONFIG;
+
+        // links
+        $objTemplate->setVariable("CONTENT_NAVIGATION", "
+            <a href='?cmd=feed' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_FEED_NEWS_FEED']."</a>
+            ".($_CONFIG['feedNewsMLStatus'] == '1' ? "<a href='?cmd=feed&amp;act=newsML' class='".($this->act == 'newsML' ? 'active' : '')."'>NewsML</a>" : "")."
+            <a href='?cmd=feed&amp;act=category' class='".($this->act == 'category' ? 'active' : '')."'>".$_ARRAYLANG['TXT_FEED_CATEGORIES']."</a>
+            <a href='?cmd=feed&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_FEED_SETTINGS']."</a>
+        ");
     }
 
     // GET PAGE
@@ -118,6 +124,9 @@ class feedManager extends feedLibrary
         unset($_SESSION['strOkMessage']);
         unset($_SESSION['strErrMessage']);
 
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
+        
         $objTemplate->setVariable('ADMIN_CONTENT', $this->_objTpl->get());
     }
 

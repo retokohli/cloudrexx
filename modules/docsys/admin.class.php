@@ -34,7 +34,8 @@ class docSysManager extends docSysLibrary
     var $strOkMessage = '';
     var $langId;
 
-
+    private $act = '';
+    
     /**
     * Constructor
     *
@@ -47,14 +48,18 @@ class docSysManager extends docSysLibrary
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/docsys/template');
         CSRF::add_placeholder($this->_objTpl);
-        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
-        $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=docsys".MODULE_INDEX."'>".$_ARRAYLANG['TXT_DOC_SYS_MENU_OVERVIEW']."</a>
-                                                      <a href='?cmd=docsys".MODULE_INDEX."&amp;act=add'>".$_ARRAYLANG['TXT_CREATE_DOCUMENT']."</a>
-                                                      <a href='?cmd=docsys".MODULE_INDEX."&amp;act=cat'>".$_ARRAYLANG['TXT_CATEGORY_MANAGER']."</a>");
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);       
 
         $this->pageTitle = $_ARRAYLANG['TXT_DOC_SYS_MANAGER'];
         $this->langId=$objInit->userFrontendLangId;
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
+
+        $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=docsys".MODULE_INDEX."' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DOC_SYS_MENU_OVERVIEW']."</a>
+                                                      <a href='?cmd=docsys".MODULE_INDEX."&amp;act=add' class='".($this->act == 'add' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CREATE_DOCUMENT']."</a>
+                                                      <a href='?cmd=docsys".MODULE_INDEX."&amp;act=cat' class='".($this->act == 'cat' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CATEGORY_MANAGER']."</a>");
     }
 
 
@@ -115,6 +120,9 @@ class docSysManager extends docSysLibrary
             'CONTENT_STATUS_MESSAGE'    => $this->strErrMessage,
             'ADMIN_CONTENT'                => $this->_objTpl->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
     /**

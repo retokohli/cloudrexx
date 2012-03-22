@@ -52,6 +52,8 @@ class Auction extends auctionLibrary
         $this->__construct();
     }
 
+    private $act = '';
+    
     /**
     * PHP5 constructor
     *
@@ -67,14 +69,18 @@ class Auction extends auctionLibrary
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->mediaPath = ASCMS_AUCTION_UPLOAD_PATH . '/';
         $this->mediaWebPath = ASCMS_AUCTION_UPLOAD_WEB_PATH . '/';
-        $this->settings = $this->getSettings();
+        $this->settings = $this->getSettings();        
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG, $_CORELANG;
 
         $objTemplate->setVariable("CONTENT_NAVIGATION",
-            "<a href='index.php?cmd=auction'>".$_CORELANG['TXT_OVERVIEW']."</a>
-            <a href='index.php?cmd=auction&act=addCategorie'>".$_CORELANG['TXT_NEW_CATEGORY']."</a>
-            <a href='index.php?cmd=auction&act=addEntry'>".$_ARRAYLANG['TXT_NEW_ENTRY']."</a>
-            <a href='index.php?cmd=auction&act=entries'>".$_ARRAYLANG['TXT_ENTRIES']."</a>
-            <a href='index.php?cmd=auction&act=settings'>".$_CORELANG['TXT_SETTINGS']."</a>");
+            "<a href='index.php?cmd=auction' class='".($this->act == '' ? 'active' : '')."'>".$_CORELANG['TXT_OVERVIEW']."</a>
+            <a href='index.php?cmd=auction&act=addCategorie' class='".($this->act == 'addCategorie' ? 'active' : '')."'>".$_CORELANG['TXT_NEW_CATEGORY']."</a>
+            <a href='index.php?cmd=auction&act=addEntry' class='".($this->act == 'addEntry' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEW_ENTRY']."</a>
+            <a href='index.php?cmd=auction&act=entries' class='".($this->act == 'entries' ? 'active' : '')."'>".$_ARRAYLANG['TXT_ENTRIES']."</a>
+            <a href='index.php?cmd=auction&act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_CORELANG['TXT_SETTINGS']."</a>");
     }
 
     /**
@@ -155,6 +161,10 @@ class Auction extends auctionLibrary
             'ADMIN_CONTENT'                => $this->_objTpl->get(),
             'CONTENT_TITLE'                => $this->_pageTitle,
         ));
+        
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
+
         return $this->_objTpl->get();
     }
 
