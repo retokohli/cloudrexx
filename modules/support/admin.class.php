@@ -268,6 +268,8 @@ class Support
         $this->__construct();
     }
 
+    private $act = '';
+    
     /**
      * Constructor (PHP5)
      * @global  Template    $objTemplate    PEAR Sigma Template
@@ -291,20 +293,7 @@ class Support
         $this->objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
         CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-        $this->objTemplate->loadTemplateFile('module_support_main.html');
-        $objTemplate->setVariable(
-            'CONTENT_NAVIGATION',
-                '<a href="index.php?cmd=support&amp;act=ticketTable">'.
-                $_ARRAYLANG['TXT_SUPPORT_TICKETS'].'</a>'.
-                '<a href="index.php?cmd=support&amp;act=categoriesEdit">'.
-                $_ARRAYLANG['TXT_SUPPORT_CATEGORIES'].'</a>'.
-                '<a href="index.php?cmd=support&amp;act=infoFieldsEdit">'.
-                $_ARRAYLANG['TXT_SUPPORT_INFO_FIELDS'].'</a>'.
-                '<a href="index.php?cmd=support&amp;act=messageEdit">'.
-                $_ARRAYLANG['TXT_SUPPORT_TICKET_NEW'].'</a>'.
-                '<a href="index.php?cmd=support&amp;act=settings">'.
-                $_ARRAYLANG['TXT_SETTINGS'].'</a>'
-        );
+        $this->objTemplate->loadTemplateFile('module_support_main.html');        
 
         $this->supportLanguageId = (!empty($_REQUEST['supportLanguageId'])
             ?   $_REQUEST['supportLanguageId']
@@ -414,6 +403,24 @@ class Support
         $this->objInfoFields =
             new InfoFields($this->supportLanguageId);
     }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
+
+        $objTemplate->setVariable(
+            'CONTENT_NAVIGATION',
+                '<a href="index.php?cmd=support&amp;act=ticketTable" class="'.($this->act == 'ticketTable' ? 'active' : '').'">'.
+                $_ARRAYLANG['TXT_SUPPORT_TICKETS'].'</a>'.
+                '<a href="index.php?cmd=support&amp;act=categoriesEdit" class="'.($this->act == 'categoriesEdit' ? 'active' : '').'">'.
+                $_ARRAYLANG['TXT_SUPPORT_CATEGORIES'].'</a>'.
+                '<a href="index.php?cmd=support&amp;act=infoFieldsEdit" class="'.($this->act == 'infoFieldsEdit' ? 'active' : '').'">'.
+                $_ARRAYLANG['TXT_SUPPORT_INFO_FIELDS'].'</a>'.
+                '<a href="index.php?cmd=support&amp;act=messageEdit" class="'.($this->act == 'messageEdit' ? 'active' : '').'">'.
+                $_ARRAYLANG['TXT_SUPPORT_TICKET_NEW'].'</a>'.
+                '<a href="index.php?cmd=support&amp;act=settings" class="'.($this->act == 'settings' ? 'active' : '').'">'.
+                $_ARRAYLANG['TXT_SETTINGS'].'</a>'
+        );
+    }
 
 
     /**
@@ -515,6 +522,9 @@ class Support
             'CONTENT_STATUS_MESSAGE' => $this->strErrMessage,
             'ADMIN_CONTENT'          => $this->objTemplate->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 

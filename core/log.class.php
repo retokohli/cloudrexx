@@ -28,6 +28,8 @@ class logmanager
 {
     var $statusMessage = "";
 
+    private $act = '';
+    
     /**
     * Constructor
     *
@@ -36,11 +38,15 @@ class logmanager
     */
     function __construct()
     {
-        global $_CORELANG, $objTemplate;
+        global $_CORELANG, $objTemplate;        
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_CORELANG;
 
         $objTemplate->setVariable(array(
             'CONTENT_TITLE'      => $_CORELANG['TXT_LOG_ADMINISTRATION'],
-            'CONTENT_NAVIGATION' => "<a href='?cmd=log'>[".$_CORELANG['TXT_LOG_INDEX']."]</a>"
+            'CONTENT_NAVIGATION' => "<a href='?cmd=log' class='".($this->act == '' ? 'active' : '')."'>[".$_CORELANG['TXT_LOG_INDEX']."]</a>"
         ));
     }
 
@@ -71,6 +77,9 @@ class logmanager
             'CONTENT_TITLE'                => $_CORELANG['TXT_LOG_ADMINISTRATION'],
             'CONTENT_STATUS_MESSAGE'    => trim($this->statusMessage)
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 
