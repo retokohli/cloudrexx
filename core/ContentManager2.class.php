@@ -14,6 +14,8 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
 require ASCMS_CORE_PATH.'/BackendTable.class.php';
 require ASCMS_CORE_PATH.'/Module.class.php';
 require ASCMS_CORE_PATH.'/routing/LanguageExtractor.class.php';
+require_once 'JSONPage.class.php';
+
 
 class ContentManagerException extends ModuleException {}
 
@@ -54,7 +56,7 @@ class ContentManager extends Module {
 	}
 
 	protected function actRenderCM() {
-        global $_ARRAYLANG;
+            global $_ARRAYLANG, $_CORELANG;
 
         JS::activate('cx');
         JS::activate('ckeditor');
@@ -63,10 +65,12 @@ class ContentManager extends Module {
         JS::activate('chosen');
         JS::registerJS('lib/javascript/lock.js');
 
-		$this->template->addBlockfile('ADMIN_CONTENT', 'content_manager', 'content_manager.html');
-		$this->template->touchBlock('content_manager');
-		$this->template->addBlockfile('CONTENT_MANAGER_MEAT', 'content_manager_meat', 'cm.html');
-		$this->template->touchBlock('content_manager_meat');
+        $this->template->addBlockfile('ADMIN_CONTENT', 'content_manager', 'content_manager.html');
+        $this->template->touchBlock('content_manager');
+        $this->template->addBlockfile('CONTENT_MANAGER_MEAT', 'content_manager_meat', 'cm.html');
+        $this->template->touchBlock('content_manager_meat');
+
+        $_CORELANG['TXT_CORE_CM_SLUG_INFO'] = sprintf($_CORELANG['TXT_CORE_CM_SLUG_INFO'], 'example.org');
 
         $this->setLanguageVars(array(
             //categories
@@ -96,11 +100,10 @@ class ContentManager extends Module {
         }
 
         ContrexxJavascript::getInstance()->setVariable('confirmDeleteQuestion', $_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE'] );
+        ContrexxJavaScript::getInstance()->setVariable('cleanAccessData', JSONPage::getAccessData());
         
         // TODO: move including of add'l JS dependencies to cx obj from /cadmin/index.html
         $this->template->setVariable('CXJS_INIT_JS', ContrexxJavascript::getInstance()->initJs());
-
-
         $this->template->setVariable('SKIN_OPTIONS', $this->getSkinOptions());
         $this->template->setVariable('LANGSWITCH_OPTIONS', $this->getLangOptions());
         $this->template->setVariable('LANGUAGE_ARRAY', json_encode($this->getLangArray()));
@@ -403,6 +406,10 @@ class ContentManager extends Module {
         );
         echo json_encode($result);
         exit(0);
+    }
+
+    protected function publishDraft() {
+
     }
 
     function getPageRepository()
