@@ -3280,7 +3280,8 @@ Version for shops without products having text or file upload attributes
 // both non-empty!
         if (   !Cart::needs_shipment()
             && empty($_SESSION['shop']['shipperId'])) {
-            self::$objTemplate->hideBlock('shipping_address');
+            if (self::$objTemplate->blockExists('shipping_address'))
+                self::$objTemplate->hideBlock('shipping_address');
         } else {
 if (empty($_SESSION['shop']['shipperId'])) {
 die("Trouble! No Shipper ID defined");
