@@ -133,11 +133,11 @@ a successful payment.  Any other numbers will produce a failed transaction.
             '<form name="postfinancemobile" method="post" '.
                 'action="'.
             ($ijustwanttotest
-//              ? 'https://postfinance.mobilesolutions.ch/shoptest/handyzahlung'
-//              : 'https://postfinance.mobilesolutions.ch/webshop/handyzahlung').
+              ? 'https://postfinance.mobilesolutions.ch/shoptest/handyzahlung'
+              : 'https://postfinance.mobilesolutions.ch/webshop/handyzahlung').
 // The live link without SSL does not seem to exist (as of 20100226)
-              ? 'http://api.smsserv.ch/shoptest/handyzahlung'
-              : 'http://api.smsserv.ch/webshop/handyzahlung').
+//              ? 'http://api.smsserv.ch/shoptest/handyzahlung'
+//              : 'http://api.smsserv.ch/webshop/handyzahlung').
             '">'."\n".
             '<input type="hidden" name="currency" value="'.$currency.'" />'."\n".
             '<input type="hidden" name="amount" value="'.$amount.'" />'."\n".
@@ -157,7 +157,6 @@ a successful payment.  Any other numbers will produce a failed transaction.
             $_ARRAYLANG['TXT_SHOP_POSTFINANCE_MOBILE_SUBMIT'].'" />'."\n".
           '</form>'."\n";
     }
-
 
 
     /**
@@ -252,5 +251,3 @@ a successful payment.  Any other numbers will produce a failed transaction.
     }
 
 }
-
-?>

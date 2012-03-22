@@ -116,7 +116,7 @@ class PaymentProcessing
 
         $query = '
             SELECT id, type, name, description,
-                   company_url, status, picture, text
+                   company_url, status, picture
               FROM '.DBPREFIX.'module_shop_payment_processors
           ORDER BY id';
         $objResult = $objDatabase->Execute($query);
@@ -129,9 +129,12 @@ class PaymentProcessing
                 'company_url' => $objResult->fields['company_url'],
                 'status'      => $objResult->fields['status'],
                 'picture'     => $objResult->fields['picture'],
-                'text'        => $objResult->fields['text']
             );
             $objResult->MoveNext();
+        }
+        // Verify version 3.0 complete data
+        if (empty (self::$arrPaymentProcessor[11])) {
+            self::errorHandler();
         }
     }
 
@@ -647,6 +650,83 @@ DBG::log("PaymentProcessing::checkIn(): mobilesolutions: Payment verification fa
                 0 => $_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'],
             ) + $arrName;
         return Html::getOptions($arrName, $selected_id);
+    }
+
+
+    /**
+     * Handles all kinds of database errors
+     *
+     * Creates the processors' table, and creates default entries if necessary
+     * @return  boolean                         False. Always.
+     * @global  ADOConnection   $objDatabase
+     */
+    static function errorHandler()
+    {
+        global $objDatabase;
+        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
+        require_once(ASCMS_CORE_PATH.'/Text.class.php');
+
+        $table_name_new = DBPREFIX.'module_shop'.MODULE_INDEX.'_processors';
+        if (!UpdateUtil::table_exist($table_name_new)) {
+            $table_structure = array(
+                'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
+                'type' => array('type' => 'ENUM("internal", "external")', 'default' => 'internal'),
+                'name' => array('type' => 'VARCHAR(255)', 'default' => ''),
+                'description' => array('type' => 'TEXT', 'default' => ''),
+                'company_url' => array('type' => 'VARCHAR(255)', 'default' => ''),
+                'status' => array('type' => 'TINYINT(10)', 'unsigned' => true, 'default' => 1),
+                'picture' => array('type' => 'VARCHAR(255)', 'default' => ''),
+            );
+        }
+        $arrPsp = array(
+            array(01, 'external', 'Saferpay_All_Cards',
+                'Saferpay is a comprehensive Internet payment platform, specially developed for commercial applications. It provides a guarantee of secure payment processes over the Internet for merchants as well as for cardholders. Merchants benefit from the easy integration of the payment method into their e-commerce platform, and from the modularity with which they can take account of current and future requirements. Cardholders benefit from the security of buying from any shop that uses Saferpay.',
+                'http://www.saferpay.com/', 1, 'logo_saferpay.gif'),
+            array(02, 'external', 'Paypal',
+                'With more than 40 million member accounts in over 45 countries worldwide, PayPal is the world\'s largest online payment service. PayPal makes sending money as easy as sending email! Any PayPal member can instantly and securely send money to anyone in the U.S. with an email address. PayPal can also be used on a web-enabled cell phone. In the future, PayPal will be available to use on web-enabled pagers and other handheld devices.',
+                'http://www.paypal.com/', 1, 'logo_paypal.gif'),
+            array(03, 'external', 'yellowpay',
+                'PostFinance vereinfacht das Inkasso im Online-Shop.',
+                'http://www.postfinance.ch/', 1, 'logo_postfinance.gif'),
+            array(04, 'internal', 'Internal',
+                'Internal no forms',
+                '', 1, ''),
+            array(05, 'internal', 'Internal_CreditCard',
+                'Internal with a Credit Card form',
+                '', 1, ''),
+            array(06, 'internal', 'Internal_Debit',
+                'Internal with a Bank Debit Form',
+                '', 1, ''),
+            array(07, 'external', 'Saferpay_Mastercard_Multipay_CAR',
+                'Saferpay is a comprehensive Internet payment platform, specially developed for commercial applications. It provides a guarantee of secure payment processes over the Internet for merchants as well as for cardholders. Merchants benefit from the easy integration of the payment method into their e-commerce platform, and from the modularity with which they can take account of current and future requirements. Cardholders benefit from the security of buying from any shop that uses Saferpay.',
+                'http://www.saferpay.com/', 1, 'logo_saferpay.gif'),
+            array(08, 'external', 'Saferpay_Visa_Multipay_CAR',
+                'Saferpay is a comprehensive Internet payment platform, specially developed for commercial applications. It provides a guarantee of secure payment processes over the Internet for merchants as well as for cardholders. Merchants benefit from the easy integration of the payment method into their e-commerce platform, and from the modularity with which they can take account of current and future requirements. Cardholders benefit from the security of buying from any shop that uses Saferpay.',
+                'http://www.saferpay.com/', 1, 'logo_saferpay.gif'),
+            array(09, 'internal', 'Internal_LSV',
+                'LSV with internal form',
+                '', 1, ''),
+            array(10, 'external', 'Datatrans',
+                'Die professionelle und komplette Payment-Lösung - all inclusive. Ein einziges Interface für sämtliche Zahlungsmethoden (Kreditkarten, Postcard, Kundenkarten). Mit variablem Angebot für unterschiedliche Kundenbedürfnisse.',
+                'http://datatrans.biz/', 1, 'logo_datatrans.gif'),
+            array(11, 'external', 'mobilesolutions',
+                'PostFinance Mobile',
+                'https://postfinance.mobilesolutions.ch/', 1, 'logo_postfinance_mobile.gif'),
+        );
+        $query_template = "
+            REPLACE INTO `".DBPREFIX."module_shop_payment_processors` (
+                `id`, `type`, `name`,
+                `description`,
+                `company_url`, `status`, `picture`
+            ) VALUES (
+                ?, ?, ?, ?, ?, ?, ?
+            )";
+        foreach ($arrPsp as $psp) {
+            UpdateUtil::sql($query_template, $psp);
+        }
+
+        // Always
+        return false;
     }
 
 }
