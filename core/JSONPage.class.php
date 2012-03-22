@@ -78,6 +78,7 @@ class JSONPage {
 
     public function set($params) {
         global $objFWUser, $_CORELANG;
+        $newpage = false;
 	$pg = Env::get('pageguard');
 
         $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
@@ -182,6 +183,7 @@ class JSONPage {
             $page->setNode($node);
             $page->setLang(FWLanguage::getLanguageIdByCode($params['post']['page']['lang']));
 
+            $newpage = true;
             $reload = true;
         }
 
@@ -202,20 +204,31 @@ class JSONPage {
 	    $pg->setAssignedGroupIds($page, $params['post']['backendGroups'], false);
 	}
 
-        if ((isset($params['get']['publish']) && $params['get']['publish']) && \Permission::checkAccess(78, 'static', true)) {
-            // user clicked save&publish. 
-            if ($page->getEditingStatus() != '') {
-                // we had a draft before, we don't now:
-                $page->setEditingStatus('');
-                $this->messages[] = $_CORELANG['TXT_CORE_SAVED'];
-                // TODO: define what log data we want to keep in a case like this.
-                //       make adjustments, if necessary.
-            }
+        if ((isset($params['get']['publish']) && $params['get']['publish']) 
+            && \Permission::checkAccess(78, 'static', true)) {
+            // user w/permission clicked save&publish. we should either publish the page or submit the draft for approval
+            $page->setEditingStatus('');
+            $this->messages[] = $_CORELANG['TXT_CORE_SAVED'];
+            // TODO: define what log data we want to keep in a case like this.
+            //       make adjustments, if necessary.
         }
         else {
             // user clicked save [as draft], so let's do that
+            if ($newpage) {
+                $this->em->persist($page);
+                $this->em->flush();
+            }
             $updatingDraft = $page->getEditingStatus() != '' ? true : false;
-            $page->setEditingStatus("hasDraft");
+
+            if (isset($params['get']['publish']) && $params['get']['publish']) {
+                // user w/o publish permission clicked save&publish. submit it as a draft
+                $page->setEditingStatus('hasDraftWaiting');
+                $this->messages[] = $_CORELANG['TXT_CORE_DRAFT_SUBMITTED'];
+            }
+            else {
+                $page->setEditingStatus("hasDraft");
+                $this->messages[] = $_CORELANG['TXT_CORE_SAVED_AS_DRAFT'];
+            }
 
             $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
             // gedmo-loggable generates a LogEntry (i.e. revision) on persist, so we'll have to 
@@ -242,7 +255,6 @@ class JSONPage {
                 $this->em->remove($logEntries[2]);
                 $this->em->remove($logEntries[3]);
             }
-            $this->messages[] = $_CORELANG['TXT_CORE_SAVED_AS_DRAFT'];
         }
 
         $this->em->persist($page);
@@ -262,6 +274,19 @@ class JSONPage {
                          'id' => $page->getId()
                          );
         }
+    }
+
+    function getAccessData($page = null) {
+        // TODO: add functionality for $page!=null (see below), DRY up #getFallbackPageArray
+
+        $pg = Env::get('pageguard');
+
+        $accessData = array();
+
+        $accessData['frontend'] = array('groups' => $pg->getGroups(true), 'assignedGroups' => array());
+        $accessData['backend'] = array('groups' => $pg->getGroups(false), 'assignedGroups' => array());
+
+        return $accessData;
     }
 
     private function getFallbackPageArray($node, $lang) {
