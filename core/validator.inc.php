@@ -5,17 +5,16 @@
  *
  * Global request validator
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @access        public
- * @version        1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @version     1.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  * @todo        Isn't this supposed to be a class?
  */
 
-//Security-Check
-if (eregi("validator.inc.php",$_SERVER['PHP_SELF'])) {
+if (stristr(__FILE__, $_SERVER['PHP_SELF'])) {
     Header("Location: index.php");
     die();
 }
@@ -128,41 +127,107 @@ function checkForSpider()
 // contrexx_addslashes() and so on please.
 
 /**
- * Encodes a raw string for use with [X]HTML
+ * Encodes raw strings or arrays thereof for use with [X]HTML
  *
- * Apply to raw strings and those taken from the database before writing it
- * to the HTML response stream.
- * @param   string  $raw      The raw string
- * @return  string            The HTML encoded string
+ * Apply to raw strings and those taken from the database, or arrays of
+ * these, before writing the contents to the HTML response stream.
+ * Note that arrays may be nested, and all scalar (leaf) elements are treated
+ * the same way.  Array keys are preserved.
+ * @param   mixed     $raw      The raw string or array
+ * @return  mixed               The HTML encoded string or array
+ * @author  Severin Raez <severin.raez@comvation.com>
+ * @author  Reto Kohli <reto.kohli@comvation.com>
  */
 function contrexx_raw2xhtml($raw)
 {
+    if (is_array($raw)) {
+        $arr = array();
+        foreach ($raw as $i => $_raw) {
+            $arr[$i] = contrexx_raw2xhtml($_raw);
+        }
+        return $arr;
+    }
     return htmlentities($raw, ENT_QUOTES, CONTREXX_CHARSET);
 }
 
 
 /**
- * Unescapes data from any request, and returns a raw string
+ * Unescapes data from any request and returns a raw string or an array
+ * thereof.
  *
- * Apply to any string taken from a get or post request, or from a cookie.
- * @param   string  $input    The input string
- * @return  string            The raw string
+ * Apply to any string or array taken from a get or post request, or from a
+ * cookie.
+ * @param   mixed   $input    The input string or array
+ * @return  mixed             The raw string or array
  */
 function contrexx_input2raw($input)
 {
-  return  contrexx_stripslashes($input);
+    if (is_array($input)) {
+        $arr = array();
+        foreach ($input as $i => $_input) {
+            $arr[$i] = contrexx_input2raw($_input);
+        }
+        return $arr;
+    }
+    return contrexx_stripslashes($input);
 }
 
 
 /**
- * Unescapes data from any request and adds slashes for insertion into the database
+ * Ensures that data from any request is limited to integer values
  *
- * Apply to any string taken from a get or post request, or from a cookie
- * befor inserting into the database.
- * @param   string $input    The input string
- * @return  string           The unescaped slashed string
+ * Apply to any string or array taken from a get or post request, or from a
+ * cookie.
+ * @param   mixed   $input    The input string or array
+ * @return  mixed             The integer or array thereof
+ * @author  Reto Kohli <reto.kohli@comvation.com>
  */
-function contrexx_input2db($input) {
+function contrexx_input2int($input)
+{
+    if (is_array($input)) {
+        $arr = array();
+        foreach ($input as $i => $_input) {
+            $arr[$i] = contrexx_input2int($_input);
+        }
+        return $arr;
+    }
+    return intval($input);
+}
+
+
+/**
+ * Ensures that data from any request is limited to float values
+ *
+ * Apply to any string or array taken from a get or post request, or from a
+ * cookie.
+ * @param   mixed   $input    The input string or array
+ * @return  mixed             The float or array thereof
+ * @author  Reto Kohli <reto.kohli@comvation.com>
+ */
+function contrexx_input2float($input)
+{
+    if (is_array($input)) {
+        $arr = array();
+        foreach ($input as $i => $_input) {
+            $arr[$i] = contrexx_input2float($_input);
+        }
+        return $arr;
+    }
+    return floatval($input);
+}
+
+
+/**
+ * Unescapes data from any request and adds slashes for insertion into the
+ * database
+ *
+ * Apply to any string or array taken from a get or post request, or from a
+ * cookie before inserting into the database.
+ * @param   mixed   $input    The input string or array
+ * @return  mixed             The unescaped slashed string or array
+ */
+function contrexx_input2db($input)
+{
     return contrexx_raw2db(contrexx_input2raw($input));
 }
 
@@ -170,55 +235,77 @@ function contrexx_input2db($input) {
 /**
  * Unescapes data from any request and encodes it for use with [X]HTML
  *
- * Apply to any string taken from a get or post request, or from a cookie
- * befor writing it to the HTML response stream.
- * @param   string $input    The input string
- * @return  string           The unescaped HTML encoded string
+ * Apply to any string or array taken from a get or post request, or from a
+ * cookie before writing it to the HTML response stream.
+ * @param   mixed   $input    The input string or array
+ * @return  mixed             The unescaped HTML encoded string or array
  */
-function contrexx_input2xhtml($input) {
+function contrexx_input2xhtml($input)
+{
     return contrexx_raw2xhtml(contrexx_input2raw($input));
 }
 
 
 /**
- * Adds slashes to the given string
- *
- * Apply to any raw string before inserting it into the database.
- * @param   string  $raw      The raw string
- * @return  string            The slashed string
+ * Adds slashes to the given raw string or array thereof for insertion
+ * into the database.
+ * @param   mixed     $raw      The raw string or array
+ * @return  mixed               The slashed string or array
  */
 function contrexx_raw2db($raw)
 {
+    if (is_array($raw)) {
+        $arr = array();
+        foreach ($raw as $i => $_raw) {
+            $arr[$i] = contrexx_raw2db($_raw);
+        }
+        return $arr;
+    }
     return addslashes($raw);
 }
 
 
 /**
- * Encodes a raw string for use with XML
+ * Encodes a raw string or array thereof for use with XML
  *
- * Apply to raw strings and those taken from the database before writing
- * to the XML response stream.
- * @param   string  $raw    The raw string
- * @return  string          The XML encoded string
+ * Apply to raw strings and those taken from the database or arrays thereof
+ * before writing to the XML response stream.
+ * @param   mixed     $raw      The raw string or array
+ * @return  mixed               The XML encoded string or array
  */
 function contrexx_raw2xml($raw)
 {
+    if (is_array($raw)) {
+        $arr = array();
+        foreach ($raw as $i => $_raw) {
+            $arr[$i] = contrexx_raw2xml($_raw);
+        }
+        return $arr;
+    }
     return htmlspecialchars($raw, ENT_QUOTES, CONTREXX_CHARSET);
 }
 
 
 /**
- * Encodes a raw string for use as a href or src attribute value.
+ * Encodes a raw string or array thereof for use as a href or src
+ * attribute value.
  *
- * Apply to any raw string that is to be used as a link or image address
- * in any tag attribute, such as a.href or img.src.
- * @param   string  $raw          The raw string
+ * Apply to any raw string or array that is to be used as a link or image
+ * address in any tag attribute, such as a.href or img.src.
+ * @param   mixed   $source       The raw string or array
  * @param   boolean $encodeDash   Encode dashes ('-') if true.
  *                                Defaults to false
- * @return  string                The URL encoded string
+ * @return  mixed                 The URL encoded string or array
  */
 function contrexx_raw2encodedUrl($source, $encodeDash=false)
 {
+    if (is_array($source)) {
+        $arr = array();
+        foreach ($source as $i => $_source) {
+            $arr[$i] = contrexx_raw2encodedUrl($_source, $encodeDash);
+        }
+        return $arr;
+    }
     $cutHttp = false;
     if (!$encodeDash && substr($source, 0, 7) == 'http://') {
         $source = substr($source, 7);
@@ -235,18 +322,23 @@ function contrexx_raw2encodedUrl($source, $encodeDash=false)
 
 
 /**
- * Removes script tags and their content from the given string
- * @param   string  $raw    The original string
- * @return  string          The string with script tags removed
+ * Removes script tags and their content from the given string or array thereof
+ * @param   mixed   $raw    The original string or array
+ * @return  mixed           The string or array with script tags removed
  * @todo    Check for event handlers
  */
 function contrexx_remove_script_tags($raw)
 {
+    if (is_array($raw)) {
+        $arr = array();
+        foreach ($raw as $i => $_raw) {
+            $arr[$i] = contrexx_remove_script_tags($_raw);
+        }
+        return $arr;
+    }
     // Remove closed script tags and content
-    $result = preg_replace('/<\s*script[^>]*>.*?<\s*\/script\s*>/is', '', $raw);
+    $result = preg_replace('/<\s*script[^>]*>.*?<\s*\\/script\s*>/is', '', $raw);
     // Remove unclosed script tags
     $result = preg_replace('/<\s*script[^>]*>/is', '', $result);
     return $result;
 }
-
-?>

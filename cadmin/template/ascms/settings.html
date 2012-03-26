@@ -22,199 +22,199 @@ Text[18]=["","{TXT_DEBUGGING_EXPLANATION}"];
 // -->
 
 function toggleDebuggingFlags(show) {
-    var target = $J('#debugging_flags');
-    if(show)
-        target.show();
-    else
-        target.hide();
+  var target = $J('#debugging_flags');
+  if(show)
+    target.show();
+  else
+    target.hide();
 }
 
 </script>
 
 <ul id="tabmenu">
-    <li><a id="setTab_Settings1" class="active" href="javascript:{}" onclick="selectTab('Settings1')" title="{TXT_TITLE_SET1}">{TXT_TITLE_SET1}</a></li>
-    <li><a id="setTab_Settings2" href="javascript:{}" onclick="selectTab('Settings2')" title="{TXT_TITLE_SET2}">{TXT_TITLE_SET2}</a></li>
-    <li><a id="setTab_Settings3" href="javascript:{}" onclick="selectTab('Settings3')" title="{TXT_TITLE_SET3}">{TXT_TITLE_SET3}</a></li>
+  <li><a id="setTab_Settings1" class="active" href="javascript:{}" onclick="selectTab('Settings1')" title="{TXT_TITLE_SET1}">{TXT_TITLE_SET1}</a></li>
+  <li><a id="setTab_Settings2" href="javascript:{}" onclick="selectTab('Settings2')" title="{TXT_TITLE_SET2}">{TXT_TITLE_SET2}</a></li>
+  <li><a id="setTab_Settings3" href="javascript:{}" onclick="selectTab('Settings3')" title="{TXT_TITLE_SET3}">{TXT_TITLE_SET3}</a></li>
 </ul>
 <form name="settings_form" method="post" action="index.php?cmd=settings&amp;act=update">
-    <div id="Settings1" class="setTab" style="display:block;">
-        <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-            <tr>
-                <th colspan="2">{TXT_TITLE_SET1}</th>
-            </tr>
-            <tr class="row2">
-                <td width="25%">{TXT_SYSTEM_STATUS}&nbsp;</td>
-                <td width="75%">
-                    <input type="radio" name="setvalue[55]" id="setvalue_55_on" value="on" {SETTINGS_SYSTEMSTATUS_ON} /><label for="setvalue_55_on">{TXT_RADIO_ON}</label>&nbsp;
-                    <input type="radio" name="setvalue[55]" id="setvalue_55_off" value="off" {SETTINGS_SYSTEMSTATUS_OFF} /><label for="setvalue_55_off">{TXT_RADIO_OFF}</label>&nbsp;
-                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[12],Style[0])" alt="" />
-                </td>
-            </tr>
-            <tr class="row1">
-                <td>{TXT_IDS_STATUS}&nbsp;</td>
-                <td>
-                    <input type="radio" name="setvalue[23]" id="setvalue_23_on" value="on" {SETTINGS_IDS_RADIO_ON} /><label for="setvalue_23_on">{TXT_RADIO_ON}</label>&nbsp;
-                    <input type="radio" name="setvalue[23]" id="setvalue_23_off" value="off" {SETTINGS_IDS_RADIO_OFF} /><label for="setvalue_23_off">{TXT_RADIO_OFF}</label>&nbsp;
-                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" alt="" />
-                </td>
-            </tr>
-            <tr class="row2">
-                <td>{TXT_HISTORY_STATUS}&nbsp;</td>
-                <td>
-                    <input type="radio" name="setvalue[43]" id="setvalue_43_on" value="on" {SETTINGS_HISTORY_ON} /><label for="setvalue_43_on">{TXT_RADIO_ON}</label>&nbsp;
-                    <input type="radio" name="setvalue[43]" id="setvalue_43_off" value="off" {SETTINGS_HISTORY_OFF} /><label for="setvalue_43_off">{TXT_RADIO_OFF}</label>&nbsp;
-                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[8],Style[0])" alt="" />
-                </td>
-            </tr>
-            <tr class="row1">
-                <td>{TXT_XML_SITEMAP_STATUS}&nbsp;</td>
-                <td>
-                    <input type="radio" name="setvalue[54]" id="setvalue_54_on" value="on" {SETTINGS_XML_SITEMAP_ON} /><label for="setvalue_54_on">{TXT_RADIO_ON}</label>&nbsp;
-                    <input type="radio" name="setvalue[54]" id="setvalue_54_off" value="off" {SETTINGS_XML_SITEMAP_OFF} /><label for="setvalue_54_off">{TXT_RADIO_OFF}</label>&nbsp;
-                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[11],Style[0])" alt="" />
-                </td>
-            </tr>
-            <tr class="row2">
-                <td>{TXT_SEARCH_VISIBLE_CONTENT_ONLY}&nbsp;</td>
-                <td>
-                    <input type="radio" name="setvalue[56]" id="setvalue_56_on" value="on" {SETTINGS_SEARCH_VISIBLE_CONTENT_ON} /><label for="setvalue_56_on">{TXT_RADIO_ON}</label>&nbsp;
-                    <input type="radio" name="setvalue[56]" id="setvalue_56_off" value="off" {SETTINGS_SEARCH_VISIBLE_CONTENT_OFF} /><label for="setvalue_56_off">{TXT_RADIO_OFF}</label>&nbsp;
-                </td>
-            </tr>
-            <tr class="row1">
-                <td>{TXT_CORE_LIST_PROTECTED_PAGES}&nbsp;</td>
-                <td>
-                    <input type="radio" name="setvalue[71]" id="setvalue_71_on" value="on" {SETTINGS_LIST_PROTECTED_PAGES_ON} /><label for="setvalue_71_on">{TXT_RADIO_ON}</label>&nbsp;
-                    <input type="radio" name="setvalue[71]" id="setvalue_71_off" value="off" {SETTINGS_LIST_PROTECTED_PAGES_OFF} /><label for="setvalue_71_off">{TXT_RADIO_OFF}</label>&nbsp;
-                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[16],Style[0])" alt="" />
-                </td>
-            </tr>
-            <tr class="row2">
-                <td>{TXT_SYSTEM_DETECT_BROWSER_LANGUAGE}&nbsp;</td>
-                <td>
-                    <input type="radio" name="setvalue[63]" id="setvalue_63_on" value="on" {SETTINGS_DETECT_BROWSER_LANGUAGE_ON} /><label for="setvalue_63_on">{TXT_RADIO_ON}</label>&nbsp;
-                    <input type="radio" name="setvalue[63]" id="setvalue_63_off" value="off" {SETTINGS_DETECT_BROWSER_LANGUAGE_OFF} /><label for="setvalue_63_off">{TXT_RADIO_OFF}</label>&nbsp;
-                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[13],Style[0])" alt="" />
-                </td>
-            </tr>
-            <tr class="row1">
-                <td>{TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH}&nbsp;</td>
-                <td>
-                    <input type="radio" name="setvalue[67]" id="setvalue_67_on" value="on" {SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_ON} {SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_DISABLED} /><label for="setvalue_67_on">{TXT_RADIO_ON}</label>&nbsp;
-                    <input type="radio" name="setvalue[67]" id="setvalue_67_off" value="off" {SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_OFF} {SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_DISABLED} /><label for="setvalue_67_off">{TXT_RADIO_OFF}</label>&nbsp;
-                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[17],Style[0])" alt="" />
-                </td>
-            </tr>
-            <tr class="row2">
-                <td>{TXT_FRONTEND_EDITING_STATUS}&nbsp;</td>
-                <td>
-                    <input type="radio" name="setvalue[69]" id="setvalue_69_on" value="on" {SETTINGS_FRONTEND_EDITING_ON} /><label for="setvalue_69_on">{TXT_RADIO_ON}</label>&nbsp;
-                    <input type="radio" name="setvalue[69]" id="setvalue_69_off" value="off" {SETTINGS_FRONTEND_EDITING_OFF} /><label for="setvalue_69_off">{TXT_RADIO_OFF}</label>&nbsp;
-                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[15],Style[0])" alt="" />
-                </td>
-            </tr>
-            <tr class="row1">
-                <td>{TXT_GLOBAL_TITLE}&nbsp;</td>
-                <td><input type="text" name="setvalue[51]" value="{SETTINGS_GLOBAL_TITLE}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[9],Style[0])" alt="" /></td>
-            </tr>
-            <tr class="row2">
-                <td>{TXT_DOMAIN_URL}&nbsp;</td>
-                <td><input type="text" name="setvalue[53]" value="{SETTINGS_DOMAIN_URL}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[10],Style[0])" alt="" /></td>
-            </tr>
-            <tr class="row1">
-                <td>{TXT_GOOGLE_MAPS_API_KEY}&nbsp;</td>
-                <td><input type="text" name="setvalue[65]" value="{SETTINGS_GOOGLE_MAPS_API_KEY}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[14],Style[0])" alt="" /></td>
-            </tr>
-            <tr class="row2">
-                <td>{TXT_PAGING_LIMIT}&nbsp;</td>
-                <td><input type="text" name="setvalue[18]" value="{SETTINGS_PAGING_LIMIT}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" alt="" /></td>
-            </tr>
-            <tr class="row1">
-                <td>{TXT_SEARCH_RESULT}&nbsp;</td>
-                <td><input type="text" name="setvalue[19]" value="{SETTINGS_SEARCH_RESULT_LENGTH}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" alt="" /></td>
-            </tr>
-            <tr class="row2">
-                <td>{TXT_SESSION_LIVETIME}&nbsp;</td>
-                <td><input type="text" name="setvalue[34]" value="{SETTINGS_SESSION_LIFETIME}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" alt="" /></td>
-            </tr>
-            <tr class="row1">
-                <td>{TXT_DNS_SERVER}&nbsp;</td>
-                <td><input type="text" name="setvalue[3]" value="{SETTINGS_DNS_SERVER}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[7],Style[0])" alt="" /></td>
-            </tr>
-            <tr class="row2">
-                <td>{TXT_ADVANCED_UPLOAD_STATUS_BACKEND}&nbsp;</td>
-                <td>
-                    <input type="radio" name="setvalue[74]" id="setvalue_74_on" value="on" {SETTINGS_ADVANCED_UPLOAD_BACKEND_ON} /><label for="setvalue_70_on">{TXT_RADIO_ON}</label>&nbsp;
-                    <input type="radio" name="setvalue[74]" id="setvalue_74_off" value="off" {SETTINGS_ADVANCED_UPLOAD_BACKEND_OFF} /><label for="setvalue_70_off">{TXT_RADIO_OFF}</label>&nbsp;
-                </td>
-            </tr>
-            <tr class="row1">
-                <td>{TXT_ADVANCED_UPLOAD_STATUS_FRONTEND}&nbsp;</td>
-                <td>
-                    <input type="radio" name="setvalue[73]" id="setvalue_73_on" value="on" {SETTINGS_ADVANCED_UPLOAD_FRONTEND_ON} /><label for="setvalue_70_on">{TXT_RADIO_ON}</label>&nbsp;
-                    <input type="radio" name="setvalue[73]" id="setvalue_73_off" value="off" {SETTINGS_ADVANCED_UPLOAD_FRONTEND_OFF} /><label for="setvalue_70_off">{TXT_RADIO_OFF}</label>&nbsp;
-                </td>
-            </tr>
+  <div id="Settings1" class="setTab" style="display:block;">
+    <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+      <tr>
+        <th colspan="2">{TXT_TITLE_SET1}</th>
+      </tr>
+      <tr class="row2">
+        <td width="25%">{TXT_SYSTEM_STATUS}&nbsp;</td>
+        <td width="75%">
+          <input type="radio" name="setvalue[55]" id="setvalue_55_on" value="on" {SETTINGS_SYSTEMSTATUS_ON} /><label for="setvalue_55_on">{TXT_RADIO_ON}</label>&nbsp;
+          <input type="radio" name="setvalue[55]" id="setvalue_55_off" value="off" {SETTINGS_SYSTEMSTATUS_OFF} /><label for="setvalue_55_off">{TXT_RADIO_OFF}</label>&nbsp;
+          <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[12],Style[0])" alt="" />
+        </td>
+      </tr>
+      <tr class="row1">
+        <td>{TXT_IDS_STATUS}&nbsp;</td>
+        <td>
+          <input type="radio" name="setvalue[23]" id="setvalue_23_on" value="on" {SETTINGS_IDS_RADIO_ON} /><label for="setvalue_23_on">{TXT_RADIO_ON}</label>&nbsp;
+          <input type="radio" name="setvalue[23]" id="setvalue_23_off" value="off" {SETTINGS_IDS_RADIO_OFF} /><label for="setvalue_23_off">{TXT_RADIO_OFF}</label>&nbsp;
+          <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" alt="" />
+        </td>
+      </tr>
+      <tr class="row2">
+        <td>{TXT_HISTORY_STATUS}&nbsp;</td>
+        <td>
+          <input type="radio" name="setvalue[43]" id="setvalue_43_on" value="on" {SETTINGS_HISTORY_ON} /><label for="setvalue_43_on">{TXT_RADIO_ON}</label>&nbsp;
+          <input type="radio" name="setvalue[43]" id="setvalue_43_off" value="off" {SETTINGS_HISTORY_OFF} /><label for="setvalue_43_off">{TXT_RADIO_OFF}</label>&nbsp;
+          <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[8],Style[0])" alt="" />
+        </td>
+      </tr>
+      <tr class="row1">
+        <td>{TXT_XML_SITEMAP_STATUS}&nbsp;</td>
+        <td>
+          <input type="radio" name="setvalue[54]" id="setvalue_54_on" value="on" {SETTINGS_XML_SITEMAP_ON} /><label for="setvalue_54_on">{TXT_RADIO_ON}</label>&nbsp;
+          <input type="radio" name="setvalue[54]" id="setvalue_54_off" value="off" {SETTINGS_XML_SITEMAP_OFF} /><label for="setvalue_54_off">{TXT_RADIO_OFF}</label>&nbsp;
+          <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[11],Style[0])" alt="" />
+        </td>
+      </tr>
+      <tr class="row2">
+        <td>{TXT_SEARCH_VISIBLE_CONTENT_ONLY}&nbsp;</td>
+        <td>
+          <input type="radio" name="setvalue[56]" id="setvalue_56_on" value="on" {SETTINGS_SEARCH_VISIBLE_CONTENT_ON} /><label for="setvalue_56_on">{TXT_RADIO_ON}</label>&nbsp;
+          <input type="radio" name="setvalue[56]" id="setvalue_56_off" value="off" {SETTINGS_SEARCH_VISIBLE_CONTENT_OFF} /><label for="setvalue_56_off">{TXT_RADIO_OFF}</label>&nbsp;
+        </td>
+      </tr>
+      <tr class="row1">
+        <td>{TXT_CORE_LIST_PROTECTED_PAGES}&nbsp;</td>
+        <td>
+          <input type="radio" name="setvalue[71]" id="setvalue_71_on" value="on" {SETTINGS_LIST_PROTECTED_PAGES_ON} /><label for="setvalue_71_on">{TXT_RADIO_ON}</label>&nbsp;
+          <input type="radio" name="setvalue[71]" id="setvalue_71_off" value="off" {SETTINGS_LIST_PROTECTED_PAGES_OFF} /><label for="setvalue_71_off">{TXT_RADIO_OFF}</label>&nbsp;
+          <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[16],Style[0])" alt="" />
+        </td>
+      </tr>
+      <tr class="row2">
+        <td>{TXT_SYSTEM_DETECT_BROWSER_LANGUAGE}&nbsp;</td>
+        <td>
+          <input type="radio" name="setvalue[63]" id="setvalue_63_on" value="on" {SETTINGS_DETECT_BROWSER_LANGUAGE_ON} /><label for="setvalue_63_on">{TXT_RADIO_ON}</label>&nbsp;
+          <input type="radio" name="setvalue[63]" id="setvalue_63_off" value="off" {SETTINGS_DETECT_BROWSER_LANGUAGE_OFF} /><label for="setvalue_63_off">{TXT_RADIO_OFF}</label>&nbsp;
+          <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[13],Style[0])" alt="" />
+        </td>
+      </tr>
+      <tr class="row1">
+        <td>{TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH}&nbsp;</td>
+        <td>
+          <input type="radio" name="setvalue[67]" id="setvalue_67_on" value="on" {SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_ON} {SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_DISABLED} /><label for="setvalue_67_on">{TXT_RADIO_ON}</label>&nbsp;
+          <input type="radio" name="setvalue[67]" id="setvalue_67_off" value="off" {SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_OFF} {SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_DISABLED} /><label for="setvalue_67_off">{TXT_RADIO_OFF}</label>&nbsp;
+          <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[17],Style[0])" alt="" />
+        </td>
+      </tr>
+      <tr class="row2">
+        <td>{TXT_FRONTEND_EDITING_STATUS}&nbsp;</td>
+        <td>
+          <input type="radio" name="setvalue[69]" id="setvalue_69_on" value="on" {SETTINGS_FRONTEND_EDITING_ON} /><label for="setvalue_69_on">{TXT_RADIO_ON}</label>&nbsp;
+          <input type="radio" name="setvalue[69]" id="setvalue_69_off" value="off" {SETTINGS_FRONTEND_EDITING_OFF} /><label for="setvalue_69_off">{TXT_RADIO_OFF}</label>&nbsp;
+          <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[15],Style[0])" alt="" />
+        </td>
+      </tr>
+      <tr class="row1">
+        <td>{TXT_GLOBAL_TITLE}&nbsp;</td>
+        <td><input type="text" name="setvalue[51]" value="{SETTINGS_GLOBAL_TITLE}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[9],Style[0])" alt="" /></td>
+      </tr>
+      <tr class="row2">
+        <td>{TXT_DOMAIN_URL}&nbsp;</td>
+        <td><input type="text" name="setvalue[53]" value="{SETTINGS_DOMAIN_URL}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[10],Style[0])" alt="" /></td>
+      </tr>
+      <tr class="row1">
+        <td>{TXT_GOOGLE_MAPS_API_KEY}&nbsp;</td>
+        <td><input type="text" name="setvalue[65]" value="{SETTINGS_GOOGLE_MAPS_API_KEY}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[14],Style[0])" alt="" /></td>
+      </tr>
+      <tr class="row2">
+        <td>{TXT_PAGING_LIMIT}&nbsp;</td>
+        <td><input type="text" name="setvalue[18]" value="{SETTINGS_PAGING_LIMIT}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" alt="" /></td>
+      </tr>
+      <tr class="row1">
+        <td>{TXT_SEARCH_RESULT}&nbsp;</td>
+        <td><input type="text" name="setvalue[19]" value="{SETTINGS_SEARCH_RESULT_LENGTH}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" alt="" /></td>
+      </tr>
+      <tr class="row2">
+        <td>{TXT_SESSION_LIVETIME}&nbsp;</td>
+        <td><input type="text" name="setvalue[34]" value="{SETTINGS_SESSION_LIFETIME}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" alt="" /></td>
+      </tr>
+      <tr class="row1">
+        <td>{TXT_DNS_SERVER}&nbsp;</td>
+        <td><input type="text" name="setvalue[3]" value="{SETTINGS_DNS_SERVER}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[7],Style[0])" alt="" /></td>
+      </tr>
+      <tr class="row2">
+        <td>{TXT_ADVANCED_UPLOAD_STATUS_BACKEND}&nbsp;</td>
+        <td>
+          <input type="radio" name="setvalue[74]" id="setvalue_74_on" value="on" {SETTINGS_ADVANCED_UPLOAD_BACKEND_ON} /><label for="setvalue_70_on">{TXT_RADIO_ON}</label>&nbsp;
+          <input type="radio" name="setvalue[74]" id="setvalue_74_off" value="off" {SETTINGS_ADVANCED_UPLOAD_BACKEND_OFF} /><label for="setvalue_70_off">{TXT_RADIO_OFF}</label>&nbsp;
+        </td>
+      </tr>
+      <tr class="row1">
+        <td>{TXT_ADVANCED_UPLOAD_STATUS_FRONTEND}&nbsp;</td>
+        <td>
+          <input type="radio" name="setvalue[73]" id="setvalue_73_on" value="on" {SETTINGS_ADVANCED_UPLOAD_FRONTEND_ON} /><label for="setvalue_70_on">{TXT_RADIO_ON}</label>&nbsp;
+          <input type="radio" name="setvalue[73]" id="setvalue_73_off" value="off" {SETTINGS_ADVANCED_UPLOAD_FRONTEND_OFF} /><label for="setvalue_70_off">{TXT_RADIO_OFF}</label>&nbsp;
+        </td>
+      </tr>
 
-        </table>
-    </div>
-    <div id="Settings2" class="setTab" style="display:none;">
-        <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-            <tr>
-                <th colspan="2">{TXT_TITLE_SET2}</th>
-            </tr>
-            <tr class="row2">
-                <td width="25%">{TXT_ADMIN_NAME}&nbsp;</td>
-                <td width="75%"><input type="text" name="setvalue[11]" value="{SETTINGS_ADMIN_NAME}" size="70" maxlength="250" /></td>
-            </tr>
-            <tr class="row1">
-                <td>{TXT_ADMIN_EMAIL}&nbsp;</td>
-                <td><input type="text" name="setvalue[24]" value="{SETTINGS_ADMIN_EMAIL}" size="70" maxlength="250" /></td>
-            </tr>
-            <tr class="row2">
-                <td>{TXT_CONTACT_EMAIL}&nbsp;</td>
-                <td><input type="text" name="setvalue[29]" value="{SETTINGS_CONTACT_EMAIL}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" alt="" /></td>
-            </tr>
-        </table>
-    </div>
-    <div id="Settings3" class="setTab" style="display:none;">
-        <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-            <tr>
-                <th colspan="2">{TXT_TITLE_SET3}</th>
-            </tr>
-            <tr class="row2">
-                <td width="25%" style="vertical-align:top; padding-top:5px;">{TXT_DEBUGGING_STATUS}&nbsp;</td>
-                <td width="75%">
-                  <div>
-                    <input type="radio" id="debugging_status_on" name="debugging[status]" {SETTINGS_DEBUGGING_ON} value="on" onclick="toggleDebuggingFlags(true);"/><label for="debugging_status">{TXT_RADIO_ON}</label>&nbsp;
-                    <input type="radio" id="debugging_status_off" name="debugging[status]" {SETTINGS_DEBUGGING_OFF} value="off" onclick="toggleDebuggingFlags(false);"/><label for="debugging_status">{TXT_RADIO_OFF}</label>&nbsp;
-                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[18],Style[0])" alt="" />
-                  </div>
-                  <div id="debugging_flags" {DEBUGGING_HIDE_FLAGS}>
-                    <div>
-                      <input type="checkbox" id="debugging_flag_php" name="debugging[flag_php]" {SETTINGS_DEBUGGING_FLAG_PHP}/><label for="debugging_flag_php">{TXT_DEBUGGING_FLAG_PHP}</label>&nbsp;
-                    </div>
-                    <div>
-                      <input type="checkbox" id="debugging_flag_adodb" name="debugging[flag_adodb]" {SETTINGS_DEBUGGING_FLAG_ADODB}/><label for="debugging_flag_adodb">{TXT_DEBUGGING_FLAG_ADODB}</label>&nbsp;
-                    </div>
-                    <div>
-                      <input type="checkbox" id="debugging_flag_adodb_trace" name="debugging[flag_adodb_trace]" {SETTINGS_DEBUGGING_FLAG_ADODB_TRACE}/><label for="debugging_flag_adodb_trace">{TXT_DEBUGGING_FLAG_ADODB_TRACE}</label>&nbsp;
-                    </div>
-                    <div>
-                      <input type="checkbox" id="debugging_flag_adodb_error" name="debugging[flag_adodb_error]" {SETTINGS_DEBUGGING_FLAG_ADODB_ERROR}/><label for="debugging_flag_adodb_error">{TXT_DEBUGGING_FLAG_ADODB_ERROR}</label>&nbsp;
-                    </div>
-                    <div>
-                      <input type="checkbox" id="debugging_log_file" name="debugging[flag_log_file]" {SETTINGS_DEBUGGING_FLAG_LOG_FILE}/><label for="debugging_flag_log_file">{TXT_DEBUGGING_FLAG_LOG_FILE}</label>&nbsp;
-                    </div>
-                        <div>
-                          <input type="checkbox" id="debugging_flag_log_firephp" name="debugging[flag_log_firephp]" {SETTINGS_DEBUGGING_FLAG_LOG_FIREPHP}/><label for="debugging_flag_log_firephp">{TXT_DEBUGGING_FLAG_LOG_FIREPHP}</label>&nbsp;
-                        </div>
-                  </div>
-                </td>
-            </tr>
-        </table>
-    </div>
-    <br />
-    <!-- BEGIN settings_submit_button --><input type="submit" value="{TXT_SAVE_CHANGES}" name="submit" /><!-- END settings_submit_button -->
+    </table>
+  </div>
+  <div id="Settings2" class="setTab" style="display:none;">
+    <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+      <tr>
+        <th colspan="2">{TXT_TITLE_SET2}</th>
+      </tr>
+      <tr class="row2">
+        <td width="25%">{TXT_ADMIN_NAME}&nbsp;</td>
+        <td width="75%"><input type="text" name="setvalue[11]" value="{SETTINGS_ADMIN_NAME}" size="70" maxlength="250" /></td>
+      </tr>
+      <tr class="row1">
+        <td>{TXT_ADMIN_EMAIL}&nbsp;</td>
+        <td><input type="text" name="setvalue[24]" value="{SETTINGS_ADMIN_EMAIL}" size="70" maxlength="250" /></td>
+      </tr>
+      <tr class="row2">
+        <td>{TXT_CONTACT_EMAIL}&nbsp;</td>
+        <td><input type="text" name="setvalue[29]" value="{SETTINGS_CONTACT_EMAIL}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" alt="" /></td>
+      </tr>
+    </table>
+  </div>
+  <div id="Settings3" class="setTab" style="display:none;">
+    <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+      <tr>
+        <th colspan="2">{TXT_TITLE_SET3}</th>
+      </tr>
+      <tr class="row2">
+        <td width="25%" style="vertical-align:top; padding-top:5px;">{TXT_DEBUGGING_STATUS}&nbsp;</td>
+        <td width="75%">
+          <div>
+          <input type="radio" id="debugging_status_on" name="debugging[status]" {SETTINGS_DEBUGGING_ON} value="on" onclick="toggleDebuggingFlags(true);"/><label for="debugging_status">{TXT_RADIO_ON}</label>&nbsp;
+          <input type="radio" id="debugging_status_off" name="debugging[status]" {SETTINGS_DEBUGGING_OFF} value="off" onclick="toggleDebuggingFlags(false);"/><label for="debugging_status">{TXT_RADIO_OFF}</label>&nbsp;
+          <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[18],Style[0])" alt="" />
+          </div>
+          <div id="debugging_flags" {DEBUGGING_HIDE_FLAGS}>
+          <div>
+            <input type="checkbox" id="debugging_flag_php" name="debugging[flag_php]" {SETTINGS_DEBUGGING_FLAG_PHP}/><label for="debugging_flag_php">{TXT_DEBUGGING_FLAG_PHP}</label>&nbsp;
+          </div>
+          <div>
+            <input type="checkbox" id="debugging_flag_adodb" name="debugging[flag_adodb]" {SETTINGS_DEBUGGING_FLAG_ADODB}/><label for="debugging_flag_adodb">{TXT_DEBUGGING_FLAG_ADODB}</label>&nbsp;
+          </div>
+          <div>
+            <input type="checkbox" id="debugging_flag_adodb_trace" name="debugging[flag_adodb_trace]" {SETTINGS_DEBUGGING_FLAG_ADODB_TRACE}/><label for="debugging_flag_adodb_trace">{TXT_DEBUGGING_FLAG_ADODB_TRACE}</label>&nbsp;
+          </div>
+          <div>
+            <input type="checkbox" id="debugging_flag_adodb_error" name="debugging[flag_adodb_error]" {SETTINGS_DEBUGGING_FLAG_ADODB_ERROR}/><label for="debugging_flag_adodb_error">{TXT_DEBUGGING_FLAG_ADODB_ERROR}</label>&nbsp;
+          </div>
+          <div>
+            <input type="checkbox" id="debugging_log_file" name="debugging[flag_log_file]" {SETTINGS_DEBUGGING_FLAG_LOG_FILE}/><label for="debugging_flag_log_file">{TXT_DEBUGGING_FLAG_LOG_FILE}</label>&nbsp;
+          </div>
+            <div>
+              <input type="checkbox" id="debugging_flag_log_firephp" name="debugging[flag_log_firephp]" {SETTINGS_DEBUGGING_FLAG_LOG_FIREPHP}/><label for="debugging_flag_log_firephp">{TXT_DEBUGGING_FLAG_LOG_FIREPHP}</label>&nbsp;
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <br />
+  <!-- BEGIN settings_submit_button --><input type="submit" value="{TXT_SAVE_CHANGES}" name="submit" /><!-- END settings_submit_button -->
 </form>
 <!-- END settings.html -->
