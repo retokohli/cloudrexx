@@ -1414,6 +1414,8 @@ $_ARRAYLANG['TXT_CORE_SAVED'] = "Seite gespeichert";
 $_ARRAYLANG['TXT_CORE_DRAFT_SUBMITTED'] = "Entwurf zur Ver&ouml;ffentlichung freigegeben";
 $_ARRAYLANG['TXT_CORE_PUBLISH_DRAFT'] = "Entwurf ver&ouml;ffentlichen";
 
+$_ARRAYLANG['TXT_CORE_ALIAS_CREATION_DENIED'] = "Aliasse konnten nicht erstellt werden";
+
 $_ARRAYLANG['TXT_CACHING_STATUS'] = "Caching aktiviert";
 $_ARRAYLANG['TXT_CONTENT_TYPE_REDIRECT'] = "Weiterleitung";
 $_ARRAYLANG['TXT_CUSTOM_CONTENT'] = "Benutzerdefinierte Inhaltsvorlage";

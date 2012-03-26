@@ -71,6 +71,21 @@ class ContentManager extends Module {
         $this->template->touchBlock('content_manager_meat');
 
         $_CORELANG['TXT_CORE_CM_SLUG_INFO'] = sprintf($_CORELANG['TXT_CORE_CM_SLUG_INFO'], 'example.org');
+                
+        if (\Permission::checkAccess(78, 'static', true)) {
+            JS::registerCode("var publishAllowed = true;");
+            $alias_permission = "block";
+            $alias_denial = "none !important";
+        } else {
+            JS::registerCode("var publishAllowed = false;");
+            $alias_permission = "none !important";
+            $alias_denial = "block";
+        }
+        $this->template->setVariable(array(
+            'ALIAS_PERMISSION'  =>  $alias_permission,
+            'ALIAS_DENIAL'      =>  $alias_denial,
+            'CONTREXX_BASE_URL' =>  ASCMS_DOCUMENT_ROOT.'/',
+        ));
 
         $this->setLanguageVars(array(
             //categories
@@ -88,7 +103,6 @@ class ContentManager extends Module {
             //bottom buttons
             'TXT_CORE_PREVIEW', 'TXT_CORE_SAVE_PUBLISH', 'TXT_CORE_SAVE'
         ));
-        $this->template->setVariable('CONTREXX_BASE_URL', ASCMS_DOCUMENT_ROOT.'/');
 
         $modules = $this->db->Execute("SELECT * FROM ".DBPREFIX."modules");
         while (!$modules->EOF) {

@@ -260,12 +260,17 @@ class JSONPage {
         $this->em->persist($page);
         $this->em->flush();
         
-        // aliasses are updated after persist!
-        $data['alias'] = $params['post']['page']['alias'];
-        $aliasses = $page->getAliasses();
-        $page->updateFromArray($data);
-        if ($aliasses != $page->getAliasses()) {
-            $reload = true;
+        // only users with publish rights can create aliassses
+        if (\Permission::checkAccess(78, 'static', true)) {
+            // aliasses are updated after persist!
+            $data['alias'] = $params['post']['page']['alias'];
+            $aliasses = $page->getAliasses();
+            $page->updateFromArray($data);
+            if ($aliasses != $page->getAliasses()) {
+                $reload = true;
+            }
+        } else {
+            $this->messages[] = $_CORELANG['TXT_CORE_ALIAS_CREATION_DENIED'];
         }
 
         if (isset($reload) && $reload) {
