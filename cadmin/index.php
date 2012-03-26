@@ -473,6 +473,7 @@ switch ($plainCmd) {
         break;
     case 'alias':
         Permission::checkAccess(115, 'static');
+        Permission::checkAccess(78, 'static');
         if (!include_once ASCMS_CORE_MODULE_PATH.'/alias/admin.class.php')
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_ALIAS_ADMINISTRATION'];

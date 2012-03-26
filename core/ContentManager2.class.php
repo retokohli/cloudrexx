@@ -56,7 +56,7 @@ class ContentManager extends Module {
 	}
 
 	protected function actRenderCM() {
-            global $_ARRAYLANG, $_CORELANG;
+            global $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
         JS::activate('cx');
         JS::activate('ckeditor');
@@ -72,7 +72,8 @@ class ContentManager extends Module {
 
         $_CORELANG['TXT_CORE_CM_SLUG_INFO'] = sprintf($_CORELANG['TXT_CORE_CM_SLUG_INFO'], 'example.org');
                 
-        if (\Permission::checkAccess(78, 'static', true)) {
+        if (\Permission::checkAccess(78, 'static', true) &&
+                \Permission::checkAccess(115, 'static', true)) {
             JS::registerCode("var publishAllowed = true;");
             $alias_permission = "block";
             $alias_denial = "none !important";
@@ -84,7 +85,7 @@ class ContentManager extends Module {
         $this->template->setVariable(array(
             'ALIAS_PERMISSION'  =>  $alias_permission,
             'ALIAS_DENIAL'      =>  $alias_denial,
-            'CONTREXX_BASE_URL' =>  ASCMS_DOCUMENT_ROOT.'/',
+            'CONTREXX_BASE_URL' =>  ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/',
         ));
 
         $this->setLanguageVars(array(
