@@ -10,7 +10,8 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-require_once ASCMS_CORE_PATH.'/Message.class.php';
+// From version 3.0.0 only
+//require_once ASCMS_CORE_PATH.'/Message.class.php';
 require_once ASCMS_CORE_PATH.'/Html.class.php';
 
 /**
@@ -116,22 +117,6 @@ class SettingDb
 
 
     /**
-     * OBSOLETE
-     *
-     * Returns the current error message
-     *
-     * The message is cleared when read, so you *SHOULD* read it once.
-     * @return  string                  The error message, if any,
-     *                                  or the empty string
-     */
-    static function getErrorString()
-    {
-DBG::log("SettingDb::getErrorString(): ERROR: Obsolete method called");
-        return '';
-    }
-
-
-    /**
      * Returns the current value of the tab index
      * @return  integer             The current tab index
      */
@@ -160,7 +145,7 @@ DBG::log("SettingDb::getErrorString(): ERROR: Obsolete method called");
      *                                Defaults to null.
      * @return  boolean               True on success, false otherwise
      */
-    function init($key='', $module_id=null)
+    static function init($key='', $module_id=null)
     {
         global $objDatabase;
 
@@ -238,7 +223,7 @@ DBG::log("SettingDb::getErrorString(): ERROR: Obsolete method called");
      * @return  array                 The settings array on success,
      *                                false otherwise
      */
-    function getArray($key='')
+    static function getArray($key='')
     {
         if (self::$key !== $key) {
             if (!self::init($key)) return false;
@@ -257,7 +242,7 @@ DBG::log("SettingDb::getErrorString(): ERROR: Obsolete method called");
      * @return  mixed                 The settings value, if present,
      *                                null otherwise
      */
-    function getValue($name)
+    static function getValue($name)
     {
         if (is_null(self::$arrSettings)) {
 DBG::log("SettingDb::getValue($name): ERROR: no settings loaded");
@@ -284,7 +269,7 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
      * @return  boolean               True if the value has been changed,
      *                                false otherwise
      */
-    function set($name, $value)
+    static function set($name, $value)
     {
         if (   isset(self::$arrSettings[$name])
             && self::$arrSettings[$name]['value'] != $value) {
@@ -311,7 +296,7 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
      * See {@see add()} on how to do this.
      * @return  boolean                   True on success, false otherwise
      */
-    function updateAll()
+    static function updateAll()
     {
         if (!self::$flagChanged) return '';
 
@@ -531,18 +516,7 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
 //$objTemplate->setCurrentBlock();
 //echo(nl2br(htmlentities(var_export($objTemplate->getPlaceholderList()))));
 
-        // "instanceof" considers subclasses of Sigma to be a Sigma, too!
-        if (!($objTemplateLocal instanceof HTML_Template_Sigma)) {
-            $objTemplateLocal = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
-        }
-        if (!$objTemplateLocal->blockExists('core_settingdb_row')) {
-            $objTemplateLocal->setRoot(ASCMS_ADMIN_TEMPLATE_PATH);
-//            $objTemplateLocal->setCacheRoot('.');
-            if (!$objTemplateLocal->loadTemplateFile('settingDb.html'))
-                die("Failed to load template settingDb.html");
-//die(nl2br(contrexx_raw2xhtml(var_export($objTemplateLocal, true))));
-        }
-
+        self::verify_template($objTemplateLocal);
 // TODO: Test if everything works without this line
 //        Html::replaceUriParameter($uriBase, 'act=settings');
         Html::replaceUriParameter($uriBase, 'active_tab='.self::$tab_index);
@@ -553,28 +527,74 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
             'URI_BASE' => $uriBase,
         ));
 
-        if ($objTemplateLocal->blockExists('core_settingdb_row'))
-            $objTemplateLocal->setCurrentBlock('core_settingdb_row');
 //echo("SettingDb::show(objTemplateLocal, $prefix): got Array: ".var_export(self::$arrSettings, true)."<br />");
         if (!is_array(self::$arrSettings)) {
-            Message::add($_CORELANG['TXT_CORE_SETTINGDB_ERROR_RETRIEVING'],
-                Message::MSG_CLASS_ERROR);
+// TODO: Error message
+//            Message::add($_CORELANG['TXT_CORE_SETTINGDB_ERROR_RETRIEVING'],
+//                Message::MSG_CLASS_ERROR);
 //die("No Settings array");
             return false;
         }
         if (empty(self::$arrSettings)) {
-            Message::add(
-                sprintf(
-                    $_CORELANG['TXT_CORE_SETTINGDB_WARNING_NONE_FOUND_FOR_TAB_AND_SECTION'],
-                    $tab_name, $section),
-                Message::MSG_CLASS_WARN);
+// TODO: Error message
+//            Message::add(
+//                sprintf(
+//                    $_CORELANG['TXT_CORE_SETTINGDB_WARNING_NONE_FOUND_FOR_TAB_AND_SECTION'],
+//                    $tab_name, $section),
+//                Message::MSG_CLASS_WARN);
 //die("No Settings found");
             return false;
         }
+        self::show_section($objTemplateLocal, $section, $prefix);
+        // The tabindex must be set in the form name in any case
+        $objTemplateLocal->setGlobalVariable(
+            'CORE_SETTINGDB_TAB_INDEX', self::$tab_index);
+        // Set up tab, if any
+        if (!empty($tab_name)) {
+            $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
+            $objTemplateLocal->setGlobalVariable(array(
+                'CORE_SETTINGDB_TAB_NAME'    => $tab_name,
+//                'CORE_SETTINGDB_TAB_INDEX'   => self::$tab_index,
+                'CORE_SETTINGDB_TAB_CLASS'   => (self::$tab_index == $active_tab ? 'active' : ''),
+                'CORE_SETTINGDB_TAB_DISPLAY' => (self::$tab_index++ == $active_tab ? 'block' : 'none'),
+            ));
+            $objTemplateLocal->touchBlock('core_settingdb_tab_row');
+            $objTemplateLocal->parse('core_settingdb_tab_row');
+            $objTemplateLocal->touchBlock('core_settingdb_tab_div');
+            $objTemplateLocal->parse('core_settingdb_tab_div');
+        }
 
+// NOK
+//die(nl2br(contrexx_raw2xhtml(var_export($objTemplateLocal, true))));
+
+        return true;
+    }
+
+
+
+    /**
+     * Display a section of settings present in the $arrSettings class array
+     *
+     * See the description of {@see show()} for details.
+     * @param   HTML_Template_Sigma $objTemplateLocal   The Template object,
+     *                                                  by reference
+     * @param   string              $section      The optional section header
+     *                                            text to add
+     * @param   string              $prefix       The optional prefix for
+     *                                            language variables.
+     *                                            Defaults to 'TXT_'
+     * @return  boolean                           True on success, false otherwise
+     */
+    static function show_section(&$objTemplateLocal, $section='', $prefix='TXT_')
+    {
+        global $_ARRAYLANG;
+
+        self::verify_template(&$objTemplateLocal);
         // This is set to multipart if necessary
         $enctype = '';
         $i = 0;
+        if ($objTemplateLocal->blockExists('core_settingdb_row'))
+            $objTemplateLocal->setCurrentBlock('core_settingdb_row');
         foreach (self::$arrSettings as $name => $arrSetting) {
             // Determine HTML element for type and apply values and selected
             $element = '';
@@ -584,21 +604,22 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
             // Not implemented yet:
             // Warn if some mandatory value is empty
             if (empty($value) && preg_match('/_mandatory$/', $type)) {
-                Message::add(
-                    sprintf($_CORELANG['TXT_CORE_SETTINGDB_WARNING_EMPTY'],
-                        $_ARRAYLANG[$prefix.strtoupper($name)],
-                        $name),
-                    Message::MSG_CLASS_WARN);
+// TODO: Error message
+//                Message::add(
+//                    sprintf($_CORELANG['TXT_CORE_SETTINGDB_WARNING_EMPTY'],
+//                        $_ARRAYLANG[$prefix.strtoupper($name)],
+//                        $name),
+//                    Message::MSG_CLASS_WARN);
             }
             // Warn if some language variable is not defined
             if (empty($_ARRAYLANG[$prefix.strtoupper($name)])) {
-                Message::add(
-                    sprintf($_CORELANG['TXT_CORE_SETTINGDB_WARNING_MISSING_LANGUAGE'],
-                        $prefix.strtoupper($name),
-                        $name),
-                    Message::MSG_CLASS_WARN);
+// TODO: Error message
+//                Message::add(
+//                    sprintf($_CORELANG['TXT_CORE_SETTINGDB_WARNING_MISSING_LANGUAGE'],
+//                        $prefix.strtoupper($name),
+//                        $name),
+//                    Message::MSG_CLASS_WARN);
             }
-            $value_align = (is_numeric($value) ? 'text-align: right;' : '');
 //DBG::log("Value: $value -> align $value_align");
             switch ($type) {
               // Dropdown menu
@@ -608,7 +629,11 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
                 $element = Html::getSelect(
                     $name, $arrValues, $value,
                     '', '',
-                    'style="width: 220px;'.$value_align.'"');
+                    'style="width: 220px;'.
+                    (   isset ($arrValues[$value])
+                     && is_numeric($arrValues[$value])
+                        ? 'text-align: right;' : '').
+                    '"');
                 break;
               case self::TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE:
                 $element = Html::getSelect(
@@ -643,7 +668,7 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
                 continue 2;
 
               case self::TYPE_FILEUPLOAD:
-//echo("Setting up upload for $name, $value<br />");
+//echo("SettingDb::show_section(): Setting up upload for $name, $value<br />");
                 $element =
                     Html::getInputFileupload(
                         // Set the ID only if the $value is non-empty.
@@ -671,7 +696,7 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
                         'document.getElementById("'.$name.'").value=1;'.
                         'document.formSettings_'.self::$tab_index.'.submit();'.
                       '}\'';
-//DBG::log("SettingDb::show(): Event: $event");
+//DBG::log("SettingDb::show_section(): Event: $event");
                 $element =
                     Html::getInputButton(
                         // The button itself gets a dummy name attribute value
@@ -683,7 +708,7 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
                     // The posted value is set to 1 when confirmed,
                     // before the form is posted
                     Html::getHidden($name, 0, '');
-//DBG::log("SettingDb::show(): Element: $element");
+//DBG::log("SettingDb::show_section(): Element: $element");
                 break;
 
               case self::TYPE_TEXTAREA:
@@ -693,20 +718,18 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
                 break;
 
               case self::TYPE_CHECKBOX:
-// TODO: TEST
-die("SettingDb::show(): ERROR: Type CHECKBOX is not implemented yet!");
+                $arrValues = self::splitValues($arrSetting['values']);
+                $value_true = current($arrValues);
                 $element =
-                    Html::getCheckbox($name, $value, false,
-                    in_array($value, array_keys($arrValues)),
-                    '',
-                    'style="width: '.(2*self::DEFAULT_INPUT_WIDTH).'px;'.'"');
+                    Html::getCheckbox($name, $value_true, false,
+                        in_array($value, $arrValues));
                 break;
-
               case self::TYPE_CHECKBOXGROUP:
                 $checked = self::splitValues($value);
+//DBG::log("Values: ".var_export($values, true).", checked: ".var_export($checked, true)."<br />");
                 $element =
                     Html::getCheckboxGroup($name, $values, $values, $checked,
-                        false, '', '<br />', '', '');
+                        '', '', '<br />', '', '');
                 break;
 
 // More...
@@ -720,7 +743,9 @@ die("SettingDb::show(): ERROR: Type CHECKBOX is not implemented yet!");
                 $element =
                     Html::getInputText(
                         $name, $value, false,
-                        'style="width: 220px;'.$value_align.'"');
+                        'style="width: 220px;'.
+                        (is_numeric($value) ? 'text-align: right;' : '').
+                        '"');
             }
 
             $objTemplateLocal->setVariable(array(
@@ -729,7 +754,7 @@ die("SettingDb::show(): ERROR: Type CHECKBOX is not implemented yet!");
                 'CORE_SETTINGDB_ROWCLASS2' => (++$i % 2 ? '1' : '2'),
             ));
             $objTemplateLocal->parseCurrentBlock();
-//echo("SettingDb::show(objTemplateLocal, $prefix): shown $name => $value<br />");
+//echo("SettingDb::show_section(objTemplateLocal, $prefix): shown $name => $value<br />");
         }
 
         // Set form encoding to multipart if necessary
@@ -738,34 +763,13 @@ die("SettingDb::show(): ERROR: Type CHECKBOX is not implemented yet!");
 
         if (   !empty($section)
             && $objTemplateLocal->blockExists('core_settingdb_section')) {
-//echo("SettingDb::show(objTemplateLocal, $section, $prefix): creating section $section<br />");
+//echo("SettingDb::show_section(objTemplateLocal, $section, $prefix): creating section $section<br />");
             $objTemplateLocal->setVariable(array(
                 'CORE_SETTINGDB_SECTION' => $section,
             ));
             $objTemplateLocal->parse('core_settingdb_section');
         }
-
-        // The tabindex must be set in the form name in any case
-        $objTemplateLocal->setGlobalVariable(
-            'CORE_SETTINGDB_TAB_INDEX', self::$tab_index);
-        // Set up tab, if any
-        if (!empty($tab_name)) {
-            $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
-            $objTemplateLocal->setGlobalVariable(array(
-                'CORE_SETTINGDB_TAB_NAME'    => $tab_name,
-//                'CORE_SETTINGDB_TAB_INDEX'   => self::$tab_index,
-                'CORE_SETTINGDB_TAB_CLASS'   => (self::$tab_index == $active_tab ? 'active' : ''),
-                'CORE_SETTINGDB_TAB_DISPLAY' => (self::$tab_index++ == $active_tab ? 'block' : 'none'),
-            ));
-            $objTemplateLocal->touchBlock('core_settingdb_tab_row');
-            $objTemplateLocal->parse('core_settingdb_tab_row');
-            $objTemplateLocal->touchBlock('core_settingdb_tab_div');
-            $objTemplateLocal->parse('core_settingdb_tab_div');
-        }
-
-// NOK
-//die(nl2br(contrexx_raw2xhtml(var_export($objTemplateLocal, true))));
-
+//DBG::log("SettingDb::show_section(): Made sections:<hr />".$objTemplateLocal->get('core_settingdb_sections')."<hr />");
         return true;
     }
 
@@ -819,12 +823,38 @@ die("SettingDb::show(): ERROR: Type CHECKBOX is not implemented yet!");
 
 
     /**
+     * Ensures that a valid template is available
+     *
+     * Die()s if the template given is invalid, and settingDb.html cannot be
+     * loaded to replace it.
+     * @param   HTML_Template_Sigma $objTemplateLocal   The template,
+     *                                                  by reference
+     */
+    static function verify_template(&$objTemplateLocal)
+    {
+        // "instanceof" considers subclasses of Sigma to be a Sigma, too!
+        if (!($objTemplateLocal instanceof HTML_Template_Sigma)) {
+            $objTemplateLocal = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+        }
+        if (!$objTemplateLocal->blockExists('core_settingdb_row')) {
+            $objTemplateLocal->setRoot(ASCMS_ADMIN_TEMPLATE_PATH);
+//            $objTemplateLocal->setCacheRoot('.');
+            if (!$objTemplateLocal->loadTemplateFile('settingDb.html'))
+                die("Failed to load template settingDb.html");
+//die(nl2br(contrexx_raw2xhtml(var_export($objTemplateLocal, true))));
+        }
+    }
+
+
+    /**
      * Update and store all settings found in the $_POST array
      *
-     * Sets up an error message on failure.
-     * @return  boolean                 True on success,
-     *                                  the empty string if none was changed,
-     *                                  or false on failure
+     * Note that you *MUST* call {@see init()} beforehand, or your settings
+     * will be unknown and thus not be stored.
+     * @todo    Set up error messages on various problems and on failure.
+     * @return  boolean                         True on success, the empty
+     *                                          string if none was changed,
+     *                                          or false on failure
      */
     static function storeFromPost()
     {
@@ -841,15 +871,21 @@ die("SettingDb::show(): ERROR: Type CHECKBOX is not implemented yet!");
         unset($_POST['bsubmit']);
         $result = true;
         // Compare POST with current settings and only store what was changed.
-        foreach ($_POST as $name => $value) {
+        foreach (array_keys(self::$arrSettings) as $name) {
+            $value = (isset ($_POST[$name])
+                ? contrexx_input2raw($_POST[$name])
+                : null);
 //            if (preg_match('/^'.preg_quote(CSRF::key(), '/').'$/', $name))
 //                continue;
             if (empty(self::$arrSettings[$name])) {
-                Message::add(sprintf(
-                    $_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING_UNKNOWN_SETTING'],
-                    $name), Message::MSG_CLASS_WARN);
+                if (!$ignore_unknown) {
+// TODO: Error message
+//                Message::add(sprintf(
+//                    $_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING_UNKNOWN_SETTING'],
+//                    $name), Message::MSG_CLASS_WARN);
 // Ignore unknown settings for the time being
 //                $result = false;
+                }
                 continue;
             }
             switch (self::$arrSettings[$name]['type']) {
@@ -864,8 +900,9 @@ die("SettingDb::show(): ERROR: Type CHECKBOX is not implemented yet!");
                             $value = '';
                         } else {
 //echo("Failed to delete file<br />");
-                            Message::add(File::getErrorString(),
-                                Message::MSG_CLASS_ERROR);
+// TODO: Error message
+//                            Message::add(File::getErrorString(),
+//                                Message::MSG_CLASS_ERROR);
                             $result = false;
                         }
                     }
@@ -890,20 +927,19 @@ die("SettingDb::show(): ERROR: Type CHECKBOX is not implemented yet!");
                     } else {
 //echo("SettingDb::storeFromPost(): Error uploading file for setting $name to $target_path<br />");
 // TODO: Add error message
-                        Message::add(File::getErrorString(), Message::MSG_CLASS_ERROR);
+//                        Message::add(File::getErrorString(), Message::MSG_CLASS_ERROR);
                         $result = false;
                     }
                 }
                 break;
-// TODO: Not implemented yet
               case self::TYPE_CHECKBOX:
-die("SettingDb::storeFromPost(): ERROR: Type CHECKBOX is not implemented yet!");
-                break;
+                  break;
               case self::TYPE_CHECKBOXGROUP:
-                $value = join(',', array_keys($value));
+                $value = (is_array($value)
+                    ? join(',', array_keys($value))
+                    : $value);
               default:
                 // Regular value of any other type
-                $value = contrexx_stripslashes($value);
                 break;
             }
             SettingDb::set($name, $value);
@@ -911,10 +947,12 @@ die("SettingDb::storeFromPost(): ERROR: Type CHECKBOX is not implemented yet!");
 //echo("SettingDb::storeFromPost(): So far, the result is ".($result ? 'okay' : 'no good')."<br />");
         $result_update = self::updateAll();
         if ($result_update === false) {
-            Message::add($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING'],
-                Message::MSG_CLASS_ERROR);
+// TODO: Error message
+//            Message::add($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING'],
+//                Message::MSG_CLASS_ERROR);
         } elseif ($result_update === true) {
-            Message::add($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
+// TODO: Error message
+//            Message::add($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
         }
         // If nothing bad happened above, return the result of updateAll(),
         // which may be true, false, or the empty string
@@ -1025,16 +1063,17 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
      * Tries to fix or recreate the settings table.
      * @return  boolean             False, always.
      */
-    function errorHandler()
+    static function errorHandler()
     {
         global $objDatabase;
 
 //die("SettingDb::errorHandler(): Disabled!<br />");
 
+        $table_name = DBPREFIX.'core_setting';
         $arrTables = $objDatabase->MetaTables('TABLES');
-        if (!in_array(DBPREFIX."core_setting", $arrTables)) {
+        if (!in_array($table_name, $arrTables)) {
             $query = "
-                CREATE TABLE `".DBPREFIX."core_setting` (
+                CREATE TABLE `$table_name` (
                   `name` TINYTEXT NOT NULL,
                   `module_id` INT(10) NOT NULL DEFAULT 0,
                   `key` TINYTEXT NOT NULL DEFAULT '',
@@ -1045,8 +1084,11 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
                   PRIMARY KEY (`name`(32), `module_id`, `key`(32))
                 ) ENGINE=MYISAM";
             $objResult = $objDatabase->Execute($query);
-            if (!$objResult) return false;
-echo("SettingDb::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
+            if (!$objResult) {
+DBG::log("SettingDb::errorHandler(): ERROR: Failed to create table $table_name<br />");
+                return false;
+            }
+DBG::log("SettingDb::errorHandler(): Successfully created table $table_name<br />");
         }
 
         // Use SettingDb::add(); in your module code to add missing and
@@ -1061,5 +1103,3 @@ echo("SettingDb::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
     }
 
 }
-
-?>

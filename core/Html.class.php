@@ -735,7 +735,7 @@ class Html
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getCheckboxGroup(
-        $name, $arrOptions, $arrLabel='', $arrChecked='', $id='',
+        $name, $arrOptions, $arrLabel=null, $arrChecked=null, $id=false,
         $onchange='', $separator='',
         $attributeCheckbox='', $attributeLabel=''
     ) {
@@ -748,16 +748,16 @@ class Html
         $name_stripped = preg_replace('/\[.*$/', '', $name);
         if (!is_array($arrLabel)) $arrLabel = array();
         if (!is_array($arrChecked)) $arrChecked = array();
-        if (empty($id)) $id = $name_stripped;
+        if (empty($id) && $id !== false) $id = $name_stripped;
         $checkboxgroup = '';
         foreach ($arrOptions as $key => $value) {
             if (empty($index[$name_stripped])) $index[$name_stripped] = 0;
-            $id_local = $id.'-'.++$index[$name_stripped];
+            $id_local = ($id ? $id.'-'.++$index[$name_stripped] : false);
             $checkboxgroup .=
                 ($checkboxgroup ? $separator : '').
                 self::getCheckbox(
-                    $name.'['.$key.']', $value, $id_local,
-                    (in_array($key, $arrChecked)),
+                    $name.'['.$key.']', $key, $id_local,
+                    in_array($key, $arrChecked),
                     $onchange, $attributeCheckbox
                 ).
                 self::getLabel(
