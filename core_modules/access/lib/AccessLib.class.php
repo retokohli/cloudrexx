@@ -1944,6 +1944,7 @@ JSaccessValidatePrimaryGroupAssociation
             return;
         }
 
+        $row = 0;
         foreach ($arrNewsletterLists as $listId => $arrList) {
             $this->_objTpl->setVariable(array(
                 $this->modulePrefix.'NEWSLETTER_ID'        => $listId,
