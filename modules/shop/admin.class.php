@@ -1206,6 +1206,7 @@ class Shopmanager extends ShopLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
+        SettingDb::init('shop', 'config');
         if (ShopSettings::storeSettings() === false) {
             // Triggers update
             ShopSettings::errorHandler();
@@ -1562,14 +1563,18 @@ class Shopmanager extends ShopLibrary
                 SettingDb::getValue('saferpay_window_option')),
             'SHOP_YELLOWPAY_SHOP_ID' => SettingDb::getValue('postfinance_shop_id'),
             'SHOP_YELLOWPAY_STATUS' =>
-                (SettingDb::getValue('postfinance_shop_id')
+                (SettingDb::getValue('postfinance_active')
                     ? HTML_ATTRIBUTE_CHECKED : ''),
 //                    'SHOP_YELLOWPAY_HASH_SEED' => SettingDb::getValue('postfinance_hash_seed'),
 // Replaced by
             'SHOP_YELLOWPAY_HASH_SIGNATURE_IN' => SettingDb::getValue('postfinance_hash_signature_in'),
             'SHOP_YELLOWPAY_HASH_SIGNATURE_OUT' => SettingDb::getValue('postfinance_hash_signature_out'),
-            'SHOP_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' => Yellowpay::getKnownPaymentMethodCheckboxes(),
-            'SHOP_YELLOWPAY_AUTHORIZATION_TYPE_OPTIONS' => Yellowpay::getAuthorizationMenuoptions(),
+            'SHOP_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' =>
+                Yellowpay::getKnownPaymentMethodCheckboxes(
+                    SettingDb::getValue('postfinance_accepted_payment_methods')),
+            'SHOP_YELLOWPAY_AUTHORIZATION_TYPE_OPTIONS' =>
+                Yellowpay::getAuthorizationMenuoptions(
+                    SettingDb::getValue('postfinance_authorization_type')),
             'SHOP_YELLOWPAY_USE_TESTSERVER_YES_CHECKED' => $yellowpayTestCheckedYes,
             'SHOP_YELLOWPAY_USE_TESTSERVER_NO_CHECKED' => $yellowpayTestCheckedNo,
             // Added 20100222 -- Reto Kohli
@@ -1584,8 +1589,10 @@ class Shopmanager extends ShopLibrary
             'SHOP_DATATRANS_AUTHORIZATION_TYPE_OPTIONS' => Datatrans::getReqtypeMenuoptions($datatrans_request_type),
             'SHOP_DATATRANS_MERCHANT_ID' => $datatrans_merchant_id,
             'SHOP_DATATRANS_STATUS' => ($datatrans_active ? HTML_ATTRIBUTE_CHECKED : ''),
-            'SHOP_DATATRANS_USE_TESTSERVER_YES_CHECKED' => ($datatrans_use_testserver ? ' checked:"checked"' : ''),
-            'SHOP_DATATRANS_USE_TESTSERVER_NO_CHECKED' => ($datatrans_use_testserver ? '' : ' checked:"checked"'),
+            'SHOP_DATATRANS_USE_TESTSERVER_YES_CHECKED' =>
+                ($datatrans_use_testserver ? ' checked="checked"' : ''),
+            'SHOP_DATATRANS_USE_TESTSERVER_NO_CHECKED' =>
+                ($datatrans_use_testserver ? '' : ' checked="checked"'),
             // Not supported
             //'SHOP_DATATRANS_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' => 0,
             'SHOP_CONFIRMATION_EMAILS' => SettingDb::getValue('email_confirmation'),
