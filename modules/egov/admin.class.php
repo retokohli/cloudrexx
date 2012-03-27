@@ -10,60 +10,10 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-
-/*
-ALTER TABLE `contrexx_module_egov_products`
-ADD `product_quantity_limit` TINYINT(2) UNSIGNED NOT NULL DEFAULT '1'
-AFTER `product_quantity`;
-
-INSERT INTO contrexx_module_egov_configuration (`name`, `value`)
-VALUES ('yellowpay_use_testserver', 0);
-
-ALTER TABLE `contrexx_module_egov_products`
-ADD `alternative_names` VARCHAR(255) NOT NULL DEFAULT '';
-*/
-
-/*
-Changes to the database:
-
-UPDATE `contrexx_module_shop_payment_processors`
-SET `name` = 'yellowpay',
-    `description` = 'Yellowpay vereinfacht das Inkasso im Online-Shop. Ihre Kunden bezahlen die Eink�ufe direkt mit dem Gelben Konto oder einer Kreditkarte. Ihr Plus: Mit den Zahlungsarten "PostFinance Debit Direct" und "PostFinance Yellownet" bieten Sie 2,4 Millionen Inhaberinnen und Inhabern eines Gelben Kontos eine kundenfreundliche und sichere Zahlungsm�glichkeit.'
-WHERE `contrexx_module_shop_payment_processors`.`id`=3;
-
-INSERT INTO `contrexx_module_shop_config` (`id`, `name`, `value`, `status`)
-VALUES (NULL, 'yellowpay_accepted_payment_methods', '', '1');
-
-CREATE TABLE `contrexx_module_egov_configuration` (
-  `name` varchar(255) NOT NULL default '',
-  `value` text NOT NULL default '',
-  UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM;
-
-(Copy the settings from the old settings table to the new configuration table)
-
-INSERT INTO `contrexx_module_egov_configuration` (`name`, `value`)
-VALUES
-('yellowpay_accepted_payment_methods', ''),
-('yellowpay_authorization', 'immediate'),
-('yellowpay_uid', 'demo'),
-('yellowpay_hashseed', 'demo'),
-('yellowpay_shopid', 'demo');
-
-ALTER TABLE `contrexx_module_egov_products`
-ADD `yellowpay` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0';
-
-*/
-
 /**
  * Includes
  */
 require_once dirname(__FILE__).'/lib/eGovLibrary.class.php';
-/**
- * Yellowpay payment handling
- */
-require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
-
 
 /**
  * E-Government
@@ -236,6 +186,7 @@ class eGov extends eGovLibrary
                 $this->_strErrMessage = $_ARRAYLANG['TXT_EGOV_SETTINGS_UPDATE_FAILED'];
             }
         }
+        $this->objTemplate->setGlobalVariable($_ARRAYLANG);
 
         $currency = eGovLibrary::GetSettings('set_paypal_currency');
         $currencyMenuoptions = eGov::getCurrencyMenuoptions($currency);
@@ -243,55 +194,27 @@ class eGov extends eGovLibrary
             (eGovLibrary::GetSettings('set_paypal_ipn') == 1
                 ? 'checked="checked"' : ''
             );
-        $objYellowpay = new Yellowpay(
-            eGovLibrary::GetSettings('yellowpay_accepted_payment_methods'),
-            eGovLibrary::GetSettings('yellowpay_authorization')
-        );
-        $yellowpayTest = eGovLibrary::GetSettings('yellowpay_use_testserver');
-        $yellowpayTestCheckedYes = ($yellowpayTest ? 'checked="checked"' : '');
-        $yellowpayTestCheckedNo = ($yellowpayTest ? '' : 'checked="checked"');
 
+        // PostFinance uses SettingDb
+        require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
+        SettingDb::init('config');
+// Temporary fix for the upgrade to SettingDb
+        $postfinance_shop_id = SettingDb::getValue('postfinance_shop_id');
+        if (empty ($postfinance_shop_id)) {
+            self::errorHandler();
+        }
+        /**
+         * @var     HTML_Template_Sigma
+         */
+        $objTemplateLocal = new HTML_Template_Sigma();
+        if (SettingDb::show_section($objTemplateLocal,
+                $_ARRAYLANG['TXT_EGOV_POSTFINANCE'], 'TXT_EGOV_')) {
+            $objTemplateLocal->parse('core_settingdb_sections');
+            $template = $objTemplateLocal->get('core_settingdb_sections');
+            $this->objTemplate->setVariable(
+                'EGOV_SETTINGS_POSTFINANCE', $template);
+        }
         $this->objTemplate->setVariable(array(
-            'TXT_EGOV_CALENDAR_COLOR_FREE' => $_ARRAYLANG['TXT_EGOV_CALENDAR_COLOR_FREE'],
-            'TXT_EGOV_CALENDAR_COLOR_OCCUPIED' => $_ARRAYLANG['TXT_EGOV_CALENDAR_COLOR_OCCUPIED'],
-            'TXT_EGOV_CALENDAR_COLOR_PART' => $_ARRAYLANG['TXT_EGOV_CALENDAR_COLOR_PART'],
-            'TXT_EGOV_ORDERDETAILS_PLACEHOLDER' => $_ARRAYLANG['TXT_EGOV_ORDERDETAILS_PLACEHOLDER'],
-            'TXT_EGOV_PAYMENTS' => $_ARRAYLANG['TXT_EGOV_PAYMENTS'],
-            'TXT_EGOV_PAYPAL' => $_ARRAYLANG['TXT_EGOV_PAYPAL'],
-            'TXT_EGOV_PAYPAL_CURRENCY' => $_ARRAYLANG['TXT_EGOV_PAYPAL_CURRENCY'],
-            'TXT_EGOV_PAYPAL_EMAIL' => $_ARRAYLANG['TXT_EGOV_PAYPAL_EMAIL'],
-            'TXT_EGOV_PAYPAL_IPN' => $_ARRAYLANG['TXT_EGOV_PAYPAL_IPN'],
-            'TXT_EGOV_PLACEHOLDERS' => $_ARRAYLANG['TXT_EGOV_PLACEHOLDERS'],
-            'TXT_EGOV_PRODUCTNAME_PLACEHOLDER' => $_ARRAYLANG['TXT_EGOV_PRODUCTNAME_PLACEHOLDER'],
-            'TXT_EGOV_PRODUCTS_CHOICE_MENU' => $_ARRAYLANG['TXT_EGOV_PRODUCTS_CHOICE_MENU'],
-            'TXT_EGOV_SANDBOX_EMAIL' => $_ARRAYLANG['TXT_EGOV_SANDBOX_EMAIL'],
-            'TXT_EGOV_SENDER_EMAIL' => $_ARRAYLANG['TXT_EGOV_SENDER_EMAIL'],
-            'TXT_EGOV_SENDER_NAME' => $_ARRAYLANG['TXT_EGOV_SENDER_NAME'],
-            'TXT_EGOV_SETTINGS_GENERALLY' => $_ARRAYLANG['TXT_EGOV_SETTINGS_GENERALLY'],
-            'TXT_EGOV_SETTINGS_LAYOUT' => $_ARRAYLANG['TXT_EGOV_SETTINGS_LAYOUT'],
-            'TXT_EGOV_STANDARD_RECIPIENT' => $_ARRAYLANG['TXT_EGOV_STANDARD_RECIPIENT'],
-            'TXT_EGOV_STANDARD_STATUS_CHANGE' => $_ARRAYLANG['TXT_EGOV_STANDARD_STATUS_CHANGE'],
-            'TXT_EGOV_STTINGS_CALENDAR_BACKGROUND' => $_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_BACKGROUND'],
-            'TXT_EGOV_STTINGS_CALENDAR_BORDERCOLOR' => $_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_BORDERCOLOR'],
-            'TXT_EGOV_STTINGS_CALENDAR_LEGENDE_1' => $_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_LEGENDE_1'],
-            'TXT_EGOV_STTINGS_CALENDAR_LEGENDE_2' => $_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_LEGENDE_2'],
-            'TXT_EGOV_STTINGS_CALENDAR_LEGENDE_3' => $_ARRAYLANG['TXT_EGOV_STTINGS_CALENDAR_LEGENDE_3'],
-            'TXT_EGOV_STTINGS_DATE_ENTRY_DESC' => $_ARRAYLANG['TXT_EGOV_STTINGS_DATE_ENTRY_DESC'],
-            'TXT_EGOV_STTINGS_DATE_LABEL' => $_ARRAYLANG['TXT_EGOV_STTINGS_DATE_LABEL'],
-            'TXT_EGOV_SUBJECT' => $_ARRAYLANG['TXT_EGOV_SUBJECT'],
-            'TXT_EGOV_YELLOWPAY' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY'],
-            'TXT_EGOV_YELLOWPAY_ACCEPTED_PAYMENT_METHODS' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_ACCEPTED_PAYMENT_METHODS'],
-            'TXT_EGOV_YELLOWPAY_AUTHORIZATION' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_AUTHORIZATION'],
-            'TXT_EGOV_YELLOWPAY_HASHSEED' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_HASHSEED'],
-            'TXT_EGOV_YELLOWPAY_UID' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_UID'],
-            'TXT_EGOV_YELLOWPAY_POSTFINANCECARD' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_POSTFINANCECARD'],
-            'TXT_EGOV_YELLOWPAY_YELLOWNET' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_YELLOWNET'],
-            'TXT_EGOV_YELLOWPAY_MASTER' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_MASTER'],
-            'TXT_EGOV_YELLOWPAY_VISA' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_VISA'],
-            'TXT_EGOV_YELLOWPAY_AMEX' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_AMEX'],
-            'TXT_EGOV_YELLOWPAY_DINERS' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_DINERS'],
-            'TXT_EGOV_YELLOWPAY_YELLOWBILL' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_YELLOWBILL'],
-            'TXT_SAVE' => $_ARRAYLANG['TXT_SAVE'],
             'CALENDER_BACKGROUND' => eGovLibrary::GetSettings("set_calendar_background"),
             'CALENDER_BORDER' => eGovLibrary::GetSettings("set_calendar_border"),
             'CALENDER_COLOR_1' => eGovLibrary::GetSettings("set_calendar_color_1"),
@@ -302,17 +225,6 @@ class eGov extends eGovLibrary
             'CALENDER_LEGENDE_1' => eGovLibrary::GetSettings("set_calendar_legende_1"),
             'CALENDER_LEGENDE_2' => eGovLibrary::GetSettings("set_calendar_legende_2"),
             'CALENDER_LEGENDE_3' => eGovLibrary::GetSettings("set_calendar_legende_3"),
-            'EGOV_YELLOWPAY_UID' => eGovLibrary::GetSettings('yellowpay_uid'),
-            'EGOV_YELLOWPAY_SHOPID' => eGovLibrary::GetSettings('yellowpay_shopid'),
-            'TXT_EGOV_YELLOWPAY_SHOPID' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_SHOPID'],
-            'EGOV_YELLOWPAY_HASHSEED' => eGovLibrary::GetSettings('yellowpay_hashseed'),
-            'EGOV_YELLOWPAY_AUTHORIZATION_MENUOPTIONS' => $objYellowpay->getAuthorizationMenuoptions(),
-            'EGOV_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' => $objYellowpay->getKnownPaymentMethodCheckboxes(),
-            'TXT_EGOV_EMAIL_TEMPLATE' => $_ARRAYLANG['TXT_EGOV_EMAIL_TEMPLATE'],
-            'TXT_EGOV_EMAIL_TEMPLATE_FOR_Admin' => $_ARRAYLANG['TXT_EGOV_EMAIL_TEMPLATE_FOR_Admin'],
-            'TXT_EGOV_EMAIL_TEMPLATE_FOR_CUSTOMER' => $_ARRAYLANG['TXT_EGOV_EMAIL_TEMPLATE_FOR_CUSTOMER'],
-            'TXT_EGOV_ORDER_ENTRY' => $_ARRAYLANG['TXT_EGOV_ORDER_ENTRY'],
-            'TXT_EGOV_STATE_CHANGE' => $_ARRAYLANG['TXT_EGOV_STATE_CHANGE'],
             'IPN_CHECKED' => $ipnchecked,
             'ORDER_ENTRY_EMAIL' => eGovLibrary::GetSettings("set_orderentry_email"),
             'ORDER_ENTRY_RECIPIENT' => eGovLibrary::GetSettings("set_orderentry_recipient"),
@@ -325,14 +237,7 @@ class eGov extends eGovLibrary
             'STANDARD_RECIPIENT' => eGovLibrary::GetSettings("set_recipient_email"),
             'STANDARD_STATE_EMAIL' => eGovLibrary::GetSettings("set_state_email"),
             'STATE_SUBJECT' => eGovLibrary::GetSettings("set_state_subject"),
-            'TXT_EGOV_GENERAL' => $_ARRAYLANG['TXT_EGOV_GENERAL'],
-            'TXT_EGOV_DEFAULT_CURRENCY' => $_ARRAYLANG['TXT_EGOV_DEFAULT_CURRENCY'],
             'EGOV_CURRENCY_MENUOPTIONS' => $currencyMenuoptions,
-            'TXT_EGOV_YELLOWPAY_USE_TESTSERVER' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_USE_TESTSERVER'],
-            'EGOV_YELLOWPAY_USE_TESTSERVER_YES_CHECKED' => $yellowpayTestCheckedYes,
-            'EGOV_YELLOWPAY_USE_TESTSERVER_NO_CHECKED' => $yellowpayTestCheckedNo,
-            'TXT_EGOV_YES' => $_ARRAYLANG['TXT_EGOV_YES'],
-            'TXT_EGOV_NO' => $_ARRAYLANG['TXT_EGOV_NO'],
         ));
     }
 
@@ -401,34 +306,12 @@ class eGov extends eGovLibrary
         }
         $currencyMenuoptions = eGov::getCurrencyMenuoptions($currency);
 
-        $objYellowpay = new Yellowpay(
-            eGovLibrary::GetSettings('yellowpay_accepted_payment_methods'),
-            eGovLibrary::GetSettings('yellowpay_authorization')
-        );
         $yellowpayCheckedYes = (eGovLibrary::GetProduktValue('yellowpay', $product_id) ? 'checked="checked"' : '');
         $yellowpayCheckedNo = ($yellowpayCheckedYes == '' ? 'checked="checked"' : '');
 
+        $this->objTemplate->setGlobalVariable($_ARRAYLANG);
         $this->objTemplate->setVariable(array(
             'TXT_ACTION_TITLE' => $this->_pageTitle,
-            'TXT_PRODUCT_NAME' => $_ARRAYLANG['TXT_PRODUCT_NAME'],
-            'TXT_EGOV_RECEIVER_ADDRESSES' => $_ARRAYLANG['TXT_EGOV_RECEIVER_ADDRESSES'],
-            'TXT_EGOV_LIMITED_PER_DAY' => $_ARRAYLANG['TXT_EGOV_LIMITED_PER_DAY'],
-            'TXT_EGOV_YES' => $_ARRAYLANG['TXT_EGOV_YES'],
-            'TXT_EGOV_NO' => $_ARRAYLANG['TXT_EGOV_NO'],
-            'TXT_EGOV_RESERVED_DAYS' => $_ARRAYLANG['TXT_EGOV_RESERVED_DAYS'],
-            'TXT_EGOV_PRODUCT_QUANTITY' => $_ARRAYLANG['TXT_EGOV_PRODUCT_QUANTITY'],
-            'TXT_EGOV_TARGET_URL' => $_ARRAYLANG['TXT_EGOV_TARGET_URL'],
-            'TXT_EGOV_TARGET_MESSAGE' => $_ARRAYLANG['TXT_EGOV_TARGET_MESSAGE'],
-            'TXT_EGOV_PRODUCT_PRICE' => $_ARRAYLANG['TXT_EGOV_PRODUCT_PRICE'],
-            'TXT_EGOV_PRODUCT_DESC' => $_ARRAYLANG['TXT_EGOV_PRODUCT_DESC'],
-            'TXT_EGOV_FORM_FIELDS' => $_ARRAYLANG['TXT_EGOV_FORM_FIELDS'],
-            'TXT_EGOV_ADD_OTHER_FIELD' => $_ARRAYLANG['TXT_EGOV_ADD_OTHER_FIELD'],
-            'TXT_EGOV_FIELD_NAME' => $_ARRAYLANG['TXT_EGOV_FIELD_NAME'],
-            'TXT_EGOV_TYPE' => $_ARRAYLANG['TXT_EGOV_TYPE'],
-            'TXT_EGOV_VALUE_S' => $_ARRAYLANG['TXT_EGOV_VALUE_S'],
-            'TXT_EGOV_MANDATORY_FIELD' => $_ARRAYLANG['TXT_EGOV_MANDATORY_FIELD'],
-            'TXT_BROWSE' => $_ARRAYLANG['TXT_BROWSE'],
-            'TXT_EGOV_SEPARATE_MULTIPLE_VALUES_BY_COMMA' => $_ARRAYLANG['TXT_EGOV_SEPARATE_MULTIPLE_VALUES_BY_COMMA'],
             'PRODUCT_FORM_DESC' => get_wysiwyg_editor('contactFormDesc', eGovLibrary::GetProduktValue("product_desc", $product_id), 'shop'),
             'PRODUCT_FORM_QUANTITY' => eGovLibrary::GetProduktValue("product_quantity", $product_id),
             'PRODUCT_FORM_NAME' => eGovLibrary::GetProduktValue('product_name', $product_id),
@@ -438,64 +321,23 @@ class eGov extends eGovLibrary
             'PRODUCT_FORM_PRICE' => eGovLibrary::GetProduktValue("product_price", $product_id),
             'PRODUCT_ID' => $product_id,
             'EGOV_JS_SUBMIT_FUNCTION' => $jsSubmitFunction,
-            'TXT_SAVE' => $_ARRAYLANG['TXT_SAVE'],
-            'TXT_EGOV_CONFIRM_CREATE_CONTENT_SITE' => $_ARRAYLANG['TXT_EGOV_CONFIRM_CREATE_CONTENT_SITE'],
-            'TXT_EGOV_CONFIRM_UPDATE_CONTENT_SITE' => $_ARRAYLANG['TXT_EGOV_CONFIRM_UPDATE_CONTENT_SITE'],
-            'TXT_STATE' => $_ARRAYLANG['TXT_STATE'],
             'STATE_CHECKED' => $StatusChecked,
-            'TXT_EGOV_PRODUCT_AUTO' => $_ARRAYLANG['TXT_EGOV_PRODUCT_AUTO'],
             'AUTOSTATUS_CHECKED_YES' => $AutoJaChecked,
             'AUTOSTATUS_CHECKED_NO' => $AutoNeinChecked,
-            'TXT_EGOV_PRODUCT_ELECTRO' => $_ARRAYLANG['TXT_EGOV_PRODUCT_ELECTRO'],
             'ELECTRO_CHECKED' => $electro_checked,
-            'TXT_EGOV_PRODUCT_SELECT_FILE' => $_ARRAYLANG['TXT_EGOV_PRODUCT_SELECT_FILE'],
             'PRODUCT_FORM_FILE' => eGovLibrary::GetProduktValue("product_file", $product_id),
-            'TXT_EGOV_ORDER_STATE_AUTOMAIL' => $_ARRAYLANG["TXT_EGOV_ORDER_STATE_AUTOMAIL"],
-            'TXT_EGOV_BASIC_DATA' => $_ARRAYLANG["TXT_EGOV_BASIC_DATA"],
-            'TXT_EGOV_EXTENDED_OPTIONS' => $_ARRAYLANG["TXT_EGOV_EXTENDED_OPTIONS"],
-            'TXT_EGOV_SENDER_NAME' => $_ARRAYLANG['TXT_EGOV_SENDER_NAME'],
-            'TXT_EGOV_SENDER_EMAIL' => $_ARRAYLANG['TXT_EGOV_SENDER_EMAIL'],
             'PRODUCT_SENDER_NAME' => $ProductSenderName,
             'PRODUCT_SENDER_EMAIL' => $ProductSenderEmail,
-            'TXT_EGOV_EMAIL_TEMPLATE_FOR_CUSTOMER' => $_ARRAYLANG['TXT_EGOV_EMAIL_TEMPLATE_FOR_CUSTOMER'],
-            'TXT_EGOV_SUBJECT' => $_ARRAYLANG['TXT_EGOV_SUBJECT'],
-            'TXT_EGOV_EMAIL_TEMPLATE' => $_ARRAYLANG['TXT_EGOV_EMAIL_TEMPLATE'],
             'PRODUCT_TARGET_SUBJECT' => $ProductTargetSubject,
             'PRODUCT_TARGET_BODY' => $ProductTargetBody,
-            'TXT_EGOV_PRODUCTNAME_PLACEHOLDER' => $_ARRAYLANG['TXT_EGOV_PRODUCTNAME_PLACEHOLDER'],
-            'TXT_EGOV_ORDERDETAILS_PLACEHOLDER' => $_ARRAYLANG['TXT_EGOV_ORDERDETAILS_PLACEHOLDER'],
             'PAYPAL_YES' => $PaypayCheckedYes,
             'PAYPAL_NO' => $PaypayCheckedNo,
-            'TXT_EGOV_ACTIVATE_PAYPAL' => $_ARRAYLANG['TXT_EGOV_ACTIVATE_PAYPAL'],
-            'TXT_EGOV_SANDBOX_EMAIL' => $_ARRAYLANG['TXT_EGOV_SANDBOX_EMAIL'],
             'SANDBOX_EMAIL' => $paypalEmail,
-            'TXT_EGOV_PAYMENTS' => $_ARRAYLANG['TXT_EGOV_PAYMENTS'],
-            'TXT_EGOV_PAYPAL_CURRENCY' => $_ARRAYLANG['TXT_EGOV_PAYPAL_CURRENCY'],
-            'TXT_EGOV_PLACEHOLDERS' => $_ARRAYLANG['TXT_EGOV_PLACEHOLDERS'],
-            'TXT_EGOV_PAYPAL' => $_ARRAYLANG['TXT_EGOV_PAYPAL'],
-            'TXT_EGOV_YELLOWPAY' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY'],
-            'TXT_EGOV_YELLOWPAY_UID' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_UID'],
-            'TXT_EGOV_YELLOWPAY_HASHSEED' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_HASHSEED'],
-            'TXT_EGOV_YELLOWPAY_AUTHORIZATION' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_AUTHORIZATION'],
-            'TXT_EGOV_YELLOWPAY_ACCEPTED_PAYMENT_METHODS' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_ACCEPTED_PAYMENT_METHODS'],
-            'TXT_EGOV_ACTIVATE_YELLOWPAY' => $_ARRAYLANG['TXT_EGOV_ACTIVATE_YELLOWPAY'],
-            'EGOV_YELLOWPAY_UID' => eGovLibrary::GetSettings('yellowpay_uid'),
-            'EGOV_YELLOWPAY_HASHSEED' => eGovLibrary::GetSettings('yellowpay_hashseed'),
-            'EGOV_YELLOWPAY_SHOPID' => eGovLibrary::GetSettings('yellowpay_shopid'),
-            'TXT_EGOV_YELLOWPAY_SHOPID' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_SHOPID'],
-            'EGOV_YELLOWPAY_AUTHORIZATION_MENUOPTIONS' => $objYellowpay->getAuthorizationMenuoptions(),
-            'EGOV_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' => $objYellowpay->getKnownPaymentMethodCheckboxes(),
-            'TXT_EGOV_ACTIVATE_YELLOWPAY' => $_ARRAYLANG['TXT_EGOV_ACTIVATE_YELLOWPAY'],
             'YELLOWPAY_CHECKED_YES' => $yellowpayCheckedYes,
             'YELLOWPAY_CHECKED_NO' => $yellowpayCheckedNo,
-            'TXT_EGOV_GENERAL' => $_ARRAYLANG['TXT_EGOV_GENERAL'],
-            'TXT_EGOV_DEFAULT_CURRENCY' => $_ARRAYLANG['TXT_EGOV_DEFAULT_CURRENCY'],
             'EGOV_CURRENCY_MENUOPTIONS' => $currencyMenuoptions,
             'EGOV_PRODUCT_QUANTITY_LIMIT' => eGovLibrary::GetProduktValue('product_quantity_limit', $product_id),
-            'TXT_EGOV_PRODUCT_QUANTITY_LIMIT' => $_ARRAYLANG['TXT_EGOV_PRODUCT_QUANTITY_LIMIT'],
             // Alternative payment methods, comma separated
-            'TXT_EGOV_ALTERNATIVE_PAYMENT_METHODS' => $_ARRAYLANG['TXT_EGOV_ALTERNATIVE_PAYMENT_METHODS'],
-            'TXT_EGOV_ALTERNATIVE_PAYMENT_NAMES' => $_ARRAYLANG['TXT_EGOV_ALTERNATIVE_PAYMENT_NAMES'],
             'ALTERNATIVE_NAMES' => eGovLibrary::GetProduktValue('alternative_names', $product_id),
         ));
 
@@ -1597,40 +1439,10 @@ class eGov extends eGovLibrary
                SET `value`='".(isset($_REQUEST['PayPal_IPN']) ? 1 : 0)."'
              WHERE `name`='set_paypal_ipn'
         ") ? true : false);
-        $strAcceptedPM = (isset($_POST['yellowpay_accepted_payment_methods'])
-            ? addslashes(join(',', $_POST['yellowpay_accepted_payment_methods']))
-            : ''
-        );
-        $result &= ($objDatabase->Execute("
-            UPDATE ".DBPREFIX."module_egov_configuration
-               SET `value`='$strAcceptedPM'
-             WHERE `name`='yellowpay_accepted_payment_methods'
-        ") ? true : false);
-        $result &= ($objDatabase->Execute("
-            UPDATE ".DBPREFIX."module_egov_configuration
-               SET `value`='".(isset($_REQUEST['yellowpay_uid']) ? $_REQUEST['yellowpay_uid'] : '')."'
-             WHERE `name`='yellowpay_uid'
-        ") ? true : false);
-        $result &= ($objDatabase->Execute("
-            UPDATE ".DBPREFIX."module_egov_configuration
-               SET `value`='".(isset($_REQUEST['yellowpay_shopid']) ? $_REQUEST['yellowpay_shopid'] : '')."'
-             WHERE `name`='yellowpay_shopid'
-        ") ? true : false);
-        $result &= ($objDatabase->Execute("
-            UPDATE ".DBPREFIX."module_egov_configuration
-               SET `value`='".(isset($_REQUEST['yellowpay_hashseed']) ? $_REQUEST['yellowpay_hashseed'] : '')."'
-             WHERE `name`='yellowpay_hashseed'
-        ") ? true : false);
-        $result &= ($objDatabase->Execute("
-            UPDATE ".DBPREFIX."module_egov_configuration
-               SET `value`='".(isset($_REQUEST['yellowpay_authorization']) ? $_REQUEST['yellowpay_authorization'] : '')."'
-             WHERE `name`='yellowpay_authorization'
-        ") ? true : false);
-        $result &= ($objDatabase->Execute("
-            UPDATE ".DBPREFIX."module_egov_configuration
-               SET `value`='".(isset($_REQUEST['yellowpay_use_testserver']) ? $_REQUEST['yellowpay_use_testserver'] : '')."'
-             WHERE `name`='yellowpay_use_testserver'
-        ") ? true : false);
+        require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
+        SettingDb::init('config');
+        $result_settingdb = SettingDb::storeFromPost(true);
+        if ($result_settingdb === false) $result = false;
         return $result;
     }
 
@@ -1961,5 +1773,3 @@ class eGov extends eGovLibrary
         return $strMenuOptions;
     }
 }
-
-?>
