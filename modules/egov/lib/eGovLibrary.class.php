@@ -37,7 +37,7 @@ class eGovLibrary {
             'name' => 'TXT_EGOV_REGEX_URL',
         ),
         4 => array(
-            'regex' => '^[A-Za-zäàáüâûôñèöéè\ ]*$',
+            'regex' => '^[A-Za-zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\ ]*$',
             'name' => 'TXT_EGOV_REGEX_TEXT',
         ),
         5 => array(
@@ -72,15 +72,14 @@ class eGovLibrary {
         global $objDatabase;
 
         $query = "
-            SELECT $FieldName
-              FROM ".DBPREFIX."module_egov_products
-             WHERE product_id=$ProductID
-        ";
+            SELECT `$FieldName`
+              FROM `".DBPREFIX."module_egov_products`
+             WHERE `product_id`=$ProductID";
         $objResult = $objDatabase->Execute($query);
-        if ($objResult && $objResult->RecordCount() == 1) {
-            return $objResult->fields[$FieldName];
+        if (!$objResult || $objResult->EOF) {
+            return '';
         }
-        return '';
+        return $objResult->fields[$FieldName];
     }
 
 
@@ -93,7 +92,7 @@ class eGovLibrary {
      *                                on success, the empty string otherwise
      * @static
      */
-    static function GetOrderValue($FieldName='', $order_id)
+    static function GetOrderValue($FieldName, $order_id)
     {
         global $objDatabase;
 
@@ -356,7 +355,7 @@ class eGovLibrary {
     {
         global $objDatabase;
 
-        list ($year, $month, $day) = split('-', $datum);
+        list ($year, $month, $day) = explode('-', $datum);
         $query = "
             SELECT count(*) AS anzahl
               FROM ".DBPREFIX."module_egov_product_calendar
@@ -379,72 +378,10 @@ class eGovLibrary {
         $flagYellowbill = false;
         $yellowpayEnabled =
             eGovLibrary::GetProduktValue('yellowpay', $id);
-        $yellowpayAcceptedPaymentMethods =
-            eGovLibrary::GetSettings('yellowpay_accepted_payment_methods');
-        if (   $flagBackend === false
-            && $yellowpayEnabled
-            && preg_match('/yellowbill/', $yellowpayAcceptedPaymentMethods)) {
-            $flagYellowbill = true;
-            // Hack: If yellowbill is one of the payment methods available,
-            // add the necessary fields with an ID, so they can be found.
-            // The special is_required value of -1 makes them easy to skip
-            // during validation of the fields when a different payment
-            // method is selected.
-            $order = count($arrFields);
-            $arrFields[] = array(
-                'name' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_ESR'],
-                'type' => 'text',
-                'attributes' => '" id="yellow1',
-                'is_required' => -1,
-                'check_type' => 1,
-                'order_id' => ++$order,
-            );
-            $arrFields[] = array(
-                'name' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_REFERENCE'],
-                'type' => 'text',
-                'attributes' => '" id="yellow2',
-                'is_required' => 0,
-                'check_type' => 5,
-                'order_id' => ++$order,
-            );
-            $arrFields[] = array(
-                'name' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_LASTNAME'],
-                'type' => 'text',
-                'attributes' => '" id="yellow3',
-                'is_required' => -1,
-                'check_type' => 4,
-                'order_id' => ++$order,
-            );
-            $arrFields[] = array(
-                'name' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_ADDRESS'],
-                'type' => 'text',
-                'attributes' => '" id="yellow4',
-                'is_required' => -1,
-                'check_type' => 1,
-                'order_id' => ++$order,
-            );
-            $arrFields[] = array(
-                'name' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_ZIP'],
-                'type' => 'text',
-                'attributes' => '" id="yellow5',
-                'is_required' => -1,
-                'check_type' => 5,
-                'order_id' => ++$order,
-            );
-            $arrFields[] = array(
-                'name' => $_ARRAYLANG['TXT_EGOV_YELLOWPAY_CITY'],
-                'type' => 'text',
-                'attributes' => '" id="yellow6',
-                'is_required' => -1,
-                'check_type' => 4,
-                'order_id' => ++$order,
-            );
-        }
         $strCalendarSource = '';
         if (eGovLibrary::GetProduktValue('product_per_day', $id) == 'yes') {
             $strCalendarSource = $this->getCalendarSource($id, $flagBackend);
         }
-
         $FormActionTarget =
             ($preview ? '../' : '').
             ($flagBackend
@@ -465,15 +402,6 @@ class eGovLibrary {
             "method=\"post\" enctype=\"multipart/form-data\" ".
             "onsubmit=\"return checkAllFields();\" id=\"contactForm\">\n".
             "<input type=\"hidden\" name=\"send\" value=\"1\" />".
-            ($flagYellowbill
-              ? "<input id=\"bill1\" type=\"hidden\" name=\"txtESR_Member\" value=\"\" />".
-                "<input id=\"bill2\" type=\"hidden\" name=\"txtESR_Ref\" value=\"\" />".
-                "<input id=\"bill3\" type=\"hidden\" name=\"txtBLastName\" value=\"\" />".
-                "<input id=\"bill4\" type=\"hidden\" name=\"txtBAddr1\" value=\"\" />".
-                "<input id=\"bill5\" type=\"hidden\" name=\"txtBZipCode\" value=\"\" />".
-                "<input id=\"bill6\" type=\"hidden\" name=\"txtBCity\" value=\"\" />"
-              : ''
-             ).
 //            "<input type=\"hidden\" name=\"paypal\" value=\"".eGovLibrary::GetProduktValue('product_paypal', $id)."\" />".
             $strCalendarSource.
             "<br /><table summary=\"\" border=\"0\">\n";
@@ -590,11 +518,9 @@ class eGovLibrary {
                 "onchange=\"toggleYellowpayFields();\">\n";
             if ($paymentYellowpay) {
                 // Yellowpay is enabled
-                $objYellowpay = new Yellowpay(
-                    eGovLibrary::GetSettings('yellowpay_accepted_payment_methods'),
-                    eGovLibrary::GetSettings('yellowpay_authorization')
-                );
-                $sourcecode .= $objYellowpay->getAcceptedPaymentMethodMenuOptions();
+                $sourcecode .=
+                    '<option value="PostFinance">'.
+                    $_ARRAYLANG['TXT_EGOV_POSTFINANCE'].'</option>';
             }
             if ($paymentPaypal) {
                 // PayPal is enabled
@@ -1359,6 +1285,34 @@ class eGovLibrary {
         fclose($fp);
     }
 
-}
 
-?>
+    /**
+     * Handles and fixes database related problems
+     * @return  boolean             False.  Always.
+     */
+    static function errorHandler()
+    {
+        require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
+        Yellowpay::errorHandler(); // Also calls SettingDb::errorHandler()
+        foreach (array(
+            'postfinance_accepted_payment_methods' =>
+                'yellowpay_accepted_payment_methods',
+            'postfinance_shop_id' =>
+                'yellowpay_shopid',
+            'postfinance_hash_signature_in' =>
+                'yellowpay_hashseed',
+            'postfinance_hash_signature_out' =>
+                'yellowpay_hashseed',
+            'postfinance_authorization_type' =>
+                'yellowpay_authorization',
+            'postfinance_use_testserver' =>
+                'yellowpay_use_testserver',
+        ) as $to => $from) {
+            $value = eGovLibrary::GetSettings($from);
+//DBG::log("eGovLibrary::errorHandler(): Copying from $from, value $value, to $to<br />");
+            SettingDb::set($to, $value);
+        }
+        SettingDb::updateAll();
+    }
+
+}

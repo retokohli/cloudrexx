@@ -52,4 +52,5 @@ $_ARRAYLANG['TXT_EGOV_DAYNAME_5'] = "Freitag";
 $_ARRAYLANG['TXT_EGOV_DAYNAME_6'] = "Samstag";
 $_ARRAYLANG['TXT_EGOV_DAYNAME_7'] = "Sonntag";
 $_ARRAYLANG['TXT_EGOV_PAYMENT_NOT_COMPLETED'] = "Die Bezahlung des Produktes steht noch aus.";
-?>
+
+$_ARRAYLANG['TXT_ORDER_LINK_PREPARED'] = "Commande prête au paiement. Veuillez cliquer sur le lien ci-dessous pour accéder à la plateforme de paiement et y confirmer la transaction.";
