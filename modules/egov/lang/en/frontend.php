@@ -52,4 +52,5 @@ $_ARRAYLANG['TXT_EGOV_DAYNAME_5'] = "Friday";
 $_ARRAYLANG['TXT_EGOV_DAYNAME_6'] = "Saturday";
 $_ARRAYLANG['TXT_EGOV_DAYNAME_7'] = "Sunday";
 $_ARRAYLANG['TXT_EGOV_PAYMENT_NOT_COMPLETED'] = "The product hasn't been paid yet.";
-?>
+
+$_ARRAYLANG['TXT_ORDER_LINK_PREPARED'] = "Your order has been prepared for payment. Click the button below in order to proceed to the payment gateway.";

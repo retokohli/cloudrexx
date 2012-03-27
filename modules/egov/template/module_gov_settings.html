@@ -1,6 +1,5 @@
-
-<script language="JavaScript" type="text/javascript">
-<!-- //
+<script type="text/javascript">
+// <![CDATA[
 function showOrHide(strElement) {
   if (document.getElementById(strElement).style.display == 'none') {
     document.getElementById(strElement).style.display = 'block';
@@ -8,7 +7,7 @@ function showOrHide(strElement) {
     document.getElementById(strElement).style.display = 'none';
   }
 }
-// -->
+// ]]>
 </script>
 
 <ul id="tabmenu">
@@ -23,8 +22,8 @@ function showOrHide(strElement) {
         <th colspan="2">{TXT_EGOV_PLACEHOLDERS}</th>
       </tr>
       <tr class="row1">
-        <td width="15%">[[PRODUCT_NAME]]</td>
-        <td width="85%">=> {TXT_EGOV_PRODUCTNAME_PLACEHOLDER}</td>
+        <td width="25%">[[PRODUCT_NAME]]</td>
+        <td width="75%">=> {TXT_EGOV_PRODUCTNAME_PLACEHOLDER}</td>
       </tr>
       <tr class="row2">
         <td>[[ORDER_VALUE]]</td>
@@ -37,8 +36,8 @@ function showOrHide(strElement) {
         <th colspan="2">{TXT_EGOV_EMAIL_TEMPLATE_FOR_CUSTOMER}</th>
       </tr>
       <tr class="row1">
-        <td width="15%">{TXT_EGOV_SENDER_NAME}</td>
-        <td width="85%"><input style="width: 670px;" type="text" name="senderName" value="{SENDER_NAME}" /></td>
+        <td width="25%">{TXT_EGOV_SENDER_NAME}</td>
+        <td width="75%"><input style="width: 670px;" type="text" name="senderName" value="{SENDER_NAME}" /></td>
       </tr>
       <tr class="row2">
         <td>{TXT_EGOV_SENDER_EMAIL}</td>
@@ -59,8 +58,8 @@ function showOrHide(strElement) {
         <th colspan="2">{TXT_EGOV_EMAIL_TEMPLATE_FOR_Admin}</th>
       </tr>
       <tr class="row2">
-        <td width="15%">{TXT_EGOV_SENDER_NAME}</td>
-        <td width="85%"><input style="width: 670px;" type="text" name="orderentrysenderName" value="{ORDER_ENTRY_SENDER_NAME}" /></td>
+        <td width="25%">{TXT_EGOV_SENDER_NAME}</td>
+        <td width="75%"><input style="width: 670px;" type="text" name="orderentrysenderName" value="{ORDER_ENTRY_SENDER_NAME}" /></td>
       </tr>
       <tr class="row1">
         <td>{TXT_EGOV_SENDER_EMAIL}</td>
@@ -87,8 +86,8 @@ function showOrHide(strElement) {
         <th colspan="2">{TXT_EGOV_SETTINGS_LAYOUT}</th>
       </tr>
       <tr class="row1">
-        <td width="15%">{TXT_EGOV_CALENDAR_COLOR_FREE}</td>
-        <td width="85%"><input style="width: 670px;" type="text" name="calenderColor1" value="{CALENDER_COLOR_1}" /></td>
+        <td width="25%">{TXT_EGOV_CALENDAR_COLOR_FREE}</td>
+        <td width="75%"><input style="width: 670px;" type="text" name="calenderColor1" value="{CALENDER_COLOR_1}" /></td>
       </tr>
       <tr class="row2">
         <td>{TXT_EGOV_CALENDAR_COLOR_PART}</td>
@@ -135,66 +134,24 @@ function showOrHide(strElement) {
         <th colspan="2">{TXT_EGOV_GENERAL}</th>
       </tr>
       <tr class="row1">
-        <td width="15%">{TXT_EGOV_DEFAULT_CURRENCY}</td>
-        <td width="85%">
+        <td width="25%">{TXT_EGOV_DEFAULT_CURRENCY}</td>
+        <td width="75%">
           <select name="general_currency" style="width: 300px;">
             {EGOV_CURRENCY_MENUOPTIONS}
           </select>
         </td>
       </tr>
     </table>
-    <!-- Yellowpay -->
-    <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-      <tr>
-        <th colspan="2">{TXT_EGOV_YELLOWPAY}</th>
-      </tr>
-      <!--tr class="row2">
-        <td width="15%">{TXT_EGOV_YELLOWPAY_UID}</td>
-        <td width="85%"><input type="text" name="yellowpay_uid" value="{EGOV_YELLOWPAY_UID}" style="width: 670px;" /></td>
-      </tr-->
-      <tr class="row1">
-        <td width="15%">{TXT_EGOV_YELLOWPAY_SHOPID}</td>
-        <td width="85%"><input type="text" name="yellowpay_shopid" value="{EGOV_YELLOWPAY_SHOPID}" style="width: 300px;" /></td>
-      </tr>
-      <tr class="row2">
-        <td>{TXT_EGOV_YELLOWPAY_HASHSEED}</td>
-        <td><input type="text" name="yellowpay_hashseed" value="{EGOV_YELLOWPAY_HASHSEED}" style="width: 300px;" /></td>
-      </tr>
-      <tr class="row1">
-        <td>{TXT_EGOV_YELLOWPAY_AUTHORIZATION}</td>
-        <td>
-          <select name="yellowpay_authorization" style="width: 300px;">
-          {EGOV_YELLOWPAY_AUTHORIZATION_MENUOPTIONS}
-          </select>
-        </td>
-      </tr>
-      <tr class="row2">
-        <td valign="top">{TXT_EGOV_YELLOWPAY_ACCEPTED_PAYMENT_METHODS}</td>
-        <td>
-        {EGOV_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES}
-        </td>
-      </tr>
-      <tr class="row1">
-        <td valign="top">{TXT_EGOV_YELLOWPAY_USE_TESTSERVER}</td>
-        <td>
-          <input id="yellowpay_use_testserver_yes" type="radio"
-            name="yellowpay_use_testserver" value="1"{EGOV_YELLOWPAY_USE_TESTSERVER_YES_CHECKED}>
-          <label for="yellowpay_use_testserver_yes">{TXT_EGOV_YES}</label>
-          <br />
-          <input id="yellowpay_use_testserver_no" type="radio"
-            name="yellowpay_use_testserver" value="0"{EGOV_YELLOWPAY_USE_TESTSERVER_NO_CHECKED}>
-          <label for="yellowpay_use_testserver_no">{TXT_EGOV_NO}</label>
-        </td>
-      </tr>
-    </table>
+    <!-- Postfinance, uses SettingDb -->
+    {EGOV_SETTINGS_POSTFINANCE}
     <!-- PayPal -->
     <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
       <tr>
         <th colspan="2">{TXT_EGOV_PAYPAL}</th>
       </tr>
     <tr class="row2">
-      <td width="15%">{TXT_EGOV_PAYPAL_EMAIL}</td>
-      <td width="85%"><input type="text" name="PayPal_mail" value="{PAYPAL_EMAIL}" style="width: 300px;" /></td>
+      <td width="25%">{TXT_EGOV_PAYPAL_EMAIL}</td>
+      <td width="75%"><input type="text" name="PayPal_mail" value="{PAYPAL_EMAIL}" style="width: 300px;" /></td>
     </tr>
     <!--tr class="row1">
       <td>{TXT_EGOV_PAYPAL_CURRENCY}</td>
