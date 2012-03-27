@@ -405,25 +405,49 @@ class PaymentProcessing
 
         $language = FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
         $language = strtolower($language).'_'.strtoupper($language);
+        // Temporary workaround until SettingDb is fully in charge.
+        // After that, just do a simple
+        //$settings = SettingDb::getArray();
+        $settings = array(
+            'postfinance_shop_id' => array('value' =>
+                Settings::getValueByName('yellowpay_shop_id')),
+            'postfinance_hash_signature_in' => array('value' =>
+                Settings::getValueByName('yellowpay_hash_signature_in')),
+            'postfinance_hash_signature_out' => array('value' =>
+                Settings::getValueByName('yellowpay_hash_signature_out')),
+            'postfinance_authorization_type' => array('value' =>
+                Settings::getValueByName('yellowpay_authorization_type')),
+            'postfinance_accepted_payment_methods' => array('value' =>
+                Settings::getValueByName('yellowpay_accepted_payment_methods')),
+            'postfinance_use_testserver' => array('value' =>
+                Settings::getValueByName('yellowpay_use_testserver')),
+        );
         $arrShopOrder = array(
-            'PSPID'    => Settings::getValueByName('yellowpay_shop_id'),
-            'orderID'  => $_SESSION['shop']['orderid'],
-            'amount'   => intval($_SESSION['shop']['grand_total_price']*100),
-            'language' => $language,
-            'currency' => Currency::getActiveCurrencyCode(),
+            'PSPID'    => $settings['postfinance_shop_id']['value'],
+            'ORDERID'  => $_SESSION['shop']['orderid'],
+            'AMOUNT'   => intval($_SESSION['shop']['grand_total_price']*100),
+            'LANGUAGE' => $language,
+            'CURRENCY' => Currency::getActiveCurrencyCode(),
+// TODO: Fill these in when available
+//            'COM' => '',
+//            'CN' => '',
+//            'OWNERADDRESS' => '',
+//            'OWNERZIP' => '',
+//            'OWNERTOWN' => '',
+//            'OWNERCTY' => '',
+//            'OWNERTELNO' => '',
+//            'EMAIL' => '',
         );
         $yellowpayForm = Yellowpay::getForm(
-            $arrShopOrder, $_ARRAYLANG['TXT_ORDER_NOW']
-        );
-        if (_PAYMENT_DEBUG && Yellowpay::$arrError) {
-            $strError =
+            $arrShopOrder, $_ARRAYLANG['TXT_ORDER_NOW'], false, $settings);
+        if (Yellowpay::$arrError) {
+            foreach (Yellowpay::$arrError as $error) {
+                DBG::log("Yellowpay Error: $error");
+            }
+            return
                 '<font color="red"><b>'.
                 $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_YELLOWPAY'].
-                '<br /></b>';
-            if (_PAYMENT_DEBUG) {
-                $strError .= join('<br />', Yellowpay::$arrError); //.'<br />';
-            }
-            return $strError.'</font>';
+                '<br /></b></font>';
         }
         return $yellowpayForm;
     }
@@ -503,8 +527,8 @@ class PaymentProcessing
                     return intval($_REQUEST['orderid']);
                 break;
             case 'yellowpay':
-                return Yellowpay::checkin();
-
+                return Yellowpay::checkin(
+                    Settings::getValueByName('yellowpay_hash_signature_out'));
 //                    if (Yellowpay::$arrError || Yellowpay::$arrWarning) {
 //                        global $_ARRAYLANG;
 //                        echo('<font color="red"><b>'.

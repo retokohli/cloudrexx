@@ -153,11 +153,11 @@ class Settings
         global $objDatabase;
 
         if (isset($_POST['general'])) {
-            $strYellowpayAcceptedPM = (isset($_POST['yellowpay_accepted_payment_methods'])
-                ? addslashes(join(',', $_POST['yellowpay_accepted_payment_methods']))
-                : ''
+            $strYellowpayAcceptedPM =
+                (isset($_POST['yellowpay_accepted_payment_methods'])
+                    ? join(',', $_POST['yellowpay_accepted_payment_methods'])
+                    : ''
             );
-
             Settings::storeSetting('email', $_POST['email']);
             Settings::storeSetting('confirmation_emails', $_POST['confirmation_emails']);
             // added: shop company name and address
@@ -184,7 +184,8 @@ class Settings
             Settings::storeSetting('datatrans_merchant_id', trim(contrexx_strip_tags($_POST['datatrans_merchant_id'])));
             Settings::storeSetting('datatrans_status', (isset($_POST['datatrans_status']) ? 1 : 0));
             Settings::storeSetting('datatrans_request_type', $_POST['datatrans_request_type']);
-            Settings::storeSetting('datatrans_use_testserver', ($_POST['datatrans_use_testserver'] ? 1 : 0));
+            Settings::storeSetting('datatrans_use_testserver',
+                (empty ($_POST['datatrans_use_testserver']) ? 0 : 1));
 
             Settings::storeSetting('country_id', $_POST['country_id']);
             Settings::storeSetting('paypal_default_currency', $_POST['paypal_default_currency']);

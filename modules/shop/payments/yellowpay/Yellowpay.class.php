@@ -1,29 +1,28 @@
 <?php
 
 /**
- * Class Yellowpay
- *
- * Interface for the payment mask yellowpay
- *
+ * PostFinance online payment
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
+ * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
- * @todo        Edit PHP DocBlocks!
  */
 
 /**
  * Currency: Conversion, formatting.
  */
-require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Settings.class.php';
+//require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
+//require_once ASCMS_MODULE_PATH.'/shop/lib/Settings.class.php';
+require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
 require_once ASCMS_FRAMEWORK_PATH.'/Validator.class.php';
 
 /**
- * Yellowpay plugin for online payment
+ * PostFinance online payment
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
+ * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
@@ -40,27 +39,9 @@ require_once ASCMS_FRAMEWORK_PATH.'/Validator.class.php';
 class Yellowpay
 {
     /**
-     * Return string of the function getForm()
-     * @access  private
-     * @var     string
-     * @see     getForm(), addToForm()
-     */
-    private static $form;
-
-    /**
-     * Information that was handed over to the class
-     * @access  private
-     * @var     array
-     * @see     Yellowpay(), __construct(), addPaymentTypeKeys(),
-     *          addOtherKeys(), checkKey(), addToForm()
-     */
-    private static $arrShopOrder = array();
-
-    /**
      * Error messages
      * @access  public
      * @var     array
-     * @see     getForm(), checkKey()
      */
     public static $arrError = array();
 
@@ -68,52 +49,8 @@ class Yellowpay
      * Warning messages
      * @access  public
      * @var     array
-     * @see     addPaymentTypeKeys(), checkKey()
      */
     public static $arrWarning = array();
-
-    /**
-     * Language codes
-     * @access  private
-     * @var     array
-     * @see     checkKey()
-     */
-    private static $arrLangVersion = array(
-        'DE' => 2055,
-        'US' => 2057, 'EN' => 2057,
-        'IT' => 2064,
-        'FR' => 4108,
-    );
-
-    /**
-     * Currency codes
-     * @access  private
-     * @var     array
-     * @see     checkKey()
-     */
-    private static $arrArtCurrency = array(
-        'CHF',
-        'USD',
-        'EUR',
-    );
-
-    /**
-     * Known authorization types
-     * @access  private
-     * @var     array
-     * @see     checkKey()
-     */
-    private static $arrKnownAuthorization = array(
-        'RES',
-        'SAL',
-    );
-
-    /**
-     * Current authorization type, defaults to 'immediate'
-     * @access  private
-     * @var     string
-     */
-    private static $strAuthorization = false;
 
     /**
      * Known payment method names
@@ -126,345 +63,562 @@ class Yellowpay
      * @static
      */
     private static $arrKnownPaymentMethod = array(
-        'PostFinanceCard',
-        'yellownet',
-        'Master',
-        'Visa',
-        'Amex',
-        'Diners',
-//        'yellowbill',
-    );
-
-
-    /**
-     * Accepted payment methods
-     *
-     * Those not allowed will be unset in the constructor.
-     * @access  private
-     * @var     array
-     * @see     addPaymentTypeKeys()
-     */
-    private static $arrAcceptedPaymentMethod = array(
-        'PostFinanceCard' => array(),
-        'yellownet' => array(),
-        'Master' => array(),
-        'Visa' => array(),
-        'Amex' => array(),
-        'Diners' => array(),
-// Not supported by the shop yet (missing some mandatory fields).
-//        'yellowbill' => array(
-//            'txtESR_Member',
-//            'txtBLastName',
-//            'txtBAddr1',
-//            'txtBZipCode',
-//            'txtBCity',
-//        ),
+        1 => 'PostFinanceCard',
+        2 => 'yellownet',
+        3 => 'Master',
+        4 => 'Visa',
+        5 => 'Amex',
+        6 => 'Diners',
     );
 
 
     private static $arrFieldMandatory = array(
         'PSPID',
-        'orderID',
-        'amount',
-        'currency',
-        'language',
-        // check before the payment: see chapter 6.2
-        'SHASign',
+        'ORDERID',
+        'AMOUNT',
+        'CURRENCY',
+        // Not mandatory, but needed for SHA-1 anyway
+        'OPERATION',
+        // The following  parameters are not mandatory, but we're being nice to customers
+        'LANGUAGE',
         // post payment redirection: see chapter 8.2
-        'accepturl',
-        'declineurl',
-        'exceptionurl',
-        'cancelurl',
+        'ACCEPTURL',
+        'DECLINEURL',
+        'EXCEPTIONURL',
+        'CANCELURL',
     );
 
-    private static $arrFieldOptional = array(
-        // optional customer details, highly recommended for fraud prevention: see chapter 5.2
-        'CN',
-        'EMAIL',
-        'ownerZIP',
-        'owneraddress',
-        'ownercty',
-        'ownertown',
-        'ownertelno',
-        'COM',
-        // payment methods/page specifics: see chapter 9.1
-        'PM',
-        'BRAND',
-        'WIN3DS',
-        'PM list type',
-        'PMListType',
-        // link to your website: see chapter 8.1
-        'homeurl',
-        'catalogurl',
-        // post payment parameters: see chapter 8.2
-        'COMPLUS',
-        'PARAMPLUS',
-        // post payment parameters: see chapter 8.3
-        'PARAMVAR',
-        // optional operation field: see chapter 9.2
-        'operation',
-        // optional extra login field: see chapter 9.3
-        'USERID',
-        // Alias details: see Alias Management documentation
-        'Alias',
-        'AliasUsage',
-        'AliasOperation',
-        'PMLIST',
-        'WIN3DS',
-        // layout information: see chapter 7.1
-        'TITLE',
+
+    /**
+     * Parameter names used for computing the SHASign IN
+     * @var     array
+     */
+    private static $arrFieldShasignIn = array(
+        'ACCEPTANCE',
+        'ACCEPTURL',
+        'ADDMATCH',
+        'ADDRMATCH',
+        'AIAGIATA',
+        'AIAIRNAME',
+        'AIAIRTAX',
+        'AIBOOKIND*XX*',
+        'AICARRIER*XX*',
+        'AICHDET',
+        'AICLASS*XX*',
+        'AICONJTI',
+        'AIDEPTCODE',
+        'AIDESTCITY*XX*',
+        'AIDESTCITYL*XX*',
+        'AIEXTRAPASNAME*XX*',
+        'AIEYCD',
+        'AIFLDATE*XX*',
+        'AIFLNUM*XX*',
+        'AIGLNUM',
+        'AIINVOICE',
+        'AIIRST',
+        'AIORCITY*XX*',
+        'AIORCITYL*XX*',
+        'AIPASNAME',
+        'AIPROJNUM',
+        'AISTOPOV*XX*',
+        'AITIDATE',
+        'AITINUM',
+        'AITINUML*XX*',
+        'AITYPCH',
+        'AIVATAMNT',
+        'AIVATAPPL',
+        'ALIAS',
+        'ALIASOPERATION',
+        'ALIASUSAGE',
+        'ALLOWCORRECTION',
+        'AMOUNT',
+        'AMOUNT*XX*',
+        'AMOUNTHTVA',
+        'AMOUNTTVA',
+        'BACKURL',
+        'BATCHID',
         'BGCOLOR',
-        'TXTCOLOR',
-        'TBLBGCOLOR',
-        'TBLTXTCOLOR',
+        'BLVERNUM',
+        'BRAND',
+        'BRANDVISUAL',
         'BUTTONBGCOLOR',
         'BUTTONTXTCOLOR',
-        'LOGO',
-        'FONTTYPE',
-        // dynamic template page: see chapter 7.2
-        'TP',
-    );
-
-    /**
-     * Mandatory fields required to confirm the SHA-1-OUT hash validity
-     * @var   array
-     */
-    private static $arrFieldShaOut = array(
-        'orderID',
-        'currency',
-        'amount',
-        'PM',
-        'ACCEPTANCE',
-        'STATUS',
+        'CANCELURL',
         'CARDNO',
+        'CATALOGURL',
+        'CAVV_3D',
+        'CAVVALGORITHM_3D',
+        'CERTID',
+        'CHECK_AAV',
+        'CIVILITY',
+        'CN',
+        'COM',
+        'COMPLUS',
+        'COSTCENTER',
+        'COSTCODE',
+        'CREDITCODE',
+        'CUID',
+        'CURRENCY',
+        'CVC',
+        'CVCFLAG',
+        'DATA',
+        'DATATYPE',
+        'DATEIN',
+        'DATEOUT',
+        'DECLINEURL',
+        'DEVICE',
+        'DISCOUNTRATE',
+        'DISPLAYMODE',
+        'ECI',
+        'ECI_3D',
+        'ECOM_BILLTO_POSTAL_CITY',
+        'ECOM_BILLTO_POSTAL_COUNTRYCODE',
+        'ECOM_BILLTO_POSTAL_NAME_FIRST',
+        'ECOM_BILLTO_POSTAL_NAME_LAST',
+        'ECOM_BILLTO_POSTAL_POSTALCODE',
+        'ECOM_BILLTO_POSTAL_STREET_LINE1',
+        'ECOM_BILLTO_POSTAL_STREET_LINE2',
+        'ECOM_BILLTO_POSTAL_STREET_NUMBER',
+        'ECOM_CONSUMERID',
+        'ECOM_CONSUMER_GENDER',
+        'ECOM_CONSUMEROGID',
+        'ECOM_CONSUMERORDERID',
+        'ECOM_CONSUMERUSERALIAS',
+        'ECOM_CONSUMERUSERPWD',
+        'ECOM_CONSUMERUSERID',
+        'ECOM_PAYMENT_CARD_EXPDATE_MONTH',
+        'ECOM_PAYMENT_CARD_EXPDATE_YEAR',
+        'ECOM_PAYMENT_CARD_NAME',
+        'ECOM_PAYMENT_CARD_VERIFICATION',
+        'ECOM_SHIPTO_COMPANY',
+        'ECOM_SHIPTO_DOB',
+        'ECOM_SHIPTO_ONLINE_EMAIL',
+        'ECOM_SHIPTO_POSTAL_CITY',
+        'ECOM_SHIPTO_POSTAL_COUNTRYCODE',
+        'ECOM_SHIPTO_POSTAL_NAME_FIRST',
+        'ECOM_SHIPTO_POSTAL_NAME_LAST',
+        'ECOM_SHIPTO_POSTAL_NAME_PREFIX',
+        'ECOM_SHIPTO_POSTAL_POSTALCODE',
+        'ECOM_SHIPTO_POSTAL_STREET_LINE1',
+        'ECOM_SHIPTO_POSTAL_STREET_LINE2',
+        'ECOM_SHIPTO_POSTAL_STREET_NUMBER',
+        'ECOM_SHIPTO_TELECOM_FAX_NUMBER',
+        'ECOM_SHIPTO_TELECOM_PHONE_NUMBER',
+        'ECOM_SHIPTO_TVA',
+        'ED',
+        'EMAIL',
+        'EXCEPTIONURL',
+        'EXCLPMLIST',
+        'EXECUTIONDATE*XX*',
+        'FACEXCL*XX*',
+        'FACTOTAL*XX*',
+        'FIRSTCALL',
+        'FLAG3D',
+        'FONTTYPE',
+        'FORCECODE1',
+        'FORCECODE2',
+        'FORCECODEHASH',
+        'FORCEPROCESS',
+        'FORCETP',
+        'GENERIC_BL',
+        'GIROPAY_ACCOUNT_NUMBER',
+        'GIROPAY_BLZ',
+        'GIROPAY_OWNER_NAME',
+        'GLOBORDERID',
+        'GUID',
+        'HDFONTTYPE',
+        'HDTBLBGCOLOR',
+        'HDTBLTXTCOLOR',
+        'HEIGHTFRAME',
+        'HOMEURL',
+        'HTTP_ACCEPT',
+        'HTTP_USER_AGENT',
+        'INCLUDE_BIN',
+        'INCLUDE_COUNTRIES',
+        'INVDATE',
+        'INVDISCOUNT',
+        'INVLEVEL',
+        'INVORDERID',
+        'ISSUERID',
+        'IST_MOBILE',
+        'ITEM_COUNT',
+        'ITEMATTRIBUTES*XX*',
+        'ITEMCATEGORY*XX*',
+        'ITEMCOMMENTS*XX*',
+        'ITEMDESC*XX*',
+        'ITEMDISCOUNT*XX*',
+        'ITEMID*XX*',
+        'ITEMNAME*XX*',
+        'ITEMPRICE*XX*',
+        'ITEMQUANT*XX*',
+        'ITEMUNITOFMEASURE*XX*',
+        'ITEMVAT*XX*',
+        'ITEMVATCODE*XX*',
+        'ITEMWEIGHT*XX*',
+        'LANGUAGE',
+        'LEVEL1AUTHCPC',
+        'LIDEXCL*XX*',
+        'LIMITCLIENTSCRIPTUSAGE',
+        'LINE_REF',
+        'LINE_REF1',
+        'LINE_REF2',
+        'LINE_REF3',
+        'LINE_REF4',
+        'LINE_REF5',
+        'LINE_REF6',
+        'LIST_BIN',
+        'LIST_COUNTRIES',
+        'LOGO',
+        'MAXITEMQUANT*XX*',
+        'MERCHANTID',
+        'MODE',
+        'MTIME',
+        'MVER',
+        'NETAMOUNT',
+        'OPERATION',
+        'ORDERID',
+        'ORDERSHIPCOST',
+        'ORDERSHIPTAX',
+        'ORDERSHIPTAXCODE',
+        'ORIG',
+        'OR_INVORDERID',
+        'OR_ORDERID',
+        'OWNERADDRESS',
+        'OWNERADDRESS2',
+        'OWNERCTY',
+        'OWNERTELNO',
+        'OWNERTOWN',
+        'OWNERZIP',
+        'PAIDAMOUNT',
+        'PARAMPLUS',
+        'PARAMVAR',
         'PAYID',
-        'NCERROR',
+        'PAYMETHOD',
+        'PM',
+        'PMLIST',
+        'PMLISTPMLISTTYPE',
+        'PMLISTTYPE',
+        'PMLISTTYPEPMLIST',
+        'PMTYPE',
+        'POPUP',
+        'POST',
+        'PSPID',
+        'PSWD',
+        'REF',
+        'REFER',
+        'REFID',
+        'REFKIND',
+        'REF_CUSTOMERID',
+        'REF_CUSTOMERREF',
+        'REGISTRED',
+        'REMOTE_ADDR',
+        'REQGENFIELDS',
+        'RTIMEOUT',
+        'RTIMEOUTREQUESTEDTIMEOUT',
+        'SCORINGCLIENT',
+        'SETT_BATCH',
+        'SID',
+        'STATUS_3D',
+        'SUBSCRIPTION_ID',
+        'SUB_AM',
+        'SUB_AMOUNT',
+        'SUB_COM',
+        'SUB_COMMENT',
+        'SUB_CUR',
+        'SUB_ENDDATE',
+        'SUB_ORDERID',
+        'SUB_PERIOD_MOMENT',
+        'SUB_PERIOD_MOMENT_M',
+        'SUB_PERIOD_MOMENT_WW',
+        'SUB_PERIOD_NUMBER',
+        'SUB_PERIOD_NUMBER_D',
+        'SUB_PERIOD_NUMBER_M',
+        'SUB_PERIOD_NUMBER_WW',
+        'SUB_PERIOD_UNIT',
+        'SUB_STARTDATE',
+        'SUB_STATUS',
+        'TAAL',
+        'TAXINCLUDED*XX*',
+        'TBLBGCOLOR',
+        'TBLTXTCOLOR',
+        'TID',
+        'TITLE',
+        'TOTALAMOUNT',
+        'TP',
+        'TRACK2',
+        'TXTBADDR2',
+        'TXTCOLOR',
+        'TXTOKEN',
+        'TXTOKENTXTOKENPAYPAL',
+        'TYPE_COUNTRY',
+        'UCAF_AUTHENTICATION_DATA',
+        'UCAF_PAYMENT_CARD_CVC2',
+        'UCAF_PAYMENT_CARD_EXPDATE_MONTH',
+        'UCAF_PAYMENT_CARD_EXPDATE_YEAR',
+        'UCAF_PAYMENT_CARD_NUMBER',
+        'USERID',
+        'USERTYPE',
+        'VERSION',
+        'WBTU_MSISDN',
+        'WBTU_ORDERID',
+        'WEIGHTUNIT',
+        'WIN3DS',
+        'WITHROOT',
+    );
+
+    /**
+     * Parameter names used for computing the SHASign OUT
+     * @var     array
+     */
+    private static $arrFieldShasignOut = array(
+        'AAVADDRESS',
+        'AAVCHECK',
+        'AAVZIP',
+        'ACCEPTANCE',
+        'ALIAS',
+        'AMOUNT',
+        'BIN',
         'BRAND',
+        'CARDNO',
+        'CCCTY',
+        'CN',
+        'COMPLUS',
+        'CREATION_STATUS',
+        'CURRENCY',
+        'CVCCHECK',
+        'DCC_COMMPERCENTAGE',
+        'DCC_CONVAMOUNT',
+        'DCC_CONVCCY',
+        'DCC_EXCHRATE',
+        'DCC_EXCHRATESOURCE',
+        'DCC_EXCHRATETS',
+        'DCC_INDICATOR',
+        'DCC_MARGINPERCENTAGE',
+        'DCC_VALIDHOURS',
+        'DIGESTCARDNO',
+        'ECI',
+        'ED',
+        'ENCCARDNO',
+        'IP',
+        'IPCTY',
+        'NBREMAILUSAGE',
+        'NBRIPUSAGE',
+        'NBRIPUSAGE_ALLTX',
+        'NBRUSAGE',
+        'NCERROR',
+        'ORDERID',
+        'PAYID',
+        'PM',
+        'SCO_CATEGORY',
+        'SCORING',
+        'STATUS',
+        'SUBBRAND',
+        'SUBSCRIPTION_ID',
+        'TRXDATE',
+        'VC',
     );
 
 
     /**
-     * Initializes class
+     * Creates and returns the HTML Form for requesting the payment service.
      *
-     * Sets up the accepted payment methods according to the settings
-     */
-    static function init()
-    {
-        $strAcceptedPaymentMethods =
-            Settings::getValueByName('yellowpay_accepted_payment_methods');
-        // There needs to be at least one accepted payment method,
-        // if there is none, accept all.
-        if (!empty($strAcceptedPaymentMethods)) {
-            foreach (Yellowpay::$arrKnownPaymentMethod as $strPaymentMethod) {
-                // Remove payment methods not mentioned
-                if (!preg_match("/$strPaymentMethod/", $strAcceptedPaymentMethods)) {
-                    unset(self::$arrAcceptedPaymentMethod[$strPaymentMethod]);
-                }
-            }
-        }
-    }
-
-
-    /**
-     * Creates and returns the HTML-Form for requesting the yellowpay-service.
-     *
+     * The parameters in $uriparam are appended to the base index URI.
+     * If empty, this defaults to "section=shop&cmd=success".
      * @access  public
-     * @return  string    The HTML-Form
-     * @see     addRequiredKeys(), addPaymentTypeKeys(), addOtherKeys()
+     * @global  array       $_ARRAYLANG
+     * @param   array       $arrField       The parameter array
+     * @param   string      $submitValue    The optional label for the submit
+     *                                      button
+     * @param   boolean     $autopost       If true, the form is automatically
+     *                                      submitted.  Defaults to false
+     * @param   string      $passphrase     The optional passphrase for
+     *                                      generating the SHASign.
+     *                                      Defaults to the setting
+     *                                      "postfinance_hash_signature_in",
+     *                                      if available
+     * @param   string      $uriparam       The optional URI parameter string
+     * @return  string                      The HTML Form code
      */
-    static function getForm(
-        $arrShopOrder, $submitValue='send', $autopost=false
-    ) {
+    static function getForm($arrField, $submitValue='send', $autopost=false,
+        $settings=null, $uriparam='')
+    {
         global $_ARRAYLANG;
 
-        self::init();
-        self::$arrShopOrder = $arrShopOrder;
-        // Build the base URI from the referrer, which also includes the
-        // protocol (http:// or https://)
-        $base_uri = $_SERVER['HTTP_REFERER'];
-        $match = array();
-        if (preg_match('/^(.+section=shop)/', $base_uri, $match)) {
-            $base_uri = $match[1];
+        if (empty ($settings)) {
+            $settings = SettingDb::init('config');
+            $settings = SettingDb::getArray();
+//die("Loaded settings: ".var_export($settings, true));
         } else {
-            self::$arrError[] = 'Failed to determine base URI: '.$base_uri;
-            return '';
+//die("Parameter settings: ".var_export($settings, true));
         }
-        $base_uri = $base_uri.'&cmd=success&handler=yellowpay&result=';
-        if (empty(self::$arrShopOrder['accepturl'])) {
-            self::$arrShopOrder['accepturl'] = $base_uri.'1';
+        if (empty ($arrField['OPERATION'])) {
+            $arrField['OPERATION'] =
+                $settings['postfinance_authorization_type']['value'];
+//die("Set OPERATION to ".$arrField['OPERATION']);
         }
-        if (empty(self::$arrShopOrder['declineurl'])) {
-            self::$arrShopOrder['declineurl'] = $base_uri.'2';
+        // There needs to be at least one accepted payment method,
+        // if there is none, accept all.
+        $strAcceptedPaymentMethods = self::getAcceptedPaymentMethodsString(
+            $settings['postfinance_accepted_payment_methods']['value']);
+        // Build the base URI, which also includes the protocol (http://)
+//die(var_export($_SERVER));
+        if (empty ($uriparam)) {
+            $uriparam = 'section=shop&cmd=success&handler=yellowpay';
         }
-        if (empty(self::$arrShopOrder['exceptionurl'])) {
-            self::$arrShopOrder['exceptionurl'] = $base_uri.'2';
+        $base_uri =
+            'http://'.$_SERVER['HTTP_HOST'].CONTREXX_SCRIPT_PATH.
+            '?'.$uriparam.'&result=';
+        if (empty($arrField['ACCEPTURL'])) {
+            $arrField['ACCEPTURL'] = $base_uri.'1';
         }
-        if (empty(self::$arrShopOrder['cancelurl'])) {
-            self::$arrShopOrder['cancelurl'] = $base_uri.'0';
+        if (empty($arrField['DECLINEURL'])) {
+            $arrField['DECLINEURL'] = $base_uri.'2';
         }
-        self::$form =
+        if (empty($arrField['EXCEPTIONURL'])) {
+            $arrField['EXCEPTIONURL'] = $base_uri.'2';
+        }
+        if (empty($arrField['CANCELURL'])) {
+            $arrField['CANCELURL'] = $base_uri.'0';
+        }
+        $form =
             $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n".
-            // The real yellowpay server or the test server
+            '    '.
             '<form name="yellowpay" method="post" '.
-// OLD yellowpay URI
-//            'action="https://yellowpay'.($isTest ? 'test' : '').
-//            '.postfinance.ch/checkout/Yellowpay.aspx?userctrl=Invisible"'.
-// CURRENT Postfinance E-Commerce URI
+            // Yellowpay dummy, for testing only
+            //'action="modules/shop/payments/yellowpay/YellowpayDummy.class.php"'.
+            // Current Postfinance E-Commerce URI, as of 2011
             'action="https://e-payment.postfinance.ch/ncol/'.
-            (Settings::getValueByName('yellowpay_use_testserver') ? 'test' : 'prod').
-            '/orderstandard.asp"'.
+            // The real yellowpay server or the test server
+            ($settings['postfinance_use_testserver']['value'] ? 'test' : 'prod').
+//            'test'.
+//            'prod'.
+            '/orderstandard'.
+            (CONTREXX_CHARSET == 'UTF-8' ? '_utf8' : '').
+            '.asp"'.
             ">\n";
-/*
-            // Yellowpay dummy
-            '<form name="yellowpay" method="post" '.
-            'action="http://localhost/c_trunk/modules/shop/payments/yellowpay/YellowpayDummy.class.php"'.
-            ">\n";
-*/
-        if (!self::addHash()) {
-            self::$arrError[] = 'ERROR: Failed to compute hash';
+//die("OPERATION is ".$arrField['OPERATION']);
+        if (!self::setFields($arrField)) {
+            self::$arrError[] = 'Failed to verify keys';
             return false;
         }
-        if (!self::verifyKeys()) {
-            self::$arrError[] = 'ERROR: Failed to verify keys';
-            return false;
+        if (empty ($passphrase))
+            $passphrase = $settings['postfinance_hash_signature_in']['value'];
+        $arrField['SHASIGN'] = self::signature($arrField, $passphrase);
+        foreach ($arrField as $name => $value) {
+            $form .=
+                '      '.
+                Html::getHidden($name, $value)."\n";
         }
-        if (!self::addKeys()) {
-            self::$arrError[] = 'ERROR: Failed to add keys';
-            return false;
-        }
+// parking-luzern customizing
+        $form .=
+            '      '.
+            '<input type="submit" name="go" value="'.$submitValue.'" />'.
+            "\n";
+        $form .=
+            '    '.
+            '</form>'.
+            "\n";
         if ($autopost) {
-            self::$form .=
+            $form .=
+                '    '.
                 '<script type="text/javascript">/* <![CDATA[ */ '.
                 'document.yellowpay.submit(); '.
-                '/* ]]> */</script>';
-        } else {
-            self::$form .=
-                '<input type="submit" name="go" value="'.$submitValue."\" />\n";
+                '/* ]]> */</script>'.
+                "\n";
         }
-        self::$form .= "</form>";
 //self::$arrError[] = "Test for error handling";
-        return self::$form;
+        return $form;
     }
 
 
-    private static function verifyKeys()
+    /**
+     * Sets the parameters with name/value pairs from the given array
+     *
+     * If $arrField is missing mandatory fields, or contains invalid values,
+     * this method fails and returns false.
+     * @param   array     $arrField     The parameter array, by reference
+     * @return  boolean                 True on success, false otherwise
+     */
+    static function setFields(&$arrField=null)
     {
-        foreach (self::$arrFieldMandatory as $key) {
-            if (empty(self::$arrShopOrder[$key])) {
-                self::$arrError[] = "Missing mandatory key '$key'";
+        if (empty($arrField)) {
+//DBG::log("Yellowpay::setFields(): Empty field array");
+            return false;
+        }
+        if (!is_array($arrField)) {
+//DBG::log("Yellowpay::setFields(): Parameter must be an array");
+            return false;
+        }
+//die("Field array: ".var_export($arrField, true));
+        foreach (self::$arrFieldMandatory as $name) {
+            if (empty($arrField[$name])) {
+//DBG::log("Yellowpay::setFields(): Missing mandatory name '$name'");
+                self::$arrError[] = "Missing mandatory name '$name'";
+                return false;
             }
         }
-        return empty(self::$arrError);
+        foreach (array_keys($arrField) as $name) {
+            $value = $arrField[$name];
+            unset($arrField[$name]);
+            $name = strtoupper($name);
+            $value = self::verifyParameter($name, $value);
+            if ($value === null) {
+                self::$arrError[] = "Invalid value '$value' for name '$name'";
+//DBG::log("Yellowpay::setFields(): Invalid value '$value' for name '$name'");
+                return false;
+            }
+            $arrField[$name] = $value;
+        }
+        return true;
     }
 
 
     /**
-     * Enter description here...
+     * Verifies a name/value pair
      *
-     * Concatenates the values of the fields
-     *  orderID, amount, currency, PSPID
-     * plus the secret taken from the 'yellowpay_hash_seed' setting
-     * and computes the SHA1 hash.
-     * Fails if one or more of the needed values are empty.
-     * @return  boolean         True on success, false otherwise
-     */
-    private static function addHash()
-    {
-        $seed = Settings::getValueByName('yellowpay_hash_signature_in');
-        if (   empty(self::$arrShopOrder['orderID'])
-            || empty(self::$arrShopOrder['amount'])
-            || empty(self::$arrShopOrder['currency'])
-            || empty(self::$arrShopOrder['PSPID'])
-            || empty($seed)) {
-            self::$arrError[] = 'Missing mandatory parameter for computing the hash';
-            return false;
-        }
-        $hash_string =
-            self::$arrShopOrder['orderID'].
-            self::$arrShopOrder['amount'].
-            self::$arrShopOrder['currency'].
-            self::$arrShopOrder['PSPID'].
-            $seed;
-        self::$arrShopOrder['SHASign'] = sha1($hash_string);
-        return true;
-    }
-
-
-    /**
-     * Sets all accepted fields from the order array
+     * May change the value before returning it.
+     * Use the value returned when adding to the form in any case.
      * @access  private
-     * @see     checkKey()
+     * @param   string    $name     The name of the parameter
+     * @param   string    $value    The value of the parameter
+     * @return  boolean             The verified value on success,
+     *                              null otherwise
      */
-    static function addKeys()
+    static function verifyParameter($name, $value)
     {
-        foreach (array_keys(self::$arrShopOrder) as $key) {
-            if (!self::addToForm($key)) return false;
-        }
-        return true;
-    }
-
-
-    /**
-     * Adds a key to the HTML form and removes it from the array arrShopOrder.
-     *
-     * Verifies any key/value pair and only adds valid parameters.
-     * @param   string    $key    Key to be added to the HTML form
-     * @return  boolean           True on success, false otherwise
-     */
-    static function addToForm($key)
-    {
-        $value = self::checkKey($key);
-        if ($value === false) return false;
-        self::$form .=
-            "<input type='hidden' name='$key' value='".
-            htmlspecialchars($value)."' />\n";
-        return true;
-    }
-
-
-    /**
-     * Verifies a key/value pair
-     * @access  private
-     * @param   string    $key    Key to check
-     * @return  boolean           True if both key and value are valid,
-     *                            false otherwise
-     * @see     addToForm()
-     */
-    static function checkKey($key)
-    {
-        if (!array_key_exists($key, self::$arrShopOrder)) {
-            self::$arrError[] = "Missing key '$key'!";
-            return false;
-        }
-        $value = self::$arrShopOrder[$key];
-        // This one *MUST NOT* be used a second time
-        unset(self::$arrShopOrder[$key]);
-        switch ($key) {
+        switch ($name) {
             // Mandatory
-            case 'orderID':
+            case 'ORDERID':
                 if (intval($value)) return intval($value);
                 break;
-            case 'amount':
+            case 'AMOUNT':
+                // Fix cents, like "1.23" to "123"
+                if (preg_match('/\./', $value)) {
+                    $value = intval($value * 100);
+                }
                 if ($value === intval($value)) return $value;
                 break;
-            case 'currency':
+            case 'CURRENCY':
                 if (preg_match('/^\w{3}$/', $value)) return $value;
                 break;
             case 'PSPID':
                 if (preg_match('/.+/', $value)) return $value;
                 break;
             // The above four are needed to form the hash:
-            case 'SHASign':
+            case 'SHASIGN':
                 // 40 digit hexadecimal string, like
                 // 4d0a445beac3561528dc26023e9ecb2d38fadc61
-                if (preg_match('/^[0-9a-z]{40}$/i', $value)) return $value;
-            case 'language':
+                if (preg_match('/^[0-9a-f]{40}$/i', $value)) return $value;
+            case 'LANGUAGE':
                 if (preg_match('/^\w{2}(?:_\w{2})?$/', $value)) return $value;
                 break;
-            case 'accepturl':
-            case 'declineurl':
-            case 'exceptionurl':
-            case 'cancelurl':
+            case 'OPERATION':
+                if ($value == 'RES' || $value == 'SAL') return $value;
+                break;
+            case 'ACCEPTURL':
+            case 'DECLINEURL':
+            case 'EXCEPTIONURL':
+            case 'CANCELURL':
 //                if (FWValidator::isUri($value)) return $value;
 // *SHOULD* verify the URIs, but the expression is not fit
                 if ($value) return $value;
@@ -472,16 +626,16 @@ class Yellowpay
             // Optional
             // optional customer details, highly recommended for fraud prevention: see chapter 5.2
             case 'CN':
-            case 'owneraddress':
-            case 'ownercty':
-            case 'ownerZIP':
-            case 'ownertown':
-            case 'ownertelno':
+            case 'OWNERADDRESS':
+            case 'OWNERCTY':
+            case 'OWNERZIP':
+            case 'OWNERTOWN':
+            case 'OWNERTELNO':
             case 'COM':
                 if (preg_match('/.*/', $value)) return $value;
                 break;
             case 'EMAIL':
-                if (isEmail($value)) return $value;
+                if (FWValidator::isEmail($value)) return $value;
                 break;
             case 'PMLIST':
                 if (preg_match('/.*/', $value)) return $value;
@@ -514,127 +668,203 @@ class Yellowpay
             case 'BUTTONTXTCOLOR':
             case 'LOGO':
             case 'FONTTYPE':
+                return $value;
             // dynamic template page: see chapter 7.2
             case 'TP':
                 if (preg_match('/.+/', $value)) return $value;
                 break;
 
-            // Contrexx does neither supply nor support the following:
-            //
+            // Alias details: see Alias Management documentation
+            case 'ALIAS':
+                if (strlen($value) <= 20) return $value;
+                break;
+            case 'ALIASUSAGE':
+                if (strlen($value) <= 255) return $value;
+                break;
+            case 'ALIASOPERATION':
+                // Valid values: BYMERCHANT (or empty), BYPSP
+                if (   $value == ''
+                    || $value == 'BYMERCHANT'
+                    || $value == 'BYPSP') return $value;
+                break;
+
+            // Contrexx does not yet supply nor support the following:
             // payment methods/page specifics: see chapter 9.1
             case 'PM':
             case 'BRAND':
-            case 'PM list type':
-            case 'PMListType':
+            case 'PMLISTTYPE':
             // link to your website: see chapter 8.1
-            case 'homeurl':
-            case 'catalogurl':
+            case 'HOMEURL':
+            case 'CATALOGURL':
             // optional extra login field: see chapter 9.3
             case 'USERID':
-            // Alias details: see Alias Management documentation
-            case 'Alias':
-            case 'AliasUsage':
-            case 'AliasOperation':
                 break;
         }
-        self::$arrError[] = "Invalid field '$key', value '$value'";
-        return false;
+        self::$arrError[] = "Unknown or unsupported field '$name' (value '$value')";
+        return null;
+    }
+
+
+    /**
+     * Returns the current SHA signature
+     *
+     * Concatenates the values of all fields, separating them with the secret
+     * passphrase (in or out).
+     * @param   array       $fields         The parameter array
+     * @param   string      $passphrase     The passphrase
+     * @param   boolean     $out            Create the OUT signature if true.
+     *                                      Defaults to false (IN)
+     * @return  string                      The signature hash on success,
+     *                                      null otherwise
+     */
+    static function signature($fields, $passphrase, $out=false)
+    {
+        $hash_string = self::concatenateFields($fields, $passphrase, $out);
+        $sha1 = strtoupper(sha1($hash_string));
+//DBG::log("signature($fields, $passphrase, $out): SHA1: $sha1<br />");
+        return $sha1;
+    }
+
+
+    /**
+     * Returns a string formed by concatenating all fields
+     *
+     * Name/value pairs are separated by an equals sign, and individual pairs
+     * separated by the passphrase (in or out).
+     * Mind that according to the new specification, all field names must be
+     * all uppercase, thus the array is reindexed using uppercase only keys
+     * before it is sorted and concatenated.
+     * @todo    Currently, all fields present in the $fields array are added
+     *          to the string with SHASIGN being the only exception that is
+     *          skipped.  It will probably be necessary to exclude further
+     *          keys that are not used for computing the hash.
+     * @param   array       $fields         The parameter array
+     * @param   string      $passphrase     The passphrase
+     * @param   boolean     $out            Create the OUT signature if true.
+     *                                      Defaults to false (IN)
+     * @return  string                      The signature string on success,
+     *                                      null otherwise
+     */
+    static function concatenateFields($fields, $passphrase, $out=false)
+    {
+        $filter = array_flip($out
+            ? self::$arrFieldShasignOut
+            : self::$arrFieldShasignIn);
+        $hash_string = '';
+        foreach ($fields as $name => $value) {
+            unset($fields[$name]);
+            $name = strtoupper($name);
+            if (isset ($filter[$name])) {
+                $fields[$name] = $value;
+//DBG::log("concatenateFields($fields, $passphrase, $out): Accepted parameter $name ($value)<br />");
+            } else {
+//DBG::log("concatenateFields($fields, $passphrase, $out): Removed parameter $name ($value)<br />");
+            }
+        }
+        ksort($fields);
+        foreach ($fields as $name => $value) {
+            // NOTE: It's obviously correct and necessary to skip empty values,
+            // although I find no mentioning of this in the documentation.
+            // However, including parameters with empty values produces
+            // invalid SHASigns!
+            if ($value === '') {
+//DBG::log("concatenateFields($fields, $passphrase, $out): Skipping parameter $name with empty string value<br />");
+                continue;
+            }
+//DBG::log("concatenateFields($fields, $passphrase, $out): Appending parameter $name ($value)<br />");
+            $hash_string .=
+                $name.
+                '='.
+                $fields[$name].
+                $passphrase;
+        }
+//DBG::log("concatenateFields($fields, $passphrase, $out): Hash string: $hash_string<br />");
+        return $hash_string;
     }
 
 
     /**
      * Verifies the parameters posted back by e-commerce
-     * @return  boolean           True on success, false otherwise
+     * @param   string  $passphrase     The SHA-OUT passphrase
+     * @return  boolean                 True on success, false otherwise
      */
-    static function checkIn()
+    static function checkIn($passphrase)
     {
-        // If the hash is correct, so is the order ID
-        return self::checkHash();
+//DBG::activate(DBG_LOG_FILE);
+//DBG::log("Yellowpay::checkIn(): POST: ".var_export($_POST, true));
+//DBG::log("Yellowpay::checkIn(): GET: ".var_export($_GET, true));
+        if (empty($_POST['SHASIGN'])) {
+            self::$arrError[] = 'No SHASIGN value in request';
+            return false;
+        }
+        $arrField = contrexx_input2raw($_POST);
+        $shasign_request = $arrField['SHASIGN'];
+        // If the hash is correct, so is the Order (and ID)
+        $shasign_computed = self::signature($arrField, $passphrase, true);
+//DBG::log("Yellowpay::checkIn(): SHA Request $shasign_request <> $shasign_computed ?");
+        return ($shasign_request == $shasign_computed);
     }
 
 
     /**
-     * Returns the Order ID from the GET request, if present
+     * Returns the Order ID from the POST request, if present
      * @return  integer           The order ID, or false
      */
     static function getOrderId()
     {
-        if (isset($_POST['txtOrderIDShop']))
-            return $_POST['txtOrderIDShop'];
-        if (isset($_GET['orderID']))
-            return $_GET['orderID'];
+        if (isset($_POST['orderID'])) return $_POST['orderID'];
         return false;
     }
 
 
     /**
-     * Validates the hash returned by the PSP
+     * Returns a string with all currently accepted payment methods.
      *
-     * Returns true both if it is correct and if it's missing, as this is not
-     * a mandatory feature.
-     * If the hash is present and wrong, however, false is returned.
-     * The fields used for the SHA-OUT value are -- in this order:
-     * orderID, currency, amount, PM, ACCEPTANCE, STATUS,
-     * CARDNO, PAYID, NCERROR, BRAND
-     * @return  boolean         True on success, false otherwise
+     * This string is ready to be used in the PMLIST field of the payment form.
+     * @param   string  $indices    The comma separated list of payment type
+     *                              indices
+     * @return  string              The payment type string
      */
-    static function checkHash()
+    static function getAcceptedPaymentMethodsString($indices)
     {
-        if (empty($_GET['SHASIGN'])) {
-            self::$arrWarning[] = 'No SHASIGN value in request';
-            return true;
+        if (empty ($indices)) return '';
+        $strAcceptedPaymentMethods = '';
+        foreach (preg_split('/\s*,\s*/', $indices, null, PREG_SPLIT_NO_EMPTY)
+                as $index) {
+            if (empty (self::$arrKnownPaymentMethod[$index])) continue;
+            $strAcceptedPaymentMethods .=
+                ($strAcceptedPaymentMethods ? ';' : '').
+                self::$arrKnownPaymentMethod[$index];
         }
-        $hash_string = '';
-        foreach (self::$arrFieldShaOut as $key) {
-            // This means failure!
-            if (!isset($_GET[$key])) {
-                continue;
-            }
-            $hash_string .= $_GET[$key];
-        }
-        $hash_string .= Settings::getValueByName('yellowpay_hash_signature_out');
-        $hash = strtoupper(sha1($hash_string));
-        if ($_GET['SHASIGN'] == $hash) {
-            return true;
-        }
-        self::$arrError[] = 'Invalid SHASIGN value in request';
-        return false;
+        return $strAcceptedPaymentMethods;
     }
 
 
     /**
-     * Returns the array with all currently accepted payment methods.
-     *
-     * Note: This is still under development.
-     * The contents of this array directly depend on the list of
-     * accepted payment methods specified when calling the constructor.
-     * @return  array         The payment type name strings
-     */
-    static function getAcceptedPaymentMethods()
-    {
-        self::init();
-        return array_keys(self::$arrAcceptedPaymentMethod);
-    }
-
-
-    /**
+     * UNUSED (for the time being) --
      * Returns the HTML menu options for selecting from the currently accepted
      * payment methods.
-     * @param   string    $strSelected    The optional preselected payment
-     *                                    method name
-     * @return  string                    The HTML menu options
+
+     * The functionality had been in use in the egov module only, where it
+     * has become obsolete.
+     * @param   string  $indices        The comma separated list of payment type
+     *                                  indices
+     * @param   integer $selected       The optional preselected payment type
+     *                                  index
+     * @return  string                  The HTML menu options
      */
-    static function getAcceptedPaymentMethodMenuOptions($strSelected='')
+    static function getAcceptedPaymentMethodMenuOptions(
+        $indices, $selected=null)
     {
         global $_ARRAYLANG;
 
-        self::init();
         $strOptions = '';
-        foreach (array_keys(self::$arrAcceptedPaymentMethod)
-                  as $strPaymentMethod) {
+        $arrIndices = preg_split('/\s*,\s*/', $indices, null, PREG_SPLIT_NO_EMPTY);
+        foreach (self::$arrKnownPaymentMethod as $index => $strPaymentMethod) {
+            if (!in_array($index, $arrIndices)) continue;
             $strOptions .=
                 '<option value="'.$strPaymentMethod.'"'.
-                ($strPaymentMethod == $strSelected
+                ($strPaymentMethod == $selected
                     ? ' selected="selected"' : ''
                 ).'>'.
                 $_ARRAYLANG['TXT_SHOP_YELLOWPAY_'.strtoupper($strPaymentMethod)].
@@ -647,47 +877,91 @@ class Yellowpay
     /**
      * Returns the HTML checkboxes for selecting zero or more from the known
      * payment methods.
-     * @return  string        The HTML checkboxes
+     * @param   string  $indices        The comma separated list of selected
+     *                                  payment type indices
+     * @return  string                  The HTML checkboxes
      */
-    static function getKnownPaymentMethodCheckboxes()
+    static function getKnownPaymentMethodCheckboxes($indices)
     {
         global $_ARRAYLANG;
 
-        self::init();
         $strOptions = '';
-        foreach (Yellowpay::$arrKnownPaymentMethod as $index => $strPaymentMethod) {
+        $arrIndices = preg_split('/\s*,\s*/', $indices, null, PREG_SPLIT_NO_EMPTY);
+        foreach (Yellowpay::$arrKnownPaymentMethod
+                as $index => $strPaymentMethod) {
             $strOptions .=
                 '<input name="yellowpay_accepted_payment_methods[]" '.
                 'id="yellowpay_pm_'.$index.'" type="checkbox" '.
-                (in_array($strPaymentMethod, array_keys(self::$arrAcceptedPaymentMethod))
-                    ? 'checked="checked" ' : ''
-                ).
-                'value="'.$strPaymentMethod.'" />'.
+                (in_array($index, $arrIndices) ? 'checked="checked" ' : '').
+                'value="'.$index.'" />'."\n".
                 '<label for="yellowpay_pm_'.$index.'">&nbsp;'.
                 $_ARRAYLANG['TXT_SHOP_YELLOWPAY_'.strtoupper($strPaymentMethod)].
-                '</label><br />';
+                '</label><br />'."\n";
         }
         return $strOptions;
     }
 
 
-    static function getAuthorizationMenuoptions()
+    /**
+     * Returns HTML code for the authorization menuoptions
+     * @global  array   $_ARRAYLANG
+     * @param   string  $authorization  The selected authorization method
+     * @return  string                  The HTML menuoptions
+     */
+    static function getAuthorizationMenuoptions($authorization)
     {
         global $_ARRAYLANG;
 
-        self::$strAuthorization =
-            Settings::getValueByName('yellowpay_authorization_type');
         return
             '<option value="SAL"'.
-            (self::$strAuthorization == 'SAL' ? ' selected="selected"' : '').'>'.
+            ($authorization == 'SAL' ? ' selected="selected"' : '').'>'.
             $_ARRAYLANG['TXT_SHOP_YELLOWPAY_REQUEST_FOR_SALE'].
             '</option>'.
             '<option value="RES"'.
-            (self::$strAuthorization == 'RES' ? ' selected="selected"' : '').'>'.
+            ($authorization == 'RES' ? ' selected="selected"' : '').'>'.
             $_ARRAYLANG['TXT_SHOP_YELLOWPAY_REQUEST_FOR_AUTHORIZATION'].
             '</option>';
     }
 
-}
 
-?>
+    /**
+     * Handles errors ocurring in this class
+     *
+     * In particular, tries to add missing Settings using the defaults.
+     * However, you will have to set them to their correct values after this.
+     */
+    static function errorHandler()
+    {
+        SettingDb::errorHandler();
+        // Uses the current MODULE_ID
+        SettingDb::init('config');
+        // Signature: ($name, $value, $ord, $type, $values, $key)
+        SettingDb::add('postfinance_shop_id', 'Ihr Kontoname',
+                1, SettingDb::TYPE_TEXT);
+        SettingDb::add('postfinance_active', '0',
+                2, SettingDb::TYPE_CHECKBOX, '1');
+        SettingDb::add('postfinance_authorization_type', 'SAL',
+                3, SettingDb::TYPE_DROPDOWN, 'RES:Reservation,SAL:Verkauf');
+        // As it appears that in_array(0, $array) is true for each non-empty
+        // $array, indices for the entries must be numbered starting at 1.
+        $arrPayments = array();
+        foreach (self::$arrKnownPaymentMethod as $index => $name) {
+            $arrPayments[$index] = $name;
+        }
+        SettingDb::add('postfinance_accepted_payment_methods', '',
+                4, SettingDb::TYPE_CHECKBOXGROUP,
+                SettingDb::joinValues($arrPayments));
+        SettingDb::add('postfinance_hash_signature_in',
+                'Mindestens 16 Buchstaben, Ziffern und Zeichen',
+                5, SettingDb::TYPE_TEXT);
+        SettingDb::add('postfinance_hash_signature_out',
+                'Mindestens 16 Buchstaben, Ziffern und Zeichen',
+                6, SettingDb::TYPE_TEXT);
+        SettingDb::add('postfinance_use_testserver', '1',
+                7, SettingDb::TYPE_CHECKBOX, '1');
+
+        // Always
+        return false;
+    }
+
+}
