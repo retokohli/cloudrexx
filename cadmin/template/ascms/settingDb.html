@@ -16,6 +16,7 @@
 <!-- BEGIN core_settingdb_tab_div -->
 <div id="tab-{CORE_SETTINGDB_TAB_INDEX}" class="settingdb" style="display: {CORE_SETTINGDB_TAB_DISPLAY};">
   <form name="formSettings-{CORE_SETTINGDB_TAB_INDEX}" method="post" action="{URI_BASE}"{CORE_SETTINGDB_ENCTYPE}>
+<!-- BEGIN core_settingdb_sections -->
 <!-- BEGIN core_settingdb_section -->
     <table class="adminlist" border="0" cellspacing="0" cellpadding="2" width="100%" summary="">
       <thead>
@@ -24,6 +25,7 @@
             {CORE_SETTINGDB_SECTION}
           </th>
         </tr>
+<!-- BEGIN core_settingdb_header -->
         <tr class="row3">
           <td width="25%">
             <b>{TXT_CORE_SETTINGDB_NAME}</b>
@@ -32,6 +34,7 @@
             <b>{TXT_CORE_SETTINGDB_VALUE}</b>
           </td>
         </tr>
+<!-- END core_settingdb_header -->
       </thead>
       <tbody>
 <!-- BEGIN core_settingdb_row -->
@@ -44,10 +47,10 @@
 <!-- END core_settingdb_row_1 -->
 <!-- BEGIN core_settingdb_row_2 -->
         <tr class="row{CORE_SETTINGDB_ROWCLASS2}">
-          <td valign="top">
+          <td valign="top" width="25%">
             {CORE_SETTINGDB_NAME}
           </td>
-          <td valign="top">
+          <td valign="top" width="75%">
             {CORE_SETTINGDB_VALUE}
           </td>
         </tr>
@@ -56,6 +59,7 @@
       </tbody>
     </table>
 <!-- END core_settingdb_section -->
+<!-- END core_settingdb_sections -->
     <br />
     <br />
     <input type="submit" value="{TXT_CORE_SETTINGDB_STORE}" name="bsubmit"
