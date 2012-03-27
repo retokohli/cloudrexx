@@ -183,6 +183,9 @@ require_once(ASCMS_CORE_PATH.'/routing/Resolver.class.php');
 
 $languageExtractor = new \Cx\Core\Routing\URLTranslator($objDatabase, DBPREFIX, Env::em());
 
+//die(var_export($_SERVER, true));
+if (empty ($_GET['__cap']))
+    $_GET['__cap'] = $_SERVER['REQUEST_URI'];
 $url = \Cx\Core\Routing\URL::fromCapturedRequest($_GET['__cap'], ASCMS_PATH_OFFSET, $_GET);
 $resolver = new \Cx\Core\Routing\Resolver($url, null, Env::em(), null, null);
 $aliaspage = $resolver->resolveAlias();
@@ -196,7 +199,7 @@ if ($aliaspage != null) {
      */
     $_LANGID = $objInit->getFallbackFrontendLangId();
 
-    //try to find the language in the url
+/*    //try to find the language in the url
     $extractedLanguage = 0;
 
     $redirectToCorrectLanguageDir = function() use ($languageExtractor, $url, $_LANGID, $_CONFIG) {
@@ -214,14 +217,13 @@ if ($aliaspage != null) {
         //to redirect the user to an url with prepended virtual language directory
         $redirectToCorrectLanguageDir();
     }
-
     //only set langid according to url if the user has not explicitly requested a language change.
     if(!isset($_REQUEST['setLang'])) {
         $_LANGID = $extractedLanguage;
     }
     else if($_LANGID != $extractedLanguage) { //the user wants to change the language, but we're still inside the wrong language directory.
         $redirectToCorrectLanguageDir();
-    }
+    }*/
 }
 
 // Post-2.1
@@ -231,13 +233,18 @@ define('LANG_ID', $_LANGID);
 
 //expose the virtual language directory to the rest of the cms
 //please do not access this variable directly, use Env::get().
-$virtualLanguageDirectory = '/'.$languageExtractor->getShortNameOfLanguage(FRONTEND_LANG_ID);
+$virtualLanguageDirectory = '/';///'.$languageExtractor->getShortNameOfLanguage(FRONTEND_LANG_ID);
 Env::set('virtualLanguageDirectory', $virtualLanguageDirectory);
 
 // TODO: this constanst used to be located in config/set_constants.php, but needed to be relocated to this very place,
 // because it depends on Env::get('virtualLanguageDirectory').
 // Find an other solution; probably best is to replace CONTREXX_SCRIPT_PATH by a prettier method
-define('CONTREXX_SCRIPT_PATH', ASCMS_PATH_OFFSET.Env::get('virtualLanguageDirectory').'/'.CONTREXX_DIRECTORY_INDEX);
+define('CONTREXX_SCRIPT_PATH',
+        ASCMS_PATH_OFFSET.
+        //Env::get('virtualLanguageDirectory').
+        '/'.
+        CONTREXX_DIRECTORY_INDEX);
+//die("Script path: ".CONTREXX_SCRIPT_PATH);
 
 // Caching-System
 /**
@@ -1792,14 +1799,22 @@ $objTemplate->setVariable(array(
     'LAST_MODIFIED_PAGE'             => date(ASCMS_DATE_SHORT_FORMAT, $page_modified),
     'FACEBOOK_LIKE_IFRAME'           => '<iframe src="https://www.facebook.com/plugins/like.php?href='.urlencode('http://'.$_CONFIG['domainUrl'].$objInit->getCurrentPageUri()).'&amp;layout=standard&amp;show_faces=true&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe>',
     'GOOGLE_PLUSONE'                 => '<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script> <g:plusone></g:plusone>',
-    'CONTACT_EMAIL'                  => $_CONFIG['contactFormEmail'],
-    'CONTACT_COMPANY'                => $_CONFIG['contactCompany'],
-    'CONTACT_ADDRESS'                => $_CONFIG['contactAddress'],
-    'CONTACT_ZIP'                    => $_CONFIG['contactZip'],
-    'CONTACT_PLACE'                  => $_CONFIG['contactPlace'],
-    'CONTACT_COUNTRY'                => $_CONFIG['contactCountry'],
-    'CONTACT_PHONE'                  => $_CONFIG['contactPhone'],
-    'CONTACT_FAX'                    => $_CONFIG['contactFax'],
+    'CONTACT_EMAIL'                  => (isset ($_CONFIG['contactFormEmail'])
+        ? $_CONFIG['contactFormEmail'] : ''),
+    'CONTACT_COMPANY'                => (isset ($_CONFIG['contactCompany'])
+        ? $_CONFIG['contactCompany'] : ''),
+    'CONTACT_ADDRESS'                => (isset ($_CONFIG['contactAddress'])
+        ? $_CONFIG['contactAddress'] : ''),
+    'CONTACT_ZIP'                    => (isset ($_CONFIG['contactZip'])
+        ? $_CONFIG['contactZip'] : ''),
+    'CONTACT_PLACE'                  => (isset ($_CONFIG['contactPlace'])
+        ? $_CONFIG['contactPlace'] : ''),
+    'CONTACT_COUNTRY'                => (isset ($_CONFIG['contactCountry'])
+        ? $_CONFIG['contactCountry'] : ''),
+    'CONTACT_PHONE'                  => (isset ($_CONFIG['contactPhone'])
+        ? $_CONFIG['contactPhone'] : ''),
+    'CONTACT_FAX'                    => (isset ($_CONFIG['contactFax'])
+        ? $_CONFIG['contactFax'] : ''),
 ));
 
 // Include and initialize handler to fill Social Network template variables
