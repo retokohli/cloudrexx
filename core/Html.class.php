@@ -495,8 +495,9 @@ class Html
 
 
     /**
+     * Returns HTML code for the hidden active tab field
      *
-     * Returns HTML code for the hidden field
+     * Includes Javascript setting the corresponding variable
      * @return type
      */
     static function getHidden_activetab()
@@ -622,9 +623,7 @@ var _active_tab = '.
     static function getOptions($arrOptions, $selected='', $attribute=null)
     {
         $options = '';
-//DBG::log("Html::getOptions(): Array: ".var_export($arrOptions, true));
         foreach ($arrOptions as $key => $value) {
-//DBG::log("Html::getOptions(): Value: $value, nonempty: ".intval($value != ''));
             $options .=
                 '<option value="'.$key.'"'.
                 (is_array($selected)
@@ -764,7 +763,7 @@ var _active_tab = '.
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getCheckboxGroup(
-        $name, $arrOptions, $arrLabel='', $arrChecked='', $id='',
+        $name, $arrOptions, $arrLabel=null, $arrChecked=null, $id=false,
         $onchange='', $separator='',
         $attributeCheckbox='', $attributeLabel=''
     ) {
@@ -777,16 +776,16 @@ var _active_tab = '.
         $name_stripped = preg_replace('/\[.*$/', '', $name);
         if (!is_array($arrLabel)) $arrLabel = array();
         if (!is_array($arrChecked)) $arrChecked = array();
-        if (empty($id)) $id = $name_stripped;
+        if (empty($id) && $id !== false) $id = $name_stripped;
         $checkboxgroup = '';
         foreach ($arrOptions as $key => $value) {
             if (empty($index[$name_stripped])) $index[$name_stripped] = 0;
-            $id_local = $id.'-'.++$index[$name_stripped];
+            $id_local = ($id ? $id.'-'.++$index[$name_stripped] : false);
             $checkboxgroup .=
                 ($checkboxgroup ? $separator : '').
                 self::getCheckbox(
-                    $name.'['.$key.']', $value, $id_local,
-                    (in_array($key, $arrChecked)),
+                    $name.'['.$key.']', $key, $id_local,
+                    in_array($key, $arrChecked),
                     $onchange, $attributeCheckbox
                 ).
                 self::getLabel(
@@ -1598,8 +1597,6 @@ function select_options(element, on_or_off) {
 //                'border:0px;width:17px;height:17px;background-image:url('.
 //                ASCMS_PATH_OFFSET.
 //                '/cadmin/images/icons/add.gif);background-repeat:no-repeat;';
-
-
         // Local copy, as this is modified in the subelements below
         $index_tab = ++self::$index_tab;
         $return =
