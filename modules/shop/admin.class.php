@@ -2216,16 +2216,22 @@ class shopmanager extends ShopLibrary
                     'SHOP_YELLOWPAY_HASH_SIGNATURE_IN' => $this->arrConfig['yellowpay_hash_signature_in']['value'],
                     'SHOP_YELLOWPAY_HASH_SIGNATURE_OUT' => $this->arrConfig['yellowpay_hash_signature_out']['value'],
 
-                    'SHOP_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' => Yellowpay::getKnownPaymentMethodCheckboxes(),
-                    'SHOP_YELLOWPAY_AUTHORIZATION_TYPE_OPTIONS' => Yellowpay::getAuthorizationMenuoptions(),
+                    'SHOP_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' =>
+                        Yellowpay::getKnownPaymentMethodCheckboxes(
+                            $this->arrConfig['yellowpay_accepted_payment_methods']['value']),
+                    'SHOP_YELLOWPAY_AUTHORIZATION_TYPE_OPTIONS' =>
+                        Yellowpay::getAuthorizationMenuoptions(
+                            $this->arrConfig['yellowpay_authorization_type']['value']),
                     'SHOP_YELLOWPAY_USE_TESTSERVER_YES_CHECKED' => $yellowpayTestCheckedYes,
                     'SHOP_YELLOWPAY_USE_TESTSERVER_NO_CHECKED' => $yellowpayTestCheckedNo,
 
                     'SHOP_DATATRANS_AUTHORIZATION_TYPE_OPTIONS' => Datatrans::getReqtypeMenuoptions($datatrans_request_type),
                     'SHOP_DATATRANS_MERCHANT_ID' => $datatrans_merchant_id,
                     'SHOP_DATATRANS_STATUS' => ($datatrans_status ? ' checked="checked"' : ''),
-                    'SHOP_DATATRANS_USE_TESTSERVER_YES_CHECKED' => ($datatrans_use_testserver ? ' checked:"checked"' : ''),
-                    'SHOP_DATATRANS_USE_TESTSERVER_NO_CHECKED' => ($datatrans_use_testserver ? '' : ' checked:"checked"'),
+                    'SHOP_DATATRANS_USE_TESTSERVER_YES_CHECKED' =>
+                        ($datatrans_use_testserver ? ' checked="checked"' : ''),
+                    'SHOP_DATATRANS_USE_TESTSERVER_NO_CHECKED' =>
+                        ($datatrans_use_testserver ? '' : ' checked="checked"'),
                     // Not supported
                     //'SHOP_DATATRANS_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' => 0,
 
