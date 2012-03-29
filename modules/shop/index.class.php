@@ -1961,21 +1961,12 @@ function addProductToCart(objForm)
       }
     }
   }
-  // Create product string
-  // 20081217 -- Reto Kohli
-  // Fixed encoding of string parameters -- now uses prototype.js
-//  productStr = Object.toJSON(objProduct);
-//  sendReq('&product='+encodeURIComponent(productStr)+updateProduct, 1);
+// Optional:  to consistently show up-to-date contents of the cart *only*
 //  hideCart();
   jQuery.ajax(
     'index.php?".
-// It seems that IE9 requires this -- sometimes?!
-//(   isset($_SERVER['HTTP_USER_AGENT'])
-// && preg_match('/MSIE\s9\.0/', $_SERVER['HTTP_USER_AGENT'])
-//    ? htmlentities(session_name(), ENT_QUOTES, CONTREXX_CHARSET)."=".
-//      htmlentities(session_id(), ENT_QUOTES, CONTREXX_CHARSET)
-//    : '').
       "section=shop".MODULE_INDEX."&cmd=cart&remoteJs=addProduct'
+      +'&r='+Math.random()
       +updateProduct, {
     data: objProduct,
     dataType: 'json',
