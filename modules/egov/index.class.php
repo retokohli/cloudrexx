@@ -302,6 +302,7 @@ class eGov extends eGovLibrary
             return $this->paymentPaypal($order_id, $amount);
           // Payment requests
           // The following are all handled by Yellowpay.
+          case 'PostFinance': // Generic
           case 'PostFinanceCard':
           case 'yellownet':
           case 'Master':

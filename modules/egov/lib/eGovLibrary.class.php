@@ -516,6 +516,12 @@ class eGovLibrary {
                 $_ARRAYLANG['TXT_EGOV_PAYMENT_HANDLER']."</td>\n".
                 '<td><select style="width: 306px;" name="handler" id="handler" '.
                 "onchange=\"toggleYellowpayFields();\">\n";
+            if ($paymentYellowpay) {
+                // Yellowpay is enabled
+                $sourcecode .=
+                    '<option value="PostFinance">'.
+                    $_ARRAYLANG['TXT_EGOV_POSTFINANCE'].'</option>';
+            }
             if ($paymentPaypal) {
                 // PayPal is enabled
                 $sourcecode .=
