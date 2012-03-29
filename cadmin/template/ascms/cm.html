@@ -49,12 +49,6 @@
 
                 <span class="info type_hidable type_fallback">{TXT_CORE_CM_TYPE_FALLBACK_INFO}</span>
             </div>
-	    <input type="hidden" name="page[scheduled_publishing]" value="off" />
-            <a class="heading toggle_checkbox" id="page[scheduled_publishing]">{TXT_CORE_CM_SCHEDULED_PUBLISHING}</a>
-            <div id="scheduled_publishing" style="display: none;">
-                Von: <input type="text" name="page[start]" value="von" class="date" />
-                Bis: <input type="text" name="page[end]" value="bis" class="date" />
-            </div>
 
             <div class="type_hidable type_application type_content" style="margin-top: 20px;">
                 <textarea id="cm_ckeditor" rows="15" cols="45" name="page[content]"></textarea>
@@ -96,6 +90,13 @@
             </div>
         </div>
         <div id="page_settings">
+	    <input type="hidden" name="page[scheduled_publishing]" value="off" />
+            <a class="heading toggle_checkbox" id="page[scheduled_publishing]">{TXT_CORE_CM_SCHEDULED_PUBLISHING}</a>
+            <div id="scheduled_publishing" style="display: none;">
+                Von: <input type="text" name="page[start]" value="von" class="date" />
+                Bis: <input type="text" name="page[end]" value="bis" class="date" />
+            </div>
+
             <a href="#" class="heading toggle">{TXT_CORE_CM_THEMES}</a>
             <div id="themes">
                 <select id="page_skin" name="page[skin]">
