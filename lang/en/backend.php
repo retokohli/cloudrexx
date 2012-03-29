@@ -1409,7 +1409,7 @@ $_ARRAYLANG['TXT_CORE_CM_PUBLISH'] = "Publish";
 $_ARRAYLANG['TXT_CORE_CM_UNPUBLISH'] = "Unpublish";
 $_ARRAYLANG['TXT_CORE_CM_HIDE'] = "Hide";
 $_ARRAYLANG['TXT_CORE_CM_SHOW'] = "Show";
-$_ARRAYLANG['TXT_CORE_CM_DELETE'] = "Delete Node";
+$_ARRAYLANG['TXT_CORE_CM_DELETE'] = "Delete";
 $_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE'] = "Please confirm that you want to delete this node and all its child nodes.";
 
 // upload

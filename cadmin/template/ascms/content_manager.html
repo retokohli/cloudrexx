@@ -9,7 +9,7 @@
 <!--[if IE 8 ]><div id="content-manager" class="clearfix ie8">  <![endif]-->
 <!--[if IE 9 ]><div id="content-manager" class="clearfix ie9">  <![endif]-->
 <!--[if (gt IE 9)|!(IE)]><!--><div id="content-manager" class="clearfix">  <!--<![endif]-->
-    <div id="site-structure">
+    <div id="site-structure" {CM_HIDE_LIST}>
         <div id="site-language" class="clearfix">
             <select class="chzn-select" style="width:101%; height:35px;">
                 {LANGSWITCH_OPTIONS}
@@ -20,7 +20,7 @@
 
         </div>
     </div>
-    <div id="page">
+    <div id="page"{CM_HIDDEN}>
         {CONTENT_MANAGER_MEAT}
     </div>
 </div>

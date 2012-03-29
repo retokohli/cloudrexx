@@ -65,6 +65,16 @@ class ContentManager extends Module {
         JS::activate('chosen');
         JS::registerJS('lib/javascript/lock.js');
 
+        $cm_hidden = ''; 
+        $hide_list = '';
+        if (isset($_GET['act']) && $_GET['act'] == 'new') {
+            $hide_list = ' class="shrunk"';
+        }
+        else {
+            $cm_hidden = ' style="display: none !important;"';
+        }
+
+
         $this->template->addBlockfile('ADMIN_CONTENT', 'content_manager', 'content_manager.html');
         $this->template->touchBlock('content_manager');
         $this->template->addBlockfile('CONTENT_MANAGER_MEAT', 'content_manager_meat', 'cm.html');
@@ -124,7 +134,8 @@ class ContentManager extends Module {
         $this->template->setVariable('LANGUAGE_ARRAY', json_encode($this->getLangArray()));
         $this->template->setVariable('FALLBACK_ARRAY', json_encode($this->getFallbackArray()));
         $this->template->setVariable('LANGUAGE_LABELS', json_encode($this->getLangLabels()));
-
+        $this->template->setVariable('CM_HIDDEN', $cm_hidden);
+        $this->template->setVariable('CM_HIDE_LIST', $hide_list);
 	}
 
     /**

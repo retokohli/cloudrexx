@@ -108,7 +108,13 @@ class JSONNode {
                 $data[FWLanguage::getLanguageCodeById($page->getLang())] = array(
                     "language"  => FWLanguage::getLanguageCodeById($page->getLang()),
                     "title"     => $page->getTitle(),
-                    "attr"      => array("id" => $page->getId()) 
+                    "attr"      => array(
+                                         "id" => $page->getId(),
+                                         "data-href" => json_encode(array('module' => $page->getModule().' '.$page->getCmd(),
+                                                                          'lastupdate' => $page->getUpdatedAt()->format('d.m.Y H:i'),
+                                                                          'user' => $page->getUsername()
+                                                                          ))
+                                         )
                 );
 
                 $editingStatus = $page->getEditingStatus();
@@ -158,7 +164,7 @@ class JSONNode {
                 elseif (!array_key_exists($lang, $data)) {
                     $data[$lang] = array(
                         "language"  => $lang,
-                        "title"     => $data[$last_resort]["title"],
+                        "title"     => array_key_exists($last_resort, $data) ? $data[$last_resort]["title"] : "No Title",
                         "attr"      => array(
                             "id"    => "0"
                         )
