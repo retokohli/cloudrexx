@@ -2059,9 +2059,7 @@ function sendReq(data, type)
     if (type == 1) {
         // add product
         objHttp.open('get', 'index.php?section=shop".MODULE_INDEX.
-//        "&".htmlentities(session_name(), ENT_QUOTES, CONTREXX_CHARSET).
-//        "=".htmlentities(session_id(), ENT_QUOTES, CONTREXX_CHARSET).
-        "&cmd=cart&remoteJs=addProduct'+data, true);
+        "&cmd=cart&remoteJs=addProduct'+data+'&r='+Math.random(), true);
         objHttp.onreadystatechange = shopUpdateCart;
     }
     // elseif ..
