@@ -1536,14 +1536,6 @@ function select_options(element, on_or_off) {
     }
 
 
-
-
-
-
-
-
-
-
     /**
      * Returns HMTL code for displaying a group of Text fields
      * @param   array   $options    The options array, by reference
@@ -1662,9 +1654,6 @@ function itg_add_'.$index_tab.'(container_id) {
 
         return $return;
     }
-
-
-
 
 
     /**
@@ -2747,5 +2736,3 @@ function cloneElement(id)
     }
 
 }
-
-?>
