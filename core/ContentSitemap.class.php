@@ -263,8 +263,10 @@ class ContentSitemap
             if ($expand) {
                 $width=($level)*18;
                 $requiredModule = in_array($this->navModule[$key], $this->requiredModuleNames) ? "_core" : "";
-                if (empty($requiredModule)) {
-                    $isRedirect = ($this->navIsRedirect[$key]) ? '_redirect' : '';
+                $isRedirect = '';
+                if (   empty($requiredModule)
+                    && $this->navIsRedirect[$key]) {
+                    $isRedirect = '_redirect';
                 }
 
                 // start active or inactive folder icon
