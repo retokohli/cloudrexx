@@ -313,6 +313,19 @@ CREATE TABLE `contrexx_content_navigation_history` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_setting` (
+  `name` tinytext NOT NULL,
+  `module_id` int(10) NOT NULL default '0',
+  `key` tinytext NOT NULL,
+  `value` text NOT NULL,
+  `type` varchar(32) NOT NULL default 'text',
+  `values` text,
+  `ord` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`name`(32),`module_id`,`key`(32))
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_ids` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `timestamp` int(14) default NULL,
