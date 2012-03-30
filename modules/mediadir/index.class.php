@@ -107,12 +107,7 @@ class mediaDirectory extends mediaDirectoryLibrary
                 $this->showPopular();
                 break;
             case 'map':
-                if(!empty($_CONFIG['googleMapsAPIKey'])) {
-                    $this->showMap();
-                } else {
-                    header("Location: index.php?section=".$this->moduleName );
-                    exit;
-                }
+                $this->showMap();
                 break;
             case 'myentries':
                 parent::checkAccess('my_entries');
