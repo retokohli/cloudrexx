@@ -24,9 +24,10 @@ class LoginManager {
      */
     public function __construct()
     {
-    	$this->objTemplate = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/login/template');
+        $this->objTemplate = new HTML_Template_Sigma(ASCMS_DOCUMENT_ROOT);
         CSRF::add_placeholder($this->objTemplate);
-		$this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+        $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+        $this->objTemplate->loadTemplateFile('/cadmin/template/ascms/index.html');
     }
 
     /**
@@ -38,7 +39,7 @@ class LoginManager {
     {
         $_GET['act'] = empty($_GET['act']) ? '' : $_GET['act'];
 
-    	switch ($_GET['act']) {
+        switch ($_GET['act']) {
             case 'lostpw':
                 $this->showPasswordLost();
                 break;
@@ -53,6 +54,7 @@ class LoginManager {
                 break;
         }
 
+        $this->objTemplate->setVariable('CONTREXX_CHARSET', CONTREXX_CHARSET);
         $this->objTemplate->show();
         exit();
     }
@@ -61,26 +63,25 @@ class LoginManager {
      * Show the password lost mask.
      *
      * @access  private
-     * @global  array    $_CORELANG
+     * @global  array    $_ARRAYLANG
      * @global  FWUser   $objFWUser
      */
     private function showPasswordLost()
     {
-        global $_CORELANG, $objFWUser;
+        global $_ARRAYLANG, $objFWUser;
 
-        $this->objTemplate->loadTemplateFile('../../../cadmin/template/ascms/index.html');
-        $this->objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', 'login_lost_password.html');
+        $this->objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', '/core_modules/login/template/login_lost_password.html');
         $this->objTemplate->setVariable(array(
-            'TITLE' => $_CORELANG['TXT_RESET_PASSWORD'],
-            'TXT_LOST_PASSWORD_TEXT' => $_CORELANG['TXT_LOST_PASSWORD_TEXT'],
-            'TXT_EMAIL' => $_CORELANG['TXT_EMAIL'],
-            'TXT_RESET_PASSWORD' => $_CORELANG['TXT_RESET_PASSWORD'],
-            'TXT_BACK_TO_LOGIN' => $_CORELANG['TXT_BACK_TO_LOGIN'],
+            'TITLE'                     => $_ARRAYLANG['TXT_LOGIN_RESET_PASSWORD'],
+            'TXT_LOGIN_LOST_PASSWORD'   => $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD'],
+            'TXT_LOGIN_EMAIL'           => $_ARRAYLANG['TXT_LOGIN_EMAIL'],
+            'TXT_LOGIN_RESET_PASSWORD'  => $_ARRAYLANG['TXT_LOGIN_RESET_PASSWORD'],
+            'TXT_LOGIN_BACK_TO_LOGIN'   => $_ARRAYLANG['TXT_LOGIN_BACK_TO_LOGIN'],
         ));
         if (isset($_POST['email'])) {
             $email = contrexx_stripslashes($_POST['email']);
             if (($objFWUser->restorePassword($email))) {
-                $statusMessage = str_replace("%EMAIL%", $email, $_CORELANG['TXT_LOST_PASSWORD_MAIL_SENT']);
+                $statusMessage = str_replace("%EMAIL%", $email, $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD_MAIL_SENT']);
                 if ($this->objTemplate->blockExists('login_lost_password')) {
                     $this->objTemplate->hideBlock('login_lost_password');
                 }
@@ -95,16 +96,15 @@ class LoginManager {
      * Show the password reset mask.
      *
      * @access  private
-     * @global  array    $_CORELANG
+     * @global  array    $_ARRAYLANG
      * @global  FWUser   $objFWUser
      */
     private function showPasswordReset()
     {
-        global $_CORELANG, $objFWUser;
+        global $_ARRAYLANG, $objFWUser;
 
-        $this->objTemplate->loadTemplateFile('../../../cadmin/template/ascms/index.html');
-        $this->objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', 'login_reset_password.html');
-        $this->objTemplate->setVariable('TITLE', $_CORELANG['TXT_SET_NEW_PASSWORD']);
+        $this->objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', '/core_modules/login/template/login_reset_password.html');
+        $this->objTemplate->setVariable('TITLE', $_ARRAYLANG['TXT_LOGIN_SET_NEW_PASSWORD']);
         // TODO: Why oh why isn't function resetPassword() located in the AccessLibrary?
         $username = isset($_POST['username']) ? contrexx_stripslashes($_POST['username']) : (isset($_GET['username']) ? contrexx_stripslashes($_GET['username']) : '');
         $restoreKey = isset($_POST['restore_key']) ? contrexx_stripslashes($_POST['restore_key']) : (isset($_GET['restoreKey']) ? contrexx_stripslashes($_GET['restoreKey']) : '');
@@ -113,20 +113,20 @@ class LoginManager {
         $statusMessage = '';
         if (isset($_POST['reset_password'])) {
             if ($objFWUser->resetPassword($username, $restoreKey, $password, $confirmedPassword, true)) {
-                $statusMessage = $_CORELANG['TXT_PASSWORD_CHANGED_SUCCESSFULLY'];
+                $statusMessage = $_ARRAYLANG['TXT_LOGIN_PASSWORD_CHANGED_SUCCESSFULLY'];
                 if ($this->objTemplate->blockExists('login_reset_password')) {
                     $this->objTemplate->hideBlock('login_reset_password');
                 }
             } else {
                 $statusMessage = $objFWUser->getErrorMsg();
                 $this->objTemplate->setVariable(array(
-                    'TXT_USERNAME' => $_CORELANG['TXT_USERNAME'],
-                    'TXT_PASSWORD' => $_CORELANG['TXT_PASSWORD'],
-                    'TXT_VERIFY_PASSWORD' => $_CORELANG['TXT_VERIFY_PASSWORD'],
-                    'TXT_PASSWORD_MINIMAL_CHARACTERS' => $_CORELANG['TXT_PASSWORD_MINIMAL_CHARACTERS'],
-                    'TXT_SET_PASSWORD_TEXT' => $_CORELANG['TXT_SET_PASSWORD_TEXT'],
-                    'TXT_SET_NEW_PASSWORD' => $_CORELANG['TXT_SET_NEW_PASSWORD'],
-                    'TXT_BACK_TO_LOGIN' => $_CORELANG['TXT_BACK_TO_LOGIN'],
+                    'TXT_LOGIN_USERNAME'                    => $_ARRAYLANG['TXT_LOGIN_USERNAME'],
+                    'TXT_LOGIN_PASSWORD'                    => $_ARRAYLANG['TXT_LOGIN_PASSWORD'],
+                    'TXT_LOGIN_VERIFY_PASSWORD'             => $_ARRAYLANG['TXT_LOGIN_VERIFY_PASSWORD'],
+                    'TXT_LOGIN_PASSWORD_MINIMAL_CHARACTERS' => $_ARRAYLANG['TXT_LOGIN_PASSWORD_MINIMAL_CHARACTERS'],
+                    'TXT_LOGIN_SET_PASSWORD_TEXT'           => $_ARRAYLANG['TXT_LOGIN_SET_PASSWORD_TEXT'],
+                    'TXT_LOGIN_SET_NEW_PASSWORD'            => $_ARRAYLANG['TXT_LOGIN_SET_NEW_PASSWORD'],
+                    'TXT_LOGIN_BACK_TO_LOGIN'               => $_ARRAYLANG['TXT_LOGIN_BACK_TO_LOGIN'],
                 ));
                 $this->objTemplate->parse('login_reset_password');
             }
@@ -137,20 +137,20 @@ class LoginManager {
             }
         } else {
             $this->objTemplate->setVariable(array(
-                'TXT_USERNAME' => $_CORELANG['TXT_USERNAME'],
-                'TXT_PASSWORD' => $_CORELANG['TXT_PASSWORD'],
-                'TXT_VERIFY_PASSWORD' => $_CORELANG['TXT_VERIFY_PASSWORD'],
-                'TXT_PASSWORD_MINIMAL_CHARACTERS' => $_CORELANG['TXT_PASSWORD_MINIMAL_CHARACTERS'],
-                'TXT_SET_PASSWORD_TEXT' => $_CORELANG['TXT_SET_PASSWORD_TEXT'],
-                'TXT_SET_NEW_PASSWORD' => $_CORELANG['TXT_SET_NEW_PASSWORD'],
-                'TXT_BACK_TO_LOGIN' => $_CORELANG['TXT_BACK_TO_LOGIN'],
+                'TXT_LOGIN_USERNAME'                    => $_ARRAYLANG['TXT_LOGIN_USERNAME'],
+                'TXT_LOGIN_PASSWORD'                    => $_ARRAYLANG['TXT_LOGIN_PASSWORD'],
+                'TXT_LOGIN_VERIFY_PASSWORD'             => $_ARRAYLANG['TXT_LOGIN_VERIFY_PASSWORD'],
+                'TXT_LOGIN_PASSWORD_MINIMAL_CHARACTERS' => $_ARRAYLANG['TXT_LOGIN_PASSWORD_MINIMAL_CHARACTERS'],
+                'TXT_LOGIN_SET_PASSWORD_TEXT'           => $_ARRAYLANG['TXT_LOGIN_SET_PASSWORD_TEXT'],
+                'TXT_LOGIN_SET_NEW_PASSWORD'            => $_ARRAYLANG['TXT_LOGIN_SET_NEW_PASSWORD'],
+                'TXT_LOGIN_BACK_TO_LOGIN'               => $_ARRAYLANG['TXT_LOGIN_BACK_TO_LOGIN'],
             ));
             $this->objTemplate->parse('login_reset_password');
         }
         $this->objTemplate->setVariable(array(
-            'LOGIN_STATUS_MESSAGE' => $statusMessage,
-            'LOGIN_USERNAME' => htmlentities($username, ENT_QUOTES, CONTREXX_CHARSET),
-            'LOGIN_RESTORE_KEY' => htmlentities($restoreKey, ENT_QUOTES, CONTREXX_CHARSET),
+            'LOGIN_STATUS_MESSAGE'  => $statusMessage,
+            'LOGIN_USERNAME'        => htmlentities($username, ENT_QUOTES, CONTREXX_CHARSET),
+            'LOGIN_RESTORE_KEY'     => htmlentities($restoreKey, ENT_QUOTES, CONTREXX_CHARSET),
         ));
     }
 
@@ -168,40 +168,39 @@ class LoginManager {
      * Show the login mask.
      *
      * @access  private
-     * @global  array    $_CORELANG
+     * @global  array    $_ARRAYLANG
      * @global  FWUser   $objFWUser
      */
     private function showLogin()
     {
-        global $_CORELANG, $objFWUser;
+        global $_ARRAYLANG, $objFWUser;
 
-        $this->objTemplate->loadTemplateFile('../../../cadmin/template/ascms/index.html', true, true);
-        $this->objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', 'login.html');
+        $this->objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', '/core_modules/login/template/login.html');
         $this->objTemplate->setVariable(array(
-            'REDIRECT_URL' => (!empty($_POST['redirect'])) ? $_POST['redirect'] : basename(getenv('REQUEST_URI')),
-            'TXT_LOGIN' => $_CORELANG['TXT_LOGIN'],
-            'TITLE' => $_CORELANG['TXT_LOGIN'],
-            'TXT_ENTER_A_USERNAME' => $_CORELANG['TXT_ENTER_A_USERNAME'],
-            'TXT_ENTER_A_PASSWORD' => $_CORELANG['TXT_ENTER_A_PASSWORD'],
-            'TXT_USER_NAME' => $_CORELANG['TXT_USER_NAME'],
-            'TXT_PASSWORD' => $_CORELANG['TXT_PASSWORD'],
-            'TXT_PASSWORD_LOST' => $_CORELANG['TXT_PASSWORD_LOST'],
-            'UID' => isset($_COOKIE['username']) ? $_COOKIE['username'] : '',
-            'LOGIN_ERROR_MESSAGE' => $objFWUser->getErrorMsg(),
-            'JAVASCRIPT' => JS::getCode(),
+            'TITLE'                         => $_ARRAYLANG['TXT_LOGIN_LOGIN'],
+            'TXT_LOGIN_LOGIN'               => $_ARRAYLANG['TXT_LOGIN_LOGIN'],
+            'TXT_LOGIN_ENTER_A_USERNAME'    => $_ARRAYLANG['TXT_LOGIN_ENTER_A_USERNAME'],
+            'TXT_LOGIN_ENTER_A_PASSWORD'    => $_ARRAYLANG['TXT_LOGIN_ENTER_A_PASSWORD'],
+            'TXT_LOGIN_USERNAME'            => $_ARRAYLANG['TXT_LOGIN_USERNAME'],
+            'TXT_LOGIN_PASSWORD'            => $_ARRAYLANG['TXT_LOGIN_PASSWORD'],
+            'TXT_LOGIN_PASSWORD_LOST'       => $_ARRAYLANG['TXT_LOGIN_PASSWORD_LOST'],
+            'TXT_LOGIN_SAVE_LOGIN'          => $_ARRAYLANG['TXT_LOGIN_SAVE_LOGIN'],
+            'TXT_LOGIN_REMEMBER_ME'         => $_ARRAYLANG['TXT_LOGIN_REMEMBER_ME'],
+            'REDIRECT_URL'                  => (!empty($_POST['redirect'])) ? $_POST['redirect'] : basename(getenv('REQUEST_URI')),
+            'LOGIN_ERROR_MESSAGE'           => $objFWUser->getErrorMsg(),
+            'UID'                           => isset($_COOKIE['username']) ? $_COOKIE['username'] : '',
+            'SAVE_LOGIN_CHECKED'            => !empty($_POST['save_login']) ? 'checked="checked"' : '',
+            'REMEMBER_ME_CHECKED'           => !empty($_POST['remember_me']) ? 'checked="checked"' : '',
+            'JAVASCRIPT'                    => JS::getCode(),
         ));
 
         if (isset($_SESSION['last_auth_failed'])) {
             $this->objTemplate->setVariable(array(
-                'TXT_SECURITY_CODE' => $_CORELANG['TXT_SECURITY_CODE'],
-                'CAPTCHA_CODE' => FWCaptcha::getInstance()->getCode(3),
-                'SAVE_LOGIN_CHECKED' => !empty($_POST['save_login']) ? 'checked="checked"' : '',
-                'REMEMBER_ME_CHECKED' => !empty($_POST['remember_me']) ? 'checked="checked"' : '',
+                'TXT_LOGIN_SECURITY_CODE'   => $_ARRAYLANG['TXT_LOGIN_SECURITY_CODE'],
+                'CAPTCHA_CODE'              => FWCaptcha::getInstance()->getCode(3),
             ));
             if (!FWCaptcha::getInstance()->check() && !empty($_POST['coreCaptchaCode'])) {
-                $this->objTemplate->setVariable(array(
-                    'CAPTCHA_ERROR' => contrexx_raw2xhtml(FWCaptcha::getInstance()->getError()),
-                ));
+                $this->objTemplate->setVariable('CAPTCHA_ERROR', contrexx_raw2xhtml(FWCaptcha::getInstance()->getError()));
             }
             $this->objTemplate->parse('captcha');
         } else {
@@ -210,5 +209,3 @@ class LoginManager {
     }
 
 }
-
-?>
