@@ -25,5 +25,4 @@ $_ARRAYLANG['TXT_LOGIN_USERNAME'] = "Gebruikersnaam";
 $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD_MAIL_SENT'] = "Een e-mailbericht met meer informatie is verstuurd naar %EMAIL%.";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD_CHANGED_SUCCESSFULLY'] = "Het wachtwoord is succesvol gewijzigd!";
 $_ARRAYLANG['TXT_LOGIN_LOGIN'] = "Inloggen";
-$_ARRAYLANG['TXT_LOGIN_SAVE_LOGIN'] = "Save login";
 $_ARRAYLANG['TXT_LOGIN_REMEMBER_ME'] = "Remember me";

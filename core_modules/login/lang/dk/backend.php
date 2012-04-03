@@ -25,5 +25,4 @@ $_ARRAYLANG['TXT_LOGIN_USERNAME'] = "Brugernavn";
 $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD_MAIL_SENT'] = "En e-mail med yderligere instruktioner er blevet sendt til %EMAIL%.";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD_CHANGED_SUCCESSFULLY'] = "Dit kodeord er blevet ændret.";
 $_ARRAYLANG['TXT_LOGIN_LOGIN'] = "Log ind";
-$_ARRAYLANG['TXT_LOGIN_SAVE_LOGIN'] = "Save login";
 $_ARRAYLANG['TXT_LOGIN_REMEMBER_ME'] = "Remember me";

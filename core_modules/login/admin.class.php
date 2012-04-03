@@ -185,12 +185,10 @@ class LoginManager {
             'TXT_LOGIN_USERNAME'            => $_ARRAYLANG['TXT_LOGIN_USERNAME'],
             'TXT_LOGIN_PASSWORD'            => $_ARRAYLANG['TXT_LOGIN_PASSWORD'],
             'TXT_LOGIN_PASSWORD_LOST'       => $_ARRAYLANG['TXT_LOGIN_PASSWORD_LOST'],
-            'TXT_LOGIN_SAVE_LOGIN'          => $_ARRAYLANG['TXT_LOGIN_SAVE_LOGIN'],
             'TXT_LOGIN_REMEMBER_ME'         => $_ARRAYLANG['TXT_LOGIN_REMEMBER_ME'],
             'REDIRECT_URL'                  => (!empty($_POST['redirect'])) ? $_POST['redirect'] : basename(getenv('REQUEST_URI')),
             'LOGIN_ERROR_MESSAGE'           => $objFWUser->getErrorMsg(),
             'UID'                           => isset($_COOKIE['username']) ? $_COOKIE['username'] : '',
-            'SAVE_LOGIN_CHECKED'            => !empty($_POST['save_login']) ? 'checked="checked"' : '',
             'REMEMBER_ME_CHECKED'           => !empty($_POST['remember_me']) ? 'checked="checked"' : '',
             'JAVASCRIPT'                    => JS::getCode(),
         ));

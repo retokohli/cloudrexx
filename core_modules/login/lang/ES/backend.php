@@ -25,5 +25,4 @@ $_ARRAYLANG['TXT_LOGIN_USERNAME'] = "Nombre de Usuario";
 $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD_MAIL_SENT'] = "Un email con mas informaci&oacute;n ha sido enviado a %EMAIL%.";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD_CHANGED_SUCCESSFULLY'] = "Tu clave ha sido modificada con &eacute;xito.";
 $_ARRAYLANG['TXT_LOGIN_LOGIN'] = "Entrar";
-$_ARRAYLANG['TXT_LOGIN_SAVE_LOGIN'] = "Save login";
 $_ARRAYLANG['TXT_LOGIN_REMEMBER_ME'] = "Remember me";
