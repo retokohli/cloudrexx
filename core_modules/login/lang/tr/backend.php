@@ -25,5 +25,4 @@ $_ARRAYLANG['TXT_LOGIN_USERNAME'] = "Kullanıcı ismi";
 $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD_MAIL_SENT'] = "Bir E-mail açıklamalarıyla birlikte  %EMAIL% adresine gönderildi.";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD_CHANGED_SUCCESSFULLY'] = "Şifreniz başarıyla değiştirildi.";
 $_ARRAYLANG['TXT_LOGIN_LOGIN'] = "Giriş";
-$_ARRAYLANG['TXT_LOGIN_SAVE_LOGIN'] = "Save login";
 $_ARRAYLANG['TXT_LOGIN_REMEMBER_ME'] = "Remember me";
