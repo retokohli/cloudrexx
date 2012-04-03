@@ -18,6 +18,8 @@ $licenseFileCommerce = "data".DIRECTORY_SEPARATOR."contrexx_lizenz_de.txt";
 $licenseFileOpenSource = "data".DIRECTORY_SEPARATOR."contrexx_lizenz_opensource_de.txt";
 $configFile = "/config/configuration.php";
 $configTemplateFile = "data".DIRECTORY_SEPARATOR."configuration.tpl";
+$htaccessFile = "/.htaccess";
+$htaccessTemplateFile = "data".DIRECTORY_SEPARATOR."htaccess.tpl";
 $versionFile = "/config/version.php";
 $versionTemplateFile = "data".DIRECTORY_SEPARATOR."version.tpl";
 $sqlDumpFile = DIRECTORY_SEPARATOR."installer".DIRECTORY_SEPARATOR."data".DIRECTORY_SEPARATOR."contrexx_dump";
@@ -29,7 +31,7 @@ $forumURI = "http://www.contrexx.com/forum/";
 $contrexxURI = "http://www.contrexx.com/";
 $useUtf8 = true;
 
-$_CONFIG['coreCmsName']	     	= 'Contrexx® Web Content Management System';
+$_CONFIG['coreCmsName']	     	= 'ContrexxÂ® Web Content Management System';
 $_CONFIG['coreCmsVersion']	  	= '1.2.0';
 $_CONFIG['coreCmsStatus']	  	= 'RC1';
 $_CONFIG['coreCmsEdition']		= 'Premium';
@@ -63,7 +65,7 @@ $arrLanguages = array(
 	/*3	=> array(
 		'id'	=> 2,
 		'lang'	=> 'fr',
-		'name'	=> 'Fran�ais',
+		'name'	=> 'Français',
 		'is_default'	=> false
 	)*/
 );
