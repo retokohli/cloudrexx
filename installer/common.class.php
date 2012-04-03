@@ -816,6 +816,16 @@ class CommonFunctions
 	    }
 		return $str;
 	}
+        
+        function _getHtaccessFileTemplate() {
+                global $htaccessTemplateFile, $_CONFIG;
+                
+                return str_replace(
+	 		array("%PATH_ROOT_OFFSET%"),
+	 		array($_SESSION['installer']['config']['offsetPath']),
+	 		@file_get_contents($htaccessTemplateFile)
+	 	);
+        }
 
 	/**
 	* get version template file
@@ -964,6 +974,30 @@ class CommonFunctions
 			return $statusMsg;
 		}
 	}
+        
+        function createHtaccessFile() {
+		global $htaccessFile, $_ARRLANG;
+
+		$htaccessFileContent = $this->_getHtaccessFileTemplate();
+
+                $htaccessFilePath =
+                        $_SESSION['installer']['config']['documentRoot'].
+                        $_SESSION['installer']['config']['offsetPath'].
+                        $htaccessFile;
+                
+                $htaccess = new FWHtAccess();
+                $result = $htaccess->loadHtAccessFile($htaccessFilePath);
+                if ($result !== true) {
+                    return $result;
+                }
+                
+                $htaccess->setSection("core_routing", $htaccessFileContent);
+                $result = $htaccess->write();
+                if ($result !== true) {
+                    return $result;
+                }
+                return true;
+        }
 
 	function createConfigFile() {
 		global $configFile, $_ARRLANG;

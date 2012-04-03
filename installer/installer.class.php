@@ -123,7 +123,7 @@ class Installer
 			$objTpl->parse('navtree');
 		}
 
-		// set langauge menu
+		// set language menu
 		foreach ($arrLanguages as $arrLanguage) {
 			if (strtolower($language) == strtolower($arrLanguage['lang'])) {
 				$useDefaultLanguage = false;
@@ -1253,6 +1253,12 @@ class Installer
 			$result = $this->_insertDatabaseData();
 			$this->_setInstallationStatus($result, $_ARRLANG['TXT_INSERT_DATABASE_DATA']);
 		}
+                
+                // create htaccess file
+                if ($result === true) {
+                        $result = $this->_createHtaccessFile();
+                        $this->_setInstallationStatus($result, $_ARRAYLANG['TXT_CREATE_HTACCESS_FILE']);
+                }
 
 		// create version file
 		if ($result === true) {
@@ -1402,6 +1408,31 @@ class Installer
 			}
 		}
 	}
+        
+        /**
+         * create .htaccess file
+         * 
+         * create the .htaccess file
+         * 
+         * @access      private
+         * @global      object  $objCommon
+         * @return      mixed   true on success, error message on failure
+         */
+        function _createHtaccessFile() {
+		global $objCommon;
+
+		if (isset($_SESSION['installer']['createHtaccessFile']) && $_SESSION['installer']['createHtaccessFile']) {
+			return true;
+		} else {
+			$result = $objCommon->createHtaccessFile();
+			if ($result !== true) {
+				return $result;
+			} else {
+				$_SESSION['installer']['createHtaccessFile'] = true;
+				return true;
+			}
+		}
+        }
 
 	/**
 	* create config file

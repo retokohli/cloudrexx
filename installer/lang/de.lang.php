@@ -133,6 +133,7 @@ $_ARRLANG['TXT_PRESS_REFRESH_TO_CONTINUE_INSTALLATION'] = "Drücken Sie anschlie
 $_ARRLANG['TXT_REFRESH'] = "Aktualisieren";
 $_ARRLANG['TXT_CREATE_CONFIG_FILE'] = "Konfigurationsdatei erstellt";
 $_ARRLANG['TXT_SET_WRITE_PERMISSION_TO_FILES'] = "Sie müssen den folgenden Dateien Schreibberechtigung zuweisen:";
+$_ARRLANG['TXT_CREATE_HTACCESS_FILE'] = ".htaccess erstellt";
 $_ARRLANG['TXT_CREATE_VERSION_FILE'] = "Versionsdatei erstellt";
 $_ARRLANG['TXT_COULD_NOT_GATHER_ALL_DATABASE_TABLES'] = "Konnte die vorhandenen Datenbanktabellen nicht ausfindig machen!";
 $_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'] = "Ihr Datenbank Server unterstützt den Zeichensatz UTF-8 nicht! Sie müssen daher eine Version von Contrexx mit dem Zeichensatz latin1 verwenden!";
