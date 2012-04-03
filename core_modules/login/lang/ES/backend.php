@@ -9,6 +9,7 @@
 
 $_ARRAYLANG['TXT_LOGIN_ENTER_A_USERNAME'] = "Please enter a username";
 $_ARRAYLANG['TXT_LOGIN_ENTER_A_PASSWORD'] = "Please enter your password";
+$_ARRAYLANG['TXT_LOGIN_ENTER_CAPTCHA'] = "Please enter the shown captcha code";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD'] = "Contrase&ntilde;a";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD_LOST'] = "\¿Olvid&oacute; su contrase&ntilde;a?";
 $_ARRAYLANG['TXT_LOGIN_SECURITY_CODE'] = "C&oacute;digo de seguridad";
