@@ -25,7 +25,7 @@
  * will either activate or deactivate all levels.
  */
 include_once '../lib/DBG.php';
-DBG::activate(DBG_PHP | DBG_ADODB_ERROR);
+DBG::deactivate();
 $startTime = explode(' ', microtime());
 //DBG::activate(DBG_PHP);
 //enable gzip compressing of the output - up to 75% smaller responses!
@@ -177,19 +177,8 @@ define('MODULE_INDEX', (intval($moduleIndex) == 0) ? '' : intval($moduleIndex));
 // to any static access ID before checking it.
 $intAccessIdOffset = intval(MODULE_INDEX)*1000;
 
-/**
- * Module specific language data
- * @ignore
- */
-$_ARRAYLANG = $objInit->loadLanguageData($plainCmd);
-$_ARRAYLANG = array_merge($_ARRAYLANG, $_CORELANG);
-Env::set('lang', $_ARRAYLANG);
-
-$objTemplate = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
-// TODO: Does CSRF::add_placeholder() really work before a template is loaded?
-CSRF::add_placeholder($objTemplate);
-$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-
+// If standalone is set, then we will not have to initialize/load any content page related stuff
+$isRegularPageRequest = !isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false';
 
 $objFWUser = FWUser::getFWUserObject();
 
@@ -202,11 +191,16 @@ if (!empty($_POST) && !$loggedIn) { //not logged in already - do captcha and pas
 // User only gets the backend if he's logged in
 if (!$objFWUser->objUser->login(true)) {
     $plainCmd = 'login';
-    if (!include_once(ASCMS_CORE_MODULE_PATH.'/login/admin.class.php'))
-        die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-    $objLoginManager = new LoginManager();
-    $objLoginManager->getPage();
+    $isRegularPageRequest = false;
 }
+
+/**
+ * Module specific language data
+ * @ignore
+ */
+$_ARRAYLANG = $objInit->loadLanguageData($plainCmd);
+$_ARRAYLANG = array_merge($_ARRAYLANG, $_CORELANG);
+Env::set('lang', $_ARRAYLANG);
 
 // CSRF code needs to be even in the login form. otherwise, we
 // could not do a super-generic check later.. NOTE: do NOT move
@@ -219,7 +213,12 @@ if (isset($_POST['redirect']) && preg_match('/\.php/', $_POST['redirect'])) {
 }
 
 // Site start
-if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
+if ($isRegularPageRequest) {
+    $objTemplate = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+    // TODO: Does CSRF::add_placeholder() really work before a template is loaded?
+    CSRF::add_placeholder($objTemplate);
+    $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+
     $objTemplate->loadTemplateFile('index.html');
     $objTemplate->addBlockfile('CONTENT_FILE', 'index_content', 'index_content.html');
     $objTemplate->touchBlock('backend_metanavigation');
@@ -261,7 +260,13 @@ if (!empty($plainCmd) and !in_array($plainCmd, array('fileBrowser', 'upload'))) 
 }
 
 switch ($plainCmd) {
-    case "access":
+    case 'login':
+        if (!include_once(ASCMS_CORE_MODULE_PATH.'/login/admin.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $objLoginManager = new LoginManager();
+        $objLoginManager->getPage();
+        break;
+    case 'access':
         if (!include_once ASCMS_CORE_MODULE_PATH."/access/admin.class.php")
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_COMMUNITY'];
@@ -614,7 +619,7 @@ switch ($plainCmd) {
         $objMarket = new Market();
         $objMarket->getPage();
         break;
-    case "data":
+    case 'data':
         Permission::checkAccess(122, 'static'); // ID !!
         if (!include_once ASCMS_MODULE_PATH."/data/admin.class.php")
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
