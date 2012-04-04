@@ -3,7 +3,6 @@
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 use Cx\Model\Events\PageEventListener as PageEventListener;
 
-require_once('configuration.php');
 require_once(ASCMS_CORE_PATH.'/Env.class.php');
 require_once(ASCMS_MODEL_PATH.'/events/PageEventListener.class.php');
 

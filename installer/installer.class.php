@@ -1257,7 +1257,7 @@ class Installer
                 // create htaccess file
                 if ($result === true) {
                         $result = $this->_createHtaccessFile();
-                        $this->_setInstallationStatus($result, $_ARRAYLANG['TXT_CREATE_HTACCESS_FILE']);
+                        $this->_setInstallationStatus($result, $_ARRLANG['TXT_CREATE_HTACCESS_FILE']);
                 }
 
 		// create version file
