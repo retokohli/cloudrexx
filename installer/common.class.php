@@ -976,7 +976,7 @@ class CommonFunctions
 	}
         
         function createHtaccessFile() {
-		global $htaccessFile, $_ARRLANG;
+		global $basePath, $offsetPath, $htaccessFile, $_ARRLANG, $_CORELANG;
 
 		$htaccessFileContent = $this->_getHtaccessFileTemplate();
 
@@ -985,7 +985,11 @@ class CommonFunctions
                         $_SESSION['installer']['config']['offsetPath'].
                         $htaccessFile;
                 
-                $htaccess = new FWHtAccess();
+                if (!@include_once(ASCMS_LIBRARY_PATH.'/FRAMEWORK/FWHtAccess.class.php')) {
+                    die('Unable to load file '.ASCMS_LIBRARY_PATH.'/FRAMEWORK/FWHtAccess.class.php');
+                }
+                $_CORELANG = $_ARRLANG;
+                $htaccess = new FWHtAccess(dirname($basePath), $offsetPath);
                 $result = $htaccess->loadHtAccessFile($htaccessFilePath);
                 if ($result !== true) {
                     return $result;

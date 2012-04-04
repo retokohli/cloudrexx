@@ -1,5 +1,6 @@
 <?php
 
+include('../config/configuration.php');
 include('../config/doctrine.php');
 
 $helpers = array(

@@ -75,14 +75,20 @@ class FWHtAccess
      * @access private
      */
     private $objHtAccess;
+    
+    private $document_root;
+    
+    private $path_offset;
 
     /**
      * Constructor
      *
      * Initializes an object of the PEAR class File_HtAccess.
      */
-    public function __construct()
+    public function __construct($document_root, $path_offset)
     {
+        $this->document_root = $document_root;
+        $this->path_offset = $path_offset;
         $this->objHtAccess = new File_HtAccess();
     }
 
@@ -103,10 +109,10 @@ class FWHtAccess
     {
         global $_CORELANG;
 
-        $this->objHtAccess->setFile(ASCMS_DOCUMENT_ROOT.$filename);
+        $this->objHtAccess->setFile($this->document_root.$filename);
         if ($prepareFileAccess && !$this->prepareFileAccess($filename)) {
             $this->HtAccessLoaded = false;
-            return sprintf($_CORELANG['TXT_CORE_HTACCESS_FILE_NOT_WRITABLE'], ASCMS_DOCUMENT_ROOT.$filename);
+            return sprintf($_CORELANG['TXT_CORE_HTACCESS_FILE_NOT_WRITABLE'], $this->document_root.$filename);
         }
 
         if (($result = $this->objHtAccess->load()) === true) {
@@ -188,7 +194,7 @@ class FWHtAccess
 
             if ($withinContrexxDirectives || $withinSection || $withinSubSection) {
                 $this->HtAccessLoaded = false;
-                return sprintf($_CORELANG['TXT_CORE_INVALID_HTACCESS_FORMAT'], ASCMS_DOCUMENT_ROOT.$filename);
+                return sprintf($_CORELANG['TXT_CORE_INVALID_HTACCESS_FORMAT'], $this->document_root.$filename);
             }
 
             $this->HtAccessLoaded = true;
@@ -343,12 +349,12 @@ class FWHtAccess
         $objFile = new File();
 
         return (
-                file_exists(ASCMS_DOCUMENT_ROOT.$path)
-                || touch(ASCMS_DOCUMENT_ROOT.$path)
-                || $objFile->touchFile(ASCMS_PATH_OFFSET.$path)
+                file_exists($this->document_root.$path)
+                || touch($this->document_root.$path)
+                || $objFile->touchFile($this->path_offset.$path)
             ) && (
-                is_writable(ASCMS_DOCUMENT_ROOT.$path)
-                || $objFile->setChmod(ASCMS_DOCUMENT_ROOT.substr($path, 0, strrpos($path, DIRECTORY_SEPARATOR)), ASCMS_PATH_OFFSET.substr($path, 0, strrpos($path, DIRECTORY_SEPARATOR)), '/'.basename($path))
+                is_writable($this->document_root.$path)
+                || $objFile->setChmod($this->document_root.substr($path, 0, strrpos($path, DIRECTORY_SEPARATOR)), $this->path_offset.substr($path, 0, strrpos($path, DIRECTORY_SEPARATOR)), '/'.basename($path))
         );
     }
 

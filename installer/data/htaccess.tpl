@@ -1,5 +1,3 @@
-RewriteEngine On
-
 #RewriteLog "logs/rewrite.log"
 #RewriteLogLevel 9
 
@@ -9,7 +7,7 @@ RewriteEngine On
 RewriteBase   %PATH_ROOT_OFFSET%
 
 # Folders that may be accessed by page requests are NO ALIASES by design
-RewriteRule ^(\w\w\/)?(favicon.ico|cadmin|editor|core_modules|modules|images|media|themes|tmp|lib\/javascript)(\/|$)(.*) $2$3$4 [L,QSA]
+RewriteRule ^(\w\w\/)?(favicon.ico|cadmin|editor|core_modules|modules|images|installer|media|themes|tmp|lib\/javascript)(\/|$)(.*) $2$3$4 [L,QSA]
 
 # Exclude "stuff" -- add more if desired
 #RewriteCond   %{REQUEST_FILENAME}  !^(cadmin|images|media|themes|tmp|lib\/javascript)(\/|$)
