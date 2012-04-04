@@ -465,6 +465,10 @@ class Yellowpay
         if (empty ($uriparam)) {
             $uriparam = 'section=shop&cmd=success&handler=yellowpay';
         }
+        // This is needed by some modules in order to identify the order,
+        // i.e. egov!
+        $order_id = $arrField['ORDERID'];
+        $uriparam .= '&order_id='.$order_id;
         $base_uri =
             'http://'.$_SERVER['HTTP_HOST'].CONTREXX_SCRIPT_PATH.
             '?'.$uriparam.'&result=';
@@ -801,7 +805,7 @@ class Yellowpay
         $shasign_request = $arrField['SHASIGN'];
         // If the hash is correct, so is the Order (and ID)
         $shasign_computed = self::signature($arrField, $passphrase, true);
-//DBG::log("Yellowpay::checkIn(): SHA Request $shasign_request <> $shasign_computed ?");
+//DBG::log("Yellowpay::checkIn(): SHA Request $shasign_request <=> $shasign_computed ?");
         return ($shasign_request == $shasign_computed);
     }
 
