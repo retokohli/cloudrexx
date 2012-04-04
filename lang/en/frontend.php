@@ -264,6 +264,8 @@ $_ARRAYLANG['TXT_CORE_YEAR'] = "Jahr";
 $_ARRAYLANG['TXT_CORE_YEARS'] = "Jahre";
 $_ARRAYLANG['TXT_CSRF_BUTTON'] = "Klicken Sie hier, um fortzufahren.";
 $_ARRAYLANG['TXT_PARTNERS_MODULE_DESCRIPTION'] = "Verwaltung und Präsentation von Geschäftspartnern";
+$_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Security code";
+$_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_ABOVE'] = "Enter the letters above.";
 
 // upload
 $_ARRAYLANG['TXT_CORE_UPLOAD_MORE'] = "Upload more";

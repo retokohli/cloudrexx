@@ -30,8 +30,7 @@ class ContrexxCaptcha implements CaptchaInterface {
 
     private $image = null; //the GD image
 
-    private $error = 0;
-    const SECURITY_CODE_IS_INCORRECT = 1;
+    private $securityCheck = null;
     
     public function __construct($config)
     {
@@ -186,26 +185,32 @@ class ContrexxCaptcha implements CaptchaInterface {
             $tabIndexAttr = "tabindex=\"$tabIndex\"";
         }
         $alt= contrexx_raw2xhtml($_CORELANG['TXT_CORE_CAPTCHA']);
-        $code = '<img src="'.$this->getUrl().'" alt="'.$alt.'" id="coreCaptchaImage" />';
+        $code = '<div id="captcha">';
+        $code .= '<img src="'.$this->getUrl().'" alt="'.$alt.'" id="coreCaptchaImage" />';
+        $code .= '<label for="coreCaptchaCode" id="coreCaptchaLabel">'.$_CORELANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_ABOVE'].'</label>';
         $code .= '<input type="text" name="coreCaptchaCode" id="coreCaptchaCode" value="" maxlength="5" '.$tabIndexAttr.' />';
+        $code .= '</div>';
 
         return $code;
     }
 
     /**
-     * checks whether the entered string matches the captcha
+     * checks whether the entered string matches the captcha.
+     * if the check is already done the result will be returned.
      *
      * @return boolean
      */
     public function check()
     {
-        if ($this->isValidCode()) {
-            return true;
+        if (empty($this->securityCheck)) {
+            if ($this->isValidCode()) {
+                $this->securityCheck = true;
+            } else {
+                $this->securityCheck = false;
+            }
         }
 
-        $this->error = self::SECURITY_CODE_IS_INCORRECT;
-
-        return false;
+        return $this->securityCheck;
     }       
 
     private function isValidCode()
@@ -252,18 +257,4 @@ class ContrexxCaptcha implements CaptchaInterface {
         return $url;
     }
 
-    public function getError()
-    {
-        global $_CORELANG;
-
-        $error = '';
-
-        switch ($this->error) {
-            case self::SECURITY_CODE_IS_INCORRECT:
-                $error = $_CORELANG['TXT_CORE_INVALID_CAPTCHA'];
-            break;
-        }
-
-        return $error;
-    }
 }

@@ -62,8 +62,6 @@ class Contact extends ContactLib
      */
     var $errorMsg = '';
 
-    var $captchaError = '';
-
     /**
      * An id unique per form submission and user.
      * This means an user can submit the same form twice at the same time,
@@ -536,7 +534,6 @@ class Contact extends ContactLib
             $this->objTemplate->setVariable(array(
                 'TXT_CONTACT_CAPTCHA'   => $_CORELANG['TXT_CORE_CAPTCHA'],
                 'CONTACT_CAPTCHA_CODE'  => FWCaptcha::getInstance()->getCode(),
-                'CONTACT_CAPTCHA_ERROR' => $this->captchaError
             ));
 
             $this->objTemplate->parse('contact_form_captcha');
@@ -939,7 +936,6 @@ class Contact extends ContactLib
         if ($useCaptcha) {
             if (!FWCaptcha::getInstance()->check()) {
                 $error = true;
-                $this->captchaError = FWCaptcha::getInstance()->getError();
             }
         }
 

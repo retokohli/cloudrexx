@@ -531,7 +531,6 @@ class Forum extends ForumLibrary {
             }
 
             if (!$objFWUser->objUser->login() && !FWCaptcha::getInstance()->check()) {
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.FWCaptcha::getInstance()->getError());
                 return false;
             }
 
@@ -892,7 +891,6 @@ class Forum extends ForumLibrary {
                 return false;
             }
             if(!$objFWUser->objUser->login() && !FWCaptcha::getInstance()->check()) {//captcha check
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.FWCaptcha::getInstance()->getError());
                 return false;
             }
             if(strlen(trim($content)) < $this->_minPostlength){//content check
@@ -993,11 +991,9 @@ class Forum extends ForumLibrary {
                 $this->_objTpl->hideBlock('postEdit');
                 return false;
             }
-            if (!$objFWUser->objUser->login() && !FWCaptcha::getInstance()->getError()) {
+            if (!$objFWUser->objUser->login() && !FWCaptcha::getInstance()->check()) {
                 $this->_objTpl->touchBlock('updatePost');
                 $this->_objTpl->hideBlock('createPost');
-
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.FWCaptcha::getInstance()->getError());
                 return false;
             }
             if(false !== ($match = $this->_hasBadWords($content))){

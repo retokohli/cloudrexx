@@ -158,17 +158,13 @@ class Recommend extends RecommendLibrary
             $this->_pageMessage .= $_ARRAYLANG['TXT_STATUS_COMMENT'].' '.$_ARRAYLANG['TXT_IS_EMPTY'].'<br />';
         }
 
-        if (!FWCaptcha::getInstance()->check()) {
-            $this->_pageMessage .= FWCaptcha::getInstance()->getError();
-        }
-
         $receivername     = $_POST['receivername'];
         $receivermail     = $_POST['receivermail'];
         $sendername     = $_POST['sendername'];
         $sendermail     = $_POST['sendermail'];
         $comment         = $_POST['comment'];
 
-        if (!empty($this->_pageMessage)) {
+        if (!empty($this->_pageMessage) || !FWCaptcha::getInstance()->check()) {
             //something's missing or wrong
             $this->_objTpl->setVariable('RECOM_STATUS', '<div style="color: red">'.$this->_pageMessage.'</div>');
             $this->_objTpl->setCurrentBlock('recommend_form');
