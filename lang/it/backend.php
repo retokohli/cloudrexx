@@ -1356,3 +1356,5 @@ $_ARRAYLANG['TXT_USE_CONTENT_FROM_LANGUAGE_HELPTEXT'] = "Verwenden Sie diese Opt
 $_ARRAYLANG['UPLOAD'] = "Hochladen";
 $_ARRAYLANG['UPLOAD_EXPOSED_DIALOG_TITLE'] = "Dateien hochladen";
 $_ARRAYLANG['UPLOAD_FORM_ADD'] = "Weitere Dateien hinzufügen";
+$_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Security code";
+$_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_ABOVE'] = "Enter the letters above.";

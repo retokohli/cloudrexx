@@ -504,7 +504,6 @@ class Blog extends BlogLibrary  {
         if ($intMessageId <= 0) {                               $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_INSERT_MID']); }
         if (empty($strSubject)) {                               $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_SUBJECT']); }
         if (empty($strComment)) {                               $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_COMMENT']); }
-        if (!FWCaptcha::getInstance()->check()) {   $this->_strErrorMessage .= FWCaptcha::getInstance()->getError(); }
 
         //Validate specified-input
         if ($this->_intCurrentUserId == 0) {
@@ -513,7 +512,7 @@ class Blog extends BlogLibrary  {
         }
 
         //Now check error-string
-        if (empty($this->_strErrorMessage)) {
+        if (empty($this->_strErrorMessage) && FWCaptcha::getInstance()->check()) {
             //No errors, insert entry
             $objDatabase->Execute(' INSERT INTO '.DBPREFIX.'module_blog_comments
                                     SET     message_id = '.$intMessageId.',

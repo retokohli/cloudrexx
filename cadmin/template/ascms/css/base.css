@@ -227,18 +227,6 @@ a:focus {
                                                    padding: 0 9px 0 9px;
 }
 
-#content_login form div img#coreCaptchaImage {
-    float: left;
-    width: auto;
-}
-
-#content_login form div input#coreCaptchaCode {
-    float: left;
-    clear: both;
-    width: 114px;
-    margin: 2px 0 0 0;
-}
-
 #navigation_wrapper {
     width: 200px;
     float: left;
@@ -306,6 +294,29 @@ a:focus {
 /* inline instruction */
 .status_message {
     background: #faf0e6;
+}
+
+#captcha {
+    padding: 0 !important;
+}
+
+#captcha #coreCaptchaImage {
+    float: left;
+    width: auto;
+}
+
+#captcha #coreCaptchaLabel {
+    float: left;
+    width: auto;
+    clear: both;
+    margin: 2px 0 2px 0;
+    white-space: nowrap;
+}
+
+#captcha #coreCaptchaCode {
+    float: left;
+    width: 114px;
+    clear: both;
 }
 
 table.navbar {

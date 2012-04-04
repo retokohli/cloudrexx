@@ -6,5 +6,4 @@ namespace Cx\Lib\Captcha;
 interface CaptchaInterface {
     public function getCode($tabIndex);
     public function check();
-    public function getError();
 }

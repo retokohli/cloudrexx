@@ -191,6 +191,10 @@ if (!empty($_POST) && !$loggedIn) { //not logged in already - do captcha and pas
 // User only gets the backend if he's logged in
 if (!$objFWUser->objUser->login(true)) {
     $plainCmd = 'login';
+
+    // If the user isn't logged in, the login mask will be showed.
+    // This mask has its own template handling.
+    // So we don't need to load any templates in the index.php.
     $isRegularPageRequest = false;
 }
 
@@ -206,11 +210,6 @@ Env::set('lang', $_ARRAYLANG);
 // could not do a super-generic check later.. NOTE: do NOT move
 // this above the "new cmsSession" line!
 CSRF::add_code();
-
-if (isset($_POST['redirect']) && preg_match('/\.php/', $_POST['redirect'])) {
-    $redirect = $_POST['redirect'];
-    CSRF::header("Location: $redirect");
-}
 
 // Site start
 if ($isRegularPageRequest) {
@@ -739,6 +738,10 @@ switch ($plainCmd) {
         $objAdminNav = new myAdminManager();
         $objAdminNav->getPage();
         break;
+}
+
+if (isset($_POST['redirect']) && preg_match('/\.php/', $_POST['redirect'])) {
+    CSRF::header('location: '.$_POST['redirect']);
 }
 
 // page parsing

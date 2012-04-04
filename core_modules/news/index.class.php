@@ -1376,10 +1376,6 @@ class news extends newsLibrary {
             $_POST['newsCat'] = intval($_POST['newsCat']);
             $_POST['newsType'] = isset($_POST['newsType']) ? intval($_POST['newsType']) : 0;
 
-            if (!FWCaptcha::getInstance()->check()) {
-                $this->_submitMessage = FWCaptcha::getInstance()->getError() . '<br />';
-            }
-
             if (!empty($_POST['newsTitle']) && FWCaptcha::getInstance()->check() &&
                (!empty($_POST['newsText']) || (!empty($_POST['newsRedirect']) && $_POST['newsRedirect'] != 'http://'))) {
                     $insertStatus = $this->_insert();
@@ -1410,7 +1406,7 @@ class news extends newsLibrary {
 
                     if ( (empty($_POST['newsTitle']) || (empty($_POST['newsText']) || $_POST['newsText'] == '&nbsp;' || $_POST['newsText'] == '<br />' )) &&
                          (empty($_POST['newsRedirect']) || $_POST['newsRedirect'] == 'http://') ) {
-                        $this->_submitMessage .= $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT'].'<br /><br />';
+                        $this->_submitMessage = $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT'].'<br /><br />';
                     }
                 }
         }
@@ -1710,8 +1706,7 @@ RSS2JSCODE;
 
             // check CAPTCHA for anonymous posters
             if (!FWCaptcha::getInstance()->check()) {
-                $error = true;
-                return array(false, FWCaptcha::getInstance()->getError());
+                return array(false, null);
             }
         } else {
             // Anonymous comments are not allowed

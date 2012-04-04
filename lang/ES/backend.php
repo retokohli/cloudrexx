@@ -1054,4 +1054,6 @@ $_ARRAYLANG['TXT_MEDIADIR_SETTINGS'] = 'Settings';
 $_ARRAYLANG['TXT_MEDIADIR_MODULE_DESCRIPTION'] = 'Flexible and customizable media directory.';
 $_ARRAYLANG['TXT_LICENSE_KEY'] = 'License key';
 $_ARRAYLANG['TXT_LICENSE_KEY_HELP'] = 'Enter here your license key to activate this Contrexx© installation.';
+$_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Security code";
+$_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_ABOVE'] = "Enter the letters above.";
 ?>

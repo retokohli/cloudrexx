@@ -554,7 +554,6 @@ class Access extends AccessLib
             return true;
         }
 
-        $this->arrStatusMsg['error'][] = FWCaptcha::getInstance()->getError();
         return false;
     }
 

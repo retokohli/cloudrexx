@@ -107,9 +107,4 @@ HTML;
         return false;
     }
 
-    public function getError()
-    {
-        return '';//$this->error;
-    }
 }
-

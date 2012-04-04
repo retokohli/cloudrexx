@@ -117,6 +117,33 @@ div.row2 {
 
 
 /***************************************************/
+/* CSS GLOBAL DEFINITIONS FOR CAPTCHA              */
+/***************************************************/
+
+#captcha {
+    padding: 0 !important;
+}
+
+#captcha #coreCaptchaImage {
+    float: left;
+    width: auto;
+}
+
+#captcha #coreCaptchaLabel {
+    float: left;
+    width: auto;
+    clear: both;
+    margin: 2px 0 2px 0;
+    white-space: nowrap;
+}
+
+#captcha #coreCaptchaCode {
+    float: left;
+    width: 114px;
+    clear: both;
+}
+
+/***************************************************/
 /* CSS DEFINITIONS FOR VOTING MODULE               */
 /***************************************************/
 
