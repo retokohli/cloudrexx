@@ -990,7 +990,7 @@ class CommonFunctions
                     return $result;
                 }
                 
-                $htaccess->setSection("core_routing", $htaccessFileContent);
+                $htaccess->setSection("core_routing", explode("\n", $htaccessFileContent));
                 $result = $htaccess->write();
                 if ($result !== true) {
                     return $result;
