@@ -979,18 +979,13 @@ class CommonFunctions
 		global $basePath, $offsetPath, $htaccessFile, $_ARRLANG, $_CORELANG;
 
 		$htaccessFileContent = $this->_getHtaccessFileTemplate();
-
-                $htaccessFilePath =
-                        $_SESSION['installer']['config']['documentRoot'].
-                        $_SESSION['installer']['config']['offsetPath'].
-                        $htaccessFile;
                 
                 if (!@include_once(ASCMS_LIBRARY_PATH.'/FRAMEWORK/FWHtAccess.class.php')) {
                     die('Unable to load file '.ASCMS_LIBRARY_PATH.'/FRAMEWORK/FWHtAccess.class.php');
                 }
                 $_CORELANG = $_ARRLANG;
                 $htaccess = new FWHtAccess(dirname($basePath), $offsetPath);
-                $result = $htaccess->loadHtAccessFile($htaccessFilePath);
+                $result = $htaccess->loadHtAccessFile($htaccessFile);
                 if ($result !== true) {
                     return $result;
                 }
