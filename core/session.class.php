@@ -27,40 +27,34 @@ require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
  */
 class cmsSession
 {
-	var $sessionid;
-	var $status;
+    var $sessionid;
+    var $status;
     private $sessionPath;
     private $sessionPathPrefix = 'session_';
-	var $userId;
-	var $lifetime;
-	var $_objDb;
-	var $compatibelitiyMode;
+    var $userId;
+    var $lifetime;
+    var $_objDb;
+    var $compatibelitiyMode;
 
-	function __construct($status='')
-	{
-		global $_CONFIG;
+    function __construct($status='')
+    {
+        global $_CONFIG;
 
-		if (intval($_CONFIG['sessionLifeTime'])==0 || empty($_CONFIG['sessionLifeTime'])){
-			$this->lifetime=3600;
-		}  else {
-			$this->lifetime=intval($_CONFIG['sessionLifeTime']);
-		}
-
-		if (ini_get("session.auto_start")) {
+        if (ini_get("session.auto_start")) {
             session_destroy();
-		}
+        }
 
-		if (session_set_save_handler(
-        	array(& $this, 'cmsSessionOpen'),
-        	array(& $this, 'cmsSessionClose'),
-        	array(& $this, 'cmsSessionRead'),
-        	array(& $this, 'cmsSessionWrite'),
-        	array(& $this, 'cmsSessionDestroy'),
-        	array(& $this, 'cmsSessionGc')))
+        if (session_set_save_handler(
+            array(& $this, 'cmsSessionOpen'),
+            array(& $this, 'cmsSessionClose'),
+            array(& $this, 'cmsSessionRead'),
+            array(& $this, 'cmsSessionWrite'),
+            array(& $this, 'cmsSessionDestroy'),
+            array(& $this, 'cmsSessionGc')))
         {
-	       	$this->status=$status;
-	       	$errorMsg = '';
-	        $this->_objDb = getDatabaseObject($errorMsg, true);
+            $this->status=$status;
+            $errorMsg = '';
+            $this->_objDb = getDatabaseObject($errorMsg, true);
             if (DBG::getMode() & DBG_ADODB_TRACE) {
                 $this->_objDb->debug=99;
             } elseif (DBG::getMode() & DBG_ADODB || DBG::getMode() & DBG_ADODB_ERROR) {
@@ -68,15 +62,26 @@ class cmsSession
             } else {
                 $this->_objDb->debug=0;
             }
-	        $this->compatibelitiyMode = ($arrColumns = $this->_objDb->MetaColumnNames(DBPREFIX.'sessions')) && in_array('username', $arrColumns);
+            $this->compatibelitiyMode = ($arrColumns = $this->_objDb->MetaColumnNames(DBPREFIX.'sessions')) && in_array('username', $arrColumns);
 
+            session_start();
+            if (isset($_POST['remember_me'])) {
+                $_SESSION['loginRememberMe'] = 1;
+            }
+            if (isset($_SESSION['loginRememberMe'])) {
+                $this->lifetime=1209600;
+            } else {
+                if (intval($_CONFIG['sessionLifeTime'])==0 || empty($_CONFIG['sessionLifeTime'])){
+                    $this->lifetime=3600;
+                } else {
+                    $this->lifetime=intval($_CONFIG['sessionLifeTime']);
+                }
+            }
 // TODO: there should be an option to limit the session to the browser's session
             @ini_set('session.gc_maxlifetime', $this->lifetime);
-	        session_start();
             $this->cmsSessionExpand();
-	    }
-        else {
-        	$this->cmsSessionError();
+        } else {
+            $this->cmsSessionError();
         }
     }
 
@@ -94,93 +99,108 @@ class cmsSession
         }
     }
 
-	function cmsSessionOpen($aSavaPath, $aSessionName)
-	{
-	       $this->cmsSessionGc($this->lifetime);
-	       return true;
-	}
+    function cmsSessionOpen($aSavaPath, $aSessionName)
+    {
+        $this->cmsSessionGc($this->lifetime);
+        return true;
+    }
 
-	function cmsSessionClose()
-	{
-	       return true;
-	}
+    function cmsSessionClose()
+    {
+        return true;
+    }
 
-	function cmsSessionRead( $aKey )
-	{
-		   $this->sessionid=$aKey;
-           $this->sessionPath = ASCMS_TEMP_WEB_PATH.'/'.$this->sessionPathPrefix.$this->sessionid;
-	       $query = "SELECT datavalue, user_id, status FROM ".DBPREFIX."sessions WHERE sessionid='".$aKey."'";
-	       if ($this->compatibelitiyMode) {
-			$query = "SELECT datavalue, username as user_id, status FROM ".DBPREFIX."sessions WHERE sessionid='".$aKey."'";
-	       }
-	       $objResult = $this->_objDb->Execute($query);
+    function cmsSessionRead( $aKey )
+    {
+        $this->sessionid=$aKey;
+        $this->sessionPath = ASCMS_TEMP_WEB_PATH.'/'.$this->sessionPathPrefix.$this->sessionid;
+        $query = "SELECT datavalue, user_id, status FROM ".DBPREFIX."sessions WHERE sessionid='".$aKey."'";
+        if ($this->compatibelitiyMode) {
+            $query = "SELECT datavalue, username as user_id, status FROM ".DBPREFIX."sessions WHERE sessionid='".$aKey."'";
+        }
+        $objResult = $this->_objDb->Execute($query);
 
-	       if ($objResult !== false) {
-		       if ($objResult->RecordCount() == 1) {
-		      	     $this->userId=$objResult->fields['user_id'];
-		      	     $this->status=$objResult->fields['status'];
-		             return $objResult->fields['datavalue'];
-		       } else {
-		             $query = "INSERT INTO ".DBPREFIX."sessions (sessionid, startdate, lastupdated, status, user_id, datavalue)
-                               VALUES ('".$aKey."', '".time()."', '".time()."', '".($this->status)."', '".intval($this->userId)."', '')";
-		             if ($this->compatibelitiyMode) {
-		             	 $query = "INSERT INTO ".DBPREFIX."sessions (sessionid, startdate, lastupdated, status, username, datavalue)
-                               VALUES ('".$aKey."', '".time()."', '".time()."', '".($this->status)."', '".intval($this->userId)."', '')";
-		             }
-		             $this->_objDb->Execute($query);
-		             return "";
-		       }
-	       }
-	}
-
-	function cmsSessionWrite( $aKey, $aVal )
-	{
-		$aVal = addslashes( $aVal );
-		$query = "UPDATE ".DBPREFIX."sessions SET datavalue = '".$aVal."', lastupdated = '".time()."' WHERE sessionid = '".$aKey."'";
-		$this->_objDb->Execute($query);
-	   return true;
-	}
-
-	function cmsSessionDestroy( $aKey )
-	{
-	       $query = "DELETE FROM ".DBPREFIX."sessions WHERE sessionid = '".$aKey."'";
-	       $this->_objDb->Execute($query);
-
-           if (File::exists($this->sessionPath)) {
-                File::delete_folder($this->sessionPath, true);
+        if ($objResult !== false) {
+            if ($objResult->RecordCount() == 1) {
+                $this->userId=$objResult->fields['user_id'];
+                $this->status=$objResult->fields['status'];
+                return $objResult->fields['datavalue'];
+            } else {
+                $query = "INSERT INTO ".DBPREFIX."sessions (sessionid, startdate, lastupdated, status, user_id, datavalue)
+                          VALUES ('".$aKey."', '".time()."', '".time()."', '".($this->status)."', '".intval($this->userId)."', '')";
+                if ($this->compatibelitiyMode) {
+                    $query = "INSERT INTO ".DBPREFIX."sessions (sessionid, startdate, lastupdated, status, username, datavalue)
+                              VALUES ('".$aKey."', '".time()."', '".time()."', '".($this->status)."', '".intval($this->userId)."', '')";
+                }
+                $this->_objDb->Execute($query);
+                return "";
            }
+        }
+    }
 
-	       return true;
-	}
+    function cmsSessionWrite( $aKey, $aVal )
+    {
+        $aVal = addslashes( $aVal );
+        $query = "UPDATE ".DBPREFIX."sessions SET datavalue = '".$aVal."', lastupdated = '".time()."' WHERE sessionid = '".$aKey."'";
+        $this->_objDb->Execute($query);
+        return true;
+    }
 
-	function cmsSessionGc( $aMaxLifeTime )
-	{
-		   if (empty($aMaxLifeTime)) return true;
-	       $query = "DELETE FROM ".DBPREFIX."sessions WHERE lastupdated < ".(time() - $aMaxLifeTime);
-	       $this->_objDb->Execute($query);
-	       return true;
-	}
+    function cmsSessionDestroy( $aKey )
+    {
+        $query = "DELETE FROM ".DBPREFIX."sessions WHERE sessionid = '".$aKey."'";
+        $this->_objDb->Execute($query);
 
-	function cmsSessionUserUpdate($userId=0)
-	{
-		   $this->userId=$userId;
-	       $query = "UPDATE ".DBPREFIX."sessions SET user_id ='".$userId."' WHERE sessionid = '".$this->sessionid."'";
-	       if ($this->compatibelitiyMode) {
-	       	$query = "UPDATE ".DBPREFIX."sessions SET username ='".$userId."' WHERE sessionid = '".$this->sessionid."'";
-	       }
-	       $this->_objDb->Execute($query);
-	       return true;
-	}
+        if (File::exists($this->sessionPath)) {
+            File::delete_folder($this->sessionPath, true);
+        }
 
-	function cmsSessionStatusUpdate($status="")
-	{
-		   $this->status=$status;
-	       $query = "UPDATE ".DBPREFIX."sessions SET status ='".$status."' WHERE sessionid = '".$this->sessionid."'";
-	       $this->_objDb->Execute($query);
-	       return true;
-	}
+        return true;
+    }
 
-	function cmsSessionError() {
+    function cmsSessionDestroyByUserId($userId)
+    {
+        $objResult = $this->_objDb->Execute('SELECT `sessionid` FROM `'.DBPREFIX.'sessions` WHERE `user_id` = '.intval($userId));
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                if ($objResult->fields['sessionid'] != $this->sessionid) {
+                    $this->cmsSessionDestroy($objResult->fields['sessionid']);
+                }
+                $objResult->MoveNext();
+            }
+        }
+
+        return true;
+    }
+
+    function cmsSessionGc( $aMaxLifeTime )
+    {
+        if (empty($aMaxLifeTime)) return true;
+        $query = "DELETE FROM ".DBPREFIX."sessions WHERE lastupdated < ".(time() - $aMaxLifeTime);
+        $this->_objDb->Execute($query);
+        return true;
+    }
+
+    function cmsSessionUserUpdate($userId=0)
+    {
+        $this->userId=$userId;
+        $query = "UPDATE ".DBPREFIX."sessions SET user_id ='".$userId."' WHERE sessionid = '".$this->sessionid."'";
+        if ($this->compatibelitiyMode) {
+           $query = "UPDATE ".DBPREFIX."sessions SET username ='".$userId."' WHERE sessionid = '".$this->sessionid."'";
+        }
+        $this->_objDb->Execute($query);
+        return true;
+    }
+
+    function cmsSessionStatusUpdate($status="")
+    {
+        $this->status=$status;
+        $query = "UPDATE ".DBPREFIX."sessions SET status ='".$status."' WHERE sessionid = '".$this->sessionid."'";
+        $this->_objDb->Execute($query);
+        return true;
+    }
+
+    function cmsSessionError() {
         die ("Session Handler Error");
     }
 

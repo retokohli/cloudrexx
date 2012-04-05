@@ -188,14 +188,13 @@ class LoginManager {
             'TXT_LOGIN_REMEMBER_ME'         => $_ARRAYLANG['TXT_LOGIN_REMEMBER_ME'],
             'REDIRECT_URL'                  => (!empty($_POST['redirect'])) ? $_POST['redirect'] : basename(getenv('REQUEST_URI')),
             'UID'                           => isset($_COOKIE['username']) ? $_COOKIE['username'] : '',
-            'REMEMBER_ME_CHECKED'           => !empty($_POST['remember_me']) ? 'checked="checked"' : '',
             'JAVASCRIPT'                    => JS::getCode(),
         ));
 
         if (FWCaptcha::getInstance()->check()) {
             $this->objTemplate->setVariable('LOGIN_ERROR_MESSAGE', $objFWUser->getErrorMsg());
         }
-        if (isset($_SESSION['last_auth_failed'])) {
+        if (isset($_SESSION['loginLastAuthFailed'])) {
             $this->objTemplate->setVariable(array(
                 'TXT_LOGIN_SECURITY_CODE'   => $_ARRAYLANG['TXT_LOGIN_SECURITY_CODE'],
                 'CAPTCHA_CODE'              => FWCaptcha::getInstance()->getCode(3),
