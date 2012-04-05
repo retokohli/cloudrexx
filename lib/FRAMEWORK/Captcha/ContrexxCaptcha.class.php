@@ -207,6 +207,7 @@ class ContrexxCaptcha implements CaptchaInterface {
                 $this->securityCheck = true;
             } else {
                 $this->securityCheck = false;
+                \DBG::msg('Captcha: The entered security code was incorrect.');
             }
         }
 
