@@ -416,6 +416,7 @@ if ($isRegularPageRequest) {
             $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
             $crit = array(
                  'module' => $section,
+                 'type' => 'application',
                  'lang' => FRONTEND_LANG_ID,
                  'cmd' => $command
             );
