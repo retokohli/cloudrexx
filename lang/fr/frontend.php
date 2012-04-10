@@ -265,4 +265,4 @@ $_ARRAYLANG['TXT_CSRF_BUTTON'] = "Klicken Sie hier, um fortzufahren.";
 $_ARRAYLANG['TXT_PARTNERS_MODULE_DESCRIPTION'] = "Verwaltung und Präsentation von Geschäftspartnern";
 $_ARRAYLANG['UPLOAD_FORM_ADD'] = "Weitere Dateien hinzuf&uuml;gen";
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Security code";
-$_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_ABOVE'] = "Enter the letters above.";
+$_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'] = "Enter the letters below.";

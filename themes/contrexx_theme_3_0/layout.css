@@ -949,15 +949,6 @@ html body div#page div#container.group div#content-wrap.group div#wrapper_conten
 }
 #lang_navigation a.en {background-image: url(images/flag_en.gif);}
 #lang_navigation a.fr {background-image: url(images/flag_fr.gif);}
-#contactFormCaptcha{
-  clear:both;
-  float:left;
-  margin-bottom: 4px;
-}
-#contactFrame img.captcha{
-  float: left;
-  /*padding-bottom: 5px;*/
-}
 #logo_part{
   width: 260px;
 }

@@ -1473,7 +1473,7 @@ $_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE'] = "Bitte bestätigen Sie, dass Sie die
 
 // core captcha
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Sicherheitscode";
-$_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_ABOVE'] = "Geben Sie die Buchstaben aus dem oben angezeigten Bild ein.";
+$_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'] = "Geben Sie die Buchstaben aus dem unten angezeigten Bild ein.";
 
 // upload
 $_ARRAYLANG['TXT_CORE_UPLOAD_MORE'] = "Weitere Dateien hochladen";

@@ -135,7 +135,6 @@ $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "The file %s was not completely upload
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "A File has not been uploaded!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'] = "CAPTCHA protection";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Please type in the characters from the picture into the textfield. This is required for the system to know that you are not a spambot.";
-$_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "The specified character string was wrong!";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Activating this option makes sure that a carbon copy of the data from the form will be sent to the sender.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Carbon copy to sender";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'] = "If an own CSS style is in use, this form has the ID and CSS class <strong>'contactForm_\$FormularNummer'</strong>, i.e. contactForm_2. By default, only 'contactForm' is used for these attributes.";

@@ -30,7 +30,6 @@ $_ARRAYLANG['TXT_CONTACT_FILE_TOO_LARGE'] = "Errore in occasione di l' spedizion
 $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "Errore: l'archivio %s n' a non potuto essere inviato completamente!";
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "Un archivio n' a non potuto essere importato!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Volete osservare la sequenza di caratteri di l' immagine nel campo qui di seguito. (Egli s' agisce d' una protezione anti-spambot)";
-$_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "Battitura erronea del codice CAPTCHA!";
 $_ARRAYLANG['TXT_CONTACT_RESET'] = "Cancellare";
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Elenco destinatari";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA'] = "Captcha";

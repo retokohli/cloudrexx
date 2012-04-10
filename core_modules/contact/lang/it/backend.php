@@ -135,7 +135,6 @@ $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "Errore: l'archivio %s n' a non potuto
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "Un archivio n' a non potuto essere importato!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'] = "CAPTCHA protection";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Volete osservare la sequenza di caratteri di l' immagine nel campo qui di seguito. (Egli s' agisce d' una protezione anti-spambot)";
-$_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "Battitura erronea del codice CAPTCHA!";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Durch das Aktivieren dieser Option, wird zusätzlich eine Kopie der angegebenen Formulardaten an den Absender geschickt.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Kopie an Absender";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'] = "Wird ein eigener CSS-Stil verwendet, so hat dieses Forumlar die ID und CSS-Klasse <strong>'contactForm_\$FormularNummer'</strong> z.B. contactForm_2, standardmässig sind für diese Attribute nur 'contactForm' gesetzt";

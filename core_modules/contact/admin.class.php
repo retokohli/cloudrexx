@@ -1831,24 +1831,24 @@ class ContactManager extends ContactLib
             $sourcecode[] = '<link href="../core_modules/contact/css/form.css" rel="stylesheet" type="text/css" />';
 
             if ($this->arrForms[$id]['useCaptcha']) {
-                $sourcecode[] = '<div style="color: red;"></div>';
+                $sourcecode[] = '<div class="contact row">';
                 $sourcecode[] = '<label>'.$_ARRAYLANG["TXT_CONTACT_CAPTCHA"].'</label>';
-                $sourcecode[] = '<div id="contactFormCaptcha">';
                 $sourcecode[] = FWCaptcha::getInstance()->getCode();
                 $sourcecode[] = '</div>';
             }
         } else {
             $sourcecode[] = "<!-- BEGIN contact_form_captcha -->";
-            $sourcecode[] = '<div style="color: red;">{CONTACT_CAPTCHA_ERROR}</div>';
+            $sourcecode[] = '<div class="contact row">';
             $sourcecode[] = '<label>{TXT_CONTACT_CAPTCHA}</label>';
-            $sourcecode[] = '<div id="contactFormCaptcha">';
             $sourcecode[] = '{CONTACT_CAPTCHA_CODE}';
             $sourcecode[] = '</div>';
             $sourcecode[] = "<!-- END contact_form_captcha -->";
         }
 
+        $sourcecode[] = '<div class="contact row">';
         $sourcecode[] = '<label>&nbsp;</label><input class="contactFormClass_button" type="submit" name="submitContactForm" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_SUBMIT'] : '{TXT_CONTACT_SUBMIT}').'" /><input class="contactFormClass_button" type="reset" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_RESET'] : '{TXT_CONTACT_RESET}').'" />';
         $sourcecode[] = '<input type="hidden" name="unique_id" value="{CONTACT_UNIQUE_ID}" />';
+        $sourcecode[] = '</div>';
         $sourcecode[] = "</fieldset>";
         $sourcecode[] = "</form>";
         $sourcecode[] = "<!-- END contact_form -->";

@@ -185,11 +185,11 @@ class ContrexxCaptcha implements CaptchaInterface {
             $tabIndexAttr = "tabindex=\"$tabIndex\"";
         }
         $alt= contrexx_raw2xhtml($_CORELANG['TXT_CORE_CAPTCHA']);
-        $code = '<div id="captcha">';
+        $code = '<span id="captcha">';
+        $code .= '<label for="coreCaptchaCode" id="coreCaptchaLabel">'.$_CORELANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'].'</label>';
         $code .= '<img src="'.$this->getUrl().'" alt="'.$alt.'" id="coreCaptchaImage" />';
-        $code .= '<label for="coreCaptchaCode" id="coreCaptchaLabel">'.$_CORELANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_ABOVE'].'</label>';
         $code .= '<input type="text" name="coreCaptchaCode" id="coreCaptchaCode" value="" maxlength="5" '.$tabIndexAttr.' />';
-        $code .= '</div>';
+        $code .= '</span>';
 
         return $code;
     }

@@ -183,7 +183,7 @@ class Blog extends BlogLibrary  {
         //Check for new comments
         if (isset($_POST['frmAddComment_MessageId'])) {
             $this->addComment();
-            if (!empty($this->_strErrorMessage)) {
+            if (!empty($this->_strErrorMessage) || !FWCaptcha::getInstance()->check()) {
                 //Error occured, get previous entered values
                 $strName        = htmlentities($_POST['frmAddComment_Name'], ENT_QUOTES, CONTREXX_CHARSET);
                 $strEMail       = htmlentities($_POST['frmAddComment_EMail'], ENT_QUOTES, CONTREXX_CHARSET);
@@ -472,7 +472,6 @@ class Blog extends BlogLibrary  {
         $intMessageId   = intval($_POST['frmAddComment_MessageId']);
         $strSubject     = contrexx_addslashes(strip_tags($_POST['frmAddComment_Subject']));
         $strComment     = $_POST['frmAddComment_Comment'];
-        $strOffset      = $_POST['frmAddComment_Offset'];
 
         //Check for editor
         if ($this->_arrSettings['blog_comments_editor'] == 'textarea') {
