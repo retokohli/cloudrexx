@@ -30,7 +30,6 @@ $_ARRAYLANG['TXT_CONTACT_FILE_TOO_LARGE'] = "\¡El fichero no pudo ser subido ya
 $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "\¡El fichero %s no fue subido correctamente!";
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "\¡El archivo no se ha subido correctamente!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Por favor, escriba los caracteres de la imagen en el campo de texto destinado para ello. Esto es necesario para que el sistema sepa que usted no es un robot de spam.";
-$_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "\¡La cadena de caracteres introducida no es v&aacute;lida!";
 $_ARRAYLANG['TXT_CONTACT_RESET'] = "Reiniciar";
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Seleccionar direcci&oacute;n del destinatario";
 ?>

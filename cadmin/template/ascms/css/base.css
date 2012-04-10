@@ -297,12 +297,16 @@ a:focus {
 }
 
 #captcha {
+    float: left !important;
+    width: auto !important;
+    clear: none !important;
     padding: 0 !important;
 }
 
 #captcha #coreCaptchaImage {
     float: left;
     width: auto;
+    clear: both;
 }
 
 #captcha #coreCaptchaLabel {
@@ -311,12 +315,14 @@ a:focus {
     clear: both;
     margin: 2px 0 2px 0;
     white-space: nowrap;
+    font-weight: normal;
 }
 
 #captcha #coreCaptchaCode {
     float: left;
-    width: 114px;
-    clear: both;
+    height: 34px;
+    width: 106px !important;
+    margin: 0 0 0 7px;
 }
 
 table.navbar {

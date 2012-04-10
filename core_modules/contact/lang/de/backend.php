@@ -135,7 +135,6 @@ $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "Die Datei %s wurde nicht komplet hina
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "Eine Datei wurde nicht hinauf geladen!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'] = "CAPTCHA-Schutz";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Tippen Sie bitte die Zeichenfolge im dargestellten Bild in das Textfeld ein. Dies ist notwendig, damit das System Sie von einem Spambot unterscheiden kann.";
-$_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "Die eingegebene Zeichenfolge war falsch!";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Durch das Aktivieren dieser Option, wird zusätzlich eine Kopie der angegebenen Formulardaten an den Absender geschickt.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Kopie an Absender";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'] = "Wird ein eigener CSS-Stil verwendet, so hat dieses Forumlar die ID und CSS-Klasse <strong>'contactForm_\$FormularNummer'</strong> z.B. contactForm_2, standardmässig sind für diese Attribute nur 'contactForm' gesetzt";

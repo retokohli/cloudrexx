@@ -29,8 +29,10 @@ form .contactFormGroup {
     float: left;
     margin-top: -15px !important;
 }
-form img.captcha {
-    padding-right: 200px;
+form #contactFrame div.row {
+    float: left;
+    width: auto;
+    clear: both;
 }
 form  p span {
     font-weight: bold;
@@ -94,6 +96,34 @@ div.row_2,
 div.row2 {
     background-color: #ffffff;
     border-bottom: 1px solid #E6E6E6;
+}
+/***************************************************/
+/* CSS GLOBAL DEFINITIONS FOR CAPTCHA              */
+/***************************************************/
+#captcha {
+    float: left !important;
+    width: auto !important;
+    clear: none !important;
+    padding: 0 !important;
+}
+#captcha #coreCaptchaImage {
+    float: left;
+    width: auto;
+    clear: both;
+}
+#captcha #coreCaptchaLabel {
+    float: left;
+    width: auto;
+    clear: both;
+    margin: 2px 0 2px 0;
+    white-space: nowrap;
+    font-weight: normal;
+}
+#captcha #coreCaptchaCode {
+    float: left;
+    height: 26px;
+    width: 106px !important;
+    margin: 0 0 0 7px;
 }
 /***************************************************/
 /* CSS DEFINITIONS FOR VOTING MODULE               */

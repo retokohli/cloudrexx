@@ -135,7 +135,6 @@ $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "Le fichier %s n'a pas pu être envoy�
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "Un fichier n'a pas pu être importé";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'] = "Protection CAPTCHA";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Veuillez saisir la séquence de caractères de l'image dans le champ ci-dessous. (Il s'agit d'une protection anti-spambot)";
-$_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "Saisie erronée du code CAPTCHA";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Si cette option est activée, l'expéditeur d'un formulaire en recevra automatiquement une copie.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Copie à l'expéditeur";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'] = "En cas d'utilisation d'un style CSS personnalisé, le formulaire prend l'ID et la classe CSS suivants:<strong>'contactForm_\$NuméroFormulaire'</strong> p.ex. contactForm_2. En standard, le nom est simplement 'contactForm'";

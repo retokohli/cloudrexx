@@ -135,7 +135,6 @@ $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "Filen %s kunne ikke uploades fuldstæ
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "En fil er ikke blevet uploadet!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'] = "CAPTCHA beskyttelse";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Indstast venligst de viste tegn i tekstfeltet. Dette er nødvendig for at beskytte systemet mod spam.";
-$_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "Den intastede tegnfølge var falsk!";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Er denne option valgt, bliver et yderligere kopi af de indtastede formulardata sendt til afsenderen.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Kopie til afsender";
 $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'] = "Hvis der anwendes et eget CSS-design, så har dette formular IDet og CSS-klassen <strong>'contactForm_\$FormularNummer'</strong> F.eks. contactForm_2, som standard er kun 'contactForm' sat for disse attributer";

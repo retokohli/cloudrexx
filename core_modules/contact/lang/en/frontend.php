@@ -30,7 +30,6 @@ $_ARRAYLANG['TXT_CONTACT_FILE_TOO_LARGE'] = "The file was not uploaded because i
 $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "The file %s was not completely uploaded!";
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "A File has not been uploaded!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Please type in the characters from the picture into the textfield. This is required for the system to know that you are not a spambot.";
-$_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "The specified character string was wrong!";
 $_ARRAYLANG['TXT_CONTACT_RESET'] = "Reset";
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Receiver address selection";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA'] = "Captcha";

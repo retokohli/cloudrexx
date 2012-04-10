@@ -461,7 +461,6 @@ class news extends newsLibrary {
             $this->_objTpl->setVariable(array(
                 'TXT_CORE_CAPTCHA'          => $_CORELANG['TXT_CORE_CAPTCHA'],
                 'NEWS_COMMENT_CAPTCHA_CODE' => FWCaptcha::getInstance()->getCode(),
-                //'NEWS_COMMENT_CAPTCHA_ERROR'=> FWCaptcha::getInstance()->getErrro(),
             ));
             $this->_objTpl->parse('news_add_comment_captcha');
         }
