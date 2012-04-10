@@ -305,8 +305,14 @@ a:focus {
 
 #captcha #coreCaptchaImage {
     float: left;
-    width: auto;
+    width: 66px;
+    height: 22px;
     clear: both;
+}
+
+#content_login #captcha #coreCaptchaImage {
+    width: 87px;
+    height: 29px;
 }
 
 #captcha #coreCaptchaLabel {
@@ -320,9 +326,14 @@ a:focus {
 
 #captcha #coreCaptchaCode {
     float: left;
-    height: 34px;
-    width: 106px !important;
+    height: 14px;
+    width: 58px !important;
     margin: 0 0 0 7px;
+}
+
+#content_login #captcha #coreCaptchaCode {
+    height: 23px;
+    width: 202px !important;
 }
 
 table.navbar {

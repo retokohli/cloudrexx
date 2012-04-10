@@ -108,7 +108,8 @@ div.row2 {
 }
 #captcha #coreCaptchaImage {
     float: left;
-    width: auto;
+    width: 93px;
+    height: 31px;
     clear: both;
 }
 #captcha #coreCaptchaLabel {
@@ -121,8 +122,8 @@ div.row2 {
 }
 #captcha #coreCaptchaCode {
     float: left;
-    height: 26px;
-    width: 106px !important;
+    height: 17px;
+    width: 79px !important;
     margin: 0 0 0 7px;
 }
 /***************************************************/

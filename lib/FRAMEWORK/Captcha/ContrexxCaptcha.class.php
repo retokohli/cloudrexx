@@ -25,7 +25,7 @@ class ContrexxCaptcha implements CaptchaInterface {
     private $intRandomLength = 5;
     private $intMaximumCharacters = 20;
     
-    private $intImageWidth = 120;
+    private $intImageWidth = 93;
     private $intNumberOfBackgrounds = 7;
 
     private $image = null; //the GD image
