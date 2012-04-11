@@ -25,7 +25,7 @@ class ContrexxCaptcha implements CaptchaInterface {
     private $intRandomLength = 5;
     private $intMaximumCharacters = 20;
     
-    private $intImageWidth = 93;
+    private $intImageWidth = 120;
     private $intNumberOfBackgrounds = 7;
 
     private $image = null; //the GD image
@@ -187,8 +187,8 @@ class ContrexxCaptcha implements CaptchaInterface {
         $alt= contrexx_raw2xhtml($_CORELANG['TXT_CORE_CAPTCHA']);
         $code = '<span id="captcha">';
         $code .= '<label for="coreCaptchaCode" id="coreCaptchaLabel">'.$_CORELANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'].'</label>';
-        $code .= '<img src="'.$this->getUrl().'" alt="'.$alt.'" id="coreCaptchaImage" />';
         $code .= '<input type="text" name="coreCaptchaCode" id="coreCaptchaCode" value="" maxlength="5" '.$tabIndexAttr.' />';
+        $code .= '<img src="'.$this->getUrl().'" alt="'.$alt.'" id="coreCaptchaImage" />';
         $code .= '</span>';
 
         return $code;

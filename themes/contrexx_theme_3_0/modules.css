@@ -106,12 +106,6 @@ div.row2 {
     clear: none !important;
     padding: 0 !important;
 }
-#captcha #coreCaptchaImage {
-    float: left;
-    width: 93px;
-    height: 31px;
-    clear: both;
-}
 #captcha #coreCaptchaLabel {
     float: left;
     width: auto;
@@ -122,9 +116,15 @@ div.row2 {
 }
 #captcha #coreCaptchaCode {
     float: left;
-    height: 17px;
     width: 79px !important;
-    margin: 0 0 0 7px;
+    height: 17px;
+    clear: both;
+    margin: 0 7px 0 0;
+}
+#captcha #coreCaptchaImage {
+    float: left;
+    width: 93px;
+    height: 31px;
 }
 /***************************************************/
 /* CSS DEFINITIONS FOR VOTING MODULE               */
