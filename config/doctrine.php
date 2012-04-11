@@ -8,25 +8,31 @@ require_once(ASCMS_MODEL_PATH.'/events/PageEventListener.class.php');
 
 $doctrineDir = ASCMS_LIBRARY_PATH.'/doctrine/';
 
-require_once $doctrineDir.'vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
+//require_once $doctrineDir.'vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
+//use \Doctrine\Common\ClassLoader as ClassLoader;
+require_once ASCMS_CORE_PATH.'/ClassLoader.class.php';
+use \Cx\ClassLoader as ClassLoader;
 
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\ORM', realpath($doctrineDir));
+$classLoader = new ClassLoader('Doctrine\ORM', realpath($doctrineDir));
 $classLoader->register();
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\DBAL', realpath($doctrineDir.'/vendor/doctrine-dbal/lib'));
+$classLoader = new ClassLoader('Doctrine\DBAL', realpath($doctrineDir.'/vendor/doctrine-dbal/lib'));
 $classLoader->register();
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\Common', realpath($doctrineDir.'/vendor/doctrine-common/lib'));
+$classLoader = new ClassLoader('Doctrine\Common', realpath($doctrineDir.'/vendor/doctrine-common/lib'));
 $classLoader->register();
-$classLoader = new \Doctrine\Common\ClassLoader('Symfony', realpath($doctrineDir.'/vendor'));
+$classLoader = new ClassLoader('Symfony', realpath($doctrineDir.'/vendor'));
 $classLoader->register();
-$classLoader = new \Doctrine\Common\ClassLoader('Cx\Model', ASCMS_MODEL_PATH.'/entities');
+$classLoader = new ClassLoader('Cx\Model', ASCMS_MODEL_PATH.'/entities');
 $classLoader->register();
-$classLoader = new \Doctrine\Common\ClassLoader('Cx\Model\Proxies', ASCMS_MODEL_PROXIES_PATH);
-$classLoader->register();
-
-$classLoader = new \Doctrine\Common\ClassLoader('DoctrineExtension', ASCMS_MODEL_PATH.'/extensions');
+$classLoader = new ClassLoader('Cx\Model\Proxies', ASCMS_MODEL_PROXIES_PATH);
 $classLoader->register();
 
-$classLoader = new \Doctrine\Common\ClassLoader('Gedmo', $doctrineDir);
+$classLoader = new ClassLoader('DoctrineExtension', ASCMS_MODEL_PATH.'/extensions');
+$classLoader->register();
+
+$classLoader = new ClassLoader('Gedmo\Loggable\Entity', ASCMS_MODEL_PATH.'/entities');
+$classLoader->register();
+
+$classLoader = new ClassLoader('Gedmo', $doctrineDir);
 $classLoader->register();
 
 $config = new \Doctrine\ORM\Configuration();

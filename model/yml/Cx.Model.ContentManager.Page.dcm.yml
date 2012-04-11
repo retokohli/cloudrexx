@@ -8,16 +8,24 @@ Cx\Model\ContentManager\Page:
       type: integer
       generator:
         strategy: AUTO
+      gedmo:
+        - versioned
   fields:
     lang: #missing foreign entity
       type: integer
+      gedmo:
+        - versioned
 
     type:
       type: string
       length: 16
+      gedmo:
+        - versioned
 
     caching:
       type: boolean
+      gedmo:
+        - versioned
 
     updatedAt:
       type: datetime    
@@ -35,6 +43,8 @@ Cx\Model\ContentManager\Page:
       type: string
       length: 16
       nullable: true
+      gedmo:
+        - versioned
 
     #content
     contentTitle:
@@ -81,68 +91,96 @@ Cx\Model\ContentManager\Page:
     skin:
       type: integer
       nullable: true
+      gedmo:
+        - versioned
 
     #meta
     metatitle:
       nullable: true
       type: string
       length: 255
+      gedmo:
+        - versioned
 
     metadesc:
       nullable: true
       type: string
       length: 255
+      gedmo:
+        - versioned
 
     metakeys:
       nullable: true
       type: string
       length: 255
+      gedmo:
+        - versioned
 
     metarobots:
       nullable: true
       type: string
       length: 7
+      gedmo:
+        - versioned
 
     #publishing
     start:
       nullable: true
       type: datetime
+      gedmo:
+        - versioned
 
     end:
       nullable: true
       type: datetime
+      gedmo:
+        - versioned
     
     editingStatus:
       type: string
       length: 16
-#      gedmo:
-#        - versioned
+      gedmo:
+        - versioned
 
     username:
       type: string
       length: 64
+      gedmo:
+        - versioned
 
     protection:
       type: integer
+      gedmo:
+        - versioned
 
     frontendAccessId:
       type: integer
+      gedmo:
+        - versioned
 
     backendAccessId:
       type: integer
+      gedmo:
+        - versioned
 
     #visibility
     display:
       type: boolean
+      gedmo:
+        - versioned
     
     active:
       type: boolean
+      gedmo:
+        - versioned
 
     #redirection
     target:
       nullable: true
       type: string
       length: 255
+      gedmo:
+        - versioned
 
     module:
       nullable: true
@@ -150,6 +188,7 @@ Cx\Model\ContentManager\Page:
       length: 255
       gedmo:
         - versioned
+    
     cmd:
       nullable: true
       type: string
