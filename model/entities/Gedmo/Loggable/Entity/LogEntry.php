@@ -2,37 +2,38 @@
 
 namespace Gedmo\Loggable\Entity;
 
+use Doctrine\ORM\Mapping\Table;
+use Doctrine\ORM\Mapping\Index;
+use Doctrine\ORM\Mapping\Entity;
+
 /**
  * Gedmo\Loggable\Entity\LogEntry
+ *
+ * @Table(
+ *     name="ext_log_entries",
+ *  indexes={
+ *      @index(name="log_class_lookup_idx", columns={"object_class"}),
+ *      @index(name="log_date_lookup_idx", columns={"logged_at"}),
+ *      @index(name="log_user_lookup_idx", columns={"username"})
+ *  }
+ * )
+ * @Entity(repositoryClass="Gedmo\Loggable\Entity\Repository\CxLogEntryRepository")
  */
-class LogEntry
+class LogEntry extends AbstractLogEntry
 {
     /**
+     * All required columns are mapped through inherited superclass
+     */
+
+    /**
      * @var integer $id
+     *
+     * @Column(type="integer")
+     * @Id
+     * @GeneratedValue
      */
     private $id;
-
-    /**
-     * @var string $objectId
-     */
-    private $objectId;
-
-    /**
-     * @var string $objectClass
-     */
-    private $objectClass;
-
-    /**
-     * @var array $data
-     */
-    private $data;
-
-    /**
-     * @var string $username
-     */
-    private $username;
-
-
+    
     /**
      * Get id
      *
@@ -42,84 +43,15 @@ class LogEntry
     {
         return $this->id;
     }
-
+    
     /**
-     * Set objectId
+     * Set id
      *
-     * @param string $objectId
+     * @param integer $id
      */
-    public function setObjectId($objectId)
+    public function setId($id)
     {
-        $this->objectId = $objectId;
+        $this->id = $id;
     }
 
-    /**
-     * Get objectId
-     *
-     * @return string $objectId
-     */
-    public function getObjectId()
-    {
-        return $this->objectId;
-    }
-
-    /**
-     * Set objectClass
-     *
-     * @param string $objectClass
-     */
-    public function setObjectClass($objectClass)
-    {
-        $this->objectClass = $objectClass;
-    }
-
-    /**
-     * Get objectClass
-     *
-     * @return string $objectClass
-     */
-    public function getObjectClass()
-    {
-        return $this->objectClass;
-    }
-
-    /**
-     * Set data
-     *
-     * @param array $data
-     */
-    public function setData($data)
-    {
-        $this->data = $data;
-    }
-
-    /**
-     * Get data
-     *
-     * @return array $data
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    /**
-     * Set username
-     *
-     * @param string $username
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
-    }
-
-    /**
-     * Get username
-     *
-     * @return string $username
-     */
-    public function getUsername()
-    {
-        return $this->username;
-    }
 }
