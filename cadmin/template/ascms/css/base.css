@@ -303,18 +303,6 @@ a:focus {
     padding: 0 !important;
 }
 
-#captcha #coreCaptchaImage {
-    float: left;
-    width: 66px;
-    height: 22px;
-    clear: both;
-}
-
-#content_login #captcha #coreCaptchaImage {
-    width: 87px;
-    height: 29px;
-}
-
 #captcha #coreCaptchaLabel {
     float: left;
     width: auto;
@@ -326,14 +314,26 @@ a:focus {
 
 #captcha #coreCaptchaCode {
     float: left;
-    height: 14px;
     width: 58px !important;
-    margin: 0 0 0 7px;
+    height: 14px;
+    clear: both;
+    margin: 0 7px 0 0;
 }
 
 #content_login #captcha #coreCaptchaCode {
-    height: 23px;
     width: 202px !important;
+    height: 23px;
+}
+
+#captcha #coreCaptchaImage {
+    float: left;
+    width: 66px;
+    height: 22px;
+}
+
+#content_login #captcha #coreCaptchaImage {
+    width: 87px;
+    height: 29px;
 }
 
 table.navbar {
