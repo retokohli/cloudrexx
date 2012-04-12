@@ -243,6 +243,11 @@ class JSONPage {
             $logEntries = $logRepo->getLogEntries($page);
             // $logEntries holds an array of Gedmo LogEntries, the most recent one listed first
 
+            // we need the editing status of the page
+            $logData = $logEntries[1]->getData();
+            $logData['editingStatus'] = $page->getEditingStatus();
+            $logEntries[1]->setData($logData);
+            
             // revert to the published version
             $logRepo->revert($page, $logEntries[1]->getVersion());
             $this->em->persist($page);
