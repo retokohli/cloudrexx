@@ -187,7 +187,6 @@ class LoginManager {
             'TXT_LOGIN_PASSWORD_LOST'       => $_ARRAYLANG['TXT_LOGIN_PASSWORD_LOST'],
             'TXT_LOGIN_REMEMBER_ME'         => $_ARRAYLANG['TXT_LOGIN_REMEMBER_ME'],
             'REDIRECT_URL'                  => (!empty($_POST['redirect'])) ? $_POST['redirect'] : basename(getenv('REQUEST_URI')),
-            'UID'                           => isset($_COOKIE['username']) ? $_COOKIE['username'] : '',
             'JAVASCRIPT'                    => JS::getCode(),
         ));
 
