@@ -8,8 +8,6 @@ Cx\Model\ContentManager\Page:
       type: integer
       generator:
         strategy: AUTO
-      gedmo:
-        - versioned
   fields:
     lang: #missing foreign entity
       type: integer
@@ -66,6 +64,8 @@ Cx\Model\ContentManager\Page:
         - versioned
     sourceMode:
       type: boolean
+      gedmo:
+        - versioned
 
     customContent:
       nullable: true
