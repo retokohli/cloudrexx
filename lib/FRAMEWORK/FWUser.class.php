@@ -113,8 +113,6 @@ class FWUser extends User_Setting
             if (empty($sessionObj)) $sessionObj = new cmsSession();
             if ($this->objUser->auth($username, $password, $this->isBackendMode(), FWCaptcha::getInstance()->check())) {
                 if ($this->isBackendMode()) {
-                    // sets cookie for 30 days
-                    setcookie("username", $this->objUser->getUsername(), time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
                     $this->log();
                 }
                 $sessionObj->cmsSessionUserUpdate($this->objUser->getId());
