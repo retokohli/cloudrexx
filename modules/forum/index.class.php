@@ -377,16 +377,14 @@ class Forum extends ForumLibrary {
      */
     function showForum($intForumId)
     {
-        global $objDatabase, $_ARRAYLANG, $objCache, $_LANGID;
+        global $objDatabase, $_ARRAYLANG, $objCache, $_LANGID, $_CORELANG;
 
-        require_once ASCMS_LIBRARY_PATH . "/spamprotection/captcha.class.php";
         if ($intForumId == 0) {
             //wrong id, redirect
             CSRF::header('location: index.php?section=forum');
             die();
         }
 
-        $captcha = new Captcha();
         $objFWUser = FWUser::getFWUserObject();
 
         $this->_communityLogin();
@@ -422,10 +420,6 @@ class Forum extends ForumLibrary {
         $keywords = !empty($_REQUEST['thread_keywords']) ? contrexx_stripslashes($_REQUEST['thread_keywords']) : '';
         $content = !empty($_REQUEST['thread_message']) ? contrexx_stripslashes($_REQUEST['thread_message']) : '';
 
-        $alt    = $captcha->getAlt();
-        $url     = $captcha->getUrl();
-
-
         if($this->_arrSettings['wysiwyg_editor'] == 1) { //IF WYSIWIG enabled..
             require ASCMS_CORE_PATH.'/wysiwyg.class.php';
             global $wysiwygEditor, $FCKeditorBasePath;
@@ -448,9 +442,8 @@ class Forum extends ForumLibrary {
             'TXT_FORUM_NOTIFY_NEW_POSTS' =>    $_ARRAYLANG['TXT_FORUM_NOTIFY_NEW_POSTS'],
             'TXT_FORUM_UPDATE_NOTIFICATION' =>    $_ARRAYLANG['TXT_FORUM_UPDATE_NOTIFICATION'],
             'FORUM_NOTIFICATION_CHECKBOX_CHECKED'    =>    $this->_hasNotification($intThreadId) ? 'checked="checked"' : '',
-
-            'FORUM_CAPTCHA_IMAGE_URL'    =>    $url,
-            'FORUM_CAPTCHA_IMAGE_ALT'    =>    $alt,
+            'TXT_FORUM_CAPTCHA'      => $_CORELANG['TXT_CORE_CAPTCHA'],
+            'FORUM_CAPTCHA_CODE'    =>    FWCaptcha::getInstance()->getCode(),
             'FORUM_FORUM_ID'            =>    $intForumId, // the category id via GET
             'FORUM_SUBJECT'                =>    htmlentities($subject, ENT_QUOTES, CONTREXX_CHARSET),
             'FORUM_KEYWORDS'            =>    htmlentities($keywords, ENT_QUOTES, CONTREXX_CHARSET),
@@ -537,8 +530,7 @@ class Forum extends ForumLibrary {
                 return false;
             }
 
-            if (!$objFWUser->objUser->login() && !$captcha->check($_POST['captcha'])) {
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.$_ARRAYLANG['TXT_FORUM_INVALID_CAPTCHA']);
+            if (!$objFWUser->objUser->login() && !FWCaptcha::getInstance()->check()) {
                 return false;
             }
 
@@ -642,11 +634,6 @@ class Forum extends ForumLibrary {
                 $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.$_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
             }
         }
-
-        require_once ASCMS_LIBRARY_PATH . "/spamprotection/captcha.class.php";
-        $captcha = new Captcha();
-        $alt     = $captcha->getAlt();
-        $url     = $captcha->getUrl();
 
         $pos = !empty($_REQUEST['pos']) ? intval($_REQUEST['pos']) : 0;
         $this->_objTpl->setVariable(array(
@@ -767,8 +754,7 @@ class Forum extends ForumLibrary {
             'FORUM_KEYWORDS'                        =>    stripslashes($keywords),
             'FORUM_ATTACHMENT_OLDNAME'              =>    $attachment,
             'FORUM_MESSAGE_INPUT'                   =>    $strMessageInputHTML,
-            'FORUM_CAPTCHA_IMAGE_URL'               =>    $url,
-            'FORUM_CAPTCHA_IMAGE_ALT'               =>    $alt,
+            'FORUM_CAPTCHA_CODE'                    =>    FWCaptcha::getInstance()->getCode(),
             'FORUM_THREAD_ID'                       =>    $intThreadId,
             'FORUM_CATEGORY_ID'                     =>    $intCatId,
             'FORUM_POSTS_PAGING'                    =>    getPaging($this->_postCount, $pos, '&amp;section=forum&amp;cmd=thread&amp;id='.$intThreadId, $_ARRAYLANG['TXT_FORUM_OVERVIEW_POSTINGS'], true, $this->_arrSettings['posting_paging']),
@@ -904,8 +890,7 @@ class Forum extends ForumLibrary {
                 $this->_objTpl->hideBlock('addPost');
                 return false;
             }
-            if(!$objFWUser->objUser->login() && !$captcha->check($_POST['captcha'])) {//captcha check
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.$_ARRAYLANG['TXT_FORUM_INVALID_CAPTCHA']);
+            if(!$objFWUser->objUser->login() && !FWCaptcha::getInstance()->check()) {//captcha check
                 return false;
             }
             if(strlen(trim($content)) < $this->_minPostlength){//content check
@@ -1006,11 +991,9 @@ class Forum extends ForumLibrary {
                 $this->_objTpl->hideBlock('postEdit');
                 return false;
             }
-            if (!$objFWUser->objUser->login() && !$captcha->check($_POST['captcha'])) {
+            if (!$objFWUser->objUser->login() && !FWCaptcha::getInstance()->check()) {
                 $this->_objTpl->touchBlock('updatePost');
                 $this->_objTpl->hideBlock('createPost');
-
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.$_ARRAYLANG['TXT_FORUM_INVALID_CAPTCHA']);
                 return false;
             }
             if(false !== ($match = $this->_hasBadWords($content))){

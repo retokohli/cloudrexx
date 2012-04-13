@@ -74,4 +74,11 @@ $_ARRAYLANG['TXT_ACCESS_REGISTER_NEW_ACCOUNT'] = "Klicken Sie hier um sich erneu
 $_ARRAYLANG['TXT_ACCESS_YOUR_ACCOUNT_SUCCSESSFULLY_DELETED'] = "Ihr Konto wurde erfolgreich gelöscht.";
 $_ARRAYLANG['TXT_ACCESS_SAVE'] = "Speichern";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'] = "Das Benutzerkonto wurde erfolgreich gespeichert";
+$_ARRAYLANG['TXT_ACCESS_CAPTCHA_DESCRIPTION'] = "Tippen Sie bitte den Sicherheitscode im dargestellten Bild in das Textfeld ein. Dies ist notwendig, damit das System Sie als natürliche Person identifizieren kann.";
+$_ARRAYLANG['TXT_ACCESS_INVALID_CAPTCHA_CODE'] = "Der eingegebene Sicherheitscode war falsch!";
+$_ARRAYLANG['TXT_ACCESS_ACCEPT_TOS'] = "Ich bestätige die Richtigkeit der gemachten Angaben und die <a href=\"%s\" target=\"_blank\" title=\"Geschäftsbedingungen\">Geschäftsbedingungen</a> zu kennen und akzeptiere diese.";
+$_ARRAYLANG['TXT_ACCESS_TOS'] = "Allgemeine Geschäftsbedingungen";
+$_ARRAYLANG['TXT_ACCESS_TOS_NOT_CHECKED'] = "Sie müssen die Allgemeinen Geschäftsbedingungen akzeptieren!";
+$_ARRAYLANG['TXT_ACCESS_CAPTCHA'] = "Sicherheitscode";
+$_ARRAYLANG['TXT_ACCESS_NEWSLETTERS_SUBSCRIBE_COLON'] = "Folgende Newsletter abonnieren:";
 ?>

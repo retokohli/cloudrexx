@@ -112,25 +112,27 @@ var $strFunctionRefreshComment = function(entry,section,cmd)
 var $strFunctionCheckCommentForm = function(entry)
 {
     var isOk = true;
-    var commentName = $('commentName').value;
-    var commentComment = $('commentComment').value;
+    var commentName = jQuery('#commentName').val();
+    var commentComment = jQuery('#commentComment').val();
 
-    if(commentName == "") {
+    errorCSSBorderStyle = '#ff0000 1px solid';
+
+    if (commentName == '') {
     	isOk = false;
-    	$('commentName').style.border = "#ff0000 1px solid";
+    	jQuery('#commentName').css({'border': errorCSSBorderStyle});
     } else {
-        $('commentName').style.borderColor = '';
+        jQuery('#commentName').css({'border': ''});
     }
 
-    if(commentComment == "") {
+    if(commentComment == '') {
     	isOk = false;
-    	$('commentComment').style.border = "#ff0000 1px solid";
+    	jQuery('#commentComment').css({'border': errorCSSBorderStyle});
     } else {
-        $('commentComment').style.borderColor = '';
+        jQuery('#commentComment').css({'border': ''});
     }
 
     if (!isOk) {
-		$('$strCommentErrMessage').style.display = "block";
+		jQuery('#$strCommentErrMessage').css({'display': 'block'});
 	} else {
 	   $strFunctionComment(entry);
 	}
@@ -193,12 +195,9 @@ EOF;
 
 
     function getCaptcha() {
-        global $_ARRAYLANG;
+        global $_CORELANG;
 
-        include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-        $captcha = new Captcha();
-
-        $strCode = '<p><label>CAPTCHA</label><img alt="'.$captcha->getAlt().'" src="'.$captcha->getUrl().'" class="captcha" /> <input type="text" name="commentCaptcha" id="commentCaptcha" /><br /></p>';
+        $strCode = '<p><label>'.$_CORELANG['TXT_CORE_CAPTCHA'].'</label>'.FWCaptcha::getInstance()->getCode().'</p>';
 
         return $strCode;
     }
@@ -294,9 +293,7 @@ EOF;
             $intAddedBy = 0;
 
             //captcha check
-            include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-            $captcha = new Captcha();
-            if(!$captcha->check($arrCommentData['commentCaptcha']))
+            if(!FWCaptcha::getInstance()->check())
                 die('captcha');
         }
 

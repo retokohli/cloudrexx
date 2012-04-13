@@ -3,38 +3,27 @@
  * Frontend Edition
  *
  * @author Kaelin Thomas <thomas.kaelin@comvation.com>
- * @version 1.0
+ * @author Daeppen Thomas <thomas.daeppen@comvation.com>
+ * @version 2.0
  * @package contrexx
  * @subpackage core_module_frontendEditing
- */
-/*
- * ATTENTION: SEE CODE AT END OF THIS FILE FOR COMPLETE UNDERSTANDMENT OF CODE!!
  */
 
 /**
  * @ignore
  */
-define('BASE_FOLDER', '../../');
-
-//Includes
-include_once(BASE_FOLDER.'lib/DBG.php');
-DBG::deactivate();
-require_once(BASE_FOLDER.'config/configuration.php');
-require_once(BASE_FOLDER.'config/settings.php');
-require_once(BASE_FOLDER.'config/set_constants.php');
-require_once(BASE_FOLDER.'config/version.php');
-require_once(BASE_FOLDER.'core/API.php');
-require_once(ASCMS_LIBRARY_PATH.'/CSRF.php');
-require_once(ASCMS_CORE_PATH.'/Init.class.php');
-require_once(ASCMS_CORE_PATH.'/wysiwyg.class.php');
-require_once(ASCMS_CORE_PATH.'/permission.class.php');
-require_once('frontendEditingLib.class.php');
+require_once ASCMS_CORE_MODULE_PATH.'/frontendEditing/frontendEditingLib.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_CORE_PATH.'/wysiwyg.class.php';
 
 /**
- * This class handels the frontend editing.
+ * This class handles the frontend editing.
  *
  * @author Kaelin Thomas <thomas.kaelin@comvation.com>
- * @version 1.0
+ * @author Daeppen Thomas <thomas.daeppen@comvation.com>
+ * @version 2.0
  * @package contrexx
  * @subpackage core_module_frontendEditing
  */
@@ -47,7 +36,7 @@ class frontendEditing extends frontendEditingLib {
 	/**
 	 * Path to template folder.
 	 */
-	private $strTemplatePath = 'template';
+	private $strTemplatePath = '';
 
 	/**
 	 * This char will be used to separate the status code from the content.
@@ -79,6 +68,10 @@ class frontendEditing extends frontendEditingLib {
 	 */
 	private $intPageId;
 
+    /**
+     * currently edited Page's path, e.g. '/example/shop/terms'
+     */
+    protected $strPagePath = null;
 	/**
 	 * Section of the requested page.
 	 */
@@ -88,6 +81,11 @@ class frontendEditing extends frontendEditingLib {
 	 * CMD of the requested page.
 	 */
 	private $strPageCommand;
+
+    /**
+     * Language ID of the currently edited page.
+     */
+    private $intPageLangId = 0;
 
 	/**
 	 * Title of the requested page.
@@ -104,15 +102,28 @@ class frontendEditing extends frontendEditingLib {
 	 */
 	private $objUser;
 
-	/**
-	 * Used for checking accessrights of the requested page.
-	 */
-	private $intBackendAccessId = 0;
+    /**
+     * Doctrine EntityManager
+     */
+    protected $em = null;
+    /**
+     * Doctrine Repository for entity Page
+     */
+    protected $pageRepo = null;
+    /**
+     * Doctrine Page entity of currently edited Page
+     */
+    protected $page = null;
 
 	/**
 	 * Constructor for PHP5.
 	 */
-	public function __construct() {
+	public function __construct($entityManager) {
+        $this->em = $entityManager;
+        $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
+
+        $this->intPageLangId = FRONTEND_LANG_ID;
+
 		$this->init();
 		$this->getParameters();
 		$this->loadValuesFromDatabase();
@@ -135,6 +146,7 @@ class frontendEditing extends frontendEditingLib {
 		$strErrorCode = '';
 
 		//Template
+		$this->strTemplatePath = ASCMS_CORE_MODULE_PATH.'/frontendEditing/template';
 		$this->objTemplate = new HTML_Template_Sigma($this->strTemplatePath);
         CSRF::add_placeholder($this->objTemplate);
 		$this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
@@ -152,9 +164,7 @@ class frontendEditing extends frontendEditingLib {
 	 */
 	private function getParameters() {
 		$this->strAction 			= isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
-		$this->intPageId 			= intval($_REQUEST['page']);
-		$this->strPageSection 		= isset($_REQUEST['section']) ? $_REQUEST['section'] : '';
-		$this->strPageCommand		= isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '';
+        $this->strPagePath          = isset($_REQUEST['page']) ? $_REQUEST['page'] : '';
 	}
 
 	/**
@@ -163,23 +173,26 @@ class frontendEditing extends frontendEditingLib {
 	 * @global 	ADONewConnection
 	 */
 	private function loadValuesFromDatabase() {
-		global $objDatabase;
+        /*
+          Find out whether there's a page in our language at the path specified
+         */
+        $page = $this->pageRepo->find($this->strPagePath);
 
-		$objResult = $objDatabase->Execute('	SELECT		content.title,
-															content.content,
-															navigation.backend_access_id
-												FROM		'.DBPREFIX.'content				AS content
-												INNER JOIN	'.DBPREFIX.'content_navigation	AS navigation
-												ON			content.id = navigation.catid
-												WHERE		id='.$this->intPageId.'
-												LIMIT		1
-											');
+        /*
+          We've got a set of pages and we know our desired page exists - get it.
+         */
+        //get the right page object.
+        if(!$page)
+            return;
+        
+        $this->page = $page;
 
-		if ($objResult->RecordCount() == 1) {
-			$this->strTitle 			= html_entity_decode($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET);
-			$this->strContent			= $objResult->fields['content'];
-			$this->intBackendAccessId	= intval($objResult->fields['backend_access_id']);
-		}
+        //remember interesting properties.
+        $this->strTitle = $this->page->getContentTitle();
+        $this->strContent = $this->page->getContent();
+
+		$this->strPageSection = $this->page->getModule();
+		$this->strPageCommand = $this->page->getCmd();
 	}
 
 	/**
@@ -196,7 +209,10 @@ class frontendEditing extends frontendEditingLib {
 					$this->setToolbarVisibility($_REQUEST['status']);
 					break;
 				case 'getEditor':
-					if (empty($this->strPageSection) || $_REQUEST['selection'] == 'false' || in_array($this->strPageSection, frontendEditingLib::$arrSectionsWithoutBackend)) {
+					if (   empty($this->strPageSection)
+                        || $_REQUEST['selection'] == 'false'
+                        || in_array($this->strPageSection, frontendEditingLib::$arrSectionsWithoutBackend)
+                    ) {
 						echo $this->getEditorPage();
 					} else {
 						echo $this->getSelectionPage();
@@ -221,6 +237,8 @@ class frontendEditing extends frontendEditingLib {
 
 			}
 		}
+
+        exit;
 	}
 
 	/**
@@ -231,21 +249,16 @@ class frontendEditing extends frontendEditingLib {
 	 */
 	private function checkAccessRights() {
 		//check for login
-		if ($_POST['doLogin'] == 'true') {
-			if (!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['seckey']) && !empty($_POST['type'])) {
+		if (isset($_POST['doLogin']) && $_POST['doLogin'] == 'true') {
+			if (!empty($_POST['fe_LoginUsername']) && !empty($_POST['fe_LoginPassword'])) {
 
 				//Assign variables for login
-				$_POST['USERNAME'] 	= $_POST['username'];
-				$_POST['PASSWORD'] 	= $_POST['password'];
-                $captchaKey = strtoupper($_POST['seckey']);
-                $captchaOffset = $_POST['seckeyOffset'];
-                include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-
-                $captcha = new Captcha();
-                $captchaPassed = $captcha->check($captchaKey);
+				$_POST['USERNAME'] 	= $_POST['fe_LoginUsername'];
+				$_POST['PASSWORD'] 	= $_POST['fe_LoginPassword'];
 
 
-                if ($captchaPassed) {
+
+                if (FWCaptcha::getInstance()->check()) {
                     if ($this->objUser->checkAuth() && (Permission::hasAllAccess() || $this->isUserInBackendGroup())) {
                         //Login successfull
                         $_SESSION[frontendEditingLib::SESSION_LOGIN_FIELD] = true;
@@ -282,16 +295,17 @@ class frontendEditing extends frontendEditingLib {
 
 			//No admin, figure out what the user is allowed to do
 			if (Permission::checkAccess(frontendEditingLib::AUTH_ID_FOR_PAGE_EDITING, 'static', true)) {
-				//Page is not restricted or allowed for this usergroup
-				if($this->intBackendAccessId == 0 || Permission::checkAccess($this->intBackendAccessId, 'dynamic', true)) {
+                //unprotected page, edit
+                if(!$this->page->isBackendProtected())
+                    return true;
+                
+                if(Permission::checkAccess($this->page->getId(), 'page_backend', true));
 					return true;
-				}
 			}
 
 			$this->strErrorCode = 'disallowed';
 		} else {
 			$this->strErrorCode = 'login';
-
 		}
 
 		return false;
@@ -322,6 +336,7 @@ class frontendEditing extends frontendEditingLib {
 	 * @return html source of the login page.
 	 */
 	private function getLoginPage() {
+// TODO: proposal: why not using the regular login module?
 		global $_CORELANG;
 
 		$this->objTemplate->loadTemplateFile('login.html',true,true);
@@ -331,13 +346,10 @@ class frontendEditing extends frontendEditingLib {
 			$statusMessage = '<div class="fe_LoginError">'.$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_FAILED'].'</div>';
 		}
 
-        include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-        $captcha = new Captcha();
-
 		$this->objTemplate->setVariable(array(	'TXT_LOGIN_TITLE'				=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_TITLE'],
 												'TXT_LOGIN_USERNAME'			=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_USERNAME'],
 												'TXT_LOGIN_PASSWORD'			=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_PASSWORD'],
-												'TXT_LOGIN_SECKEY'				=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_SECKEY'],
+												'TXT_LOGIN_CAPTCHA'				=>	$_CORELANG['TXT_CORE_CAPTCHA'],
 												'TXT_LOGIN_AREA'				=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_AREA'],
 												'TXT_LOGIN_AREA_FRONTEND'		=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_FRONTEND'],
 												'TXT_LOGIN_AREA_BACKEND'		=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_BACKEND'],
@@ -345,13 +357,27 @@ class frontendEditing extends frontendEditingLib {
 												'TXT_LOGIN_CANCEL'				=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_CANCEL'],
 												'TXT_LOGIN_PASSWORD_FORGOTTON'	=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_PASSWORD_FORGOTTON']
 									));
+        $loginUsername = isset($_POST['USERNAME']) ? $_POST['USERNAME'] : '';
 
-		$this->objTemplate->setVariable(array(	'LOGIN_PAGE_ID'			=>	$this->intPageId,
-												'LOGIN_PAGE_SECTION'	=>	$this->strPageSection,
-												'LOGIN_PAGE_CMD'		=>	$this->strPageCommand,
-												'LOGIN_SECURITY_IMAGE'	=>	$captcha->getURL(),
-												'LOGIN_USERNAME'		=>	(get_magic_quotes_gpc() == 1 ? stripslashes($_POST['USERNAME']) : $_POST['USERNAME']),
-												'LOGIN_STATUS_MESSAGE'	=>	$statusMessage,
+        $lostPWPath = '';
+        $crit = array(
+             'module'   => 'login',
+             'lang'     => FRONTEND_LANG_ID,
+             'cmd'      => 'lostpw',
+        );
+        $page = $this->pageRepo->findOneBy($crit);
+        if ($page && $page->isActive()) {
+            $lostPWPath = ASCMS_PATH_OFFSET.Env::get('virtualLanguageDirectory').'/'.$this->pageRepo->getPath($page);
+        }
+
+		$this->objTemplate->setVariable(array(	'LOGIN_PAGE_ID'			=> $this->intPageId,
+												'LOGIN_PAGE_SECTION'	=> $this->strPageSection,
+												'LOGIN_PAGE_CMD'		=> $this->strPageCommand,
+												'LOGIN_CAPTCHA_CODE'	=> FWCaptcha::getInstance()->getCode(),
+												'LOGIN_USERNAME'		=> (get_magic_quotes_gpc() == 1 ? stripslashes($loginUsername) : $loginUsername),
+												'LOGIN_STATUS_MESSAGE'	=> $statusMessage,
+                                                'LOGIN_LOSTPW_URL'      => $lostPWPath,
+                                                'JAVASCRIPT' => JS::getCode(),
 										));
 
 		return 'login'.$this->strSplitChar.$this->objTemplate->get();
@@ -374,7 +400,7 @@ class frontendEditing extends frontendEditingLib {
 	 * @return url for accessing the admin-interface.
 	 */
 	private function getAdminPage() {
-		return 'admin'.$this->strSplitChar.frontendEditingLib::ADMIN_PATH ;
+		return 'admin'.$this->strSplitChar.ASCMS_ADMIN_WEB_PATH.'/?cmd='.$this->strPageSection.'&'.CSRF::param();
 	}
 
 	/**
@@ -395,7 +421,7 @@ class frontendEditing extends frontendEditingLib {
 												'TXT_TOOLBAR_LOGOUT'		=>	$_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_LOGOUT']
 										));
 
-		$this->objTemplate->setVariable(array(	'TOOLBAR_PATH'				=>	frontendEditingLib::FRONTENDEDITING_PATH,
+		$this->objTemplate->setVariable(array(	'TOOLBAR_PATH'				=>	ASCMS_PATH_OFFSET.frontendEditingLib::FRONTENDEDITING_PATH,
 												'TOOLBAR_USERNAME'			=>	$this->objUser->objUser->getUsername()
 										));
 
@@ -427,8 +453,8 @@ class frontendEditing extends frontendEditingLib {
 												'TXT_SELECTION_MODE_CONTENT'	=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_CONTENT']
 								));
 
-		$this->objTemplate->setVariable(array(	'SELECTION_IMAGE_PATH'	=>	frontendEditingLib::FRONTENDEDITING_PATH,
-												'SELECTION_ADMIN_PATH'	=>	frontendEditingLib::ADMIN_PATH .'?cmd='.$this->strPageSection));
+		$this->objTemplate->setVariable(array(	'SELECTION_IMAGE_PATH'	=>	ASCMS_PATH_OFFSET.frontendEditingLib::FRONTENDEDITING_PATH,
+												'SELECTION_ADMIN_PATH'	=>	ASCMS_ADMIN_WEB_PATH.'/?cmd='.$this->strPageSection.'&amp;'.CSRF::param()));
 
 		return 'selection'.$this->strSplitChar.$this->objTemplate->get();
 	}
@@ -473,166 +499,12 @@ class frontendEditing extends frontendEditingLib {
 	 * @global 	ADONewConnection
 	 */
 	private function updatePage() {
-		global $objDatabase;
+        $this->page->setContentTitle(strip_tags($_POST['title']));
+        $this->page->setContent(preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}', html_entity_decode($_POST['content'], ENT_QUOTES, CONTREXX_CHARSET)));
+        $this->page->setUser(strip_tags($this->objUser->objUser->getUsername()));
+        $this->page->setUpdatedAtToNow();
 
-		//Collect existing values
-		$objResult = $objDatabase->Execute('	SELECT		content.content,
-															content.title,
-															content.metatitle,
-															content.metadesc,
-															content.metakeys,
-															content.metarobots,
-															content.css_name AS c_css_name,
-															content.redirect,
-															content.expertmode,
-															navigation.is_validated,
-															navigation.parcat,
-															navigation.catname,
-															navigation.target,
-															navigation.displayorder,
-															navigation.displaystatus,
-															navigation.activestatus,
-															navigation.cachingstatus,
-															navigation.username,
-															navigation.changelog,
-															navigation.cmd,
-															navigation.lang,
-															navigation.module,
-															navigation.startdate,
-															navigation.enddate,
-															navigation.protected,
-															navigation.frontend_access_id,
-															navigation.backend_access_id,
-															navigation.themes_id,
-															navigation.css_name AS n_css_name
-												FROM		'.DBPREFIX.'content				AS content
-												INNER JOIN	'.DBPREFIX.'content_navigation	AS navigation
-												ON			content.id = navigation.catid
-												WHERE		id='.$this->intPageId.'
-												LIMIT		1
-											');
-
-		$strOld_C_Content 		= $objResult->fields['content'];
-		$strOld_C_Title 		= $objResult->fields['title'];
-		$strOld_C_MetaTitle 	= $objResult->fields['metatitle'];
-		$strOld_C_MetaDesc 		= $objResult->fields['metadesc'];
-		$strOld_C_MetaKeys 		= $objResult->fields['metakeys'];
-		$strOld_C_MetaRobots 	= $objResult->fields['metarobots'];
-		$strOld_C_CssName 		= $objResult->fields['c_css_name'];
-		$strOld_C_Redirect 		= $objResult->fields['redirect'];
-		$strOld_C_ExpertMode 	= $objResult->fields['expertmode'];
-
-		$strOld_N_IsValidated	= $objResult->fields['is_validated'];
-		$strOld_N_ParCat		= $objResult->fields['parcat'];
-		$strOld_N_CatName		= $objResult->fields['catname'];
-		$strOld_N_Target		= $objResult->fields['target'];
-		$strOld_N_DisplayOrder	= $objResult->fields['displayorder'];
-		$strOld_N_DisplayStatus	= $objResult->fields['displaystatus'];
-		$strOld_N_ActiveStatus	= $objResult->fields['activestatus'];
-		$strOld_N_CachingStatus	= $objResult->fields['cachingstatus'];
-		$strOld_N_UserName		= $objResult->fields['username'];
-		$strOld_N_ChangeLog		= $objResult->fields['changelog'];
-		$strOld_N_Command		= $objResult->fields['cmd'];
-		$strOld_N_Language		= $objResult->fields['lang'];
-		$strOld_N_Module		= $objResult->fields['module'];
-		$strOld_N_Startdate		= $objResult->fields['startdate'];
-		$strOld_N_Enddate		= $objResult->fields['enddate'];
-		$strOld_N_Protected		= $objResult->fields['protected'];
-		$strOld_N_FrontendAcc	= $objResult->fields['frontend_access_id'];
-		$strOld_N_BackendAcc	= $objResult->fields['backend_access_id'];
-		$strOld_N_ThemesId		= $objResult->fields['themes_id'];
-		$strOld_N_CssName		= $objResult->fields['n_css_name'];
-
-		//Collect new values
-		$strNew_C_Title 	= contrexx_addslashes(strip_tags($_POST['title']));
-		$strNew_C_Content 	= preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}', contrexx_addslashes($_POST['content']));
-
-		$strNew_N_UserName	= contrexx_addslashes(strip_tags($this->objUser->objUser->getUsername()));
-		$strNew_N_ChangeLog = time();
-
-		//Update database
-		$objResult = $objDatabase->Execute('	UPDATE		'.DBPREFIX.'content 			AS content
-												INNER JOIN	'.DBPREFIX.'content_navigation	AS navigation
-												ON			content.id = navigation.catid
-												SET			content.title = "'.$strNew_C_Title.'",
-															content.content = "'.$strNew_C_Content.'",
-															navigation.username = "'.$strNew_N_UserName.'",
-															navigation.changelog = '.$strNew_N_ChangeLog.'
-												WHERE		content.id='.$this->intPageId.'
-											');
-
-		//Write history
-		if ($this->boolHistoryEnabled) {
-			$objDatabase->Execute('	UPDATE	'.DBPREFIX.'content_navigation_history
-									SET		is_active="0"
-									WHERE	catid='.$this->intPageId);
-
-			$objDatabase->Execute('	INSERT
-									INTO	'.DBPREFIX.'content_navigation_history
-									SET		is_active="1",
-											catid='.$this->intPageId.',
-											parcat="'.$strOld_N_CatId.'",
-					                    	catname="'.$strOld_N_CatName.'",
-					                    	target="'.$$strOld_N_Target.'",
-					                    	displayorder='.$strOld_N_DisplayOrder.',
-					                    	displaystatus="'.$strOld_N_DisplayStatus.'",
-					                    	activestatus="'.$strOld_N_ActiveStatus.'",
-					                    	cachingstatus="'.$strOld_N_CachingStatus.'",
-					                    	username="'.$strNew_N_UserName.'",
-					                    	changelog="'.$strNew_N_ChangeLog.'",
-					                   	 	cmd="'.$strOld_N_Command.'",
-					                    	lang="'.$strOld_N_Language.'",
-					                    	module="'.$strOld_N_Module.'",
-					                    	startdate="'.$strOld_N_Startdate.'",
-					                    	enddate="'.$strOld_N_Enddate.'",
-					                    	protected='.$strOld_N_Protected.',
-					                    	frontend_access_id='.$strOld_N_FrontendAcc.',
-					                    	backend_access_id='.$strOld_N_BackendAcc.',
-					                    	themes_id="'.$$strOld_N_ThemesId.'",
-					                    	css_name="'.$strOld_N_CssName.'"
-						               ');
-
-			$intHistoryId = $objDatabase->insert_id();
-
-			$objDatabase->Execute('	INSERT
-									INTO	'.DBPREFIX.'content_history
-						            SET 	id='.$intHistoryId.',
-						            		page_id='.$this->intPageId.',
-						                   	content="'.$strNew_C_Content.'",
-						                   	title="'.$strNew_C_Title.'",
-						                   	metatitle="'.$strOld_C_MetaTitle.'",
-							                metadesc="'.$strOld_C_MetaDesc.'",
-						                   	metakeys="'.$strOld_C_MetaKeys.'",
-						                   	metarobots="'.$strOld_C_MetaRobots.'",
-						                   	css_name="'.$strOld_C_CssName.'",
-						                   	redirect="'.$strOld_C_Redirect.'",
-						                  	expertmode="'.$strOld_C_ExpertMode.'"'
-									);
-
-			$objDatabase->Execute('	INSERT
-									INTO	'.DBPREFIX.'content_logfile
-									SET		action="update",
-											history_id='.$intHistoryId.',
-											is_validated="1"
-								');
-		}
-
+        $this->em->persist($this->page);
+        $this->em->flush();
 	}
 }
-
-//Instantiate database-object. Has to be global because of included classes!
-$objDatabase = getDatabaseObject($strErrorCode);
-
-//Instantiate language-array. Has to be global because of included classes!
-$objInit = new InitCMS();
-$_CORELANG = $objInit->loadLanguageData('core');
-
-if(!isset($sessionObj)) {
-    //Instantiate session-object. Has to be global because of included classes!
-    $sessionObj = new cmsSession();
-}
-
-//Instantiate Front editing
-$objFrontendEditing = new frontendEditing();
-$objFrontendEditing->performAction();
-?>

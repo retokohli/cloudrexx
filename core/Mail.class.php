@@ -1,15 +1,18 @@
 <?php
 
 /**
- * OBSOLETE -- See {@see core/Mailtemplate.class.php}
+ * OBSOLETE -- See {@see core/MailTemplate.class.php}
+ *
+ * Note that this partial class is left over for updating to the new
+ * MailTemplate.  We use it to migrate the existing templates ONLY.
  */
 
 require_once ASCMS_CORE_PATH.'/Text.class.php';
 
 /**
- * OBSOLETE -- See {@see core/Mailtemplate.class.php}
+ * OBSOLETE -- See {@see core/MailTemplate.class.php}
  */
-class Mail
+class OBOLETE_Mail
 {
     /**
      * The language ID used when init() was called
@@ -31,7 +34,7 @@ class Mail
      */
     static function reset()
     {
-    	self::$lang_id = false;
+        self::$lang_id = false;
     }
 
 
@@ -65,42 +68,9 @@ class Mail
                 break;
             }
         }
-
-//        $arrSqlName = Text::getSqlSnippets(
-//            '`mail`.`text_name_id`', $lang_id,
-//            MODULE_ID, TEXT_SHOP_MAIL_NAME
-//        );
-//        $arrSqlFrom = Text::getSqlSnippets(
-//            '`mail`.`text_from_id`', $lang_id,
-//            MODULE_ID, TEXT_SHOP_MAIL_FROM
-//        );
-//        $arrSqlSender = Text::getSqlSnippets(
-//            '`mail`.`text_sender_id`', $lang_id,
-//            MODULE_ID, TEXT_SHOP_MAIL_SENDER
-//        );
-//        $arrSqlSubject = Text::getSqlSnippets(
-//            '`mail`.`text_subject_id`', $lang_id,
-//            MODULE_ID, TEXT_SHOP_MAIL_SUBJECT
-//        );
-//        $arrSqlMessage = Text::getSqlSnippets(
-//            '`mail`.`text_message_id`', $lang_id,
-//            MODULE_ID, TEXT_SHOP_MAIL_MESSAGE
-//        );
-
-//        $objResult = $objDatabase->Execute("
-//            SELECT `mail`.`id`, `mail`.`protected`".
-//                   $arrSqlName['field'].$arrSqlFrom['field'].
-//                   $arrSqlSender['field'].$arrSqlSubject['field'].
-//                   $arrSqlMessage['field']."
-//              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_mail` AS `mail`".
-//                   $arrSqlName['join'].$arrSqlFrom['join'].
-//                   $arrSqlSender['join'].$arrSqlSubject['join'].
-//                   $arrSqlMessage['join']
-//        );
         $objResult = $objDatabase->Execute("
             SELECT `mail`.`id`, `mail`.`tplname`, `mail`.`protected`
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_mail` AS `mail`
-        ");
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_mail` AS `mail`");
         if (!$objResult) return false;
         while (!$objResult->EOF) {
             $id = $objResult->fields['id'];
@@ -113,79 +83,15 @@ class Mail
             );
             $objResult->MoveNext();
         }
-       	$objResult = $objDatabase->Execute("
+        $objResult = $objDatabase->Execute("
             SELECT `content`.`tpl_id`,
                    `content`.`from_mail`, `content`.`xsender`,
                    `content`.`subject`, `content`.`message`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_mail_content` AS `content`
-            ORDER BY FIELD(`content`.`lang_id`, $defaultLangId, $lang_id) DESC
-        ");
+            ORDER BY FIELD(`content`.`lang_id`, $defaultLangId, $lang_id) DESC");
         if (!$objResult) return false;
         while (!$objResult->EOF) {
-//            $id = $objResult->fields['id'];
-//            $available = true;
-//            $text_name_id = $objResult->fields[$arrSqlName['name']];
-//            $strName = $objResult->fields[$arrSqlName['text']];
-//            if ($strName === null) {
-//                $available = false;
-//                $objText = Text::getById($text_name_id, 0);
-//                if ($objText) $strName = $objText->getText();
-//            }
-//            $text_from_id = $objResult->fields[$arrSqlFrom['name']];
-//            $strFrom = $objResult->fields[$arrSqlFrom['text']];
-//            if ($strFrom === null) {
-//                $available = false;
-//                $objText = Text::getById($text_from_id, 0);
-//                if ($objText) $strFrom = $objText->getText();
-//            }
-//            $text_sender_id = $objResult->fields[$arrSqlSender['name']];
-//            $strSender = $objResult->fields[$arrSqlSender['text']];
-//            if ($strSender === null) {
-//                $available = false;
-//                $objText = Text::getById($text_sender_id, 0);
-//                if ($objText) $strSender = $objText->getText();
-//            }
-//            $text_subject_id = $objResult->fields[$arrSqlSubject['name']];
-//            $strSubject = $objResult->fields[$arrSqlSubject['text']];
-//            if ($strSubject === null) {
-//                $available = false;
-//                $objText = Text::getById($text_subject_id, 0);
-//                if ($objText) $strSubject = $objText->getText();
-//            }
-//            $text_message_id = $objResult->fields[$arrSqlMessage['name']];
-//            $strMessage = $objResult->fields[$arrSqlMessage['text']];
-//            if ($strMessage === null) {
-//                $available = false;
-//                $objText = Text::getById($text_message_id, 0);
-//                if ($objText) $strMessage = $objText->getText();
-//            }
-//            self::$arrTemplate[$id] = array(
-//                'id' => $id,
-//                'protected' => $objResult->fields['protected'],
-//                'available' => $available,
-//                'text_name_id' => $text_name_id,
-//                'name' => $strName,
-//                'text_from_id' => $text_from_id,
-//                'from' => $strFrom,
-//                'text_sender_id' => $text_sender_id,
-//                'sender' => $strSender,
-//                'text_subject_id' => $text_subject_id,
-//                'subject' => $strSubject,
-//                'text_message_id' => $text_message_id,
-//                'message' => $strMessage,
-//            );
-//            $id = $objResult->fields['id'];
-//            self::$arrTemplate[$id] = array(
-//                'id' => $id,
-//                'protected' => $objResult->fields['protected'],
-//                'available' => true, // post-2.1
-//                'name' => $objResult->fields['tplname'],
-//                'from' => $objResult->fields['from_mail'],
-//                'sender' => $objResult->fields['xsender'],
-//                'subject' => $objResult->fields['subject'],
-//                'message' => $objResult->fields['message'],
-//            );
-        	$id = $objResult->fields['tpl_id'];
+            $id = $objResult->fields['tpl_id'];
             if (!self::$arrTemplate[$id]['available']) {
                 self::$arrTemplate[$id]['available'] = true;
                 self::$arrTemplate[$id]['from'] = $objResult->fields['from_mail'];
@@ -243,7 +149,6 @@ class Mail
             $objMail->CharSet = CONTREXX_CHARSET;
             $objMail->From = preg_replace('/\015\012/', '', $mailFrom);
             $objMail->FromName = preg_replace('/\015\012/', '', $mailSender);
-            //$objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
             $objMail->Subject = $mailSubject;
             $objMail->IsHTML(false);
             $objMail->Body = preg_replace('/\015\012/', "\012", $mailBody);
@@ -268,51 +173,9 @@ class Mail
      */
     static function getTemplate($template_id, $lang_id=0)
     {
-    	if (empty($lang_id)) $lang_id = FRONTEND_LANG_ID;
+        if (empty($lang_id)) $lang_id = FRONTEND_LANG_ID;
         self::init($lang_id);
         return self::$arrTemplate[$template_id];
-    }
-
-
-    /**
-     * Validate the email address
-     *
-     * Does an extensive syntax check to determine whether the string argument
-     * is a real email address.
-     * Note that this doesn't mean that the address is necessarily valid,
-     * but only that it isn't just an arbitrary character sequence.
-     * @todo    Some valid addresses are rejected by this method,
-     * such as *%+@mymail.com.
-     * Valid (atom) characters are: "!#$%&'*+-/=?^_`{|}~" (without the double quotes),
-     * see {@link http://rfc.net/rfc2822.html RFC 2822} for details.
-     * @todo    The rules applied to host names are not correct either, see
-     * {@link http://rfc.net/rfc1738.html RFC 1738} and {@link http://rfc.net/rfc3986.html}.
-     * Excerpt from RFC 1738:
-     * - hostport       = host [ ":" port ]
-     * - host           = hostname | hostnumber
-     * - hostname       = *[ domainlabel "." ] toplabel
-     * - domainlabel    = alphadigit | alphadigit *[ alphadigit | "-" ] alphadigit
-     * - toplabel       = alpha | alpha *[ alphadigit | "-" ] alphadigit
-     * - alphadigit     = alpha | digit
-     * Excerpt from RFC 3986:
-     * "Non-ASCII characters must first be encoded according to UTF-8 [STD63],
-     * and then each octet of the corresponding UTF-8 sequence must be percent-
-     * encoded to be represented as URI characters".
-     * @todo    This doesn't really belong here.  Should be placed into a
-     *          proper core e-mail class as a static method.
-     * @version 1.0
-     * @param   string  $string
-     * @return  boolean
-     */
-    function isValidAddress($string)
-    {
-        if (preg_match(
-            '/^[a-z0-9]+([-_\.a-z0-9]+)*'.  // user
-            '@([a-z0-9]+([-\.a-z0-9]+)*)+'. // domain
-            '\.[a-z]{2,4}$/',               // sld, tld
-            $string
-        )) return true;
-        return false;
     }
 
 
@@ -342,29 +205,14 @@ class Mail
         $template_id = $_GET['delTplId'];
         // Cannot delete protected (system) templates
         if (self::$arrTemplate[$template_id]['protected']) return false;
-// post-2.1
-//        // Delete all Text records
-//        if (!Text::deleteById(self::$arrTemplate[$template_id]['text_name_id'])) return false;
-//        if (!Text::deleteById(self::$arrTemplate[$template_id]['text_from_id'])) return false;
-//        if (!Text::deleteById(self::$arrTemplate[$template_id]['text_sender_id'])) return false;
-//        if (!Text::deleteById(self::$arrTemplate[$template_id]['text_subject_id'])) return false;
-//        if (!Text::deleteById(self::$arrTemplate[$template_id]['text_message_id'])) return false;
-//        $objResult = $objDatabase->Execute("
-//            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_mail
-//             WHERE id=$template_id
-//        ");
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_mail
-             WHERE id=$template_id
-        ");
+             WHERE id=$template_id");
         if (!$objResult) return false;
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content
-             WHERE tpl_id=$template_id
-        ");
+             WHERE tpl_id=$template_id");
         if (!$objResult) return false;
-// post-2.1
-//        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_mail");
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_mail");
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content");
         return true;
@@ -383,56 +231,20 @@ class Mail
         // hasn't been marked
         $template_id =
             (empty($_POST['shopMailSaveNew']) && !empty($_POST['tplId'])
-                ? $_POST['tplId'] : 0
-            );
-// pre-2.1
+                ? $_POST['tplId'] : 0);
         if (empty($_POST['langId'])) return '';
         $lang_id = $_POST['langId'];
         self::init($lang_id);
-
-//        $text_name_id = 0;
-//        $text_from_id = 0;
-//        $text_sender_id = 0;
-//        $text_subject_id = 0;
-//        $text_message_id = 0;
         if ($template_id) {
             $arrTemplate = self::$arrTemplate[$template_id];
-            if ($arrTemplate) {
-//                $text_name_id = $arrTemplate['text_name_id'];
-//                $text_from_id = $arrTemplate['text_from_id'];
-//                $text_sender_id = $arrTemplate['text_sender_id'];
-//                $text_subject_id = $arrTemplate['text_subject_id'];
-//                $text_message_id = $arrTemplate['text_message_id'];
-            } else {
+            if (!$arrTemplate) {
                 // Template not found.  Clear the ID.
                 $template_id = 0;
             }
         }
-// Note: Text::replace() now returns the ID, not the object!
-//        $objTextName = Text::replace(
-//            $text_name_id, FRONTEND_LANG_ID, $_POST['shopMailTemplate'],
-//            MODULE_ID, TEXT_SHOP_MAIL_NAME
-//        );
-//        $objTextFrom = Text::replace(
-//            $text_from_id, FRONTEND_LANG_ID, $_POST['shopMailFromAddress'],
-//            MODULE_ID, TEXT_SHOP_MAIL_FROM
-//        );
-//        $objTextSender = Text::replace(
-//            $text_sender_id, FRONTEND_LANG_ID, $_POST['shopMailFromName'],
-//            MODULE_ID, TEXT_SHOP_MAIL_SENDER
-//        );
-//        $objTextSubject = Text::replace(
-//            $text_subject_id, FRONTEND_LANG_ID, $_POST['shopMailSubject'],
-//            MODULE_ID, TEXT_SHOP_MAIL_SUBJECT
-//        );
-//        $objTextMessage = Text::replace(
-//            $text_message_id, FRONTEND_LANG_ID, $_POST['shopMailBody'],
-//            MODULE_ID, TEXT_SHOP_MAIL_MESSAGE
-//        );
         // If the template ID is known, update.
         // Note that the protected flag is not changed.
         // For newly inserted templates, the protected flag is always 0 (zero).
-// post 2.1 -> REMOVE
         $query =
             (   $template_id
              && isset(self::$arrTemplate[$template_id])
@@ -445,7 +257,7 @@ class Mail
                     0,
                     '".contrexx_addslashes($_POST['shopMailTemplate'])."'
                 )"
-         );
+        );
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         if (empty($template_id))
@@ -453,27 +265,6 @@ class Mail
         $query =
             (   $template_id
              && self::$arrTemplate[$template_id]['available']
-// post 2.1
-//          ? "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_mail
-//                SET `text_name_id`=".$objTextName->getId().",
-//                    `text_from_id`=".$objTextFrom->getId().",
-//                    `text_sender_id`=".$objTextSender->getId().",
-//                    `text_subject_id`=".$objTextSubject->getId().",
-//                    `text_message_id`=".$objTextMessage->getId()."
-//                WHERE `id`=$template_id"
-//             : "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_mail (
-//                `protected`,
-//                `text_name_id`,
-//                `text_from_id`, `text_sender_id`,
-//                `text_subject_id`, `text_message_id`
-//            ) VALUES (
-//                0, ".
-//                $objTextName->getId().", ".
-//                $objTextFrom->getId().", ".
-//                $objTextSender->getId().", ".
-//                $objTextSubject->getId().", ".
-//                $objTextMessage->getId()."
-//            )"
             ? "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content
                   SET `from_mail`='".contrexx_addslashes($_POST['shopMailFromAddress'])."',
                       `xsender`='".contrexx_addslashes($_POST['shopMailFromName'])."',
@@ -499,5 +290,3 @@ class Mail
     }
 
 }
-
-?>

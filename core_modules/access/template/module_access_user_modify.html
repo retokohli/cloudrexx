@@ -29,6 +29,7 @@
 <!-- BEGIN access_profile_group_assignment --><li><a id="userTab_modifyUser2" href="javascript:void(0);" onclick="selectTab('modifyUser2')" title="{TXT_ACCESS_USER_GROUP_S}">{TXT_ACCESS_USER_GROUP_S}</a></li><!-- END access_profile_group_assignment -->
 <li><a id="userTab_modifyUser3" href="javascript:void(0);" onclick="selectTab('modifyUser3')" title="{TXT_ACCESS_PROFILE}">{TXT_ACCESS_PROFILE}</a></li>
 <!-- BEGIN access_additional_functions_tab --><li><a id="userTab_modifyUser4" href="javascript:void(0);" onclick="selectTab('modifyUser4')" title="{TXT_ACCESS_ADDITIONAL_FUNCTIONS}">{TXT_ACCESS_ADDITIONAL_FUNCTIONS}</a></li><!-- END access_additional_functions_tab -->
+<li><a id="userTab_modifyUser5" href="javascript: void(0);" onclick="selectTab('modifyUser5')" title="{TXT_ACCESS_NEWSLETTER_LISTS}">{TXT_ACCESS_NEWSLETTER_LISTS}</a></li>
 </ul>
 
 <form action="index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id={ACCESS_USER_ID}" onsubmit="accessAssociatedGroups=document.getElementById('access_user_associated_groups');if(accessAssociatedGroups !== null){accessSelectAllGroups(accessAssociatedGroups);}" method="post" enctype="multipart/form-data" id="access">
@@ -133,6 +134,10 @@
 					<a href="javascript:void(0);" onclick="accessDeselectAllGroups(document.getElementById('access_user_associated_groups'))" title="{TXT_ACCESS_UNCHECK_ALL}" style="color:blue;">{TXT_ACCESS_UNCHECK_ALL}</a>
 				</td>
 			</tr>
+            <tr class="row2">
+                <td>{TXT_ACCESS_PRIMARY_GROUP}</td>
+                <td colspan="2">{ACCESS_USER_PRIMARY_GROUP_MENU}</td>
+            </tr>
 		</tbody>
 	</table>
 	<br />
@@ -178,6 +183,36 @@
 	<br />
 </div>
 <!-- end modifyUser4 div -->
+
+<!-- start modifyUser5 div -->
+<div id="modifyUser5" class="userTab" style="display:none">
+    <table cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" >
+        <thead>
+            <tr>
+                <th colspan="2">{TXT_ACCESS_NEWSLETTER_LISTS}</th>
+            </tr>
+            <!-- BEGIN newsletter_lists -->
+            <!-- BEGIN newsletter_list -->
+            <tr class="row{ACCESS_NEWSLETTER_ROW_CLASS}">
+                <td style="width: 15px">
+                    <input type="checkbox" value="{ACCESS_NEWSLETTER_ID}" {ACCESS_NEWSLETTER_SELECTED}
+                           id="access_user_newsletters-{ACCESS_NEWSLETTER_ID}"
+                           name="access_user_newsletters[]" />
+                </td>
+                <td>
+                    <label for="access_user_newsletters-{ACCESS_NEWSLETTER_ID}">
+                        {ACCESS_NEWSLETTER_NAME}
+                    </label>
+                </td>
+            </tr>
+            <!-- END newsletter_list -->
+            <!-- END newsletter_lists -->
+        </thead>
+    </table>
+    <br />
+</div>
+<!-- end modifyUser5 div -->
+
 <input type="button" value="{TXT_ACCESS_CANCEL}" name="access_cancel" onclick="window.location.href='index.php?cmd=access&{CSRF_PARAM}&amp;act=user'" />
 <input type="submit" value="{TXT_ACCESS_SAVE}" name="access_save_user" />
 </form>

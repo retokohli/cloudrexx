@@ -10,9 +10,9 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-// From version 3.0.0 only
-//require_once ASCMS_CORE_PATH.'/Message.class.php';
+require_once ASCMS_CORE_PATH.'/Message.class.php';
 require_once ASCMS_CORE_PATH.'/Html.class.php';
+//require_once ASCMS_LIBRARY_PATH.'/DBG.php';
 
 /**
  * Manages settings stored in the database
@@ -64,12 +64,12 @@ class SettingDb
      * The array of currently loaded settings settings, like
      *  array(
      *    'name' => array(
-     *      'module_id' => module ID,
-     *      'key'       => key,
-     *      'value'     => current value,
-     *      'type'      => element type (text, dropdown, ... [more to come]),
-     *      'values'    => predefined values (for dropdown),
-     *      'ord'       => ordinal number (for sorting),
+     *      'section' => section,
+     *      'group' => group,
+     *      'value' => current value,
+     *      'type' => element type (text, dropdown, ... [more to come]),
+     *      'values' => predefined values (for dropdown),
+     *      'ord' => ordinal number (for sorting),
      *    ),
      *    ... more ...
      *  );
@@ -80,25 +80,25 @@ class SettingDb
     private static $arrSettings = null;
 
     /**
-     * The key last used to {@see init()} the settings.
+     * The group last used to {@see init()} the settings.
      * Defaults to null (ignored).
      * @var     string
      * @static
      * @access  private
      */
-    private static $key = null;
+    private static $group = null;
 
     /**
-     * The module ID last used to {@see init()} the settings.
+     * The section last used to {@see init()} the settings.
      * Defaults to null (which will cause an error in most methods).
-     * @var     integer
+     * @var     string
      * @static
      * @access  private
      */
-    private static $module_id = null;
+    private static $section = null;
 
     /**
-     * Changes flag
+     * Changed flag
      *
      * This flag is set to true as soon as any change to the settings is detected.
      * It is cleared whenever {@see updateAll()} is called.
@@ -106,7 +106,18 @@ class SettingDb
      * @static
      * @access  private
      */
-    private static $flagChanged = false;
+    private static $changed = false;
+    /**
+     * Returns the current value of the changed flag.
+     *
+     * If it returns true, you probably want to call {@see updateAll()}.
+     * @return  boolean           True if values have been changed in memory,
+     *                            false otherwise
+     */
+    static function changed()
+    {
+        return self::$changed;
+    }
 
     /**
      * Tab counter for the {@see show()} and {@see show_external()}
@@ -117,66 +128,66 @@ class SettingDb
 
 
     /**
-     * Returns the current value of the tab index
+     * Optionally sets and returns the value of the tab index
+     * @param   integer             The optional new tab index
      * @return  integer             The current tab index
      */
-    static function getTabIndex()
+    static function tab_index($tab_index=null)
     {
+        if (isset($tab_index)) {
+            self::$tab_index = intval($tab_index);
+        }
         return self::$tab_index;
     }
 
 
     /**
      * Initialize the settings entries from the database with key/value pairs
-     * for the current module ID and the given key
+     * for the current section and the given group
      *
-     * An empty $key value is ignored.  All records with the module ID
-     * (taken from the global MODULE_ID constant if missing) are included in
-     * this case.
-     * Note that the setting name *SHOULD* be unambiguous whether $key is
-     * empty or not.  If there are two settings with the same name but different
-     * $key values, the second one will overwrite the first!
+     * An empty $group value is ignored.  All records with the section are
+     * included in this case.
+     * Note that all setting names *SHOULD* be unambiguous for the entire
+     * section.  If there are two settings with the same name but different
+     * $group values, the second one may overwrite the first!
      * @internal  The records are ordered by
-     *            `key` ASC, `ord` ASC, `name` ASC
-     * @param   string    $key        The key, or an empty value.
-     *                                Defaults to the empty string
-     * @param   integer   $module_id  The optional module ID.  *MUST* be set
-     *                                unless the global MODULE_ID is defined.
-     *                                Defaults to null.
+     *            `group` ASC, `ord` ASC, `name` ASC
+     * @param   string    $section    The section
+     * @param   string    $group      The optional group.
+     *                                Defaults to null
      * @return  boolean               True on success, false otherwise
+     * @global  ADOConnection   $objDatabase
      */
-    static function init($key='', $module_id=null)
+    static function init($section, $group=null)
     {
         global $objDatabase;
 
-        if (empty($module_id)) {
-            if (!defined('MODULE_ID')) {
-                return false;
-            }
-            $module_id = MODULE_ID;
+        if (empty($section)) {
+die("SettingDb::init($section, $group): ERROR: Missing \$section parameter!");
+//                return false;
         }
-        self::$module_id = $module_id;
         self::flush();
-//echo("SettingDb::init($key): Entered<br />");
+//echo("SettingDb::init($section, $group): Entered<br />");
         $objResult = $objDatabase->Execute("
-            SELECT `name`, `key`, `value`,
+            SELECT `name`, `group`, `value`,
                    `type`, `values`, `ord`
               FROM ".DBPREFIX."core_setting
-             WHERE `module_id`=".$module_id.
-             ($key ? " AND `key`='".addslashes($key)."'" : '')."
-             ORDER BY `key` ASC, `ord` ASC, `name` ASC");
+             WHERE `section`='".addslashes($section)."'".
+             ($group ? " AND `group`='".addslashes($group)."'" : '')."
+             ORDER BY `group` ASC, `ord` ASC, `name` ASC");
         if (!$objResult) return self::errorHandler();
-        // Set the current key to the empty string if empty
-        self::$key = ($key ? $key : '');
+        // Set the current group to the empty string if empty
+        self::$section = $section;
+        self::$group = $group;
         self::$arrSettings = array();
         while (!$objResult->EOF) {
             self::$arrSettings[$objResult->fields['name']] = array(
-                'module_id' => $module_id,
-                'key'       => $objResult->fields['key'],
-                'value'     => $objResult->fields['value'],
-                'type'      => $objResult->fields['type'],
-                'values'    => $objResult->fields['values'],
-                'ord'       => $objResult->fields['ord'],
+                'section' => $section,
+                'group' => $objResult->fields['group'],
+                'value' => $objResult->fields['value'],
+                'type' => $objResult->fields['type'],
+                'values' => $objResult->fields['values'],
+                'ord' => $objResult->fields['ord'],
             );
 //echo("Setting ".$objResult->fields['name']." = ".$objResult->fields['value']."<br />");
             $objResult->MoveNext();
@@ -189,44 +200,35 @@ class SettingDb
      * Flush the stored settings
      *
      * Resets the class to its initial state.
-     * Does *NOT* clear the module ID, however.
+     * Does *NOT* clear the section, however.
      * @return  void
      */
     static function flush()
     {
         self::$arrSettings = null;
-        self::$key         = null;
-        self::$flagChanged = null;
+        self::$section = null;
+        self::$group = null;
+        self::$changed = null;
     }
 
 
     /**
-     * Returns true if changes have been made to the current settings
-     * @return  boolean         True if changes have been made,
-     *                          false otherwise
-     */
-    static function hasChanged()
-    {
-        return self::$flagChanged;
-    }
-
-
-    /**
-     * Returns the settings array for the current module ID and the
-     * given key
+     * Returns the settings array for the given section and group
      *
      * See {@see init()} on how the arguments are used.
-     * If the method is called successively using the same $key argument,
+     * If the method is called successively using the same $group argument,
      * the current settings are returned without calling {@see init()}.
      * Thus, changes made by calling {@see set()} will be preserved.
-     * @param   string    $key        The optional key
+     * @param   string    $section    The section
+     * @param   string    $group        The optional group
      * @return  array                 The settings array on success,
      *                                false otherwise
      */
-    static function getArray($key='')
+    static function getArray($section, $group=null)
     {
-        if (self::$key !== $key) {
-            if (!self::init($key)) return false;
+        if (self::$section !== $section
+         || self::$group !== $group) {
+            if (!self::init($section, $group)) return false;
         }
         return self::$arrSettings;
     }
@@ -252,7 +254,7 @@ DBG::log("SettingDb::getValue($name): ERROR: no settings loaded");
         if (isset(self::$arrSettings[$name]['value'])) {
             return self::$arrSettings[$name]['value'];
         };
-DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current key ".var_export(self::$key, true).")");
+DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current group ".var_export(self::$group, true).")");
         return null;
     }
 
@@ -261,25 +263,28 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
      * Updates a setting
      *
      * If the setting name exists and the new value is not equal to
-     * the old one, it is updated, and $flagChanged set to true.
+     * the old one, it is updated, and $changed set to true.
      * Otherwise, nothing happens, and false is returned
      * @see init(), updateAll()
      * @param   string    $name       The settings name
      * @param   string    $value      The settings value
      * @return  boolean               True if the value has been changed,
-     *                                false otherwise
+     *                                false otherwise, null on noop
      */
     static function set($name, $value)
     {
-        if (   isset(self::$arrSettings[$name])
-            && self::$arrSettings[$name]['value'] != $value) {
-//echo("SettingDb::set($name, $value): Added/updated<br />");
-            self::$flagChanged = true;
-            self::$arrSettings[$name]['value'] = $value;
-            return true;
+        if (!isset(self::$arrSettings[$name])) {
+//DBG::log("SettingDb::set($name, $value): Unknown, changed: ".self::$changed."<br />");
+            return false;
         }
-//echo("SettingDb::set($name, $value): No change, leaving<br />");
-        return false;
+        if (self::$arrSettings[$name]['value'] == $value) {
+//DBG::log("SettingDb::set($name, $value): Identical, changed: ".self::$changed."<br />");
+            return null;
+        }
+        self::$changed = true;
+        self::$arrSettings[$name]['value'] = $value;
+//DBG::log("SettingDb::set($name, $value): Added/updated, changed: ".self::$changed."<br />");
+        return true;
     }
 
 
@@ -288,26 +293,35 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
      * array variable
      *
      * Returns boolean true if all records were stored successfully,
-     * false otherwise.
-     * Upon success, also resets the $flagChanged class variable to false.
+     * null if nothing changed (noop), false otherwise.
+     * Upon success, also resets the $changed class variable to false.
      * The class *MUST* have been initialized before calling this
      * method using {@see init()}, and the new values been {@see set()}.
      * Note that this method does not work for adding new settings.
      * See {@see add()} on how to do this.
-     * @return  boolean                   True on success, false otherwise
+     * @return  boolean                   True on success, null on noop,
+     *                                    false otherwise
      */
     static function updateAll()
     {
-        if (!self::$flagChanged) return '';
+//        global $_CORELANG;
 
+        if (!self::$changed) {
+// TODO: These messages are inapropriate when settings are stored by another piece of code, too.
+// Find a way around this.
+//            Message::information($_CORELANG['TXT_CORE_SETTINGDB_INFORMATION_NO_CHANGE']);
+            return null;
+        }
         $success = true;
         foreach (self::$arrSettings as $name => $arrSetting) {
             $success &= self::update($name, $arrSetting['value']);
         }
         if ($success) {
-            self::$flagChanged = false;
+            self::$changed = false;
+//            return Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
             return true;
         }
+//        return Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING']);
         return false;
     }
 
@@ -317,10 +331,11 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
      *
      * The class *MUST* have been initialized before calling this
      * method using {@see init()}, and the new value been {@see set()}.
-     * Sets $flagChanged to true and returns true if the value has been
+     * Sets $changed to true and returns true if the value has been
      * updated successfully.
      * Note that this method does not work for adding new settings.
      * See {@see add()} on how to do this.
+     * Also note that the loaded setting is not updated, only the database!
      * @param   string    $name   The settings name
      * @return  boolean           True on successful update or if
      *                            unchanged, false on failure
@@ -331,29 +346,30 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
     {
         global $objDatabase;
 
-        if (empty(self::$module_id)) {
-// TODO: Error message
+// TODO: Add error messages for individual errors
+        if (empty(self::$section)) {
+DBG::log("SettingDb::update(): ERROR: Empty section!");
             return false;
         }
         // Fail if the name is invalid
-        // or the setting does not exist already
-// TODO: Add error messages for individual errors
+        // or the setting does not exist
         if (empty($name)) {
-//echo("Empty setting name: $name<br />");
+DBG::log("SettingDb::update(): ERROR: Empty name!");
             return false;
         }
         if (!isset(self::$arrSettings[$name])) {
-//echo("Unknown setting: $name<br />");
+DBG::log("SettingDb::update(): ERROR: Unknown setting name '$name'!");
             return false;
         }
         $objResult = $objDatabase->Execute("
             UPDATE `".DBPREFIX."core_setting`
                SET `value`='".addslashes(self::$arrSettings[$name]['value'])."'
              WHERE `name`='".addslashes($name)."'
-               AND `module_id`=".self::$module_id.
-             (self::$key ? " AND `key`='".addslashes(self::$key)."'" : ''));
+               AND `section`='".addslashes(self::$section)."'".
+            (self::$group
+                ? " AND `group`='".addslashes(self::$group)."'" : ''));
         if (!$objResult) return self::errorHandler();
-        self::$flagChanged = true;
+        self::$changed = true;
         return true;
     }
 
@@ -363,8 +379,8 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
      *
      * The class *MUST* have been initialized by calling {@see init()}
      * or {@see getArray()} before this method is called.
-     * The present $key stored in the class is used as a default.
-     * If the current class $key is empty, it *MUST* be specified in the call.
+     * The present $group stored in the class is used as a default.
+     * If the current class $group is empty, it *MUST* be specified in the call.
      * @param   string    $name     The setting name
      * @param   string    $value    The value
      * @param   integer   $ord      The ordinal value for sorting,
@@ -373,30 +389,36 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
      *                              defaults to 'text'
      * @param   string    $values   The values for type 'dropdown',
      *                              defaults to the empty string
-     * @param   string    $key      The optional key
+     * @param   string    $group      The optional group
      * @return  boolean             True on success, false otherwise
      */
     static function add(
-        $name, $value, $ord=false, $type='text', $values='', $key=null)
+        $name, $value, $ord=false, $type='text', $values='', $group=null)
     {
         global $objDatabase;
 
-        if (empty(self::$module_id)) {
+        if (!isset(self::$section)) {
 // TODO: Error message
+DBG::log("SettingDb::add(): ERROR: Empty section!");
             return false;
         }
         // Fail if the name is invalid
-        if (empty($name)) return false;
-
-        // This can only be done with a non-empty key!
-        // Use the current key, if present, otherwise fail
-        if (!$key) {
-            if (!self::$key) return false;
-            $key = self::$key;
+        if (empty($name)) {
+DBG::log("SettingDb::add(): ERROR: Empty name!");
+            return false;
+        }
+        // This can only be done with a non-empty group!
+        // Use the current group, if present, otherwise fail
+        if (!$group) {
+            if (!self::$group) {
+DBG::log("SettingDb::add(): ERROR: Empty group!");
+                return false;
+            }
+            $group = self::$group;
         }
         // Initialize if necessary
-        if (is_null(self::$arrSettings) || self::$key != $key)
-            self::init($key);
+        if (is_null(self::$arrSettings) || self::$group != $group)
+            self::init(self::$section, $group);
 
         // Such an entry exists already, fail.
         // Note that getValue() returns null if the entry is not present
@@ -404,25 +426,24 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
         if (isset($old_value)) return false;
 
         // Not present, insert it
-        $objResult = $objDatabase->Execute("
+        $query = "
             INSERT INTO `".DBPREFIX."core_setting` (
-                `name`,
-                `module_id`,
-                `key`,
-                `value`,
-                `type`,
-                `values`,
-                `ord`
+                `section`, `group`, `name`, `value`,
+                `type`, `values`, `ord`
             ) VALUES (
+                '".addslashes(self::$section)."',
+                '".addslashes($group)."',
                 '".addslashes($name)."',
-                ".self::$module_id.",
-                '".addslashes($key)."',
                 '".addslashes($value)."',
                 '".addslashes($type)."',
                 '".addslashes($values)."',
                 ".intval($ord)."
-            )");
-        if (!$objResult) return self::errorHandler();
+            )";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+DBG::log("SettingDb::add(): ERROR: Query failed: $query");
+            return false;
+        }
         return true;
     }
 
@@ -437,21 +458,21 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
      * Does {@see flush()} the currently loaded settings on success.
      * @param   string    $name     The optional setting name.
      *                              Defaults to null
-     * @param   string    $key      The optional key.
+     * @param   string    $group      The optional group.
      *                              Defaults to null
      * @return  boolean             True on success, false otherwise
      */
-    static function delete($name=null, $key=null)
+    static function delete($name=null, $group=null)
     {
         global $objDatabase;
 
         // Fail if both parameter values are empty
-        if (empty($name) && empty($key)) return false;
+        if (empty($name) && empty($group)) return false;
         $objResult = $objDatabase->Execute("
             DELETE FROM `".DBPREFIX."core_setting`
              WHERE 1".
             ($name ? " AND `name`='".addslashes($name)."'" : '').
-            ($key  ? " AND `key`='".addslashes($key)."'"   : ''));
+            ($group  ? " AND `group`='".addslashes($group)."'"   : ''));
         if (!$objResult) return self::errorHandler();
         self::flush();
         return true;
@@ -496,7 +517,7 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
      * {@see SettingDb::store()}.
      * @param   HTML_Template_Sigma $objTemplateLocal   Template object
      * @param   string              $uriBase      The base URI for the module.
-     * @param   string              $section      The optional section header
+     * @param   string              $header       The optional section header
      *                                            text to add
      * @param   string              $tab_name     The optional tab name to add
      * @param   string              $prefix       The optional prefix for
@@ -509,7 +530,7 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
      *          that store them, like add(), update(), and updateAll()
      */
     static function show(
-        &$objTemplateLocal, $uriBase, $section='', $tab_name='', $prefix='TXT_'
+        &$objTemplateLocal, $uriBase, $header='', $tab_name='', $prefix='TXT_'
     ) {
         global $_CORELANG, $_ARRAYLANG;
 
@@ -527,22 +548,19 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
             'URI_BASE' => $uriBase,
         ));
 
+        if ($objTemplateLocal->blockExists('core_settingdb_row'))
+            $objTemplateLocal->setCurrentBlock('core_settingdb_row');
 //echo("SettingDb::show(objTemplateLocal, $prefix): got Array: ".var_export(self::$arrSettings, true)."<br />");
         if (!is_array(self::$arrSettings)) {
-// TODO: Error message
-//            Message::add($_CORELANG['TXT_CORE_SETTINGDB_ERROR_RETRIEVING'],
-//                Message::MSG_CLASS_ERROR);
 //die("No Settings array");
-            return false;
+            return Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_RETRIEVING']);
         }
         if (empty(self::$arrSettings)) {
-// TODO: Error message
-//            Message::add(
-//                sprintf(
-//                    $_CORELANG['TXT_CORE_SETTINGDB_WARNING_NONE_FOUND_FOR_TAB_AND_SECTION'],
-//                    $tab_name, $section),
-//                Message::MSG_CLASS_WARN);
 //die("No Settings found");
+            Message::warning(
+                sprintf(
+                    $_CORELANG['TXT_CORE_SETTINGDB_WARNING_NONE_FOUND_FOR_TAB_AND_SECTION'],
+                    $tab_name, $header));
             return false;
         }
         self::show_section($objTemplateLocal, $section, $prefix);
@@ -553,9 +571,9 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
         if (!empty($tab_name)) {
             $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
             $objTemplateLocal->setGlobalVariable(array(
-                'CORE_SETTINGDB_TAB_NAME'    => $tab_name,
-//                'CORE_SETTINGDB_TAB_INDEX'   => self::$tab_index,
-                'CORE_SETTINGDB_TAB_CLASS'   => (self::$tab_index == $active_tab ? 'active' : ''),
+                'CORE_SETTINGDB_TAB_NAME' => $tab_name,
+//                'CORE_SETTINGDB_TAB_INDEX' => self::$tab_index,
+                'CORE_SETTINGDB_TAB_CLASS' => (self::$tab_index == $active_tab ? 'active' : ''),
                 'CORE_SETTINGDB_TAB_DISPLAY' => (self::$tab_index++ == $active_tab ? 'block' : 'none'),
             ));
             $objTemplateLocal->touchBlock('core_settingdb_tab_row');
@@ -589,7 +607,7 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
     {
         global $_ARRAYLANG;
 
-        self::verify_template(&$objTemplateLocal);
+        self::verify_template($objTemplateLocal);
         // This is set to multipart if necessary
         $enctype = '';
         $i = 0;
@@ -604,22 +622,19 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
             // Not implemented yet:
             // Warn if some mandatory value is empty
             if (empty($value) && preg_match('/_mandatory$/', $type)) {
-// TODO: Error message
-//                Message::add(
-//                    sprintf($_CORELANG['TXT_CORE_SETTINGDB_WARNING_EMPTY'],
-//                        $_ARRAYLANG[$prefix.strtoupper($name)],
-//                        $name),
-//                    Message::MSG_CLASS_WARN);
+                Message::warning(
+                    sprintf($_CORELANG['TXT_CORE_SETTINGDB_WARNING_EMPTY'],
+                        $_ARRAYLANG[$prefix.strtoupper($name)],
+                        $name));
             }
             // Warn if some language variable is not defined
             if (empty($_ARRAYLANG[$prefix.strtoupper($name)])) {
-// TODO: Error message
-//                Message::add(
-//                    sprintf($_CORELANG['TXT_CORE_SETTINGDB_WARNING_MISSING_LANGUAGE'],
-//                        $prefix.strtoupper($name),
-//                        $name),
-//                    Message::MSG_CLASS_WARN);
+                Message::warning(
+                    sprintf($_CORELANG['TXT_CORE_SETTINGDB_WARNING_MISSING_LANGUAGE'],
+                        $prefix.strtoupper($name),
+                        $name));
             }
+
 //DBG::log("Value: $value -> align $value_align");
             switch ($type) {
               // Dropdown menu
@@ -655,12 +670,12 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
                 // claim the full width
                 $element = get_wysiwyg_editor($name, $value);
                 $objTemplateLocal->setVariable(array(
-                    'CORE_SETTINGDB_ROW'       => $_ARRAYLANG[$prefix.strtoupper($name)],
+                    'CORE_SETTINGDB_ROW' => $_ARRAYLANG[$prefix.strtoupper($name)],
                     'CORE_SETTINGDB_ROWCLASS1' => (++$i % 2 ? '1' : '2'),
                 ));
                 $objTemplateLocal->parseCurrentBlock();
                 $objTemplateLocal->setVariable(array(
-                    'CORE_SETTINGDB_ROW'       => $element.'<br /><br />',
+                    'CORE_SETTINGDB_ROW' => $element.'<br /><br />',
                     'CORE_SETTINGDB_ROWCLASS1' => (++$i % 2 ? '1' : '2'),
                 ));
                 $objTemplateLocal->parseCurrentBlock();
@@ -726,7 +741,6 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
                 break;
               case self::TYPE_CHECKBOXGROUP:
                 $checked = self::splitValues($value);
-//DBG::log("Values: ".var_export($values, true).", checked: ".var_export($checked, true)."<br />");
                 $element =
                     Html::getCheckboxGroup($name, $values, $values, $checked,
                         '', '', '<br />', '', '');
@@ -749,27 +763,26 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
             }
 
             $objTemplateLocal->setVariable(array(
-                'CORE_SETTINGDB_NAME'      => $_ARRAYLANG[$prefix.strtoupper($name)],
-                'CORE_SETTINGDB_VALUE'     => $element,
+                'CORE_SETTINGDB_NAME' => $_ARRAYLANG[$prefix.strtoupper($name)],
+                'CORE_SETTINGDB_VALUE' => $element,
                 'CORE_SETTINGDB_ROWCLASS2' => (++$i % 2 ? '1' : '2'),
             ));
             $objTemplateLocal->parseCurrentBlock();
-//echo("SettingDb::show_section(objTemplateLocal, $prefix): shown $name => $value<br />");
+//echo("SettingDb::show(objTemplateLocal, $prefix): shown $name => $value<br />");
         }
 
         // Set form encoding to multipart if necessary
         if (!empty($enctype))
             $objTemplateLocal->setVariable('CORE_SETTINGDB_ENCTYPE', $enctype);
 
-        if (   !empty($section)
+        if (   !empty($header)
             && $objTemplateLocal->blockExists('core_settingdb_section')) {
-//echo("SettingDb::show_section(objTemplateLocal, $section, $prefix): creating section $section<br />");
+//echo("SettingDb::show(objTemplateLocal, $header, $prefix): creating section $header<br />");
             $objTemplateLocal->setVariable(array(
-                'CORE_SETTINGDB_SECTION' => $section,
+                'CORE_SETTINGDB_SECTION' => $header,
             ));
             $objTemplateLocal->parse('core_settingdb_section');
         }
-//DBG::log("SettingDb::show_section(): Made sections:<hr />".$objTemplateLocal->get('core_settingdb_sections')."<hr />");
         return true;
     }
 
@@ -783,6 +796,7 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
      * @param   HTML_Template_Sigma $objTemplateLocal   Template object
      * @param   string              $tab_name           The tab name to add
      * @param   string              $content            The external content
+     * @return  boolean                                 True on success
      */
     static function show_external(
         &$objTemplateLocal, $tab_name, $content
@@ -808,9 +822,9 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
         // Set up the tab, if any
         if (!empty($tab_name)) {
             $objTemplateLocal->setGlobalVariable(array(
-                'CORE_SETTINGDB_TAB_NAME'    => $tab_name,
-//                'CORE_SETTINGDB_TAB_INDEX'   => self::$tab_index,
-                'CORE_SETTINGDB_TAB_CLASS'   => (self::$tab_index == $active_tab ? 'active' : ''),
+                'CORE_SETTINGDB_TAB_NAME' => $tab_name,
+//                'CORE_SETTINGDB_TAB_INDEX' => self::$tab_index,
+                'CORE_SETTINGDB_TAB_CLASS' => (self::$tab_index == $active_tab ? 'active' : ''),
                 'CORE_SETTINGDB_TAB_DISPLAY' => (self::$tab_index++ == $active_tab ? 'block' : 'none'),
             ));
             $objTemplateLocal->touchBlock('core_settingdb_tab_row');
@@ -851,10 +865,9 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
      *
      * Note that you *MUST* call {@see init()} beforehand, or your settings
      * will be unknown and thus not be stored.
-     * @todo    Set up error messages on various problems and on failure.
-     * @return  boolean                         True on success, the empty
-     *                                          string if none was changed,
-     *                                          or false on failure
+     * Sets up an error message on failure.
+     * @return  boolean                 True on success, null on noop,
+     *                                  or false on failure
      */
     static function storeFromPost()
     {
@@ -862,11 +875,11 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
 
 //echo("SettingDb::storeFromPost(): POST:<br />".nl2br(htmlentities(var_export($_POST, true)))."<hr />");
 //echo("SettingDb::storeFromPost(): FILES:<br />".nl2br(htmlentities(var_export($_FILES, true)))."<hr />");
-        // There may be several tabs for different keys being edited, so
+        // There may be several tabs for different groups being edited, so
         // load the full set of settings for the module.
         // Note that this is why setting names should be unique.
 // TODO: You *MUST* call this yourself *before* in order to
-// properly initialize the module ID!
+// properly initialize the section!
 //        self::init();
         unset($_POST['bsubmit']);
         $result = true;
@@ -877,17 +890,6 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
                 : null);
 //            if (preg_match('/^'.preg_quote(CSRF::key(), '/').'$/', $name))
 //                continue;
-            if (empty(self::$arrSettings[$name])) {
-                if (!$ignore_unknown) {
-// TODO: Error message
-//                Message::add(sprintf(
-//                    $_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING_UNKNOWN_SETTING'],
-//                    $name), Message::MSG_CLASS_WARN);
-// Ignore unknown settings for the time being
-//                $result = false;
-                }
-                continue;
-            }
             switch (self::$arrSettings[$name]['type']) {
               case self::TYPE_FILEUPLOAD:
                 // An empty folder path has been posted, indicating that the
@@ -900,9 +902,7 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
                             $value = '';
                         } else {
 //echo("Failed to delete file<br />");
-// TODO: Error message
-//                            Message::add(File::getErrorString(),
-//                                Message::MSG_CLASS_ERROR);
+                            Message::error(File::getErrorString());
                             $result = false;
                         }
                     }
@@ -921,13 +921,14 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
                         self::$arrSettings[$name]['values']
                     );
                     // If no file has been uploaded at all, ignore the no-change
-                    if ($result_upload === '') continue;
+// TODO: Noop is not implemented in File::upload_file_http()
+//                    if ($result_upload === '') continue;
                     if ($result_upload === true) {
                         $value = $target_path;
                     } else {
 //echo("SettingDb::storeFromPost(): Error uploading file for setting $name to $target_path<br />");
 // TODO: Add error message
-//                        Message::add(File::getErrorString(), Message::MSG_CLASS_ERROR);
+                        Message::error(File::getErrorString());
                         $result = false;
                     }
                 }
@@ -947,12 +948,9 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
 //echo("SettingDb::storeFromPost(): So far, the result is ".($result ? 'okay' : 'no good')."<br />");
         $result_update = self::updateAll();
         if ($result_update === false) {
-// TODO: Error message
-//            Message::add($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING'],
-//                Message::MSG_CLASS_ERROR);
+            Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING']);
         } elseif ($result_update === true) {
-// TODO: Error message
-//            Message::add($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
+            Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
         }
         // If nothing bad happened above, return the result of updateAll(),
         // which may be true, false, or the empty string
@@ -965,23 +963,23 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current ke
 
 
     /**
-     * Deletes all entries for the current module
+     * Deletes all entries for the current section
      *
      * This is for testing purposes only.  Use with care!
-     * The static $module_id determines the current module ID.
+     * The static $section determines the module affected.
      * @return    boolean               True on success, false otherwise
      */
     static function deleteModule()
     {
         global $objDatabase;
 
-        if (empty(self::$module_id)) {
+        if (empty(self::$section)) {
 // TODO: Error message
             return false;
         }
         $objResult = $objDatabase->Execute("
             DELETE FROM `".DBPREFIX."core_setting`
-             WHERE `module_id`=".self::$module_id);
+             WHERE `section`='".self::$section."'");
         if (!$objResult) return self::errorHandler();
         return true;
     }
@@ -1062,44 +1060,79 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
      *
      * Tries to fix or recreate the settings table.
      * @return  boolean             False, always.
+     * @static
      */
     static function errorHandler()
     {
-        global $objDatabase;
+        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
 
-//die("SettingDb::errorHandler(): Disabled!<br />");
+//DBG::activate(DBG_DB_FIREPHP);
 
         $table_name = DBPREFIX.'core_setting';
-        $arrTables = $objDatabase->MetaTables('TABLES');
-        if (!in_array($table_name, $arrTables)) {
-            $query = "
-                CREATE TABLE `$table_name` (
-                  `name` TINYTEXT NOT NULL,
-                  `module_id` INT(10) NOT NULL DEFAULT 0,
-                  `key` TINYTEXT NOT NULL DEFAULT '',
-                  `value` TEXT NOT NULL DEFAULT '',
-                  `type` VARCHAR(32) NOT NULL DEFAULT 'text',
-                  `values` TEXT NULL DEFAULT NULL,
-                  `ord` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-                  PRIMARY KEY (`name`(32), `module_id`, `key`(32))
-                ) ENGINE=MYISAM";
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult) {
-DBG::log("SettingDb::errorHandler(): ERROR: Failed to create table $table_name<br />");
-                return false;
-            }
-DBG::log("SettingDb::errorHandler(): Successfully created table $table_name<br />");
-        }
+        $table_structure = array(
+            'section' => array('type' => 'TINYTEXT', 'default' => ''),
+            'name' => array('type' => 'TINYTEXT', 'default' => ''),
+            'group' => array('type' => 'TINYTEXT', 'default' => ''),
+            'type' => array('type' => 'VARCHAR(32)', 'default' => 'text'),
+            'value' => array('type' => 'TEXT', 'default' => ''),
+            'values' => array('type' => 'TEXT', 'notnull' => false, 'default' => null),
+            'ord' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0'),
+        );
+// TODO: The index array structure is wrong here!
+        $table_index =  array(
+            'id' => array(
+                'type' => 'primary',
+                'fields' => array('section' => 32, 'name' => 32, 'group' => 32),
+            ),
+        );
+        UpdateUtil::table($table_name, $table_structure, $table_index);
+//echo("SettingDb::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
 
-        // Use SettingDb::add(); in your module code to add missing and
-        // new settings.
-//        SettingDb::init('country');
-//        SettingDb::add('core_country_per_page_backend', 30, 1, SettingDb::TYPE_TEXT);
+        // Use SettingDb::add(); in your module code to add settings; example:
+//        SettingDb::init('core', 'country');
+//        SettingDb::add('numof_countries_per_page_backend', 30, 1, SettingDb::TYPE_TEXT);
 
         // More to come...
 
         // Always!
         return false;
+    }
+
+
+    /**
+     * Returns the settings from the old settings table for the given module ID,
+     * if available
+     *
+     * If the module ID is missing or invalid, or if the settings cannot be
+     * read for some other reason, returns null.
+     * Don't drop the table after migrating your settings, other modules
+     * might still need it!  Instead, try this method only after you failed
+     * to get your settings from SettingDb.
+     * @param   integer   $module_id      The module ID
+     * @return  array                     The settings array on success,
+     *                                    null otherwise
+     * @static
+     */
+    static function __getOldSettings($module_id)
+    {
+        global $objDatabase;
+
+        $module_id = intval($module_id);
+        if ($module_id <= 0) return null;
+        $objResult = $objDatabase->Execute('
+            SELECT `setname`, `setvalue`
+              FROM `'.DBPREFIX.'settings`
+             WHERE `setmodule`='.$module_id);
+        if (!$objResult) {
+            return null;
+        }
+        $arrConfig = array();
+        while (!$objResult->EOF) {
+            $arrConfig[$objResult->fields['setname']] =
+                $objResult->fields['setvalue'];
+            $objResult->MoveNext();
+        }
+        return $arrConfig;
     }
 
 }

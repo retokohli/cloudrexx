@@ -50,24 +50,27 @@ class downloads extends DownloadsLibrary
     * Constructor
     *
     * Calls the parent constructor and creates a local template object
+    * @param $strPageContent string The content of the page as string.
+    * @param $queryParams array The constructor accepts an array parameter $queryParams, which will
+    *                           override the request parameters cmd and/or category, if given
+    * override the request parameters cmd and/or category
     */
-    function __construct($strPageContent)
+    function __construct($strPageContent, array $queryParams = array())
     {
         parent::__construct();
 
         $objFWUser = FWUser::getFWUserObject();
         $this->userId = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
-        $this->parseURLModifiers();
+        $this->parseURLModifiers($queryParams);
         $this->objTemplate = new HTML_Template_Sigma('.');
         CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($strPageContent);
     }
 
-
-    private function parseURLModifiers()
+    private function parseURLModifiers($queryParams)
     {
-        $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '';
+        $cmd = isset($queryParams['cmd']) ? $queryParams['cmd'] : (isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '');
 
         if (isset($_GET['download'])) {
             $this->cmd = 'download_file';
@@ -85,12 +88,11 @@ class downloads extends DownloadsLibrary
         }
 
         if (intval($cmd)) {
-            $this->categoryId = !empty($_REQUEST['category']) ? intval($_REQUEST['category']) : intval($cmd);
+            $this->categoryId = isset($queryParams['category']) ? $queryParams['category'] : (!empty($_REQUEST['category']) ? intval($_REQUEST['category']) : intval($cmd));
         } else {
-            $this->categoryId = !empty($_REQUEST['category']) ? intval($_REQUEST['category']) : 0;
+            $this->categoryId = isset($queryParams['category']) ? $queryParams['category'] : (!empty($_REQUEST['category']) ? intval($_REQUEST['category']) : 0);
         }
     }
-
 
     /**
     * Reads $this->cmd and selects (depending on the value) an action
@@ -587,8 +589,6 @@ class downloads extends DownloadsLibrary
             return;
         }
 
-        require_once ASCMS_CORE_PATH.'/Modulechecker.class.php';
-
         if ($this->objTemplate->blockExists('downloads_simple_file_upload')) {
             $objFWSystem = new FWSystem();
             
@@ -988,15 +988,9 @@ JS_CODE;
         $objDownload = new Download();
         $objDownload->loadDownloads(array('category_id' => $objCategory->getId(), 'expiration' => array('=' => 0, '>' => time())), $this->searchKeyword, null, null, $_CONFIG['corePagingLimit'], $limitOffset);
         $categoryId = $objCategory->getId();
-        $allowdDeleteFiles = false;
-        if (!$objCategory->EOF) {
-            $allowdDeleteFiles =    !$objCategory->getManageFilesAccessId()
-                                 || Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true)
-                                 || (   $this->userId
-                                     && $objCategory->getOwnerId() == $this->userId);
-        } elseif (Permission::hasAllAccess()) {
-            $allowdDeleteFiles = true;
-        }
+        $allowdDeleteFiles = !$objCategory->getManageFilesAccessId()
+                            || Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true)
+                            || $objCategory->getOwnerId() == $this->userId;
 
         if ($objDownload->EOF) {
             $this->objTemplate->hideBlock('downloads_file_list');
@@ -1113,7 +1107,7 @@ JS_CODE;
         }
 
         // parse delete icon link
-        if ($allowDeleteFilesFromCategory || ($this->userId && $objDownload->getOwnerId() == $this->userId)) {
+        if ($allowDeleteFilesFromCategory || $objDownload->getOwnerId() == $this->userId) {
             $deleteIcon = $this->getHtmlDeleteLinkIcon(
                 $objDownload->getId(),
                 htmlspecialchars(str_replace("'", "\\'", $objDownload->getName($_LANGID)), ENT_QUOTES, CONTREXX_CHARSET),

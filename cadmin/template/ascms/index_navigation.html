@@ -1,39 +1,36 @@
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
 // <![CDATA[
-function swapNavigation( div )
-{
-	displayType = ( document.getElementById( div ).style.display == 'none' ) ? 'block' : 'none';
-	document.getElementById( div ).style.display = displayType;
+function swapNavigation(div) {
+	displayType = (document.getElementById(div).style.display == 'none') ? 'block' : 'none';
+	document.getElementById(div).style.display = displayType;
 	document.cookie = div + "=" + displayType;
 }
 // ]]>
 </script>
+
 <!-- BEGIN navigationRow -->
 <table summary="" class="navbar" cellspacing="0" cellpadding="0" width="100%">
-<tr>
-<th width="8">&nbsp;</th>
-<th style="cursor:hand; cursor:pointer" onclick="swapNavigation('navigation_{NAVIGATION_ID}'); return false;" height="25">
-<div align="left">{NAVIGATION_GROUP_NAME}</div>
-</th>
-</tr>
+    <tr>
+        <th onclick="swapNavigation('navigation_{NAVIGATION_ID}'); $J(this).children('div').toggleClass('block'); return false;" height="25">
+            <div class="{NAVIGATION_STYLE}">{NAVIGATION_GROUP_NAME}</div>
+        </th>
+    </tr>
 </table>
-<div id="navigation_{NAVIGATION_ID}" style="DISPLAY: {NAVIGATION_STYLE}">
-<table summary="" class="navbar" width="100%" cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td>
-<ul class="navigation">
-{NAVIGATION_MENU}
-</ul>
-</td>
-</tr>
-</table>
+<div id="navigation_{NAVIGATION_ID}" style="display: {NAVIGATION_STYLE};">
+    <table summary="" class="navbar" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+            <td>
+                <ul class="navigation">{NAVIGATION_MENU}</ul>
+            </td>
+        </tr>
+    </table>
 </div>
 <!-- END navigationRow -->
+
 <table summary="" class="navbar" cellspacing="0" cellpadding="0" width="100%">
-<tr>
-<th width="8">&nbsp;</th>
-<th style="cursor:hand; cursor:pointer" onclick="logout()" height="22">
-<div align="left">{TXT_LOGOUT}</div>
-</th>
-</tr>
+    <tr>
+        <th style="cursor:pointer" onclick="logout()" height="22">
+            <div align="left">{TXT_LOGOUT}</div>
+        </th>
+    </tr>
 </table>

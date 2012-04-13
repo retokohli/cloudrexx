@@ -11,7 +11,7 @@
  * Calendar
  */
 function calendar(
-    $QuantArray, $AnzahlDropdown, $AnzahlTxT,
+    $DatumJS, $QuantArray, $AnzahlDropdown, $AnzahlTxT,
     $DatumDesc, $DatumLabel, $ArrayRD, $Anzahl, $quantityLimit, $date='',
     $backgroundcolor='', $legende1='', $legende2='', $legende3='',
     $legende1Color='', $legende2Color='', $legende3Color='', $border='',
@@ -77,6 +77,7 @@ function calendar(
 //    $monthes_name = $calendar_txt[$param['lang']]['monthes'];
     $param['calendar_columns'] = ($param['show_day']) ? 7 : $param['calendar_columns'];
 
+    $date = priv_reg_glob_calendar('date');
     if ($date == '') {
         $timestamp = time();
     } else {
@@ -468,6 +469,19 @@ function calendar(
     $output .= "\n// ]]>\n";
     $output .= '</script>'."\n";
     return $output;
+}
+
+
+function priv_reg_glob_calendar($var)
+{
+    global $HTTP_GET_VARS, $HTTP_POST_VARS;
+
+    if (isset($HTTP_GET_VARS[$var])) {
+        return $HTTP_GET_VARS[$var];
+    } elseif (isset($HTTP_POST_VARS[$var])) {
+        return $HTTP_POST_VARS[$var];
+    }
+    return '';
 }
 
 ?>

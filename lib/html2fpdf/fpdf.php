@@ -267,8 +267,7 @@ function AliasNbPages($alias='{nb}')
 function Error($msg)
 {
 	//Fatal error
-    DBG::msg('<B>FPDF error: </B>'.$msg);
-    exit;
+	die('<B>FPDF error: </B>'.$msg);
 }
 
 function Open()
@@ -1358,7 +1357,7 @@ function Ellipse($x,$y,$rx,$ry,$style='D')
         $op));
 }
 
-function Image($file,$x,$y,$w=0,$h=0,$type='',$link='',$paint=true,$isNoImageHandler=false)
+function Image($file,$x,$y,$w=0,$h=0,$type='',$link='',$paint=true)
 {
 	//Put an image on the page
 	if(!isset($this->images[$file]))
@@ -1367,10 +1366,7 @@ function Image($file,$x,$y,$w=0,$h=0,$type='',$link='',$paint=true,$isNoImageHan
 		if($type=='')
 		{
 			$pos=strrpos($file,'.');
-			if(!$pos) {
-                DBG::msg('Image file has no extension and no type was specified: '.$file);
-                return $this->showNoImage($file, $x, $y, $w, $h, $type, $link, $paint, $isNoImageHandler);
-            }
+			if(!$pos)	$this->Error('Image file has no extension and no type was specified: '.$file);
 			$type=substr($file,$pos+1);
 		}
 		$type=strtolower($type);
@@ -1396,18 +1392,9 @@ function Image($file,$x,$y,$w=0,$h=0,$type='',$link='',$paint=true,$isNoImageHan
 		{
 			//Allow for additional formats
 			$mtd='_parse'.$type;
-			if(!method_exists($this,$mtd)) {
-                DBG::msg('Unsupported image type: '.$type);
-                return $this->showNoImage($file, $x, $y, $w, $h, $type, $link, $paint, $isNoImageHandler);
-            }
+			if(!method_exists($this,$mtd)) $this->Error('Unsupported image type: '.$type);
 			$info=$this->$mtd($file);
 		}
-
-        // check if something went wrong during the image parse process
-        if (!$info) {
-            return $this->showNoImage($file, $x, $y, $w, $h, $type, $link, $paint, $isNoImageHandler);
-        }
-
 		set_magic_quotes_runtime($mqr);
 		$info['i']=count($this->images)+1;
 		$this->images[$file]=$info;
@@ -1428,22 +1415,14 @@ function Image($file,$x,$y,$w=0,$h=0,$type='',$link='',$paint=true,$isNoImageHan
 	//Avoid drawing out of the paper(exceeding width limits). //EDITEI
 	if ( ($x + $w) > $this->fw )
 	{
-        $wOriginal = $w;
-
-        // Image is too big, therefore
-        // align it to the very left on a new line ($y += 5)
 		$x = $this->lMargin;
 		$y += 5;
-
-        // and scale it to the max page width        
-        $w = $this->fw - $this->lMargin - $this->rMargin;
-        $h *= $w / $wOriginal;
 	}
 	//Avoid drawing out of the page. //EDITEI
 	if ( ($y + $h) > $this->fh )
 	{
 		$this->AddPage();
-		$y = $this->tMargin + 10; // +10 to avoid drawing too close to border of page
+		$y = $tMargin + 10; // +10 to avoid drawing too close to border of page
 		$changedpage = true;
 	}
 
@@ -1466,14 +1445,6 @@ function Image($file,$x,$y,$w=0,$h=0,$type='',$link='',$paint=true,$isNoImageHan
 	$sizesarray['Y'] = $y; //Position before painting image
 	$sizesarray['OUTPUT'] = $outstring;
 	return $sizesarray;
-}
-
-private function showNoImage($file,$x,$y,$w,$h,$type,$link,$paint,$isNoImageHandler)
-{
-    // check if the no_img.gif replacement also failed
-    if (!$this->shownoimg || $isNoImageHandler) return false;
-
-    return $this->Image($this->noimgsrc, $x, $y, $w, $h, $this->noimgtype, $link, $paint, true);
 }
 
 //EDITEI - Done after reading a little about PDF reference guide
@@ -2160,153 +2131,53 @@ function _dounderline($x,$y,$txt)
 
 function _parsejpg($file)
 {
-    $width = 0;
-    $height = 0;
-    $colspace = 'DeviceRGB';
-    $bpc = 8;
-    $data = null;
-
-    if (FWValidator::isUri($file)) { // Image is a remote ressource
-        require_once ASCMS_LIBRARY_PATH.'/PEAR/HTTP/Request2.php';
-        try {
-            $request = new HTTP_Request2($file);
-            $data = $request->send()->getBody();
-            $img = imagecreatefromstring($data);
-            $width = imagesx($img);
-            $height = imagesy($img);
-            unset($img);
-        } catch (Exception $e) {
-            DBG::msg($e->getMessage());
-            return false;
-        }
-    } else { // Image is a local ressource
-        $imageInfo = getimagesize($file);
-
-        if(!$imageInfo) {
-            DBG::msg('Missing or incorrect image file: '.$file);
-            return false;
-        }
-
-        list($width, $height, $imageType) = $imageInfo;
-        if($imageType != IMAGETYPE_JPEG) {
-            DBG::msg('Not a JPEG file: '.$file);
-            return false;
-        }
-
-        if (!isset($imageInfo['channels']) || $imageInfo['channels'] == 3) {
-            $colspace='DeviceRGB';
-        } elseif ($imageInfo['channels'] == 4) {
-            $colspace='DeviceCMYK';
-        } else {
-            $colspace='DeviceGray';
-        }
-
-        if (isset($imageInfo['bits'])) {
-            $bpc = $imageInfo['bits'];
-        }
-
-        //Read whole file
-        $f=fopen($file,'rb');
-        $data='';
-        while(!feof($f))
-            $data.=fread($f,4096);
-        fclose($f);
-    }
-
-	return array(
-        'w'     => $width,
-        'h'     => $height,
-        'cs'    => $colspace,
-        'bpc'   => $bpc,
-        'f'     => 'DCTDecode',
-        'data'  => $data,
-    );
+	//Extract info from a JPEG file
+	$a=GetImageSize($file);
+	if(!$a)
+		$this->Error('Missing or incorrect image file: '.$file);
+	if($a[2]!=2)
+		$this->Error('Not a JPEG file: '.$file);
+	if(!isset($a['channels']) or $a['channels']==3)
+		$colspace='DeviceRGB';
+	elseif($a['channels']==4)
+		$colspace='DeviceCMYK';
+	else
+		$colspace='DeviceGray';
+	$bpc=isset($a['bits']) ? $a['bits'] : 8;
+	//Read whole file
+	$f=fopen($file,'rb');
+	$data='';
+	while(!feof($f))
+		$data.=fread($f,4096);
+	fclose($f);
+	return array('w'=>$a[0],'h'=>$a[1],'cs'=>$colspace,'bpc'=>$bpc,'f'=>'DCTDecode','data'=>$data);
 }
 
-private function parsePNGwithAlphaChannel($file, $wpx, $hpx)
-{
-    $img = imagecreatefrompng($file);
-    if (!$img) return false;
-
-    // extract image without alpha channel
-    $imgplain = imagecreatetruecolor($wpx, $hpx);
-    imagecopy($imgplain, $img, 0, 0, 0, 0, $wpx, $hpx);
-
-    $fpm = fopen("php://memory", 'r+');
-    if ($fpm) {
-        // clean output buffer
-        $obBuffer = ob_get_clean();
-        ob_start();
-        // output image to output buffer
-        imagepng($imgplain);
-        // collect image and clean output buffer 
-        $image = ob_get_clean();
-        imagedestroy($imgplain);
-
-        // put image to memory pointer
-        fwrite($fpm, $image);
-        rewind($fpm);
-        return $this->_parsepng($file, $fpm);
-    } else {
-        $tempImage = ASCMS_TEMP_PATH.'/'.$file.'_without_alpha.png';
-        imagepng($imgplain, $tempImage);
-        $pngData = $this->_parsepng($tempImage); 
-        unlink($tempImage);
-        return $pngData;
-    }
-}
-
-function _parsepng($file, $f=null)
+function _parsepng($file)
 {
 	//Extract info from a PNG file
-    if (!isset($f)) {
-	    $f=fopen($file,'rb');
-    }
+	$f=fopen($file,'rb');
 	//Extract info from a PNG file
-	if(!$f) {
-        DBG::msg('Can\'t open image file: '.$file);
-        return false;
-    }
+	if(!$f)	$this->Error('Can\'t open image file: '.$file);
 	//Check signature
-	if(fread($f,8)!=chr(137).'PNG'.chr(13).chr(10).chr(26).chr(10)) {
-        DBG::msg('Not a PNG file: '.$file);
-        return false;
-    }
+	if(fread($f,8)!=chr(137).'PNG'.chr(13).chr(10).chr(26).chr(10))
+		$this->Error('Not a PNG file: '.$file);
 	//Read header chunk
 	fread($f,4);
-	if(fread($f,4)!='IHDR') {
-        DBG::msg('Incorrect PNG file: '.$file);
-        return false;
-    }
+	if(fread($f,4)!='IHDR')	$this->Error('Incorrect PNG file: '.$file);
 	$w=$this->_freadint($f);
 	$h=$this->_freadint($f);
 	$bpc=ord(fread($f,1));
-	if($bpc>8) {
-        DBG::msg('16-bit depth not supported: '.$file);
-        return false;
-    }
+	if($bpc>8) $this->Error('16-bit depth not supported: '.$file);
 	$ct=ord(fread($f,1));
 	if($ct==0) $colspace='DeviceGray';
 	elseif($ct==2) $colspace='DeviceRGB';
 	elseif($ct==3) $colspace='Indexed';
-	elseif($ct==6) {
-        fclose($f);
-        return $this->parsePNGwithAlphaChannel($file, $w, $h);
-    }
 	//else $this->Error('Alpha channel not supported: '.$file);
 	else $colspace='DeviceGray';
-	if(ord(fread($f,1))!=0) {
-        DBG::msg('Unknown compression method: '.$file);
-        return false;
-    }
-	if(ord(fread($f,1))!=0) {
-        DBG::msg('Unknown filter method: '.$file);
-        return false;
-    }
-	if(ord(fread($f,1))!=0) {
-        DBG::msg('Interlacing not supported: '.$file);
-        return false;
-    }
+	if(ord(fread($f,1))!=0)	$this->Error('Unknown compression method: '.$file);
+	if(ord(fread($f,1))!=0)	$this->Error('Unknown filter method: '.$file);
+	if(ord(fread($f,1))!=0)	$this->Error('Interlacing not supported: '.$file);
 	fread($f,4);
 	$parms='/DecodeParms <</Predictor 15 /Colors '.($ct==2 ? 3 : 1).' /BitsPerComponent '.$bpc.' /Columns '.$w.'>>';
 	//Scan chunks looking for palette, transparency and image data
@@ -2346,10 +2217,7 @@ function _parsepng($file, $f=null)
 		else fread($f,$n+4);
 	}
 	while($n);
-	if($colspace=='Indexed' and empty($pal)) {
-        DBG::msg('Missing palette in '.$file);
-        return false;
-    }
+	if($colspace=='Indexed' and empty($pal)) $this->Error('Missing palette in '.$file);
 	fclose($f);
 	return array('w'=>$w,'h'=>$h,'cs'=>$colspace,'bpc'=>$bpc,'f'=>'FlateDecode','parms'=>$parms,'pal'=>$pal,'trns'=>$trns,'data'=>$data);
 }
@@ -2363,10 +2231,8 @@ function _parsegif($file) //EDITEI - GIF support is now included
 	$w=0;
 	$gif=new CGIF();
 
-	if (!$gif->loadFile($file, 0)) {
-        DBG::msg("GIF parser: unable to open file $file");
-        return false;
-    }
+	if (!$gif->loadFile($file, 0))
+		$this->Error("GIF parser: unable to open file $file");
 
 	if($gif->m_img->m_gih->m_bLocalClr) {
 		$nColors = $gif->m_img->m_gih->m_nTableSize;
@@ -2398,10 +2264,8 @@ function _parsegif($file) //EDITEI - GIF support is now included
 	$w=$gif->m_gfh->m_nWidth;
 	$h=$gif->m_gfh->m_nHeight;
 
-	if($colspace=='Indexed' and empty($pal)) {
-		DBG::msg('Missing palette in '.$file);
-        return false;
-    }
+	if($colspace=='Indexed' and empty($pal))
+		$this->Error('Missing palette in '.$file);
 
 	if ($this->compress) {
 		$data=gzcompress($data);

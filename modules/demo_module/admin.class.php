@@ -42,6 +42,8 @@ class demoModule
 		$this->__construct();
 	}
 
+        private $act = '';
+        
 	/**
 	* PHP5 constructor
 	*
@@ -54,10 +56,15 @@ class demoModule
 
 		$this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/demo_module/template');
         CSRF::add_placeholder($this->_objTpl);
-		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
-    	$objTemplate->setVariable("CONTENT_NAVIGATION", "	<a href='index.php?cmd=gallery'>".$_ARRAYLANG['TXT_OVERVIEW']."</a>");
+		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);    	
 	}
+        private function setNavigation()
+        {
+        global $objTemplate, $_ARRAYLANG;
+
+        $objTemplate->setVariable("CONTENT_NAVIGATION", "
+            <a href='index.php?cmd=gallery' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_OVERVIEW']."</a>");
+        }
 
 	/**
 	* Set the backend page
@@ -80,6 +87,9 @@ class demoModule
 			'CONTENT_STATUS_MESSAGE'	=> $this->_statusMessage,
 			'ADMIN_CONTENT'				=> $this->_objTpl->get()
 		));
+
+                $this->act = $_REQUEST['act'];
+                $this->setNavigation();
 	}
 }
 ?>

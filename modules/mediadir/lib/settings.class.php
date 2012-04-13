@@ -359,52 +359,40 @@ class mediaDirectorySettings extends mediaDirectoryLibrary
 
         $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_'.$this->moduleName.'_settings_map.html');
 
-        if(empty($_CONFIG['googleMapsAPIKey'])) {
-            $objTpl->hideBlock($this->moduleName.'GoogleMap');
+        $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfield_types SET `active`='1' WHERE `name`='google_map'");
 
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfield_types SET `active`='0' WHERE `name`='google_map'");
+        $objTpl->setVariable(array(
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_GOOGLE_START_POSITION' => $_ARRAYLANG['TXT_MEDIADIR_GOOGLE'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_GOOGLE_START_POSITION' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_START_POSITION'],
+        ));
 
-            $objTpl->setVariable(array(
-                'TXT_'.$this->moduleLangVar.'_SETTINGS_GOOGLE_NO_KEY' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_NO_KEY'],
-                'TXT_'.$this->moduleLangVar.'_SETTINGS_GOOGLE_PLEASE_ENTER_KEY_IN_GLOBAL_SETTINGS' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_PLEASE_ENTER_KEY_IN_GLOBAL_SETTINGS'],
-            ));
-        } else {
-            $objTpl->hideBlock($this->moduleName.'GoogleMapNoKey');
+        $strMapId       = 'settingsGoogleMap_map';
+        $strLonId       = 'settingsGoogleMap_lon';
+        $strLatId       = 'settingsGoogleMap_lat';
+        $strZoomId      = 'settingsGoogleMap_zoom';
+        $strStreetId    = 'settingsGoogleMap_street';
+        $strZipId       = 'settingsGoogleMap_zip';
+        $strCityId      = 'settingsGoogleMap_city';
+        $strKey         = $_CONFIG['googleMapsAPIKey'];
 
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfield_types SET `active`='1' WHERE `name`='google_map'");
+        $arrValues = explode(',', $this->arrSettings['settingsGoogleMapStartposition']);
 
-            $objTpl->setVariable(array(
-                'TXT_'.$this->moduleLangVar.'_SETTINGS_GOOGLE_START_POSITION' => $_ARRAYLANG['TXT_MEDIADIR_GOOGLE'],
-                'TXT_'.$this->moduleLangVar.'_SETTINGS_GOOGLE_START_POSITION' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_START_POSITION'],
-            ));
+        $strValueLon = $arrValues[0];
+        $strValueLat = $arrValues[1];
+        $strValueZoom = $arrValues[2];
 
-            $strMapId       = 'settingsGoogleMap_map';
-            $strLonId       = 'settingsGoogleMap_lon';
-            $strLatId       = 'settingsGoogleMap_lat';
-            $strZoomId      = 'settingsGoogleMap_zoom';
-            $strStreetId    = 'settingsGoogleMap_street';
-            $strZipId       = 'settingsGoogleMap_zip';
-            $strCityId      = 'settingsGoogleMap_city';
-            $strKey         = $_CONFIG['googleMapsAPIKey'];
-
-            $arrValues = explode(',', $this->arrSettings['settingsGoogleMapStartposition']);
-
-            $strValueLon = $arrValues[0];
-            $strValueLat = $arrValues[1];
-            $strValueZoom = $arrValues[2];
-
-            $strGoogleMap .= '<table cellpadding="0" cellspacing="0" border="0" class="'.$this->moduleName.'TableGoogleMap">';
-            $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_STREET'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[street]" id="'.$strStreetId.'" class="'.$this->moduleName.'InputfieldGoogleMapLarge" value="" onfocus="this.select();" /></td></tr>';
-            $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_CITY'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[place]" id="'.$strZipId.'" class="'.$this->moduleName.'InputfieldGoogleMapLarge" value="" onfocus="this.select();" /></td></tr>';
-            $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZIP'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[zip]" id="'.$strCityId.'" class="'.$this->moduleName.'InputfieldGoogleMapSmall" value="" onfocus="this.select();" /></td></tr>';
-            $strGoogleMap .= '<tr><td style="border: 0px;"><br /></td><td style="border: 0px;"><input type="button" onclick="searchAddress();" name="settingsGoogleMap[search]" id="'.$this->moduleName.'Inputfield_'.$intId.'_search" value="'.$_CORELANG['TXT_SEARCH'].'" /></td></tr>';
-            $strGoogleMap .= '<tr><td style="border: 0px;" coldpan="2"><br /></td></tr>';
-            $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_LON'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[lon]" id="'.$strLonId.'" class="'.$this->moduleName.'InputfieldGoogleMapLarge" value="'.$strValueLon.'" onfocus="this.select();" /></td></tr>';
-            $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_LAT'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[lat]" id="'.$strLatId.'" class="'.$this->moduleName.'InputfieldGoogleMapLarge" value="'.$strValueLat.'" onfocus="this.select();" /></td></tr>';
-            $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZOOM'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[zoom]" id="'.$strZoomId.'" class="'.$this->moduleName.'InputfieldGoogleMapSmall" value="'.$strValueZoom.'" onfocus="this.select();" /></td></tr>';
-            $strGoogleMap .= '</table><br />';
-            $strGoogleMap .= '<div id="'.$strMapId.'" style="border: solid 1px #0A50A1; width: 418px; height: 300px;"></div>';
-            $strGoogleMap .= <<<EOF
+        $strGoogleMap = '<table cellpadding="0" cellspacing="0" border="0" class="'.$this->moduleName.'TableGoogleMap">';
+        $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_STREET'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[street]" id="'.$strStreetId.'" class="'.$this->moduleName.'InputfieldGoogleMapLarge" value="" onfocus="this.select();" /></td></tr>';
+        $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_CITY'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[place]" id="'.$strZipId.'" class="'.$this->moduleName.'InputfieldGoogleMapLarge" value="" onfocus="this.select();" /></td></tr>';
+        $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZIP'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[zip]" id="'.$strCityId.'" class="'.$this->moduleName.'InputfieldGoogleMapSmall" value="" onfocus="this.select();" /></td></tr>';
+        $strGoogleMap .= '<tr><td style="border: 0px;"><br /></td><td style="border: 0px;"><input type="button" onclick="searchAddress();" name="settingsGoogleMap[search]" id="'.$this->moduleName.'Inputfield_'.$intId.'_search" value="'.$_CORELANG['TXT_SEARCH'].'" /></td></tr>';
+        $strGoogleMap .= '<tr><td style="border: 0px;" coldpan="2"><br /></td></tr>';
+        $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_LON'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[lon]" id="'.$strLonId.'" class="'.$this->moduleName.'InputfieldGoogleMapLarge" value="'.$strValueLon.'" onfocus="this.select();" /></td></tr>';
+        $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_LAT'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[lat]" id="'.$strLatId.'" class="'.$this->moduleName.'InputfieldGoogleMapLarge" value="'.$strValueLat.'" onfocus="this.select();" /></td></tr>';
+        $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZOOM'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[zoom]" id="'.$strZoomId.'" class="'.$this->moduleName.'InputfieldGoogleMapSmall" value="'.$strValueZoom.'" onfocus="this.select();" /></td></tr>';
+        $strGoogleMap .= '</table><br />';
+        $strGoogleMap .= '<div id="'.$strMapId.'" style="border: solid 1px #0A50A1; width: 418px; height: 300px;"></div>';
+        $strGoogleMap .= <<<EOF
 <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=$strKey" type="text/javascript"></script>
 <script type="text/javascript">
 //<![CDATA[
@@ -504,41 +492,40 @@ window.onload = initialize();
 //]]>
 </script>
 EOF;
-            if($this->arrSettings['settingsGoogleMapAllowKml'] == 1) {
-                $strAllowKmlOn = 'checked="checked"';
-                $strAllowKmlOff = '';
-            } else {
-                $strAllowKmlOn = '';
-                $strAllowKmlOff = 'checked="checked"';
-            }
-
-            if($this->arrSettings['settingsGoogleMapType'] == 0) {
-                $strMapyType0 = 'selected="selected"';
-                $strMapyType1 = '';
-                $strMapyType2 = '';
-            } else if($this->arrSettings['settingsGoogleMapType'] == 1) {
-                $strMapyType0 = '';
-                $strMapyType1 = 'selected="selected"';
-                $strMapyType2 = '';
-            } else  {
-                $strMapyType0 = '';
-                $strMapyType1 = '';
-                $strMapyType2 = 'selected="selected"';
-            }
-
-            $strSelectMapyType .= '<option value="0" '.$strMapyType0.'>'.$_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_MAP_TYPE_MAP'].'</option>';
-            $strSelectMapyType .= '<option value="1" '.$strMapyType1.'>'.$_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_MAP_TYPE_SATELLITE'].'</option>';
-            $strSelectMapyType .= '<option value="2" '.$strMapyType2.'>'.$_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_MAP_TYPE_HYBRID'].'</option>';
-
-            $objTpl->setVariable(array(
-                $this->moduleLangVar.'_SETTINGS_GOOGLE_START_POSITION' => $strGoogleMap,
-                'TXT_'.$this->moduleLangVar.'_SETTINGS_GOOGLE_ALLOW_KML' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_ALLOW_KML'],
-                'TXT_'.$this->moduleLangVar.'_SETTINGS_GOOGLE_MAP_TYPE' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_MAP_TYPE'],
-                $this->moduleLangVar.'_SETTINGS_GOOGLE_ALLOW_KML_ON' => $strAllowKmlOn,
-                $this->moduleLangVar.'_SETTINGS_GOOGLE_ALLOW_KML_OFF' => $strAllowKmlOff,
-                $this->moduleLangVar.'_SETTINGS_GOOGLE_MAP_TYPE' => $strSelectMapyType,
-            ));
+        if($this->arrSettings['settingsGoogleMapAllowKml'] == 1) {
+            $strAllowKmlOn = 'checked="checked"';
+            $strAllowKmlOff = '';
+        } else {
+            $strAllowKmlOn = '';
+            $strAllowKmlOff = 'checked="checked"';
         }
+
+        if($this->arrSettings['settingsGoogleMapType'] == 0) {
+            $strMapyType0 = 'selected="selected"';
+            $strMapyType1 = '';
+            $strMapyType2 = '';
+        } else if($this->arrSettings['settingsGoogleMapType'] == 1) {
+            $strMapyType0 = '';
+            $strMapyType1 = 'selected="selected"';
+            $strMapyType2 = '';
+        } else  {
+            $strMapyType0 = '';
+            $strMapyType1 = '';
+            $strMapyType2 = 'selected="selected"';
+        }
+
+        $strSelectMapyType = '<option value="0" '.$strMapyType0.'>'.$_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_MAP_TYPE_MAP'].'</option>';
+        $strSelectMapyType .= '<option value="1" '.$strMapyType1.'>'.$_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_MAP_TYPE_SATELLITE'].'</option>';
+        $strSelectMapyType .= '<option value="2" '.$strMapyType2.'>'.$_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_MAP_TYPE_HYBRID'].'</option>';
+
+        $objTpl->setVariable(array(
+            $this->moduleLangVar.'_SETTINGS_GOOGLE_START_POSITION' => $strGoogleMap,
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_GOOGLE_ALLOW_KML' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_ALLOW_KML'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_GOOGLE_MAP_TYPE' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_MAP_TYPE'],
+            $this->moduleLangVar.'_SETTINGS_GOOGLE_ALLOW_KML_ON' => $strAllowKmlOn,
+            $this->moduleLangVar.'_SETTINGS_GOOGLE_ALLOW_KML_OFF' => $strAllowKmlOff,
+            $this->moduleLangVar.'_SETTINGS_GOOGLE_MAP_TYPE' => $strSelectMapyType,
+        ));
     }
 
 

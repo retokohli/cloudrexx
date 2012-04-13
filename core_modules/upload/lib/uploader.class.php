@@ -2,7 +2,7 @@
 /**
  * @ignore
  */
-include_once ASCMS_CORE_MODULE_PATH.'/upload/lib/uploadResponse.class.php';
+include_once 'uploadResponse.class.php';
 
 /**
  * Exceptions thrown by uploader
@@ -70,12 +70,8 @@ abstract class Uploader
      *
      * The callback will be called with the arguments
      * * $tempPath, containing the path to the folder where the files are
-     * * $tempWebPath, containing the web path to the folder where the files are
      * * $data, containing the data set by @link Uploader::setData
      * * $uploadId, containing the id of the current upload
-     * * $fileInfos, containing an array ( 'originalFileNames' => array ('currentCleanFileName' => 'fileNameGivenWhenUploaded'))
-     *     add a key if you want to pass more file informations (e.g. size, mime type) to the callback!
-     * * $response, an UploadResponse object.
      *
      * The callback can either return null if he moves the files himself or
      * { <path_string> , <web_path_string> } if the files should be moved
@@ -257,7 +253,7 @@ abstract class Uploader
 
         //we're going to call the callbck, so the data is not needed anymore
         //well... not quite sure. need it again in contact form.
-        //TODO: code session cleanup properly if time.
+//TODO: code session cleanup properly if time.
         //$this->cleanupCallbackData();
 
         $classFile = $this->callbackData[0];
@@ -295,47 +291,40 @@ abstract class Uploader
         if(isset($_SESSION[$dataKey]))
             unset($_SESSION[$dataKey]);
         
-        //the callback could have returned a path where he wants the files moved to
-        if(!is_null($ret)) { //we need to move the files
-            //gather target information
-            $path = pathinfo($ret[0]);
-            $pathWeb = pathinfo($ret[1]);
-            //make sure the target directory is writable
-            $fm = new File();
-            $fm->setChmod($path['dirname'], $pathWeb['dirname'], $path['basename']);
+        if (File::exists($tempWebPath)) {
+            //the callback could have returned a path where he wants the files moved to
+            if(!is_null($ret)) { //we need to move the files
+                //gather target information
+                $path = pathinfo($ret[0]);
+                $pathWeb = pathinfo($ret[1]);
+                //make sure the target directory is writable
+                File::chmod($pathWeb['dirname'].$path['basename'], File::CHMOD_FILE);
 
-            //revert $path and $pathWeb to whole path instead of pathinfo path for copying
-            $path = $path['dirname'].'/'.$path['basename'].'/';
-            $pathWeb = $pathWeb['dirname'].'/'.$pathWeb['basename'].'/';
+                //revert $path and $pathWeb to whole path instead of pathinfo path for copying
+                $path = $path['dirname'].'/'.$path['basename'].'/';
+                $pathWeb = $pathWeb['dirname'].'/'.$pathWeb['basename'].'/';
 
-            //trailing slash needed for File-class calls
-            $tempPath .= '/';
-            $tempWebPath .= '/';
-            
-            //move everything uploaded to target dir
-            $h = opendir($tempPath);
-            while(false != ($f = readdir($h))) {
-                //skip . and ..
-                if($f == '.' || $f == '..')
-                    continue;
+                //trailing slash needed for File-class calls
+                $tempPath .= '/';
+                $tempWebPath .= '/';
+                
+                //move everything uploaded to target dir
+                $h = opendir($tempPath);
+                while(false != ($f = readdir($h))) {
+                    //skip . and ..
+                    if($f == '.' || $f == '..')
+                        continue;
 
-                //TODO: if return value = 'error' => react
-                $fm->moveFile($tempPath, $tempWebPath, $f, $path, $pathWeb);
-                $response->increaseUploadedFilesCount();
+                    //TODO: if return value = 'error' => react
+                    File::move($tempWebPath.$f, $pathWeb.$f, true);
+                    $response->increaseUploadedFilesCount();
+                }
+                closedir($h);
             }
-            closedir($h);
-        }
 
-        //delete the files left
-        $h = opendir($tempPath);
-        while(false != ($f = readdir($h))) {
-            if($f != '..' && $f != '.')
-                @unlink($tempPath.'/'.$f);
+            //delete the folder
+            File::delete_folder($tempWebPath, true);
         }
-        //delete the folder
-        @rmdir($tempPath);
-
-        closedir($h);
 
         $response->uploadFinished();
         $sessionResponseKey = 'upload_response_data_'.$this->uploadId;
@@ -398,7 +387,6 @@ abstract class Uploader
       
         //create a file manager
         require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
-        $fm = new File();
         
         //get a writable directory
         $tempPath = $sessionObj->getTempPath();
@@ -407,7 +395,7 @@ abstract class Uploader
 
         $targetDir = $tempPath.'/'.$dirName;
         if(!file_exists($targetDir))
-            $fm->mkdir($tempPath, $webTempPath, '/'.$dirName);
+            File::make_folder($webTempPath.'/'.$dirName);
 
         $cleanupTargetDir = false; // Remove old files
         $maxFileAge = 60 * 60; // Temp file age in seconds

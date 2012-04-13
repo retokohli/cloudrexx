@@ -289,11 +289,11 @@ class MediaLibrary
     {
         global $objTemplate;
 
-        if (!empty($this->getFile)) {
-            $objTemplate->setVariable('CONTENT_OK_MESSAGE', $this->_deleteMedia2($this->getFile));
-        } elseif (!empty($_POST['formSelected'])) {
+        if (isset($this->getFile) && !empty($this->getFile)) {
+            $objTemplate->setVariable('CONTENT_OK_MESSAGE',$this->_deleteMedia2($this->getFile));
+        } elseif (isset($_POST['formSelected']) && !empty($_POST['formSelected'])) {
             foreach ($_POST['formSelected'] as $file) {
-                $objTemplate->setVariable('CONTENT_OK_MESSAGE', $this->_deleteMedia2($file));
+                $objTemplate->setVariable('CONTENT_OK_MESSAGE',$this->_deleteMedia2($file));
             }
         }
     }
@@ -835,7 +835,7 @@ class MediaLibrary
 
         JS::activate('jquery');
 
-        $delete_msg = $_ARRAYLANG['TXT_MEDIA_CONFIRM_DELETE_2'];
+        $delete_msg = $_ARRAYLANG['TXT_MEDIA_DELETE_MSG'];
         $code       = <<<END
                     <script language="JavaScript" type="text/javascript">
                     /* <![CDATA[ */
@@ -855,14 +855,12 @@ class MediaLibrary
                             prev.focus();
                         }
 
-                        function mediaConfirmDelete(file)
+                        function mediaConfirmDelete()
                         {
                             if(confirm('$delete_msg')) {
-                                \$J(document.fileList.deleteMedia).attr('value', '1');
-                                \$J(document.fileList.file).attr('value', file);
-                                document.fileList.action = 'index.php?cmd=media&archive=$this->archive&path=$this->webPath';
-                                document.fileList.submit();
+                                return true;
                             }
+                            return false;
                         }
         
                         /*
@@ -998,7 +996,7 @@ END;
      * 
      * @return string the directory to move to
      */
-    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos){
+    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response){
         $path = $data['path'];
         $webPath = $data['webPath'];
 
@@ -1009,36 +1007,40 @@ END;
         //rename files, delete unwanted
         $arrFilesToRename = array(); //used to remember the files we need to rename
         $h = opendir($tempPath);
-        while(false !== ($file = readdir($h))) {
-            //delete potentially malicious files
-            if(!FWValidator::is_file_ending_harmless($file)) {
-                @unlink($file);
-                continue;
-            }
-            //skip . and ..           
-            if($file == '.' || $file == '..')
-                continue;
-
-			//clean file name
-            $newName = self::cleanFileName($file);
-
-            //check if file needs to be renamed
-            if (file_exists($path.$newName)) {
-                $info     = pathinfo($newName);
-                $exte     = $info['extension'];
-                $exte     = (!empty($exte)) ? '.'.$exte : '';
-                $part1    = $info['filename'];
-                if (empty($_REQUEST['uploadForceOverwrite']) || !intval($_REQUEST['uploadForceOverwrite'] > 0)) {
-                    $newName = $part1.'_'.time().$exte;
+        if ($h) {
+            while(false !== ($file = readdir($h))) {
+                //delete potentially malicious files
+// TODO: this is probably an overhead, because the uploader might already to this. doesn't it?
+                if(!FWValidator::is_file_ending_harmless($file)) {
+                    @unlink($file);
+                    continue;
                 }
-            }
- 
-            //if the name has changed, the file needs to be renamed afterwards
-            if($newName != $file)
-                $arrFilesToRename[$file] = $newName;
+                //skip . and ..           
+                if($file == '.' || $file == '..')
+                    continue;
 
-            array_push($arrFiles, $newName);
+                //clean file name
+                $newName = self::cleanFileName($file);
+
+                //check if file needs to be renamed
+                if (file_exists($path.$newName)) {
+                    $info     = pathinfo($newName);
+                    $exte     = $info['extension'];
+                    $exte     = (!empty($exte)) ? '.'.$exte : '';
+                    $part1    = $info['filename'];
+                    if (empty($_REQUEST['uploadForceOverwrite']) || !intval($_REQUEST['uploadForceOverwrite'] > 0)) {
+                        $newName = $part1.'_'.time().$exte;
+                    }
+                }
+     
+                //if the name has changed, the file needs to be renamed afterwards
+                if($newName != $file)
+                    $arrFilesToRename[$file] = $newName;
+
+                array_push($arrFiles, $newName);
+            }
         }
+
         //rename files where needed
         foreach($arrFilesToRename as $oldName => $newName){
             rename($tempPath.'/'.$oldName, $tempPath.'/'.$newName);

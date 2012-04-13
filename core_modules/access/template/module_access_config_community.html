@@ -109,9 +109,37 @@ function accessChangeActivationMethod()
 			<tr class="row2">
 				<td colspan="3">&nbsp;</td>
 			</tr>
-			<tr class="row3">
-				<td colspan="3"><strong>{TXT_ACCESS_USER_ACCOUNT_ACTIVATION_METHOD_TEXT}</strong></td>
-			</tr>
+            <tr class="row3">
+                <td colspan="3">
+                    <strong>{TXT_ACCESS_TOS}</strong>
+                </td>
+            </tr>
+            <tr class="row1">
+                <td colspan="3">
+                    <input type="checkbox" name="accessUserTos" id="accessUserTos" value="1" style="border:0px; background-color:#F4F7FF;" {ACCESS_USER_TOS} /><label for="accessUserTos">{TXT_ACCESS_TOS_SINGUP_DESC}</label>
+                </td>
+            </tr>
+            <tr class="row2">
+                <td colspan="3">&nbsp;</td>
+            </tr>
+            <tr class="row3">
+                <td colspan="3">    
+                    <strong>{TXT_ACCESS_CAPTCHA}</strong>   
+                </td>
+            </tr>
+            <tr class="row1">
+                <td colspan="3">
+                    <input type="checkbox" name="accessUserCaptcha" id="accessUserCaptcha" value="1" style="border:0px; background-color:#F4F7FF;" {ACCESS_USER_CAPTCHA} /><label for="accessUserCaptcha">{TXT_ACCESS_CAPTCHA_SIGNUP_DESC}</label>
+                </td>
+            </tr>
+            <tr class="row2">
+                <td colspan="3">&nbsp;</td>
+            </tr>
+            <tr class="row3">
+                <td colspan="3">    
+                    <strong>{TXT_ACCESS_USER_ACCOUNT_ACTIVATION_METHOD_TEXT}</strong>   
+                </td>
+            </tr>
 			<tr class="row1">
 				<td colspan="3">
 					<input type="radio" name="accessUserActivation" id="accessUserActivation_1" value="1" style="border:0px; background-color:#F4F7FF;" {ACCESS_USER_ACTIVATION_1} onclick="accessChangeActivationMethod()" /><label for="accessUserActivation_1">{TXT_ACCESS_ACTIVATION_BY_USER}</label><br />

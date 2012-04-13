@@ -64,6 +64,8 @@ class KnowledgeAdmin extends KnowledgeLibrary
 	 */
 	private $languageId = 1;
 
+        private $act = '';
+        
 	/**
 	* Constructor Create the module-menu and an internal template-object
     *
@@ -83,12 +85,19 @@ class KnowledgeAdmin extends KnowledgeLibrary
 		$this->tpl->setErrorHandling(PEAR_ERROR_DIE);
 
  		$this->languageId = $objInit->userFrontendLangId;
-
-    	$objTemplate->setVariable("CONTENT_NAVIGATION","   <a href=\"index.php?cmd=knowledge".MODULE_INDEX."&amp;section=articles\">".$_ARRAYLANG['TXT_KNOWLEDGE_ARTICLES']."</a>
-    	                                                   <a href=\"index.php?cmd=knowledge".MODULE_INDEX."&amp;section=categories\">".$_ARRAYLANG['TXT_KNOWLEDGE_CATEGORIES']."</a>
-    	                                                   <a href=\"index.php?cmd=knowledge".MODULE_INDEX."&amp;section=settings\">".$_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS']."</a>
-    	                                                   ");
+    	
 	}
+        private function setNavigation()
+        {
+        global $objTemplate, $_ARRAYLANG;
+        
+        $objTemplate->setVariable("CONTENT_NAVIGATION","
+            <a href=\"index.php?cmd=knowledge".MODULE_INDEX."&amp;section=articles\" class='".($this->act == 'articles' ? 'active' : '')."'>".$_ARRAYLANG['TXT_KNOWLEDGE_ARTICLES']."</a>
+            <a href=\"index.php?cmd=knowledge".MODULE_INDEX."&amp;section=categories\" class='".($this->act == 'categories' ? 'active' : '')."'>".$_ARRAYLANG['TXT_KNOWLEDGE_CATEGORIES']."</a>
+            <a href=\"index.php?cmd=knowledge".MODULE_INDEX."&amp;section=settings\" class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS']."</a>
+    	                                                   ");
+        }
+
 
 
     /**
@@ -249,6 +258,9 @@ class KnowledgeAdmin extends KnowledgeLibrary
 			'CONTENT_STATUS_MESSAGE'	=> $this->errorMessage,
 			'ADMIN_CONTENT'				=> $this->tpl->get()
 		));
+
+        $this->act = $_REQUEST['section'];
+        $this->setNavigation();
     }
 
     /**

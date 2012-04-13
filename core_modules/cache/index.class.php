@@ -48,6 +48,7 @@ class Cache extends cacheLib {
         // able to determine of the mobile device wishes to be served
         // with the system's mobile view), we shall deactivate the caching system
         if (InitCMS::_is_mobile_phone()
+            && !InitCMS::_is_tablet()
             && !isset($_REQUEST['smallscreen'])
         ) {
             $this->boolIsEnabled = false;

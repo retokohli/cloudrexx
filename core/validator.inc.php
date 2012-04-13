@@ -5,9 +5,9 @@
  *
  * Global request validator
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @access      public
- * @version     1.0.0
+ * @author        Comvation Development Team <info@comvation.com>
+ * @access        public
+ * @version        1.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -337,7 +337,7 @@ function contrexx_remove_script_tags($raw)
         return $arr;
     }
     // Remove closed script tags and content
-    $result = preg_replace('/<\s*script[^>]*>.*?<\s*\\/script\s*>/is', '', $raw);
+    $result = preg_replace('/<\s*script[^>]*>.*?<\s*\/script\s*>/is', '', $raw);
     // Remove unclosed script tags
     $result = preg_replace('/<\s*script[^>]*>/is', '', $result);
     return $result;

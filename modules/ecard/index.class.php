@@ -415,13 +415,6 @@ class ecard
         return '
 <script type="text/javascript">
 /* <![CDATA[ */
-Shadowbox.loadSkin("classic","lib/javascript/shadowbox/src/skin/");
-Shadowbox.loadLanguage("en", "lib/javascript/shadowbox/src/lang");
-Shadowbox.loadPlayer(["flv", "html", "iframe", "img", "qt", "swf", "wmp"], "lib/javascript/shadowbox/src/player");
-window.onload = function(){
-  Shadowbox.init();
-};
-
 var maxChars = '.$maxCharacters.';
 function checkAllFields() {
     value = document.getElementById("ecardMessage").value.substr(0, maxChars);

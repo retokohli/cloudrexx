@@ -1,10 +1,9 @@
 <?php
-
 /**
  * Admin CP navigation
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
+ * @version     2.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -15,7 +14,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
- * @version     1.0.0
+ * @version     2.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -27,18 +26,17 @@ class adminMenu
     public $statusMessage;
     public $arrUserRights = array();
     public $arrUserGroups = array();
+    private $activeCmd = null;
 
 
-    /**
-     * Constructor
-     */
-    function __construct()
+    public function __construct($activeCmd)
     {
+        $this->activeCmd = $activeCmd;
         $this->init();
     }
 
 
-    function getAdminNavbar()
+    public function getAdminNavbar()
     {
         global $objTemplate;
 
@@ -47,7 +45,7 @@ class adminMenu
     }
 
 
-    function init()
+    private function init()
     {
         global $_CORELANG, $objDatabase;
 
@@ -102,19 +100,15 @@ class adminMenu
      * allowed to see
      * @global array  $_CORELANG
      * @global object $objTemplate
-     * @global object $objModules
      */
-    function getMenu()
+    private function getMenu()
     {
-        global $objModules, $_CORELANG, $objTemplate;
+        global $_CORELANG, $objTemplate;
 
         $objTemplate->addBlockfile('NAVIGATION_OUTPUT', 'navigation_output', 'index_navigation.html');
         reset($this->arrMenuItems);
         foreach ( $this->arrMenuGroups as $group_id => $group_data ) {
             // Module group menu and module check!
-            if ($group_id==2 && !$objModules->existsModuleFolders) {
-                continue;
-            }
             $navigation = '';
 
             //used to remember items in current menu group
@@ -135,10 +129,81 @@ class adminMenu
                 //(2/3) sort entries by captions
                 array_multisort($arrMatchingItemCaptions, $arrMatchingItems);
             }
+
             //(3/3) display a nice ordered menu.
             foreach ($arrMatchingItems as $link_data) {
-                if ($this->moduleExists($link_data[4])) {
-                    $navigation.= "<li><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>&raquo;&nbsp;".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
+                if ($group_id != 2 ||  $this->moduleExists($link_data[4])) {
+
+                    // active exceptions for media and content module
+                    // ask: thomas.daeppen@comvation.com
+                    if (preg_match('/cmd=(.+?)(?:&amp;(.+))?$/', $link_data[2], $arrMatch)) {
+                        $linkCmd = $arrMatch[1];
+
+                        $linkCmdSection = '';
+                        if (isset($arrMatch[2])) {
+                            $linkCmdSection = $arrMatch[2];
+                        }
+
+                        switch ($linkCmd) {
+                            case 'content';
+                                if (   $this->activeCmd == 'content'
+                                    && (   empty($_REQUEST['act']) && !empty($linkCmdSection)
+                                        || !empty($_REQUEST['act']) && empty($linkCmdSection))
+                                ) {
+
+                                    $linkCmd = '';
+                                }
+                                break;
+                            case 'skins':
+                                if ($this->activeCmd == 'skins') {
+                                    break;
+                                }
+                                $linkCmdSection = 'archive=themes';
+                            case 'media':
+                                if ($this->activeCmd != 'media') {
+                                    break;
+                                }
+
+                                $isRequestedMediaArchive = false;
+                                $requestedArchive = '';
+                                if (isset($_REQUEST['archive'])) {
+                                    $requestedArchive = preg_replace('/\d+$/', '', $_REQUEST['archive']);
+                                }
+
+                                switch ($requestedArchive) {
+                                    case 'shop':
+                                        $requestedArchive = 'content';
+                                        break;
+                                    case 'themes':
+                                        $linkCmd = 'media';
+                                        break;
+                                    case 'archive':
+                                        $requestedArchive = 'archive';
+                                        break;
+                                }
+
+                                if (!empty($requestedArchive)) {
+                                    if (preg_match('/archive=(.+?)\d*$/', $linkCmdSection, $arrMatch)) {
+                                        $mediaArchive = $arrMatch[1];
+                                        if ($mediaArchive == $requestedArchive) {
+                                            $isRequestedMediaArchive = true;
+                                        }
+                                    }
+
+                                }
+
+                                if (!$isRequestedMediaArchive) {
+                                    $linkCmd = '';
+                                }
+
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+                    $cssClass = $this->activeCmd == $linkCmd ? 'active' : '';
+                    $navigation.= "<li><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."' class='$cssClass'>&raquo;&nbsp;".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
                 }
             }
 
@@ -157,16 +222,12 @@ class adminMenu
     }
 
 
-    function moduleExists($moduleFolderName)
+    private function moduleExists($moduleFolderName)
     {
-        global $objModules;
-
         if (empty($moduleFolderName)) {
             return true;
         }
-        return $objModules->getModuleStatusByName($moduleFolderName);
+
+        return contrexx_isModuleActive($moduleFolderName);
     }
-
 }
-
-?>

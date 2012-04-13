@@ -7,15 +7,14 @@ img,a { behavior: url(themes/polished/iepngfix.htc) }
 /* CSS GLOBAL DEFINITIONS FOR FORMS IN MODULES     */
 /***************************************************/
 
-form p {
+form {
     clear: left;
     margin: 0;
-    padding: 2px 0 3px 0;
-    padding-left: 190px;
+    padding: 2px 0 3px 5px;
     height: 1%;
 }
 
-form p label.description {
+form label.description {
     font-weight: normal;
     float: left;
     margin: 0px 0px 0px 10px;
@@ -23,27 +22,22 @@ form p label.description {
     width: 300px;
 }
 
-form p label.noCaption {
+form label.noCaption {
     float: left;
-    width: 420px;
     margin-left: 2px;
     margin-top: 2px;
     font-weight: normal;
 }
 
-form .contactFormGroup {
-    float: left;
-    margin-top: -15px !important;
-}
-
 form img.captcha {
-    padding-right: 200px;
+    float: left;
 }
 
-form p label, form  p span {
+form label, form  span {
+    clear: left;
     font-weight: bold;
     float: left;
-    margin-left: -190px;
+    margin-top: 5px;
     width: 180px;
 }
 
@@ -163,6 +157,47 @@ div.row2 {
 /***************************************************/
 div#livecam #CALBUTTONDPC_datum {
     display: none;
+}
+
+/***************************************************/
+/* CSS DEFINITIONS FOR CONTACT MODULE              */
+/***************************************************/
+form#contactForm .noCaption{
+    clear: none;
+    width: 420px;
+    margin: 0px;
+}
+
+form#contactForm input{
+    float: left;
+    clear: right;
+}
+
+form#contactForm select,
+form#contactForm textarea{
+    float: left;
+}
+
+form#contactForm hr{
+    float: left;
+    width: 100%;
+}
+
+form#contactForm p{
+    float: left;
+    width: 100%;
+}
+
+form#contactForm .contactFormGroup{
+    float: left;
+}
+
+form#contactForm div.contactFormGroup input{
+    clear: left;
+}
+
+form#contactForm .contactFormClass_uploadWidget span{
+    float:left;
 }
 
 /***************************************************/
@@ -1152,6 +1187,20 @@ div#livecam #CALBUTTONDPC_datum {
 	height:auto !important;
 }
 
+/* Inner block for the toggable shipment address */
+#shop .shipping_address {
+  clear: both;
+}
+
+/* Right align prices etc. */
+#shop .right {
+  text-align: right;
+}
+/* Center quantities etc. */
+#shop .center {
+  text-align: center;
+}
+
 #shop div.message_error {
 	color:#FF0000;
 }
@@ -1316,12 +1365,23 @@ table.news_meta td {
 	color: #ff0000;
 }
 
-#newsletter_home input[type=radio],
-#newsletter_home input[type=checkbox]{
-        float: none;
+#newsletter form label.description {
+    float: left;
+    margin: 2px 0px 0px 10px;
+    padding:  0px 0px 0px 0px;
+    width: 300px;
 }
 
+#newsletter form p {
+    clear: left;
+    margin: 0;
+    padding: 2px 0 3px 5px;
+    height: 1%;
+}
 
+#newsletter form label {
+    clear: none;
+}
 /***************************************************/
 /* CSS DEFINITIONS FOR EGOV MODULE                 */
 /***************************************************/
@@ -2169,8 +2229,8 @@ outline-style:none;
 #mediadir .map{
     margin-top: 10px;
     border: 1px solid #CFCFCF;
-    width: 489px; 
-    height: 250px; 
+    width: 489px;
+    height: 250px;
 }
 
 #mediadir table.list{
@@ -2195,8 +2255,8 @@ outline-style:none;
 #mediadir .mapLarge{
     margin-top: 10px;
     border: 0px solid #CFCFCF;
-    width: 620px; 
-    height: 600px; 
+    width: 620px;
+    height: 600px;
 }
 
 #mediadir input[type="button"].active {
@@ -2214,8 +2274,8 @@ outline-style:none;
 }
 
 #mediadir input.mediadirVoteButton {
-       font-weight:normal;  
-       min-width:1px; 
+       font-weight:normal;
+       min-width:1px;
        width: 30px !important;
 }
 
@@ -2277,7 +2337,4 @@ outline-style:none;
     float:left;
     overflow: hidden;
     text-indent: 30px;
-}
-#contactFormField_uploadWidget span{
-    float:left;
 }

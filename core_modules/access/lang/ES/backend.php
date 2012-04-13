@@ -251,4 +251,27 @@ $_ARRAYLANG['TXT_ACCESS_NEW_DAM_CATEGORY_CREATED_TXT'] = "A new category has bee
 $_ARRAYLANG['TXT_ACCESS_ADDITIONAL_FUNCTIONS'] = "Additional Functions";
 $_ARRAYLANG['TXT_ACCESS_DIGITAL_ASSET_MANAGEMENT'] = "Digital Asset Management";
 $_ARRAYLANG['TXT_ACCESS_ADD_DAM_CATEGORY'] = "Add a new, personal category to the Digital Asset Management module which is only accessable by this user.";
+$_ARRAYLANG['TXT_ACCESS_HOMEPAGE'] = "Homepage";
+$_ARRAYLANG['TXT_ACCESS_BROWSE'] = "Browse";
+$_ARRAYLANG['TXT_ACCESS_HOMEPAGE_DESC'] = "Select the web page to which the associated users of this group should be redirected to after they had successfully been authenticated.";
+$_ARRAYLANG['TXT_ACCESS_TOS_SINGUP_DESC'] = "Users must accept the <a href=\"%s\" target=\"_blank\" title=\"ToS\">ToS</a> when signing up.";
+$_ARRAYLANG['TXT_ACCESS_TOS'] = "Terms of Service";
+$_ARRAYLANG['TXT_ACCESS_CAPTCHA'] = "Security Code";
+$_ARRAYLANG['TXT_ACCESS_CAPTCHA_SIGNUP_DESC'] = "Users have to copy off a security code when signing up. This will prevent robots to sign up automatically.";
+$_ARRAYLANG['TXT_ACCESS_CROP_THUMBNAIL_TXT'] = "Crop to thumbnail's size";
+$_ARRAYLANG['TXT_ACCESS_SCALE_THUMBNAIL_TXT'] = "Scale to thumbnail's size";
+$_ARRAYLANG['TXT_ACCESS_BACKGROUND_COLOR'] = "Background Color";
+$_ARRAYLANG['TXT_ACCESS_THUMBNAIL_GENERATION'] = "Thumbnail Generation";
+$_ARRAYLANG['TXT_ACCESS_NEWSLETTER_LISTS'] = "Newsletter";
+$_ARRAYLANG['TXT_ACCESS_IMPORT'] = "Benutzer importieren";
+$_ARRAYLANG['TXT_ACCESS_CHOOSE_FILE'] = "CSV Datei auswählen";
+$_ARRAYLANG['TXT_ACCESS_IMPORT_MESSAGE_TEMPLATE'] = "%1\$s: %2\$s";
+$_ARRAYLANG['TXT_ACCESS_IMPORT_ERROR_INVALID_EMAIL'] = "Ungültige E-Mail Adresse";
+$_ARRAYLANG['TXT_ACCESS_IMPORT_SUCCESS_USER_CREATED'] = "Benutzerkonto angelegt";
+$_ARRAYLANG['TXT_ACCESS_IMPORT_SUCCESS_USER_UPDATED'] = "Benutzerkonto aktualisiert";
+$_ARRAYLANG['TXT_ACCESS_IMPORT_ERROR_CREATING_USER'] = "Benutzerkonto konnte nicht angelegt werden";
+$_ARRAYLANG['TXT_ACCESS_IMPORT_SUCCESS_LIST_CREATED'] = "Liste angelegt";
+$_ARRAYLANG['TXT_ACCESS_DELETE'] = "Eliminar";
+$_ARRAYLANG['TXT_ACCESS_SELECT_ACTION'] = "Seleccionar acci&oacute;n";
+$_ARRAYLANG['TXT_ACCESS_CONFIRM_DELETE_USERS'] = "Est&aacute; usted seguro de que desea eliminar las usuarios seleccionadas?";
 ?>

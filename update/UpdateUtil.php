@@ -1,15 +1,20 @@
 <?php
+
 class UpdateException extends Exception {};
+
 
 class Update_DatabaseException extends UpdateException {
     public $sql;
+
     function __construct($message, $sql = null) {
         parent::__construct($message);
         $this->sql = $sql;
     }
 }
 
-class UpdateUtil {
+
+class UpdateUtil
+{
     /**
      * Creates or modifies a table to the given specification.
      *
@@ -38,19 +43,22 @@ class UpdateUtil {
      *                                     # are duplicates (which will be dropped). use with care.
      *        )
      */
-    public static function table($name, array $struc, array $idx = array(), $engine = 'MyISAM') {
+    public static function table($name, $struc, $idx = array(), $engine = 'MyISAM')
+    {
         if (self::table_exist($name)) {
             self::check_columns($name, $struc);
             self::check_indexes($name, $idx, $struc);
             self::check_dbtype($name, $engine);
-        }
-        else {
+        } else {
             self::create_table($name, $struc, $idx, $engine);
         }
     }
 
-    public static function drop_table($name) {
+
+    public static function drop_table($name)
+    {
         global $objDatabase;
+
         if (self::table_exist($name)) {
             $table_stmt = "DROP TABLE `$name`";
             if ($objDatabase->Execute($table_stmt) === false) {
@@ -59,8 +67,11 @@ class UpdateUtil {
         }
     }
 
-    public static function column_exist($name, $col) {
-        global $objDatabase;
+
+    public static function column_exist($name, $col)
+    {
+        global $objDatabase, $_ARRAYLANG;
+
         $col_info = $objDatabase->MetaColumns($name);
         if ($col_info === false) {
             throw new UpdateException(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
@@ -68,8 +79,11 @@ class UpdateUtil {
         return isset($col_info[strtoupper($col)]);
     }
 
-    public static function table_exist($name) {
+
+    public static function table_exist($name)
+    {
         global $objDatabase, $_ARRAYLANG;
+
         $tableinfo = $objDatabase->MetaTables();
         if ($tableinfo === false) {
             throw new UpdateException(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
@@ -77,15 +91,14 @@ class UpdateUtil {
         return in_array($name, $tableinfo);
     }
 
-    private static function check_dbtype($name, $engine) {
-        global $objDatabase;
 
-        $tableinfo   = self::sql("SHOW CREATE TABLE $name");
+    private static function check_dbtype($name, $engine)
+    {
+        $tableinfo = self::sql("SHOW CREATE TABLE $name");
         $create_stmt = $tableinfo->fields['Create Table'];
-
-        preg_match('#ENGINE=(\w+)#i', $create_stmt, $result);
-        $current_engine = strtoupper($result[1]);
-
+        $match = null;
+        preg_match('#ENGINE=(\w+)#i', $create_stmt, $match);
+        $current_engine = strtoupper($match[1]);
         if (strtoupper($engine) == $current_engine) {
             return;
         }
@@ -93,7 +106,9 @@ class UpdateUtil {
         self::sql("ALTER TABLE `$name` ENGINE=$engine");
     }
 
-    private static function create_table($name, array $struc, $idx, $engine) {
+
+    private static function create_table($name, $struc, $idx, $engine)
+    {
         global $objDatabase, $_ARRAYLANG;
 
         // create table statement
@@ -115,13 +130,69 @@ class UpdateUtil {
         // of the "problem".
         self::check_indexes($name, $idx);
     }
-    private static function cry($msg, $sql) {
+
+
+    /**
+     * Rename the table $table_name_old to $table_name_new
+     * @param   string  $table_name_old   The current table name
+     * @param   string  $table_name_new   The new table name
+     * @return  boolean                   True on success, false otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function table_rename($table_name_old, $table_name_new)
+    {
+        return (boolean)self::sql(
+            "RENAME TABLE `$table_name_old` TO `$table_name_new`");
+    }
+
+
+    /**
+     * Returns true if the table is empty
+     *
+     * If the table cannot be accessed, returns null.
+     * Hint: call {@see table_exists} first.
+     * @param   string      $table_name     The table name
+     * @return  boolean                     True if the table is empty,
+     *                                      null on error, or false
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function table_empty($table_name)
+    {
+        $count = self::record_count($table_name);
+        if (is_null($count)) return null;
+        return !(boolean)$count;
+    }
+
+
+    /**
+     * Returns the record count for the given table name
+     *
+     * If the table cannot be accessed, returns null.
+     * @param   string    $table_name     The table name
+     * @return  integer                   The record count on success,
+     *                                    null otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function record_count($table_name)
+    {
+        $objResult = self::sql("
+            SELECT COUNT(*) AS `record_count`
+              FROM $table_name");
+        if (!$objResult) return null;
+        return $objResult->fields['record_count'];
+    }
+
+
+    private static function cry($msg, $sql)
+    {
         throw new Update_DatabaseException($msg, $sql);
     }
 
 
-    public static function sql($statement) {
+    public static function sql($statement)
+    {
         global $objDatabase;
+
         # ugly, ugly hack so it does not return Insert_ID when we didn't insert
         $objResult = $objDatabase->Execute($statement);
         if ($objResult === false) {
@@ -130,20 +201,24 @@ class UpdateUtil {
         return $objResult;
     }
 
-    public static function insert($statement) {
+
+    public static function insert($statement)
+    {
         global $objDatabase;
+
         self::sql($statement);
         return $objDatabase->Insert_ID();
     }
 
 
-    private function check_columns($name, $struc) {
-        global $objDatabase;
+    private static function check_columns($name, $struc)
+    {
+        global $objDatabase, $_ARRAYLANG;
+
         $col_info = $objDatabase->MetaColumns($name);
         if ($col_info === false) {
             self::cry(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
         }
-
         // Create columns that don't exist yet
         foreach ($struc as $col => $spec) {
             if (self::_check_column($name, $col_info, $col, $spec)) {
@@ -154,12 +229,13 @@ class UpdateUtil {
                 }
             }
         }
-
         // Drop columns that are not specified
         self::_drop_unspecified_columns($name, $struc, $col_info);
     }
 
-    private function _drop_unspecified_columns($name, $struc, $col_info) {
+
+    private static function _drop_unspecified_columns($name, $struc, $col_info)
+    {
         global $objDatabase;
 
         foreach (array_keys($col_info) as $col) {
@@ -180,15 +256,18 @@ class UpdateUtil {
         }
     }
 
+
     /**
      * Checks the given column and ALTERS what's needed. Returns true
      * if a change has been done.
      */
-    private function _check_column($name, $col_info, $col, $spec) {
+    private static function _check_column($name, $col_info, $col, $spec)
+    {
         global $objDatabase;
 
         if (!isset($col_info[strtoupper($col)])) {
             $colspec = self::_colspec($spec);
+            $query = '';
             // check if we need to rename the column
             if (isset($spec['renamefrom']) and isset($col_info[strtoupper($spec['renamefrom'])])) {
                 // rename requested and possible.
@@ -201,38 +280,36 @@ class UpdateUtil {
                 //       rename was requested but not possible?
                 $query = "ALTER TABLE `$name` ADD `$col` $colspec";
             }
-
             self::sql($query);
             return true;
-		}
-        else {
-            $col_spec = $col_info[strtoupper($col)];
-            $type = $col_spec->type . (preg_match('@[a-z]+\([0-9]+\)@i', $spec['type']) && $col_spec->max_length > 0 ? "($col_spec->max_length)" : ($col_spec->type == 'enum' ? "(".implode(",", $col_spec->enums).")" : ''));
-            $default = isset($spec['default']) ? $spec['default'] : (isset($spec['default_expr']) ? $spec['default_expr'] : '');
-            if ($type <> strtolower($spec['type'])
-                || $col_spec->unsigned <> (isset($spec['unsigned']) && $spec['unsigned'])
-                || $col_spec->not_null <> (!isset($spec['notnull']) || $spec['notnull'])
-                || $col_spec->has_default <> (isset($spec['default']) || isset($spec['default_expr']))
-                || $col_spec->has_default && ($col_spec->default_value <> $default)
-                || $col_spec->auto_increment <> (isset($spec['auto_increment']) && $spec['auto_increment'])
-                || isset($spec['on_update'])
-                || isset($spec['on_delete'])
-            ) {
-                $colspec = self::_colspec($spec);
-                $query = "ALTER TABLE `$name` CHANGE `$col` `$col` $colspec";
-                self::sql($query);
-                return true;
-            }
-
+        }
+        $col_spec = $col_info[strtoupper($col)];
+        $type = $col_spec->type . (preg_match('@[a-z]+\([0-9]+\)@i', $spec['type']) && $col_spec->max_length > 0 ? "($col_spec->max_length)" : ($col_spec->type == 'enum' ? "(".implode(",", $col_spec->enums).")" : ''));
+        $default = isset($spec['default']) ? $spec['default'] : (isset($spec['default_expr']) ? $spec['default_expr'] : '');
+        if ($type != strtolower($spec['type'])
+            || $col_spec->unsigned != (isset($spec['unsigned']) && $spec['unsigned'])
+            || $col_spec->not_null != (!isset($spec['notnull']) || $spec['notnull'])
+            || $col_spec->has_default != (isset($spec['default']) || isset($spec['default_expr']))
+            || $col_spec->has_default && ($col_spec->default_value != $default)
+            || $col_spec->auto_increment != (isset($spec['auto_increment']) && $spec['auto_increment'])
+            || isset($spec['on_update'])
+            || isset($spec['on_delete'])
+        ) {
+            $colspec = self::_colspec($spec);
+            $query = "ALTER TABLE `$name` CHANGE `$col` `$col` $colspec";
+            self::sql($query);
+            return true;
         }
         return false;
-
         // TODO: maybe we should check for the type of the
         // existing column here and adjust it too?
     }
 
-    private function check_indexes($name, $idx, $struc = null) {
+
+    private static function check_indexes($name, $idx, $struc=null)
+    {
         global $objDatabase;
+
         # mysql> show index from contrexx_access_user_mail;
         $keyinfo = $objDatabase->Execute("SHOW INDEX FROM `$name`");
         if ($keyinfo === false) {
@@ -243,13 +320,15 @@ class UpdateUtil {
         $arr_keys_to_drop = array();
         $arr_primaries = array();
         while (!$keyinfo->EOF) {
-            if (isset($idx[ $keyinfo->fields['Key_name'] ])) {
+            if (isset($idx[$keyinfo->fields['Key_name']])) {
                 $idx[$keyinfo->fields['Key_name']]['exists'] = true;
                 $keyinfo->MoveNext();
                 continue;
             }
             if ($keyinfo->fields['Key_name'] == 'PRIMARY') {
-                $arr_primaries[] = $keyinfo->fields['Column_name'];
+                $arr_primaries[] =
+                    $keyinfo->fields['Column_name'].
+                    $keyinfo->fields['Sub_part'];
                 // primary keys should NOT be dropped :P
                 $keyinfo->MoveNext();
                 continue;
@@ -261,16 +340,27 @@ class UpdateUtil {
         if ($struc) {
             $new_primaries = self::_getprimaries($struc);
             // recreate the primary key in case it changed
-            if (count(array_diff($new_primaries, $arr_primaries)) || count(array_diff($arr_primaries, $new_primaries))) {
+            if (count(array_diff($new_primaries, $arr_primaries))
+             || count(array_diff($arr_primaries, $new_primaries))) {
                 // delete current primary key, in case there is one
                 if (count($arr_primaries)) {
                     $drop_st = "ALTER TABLE `$name` DROP PRIMARY KEY";
                     self::sql($drop_st);
                 }
-
                 // add new primary key, in case one is defined
                 if (count($new_primaries)) {
-                    $new_st = "ALTER TABLE `$name` ADD PRIMARY KEY (`".join("`, `", $new_primaries)."`)";
+                    // Properly handle key lengths
+                    $match = null;
+                    foreach ($new_primaries as &$primary) {
+                        if (preg_match('/(\w+)(\(\d+\))?/', $primary, $match)) {
+                            $primary =
+                                '`'.$match[1].'`'.
+                                (empty($match[2]) ? '' : $match[2]);
+                        }
+                    }
+                    $new_st =
+                        "ALTER TABLE `$name` ADD PRIMARY KEY (".
+                        join(', ', $new_primaries).')';
                     self::sql($new_st);
                 }
             }
@@ -294,11 +384,16 @@ class UpdateUtil {
         // okay, that's it, have a nice day!
     }
 
-    private function _dropkey($table, $name) {
+
+    private static function _dropkey($table, $name)
+    {
         return "ALTER TABLE `$table` DROP INDEX `$name`";
     }
 
-    private function _keyspec($table, $name, $spec) {
+
+    private static function _keyspec($table, $name, $spec)
+    {
+        $arrFields = array();
         foreach ($spec['fields'] as $fieldInfo1 => $fieldInfo2) {
             if (intval($fieldInfo1) !== $fieldInfo1) {
                 $arrFields[] = '`'.$fieldInfo1.'`('.$fieldInfo2.')';
@@ -307,42 +402,50 @@ class UpdateUtil {
             }
         }
         $fields = join(',', $arrFields);
-        $type   = array_key_exists('type', $spec) ? $spec['type'] : '';
-
+        $type = array_key_exists('type', $spec) ? $spec['type'] : '';
+        $descr = null;
         if (isset($spec['force']) && $spec['force']) {
-            $descr = "ALTER IGNORE TABLE `$table` ADD $type INDEX `$name` ($fields)";
+//            $descr = "ALTER IGNORE TABLE `$table` ADD $type INDEX `$name` ($fields)";
+            $descr = "ALTER IGNORE TABLE `$table` ADD $type KEY `$name` ($fields)";
         } else {
-            $descr  = "ALTER TABLE `$table` ADD $type INDEX `$name` ($fields)";
+// TODO "INDEX" instead of "KEY" produces an error for type "PRIMARY"? -- RK
+  //          $descr  = "ALTER TABLE `$table` ADD $type INDEX `$name` ($fields)";
+            $descr  = "ALTER TABLE `$table` ADD $type KEY `$name` ($fields)";
         }
-
         return $descr;
     }
-    private function _colspec($spec, $create_tbl_operation = false) {
+
+
+    private static function _colspec($spec, $create_tbl_operation=false)
+    {
         $unsigned     = (array_key_exists('unsigned',       $spec)) ? $spec['unsigned']       : false;
         $notnull      = (array_key_exists('notnull',        $spec)) ? $spec['notnull']        : true;
         $autoinc      = (array_key_exists('auto_increment', $spec)) ? $spec['auto_increment'] : false;
         $default_expr = (array_key_exists('default_expr',   $spec)) ? $spec['default_expr']   : '';
-        $default      = (array_key_exists('default',        $spec)) ? $spec['default']        : null;
+//        $default      = (array_key_exists('default',        $spec)) ? $spec['default']        : null;
+        // Allow "NULL" as a default value!
+        $default = (array_key_exists('default', $spec)
+            ? (is_null($spec['default'])
+                ? 'NULL' : "'".addslashes($spec['default'])."'")
+            : null);
         $binary       = (array_key_exists('binary',         $spec)) ? $spec['binary']         : null;
         $on_update    = (array_key_exists('on_update',      $spec)) ? $spec['on_update']      : null;
         $on_delete    = (array_key_exists('on_delete',      $spec)) ? $spec['on_delete']      : null;
-
         $after = false;
         if (!$create_tbl_operation) {
             $after    = (array_key_exists('after',          $spec)) ? $spec['after']          : false;
         }
-
         $default_st = '';
-        if (strtoupper($spec['type']) != 'BLOB' and strtoupper($spec['type']) != 'TEXT') {
+        if (strtoupper($spec['type']) != 'BLOB'
+         && strtoupper($spec['type']) != 'TEXT'
+         && strtoupper($spec['type']) != 'TINYTEXT') {
             // BLOB/TEXT can't have a default value... sez MySQL
-            if (!is_null($default)) {
-                $default_st = " DEFAULT '".addslashes($default)."'";
-            }
-            elseif($default_expr != '') {
+            if (isset($default)) {
+                $default_st = " DEFAULT $default";
+            } elseif ($default_expr != '') {
                 $default_st = " DEFAULT $default_expr";
             }
         }
-
         $descr  = $spec['type'];
         $descr .= $binary ? " BINARY" : '';
         $descr .= $unsigned ? " unsigned"      : '';
@@ -354,11 +457,30 @@ class UpdateUtil {
         $descr .= $after ? " AFTER `".$after."`" : '';
         return $descr;
     }
-    private function _getprimaries($struc) {
+
+
+    /**
+     * Picks the primary key names (and optional key lengths) from the
+     * field specifications
+     *
+     * If the "primary" element value is numeric, it is assumed to be the
+     * length of the key, and appended to the name in parentheses.
+     * @param   array   $struc      The field specification array
+     * @return  array               The array of primary key names
+     */
+    private static function _getprimaries($struc)
+    {
         $primaries = array();
         foreach ($struc as $name => $spec) {
             $is_primary = (array_key_exists('primary', $spec)) ? $spec['primary'] : false;
+// Primary with key length, as with the separate key specs.
+// -> Use separate key specs in that case.
+//            if (is_numeric($is_primary)) {
+//                // Like "'type' => 'TEXT', 'primary' => 32, ..."
+//                $primaries[] = "$name($is_primary)";
+//            } else
             if ($is_primary) {
+                // Like "'type' => 'INT(10)', 'primary' => true, ..."
                 $primaries[] = $name;
             }
         }
@@ -368,21 +490,26 @@ class UpdateUtil {
     /**
      * Replace certain strings in a content page
      *
-     * This method will replace $search with $replace in the content page(s) specified by the module ID $moduleId and CMD $cmd.
-     * If $cmd is set to NULL, the replacement will be done on every content page of the specified module.
-     * $search and $replace can either be a single string or an array of strings.
-     * $changeVersion specifies the Contrexx version in which the replaced should take place. Latter means that the replace will only be done if the installed Contrexx version is older than the one specified by $changeVersion.
-     *
-     * @global Contrexx_Update
-     * @global Array
-     * @param integer Module ID
-     * @param string CMD
-     * @param mixed Search string(s)
-     * @param mixed Replacement string(s)
-     * @param string Contrexx version
-     * of the content page
+     * This method will replace $search with $replace in the content page(s)
+     * specified by the module ID $moduleId and CMD $cmd.
+     * If $cmd is set to NULL, the replacement will be done on every content
+     * page of the specified module.
+     * $search and $replace can either be a single string or an array
+     * of strings.
+     * $changeVersion specifies the Contrexx version in which the replaced
+     * should take place. Latter means that the replace will only be done if
+     * the installed Contrexx version is older than the one specified by
+     * $changeVersion.
+     * @global  Contrexx_Update
+     * @global  Array
+     * @param   integer   $moduleId   Module ID
+     * @param   string    $cmd        CMD
+     * @param   mixed     $search     Search string or array of strings
+     * @param   mixed     $replace    Replacement string or array of strings
+     * @param   string    $changeVersion  Contrexx version of the content page
      */
-    public static function migrateContentPage($moduleId, $cmd, $search, $replace, $changeVersion)
+    public static function migrateContentPage($moduleId, $cmd, $search,
+        $replace, $changeVersion)
     {
         global $objUpdate, $_CONFIG;
 
@@ -422,8 +549,9 @@ class UpdateUtil {
                 INNER JOIN `".DBPREFIX."content_navigation` AS n ON n.`catid` = c.`id`
                 WHERE n.`module` = $moduleId ".($cmd === null ? '' : "AND n.`cmd` = '$cmd'")." AND n.`username` != 'contrexx_update_$changeVersion'";
             $objContent = self::sql($query);
-            $orig_loopy_query = $query;
-            $arrFailedPages = array();
+// TODO: Unused
+//            $orig_loopy_query = $query;
+//            $arrFailedPages = array();
             while (!$objContent->EOF) {
                 $newContent = str_replace(
                     $search,
@@ -491,12 +619,14 @@ class UpdateUtil {
         }
     }
 
-    public static function DefaultActionHandler($e) {
+
+    public static function DefaultActionHandler($e)
+    {
         if ($e instanceof Update_DatabaseException) {
             return _databaseError($e->sql, $e->getMessage());
         }
-		setUpdateMsg($e->getMessage());
-		return false;
+        setUpdateMsg($e->getMessage());
+        return false;
     }
-}
 
+}

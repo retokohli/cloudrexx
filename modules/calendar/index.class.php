@@ -318,8 +318,8 @@ JSCODE;
                         $year    = isset($_REQUEST['yearID']) ? '&amp;yearID='.$_REQUEST['yearID'] : '&amp;yearID='.date("Y", mktime());
                     }
             	} else {
-            		$datearr = explode(".", $_POST['startDate']);
-            		$startdate = mktime(0, 0, 0, $datearr[1], $datearr[0], $datearr[2]);
+            		$datearr = explode("-", $_POST['startDate']);
+            		$startdate = mktime(0, 0, 0, $datearr[1], $datearr[2], $datearr[0]);
 
             		$day 	=  '&amp;dayID='.date("d", $startdate);
     	    		$month 	=  '&amp;monthID='.date("m", $startdate);
@@ -337,8 +337,8 @@ JSCODE;
                         $yearEnd    = isset($_REQUEST['yearID']) ? '&amp;yearEndID='.$_REQUEST['yearID'] : '&amp;yearEndID='.date("Y", mktime());
                     }
             	} else {
-            		$datearr = explode(".", $_POST['endDate']);
-            		$enddate = mktime(0, 0, 0, $datearr[1], $datearr[0], $datearr[2]);
+            		$datearr = explode("-", $_POST['endDate']);
+            		$enddate = mktime(0, 0, 0, $datearr[1], $datearr[2], $datearr[0]);
 
             		$dayEnd 	=  '&amp;dayEndID='.date("d", $enddate);
     	    		$monthEnd 	=  '&amp;monthEndID='.date("m", $enddate);
@@ -1483,7 +1483,7 @@ JSCODE;
                 }
             }
             $fileNew = $this->uploadImgWebPath.$pathAdd.$sessid.$extension;
-            $rc = File::uploadFileHttp($formfield, $fileNew, $this->uploadImgMaxSize);
+            $rc = File::upload_file_http($formfield, $fileNew, $this->uploadImgMaxSize);
             if($rc) {
                 $_SESSION['calendar']['uploadedimage'][$formfield] = $this->uploadImgWebPath.$pathAdd.$sessid.$extension;
                 $_SESSION['calendar']['uploadedimagepath'][$formfield] = $this->uploadImgPath.$pathAdd.$sessid.$extension;

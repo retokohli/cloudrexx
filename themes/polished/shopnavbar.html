@@ -1,21 +1,42 @@
 <!-- start shopnavbar.html -->
-<div id="shop_navigation">
-<ul>
-<li><a class="title" href="index.php?section=shop">Kategorien</a></li>
-<!-- BEGIN shopNavbar --><li class="{SHOP_CATEGORY_STYLE}"><a href="index.php?section=shop&amp;catId={SHOP_CATEGORY_ID}">{SHOP_CATEGORY_NAME}</a></li><!-- END shopNavbar --></ul></div>
-<!-- BEGIN shopJsCart -->
+<!-- BEGIN shopCartInfo -->
+<!-- Optional static cart info, only useful when the dynamic cart is off -->
+{SHOP_CART_INFO}
+<br /> 
+<!-- END shopCartInfo -->
 
+<div id="shop_navigation">
+  <ul>
+    <li>
+      <a class="title" href="index.php?section=shop">{TXT_SHOP_CATEGORIES}</a>
+    </li>
+<!-- BEGIN shopNavbar -->
+    <li class="{SHOP_CATEGORY_STYLE}">
+      <a href="index.php?section=shop&amp;catId={SHOP_CATEGORY_ID}">{SHOP_CATEGORY_NAME}</a>
+    </li>
+<!-- END shopNavbar -->
+  </ul>
+</div>
+
+<!-- BEGIN shopJsCart -->
 <div id="shopJsCart">
-<ul>
-<li><a href="index.php?section=shop&amp;cmd=cart" class="title">Warenkorb</a></li>
+  <ul>
+    <li><a href="index.php?section=shop&amp;cmd=cart" class="title">{TXT_SHOP_CART}</a></li>
 <!-- BEGIN shopJsCartProducts -->
-<li class="product">{SHOP_JS_PRODUCT_QUANTITY}x {SHOP_JS_PRODUCT_TITLE}<br />({SHOP_JS_PRODUCT_PRICE} {SHOP_JS_TOTAL_PRICE_UNIT})</li>
+    <li class="product">{TXT_SHOP_CART_JS_FORMAT_PRODUCT}</li>
 <!-- END shopJsCartProducts -->
-<li class="total">Total {SHOP_JS_PRDOCUT_COUNT} Artikel im Wert von<br /><b>{SHOP_JS_TOTAL_PRICE} {SHOP_JS_TOTAL_PRICE_UNIT}</b></li>
-<li class="link"><a href='?section=shop&amp;cmd=cart' title="Weiter zur Bestellung...">Warenkorb anzeigen</a></li>
-<li class="link"><a href='?section=shop&amp;act=destroy' title="Neue Bestellung...">Warenkorb leeren</a></li>
-</ul>
+    <li class="total">{TXT_SHOP_CART_JS_FORMAT_TOTAL}</li>
+    <li class="link"><a href='index.php?section=shop&amp;cmd=cart'
+        title="{TXT_SHOP_MAKE_ORDER}">{TXT_SHOP_SHOW_CART}</a></li>
+    <li class="link"><a href='index.php?section=shop&amp;act=destroy'
+        title="{TXT_SHOP_NEW_ORDER}">{TXT_SHOP_EMPTY_CART}</a></li>
+  </ul>
 </div>
 <!-- END shopJsCart -->
-<div id="shop_currencies"><!-- BEGIN shopCurrencies -->{SHOP_CURRENCIES}&nbsp;<!-- END shopCurrencies --></div>
+
+<div id="shop_currencies">
+<!-- BEGIN shopCurrencies -->
+  {SHOP_CURRENCIES}&nbsp;
+<!-- END shopCurrencies -->
+</div>
 <!-- end shopnavbar.html -->

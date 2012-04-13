@@ -354,8 +354,7 @@ class Saferpay
     {
         $this->arrShopOrder = $arrShopOrder;
         $this->attributes = $this->getAttributeList('payInit');
-
-        // This won't work without allow_url_fopen
+// TODO: This won't work without allow_url_fopen
         $this->arrTemp['result'] =
             file_get_contents($this->gateway['payInit'].'?'.$this->attributes);
         if ($this->arrTemp['result']) return $this->arrTemp['result'];
@@ -375,36 +374,38 @@ class Saferpay
      */
     function payConfirm()
     {
+//DBG::log("Saferpay::payConfirm():");
+//DBG::log("POST: ".var_export($_POST, true));
+//DBG::log("GET: ".var_export($_GET, true));
         // Predefine the variables parsed by parse_str() to avoid
         // code analyzer warnings
         $DATA = '';
         $SIGNATURE = '';
         parse_str($_SERVER['QUERY_STRING']);
         // Note: parse_str()'s results comply with the magic quotes setting!
-        $this->arrShopOrder['DATA']      = urlencode(contrexx_stripslashes($DATA));
-        $this->arrShopOrder['SIGNATURE'] = urlencode(contrexx_stripslashes($SIGNATURE));
+        $this->arrShopOrder['DATA'] = urlencode(contrexx_input2raw($DATA));
+        $this->arrShopOrder['SIGNATURE'] = urlencode(contrexx_input2raw($SIGNATURE));
         $this->attributes = $this->getAttributeList('payConfirm');
-
-        // This won't work without allow_url_fopen
-        $this->arrTemp['result'] =
-            file_get_contents($this->gateway['payConfirm'].'?'.$this->attributes);
+// TODO: This won't work without allow_url_fopen
+        $confirmUrl = $this->gateway['payConfirm'].'?'.$this->attributes;
+//DBG::log("payConfirm: URL: $confirmUrl");
+        $this->arrTemp['result'] = file_get_contents($confirmUrl);
         if (!$this->arrTemp['result']) {
             // Try socket connection as well
-            $this->arrTemp['result'] =
-                Socket::getHttp10Response(
-                    $this->gateway['payConfirm'].'?'.$this->attributes
-                );
+            $this->arrTemp['result'] = Socket::getHttp10Response($confirmUrl);
         }
-
+//DBG::log("payConfirm: Result: ".$this->arrTemp['result']);
         if (substr($this->arrTemp['result'], 0, 2) == 'OK') {
             $ID = '';
             $TOKEN = '';
             parse_str(substr($this->arrTemp['result'], 3));
             $this->arrTemp['id'] = $ID;
             $this->arrTemp['token'] = $TOKEN;
+//DBG::log("Saferpay::payConfirm(): SUCCESS");
             return true;
         }
         $this->arrError[] = $this->arrTemp['result'];
+//DBG::log("Saferpay::payConfirm(): FAIL, Error: ".join("\n", $this->arrError));
         return false;
     }
 
@@ -426,7 +427,7 @@ class Saferpay
             // Business account *ONLY*, like the test account
             // There is no password setting (yet), so this is for
             // future testing porposes *ONLY*
-            (Settings::getStatusByName('saferpay_use_test_account')
+            (SettingDb::getValue('saferpay_use_test_account')
               ? '&spPassword=XAjc3Kna'
               : '');
         // This won't work without allow_url_fopen
@@ -472,7 +473,7 @@ class Saferpay
      */
     function ifExist($attribute)
     {
-        if (array_key_exists($attribute,$this->arrShopOrder)) {
+        if (array_key_exists($attribute, $this->arrShopOrder)) {
             return true;
         }
         $this->arrError[] = $attribute." isn't set!";
@@ -504,9 +505,6 @@ class Saferpay
                 $this->arrError[] = $attribute." isn't valid.";
                 return false;
             case 'ACCOUNTID':
-                if ($this->isTest) {
-                    $this->arrShopOrder[$attribute] = $this->testAccountId;
-                }
                 if ($this->arrShopOrder[$attribute] == '') {
                     $this->arrError[] = $attribute." isn't set";
                     return false;
@@ -540,14 +538,12 @@ class Saferpay
                 return true;
             case 'ALLOWCOLLECT':
                 if ($this->arrShopOrder[$attribute] != 'yes') {
-                    $this->arrShopOrder[$attribute] = 'yes';
-                    $this->arrWarning[] = $attribute.' was set to "yes"';
+                    $this->arrShopOrder[$attribute] = 'no';
                 }
                 return true;
             case 'DELIVERY':
                 if ($this->arrShopOrder[$attribute] != 'yes') {
-                    $this->arrShopOrder[$attribute] = 'yes';
-                    $this->arrWarning[] = $attribute.' was set to "yes"';
+                    $this->arrShopOrder[$attribute] = 'no';
                 }
                 return true;
             case 'NOTIFYADDRESS':
@@ -651,5 +647,3 @@ class Saferpay
     }
 
 }
-
-?>

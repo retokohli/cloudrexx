@@ -1,26 +1,27 @@
 <?php
 
 /**
- * Initialize CMS
+ * Initialize the CMS
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @version        1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
 
 /**
- * Class Initialize
- *
- * init CMS
- *
+ * Initialize the CMS
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @access        public
- * @version        1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  core
+ * @todo        Any methods handling content or language should be moved
+ *              away from here to a distinct class!
+ * @todo        Most if not all of the properties and methods are potentially
+ *              static.
  */
 class InitCMS
 {
@@ -36,7 +37,6 @@ class InitCMS
 
     public $currentThemesId;
     public $customContentTemplate = null;
-    public $is_home;
     public $arrLang = array();
     public $arrLangNames = array();
     public $templates = array();
@@ -46,31 +46,34 @@ class InitCMS
     * int $isMobileDevice
     * whether we're dealing with a mobile device.
     * values 1 or 0.
-    * @see InitCMS::_initFrontendLanguage()
-    * @see InitCMS::_setCustomizedThemesId()
+    * @see InitCMS::checkForMobileDevice()
+    * @see InitCMS::setCustomizedTheme()
     * @access private
     */
     private $isMobileDevice = 0;
 
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
+    protected $em = null;
 
     private $themesPath;
 
     /**
-    * string $mode
-    * frontend or backend
-    */
+     * Either "frontend" or "backend"
+     * @var   string
+     */
     public $mode;
 
 
     /**
-    * Constructor
-    *
-    */
-    function __construct($mode='frontend')
+     * Constructor
+     */
+    function __construct($mode='frontend', $entityManager)
     {
         global $objDatabase;
 
-        $this->is_home=false;
+        $this->em = $entityManager;
         $this->mode=$mode;
 
         $objResult = $objDatabase->Execute("
@@ -104,9 +107,10 @@ class InitCMS
             //$this->_initBackendLanguage();
             $this->getUserFrontendLangId();
         }
-        $this->_initFrontendLanguage();
+
         $this->loadModulePaths();
     }
+
 
     /**
      * Backend language initialization
@@ -121,7 +125,7 @@ class InitCMS
         } else {
             $backendLangId = $this->defaultBackendLangId;
         }
-        if (!isset($this->arrLang[$backendLangId]) || $this->arrLang[$backendLangId]['backend'] != 1) {
+        if (empty($this->arrLang[$backendLangId]['backend'])) {
             $backendLangId = $this->defaultBackendLangId;
         }
         $this->backendLangId = $this->arrLang[$backendLangId]['id'];
@@ -131,51 +135,75 @@ class InitCMS
     }
 
 
-    function _initFrontendLanguage()
+    function getFallbackFrontendLangId()
     {
-        global $_CONFIG;
-
         // Frontend language initialization
         $setCookie = false;
 
         if (!empty($_REQUEST['setLang'])) {
-            $frontendLangId = intval($_REQUEST['setLang']);
+            $langId = intval($_REQUEST['setLang']);
             $setCookie = true;
         } elseif (!empty($_GET['langId'])) {
-            $frontendLangId = intval($_GET['langId']);
+            $langId = intval($_GET['langId']);
         } elseif (!empty($_POST['langId'])) {
-            $frontendLangId = intval($_POST['langId']);
+            $langId = intval($_POST['langId']);
         } elseif (!empty($_COOKIE['langId'])) {
-            $frontendLangId = intval($_COOKIE['langId']);
+            $langId = intval($_COOKIE['langId']);
             $setCookie = true;
         } else {
-            $frontendLangId = $this->_selectBestLanguage();
+            $langId = $this->_selectBestLanguage();
         }
-        if ($this->arrLang[$frontendLangId]['frontend'] != 1) {
-            $frontendLangId = $this->defaultFrontendLangId;
+
+        if ($this->arrLang[$langId]['frontend'] != 1) {
+            $langId = $this->defaultFrontendLangId;
         }
 
         if ($setCookie) {
-            setcookie("langId", $frontendLangId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
+            setcookie("langId", $langId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
         }
 
-        if (isset($_CONFIG['useVirtualLanguagePath'])
-            && $_CONFIG['useVirtualLanguagePath'] == 'on'
-            && $this->mode == 'frontend'
-            && empty($_SERVER['REDIRECT_CONTREXX_LANG_PREFIX'])
-            && basename($_SERVER['SCRIPT_FILENAME']) != 'frontendEditing.class.php'
-        ) {
-            CSRF::header('Location: '.ASCMS_PATH_OFFSET.'/'.$this->arrLang[$frontendLangId]['lang'].'/'.(empty($_GET) ? '' : CONTREXX_DIRECTORY_INDEX.'?'.implode('&', array_map(create_function('$a,$b', 'return contrexx_stripslashes($a.\'=\'.$b);'), array_keys($_GET), $_GET))), true, 301);
-            exit;
+        return $langId;
+    }
+
+
+    public function setFrontendLangId($langId)
+    {
+        $this->frontendLangId = $langId;
+
+        // This must not be called before setting $this->frontendLangId
+        $this->checkForMobileDevice();
+
+        // Load print template
+        if (isset($_GET['printview']) && $_GET['printview'] == 1) {
+            $this->currentThemesId = $this->arrLang[$this->frontendLangId]['print_themes_id'];
+        }
+        // Load PDF template
+        elseif (isset($_GET['pdfview']) && $_GET['pdfview'] == 1){
+            $this->currentThemesId = $this->arrLang[$this->frontendLangId]['pdf_themes_id'];
+        }
+        // Load mobile template
+        elseif ($this->isMobileDevice and $this->arrLang[$this->frontendLangId]['mobile_themes_id']) {
+            $this->currentThemesId = $this->arrLang[$this->frontendLangId]['mobile_themes_id'];
+        }
+        // Load regular content template
+        else {
+            $this->currentThemesId = $this->arrLang[$this->frontendLangId]['themesid'];
         }
 
+        // Set charset of frontend language
+        $this->frontendLangCharset = $this->arrLang[$this->frontendLangId]['charset'];
+    }
+
+
+    function checkForMobileDevice()
+    {
         // small screen view (mobile etc). use index.php?smallscreen=1 to
         // enable, ?smallscreen=0 to disable.
         $this->isMobileDevice = 0;
         // only set the smallscreen environment if there's actually a mobile theme defined.
         if (isset($_GET['smallscreen']) ) {
             // user wants to enable/disable smallscreen mode.
-            if ($_GET['smallscreen'] && $this->arrLang[$frontendLangId]['mobile_themes_id']) {
+            if ($_GET['smallscreen'] && $this->arrLang[$this->frontendLangId]['mobile_themes_id']) {
                 // enable
                 setcookie('smallscreen', 1, 0, ASCMS_PATH_OFFSET.'/');
                 $this->isMobileDevice = 1;
@@ -196,7 +224,7 @@ class InitCMS
         }
         else {
             // auto detection
-            if (self::_is_mobile_phone() && !self::_is_tablet() && $this->arrLang[$frontendLangId]['mobile_themes_id']) {
+            if (self::_is_mobile_phone() && !self::_is_tablet() && $this->arrLang[$this->frontendLangId]['mobile_themes_id']) {
                 // same here: only set smallscreen mode if there IS a smallscreen theme
                 setcookie('smallscreen', 1, 0, ASCMS_PATH_OFFSET.'/');
                 $this->isMobileDevice = 1;
@@ -209,35 +237,18 @@ class InitCMS
                 // didn't decide by himself.
             }
         }
-
-        $this->frontendLangId = $frontendLangId;
-        if (isset($_GET['printview']) && $_GET['printview'] == 1) {
-            $this->currentThemesId = $this->arrLang[$frontendLangId]['print_themes_id'];
-
-        } elseif (isset($_GET['pdfview']) && $_GET['pdfview'] == 1){
-            $this->currentThemesId = $this->arrLang[$frontendLangId]['pdf_themes_id'];
-
-        } elseif ($this->isMobileDevice and $this->arrLang[$frontendLangId]['mobile_themes_id']) {
-            $this->currentThemesId = $this->arrLang[$frontendLangId]['mobile_themes_id'];
-
-        } else {
-            $this->currentThemesId = $this->arrLang[$frontendLangId]['themesid'];
-        }
-
-        $this->frontendLangCharset = $this->arrLang[$frontendLangId]['charset'];
     }
 
 
     /**
-     * Select best language
+     * Returns the language ID best matching the client's request
      *
-     * Selects the best language for the client and returns
-     * its name.
-     *
+     * If no match can be found, returns the default frontend language.
      */
     function _selectBestLanguage()
     {
         global $_CONFIG;
+
         if (   isset($_CONFIG['languageDetection'])
             && $_CONFIG['languageDetection'] == 'on') {
             $arrAcceptedLanguages = $this->_getClientAcceptedLanguages();
@@ -254,12 +265,10 @@ class InitCMS
 
 
     /**
-     * Get client accepted languages
-     *
-     * Returns an array with the accepted languages and their associated quality of the client.
-     *
-     * @access private
-     * @return array
+     * Returns an array with the accepted languages as keys and their
+     * quality as values
+     * @access  private
+     * @return  array
      */
     function _getClientAcceptedLanguages()
     {
@@ -277,27 +286,30 @@ class InitCMS
 
 
     /**
-    * Gets the selected User Frontend Language id
-    *
-    * This method is only for the backend use!
-    *
-    * @return   string $this->userFrontendLangId
-    */
+     * Returns the selected User Frontend Language id
+     *
+     * Backend use only!
+     * @return   string $this->userFrontendLangId
+     */
     function getUserFrontendLangId()
     {
-        if (isset($_POST['userFrontendLangId']) && !empty($_POST['userFrontendLangId'])) {
-            $id=intval($_POST['userFrontendLangId']);
-        } elseif (isset($_SESSION['userFrontendLangId']) && !empty($_SESSION['userFrontendLangId'])) {
+// Mind: Changed from $_POST to $_REQUEST, so it can be changed by
+// clicking a link (used in the Shop, and for MailTemplates)
+        if (!empty($_REQUEST['userFrontendLangId'])) {
+            if (preg_match('/[0-9]/', $_REQUEST['userFrontendLangId'])) {
+                $id = intval($_REQUEST['userFrontendLangId']);
+            } else {
+                $id = FWLanguage::getLanguageIdByCode($_REQUEST['userFrontendLangId']);
+            }
+        } elseif (!empty($_SESSION['userFrontendLangId'])) {
             $id = intval($_SESSION['userFrontendLangId']);
         } else {
             $id = $this->defaultFrontendLangId;
         }
-
-        if ($this->arrLang[$id]['frontend']!=1){
-            $id=$this->defaultFrontendLangId;
+        if (empty($this->arrLang[$id]['frontend'])) {
+            $id = $this->defaultFrontendLangId;
         }
-
-        $this->userFrontendLangId= $id;
+        $this->userFrontendLangId = $id;
         $_SESSION['userFrontendLangId'] = $id;
         return $this->userFrontendLangId;
     }
@@ -334,11 +346,10 @@ class InitCMS
 
 
     /**
-    * gets all languages as an array
-    *
-    * @access public
-    * @return array $arrLang
-    */
+     * Returns an array of all languages
+     * @access  public
+     * @return  array $arrLang
+     */
     function getLanguageArray()
     {
         return $this->arrLang;
@@ -346,11 +357,11 @@ class InitCMS
 
 
     /**
-    * gets the current language charset for the html header
-    *
-    * @param string   charset
-    * @access public
-    */
+     * Returns the current frontend language charset string
+     * for the HTML header
+     * @return  string               The charset string
+     * @access  public
+     */
     function getFrontendLangCharset()
     {
         if (empty($this->frontendLangCharset)){
@@ -362,11 +373,11 @@ class InitCMS
 
 
     /**
-    * gets the current language charset for the html header
-    *
-    * @param string   charset
-    * @access public
-    */
+     * Returns the current backend language charset string
+     * for the html header
+     * @return  string               The charset string
+     * @access  public
+     */
     function getBackendLangCharset()
     {
         if (empty($this->backendLangCharset)){
@@ -378,35 +389,30 @@ class InitCMS
 
 
     /**
-    * getDefaultLangId
-    *
-    * @param string   current language id
-    * @access public
-    */
+     * Returns the default frontend language ID
+     * @access  public
+     */
     function getFrontendDefaultLangId()
     {
-          return $this->defaultFrontendLangId;
+        return $this->defaultFrontendLangId;
     }
 
 
     /**
-    * getDefaultLangId
-    *
-    * @param string   current language id
-    * @access public
-    */
+     * Returns the default backend language ID
+     * @access  public
+     */
     function getBackendDefaultLangId()
     {
-          return $this->defaultBackendLangId;
+        return $this->defaultBackendLangId;
     }
 
 
     /**
-    * getTemplate Function
-    *
-    * @param  array    Template strings
-    * @access public
-    */
+     * Returns an array of all basic templates for the active theme
+     * @return  array           The array of template strings
+     * @access  public
+     */
     function getTemplates()
     {
         global $objDatabase;
@@ -442,61 +448,76 @@ class InitCMS
         $this->themesPath = $themesPath;
 
         $this->templates['index'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/index.html');
-        $this->templates['home'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/home.html');
-        $this->templates['navbar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar.html');
-        $this->templates['subnavbar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar.html');
+        $this->templates['home'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/home.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/home.html') : '';
+        $this->templates['navbar'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar.html') : '';
+        $this->templates['navbar2'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar2.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar2.html') : '';
+        $this->templates['navbar3'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar3.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar3.html') : '';
+        $this->templates['subnavbar'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar.html') : '';
         $this->templates['subnavbar2'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar2.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar2.html') : '';
         $this->templates['subnavbar3'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar3.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar3.html') : '';
-        $this->templates['sidebar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/sidebar.html');
-        $this->templates['shopnavbar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/shopnavbar.html');
-        $this->templates['headlines'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines.html');
-        $this->templates['javascript'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/javascript.js');
-        //$this->templates['style'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/style.css');
-        $this->templates['buildin_style'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/buildin_style.css');
-        @$this->templates['calendar_headlines'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/events.html');
-        @$this->templates['directory_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/directory.html');
-        @$this->templates['forum_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/forum.html');
-        @$this->templates['podcast_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/podcast.html');
-        @$this->templates['blog_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/blog.html');
-        @$this->templates['immo'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/immo.html');
+        $this->templates['sidebar'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/sidebar.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/sidebar.html') : '';
+        $this->templates['shopnavbar'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/shopnavbar.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/shopnavbar.html') : '';
+        $this->templates['headlines'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines.html') : '';
+        $this->templates['javascript'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/javascript.js') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/javascript.js') : '';
+        //$this->templates['style'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/style.css') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/style.css') : '';
+        $this->templates['buildin_style'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/buildin_style.css') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/buildin_style.css') : '';
+        $this->templates['calendar_headlines'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/events.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/events.html') : '';
+        $this->templates['directory_content'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/directory.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/directory.html') : '';
+        $this->templates['forum_content'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/forum.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/forum.html') : '';
+        $this->templates['podcast_content'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/podcast.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/podcast.html') : '';
+        $this->templates['blog_content'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/blog.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/blog.html') : '';
+        $this->templates['immo'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/immo.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/immo.html') : '';
 
-        if (!$this->hasCustomContent() || !$this->loadCustomContent()) {
-            // load default content layout if page doesn't have a custom content
-            // layout or if it failed to be loaded
+        if (!$this->hasCustomContent()) {
             $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/content.html');
         }
+        else {
+            $customTemplatePath = ASCMS_THEMES_PATH.'/'.$themesPath.'/'.$this->customContentTemplate;
+            //only include the custom template if it really exists.
+            //if the user selected custom_x.html as a page's custom template, a print-view request will
+            //try to get the file "themes/<printtheme>/custom_x.html" - we do not know if this file
+            //exists. trying to read a non-existant file would lead to an empty content-template.
+            //to omit this, we read the standard print content template instead.
+            //another possible behaviour would be to read the standard theme's custom content template instead.
+            //this is not done, because customcontent files are mostly used for sidebars etc. -
+            //stuff that should not change the print representation of the content.
+            if(file_exists($customTemplatePath)) {
+                $this->templates['content'] = file_get_contents($customTemplatePath);
+            }
+            else {
+                $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/content.html');
+            }
+        }
+
+        // No need for that, right? / TD - 09/30/11
+        /*$template_files = scandir(ASCMS_THEMES_PATH.'/'.$themesPath);
+        foreach ($template_files as $f) {
+            $match = '';
+            if (preg_match('/^(content|home)_(.+).html$/', $f, $match)) {
+                $this->templates['custom_content'][$match[0]] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/'.$f);
+            }
+        }*/
 
         return $this->templates;
     }
 
-    private function loadCustomContent()
-    {
-        global $objDatabase;
-
-        //only include the custom template if it really exists.
-        //if the user selected custom_x.html as a page's custom template, a print-view request will
-        //try to get the file "themes/<printtheme>/custom_x.html" - we do not know if this file
-        //exists. trying to read a non-existant file would lead to an empty content-template.
-        //to omit this, we read the standard print content template instead.
-        //another possible behaviour would be to read the standard theme's custom content template instead.
-        //this is not done, because customcontent files are mostly used for sidebars etc. - 
-        //stuff that should not change the print representation of the content.
-        if (!file_exists(ASCMS_THEMES_PATH.'/'.$this->themesPath.'/'.$this->customContentTemplate)) {
-            return false;
-        }
-
-        $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$this->themesPath.'/'.$this->customContentTemplate);
-
-        return true;
-    }
 
     /**
-     * Collects all custom content templates available for the theme specified.
-     * Used by @link ContentManager::ajaxGetCustomContentTemplate()
-     * @param string $themeId the theme's id
-     * @return array ('content_xy.html','home_xy.html' [ ,... ] )
+     * Collects all custom content templates available for the theme specified
+     *
+     * Used by @link ContentManager::ajaxGetCustomContentTemplate().
+     * On failure, returns the empty array.
+     * The array returned looks like
+     *  array(
+     *    'content_xy.html',
+     *    'home_xy.html' ,
+     *    [... more ...]
+     *  )
+     * @param   integer   $themeId    The theme ID
+     * @return  array                 The custom content template filename array
      */
-    public function getCustomContentTemplatesForTheme($themeId) {
+    public function getCustomContentTemplatesForTheme($themeId)
+    {
         global $objDatabase;
 
         if ($themeId == 0)
@@ -568,182 +589,117 @@ class InitCMS
 
 
     /**
-    *  initialise the setting array
-    *
-    * @return    array   $arrayLanguageSettings
-    */
-    function loadLanguageData($module = '')
+     * Initializes the language array
+     * @return    array         The language array, either local $_ARRAYLANG or
+     *                          the global $_CORELANG
+     */
+    function loadLanguageData($module='')
     {
-        global $objInit, $_CORELANG, $_CONFIG, $objDatabase;
+// NOTE: This method is called on the (global) Init object, so
+// there's no need to "global" that!
+//        global $objInit;
+        global $_CORELANG, $_CONFIG, $objDatabase, $_ARRAYLANG;
 
-        $_ARRAYLANG = array();
-        if ($objInit->mode == 'backend') {
+        if(!isset($_ARRAYLANG))
+            $_ARRAYLANG = array();
+
+        if ($this->mode == 'backend') {
             $langId = $this->backendLangId;
         } else {
             $langId = $this->frontendLangId;
         }
 
         // check which module will be loaded
-        if (empty($module)){
-            if ($objInit->mode == 'backend') {
+        if (empty($module)) {
+            if ($this->mode == 'backend') {
                 $module = isset($_REQUEST['cmd']) ? addslashes(strip_tags($_REQUEST['cmd'])) : 'core';
             } else {
                 $module = isset($_REQUEST['section']) ? addslashes(strip_tags($_REQUEST['section'])) : 'core';
             }
         }
-
         if (preg_match('/^media\d+$/', $module)) {
             $module = 'media';
         }
-
         // change module for core components
-        if (!array_key_exists($module,$objInit->arrModulePath) && $module != 'media') {
+        if (!array_key_exists($module, $this->arrModulePath) && $module != 'media') {
             $module = '';
         } else {
-            // check if the language file exist
-            $path = $objInit->arrModulePath[$module].$objInit->arrLang[$langId]['lang'].'/'.$objInit->mode.'.php';
-               if (!file_exists($path)){
-                $langId = $objInit->mode == 'backend' ? $objInit->getBackendDefaultLangId() : $objInit->getFrontendDefaultLangId();
-                $path = $objInit->arrModulePath[$module].$objInit->arrLang[$langId]['lang'].'/'.$objInit->mode.'.php';
-                if (!file_exists($path)){
-                    $path = '';
-                }
+            //load english language file first...
+            $path = $this->getLangFilePath($module, 2);
+            if (!empty($path)) {
+                $this->loadLangFile($path);
             }
-        }
-        // load variables
-        if (empty($module)){
-            return $_CORELANG;
-        }
-        if (!empty($path)){
-            //require_once($path);
-            require($path);
-            // remove escape characters
-            foreach (array_keys($_ARRAYLANG) as $langTxtId) {
-                $_ARRAYLANG[$langTxtId] = ereg_replace("\\\"", "\"", $_ARRAYLANG[$langTxtId]);
-                if (isset($_CONFIG['langDebugIds']) && $_CONFIG['langDebugIds'] == 'on') {
-                    $objRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."modules WHERE name = '$module' LIMIT 1");
-                    $moduleID = $objRS->fields['id'];
-                    $objRS = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."language_variable_names
-                                                    WHERE module_id = $moduleID
-                                                    AND name = '$langTxtId'", 1);
-                    if ($objRS){
-                        $_ARRAYLANG[$langTxtId] .= " ( ".$objRS->fields['id']." )";
-                    }
+            //...and overwrite with actual language where translated.
+            if($langId != 2) { //don't do it for english, already loaded.
+                $path = $this->getLangFilePath($module, $langId);
+                if (!empty($path)) {
+                    $this->loadLangFile($path);
                 }
             }
             return $_ARRAYLANG;
         }
-        //die("init::loadLanguageData() error (".$objInit->arrModulePath[$module].$objInit->arrLang[$_LANGID]['lang'].'/'.$objInit->mode.'.php'.")");
+
+        // load variables
+        if (empty($module)) {
+            return $_CORELANG;
+        }
         return $_CORELANG;
     }
 
-
-    /**
-     * Returns the current page ID
-     *
-     * Also define()s the global MODULE_ID constant according to the value of
-     * the module ID.
-     *
-     * The old implementation of this function, previously kept as getPageID_old(),
-     * has been deleted on 3.2.2011. Last version containing it is 2.1.4.
-     * @global  ADONewConnection  $objDatabase
-     * @param   integer           $page_id      The optional page ID
-     * @param   string            $section      The optional section/cmd parameter value
-     * @param   string            $command      The optional cmd/act parameter value
-     * @param   integer           $history_id   The optional history ID
-     * @return  integer           $page_id      The page ID
-     * @author  Reto Kohli <reto.kohli@comvation.com> (Version 2.1)
-     * @version 2.1
-     */
-    function getPageID($page_id=0, $section='', $command='', $history_id=0)
-    {
-        global $objDatabase;
-
-        switch ($section) {
-            case 'home':
-                $this->is_home = true;
-                $section = 'home';
-                $command = '';
-                break;
-            case 'logout':
-                $section = 'login';
-                break;
-            case 'media':
-                $section .= (MODULE_INDEX == '' ? 1 : MODULE_INDEX);
-                break;
-        }
-        if (empty($page_id)) {
-            if (empty($section)) {
-                $this->is_home = true;
-                $section = 'home';
-                $command = '';
-            }
-            // if the section is given, we need to search the command too,
-            // even if it's empty. Otherwise, on ?section=access it could be
-            // that another "access" page shows up as the cmd is not explicitly
-            // defined as empty.
-            $query = "
-                  SELECT n.catid, n.themes_id, n.module
-                    FROM ".DBPREFIX."modules AS m
-                   INNER JOIN ".DBPREFIX."content_navigation AS n
-                      ON n.module=m.id
-                   WHERE 1
-                   ".(empty($section) ? '' : " AND m.name='$section'")."
-                   ".(empty($section) ? '' : " AND n.cmd ='$command'")."
-                     AND n.lang=".FRONTEND_LANG_ID."
-                   ORDER BY parcat ASC
-            ";
-            $objResult = $objDatabase->SelectLimit($query, 1);
-            if ($objResult && !$objResult->EOF) {
-                $page_id = $objResult->fields['catid'];
-            }
-            if (!$page_id) {
-                CSRF::header('Location: index.php?section=error');
-                exit;
-            }
-            $this->_setCustomizedThemesId($objResult->fields['themes_id']);
-            define('MODULE_ID', $objResult->fields['module']);
-        } else {
-            define('MODULE_ID', null);
-        }
-
-        if (empty($history_id)) {
-            $query = "
-                SELECT themes_id, custom_content
-                  FROM ".DBPREFIX."content_navigation
-                 WHERE catid=$page_id";
-        } else {
-          $query = "
-              SELECT themes_id, custom_content
-                FROM ".DBPREFIX."content_navigation_history
-               WHERE id=$history_id";
-        }
-        $objResult = $objDatabase->SelectLimit($query, 1);
-        if ($objResult) {
-            if (!$objResult->EOF) {
-                $this->_setCustomizedThemesId($objResult->fields['themes_id']);
-                $this->customContentTemplate = $objResult->fields['custom_content'];
+    protected function getLangFilePath($module, $langId) {
+        // check whether the language file exists
+        $path = $this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$this->mode.'.php';
+        if (!file_exists($path)) {
+            $path = '';
+            $langId = $this->mode == 'backend' ? $this->getBackendDefaultLangId() : $this->getFrontendDefaultLangId();
+            $path = $this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$this->mode.'.php';
+            if (!file_exists($path)) {
+                $path = '';
             }
         }
-        return $page_id;
+        return $path;
     }
 
 
     /**
-     * Sets the customized ThemesId
+     * Loads the language file for the given file path
      *
-     * This method set the currentThemesId if a customized themesId is set
-     * in the navigation table.
-     * @access private
-     * @param optional string $themesId
+     * Note that no replacements are made to the entries' contents.
+     * If your strings don't work as expected, fix *them*.
      */
-    function _setCustomizedThemesId($themesId='')
+    protected function loadLangFile($path)
+    {
+        global $_ARRAYLANG;
+        //require_once($path);
+        require($path);
+        // remove escape characters
+// Pointless IMHO.  If your language entry
+//    $_ARRAYLANG['demo'] = "\"quoted\"";
+// does not look like '"quoted"' after it has been included, fix it!  :)
+//        foreach (array_keys($_ARRAYLANG) as $langTxtId) {
+//            $_ARRAYLANG[$langTxtId] = preg_replace('/\\\\"/', '"', $_ARRAYLANG[$langTxtId]);
+//        }
+        return $_ARRAYLANG;
+    }
+
+
+    /**
+     * Sets the customized ThemesId and customContent template
+     *
+     * This method sets the currentThemesId if a customized themesId is set
+     * in the navigation table.
+     * @param   int $themesId     The optional theme ID
+     * @param   string $customContent   The optional custom content template (like 'content_without_h1.html')
+     */
+    public function setCustomizedTheme($themesId=0, $customContent='')
     {
         global $objDatabase;
 
-        $mobileThemeDefinedAndRequested = $this->arrLang[$this->frontendLangId]['mobile_themes_id'] && $this->isMobileDevice;
+        // set custom content template
+        $this->customContentTemplate = $customContent;
+
         //only set customized theme if not in printview AND no mobile devic
-        if (!isset($_GET['printview']) && !$mobileThemeDefinedAndRequested) {
+        if (!isset($_GET['printview']) && !$this->isInMobileView()) {
             $themesId=intval($themesId);
             if ($themesId>0){
                 $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."skins WHERE id = $themesId");
@@ -755,28 +711,123 @@ class InitCMS
     }
 
 
+    /**
+     * @access private
+     * @return boolean Return TRUE if the user is in "Mobile View"-mode, otherwise FALSE
+     */
+    private function isInMobileView()
+    {
+        return $this->arrLang[$this->frontendLangId]['mobile_themes_id'] && $this->isMobileDevice;
+    }
+
+
+    /**
+     * Returns the HTML for the frontend language selection dropdown menu
+     *
+     * Backend use only.
+     * @internal    Note to Shop (and other newish module) programmers:
+     *  Registers javascript for handling the currently active tab.
+     *  Set the _active_tab global index variable in your onchange handler
+     *  whenever the user switches the tab.  This value is posted in the
+     *  active_tab parameter when the language is changed.
+     *  See {@see getJavascript_activetab()} for details, and
+     *  {@see SettingDb::show()} and {@see SettingDb::show_external()}
+     *  for implementations.
+     * @return  string            The HTML language dropdown menu code
+     */
     function getUserFrontendLangMenu()
     {
-        $i = 0;
-        $arrVars = array();
-        if (isset($_SERVER['QUERY_STRING'])) {
-            parse_str($_SERVER['QUERY_STRING'], $arrVars);
+        global $_ARRAYLANG;
+
+        $arrLanguageName = FWLanguage::getNameArray();
+        // No dropdown at all if there is a single active frontend language
+        if (count($arrLanguageName) == 1) {
+            return '';
         }
-        $query = isset($arrVars['cmd']) ? "?cmd=".$arrVars['cmd'] : "";
-        $return = "\n<form action='index.php".$query."' method='post' name='userFrontendLangIdForm'>\n";
-        $return .= "<select name='userFrontendLangId' size='1' onchange=\"document.forms['userFrontendLangIdForm'].submit()\">\n";
-        foreach ($this->arrLang as $id=>$value){
-            if ($this->arrLang[$id]['frontend']==1) {
-                $i++;
-                if ($id==$this->userFrontendLangId) {
-                    $return .= "<option value='".$id."' selected='selected'>Frontend [".htmlentities($value['name'], ENT_QUOTES, CONTREXX_CHARSET)."]</option>\n";
-                } else {
-                    $return .= "<option value='".$id."'>Frontend [".htmlentities($value['name'], ENT_QUOTES, CONTREXX_CHARSET)."]</option>\n";
+        $action = CONTREXX_DIRECTORY_INDEX;
+        $command = (isset($_REQUEST['cmd'])
+            ? contrexx_input2raw($_REQUEST['cmd']) : '');
+        switch ($command) {
+/*
+          case 'xyzzy':
+            // Variant 1:  Use selected GET parameters only
+            // Currently unused, but this could be extended by a few required
+            // parameters and might prove useful for some modules.
+            $query_string = '';
+            // Add more as needed
+            $arrParameter = array('cmd', 'act', 'tpl', 'key', );
+            foreach ($arrParameter as $parameter) {
+                $value = (isset($_GET[$parameter])
+                  ? $_GET[$parameter] : null);
+                if (isset($value)) {
+                    $query_string .= "&$parameter=".contrexx_input2raw($value);
                 }
             }
+            Html::replaceUriParameter($action, $query_string);
+            // The dropdown is built below
+            break;
+*/
+          case 'shop':
+          case 'country':
+            // Variant 2:  Use any (GET) request parameters
+            // Note that this is generally unsafe, as most modules/methods do
+            // not rely on posted data only!
+            $arrParameter = null;
+            $uri = $_SERVER['QUERY_STRING'];
+            Html::stripUriParam($uri, 'userFrontendLangId');
+            parse_str($uri, $arrParameter);
+            $first = true;
+            foreach ($arrParameter as $name => $value) {
+                $action .=
+                    ($first ? '?' : '&amp;').
+                    $name.'='.urlencode(contrexx_input2raw($value));
+                $first = false;
+            }
+            // The dropdown is built below
+            break;
+// TODO: Add your case here if variant 1 is enabled, too
+//          case 'foobar':
+          default:
+            // The old way
+            $i = 0;
+            $arrVars = array();
+            if (isset($_SERVER['QUERY_STRING'])) {
+                parse_str($_SERVER['QUERY_STRING'], $arrVars);
+            }
+            $query = isset($arrVars['cmd']) ? "?cmd=".$arrVars['cmd'] : "";
+            $return = "\n<form action='index.php".$query."' method='post' name='userFrontendLangIdForm'>\n";
+            $return .= "<select name='userFrontendLangId' size='1' onchange=\"document.forms['userFrontendLangIdForm'].submit()\">\n";
+            foreach ($this->arrLang as $id=>$value){
+                if ($this->arrLang[$id]['frontend']==1) {
+                    $i++;
+                    if ($id==$this->userFrontendLangId) {
+                        $return .= "<option value='".$id."' selected='selected'>Frontend [".htmlentities($value['name'], ENT_QUOTES, CONTREXX_CHARSET)."]</option>\n";
+                    } else {
+                        $return .= "<option value='".$id."'>Frontend [".htmlentities($value['name'], ENT_QUOTES, CONTREXX_CHARSET)."]</option>\n";
+                    }
+                }
+            }
+            $return .= "</select>\n</form>\n";
+            return ($i>1) ? $return : "";
         }
-        $return .= "</select>\n</form>\n";
-        return ($i>1) ? $return : "";
+        // For those views that support it, update the selected tab index
+        JS::registerCode(
+            'function submitUserFrontendLanguage() {'.
+            ' $J("[name=active_tab]").val(_active_tab);'.
+            ' document.forms.userFrontendLangIdForm.submit(); '.
+            '}');
+        // For variants 1 and 2:  Build the dropdown
+        return
+            "\n".
+            '<form id="userFrontendLangIdForm" name="userFrontendLangIdForm"'.
+            ' action="'.$action.'"'.
+            ' method="post">'."\n".
+            Html::getHidden_activetab()."\n".
+            Html::getSelectCustom('userFrontendLangId',
+                FWLanguage::getMenuoptions($this->userFrontendLangId),
+                false,
+                'submitUserFrontendLanguage();',
+                'size="1"')."\n</form>\n";
     }
 
 
@@ -805,6 +856,7 @@ class InitCMS
     {
         return htmlspecialchars($_SERVER['REQUEST_URI'], ENT_QUOTES, CONTREXX_CHARSET);
     }
+
 
     /**
      * Returns true if the user agent is a mobile device (smart phone, PDA etc.)
@@ -888,13 +940,12 @@ class InitCMS
 
 
     /**
-     * Has the user specified custom content for this page?
-     *
-     * @return boolean true if yes
+     * Returns true if there is custom content for this page
+     * @return  boolean       True if there is custom content,
+     *                        false otherwise
      */
     public function hasCustomContent()
     {
         return strlen($this->customContentTemplate) > 0 ? true : false;
     }
 }
-?>

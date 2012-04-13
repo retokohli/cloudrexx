@@ -33,6 +33,8 @@ class ContentWorkflow {
     var $strErrMessage = array();
     var $strOkMessage = '';
 
+    private $act = '';
+    
     /**
     * Constructor
     *
@@ -47,19 +49,23 @@ class ContentWorkflow {
         $objDatabase->Execute('DELETE FROM  '.DBPREFIX.'content_logfile WHERE history_id=0');
         $objDatabase->Execute('OPTIMIZE TABLE '.DBPREFIX.'content_logfile');
         $objDatabase->Execute('OPTIMIZE TABLE '.DBPREFIX.'content_history');
-        $objDatabase->Execute('OPTIMIZE TABLE '.DBPREFIX.'content_navigation_history');
-
-        $objTemplate->setVariable(  'CONTENT_NAVIGATION',
-                                    '<a href="index.php?cmd=workflow&amp;act=new">'.$_CORELANG['TXT_NEW_PAGES'].'</a>
-                                     <a href="index.php?cmd=workflow&amp;act=updated">'.$_CORELANG['TXT_UPDATED_PAGES'].'</a>
-                                     <a href="index.php?cmd=workflow&amp;act=deleted">'.$_CORELANG['TXT_DELETED_PAGES'].'</a>
-                                     <a href="index.php?cmd=workflow&amp;act=unvalidated">'.$_CORELANG['TXT_WORKFLOW_VALIDATE'].'</a>
-                                     <a href="index.php?cmd=workflow&amp;act=showClean">'.$_CORELANG['TXT_WORKFLOW_CLEAN_TITLE'].'</a>
-                                ');
+        $objDatabase->Execute('OPTIMIZE TABLE '.DBPREFIX.'content_navigation_history');        
 
         if ($_CONFIG['contentHistoryStatus'] == 'off') {
             $this->strErrMessage[] = $_CORELANG['TXT_WORKFLOW_NOT_ACTIVE'];
         }
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_CORELANG;
+
+        $objTemplate->setVariable(  'CONTENT_NAVIGATION',
+                                    '<a href="index.php?cmd=workflow&amp;act=new" class="'.($this->act == 'new' ? 'active' : '').'">'.$_CORELANG['TXT_NEW_PAGES'].'</a>
+                                     <a href="index.php?cmd=workflow&amp;act=updated" class="'.($this->act == 'updated' ? 'active' : '').'">'.$_CORELANG['TXT_UPDATED_PAGES'].'</a>
+                                     <a href="index.php?cmd=workflow&amp;act=deleted" class="'.($this->act == 'deleted' ? 'active' : '').'">'.$_CORELANG['TXT_DELETED_PAGES'].'</a>
+                                     <a href="index.php?cmd=workflow&amp;act=unvalidated" class="'.($this->act == 'unvalidated' ? 'active' : '').'">'.$_CORELANG['TXT_WORKFLOW_VALIDATE'].'</a>
+                                     <a href="index.php?cmd=workflow&amp;act=showClean" class="'.($this->act == 'showClean' ? 'active' : '').'">'.$_CORELANG['TXT_WORKFLOW_CLEAN_TITLE'].'</a>
+                                ');
     }
 
     /**
@@ -131,6 +137,9 @@ class ContentWorkflow {
             'CONTENT_OK_MESSAGE'        => $this->strOkMessage,
             'CONTENT_STATUS_MESSAGE'    => implode("<br />\n", $this->strErrMessage)
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
     /**

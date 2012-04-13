@@ -359,7 +359,6 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
                 value = document.getElementById('$fieldName' + field).value;
                 $hiddenField
                 filetype = value.substring(value.length-4);
-                filetype = filetype.toLowerCase();
 
                 if (value == "" && value_hidden == "" && isRequiredGlobal(inputFields[field][1], value)) {
                     isOk = false;

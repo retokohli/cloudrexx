@@ -210,47 +210,47 @@ class Security
                 // Test the string (called $array) for cross site scripting attacks
                 if(
                     // Disallow <*script
-                    eregi("<[^>a-z0-9]*script[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*script[^a-z]+/i', $array) ||
                     // Disallow <*xml*
-                    eregi("<[^>a-z0-9]*xml[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*xml[^a-z]+/i', $array) ||
                     // Disallow <*style*
-                    eregi("<[^>a-z0-9]*style[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*style[^a-z]+/i', $array) ||
                     // Disallow <*form*
-                    eregi("<[^>a-z0-9]*form[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*form[^a-z]+/i', $array) ||
                     // Disallow <*input*
-                    eregi("<[^>a-z0-9]*input[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*input[^a-z]+/i', $array) ||
                     // Disallow <*window*
-                    eregi("<[^>a-z0-9]*window[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*window[^a-z]+/i', $array) ||
                     // Disallow <*alert*
-                    eregi("<[^>a-z0-9]*alert[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*alert[^a-z]+/i', $array) ||
                     // Disallow <*img*
-                    eregi("<[^>a-z0-9]*img[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*img[^a-z]+/i', $array) ||
                      // Disallow <*cookie*
-                    eregi("<[^>a-z0-9]*cookie[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*cookie[^a-z]+/i', $array) ||
                     // Disallow <*object*
-                    eregi("<[^>a-z0-9]*object[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*object[^a-z]+/i', $array) ||
                     // Disallow <*iframe*
-                    eregi("<[^>a-z0-9]*iframe[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*iframe[^a-z]+/i', $array) ||
                     // Disallow <*applet*
-                    eregi("<[^>a-z0-9]*applet[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*applet[^a-z]+/i', $array) ||
                     // Disallow <*meta*
-                    eregi("<[^>a-z0-9]*meta[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*meta[^a-z]+/i', $array) ||
                     // Disallow <*body*
-                    eregi("<[^>a-z0-9]*body[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*body[^a-z]+/i', $array) ||
                     // Disallow <*font*
-                    eregi("<[^>a-z0-9]*font[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*font[^a-z]+/i', $array) ||
                     // Disallow <*p*
-                //    eregi("<[^>a-z0-9]*p[^a-z]+", $array) ||
+                //    preg_match('/<[^>a-z0-9]*p[^a-z]+/i', $array) ||
                     // Disallow "javascript: and 'javascript
-                    eregi("[\"|']javascript:", $array) ||
+                    preg_match('/["|\']javascript:/i', $array) ||
                     // Disallow =javascript:
-                    eregi("=javascript:", $array) ||
+                    preg_match('/=javascript:/i', $array) ||
                     // Disallow "vbscript: and 'vbscript:
-                    eregi("[\"|']vbscript:", $array) ||
+                    preg_match('/["|\']vbscript:/i', $array) ||
                     // Disallow =vbscript:
-                    eregi("=vbscript:", $array) ||
+                    preg_match('/=vbscript:/i', $array) ||
                     // Disallow on*=
-                    eregi("[^a-z0-9]*on[a-z]+[\t ]*=", $array)
+                    preg_match('/[^a-z0-9]*on[a-z]+\s*=/i', $array)
                   )
                 {
                     // Report a potential cross site scripting attack
@@ -261,21 +261,21 @@ class Security
 
                     // Use special ways to protect to some cross site scriptings
                     if(
-                        eregi("[\"|']javascript:", $array) ||
-                        eregi("=[\t ]*javascript:", $array) ||
-                        eregi("[\"|']vbscript:", $array) ||
-                        eregi("=[\t ]*vbscript:", $array)
+                        preg_match('/["|\']javascript:/i', $array) ||
+                        preg_match('/=\s*javascript:/i', $array) ||
+                        preg_match('/["|\']vbscript:/i', $array) ||
+                        preg_match('/=\s*vbscript:/i', $array)
                       )
                     {
                         // Remove the ':'
-                        $array = eregi_replace("([\"|']javascript):", "\\1", $array);
-                        $array = eregi_replace("(=[\t ]*javascript):", "\\1", $array);
-                        $array = eregi_replace("([\"|']vbscript):", "\\1", $array);
-                        $array = eregi_replace("(=[\t ]*vbscript):", "\\1", $array);
+                        $array = preg_replace('/(["|\']javascript):/i', '\1', $array);
+                        $array = preg_replace('/(=\s*javascript):/i', '\1', $array);
+                        $array = preg_replace('/(["|\']vbscript):/i', '\1', $array);
+                        $array = preg_replace('/(=\s*vbscript):/i', '\1', $array);
                     }
-                    if(eregi("[^a-z0-9]*on[a-z]+[\t ]*=", $array)){
+                    if(preg_match('/[^a-z0-9]*on[a-z]+\s*=/i', $array)){
                         // Remove the =
-                        $array = eregi_replace("([^a-z0-9]*on[a-z]+[\t ]*)=", "\\1", $array);
+                        $array = preg_replace('/([^a-z0-9]*on[a-z]+\s*)=/i', '\1', $array);
                     }
                     // Secure it using htmlspecialchars
                     $array = htmlspecialchars($array, ENT_QUOTES, CONTREXX_CHARSET);
@@ -286,9 +286,9 @@ class Security
                 // Test for SQL injection
                 if(
                     // Disallow "*or/and*=*" or "*or*like*"
-                    eregi("([^a-z]+|^)(OR|AND)[^a-z]+.*(=|like)", $array) ||
+                    preg_match('/([^a-z]+|^)(OR|AND)[^a-z]+.*(=|like)/i', $array) ||
                     // Disallow "*UNION*SELECT "
-                    eregi("([^a-z]+|^)UNION[^a-z]+.*SELECT[\t ]+", $array)
+                    preg_match('/([^a-z]+|^)UNION[^a-z]+.*SELECT[\t ]+/i', $array)
                   )
                 {
                     // Report for an intrusion attempt

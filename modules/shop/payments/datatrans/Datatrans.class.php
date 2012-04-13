@@ -7,8 +7,6 @@
  * @package     contrexx
  * @subpackage  module_shop
  * @version     2.1.0
- * @todo        Find an image: "logo_datatrans.gif"
- * @todo        Add image: "logo_datatrans.gif"
  */
 
 
@@ -30,7 +28,8 @@ define('SHOP_PSP_URI_DATATRANS_TEST', 'https://pilot.datatrans.biz/upp/jsp/upSta
 /**
  * @ignore
  */
-require_once ASCMS_MODULE_PATH.'/shop/lib/Settings.class.php';
+//require_once ASCMS_MODULE_PATH.'/shop/lib/Settings.class.php';
+require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
 
 /*
 
@@ -463,12 +462,12 @@ class Datatrans
 
     static function getGatewayUri()
     {
-//echo("Testserver: self: ".(self::$useTestserver ? 'Ja' : 'Nein').", conf: ".(Settings::getValueByName('datatrans_use_testserver') ? 'Ja' : 'Nein')."<br />");
+//echo("Testserver: self: ".(self::$useTestserver ? 'Ja' : 'Nein').", conf: ".(SettingDb::getValue('datatrans_use_testserver') ? 'Ja' : 'Nein')."<br />");
 // See setTestonly() for details on why this is not used.
 //            (self::$arrFieldOptional['testOnly']
         return
             (   self::$useTestserver
-             || Settings::getValueByName('datatrans_use_testserver')
+             || SettingDb::getValue('datatrans_use_testserver')
               ? SHOP_PSP_URI_DATATRANS_TEST
               : SHOP_PSP_URI_DATATRANS
             );
@@ -521,7 +520,7 @@ class Datatrans
         foreach (array_keys(self::$arrFieldReturn) as $name) {
             if (isset($_POST[$name]))
                 self::$arrFieldReturn[$name] =
-                    contrexx_stripslashes($_POST[$name]);
+                    contrexx_input2raw($_POST[$name]);
             unset($_POST[$name]);
         }
         // Common parameters must be non-empty
@@ -676,13 +675,13 @@ Datatrans::initialize('1000011011', '995', 'CHF', '234');
 <? echo(nl2br(htmlentities(print_r($_POST, true), ENT_QUOTES, 'UTF-8'))); ?>
     <h1>Current Form:</h1>
 <? echo(nl2br(htmlentities(
-'    <form action="'.Datatrans::getGatewayUri().'" method="POST">
+'    <form action="'.Datatrans::getGatewayUri().'" method="post">
 '.Datatrans::getHtml().'
       <input type="submit" value="go">
     </form>
 ', ENT_QUOTES, 'UTF-8')));
 ?>
-    <form action="<? echo(Datatrans::getGatewayUri()); ?>" method="POST">
+    <form action="<? echo(Datatrans::getGatewayUri()); ?>" method="post">
 <? echo(Datatrans::getHtml()); ?>
       <input type="submit" value="go">
     </form>

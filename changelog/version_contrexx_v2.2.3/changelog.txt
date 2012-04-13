@@ -6,7 +6,7 @@
 * Neue Funktionen / Änderungen *********
 ****************************************
 
-Modul: Bildergalerie
+Modul: Galerie
 - Optionen Status, Kommentarfunktion und Bewertung per Vorgabe inaktiv bei einem neuen Eintrag
 
 Modul: Medienverzeichnis
@@ -22,20 +22,8 @@ Code-Qualität
 Layout & Design
 - Wird eine Benutzerdefinierte Vorlage nicht gefunden (z.B. weil die Datei in der Druckansicht nicht vorhanden ist), so wird auf die Standardmässige Inhaltsvorlage des aktiven Templates zurückgegriffen.
 
-Modul: Blog
-- Sicherheitslücke geschlossen. (Thanks to an anonymous contributor working with Beyond Security's SecuriTeam Secure Disclosure program)
-
-Modul: Kalender
-- Fehler bei fehlenden Wochentagen (Serientyp "Wöchentlich") behoben.
-
 Modul: Newsletter
 - Deaktivierte News werden im Newsletter nicht mehr angezeigt.
 
 Captcha
 - Funktioniert auch, wenn ASCMS_BACKEND_PATH verändert wird
-
-Modul: Bildergalerie
-- Shadowbox funktioniert im Internet Explorer
-
-News Manager
-- Es kann kein negativer Veröffentlichungszeitraum definiert werden (Enddatum < Startdatum).

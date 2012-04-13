@@ -37,6 +37,8 @@ class netToolsManager extends NetToolsLib {
        $this->__construct();
     }
 
+    private $act = '';
+
     /**
     * constructor
     *
@@ -48,13 +50,18 @@ class netToolsManager extends NetToolsLib {
 
     	$this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/nettools/template');
         CSRF::add_placeholder($this->_objTpl);
-		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
+		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);		
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
 
-		$objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=nettools&amp;tpl=whois'>".$_ARRAYLANG['TXT_WHOIS']."</a>
-												<a href='?cmd=nettools&amp;tpl=lookup'>".$_ARRAYLANG['TXT_LOOKUP']."</a>
-												<a href='?cmd=nettools&amp;tpl=mxlookup'>".$_ARRAYLANG['TXT_MX_LOOKUP']."</a>
-												".(!ini_get("safe_mode") ? "<a href='?cmd=nettools&amp;tpl=ping'>".$_ARRAYLANG['TXT_PING']."</a>" : "")."
-												<a href='?cmd=nettools&amp;tpl=port'>".$_ARRAYLANG['TXT_CHECK_PORT']."</a>");
+        $objTemplate->setVariable("CONTENT_NAVIGATION","
+                    <a href='?cmd=nettools&amp;tpl=whois' class='".($this->act == 'whois' ? 'active' : '')."'>".$_ARRAYLANG['TXT_WHOIS']."</a>
+                    <a href='?cmd=nettools&amp;tpl=lookup' class='".($this->act == 'lookup' ? 'active' : '')."'>".$_ARRAYLANG['TXT_LOOKUP']."</a>
+                    <a href='?cmd=nettools&amp;tpl=mxlookup' class='".($this->act == 'mxlookup' ? 'active' : '')."'>".$_ARRAYLANG['TXT_MX_LOOKUP']."</a>
+                    ".(!ini_get("safe_mode") ? "<a href='?cmd=nettools&amp;tpl=ping' class='".($this->act == 'ping' ? 'active' : '')."'>".$_ARRAYLANG['TXT_PING']."</a>" : "")."
+                    <a href='?cmd=nettools&amp;tpl=port' class='".($this->act == 'port' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CHECK_PORT']."</a>");
     }
 
     /**
@@ -106,6 +113,9 @@ class netToolsManager extends NetToolsLib {
 			'CONTENT_STATUS_MESSAGE'	=> $this->strErrMessage,
     		'ADMIN_CONTENT'				=> $this->_objTpl->get()
     	));
+
+        $this->act = $_REQUEST['tpl'];
+        $this->setNavigation();
     }
 
     function _showWhois() {

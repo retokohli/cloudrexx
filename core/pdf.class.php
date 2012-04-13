@@ -79,7 +79,7 @@ class PDF extends HTML2FPDF
         $this->content = utf8_decode($this->_ParseHTML($this->content));
 
         $pdf = new HTML2FPDF();
-        $pdf->ShowNOIMG_GIF();
+
         $pdf->DisplayPreferences('HideWindowUI');
         $pdf->AddPage();
         $pdf->WriteHTML($this->content);

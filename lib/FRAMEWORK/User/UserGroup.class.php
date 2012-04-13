@@ -19,48 +19,44 @@
  */
 class UserGroup
 {
-    var $id;
-    var $name;
-    var $description;
-    var $is_active;
-    var $type;
+    private $id;
+    private $name;
+    private $description;
+    private $is_active;
+    private $type;
+    private $homepage;
 
-    var $arrLoadedGroups = array();
-    var $arrCache = array();
+    private $arrLoadedGroups = array();
+    private $arrCache = array();
 
-    var $arrAttributes = array(
+    private $arrAttributes = array(
         'group_id',
         'group_name',
         'group_description',
         'is_active',
-        'type'
+        'type',
+        'homepage',
     );
 
-    var $arrTypes = array(
+    private $arrTypes = array(
         'frontend',
         'backend'
     );
 
-    var $arrUsers;
-    var $arrStaticPermissions;
-    var $arrDynamicPermissions;
+    private $arrUsers;
+    private $arrStaticPermissions;
+    private $arrDynamicPermissions;
 
-    var $defaultType = 'frontend';
+    private $defaultType = 'frontend';
 
-    var $EOF;
+    public $EOF;
 
     /**
      * Contains the message if an error occurs
      *
      * @var unknown_type
      */
-    var $error_msg;
-
-
-    function UserGroup()
-    {
-        $this->__construct();
-    }
+    private $error_msg;
 
 
     function __construct()
@@ -184,6 +180,11 @@ class UserGroup
     }
 
 
+    /**
+     * Returns the UserGroup for the given ID
+     * @param   integer   $id     The UserGroup ID
+     * @return  UserGroup         The Group on success, false(?) otherwise
+     */
     public function getGroup($id)
     {
         $objGroup = clone $this;
@@ -198,24 +199,30 @@ class UserGroup
         if ($id) {
             if (!isset($this->arrCache[$id])) {
                 return $this->loadGroups($id);
-            } else {
-                $this->id = $this->arrCache[$id]['group_id'];
-                $this->name = isset($this->arrCache[$id]['group_name']) ? $this->arrCache[$id]['group_name'] : '';
-                $this->description = isset($this->arrCache[$id]['group_description']) ? $this->arrCache[$id]['group_description'] : '';
-                $this->is_active = isset($this->arrCache[$id]['is_active']) ? (bool)$this->arrCache[$id]['is_active'] : false;
-                $this->type = isset($this->arrCache[$id]['type']) ? $this->arrCache[$id]['type'] : $this->defaultType;
-                $this->arrDynamicPermissions = null;
-                $this->arrStaticPermissions = null;
-                $this->arrUsers = null;
-                $this->EOF = false;
-                return true;
             }
-        } else {
-            $this->clean();
+            $this->id = $this->arrCache[$id]['group_id'];
+            $this->name = isset($this->arrCache[$id]['group_name']) ? $this->arrCache[$id]['group_name'] : '';
+            $this->description = isset($this->arrCache[$id]['group_description']) ? $this->arrCache[$id]['group_description'] : '';
+            $this->is_active = isset($this->arrCache[$id]['is_active']) ? (bool)$this->arrCache[$id]['is_active'] : false;
+            $this->type = isset($this->arrCache[$id]['type']) ? $this->arrCache[$id]['type'] : $this->defaultType;
+            $this->homepage = isset($this->arrCache[$id]['homepage']) ? $this->arrCache[$id]['homepage'] : '';
+            $this->arrDynamicPermissions = null;
+            $this->arrStaticPermissions = null;
+            $this->arrUsers = null;
+            $this->EOF = false;
+            return true;
         }
+        $this->clean();
+        return false;
     }
 
 
+    /**
+     * Returns an array of IDs of Users associated with this group
+     * @global ADOConnection    $objDatabase
+     * @return array                            The array of User IDs on
+     *                                          success, false otherwise
+     */
     private function loadUsers()
     {
         global $objDatabase;
@@ -250,7 +257,6 @@ class UserGroup
         global $objDatabase;
 
         $arrRightIds = array();
-
         $objResult = $objDatabase->Execute('SELECT `access_id` FROM `'.DBPREFIX.'access_group_'.$type.'_ids` WHERE `group_id`='.$this->id);
         if ($objResult !== false) {
             while (!$objResult->EOF) {
@@ -292,19 +298,19 @@ class UserGroup
         global $objDatabase, $_CORELANG;
 
         if (!$this->isUniqueGroupName() || !$this->isValidGroupName()) {
+            $this->error_msg = $_CORELANG['TXT_ACCESS_GROUP_NAME_INVALID'];
             return false;
         }
-
-
         if ($this->id) {
-            if ($objDatabase->Execute("
+            if (!$objDatabase->Execute("
                 UPDATE `".DBPREFIX."access_user_groups`
                 SET
                     `group_name` = '".addslashes($this->name)."',
                     `group_description` = '".addslashes($this->description)."',
-                    `is_active` = ".intval($this->is_active)."
+                    `is_active` = ".intval($this->is_active).",
+                    `homepage` = '".addslashes($this->homepage)."'
                 WHERE `group_id`=".$this->id
-            ) === false) {
+            )) {
                 $this->error_msg = $_CORELANG['TXT_ACCESS_FAILED_TO_UPDATE_GROUP'];
                 return false;
             }
@@ -314,14 +320,16 @@ class UserGroup
                     `group_name`,
                     `group_description`,
                     `is_active`,
-                    `type`
+                    `type`,
+                    `homepage`
                 ) VALUES (
                     '".addslashes($this->name)."',
                     '".addslashes($this->description)."',
                     ".intval($this->is_active).",
-                    '".$this->type."'
+                    '".$this->type."',
+                    '".addslashes($this->homepage)."'
                 )"
-            ) !== false) {
+            )) {
                 $this->id = $objDatabase->Insert_ID();
             } else {
                 $this->error_msg = $_CORELANG['TXT_ACCESS_FAILED_TO_CREATE_GROUP'];
@@ -379,27 +387,27 @@ class UserGroup
     private function storePermissions()
     {
         global $objDatabase;
+        static $arrType = array('Static', 'Dynamic');
 
         $status = true;
-        foreach (array('Static', 'Dynamic') as $type) {
+        foreach ($arrType as $type) {
             $arrCurrentIds = $this->{'load'.$type.'Permissions'}();
-            $arrAddedRightIds = array_diff($this->{$ids = 'arr'.$type.'Permissions'}, $arrCurrentIds);
+            $ids = 'arr'.$type.'Permissions';
+            if (!is_array($this->$ids)) continue;
+            $arrAddedRightIds = array_diff($this->$ids, $arrCurrentIds);
             $arrRemovedRightIds = array_diff($arrCurrentIds, $this->$ids);
             $table = DBPREFIX.'access_group_'.strtolower($type).'_ids';
-
             foreach ($arrRemovedRightIds as $rightId) {
-                if ($objDatabase->Execute('DELETE FROM `'.$table.'` WHERE `access_id`='.$rightId.' AND `group_id`='.$this->id) === false) {
+                if (!$objDatabase->Execute('DELETE FROM `'.$table.'` WHERE `access_id`='.$rightId.' AND `group_id`='.$this->id)) {
                     $status = false;
                 }
             }
-
             foreach ($arrAddedRightIds as $rightId) {
-                if ($objDatabase->Execute('INSERT INTO `'.$table.'` (`access_id` , `group_id`) VALUES ('.$rightId.','.$this->id.')') === false) {
+                if (!$objDatabase->Execute('INSERT INTO `'.$table.'` (`access_id` , `group_id`) VALUES ('.$rightId.','.$this->id.')')) {
                     $status = false;
                 }
             }
         }
-
         return $status;
     }
 
@@ -411,6 +419,7 @@ class UserGroup
         $this->description = '';
         $this->is_active = false;
         $this->type = $this->defaultType;
+        $this->homepage = '';
         $this->arrDynamicPermissions = null;
         $this->arrStaticPermissions = null;
         $this->arrUsers = null;
@@ -478,6 +487,10 @@ class UserGroup
         $this->type = in_array($type, $this->arrTypes) ? $type : $this->defaultType;
     }
 
+    public function setHomepage($homepage)
+    {
+        $this->homepage = $homepage;
+    }
 
     /**
      * Set ID's of users which should belong to this group
@@ -487,7 +500,7 @@ class UserGroup
      */
     public function setUsers($arrUsers)
     {
-        $objFWUser = FWUser::getFWUserObject();
+//        $objFWUser = FWUser::getFWUserObject();
         $this->arrUsers = array();
         foreach ($arrUsers as $userId)
         {
@@ -615,6 +628,10 @@ class UserGroup
         return $this->type;
     }
 
+    public function getHomepage()
+    {
+        return $this->homepage;
+    }
 
     public function getTypes()
     {
@@ -664,6 +681,27 @@ class UserGroup
         }
     }
 
-}
 
-?>
+    /**
+     * Returns an array of all available user group names, indexed by their ID
+     * @return    array                 The user group name array
+     * @author    Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function getNameArray()
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute("
+            SELECT `group_id`, `group_name`
+              FROM ".DBPREFIX."access_user_groups");
+        if (!$objResult) return false;
+        $arrGroupName = array();
+        while (!$objResult->EOF) {
+            $arrGroupName[$objResult->fields['group_id']] =
+                $objResult->fields['group_name'];
+            $objResult->MoveNext();
+        }
+        return $arrGroupName;
+    }
+
+}

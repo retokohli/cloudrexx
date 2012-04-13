@@ -7,7 +7,6 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @version     2.1.0
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
- * @todo        Edit PHP DocBlocks!
  */
 
 /**
@@ -18,19 +17,18 @@ define('_PAYMENT_DEBUG', 0);
 /**
  * Payment logo folder (e.g. /modules/shop/images/payments/)
  */
-define('SHOP_PAYMENT_LOGO_PATH',
-       ASCMS_PATH_OFFSET.'/modules/shop/images/payments/');
+define('SHOP_PAYMENT_LOGO_PATH', '/modules/shop/images/payments/');
 
 /**
  * Settings
  */
-require_once ASCMS_MODULE_PATH.'/shop/lib/Settings.class.php';
+//require_once ASCMS_MODULE_PATH.'/shop/lib/Settings.class.php';
 /**
  * Saferpay payment handling
  */
 require_once ASCMS_MODULE_PATH.'/shop/payments/saferpay/Saferpay.class.php';
 /**
- * Yellowpay payment handling
+ * Postfinance/Yellowpay payment handling
  */
 require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
 /**
@@ -41,6 +39,10 @@ require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
  * Dummy payment handling -- for testing purposes only.
  */
 require_once ASCMS_MODULE_PATH.'/shop/payments/dummy/Dummy.class.php';
+/**
+ * File operations
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
 
 /**
  * Payment Service Provider manager
@@ -53,10 +55,10 @@ require_once ASCMS_MODULE_PATH.'/shop/payments/dummy/Dummy.class.php';
  * - Any data needed by the payment service class *MUST* be provided
  *   as arguments to the constructor and/or methods from within the
  *   PaymentProcessing class.
- * - Any code in checkIn() *MUST* return either a valid payment form *OR*
+ * - Any code in checkOut() *MUST* return either a valid payment form *OR*
  *   redirect to a payment page of that provider, supplying all necessary
  *   data for a successful payment.
- * - Any code in checkOut() *MUST* return the original order ID of the order
+ * - Any code in checkIn() *MUST* return the original order ID of the order
  *   being processed on success, false otherwise (both in the case of failure
  *   and upon cancelling the payment).
  * - A payment provider class *MUST NOT* access the database itself, in
@@ -72,6 +74,7 @@ require_once ASCMS_MODULE_PATH.'/shop/payments/dummy/Dummy.class.php';
  *      Successful payments, silent *:  result=-1
  *      Failed payments:                result=0
  *      Aborted payments:               result=2
+ *      Aborted payments, silent *:     result=-2
  *   * Some payment services do not only redirect the customer after a
  *     successful payment has completed, but already after the payment
  *     has been authorized.  Yellowpay, as an example, expects an empty
@@ -113,10 +116,9 @@ class PaymentProcessing
 
         $query = '
             SELECT id, type, name, description,
-                   company_url, status, picture, text
+                   company_url, status, picture
               FROM '.DBPREFIX.'module_shop_payment_processors
-          ORDER BY id
-        ';
+          ORDER BY id';
         $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
             self::$arrPaymentProcessor[$objResult->fields['id']] = array(
@@ -127,9 +129,12 @@ class PaymentProcessing
                 'company_url' => $objResult->fields['company_url'],
                 'status'      => $objResult->fields['status'],
                 'picture'     => $objResult->fields['picture'],
-                'text'        => $objResult->fields['text']
             );
             $objResult->MoveNext();
+        }
+        // Verify version 3.0 complete data
+        if (empty (self::$arrPaymentProcessor[11])) {
+            self::errorHandler();
         }
     }
 
@@ -254,12 +259,10 @@ class PaymentProcessing
                 /* Redirect browser */
                 CSRF::header('location: index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=1&handler=Internal');
                 exit;
-                break;
             case 'Internal_LSV':
                 /* Redirect browser */
                 CSRF::header('location: index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=1&handler=Internal');
                 exit;
-                break;
             case 'Internal_CreditCard':
                 $return = self::_Internal_CreditCardProcessor();
                 break;
@@ -278,6 +281,28 @@ class PaymentProcessing
                 break;
             case 'yellowpay': // was: 'PostFinance_DebitDirect'
                 $return = self::_YellowpayProcessor();
+if (empty ($return)) {
+    foreach (Yellowpay::$arrError as $error) {
+        DBG::log("Yellowpay Error: $error");
+    }
+}
+                break;
+            // Added 20100222 -- Reto Kohli
+            case 'mobilesolutions':
+                require_once(ASCMS_MODULE_PATH.'/shop/payments/yellowpay/PostfinanceMobile.class.php');
+                $return = PostfinanceMobile::getForm(
+                    intval(100 * $_SESSION['shop']['grand_total_price']),
+                    $_SESSION['shop']['order_id']);
+                if ($return) {
+//DBG::log("Postfinance Mobile getForm() returned:");
+//DBG::log($return);
+                } else {
+DBG::log("PaymentProcessing::checkOut(): ERROR: Postfinance Mobile getForm() failed");
+DBG::log("Postfinance Mobile error messages:");
+foreach (PostfinanceMobile::getErrors() as $error) {
+DBG::log($error);
+}
+                }
                 break;
             // Added 20081117 -- Reto Kohli
             case 'Datatrans':
@@ -307,45 +332,53 @@ class PaymentProcessing
         if (!is_array(self::$arrPaymentProcessor)) self::init();
         $imageName = self::getPaymentProcessorPicture();
         if (empty($imageName)) return '';
+        $imageName_lang = $imageName;
+        $match = array();
+        if (preg_match('/(\.\w+)$/', $imageName, $match))
+            $imageName_lang = preg_replace(
+                '/\.\w+$/', '_'.FRONTEND_LANG_ID.$match[1], $imageName);
+//DBG::log("PaymentProcessing::_getPictureCode(): Testing path ".ASCMS_DOCUMENT_ROOT.SHOP_PAYMENT_LOGO_PATH.$imageName_lang);
         return
             '<br /><br /><img src="'.
-            SHOP_PAYMENT_LOGO_PATH.$imageName.
+            // Is there a language dependent version?
+            (File::exists(SHOP_PAYMENT_LOGO_PATH.$imageName_lang)
+              ? ASCMS_PATH_OFFSET.SHOP_PAYMENT_LOGO_PATH.$imageName_lang
+              : ASCMS_PATH_OFFSET.SHOP_PAYMENT_LOGO_PATH.$imageName).
             '" alt="" title="" /><br /><br />';
     }
 
 
     /**
-     * Returns the HTML code for the Saferpay payment method.
-     * @return  string  HTML code
+     * Returns the HTML code for the Saferpay payment form.
+     * @param   array   $arrCards     The optional accepted card types
+     * @return  string                The HTML code
      * @static
      */
-    static function _SaferpayProcessor($arrCards=array())
+    static function _SaferpayProcessor($arrCards=null)
     {
         global $_ARRAYLANG;
 
         $objSaferpay = new Saferpay();
-        if (Settings::getStatusByName('saferpay_use_test_account'))
-            $objSaferpay->isTest = true;
-
-        $serverBase =
-            $_SERVER['SERVER_NAME'].
-            (ASCMS_PATH_OFFSET != '' ? '' : '/').
-            ASCMS_PATH_OFFSET.
-            (ASCMS_PATH_OFFSET != '' ? '/' : '');
+        $serverBase = $_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET.'/';
         $arrShopOrder = array(
             'AMOUNT'      => str_replace('.', '', $_SESSION['shop']['grand_total_price']),
             'CURRENCY'    => Currency::getActiveCurrencyCode(),
-            'ORDERID'     => $_SESSION['shop']['orderid'],
-            'ACCOUNTID'   => Settings::getValueByName('saferpay_id'),
+            'ORDERID'     => $_SESSION['shop']['order_id'],
+            'ACCOUNTID'   => SettingDb::getValue('saferpay_id'),
             'SUCCESSLINK' => urlencode('http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=1&handler=saferpay'),
             'FAILLINK'    => urlencode('http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=0&handler=saferpay'),
             'BACKLINK'    => urlencode('http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=2&handler=saferpay'),
-            'DESCRIPTION' => urlencode('"'.$_ARRAYLANG['TXT_ORDER_NR'].' '.$_SESSION['shop']['orderid'].'"'),
+            'DESCRIPTION' => urlencode('"'.$_ARRAYLANG['TXT_ORDER_NR'].' '.$_SESSION['shop']['order_id'].'"'),
             'LANGID'      => FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
-            'PROVIDERSET' => $arrCards,
+            'NOTIFYURL'   => urlencode('http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=-1&handler=saferpay'),
+            'ALLOWCOLLECT' => 'no',
+            'DELIVERY'     => 'no',
         );
-
+        if ($arrCards) {
+            $arrShopOrder['PROVIDERSET'] = $arrCards;
+        }
         $payInitUrl = $objSaferpay->payInit($arrShopOrder);
+//DBG::log("PaymentProcessing::_SaferpayProcessor(): payInit URL: $payInitUrl");
         // Fixed: Added check for empty return string,
         // i.e. on connection problems
         if (   !$payInitUrl
@@ -356,7 +389,7 @@ class PaymentProcessing
                 "<br />$payInitUrl</b></font>";
         }
         $return = "<script src='http://www.saferpay.com/OpenSaferpayScript.js'></script>\n";
-        switch (Settings::getValueByName('saferpay_window_option')) {
+        switch (SettingDb::getValue('saferpay_window_option')) {
             case 0: // iframe
                 return
                     $return.
@@ -366,30 +399,29 @@ class PaymentProcessing
                 return
                     $return.
                     $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n".
-                    "<script language='javascript' type='text/javascript'>
-                     function openSaferpay()
-                     {
-                         strUrl = '$payInitUrl';
-                         if (strUrl.indexOf(\"WINDOWMODE=Standalone\") == -1) {
-                             strUrl += \"&WINDOWMODE=Standalone\";
-                         }
-                         oWin = window.open(strUrl, 'SaferpayTerminal',
-                                       'scrollbars=1,resizable=0,toolbar=0,location=0,directories=0,status=1,menubar=0,width=580,height=400'
-                         );
-                         if (oWin==null || typeof(oWin)==\"undefined\") {
-                             alert(\"The payment couldn't be initialized, because it seems that you are using a popup blocker!\");
-                         }
+                    "<script type='text/javascript'>
+                     function openSaferpay() {
+                       strUrl = '$payInitUrl';
+                       if (strUrl.indexOf(\"WINDOWMODE=Standalone\") == -1) {
+                         strUrl += \"&WINDOWMODE=Standalone\";
+                       }
+                       oWin = window.open(strUrl, 'SaferpayTerminal',
+                           'scrollbars=1,resizable=0,toolbar=0,location=0,directories=0,status=1,menubar=0,width=580,height=400'
+                       );
+                       if (oWin == null || typeof(oWin) == \"undefined\") {
+                         alert(\"The payment couldn't be initialized.  It seems like you are using a popup blocker!\");
+                       }
                      }
                      </script>\n".
                     "<input type='button' name='order_now' value='".
                     $_ARRAYLANG['TXT_ORDER_NOW'].
                     "' onclick='openSaferpay()' />\n";
-            default:  //case 2: // new window
+            default: //case 2: // new window
         }
         return
             $return.
             $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n".
-            "<form method='post' action='$payInitUrl'>\n<input type='Submit' value='".
+            "<form method='post' action='$payInitUrl'>\n<input type='submit' value='".
             $_ARRAYLANG['TXT_ORDER_NOW'].
             "' />\n</form>\n";
     }
@@ -399,55 +431,33 @@ class PaymentProcessing
      * Returns the HTML code for the Yellowpay payment method.
      * @return  string  HTML code
      */
-    function _YellowpayProcessor()
+    static function _YellowpayProcessor()
     {
         global $_ARRAYLANG;
 
         $language = FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
         $language = strtolower($language).'_'.strtoupper($language);
-        // Temporary workaround until SettingDb is fully in charge.
-        // After that, just do a simple
-        //$settings = SettingDb::getArray();
-        $settings = array(
-            'postfinance_shop_id' => array('value' =>
-                Settings::getValueByName('yellowpay_shop_id')),
-            'postfinance_hash_signature_in' => array('value' =>
-                Settings::getValueByName('yellowpay_hash_signature_in')),
-            'postfinance_hash_signature_out' => array('value' =>
-                Settings::getValueByName('yellowpay_hash_signature_out')),
-            'postfinance_authorization_type' => array('value' =>
-                Settings::getValueByName('yellowpay_authorization_type')),
-            'postfinance_accepted_payment_methods' => array('value' =>
-                Settings::getValueByName('yellowpay_accepted_payment_methods')),
-            'postfinance_use_testserver' => array('value' =>
-                Settings::getValueByName('yellowpay_use_testserver')),
-        );
         $arrShopOrder = array(
-            'PSPID'    => $settings['postfinance_shop_id']['value'],
-            'ORDERID'  => $_SESSION['shop']['orderid'],
-            'AMOUNT'   => intval($_SESSION['shop']['grand_total_price']*100),
-            'LANGUAGE' => $language,
-            'CURRENCY' => Currency::getActiveCurrencyCode(),
-// TODO: Fill these in when available
-//            'COM' => '',
-//            'CN' => '',
-//            'OWNERADDRESS' => '',
-//            'OWNERZIP' => '',
-//            'OWNERTOWN' => '',
-//            'OWNERCTY' => '',
-//            'OWNERTELNO' => '',
-//            'EMAIL' => '',
+// 20111227 - Note that all parameter names should now be uppercase only
+            'PSPID'    => SettingDb::getValue('postfinance_shop_id'),
+            'ORDERID'   => $_SESSION['shop']['order_id'],
+            'AMOUNT'    => intval($_SESSION['shop']['grand_total_price']*100),
+            'LANGUAGE'  => $language,
+            'CURRENCY'  => Currency::getActiveCurrencyCode(),
+            'OPERATION' => SettingDb::getValue('postfinance_authorization_type'),
         );
         $yellowpayForm = Yellowpay::getForm(
-            $arrShopOrder, $_ARRAYLANG['TXT_ORDER_NOW'], false, $settings);
-        if (Yellowpay::$arrError) {
-            foreach (Yellowpay::$arrError as $error) {
-                DBG::log("Yellowpay Error: $error");
-            }
-            return
+            $arrShopOrder, $_ARRAYLANG['TXT_ORDER_NOW']
+        );
+        if (_PAYMENT_DEBUG && Yellowpay::$arrError) {
+            $strError =
                 '<font color="red"><b>'.
                 $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_YELLOWPAY'].
-                '<br /></b></font>';
+                '<br /></b>';
+            if (_PAYMENT_DEBUG) {
+                $strError .= join('<br />', Yellowpay::$arrError); //.'<br />';
+            }
+            return $strError.'</font>';
         }
         return $yellowpayForm;
     }
@@ -468,8 +478,8 @@ class PaymentProcessing
 
         require_once(ASCMS_MODULE_PATH.'/shop/payments/datatrans/Datatrans.class.php');
         Datatrans::initialize(
-            Settings::getValueByName('datatrans_merchant_id'),
-            $_SESSION['shop']['orderid'],
+            SettingDb::getValue('datatrans_merchant_id'),
+            $_SESSION['shop']['order_id'],
             $_SESSION['shop']['grand_total_price'],
             Currency::getActiveCurrencyCode()
         );
@@ -494,24 +504,23 @@ class PaymentProcessing
      *                  If the order ID is unknown or upon failure:
      *                  Boolean false
      */
-    function checkIn()
+    static function checkIn()
     {
-        if (   isset($_GET['result'])
-            && $_GET['result'] == 0 || $_GET['result'] == 2
-        ) return false;
+        if (isset($_GET['result'])) {
+            $result = abs(intval($_GET['result']));
+            if ($result == 0 || $result == 2) return false;
+        }
         if (empty($_GET['handler'])) return false;
         switch ($_GET['handler']) {
             case 'saferpay':
+//DBG::log("PaymentProcessing::checkIn():");
+//DBG::log("POST: ".var_export($_POST, true));
+//DBG::log("GET: ".var_export($_GET, true));
                 $objSaferpay = new Saferpay();
                 $arrShopOrder = array();
-// Not used
-//                if (Settings::getStatusByName('saferpay_use_test_account')) {
-//                    $objSaferpay->isTest = true;
-//                } else {
-                    $arrShopOrder['ACCOUNTID'] = Settings::getValueByName('saferpay_id');
-//                }
+                $arrShopOrder['ACCOUNTID'] = SettingDb::getValue('saferpay_id');
                 $transaction = $objSaferpay->payConfirm();
-                if (Settings::getValueByName('saferpay_finalize_payment')) {
+                if (SettingDb::getValue('saferpay_finalize_payment')) {
 // payComplete() has been fixed to work
 //                    if ($objSaferpay->isTest == true) {
 //                        $transaction = true;
@@ -519,16 +528,12 @@ class PaymentProcessing
                         $transaction = $objSaferpay->payComplete($arrShopOrder);
 //                    }
                 }
+//DBG::log("Transaction: ".var_export($transaction, true));
                 return $transaction;
             case 'paypal':
-                // The order ID must be returned when the payment is done.
-                // is this guaranteed to be a GET request?
-                if (isset($_REQUEST['orderid']))
-                    return intval($_REQUEST['orderid']);
-                break;
+                return PayPal::ipnCheck();
             case 'yellowpay':
-                return Yellowpay::checkin(
-                    Settings::getValueByName('yellowpay_hash_signature_out'));
+                return Yellowpay::checkIn();
 //                    if (Yellowpay::$arrError || Yellowpay::$arrWarning) {
 //                        global $_ARRAYLANG;
 //                        echo('<font color="red"><b>'.
@@ -540,6 +545,22 @@ class PaymentProcessing
 //                        join('<br />', Yellowpay::$arrWarning).
 //                        '</font>');
 //                    }
+            // Added 20100222 -- Reto Kohli
+            case 'mobilesolutions':
+                // A return value of null means:  Do not change the order status
+                if (   empty($_POST['state'])
+//                    || (   $_POST['state'] == 'success'
+//                        && (   empty($_POST['mosoauth'])
+//                            || empty($_POST['postref'])))
+                ) return null;
+                require_once(ASCMS_MODULE_PATH.'/shop/payments/yellowpay/PostfinanceMobile.class.php');
+                $result = PostfinanceMobile::validateSign();
+if ($result) {
+//DBG::log("PaymentProcessing::checkIn(): mobilesolutions: Payment verification successful!");
+} else {
+DBG::log("PaymentProcessing::checkIn(): mobilesolutions: Payment verification failed; errors: ".var_export(PostfinanceMobile::getErrors(), true));
+}
+                return $result;
             // Added 20081117 -- Reto Kohli
             case 'datatrans':
                 require_once(ASCMS_MODULE_PATH.'/shop/payments/datatrans/Datatrans.class.php');
@@ -574,30 +595,31 @@ class PaymentProcessing
 
     static function getOrderId()
     {
-        if (empty($_GET['handler'])) return false;
+        if (empty($_GET['handler'])) {
+//DBG::log("PaymentProcessing::getOrderId(): No handler, fail");
+            return false;
+        }
         switch ($_GET['handler']) {
             case 'saferpay':
                 return Saferpay::getOrderId();
-
             case 'paypal':
-                return (isset($_REQUEST['orderid'])
-                    ? intval($_REQUEST['orderid'])
-                    : false);
-
+                return (isset($_REQUEST['order_id'])
+                  ? intval($_REQUEST['order_id'])
+                  : (isset($_REQUEST['orderid'])
+                      ? intval($_REQUEST['orderid']) : false));
             case 'yellowpay':
                 return Yellowpay::getOrderId();
-
             // Added 20100222 -- Reto Kohli
             case 'mobilesolutions':
+//DBG::log("getOrderId(): mobilesolutions");
                 require_once(ASCMS_MODULE_PATH.'/shop/payments/yellowpay/PostfinanceMobile.class.php');
                 $order_id = PostfinanceMobile::getOrderId();
+//DBG::log("getOrderId(): mobilesolutions, Order ID $order_id");
                 return $order_id;
-
             // Added 20081117 -- Reto Kohli
             case 'datatrans':
                 require_once(ASCMS_MODULE_PATH.'/shop/payments/datatrans/Datatrans.class.php');
                 return Datatrans::getOrderId();
-
             // For the remaining types, there's no need to check in, so we
             // return true and jump over the validation of the order ID
             // directly to success!
@@ -609,8 +631,8 @@ class PaymentProcessing
             case 'Internal_Debit':
             case 'Internal_LSV':
             case 'dummy':
-                return (isset($_SESSION['shop']['orderid_checkin'])
-                    ? $_SESSION['shop']['orderid_checkin']
+                return (isset($_SESSION['shop']['order_id_checkin'])
+                    ? $_SESSION['shop']['order_id_checkin']
                     : false);
         }
         // Anything else is wrong.
@@ -622,24 +644,89 @@ class PaymentProcessing
     {
         global $_ARRAYLANG;
 
-        if (!is_array(self::$arrPaymentProcessor)) self::init();
-        $strMenuoptions =
-            (empty($selected_id)
-              ? '<option value="" selected="selected">'.
-                $_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'].
-                "</option>\n"
-              : ''
+        $arrName = self::getPaymentProcessorNameArray();
+        if (empty($selected_id))
+            $arrName = array(
+                0 => $_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'],
+            ) + $arrName;
+        return Html::getOptions($arrName, $selected_id);
+    }
+
+
+    /**
+     * Handles all kinds of database errors
+     *
+     * Creates the processors' table, and creates default entries if necessary
+     * @return  boolean                         False. Always.
+     * @global  ADOConnection   $objDatabase
+     */
+    static function errorHandler()
+    {
+        global $objDatabase;
+        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
+        require_once(ASCMS_CORE_PATH.'/Text.class.php');
+
+        $table_name_new = DBPREFIX.'module_shop'.MODULE_INDEX.'_processors';
+        if (!UpdateUtil::table_exist($table_name_new)) {
+            $table_structure = array(
+                'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
+                'type' => array('type' => 'ENUM("internal", "external")', 'default' => 'internal'),
+                'name' => array('type' => 'VARCHAR(255)', 'default' => ''),
+                'description' => array('type' => 'TEXT', 'default' => ''),
+                'company_url' => array('type' => 'VARCHAR(255)', 'default' => ''),
+                'status' => array('type' => 'TINYINT(10)', 'unsigned' => true, 'default' => 1),
+                'picture' => array('type' => 'VARCHAR(255)', 'default' => ''),
             );
-        foreach (array_keys(self::$arrPaymentProcessor) as $id) {
-            $strMenuoptions .=
-                '<option value="'.$id.'"'.
-                ($id == $selected_id ? ' selected="selected"' : '').'>'.
-                self::$arrPaymentProcessor[$id]['name'].
-                "</option>\n";
         }
-        return $strMenuoptions;
+        $arrPsp = array(
+            array(01, 'external', 'Saferpay_All_Cards',
+                'Saferpay is a comprehensive Internet payment platform, specially developed for commercial applications. It provides a guarantee of secure payment processes over the Internet for merchants as well as for cardholders. Merchants benefit from the easy integration of the payment method into their e-commerce platform, and from the modularity with which they can take account of current and future requirements. Cardholders benefit from the security of buying from any shop that uses Saferpay.',
+                'http://www.saferpay.com/', 1, 'logo_saferpay.gif'),
+            array(02, 'external', 'Paypal',
+                'With more than 40 million member accounts in over 45 countries worldwide, PayPal is the world\'s largest online payment service. PayPal makes sending money as easy as sending email! Any PayPal member can instantly and securely send money to anyone in the U.S. with an email address. PayPal can also be used on a web-enabled cell phone. In the future, PayPal will be available to use on web-enabled pagers and other handheld devices.',
+                'http://www.paypal.com/', 1, 'logo_paypal.gif'),
+            array(03, 'external', 'yellowpay',
+                'PostFinance vereinfacht das Inkasso im Online-Shop.',
+                'http://www.postfinance.ch/', 1, 'logo_postfinance.gif'),
+            array(04, 'internal', 'Internal',
+                'Internal no forms',
+                '', 1, ''),
+            array(05, 'internal', 'Internal_CreditCard',
+                'Internal with a Credit Card form',
+                '', 1, ''),
+            array(06, 'internal', 'Internal_Debit',
+                'Internal with a Bank Debit Form',
+                '', 1, ''),
+            array(07, 'external', 'Saferpay_Mastercard_Multipay_CAR',
+                'Saferpay is a comprehensive Internet payment platform, specially developed for commercial applications. It provides a guarantee of secure payment processes over the Internet for merchants as well as for cardholders. Merchants benefit from the easy integration of the payment method into their e-commerce platform, and from the modularity with which they can take account of current and future requirements. Cardholders benefit from the security of buying from any shop that uses Saferpay.',
+                'http://www.saferpay.com/', 1, 'logo_saferpay.gif'),
+            array(08, 'external', 'Saferpay_Visa_Multipay_CAR',
+                'Saferpay is a comprehensive Internet payment platform, specially developed for commercial applications. It provides a guarantee of secure payment processes over the Internet for merchants as well as for cardholders. Merchants benefit from the easy integration of the payment method into their e-commerce platform, and from the modularity with which they can take account of current and future requirements. Cardholders benefit from the security of buying from any shop that uses Saferpay.',
+                'http://www.saferpay.com/', 1, 'logo_saferpay.gif'),
+            array(09, 'internal', 'Internal_LSV',
+                'LSV with internal form',
+                '', 1, ''),
+            array(10, 'external', 'Datatrans',
+                'Die professionelle und komplette Payment-Lösung - all inclusive. Ein einziges Interface für sämtliche Zahlungsmethoden (Kreditkarten, Postcard, Kundenkarten). Mit variablem Angebot für unterschiedliche Kundenbedürfnisse.',
+                'http://datatrans.biz/', 1, 'logo_datatrans.gif'),
+            array(11, 'external', 'mobilesolutions',
+                'PostFinance Mobile',
+                'https://postfinance.mobilesolutions.ch/', 1, 'logo_postfinance_mobile.gif'),
+        );
+        $query_template = "
+            REPLACE INTO `".DBPREFIX."module_shop_payment_processors` (
+                `id`, `type`, `name`,
+                `description`,
+                `company_url`, `status`, `picture`
+            ) VALUES (
+                ?, ?, ?, ?, ?, ?, ?
+            )";
+        foreach ($arrPsp as $psp) {
+            UpdateUtil::sql($query_template, $psp);
+        }
+
+        // Always
+        return false;
     }
 
 }
-
-?>

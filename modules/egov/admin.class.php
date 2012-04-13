@@ -35,6 +35,7 @@ class eGov extends eGovLibrary
     private $_strErrMessage = '';
     private $_strOkMessage = '';
 
+    private $act = '';
 
     function __construct()
     {
@@ -60,10 +61,15 @@ class eGov extends eGovLibrary
 
         $this->imagePath = ASCMS_MODULE_IMAGE_WEB_PATH;
         $this->langId=$objInit->userFrontendLangId;
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
 
-        $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='index.php?cmd=egov'>".$_ARRAYLANG['TXT_ORDERS']."</a>
-                                                        <a href='index.php?cmd=egov&amp;act=products'>".$_ARRAYLANG['TXT_PRODUCTS']."</a>
-                                                        <a href='index.php?cmd=egov&amp;act=settings'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
+        $objTemplate->setVariable("CONTENT_NAVIGATION","
+            <a href='index.php?cmd=egov' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_ORDERS']."</a>
+            <a href='index.php?cmd=egov&amp;act=products' class='".($this->act == 'products' ? 'active' : '')."'>".$_ARRAYLANG['TXT_PRODUCTS']."</a>
+            <a href='index.php?cmd=egov&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
     }
 
 
@@ -72,30 +78,30 @@ class eGov extends eGovLibrary
         global $objTemplate;
 
         if (!isset($_GET['act'])) {
-            $_GET['act']='';
+            $_GET['act'] = '';
         }
         switch($_GET['act']) {
             case 'save_form':
                 $this->_saveForm();
-            break;
+                break;
             case 'product_edit':
                 $this->_product_edit();
-            break;
+                break;
             case 'product_copy':
                 $this->_product_copy();
-            break;
+                break;
             case 'products':
                 $this->_products();
-            break;
+                break;
             case 'settings':
                 $this->_settings();
-            break;
+                break;
             case 'order_edit':
                 $this->_order_edit();
-            break;
+                break;
             case 'orders':
                 $this->_orders();
-            break;
+                break;
             case 'detail':
                 $this->_ProductDetail();
                 break;
@@ -105,20 +111,21 @@ class eGov extends eGovLibrary
             default:
                 $this->_orders();
         }
-
-        $this->objTemplate->setGlobalVariable('ASCMS_BACKEND_PATH', ASCMS_BACKEND_PATH);
-
+        $this->objTemplate->setGlobalVariable(
+            'ASCMS_BACKEND_PATH', ASCMS_BACKEND_PATH);
         $objTemplate->setVariable(array(
             'CONTENT_TITLE' => $this->_pageTitle,
             'CONTENT_OK_MESSAGE' => $this->_strOkMessage,
             'CONTENT_STATUS_MESSAGE' => $this->_strErrMessage,
             'ADMIN_CONTENT' => $this->objTemplate->get()
         ));
+        $this->act = (isset ($_REQUEST['act']) ? $_REQUEST['act'] : '');
+        $this->setNavigation();
     }
 
 
-    function _product_copy() {
-
+    function _product_copy()
+    {
         global $objDatabase, $_ARRAYLANG;
 
         $product_id = $_REQUEST['id'];
@@ -190,15 +197,14 @@ class eGov extends eGovLibrary
 
         $currency = eGovLibrary::GetSettings('set_paypal_currency');
         $currencyMenuoptions = eGov::getCurrencyMenuoptions($currency);
-        $ipnchecked =
-            (eGovLibrary::GetSettings('set_paypal_ipn') == 1
-                ? 'checked="checked"' : ''
-            );
+        $ipnchecked = (eGovLibrary::GetSettings('set_paypal_ipn') == 1
+            ? 'checked="checked"' : '');
 
         // PostFinance uses SettingDb
         require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
-        SettingDb::init('config');
-// Temporary fix for the upgrade to SettingDb
+        SettingDb::init('egov', 'config');
+// TODO: Temporary fix for the upgrade to SettingDb.
+// Remove when the whole module is migrated.
         $postfinance_shop_id = SettingDb::getValue('postfinance_shop_id');
         if (empty ($postfinance_shop_id)) {
             self::errorHandler();
@@ -1440,9 +1446,12 @@ class eGov extends eGovLibrary
              WHERE `name`='set_paypal_ipn'
         ") ? true : false);
         require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
-        SettingDb::init('config');
+        SettingDb::init('egov', 'config');
         $result_settingdb = SettingDb::storeFromPost(true);
-        if ($result_settingdb === false) $result = false;
+        if ($result_settingdb === false) {
+            self::errorHandler();
+            $result = false;
+        }
         return $result;
     }
 

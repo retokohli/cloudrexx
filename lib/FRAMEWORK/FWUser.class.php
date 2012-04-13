@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Framework user
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -32,6 +33,10 @@ require_once ASCMS_FRAMEWORK_PATH.'/User/User.class.php';
  * @ignore
  */
 require_once ASCMS_FRAMEWORK_PATH.'/User/UserGroup.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_CORE_MODULE_PATH.'/access/lib/AccessLib.class.php';
 
 /**
  * Framework user
@@ -64,9 +69,7 @@ class FWUser extends User_Setting
     function __construct($backend = false)
     {
         parent::__construct();
-
         $this->setMode($backend);
-
         $this->objUser = new User();
         $this->objGroup = new UserGroup();
     }
@@ -81,6 +84,7 @@ class FWUser extends User_Setting
     {
         $this->backendMode = $backend;
     }
+
 
     /**
      * Get the backend mode flag
@@ -104,34 +108,34 @@ class FWUser extends User_Setting
 
         $username = isset($_POST['USERNAME']) && $_POST['USERNAME'] != '' ? contrexx_stripslashes($_POST['USERNAME']) : null;
         $password = isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '' ? md5(contrexx_stripslashes($_POST['PASSWORD'])) : null;
-        $validationCode = isset($_POST['secid2']) && $_POST['secid2'] != '' ? contrexx_stripslashes($_POST['secid2']) : false;
 
         if (isset($username) && isset($password)) {
-            if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
-
-            if ($this->objUser->auth($username, $password, $this->isBackendMode())) {
+            if (empty($sessionObj)) $sessionObj = new cmsSession();
+            if ($this->objUser->auth($username, $password, $this->isBackendMode(), FWCaptcha::getInstance()->check())) {
                 if ($this->isBackendMode()) {
-                    // sets cookie for 30 days
-                    setcookie("username", $this->objUser->getUsername(), time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
                     $this->log();
                 }
                 $sessionObj->cmsSessionUserUpdate($this->objUser->getId());
-
-                // store frontend lang_id in cookie
+                $this->objUser->registerSuccessfulLogin();
+                unset($_SESSION['loginLastAuthFailed']);
+                // Store frontend lang_id in cookie
                 if (empty($_COOKIE['langId'])) {
+// TODO: Seems that this method returns zero at first when the Users' language is set to "default"!
                     $langId = $this->objUser->getFrontendLanguage();
+// Temporary fix:
+if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
                     if ($objInit->arrLang[$langId]['frontend']) {
                         setcookie("langId", $langId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
                     }
                 }
                 return true;
             }
-
+            $_SESSION['loginLastAuthFailed'] = 1;
+            User::registerFailedLogin($username);
             $this->arrStatusMsg['error'][] = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];
             $sessionObj->cmsSessionUserUpdate();
             $sessionObj->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
         }
-
         return false;
     }
 
@@ -152,7 +156,7 @@ class FWUser extends User_Setting
         setcookie(session_name(), '', time() - 3600, ASCMS_PATH_OFFSET.'/');
 
         if ($this->backendMode) {
-            CSRF::header('Location: ../'.CONTREXX_DIRECTORY_INDEX);
+            CSRF::header('Location: '.ASCMS_PATH_OFFSET);
         } else {
             CSRF::header('Location: '.(!empty($_REQUEST['redirect'])
                 ? urldecode($_REQUEST['redirect'])
@@ -200,36 +204,104 @@ class FWUser extends User_Setting
         return implode('<br />', $this->arrStatusMsg['error']);
     }
 
-    /**
-     * Checks the code from the security image.
-     *
-     * This function compares the security image code with the
-     * code present in the current session.
-     * @access  private
-     * @param   string    $validationCode   The code entered by the user
-     * @return  boolean                     True if the codes are equal,
-     *                                      false otherwise.
-     */
-    function checkCode($validationCode)
+
+    private static function loadTemplate($template)
     {
-        return
-            (   isset($_SESSION['auth']['secid'])
-             && $_SESSION['auth']['secid'] === $validationCode);
+        $objTemplate = new HTML_Template_Sigma(ASCMS_THEMES_PATH);
+        $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+        $objTemplate->setTemplate($template[0]);
+        self::parseLoggedInOutBlocks($objTemplate);
+        return $objTemplate->get();
     }
 
 
-    function setLoggedInInfos()
+    public static function parseLoggedInOutBlocks(&$template)
     {
-        global $_CORELANG, $objTemplate;
+        $accessLoggedInOutBlockIdx = '';
+        $accessLoggedInBlock = 'access_logged_in';
+        $accessLoggedInTplBlock = $accessLoggedInBlock.$accessLoggedInOutBlockIdx;
+        $accessLoggedOutBlock = 'access_logged_out';
+        $accessLoggedOutTplBlock = $accessLoggedOutBlock.$accessLoggedInOutBlockIdx;
 
-        if (!$this->objUser->login()) {
+        if (!is_object($template)) {
+            // content provided instead of HTML_Template_Sigma object
+            $template = preg_replace_callback('/<!--\s+BEGIN\s+(access_logged_in[0-9]*)\s+-->.*<!--\s+END\s+\1\s+-->/sm', array('self', 'loadTemplate'), $template);
+            return;
+        } else {
+            $objTemplate = $template;
+        }
+
+        while ($accessLoggedInOutBlockIdx <= 10) {
+            // parse access_logged_in[_[1-10]] blocks
+            if ($objTemplate->blockExists($accessLoggedInTplBlock)) {
+                $objFWUser = FWUser::getFWUserObject();
+                if ($objFWUser->objUser->login()) {
+                    $objFWUser->setLoggedInInfos($objTemplate, $accessLoggedInTplBlock);
+                    $objTemplate->parse($accessLoggedInTplBlock);
+                } else {
+                    $objTemplate->hideBlock($accessLoggedInTplBlock);
+                }
+            }
+
+            // parse access_logged_out[_[1-10]] blocks
+            if ($objTemplate->blockExists($accessLoggedOutTplBlock)) {
+                $objFWUser = FWUser::getFWUserObject();
+                if ($objFWUser->objUser->login()) {
+                    $objTemplate->hideBlock($accessLoggedOutTplBlock);
+                } else {
+                    $objTemplate->touchBlock($accessLoggedOutTplBlock);
+                }
+            }
+
+            $accessLoggedInOutBlockIdx++;
+            $accessLoggedInTplBlock = $accessLoggedInBlock.$accessLoggedInOutBlockIdx;
+            $accessLoggedOutTplBlock = $accessLoggedOutBlock.$accessLoggedInOutBlockIdx;
+        }
+    }
+
+
+    private function setLoggedInInfos($objTemplate, $blockName = '')
+    {
+        global $_CORELANG;
+
+        $objUser = FWUser::getFWUserObject()->objUser;
+        if (!$objUser->login()) {
             return false;
         }
+
+        $loggedInLabel = $_CORELANG['TXT_LOGGED_IN_AS'].' '.contrexx_raw2xhtml($objUser->getUsername());
+
+        if (empty($blockName) || $blockName == 'access_logged_in') {
+            // this is for backwards compatibility for version pre 3.0
+            $objTemplate->setVariable(array(
+                'LOGGING_STATUS'        => $loggedInLabel,
+                'ACCESS_USER_ID'        => $objUser->getId(),
+                'ACCESS_USER_USERNAME'  => contrexx_raw2xhtml($objUser->getUsername()),
+                'ACCESS_USER_EMAIL'     => contrexx_raw2xhtml($objUser->getEmail()),
+            ));
+
+            $blockName = 'access_logged_in';
+        }
+        $placeholderPrefix = strtoupper($blockName).'_';
+
         $objTemplate->setVariable(array(
-            'LOGGING_STATUS'        => $_CORELANG['TXT_LOGGED_IN_AS'].' '.htmlentities($this->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-            'ACCESS_USER_ID'        => $this->objUser->getId(),
-            'ACCESS_USER_USERNAME'  => htmlentities($this->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
+            $placeholderPrefix.'LOGGING_STATUS' => $loggedInLabel,
+            $placeholderPrefix.'USER_ID'        => $objUser->getId(),
+            $placeholderPrefix.'USER_USERNAME'  => contrexx_raw2xhtml($objUser->getUsername()),
+            $placeholderPrefix.'USER_EMAIL'     => contrexx_raw2xhtml($objUser->getEmail()),
         ));
+
+        $objAccessLib = new AccessLib($objTemplate);
+        $objAccessLib->setModulePrefix($placeholderPrefix);
+        $objAccessLib->setAttributeNamePrefix($blockName.'_profile_attribute');
+
+        $objUser->objAttribute->first();
+        while (!$objUser->objAttribute->EOF) {
+            $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
+            $objAccessLib->parseAttribute($objUser, $objAttribute->getId(), 0, false, FALSE, false, false, false);
+            $objUser->objAttribute->next();
+        }
+
         return true;
     }
 
@@ -291,7 +363,7 @@ class FWUser extends User_Setting
                 $objMail->Subject = $objUserMail->getSubject();
 
                 if ($this->isBackendMode()) {
-                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=resetpw&username=".urlencode($objUser->getUsername())."&restoreKey=".$objUser->getRestoreKey();
+                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=login&act=resetpw&username=".urlencode($objUser->getUsername())."&restoreKey=".$objUser->getRestoreKey();
                 } else {
                     $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH."?section=login&cmd=resetpw&username=".urlencode($objUser->getUsername())."&restoreKey=".$objUser->getRestoreKey();
                 }
@@ -365,6 +437,78 @@ class FWUser extends User_Setting
 
 
     /**
+     * Format the author and publisher title
+     * @global array
+     * @param   mixed   Either the ID of the user account to parse or a User object
+     *                  of the user account to parse.
+     * @param   string  User name
+     * @param   boolean Whether or not to add the username to the title
+     * @return  string  Generated user title
+     */
+    public static function getParsedUserTitle($user, $name = '', $showUsername = false)
+    {
+        global $_CORELANG;
+    
+        static $arrTitles = array();
+
+        if ($user) {
+            if (is_object($user)) {
+                $userId = $user->getId();
+            } else {
+                $userId = $user;
+            }
+
+            if (isset($arrTitles[$userId])) {
+                $name = $arrTitles[$userId]['name'];
+                $username = $arrTitles[$userId]['username'];
+            } else {
+                if (!is_object($user)) {
+                    $user = FWUser::getFWUserObject()->objUser->getUser($userId);
+                }
+                
+                if ($user) {
+                    $company   = trim($user->getProfileAttribute('company'));
+                    $lastname  = trim($user->getProfileAttribute('lastname'));
+                    $firstname = trim($user->getProfileAttribute('firstname'));
+                    $username  = $user->getUsername();
+
+                    $nameFragments = array();
+                    if (!empty($company)) {
+                        $nameFragments[] = $company;
+                    }
+                    if (!empty($lastname) || !empty($firstname)) {
+                        $nameFragments[] = trim($lastname.' '.$firstname);
+                    }
+                    $name = join(', ', $nameFragments);
+
+                    $arrTitles[$userId] = array(
+                        'name'      => $name,
+                        'username'  => $username,
+                    );
+                }
+            }
+        }
+
+        if (!empty($name)) {
+            // set name as title
+            $title = $name;
+            if ($showUsername && !empty($username)) {
+                // add username to name if requested
+                $title = $name.' ('.$username.')';
+            }
+        } elseif (empty($name) && !empty($username)) {
+            // no name was set, so lets just use the username instead (in case one had been set)
+            $title = $username;
+        } else {
+            // neither a name, nor a username had been set
+            $title = $_CORELANG['TXT_ACCESS_UNKNOWN'];
+        }
+
+        return $title;
+    }
+
+
+    /**
      * Reset the password of the user using a reset form.
      * @access  public
      * @param   mixed  $objTemplate Template
@@ -434,6 +578,10 @@ class FWUser extends User_Setting
     }
 
 
+    /**
+     * Returns the static FWUser object
+     * @return  FWUser
+     */
     public static function getFWUserObject()
     {
         global $objInit;
@@ -443,6 +591,26 @@ class FWUser extends User_Setting
             $objFWUser = new FWUser($objInit->mode == 'backend');
         }
         return $objFWUser;
+    }
+
+
+    /**
+     * Return the number of registered users.
+     * Only users with an active and valid account are counted.
+     * global ADONewConnection
+     * Return integer
+     */
+    public static function getUserCount()
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute('
+            SELECT COUNT(`id`) AS user_count FROM `'.DBPREFIX.'access_users` WHERE `active` = 1');
+        if ($objResult !== false) {
+            return $objResult->fields['user_count'];
+        }
+
+        return 0;
     }
 
 
@@ -485,7 +653,7 @@ class FWUser extends User_Setting
         $unit = 'DAY';
         if ($validity == 0) {
             $validity = '';
-            $unit = $_CORELANG['TXT_USERS_UNLIMITED'];
+            $unit = $_CORELANG['TXT_CORE_UNLIMITED'];
         } else {
             if ($validity >= 30) {
                 $unit = 'MONTH';
@@ -496,11 +664,12 @@ class FWUser extends User_Setting
                 }
             }
             $unit =
-                $_CORELANG['TXT_USERS_'.$unit.
+                $_CORELANG['TXT_CORE_'.$unit.
                 ($validity > 1 ? 'S' : '')];
         }
         return "$validity $unit";
     }
+
 
     /**
      * Returns a SECID for logging in (Backend, Frontend editing)
@@ -511,12 +680,10 @@ class FWUser extends User_Setting
         $chars = 'ACDEFGHJKLMNPRTUWXZ345679';
         $max   = strlen($chars) -1;
         $ret = '';
-        for ($i=0;$i<4;$i++) {
-
-            $ret .= $chars{rand(0,$max)};
+        for ($i = 0; $i < 4; ++$i) {
+            $ret .= $chars{rand(0, $max)};
         }
         return $ret;
     }
-}
 
-?>
+}

@@ -22,6 +22,8 @@ class u2uAdmin extends u2uLibrary {
     var $_strErrMessage = '';
     var $_strOkMessage  = '';
 
+    private $act = '';
+    
     /**
     * Constructor   -> Create the module-menu and an internal template-object
     * @global   object      $objInit
@@ -39,9 +41,13 @@ class u2uAdmin extends u2uLibrary {
         $this->_intLanguageId = $objInit->userFrontendLangId;
 
         $objFWUser = FWUser::getFWUserObject();
-        $this->_intCurrentUserId = $objFWUser->objUser->getId();
+        $this->_intCurrentUserId = $objFWUser->objUser->getId();        
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
 
-        $objTemplate->setVariable('CONTENT_NAVIGATION',' <a href="?cmd=u2u&amp;act=settings">'.$_ARRAYLANG['TXT_U2U_SETTINGS'].'</a>');
+        $objTemplate->setVariable('CONTENT_NAVIGATION',' <a href="?cmd=u2u&amp;act=settings" class="'.($this->act == 'settings' ? 'active' : '').'">'.$_ARRAYLANG['TXT_U2U_SETTINGS'].'</a>');
     }
 
     /**
@@ -74,6 +80,9 @@ class u2uAdmin extends u2uLibrary {
             'CONTENT_STATUS_MESSAGE'    => $this->_strErrMessage,
             'ADMIN_CONTENT'             => $this->_objTpl->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 

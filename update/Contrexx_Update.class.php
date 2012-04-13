@@ -42,7 +42,14 @@ class Contrexx_Update
         if (!$objDatabase) {
             die($errorMsg);
         }
-        DBG::set_adodb_debug_mode();
+
+        if (DBG::getMode() & DBG_ADODB_TRACE) {
+            DBG::enable_adodb_debug(true);
+        } elseif (DBG::getMode() & DBG_ADODB || DBG::getMode() & DBG_ADODB_ERROR) {
+            DBG::enable_adodb_debug();
+        } else {
+            DBG::disable_adodb_debug();
+        }
 
         $this->_loadLanguage();
         if (!empty($_GET['ajax'])) {

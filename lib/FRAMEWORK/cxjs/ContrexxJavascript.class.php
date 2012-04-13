@@ -1,7 +1,7 @@
 <?php
 class ContrexxJavascriptException extends Exception {}
 
-require_once 'ContrexxJavascriptI18n.class.php';
+require_once ASCMS_FRAMEWORK_PATH.'/cxjs/ContrexxJavascriptI18n.class.php';
 /**
  * This class configures the ContrexxJavascript-object
  * (referred to as 'cx-object' in the comments)
@@ -31,11 +31,13 @@ class ContrexxJavascript {
             $langId = $objInit->getBackendLangId();
         $langCode = FWLanguage::getLanguageCodeById($langId);
 
-        $this->setVariable(array(
-            'cmsPath' => ASCMS_PATH_OFFSET,
-            'cadminPath' => ASCMS_BACKEND_PATH,
-            'mode' => $objInit->mode,
-            'language' => $langCode
+        $this->setVariable(
+            array(
+                'path'      => ASCMS_PATH_OFFSET.'/'.$langCode.'/',
+                'basePath'  => ASCMS_PATH_OFFSET.'/',
+                'cadminPath'=> ASCMS_BACKEND_PATH.'/',
+                'mode'      => $objInit->mode,
+                'language'  => $langCode
             ),
             'contrexx'
         );

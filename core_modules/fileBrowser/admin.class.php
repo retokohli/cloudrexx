@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /**
  * File browser
@@ -49,14 +49,12 @@ class FileBrowser {
         'shop'      => 'TXT_FILEBROWSER_SHOP',
         'blog'      => 'TXT_FILEBROWSER_BLOG',
         'podcast'   => 'TXT_FILEBROWSER_PODCAST',
-        'downloads' => 'TXT_FILEBROWSER_DOWNLOADS',
-        'mediadir'  => 'TXT_FILEBROWSER_MEDIADIR',
+        'downloads' => 'TXT_FILEBROWSER_DOWNLOADS'
     );
     public $_shopEnabled;
     public $_blogEnabled;
     public $_podcastEnabled;
     public $_downloadsEnabled;
-    public $_mediadirEnabled;
     public $highlightedFiles     = array(); // added files
     public $highlightColor    = '#D8FFCA'; // highlight added files [#d8ffca]
 
@@ -80,7 +78,6 @@ class FileBrowser {
         $this->_blogEnabled = $this->_checkForModule('blog');
         $this->_podcastEnabled = $this->_checkForModule('podcast');
         $this->_downloadsEnabled = $this->_checkForModule('downloads');
-        $this->_mediadirEnabled = $this->_checkForModule('mediadir');
 
         $this->checkMakeDir();
         $this->_initFiles();
@@ -139,7 +136,7 @@ class FileBrowser {
     }
 
     function getPage() {
-		$this->_showFileBrowser();
+        $this->_showFileBrowser();
     }
 
     /**
@@ -179,9 +176,6 @@ class FileBrowser {
                 break;
             case 'downloads':
                 $strWebPath = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
-                break;
-            case 'mediadir':
-                $strWebPath = ASCMS_MEDIADIR_IMAGES_WEB_PATH.$this->_path;
                 break;
             default:
                 $strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
@@ -285,10 +279,6 @@ class FileBrowser {
                 $strPath    = ASCMS_DOWNLOADS_IMAGES_PATH.$this->_path;
                 $strWebPath = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
             break;
-            case 'mediadir':
-                $strPath = ASCMS_MEDIADIR_IMAGES_PATH.$this->_path;
-                $strWebPath = ASCMS_MEDIADIR_IMAGES_WEB_PATH.$this->_path;
-            break;
             default:
                 $strPath    = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
                 $strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
@@ -316,9 +306,11 @@ class FileBrowser {
     {
         global $_ARRAYLANG;
 
+        $ckEditorFuncNum = isset($_GET['CKEditorFuncNum']) ? '&amp;CKEditorFuncNum='.contrexx_raw2xhtml($_GET['CKEditorFuncNum']) : '';
+
         $this->_objTpl->addBlockfile('FILEBROWSER_NAVIGATION', 'fileBrowser_navigation', 'module_fileBrowser_navigation.html');
         $this->_objTpl->setVariable(array(
-            'FILEBROWSER_MEDIA_TYPE_MENU'   => $this->_getMediaTypeMenu('fileBrowserType', $this->_mediaType, 'onchange="window.location.replace(\''.CSRF::enhanceURI('index.php?cmd=fileBrowser').'&amp;standalone=true&amp;langId='.$this->_frontendLanguageId.'&amp;absoluteURIs='.$this->_absoluteURIs.'&amp;type=\'+this.value)" style="width:180px;"'),
+            'FILEBROWSER_MEDIA_TYPE_MENU'   => $this->_getMediaTypeMenu('fileBrowserType', $this->_mediaType, 'onchange="window.location.replace(\''.CSRF::enhanceURI('index.php?cmd=fileBrowser').'&amp;standalone=true&amp;langId='.$this->_frontendLanguageId.'&amp;absoluteURIs='.$this->_absoluteURIs.'&amp;type=\'+this.value+\''.$ckEditorFuncNum.'\')" style="width:180px;"'),
             'TXT_FILEBROWSER_PREVIEW'       => $_ARRAYLANG['TXT_FILEBROWSER_PREVIEW']
         ));
 
@@ -349,6 +341,7 @@ class FileBrowser {
         $this->_objTpl->addBlockfile('FILEBROWSER_CONTENT', 'fileBrowser_content', 'module_fileBrowser_content.html');
         $this->_objTpl->setVariable('FILEBROWSER_NOT_ABSOLUTE_URI', !$this->_absoluteURIs ? 'true' : 'false');
 
+        $ckEditorFuncNum = isset($_GET['CKEditorFuncNum']) ? '&amp;CKEditorFuncNum='.contrexx_raw2xhtml($_GET['CKEditorFuncNum']) : '';
         $rowNr = 0;
 
         switch ($this->_mediaType) {
@@ -366,9 +359,8 @@ class FileBrowser {
             $objContentTree = new ContentTree($this->_frontendLanguageId);
 
             $scriptPath = ($this->_absoluteURIs ?
-                $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.($_CONFIG['useVirtualLanguagePath'] == 'on' ?
+                $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.
                     FWLanguage::getLanguageParameter($this->_frontendLanguageId, 'lang').'/'
-                :   null)
             :   null);
             foreach ($objContentTree->getTree() as $arrPage) {
                 $s = isset($arrModules[$arrPage['moduleid']]) ? $arrModules[$arrPage['moduleid']] : '';
@@ -380,12 +372,12 @@ class FileBrowser {
                 $url = "'".$link."'".($getPageId ? ','.$arrPage['catid'] : '')."";
 
                 if($arrPage['alias'] && !$noAliases) {
-                    $url = "'" . $scriptPath . $arrPage['alias'] . "'";
+                    $url = "'" . '[[NODE_' . $arrPage['node_id'] . '_' . $this->_frontendLanguageId . "]]'";
                 }
-
+                
                 $this->_objTpl->setVariable(array(
                     'FILEBROWSER_ROW_CLASS'         => $rowNr%2 == 0 ? "row1" : "row2",
-                    'FILEBROWSER_FILE_PATH_CLICK'   => "javascript:{setUrl($url)}",
+                    'FILEBROWSER_FILE_PATH_CLICK'   => "javascript:{setUrl($url,null,null,'".FWLanguage::getLanguageCodeById($this->_frontendLanguageId)."/".$arrPage['alias']."','page')}",
                     'FILEBROWSER_FILE_NAME'         => $arrPage['catname'],
                     'FILEBROWSER_FILESIZE'          => '&nbsp;',
                     'FILEBROWSER_FILE_ICON'         => $this->_iconPath.'htm.gif',
@@ -413,7 +405,7 @@ class FileBrowser {
                 foreach ($this->_arrDirectories as $arrDirectory) {
                     $this->_objTpl->setVariable(array(
                         'FILEBROWSER_ROW_CLASS'         => $rowNr%2 == 0 ? "row1" : "row2",
-                        'FILEBROWSER_FILE_PATH_CLICK'   => "index.php?cmd=fileBrowser&amp;standalone=true&amp;langId={$this->_frontendLanguageId}&amp;absoluteURIs={$this->_absoluteURIs}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}",
+                        'FILEBROWSER_FILE_PATH_CLICK'   => "index.php?cmd=fileBrowser&amp;standalone=true&amp;langId={$this->_frontendLanguageId}&amp;absoluteURIs={$this->_absoluteURIs}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}&amp;CKEditor=".contrexx_raw2xhtml($_GET['CKEditor']).$ckEditorFuncNum,
                         'FILEBROWSER_FILE_NAME'         => $arrDirectory['name'],
                         'FILEBROWSER_FILESIZE'          => '&nbsp;',
                         'FILEBROWSER_FILE_ICON'         => $arrDirectory['icon'],
@@ -470,9 +462,6 @@ class FileBrowser {
                 case 'downloads':
                     $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_DOWNLOADS_IMAGES_WEB_PATH);
                     break;
-                case 'mediadir':
-                    $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIADIR_IMAGES_WEB_PATH);
-                    break;
                 default:
                     $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_CONTENT_IMAGE_WEB_PATH);
             }
@@ -528,10 +517,6 @@ class FileBrowser {
                 $data['path']    = ASCMS_DOWNLOADS_IMAGES_PATH.$this->_path;
                 $data['webPath'] = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
             break;
-            case 'mediadir':
-                $data['path']    = ASCMS_MEDIADIR_IMAGES_PATH.$this->_path;
-                $data['webPath'] = ASCMS_MEDIADIR_IMAGES_WEB_PATH.$this->_path;
-            break;
             default:
                 $data['path']    = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
                 $data['webPath'] = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
@@ -545,7 +530,8 @@ class FileBrowser {
 
         $this->_objTpl->setVariable(array(
               'COMBO_UPLOADER_CODE' => $comboUp->getXHtml(true),
-			  'REDIRECT_URL'		=> $redirectUrl
+// TODO: what is this for?
+			  //'REDIRECT_URL'		=> $redirectUrl
         ));
         //end of uploader button handling
         //check if a finished upload caused reloading of the page.
@@ -560,7 +546,12 @@ class FileBrowser {
                 $this->highlightedFiles = $sessionHighlightCandidates;
         }
 
-		$objFWSystem = new FWSystem();
+        $objFWSystem = new FWSystem();
+        
+        // cannot upload or mkdir in webpages view
+        if ($this->_mediaType == "webpages") {
+            return;
+        }
         $this->_objTpl->addBlockfile('FILEBROWSER_UPLOAD', 'fileBrowser_upload', 'module_fileBrowser_upload.html');
         $this->_objTpl->setVariable(array(
             'FILEBROWSER_UPLOAD_TYPE'   => $this->_mediaType,
@@ -568,7 +559,7 @@ class FileBrowser {
             'FILEBROWSER_MAX_FILE_SIZE' => $objFWSystem->getMaxUploadFileSize(),
             'TXT_CREATE_DIRECTORY'      => $_ARRAYLANG['TXT_FILEBROWSER_CREATE_DIRECTORY'],
             'TXT_UPLOAD_FILE'           => $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FILE'],
-			'JAVASCRIPT'            	=> JS::getCode(),
+                        'JAVASCRIPT'            	=> JS::getCode(),
         ));
 
         $this->_objTpl->parse('fileBrowser_upload');
@@ -616,8 +607,6 @@ class FileBrowser {
 					$arrFilesToRename[$file] = $newName;
 					array_push($arrFiles, $newName);
                 }
-            } else {
-                array_push($arrFiles, $file);
             }
         }
         
@@ -658,7 +647,7 @@ class FileBrowser {
         // replace $change with ''
         $change = array('+');
         // replace $signs1 with $signs
-        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
+        $signs1 = array(' ', '�', '�', '�', '�');
         $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
 
         foreach ($change as $str) {
@@ -709,9 +698,6 @@ class FileBrowser {
             break;
             case 'downloads':
                 $strPath = ASCMS_DOWNLOADS_IMAGES_PATH.$this->_path;
-            break;
-            case 'mediadir':
-                $strPath = ASCMS_MEDIADIR_IMAGES_PATH.$this->_path;
             break;
             default:
                 $strPath = ASCMS_CONTENT_IMAGE_PATH.$this->_path;

@@ -46,7 +46,6 @@ $_ARRAYLANG['TXT_OVERVIEW'] = "Übersicht";
 $_ARRAYLANG['TXT_FORUM'] = "Forum";
 $_ARRAYLANG['TXT_VERIFY_PASSWORD'] = "Passwort bestätigen";
 $_ARRAYLANG['TXT_TYPE'] = "Typ";
-$_ARRAYLANG['TXT_SECURITY_CODE_IS_INCORRECT'] = "Der Sicherheitscode ist unkorrekt.";
 $_ARRAYLANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'] = "Das Passwort oder der Benutzername ist falsch.";
 $_ARRAYLANG['TXT_SEARCH'] = "Suchen";
 $_ARRAYLANG['TXT_ADMIN_STATUS'] = "Administrator";
@@ -89,6 +88,12 @@ $_ARRAYLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER'] = "Es kann keine Verbindung zum D
 $_ARRAYLANG['TXT_DELETED'] = "Gelöscht";
 $_ARRAYLANG['TXT_PRIVACY_STATEMENT'] = "Datenschutz";
 $_ARRAYLANG['TXT_DOWNLOADS'] = "Digital Asset Management";
+$_ARRAYLANG['TXT_CORE_DAY'] = "Tag";
+$_ARRAYLANG['TXT_CORE_MONTH'] = "Monat";
+$_ARRAYLANG['TXT_CORE_YEAR'] = "Jahr";
+$_ARRAYLANG['TXT_CORE_DAYS'] = "Tage";
+$_ARRAYLANG['TXT_CORE_MONTHS'] = "Monate";
+$_ARRAYLANG['TXT_CORE_YEARS'] = "Jahre";
 $_ARRAYLANG['TXT_FRONTEND_EDITING_LOGIN'] = "Login";
 $_ARRAYLANG['TXT_FRONTEND_EDITING_LOGIN_TITLE'] = "Login";
 $_ARRAYLANG['TXT_FRONTEND_EDITING_LOGIN_USERNAME'] = "Benutzername";
@@ -171,7 +176,7 @@ $_ARRAYLANG['TXT_ACCESS_SKYPE_NAME'] = "Skype-Name";
 $_ARRAYLANG['TXT_ACCESS_TITLE'] = "Anrede";
 $_ARRAYLANG['TXT_ACCESS_UNABLE_DELETE_YOUR_USER'] = "Sie können Ihren eigenen Benutzer nicht löschen!";
 $_ARRAYLANG['TXT_ACCESS_UNABLE_STORE_PROFILE_ATTIRBUTE'] = "Die Profileigenschaft %s konnte nicht gespeichert werden!";
-$_ARRAYLANG['TXT_ACCESS_UNKNOWN'] = "Unbekannt";
+$_ARRAYLANG['TXT_ACCESS_NOT_SPECIFIED'] = "Keine Angabe";
 $_ARRAYLANG['TXT_ACCESS_URL_OPEN_RISK_MSG'] = "Wenn Ihnen die Adresse %s unbekannt ist, kann es ein Sicherheitsrisiko sein diese Seite zu besuchen!";
 $_ARRAYLANG['TXT_ACCESS_USER_DELETE_FAILED'] = "Der Benutzer %s konnte nicht gelöscht werden, da ein Fehler auftrat!";
 $_ARRAYLANG['TXT_ACCESS_USERNAME'] = "Benutzername";
@@ -190,6 +195,7 @@ $_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Auktionen";
 $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auktionen";
 $_ARRAYLANG['TXT_MARKET_LATEST'] = "Neuste Inserate";
 $_ARRAYLANG['TXT_CORE_LAST_MODIFIED_PAGE'] = "Geändert am";
+$_ARRAYLANG['TXT_ACCESS_PRIMARY_GROUP'] = "Primäre Benutzergruppe";
 $_ARRAYLANG['TXT_CSRF_TITLE'] = "Sicherheitshinweis";
 $_ARRAYLANG['TXT_CSRF_DESCR'] = "Sie sind dabei, &Auml;nderungen am System herbeizuf&uuml;hren. Falls Sie diese Meldung<ul><li>nach einem Klick auf einen Link in der Administrationsoberfl&auml;che sehen, klicken Sie auf <strong>&Auml;nderungen &uuml;bernehmen</strong></li><li>nach einem Klick auf einen Link in einer E-Mail oder ausserhalb der Administrationsoberfl&auml;che sehen, klicken Sie auf <strong>Ohne &Auml;nderungen fortfahren</strong></li></ul>";
 $_ARRAYLANG['TXT_CSRF_ABORT'] = "Ohne &Auml;nderungen fortfahren";
@@ -217,9 +223,64 @@ $_ARRAYLANG['TXT_MEDIADIR_MANAGE_LEVELS'] = 'Ebenen verwalten';
 $_ARRAYLANG['TXT_MEDIADIR_MANAGE_CATEGORIES'] = 'Kategorien verwalten';
 $_ARRAYLANG['TXT_MEDIADIR_INTERFACES'] = 'Interfaces';
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS'] = 'Einstellungen';
+
+// From v2.3(?) -- still in use?
+$_ARRAYLANG['TXT_CSRF_BUTTON'] = "Klicken Sie hier, um fortzufahren.";
+$_ARRAYLANG['TXT_ACCESS_PLEASE_SELECT'] = "Bitte wählen";
+$_ARRAYLANG['TXT_PARTNERS_MODULE_DESCRIPTION'] = "Verwaltung und Präsentation von Geschäftspartnern";
+$_ARRAYLANG['TXT_ACCESS_UNKNOWN'] = "unbekannt";
+$_ARRAYLANG['TXT_ACCESS_COUNTRY_RELATED'] = "Zuständig für Länder";
+$_ARRAYLANG['TXT_CORE_PHONE'] = "Telefon";
+$_ARRAYLANG['TXT_CORE_FAX'] = "Telefax";
+$_ARRAYLANG['TXT_CORE_SEARCH'] = "Suchen";
+
+// core Sorting
+$_ARRAYLANG['TXT_CORE_SORTING_ASCENDING'] = "aufsteigend sortieren";
+$_ARRAYLANG['TXT_CORE_SORTING_DESCENDING'] = "absteigend sortieren";
+
+// core general (dates)
+$_ARRAYLANG['TXT_CORE_DAY'] = "Tag";
+$_ARRAYLANG['TXT_CORE_MONTH'] = "Monat";
+$_ARRAYLANG['TXT_CORE_YEAR'] = "Jahr";
+$_ARRAYLANG['TXT_CORE_DAYS'] = "Tage";
+$_ARRAYLANG['TXT_CORE_MONTHS'] = "Monate";
+$_ARRAYLANG['TXT_CORE_YEARS'] = "Jahre";
+$_ARRAYLANG['TXT_CORE_UNLIMITED'] = "unbegrenzt";
+$_ARRAYLANG['TXT_CORE_DAY_ABBREV2_ARRAY'] = "So,Mo,Di,Mi,Do,Fr,Sa";
+$_ARRAYLANG['TXT_CORE_DAY_ABBREV3_ARRAY'] = "Son,Mon,Die,Mit,Don,Fre,Sam";
+$_ARRAYLANG['TXT_CORE_DAY_ARRAY'] = "Sonntag,Montag,Dienstag,Mittwoch,Donnerstag,Freitag,Samstag";
+$_ARRAYLANG['TXT_CORE_MONTH_ABBREV3_ARRAY'] = "M_0,Jan,Feb,Mär,Apr,Mai,Jun,Jul,Aug,Sep,Okt,Nov,Dez";
+$_ARRAYLANG['TXT_CORE_MONTH_ARRAY'] = "MONTH_0,Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember";
+$_ARRAYLANG['TXT_CORE_TODAY'] = "Heute";
+
+// core MailTemplate
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NO_MESSAGE'] = "(Kein Text)";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NO_SUBJECT'] = "(Kein Betreff)";
+
+// core HTML
+$_ARRAYLANG['TXT_CORE_HTML_ETC'] = "%1\$s&nbsp;...";
+$_ARRAYLANG['TXT_CORE_HTML_MORE'] = "mehr...";
+$_ARRAYLANG['TXT_CORE_HTML_CHOOSE_IMAGE'] = "Wählen Sie eine Bilddatei";
+$_ARRAYLANG['TXT_CORE_HTML_CONFIRM_DELETE_IMAGE'] = "Wollen Sie dieses Bild wirklich entfernen?\\n\\nDiese Aktion kann nicht rückgängig gemacht werden.";
+$_ARRAYLANG['TXT_CORE_HTML_COPY'] = "Kopie bearbeiten";
+$_ARRAYLANG['TXT_CORE_HTML_DELETE'] = "Löschen";
+$_ARRAYLANG['TXT_CORE_HTML_DELETE_IMAGE'] = "Bild entfernen";
+$_ARRAYLANG['TXT_CORE_HTML_EDIT'] = "Bearbeiten";
+$_ARRAYLANG['TXT_CORE_HTML_FUNCTIONS'] = "Funktionen";
+$_ARRAYLANG['TXT_CORE_HTML_IMAGETYPE_NAME'] = "Bildtyp: %1\$s";
+$_ARRAYLANG['TXT_CORE_HTML_IMAGE_CURRENT'] = "Aktuelles Bild: %1\$s";
+$_ARRAYLANG['TXT_CORE_HTML_IMAGE_PREVIEW'] = "Vorschau";
+$_ARRAYLANG['TXT_CORE_HTML_TOGGLE_CLOSE'] = "schliessen";
+$_ARRAYLANG['TXT_CORE_HTML_TOGGLE_OPEN'] = "öffnen";
+$_ARRAYLANG['TXT_CORE_HTML_VIEW'] = "Details";
+
+// core captcha
+$_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Sicherheitscode";
+$_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'] = "Geben Sie die Buchstaben aus dem unten angezeigten Bild ein.";
+
+// upload
 $_ARRAYLANG['TXT_CORE_UPLOAD_MORE'] = "Weitere Dateien hochladen";
 $_ARRAYLANG['TXT_CORE_FINISH_UPLOADING'] = "Hochladen beenden";
 $_ARRAYLANG['TXT_CORE_FILES_UPLOADED'] = "Datei(en) heraufgeladen";
 $_ARRAYLANG['TXT_CORE_FILES_NOT_UPLOADED'] = "Einige Datei(en) konnte(n) nicht heraufgeladen werden:";
 $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "Die Dateiendung ist nicht erlaubt.";
-?>

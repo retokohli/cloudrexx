@@ -25,11 +25,6 @@ class myAdminManager {
     var $pageTitle;
 
 
-    function myAdminManager()
-    {
-    	$this->__construct();
-    }
-
     /**
     * Constructor
     *

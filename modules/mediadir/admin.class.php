@@ -31,6 +31,8 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
     public $strErrMessage;
     private $pageTitle;
 
+    private $act = '';
+    
     /**
      * Constructor
      */
@@ -39,13 +41,18 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
         global  $_ARRAYLANG, $_CORELANG, $objTemplate;
 
         parent::__construct(ASCMS_MODULE_PATH.'/'.$this->moduleName.'/template');
-        parent::getFrontendLanguages();
+        parent::getFrontendLanguages();        
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG, $_CORELANG;
 
-        $objTemplate->setVariable('CONTENT_NAVIGATION','<a href="index.php?cmd='.$this->moduleName.'">'.$_ARRAYLANG['TXT_MEDIADIR_OVERVIEW'].'</a>
-                                                        <a href="index.php?cmd='.$this->moduleName.'&amp;act=modify_entry">'.$_ARRAYLANG['TXT_MEDIADIR_ADD_ENTRY'].'</a>
-                                                        <a href="index.php?cmd='.$this->moduleName.'&amp;act=entries">'.$_ARRAYLANG['TXT_MEDIADIR_MANAGE_ENTRIES'].'</a>
-                                                        <a href="index.php?cmd='.$this->moduleName.'&amp;act=interfaces">'.$_ARRAYLANG['TXT_MEDIADIR_INTERFACES'].'</a>
-                                                        <a href="index.php?cmd='.$this->moduleName.'&amp;act=settings">'.$_CORELANG['TXT_SETTINGS'].'</a>');
+        $objTemplate->setVariable('CONTENT_NAVIGATION','
+            <a href="index.php?cmd='.$this->moduleName.'" class="'.($this->act == '' ? 'active' : '').'">'.$_ARRAYLANG['TXT_MEDIADIR_OVERVIEW'].'</a>
+            <a href="index.php?cmd='.$this->moduleName.'&amp;act=modify_entry" class="'.($this->act == 'modify_entry' ? 'active' : '').'">'.$_ARRAYLANG['TXT_MEDIADIR_ADD_ENTRY'].'</a>
+            <a href="index.php?cmd='.$this->moduleName.'&amp;act=entries" class="'.($this->act == 'entries' ? 'active' : '').'">'.$_ARRAYLANG['TXT_MEDIADIR_MANAGE_ENTRIES'].'</a>
+            <a href="index.php?cmd='.$this->moduleName.'&amp;act=interfaces" class="'.($this->act == 'interfaces' ? 'active' : '').'">'.$_ARRAYLANG['TXT_MEDIADIR_INTERFACES'].'</a>
+            <a href="index.php?cmd='.$this->moduleName.'&amp;act=settings" class="'.($this->act == 'settings' ? 'active' : '').'">'.$_CORELANG['TXT_SETTINGS'].'</a>');
     }
 
     /**
@@ -109,6 +116,9 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
             'ADMIN_CONTENT'          => $this->_objTpl->get(),
         ));
 
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
+        
         return $this->_objTpl->get();
     }
 

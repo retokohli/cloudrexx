@@ -30,7 +30,9 @@ $_ARRAYLANG['TXT_CONTACT_FILE_TOO_LARGE'] = "Filen %s blev ikke uploadet, da fil
 $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "Filen %s kunne ikke uploades fuldstændigt!";
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "En fil er ikke blevet uploadet!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Indstast venligst de viste tegn i tekstfeltet. Dette er nødvendig for at beskytte systemet mod spam.";
-$_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "Den intastede tegnfølge var falsk!";
 $_ARRAYLANG['TXT_CONTACT_RESET'] = "Reset";
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Modtageradresser liste";
+$_ARRAYLANG['TXT_CONTACT_CAPTCHA'] = "Captcha";
+$_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Vælg";
+$_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] = "Ikke angivet";
 ?>

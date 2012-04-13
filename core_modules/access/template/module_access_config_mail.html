@@ -19,14 +19,14 @@
 			<td>{ACCESS_MAIL_SUBJECT}</td>
 			<td style="text-align:right;">
 			<!-- BEGIN access_email_copy -->
-				<a href="?cmd=access&amp;act=config&amp;tpl=copyMail&amp;type={ACCESS_MAIL_TYPE}" title="{TXT_ACCESS_COPY_MAIL_TEMPLATE}"><img src="images/icons/copy.gif" alt="{TXT_ACCESS_COPY_MAIL_TEMPLATE}" border="0" width="16" height="16" /></a>
+        <a href="index.php?cmd=access&amp;act=config&amp;tpl=copyMail&amp;type={ACCESS_MAIL_TYPE}" title="{TXT_ACCESS_COPY_MAIL_TEMPLATE}"><img src="images/icons/copy.gif" alt="{TXT_ACCESS_COPY_MAIL_TEMPLATE}" border="0" width="16" height="16" /></a>
 			<!-- END access_email_copy -->
-				<a href="?cmd=access&amp;act=config&amp;tpl=modifyMail&amp;type={ACCESS_MAIL_TYPE}&amp;access_mail_lang={ACCESS_MAIL_LANG}" title="{TXT_ACCESS_MODIFY_MAIL_TEMPLATE}"><img src="images/icons/edit.gif" alt="{TXT_ACCESS_MODIFY_MAIL_TEMPLATE}" border="0" width="16" height="16" /></a>
+        <a href="index.php?cmd=access&amp;act=config&amp;tpl=modifyMail&amp;type={ACCESS_MAIL_TYPE}&amp;access_mail_lang={ACCESS_MAIL_LANG}" title="{TXT_ACCESS_MODIFY_MAIL_TEMPLATE}"><img src="images/icons/edit.gif" alt="{TXT_ACCESS_MODIFY_MAIL_TEMPLATE}" border="0" width="16" height="16" /></a>
 			<!-- BEGIN access_email_delete_space -->
 			<img src="images/icons/pixel.gif" alt="-" border="0" width="17" height="17" />
 			<!-- END access_email_delete_space -->
 			<!-- BEGIN access_email_delete -->
-				<a href="javascript:if(confirm('{TXT_ACCESS_CONFIRM_DELETE_MAIL}')){window.location.href='?cmd=access&{CSRF_PARAM}&amp;act=config&amp;tpl=deleteMail&amp;type={ACCESS_MAIL_TYPE}&amp;access_mail_lang={ACCESS_MAIL_LANG}';}" title="{TXT_ACCESS_DELETE_MAIL_TEMPLATE}"><img src="images/icons/delete.gif" alt="{TXT_ACCESS_DELETE_MAIL_TEMPLATE}" border="0" width="17" height="17" /></a>
+				<a href="javascript:if(confirm('{TXT_ACCESS_CONFIRM_DELETE_MAIL}')){window.location.href='index.php?cmd=access&{CSRF_PARAM}&amp;act=config&amp;tpl=deleteMail&amp;type={ACCESS_MAIL_TYPE}&amp;access_mail_lang={ACCESS_MAIL_LANG}';}" title="{TXT_ACCESS_DELETE_MAIL_TEMPLATE}"><img src="images/icons/delete.gif" alt="{TXT_ACCESS_DELETE_MAIL_TEMPLATE}" border="0" width="17" height="17" /></a>
 			<!-- END access_email_delete --></td>
 		</tr>
 		<!-- END access_email_list -->

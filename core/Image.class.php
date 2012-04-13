@@ -771,6 +771,7 @@ class Image
         if ($maxwidth == 0 && $maxheight == 0) return $size;
         if ($maxwidth == 0) $maxwidth = 1e9;
         if ($maxheight == 0) $maxheight = 1e9;
+        $width = $height = null;
         if ($size[0] && $size[1]) {
             $ratio    = $size[0] / $size[1];
             $maxratio = $maxwidth / $maxheight;
@@ -890,6 +891,7 @@ class Image
     ) {
 //DBG::log("crop($source_path, $target_path, $x1, $y1, $x2, $y2, $force, $quality): Entered");
         File::path_relative_to_root($source_path);
+        $xs = $ys = null;
         list($xs, $ys) = getimagesize(ASCMS_DOCUMENT_ROOT.'/'.$source_path);
         // Fix coordinates that are out of range:
         // - Reset negative and too large values to the original size
@@ -988,7 +990,7 @@ class Image
         // 1: GIF, 2: JPG, 3: PNG, others are not accepted
         if (   $arrInfo[2] == 1
             && !function_exists('imagecreatefromgif')) return false;
-        switch($arrInfo[2]) {
+        switch ($arrInfo[2]) {
             case 1:
                 $function = 'imagecreatefromgif';
                 break;
@@ -1351,7 +1353,7 @@ class Image
         // $target_path *SHOULD* be like ASCMS_HOTELCARD_IMAGES_FOLDER.'/folder/name.ext'
         // Strip path offset, if any, from the target path
         $target_path = preg_replace('/^'.preg_quote(ASCMS_PATH_OFFSET, '/').'/', '', $target_path);
-        if (!File::uploadFileHttp(
+        if (!File::upload_file_http(
             $upload_field_name, $target_path,
             self::MAXIMUM_UPLOAD_FILE_SIZE, Filetype::MIMETYPE_IMAGES_WEB)
         ) {
@@ -1469,5 +1471,3 @@ die("Image::errorHandler(): Fixed core_image table field names<br />");
     }
 
 }
-
-?>

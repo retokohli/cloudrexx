@@ -18,6 +18,8 @@ $licenseFileCommerce = "data".DIRECTORY_SEPARATOR."contrexx_lizenz_de.txt";
 $licenseFileOpenSource = "data".DIRECTORY_SEPARATOR."contrexx_lizenz_opensource_de.txt";
 $configFile = "/config/configuration.php";
 $configTemplateFile = "data".DIRECTORY_SEPARATOR."configuration.tpl";
+$htaccessFile = "/.htaccess";
+$htaccessTemplateFile = "data".DIRECTORY_SEPARATOR."htaccess.tpl";
 $versionFile = "/config/version.php";
 $versionTemplateFile = "data".DIRECTORY_SEPARATOR."version.tpl";
 $sqlDumpFile = DIRECTORY_SEPARATOR."installer".DIRECTORY_SEPARATOR."data".DIRECTORY_SEPARATOR."contrexx_dump";
@@ -29,7 +31,7 @@ $forumURI = "http://www.contrexx.com/forum/";
 $contrexxURI = "http://www.contrexx.com/";
 $useUtf8 = true;
 
-$_CONFIG['coreCmsName']	     	= 'Contrexx® Web Content Management System';
+$_CONFIG['coreCmsName']	     	= 'ContrexxÂ® Web Content Management System';
 $_CONFIG['coreCmsVersion']	  	= '1.2.0';
 $_CONFIG['coreCmsStatus']	  	= 'RC1';
 $_CONFIG['coreCmsEdition']		= 'Premium';
@@ -63,7 +65,7 @@ $arrLanguages = array(
 	/*3	=> array(
 		'id'	=> 2,
 		'lang'	=> 'fr',
-		'name'	=> 'Fran�ais',
+		'name'	=> 'Français',
 		'is_default'	=> false
 	)*/
 );
@@ -116,7 +118,6 @@ $arrDatabaseTables = array(
 	'module_alias_source',
 	'module_alias_target',
 	'module_block_blocks',
-	'module_block_rel_lang',
 	'module_block_rel_pages',
 	'module_block_settings',
 	'module_calendar',
@@ -225,10 +226,8 @@ $arrDatabaseTables = array(
 	'module_podcast_template',
 	'module_recommend',
 	'module_shop_categories',
-	'module_shop_config',
 	'module_shop_countries',
 	'module_shop_currencies',
-	'module_shop_customers',
 	'module_shop_importimg',
 	'module_shop_lsv',
 	'module_shop_mail',
@@ -236,18 +235,13 @@ $arrDatabaseTables = array(
 	'module_shop_manufacturer',
 	'module_shop_orders',
 	'module_shop_order_items',
-	'module_shop_order_items_attributes',
 	'module_shop_payment',
 	'module_shop_payment_processors',
 	'module_shop_pricelists',
 	'module_shop_products',
-	'module_shop_products_attributes',
-	'module_shop_products_attributes_name',
-	'module_shop_products_attributes_value',
 	'module_shop_products_downloads',
 	'module_shop_rel_countries',
 	'module_shop_rel_payment',
-	'module_shop_rel_shipment',
 	'module_shop_shipment_cost',
 	'module_shop_shipper',
 	'module_shop_vat',

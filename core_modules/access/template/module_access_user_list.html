@@ -15,6 +15,15 @@ function accessChangeUserStatus(id, name)
 	notify = confirm(msg.replace('%s', name));
 	window.location.href = 'index.php?cmd=access&{CSRF_PARAM}&act=user&tpl=changeStatus&groupId={ACCESS_GROUP_ID}&sort={ACCESS_SORT_DIRECTION}&by={ACCESS_SORT_BY}&search={ACCESS_SEARCH_VALUE_ESCAPED}&username_filter={ACCESS_USER_USERNAME_FILTER_ESCAPED}&user_status_filter={ACCESS_USER_STATUS_FILTER_ESCAPED}&user_role_filter={ACCESS_USER_ROLE_FILTER_ESCAPED}&id='+id+'&notifyUser='+Number(notify);
 }
+
+function accessUserDoAction(action)
+{
+    if (   checkboxIsChecked('access_user_form', 'access_user_id[]')
+        && confirm('{ACCESS_CONFIRM_DELETE_USERS_TXT}')) {
+        document.getElementById('access_user_form').submit(); return true;
+    }
+    document.getElementById('access_user_select_action').value=0;
+}
 // ]]>
 </script>
 <form action="index.php?cmd=access&amp;act=user&amp;groupId={ACCESS_GROUP_IP}" method="post">
@@ -29,17 +38,19 @@ function accessChangeUserStatus(id, name)
 <!-- END access_user_letter_index_list -->
 <br />
 <br />
+<form name="access_user_form" id="access_user_form" action="index.php?cmd=access&amp;act=user&amp;tpl=delete&amp;groupId={ACCESS_GROUP_ID}&amp;search={ACCESS_SEARCH_VALUE}&amp;username_filter={ACCESS_USER_USERNAME_FILTER}&amp;user_status_filter={ACCESS_USER_STATUS_FILTER}&amp;user_role_filter={ACCESS_USER_ROLE_FILTER}&amp;sort={ACCESS_SORT_DIRECTION}&amp;by={ACCESS_SORT_BY}" method="post">
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
 	<thead>
 		<tr>
-			<th colspan="11">{TXT_ACCESS_USER_LIST}</th>
+			<th colspan="12">{TXT_ACCESS_USER_LIST}</th>
 		</tr>
 	</thead>
 	<tbody style="vertical-align:top;">
 		<!-- BEGIN access_has_users -->
 			<tr class="row3" style="font-weight:bold; white-space:nowrap;">
+                <td width="1%" style="text-align: center;">#</td>
 				<td width="1%"><a href="index.php?cmd=access&amp;act=user&amp;groupId={ACCESS_GROUP_ID}&amp;search={ACCESS_SEARCH_VALUE_ESCAPED}&amp;username_filter={ACCESS_USER_USERNAME_FILTER}&amp;user_status_filter={ACCESS_USER_STATUS_FILTER}&amp;user_role_filter={ACCESS_USER_ROLE_FILTER}&amp;sort={ACCESS_SORT_ID}&amp;by=id" title="{TXT_ACCESS_CHANGE_SORT_DIRECTION}">{ACCESS_ID}</a></td>
-				<td width="4%"><a href="index.php?cmd=access&amp;act=user&amp;groupId={ACCESS_GROUP_ID}&amp;search={ACCESS_SEARCH_VALUE_ESCAPED}&amp;username_filter={ACCESS_USER_USERNAME_FILTER}&amp;user_status_filter={ACCESS_USER_STATUS_FILTER}&amp;user_role_filter={ACCESS_USER_ROLE_FILTER}&amp;sort={ACCESS_SORT_STATUS}&amp;by=active" title="{TXT_ACCESS_CHANGE_SORT_DIRECTION}">{ACCESS_STATUS}</a></td>
+				<td width="3%"><a href="index.php?cmd=access&amp;act=user&amp;groupId={ACCESS_GROUP_ID}&amp;search={ACCESS_SEARCH_VALUE_ESCAPED}&amp;username_filter={ACCESS_USER_USERNAME_FILTER}&amp;user_status_filter={ACCESS_USER_STATUS_FILTER}&amp;user_role_filter={ACCESS_USER_ROLE_FILTER}&amp;sort={ACCESS_SORT_STATUS}&amp;by=active" title="{TXT_ACCESS_CHANGE_SORT_DIRECTION}">{ACCESS_STATUS}</a></td>
 				<td width="15%"><a href="index.php?cmd=access&amp;act=user&amp;groupId={ACCESS_GROUP_ID}&amp;search={ACCESS_SEARCH_VALUE_ESCAPED}&amp;username_filter={ACCESS_USER_USERNAME_FILTER}&amp;user_status_filter={ACCESS_USER_STATUS_FILTER}&amp;user_role_filter={ACCESS_USER_ROLE_FILTER}&amp;sort={ACCESS_SORT_USERNAME}&amp;by=username" title="{TXT_ACCESS_CHANGE_SORT_DIRECTION}">{ACCESS_USERNAME}</a></td>
 				<td width="15%"><a href="index.php?cmd=access&amp;act=user&amp;groupId={ACCESS_GROUP_ID}&amp;search={ACCESS_SEARCH_VALUE_ESCAPED}&amp;username_filter={ACCESS_USER_USERNAME_FILTER}&amp;user_status_filter={ACCESS_USER_STATUS_FILTER}&amp;user_role_filter={ACCESS_USER_ROLE_FILTER}&amp;sort={ACCESS_SORT_COMPANY}&amp;by=company" title="{TXT_ACCESS_CHANGE_SORT_DIRECTION}">{ACCESS_COMPANY}</a></td>
 				<td width="15%"><a href="index.php?cmd=access&amp;act=user&amp;groupId={ACCESS_GROUP_ID}&amp;search={ACCESS_SEARCH_VALUE_ESCAPED}&amp;username_filter={ACCESS_USER_USERNAME_FILTER}&amp;user_status_filter={ACCESS_USER_STATUS_FILTER}&amp;user_role_filter={ACCESS_USER_ROLE_FILTER}&amp;sort={ACCESS_SORT_FIRSTNAME}&amp;by=firstname" title="{TXT_ACCESS_CHANGE_SORT_DIRECTION}">{ACCESS_FIRSTNAME}</a></td>
@@ -52,6 +63,7 @@ function accessChangeUserStatus(id, name)
 			</tr>
 			<!-- BEGIN access_user_list -->
 				<tr class="row{ACCESS_ROW_CLASS_ID}">
+                    <td style="text-align: center;"><input type="checkbox" name="access_user_id[]" value="{ACCESS_USER_ID}" /></td> 
 					<td>{ACCESS_USER_ID}</td>
 					<td><a href="javascript:accessChangeUserStatus({ACCESS_USER_ID},'{ACCESS_USER_USERNAME}');" title="{ACCESS_CHANGE_ACCOUNT_STATUS_MSG}"><img src="images/icons/{ACCESS_USER_STATUS_IMG}" alt="{ACCESS_USER_STATUS}" width="13" height="13" border="0" /></a> <img src="images/icons/{ACCESS_USER_ADMIN_IMG}" border="0" alt="{ACCESS_USER_ADMIN_TXT}" width="16" height="16" /></td>
 					<td><a href="index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id={ACCESS_USER_ID}" title="{TXT_ACCESS_MODIFY_USER_ACCOUNT}">{ACCESS_USER_USERNAME}</a></td>
@@ -71,11 +83,22 @@ function accessChangeUserStatus(id, name)
 		<!-- END access_has_users -->
 		<!-- BEGIN access_no_user -->
 			<tr class="row1">
-				<td colspan="11">{ACCESS_STATUS_MSG}</td>
+				<td colspan="12">{ACCESS_STATUS_MSG}</td>
 			</tr>
 		<!-- END access_no_user -->
 	</tbody>
 </table>
+<!-- BEGIN access_user_action_dropdown -->
+<img src="images/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
+<a href="javascript:void(0);" onclick="changeCheckboxes('access_user_form','access_user_id[]',true); return false;" title="{TXT_ACCESS_CHECK_ALL}">{TXT_ACCESS_CHECK_ALL}</a> /
+<a href="javascript:void(0);" onclick="changeCheckboxes('access_user_form','access_user_id[]',false); return false;" title="{TXT_ACCESS_UNCHECK_ALL}">{TXT_ACCESS_UNCHECK_ALL}</a>
+<img src="images/icons/strike.gif" width="34" height="22" alt="design" />
+<select name="access_user_select_action" id="access_user_select_action" onchange="accessUserDoAction(this.value)">
+	<option value="0" selected="selected" style="border-bottom: 1px solid #000;">{TXT_ACCESS_SELECT_ACTION}</option>
+	<option value="delete">{TXT_ACCESS_DELETE}</option>
+</select>
+<!-- END access_user_action_dropdown -->
+</form>
 <br />
 {ACCESS_USER_PAGING}
 <!-- end module_access_user.html -->

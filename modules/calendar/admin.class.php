@@ -33,12 +33,25 @@ class calendarManager extends calendarLibrary
     var $pageTitle;
     var $_csvSeparator = ';';
 
+    private $act = '';
+    
     /**
      * PHP 5 Constructor
      */
     function __construct()
     {
         $this->calendarManager();
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
+
+        $objTemplate->setVariable("CONTENT_NAVIGATION","
+            <a href='index.php?cmd=calendar".$this->mandateLink."' class='".($this->act == '' ? 'active' : '')."'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW']." </a>
+            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=new' class='".($this->act == 'new' ? 'active' : '')."'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_ENTRY']." </a>
+            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=cat' class='".($this->act == 'cat' ? 'active' : '')."'> ".$_ARRAYLANG['TXT_CALENDAR_CATEGORIES']." </a>
+            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=placeholder' class='".($this->act == 'placeholder' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER']."</a>
+            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_SETTINGS']." </a>");
     }
 
     /**
@@ -51,13 +64,7 @@ class calendarManager extends calendarLibrary
         parent::__construct($_SERVER["SCRIPT_NAME"]."?cmd=calendar".$this->mandateLink);
         // links
         $this->pageTitle = $_ARRAYLANG['TXT_CALENDAR'];
-
-        $objTemplate->setVariable("CONTENT_NAVIGATION","
-            <a href='index.php?cmd=calendar".$this->mandateLink."'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW']." </a>
-            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=new'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_ENTRY']." </a>
-            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=cat'> ".$_ARRAYLANG['TXT_CALENDAR_CATEGORIES']." </a>
-            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=placeholder'>".$_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER']."</a>
-            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=settings'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_SETTINGS']." </a>");
+        
         $this->showOnlyActive = false;
     }
 
@@ -185,6 +192,9 @@ class calendarManager extends calendarLibrary
             'ADMIN_CONTENT'             => $this->_objTpl->get(),
             'CONTENT_TITLE'             => $this->pageTitle,
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 
@@ -879,8 +889,7 @@ class calendarManager extends calendarLibrary
 			'TXT_CALENDAR_SERIES_PATTERN_APPONTMENTS' 	=> $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_APPONTMENTS'],
 			'TXT_CALENDAR_SERIES_PATTERN_ENDS' 			=> $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_ENDS'],
 
-            'TXT_CALENDAR_REGISTRATION_UNCHECKED_WARNING' => $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_UNCHECKED_WARNING'],
-            'TXT_CALENDAR_ERROR_WEEKLY_NO_WEEKDAY' => $_ARRAYLANG['TXT_CALENDAR_ERROR_WEEKLY_NO_WEEKDAY']
+            'TXT_CALENDAR_REGISTRATION_UNCHECKED_WARNING' => $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_UNCHECKED_WARNING']
 		));
 	}
 
@@ -951,8 +960,7 @@ class calendarManager extends calendarLibrary
         $mailSendAgain  = !empty($_POST['inputSendMailAgain']);
 
         //notification
-        $notification        = intval($_POST['inputNotification']);
-        $notificationAddress = contrexx_input2raw($_POST['inputNotificationAddress']);
+        $notification   = intval($_POST['inputNotification']);
 
 		//series pattern
 		$seriesStatus 				= intval(!empty($_POST['inputSeriesStatus']));
@@ -1069,6 +1077,10 @@ class calendarManager extends calendarLibrary
 					}
 				}
 			break;
+		}
+
+		if ($notification == 1) {
+			$notificationAddress = contrexx_addslashes(contrexx_strip_tags($_POST['inputNotificationAddress']));
 		}
 
         if (!empty($link)) {

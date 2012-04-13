@@ -12,6 +12,7 @@
  * @ignore
  */
 require_once ASCMS_CORE_MODULE_PATH.'/access/lib/AccessLib.class.php';
+
 /**
  * @ignore
  */
@@ -101,17 +102,16 @@ class Access extends AccessLib
             $metaPageTitle = $objUser->getUsername()."'s Profil";
             $pageTitle = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)."'s Profil";
             $this->_objTpl->setGlobalVariable(array(
-                'ACCESS_USER_ID'        => $objUser->getId(),
-                'ACCESS_USER_USERNAME'  => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
+                'ACCESS_USER_ID'            => $objUser->getId(),
+                'ACCESS_USER_USERNAME'      => contrexx_raw2xhtml($objUser->getUsername()),
+                'ACCESS_USER_PRIMARY_GROUP' => contrexx_raw2xhtml($objUser->getPrimaryGroupName()),
             ));
 
             if ($objUser->getEmailAccess() == 'everyone' ||
-                $objFWUser->objUser->login() &&
-                (
-                    $objUser->getId() == $objFWUser->objUser->getId() ||
+                   $objFWUser->objUser->login()
+                && ($objUser->getId() == $objFWUser->objUser->getId() ||
                     $objUser->getEmailAccess() == 'members_only' ||
-                    $objFWUser->objUser->getAdminStatus()
-                )
+                    $objFWUser->objUser->getAdminStatus())
             ) {
                 $this->parseAccountAttribute($objUser, 'email');
             } elseif ($this->_objTpl->blockExists('access_user_email')) {
@@ -304,17 +304,20 @@ class Access extends AccessLib
                 $msg = implode('<br />', $result);
             }
             $this->_objTpl->setVariable('ACCESS_SETTINGS_MESSAGE', $msg);
+        } elseif (isset($_POST['access_set_newsletters'])) {
+            $arrSubscribedNewsletterListIDs = isset($_POST['access_user_newsletters']) && is_array($_POST['access_user_newsletters']) ? $_POST['access_user_newsletters'] : array();
+            $objFWUser->objUser->setSubscribedNewsletterListIDs($arrSubscribedNewsletterListIDs);
+            $objFWUser->objUser->store();
         }
         $this->parseAccountAttributes($objFWUser->objUser, true);
+        $this->parseNewsletterLists($objFWUser->objUser);
 
         while (!$objFWUser->objUser->objAttribute->EOF) {
             $objAttribute = $objFWUser->objUser->objAttribute->getById($objFWUser->objUser->objAttribute->getId());
 
-            if (!$objAttribute->isProtected() ||
-                (
-                    Permission::checkAccess($objAttribute->getAccessId(), 'dynamic', true) ||
-                    $objAttribute->checkModifyPermission()
-                )
+            if (   !$objAttribute->isProtected()
+                || (Permission::checkAccess($objAttribute->getAccessId(), 'dynamic', true)
+                    || $objAttribute->checkModifyPermission())
             ) {
                 $this->parseAttribute($objFWUser->objUser, $objAttribute->getId(), 0, true);
             }
@@ -330,7 +333,8 @@ class Access extends AccessLib
             'ACCESS_USER_PASSWORD_INPUT'    => '<input type="password" name="access_user_password" />',
             'ACCESS_STORE_BUTTON'           => '<input type="submit" name="access_store" value="'.$_ARRAYLANG['TXT_ACCESS_SAVE'].'" />',
             'ACCESS_CHANGE_PASSWORD_BUTTON' => '<input type="submit" name="access_change_password" value="'.$_ARRAYLANG['TXT_ACCESS_CHANGE_PASSWORD'].'" />',
-            'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode()
+            'ACCESS_SET_NEWSLETTER_BUTTON'  => '<input type="submit" name="access_set_newsletters" value="'.$_ARRAYLANG['TXT_ACCESS_SAVE'] .'" />',
+            'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode(),
         ));
 
         if ($this->_objTpl->blockExists('access_settings')) {
@@ -341,6 +345,7 @@ class Access extends AccessLib
         }
     }
 
+
     private function setLanguageCookie($currentLangId, $newLangId)
     {
         global $objInit;
@@ -349,7 +354,8 @@ class Access extends AccessLib
         if ($currentLangId != $newLangId) {
             // check if the desired language is active at all. otherwise set default language
     $objInit->arrLang[$newLangId]['frontend'];
-            if ($objInit->arrLang[$newLangId]['frontend'] || ($newLangId = $objInit->defaultFrontendLangId)) {
+            if (   $objInit->arrLang[$newLangId]['frontend']
+                || ($newLangId = $objInit->defaultFrontendLangId)) {
                 setcookie("langId", $newLangId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
             }
         }
@@ -365,9 +371,8 @@ class Access extends AccessLib
             if (!$arrSettings['user_activation_timeout']['status'] || $objUser->getRestoreKeyTime() >= time()) {
                 if ($objUser->finishSignUp()) {
                     return true;
-                } else {
-                    $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objUser->getErrorMsg());
                 }
+                $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objUser->getErrorMsg());
             } else {
                 $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_ACTIVATION_TIME_EXPIRED'];
                 $this->arrStatusMsg['error'][] = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=access&amp;cmd=signup" title="'.$_ARRAYLANG['TXT_ACCESS_REGISTER_NEW_ACCOUNT'].'">'.$_ARRAYLANG['TXT_ACCESS_REGISTER_NEW_ACCOUNT'].'</a>';
@@ -383,7 +388,7 @@ class Access extends AccessLib
 
     private function signUp()
     {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_CORELANG;
 
         $arrProfile = array();
 
@@ -408,15 +413,19 @@ class Access extends AccessLib
         }
 
         $objUser = new User();
+        $arrSettings = User_Setting::getSettings();
 
         if (isset($_POST['access_signup'])) {
-            $arrSettings = User_Setting::getSettings();
-
             $objUser->setUsername(isset($_POST['access_user_username']) ? trim(contrexx_stripslashes($_POST['access_user_username'])) : '');
             $objUser->setEmail(isset($_POST['access_user_email']) ? trim(contrexx_stripslashes($_POST['access_user_email'])) : '');
             $objUser->setFrontendLanguage(isset($_POST['access_user_frontend_language']) ? intval($_POST['access_user_frontend_language']) : 0);
 
             $objUser->setGroups(explode(',', $arrSettings['assigne_to_groups']['value']));
+
+            if (isset($_POST['access_set_newsletters'])) {
+                $arrSubscribedNewsletterListIDs = isset($_POST['access_user_newsletters']) && is_array($_POST['access_user_newsletters']) ? $_POST['access_user_newsletters'] : array();
+                $objUser->setSubscribedNewsletterListIDs($arrSubscribedNewsletterListIDs);
+            }
 
             if (
                 (
@@ -445,6 +454,8 @@ class Access extends AccessLib
                     :    ''
                 )
                 && $objUser->checkMandatoryCompliance()
+                && $this->checkCaptcha()
+                && $this->checkToS()
                 && $objUser->signUp()
             ) {
                 if ($this->handleSignUp($objUser)) {
@@ -491,6 +502,8 @@ class Access extends AccessLib
             $objUser->objAttribute->next();
         }
 
+        $this->parseNewsletterLists($objUser);
+
         $this->attachJavaScriptFunction('accessSetWebsite');
         $this->attachJavaScriptFunction('jscalendarIncludes');
 
@@ -499,8 +512,65 @@ class Access extends AccessLib
             'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode(),
             'ACCESS_SIGNUP_MESSAGE'         => implode("<br />\n", $this->arrStatusMsg['error'])
         ));
+
+        // set captcha
+        if ($this->_objTpl->blockExists('access_captcha')) {
+            if ($arrSettings['user_captcha']['status']) {
+                $this->_objTpl->setVariable(array(
+                    'ACCESS_CAPTCHA_CODE'            => FWCaptcha::getInstance()->getCode(),
+                    'TXT_ACCESS_CAPTCHA'            => $_CORELANG['TXT_CORE_CAPTCHA'],
+                ));
+                $this->_objTpl->parse('access_captcha');
+            } else {
+                $this->_objTpl->hideBlock('access_captcha');
+            }
+        }
+
+        // set terms and conditions
+        if ($this->_objTpl->blockExists('access_tos')) {
+            if ($arrSettings['user_accept_tos_on_signup']['status']) {
+                $uriTos = CONTREXX_SCRIPT_PATH.'?section=agb';
+                $this->_objTpl->setVariable(array(
+                    'TXT_ACCESS_TOS' => $_ARRAYLANG['TXT_ACCESS_TOS'],
+                    'ACCESS_TOS'     => '<input type="checkbox" name="access_user_tos" id="access_user_tos"'.(!empty($_POST['access_user_tos']) ? ' checked="checked"' : '').' /><label for="access_user_tos">'.sprintf($_ARRAYLANG['TXT_ACCESS_ACCEPT_TOS'], $uriTos).'</label>'
+                ));
+                $this->_objTpl->parse('access_tos');
+            } else {
+                $this->_objTpl->hideBlock('access_tos');
+            }
+        }
+
         $this->_objTpl->parse('access_signup_form');
     }
+
+
+    private function checkCaptcha()
+    {
+        global $_ARRAYLANG;
+
+        $arrSettings = User_Setting::getSettings();
+
+        if(!$arrSettings['user_captcha']['status'] || FWCaptcha::getInstance()->check()) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    private function checkTos()
+    {
+        global $_ARRAYLANG;
+
+        $arrSettings = User_Setting::getSettings();
+        if (!$arrSettings['user_accept_tos_on_signup']['status'] || !empty($_POST['access_user_tos'])) {
+            return true;
+        }
+
+        $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_TOS_NOT_CHECKED'];
+        return false;
+    }
+
 
     function handleSignUp($objUser)
     {

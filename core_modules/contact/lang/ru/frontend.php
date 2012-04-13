@@ -30,7 +30,9 @@ $_ARRAYLANG['TXT_CONTACT_FILE_TOO_LARGE'] = "Файл %s не был перед�
 $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "Файл %s не был полностью закачан!";
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "Файл не был закачан!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Для активации этой опции пользователь должен ввести код изображенный на картинке, чтобы иметь возможность отправть контактную форму. Это необходимо для блокирования автоматических записей генерируемых спамботами.";
-$_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "Указанная строка символов была неправильной!";
 $_ARRAYLANG['TXT_CONTACT_RESET'] = "Reset";
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Empfängeradressen Auswahlliste";
+$_ARRAYLANG['TXT_CONTACT_CAPTCHA'] = "Captcha";
+$_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Выберите, пожалуйста";
+$_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] = "Не определено";
 ?>

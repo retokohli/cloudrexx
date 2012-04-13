@@ -646,20 +646,18 @@ EOF;
 
 
     function getJavascript(){ 
+// TODO: do we need the shadowbox every time?
+        JS::activate('shadowbox');
+
         $strLibPath = ASCMS_LIBRARY_WEB_PATH;    
         $strJavascript = <<< EOF
-
 <script language="JavaScript" type="text/javascript">
-/* <![CDATA[ */                
-
-var \$J = jQuery.noConflict();  
+/* <![CDATA[ */
 EOF;
-
         $strJavascript .= $this->strJavascript;
         $strJavascript .= <<< EOF
 /* ]]> */
 </script>
-
 EOF;
         return $strJavascript;
     }

@@ -1,6 +1,6 @@
 <!-- START module_shop_settings_countries.html -->
-<script language="javascript" type="text/javascript">
-//<![CDATA[
+<script type="text/javascript">
+// <![CDATA[
 function submit_form()
 {
   for (var i = document.shopForm.elements['list1[]'].length-1; i >= 0; --i) {
@@ -78,55 +78,54 @@ function moveAllOptions(from, to)
 }
 // ]]>
 </script>
-<style type="text/css">
-<!--
-.zoneList {width: 300px;}
--->
-</style>
 <!-- BEGIN statusBar -->
 <span class="red">{CONTENT_STATUS}</span>
 <!-- END statusBar -->
 <ul id="tabmenu">
-<li><a id="countriesTab_shopContent1" class="active" href="#" onclick="selectTab('shopContent1')" title="{TXT_DELIVERY_COUNTRIES}">{TXT_DELIVERY_COUNTRIES}</a></li>
+  <li><a id="countriesTab_content1" class="active" href="#" onclick="selectTab('content1')" title="{TXT_DELIVERY_COUNTRIES}">{TXT_DELIVERY_COUNTRIES}</a></li>
 </ul>
 <form name="shopForm" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=countries">
-<!-- start shopContent1 div -->
-<div id="shopContent1" class="countriesTab" style="display:block">
-<table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
-  <tr>
-    <th colspan="3">{TXT_COUNTRY_LIST}</th>
-  </tr>
-  <tr class="row1">
-    <td nowrap="nowrap" width="15%"><font color="#009900"><b>{TXT_DISPLAY_IT_IN_THE_SHOP}:</b></font></td>
-    <td width="5%">&nbsp;</td>
-    <td><font color="#FF0000"><b>{TXT_DONT_DISPLAY_IT_IN_THE_SHOP}:</b></font></td>
-  </tr>
-  <tr class="row2">
-    <td nowrap="nowrap">
-<select class="zoneList" name="list1[]" multiple="multiple" size="15" ondblclick="moveSelectedOptions(this.form['list1[]'],this.form['list2[]'])">
-{SHOP_COUNTRY_SELECTED_OPTIONS}
-</select>
-    </td>
-    <td nowrap="nowrap"><div style="text-align:center;vertical-align:middle;">
-      <input type="button" title="{TXT_ADD_ALL}" name="add_all" value="&gt;&gt;" onclick="moveAllOptions(this.form['list1[]'],this.form['list2[]'])" /><br /><br />
-      <input type="button" title="{TXT_ADD_SELECTION}" name="add" value="&gt;" onclick="moveSelectedOptions(this.form['list1[]'],this.form['list2[]'])" /><br /><br />
-      <input type="button" title="{TXT_REMOVE_SELECTION}" name="remove" value="&lt;" onclick="moveSelectedOptions(this.form['list2[]'],this.form['list1[]'])" /><br /><br />
-      <input type="button" title="{TXT_REMOVE_ALL}" name="remove_all" value="&lt;&lt;" onclick="moveAllOptions(this.form['list2[]'],this.form['list1[]'])" />
-    </div></td>
-    <td nowrap="nowrap">
-<select class="zoneList" name="list2[]" multiple="multiple" size="15"  ondblclick="moveSelectedOptions(this.form['list2[]'],this.form['list1[]'])">
-{SHOP_COUNTRY_NOTSELECTED_OPTIONS}
-</select>
-    </td>
-  </tr>
-  <tr class="row1">
-    <td colspan="3">{TXT_SELECT_COUNTRIES}<br />{TXT_SELECT_SEVERAL_COUNTRIES}</td>
-    </tr>
-</table>
-<br />
-</div>
-<!-- end shopContent1 div -->
-<input type="submit" name="countries" value="{TXT_STORE}" onclick="submit_form();" />
-<br />
+<!-- start content1 div -->
+  <div id="content1" class="countriesTab" style="display:block">
+    <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
+      <tr>
+        <th colspan="3">{TXT_COUNTRY_LIST}</th>
+      </tr>
+      <tr class="row1">
+        <td nowrap="nowrap" width="15%"><font color="#009900"><b>{TXT_DISPLAY_IT_IN_THE_SHOP}:</b></font></td>
+        <td width="5%">&nbsp;</td>
+        <td><font color="#FF0000"><b>{TXT_DONT_DISPLAY_IT_IN_THE_SHOP}:</b></font></td>
+      </tr>
+      <tr class="row2">
+        <td nowrap="nowrap">
+          <select name="list1[]" multiple="multiple" size="15" style="width: 300px;"
+              ondblclick="moveSelectedOptions(this.form['list1[]'],this.form['list2[]'])">
+            {SHOP_COUNTRY_SELECTED_OPTIONS}
+          </select>
+        </td>
+        <td nowrap="nowrap">
+          <div style="text-align: center; vertical-align: middle;">
+            <input type="button" title="{TXT_ADD_ALL}" name="add_all" value="&gt;&gt;" onclick="moveAllOptions(this.form['list1[]'],this.form['list2[]'])" /><br /><br />
+            <input type="button" title="{TXT_ADD_SELECTION}" name="add" value="&gt;" onclick="moveSelectedOptions(this.form['list1[]'],this.form['list2[]'])" /><br /><br />
+            <input type="button" title="{TXT_REMOVE_SELECTION}" name="remove" value="&lt;" onclick="moveSelectedOptions(this.form['list2[]'],this.form['list1[]'])" /><br /><br />
+            <input type="button" title="{TXT_REMOVE_ALL}" name="remove_all" value="&lt;&lt;" onclick="moveAllOptions(this.form['list2[]'],this.form['list1[]'])" />
+          </div>
+        </td>
+        <td nowrap="nowrap">
+          <select name="list2[]" multiple="multiple" size="15" style="width: 300px;"
+              ondblclick="moveSelectedOptions(this.form['list2[]'],this.form['list1[]'])">
+            {SHOP_COUNTRY_NOTSELECTED_OPTIONS}
+          </select>
+        </td>
+      </tr>
+      <tr class="row1">
+        <td colspan="3">{TXT_SELECT_COUNTRIES}<br />{TXT_SELECT_SEVERAL_COUNTRIES}</td>
+      </tr>
+    </table>
+  </div>
+<!-- end content1 div -->
+  <br />
+  <input type="submit" name="countries" value="{TXT_STORE}" onclick="submit_form();" />
+  <br />
 </form>
 <!-- END module_shop_settings_countries.html -->

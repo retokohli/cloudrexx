@@ -137,6 +137,7 @@ $_ARRLANG['TXT_CREATE_VERSION_FILE'] = "Create version file";
 $_ARRLANG['TXT_COULD_NOT_GATHER_ALL_DATABASE_TABLES'] = "Could not find the available database tables!";
 $_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'] = "Your database server doesn't support the character set UTF-8! You need the a version of Contrexx which uses the latin1 character set instead!";
 $_ARRLANG['TXT_COULD_NOT_SET_DATABASE_CHARSET'] = "Could not set database collation!";
+$_ARRLANG['TXT_COULD_NOT_SET_INSTALLATIONID'] = "The installation ID could not be set.";
 $_ARRLANG['TXT_CONFIG_DATABASE'] = "Config database";
 
 // system configuration

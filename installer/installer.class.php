@@ -1,8 +1,9 @@
 <?php
 
 define('ASCMS_FRAMEWORK_PATH', dirname(dirname(__FILE__)) . '/lib/FRAMEWORK');
-require_once "../lib/FRAMEWORK/FWUser.class.php";
-require_once "../lib/FRAMEWORK/User/User.class.php";
+define('ASCMS_CORE_MODULE_PATH', dirname(dirname(__FILE__)) . '/core_modules');
+require_once ASCMS_FRAMEWORK_PATH."/FWUser.class.php";
+require_once ASCMS_FRAMEWORK_PATH."/User/User.class.php";
 
 /**
  * Install Wizard Controller
@@ -122,7 +123,7 @@ class Installer
 			$objTpl->parse('navtree');
 		}
 
-		// set langauge menu
+		// set language menu
 		foreach ($arrLanguages as $arrLanguage) {
 			if (strtolower($language) == strtolower($arrLanguage['lang'])) {
 				$useDefaultLanguage = false;
@@ -672,8 +673,8 @@ class Installer
 						$_POST['ftpPasv'] = 0;
 					}
 
-					$_POST['ftpHostname'] = ereg_replace("^.*\/\/", "", $_POST['ftpHostname']);
-
+					$_POST['ftpHostname'] = preg_replace(
+                        '/^\w*:?\\/?\\/?/', '', $_POST['ftpHostname']);
 					if ($ftpPortPos = intval(strpos($_POST['ftpHostname'], ":"))) {
 						if (($ftpPort = intval(substr($_POST['ftpHostname'],$ftpPortPos+1))) != 0) {
 							$_SESSION['installer']['config']['ftpPort'] = $ftpPort;
@@ -1062,7 +1063,14 @@ class Installer
 				'DB_TABLE_PREFIX'	=> (empty($dbTablePrefix) ? "&nbsp;" : $dbTablePrefix),
 			));
 
-			if ($useUtf8 && $objCommon->checkDbConnection($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword']) === true) {
+			if ($useUtf8
+             && isset ($_SESSION['installer']['config']['dbHostname'])
+             && isset ($_SESSION['installer']['config']['dbUsername'])
+             && isset ($_SESSION['installer']['config']['dbPassword'])
+             && $objCommon->checkDbConnection(
+                $_SESSION['installer']['config']['dbHostname'],
+                $_SESSION['installer']['config']['dbUsername'],
+                $_SESSION['installer']['config']['dbPassword']) === true) {
 				$objTpl->setVariable('DB_CONNECTION_COLLATION', $dbCollation);
 				$objTpl->parse('database_collation');
 			} else {
@@ -1245,6 +1253,12 @@ class Installer
 			$result = $this->_insertDatabaseData();
 			$this->_setInstallationStatus($result, $_ARRLANG['TXT_INSERT_DATABASE_DATA']);
 		}
+                
+                // create htaccess file
+                if ($result === true) {
+                        $result = $this->_createHtaccessFile();
+                        $this->_setInstallationStatus($result, $_ARRLANG['TXT_CREATE_HTACCESS_FILE']);
+                }
 
 		// create version file
 		if ($result === true) {
@@ -1394,6 +1408,31 @@ class Installer
 			}
 		}
 	}
+        
+        /**
+         * create .htaccess file
+         * 
+         * create the .htaccess file
+         * 
+         * @access      private
+         * @global      object  $objCommon
+         * @return      mixed   true on success, error message on failure
+         */
+        function _createHtaccessFile() {
+		global $objCommon;
+
+		if (isset($_SESSION['installer']['createHtaccessFile']) && $_SESSION['installer']['createHtaccessFile']) {
+			return true;
+		} else {
+			$result = $objCommon->createHtaccessFile();
+			if ($result !== true) {
+				return $result;
+			} else {
+				$_SESSION['installer']['createHtaccessFile'] = true;
+				return true;
+			}
+		}
+        }
 
 	/**
 	* create config file
@@ -1674,7 +1713,8 @@ class Installer
 			}
 
 			if ($status) {
-				if ($changed || !$_SESSION['installer']['account']['status']) {
+				if ($changed
+                 || empty ($_SESSION['installer']['account']['status'])) {
 					$result = $objCommon->createAdminAccount();
 					if ($result !== true) {
 						$this->arrStatusMsg['global'] .= $result;

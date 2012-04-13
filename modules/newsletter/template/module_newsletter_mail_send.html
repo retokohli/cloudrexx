@@ -37,10 +37,112 @@
 	<!-- END newsletter_mail_list_required -->
 </table>
 <!-- BEGIN newsletter_mail_send_status -->
-	<!--<iframe frameborder="0" id="NewsletterSending" width="200" height="50" src="../modules/newsletter/template/newsletter_reload.html">-->
-	<iframe style="margin:5px;" name="NewsletterIframe" scrolling="no" width="100%" height="120" frameborder="0" src="index.php?cmd=newsletter&amp;act=send&amp;standalone=true&amp;id={NEWSLETTER_MAIL_ID}"></iframe>
+
+<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+	<tr class="row1">
+		<td width="15%">{TXT_NEWSLETTER_SUBJECT}</td>
+		<td width="85%">{NEWSLETTER_MAIL_SUBJECT}</td>
+	</tr>
+	<tr class="row2">
+		<td width="15%" style="vertical-align:top;">
+			{TXT_NEWSLETTER_MAILS_SENT}
+		</td>
+		<td width="85%">
+			<div style="display:block">
+				<div id="newsletter_statusbar" style="display:inline; border:1px outset #000000; background-color:#C0C0C0; float:left; width:200px; height:10px;">
+					<!-- <img src="images/icons/green.gif" id="newsletter_statusbar" width="{NEWSLETTER_STATUSBAR_WIDTH}" height="10" border="0" alt="statusbar" style="display:inline;" /> -->
+				</div>
+				<div style="display:inline; margin-left:5px;">(<div id="newsletter_sent_count" style="display:inline;">{NEWSLETTER_SENDT}</div> / {NEWSLETTER_MAIL_USERES})</div>
+			</div>
+			<div style="color: red;">{TXT_SENDING}</div>
+		</td>
+	</tr>
+</table>
+<br />
+<input type="button" value="E-Mail versenden" id="newsletter_send_button" onclick="newsletterToggleSend()" />
+
+
 <!-- END newsletter_mail_send_status -->
 <!-- END bulkSend -->
 <input type="hidden" name="{NEWSLETTER_TESTMAIL_SENT2}" value="1" />
 </form>
+
+
+<script type="text/javascript" 	language="javascript">
+// <![CDATA[
+	var newsletterSendStatus = false;
+	var newsletterSendRunning = false;
+	var newsletterCycleTime = 0;
+	var newsletterCycleStartTime = 0;
+	var newsletterCycleAmount = 0;
+	var newsletterSentCountBeforeCycle = {NEWSLETTER_SENDT};
+	var newsletterSentCountGuess = {NEWSLETTER_SENDT};
+	var newsletterCycleSpeed = 500;
+	var newsletterCycleIncrement = 1;
+	var newsletterTotalEmailAmount = {NEWSLETTER_MAIL_USERES};
+
+	function newsletterToggleSend() {
+		newsletterSendStatus = !newsletterSendStatus;
+
+		if (newsletterSendStatus) {
+			$J('#newsletter_send_button').attr('value', 'Versenden anhalten');
+			$J('#newsletter_statusbar .ui-progressbar-value').css({'background-image': 'url(template/ascms/images/loadingAnimation.gif)'});
+			newsletterSend();
+			newsletterSendRunning = true;
+			setTimeout(newsletterAnimateCycle, newsletterCycleSpeed)
+		} else {
+			$J('#newsletter_send_button').attr('value', 'Versand wird gestoppt...');
+			$J('#newsletter_send_button').attr('disabled', 'disabled');
+		}
+	}
+	
+	function newsletterSend()
+	{
+		if (!newsletterSendStatus) return;
+
+		newsletterCycleStartTime = (new Date()).getTime();
+
+		$J.ajax({
+			url: 'index.php?cmd=newsletter&act=send&standalone=true&id={NEWSLETTER_MAIL_ID}',
+			data: {id: {NEWSLETTER_MAIL_ID}, send: 1},
+			type: 'POST',
+			dataType: 'json',
+			success: function(data){
+				if (data.sentComplete) {
+					newsletterSendStatus = false;
+				}
+
+				$J('#newsletter_sent_count').html(data.count);
+				$J('#newsletter_statusbar').progressbar({value:data.progressbarStatus});
+				if (newsletterSendStatus) {
+					newsletterCycleAmount = data.count - newsletterSentCountBeforeCycle;
+					newsletterSentCountBeforeCycle = parseInt(data.count, 10);
+					newsletterSentCountGuess = parseInt(data.count, 10);
+					newsletterCycleTime = (new Date()).getTime() - newsletterCycleStartTime;
+					newsletterCycleIncrement = newsletterCycleAmount / newsletterCycleTime * newsletterCycleSpeed;
+
+					newsletterSend();
+				} else {
+					newsletterSendRunning = false;
+					$J('#newsletter_statusbar .ui-progressbar-value').css({'background-image': ''});
+					$J('#newsletter_send_button').attr('value', 'E-Mail versenden');
+					$J('#newsletter_send_button').removeAttr('disabled');
+				}
+			}
+		}); 
+	}
+
+	function newsletterAnimateCycle()
+	{
+		if (!newsletterSendRunning) return;
+
+		newsletterSentCountGuess += newsletterCycleIncrement;
+		$J('#newsletter_sent_count').html(Math.floor(newsletterSentCountGuess));
+		$J('#newsletter_statusbar').progressbar({value:Math.round(100/newsletterTotalEmailAmount*newsletterSentCountGuess)});
+		setTimeout(newsletterAnimateCycle, newsletterCycleSpeed)
+	}
+
+	cx.ready(function(){$J('#newsletter_statusbar').progressbar({value:{NEWSLETTER_PROGRESSBAR_STATUS}})});
+// ]]
+</script>
 <!-- END module_newsletter_mail_send.html -->

@@ -777,24 +777,24 @@ class CGIF
 			return false;
 		}
 		// READ FILE
-        if (FWValidator::isUri($lpszFileName)) { // Image is a remote ressource
-            require_once ASCMS_LIBRARY_PATH.'/PEAR/HTTP/Request2.php';
-            try {
-                $request = new HTTP_Request2($lpszFileName);
-                $contents = $request->send()->getBody();
-            } catch (Exception $e) {
-                DBG::msg($e->getMessage());
-                return false;
-            }
-        } elseif(!($fh = @fOpen($lpszFileName, "rb"))) {
+		if(!($fh = @fOpen($lpszFileName, "rb"))) {
 			return false;
-		} else {
+		}
+		//EDITEI - in order to read remote files (HTTP(s) and FTP protocols)
+		if ( strpos($lpszFileName,"http") !== false or strpos($lpszFileName,"ftp") !== false )
+		{
+
+			$contents = '';
+			while (!feof($fh)) $contents .= @fread($fh, 8192);
+		}
+		else
+		{
 			$contents = @fread($fh,@filesize($lpszFileName) );
-            fClose($fh);
 			//echo($contents);
 		}
 		$this->m_lpData = $contents;
 //		$this->m_lpData = @fRead($fh, @fileSize($lpszFileName));
+		fClose($fh);
 //header ("Content-type: image/gif");
 //echo($this->m_lpData);
 

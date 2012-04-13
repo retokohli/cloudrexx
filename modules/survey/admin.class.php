@@ -30,6 +30,7 @@ class SurveyAdmin extends SurveyLibrary {
     var $_strErrMessage = '';
     var $_strOkMessage     = '';
 
+    private $act = '';
 
     /**
      * Constructor
@@ -49,11 +50,16 @@ class SurveyAdmin extends SurveyLibrary {
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_intLangId = $objInit->userFrontendLangId;
+        
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_CORELANG;
 
-        $objTemplate->setVariable('CONTENT_NAVIGATION','    <a href="?cmd=survey">'.$_CORELANG['TXT_SURVEY_MENU_OVERVIEW'].'</a>
-                                                            <a href="?cmd=survey&amp;act=add">'.$_CORELANG['TXT_SURVEY_MENU_ADD'].'</a>
-                                                            <a href="?cmd=survey&amp;act=settings">'.$_CORELANG['TXT_SURVEY_MENU_SETTINGS'].'</a>
-                                                    ');
+        $objTemplate->setVariable('CONTENT_NAVIGATION','
+            <a href="?cmd=survey" class="'.($this->act == '' ? 'active' : '').'">'.$_CORELANG['TXT_SURVEY_MENU_OVERVIEW'].'</a>
+            <a href="?cmd=survey&amp;act=add" class="'.($this->act == 'add' ? 'active' : '').'">'.$_CORELANG['TXT_SURVEY_MENU_ADD'].'</a>
+            <a href="?cmd=survey&amp;act=settings" class="'.($this->act == 'settings' ? 'active' : '').'">'.$_CORELANG['TXT_SURVEY_MENU_SETTINGS'].'</a>');
     }
 
 
@@ -118,6 +124,9 @@ class SurveyAdmin extends SurveyLibrary {
             'CONTENT_STATUS_MESSAGE'    => $this->_strErrMessage,
             'ADMIN_CONTENT'                => $this->_objTpl->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 

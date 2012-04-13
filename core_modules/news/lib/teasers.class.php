@@ -77,40 +77,44 @@ class Teasers extends newsLibrary
 
     function initializeTeasers()
     {
-        global $objDatabase, $objInit, $_LANGID, $_CORELANG;
+        global $objDatabase, $_CORELANG;
 
         $this->arrTeasers = array();
         $this->getSettings();
 
-        if ($this->administrate) {
-            $langId = $objInit->userFrontendLangId;
-        } else {
-            $langId = $_LANGID;
-        }
         $objResult = $objDatabase->Execute("
-            SELECT news.id, news.date, news.userid,
-                   news.title, news.teaser_frames,
-                   news.catid, news.redirect,
-                   cat.name AS category_name,
-                   news.text AS teaser_full_text,
-                   news.teaser_text, news.teaser_show_link,
-                   news.teaser_image_path, news.teaser_image_thumbnail_path
-              FROM ".DBPREFIX."module_news AS news
-             INNER JOIN ".DBPREFIX."module_news_categories AS cat ON cat.catid=news.catid
-             WHERE news.lang=".$langId.
+            SELECT tblN.id,
+                   tblN.date,
+                   tblN.userid,
+                   tblN.teaser_frames,
+                   tblN.catid,
+                   tblN.redirect,
+                   tblN.teaser_show_link,
+                   tblN.teaser_image_path,
+                   tblN.teaser_image_thumbnail_path,
+                   tblL.title,
+                   tblL.text AS teaser_full_text,
+                   tblL.teaser_text,
+                   tblC.name AS category_name
+              FROM ".DBPREFIX."module_news AS tblN
+             INNER JOIN ".DBPREFIX."module_news_locale AS tblL ON tblL.news_id=tblN.id
+             INNER JOIN ".DBPREFIX."module_news_categories_locale AS tblC ON tblC.category_id=tblN.catid
+             WHERE tblL.lang_id=".FRONTEND_LANG_ID."
+               AND tblC.lang_id=".FRONTEND_LANG_ID.
               ($this->administrate == false
-                ? " AND news.validated='1'
-                    AND news.status='1'
-                    AND (news.startdate<='".date('Y-m-d H:i:s').
-                    "' OR news.startdate='0000-00-00 00:00:00') AND (news.enddate>='".
-                    date('Y-m-d H:i:s')."' OR news.enddate='0000-00-00 00:00:00')"
+                ? " AND tblN.validated='1'
+                    AND tblN.status='1'
+		            AND tblL.is_active=1	
+                    AND (tblN.startdate<='".date('Y-m-d H:i:s').
+                    "' OR tblN.startdate='0000-00-00 00:00:00') AND (tblN.enddate>='".
+                    date('Y-m-d H:i:s')."' OR tblN.enddate='0000-00-00 00:00:00')"
                 : "" ).
               ($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess()
                 ? (($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login()
-                    ? " AND (news.frontend_access_id IN (".implode(',',
+                    ? " AND (tblN.frontend_access_id IN (".implode(',',
                           array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).
                         ") OR userid = ".$objFWUser->objUser->getId().") "
-                    : " AND news.frontend_access_id=0 ")
+                    : " AND tblN.frontend_access_id=0 ")
                 : '')."
              ORDER BY date DESC");
         if ($objResult !== false) {
@@ -136,9 +140,9 @@ class Teasers extends newsLibrary
                         $firstname = $objUser->getProfileAttribute('firstname');
                         $lastname = $objUser->getProfileAttribute('lastname');
                         if (!empty($firstname) && !empty($lastname)) {
-                            $author = htmlentities($firstname.' '.$lastname, ENT_QUOTES, CONTREXX_CHARSET);
+                            $author = contrexx_raw2xhtml($firstname.' '.$lastname);
                         } else {
-                            $author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
+                            $author = contrexx_raw2xhtml($objUser->getUsername());
                         }
                     } else {
                         $author = $_CORELANG['TXT_ANONYMOUS'];
@@ -177,21 +181,15 @@ class Teasers extends newsLibrary
 
     function initializeTeaserFrames($id = 0)
     {
-        global $objDatabase, $objInit;
+        global $objDatabase;
 
         $this->arrTeaserFrames = array();
         $this->arrTeaserFrameNames = array();
 
-        if ($objInit->mode == 'frontend') {
-            $langId = $objInit->getFrontendLangId();
-        } else {
-            $langId = $objInit->getUserFrontendLangId();
-        }
-
         if ($id != 0) {
-            $objResult = $objDatabase->SelectLimit("SELECT id, frame_template_id, name FROM ".DBPREFIX."module_news_teaser_frame WHERE lang_id=".$langId." AND id=".$id, 1);
+            $objResult = $objDatabase->SelectLimit("SELECT id, frame_template_id, name FROM ".DBPREFIX."module_news_teaser_frame WHERE id=".$id, 1);
         } else {
-            $objResult = $objDatabase->Execute("SELECT id, frame_template_id, name FROM ".DBPREFIX."module_news_teaser_frame WHERE lang_id=".$langId." ORDER BY name");
+            $objResult = $objDatabase->Execute("SELECT id, frame_template_id, name FROM ".DBPREFIX."module_news_teaser_frame ORDER BY name");
         }
         if ($objResult !== false) {
             while (!$objResult->EOF) {
@@ -372,9 +370,9 @@ class Teasers extends newsLibrary
 
     function addTeaserFrame($id, $templateId, $name)
     {
-        global $objDatabase, $objInit;
+        global $objDatabase;
 
-        if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_teaser_frame (`frame_template_id`, `name`, `lang_id`) VALUES (".$templateId.", '".$name."', ".$objInit->userFrontendLangId.")") !== false) {
+        if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_teaser_frame (`frame_template_id`, `name`) VALUES (".$templateId.", '".$name."')") !== false) {
             return true;
         } else {
             return false;
@@ -396,7 +394,7 @@ class Teasers extends newsLibrary
 
     function addTeaserFrameTemplate($description, $html, $sourceCodeMode)
     {
-        global $objDatabase, $objInit;
+        global $objDatabase;
 
         if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_teaser_frame_templates (`description`, `html`, `source_code_mode`) VALUES ('".$description."', '".$html."', '".$sourceCodeMode."')") !== false) {
             return true;
