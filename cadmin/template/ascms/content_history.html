@@ -19,10 +19,11 @@ function restoreDeleted(intId) {
 <div id="content1" class="editorTab" style="display:block">
 	<table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
 		<tr>
-			<th colspan="5">{TXT_TITLE}</th>
+			<th colspan="6">{TXT_TITLE}</th>
 		</tr>
 		<tr class="row3">
-			<td width="24%"><b>{TXT_SUBTITLE_DATE}</b></td>
+			<td width="12%"><b>{TXT_SUBTITLE_DATE}</b></td>
+			<td width="12%"><b>{TXT_SUBTITLE_TRANSLATION}</b></td>
 			<td width="35%"><b>{TXT_SUBTITLE_NAME}</b></td>
 			<td width="20%"><b>{TXT_SUBTITLE_MODULE}</b></td>
 			<td width="20%"><b>{TXT_SUBTITLE_USER}</b></td>
@@ -31,6 +32,7 @@ function restoreDeleted(intId) {
 		<!-- BEGIN showPages -->
 		<tr class="{HISTORY_ROWCLASS}">
 			<td><div style="border-bottom:0px;">{HISTORY_DATE}</div></td>
+			<td><div style="border-bottom:0px;">{HISTORY_TRANSLATION}</div></td>
 			<td><div style="border-bottom:0px;">{HISTORY_PREFIX}<a href="javascript:showOrHide('contentDiv_{HISTORY_RID}');">{HISTORY_TITLE}</a></div></td>
 			<td><div style="border-bottom:0px;"><i>{HISTORY_MODULE}</i></div></td>
 			<td><div style="border-bottom:0px;"><img src="images/icons/creator.gif" alt="{HISTORY_USER}" title="{HISTORY_USER}" border="0" align="middle" />&nbsp;{HISTORY_USER}</div></td>

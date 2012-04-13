@@ -9,6 +9,11 @@ Cx\Model\ContentManager\Page:
       generator:
         strategy: AUTO
   fields:
+    nodeIdShadowed:
+      type: integer
+      gedmo:
+        - versioned
+
     lang: #missing foreign entity
       type: integer
       gedmo:
@@ -206,3 +211,5 @@ Cx\Model\ContentManager\Page:
 
   lifecycleCallbacks:
       prePersist: [ validate ]
+      postPersist: [ setNodeIdShadowed ]
+      postUpdate: [ setNodeIdShadowed ]

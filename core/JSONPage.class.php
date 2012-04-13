@@ -79,7 +79,7 @@ class JSONPage {
     public function set($params) {
         global $objFWUser, $_CORELANG;
         $newpage = false;
-	$pg = Env::get('pageguard');
+        $pg = Env::get('pageguard');
 
         $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
         $pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
@@ -195,14 +195,14 @@ class JSONPage {
             $page->setActive(true);
         }
 
-	$page->validate();
+        $page->validate();
 
-	if ($page->isFrontendProtected() && isset($params['post']['frontendGroups'])) {
-	    $pg->setAssignedGroupIds($page, $params['post']['frontendGroups'], true);
-	}
-	if ($page->isBackendProtected() && isset($params['post']['backendGroups'])) {
-	    $pg->setAssignedGroupIds($page, $params['post']['backendGroups'], false);
-	}
+        if ($page->isFrontendProtected() && isset($params['post']['frontendGroups'])) {
+            $pg->setAssignedGroupIds($page, $params['post']['frontendGroups'], true);
+        }
+        if ($page->isBackendProtected() && isset($params['post']['backendGroups'])) {
+            $pg->setAssignedGroupIds($page, $params['post']['backendGroups'], false);
+        }
 
         if ((isset($params['get']['publish']) && $params['get']['publish']) 
             && \Permission::checkAccess(78, 'static', true)) {

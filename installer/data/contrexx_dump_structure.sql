@@ -3088,6 +3088,7 @@ CREATE TABLE `contrexx_nodes` (
 CREATE TABLE `contrexx_pages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `node_id` int(11) DEFAULT NULL,
+  `nodeIdShadowed` int(11) DEFAULT NULL,
   `lang` int(11) NOT NULL,
   `type` varchar(16) NOT NULL,
   `caching` tinyint(1) NOT NULL,

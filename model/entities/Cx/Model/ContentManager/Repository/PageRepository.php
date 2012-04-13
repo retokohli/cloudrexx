@@ -306,6 +306,44 @@ class PageRepository extends EntityRepository {
         $path = $this->getPath($page);
         return "$protocolAndDomainWithPathOffset/$path$params";
     }
+    
+    /**
+     * Returns an array with the page translations of the given page id.
+     * 
+     * @param  int  $pageId
+     * @param  int  $historyId  If the page does not exist, we need the history id to revert them.
+     */
+    public function getPageTranslations($pageId, $historyId) {
+        $pages = array();
+        $pageTranslations = array();
+        
+        $currentPage = $this->findOneById($pageId);
+        // If page is deleted
+        if (!is_object($currentPage)) {
+            $currentPage = new \Cx\Model\ContentManager\Page();
+            $currentPage->setId($pageId);
+            $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
+            $logRepo->revert($currentPage, $historyId);
+            
+            $logs = $logRepo->findByAction('remove');
+            foreach ($logs as $log) {
+                $page = new \Cx\Model\ContentManager\Page();
+                $page->setId($log->getObjectId());
+                $logRepo->revert($page, $log->getVersion() - 1);
+                if ($page->getNodeIdShadowed() == $currentPage->getNodeIdShadowed()) {
+                    $pages[] = $page;
+                }
+            }
+        } else { // Page exists
+            $pages = $this->findByNodeIdShadowed($currentPage->getNodeIdShadowed());
+        }
+        
+        foreach ($pages as $page) {
+            $pageTranslations[$page->getLang()] = \FWLanguage::getLanguageCodeById($page->getLang());
+        }
+        
+        return $pageTranslations;
+    }
 
     /**
      * Searches the content and returns an array that is built as needed by the search module.
@@ -432,7 +470,6 @@ class PageRepository extends EntityRepository {
         return $page;
     }
 
-
     /**
      * Returns true if the page selected by its language, module name (section)
      * and optional cmd parameters exists
@@ -465,6 +502,7 @@ class PageRepository extends EntityRepository {
 
         return $query->getResult();
     }
+    
     public function getHistory($from=0, $count=30) {
         $logRepo = $this->em->getRepository('Cx\Model\ContentManager\HistoryLogEntry');
         $logs = $logRepo->getLogHistory('Cx\Model\ContentManager\Page', $from, $count);

@@ -77,6 +77,7 @@ $_ARRAYLANG['TXT_PAGE_ID'] = "Pagina ID";
 $_ARRAYLANG['TXT_PAGE_NAME'] = "Sitenaam";
 $_ARRAYLANG['TXT_SECONDS'] = "seconden";
 $_ARRAYLANG['TXT_LANGUAGE_DEPENDANT_SYSTEM_VARIABLES'] = "Taal afhankelijke systeemvariabelen";
+$_ARRAYLANG['TXT_TRANSLATION'] = "Vertaling";
 $_ARRAYLANG['TXT_BROWSERLANGUAGE'] = "Taal";
 $_ARRAYLANG['TXT_LANGUAGE_SETTINGS'] = "Taalinstellingen";
 $_ARRAYLANG['TXT_LANGUAGE_LIST'] = "Taaloverzicht";
