@@ -77,6 +77,7 @@ $_ARRAYLANG['TXT_PAGE_ID'] = "Id de la page";
 $_ARRAYLANG['TXT_PAGE_NAME'] = "Nom de la page";
 $_ARRAYLANG['TXT_SECONDS'] = "Secondes";
 $_ARRAYLANG['TXT_LANGUAGE_DEPENDANT_SYSTEM_VARIABLES'] = "Variables système multilingues";
+$_ARRAYLANG['TXT_TRANSLATION'] = "Traduction";
 $_ARRAYLANG['TXT_BROWSERLANGUAGE'] = "Langue";
 $_ARRAYLANG['TXT_LANGUAGE_SETTINGS'] = "Paramètres de langue";
 $_ARRAYLANG['TXT_LANGUAGE_LIST'] = "Aperçu des langues";

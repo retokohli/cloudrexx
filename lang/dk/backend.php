@@ -77,6 +77,7 @@ $_ARRAYLANG['TXT_PAGE_ID'] = "Side ID";
 $_ARRAYLANG['TXT_PAGE_NAME'] = "Sidenavn";
 $_ARRAYLANG['TXT_SECONDS'] = "Sekunder";
 $_ARRAYLANG['TXT_LANGUAGE_DEPENDANT_SYSTEM_VARIABLES'] = "System variabler afhængig af sprog";
+$_ARRAYLANG['TXT_TRANSLATION'] = "Oversættelse";
 $_ARRAYLANG['TXT_BROWSERLANGUAGE'] = "Sprog";
 $_ARRAYLANG['TXT_LANGUAGE_SETTINGS'] = "Sprogindstillinger";
 $_ARRAYLANG['TXT_LANGUAGE_LIST'] = "Overblik over sprog";

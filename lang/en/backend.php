@@ -77,6 +77,7 @@ $_ARRAYLANG['TXT_PAGE_ID'] = "Jump to Page-ID";
 $_ARRAYLANG['TXT_PAGE_NAME'] = "Site name";
 $_ARRAYLANG['TXT_SECONDS'] = "seconds";
 $_ARRAYLANG['TXT_LANGUAGE_DEPENDANT_SYSTEM_VARIABLES'] = "System variables dependent of language";
+$_ARRAYLANG['TXT_TRANSLATION'] = "Translation";
 $_ARRAYLANG['TXT_BROWSERLANGUAGE'] = "Language";
 $_ARRAYLANG['TXT_LANGUAGE_SETTINGS'] = "Language settings";
 $_ARRAYLANG['TXT_LANGUAGE_LIST'] = "Language overview";

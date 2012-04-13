@@ -69,7 +69,16 @@ class Node extends \Cx\Model\Base\EntityBase
             return 'i'.$this->instance;
     }
 
-    
+    /**
+     * Set id
+     *
+     * @param integer $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
     /**
      * Get id
      *

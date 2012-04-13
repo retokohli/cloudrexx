@@ -2,6 +2,8 @@
 
 namespace Cx\Model\ContentManager;
 
+use Doctrine\ORM\EntityManager;
+
 define('FRONTEND_PROTECTION', 1 << 0);
 define('BACKEND_PROTECTION',  1 << 1);
 /**
@@ -20,6 +22,11 @@ class Page extends \Cx\Model\Base\EntityBase
      * @var integer $id
      */
     private $id;
+
+    /**
+     * @var integer $nodeIdShadowed
+     */
+    private $nodeIdShadowed;
 
     /**
      * @var integer $lang
@@ -194,6 +201,29 @@ class Page extends \Cx\Model\Base\EntityBase
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set nodeIdShadowed
+     *
+     * @param integer $nodeIdShadowed
+     */
+    public function setNodeIdShadowed()
+    {
+        $this->nodeIdShadowed = $this->node->getId();
+        $em = \Env::em();
+        $em->persist($this);
+        $em->flush();
+    }
+
+    /**
+     * Get nodeIdShadowed
+     *
+     * @return integer $nodeIdShadowed
+     */
+    public function getNodeIdShadowed()
+    {
+        return $this->nodeIdShadowed;
     }
 
     /**

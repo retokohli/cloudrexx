@@ -77,6 +77,7 @@ $_ARRAYLANG['TXT_PAGE_ID'] = "ID(идентификация)электронны
 $_ARRAYLANG['TXT_PAGE_NAME'] = "Название электронной страницы";
 $_ARRAYLANG['TXT_SECONDS'] = "Секунды";
 $_ARRAYLANG['TXT_LANGUAGE_DEPENDANT_SYSTEM_VARIABLES'] = "Системные переменные величины, зависящие от языка";
+$_ARRAYLANG['TXT_TRANSLATION'] = "Перевод";
 $_ARRAYLANG['TXT_BROWSERLANGUAGE'] = "Язык";
 $_ARRAYLANG['TXT_LANGUAGE_SETTINGS'] = "Языковые установки";
 $_ARRAYLANG['TXT_LANGUAGE_LIST'] = "Обзор языков";
