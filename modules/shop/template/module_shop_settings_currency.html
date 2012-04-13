@@ -1,5 +1,5 @@
 <!-- START module_shop_settings_currency.html -->
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 <!-- //
 function deleteCurrency(cId)
 {
@@ -7,16 +7,19 @@ function deleteCurrency(cId)
     window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=currency&currencyId="+cId);
 }
 
+{SHOP_CURRENCY_INCREMENT_JS_ARRAY}
+
 function updateCurrencyCode(selectElement)
 {
-  var value = selectElement.value;
-  var symbolElement = document.getElementById("currencySymbolNew");
-  symbolElement.value = value;
-  var text = selectElement.options[selectElement.selectedIndex].text;
-//alert("value "+value+"\ntext: "+text);
-  text = text.replace(/^\w+\s+(.+)$/, "$1");
-  var nameElement = document.getElementById("currencyNameNew");
-  nameElement.value = text;
+  var code = selectElement.value;
+  var name = selectElement.options[selectElement.selectedIndex].text;
+  // By default, the name is followed by the code in parentheses
+  name = name.replace(/\s*\([A-Z]+\)$/, "");
+  var increment = currency_increment[code];
+console.log("code "+code+", name: "+name+", increment: "+increment);
+  document.getElementById("currencySymbolNew").value = code;
+  document.getElementById("currencyNameNew").value = name;
+  document.getElementById("currencyIncrementNew").value = increment;
 }
 
 function updateExchangeRates(selectedElement)
@@ -82,181 +85,124 @@ function updateExchangeRates(selectedElement)
 <span class="red">{CONTENT_STATUS}</span>
 <!-- END statusBar -->
 <ul id="tabmenu">
-<li><a id="currencyTab_shopContent1" class="active" href="javascript:{}" onclick="selectTab('shopContent1')" title="{TXT_CURRENCIES}">{TXT_CURRENCIES}</a></li>
-<li><a id="currencyTab_shopContent2" href="javascript:{}" onclick="selectTab('shopContent2')" title="W&auml;hrung hinzuf&uuml;gen">{TXT_ADD}</a></li>
+<li><a id="currencyTab_content1" class="active" href="javascript:{}" onclick="selectTab('content1')" title="{TXT_CURRENCIES}">{TXT_CURRENCIES}</a></li>
+<li><a id="currencyTab_content2" href="javascript:{}" onclick="selectTab('content2')" title="W&auml;hrung hinzuf&uuml;gen">{TXT_ADD}</a></li>
 </ul>
 <form name="shopForm" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=currency">
-<!-- start shopContent1 div -->
-<div id="shopContent1" class="currencyTab" style="display:block">
+<!-- start content1 div -->
+<div id="content1" class="currencyTab" style="display:block">
 <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
     <tr>
-      <th colspan="6"><b>{TXT_CURRENCIES}</b></th>
-      <th colspan="2" nowrap="nowrap" ><div align="right"><a href="http://www.xe.com/" target="_blank">{TXT_CURRENCY_CONVERTER}</a></div></th>
+      <th colspan="7"><b>{TXT_CURRENCIES}</b></th>
+      <th colspan="2" nowrap="nowrap" class="a_right">
+        <a href="http://www.xe.com/" target="_blank">{TXT_CURRENCY_CONVERTER}</a>
+      </th>
       </tr>
-    <tr class="row1">
-      <td width="5%" nowrap="nowrap"><strong>{TXT_ID}&nbsp;</strong></td>
-      <td width="8%" nowrap="nowrap" ><strong>{TXT_CODE}&nbsp;</strong></td>
-      <td width="12%" nowrap="nowrap" ><strong>{TXT_SYMBOL}&nbsp;</strong></td>
-      <td width="48%" nowrap="nowrap"><strong>{TXT_NAME}</strong></td>
-      <td width="15%" nowrap="nowrap"><strong>{TXT_RATE}</strong></td>
-      <td width="5%" nowrap="nowrap"><strong>{TXT_STANDARD}</strong></td>
-      <td width="5%" nowrap="nowrap"><div align="center"><strong>{TXT_ACTIVE}</strong></div></td>
-      <td nowrap="nowrap" width="2%">&nbsp;</td>
+    <tr class="row3">
+      <td width="05%" nowrap="nowrap" class="f_bold">{TXT_ID}&nbsp;</td>
+      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_CODE}&nbsp;</td>
+      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_SYMBOL}&nbsp;</td>
+      <td width="38%" nowrap="nowrap" class="f_bold">{TXT_NAME}</td>
+      <td width="15%" nowrap="nowrap" class="f_bold">{TXT_RATE}</td>
+      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_SHOP_CURRENCY_INCREMENT}</td>
+      <td width="05%" nowrap="nowrap" class="a_center f_bold">{TXT_STANDARD}</td>
+      <td width="05%" nowrap="nowrap" class="a_center f_bold">{TXT_ACTIVE}</td>
+      <td width="02%" nowrap="nowrap" class="a_right f_bold">{TXT_FUNCTIONS}</td>
     </tr>
 <!-- BEGIN shopCurrency -->
     <tr class="{SHOP_CURRENCY_STYLE}">
       <td nowrap="nowrap">{SHOP_CURRENCY_ID}</td>
-      <td nowrap="nowrap"><input name="currencyCode[{SHOP_CURRENCY_ID}]" type="text" value="{SHOP_CURRENCY_CODE}" size="10" maxlength="3" /></td>
-      <td nowrap="nowrap"><input name="currencySymbol[{SHOP_CURRENCY_ID}]" type="text" value="{SHOP_CURRENCY_SYMBOL}" size="10" maxlength="20" /></td>
-      <td nowrap="nowrap"><input type="text" name="currencyName[{SHOP_CURRENCY_ID}]" value="{SHOP_CURRENCY_NAME}" size="30" maxlength="50" /></td>
-      <td nowrap="nowrap"><input type="text" name="currencyRate[{SHOP_CURRENCY_ID}]" value="{SHOP_CURRENCY_RATE}" size="15" maxlength="10" /></td>
-      <td nowrap="nowrap"><input name="currencyDefault" type="radio" value="{SHOP_CURRENCY_ID}" {SHOP_CURRENCY_STANDARD}
-        onchange="updateExchangeRates(this)" /></td>
-      <td nowrap="nowrap"><div align="center"><input type="checkbox" name="currencyActive[{SHOP_CURRENCY_ID}]" value="1" {SHOP_CURRENCY_ACTIVE} /></div></td>
-      <td nowrap="nowrap"><div style="text-align:right"><a href="javascript:deleteCurrency('{SHOP_CURRENCY_ID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a></div></td>
+      <td nowrap="nowrap">
+        <input name="currencyCode[{SHOP_CURRENCY_ID}]" type="text"
+            value="{SHOP_CURRENCY_CODE}" size="10" maxlength="3" />
+      </td>
+      <td nowrap="nowrap">
+        <input name="currencySymbol[{SHOP_CURRENCY_ID}]"
+            type="text" value="{SHOP_CURRENCY_SYMBOL}" size="10" maxlength="20" />
+      </td>
+      <td nowrap="nowrap">
+        <input type="text" name="currencyName[{SHOP_CURRENCY_ID}]"
+            value="{SHOP_CURRENCY_NAME}" size="60" maxlength="50" />
+      </td>
+      <td nowrap="nowrap">
+        <input type="text" name="currencyRate[{SHOP_CURRENCY_ID}]"
+            value="{SHOP_CURRENCY_RATE}" size="15" maxlength="11" />
+      </td>
+      <td nowrap="nowrap">
+        <input type="text" name="currencyIncrement[{SHOP_CURRENCY_ID}]"
+            value="{SHOP_CURRENCY_INCREMENT}" size="10" maxlength="4" />
+      </td>
+      <td nowrap="nowrap" class="a_center">
+        <input name="currencyDefault" type="radio" value="{SHOP_CURRENCY_ID}"
+            {SHOP_CURRENCY_STANDARD} onchange="updateExchangeRates(this)" />
+      </td>
+      <td nowrap="nowrap" class="a_center">
+        <input type="checkbox" name="currencyActive[{SHOP_CURRENCY_ID}]"
+            value="1" {SHOP_CURRENCY_ACTIVE} />
+      </td>
+      <td nowrap="nowrap" class="a_right">
+        <a href="javascript:deleteCurrency('{SHOP_CURRENCY_ID}')" title="{TXT_DELETE}">
+          <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
+        </a>
+      </td>
     </tr>
 <!-- END shopCurrency -->
   </table>
 <br />
 <input type="submit" name="currency" value="{TXT_STORE}" />
 </div>
-<!-- end shopContent1 div -->
+<!-- end content1 div -->
 
-<!-- start shopContent2 div -->
-<div id="shopContent2" class="currencyTab" style="display:none">
+<!-- start content2 div -->
+<div id="content2" class="currencyTab" style="display:none">
 <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
     <tr>
-      <th colspan="5"><b>{TXT_ADD}</b></th>
-      <th colspan="2" nowrap="nowrap" ><div align="right"><a href="http://www.xe.com/" target="_blank">{TXT_CURRENCY_CONVERTER}</a></div></th>
-      </tr>
+      <th colspan="6"><b>{TXT_ADD}</b></th>
+      <th colspan="2" nowrap="nowrap" class="number">
+        <a href="http://www.xe.com/" target="_blank">{TXT_CURRENCY_CONVERTER}</a>
+      </th>
+    </tr>
     <tr class="row1">
-      <td width="5%" nowrap="nowrap"><strong>{TXT_ID}&nbsp;</strong></td>
-      <td width="8%" nowrap="nowrap" ><strong>{TXT_CODE}&nbsp;</strong></td>
-      <td width="12%" nowrap="nowrap" ><strong>{TXT_SYMBOL}&nbsp;</strong></td>
-      <td width="50%" nowrap="nowrap"><strong>{TXT_NAME}</strong></td>
-      <td width="15%" nowrap="nowrap"><strong>{TXT_RATE}</strong></td>
-      <td width="5%" nowrap="nowrap"><strong><!--{TXT_STANDARD}--></strong></td>
-      <td width="5%" nowrap="nowrap"><div align="center"><strong>{TXT_ACTIVE}</strong></div></td>
+      <td width="05%" nowrap="nowrap" class="f_bold">{TXT_ID}&nbsp;</td>
+      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_CODE}&nbsp;</td>
+      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_SYMBOL}&nbsp;</td>
+      <td width="40%" nowrap="nowrap" class="f_bold">{TXT_NAME}</td>
+      <td width="15%" nowrap="nowrap" class="f_bold">{TXT_RATE}</td>
+      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_SHOP_CURRENCY_INCREMENT}</td>
+      <td width="05%" nowrap="nowrap" class="a_center f_bold">{TXT_STANDARD}</td>
+      <td width="05%" nowrap="nowrap" class="a_center f_bold">{TXT_ACTIVE}</td>
     </tr>
     <tr class="row2">
       <td nowrap="nowrap">N/A</td>
       <td nowrap="nowrap">
-<select name="currencyCodeNew" onchange="updateCurrencyCode(this)">
-<option value="ATS">ATS Austria Schillings</option>
-<option value="CHF">CHF Switzerland Francs</option>
-<option value="USD">USD United States Dollars</option>
-<option value="EUR" selected="selected">EUR Euro</option>
-<option value="GBP">GBP United Kingdom Pounds</option>
-<option value="CAD">CAD Canada Dollars</option>
-<option value="FRF">FRF France Francs</option>
-<option value="JPY">JPY Japan Yen</option>
-<option value="NLG">NLG Netherlands Guilders</option>
-<option value="ITL">ITL Italy Lire</option>
-<option value="DZD">DZD Algeria Dinars</option>
-<option value="ARS">ARS Argentina Pesos</option>
-<option value="AUD">AUD Australia Dollars</option>
-
-<option value="BSD">BSD Bahamas Dollars</option>
-<option value="BBD">BBD Barbados Dollars</option>
-
-<option value="BEF">BEF Belgium Francs</option>
-<option value="BMD">BMD Bermuda Dollars</option>
-<option value="BRL">BRL Brazil Real</option>
-<option value="BGN">BGN Bulgaria Leva</option>
-<option value="CAD">CAD Canada Dollars</option>
-<option value="CLP">CLP Chile Pesos</option>
-
-<option value="CNY">CNY China Yuan Renminbi</option>
-<option value="CYP">CYP Cyprus Pounds</option>
-<option value="CZK">CZK Czech Republic Koruny</option>
-<option value="DKK">DKK Denmark Kroner</option>
-<option value="NLG">NLG Dutch (Netherlands) Guilders</option>
-<option value="XCD">XCD Eastern Caribbean Dollars</option>
-
-<option value="EGP">EGP Egypt Pounds</option>
-<option value="EUR">EUR Euro</option>
-<option value="FJD">FJD Fiji Dollars</option>
-<option value="FIM">FIM Finland Markkaa</option>
-<option value="FRF">FRF France Francs</option>
-<option value="DEM">DEM Germany Deutsche Marks</option>
-
-<option value="XAU">XAU Gold Ounces</option>
-<option value="GRD">GRD Greece Drachmae</option>
-<option value="HKD">HKD Hong Kong Dollars</option>
-<option value="NLG">NLG Holland (Netherlands) Guilders</option>
-<option value="HUF">HUF Hungary Forint</option>
-<option value="ISK">ISK Iceland Kronur</option>
-
-<option value="INR">INR India Rupees</option>
-<option value="IDR">IDR Indonesia Rupiahs</option>
-<option value="IEP">IEP Ireland Pounds</option>
-<option value="ILS">ILS Israel New Shekels</option>
-<option value="ITL">ITL Italy Lire</option>
-<option value="JMD">JMD Jamaica Dollars</option>
-
-<option value="JPY">JPY Japan Yen</option>
-<option value="JOD">JOD Jordan Dinars</option>
-<option value="KRW">KRW Korea (South) Won</option>
-<option value="LBP">LBP Lebanon Pounds</option>
-<option value="LUF">LUF Luxembourg Francs</option>
-<option value="MYR">MYR Malaysia Ringgits</option>
-
-<option value="MXN">MXN Mexico Pesos</option>
-<option value="NLG">NLG Netherlands Guilders</option>
-<option value="NZD">NZD New Zealand Dollars</option>
-<option value="NOK">NOK Norway Kroner</option>
-<option value="PKR">PKR Pakistan Rupees</option>
-<option value="XPD">XPD Palladium Ounces</option>
-
-<option value="PHP">PHP Philippines Pesos</option>
-<option value="XPT">XPT Platinum Ounces</option>
-<option value="PLN">PLN Poland Zlotych</option>
-<option value="PTE">PTE Portugal Escudos</option>
-<option value="ROL">ROL Romania Lei</option>
-<option value="RUR">RUR Russia Rubles</option>
-
-<option value="SAR">SAR Saudi Arabia Riyals</option>
-<option value="XAG">XAG Silver Ounces</option>
-<option value="SGD">SGD Singapore Dollars</option>
-<option value="SKK">SKK Slovakia Koruny</option>
-<option value="ZAR">ZAR South Africa Rand</option>
-<option value="KRW">KRW South Korea Won</option>
-
-<option value="ESP">ESP Spain Pesetas</option>
-<option value="XDR">XDR Special Drawing Rights (IMF)</option>
-<option value="SDD">SDD Sudan Dinars</option>
-<option value="SEK">SEK Sweden Kronor</option>
-<option value="CHF">CHF Switzerland Francs</option>
-<option value="TWD">TWD Taiwan New Dollars</option>
-
-<option value="THB">THB Thailand Baht</option>
-<option value="TTD">TTD Trinidad and Tobago Dollars</option>
-<option value="TRL">TRL Turkey Liras</option>
-<option value="GBP">GBP United Kingdom Pounds</option>
-<option value="USD">USD United States Dollars</option>
-<option value="VEB">VEB Venezuela Bolivares</option>
-
-<option value="ZMK">ZMK Zambia Kwacha</option>
-<option value="EUR">EUR Euro</option>
-<option value="XCD">XCD Eastern Caribbean Dollars</option>
-<option value="XDR">XDR Special Drawing Right (IMF)</option>
-<option value="XAG">XAG Silver Ounces</option>
-<option value="XAU">XAU Gold Ounces</option>
-
-<option value="XPD">XPD Palladium Ounces</option>
-<option value="XPT">XPT Platinum Ounces</option>
-</select>
-    </td>
-      <td nowrap="nowrap"><input name="currencySymbolNew" id="currencySymbolNew" type="text" value="" size="10" maxlength="20" /></td>
-      <td nowrap="nowrap"><input type="text" name="currencyNameNew" id="currencyNameNew" value="" size="30" maxlength="50" /></td>
-      <td nowrap="nowrap"><input type="text" name="currencyRateNew" value="1.0000" size="15" maxlength="10" /></td>
-      <td nowrap="nowrap"><input name="currencyDefaultNew" type="hidden" value="0" /></td>
-      <td nowrap="nowrap"><div align="center"><input type="checkbox" name="currencyActiveNew" value="1" checked="checked" /></div></td>
+        <select name="currencyCodeNew" onchange="updateCurrencyCode(this)">
+          {SHOP_CURRENCY_NAME_MENUOPTIONS}
+        </select>
+      </td>
+      <td nowrap="nowrap">
+        <input name="currencySymbolNew" id="currencySymbolNew" type="text" value="" size="10" maxlength="20" />
+      </td>
+      <td nowrap="nowrap">
+        <input type="text" name="currencyNameNew" id="currencyNameNew" value="" size="60" maxlength="50" />
+      </td>
+      <td nowrap="nowrap">
+        <input type="text" name="currencyRateNew" value="1.0000" size="15" maxlength="11" />
+      </td>
+      <td nowrap="nowrap">
+        <input type="text" name="currencyIncrementNew" id="currencyIncrementNew"
+            value="0.01" size="10" maxlength="7" />
+      </td>
+      <td nowrap="nowrap" class="a_center">
+        <input type="checkbox" name="currencyDefaultNew" value="1" />
+      </td>
+      <td nowrap="nowrap" class="a_center">
+        <input type="checkbox" name="currencyActiveNew" value="1" checked="checked" />
+      </td>
     </tr>
   </table>
 <br />
 <input type="submit" name="currency_add" value="{TXT_ADD}" />
 </div>
-<!-- end shopContent2 div -->
+<!-- end content2 div -->
 </form>
 <!-- END module_shop_settings_currency.html -->

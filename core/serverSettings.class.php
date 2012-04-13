@@ -38,6 +38,7 @@ class serverSettings
     var $ftpConnection;
     var $ftpSupport;
 
+    private $act = '';
 
     /**
      * Constructor
@@ -46,11 +47,15 @@ class serverSettings
     function __construct()
     {
         global  $_CORELANG, $objTemplate, $_FTPCONFIG;
-
-        $objTemplate->setVariable('CONTENT_NAVIGATION',"<a href='?cmd=server'>".$_CORELANG['TXT_OVERVIEW']."</a>
-                                                <a href='?cmd=server&amp;act=phpinfo'>".$_CORELANG['TXT_PHP_INFO']."</a>");
     }
 
+    public function setNavigation()
+    {
+        global $objTemplate, $_CORELANG;
+
+        $objTemplate->setVariable('CONTENT_NAVIGATION',"<a href='?cmd=server' class='".($this->act == '' ? 'active' : '')."'>".$_CORELANG['TXT_OVERVIEW']."</a>
+                                                <a href='?cmd=server&amp;act=phpinfo' class='".($this->act == 'phpinfo' ? 'active' : '')."'>".$_CORELANG['TXT_PHP_INFO']."</a>");
+    }
 
     /**
      * Sets the requested content
@@ -88,6 +93,9 @@ class serverSettings
             'CONTENT_TITLE'    => $this->pageTitle,
             'CONTENT_STATUS_MESSAGE'    => $this->statusMessage
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 
@@ -184,7 +192,7 @@ class serverSettings
         $this->pageTitle = "FTP Einstellungen";
         $objTemplate->setVariable(array(
             'TXT_FTP_SETTINGS'           =>         "FTP Einstellungen (config)",
-            'TXT_FTP_CHECK'               =>         "FTP PrÃ¼fen",
+            'TXT_FTP_CHECK'               =>         "FTP Prüfen",
             'TXT_FTP_IS_ACTIVATED'      =>         "Aktiviert",
             'TXT_FTP_HOST'               =>        "Host",
             'TXT_FTP_USER'               =>        "Username",
@@ -193,6 +201,7 @@ class serverSettings
             'FTP_IS_ACTIVATED'          =>         $is_activated,
             'FTP_HOST'                   =>        $this->ftpHost,
             'FTP_USER'                   =>        $this->ftpUserName,
+            'FTP_PASSWORD'               =>        $this->ftpUserPass,
             'FTP_PATH'                   =>        $this->ftpDirectory,
             'TXT_WEBSERVER'               =>         "Webserver",
             'WEBSERVER'                   =>         $this->getServerSoftware(),
@@ -244,10 +253,10 @@ class serverSettings
         //check connection
         if ((!$this->conn_id) || (!$this->login_result)) {
             $this->ftpConnection = "Konnte keine Verbindung herstellen";
-            //$this->ftpSupport = "FTP wird nicht unterstÃ¼tzt";
+            //$this->ftpSupport = "FTP wird nicht unterstützt";
         } else {
             $this->ftpConnection = "Verbindung konnte erfolgreich hergestellt werden";
-            //$this->ftpSupport = "FTP wird unterstÃ¼tzt";
+            //$this->ftpSupport = "FTP wird unterstützt";
         }
 
         if($this->saveMode == true){

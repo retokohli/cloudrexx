@@ -816,6 +816,16 @@ class CommonFunctions
 	    }
 		return $str;
 	}
+        
+        function _getHtaccessFileTemplate() {
+                global $htaccessTemplateFile, $_CONFIG;
+                
+                return str_replace(
+	 		array("%PATH_ROOT_OFFSET%"),
+	 		array($_SESSION['installer']['config']['offsetPath']),
+	 		@file_get_contents($htaccessTemplateFile)
+	 	);
+        }
 
 	/**
 	* get version template file
@@ -964,6 +974,29 @@ class CommonFunctions
 			return $statusMsg;
 		}
 	}
+        
+        function createHtaccessFile() {
+		global $basePath, $offsetPath, $htaccessFile, $_ARRLANG, $_CORELANG;
+
+		$htaccessFileContent = $this->_getHtaccessFileTemplate();
+                
+                if (!@include_once(ASCMS_LIBRARY_PATH.'/FRAMEWORK/FWHtAccess.class.php')) {
+                    die('Unable to load file '.ASCMS_LIBRARY_PATH.'/FRAMEWORK/FWHtAccess.class.php');
+                }
+                $_CORELANG = $_ARRLANG;
+                $htaccess = new FWHtAccess(dirname($basePath), $offsetPath);
+                $result = $htaccess->loadHtAccessFile($htaccessFile);
+                if ($result !== true) {
+                    return $result;
+                }
+                
+                $htaccess->setSection("core_routing", explode("\n", $htaccessFileContent));
+                $result = $htaccess->write();
+                if ($result !== true) {
+                    return $result;
+                }
+                return true;
+        }
 
 	function createConfigFile() {
 		global $configFile, $_ARRLANG;
@@ -1080,16 +1113,10 @@ class CommonFunctions
 	* @return boolean
 	* @access public
 	*/
-	function isEmail($email) {
-		if( eregi( "^" . "[a-z0-9]+([_\\.-][a-z0-9]+)*" .	//user
-			"@" . "([a-z0-9]+([\.-][a-z0-9]+)*)+" .			//domain
-			"\\.[a-z]{2,4}" . 								//sld, tld
-			"$", $email)
-		) {
-	        return true;
-		} else {
-		    return false;
-		}
+	function isEmail($email)
+    {
+        require_once ASCMS_FRAMEWORK_PATH.'/Validator.class.php';
+		return FWValidator::isEmail($email);
 	}
 
 	function isValidDbPrefix($prefix)
@@ -1243,6 +1270,15 @@ class CommonFunctions
 				if (!@$objDb->Execute($query)) {
 					$statusMsg .= $_ARRLANG['TXT_COULD_NOT_SET_CONTACT_EMAIL']."<br />";
 				}
+			}
+
+            $_SESSION['installer']['sysConfig']['iid'] = $this->updateCheck();
+
+			$query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."settings`
+						 SET `setvalue` = '".$_SESSION['installer']['sysConfig']['iid']."'
+					   WHERE `setname` = 'installationId'";
+			if (!@$objDb->Execute($query) || empty($_SESSION['installer']['sysConfig']['iid'])) {
+				$statusMsg .= $_ARRLANG['TXT_COULD_NOT_SET_INSTALLATIONID']."<br />";
 			}
 
 			/*
@@ -1413,14 +1449,18 @@ class CommonFunctions
 	}
 
 	function updateCheck() {
-		global $_CONFIG;
+		global $_CONFIG, $objDb;
 
         $version = "";
         $ip = "";
         $serverName = "";
+        $iid = "";
 
         if (!isset($_SESSION['installer']['updateCheck']) || !$_SESSION['installer']['updateCheck']) {
-	        if (isset($_SERVER['SERVER_NAME'])) {
+	        if (isset($_SESSION['installer']['sysConfig']['domainURL'])) {
+                $serverName = $_SESSION['installer']['sysConfig']['domainURL'];
+            }
+            else if (isset($_SERVER['SERVER_NAME'])) {
 	        	$serverName = $_SERVER['SERVER_NAME'];
 	        }
 	        if (isset($_SERVER['SERVER_ADDR'])) {
@@ -1428,14 +1468,27 @@ class CommonFunctions
 	        }
 
 			$v = $_CONFIG['coreCmsVersion'] . $_CONFIG['coreCmsStatus'];
-	        $url = base64_decode('aHR0cDovL3d3dy5jb250cmV4eC5jb20vdXBkYXRlY2VudGVyL2luZGV4LnBocA==').'?host='.$serverName.$_SESSION['installer']['config']['offsetPath'].'&ip='.$ip.'&version='.$v.'&edition='.$_CONFIG['coreCmsEdition'];
-	        if($this->checkRSSSupport()) {
-	            @file($url);
-	            $_SESSION['installer']['updateCheckImage']="";
-	        } else {
-	        	$_SESSION['installer']['updateCheckImage']="<img src='".$url."' width='1' height='1' />";
-	        }
+	        $url = base64_decode('d3d3LmNvbnRyZXh4LmNvbQ==');
+            $file = base64_decode("L3VwZGF0ZWNlbnRlci9pbmRleC5waHA=").'?host='.$serverName.$_SESSION['installer']['config']['offsetPath'].'&ip='.$ip.'&version='.$v.'&edition='.$_CONFIG['coreCmsEdition'];
+            $fp = fsockopen($url, 80, $errno, $errstr, 3);
+            if ($fp)
+            {
+                $out = "GET $file HTTP/1.1\r\n";
+                $out .= "Host: $url\r\n";
+                $out .= "Connection: Close\r\n\r\n";
+                fwrite($fp, $out);
+                $ret = '';
+                while (!feof($fp)) {
+                    $ret .= fgets($fp);
+                }
+                fclose($fp);
+                $iid = substr($ret, strpos($ret, "\r\n\r\n") + 4);
+                $_SESSION['installer']['updateCheckImage']="";
+            } else {
+                $_SESSION['installer']['updateCheckImage']="<img src='".$url."' width='1' height='1' />";
+            }
 	        $_SESSION['installer']['updateCheck'] = true;
+            return $iid;
         }
 	}
 

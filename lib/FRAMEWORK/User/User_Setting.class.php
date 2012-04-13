@@ -1,4 +1,5 @@
 <?php
+
 /**
  * User Settings Object
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -7,6 +8,9 @@
  * @package     contrexx
  * @subpackage  lib_framework
  */
+
+require_once(ASCMS_FRAMEWORK_PATH.'/User/User_Setting_Mail.class.php');
+
 /**
  * User Settings Object
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -35,7 +39,20 @@ class User_Setting
     }
 
 
-    function getSettings($reload=false)
+    /**
+     * Returns the current settings array
+     *
+     * Note that the records are read from the database on the first call
+     * and stored locally.  Successive calls will yield the same array,
+     * regardless of changes made to the table, unless $reload is set to true.
+     * @global      ADOConnection   $objDatabase
+     * @staticvar   array           $arrSettings    The settings array
+     * @param       boolean         $reload         Force reloading if true.
+     *                                              Defaults to false
+     * @return      array                           The settings array
+     * @static
+     */
+    static function getSettings($reload=false)
     {
         global $objDatabase;
         static $arrSettings = array();
@@ -99,6 +116,5 @@ class User_Setting
         }
         return $arrValidityPeriod;
     }
-}
 
-?>
+}

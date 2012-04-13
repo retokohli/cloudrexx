@@ -1,0 +1,40 @@
+#shop .error  {
+  padding: 9px 5px 9px 9px;
+  margin: 0px 0px 25px 0px;
+  border: 1px solid #b40018;
+  background-color: #f6cbca;
+  color: #b40018;
+  font-weight: bold;
+  width: 95% !important;
+  display: block;
+}
+#shop .information {
+  padding: 9px 5px 9px 9px;
+  margin: 0px 0px 25px 0px;
+  border: 1px solid #1d2a8f;
+  background-color: #cbd5f4;
+  color: #1d2a8f;
+  font-weight: bold;
+  width: 95% !important;
+  display: block;
+}
+#shop .ok  {
+  padding: 9px 5px 9px 9px;
+  margin: 0px 0px 25px 0px;
+  border: 1px solid #29560b;
+  background-color: #b4e19e;
+  color: #29560b;
+  font-weight: bold;
+  width: 95% !important;
+  display: block;
+}
+#shop .warning  {
+  padding: 9px 5px 9px 9px;
+  margin: 0px 0px 25px 0px;
+  border: 1px solid #db6503;
+  background-color: #f4df88;
+  color: #db6503;
+  font-weight: bold;
+  width: 95% !important;
+  display: block;
+}

@@ -1,0 +1,135 @@
+<div id="shop">
+<!-- BEGIN core_message -->
+  <span class="{MESSAGE_CLASS}">{MESSAGE_TEXT}</span>
+<!-- END core_message -->
+  <form name="account" action="{SHOP_ACCOUNT_ACTION}" method="post"
+      onsubmit="copy_address();">
+    <div class="customer_address">
+      <h2>{TXT_CUSTOMER_ADDRESS}</h2>
+      <p><label>{TXT_COMPANY}</label>
+        <input type="text" tabindex="1" name="company" value="{SHOP_ACCOUNT_COMPANY}" /></p>
+      <p><label>{TXT_GREETING}<font color="#ff0000">&nbsp;*</font></label>
+        <select tabindex="2" name="gender">{SHOP_ACCOUNT_PREFIX}</select></p>
+      <p><label>{TXT_SURNAME}<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" tabindex="3" name="lastname" value="{SHOP_ACCOUNT_LASTNAME}" /></p>
+      <p><label>{TXT_FIRSTNAME}<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" tabindex="4" name="firstname" value="{SHOP_ACCOUNT_FIRSTNAME}" /></p>
+      <p><label>{TXT_ADDRESS}<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" tabindex="5" name="address" value="{SHOP_ACCOUNT_ADDRESS}" /></p>
+      <p><label>{TXT_POSTALE_CODE}<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" tabindex="6" name="zip" value="{SHOP_ACCOUNT_ZIP}" /></p>
+      <p><label>{TXT_CITY}<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" tabindex="7" name="city" value="{SHOP_ACCOUNT_CITY}" /></p>
+      <p><label>{TXT_COUNTRY}</label>
+        <select name="countryId" id="countryId" tabindex="8">
+          {SHOP_ACCOUNT_COUNTRY_MENUOPTIONS}
+        </select>
+      </p>
+      <p><label>{TXT_PHONE_NUMBER}<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" tabindex="9" name="phone" value="{SHOP_ACCOUNT_PHONE}" /></p>
+      <p><label>{TXT_FAX_NUMBER}</label>
+        <input type="text" tabindex="10" name="fax" value="{SHOP_ACCOUNT_FAX}" /></p>
+    </div>
+<!-- BEGIN shipping_address -->
+    <div class="shipping_address">
+      <h2>{TXT_SHIPPING_ADDRESS}</h2>
+      <p><input type="checkbox" tabindex="21" value="1" onclick="copy_address();"
+          id="equal_address" name="equal_address" {SHOP_EQUAL_ADDRESS_CHECKED} />
+        <label class="description" for="equal_address">{TXT_SAME_BILLING_ADDRESS}</label></p>
+    </div>
+    <div id="shipping_address" style="display: {SHOP_EQUAL_ADDRESS_DISPLAY};">
+      <p><label>{TXT_COMPANY}</label>
+        <input type="text" tabindex="31" name="company2" value="{SHOP_ACCOUNT_COMPANY2}" /></p>
+      <p><label>{TXT_GREETING}<font color="#ff0000">&nbsp;*</font></label>
+        <select tabindex="32" name="gender2">{SHOP_ACCOUNT_PREFIX2}</select></p>
+      <p><label>{TXT_SURNAME}<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" tabindex="33" name="lastname2" value="{SHOP_ACCOUNT_LASTNAME2}" /></p>
+      <p><label>{TXT_FIRSTNAME}<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" tabindex="34" name="firstname2" value="{SHOP_ACCOUNT_FIRSTNAME2}" /></p>
+      <p><label>{TXT_ADDRESS}<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" tabindex="35" name="address2" value="{SHOP_ACCOUNT_ADDRESS2}" /></p>
+      <p><label>{TXT_POSTALE_CODE}<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" tabindex="36" name="zip2" value="{SHOP_ACCOUNT_ZIP2}" size="6" /></p>
+      <p><label>{TXT_CITY}<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" tabindex="37" name="city2" value="{SHOP_ACCOUNT_CITY2}" /></p>
+      <p><label>{TXT_COUNTRY}</label>
+        <input type="hidden" name="countryId2" id="countryId2"
+            value="{SHOP_ACCOUNT_COUNTRY2_ID}" />{SHOP_ACCOUNT_COUNTRY2}
+      </p>
+      <p><label>{TXT_PHONE_NUMBER}<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" tabindex="38" name="phone2" value="{SHOP_ACCOUNT_PHONE2}" /></p>
+    </div>
+<!-- END shipping_address -->
+<!-- BEGIN account_details -->
+    <div class="account_details">
+      <h2>{TXT_YOUR_ACCOUNT_DETAILS}</h2>
+      <p><label>{TXT_EMAIL}<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" tabindex="51" name="email" value="{SHOP_ACCOUNT_EMAIL}" /></p>
+      <div id="account_password"
+          style="{SHOP_ACCOUNT_PASSWORD_DISPLAY};">
+        <p><label>{TXT_PASSWORD}<font color="#ff0000">&nbsp;*</font></label>
+          <input type="password" tabindex="52" name="password" value="" /></p>
+        <p><b>{TXT_SHOP_ACCOUNT_PASSWORD_HINT}</b></p>
+      </div>
+<!-- BEGIN dont_register -->
+      <br />
+      <p>
+        <input type="checkbox" tabindex="61" value="1"
+            id="dont_register" name="dont_register"
+            onClick="document.getElementById('account_details').style.display = (this.checked ? 'none' : 'block');" />
+        <label class="description" for="dont_register"><b>{TXT_SHOP_ACCOUNT_DONT_REGISTER}</b></label>
+        <br />
+        {TXT_SHOP_ACCOUNT_DONT_REGISTER_NOTE}
+      </p>
+<!-- END dont_register -->
+    </div>
+<!-- END account_details -->
+    <p>
+      <input type="reset" value="{TXT_RESET}" name="reset" tabindex="71" />
+      <input type="submit" value="{TXT_SHOP_CONTINUE_ARROW}" name="bsubmit" tabindex="72" />
+    </p>
+  </form>
+</div>
+
+<script type="text/javascript">//<![CDATA[
+function copy_address() {
+  with (document.account) {
+    var disp = "block";
+    if (equal_address && equal_address.checked) {
+      gender2.value = gender.value;
+      company2.value = company.value;
+      lastname2.value = lastname.value;
+      firstname2.value = firstname.value;
+      address2.value = address.value;
+      zip2.value = zip.value;
+      city2.value = city.value;
+      phone2.value = phone.value;
+      countryId2.value = countryId.value;
+      disp = "none";
+/* Optionally clear the shipment address
+    } else {
+      gender2.value = "";
+      company2.value = "";
+      lastname2.value = "";
+      firstname2.value = "";
+      address2.value = "";
+      zip2.value = "";
+      city2.value = "";
+      phone2.value = "";
+*/
+    }
+    if (document.getElementById('shipping_address')) {
+      document.getElementById('shipping_address').style.display = disp;
+    }
+  }
+}
+
+for each (var element in document.getElementsByTagName("input")) {
+  element.onchange = function() { copy_address(); };
+}
+for each (var element in document.getElementsByTagName("select")) {
+  element.onchange = function() { copy_address(); };
+}
+
+copy_address();
+//]]></script>

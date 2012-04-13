@@ -1,0 +1,20 @@
+////////////////////////////////////////
+// CHANGELOG 2.2.5-3.0.0 ///////////////
+////////////////////////////////////////
+
+****************************************
+* Neue Funktionen / Änderungen *********
+****************************************
+
+Layout & Design
+- Gestaltung von drei unterschiedlichen Hauptnavigationen, mittels [[NAVBAR_FILE]], [[NAVBAR2_FILE]] und [[NAVBAR3_FILE]].
+
+****************************************
+* Behobene Fehler **********************
+****************************************
+
+Aliasverwaltung
+- Es können nun Aliase für Inhaltsseiten mit dem Schlüsselwort "require" definiert werden.
+
+Shop
+- Bestellungen, welche beim Online-Zahlungsvorgang abgebrochen werden, sind nun im Shop Backend mit dem richtigen Status "annulliert" versehen.

@@ -6,13 +6,13 @@
  * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
- * @todo        Edit PHP DocBlocks!
  */
 
 /**
  * @ignore
  */
-require_once ASCMS_MODULE_PATH.'/shop/lib/Settings.class.php';
+//require_once ASCMS_MODULE_PATH.'/shop/lib/Settings.class.php';
+require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
 
 /**
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -25,12 +25,16 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Settings.class.php';
 class Vat
 {
     /**
+     * Text key
+     */
+    const TEXT_CLASS = 'vat_class';
+
+    /**
      * entries look like
      *  VAT ID => array(
      *    'id' => VAT ID,
      *    'rate' => VAT rate (in percent, double),
      *    'class' => VAT class name,
-     *    'text_class_id' => VAT class Text ID,
      *  )
      * @var     array   $arrVat         The Vat rate and class array
      * @static
@@ -68,9 +72,8 @@ class Vat
     private static $vatDefaultId = false;
 
     /**
-     * @var     double  $vatDefaultRate The default VAT rate, determined by the tax_default_id entry
-     *                                  in the shop_config table.  See {@see init()},
-     *                                  {@see  calculateDefaultTax()}.
+     * @var     double  $vatDefaultRate The default VAT rate.
+     * @see     init(), calculateDefaultTax()
      * @static
      * @access  private
      */
@@ -100,21 +103,16 @@ class Vat
 
 
     /**
-     * Set the home country flag
-     * @param   boolean     True if the shop home country and the
-     *                      ship-to country are identical
-     */
-    static function setIsHomeCountry($is_home_country)
-    {
-        self::$is_home_country = $is_home_country;
-    }
-    /**
-     * Get the home country flag
+     * Get or set the home country flag
+     * @param   boolean     The optional home country flag
      * @return  boolean     True if the shop home country and the
      *                      ship-to country are identical
      */
-    static function getIsHomeCountry()
+    static function is_home_country($is_home_country=null)
     {
+        if (isset($is_home_country)) {
+            self::$is_home_country = (boolean)$is_home_country;
+        }
         return self::$is_home_country;
     }
 
@@ -123,7 +121,7 @@ class Vat
      * @param   boolean     True if the current customer has the
      *                      reseller flag set
      */
-    static function isReseller($is_reseller)
+    static function is_reseller($is_reseller)
     {
         self::$is_reseller = $is_reseller;
     }
@@ -146,34 +144,28 @@ class Vat
     {
         global $objDatabase;
 
-//        $arrSqlClass = Text::getSqlSnippets('`vat`.`text_class_id`', FRONTEND_LANG_ID);
-//        $query = "
-//            SELECT `vat`.`id`, `percent`".$arrSqlClass['field']."
-//              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat as `vat`
-//             ".$arrSqlClass['join'];
-//        $objResult = $objDatabase->Execute($query);
-//        if (!$objResult) return false;
-        $query = "SELECT id, percent, class ".
-                 "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat";
+        $arrSqlClass = Text::getSqlSnippets(
+            '`vat`.`id`', FRONTEND_LANG_ID, 'shop',
+            array('name' => self::TEXT_CLASS));
+        $query = "
+            SELECT `vat`.`id`, `vat`.`rate`, ".$arrSqlClass['field']."
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat as `vat`".
+            $arrSqlClass['join'];
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
+        if (!$objResult) return self::errorHandler();
         self::$arrVat = array();
         while (!$objResult->EOF) {
             $id = $objResult->fields['id'];
-//            $text_class_id = $objResult->fields[$arrSqlClass['name']];
-//            $strClass = $objResult->fields[$arrSqlClass['text']];
-//            // Replace Text in a missing language by another, if available
-//            if ($text_class_id && $strClass === null) {
-//                $objText = Text::getById($text_class_id, 0);
-//                if ($objText)
-//                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
-//                    $strClass = $objText->getText();
-//            }
+            $strClass = $objResult->fields['name'];
+            // Replace Text in a missing language by another, if available
+            if ($strClass === null) {
+                $objText = Text::getById($id, 'shop', self::TEXT_CLASS);
+                if ($objText) $strClass = $objText->content();
+            }
             self::$arrVat[$id] = array(
                 'id'    => $id,
-                'rate'  => $objResult->fields['percent'],
-                'class' => $objResult->fields['class'], //$strClass,
-//                'text_class_id' => $text_class_id,
+                'rate'  => $objResult->fields['rate'],
+                'class' => $strClass,
             );
             $objResult->MoveNext();
         }
@@ -181,50 +173,37 @@ class Vat
             // Foreign countries
             0 => array(
                 // Customer
-                0 => Settings::getValueByName('vat_enabled_foreign_customer'),
+                0 => SettingDb::getValue('vat_enabled_foreign_customer'),
                 // Reseller
-                1 => Settings::getValueByName('vat_enabled_foreign_reseller'),
+                1 => SettingDb::getValue('vat_enabled_foreign_reseller'),
             ),
             // Home country
             1 => array(
                 // Customer
-                0 => Settings::getValueByName('vat_enabled_home_customer'),
+                0 => SettingDb::getValue('vat_enabled_home_customer'),
                 // Reseller
-                1 => Settings::getValueByName('vat_enabled_home_reseller'),
+                1 => SettingDb::getValue('vat_enabled_home_reseller'),
             ),
         );
         self::$arrVatIncluded = array(
             // Foreign country
             0 => array(
                 // Customer
-                0 => Settings::getValueByName('vat_included_foreign_customer'),
+                0 => SettingDb::getValue('vat_included_foreign_customer'),
                 // Reseller
-                1 => Settings::getValueByName('vat_included_foreign_reseller'),
+                1 => SettingDb::getValue('vat_included_foreign_reseller'),
             ),
             // Home country
             1 => array(
                 // Customer
-                0 => Settings::getValueByName('vat_included_home_customer'),
+                0 => SettingDb::getValue('vat_included_home_customer'),
                 // Reseller
-                1 => Settings::getValueByName('vat_included_home_reseller'),
+                1 => SettingDb::getValue('vat_included_home_reseller'),
             ),
         );
-        self::$vatDefaultId = Settings::getValueByName('vat_default_id');
+        self::$vatDefaultId = SettingDb::getValue('vat_default_id');
         self::$vatDefaultRate = self::getRate(self::$vatDefaultId);
-        self::$vatOtherId = Settings::getValueByName('vat_other_id');
-
-// NOTE: Temporary fix for VAT rate change on 2011-01-01 in switzerland
-        if (   isset(self::$arrVat[10])
-            && self::$arrVat[10]['rate'] == 7.6) {
-            $date = date('Y-m-d');
-            if ($date >= '2011-01-01') {
-                self::updateVat(
-                    array(10 => self::$arrVat[10]['class']),
-                    array(10 => '8.00'));
-                self::$arrVat[10]['rate'] = '8.00';
-            }
-        }
-
+        self::$vatOtherId = SettingDb::getValue('vat_other_id');
         return true;
     }
 
@@ -236,7 +215,6 @@ class Vat
      *  array(
      *    'id'    => VAT ID,
      *    'class' => VAT class name
-     *    'text_class_id' => VAT class Text ID (for updating the record)
      *    'rate'  => VAT rate in percent
      *  )
      * @param   integer   $vatId        The VAT ID
@@ -456,7 +434,7 @@ class Vat
         if (!is_array(self::$arrVat)) self::init();
         if (isset(self::$arrVat[$vatId]))
             return self::$arrVat[$vatId]['class'];
-        // no entry found
+        // No entry found
         return $_ARRAYLANG['TXT_SHOP_VAT_NOT_SET'];
     }
 
@@ -522,7 +500,7 @@ class Vat
      * @global  ADONewConnection
      * @return  boolean         True if *all* the values were accepted and
      *                          successfully updated in the database,
-     *                          false otherwise.
+     *                          null on noop, false on failure.
      * @static
      */
     static function updateVat($vatClasses, $vatRates)
@@ -530,27 +508,30 @@ class Vat
         global $objDatabase;
 
         if (!is_array(self::$arrVat)) self::init();
+        $changed = false;
         foreach ($vatClasses as $id => $class) {
-            $rate = $vatRates[$id];
+            $rate = floatval($vatRates[$id]);
+            $class = trim(strip_tags($class));
             if (   self::$arrVat[$id]['class'] != $class
                 || self::$arrVat[$id]['rate']  != $rate) {
-// Note: Text::replace() now returns the ID, not the object!
-//                $objText = Text::replace(
-//                    $text_class_id, LANG_ID, $class,
-//                    MODULE_ID, TEXT_SHOP_VAT_CLASS
-//                );
-//                if (!$objText) return false;
+                $changed = true;
+                if (!Text::replace(
+                    $id, LANG_ID, 'shop', self::TEXT_CLASS, $class)) {
+                    return false;
+                }
                 $query = "
                     UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_vat
-                       SET `percent`=$rate,
-                           `class`='".addslashes($class)."'
-                     WHERE `id`=$id
-                ";
+                       SET `rate`=$rate
+                     WHERE `id`=$id";
                 $objResult = $objDatabase->Execute($query);
                 if (!$objResult) return false;
             }
         }
-        return true;
+        if ($changed) {
+            self::init();
+            return true;
+        }
+        return null;
     }
 
 
@@ -575,33 +556,27 @@ class Vat
     {
         global $objDatabase;
 
-        $vatRate = doubleval($vatRate);
-        if ($vatRate >= 0) {
-// Note: Text::replace() now returns the ID, not the object!
-//            $objText = Text::replace(
-//                0, BACKEND_LANG_ID, $vatClass, MODULE_ID, TEXT_SHOP_VAT_CLASS
-//            );
-//            if (!$objText) return false;
-//            $query = "
-//                INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_vat (
-//                    text_class_id, percent
-//                ) VALUES (
-//                    ".$objText->getId().", $vatRate
-//                )
-//            ";
-            $query = "
-                INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_vat (
-                    class, percent
-                ) VALUES (
-                    '".addslashes($vatClass)."', $vatRate
-                )
-            ";
-            $objResult = $objDatabase->Execute($query);
-            if ($objResult) return true;
-//            // Rollback and delete the Text
-//            Text::deleteById($objText->getId(), BACKEND_LANG_ID);
+        $vatRate = number_format($vatRate, 2);
+        if ($vatRate < 0) return false;
+        $query = "
+            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_vat (
+                `rate`
+            ) VALUES (
+                $vatRate
+            )";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
+        $id = $objDatabase->Insert_ID();
+        if (!Text::replace($id, BACKEND_LANG_ID,
+            'shop', self::TEXT_CLASS, $vatClass)) {
+            // Rollback
+            $objDatabase->Execute("
+                DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat
+                WHERE `id`=$id");
+            return false;
         }
-        return false;
+        self::init();
+        return true;
     }
 
 
@@ -625,35 +600,16 @@ class Vat
 
         if (!is_array(self::$arrVat)) self::init();
         $vatId = intval($vatId);
-        if ($vatId > 0) {
-//            if (!Text::deleteById(self::$arrVat[$vatId]['text_class_id']))
-//                return false;
-            $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat WHERE id=$vatId";
-            $objResult = $objDatabase->Execute($query);
-            if ($objResult) return true;
-        }
-        return false;
-    }
-
-
-    /**
-     * post-2.1
-     * Returns the Text ID stored in the VAT record for the given VAT ID
-     * @param   integer   $vat_id       The VAT ID
-     * @return  integer                 The Text ID on success, false otherwise
-     */
-    static function getTextClassIdById($vat_id)
-    {
-        global $objDatabase;
-
+        if (!$vatId > 0) return false;
+        if (!Text::deleteById($vatId, 'shop', self::TEXT_CLASS))
+            return false;
         $query = "
-            SELECT `text_class_id`
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat
-             WHERE `id`=$vat_id
-        ";
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat
+             WHERE id=$vatId";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-        return $objResult->fields['text_class_id'];
+        self::init();
+        return true;
     }
 
 
@@ -697,14 +653,14 @@ class Vat
      * Otherwise, returns -1.
      * Note: This function returns the VAT rate no matter whether it is
      * enabled in the shop or not.  Check this yourself!
-     * @param   double  $productId  The product ID
+     * @param   double  $product_id  The product ID
      * @global  ADONewConnection
      * @return  double              The (positive) associated vat rate
      *                              in percent, or -1 if the record could
      *                              not be found.
      * @static
      */
-    static function getAssociatedTaxRate($productId)
+    static function getAssociatedTaxRate($product_id)
     {
         global $objDatabase;
 
@@ -712,8 +668,7 @@ class Vat
             SELECT percent FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat vat
              INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_products products
                 ON vat.id=products.vat_id
-             WHERE products.id=$productId
-        ";
+             WHERE products.id=$product_id";
         $objResult = $objDatabase->Execute($query);
         // There must be exactly one match
         if ($objResult && $objResult->RecordCount() == 1)
@@ -726,7 +681,8 @@ class Vat
     /**
      * Returns the VAT amount using the default rate for the given price.
      *
-     * Note that the amount returned is not formatted as a currency.
+     * Note that the amount returned is not formatted as a currency,
+     * nor are any checks performed on whether VAT is active or not!
      * @param   double  $price  The price
      * @return  double          The VAT amount
      * @static
@@ -754,6 +710,53 @@ class Vat
         return self::amount($otherRate, $price);
     }
 
-}
 
-?>
+    /**
+     * Tries to fix database problems
+     *
+     * Also migrates text fields to the new structure
+     * @return  boolean               False.  Always.
+     */
+    static function errorHandler()
+    {
+        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
+
+//DBG::activate(DBG_DB_FIREPHP);
+
+        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_vat';
+        $table_structure = array(
+            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'rate' => array('type' => 'DECIMAL(5,2)', 'unsigned' => true, 'notnull' => true, 'default' => '0.00', 'renamefrom' => 'percent'),
+        );
+        $table_index =  array();
+        if (UpdateUtil::table_exist($table_name, 'class')) {
+            if (UpdateUtil::column_exist($table_name, 'class')) {
+                // Migrate all Vat classes to the Text table first
+                Text::deleteByKey('shop', self::TEXT_CLASS);
+                $query = "
+                    SELECT `id`, `class`
+                      FROM `$table_name`";
+                $objResult = UpdateUtil::sql($query);
+                if (!$objResult) {
+                    throw new Update_DatabaseException(
+                        "Failed to query VAT classes", $query);
+                }
+                while (!$objResult->EOF) {
+                    $id = $objResult->fields['id'];
+                    $class = $objResult->fields['class'];
+                    if (!Text::replace($id, FRONTEND_LANG_ID, 'shop',
+                        self::TEXT_CLASS, $class)) {
+                        throw new Update_DatabaseException(
+                            "Failed to migrate VAT class '$class'");
+                    }
+                    $objResult->MoveNext();
+                }
+            }
+        }
+        UpdateUtil::table($table_name, $table_structure, $table_index);
+
+        // Always
+        return false;
+    }
+
+}

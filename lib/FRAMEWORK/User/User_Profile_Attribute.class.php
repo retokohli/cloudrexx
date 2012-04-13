@@ -1,4 +1,5 @@
 <?php
+
 /**
  * User Profile Attribute Object
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -46,416 +47,418 @@ class User_Profile_Attribute
 
     private $arrCoreAttributes = array(
         'picture' => array(
-            'type'                => 'image',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 0,
-            'desc'                => 'TXT_ACCESS_PROFILE_PIC',
-            'modifiable'        => array('mandatory', 'access')
+            'type'         => 'image',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_PROFILE_PIC',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'gender' => array(
-            'type'                => 'menu',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'custom',
-            'parent_id'            => 0,
-            'desc'                => 'TXT_ACCESS_GENDER',
-            'modifiable'        => array('mandatory', 'access')
+            'type'         => 'menu',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'custom',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_GENDER',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'gender_undefined' => array(
-            'type'                => 'menu_option',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 'gender',
-            'desc'                => 'TXT_ACCESS_UNKNOWN',
-            'order_id'            => 0
+            'type'         => 'menu_option',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 'gender',
+            'desc'         => 'TXT_ACCESS_NOT_SPECIFIED',
+            'unknown'      => true,
+            'order_id'     => 0,
         ),
         'gender_female' => array(
-            'type'                => 'menu_option',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 'gender',
-            'desc'                => 'TXT_ACCESS_FEMALE',
-            'order_id'            => 1
+            'type'         => 'menu_option',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 'gender',
+            'desc'         => 'TXT_ACCESS_FEMALE',
+            'order_id'     => 1
         ),
         'gender_male' => array(
-            'type'                => 'menu_option',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 'gender',
-            'desc'                => 'TXT_ACCESS_MALE',
-            'order_id'            => 2
+            'type'         => 'menu_option',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 'gender',
+            'desc'         => 'TXT_ACCESS_MALE',
+            'order_id'     => 2,
         ),
         'title' => array(
-            'type'                => 'menu',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'desc',
-            'parent_id'            => 0,
-            'desc'                => 'TXT_ACCESS_TITLE',
-            'modifiable'        => array('mandatory', 'sort_order', 'access', 'children')
+            'type'         => 'menu',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'desc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_TITLE',
+            'modifiable'   => array('mandatory', 'sort_order', 'access', 'children'),
         ),
         'title_undefined' => array(
-            'type'                => 'menu_option',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 'title',
-            'desc'                => 'TXT_ACCESS_UNKNOWN',
-            'value'                => '0',
-            'order_id'            => 0
+            'type'         => 'menu_option',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 'title',
+            'desc'         => 'TXT_ACCESS_NOT_SPECIFIED',
+            'value'        => '0',
+            'unknown'      => true,
+            'order_id'     => 0,
         ),
         'firstname' => array(
-            'type'                => 'text',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 0,
-            'desc'                => 'TXT_ACCESS_FIRSTNAME',
-            'modifiable'        => array('mandatory', 'access')
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_FIRSTNAME',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'lastname' => array(
-            'type'                => 'text',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 0,
-            'desc'                => 'TXT_ACCESS_LASTNAME',
-            'modifiable'        => array('mandatory', 'access')
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_LASTNAME',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'company' => array(
-            'type'                => 'text',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 0,
-            'desc'                => 'TXT_ACCESS_COMPANY',
-            'modifiable'        => array('mandatory', 'access')
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_COMPANY',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'address' => array(
-            'type'                => 'text',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 0,
-            'desc'                => 'TXT_ACCESS_ADDRESS',
-            'modifiable'        => array('mandatory', 'access')
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_ADDRESS',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'city' => array(
-            'type'                => 'text',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 0,
-            'desc'                => 'TXT_ACCESS_CITY',
-            'modifiable'        => array('mandatory', 'access')
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_CITY',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'zip' => array(
-            'type'                => 'text',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 0,
-            'desc'                => 'TXT_ACCESS_ZIP',
-            'modifiable'        => array('mandatory', 'access')
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_ZIP',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'country' => array(
-            'type'                => 'menu',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 0,
-            'desc'                => 'TXT_ACCESS_COUNTRY',
-            'modifiable'        => array('mandatory', 'access')
+            'type'         => 'menu',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_COUNTRY',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'country_undefined' => array(
-            'type'                => 'menu_option',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 'country',
-            'desc'                => 'TXT_ACCESS_UNKNOWN',
-            'value'                => '0',
-            'order_id'            => 0
+            'type'         => 'menu_option',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 'country',
+            'desc'         => 'TXT_ACCESS_NOT_SPECIFIED',
+            'value'        => '0',
+            'unknown'      => true,
+            'order_id'     => 0,
         ),
         'phone_office' => array(
-            'type'                => 'text',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 0,
-            'desc'                => 'TXT_ACCESS_PHONE_OFFICE',
-            'modifiable'        => array('mandatory', 'access')
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_PHONE_OFFICE',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'phone_private' => array(
-            'type'                => 'text',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 0,
-            'desc'                => 'TXT_ACCESS_PHONE_PRIVATE',
-            'modifiable'        => array('mandatory', 'access')
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_PHONE_PRIVATE',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'phone_mobile' => array(
-            'type'                => 'text',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 0,
-            'desc'                => 'TXT_ACCESS_PHONE_MOBILE',
-            'modifiable'        => array('mandatory', 'access')
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_PHONE_MOBILE',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'phone_fax' => array(
-            'type'                => 'text',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 0,
-            'desc'                => 'TXT_ACCESS_PHONE_FAX',
-            'modifiable'        => array('mandatory', 'access')
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_PHONE_FAX',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'birthday' => array(
-            'type'                => 'date',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 0,
-            'desc'                => 'TXT_ACCESS_BIRTHDAY',
-            'modifiable'        => array('mandatory', 'access')
+            'type'         => 'date',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_BIRTHDAY',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'website' => array(
-            'type'                => 'uri',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 0,
-            'desc'                => 'TXT_ACCESS_WEBSITE',
-            'modifiable'        => array('mandatory', 'access')
+            'type'         => 'uri',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_WEBSITE',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         /*'skype' => array(
-            'type'                => 'text',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 0,
-            'desc'                => 'TXT_ACCESS_SKYPE_NAME',
-            'modifiable'        => array('mandatory', 'access')
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_SKYPE_NAME',
+            'modifiable'   => array('mandatory', 'access'),
         ),*/
         'profession' => array(
-            'type'                => 'text',
-            'multiline'            => false,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 0,
-            'desc'                => 'TXT_ACCESS_PREFESSION',
-            'modifiable'        => array('mandatory', 'access')
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_PREFESSION',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'interests' => array(
-            'type'                => 'text',
-            'multiline'            => true,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 0,
-            'desc'                => 'TXT_ACCESS_INTERESTS',
-            'modifiable'        => array('mandatory', 'access')
+            'type'         => 'text',
+            'multiline'    => true,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_INTERESTS',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'signature' => array(
-            'type'                => 'text',
-            'multiline'            => true,
-            'mandatory'            => false,
-            'sort_type'            => 'asc',
-            'parent_id'            => 0,
-            'desc'                => 'TXT_ACCESS_SIGNATURE',
-            'modifiable'        => array('mandatory', 'access')
-        )
+            'type'         => 'text',
+            'multiline'    => true,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_SIGNATURE',
+            'modifiable'   => array('mandatory', 'access'),
+        ),
     );
 
     private $arrTypes = array(
         'text' => array(
-            'desc'            => 'TXT_ACCESS_TEXT_FIELD',
-            'parent'        => 'TXT_ACCESS_PARENT_ATTRIBUTE',
-            'mandatory'        => true,
-            'children'        => false,
-            'multiline'        => true,
-            'movable'        => true,
-            'protection'    => true,
-            'special'        => array(),
-            'data_type'        => 'string'
+            'desc'         => 'TXT_ACCESS_TEXT_FIELD',
+            'parent'       => 'TXT_ACCESS_PARENT_ATTRIBUTE',
+            'mandatory'    => true,
+            'children'     => false,
+            'multiline'    => true,
+            'movable'      => true,
+            'protection'   => true,
+            'special'      => array(),
+            'data_type'    => 'string',
         ),
         'mail' => array(
-            'desc'            => 'TXT_ACCESS_EMAIL_ADDRESS',
-            'parent'        => 'TXT_ACCESS_PARENT_ATTRIBUTE',
-            'mandatory'        => true,
-            'children'        => false,
-            'multiline'        => false,
-            'movable'        => true,
-            'protection'    => true,
-            'special'        => array(),
-            'data_type'        => 'string'
+            'desc'         => 'TXT_ACCESS_EMAIL_ADDRESS',
+            'parent'       => 'TXT_ACCESS_PARENT_ATTRIBUTE',
+            'mandatory'    => true,
+            'children'     => false,
+            'multiline'    => false,
+            'movable'      => true,
+            'protection'   => true,
+            'special'      => array(),
+            'data_type'    => 'string',
         ),
         'uri' => array(
-            'desc'            => 'TXT_ACCESS_WEB_ADDRESS',
-            'parent'        => 'TXT_ACCESS_PARENT_ATTRIBUTE',
-            'mandatory'        => true,
-            'children'        => false,
-            'multiline'        => false,
-            'movable'        => true,
-            'protection'    => true,
-            'special'        => array(),
-            'data_type'        => 'string'
+            'desc'         => 'TXT_ACCESS_WEB_ADDRESS',
+            'parent'       => 'TXT_ACCESS_PARENT_ATTRIBUTE',
+            'mandatory'    => true,
+            'children'     => false,
+            'multiline'    => false,
+            'movable'      => true,
+            'protection'   => true,
+            'special'      => array(),
+            'data_type'    => 'string',
         ),
         'date' => array(
-            'desc'            => 'TXT_ACCESS_DATE',
-            'parent'        => 'TXT_ACCESS_PARENT_ATTRIBUTE',
-            'mandatory'        => true,
-            'children'        => false,
-            'multiline'        => false,
-            'movable'        => true,
-            'protection'    => true,
-            'special'        => array(),
-            'data_type'        => 'int'
+            'desc'         => 'TXT_ACCESS_DATE',
+            'parent'       => 'TXT_ACCESS_PARENT_ATTRIBUTE',
+            'mandatory'    => true,
+            'children'     => false,
+            'multiline'    => false,
+            'movable'      => true,
+            'protection'   => true,
+            'special'      => array(),
+            'data_type'    => 'int',
         ),
         'image' => array(
-            'desc'            => 'TXT_ACCESS_IMAGE',
-            'parent'        => 'TXT_ACCESS_PARENT_ATTRIBUTE',
-            'mandatory'        => true,
-            'children'        => false,
-            'multiline'        => false,
-            'movable'        => true,
-            'protection'    => true,
-            'special'        => array(),
-            'data_type'        => 'string'
+            'desc'         => 'TXT_ACCESS_IMAGE',
+            'parent'       => 'TXT_ACCESS_PARENT_ATTRIBUTE',
+            'mandatory'    => true,
+            'children'     => false,
+            'multiline'    => false,
+            'movable'      => true,
+            'protection'   => true,
+            'special'      => array(),
+            'data_type'    => 'string',
         ),
         'checkbox' => array(
-            'desc'            => 'TXT_ACCESS_CHECKBOX',
-            'parent'        => 'TXT_ACCESS_PARENT_ATTRIBUTE',
-            'mandatory'        => true,
-            'children'        => false,
-            'multiline'        => false,
-            'movable'        => true,
-            'protection'    => true,
-            'special'        => array(),
-            'data_type'        => 'int'
+            'desc'         => 'TXT_ACCESS_CHECKBOX',
+            'parent'       => 'TXT_ACCESS_PARENT_ATTRIBUTE',
+            'mandatory'    => true,
+            'children'     => false,
+            'multiline'    => false,
+            'movable'      => true,
+            'protection'   => true,
+            'special'      => array(),
+            'data_type'    => 'int',
         ),
         'menu' => array(
-            'desc'            => 'TXT_ACCESS_MENU',
-            'parent'        => 'TXT_ACCESS_PARENT_ATTRIBUTE',
-            'mandatory'        => false,
-            'children'        => true,
-            'multiline'        => false,
-            'movable'        => true,
-            'protection'    => true,
-            'special'        => array('', 'menu_select_higher', 'menu_select_lower'),
-            'data_type'        => 'int'
+            'desc'         => 'TXT_ACCESS_MENU',
+            'parent'       => 'TXT_ACCESS_PARENT_ATTRIBUTE',
+            'mandatory'    => true,
+            'children'     => true,
+            'multiline'    => false,
+            'movable'      => true,
+            'protection'   => true,
+            'special'      => array('', 'menu_select_higher', 'menu_select_lower'),
+            'data_type'    => 'int',
         ),
         'menu_option' => array(
-            'desc'            => 'TXT_ACCESS_MENU_OPTION',
-            'parent'        => 'TXT_ACCESS_MENU',
-            'mandatory'        => false,
-            'children'        => false,
-            'multiline'        => false,
-            'movable'        => false,
-            'protection'    => false,
-            'special'        => array(),
-            'data_type'        => 'null'
+            'desc'         => 'TXT_ACCESS_MENU_OPTION',
+            'parent'       => 'TXT_ACCESS_MENU',
+            'mandatory'    => false,
+            'children'     => false,
+            'multiline'    => false,
+            'movable'      => false,
+            'protection'   => false,
+            'special'      => array(),
+            'data_type'    => 'null',
         ),
         'group' => array(
-            'desc'            => 'TXT_ACCESS_GROUP',
-            'parent'        => 'TXT_ACCESS_PARENT_ATTRIBUTE',
-            'mandatory'        => false,
-            'children'        => true,
-            'multiline'        => false,
-            'movable'        => true,
-            'protection'    => false,
-            'special'        => array(),
-            'data_type'        => 'array'
+            'desc'         => 'TXT_ACCESS_GROUP',
+            'parent'       => 'TXT_ACCESS_PARENT_ATTRIBUTE',
+            'mandatory'    => false,
+            'children'     => true,
+            'multiline'    => false,
+            'movable'      => true,
+            'protection'   => false,
+            'special'      => array(),
+            'data_type'    => 'array',
         ),
         'frame' => array(
-            'desc'            => 'TXT_ACCESS_FRAME',
-            'parent'        => 'TXT_ACCESS_GROUP',
-            'mandatory'        => false,
-            'children'        => true,
-            'multiline'        => false,
-            'movable'        => false,
-            'protection'    => false,
-            'special'        => array(),
-            'data_type'        => 'array'
+            'desc'         => 'TXT_ACCESS_FRAME',
+            'parent'       => 'TXT_ACCESS_GROUP',
+            'mandatory'    => false,
+            'children'     => true,
+            'multiline'    => false,
+            'movable'      => false,
+            'protection'   => false,
+            'special'      => array(),
+            'data_type'    => 'array',
         ),
         'history' => array(
-            'desc'            => 'TXT_ACCESS_HISTORY',
-            'parent'        => 'TXT_ACCESS_PARENT_ATTRIBUTE',
-            'mandatory'        => false,
-            'children'        => true,
-            'multiline'        => false,
-            'movable'        => true,
-            'protection'    => true,
-            'special'        => array(),
-            'data_type'        => 'array'
-        )
+            'desc'         => 'TXT_ACCESS_HISTORY',
+            'parent'       => 'TXT_ACCESS_PARENT_ATTRIBUTE',
+            'mandatory'    => false,
+            'children'     => true,
+            'multiline'    => false,
+            'movable'      => true,
+            'protection'   => true,
+            'special'      => array(),
+            'data_type'    => 'array',
+        ),
     );
 
     private $arrTypeAssociation = array(
-        ''            => array(
-                'text',
-                'mail',
-                'uri',
-                'date',
-                'image',
-                'checkbox',
-                'menu',
-                'group',
-                'history'
-            ),
-        'text'        => array(),
-        'mail'        => array(),
-        'uri'        => array(),
-        'date'        => array(),
-        'image'        => array(),
-        'checkbox'    => array(),
-        'menu'        => array(
-                'menu_option'
-            ),
-        'group'        => array(
-                'frame'
-            ),
-        'frame'        => array(
-                'text',
-                'mail',
-                'uri',
-                'date',
-                'image',
-                'checkbox',
-                'menu',
-                'group',
-                'history'
-            ),
-        'history'    => array(
-                'text',
-                'mail',
-                'uri',
-                'date',
-                'image',
-                'checkbox',
-                'menu',
-                'group',
-                'history'
-            )
+        '' => array(
+            'text',
+            'mail',
+            'uri',
+            'date',
+            'image',
+            'checkbox',
+            'menu',
+            'group',
+            'history',
+        ),
+        'text' => array(),
+        'mail' => array(),
+        'uri' => array(),
+        'date' => array(),
+        'image' => array(),
+        'checkbox' => array(),
+        'menu' => array(
+            'menu_option', ),
+        'group' => array(
+            'frame', ),
+        'frame' => array(
+            'text',
+            'mail',
+            'uri',
+            'date',
+            'image',
+            'checkbox',
+            'menu',
+            'group',
+            'history',
+        ),
+        'history' => array(
+            'text',
+            'mail',
+            'uri',
+            'date',
+            'image',
+            'checkbox',
+            'menu',
+            'group',
+            'history',
+        ),
     );
 
     private $arrSortTypes = array(
-        'asc'        => 'TXT_ACCESS_ASCENDING',
-        'desc'        => 'TXT_ACCESS_DESCENDING',
-        'custom'    => 'TXT_ACCESS_CUSTOM'
+        'asc' => 'TXT_ACCESS_ASCENDING',
+        'desc' => 'TXT_ACCESS_DESCENDING',
+        'custom' => 'TXT_ACCESS_CUSTOM',
     );
 
     private $defaultAttributeType = 'text';
     private $defaultSortType = 'asc';
 
     private $errorMsg = '';
+
 
     function __construct()
     {
@@ -467,6 +470,7 @@ class User_Profile_Attribute
         $this->init();
         $this->first();
     }
+
 
     function init()
     {
@@ -480,6 +484,7 @@ class User_Profile_Attribute
         $this->sortChildren();
     }
 
+
     function loadCoreAttributes()
     {
         global $_CORELANG;
@@ -490,9 +495,22 @@ class User_Profile_Attribute
             if (!$arrAttribute['parent_id']) {
                 $this->arrCoreAttributeIds[] = $attributeId;
             }
-            $this->arrAttributes[$attributeId]['names'][$this->langId] = $_CORELANG[$arrAttribute['desc']];
-        }
 
+// TODO: In the backend, this always results in the empty string!
+// The core language is not loaded yet when this is run!
+            $this->arrAttributes[$attributeId]['names'][$this->langId] = $_CORELANG[$arrAttribute['desc']];
+// See:
+//die(var_export($_CORELANG, true));
+// and
+/*
+DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, language ID $this->langId: ".$arrAttribute['desc'].
+  " => ".
+  $_CORELANG[$arrAttribute['desc']].
+  " => ".
+  $this->arrAttributes[$attributeId]['names'][$this->langId]
+);
+*/
+        }
         $this->loadCoreAttributesCustomizing();
         $this->loadCoreAttributeCountry();
         $this->loadCoreAttributeTitle();
@@ -515,7 +533,6 @@ class User_Profile_Attribute
                 $this->arrAttributes[$objAttribute->fields['id']]['access_special'] = $objAttribute->fields['access_special'];
                 $this->arrAttributes[$objAttribute->fields['id']]['access_id'] = $objAttribute->fields['access_id'];
                 $this->arrAttributes[$objAttribute->fields['id']]['customizing'] = true;
-
                 if ($objAttribute->fields['mandatory']) {
                     $this->arrMandatoryAttributes[] = $objAttribute->fields['id'];
                 }
@@ -529,21 +546,21 @@ class User_Profile_Attribute
     {
         global $objDatabase;
 
-        $objCountry = $objDatabase->Execute('SELECT `id`, `name` FROM '.DBPREFIX.'lib_country');
-        if ($objCountry) {
-            while (!$objCountry->EOF) {
-                $this->arrAttributes['country_'.$objCountry->fields['id']] = array(
-                    'type'      => 'menu_option',
+        $objResult = $objDatabase->Execute('SELECT `id`, `name` FROM '.DBPREFIX.'lib_country');
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $this->arrAttributes['country_'.$objResult->fields['id']] = array(
+                    'type' => 'menu_option',
                     'multiline' => false,
                     'mandatory' => false,
                     'sort_type' => 'asc',
                     'parent_id' => 'country',
-                    'desc'      => $objCountry->fields['name'],
-                    'names'     => array($this->langId => $objCountry->fields['name']),
-                    'value'     => $objCountry->fields['id'],
-                    'order_id'  => 0
+                    'desc' => $objResult->fields['name'],
+                    'names' => array($this->langId => $objResult->fields['name']),
+                    'value' => $objResult->fields['id'],
+                    'order_id' => 0,
                 );
-                $objCountry->MoveNext();
+                $objResult->MoveNext();
             }
         }
     }
@@ -553,22 +570,22 @@ class User_Profile_Attribute
     {
         global $objDatabase;
 
-        $objTitle = $objDatabase->Execute('SELECT `id`, `title`, `order_id` FROM '.DBPREFIX.'access_user_title');
-        if ($objTitle) {
-            while (!$objTitle->EOF) {
-                $this->arrAttributes['title_'.$objTitle->fields['id']] = array(
-                    'type'       => 'menu_option',
-                    'multiline'  => false,
-                    'mandatory'  => false,
-                    'sort_type'  => 'asc',
-                    'parent_id'  => 'title',
-                    'desc'       => $objTitle->fields['title'],
-                    'names'      => array($this->langId => $objTitle->fields['title']),
-                    'value'      => $objTitle->fields['id'],
-                    'order_id'   => $objTitle->fields['order_id'],
-                    'modifiable' => array('names')
+        $objResult = $objDatabase->Execute('SELECT `id`, `title`, `order_id` FROM '.DBPREFIX.'access_user_title');
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $this->arrAttributes['title_'.$objResult->fields['id']] = array(
+                    'type' => 'menu_option',
+                    'multiline' => false,
+                    'mandatory' => false,
+                    'sort_type' => 'asc',
+                    'parent_id' => 'title',
+                    'desc' => $objResult->fields['title'],
+                    'names' => array($this->langId => $objResult->fields['title']),
+                    'value' => $objResult->fields['id'],
+                    'order_id' => $objResult->fields['order_id'],
+                    'modifiable' => array('names'),
                 );
-                $objTitle->MoveNext();
+                $objResult->MoveNext();
             }
         }
     }
@@ -579,37 +596,35 @@ class User_Profile_Attribute
         global $objDatabase;
 
         $this->arrCustomAttributes = array();
-        $objAttribute = $objDatabase->Execute('
+        $objResult = $objDatabase->Execute('
             SELECT `id`, `type`, `sort_type`, `order_id`,
                    `mandatory`, `parent_id`, `access_special`, `access_id`
               FROM '.DBPREFIX.'access_user_attribute
              ORDER BY `order_id`, `id`'
         );
-        if ($objAttribute !== false) {
-            while (!$objAttribute->EOF) {
-                $this->arrAttributes[$objAttribute->fields['id']]['type'] =  $objAttribute->fields['type'] == 'textarea' ? 'text' : $objAttribute->fields['type'];
-                $this->arrAttributes[$objAttribute->fields['id']]['multiline'] = $objAttribute->fields['type'] == 'textarea' ? true : false;
-                $this->arrAttributes[$objAttribute->fields['id']]['sort_type'] = $objAttribute->fields['sort_type'];
-                $this->arrAttributes[$objAttribute->fields['id']]['order_id'] = $objAttribute->fields['order_id'];
-                $this->arrAttributes[$objAttribute->fields['id']]['mandatory'] = $objAttribute->fields['mandatory'];
-                $this->arrAttributes[$objAttribute->fields['id']]['parent_id'] = $objAttribute->fields['parent_id'];
-                $this->arrAttributes[$objAttribute->fields['id']]['access_special'] = $objAttribute->fields['access_special'];
-                $this->arrAttributes[$objAttribute->fields['id']]['access_id'] = $objAttribute->fields['access_id'];
-                $this->arrAttributes[$objAttribute->fields['id']]['modifiable'] = array('type', 'sort_order', 'mandatory', 'parent_id', 'access', 'children');
-                $this->arrCustomAttributes[] = $objAttribute->fields['id'];
-
-                if ($objAttribute->fields['mandatory']) {
-                    $this->arrMandatoryAttributes[] = $objAttribute->fields['id'];
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $this->arrAttributes[$objResult->fields['id']]['type'] = $objResult->fields['type'] == 'textarea' ? 'text' : $objResult->fields['type'];
+                $this->arrAttributes[$objResult->fields['id']]['multiline'] = $objResult->fields['type'] == 'textarea' ? true : false;
+                $this->arrAttributes[$objResult->fields['id']]['sort_type'] = $objResult->fields['sort_type'];
+                $this->arrAttributes[$objResult->fields['id']]['order_id'] = $objResult->fields['order_id'];
+                $this->arrAttributes[$objResult->fields['id']]['mandatory'] = $objResult->fields['mandatory'];
+                $this->arrAttributes[$objResult->fields['id']]['parent_id'] = $objResult->fields['parent_id'];
+                $this->arrAttributes[$objResult->fields['id']]['access_special'] = $objResult->fields['access_special'];
+                $this->arrAttributes[$objResult->fields['id']]['access_id'] = $objResult->fields['access_id'];
+                $this->arrAttributes[$objResult->fields['id']]['modifiable'] = array('type', 'sort_order', 'mandatory', 'parent_id', 'access', 'children');
+                $this->arrCustomAttributes[] = $objResult->fields['id'];
+                if ($objResult->fields['mandatory']) {
+                    $this->arrMandatoryAttributes[] = $objResult->fields['id'];
                 }
-                $objAttribute->MoveNext();
+                $objResult->MoveNext();
             }
         }
-
-        $objNames = $objDatabase->Execute('SELECT `attribute_id`, `name` FROM `'.DBPREFIX.'access_user_attribute_name` WHERE `lang_id` = '.$this->langId);
-        if ($objNames !== false) {
-            while (!$objNames->EOF) {
-                $this->arrAttributes[$objNames->fields['attribute_id']]['names'][$this->langId] = $objNames->fields['name'];
-                $objNames->MoveNext();
+        $objResult = $objDatabase->Execute('SELECT `attribute_id`, `name` FROM `'.DBPREFIX.'access_user_attribute_name` WHERE `lang_id` = '.$this->langId);
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $this->arrAttributes[$objResult->fields['attribute_id']]['names'][$this->langId] = $objResult->fields['name'];
+                $objResult->MoveNext();
             }
         }
     }
@@ -638,8 +653,8 @@ class User_Profile_Attribute
         if (isset($this->arrAttributeRelations[$parentId])) {
             foreach ($this->arrAttributeRelations[$parentId] as $attributeId) {
                 $arrTree[$attributeId] = array(
-                    'type'        => $this->arrAttributes[$attributeId]['type'],
-                    'mandatory'    => $this->arrAttributes[$attributeId]['mandatory']
+                    'type' => $this->arrAttributes[$attributeId]['type'],
+                    'mandatory' => $this->arrAttributes[$attributeId]['mandatory'],
                 );
                 if (count($arrChildren = $this->generateAttributeTree($attributeId))) {
                     $arrTree[$attributeId]['children'] = $arrChildren;
@@ -717,14 +732,26 @@ class User_Profile_Attribute
                 }
                 asort($arrChildren, SORT_NUMERIC);
             } else {
+                $unknownMenuOption = null;
                 foreach ($arrAttributeIds as $childAttributeId) {
-                    $arrChildren[$childAttributeId] = $this->arrAttributes[$childAttributeId]['names'][$this->langId];
+                    if (empty($unknownMenuOption)
+                        && $this->arrAttributes[$childAttributeId]['type'] == 'menu_option'
+                        && !empty($this->arrAttributes[$childAttributeId]['unknown'])
+                    ) {
+                        $unknownMenuOption = array($childAttributeId => $this->arrAttributes[$childAttributeId]['names'][$this->langId]);
+                    } else {
+                        $arrChildren[$childAttributeId] = $this->arrAttributes[$childAttributeId]['names'][$this->langId];
+                    }
                 }
 
                 if (isset($this->arrAttributes[$attributeId]['sort_type']) && $this->arrAttributes[$attributeId]['sort_type'] == 'desc') {
                     arsort($arrChildren, SORT_STRING);
                 } else {
                     asort($arrChildren, SORT_STRING);
+                }
+
+                if (!empty($unknownMenuOption)) {
+                    $arrChildren = array_merge($unknownMenuOption, $arrChildren);
                 }
             }
             $this->arrAttributeRelations[$attributeId] = array_keys($arrChildren);
@@ -830,12 +857,28 @@ class User_Profile_Attribute
     {
         global $objDatabase;
 
-        $type = $this->arrTypes[$this->type]['multiline'] && $this->multiline ? 'textarea' : $this->type;
-        if (($this->id > 0 && $objDatabase->Execute("UPDATE `".DBPREFIX."access_user_attribute` SET `type` = '".$type."', `sort_type` = '".$this->sort_type."', `order_id` = ".$this->order_id.", `mandatory` = '".$this->mandatory."', `parent_id` = ".$this->parent_id." WHERE `id` = ".$this->id) !== false) ||
-        ($objDatabase->Execute("INSERT INTO `".DBPREFIX."access_user_attribute` (`type`, `sort_type`, `order_id`, `mandatory`, `parent_id`) VALUES ('".$type."', '".$this->sort_type."', ".$this->order_id.", '".$this->mandatory."', ".$this->parent_id.")") !== false && $this->id = $objDatabase->Insert_ID())) {
-            return true;
+        $type =
+            ($this->arrTypes[$this->type]['multiline'] && $this->multiline
+              ? 'textarea' : $this->type);
+        if ($this->id) {
+            return (boolean)$objDatabase->Execute("
+                UPDATE `".DBPREFIX."access_user_attribute`
+                   SET `type`='$type', `sort_type`='$this->sort_type',
+                       `order_id`=$this->order_id,
+                       `mandatory`='$this->mandatory',
+                       `parent_id`=$this->parent_id
+                 WHERE `id`=$this->id");
         }
-        return false;
+        if (!$objDatabase->Execute("
+            INSERT INTO `".DBPREFIX."access_user_attribute` (
+              `type`, `sort_type`, `order_id`, `mandatory`, `parent_id`
+            ) VALUES (
+              '$type', '$this->sort_type', $this->order_id, '$this->mandatory',
+              $this->parent_id)")) {
+            return false;
+        }
+        $this->id = $objDatabase->Insert_ID();
+        return true;
     }
 
 
@@ -852,6 +895,7 @@ class User_Profile_Attribute
         return false;
     }
 
+
     function storeCoreAttribute()
     {
         global $objDatabase;
@@ -862,6 +906,7 @@ class User_Profile_Attribute
         }
         return false;
     }
+
 
     function storeChildrenOrder()
     {
@@ -902,33 +947,27 @@ class User_Profile_Attribute
 
         $arrOldNames = array();
         $status = true;
-
-        $objOldNames = $objDatabase->Execute('SELECT `lang_id`, `name` FROM `'.DBPREFIX.'access_user_attribute_name` WHERE `attribute_id` = '.$this->id);
-        if ($objOldNames !== false) {
-            while (!$objOldNames->EOF) {
-                $arrOldNames[$objOldNames->fields['lang_id']] = $objOldNames->fields['name'];
-                $objOldNames->MoveNext();
-            }
-        } else {
+        $objResult = $objDatabase->Execute('SELECT `lang_id`, `name` FROM `'.DBPREFIX.'access_user_attribute_name` WHERE `attribute_id` = '.$this->id);
+        if (!$objResult) {
             return false;
         }
-
+        while (!$objResult->EOF) {
+            $arrOldNames[$objResult->fields['lang_id']] = $objResult->fields['name'];
+            $objResult->MoveNext();
+        }
         $arrNewNames = array_diff(array_keys($this->arrName), array_keys($arrOldNames));
         $arrRemovedNames = array_diff(array_keys($arrOldNames), array_keys($this->arrName));
         $arrUpdatedNames = array_intersect(array_keys($this->arrName), array_keys($arrOldNames));
-
         foreach ($arrNewNames as $langId) {
             if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (".$this->id.", ".$langId.", '".addslashes($this->arrName[$langId])."')") === false) {
                 $status = false;
             }
         }
-
         foreach ($arrRemovedNames as $langId) {
             if ($objDatabase->Execute("DELETE FROM `".DBPREFIX."access_user_attribute_name` WHERE `attribute_id` = ".$this->id." AND `lang_id` = ".$langId) === false) {
                 $status = false;
             }
         }
-
         foreach ($arrUpdatedNames as $langId) {
             if ($this->arrName[$langId] != $arrOldNames[$langId]) {
                 if ($objDatabase->Execute("UPDATE `".DBPREFIX."access_user_attribute_name` SET `name` = '".addslashes($this->arrName[$langId])."' WHERE `attribute_id` = ".$this->id." AND `lang_id` = ".$langId) === false) {
@@ -943,11 +982,11 @@ class User_Profile_Attribute
     /**
      * Store modification protection
      *
-     * Create a new access ID (if there hasn't already one be setted) and associate it with the groups defined in $this->access_group_ids
-     *
-     * @global ADONewConnection
-     * @global array
-     * @return boolean TRUE on success, otherwiese FALSE
+     * Create a new access ID if none is set and associates it with the groups
+     * defined in $this->access_group_ids
+     * @global  ADONewConnection
+     * @global  array
+     * @return  boolean           True on success, false otherwise
      */
     function storeProtection()
     {
@@ -956,19 +995,17 @@ class User_Profile_Attribute
         if ($this->protected) {
             $arrOldGroups = array();
             $status = true;
-
             if ($this->access_id) {
-                $objOldGroup = $objDatabase->Execute('SELECT `group_id` FROM `'.DBPREFIX.'access_group_dynamic_ids` WHERE `access_id` = '.$this->access_id);
-                if ($objOldGroup !== false) {
-                    while (!$objOldGroup->EOF) {
-                        $arrOldGroups[] = $objOldGroup->fields['group_id'];
-                        $objOldGroup->MoveNext();
+                $objResult = $objDatabase->Execute('SELECT `group_id` FROM `'.DBPREFIX.'access_group_dynamic_ids` WHERE `access_id` = '.$this->access_id);
+                if ($objResult) {
+                    while (!$objResult->EOF) {
+                        $arrOldGroups[] = $objResult->fields['group_id'];
+                        $objResult->MoveNext();
                     }
                 }
             } else {
                 $lastAccessId = $_CONFIG['lastAccessId'];
-                $lastAccessId++;
-
+                ++$lastAccessId;
                 if ($objDatabase->Execute("UPDATE `".DBPREFIX."access_user_".($this->isCoreAttribute($this->id) ? 'core_' : '')."attribute` SET `access_id` = ".$lastAccessId." WHERE `id` = '".$this->id."'") !== false &&
                     $objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = ".$lastAccessId." WHERE `setname` = 'lastAccessId'") !== false
                 ) {
@@ -980,37 +1017,31 @@ class User_Profile_Attribute
                     return false;
                 }
             }
-
             if ($objDatabase->Execute("UPDATE `".DBPREFIX."access_user_".($this->isCoreAttribute($this->id) ? 'core_' : '')."attribute` SET `access_special` = '".$this->access_special."' WHERE `id` = '".$this->id."'") === false) {
                 return false;
             }
-
             $arrNewGroups = array_diff($this->access_group_ids, $arrOldGroups);
             $arrRemovedGroups = array_diff($arrOldGroups, $this->access_group_ids);
-
             foreach ($arrNewGroups as $groupId) {
                 if ($objDatabase->Execute('INSERT INTO `'.DBPREFIX.'access_group_dynamic_ids` (`access_id`, `group_id`) VALUES ('.$this->access_id.', '.$groupId.')') === false) {
                     $status = false;
                 }
             }
-
             foreach ($arrRemovedGroups as $groupId) {
                 if ($objDatabase->Execute('DELETE FROM `'.DBPREFIX.'access_group_dynamic_ids` WHERE `access_id` = '.$this->access_id.' AND `group_id` = '.$groupId) === false) {
                     $status = false;
                 }
             }
-
             return $status;
-        } else {
-            // remove protection
-            if ($objDatabase->Execute("UPDATE `".DBPREFIX."access_user_".($this->isCoreAttribute($this->id) ? 'core_' : '')."attribute` SET `access_special` = '', `access_id` = 0 WHERE `id` = '".$this->id."'") !== false &&
-                !isset($this->arrAttributes[$this->id]['access_id']) ||
-                $objDatabase->Execute('DELETE FROM `'.DBPREFIX.'access_group_dynamic_ids` WHERE `access_id` = '.$this->arrAttributes[$this->id]['access_id']) !== false
-            ) {
-                return true;
-            }
-            return false;
         }
+        // remove protection
+        if ($objDatabase->Execute("UPDATE `".DBPREFIX."access_user_".($this->isCoreAttribute($this->id) ? 'core_' : '')."attribute` SET `access_special` = '', `access_id` = 0 WHERE `id` = '".$this->id."'") !== false &&
+            !isset($this->arrAttributes[$this->id]['access_id']) ||
+            $objDatabase->Execute('DELETE FROM `'.DBPREFIX.'access_group_dynamic_ids` WHERE `access_id` = '.$this->arrAttributes[$this->id]['access_id']) !== false
+        ) {
+            return true;
+        }
+        return false;
     }
 
 
@@ -1031,7 +1062,15 @@ class User_Profile_Attribute
                 }
             }
         }
-        return ($this->isCoreAttribute($attributeId) || $this->deleteAttributeContent($attributeId)) && ($this->isCoreAttribute($attributeId) || $this->deleteAttributeNames($attributeId)) && $this->deleteAttributeEntity($attributeId);
+// TODO: I suppose the precedence is okay like this.
+//        return ($this->isCoreAttribute($attributeId) || $this->deleteAttributeContent($attributeId)) && ($this->isCoreAttribute($attributeId) || $this->deleteAttributeNames($attributeId)) && $this->deleteAttributeEntity($attributeId);
+// However, it would be clearer with a few parentheses.
+        return
+            (   $this->isCoreAttribute($attributeId)
+             ||    $this->deleteAttributeContent($attributeId))
+                && ($this->isCoreAttribute($attributeId)
+             ||    $this->deleteAttributeNames($attributeId))
+                && $this->deleteAttributeEntity($attributeId);
     }
 
 
@@ -1043,12 +1082,10 @@ class User_Profile_Attribute
             case 'title':
                 $affectedTable = DBPREFIX.'access_user_title';
                 break;
-
             default:
                 $affectedTable = DBPREFIX.'access_user_attribute';
                 break;
         }
-
         $pattern = array();
         if ($objDatabase->Execute('DELETE FROM `'.$affectedTable.'` WHERE `id` = '.($this->parent_id == 'title' && preg_match('#([0-9]+)#', $attributeId, $pattern) ? $pattern[0] : $attributeId)) !== false) {
             return true;
@@ -1106,56 +1143,58 @@ class User_Profile_Attribute
     }
 
 
-    public function checkModifyPermission($currentValue = null, $newValue = null)
+    public function checkModifyPermission($currentValue=null, $newValue=null)
     {
-        switch ($this->getType())
-        {
-            case 'menu':
-                $currentPos = array_search($currentValue, $this->getChildren());
-                $newPos = array_search($newValue, $this->getChildren());
-
-                switch ($this->getSpecialProtection())
-                {
-                    case 'menu_select_higher':
-                        if ($newPos >= $currentPos || empty($currentValue) && empty($newValue)) {
-                            return true;
-                        }
-                        break;
-                    case 'menu_select_lower':
-                        if ($newPos <= $currentPos || empty($currentValue) && empty($newValue)) {
-                            return true;
-                        }
-                        break;
+        switch ($this->getType()) {
+          case 'menu':
+            $currentPos = array_search($currentValue, $this->getChildren());
+            $newPos = array_search($newValue, $this->getChildren());
+            switch ($this->getSpecialProtection()) {
+              case 'menu_select_higher':
+                if ($newPos >= $currentPos || empty($currentValue) && empty($newValue)) {
+                    return true;
                 }
                 break;
+              case 'menu_select_lower':
+                if ($newPos <= $currentPos || empty($currentValue) && empty($newValue)) {
+                    return true;
+                }
+                break;
+            }
+            break;
         }
         return false;
     }
 
 
-    function hasMandatoryOption()
+    public function hasMandatoryOption()
     {
-        return isset($this->arrTypes[$this->type]['mandatory']) && $this->arrTypes[$this->type]['mandatory'];
+        return !empty($this->arrTypes[$this->type]['mandatory']);
     }
 
 
-    function hasChildOption()
+    public function hasChildOption()
     {
-        return isset($this->arrTypes[$this->type]['children']) && $this->arrTypes[$this->type]['children'];
+        return !empty($this->arrTypes[$this->type]['children']);
     }
 
 
-    function hasMovableOption()
+    public function hasMovableOption()
     {
-        return isset($this->arrTypes[$this->type]['movable']) && $this->arrTypes[$this->type]['movable'];
+        return !empty($this->arrTypes[$this->type]['movable']);
     }
 
 
-    function hasSameParentHistoryAttribute($attributeId)
+    public function hasSortableOption()
+    {
+        return !empty($this->arrTypes[$this->type]['children']);
+    }
+
+
+    private function hasSameParentHistoryAttribute($attributeId)
     {
         $tmpAttributeId = $this->id;
         $parentHistoryId = 0;
-
         // get parent history attribute of the loaded attribute ($this-id)
         while (!empty($this->arrAttributes[$tmpAttributeId]['parent_id'])) {
             if ($this->arrAttributes[$this->arrAttributes[$tmpAttributeId]['parent_id']]['type'] == 'history') {
@@ -1170,19 +1209,19 @@ class User_Profile_Attribute
         while (!empty($this->arrAttributes[$attributeId]['parent_id'])) {
             if ($this->arrAttributes[$attributeId]['parent_id'] == $parentHistoryId) {
                 return true;
-            } elseif ($this->arrAttributes[$this->arrAttributes[$attributeId]['parent_id']]['type'] == 'history') {
-                return false;
-            } else {
-                $attributeId = $this->arrAttributes[$attributeId]['parent_id'];
             }
+            if ($this->arrAttributes[$this->arrAttributes[$attributeId]['parent_id']]['type'] == 'history') {
+                return false;
+            }
+            $attributeId = $this->arrAttributes[$attributeId]['parent_id'];
         }
         return false;
     }
 
 
-    function hasProtectionOption()
+    public function hasProtectionOption()
     {
-        return isset($this->arrTypes[$this->type]['protection']) && $this->arrTypes[$this->type]['protection'];
+        return !empty($this->arrTypes[$this->type]['protection']);
     }
 
 
@@ -1207,14 +1246,22 @@ class User_Profile_Attribute
     }
 
 
+    public function isUnknownOption($attributeId = null)
+    {
+        if (is_null($attributeId)) {
+            $attributeId = $this->id;
+        }
+        return isset($this->arrAttributes[$attributeId]['unknown']) && $this->arrAttributes[$attributeId]['unknown'];
+    }
+
+
     function isSubChild($attributeId)
     {
         while ($this->arrAttributes[$attributeId]['parent_id'] != 0) {
             if ($this->arrAttributes[$attributeId]['parent_id'] == $this->id) {
                 return true;
-            } else {
-                $attributeId = $this->arrAttributes[$attributeId]['parent_id'];
             }
+            $attributeId = $this->arrAttributes[$attributeId]['parent_id'];
         }
         return false;
     }
@@ -1225,9 +1272,8 @@ class User_Profile_Attribute
         while (!empty($this->arrAttributes[$attributeId]['parent_id'])) {
             if ($this->arrAttributes[$this->arrAttributes[$attributeId]['parent_id']]['type'] == 'history') {
                 return true;
-            } else {
-                $attributeId = $this->arrAttributes[$attributeId]['parent_id'];
             }
+            $attributeId = $this->arrAttributes[$attributeId]['parent_id'];
         }
         return false;
     }
@@ -1274,9 +1320,8 @@ class User_Profile_Attribute
         while (!empty($this->arrAttributes[$attributeId]['parent_id'])) {
             if ($this->arrAttributes[$this->arrAttributes[$attributeId]['parent_id']]['type'] == 'history') {
                 return $this->arrAttributes[$attributeId]['parent_id'];
-            } else {
-                $attributeId = $this->arrAttributes[$attributeId]['parent_id'];
             }
+            $attributeId = $this->arrAttributes[$attributeId]['parent_id'];
         }
         return false;
     }
@@ -1289,11 +1334,11 @@ class User_Profile_Attribute
         while (!empty($this->arrAttributes[$tmpAttributeId]['parent_id'])) {
             if ($this->arrAttributes[$tmpAttributeId]['parent_id'] == $attributeId) {
                 return true;
-            } elseif ($this->arrAttributes[$this->arrAttributes[$tmpAttributeId]['parent_id']]['type'] == 'history') {
-                return false;
-            } else {
-                $tmpAttributeId = $this->arrAttributes[$tmpAttributeId]['parent_id'];
             }
+            if ($this->arrAttributes[$this->arrAttributes[$tmpAttributeId]['parent_id']]['type'] == 'history') {
+                return false;
+            }
+            $tmpAttributeId = $this->arrAttributes[$tmpAttributeId]['parent_id'];
         }
         return false;
     }
@@ -1327,25 +1372,31 @@ class User_Profile_Attribute
     }
 
 
-    function isProtected()
+    public function isProtected()
     {
         return $this->protected;
     }
 
 
-    function isCoreAttribute($attributeId)
+    public function isCoreAttribute($attributeId=null)
     {
+        if (is_null($attributeId)) {
+            $attributeId = $this->id;
+        }
         return isset($this->arrCoreAttributes[$attributeId]);
     }
 
 
-    function isCustomAttribute($attributeId)
+    public function isCustomAttribute($attributeId = null)
     {
+        if (is_null($attributeId)) {
+            $attributeId = $this->id;
+        }
         return in_array($attributeId, $this->arrCustomAttributes);
     }
 
 
-    function setNames($arrNames)
+    public function setNames($arrNames)
     {
         $this->arrName = array();
         foreach ($arrNames as $langId => $name) {
@@ -1355,7 +1406,7 @@ class User_Profile_Attribute
     }
 
 
-    function setType($type)
+    public function setType($type)
     {
         if (in_array($type, array_keys($this->arrTypes))) {
             $this->type = $type;
@@ -1365,19 +1416,19 @@ class User_Profile_Attribute
     }
 
 
-    function setMultiline($multiline=false)
+    public function setMultiline($multiline=false)
     {
         $this->multiline = $multiline;
     }
 
 
-    function setMandatory($mandatory = 0)
+    public function setMandatory($mandatory = 0)
     {
         $this->mandatory = intval($mandatory);
     }
 
 
-    function setParent($parentId = 0)
+    public function setParent($parentId = 0)
     {
         global $_ARRAYLANG;
         if (($parentId == 0 || isset($this->arrAttributes[$parentId])) && $this->isAllowedParentType($parentId) && $this->isAllowedParentAttribute($parentId)) {
@@ -1389,7 +1440,7 @@ class User_Profile_Attribute
     }
 
 
-    function setSortType($type)
+    public function setSortType($type)
     {
         if (in_array($type, array_keys($this->arrSortTypes))) {
             $this->sort_type = $type;
@@ -1399,7 +1450,7 @@ class User_Profile_Attribute
     }
 
 
-    function setChildOrder($arrChildOrder)
+    public function setChildOrder($arrChildOrder)
     {
         $pattern = array();
         foreach ($arrChildOrder as $childId => $orderId) {
@@ -1409,7 +1460,7 @@ class User_Profile_Attribute
     }
 
 
-    function setProtection($arrGroups)
+    public function setProtection($arrGroups)
     {
         $this->access_group_ids = array();
         foreach ($arrGroups as $groupId) {
@@ -1419,7 +1470,7 @@ class User_Profile_Attribute
     }
 
 
-    function setSpecialProtection($special)
+    public function setSpecialProtection($special)
     {
         if (in_array($special, $this->arrTypes[$this->type]['special'])) {
             $this->access_special = $special;
@@ -1427,7 +1478,7 @@ class User_Profile_Attribute
     }
 
 
-    function removeProtection()
+    public function removeProtection()
     {
         $this->access_id = 0;
         $this->protected = false;
@@ -1436,7 +1487,6 @@ class User_Profile_Attribute
 
     /**
      * Load attribute name in each language
-     *
      * @return mixed Array with names, which may also contains no elements, or FALSE on failure.
      */
     function getAttributeNames($id)
@@ -1444,11 +1494,11 @@ class User_Profile_Attribute
         global $objDatabase;
 
         $arrNames = array();
-        $objName = $objDatabase->Execute('SELECT `lang_id`, `name` FROM `'.DBPREFIX.'access_user_attribute_name` WHERE `attribute_id` = '.$id);
-        if ($objName !== false) {
-            while (!$objName->EOF) {
-                $arrNames[$objName->fields['lang_id']] = $objName->fields['name'];
-                $objName->MoveNext();
+        $objResult = $objDatabase->Execute('SELECT `lang_id`, `name` FROM `'.DBPREFIX.'access_user_attribute_name` WHERE `attribute_id` = '.$id);
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $arrNames[$objResult->fields['lang_id']] = $objResult->fields['name'];
+                $objResult->MoveNext();
             }
             return $arrNames;
         }
@@ -1463,8 +1513,8 @@ class User_Profile_Attribute
         if ($this->isCoreAttribute($this->id)) {
             $this->arrName[$langId] = (string)$_CORELANG[$this->arrAttributes[$this->id]['desc']];
         } else {
-            $objName = $objDatabase->SelectLimit('SELECT `name` FROM `'.DBPREFIX.'access_user_attribute_name` WHERE `lang_id` = '.$langId.' AND `attribute_id` = '.$this->id, 1);
-            $this->arrName[$langId] = $objName !== false && $objName->RecordCount() == 1 ? $objName->fields['name'] : '';
+            $objResult = $objDatabase->SelectLimit('SELECT `name` FROM `'.DBPREFIX.'access_user_attribute_name` WHERE `lang_id` = '.$langId.' AND `attribute_id` = '.$this->id, 1);
+            $this->arrName[$langId] = $objResult && $objResult->RecordCount() == 1 ? $objResult->fields['name'] : '';
         }
         $this->arrAttributes[$this->id]['names'][$langId] = $this->arrName[$langId];
     }
@@ -1476,9 +1526,9 @@ class User_Profile_Attribute
         if (isset($this->arrAttributes[$parentId]['children'])) {
             foreach ($this->arrAttributes[$parentId]['children'] as $attributeId) {
                 $arrTree[$attributeId] = array(
-                    'type'        => $this->arrAttributes[$attributeId]['type'],
-                    'mandatory'    => $this->arrAttributes[$attributeId]['mandatory'],
-                    'children'    => $this->getTree($attributeId)
+                    'type' => $this->arrAttributes[$attributeId]['type'],
+                    'mandatory' => $this->arrAttributes[$attributeId]['mandatory'],
+                    'children' => $this->getTree($attributeId),
                 );
             }
         }
@@ -1612,9 +1662,9 @@ class User_Profile_Attribute
         return $this->getTypeDescription().'<input type="hidden" name="access_attribute_type" value="'.$this->arrTypeAssociation[isset($this->arrAttributes[$this->parent_id]['type']) ? $this->arrAttributes[$this->parent_id]['type'] : ''][0].'" />';
     }
 
+
     /**
      * Get element type of the attribute
-     *
      * @return string Element typ
      */
     function getType()
@@ -1634,6 +1684,48 @@ class User_Profile_Attribute
     function getDataType()
     {
         return $this->arrTypes[$this->type]['data_type'];
+    }
+
+
+    /**
+     * Get an array containing all types that can be set to mandatory.
+     *
+     * @return array
+     */
+    public function getMandatoryTypes()
+    {
+        static $arrTypes = null;
+
+        if (empty($arrTypes)) {
+            $arrTypes = array();
+            foreach ($this->arrTypes as $type => $arrType) {
+                if ($arrType['mandatory']) {
+                    $arrTypes[] = $type;
+                }
+            }
+        }
+        return $arrTypes;
+    }
+
+
+    /**
+     * Get an array containing all types that can be sorted.
+     *
+     * @return array
+     */
+    public function getSortableTypes()
+    {
+        static $arrTypes = null;
+
+        if (empty($arrTypes)) {
+            $arrTypes = array();
+            foreach ($this->arrTypes as $type => $arrType) {
+                if ($arrType['children']) {
+                    $arrTypes[] = $type;
+                }
+            }
+        }
+        return $arrTypes;
     }
 
 
@@ -1696,17 +1788,47 @@ class User_Profile_Attribute
 
     function getMenuOptionValue()
     {
-        return isset($this->arrAttributes[$this->id]['value']) ? $this->arrAttributes[$this->id]['value'] : $this->id;
+        return (isset($this->arrAttributes[$this->id]['value'])
+            ? $this->arrAttributes[$this->id]['value'] : $this->id);
     }
 
 
     /**
-     * Returns an array of all custom attribute names
-     * @return    array                     An array with attribute names indexed
-     *                                      by their IDs
+     * Returns an array of all custom attribute names in the selected language
+     *
+     * If the $langId parameter is empty, the language is taken from the
+     * global LANG_ID constant.
+     * Used by {@see SettingDb::show()},
+     * {@see Shopmanager::view_settings_general()}
+     * @param   integer     $langId         The optional language ID
+     * @return  array                       An array with attribute names
+     *                                      indexed by their IDs on success,
+     *                                      false otherwise
+     * @global    mixed     $objDatabase    Database connection object
+     * @static
+     * @author    Reto Kohli <reto.kohli@comvation.com>
      */
-    public function getCustomAttributeNameArray()
+    public static function getCustomAttributeNameArray($langId=0)
     {
+        global $objDatabase;
+
+        if (empty($langId)) $langId = LANG_ID;
+        $objResult = $objDatabase->Execute("
+            SELECT `id`, `name`
+              FROM `contrexx_access_user_attribute`
+             INNER JOIN `contrexx_access_user_attribute_name`
+                ON id=attribute_id
+             WHERE lang_id=$langId
+             ORDER BY order_id ASC");
+        if (!$objResult) return false;
+        $arrNames = array();
+        while (!$objResult->EOF) {
+            $arrNames[$objResult->fields['id']] = $objResult->fields['name'];
+            $objResult->MoveNext();
+        }
+        return $arrNames;
+
+// TODO: check if this methods logic could be replaced by the following code
         $arrNames = array();
         foreach ($this->getSortedAttributeIds() as $attributeId) {
             if ($this->isCustomAttribute($attributeId)) {
@@ -1717,5 +1839,3 @@ class User_Profile_Attribute
     }
 
 }
-
-?>

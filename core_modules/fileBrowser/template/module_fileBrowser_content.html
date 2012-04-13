@@ -1,14 +1,49 @@
 <!-- start module_fileBrowser_content.html -->
 <script language="javascript" type="text/javascript">
-<!--
 webPath = '{FILEBROWSER_IMAGE_PATH}';
 maxWidth = 180;
 maxHeight = 180;
 
-function setUrl(url, width, height, alt) {
-	window.opener.SetUrl( webPath+url, width, height, alt );
-	if (window.opener.document.getElementById('cmbLinkProtocol') !== null && {FILEBROWSER_NOT_ABSOLUTE_URI}) {
-     window.opener.document.getElementById('cmbLinkProtocol').value = '';
+function getParam( name )
+{
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec( window.location.href );
+  if( results == null )
+    return "";
+  else
+    return results[1];
+}
+
+function setUrl(url, width, height, alt, type) {
+    var ckFuncNum = getParam('CKEditorFuncNum');
+    
+    // Check if the user requested the fileBrowser from within the CKeditor
+    if(ckFuncNum !== "") {
+        window.opener.CKEDITOR.tools.callFunction(parseInt(ckFuncNum), webPath+url, function() {
+            // Get the reference to the CKeditor's dialog window.
+            var element, dialog = this.getDialog();
+
+            // Check if the user is intending to create a html link (called from within the CKeditor's link dialog)
+            if (   dialog.getName() == 'link'
+                && type == 'page') {
+                // Get the reference to the protocol attribute
+                element = dialog.getContentElement( 'info', 'protocol' );
+
+                // Content pages are in the form [[NODE_1]],
+                // therefore set the protocol 'other'
+                if (element) {
+                    element.setValue('');
+                }
+            }
+        });
+    }
+    else {
+	    window.opener.SetUrl( webPath+url, width, height, alt );
+	    if (window.opener.document.getElementById('cmbLinkProtocol') !== null && {FILEBROWSER_NOT_ABSOLUTE_URI}) {
+            window.opener.document.getElementById('cmbLinkProtocol').value = '';
+        }
 	}
 	window.opener.focus();
 	window.top.close();
@@ -39,7 +74,6 @@ function showPreview(fileNr, width, height) {
 		document.getElementById('fileBrowserPreview').src = webPath + aFileBrowserFiles[fileNr];
 	}
 }
-// -->
 </script>
 <div style="height:500px; overflow:auto;">
 	<table border="0" cellpadding="0" cellspacing="0" class="adminlist" id="contentList" summary="directory listing">

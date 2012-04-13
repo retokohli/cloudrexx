@@ -74,4 +74,11 @@ $_ARRAYLANG['TXT_ACCESS_REGISTER_NEW_ACCOUNT'] = "Click here to start a new regi
 $_ARRAYLANG['TXT_ACCESS_YOUR_ACCOUNT_SUCCSESSFULLY_DELETED'] = "Ihr Konto wurde erfolgreich gelöscht.";
 $_ARRAYLANG['TXT_ACCESS_SAVE'] = "Store";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'] = "Das Benutzerkonto wurde erfolgreich gespeichert";
+$_ARRAYLANG['TXT_ACCESS_CAPTCHA_DESCRIPTION'] = "Please type in the security code from the picture into the textfield. This is required so that the system can identify you as a human being.";
+$_ARRAYLANG['TXT_ACCESS_INVALID_CAPTCHA_CODE'] = "Wrong security code entered!";
+$_ARRAYLANG['TXT_ACCESS_ACCEPT_TOS'] = "I confirm the correctness of the entered data and I know the  <a href=\"%s\" target=\"_blank\" title=\"Terms of Service\">Terms of Service</a> and accept them.";
+$_ARRAYLANG['TXT_ACCESS_TOS'] = "Terms of Service";
+$_ARRAYLANG['TXT_ACCESS_TOS_NOT_CHECKED'] = "You have to accept the Terms of Service to sign up!";
+$_ARRAYLANG['TXT_ACCESS_CAPTCHA'] = "Security Code";
+$_ARRAYLANG['TXT_ACCESS_NEWSLETTERS_SUBSCRIBE_COLON'] = "Folgende Newsletter abonnieren:";
 ?>

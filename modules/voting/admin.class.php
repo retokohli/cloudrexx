@@ -38,6 +38,8 @@ class votingmanager
     var $strErrMessage = '';
     var $strOkMessage = '';
 
+    private $act = '';
+
     /**
     * Constructor
     *
@@ -50,13 +52,17 @@ class votingmanager
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/voting/template');
         CSRF::add_placeholder($this->_objTpl);
-        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);        
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
 
         $objTemplate->setVariable(array(
             'CONTENT_TITLE'      => $_ARRAYLANG['TXT_VOTING_MANAGER'],
-            'CONTENT_NAVIGATION' => "<a href='?cmd=voting'>".$_ARRAYLANG['TXT_VOTING_RESULTS']."</a>
-                                   <a href='?cmd=voting&amp;act=add'>".$_ARRAYLANG['TXT_VOTING_ADD']."</a>
-                                   <a href='?cmd=voting&amp;act=disablestatus'>".$_ARRAYLANG['TXT_VOTING_DISABLE']."</a>"
+            'CONTENT_NAVIGATION' => "<a href='?cmd=voting' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_VOTING_RESULTS']."</a>
+                                   <a href='?cmd=voting&amp;act=add' class='".($this->act == 'add' ? 'active' : '')."'>".$_ARRAYLANG['TXT_VOTING_ADD']."</a>
+                                   <a href='?cmd=voting&amp;act=disablestatus' class='".($this->act == 'disablestatus' ? 'active' : '')."'>".$_ARRAYLANG['TXT_VOTING_DISABLE']."</a>"
            ));
     }
 
@@ -118,6 +124,9 @@ class votingmanager
             'CONTENT_STATUS_MESSAGE'    => $this->strErrMessage,
             'ADMIN_CONTENT'                => $this->_objTpl->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 

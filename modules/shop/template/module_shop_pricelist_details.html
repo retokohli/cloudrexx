@@ -1,98 +1,124 @@
 <!-- START shop_pricelist_details.html -->
-<script language="JavaScript">
-function enableHeader()
-{
-  document.pdf.headerTextLeft.disabled = false;
-  document.pdf.headerTextRight.disabled = false;
-}
-
-function disableHeader()
-{
-  document.pdf.headerTextLeft.disabled = true;
-  document.pdf.headerTextRight.disabled = true;
-}
-
-function enableFooter()
-{
-  document.pdf.footerTextLeft.disabled = false;
-  document.pdf.footerTextRight.disabled = false;
-}
-
-function disableFooter()
-{
-  document.pdf.footerTextLeft.disabled = true;
-  document.pdf.footerTextRight.disabled = true;
-}
-
-function enableCategories()
-{
-<!-- BEGIN showShopCategories2 -->
-  document.pdf.categoryNumber{PDF_CATEGORY_ID3}.disabled = false;
-  document.pdf.categoryNumber{PDF_CATEGORY_ID3}.checked = true;
-<!-- END showShopCategories2 -->
-}
-
-function disableCategories()
-{
-<!-- BEGIN showShopCategories3 -->
-  document.pdf.categoryNumber{PDF_CATEGORY_ID3}.disabled = true;
-  document.pdf.categoryNumber{PDF_CATEGORY_ID3}.checked = false;
-<!-- END showShopCategories3 -->
-}
-</script>
-<form method="post" name="pdf" action="index.php?cmd=shop{MODULE_INDEX}&amp;act={SHOP_PRICELIST_DETAILS_ACT}" target="_self">
-  <table width="100%" cellspacing="0" cellpadding="2" border="0" align="top" class="adminlist">
+<form method="post" name="form_pricelist"
+    action="index.php?cmd=shop{MODULE_INDEX}&amp;act=pricelist_edit">
+  <input type="hidden" name="list_id" value="{SHOP_PRICELIST_ID}" />
+  <table width="100%" cellspacing="0" cellpadding="2" border="0" class="adminlist">
     <tr>
-      <th nowrap="nowrap" colspan="3">{TXT_GENERAL_SETTINGS}</th>
+      <th nowrap="nowrap" colspan="2">{SHOP_PRICELIST_EDIT}</th>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap" width="15%">{TXT_PDF_LINK}</td>
-      <td norwap="nowrap" colspan="2">{SHOP_PRICELIST_PDFLINK}</td>
+      <td nowrap="nowrap">{TXT_PDF_LINK}</td>
+      <td nowrap="nowrap">{SHOP_PRICELIST_LINK_PDF}</td>
     </tr>
     <tr class="row2">
       <td nowrap="nowrap">{TXT_NAME}</td>
-      <td nowrap="nowrap" colspan="2"><input type="text" name="pricelistName" value="{SHOP_PRICELIST_DETAILS_NAME}" /></td>
+      <td nowrap="nowrap">
+        <input type="text" name="name" value="{SHOP_PRICELIST_NAME}"
+            style="width: 250px;" />
+      </td>
     </tr>
     <tr class="row1">
       <td nowrap="nowarp">{TXT_LANGUAGE}</td>
-      <td nowrap="nowrap" colspan="2">{SHOP_PRICELIST_DETAILS_LANGUAGE}</td>
+      <td nowrap="nowrap">
+        <select name="lang_id" size="1" style="width: 250px;">
+          {SHOP_PRICELIST_LANGUAGE_MENUOPTIONS}
+        </select>
+      </td>
     </tr>
     <tr class="row2">
       <td nowrap="nowrap">{TXT_FRAME}</td>
-      <td nowrap="nowrap" colspan="2"><input type="radio" name="borderOn" value="1" {SHOP_PRICELIST_DETAILS_BORDERON} />&nbsp;{TXT_DISPLAY}&nbsp;<input type="radio" name="borderOn" value="0" {SHOP_PRICELIST_DETAILS_BORDEROFF} />&nbsp;{TXT_DONT_DISPLAY}</td>
+      <td nowrap="nowrap">
+        <label>
+          <input type="checkbox" name="border" value="1" {SHOP_PRICELIST_BORDER_CHECKED} />
+          {TXT_DISPLAY}
+        </label>
+      </td>
     </tr>
     <tr class="row1">
       <td nowrap="nowrap">{TXT_HEADER}</td>
-      <td nowrap="nowrap" colspan="2"><input type="radio" name="headerOn" value="1" onClick="enableHeader()" {SHOP_PRICELIST_DETAILS_HEADERON} />&nbsp;{TXT_DISPLAY}&nbsp;<input type="radio" name="headerOn" value="0" onClick="disableHeader()" {SHOP_PRICELIST_DETAILS_HEADEROFF} />&nbsp;{TXT_DONT_DISPLAY}</td>
+      <td nowrap="nowrap">
+        <label>
+          <input type="checkbox" name="header" value="1" onchange="toggle_header();"
+              {SHOP_PRICELIST_HEADER_CHECKED} />
+          {TXT_DISPLAY}
+        </label>
+      </td>
+    </tr>
+    <tr class="row1" id="pricelist_header">
+      <td nowrap="nowarp" valign="top">&nbsp;</td>
+      <td nowrap="nowrap">
+        <textarea name="header_left" rows="4"  style="width: 250px;">{SHOP_PRICELIST_HEADER_LEFT}</textarea>
+        &nbsp;
+        <textarea name="header_right" rows="4" style="width: 250px; text-align:right;">{SHOP_PRICELIST_HEADER_RIGHT}</textarea>
+      </td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowarp" width="15%"><div style="vertical-align:top;">{TXT_HEADER}</div></td>
-      <td nowrap="nowrap" width="85%" colspan="2"><textarea name="headerTextLeft" rows="4" cols="30">{SHOP_PRICELIST_DETAILS_HEADERLEFT}</textarea>&nbsp;<textarea name="headerTextRight" rows="4" cols="30" style="text-align:right;">{SHOP_PRICELIST_DETAILS_HEADERRIGHT}</textarea></td>
+      <td nowrap="nowrap">{TXT_FOOTER}</td>
+      <td nowrap="nowrap">
+        <label>
+          <input type="checkbox" name="footer" value="1" onchange="toggle_footer();"
+            {SHOP_PRICELIST_FOOTER_CHECKED} />
+          {TXT_DISPLAY}
+        </label>
+      </td>
+    </tr>
+    <tr class="row2" id="pricelist_footer">
+      <td nowrap="nowrap" valign="top">&nbsp;</td>
+      <td nowrap="nowrap">
+        <textarea name="footer_left" rows="4" style="width: 250px;">{SHOP_PRICELIST_FOOTER_LEFT}</textarea>
+        &nbsp;
+        <textarea name="footer_right" rows="4" style="width: 250px; text-align:right;">{SHOP_PRICELIST_FOOTER_RIGHT}</textarea>
+        <br /><tt>[DATE]</tt>: &nbsp;{TXT_DATE}
+        <br /><tt>[PAGENUMBER]</tt>:&nbsp;{TXT_PAGENUMBER}
+      </td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap" width="15%">{TXT_FOOTER}</td>
-      <td nowrap="nowrap" colspan="2"><input type="radio" name="footerOn" value="1" onClick="enableFooter()" {SHOP_PRICELIST_DETAILS_FOOTERON} />&nbsp;{TXT_DISPLAY}&nbsp;<input type="radio" name="footerOn" value="0" onClick="disableFooter()" {SHOP_PRICELIST_DETAILS_FOOTEROFF} />&nbsp;{TXT_DONT_DISPLAY}</td>
+      <td nowrap="nowrap" valign="top">{TXT_SHOP_PRICELIST_CATEGORIES}</td>
+      <td nowrap="nowrap">
+        <input type="checkbox" name="category_all" id="category_all" value="1"
+            onchange="toggle_categories();" {SHOP_PRICELIST_CATEGORY_ALL_CHECKED} />
+        <label for="category_all">{TXT_SHOP_PRICELIST_CATEGORIES_ALL}</label>
     </tr>
-    <tr class="row2">
-      <td nowrap="nowrap" width="10%"><div style="vertical-align:top;">{TXT_FOOTER}</div></td>
-      <td nowrap="nowrap" width="45%"><textarea name="footerTextLeft" rows="4" cols="30">{SHOP_PRICELIST_DETAILS_FOOTERLEFT}</textarea>&nbsp;<textarea name="footerTextRight" rows="4" cols="30" style="text-align:right;">{SHOP_PRICELIST_DETAILS_FOOTERRIGHT}</textarea></td>
-      <td width="45%" style="vertical-align:top;">&lt;--DATE--&gt;&nbsp;=&nbsp;{TXT_DATE}<br />&lt;--PAGENUMBER--&gt;&nbsp;=&nbsp;{TXT_PAGENUMBER}</td>
+<!-- BEGIN shop_category -->
+    <tr class="{SHOP_CATEGORY_ROWCLASS}">
+      <td>&nbsp;</td>
+      <td>
+        <input type="checkbox" name="category_id[]" id="category_id_{SHOP_CATEGORY_ID}"
+            value="{SHOP_CATEGORY_ID}" {SHOP_CATEGORY_CHECKED} />
+        <label for="category_id_{SHOP_CATEGORY_ID}">{SHOP_CATEGORY_NAME}</label>
+      </td>
     </tr>
-    <tr class="row1">
-      <td colspan="3" nowrap="nowrap"><div style="vertical-align:top;">&nbsp;</div></td>
-    </tr>
-    <tr class="row2">
-      <td width="10%" nowrap="nowrap"><div style="vertical-align:top;">{TXT_PRODUCTSELECTION}</div></td>
-      <td nowrap="nowrap" colspan="2"><input type="radio" name="productsAll" value="1" checked="checked" onClick="disableCategories()" {SHOP_PRICELIST_DETAILS_ALLPROD} />&nbsp;{TXT_ALL_PRODUCTS}&nbsp;<input type="radio" name="productsAll" value="0" onClick="enableCategories()" {SHOP_PRICELIST_DETAILS_SEPPROD} />&nbsp;{TXT_SEPERATE_PRODUCTS}</td>
-    </tr>
-    <!-- BEGIN showShopCategories -->
-      <tr class="{CATEGORY_OVERVIEW_ROWCOLOR}">
-        <td>{PDF_CATEGORY_NAME}</td>
-        <td colspan="2"><input type="checkbox" name="categoryNumber{PDF_CATEGORY_ID}" value="{PDF_CATEGORY_ID}" {PDF_CATEGORY_DISABLED} {PDF_CATEGORY_CHECKED}></td>
-      </tr>
-    <!-- END showShopCategories -->
+<!-- END shop_category -->
   </table>
   <br />
-  <input type="submit" name="submit" value="{TXT_STORE_PRODUCT_LIST}" />
+  <input type="submit" name="bsubmit" value="{TXT_STORE_PRODUCT_LIST}" />
 </form>
+<script type="text/javascript">
+// <![CDATA[
+function toggle_header()
+{
+  var disp = (document.form_pricelist.header.checked ? "table-row" : "none");
+  document.getElementById("pricelist_header").style.display = disp;
+}
+
+function toggle_footer()
+{
+  var disp = (document.form_pricelist.footer.checked ? "table-row" : "none");
+  document.getElementById("pricelist_footer").style.display = disp;
+}
+
+function toggle_categories()
+{
+  var check = document.form_pricelist.category_all.checked;
+  for each (var element in document.getElementsByName("category_id[]")) {
+//    element.checked = !check;
+    element.disabled = check;
+  }
+}
+
+toggle_header();
+toggle_footer();
+toggle_categories();
+// ]]>
+</script>
 <!-- END shop_pricelist_details.html -->

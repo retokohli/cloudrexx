@@ -929,7 +929,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                        SET `entry_id`='".intval($intId)."',
                            `category_id`='".intval($intCategoryId)."'");
                     if (!$objResult) {
-                        DBG::msg($objDatabase->ErrorMsg());
+                        Message::error($objDatabase->ErrorMsg());
                         $error = true;
                     }
                 }
@@ -946,7 +946,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                            SET `entry_id`='".intval($intId)."',
                                `level_id`='".intval($intLevelId)."'");
                         if (!$objResult) {
-                            DBG::msg($objDatabase->ErrorMsg());
+                            Message::error($objDatabase->ErrorMsg());
                             $error = true;
                         }
                     }
@@ -974,7 +974,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
             ) {
                 $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE entry_id='".$intId."' AND field_id='".intval($arrInputfield['id'])."'");
                 if (!$objResult) {
-                    DBG::msg($objDatabase->ErrorMsg());
+                    Message::error($objDatabase->ErrorMsg());
                     $error = true;
                 }
 
@@ -987,7 +987,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
             try {
                 $objInputfield = safeNew($strInputfieldClass);
             } catch (Exception $e) {
-                DBG::msg($e->getMessage());
+                Message::error($e->getMessage());
                 $error = true;
 
                 continue;
@@ -1010,7 +1010,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                         throw new Exception($objDatabase->ErrorMsg());
                     }
                 } catch (Exception $e) {
-                    DBG::msg($e->getMessage());
+                    Message::error($e->getMessage());
                     $error = true;
                 }
 
@@ -1097,7 +1097,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                         throw new Exception($objDatabase->ErrorMsg());
                     }
                 } catch (Exception $e) {
-                    DBG::msg($e->getMessage());
+                    Message::error($e->getMessage());
                     $error = true;
                 }
             }

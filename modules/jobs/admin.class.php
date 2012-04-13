@@ -41,6 +41,7 @@ class jobsManager extends jobsLibrary
     public $strOkMessage = '';
     public $langId;
 
+    private $act = '';
 
     /**
     * Constructor
@@ -55,16 +56,21 @@ class jobsManager extends jobsLibrary
         $this->pageTitle = $_ARRAYLANG["TXT_JOBS_MANAGER"];
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/jobs/template');
         CSRF::add_placeholder($this->_objTpl);
-        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);        
+        $this->langId=$objInit->userFrontendLangId;
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
+
         $objTemplate->setVariable(
             'CONTENT_NAVIGATION',
-            '<a href="index.php?cmd=jobs">'.$_ARRAYLANG["TXT_JOBS_MENU_OVERVIEW"].'</a>'.
-            '<a href="index.php?cmd=jobs&amp;act=add">'.$_ARRAYLANG["TXT_CREATE_DOCUMENT"].'</a>'.
-            '<a href="index.php?cmd=jobs&amp;act=cat">'.$_ARRAYLANG["TXT_CATEGORY_MANAGER"].'</a>'.
-            '<a href="index.php?cmd=jobs&amp;act=loc">'.$_ARRAYLANG["TXT_LOCATION_MANAGER"].'</a>'.
-            '<a href="index.php?cmd=jobs&amp;act=settings">'.$_ARRAYLANG["TXT_SETTINGS"].'</a>'
+            '<a href="index.php?cmd=jobs" class="'.($this->act == '' ? 'active' : '').'">'.$_ARRAYLANG["TXT_JOBS_MENU_OVERVIEW"].'</a>'.
+            '<a href="index.php?cmd=jobs&amp;act=add" class="'.($this->act == 'add' ? 'active' : '').'">'.$_ARRAYLANG["TXT_CREATE_DOCUMENT"].'</a>'.
+            '<a href="index.php?cmd=jobs&amp;act=cat" class="'.($this->act == 'cat' ? 'active' : '').'">'.$_ARRAYLANG["TXT_CATEGORY_MANAGER"].'</a>'.
+            '<a href="index.php?cmd=jobs&amp;act=loc" class="'.($this->act == 'loc' ? 'active' : '').'">'.$_ARRAYLANG["TXT_LOCATION_MANAGER"].'</a>'.
+            '<a href="index.php?cmd=jobs&amp;act=settings" class="'.($this->act == 'settings' ? 'active' : '').'">'.$_ARRAYLANG["TXT_SETTINGS"].'</a>'
         );
-        $this->langId=$objInit->userFrontendLangId;
     }
 
 
@@ -126,6 +132,9 @@ class jobsManager extends jobsLibrary
             'CONTENT_STATUS_MESSAGE' => $this->strErrMessage,
             'ADMIN_CONTENT'          => $this->_objTpl->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 

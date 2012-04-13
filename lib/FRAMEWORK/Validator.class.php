@@ -18,16 +18,7 @@
  * @since   2.0.0
  */
 define('VALIDATOR_REGEX_EMAIL',
-    '[a-zäàáâöôüûñéè0-9!\#\$\%\&\'\*\+\/\=\?\^_\`\{\|\}\~-]+(?:\.[a-zäàáâöôüûñéè0-9!\#\$\%\&\'\*\+\/\=\?\^_\`\{\|\}\~-]+)*@(?:[a-zäàáâöôüûñéè0-9](?:[a-zäàáâöôüûñéè0-9-]*[a-zäàáâöôüûñéè0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?'
-);
-
-/**
- * Regular Expression in javascript for e-mail addresses
- * @author  Michael Räss <info@comvation.com>
- * @since  2.2.6
- */
-define('VALIDATOR_REGEX_EMAIL_JS',
-    '^'.VALIDATOR_REGEX_EMAIL.'$'
+    '[a-z0-9!\#\$\%\&\'\*\+\/\=\?\^_\`\{\|\}\~-]+(?:\.[a-z0-9!\#\$\%\&\'\*\+\/\=\?\^_\`\{\|\}\~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?'
 );
 
 /**
@@ -38,7 +29,7 @@ define('VALIDATOR_REGEX_EMAIL_JS',
  * @since   2.2.0
  */
 define('VALIDATOR_REGEX_URI_PROTO',
-    '(?:(?:ht|f)tps?\:\/\/)'
+      '(?:(?:ht|f)tps?\:\/\/)'
 );
 
 /**
@@ -47,18 +38,9 @@ define('VALIDATOR_REGEX_URI_PROTO',
  * @since   2.2.0
  */
 define('VALIDATOR_REGEX_URI',
-    VALIDATOR_REGEX_URI_PROTO.
-    '?((([\wäàáâöôüûñéè\d-]{1,}\.)+[a-z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?:(\.?\d)\.)) {4}))(?:[\w\d]+)?(\/[\w\d\-\.\?\,\'\/\\\+\&\%\$\#\=\~]*)?'
-//  '(https?|ftp)\:\/\/([-a-z0-9.]+)(\/[-a-z0-9+&@#\/%=~_|!:,.;]*)?(\?[-a-z0-9+&@#\/%=~_|!:,.;]*)?'
-);
-
-/**
- * Regular Expression in javascript for URIs
- * @author  Michael Räss <info@comvation.com>
- * @since   2.2.6
- */
-define('VALIDATOR_REGEX_URI_JS',
-    '^'.VALIDATOR_REGEX_URI.'$'
+      VALIDATOR_REGEX_URI_PROTO.
+      '?((([\w\d-]{2,}\.)+[a-z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?:(\.?\d)\.)) {4}))(?:[\w\d]+)?(\/[\w\d\-\.\?\,\'\/\\\+\&\%\$\#\=\~]*)?'
+//    '(https?|ftp)\:\/\/([-a-z0-9.]+)(\/[-a-z0-9+&@#\/%=~_|!:,.;]*)?(\?[-a-z0-9+&@#\/%=~_|!:,.;]*)?'
 );
 
 /**
@@ -213,7 +195,7 @@ class FWValidator
     static function fix_flash_transparency($html_code) {
         $result = preg_replace_callback(
             '!<object.*?.*?<param.*?</object>!ims',
-            'FWValidator::__fix_flash',
+            array('FWValidator', '__fix_flash'),
             $html_code
         );
         return $result;
@@ -229,5 +211,97 @@ class FWValidator
 
         return $fileName;
     }
+
 }
-?>
+
+/**
+ * An abstract base for ZendValidator-Style instantiable Validators
+ */
+abstract class CxValidate {
+    protected $constraints;
+    protected $passesValidation;
+    protected $messages;
+
+    // TODO: Possibly throw an Exception if an unknown/typoed constraint was provided
+    public function __construct($constraints) {
+	$this->messages = array();
+	$this->constraints = $constraints;
+    }
+
+    public abstract function isValid($value);
+
+    public function getMessages() {
+	return $this->messages;
+    }
+
+}
+
+/**
+ * Validates Strings to a set of constraints
+ */
+class CxValidateString extends CxValidate {
+    public function __construct($constraints) {
+	parent::__construct($constraints);
+    }
+
+    public function isValid($value) {
+	$this->passesValidation = true;
+
+	if (isset($this->constraints['maxlength'])) {
+	    if (strlen($value) > $this->constraints['maxlength']) {
+		// TODO: Translate messages
+		$this->messages[] = 'is too long.';
+		$this->passesValidation = false;
+	    }
+	}
+
+	if (isset($this->constraints['alphanumeric']) && $this->constraints['alphanumeric']) {
+	    if (!ctype_alnum($value)) {
+		$this->passesValidation = false;
+	    }
+	}
+
+	return $this->passesValidation;
+    }
+}
+
+class CxValidateRegexp extends CxValidate {
+    public function __construct($constraints) {
+	parent::__construct($constraints);
+    }
+
+    public function isValid($value) {
+	$this->passesValidation = false;
+
+	if (isset($this->constraints['pattern']) &&
+	    preg_match($this->constraints['pattern'], $value)) {
+	    $this->passesValidation = true;
+	}
+	else {
+	    // TODO: Translate messages
+	    $this->messages[] = 'doesn\'t match required pattern.';
+	}
+
+	return $this->passesValidation;
+    }   
+}
+
+class CxValidateInteger extends CxValidate {
+    public function __construct($constraints = array()) {
+	parent::__construct($constraints);
+    }
+
+    public function isValid($value) {
+	$this->passesValidation = false;
+
+	if(is_numeric($value) || is_int($value)) {
+	    $this->passesValidation = true;
+	}
+	else {
+	    // TODO: Translate messages
+	    $this->messages[] = 'is not a number.';
+	}
+
+	return $this->passesValidation;
+    }
+}

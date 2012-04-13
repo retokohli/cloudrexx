@@ -29,6 +29,8 @@ class ForumAdmin extends ForumLibrary {
     var $_strErrMessage = '';
     var $_strOkMessage     = '';
 
+    private $act = '';
+    
     /**
      * Constructor    -> Create the module-menu and an internal template-object
      * @global    InitCMS 
@@ -42,11 +44,16 @@ class ForumAdmin extends ForumLibrary {
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/forum/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-        $this->_intLangId = $objInit->userFrontendLangId;
+        $this->_intLangId = $objInit->userFrontendLangId;        
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
+
         $objTemplate->setVariable(
             'CONTENT_NAVIGATION',
-            '<a href="?cmd=forum&amp;act=category">'.$_ARRAYLANG['TXT_FORUM_MENU_CATEGORIES'].'</a>
-            <a href="?cmd=forum&amp;act=settings">'.$_ARRAYLANG['TXT_FORUM_MENU_SETTINGS'].'</a>
+            '<a href="?cmd=forum&amp;act=category" class="'.($this->act == 'category' ? 'active' : '').'">'.$_ARRAYLANG['TXT_FORUM_MENU_CATEGORIES'].'</a>
+            <a href="?cmd=forum&amp;act=settings" class="'.($this->act == 'settings' ? 'active' : '').'">'.$_ARRAYLANG['TXT_FORUM_MENU_SETTINGS'].'</a>
         ');
     }
 
@@ -143,6 +150,9 @@ class ForumAdmin extends ForumLibrary {
             'CONTENT_STATUS_MESSAGE'    => $this->_strErrMessage,
             'ADMIN_CONTENT'                => $this->_objTpl->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 

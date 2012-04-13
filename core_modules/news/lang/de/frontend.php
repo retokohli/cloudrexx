@@ -33,7 +33,8 @@ $_ARRAYLANG['TXT_NEWS_FONT_SIZE'] = "Schriftgrösse";
 $_ARRAYLANG['TXT_NEWS_FONT'] = "Schriftart";
 $_ARRAYLANG['TXT_NEWS_DISPLAY_LIMIT'] = "Anzahl anzuzeigende Newsmeldungen";
 $_ARRAYLANG['TXT_NEWS_SHOW_NEWS_DATE'] = "Datum der Newsmeldung anzeigen";
-$_ARRAYLANG['TXT_NEWS_REDIRECT'] = "Soll eine externe Newsmeldung eingelesen werden, muss hier die entsprechende URL eingetragen werden.<br />Beim Aufruf der Newsmeldung wird dann automatisch auf die externe Quelle verwiesen.";
+$_ARRAYLANG['TXT_NEWS_REDIRECT'] = "Soll eine externe Newsmeldung eingelesen werden, muss hier die entsprechende URL eingetragen werden.
+Beim Aufruf der Newsmeldung wird dann automatisch auf die externe Quelle verwiesen.";
 $_ARRAYLANG['TXT_NEWS_TEASER_TEXT'] = "Teaser Text";
 $_ARRAYLANG['TXT_NEWS_TEASER_IMAGE'] = "Teaser Bild";
 $_ARRAYLANG['TXT_NEWS_NEWS_URL'] = "News URL";
@@ -44,4 +45,30 @@ $_ARRAYLANG['TXT_NOTIFY_MESSAGE'] = "Es wurde eine neue News-Meldung eingetragen
 $_ARRAYLANG['TXT_CAPTCHA_ERROR'] = "Der eingegebene Captcha-Code ist nicht korrekt!";
 $_ARRAYLANG['TXT_CAPTCHA'] = "Bitte geben Sie die abgebildeten Zeichen ein:";
 $_ARRAYLANG['TXT_NEWS_MORE'] = "mehr";
+$_ARRAYLANG['TXT_NEWS_COMMENTS_NONE_EXISTING'] = "No comments found";
+$_ARRAYLANG['TXT_NEWS_COMMENT_SAVE_ERROR'] = "Ihr Kommentar konnte nicht hinzugefügt werden. Bitte versuchen Sie es erneut.";
+$_ARRAYLANG['TXT_NEWS_MISSING_COMMENT_TITLE'] = "Bitte vergeben Sie Ihrem Kommentar einen Titel.";
+$_ARRAYLANG['TXT_NEWS_MISSING_COMMENT_MESSAGE'] = "Bitte erfassen Sie Ihren Kommentar im Feld Kommentar.";
+$_ARRAYLANG['TXT_NEWS_POSTER_NAME_MISSING'] = "Bitte geben Sie Ihren Namen an.";
+$_ARRAYLANG['TXT_NEWS_NAME'] = "Name";
+$_ARRAYLANG['TXT_NEWS_TITLE'] = "Titel";
+$_ARRAYLANG['TXT_NEWS_COMMENT'] = "Kommentar";
+$_ARRAYLANG['TXT_NEWS_ADD_COMMENT'] = "Kommentar hinzufügen";
+$_ARRAYLANG['TXT_NEWS_ADD'] = "Hinzufügen";
+$_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_SUBJECT'] = "Neuer Kommentar zur News Meldung \"%s\"";
+$_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_BODY'] = "Auf %1\$s wurde ein neuer Kommentar erfasst.\n\nNews Meldung: %2\$s\n\nErfasser: %3\$s\nTitel: %4\$s\nKommentar: %5\$s\n\n%6\$s-- \nDies ist eine automatisch generierte Nachricht";
+$_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_LINK'] = "Der Kommentar muss vor der Publikation noch frei geschalten werden.\nKlicken Sie auf den folgenden Link, um die Kommentare dieser News Meldung zu verwalten:\n%s\n\n";
+$_ARRAYLANG['TXT_NEWS_COMMENT_INTERVAL_MSG'] = "Sie haben soeben einen Kommentar erfasst. Bitte warten Sie mindestens %s bevor Sie den nächsten Kommentar absenden.";
+$_ARRAYLANG['TXT_NEWS_COMMENTS'] = "Kommentare";
+$_ARRAYLANG['TXT_TYPE'] = "Typ";
+$_ARRAYLANG['TXT_NEWS_READ_MORE'] = "weiterlesen";
+$_ARRAYLANG['TXT_NEWS_RELATED_MESSAGES_OF_PUBLISHER'] = "Weitere Meldungen desselben Herausgebers";
+$_ARRAYLANG['TXT_NEWS_RELATED_MESSAGES_OF_AUTHOR'] = "Weitere Meldungen desselben Authors";
+$_ARRAYLANG['TXT_NEWS_RELATED_MESSAGES_OF_CATEGORY'] = "Weitere Meldungen derselben Rubrik";
+$_ARRAYLANG['TXT_NEWS_RELATED_MESSAGES_OF_TYPE'] = "Weitere Meldungen desselben Typs";
+$_ARRAYLANG['TXT_NEWS_PUBLISHER'] = "Herausgeber";
+$_ARRAYLANG['TXT_NEWS_AUTHOR'] = "Autor";
+
+// TODO: News Archive - what is it good for?
+$_ARRAYLANG['TXT_NEWS_NOT_FOUND'] = "News not found";
 ?>

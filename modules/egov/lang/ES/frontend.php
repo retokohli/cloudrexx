@@ -54,4 +54,3 @@ $_ARRAYLANG['TXT_EGOV_DAYNAME_7'] = "Domingo";
 $_ARRAYLANG['TXT_EGOV_PAYMENT_NOT_COMPLETED'] = "El pago del producto a&uacute;n est&aacute; pendiente.";
 
 $_ARRAYLANG['TXT_ORDER_LINK_PREPARED'] = "Su pedido ha sido preparado para el pago. Pulse el siguiente boton para proceder a seleccionar la forma de pago.";
-$_ARRAYLANG['TXT_EGOV_POSTFINANCE'] = "PostFinance";

@@ -1067,9 +1067,8 @@ class directoryLibrary
         } else {
             $link =
                 "http://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.
-                ($_CONFIG['useVirtualLanguagePath'] == 'on'
-                  ? FWLanguage::getLanguageParameter($languageId, 'lang').'/' : '').
-                  CONTREXX_DIRECTORY_INDEX."?section=directory&cmd=detail&id=".$feedId;
+                    FWLanguage::getLanguageParameter($languageId, 'lang').'/'.
+                    CONTREXX_DIRECTORY_INDEX."?section=directory&cmd=detail&id=".$feedId;
         }
 
         // replace placeholders
@@ -2112,8 +2111,12 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
                 }
 
                 //check uploads
-                $arrSpezialUploadFields = array('attachment', 'spez_field_25', 'spez_field_26', 'spez_field_27', 'spez_field_28', 'spez_field_29');
-                if (in_array($inputName, $arrSpezialUploadFields)) {
+                if ($inputName == "attachment" ||
+                    $inputName == "spez_field_25" ||
+                    $inputName == "spez_field_26" ||
+                    $inputName == "spez_field_27" ||
+                    $inputName == "spez_field_28" ||
+                    $inputName == "spez_field_29") {
 
                     if (!empty($_FILES[$inputName]['name']) || $_POST["deleteMedia"][$inputName] == 1) {
                         $obj_file = new File();
@@ -2138,12 +2141,12 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
                 }
 
                 /*
-                 * spezial upload fields must be updated only when new file is uploaded or old one is deleted
+                 * 'attachment' coulmn must be updated only when new file is uploaded or old one is deleted
                  * other input types must be updated unconditionally.
                  */
-                if (!in_array($inputName, $arrSpezialUploadFields)) {
+                if ($inputName != "attachment") {
                     $query .= contrexx_addslashes($inputName)." ='".contrexx_strip_tags(contrexx_addslashes($inputValue))."', ";
-                } else if (in_array($inputName, $arrSpezialUploadFields) && (!empty($_FILES[$inputName]['name']) || $_POST["deleteMedia"][$inputName] == 1)) {
+                } else if ($inputName == "attachment" && (!empty($_FILES[$inputName]['name']) || $_POST["deleteMedia"][$inputName] == 1)) {
                     $query .= contrexx_addslashes($inputName)." ='".contrexx_strip_tags(contrexx_addslashes($inputValue))."', ";
                 }
             }

@@ -2,8 +2,8 @@
 
 /**
  * Core Country and Region class
- * @version     2.2.0
- * @since       2.2.0
+ * @version     3.0.0
+ * @since       3.0.0
  * @package     contrexx
  * @subpackage  core
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -19,20 +19,19 @@ require_once ASCMS_CORE_PATH.'/Text.class.php';
 
 /**
  * Country helper methods
- * @version     2.2.0
- * @since       2.2.0
+ * @version     3.0.0
+ * @since       3.0.0
  * @package     contrexx
  * @subpackage  core
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @todo        Test!
  */
 class Country
 {
     /**
-     * Database key
+     * Text key
      */
-    const TEXT_CORE_COUNTRY_NAME = 'core_country_name';
+    const TEXT_NAME = 'core_country_name';
 
     /**
      * Array of all countries
@@ -40,7 +39,19 @@ class Country
      * @access  private
      * @see     init()
      */
-    private static $arrCountries = false;
+    private static $arrCountries = null;
+
+    /**
+     * The array for success and info messages
+     * @var     string
+     */
+    private static $messages = array();
+
+    /**
+     * The array for error messages
+     * @var     string
+     */
+    private static $errors = array();
 
     /*
      * Array of all country-zone relations
@@ -52,98 +63,248 @@ class Country
 
 
     /**
-     * Initialise the static $arrCountries array with all countries
-     * found in the database
+     * Returns the country settings page, always.
+     * @return
+     */
+    static function getPage()
+    {
+        global $objTemplate, $_CORELANG;
+
+//DBG::activate(DBG_PHP|DBG_ADODB|DBG_LOG_FIREPHP);
+        $objTemplate->setVariable(array(
+            'CONTENT_NAVIGATION'     =>
+                '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=country">'.
+                $_CORELANG['TXT_CORE_COUNTRY'].'</a>',
+            'CONTENT_TITLE'          => $_CORELANG['TXT_CORE_COUNTRY'],
+            'CONTENT_OK_MESSAGE'     => join('<br />', self::$messages),
+            'CONTENT_STATUS_MESSAGE' => join('<br />', self::$errors),
+            'ADMIN_CONTENT'          => self::settings(),
+        ));
+//DBG::log("ERROR: ".join('; ', self::$errors));
+//DBG::log("MESSAGE: ".join('; ', self::$messages));
+//die(self::errorHandler());
+    }
+
+
+    /**
+     * Initialises the class array of Countries
+     *
+     * Calls {@see getArray()} to accomplish this.
+     * @param   integer   $lang_id      The optional language ID.
+     *                                  Defaults to the FRONTEND_LANG_ID
+     *                                  if empty
+     * @return  void
+     */
+    static function init($lang_id=null)
+    {
+        $count = 0;
+        self::$arrCountries = self::getArray($count, $lang_id);
+    }
+
+
+    /**
+     * Returns an array of Country arrays
      *
      * The array created is of the form
      *  array(
      *    country ID => array(
-     *      'id'         => country ID,
-     *      'name'       => country name,
-     *      'iso_code_2' => ISO 2 digit code,
-     *      'iso_code_3' => ISO 3 digit code,
-     *      'is_active'  => boolean,
+     *      'id'           => country ID,
+     *      'name'         => country name,
+     *      'alpha2'       => alpha-2 (two letter) code,
+     *      'alpha3'       => alpha-3 (three letter) code,
+     *      'active'       => boolean,
+     *      'ord'          => ordinal value,
      *    ),
      *    ... more ...
      *  )
      * Notes:
-     *  - The Countries are always shown in the current frontend language
-     *    as set in FRONTEND_LANG_ID.
-     *  - The country ID (field name_text_id) equals the corresponding Text ID.
+     *  - The Countries are returned in the current frontend language
+     *    as set in FRONTEND_LANG_ID, except if the optional $lang_id
+     *    argument is not empty.
+     *  - Empty arguments are set to their default values, which are:
+     *    - $lang_id: The current value of the FRONTEND_LANG_ID constant
+     *    - $limit:   -1, meaning no limit
+     *    - $offset:  0, meaning no offset
+     *    - $order:   `name` ASC, meaning ordered by country name, ascending
      * @global  ADONewConnection  $objDatabase
-     * @return  boolean                     True on success, false otherwise
+     * @param   integer   $count            The record count, by reference
+     * @param   integer   $lang_id          The optional language ID
+     * @param   integer   $limit            The optional record limit
+     * @param   integer   $offset           The optional record offset
+     * @param   string    $order            The optional order direction
+     * @return  array                       The Country array on success,
+     *                                      false otherwise
      */
-    static function init()
-    {
+    static function getArray(
+        &$count, $lang_id=null, $limit=-1, $offset=0, $order='`name` ASC'
+    ) {
         global $objDatabase;
 
-        $arrSqlName = Text::getSqlSnippets(
-            '`country`.`name_text_id`', FRONTEND_LANG_ID,
-            MODULE_ID, self::TEXT_CORE_COUNTRY_NAME
-        );
+        if (empty($lang_id)) $lang_id = FRONTEND_LANG_ID;
+        $arrSqlName = Text::getSqlSnippets('`country`.`id`', $lang_id,
+            'core', array('name' => self::TEXT_NAME));
+        if (empty($limit)) $limit  = -1;
+        if (empty($offset)) $offset =  0;
+        if (empty($order)) $order  = $arrSqlName['text'].' ASC';
+        $count = 0;
         $query = "
-            SELECT `country`.`name_text_id`,
-                   `country`.`iso_code_2`, `country`.`iso_code_3`,
-                   `country`.`is_active`".
-                   $arrSqlName['field']."
+            SELECT `country`.`id`,
+                   `country`.`alpha2`, `country`.`alpha3`,
+                   `country`.`ord`,
+                   `country`.`active`, ".
+            $arrSqlName['field']."
               FROM ".DBPREFIX."core_country AS `country`".
-                   $arrSqlName['join']."
-             ORDER BY `country`.`ord` ASC
-        ";
-        $objResult = $objDatabase->Execute($query);
+            $arrSqlName['join']."
+             ORDER BY $order";
+        $objResult = $objDatabase->SelectLimit($query, $limit, $offset);
         if (!$objResult) return self::errorHandler();
-        self::$arrCountries = array();
+        $arrCountries = array();
         while (!$objResult->EOF) {
-            $id = $objResult->fields['name_text_id'];
-            $strName = $objResult->fields[$arrSqlName['text']];
+            $id = $objResult->fields['id'];
+            $strName = $objResult->fields['name'];
             if ($strName === null) {
-                $objText = Text::getById($id, 0);
-                if ($objText) $strName = $objText->getText();
+                $objText = Text::getById($id, 'core', self::TEXT_NAME);
+                if ($objText) $strName = $objText->content();
             }
-            self::$arrCountries[$id] = array(
-                'id' => $id,
-                'name' => $strName,
-                'iso_code_2' => $objResult->fields['iso_code_2'],
-                'iso_code_3' => $objResult->fields['iso_code_3'],
-                'is_active' => $objResult->fields['is_active'],
+            $arrCountries[$id] = array(
+                'id'     => $id,
+                'name'   => $strName,
+                'ord'    => $objResult->fields['ord'],
+                'alpha2' => $objResult->fields['alpha2'],
+                'alpha3' => $objResult->fields['alpha3'],
+                'active' => $objResult->fields['active'],
             );
             $objResult->MoveNext();
         }
-        return true;
+        $query = "
+            SELECT COUNT(*) AS `numof_records`
+              FROM `".DBPREFIX."core_country`";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        $count = $objResult->fields['numof_records'];
+        return $arrCountries;
     }
 
 
     /**
-     * Returns the array of all countries
-     * @return  array               The country array on success,
-     *                              false otherwise
-     * @static
+     * Returns an array of Country data for the given ID
+     *
+     * The array created is of the form
+     *  array(
+     *    'id'           => country ID,
+     *    'name'         => country name,
+     *    'alpha2'       => alpha-2 (two letter) code,
+     *    'alpha3'       => alpha-3 (three letter) code,
+     *    'active'       => boolean,
+     *    'ord'          => ordinal value,
+     *  ),
+     * The Country is returned in the current frontend language
+     * as set in FRONTEND_LANG_ID, except if the optional $lang_id
+     * argument is not empty.
+     * @global  ADONewConnection  $objDatabase
+     * @param   integer   $country_id       The Country ID
+     * @param   integer   $lang_id          The optional language ID
+     * @return  array                       The Country array on success,
+     *                                      false otherwise
      */
-    static function getArray()
+    static function getById($country_id, $lang_id=null)
     {
-        if (empty(self::$arrCountries) && self::init())
-            return self::$arrCountries;
-        return false;
-    }
+        global $objDatabase;
 
-
-    /**
-     * Returns the array of all country names, indexed by their ID
-     * @return  array               The country names array on success,
-     *                              false otherwise
-     */
-    static function getNameArray()
-    {
-        static $arrName = false;
-
-        if (empty(self::$arrCountries)) {
-            $arrName = false;
-            self::init();
+        if (empty($lang_id)) $lang_id = FRONTEND_LANG_ID;
+        $arrSqlName = Text::getSqlSnippets('`country`.`id`', $lang_id,
+            'core', array('name' => self::TEXT_NAME));
+        $query = "
+            SELECT `country`.`alpha2`, `country`.`alpha3`,
+                   `country`.`ord`,
+                   `country`.`active`, ".
+                   $arrSqlName['field']."
+              FROM ".DBPREFIX."core_country AS `country`".
+                   $arrSqlName['join']."
+             WHERE `country`.`id`=$country_id";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        if ($objResult->EOF) return false;
+        $strName = $objResult->fields['name'];
+        if ($strName === null) {
+            $objText = Text::getById($country_id, 'core', self::TEXT_NAME);
+            if ($objText) $strName = $objText->content();
         }
-        if (empty($arrName)) {
+        return array(
+            'id'     => $country_id,
+            'name'   => $strName,
+            'ord'    => $objResult->fields['ord'],
+            'alpha2' => $objResult->fields['alpha2'],
+            'alpha3' => $objResult->fields['alpha3'],
+            'active' => $objResult->fields['active'],
+        );
+    }
+
+
+    /**
+     * Returns the current number of Country records present in the database
+     * @return  integer           The number of records on success,
+     *                            false otherwise.
+     */
+    static function getRecordcount()
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT COUNT(*) AS `numof_records`
+              FROM ".DBPREFIX."core_country";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult || $objResult->EOF) return self::errorHandler();
+        return $objResult->fields['numof_records'];
+    }
+
+
+    /**
+     * Returns the ID of the Country specified by its alpha2 code
+     * @param   string    $alpha2   The alpha2 code
+     * @return  integer             The Country ID on success, null otherwise
+     */
+    static function getIdByAlpha2($alpha2)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT `country`.`id`
+              FROM ".DBPREFIX."core_country AS `country`
+             WHERE `alpha2`='".addslashes($alpha2)."'";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        if ($objResult->EOF) return null;
+        return $objResult->fields['id'];
+    }
+
+
+    /**
+     * Returns the array of all active country names, indexed by their ID
+     *
+     * If the optional $lang_id parameter is empty, the FRONTEND_LANG_ID
+     * constant's value is used instead.
+     * @param   boolean   $full       If true, all Countries are included,
+     *                                only active ones otherwise.
+     *                                Defaults to false
+     * @param   integer   $lang_id    The optional language ID.
+     *                                Defaults to the FRONTEND_LANG_ID
+     *                                if empty
+     * @return  array                 The country names array on success,
+     *                                false otherwise
+     */
+    static function getNameArray($active=true, $lang_id=null)
+    {
+        static $arrName = null;
+
+        if (is_null(self::$arrCountries)) self::init($lang_id);
+        if (is_null($arrName)) {
+            $arrName = array();
             foreach (self::$arrCountries as $id => $arrCountry) {
+                if ($active && empty($arrCountry['active'])) continue;
                 $arrName[$id] = $arrCountry['name'];
             }
+//die("Names: ".var_export($arrName, true));
         }
         return $arrName;
     }
@@ -159,7 +320,7 @@ class Country
      */
     static function getNameById($country_id)
     {
-        if (empty(self::$arrCountries)) self::init();
+        if (is_null(self::$arrCountries)) self::init();
         if (isset(self::$arrCountries[$country_id]))
             return self::$arrCountries[$country_id]['name'];
         return '';
@@ -174,11 +335,11 @@ class Country
      * @return  string                    The ISO 2 code, or the empty string
      * @static
      */
-    static function getIso2ById($country_id)
+    static function getAlpha2ById($country_id)
     {
-        if (empty(self::$arrCountries)) self::init();
+        if (is_null(self::$arrCountries)) self::init();
         if (isset(self::$arrCountries[$country_id]))
-            return self::$arrCountries[$country_id]['iso_code_2'];
+            return self::$arrCountries[$country_id]['alpha2'];
         return '';
     }
 
@@ -191,11 +352,11 @@ class Country
      * @return  string                    The ISO 3 code, or the empty string
      * @static
      */
-    static function getIso3ById($country_id)
+    static function getAlpha3ById($country_id)
     {
-        if (empty(self::$arrCountries)) self::init();
+        if (is_null(self::$arrCountries)) self::init();
         if (isset(self::$arrCountries[$country_id]))
-            return self::$arrCountries[$country_id]['iso_code_3'];
+            return self::$arrCountries[$country_id]['alpha3'];
         return '';
     }
 
@@ -210,9 +371,9 @@ class Country
      */
     static function isActiveById($country_id)
     {
-        if (empty(self::$arrCountries)) self::init();
+        if (is_null(self::$arrCountries)) self::init();
         if (isset(self::$arrCountries[$country_id]))
-            return self::$arrCountries[$country_id]['is_active'];
+            return self::$arrCountries[$country_id]['active'];
         return '';
     }
 
@@ -222,25 +383,273 @@ class Country
      * @return  void
      * @static
      */
-    static function flush()
+    static function reset()
     {
-        self::$arrCountries = false;
+        self::$arrCountries = null;
     }
 
 
     /**
-     * @todo    Rewrite this for proper use with the modules affected
-     *          (i.e. shop)
+     * Returns SQL query snippets for the Country name for including
+     * in any full query
+     *
+     * Simply calls {@see Text::getSqlSnippets()} using 'name' as the
+     * alias for the Country name field.
+     * @param   integer   $lang_id    The optional Language ID.
+     *                                Defaults to the FRONTEND_LANG_ID
+     *                                constant value
+     * @return  array                 The SQL snippet array
+     * @todo    Maybe add an optional $alias parameter?
+     */
+    static function getSqlSnippets($lang_id=0)
+    {
+        $lang_id = intval($lang_id);
+        if (empty($lang_id)) $lang_id = FRONTEND_LANG_ID;
+        return Text::getSqlSnippets(
+            '`country`.`id`', $lang_id, 'core',
+            array('name' => self::TEXT_NAME));
+    }
+
+
+    /**
+     * Returns true if the record for the given ID exists in the database
+     *
+     * Returns true if the $country_id argument is empty.
+     * Returns false both if the ID cannot be found and on failure.
+     * @param   integer   $country_id   The Country ID
+     * @return  boolean                 True if the Country ID is present,
+     *                                  false otherwise.
+     */
+    static function recordExists($country_id)
+    {
+        global $objDatabase;
+
+        if (empty($country_id)) {
+            return false;
+        }
+        $objResult = $objDatabase->Execute("
+            SELECT 1
+              FROM `".DBPREFIX."core_country` AS `country`
+             WHERE `country`.`id`=$country_id");
+        if (!$objResult) return self::errorHandler();
+        return $objResult->EOF;
+    }
+
+
+    /**
+     * Stores a Country in the database.
+     *
+     * Decides whether to call {@see insert()} or {@see update()}
+     * by means of calling {@see getById()} if $country_id is valid.
+     * Optional values equal to null are ignored and not updated,
+     * or inserted with default values.
+     * Note, however, that $country_name, $alpha2 and $alpha3 are mandatory
+     * and must be non-empty when a new record is to be {@see insert()}ed!
+     * @param   string    $alpha2         The ISO 2-character code, or null
+     * @param   string    $alpha3         The ISO 3-character code, or null
+     * @param   integer   $country_name   The name of the Country, or null
+     * @param   integer   $ord            The ordinal value, or null
+     * @param   boolean   $active         The active status, or null
+     * @param   integer   $country_id     The Country ID, or null
+     * @return  boolean                   True on success, false otherwise
+     */
+    static function store(
+        $alpha2=null, $alpha3=null, $lang_id=null, $country_name=null,
+        $ord=null, $active=null, $country_id=null
+    ) {
+        $arrCountry = false;
+        if ($country_id) $arrCountry = self::getById($country_id);
+        if ($arrCountry) {
+//DBG::log("Country::store($alpha2, $alpha3, $lang_id, $country_name, $ord, $active, $country_id): Updating Country ID $country_id, $country_name");
+            if (!self::update($country_id, $ord, $active, $alpha2, $alpha3))
+                return false;
+        } else {
+            $country_id = self::insert(
+                $alpha2, $alpha3, $ord, $active, $country_id);
+            if (!$country_id) {
+//DBG::log("Country::store($alpha2, $alpha3, $lang_id, $country_name, $ord, $active, $country_id): Failed to insert Country ID $country_id, $country_name");
+                return false;
+            }
+        }
+        // Store the Country name only if it's set
+        if ($country_name != '') {
+            if (Text::replace(
+                $country_id, $lang_id, 'core', self::TEXT_NAME, $country_name)) {
+//DBG::log("Country::store($alpha2, $alpha3, $lang_id, $country_name, $ord, $active, $country_id): Successfully stored Text);
+                return true;
+            }
+        }
+//DBG::log("Country::store($alpha2, $alpha3, $lang_id, $country_name, $ord, $active, $country_id): Failed to store Text");
+        // TODO: If inserting fails, the record could be rolled back
+        return false;
+    }
+
+
+    /**
+     * Inserts the Country into the database
+     *
+     * Note that the Country name is inserted or updated in {@see store()} only.
+     * @param   string    $alpha2     The ISO 2-character code
+     * @param   string    $alpha3     The ISO 3-character code
+     * @param   integer   $ord        The ordinal value, or null
+     * @param   boolean   $active     The active status, or null
+     * @param   integer   $country_id The Country ID, or null
+     * @return  boolean               True on success, false otherwise
+     */
+    static function insert(
+        $alpha2, $alpha3, $ord=null, $active=null, $country_id=null
+    ) {
+        global $objDatabase;
+
+        if (empty($alpha2) || empty($alpha3)) {
+//DBG::log("Country::insert(): Error: Trying to store Country with empty name or alpha code");
+            return false;
+        }
+        $objResult = $objDatabase->Execute("
+            INSERT INTO `".DBPREFIX."core_country` (
+              `id`,
+              `alpha2`,
+              `alpha3`,
+              `ord`,
+              `active`
+            ) VALUES (
+              ".($country_id ? $country_id : 'NULL').",
+              '".addslashes($alpha2)."',
+              '".addslashes($alpha3)."',
+              ".intval($ord).",
+              ".intval($active)."
+            )");
+        if (!$objResult) return false; //self::errorHandler();
+        return ($country_id ? $country_id : $objDatabase->Insert_ID());
+    }
+
+
+    /**
+     * Updates the Country in the database
+     *
+     * Note that it should never be necessary to update the Text ID,
+     * so that parameter is not present here.  Call {@see store()}
+     * to update the Country name as well.
+     * @param   integer   $country_id The Country ID
+     * @param   integer   $ord        The ordinal value, or null
+     * @param   boolean   $active     The active status, or null
+     * @param   string    $alpha2     The ISO 2-character code, or null
+     * @param   string    $alpha3     The ISO 3-character code, or null
+     * @return  boolean               True on success, false otherwise
+     */
+    static function update(
+        $country_id, $ord=null, $active=null, $alpha2=null, $alpha3=null
+    ) {
+        global $objDatabase;
+
+        if (empty($country_id)) {
+//die("Country::update($country_id, $text_id, $ord, $active, $alpha2, $alpha3): Error: Cannot update without a valid Country ID");
+            return false;
+        }
+        $query = array();
+        if (isset($ord))     $query[] = "`ord`=$ord";
+        if (isset($active))  $query[] = "`active`=".intval($active);
+        if (!empty($alpha2)) $query[] = "`alpha2`='".addslashes($alpha2)."'";
+        if (!empty($alpha3)) $query[] = "`alpha3`='".addslashes($alpha3)."'";
+        // Something to do?
+        if ($query) {
+            $objResult = $objDatabase->Execute("
+                UPDATE `".DBPREFIX."core_country`
+                   SET ".join(', ', $query)."
+                 WHERE `id`=$country_id");
+            if (!$objResult) return false; //self::errorHandler();
+        }
+        return true;
+    }
+
+
+    /**
+     * Deletes the Country with the given ID from the database
+     * @param   integer   $country_id The Country ID
+     * @return  boolean               True on success, false otherwise
+     */
+    static function deleteById($country_id)
+    {
+        global $objDatabase, $_CORELANG;
+
+        if (is_null(self::$arrCountries)) self::init();
+        if (empty(self::$arrCountries[$country_id])) {
+//            Message::add($_CORELANG['TXT_CORE_COUNTRY_ERROR_DELETING_NOT_FOUND'];
+            return false;
+        }
+        if (!Text::deleteById($country_id, 'core', self::TEXT_NAME, 0)) {
+            return false;
+        }
+        $query = "
+            DELETE FROM `".DBPREFIX."core_country`
+             WHERE `id`=".intval($country_id);
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+//            Message::add($_CORELANG['TXT_CORE_COUNTRY_ERROR_DELETING'];
+            return false;
+        }
+        return true;
+    }
+
+
+    /**
+     * Returns the HTML dropdown menu or hidden input field plus name string
+     *
+     * If there is just one active country, returns a hidden <input> tag with
+     * the countries' name appended.  If there are more, returns a dropdown
+     * menu with the optional ID preselected and optional onchange method added.
+     * @param   string    $menuName   Optional name of the menu,
+     *                                defaults to "countryId"
+     * @param   string    $selected   Optional selected country ID
+     * @param   boolean   $active     Include inactive countries if false.
+     *                                Defaults to true
+     * @param   string    $onchange   Optional onchange callback function
+     * @return  string                The HTML dropdown menu code
+     * @static
+     */
+    static function getMenu(
+        $menuName='countryId', $selected='', $active=true, $onchange=''
+    ) {
+        if (is_null(self::$arrCountries)) self::init();
+        if (empty(self::$arrCountries)) return '';
+//DBG::log("Country::getMenu(): ".count(self::$arrCountries)." countries");
+        if (count(self::$arrCountries) == 1) {
+            $arrCountry = current(self::$arrCountries);
+            return
+                Html::getHidden($menuName, $arrCountry['id']).
+                $arrCountry['name'];
+        }
+        return Html::getSelectCustom(
+            $menuName, self::getMenuoptions($selected, $active),
+            false, $onchange);
+    }
+
+
+    /**
+     * Returns the HTML code for the countries dropdown menu options
+     * @param   string  $selected     The optional selected Country ID
+     * @param   boolean $active       If true, only active countries
+     *                                are added to the options, all otherwise.
+     * @return  string                The HTML dropdown menu options code
+     * @static
+     */
+    static function getMenuoptions($selected=0, $active=true)
+    {
+        return Html::getOptions(self::getNameArray($active), $selected);
+    }
+
+
+    /**
      * Returns an array of two arrays; one with countries in the given zone,
      * the other with the remaining countries.
      *
+     * If $zone_id is empty, includes Countries for all Zones present.
      * The array looks like this:
      *  array(
      *    'in' => array(    // Countries in the zone
      *      country ID => array(
      *        'id' => country ID,
      *        'name' => country name,
-     *        'name_text_id' => country name Text ID,
      *      ),
      *      ... more ...
      *    ),
@@ -248,1093 +657,375 @@ class Country
      *      country ID => array(
      *        'id' => country ID,
      *        'name' => country name,
-     *        'name_text_id' => country name Text ID,
      *      ),
      *      ... more ...
      *    ),
      *  );
-     * @param   integer     $zone_id        The zone ID
+     * @todo    Shop use only (should be moved back there)!
+     * @param   integer     $zone_id        The optional Zone ID
      * @return  array                       Countries array, as described above
-    static function getArraysByZoneId($zone_id)
+     */
+    static function getArraysByZoneId($zone_id=null)
     {
         global $objDatabase;
 
-        if (empty(self::$arrCountries)) self::init();
-
+        if (is_null(self::$arrCountries)) self::init();
         // Query relations between zones and countries:
         // Get all country IDs and names
         // associated with that zone ID
-//        $arrSqlName = Text::getSqlSnippets(
-//            '`country`.`name_text_id`', FRONTEND_LANG_ID,
-//            MODULE_ID, TEXT_SHOP_COUNTRY_NAME
-//        );
-// TEST!
-//        $query = "
-//            SELECT `country`.`id`, `relation`.`country_id`".
-//                   $arrSqlName['field']."
-//              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_countries` AS `country`".
-//                   $arrSqlName['join']."
-//              LEFT JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `relation`
-//                ON `country`.`id`=`relation`.`country_id`
-//             WHERE `country`.`is_active`=1
-//               AND `relation`.`zone_id`=$zone_id
-//             ORDER BY ".$arrSqlName['text']." ASC
-//        ";
+        $arrSqlName = Text::getSqlSnippets(
+            '`country`.`id`', FRONTEND_LANG_ID, 'core',
+            array('name' => self::TEXT_NAME));
         $query = "
-            SELECT `relation`.`countries_id`
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `relation`
-              JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_countries` AS `country`
-                ON `country`.`countries_id`=`relation`.`countries_id`
-             WHERE `relation`.`zones_id`=$zone_id
-             ORDER BY `country`.`countries_name`
-        ";
-//             WHERE `country`.`activation_is_active`=1
-//             ORDER BY ".//$arrSqlName['text']."`country`.`countries_name` ASC
+            SELECT `country`.`id`, ".$arrSqlName['field']."
+              FROM `".DBPREFIX."core_country` AS `country`
+             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `relation`
+                ON `country`.`id`=`relation`.`country_id`
+                   ".$arrSqlName['join']."
+             WHERE `country`.`active`=1
+               ".($zone_id ? "AND `relation`.`zone_id`=$zone_id" : '')."
+             ORDER BY `name` ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         // Initialize the array to avoid notices when one or the other is empty
         $arrZoneCountries = array('in' => array(), 'out' => array());
+
         while (!$objResult->EOF) {
-            $id = $objResult->fields['countries_id'];
-            // Country may only be in the Zone if it exists and is active
-            if (   empty(self::$arrCountries[$id])
-                || empty(self::$arrCountries[$id]['is_active']))
-                continue;
+            $id = $objResult->fields['id'];
+            $strName = $objResult->fields['name'];
+            if ($strName === null) {
+//DBG::log(("MISSING Name for ID $id"));
+                $objText = Text::getById($id, 'core', self::TEXT_NAME, 0);
+//DBG::log(("GOT Name for Text ID $id: ".$objText->content()));
+                if ($objText) $strName = $objText->content();
+            }
+//DBG::log(("IN zone: ID $id - $strName"));
             $arrZoneCountries['in'][$id] = array(
-                'id' => $id,
-                'name' => self::$arrCountries[$id]['name'],
-// Probably not needed:
-//                'name_text_id' => $name_text_id,
+                'id'   => $id,
+                'name' => $strName,
             );
             $objResult->MoveNext();
         }
         foreach (self::$arrCountries as $id => $arrCountry) {
-            // Country may only be available for the Zone if it is active
-            if (empty($arrZoneCountries['in'][$id])
-                && $arrCountry['is_active'])
+            // Country may only be available for the Zone if it's
+            // not in yet and it's active
+            if (   empty($arrZoneCountries['in'][$id])
+                && $arrCountry['active']) {
+//DBG::log(("OUT zone: ID $id - {$arrCountry['name']}"));
                 $arrZoneCountries['out'][$id] = array(
-                    'id' => $id,
+                    'id'   => $id,
                     'name' => $arrCountry['name'],
                 );
+            }
+
         }
         return $arrZoneCountries;
     }
-     */
 
 
     /**
-     * Tries to fix or recreate the database table(s) for the class
+     * Activate the countries whose IDs are listed in the comma separated
+     * list of Country IDs
      *
-     * Should be called whenever there's a problem with the database table.
-     * @return  boolean             False.  Always.
-     */
-    function errorHandler()
-    {
-        global $objDatabase;
-
-die("Country::errorHandler(): Disabled!<br />");
-
-        $arrTables = $objDatabase->MetaTables('TABLES');
-        if (!in_array(DBPREFIX."core_country", $arrTables)) {
-            $query = "
-                CREATE TABLE IF NOT EXISTS `".DBPREFIX."core_country` (
-                  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-                  `name_text_id` INT UNSIGNED NOT NULL DEFAULT 0,
-                  `iso_code_2` CHAR(2) ASCII NOT NULL DEFAULT '',
-                  `iso_code_3` CHAR(3) ASCII NOT NULL DEFAULT '',
-                  `ord` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-                  `is_active` TINYINT(1) UNSIGNED NOT NULL DEFAULT 1,
-                  PRIMARY KEY (`id`),
-                  INDEX `country_name_text_id` (`name_text_id` ASC)
-                ) ENGINE=MYISAM";
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult) return false;
-echo("Country::errorHandler(): Created table ".DBPREFIX."core_country<br />");
-        }
-
-        // Remove old countries
-        $objResult = $objDatabase->Execute("
-            TRUNCATE TABLE `".DBPREFIX."core_country`");
-        if (!$objResult)
-die("Country::errorHandler(): Failed to truncate table ".DBPREFIX."core_country");
-
-        // Remove old country names
-        Text::deleteByKey(self::TEXT_CORE_COUNTRY_NAME);
-// Obsolete
-//        Text::deleteByKey('CORE_COUNTRY');
-
-/*
-        // Insert all country names into the multilanguage text table
-        // German
-        $query = "
-            INSERT INTO `".DBPREFIX."core_text` (
-              `id`, `lang_id`, `module_id`, `key`, `text`
-            )
-            SELECT NULL, 1, 0, '".self::TEXT_CORE_COUNTRY_NAME."', `name`
-              FROM `".DBPREFIX."lib_country`";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-
-        // Insert all country name text IDs into the country table
-        $query = "
-            INSERT INTO `".DBPREFIX."core_country` (
-              `name_text_id`, `iso_code_2`, `iso_code_3`
-            )
-            SELECT DISTINCT `t`.`id`, `c`.`iso_code_2`, `c`.`iso_code_3`
-              FROM `".DBPREFIX."lib_country` AS `c`
-             INNER JOIN `".DBPREFIX."core_text` AS `t`
-                ON `c`.`name`=`t`.`text`
-             WHERE `t`.`key`='".self::TEXT_CORE_COUNTRY_NAME."'
-               AND `t`.`lang_id`=2";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-*/
-
-        // Re-insert country records from scratch
-        $arrCountries = array(
-            // (ID (Obsolete), Name, ISO2, ISO3)
-            array(1, 'Afghanistan', 'AF', 'AFG'),
-            array(2, 'Albania', 'AL', 'ALB'),
-            array(3, 'Algeria', 'DZ', 'DZA'),
-            array(4, 'American Samoa', 'AS', 'ASM'),
-            array(5, 'Andorra', 'AD', 'AND'),
-            array(6, 'Angola', 'AO', 'AGO'),
-            array(7, 'Anguilla', 'AI', 'AIA'),
-            array(8, 'Antarctica', 'AQ', 'ATA'),
-            array(9, 'Antigua and Barbuda', 'AG', 'ATG'),
-            array(10, 'Argentina', 'AR', 'ARG'),
-            array(11, 'Armenia', 'AM', 'ARM'),
-            array(12, 'Aruba', 'AW', 'ABW'),
-            array(13, 'Australia', 'AU', 'AUS'),
-            array(14, 'Österreich', 'AT', 'AUT'),
-            array(15, 'Azerbaijan', 'AZ', 'AZE'),
-            array(16, 'Bahamas', 'BS', 'BHS'),
-            array(17, 'Bahrain', 'BH', 'BHR'),
-            array(18, 'Bangladesh', 'BD', 'BGD'),
-            array(19, 'Barbados', 'BB', 'BRB'),
-            array(20, 'Belarus', 'BY', 'BLR'),
-            array(21, 'Belgium', 'BE', 'BEL'),
-            array(22, 'Belize', 'BZ', 'BLZ'),
-            array(23, 'Benin', 'BJ', 'BEN'),
-            array(24, 'Bermuda', 'BM', 'BMU'),
-            array(25, 'Bhutan', 'BT', 'BTN'),
-            array(26, 'Bolivia', 'BO', 'BOL'),
-            array(27, 'Bosnia and Herzegowina', 'BA', 'BIH'),
-            array(28, 'Botswana', 'BW', 'BWA'),
-            array(29, 'Bouvet Island', 'BV', 'BVT'),
-            array(30, 'Brazil', 'BR', 'BRA'),
-            array(31, 'British Indian Ocean Territory', 'IO', 'IOT'),
-            array(32, 'Brunei Darussalam', 'BN', 'BRN'),
-            array(33, 'Bulgaria', 'BG', 'BGR'),
-            array(34, 'Burkina Faso', 'BF', 'BFA'),
-            array(35, 'Burundi', 'BI', 'BDI'),
-            array(36, 'Cambodia', 'KH', 'KHM'),
-            array(37, 'Cameroon', 'CM', 'CMR'),
-            array(38, 'Canada', 'CA', 'CAN'),
-            array(39, 'Cape Verde', 'CV', 'CPV'),
-            array(40, 'Cayman Islands', 'KY', 'CYM'),
-            array(41, 'Central African Republic', 'CF', 'CAF'),
-            array(42, 'Chad', 'TD', 'TCD'),
-            array(43, 'Chile', 'CL', 'CHL'),
-            array(44, 'China', 'CN', 'CHN'),
-            array(45, 'Christmas Island', 'CX', 'CXR'),
-            array(46, 'Cocos (Keeling) Islands', 'CC', 'CCK'),
-            array(47, 'Colombia', 'CO', 'COL'),
-            array(48, 'Comoros', 'KM', 'COM'),
-            array(49, 'Congo', 'CG', 'COG'),
-            array(50, 'Cook Islands', 'CK', 'COK'),
-            array(51, 'Costa Rica', 'CR', 'CRI'),
-            array(52, 'Cote D\'Ivoire', 'CI', 'CIV'),
-            array(53, 'Croatia', 'HR', 'HRV'),
-            array(54, 'Cuba', 'CU', 'CUB'),
-            array(55, 'Cyprus', 'CY', 'CYP'),
-            array(56, 'Czech Republic', 'CZ', 'CZE'),
-            array(57, 'Denmark', 'DK', 'DNK'),
-            array(58, 'Djibouti', 'DJ', 'DJI'),
-            array(59, 'Dominica', 'DM', 'DMA'),
-            array(60, 'Dominican Republic', 'DO', 'DOM'),
-            array(61, 'East Timor', 'TP', 'TMP'),
-            array(62, 'Ecuador', 'EC', 'ECU'),
-            array(63, 'Egypt', 'EG', 'EGY'),
-            array(64, 'El Salvador', 'SV', 'SLV'),
-            array(65, 'Equatorial Guinea', 'GQ', 'GNQ'),
-            array(66, 'Eritrea', 'ER', 'ERI'),
-            array(67, 'Estonia', 'EE', 'EST'),
-            array(68, 'Ethiopia', 'ET', 'ETH'),
-            array(69, 'Falkland Islands (Malvinas)', 'FK', 'FLK'),
-            array(70, 'Faroe Islands', 'FO', 'FRO'),
-            array(71, 'Fiji', 'FJ', 'FJI'),
-            array(72, 'Finland', 'FI', 'FIN'),
-            array(73, 'France', 'FR', 'FRA'),
-            array(74, 'France, Metropolitan', 'FX', 'FXX'),
-            array(75, 'French Guiana', 'GF', 'GUF'),
-            array(76, 'French Polynesia', 'PF', 'PYF'),
-            array(77, 'French Southern Territories', 'TF', 'ATF'),
-            array(78, 'Gabon', 'GA', 'GAB'),
-            array(79, 'Gambia', 'GM', 'GMB'),
-            array(80, 'Georgia', 'GE', 'GEO'),
-            array(81, 'Deutschland', 'DE', 'DEU'),
-            array(82, 'Ghana', 'GH', 'GHA'),
-            array(83, 'Gibraltar', 'GI', 'GIB'),
-            array(84, 'Greece', 'GR', 'GRC'),
-            array(85, 'Greenland', 'GL', 'GRL'),
-            array(86, 'Grenada', 'GD', 'GRD'),
-            array(87, 'Guadeloupe', 'GP', 'GLP'),
-            array(88, 'Guam', 'GU', 'GUM'),
-            array(89, 'Guatemala', 'GT', 'GTM'),
-            array(90, 'Guinea', 'GN', 'GIN'),
-            array(91, 'Guinea-bissau', 'GW', 'GNB'),
-            array(92, 'Guyana', 'GY', 'GUY'),
-            array(93, 'Haiti', 'HT', 'HTI'),
-            array(94, 'Heard and Mc Donald Islands', 'HM', 'HMD'),
-            array(95, 'Honduras', 'HN', 'HND'),
-            array(96, 'Hong Kong', 'HK', 'HKG'),
-            array(97, 'Hungary', 'HU', 'HUN'),
-            array(98, 'Iceland', 'IS', 'ISL'),
-            array(99, 'India', 'IN', 'IND'),
-            array(100, 'Indonesia', 'ID', 'IDN'),
-            array(101, 'Iran (Islamic Republic of)', 'IR', 'IRN'),
-            array(102, 'Iraq', 'IQ', 'IRQ'),
-            array(103, 'Ireland', 'IE', 'IRL'),
-            array(104, 'Israel', 'IL', 'ISR'),
-            array(105, 'Italy', 'IT', 'ITA'),
-            array(106, 'Jamaica', 'JM', 'JAM'),
-            array(107, 'Japan', 'JP', 'JPN'),
-            array(108, 'Jordan', 'JO', 'JOR'),
-            array(109, 'Kazakhstan', 'KZ', 'KAZ'),
-            array(110, 'Kenya', 'KE', 'KEN'),
-            array(111, 'Kiribati', 'KI', 'KIR'),
-            array(112, 'Korea, Democratic People\'s Republic of', 'KP', 'PRK'),
-            array(113, 'Korea, Republic of', 'KR', 'KOR'),
-            array(114, 'Kuwait', 'KW', 'KWT'),
-            array(115, 'Kyrgyzstan', 'KG', 'KGZ'),
-            array(116, 'Lao People\'s Democratic Republic', 'LA', 'LAO'),
-            array(117, 'Latvia', 'LV', 'LVA'),
-            array(118, 'Lebanon', 'LB', 'LBN'),
-            array(119, 'Lesotho', 'LS', 'LSO'),
-            array(120, 'Liberia', 'LR', 'LBR'),
-            array(121, 'Libyan Arab Jamahiriya', 'LY', 'LBY'),
-            array(122, 'Liechtenstein', 'LI', 'LIE'),
-            array(123, 'Lithuania', 'LT', 'LTU'),
-            array(124, 'Luxembourg', 'LU', 'LUX'),
-            array(125, 'Macau', 'MO', 'MAC'),
-            array(126, 'Macedonia, The Former Yugoslav Republic of', 'MK', 'MKD'),
-            array(127, 'Madagascar', 'MG', 'MDG'),
-            array(128, 'Malawi', 'MW', 'MWI'),
-            array(129, 'Malaysia', 'MY', 'MYS'),
-            array(130, 'Maldives', 'MV', 'MDV'),
-            array(131, 'Mali', 'ML', 'MLI'),
-            array(132, 'Malta', 'MT', 'MLT'),
-            array(133, 'Marshall Islands', 'MH', 'MHL'),
-            array(134, 'Martinique', 'MQ', 'MTQ'),
-            array(135, 'Mauritania', 'MR', 'MRT'),
-            array(136, 'Mauritius', 'MU', 'MUS'),
-            array(137, 'Mayotte', 'YT', 'MYT'),
-            array(138, 'Mexico', 'MX', 'MEX'),
-            array(139, 'Micronesia, Federated States of', 'FM', 'FSM'),
-            array(140, 'Moldova, Republic of', 'MD', 'MDA'),
-            array(141, 'Monaco', 'MC', 'MCO'),
-            array(142, 'Mongolia', 'MN', 'MNG'),
-            array(143, 'Montserrat', 'MS', 'MSR'),
-            array(144, 'Morocco', 'MA', 'MAR'),
-            array(145, 'Mozambique', 'MZ', 'MOZ'),
-            array(146, 'Myanmar', 'MM', 'MMR'),
-            array(147, 'Namibia', 'NA', 'NAM'),
-            array(148, 'Nauru', 'NR', 'NRU'),
-            array(149, 'Nepal', 'NP', 'NPL'),
-            array(150, 'Netherlands', 'NL', 'NLD'),
-            array(151, 'Netherlands Antilles', 'AN', 'ANT'),
-            array(152, 'New Caledonia', 'NC', 'NCL'),
-            array(153, 'New Zealand', 'NZ', 'NZL'),
-            array(154, 'Nicaragua', 'NI', 'NIC'),
-            array(155, 'Niger', 'NE', 'NER'),
-            array(156, 'Nigeria', 'NG', 'NGA'),
-            array(157, 'Niue', 'NU', 'NIU'),
-            array(158, 'Norfolk Island', 'NF', 'NFK'),
-            array(159, 'Northern Mariana Islands', 'MP', 'MNP'),
-            array(160, 'Norway', 'NO', 'NOR'),
-            array(161, 'Oman', 'OM', 'OMN'),
-            array(162, 'Pakistan', 'PK', 'PAK'),
-            array(163, 'Palau', 'PW', 'PLW'),
-            array(164, 'Panama', 'PA', 'PAN'),
-            array(165, 'Papua New Guinea', 'PG', 'PNG'),
-            array(166, 'Paraguay', 'PY', 'PRY'),
-            array(167, 'Peru', 'PE', 'PER'),
-            array(168, 'Philippines', 'PH', 'PHL'),
-            array(169, 'Pitcairn', 'PN', 'PCN'),
-            array(170, 'Poland', 'PL', 'POL'),
-            array(171, 'Portugal', 'PT', 'PRT'),
-            array(172, 'Puerto Rico', 'PR', 'PRI'),
-            array(173, 'Qatar', 'QA', 'QAT'),
-            array(174, 'Reunion', 'RE', 'REU'),
-            array(175, 'Romania', 'RO', 'ROM'),
-            array(176, 'Russian Federation', 'RU', 'RUS'),
-            array(177, 'Rwanda', 'RW', 'RWA'),
-            array(178, 'Saint Kitts and Nevis', 'KN', 'KNA'),
-            array(179, 'Saint Lucia', 'LC', 'LCA'),
-            array(180, 'Saint Vincent and the Grenadines', 'VC', 'VCT'),
-            array(181, 'Samoa', 'WS', 'WSM'),
-            array(182, 'San Marino', 'SM', 'SMR'),
-            array(183, 'Sao Tome and Principe', 'ST', 'STP'),
-            array(184, 'Saudi Arabia', 'SA', 'SAU'),
-            array(185, 'Senegal', 'SN', 'SEN'),
-            array(186, 'Seychelles', 'SC', 'SYC'),
-            array(187, 'Sierra Leone', 'SL', 'SLE'),
-            array(188, 'Singapore', 'SG', 'SGP'),
-            array(189, 'Slovakia (Slovak Republic)', 'SK', 'SVK'),
-            array(190, 'Slovenia', 'SI', 'SVN'),
-            array(191, 'Solomon Islands', 'SB', 'SLB'),
-            array(192, 'Somalia', 'SO', 'SOM'),
-            array(193, 'South Africa', 'ZA', 'ZAF'),
-            array(194, 'South Georgia and the South Sandwich Islands', 'GS', 'SGS'),
-            array(195, 'Spain', 'ES', 'ESP'),
-            array(196, 'Sri Lanka', 'LK', 'LKA'),
-            array(197, 'St. Helena', 'SH', 'SHN'),
-            array(198, 'St. Pierre and Miquelon', 'PM', 'SPM'),
-            array(199, 'Sudan', 'SD', 'SDN'),
-            array(200, 'Suriname', 'SR', 'SUR'),
-            array(201, 'Svalbard and Jan Mayen Islands', 'SJ', 'SJM'),
-            array(202, 'Swaziland', 'SZ', 'SWZ'),
-            array(203, 'Sweden', 'SE', 'SWE'),
-            array(204, 'Schweiz', 'CH', 'CHE'),
-            array(205, 'Syrian Arab Republic', 'SY', 'SYR'),
-            array(206, 'Taiwan', 'TW', 'TWN'),
-            array(207, 'Tajikistan', 'TJ', 'TJK'),
-            array(208, 'Tanzania, United Republic of', 'TZ', 'TZA'),
-            array(209, 'Thailand', 'TH', 'THA'),
-            array(210, 'Togo', 'TG', 'TGO'),
-            array(211, 'Tokelau', 'TK', 'TKL'),
-            array(212, 'Tonga', 'TO', 'TON'),
-            array(213, 'Trinidad and Tobago', 'TT', 'TTO'),
-            array(214, 'Tunisia', 'TN', 'TUN'),
-            array(215, 'Turkey', 'TR', 'TUR'),
-            array(216, 'Turkmenistan', 'TM', 'TKM'),
-            array(217, 'Turks and Caicos Islands', 'TC', 'TCA'),
-            array(218, 'Tuvalu', 'TV', 'TUV'),
-            array(219, 'Uganda', 'UG', 'UGA'),
-            array(220, 'Ukraine', 'UA', 'UKR'),
-            array(221, 'United Arab Emirates', 'AE', 'ARE'),
-            array(222, 'United Kingdom', 'GB', 'GBR'),
-            array(223, 'United States', 'US', 'USA'),
-            array(224, 'United States Minor Outlying Islands', 'UM', 'UMI'),
-            array(225, 'Uruguay', 'UY', 'URY'),
-            array(226, 'Uzbekistan', 'UZ', 'UZB'),
-            array(227, 'Vanuatu', 'VU', 'VUT'),
-            array(228, 'Vatican City State (Holy See)', 'VA', 'VAT'),
-            array(229, 'Venezuela', 'VE', 'VEN'),
-            array(230, 'Viet Nam', 'VN', 'VNM'),
-            array(231, 'Virgin Islands (British)', 'VG', 'VGB'),
-            array(232, 'Virgin Islands (U.S.)', 'VI', 'VIR'),
-            array(233, 'Wallis and Futuna Islands', 'WF', 'WLF'),
-            array(234, 'Western Sahara', 'EH', 'ESH'),
-            array(235, 'Yemen', 'YE', 'YEM'),
-            array(236, 'Yugoslavia', 'YU', 'YUG'),
-            array(237, 'Zaire', 'ZR', 'ZAR'),
-            array(238, 'Zambia', 'ZM', 'ZMB'),
-            array(239, 'Zimbabwe', 'ZW', 'ZWE'),
-        );
-        $ord = 0;
-        foreach ($arrCountries as $arrCountry) {
-            // German only!
-            $objResult = $objDatabase->Execute("
-                INSERT INTO `".DBPREFIX."core_text` (
-                  `id`, `lang_id`, `module_id`, `key`, `text`
-                ) VALUES (
-                  NULL, 1, 0, '".self::TEXT_CORE_COUNTRY_NAME."', '".addslashes($arrCountry[1])."'
-                )");
-            if (!$objResult) {
-                Text::errorHandler();
-                return self::errorHandler();
-//echo("Country::errorHandler(): Failed to insert Text for Country ".var_export($arrCountry, true)."<br />");
-//                continue;
-            }
-            $text_id = $objDatabase->Insert_ID();
-            // The active field defaults to 1
-            $objResult = $objDatabase->Execute("
-                INSERT INTO `".DBPREFIX."core_country` (
-                  `id`, `name_text_id`, `iso_code_2`, `iso_code_3`, `ord`
-                ) VALUES (
-                  ".$arrCountry['0'].",
-                  $text_id,
-                  '".addslashes($arrCountry['2'])."',
-                  '".addslashes($arrCountry['3'])."',
-                  ".++$ord."
-                )");
-            if (!$objResult) {
-die("Country::errorHandler(): Failed to insert Country ".var_export($arrCountry, true)."<br />");
-//                continue;
-            }
-        }
-
-        // More to come...
-
-        // Always!
-        return false;
-    }
-
-}
-
-
-/**
- * State helper methods
- * @version     2.2.0
- * @since       2.2.0
- * @package     contrexx
- * @subpackage  core
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Reto Kohli <reto.kohli@comvation.com>
- * @todo        Test!
- */
-class State
-{
-    const TEXT_STATE = 'core_country_state';
-
-    /**
-     * Initialises and returns the static array with all records
-     * from the database
-     *
-     * Note: The short state names are only present in one language
-     * @param   boolean     $fullname   If true, the full state names are
-     *                                  looked up and used instead of the
-     *                                  short ones
-     * @global  ADONewConnection  $objDatabase
-     * @return  array                   The state array on success,
-     *                                  false otherwise
-     */
-    function getArray($fullname)
-    {
-        global $objDatabase;
-        static $arrState = false;
-
-        if (empty($arrState)) {
-            $query = "
-                SELECT DISTINCT `zip`.`state`, `text`.`text`
-                  FROM `".DBPREFIX."core_zip` AS `zip`
-                 INNER JOIN `".DBPREFIX."core_text` AS `text`
-                       ON `text`.`key`=CONCAT('".self::TEXT_STATE."_', `zip`.`state`)
-                 WHERE `text`.`lang_id`=".FRONTEND_LANG_ID."
-                 ORDER BY `state` ASC";
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult) return self::errorHandler();
-            $arrState = array();
-            while (!$objResult->EOF) {
-                $arrState[$objResult->fields['state']] =
-                    ($fullname
-                      ? $objResult->fields['text']
-                      : $objResult->fields['state']);
-                $objResult->MoveNext();
-            }
-        }
-        return $arrState;
-    }
-
-
-    /**
-     * Returns the short state name for the given location (city)
-     * @param   string    $location     The location (city) name
-     * @return  string                  The short state name, if found,
-     *                                  false otherwise
-     */
-    static function getByLocation($location)
-    {
-        global $objDatabase;
-
-        $query = "
-            SELECT `state`
-              FROM ".DBPREFIX."core_zip
-             WHERE `city`='".addslashes($location)."'";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return self::errorHandler();
-        if ($objResult->EOF) return false;
-        return $objResult->fields['state'];
-    }
-
-
-    /**
-     * Returns the short state name for the given zip
-     * @param   string    $location     The zip
-     * @return  string                  The short state name, if found,
-     *                                  false otherwise
-     */
-    static function getByZip($zip)
-    {
-        global $objDatabase;
-
-        $query = "
-            SELECT `state`
-              FROM ".DBPREFIX."core_zip
-             WHERE `zip`='".addslashes($zip)."'";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return self::errorHandler();
-        if ($objResult->EOF) return false;
-        return $objResult->fields['state'];
-    }
-
-
-    /**
-     * Returns the full state name in the current language
-     *
-     * This method uses a little hack to pick Text entries with
-     * distinct keys from the Text table.  See {@see Text::getByKey()}
-     * for details.
-     * Uses the FRONTEND_LANG_ID global constant as the current language ID.
-     * If the full name is not present in the Text table, some error
-     * message generated by the Text class is returned.
-     * @param   string    $state    The short state name
-     * @return  string              The full state name on success,
-     *                              some error message otherwise
-     */
-    static function getFullname($state)
-    {
-        $objText = Text::getByKey(self::TEXT_STATE.'_'.$state, FRONTEND_LANG_ID);
-        return $objText->getText();
-    }
-
-
-    static function errorHandler()
-    {
-
-        global $objDatabase;
-
-die("State::errorHandler(): Disabled!<br />");
-
-        $query = "DROP TABLE IF EXISTS `".DBPREFIX."core_zip`";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-
-        $query = "
-            CREATE TABLE `".DBPREFIX."core_zip` (
-              `zip`        VARCHAR(8) NOT NULL DEFAULT '',
-              `city`       VARCHAR(64) NOT NULL DEFAULT '',
-              `state`      VARCHAR(4) NOT NULL DEFAULT '',
-              `country_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-              PRIMARY KEY (`zip`, `country_id`),
-              INDEX (`city`),
-              INDEX (`state`)
-            ) ENGINE=MYISAM";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-
-        // Data -- to big to load all the time
-        $query = file_get_contents(ASCMS_CORE_PATH.'/region_data.sql');
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-
-        $query = "
-            DELETE FROM `".DBPREFIX."core_text`
-             WHERE `key` LIKE '".self::TEXT_STATE."%'";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-
-        // Add the full state names to the text table
-        // Note: Text::replace() returns the ID
-        Text::replace(false, FRONTEND_LANG_ID, 'Appenzell Innerrhoden', 0, self::TEXT_STATE.'_AI');
-        Text::replace(false, FRONTEND_LANG_ID, 'Appenzell Ausserrhoden', 0, self::TEXT_STATE.'_AR');
-        Text::replace(false, FRONTEND_LANG_ID, 'Bern', 0, self::TEXT_STATE.'_BE');
-        Text::replace(false, FRONTEND_LANG_ID, 'Basel Land', 0, self::TEXT_STATE.'_BL');
-        Text::replace(false, FRONTEND_LANG_ID, 'Basel Stadt', 0, self::TEXT_STATE.'_BS');
-        Text::replace(false, FRONTEND_LANG_ID, 'Deutschland', 0, self::TEXT_STATE.'_DE');
-        Text::replace(false, FRONTEND_LANG_ID, 'Fürstentum Liechtenstein', 0, self::TEXT_STATE.'_FL');
-        Text::replace(false, FRONTEND_LANG_ID, 'Fribourg', 0, self::TEXT_STATE.'_FR');
-        Text::replace(false, FRONTEND_LANG_ID, 'Genève', 0, self::TEXT_STATE.'_GE');
-        Text::replace(false, FRONTEND_LANG_ID, 'Glarus', 0, self::TEXT_STATE.'_GL');
-        Text::replace(false, FRONTEND_LANG_ID, 'Graubünden', 0, self::TEXT_STATE.'_GR');
-        Text::replace(false, FRONTEND_LANG_ID, 'Italien', 0, self::TEXT_STATE.'_IT');
-        Text::replace(false, FRONTEND_LANG_ID, 'Jura', 0, self::TEXT_STATE.'_JU');
-        Text::replace(false, FRONTEND_LANG_ID, 'Luzern', 0, self::TEXT_STATE.'_LU');
-        Text::replace(false, FRONTEND_LANG_ID, 'Neuchâtel', 0, self::TEXT_STATE.'_NE');
-        Text::replace(false, FRONTEND_LANG_ID, 'Nidwalden', 0, self::TEXT_STATE.'_NW');
-        Text::replace(false, FRONTEND_LANG_ID, 'Obwalden', 0, self::TEXT_STATE.'_OW');
-        Text::replace(false, FRONTEND_LANG_ID, 'Sankt Gallen', 0, self::TEXT_STATE.'_SG');
-        Text::replace(false, FRONTEND_LANG_ID, 'Schaffhausen', 0, self::TEXT_STATE.'_SH');
-        Text::replace(false, FRONTEND_LANG_ID, 'Soloturn', 0, self::TEXT_STATE.'_SO');
-        Text::replace(false, FRONTEND_LANG_ID, 'Schwyz', 0, self::TEXT_STATE.'_SZ');
-        Text::replace(false, FRONTEND_LANG_ID, 'Thurgau', 0, self::TEXT_STATE.'_TG');
-        Text::replace(false, FRONTEND_LANG_ID, 'Ticino', 0, self::TEXT_STATE.'_TI');
-        Text::replace(false, FRONTEND_LANG_ID, 'Uri', 0, self::TEXT_STATE.'_UR');
-        Text::replace(false, FRONTEND_LANG_ID, 'Vaud', 0, self::TEXT_STATE.'_VD');
-        Text::replace(false, FRONTEND_LANG_ID, 'Valais', 0, self::TEXT_STATE.'_VS');
-        Text::replace(false, FRONTEND_LANG_ID, 'Zug', 0, self::TEXT_STATE.'_ZG');
-        Text::replace(false, FRONTEND_LANG_ID, 'Zürich', 0, self::TEXT_STATE.'_ZH');
-
-        // More to come...
-
-        // Always!
-        return false;
-    }
-}
-
-
-/**
- * State helper methods
- * @version     2.2.0
- * @since       2.2.0
- * @package     contrexx
- * @subpackage  core
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Reto Kohli <reto.kohli@comvation.com>
- * @todo        Test!
- */
-class Location
-{
-    private static $arrLocations = false;
-
-    /**
-     * Initialises and returns the static array with all records
-     * from the database matching the given state, if any
-     *
-     * The array returned looks like
-     *  array(
-     *    zip => location,
-     *    ... more ...
-     *  )
-     * Note: The locations are only present in one language.
-     * The second optional $format parameter determines the format
-     * of the location strings, as processed by sprintf().
-     * The parameter %1$s is replaced by the location, and %2$s by the ZIP.
-     * The format defaults to '%1$s', the location only.
-     * E.g. if you specify the format as '%1$s (%2$s)', you get entries
-     * like 'location (zip)'.
-     * @global  ADONewConnection  $objDatabase
-     * @param   string    $state        The optional state name
-     * @param   integer   $zip_pos      The position of the ZIP code
-     * @return  boolean                 True on success, false otherwise
-     */
-    function getArrayByState($state=false, $format='%1$s')
-    {
-        global $objDatabase;
-        static $last_state = null;
-
-        if (empty(self::$arrLocations) || $last_state !== $state) {
-            self::$arrLocations = array();
-            $query = "
-                SELECT DISTINCT `city`, `zip`
-                  FROM `".DBPREFIX."core_zip`
-                 ".($state ? "WHERE `state`='".addslashes($state)."'" : '')."
-                 ORDER BY `city` ASC, `zip` ASC";
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult) return self::errorHandler();
-            self::$arrLocations = array();
-            while (!$objResult->EOF) {
-                self::$arrLocations[$objResult->fields['zip']] =
-//                self::$arrLocations[$objResult->fields['city']] =
-                    sprintf($format,
-                        $objResult->fields['city'],
-                        $objResult->fields['zip']
-                    );
-                $objResult->MoveNext();
-            }
-        }
-        $last_state = $state;
-//echo("Location::getArrayByState($state): Made array<br />".var_export(self::$arrLocations, true)."<hr />");
-        return self::$arrLocations;
-    }
-
-
-    static function getCityByZip($zip, $country_id)
-    {
-        global $objDatabase;
-
-        $query = "
-            SELECT `city`
-              FROM `".DBPREFIX."core_zip`
-             WHERE `zip`='".addslashes($zip)."'
-               AND `country_id`=$country_id";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return self::errorHandler();
-        if ($objResult->EOF) return false;
-        return $objResult->fields['city'];
-    }
-
-
-    static function getSqlSnippets($field_foreign_zip, $alias=false)
-    {
-        static $table_alias_index = 0;
-
-        if (empty($field_foreign_zip)) return false;
-        $table_alias = 'location_'.++$table_alias_index;
-        $field_zip = $table_alias.'_zip';
-        $field_city = ($alias ? $alias : $table_alias.'_city');
-        $query_field =
-            ', '.$field_foreign_zip.
-            ', `'.$table_alias.'`.`zip`  AS `'.$field_zip.'`'.
-            ', `'.$table_alias.'`.`city` AS `'.$field_city.'`';
-        $query_join =
-            ' LEFT JOIN `'.DBPREFIX.'core_zip` as `'.$table_alias.'`'.
-            ' ON `'.$table_alias.'`.`zip`='.$field_foreign_zip;
-// Unfortunately, we don't have these in multiple lanugages yet
-//            ' AND `'.$table_alias.'`.`lang_id`='.$lang_id.
-//echo("Text::getSqlSnippets(): got name /$field_id_name/, made ");
-            // Remove table name, dot and backticks, if any
-            $field_foreign_zip = preg_replace(
-                '/`?\w*`?\.?`?(\w+)`?/', '$1', $field_foreign_zip);
-//echo("/$field_id_name/<br />");
-        return array(
-            'zip'   => $field_zip,
-            'city'  => $field_city,
-            'name'  => $field_foreign_zip,
-            'alias' => $table_alias,
-            'field' => $query_field,
-            'join'  => $query_join,
-        );
-    }
-
-
-    static function getMatching($location, $state)
-    {
-        global $objDatabase;
-
-        $query = "
-            SELECT DISTINCT `city`
-              FROM `".DBPREFIX."core_zip`
-             WHERE 1
-             ".($location ? " AND `city` LIKE '".addslashes($location)."%'" : '')."
-             ".($state ? " AND `state`='".addslashes($state)."'" : '')."
-             ORDER BY `city` ASC";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) die();
-        $arrLocations = array();
-        while (!$objResult->EOF) {
-            $arrLocations[] =
-                $objResult->fields['city'];
-            $objResult->MoveNext();
-        }
-        die(join(',', $arrLocations));
-    }
-
-
-    /**
-     * Returns the HTML code for the locations dropdown menu options
-     * @param   string  $state      The optional state
-     * @param   string  $selected   Optional preselected region ID
-     * @param   string  $format     The optional format, passed on to
-     *                              {@see Location::getArrayByState()}
-     * @return  string              The HTML dropdown menu options code
-     * @static
-     */
-    static function getMenuoptions($state='', $selected=false, $format=false)
-    {
-        $strMenuoptions = '';
-        foreach (self::getArrayByState($state, $format)
-            as $id => $location) {
-            $strMenuoptions .=
-                '<option value="'.$id.'"'.
-                ($selected == $id ? ' selected="selected"' : '').'>'.
-                $location."</option>\n";
-        }
-        return $strMenuoptions;
-    }
-
-
-    static function errorHandler()
-    {
-        return State::errorHandler();
-    }
-
-}
-
-
-/**
- * NOT CURRENTLY IN USE
- * See {@see State} and {@see Location} classes for some intermediate
- * solution to most of your problems.
- *
- * Region helper methods
- * @version     2.2.0
- * @since       2.2.0
- * @package     contrexx
- * @subpackage  core
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Reto Kohli <reto.kohli@comvation.com>
- * @todo        Test!
- */
-class Region
-{
-    /**
-     * Database key
-     */
-    const TEXT_CORE_REGION_NAME = 'core_region_name';
-
-    /**
-     * Array of all regions
-     * @var     array
-     * @access  private
-     * @see     init()
-     */
-    private static $arrRegions = false;
-
-    /**
-     * Array of all region to parent region relations
-     * @var     array
-     * @access  private
-     * @see     init()
-     */
-//    private static $arrParentId = false;
-
-
-    /**
-     * Initialise the static array with all regions from the database
-     *
-     * Notes:
-     *  - The regions are always shown in the current frontend language
-     *    as set in FRONTEND_LANG_ID.
-     *  - The region ID equals the corresponding Text ID.
-     * @global  ADONewConnection  $objDatabase
+     * Any Country not included in the list is deactivated.
+     * @param   string    $strCountryIds    The comma separated list of
+     *                                      to-be-active Country IDs
      * @return  boolean                     True on success, false otherwise
      */
-    function init()
+    static function activate($strCountryIds)
     {
         global $objDatabase;
 
-        $arrSqlName = Text::getSqlSnippets(
-            '`region`.`name_text_id`', FRONTEND_LANG_ID,
-            MODULE_ID, self::TEXT_CORE_REGION_NAME
-        );
         $query = "
-            SELECT `region`.`id`,
-                   `region`.`parent_id`, `region`.`country_name_id`,
-                   `region`.`ord`, `region`.`is_active`".
-                   $arrSqlName['field']."
-              FROM ".DBPREFIX."core_region AS `region`".
-                   $arrSqlName['join']."
-             ORDER BY `region`.`ord` ASC
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return self::errorHandler();
-        self::$arrRegions = array();
-        self::$arrParentId = array();
-        while (!$objResult->EOF) {
-            $id = $objResult->fields['name_text_id'];
-            $parent_id = $objResult->fields['parent_id'];
-            $strName = $objResult->fields[$arrSqlName['text']];
-            if ($strName === null) {
-                $objText = Text::getById($id, 0);
-                if ($objText) $strName = $objText->getText();
-            }
-            self::$arrRegions[$id] = array(
-                'id'         => $id,
-                'parent_id'  => $parent_id,
-                'country_id' => $objResult->fields['country_name_id'],
-                'name'       => $strName,
-                'ord'        => $objResult->fields['ord'],
-                'is_active'  => $objResult->fields['is_active'],
-            );
-            self::$arrParentId[$id] = $parent_id;
-            $objResult->MoveNext();
-        }
-        return true;
+            UPDATE ".DBPREFIX."core_country
+               SET active=0
+             WHERE id NOT IN ($strCountryIds)";
+        if (!$objDatabase->Execute($query)) return false;
+        self::reset();
+        $query = "
+            UPDATE ".DBPREFIX."core_country
+               SET active=1
+             WHERE id IN ($strCountryIds)";
+        return (boolean)$objDatabase->Execute($query);
     }
 
 
     /**
-     * Returns the array of all regions
-     * @return  array               The region array on success,
-     *                              false otherwise
-     * @static
+     * Sets up the Country settings page
+     * @return  string          The page content
      */
-    static function getArray()
+    static function settings()
     {
-        if (empty(self::$arrRegions) && self::init())
-            return self::$arrRegions;
-        return false;
-    }
+        global $_CORELANG;
+        require_once ASCMS_CORE_PATH.'/Sorting.class.php';
+        require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
 
+        $objTemplateCountry = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+        $objTemplateCountry->loadTemplateFile('settings_country.html');
 
-    /**
-     * Returns the array of all region names, indexed by their ID
-     * @return  array               The region names array on success,
-     *                              false otherwise
-     */
-    static function getNameArray()
-    {
-        static $arrName = false;
+        // Adds messages
+        self::storeSettings();
+        self::storeFromPost();
 
-        if (empty(self::$arrRegions)) {
-            $arrName = false;
-            self::init();
-        }
-        if (empty($arrName)) {
-            foreach (self::$arrRegions as $id => $arrRegion) {
-                $arrName[$id] = $arrRegion['name'];
-            }
-        }
-        return $arrName;
-    }
-
-
-    /**
-     * Returns the name of the region selected by its ID
-     *
-     * If a region with the given ID does not exist, returns the empty string.
-     * @param   integer   $region_id     The region ID
-     * @return  string                    The region name, or the empty string
-     * @static
-     */
-    static function getNameById($region_id)
-    {
-        if (empty(self::$arrRegions)) self::init();
-        if (isset(self::$arrRegions[$region_id]))
-            return self::$arrRegions[$region_id]['name'];
-        return '';
-    }
-
-
-    /**
-     * Returns the parent ID of the region selected by its ID
-     *
-     * If a region with the given ID does not exist, returns zero.
-     * @param   integer   $region_id      The region ID
-     * @return  string                    The parent ID, or zero
-     * @static
-     */
-    static function getParentIdById($region_id)
-    {
-        if (empty(self::$arrRegions)) self::init();
-        return (isset(self::$arrRegions[$region_id])
-            ? self::$arrRegions[$region_id]['parent_id']
-            : 0
+        $uri = Html::getRelativeUri();
+        // Let all links in this tab point here again
+        Html::replaceUriParameter($uri, 'active_tab='.SettingDb::tab_index());
+        // Create a copy of the URI for the Paging, as this is passed by
+        // reference and modified
+        $uri_paging = $uri;
+//DBG::log("URI: $uri");
+        $objSorting = new Sorting(
+            $uri,
+            array(
+                'id'     => $_CORELANG['TXT_CORE_COUNTRY_ID'],
+                'active' => $_CORELANG['TXT_CORE_COUNTRY_ACTIVE'],
+                'ord'    => $_CORELANG['TXT_CORE_COUNTRY_ORD'],
+                'name'   => $_CORELANG['TXT_CORE_COUNTRY_NAME'],
+                'alpha2' => $_CORELANG['TXT_CORE_COUNTRY_ISO2'],
+                'alpha3' => $_CORELANG['TXT_CORE_COUNTRY_ISO3'],
+            ),
+            true,
+            'order_country'
         );
-    }
-
-
-    /**
-     * Returns the country ID of the region selected by its ID
-     *
-     * If a region with the given ID does not exist, returns false.
-     * @param   integer   $region_id      The region ID
-     * @return  string                    The country ID, or false
-     * @static
-     */
-    static function getCountryIdById($region_id)
-    {
-        if (empty(self::$arrRegions)) self::init();
-        return (isset(self::$arrRegions[$region_id])
-            ? self::$arrRegions[$region_id]['country_id']
-            : false
+        SettingDb::init('core', 'country');
+        $limit = SettingDb::getValue('numof_countries_per_page_backend');
+        $count = 0;
+        $arrCountries = self::getArray(
+            $count, null, $limit, Paging::getPosition(),
+            $objSorting->getOrder());
+        if ($arrCountries === false) {
+            return Message::error($_CORELANG['TXT_CORE_COUNTRY_ERROR_INITIALIZING']);
+        }
+        $objTemplateCountry->setGlobalVariable($_CORELANG
+          + array(
+            'CORE_COUNTRY' => $_CORELANG['TXT_CORE_COUNTRY'].' '.
+                sprintf($_CORELANG['TXT_CORE_TOTAL'], $count),
+            'HEAD_SETTINGS_COUNTRY_ID' => $objSorting->getHeaderForField('id'),
+            'HEAD_SETTINGS_COUNTRY_ACTIVE' => $objSorting->getHeaderForField('active'),
+            'HEAD_SETTINGS_COUNTRY_ORD' => $objSorting->getHeaderForField('ord'),
+            'HEAD_SETTINGS_COUNTRY_NAME' => $objSorting->getHeaderForField('name'),
+            'HEAD_SETTINGS_COUNTRY_ISO2' => $objSorting->getHeaderForField('alpha2'),
+            'HEAD_SETTINGS_COUNTRY_ISO3' => $objSorting->getHeaderForField('alpha3'),
+            'CORE_SETTINGDB_TAB_INDEX' => SettingDb::tab_index(),
+            'SETTINGS_COUNTRY_PAGING' =>
+                Paging::get($uri_paging, '', $count, $limit, true),
+        ));
+        // Note:  Optionally disable the block 'settings_country_submit'
+        // to disable storing changes
+        $i = 0;
+        foreach ($arrCountries as $country_id => $arrCountry) {
+            $objTemplateCountry->setVariable(array(
+                'SETTINGS_COUNTRY_ROWCLASS' => (++$i % 2 + 1),
+                'SETTINGS_COUNTRY_ID' => $country_id,
+                'SETTINGS_COUNTRY_ACTIVE' =>
+                    ($arrCountry['active'] ? HTML_ATTRIBUTE_CHECKED : ''),
+// Note that the ordinal value is unused other than in the settings!
+                'SETTINGS_COUNTRY_ORD' => $arrCountry['ord'],
+                'SETTINGS_COUNTRY_NAME' => $arrCountry['name'],
+                'SETTINGS_COUNTRY_ISO2' => $arrCountry['alpha2'],
+                'SETTINGS_COUNTRY_ISO3' => $arrCountry['alpha3'],
+                'SETTINGS_FUNCTIONS' => Html::getBackendFunctions(
+                    array(
+                        'delete' => 'delete_country_id='.$country_id,
+                    ),
+                    array(
+                        'delete' =>
+                            $_CORELANG['TXT_CORE_COUNTRY_CONFIRM_DELETE']."\\n".
+                            $_CORELANG['TXT_ACTION_IS_IRREVERSIBLE'],
+                    )
+                ),
+            ));
+            $objTemplateCountry->parse('settings_country_row');
+        }
+        $objTemplateSetting = null;
+        SettingDb::show_external(
+            $objTemplateSetting,
+            $_CORELANG['TXT_CORE_COUNTRY_EDIT'],
+            $objTemplateCountry->get()
         );
+        SettingDb::show(
+            $objTemplateSetting,
+            $uri,
+            $_CORELANG['TXT_CORE_COUNTRY_SETTINGS'],
+            $_CORELANG['TXT_CORE_COUNTRY_SETTINGS']
+        );
+        return $objTemplateSetting->get();
     }
 
 
     /**
-     * Returns true if the region selected by its ID is active
+     * Store the Countries posted from the (settings) page
      *
-     * If a region with the given ID does not exist, returns false.
-     * @param   integer   $region_id      The region ID
-     * @return  boolean                   True if active, false otherwise
-     * @static
-     */
-    static function isActiveById($region_id)
-    {
-        if (empty(self::$arrRegions)) self::init();
-        return (!empty(self::$arrRegions[$region_id]['is_active']));
-    }
-
-
-    /**
-     * Resets the state of the class
+     * Appends any errors encountered to the class array variable $errors.
      * @return  void
-     * @static
      */
-    static function flush()
+    static function storeFromPost()
     {
-        self::$arrRegions = false;
-        self::$arrParentId = false;
-    }
+        global $_CORELANG;
 
-
-    /**
-     * Returns the HTML dropdown menu code for the active regions.
-     *
-     * Frontend use only.
-     * @param   string  $selectedId Optional preselected region ID
-     * @param   string  $menuName   Optional name of the menu,
-     *                              defaults to "regionId"
-     * @param   string  $onchange   Optional onchange callback function
-     * @return  string              The HTML dropdown menu code
-     * @static
-     */
-    static function getMenu($selectedId='', $menuName='regionId', $onchange='')
-    {
-        $strMenu =
-            '<select name="'.$menuName.'"'.
-            ($onchange ? ' onchange="'.$onchange.'"' : '').">\n".
-            self::getMenuoptions($selectedId).
-            "</select>\n";
-        return $strMenu;
-    }
-
-
-    /**
-     * Returns the HTML code for the regions dropdown menu options
-     *
-     * Remembers the last selected ID and the menu options created, so it's
-     * very quick to call this again using the same arguments.
-     * @param   string  $selectedId   Optional preselected region ID
-     * @param   boolean $active_only  If true, only active regions are
-     *                                added to the options, all otherwise.
-     *                                Defaults to true.
-     * @return  string                The HTML dropdown menu options code
-     * @static
-     */
-    static function getMenuoptions($selected_id=0, $active_only=true)
-    {
-        static $strMenuoptions = '';
-        static $last_selected_id = 0;
-
-        if (empty(self::$arrRegions)) {
-            $strMenuoptions = '';
-            self::init();
+        self::init();
+        if (!empty($_REQUEST['delete_country_id'])) {
+            if (Country::deleteById($_REQUEST['delete_country_id'])) {
+                Message::ok($_CORELANG['TXT_CORE_COUNTRY_DELETED_SUCCESSULLY']);
+            } else {
+                Message::error($_CORELANG['TXT_CORE_COUNTRY_DELETING_FAILED']);
+            }
+            return;
         }
-        if ($strMenuoptions && $last_selected_id == $selected_id)
-            return $strMenuoptions;
-        foreach (self::$arrRegions as $id => $arrRegion) {
-            if (   $active_only
-                && empty($arrRegion['is_active'])) continue;
-            $strMenuoptions .=
-                '<option value="'.$id.'"'.
-                ($selected_id == $id ? ' selected="selected"' : '').'>'.
-                $arrRegion['name']."</option>\n";
+        if (empty($_POST['country_name'])) return;
+// TODO
+//        Permission::checkAccess(PERMISSION_COUNTRY_EDIT, 'static');
+        foreach ($_POST['country_name'] as $country_id => $country_name) {
+            $active = !empty($_POST['country_active'][$country_id]);
+            $ord = (isset($_POST['country_ord'][$country_id])
+                ? intval($_POST['country_ord'][$country_id]) : null);
+            $alpha2 = empty($_POST['country_alpha2'][$country_id])
+                ? null : strtoupper($_POST['country_alpha2'][$country_id]);
+            $alpha3 = empty($_POST['country_alpha3'][$country_id])
+                ? null : strtoupper($_POST['country_alpha3'][$country_id]);
+//DBG::log("Country::storeFromPost(): Storing Country ID $country_id, name $country_name, ord $ord, status $active, alpha2 $alpha2, alpha3 $alpha3, language ID ".FRONTEND_LANG_ID);
+            if (   isset($alpha2) && empty($alpha2)
+                || isset($alpha3) && empty($alpha3)
+                || !self::store(
+                      $alpha2, $alpha3, FRONTEND_LANG_ID, $country_name,
+                      $ord, $active, $country_id)
+            ) {
+                Message::error(sprintf(
+                        $_CORELANG['TXT_CORE_COUNTRY_ERROR_STORING'],
+                        $country_id, $country_name));
+            }
         }
-        $last_selected_id = $selected_id;
-        return $strMenuoptions;
+        if (!Message::have(Message::CLASS_ERROR)) {
+            Message::ok($_CORELANG['TXT_CORE_COUNTRY_STORED_SUCCESSULLY']);
+        }
+    }
+
+
+    static function storeSettings()
+    {
+        SettingDb::storeFromPost();
     }
 
 
     /**
-     * Tries to fix or recreate the database table(s) for the class
+     * Tries to recreate the database table(s) for the class
      *
      * Should be called whenever there's a problem with the database table.
      * @return  boolean             False.  Always.
      */
-    function errorHandler()
+    static function errorHandler()
     {
-        global $objDatabase;
 
-die("Region::errorHandler(): Disabled!<br />");
+        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
+        require_once(ASCMS_CORE_PATH.'/Text.class.php');
 
-        $arrTables = $objDatabase->MetaTables('TABLES');
-        if (!in_array(DBPREFIX."core_region", $arrTables)) {
-            $query = "
-              CREATE TABLE IF NOT EXISTS `".DBPREFIX."core_region` (
-                `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-                `name_text_id` INT UNSIGNED NOT NULL DEFAULT 0,
-                `parent_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-                `country_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-                `ord` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-                `is_active` TINYINT(1) UNSIGNED NOT NULL DEFAULT 1,
-                PRIMARY KEY (`id`)
-              ) ENGINE=MYISAM";
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult) return false;
-echo("Region::errorHandler(): Created table ".DBPREFIX."core_region<br />");
+        $table_name = DBPREFIX.'core_country';
+        $table_structure = array(
+            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'alpha2' => array('type' => 'CHAR(2)', 'notnull' => true, 'default' => ''),
+            'alpha3' => array('type' => 'CHAR(3)', 'notnull' => true, 'default' => ''),
+            'ord' => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'renamefrom' => 'sort_order'),
+            'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'renamefrom' => 'is_active'),
+        );
+//        if (!
+        UpdateUtil::table($table_name, $table_structure);
+//        ) {
+//            throw new Update_DatabaseException(
+//               "Failed to to create Country table");
+//        }
+        if (UpdateUtil::table_empty($table_name)) {
+            Text::deleteByKey('core', self::TEXT_NAME);
+            // Copy the Countries from the Shop module if possible
+            if (UpdateUtil::table_exist(DBPREFIX."module_shop_countries")) {
+                $query = "
+                    SELECT `countries_id`, `countries_name`,
+                           `countries_iso_code_2`, `countries_iso_code_3`,
+                           `activation_status`
+                      FROM ".DBPREFIX."module_shop_countries";
+                $objResult = UpdateUtil::sql($query);
+                if (!$objResult) {
+                    throw new Update_DatabaseException(
+                       "Failed to to query Country names", $query);
+                }
+                while (!$objResult->EOF) {
+                    $id = $objResult->fields['countries_id'];
+                    $name = $objResult->fields['countries_name'];
+                    $alpha2 = $objResult->fields['countries_iso_code_2'];
+                    $alpha3 = $objResult->fields['countries_iso_code_3'];
+                    $active = $objResult->fields['activation_status'];
+                    $ord = 0;
+                    if (!self::store($alpha2, $alpha3, FRONTEND_LANG_ID,
+                        $name, $ord, $active, $id)
+                    ) {
+                        throw new Update_DatabaseException(
+                           "Failed to to migrate Country '$name'");
+                    }
+                    $objResult->MoveNext();
+                }
+                UpdateUtil::drop_table(DBPREFIX.'modules_shop_countries');
+            }
         }
+
+
+// USE FOR NEW INSTALLATIONS ONLY!
+// These records will lead to inconsistencies with Country references in
+// other tables otherwise.
+        if (UpdateUtil::table_empty($table_name)) {
+            // Add new Country records if available
+            if (@include_once(ASCMS_CORE_PATH.'/countries_iso_3166-2.php')) {
+//DBG::log("Country::errorHandler(): Included ISO file");
+                $arrCountries = null;
+                $ord = 0;
+                foreach ($arrCountries as $country_id => $arrCountry) {
+                    $name = $arrCountry[0];
+                    $alpha2 = $arrCountry[1];
+                    $alpha3 = $arrCountry[2];
+// Not currently in use:
+//                    $numeric = $arrCountry[3];
+//                    $iso_full = $arrCountry[4];
+                    // English (language ID 2) only!
+                    if (!self::store(
+                        $alpha2, $alpha3, 2, $name, ++$ord, true, $country_id)
+                    ) {
+                        throw new Update_DatabaseException(
+                           "Failed to to add Country '$name'", $query);
+                    }
+//DBG::log("Country::errorHandler(): Added Country ID $country_id: '$name'");
+                }
+            }
+        }
+
+//DBG::activate(DBG_ADODB);
+        // Add more languages from the countries_languages.php file,
+        // if present
+        $arrCountries = array();
+        // $arrCountries is redefined in the file
+        if (@include_once ASCMS_CORE_PATH.'/countries_languages.php') {
+            foreach ($arrCountries as $alpha2 => $arrLanguage) {
+//DBG::log("errorHandler: Looking for Alpha-2 $alpha2");
+                $country_id = self::getIdByAlpha2($alpha2);
+                if (!$country_id) {
+// TODO: Fail or not?
+                    continue;
+                }
+                foreach ($arrLanguage as $lang_id => $name) {
+                    if (!Text::replace($country_id, $lang_id, 'core',
+                        self::TEXT_NAME, $name)) {
+                        throw new Update_DatabaseException(
+                           "Failed to to update Country '$name'");
+                    }
+//DBG::log("Country::errorHandler(): Added Country ID $country_id: language ID $lang_id");
+                }
+            }
+        }
+
+        SettingDb::init('core', 'country');
+        SettingDb::add('numof_countries_per_page_backend', 30, 101);
 
         // More to come...
 
-        // Always
+        // Always!
         return false;
-   }
+    }
 
 }
-
-?>

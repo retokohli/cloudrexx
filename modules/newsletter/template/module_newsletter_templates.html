@@ -11,12 +11,13 @@
 </script>
 <table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
 	<tr>
-		<th colspan="4">{TXT_NEWSLETTER_TEMPLATES}</th>
+		<th colspan="5">{TXT_NEWSLETTER_TEMPLATES}</th>
 	</tr>
     <tr class="row3">
         <td width="1%" valign="top"><b>{TXT_NEWSLETTER_ID_UC}</b></td>
 		<td width="20%" valign="top"><b>{TXT_NEWSLETTER_NAME}</b></td>
-		<td width="80%"><b>{TXT_NEWSLETTER_DESCRIPTION}</b></td>
+		<td width="40%"><b>{TXT_NEWSLETTER_DESCRIPTION}</b></td>
+		<td width="40%"><b>{TXT_NEWSLETTER_TYPE}</b></td>
 		<td style="text-align:right;"><b>{TXT_NEWSLETTER_FUNCTIONS}</b></td>
 	</tr>
 	<!-- BEGIN templates_row -->
@@ -24,6 +25,7 @@
 	        <td width="1%" style="vertical-align:top;">{NEWSLETTER_TEMPLATE_ID}</td>
 			<td style="vertical-align:top; white-space:nowrap;">{NEWSLETTER_TEMPLATE_NAME}</td>
 			<td>{NEWSLETTER_TEMPLATE_DESCRIPTION}</td>
+			<td>{NEWSLETTER_TEMPLATE_TYPE}</td>
 			<td style="vertical-align:top; text-align:right; white-space:nowrap;">
 				<a href="index.php?cmd=newsletter&amp;act=tpledit&amp;id={NEWSLETTER_TEMPLATE_ID}" title="{TXT_NEWSLETTER_MODIFY_TEMPLATE}"><img src="images/icons/edit.gif" width="16" height="16" alt="{TXT_NEWSLETTER_MODIFY_TEMPLATE}" border="0" /></a>
 				<!-- BEGIN newsletter_template_delete -->

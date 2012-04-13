@@ -1,3 +1,4 @@
+{JAVASCRIPT}
 <div id="fe_Background" style="display: none;"></div>
 <div id="fe_Login" style="display: none;">
 	<div id="fe_LoginBoxFrame">
@@ -7,23 +8,19 @@
 		</div>
 		<div id="fe_LoginBoxContent">
 			{LOGIN_STATUS_MESSAGE}
-			<form name="fe_LoginForm" action="" method="post">
-				<input type="hidden" id="fe_LoginPageId" name="fe_LoginPageId" value="{LOGIN_PAGE_ID}" />
-				<input type="hidden" id="fe_LoginPageSection" name="fe_LoginPageSection" value="{LOGIN_PAGE_SECTION}" />
-				<input type="hidden" id="fe_LoginPageCmd" name="fe_LoginPageCmd" value="{LOGIN_PAGE_CMD}" />
+			<form name="fe_LoginForm" id="fe_LoginForm" action="" method="post">
 				<div class="fe_LoginBoxLabel">{TXT_LOGIN_USERNAME}</div>
 				<div class="fe_LoginBoxValue"><input type="text" id="fe_LoginUsername" name="fe_LoginUsername" value="{LOGIN_USERNAME}" class="fe_LoginBoxUsername" /></div>
 				<div class="fe_LoginBoxLabel">{TXT_LOGIN_PASSWORD}</div>
 				<div class="fe_LoginBoxValue"><input type="password" id="fe_LoginPassword" name="fe_LoginPassword" value="" class="fe_LoginBoxPassword" /></div>
-				<div class="fe_LoginBoxLabel">{TXT_LOGIN_SECKEY}</div>
-				<div class="fe_LoginBoxValue"><input type="text" id="fe_LoginSecurityKey" onchange="this.value=this.value.toUpperCase();" name="fe_LoginSecurityKey" class="fe_LoginBoxCaptcha" value="" maxlength="5" />
-                &nbsp;<img src="{LOGIN_SECURITY_IMAGE}" title="Security Image" style="margin: 0px;" /></div>
+				<div class="fe_LoginBoxLabel">{TXT_LOGIN_CAPTCHA}</div>
+				<div class="fe_LoginBoxValue">{LOGIN_CAPTCHA_CODE}</div>
 				<div class="fe_LoginBoxLabel">{TXT_LOGIN_AREA}</div>
 				<div class="fe_LoginBoxValue"><input type="radio" id="fe_LoginTypeFrontend" name="fe_LoginType" value="Frontend" checked="checked" />&nbsp;{TXT_LOGIN_AREA_FRONTEND}&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" id="fe_LoginTypeBackend" name="fe_LoginType" value="Backend" />&nbsp;{TXT_LOGIN_AREA_BACKEND}<br /></div>
 				<br />
 				<input type="button" value="{TXT_LOGIN_SUBMIT}" class="fe_LoginBoxButton" onclick="fe_doLogin();" />&nbsp;<input type="button" value="{TXT_LOGIN_CANCEL}" class="fe_LoginBoxButton" onclick="fe_closeLogin();" />
 			</form>
-			<div class="fe_LoginLostPassword"><a href="index.php?section=login&cmd=lostpw" title="{TXT_LOGIN_PASSWORD_FORGOTTON}">{TXT_LOGIN_PASSWORD_FORGOTTON}</a></div>
+			<div class="fe_LoginLostPassword"><a href="{LOGIN_LOSTPW_URL}" title="{TXT_LOGIN_PASSWORD_FORGOTTON}">{TXT_LOGIN_PASSWORD_FORGOTTON}</a></div>
 		</div>
 	</div>
 </div>

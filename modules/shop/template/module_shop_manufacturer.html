@@ -1,51 +1,42 @@
 <!-- START shop_manufacturer.html -->
-<script language="javascript" type="text/javascript">
-<!--
-function InsertNewManufacturer() {
-  if (document.forms["frmNewManufacturer"].name.value != "") {
-    document.forms["frmNewManufacturer"].submit();
-  } else {
-    alert("{TXT_SHOP_INSERT_NEW_MANUFACTURER_ERROR}");
-  }
-}
-
+<script type="text/javascript">
+// <![CDATA[
 function shopCatDoAction(strForm, strCheckbox, objSelect, strAct)
 {
-  if (checkboxIsChecked(strForm,strCheckbox) == true) {
+  if (checkboxIsChecked(strForm, strCheckbox)) {
     switch (strAct) {
-      case 'del':
+      case 'delete':
         if (confirm('{TXT_SHOP_CONFIRM_DELETE_MANUFACTURER}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {
-          document.forms[strForm].action = "index.php?cmd=shop{MODULE_INDEX}&act=manufacturer&exe=deleteList";
-          document.forms[strForm].submit();
+          document.form_list.submit();
         }
         break;
     }
   } else {
     alert("{TXT_MAKE_SELECTION}");
   }
-  objSelect.value = 0;
+  objSelect.selectedIndex = 0;
 }
 
-function deleteManufacturer(manufacturerID) {
+function deleteManufacturer(manufacturer_id) {
   if (confirm('{TXT_SHOP_CONFIRM_DELETE_MANUFACTURER}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=manufacturer&exe=delete&id="+manufacturerID);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=manufacturer&delete="+manufacturer_id);
   }
 }
-// -->
+
+// ]]>
 </script>
 
-<form name="frmNewManufacturer" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=manufacturer">
-  <input type="hidden" name="exe" value="{EXE_MODE}" />
-  <input type="hidden" name="id" value="{VALUE_ID}" />
+<form name="form_edit" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=manufacturer">
+  <input type="hidden" name="id" value="{SHOP_MANUFACTURER_ID}" />
   <table width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
     <tr>
-      <th>{TXT_SHOP_INSERT_NEW_MANUFACTURER}</th>
+      <th>{SHOP_EDIT_MANUFACTURER}</th>
     </tr>
     <tr class="row1">
       <td>
-      {TXT_NAME}:&nbsp;<input type="text" name="name" size="40" maxlength="255" value="{VALUE_MANUFACTURER_NAME}" />&nbsp;&nbsp;&nbsp;&nbsp;
-      {TXT_URL}:&nbsp;<input type="text" name="url" size="40" maxlength="255" value="{VALUE_MANUFACTURER_URL}" />&nbsp;&nbsp;&nbsp;&nbsp;
-      <input type="button" value="{TXT_STORE}" onclick="InsertNewManufacturer();" />
+        {TXT_SHOP_MANUFACTURER_NAME}:&nbsp;<input type="text" name="name" size="40" maxlength="255" value="{SHOP_MANUFACTURER_NAME}" />&nbsp;&nbsp;&nbsp;&nbsp;
+        {TXT_SHOP_MANUFACTURER_URL}:&nbsp;<input type="text" name="url" size="40" maxlength="255" value="{SHOP_MANUFACTURER_URL}" />&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="submit" name="bstore" value="{TXT_STORE}" />
       </td>
     </tr>
   </table>
@@ -53,35 +44,42 @@ function deleteManufacturer(manufacturerID) {
 
 <br />
 
-<form name="frmManufacturer" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=manufacturer">
+<form name="form_list" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=manufacturer"
+    onsubmit="return checkboxIsChecked('form_list','selected_manufacturer_id')">
   <table width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
     <tr>
-      <th colspan="4">{TXT_SHOP_MANUFACTURER}</th>
+      <th colspan="5">{TXT_SHOP_MANUFACTURER}</th>
     </tr>
     <tr class="row1">
-      <td width="1%"><div style="text-align:center;"><b>#</b></div></td>
-      <td width="3%"><b>{TXT_ID}</b></td>
-      <td width="95%"><b>{TXT_NAME}</b></td>
-      <td width="1%"><b>{TXT_ACTION}</b></td>
+      <td width="01%"><div style="text-align:center;"><b>#</b></div></td>
+      <td width="03%"><b>{SHOP_HEADER_ID}</b></td>
+      <td width="20%"><b>{SHOP_HEADER_NAME}</b></td>
+      <td width="75%"><b>{SHOP_HEADER_URL}</b></td>
+      <td width="01%"><div style="text-align:right;"><b>{TXT_ACTION}</b></div></td>
     </tr>
-    <!-- BEGIN manufacturerRow -->
+<!-- BEGIN manufacturerRow -->
       <tr class="{SHOP_ROWCLASS}">
-        <td width="1%" align="center"><b><input type="checkbox" name="selectedManufacturerId[]" value="{VALUE_ID}" /></b></td>
-        <td width="3%">{VALUE_ID}</td>
-        <td width="95%">{VALUE_NAME}</td>
-        <td width="1%"><div style="text-align:right;">
-          <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=manufacturer&amp;id={VALUE_ID}&amp;mode=update" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a>
-          <a href="javascript:deleteManufacturer('{VALUE_ID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a>
+        <td align="center"><b><input type="checkbox" name="selected_manufacturer_id[]" value="{SHOP_MANUFACTURER_ID}" /></b></td>
+        <td>{SHOP_MANUFACTURER_ID}</td>
+        <td>{SHOP_MANUFACTURER_NAME}</td>
+        <td>{SHOP_MANUFACTURER_URL}</td>
+        <td><div style="text-align:right;">
+          <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=manufacturer&amp;id={SHOP_MANUFACTURER_ID}"
+              title="{TXT_EDIT}">
+            <img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a>
+          <a href="javascript:deleteManufacturer('{SHOP_MANUFACTURER_ID}')"
+              title="{TXT_DELETE}">
+            <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a>
         </div></td>
       </tr>
-    <!-- END manufacturerRow -->
+<!-- END manufacturerRow -->
   </table>
   <img src="images/icons/arrow.gif" border="0" width="38" height="22" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" />
-  <a href="javascript:{}" onclick="changeCheckboxes('frmManufacturer','selectedManufacturerId[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
-  <a href="javascript:{}" onclick="changeCheckboxes('frmManufacturer','selectedManufacturerId[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
-  <select name="selectAction" onchange="shopCatDoAction('frmManufacturer','selectedManufacturerId[]',this,this.value)">
-    <option value="0" selected="selected">{TXT_SELECT_ACTION}:</option>
-    <option value="del">{TXT_DELETE_MARKED}</option>
+  <a href="javascript:{}" onclick="changeCheckboxes('form_list','selected_manufacturer_id[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
+  <a href="javascript:{}" onclick="changeCheckboxes('form_list','selected_manufacturer_id[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
+  <select name="multi_action" onchange="shopCatDoAction('form_list','selected_manufacturer_id[]',this,this.value)">
+    <option value="" selected="selected">{TXT_SELECT_ACTION}:</option>
+    <option value="delete">{TXT_DELETE_MARKED}</option>
   </select>
 </form>
 

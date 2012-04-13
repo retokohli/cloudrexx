@@ -108,11 +108,11 @@ class MediaManager extends MediaLibrary
         }
 
         // get variables
-        $this->getAct   = isset($_POST['deleteMedia']) && $_POST['deleteMedia'] ? 'delete' : (!empty($_GET['act']) ? trim($_GET['act']) : '');
-        $this->getPath  = !empty($_GET['path']) && !stristr($_GET['path'], '..') ? trim($_GET['path']) : $this->arrWebPaths[$this->archive];
-        $this->getFile  = !empty($_REQUEST['file']) && !stristr($_REQUEST['file'], '..') ? trim($_REQUEST['file']) : '';
-        $this->getData  = !empty($_GET['data']) ? $_GET['data']       : '';
-        $this->sortBy   = !empty($_GET['sort']) ? trim($_GET['sort']) : 'name';
+        $this->getAct  = (isset($_GET['act'])  and !empty($_GET['act']))  ? trim($_GET['act'])  : '';
+        $this->getPath = (isset($_GET['path']) and !empty($_GET['path']) AND !stristr($_GET['path'],'..')) ? trim($_GET['path']) : $this->arrWebPaths[$this->archive];
+        $this->getFile = (isset($_GET['file']) and !empty($_GET['file']) AND !stristr($_GET['file'],'..')) ? trim($_GET['file']) : '';
+        $this->getData = (isset($_GET['data']) and !empty($_GET['data'])) ? $_GET['data']       : '';
+        $this->sortBy = !empty($_GET['sort']) ? trim($_GET['sort']) : 'name';
         $this->sortDesc = !empty($_GET['sort_desc']);
 
         if($this->archive == 'themes') {
@@ -122,42 +122,42 @@ class MediaManager extends MediaLibrary
         }
 
         switch ($this->archive) {
-            case 'themes':
-                Permission::checkAccess(21, 'static');
-                $objTemplate->setVariable("CONTENT_NAVIGATION",
-                    "<a href='index.php?cmd=skins'>".$_ARRAYLANG['TXT_DESIGN_OVERVIEW']."</a>
-                    <a href='index.php?cmd=skins&amp;act=newDir'>".$_ARRAYLANG['TXT_NEW_DESIGN']."</a>
-                    <a href='index.php?cmd=skins&amp;act=activate'>".$_ARRAYLANG['TXT_ACTIVATE_DESIGN']."</a>
-                    <a href='index.php?cmd=media&amp;archive=themes'>".$_ARRAYLANG['TXT_DESIGN_FILES_ADMINISTRATION']."</a>
-                    <a href='index.php?cmd=skins&amp;act=examples'>".$_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR']."</a>
-                    <a href='index.php?cmd=skins&amp;act=manage'>".$_ARRAYLANG['TXT_THEME_IMPORT_EXPORT']."</a>");
-                break;
+        case 'themes':
+            Permission::checkAccess(21, 'static');
+            $objTemplate->setVariable("CONTENT_NAVIGATION",
+                "<a href='index.php?cmd=skins'>".$_ARRAYLANG['TXT_DESIGN_OVERVIEW']."</a>
+                <a href='index.php?cmd=skins&amp;act=newDir'>".$_ARRAYLANG['TXT_NEW_DESIGN']."</a>
+                <a href='index.php?cmd=skins&amp;act=activate'>".$_ARRAYLANG['TXT_ACTIVATE_DESIGN']."</a>
+                <a href='index.php?cmd=media&amp;archive=themes'>".$_ARRAYLANG['TXT_DESIGN_FILES_ADMINISTRATION']."</a>
+                <a href='index.php?cmd=skins&amp;act=examples'>".$_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR']."</a>
+                <a href='index.php?cmd=skins&amp;act=manage'>".$_ARRAYLANG['TXT_THEME_IMPORT_EXPORT']."</a>");
+            break;
 
-            case 'content':
-                Permission::checkAccess(32, 'static');
-                $objTemplate->setVariable('CONTENT_NAVIGATION', '
-                    <a href="index.php?cmd=media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>'
-                    .(($_shopEnabled) ? '<a href="index.php?cmd=media&amp;archive=shop">'. $_ARRAYLANG['TXT_IMAGE_SHOP'] .'</a>' : '')
-                );
-                break;
-            case 'shop':
-                Permission::checkAccess(13, 'static');
-                $objTemplate->setVariable('CONTENT_NAVIGATION', '
-                    <a href="index.php?cmd=media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>'
-                    .(($_shopEnabled) ? '<a href="index.php?cmd=media&amp;archive=shop">'. $_ARRAYLANG['TXT_IMAGE_SHOP'] .'</a>' : '')
-                );
-                break;
+        case 'content':
+            Permission::checkAccess(32, 'static');
+            $objTemplate->setVariable('CONTENT_NAVIGATION', '
+                <a href="index.php?cmd=media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>'
+                .(($_shopEnabled) ? '<a href="index.php?cmd=media&amp;archive=shop">'. $_ARRAYLANG['TXT_IMAGE_SHOP'] .'</a>' : '')
+            );
+            break;
+        case 'shop':
+            Permission::checkAccess(13, 'static');
+            $objTemplate->setVariable('CONTENT_NAVIGATION', '
+                <a href="index.php?cmd=media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>'
+                .(($_shopEnabled) ? '<a href="index.php?cmd=media&amp;archive=shop">'. $_ARRAYLANG['TXT_IMAGE_SHOP'] .'</a>' : '')
+            );
+            break;
 
-            default:
-                Permission::checkAccess(7, 'static');
-                $objTemplate->setVariable('CONTENT_NAVIGATION', '
-                    <a href="index.php?cmd=media&amp;archive=archive1">'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #1</a>
-                    <a href="index.php?cmd=media&amp;archive=archive2">'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #2</a>
-                    <a href="index.php?cmd=media&amp;archive=archive3">'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #3</a>
-                    <a href="index.php?cmd=media&amp;archive=archive4">'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #4</a>
-                    <a href="index.php?cmd=media&amp;archive=archive1&amp;act=settings">'    . $_ARRAYLANG['TXT_MEDIA_SETTINGS'] .  '</a>
-                ');
-                break;
+        default:
+            Permission::checkAccess(7, 'static');
+            $objTemplate->setVariable('CONTENT_NAVIGATION', '
+                <a href="index.php?cmd=media&amp;archive=archive1">'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #1</a>
+                <a href="index.php?cmd=media&amp;archive=archive2">'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #2</a>
+                <a href="index.php?cmd=media&amp;archive=archive3">'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #3</a>
+                <a href="index.php?cmd=media&amp;archive=archive4">'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #4</a>
+                <a href="index.php?cmd=media&amp;archive=archive1&amp;act=settings">'    . $_ARRAYLANG['TXT_MEDIA_SETTINGS'] .  '</a>
+            ');
+            break;
         }
 
         $this->docRoot = ASCMS_DOCUMENT_ROOT; // with path offset
@@ -824,17 +824,14 @@ class MediaManager extends MediaLibrary
                 $accessGroups = $_POST['media' . $i . '_access_associated_groups'];
                 // add AccessID
                 $newMediaSetting = Permission::createNewDynamicAccessId();
-
                 // save AccessID
                 if (count($accessGroups)) {
                     Permission::setAccess($newMediaSetting, 'dynamic', $accessGroups);
                 }
-                $query = 'UPDATE '.DBPREFIX.'module_media_settings
-                              SET `value` = "' . intval($newMediaSetting) . '"
-                              WHERE `name` = "media' . $i . '_frontend_changable"';
-
-
-                $objDatabase->Execute($query);
+                $objDatabase->Execute(' UPDATE '.DBPREFIX.'module_media_settings
+                                                SET `value` = "' . intval($newMediaSetting) . '"
+                                                WHERE `name` = "media' . $i . '_frontend_changable"
+                                            ');
             }
 
             $oldManageSetting = $this->_arrSettings['media' . $i . '_frontend_managable'];

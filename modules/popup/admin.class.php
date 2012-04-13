@@ -59,7 +59,8 @@ class popupManager extends popupLibrary
     */
     var $_strErrMessage = '';
 
-
+    private $act = '';
+    
     /**
     * PHP5 constructor
     *
@@ -130,9 +131,16 @@ class popupManager extends popupLibrary
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/popup/template');
         CSRF::add_placeholder($this->_objTpl);
-        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);        
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
 
-        $objTemplate->setVariable("CONTENT_NAVIGATION", "<a href='index.php?cmd=popup&amp;act=overview'>".$_ARRAYLANG['TXT_POPUP_OVERVIEW']."</a><a href='index.php?cmd=popup&amp;act=modify'>".$_ARRAYLANG['TXT_PUPUP_ADD_PUPUP']."</a><a href='index.php?cmd=popup&amp;act=settings'>".$_ARRAYLANG['TXT_POPUP_SETTINGS']."</a>");
+        $objTemplate->setVariable("CONTENT_NAVIGATION", "
+            <a href='index.php?cmd=popup&amp;act=overview' class='".($this->act == 'overview' ? 'active' : '')."'>".$_ARRAYLANG['TXT_POPUP_OVERVIEW']."</a>
+            <a href='index.php?cmd=popup&amp;act=modify' class='".($this->act == 'modify' ? 'active' : '')."'>".$_ARRAYLANG['TXT_PUPUP_ADD_PUPUP']."</a>
+            <a href='index.php?cmd=popup&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_POPUP_SETTINGS']."</a>");
     }
 
     /**
@@ -194,6 +202,9 @@ class popupManager extends popupLibrary
             'CONTENT_STATUS_MESSAGE'    => $this->_strErrMessage,
             'ADMIN_CONTENT'                => $this->_objTpl->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
     /**

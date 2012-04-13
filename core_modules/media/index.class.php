@@ -300,8 +300,6 @@ class MediaManager extends MediaLibrary
         }
         else {
             // forms for uploading files and creating folders
-            require_once ASCMS_CORE_PATH.'/Modulechecker.class.php';
-
             if ($this->_objTpl->blockExists('media_simple_file_upload')) {
                 /**
                  * Uploader button handling

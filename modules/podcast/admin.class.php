@@ -63,6 +63,8 @@ class podcastManager extends podcastLib
     */
     var $_strOkMessage = '';
 
+    private $act = '';
+    
     /**
     * PHP5 constructor
     *
@@ -76,15 +78,21 @@ class podcastManager extends podcastLib
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/podcast/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
-        $objTemplate->setVariable("CONTENT_NAVIGATION", "<a href='index.php?cmd=podcast'>".$_ARRAYLANG['TXT_PODCAST_MEDIA']."</a>
-                                                        <a href='index.php?cmd=podcast&amp;act=selectSource'>".$_ARRAYLANG['TXT_PODCAST_ADD_MEDIUM']."</a>
-                                                        <a href='index.php?cmd=podcast&amp;act=categories'>".$_ARRAYLANG['TXT_PODCAST_CATEGORIES']."</a>
-                                                        <a href='index.php?cmd=podcast&amp;act=templates'>".$_ARRAYLANG['TXT_PODCAST_TEMPLATES']."</a>
-                                                        <a href='index.php?cmd=podcast&amp;act=settings'>".$_ARRAYLANG['TXT_PODCAST_SETTINGS']."</a>"
-                                                        );
+        
         $this->_youTubeIdRegex = '#.*[\?&]v=('.$this->_youTubeAllowedCharacters.'{'.$this->_youTubeIdLength.'}).*#';
         parent::__construct();
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
+
+        $objTemplate->setVariable("CONTENT_NAVIGATION", "
+            <a href='index.php?cmd=podcast' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_PODCAST_MEDIA']."</a>
+            <a href='index.php?cmd=podcast&amp;act=selectSource' class='".($this->act == 'selectSource' ? 'active' : '')."'>".$_ARRAYLANG['TXT_PODCAST_ADD_MEDIUM']."</a>
+            <a href='index.php?cmd=podcast&amp;act=categories' class='".($this->act == 'categories' ? 'active' : '')."'>".$_ARRAYLANG['TXT_PODCAST_CATEGORIES']."</a>
+            <a href='index.php?cmd=podcast&amp;act=templates' class='".($this->act == 'templates' ? 'active' : '')."'>".$_ARRAYLANG['TXT_PODCAST_TEMPLATES']."</a>
+            <a href='index.php?cmd=podcast&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_PODCAST_SETTINGS']."</a>"
+                                                        );
     }
 
     /**
@@ -166,6 +174,9 @@ class podcastManager extends podcastLib
             'CONTENT_STATUS_MESSAGE'    => $this->_strErrMessage,
             'ADMIN_CONTENT'             => $this->_objTpl->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
     function _media()

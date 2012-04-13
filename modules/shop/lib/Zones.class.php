@@ -2,43 +2,54 @@
 
 class Zones
 {
-    private static $arrZone = false;
-    private static $arrRelation = false;
+    /**
+     * Text key
+     */
+    const TEXT_NAME = 'zone_name';
 
-    function init()
+    /**
+     * Zones
+     * @var   array
+     */
+    private static $arrZone = null;
+    /**
+     * Zone-Country relation
+     * @var   array
+     */
+    private static $arrRelation = null;
+
+
+    /**
+     * Initialises all Zones (but no relation)
+     * @return  boolean           True on success, false otherwise
+     * @static
+     */
+    static function init()
     {
         global $objDatabase;
 
-//        $arrSqlName = Text::getSqlSnippets(
-//            '`zone`.`text_name_id`', FRONTEND_LANG_ID,
-//            MODULE_ID, TEXT_SHOP_ZONES_NAME
-//        );
+        $arrSqlName = Text::getSqlSnippets('`zone`.`id`',
+            FRONTEND_LANG_ID, 'shop', array('name' => self::TEXT_NAME));
         $query = "
-            SELECT `zone`.`zones_id`, `zone`.`activation_status`, `zone`.`zones_name`".
-        //$arrSqlName['field']."
-            "
+            SELECT `zone`.`id`, `zone`.`active`, ".
+                   $arrSqlName['field']."
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `zone`".
-        //$arrSqlName['join']."
-            "
-             ORDER BY `zone`.`zones_name` ASC";
-        //".$arrSqlName['text']."
+                   $arrSqlName['join']."
+             ORDER BY `name` ASC";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
+        if (!$objResult) return self::errorHandler();
         self::$arrZone = array();
         while (!$objResult->EOF) {
-            $id = $objResult->fields['zones_id']; // id
-//            $text_name_id = $objResult->fields[$arrSqlName['name']];
-//            $strName = $objResult->fields[$arrSqlName['text']];
-//            if ($strName === null) {
-//                $objText = Text::getById($text_name_id, 0);
-//                if ($objText) $strName = $objText->getText();
-//            }
+            $id = $objResult->fields['id'];
+            $strName = $objResult->fields['name'];
+            if ($strName === null) {
+                $objText = Text::getById($id, 'shop', self::TEXT_NAME);
+                if ($objText) $strName = $objText->content();
+            }
             self::$arrZone[$id] = array(
                 'id' => $id,
-                'name' => $objResult->fields['zones_name'], // REPLACE:
-//                'text_name_id' => $text_name_id,
-//                'name' => $strName,
-                'status' => $objResult->fields['activation_status'], // status
+                'name' => $strName,
+                'active' => $objResult->fields['active'],
             );
             $objResult->MoveNext();
         }
@@ -49,32 +60,42 @@ class Zones
     /**
      * Returns an array of the available zones
      * @return  array                           The zones array
+     * @static
      */
-    function getZoneArray()
+    static function getZoneArray()
     {
-        if (empty(self::$arrZone)) self::init();
+        if (is_null(self::$arrZone)) self::init();
         return self::$arrZone;
     }
 
 
+    /**
+     * Returns the Zone-Country relation array
+     *
+     * This array is of the form
+     *  array(
+     *    Zone ID => array(Country ID, ... more ...),
+     *    ... more ...
+     *  )
+     * @global  ADOConnection   $objDatabase
+     * @return  array                           The relation array
+     * @static
+     */
     static function getCountryRelationArray()
     {
         global $objDatabase;
 
-        if (empty(self::$arrRelation)) {
+        if (is_null(self::$arrRelation)) {
+//DBG::log("Zones::getCountryRelationArray(): init()ialising");
             $query = "
-                SELECT zones_id, countries_id
+                SELECT zone_id, country_id
                   FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
-            $arrRelCountries = array();
+            self::$arrRelation = array();
             while (!$objResult->EOF) {
-                $zonesId   = $objResult->fields['zones_id'];
-                $countryId = $objResult->fields['countries_id'];
-                if (empty($arrRelCountries[$zonesId])) {
-                    $arrRelCountries[$zonesId] = array();
-                }
-                $arrRelCountries[$zonesId][] = $countryId;
+                self::$arrRelation[$objResult->fields['zone_id']][] =
+                    $objResult->fields['country_id'];
                 $objResult->MoveNext();
             }
         }
@@ -82,170 +103,197 @@ class Zones
     }
 
 
-    static function store()
+    /**
+     * Returns the Zone ID associated with the given Payment ID, if any
+     *
+     * This shouldn't happen, but if the Payment isn't associated with any
+     * Zone, returns null.
+     * @param   integer     $payment_id     The Payment ID
+     * @return  integer                     The Zone ID, if any,
+     *                                      false on failure, or null if none
+     * @static
+     */
+    static function getZoneIdByPaymentId($payment_id)
     {
-        $total_result = true;
+        global $objDatabase;
+
+        $query = "
+            SELECT r.zone_id
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment AS r
+              JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_zones AS z
+                ON z.id=r.zone_id
+             WHERE r.payment_id=$payment_id"; // AND z.active=1
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
+        if ($objResult->EOF) return null;
+        return $objResult->fields['zone_id'];
+    }
+
+
+    /**
+     * Stores all changes made to any Zone
+     * @return  boolean           True on success, false on failure,
+     *                            or null on noop.
+     * @static
+     */
+    static function store_from_post()
+    {
+        $success = true;
+        $changed = false;
         $result = self::deleteZone();
-        if ($result !== '') $total_result &= $result;
+        if (isset($result)) {
+            $changed = true;
+            $success &= $result;
+        }
         $result = self::addZone();
-        if ($result !== '') $total_result &= $result;
+        if (isset($result)) {
+            $changed = true;
+            $success &= $result;
+        }
         $result = self::updateZones();
-        if ($result !== '') $total_result &= $result;
-        // Reinit after storing, or the user won't see any changes at first
-        self::$arrZone = false;
-        return $total_result;
+        if (isset($result)) {
+            $changed = true;
+            $success &= $result;
+        }
+        if ($changed) {
+            // Reinit after storing, or the user won't see any changes at first
+            self::$arrZone = null;
+            return $success;
+        }
+        return null;
     }
 
 
     /**
      * Delete Zone
+     * @static
      */
-    function deleteZone()
+    static function deleteZone()
     {
         global $objDatabase;
 
-        if (empty($_GET['zonesId'])) return '';
-        if (empty(self::$arrZone)) self::init();
-        $zone_id = $_GET['zonesId'];
-        if (empty(self::$arrZone[$zone_id])) return '';
-        // Delete zone with Text
-// 3.0
-//        $text_id = self::$arrZone[$zone_id]['text_name_id'];
-//        if (!Text::deleteById($text_id)) return false;
-//        $objResult = $objDatabase->Execute("
-//            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_zones
-//             WHERE id=$zone_id");
-        $objResult = $objDatabase->Execute("
-            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_zones
-             WHERE zones_id=$zone_id"); // 3.0: zone_id
-        if (!$objResult) return false;
-        // Delete country relations
+        if (empty($_GET['delete_zone_id'])) return null;
+        $zone_id = $_GET['delete_zone_id'];
+        if (is_null(self::$arrZone)) self::init();
+        if (empty(self::$arrZone[$zone_id])) return null;
+        // Delete Country relations
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries
-             WHERE zones_id=$zone_id"); // 3.0: zone_id
+             WHERE zone_id=$zone_id");
         if (!$objResult) return false;
-        // Update relations:  Apply zone "All" to those still associated
-        // with the deleted one
+        // Update relations: Move affected Payments and Shipments to Zone "All"
         $objResult = $objDatabase->Execute("
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment
-               SET zones_id=1
-             WHERE zones_id=$zone_id"); // 3.0: zone_id
+               SET zone_id=1
+             WHERE zone_id=$zone_id");
         if (!$objResult) return false;
         $objResult = $objDatabase->Execute("
-            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment
-               SET zones_id=1
-             WHERE zones_id=$zone_id"); // 3.0: zone_id
+            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipper
+               SET zone_id=1
+             WHERE zone_id=$zone_id");
+        if (!$objResult) return false;
+        // Delete Zone with Text
+        if (!Text::deleteById($zone_id, 'shop', self::TEXT_NAME))
+            return false;
+        $objResult = $objDatabase->Execute("
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_zones
+             WHERE id=$zone_id");
         if (!$objResult) return false;
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_zones");
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries");
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment");
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment");
+        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipper");
         return true;
     }
 
 
     /**
      * Add a new zone
+     * @static
      */
-    function addZone()
+    static function addZone()
     {
         global $objDatabase;
 
-        if (empty($_POST['zone_name_new'])) return '';
+        if (empty($_POST['zone_name_new'])) return null;
         $strName = $_POST['zone_name_new'];
-// Note: Text::replace() now returns the ID, not the object!
-//        $objText = Text::replace(
-//            0, FRONTEND_LANG_ID, $strName,
-//            MODULE_ID, TEXT_SHOP_ZONES_NAME
-//        );
-//        if (!$objText) return false;
-//        $objResult = $objDatabase->Execute("
-//            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_zones (
-//                text_name_id, status
-//            ) VALUES (
-//                ".$objText->getId().",
-//                ".(isset($_POST['zone_active_new']) ? 1 : 0)."
-//            )");
         $objResult = $objDatabase->Execute("
             INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_zones (
-                zones_name, activation_status
+                active
             ) VALUES (
-                '".addslashes($strName)."',
-                ".(empty($_POST['zone_active_new']) ? 0 : 1)."
+                ".(isset($_POST['zone_active_new']) ? 1 : 0)."
             )");
         if (!$objResult) return false;
         $zone_id = $objDatabase->Insert_ID();
+        if (!Text::replace($zone_id, FRONTEND_LANG_ID, 'shop',
+            self::TEXT_NAME, $strName)) {
+            return false;
+        }
         if (isset($_POST['selected_countries'])) {
             foreach ($_POST['selected_countries'] as $country_id) {
-//                $objResult = $objDatabase->Execute("
-//                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries (
-//                        zone_id, country_id
-//                    ) VALUES (
-//                        $zone_id, $country_id
-//                    )");
                 $objResult = $objDatabase->Execute("
                     INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries (
-                        zones_id, countries_id
+                        zone_id, country_id
                     ) VALUES (
                         $zone_id, $country_id
                     )");
                 if (!$objResult) return false;
             }
-            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries");
         }
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_zones");
         return true;
     }
 
 
     /**
-     * Update zones
+     * Updates the Zones with data posted from the form
+     * @return  boolean             True on success, false on failure,
+     *                              null on noop
+     * @static
      */
-    function updateZones()
+    static function updateZones()
     {
         global $objDatabase;
 
-        if (   empty($_POST['zones'])
-            || empty($_POST['zone_list'])) return '';
-        if (empty(self::$arrZone)) self::init();
+        if (   empty($_POST['bzones'])
+            || empty($_POST['zone_list'])) return null;
+        if (is_null(self::$arrZone)) self::init();
+        $changed = false;
         foreach ($_POST['zone_list'] as $zone_id) {
-            $strName = $_POST['zone_name'][$zone_id];
-// Note: Text::replace() now returns the ID, not the object!
-//            $text_name_id = self::$arrZone[$zone_id]['text_name_id'];
-//            $objText = Text::replace(
-//                $text_name_id, FRONTEND_LANG_ID, $strName,
-//                MODULE_ID, TEXT_SHOP_ZONES_NAME
-//            );
-//            if (!$objText) return false;
-//            $objResult = $objDatabase->Execute("
-//                UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_zones
-//                   SET text_name_id=".$objText->getId().",
-//                       status=".(isset($_POST['zone_active'][$zone_id]) ? 1 : 0)."
-//                 WHERE id=$zone_id");
+            $name = contrexx_input2raw($_POST['zone_name'][$zone_id]);
+            $active = (empty($_POST['zone_active'][$zone_id]) ? 0 : 1);
+            $arrCountryId = (empty($_POST['selected_countries'][$zone_id])
+                ? array() : $_POST['selected_countries'][$zone_id]);
+            sort($arrCountryId);
+            $arrCountryId_old = self::getCountryRelationArray();
+//DBG::log("Zones::updateZones(): Zones: ".var_export($arrCountryId_old, true));
+            $arrCountryId_old = (empty($arrCountryId_old[$zone_id])
+                ? array() : $arrCountryId_old[$zone_id]);
+            sort($arrCountryId_old);
+            if (   $name == self::$arrZone[$zone_id]['name']
+                && $active == self::$arrZone[$zone_id]['active']
+                && $arrCountryId == $arrCountryId_old) {
+                continue;
+            }
+//DBG::log("Zones::updateZones(): Different: name $name == ".self::$arrZone[$zone_id]['name'].", active $active == ".self::$arrZone[$zone_id]['active'].", arrCountryId ".var_export($arrCountryId, true)." == ".var_export($arrCountryId_old, true));
             $objResult = $objDatabase->Execute("
                 UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_zones
-                   SET zones_name='".addslashes($strName)."',
-                       activation_status=".(empty($_POST['zone_active'][$zone_id]) ? 0 : 1)."
-                 WHERE zones_id=$zone_id");
+                   SET active=$active
+                 WHERE id=$zone_id");
             if (!$objResult) return false;
-//            $objResult = $objDatabase->Execute("
-//                DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries
-//                 WHERE zone_id=$zone_id");
+            $changed = true;
+            if (!Text::replace($zone_id, FRONTEND_LANG_ID, 'shop',
+                self::TEXT_NAME, $name)) {
+                return false;
+            }
             $objResult = $objDatabase->Execute("
                 DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries
-                 WHERE zones_id=$zone_id");
+                 WHERE zone_id=$zone_id");
             if (!$objResult) return false;
-            if (!empty($_POST['selected_countries'][$zone_id])) {
-                foreach ($_POST['selected_countries'][$zone_id] as $country_id) {
-//                    $objResult = $objDatabase->Execute("
-//                        INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries (
-//                            zone_id, country_id
-//                        ) VALUES (
-//                            $zone_id, $country_id
-//                        )");
+            if (!empty($arrCountryId)) {
+                foreach ($arrCountryId as $country_id) {
                     $objResult = $objDatabase->Execute("
                         INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries (
-                            zones_id, countries_id
+                            zone_id, country_id
                         ) VALUES (
                             $zone_id, $country_id
                         )");
@@ -253,34 +301,181 @@ class Zones
                 }
             }
         }
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_zones");
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries");
-        return true;
+        if ($changed) return true;
+        return null;
     }
 
 
-    function getMenu($selectedId='', $menuName='zone_id', $onchange='')
+    /**
+     * Updates the relation entry for the given Shipper and Zone ID
+     * @param   integer   $zone_id      The Zone ID
+     * @param   integer   $shipper_id   The Shipper ID
+     * @return  boolean                 True on success, false otherwise
+     * @static
+     */
+    static function update_shipper_relation($zone_id, $shipper_id)
     {
-        if (empty(self::$arrZone)) self::init();
-        $menu = '';
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute("
+            REPLACE INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipper (
+               `zone_id`, `shipper_id`
+             ) VALUES (
+               $zone_id, $shipper_id
+             )");
+        return (boolean)$objResult;
+    }
+
+
+    /**
+     * Returns HTML code for the Zones dropdown menu
+     *
+     * Includes all Zones.  Backend use only.
+     * @param   integer     $selected       The optional preselected Zone ID.
+     *                                      Defaults to 0 (zero)
+     * @param   string      $name           The optional name attribute value.
+     *                                      Defaults to "zone_id".
+     * @param   string      $onchange       The optional onchange attribute
+     *                                      value.  Defaults to the empty string
+     * @return  string                      The HTML dropdown menu code
+     */
+    static function getMenu($selected=0, $name='zone_id', $onchange='')
+    {
+        $arrName = self::getNameArray();
+        return Html::getSelect(
+            $name, $arrName, $selected, false, $onchange);
+    }
+
+
+    /**
+     * Returns an array of Zone names indexed by their respective IDs
+     * @param   boolean     $active     Optionally limits results to Zones
+     *                                  of the given active status if set.
+     *                                  Defaults to null
+     * @return  array                   The array of Zone names on success,
+     *                                  false otherwise
+     */
+    static function getNameArray($active=null)
+    {
+        if (is_null(self::$arrZone)) self::init();
+        if (is_null(self::$arrZone)) return false;
+        $arrName = array();
         foreach (self::$arrZone as $zone_id => $arrZone) {
-            $menu .=
-                '<option value="'.$zone_id.'"'.
-                ($selectedId == $zone_id ? ' selected="selected"' : '').
-                '>'.$arrZone['name'].'</option>'."\n";
+            if (isset ($active) && $active != $arrZone['active']) continue;
+            $arrName[$zone_id] = $arrZone['name'];
         }
-        // Add select tag and hidden input if the menu name is non-empty
-        if ($menuName)
-            $menu =
-                '<input type="hidden" name="old_'.$menuName.'" '.
-                'value="'.$selectedId.'" />'."\n".
-                '<select name="'.$menuName.'"'.
-                (empty($onchange) ? '' : ' onchange="'.$onchange.'"').">\n".
-                $menu.
-                "</select>\n";
-        return $menu;
+        return $arrName;
+    }
+
+
+    /**
+     * Returns the Zone ID for the given shipper ID
+     * @param   integer   $shipper_id   The shipper ID
+     * @return  integer                 The Zone ID on success, null otherwise
+     */
+    static function getZoneIdByShipperId($shipper_id)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT `relation`.`zone_id`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipper` AS `relation`
+              JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `zone`
+                ON `zone`.`id`=`relation`.`zone_id`
+             WHERE `zone`.`active`=1
+               AND `relation`.`shipper_id`=$shipper_id";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            return self::errorHandler();
+        }
+        if ($objResult->EOF) {
+            return null;
+        }
+        return $objResult->fields['zone_id'];
+    }
+
+
+    /**
+     * Handles database errors
+     *
+     * Also migrates text fields to the new structure
+     * @return  boolean           False.  Always.
+     */
+    static function errorHandler()
+    {
+        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
+
+//DBG::activate(DBG_DB_FIREPHP);
+
+        // Fix the Zone-Payment relation table
+        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_payment';
+        $table_structure = array(
+            'zone_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'primary' => true, 'renamefrom' => 'zones_id'),
+            'payment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'primary' => true),
+        );
+        $table_index =  array();
+        UpdateUtil::table($table_name, $table_structure, $table_index);
+
+        // Fix the Text table
+        Text::errorHandler();
+
+        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_zones';
+        $table_structure = array(
+            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true, 'renamefrom' => 'zones_id'),
+            'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1', 'renamefrom' => 'activation_status'),
+        );
+        $table_index =  array();
+        if (UpdateUtil::table_exist($table_name)) {
+            if (UpdateUtil::column_exist($table_name, 'zones_name')) {
+                // Migrate all Zone names to the Text table first
+                Text::deleteByKey('shop', self::TEXT_NAME);
+                $query = "
+                    SELECT `zones_id`, `zones_name`
+                      FROM `$table_name";
+                $objResult = UpdateUtil::sql($query);
+                if (!$objResult) {
+                    throw new Update_DatabaseException(
+                        "Failed to query Zone names", $query);
+                }
+                while (!$objResult->EOF) {
+                    $id = $objResult->fields['zones_id'];
+                    $name = $objResult->fields['zones_name'];
+                    if (!Text::replace($id, FRONTEND_LANG_ID, 'shop',
+                        self::TEXT_NAME, $name)) {
+                        throw new Update_DatabaseException(
+                            "Failed to migrate Zone name '$name'");
+                    }
+                    $objResult->MoveNext();
+                }
+            }
+        }
+        UpdateUtil::table($table_name, $table_structure, $table_index);
+
+        $table_name_old = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_shipment';
+        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_shipper';
+        if (UpdateUtil::table_exist($table_name_old)) {
+            if (UpdateUtil::table_exist($table_name)) {
+                throw new UpdateException("Destination table $table_name exists, cannot rename old table $table_name_old");
+            }
+            UpdateUtil::table_rename($table_name_old, $table_name);
+        }
+        $table_structure = array(
+            'shipper_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'renamefrom' => 'shipment_id'),
+            'zone_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'renamefrom' => 'zones_id'),
+        );
+        $table_index = array();
+        UpdateUtil::table($table_name, $table_structure, $table_index);
+
+        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_countries';
+        $table_structure = array(
+            'country_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'renamefrom' => 'countries_id'),
+            'zone_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'renamefrom' => 'zones_id'),
+        );
+        $table_index = array();
+        UpdateUtil::table($table_name, $table_structure, $table_index);
+
+        // Always
+        return false;
     }
 
 }
-
-?>

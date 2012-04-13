@@ -2456,10 +2456,10 @@ class ContentManager
         if($pageId)
           $objInit->getPageId($pageId);
         
-        $templates = $objInit->getCustomContentTemplatesForTheme();
+        $templates = $objInit->getTemplates();
         $menu = '<option value="">(Standard)</option>';
         
-        foreach ($templates as $name) {
+        foreach ($templates['custom_content'] as $name => $value) {
             $sel = $name == $selected ? ' selected="selected"' : '';
             $menu .= '<option value="'.$name.'"'.$sel.'>'.$name.'</option>';
         }

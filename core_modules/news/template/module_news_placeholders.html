@@ -3,7 +3,8 @@
 <li><a id="placeholdersTab_news1" class="active" href="javascript:{}" onclick="selectTab('news1')" title="{TXT_NEWS_SITE}">{TXT_NEWS_SITE}</a></li>
 <li><a id="placeholdersTab_news2" href="javascript:{}" onclick="selectTab('news2')" title="{TXT_NEWS_MESSAGE}">{TXT_NEWS_MESSAGE}</a></li>
 <li><a id="placeholdersTab_news3" href="javascript:{}" onclick="selectTab('news3')" title="{TXT_HEADLINES}">{TXT_HEADLINES}</a></li>
-<li><a id="placeholdersTab_news4" href="javascript:{}" onclick="selectTab('news4')" title="{TXT_TEASERS}">{TXT_TEASERS}</a></li>
+<li><a id="placeholdersTab_news4" href="javascript:{}" onclick="selectTab('news4')" title="{TXT_HEADLINES}">{TXT_TOPNEWS}</a></li>
+<li><a id="placeholdersTab_news5" href="javascript:{}" onclick="selectTab('news5')" title="{TXT_TEASERS}">{TXT_TEASERS}</a></li>
 </ul>
 <!-- start news1 div -->
 <div id="news1" class="placeholdersTab" style="display:block">
@@ -39,6 +40,10 @@
 			<td>[[TXT_CATEGORY]]</td>
 			<td>{TXT_CATEGORY}</td>
 		</tr>
+		<tr class="row1">
+			<td>[[TXT_TYPE]]</td>
+			<td>{TXT_TYPE}</td>
+		</tr>
 		<tr class="row3">
 			<td colspan="2"><b>{TXT_GENERAL}</b></td>
 		</tr>
@@ -53,6 +58,14 @@
 		<tr class="row1">
 			<td>[[NEWS_CAT_DROPDOWNMENU]]</td>
 			<td>{TXT_NEWS_CAT_DROPDOWNMENU_DESCRIPTION}</td>
+		</tr>
+		<tr class="row2">
+			<td>[[NEWS_NO_TYPE]]</td>
+			<td>{TXT_NEWS_NO_TYPE_DESCRIPTION}</td>
+		</tr>
+		<tr class="row1">
+			<td>[[NEWS_TYPE_DROPDOWNMENU]]</td>
+			<td>{TXT_NEWS_TYPE_DROPDOWNMENU_DESCRIPTION}</td>
 		</tr>
 		<tr class="row3">
 			<td colspan="2"><b>{TXT_NEWS_MESSAGES}</b></td>
@@ -78,30 +91,34 @@
 			<td>{TXT_NEWS_CATEGORY_DESCRIPTION}</td>
 		</tr>
 		<tr class="row2">
+			<td>[[NEWS_TYPE]]</td>
+			<td>{TXT_NEWS_TYPE_DESCRIPTION}</td>
+		</tr>
+		<tr class="row1">
 			<td>[[NEWS_CSS]]</td>
 			<td>{TXT_NEWS_CSS_DESCRIPTION}</td>
 		</tr>
-		<tr class="row1">
+		<tr class="row2">
 			<td>[[NEWS_IMAGE]]</td>
 			<td>{TXT_NEWS_IMAGE_DESCRIPTION}</td>
 		</tr>
-		<tr class="row2">
+		<tr class="row1">
 			<td>[[NEWS_IMAGE_SRC]]</td>
 			<td>{TXT_NEWS_IMAGE_SRC_DESCRIPTION}</td>
 		</tr>
-		<tr class="row1">
+		<tr class="row2">
 			<td>[[NEWS_IMAGE_ALT]]</td>
 			<td>{TXT_NEWS_TITLE_DESCRIPTION}</td>
 		</tr>
-		<tr class="row2">
+		<tr class="row1">
 			<td>[[NEWS_IMAGE_LINK]]</td>
 			<td>{TXT_NEWS_IMAGE_LINK_DESCRIPTION}</td>
 		</tr>
-        <tr class="row1">
+        <tr class="row2">
             <td>&lt;-- news_image --&gt;</td>
             <td>{TXT_NEWS_IMAGE_ROW_DESCRIPTION}</td>
         </tr>
-		<tr class="row2">
+		<tr class="row1">
 			<td>&lt;!-- newsrow --&gt;</td>
 			<td>{TXT_NEWSROW_DESCRIPTION}</td>
 		</tr>
@@ -113,10 +130,17 @@
 		</tr>
 		<tr class="row1">
 			<td>&lt;form action="index.php?section=news" method="post"&gt;<br />
+
 				&nbsp;&nbsp;&nbsp;&nbsp;&lt;select onchange="this.form.submit()" name="category"&gt;<br />
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;option value="" selected="selected"&gt;<b>[[NEWS_NO_CATEGORY]]</b>&lt;/option&gt;<br />
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>[[NEWS_CAT_DROPDOWNMENU]]</b><br />
 				&nbsp;&nbsp;&nbsp;&nbsp;&lt;/select&gt;<br />
+
+				&nbsp;&nbsp;&nbsp;&nbsp;&lt;select onchange="this.form.submit()" name="type"&gt;<br />
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;option value="" selected="selected"&gt;<b>[[NEWS_NO_TYPE]]</b>&lt;/option&gt;<br />
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>[[NEWS_TYPE_DROPDOWNMENU]]</b><br />
+				&nbsp;&nbsp;&nbsp;&nbsp;&lt;/select&gt;<br />
+
 				&lt;/form&gt;<br />
 				&lt;br&nbsp;/&gt;<br />
 				&lt;table&gt;<br />
@@ -124,6 +148,7 @@
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;<b>[[TXT_DATE]]</b>&lt;/th&gt;<br />
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;<b>[[TXT_TITLE]]</b>&lt;/th&gt;<br />
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;<b>[[TXT_CATEGORY]]</b>&lt;/th&gt;<br />
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;<b>[[TXT_TYPE]]</b>&lt;/th&gt;<br />
 				&nbsp;&nbsp;&nbsp;&nbsp;&lt;/tr&gt;<br />
 				&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN newsrow --&gt;</b><br />
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;tr&gt;<br />
@@ -131,6 +156,7 @@
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;<b>[[NEWS_DATE]]</b>&lt;/td&gt;<br />
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;<b>[[NEWS_LINK]]</b>&lt;/td&gt;<br />
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;<b>[[NEWS_CATEGORY]]</b>&lt;/td&gt;<br />
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;<b>[[NEWS_TYPE]]</b>&lt;/td&gt;<br />
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/tr&gt;<br />
 				&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END newsrow --&gt;</b><br />
 				&lt;/table&gt;<br />
@@ -194,18 +220,22 @@
 			<td>{TXT_NEWS_CATEGORY_NAME_DESCRIPTION}</td>
 		</tr>
 		<tr class="row2">
+			<td>[[NEWS_TYPE_NAME]]</td>
+			<td>{TXT_NEWS_TYPE_NAME_DESCRIPTION}</td>
+		</tr>
+		<tr class="row1">
 			<td>[[NEWS_IMAGE]]</td>
 			<td>{TXT_NEWS_IMAGE_DESCRIPTION}</td>
 		</tr>
-		<tr class="row1">
+		<tr class="row2">
 			<td>[[NEWS_IMAGE_SRC]]</td>
 			<td>{TXT_NEWS_IMAGE_SRC_DESCRIPTION}</td>
 		</tr>
-		<tr class="row2">
+		<tr class="row1">
 			<td>[[NEWS_IMAGE_ALT]]</td>
 			<td>{TXT_NEWS_TITLE_DESCRIPTION}</td>
 		</tr>
-        <tr class="row1">
+        <tr class="row2">
             <td>&lt;-- news_image --&gt;</td>
             <td>{TXT_NEWS_IMAGE_ROW_DESCRIPTION}</td>
         </tr>
@@ -235,7 +265,7 @@
 			<th colspan="2">{TXT_USAGE}</th>
 		</tr>
 		<tr class="row1">
-			<td colspan="2">{TXT_HEADLINE_PLACEHOLLDERS_USAGE}</td>
+			<td colspan="2">{TXT_HEADLINE_PLACEHOLDERS_USAGE}</td>
 		</tr>
 	</table>
 	<br />
@@ -257,15 +287,15 @@
 		</tr>
 		<tr class="row2">
 			<td>[[HEADLINE_TEXT]]</td>
-			<td>{TXT_HEADLINE_TEXT_DESCRIPTION}</td>
+			<td>{TXT_NEWS_TEXT_DESCRIPTION}</td>
 		</tr>
 		<tr class="row1">
 			<td>[[HEADLINE_AUTHOR]]</td>
-			<td>{TXT_HEADLINE_AUTHOR_DESCRIPTION}</td>
+			<td>{TXT_NEWS_AUTHOR_DESCRIPTION}</td>
 		</tr>
 		<tr class="row2">
 			<td>[[HEADLINE_ID]]</td>
-			<td>{TXT_HEADLINE_ID_DESCRIPTION}</td>
+			<td>{TXT_NEWS_ID_DESCRIPTION}</td>
 		</tr>
 	</table>
 	<br />
@@ -293,9 +323,67 @@
 			<th colspan="2">{TXT_USAGE}</th>
 		</tr>
 		<tr class="row1">
-			<td colspan="2">{TXT_TEASER_PLACEHOLLDERS_USAGE}</td>
+			<td colspan="2">{TXT_TOP_NEWS_PLACEHOLDERS_USAGE}</td>
+		</tr>
+	</table>
+	<br />
+	<table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+		<tr>
+			<th colspan="2">{TXT_PLACEHOLDER_LIST}</th>
+		</tr>
+		<tr class="row1">
+			<td width="15%">[[TOP_NEWS_DATE]]</td>
+			<td width="85%">{TXT_NEWS_DATE_DESCRIPTION}</td>
+		</tr>
+		<tr class="row2">
+			<td>[[TOP_NEWS_LINK]]</td>
+			<td>{TXT_NEWS_LINK_DESCRIPTION}</td>
+		</tr>
+		<tr class="row1">
+			<td>[[TOP_NEWS_IMAGE_PATH]]</td>
+			<td>{TXT_NEWS_IMAGE_PATH_DESCRIPTION}</td>
+		</tr>
+		<tr class="row2">
+			<td>[[TOP_NEWS_TEXT]]</td>
+			<td>{TXT_NEWS_TEXT_DESCRIPTION}</td>
+		</tr>
+		<tr class="row1">
+			<td>[[TOP_NEWS_AUTHOR]]</td>
+			<td>{TXT_NEWS_AUTHOR_DESCRIPTION}</td>
+		</tr>
+		<tr class="row2">
+			<td>[[TOP_NEWS_ID]]</td>
+			<td>{TXT_NEWS_ID_DESCRIPTION}</td>
+		</tr>
+	</table>
+	<br />
+	<table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+		<tr>
+			<th>{TXT_EXAMPLE}</th>
+		</tr>
+		<tr class="row1">
+			<td>&lt;ul&gt;<br />
+				&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;{TXT_NEWS_MESSAGES}&lt;/li&gt;<br />
+				&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN headlines_row --&gt;</b><br />
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;<b>[[HEADLINE_LINK]]</b>&lt;/li&gt;<br />
+				&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END headlines_row --&gt;</b><br />
+				&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;&lt;a href="index.php?section=news"&gt;{TXT_MORE_NEWS}&lt;/a&gt;&lt;/li&gt;<br />
+				&lt;/ul&gt;<br />
+			</td>
 		</tr>
 	</table>
 </div>
 <!-- end news4 div -->
+<!-- start news5 div -->
+<div id="news5" class="placeholdersTab" style="display:none;">
+	<table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+		<tr>
+			<th colspan="2">{TXT_USAGE}</th>
+		</tr>
+		<tr class="row1">
+			<td colspan="2">{TXT_TEASER_PLACEHOLLDERS_USAGE}</td>
+		</tr>
+	</table>
+</div>
+<!-- end news5 div -->
 <!-- END module_news_placeholders.html -->

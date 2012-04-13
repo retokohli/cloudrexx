@@ -41,7 +41,8 @@ class DataAdmin extends DataLibrary {
         $this->__construct();
     }
 
-
+    private $act = '';
+    
     /**
     * Constructor    -> Create the module-menu and an internal template-object
     *
@@ -56,12 +57,17 @@ class DataAdmin extends DataLibrary {
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/data/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-         $this->_intLanguageId = $objInit->userFrontendLangId;
+         $this->_intLanguageId = $objInit->userFrontendLangId;        
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
 
-        $objTemplate->setVariable('CONTENT_NAVIGATION','    <a href="?cmd=data">'.$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_TITLE'].'</a>
-                                                            <a href="?cmd=data&amp;act=addEntry">'.$_ARRAYLANG['TXT_DATA_ENTRY_ADD_TITLE'].'</a>
-                                                            <a href="?cmd=data&amp;act=manageCategory">'.$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_TITLE'].'</a>
-                                                            <a href="?cmd=data&amp;act=settings">'.$_ARRAYLANG['TXT_DATA_SETTINGS_TITLE'].'</a>
+        $objTemplate->setVariable('CONTENT_NAVIGATION','
+            <a href="?cmd=data" class="'.($this->act == '' ? 'active' : '').'">'.$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_TITLE'].'</a>
+            <a href="?cmd=data&amp;act=addEntry" class="'.($this->act == 'addEntry' ? 'active' : '').'">'.$_ARRAYLANG['TXT_DATA_ENTRY_ADD_TITLE'].'</a>
+            <a href="?cmd=data&amp;act=manageCategory" class="'.($this->act == 'manageCategory' ? 'active' : '').'">'.$_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_TITLE'].'</a>
+            <a href="?cmd=data&amp;act=settings" class="'.($this->act == 'settings' ? 'active' : '').'">'.$_ARRAYLANG['TXT_DATA_SETTINGS_TITLE'].'</a>
                                                     ');
     }
 
@@ -175,6 +181,9 @@ class DataAdmin extends DataLibrary {
             'CONTENT_STATUS_MESSAGE'    => $this->_strErrMessage,
             'ADMIN_CONTENT'                => $this->_objTpl->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 

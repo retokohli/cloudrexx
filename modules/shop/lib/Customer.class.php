@@ -2,247 +2,62 @@
 
 /**
  * Shop Customer
- *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     2.1.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Test!
  */
 
-/*
-
-Changes to the customer table:
-ALTER TABLE `contrexx_module_shop_customers`
-ADD `group_id` INT(10) UNSIGNED NULL DEFAULT NULL;
-
-*/
+require_once ASCMS_MODULE_PATH.'/shop/lib/Order.class.php';
 
 /**
  * Customer as used in the Shop.
  *
- * Includes access methods and data layer.
- * Do not, I repeat, do not access private fields, or even try
- * to access the database directly!
+ * Extends the User class
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     2.1.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  */
-class Customer
+class Customer extends User
 {
     /**
-     * All Customer table field names.
-     *
-     * This is used to generate queries in {@see getByWildcards()}.
-     * Note that the ID, countryId and password fields are excluded here!
-     * Use the keys here as the field names in the pattern array argument
-     * for {@see getByWildcards()}, not the real database table field names!
-     * @var array   $fieldNames
-     */
-    private $fieldNames = array(
-        'userName'       => 'username',
-        'prefix'         => 'prefix',
-        'firstName'      => 'firstname',
-        'lastName'       => 'lastname',
-        'company'        => 'company',
-        'address'        => 'address',
-        'city'           => 'city',
-        'zip'            => 'zip',
-        'phone'          => 'phone',
-        'fax'            => 'fax',
-        'email'          => 'email',
-        'ccNumber'       => 'ccnumber',
-        'ccDate'         => 'ccdate',
-        'ccName'         => 'ccname',
-        'ccCode'         => 'cvc_code',
-        'companyNote'    => 'company_note',
-        'registerDate'   => 'register_date',
-    );
-
-    /**
-     * @var     string          $prefix     The customers' prefix (Sir, Madam, etc.)
-     * @access  private
-     */
-    private $prefix = '';
-    /**
-     * @var     string          $firstName  The customers' first name
-     * @access  private
-     */
-    private $firstName = '';
-    /**
-     * @var     string          $lastName   The customers' last name
-     * @access  private
-     */
-    private $lastName = '';
-    /**
-     * @var     string          $company    The customers' company
-     * @access  private
-     */
-    private $company = '';
-    /**
-     * @var     string          $address    The customers' address (street and number)
-     * @access  private
-     */
-    private $address = '';
-    /**
-     * @var     string          $city       The customers' city
-     * @access  private
-     */
-    private $city = '';
-    /**
-     * @var     string          $zip        The customers' zip code
-     * @access  private
-     */
-    private $zip = '';
-    /**
-     * @var     string          $countryId  The customer country's ID
-     * @access  private
-     */
-    private $countryId = 0;
-    /**
-     * @var     string          $phone      The customers' phone number
-     * @access  private
-     */
-    private $phone = '';
-    /**
-     * @var     string          $fax        The customers' fax number
-     * @access  private
-     */
-    private $fax = '';
-    /**
-     * @var     string          $email      The customers' e-mail address
-     * @access  private
-     */
-    private $email = '';
-    /**
-     * @var     string          $ccNumber   The customers' credit card number
-     * @access  private
-     */
-    private $ccNumber = '';
-    /**
-     * @var     string          $ccDate     The customers' credit card expiry date
-     * @access  private
-     */
-    private $ccDate = '';
-    /**
-     * @var     string          $ccName     The customers' credit card holder name
-     * @access  private
-     */
-    private $ccName = '';
-    /**
-     * @var     string          $ccCode     The customers' credit card verification code
-     * @access  private
-     */
-    private $ccCode = '';
-    /**
-     * @var     string          $userName   The customers' user name
-     * @access  private
-     */
-    private $userName = '';
-    /**
-     * @var     string          $password   The customers' password
-     * @access  private
-     */
-    private $password = '';
-    /**
-     * @var     string      $companyNote   A note regarding the customers' company
-     * @access  private
-     */
-    private $companyNote = '';
-    /**
-     * @var     boolean     $resellerStatus   True if the customer is a reseller
-     * @access  private
-     */
-    private $resellerStatus = false;
-    /**
-     * @var     string      $registerDate   The date the customer was inserted into the database
-     * @access  private
-     */
-    private $registerDate = '0000-00-00';
-    /**
-     * @var     boolean     $activeStatus   The customers' active status (0: inactive, 1: active)
-     * @access  private
-     */
-    private $activeStatus = true;
-
-    /**
-     * The ID of the customer group
-     * @var     integer
-     */
-    private $groupId = 0;
-
-    /**
-     * Create a Customer
-     *
-     * If the optional argument $id is set, the corresponding
-     * Customer is updated if she exists.
-     * Otherwise, a new Customer is created.
-     * Set the remaining object variables by calling the appropriate
-     * access methods.
+     * Creates a Customer
      * @access  public
-     * @param   string  $prefix     The customers' prefix (Sir, Madam, etc.)
-     * @param   string  $firstName  The customers' first name
-     * @param   string  $lastName   The customers' last name
-     * @param   string  $company    The customers' company
-     * @param   string  $address    The customers' address (street and number)
-     * @param   string  $city       The customers' city
-     * @param   string  $zip        The customers' zip code
-     * @param   integer $countryId  The customer country's ID
-     * @param   string  $phone      The customers' phone number
-     * @param   string  $fax        The customers' fax number
      * @return  Customer            The Customer
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function __construct(
-        $prefix, $firstName, $lastName, $company,
-        $address, $city, $zip, $countryId,
-        $phone, $fax, $id=0)
+    function __construct()
     {
-        // assign & check
-        $this->id        = intval($id);
-        $this->prefix    = strip_tags(trim($prefix));
-        $this->firstName = strip_tags(trim($firstName));
-        $this->lastName  = strip_tags(trim($lastName));
-        $this->company   = strip_tags(trim($company));
-        $this->address   = strip_tags(trim($address));
-        $this->city      = strip_tags(trim($city));
-        $this->zip       = strip_tags(trim($zip));
-        $this->countryId = intval($countryId);
-        $this->phone     = strip_tags(trim($phone));
-        $this->fax       = strip_tags(trim($fax));
-        // The remaining fields keep their default values for the time being.
+// TODO: Is that necessary?
+        parent::__construct();
+//DBG::log("Customer::__construct(): Made new ".get_class());
     }
 
 
-    /**
+    /*
      * Authenticate a Customer using his user name and password.
-     * @param   string  $userName   The user name
+     *
+     * Note that this overrides the parent method for testing purposes only
+     * and *SHOULD NOT* be used for production.
+     * See {@see User::auth()}.
+     * @param   string  $username   The user name
      * @param   string  $password   The password
      * @return  Customer    The Customer object on success, false otherwise.
      */
-    function authenticate($userName, $password)
-    {
-        global $objDatabase;
-
-        $query = "
-            SELECT customerid
-            FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
-            WHERE username='$userName'
-              AND password='$password'
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-        if ($objResult->RecordCount() != 1) {
-            return false;
-        }
-        $id = $objResult->fields['customerid'];
-        return Customer::getById($id);
-    }
+//    function auth($username, $password)
+//    {
+//        return parent::auth($username, $password);
+//        if (!parent::auth($username, $password)) return false;
+//        $objUser = FWUser::getFWUserObject()->objUser;
+//        $customer_id = $objUser->getId();
+//DBG::log("Customer::auth(): This: ".var_export($objUser, true));
+//DBG::log("Customer::auth(): Usergroups: ".var_export($objUser->getAssociatedGroupIds(), true));
+//        return true;
+//    }
 
 
     /**
@@ -250,591 +65,312 @@ class Customer
      * @return  integer         $id                 Customer ID
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getId()
+    function id()
     {
         return $this->id;
     }
-    /**
-     * Set the ID -- NOT ALLOWED
-     * @see {Customer::makeClone()}
-     */
 
     /**
-     * Get the prefix
-     * @return  string         The prefix (Sir, Madam, etc.)
+     * Get or set the user name
+     * @param   string    $username       The optional user name
+     * @return  string                    The user name
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getPrefix()
+    function username($username=null)
     {
-        return $this->prefix;
-    }
-    /**
-     * Set the prefix
-     * @param   string         $prefix     The prefix
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setPrefix($prefix)
-    {
-        $this->prefix = strip_tags(trim($prefix, " \t"));
+        if (isset($username)) {
+            $this->setUsername($username);
+        }
+        return $this->getUsername();
     }
 
     /**
-     * Get the first name
-     * @return  string      The first name
+     * Get or set the password
+     *
+     * Note that the password is set as plain text, but only the md5 hash
+     * is returned!
+     * If setting the password fails, returns null.
+     * @param   string    $password       The optional password in plain text
+     * @return  string                    The md5 password hash on success,
+     *                                    null otherwise
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getFirstName()
+    function password($password=null)
     {
-        return $this->firstName;
-    }
-    /**
-     * Set the first name
-     * @param   string         $firstName   The first name
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setFirstName($firstName)
-    {
-        $this->firstName = strip_tags(trim($firstName, " \t"));
-    }
-
-    /**
-     * Get the last name
-     * @return  string    The last name
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function getLastName()
-    {
-        return $this->lastName;
-    }
-    /**
-     * Set the last name
-     * @param   string         $lastName    The last name
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setLastName($lastName)
-    {
-        $this->lastName = strip_tags(trim($lastName, " \t"));
+        if (isset($password)) {
+            // plain!
+            if (!$this->setPassword($password, $password)) return null;
+        }
+        // md5!
+        return $this->password;
     }
 
     /**
-     * Get the company name
-     * @return  string         The company name
+     * Get or set the e-mail address
+     * @param   string    $email          The optional e-mail address
+     * @return  string                    The e-mail address
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getCompany()
+    function email($email=null)
     {
-        return $this->company;
-    }
-    /**
-     * Set the company name
-     * @param   string         $company     The company name
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setCompany($company)
-    {
-        $this->company = strip_tags(trim($company, " \t"));
+        if (isset($email)) {
+            $this->setEmail($email);
+        }
+        return $this->getEmail();
     }
 
     /**
-     * Get the address
+     * Get or set the gender
+     * @param   string        $gender     The optional gender
+     * @return  string                    The gender
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function gender($gender=null)
+    {
+        if (isset($gender)) {
+            $this->setProfile(array('gender' => array(0 => $gender)));
+        }
+        return $this->getProfileAttribute('gender');
+    }
+
+    /**
+     * Get or set the first name
+     * @param   string         $firstname   The optional first name
+     * @return  string                      The first name
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function firstname($firstname=null)
+    {
+        if (isset($firstname)) {
+            $this->setProfile(array('firstname' => array(0 => $firstname)));
+        }
+        return $this->getProfileAttribute('firstname');
+    }
+
+    /**
+     * Get or set the last name
+     * @param   string         $lastname    The optional last name
+     * @return  string                      The last name
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function lastname($lastname=null)
+    {
+        if (isset($lastname)) {
+            $this->setProfile(array('lastname' => array(0 => $lastname)));
+        }
+        return $this->getProfileAttribute('lastname');
+    }
+
+    /**
+     * Get or set the company name
+     * @param   string         $company     The optional company name
+     * @return  string                      The company name
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function company($company=null)
+    {
+        if (isset($company)) {
+            $this->setProfile(array('company' => array(0 => $company)));
+        }
+        return $this->getProfileAttribute('company');
+    }
+
+    /**
+     * Get or set the address
+     * @param   string    $address     The optional address (street and number)
      * @return  string                 The address (street and number)
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getAddress()
+    function address($address=null)
     {
-        return $this->address;
-    }
-    /**
-     * Set the address
-     * @param   string         $address     The address (street and number)
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setAddress($address)
-    {
-        $this->address = strip_tags(trim($address, " \t"));
+        if (isset($address)) {
+            $this->setProfile(array('address' => array(0 => $address)));
+        }
+        return $this->getProfileAttribute('address');
     }
 
     /**
-     * Get the city name
-     * @return  string         The city name
+     * Get or set the city name
+     * @param   string    $city       The optional city name
+     * @return  string                The city name
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getCity()
+    function city($city=null)
     {
-        return $this->city;
-    }
-    /**
-     * Set the city name
-     * @param   string         $city    The city name
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setCity($city)
-    {
-        $this->city = strip_tags(trim($city, " \t"));
+        if (isset($city)) {
+            $this->setProfile(array('city' => array(0 => $city)));
+        }
+        return $this->getProfileAttribute('city');
     }
 
     /**
-     * Get the zip code
-     * @return  string         The zip code
+     * Get or set the zip code
+     * @param   string    $zip        The optional zip code
+     * @return  string                The zip code
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getZip()
+    function zip($zip=null)
     {
-        return $this->zip;
-    }
-    /**
-     * Set the zip code
-     * @param   string         $zip         The zip code
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setZip($zip)
-    {
-        $this->zip = strip_tags(trim($zip, " \t"));
+        if (isset($zip)) {
+            $this->setProfile(array('zip' => array(0 => $zip)));
+        }
+        return $this->getProfileAttribute('zip');
     }
 
     /**
-     * Get the country ID
-     * @return  integer         $countryId      The country ID
+     * Get or set the country ID
+     * @param   integer   $country_id     The optional Country ID
+     * @return  integer                   The Country ID
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getCountryId()
+    function country_id($country_id=null)
     {
-        return $this->countryId;
-    }
-    /**
-     * Set the country ID
-     * @param   integer         $countryId       The country ID
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setCountryId($countryId)
-    {
-        $this->countryId = intval($countryId);
+        if (isset($country_id)) {
+            $this->setProfile(array('country' => array(0 => $country_id)));
+        }
+        return $this->getProfileAttribute('country');
     }
 
     /**
-     * Get the phone number
-     * @return  string         The phone number
+     * Get or set the phone number
+     * @param   string    $phone_private  The optional phone number
+     * @return  string                    The phone number
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getPhone()
+    function phone($phone_private=null)
     {
-        return $this->phone;
-    }
-    /**
-     * Set the phone
-     * @param  string         $phone        The phone number
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setPhone($phone)
-    {
-        $this->phone = strip_tags(trim($phone, " \t"));
+        if (isset($phone_private)) {
+            $this->setProfile(array('phone_private' => array(0 => $phone_private)));
+        }
+        return $this->getProfileAttribute('phone_private');
     }
 
     /**
-     * Get the fax number
-     * @return  string         The fax number
+     * Get or set the fax number
+     * @param   string    $phone_fax      The optional fax number
+     * @return  string                    The fax number
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getFax()
+    function fax($phone_fax=null)
     {
-        return $this->fax;
-    }
-    /**
-     * Set the fax number
-     * @param   string         $fax       The fax number
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setFax($fax)
-    {
-        $this->fax = strip_tags(trim($fax, " \t"));
+        if (isset($phone_fax)) {
+            $this->setProfile(array('phone_fax' => array(0 => $phone_fax)));
+        }
+        return $this->getProfileAttribute('phone_fax');
     }
 
     /**
-     * Get the email address
-     * @return  string          The email address
+     * Get or set the company note
+     * @param   string    $companynote    The optional company note
+     * @return  string                    The company note
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getEmail()
+    function companynote($companynote=null)
     {
-        return $this->email;
-    }
-    /**
-     * Set the email address
-     * @param   string         $email       The email address
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setEmail($email)
-    {
-        $this->email = strip_tags(trim($email, " \t"));
+        $index = SettingDb::getValue('user_profile_attribute_notes');
+        if (!$index) return null;
+        if (isset($companynote)) {
+            $this->setProfile(array($index => array(0 => $companynote)));
+        }
+        return $this->getProfileAttribute($index);
     }
 
     /**
-     * Get the credit card number
-     * @return  string         $ccNumber            The credit card number
+     * Get or set the reseller status
+     * @param   boolean   $is_reseller    The optional reseller status
+     * @return  boolean                   True if the customer is a
+     *                                    reseller, false otherwise.
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getCcNumber()
+    function is_reseller($is_reseller=null)
     {
-        return $this->ccNumber;
-    }
-    /**
-     * Set the ccNumber
-     * @param   string         The credit card number
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setCcNumber($ccNumber)
-    {
-        $this->ccNumber = strip_tags(trim($ccNumber, " \t"));
-    }
-
-    /**
-     * Get the credit card expiry date
-     * @return  string         The credit card expiry date
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function getCcDate()
-    {
-        return $this->ccDate;
-    }
-    /**
-     * Set the credit card expiry date
-     * @param   string         $ccDate    The credit card expiry date
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setCcDate($ccDate)
-    {
-        $this->ccDate = strip_tags(trim($ccDate, " \t"));
+        $group_reseller = SettingDb::getValue('usergroup_id_reseller');
+        if (empty($group_reseller)) {
+            self::errorHandler();
+            $group_reseller = SettingDb::getValue('usergroup_id_reseller');
+        }
+        if (isset($is_reseller)) {
+            if ($is_reseller) {
+                $this->setGroups(array($group_reseller));
+            } else {
+                $group_customer = SettingDb::getValue('usergroup_id_customer');
+                if (empty($group_customer)) {
+                    self::errorHandler();
+                    $group_customer = SettingDb::getValue('usergroup_id_customer');
+                }
+                $this->setGroups(array($group_customer));
+            }
+        }
+        return (in_array($group_reseller, $this->getAssociatedGroupIds()));
     }
 
     /**
-     * Get the credit card holders' name
-     * @return  string         The credit card holders' name
+     * Get or set the Customer group ID
+     * @param   integer   $group_id       The optional group ID
+     * @return  integer                   The group ID
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getCcName()
+    function group_id($group_id=null)
     {
-        return $this->ccName;
-    }
-    /**
-     * Set the credit card holders' name
-     * @param   string         $ccName      The credit card holders' name
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setCcName($ccName)
-    {
-        $this->ccName = strip_tags(trim($ccName, " \t"));
+        $index = SettingDb::getValue('user_profile_attribute_customer_group_id');
+        if (!$index) return false;
+        if (isset($group_id)) {
+            $this->setProfile(array($index => array(0 => $group_id)));
+        }
+        return $this->getProfileAttribute($index);
     }
 
     /**
-     * Get the credit card code
-     * @return  string         The credit card code
+     * Get or set the active status
+     * @param   boolean   $active         The optional active status
+     * @return  boolean                   True if the customer is active,
+     *                                    false otherwise.
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getCcCode()
+    function active($active=null)
     {
-        return $this->ccCode;
-    }
-    /**
-     * Set the credit card code
-     * @param   string         $ccCode      The credit card code
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setCcCode($ccCode)
-    {
-        $this->ccCode = strip_tags(trim($ccCode, " \t"));
+        if (isset($active)) {
+            $this->setActiveStatus($active);
+        }
+        return $this->getActiveStatus();
     }
 
-    /**
-     * Get the user name
-     * @return  string         The user name
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function getUserName()
-    {
-        return $this->userName;
-    }
-    /**
-     * Set the user name
-     * @param   string         $userName    The user name
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setUserName($userName)
-    {
-        $this->userName = strip_tags(trim($userName, " \t"));
-    }
 
     /**
-     * Get the md5 hash of the password
-     * @return  string         The md5 hash of the password
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function getPasswordMd5()
-    {
-        return $this->password;
-    }
-    /**
-     * Set the password
-     * @param   string         $password    The password
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setPassword($password)
-    {
-        $this->password = md5($password);
-    }
-
-    /**
-     * Get the company note
-     * @return  string         The company note
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function getCompanyNote()
-    {
-        return $this->companyNote;
-    }
-    /**
-     * Set the company note
-     * @param   string         $companyNote    The company note
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setCompanyNote($companyNote)
-    {
-        $this->companyNote = strip_tags(trim($companyNote, " \t"));
-    }
-
-    /**
-     * Get the reseller status
-     * @return  boolean                         True if the customer is a
-     *                                          reseller, false otherwise.
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function isReseller()
-    {
-        return $this->resellerStatus;
-    }
-    /**
-     * Set the reseller status
+     * Get or set the register date
      *
-     * The reseller status is set to true if the argument
-     * evaluates to boolean true, false otherwise.
-     * @param   boolean     $resellerStatus    The reseller status value
+     * Note that this property is not writable in the parent class!
+     * However, this is necessary in order to properly migrate old
+     * Shop Customers.
+     * @param   boolean   $active         The optional active status
+     * @return  boolean                   True if the customer is active,
+     *                                    false otherwise.
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function setResellerStatus($resellerStatus)
+    function register_date($regdate=null)
     {
-        $this->resellerStatus = ($resellerStatus ? true : false);
+        if (isset($regdate)) {
+            $this->regdate = $regdate;
+        }
+        return $this->getRegistrationDate();
     }
 
-    /**
-     * Get the register date
-     * @return  string         The register date
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function getRegisterDate()
-    {
-        return $this->registerDate;
-    }
-    /**
-     * Set the register date
-     * @param   string         $registerDate    The register date
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setRegisterDate($registerDate)
-    {
-        $this->registerDate = strip_tags(trim($registerDate, " \t"));
-    }
 
     /**
-     * Get the active status
+     * Delete this Customer from the database
      *
-     * The customer is inactive if his activeStatus is false, active otherwise.
-     * @return  boolean         The active status
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function getActiveStatus()
-    {
-        return $this->activeStatus;
-    }
-    /**
-     * Set the active status
-     *
-     * The active status value is set to true if the argument evaluates to
-     * the boolean true value, false otherwise.
-     * @param   boolean     $activeStatus    The active status
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setActiveStatus($activeStatus)
-    {
-        $this->activeStatus = ($activeStatus ? true : false);
-    }
-
-    /**
-     * Get the customer group ID
-     * @return  string         The customer group ID
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function getGroupId()
-    {
-        return $this->groupId;
-    }
-    /**
-     * Set the customer group ID
-     * @param   string         $groupId       The customer group ID
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setGroupId($groupId)
-    {
-        $this->groupId = intval($groupId);
-    }
-
-
-    /**
-     * Clone the Customer
-     *
-     * Note that this does NOT create a copy in any way, but simply clears
-     * the Customer ID.  Upon storing this Customer, a new ID is created.
-     * @return  void
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function makeClone()
-    {
-        $this->id = '';
-    }
-
-
-    /**
-     * Delete the Customer specified by its ID from the database.
-     * @param   integer     $customerId The Customer ID
+     * Also deletes all of her orders
      * @return  boolean                 True on success, false otherwise
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function delete()
+    function delete($deleteOwnAccount=false)
     {
-        global $objDatabase;
+        global $_ARRAYLANG;
 
-        if (!$this->id) {
-            return false;
+        if (!Orders::deleteByCustomerId($this->id)) {
+            return Message::error($_ARRAYLANG['TXT_SHOP_ERROR_CUSTOMER_DELETING_ORDERS']);
         }
-        $query = "
-            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
-            WHERE customerid=$this->id
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-        return true;
-    }
-
-
-    /**
-     * Stores the Customer object in the database.
-     *
-     * Either updates (id > 0) or inserts (id == 0) the object.
-     * @return  boolean     True on success, false otherwise
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function store()
-    {
-        if ($this->id > 0) {
-            return ($this->update());
-        }
-        return ($this->insert());
-    }
-
-
-    /**
-     * Update this Customer in the database.
-     * @return  boolean     True on success, false otherwise
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function update()
-    {
-        global $objDatabase;
-
-        $query = "
-            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_customers
-               SET prefix='".contrexx_addslashes($this->prefix)."',
-                   firstname='".contrexx_addslashes($this->firstName)."',
-                   lastname='".contrexx_addslashes($this->lastName)."',
-                   company='".contrexx_addslashes($this->company)."',
-                   address='".contrexx_addslashes($this->address)."',
-                   city='".contrexx_addslashes($this->city)."',
-                   zip='".contrexx_addslashes($this->zip)."',
-                   country_id='".contrexx_addslashes($this->countryId)."',
-                   phone='".contrexx_addslashes($this->phone)."',
-                   fax='".contrexx_addslashes($this->fax)."',
-                   email='".contrexx_addslashes($this->email)."',
-                   ccnumber='".contrexx_addslashes($this->ccNumber)."',
-                   ccdate='".contrexx_addslashes($this->ccDate)."',
-                   ccname='".contrexx_addslashes($this->ccName)."',
-                   cvc_code='".contrexx_addslashes($this->ccCode)."',
-                   username='".contrexx_addslashes($this->userName)."',
-                   password='".contrexx_addslashes($this->password)."',
-                   company_note='".contrexx_addslashes($this->companyNote )."',
-                   is_reseller=".($this->resellerStatus ? 1 : 0).",
-                   register_date='".contrexx_addslashes($this->registerDate)."',
-                   customer_status=".($this->activeStatus ? 1 : 0).",
-                   group_id=".intval($this->groupId)."
-             WHERE customerid=$this->id
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-        return true;
-    }
-
-
-    /**
-     * Insert this Customer into the database.
-     * Returns the result of the query.
-     *
-     * @return  boolean         True on success, false otherwise
-     */
-    function insert()
-    {
-        global $objDatabase;
-
-        $query = "
-            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_customers (
-                prefix, firstname, lastname, company, address, city, zip,
-                country_id, phone, fax, email,
-                ccnumber, ccdate, ccname, cvc_code,
-                username, password, company_note, is_reseller,
-                customer_status, register_date,
-                group_id
-            ) VALUES (
-                '".contrexx_addslashes($this->prefix)."',
-                '".contrexx_addslashes($this->firstName)."',
-                '".contrexx_addslashes($this->lastName)."',
-                '".contrexx_addslashes($this->company)."',
-                '".contrexx_addslashes($this->address)."',
-                '".contrexx_addslashes($this->city)."',
-                '".contrexx_addslashes($this->zip)."',
-                 ".intval($this->countryId).",
-                '".contrexx_addslashes($this->phone)."',
-                '".contrexx_addslashes($this->fax)."',
-                '".contrexx_addslashes($this->email)."',
-                '".contrexx_addslashes($this->ccNumber)."',
-                '".contrexx_addslashes($this->ccDate)."',
-                '".contrexx_addslashes($this->ccName)."',
-                '".contrexx_addslashes($this->ccCode)."',
-                '".contrexx_addslashes($this->userName)."',
-                '".contrexx_addslashes($this->password)."',
-                '".contrexx_addslashes($this->companyNote )."',
-                ".($this->resellerStatus ? 1 : 0).",
-                ".($this->activeStatus ? 1 : 0).",
-                NOW(),
-                ".intval($this->groupId)."
-            )
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-        // my brand new ID
-        $this->id = $objDatabase->Insert_ID();
-        return true;
+        return parent::delete($deleteOwnAccount);
     }
 
 
@@ -843,133 +379,533 @@ class Customer
      * @static
      * @param   integer     $id     The Customer ID
      * @return  Customer            The Customer object on success,
-     *                              false otherwise
+     *                              null otherwise
      */
-    //static
-    function getById($id)
+    static function getById($id)
     {
-        global $objDatabase;
-
-        $query = "
-            SELECT *
-            FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
-            WHERE customerid=$id
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
-        if ($objResult->RecordCount() != 1) {
-            return false;
-        }
-        $objCustomer = new Customer(
-            $objResult->fields['prefix'],
-            $objResult->fields['firstname'],
-            $objResult->fields['lastname'],
-            $objResult->fields['company'],
-            $objResult->fields['address'],
-            $objResult->fields['city'],
-            $objResult->fields['zip'],
-            $objResult->fields['country_id'],
-            $objResult->fields['phone'],
-            $objResult->fields['fax'],
-            $objResult->fields['customerid']
-        );
-        $objCustomer->email    = $objResult->fields['email'];
-        $objCustomer->ccNumber = $objResult->fields['ccnumber'];
-        $objCustomer->ccDate   = $objResult->fields['ccdate'];
-        $objCustomer->ccName   = $objResult->fields['ccname'];
-        $objCustomer->ccCode   = $objResult->fields['cvc_code'];
-        $objCustomer->userName = $objResult->fields['username'];
-        $objCustomer->password = $objResult->fields['password'];
-        $objCustomer->companyNote    = $objResult->fields['company_note'];
-        $objCustomer->resellerStatus = ($objResult->fields['is_reseller'] ? true : false);
-        $objCustomer->registerDate   = $objResult->fields['register_date'];
-        $objCustomer->activeStatus   = ($objResult->fields['customer_status'] ? true : false);
-        $objCustomer->groupId = $objResult->fields['group_id'];
+        $objCustomer = new Customer();
+        $objCustomer = $objCustomer->getUser($id);
+        if (!$objCustomer) return null;
+//DBG::log("Customer::getById($id): Usergroups: ".var_export($objCustomer->getAssociatedGroupIds(), true));
         return $objCustomer;
     }
 
 
     /**
-     * Returns an array of Customer objects found by wildcard.
+     * Returns a Customer object according to the given criteria
      *
-     * Takes an array of patterns as an argument, whose keys represent
-     * customer fields.  {@see $this->fieldNames} for a list of the valid
-     * names.
-     * The customer table is then queried with the values of the respective
-     * fields as wildcards, adding appropriate SQL syntax.
-     * @static
-     * @param   array   $arrPattern     The pattern array.
-     * @return  array                   An array of Customers on success,
+     * This extends the parent method by resolving the "group" index in
+     * the $filter array to User IDs.  These are in turn passed to the
+     * User class.
+     * @param   array   $filter
+     * @param   string  $search
+     * @param   array   $arrSort
+     * @param   array   $arrAttributes
+     * @param   integer $limit
+     * @param   integer $offset
+     * @return  Customer                The Customer object on success,
      *                                  false otherwise
      */
-    //static
-    function getByWildcard($arrPattern)
-    {
-        global $objDatabase;
+    public function getUsers(
+        $filter=null, $search=null, $arrSort=null, $arrAttributes=null,
+        $limit=null, $offset=0
+    ) {
+        if (!empty($filter) && is_array($filter)) {
+            if (isset($filter['group']) && is_array($filter['group'])) {
+                $arrUserId = array();
+                foreach ($filter['group'] as $group_id) {
+                    $objGroup = FWUser::getFWUserObject()->objGroup;
+                    $objGroup = $objGroup->getGroup($group_id);
+                    if ($objGroup) {
+                        $_arrUserId = $objGroup->getAssociatedUserIds();
+//DBG::log("Customer::getUsers(): Group ID $group_id, User IDs: ".var_export($_arrUserId, true));
 
-        $query = '';
-        foreach ($arrPattern as $fieldName => $pattern) {
-            if (in_array($fieldName, array_keys($this->fieldNames))) {
-                if ($query) {
-                    $query .= "
-                        OR ".$this->fieldNames[$fieldName]." LIKE '%".
-                        contrexx_addslashes($pattern)."%'";
-                } else {
-                    $query  = "
-                        SELECT customerid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
-                        WHERE ".$this->fieldNames[$fieldName]." LIKE '%".
-                        contrexx_addslashes($pattern)."%'";
+                        $arrUserId += array_flip($_arrUserId);
+//DBG::log("Customer::getUsers(): Merged: ".var_export($arrUserId, true));
+                    }
                 }
+                $filter['id'] = ($arrUserId ? array_flip($arrUserId) : array(0));
+                unset($filter['group']);
             }
         }
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
+//DBG::log("Customer::getUsers(): Filter: ".var_export($filter, true));
+        if ($this->loadUsers($filter, $search, $arrSort, $arrAttributes, $limit, $offset)) {
+            return $this;
         }
-        $arrCustomer = array();
-        while (!$objResult->EOF) {
-            $arrCustomer[] = Customer::getById($objResult->fields['id']);
-            $objResult->MoveNext();
-        }
-        return $arrCustomer;
+        return false;
     }
 
 
     /**
-     * Return a textual representation of the object
-     * for testing and debugging purposes.
+     * Returns the unregistered Customer with the given e-mail address
+     *
+     * Note the implicit contradiction.  Even unregistered Customers
+     * are stored in the database and retrieved when they visit the Shop
+     * again.  However, such Users are always inactive, and thus cannot
+     * log in.  They are identified by their e-mail address and updated with
+     * the current data.  That information is needed for processing the order
+     * and sending confirmation e-mails.
+     * Note that this kind of Customer is limited to the group of final
+     * customers.  This implies that no reseller prices are available to
+     * unregistered Customers.
+     * @param   string  $email    The e-mail address
+     * @return  User              The Customer on success, null otherwise
+     * @todo    Add the Customer Usergroup to the filter and test that
      */
-    function toString()
+    static function getUnregisteredByEmail($email)
     {
-        return "
-            id        : $this->id,<br />
-            prefix    : $this->prefix,<br />
-            firstName : $this->firstName,<br />
-            lastName  : $this->lastName,<br />
-            company   : $this->company,<br />
-            address   : $this->address,<br />
-            city      : $this->city,<br />
-            zip       : $this->zip,<br />
-            countryId : $this->countryId,<br />
-            phone     : $this->phone,<br />
-            fax       : $this->fax,<br />
-            email     : $this->email,<br />
-            ccNumber  : $this->ccNumber,<br />
-            ccDate    : $this->ccDate,<br />
-            ccName    : $this->ccName,<br />
-            ccCode    : $this->ccCode,<br />
-            userName  : $this->userName,<br />
-            password  : $this->password,<br />
-            companyNote : $this->companyNote,<br />
-            resellerStatus : ".($this->resellerStatus ? 1 : 0).",<br />
-            registerDate : $this->registerDate,<br />
-            activeStatus : ".($this->activeStatus ? 1 : 0).",<br />
-            groupId : $this->groupId<br />
-        ";
+        global $_ARRAYLANG;
+
+        // Only final customers may be unregistered
+        $usergroup_id = SettingDb::getValue('usergroup_id_customer');
+        if (!$usergroup_id) {
+            Message::error($_ARRAYLANG['TXT_SHOP_ERROR_USERGROUP_INVALID']);
+            require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
+            HTTP::redirect(CONTREXX_DIRECTORY_INDEX.'?section=shop');
+        }
+        $objUser = FWUser::getFWUserObject()->objUser;
+        $objUser = $objUser->getUsers(array(
+            'email' => $email,
+            'active' => false,
+            'group_id' => $usergroup_id,
+        ));
+        if (!$objUser) {
+//DBG::log("Customer::getUnregisteredByEmail($email): Found no such unregistered User");
+            return null;
+        }
+//DBG::log("Customer::getUnregisteredByEmail($email): Found unregistered User ID ".$objUser->getId()." (".$objUser->getEmail().")");
+        return self::getById($objUser->getId());
+    }
+
+
+    /**
+     * Returns the registered Customer with the given e-mail address
+     * @param   string  $email    The e-mail address
+     * @return  User              The Customer on success, null otherwise
+     * @todo    Add the Customer Usergroup to the filter and test that
+     */
+    static function getRegisteredByEmail($email)
+    {
+        global $_ARRAYLANG;
+
+        // Any Customers
+        $objUser = FWUser::getFWUserObject()->objUser;
+        $objUser = $objUser->getUsers(array(
+            'email' => $email,
+            'active' => true,
+        ));
+        if (!$objUser) {
+//DBG::log("Customer::getUnregisteredByEmail($email): Found no such unregistered User");
+            return null;
+        }
+//DBG::log("Customer::getUnregisteredByEmail($email): Found unregistered User ID ".$objUser->getId()." (".$objUser->getEmail().")");
+        return self::getById($objUser->getId());
+    }
+
+
+    /**
+     * Returns an array of Customer data for MailTemplate substitution
+     *
+     * The password is no longer available in the session if the confirmation
+     * is sent after paying with some external PSP that uses some form of
+     * instant payment notification (i.e. PayPal)!
+     * In that case, it is *NOT* included in the template produced.
+     * Call {@see Shop::sendLogin()} while processing the Order instead.
+     * @return    array               The Customer data substitution array
+     * @see       MailTemplate::substitute()
+     */
+    function getSubstitutionArray()
+    {
+        global $_ARRAYLANG;
+
+// See below.
+//        $index_notes = SettingDb::getValue('user_profile_attribute_notes');
+//        $index_type = SettingDb::getValue('user_attribute_customer_type');
+//        $index_reseller = SettingDb::getValue('user_attribute_reseller_status');
+        $gender = strtoupper($this->gender());
+        $title = $_ARRAYLANG['TXT_SHOP_TITLE_'.$gender];
+        $format_salutation = $_ARRAYLANG['TXT_SHOP_SALUTATION_'.$gender];
+        $salutation = sprintf($format_salutation,
+            $this->firstname(), $this->lastname(), $this->company(), $title);
+        $arrSubstitution = array(
+            'CUSTOMER_SALUTATION' => $salutation,
+            'CUSTOMER_ID'         => $this->id(),
+            'CUSTOMER_EMAIL'      => $this->email(),
+            'CUSTOMER_COMPANY'    => $this->company(),
+            'CUSTOMER_FIRSTNAME'  => $this->firstname(),
+            'CUSTOMER_LASTNAME'   => $this->lastname(),
+            'CUSTOMER_ADDRESS'    => $this->address(),
+            'CUSTOMER_ZIP'        => $this->zip(),
+            'CUSTOMER_CITY'       => $this->city(),
+            'CUSTOMER_COUNTRY'    => Country::getNameById($this->country_id()),
+            'CUSTOMER_PHONE'      => $this->phone(),
+            'CUSTOMER_FAX'        => $this->fax(),
+            'CUSTOMER_USERNAME'   => $this->username(),
+// There are not used in any MailTemplate so far:
+//            'CUSTOMER_COUNTRY_ID' => $this->country_id(),
+//            'CUSTOMER_NOTE'       => $this->getProfileAttribute($index_notes),
+//            'CUSTOMER_TYPE'       => $this->getProfileAttribute($index_type),
+//            'CUSTOMER_RESELLER'   => $this->getProfileAttribute($index_reseller),
+//            'CUSTOMER_GROUP_ID'   => current($this->getAssociatedGroupIds()),
+        );
+//DBG::log("Login: ".$this->username()."/".$_SESSION['shop']['password']);
+        if (isset($_SESSION['shop']['password'])) {
+            $arrSubstitution['CUSTOMER_LOGIN'] = array(0 => array(
+                'CUSTOMER_USERNAME' => $this->username(),
+                'CUSTOMER_PASSWORD' => $_SESSION['shop']['password'],
+            ));
+        }
+        return $arrSubstitution;
+    }
+
+
+    /**
+     * Returns a string representing the name of this customer
+     *
+     * The format of the string is determined by the optional
+     * $format parameter in sprintf() format:
+     *  - %1$u : ID
+     *  - %2$s : Company
+     *  - %3$s : First name
+     *  - %4$s : Last name
+     * Defaults to '%2$s %3$s %4$s (%1$u)'.
+     * The result is trimmed before it is returned.
+     * @param   string    $format         The optional format string
+     * @return  string                    The Customer name
+     */
+    function getName($format=null)
+    {
+        if (!isset($format)) $format = '%2$s %3$s %4$s (%1$u)';
+        return trim(sprintf($format,
+            $this->id(),
+            $this->company(),
+            $this->firstname(),
+            $this->lastname()
+        ));
+    }
+
+
+    /**
+     * Returns the HTML dropdown menu code for selecting the gender/title
+     *
+     * @global  array   $_ARRAYLANG     The language array
+     * @param   string  $selected       The optional select tag name attribute
+     *                                  value.  Defaults to 'shipPrefix'
+     * @param   string  $name           The optional
+     * @return  string                  The HTML menu code
+     */
+    static function getGenderMenu($selected, $name='gender')
+    {
+        global $_ARRAYLANG;
+//die("Customer::getGenderMenu(): HERE");
+        $objAttribute = FWUser::getFWUserObject()->objUser->objAttribute;
+        if (!$objAttribute) return null;
+        $objAttribute = $objAttribute->getById('gender');
+//die("Customer::getGenderMenu(): Attribute: ".var_export($objAttribute, true));
+        $arrAttribute = array();
+//die("Customer::getGenderMenu(): Attribute Menu: ".var_export($arrAttribute, true));
+        foreach ($objAttribute->getChildren() as $attribute_id) {
+            $arrAttribute[$attribute_id] =
+                $_ARRAYLANG['TXT_SHOP_'.strtoupper($attribute_id)];
+        }
+//DBG::log("Customer::getGenderMenu(): Attribute Array: ".var_export($arrAttribute, true));
+        return Html::getSelect($name, $arrAttribute, $selected);
+    }
+
+
+    /**
+     * Updates the password of the Customer with the given e-mail address
+     * @param   string    $email        The e-mail address
+     * @param   string    $password     The new password
+     * @return  boolean                 True on success, false otherwise
+     */
+    static function updatePassword($email, $password)
+    {
+        global $objFWUser;
+
+        $objUser = $objFWUser->objUser->getUsers(
+            array('email' => $email));
+        if (!$objUser) return false;
+        $objUser->setPassword($password);
+        return $objUser->store();
+    }
+
+
+    /**
+     * Handles database errors
+     *
+     * Also migrates old Shop Customers to the User accounts and adds
+     * all new settings
+     * @return  boolean     false     Always!
+     * @throws  Update_DatabaseException
+     */
+    static function errorHandler()
+    {
+        global $objFWUser;
+        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
+        require_once ASCMS_MODULE_PATH.'/shop/lib/ShopSettings.class.php';
+
+        $table_name_old = DBPREFIX."module_shop".MODULE_INDEX."_customers";
+        // If the old Customer table is missing, the migration has completed
+        // successfully already
+        if (!UpdateUtil::table_exist($table_name_old)) {
+            return false;
+        }
+
+        // Ensure that the ShopSettings (including SettingDb) and Order tables
+        // are ready first!
+//DBG::log("Customer::errorHandler(): Adding settings");
+        ShopSettings::errorHandler();
+        Country::errorHandler();
+        Order::errorHandler();
+        Discount::errorHandler();
+
+        SettingDb::init('shop', 'config');
+        $objUser = FWUser::getFWUserObject()->objUser;
+
+        // Create new User_Profile_Attributes
+        $index_notes = SettingDb::getValue('user_profile_attribute_notes');
+        if (!$index_notes) {
+//DBG::log("Customer::errorHandler(): Adding notes attribute...");
+//            $objProfileAttribute = new User_Profile_Attribute();
+            $objProfileAttribute = $objUser->objAttribute->getById(0);
+//DBG::log("Customer::errorHandler(): NEW notes attribute: ".var_export($objProfileAttribute, true));
+            $objProfileAttribute->setNames(array(
+                1 => 'Notizen',
+                2 => 'Notes',
+// TODO: Translate
+                3 => 'Notes', 4 => 'Notes', 5 => 'Notes', 6 => 'Notes',
+            ));
+            $objProfileAttribute->setType('text');
+            $objProfileAttribute->setMultiline(true);
+            $objProfileAttribute->setParent(0);
+            $objProfileAttribute->setProtection(array(1));
+//DBG::log("Customer::errorHandler(): Made notes attribute: ".var_export($objProfileAttribute, true));
+            if (!$objProfileAttribute->store()) {
+                throw new Update_DatabaseException(
+                   "Failed to create User_Profile_Attribute 'notes'");
+            }
+//DBG::log("Customer::errorHandler(): Stored notes attribute, ID ".$objProfileAttribute->getId());
+            if (!(SettingDb::set('user_profile_attribute_notes', $objProfileAttribute->getId())
+               && SettingDb::update('user_profile_attribute_notes'))) {
+                throw new Update_DatabaseException(
+                   "Failed to update User_Profile_Attribute 'notes' setting");
+            }
+//DBG::log("Customer::errorHandler(): Stored notes attribute ID setting");
+        }
+
+        $index_group = SettingDb::getValue('user_profile_attribute_customer_group_id');
+        if (!$index_group) {
+//            $objProfileAttribute = new User_Profile_Attribute();
+            $objProfileAttribute = $objUser->objAttribute->getById(0);
+            $objProfileAttribute->setNames(array(
+                1 => 'Kundenrabattgruppe',
+                2 => 'Discount group',
+// TODO: Translate
+                3 => 'Kundenrabattgruppe', 4 => 'Kundenrabattgruppe',
+                5 => 'Kundenrabattgruppe', 6 => 'Kundenrabattgruppe',
+            ));
+            $objProfileAttribute->setType('text');
+            $objProfileAttribute->setParent(0);
+            $objProfileAttribute->setProtection(array(1));
+            if (!$objProfileAttribute->store()) {
+                throw new Update_DatabaseException(
+                   "Failed to create User_Profile_Attribute 'notes'");
+            }
+            if (!(SettingDb::set('user_profile_attribute_customer_group_id', $objProfileAttribute->getId())
+               && SettingDb::update('user_profile_attribute_customer_group_id'))) {
+                throw new Update_DatabaseException(
+                   "Failed to update User_Profile_Attribute 'customer_group_id' setting");
+            }
+        }
+
+        // For the migration, a temporary flag is needed in the orders table
+        // in order to prevent mixing up old and new customer_id values.
+        $query = "
+            ALTER TABLE `".DBPREFIX."module_shop".MODULE_INDEX."_orders`
+              ADD `migrated` TINYINT(1) unsigned NOT NULL default 0";
+        UpdateUtil::sql($query);
+
+        $arrResellerId = array();
+        $arrCustomerId = array();
+        $query = "
+            SELECT `customer`.`customerid`,
+                   `customer`.`prefix`, `customer`.`firstname`,
+                   `customer`.`lastname`,
+                   `customer`.`company`, `customer`.`address`,
+                   `customer`.`city`, `customer`.`zip`,
+                   `customer`.`country_id`,
+                   `customer`.`phone`, `customer`.`fax`,
+                   `customer`.`email`,
+                   `customer`.`username`, `customer`.`password`,
+                   `customer`.`company_note`,
+                   `customer`.`is_reseller`,
+                   `customer`.`customer_status`, `customer`.`register_date`,
+                   `customer`.`group_id`
+              FROM `$table_name_old` AS `customer`
+             ORDER BY `customer`.`customerid` ASC";
+        $objResult = UpdateUtil::sql($query);
+        while (!$objResult->EOF) {
+            $old_customer_id = $objResult->fields['customerid'];
+            if (empty($objResult->fields['email'])) {
+                $objResult->fields['email'] = $objResult->fields['username'];
+            }
+            $email = $objResult->fields['email'];
+            $objUser = $objFWUser->objUser->getUsers(array('email' => array(0 => $email)));
+            $objCustomer = null;
+            if ($objUser) {
+                $objCustomer = self::getById($objUser->getId());
+            }
+            if (!$objCustomer) {
+                $lang_id = Order::getLanguageIdByCustomerId($old_customer_id);
+                $lang_id = FWLanguage::getLangIdByIso639_1($lang_id);
+                if (!$lang_id) $lang_id = FRONTEND_LANG_ID;
+                $objCustomer = new Customer();
+                if (preg_match('/^(?:frau|mad|mme|signora|miss)/i',
+                    $objResult->fields['prefix'])) {
+                    $objCustomer->gender('gender_female');
+                } elseif (preg_match('/^(?:herr|mon|signore|mister|mr)/i',
+                    $objResult->fields['prefix'])) {
+                    $objCustomer->gender('gender_male');
+//                } else {
+// Other "genders", like "family", "thing", or "it" won't be matched
+// and are left on "gender_unknown".
+//DBG::log("*** Prefix {$objResult->fields['prefix']}, UNKNOWN GENDER!");
+                }
+//DBG::log("Prefix {$objResult->fields['prefix']}, made gender ".$objCustomer->gender());
+
+                $objCustomer->company($objResult->fields['company']);
+                $objCustomer->firstname($objResult->fields['firstname']);
+                $objCustomer->lastname($objResult->fields['lastname']);
+                $objCustomer->address($objResult->fields['address']);
+                $objCustomer->city($objResult->fields['city']);
+                $objCustomer->zip($objResult->fields['zip']);
+                $objCustomer->country_id($objResult->fields['country_id']);
+                $objCustomer->phone($objResult->fields['phone']);
+                $objCustomer->fax($objResult->fields['fax']);
+                $objCustomer->email($objResult->fields['email']);
+                $objCustomer->companynote($objResult->fields['company_note']);
+                $objCustomer->active($objResult->fields['customer_status']);
+                // Handled by a UserGroup now, see below
+                //$objCustomer->setResellerStatus($objResult->fields['is_reseller']);
+                $objCustomer->register_date($objResult->fields['register_date']);
+                $objCustomer->group_id($objResult->fields['group_id']);
+// NOTE: Mind that the User class has been modified to accept e-mail addresses
+// as usernames!
+                $objCustomer->username($objResult->fields['username']);
+                // Copy the md5 hash of the password!
+                $objCustomer->password = $objResult->fields['password'];
+                $objCustomer->setFrontendLanguage($lang_id);
+            }
+            if (!$objCustomer->store()) {
+//DBG::log(var_export($objCustomer, true));
+                throw new Update_DatabaseException(
+                   "Failed to migrate existing Customer ID ".
+                   $old_customer_id.
+                   " to Users (Messages: ".
+                   join(', ', $objCustomer->error_msg).")");
+            }
+            if ($objResult->fields['is_reseller']) {
+                $arrResellerId[$objCustomer->id()] = true;
+//DBG::log("Customer::errorHandler(): Added reseller: ".$objCustomer->id());
+            } else {
+                $arrCustomerId[$objCustomer->id()] = true;
+//DBG::log("Customer::errorHandler(): Added customer: ".$objCustomer->id());
+            }
+            // Update the Orders table with the new Customer ID.
+            // Note that we use the ambiguous old customer ID that may
+            // coincide with a new User ID, so to prevent inconsistencies,
+            // migrated Orders are marked as such.
+            $query = "
+                UPDATE `".DBPREFIX."module_shop_orders`
+                   SET `customer_id`=".$objCustomer->id().",
+                       `migrated`=1
+                 WHERE `customer_id`=$old_customer_id
+                   AND `migrated`=0";
+            UpdateUtil::sql($query);
+            $objResult->MoveNext();
+        }
+
+        // Remove the flag, it's no longer needed.
+        // (You could also verify that all records have been migrated by
+        // querying them with "[...] WHERE `migrated`=0", which *MUST* result
+        // in an empty recordset.  This is left as an exercise for the reader.)
+        $query = "
+            ALTER TABLE `".DBPREFIX."module_shop".MODULE_INDEX."_orders`
+             DROP `migrated`";
+        UpdateUtil::sql($query);
+
+        // Create missing UserGroups for customers and resellers
+        $objGroup = null;
+        $group_id_customer = SettingDb::getValue('usergroup_id_customer');
+        if ($group_id_customer) {
+            $objGroup = $objFWUser->objGroup->getGroup($group_id_customer);
+        }
+        if (!$objGroup || $objGroup->EOF) {
+            $objGroup = $objFWUser->objGroup->getGroups(
+                array('group_name' => 'Shop Endkunden'));
+        }
+        if (!$objGroup || $objGroup->EOF) {
+            $objGroup = new UserGroup();
+            $objGroup->setActiveStatus(true);
+            $objGroup->setDescription('Online Shop Endkunden');
+            $objGroup->setName('Shop Endkunden');
+            $objGroup->setType('frontend');
+        }
+//DBG::log("Group: ".var_export($objGroup, true));
+        if (!$objGroup) {
+            throw new Update_DatabaseException(
+               "Failed to create UserGroup for customers");
+        }
+        $objGroup->setUsers(array_keys($arrCustomerId));
+//DBG::log("Customer::errorHandler(): Made customer usergroup: ".var_export($objGroup, true));
+        if (!$objGroup->store() || !$objGroup->getId()) {
+            throw new Update_DatabaseException(
+                "Failed to store UserGroup for customers");
+        }
+//DBG::log("Customer::errorHandler(): Stored customer usergroup, ID ".$objGroup->getId());
+        SettingDb::set('usergroup_id_customer', $objGroup->getId());
+        if (!SettingDb::update('usergroup_id_customer')) {
+            throw new Update_DatabaseException(
+               "Failed to store UserGroup ID for customers");
+        }
+        $objGroup = null;
+        $group_id_reseller = SettingDb::getValue('usergroup_id_reseller');
+        if ($group_id_reseller) {
+            $objGroup = $objFWUser->objGroup->getGroup($group_id_reseller);
+        }
+        if (!$objGroup || $objGroup->EOF) {
+            $objGroup = $objFWUser->objGroup->getGroups(
+                array('group_name' => 'Shop Wiederverkäufer'));
+        }
+        if (!$objGroup || $objGroup->EOF) {
+            $objGroup = new UserGroup();
+            $objGroup->setActiveStatus(true);
+            $objGroup->setDescription('Online Shop Wiederverkäufer');
+            $objGroup->setName('Shop Wiederverkäufer');
+            $objGroup->setType('frontend');
+        }
+        if (!$objGroup) {
+            throw new Update_DatabaseException(
+               "Failed to create UserGroup for resellers");
+        }
+        $objGroup->setUsers(array_keys($arrResellerId));
+//DBG::log("Customer::errorHandler(): Made reseller usergroup: ".var_export($objGroup, true));
+        if (!$objGroup->store() || !$objGroup->getId()) {
+            throw new Update_DatabaseException(
+                "Failed to store UserGroup for resellers");
+        }
+        SettingDb::set('usergroup_id_reseller', $objGroup->getId());
+        if (!SettingDb::update('usergroup_id_reseller')) {
+            throw new Update_DatabaseException(
+               "Failed to store UserGroup ID for resellers");
+        }
+
+        UpdateUtil::drop_table($table_name_old);
+
+//DBG::log("Updated Customer table and related stuff");
+        // Always
+        return false;
     }
 
 }
-
-?>

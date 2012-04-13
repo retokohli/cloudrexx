@@ -445,30 +445,20 @@ class Yellowpay
         global $_ARRAYLANG;
 
         if (empty ($settings)) {
-            $settings = SettingDb::init('config');
-            $settings = SettingDb::getArray();
-//die("Loaded settings: ".var_export($settings, true));
-        } else {
-//die("Parameter settings: ".var_export($settings, true));
+            $settings = SettingDb::getArray('shop', 'config');
         }
         if (empty ($arrField['OPERATION'])) {
             $arrField['OPERATION'] =
                 $settings['postfinance_authorization_type']['value'];
-//die("Set OPERATION to ".$arrField['OPERATION']);
         }
         // There needs to be at least one accepted payment method,
         // if there is none, accept all.
         $strAcceptedPaymentMethods = self::getAcceptedPaymentMethodsString(
             $settings['postfinance_accepted_payment_methods']['value']);
         // Build the base URI, which also includes the protocol (http://)
-//die(var_export($_SERVER));
         if (empty ($uriparam)) {
             $uriparam = 'section=shop&cmd=success&handler=yellowpay';
         }
-        // This is needed by some modules in order to identify the order,
-        // i.e. egov!
-        $order_id = $arrField['ORDERID'];
-        $uriparam .= '&order_id='.$order_id;
         $base_uri =
             'http://'.$_SERVER['HTTP_HOST'].CONTREXX_SCRIPT_PATH.
             '?'.$uriparam.'&result=';
@@ -500,11 +490,11 @@ class Yellowpay
             (CONTREXX_CHARSET == 'UTF-8' ? '_utf8' : '').
             '.asp"'.
             ">\n";
-//die("OPERATION is ".$arrField['OPERATION']);
         if (!self::setFields($arrField)) {
             self::$arrError[] = 'Failed to verify keys';
             return false;
         }
+// TODO: Remove passphrase as a parameter, use $settings only
         if (empty ($passphrase))
             $passphrase = $settings['postfinance_hash_signature_in']['value'];
         $arrField['SHASIGN'] = self::signature($arrField, $passphrase);
@@ -513,7 +503,6 @@ class Yellowpay
                 '      '.
                 Html::getHidden($name, $value)."\n";
         }
-// parking-luzern customizing
         $form .=
             '      '.
             '<input type="submit" name="go" value="'.$submitValue.'" />'.
@@ -546,17 +535,15 @@ class Yellowpay
     static function setFields(&$arrField=null)
     {
         if (empty($arrField)) {
-//DBG::log("Yellowpay::setFields(): Empty field array");
+            self::$arrError[] = "Empty parameter array";
             return false;
         }
         if (!is_array($arrField)) {
-//DBG::log("Yellowpay::setFields(): Parameter must be an array");
+            self::$arrError[] = "Parameter must be an array";
             return false;
         }
-//die("Field array: ".var_export($arrField, true));
         foreach (self::$arrFieldMandatory as $name) {
             if (empty($arrField[$name])) {
-//DBG::log("Yellowpay::setFields(): Missing mandatory name '$name'");
                 self::$arrError[] = "Missing mandatory name '$name'";
                 return false;
             }
@@ -568,7 +555,6 @@ class Yellowpay
             $value = self::verifyParameter($name, $value);
             if ($value === null) {
                 self::$arrError[] = "Invalid value '$value' for name '$name'";
-//DBG::log("Yellowpay::setFields(): Invalid value '$value' for name '$name'");
                 return false;
             }
             $arrField[$name] = $value;
@@ -680,7 +666,7 @@ class Yellowpay
 
             // Alias details: see Alias Management documentation
             case 'ALIAS':
-                if (strlen($value) <= 20) return $value;
+                if (strlen($value) <= 40) return $value;
                 break;
             case 'ALIASUSAGE':
                 if (strlen($value) <= 255) return $value;
@@ -725,7 +711,6 @@ class Yellowpay
     {
         $hash_string = self::concatenateFields($fields, $passphrase, $out);
         $sha1 = strtoupper(sha1($hash_string));
-//DBG::log("signature($fields, $passphrase, $out): SHA1: $sha1<br />");
         return $sha1;
     }
 
@@ -760,9 +745,6 @@ class Yellowpay
             $name = strtoupper($name);
             if (isset ($filter[$name])) {
                 $fields[$name] = $value;
-//DBG::log("concatenateFields($fields, $passphrase, $out): Accepted parameter $name ($value)<br />");
-            } else {
-//DBG::log("concatenateFields($fields, $passphrase, $out): Removed parameter $name ($value)<br />");
             }
         }
         ksort($fields);
@@ -772,17 +754,14 @@ class Yellowpay
             // However, including parameters with empty values produces
             // invalid SHASigns!
             if ($value === '') {
-//DBG::log("concatenateFields($fields, $passphrase, $out): Skipping parameter $name with empty string value<br />");
                 continue;
             }
-//DBG::log("concatenateFields($fields, $passphrase, $out): Appending parameter $name ($value)<br />");
             $hash_string .=
                 $name.
                 '='.
                 $fields[$name].
                 $passphrase;
         }
-//DBG::log("concatenateFields($fields, $passphrase, $out): Hash string: $hash_string<br />");
         return $hash_string;
     }
 
@@ -805,7 +784,7 @@ class Yellowpay
         $shasign_request = $arrField['SHASIGN'];
         // If the hash is correct, so is the Order (and ID)
         $shasign_computed = self::signature($arrField, $passphrase, true);
-//DBG::log("Yellowpay::checkIn(): SHA Request $shasign_request <=> $shasign_computed ?");
+//DBG::log("Yellowpay::checkIn(): SHA Request $shasign_request <> $shasign_computed ?");
         return ($shasign_request == $shasign_computed);
     }
 
@@ -891,14 +870,14 @@ class Yellowpay
 
         $strOptions = '';
         $arrIndices = preg_split('/\s*,\s*/', $indices, null, PREG_SPLIT_NO_EMPTY);
-        foreach (Yellowpay::$arrKnownPaymentMethod
+        foreach (self::$arrKnownPaymentMethod
                 as $index => $strPaymentMethod) {
             $strOptions .=
-                '<input name="yellowpay_accepted_payment_methods[]" '.
-                'id="yellowpay_pm_'.$index.'" type="checkbox" '.
+                '<input name="postfinance_accepted_payment_methods[]" '.
+                'id="postfinance_pm_'.$index.'" type="checkbox" '.
                 (in_array($index, $arrIndices) ? 'checked="checked" ' : '').
                 'value="'.$index.'" />'."\n".
-                '<label for="yellowpay_pm_'.$index.'">&nbsp;'.
+                '<label for="postfinance_pm_'.$index.'">&nbsp;'.
                 $_ARRAYLANG['TXT_SHOP_YELLOWPAY_'.strtoupper($strPaymentMethod)].
                 '</label><br />'."\n";
         }
@@ -933,12 +912,14 @@ class Yellowpay
      *
      * In particular, tries to add missing Settings using the defaults.
      * However, you will have to set them to their correct values after this.
+     * Note that you *MUST* call SettingDb::init() using the proper section
+     * and group parameters beforehand.  Otherwise, no settings will be added.
      */
     static function errorHandler()
     {
         SettingDb::errorHandler();
-        // Uses the current MODULE_ID
-        SettingDb::init('config');
+        // You *MUST* call this yourself beforehand, using the proper section!
+        //SettingDb::init('shop', 'config');
         // Signature: ($name, $value, $ord, $type, $values, $key)
         SettingDb::add('postfinance_shop_id', 'Ihr Kontoname',
                 1, SettingDb::TYPE_TEXT);

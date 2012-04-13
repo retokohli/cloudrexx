@@ -344,7 +344,7 @@ class LanguageManager
                 if (!empty($result[1]) && !empty($result[2])) {
                     $backendVars[$result[1]] = $result[2];
                 } else {
-                    $this->strErrMessage .= 'Ungültiges $_ARRAYLANG Format. (backend)  regex: '.$regex.'<br />';
+                    $this->strErrMessage .= 'Ungï¿½ltiges $_ARRAYLANG Format. (backend)  regex: '.$regex.'<br />';
                 }
             }
 
@@ -364,7 +364,7 @@ class LanguageManager
                     }
                     $frontendVars[$result[1]] = $result[2];
                 } else {
-                    $this->strErrMessage .= 'Ungültiges $_ARRAYLANG Format. (frontend )  regex: '.$regex.'<br />';
+                    $this->strErrMessage .= 'Ungï¿½ltiges $_ARRAYLANG Format. (frontend )  regex: '.$regex.'<br />';
                 }
             }
 
@@ -1022,12 +1022,6 @@ class LanguageManager
             $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
 
             $objLanguage->loadLangConfig();
-
-            if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
-                $settings = new settingsManager();
-                $settings->setVirtualLanguagePath(true);
-            }
-
             return true;
        }
         return false;

@@ -73,6 +73,8 @@ class DatabaseManager
      */
     public $_arrMimeTypes;
 
+    private $act = '';
+    
     /**
      * Constructor
      * @global  HTML_Template_Sigma
@@ -90,15 +92,20 @@ class DatabaseManager
         $this->_arrMimeTypes = array(
             'sql' => 'application/x-unknown',
             'csv' => 'text/comma-separated-values',
-        );
-        $objTemplate->setVariable(
-            'CONTENT_NAVIGATION',
-            '<a href="index.php?cmd=dbm">'.$_CORELANG['TXT_DBM_MAINTENANCE_TITLE'].'</a>'.
+        );        
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_CORELANG;
+
+        $objTemplate->setVariable('CONTENT_NAVIGATION',
+            '<a href="index.php?cmd=dbm" class="'.($this->act == '' ? 'active' : '').'">'.$_CORELANG['TXT_DBM_MAINTENANCE_TITLE'].'</a>'.
             (Permission::hasAllAccess()
-              ? '<a href="index.php?cmd=dbm&amp;act=sql">'.$_CORELANG['TXT_DBM_SQL_TITLE'].'</a>'.
-                '<a href="index.php?cmd=dbm&amp;act=csv">'.$_CORELANG['TXT_DBM_CSV'].'</a>'.
-                 '<a href="index.php?cmd=dbm&amp;act=status">'.$_CORELANG['TXT_DBM_STATUS_TITLE'].'</a>'
-              : ''
+            ? '<a href="index.php?cmd=dbm&amp;act=sql" class="'.($this->act == 'sql' ? 'active' : '').'">'.$_CORELANG['TXT_DBM_SQL_TITLE'].'</a>'.
+            '<a href="index.php?cmd=dbm&amp;act=csv" class="'.($this->act == 'csv' ? 'active' : '').'">'.$_CORELANG['TXT_DBM_CSV'].'</a>'.
+            '<a href="index.php?cmd=dbm&amp;act=status" class="'.($this->act == 'status' ? 'active' : '').'">'.$_CORELANG['TXT_DBM_STATUS_TITLE'].'</a>'.
+            '<a href="index.php?cmd=dbm&amp;act=ie" class="'.($this->act == 'ie' ? 'active' : '').'">'.$_CORELANG['TXT_DBM_BACKUP_TITLE'].'</a>'
+            : ''
             )
         );
     }
@@ -118,7 +125,7 @@ class DatabaseManager
         // Check permission to access this module
         Permission::checkAccess(20, 'static');
 
-        switch ($_GET['act']) { 
+        switch ($_GET['act']) {
             case 'showTable':
                 if (Permission::hasAllAccess()) {
                     $this->showTable($_GET['table']);
@@ -150,6 +157,61 @@ class DatabaseManager
                     Permission::noAccess();
                 }
                 break;
+            case 'ie':
+                if (Permission::hasAllAccess()) {
+                    $this->showImportExport();
+                } else {
+                    Permission::noAccess();
+                }
+                break;
+            case 'createBackup':
+                if (Permission::hasAllAccess()) {
+                    $this->createBackup();
+                    $this->showImportExport();
+                } else {
+                    Permission::noAccess();
+                }
+                break;
+            case 'deleteBackup':
+                if (Permission::hasAllAccess()) {
+                    $this->deleteBackup($_GET['id']);
+                    $this->showImportExport();
+                } else {
+                    Permission::noAccess();
+                }
+                break;
+
+            case 'downloadBackup':
+                if (Permission::hasAllAccess()) {
+                    $this->downloadBackup($_GET['id']);
+                } else {
+                    Permission::noAccess();
+                }
+                break;
+            case 'restoreBackup':
+                if (Permission::hasAllAccess()) {
+                    $this->restoreBackup($_GET['id']);
+                    $this->showImportExport();
+                } else {
+                    Permission::noAccess();
+                }
+                break;
+            case 'uploadBackup':
+                if (Permission::hasAllAccess()) {
+                    $this->uploadBackup();
+                    $this->showImportExport();
+                } else {
+                    Permission::noAccess();
+                }
+                break;
+            case 'details':
+                if (Permission::hasAllAccess()) {
+                    $this->showDetails($_GET['id']);
+                } else {
+                    Permission::noAccess();
+                }
+                break;
+
 // Added 2.1.0
             case 'csv':
                 // Kick unauthorised users out
@@ -167,6 +229,9 @@ class DatabaseManager
             'CONTENT_OK_MESSAGE' => self::$strOkMessage,
             'CONTENT_STATUS_MESSAGE' => self::$strErrMessage,
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 
@@ -784,6 +849,397 @@ class DatabaseManager
     }
 
     /**
+     * Shows the Import/Export page.
+     *
+     * @global     HTML_Template_Sigma
+     * @global     ADONewConnection
+     * @global     array        core language
+     * @global     array        system configuration
+     */
+    function showImportExport()
+    {
+        global  $objTemplate, $objDatabase, $_CORELANG, $_CONFIG;
+
+        $this->_strPageTitle = $_CORELANG['TXT_DBM_BACKUP_TITLE'];
+
+        $objTemplate->addBlockfile('ADMIN_CONTENT', 'import_export', 'dbm_import_export.html');
+        $objTemplate->setVariable(array(
+            'TXT_EXPORT_TITLE' => $_CORELANG['TXT_DBM_EXPORT_TITLE'],
+            'TXT_EXPORT_DESCRIPTION' => $_CORELANG['TXT_DBM_EXPORT_DESCRIPTION'],
+            'TXT_EXPORT_TYPE' => $_CORELANG['TXT_DBM_EXPORT_TYPE'],
+            'TXT_EXPORT_TABLES' => $_CORELANG['TXT_DBM_MAINTENANCE_TABLES'],
+            'TXT_EXPORT_SELECT_ALL' => $_CORELANG['TXT_SELECT_ALL'],
+            'TXT_EXPORT_UNSELECT_ALL' => $_CORELANG['TXT_DESELECT_ALL'],
+            'TXT_EXPORT_SUBMIT' => $_CORELANG['TXT_DBM_EXPORT_TITLE'],
+            'TXT_EXISTING_BACKUPS_TITLE' => $_CORELANG['TXT_DBM_EXPORT_BACKUPS'],
+            'TXT_EXISTING_BACKUP_DATE' => $_CORELANG['TXT_DBM_EXPORT_DATE'],
+            'TXT_EXISTING_BACKUP_TYPE' => $_CORELANG['TXT_DBM_EXPORT_TYPE'],
+            'TXT_EXISTING_BACKUP_VERSION' => $_CORELANG['TXT_DBM_EXPORT_VERSION'],
+            'TXT_EXISTING_BACKUP_EDITION' => $_CORELANG['TXT_DBM_EXPORT_EDITION'],
+            'TXT_EXISTING_BACKUP_DESC' => $_CORELANG['TXT_DBM_EXPORT_DESCRIPTION'],
+            'TXT_EXISTING_BACKUP_TABLES' => $_CORELANG['TXT_DBM_MAINTENANCE_TABLES'],
+            'TXT_EXISTING_BACKUP_SIZE' => $_CORELANG['TXT_DBM_EXPORT_SIZE'],
+            'TXT_EXISTING_BACKUP_DELETE' => $_CORELANG['TXT_CONFIRM_DELETE_DATA'].' '.$_CORELANG['TXT_ACTION_IS_IRREVERSIBLE'],
+            'TXT_EXISTING_BACKUP_COMMENTS' => $_CORELANG['TXT_DBM_EXPORT_COMMENTS'],
+            'TXT_IMPORT_TITLE' => $_CORELANG['TXT_DBM_IMPORT'],
+            'TXT_IMPORT_DESCRIPTION' => $_CORELANG['TXT_DBM_IMPORT_DESCRIPTION'],
+            'TXT_IMPORT_FILE' => $_CORELANG['TXT_DBM_IMPORT_FILE'],
+            'TXT_IMPORT_SUBMIT' => $_CORELANG['TXT_DBM_IMPORT_SUBMIT']
+        ));
+
+        //Show tables
+        $objResult = $objDatabase->Execute('SHOW TABLE STATUS LIKE "'.DBPREFIX.'%"');
+
+        while(!$objResult->EOF) {
+            if (stripos($objResult->fields['Name'],'backup') == 0) {
+                //Don't backup the backup-table..
+                $objTemplate->setVariable('TABLE_NAME', $objResult->fields['Name']);
+                $objTemplate->parse('showTables');
+            }
+            $objResult->MoveNext();
+        }
+
+        //Show existing Backups
+        $objResult = $objDatabase->Execute('SELECT      id,
+                                                        date,
+                                                        version,
+                                                        edition,
+                                                        type,
+                                                        description,
+                                                        usedtables,
+                                                        size
+                                            FROM        '.DBPREFIX.'backups
+                                            ORDER BY    date DESC
+                                        ');
+
+        while (!$objResult->EOF) {
+
+            if ($objResult->fields['version'] == $_CONFIG['coreCmsVersion'].' '.$_CONFIG['coreCmsStatus'] && $objResult->fields['edition'] == $_CONFIG['coreCmsEdition']) {
+                $strClassRow = 'highlightedGreen';
+            } else {
+                $strClassRow = 'rowWarn';
+            }
+
+            $objTemplate->setVariable(array(
+                'TXT_BACKUP_RESTORE' => $_CORELANG['TXT_DBM_EXPORT_RESTORE'],
+                'TXT_DETAILS' => $_CORELANG['TXT_DBM_DETAILS_TITLE'],
+                'TXT_BACKUP_DOWNLOAD' => $_CORELANG['TXT_DOWNLOAD'],
+                'TXT_BACKUP_DELETE' => $_CORELANG['TXT_DELETE']
+            ));
+
+            $objTemplate->setVariable(array(
+                'BACKUP_CLASS' => $strClassRow,
+                'BACKUP_ID' => $objResult->fields['id'],
+                'BACKUP_DATE' => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
+                'BACKUP_DESC' => ($objResult->fields['description'] != '') ? $objResult->fields['description'] : '-',
+                'BACKUP_TYPE' => strtoupper($objResult->fields['type']),
+                'BACKUP_VERSION' => htmlentities($objResult->fields['version'], ENT_QUOTES, CONTREXX_CHARSET),
+                'BACKUP_EDITION' => htmlentities($objResult->fields['edition'], ENT_QUOTES, CONTREXX_CHARSET),
+                'BACKUP_TABLES' => count(explode(';',$objResult->fields['usedtables'])),
+                'BACKUP_SIZE' => $this->convertBytesToKBytes($objResult->fields['size']),
+            ));
+
+            $objTemplate->parse('showBackups');
+            $objResult->MoveNext();
+        }
+    }
+
+    /**
+     * Creates a backup of all contrexx-tables.
+     *
+     * @global     ADONewConnection
+     * @global     array        core language
+     * @global     array        system configuration
+     */
+    function createBackup()
+    {
+        global $objDatabase, $_CORELANG, $_CONFIG;
+
+        $strDescription = addslashes(strip_tags($_POST['frmDatabaseExport_Desc']));
+        $strBackupType = addslashes(strip_tags($_POST['frmDatabaseExport_Type']));
+
+        //Select desired type of backup
+        switch ($strBackupType) {
+            case 'csv':
+                $objBackup = new CSVBackup();
+                break;
+            default: //sql
+                $objBackup = new SQLBackup();
+        }
+
+        if (! isset($_POST['frmDatabaseExport_Tables'])) {
+            self::addError($_CORELANG['TXT_DBM_EXPORT_ERROR_SELECTION']);
+            return;
+        }
+
+        // New Backup String
+        $strBackup = '';
+
+        // Create file header
+        if ($objBackup->hasCommentTags()) {
+            $strBackup .=
+                $objBackup->getSeparationLine().
+                $objBackup->getCommentString()." Info:\t\tContrexx CMS database backup file\n".
+                $objBackup->getCommentString()." Version:\t".$_CONFIG['coreCmsVersion'].' '.$_CONFIG['coreCmsStatus']."\n".
+                $objBackup->getCommentString()." Edition:\t".$_CONFIG['coreCmsEdition']."\n".
+                $objBackup->getCommentString()." Created:\t".date(ASCMS_DATE_FORMAT, mktime())."\n".
+                $objBackup->getSeparationLine()."\n\n";
+        }
+
+        // Create table data
+        $strTables = '';
+        foreach ($_POST['frmDatabaseExport_Tables'] as $strTableName) {
+            $strTables .= $strTableName.';';
+            $strBackup .=
+                $objBackup->getSeparationLine().
+                $objBackup->getTableHeader($strTableName).
+                $objBackup->getSeparationLine().
+                $objBackup->getTableDefinition($strTableName).
+                $objBackup->getTableContent($strTableName).
+                "\n\n";
+        }
+        $strTables = substr($strTables,0,-1);
+
+        // Write file
+        if (is_writable($this->_strBackupPath)) {
+            $intTimeStamp = time();
+            $strFileName = $intTimeStamp.$this->_arrFileEndings[$strBackupType];
+            $handleFile = fopen($this->_strBackupPath.$strFileName, 'w');
+            fwrite ($handleFile, $strBackup);
+            fclose ($handleFile);
+
+            //Try to set access rights
+            @chmod($this->_strBackupPath.$strFileName, 0644);
+
+            //Add to database
+            $objDatabase->Execute(' INSERT INTO '.DBPREFIX.'backups
+                                    SET `date`          = '.$intTimeStamp.',
+                                        `version`       = "'.$_CONFIG['coreCmsVersion'].' '.$_CONFIG['coreCmsStatus'].'",
+                                        `edition`       = "'.$_CONFIG['coreCmsEdition'].'",
+                                        `type`          = "'.$strBackupType.'",
+                                        `description`   = "'.$strDescription.'",
+                                        `usedtables`    = "'.$strTables.'",
+                                        `size`          = '.filesize($this->_strBackupPath.$strFileName).'
+                                ');
+            self::addMessage(sprintf(
+                $_CORELANG['TXT_DBM_EXPORT_SUCCESS'],
+                $this->_strBackupPath.$strFileName
+            ));
+        } else {
+            //Directory is not writable, show error
+            self::addError(sprintf(
+                $_CORELANG['TXT_DBM_EXPORT_ERROR'],
+                $this->_strBackupPath
+            ));
+        }
+    }
+
+
+    /**
+     * Removes an existing backup from database and the filesystem.
+     *
+     * @global     ADONewConnection
+     * @global     array        core language
+     * @param         integer        $intBackupId: The backup with this id will be removed.
+     */
+    function deleteBackup($intBackupId)
+    {
+        global $objDatabase, $_CORELANG;
+
+        $intBackupId = intval($intBackupId);
+
+        if ($intBackupId == 0) {
+            self::addError($_CORELANG['TXT_DBM_EXPORT_DELETE_ERROR']);
+            return;
+        }
+
+
+        $objResult = $objDatabase->Execute('SELECT  `date`,
+                                                    `type`
+                                            FROM    '.DBPREFIX.'backups
+                                            WHERE   id='.$intBackupId.'
+                                            LIMIT   1
+                                        ');
+
+        if ($objResult->RecordCount() != 1) {
+            self::addError($_CORELANG['TXT_DBM_EXPORT_DELETE_ERROR']);
+            return;
+        }
+
+        $strFile = $objResult->fields['date'].$this->_arrFileEndings[$objResult->fields['type']];
+        @unlink($this->_strBackupPath.$strFile);
+
+        $objDatabase->Execute(' DELETE
+                                FROM    '.DBPREFIX.'backups
+                                WHERE   id='.$intBackupId.'
+                                LIMIT   1
+                            ');
+
+        self::addMessage($_CORELANG['TXT_DBM_EXPORT_DELETE_SUCCESS']);
+    }
+
+
+    /**
+     * Writes a backup to the output stream. Allows to download it.
+     *
+     * @global     ADONewConnection
+     * @param   integer        $intBackupId: The backup with this id should be downloaded
+     */
+    function downloadBackup($intBackupId) {
+        global $objDatabase;
+
+        //Check id
+        $intBackupId = intval($intBackupId);
+        if ($intBackupId <= 0) { return; }
+
+        //Check database
+        $objResult = $objDatabase->Execute('SELECT  `date`,
+                                                    `type`,
+                                                    `size`
+                                            FROM    '.DBPREFIX.'backups
+                                            WHERE   id='.$intBackupId.'
+                                            LIMIT   1
+                                        ');
+        if ($objResult->RecordCount() != 1) { return; }
+
+        //Check file
+        $strFileName = $objResult->fields['date'].$this->_arrFileEndings[$objResult->fields['type']];
+        if (! is_file($this->_strBackupPath.$strFileName)) { return; }
+
+        //Write stream
+        header('Content-type: '.$this->_arrMimeTypes[$objResult->fields['type']]);
+        header('Content-Length: '.$objResult->fields['size']);
+        header('Content-Disposition: attachment; filename="'.$strFileName.'"');
+        readfile($this->_strBackupPath.$strFileName);
+        exit();
+    }
+
+
+    /**
+     * Manages the Upload of a Backup-File and adds it to the database. Currently it only proccesses SQL-Uploads.
+     *
+     * @global     ADONewConnection
+     * @global     array        config
+     * @global     array        core language
+     */
+    function uploadBackup()
+    {
+        global $objDatabase, $_CORELANG;
+
+        $intTimeStamp = time();
+        $strFileName = $intTimeStamp.$this->_arrFileEndings['sql'];
+
+        $arrFileRows = file($_FILES['frmDatabaseImport_File']['tmp_name']);
+
+        //No check for mime-type or file-type necessary because of check for the contrexx-header
+        //Check for Contrexx-File
+        if (!preg_match('/# Version:.*/', $arrFileRows[2]) || !preg_match('/# Edition:.*/', $arrFileRows[3])) {
+            self::addError($_CORELANG['TXT_DBM_IMPORT_ERROR_NO_CONTREXX']);
+            return;
+        }
+
+        //Collect version & edition information
+        $strVersion = substr($arrFileRows[2], strrpos($arrFileRows[2],"\t") + 1, -1); //Find begin of version and remove the newline at the end of the string
+        $strEdition = substr($arrFileRows[3], strrpos($arrFileRows[2],"\t") + 1, -1); //Find begin of edition and remove the newline at the end of the string
+
+        //Collect used tables
+        $strTables = '';
+        foreach ($arrFileRows as $strRow) {
+            if (preg_match('/CREATE TABLE `.*` \(\n/', $strRow)) {
+                $strTables .= substr($strRow, strpos($strRow, '`') + 1, -4).';';
+            }
+        }
+        $strTables = substr($strTables,0,-1);
+
+
+        //Move uploaded file
+        move_uploaded_file($_FILES['frmDatabaseImport_File']['tmp_name'], $this->_strBackupPath.$strFileName);
+        chmod($this->_strBackupPath.$strFileName, 0644);
+
+        //Add to database
+        $objDatabase->Execute(' INSERT INTO '.DBPREFIX.'backups
+                                SET `date`          = '.$intTimeStamp.',
+                                    `version`       = "'.$strVersion.'",
+                                    `edition`       = "'.$strEdition.'",
+                                    `type`          = "sql",
+                                    `description`   = "",
+                                    `usedtables`    = "'.$strTables.'",
+                                    `size`          = '.filesize($this->_strBackupPath.$strFileName).'
+                            ');
+        self::addMessage($_CORELANG['TXT_DBM_IMPORT_SUCCESS']);
+    }
+
+
+    /**
+     * Shows details of an existing backup.
+     *
+     * @global     HTML_Template_Sigma
+     * @global     ADONewConnection
+     * @global     array        core language
+     * @global     array        system configuration
+     */
+    function showDetails($intBackupId)
+    {
+        global  $objTemplate, $objDatabase, $_CORELANG;
+
+        $this->_strPageTitle = $_CORELANG['TXT_DBM_BACKUP_TITLE'];
+        $objTemplate->addBlockfile('ADMIN_CONTENT', 'status', 'dbm_details.html');
+        $objTemplate->setVariable(array(
+            'TXT_DETAILS_TITLE' => $_CORELANG['TXT_DBM_EXPORT_TITLE'],
+            'TXT_DETAILS_DATE' => $_CORELANG['TXT_DBM_EXPORT_DATE'],
+            'TXT_DETAILS_COMMENT' => $_CORELANG['TXT_DBM_EXPORT_DESCRIPTION'],
+            'TXT_DETAILS_TYPE' => $_CORELANG['TXT_DBM_EXPORT_TYPE'],
+            'TXT_DETAILS_VERSION' => $_CORELANG['TXT_DBM_EXPORT_VERSION'],
+            'TXT_DETAILS_SIZE' => $_CORELANG['TXT_DBM_EXPORT_SIZE'],
+            'TXT_DETAILS_TABLES' => $_CORELANG['TXT_DBM_MAINTENANCE_TABLES'],
+            'TXT_DETAILS_CONTENT' => $_CORELANG['TXT_DBM_DETAILS_CONTENT'],
+            'TXT_DETAILS_BUTTON_SELECT' => $_CORELANG['TXT_SELECT_ALL'],
+            'TXT_DETAILS_BUTTON_BACK' => ucfirst($_CORELANG['TXT_BACK'])
+        ));
+        $intBackupId = intval($intBackupId);
+        if (empty($intBackupId)) {
+            self::addError($_CORELANG['TXT_DBM_DETAILS_ERROR_ID']);
+            return false;
+        }
+           $objResult = $objDatabase->Execute("
+            SELECT  `date`, `version`, `edition`, `type`,
+                    `description`, `usedtables`, `size`
+              FROM  `".DBPREFIX."backups`
+              WHERE `id`=$intBackupId
+        ");
+        if (!$objResult || $objResult->EOF) {
+            self::addError($_CORELANG['TXT_DBM_DETAILS_ERROR_ID']);
+            return false;
+        }
+        $strFile =
+            $this->_strBackupPath.$objResult->fields['date'].
+            $this->_arrFileEndings[$objResult->fields['type']];
+        if (!is_file($strFile)) {
+            //Wrong ID, show error
+            self::addError($_CORELANG['TXT_DBM_DETAILS_ERROR_ID']);
+            return false;
+        }
+        //Read file
+        $strFileContent = '';
+        $handleFile = fopen ($strFile, 'r');
+        while (!feof($handleFile)) {
+            $strFileContent .= fgets($handleFile, 4096);
+        }
+        fclose ($handleFile);
+        $objTemplate->setVariable(array(
+            'DETAILS_DATE' => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
+            'DETAILS_COMMENT' => ($objResult->fields['description'] != '') ? $objResult->fields['description'] : '-',
+            'DETAILS_TYPE' => strtoupper($objResult->fields['type']),
+            'DETAILS_VERSION' => $objResult->fields['version'].' '.$objResult->fields['edition'],
+            'DETAILS_SIZE' => $this->convertBytesToKBytes($objResult->fields['size']),
+            'DETAILS_TABLES' => str_replace(';',', ', $objResult->fields['usedtables']),
+            'DETAILS_CONTENT' => htmlentities($strFileContent, ENT_QUOTES, CONTREXX_CHARSET)
+        ));
+        return true;
+    }
+
+
+    /**
      * Converts an number of Bytes into Kilo Bytes.
      *
      * @return      float       converted size
@@ -810,7 +1266,38 @@ class DatabaseManager
 
         $arrSuccess = array();
         $arrFail = array();
-        if ( isset($_POST['export']) ) {
+        if (   isset($_POST['multiaction'])
+            && $_POST['multiaction'] == 'import') {
+            if (   empty($_POST['source'])
+                || !is_array($_POST['source'])) {
+                self::addError($_CORELANG['TXT_DBM_ERROR_NO_SOURCE_FILES']);
+            } else {
+                $flagTruncate = !empty($_POST['truncate']);
+                foreach ($_POST['source'] as $strTablename) {
+                    $result = CSVBackup::import_csv($strTablename, $flagTruncate);
+                    if ($result) {
+                        $arrSuccess[] = $strTablename;
+                    } else {
+                        $arrFail[] = $strTablename;
+                    }
+                }
+                if ($arrSuccess)
+                    self::addMessage(sprintf(
+                        $_CORELANG['TXT_DBM_SUCCEEDED_IMPORTING_CSV_FILES'],
+                        join(', ', $arrSuccess)
+                    ));
+                    self::addMessage(sprintf(
+                        $_CORELANG['TXT_DBM_CSV_FOLDER'], CSVBackup::getPath()
+                    ));
+                if ($arrFail)
+                    self::addError(sprintf(
+                        $_CORELANG['TXT_DBM_FAILED_IMPORTING_CSV_FILES'],
+                        join(', ', $arrFail)
+                    ));
+            }
+        }
+        if (   isset($_POST['multiaction'])
+            && $_POST['multiaction'] == 'export') {
 /*
             // Accept a custom destination folder
             if (empty($_POST['target'])) {

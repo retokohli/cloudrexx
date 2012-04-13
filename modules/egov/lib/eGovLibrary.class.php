@@ -355,7 +355,7 @@ class eGovLibrary {
     {
         global $objDatabase;
 
-        list ($year, $month, $day) = split('-', $datum);
+        list ($year, $month, $day) = explode('-', $datum);
         $query = "
             SELECT count(*) AS anzahl
               FROM ".DBPREFIX."module_egov_product_calendar
@@ -795,10 +795,21 @@ class eGovLibrary {
         require_once dirname(__FILE__).'/cal/calendrier.php';
         $AnzahlTxT = $_ARRAYLANG['TXT_EGOV_QUANTITY'];
         $AnzahlDropdown = eGovLibrary::_QuantityDropdown();
-        $Datum4JS = isset($_REQUEST['date']) ? $_REQUEST['date'] : '';
+        $Datum4JS = (isset($_REQUEST['date']) ? $_REQUEST['date'] : '');
+        if ($Datum4JS == '') {
+            $Datum4JS = date('Ymd');
+        }
         $QuantArray =
             eGovLibrary::_GetOrdersQuantityArray($product_id, $Datum4JS);
+        $dat1 = substr($Datum4JS, 0, 4);
+        $dat2 = substr($Datum4JS, 4, 2);
+        $dat3 = substr($Datum4JS, 6, 2);
+        if (substr($dat3, 0, 1) == '0') {
+            $dat3 = substr($dat3, 1, 1);
+        }
+        $DatumJS = "$dat3.$dat2.$dat1";
         return calendar(
+            $DatumJS,
             $QuantArray,
             $AnzahlDropdown,
             $AnzahlTxT,
@@ -807,7 +818,7 @@ class eGovLibrary {
             $ArrayRD,
             eGovLibrary::GetProduktValue('product_quantity', $product_id),
             eGovLibrary::GetProduktValue('product_quantity_limit', $product_id),
-            $Datum4JS,
+            '',
             eGovLibrary::GetSettings('set_calendar_background'),
             eGovLibrary::GetSettings('set_calendar_legende_1'),
             eGovLibrary::GetSettings('set_calendar_legende_2'),
@@ -1192,9 +1203,20 @@ class eGovLibrary {
         require_once dirname(__FILE__).'/cal/calendrier.php';
         $AnzahlTxT = $_ARRAYLANG['TXT_EGOV_QUANTITY'];
         $AnzahlDropdown = $this->_QuantityDropdown();
-        $Datum4JS = isset($_REQUEST['date']) ? $_REQUEST['date'] : '';
+        $Datum4JS = (isset($_REQUEST['date']) ? $_REQUEST['date'] : '');
+        if ($Datum4JS == '') {
+            $Datum4JS = date('Ymd');
+        }
         $QuantArray = $this->_GetOrdersQuantityArray($product_id, $Datum4JS);
+        $dat1 = substr($Datum4JS, 0, 4);
+        $dat2 = substr($Datum4JS, 4, 2);
+        $dat3 = substr($Datum4JS, 6, 2);
+        if (substr($dat3, 0, 1) == '0') {
+            $dat3 = substr($dat3, 1, 1);
+        }
+        $DatumJS = "$dat3.$dat2.$dat1";
         return calendar(
+            $DatumJS,
             $QuantArray,
             $AnzahlDropdown,
             $AnzahlTxT,
@@ -1203,7 +1225,7 @@ class eGovLibrary {
             $ArrayRD,
             eGovLibrary::GetProduktValue('product_quantity', $product_id),
             eGovLibrary::GetProduktValue('product_quantity_limit', $product_id),
-            $Datum4JS,
+            '',
             eGovLibrary::GetSettings('set_calendar_background'),
             eGovLibrary::GetSettings('set_calendar_legende_1'),
             eGovLibrary::GetSettings('set_calendar_legende_2'),
@@ -1272,7 +1294,6 @@ class eGovLibrary {
     {
         require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
         Yellowpay::errorHandler(); // Also calls SettingDb::errorHandler()
-        SettingDb::init('config');
         foreach (array(
             'postfinance_accepted_payment_methods' =>
                 'yellowpay_accepted_payment_methods',

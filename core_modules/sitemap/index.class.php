@@ -1,4 +1,5 @@
 <?php
+require_once(ASCMS_CORE_PATH.'/SitemapPageTree.class.php');
 /**
  * Sitemapping
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -53,18 +54,26 @@ class sitemap
 
         $this->_objTpl->setTemplate($this->pageContent);
 
-        if (isset($this->_objTpl->_blocks['sitemap'])) {
+        if(isset($this->_objTpl->_blocks['sitemap'])) {
+            $sm = new SitemapPageTree(Env::em(), 0, null, FRONTEND_LANG_ID);
+            $sm->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
+            $sm->setTemplate($this->_objTpl);
+            $sm->render();
+        }
+       
+        /*        if (isset($this->_objTpl->_blocks['sitemap'])) {
             $this->_initialize();
             $this->_doSitemapArray();
         } else {
             $this->_doSitemap = false;
-        }
+            }*/
     }
 
 
 
     function getSitemapContent() {
-        return $this->doSitemap();
+        return $this->_objTpl->get();
+        //        return $this->doSitemap();
     }
 
 
@@ -119,24 +128,20 @@ class sitemap
 
                 if ($_CONFIG['aliasStatus']
                     && ($objResult->fields['alias_url']
-                        || $_CONFIG['useVirtualLanguagePath'] == 'on' && $s == 'home'
+                        || $s == 'home'
                     )
                 ) {
                     $useAlias = true;
                 }
 
                 if ($useAlias) {
-                    if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
-                        // the homepage should not use an alias, but only a slash
-                        if ($s == 'home') {
-                            if ($_LANGID == $objInit->defaultFrontendLangId) {
-                                // the default language should not use the virtual language path
-                                $menu_url = '/';
-                            } else {
-                                $menu_url = CONTREXX_VIRTUAL_LANGUAGE_PATH.'/';
-                            }
+                    // the homepage should not use an alias, but only a slash
+                    if ($s == 'home') {
+                        if ($_LANGID == $objInit->defaultFrontendLangId) {
+                            // the default language should not use the virtual language path
+                            $menu_url = '/';
                         } else {
-                            $menu_url = CONTREXX_VIRTUAL_LANGUAGE_PATH.'/'.rawurlencode(stripslashes($objResult->fields['alias_url']));
+                            $menu_url = CONTREXX_VIRTUAL_LANGUAGE_PATH.'/';
                         }
                     } else {
                         $menu_url = CONTREXX_VIRTUAL_LANGUAGE_PATH.'/'.rawurlencode(stripslashes($objResult->fields['alias_url']));

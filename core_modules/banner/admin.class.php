@@ -40,7 +40,8 @@ class Banner extends bannerLibrary {
     */
     public $_objTeaser;
 
-
+    private $act = '';
+    
     /**
     * Constructor
     *
@@ -53,15 +54,19 @@ class Banner extends bannerLibrary {
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/banner/template');
         CSRF::add_placeholder($this->_objTpl);
-        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
-        $objTemplate->setVariable('CONTENT_NAVIGATION','<a href="?cmd=banner">'.$_ARRAYLANG['TXT_BANNER_MENU_OVERVIEW'].'</a>
-                                                        <a href="?cmd=banner&amp;act=banner_add">'.$_ARRAYLANG['TXT_BANNER_MENU_BANNER_NEW'].'</a>
-                                                        <a href="?cmd=banner&amp;act=settings">'.$_ARRAYLANG['TXT_BANNER_MENU_SETTINGS'].'</a>');
-
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);     
         $this->pageTitle = $_ARRAYLANG['TXT_BANNER_ADMINISTRATION'];
         $this->langId=$objInit->userFrontendLangId;
         $this->getSettings();
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_ARRAYLANG;
+
+         $objTemplate->setVariable('CONTENT_NAVIGATION','
+             <a href="?cmd=banner" class="'.($this->act == '' ? 'active' : '').'">'.$_ARRAYLANG['TXT_BANNER_MENU_OVERVIEW'].'</a>
+             <a href="?cmd=banner&amp;act=banner_add" class="'.($this->act == 'banner_add' ? 'active' : '').'">'.$_ARRAYLANG['TXT_BANNER_MENU_BANNER_NEW'].'</a>
+             <a href="?cmd=banner&amp;act=settings" class="'.($this->act == 'settings' ? 'active' : '').'">'.$_ARRAYLANG['TXT_BANNER_MENU_SETTINGS'].'</a>');
     }
 
 
@@ -132,6 +137,9 @@ class Banner extends bannerLibrary {
             'CONTENT_STATUS_MESSAGE'    => $this->strErrMessage,
             'ADMIN_CONTENT'                => $this->_objTpl->get()
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 

@@ -15,40 +15,50 @@
     action="index.php?cmd=shop&amp;act=customers&amp;tpl=discounts">
   <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
     <tr>
-      <th colspan="{SHOP_CUSTOMER_GROUP_COUNT_PLUS_1}"><b>{TXT_SHOP_DISCOUNTS_CUSTOMER}</b></th>
+      <th width="01%"><b>{TXT_SHOP_DISCOUNTS_CUSTOMER}</b></th>
+      <th colspan="{SHOP_CUSTOMER_GROUP_COUNT}">&nbsp;</th>
     </tr>
 
-    <!-- BEGIN shopCustomerGroupHeader -->
-    <tr class="{SHOP_DISCOUNT_ROW_STYLE}">
-      <td nowrap="nowrap">&nbsp;</td>
-      <!-- BEGIN shopCustomerGroupHeaderColumn -->
+<!-- BEGIN customer_group_header -->
+    <tr class="row3">
+      <td><div style="text-align: right;"><b>{TXT_SHOP_DISCOUNT_GROUP_CUSTOMER_COLON}</b></div></td>
+<!-- BEGIN customer_group_header_column -->
       <td nowrap="nowrap" style="text-align: right;">
-        <a href="index.php?cmd=shop&act=customers&tpl=groups&edit=1&id={SHOP_CUSTOMER_GROUP_ID}"
+        <a href="index.php?cmd=shop&amp;act=customers&amp;tpl=groups&amp;edit=1&amp;id={SHOP_CUSTOMER_GROUP_ID}"
             title="{TXT_EDIT}">
           {SHOP_CUSTOMER_GROUP_NAME}
         </a>
       </td>
-      <!-- END shopCustomerGroupHeaderColumn -->
+<!-- END customer_group_header_column -->
     </tr>
-    <!-- END shopCustomerGroupHeader -->
+<!-- END customer_group_header -->
 
-    <!-- BEGIN shopArticleGroupRow -->
+<!-- BEGIN article_group_header_row -->
     <tr>
-      <td nowrap="nowrap">
-        <a href="index.php?cmd=shop&act=products&tpl=groups&edit=1&id={SHOP_ARTICLE_GROUP_ID}"
+      <td class="col3"><b>{TXT_SHOP_DISCOUNT_GROUP_ARTICLE_COLON}</b></td>
+<!-- BEGIN article_group_header_column -->
+      <td>&nbsp;</td>
+<!-- END article_group_header_column -->
+    </tr>
+<!-- END article_group_header_row -->
+
+<!-- BEGIN article_group_row -->
+    <tr class="{SHOP_DISCOUNT_ROW_STYLE}">
+      <td class="col3" nowrap="nowrap">
+        <a href="index.php?cmd=shop&amp;act=products&amp;tpl=groups&amp;edit=1&amp;id={SHOP_ARTICLE_GROUP_ID}"
             title="{TXT_EDIT}">
           {SHOP_ARTICLE_GROUP_NAME}
         </a>
       </td>
-      <!-- BEGIN shopDiscountColumn -->
+<!-- BEGIN discount_column -->
       <td nowrap="nowrap" style="text-align:right">
         <input type="text" size="2" maxlength="6" style="text-align: right;"
             name="discountRate[{SHOP_CUSTOMER_GROUP_ID}][{SHOP_ARTICLE_GROUP_ID}]"
-            value="{SHOP_DISCOUNT_RATE}">
+            value="{SHOP_DISCOUNT_RATE}" />&nbsp;%
       </td>
-      <!-- END shopDiscountColumn -->
+<!-- END discount_column -->
     </tr>
-    <!-- END shopArticleGroupRow -->
+<!-- END article_group_row -->
 
   </table>
   <br />

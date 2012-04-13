@@ -275,5 +275,4 @@ $_ARRAYLANG['TXT_CALENDAR_FE_DEACTIVATED'] = "deaktiviert";
 $_ARRAYLANG['TXT_CALENDAR_FE_REGISTEREDONLY'] = "nur Community";
 $_ARRAYLANG['TXT_CALENDAR_FE_ALL'] = "alle Besucher";
 $_ARRAYLANG['TXT_CALENDAR_ACTION_NOT_ACTIVATED'] = "Diese Funktionalität ist nicht aktiviert.";
-$_ARRAYLANG['TXT_CALENDAR_ERROR_WEEKLY_NO_WEEKDAY'] = "Bitte wählen Sie mindestens einen Tag.";
 ?>

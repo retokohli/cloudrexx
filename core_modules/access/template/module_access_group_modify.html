@@ -1,65 +1,10 @@
 <!-- start module_access_group_modify.html -->
+{ACCESS_JAVASCRIPT_FUNCTIONS}
 <script type="text/javascript">
 // <![CDATA[
-function accessAddUserToList(from, dest)
-{
-    if ( from.selectedIndex < 0) {
-		if (from.options[0] != null) {
-			from.options[0].selected = true;
-		}
-		from.focus();
-		return false;
-	} else {
-		for (var i=0; i<from.length; i++) {
-			if (from.options[i].selected) {
-		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
-   			}
-		}
-	    for (var i=from.length-1; i>=0; i--) {
-			if (from.options[i].selected) {
-		       from.options[i] = null;
-   			}
-		}
-	}
-}
 
-function accessRemoveUserFromList(from,dest)
-{
-	if ( dest.selectedIndex < 0) {
-		if (dest.options[0] != null) {
-			dest.options[0].selected = true;
-		}
-		dest.focus();
-		return false;
-	} else {
-		for (var i=0; i<dest.options.length; i++) {
-			if (dest.options[i].selected) {
-		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
-   			}
-		}
-	    for (var i=dest.options.length-1; i>=0; i--) {
-			if (dest.options[i].selected) {
-		       dest.options[i] = null;
-   			}
-		}
-	}
-}
-
-function accessSelectAllUsers(CONTROL)
-{
-	for(var i = 0;i < CONTROL.length;i++)
-    {
-		CONTROL.options[i].selected = true;
-	}
-}
-
-function accessDeselectAllUsers(CONTROL)
-{
-	for(var i = 0;i < CONTROL.length;i++)
-	{
-		CONTROL.options[i].selected = false;
-	}
-}
+Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
+Text[0]=["","{TXT_ACCESS_HOMEPAGE_DESC}"];
 
 function accessSwitchCheckboxStatus(id)
 {
@@ -77,7 +22,7 @@ function accessChangeProtection(id, isProtected)
 	msg = isProtected ? '{ACCESS_UNPROTECT_PAGE_TXT}' : '{ACCESS_PROTECT_PAGE_TXT}';
 
 	if (confirm(msg+'\n\n{TXT_ACCESS_PROMT_EXEC_WARNING}')) {
-		accessSelectAllUsers(document.getElementById('access_group_associated_users'));
+        accessSelectAllGroups(document.getElementById('access_group_associated_users'));
 
 		if (typeof(window.pageYOffset) != 'undefined') {
 			offset = window.pageYOffset;
@@ -100,7 +45,7 @@ function accessSetScrollPos()
 <li><a id="groupTab_modifyGroup1" {ACCESS_GENERAL_TAB_BUTTON_STATUS} href="javascript:void(0);" onclick="selectTab('modifyGroup1')" title="{TXT_ACCESS_GENERAL}">{TXT_ACCESS_GENERAL}</a></li>
 <li><a id="groupTab_modifyGroup2" {ACCESS_PERMISSION_TAB_BUTTON_STATUS} href="javascript:void(0);" onclick="selectTab('modifyGroup2')" title="{TXT_ACCESS_PERMISSIONS}">{TXT_ACCESS_PERMISSIONS}</a></li>
 </ul>
-<form action="?cmd=access&amp;act=group&amp;tpl=modify&amp;id={ACCESS_GROUP_ID}" method="post" id="access_group_form" onsubmit="accessSelectAllUsers(document.getElementById('access_group_associated_users'));">
+<form action="?cmd=access&amp;act=group&amp;tpl=modify&amp;id={ACCESS_GROUP_ID}" method="post" id="access_group_form" onsubmit="accessSelectAllGroups(document.getElementById('access_group_associated_users'));">
 <input type="hidden" name="access_change_protection" value="1" />
 <input type="hidden" name="access_group_type" value="{ACCESS_GROUP_TYPE}" />
 	<!-- start modifyGroup1 div -->
@@ -131,26 +76,30 @@ function accessSetScrollPos()
 						{ACCESS_GROUP_NOT_ASSOCIATED_USERS}
 						</select>
 						<br />
-						<a href="javascript:void(0);" onclick="accessSelectAllUsers(document.getElementById('access_group_not_associated_users'))" title="{TXT_ACCESS_CHECK_ALL}" style="color:blue;">{TXT_ACCESS_CHECK_ALL}</a>
+                        <a href="javascript:void(0);" onclick="accessSelectAllGroups(document.getElementById('access_group_not_associated_users'))" title="{TXT_ACCESS_CHECK_ALL}" style="color:blue;">{TXT_ACCESS_CHECK_ALL}</a>
 						<br />
-						<a href="javascript:void(0);" onclick="accessDeselectAllUsers(document.getElementById('access_group_not_associated_users'))" title="{TXT_ACCESS_UNCHECK_ALL}" style="color:blue;">{TXT_ACCESS_UNCHECK_ALL}</a>
+						<a href="javascript:void(0);" onclick="accessDeselectAllGroups(document.getElementById('access_group_not_associated_users'))" title="{TXT_ACCESS_UNCHECK_ALL}" style="color:blue;">{TXT_ACCESS_UNCHECK_ALL}</a>
 					</td>
 					<td width="45" style="text-align:center;">
 						<br />
-						<input type="button" value="&gt;&gt;" name="adduser" onclick="accessAddUserToList(document.getElementById('access_group_not_associated_users'), document.getElementById('access_group_associated_users'))" style="margin-bottom:2px;" />
+						<input type="button" value="&gt;&gt;" name="adduser" onclick="accessAddGroupToList(document.getElementById('access_group_not_associated_users'), document.getElementById('access_group_associated_users'))" style="margin-bottom:2px;" />
 						<br />
-						<input type="button" value="&lt;&lt;" name="removeuser" onclick="accessRemoveUserFromList(document.getElementById('access_group_not_associated_users'), document.getElementById('access_group_associated_users'))" />
+						<input type="button" value="&lt;&lt;" name="removeuser" onclick="accessRemoveGroupFromList(document.getElementById('access_group_not_associated_users'), document.getElementById('access_group_associated_users'))" />
 					</td>
 					<td width="100%">{TXT_ACCESS_ASSOCIATED_USERS}<br />
 						<select name="access_group_associated_users[]" id="access_group_associated_users" size="15" style="width:300px;" multiple="multiple">
 						{ACCESS_GROUP_ASSOCIATED_USERS}
 						</select>
 						<br />
-						<a href="javascript:void(0);" onclick="accessSelectAllUsers(document.getElementById('access_group_associated_users'))" title="{TXT_ACCESS_CHECK_ALL}" style="color:blue;">{TXT_ACCESS_CHECK_ALL}</a>
+						<a href="javascript:void(0);" onclick="accessSelectAllGroups(document.getElementById('access_group_associated_users'))" title="{TXT_ACCESS_CHECK_ALL}" style="color:blue;">{TXT_ACCESS_CHECK_ALL}</a>
 						<br />
-						<a href="javascript:void(0);" onclick="accessDeselectAllUsers(document.getElementById('access_group_associated_users'))" title="{TXT_ACCESS_UNCHECK_ALL}" style="color:blue;">{TXT_ACCESS_UNCHECK_ALL}</a>
+						<a href="javascript:void(0);" onclick="accessDeselectAllGroups(document.getElementById('access_group_associated_users'))" title="{TXT_ACCESS_UNCHECK_ALL}" style="color:blue;">{TXT_ACCESS_UNCHECK_ALL}</a>
 					</td>
 				</tr>
+                <tr class="row1">
+                    <td>{TXT_ACCESS_HOMEPAGE} <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+                    <td colspan="3"><input type="text" name="access_group_homepage" id="access_group_homepage" value="{ACCESS_GROUP_HOMEPAGE}" style="width:300px;" /> <input type="button" name="access_open_browser" value="{TXT_ACCESS_BROWSE}" onclick="accessGetFileBrowser('access_group_homepage', 'webpages')" /></td>
+                </tr>
 			</tbody>
 		</table>
 	</div>

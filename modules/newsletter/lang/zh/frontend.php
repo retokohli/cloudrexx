@@ -83,4 +83,10 @@ $_ARRAYLANG['TXT_ACCESS_SEND_MSG'] = "Send Message";
 $_ARRAYLANG['TXT_ADD_TO_ADDRESS_BOOK'] = "Add to address book";
 $_ARRAYLANG['TXT_ADD_ADDRESS'] = "Add to address book";
 $_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE_NOTIFICATION_TEMPLATE'] = "The recipient %s unsubscribed from the newsletter.";
+$_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_GROUP'] = "Empfänger der Gruppe %s anzeigen";
+$_ARRAYLANG['TXT_NEWSLETTER_LANGUAGE'] = "Language";
+$_ARRAYLANG['TXT_NEWSLETTER_LANGUAGE_PLEASE_CHOSE'] = "Please select";
+$_ARRAYLANG['TXT_NEWSLETTER_FILL_OUT_ALL_REQUIRED_FIELDS'] = "You need to fill every required field!";
+$_ARRAYLANG['TXT_NEWSLETTER_MUST_SELECT_SEX'] = "Please select your gender.";
+$_ARRAYLANG['TXT_NEWSLETTER_MUST_SELECT_LANGUAGE'] = "Please select a language.";
 ?>

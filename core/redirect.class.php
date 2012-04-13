@@ -25,21 +25,9 @@ class redirect
 	var $host;
 	var $locations = array();
 
-	/**
-    * Constructor
-    * @param  string
-    * @access public
-    */
-    function redirect()
-    {
-    	$this->__construct();
-    }
-
-
-
     function __construct()
     {
-    	global  $_CORELANG, $objDatabase;
+        return;
 
     	if (substr($_SERVER['HTTP_HOST'], 0, 4) == 'www.') {
     		$this->host = strtolower(substr($_SERVER['HTTP_HOST'], 4));
@@ -54,8 +42,6 @@ class redirect
 
     function changeLocation()
     {
-    	global  $_CORELANG, $objDatabase;
-
     	if (empty($_SERVER['argv'])) {
     		if (!empty($this->locations[$this->host])) {
 	    		if (!empty($this->locations[$this->host]['lid'])) {

@@ -1,0 +1,208 @@
+Cx\Model\ContentManager\Page:
+  type: entity
+  table: pages
+  repositoryClass: Cx\Model\ContentManager\Repository\PageRepository
+  
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    lang: #missing foreign entity
+      type: integer
+      gedmo:
+        - versioned
+
+    type:
+      type: string
+      length: 16
+      gedmo:
+        - versioned
+
+    caching:
+      type: boolean
+      gedmo:
+        - versioned
+
+    updatedAt:
+      type: datetime    
+      gedmo:
+        - versioned
+
+    #navigation
+    title:
+      type: string
+      length: 255
+      gedmo:
+        - versioned
+        
+    linkTarget:
+      type: string
+      length: 16
+      nullable: true
+      gedmo:
+        - versioned
+
+    #content
+    contentTitle:
+      type: string
+      length: 255
+      gedmo:
+        - versioned
+
+    #the title used for routing / URLs
+    slug:
+      type: string
+      length: 255
+      gedmo:
+        - versioned      
+    
+    content:
+      type: text
+      gedmo:
+        - versioned
+    sourceMode:
+      type: boolean
+      gedmo:
+        - versioned
+
+    customContent:
+      nullable: true
+      type: string
+      length: 64
+      gedmo:
+        - versioned
+    
+    cssName:
+      nullable: true
+      type: string
+      length: 255
+      gedmo:
+        - versioned
+
+    cssNavName:
+      nullable: true
+      type: string
+      length: 255
+      gedmo:
+        - versioned
+
+    skin:
+      type: integer
+      nullable: true
+      gedmo:
+        - versioned
+
+    #meta
+    metatitle:
+      nullable: true
+      type: string
+      length: 255
+      gedmo:
+        - versioned
+
+    metadesc:
+      nullable: true
+      type: string
+      length: 255
+      gedmo:
+        - versioned
+
+    metakeys:
+      nullable: true
+      type: string
+      length: 255
+      gedmo:
+        - versioned
+
+    metarobots:
+      nullable: true
+      type: string
+      length: 7
+      gedmo:
+        - versioned
+
+    #publishing
+    start:
+      nullable: true
+      type: datetime
+      gedmo:
+        - versioned
+
+    end:
+      nullable: true
+      type: datetime
+      gedmo:
+        - versioned
+    
+    editingStatus:
+      type: string
+      length: 16
+      gedmo:
+        - versioned
+
+    username:
+      type: string
+      length: 64
+      gedmo:
+        - versioned
+
+    protection:
+      type: integer
+      gedmo:
+        - versioned
+
+    frontendAccessId:
+      type: integer
+      gedmo:
+        - versioned
+
+    backendAccessId:
+      type: integer
+      gedmo:
+        - versioned
+
+    #visibility
+    display:
+      type: boolean
+      gedmo:
+        - versioned
+    
+    active:
+      type: boolean
+      gedmo:
+        - versioned
+
+    #redirection
+    target:
+      nullable: true
+      type: string
+      length: 255
+      gedmo:
+        - versioned
+
+    module:
+      nullable: true
+      type: string
+      length: 255
+      gedmo:
+        - versioned
+    
+    cmd:
+      nullable: true
+      type: string
+      length: 50
+      gedmo:
+        - versioned
+
+  manyToOne:
+    node:
+      targetEntity: Cx\Model\ContentManager\Node
+      inversedBy: pages
+      joinColumn:
+        name: node_id
+        referencedColumnName: id
+
+  lifecycleCallbacks:
+      prePersist: [ validate ]

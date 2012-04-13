@@ -11,9 +11,12 @@ aChildFrames = ['access_attribute_child_frame', 'access_attribute_menu_option_fr
 
 function accessSwitchType(selectedType)
 {
-	document.getElementById('access_attribute_sort_frame').style.display = ['menu', 'group', 'frame', 'history'].in_array(selectedType) ? '' : 'none';
-  document.getElementById('access_attribute_mandatory_frame').style.display = ['mail', 'uri', 'date', 'image', 'text', 'checkbox'].in_array(selectedType) ? '' : 'none';
-  document.getElementById('accessPermissionTab').style.display = ['group', 'frame', 'menu_option'].in_array(selectedType) ? 'none' : '';
+    accessSortableTypeList = ['{ACCESS_SORTABLE_TYPE_LIST}'];
+    accessMandatoryTypeList = ['{ACCESS_MANDATORY_TYPE_LIST}'];
+    document.getElementById('access_attribute_sort_frame').style.display = accessSortableTypeList.in_array(selectedType) ? '' : 'none';
+    document.getElementById('access_attribute_mandatory_frame').style.display = accessMandatoryTypeList.in_array(selectedType) ? '' : 'none';
+    document.getElementById('access_attribute_sort_frame_row').setAttribute('class', accessSortableTypeList.in_array(selectedType) && accessMandatoryTypeList.in_array(selectedType) ? 'row1' : 'row2');
+    document.getElementById('accessPermissionTab').style.display = ['group', 'frame', 'menu_option'].in_array(selectedType) ? 'none' : '';
 	document.getElementById('accessChildrenTab').style.display = ['frame', 'history'].in_array(selectedType) ? '' : 'none';
 	document.getElementById('accessMenuOptionTab').style.display = selectedType == 'menu' ? '' : 'none';
 	document.getElementById('accessFramesTab').style.display = ['group'].in_array(selectedType) ? '': 'none';
@@ -280,7 +283,7 @@ function accessSwitchSortType(sortType)
 		</table>
 		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist" id="access_attribute_sort_frame" style="display:{ACCESS_ATTRIBUTE_SORT_FRAME_DISPLAY};">
 			<tbody style="vertical-align:top;">
-				<tr class="row2">
+                <tr class="{ACCESS_ATTRIBUTE_SORT_FRAME_ROW}" id="access_attribute_sort_frame_row">
 					<td width="15%">{TXT_ACCESS_SORT}</td>
 					<td width="85%">{ACCESS_ATTRIBUTE_SORT_TYPE}</td>
 				</tr>

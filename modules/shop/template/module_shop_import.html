@@ -1,6 +1,6 @@
 <!-- BEGIN shop_import.html -->
-<script language="JavaScript" type="text/javascript">
-// <[CDATA[
+<script type="text/javascript">
+// <![CDATA[
 function addPair()
 {
   var selectGiven = document.getElementById("given_field");
@@ -129,7 +129,7 @@ function DeleteImg(ImgID)
 function MakeExport(groupCode)
 {
   if (confirm("{TXT_SHOP_EXPORT_WARNING}")) {
-    document.location = "?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=import&group="+groupCode;
+    document.location = "index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=import&group="+groupCode;
   }
 }
 
@@ -140,9 +140,9 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 
 <ul id="tabmenu">
   <li><a id="generalTab_import1" class="active" href="javascript:{}" onclick="selectTab('import1')" title="{TXT_SHOP_IMPORT_IMPORT}">{TXT_SHOP_IMPORT_IMPORT}</a></li>
-  <li><a id="generalTab_export" href="javascript:{}" onclick="selectTab('export')" title="{TXT_SHOP_EXPORT_DATA}">{TXT_SHOP_EXPORT_DATA}</a></li>
-  <li style="display: none;"><a id="generalTab_import2" class="active" href="javascript:{}" onclick="selectTab('import2')" title="Import">SelectFields</a></li>
-  <li style="display: none;"><a id="generalTab_import3" class="active" href="javascript:{}" onclick="selectTab('import3')" title="Import">Upload</a></li>
+  <li style="display: none;"><a id="generalTab_export" href="javascript:{}" onclick="selectTab('export')" title="{TXT_SHOP_EXPORT_DATA}">{TXT_SHOP_EXPORT_DATA}</a></li>
+  <li style="display: none;"><a id="generalTab_import2" href="javascript:{}" onclick="selectTab('import2')" title="Import">SelectFields</a></li>
+  <li style="display: none;"><a id="generalTab_import3" href="javascript:{}" onclick="selectTab('import3')" title="Import">Upload</a></li>
   <li><a id="generalTab_import4" href="javascript:{}" onclick="selectTab('import4')" title="{TXT_SHOP_IMPORT_MANAGE_TEMPLATES}">{TXT_SHOP_IMPORT_MANAGE_TEMPLATES}</a></li>
   <li><a id="generalTab_import5" href="javascript:{}" onclick="selectTab('import5')" title="{TXT_SHOP_IMPORT_MAKE_NEW_TEMPLATE}">{TXT_SHOP_IMPORT_MAKE_NEW_TEMPLATE}</a></li>
 </ul>
@@ -300,7 +300,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
     <!-- BEGIN imgRow -->
     <tr class="{CLASS_NAME}">
       <td>{IMG_NAME}</td>
-      <td><div style="text-align:right;"><a href="javascript:DeleteImg({IMG_ID});"><img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE}" title="{TXT_DELETE}" /></a></div></td>
+      <td><div style="text-align:right;"><a href="javascript:DeleteImg({IMG_ID});"><img src="images/icons/delete.gif" border="0" alt="{TXT_SHOP_IMPORT_DELETE}" title="{TXT_SHOP_IMPORT_DELETE}" /></a></div></td>
     </tr>
     <!-- END imgRow -->
   </table>
@@ -363,7 +363,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
   <div class="infobox_body">{TXT_SHOP_EXPORT_TIPS}</div>
 </div>
 
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 <!-- //
 {SELECT_LAYER_ONLOAD}
 {NO_FILES}

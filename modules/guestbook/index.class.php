@@ -1,4 +1,4 @@
-<?PHP
+<?php
 /**
  * Guestbook
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -192,7 +192,7 @@ class Guestbook extends GuestbookLibrary
 
     function _showForm()
     {
-        global $_ARRAYLANG;
+        global $_CORELANG;
 
         $this->_objTpl->setTemplate($this->pageContent);
 
@@ -225,19 +225,22 @@ class Guestbook extends GuestbookLibrary
             ));
         }
 
-        require_once ASCMS_LIBRARY_PATH . "/spamprotection/captcha.class.php";
-        $captcha = new Captcha();
-
-        $alt = $captcha->getAlt();
-        $url = $captcha->getUrl();
-
         $this->_objTpl->setVariable(array(
             "ERROR"                    => $errors,
-            "TXT_CAPTCHA"            => $_ARRAYLANG['txt_captcha'],
-            "IMAGE_URL"                => $url,
-            "IMAGE_ALT"                => $alt,
             "FEMALE_CHECKED"        => $checked
         ));
+
+        if ($this->_objTpl->blockExists('guestbook_captcha')) {
+            if (FWUser::getFWUserObject()->objUser->login()) {
+                $this->_objTpl->hideBlock('guestbook_captcha');
+            } else {
+                $this->_objTpl->setVariable(array(
+                    'TXT_GUESTBOOK_CAPTCHA'     => $_CORELANG['TXT_CORE_CAPTCHA'],
+                    'GUESTBOOK_CAPTCHA_CODE'    => FWCaptcha::getInstance()->getCode(),
+                ));
+                $this->_objTpl->parse('guestbook_captcha');
+            }
+        }
 
         $this->_objTpl->hideBlock('guestbookStatus');
         $this->_objTpl->parse('guestbookForm');
@@ -320,9 +323,6 @@ class Guestbook extends GuestbookLibrary
     {
         global $_ARRAYLANG;
 
-        require_once ASCMS_LIBRARY_PATH . "/spamprotection/captcha.class.php";
-
-        $captcha = new Captcha();
         $objValidator = new FWValidator();
 
 		$_POST['forename'] = strip_tags(contrexx_stripslashes($_POST['forename']));
@@ -332,8 +332,8 @@ class Guestbook extends GuestbookLibrary
         $_POST['email'] = strip_tags(contrexx_stripslashes($_POST['email']));
         $_POST['url'] = strip_tags(contrexx_stripslashes($_POST['url']));
 
-        if (!$captcha->check($_POST['captcha'])) {
-            $this->error[] = $_ARRAYLANG['TXT_CAPTCHA_ERROR'];
+        if (!FWCaptcha::getInstance()->check()) {
+            $this->error[] = FWCaptcha::getInstance()->getErrro();
         }
 
 		if (empty($_POST['name']) || empty($_POST['forename'])) {

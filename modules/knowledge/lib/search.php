@@ -81,7 +81,8 @@ class Search {
 
         // the template system
         $this->tpl = new HTML_Template_Sigma('');
-        $this->tpl->setErrorHandling(PEAR_ERROR_DIE);
+        CSRF::add_placeholder($this->tpl);
+		$this->tpl->setErrorHandling(PEAR_ERROR_DIE);
 		$this->tpl->loadTemplateFile($this->templateFile);
 
 		// make a response object

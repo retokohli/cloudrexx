@@ -11,7 +11,7 @@
 
 // TODO: This is awkward here!  Find a way to include it just when it's needed.
 // Required by ContrexxJS (activated with 'cx')
-require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/cxjs/ContrexxJavascript.class.php';
+require_once ASCMS_FRAMEWORK_PATH.'/cxjs/ContrexxJavascript.class.php';
 
 /**
  * Javascript
@@ -107,14 +107,15 @@ class JS
                 'lib/javascript/shadowbox/shadowbox.js'
             ),
             'dependencies'  => array(
-                'jquery'
+                'jquery',
+                'cx',
             ),
             'specialcode'  => "
-    Shadowbox.loadSkin('classic','lib/javascript/shadowbox/src/skin/');
-    Shadowbox.loadLanguage('en', 'lib/javascript/shadowbox/src/lang');
-    Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], 'lib/javascript/shadowbox/src/player');
+Shadowbox.loadSkin('classic', cx.variables.get('basePath', 'contrexx')+'lib/javascript/shadowbox/src/skin/');
+Shadowbox.loadLanguage('en', cx.variables.get('basePath', 'contrexx')+'lib/javascript/shadowbox/src/lang');
+Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], cx.variables.get('basePath', 'contrexx')+'lib/javascript/shadowbox/src/player');
 jQuery(document).ready(function(){
-    Shadowbox.init();
+  Shadowbox.init();
 })"
         ),
         'jquery'     => array(
@@ -129,22 +130,43 @@ jQuery(document).ready(function(){
             ),
             'dependencies' => array('jquery')
         ),
-/*
-Coming soon
+        'ckeditor'     => array(
+            'jsfiles'       => array(
+                'editor/ckeditor/ckeditor.js',
+                'editor/ckeditor/adapters/jquery.js'
+            ),
+            'dependencies' => array('jquery')
+        ),
+        // Required by HTML::getDatepicker() (modules/shop)!
+        // (Though other versions will do just as well)
+// TODO: remove & replace by cx call
         'jqueryui'     => array(
             'jsfiles'       => array(
-                'lib/javascript/jqueryUI/js/jquery-ui-1.8.2.custom.min.js'
+                'lib/javascript/jquery/ui/jquery-ui-1.8.7.custom.min.js'
             ),
             'cssfiles'      => array(
-                'lib/javascript/jqueryUI/css/blitzer/jquery-ui-1.8.2.custom.css',
+                'lib/javascript/jquery/ui/css/jquery-ui.css'
             ),
             'dependencies'  => array(
-                'jquery',
+                'jquery'
             ),
         ),
-*/
+        //stuff to beautify forms.
+        'cx-form'     => array(
+            'jsfiles'       => array(
+                'lib/javascript/jquery/ui/jquery.multiselect2side.js'
+            ),
+            'cssfiles'      => array(
+                'lib/javascript/jquery/ui/css/jquery.multiselect2side.css'
+            ),
+            'dependencies'  => array(
+                'jqueryui'
+            ),
+        ),
+
 /*
 Coming soon
+Caution: JS/ALL files are missing. Also, this should probably be loaded through js:cx now.
         'jcrop' => array(
             'jsfiles'       => array(
                 'lib/javascript/jcrop/js/jquery.Jcrop.min.js'
@@ -182,6 +204,44 @@ Coming soon
             ),
             'dependencies' => array('jquery')
             //we insert the specialCode for the Contrexx-API later in getCode()
+        ),
+        'jstree' => array(
+            'jsfiles' => array(
+                'lib/javascript/jquery/jstree/jquery.jstree.js',
+                'lib/javascript/jquery/hotkeys/jquery.hotkeys.js',
+                'lib/javascript/jquery/cookie/jquery.cookie.js',
+            ),
+            'dependencies' => array('jquery'),
+        ),
+
+        // jQ UI input select enhancer. used in Content Manager 2
+        'chosen' => array(
+            'jsfiles' => array(
+                'lib/javascript/jquery/chosen/jquery.chosen.js'
+            ),
+            'dependencies' => array('cx')
+        ),
+        'backend' => array(
+            'jsfiles' => array(
+                'cadmin/javascript/switching_content.js',
+                'cadmin/javascript/tabs.js',
+                'cadmin/javascript/set_checkboxes.js'
+            )
+        ),
+        'tipmessage' => array(
+            'jsfiles' => array(
+                'lib/tipmessage1.5/main15.js'
+            ),
+            'dependencies'  => array(
+                'jquery'
+            ),
+            'specialcode'  => '
+                $J(document).ready(function() {
+                    TipId = "tipMessageLayer";
+                    FiltersEnabled = 0;
+                    mig_clay();
+                });
+            '
         ),
     );
 
@@ -417,9 +477,10 @@ Coming soon
      */
     public static function getCode()
     {
-        $jsfiles = array();
         $cssfiles = array();
-        $specialcode = array();
+// TODO: Unused
+//        $jsfiles = array();
+//        $specialcode = array();
         $retstring  = '';
         if (count(self::$active) > 0) {
             foreach (self::$active as $name) {
@@ -442,7 +503,7 @@ Coming soon
                 if ($name == 'cx') {
                     $retstring .= self::makeSpecialCode(
                         array(ContrexxJavascript::getInstance()->initJs()));
-                }                  
+                }
             }
         }
         $retstring .= self::makeJSFiles(self::$customJS);
@@ -562,7 +623,7 @@ Coming soon
      * @param string $content - Reference to the HTML content. Note that it
      *                          WILL be modified in-place.
      */
-    public function findJavascripts(&$content)
+    public static function findJavascripts(&$content)
     {
         JS::grabComments($content);
         $content = preg_replace_callback('/<script .*?src=(?:"|\')([^"\']*)(?:"|\').*?\/?>(?:<\/script>)?/i', array('JS', 'registerFromRegex'), $content);
@@ -607,5 +668,3 @@ Coming soon
     }
 
 }
-
-?>

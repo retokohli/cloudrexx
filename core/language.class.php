@@ -33,6 +33,8 @@ class LanguageManager
     public $hideVariables = true;
     public $langIDs = array();
 
+    private $act = '';
+    
     /**
      * Constructor
      * @global  ADONewConnection
@@ -59,12 +61,7 @@ class LanguageManager
         }
         if (in_array(DBPREFIX."language_variable_names",$arrTables) && in_array(DBPREFIX."language_variable_content",$arrTables)) {
             $this->hideVariables = false;
-        }
-        $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='index.php?cmd=language'>".$_CORELANG['TXT_LANGUAGE_LIST']."</a>"
-                                                 .($this->hideVariables == false ? "<a href='index.php?cmd=language&amp;act=vars'>".$_CORELANG['TXT_VARIABLE_LIST']."</a>
-                                                 <a href='index.php?cmd=language&amp;act=mod'>".$_CORELANG['TXT_ADD_LANGUAGE_VARIABLES']."</a>
-                                                 <a href='index.php?cmd=language&amp;act=writefiles' title='".$_CORELANG['TXT_WRITE_VARIABLES_TO_FILES']."'>".$_CORELANG['TXT_WRITE_VARIABLES_TO_FILES']."</a>"
-                                                 : ""));
+        }        
         $objResult = $objDatabase->Execute("SELECT id,name FROM ".DBPREFIX."languages");
         if ($objResult !== false) {
             while (!$objResult->EOF) {
@@ -75,6 +72,16 @@ class LanguageManager
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."languages");
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."language_variable_content");
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."language_variable_names");
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_CORELANG;
+
+        $objTemplate->setVariable("CONTENT_NAVIGATION","
+            <a href='index.php?cmd=language' class='".($this->act == '' ? 'active' : '')."'>".$_CORELANG['TXT_LANGUAGE_LIST']."</a>"
+            .($this->hideVariables == false ? "<a href='index.php?cmd=language&amp;act=vars' class='".($this->act == 'vars' ? 'active' : '')."'>".$_CORELANG['TXT_VARIABLE_LIST']."</a>
+            <a href='index.php?cmd=language&amp;act=mod' class='".($this->act == 'mod' ? 'active' : '')."'>".$_CORELANG['TXT_ADD_LANGUAGE_VARIABLES']."</a>
+            <a href='index.php?cmd=language&amp;act=writefiles' class='".($this->act == 'writefiles' ? 'active' : '')."' title='".$_CORELANG['TXT_WRITE_VARIABLES_TO_FILES']."'>".$_CORELANG['TXT_WRITE_VARIABLES_TO_FILES']."</a>": ""));
     }
 
 
@@ -125,7 +132,7 @@ class LanguageManager
                 $this->createFiles();
                 $this->listVariables();
                 break;
-            default:
+            default:                
                 Permission::checkAccess(50, 'static');
                 $this->modifyLanguage();
                 $this->languageOverview();
@@ -135,6 +142,9 @@ class LanguageManager
             'CONTENT_OK_MESSAGE'     => $this->strOkMessage,
             'CONTENT_STATUS_MESSAGE' => $this->strErrMessage,
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
 
@@ -896,23 +906,28 @@ class LanguageManager
             'TXT_LANGUAGE_DEPENDANT_SYSTEM_VARIABLES'=> $_CORELANG['TXT_LANGUAGE_DEPENDANT_SYSTEM_VARIABLES'],
             'TXT_ADMINISTRATION_PAGES'       => $_CORELANG['TXT_ADMINISTRATION_PAGES'],
             'TXT_WEB_PAGES'                  => $_CORELANG['TXT_WEB_PAGES'],
-            'TXT_SECTION'                    => $_CORELANG['TXT_SECTION'],
-            'TXT_DEFAULT_LANGUAGE'           => $_CORELANG['TXT_STANDARD_LANGUAGE']
+            'TXT_SECTION'                    => $_CORELANG['TXT_SECTION'],            
+            'TXT_CORE_FALLBACK'              => $_CORELANG['TXT_CORE_FALLBACK'],        
         ));
+        $objTemplate->setGlobalVariable(array(
+            'TXT_DEFAULT_LANGUAGE' => $_CORELANG['TXT_STANDARD_LANGUAGE'],
+            'TXT_CORE_NONE'        => $_CORELANG['TXT_CORE_NONE']            
+        ));        
         //end language variables
-
         if ($this->hideVariables == true) {
             $objTemplate->setGlobalVariable(array('LANGUAGE_ADMIN_STYLE' => 'display: none'));
         } else {
             $objTemplate->setGlobalVariable(array('LANGUAGE_ADMIN_STYLE' => 'display: block'));
         }
-
+                
+        $arrLanguages = FWLanguage::getActiveFrontendLanguages();
         $objResult = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."languages ORDER BY id");
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $checked = "";
                 if ($objResult->fields['is_default']=="true") {
                   $checked = "checked";
+                  $objTemplate->hideBlock('fallback');
                 }
                 $status ="<input type='radio' name='langDefaultStatus' value='".$objResult->fields['id']."' $checked />";
 
@@ -925,6 +940,29 @@ class LanguageManager
                 if ($objResult->fields['backend']==1) {
                   $checked = "checked";
                 }
+                
+                $selectedLang = '';                
+                switch ($objResult->fields['fallback']) {
+                    case '':
+                        $objTemplate->setVariable('NONE_SELECTED', 'selected="selected"');
+                        break;
+                    case '0':
+                        $objTemplate->setVariable('LANGUAGE_DEFAULT_SELECTED', 'selected="selected"');
+                        break;        
+                    default:
+                        $selectedLang = $objResult->fields['fallback'];                        
+                }
+                // set fallback language drop down                
+                foreach ($arrLanguages as $langId => $arrLanguage) {      
+                    $selected = ($langId == $selectedLang) ? 'selected="selected"' : '';
+                    $objTemplate->setVariable(array(
+                        'LANGUAGE_LANG_ID'         => $langId,
+                        'LANGUAGE_LANG_OPTION'     => contrexx_raw2xhtml($arrLanguage['name']),
+                        'LANGUAGE_OPTION_SELECTED' => $selected
+                    ));
+                    $objTemplate->parse('fallbackLanguages');
+                }                    
+                
                 $adminStatus ="<input type='checkbox' name='langAdminStatus[".$objResult->fields['id']."]' value='1' $checked />";
                 $objTemplate->setVariable(array(
                     'LANGUAGE_ROWCLASS'            => 'row'.(($i++ % 2)+1),
@@ -936,10 +974,11 @@ class LanguageManager
                     'LANGUAGE_ACTIVE_STATUS'    => $activeStatus,
                     'LANGUAGE_ADMIN_STATUS'        => $adminStatus
                 ));
+                                
                 $objTemplate->parse('languageRow');
                 $objResult->MoveNext();
             }
-        }
+        }    
     }
 
 
@@ -1017,14 +1056,17 @@ class LanguageManager
                 if (isset($_POST['langAdminStatus'][$id]) && $_POST['langAdminStatus'][$id]==1) {
                     $adminstatus = 1;
                 }
-                $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET name='".$name."', frontend=".$active." , is_default='".$status."',backend='".$adminstatus."' WHERE id=".$id);
+                $fallBack = (isset($_POST['fallBack'][$id]) && $_POST['fallBack'][$id] != "" ) ? intval($_POST['fallBack'][$id]) : 'NULL';                
+                $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET 
+                                        name='".$name."',
+                                        frontend=".$active.",
+                                        is_default='".$status."',
+                                        backend='".$adminstatus."',
+                                        fallback=".$fallBack."
+                                        WHERE id=".$id);
             }
             $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             FWLanguage::init();
-             if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
-                $settings = new settingsManager();
-                $settings->setVirtualLanguagePath(true);
-            }
             return true;
         }
         return false;

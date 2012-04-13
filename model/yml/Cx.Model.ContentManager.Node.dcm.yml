@@ -1,0 +1,47 @@
+Cx\Model\ContentManager\Node:
+  type: entity
+  table: nodes
+  repositoryClass: Cx\Model\ContentManager\Repository\NodeRepository
+  gedmo:
+    tree:
+      type: nested
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:    
+    lft:
+      type: integer
+      gedmo:
+        - treeLeft
+    rgt:
+      type: integer 
+      gedmo:
+        - treeRight
+    lvl:
+      type: integer
+      gedmo:
+        - treeLevel
+  manyToOne:
+    parent:
+      targetEntity: Cx\Model\ContentManager\Node
+      inversedBy: children
+      joinColumn:
+        name: parent_id
+        referencedColumnName: id
+      gedmo:
+        - treeParent
+  oneToMany:
+    children:
+      fetch: EAGER #progressive fetching
+      targetEntity: Cx\Model\ContentManager\Node
+      mappedBy: parent
+      cascade: [remove]
+    pages:
+      targetEntity: Cx\Model\ContentManager\Page
+      mappedBy: node
+      cascade: [remove]
+
+  lifecycleCallbacks:
+      prePersist: [ validate ]

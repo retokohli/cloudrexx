@@ -1,0 +1,163 @@
+         <ul id="cm-tabs" class="clearfix">
+            <li><a href="#page_content" class="tab page_content">{TXT_CORE_CM_PAGE}</a></li>
+            <li><a href="#page_meta" class="tab page_meta type_hidable type_content type_application type_fallback">{TXT_CORE_CM_META}</a></li>
+            <li><a href="#page_access" class="tab page_access">{TXT_CORE_CM_ACCESS}</a></li>
+            <li><a href="#page_settings" class="tab page_settings">{TXT_CORE_CM_SETTINGS}</a></li>
+            <li><a href="#page_history" class="tab page_history">{TXT_CORE_CM_HISTORY}</a></li>
+        </ul>
+      <form class="clearfix" action="." enctype="multipart/form-data" id="cm_page">
+        <div id="page_content" class="types">
+            <input type="hidden" name="page[id]" id="pageId" value="new" />
+            <input type="hidden" name="page[lang]" id="pageLang" value="en" />
+            <input type="hidden" name="page[node]" id="pageNode" value="" />
+            <input type="hidden" name="source_page" id="sourcePage" value="" />
+
+            <a id="toggle_titles" class="heading toggle"><label for="page_name">{TXT_CORE_CM_PAGE_NAME}</label></a>
+            <div id="titles">
+                <input type="text" class="title" name="page[name]" id="page_name" />
+                <span class="info">{TXT_CORE_CM_PAGE_NAME_INFO}</span>
+                <label for="page_title">{TXT_CORE_CM_PAGE_TITLE}</label>
+                <input type="text" class="title" name="page[title]" id="page_title" />
+                <span class="info">{TXT_CORE_CM_PAGE_TITLE_INFO}</span>
+            </div>
+            <a id="toggle_type" class="heading toggle">{TXT_CORE_CM_TYPE}</a>
+            <div id="type" class="clearfix">
+	      <input type="hidden" name="page[type]" value="off" />
+                <input type="radio" name="page[type]" value="content" id="type_content" class="radio" checked="checked" />
+                <label for="type_content">{TXT_CORE_CM_TYPE_CONTENT}</label>
+                <input type="radio" name="page[type]" value="redirect" id="type_redirect" class="radio" />
+                <label for="type_redirect">{TXT_CORE_CM_TYPE_REDIRECT}</label>
+                <input type="radio" name="page[type]" value="application" id="type_application" class="radio" />
+                <label for="type_application">{TXT_CORE_CM_TYPE_APPLICATION}</label>
+                <input type="radio" name="page[type]" value="fallback" id="type_fallback" class="radio hidable_nofallback" />
+                <label for="type_fallback" class="hidable_nofallback">{TXT_CORE_CM_TYPE_FALLBACK} <strong id="fallback"></strong></label>
+                <br style="clear: both;" />
+                <span class="info type_hidable type_content">{TXT_CORE_CM_TYPE_CONTENT_INFO}</span>
+                <label for="page_redirect" class="type_hidable type_redirect">{TXT_CORE_CM_TYPE_REDIRECT_TARGET}</label><br class="type_hidable type_redirect" />
+                <input type="text" class="type_hidable type_redirect" name="page[target]" id="page_target" />
+                <button id="targetBrowseButton" class="type_hidable type_redirect">{TXT_CORE_CM_BROWSE}</button>
+                <span class="info type_hidable type_redirect">{TXT_CORE_CM_TYPE_REDIRECT_INFO}</span>
+                <label for="page_application" class="type_hidable type_application">{TXT_CORE_CM_TYPE_APPLICATION}</label>
+                <label for="page_application_area" class="type_hidable type_application">{TXT_CORE_CM_TYPE_APPLICATION_AREA}</label><br /><!-- TODO: fix br -->
+                <select name="page[application]" class="type_hidable type_application" id="page_application">
+<!-- BEGIN module_option -->
+                    <option value="{MODULE_KEY}">{MODULE_TITLE}</option>
+<!-- END module_option -->
+                </select>
+                <input type="text" name="page[area]" class="type_hidable type_application" id="page_application_area" />
+                <span class="info type_hidable type_application">{TXT_CORE_CM_TYPE_APPLICATION_INFO}</span>
+
+                <span class="info type_hidable type_fallback">{TXT_CORE_CM_TYPE_FALLBACK_INFO}</span>
+            </div>
+
+            <div class="type_hidable type_application type_content" style="margin-top: 20px;">
+                <textarea id="cm_ckeditor" rows="15" cols="45" name="page[content]"></textarea>
+            </div>
+        </div>
+        <div id="page_meta">
+	  <input type="hidden" name="page[metarobots]" value="off" />
+            <a class="heading toggle_checkbox" id="page[metarobots]">{TXT_CORE_CM_SE_INDEX}</a>
+            <div id="metadata" style="display: none;">
+                <label for="page_metatitle">{TXT_CORE_CM_METATITLE}</label>
+                <input type="text" name="page[metatitle]" />
+                <span class="info">{TXT_CORE_CM_METATITLE_INFO}</span>
+
+                <label for="page_metadesc">{TXT_CORE_CM_METADESC}</label>
+                <textarea name="page[metadesc]"></textarea>
+                <span class="info">{TXT_CORE_CM_METADESC_INFO}</span>
+
+                <label for="page_metadesc">{TXT_CORE_CM_METAKEYS}</label>
+                <textarea name="page[metakeys]"></textarea>
+                <span class="info">{TXT_CORE_CM_METAKEYS_INFO}</span>
+            </div>
+        </div>
+        <div id="page_access">
+	  <input type="hidden" name="page[protection_frontend]" value="off" />
+            <a class="heading toggle_checkbox" id="page[protection_frontend]">{TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND}</a>
+            <div id="access_protection_backend" style="display: none;">
+                <select style="width: 300px; height: 250px" id="frontendAccessGroups" class="multiselect" multiple="multiple" name="frontendGroups[]">
+                  <option value="test">unselected</option>
+                  <option value="test2" selected="selected">selected</option>
+                </select>
+            </div>
+	    <input type="hidden" name="page[protection_backend]" value="off" />
+            <a class="heading toggle_checkbox" id="page[protection_backend]">{TXT_CORE_CM_ACCESS_PROTECTION_BACKEND}</a>
+            <div id="access_protection_backend" style="display: none;">
+                <select style="width: 300px; height: 250px" id="backendAccessGroups" class="multiselect" multiple="multiple" name="backendGroups[]">
+                  <option value="test">unselected</option>
+                  <option value="test2" selected="selected">selected</option>
+                </select>
+            </div>
+        </div>
+        <div id="page_settings">
+	    <input type="hidden" name="page[scheduled_publishing]" value="off" />
+            <a class="heading toggle_checkbox" id="page[scheduled_publishing]">{TXT_CORE_CM_SCHEDULED_PUBLISHING}</a>
+            <div id="scheduled_publishing" style="display: none;">
+                Von: <input type="text" name="page[start]" value="von" class="date" />
+                Bis: <input type="text" name="page[end]" value="bis" class="date" />
+            </div>
+
+            <a href="#" class="heading toggle">{TXT_CORE_CM_THEMES}</a>
+            <div id="themes">
+                <select id="page_skin" name="page[skin]">
+                    <option value="">(Default)</option>
+                    {SKIN_OPTIONS}
+                </select>
+                <span class="info">{TXT_CORE_CM_THEMES_INFO}</span>
+                <label for="page_custom_content">{TXT_CORE_CM_CUSTOM_CONTENT}</label>
+                <select id="page_custom_content" name="page[customContent]">
+                    <option>(Default)</option>
+                </select>
+                <span class="info">{TXT_CORE_CM_CUSTOM_CONTENT_INFO}</span>
+                <label for="page_css_class">{TXT_CORE_CM_CSS_CLASS}</label>
+                <input type="text" name="page[cssName]" id="page_css_class" />
+                <span class="info">{TXT_CORE_CM_CSS_CLASS_INFO}</span>
+            </div>
+	    <input type="hidden" name="page[caching]" value="off" />
+            <a class="heading toggle_checkbox" id="page[caching]">{TXT_CORE_CM_CACHE}</a>
+            <a href="#" class="heading toggle">{TXT_CORE_CM_NAVIGATION}</a>
+            <div id="navigation">
+                <label for="page_link_target">{TXT_CORE_CM_LINK_TARGET}</label>
+                <select id="page_link_target" name="page[link_target]">
+                    <option value="">(None)</option>
+                    <option value="_blank">New Window (_blank)</option>
+                    <option value="_parent">Parent Window (_parent)</option>
+                    <option value="_top">Top Window (_top)</option>
+                </select>
+                <span class="info">{TXT_CORE_CM_LINK_TARGET_INO}</span>
+
+                <label for="page_slug">{TXT_CORE_CM_SLUG}</label>
+                <input type="text" name="page[slug]" id="page_slug" />
+                <span class="info">{TXT_CORE_CM_SLUG_INFO}</span>
+                
+                <label for="page_alias">{TXT_CORE_CM_ALIAS}</label>
+                <div>
+                    <div class="page_alias empty">
+                        <span class="page_alias_pre_url">{CONTREXX_BASE_URL}</span>
+                        <span class="noedit" style="font-weight: bold; display: {ALIAS_DENIAL};"></span>
+                        <input type="text" name="page[alias][]" style="display: {ALIAS_PERMISSION};" />
+                        <div style="float: none; clear: left;"></div>
+                    </div>
+                </div>
+                <span class="info">{TXT_CORE_CM_ALIAS_INFO}</span>
+
+                <label for="page_css_nav_class">{TXT_CORE_CM_CSS_NAV_CLASS}</label>
+                <input type="text" name="page[cssNavName]" id="page_css_nav_class" />
+                <span class="info">{TXT_CORE_CM_CSS_NAV_CLASS_INFO}</span>
+            </div>
+	    <input type="hidden" name="page[sourceMode]" value="off" />
+            <a class="heading toggle_checkbox" id="page[sourceMode]">{TXT_CORE_CM_SOURCE_MODE}</a>
+        </div>
+      </form>
+
+      <div id="page_history">
+        <div id="historyContainer">
+        </div>
+      </div>
+      
+      <div id="buttons">
+        <!--<button id="preview" class="btn left"><span>{TXT_CORE_PREVIEW}</span></button>-->
+        <button id="publish" class="btn right"><span>{TXT_CORE_SAVE_PUBLISH}</span></button>
+	<button id="save" class="btn right"><span>{TXT_CORE_SAVE}</span></button>
+      </div>
+

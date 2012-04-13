@@ -1,4 +1,4 @@
-<?PHP
+<?php
 /**
  * DocSys
  * @copyright   CONTREXX CMS - COMVATION AG

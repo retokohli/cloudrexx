@@ -132,7 +132,7 @@ class skins
      * Required files
      * @var array
      */
-    public $filenames = array("index.html","style.css","content.html","home.html","navbar.html","subnavbar.html","sidebar.html","shopnavbar.html","headlines.html","events.html","javascript.js","buildin_style.css","directory.html","info.xml","forum.html","podcast.html","blog.html","immo.html");
+    public $filenames = array("index.html","style.css","content.html","home.html","navbar.html","navbar2.html","navbar3.html","subnavbar.html","subnavbar2.html","subnavbar3.html","sidebar.html","shopnavbar.html","headlines.html","events.html","javascript.js","buildin_style.css","directory.html","info.xml","forum.html","podcast.html","blog.html","immo.html");
 
     /**
      * Required directories
@@ -168,6 +168,7 @@ class skins
     public $tableExists;                      // Table exists
     public $oldTable;                         // old Theme-Table name
 
+    private $act = '';
 
     function __construct()
     {
@@ -193,17 +194,22 @@ class skins
         if (substr($this->webPath, -1) != '/'){
             $this->webPath = $this->webPath . '/';
         }
-
-        $objTemplate->setVariable("CONTENT_NAVIGATION",
-                          "<a href='index.php?cmd=skins'>".$_CORELANG['TXT_DESIGN_OVERVIEW']."</a>
-                           <a href='index.php?cmd=skins&amp;act=newDir'>".$_CORELANG['TXT_NEW_DESIGN']."</a>
-                           <a href='index.php?cmd=skins&amp;act=activate'>".$_CORELANG['TXT_ACTIVATE_DESIGN']."</a>
-                           <a href='index.php?cmd=media&amp;archive=themes'>".$_CORELANG['TXT_DESIGN_FILES_ADMINISTRATION']."</a>
-                           <a href='index.php?cmd=skins&amp;act=examples'>".$_CORELANG['TXT_DESIGN_REPLACEMENTS_DIR']."</a>
-                           <a href='index.php?cmd=skins&amp;act=manage'>".$_CORELANG['TXT_THEME_IMPORT_EXPORT']."</a>");
+      
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."skins");
         $this->oldTable = DBPREFIX."themes";
         $this->_objFile->setChmod($this->path, $this->webPath, "");
+    }
+    private function setNavigation()
+    {
+        global $objTemplate, $_CORELANG;
+
+        $objTemplate->setVariable("CONTENT_NAVIGATION","
+            <a href='index.php?cmd=skins' class='".($this->act == '' ? 'active' : '')."'>".$_CORELANG['TXT_DESIGN_OVERVIEW']."</a>
+            <a href='index.php?cmd=skins&amp;act=newDir' class='".($this->act == 'newDir' ? 'active' : '')."'>".$_CORELANG['TXT_NEW_DESIGN']."</a>
+            <a href='index.php?cmd=skins&amp;act=activate' class='".($this->act == 'activate' ? 'active' : '')."'>".$_CORELANG['TXT_ACTIVATE_DESIGN']."</a>
+            <a href='index.php?cmd=media&amp;archive=themes'>".$_CORELANG['TXT_DESIGN_FILES_ADMINISTRATION']."</a>
+            <a href='index.php?cmd=skins&amp;act=examples' class='".($this->act == 'examples' ? 'active' : '')."'>".$_CORELANG['TXT_DESIGN_REPLACEMENTS_DIR']."</a>
+            <a href='index.php?cmd=skins&amp;act=manage' class='".($this->act == 'manage' ? 'active' : '')."'>".$_CORELANG['TXT_THEME_IMPORT_EXPORT']."</a>");
     }
 
     /**
@@ -259,6 +265,9 @@ class skins
             'CONTENT_OK_MESSAGE'        => $this->strOkMessage,
             'CONTENT_STATUS_MESSAGE'    => $this->strErrMessage,
         ));
+
+        $this->act = $_REQUEST['act'];
+        $this->setNavigation();
     }
 
     /**

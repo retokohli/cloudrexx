@@ -36,5 +36,14 @@ $_ARRAYLANG['TXT_EGOV_DAYNAME_6'] = "Samstag";
 $_ARRAYLANG['TXT_EGOV_DAYNAME_7'] = "Sonntag";
 $_ARRAYLANG['TXT_EGOV_PAYMENT_NOT_COMPLETED'] = "Die Bezahlung des Produktes steht noch aus.";
 
-$_ARRAYLANG['TXT_ORDER_LINK_PREPARED'] = "Die Bestellung ist nun für die Zahlung vorbereitet. Klicken Sie auf den untenstehenden Link, um zum Zahlungs Gateway zu gelangen und dort Ihre Zahlung zu tätigen.";
+$_ARRAYLANG['TXT_EGOV_POSTFINANCE_SUCCESS'] = "Die Zahlung mit PostFinance wurde erfolgreich abgeschlossen";
+$_ARRAYLANG['TXT_EGOV_POSTFINANCE_CANCEL'] = "Die Zahlung mit PostFinance wurde abgebrochen";
+$_ARRAYLANG['TXT_EGOV_POSTFINANCE_NOT_VALID'] = "Die Zahlung mit PostFinance ist ungültig";
+$_ARRAYLANG['TXT_EGOV_POSTFINANCE_ESR'] = "ESR-Teilnehmernummer";
+$_ARRAYLANG['TXT_EGOV_POSTFINANCE_REFERENCE'] = "Referenznummer";
+$_ARRAYLANG['TXT_EGOV_POSTFINANCE_LASTNAME'] = "Nachname";
+$_ARRAYLANG['TXT_EGOV_POSTFINANCE_ADDRESS'] = "Strasse, Nr.";
+$_ARRAYLANG['TXT_EGOV_POSTFINANCE_ZIP'] = "PLZ";
+$_ARRAYLANG['TXT_EGOV_POSTFINANCE_CITY'] = "Ort";
 $_ARRAYLANG['TXT_EGOV_POSTFINANCE'] = "PostFinance";
+$_ARRAYLANG['TXT_ORDER_LINK_PREPARED'] = "Die Bestellung ist nun für die Zahlung vorbereitet. Klicken Sie auf den untenstehenden Link, um zum Zahlungs Gateway zu gelangen und dort Ihre Zahlung zu tätigen.";
