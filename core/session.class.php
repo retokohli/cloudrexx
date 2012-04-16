@@ -35,6 +35,7 @@ class cmsSession
     var $lifetime;
     var $_objDb;
     var $compatibelitiyMode;
+    private $defaultSessionLifeTime = 3600;//1 hour
 
     function __construct($status='')
     {
@@ -66,13 +67,13 @@ class cmsSession
 
             session_start();
             if (isset($_POST['remember_me'])) {
-                $_SESSION['loginRememberMe'] = 1;
+                $_SESSION['auth']['loginRememberMe'] = 1;
             }
-            if (isset($_SESSION['loginRememberMe'])) {
-                $this->lifetime=1209600;
+            if (isset($_SESSION['auth']['loginRememberMe']) && !empty($_CONFIG['sessionLifeTimeRememberMe'])) {
+                $this->lifetime=$_CONFIG['sessionLifeTimeRememberMe'];
             } else {
                 if (intval($_CONFIG['sessionLifeTime'])==0 || empty($_CONFIG['sessionLifeTime'])){
-                    $this->lifetime=3600;
+                    $this->lifetime=$this->defaultSessionLifeTime;
                 } else {
                     $this->lifetime=intval($_CONFIG['sessionLifeTime']);
                 }
