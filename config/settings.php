@@ -36,6 +36,7 @@ $_CONFIG['lastAccessId']             = 57;
 $_CONFIG['licenseKey']               = "";
 $_CONFIG['searchVisibleContentOnly'] = "on";
 $_CONFIG['sessionLifeTime']          = 3600;
+$_CONFIG['sessionLifeTimeRememberMe'] = 1209600;
 $_CONFIG['spamKeywords']             = "sex, viagra";
 $_CONFIG['systemStatus']             = "on";
 $_CONFIG['useVirtualLanguagePath']   = "off";

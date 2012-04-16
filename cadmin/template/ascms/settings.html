@@ -18,6 +18,7 @@ Text[14]=["","{TXT_GOOGLE_MAPS_API_KEY_HELP}"];
 Text[15]=["","{TXT_FRONTEND_EDITING_STATUS_HELP}"];
 Text[16]=["","{TXT_CORE_LIST_PROTECTED_PAGES_HELP}"];
 Text[17]=["","{TXT_LICENSE_KEY_HELP}"];
+Text[18]=["","{TXT_SESSION_LIFETIME_REMEMBER_ME_HELP}"];
 // -->
 </script>
 
@@ -116,27 +117,31 @@ Text[17]=["","{TXT_LICENSE_KEY_HELP}"];
             </tr>
             <tr class="row1">
                 <td>{TXT_SESSION_LIVETIME}&nbsp;</td>
-                <td><input type="text" name="setvalue[34]" value="{SETTINGS_SESSION_LIFETIME}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" alt="" /></td>
+                <td><input type="text" name="setvalue[84]" value="{SETTINGS_SESSION_LIFETIME}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" alt="" /></td>
             </tr>
             <tr class="row2">
+                <td>{TXT_SESSION_LIFETIME_REMEMBER_ME}&nbsp;</td>
+                <td><input type="text" name="setvalue[84]" value="{SETTINGS_SESSION_LIFETIME_REMEMBER_ME}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[18],Style[0])" alt="" /></td>
+            </tr>
+            <tr class="row1">
                 <td>{TXT_DNS_SERVER}&nbsp;</td>
                 <td><input type="text" name="setvalue[3]" value="{SETTINGS_DNS_SERVER}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[7],Style[0])" alt="" /></td>
             </tr>
-            <tr class="row1">
+            <tr class="row2">
                 <td>{TXT_ADVANCED_UPLOAD_STATUS_BACKEND}&nbsp;</td>
                 <td>
                     <input type="radio" name="setvalue[74]" id="setvalue_74_on" value="on" {SETTINGS_ADVANCED_UPLOAD_BACKEND_ON} /><label for="setvalue_70_on">{TXT_RADIO_ON}</label>&nbsp;
                     <input type="radio" name="setvalue[74]" id="setvalue_74_off" value="off" {SETTINGS_ADVANCED_UPLOAD_BACKEND_OFF} /><label for="setvalue_70_off">{TXT_RADIO_OFF}</label>&nbsp;
                 </td>
             </tr>
-            <tr class="row2">
+            <tr class="row1">
                 <td>{TXT_ADVANCED_UPLOAD_STATUS_FRONTEND}&nbsp;</td>
                 <td>
                     <input type="radio" name="setvalue[73]" id="setvalue_73_on" value="on" {SETTINGS_ADVANCED_UPLOAD_FRONTEND_ON} /><label for="setvalue_70_on">{TXT_RADIO_ON}</label>&nbsp;
                     <input type="radio" name="setvalue[73]" id="setvalue_73_off" value="off" {SETTINGS_ADVANCED_UPLOAD_FRONTEND_OFF} /><label for="setvalue_70_off">{TXT_RADIO_OFF}</label>&nbsp;
                 </td>
             </tr>
-            <tr class="row1" style="line-height: 22px;">
+            <tr class="row2" style="line-height: 22px;">
                 <td>{TXT_LICENSE_KEY}&nbsp;</td>
                 <td><input type="text" name="setvalue[76]" value="{SETTINGS_LICENSE_KEY}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[17],Style[0])" alt="" /></td>
             </tr>
