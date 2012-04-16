@@ -208,12 +208,9 @@ class Page extends \Cx\Model\Base\EntityBase
      *
      * @param integer $nodeIdShadowed
      */
-    public function setNodeIdShadowed()
+    public function setNodeIdShadowed($nodeIdShadowed)
     {
-        $this->nodeIdShadowed = $this->node->getId();
-        $em = \Env::em();
-        $em->persist($this);
-        $em->flush();
+        $this->nodeIdShadowed = $nodeIdShadowed;
     }
 
     /**

@@ -325,7 +325,7 @@ class PageRepository extends EntityRepository {
             $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
             $logRepo->revert($currentPage, $historyId);
             
-            $logs = $logRepo->findByAction('remove');
+            $logs = $logRepo->getLogsByAction('remove');
             foreach ($logs as $log) {
                 $page = new \Cx\Model\ContentManager\Page();
                 $page->setId($log->getObjectId());
