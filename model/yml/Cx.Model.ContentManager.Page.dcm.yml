@@ -211,5 +211,3 @@ Cx\Model\ContentManager\Page:
 
   lifecycleCallbacks:
       prePersist: [ validate ]
-      postPersist: [ setNodeIdShadowed ]
-      postUpdate: [ setNodeIdShadowed ]

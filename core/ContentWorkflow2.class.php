@@ -347,7 +347,7 @@ class ContentWorkflow extends Module {
     }
     
     /**
-     *  Restores a page from histroy
+     *  Restores a page from histroy.
      */
     protected function restoreHistory() {
         \Permission::checkAccess(77, 'static');
@@ -365,17 +365,28 @@ class ContentWorkflow extends Module {
         $this->em->persist($currentPage);
         $this->em->flush();
         
+        $this->em->remove($logs[0]);
+        $this->em->flush();
+        unset($logs[0]);
+        
         foreach ($logs as $log) {
             $log->setObjectId($currentPage->getId());
             $this->em->persist($log);
             $this->em->flush();
         }
         
-        $logs = $this->logRepo->getLogEntries($currentPage);
-        $this->em->remove($logs[0]);
+        // Delete old log entries
+        $logs = $this->logRepo->findByObjectId($this->pageId);
+        foreach ($logs as $log) {
+            $this->em->remove($log);
+            $this->em->flush();
+        }
+        
+        $currentPage->setNodeIdShadowed($node->getId());
+        $this->em->persist($currentPage);
         $this->em->flush();
         
-        $logsRemove = $this->logRepo->findByAction('remove');
+        $logsRemove = $this->logRepo->getLogsByAction('remove');
         foreach ($logsRemove as $logRemove) {
             $page = new \Cx\Model\ContentManager\Page();
             $page->setId($logRemove->getObjectId());
@@ -386,14 +397,26 @@ class ContentWorkflow extends Module {
                 $this->em->persist($page);
                 $this->em->flush();
                 
+                // Delete 'create' and 'remove' log
+                $this->em->remove($logs[0]);
+                $this->em->flush();
+                unset($logs[0]);
+                
                 foreach ($logs as $log) {
                     $log->setObjectId($page->getId());
                     $this->em->persist($log);
                     $this->em->flush();
                 }
                 
-                $logs = $this->logRepo->getLogEntries($page);
-                $this->em->remove($logs[0]);
+                // Delete old log entries
+                $logs = $this->logRepo->findByObjectId($logRemove->getObjectId());
+                foreach ($logs as $log) {
+                    $this->em->remove($log);
+                    $this->em->flush();
+                }
+                
+                $page->setNodeIdShadowed($node->getId());
+                $this->em->persist($page);
                 $this->em->flush();
             }
         }

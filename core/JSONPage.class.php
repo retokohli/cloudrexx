@@ -265,6 +265,10 @@ class JSONPage {
         $this->em->persist($page);
         $this->em->flush();
         
+        $page->setNodeIdShadowed($node->getId());
+        $this->em->persist($page);
+        $this->em->flush();
+        
         // only users with publish rights can create aliassses
         if (\Permission::checkAccess(78, 'static', true)) {
             // aliasses are updated after persist!
