@@ -158,6 +158,7 @@ class JSONPage {
         if (intval($page['id']) > 0) {
             // if we got a page id, the page already exists and can be updated
             $page = $pageRepo->find($params['post']['page']['id']);
+            $node = $page->getNode();
 
         }
         elseif ($page['id'] == 0 && $page['node'] && $page['lang']) {
@@ -269,9 +270,9 @@ class JSONPage {
         $this->em->persist($page);
         $this->em->flush();
         
-        // only users with publish rights can create aliassses
+        // only users with publish rights can create aliases
         if (\Permission::checkAccess(78, 'static', true)) {
-            // aliasses are updated after persist!
+            // aliases are updated after persist!
             $data['alias'] = $params['post']['page']['alias'];
             $aliasses = $page->getAliasses();
             $page->updateFromArray($data);
@@ -397,9 +398,9 @@ class JSONPage {
                            'linkTarget'            => $page->getLinkTarget(),
                            'slug'                  => $page->getSlug(),
                            'aliasses'              => $this->getAliasArray($page),
+                           'editingStatus'         => $page->getEditingStatus(),
             
-                           /*'editingStatus' =>  $page->getEditingStatus(),
-                             'display'       =>  $page->getDisplay(),
+                           /*'display'       =>  $page->getDisplay(),
                              'active'        =>  $page->getActive(),
                              'user'          =>  $page->getUser(),
                              'username'      =>  $page->getUsername(),
