@@ -367,18 +367,11 @@ switch ($plainCmd) {
         echo $json->jsondata();
         die();
     case 'workflow':
-        if (!include_once ASCMS_CORE_PATH.'/ContentWorkflow2.class.php')
+        if (!include_once ASCMS_CORE_PATH.'/ContentWorkflow.class.php')
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_CONTENT_HISTORY'];
         $wf = new ContentWorkflow($act, $objTemplate, $objDatabase, $objInit);
         $wf->getPage();
-        break;
-    case 'workflow_old':
-        if (!include_once ASCMS_CORE_PATH.'/ContentWorkflow.class.php')
-            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_CONTENT_HISTORY'];
-        $objWorkflow = new ContentWorkflow();
-        $objWorkflow->getPage();
         break;
     case 'docsys':
         Permission::checkAccess(11, 'static');
