@@ -34,9 +34,6 @@ class ContactManager extends ContactLib
     var $_arrFormFieldTypes;
     var $_arrUserAccountData;
 
-    var $boolHistoryEnabled = false;
-    var $boolHistoryActivate = false;
-
     var $_csvSeparator = null;
     var $_csvEnclosure = null;
     var $_csvCharset = null;
@@ -126,12 +123,6 @@ class ContactManager extends ContactLib
 
         $this->initContactForms();
         $this->initCheckTypes();
-
-        $this->boolHistoryEnabled = ($_CONFIG['contentHistoryStatus'] == 'on') ? true : false;
-
-        if (Permission::checkAccess(78, 'static', true)) {
-            $this->boolHistoryActivate = true;
-        }
     }
     private function setNavigation()
     {

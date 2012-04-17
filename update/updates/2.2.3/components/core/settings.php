@@ -86,11 +86,6 @@ function _updateSettings()
             'setvalue'    => '1',
             'setmodule'    => 7
         ),
-        43    => array(
-            'setname'    => 'contentHistoryStatus',
-            'setvalue'    => 'on',
-            'setmodule'    => 1
-        ),
         44    => array(
             'setname'    => 'calendarheadlinescat',
             'setvalue'    => '0',

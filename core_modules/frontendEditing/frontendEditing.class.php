@@ -44,11 +44,6 @@ class frontendEditing extends frontendEditingLib {
 	private $strSplitChar = ';;;';
 
 	/**
-	 * Is set to true if the history-function is enabled.
-	 */
-	private $boolHistoryEnabled;
-
-	/**
 	 * Will be set to true, if the user failed with his login-attempt.
 	 */
 	private $boolLoginFailed = false;
@@ -150,9 +145,6 @@ class frontendEditing extends frontendEditingLib {
 		$this->objTemplate = new HTML_Template_Sigma($this->strTemplatePath);
         CSRF::add_placeholder($this->objTemplate);
 		$this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-
-		//Configuration
-		$this->boolHistoryEnabled = ($_CONFIG['contentHistoryStatus'] == 'on') ? true : false;
 
 		//create user object
 		$this->objUser = FWUser::getFWUserObject();
