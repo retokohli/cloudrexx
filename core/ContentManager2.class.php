@@ -112,7 +112,7 @@ class ContentManager extends Module {
             //settings tab
             'TXT_CORE_APPLICATION_AREA', 'TXT_CORE_APPLICATION', 'TXT_CORE_AREA', 'TXT_CORE_OPTICS_STYLE', 'TXT_CORE_SKIN', 'TXT_CORE_SPECIAL_CONTENT_PAGE', 'TXT_CORE_CUSTOMCONTENT', 'TXT_CORE_REDIRECTION', 'TXT_CORE_TARGET', 'TXT_CORE_PERFORMANCE_OPTIMIZATION', 'TXT_CORE_CACHING', 'TXT_CORE_LINK', 'TXT_CORE_SLUG', 'TXT_CORE_CSSNAME',
             //bottom buttons
-            'TXT_CORE_PREVIEW', 'TXT_CORE_SAVE_PUBLISH', 'TXT_CORE_SAVE'
+            'TXT_CORE_PREVIEW', 'TXT_CORE_SAVE_PUBLISH', 'TXT_CORE_SAVE', 'TXT_CORE_SUBMIT_FOR_RELEASE', 'TXT_CORE_REFUSE_RELEASE'
         ));
 
         $modules = $this->db->Execute("SELECT * FROM ".DBPREFIX."modules");
@@ -122,6 +122,13 @@ class ContentManager extends Module {
             $this->template->setVariable('MODULE_TITLE', ucwords($modules->fields['name']));
             $this->template->parse('module_option');
             $modules->MoveNext();
+        }
+        
+        if (\Permission::checkAccess(78, 'static', true)) {
+            $this->template->hideBlock('release_button');
+        } else {
+            $this->template->hideBlock('publish_button');
+            $this->template->hideBlock('refuse_button');
         }
 
         ContrexxJavascript::getInstance()->setVariable('confirmDeleteQuestion', $_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE'] );

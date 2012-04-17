@@ -208,6 +208,9 @@ class JSONPage {
         if ((isset($params['get']['publish']) && $params['get']['publish']) 
             && \Permission::checkAccess(78, 'static', true)) {
             // user w/permission clicked save&publish. we should either publish the page or submit the draft for approval
+            if ($page->getEditingStatus() == 'hasDraftWaiting') {
+                $reload = true;
+            }
             $page->setEditingStatus('');
             $this->messages[] = $_CORELANG['TXT_CORE_SAVED'];
             // TODO: define what log data we want to keep in a case like this.
@@ -227,7 +230,10 @@ class JSONPage {
                 $this->messages[] = $_CORELANG['TXT_CORE_DRAFT_SUBMITTED'];
             }
             else {
-                $page->setEditingStatus("hasDraft");
+                if ($page->getEditingStatus() == 'hasDraftWaiting' && \Permission::checkAccess(78, 'static', true)) {
+                    $reload = true;
+                }
+                $page->setEditingStatus('hasDraft');
                 $this->messages[] = $_CORELANG['TXT_CORE_SAVED_AS_DRAFT'];
             }
 
@@ -285,9 +291,9 @@ class JSONPage {
 
         if (isset($reload) && $reload) {
             return array(
-                         'reload' => 'true', 
-                         'id' => $page->getId()
-                         );
+                'reload' => 'true', 
+                'id'     => $page->getId()
+            );
         }
     }
 
