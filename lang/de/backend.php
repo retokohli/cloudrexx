@@ -1388,9 +1388,11 @@ $_ARRAYLANG['TXT_CORE_TARGET'] = "Ziel";
 $_ARRAYLANG['TXT_CORE_PERFORMANCE_OPTIMIZATION'] = "Geschwindigkeitsoptimierung";
 $_ARRAYLANG['TXT_CORE_LINK'] = "Linkspezifisches";
 
-$_ARRAYLANG['TXT_CORE_PREVIEW'] = "Seitenvorschau";
-$_ARRAYLANG['TXT_CORE_SAVE_PUBLISH'] = "Speichern & veröffentlichen";
-$_ARRAYLANG['TXT_CORE_SAVE'] = "Speichern";
+$_ARRAYLANG['TXT_CORE_PREVIEW'] = "Vorschau";
+$_ARRAYLANG['TXT_CORE_SAVE_PUBLISH'] = "Veröffentlichen";
+$_ARRAYLANG['TXT_CORE_SAVE'] = "Als Entwurf speichern";
+$_ARRAYLANG['TXT_CORE_SUBMIT_FOR_RELEASE'] = "Zur Freigabe einreichen";
+$_ARRAYLANG['TXT_CORE_REFUSE_RELEASE'] = "Freigabe ablehnen";
 
 $_ARRAYLANG['TXT_CORE_LOAD'] = "Laden";
 $_ARRAYLANG['TXT_CORE_CURRENT'] = "jetzige";

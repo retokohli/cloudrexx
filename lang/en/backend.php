@@ -1081,12 +1081,14 @@ $_ARRAYLANG['TXT_LICENSE_KEY_HELP'] = 'Enter here your license key to activate t
 
 //content manager
 $_ARRAYLANG['TXT_CORE_PREVIEW'] = "Preview";
-$_ARRAYLANG['TXT_CORE_SAVE_PUBLISH'] = "Save & publish";
-$_ARRAYLANG['TXT_CORE_SAVE'] = "Save";
-$_ARRAYLANG['TXT_CORE_LOAD'] = "Load";
+$_ARRAYLANG['TXT_CORE_SAVE_PUBLISH'] = "Publish";
+$_ARRAYLANG['TXT_CORE_SAVE'] = "Save as draft";
+$_ARRAYLANG['TXT_CORE_SUBMIT_FOR_RELEASE'] = "Submit for release";
+$_ARRAYLANG['TXT_CORE_REFUSE_RELEASE'] = "Refuse release";
 
+$_ARRAYLANG['TXT_CORE_LOAD'] = "Load";
 $_ARRAYLANG['TXT_CORE_CURRENT'] = "current";
-$_ARRAYLANG['TXT_CORE_DRAFT'] = "draft";
+$_ARRAYLANG['TXT_CORE_DRAFT'] = "Draft";
 
 $_ARRAYLANG['TXT_CORE_SAVED_AS_DRAFT'] = "Saved as draft";
 $_ARRAYLANG['TXT_CORE_SAVED'] = "Saved";

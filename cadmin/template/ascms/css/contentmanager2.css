@@ -343,7 +343,7 @@ h1{ font-size: 20px }
     padding: 0 10px 0 30px
 }
 
-#publish span, #save span{
+#publish span, #save span, #release span, #refuse span{
     background-position: 0 -28px
 }
 
