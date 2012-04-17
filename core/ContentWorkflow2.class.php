@@ -90,10 +90,6 @@ class ContentWorkflow extends Module {
             $this->intPos = intval($_GET['pos']);
         }
         
-        if ($_CONFIG['contentHistoryStatus'] == 'off') {
-            $this->strErrMessage[] = $_CORELANG['TXT_WORKFLOW_NOT_ACTIVE'];
-        }
-        
         $template->setVariable(array(
             'CONTENT_TITLE'             => $this->strPageTitle,
             'CONTENT_OK_MESSAGE'        => $this->strOkMessage,

@@ -268,8 +268,6 @@ class settingsManager
             'SETTINGS_DNS_SERVER'                            => $arrSettings['dnsServer'],
             'SETTINGS_IDS_RADIO_ON'                          => ($arrSettings['coreIdsStatus'] == 'on') ? 'checked="checked"' : '',
             'SETTINGS_IDS_RADIO_OFF'                         => ($arrSettings['coreIdsStatus'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_HISTORY_ON'                            => ($arrSettings['contentHistoryStatus'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_HISTORY_OFF'                           => ($arrSettings['contentHistoryStatus'] == 'off') ? 'checked="checked"' : '',
             'SETTINGS_XML_SITEMAP_ON'                        => ($arrSettings['xmlSitemapStatus'] == 'on') ? 'checked="checked"' : '',
             'SETTINGS_XML_SITEMAP_OFF'                       => ($arrSettings['xmlSitemapStatus'] == 'off') ? 'checked="checked"' : '',
             'SETTINGS_SYSTEMSTATUS_ON'                       => ($arrSettings['systemStatus'] == 'on') ? 'checked="checked"' : '',
