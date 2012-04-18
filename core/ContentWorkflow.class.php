@@ -361,6 +361,7 @@ class ContentWorkflow extends Module {
         $this->em->persist($currentPage);
         $this->em->flush();
         
+        // Delete 'remove' log
         $this->em->remove($logs[0]);
         $this->em->flush();
         unset($logs[0]);
@@ -393,7 +394,7 @@ class ContentWorkflow extends Module {
                 $this->em->persist($page);
                 $this->em->flush();
                 
-                // Delete 'create' and 'remove' log
+                // Delete 'remove' log
                 $this->em->remove($logs[0]);
                 $this->em->flush();
                 unset($logs[0]);
