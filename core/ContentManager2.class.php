@@ -65,16 +65,6 @@ class ContentManager extends Module {
         JS::activate('chosen');
         JS::registerJS('lib/javascript/lock.js');
 
-        $cm_hidden = ''; 
-        $hide_list = '';
-        if (isset($_GET['act']) && $_GET['act'] == 'new') {
-            $hide_list = ' class="shrunk"';
-        }
-        else {
-            $cm_hidden = ' style="display: none !important;"';
-        }
-
-
         $this->template->addBlockfile('ADMIN_CONTENT', 'content_manager', 'content_manager.html');
         $this->template->touchBlock('content_manager');
         $this->template->addBlockfile('CONTENT_MANAGER_MEAT', 'content_manager_meat', 'cm.html');
@@ -129,6 +119,15 @@ class ContentManager extends Module {
         } else {
             $this->template->hideBlock('publish_button');
             $this->template->hideBlock('refuse_button');
+        }
+        
+        $cm_hidden = ''; 
+        $hide_list = '';
+        if (isset($_GET['act']) && $_GET['act'] == 'new') {
+            $hide_list = ' class="shrunk"';
+            $this->template->hideBlock('refuse_button');
+        } else {
+            $cm_hidden = ' style="display: none !important;"';
         }
 
         ContrexxJavascript::getInstance()->setVariable('confirmDeleteQuestion', $_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE'] );
@@ -259,32 +258,30 @@ class ContentManager extends Module {
 
         //(III) collect page informations - path, virtual language directory
         $path = $this->getPageRepository()->getPath($page);
-        $pageHasDraft = $page->getEditingStatus() ? true : false;
-
+        $pageHasDraft = $page->getEditingStatus() != '' ? true : false;
+        
         $le = new \Cx\Core\Routing\LanguageExtractor($this->db, DBPREFIX);
         $langDir = $le->getShortNameOfLanguage($page->getLang());
 
         //(IV) add current entry to table
         $this->addHistoryEntries($page, $table, 1);
-      
+
         //(V) add the history entries
         $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
         $logs = $logRepo->getLogEntries($page);
-      
+
         $logCount = count($logs);
-        for($i = 0; $i < $logCount; $i++) {
-            $version = $logCount - ($i + 1);
-            $row = $i + 2;
+        for ($i = 1; $i < $logCount; $i++) {
+            $version = $logs[$i]->getVersion();
+            $row = $i + 1;
             try {
                 $logRepo->revert($page, $version);
-            }
-            catch(\Gedmo\Exception\UnexpectedValueException $e) {
-            }
-            $this->addHistoryEntries($page, $table, $row, $version, $langDir.'/'.$path, $pageHasDraft);
- 
+                $page->setUpdatedAt($logs[$i]->getLoggedAt());
                 
+                $this->addHistoryEntries($page, $table, $row, $version, $langDir.'/'.$path, $pageHasDraft);
+            } catch (\Gedmo\Exception\UnexpectedValueException $e) {}
         }
-       
+
         //(VI) render
         die($table->toHtml());
     }
@@ -296,13 +293,11 @@ class ContentManager extends Module {
 
         if ($row == 2 && $pageHasDraft) {
             $dateString .= ' ('.$_ARRAYLANG['TXT_CORE_DRAFT'].')';
-        }
-        if($row > 1) { //not the current page
+        } else if ($row > 1) { //not the current page
             $table->setCellContents($row, 3, '<a href="javascript:loadHistoryVersion('.$page->getId().','.$version.')">'.$_ARRAYLANG['TXT_CORE_LOAD'].'</a>');
-            $historyLink = ASCMS_PATH_OFFSET."/$path?history=$version";
+            $historyLink = ASCMS_PATH_OFFSET.'/'.$path.'?history='.$version;
             $table->setCellContents($row, 4, '<a href="'.$historyLink.'" target="_blank">'.$_ARRAYLANG['TXT_CORE_PREVIEW'].'</a>');
-        }
-        else { //current page state
+        } else { //current page state
             $dateString .= ' ('. $_ARRAYLANG['TXT_CORE_CURRENT'] . ')';
         }
 

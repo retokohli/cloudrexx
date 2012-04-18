@@ -179,9 +179,11 @@ class JSONPage {
             $node->setParent($nodeRepo->getRoot());
 
             $this->em->persist($node);
+            $this->em->flush();
 
             $page = new \Cx\Model\ContentManager\Page();
             $page->setNode($node);
+            $page->setNodeIdShadowed($node->getId());
             $page->setLang(FWLanguage::getLanguageIdByCode($params['post']['page']['lang']));
 
             $newpage = true;
@@ -269,10 +271,6 @@ class JSONPage {
             }
         }
 
-        $this->em->persist($page);
-        $this->em->flush();
-        
-        $page->setNodeIdShadowed($node->getId());
         $this->em->persist($page);
         $this->em->flush();
         
