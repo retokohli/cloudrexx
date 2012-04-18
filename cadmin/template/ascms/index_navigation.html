@@ -1,36 +1,20 @@
 <script type="text/javascript">
 // <![CDATA[
-function swapNavigation(div) {
-	displayType = (document.getElementById(div).style.display == 'none') ? 'block' : 'none';
-	document.getElementById(div).style.display = displayType;
-	document.cookie = div + "=" + displayType;
+function swapNavigation(navi_id) {
+    $J('#navigation_level_1_' + navi_id).toggleClass('active inactive');
+    $J('#navigation_level_2_' + navi_id).toggleClass('active inactive');
+    className = $J('#navigation_level_2_' + navi_id).hasClass('active') ? 'active' : 'inactive';
+    document.cookie = 'navigation_level_2_' + navi_id + "=" + className;
 }
 // ]]>
 </script>
 
+<a id="dashboard" href="index.php" title="Dashboard">Dashboard</a>
 <!-- BEGIN navigationRow -->
-<table summary="" class="navbar" cellspacing="0" cellpadding="0" width="100%">
-    <tr>
-        <th onclick="swapNavigation('navigation_{NAVIGATION_ID}'); $J(this).children('div').toggleClass('block'); return false;" height="25">
-            <div class="{NAVIGATION_STYLE}">{NAVIGATION_GROUP_NAME}</div>
-        </th>
-    </tr>
-</table>
-<div id="navigation_{NAVIGATION_ID}" style="display: {NAVIGATION_STYLE};">
-    <table summary="" class="navbar" width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-            <td>
-                <ul class="navigation">{NAVIGATION_MENU}</ul>
-            </td>
-        </tr>
-    </table>
-</div>
+<div id="navigation_level_1_{NAVIGATION_ID}" class="navigation_level_1 {NAVIGATION_CLASS}" onclick="swapNavigation('{NAVIGATION_ID}');">{NAVIGATION_GROUP_NAME}</div>
+<ul id="navigation_level_2_{NAVIGATION_ID}" class="navigation_level_2 {NAVIGATION_CLASS}">{NAVIGATION_MENU}</ul>
 <!-- END navigationRow -->
-
-<table summary="" class="navbar" cellspacing="0" cellpadding="0" width="100%">
-    <tr>
-        <th style="cursor:pointer" onclick="logout()" height="22">
-            <div align="left">{TXT_LOGOUT}</div>
-        </th>
-    </tr>
-</table>
+<form id="search" name="search" action="index.php" method="post">
+    <input name="term" type="text" value="" />
+    <input name="submit" type="submit" value="{TXT_SEARCH}" />
+</form>

@@ -203,7 +203,7 @@ class adminMenu
                     }
 
                     $cssClass = $this->activeCmd == $linkCmd ? 'active' : '';
-                    $navigation.= "<li><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."' class='$cssClass'>&raquo;&nbsp;".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
+                    $navigation.= "<li class='$cssClass'><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
                 }
             }
 
@@ -212,12 +212,12 @@ class adminMenu
                     'NAVIGATION_GROUP_NAME'    => htmlentities($_CORELANG[$group_data], ENT_QUOTES, CONTREXX_CHARSET),
                     'NAVIGATION_ID'            => $group_id,
                     'NAVIGATION_MENU'        => $navigation,
-                    'NAVIGATION_STYLE'        => isset($_COOKIE['navigation_'.$group_id]) ? $_COOKIE['navigation_'.$group_id] : 'none'
+                    'NAVIGATION_CLASS'        => isset($_COOKIE['navigation_level_2_'.$group_id]) ? $_COOKIE['navigation_level_2_'.$group_id] : 'inactive',
                 ));
                 $objTemplate->parse('navigationRow');
             }
         }
-        $objTemplate->setVariable('TXT_LOGOUT', $_CORELANG['TXT_LOGOUT']);
+        $objTemplate->setVariable('TXT_SEARCH', $_CORELANG['TXT_SEARCH']);
         $objTemplate->parse('navigation_output');
     }
 
