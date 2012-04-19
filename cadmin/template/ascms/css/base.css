@@ -13,89 +13,33 @@ html, body {
     height: 100%;
     padding: 0;
     margin: 0;
-    font-size: 11px;
+    font-size: 12px;
     font-family: arial, helvetica, sans-serif;
 }
 
-/*html, body {
-  color: black;
-  background: #ffffff;
-  font-weight: normal;
-  font-family: Arial, Helvetica, sans-serif;
-  font-style: normal;
-  font-size: 11px;
-  text-decoration: none;
-  padding: 0px;
-  border: 0px;
-  margin: 0px;
-  height: 100%;
-}
-
-body {
-  scrollbar-face-color: #dadada;
-  scrollbar-highlight-color: #dadada;
-  scrollbar-shadow-color: #dadada;
-  scrollbar-3dlight-color: #dadada;
-  scrollbar-arrow-color: #000000;
-  scrollbar-track-color: #dadada;
-  scrollbar-darkshadow-color: #2f4f4f;
-  scrollbar-base-color: #dadada;
-}*/
-
-td {
-    font-size: 11px;
+table td {
     text-align: left;
 }
 
 form {
-    margin: 0px;
+    margin: 0;
 }
 
 h1 {
-    padding-right: 0px;
-    padding-left: 0px;
-    font-size: 12px;
-    padding-bottom: 0px;
-    margin: 0px;
-    padding-top: 0px;
+    padding: 0;
+    margin: 0;
 }
 
-/*a {
-  font-size: 11px;
-  color: #000099;
-  text-decoration: none;
-}
-
-a:link {
-  color: #000099;
-  text-decoration: none;
-}
-
+a,
+a:hover,
+a:focus,
+a:active,
+a:link,
 a:visited {
-  color: #000099;
-  text-decoration: none;
-}
-
-a:hover {
-  color: #000099;
-  background-color: #ffffcc;
-  text-decoration: none;
-}
-
-a:active {
-  color: #000099;
-  text-decoration: none;
-}*/
-
-a {
-    color: #1A74B1;
+    color: #1072ba;
     text-decoration: none;
     outline: 0;
-}
-
-a:hover,
-a:focus {
-    text-decoration: none;
+    cursor: pointer;
 }
 
 #container {
@@ -109,8 +53,8 @@ a:focus {
     background: url('../images/navigation_wrapper.jpg') repeat-y;
 }
 
-* html #container {
-    height: 100%; /* for ie6 */
+* html #container {/* for ie6 */
+    height: 100%;
 }
 
 #header {
@@ -222,19 +166,20 @@ a:focus {
 }
 
 *+html #content_login form div input[type=submit],
-*+html #content_login form div input[type=button] {/* for ie7 */
-                                                   overflow: visible;
-                                                   padding: 0 9px 0 9px;
+*+html #content_login form div input[type=button] {/* For IE7 */
+    overflow: visible;
+    padding: 0 9px 0 9px;
 }
 
 #navigation_wrapper {
-    width: 215px;
     float: left;
+    width: 215px;
+    padding: 13px 0 28px 0;
 }
 
 #content {
     overflow: hidden;
-    padding: 14px;
+    padding: 25px 14px 14px 14px;
 }
 
 #content textarea,
@@ -245,26 +190,18 @@ a:focus {
 #navigation_wrapper object,
 #content select,
 #navigation_wrapper select {
-    border-right: 1px solid;
-    margin-bottom: 2px;
-    border-top: 1px solid;
-    font-size: 11px;
-    border-left: 1px solid;
-    color: black;
-    border-bottom: 1px solid;
-    background-color: white;
-    border-color: #ACACAC;
+    border: 1px solid #acacac;
+    background: #ffffff;
     padding: 3px;
+    color: #000000;
+}
 
-    /* background: url("../images/button_bg.png") repeat-x scroll left top transparent;
-     border: 1px solid #BBBBBB;
-     color: #333333;
-     font-size: 11px;
-     height: 30px;
-     line-height: 30px;
-     margin-bottom: 2px;
-     padding: 0 ;
-     text-shadow: 1px 1px #FFFFFF;*/
+#content input[type=radio],
+#navigation_wrapper input[type=radio],
+#content input[type=checkbox],
+#navigation_wrapper input[type=checkbox] {
+    border: 0;
+    background: transparent;
 }
 
 #footer {
@@ -336,32 +273,39 @@ a:focus {
     height: 29px;
 }
 
-#dashboard {
+.navigation_level_1 {
     float: left;
-    width: 153px;
-    height: 12px;
-    padding: 25px 17px 25px 45px;
-    background: url(../images/icon_home.jpg) no-repeat 26px 26px;
-    font-size: 13px;
+    width: 169px;
+    height: 16px;
+    line-height: 16px;
+    padding: 12px 17px 12px 29px;
+    font-size: 14px;
+    font-weight: bold;
     color: #373737;
 }
 
-.navigation_level_1 {
-    float: left;
-    width: 170px;
-    height: 27px;
-    line-height: 27px;
-    padding: 0 17px 0 28px;
-    font-size: 13px;
+.navigation_level_1.dashboard {
+    background: url(../images/icon_home.jpg) no-repeat 11px 13px;
+    color: #373737;
 }
 
 .navigation_level_1.active,
 .navigation_level_1:hover,
 .navigation_level_1:focus {
-    font-weight: bold;
+    padding: 12px 17px 12px 29px;
+    background: url(../images/navigation_level_1_hover_arrow.png) no-repeat 12px 18px;
     color: #54a200;
-    background: url(../images/navigation_level_1_hover_arrow.png) no-repeat 12px 11px;
     cursor: pointer;
+}
+
+.navigation_level_1.active {
+    padding-bottom: 6px;
+}
+
+.navigation_level_1.dashboard.active,
+.navigation_level_1.dashboard:hover,
+.navigation_level_1.dashboard:focus {
+    background: url(../images/icon_home_hover.jpg) no-repeat 11px 13px;
 }
 
 .navigation_level_2 {
@@ -386,17 +330,17 @@ a:focus {
 .navigation_level_2 li.active,
 .navigation_level_2 li:hover,
 .navigation_level_2 li:focus {
-    background: #91ce0d url(../images/navigation_level_2_hover.jpg);
+    background: #91ce0d url(../images/navigation_level_2_hover.jpg) left center;
 }
 
 .navigation_level_2 li a {
     float: left;
-    width: 136px;
+    width: 137px;
     height: auto !important;
     min-height: 15px;
     height: 15px;
-    padding: 6px 17px 6px 24px;
-    font-size: 12px;
+    padding: 5px 17px 5px 23px;
+    font-size: 13px;
     font-weight: normal;
     color: #373737;
 }
@@ -405,25 +349,27 @@ a:focus {
 .navigation_level_2 li:hover a,
 .navigation_level_2 li:focus a {
     float: left;
-    width: 136px;
+    width: 137px;
     height: auto !important;
     min-height: 15px;
     height: 15px;
-    padding: 6px 17px 6px 24px;
+    padding: 5px 17px 5px 23px;
     background: url(../images/navigation_level_2_hover_arrow.png) no-repeat 10px 7px;
-    font-size: 12px;
-    font-weight: bold;
     color: #ffffff;
+}
+
+.navigation_level_2 li.active a {
+    font-weight: bold;
 }
 
 #search {
     float: left;
     width: 186px;
-    padding: 25px 17px 25px 12px;
+    padding: 28px 17px 0 12px;
 }
 
 #search input[type="text"] {
-    width: 110px;
+    width: 111px;
     margin: 0 !important;
 }
 
@@ -435,45 +381,38 @@ a:focus {
 }
 
 *+html #search input[type="submit"] {
-    height: 30px !important;
+    border: 0;
 }
 
-.navigation {
+#breadcrumb {
+    float: left;
     width: 100%;
+    padding: 0;
+    margin: 0 0 8px 0;
+    list-style-type: none;
+}
+
+#breadcrumb li {
     float: left;
+    width: auto;
+    background: url(../images/breadcrumb_list_style.jpg) no-repeat left center;
+    padding: 0 0 0 14px;
+    margin: 0 0 0 8px;
+    font-size: 14px;
+}
+
+#breadcrumb li.first {
+    background: transparent;
     padding: 0;
     margin: 0;
 }
 
-.navigation li {
-    width: 200px;
-    float: left;
-    padding: 0;
-    margin: 0;
-    list-style: none;
-}
-
-.navigation li a {
-    width: 181px;
-    float: left;
-    /*padding: 6px 10px 6px 10px;*/
-    padding: 6px 9px 6px 10px;
-    font-size: 11px;
-    color: #000000;
-}
-
-.navigation li a:hover {
-    /*  background-color: #CFE3EE;*/
-    background: url("../images/nav_hover.png") repeat scroll 0 0 transparent;
-}
-
-.navigation li a.active:hover {
-    background: url("../images/nav_active.png") repeat-x scroll 0 0 transparent;
+#breadcrumb li a {
+    color: #148dcd;
 }
 
 div.infobox_head{
     padding: 5px;
-    font-size: 11px;
     background-color: #ffcc33;
 }
 
@@ -488,256 +427,137 @@ div.infobox_body {
 }
 
 table.adminlist {
-    font-size: 11px;
+    background: #ffffff;
     empty-cells: show;
-    background-color: #ffffff;
+    clear: both;
 }
 table.adminlist th {
-    background: url("../images/table_header.png") repeat-x scroll 0 0 transparent;
-    color: white;
+    background: #1773bb url(../images/table_header.jpg) repeat-y;
     height: 26px;
     margin: 0;
-    padding: 0 0 0 5px;
+    padding: 0 10px;
     text-align: left;
-    vertical-align: middle;
+    font-weight: bold;
+    color: #ffffff;
 }
 table.adminlist th a {
-    color: white;
-    /*text-decoration: underline*/
+    color: #ffffff;
 }
-table.adminlist th a:active {
-    color: white;
-    text-decoration: underline;
-}
-table.adminlist th a:visited {
-    color: white;
-    text-decoration: underline;
-}
+table.adminlist th a:active,
+table.adminlist th a:visited,
 table.adminlist th a:hover {
-    color: #0a50a1;
-    background-color: #dce4ff;
-    text-decoration: none;
+    text-decoration: underline;
+    cursor: pointer;
 }
-table.adminlist th.title {
-    color: #333333;
-    text-align: left;
+table.adminlist tr {
+    height: 23px;
+    line-height: 23px;
 }
-table.adminlist tr.row1 {
-    background-color: #FFFFFF;
-}
+table.adminlist tr.row0,
+table.adminlist tr.row1,
 table.adminlist tr.row2 {
-    background-color: #F5F5F5;
+    background: #ffffff;
+}
+table.adminlist tr.row0:hover,
+table.adminlist tr.row1:hover,
+table.adminlist tr.row2:hover {
+    background: #ffffd6;
 }
 table.adminlist tr.row3 {
-    background-color: #D8EAFE;
+    line-height: 23px;
+    height: 23px;
+    background: #d8eafe;
+    color: #1a74bd;
+    font-weight: bold;
 }
-table.adminlist thead tr.row3 {
-    background-color: #dde4ff;
-}
-table.adminlist tr td.col3 { /* Shop! */
-                             background-color: #dde4ff;
+table.adminlist tr.row3 td {
+    white-space: nowrap;
 }
 table.adminlist tr.highlighted {
-    background-color: #ffe7e7;
+    background: #ffe7e7;
 }
 table.adminlist tr.highlighted:hover {
-    background-color: #ffe7e7;
-}
-table.adminlist tr.rowwarn {
-    background-color: #ffe7e7;
+    background: #ffe7e7;
 }
 table.adminlist tr.highlightedGreen {
-    background-color: #d8ffca;
+    background: #d8ffca;
+}
+table.adminlist tr.rowwarn {
+    background: #ffe7e7 !important;
 }
 table.adminlist td {
+    text-align: left;
     border-bottom: #dde4ff 1px solid;
 }
-table.adminlist tr.row1:hover {
-    background-color: #f1f1f1;
-}
-table.adminlist tr.row2:hover {
-    background-color: #f1f1f1;
-}
 table.adminlist td.options {
-    FONT-SIZE: 10px;
-    background-color: #ffffff;
+    font-size: 10px;
+    background: #ffffff;
 }
-table.adminlist td.number { /* Shop */
-                            text-align: right;
+table.adminlist td.col3 {/* Shop */
+    background: #dde4ff;
+}
+table.adminlist td.number {/* Shop */
+    text-align: right;
 }
 table.title {
-    font-size: 12px;
     border-bottom: #000099 1px solid;
-    font-family: Arial, Helvetica, sans-serif;
-    background-color: white;
-}
-
-table.subnavbar {
-    font-size: 11px;
-    border-bottom: #000099 0px solid;
-    font-family: Arial, Helvetica, sans-serif;
-    background-color: #dde4ff;
-}
-
-.tabmenu{
-    color: black;
-    margin: 0;
-    padding: 2px;
-    z-index: 1;
-    padding-left: 0px;
-}
-
-#tabmenu {
-    color: black;
-    margin: 0;
-    padding: 0 2px 3px 0;
-    z-index: 1;    
-}
-
-.tabmenu li, #tabmenu li {
-    display: inline;
-    overflow: hidden;
-    list-style-type: none;
-}
-
-.tabmenu a  {
-    color: black;
-    background: url("../images/tab_clas_btn.jpg") repeat-x scroll 0 0 transparent;
-    /*background: white;*/
-    font-weight: normal;
-    border: 1px solid #CCCCCC;
-    /* border: 1px solid #0a50a1;*/
-    padding: 2px 5px 2px 5px;
-    margin: 0px;
-    text-decoration: none;
-    cursor: pointer;
-}
-#tabmenu a  {
-    color: black;
-    /*background: url("../images/tab_clas_btn.jpg") repeat-x scroll 0 0 transparent;*/
-    background: url("../images/nav_tab_bg.jpg") repeat-x scroll 0 0 transparent;
-    /*background: white;*/
-    font-weight: normal;
-    border: 1px solid #CCCCCC;
-    /* border: 1px solid #0a50a1;*/
-    padding: 2px 5px 2px 5px;
-    margin: 0px;
-    text-decoration: none;
-    cursor: pointer;
-}
-a.active  {
-    color: black;
     background: white;
-    font-weight: normal;
-    border: 1px solid #CCCCCC;
-    border: 1px solid #0a50a1;
-    padding: 2px 5px 2px 5px;
-    margin: 0px;
-    text-decoration: none;
-    cursor: pointer;
+}
+table.subnavbar {
+    border-bottom: #000099 0px solid;
+    background: #dde4ff;
 }
 
-
-#tabmenu a.active {
-    border: 1px solid #2E99D1;
+#tabmenu,
+.tabmenu {
+    float: left;
+    width: 100%;
+    padding: 0;
+    border-bottom: 1px solid #cccccc;
+    margin: 9px 0 0 0;
 }
 
-
-
-#tabmenu a:hover {
-    /*color: black;*/
-    background: none repeat scroll 0 0 #88CAFE;
-    border: 1px solid #88CAFE;
-}
-
-
-#tabmenu a.active {
-    background: url("../images/nav_tab_bg_active.png") repeat scroll 0 0 transparent;
-    color: #FFFFFF;
-    padding-bottom: 3px;
-}
-
-
-#tabmenu.media_settings a.active {
-    background: #F4F7FF;
-    border-bottom: 1px solid #F4F7FF;
-}
-
-
-.tabmenu a:visited, #tabmenu a:visited {
-    color: black;
-}
-
-.tabmenu a:hover{
-    /*  background: #f4f7ff;*/
-    background: none repeat scroll 0 0 #E0F2FF;
-    color: black;
-}
-.tabmenu a.active {
-    /*  background-color: #DDE4FF;
-      font-weight: bold;*/
-    background: url("../images/tab_clas_blue_nav.jpg") repeat scroll 0 0 transparent;
-    font-weight: normal;
-}
-
-#tabmenu a.active:hover {
-    /*background: #f4f7ff;*/
-    border: 1px solid #2E99D1;
-    color: #FFFFFF;
-}
-
-.tabmenu a.active:hover {
-    /*    background-color: #DDE4FF;*/
-    background-color:none;
-}
-
-#tabsubmenu {
-    color: black;
-    margin: 0;
-    padding: 2px;
-    z-index: 1;
-    padding-left: 0px;
-}
-
-#tabsubmenu li {
-    display: inline;
-    overflow: hidden;
+#tabmenu li,
+.tabmenu li {
+    float: left;
+    width: auto;
     list-style-type: none;
 }
 
-#tabsubmenu a, a.active {
-    color: black;
-    /*  background: white;*/
-    background: url("../images/nav_active.png") repeat scroll 0 0 transparent;
+#tabmenu li a,
+.tabmenu li a  {
+    float: left;
+    height: 20px;
+    line-height: 20px;
+    width: auto;
+    padding: 0 9px;
+    border-right: 1px solid transparent;
+    border-left: 1px solid transparent;
     font-weight: normal;
-    border: 0px solid #dde4ff;
-    padding: 2px 5px 2px 5px;
-    margin: 0px;
-    text-decoration: none;
-    border-bottom: 0 none;
-
-}
-a.active{
-
+    color: #1a74bd;
+    cursor: pointer;
 }
 
-#tabsubmenu a.active {
-    background: #f4f7ff;
-    border-bottom: 1px solid #dde4ff;
+#tabmenu li a.active,
+.tabmenu li a.active {
+    position: relative;
+    top: 1px;
+    height: 19px;
+    line-height: 17px;
+    background: url(../images/tabmenu_active.jpg);
+    border-top: 1px solid #cccccc;
+    border-right: 1px solid #cccccc;
+    border-left: 1px solid #cccccc;
+    border-bottom: 1px solid #ffffff;
+    color: #000000;
 }
 
-#tabsubmenu a:hover {
-    color: black;
-    background: #f4f7ff;
-}
-
-#tabsubmenu a:visited {
-    color: black;
-}
-
-#tabsubmenu a.active:hover {
-    background: #f4f7ff;
-    color: black;
+#okbox, .okbox {
+    clear: both;
+    border: #029202 1px solid;
+    color: #006900;
+    background: #b8fd9f;
+    padding: 4px;
 }
 
 #alertbox, .alertbox {
@@ -749,19 +569,6 @@ a.active{
 
 #alertbox a, .alertbox a {
     color: #fb5959;
-}
-
-#okbox, .okbox {
-    border: #029202 1px solid;
-    color: #006900;
-    background: #b8fd9f;
-    padding: 4px;
-}
-
-div.tabContainer {
-    /*background-color: #B5C8DE;*/
-    background-color: #AEDAFD;
-    padding: 0px 0px;
 }
 
 .warningbox {
@@ -810,6 +617,7 @@ div.tabContainer {
     background-position: 21px 0px;
 }
 
+
 /* Text alignment -- Shop */
 .a_left {
     text-align: left;
@@ -820,6 +628,8 @@ div.tabContainer {
 .a_right {
     text-align: right;
 }
+
+
 /* Text style -- Shop */
 .f_bold {
     font-weight: bold;
@@ -831,7 +641,6 @@ body #navigation_wrapper input[type=submit] {
     background: url("../images/button_bg.png") repeat-x scroll left top transparent;
     border: 1px solid #BBBBBB;
     color: #333333;
-    font-size: 11px;
     line-height: 14px;
     margin-bottom: 2px;
     padding: 2px 10px;

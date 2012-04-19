@@ -9,21 +9,17 @@ function logout() {
 }
 // -->
 </script>
-<table summary="" cellspacing="0" cellpadding="3" width="100%" border="0">
-<tr>
-<td height="18" nowrap="nowrap" valign="top">
-<div align="left" style="padding-bottom: 10px;"><a href="./"><b>Home</b></a>&nbsp;&raquo;&nbsp;<b>{SUB_MENU_TITLE}</b>&nbsp;&raquo;&nbsp;<b>{CONTENT_TITLE}</b></div>
-</td>
-</tr>
-</table>
-<table summary="" class="subnavbar_level1" cellspacing="0" cellpadding="3" width="100%" border="0">
-<tr>
-<td width="83%">&nbsp;{CONTENT_NAVIGATION}</td>
-<td width="17%"><div align="right">{FRONTEND_LANG_MENU}</div>
-</td>
-</tr>
+<ul id="breadcrumb">
+    <li class="first"><a href="index.php">Home</a></li>
+    <li>{SUB_MENU_TITLE}</li>
+    <li>{CONTENT_TITLE}</li>
+</ul>
+<table id="subnavbar_level1" width="100%" cellspacing="0" cellpadding="0" border="0">
+    <tr>
+        <td width="100%">{CONTENT_NAVIGATION}</td>
+        <td>{FRONTEND_LANG_MENU}</td>
+    </tr>
 </table>
 {CONTENT_STATUS_MESSAGE}
-{ADMIN_CONTENT}<br />
-<br />
+{ADMIN_CONTENT}<br /><br />
 <!-- END content_master.html -->

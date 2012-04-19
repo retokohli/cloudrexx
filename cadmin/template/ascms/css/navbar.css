@@ -6,75 +6,77 @@
 
 */
 
-
-table.subnavbar_level1 {
-    /*border-top: 1px solid #ffcc33;*/
-    WIDTH: 100%;
-    margin-bottom: 8px;
-    border-left: 1px solid #DEDEDE;
-    border-right: 1px solid #DEDEDE;
+table#subnavbar_level1 {
+    float: left;
+    width: 100%;
+    margin: 0 0 11px 0;
+    background: #ececec;
 }
 
-table.subnavbar_level1 td{
-    color: black;
-    background: url("../images/bg_table_td_top.png") repeat scroll 0 0 transparent;
+table#subnavbar_level1 td {
     vertical-align: middle;
-    height: 31px;
-    padding: 0px 0px 0px 0pc;
 }
 
-table.subnavbar_level1 a{
-    padding-left: 7px;
-    padding-right: 6px;
-    padding-bottom: 8px;
-    padding-top: 8px;
-    color: black;
+table#subnavbar_level1 a {
+    float: left;
+    width: auto;
+    height: 18px;
+    line-height: 18px;
+    padding: 9px 13px 9px 13px;
     text-decoration: none;
-    /*background-color: #fff4c2;
-	border: #fff4c2 1px solid;*/
+    font-size: 13px;
+    color: #000000;
 }
 
-table.subnavbar_level1 a:hover {
-    background-color: #E0F2FF;
-    /*	border: #ffcc33 1px solid;*/
-    color: black;
+table#subnavbar_level1 a:hover,
+table#subnavbar_level1 a:focus,
+table#subnavbar_level1 a.active {
+    background: #148dcd;
+    color: #ffffff;
 }
 
+table#subnavbar_level1 form[name="userFrontendLangIdForm"] {
+    float: right;
+    width: auto;
+    margin: 0 7px 0 7px !important;
+}
 
+table#subnavbar_level1 form[name="userFrontendLangIdForm"] select {
+    margin: 0;
+}
 
-
-/* subnavbar_level2 menu top container */
 #subnavbar_level2 {
-    background: none repeat scroll 0 0 #AEDAFD;
-margin: 10px 0 0;
-padding: 9px 6px;
-text-align: left;
-vertical-align: top;
+    float: left;
+    width: 100%;
+    background: #f5f5f5;
+    margin: 0 0 31px 0;
 }
 
-/* subnavbar_level2 menu sub container */
 #subnavbar_level2 ul {
-   
-    margin:0;
-    padding:0 1em 0 0;
+    float: left;
+    width: auto;
+    padding: 0;
+    margin: 0;
 }
 
-/* subnavbar_level2 menu item */
 #subnavbar_level2 li {
-    list-style-type:none;
-    display: inline;
+    float: left;
+    width: auto;
+    list-style-type: none;
 }
 
-/* subnavbar_level2 menu hyperlink */
 #subnavbar_level2 a {
-    font-size:1em;
-    color:black;
-    text-decoration:none;
-    padding:9px 5px
+    float: left;
+    width: auto;
+    padding: 7px 10px;
+    text-decoration: none;
+    font-size: 12px;
+    color: #000000;
 }
 
-/* subnavbar_level2 menu hyperlink hover */
-#subnavbar_level2 a:hover {
-    background-color: #88CAFE;
-    color: black;
+#subnavbar_level2 a:hover,
+#subnavbar_level2 a:focus,
+#subnavbar_level2 a.active {
+    background: #de941d;
+    color: #ffffff;
 }
