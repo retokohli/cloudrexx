@@ -72,7 +72,6 @@
  * will either activate or deactivate all levels.
  */
 require_once dirname(__FILE__).'/lib/DBG.php';
-DBG::deactivate();
 
 //iconv_set_encoding('output_encoding', 'utf-8');
 //iconv_set_encoding('input_encoding', 'utf-8');
@@ -183,10 +182,8 @@ require_once(ASCMS_CORE_PATH.'/routing/Resolver.class.php');
 
 $languageExtractor = new \Cx\Core\Routing\URLTranslator($objDatabase, DBPREFIX, Env::em());
 
-//die(var_export($_SERVER, true));
-if (empty ($_GET['__cap']))
-    $_GET['__cap'] = $_SERVER['REQUEST_URI'];
-$url = \Cx\Core\Routing\URL::fromCapturedRequest($_GET['__cap'], ASCMS_PATH_OFFSET, $_GET);
+$request = !empty($_GET['__cap']) ? $_GET['__cap'] : '';
+$url = \Cx\Core\Routing\URL::fromCapturedRequest($request, ASCMS_PATH_OFFSET, $_GET);
 $resolver = new \Cx\Core\Routing\Resolver($url, null, Env::em(), null, null);
 $aliaspage = $resolver->resolveAlias();
 if ($aliaspage != null) {
@@ -199,7 +196,7 @@ if ($aliaspage != null) {
      */
     $_LANGID = $objInit->getFallbackFrontendLangId();
 
-/*    //try to find the language in the url
+    //try to find the language in the url
     $extractedLanguage = 0;
 
     $redirectToCorrectLanguageDir = function() use ($languageExtractor, $url, $_LANGID, $_CONFIG) {
@@ -223,7 +220,7 @@ if ($aliaspage != null) {
     }
     else if($_LANGID != $extractedLanguage) { //the user wants to change the language, but we're still inside the wrong language directory.
         $redirectToCorrectLanguageDir();
-    }*/
+    }
 }
 
 // Post-2.1
@@ -233,7 +230,7 @@ define('LANG_ID', $_LANGID);
 
 //expose the virtual language directory to the rest of the cms
 //please do not access this variable directly, use Env::get().
-$virtualLanguageDirectory = '/';///'.$languageExtractor->getShortNameOfLanguage(FRONTEND_LANG_ID);
+$virtualLanguageDirectory = '/'.$languageExtractor->getShortNameOfLanguage(FRONTEND_LANG_ID);
 Env::set('virtualLanguageDirectory', $virtualLanguageDirectory);
 
 // TODO: this constanst used to be located in config/set_constants.php, but needed to be relocated to this very place,
@@ -241,10 +238,9 @@ Env::set('virtualLanguageDirectory', $virtualLanguageDirectory);
 // Find an other solution; probably best is to replace CONTREXX_SCRIPT_PATH by a prettier method
 define('CONTREXX_SCRIPT_PATH',
         ASCMS_PATH_OFFSET.
-        //Env::get('virtualLanguageDirectory').
+        Env::get('virtualLanguageDirectory').
         '/'.
         CONTREXX_DIRECTORY_INDEX);
-//die("Script path: ".CONTREXX_SCRIPT_PATH);
 
 // Caching-System
 /**
