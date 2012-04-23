@@ -194,7 +194,7 @@ class LoginManager {
         if (FWCaptcha::getInstance()->check()) {
             $this->objTemplate->setVariable('LOGIN_ERROR_MESSAGE', $objFWUser->getErrorMsg());
         }
-        if (isset($_SESSION['auth']['loginRememberMe'])) {
+        if (isset($_SESSION['auth']['loginLastAuthFailed'])) {
             $this->objTemplate->setVariable(array(
                 'TXT_LOGIN_SECURITY_CODE'   => $_ARRAYLANG['TXT_LOGIN_SECURITY_CODE'],
                 'CAPTCHA_CODE'              => FWCaptcha::getInstance()->getCode(3),
