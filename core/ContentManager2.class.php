@@ -64,6 +64,7 @@ class ContentManager extends Module {
         JS::activate('jstree');
         JS::activate('chosen');
         JS::registerJS('lib/javascript/lock.js');
+        JS::registerJS('lib/javascript/jquery/jquery.history.js');
 
         $this->template->addBlockfile('ADMIN_CONTENT', 'content_manager', 'content_manager.html');
         $this->template->touchBlock('content_manager');

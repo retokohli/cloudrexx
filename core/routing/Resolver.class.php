@@ -84,7 +84,7 @@ class Resolver {
         // This is our alias, if any
         $path = $this->url->getSuggestedTargetPath();
 
-        //(I) see what the model has for us, aliasses only.
+        //(I) see what the model has for us, aliases only.
         $result = $this->pageRepo->getPagesAtPath($path, null, null, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_ALIAS_ONLY);
         
         //(II) sort out errors
@@ -114,7 +114,7 @@ class Resolver {
         $path = $this->url->getSuggestedTargetPath();
 
         if (!$this->page || $internal) {
-            //(I) see what the model has for us, including aliasses.
+            //(I) see what the model has for us, including aliases.
             $result = $this->pageRepo->getPagesAtPath($path, null, $this->lang, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
 
             //(II) sort out errors

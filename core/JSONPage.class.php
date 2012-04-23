@@ -278,9 +278,9 @@ class JSONPage {
         if (\Permission::checkAccess(78, 'static', true)) {
             // aliases are updated after persist!
             $data['alias'] = $params['post']['page']['alias'];
-            $aliasses = $page->getAliasses();
+            $aliases = $page->getAliases();
             $page->updateFromArray($data);
-            if ($aliasses != $page->getAliasses()) {
+            if ($aliases != $page->getAliases()) {
                 $reload = true;
             }
         } else {
@@ -401,7 +401,7 @@ class JSONPage {
                            'caching'               => $page->getCaching(),
                            'linkTarget'            => $page->getLinkTarget(),
                            'slug'                  => $page->getSlug(),
-                           'aliasses'              => $this->getAliasArray($page),
+                           'aliases'              => $this->getAliasArray($page),
                            'editingStatus'         => $page->getEditingStatus(),
             
                            /*'display'       =>  $page->getDisplay(),
@@ -416,17 +416,17 @@ class JSONPage {
 
     /**
      * Returns an array of alias slugs
-     * @param Cx\Model\ContentManager\Page $page Page to get the aliasses of
+     * @param Cx\Model\ContentManager\Page $page Page to get the aliases of
      * @return Array<String>
      */
     private function getAliasArray($page)
     {
-        $pages = $page->getAliasses();
-        $aliasses = array();
+        $pages = $page->getAliases();
+        $aliases = array();
         foreach ($pages as $alias) {
-            $aliasses[] = $alias->getSlug();
+            $aliases[] = $alias->getSlug();
         }
-        return $aliasses;
+        return $aliases;
     }
 }
 ?>
