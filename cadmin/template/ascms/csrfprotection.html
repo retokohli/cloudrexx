@@ -91,7 +91,7 @@
       </div>
     </div>
         
-    <form method="{REQUEST_METHOD}" id="theForm">
+    <form method="{REQUEST_METHOD}" action="{ACTION}" id="theForm">
       {FORM_ELEMENTS}
     </form>
 
@@ -100,6 +100,10 @@
       {
         document.forms['theForm'].submit();
       }
+      // patch to submit anchors too
+      var url = document.forms['theForm'].attributes.action.value;
+      url = url + self.document.location.hash;
+      document.forms['theForm'].attributes.action.value = url;
     </script>
   </body>
 </html>
