@@ -17,28 +17,29 @@ table#subnavbar_level1 td {
     vertical-align: middle;
 }
 
-table#subnavbar_level1 a {
+table#subnavbar_level1 .navi a {
     float: left;
     width: auto;
     height: 18px;
     line-height: 18px;
-    padding: 9px 13px 9px 13px;
+    padding: 6.5px 13px 6.5px 13px;
     text-decoration: none;
     font-size: 13px;
-    color: #000000;
+    color: #444444;
 }
 
-table#subnavbar_level1 a:hover,
-table#subnavbar_level1 a:focus,
-table#subnavbar_level1 a.active {
-    background: #148dcd;
+table#subnavbar_level1 .navi a:hover,
+table#subnavbar_level1 .navi a:focus,
+table#subnavbar_level1 .navi a:active,
+table#subnavbar_level1 .navi a.active {
+    background: #85be0b;
     color: #ffffff;
 }
 
 table#subnavbar_level1 form[name="userFrontendLangIdForm"] {
     float: right;
     width: auto;
-    margin: 0 7px 0 7px !important;
+    margin: 0 2px 0 10px !important;
 }
 
 table#subnavbar_level1 form[name="userFrontendLangIdForm"] select {
@@ -68,15 +69,16 @@ table#subnavbar_level1 form[name="userFrontendLangIdForm"] select {
 #subnavbar_level2 a {
     float: left;
     width: auto;
-    padding: 7px 10px;
+    padding: 6.5px 10px;
     text-decoration: none;
     font-size: 12px;
-    color: #000000;
+    color: #444444;
 }
 
 #subnavbar_level2 a:hover,
 #subnavbar_level2 a:focus,
+#subnavbar_level2 a:active,
 #subnavbar_level2 a.active {
-    background: #de941d;
+    background: #df961e;
     color: #ffffff;
 }

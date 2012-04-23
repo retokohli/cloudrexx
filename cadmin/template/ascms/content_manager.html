@@ -4,21 +4,40 @@
 <link href="template/ascms/css/contentmanager2.css" rel="stylesheet" type="text/css" />
 <link href="template/ascms/css/contentmanager2-jq-ui.css" rel="stylesheet" type="text/css" />
 
+<ul id="breadcrumb">
+    <li class="first"><a href="index.php">Home</a></li>
+    <li>{SUB_MENU_TITLE}</li>
+    <li>{CONTENT_TITLE}</li>
+</ul>
+<table id="subnavbar_level1" width="100%" cellspacing="0" cellpadding="0" border="0">
+    <tr>
+        <td>
+            <div id="site-language" class="clearfix">
+                <select class="chzn-select" style="width:100%; height:29px;">{LANGSWITCH_OPTIONS}</select>
+            </div>
+        </td>
+        <td width="100%" class="navi">{CONTENT_NAVIGATION}</td>
+    </tr>
+</table>
+
 <!--[if lt IE 7 ]><div id="content-manager" class="clearfix ie6"> <![endif]-->
 <!--[if IE 7 ]><div id="content-manager" class="clearfix ie7">  <![endif]-->
 <!--[if IE 8 ]><div id="content-manager" class="clearfix ie8">  <![endif]-->
 <!--[if IE 9 ]><div id="content-manager" class="clearfix ie9">  <![endif]-->
 <!--[if (gt IE 9)|!(IE)]><!--><div id="content-manager" class="clearfix">  <!--<![endif]-->
     <div id="site-structure" {CM_HIDE_LIST}>
-        <div id="site-language" class="clearfix">
-            <select class="chzn-select" style="width:101%; height:35px;">
-                {LANGSWITCH_OPTIONS}
-            </select>
-        </div>
-
-        <div id="site-tree">
-
-        </div>
+        <table class="adminlist" width="100%">
+            <tr>
+                <th class="page" width="22%">Status / Seite</th>
+                <th class="translation" width="13%">&Uuml;bersetzung</th>
+                <th class="module" width="13%">Section / CMD</th>
+                <th class="preview" width="13%">Ansicht</th>
+                <th class="user" width="13%">Benutzer</th>
+                <th class="lastupdate" width="13%">Datum</th>
+                <th calss="actions" width="7%" style="text-align: right;">Aktionen</th>
+            </tr>
+        </table>
+        <div id="site-tree"></div>
     </div>
     <div id="page"{CM_HIDDEN}>
         {CONTENT_MANAGER_MEAT}
@@ -34,3 +53,4 @@ cx.ready(function() {
     cx.cm();
 });
 </script>
+    
