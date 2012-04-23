@@ -1236,25 +1236,25 @@ class Page extends \Cx\Model\Base\EntityBase
     }
     
     /**
-     * Stores changes to the aliasses for this page
+     * Stores changes to the aliases for this page
      * @param Array List of alias slugs
      */
     public function setAlias($data)
     {
-        $oldAliasList = $this->getAliasses();
-        $aliasses = array();
+        $oldAliasList = $this->getAliases();
+        $aliases = array();
         $lib = new \aliasLib($this->getLang());
         foreach ($oldAliasList as $oldAlias) {
             if (in_array($oldAlias->getSlug(), $data)) {
                 // existing alias, ignore;
-                $aliasses[] = $oldAlias->getSlug();
+                $aliases[] = $oldAlias->getSlug();
             } else {
                 // deleted alias
                 $lib->_deleteAlias($oldAlias->getNode()->getId());
             }
         }
         foreach ($data as $alias) {
-            if (!in_array($alias, $aliasses)) {
+            if (!in_array($alias, $aliases)) {
                 // new alias
                 $lib->_saveAlias($alias, $this->getNode()->getId() . '-' . $this->getLang() . '|', true);
             }
@@ -1265,7 +1265,7 @@ class Page extends \Cx\Model\Base\EntityBase
      * Returns an array of alias pages for a page
      * @return Array<Cx\Model\ContentManager\Page>
      */
-    public function getAliasses()
+    public function getAliases()
     {
         $target = $this->getNode()->getId() . '-' . $this->getLang() . '|';
         $crit = array(
