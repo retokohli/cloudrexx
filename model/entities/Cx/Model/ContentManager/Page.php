@@ -998,11 +998,13 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function setSlug($slug, $nextSlugCall=false)
     {
-        $this->slug = $this->slugify($slug);
-
-        if(!$nextSlugCall) {
-            $this->slugSuffix = 0;
-            $this->slugBase = $this->slug;
+        if (!empty($slug)) {
+            $this->slug = $this->slugify($slug);
+            
+            if(!$nextSlugCall) {
+                $this->slugSuffix = 0;
+                $this->slugBase = $this->slug;
+            }
         }
     }
 

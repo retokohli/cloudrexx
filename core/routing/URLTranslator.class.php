@@ -51,20 +51,15 @@ class URLTranslator extends LanguageExtractor {
      * Gets the URL of $page in $lang.
      */
     public function getUrlIn($lang, $page, $pageURL) {
-        if(!isset($this->languageShortNames[$lang]))
+        if (!isset($this->languageShortNames[$lang])) {
             throw new URLTranslatorException("unable to translate to language with id '$lang', is this really an id?");
+        }
 
         $langDir = $this->languageShortNames[$lang].'/';
-        $dql = 'SELECT p FROM Cx\Model\ContentManager\Page p WHERE p.node = ' . $page->getNode()->getId() . ' and p.lang = ' . $lang;
-        $q = $this->em->createQuery($dql);
-        $q->setHint(\Doctrine\ORM\Query::HINT_REFRESH, true);
-        $q->setMaxResults(1);
-
-        $pages = $q->getResult();
-        if(count($pages) == 0)
+        $targetPage = $page->getNode()->getPage($lang);
+        if ($targetPage == null) {
             throw new URLTranslatorException("unable to find a translation for page '" . $page->getTitle() . "' with id '" . $page->getId() . "' on node '".$page->getNode()->getId()."' to language with id '$lang'.");
-               
-        $targetPage = $pages[0];       
+        }
         $targetPath = $this->pageRepo->getPath($targetPage);
 
         $params = $pageURL->getParams();
