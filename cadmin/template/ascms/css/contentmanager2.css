@@ -24,16 +24,58 @@ html{ overflow-y: scroll; }
 h1{ font-size: 20px }
 
 /* 2.2 Content Manager */
+#content {
+    padding-bottom: 0;
+}
+
 #content-manager {
+    float: left;
+    width: 100%;
+    height: 100%;
+    margin: 0 0 14px !important;
+    background: url(../images/subnavigation_level_1.jpg) repeat-x left top;
+}
+
+#content-manager td.left {
+    display: table-cell;
+    float: none;
+    width: 100%;
+    padding: 0;
+    border-right: 1px solid #e5e5e5;
+    border-left: 1px solid #e5e5e5;
+    margin: 0;
+    vertical-align: top;
+}
+
+#content-manager td.right {
+    display: none;
+    float: none;
+    padding: 0 0 0 12px;
+    margin: 0;
+    vertical-align: top;
+}
+
+#content-manager.shrunk td.left {
+    width: 351px;
+    border: 0;
+}
+
+#content-manager.shrunk td.right {
+    display: table-cell;
+    width: 100%;
+}
+
+#content-manager td.left table.adminlist {
+    margin: 11px 0 0 0;
+}
+
+#cm_page {
     float: left;
     width: 100%;
 }
 
 .ie7 #input1{ float:left; }
 .ie7 .space{ margin-bottom: 10px; }
-#cm_page {
-    padding-left: 15px;
-}
 #page input, #page textarea, #page select {
     padding: 3px;
     border: 1px solid #abadb3;
@@ -88,15 +130,16 @@ h1{ font-size: 20px }
     position: relative;
     float: left;
     width: 100%;
+    overflow: visible;
 }
 
-#site-structure.shrunk {
-    width: 349px;
-    border-left: 1px solid #d3d3d3;
-    border-right: 1px solid #d3d3d3;
-    overflow: hidden;
-    position: relative;
-    bottom: 11px;
+*+html #site-structure {
+    z-index: 1;
+}
+
+#content-manager.shrunk #site-structure {
+    border-right: 1px solid #e5e5e5;
+    border-left: 1px solid #e5e5e5;
 }
 
 #site-structure li select {
@@ -115,24 +158,24 @@ h1{ font-size: 20px }
     left: 22%;
 }
 
+#subnavbar_level1 {
+    margin: 0 !important;
+}
 
 .toplevel{
     background: url(../images/contrexx_icon.png) no-repeat scroll 25px 3px transparent
 }
 
 #page {
-    width: 70%;
     float: left;
-    overflow: hidden;
-    padding: 0 0 20px 0;
-    margin: 0 0 0 0;
-    border-left: 1px solid #e5e5e5;
+    width: 100%;
+    overflow: visible;
     position: relative;
-    bottom: 11px;
-    right: 1px;
+    background: transparent;
 }
 
-#site-language{
+#site-language {
+    height: 29px;
 }
 
 #site-tree{
@@ -168,10 +211,8 @@ h1{ font-size: 20px }
 #site-tree div.actions-expanded {
     top: -7px;
     right: 8px;
-    background-color: #fff;
-    z-index: 100;
     padding: 6px;
-    z-index: 35;
+    z-index: 9999;
     border:  1px solid #d3d3d3;
     -moz-box-shadow: 2px 4px 5px rgba(153,153,153,0.5),-2px 4px 5px rgba(153,153,153,0.5);
     -o-box-shadow: 2px 4px 5px rgba(153,153,153,0.5),-2px 4px 5px rgba(153,153,153,0.5);
@@ -217,7 +258,7 @@ h1{ font-size: 20px }
     position: absolute;
     left: 51.7%;
     background: url(../images/content_manager_preview.jpg) no-repeat left center;
-    padding-left: 16px;
+    padding-left: 16px !important;
     margin-top: -29px;
 }
 
@@ -231,13 +272,20 @@ h1{ font-size: 20px }
     left: 79.3%;
 }
 
-#site-structure.shrunk table.adminlist,
-#site-structure.shrunk .translation,
-#site-structure.shrunk .module,
-#site-structure.shrunk .preview,
-#site-structure.shrunk .user,
-#site-structure.shrunk .lastupdate {
+#content-manager.shrunk #site-structure .translation,
+#content-manager.shrunk #site-structure .module,
+#content-manager.shrunk #site-structure .preview,
+#content-manager.shrunk #site-structure .user,
+#content-manager.shrunk #site-structure .lastupdate {
     display: none;
+}
+
+#content-manager.shrunk #site-structure th.page {
+    width: 100%;
+}
+
+*+html #site-tree li a span {
+    line-height: 17px;
 }
 
 #site-tree ins.publishing {
@@ -303,15 +351,19 @@ h1{ font-size: 20px }
     left: 10px;
     margin-top: 5px;
 }
+*+html #site-tree li a ins.jstree-checkbox {
+    margin: 0;
+}
 #site-tree div.jstree-wrapper {
     position: absolute;
     left: 0px;
     width: 100%;
     margin-top: 29px;
     border-bottom: 1px solid #e5e5e5;
+    z-index: 1;
 }
 
-#cm-tabs{
+/*#cm-tabs{
     position: relative;
     top: 0;
     left: -1px;
@@ -329,12 +381,70 @@ h1{ font-size: 20px }
 #cm-tabs li .page_meta{ background-position: -5px -42px; }
 #cm-tabs li .page_access{ background-position: -5px -82px; }
 #cm-tabs li .page_settings{ background-position: -5px -122px; }
-#cm-tabs li .page_history{ background-position: -5px -162px; }
+#cm-tabs li .page_history{ background-position: -5px -162px; }*/
 
+#cm-tabs {
+    position: static;
+    float: left;
+    width: 100%;
+    height: 31px;
+    background: transparent;
+    margin: 0;
+    padding: 0;
+}
+
+#cm-tabs li {
+    position: inherit;
+    float: left;
+    width: auto;
+    background: transparent;
+    padding: 0;
+    border: 0;
+    margin: 0;
+    list-style-type: none;
+}
+
+#cm-tabs li a {
+    float: left;
+    width: auto;
+    height: 18px;
+    line-height: 18px;
+    padding: 6.5px 13px 6.5px 13px;
+    text-decoration: none;
+    font-size: 13px;
+    color: #444444;
+}
+
+#cm-tabs a:hover,
+#cm-tabs a:focus,
+#cm-tabs a:active,
+#cm-tabs li.ui-state-active a,
+#cm-tabs li.ui-state-selected a {
+    background: #85be0b;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.ui-tabs .ui-tabs-panel {
+    padding-top: 0 !important;
+    padding-right: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.ui-tabs #page_history.ui-tabs-panel {
+    float: left;
+    margin: 11px 0 0 0;
+    padding-left: 0 !important;
+    width: 100%;
+}
+
+.ui-tabs #page_history.ui-tabs-panel .adminlist {
+    bottom: 0;
+}
 
 #buttons {
-    padding: 0 19px 0 32px;
-    margin: 10px 0 0 0;
+    float: right;
+    margin: 25px 0 0 0;
 }
 
 #buttons a {
@@ -486,14 +596,13 @@ div.date img{
     display: inline;
 }
 input.toggle_indicator {
-    left: -25px;
+    left: -23px;
     top: 5px;
-    margin-right: -20px;
     background: none;
 }
 .toggle_indicator {
     width: 16px !important;
-    margin-right: -16px;
+    margin-right: -21px;
     height: 16px;
     background-image: url(../../../../lib/javascript/jquery/jstree/themes/default/d.png);
     position: relative;
@@ -574,14 +683,17 @@ select.chzn-select{
     min-height: 28px !important;
 }
 .chzn-container{
-    margin-right: 12px;
-    width: 351px !important;
+    width: 352px !important;
+    margin: 0 -1px 0 -1px;
     height: 31px;
     font-size: 13px;
     position: relative;
     display: inline-block;
     zoom: 1;
     *display: inline;
+}
+#content-manager.shrunk .chzn-container {
+    margin: 0 -2px 0 0;
 }
 .chzn-container .chzn-drop{
     background: #fff;
@@ -595,6 +707,7 @@ select.chzn-select{
     -o-box-shadow: 0 4px 5px rgba(0, 0, 0, .15);
     box-shadow: 0 4px 5px rgba(0, 0, 0, .15);
     z-index: 999;
+    width: auto !important;
 }
 /* @end */
 
@@ -778,7 +891,7 @@ select.chzn-select{
 .chzn-container .chzn-results{
     margin: 0 4px 4px 4px;
     padding: 0;
-    width: 341px;
+    width: 342px;
     position: relative;
     overflow-x: hidden;
     overflow-y: auto;
