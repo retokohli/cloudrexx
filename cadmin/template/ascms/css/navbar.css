@@ -11,6 +11,7 @@ table#subnavbar_level1 {
     width: 100%;
     margin: 0 0 11px 0;
     background: #ececec;
+    z-index: 0;
 }
 
 table#subnavbar_level1 td {

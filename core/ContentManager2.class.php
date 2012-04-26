@@ -125,7 +125,7 @@ class ContentManager extends Module {
         $cm_hidden = ''; 
         $hide_list = '';
         if (isset($_GET['act']) && $_GET['act'] == 'new') {
-            $hide_list = ' class="shrunk"';
+            $hide_list = 'shrunk';
             $this->template->hideBlock('refuse_button');
         } else {
             $cm_hidden = ' style="display: none !important;"';
