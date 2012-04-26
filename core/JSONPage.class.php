@@ -12,13 +12,17 @@
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 
 class JSONPage {
-        
-    var $em = null;
-    var $fallbacks;
+    private $em = null;
+    private $pageRepo = null;
+    private $nodeRepo = null;
+    private $fallbacks;
+    
     public $messages;
 
     function __construct() {
         $this->em = Env::em();
+        $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
+        $this->nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
         $this->messages = array();
         $this->tz = new DateTimeZone('Europe/Berlin');
 
@@ -36,21 +40,18 @@ class JSONPage {
     }
 
     public function get($params) {
-        $pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
-        $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
-
         // pages can be requested in two ways:
         // by page id               - default for existing pages
         // by node id + lang        - to translate an existing page into a new language, assigned to the same node
         if (isset($_GET['page']) && $_GET['page'] != 0) {
-            $page = $pageRepo->find($_GET['page']);
+            $page = $this->pageRepo->find($_GET['page']);
         }
 
         if (isset($page)) {
             // All is well, continue
         }
         elseif (isset($_GET['node']) && isset($_GET['lang'])) {
-            $node = $nodeRepo->find($_GET['node']);
+            $node = $this->nodeRepo->find($_GET['node']);
             $pageArray = $this->getFallbackPageArray($node, $_GET['lang']);
         }
         else {
@@ -81,102 +82,31 @@ class JSONPage {
         $newpage = false;
         $pg = Env::get('pageguard');
 
-        $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
-        $pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
-
         $page = $params['post']['page'];
-
-        $fields = array(
-                        'type'                     => array('type' => 'String'),
-                        'name'                     => array('type' => 'String', 'map_to' => 'title'),
-                        'title'                    => array('type' => 'String', 'map_to' => 'contentTitle'),
-                        // the model can take advantage of proper NULLing, so this needn't be set
-                        //                  'scheduled_publishing' => array('type' => 'boolean'),
-                        'start'                    => array('type' => 'DateTime', 'require' => 'scheduled_publishing'),
-                        'end'                      => array('type' => 'DateTime', 'require' => 'scheduled_publishing'),
-                        'metatitle'                => array('type' => 'String'),
-                        'metakeys'                 => array('type' => 'String'),
-                        'metadesc'                 => array('type' => 'String'),
-                        'metarobots'               => array('type' => 'boolean'),
-                        'content'                  => array('type' => 'String'),
-                        'sourceMode'               => array('type' => 'boolean'),
-                        'protection_frontend'      => array('type' => 'boolean', 'map_to' => 'frontendProtection'),
-                        'protection_backend'       => array('type' => 'boolean', 'map_to' => 'backendProtection'),
-                        'application'              => array('type' => 'String', 'map_to' => 'module'),
-                        'area'                     => array('type' => 'String', 'map_to' => 'cmd'),
-                        'target'                   => array('type' => 'String'),
-                        'link_target'              => array('type' => 'String', 'map_to' => 'linkTarget'),
-                        'slug'                     => array('type' => 'String'),
-                        'caching'                  => array('type' => 'boolean'),
-                        'skin'                     => array('type' => 'integer'),
-                        'customContent'            => array('type' => 'String'),
-                        'cssName'                  => array('type' => 'String'),
-                        'cssNavName'               => array('type' => 'String'),
-                        );
-
-        $output = array();
-
-        foreach($fields as $field => $meta) {
-            $target = isset($meta['map_to']) ? $meta['map_to'] : $field;
-
-            if ($meta['type'] == 'boolean') {
-                // checkboxes and radiobuttons by default aren't submitted unless checked or
-                // selected. in cm.html they are prefixed with an input type=hidden value=off, so 
-                // we always get a value
-                // this is required for Page#updateFromArray to work.
-                if ($page[$field] == "on")  $value = true;
-                if ($page[$field] == "off") $value = false;
-            }
-
-            if ($meta['type'] == 'DateTime') {
-                try {
-                    $value = new DateTime($page[$field], $this->tz);
-                }
-                catch (Exception $e) {
-                    $value = new DateTime('0000-00-00 00:00', $this->tz);
-                }
-            }
-
-            if ($meta['type'] == 'integer') {
-                $value = intval($page[$field]);
-            }
-
-            if ($meta['type'] == 'String') {
-                $value = $page[$field];
-            }
-
-            if (isset($meta['require']) && !$page[$meta['require']]) {
-                $value = null;
-            }
-
-            $output[$target] = $value;
-        }
-
-        //TODO: should we allow filter/callback fns in field processing above?
-        $output['content'] = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $output['content']);
+        $output = $this->validatePageArray($page);
 
         if (intval($page['id']) > 0) {
             // if we got a page id, the page already exists and can be updated
-            $page = $pageRepo->find($params['post']['page']['id']);
+            $page = $this->pageRepo->find($params['post']['page']['id']);
             $node = $page->getNode();
 
         }
         elseif ($page['id'] == 0 && $page['node'] && $page['lang']) {
             // we are translating another page (to $page['lang'])
-            $node = $nodeRepo->find($page['node']);
+            $node = $this->nodeRepo->find($page['node']);
 
             foreach ($node->getPages() as $pageCandidate) {
                 $source_page = $pageCandidate;
                 if ($source_page->getLang() == FWLanguage::getLanguageIdByCode($params['post']['page']['lang'])) break;
             }
-            $page = $pageRepo->translate($source_page, FWLanguage::getLanguageIdByCode($page['lang']), true, true, true);
+            $page = $this->pageRepo->translate($source_page, FWLanguage::getLanguageIdByCode($page['lang']), true, true, true);
 
             $reload = true;
         } 
         else {
             // create a new node/page combination
             $node = new \Cx\Model\ContentManager\Node();
-            $node->setParent($nodeRepo->getRoot());
+            $node->setParent($this->nodeRepo->getRoot());
 
             $this->em->persist($node);
             $this->em->flush();
@@ -293,6 +223,104 @@ class JSONPage {
                 'id'     => $page->getId()
             );
         }
+    }
+    
+    /**
+     * Sets the page object in the session and returns the link to the page (frontend).
+     * 
+     * @param   array  $params
+     * @return  array  [link]     The link to the page (frontend).
+     */
+    public function setSessionPage($params) {
+        global $objFWUser;
+        
+        $page = $this->validatePageArray($params['post']['page']);
+        $page['pageId'] = $params['post']['page']['id'];
+        $page['lang'] = $params['post']['page']['lang'];
+        $page['frontendGroups'] = $params['post']['frontendGroups'];
+        $page['backendGroups'] = $params['post']['backendGroups'];
+        $page['username'] = $objFWUser->objUser->getUsername();
+        
+        $_SESSION['page'] = $page;
+    }
+
+    /**
+     * Returns a validated page array.
+     * 
+     * @param   array  $page
+     * @return  array  $output
+     */
+    private function validatePageArray($page) {
+        $fields = array(
+            'type'                     => array('type' => 'String'),
+            'name'                     => array('type' => 'String', 'map_to' => 'title'),
+            'title'                    => array('type' => 'String', 'map_to' => 'contentTitle'),
+            // the model can take advantage of proper NULLing, so this needn't be set
+            //                  'scheduled_publishing' => array('type' => 'boolean'),
+            'start'                    => array('type' => 'DateTime', 'require' => 'scheduled_publishing'),
+            'end'                      => array('type' => 'DateTime', 'require' => 'scheduled_publishing'),
+            'metatitle'                => array('type' => 'String'),
+            'metakeys'                 => array('type' => 'String'),
+            'metadesc'                 => array('type' => 'String'),
+            'metarobots'               => array('type' => 'boolean'),
+            'content'                  => array('type' => 'String'),
+            'sourceMode'               => array('type' => 'boolean'),
+            'protection_frontend'      => array('type' => 'boolean', 'map_to' => 'frontendProtection'),
+            'protection_backend'       => array('type' => 'boolean', 'map_to' => 'backendProtection'),
+            'application'              => array('type' => 'String', 'map_to' => 'module'),
+            'area'                     => array('type' => 'String', 'map_to' => 'cmd'),
+            'target'                   => array('type' => 'String'),
+            'link_target'              => array('type' => 'String', 'map_to' => 'linkTarget'),
+            'slug'                     => array('type' => 'String'),
+            'caching'                  => array('type' => 'boolean'),
+            'skin'                     => array('type' => 'integer'),
+            'customContent'            => array('type' => 'String'),
+            'cssName'                  => array('type' => 'String'),
+            'cssNavName'               => array('type' => 'String'),
+        );
+
+        $output = array();
+
+        foreach($fields as $field => $meta) {
+            $target = isset($meta['map_to']) ? $meta['map_to'] : $field;
+
+            if ($meta['type'] == 'boolean') {
+                // checkboxes and radiobuttons by default aren't submitted unless checked or
+                // selected. in cm.html they are prefixed with an input type=hidden value=off, so 
+                // we always get a value
+                // this is required for Page#updateFromArray to work.
+                if ($page[$field] == "on")  $value = true;
+                if ($page[$field] == "off") $value = false;
+            }
+
+            if ($meta['type'] == 'DateTime') {
+                try {
+                    $value = new DateTime($page[$field], $this->tz);
+                }
+                catch (Exception $e) {
+                    $value = new DateTime('0000-00-00 00:00', $this->tz);
+                }
+            }
+
+            if ($meta['type'] == 'integer') {
+                $value = intval($page[$field]);
+            }
+
+            if ($meta['type'] == 'String') {
+                $value = $page[$field];
+            }
+
+            if (isset($meta['require']) && !$page[$meta['require']]) {
+                $value = null;
+            }
+
+            $output[$target] = $value;
+        }
+
+        //TODO: should we allow filter/callback fns in field processing above?
+        $output['content'] = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $output['content']);
+        
+        return $output;
     }
 
     function getAccessData($page = null) {

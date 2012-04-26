@@ -87,7 +87,11 @@ class PageRepository extends EntityRepository {
         }
         
         //get all nodes
-        $tree = $repo->children($rootNode, false, 'lft', 'ASC', $qb);
+        if (is_object($rootNode) && !$rootNode->getId()) {
+            $tree = array();
+        } else {
+            $tree = $repo->children($rootNode, false, 'lft', 'ASC', $qb);
+        }
 
         return $tree;
     }

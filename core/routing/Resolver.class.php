@@ -137,6 +137,43 @@ class Resolver {
                 $logRepo->revert($result['page'], $_GET['history']);
             }
 
+            if (isset($_GET['sessionPreview']) && $_GET['sessionPreview'] == 1 && !empty($_SESSION['page'])) {
+                $data = $_SESSION['page'];
+                $pg = \Env::get('pageguard');
+                
+                if (is_int($data['pageId'])) {
+                    $page = $pageRepo->findOneById($data['pageId']);
+                } else {
+                    $page = new \Cx\Model\ContentManager\Page();
+                    $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
+                    $node = new \Cx\Model\ContentManager\Node();
+                    $node->setParent($nodeRepo->getRoot());
+                    $page->setNode($node);
+                }
+                
+                $page->setLang(\FWLanguage::getLanguageIdByCode($data['lang']));
+                $page->setUsername($data['username']);
+                
+                if ($page->isFrontendProtected() && isset($data['frontendGroups'])) {
+                    $pg->setAssignedGroupIds($page, $data['frontendGroups'], true);
+                }
+                if ($page->isBackendProtected() && isset($data['backendGroups'])) {
+                    $pg->setAssignedGroupIds($page, $data['backendGroups'], false);
+                }
+                
+                unset($data['pageId']);
+                unset($data['lang']);
+                unset($data['frontendGroups']);
+                unset($data['backendGroups']);
+                unset($data['username']);
+                $page->updateFromArray($data);
+                $page->setUpdatedAtToNow();
+                $page->setActive(true);
+                $page->validate();
+                
+                $result['page'] = $page;
+            }
+
             $this->page = $result['page'];
         }
         /*
