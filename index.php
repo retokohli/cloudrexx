@@ -1834,22 +1834,14 @@ $objTemplate->setVariable(array(
     'LAST_MODIFIED_PAGE'             => date(ASCMS_DATE_SHORT_FORMAT, $page_modified),
     'FACEBOOK_LIKE_IFRAME'           => '<iframe src="https://www.facebook.com/plugins/like.php?href='.urlencode('http://'.$_CONFIG['domainUrl'].$objInit->getCurrentPageUri()).'&amp;layout=standard&amp;show_faces=true&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe>',
     'GOOGLE_PLUSONE'                 => '<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script> <g:plusone></g:plusone>',
-    'CONTACT_EMAIL'                  => (isset ($_CONFIG['contactFormEmail'])
-        ? $_CONFIG['contactFormEmail'] : ''),
-    'CONTACT_COMPANY'                => (isset ($_CONFIG['contactCompany'])
-        ? $_CONFIG['contactCompany'] : ''),
-    'CONTACT_ADDRESS'                => (isset ($_CONFIG['contactAddress'])
-        ? $_CONFIG['contactAddress'] : ''),
-    'CONTACT_ZIP'                    => (isset ($_CONFIG['contactZip'])
-        ? $_CONFIG['contactZip'] : ''),
-    'CONTACT_PLACE'                  => (isset ($_CONFIG['contactPlace'])
-        ? $_CONFIG['contactPlace'] : ''),
-    'CONTACT_COUNTRY'                => (isset ($_CONFIG['contactCountry'])
-        ? $_CONFIG['contactCountry'] : ''),
-    'CONTACT_PHONE'                  => (isset ($_CONFIG['contactPhone'])
-        ? $_CONFIG['contactPhone'] : ''),
-    'CONTACT_FAX'                    => (isset ($_CONFIG['contactFax'])
-        ? $_CONFIG['contactFax'] : ''),
+    'CONTACT_EMAIL'                  => (isset ($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : ''),
+    'CONTACT_COMPANY'                => (isset ($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : ''),
+    'CONTACT_ADDRESS'                => (isset ($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : ''),
+    'CONTACT_ZIP'                    => (isset ($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : ''),
+    'CONTACT_PLACE'                  => (isset ($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : ''),
+    'CONTACT_COUNTRY'                => (isset ($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : ''),
+    'CONTACT_PHONE'                  => (isset ($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : ''),
+    'CONTACT_FAX'                    => (isset ($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : ''),
 ));
 
 // Include and initialize handler to fill Social Network template variables
