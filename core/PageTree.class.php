@@ -57,6 +57,10 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
         }
 
         $this->fetchTree();
+        /*$this->tree = $this->pageRepo->findAll();
+        foreach ($this->tree as $id=>$page) {
+            echo $id . ' => ' . $page->getTitle() . '<br />';
+        }*/
         if($this->currentPage) {
             if ($this->currentPage->getNode()->getId()) {
                 $this->currentPagePath = '/'.$this->pageRepo->getPath($this->currentPage);
