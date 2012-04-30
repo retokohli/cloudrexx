@@ -78,7 +78,7 @@ class JSONPage {
     }
 
     public function set($params) {
-        global $objFWUser, $_CORELANG;
+        global $_CORELANG;
         $newpage = false;
         $pg = Env::get('pageguard');
 
@@ -121,7 +121,7 @@ class JSONPage {
         }
 
         $page->updateFromArray($output);
-        $page->setUsername($objFWUser->objUser->getUsername());
+        $page->setUsername(FWUser::getFWUserObject()->objUser->getUsername());
         $page->setUpdatedAtToNow();
 
         if (isset($params['get']['publish']) && $params['get']['publish']) {
@@ -231,15 +231,10 @@ class JSONPage {
      * @param   array  $params
      * @return  array  [link]     The link to the page (frontend).
      */
-    public function setSessionPage($params) {
-        global $objFWUser;
-        
+    public function setPagePreview($params) {
         $page = $this->validatePageArray($params['post']['page']);
         $page['pageId'] = $params['post']['page']['id'];
         $page['lang'] = $params['post']['page']['lang'];
-        $page['frontendGroups'] = $params['post']['frontendGroups'];
-        $page['backendGroups'] = $params['post']['backendGroups'];
-        $page['username'] = $objFWUser->objUser->getUsername();
         
         $_SESSION['page'] = $page;
     }

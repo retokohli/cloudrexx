@@ -376,7 +376,7 @@ $isRegularPageRequest = !isset($_REQUEST['standalone']) || $_REQUEST['standalone
 if ($isRegularPageRequest) {
 // TODO: history (empty($history) ? )
 
-    if (isset($_GET['sessionPreview']) && $_GET['sessionPreview'] == 1 && empty($sessionObj)) {
+    if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && empty($sessionObj)) {
         $sessionObj = new cmsSession();
     }
     $resolver->init($url, FRONTEND_LANG_ID, Env::em(), ASCMS_PATH_OFFSET.Env::get('virtualLanguageDirectory'), FWLanguage::getFallbackLanguageArray());
@@ -413,39 +413,45 @@ if ($isRegularPageRequest) {
         if($section) {
             $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
             
-            if (isset($_GET['sessionPreview']) && $_GET['sessionPreview'] == 1 && !empty($_SESSION['page'])) {
+            if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && !empty($_SESSION['page'])) {
                 $data = $_SESSION['page'];
                 $pg = Env::get('pageguard');
                 
-                if (is_int($data['pageId'])) {
-                    $page = $pageRepo->findOneById($data['pageId']);
-                } else {
-                    $page = new \Cx\Model\ContentManager\Page();
-                    $nodeRepo = Env::em()->getRepository('Cx\Model\ContentManager\Node');
-                    $node = new \Cx\Model\ContentManager\Node();
-                    $node->setParent($nodeRepo->getRoot());
-                    $page->setNode($node);
-                }
-                
-                $page->setLang(FWLanguage::getLanguageIdByCode($data['lang']));
-                $page->setUsername($data['username']);
-                
-                if ($page->isFrontendProtected() && isset($data['frontendGroups'])) {
-                    $pg->setAssignedGroupIds($page, $data['frontendGroups'], true);
-                }
-                if ($page->isBackendProtected() && isset($data['backendGroups'])) {
-                    $pg->setAssignedGroupIds($page, $data['backendGroups'], false);
-                }
+                $page = new \Cx\Model\ContentManager\Page();
+                $nodeRepo = Env::em()->getRepository('Cx\Model\ContentManager\Node');
+                $node = new \Cx\Model\ContentManager\Node();
+                $node->setParent($nodeRepo->getRoot());
+                $nodes = $nodeRepo->findAll();
+                $lastNode = end($nodes);
+                $node->setLft($lastNode->getRgt() + 1);
+                $node->setRgt($lastNode->getRgt() + 2);
+                $node->setLvl(1);
+                $node->addPages($page);
+                $page->setNode($node);
                 
                 unset($data['pageId']);
+                $page->setLang(FWLanguage::getLanguageIdByCode($data['lang']));
                 unset($data['lang']);
-                unset($data['frontendGroups']);
-                unset($data['backendGroups']);
-                unset($data['username']);
                 $page->updateFromArray($data);
                 $page->setUpdatedAtToNow();
                 $page->setActive(true);
                 $page->validate();
+                
+                /*$uow = Env::em()->getUnitOfWork();
+                $ident = $uow->getEntityIdentifier($page);
+                Env::em()->getUnitOfWork()->registerManaged($page, $ident, array());
+                $ident = $uow->getEntityIdentifier($node);
+                Env::em()->getUnitOfWork()->registerManaged($node, $ident, array());
+                Env::em()->merge($node);
+                Env::em()->persist($node);
+                Env::em()->merge($page);
+                Env::em()->getUnitOfWork()->addToIdentityMap($page);
+                Env::em()->getUnitOfWork()->addToIdentityMap($node);
+                Env::em()->persist($page);
+                $page->setId(429);
+                Env::em()->persist($page);
+                var_dump($page->getId());*/
+                
             } else {
                 $crit = array(
                      'module' => $section,
