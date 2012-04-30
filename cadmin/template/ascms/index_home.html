@@ -1,56 +1,123 @@
 <!-- START index_home.html -->
-{INDEX_HOME_CMS_NAME} {INDEX_HOME_CMS_EDITION}<br />
-Version {INDEX_HOME_CMS_VERSION} - {INDEX_HOME_CMS_STATUS} <span id="newversion"> </span><br />
-{TXT_RELEASE_DATE}: {INDEX_HOME_CMS_RELEASEDATE}<br />
-<br />
-<div style="border-bottom-width: 1px; border-bottom-color:#cccccc; border-bottom-style:solid"></div>
-<br /><br /><br />
-<table border="0" width="50%" cellpadding="3" cellspacing="0" summary="quick links">
-<tr>
-	<td width="25%"><div align="center"><a href="index.php?cmd=content&amp;act=new"><img src="template/ascms/images/icons/32x32/new_site.gif" border="0" alt="" /><br/>{TXT_NEW_SITE}</a></div></td>
-	<td width="25%"><div align="center"><a href="index.php?cmd=content"><img src="template/ascms/images/icons/32x32/media.gif" border="0" alt="" /><br/>{TXT_CONTENT_MANAGER}</a></div></td>
-	<td width="25%"><div align="center"><a href="index.php?cmd=workflow"><img src="template/ascms/images/icons/32x32/workflow.gif" border="0" alt="" /><br/>{TXT_WORKFLOW}</a></div></td>
-	<td width="25%"><div align="center"><a href="index.php?cmd=media&amp;archive=archive1"><img src="template/ascms/images/icons/32x32/media_manager.gif" border="0" alt="" /><br/>{TXT_MEDIA_MANAGER}</a></div></td>
-
-</tr>
-<tr>
-	<td colspan="4"><br /></td>
-</tr>
-<tr>
-	<td width="25%"><div align="center"><a href="index.php?cmd=media&amp;archive=content"><img src="template/ascms/images/icons/32x32/picturemanager.gif" border="0" alt="" /><br/>{TXT_IMAGE_ADMINISTRATION}</a></div></td>
-	<td width="25%"><div align="center"><a href="index.php?cmd=news"><img src="template/ascms/images/icons/32x32/news.gif" border="0" alt="" /><br/>{TXT_NEWS_MAMAGER}</a></div></td>
-	<td width="25%"><div align="center"><a href="../index.php?caching=0" target="_blank"><img src="template/ascms/images/icons/32x32/preview.gif" border="0" alt="" /><br/>{TXT_SITE_PREVIEW}</a></div></td>
-	<td width="25%"><div align="center"><a href="index.php?cmd=skins"><img src="template/ascms/images/icons/32x32/skins.gif" border="0" alt="" /><br/>{TXT_SKINS}</a></div></td>
-</tr>
-<tr>
-	<td colspan="4"><br /></td>
-</tr>
-<tr>
-	<td width="25%"><div align="center"><a href="index.php?cmd=access"><img src="template/ascms/images/icons/32x32/user.gif" border="0" alt="" /><br/>{TXT_USER_MANAGER}</a></div></td>
-	<td width="25%"><div align="center"><a href="index.php?cmd=stats"><img src="template/ascms/images/icons/32x32/statistik.gif" border="0" alt="" /><br/>{TXT_STATS}</a></div></td>
-	<td width="25%"><div align="center"><a href="index.php?cmd=server"><img src="template/ascms/images/icons/32x32/server_info.gif" border="0" alt="" /><br/>{TXT_SERVER_INFO}</a></div></td>
-	<td width="25%"><div align="center"><a href="javascript:logout();"><img src="template/ascms/images/icons/32x32/logout.gif" border="0" alt="" /><br/>{TXT_LOGOUT}</a></div></td>
-
-</tr>
+<table id="dashboard">
+    <tr>
+        <td class="left">
+            <div id="quick_access_wrapper">
+                <a id="toggle_quick_access"><label>Schnellzugriff</label></a>
+                <div id="quick_access">
+                    <div id="box_1" class="box">
+                        <div class="padding_fix">
+                            <h1>Publizieren und Anlegen</h1>
+                            <ul>
+                                <li><a href="index.php?cmd=content&amp;act=new">{TXT_NEW_SITE}</a></li>
+                                <li><a href="#">Newsmeldung erstellen</a></li>
+                                <li><a href="#">Block hinzufügen</a></li>
+                                <li><a href="#">Formular erstellen</a></li>
+                            </ul>
+                            <div class="icon"></div>
+                        </div>
+                    </div>
+                    <div id="box_2" class="box">
+                        <div class="padding_fix">
+                            <h1>Auswerten und Ansehen</h1>
+                            <ul>
+                                <li><a href="../index.php?caching=0">{TXT_SITE_PREVIEW}</a></li>
+                                <li><a href="index.php?cmd=content">{TXT_CONTENT_MANAGER}</a></li>
+                                <li><a href="#">Seitenstatistik</a></li>
+                                <li><a href="index.php?cmd=workflow">{TXT_WORKFLOW}</a></li>
+                                <li><a href="#">Formulare</a></li>
+                            </ul>
+                            <div class="icon"></div>
+                        </div>
+                    </div>
+                    <div id="box_3" class="box">
+                        <div class="padding_fix">
+                            <h1>Verwalten</h1>
+                            <ul>
+                                <li><a href="#">Grundeinstellungen</a></li>
+                                <li><a href="index.php?cmd=access">{TXT_USER_MANAGER}</a></li>
+                                <li><a href="index.php?cmd=media&amp;archive=archive1">{TXT_MEDIA_MANAGER}</a></li>
+                                <li><a href="index.php?cmd=media&amp;archive=content">{TXT_IMAGE_ADMINISTRATION}</a></li>
+                                <li><a href="index.php?cmd=skins">{TXT_SKINS}</a></li>
+                            </ul>
+                            <div class="icon"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="history_wrapper">
+                <a id="toggle_history"><label>Verlauf</label></a>
+                <div id="history"></div>
+            </div>
+            <div id="logged_in_wrapper">
+                <a id="toggle_logged_in"><label>Eingeloggt</label></a>
+                <div id="logged_in"></div>
+            </div>
+        </td>
+        <td class="right">
+            <div id="stats_wrapper">
+                <a id="toggle_stats"><label>Website Statistik</label></a>
+                <div id="stats"></div>
+            </div>
+            <div id="news_wrapper">
+                <a id="toggle_news"><label>Contrexx News</label></a>
+                <div id="news"></div>
+            </div>
+        </td>
+    </tr>
 </table>
-<br /><br /><br />
-<table class="adminlist" border="0" width="100%" cellpadding="3" cellspacing="0" summary="session details">
-<tr valign="top"><th nowrap="nowrap" colspan="3">{TXT_LAST_LOG_SESSIONS}</th></tr>
-<tr valign="top" class="row2">
-<td nowrap="nowrap" width="2%"><div align="left"><b>{TXT_USERNAME}</b></div></td>
-<td nowrap="nowrap" width="20%"><div align="left"><b>{TXT_LOGTIME}</b></div></td>
-<td width="78%"><div align="left"><b>{TXT_HOSTNAME}</b></div></td>
-</tr>
-<!-- BEGIN logRow -->
-<tr valign="top" class="{INDEX_HOME_ROWCLASS}">
-<td nowrap="nowrap">{INDEX_HOME_USERNAME}&nbsp;</td>
-<td nowrap="nowrap">{INDEX_HOME_TIME}&nbsp;</td>
-<td nowrap="nowrap">{INDEX_HOME_REMOTE_HOST}&nbsp;</td>
-</tr>
-<!-- END logRow -->
-</table>
-<br />
-<script type="text/javascript" language="javascript">
-	new Ajax.Updater('newversion', 'versioncheck.php');
-</script>
+    {INDEX_HOME_CMS_NAME} {INDEX_HOME_CMS_EDITION}<br />
+    Version {INDEX_HOME_CMS_VERSION} - {INDEX_HOME_CMS_STATUS} <span id="newversion"> </span><br />
+    {TXT_RELEASE_DATE}: {INDEX_HOME_CMS_RELEASEDATE}<br />
+    <br />
+    <div style="border-bottom-width: 1px; border-bottom-color:#cccccc; border-bottom-style:solid"></div>
+    <br /><br /><br />
+    <table border="0" width="50%" cellpadding="3" cellspacing="0" summary="quick links">
+    <tr>
+        <td width="25%"><div align="center"><a href="index.php?cmd=content&amp;act=new"><img src="template/ascms/images/icons/32x32/new_site.gif" border="0" alt="" /><br/>{TXT_NEW_SITE}</a></div></td>
+        <td width="25%"><div align="center"><a href="index.php?cmd=content"><img src="template/ascms/images/icons/32x32/media.gif" border="0" alt="" /><br/>{TXT_CONTENT_MANAGER}</a></div></td>
+        <td width="25%"><div align="center"><a href="index.php?cmd=workflow"><img src="template/ascms/images/icons/32x32/workflow.gif" border="0" alt="" /><br/>{TXT_WORKFLOW}</a></div></td>
+        <td width="25%"><div align="center"><a href="index.php?cmd=media&amp;archive=archive1"><img src="template/ascms/images/icons/32x32/media_manager.gif" border="0" alt="" /><br/>{TXT_MEDIA_MANAGER}</a></div></td>
+
+    </tr>
+    <tr>
+        <td colspan="4"><br /></td>
+    </tr>
+    <tr>
+        <td width="25%"><div align="center"><a href="index.php?cmd=media&amp;archive=content"><img src="template/ascms/images/icons/32x32/picturemanager.gif" border="0" alt="" /><br/>{TXT_IMAGE_ADMINISTRATION}</a></div></td>
+        <td width="25%"><div align="center"><a href="index.php?cmd=news"><img src="template/ascms/images/icons/32x32/news.gif" border="0" alt="" /><br/>{TXT_NEWS_MAMAGER}</a></div></td>
+        <td width="25%"><div align="center"><a href="../index.php?caching=0" target="_blank"><img src="template/ascms/images/icons/32x32/preview.gif" border="0" alt="" /><br/>{TXT_SITE_PREVIEW}</a></div></td>
+        <td width="25%"><div align="center"><a href="index.php?cmd=skins"><img src="template/ascms/images/icons/32x32/skins.gif" border="0" alt="" /><br/>{TXT_SKINS}</a></div></td>
+    </tr>
+    <tr>
+        <td colspan="4"><br /></td>
+    </tr>
+    <tr>
+        <td width="25%"><div align="center"><a href="index.php?cmd=access"><img src="template/ascms/images/icons/32x32/user.gif" border="0" alt="" /><br/>{TXT_USER_MANAGER}</a></div></td>
+        <td width="25%"><div align="center"><a href="index.php?cmd=stats"><img src="template/ascms/images/icons/32x32/statistik.gif" border="0" alt="" /><br/>{TXT_STATS}</a></div></td>
+        <td width="25%"><div align="center"><a href="index.php?cmd=server"><img src="template/ascms/images/icons/32x32/server_info.gif" border="0" alt="" /><br/>{TXT_SERVER_INFO}</a></div></td>
+        <td width="25%"><div align="center"><a href="javascript:logout();"><img src="template/ascms/images/icons/32x32/logout.gif" border="0" alt="" /><br/>{TXT_LOGOUT}</a></div></td>
+
+    </tr>
+    </table>
+    <br /><br /><br />
+    <table class="adminlist" border="0" width="100%" cellpadding="3" cellspacing="0" summary="session details">
+    <tr valign="top"><th nowrap="nowrap" colspan="3">{TXT_LAST_LOG_SESSIONS}</th></tr>
+    <tr valign="top" class="row2">
+    <td nowrap="nowrap" width="2%"><div align="left"><b>{TXT_USERNAME}</b></div></td>
+    <td nowrap="nowrap" width="20%"><div align="left"><b>{TXT_LOGTIME}</b></div></td>
+    <td width="78%"><div align="left"><b>{TXT_HOSTNAME}</b></div></td>
+    </tr>
+    <!-- BEGIN logRow -->
+    <tr valign="top" class="{INDEX_HOME_ROWCLASS}">
+    <td nowrap="nowrap">{INDEX_HOME_USERNAME}&nbsp;</td>
+    <td nowrap="nowrap">{INDEX_HOME_TIME}&nbsp;</td>
+    <td nowrap="nowrap">{INDEX_HOME_REMOTE_HOST}&nbsp;</td>
+    </tr>
+    <!-- END logRow -->
+    </table>
+    <br />
+    <script type="text/javascript" language="javascript">
+        new Ajax.Updater('newversion', 'versioncheck.php');
+    </script>
 <!-- END index_home.html -->

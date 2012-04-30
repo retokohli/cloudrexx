@@ -51,10 +51,11 @@ a:visited {
     float: left;
     width: 100%;
     min-height: 100%;
+    background: #ffffff;
 }
 
 #container.backend {
-    background: url('../images/navigation_wrapper.jpg') repeat-y;
+    background: #ffffff url(../images/navigation_wrapper.jpg) repeat-y;
 }
 
 * html #container {/* for ie6 */
@@ -65,7 +66,7 @@ a:visited {
     position: relative;
     width: 100%;
     height: 53px;
-    background: #206eaa url(../images/login_header.jpg) left top no-repeat;
+    background: #0873bb url(../images/gradient.jpg) left top repeat-y;
 }
 
 #header a.logo {
@@ -103,6 +104,7 @@ a:visited {
     float: left;
     width: 100%;
     padding: 0 0 24px 0;
+    
 }
 
 #content_login_center {
@@ -177,13 +179,14 @@ a:visited {
 
 #navigation_wrapper {
     float: left;
-    width: 216px;
-    padding: 20px 0;
+    width: 217px;
+    padding: 30px 0;
 }
 
 #content {
     overflow: hidden;
     padding: 24px 14px 14px 14px;
+    margin: 10px 18px 10px 0;
 }
 
 #content textarea,
@@ -214,7 +217,7 @@ a:visited {
     bottom: 0;
     width: 100%;
     height: 24px;
-    background: #2170ac url(../images/login_footer.jpg) left top no-repeat;
+    background: #0873bb url(../images/gradient.jpg) repeat-y left top;
 }
 
 #footer a {
@@ -294,7 +297,7 @@ a:visited {
 .navigation_level_2 li {
     float: left;
     width: auto;
-    background: url(../images/navigation_border_bottom.jpg) no-repeat left top;
+    border-bottom: 1px solid #efefef;
 }
 
 .navigation_level_1 li.dashboard {
@@ -305,15 +308,16 @@ a:visited {
 .navigation_level_1 li:focus,
 .navigation_level_1 li:active,
 .navigation_level_1 li.active {
-    background: #11aae2 url(../images/navigation_level_1_hover.jpg) no-repeat left top;
+    background: url(../images/gradient.jpg) repeat-y left top;
+    border-bottom: 1px solid transparent;
 }
 
 .navigation_level_1 li span,
 .navigation_level_1 li a {
     float: left;
     width: 184px;
-    height: 31px;
-    line-height: 29px;
+    height: 30px;
+    line-height: 28px;
     padding: 0 10px 0 22px;
     background: url(../images/navigation_level_1_list_style.png) no-repeat 10px 10px;
     font-size: 13px;
@@ -334,11 +338,15 @@ a:visited {
     cursor: pointer;
 }
 
+.navigation_level_2 li {
+    border-bottom: 1px solid #efefef;
+}
+
 .navigation_level_2 li a {
     float: left;
     width: 167px;
-    height: 24px;
-    line-height: 22px;
+    height: 23px;
+    line-height: 21px;
     padding: 0 10px 0 39px;
     background: url(../images/navigation_level_2_list_style.png) no-repeat 26px 7px;
     font-size: 12px;
@@ -386,7 +394,7 @@ a:visited {
     float: left;
     width: 100%;
     padding: 0;
-    margin: 0 0 11px 0;
+    margin: 0 0 14px 0;
     list-style-type: none;
 }
 
@@ -394,10 +402,9 @@ a:visited {
     float: left;
     width: auto;
     background: url(../images/breadcrumb_list_style.jpg) no-repeat left center;
-    padding: 0 0 0 14px;
-    margin: 0 0 0 8px;
-    font-size: 13px;
-    color: #0d91d1;
+    padding: 0 0 0 12px;
+    margin: 0 0 0 6px;
+    font-size: 11px;
 }
 
 #breadcrumb li.first {
@@ -410,19 +417,21 @@ a:visited {
     color: #0d91d1;
 }
 
-div.infobox_head{
+div.infobox_head {
+    clear: both;
     padding: 5px;
-    background-color: #ffcc33;
+    background: #ffcc33;
 }
 
 div.infobox_body {
+    clear: both;
     padding: 5px;
-    color: #444444;
-    background-color: #fff4c2;
+    background: #fff4c2;
+    border-left: 1px solid #ffcc33;
+    border-right: 1px solid #ffcc33;
+    border-bottom: 1px solid #ffcc33;
     text-align: left;
-    border-left: solid 1px #ffcc33;
-    border-right: solid 1px #ffcc33;
-    border-bottom: solid 1px #ffcc33;
+    color: #444444;
 }
 
 table.adminlist {
@@ -434,7 +443,7 @@ table.adminlist {
     background: #ffffff;
 }
 table.adminlist th {
-    background: #c6e5ff;
+    background: #ddeeff;
     height: 31px;
     line-height: 31px;
     margin: 0;
@@ -499,7 +508,8 @@ table.adminlist td.options {
     background: #ffffff;
 }
 table.adminlist td.col3 {/* Shop */
-    background: #dde4ff;
+    background: #fafafa;
+    font-weight: bold;
 }
 table.adminlist td.number {/* Shop */
     text-align: right;
@@ -531,13 +541,18 @@ table.subnavbar {
 
 #tabmenu li a,
 .tabmenu li a  {
+    position: relative;
+    top: 1px;
     float: left;
-    height: 20px;
-    line-height: 20px;
+    height: 22px;
+    line-height: 22px;
     width: auto;
     padding: 0 9px;
-    border-right: 1px solid transparent;
-    border-left: 1px solid transparent;
+    border-top: 1px solid #cccccc;
+    border-right: 1px solid #cccccc;
+    border-bottom: 1px solid transparent;
+    border-left: 1px solid #cccccc;
+    margin: 0 10px 0 0;
     font-weight: normal;
     color: #1a74bd;
     cursor: pointer;
@@ -545,15 +560,14 @@ table.subnavbar {
 
 #tabmenu li a.active,
 .tabmenu li a.active {
-    position: relative;
-    top: 1px;
-    height: 19px;
-    line-height: 17px;
-    background: url(../images/tabmenu_active.jpg);
-    border-top: 1px solid #cccccc;
-    border-right: 1px solid #cccccc;
-    border-left: 1px solid #cccccc;
-    border-bottom: 1px solid #ffffff;
+    height: 22px;
+    line-height: 22px;
+    /*background: url(../images/tabmenu_active.jpg);*/
+    background: #ddeeff;
+    border-top: 1px solid #ddeeff;
+    border-right: 1px solid #ddeeff;
+    border-bottom: 1px solid #ddeeff;
+    border-left: 1px solid #ddeeff;
     color: #444444;
 }
 
@@ -603,6 +617,166 @@ table.subnavbar {
                margin-right: 3px;
 }
 
+#dashboard {
+    float: left;
+    width: 100%;
+}
+
+#dashboard .left,
+#dashboard .right {
+    padding: 20px 0 20px 0;
+    vertical-align: top;
+}
+
+#dashboard .left {
+    width: 70%;
+    border-right: 1px solid #e5e5e5;
+    display: table-cell;
+}
+
+#dashboard .right {
+    width: 30%;
+    display: table-cell;
+}
+
+#dashboard #quick_access_wrapper {
+    float: left;
+    width: 100%;
+    margin: 0 0 50px 0;
+}
+
+#dashboard #quick_access_wrapper #quick_access {
+    float: left;
+    width: 100%;
+}
+
+#dashboard #quick_access .box {
+    position: relative;
+    float: left;
+    width: 31.333%;
+    height: auto !important;
+    padding: 0;
+    overflow: hidden;
+}
+
+#dashboard #quick_access .box#box_1 {
+    clear: both;
+    min-height: 158px;
+    height: 158px;
+    padding: 10px 0 50px 0;
+    margin: 0 2% 0 0;
+    background: #21c1f2 url(../images/dashboard_box_1.jpg) repeat-y;
+}
+
+#dashboard #quick_access .box#box_2 {
+    min-height: 162px;
+    height: 162px;
+    padding: 10px 0 46px 0;
+    margin: 0 2% 0 0;
+    background: #68c210 url(../images/dashboard_box_2.jpg) repeat-y;
+}
+
+#dashboard #quick_access .box#box_3 {
+    min-height: 160px;
+    height: 160px;
+    padding: 10px 0 48px 0;
+    margin: 0 2% 0 0;
+    background: #e1a31a url(../images/dashboard_box_3.jpg) repeat-y;
+}
+
+#dashboard #quick_access .box .padding_fix {
+    float: left;
+    width: auto;
+    padding: 0 10px;
+}
+
+#dashboard #quick_access .box h1 {
+    margin: 0 0 9px 0;
+    color: #ffffff;
+    font-size: 19px;
+    font-weight: normal;
+}
+
+#dashboard #quick_access .box ul {
+    float: left;
+    width: auto;
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+
+#dashboard #quick_access .box ul li {
+    float: left;
+    width: auto;
+    clear: both;
+}
+
+#dashboard #quick_access .box ul li a {
+    float: left;
+    width: auto;
+    background: url(../images/dashboard_box_list_style.png) no-repeat left center;
+    padding: 0 0 0 9px;
+    margin: 0 0 5px 0;
+    color: #ffffff;
+}
+
+#dashboard #quick_access .box ul li a:hover,
+#dashboard #quick_access .box ul li a:focus,
+#dashboard #quick_access .box ul li a:active {
+    text-decoration: underline;
+}
+
+#dashboard #quick_access .box .icon {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    float: left;
+}
+
+#dashboard #quick_access .box#box_1 .icon {
+    width: 30px;
+    height: 30px;
+    background: url(../images/dashboard_box_1_icon.png) no-repeat;
+}
+
+#dashboard #quick_access .box#box_2 .icon {
+    width: 26px;
+    height: 26px;
+    background: url(../images/dashboard_box_2_icon.png) no-repeat;
+}
+
+#dashboard #quick_access .box#box_3 .icon {
+    float: left;
+    width: 28px;
+    height: 28px;
+    background: url(../images/dashboard_box_3_icon.png) no-repeat;
+}
+
+#dashboard #history_wrapper {
+    float: left;
+    width: 48%;
+    margin: 0 2% 0 0;
+    height: 100px;
+}
+
+#dashboard #logged_in_wrapper {
+    float: left;
+    width: 48%;
+    margin: 0 2% 0 0;
+    height: 100px;
+}
+
+#dashboard #stats_wrapper {
+    float: left;
+    width: 100%;
+    height: 100px;
+}
+
+#dashboard #news_wrapper {
+    float: left;
+    width: 100%;
+    height: 100px;
+}
 
 /*
   styles for javascript helpers.

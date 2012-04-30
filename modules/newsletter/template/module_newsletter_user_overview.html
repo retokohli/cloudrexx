@@ -322,13 +322,14 @@ var confirmDeleteInactive = function() {
     <br />
 
     <form name="userlist" action="index.php?cmd=newsletter&amp;act=users&amp;bulkdelete=1" method="post">
-        <div style="background-color: #0A50A1; height: 22px;">
-            <a href="index.php?cmd=newsletter&amp;act=deleteInactive" onclick="return confirmDeleteInactive();" title="{TXT_NEWSLETTER_DELETE_ALL_INACTIVE}"><span style="float: right; position: relative; right: 5px; top: 5px; font-weight: bold; color: #FFFFFF"> [ {TXT_NEWSLETTER_DELETE_ALL_INACTIVE} ] </span></a>
-            <span style="float: left; position: relative; left: 5px; top: 5px; font-weight: bold; color: #FFFFFF"> {TXT_NEWSLETTER_RECIPIENTS} </span>
-        </div>
-
         <table id="tbluserlist" width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
             <thead>
+                <tr>
+                    <th colspan="12">
+                        <span style="float: left; width: auto;">{TXT_NEWSLETTER_RECIPIENTS}</span>
+                        <a href="index.php?cmd=newsletter&amp;act=deleteInactive" onclick="return confirmDeleteInactive();" title="{TXT_NEWSLETTER_DELETE_ALL_INACTIVE}" style="float: right; width: auto;">[ {TXT_NEWSLETTER_DELETE_ALL_INACTIVE} ] </span></a>
+                    </th>
+                </tr>
                 <tr class="row3" style="font-weight:bold;">
                     <td nowrap width="1%">
                         {TXT_STATUS}
