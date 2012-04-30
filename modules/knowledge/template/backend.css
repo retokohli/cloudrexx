@@ -86,9 +86,10 @@
     width: 230px;
     height: 360px;
     overflow: auto;
-    border: 1px solid #0A50A1;
+    border: 1px solid #DDEEFF;
     padding: 5px 0px;
     border-top: none;
+    margin-top: -1px;
 }
 
 

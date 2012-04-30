@@ -224,15 +224,63 @@ var deleteArticle = function(id)
 </script>
 
 <div id="knowledge_articles">
+<table style="float: left; width: 100%;">
+    <tr>
+        <td style="float: left; width: 230px;  margin-right: 15px; vertical-align: top;">
+            <form action="index.php?cmd=knowledge{MODULE_INDEX}&amp;section=articles&amp;act=edit&amp;id=18" method="get" style="margin-bottom: 5px;">
+                    {TXT_JUMP_TO_ARTICLE}
+                    <input type="hidden" name="cmd" value="knowledge" /> <input type="hidden" name="section" value="articles" />
+                    <input type="hidden" name="act" value="edit" />
+                <input type="text" style="width: 35px;" name="id" />
+                <input type="submit" value="Go" style="margin: 0;"/>
+            </form>
+            <table class="adminlist" style="width: 232px; border-collapse: collapse;">
+                <tr>
+                    <th>{TXT_CATEGORIES}</th>
+                </tr>
+            </table>
+            <div id="catlist">
+                <!-- BEGIN remove_area -->
+                    <!-- BEGIN list -->
+                    <ul style="display: {CSS_DISPLAY}; width: 230px;">
+                        <!-- BEGIN row -->
+                        <li style="clear: both; width: 95%;">
+                            <div style="float: left; ">
+                                <img src="images/icons/sub_arrow.gif" class="sub_arrow" style="border: none;" /><a href="javascript: void(0);" onclick="catTree.openPart(this);" style="visibility: {CATEGORY_PLUS_VISIBLITY};"><img alt="" class="openClosePicture" src="images/icons/pluslink.gif" style="border: none; margin: 2px;" /></a><img src="../images/modules/knowledge/folder.small.png" style="margin-right:8px;" id="folder_{CATEGORY_ID}" />
+                            </div>
+                            
+                            <div>
+                                <a href="javascript: void(0);" onclick="articles.getCategory({ID})">{NAME}</a> ({ENTRY_COUNT})
+                            </div>
+                            {SUB}
+                        </li>
+                        <!-- END row -->
+                        {ROWS}
+                    </ul>
+                    <!-- END list -->   
+                <!-- END remove_area -->
+                {CATLIST}
+            </div>
+        </td>
+        <td style="width: 100%; vertical-align: top;">
+            {TXT_ARTICLES}
+            <table class="adminlist" style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <th>
+                        <div id="head">&nbsp;</div>
+                    </th>
+                    </tr>
+                    <tr>
+                        <td>{TXT_SELECT_CATEGORY}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+</table>
 
 
-<form action="index.php?cmd=knowledge{MODULE_INDEX}&amp;section=articles&amp;act=edit&amp;id=18" method="get">
-    {TXT_JUMP_TO_ARTICLE}
-        <input type="hidden" name="cmd" value="knowledge" /> <input type="hidden" name="section" value="articles" />
-        <input type="hidden" name="act" value="edit" />
-    <input type="text" style="width: 3em;" name="id" />
-    <input type="submit" value="Go"  style=" margin-right: 4px;"/>
-</form>
+
 
 <div style="position: relative; width: 232px;">
 
@@ -244,54 +292,9 @@ var deleteArticle = function(id)
 </div>
 
 <div id="categories">
-    <table class="adminlist" style="width: 232px; border-collapse: collapse;">
-        <tr>
-            <th>
-                <div >{TXT_CATEGORIES}</div>
-            </th>
-            <th style="text-align: right; width: 50%;">
-            </th>
-        </tr>
-    </table>
-    <div id="catlist">
-        <!-- BEGIN remove_area -->
-            <!-- BEGIN list -->
-            <ul style="display: {CSS_DISPLAY}; width: 230px;">
-                <!-- BEGIN row -->
-                <li style="clear: both; width: 95%;">
-                    <div style="float: left; ">
-                        <img src="images/icons/sub_arrow.gif" class="sub_arrow" style="border: none;" /><a href="javascript: void(0);" onclick="catTree.openPart(this);" style="visibility: {CATEGORY_PLUS_VISIBLITY};"><img alt="" class="openClosePicture" src="images/icons/pluslink.gif" style="border: none; margin: 2px;" /></a><img src="../images/modules/knowledge/folder.small.png" style="margin-right:8px;" id="folder_{CATEGORY_ID}" />
-                    </div>
-                    
-                    <div>
-                        <a href="javascript: void(0);" onclick="articles.getCategory({ID})">{NAME}</a> ({ENTRY_COUNT})
-                    </div>
-                    {SUB}
-                </li>
-                <!-- END row -->
-                {ROWS}
-            </ul>
-            <!-- END list -->   
-        <!-- END remove_area -->
-        {CATLIST}
-    </div>
 </div>
-	<div id="articles">
-	    {TXT_ARTICLES}
+<div id="articles">
         <div style="position: relative">
-        <table class="adminlist" style="width: 100%; border-collapse: collapse;">
-            <tr>
-                <th>
-                    <div id="head">&nbsp;</div>
-                </th>
-                </tr>
-                <tr>
-                    <td>{TXT_SELECT_CATEGORY}</td>
-                </tr>
-            </tbody>
-        </table>
     </div>
-
-<br style="clear: both;" />
 </div>
 <!-- END module_knowledge_articles_overview.html -->
