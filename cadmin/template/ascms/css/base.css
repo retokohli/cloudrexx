@@ -451,7 +451,7 @@ table.adminlist th {
     color: #ffffff;
 }
 table.adminlist tr a {
-    color: #444444;
+    color: #ffffff;
 }
 table.adminlist tr a:hover,
 table.adminlist tr a:focus,
@@ -525,7 +525,7 @@ table.subnavbar {
     float: left;
     width: 100%;
     padding: 0;
-    border-bottom: 1px solid #cccccc;
+    border-bottom: 1px solid #0a85c8;
     margin: 9px 0 0 0;
 }
 
@@ -547,7 +547,7 @@ table.subnavbar {
     padding: 0 9px;
     border-top: 1px solid #e5e5e5;
     border-right: 1px solid #e5e5e5;
-    border-bottom: 1px solid transparent;
+    border-bottom: 1px solid #0a85c8;
     border-left: 1px solid #e5e5e5;
     margin: 0 10px 0 0;
     font-weight: normal;
