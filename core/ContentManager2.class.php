@@ -62,7 +62,6 @@ class ContentManager extends Module {
         JS::activate('ckeditor');
         JS::activate('cx-form');
         JS::activate('jstree');
-        JS::activate('chosen');
         JS::registerJS('lib/javascript/lock.js');
         JS::registerJS('lib/javascript/jquery/jquery.history.js');
 
