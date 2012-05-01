@@ -42,7 +42,7 @@ table#subnavbar_level1 .navi a.active {
 table#subnavbar_level1 form[name="userFrontendLangIdForm"] {
     float: right;
     width: auto;
-    margin: 0 2px 0 10px !important;
+    margin: 0 0 0 10px !important;
 }
 
 table#subnavbar_level1 form[name="userFrontendLangIdForm"] select {

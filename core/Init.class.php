@@ -796,7 +796,7 @@ class InitCMS
             }
             $query = isset($arrVars['cmd']) ? "?cmd=".$arrVars['cmd'] : "";
             $return = "\n<form action='index.php".$query."' method='post' name='userFrontendLangIdForm'>\n";
-            $return .= "<select name='userFrontendLangId' size='1' onchange=\"document.forms['userFrontendLangIdForm'].submit()\">\n";
+            $return .= "<select name='userFrontendLangId' size='1' class='chzn-select' onchange=\"document.forms['userFrontendLangIdForm'].submit()\">\n";
             foreach ($this->arrLang as $id=>$value){
                 if ($this->arrLang[$id]['frontend']==1) {
                     $i++;
@@ -827,7 +827,7 @@ class InitCMS
                 FWLanguage::getMenuoptions($this->userFrontendLangId),
                 false,
                 'submitUserFrontendLanguage();',
-                'size="1"')."\n</form>\n";
+                'size="1" class="chzn-select"')."\n</form>\n";
     }
 
 

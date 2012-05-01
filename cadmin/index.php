@@ -223,6 +223,7 @@ if ($isRegularPageRequest) {
     $objTemplate->touchBlock('backend_metanavigation');
     JS::activate('backend');
     JS::activate('tipmessage');
+    JS::activate('chosen');
     
     // No longer needed in v3.0
     /*if (Permission::checkAccess(35, 'static', true)) {

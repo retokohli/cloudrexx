@@ -219,8 +219,12 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             'jsfiles' => array(
                 'lib/javascript/jquery/chosen/jquery.chosen.js'
             ),
-            'dependencies' => array('cx')
-        ),
+            'dependencies' => array('jquery', 'cx'),
+            'specialcode'  => '
+                $J(document).ready(function() {
+                    $J(".chzn-select").chosen();
+                });'
+       ),
         'backend' => array(
             'jsfiles' => array(
                 'cadmin/javascript/switching_content.js',
