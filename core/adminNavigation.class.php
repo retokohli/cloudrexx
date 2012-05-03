@@ -212,12 +212,20 @@ class adminMenu
                     'NAVIGATION_GROUP_NAME'    => htmlentities($_CORELANG[$group_data], ENT_QUOTES, CONTREXX_CHARSET),
                     'NAVIGATION_ID'            => $group_id,
                     'NAVIGATION_MENU'        => $navigation,
-                    'NAVIGATION_CLASS'        => isset($_COOKIE['navigation_level_2_'.$group_id]) ? $_COOKIE['navigation_level_2_'.$group_id] : 'inactive',
+                    'NAVIGATION_CLASS'        => (isset($_COOKIE['navigation_level_2_active'])) && ($_COOKIE['navigation_level_2_active'] == $group_id) ? 'active' : 'inactive',
                 ));
                 $objTemplate->parse('navigationRow');
             }
         }
-        $objTemplate->setVariable('TXT_SEARCH', $_CORELANG['TXT_SEARCH']);
+
+        if (empty($_GET['cmd'])) {
+            $_COOKIE['navigation_level_2_active'] = 'dashboard';
+        }
+
+        $objTemplate->setVariable(array(
+            'TXT_SEARCH' => $_CORELANG['TXT_SEARCH'],
+            'NAVIGATION_DASHBOARD_CLASS' => (isset($_COOKIE['navigation_level_2_active'])) && ($_COOKIE['navigation_level_2_active'] == 'dashboard') ? 'active' : 'inactive',
+        ));
         $objTemplate->parse('navigation_output');
     }
 
