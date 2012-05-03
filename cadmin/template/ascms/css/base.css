@@ -28,8 +28,13 @@ form {
 }
 
 h1 {
+    float: left;
+    width: auto;
+    clear: both;
     padding: 0;
     margin: 0;
+    font-size: 18px;
+    font-weight: normal;
 }
 
 a {
@@ -186,7 +191,7 @@ a:visited {
 
 #content {
     overflow: hidden;
-    padding: 34px 14px 14px 14px;
+    padding: 33px 14px 14px 14px;
 }
 
 #content textarea,
@@ -338,6 +343,13 @@ a:visited {
     cursor: pointer;
 }
 
+#navigation_level_1_dashboard li:hover a,
+#navigation_level_1_dashboard li:focus a,
+#navigation_level_1_dashboard li:active a,
+#navigation_level_1_dashboard li.active a {
+    background: url(../images/navigation_level_1_hover_list_style_no_submenu.png) no-repeat 10px 10px;
+}
+
 .navigation_level_2 li a {
     float: left;
     width: 167px;
@@ -386,15 +398,16 @@ a:visited {
     border: 0;
 }
 
-#breadcrumb {
+.breadcrumb {
     float: left;
     width: 100%;
     padding: 0;
     margin: 0 0 14px 0;
+    margin: 0 0 6px 0;
     list-style-type: none;
 }
 
-#breadcrumb li {
+.breadcrumb li {
     float: left;
     width: auto;
     background: url(../images/breadcrumb_list_style.jpg) no-repeat left center;
@@ -403,14 +416,18 @@ a:visited {
     font-size: 11px;
 }
 
-#breadcrumb li.first {
+.breadcrumb li.first {
     background: transparent;
     padding: 0;
     margin: 0;
 }
 
-#breadcrumb li a {
+.breadcrumb li a {
     color: #0d91d1;
+}
+
+h1.breadcrumb {
+    margin: 0 0 10px 0;
 }
 
 div.infobox_head {
@@ -450,7 +467,7 @@ table.adminlist th {
     white-space: nowrap;
     color: #ffffff;
 }
-table.adminlist tr a {
+table.adminlist th a {
     color: #ffffff;
 }
 table.adminlist tr a:hover,
@@ -694,6 +711,7 @@ table.subnavbar {
 }
 
 #dashboard #quick_access .box ul {
+    clear: both;
     float: left;
     width: auto;
     padding: 0;

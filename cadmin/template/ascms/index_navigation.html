@@ -1,18 +1,29 @@
 <script type="text/javascript">
 // <![CDATA[
-function swapNavigation(navi_id) {
-    $J('#navigation_level_1_' + navi_id + ' li').toggleClass('active inactive');
-    $J('#navigation_level_1_' + navi_id + ' li a').toggleClass('active inactive');
-    $J('#navigation_level_2_' + navi_id).toggleClass('active inactive');
-    className = $J('#navigation_level_2_' + navi_id).hasClass('active') ? 'active' : 'inactive';
-    document.cookie = 'navigation_level_2_' + navi_id + "=" + className;
+function switchNavigation(navi_id) {
+    $J('.navigation_level_1').each(function(index, value) {
+        $J(value).children('li, span').removeClass('active');
+        $J(value).children('li, span').addClass('inactive');
+    });
+    $J('.navigation_level_2').each(function(index, value) {
+        $J(value).removeClass('active');
+        $J(value).addClass('inactive');
+    });
+
+    $J('#navigation_level_1_' + navi_id).children('li, span, a').removeClass('inactive');
+    $J('#navigation_level_1_' + navi_id).children('li, span, a').addClass('active');
+    if ($J('#navigation_level_2_' + navi_id).length > 0) {
+        $J('#navigation_level_2_' + navi_id).removeClass('inactive');
+        $J('#navigation_level_2_' + navi_id).addClass('active');
+    }
+    document.cookie = 'navigation_level_2_active=' + navi_id;
 }
 // ]]>
 </script>
 
-<ul class="navigation_level_1 dashboard" href="index.php" title="Dashboard"><li class="dashboard"><a href="index.php">Dashboard</a></li></ul>
+<ul id="navigation_level_1_dashboard" class="navigation_level_1 {NAVIGATION_DASHBOARD_CLASS}" onclick="switchNavigation('dashboard');window.location.href='index.php'"><li class="{NAVIGATION_DASHBOARD_CLASS}"><a class="{NAVIGATION_DASHBOARD_CLASS}" href="#">Dashboard</a></li></ul>
 <!-- BEGIN navigationRow -->
-<ul id="navigation_level_1_{NAVIGATION_ID}" class="navigation_level_1" onclick="swapNavigation('{NAVIGATION_ID}');"><li class="{NAVIGATION_CLASS}"><span class="{NAVIGATION_CLASS}">{NAVIGATION_GROUP_NAME}</span></li></ul>
+<ul id="navigation_level_1_{NAVIGATION_ID}" class="navigation_level_1" onclick="switchNavigation('{NAVIGATION_ID}');"><li class="{NAVIGATION_CLASS}"><span class="{NAVIGATION_CLASS}">{NAVIGATION_GROUP_NAME}</span></li></ul>
 <ul id="navigation_level_2_{NAVIGATION_ID}" class="navigation_level_2 {NAVIGATION_CLASS}">{NAVIGATION_MENU}</ul>
 <!-- END navigationRow -->
 <form id="search" name="search" action="index.php" method="post">
