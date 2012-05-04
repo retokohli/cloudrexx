@@ -78,12 +78,18 @@ class LoginManager {
             'TXT_LOGIN_RESET_PASSWORD'  => $_ARRAYLANG['TXT_LOGIN_RESET_PASSWORD'],
             'TXT_LOGIN_BACK_TO_LOGIN'   => $_ARRAYLANG['TXT_LOGIN_BACK_TO_LOGIN'],
         ));
+        if ($this->objTemplate->blockExists('back_to_login')) {
+            $this->objTemplate->hideBlock('back_to_login');
+        }
         if (isset($_POST['email'])) {
             $email = contrexx_stripslashes($_POST['email']);
             if (($objFWUser->restorePassword($email))) {
                 $statusMessage = str_replace("%EMAIL%", $email, $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD_MAIL_SENT']);
                 if ($this->objTemplate->blockExists('login_lost_password')) {
                     $this->objTemplate->hideBlock('login_lost_password');
+                }
+                if ($this->objTemplate->blockExists('back_to_login')) {
+                    $this->objTemplate->touchBlock('back_to_login');
                 }
             } else {
                 $statusMessage = $objFWUser->getErrorMsg();
@@ -104,7 +110,13 @@ class LoginManager {
         global $_ARRAYLANG, $objFWUser;
 
         $this->objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', '/core_modules/login/template/login_reset_password.html');
-        $this->objTemplate->setVariable('TITLE', $_ARRAYLANG['TXT_LOGIN_SET_NEW_PASSWORD']);
+        $this->objTemplate->setVariable(array(
+            'TITLE'                     => $_ARRAYLANG['TXT_LOGIN_SET_NEW_PASSWORD'],
+            'TXT_LOGIN_BACK_TO_LOGIN'   => $_ARRAYLANG['TXT_LOGIN_BACK_TO_LOGIN'],
+        ));
+        if ($this->objTemplate->blockExists('back_to_login')) {
+            $this->objTemplate->hideBlock('back_to_login');
+        }
         // TODO: Why oh why isn't function resetPassword() located in the AccessLibrary?
         $username = isset($_POST['username']) ? contrexx_stripslashes($_POST['username']) : (isset($_GET['username']) ? contrexx_stripslashes($_GET['username']) : '');
         $restoreKey = isset($_POST['restore_key']) ? contrexx_stripslashes($_POST['restore_key']) : (isset($_GET['restoreKey']) ? contrexx_stripslashes($_GET['restoreKey']) : '');
@@ -117,6 +129,9 @@ class LoginManager {
                 if ($this->objTemplate->blockExists('login_reset_password')) {
                     $this->objTemplate->hideBlock('login_reset_password');
                 }
+                if ($this->objTemplate->blockExists('back_to_login')) {
+                    $this->objTemplate->touchBlock('back_to_login');
+                }
             } else {
                 $statusMessage = $objFWUser->getErrorMsg();
                 $this->objTemplate->setVariable(array(
@@ -126,7 +141,6 @@ class LoginManager {
                     'TXT_LOGIN_PASSWORD_MINIMAL_CHARACTERS' => $_ARRAYLANG['TXT_LOGIN_PASSWORD_MINIMAL_CHARACTERS'],
                     'TXT_LOGIN_SET_PASSWORD_TEXT'           => $_ARRAYLANG['TXT_LOGIN_SET_PASSWORD_TEXT'],
                     'TXT_LOGIN_SET_NEW_PASSWORD'            => $_ARRAYLANG['TXT_LOGIN_SET_NEW_PASSWORD'],
-                    'TXT_LOGIN_BACK_TO_LOGIN'               => $_ARRAYLANG['TXT_LOGIN_BACK_TO_LOGIN'],
                 ));
                 $this->objTemplate->parse('login_reset_password');
             }
@@ -143,7 +157,6 @@ class LoginManager {
                 'TXT_LOGIN_PASSWORD_MINIMAL_CHARACTERS' => $_ARRAYLANG['TXT_LOGIN_PASSWORD_MINIMAL_CHARACTERS'],
                 'TXT_LOGIN_SET_PASSWORD_TEXT'           => $_ARRAYLANG['TXT_LOGIN_SET_PASSWORD_TEXT'],
                 'TXT_LOGIN_SET_NEW_PASSWORD'            => $_ARRAYLANG['TXT_LOGIN_SET_NEW_PASSWORD'],
-                'TXT_LOGIN_BACK_TO_LOGIN'               => $_ARRAYLANG['TXT_LOGIN_BACK_TO_LOGIN'],
             ));
             $this->objTemplate->parse('login_reset_password');
         }
@@ -197,7 +210,7 @@ class LoginManager {
         if (isset($_SESSION['auth']['loginLastAuthFailed'])) {
             $this->objTemplate->setVariable(array(
                 'TXT_LOGIN_SECURITY_CODE'   => $_ARRAYLANG['TXT_LOGIN_SECURITY_CODE'],
-                'CAPTCHA_CODE'              => FWCaptcha::getInstance()->getCode(3),
+                'CAPTCHA_CODE'              => FWCaptcha::getInstance()->getCode(4),
             ));
             $this->objTemplate->parse('captcha');
         } else {
