@@ -161,26 +161,26 @@ class Page extends \Cx\Model\Base\EntityBase
         $this->setUpdatedAtToNow();
 
         $this->validators = array(
-                                  'lang' => new \CxValidateInteger(),
-                                  'type' => new \CxValidateString(array('alphanumeric' => true, 'maxlength' => 255)),
-                                  //caching is boolean, not checked
-                                  'title' => new \CxValidateString(array('maxlength' => 255)),
-                                  'customContent' => new \CxValidateString(array('maxlength' => 64)),
-                                  'cssName' => new \CxValidateString(array('maxlength' => 255)),
-                                  'metatitle' => new \CxValidateString(array('maxlength' => 255)),
-                                  'metadesc' => new \CxValidateString(array('maxlength' => 255)),
-                                  'metakeys' => new \CxValidateString(array('maxlength' => 255)),
-                                  'metarobots' => new \CxValidateString(array('maxlength' => 255)),
-                                  //'start' => maybe date? format?
-                                  //'end' => maybe date? format?
-                                  'editingStatus' => new \CxValidateString(array('maxlength' => 16)),
-                                  'username' => new \CxValidateString(array('maxlength' => 64)),
-                                  //display is boolean, not checked
-                                  //active is boolean, not checked
-                                  'target' => new \CxValidateString(array('maxlength' => 255)),
-                                  'module' => new \CxValidateString(array('alphanumeric' => true)),
-                                  'cmd' => new \CxValidateRegexp(array('pattern' => '/^[A-Za-z0-9_]+$/')),            
-                                  );
+            'lang' => new \CxValidateInteger(),
+            'type' => new \CxValidateString(array('alphanumeric' => true, 'maxlength' => 255)),
+            //caching is boolean, not checked
+            'title' => new \CxValidateString(array('maxlength' => 255)),
+            'customContent' => new \CxValidateString(array('maxlength' => 64)),
+            'cssName' => new \CxValidateString(array('maxlength' => 255)),
+            'metatitle' => new \CxValidateString(array('maxlength' => 255)),
+            'metadesc' => new \CxValidateString(array('maxlength' => 255)),
+            'metakeys' => new \CxValidateString(array('maxlength' => 255)),
+            'metarobots' => new \CxValidateString(array('maxlength' => 255)),
+            //'start' => maybe date? format?
+            //'end' => maybe date? format?
+            'editingStatus' => new \CxValidateString(array('maxlength' => 16)),
+            'username' => new \CxValidateString(array('maxlength' => 64)),
+            //display is boolean, not checked
+            //active is boolean, not checked
+            'target' => new \CxValidateString(array('maxlength' => 255)),
+            'module' => new \CxValidateString(array('alphanumeric' => true)),
+            'cmd' => new \CxValidateRegexp(array('pattern' => '/^[A-Za-z0-9_]+$/')),            
+        );
     }
 
     /**
@@ -1020,47 +1020,77 @@ class Page extends \Cx\Model\Base\EntityBase
 
     /**
      * Copies data from another Page.
-     *
-     * @param \Cx\Model\ContentManager\Page $source
+     * @todo Implement access protection cloning
      * @param boolean $includeContent whether to copy content. defaults to true.
      * @param boolean $includeModuleAndCmd whether to copy module and cmd. defaults to true.
      */
-    public function copyFrom($source, $includeContent=true, $includeModuleAndCmd=true) {
-        $this->setTitle($source->getTitle());
+    private function copy($includeContent=true, $includeModuleAndCmd=true) {
+        $page = new \Cx\Model\ContentManager\Page();
+        
+        $page->setTitle($this->getTitle());
 
         if($includeContent)
-            $this->setContent($source->getContent());
+            $page->setContent($this->getContent());
 
         if($includeModuleAndCmd) {
-            $this->setModule($source->getModule());
-            $this->setCmd($source->getCmd());
+            $page->setModule($this->getModule());
+            $page->setCmd($this->getCmd());
         }
 
-        $this->setNode($source->getNode());
+        $page->setNode($this->getNode());
 
-        $this->setActive($source->getActive());
-        $this->setDisplay($source->getDisplay());
+        $page->setActive($this->getActive());
+        $page->setDisplay($this->getDisplay());
 
-        $this->setLang($source->getLang());
-        $this->setUsername($source->getUsername());
+        $page->setLang($this->getLang());
+        $page->setUsername($this->getUsername());
 
-        $this->setType($source->getType());
-        $this->setCaching($source->getCaching());
-        $this->setContentTitle($source->getContentTitle());
-        $this->setSlug($source->getSlug());
-        $this->setCustomContent($source->getCustomContent());
-        $this->setCssName($source->getCssName());
-        $this->setSkin($source->getSkin());
-        $this->setMetatitle($source->getMetatitle());
-        $this->setMetadesc($source->getMetadesc());
-        $this->setMetakeys($source->getMetakeys());
-        $this->setMetarobots($source->getMetarobots());
-        $this->setStart($source->getStart());
-        $this->setEnd($source->getEnd());
-        $this->setEditingStatus($source->getEditingStatus());
-        $this->setTarget($source->getTarget());
+        $page->setType($this->getType());
+        $page->setCaching($this->getCaching());
+        $page->setContentTitle($this->getContentTitle());
+        $page->setSlug($this->getSlug());
+        $page->setCustomContent($this->getCustomContent());
+        $page->setCssName($this->getCssName());
+        $page->setSkin($this->getSkin());
+        $page->setMetatitle($this->getMetatitle());
+        $page->setMetadesc($this->getMetadesc());
+        $page->setMetakeys($this->getMetakeys());
+        $page->setMetarobots($this->getMetarobots());
+        $page->setStart($this->getStart());
+        $page->setEnd($this->getEnd());
+        $page->setEditingStatus($this->getEditingStatus());
+        $page->setTarget($this->getTarget());
         //TODO: copy access protection
+        \DBG::msg('\Cx\Model\ContentManager\Page::copy(): Access cloning is not yet implemented, copied page is not protected!');
+        return $page;
     }
+    
+    /**
+     * Creates a copy of this page which belongs to another node.
+     *
+     * @param \Cx\Model\ContentManager\Node $destinationNode The other node
+     * @param boolean $includeContent whether to copy content. defaults to true.
+     * @param boolean $includeModuleAndCmd whether to copy module and cmd. defaults to true.
+     */
+    public function copyToNode($destinationNode, $includeContent=true, $includeModuleAndCmd=true) {
+        $copy = $this->copy($includeContent, $includeModuleAndCmd);
+        $copy->setNode($destinationNode);
+        return $copy;
+    }
+    
+    /**
+     * Creates a copy of this page with a different language.
+     *
+     * @param int $destinationLang Language ID to set
+     * @param boolean $includeContent whether to copy content. defaults to true.
+     * @param boolean $includeModuleAndCmd whether to copy module and cmd. defaults to true.
+     */
+    public function copyToLanguage($destinationLang, $includeContent=true, $includeModuleAndCmd=true) {
+        $copy = $this->copy($includeContent, $includeModuleAndCmd);
+        $copy->setLang($destinationLang);
+        return $copy;
+    }
+    
     /**
      * @var string $contentTitle
      */
@@ -1296,5 +1326,72 @@ class Page extends \Cx\Model\Base\EntityBase
     public function setProtection($protection)
     {
         $this->protection = $protection;
+    }
+
+    /**
+     * Creates a copy of $source in the desired language and returns it.
+     *
+     * Does not flush EntityManager.
+     *
+     * This function takes care of maintaining the tree.
+     * It creates empty Pages in the desired language where the parent Nodes do not have such associated Pages.
+     *
+     * @param \Cx\Model\ContentManager\Page $source the source page
+     * @param int $targetLang target language id
+     * @param boolean $activate whether the copy should be activated. defaults to false.
+     * @param boolean $copyContent whether the page content should be copied. defaults to false.
+     * @param boolean $copyModuleAndCmd whether module and cmd should be copied. defaults to false.
+     * @throws \Cx\Model\ContentManager\Repository\PageRepository\TranslateException if the page is already translated
+     *
+     * @returns \Cx\Model\ContentManager\Page the copy
+     */
+    public function translate($targetLang, $activate = false, $copyContent = false, $copyModuleAndCmd = false, $copyOtherProperties = false) {
+        // check if target exists -> throw...
+        $page = $this->copyToLang($targetLang, $copyContent, $copyModuleAndCmd);
+        $page->setActive($activate);
+        return $page;
+    }
+    
+    /**
+     * Sanitize tree.
+     * Translates all missing parent pages in the desired language
+     * @param int $targetLang Language ID of the branch to sanitize
+     * @return type 
+     */
+    public function setupPath($targetLang) {
+        $node = $this->getNode()->getParent();
+        
+        $pages = $node->getPagesByLang();
+        if (!isset($pages[$targetLang])) {
+            $page = $pages[$this->getLang()]->translate($targetLang);
+            $page->setDisplay(false);
+            \Env::em()->persist($page);
+            // recursion
+            return $page->setupPath($targetLang);
+        } else {
+            return;
+        }
+    }
+
+    /**
+     * Get a pages' path.
+     * 
+     * @return string path, e.g. 'This/Is/It'
+     */
+    public function getPath() {
+        return \Env::em()->getRepository("Cx\Model\ContentManager\Page")->getPath($this);
+    }
+
+    /**
+     * Returns "$protocolAndDomainWithPathOffset/link/to/page$params.
+     * Notice that there is no trailing slash inserted after the link.
+     * If you need one, prepend it to $params.
+     * @param string $protocolAndDomain 'http://example.com/cms' - will generate absolute link if left empty
+     * @param string $params '?a=b'
+     *
+     */
+    public function getURL($protocolAndDomainWithPathOffset, $params) {
+        $path = $this->getPath($this);
+        return "$protocolAndDomainWithPathOffset/$path$params";
     }
 }
