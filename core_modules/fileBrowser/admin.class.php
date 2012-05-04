@@ -336,7 +336,7 @@ class FileBrowser {
      */
     function _setContent($noAliases=false)
     {
-        global $objDatabase, $_CONFIG;
+        global $objDatabase, $_CONFIG, $_FRONTEND_LANGID;
 
         $this->_objTpl->addBlockfile('FILEBROWSER_CONTENT', 'fileBrowser_content', 'module_fileBrowser_content.html');
         $this->_objTpl->setVariable('FILEBROWSER_NOT_ABSOLUTE_URI', !$this->_absoluteURIs ? 'true' : 'false');
@@ -372,7 +372,14 @@ class FileBrowser {
                 $url = "'".$link."'".($getPageId ? ','.$arrPage['catid'] : '')."";
 
                 if($arrPage['alias'] && !$noAliases) {
-                    $url = "'" . '[[NODE_' . $arrPage['node_id'] . '_' . $this->_frontendLanguageId . "]]'";
+                    $url = "'" . '[[NODE_' . $arrPage['node_id'];
+                    // if language != current language or $alwaysReturnLanguage
+                    if ($this->_frontendLanguageId != $_FRONTEND_LANGID ||
+                            (isset($_GET['alwaysReturnLanguage']) &&
+                            $_GET['alwaysReturnLanguage'] == 'true')) {
+                        $url .= '_' . $this->_frontentLanguageId;
+                    }
+                    $url .= "]]'";
                 }
                 
                 $this->_objTpl->setVariable(array(
