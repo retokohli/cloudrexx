@@ -139,10 +139,9 @@ class Page extends \Cx\Model\Base\EntityBase
     private $skin;
 
     /**
-     * Remembers whether the routing assigned fallback content to this page via
-     * @link getFallbackContent(). In this case, we should not persist the entity.
+     * Tells wheter this is a virtual (non DB) page or not
      */
-    protected $containsFallbackContent = false;
+    protected $isVirtual = false;
 
     public function __construct() {
         //default values
@@ -626,7 +625,7 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function isTargetInternal() {
         //internal targets are formed like <node_id>[-<lang_id>]|<querystring>
-        return is_numeric(substr($this->target,0,1));
+        return preg_match('/\[\[NODE_(\d+)(_(\d+))*\]\]/', $this->target);
     }
 
     /**
@@ -645,12 +644,17 @@ class Page extends \Cx\Model\Base\EntityBase
         $t = $this->getTarget();
         $matches = array();
         
-        preg_match('#(\d+)(-(\d+))?\|(.*)#', $t, $matches);
+        preg_match('/\[\[NODE_(\d+)(_(\d+))*\]\](\S)*/', $t, $matches);
+        
+        // Indexes 1 and 2 are optinal
+        $matches[3] = empty($matches[3]) ? '' : $matches[3];
+        $matches[4] = empty($matches[4]) ? '' : $matches[4];
+        
         return array(
-                     'nodeId' => $matches[1],
-                     'langId' => $matches[3],
-                     'queryString' => $matches[4],
-                     );
+            'nodeId' => $matches[1],
+            'langId' => $matches[3],
+            'queryString' => $matches[4],
+        );
     }
 
     /**
@@ -1038,13 +1042,19 @@ class Page extends \Cx\Model\Base\EntityBase
     /**
      * Copies data from another Page.
      * @todo Implement access protection cloning
-     * @param boolean $includeContent whether to copy content. defaults to true.
-     * @param boolean $includeModuleAndCmd whether to copy module and cmd. defaults to true.
+     * @param boolean $includeContent Whether to copy content. Defaults to true.
+     * @param boolean $includeModuleAndCmd Whether to copy module and cmd. Defaults to true.
+     * @param boolean $includeName Wheter to copy title, content title and slug. Defaults to true.
+     * @param boolean $includeMetaData Wheter to copy meta data. Defaults to true.
      */
-    private function copy($includeContent=true, $includeModuleAndCmd=true) {
+    private function copy($includeContent=true, $includeModuleAndCmd=true, $includeName = true, $includeMetaData = true) {
         $page = new \Cx\Model\ContentManager\Page();
         
-        $page->setTitle($this->getTitle());
+        if ($includeName) {
+            $page->setContentTitle($this->getContentTitle());
+            $page->setTitle($this->getTitle());
+            $page->setSlug($this->getSlug());
+        }
 
         if($includeContent)
             $page->setContent($this->getContent());
@@ -1052,6 +1062,13 @@ class Page extends \Cx\Model\Base\EntityBase
         if($includeModuleAndCmd) {
             $page->setModule($this->getModule());
             $page->setCmd($this->getCmd());
+        }
+        
+        if ($includeMetaData) {
+            $page->setMetatitle($this->getMetatitle());
+            $page->setMetadesc($this->getMetadesc());
+            $page->setMetakeys($this->getMetakeys());
+            $page->setMetarobots($this->getMetarobots());
         }
 
         $page->setNode($this->getNode());
@@ -1064,21 +1081,17 @@ class Page extends \Cx\Model\Base\EntityBase
 
         $page->setType($this->getType());
         $page->setCaching($this->getCaching());
-        $page->setContentTitle($this->getContentTitle());
-        $page->setSlug($this->getSlug());
         $page->setCustomContent($this->getCustomContent());
         $page->setCssName($this->getCssName());
+        $page->setCssNavName($this->getCssNavName());
         $page->setSkin($this->getSkin());
-        $page->setMetatitle($this->getMetatitle());
-        $page->setMetadesc($this->getMetadesc());
-        $page->setMetakeys($this->getMetakeys());
-        $page->setMetarobots($this->getMetarobots());
         $page->setStart($this->getStart());
         $page->setEnd($this->getEnd());
         $page->setEditingStatus($this->getEditingStatus());
         $page->setTarget($this->getTarget());
+        $page->setLinkTarget($this->getLinkTarget());
         //TODO: copy access protection
-        \DBG::msg('\Cx\Model\ContentManager\Page::copy(): Access cloning is not yet implemented, copied page is not protected!');
+        //\DBG::msg('\Cx\Model\ContentManager\Page::copy(): Access cloning is not yet implemented, copied page is not protected!');
         return $page;
     }
     
@@ -1086,11 +1099,13 @@ class Page extends \Cx\Model\Base\EntityBase
      * Creates a copy of this page which belongs to another node.
      *
      * @param \Cx\Model\ContentManager\Node $destinationNode The other node
-     * @param boolean $includeContent whether to copy content. defaults to true.
-     * @param boolean $includeModuleAndCmd whether to copy module and cmd. defaults to true.
+     * @param boolean $includeContent Whether to copy content. Defaults to true.
+     * @param boolean $includeModuleAndCmd Whether to copy module and cmd. Defaults to true.
+     * @param boolean $includeName Wheter to copy title, content title and slug. Defaults to true.
+     * @param boolean $includeMetaData Wheter to copy meta data. Defaults to true.
      */
-    public function copyToNode($destinationNode, $includeContent=true, $includeModuleAndCmd=true) {
-        $copy = $this->copy($includeContent, $includeModuleAndCmd);
+    public function copyToNode($destinationNode, $includeContent=true, $includeModuleAndCmd=true, $includeName = true, $includeMetaData = true) {
+        $copy = $this->copy($includeContent, $includeModuleAndCmd, $includeName, $includeMetaData);
         $copy->setNode($destinationNode);
         return $copy;
     }
@@ -1099,11 +1114,13 @@ class Page extends \Cx\Model\Base\EntityBase
      * Creates a copy of this page with a different language.
      *
      * @param int $destinationLang Language ID to set
-     * @param boolean $includeContent whether to copy content. defaults to true.
-     * @param boolean $includeModuleAndCmd whether to copy module and cmd. defaults to true.
+     * @param boolean $includeContent Whether to copy content. Defaults to true.
+     * @param boolean $includeModuleAndCmd Whether to copy module and cmd. Defaults to true.
+     * @param boolean $includeName Wheter to copy title, content title and slug. Defaults to true.
+     * @param boolean $includeMetaData Wheter to copy meta data. Defaults to true.
      */
-    public function copyToLanguage($destinationLang, $includeContent=true, $includeModuleAndCmd=true) {
-        $copy = $this->copy($includeContent, $includeModuleAndCmd);
+    public function copyToLang($destinationLang, $includeContent=true, $includeModuleAndCmd=true, $includeName = true, $includeMetaData = true) {
+        $copy = $this->copy($includeContent, $includeModuleAndCmd, $includeName, $includeMetaData);
         $copy->setLang($destinationLang);
         return $copy;
     }
@@ -1236,20 +1253,27 @@ class Page extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Whether the Page contains fallback content.
-     * If so, it should not be persisted.
+     * Whether the Page is intended to exist in DB or not.
      * @return boolean
      */
-    public function hasFallbackContent() {
-        return $this->containsFallbackContent;
+    public function isVirtual() {
+        return $this->isVirtual;
     }
-
+    
+    /**
+     * Sets this pages virtual flag
+     * @param boolean $virtual 
+     */
+    public function setVirtual($virtual) {
+        $this->isVirtual = $virtual;
+    }
+    
     /**
      * Copies the content from the other page given.
      * @param \Cx\Model\ContentManager\Page $page
      */
     public function getFallbackContentFrom($page) {
-        $this->containsFallbackContent = true;
+        $this->virtual = true;
         $this->content = $page->getContent();
         $this->module = $page->getModule();
         $this->cmd = $page->getCmd();
@@ -1257,7 +1281,11 @@ class Page extends \Cx\Model\Base\EntityBase
         $this->customContent = $page->getCustomContent();
         $this->cssName = $page->getCssName();
         $this->cssNavName = $page->getCssNavName();
-    }
+        
+        $this->type = $page->getType();
+        $this->target = $page->getTarget();
+   }
+    
     /**
      * @var string $cssNavName
      */
@@ -1346,13 +1374,11 @@ class Page extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Creates a copy of $source in the desired language and returns it.
+     * Creates a copy of $this in the desired language and returns it.
      *
      * Does not flush EntityManager.
      *
-     * This function takes care of maintaining the tree.
-     * It creates empty Pages in the desired language where the parent Nodes do not have such associated Pages.
-     *
+     * @todo Check fallback logic
      * @param \Cx\Model\ContentManager\Page $source the source page
      * @param int $targetLang target language id
      * @param boolean $activate whether the copy should be activated. defaults to false.

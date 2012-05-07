@@ -192,7 +192,7 @@ class Resolver {
                 $nId = $this->page->getTargetNodeId();
                 $lId = $this->page->getTargetLangId();
                 $qs = $this->page->getTargetQueryString();
-
+                
                 $crit = array(
                     'node' => $nId
                 );
@@ -217,7 +217,7 @@ class Resolver {
 
                 $targetPage = $targetPage[0];
 
-                $targetPath = $this->pageRepo->getPath($targetPage);
+                $targetPath = substr($targetPage->getPath(), 1);
 
                 $this->url->setPath($targetPath.$qs);
                 $this->isRedirection = true;
@@ -231,7 +231,7 @@ class Resolver {
         
         //if we followed one or more redirections, the user shall be redirected by 302.
         if($this->isRedirection && !$this->forceInternalRedirection) {
-            header('Location: '.$this->pageRepo->getURL($this->page, $this->pathOffset, $params));
+            header('Location: '.$this->page->getURL($this->pathOffset, ''));
             die();
         }
         
@@ -252,6 +252,7 @@ class Resolver {
                 throw new ResolverException('Followed fallback page, but couldn\'t find content of fallback Language');
 
             $page->getFallbackContentFrom($fallbackPage);
+            $this->resolve(true);
         }
     }
 
