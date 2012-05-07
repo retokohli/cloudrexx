@@ -198,6 +198,9 @@ class AliasAdmin extends aliasLib
         }
     }
 
+    /**
+     * @todo Use param $page (to update a page without prividing an id per GET)
+     */
     function _modifyAlias($array, $page = null)
     {
         global $_ARRAYLANG, $_CONFIG;
@@ -226,42 +229,42 @@ class AliasAdmin extends aliasLib
             }
 
             // handle existing slugs pointing to the target
-            $aliasses = array();
+            $aliases = array();
             if (!empty($array['alias_aliases']) && is_array($array['alias_aliases'])) {
                 $nr = 0;
                 foreach ($array['alias_aliases'] as $sourceId => $aliasSource) {
                     if (!empty($aliasSource)) {
-                        $aliasses[intval($sourceId)] = $aliasSource;
+                        $aliases[intval($sourceId)] = $aliasSource;
                     }
                     $nr++;
                 }
             }
             
             // delete removed
-            $sources = $this->_getAliassesWithSameTarget($alias);
+            $sources = $this->_getAliasesWithSameTarget($alias);
             foreach ($sources as $sourceAlias) {
-                if (!isset($aliasses[$sourceAlias->getNode()->getId()])) {
+                if (!isset($aliases[$sourceAlias->getNode()->getId()])) {
                     // alias is no longer listet in POST: delete it
                     $this->_delete($sourceAlias->getNode()->getId());
                 }
             }
 
             // handle enw slugs pointing to the target
-            $newaliasses = array();
+            $newaliases = array();
             if (!empty($array['alias_aliases_new']) && is_array($array['alias_aliases_new'])) {
                 foreach ($array['alias_aliases_new'] as $id => $newAliasSource) {
                     if (!empty($newAliasSource)) {
-                        $newaliasses[] = $newAliasSource;
+                        $newaliases[] = $newAliasSource;
                     }
                 }
             }
             
             // save information
             if (!empty($newtarget)) {
-                if (count($aliasses) || count($newaliasses)) {
+                if (count($aliases) || count($newaliases)) {
                     $error = false;
 
-                    foreach ($aliasses as $id=>$slug) {
+                    foreach ($aliases as $id=>$slug) {
                         if (!$this->_saveAlias($slug, $newtarget, $newtype == 'local', $id)) {
                             $this->arrStatusMsg['error'][] = $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_UPDATE_FAILED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_ADD_FAILED'];
                             $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_RETRY_OPERATION'];
@@ -270,14 +273,14 @@ class AliasAdmin extends aliasLib
                         }
                     }
                     if (!$error) {
-                        foreach ($newaliasses as $id=>$slug) {
+                        foreach ($newaliases as $id=>$slug) {
                             if (!$this->_saveAlias($slug, $newtarget, $newtype == 'local')) {
                                 $this->arrStatusMsg['error'][] = $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_UPDATE_FAILED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_ADD_FAILED'];
                                 $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_RETRY_OPERATION'];
                                 break;
                             }
                         }
-                        // load new aliasses
+                        // load new aliases
                     }
                     if ($_CONFIG['xmlSitemapStatus'] == 'on' && ($result = XMLSitemap::write()) !== true) {
                         $this->arrStatusMsg['error'][] = $result;
@@ -355,7 +358,7 @@ class AliasAdmin extends aliasLib
 
         $nr = 0;
         
-        $sources = $this->_getAliassesWithSameTarget($alias);
+        $sources = $this->_getAliasesWithSameTarget($alias);
 
         foreach ($sources as $sourceAlias) {
             $url = $sourceAlias->getSlug();
