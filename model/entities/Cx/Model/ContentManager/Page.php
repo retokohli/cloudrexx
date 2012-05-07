@@ -1396,7 +1396,15 @@ class Page extends \Cx\Model\Base\EntityBase
      * @return string path, e.g. 'This/Is/It'
      */
     public function getPath() {
-        return \Env::em()->getRepository("Cx\Model\ContentManager\Page")->getPath($this);
+        $path = '';
+        $parent = $this->getNode()->getParent();
+        if ($parent) {
+            $parentPage = $parent->getPage($this->getLang());
+            if ($parentPage) {
+                $path = $parentPage->getPath();
+            }
+        }
+        return $path . '/' . $this->getSlug();
     }
 
     /**
@@ -1409,6 +1417,6 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function getURL($protocolAndDomainWithPathOffset, $params) {
         $path = $this->getPath($this);
-        return "$protocolAndDomainWithPathOffset/$path$params";
+        return $protocolAndDomainWithPathOffset . $path . $params;
     }
 }
