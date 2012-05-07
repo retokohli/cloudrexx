@@ -136,6 +136,7 @@ class adminMenu
 
                     // active exceptions for media and content module
                     // ask: thomas.daeppen@comvation.com
+                    $linkCmd = '';
                     if (preg_match('/cmd=(.+?)(?:&amp;(.+))?$/', $link_data[2], $arrMatch)) {
                         $linkCmd = $arrMatch[1];
 
@@ -202,8 +203,8 @@ class adminMenu
                         }
                     }
 
-                    $cssClass = $this->activeCmd == $linkCmd ? 'active' : '';
-                    $navigation.= "<li class='$cssClass'><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
+                    $cssClass = $this->activeCmd == $linkCmd ? ' class="active"' : '';
+                    $navigation.= "<li$cssClass><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
                 }
             }
 
@@ -218,7 +219,8 @@ class adminMenu
             }
         }
 
-        if (empty($_GET['cmd'])) {
+        if (empty($_GET['cmd']) && !isset($_COOKIE['navigation_level_2_active'])) {
+            setcookie('navigation_level_2_active', 'dashboard');
             $_COOKIE['navigation_level_2_active'] = 'dashboard';
         }
 

@@ -12,16 +12,16 @@
             <input type="hidden" name="page[node]" id="pageNode" value="" />
             <input type="hidden" name="source_page" id="sourcePage" value="" />
 
-            <a id="toggle_titles" class="heading toggle"><label for="page_name">{TXT_CORE_CM_PAGE_NAME}</label></a>
-            <div id="titles">
+            <a id="toggle_titles" class="toggle"><label for="page_name">{TXT_CORE_CM_PAGE_NAME}</label></a>
+            <div id="titles" style="{TITLES_DISPLAY_STYLE}">
                 <input type="text" class="title" name="page[name]" id="page_name" />
                 <span class="info">{TXT_CORE_CM_PAGE_NAME_INFO}</span>
                 <label for="page_title">{TXT_CORE_CM_PAGE_TITLE}</label>
                 <input type="text" class="title" name="page[title]" id="page_title" />
                 <span class="info">{TXT_CORE_CM_PAGE_TITLE_INFO}</span>
             </div>
-            <a id="toggle_type" class="heading toggle">{TXT_CORE_CM_TYPE}</a>
-            <div id="type" class="clearfix">
+            <a id="toggle_type" class="toggle">{TXT_CORE_CM_TYPE}</a>
+            <div id="type" style="{TYPE_DISPLAY_STYLE}">
 	      <input type="hidden" name="page[type]" value="off" />
                 <input type="radio" name="page[type]" value="content" id="type_content" class="radio" checked="checked" />
                 <label for="type_content">{TXT_CORE_CM_TYPE_CONTENT}</label>
@@ -50,13 +50,13 @@
                 <span class="info type_hidable type_fallback">{TXT_CORE_CM_TYPE_FALLBACK_INFO}</span>
             </div>
 
-            <div class="type_hidable type_application type_content" style="margin-top: 20px;">
+            <div id="ckeditor" class="type_hidable type_application type_content">
                 <textarea id="cm_ckeditor" rows="15" cols="45" name="page[content]"></textarea>
             </div>
         </div>
         <div id="page_meta">
 	  <input type="hidden" name="page[metarobots]" value="off" />
-            <a class="heading toggle_checkbox" id="page[metarobots]">{TXT_CORE_CM_SE_INDEX}</a>
+            <a class="toggle_checkbox" id="page[metarobots]">{TXT_CORE_CM_SE_INDEX}</a>
             <div id="metadata" style="display: none;">
                 <label for="page_metatitle">{TXT_CORE_CM_METATITLE}</label>
                 <input type="text" name="page[metatitle]" />
@@ -73,7 +73,7 @@
         </div>
         <div id="page_access">
 	  <input type="hidden" name="page[protection_frontend]" value="off" />
-            <a class="heading toggle_checkbox" id="page[protection_frontend]">{TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND}</a>
+            <a class="toggle_checkbox" id="page[protection_frontend]">{TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND}</a>
             <div id="access_protection_backend" style="display: none;">
                 <select style="width: 300px; height: 250px" id="frontendAccessGroups" class="multiselect" multiple="multiple" name="frontendGroups[]">
                   <option value="test">unselected</option>
@@ -81,7 +81,7 @@
                 </select>
             </div>
 	    <input type="hidden" name="page[protection_backend]" value="off" />
-            <a class="heading toggle_checkbox" id="page[protection_backend]">{TXT_CORE_CM_ACCESS_PROTECTION_BACKEND}</a>
+            <a class="toggle_checkbox" id="page[protection_backend]">{TXT_CORE_CM_ACCESS_PROTECTION_BACKEND}</a>
             <div id="access_protection_backend" style="display: none;">
                 <select style="width: 300px; height: 250px" id="backendAccessGroups" class="multiselect" multiple="multiple" name="backendGroups[]">
                   <option value="test">unselected</option>
@@ -91,14 +91,14 @@
         </div>
         <div id="page_settings">
 	    <input type="hidden" name="page[scheduled_publishing]" value="off" />
-            <a class="heading toggle_checkbox" id="page[scheduled_publishing]">{TXT_CORE_CM_SCHEDULED_PUBLISHING}</a>
+            <a class="toggle_checkbox" id="page[scheduled_publishing]">{TXT_CORE_CM_SCHEDULED_PUBLISHING}</a>
             <div id="scheduled_publishing" style="display: none;">
                 Von: <input type="text" name="page[start]" value="von" class="date" />
                 Bis: <input type="text" name="page[end]" value="bis" class="date" />
             </div>
 
-            <a href="#" class="heading toggle">{TXT_CORE_CM_THEMES}</a>
-            <div id="themes">
+            <a href="#" class="toggle">{TXT_CORE_CM_THEMES}</a>
+            <div id="themes" style="{THEMES_DISPLAY_STYLE}">
                 <select id="page_skin" name="page[skin]">
                     <option value="">(Default)</option>
                     {SKIN_OPTIONS}
@@ -114,9 +114,10 @@
                 <span class="info">{TXT_CORE_CM_CSS_CLASS_INFO}</span>
             </div>
 	    <input type="hidden" name="page[caching]" value="off" />
-            <a class="heading toggle_checkbox" id="page[caching]">{TXT_CORE_CM_CACHE}</a>
-            <a href="#" class="heading toggle">{TXT_CORE_CM_NAVIGATION}</a>
-            <div id="navigation">
+            <a class="toggle_checkbox" id="page[caching]">{TXT_CORE_CM_CACHE}</a>
+            <div></div>
+            <a href="#" class="toggle">{TXT_CORE_CM_NAVIGATION}</a>
+            <div id="navigation" style="{NAVIGATION_DISPLAY_STYLE}">
                 <label for="page_link_target">{TXT_CORE_CM_LINK_TARGET}</label>
                 <select id="page_link_target" name="page[link_target]">
                     <option value="">(None)</option>
@@ -146,7 +147,8 @@
                 <span class="info">{TXT_CORE_CM_CSS_NAV_CLASS_INFO}</span>
             </div>
 	    <input type="hidden" name="page[sourceMode]" value="off" />
-            <a class="heading toggle_checkbox" id="page[sourceMode]">{TXT_CORE_CM_SOURCE_MODE}</a>
+            <a class="toggle_checkbox" id="page[sourceMode]">{TXT_CORE_CM_SOURCE_MODE}</a>
+            <div></div>
         </div>
       </form>
 
