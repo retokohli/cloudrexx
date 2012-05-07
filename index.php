@@ -375,7 +375,6 @@ $isRegularPageRequest = !isset($_REQUEST['standalone']) || $_REQUEST['standalone
 // Regular page request
 if ($isRegularPageRequest) {
 // TODO: history (empty($history) ? )
-
     if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && empty($sessionObj)) {
         $sessionObj = new cmsSession();
     }
@@ -400,7 +399,7 @@ if ($isRegularPageRequest) {
           We try to locate a module page via cmd and section (if provided).
           If that doesn't work, an error is shown.
         */
-
+        
         // a: 'home' page
         $urlPointsToHome =    $url->getSuggestedTargetPath() == 'index.php'
                            || $url->getSuggestedTargetPath() == '';
@@ -413,55 +412,14 @@ if ($isRegularPageRequest) {
         if($section) {
             $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
             
-            if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && !empty($_SESSION['page'])) {
-                $data = $_SESSION['page'];
-                $pg = Env::get('pageguard');
-                
-                $page = new \Cx\Model\ContentManager\Page();
-                $nodeRepo = Env::em()->getRepository('Cx\Model\ContentManager\Node');
-                $node = new \Cx\Model\ContentManager\Node();
-                $node->setParent($nodeRepo->getRoot());
-                $nodes = $nodeRepo->findAll();
-                $lastNode = end($nodes);
-                $node->setLft($lastNode->getRgt() + 1);
-                $node->setRgt($lastNode->getRgt() + 2);
-                $node->setLvl(1);
-                $node->addPages($page);
-                $page->setNode($node);
-                
-                unset($data['pageId']);
-                $page->setLang(FWLanguage::getLanguageIdByCode($data['lang']));
-                unset($data['lang']);
-                $page->updateFromArray($data);
-                $page->setUpdatedAtToNow();
-                $page->setActive(true);
-                $page->validate();
-                
-                /*$uow = Env::em()->getUnitOfWork();
-                $ident = $uow->getEntityIdentifier($page);
-                Env::em()->getUnitOfWork()->registerManaged($page, $ident, array());
-                $ident = $uow->getEntityIdentifier($node);
-                Env::em()->getUnitOfWork()->registerManaged($node, $ident, array());
-                Env::em()->merge($node);
-                Env::em()->persist($node);
-                Env::em()->merge($page);
-                Env::em()->getUnitOfWork()->addToIdentityMap($page);
-                Env::em()->getUnitOfWork()->addToIdentityMap($node);
-                Env::em()->persist($page);
-                $page->setId(429);
-                Env::em()->persist($page);
-                var_dump($page->getId());*/
-                
-            } else {
-                $crit = array(
-                     'module' => $section,
-                     'type' => 'application',
-                     'lang' => FRONTEND_LANG_ID,
-                     'cmd' => $command
-                );
+            $crit = array(
+                 'module' => $section,
+                 'type' => 'application',
+                 'lang' => FRONTEND_LANG_ID,
+                 'cmd' => $command
+            );
 
-                $page = $pageRepo->findOneBy($crit);
-            }
+            $page = $pageRepo->findOneBy($crit);
 
             // if no page was found so far,
             // but, because the request was done using the legacy module request notation (?section=module)

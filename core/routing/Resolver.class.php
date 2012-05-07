@@ -71,6 +71,7 @@ class Resolver {
         $this->lang = $lang;
         $this->pathOffset = $pathOffset;
         $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
+        $this->nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
         $this->forceInternalRedirection = $forceInternalRedirection;
 
         $this->fallbackLanguages = $fallbackLanguages;
@@ -117,12 +118,46 @@ class Resolver {
             //(I) see what the model has for us, including aliases.
             $result = $this->pageRepo->getPagesAtPath($path, null, $this->lang, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
 
+            if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && !empty($_SESSION['page'])) {
+                $data = $_SESSION['page'];
+                
+                $page = $this->pageRepo->findOneById($data['pageId']);
+                if (!$page) {
+                    $page = new \Cx\Model\ContentManager\Page();
+                    $node = new \Cx\Model\ContentManager\Node();
+                    $node->setParent($this->nodeRepo->getRoot());
+                    $this->nodeRepo->getRoot()->addChildren($node);
+                    $node->addPages($page);
+                    $page->setNode($node);
+                    
+                    $this->pageRepo->addVirtualPage($page);
+                }
+                
+                unset($data['pageId']);
+                $page->setLang(\FWLanguage::getLanguageIdByCode($data['lang']));
+                unset($data['lang']);
+                $page->updateFromArray($data);
+                $page->setUpdatedAtToNow();
+                $page->setActive(true);
+                $page->setLinkTarget('?pagePreview=1');
+                //$page->setVirtual(true);
+                $page->validate();
+                
+                $this->page = $page;
+            }
+
             //(II) sort out errors
             if(!$result) {
+                if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && !empty($_SESSION['page'])) {
+                    return;
+                }
                 throw new ResolverException('Unable to locate page (tried path ' . $path .').');
             }
 
             if(!$result['page']) {
+                if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && !empty($_SESSION['page'])) {
+                    return;
+                }
                 throw new ResolverException('Unable to locate page for this language. (tried path ' . $path .').');
             }
 
@@ -135,25 +170,6 @@ class Resolver {
                 $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
 
                 $logRepo->revert($result['page'], $_GET['history']);
-            }
-
-            if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && !empty($_SESSION['page'])) {
-                $data = $_SESSION['page'];
-                
-                $page = $pageRepo->findOneById($data['pageId']);
-                if (!$page) {
-                    throw new ResolverException('Page does not exist.');
-                }
-                
-                unset($data['pageId']);
-                $page->setLang(\FWLanguage::getLanguageIdByCode($data['lang']));
-                unset($data['lang']);
-                $page->updateFromArray($data);
-                $page->setUpdatedAtToNow();
-                $page->setActive(true);
-                $page->validate();
-                
-                $result['page'] = $page;
             }
 
             $this->page = $result['page'];

@@ -47,26 +47,13 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
          */
         if($this->rootNode) {
             $this->startLevel = $this->rootNode->getLvl() + 1;
-
-            if ($this->currentPage->getNode()->getId()) {
-                $page = $this->rootNode->getPage($lang);
-                $this->startPath = '/'.$this->pageRepo->getPath($page);
-            } else {
-                $this->startPath = '/';
-            }
+            $page = $this->rootNode->getPage($lang);
+            $this->startPath = $page->getPath();
         }
 
         $this->fetchTree();
-        /*$this->tree = $this->pageRepo->findAll();
-        foreach ($this->tree as $id=>$page) {
-            echo $id . ' => ' . $page->getTitle() . '<br />';
-        }*/
         if($this->currentPage) {
-            if ($this->currentPage->getNode()->getId()) {
-                $this->currentPagePath = '/'.$this->pageRepo->getPath($this->currentPage);
-            } else {
-                $this->currentPagePath = '/';
-            }
+            $this->currentPagePath = $this->currentPage->getPath();
         }
         //determine whether the current page is attached to the user-provided
         //root node. in this case, internalRender needs to be called with
@@ -78,7 +65,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
     }
 
     private function fetchTree() {
-        $this->tree = $this->pageRepo->getTreeByTitle($this->rootNode, $this->lang, true);
+        $this->tree = $this->pageRepo->getTreeByTitle($this->rootNode, $this->lang, true, true);
     }
 
     /**
@@ -147,6 +134,10 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
                 }
                   
                 $dontDescendNext = $this->currentPagePath == $pathOfThis;
+            }
+            
+            if (/*$page->isVirtual()*/true && $page->getLinkTarget() != '') {
+                $pathOfThis .= $page->getLinkTarget();
             }
 
             $content .= $this->renderElement($title, $level, $parseChildren, $lang, $pathOfThis, $current, $page);

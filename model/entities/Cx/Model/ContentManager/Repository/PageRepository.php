@@ -15,8 +15,9 @@ class PageRepository extends EntityRepository {
     const SEARCH_MODE_PAGES_ONLY = 1;
     const SEARCH_MODE_ALIAS_ONLY = 2;
     const SEARCH_MODE_ALL = 3;
-    protected $em = null;
     const DataProperty = '__data';
+    protected $em = null;
+    private $virtualPages = array();
 
     public function __construct(EntityManager $em, ClassMetadata $class)
     {
@@ -45,6 +46,51 @@ class PageRepository extends EntityRepository {
         }
 
         return $ret;
+    }
+
+    public function addVirtualPage($virtualPage, $afterSlug = '') {
+        //$virtualPage->setVirtual(true);
+        if (!$virtualPage->getLang()) {
+            $virtualPage->setLang(FRONTEND_LANG_ID);
+        }
+        $this->virtualPages[] = array(
+            'page'      => $virtualPage,
+            'afterSlug' => $afterSlug,
+        );
+    }
+    
+    private function addVirtualTree($tree, $lang, $rootNodeLvl) {
+        foreach ($this->virtualPages as $virtualPage) {
+            $page = $virtualPage['page'];
+            $node = $page->getNode();
+            if (count(explode('/', $page->getPath())) - 2 != $rootNodeLvl) {
+                continue;
+            }
+            $afterSlug = $virtualPage['afterSlug'];
+            
+            if (!empty($afterSlug)) {
+                $position = array_search($afterSlug, array_keys($tree)) + 1;
+                $head = array_splice($tree, 0, $position);
+                $insert[$page->getSlug()] = array(
+                    '__data' => array(
+                        'lang' => array($lang),
+                        'page' => $page,
+                        'node' => $node,
+                    ),
+                );
+                $tree = array_merge($head, $insert, $tree);
+            } else {
+                $tree[$page->getSlug()] = array(
+                    '__data' => array(
+                        'lang' => array($lang),
+                        'page' => $page,
+                        'node' => $node,
+                    ),
+                );
+            }
+        }
+        
+        return $tree;
     }
 
     /**
@@ -123,6 +169,11 @@ class PageRepository extends EntityRepository {
             else {
                 $i++;
             }
+        }
+
+        if (!empty($this->virtualPages)) {
+            $rootNodeLvl = $rootNode ? $rootNode->getLvl() : 0;
+            $result = $this->addVirtualTree($result, $lang, $rootNodeLvl);
         }
 
         return $result;
