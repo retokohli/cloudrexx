@@ -208,12 +208,12 @@ a:visited {
 #navigation_wrapper {
     float: left;
     width: 217px;
-    padding: 30px 0;
+    padding: 34px 0;
 }
 
 #content {
     overflow: hidden;
-    padding: 33px 14px 14px 14px;
+    padding: 14px 14px 14px 14px;
 }
 
 #content textarea,
@@ -225,7 +225,6 @@ a:visited {
 #content select,
 #navigation_wrapper select {
     border: 1px solid #acacac;
-    background: #ffffff;
     padding: 3px;
     color: #444444;
 }
@@ -235,7 +234,8 @@ a:visited {
 #content input[type=checkbox],
 #navigation_wrapper input[type=checkbox] {
     border: 0;
-    background: transparent;
+    width: 13px;
+    height: 13px;
 }
 
 #footer {
@@ -327,16 +327,13 @@ a:visited {
     border-bottom: 1px solid #efefef;
 }
 
-.navigation_level_1 li.dashboard {
-    background: transparent;
-}
-
 .navigation_level_1 li:hover,
 .navigation_level_1 li:focus,
 .navigation_level_1 li:active,
 .navigation_level_1 li.active {
     background: url(../images/gradient.jpg) repeat-y left top;
-    border-bottom: 1px solid transparent;
+    padding-bottom: 1px;
+    border: 0;
 }
 
 .navigation_level_1 li span,
@@ -448,10 +445,6 @@ a:visited {
     color: #0d91d1;
 }
 
-h1.breadcrumb {
-    margin: 0 0 10px 0;
-}
-
 div.infobox_head {
     clear: both;
     padding: 5px;
@@ -475,6 +468,7 @@ table.adminlist {
     clear: both;
     empty-cells: show;
     border-spacing: 0;
+    border-collapse: collapse;
     background: #ffffff;
 }
 table.adminlist th {
@@ -851,6 +845,8 @@ table.subnavbar {
 }
 body #content input[type=button],
 body #navigation_wrapper input[type=button],
+body #content input[type=reset],
+body #navigation_wrapper input[type=reset],
 body #content input[type=submit],
 body #navigation_wrapper input[type=submit] {
     background: url("../images/button_bg.png") repeat-x scroll left top transparent;

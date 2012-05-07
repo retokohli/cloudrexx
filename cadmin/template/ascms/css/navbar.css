@@ -12,10 +12,12 @@ table#subnavbar_level1 {
     margin: 0 0 20px 0;
     background: #ececec;
     z-index: 0;
+    display: inline-table;
 }
 
 table#subnavbar_level1 td {
     vertical-align: middle;
+    white-space: nowrap;
 }
 
 table#subnavbar_level1 .navi a {
@@ -29,6 +31,13 @@ table#subnavbar_level1 .navi a {
     font-size: 13px;
     font-weight: bold;
     color: #444444;
+}
+
+*+html table#subnavbar_level1 .navi a {
+    position: realtive;
+    bottom: 1px;
+    height: 19px;
+    line-height: 19px;
 }
 
 table#subnavbar_level1 .navi a:hover,

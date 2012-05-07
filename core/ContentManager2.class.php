@@ -44,9 +44,18 @@ class ContentManager extends Module {
      */
 	public function __construct($act, $template, $db, $init) {
         parent::__construct($act, $template);
+        switch ($this->act) {
+            case 'saveToggleStatuses':
+                $this->saveToggleStatuses();
+                exit;
+                break;
+            case 'new':
+            default:
+                break;
+        }
         if($this->act == 'new')
             $this->act = ''; //default action;
-	
+    
         $this->em = Env::em();
         $this->db = $db;
         $this->init = $init;
@@ -104,6 +113,26 @@ class ContentManager extends Module {
             //bottom buttons
             'TXT_CORE_PREVIEW', 'TXT_CORE_SAVE_PUBLISH', 'TXT_CORE_SAVE', 'TXT_CORE_SUBMIT_FOR_RELEASE', 'TXT_CORE_REFUSE_RELEASE'
         ));
+
+        if (!empty($_GET['act']) && ($_GET['act'] == 'new')) {
+            $this->template->setVariable(array(
+                'TITLES_DISPLAY_STYLE' => 'display: block;',
+                'TYPE_DISPLAY_STYLE' => 'display: block;',
+                'THEMES_DISPLAY_STYLE' => 'display: block;',
+                'NAVIGATION_DISPLAY_STYLE' => 'display: block;',
+            ));
+        } else {
+            $toggleTitles = !empty($_SESSION['contentManager']['toggleStatuses']['tabContent']['toggleTitles']) ? $_SESSION['contentManager']['toggleStatuses']['tabContent']['toggleTitles'] : '';
+            $toggleType = !empty($_SESSION['contentManager']['toggleStatuses']['tabContent']['toggleType']) ? $_SESSION['contentManager']['toggleStatuses']['tabContent']['toggleType'] : '';
+            $toggleThemes = !empty($_SESSION['contentManager']['toggleStatuses']['tabSettings']['toggleThemes']) ? $_SESSION['contentManager']['toggleStatuses']['tabSettings']['toggleThemes'] : '';
+            $toggleNavigation = !empty($_SESSION['contentManager']['toggleStatuses']['tabSettings']['toggleNavigation']) ? $_SESSION['contentManager']['toggleStatuses']['tabSettings']['toggleNavigation'] : '';
+            $this->template->setVariable(array(
+                'TITLES_DISPLAY_STYLE' => $toggleTitles == 'none' ? 'display: none;' : 'display: block;',
+                'TYPE_DISPLAY_STYLE' => $toggleType == 'none' ? 'display: none;' : 'display: block;',
+                'THEMES_DISPLAY_STYLE' => $toggleThemes == 'none' ? 'display: none;' : 'display: block;',
+                'NAVIGATION_DISPLAY_STYLE' => $toggleNavigation == 'none' ? 'display: none;' : 'display: block;',
+            ));
+        }
 
         $modules = $this->db->Execute("SELECT * FROM ".DBPREFIX."modules");
         while (!$modules->EOF) {
@@ -448,6 +477,17 @@ class ContentManager extends Module {
     function getNodeRepository()
     {
         return $this->nodeRepository;
+    }
+
+    public function saveToggleStatuses() {
+        $arrToggleStatuses = array();
+        foreach ($_POST as $tabKey => $tabValue) {
+            foreach ($tabValue as $toggleKey => $toggleValue) {
+                $arrToggleStatuses[contrexx_input2raw($tabKey)][contrexx_input2raw($toggleKey)] = contrexx_input2raw($toggleValue);
+            }
+        }
+        $_SESSION['contentManager']['toggleStatuses'] = $_POST;
+        return print_r($_SESSION);
     }
 }
 ?>

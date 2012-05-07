@@ -306,88 +306,86 @@
         </div>            
         <br />        
     </div>
-</div>
-<div id="{TXT_BLOCK_ADDITIONAL_OPTIONS}" class="data" style="display:none;">
-    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
-        <tbody>
-            <tr>
-                <th colspan="2">{TXT_BLOCK_ADDITIONAL_OPTIONS}</th>
-            </tr>
-            <tr class="row1">
-                <td valign="top" width="250px">{TXT_BLOCK_RANDOM}:</td>
-                <td>
-                    <input type="checkbox" name="blockRandom" value="1" {BLOCK_RANDOM}/>[[BLOCK_RANDOMIZER]]<br />
-                    <input type="checkbox" name="blockRandom2" value="1" {BLOCK_RANDOM_2}/>[[BLOCK_RANDOMIZER_2]]<br />                      
-                    <input type="checkbox" name="blockRandom3" value="1" {BLOCK_RANDOM_3}/>[[BLOCK_RANDOMIZER_3]]<br />
-                    <input type="checkbox" name="blockRandom4" value="1" {BLOCK_RANDOM_4}/>[[BLOCK_RANDOMIZER_4]]<br />
-                </td>
-            </tr>   
-            <tr class="row2">
-                <td valign="top">{TXT_BLOCK_DISPLAY_TIME}</td>
-                <td>
-                    <span id="startTime">
-                        <span style="float: left;width:40px">
-                            <label name="{TXT_BLOCK_SHOW_FROM}">{TXT_BLOCK_SHOW_FROM}</label>&nbsp;:&nbsp;
-                        </span>                            
-                        <input type="text" name="inputStartDate" id="DPC_edit1_YYYY-MM-DD" value="{BLOCK_START}" />                        
-                    </span>
+    <div id="{TXT_BLOCK_ADDITIONAL_OPTIONS}" class="data" style="display:none;">
+        <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
+            <tbody>
+                <tr>
+                    <th colspan="2">{TXT_BLOCK_ADDITIONAL_OPTIONS}</th>
+                </tr>
+                <tr class="row1">
+                    <td valign="top" width="250px">{TXT_BLOCK_RANDOM}:</td>
+                    <td>
+                        <input type="checkbox" name="blockRandom" value="1" {BLOCK_RANDOM}/>[[BLOCK_RANDOMIZER]]<br />
+                        <input type="checkbox" name="blockRandom2" value="1" {BLOCK_RANDOM_2}/>[[BLOCK_RANDOMIZER_2]]<br />                      
+                        <input type="checkbox" name="blockRandom3" value="1" {BLOCK_RANDOM_3}/>[[BLOCK_RANDOMIZER_3]]<br />
+                        <input type="checkbox" name="blockRandom4" value="1" {BLOCK_RANDOM_4}/>[[BLOCK_RANDOMIZER_4]]<br />
+                    </td>
+                </tr>   
+                <tr class="row2">
+                    <td valign="top">{TXT_BLOCK_DISPLAY_TIME}</td>
+                    <td>
+                        <span id="startTime">
+                            <span style="float: left;width:40px">
+                                <label name="{TXT_BLOCK_SHOW_FROM}">{TXT_BLOCK_SHOW_FROM}</label>&nbsp;:&nbsp;
+                            </span>                            
+                            <input type="text" name="inputStartDate" id="DPC_edit1_YYYY-MM-DD" value="{BLOCK_START}" />                        
+                        </span>
 
-                    <span id="startTimeAlways" style="display:none;">
-                        {TXT_BLOCK_SHOW_ALWAYS}
-                    </span>&nbsp;<a style="margin-left: 15px;" href="#" id="blockShowAlways">{TXT_BLOCK_SHOW_ALWAYS}</a>
-                    <br />
-                    <span id="endTime">
-                        <span style="float: left;width:40px">
-                            <label name="{TXT_BLOCK_SHOW_UNTIL}">{TXT_BLOCK_SHOW_UNTIL}</label>&nbsp;:&nbsp;
-                        </span>                            
-                        <input type="text" name="inputEndDate" id="DPC_edit2_YYYY-MM-DD" value="{BLOCK_END}" /><br />
-                    </span>
-                    <span id="endTimeAlways" style="display:none;">
-                        {TXT_BLOCK_SHOW_ALWAYS}
-                    </span>
-                </td>
-            </tr>
-            <tr class="row1">
-                <td width="250px" valign="top">{TXT_BLOCK_GLOBAL_PLACEHOLDERS}:</td>
-                <td nowrap="nowrap">
-                    <input onclick="showOrHide('pageSelector', '0');" type="radio" name="blockGlobal" value="0" {BLOCK_GLOBAL_0} />&nbsp;{TXT_DONT_SHOW}Auf keiner Seite&nbsp;&nbsp;&nbsp;<br />
-                    <input onclick="showOrHide('pageSelector', '0');" type="radio" name="blockGlobal" value="1" {BLOCK_GLOBAL_1} />&nbsp;{TXT_SHOW_ON_ALL_PAGES}&nbsp;&nbsp;&nbsp;<br />
-                    <input onclick="showOrHide('pageSelector', '1');" type="radio" name="blockGlobal" value="2" {BLOCK_GLOBAL_2} />&nbsp;{TXT_SHOW_ON_SELECTED_PAGES}<br /><br />
-                    <div id="pageSelector" class="blockLangTab"  style="display:{BLOCK_SHOW_PAGE_SELECTOR};">
-                        <div style="float: left;width: 41%">
-                            <label name="{TXT_BLOCK_AVAILABLE_PAGES}">{TXT_BLOCK_AVAILABLE_PAGES}</label><br/>
-                            <select id="notSelectedPages" name="notSelectedPages[]" size="12" style="margin-top: 5px;width:100%;" multiple="multiple">
-                                {BLOCK_RELATION_PAGES_UNSELECTED}
-                            </select>
-                            <br />                                  
-                            <a href="javascript:selectAll(document.blockFormModifyBlock.elements['notSelectedPages[]']);" style="color:blue;" title="{TXT_BLOCK_SELECT_ALL}">{TXT_BLOCK_SELECT_ALL}<br />
-                            </a><a href="javascript:deselectAll(document.blockFormModifyBlock.elements['notSelectedPages[]']);" style="color:blue;" title="{TXT_BLOCK_UNSELECT_ALL}">{TXT_BLOCK_UNSELECT_ALL}</a>                                    
-                        </div>
-                        <div style="padding-top: 18px;float: left;width:5%;"align="center">
-                            <input type="button" value=" &gt;&gt; " name="addpages" onclick="move(document.getElementById('notSelectedPages'),document.getElementById('SelectedPages'),document.getElementsByName('addpages')[0],document.getElementsByName('removepages')[0]);" />
-                            <br />
-                            <input type="button" value=" &lt;&lt; " name="removepages" onclick="move(document.getElementById('SelectedPages'),document.getElementById('notSelectedPages'),document.getElementsByName('removepages')[0],document.getElementsByName('addpages')[0]);" />
-                            <br /><br />
-                        </div>                                
-                        <div style="float: left;width: 45%;">
-                            <label name="{TXT_BLOCK_SELECTED_PAGES}">{TXT_BLOCK_SELECTED_PAGES}</label><br />
-                            <div align="left">
-                                <select id="SelectedPages" name="selectedPages[]" size="12" style="margin-top: 5px;width:100%;" multiple="multiple">
-                                    {BLOCK_RELATION_PAGES_SELECTED}
+                        <span id="startTimeAlways" style="display:none;">
+                            {TXT_BLOCK_SHOW_ALWAYS}
+                        </span>&nbsp;<a style="margin-left: 15px;" href="#" id="blockShowAlways">{TXT_BLOCK_SHOW_ALWAYS}</a>
+                        <br />
+                        <span id="endTime">
+                            <span style="float: left;width:40px">
+                                <label name="{TXT_BLOCK_SHOW_UNTIL}">{TXT_BLOCK_SHOW_UNTIL}</label>&nbsp;:&nbsp;
+                            </span>                            
+                            <input type="text" name="inputEndDate" id="DPC_edit2_YYYY-MM-DD" value="{BLOCK_END}" /><br />
+                        </span>
+                        <span id="endTimeAlways" style="display:none;">
+                            {TXT_BLOCK_SHOW_ALWAYS}
+                        </span>
+                    </td>
+                </tr>
+                <tr class="row1">
+                    <td width="250px" valign="top">{TXT_BLOCK_GLOBAL_PLACEHOLDERS}:</td>
+                    <td nowrap="nowrap">
+                        <input onclick="showOrHide('pageSelector', '0');" type="radio" name="blockGlobal" value="0" {BLOCK_GLOBAL_0} />&nbsp;{TXT_DONT_SHOW}Auf keiner Seite&nbsp;&nbsp;&nbsp;<br />
+                        <input onclick="showOrHide('pageSelector', '0');" type="radio" name="blockGlobal" value="1" {BLOCK_GLOBAL_1} />&nbsp;{TXT_SHOW_ON_ALL_PAGES}&nbsp;&nbsp;&nbsp;<br />
+                        <input onclick="showOrHide('pageSelector', '1');" type="radio" name="blockGlobal" value="2" {BLOCK_GLOBAL_2} />&nbsp;{TXT_SHOW_ON_SELECTED_PAGES}<br /><br />
+                        <div id="pageSelector" class="blockLangTab"  style="display:{BLOCK_SHOW_PAGE_SELECTOR};">
+                            <div style="float: left;width: 41%">
+                                <label name="{TXT_BLOCK_AVAILABLE_PAGES}">{TXT_BLOCK_AVAILABLE_PAGES}</label><br/>
+                                <select id="notSelectedPages" name="notSelectedPages[]" size="12" style="margin-top: 5px;width:100%;" multiple="multiple">
+                                    {BLOCK_RELATION_PAGES_UNSELECTED}
                                 </select>
-                                <br />                                                                    
-                                <a href="javascript:selectAll(document.blockFormModifyBlock.elements['selectedPages[]']);" style="color:blue;" title="{TXT_BLOCK_SELECT_ALL}">{TXT_BLOCK_SELECT_ALL}<br />
-                                </a><a href="javascript:deselectAll(document.blockFormModifyBlock.elements['selectedPages[]']);" style="color:blue;" title="{TXT_BLOCK_UNSELECT_ALL}">{TXT_BLOCK_UNSELECT_ALL}</a>
-                            </div>                                    
+                                <br />                                  
+                                <a href="javascript:selectAll(document.blockFormModifyBlock.elements['notSelectedPages[]']);" title="{TXT_BLOCK_SELECT_ALL}">{TXT_BLOCK_SELECT_ALL}<br />
+                                </a><a href="javascript:deselectAll(document.blockFormModifyBlock.elements['notSelectedPages[]']);" title="{TXT_BLOCK_UNSELECT_ALL}">{TXT_BLOCK_UNSELECT_ALL}</a>                                    
+                            </div>
+                            <div style="padding-top: 18px;float: left;width:5%;"align="center">
+                                <input type="button" value=" &gt;&gt; " name="addpages" onclick="move(document.getElementById('notSelectedPages'),document.getElementById('SelectedPages'),document.getElementsByName('addpages')[0],document.getElementsByName('removepages')[0]);" />
+                                <br />
+                                <input type="button" value=" &lt;&lt; " name="removepages" onclick="move(document.getElementById('SelectedPages'),document.getElementById('notSelectedPages'),document.getElementsByName('removepages')[0],document.getElementsByName('addpages')[0]);" />
+                                <br /><br />
+                            </div>                                
+                            <div style="float: left;width: 45%;">
+                                <label name="{TXT_BLOCK_SELECTED_PAGES}">{TXT_BLOCK_SELECTED_PAGES}</label><br />
+                                <div align="left">
+                                    <select id="SelectedPages" name="selectedPages[]" size="12" style="margin-top: 5px;width:100%;" multiple="multiple">
+                                        {BLOCK_RELATION_PAGES_SELECTED}
+                                    </select>
+                                    <br />                                                                    
+                                    <a href="javascript:selectAll(document.blockFormModifyBlock.elements['selectedPages[]']);" title="{TXT_BLOCK_SELECT_ALL}">{TXT_BLOCK_SELECT_ALL}<br />
+                                    </a><a href="javascript:deselectAll(document.blockFormModifyBlock.elements['selectedPages[]']);" title="{TXT_BLOCK_UNSELECT_ALL}">{TXT_BLOCK_UNSELECT_ALL}</a>
+                                </div>                                    
+                            </div>
                         </div>
-                    </div>
-                    </div>                            
-                </td>
-            </tr>
-        </tbody>
-    </table>     
-    <br />        
-</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>     
+        <br />        
+    </div>
 <br />
 <input type="submit" onclick="onSubmit()" name="block_save_block" value="{TXT_BLOCK_SAVE}" />
 </form>

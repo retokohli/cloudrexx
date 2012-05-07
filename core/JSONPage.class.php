@@ -78,6 +78,8 @@ class JSONPage {
     }
 
     public function set($params) {
+        var_dump($params);
+        print_r($params);
         global $_CORELANG;
         $newpage = false;
         $pg = Env::get('pageguard');

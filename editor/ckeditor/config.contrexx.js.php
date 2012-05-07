@@ -33,11 +33,9 @@
 ?>
 CKEDITOR.editorConfig = function( config )
 {
-    // Define changes to default configuration here. For example:
-    // config.language = 'fr';
-    // config.uiColor = '#AADC6E';
-
     config.skin = 'v2';
+
+    config.height = 600;
 
     config.forcePasteAsPlainText = false;
     config.enterMode = CKEDITOR.ENTER_BR;
