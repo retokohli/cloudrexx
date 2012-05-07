@@ -30,8 +30,8 @@ class PageEventListener {
      */
     protected function checkValidPersistingOperation($page) {
         if ($page instanceof Page) {
-            if ($page->hasFallbackContent()) {
-                throw new PageEventListenerException('Tried to persist Page "'.$page->getTitle().'" with id "'.$page->getId().'". This Page was retrieved by the routing and is filled with (bogus) fallback content. Please re-fetch the Page via it\'s id, then edit and persist it.');
+            if ($page->isVirtual()) {
+                throw new PageEventListenerException('Tried to persist Page "'.$page->getTitle().'" with id "'.$page->getId().'". This Page is virtual and cannot be stored in the DB.');
             }
         }
     }
