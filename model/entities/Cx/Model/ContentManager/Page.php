@@ -274,11 +274,16 @@ class Page extends \Cx\Model\Base\EntityBase
     protected function slugify($string) {
         $string = preg_replace('/\s/', '-', $string);
         $string = preg_replace('/[^a-zA-Z0-9-_]/', '', $string);
-        return $string;        
+        return $string;
     }
 
     public function nextSlug() {
-        $this->setSlug($this->slugBase . '-' . ++$this->slugSuffix, true);
+        $slug = '';
+        if (!empty($this->slugBase)) {
+            $slug .= $this->slugBase . '-';
+        }
+        $slug .= ++$this->slugSuffix;
+        $this->setSlug($slug, true);
     }
 
     /**
@@ -855,9 +860,21 @@ class Page extends \Cx\Model\Base\EntityBase
     }
     /**
      * @prePersist
+     * @onFlush
      */
     public function validate()
     {
+        // Slug must be unique per language and level of a branch (of the node tree)
+        $slugs = array();
+        foreach ($this->getNode()->getParent()->getChildren() as $child) {
+            $page = $child->getPage($this->getLang());
+            if ($page !== $this) {
+                $slugs[] = $page->getSlug();
+            }
+        }
+        while ($this->getSlug() == '' || in_array($this->getSlug(), $slugs)) {
+            $this->nextSlug();
+        }
         //workaround, this method is regenerated each time
         parent::validate(); 
     }
