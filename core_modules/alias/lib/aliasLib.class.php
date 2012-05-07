@@ -117,9 +117,9 @@ class aliasLib
         return $this->pageRepository->getURL($page, "/".$lang, "");
     }
     
-    function _getAliassesWithSameTarget($page)
+    function _getAliasesWithSameTarget($page)
     {
-        return $page->getAliasses();
+        return $page->getAliases();
     }
     
 
@@ -185,7 +185,7 @@ class aliasLib
                 return false;
             }
             $page = $pages->first();
-            // we won't change anything on non aliasses
+            // we won't change anything on non aliases
             if ($page->getType() != "alias") {
                 return false;
             }
@@ -195,6 +195,11 @@ class aliasLib
         $page->setSlug($slug);
         $page->setTarget($target);
         $page->setTitle($page->getSlug());
+        
+        // sanitize slug
+        while (file_exists(ASCMS_PATH . '/' . $page->getSlug())) {
+            $page->nextSlug();
+        }
         
         // save
 	$page->validate();
