@@ -211,3 +211,4 @@ Cx\Model\ContentManager\Page:
 
   lifecycleCallbacks:
       prePersist: [ validate ]
+      onFlush: [ validate ]
