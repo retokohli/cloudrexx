@@ -233,7 +233,7 @@ if ($isRegularPageRequest) {
     $objTemplate->setVariable(array(
         'TXT_PAGE_ID'      => $_CORELANG['TXT_PAGE_ID'],
         'CONTREXX_CHARSET' => CONTREXX_CHARSET,
-        'CONTAINER_CLASS'  => 'backend',
+        'CONTAINER_CLASS'  => empty($plainCmd) ? 'backend dashboard' : 'backend',
         'USER_ID'          => $objFWUser->objUser->getId(),
     ));
     
@@ -789,6 +789,10 @@ if (!empty($objTemplate->_variables['CONTENT_WARNING_MESSAGE'])) {
     $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] .=
         '<div class="warningbox" style="overflow: auto">'.
         $objTemplate->_variables['CONTENT_WARNING_MESSAGE'].'</div><br />';
+}
+
+if (empty($cmd)) {
+    $cmd = 'dashboard';
 }
 
 // Style parsing
