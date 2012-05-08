@@ -480,12 +480,14 @@ class ContentManager extends Module {
     }
 
     public function saveToggleStatuses() {
+        print_r($_POST);
         $arrToggleStatuses = array();
         foreach ($_POST as $tabKey => $tabValue) {
             foreach ($tabValue as $toggleKey => $toggleValue) {
                 $arrToggleStatuses[contrexx_input2raw($tabKey)][contrexx_input2raw($toggleKey)] = contrexx_input2raw($toggleValue);
             }
         }
+        print_r($arrToggleStatuses);
         $_SESSION['contentManager']['toggleStatuses'] = $_POST;
         return print_r($_SESSION);
     }

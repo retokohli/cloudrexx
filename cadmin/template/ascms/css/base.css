@@ -213,7 +213,7 @@ a:visited {
 
 #content {
     overflow: hidden;
-    padding: 14px 14px 14px 14px;
+    padding: 14px 14px 28px 14px;
 }
 
 #content textarea,
@@ -848,11 +848,12 @@ body #navigation_wrapper input[type=button],
 body #content input[type=reset],
 body #navigation_wrapper input[type=reset],
 body #content input[type=submit],
-body #navigation_wrapper input[type=submit] {
+body #navigation_wrapper input[type=submit],
+body #content a.button {
     background: url("../images/button_bg.png") repeat-x scroll left top transparent;
     border: 1px solid #BBBBBB;
     color: #444444;
-    line-height: 14px;
+    line-height: 18px;
     margin-bottom: 2px;
     padding: 2px 10px;
     text-shadow: 1px 1px #FFFFFF;
