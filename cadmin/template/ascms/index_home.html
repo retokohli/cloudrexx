@@ -1,72 +1,71 @@
 <!-- START index_home.html -->
-<table id="dashboard">
-    <tr>
-        <td class="left">
-            <div id="quick_access_wrapper">
-                <a id="toggle_quick_access"><label>Schnellzugriff</label></a>
-                <div id="quick_access">
-                    <div id="box_1" class="box">
-                        <div class="padding_fix">
-                            <h1>Publizieren und Anlegen</h1>
-                            <ul>
-                                <li><a href="index.php?cmd=content&amp;act=new">{TXT_NEW_SITE}</a></li>
-                                <li><a href="#">Newsmeldung erstellen</a></li>
-                                <li><a href="#">Block hinzufügen</a></li>
-                                <li><a href="#">Formular erstellen</a></li>
-                            </ul>
-                            <div class="icon"></div>
-                        </div>
-                    </div>
-                    <div id="box_2" class="box">
-                        <div class="padding_fix">
-                            <h1>Auswerten und Ansehen</h1>
-                            <ul>
-                                <li><a href="../index.php?caching=0">{TXT_SITE_PREVIEW}</a></li>
-                                <li><a href="index.php?cmd=content">{TXT_CONTENT_MANAGER}</a></li>
-                                <li><a href="#">Seitenstatistik</a></li>
-                                <li><a href="index.php?cmd=workflow">{TXT_WORKFLOW}</a></li>
-                                <li><a href="#">Formulare</a></li>
-                            </ul>
-                            <div class="icon"></div>
-                        </div>
-                    </div>
-                    <div id="box_3" class="box">
-                        <div class="padding_fix">
-                            <h1>Verwalten</h1>
-                            <ul>
-                                <li><a href="#">Grundeinstellungen</a></li>
-                                <li><a href="index.php?cmd=access">{TXT_USER_MANAGER}</a></li>
-                                <li><a href="index.php?cmd=media&amp;archive=archive1">{TXT_MEDIA_MANAGER}</a></li>
-                                <li><a href="index.php?cmd=media&amp;archive=content">{TXT_IMAGE_ADMINISTRATION}</a></li>
-                                <li><a href="index.php?cmd=skins">{TXT_SKINS}</a></li>
-                            </ul>
-                            <div class="icon"></div>
-                        </div>
-                    </div>
+<div id="dashboard">
+    <div class="left">
+        <div id="quick_access_wrapper">
+            <hr />
+            <h1>Schnellzugriff</h1>
+            <div id="quick_access">
+                <div id="box_1" class="box">
+                    <h2>Publizieren und Anlegen</h2>
+                    <ul>
+                        <li><a href="index.php?cmd=content&amp;act=new">{TXT_NEW_SITE}</a></li>
+                        <li><a href="#">Newsmeldung erstellen</a></li>
+                        <li><a href="#">Block hinzufügen</a></li>
+                        <li><a href="#">Formular erstellen</a></li>
+                    </ul>
+                    <div class="icon"></div>
+                </div>
+                <div id="box_2" class="box">
+                    <h2>Auswerten und Ansehen</h2>
+                    <ul>
+                        <li><a href="../index.php?caching=0">{TXT_SITE_PREVIEW}</a></li>
+                        <li><a href="index.php?cmd=content">{TXT_CONTENT_MANAGER}</a></li>
+                        <li><a href="#">Seitenstatistik</a></li>
+                        <li><a href="index.php?cmd=workflow">{TXT_WORKFLOW}</a></li>
+                        <li><a href="#">Formulare</a></li>
+                    </ul>
+                    <div class="icon"></div>
+                </div>
+                <div id="box_3" class="box">
+                    <h2>Verwalten</h2>
+                    <ul>
+                        <li><a href="#">Grundeinstellungen</a></li>
+                        <li><a href="index.php?cmd=access">{TXT_USER_MANAGER}</a></li>
+                        <li><a href="index.php?cmd=media&amp;archive=archive1">{TXT_MEDIA_MANAGER}</a></li>
+                        <li><a href="index.php?cmd=media&amp;archive=content">{TXT_IMAGE_ADMINISTRATION}</a></li>
+                        <li><a href="index.php?cmd=skins">{TXT_SKINS}</a></li>
+                    </ul>
+                    <div class="icon"></div>
                 </div>
             </div>
-            <div id="history_wrapper">
-                <a id="toggle_history"><label>Verlauf</label></a>
-                <div id="history"></div>
-            </div>
-            <div id="logged_in_wrapper">
-                <a id="toggle_logged_in"><label>Eingeloggt</label></a>
-                <div id="logged_in"></div>
-            </div>
-        </td>
-        <td class="right">
-            <div id="stats_wrapper">
-                <a id="toggle_stats"><label>Website Statistik</label></a>
-                <div id="stats"></div>
-            </div>
-            <div id="news_wrapper">
-                <a id="toggle_news"><label>Contrexx News</label></a>
-                <div id="news"></div>
-            </div>
-        </td>
-    </tr>
-</table>
-    {INDEX_HOME_CMS_NAME} {INDEX_HOME_CMS_EDITION}<br />
+        </div>
+        <div id="last_sessions_wrapper">
+            <hr />
+            <h1>Eingeloggt</h1>
+            <ul id="last_sessions">
+                <!-- BEGIN logRow -->
+                <li>
+                    <span class="username">{INDEX_HOME_USERNAME}</span>
+                    <span class="hostname">{TXT_HOSTNAME}: {INDEX_HOME_REMOTE_HOST}</span>
+                    <span class="time">{INDEX_HOME_TIME}</span>
+                </li>
+                <!-- END logRow -->
+            </ul>
+        </div>
+    </div>
+    <div class="right">
+        <div id="news_wrapper">
+            <hr />
+            <h1>Contrexx News</h1>
+            <ul id="news">
+                <li><a href="#">Content Management System Contrexx® in Version 2.2 Service Pack 6 erschienen</a></li>
+                <li><a href="#">Neue Templates zum Download bereit</a></li>
+                <li><a href="#">Neuer Internetauftritt: Schweizer Kultband PEGASUS setzt auf Contrexx</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!--    {INDEX_HOME_CMS_NAME} {INDEX_HOME_CMS_EDITION}<br />
     Version {INDEX_HOME_CMS_VERSION} - {INDEX_HOME_CMS_STATUS} <span id="newversion"> </span><br />
     {TXT_RELEASE_DATE}: {INDEX_HOME_CMS_RELEASEDATE}<br />
     <br />
@@ -101,23 +100,8 @@
     </tr>
     </table>
     <br /><br /><br />
-    <table class="adminlist" border="0" width="100%" cellpadding="3" cellspacing="0" summary="session details">
-    <tr valign="top"><th nowrap="nowrap" colspan="3">{TXT_LAST_LOG_SESSIONS}</th></tr>
-    <tr valign="top" class="row2">
-    <td nowrap="nowrap" width="2%"><div align="left"><b>{TXT_USERNAME}</b></div></td>
-    <td nowrap="nowrap" width="20%"><div align="left"><b>{TXT_LOGTIME}</b></div></td>
-    <td width="78%"><div align="left"><b>{TXT_HOSTNAME}</b></div></td>
-    </tr>
-    <!-- BEGIN logRow -->
-    <tr valign="top" class="{INDEX_HOME_ROWCLASS}">
-    <td nowrap="nowrap">{INDEX_HOME_USERNAME}&nbsp;</td>
-    <td nowrap="nowrap">{INDEX_HOME_TIME}&nbsp;</td>
-    <td nowrap="nowrap">{INDEX_HOME_REMOTE_HOST}&nbsp;</td>
-    </tr>
-    <!-- END logRow -->
-    </table>
-    <br />
+    <br />-->
     <script type="text/javascript" language="javascript">
         new Ajax.Updater('newversion', 'versioncheck.php');
-    </script>
+    </script>-
 <!-- END index_home.html -->
