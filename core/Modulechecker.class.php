@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Module Checker
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -8,12 +9,13 @@
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
-namespace Cx\Core {
+
+namespace Cx\Core
+{
     /**
      * Module Checker Class
      *
      * Checks for activated modules and plugins
-     *
      * @copyright   CONTREXX CMS - COMVATION AG
      * @author		Comvation Development Team <info@comvation.com>
      * @access		public
@@ -108,22 +110,23 @@ namespace Cx\Core {
     }
 }
 
-namespace {
+
+namespace
+{
     /**
      * Checks if a certain module, specified by param $moduleName, is active/installed.
-     * 
+     *
      * @param   string Module name
      * @return boolean  Either TRUE or FALSE, depending if the module in question is
      *                  active/installed or not.
      */
     function contrexx_isModuleActive($moduleName)
     {
-        static $objModuleChecker;
+        static $objModuleChecker = NULL;
 
         if (!isset($objModuleChecker)) {
             $objModuleChecker = new \Cx\Core\ModuleChecker(\Env::get('em'), \Env::get('db'));
         }
-
         return $objModuleChecker->isModuleActive($moduleName);
     }
 }
