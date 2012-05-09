@@ -85,7 +85,7 @@ class galleryManager extends GalleryLibrary
 
         $this->getSettings();
         $this->checkImages();
-        
+
         parent::__construct();
     }
     private function setNavigation()
@@ -722,7 +722,11 @@ class galleryManager extends GalleryLibrary
 
         $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_OVERVIEW'];
 
-        $pid = ($_POST['category_type'] == "main") ? 0 : intval($_POST['select_category_id']);
+        $pid = (   isset ($_POST['category_type'])
+                && $_POST['category_type'] == "main"
+                ? 0
+                : (isset ($_POST['select_category_id'])
+                    ? intval($_POST['select_category_id']) : 0));
         if ($pid > 0) {
             if (!$this->checkCategoryAccess($pid)) {
                 return;
@@ -1181,7 +1185,12 @@ class galleryManager extends GalleryLibrary
 
         try {
             // check access
-            $insertPid = ($_POST['category_type'] == 'main') ? 0 : intval($_POST['select_category_id']);
+            $insertPid =
+                (   isset ($_POST['category_type'])
+                 && $_POST['category_type'] == 'main'
+                    ? 0
+                    : (isset ($_POST['select_category_id'])
+                        ? intval($_POST['select_category_id']) : 0));
             if ($insertPid > 0) {
                 if (!$this->checkCategoryAccess($insertPid)) {
                     return;
@@ -2212,7 +2221,7 @@ class galleryManager extends GalleryLibrary
 
         //we remember the names of the uploaded files here. they are stored in the session afterwards,
         //so we can later display them highlighted.
-        $arrFiles = array(); 
+        $arrFiles = array();
 
 		//get allowed file types
 		$arrAllowedFileTypes = array();
@@ -2341,7 +2350,7 @@ class galleryManager extends GalleryLibrary
         } else if ($intNewHeight == 0){
             $intNewHeight = round(($intOldHeight * $intNewWidth) / $intOldWidth,0);
         }
-        
+
         //the link="" is needed as the column has no default value and mysql
         //doesn't allow to specify one for text columns.
         $query = '    INSERT
@@ -2357,7 +2366,7 @@ class galleryManager extends GalleryLibrary
         $objDatabase->Execute($query);
 
         $intPictureId = $objDatabase->insert_id();
-        $objResult = $objDatabase->Execute('INSERT INTO '.DBPREFIX.'module_gallery_language_pics 
+        $objResult = $objDatabase->Execute('INSERT INTO '.DBPREFIX.'module_gallery_language_pics
                                                (picture_id, lang_id, name)
                                             SELECT
                                                '.$intPictureId.', id, "'.$imageName.'"
@@ -2720,7 +2729,7 @@ class galleryManager extends GalleryLibrary
                         $intNewThumbHeight     = $objResult->fields['size_abs_h'];
                         $intNewThumbQuality     = $objResult->fields['quality'];
                     }
-                    //create thumb             
+                    //create thumb
                     $this->createImages_JPG_GIF_PNG($this->strImagePath, ASCMS_GALLERY_THUMBNAIL_PATH.'/', $objResult->fields['path'], basename($arrImageInfo[$objResult->fields['id']]['random_path']), $intNewThumWidth, $intNewThumbHeight, $intNewThumbQuality);
                     $arrFileInfo = getimagesize(ASCMS_PATH.$arrImageInfo[$objResult->fields['id']]['random_path']);
                     $arrImageInfo[$objResult->fields['id']]['size_t'] = round(filesize(ASCMS_PATH.$arrImageInfo[$objResult->fields['id']]['random_path'])/1024,2);
@@ -3090,7 +3099,7 @@ $strFileNew = '';
                     $intNewThumbHeight     = $objResult->fields['size_abs_h'];
                     $intNewThumbQuality = $objResult->fields['quality'];
                 }
-                
+
 
                 //create thumb
 // TODO: $strFileOld, $strFileNew are not initialized
@@ -3557,7 +3566,7 @@ $strFileNew = '';
     function createImages_JPG_GIF_PNG($strPathOld, $strPathNew, $strFileOld, $strFileNew, $intNewWidth, $intNewHeight, $intQuality)
     {
         global $_ARRAYLANG;
-       
+
         //TODO: sometimes, strings are passed... this is a workaround
         $intNewWidth = intval($intNewWidth);
         $intNewHeight = intval($intNewHeight);
@@ -3646,7 +3655,7 @@ $strFileNew = '';
                     $handleImage1 = ImageCreateFromPNG($strPathOld.$strFileOld);
                     $handleImage2 = @ImageCreateTrueColor($intNewWidth,$intNewHeight);
                     ImageAlphaBlending($handleImage2, false);
-                    ImageSaveAlpha($handleImage2, true); 
+                    ImageSaveAlpha($handleImage2, true);
                     ImageCopyResampled($handleImage2, $handleImage1,0,0,0,0,$intNewWidth,$intNewHeight, $intWidth,$intHeight);
                     ImagePNG($handleImage2, $strPathNew.$strFileNew);
                     ImageDestroy($handleImage1);
