@@ -112,7 +112,7 @@ a:visited {
     float: left;
     width: 100%;
     padding: 0 0 24px 0;
-    
+
 }
 
 #content_login_center {
@@ -737,4 +737,9 @@ select#jobsCat,
 }
 #content1.generalTab textarea{
     width: 365px !important;
+}
+
+table.adminlist td.nowrap {
+  white-space: nowrap;
+  vertical-align: top;
 }
