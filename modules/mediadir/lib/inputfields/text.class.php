@@ -86,7 +86,7 @@ class mediaDirectoryInputfieldText extends mediaDirectoryLibrary implements inpu
                         }
                 	}
                 }
-                
+
                 $arrInfoValue = array();
                 if(!empty($arrInputfield['info'][0])){
                 	$arrInfoValue[0] = 'title="'.$arrInputfield['info'][0].'"';
@@ -98,7 +98,7 @@ class mediaDirectoryInputfieldText extends mediaDirectoryLibrary implements inpu
                 	$arrInfoValue = null;
                     $strInfoClass = '';
                 }
-                
+
                 if($objInit->mode == 'backend') {
                     $strInputfield = '<div id="'.$this->moduleName.'Inputfield_'.$intId.'_Minimized" style="display: block;"><input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][0]" id="'.$this->moduleName.'Inputfield_'.$intId.'_0" value="'.$arrValue[0].'" style="width: 300px" onfocus="this.select();" />&nbsp;<a href="javascript:ExpandMinimize(\''.$intId.'\');">'.$_ARRAYLANG['TXT_MEDIADIR_MORE'].'&nbsp;&raquo;</a></div>';
 
@@ -119,17 +119,17 @@ class mediaDirectoryInputfieldText extends mediaDirectoryLibrary implements inpu
                 } else {
                     if($this->arrSettings['settingsFrontendUseMultilang'] == 1) {
 	                    $strInputfield = '<div id="'.$this->moduleName.'Inputfield_'.$intId.'_Minimized" style="display: block; float: left;" class="'.$this->moduleName.'GroupMultilang"><input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][0]" id="'.$this->moduleName.'Inputfield_'.$intId.'_0" value="'.$arrValue[0].'" class="'.$this->moduleName.'InputfieldText '.$strInfoClass.'" '.$arrInfoValue[0].'/>&nbsp;<a href="javascript:ExpandMinimize(\''.$intId.'\');">'.$_ARRAYLANG['TXT_MEDIADIR_MORE'].'&nbsp;&raquo;</a></div>';
-	
+
 	                    $strInputfield .= '<div id="'.$this->moduleName.'Inputfield_'.$intId.'_Expanded" style="display: none;  float: left;" class="'.$this->moduleName.'GroupMultilang">';
 	                    foreach ($this->arrFrontendLanguages as $key => $arrLang) {
 	                        $intLangId = $arrLang['id'];
-	
+
 	                        if(($key+1) == count($this->arrFrontendLanguages)) {
 	                            $minimize = "&nbsp;<a href=\"javascript:ExpandMinimize('".$intId."');\">&laquo;&nbsp;".$_ARRAYLANG['TXT_MEDIADIR_MINIMIZE']."</a>";
 	                        } else {
 	                            $minimize = "";
 	                        }
-	
+
 	                        $strInputfield .= '<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.']['.$intLangId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'_'.$intLangId.'" value="'.$arrValue[$intLangId].'" class="'.$this->moduleName.'InputfieldText '.$strInfoClass.'" '.$arrInfoValue[$intLangId].' onfocus="this.select();" />&nbsp;'.$arrLang['name'].'&nbsp;'.$minimize.'<br />';
 	                    }
 	                    $strInputfield .= '<input type="hidden" name="'.$this->moduleName.'Inputfield['.$intId.'][old]" value="'.$arrValue[0].'" />';
@@ -138,18 +138,12 @@ class mediaDirectoryInputfieldText extends mediaDirectoryLibrary implements inpu
                     	$strInputfield = '<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][0]" id="'.$this->moduleName.'Inputfield_'.$intId.'_0" value="'.$arrValue[0].'" class="'.$this->moduleName.'InputfieldText '.$strInfoClass.'" '.$arrInfoValue[0].'/>';
                     }
                 }
-
                 return $strInputfield;
-
-                break;
             case 2:
                 //search View
-                $strValue = $_GET[$intId];
+                $strValue = (isset ($_GET[$intId]) ? $_GET[$intId] : '');
                 $strInputfield = '<input type="text" name="'.$intId.'" " class="'.$this->moduleName.'InputfieldSearch" value="'.$strValue.'" />';
-
                 return $strInputfield;
-
-                break;
         }
     }
 
@@ -181,7 +175,7 @@ class mediaDirectoryInputfieldText extends mediaDirectoryLibrary implements inpu
         $intId = intval($arrInputfield['id']);
         $objEntryDefaultLang = $objDatabase->Execute("SELECT `lang_id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE id=".intval($intEntryId)." LIMIT 1");
         $intEntryDefaultLang = intval($objEntryDefaultLang->fields['lang_id']);
-        
+
         if($this->arrSettings['settingsTranslationStatus'] == 1) {
 	        if(in_array($_LANGID, $arrTranslationStatus)) {
 	        	$intLangId = $_LANGID;
@@ -191,7 +185,7 @@ class mediaDirectoryInputfieldText extends mediaDirectoryLibrary implements inpu
         } else {
         	$intLangId = $_LANGID;
         }
-        
+
         $objInputfieldValue = $objDatabase->Execute("
             SELECT
                 `value`
@@ -205,7 +199,7 @@ class mediaDirectoryInputfieldText extends mediaDirectoryLibrary implements inpu
                 lang_id=".$intLangId."
             LIMIT 1
         ");
-        
+
         if(empty($objInputfieldValue->fields['value'])) {
         	$objInputfieldValue = $objDatabase->Execute("
 	            SELECT
@@ -221,7 +215,7 @@ class mediaDirectoryInputfieldText extends mediaDirectoryLibrary implements inpu
 	            LIMIT 1
 	        ");
         }
-        
+
         $strValue = strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
 
         if(!empty($strValue)) {
@@ -256,8 +250,8 @@ class mediaDirectoryInputfieldText extends mediaDirectoryLibrary implements inpu
 EOF;
         return $strJavascriptCheck;
     }
-    
-    
+
+
     function getFormOnSubmit($intInputfieldId)
     {
         return null;
