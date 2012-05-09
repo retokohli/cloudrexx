@@ -50,6 +50,8 @@ class SettingDb
 // 20110224
     const TYPE_CHECKBOX = 'checkbox';
     const TYPE_CHECKBOXGROUP = 'checkboxgroup';
+// 20120508
+    const TYPE_RADIO = 'radio';
 // Not implemented
 //    const TYPE_SUBMIT = 'submit';
 
@@ -517,7 +519,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
      * {@see SettingDb::store()}.
      * @param   HTML_Template_Sigma $objTemplateLocal   Template object
      * @param   string              $uriBase      The base URI for the module.
-     * @param   string              $header       The optional section header
+     * @param   string              $section      The optional section header
      *                                            text to add
      * @param   string              $tab_name     The optional tab name to add
      * @param   string              $prefix       The optional prefix for
@@ -530,7 +532,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
      *          that store them, like add(), update(), and updateAll()
      */
     static function show(
-        &$objTemplateLocal, $uriBase, $header='', $tab_name='', $prefix='TXT_'
+        &$objTemplateLocal, $uriBase, $section='', $tab_name='', $prefix='TXT_'
     ) {
         global $_CORELANG, $_ARRAYLANG;
 
@@ -605,7 +607,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
      */
     static function show_section(&$objTemplateLocal, $section='', $prefix='TXT_')
     {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_CORELANG;
 
         self::verify_template($objTemplateLocal);
         // This is set to multipart if necessary
@@ -745,6 +747,12 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
                     Html::getCheckboxGroup($name, $values, $values, $checked,
                         '', '', '<br />', '', '');
                 break;
+// 20120508 UNTESTED!
+              case self::TYPE_RADIO:
+                $checked = self::splitValues($value);
+                $element =
+                    Html::getRadioGroup($name, $values, $values);
+                break;
 
 // More...
 //              case self::TYPE_:
@@ -775,11 +783,11 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
         if (!empty($enctype))
             $objTemplateLocal->setVariable('CORE_SETTINGDB_ENCTYPE', $enctype);
 
-        if (   !empty($header)
+        if (   !empty($section)
             && $objTemplateLocal->blockExists('core_settingdb_section')) {
 //echo("SettingDb::show(objTemplateLocal, $header, $prefix): creating section $header<br />");
             $objTemplateLocal->setVariable(array(
-                'CORE_SETTINGDB_SECTION' => $header,
+                'CORE_SETTINGDB_SECTION' => $section,
             ));
             $objTemplateLocal->parse('core_settingdb_section');
         }
@@ -939,6 +947,9 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
                 $value = (is_array($value)
                     ? join(',', array_keys($value))
                     : $value);
+// 20120508
+              case self::TYPE_RADIO:
+                  break;
               default:
                 // Regular value of any other type
                 break;
