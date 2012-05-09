@@ -189,12 +189,25 @@ class UpdateUtil
     }
 
 
-    public static function sql($statement)
+    /**
+     * Execute an SQL query
+     *
+     * Raises an Update_DatabaseException on error.
+     * Returns a recordset on success.
+     * Note that the recordset may be an empty one.
+     * You may provide a query template plus an optional input array as with
+     * {@see ADOConnection::Execute()}.
+     * @global  ADOConnection   $objDatabase
+     * @param   string          $statement      The query string
+     * @param   array           $inputarray     The optional query parameters
+     * @return  ADORecordset
+     */
+    public static function sql($statement, $inputarray=null)
     {
         global $objDatabase;
 
         # ugly, ugly hack so it does not return Insert_ID when we didn't insert
-        $objResult = $objDatabase->Execute($statement);
+        $objResult = $objDatabase->Execute($statement, $inputarray);
         if ($objResult === false) {
             self::cry($objDatabase->ErrorMsg(), $statement);
         }
