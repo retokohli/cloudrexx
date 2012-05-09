@@ -37,10 +37,10 @@ class mediaDirectoryInputfieldWysiwyg extends mediaDirectoryLibrary implements i
         parent::getFrontendLanguages();
     }
 
-    
+
     function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
-        global $objDatabase, $_LANGID, $objInit, $wysiwygEditor, $FCKeditorBasePath, $_ARRAYLANG;;      
+        global $objDatabase, $_LANGID, $objInit, $wysiwygEditor, $FCKeditorBasePath, $_ARRAYLANG;;
 
         $intId = intval($arrInputfield['id']);
         $wysiwygEditor = "FCKeditor";
@@ -114,8 +114,8 @@ class mediaDirectoryInputfieldWysiwyg extends mediaDirectoryLibrary implements i
                             $minimize = "&nbsp;<a href=\"javascript:ExpandMinimize('".$intId."');\">&laquo;&nbsp;".$_ARRAYLANG['TXT_MEDIADIR_MINIMIZE']."</a>";
                         } else {
                             $minimize = "";
-                        }  
-                        $strInputfield .=  get_wysiwyg_editor($this->moduleName.'Inputfield['.$intId.']['.$intLangId.']', $arrValue[$intLangId], 'mediadir').'&nbsp;'.$arrLang['name'].'<a href="javascript:ExpandMinimize(\''.$intId.'\');">&nbsp;'.$minimize.'</a><br />';  
+                        }
+                        $strInputfield .=  get_wysiwyg_editor($this->moduleName.'Inputfield['.$intId.']['.$intLangId.']', $arrValue[$intLangId], 'mediadir').'&nbsp;'.$arrLang['name'].'<a href="javascript:ExpandMinimize(\''.$intId.'\');">&nbsp;'.$minimize.'</a><br />';
                     }
                     $strInputfield .= '<textarea name="'.$this->moduleName.'Inputfield['.$intId.'][old]" style="display: none;" onfocus="this.select();" />'.$arrValue[0].'</textarea>';
                     $strInputfield .= '</span>';
@@ -135,27 +135,21 @@ class mediaDirectoryInputfieldWysiwyg extends mediaDirectoryLibrary implements i
                         }
 
                         //$strInputfield .= '<textarea name="'.$this->moduleName.'Inputfield['.$intId.']['.$intLangId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'_'.$intLangId.'" class="'.$this->moduleName.'InputfieldTextarea '.$strInfoClass.'" '.$arrInfoValue[$intLangId].' onfocus="this.select();" />'.$arrValue[$intLangId].'</textarea>&nbsp;'.$arrLang['name'].'<a href="javascript:ExpandMinimize(\''.$intId.'\');">&nbsp;'.$minimize.'</a><br />';
-                        
+
                         $strInputfield .=  get_wysiwyg_editor($this->moduleName.'Inputfield['.$intId.']['.$intLangId.']', $arrValue[$intLangId], 'mediadir').'&nbsp;'.$arrLang['name'].'<a href="javascript:ExpandMinimize(\''.$intId.'\');">&nbsp;'.$minimize.'</a><br />';
                     }
                     $strInputfield .= '<textarea name="'.$this->moduleName.'Inputfield['.$intId.'][old]" style="display: none;" onfocus="this.select();" />'.$arrValue[0].'</textarea>';
                     $strInputfield .= '</span></span>';
                 }
-
-
                 return $strInputfield;
-                break;
             case 2:
                 //search View
-                $strValue = $_GET[$intId];
+                $strValue = (isset ($_GET[$intId]) ? $_GET[$intId] : '');
                 $strInputfield = '<input type="text" name="'.$intId.'" " class="'.$this->moduleName.'InputfieldSearch" value="'.$strValue.'" />';
-
                 return $strInputfield;
-
-                break;
         }
-    }    
-    
+    }
+
 
     function saveInputfield($intInputfieldId, $strValue)
     {
@@ -165,9 +159,9 @@ class mediaDirectoryInputfieldWysiwyg extends mediaDirectoryLibrary implements i
             $strValue = contrexx_addslashes($strValue);
         } else {
             //$strValue = strip_tags($strValue, )
-            
+
             $strValue = $this->BBCodeToHTML(contrexx_stripslashes($strValue));
-        }   */                                             
+        }   */
         $strValue = strip_tags(contrexx_input2raw($strValue), '<b><strong><em><u><br><ul><li><ol>');
 
         return $strValue;

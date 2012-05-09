@@ -90,7 +90,7 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
                         }
                     }
                 }
-                
+
                 $arrInfoValue = array();
                 if(!empty($arrInputfield['info'][0])){
                     $arrInfoValue[0] = 'title="'.$arrInputfield['info'][0].'"';
@@ -123,17 +123,17 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
                 } else {
                 	if($this->arrSettings['settingsFrontendUseMultilang'] == 1) {
                 		$strInputfield = '<div id="'.$this->moduleName.'Inputfield_'.$intId.'_Minimized" style="display: block; float: left;" class="'.$this->moduleName.'GroupMultilang"><textarea name="'.$this->moduleName.'Inputfield['.$intId.'][0]" id="'.$this->moduleName.'Inputfield_'.$intId.'_0" class="'.$this->moduleName.'InputfieldTextarea '.$strInfoClass.'" '.$arrInfoValue[0].' onfocus="this.select();" />'.$arrValue[0].'</textarea>&nbsp;<a href="javascript:ExpandMinimize(\''.$intId.'\');">'.$_ARRAYLANG['TXT_MEDIADIR_MORE'].'&nbsp;&raquo;</a></div>';
-	                    
+
                 		$strInputfield .= '<div id="'.$this->moduleName.'Inputfield_'.$intId.'_Expanded" style="display: none; float: left;" class="'.$this->moduleName.'GroupMultilang">';
 	                    foreach ($this->arrFrontendLanguages as $key => $arrLang) {
 	                        $intLangId = $arrLang['id'];
-	
+
 	                        if(($key+1) == count($this->arrFrontendLanguages)) {
 	                            $minimize = "&nbsp;<a href=\"javascript:ExpandMinimize('".$intId."');\">&laquo;&nbsp;".$_ARRAYLANG['TXT_MEDIADIR_MINIMIZE']."</a>";
 	                        } else {
 	                            $minimize = "";
 	                        }
-	
+
 	                        $strInputfield .= '<textarea name="'.$this->moduleName.'Inputfield['.$intId.']['.$intLangId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'_'.$intLangId.'" class="'.$this->moduleName.'InputfieldTextarea '.$strInfoClass.'" '.$arrInfoValue[$intLangId].' onfocus="this.select();" />'.$arrValue[$intLangId].'</textarea>&nbsp;'.$arrLang['name'].'<a href="javascript:ExpandMinimize(\''.$intId.'\');">&nbsp;'.$minimize.'</a><br />';
 	                    }
 	                    $strInputfield .= '<textarea name="'.$this->moduleName.'Inputfield['.$intId.'][old]" style="display: none;" onfocus="this.select();" />'.$arrValue[0].'</textarea>';
@@ -142,18 +142,12 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
                 		$strInputfield = '<textarea name="'.$this->moduleName.'Inputfield['.$intId.'][0]" id="'.$this->moduleName.'Inputfield_'.$intId.'_0" class="'.$this->moduleName.'InputfieldTextarea '.$strInfoClass.'" '.$arrInfoValue[0].' onfocus="this.select();" />'.$arrValue[0].'</textarea>';
                     }
                 }
-
-
                 return $strInputfield;
-                break;
             case 2:
                 //search View
-                $strValue = $_GET[$intId];
+                $strValue = (isset ($_GET[$intId]) ? $_GET[$intId] : '');
                 $strInputfield = '<input type="text" name="'.$intId.'" " class="'.$this->moduleName.'InputfieldSearch" value="'.$strValue.'" />';
-
                 return $strInputfield;
-
-                break;
         }
     }
 
@@ -185,7 +179,7 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
         $intId = intval($arrInputfield['id']);
         $objEntryDefaultLang = $objDatabase->Execute("SELECT `lang_id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE id=".intval($intEntryId)." LIMIT 1");
         $intEntryDefaultLang = intval($objEntryDefaultLang->fields['lang_id']);
-        
+
         if($this->arrSettings['settingsTranslationStatus'] == 1) {
             if(in_array($_LANGID, $arrTranslationStatus)) {
                 $intLangId = $_LANGID;
@@ -195,7 +189,7 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
         } else {
             $intLangId = $_LANGID;
         }
-        
+
         $objInputfieldValue = $objDatabase->Execute("
             SELECT
                 `value`
@@ -209,7 +203,7 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
                 lang_id=".$intLangId."
             LIMIT 1
         ");
-        
+
         if(empty($objInputfieldValue->fields['value'])) {
             $objInputfieldValue = $objDatabase->Execute("
                 SELECT
@@ -269,8 +263,8 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
 EOF;
         return $strJavascriptCheck;
     }
-    
-    
+
+
     function getFormOnSubmit($intInputfieldId)
     {
         return null;
