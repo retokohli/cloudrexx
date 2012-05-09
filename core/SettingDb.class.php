@@ -60,7 +60,7 @@ class SettingDb
      *
      * Note that textareas often use twice that value.
      */
-    const DEFAULT_INPUT_WIDTH = 220;
+    const DEFAULT_INPUT_WIDTH = 300;
 
     /**
      * The array of currently loaded settings settings, like
@@ -562,7 +562,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
             Message::warning(
                 sprintf(
                     $_CORELANG['TXT_CORE_SETTINGDB_WARNING_NONE_FOUND_FOR_TAB_AND_SECTION'],
-                    $tab_name, $header));
+                    $tab_name, $section));
             return false;
         }
         self::show_section($objTemplateLocal, $section, $prefix);
@@ -646,7 +646,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
                 $element = Html::getSelect(
                     $name, $arrValues, $value,
                     '', '',
-                    'style="width: 220px;'.
+                    'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;'.
                     (   isset ($arrValues[$value])
                      && is_numeric($arrValues[$value])
                         ? 'text-align: right;' : '').
@@ -656,7 +656,8 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
                 $element = Html::getSelect(
                     $name,
                     User_Profile_Attribute::getCustomAttributeNameArray(),
-                    $arrSetting['value'], '', '', 'style="width: 220px;"'
+                    $arrSetting['value'], '', '',
+                    'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'
                 );
                 break;
               case self::TYPE_DROPDOWN_USERGROUP:
@@ -664,7 +665,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
                     $name,
                     UserGroup::getNameArray(),
                     $arrSetting['value'],
-                    '', '', 'style="width: 220px;"'
+                    '', '', 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'
                 );
                 break;
               case self::TYPE_WYSIWYG:
@@ -694,7 +695,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
                         Filetype::MAXIMUM_UPLOAD_FILE_SIZE,
                         // "values" defines the MIME types allowed
                         $arrSetting['values'],
-                        'style="width: 220px;"', true,
+                        'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"', true,
                         ($value
                           ? $value
                           : 'media/'.
@@ -731,7 +732,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
               case self::TYPE_TEXTAREA:
                 $element =
                     Html::getTextarea($name, $value, 80, 8, '');
-//                        'style="width: 220px;'.$value_align.'"');
+//                        'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;'.$value_align.'"');
                 break;
 
               case self::TYPE_CHECKBOX:
@@ -765,7 +766,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
                 $element =
                     Html::getInputText(
                         $name, $value, false,
-                        'style="width: 220px;'.
+                        'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;'.
                         (is_numeric($value) ? 'text-align: right;' : '').
                         '"');
             }
