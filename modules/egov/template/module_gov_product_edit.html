@@ -251,47 +251,62 @@ function showOrHide(strElement) {
 // -->
 </script>
 <div style="display:none;">
-  <div style="white-space:nowrap; height:20px;" id="formField_{CONTACT_FORM_FIELD_NEXT_ID}">
-    <div style="width:55px; display:inline; float:left;">
-      <a href="javascript:removeFormField('{CONTACT_FORM_FIELD_NEXT_ID}')" id="contactFormFieldButtonDelete_{CONTACT_FORM_FIELD_NEXT_ID}" title="{TXT_CONTACT_DELETE}"><img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" /></a>
-      <a href="javascript:moveFormFieldUp('{CONTACT_FORM_FIELD_NEXT_ID}')" id="contactFormFieldButtonUp_{CONTACT_FORM_FIELD_NEXT_ID}" title="{TXT_CONTACT_MOVE_UP}"><img style="vertical-align:middle;" src="images/icons/up.gif" alt="{TXT_CONTACT_MOVE_UP}" width="14" height="12" border="0" /></a>
-      <a href="javascript:moveFormFieldDown('{CONTACT_FORM_FIELD_NEXT_ID}')" id="contactFormFieldButtonDown_{CONTACT_FORM_FIELD_NEXT_ID}" title="{TXT_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;" src="images/icons/down.gif" alt="{TXT_CONTACT_MOVE_DOWN}" width="14" height="12" border="0" /></a>
+  <div style="white-space: nowrap; height: 27px;" id="formField_{CONTACT_FORM_FIELD_NEXT_ID}">
+    <div style="width: 55px; display: table-cell; float: left;">
+      <a href="javascript:removeFormField('{CONTACT_FORM_FIELD_NEXT_ID}')"
+         id="contactFormFieldButtonDelete_{CONTACT_FORM_FIELD_NEXT_ID}"
+         title="{TXT_CONTACT_DELETE}"><img style="vertical-align:middle;"
+            src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}"
+            width="17" height="17" border="0" /></a>
+      <a href="javascript:moveFormFieldUp('{CONTACT_FORM_FIELD_NEXT_ID}')"
+         id="contactFormFieldButtonUp_{CONTACT_FORM_FIELD_NEXT_ID}"
+         title="{TXT_CONTACT_MOVE_UP}"><img style="vertical-align:middle;"
+            src="images/icons/up.gif" alt="{TXT_CONTACT_MOVE_UP}"
+            width="14" height="12" border="0" /></a>
+      <a href="javascript:moveFormFieldDown('{CONTACT_FORM_FIELD_NEXT_ID}')"
+         id="contactFormFieldButtonDown_{CONTACT_FORM_FIELD_NEXT_ID}"
+         title="{TXT_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;"
+            src="images/icons/down.gif" alt="{TXT_CONTACT_MOVE_DOWN}"
+            width="14" height="12" border="0" /></a>
     </div>
-    <div style="width:120px; display:inline; float:left;">
-      <input type="text" name="contactFormFieldName[{CONTACT_FORM_FIELD_NEXT_ID}]" id="contactFormFieldName_{CONTACT_FORM_FIELD_NEXT_ID}" value="" />
+    <div style="width: 160px; display: table-cell; float: left;">
+      <input type="text" name="contactFormFieldName[{CONTACT_FORM_FIELD_NEXT_ID}]"
+             id="contactFormFieldName_{CONTACT_FORM_FIELD_NEXT_ID}" value="" />
     </div>
-    <div style="width:150px; display:inline; float:left;">
+    <div style="width: 183px; display: table-cell; float: left;">
       {CONTACT_FORM_FIELD_TYPE_MENU_TPL}
     </div>
-    <div style="width:240px; height:1px; display:inline; float:left;" id="contactFormFieldAttributeBox_{CONTACT_FORM_FIELD_NEXT_ID}">
+    <div style="width: 240px; display: table-cell; float: left;"
+         id="contactFormFieldAttributeBox_{CONTACT_FORM_FIELD_NEXT_ID}">
       {CONTACT_FORM_FIELD_NEXT_TEXT_TPL}
     </div>
-    <div style="width:150px; display:inline;" id="contactFormFieldRequiredBox_{CONTACT_FORM_FIELD_NEXT_ID}">
+    <div style="width: 150px; display: table-cell;"
+         id="contactFormFieldRequiredBox_{CONTACT_FORM_FIELD_NEXT_ID}">
       {CONTACT_FORM_FIELD_CHECK_BOX_NEXT_TPL} {CONTACT_FORM_FIELD_CHECK_MENU_NEXT_TPL}
     </div>
   </div>
-  <div style="display:inline;" id="formFieldtextAttribute_0">
+  <div style="display: inline;" id="formFieldtextAttribute_0">
     {CONTACT_FORM_FIELD_TEXT_TPL}
   </div>
-  <div style="display:inline;" id="formFieldlabelAttribute_0">
+  <div style="display: inline;" id="formFieldlabelAttribute_0">
     {CONTACT_FORM_FIELD_NEXT_TEXT_TPL}
   </div>
-  <div style="display:inline;" id="formFieldcheckboxAttribute_0">
+  <div style="display: inline;" id="formFieldcheckboxAttribute_0">
     {CONTACT_FORM_FIELD_CHECKBOX_TPL}
   </div>
-  <div style="display:inline;" id="formFieldcheckboxGroupAttribute_0">
+  <div style="display: inline;" id="formFieldcheckboxGroupAttribute_0">
     {CONTACT_FORM_FIELD_CHECKBOX_GROUP_TPL}
   </div>
-  <div style="display:inline;" id="formFieldhiddenAttribute_0">
+  <div style="display: inline;" id="formFieldhiddenAttribute_0">
     {CONTACT_FORM_FIELD_HIDDEN_TPL}
   </div>
-  <div style="display:inline;" id="formFieldradioAttribute_0">
+  <div style="display: inline;" id="formFieldradioAttribute_0">
     {CONTACT_FORM_FIELD_RADIO_TPL}
   </div>
-  <div style="display:inline;" id="formFieldselectAttribute_0">
+  <div style="display: inline;" id="formFieldselectAttribute_0">
     {CONTACT_FORM_FIELD_SELECT_TPL}
   </div>
-  <div style="width:150px; display:inline;" id="contactFormFieldRequiredBox_0">
+  <div style="width: 150px; display: inline;" id="contactFormFieldRequiredBox_0">
     {CONTACT_FORM_FIELD_CHECK_BOX_TPL} {CONTACT_FORM_FIELD_CHECK_MENU_TPL}
   </div>
 </div>
@@ -327,44 +342,61 @@ function showOrHide(strElement) {
           <td>{TXT_EGOV_FORM_FIELDS}</td>
           <td>
             <div id="formFieldContainer">
-              <div style="white-space:nowrap; height:20px;">
-                <div style="width:55px; display:inline; float:left; text-align:center;">
+              <div style="white-space: nowrap; height: auto;">
+                <div style="width: 55px; display: table-cell; float:left; text-align:center;">
                   &nbsp;
                 </div>
-                <div style="width:120px; display:inline; float:left;">
+                <div style="width: 160px; display: table-cell; float:left;">
                   {TXT_EGOV_FIELD_NAME}
                 </div>
-                <div style="width:150px; display:inline; float:left;">
+                <div style="width: 183px; display: table-cell; float:left;">
                   {TXT_EGOV_TYPE}
                 </div>
-                <div style="width:240px; height:1px; display:inline; float:left;">
+                <div style="width: 240px; display: table-cell; float:left;">
                   {TXT_EGOV_VALUE_S}
                 </div>
-                <div style="width:150px; display:inline;">
+                <div style="width: 150px; display: table-cell; clear: right;">
                   {TXT_EGOV_MANDATORY_FIELD}
                 </div>
               </div>
-              <!-- BEGIN egov_form_field_list -->
-                <div style="white-space:nowrap; height:20px;" id="formField_{EGOV_FORM_FIELD_ID}">
-                  <div style="width:55px; display:inline; float:left;">
-                    <a href="javascript:removeFormField('{EGOV_FORM_FIELD_ID}')" id="contactFormFieldButtonDelete_{EGOV_FORM_FIELD_ID}" title="{EGOV_CONTACT_DELETE}"><img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{EGOV_CONTACT_DELETE}" width="17" height="17" border="0" /></a>
-                    <a href="javascript:moveFormFieldUp('{EGOV_FORM_FIELD_ID}')" id="contactFormFieldButtonUp_{EGOV_FORM_FIELD_ID}" title="{EGOV_CONTACT_MOVE_UP}"><img style="vertical-align:middle;" src="images/icons/up.gif" alt="{EGOV_CONTACT_MOVE_UP}" width="14" height="12" border="0" /></a>
-                    <a href="javascript:moveFormFieldDown('{EGOV_FORM_FIELD_ID}')" id="contactFormFieldButtonDown_{EGOV_FORM_FIELD_ID}" title="{EGOV_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;" src="images/icons/down.gif" alt="{EGOV_CONTACT_MOVE_DOWN}" width="14" height="12" border="0" /></a>
-                  </div>
-                  <div style="width:120px; display:inline; float:left;">
-                    <input type="text" name="contactFormFieldName[{EGOV_FORM_FIELD_ID}]" id="contactFormFieldName_{EGOV_FORM_FIELD_ID}" value="{EGOV_FORM_FIELD_NAME}" />
-                  </div>
-                  <div style="width:150px; display:inline; float:left;">
-                    {EGOV_FORM_FIELD_TYPE_MENU}
-                  </div>
-                  <div style="width:240px; height:1px; display:inline; float:left;" id="contactFormFieldAttributeBox_{EGOV_FORM_FIELD_ID}">
-                    {EGOV_FORM_FIELD_ATTRIBUTES}
-                  </div>
-                  <div style="width:150px; display:inline;" id="contactFormFieldRequiredBox_{EGOV_FORM_FIELD_ID}">
-                    {EGOV_FORM_FIELD_CHECK_BOX} {EGOV_FORM_FIELD_CHECK_MENU}
-                  </div>
+<!-- BEGIN egov_form_field_list -->
+              <div style="white-space: nowrap; height: 27px; clear: left;"
+                   id="formField_{EGOV_FORM_FIELD_ID}">
+                <div style="width: 55px; display: table-cell; float:left;">
+                  <a href="javascript:removeFormField('{EGOV_FORM_FIELD_ID}')"
+                     id="contactFormFieldButtonDelete_{EGOV_FORM_FIELD_ID}"
+                     title="{EGOV_CONTACT_DELETE}"><img style="vertical-align:middle;"
+                     src="images/icons/delete.gif" alt="{EGOV_CONTACT_DELETE}"
+                        width="17" height="17" border="0" /></a>
+                  <a href="javascript:moveFormFieldUp('{EGOV_FORM_FIELD_ID}')"
+                     id="contactFormFieldButtonUp_{EGOV_FORM_FIELD_ID}"
+                     title="{EGOV_CONTACT_MOVE_UP}"><img style="vertical-align:middle;"
+                     src="images/icons/up.gif" alt="{EGOV_CONTACT_MOVE_UP}"
+                        width="14" height="12" border="0" /></a>
+                  <a href="javascript:moveFormFieldDown('{EGOV_FORM_FIELD_ID}')"
+                     id="contactFormFieldButtonDown_{EGOV_FORM_FIELD_ID}"
+                     title="{EGOV_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;"
+                     src="images/icons/down.gif" alt="{EGOV_CONTACT_MOVE_DOWN}"
+                        width="14" height="12" border="0" /></a>
                 </div>
-              <!-- END egov_form_field_list -->
+                <div style="width: 160px; display: table-cell; float:left;">
+                  <input type="text" name="contactFormFieldName[{EGOV_FORM_FIELD_ID}]"
+                       id="contactFormFieldName_{EGOV_FORM_FIELD_ID}"
+                       value="{EGOV_FORM_FIELD_NAME}" />
+                </div>
+                <div style="width: 183px; display: table-cell; float:left;">
+                  {EGOV_FORM_FIELD_TYPE_MENU}
+                </div>
+                <div style="width: 240px; display: table-cell; float:left;"
+                     id="contactFormFieldAttributeBox_{EGOV_FORM_FIELD_ID}">
+                  {EGOV_FORM_FIELD_ATTRIBUTES}
+                </div>
+                <div style="width: 150px; display: table-cell; clear: right;"
+                     id="contactFormFieldRequiredBox_{EGOV_FORM_FIELD_ID}">
+                  {EGOV_FORM_FIELD_CHECK_BOX} {EGOV_FORM_FIELD_CHECK_MENU}
+                </div>
+              </div>
+<!-- END egov_form_field_list -->
             </div>
             <br />
             <br />
