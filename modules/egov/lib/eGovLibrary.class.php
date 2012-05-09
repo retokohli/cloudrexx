@@ -155,11 +155,12 @@ class eGovLibrary {
 
     static function ParseFormValues($Field='', $Values='')
     {
-        $ValuesArray = split(';;', $Values);
+        $ValuesArray = explode(';;', $Values);
         $FormArray = array();
+        $ArrayName = $ArrayValue = NULL;
         foreach ($ValuesArray as $value) {
             if (empty($value)) continue;
-            list ($ArrayName, $ArrayValue) = split('::', $value);
+            list ($ArrayName, $ArrayValue) = explode('::', $value);
             $FormArray[$ArrayName] = $ArrayValue;
         }
         if (isset($FormArray[$Field])) {
@@ -263,8 +264,9 @@ class eGovLibrary {
         $arrResult = array();
         $order_values = eGovLibrary::GetOrderValue('order_values', $order_id);
         $arrFields = preg_split('/;;/', $order_values, null, PREG_SPLIT_NO_EMPTY);
+        $name = $value = NULL;
         foreach ($arrFields as $field) {
-            list ($name, $value) = split('::', $field);
+            list ($name, $value) = explode('::', $field);
             if ($name != '') {
                 $arrResult[$name] = $value;
             }
@@ -355,6 +357,7 @@ class eGovLibrary {
     {
         global $objDatabase;
 
+        $year = $month = $day = NULL;
         list ($year, $month, $day) = explode('-', $datum);
         $query = "
             SELECT count(*) AS anzahl
