@@ -1602,10 +1602,16 @@ class ContentManager
             $parcat = 0;
         }
 
-        $displaystatus = ( $_POST['displaystatus'] == "on" ) ? "on" : "off";
-        $cachingstatus = (intval($_POST['cachingstatus']) == 1) ? 1 : 0;
-        $expertmode = ( $_POST['expertmode'] == "y" ) ? "y" : "n";
-        $robotstatus = ( $_POST['robots'] == "index" ) ? "index" : "noindex";
+        $displaystatus =
+            (   isset ($_POST['displaystatus'])
+             && $_POST['displaystatus'] == 'on' ) ? 'on' : 'off';
+        $cachingstatus = (empty($_POST['cachingstatus']) ? 0 : 1);
+        $expertmode =
+            (   isset ($_POST['expertmode'])
+             && $_POST['expertmode'] == 'y') ? 'y' : 'n';
+        $robotstatus =
+            (   isset ($_POST['robots'])
+             && $_POST['robots'] == 'index') ? 'index' : 'noindex';
 
         $catname =     strip_tags(contrexx_addslashes($_POST['newpage']));
         // Never used
@@ -2448,22 +2454,22 @@ class ContentManager
         }
         return $return;
     }
-    
+
     function _getCustomContentMenu($selected=null) {
         global $objInit, $_CORELANG;
 
         $pageId = !empty($_REQUEST['pageId']) ? intval($_REQUEST['pageId']) : 0;
         if($pageId)
           $objInit->getPageId($pageId);
-        
+
         $templates = $objInit->getTemplates();
         $menu = '<option value="">(Standard)</option>';
-        
+
         foreach ($templates['custom_content'] as $name => $value) {
             $sel = $name == $selected ? ' selected="selected"' : '';
             $menu .= '<option value="'.$name.'"'.$sel.'>'.$name.'</option>';
         }
-        
+
         return $menu;
     }
 
