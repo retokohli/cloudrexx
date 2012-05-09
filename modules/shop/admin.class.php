@@ -1542,10 +1542,6 @@ class Shopmanager extends ShopLibrary
         require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
         $paypalStatus = (SettingDb::getValue('paypal_active') ? HTML_ATTRIBUTE_CHECKED : '');
 
-        $yellowpayTest = SettingDb::getValue('postfinance_use_testserver');
-        $yellowpayTestCheckedYes = ($yellowpayTest ? HTML_ATTRIBUTE_CHECKED : '');
-        $yellowpayTestCheckedNo = ($yellowpayTest ? '' : HTML_ATTRIBUTE_CHECKED);
-
         // Datatrans
         $datatrans_request_type = SettingDb::getValue('datatrans_request_type');
         $datatrans_merchant_id = SettingDb::getValue('datatrans_merchant_id');
@@ -1569,14 +1565,16 @@ class Shopmanager extends ShopLibrary
 // Replaced by
             'SHOP_YELLOWPAY_HASH_SIGNATURE_IN' => SettingDb::getValue('postfinance_hash_signature_in'),
             'SHOP_YELLOWPAY_HASH_SIGNATURE_OUT' => SettingDb::getValue('postfinance_hash_signature_out'),
-            'SHOP_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' =>
-                Yellowpay::getKnownPaymentMethodCheckboxes(
-                    SettingDb::getValue('postfinance_accepted_payment_methods')),
+// OBSOLETE
+//            'SHOP_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' =>
+//                Yellowpay::getKnownPaymentMethodCheckboxes(
+//                    SettingDb::getValue('postfinance_accepted_payment_methods')),
             'SHOP_YELLOWPAY_AUTHORIZATION_TYPE_OPTIONS' =>
                 Yellowpay::getAuthorizationMenuoptions(
                     SettingDb::getValue('postfinance_authorization_type')),
-            'SHOP_YELLOWPAY_USE_TESTSERVER_YES_CHECKED' => $yellowpayTestCheckedYes,
-            'SHOP_YELLOWPAY_USE_TESTSERVER_NO_CHECKED' => $yellowpayTestCheckedNo,
+            'SHOP_YELLOWPAY_USE_TESTSERVER_CHECKED' =>
+                (SettingDb::getValue('postfinance_use_testserver')
+                    ? HTML_ATTRIBUTE_CHECKED : ''),
             // Added 20100222 -- Reto Kohli
             'SHOP_POSTFINANCE_MOBILE_WEBUSER' => SettingDb::getValue('postfinance_mobile_webuser'),
             'SHOP_POSTFINANCE_MOBILE_SIGN' => SettingDb::getValue('postfinance_mobile_sign'),

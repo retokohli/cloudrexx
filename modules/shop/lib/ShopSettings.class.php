@@ -112,11 +112,12 @@ class ShopSettings
             trim(strip_tags(contrexx_input2raw($_POST['fax']))));
         SettingDb::set('country_id', intval($_POST['country_id']));
 
+// OBSOLETE
         // Postfinance (FKA yellowpay)
-        $strYellowpayAcceptedPM = (!empty($_POST['postfinance_accepted_payment_methods'])
-            ? addslashes(join(',', $_POST['postfinance_accepted_payment_methods']))
-            : ''
-        );
+//        $strYellowpayAcceptedPM = (!empty($_POST['postfinance_accepted_payment_methods'])
+//            ? addslashes(join(',', $_POST['postfinance_accepted_payment_methods']))
+//            : ''
+//        );
         SettingDb::set('postfinance_shop_id',
             trim(strip_tags(contrexx_input2raw($_POST['postfinance_shop_id']))));
         SettingDb::set('postfinance_active', !empty($_POST['postfinance_active']));
@@ -129,7 +130,8 @@ class ShopSettings
             trim(strip_tags(contrexx_input2raw($_POST['postfinance_hash_signature_out']))));
         SettingDb::set('postfinance_authorization_type',
             trim(strip_tags(contrexx_input2raw($_POST['postfinance_authorization_type']))));
-        SettingDb::set('postfinance_accepted_payment_methods', $strYellowpayAcceptedPM);
+// OBSOLETE
+//        SettingDb::set('postfinance_accepted_payment_methods', $strYellowpayAcceptedPM);
         SettingDb::set('postfinance_use_testserver', !empty($_POST['postfinance_use_testserver']));
 
         // Postfinance Mobile
@@ -656,6 +658,20 @@ DBG::log("ShopSettings::errorHandler(): Migrating");
         }
         SettingDb::init('shop', 'config');
         // Try adding any that just *might* be missing for *any* reason
+        SettingDb::add('email', 'no-reply@comvation.com', ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('email_confirmation', 'no-reply@comvation.com', ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('company', 'Comvation AG', ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('address', 'Burgstrasse 20', ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('country_id', 204, ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('telephone', '+4133 2266000', ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('fax', '+4133 2266001', ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
         SettingDb::add('vat_enabled_foreign_customer', 0, ++$i,
             SettingDb::TYPE_TEXT, null, 'config');
         SettingDb::add('vat_enabled_foreign_reseller', 0, ++$i,
@@ -676,10 +692,86 @@ DBG::log("ShopSettings::errorHandler(): Migrating");
             SettingDb::TYPE_TEXT, null, 'config');
         SettingDb::add('vat_other_id', 1, ++$i,
             SettingDb::TYPE_TEXT, null, 'config');
-        SettingDb::add('country_id', 204, ++$i,
-            SettingDb::TYPE_TEXT, null, 'config');
         SettingDb::add('weight_enable', 0, ++$i,
             SettingDb::TYPE_TEXT, null, 'config');
+
+        SettingDb::add('show_products_default', 0, ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('product_sorting', 0, ++$i,
+            SettingDb::TYPE_DROPDOWN,
+            '0:TXT_SHOP_PRODUCT_SORTING_ALPHABETIC,'.
+            '1:TXT_SHOP_PRODUCT_SORTING_INDIVIDUAL,'.
+            '2:TXT_SHOP_PRODUCT_SORTING_PRODUCTCODE',
+            'config');
+        SettingDb::add('thumbnail_max_width', 140, ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('thumbnail_max_height', 140, ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('thumbnail_quality', 90, ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+
+
+        SettingDb::add('saferpay_id', '1234', ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('saferpay_active', 1, ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('saferpay_use_test_account', 1, ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('saferpay_finalize_payment', 1, ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('saferpay_window_option', 2, ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('paypal_active', 1, ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('paypal_account_email', 'no-reply@comvation.com', ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('paypal_default_currency', 'CHF', ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+
+        // Also see Yellowpay.class
+        SettingDb::add('postfinance_shop_id', 'Ihr Kontoname', ++$i,
+            SettingDb::TYPE_TEXT);
+        SettingDb::add('postfinance_active', '0', ++$i,
+            SettingDb::TYPE_CHECKBOX, '1');
+        SettingDb::add('postfinance_authorization_type', 'SAL', ++$i,
+            SettingDb::TYPE_DROPDOWN, 'RES:Reservation,SAL:Verkauf');
+// OBSOLETE
+        // As it appears that in_array(0, $array) is true for each non-empty
+        // $array, indices for the entries must be numbered starting at 1.
+//        $arrPayments = array();
+//        foreach (self::$arrKnownPaymentMethod as $index => $name) {
+//            $arrPayments[$index] = $name;
+//        }
+//        SettingDb::add('postfinance_accepted_payment_methods', '', ++$i,
+//                SettingDb::TYPE_CHECKBOXGROUP,
+//                SettingDb::joinValues($arrPayments));
+        SettingDb::add('postfinance_hash_signature_in',
+            'Mindestens 16 Buchstaben, Ziffern und Zeichen', ++$i,
+            SettingDb::TYPE_TEXT);
+        SettingDb::add('postfinance_hash_signature_out',
+            'Mindestens 16 Buchstaben, Ziffern und Zeichen', ++$i,
+            SettingDb::TYPE_TEXT);
+        SettingDb::add('postfinance_use_testserver', '1', ++$i,
+            SettingDb::TYPE_CHECKBOX, '1');
+        SettingDb::add('postfinance_mobile_webuser', '1234', ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('postfinance_mobile_sign', 'geheimer_schlüssel', ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('postfinance_mobile_ijustwanttotest', 1, ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('postfinance_mobile_status', 1, ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('datatrans_merchant_id', '1234', ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('datatrans_active', 1, ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('datatrans_request_type', 'CAA', ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('datatrans_use_testserver', 1, ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('payment_lsv_active', 0, ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+
         // New for v2.2(?)
         SettingDb::add('orderitems_amount_max', 0, ++$i,
             SettingDb::TYPE_TEXT, null, 'config');
@@ -692,18 +784,6 @@ DBG::log("ShopSettings::errorHandler(): Migrating");
                 ShopLibrary::REGISTER_OPTIONAL,
                 ShopLibrary::REGISTER_NONE)),
             'config');
-        SettingDb::add('postfinance_hash_signature_in', 0, ++$i,
-            SettingDb::TYPE_TEXT, null, 'config');
-        SettingDb::add('postfinance_hash_signature_out', 0, ++$i,
-            SettingDb::TYPE_TEXT, null, 'config');
-        SettingDb::add('postfinance_mobile_webuser', 0, ++$i,
-            SettingDb::TYPE_TEXT, null, 'config');
-        SettingDb::add('postfinance_mobile_sign', 0, ++$i,
-            SettingDb::TYPE_TEXT, null, 'config');
-        SettingDb::add('postfinance_mobile_ijustwanttotest', 0, ++$i,
-            SettingDb::TYPE_TEXT, null, 'config');
-        SettingDb::add('postfinance_mobile_status', 0, ++$i,
-            SettingDb::TYPE_TEXT, null, 'config');
         SettingDb::add('numof_products_per_page_frontend', 25, ++$i,
             SettingDb::TYPE_TEXT, null, 'config');
         SettingDb::add('numof_orders_per_page_backend', 25, ++$i,

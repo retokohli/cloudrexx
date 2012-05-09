@@ -714,7 +714,10 @@ class Vat
     /**
      * Tries to fix database problems
      *
-     * Also migrates text fields to the new structure
+     * Also migrates text fields to the new structure.
+     * Note that no VAT classes are added here (yet), so neither the old
+     * nor the new table exists to begin with, the new structure will be
+     * created with no records.
      * @return  boolean               False.  Always.
      */
     static function errorHandler()
@@ -737,10 +740,6 @@ class Vat
                     SELECT `id`, `class`
                       FROM `$table_name`";
                 $objResult = UpdateUtil::sql($query);
-                if (!$objResult) {
-                    throw new Update_DatabaseException(
-                        "Failed to query VAT classes", $query);
-                }
                 while (!$objResult->EOF) {
                     $id = $objResult->fields['id'];
                     $class = $objResult->fields['class'];

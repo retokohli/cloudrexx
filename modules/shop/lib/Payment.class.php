@@ -488,6 +488,7 @@ class Payment
         // Fix the Text and Zones tables first
         Text::errorHandler();
         Zones::errorHandler();
+        Yellowpay::errorHandler();
 
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_payment';
         $table_structure = array(

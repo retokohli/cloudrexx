@@ -451,10 +451,11 @@ class Yellowpay
             $arrField['OPERATION'] =
                 $settings['postfinance_authorization_type']['value'];
         }
+// OBSOLETE
         // There needs to be at least one accepted payment method,
         // if there is none, accept all.
-        $strAcceptedPaymentMethods = self::getAcceptedPaymentMethodsString(
-            $settings['postfinance_accepted_payment_methods']['value']);
+//        $strAcceptedPaymentMethods = self::getAcceptedPaymentMethodsString(
+//            $settings['postfinance_accepted_payment_methods']['value']);
         // Build the base URI, which also includes the protocol (http://)
         if (empty ($uriparam)) {
             $uriparam = 'section=shop&cmd=success&handler=yellowpay';
@@ -858,6 +859,7 @@ class Yellowpay
 
 
     /**
+     * OBSOLETE AND UNUSED
      * Returns the HTML checkboxes for selecting zero or more from the known
      * payment methods.
      * @param   string  $indices        The comma separated list of selected
@@ -866,10 +868,11 @@ class Yellowpay
      */
     static function getKnownPaymentMethodCheckboxes($indices)
     {
-        global $_ARRAYLANG;
+die("Obsolete method called: Yellowpay::getKnownPaymentMethodCheckboxes()");
+/*        global $_ARRAYLANG;
 
         $strOptions = '';
-        $arrIndices = preg_split('/\s*,\s*/', $indices, null, PREG_SPLIT_NO_EMPTY);
+        $arrIndices = preg_split('/\s*,\s* __TODO__ /', $indices, null, PREG_SPLIT_NO_EMPTY);
         foreach (self::$arrKnownPaymentMethod
                 as $index => $strPaymentMethod) {
             $strOptions .=
@@ -881,7 +884,7 @@ class Yellowpay
                 $_ARRAYLANG['TXT_SHOP_YELLOWPAY_'.strtoupper($strPaymentMethod)].
                 '</label><br />'."\n";
         }
-        return $strOptions;
+        return $strOptions;*/
     }
 
 
@@ -910,6 +913,7 @@ class Yellowpay
     /**
      * Handles errors ocurring in this class
      *
+     * Applies to the section (module) SettingsDb has been initialized with.
      * In particular, tries to add missing Settings using the defaults.
      * However, you will have to set them to their correct values after this.
      * Note that you *MUST* call SettingDb::init() using the proper section
@@ -927,15 +931,16 @@ class Yellowpay
                 2, SettingDb::TYPE_CHECKBOX, '1');
         SettingDb::add('postfinance_authorization_type', 'SAL',
                 3, SettingDb::TYPE_DROPDOWN, 'RES:Reservation,SAL:Verkauf');
+// OBSOLETE
         // As it appears that in_array(0, $array) is true for each non-empty
         // $array, indices for the entries must be numbered starting at 1.
-        $arrPayments = array();
-        foreach (self::$arrKnownPaymentMethod as $index => $name) {
-            $arrPayments[$index] = $name;
-        }
-        SettingDb::add('postfinance_accepted_payment_methods', '',
-                4, SettingDb::TYPE_CHECKBOXGROUP,
-                SettingDb::joinValues($arrPayments));
+//        $arrPayments = array();
+//        foreach (self::$arrKnownPaymentMethod as $index => $name) {
+//            $arrPayments[$index] = $name;
+//        }
+//        SettingDb::add('postfinance_accepted_payment_methods', '',
+//                4, SettingDb::TYPE_CHECKBOXGROUP,
+//                SettingDb::joinValues($arrPayments));
         SettingDb::add('postfinance_hash_signature_in',
                 'Mindestens 16 Buchstaben, Ziffern und Zeichen',
                 5, SettingDb::TYPE_TEXT);
