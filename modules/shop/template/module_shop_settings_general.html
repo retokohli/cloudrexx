@@ -20,34 +20,34 @@
       <th colspan="2"> <b>{TXT_GENERAL_SETTINGS}</b></th>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_SHOP_EMAIL}</td>
-      <td nowrap="nowrap"><input type="text" name="email" size="50" maxlength='255' value="{SHOP_CONTACT_EMAIL}" /></td>
+      <td class="nowrap">{TXT_SHOP_EMAIL}</td>
+      <td class="nowrap"><input type="text" name="email" style="width: 270px;" maxlength='255' value="{SHOP_CONTACT_EMAIL}" /></td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap" width="15%">{TXT_CONFIRMATION_EMAILS}</td>
-      <td nowrap="nowrap" ><input type="text" name="email_confirmation" size="50" maxlength='255' value="{SHOP_CONFIRMATION_EMAILS}" />
+      <td class="nowrap" width="15%">{TXT_CONFIRMATION_EMAILS}</td>
+      <td class="nowrap" ><input type="text" name="email_confirmation" style="width: 270px;" maxlength='255' value="{SHOP_CONFIRMATION_EMAILS}" />
       ({TXT_SEPARATED_WITH_COMMAS})</td>
     </tr>
 
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_CONTACT_COMPANY}</td>
-      <td nowrap="nowrap"><input type="text" name="company" size="50" maxlength='255' value="{SHOP_CONTACT_COMPANY}" /></td>
+      <td class="nowrap">{TXT_CONTACT_COMPANY}</td>
+      <td class="nowrap"><input type="text" name="company" style="width: 270px;" maxlength='255' value="{SHOP_CONTACT_COMPANY}" /></td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_CONTACT_ADDRESS}</td>
-      <td nowrap="nowrap"><textarea cols="36" rows="5" name="address">{SHOP_CONTACT_ADDRESS}</textarea></td>
+      <td class="nowrap">{TXT_CONTACT_ADDRESS}</td>
+      <td class="nowrap"><textarea cols="36" rows="5" name="address">{SHOP_CONTACT_ADDRESS}</textarea></td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_PHONE_NUMBER}</td>
-      <td nowrap="nowrap"><input type="text" name="telephone" size="50" maxlength='255' value="{SHOP_CONTACT_TEL}" /></td>
+      <td class="nowrap">{TXT_PHONE_NUMBER}</td>
+      <td class="nowrap"><input type="text" name="telephone" style="width: 270px;" maxlength='255' value="{SHOP_CONTACT_TEL}" /></td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_FAX_NUMBER}</td>
-      <td nowrap="nowrap"><input type="text" name="fax" size="50" maxlength='255' value="{SHOP_CONTACT_FAX}" /></td>
+      <td class="nowrap">{TXT_FAX_NUMBER}</td>
+      <td class="nowrap"><input type="text" name="fax" style="width: 270px;" maxlength='255' value="{SHOP_CONTACT_FAX}" /></td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_COUNTRY}</td>
-      <td nowrap="nowrap">
+      <td class="nowrap">{TXT_COUNTRY}</td>
+      <td class="nowrap">
         <select name="country_id" style="width: 270px;">
           {SHOP_GENERAL_COUNTRY_MENUOPTIONS}
         </select>
@@ -65,80 +65,66 @@
       <th colspan="3">{TXT_PAYMENT_HANDLER}</th>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap" width="15%"><strong>{TXT_NAME}</strong></td>
+      <td class="nowrap" width="15%"><strong>{TXT_NAME}</strong></td>
       <td width="80%"><strong>{TXT_STATEMENT}</strong></td>
-      <td nowrap="nowrap" width="5%"><div align="center"><strong>{TXT_ACTIVE}</strong></div></td>
+      <td class="nowrap" width="5%"><div align="center"><strong>{TXT_ACTIVE}</strong></div></td>
     </tr>
     <tr valign="top" class="row2">
-      <td width="15%" nowrap="nowrap">{TXT_YELLOWPAY_POSTFINANCE}</td>
-      <td nowrap="nowrap">
+      <td width="15%" class="nowrap" valign="top">{TXT_YELLOWPAY_POSTFINANCE}</td>
+      <td class="nowrap">
         <label for="postfinance_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
         <input name="postfinance_swapper" id="postfinance_swapper" type="checkbox" onclick="swapBlock('postfinance');" value="1" />&nbsp;
         <div id="postfinance" style="display:none;">
           <table width="100%" summary="">
             <tr>
-              <td width="20%">
-                {TXT_SHOP_YELLOWPAY_PSPID}
-              </td>
+              <td width="20%">{TXT_SHOP_YELLOWPAY_PSPID}</td>
               <td width="80%">
-                <input type="text" name="postfinance_shop_id" value="{SHOP_YELLOWPAY_SHOP_ID}" size="15" maxlength="50" />
+                <input type="text" name="postfinance_shop_id" value="{SHOP_YELLOWPAY_SHOP_ID}" style="width: 270px;" maxlength="50" />
               </td>
             </tr>
             <tr>
+              <td>{TXT_SHOP_YELLOWPAY_HASH_SIGNATURE_IN}</td>
               <td>
-                {TXT_SHOP_YELLOWPAY_HASH_SIGNATURE_IN}
-              </td>
-              <td>
-                <input type="text" name="postfinance_hash_signature_in" value="{SHOP_YELLOWPAY_HASH_SIGNATURE_IN}" size="15" maxlength="50" />
+                <input type="text" name="postfinance_hash_signature_in" value="{SHOP_YELLOWPAY_HASH_SIGNATURE_IN}" style="width: 270px;" maxlength="50" />
               </td>
             </tr>
             <tr>
+              <td>{TXT_SHOP_YELLOWPAY_HASH_SIGNATURE_OUT}</td>
               <td>
-                {TXT_SHOP_YELLOWPAY_HASH_SIGNATURE_OUT}
-              </td>
-              <td>
-                <input type="text" name="postfinance_hash_signature_out" value="{SHOP_YELLOWPAY_HASH_SIGNATURE_OUT}" size="15" maxlength="50" />
+                <input type="text" name="postfinance_hash_signature_out" value="{SHOP_YELLOWPAY_HASH_SIGNATURE_OUT}" style="width: 270px;" maxlength="50" />
               </td>
             </tr>
             <tr>
+              <td>{TXT_AUTORIZATION}</td>
               <td>
-                {TXT_AUTORIZATION}
-              </td>
-              <td>
-                <select name="postfinance_authorization_type">
+                <select name="postfinance_authorization_type" style="width: 270px;">
                   {SHOP_YELLOWPAY_AUTHORIZATION_TYPE_OPTIONS}
                 </select>
               </td>
             </tr>
-            <tr>
-              <td valign="top">
-                {TXT_SHOP_ACCEPTED_PAYMENT_METHODS}
-              </td>
+            <!-- OBSOLETE tr>
+              <td valign="top">{TXT_SHOP_ACCEPTED_PAYMENT_METHODS}</td>
               <td>
                 {SHOP_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES}
               </td>
-            </tr>
+            </tr-->
             <tr>
               <td valign="top">{TXT_SHOP_YELLOWPAY_USE_TESTSERVER}</td>
               <td>
-                <input id="postfinance_use_testserver_yes" type="radio"
-                  name="postfinance_use_testserver" value="1"{SHOP_YELLOWPAY_USE_TESTSERVER_YES_CHECKED} />
-                <label for="postfinance_use_testserver_yes">{TXT_SHOP_YES}</label>
-                <br />
-                <input id="postfinance_use_testserver_no" type="radio"
-                  name="postfinance_use_testserver" value="0"{SHOP_YELLOWPAY_USE_TESTSERVER_NO_CHECKED} />
-                <label for="postfinance_use_testserver_no">{TXT_SHOP_NO}</label>
+                <input id="postfinance_use_testserver" type="checkbox"
+                  name="postfinance_use_testserver" value="1"
+                  {SHOP_YELLOWPAY_USE_TESTSERVER_CHECKED} />
               </td>
             </tr>
           </table>
         </div>
       </td>
-      <td nowrap="nowrap"><div align="center"><input type="checkbox" name="postfinance_active" value="1" {SHOP_YELLOWPAY_STATUS} /></div></td>
+      <td class="nowrap"><div align="center"><input type="checkbox" name="postfinance_active" value="1" {SHOP_YELLOWPAY_STATUS} /></div></td>
     </tr>
 
     <tr valign="top" class="row1">
-      <td width="15%" nowrap="nowrap">{TXT_SHOP_POSTFINANCE_MOBILE}</td>
-      <td nowrap="nowrap">
+      <td class="nowrap">{TXT_SHOP_POSTFINANCE_MOBILE}</td>
+      <td class="nowrap">
         <label for="postfinance_mobile_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
         <input name="postfinance_mobile_swapper" id="postfinance_mobile_swapper"
             type="checkbox" onclick="swapBlock('postfinance_mobile');" value="1" />&nbsp;
@@ -149,7 +135,7 @@
                 {TXT_SHOP_POSTFINANCE_MOBILE_WEBUSER}
               </td>
               <td width="80%">
-                <input type="text" name="postfinance_mobile_webuser" value="{SHOP_POSTFINANCE_MOBILE_WEBUSER}" size="15" maxlength="50" />
+                <input type="text" name="postfinance_mobile_webuser" value="{SHOP_POSTFINANCE_MOBILE_WEBUSER}" style="width: 270px;" maxlength="50" />
               </td>
             </tr>
             <tr>
@@ -157,7 +143,7 @@
                 {TXT_SHOP_POSTFINANCE_MOBILE_SIGN}
               </td>
               <td>
-                <input type="text" name="postfinance_mobile_sign" value="{SHOP_POSTFINANCE_MOBILE_SIGN}" size="15" maxlength="50" />
+                <input type="text" name="postfinance_mobile_sign" value="{SHOP_POSTFINANCE_MOBILE_SIGN}" style="width: 270px;" maxlength="50" />
               </td>
             </tr>
             <tr>
@@ -173,12 +159,12 @@
           </table>
         </div>
       </td>
-      <td nowrap="nowrap"><div align="center"><input type="checkbox" name="postfinance_mobile_status" value="1" {SHOP_POSTFINANCE_MOBILE_STATUS} /></div></td>
+      <td class="nowrap"><div align="center"><input type="checkbox" name="postfinance_mobile_status" value="1" {SHOP_POSTFINANCE_MOBILE_STATUS} /></div></td>
     </tr>
 
     <tr valign="top" class="row2">
-      <td width="15%" nowrap="nowrap">{TXT_SHOP_DATATRANS}</td>
-      <td nowrap="nowrap">
+      <td class="nowrap">{TXT_SHOP_DATATRANS}</td>
+      <td class="nowrap">
         <label for="datatrans_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
         <input name="datatrans_swapper" id="datatrans_swapper" type="checkbox" onclick="swapBlock('datatrans');" value="1" />&nbsp;
         <div id="datatrans" style="display:none;">
@@ -186,13 +172,13 @@
             <tr>
               <td width="20%">{TXT_SHOP_DATATRANS_MERCHANT_ID}</td>
               <td width="80%">
-                <input type="text" name="datatrans_merchant_id" value="{SHOP_DATATRANS_MERCHANT_ID}" size="15" maxlength="50" />
+                <input type="text" name="datatrans_merchant_id" value="{SHOP_DATATRANS_MERCHANT_ID}" style="width: 270px;" maxlength="50" />
               </td>
             </tr>
             <tr>
               <td>{TXT_SHOP_AUTHORIZATION}</td>
               <td>
-                <select name="datatrans_request_type">
+                <select name="datatrans_request_type" style="width: 270px;">
                   {SHOP_DATATRANS_AUTHORIZATION_TYPE_OPTIONS}
                 </select>
               </td>
@@ -216,19 +202,19 @@
           </table>
         </div>
       </td>
-      <td nowrap="nowrap"><div align="center"><input type="checkbox" name="datatrans_active" value="1"{SHOP_DATATRANS_STATUS} /></div></td>
+      <td class="nowrap"><div align="center"><input type="checkbox" name="datatrans_active" value="1"{SHOP_DATATRANS_STATUS} /></div></td>
     </tr>
 
     <tr valign="top" class="row1">
-      <td width="15%" nowrap="nowrap">{TXT_SAFERPAY}</td>
-      <td nowrap="nowrap"><label for="safperpay_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
+      <td class="nowrap">{TXT_SAFERPAY}</td>
+      <td class="nowrap"><label for="safperpay_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
         <input name="safperpay_swapper" id="safperpay_swapper" type="checkbox" onclick="swapBlock('safperpay');" value="1" />&nbsp;
         <div id="safperpay" style="display:none;">
           <table width="100%" summary="">
             <tr>
               <td width="20%">{TXT_ACCOUNT_ID}</td>
               <td width="80%">
-                <input type="text" name="saferpay_id" value="{SHOP_SAFERPAY_ID}" size="15" maxlength="60" />
+                <input type="text" name="saferpay_id" value="{SHOP_SAFERPAY_ID}" style="width: 270px;" maxlength="60" />
               </td>
             </tr>
             <tr>
@@ -246,7 +232,8 @@
             <tr>
               <td>{TXT_INDICATE_PAYMENT_WINDOW_AS}</td>
               <td>
-                <select name="saferpay_window_option" id="saferpay_window_option">
+                <select name="saferpay_window_option" id="saferpay_window_option"
+                    style="width: 270px;">
                   {SHOP_SAFERPAY_WINDOW_MENUOPTIONS}
                 </select>
               </td>
@@ -254,10 +241,10 @@
           </table>
         </div>
       </td>
-      <td nowrap="nowrap" ><div align="center"><input type="checkbox" name="saferpay_active" value="1" {SHOP_SAFERPAY_STATUS} /></div></td>
+      <td class="nowrap" ><div align="center"><input type="checkbox" name="saferpay_active" value="1" {SHOP_SAFERPAY_STATUS} /></div></td>
     </tr>
     <tr valign="top" class="row2">
-      <td width="15%">{TXT_PAYPAL}</td>
+      <td>{TXT_PAYPAL}</td>
       <td><label for="paypal_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
         <input name="paypal_swapper" id="paypal_swapper" type="checkbox" onclick="swapBlock('paypal');" value="1" />&nbsp;
         <div id="paypal" style="display:none;">
@@ -265,13 +252,13 @@
             <tr>
               <td width="20%">{TXT_PAYPAL_EMAIL_ACCOUNT}</td>
               <td width="80%">
-                <input type="text" name="paypal_account_email" value="{SHOP_PAYPAL_EMAIL}" size="24" maxlength="254" style="margin-bottom:1px;" />
+                <input type="text" name="paypal_account_email" value="{SHOP_PAYPAL_EMAIL}" style="width: 270px;" maxlength="254" style="margin-bottom:1px;" />
               </td>
             </tr>
             <tr>
               <td>{TXT_SHOP_PAYPAL_DEFAULT_CURRENCY}</td>
               <td>
-                <select name="paypal_default_currency">
+                <select name="paypal_default_currency" style="width: 270px;">
                   {SHOP_PAYPAL_DEFAULT_CURRENCY_MENUOPTIONS}
                 </select>
               </td>
@@ -282,7 +269,7 @@
       <td ><div align="center"><input type="checkbox" name="paypal_active" value="1" {SHOP_PAYPAL_STATUS} /></div></td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_PAYMENT_LSV}</td>
+      <td class="nowrap">{TXT_PAYMENT_LSV}</td>
       <td>&nbsp;</td>
       <td ><div align="center"><input type="checkbox" name="payment_lsv_active" value="1" {SHOP_PAYMENT_LSV_STATUS} /></div></td>
     </tr>
@@ -298,30 +285,33 @@
       <th colspan="2">{TXT_SHOP_IMAGE_SETTINGS}</th>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap" width='15%'>
+      <td class="nowrap" width='15%'>
         {TXT_SHOP_THUMBNAIL_MAX_WIDTH}
       </td>
       <td width='85%'>
-        <input type="text" name="thumbnail_max_width" style="text-align: right;"
-            value="{SHOP_THUMBNAIL_MAX_WIDTH}" size="6" maxlength="3" />
+        <input type="text" name="thumbnail_max_width"
+            style="text-align: right; width: 270px;"
+            value="{SHOP_THUMBNAIL_MAX_WIDTH}" style="width: 270px;" maxlength="3" />
       </td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap" width='15%'>
+      <td class="nowrap" width='15%'>
         {TXT_SHOP_THUMBNAIL_MAX_HEIGHT}
       </td>
       <td width='85%'>
-        <input type="text" name="thumbnail_max_height" style="text-align: right;"
-            value="{SHOP_THUMBNAIL_MAX_HEIGHT}" size="6" maxlength="3" />
+        <input type="text" name="thumbnail_max_height"
+            style="text-align: right; width: 270px;"
+            value="{SHOP_THUMBNAIL_MAX_HEIGHT}" style="width: 270px;" maxlength="3" />
       </td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap" width='15%'>
+      <td class="nowrap" width='15%'>
         {TXT_SHOP_THUMBNAIL_QUALITY}
       </td>
       <td width='85%'>
-        <input type="text" name="thumbnail_quality" style="text-align: right;"
-            value="{SHOP_THUMBNAIL_QUALITY}" size="6" maxlength="3" />
+        <input type="text" name="thumbnail_quality"
+            style="text-align: right; width: 270px;"
+            value="{SHOP_THUMBNAIL_QUALITY}" style="width: 270px;" maxlength="3" />
       </td>
     </tr>
   </table>
@@ -336,89 +326,89 @@
       <th colspan="2">{TXT_SHOP_SETTINGS_EXTENDED}</th>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_SHOP_SETTING_WEIGHT_ENABLE}</td>
-      <td nowrap="nowrap"><input type="checkbox" name="weight_enable" value="1"{SHOP_WEIGHT_ENABLE_CHECKED} /></td>
+      <td class="nowrap">{TXT_SHOP_SETTING_WEIGHT_ENABLE}</td>
+      <td class="nowrap"><input type="checkbox" name="weight_enable" value="1"{SHOP_WEIGHT_ENABLE_CHECKED} /></td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_SHOP_PRODUCT_SORTING}</td>
-      <td nowrap="nowrap">
+      <td class="nowrap">{TXT_SHOP_PRODUCT_SORTING}</td>
+      <td class="nowrap">
         <select name="product_sorting" style="width: 270px;">
           {SHOP_PRODUCT_SORTING_MENUOPTIONS}
         </select>
       </td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_SHOP_SHOW_PRODUCTS_ON_START_PAGE}</td>
-      <td nowrap="nowrap">
+      <td class="nowrap">{TXT_SHOP_SHOW_PRODUCTS_ON_START_PAGE}</td>
+      <td class="nowrap">
         <select name="show_products_default" style="width: 270px;">
           {SHOP_SHOW_PRODUCTS_DEFAULT_OPTIONS}
         </select>
       </td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_SHOP_ORDERITEMS_AMOUNT_MAX} ({SHOP_CURRENCY_CODE})</td>
-      <td nowrap="nowrap">
-        <input type="text" name="orderitems_amount_max" size="50"
-            maxlength='12' style="text-align: right;"
-            value="{SHOP_ORDERITEMS_AMOUNT_MAX}" />
+      <td class="nowrap">{TXT_SHOP_ORDERITEMS_AMOUNT_MAX} ({SHOP_CURRENCY_CODE})</td>
+      <td class="nowrap">
+        <input type="text" name="orderitems_amount_max"
+            style="width: 270px; text-align: right;"
+            maxlength='12' value="{SHOP_ORDERITEMS_AMOUNT_MAX}" />
         &nbsp;{TXT_SHOP_ORDERITEMS_AMOUNT_MAX_NOTE}
       </td>
     </tr>
 
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_SHOP_SETTING_REGISTER}</td>
-      <td nowrap="nowrap">
+      <td class="nowrap">{TXT_SHOP_SETTING_REGISTER}</td>
+      <td class="nowrap">
         {SHOP_SETTING_REGISTER}
       </td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_SHOP_SETTING_NUMOF_CUSTOMERS_PER_PAGE_BACKEND}</td>
-      <td nowrap="nowrap">
+      <td class="nowrap">{TXT_SHOP_SETTING_NUMOF_CUSTOMERS_PER_PAGE_BACKEND}</td>
+      <td class="nowrap">
         <input type="text" name="numof_customers_per_page_backend"
-            size="50" maxlength='12' style="text-align: right;"
+            style="width: 270px; text-align: right;" maxlength='12'
             value="{SHOP_SETTING_NUMOF_CUSTOMERS_PER_PAGE_BACKEND}" />
       </td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_SHOP_SETTING_NUMOF_MANUFACTURERS_PER_PAGE_BACKEND}</td>
-      <td nowrap="nowrap">
+      <td class="nowrap">{TXT_SHOP_SETTING_NUMOF_MANUFACTURERS_PER_PAGE_BACKEND}</td>
+      <td class="nowrap">
         <input type="text" name="numof_manufacturers_per_page_backend"
-            size="50" maxlength='12' style="text-align: right;"
+            style="width: 270px; text-align: right;" maxlength='12'
             value="{SHOP_SETTING_NUMOF_MANUFACTURERS_PER_PAGE_BACKEND}" />
       </td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_SHOP_SETTING_NUMOF_MAILTEMPLATE_PER_PAGE_BACKEND}</td>
-      <td nowrap="nowrap">
+      <td class="nowrap">{TXT_SHOP_SETTING_NUMOF_MAILTEMPLATE_PER_PAGE_BACKEND}</td>
+      <td class="nowrap">
         <input type="text" name="numof_mailtemplate_per_page_backend"
-            size="50" maxlength='12' style="text-align: right;"
+            style="width: 270px; text-align: right;" maxlength='12' 
             value="{SHOP_SETTING_NUMOF_MAILTEMPLATE_PER_PAGE_BACKEND}" />
       </td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_SHOP_SETTING_USERGROUP_ID_CUSTOMER}</td>
-      <td nowrap="nowrap">
+      <td class="nowrap">{TXT_SHOP_SETTING_USERGROUP_ID_CUSTOMER}</td>
+      <td class="nowrap">
         {SHOP_SETTING_USERGROUP_ID_CUSTOMER}
         &nbsp;{TXT_SHOP_SETTING_HINT_USER}
       </td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_SHOP_SETTING_USERGROUP_ID_RESELLER}</td>
-      <td nowrap="nowrap">
+      <td class="nowrap">{TXT_SHOP_SETTING_USERGROUP_ID_RESELLER}</td>
+      <td class="nowrap">
         {SHOP_SETTING_USERGROUP_ID_RESELLER}
         &nbsp;{TXT_SHOP_SETTING_HINT_USER}
       </td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_SHOP_SETTING_USER_PROFILE_ATTRIBUTE_CUSTOMER_GROUP_ID}</td>
-      <td nowrap="nowrap">
+      <td class="nowrap">{TXT_SHOP_SETTING_USER_PROFILE_ATTRIBUTE_CUSTOMER_GROUP_ID}</td>
+      <td class="nowrap">
         {SHOP_SETTING_USER_PROFILE_ATTRIBUTE_CUSTOMER_GROUP_ID}
         &nbsp;{TXT_SHOP_SETTING_HINT_USER}
       </td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_SHOP_SETTING_USER_PROFILE_ATTRIBUTE_NOTES}</td>
-      <td nowrap="nowrap">
+      <td class="nowrap">{TXT_SHOP_SETTING_USER_PROFILE_ATTRIBUTE_NOTES}</td>
+      <td class="nowrap">
         {SHOP_SETTING_USER_PROFILE_ATTRIBUTE_NOTES}
         &nbsp;{TXT_SHOP_SETTING_HINT_USER}
       </td>

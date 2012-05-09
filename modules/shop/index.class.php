@@ -157,10 +157,12 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
 
         // Do this *before* calling our friends, especially Customer methods!
 // TODO: Define SettingDb keys for various subsections
-        if (!SettingDb::init('shop', 'config')) {
+        if (   !SettingDb::init('shop', 'config')
+            || !SettingDb::getValue('numof_products_per_page_frontend')) {
             require_once ASCMS_MODULE_PATH.'/shop/lib/ShopSettings.class.php';
             ShopSettings::errorHandler();
         }
+
 
         // Pick the default Country for delivery
         if (empty($_SESSION['shop']['countryId2'])) {
