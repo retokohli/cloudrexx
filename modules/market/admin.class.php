@@ -51,7 +51,7 @@ class Market extends marketLibrary
     }
 
     private $act = '';
-    
+
     /**
     * PHP5 constructor
     *
@@ -68,7 +68,7 @@ class Market extends marketLibrary
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->mediaPath = ASCMS_MARKET_MEDIA_PATH . '/';
         $this->mediaWebPath = ASCMS_MARKET_MEDIA_WEB_PATH . '/';
-        $this->settings = $this->getSettings();        
+        $this->settings = $this->getSettings();
     }
     private function setNavigation()
     {
@@ -480,26 +480,41 @@ class Market extends marketLibrary
         }
 
         // Sort
+        if (empty ($_SESSION['market']['sort'])) {
+            $_SESSION['market']['sort'] = 'title ASC';
+        }
         if (isset($_GET['sort'])) {
             switch ($_GET['sort']) {
                 case 'title':
-                $_SESSION['market']['sort']=($_SESSION['market']['sort']=="title DESC")? "title ASC" : "title DESC";
-                break;
+                    $_SESSION['market']['sort'] =
+                        ($_SESSION['market']['sort'] == "title DESC"
+                            ? "title ASC" : "title DESC");
+                    break;
                 case 'type':
-                $_SESSION['market']['sort']=($_SESSION['market']['sort']=="type DESC")? "type ASC" : "type DESC";
-                break;
+                    $_SESSION['market']['sort'] =
+                        ($_SESSION['market']['sort'] == "type DESC"
+                            ? "type ASC" : "type DESC");
+                    break;
                 case 'status':
-                $_SESSION['market']['sort']=($_SESSION['market']['sort']=="status DESC")? "status ASC" : "status DESC";
-                break;
+                    $_SESSION['market']['sort'] =
+                        ($_SESSION['market']['sort'] == "status DESC"
+                            ? "status ASC" : "status DESC");
+                    break;
                 case 'addedby':
-                $_SESSION['market']['sort']=($_SESSION['market']['sort']=="userid DESC")? "userid ASC" : "userid DESC";
-                break;
+                    $_SESSION['market']['sort'] =
+                        ($_SESSION['market']['sort'] == "userid DESC"
+                            ? "userid ASC" : "userid DESC");
+                    break;
                 case 'regdate':
-                $_SESSION['market']['sort']=($_SESSION['market']['sort']=="regdate DESC")? "regdate ASC" : "regdate DESC";
-                break;
+                    $_SESSION['market']['sort'] =
+                        ($_SESSION['market']['sort'] == "regdate DESC"
+                            ? "regdate ASC" : "regdate DESC");
+                    break;
                 case 'id':
-                $_SESSION['market']['sort']=($_SESSION['market']['sort']=="id DESC")? "id ASC" : "id DESC";
-                break;
+                    $_SESSION['market']['sort'] =
+                        ($_SESSION['market']['sort'] == "id DESC"
+                            ? "id ASC" : "id DESC");
+                    break;
             }
         }
 
