@@ -194,7 +194,7 @@ class skins
         if (substr($this->webPath, -1) != '/'){
             $this->webPath = $this->webPath . '/';
         }
-      
+
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."skins");
         $this->oldTable = DBPREFIX."themes";
         $this->_objFile->setChmod($this->path, $this->webPath, "");
@@ -227,33 +227,32 @@ class skins
         switch($_GET['act']){
             case "activate":
                 $this->_activate();
-            break;
+                break;
             case "examples":
                 $this->examples();
-            break;
+                break;
             case "manage":
                 $this->_manage();
-            break;
+                break;
             case "upload":
                 $this->upload();
                 $this->overview();
-            break;
+                break;
             case "update":
                 $this->update();
                 $this->overview();
-            break;
+                break;
             case "newDir":
                 $this->newdir();
-
-            break;
+                break;
             case "createDir":
                 $this->createdir();
                 //$this->overview();
-            break;
+                break;
             case "newFile":
                 $this->newfile();
                 $this->overview();
-            break;
+                break;
             default:
                 $this->newfile();
                 $this->delfile();
@@ -265,8 +264,7 @@ class skins
             'CONTENT_OK_MESSAGE'        => $this->strOkMessage,
             'CONTENT_STATUS_MESSAGE'    => $this->strErrMessage,
         ));
-
-        $this->act = $_REQUEST['act'];
+        $this->act = (isset ($_REQUEST['act']) ? $_REQUEST['act'] : '');
         $this->setNavigation();
     }
 
