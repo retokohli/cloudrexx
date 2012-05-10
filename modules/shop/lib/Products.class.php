@@ -132,7 +132,7 @@ class Products
         global $objDatabase, $_CONFIG;
 
 //DBG::activate(DBG_ADODB);
-
+//DBG::log("getByShopParams(count $count, offset $offset, product_id $product_id, category_id $category_id, manufacturer_id $manufacturer_id, pattern $pattern, flagSpecialoffer $flagSpecialoffer, flagLastFive $flagLastFive, orderSetting $orderSetting, flagIsReseller $flagIsReseller,flagShowInactive $flagShowInactive): Entered");
         // Do not show any Products if no selection is made at all
         if (   empty($product_id)
             && empty($category_id)
@@ -207,7 +207,6 @@ class Products
 // TODO: Extend for searching for most recently modified Products
             $limit = ($flagLastFive === true ? 5 : $flagLastFive);
             $queryOrder = ' ORDER BY `id` DESC';
-            $queryCount = "SELECT $limit AS `numof_products`";
         } else {
             // Build standard full featured query
             $querySpecialOffer =
