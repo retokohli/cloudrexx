@@ -141,10 +141,6 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
     static function getPage($template)
     {
 //DBG::activate(DBG_ERROR_FIREPHP);
-// Temporary, for developing only. Remove for production.
-//if (isset ($_REQUEST['content'])) {
-//    self::update_content();
-//}
         self::init();
         self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
 
@@ -860,7 +856,6 @@ die("Failed to update the Cart!");
                 }
             }
         }
-//DBG::log("Got Category ID $category_id");
         $objCategory = null;
         if ($category_id && empty($product_id)) {
             $objCategory = ShopCategory::getById($category_id);
@@ -914,10 +909,6 @@ die("Failed to update the Cart!");
                 ));
             }
         }
-// Moved to index.php
-//        self::$objTemplate->setVariable(
-//            'SHOPNAVBAR_FILE',
-//            self::getNavbar($themesPages['shopnavbar']));
         $pagingCatId = '';
         $pagingManId = '';
         $pagingTerm = '';
@@ -952,17 +943,14 @@ die("Failed to update the Cart!");
             $order,
             self::$objCustomer && self::$objCustomer->is_reseller()
         );
-//DBG::log("Count: $count, term $term, manufacturer $manufacturer_id, special$flagSpecialoffer");
         if ($count == 0
          && !ShopCategories::getChildCategoryIdArray($category_id)) {
             //if ($term != '' || $manufacturer_id != 0 || $flagSpecialoffer) {
                 self::$objTemplate->touchBlock('no_product');
             //}
-//DBG::log("No Product");
             return true;
         }
         if ($objCategory) {
-//DBG::log(sprintf($_ARRAYLANG['TXT_SHOP_PRODUCTS_IN_CATEGORY'], contrexx_raw2xhtml($objCategory->name())));
             self::$objTemplate->setVariable(array(
                 // Old, kept for convenience
                 'SHOP_CATEGORY_CURRENT_NAME' =>
@@ -973,11 +961,24 @@ die("Failed to update the Cart!");
                     contrexx_raw2xhtml($objCategory->name())),
             ));
         } else {
-//DBG::log("No Category");
-            if (self::$objTemplate->blockExists('products_in_category'))
-                self::$objTemplate->hideBlock('products_in_category');
+// TODO: There are other cases of flag combinations that are not indivuidually
+// handled here yet.
+            if ($term == '') {
+                if ($flagSpecialoffer == SHOP_PRODUCT_DEFAULT_VIEW_DISCOUNTS) {
+                    self::$objTemplate->setVariable(
+                        'SHOP_PRODUCTS_IN_CATEGORY',
+                            $_ARRAYLANG['TXT_SHOP_PRODUCTS_SPECIAL_OFFER']);
+                } else {
+                    if (self::$objTemplate->blockExists('products_in_category'))
+                        self::$objTemplate->hideBlock('products_in_category');
+                }
+            } else {
+                self::$objTemplate->setVariable(
+                    'SHOP_PRODUCTS_IN_CATEGORY', sprintf(
+                        $_ARRAYLANG['TXT_SHOP_PRODUCTS_SEARCH_RESULTS'],
+                        contrexx_raw2xhtml($term)));
+            }
         }
-
         $uri =
             '&amp;section=shop'.MODULE_INDEX.
             $pagingCatId.$pagingManId.$pagingTerm;
@@ -988,13 +989,8 @@ die("Failed to update the Cart!");
         ));
         $formId = 0;
         $arrDefaultImageSize = $arrSize = null;
-//            array(3 =>
-//                'height="'.SettingDb::getValue('thumbnail_max_height').
-//                '" width="'.SettingDb::getValue('thumbnail_max_width').'"');
-//        $flagUpload = false;
         foreach ($arrProduct as $objProduct) {
             $id = $objProduct->id();
-//DBG::log("Product ID $id, Product ".var_export($objProduct, true));
             $productSubmitFunction = '';
             $arrPictures = Products::get_image_array_from_base64($objProduct->pictures());
             $havePicture = false;
@@ -1040,6 +1036,7 @@ die("Failed to update the Cart!");
             }
             $i = 1;
             foreach ($arrProductImages as $arrProductImage) {
+// TODO: Instead of several numbered image blocks, use a single one repeatedly
                 self::$objTemplate->setVariable(array(
                     'SHOP_PRODUCT_THUMBNAIL_'.$i => $arrProductImage['THUMBNAIL'],
                     'SHOP_PRODUCT_THUMBNAIL_SIZE_'.$i => $arrProductImage['THUMBNAIL_SIZE'],
@@ -1054,11 +1051,6 @@ die("Failed to update the Cart!");
                         'TXT_SEE_LARGE_PICTURE' => $objProduct->name(),
                     ));
                 }
-/*
-                if (self::$objTemplate->blockExists('productImage_'.$i)) {
-                    self::$objTemplate->parse('productImage_'.$i);
-                }
-*/
                 if ($arrProductImage['POPUP_LINK']) {
                     self::$objTemplate->setVariable(
                         'SHOP_PRODUCT_POPUP_LINK_'.$i, $arrProductImage['POPUP_LINK']
@@ -1102,7 +1094,6 @@ die("Failed to update the Cart!");
             self::showDiscountInfo(
                 $groupCustomerId, $groupArticleId, $groupCountId, 1
             );
-
 /* OLD
             $price = Currency::getCurrencyPrice(
                 $objProduct->getCustomerPrice(self::$objCustomer)
@@ -1152,10 +1143,7 @@ die("Failed to update the Cart!");
                     $id, $formId, $cart_id, $flagMultipart
                 );
             }
-            // Should be used by registerJavascriptCode()
-//            if ($flagMultipart) $flagUpload = true;
             $shopProductFormName = "shopProductForm$formId";
-
             $row = (++$formId % 2 + 1);
             self::$objTemplate->setVariable(array(
                 'SHOP_ROWCLASS' => 'row'.$row,
@@ -4230,50 +4218,6 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
         }
 //DBG::log("Shop::use_session(): Order view => true");
         return true;
-    }
-
-
-    /**
-     * Temporary -- for developing whilst the content manager is broken
-     */
-    static function update_content()
-    {
-        global $objDatabase;
-
-        $folder = ASCMS_DOCUMENT_ROOT.'/customizing/template/';
-        $dh = opendir($folder);
-        if (!$dh) {
-            die('Failed to open directory '.$folder);
-        }
-        $arrFiles = array();
-        while (true) {
-            $file = readdir($dh);
-            if ($file === false) break;
-            $arrFiles[] = $file;
-        }
-        closedir($dh);
-        $match = null;
-        foreach ($arrFiles as $file) {
-            if (!preg_match('/^(shop)_?(\w*)\.html$/', $file, $match)) {
-//DBG::log("File name $file does not match; skipped");
-                continue;
-            }
-            $section = $match[1];
-            if (empty($match[2])) $match[2] = '';
-            $cmd = $match[2];
-            $content = file_get_contents($folder.$file);
-            $query = "
-                UPDATE `".DBPREFIX."pages`
-                   SET `content`='".addslashes($content)."'
-                 WHERE `module`='".addslashes($section)."'
-                   AND `cmd`".($cmd ? "='".addslashes($cmd)."'" : ' IS NULL');
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult) {
-                die('Query error: '.$query);
-            }
-//DBG::log("Query: $query");
-DBG::log("File $file updated content $section/$cmd, affected ".$objDatabase->Affected_Rows()." rows");
-        }
     }
 
 }
