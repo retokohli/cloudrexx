@@ -668,36 +668,16 @@ div.date img{
     margin: 10px 0 10px -18px !important;
 }
 
-/*.heading {
-    position: relative;
-    top: 6px;
-    background-color: #fff;
-    clear: both;
-    font-size: 11pt;
-    padding-right: 7px;
-}
-.heading_separator {
-    margin-top: -2px;
-    height: 1px;
-    margin-bottom: 20px;
-    border: none;
-    display: block;
-    background-color: #666;
-}
-.heading:hover {
-    background-color: #fff;
-}*/
-
 
 #page .ms2side__select select {
     width: 400px;
 }
 /* 3) Helpers */
-.left{
+#content-manager .left{
     float: left
 }
 
-.right{
+#content-manager .right{
     float: right;
     margin: 0 0 0 10px
 }

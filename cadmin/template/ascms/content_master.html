@@ -10,16 +10,18 @@ function logout() {
 // -->
 </script>
 <ul class="breadcrumb">
-    <li class="first"><a href="index.php">Home</a></li>
-    <li>{SUB_MENU_TITLE}</li>
-    <li>{CONTENT_TITLE}</li>
+    <li class="level_1"><a href="index.php">Home</a></li>
+    <li class="level_2">{SUB_MENU_TITLE}</li>
+    <li class="level_3">{CONTENT_TITLE}</li>
 </ul>
+
 <table id="subnavbar_level1" width="100%" cellspacing="0" cellpadding="0" border="0">
     <tr>
         <td width="100%" class="navi">{CONTENT_NAVIGATION}</td>
-        <td>{FRONTEND_LANG_MENU}</td>
+        <td id="language_selection">{FRONTEND_LANG_MENU}</td>
     </tr>
 </table>
+
 {CONTENT_STATUS_MESSAGE}
 {ADMIN_CONTENT}<br /><br />
 <!-- END content_master.html -->

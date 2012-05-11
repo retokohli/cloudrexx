@@ -1,39 +1,49 @@
 <!-- START index_home.html -->
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    jQuery('.box').each(function() {
+        if (jQuery(this).find('ul li').length == 0) {
+            jQuery(this).hide();
+        }
+    });
+});
+</script>
+
 <div id="dashboard">
     <div class="left">
         <div id="quick_access_wrapper">
             <hr />
-            <h1>Schnellzugriff</h1>
+            <h1>{TXT_QUICK_ACCESS}</h1>
             <div id="quick_access">
                 <div id="box_1" class="box">
-                    <h2>Publizieren und Anlegen</h2>
+                    <h2>{TXT_CREATING_AND_PUBLISHING}</h2>
                     <ul>
-                        <li><a href="index.php?cmd=content&amp;act=new">{TXT_NEW_SITE}</a></li>
-                        <li><a href="#">Newsmeldung erstellen</a></li>
-                        <li><a href="#">Block hinzufügen</a></li>
-                        <li><a href="#">Formular erstellen</a></li>
+                        <!-- BEGIN check_access_5 --><li><a href="index.php?cmd=content&amp;act=new">{TXT_NEW_SITE}</a></li><!-- END check_access_5 -->
+                        <!-- BEGIN check_access_10 --><li><a href="index.php?cmd=news&act=add">{TXT_ADD_NEWS}</a></li><!-- END check_access_10 -->
+                        <!-- BEGIN check_access_76 --><li><a href="index.php?cmd=block&act=modify">{TXT_ADD_BLOCK}</a></li><!-- END check_access_76 -->
+                        <!-- BEGIN check_access_84_1 --><li><a href="index.php?cmd=contact&act=forms&tpl=edit">{TXT_ADD_FORM}</a></li><!-- END check_access_84_1 -->
                     </ul>
                     <div class="icon"></div>
                 </div>
                 <div id="box_2" class="box">
-                    <h2>Auswerten und Ansehen</h2>
+                    <h2>{TXT_EVALUATE_AND_VIEW}</h2>
                     <ul>
                         <li><a href="../index.php?caching=0">{TXT_SITE_PREVIEW}</a></li>
-                        <li><a href="index.php?cmd=content">{TXT_CONTENT_MANAGER}</a></li>
-                        <li><a href="#">Seitenstatistik</a></li>
-                        <li><a href="index.php?cmd=workflow">{TXT_WORKFLOW}</a></li>
-                        <li><a href="#">Formulare</a></li>
+                        <!-- BEGIN check_access_6 --><li><a href="index.php?cmd=content">{TXT_CONTENT_MANAGER}</a></li><!-- END check_access_6 -->
+                        <!-- BEGIN check_access_19 --><li><a href="index.php?cmd=stats">{TXT_STATS}</a></li><!-- END check_access_19 -->
+                        <!-- BEGIN check_access_75 --><li><a href="index.php?cmd=workflow">{TXT_WORKFLOW}</a></li><!-- END check_access_75 -->
+                        <!-- BEGIN check_access_84_2 --><li><a href="index.php?cmd=contact">{TXT_FORMS}</a></li><!-- END check_access_84_2 -->
                     </ul>
                     <div class="icon"></div>
                 </div>
                 <div id="box_3" class="box">
-                    <h2>Verwalten</h2>
+                    <h2>{TXT_MANAGE}</h2>
                     <ul>
-                        <li><a href="#">Grundeinstellungen</a></li>
-                        <li><a href="index.php?cmd=access">{TXT_USER_MANAGER}</a></li>
-                        <li><a href="index.php?cmd=media&amp;archive=archive1">{TXT_MEDIA_MANAGER}</a></li>
-                        <li><a href="index.php?cmd=media&amp;archive=content">{TXT_IMAGE_ADMINISTRATION}</a></li>
-                        <li><a href="index.php?cmd=skins">{TXT_SKINS}</a></li>
+                        <!-- BEGIN check_access_17 --><li><a href="index.php?cmd=settings">{TXT_SYSTEM_SETTINGS}</a></li><!-- END check_access_17 -->
+                        <!-- BEGIN check_access_18 --><li><a href="index.php?cmd=access">{TXT_USER_MANAGER}</a></li><!-- END check_access_18 -->
+                        <!-- BEGIN check_access_7 --><li><a href="index.php?cmd=media&amp;archive=archive1">{TXT_MEDIA_MANAGER}</a></li><!-- END check_access_7 -->
+                        <!-- BEGIN check_access_32 --><li><a href="index.php?cmd=media&amp;archive=content">{TXT_IMAGE_ADMINISTRATION}</a></li><!-- END check_access_32 -->
+                        <!-- BEGIN check_access_21 --><li><a href="index.php?cmd=skins">{TXT_SKINS}</a></li><!-- END check_access_21 -->
                     </ul>
                     <div class="icon"></div>
                 </div>
@@ -41,67 +51,42 @@
         </div>
         <div id="last_sessions_wrapper">
             <hr />
-            <h1>Eingeloggt</h1>
+            <h1>{TXT_LAST_LOGINS}</h1>
+            <!-- BEGIN logs -->
             <ul id="last_sessions">
                 <!-- BEGIN logRow -->
                 <li>
-                    <span class="username">{INDEX_HOME_USERNAME}</span>
-                    <span class="hostname">{TXT_HOSTNAME}: {INDEX_HOME_REMOTE_HOST}</span>
-                    <span class="time">{INDEX_HOME_TIME}</span>
+                    <span class="username">{LOG_USERNAME}</span>
+                    <span class="hostname">{TXT_HOSTNAME}: {LOG_REMOTE_HOST}</span>
+                    <span class="time">{LOG_TIME}</span>
                 </li>
                 <!-- END logRow -->
             </ul>
+            <!-- END logs -->
+            <!-- BEGIN logError -->
+            <div class="error">{LOG_ERROR_MESSAGE}</div>
+            <!-- END logError -->
         </div>
     </div>
     <div class="right">
         <div id="news_wrapper">
             <hr />
-            <h1>Contrexx News</h1>
+            <h1>{TXT_CONTREXX_NEWS}</h1>
+            <!-- BEGIN rssFeeds -->
             <ul id="news">
-                <li><a href="#">Content Management System Contrexx® in Version 2.2 Service Pack 6 erschienen</a></li>
-                <li><a href="#">Neue Templates zum Download bereit</a></li>
-                <li><a href="#">Neuer Internetauftritt: Schweizer Kultband PEGASUS setzt auf Contrexx</a></li>
+                <!-- BEGIN rssRow -->
+                <li><a href="{RSS_LINK}" target="_blank">{RSS_TITLE}</a></li>
+                <!-- END rssRow -->
             </ul>
+            <!-- END rssFeeds -->
+            <!-- BEGIN rssError -->
+            <div class="error">{RSS_ERROR_MESSAGE}</div>
+            <!-- END rssError -->
         </div>
     </div>
 </div>
-<!--    {INDEX_HOME_CMS_NAME} {INDEX_HOME_CMS_EDITION}<br />
-    Version {INDEX_HOME_CMS_VERSION} - {INDEX_HOME_CMS_STATUS} <span id="newversion"> </span><br />
-    {TXT_RELEASE_DATE}: {INDEX_HOME_CMS_RELEASEDATE}<br />
-    <br />
-    <div style="border-bottom-width: 1px; border-bottom-color:#cccccc; border-bottom-style:solid"></div>
-    <br /><br /><br />
-    <table border="0" width="50%" cellpadding="3" cellspacing="0" summary="quick links">
-    <tr>
-        <td width="25%"><div align="center"><a href="index.php?cmd=content&amp;act=new"><img src="template/ascms/images/icons/32x32/new_site.gif" border="0" alt="" /><br/>{TXT_NEW_SITE}</a></div></td>
-        <td width="25%"><div align="center"><a href="index.php?cmd=content"><img src="template/ascms/images/icons/32x32/media.gif" border="0" alt="" /><br/>{TXT_CONTENT_MANAGER}</a></div></td>
-        <td width="25%"><div align="center"><a href="index.php?cmd=workflow"><img src="template/ascms/images/icons/32x32/workflow.gif" border="0" alt="" /><br/>{TXT_WORKFLOW}</a></div></td>
-        <td width="25%"><div align="center"><a href="index.php?cmd=media&amp;archive=archive1"><img src="template/ascms/images/icons/32x32/media_manager.gif" border="0" alt="" /><br/>{TXT_MEDIA_MANAGER}</a></div></td>
 
-    </tr>
-    <tr>
-        <td colspan="4"><br /></td>
-    </tr>
-    <tr>
-        <td width="25%"><div align="center"><a href="index.php?cmd=media&amp;archive=content"><img src="template/ascms/images/icons/32x32/picturemanager.gif" border="0" alt="" /><br/>{TXT_IMAGE_ADMINISTRATION}</a></div></td>
-        <td width="25%"><div align="center"><a href="index.php?cmd=news"><img src="template/ascms/images/icons/32x32/news.gif" border="0" alt="" /><br/>{TXT_NEWS_MAMAGER}</a></div></td>
-        <td width="25%"><div align="center"><a href="../index.php?caching=0" target="_blank"><img src="template/ascms/images/icons/32x32/preview.gif" border="0" alt="" /><br/>{TXT_SITE_PREVIEW}</a></div></td>
-        <td width="25%"><div align="center"><a href="index.php?cmd=skins"><img src="template/ascms/images/icons/32x32/skins.gif" border="0" alt="" /><br/>{TXT_SKINS}</a></div></td>
-    </tr>
-    <tr>
-        <td colspan="4"><br /></td>
-    </tr>
-    <tr>
-        <td width="25%"><div align="center"><a href="index.php?cmd=access"><img src="template/ascms/images/icons/32x32/user.gif" border="0" alt="" /><br/>{TXT_USER_MANAGER}</a></div></td>
-        <td width="25%"><div align="center"><a href="index.php?cmd=stats"><img src="template/ascms/images/icons/32x32/statistik.gif" border="0" alt="" /><br/>{TXT_STATS}</a></div></td>
-        <td width="25%"><div align="center"><a href="index.php?cmd=server"><img src="template/ascms/images/icons/32x32/server_info.gif" border="0" alt="" /><br/>{TXT_SERVER_INFO}</a></div></td>
-        <td width="25%"><div align="center"><a href="javascript:logout();"><img src="template/ascms/images/icons/32x32/logout.gif" border="0" alt="" /><br/>{TXT_LOGOUT}</a></div></td>
-
-    </tr>
-    </table>
-    <br /><br /><br />
-    <br />-->
-    <script type="text/javascript" language="javascript">
-        new Ajax.Updater('newversion', 'versioncheck.php');
-    </script>-
+<script type="text/javascript" language="javascript">
+    new Ajax.Updater('newversion', 'versioncheck.php');
+</script>
 <!-- END index_home.html -->
