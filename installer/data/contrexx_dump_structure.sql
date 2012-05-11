@@ -3991,7 +3991,6 @@ CREATE TABLE `contrexx_pages` (
   `start` datetime default NULL,
   `end` datetime default NULL,
   `editingStatus` varchar(16) NOT NULL,
-  `username` varchar(64) NOT NULL,
   `protection` int(11) NOT NULL,
   `frontendAccessId` int(11) NOT NULL,
   `backendAccessId` int(11) NOT NULL,
