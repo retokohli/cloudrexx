@@ -196,6 +196,12 @@ if (!$objFWUser->objUser->login(true)) {
     // This mask has its own template handling.
     // So we don't need to load any templates in the index.php.
     $isRegularPageRequest = false;
+} else {
+    $userData = array(
+        'id'   => FWUser::getFWUserObject()->objUser->getId(),
+        'name' => FWUser::getFWUserObject()->objUser->getUsername(),
+    );
+    $loggableListener->setUsername(json_encode($userData));
 }
 
 /**

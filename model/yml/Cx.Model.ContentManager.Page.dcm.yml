@@ -147,12 +147,6 @@ Cx\Model\ContentManager\Page:
       gedmo:
         - versioned
 
-    username:
-      type: string
-      length: 64
-      gedmo:
-        - versioned
-
     protection:
       type: integer
       gedmo:
