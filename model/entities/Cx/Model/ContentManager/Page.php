@@ -173,7 +173,6 @@ class Page extends \Cx\Model\Base\EntityBase
             //'start' => maybe date? format?
             //'end' => maybe date? format?
             'editingStatus' => new \CxValidateString(array('maxlength' => 16)),
-            'username' => new \CxValidateString(array('maxlength' => 64)),
             //display is boolean, not checked
             //active is boolean, not checked
             'target' => new \CxValidateString(array('maxlength' => 255)),
@@ -768,12 +767,6 @@ class Page extends \Cx\Model\Base\EntityBase
     private $caching;
 
     /**
-     * @var integer $user
-     */
-    private $user;
-
-
-    /**
      * Set caching
      *
      * @param boolean $caching
@@ -793,25 +786,6 @@ class Page extends \Cx\Model\Base\EntityBase
         return $this->caching;
     }
 
-    /**
-     * Set user
-     *
-     * @param integer $user
-     */
-    public function setUser($user)
-    {
-        $this->user = $user;
-    }
-
-    /**
-     * Get user
-     *
-     * @return integer $user
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
     /**
      * @var string $type
      */
@@ -837,31 +811,7 @@ class Page extends \Cx\Model\Base\EntityBase
     {
         return $this->type;
     }
-    /**
-     * @var string $username
-     */
-    private $username;
 
-
-    /**
-     * Set username
-     *
-     * @param string $username
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
-    }
-
-    /**
-     * Get username
-     *
-     * @return string $username
-     */
-    public function getUsername()
-    {
-        return $this->username;
-    }
     /**
      * @prePersist
      * @onFlush
@@ -1072,13 +1022,9 @@ class Page extends \Cx\Model\Base\EntityBase
         }
 
         $page->setNode($this->getNode());
-
         $page->setActive($this->getActive());
         $page->setDisplay($this->getDisplay());
-
         $page->setLang($this->getLang());
-        $page->setUsername($this->getUsername());
-
         $page->setType($this->getType());
         $page->setCaching($this->getCaching());
         $page->setCustomContent($this->getCustomContent());

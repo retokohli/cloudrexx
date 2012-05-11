@@ -1,0 +1,95 @@
+<!-- START content_history.html -->
+<script language="JavaScript" type="text/javascript">
+// <![CDATA[
+function showOrHide(strElement)
+{
+	if (document.getElementById(strElement).style.display == 'block'){
+		document.getElementById(strElement).style.display = 'none';
+	} else {
+		document.getElementById(strElement).style.display = 'block';
+	}
+}
+function restoreDeleted(intId) {
+	if (confirm('{TXT_DELETED_RESTORE_JS}')) {
+		window.location.replace("index.php?cmd=workflow&{CSRF_PARAM}&act=restoreHistory&hId="+intId);
+	}
+}
+// ]]>
+</script>
+<div id="content1" class="editorTab" style="display:block">
+	<table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
+		<tr>
+			<th colspan="6">{TXT_TITLE}</th>
+		</tr>
+		<tr class="row3">
+			<td width="12%"><b>{TXT_SUBTITLE_DATE}</b></td>
+			<td width="12%"><b>{TXT_SUBTITLE_TRANSLATION}</b></td>
+			<td width="35%"><b>{TXT_SUBTITLE_NAME}</b></td>
+			<td width="20%"><b>{TXT_SUBTITLE_MODULE}</b></td>
+			<td width="20%"><b>{TXT_SUBTITLE_USER}</b></td>
+			<td width="1%"><b>{TXT_SUBTITLE_FUNCTIONS}</b></td>
+		</tr>
+		<!-- BEGIN showPages -->
+		<tr class="{HISTORY_ROWCLASS}">
+			<td><div style="border-bottom:0px;">{HISTORY_DATE}</div></td>
+			<td><div style="border-bottom:0px;">{HISTORY_TRANSLATION}</div></td>
+			<td><div style="border-bottom:0px;">{HISTORY_PREFIX}<a href="javascript:showOrHide('contentDiv_{HISTORY_RID}');">{HISTORY_TITLE}</a></div></td>
+			<td><div style="border-bottom:0px;"><i>{HISTORY_MODULE}</i></div></td>
+			<td><div style="border-bottom:0px;"><img src="images/icons/creator.gif" alt="{HISTORY_USER}" title="{HISTORY_USER}" border="0" align="middle" />&nbsp;{HISTORY_USER}</div></td>
+			<td nowrap="nowrap"><div style="border-bottom:0px; text-align:right;">
+				{HISTORY_IMGDETAILS}</div>
+			</td>
+		</tr>
+		<tr class="{HISTORY_ROWCLASS}">
+			<td colspan="6">
+				<div id="contentDiv_{HISTORY_RID}" style="width:100%; border:1px solid #DDE4FF; display:none;">
+					<table summary="" border="0" cellpadding="2" width="100%">
+						<tr>
+							<td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>{TXT_CONTENT_TITLE}</b></div></td>
+							<td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{HISTORY_CONTENT_TITLE}</div></td>
+							<td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>{TXT_START_DATE}</b></div></td>
+							<td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{HISTORY_STARTDATE}</div></td>
+							<td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>{TXT_MODULE} (cmd|section)</b></div></td>
+							<td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{HISTORY_CMD} | {HISTORY_SECTION}</div></td>
+							<td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>{TXT_FRONTEND}</b></div></td>
+							<td width="15%" valign="top" rowspan="2"><div style="border-bottom:0px;">{HISTORY_FRONTEND}</div></td>
+						</tr>
+						<tr>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_META_TITLE}</b></div></td>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{HISTORY_METATITLE}</div></td>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_END_DATE}</b></div></td>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{HISTORY_ENDDATE}</div></td>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_REDIRECT}</b></div></td>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{HISTORY_REDIRECT}</div></td>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+						</tr>
+						<tr>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_META_DESCRIPTION}</b></div></td>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{HISTORY_METADESC}</div></td>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_THEMES}</b></div></td>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{HISTORY_THEME}</div></td>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_SOURCE_MODE}</b></div></td>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{HISTORY_SOURCEMODE}</div></td>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px; height:1%;"><b>{TXT_BACKEND}</b></div></td>
+							<td rowspan="2" valign="top"><div style="border-bottom:0px;">{HISTORY_BACKEND}</div></td>
+						</tr>
+						<tr>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_META_KEYWORD}</b></div></td>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{HISTORY_METAKEY}</div></td>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_OPTIONAL_CSS_NAME}</b></div></td>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{HISTORY_OPTIONAL_CSS}</div></td>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CACHING_STATUS}</b></div></td>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{HISTORY_CACHING_STATUS}</div></td>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+							<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>
+		<!-- END showPages -->
+	</table>
+	<br />
+	{HISTORY_PAGING}
+</div>
+<!-- END content_history.html -->

@@ -72,7 +72,7 @@ class CxLogEntryRepository extends \Gedmo\Loggable\Entity\Repository\LogEntryRep
                     }
                 }
                 break;
-            default: // create
+            default: // create and update
                 $where = $action == 'updated' ? 'update' : 'create';
                 $logs  = $this->getLogsByAction($where);
                 
@@ -106,11 +106,25 @@ class CxLogEntryRepository extends \Gedmo\Loggable\Entity\Repository\LogEntryRep
         $result = array();
         
         $qb = $this->em->createQueryBuilder();
-        $qb->select('l.action, l.objectId, MAX(l.version) AS version')
+        $sqb = $this->em->createQueryBuilder();
+        $qb->select('l.objectId, l.action, l.loggedAt, l.version, l.username')
            ->from('Gedmo\Loggable\Entity\LogEntry', 'l')
            ->where('l.action = :action')
            ->andWhere('l.objectClass = :objectClass')
-           ->groupBy('l.objectId')
+           ->andWhere(
+               $qb->expr()->eq(
+                   'l.version',
+                   '('.$sqb->select('MAX(sl.version) AS version')
+                       ->from('Gedmo\Loggable\Entity\LogEntry', 'sl')
+                       ->where(
+                           $sqb->expr()->eq(
+                               'l.objectId',
+                               'sl.objectId'
+                           )
+                       )
+                       ->getDQL().')'
+               )
+           )
            ->orderBy('l.loggedAt', 'DESC')
            ->setParameter('objectClass', 'Cx\Model\ContentManager\Page');
         
@@ -190,16 +204,67 @@ class CxLogEntryRepository extends \Gedmo\Loggable\Entity\Repository\LogEntryRep
      */
     public function getLogsByAction($action = '')
     {
-        $result = array();
-        
         $qb = $this->em->createQueryBuilder();
         $qb->select('l')
            ->from('Gedmo\Loggable\Entity\LogEntry', 'l')
            ->where('l.action = :action')
-           ->setParameter('action', $action);
+           ->andWhere('l.objectClass = :objectClass')
+           ->setParameter('action', $action)
+           ->setParameter('objectClass', 'Cx\Model\ContentManager\Page');
         $result = $qb->getQuery()->getResult();
         
         return $result;
+    }
+    
+    /**
+     * Returns the latest logs of all pages.
+     * The log entries are filtered by the page object.
+     * 
+     * @return  array  $result
+     */
+    public function getLatestLogsOfAllPages()
+    {
+        $qb = $this->em->createQueryBuilder();
+        $sqb = $this->em->createQueryBuilder();
+        $qb->select('l')
+           ->from('Gedmo\Loggable\Entity\LogEntry', 'l')
+           ->where('l.objectClass = :objectClass')
+           ->andWhere(
+               $qb->expr()->eq(
+                   'l.version',
+                   '('.$sqb->select('MAX(sl.version) AS version')
+                       ->from('Gedmo\Loggable\Entity\LogEntry', 'sl')
+                       ->where(
+                           $sqb->expr()->eq(
+                               'l.objectId',
+                               'sl.objectId'
+                           )
+                       )
+                       ->getDQL().')'
+               )
+           )
+           ->setParameter('objectClass', 'Cx\Model\ContentManager\Page');
+        
+        $logs = $qb->getQuery()->getResult();
+        foreach ($logs as $log) {
+            $result[$log->getObjectId()] = $log;
+        }
+        
+        return $result;
+    }
+    
+    /**
+     * Returns the user name from the given log.
+     * 
+     * @param   Gedmo\Loggable\Entity\LogEntry
+     * @return  string  $username
+     */
+    public function getUsernameByLog($log)
+    {
+        $user = json_decode($log->getUsername());
+        $username = $user->{'name'};
+        
+        return $username;
     }
     
 }

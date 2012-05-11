@@ -121,7 +121,6 @@ class JSONPage {
         }
 
         $page->updateFromArray($output);
-        $page->setUsername(FWUser::getFWUserObject()->objUser->getUsername());
         $page->setUpdatedAtToNow();
 
         if (isset($params['get']['publish']) && $params['get']['publish']) {
@@ -429,8 +428,6 @@ class JSONPage {
             
                            /*'display'       =>  $page->getDisplay(),
                              'active'        =>  $page->getActive(),
-                             'user'          =>  $page->getUser(),
-                             'username'      =>  $page->getUsername(),
                              'updatedAt'     =>  $page->getUpdatedAt(),*/
                            );
 

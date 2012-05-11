@@ -42,6 +42,8 @@ class ContentWorkflow extends Module {
     
     //doctrine entity manager
     protected $em = null;
+    //template object
+    protected $tpl = null;
     //the mysql connection
     protected $db = null;
     //the init object
@@ -79,18 +81,17 @@ class ContentWorkflow extends Module {
         }
         
         $this->em = Env::em();
+        $this->tpl = $template;
         $this->db = $db;
         $this->nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
         $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
         $this->logRepo  = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
         
-        $this->db->Execute('OPTIMIZE TABLE '.DBPREFIX.'ext_log_entries');
-        
         if (isset($_GET['pos'])) {
             $this->intPos = intval($_GET['pos']);
         }
         
-        $template->setVariable(array(
+        $this->tpl->setVariable(array(
             'CONTENT_TITLE'             => $this->strPageTitle,
             'CONTENT_OK_MESSAGE'        => $this->strOkMessage,
             'CONTENT_STATUS_MESSAGE'    => implode("<br />\n", $this->strErrMessage)
@@ -106,14 +107,14 @@ class ContentWorkflow extends Module {
      * @global    array    Core language
      */
     protected function setNavigation() {
-        global $objTemplate, $_CORELANG;
+        global $_CORELANG;
         
-        $objTemplate->setVariable(
+        $this->tpl->setVariable(
             'CONTENT_NAVIGATION',
-            '<a href="index.php?cmd=workflow&amp;act=new" class="'.($this->act == 'new' ? 'active' : '').'">'.$_CORELANG['TXT_NEW_PAGES'].'</a>
-             <a href="index.php?cmd=workflow&amp;act=updated" class="'.($this->act == 'updated' ? 'active' : '').'">'.$_CORELANG['TXT_UPDATED_PAGES'].'</a>
-             <a href="index.php?cmd=workflow&amp;act=deleted" class="'.($this->act == 'deleted' ? 'active' : '').'">'.$_CORELANG['TXT_DELETED_PAGES'].'</a>
-             <a href="index.php?cmd=workflow&amp;act=unvalidated" class="'.($this->act == 'unvalidated' ? 'active' : '').'">'.$_CORELANG['TXT_WORKFLOW_VALIDATE'].'</a>'
+            '<a href="index.php?cmd=workflow&amp;act=new" class="'.($this->cmd == 'new' ? 'active' : '').'">'.$_CORELANG['TXT_NEW_PAGES'].'</a>
+             <a href="index.php?cmd=workflow&amp;act=updated" class="'.($this->cmd == 'updated' ? 'active' : '').'">'.$_CORELANG['TXT_UPDATED_PAGES'].'</a>
+             <a href="index.php?cmd=workflow&amp;act=deleted" class="'.($this->cmd == 'deleted' ? 'active' : '').'">'.$_CORELANG['TXT_DELETED_PAGES'].'</a>
+             <a href="index.php?cmd=workflow&amp;act=unvalidated" class="'.($this->cmd == 'unvalidated' ? 'active' : '').'">'.$_CORELANG['TXT_WORKFLOW_VALIDATE'].'</a>'
              //<a href="index.php?cmd=workflow&amp;act=showClean" class="'.($this->act == 'showClean' ? 'active' : '').'">'.$_CORELANG['TXT_WORKFLOW_CLEAN_TITLE'].'</a>
         );
     }
@@ -126,7 +127,7 @@ class ContentWorkflow extends Module {
     * @global     array        Configuration
     */
     protected function showHistory() {
-        global $objTemplate, $_CORELANG, $_CONFIG;
+        global $_CORELANG, $_CONFIG;
         
         \Permission::checkAccess(75, 'static');
         
@@ -152,12 +153,19 @@ class ContentWorkflow extends Module {
                 $strPagingAct       = 'new';
         }
 
-        $objTemplate->addBlockfile('ADMIN_CONTENT', 'content_history', 'content_history.html');
-        $objTemplate->setVariable(array(
+        if ($this->cmd == 'deleted') {
+            $template = 'content_history_deleted_pages.html';
+        } else {
+            $template = 'content_history.html';
+        }
+
+        $this->tpl->addBlockfile('ADMIN_CONTENT', 'content_history', $template);
+        $this->tpl->setVariable(array(
             'TXT_TITLE'                 => $strTitle,
             'TXT_SUBTITLE_DATE'         => $_CORELANG['TXT_DATE'],
             'TXT_SUBTITLE_TRANSLATION'  => $_CORELANG['TXT_TRANSLATION'],
             'TXT_SUBTITLE_NAME'         => $_CORELANG['TXT_PAGETITLE'],
+            'TXT_SUBTITLE_LANGUAGE'     => $_CORELANG['TXT_LANGUAGE'],
             'TXT_SUBTITLE_MODULE'       => $_CORELANG['TXT_MODULE'],
             'TXT_SUBTITLE_USER'         => $_CORELANG['TXT_USER'],
             'TXT_SUBTITLE_FUNCTIONS'    => $_CORELANG['TXT_FUNCTIONS'],
@@ -184,10 +192,10 @@ class ContentWorkflow extends Module {
         
         // Gets the quantity of log entries
         $countLogEntries = $this->logRepo->countLogEntries($this->cmd);
-
+        
         // Paging
         $strPaging = getPaging($countLogEntries, $this->intPos, '&amp;cmd=workflow&amp;act='.$strPagingAct, '', true);
-        $objTemplate->setVariable('HISTORY_PAGING', $strPaging);
+        $this->tpl->setVariable('HISTORY_PAGING', $strPaging);
         
         // Gets the log entries
         $logs  = $this->logRepo->getLogs($this->cmd, $this->intPos, $_CONFIG['corePagingLimit']);
@@ -204,6 +212,8 @@ class ContentWorkflow extends Module {
             $data[$page->getId()] = array(
                 'action'  => $log['action'],
                 'version' => $log['version'],
+                'updated' => $log['loggedAt'],
+                'user'    => $log['username'],
                 'page'    => $page,
             );
         }
@@ -215,6 +225,8 @@ class ContentWorkflow extends Module {
             foreach ($data as $pageId => $data) {
                 $act     = $data['action'];
                 $history = $data['version'] - 1;
+                $updated = $data['updated'];
+                $user    = json_decode($data['user']);
                 $page    = $data['page'];
                 
                 $frontendGroups = '';
@@ -286,59 +298,60 @@ class ContentWorkflow extends Module {
                         $strIcon = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=content&amp;loadPage='.$pageId.'"><img src="images/icons/details.gif" alt="'.$_CORELANG['TXT_DETAILS'].'" title="'.$_CORELANG['TXT_DETAILS'].'" border="0" /></a>';
                 }
                 
-                $objTemplate->setVariable(array(
-                    'TXT_CONTENT_TITLE'         =>  $_CORELANG['TXT_PAGETITLE'],
-                    'TXT_META_TITLE'            =>  $_CORELANG['TXT_META_TITLE'],
-                    'TXT_META_DESCRIPTION'      =>  $_CORELANG['TXT_META_DESCRIPTION'],
-                    'TXT_META_KEYWORD'          =>  $_CORELANG['TXT_META_KEYWORD'],
-                    'TXT_CATEGORY'              =>  $_CORELANG['TXT_CATEGORY'],
-                    'TXT_START_DATE'            =>  $_CORELANG['TXT_START_DATE'],
-                    'TXT_END_DATE'              =>  $_CORELANG['TXT_END_DATE'],
-                    'TXT_THEMES'                =>  $_CORELANG['TXT_THEMES'],
-                    'TXT_OPTIONAL_CSS_NAME'     =>  $_CORELANG['TXT_CORE_CSSNAME'],
-                    'TXT_MODULE'                =>  $_CORELANG['TXT_MODULE'],
-                    'TXT_REDIRECT'              =>  $_CORELANG['TXT_REDIRECT'],
-                    'TXT_SOURCE_MODE'           =>  $_CORELANG['TXT_SOURCE_MODE'],
-                    'TXT_CACHING_STATUS'        =>  $_CORELANG['TXT_CACHING_STATUS'],
-                    'TXT_FRONTEND'              =>  $_CORELANG['TXT_WEB_PAGES'],
-                    'TXT_BACKEND'               =>  $_CORELANG['TXT_ADMINISTRATION_PAGES'],
+                $this->tpl->setVariable(array(
+                    'TXT_CONTENT_TITLE'         => $_CORELANG['TXT_PAGETITLE'],
+                    'TXT_META_TITLE'            => $_CORELANG['TXT_META_TITLE'],
+                    'TXT_META_DESCRIPTION'      => $_CORELANG['TXT_META_DESCRIPTION'],
+                    'TXT_META_KEYWORD'          => $_CORELANG['TXT_META_KEYWORD'],
+                    'TXT_CATEGORY'              => $_CORELANG['TXT_CATEGORY'],
+                    'TXT_START_DATE'            => $_CORELANG['TXT_START_DATE'],
+                    'TXT_END_DATE'              => $_CORELANG['TXT_END_DATE'],
+                    'TXT_THEMES'                => $_CORELANG['TXT_THEMES'],
+                    'TXT_OPTIONAL_CSS_NAME'     => $_CORELANG['TXT_CORE_CSSNAME'],
+                    'TXT_MODULE'                => $_CORELANG['TXT_MODULE'],
+                    'TXT_REDIRECT'              => $_CORELANG['TXT_REDIRECT'],
+                    'TXT_SOURCE_MODE'           => $_CORELANG['TXT_SOURCE_MODE'],
+                    'TXT_CACHING_STATUS'        => $_CORELANG['TXT_CACHING_STATUS'],
+                    'TXT_FRONTEND'              => $_CORELANG['TXT_WEB_PAGES'],
+                    'TXT_BACKEND'               => $_CORELANG['TXT_ADMINISTRATION_PAGES'],
                 ));
                 
-                $objTemplate->setVariable(array(
-                    'HISTORY_ROWCLASS'      =>  $intRowCount % 2 == 0 ? 'row0' : 'row1',
-                    'HISTORY_IMGDETAILS'    =>  $strIcon,
-                    'HISTORY_RID'           =>  $intRowCount,
-                    'HISTORY_ID'            =>  $pageId,
-                    'HISTORY_PID'           =>  $pageId,
-                    'HISTORY_DATE'          =>  $page->getUpdatedAt()->format('d.m.Y H:i'),
-                    'HISTORY_TRANSLATION'   =>  implode('&nbsp;&nbsp;', $this->pageRepo->getPageTranslations($pageId, $history)),
-                    'HISTORY_USER'          =>  $page->getUsername(),
-                    'HISTORY_PREFIX'        =>  $prefix,
-                    'HISTORY_TITLE'         =>  $page->getTitle(),
-                    'HISTORY_CONTENT_TITLE' =>  $page->getContentTitle(),
-                    'HISTORY_METATITLE'     =>  $page->getMetatitle(),
-                    'HISTORY_METADESC'      =>  $page->getMetadesc(),
-                    'HISTORY_METAKEY'       =>  $page->getMetakeys(),
-                    'HISTORY_STARTDATE'     =>  $page->getStart()->format('d.m.Y H:i'),
-                    'HISTORY_ENDDATE'       =>  $page->getEnd()->format('d.m.Y H:i'),
-                    'HISTORY_THEME'         =>  $page->getSkin() != '' ? $arrThemes[$page->getSkin()] : $arrThemes[0],
-                    'HISTORY_OPTIONAL_CSS'  =>  $page->getCssName() == '' ? '-' : $page->getCssName(),
-                    'HISTORY_MODULE'        =>  $page->getModule().' '.$page->getCmd(),
-                    'HISTORY_CMD'           =>  $page->getCmd() == ''    ? '-' : $page->getCmd(),
-                    'HISTORY_SECTION'       =>  $page->getModule() == '' ? '-' : $page->getModule(),
-                    'HISTORY_REDIRECT'      =>  $page->getTarget() == '' ? '-' : $page->getTarget(),
-                    'HISTORY_SOURCEMODE'    =>  $page->getSourceMode() == 1 ? 'Y' : 'N',
-                    'HISTORY_CACHING_STATUS'=>  $page->getCaching() == 1 ? 'Y' : 'N',
-                    'HISTORY_FRONTEND'      =>  $frontendGroups,
-                    'HISTORY_BACKEND'       =>  $backendGroups,
-                    'HISTORY_CONTENT'       =>  $page->getContent(),
+                $this->tpl->setVariable(array(
+                    'HISTORY_ROWCLASS'      => $intRowCount % 2 == 0 ? 'row0' : 'row1',
+                    'HISTORY_IMGDETAILS'    => $strIcon,
+                    'HISTORY_RID'           => $intRowCount,
+                    'HISTORY_ID'            => $pageId,
+                    'HISTORY_PID'           => $pageId,
+                    'HISTORY_DATE'          => $updated,
+                    'HISTORY_TRANSLATION'   => implode('&nbsp;&nbsp;', $this->pageRepo->getPageTranslations($pageId, $history)),
+                    'HISTORY_LANGUAGE'      => \FWLanguage::getLanguageCodeById($page->getLang()),
+                    'HISTORY_USER'          => $user->{'name'},
+                    'HISTORY_PREFIX'        => $prefix,
+                    'HISTORY_TITLE'         => $page->getTitle(),
+                    'HISTORY_CONTENT_TITLE' => $page->getContentTitle(),
+                    'HISTORY_METATITLE'     => $page->getMetatitle(),
+                    'HISTORY_METADESC'      => $page->getMetadesc(),
+                    'HISTORY_METAKEY'       => $page->getMetakeys(),
+                    'HISTORY_STARTDATE'     => $page->getStart()->format('d.m.Y H:i'),
+                    'HISTORY_ENDDATE'       => $page->getEnd()->format('d.m.Y H:i'),
+                    'HISTORY_THEME'         => $page->getSkin() != '' ? $arrThemes[$page->getSkin()] : $arrThemes[0],
+                    'HISTORY_OPTIONAL_CSS'  => $page->getCssName() == '' ? '-' : $page->getCssName(),
+                    'HISTORY_MODULE'        => $page->getModule().' '.$page->getCmd(),
+                    'HISTORY_CMD'           => $page->getCmd() == ''    ? '-' : $page->getCmd(),
+                    'HISTORY_SECTION'       => $page->getModule() == '' ? '-' : $page->getModule(),
+                    'HISTORY_REDIRECT'      => $page->getTarget() == '' ? '-' : $page->getTarget(),
+                    'HISTORY_SOURCEMODE'    => $page->getSourceMode() == 1 ? 'Y' : 'N',
+                    'HISTORY_CACHING_STATUS'=> $page->getCaching() == 1 ? 'Y' : 'N',
+                    'HISTORY_FRONTEND'      => $frontendGroups,
+                    'HISTORY_BACKEND'       => $backendGroups,
+                    'HISTORY_CONTENT'       => $page->getContent(),
                 ));
 
-                $objTemplate->parse('showPages');
+                $this->tpl->parse('showPages');
                 $intRowCount++;
             }
         } else {
-            $objTemplate->hideBlock('showPages');
+            $this->tpl->hideBlock('showPages');
         }
     }
     

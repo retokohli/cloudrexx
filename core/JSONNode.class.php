@@ -13,12 +13,18 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
 
 class JSONNode {
         
-    var $em = null;
-    var $fallbacks;
-    var $messages;
+    private $em = null;
+    private $pageRepo = null;
+    private $nodeRepo = null;
+    private $logRepo = null;
+    private $fallbacks;
+    private $messages;
 
     function __construct() {
         $this->em = Env::em();
+        $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
+        $this->nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
+        $this->logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
         $this->messages = array();
         $this->tz = new DateTimeZone('Europe/Berlin');
 
@@ -45,9 +51,8 @@ class JSONNode {
     //  ref = id of the new parent node
     //  position = new position of id as ref's Nth child
     public function move() {
-        $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
-        $moved_node = $nodeRepo->find($_POST['id']);
-        $parent_node = $nodeRepo->find($_POST['ref']);
+        $moved_node = $this->nodeRepo->find($_POST['id']);
+        $parent_node = $this->nodeRepo->find($_POST['ref']);
 
         $moved_node->setParent($parent_node);
         $this->em->persist($parent_node);
@@ -55,9 +60,9 @@ class JSONNode {
         $this->em->flush();
 
 
-        $nodeRepo->moveUp($moved_node, true);
+        $this->nodeRepo->moveUp($moved_node, true);
         if ($_POST['position'])
-            $nodeRepo->moveDown($moved_node, $_POST['position']);
+            $this->nodeRepo->moveDown($moved_node, $_POST['position']);
 
         $this->em->persist($moved_node);
         $this->em->persist($parent_node);
@@ -66,8 +71,7 @@ class JSONNode {
     }
 
     public function delete() {
-        $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
-        $node = $nodeRepo->find($_POST['id']);
+        $node = $this->nodeRepo->find($_POST['id']);
 
         $this->em->remove($node);
         $this->em->flush();
@@ -75,17 +79,15 @@ class JSONNode {
 
     // Renders a jsTree friendly representation of the Node tree (in json)
         private function renderTree() {
-                $pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
-                $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
+                $root = $this->nodeRepo->getRoot();
+                $logs = $this->logRepo->getLatestLogsOfAllPages();
 
-                $root = $nodeRepo->getRoot();
-
-                $jsondata = $this->tree_to_jstree_array($root);
+                $jsondata = $this->tree_to_jstree_array($root, $logs);
 
                 return $jsondata;
         }
 
-    private function tree_to_jstree_array($root) {
+    private function tree_to_jstree_array($root, $logs) {
         $fallback_langs = $this->fallbacks;
 
         $sorted_tree = array();
@@ -98,7 +100,7 @@ class JSONNode {
         foreach ($sorted_tree as $node) {
             $data = array();
             $metadata = array();
-            $children = $this->tree_to_jstree_array($node);
+            $children = $this->tree_to_jstree_array($node, $logs);
             $last_resort = 0;
 
             foreach ($node->getPages() as $page) {
@@ -106,14 +108,17 @@ class JSONNode {
                 if ($page->getType() == "alias") continue 2;
 
                 $data[FWLanguage::getLanguageCodeById($page->getLang())] = array(
-                    "language"  => FWLanguage::getLanguageCodeById($page->getLang()),
-                    "title"     => $page->getTitle(),
-                    "attr"      => array(
-                                         "id" => $page->getId(),
-                                         "data-href" => json_encode(array('module' => $page->getModule().' '.$page->getCmd(),
-                                                                          'lastupdate' => $page->getUpdatedAt()->format('d.m.Y H:i'),
-                                                                          'user' => $page->getUsername()
-                                                                          ))
+                    'language'  => FWLanguage::getLanguageCodeById($page->getLang()),
+                    'title'     => $page->getTitle(),
+                    'attr'      => array(
+                                         'id'        => $page->getId(),
+                                         'data-href' => json_encode(
+                                                            array(
+                                                                'module'     => $page->getModule().' '.$page->getCmd(),
+                                                                'lastupdate' => $page->getUpdatedAt()->format('d.m.Y H:i'),
+                                                                'user'       => $this->logRepo->getUsernameByLog($logs[$page->getId()]),
+                                                            )
+                                                        ),
                                          )
                 );
 

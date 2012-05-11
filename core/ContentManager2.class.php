@@ -65,7 +65,7 @@ class ContentManager extends Module {
 	}
 
 	protected function actRenderCM() {
-            global $_ARRAYLANG, $_CORELANG, $_CONFIG;
+        global $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
         JS::activate('cx');
         JS::activate('ckeditor');
@@ -291,23 +291,29 @@ class ContentManager extends Module {
         
         $le = new \Cx\Core\Routing\LanguageExtractor($this->db, DBPREFIX);
         $langDir = $le->getShortNameOfLanguage($page->getLang());
-
-        //(IV) add current entry to table
-        $this->addHistoryEntries($page, $table, 1);
-
-        //(V) add the history entries
+        
         $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
         $logs = $logRepo->getLogEntries($page);
+        
+        //currently user of this page
+        $user = json_decode($logs[0]->getUsername());
+        $username = $user->{'name'};
 
+        //(IV) add current entry to table
+        $this->addHistoryEntries($page, $username, $table, 1);
+
+        //(V) add the history entries
         $logCount = count($logs);
         for ($i = 1; $i < $logCount; $i++) {
             $version = $logs[$i]->getVersion();
             $row = $i + 1;
+            $user = json_decode($logs[$i]->getUsername());
+            $username = $user->{'name'};
             try {
                 $logRepo->revert($page, $version);
                 $page->setUpdatedAt($logs[$i]->getLoggedAt());
                 
-                $this->addHistoryEntries($page, $table, $row, $version, $langDir.'/'.$path, $pageHasDraft);
+                $this->addHistoryEntries($page, $username, $table, $row, $version, $langDir.'/'.$path, $pageHasDraft);
             } catch (\Gedmo\Exception\UnexpectedValueException $e) {}
         }
 
@@ -315,7 +321,7 @@ class ContentManager extends Module {
         die($table->toHtml());
     }
 
-    protected function addHistoryEntries($page, $table, $row, $version='', $path='', $pageHasDraft=true) {
+    protected function addHistoryEntries($page, $username, $table, $row, $version='', $path='', $pageHasDraft=true) {
         global $_ARRAYLANG;
 
         $dateString = $page->getUpdatedAt()->format(ASCMS_DATE_FORMAT);
@@ -332,7 +338,7 @@ class ContentManager extends Module {
 
         $table->setCellContents($row, 0, $dateString);
         $table->setCellContents($row, 1, $page->getTitle());
-        $table->setCellContents($row, 2, $page->getUsername());
+        $table->setCellContents($row, 2, $username);
     }
 
     protected function actAjaxGetCustomContentTemplates() {
