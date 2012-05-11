@@ -304,7 +304,7 @@ class JSONPage {
                 $value = $page[$field];
             }
 
-            if (isset($meta['require']) && !$page[$meta['require']]) {
+            if (isset($meta['require']) && $page[$meta['require']] == 'off') {
                 $value = null;
             }
 
