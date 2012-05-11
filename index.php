@@ -185,6 +185,7 @@ $languageExtractor = new \Cx\Core\Routing\URLTranslator($objDatabase, DBPREFIX, 
 $request = !empty($_GET['__cap']) ? $_GET['__cap'] : '';
 $url = \Cx\Core\Routing\URL::fromCapturedRequest($request, ASCMS_PATH_OFFSET, $_GET);
 $resolver = new \Cx\Core\Routing\Resolver($url, null, Env::em(), null, null);
+\Env::set('Resolver', $resolver);
 $aliaspage = $resolver->resolveAlias();
 if ($aliaspage != null) {
     $_LANGID = $aliaspage->getTargetLangId();
