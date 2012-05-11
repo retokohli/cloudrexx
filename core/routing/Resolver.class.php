@@ -27,6 +27,11 @@ class Resolver {
     protected $pageRepo = null;
 
     /**
+     * Doctrine NodeRepository
+     */
+    protected $nodeRepo = null;
+
+    /**
      * Remembers if we've come across a redirection while resolving the URL.
      * This allow to properly redirect via 302.
      * @var boolean
@@ -140,7 +145,7 @@ class Resolver {
                 $page->setUpdatedAtToNow();
                 $page->setActive(true);
                 $page->setLinkTarget('?pagePreview=1');
-                //$page->setVirtual(true);
+                $page->setVirtual(true);
                 $page->validate();
                 
                 $this->page = $page;
@@ -258,5 +263,9 @@ class Resolver {
 
     public function getPage() {
         return $this->page;
+    }
+    
+    public function getURL() {
+        return $this->url;
     }
 }

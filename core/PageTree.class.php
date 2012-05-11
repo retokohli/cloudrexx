@@ -5,6 +5,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
  * Base class for all kinds of trees such as Sitemaps and Navigation.
  */
 /*abstract */class PageTree {
+    protected static $virtualPagesAdded = false;
 
     //the language id
     protected $lang = null;
@@ -52,8 +53,18 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
         }
 
         $this->fetchTree();
-        if($this->currentPage) {
-            $this->currentPagePath = $this->currentPage->getPath();
+        if ($this->currentPage) {
+            // get the path of the resolved (== displayed) page
+            $realPagePath = $this->currentPage->getPath();
+            // get the path of the request (may contain more info (non-existant, virtual pages)
+            $virtualPagePath = '/' . \Env::get('Resolver')->getURL()->getSuggestedTargetPath();
+            // does the two paths start the same?
+            if (substr($virtualPagePath, 0, strlen($realPagePath)) == $realPagePath) {
+                $this->currentPagePath = $virtualPagePath;
+            } else {
+                // if not, take the real one:
+                $this->currentPagePath = $realPagePath;
+            }
         }
         //determine whether the current page is attached to the user-provided
         //root node. in this case, internalRender needs to be called with
@@ -65,7 +76,11 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
     }
 
     private function fetchTree() {
-        $this->tree = $this->pageRepo->getTreeByTitle($this->rootNode, $this->lang, true, true);
+        if (!static::$virtualPagesAdded) {
+            // TODO: Add virtual pages
+            static::$virtualPagesAdded = true;
+        }
+        $this->tree = $this->pageRepo->getTreeByTitle($this->rootNode, $this->lang, true);
     }
 
     /**
@@ -94,40 +109,45 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
 
     private function internalRender(&$elems, $path, $level, $dontDescend = false) {
         $content = '';
-        foreach($elems as $title => &$elem) {
+        foreach ($elems as $slug => &$elem) {
             $page = $elem['__data']['page'];
 
-            if(!$page->isVisible() || !$page->isActive())
+            if (!$page->isVisible() || !$page->isActive()) {
                 continue;
-
+            }
+            
             //determine whether any of the children is to be shown.
             $hasChilds = false;
-            foreach($elem as $childTitle => $child) {
+            foreach ($elem as $childSlug => $child) {
                 //skip data of current property
-                if($childTitle == '__data')
+                if ($childSlug == '__data') {
                     continue;
+                }
 
                 $childPage = $child['__data']['page'];
-                if($childPage->isVisible() && $childPage->isActive()) {
+                if ($childPage->isVisible() && $childPage->isActive()) {
                     $hasChilds = true;
                     break;
                 }
             }
 
+            $title = $page->getTitle();
             $lang = $elem['__data']['lang'];
-            $pathOfThis = $path . '/' . $page->getSlug();
+            $pathOfThis = $path . '/' . $slug;
             $current = false;
-
+            
             $dontDescendNext = false;
             $weWantTheChildren = true;
             $parseChildren = $hasChilds && !$dontDescend && $weWantTheChildren;
-            if($this->currentPagePath) { //current flag requested
+            
+            $href = $pathOfThis;
+            if ($this->currentPagePath) { //current flag requested
                 //are we rendering a parent page of currentPage or the currenPage itself?
 //TODO: example: if we're treating
 //      http://www.example.com/the/current/page and pathOfThis is
 //      http://www.example.com/the/cur
 //      we have a false match.
-                $current = substr($this->currentPagePath, 0, strlen($pathOfThis)) == $pathOfThis;               
+                $current = $this->isPagePathActive($pathOfThis, $lang);
                 //do not display children outside of current branch 
                 if($this->rootNode && !$current) {
                     $weWantTheChildren = false;
@@ -136,13 +156,12 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
                 $dontDescendNext = $this->currentPagePath == $pathOfThis;
             }
             
-            if (/*$page->isVirtual()*/true && $page->getLinkTarget() != '') {
-                $pathOfThis .= $page->getLinkTarget();
+            if ($page->isVirtual() && $page->getTarget() != '') {
+                $href .= $page->getTarget();
             }
-
-            $content .= $this->renderElement($title, $level, $parseChildren, $lang, $pathOfThis, $current, $page);
-
-            if($parseChildren) {
+            $content .= $this->renderElement($title, $level, $parseChildren, $lang, $href, $current, $page);
+            
+            if ($parseChildren) {
                 unset($elem['__data']);
                 $content .= $this->internalRender($elem, $pathOfThis, $level+1, $dontDescendNext);
             }
@@ -151,6 +170,20 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
         }
         return $content;
 
+    }
+    
+    /**
+     * Tells wheter $pathToPage is in the active branch
+     * @param String $pathToPage
+     * @return boolean True if active, false otherwise
+     */
+    public function isPagePathActive($pathToPage) {
+        if ($pathToPage == '') {
+            return false;
+        }
+        
+        $pathToPage = str_replace('//', '/', $pathToPage . '/');
+        return substr($this->currentPagePath . '/', 0, strlen($pathToPage)) == $pathToPage;
     }
 
     /**

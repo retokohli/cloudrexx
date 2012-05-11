@@ -49,7 +49,7 @@ class PageRepository extends EntityRepository {
     }
 
     public function addVirtualPage($virtualPage, $afterSlug = '') {
-        //$virtualPage->setVirtual(true);
+        $virtualPage->setVirtual(true);
         if (!$virtualPage->getLang()) {
             $virtualPage->setLang(FRONTEND_LANG_ID);
         }
@@ -59,11 +59,29 @@ class PageRepository extends EntityRepository {
         );
     }
     
-    private function addVirtualTree($tree, $lang, $rootNodeLvl) {
+    protected function addVirtualTree($tree, $lang, $rootNodeLvl, $rootPath) {
+        $tree = $this->addVirtualTreeLvl($tree, $lang, $rootNodeLvl, $rootPath);
+        foreach ($tree as $slug=>$data) {
+            if ($slug == '__data') {
+                continue;
+            }
+            if ($tree[$slug]['__data']['page']->isVirtual()) {
+                continue;
+            }
+            $tree[$slug] = $this->addVirtualTreeLvl($data, $lang, $rootNodeLvl, $tree[$slug]['__data']['page']->getPath());
+            // Recursion for the tree
+            $tree[$slug] = $this->addVirtualTree($data, $lang, $rootNodeLvl + 1, $tree[$slug]['__data']['page']->getPath());
+        }
+        return $tree;
+    }
+    
+    protected function addVirtualTreeLvl($tree, $lang, $rootNodeLvl, $rootPath) {
         foreach ($this->virtualPages as $virtualPage) {
             $page = $virtualPage['page'];
             $node = $page->getNode();
-            if (count(explode('/', $page->getPath())) - 2 != $rootNodeLvl) {
+            if (count(explode('/', $page->getPath())) - 2 != $rootNodeLvl ||
+                    // Only add pages within path of currently parsed node
+                    substr($page->getPath().'/', 0, strlen($rootPath.'/')) != $rootPath.'/') {
                 continue;
             }
             $afterSlug = $virtualPage['afterSlug'];
@@ -88,6 +106,8 @@ class PageRepository extends EntityRepository {
                     ),
                 );
             }
+            // Recursion for virtual subpages of a virtual page
+            $tree[$page->getSlug()] = $this->addVirtualTreeLvl($tree[$page->getSlug()], $lang, $rootNodeLvl + 1, $page->getPath());
         }
         
         return $tree;
@@ -173,7 +193,8 @@ class PageRepository extends EntityRepository {
 
         if (!empty($this->virtualPages)) {
             $rootNodeLvl = $rootNode ? $rootNode->getLvl() : 0;
-            $result = $this->addVirtualTree($result, $lang, $rootNodeLvl);
+            $rootPath = $rootNode ? $rootNode->getPage($lang) ? $rootNode->getPage($lang)->getPath() : '' : '';
+            $result = $this->addVirtualTree($result, $lang, $rootNodeLvl, $rootPath);
         }
 
         return $result;
@@ -316,36 +337,15 @@ class PageRepository extends EntityRepository {
     }
 
     /**
-     * Get a pages' path. Quite costly
-     * @todo should be rewritten to use a custom query on heavy usage
+     * Get a pages' path. Alias for $page->getPath() for compatibility reasons
+     * For compatibility reasons, this path won't start with a slash!
+     * @todo remove this method
      *
      * @param \Cx\Model\ContentManager\Page $page
      * @return string path, e.g. 'This/Is/It'
      */
     public function getPath($page) {
-        $lang = $page->getLang();
-        $node = $page->getNode();
-        $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
-        $pathNodes = $nodeRepo->getPath($node);
-
-        $path = '';
-        foreach($pathNodes as $node) {
-            if($node->getLvl() > 0) { //all but top node (it's pageless).
-                $pages = $node->getPagesByLang();
-                $thePageInOurLang = $pages[$page->getLang()];
-
-//TODO: what happens if $thePageInOurLang is still null?
-//      This should be restricted by the content manager.
-//      Throwing below is a first attempt to react in this case.
-                if(!$thePageInOurLang)
-                    throw new PageRepositoryException('getPath(): Missing Page while moving up the tree to collect Path for Page with title "' . $page->getTitle() . '". Node ' . $node->getId() . ' at level ' . $node->getLvl() . ' has no Page in language ' . $page->getLang());
-
-                $path .= '/'.$thePageInOurLang->getSlug();
-            }
-        }
-
-        //cut leading /
-        return substr($path,1);
+        return substr($page->getPath(), 1) . '/';
     }
     
     /**

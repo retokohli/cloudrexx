@@ -872,7 +872,7 @@ class Page extends \Cx\Model\Base\EntityBase
         $slugs = array();
         foreach ($this->getNode()->getParent()->getChildren() as $child) {
             $page = $child->getPage($this->getLang());
-            if ($page !== $this) {
+            if ($page && $page !== $this) {
                 $slugs[] = $page->getSlug();
             }
         }
@@ -1417,19 +1417,15 @@ class Page extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Get a pages' path.
+     * Get a pages' path starting with a slash
      * 
-     * @return string path, e.g. 'This/Is/It'
+     * @return string path, e.g. '/This/Is/It'
      */
     public function getPath() {
         $path = '';
-        $parent = $this->getNode()->getParent();
-        if ($parent) {
-            $parentPage = $parent->getPage($this->getLang());
-            if ($parentPage) {
-                $path = $parentPage->getPath();
-            }
-        }
+        try {
+            $path = $this->getParent()->getPath();
+        } catch (PageException $e) {}
         return $path . '/' . $this->getSlug();
     }
 
@@ -1444,5 +1440,23 @@ class Page extends \Cx\Model\Base\EntityBase
     public function getURL($protocolAndDomainWithPathOffset, $params) {
         $path = $this->getPath($this);
         return $protocolAndDomainWithPathOffset . $path . $params;
+    }
+    
+    /**
+     * Returns the page with the same language of the parent node
+     * e.g. $this->getNode()->getParent()->getPage($this->lang)
+     * @return \Cx\Model\ContentManager\Page
+     * @throws PageException If parent page can not be found
+     */
+    public function getParent() {
+        $parentNode = $this->getNode()->getParent();
+        if (!$parentNode) {
+            throw new PageException('Parent node not found (my page id is ' . $this->getId() . ')');
+        }
+        $parent = $parentNode->getPage($this->getLang());
+        if (!$parent) {
+            throw new PageException('Parent page not found (my page id is ' . $this->getId() . ')');
+        }
+        return $parent;
     }
 }
