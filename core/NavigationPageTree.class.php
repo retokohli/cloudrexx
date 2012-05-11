@@ -7,6 +7,9 @@ class NavigationPageTree extends SigmaPageTree {
     const styleNameActive = "active";
     const styleNameNormal = "inactive";
 
+    /**
+     * @see PageTree::renderElement()
+     */
     protected function renderElement($title, $level, $hasChilds, $lang, $path, $current, $page) {
         $blockName = 'level_'.$level;
         $hideLevel = false;
@@ -17,34 +20,40 @@ class NavigationPageTree extends SigmaPageTree {
             }                
         }
         else {
-            if($this->topLevelBlockName) {
+            if ($this->topLevelBlockName) {
                 //checks for the standard block e.g. "level"
-                if ($this->template->blockExists('level'))
+                if ($this->template->blockExists('level')) {
                     $blockName = 'level';
-                else
+                } else {
                     $hideLevel = true;
+                }
             }
         }
-
-        if($this->topLevelBlockName && !$hideLevel) {
-            if($page->isVisible()) {
+        // get the parent path
+        try {
+            $parentPath = $page->getParent()->getPath();
+        } catch (\Cx\Model\ContentManager\PageException $e) {
+            $parentPath = '/';
+        }
+        
+        if($this->topLevelBlockName && !$hideLevel &&
+                $this->isPagePathActive($parentPath, $lang) && $page->isVisible()) {
 //TODO: invisible childs
 //      maybe the return value of this function could set whether the childs
 //      are rendered.
-                $style = $current ? self::styleNameActive : self::styleNameNormal;
+            $style = $current ? self::styleNameActive : self::styleNameNormal;
 //TODO: navigation_id
-                $this->template->setCurrentBlock($blockName);
-                $this->template->setVariable(array(
-                    'URL' => ASCMS_PATH_OFFSET.$this->virtualLanguageDirectory.$path,
-                    'NAME' => $title,
-                    'TARGET' => $page->getLinkTarget(),
-                    'LEVEL_INFO' => $hasChilds ? '' : 'down',
-                    'STYLE' => $style,
-                    'CSS_NAME' => $page->getCssNavName()
-                ));
-                $this->template->parse($blockName);
-                $this->output .= $this->template->get($blockName, true);
-            }
+            $this->template->setCurrentBlock($blockName);
+            $this->template->setVariable(array(
+                'URL' => ASCMS_PATH_OFFSET.$this->virtualLanguageDirectory.$path,
+                'NAME' => $title,
+                'TARGET' => $page->getLinkTarget(),
+                'LEVEL_INFO' => $hasChilds ? '' : 'down',
+                'STYLE' => $style,
+                'CSS_NAME' => $page->getCssNavName()
+            ));
+            $this->template->parse($blockName);
+            $this->output .= $this->template->get($blockName, true);
         }
     }
 
