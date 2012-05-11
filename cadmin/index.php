@@ -555,9 +555,9 @@ switch ($plainCmd) {
         break;
     case 'calendar':
         Permission::checkAccess(16, 'static');
+        define('CALENDAR_MANDATE', MODULE_INDEX);
         if (!include_once ASCMS_MODULE_PATH.'/calendar'.MODULE_INDEX.'/admin.class.php')
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        define('CALENDAR_MANDATE', MODULE_INDEX);
         $subMenuTitle = $_CORELANG['TXT_CALENDAR'];
         $objCalendar = new calendarManager();
         $objCalendar->getCalendarPage();
