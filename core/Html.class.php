@@ -1984,30 +1984,58 @@ jQuery(document).ready(function($) {
 
 
     /**
-     * Returns HTML code that provides a hint or information message icon
+     * Returns HTML code that provides an information message icon
      *
-     * The given text is displayed as a tootip on the icon.
+     * The given hint text is displayed as a tootip on the icon.
      * Note that the code includes no leading nor trailing whitespace nor
      * linebreaks.
-     * Note that this method calls {@see contrexx_raw2xhtml()} on the $text
+     * Note that this method calls {@see contrexx_raw2xhtml()} on the hint text
      * in order to ensure it doesn't break the enclosing javascript,
      * so don't do that yourself.
-     * @param   string    $text         The hint text
+     * @param   array       $hint       The hint header and text as array
+     *                                  elements 0 and 1, respectively
      * @return  string                  The HTML code for the hint element
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getHint($text)
+    static function getHint($hint)
     {
+        static $initialized = NULL;
+
         JS::registerJS('lib/tipmessage1.5/main15.js');
-        JS::registerCode(
-            'tipmessage_style = '.
-            '["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,15,-50];'."\n".
-            'TipId = "tipMessageLayer";'."\n".
-            'jQuery(document).ready(function($){mig_clay();})'."\n");
+        if (!$initialized) {
+/*
+    titleColor,TitleBgColor,TitleBgImag,TitleTextAlign,TitleFontFace,TitleFontSize,
+    TextColor,TextBgColor,TextBgImag,TextTextAlign,TextFontFace,TextFontSize,
+    Width,Height,
+    BorderSize,BorderColor,
+    Textpadding,
+    transition number,Transition duration,
+    Transparency level,shadow type,shadow color,
+    Appearance behavior,
+    TipPositionType,Xpos,Ypos
+*/
+            JS::registerCode(
+                'tipmessage_style = '.
+                '["#000000","#ffffe1","","","",,'.
+                '"black","#ffffe1","","","",,'.
+                '0,0,'.
+                '1,"#000000",'.
+                '2,'.
+                '24,0.3,'.
+                ',2,"gray",'.
+                '1,'.
+                '0,0,-0];'."\n".
+                'TipId = "tipMessageLayer";'."\n".
+                'jQuery(document).ready(function($){mig_clay();})'."\n");
+            $initialized = TRUE;
+        }
         return
             '<span class="note" onmouseout="htm()" '.
-            'onmouseover="stm(\''.contrexx_raw2xhtml($text).'\','.
-              'tipmessage_style);">&nbsp;</span>';
+            'onmouseover="stm(['.
+            '\''.contrexx_raw2xhtml($hint[0]).'\','.
+            '\''.contrexx_raw2xhtml($hint[1]).'\''.
+            '],'.
+            'tipmessage_style);">&nbsp;</span>';
     }
 
 
