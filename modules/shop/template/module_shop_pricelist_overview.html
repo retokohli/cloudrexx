@@ -4,13 +4,13 @@
 function deleteList(plid)
 {
   if (confirm('{TXT_DELETE_PRICELIST_MSG}')) {
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=pricelists&delete_list_id="+plid);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=categories&tpl=pricelists&delete_list_id="+plid);
   }
 }
 
 function newPricelist()
 {
-  window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=pricelist_edit");
+  window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=categories&tpl=pricelist_edit&list_id");
 }
 
 function shopPricelistDoAction(strForm, strCheckbox, objSelect, strAct)
@@ -19,7 +19,7 @@ function shopPricelistDoAction(strForm, strCheckbox, objSelect, strAct)
     switch (strAct) {
       case 'del':
         if (confirm('{TXT_DELETE_PRICELIST_MSG}')) {
-          document.forms[strForm].action = "index.php?cmd=shop{MODULE_INDEX}&act=pricelists";
+          document.forms[strForm].action = "index.php?cmd=shop{MODULE_INDEX}&act=categories&tpl=pricelists";
           document.forms[strForm].submit();
         }
         break;
@@ -31,6 +31,15 @@ function shopPricelistDoAction(strForm, strCheckbox, objSelect, strAct)
 }
 // -->
 </script>
+
+<div id="subnavbar_level2">
+  <ul>
+    <li><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=categories" title="{TXT_CATEGORIES}">{TXT_CATEGORIES}</a></li>
+    <li><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=categories&amp;tpl=pricelists" title="{TXT_PDF_OVERVIEW}">{TXT_PDF_OVERVIEW}</a></li>
+  </ul>
+</div>
+<br />
+
 <!-- BEGIN shop_pricelist_overview -->
 <form name="form_pricelist" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=pricelists">
   <table width="100%" cellspacing="0" cellpadding="2" border="0" class="adminlist">
@@ -48,7 +57,7 @@ function shopPricelistDoAction(strForm, strCheckbox, objSelect, strAct)
       <td nowrap="nowrap">{SHOP_PRICELIST_NAME}</td>
       <td nowrap="nowrap">{SHOP_PRICELIST_LINK_PDF}</td>
       <td nowrap="nowrap"><div style="text-align:right;">
-        <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=pricelist_edit&amp;list_id={SHOP_PRICELIST_ID}" target="_self" title="{TXT_EDIT}"><img border="0" src="images/icons/edit.gif" width="16" height="16" alt="{TXT_EDIT}" /></a>
+        <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=categories&amp;tpl=pricelist_edit&amp;list_id={SHOP_PRICELIST_ID}" target="_self" title="{TXT_EDIT}"><img border="0" src="images/icons/edit.gif" width="16" height="16" alt="{TXT_EDIT}" /></a>
         <a href="javascript:deleteList({SHOP_PRICELIST_ID})" target="_self" title="{TXT_DELETE}"><img border="0" src="images/icons/delete.gif" width="16" height="16" alt="{TXT_DELETE}" /></a>
       </div></td>
     </tr>
