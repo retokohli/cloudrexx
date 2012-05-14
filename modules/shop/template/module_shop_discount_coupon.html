@@ -18,7 +18,6 @@
     </tr>
     <tr class="row3">
       <td width="10%" nowrap="nowrap"><b>{HEADER_SHOP_DISCOUNT_COUPON_CODE}</b></td>
-      <td width="10%" nowrap="nowrap"><b>{TXT_SHOP_DISCOUNT_COUPON_URI}</b>&nbsp;{SHOP_DISCOUNT_COUPON_URI_HINT}</td>
       <td width="08%" nowrap="nowrap"><b>{HEADER_SHOP_DISCOUNT_COUPON_START_TIME}</b></td>
       <td width="08%" nowrap="nowrap"><b>{HEADER_SHOP_DISCOUNT_COUPON_END_TIME}</b></td>
       <td width="10%" nowrap="nowrap"><div style="text-align: right;"><b>{HEADER_SHOP_DISCOUNT_COUPON_MINIMUM_AMOUNT_CURRENCY}</b></div></td>
@@ -29,17 +28,12 @@
       <td width="10%" nowrap="nowrap"><b>{HEADER_SHOP_DISCOUNT_COUPON_CUSTOMER}</b></td>
       <td width="10%" nowrap="nowrap"><b>{HEADER_SHOP_DISCOUNT_COUPON_PRODUCT}</b></td>
       <td width="10%" nowrap="nowrap"><b>{HEADER_SHOP_DISCOUNT_COUPON_PAYMENT}</b></td>
+      <td width="10%" nowrap="nowrap">{TXT_SHOP_DISCOUNT_COUPON_URI}&nbsp;{SHOP_DISCOUNT_COUPON_URI_HINT}</td>
       <td width="01%" nowrap="nowrap"><b>{TXT_FUNCTIONS}</b></td>
     </tr>
 <!-- BEGIN shopDiscountCouponView -->
     <tr class="{SHOP_ROWCLASS}">
       <td nowrap="nowrap">{SHOP_DISCOUNT_COUPON_CODE}</td>
-      <td nowrap="nowrap">
-        <input type="text" readonly="readonly"
-            style="width: 420px;"
-            value="{SHOP_DISCOUNT_COUPON_URI}"
-            onfocus="this.select();" />
-      </td>
       <td nowrap="nowrap">{SHOP_DISCOUNT_COUPON_START_TIME}</td>
       <td nowrap="nowrap">{SHOP_DISCOUNT_COUPON_END_TIME}</td>
       <td nowrap="nowrap"><div style="text-align: right;">{SHOP_DISCOUNT_COUPON_MINIMUM_AMOUNT}</div></td>
@@ -50,6 +44,7 @@
       <td nowrap="nowrap">{SHOP_DISCOUNT_COUPON_CUSTOMER}</td>
       <td nowrap="nowrap">{SHOP_DISCOUNT_COUPON_PRODUCT}</td>
       <td nowrap="nowrap">{SHOP_DISCOUNT_COUPON_PAYMENT}</td>
+      <td nowrap="nowrap">{SHOP_DISCOUNT_COUPON_URI}</td>
       <td nowrap="nowrap">{SHOP_DISCOUNT_COUPON_FUNCTIONS}</td>
     </tr>
 <!-- END shopDiscountCouponView -->
@@ -91,21 +86,7 @@
       </tr>
       <tr class="row2">
         <td>{TXT_SHOP_DISCOUNT_COUPON_TYPE}</td>
-        <td>
-          <input type="radio" name="coupon_type" value="rate"
-              id="coupon_type_rate" onclick="set_coupon_type('rate');"
-              {SHOP_DISCOUNT_COUPON_TYPE_RATE_CHECKED} />
-          <label for="coupon_type_rate">
-            {TXT_SHOP_DISCOUNT_COUPON_TYPE_RATE}
-          </label>
-          &nbsp;
-          <input type="radio" name="coupon_type" value="amount"
-              id="coupon_type_amount" onclick="set_coupon_type('amount');"
-              {SHOP_DISCOUNT_COUPON_TYPE_AMOUNT_CHECKED} />
-          <label for="coupon_type_amount">
-            {TXT_SHOP_DISCOUNT_COUPON_TYPE_AMOUNT}
-          </label>
-        </td>
+        <td>{SHOP_DISCOUNT_COUPON_TYPE}</td>
       </tr>
       <tr class="row1" id="coupon_type_rate_row" style="display: none;">
         <td>{TXT_SHOP_DISCOUNT_COUPON_RATE}</td>

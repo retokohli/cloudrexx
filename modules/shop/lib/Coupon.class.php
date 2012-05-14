@@ -993,22 +993,27 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
         $i = 0;
         $row = 0;
         $objCouponEdit = new Coupon();
-// TODO: The location of the required method get_absolute_url() may change
-//        require_once ASCMS_CORE_PATH.'/Dispatcher.class.php';
         global $_CONFIG;
         foreach ($arrCoupons as $index => $objCoupon) {
-//DBG::log("Coupon: ".var_export($objCoupon, true));
+            $coupon_uri_id = 'coupon_uri_'.$index;
             $objTemplate->setVariable(array(
                 'SHOP_ROWCLASS' => 'row'.(++$row % 2 + 1),
                 'SHOP_DISCOUNT_COUPON_CODE' => $objCoupon->code(),
                 'SHOP_DISCOUNT_COUPON_URI' =>
-// TODO: Use the Dispatcher (or its replacement) for the proper method
-// to form the URI
+// TODO: Use Resolver methods to form the URI
 //                    Dispatcher::get_absolute_url(
-                    'http://'.$_CONFIG['domainUrl'].
-                    ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.
-                    '?section=shop'.MODULE_INDEX.
-                    '&amp;coupon_code='.$objCoupon->code(),
+                    '<div class="icon_url" onclick="jQuery(\'#'.$coupon_uri_id.
+                    '\').toggle().find(\'input\').focus()">&nbsp;</div>'.
+                    '<div class="layer_url" id="'.$coupon_uri_id.'">'.
+                    Html::getInputText('',
+                        'http://'.$_CONFIG['domainUrl'].
+                        ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.
+                        '?section=shop'.MODULE_INDEX.
+                        '&coupon_code='.$objCoupon->code(), false,
+                        'readonly="readonly"'.
+                        ' style="width: 420px;"'.
+                        ' onfocus="this.select();"'
+                    ).'</div>',
                 'SHOP_DISCOUNT_COUPON_START_TIME' =>
                     ($objCoupon->start_time()
                       ? date(ASCMS_DATE_SHORT_FORMAT, $objCoupon->start_time())
@@ -1076,13 +1081,16 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                             '\\n\\n'.
                             $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
                     )),
-                'SHOP_DISCOUNT_COUPON_URI_HINT' => Html::getHint(
-                    $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_URI_HINT']),
+                'SHOP_DISCOUNT_COUPON_URI_HINT' => Html::getHint(array(
+                    $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_URI'],
+                    $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_URI_HINT_TEXT'])),
             ));
             $objTemplate->parse('shopDiscountCouponView');
             if ($index === $edit) $objCouponEdit = $objCoupon;
         }
         $objTemplate->replaceBlock('shopDiscountCouponView', '', true);
+        JS::registerCode('jQuery(function(){jQuery(".icon_url")'.
+            '.bind("click", function(){jQuery(this).toggle();});});');
         $paging = Paging::get($uri,
             $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_CODES'],
             $count, $limit);
@@ -1131,9 +1139,11 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                 Html::getInputText('minimum_amount',
                     $objCouponEdit->minimum_amount(), false,
                     $attribute_minimum_amount),
-            'SHOP_DISCOUNT_COUPON_TYPE' => $type,
-            'SHOP_DISCOUNT_COUPON_TYPE_'.strtoupper($type).'_CHECKED' =>
-                HTML_ATTRIBUTE_CHECKED,
+            'SHOP_DISCOUNT_COUPON_TYPE' =>
+                Html::getRadioGroup('coupon_type', array(
+                    'rate' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_TYPE_RATE'],
+                    'amount' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_TYPE_AMOUNT'],
+                    ), $type, "set_coupon_type('rate');", '', ''),
             'SHOP_DISCOUNT_COUPON_RATE' =>
                 Html::getInputText('discount_rate',
                     $objCouponEdit->discount_rate(), false,

@@ -880,9 +880,9 @@ $_ARRAYLANG['TXT_ZONE_LIST'] = "Zonenliste";
 $_ARRAYLANG['TXT_ZONE_NAME'] = "Zonenname";
 
 // 20110824
-$_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_URI'] = "Link zum Shop für Kunden";
-//$_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_URI_HINT'] = "+\"*ç%&/()='?^´~\\nKlicken Sie in ein Textfeld, um die URI zu markieren.\\nSie können sie kopieren oder mit der Maus auf das gewünschte Ziel ziehen.";
-$_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_URI_HINT'] = "dsgsdfgdfsg";
+$_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_URI'] = "Link";
+$_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_URI_HINT_TITLE'] = "Link zum Shop für Kunden";
+$_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_URI_HINT_TEXT'] = "Klicken Sie auf das Symbol in der Liste, um den Link für den entsprechenden Gutschein ein- oder auszublenden.<br />Kopieren Sie die eingeblendete URI oder ziehen Sie sie mit der Maus auf das gewünschte Ziel.";
 
 // 20110901
 $_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_INSERTING'] = "Fehler beim Einfügen des Produkts in die Bestellung";
