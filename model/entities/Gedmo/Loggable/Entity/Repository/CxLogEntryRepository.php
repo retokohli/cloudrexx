@@ -159,13 +159,7 @@ class CxLogEntryRepository extends \Gedmo\Loggable\Entity\Repository\LogEntryRep
                     $page->setId($log['objectId']);
                     $this->revert($page, $log['version'] - 1);
                     
-                    $logsByNodeId[$page->getNodeIdShadowed()][$page->getLang()] = $log;
-                }
-                
-                // Only one log per node id. It takes the first index.
-                foreach ($logsByNodeId as $log) {
-                    ksort($log);
-                    $result[] = array_shift(array_values($log));
+                    $result[$page->getNodeIdShadowed()][$page->getLang()] = $log;
                 }
                 break;
             default: // create, update and unvalidated
