@@ -256,9 +256,21 @@ class Pricelist
      * @var   string
      */
     private $arrCategoryId = array('*');
+    /**
+     * Returns the comma separated list of Categories, or "*" for all
+     *
+     * Optionally sets the Category IDs to the value of $category_ids.
+     * $category_ids may be a comma separated string, or an array of IDs.
+     * @param   mixed   $category_ids   An optional comma separated list of
+     *                                  Category IDs, or an array of IDs
+     * @return  string                  The comma separated list of Category IDs
+     */
     function category_ids($category_ids=null)
     {
         if (isset($category_ids)) {
+            if (is_array($category_ids)) {
+                $category_ids = join(',', $category_ids);
+            }
             $category_ids = trim(strip_tags($category_ids));
             if (!$category_ids) $category_ids = '*';
             $this->arrCategoryId = preg_split('/\s*,\s*/', $category_ids,
@@ -317,6 +329,8 @@ class Pricelist
         $objPdf->setLineStyle(0.5);
         $marginTop = 30;
         $biggerCountTop = $biggerCountBottom = 0;
+        $arrHeaderLeft = $arrHeaderRight = $arrFooterLeft = $arrFooterRight =
+            array();
         if ($this->header) { // header should be shown
             $arrHeaderLeft = explode("\n", $this->header_left);
             $arrHeaderRight = explode("\n", $this->header_right);
@@ -359,7 +373,7 @@ class Pricelist
             $objPdf->addObject($linesForAllPages, 'all');
         }
         // Header
-        $headerArray = $arrHeaderLeft = $arrHeaderRight = array();
+        $headerArray = array();
         $startpointY = 0;
         if ($this->header) {
             $objPdf->ezSetY(830);
@@ -392,7 +406,6 @@ class Pricelist
             $objPdf->addObject($headerForAllPages, 'all');
         }
         // Footer
-        $arrFooterLeft = $arrFooterRight = array();
         $pageNumbersX = $pageNumbersY = $pageNumbersFont = 0;
         if ($this->footer) {
             $footerForAllPages = $objPdf->openObject();
@@ -455,11 +468,13 @@ class Pricelist
         $_ARRAYLANG = $objInit->loadLanguageData('shop');
         Currency::setActiveCurrencyId($this->currency_id);
         $currency_symbol = Currency::getActiveCurrencySymbol();
-        $category_ids = join(',', $this->arrCategoryId);
+        $category_ids = $this->category_ids();
         if ($category_ids == '*') $category_ids = null;
         $count = 1000; // Be sensible!
+        // Pattern is "%" because all-empty parameters will result in an
+        // empty array!
         $arrProduct = Products::getByShopParams($count, 0, null,
-            $category_ids, null, null, null, null,
+            $category_ids, null, '%', null, null,
             '`category_id` ASC, `name` ASC');
         $arrCategoryName = ShopCategories::getNameArray();
         $arrOutput = array();
@@ -552,8 +567,7 @@ class Pricelist
         $this->footer = $objResult->fields['footer_on'];
         $this->footer_left = self::decode($objResult->fields['footer_left']);
         $this->footer_right = self::decode($objResult->fields['footer_right']);
-        $this->arrCategoryId = preg_split('/\s*,\s*/',
-            $objResult->fields['categories'], null, PREG_SPLIT_NO_EMPTY);
+        $this->category_ids($objResult->fields['categories']);
         return true;
     }
 
@@ -570,7 +584,7 @@ class Pricelist
 // TODO: Use the get_absolute_url() method of the Dispatcher (or whatever class it ends up in)
         return
             'http://'.$_CONFIG['domainUrl'].
-            CONTREXX_SCRIPT_PATH.
+            ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.
             '?section=shop'.MODULE_INDEX.'&amp;act=pricelist'.
             '&amp;list_id='.$list_id;
     }
@@ -697,7 +711,8 @@ class Pricelist
             && !empty($_POST['category_id'])) {
             foreach ($_POST['category_id'] as $category_id) {
                 $category_ids .=
-                    ($category_ids ? ',' : '').$category_id;
+                    ($category_ids ? ',' : '').
+                    contrexx_input2raw($category_id);
             }
         }
         // Both if no or all categories were selected, select all.

@@ -103,15 +103,14 @@ class Shopmanager extends ShopLibrary
         global $objTemplate, $_ARRAYLANG;
 
         $objTemplate->setVariable('CONTENT_NAVIGATION',
-            "<a href='index.php?cmd=shop".MODULE_INDEX."' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SHOP_INDEX']."</a>".
+            "<a href='index.php?cmd=shop".MODULE_INDEX."' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_ORDERS']."</a>".
             "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=categories' class='".($this->act == 'categories' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CATEGORIES']."</a>".
             "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=products' class='".($this->act == 'products' ? 'active' : '')."'>".$_ARRAYLANG['TXT_PRODUCTS']."</a>".
             "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=manufacturer' class='".($this->act == 'manufacturer' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SHOP_MANUFACTURER']."</a>".
             "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=customers' class='".($this->act == 'customers' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CUSTOMERS_PARTNERS']."</a>".
-            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=orders' class='".($this->act == 'orders' ? 'active' : '')."'>".$_ARRAYLANG['TXT_ORDERS']."</a>".
             "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=statistics' class='".($this->act == 'statistics' ? 'active' : '')."'>".$_ARRAYLANG['TXT_STATISTIC']."</a>".
             "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=import' class='".($this->act == 'import' ? 'active' : '')."'>".$_ARRAYLANG['TXT_IMPORT_EXPORT']."</a>".
-            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=pricelists' class='".($this->act == 'pricelists' ? 'active' : '')."'>".$_ARRAYLANG['TXT_PDF_OVERVIEW']."</a>".
+//            "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=pricelists' class='".($this->act == 'pricelists' ? 'active' : '')."'>".$_ARRAYLANG['TXT_PDF_OVERVIEW']."</a>".
             "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SETTINGS']."</a>"
 // TODO: Workaround for the language selection.  Remove when the new UI
 // is introduced in the shop.
@@ -145,6 +144,7 @@ class Shopmanager extends ShopLibrary
                 break;
             case 'categories':
             case 'category_edit':
+                // Includes PDF pricelists
                 $this->view_categories();
                 break;
             case 'products':
@@ -194,14 +194,6 @@ class Shopmanager extends ShopLibrary
             case 'statistics':
                 self::$pageTitle = $_ARRAYLANG['TXT_STATISTIC'];
                 Orders::view_statistics(self::$objTemplate);
-                break;
-            case 'pricelists':
-                self::$pageTitle = $_ARRAYLANG['TXT_PDF_OVERVIEW'];
-                self::view_pricelists();
-                break;
-            case 'pricelist_edit':
-                self::$pageTitle = $_ARRAYLANG['TXT_PDF_OVERVIEW'];
-                self::view_pricelist_edit();
                 break;
             case 'import':
                 $this->_import();
@@ -1672,12 +1664,20 @@ class Shopmanager extends ShopLibrary
     {
         global $_ARRAYLANG;
 
+        if (   isset ($_REQUEST['tpl'])) {
+            if (   $_REQUEST['tpl'] == 'pricelists'
+                || $_REQUEST['tpl'] == 'pricelist_edit') {
+                return self::view_pricelists();
+            }
+        }
+
         $this->delete_categories();
         $this->store_category();
         $this->update_categories();
         $i = 1;
         self::$pageTitle = $_ARRAYLANG['TXT_CATEGORIES'];
         self::$objTemplate->loadTemplateFile('module_shop_categories.html');
+        self::$objTemplate->setGlobalVariable($_ARRAYLANG);
         // ID of the category to be edited, if any
         $category_id = (isset($_REQUEST['category_id'])
             ? intval($_REQUEST['category_id']) : 0);
@@ -3460,9 +3460,15 @@ if (!$limit) {
         global $objDatabase, $_ARRAYLANG;
         require_once ASCMS_MODULE_PATH.'/shop/lib/Pricelist.class.php';
 
+        self::$pageTitle = $_ARRAYLANG['TXT_PDF_OVERVIEW'];
+        // Note that the "list_id" index may be set but empty in order to
+        // create a new pricelist.
+        if (isset($_REQUEST['list_id'])) {
+            return self::view_pricelist_edit();
+        }
         Pricelist::deleteByRequest();
-
         self::$objTemplate->loadTemplateFile("module_shop_pricelist_overview.html");
+        self::$objTemplate->setGlobalVariable($_ARRAYLANG);
         $arrName = Pricelist::getNameArray();
         $i = 0;
         foreach ($arrName as $list_id => $name) {
@@ -3487,7 +3493,7 @@ if (!$limit) {
      * @global  array           $_ARRAYLANG
      * @return  boolean                         True on success, false otherwise
      */
-    function view_pricelist_edit()
+    static function view_pricelist_edit()
     {
         global $objDatabase, $_ARRAYLANG;
         require_once ASCMS_MODULE_PATH.'/shop/lib/Pricelist.class.php';
@@ -3497,17 +3503,18 @@ if (!$limit) {
         if ($objList) {
             $result = $objList->store();
             if ($result) {
+                if (isset ($_REQUEST['list_id']))
+                    unset($_REQUEST['list_id']);
+//die("Showing lists");
                 return self::view_pricelists();
             }
-        } else {
-            $list_id = (isset($_GET['list_id']) ? $_GET['list_id'] : null);
-            $objList = Pricelist::getById($list_id);
         }
+        $list_id = (isset($_GET['list_id']) ? $_GET['list_id'] : null);
+        $objList = Pricelist::getById($list_id);
         if (!$objList) $objList = new Pricelist(null);
         $list_id = $objList->id();
-//DBG::log("Pricelist ID $list_id (".$objList->id().")");
-//DBG::log("Pricelist: ".var_export($objList, true));
         self::$objTemplate->loadTemplateFile("module_shop_pricelist_details.html");
+        self::$objTemplate->setGlobalVariable($_ARRAYLANG);
         self::$objTemplate->setVariable(array(
             'SHOP_PRICELIST_EDIT' => $_ARRAYLANG[($list_id
                 ? 'TXT_SHOP_PRICELIST_EDIT' : 'TXT_SHOP_PRICELIST_ADD')],
