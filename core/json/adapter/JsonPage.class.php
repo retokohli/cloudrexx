@@ -1,44 +1,92 @@
 <?php
+/**
+ * JSON Adapter for Cx\Model\ContentManager\Page
+ * @copyright   Comvation AG
+ * @author      Florian Schuetz <florian.schuetz@comvation.com>
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core/json
+ */
+namespace Cx\Core\Json\Adapter;
+require_once ASCMS_CORE_PATH.'/json/JsonAdapter.interface.php';
+use \Cx\Core\Json\JsonAdapter;
 
 /**
- * JSON Export for the node structure
- *
+ * JSON Adapter for Cx\Model\ContentManager\Page
  * @copyright   Comvation AG
- * @author      Comvation Engineering Team
+ * @author      Florian Schuetz <florian.schuetz@comvation.com>
+ * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
- * @subpackage  admin
+ * @subpackage  core/json
  */
-use Doctrine\Common\Util\Debug as DoctrineDebug;
 
-class JSONPage {
+class JsonPage implements JsonAdapter {
+
     private $em = null;
     private $pageRepo = null;
     private $nodeRepo = null;
     private $fallbacks;
-    
     public $messages;
 
+    /**
+     * Constructor
+     */
     function __construct() {
-        $this->em = Env::em();
+        $this->em = \Env::em();
         $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
         $this->nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
         $this->messages = array();
-        $this->tz = new DateTimeZone('Europe/Berlin');
+        $this->tz = new \DateTimeZone('Europe/Berlin');
 
-        $fallback_lang_codes = FWLanguage::getFallbackLanguageArray();
-        $active_langs = FWLanguage::getActiveFrontendLanguages();
+        $fallback_lang_codes = \FWLanguage::getFallbackLanguageArray();
+        $active_langs = \FWLanguage::getActiveFrontendLanguages();
 
         // get all active languages and their fallbacks
         foreach ($active_langs as $lang) {
-            $this->fallbacks[FWLanguage::getLanguageCodeById($lang['id'])] = ((array_key_exists($lang['id'], $fallback_lang_codes)) ? FWLanguage::getLanguageCodeById($fallback_lang_codes[$lang['id']]) : null);
+            $this->fallbacks[\FWLanguage::getLanguageCodeById($lang['id'])] = ((array_key_exists($lang['id'], $fallback_lang_codes)) ? \FWLanguage::getLanguageCodeById($fallback_lang_codes[$lang['id']]) : null);
         }
     }
+    
+    /**
+     * Returns the internal name used as identifier for this adapter
+     * @return String Name of this adapter
+     */
+    public function getName() {
+        return 'page';
+    }
+    
+    /**
+     * Returns an array of method names accessable from a JSON request
+     * @author Michael Ritter <michael.ritter@comvation.com>
+     * @return array List of method names
+     */
+    public function getAccessableMethods() {
+        return array('get', 'set', 'setPagePreview', 'setPageStatus');
+    }
 
+    /**
+     * Returns all messages as string
+     * @return String HTML encoded error messages
+     */
     public function getMessagesAsString() {
         return implode("<br />", $this->messages);
     }
 
+    /**
+     * Sends data to the client
+     * @todo Clean up usage of $param and $_GET
+     * @param Array $params Client parameters
+     * @return Array Page as array
+     * @throws Exception If the page could not be found
+     */
     public function get($params) {
+        $_GET['page'] = contrexx_input2raw($_GET['page']);
+        $_GET['node'] = contrexx_input2raw($_GET['node']);
+        $_GET['lang'] = contrexx_input2raw($_GET['lang']);
+        if (isset($params['get']) && isset($params['get']['history'])) {
+            $params['get']['history'] = contrexx_input2raw($params['get']['history']);
+        }
+        
         // pages can be requested in two ways:
         // by page id               - default for existing pages
         // by node id + lang        - to translate an existing page into a new language, assigned to the same node
@@ -48,12 +96,10 @@ class JSONPage {
 
         if (isset($page)) {
             // All is well, continue
-        }
-        elseif (isset($_GET['node']) && isset($_GET['lang'])) {
+        } elseif (isset($_GET['node']) && isset($_GET['lang'])) {
             $node = $this->nodeRepo->find($_GET['node']);
             $pageArray = $this->getFallbackPageArray($node, $_GET['lang']);
-        }
-        else {
+        } else {
             throw new Exception('cannot find that page');
         }
 
@@ -70,16 +116,23 @@ class JSONPage {
             $availableRevisions = $logRepo->getLogEntries($page);
             $logRepo->revert($page, $availableRevisions[1]->getVersion());
         }
-        
+
         $pageArray = $this->getPageArray($page);
 
         return $pageArray;
     }
 
+    /**
+     * Handles request from the client
+     * @todo Clean up usage of $param and $_GET
+     * @global Array $_CORELANG Core language data
+     * @param Array $params Client parameters
+     * @return type 
+     */
     public function set($params) {
         global $_CORELANG;
         $newpage = false;
-        $pg = Env::get('pageguard');
+        $pg = \Env::get('pageguard');
 
         $page = $params['post']['page'];
         $output = $this->validatePageArray($page);
@@ -88,20 +141,19 @@ class JSONPage {
             // if we got a page id, the page already exists and can be updated
             $page = $this->pageRepo->find($params['post']['page']['id']);
             $node = $page->getNode();
-
-        }
-        elseif ($page['id'] == 0 && $page['node'] && $page['lang']) {
+        } elseif ($page['id'] == 0 && $page['node'] && $page['lang']) {
             // we are translating another page (to $page['lang'])
             $node = $this->nodeRepo->find($page['node']);
 
             foreach ($node->getPages() as $pageCandidate) {
                 $source_page = $pageCandidate;
-                if ($source_page->getLang() == FWLanguage::getLanguageIdByCode($params['post']['page']['lang'])) break;
+                if ($source_page->getLang() == \FWLanguage::getLanguageIdByCode($params['post']['page']['lang']))
+                    break;
             }
-            $page = $this->pageRepo->translate($source_page, FWLanguage::getLanguageIdByCode($page['lang']), true, true, true);
+            $page = $this->pageRepo->translate($source_page, \FWLanguage::getLanguageIdByCode($page['lang']), true, true, true);
 
             $reload = true;
-        } 
+        }
         else {
             // create a new node/page combination
             $node = new \Cx\Model\ContentManager\Node();
@@ -113,7 +165,7 @@ class JSONPage {
             $page = new \Cx\Model\ContentManager\Page();
             $page->setNode($node);
             $page->setNodeIdShadowed($node->getId());
-            $page->setLang(FWLanguage::getLanguageIdByCode($params['post']['page']['lang']));
+            $page->setLang(\FWLanguage::getLanguageIdByCode($params['post']['page']['lang']));
 
             $newpage = true;
             $reload = true;
@@ -135,8 +187,8 @@ class JSONPage {
             $pg->setAssignedGroupIds($page, $params['post']['backendGroups'], false);
         }
 
-        if ((isset($params['get']['publish']) && $params['get']['publish']) 
-            && \Permission::checkAccess(78, 'static', true)) {
+        if ((isset($params['get']['publish']) && $params['get']['publish'])
+                && \Permission::checkAccess(78, 'static', true)) {
             // user w/permission clicked save&publish. we should either publish the page or submit the draft for approval
             if ($page->getEditingStatus() == 'hasDraftWaiting') {
                 $reload = true;
@@ -145,8 +197,7 @@ class JSONPage {
             $this->messages[] = $_CORELANG['TXT_CORE_SAVED'];
             // TODO: define what log data we want to keep in a case like this.
             //       make adjustments, if necessary.
-        }
-        else {
+        } else {
             // user clicked save [as draft], so let's do that
             if ($newpage) {
                 $this->em->persist($page);
@@ -158,8 +209,7 @@ class JSONPage {
                 // user w/o publish permission clicked save&publish. submit it as a draft
                 $page->setEditingStatus('hasDraftWaiting');
                 $this->messages[] = $_CORELANG['TXT_CORE_DRAFT_SUBMITTED'];
-            }
-            else {
+            } else {
                 if ($page->getEditingStatus() == 'hasDraftWaiting' && \Permission::checkAccess(78, 'static', true)) {
                     $reload = true;
                 }
@@ -179,12 +229,11 @@ class JSONPage {
             $this->em->flush();
             $logEntries = $logRepo->getLogEntries($page);
             // $logEntries holds an array of Gedmo LogEntries, the most recent one listed first
-
             // we need the editing status of the page
             $logData = $logEntries[1]->getData();
             $logData['editingStatus'] = $page->getEditingStatus();
             $logEntries[1]->setData($logData);
-            
+
             // revert to the published version
             $logRepo->revert($page, $logEntries[1]->getVersion());
             $this->em->persist($page);
@@ -201,10 +250,11 @@ class JSONPage {
 
         $this->em->persist($page);
         $this->em->flush();
-        
+
         // only users with publish rights can create aliases
         if (\Permission::checkAccess(78, 'static', true)) {
             // aliases are updated after persist!
+            $data = array();
             $data['alias'] = $params['post']['page']['alias'];
             $aliases = $page->getAliases();
             $page->updateFromArray($data);
@@ -217,15 +267,15 @@ class JSONPage {
 
         if (isset($reload) && $reload) {
             return array(
-                'reload' => 'true', 
-                'id'     => $page->getId()
+                'reload' => 'true',
+                'id' => $page->getId()
             );
         }
     }
-    
+
     /**
      * Sets the page object in the session and returns the link to the page (frontend).
-     * 
+     * @author Michael Raess <michael.raess@comvation.com>
      * @param   array  $params
      * @return  array  [link]     The link to the page (frontend).
      */
@@ -233,7 +283,7 @@ class JSONPage {
         $page = $this->validatePageArray($params['post']['page']);
         $page['pageId'] = $params['post']['page']['id'];
         $page['lang'] = $params['post']['page']['lang'];
-        
+
         $_SESSION['page'] = $page;
     }
 
@@ -245,64 +295,70 @@ class JSONPage {
      */
     private function validatePageArray($page) {
         $fields = array(
-            'type'                     => array('type' => 'String'),
-            'name'                     => array('type' => 'String', 'map_to' => 'title'),
-            'title'                    => array('type' => 'String', 'map_to' => 'contentTitle'),
+            'type' => array('type' => 'String'),
+            'name' => array('type' => 'String', 'map_to' => 'title'),
+            'title' => array('type' => 'String', 'map_to' => 'contentTitle'),
             // the model can take advantage of proper NULLing, so this needn't be set
             //                  'scheduled_publishing' => array('type' => 'boolean'),
-            'start'                    => array('type' => 'DateTime', 'require' => 'scheduled_publishing'),
-            'end'                      => array('type' => 'DateTime', 'require' => 'scheduled_publishing'),
-            'metatitle'                => array('type' => 'String'),
-            'metakeys'                 => array('type' => 'String'),
-            'metadesc'                 => array('type' => 'String'),
-            'metarobots'               => array('type' => 'boolean'),
-            'content'                  => array('type' => 'String'),
-            'sourceMode'               => array('type' => 'boolean'),
-            'protection_frontend'      => array('type' => 'boolean', 'map_to' => 'frontendProtection'),
-            'protection_backend'       => array('type' => 'boolean', 'map_to' => 'backendProtection'),
-            'application'              => array('type' => 'String', 'map_to' => 'module'),
-            'area'                     => array('type' => 'String', 'map_to' => 'cmd'),
-            'target'                   => array('type' => 'String'),
-            'link_target'              => array('type' => 'String', 'map_to' => 'linkTarget'),
-            'slug'                     => array('type' => 'String'),
-            'caching'                  => array('type' => 'boolean'),
-            'skin'                     => array('type' => 'integer'),
-            'customContent'            => array('type' => 'String'),
-            'cssName'                  => array('type' => 'String'),
-            'cssNavName'               => array('type' => 'String'),
+            'start' => array('type' => 'DateTime', 'require' => 'scheduled_publishing'),
+            'end' => array('type' => 'DateTime', 'require' => 'scheduled_publishing'),
+            'metatitle' => array('type' => 'String'),
+            'metakeys' => array('type' => 'String'),
+            'metadesc' => array('type' => 'String'),
+            'metarobots' => array('type' => 'boolean'),
+            'content' => array('type' => 'String'),
+            'sourceMode' => array('type' => 'boolean'),
+            'protection_frontend' => array('type' => 'boolean', 'map_to' => 'frontendProtection'),
+            'protection_backend' => array('type' => 'boolean', 'map_to' => 'backendProtection'),
+            'application' => array('type' => 'String', 'map_to' => 'module'),
+            'area' => array('type' => 'String', 'map_to' => 'cmd'),
+            'target' => array('type' => 'String'),
+            'link_target' => array('type' => 'String', 'map_to' => 'linkTarget'),
+            'slug' => array('type' => 'String'),
+            'caching' => array('type' => 'boolean'),
+            'skin' => array('type' => 'integer'),
+            'customContent' => array('type' => 'String'),
+            'cssName' => array('type' => 'String'),
+            'cssNavName' => array('type' => 'String'),
         );
 
         $output = array();
 
-        foreach($fields as $field => $meta) {
+        foreach ($fields as $field => $meta) {
             $target = isset($meta['map_to']) ? $meta['map_to'] : $field;
-
-            if ($meta['type'] == 'boolean') {
-                // checkboxes and radiobuttons by default aren't submitted unless checked or
-                // selected. in cm.html they are prefixed with an input type=hidden value=off, so 
-                // we always get a value
-                // this is required for Page#updateFromArray to work.
-                if ($page[$field] == "on")  $value = true;
-                if ($page[$field] == "off") $value = false;
+            
+            if (isset($page[$field])) {
+                $page[$field] = contrexx_input2raw($page[$field]);
+            } else {
+                $page[$field] = null;
             }
 
-            if ($meta['type'] == 'DateTime') {
-                try {
-                    $value = new DateTime($page[$field], $this->tz);
-                }
-                catch (Exception $e) {
-                    $value = new DateTime('0000-00-00 00:00', $this->tz);
-                }
+            switch ($meta['type']) {
+                case 'boolean':
+                    // checkboxes and radiobuttons by default aren't submitted
+                    // unless checked or selected. in cm.html they are prefixed
+                    // with an input type=hidden value=off, so we always get a
+                    // value this is required for Page#updateFromArray to work.
+                    if ($page[$field] == 'on') {
+                        $value = true;
+                    } else if ($page[$field] == 'off') {
+                        $value = false;
+                    }
+                    break;
+                case 'DateTime':
+                    try {
+                        $value = new \DateTime($page[$field], $this->tz);
+                    } catch (Exception $e) {
+                        $value = new \DateTime('0000-00-00 00:00', $this->tz);
+                    }
+                    break;
+                case 'integer':
+                    $value = intval($page[$field]);
+                    break;
+                case 'String':
+                    $value = $page[$field];
+                    break;
             }
-
-            if ($meta['type'] == 'integer') {
-                $value = intval($page[$field]);
-            }
-
-            if ($meta['type'] == 'String') {
-                $value = contrexx_input2raw($page[$field]);
-            }
-
             if (isset($meta['require']) && $page[$meta['require']] == 'off') {
                 $value = null;
             }
@@ -312,14 +368,19 @@ class JSONPage {
 
         //TODO: should we allow filter/callback fns in field processing above?
         $output['content'] = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $output['content']);
-        
+
         return $output;
     }
 
-    function getAccessData($page = null) {
+    /**
+     * Returns the access data array
+     * @param type $page Unused
+     * @return array Access data
+     */
+    public function getAccessData($page = null) {
         // TODO: add functionality for $page!=null (see below), DRY up #getFallbackPageArray
 
-        $pg = Env::get('pageguard');
+        $pg = \Env::get('pageguard');
 
         $accessData = array();
 
@@ -329,106 +390,115 @@ class JSONPage {
         return $accessData;
     }
 
+    /**
+     * Returns the array representation of a fallback page
+     * @param \Cx\Model\ContentManager\Node $node Node to get the page of
+     * @param integer $lang Language id to get the fallback of
+     * @return array Array representing a fallback page
+     */
     private function getFallbackPageArray($node, $lang) {
-        foreach ($node->getPages() as $pageCandidate) {
-            $page = $pageCandidate;
-            if ($page->getLang() == FWLanguage::getLanguageIdByCode($this->fallbacks[$lang])) break;
+        foreach ($node->getPages() as $page) {
+            if ($page->getLang() == \FWLanguage::getLanguageIdByCode($this->fallbacks[$lang]))
+                break;
         }
 
         // Access Permissions
-        $pg = Env::get('pageguard');
+        $pg = \Env::get('pageguard');
         $accessData = array();
         $accessData['frontend'] = array('groups' => $pg->getGroups(true), 'assignedGroups' => $pg->getAssignedGroupIds($page, true));
         $accessData['backend'] = array('groups' => $pg->getGroups(false), 'assignedGroups' => $pg->getAssignedGroupIds($page, false));
 
         $pageArray = array(
-                           // Editor Meta
-                           'id'                    => 0,
-                           'lang'                  => $lang,
-                           'node'                  => $node->getId(),
-                           'type'                  => ($this->fallbacks[$lang] ? 'fallback' : 'content'),
-                           // Page Tab
-                           'name'                  => $page->getTitle(),
-                           'title'                 => $page->getContentTitle(),
-                           // Metadata
-                           'metatitle'             => $page->getMetatitle(),
-                           'metadesc'              => $page->getMetadesc(),
-                           'metakeys'              => $page->getMetakeys(),
-                           'metarobots'            => $page->getMetarobots(),
-                           // Access Permissions
-                           'frontend_protection'   => $page->isFrontendProtected(),
-                           'backend_protection'    => $page->isBackendProtected(),
-                           'accessData'            => $accessData,
-                           // Advanced Settings
-                           'slug'                  => $page->getSlug(),
-                           'sourceMode'            => false,
-                           'sourceMode'            => $page->getSourceMode(),
-                           );
+            // Editor Meta
+            'id' => 0,
+            'lang' => $lang,
+            'node' => $node->getId(),
+            'type' => ($this->fallbacks[$lang] ? 'fallback' : 'content'),
+            // Page Tab
+            'name' => $page->getTitle(),
+            'title' => $page->getContentTitle(),
+            // Metadata
+            'metatitle' => $page->getMetatitle(),
+            'metadesc' => $page->getMetadesc(),
+            'metakeys' => $page->getMetakeys(),
+            'metarobots' => $page->getMetarobots(),
+            // Access Permissions
+            'frontend_protection' => $page->isFrontendProtected(),
+            'backend_protection' => $page->isBackendProtected(),
+            'accessData' => $accessData,
+            // Advanced Settings
+            'slug' => $page->getSlug(),
+            'sourceMode' => false,
+            'sourceMode' => $page->getSourceMode(),
+        );
 
         return $pageArray;
     }
 
+    /**
+     * Creates the page array representation of a page
+     * @param \Cx\Model\ContentManager\Page $page Page to "arrayify"
+     * @return Array Array representing a page
+     */
     private function getPageArray($page) {
         // Scheduled Publishing
-        $n = new DateTime(null, $this->tz);
+        $n = new \DateTime(null, $this->tz);
         if ($page->getStart() && $page->getEnd()) {
             $scheduled_publishing = true;
             $start = $page->getStart()->format('d.m.Y H:i');
             $end = $page->getEnd()->format('d.m.Y H:i');
-        }
-        else {
+        } else {
             $scheduled_publishing = false;
             $start = $n->format('d.m.Y H:i');
             $end = $n->format('d.m.Y H:i');
         }
 
         // Access Permissions
-        $pg = Env::get('pageguard');
+        $pg = \Env::get('pageguard');
         $accessData = array();
         $accessData['frontend'] = array('groups' => $pg->getGroups(true), 'assignedGroups' => $pg->getAssignedGroupIds($page, true));
         $accessData['backend'] = array('groups' => $pg->getGroups(false), 'assignedGroups' => $pg->getAssignedGroupIds($page, false));
 
         $pageArray = array(
-                           // Editor Meta
-                           'id'                    => $page->getId(),
-                           'lang'                  => FWLanguage::getLanguageCodeById($page->getLang()),
-                           'node'                  => $page->getNode()->getId(),
-                           // Page Tab
-                           'name'                  => $page->getTitle(),
-                           'title'                 => $page->getContentTitle(),
-                           'type'                  => $page->getType(),
-                           'target'                => $page->getTarget(),
-                           'module'                => $page->getModule(),
-                           'area'                  => $page->getCmd(),
-                           'scheduled_publishing'  => $scheduled_publishing,
-                           'start'                 => $start,
-                           'end'                   => $end,
-                           'content'               => preg_replace('/{([A-Z0-9_-]+)}/', '[[\\1]]', $page->getContent()),
-                           'sourceMode'            => $page->getSourceMode(),
-                           // Metadata
-                           'metatitle'             => $page->getMetatitle(),
-                           'metadesc'              => $page->getMetadesc(),
-                           'metakeys'              => $page->getMetakeys(),
-                           'metarobots'            => $page->getMetarobots(),
-                           // Access Permissions
-                           'frontend_protection'   => $page->isFrontendProtected(),
-                           'backend_protection'    => $page->isBackendProtected(),
-                           'accessData'            => $accessData,
-                           // Advanced Settings
-                           'skin'                  => $page->getSkin(),
-                           'customContent'         => $page->getCustomContent(),
-                           'cssName'               => $page->getCssName(),
-                           'cssNavName'            => $page->getCssNavName(),
-                           'caching'               => $page->getCaching(),
-                           'linkTarget'            => $page->getLinkTarget(),
-                           'slug'                  => $page->getSlug(),
-                           'aliases'              => $this->getAliasArray($page),
-                           'editingStatus'         => $page->getEditingStatus(),
-            
-                           /*'display'       =>  $page->getDisplay(),
-                             'active'        =>  $page->getActive(),
-                             'updatedAt'     =>  $page->getUpdatedAt(),*/
-                           );
+            // Editor Meta
+            'id' => $page->getId(),
+            'lang' => \FWLanguage::getLanguageCodeById($page->getLang()),
+            'node' => $page->getNode()->getId(),
+            // Page Tab
+            'name' => $page->getTitle(),
+            'title' => $page->getContentTitle(),
+            'type' => $page->getType(),
+            'target' => $page->getTarget(),
+            'module' => $page->getModule(),
+            'area' => $page->getCmd(),
+            'scheduled_publishing' => $scheduled_publishing,
+            'start' => $start,
+            'end' => $end,
+            'content' => preg_replace('/{([A-Z0-9_-]+)}/', '[[\\1]]', $page->getContent()),
+            'sourceMode' => $page->getSourceMode(),
+            // Metadata
+            'metatitle' => $page->getMetatitle(),
+            'metadesc' => $page->getMetadesc(),
+            'metakeys' => $page->getMetakeys(),
+            'metarobots' => $page->getMetarobots(),
+            // Access Permissions
+            'frontend_protection' => $page->isFrontendProtected(),
+            'backend_protection' => $page->isBackendProtected(),
+            'accessData' => $accessData,
+            // Advanced Settings
+            'skin' => $page->getSkin(),
+            'customContent' => $page->getCustomContent(),
+            'cssName' => $page->getCssName(),
+            'cssNavName' => $page->getCssNavName(),
+            'caching' => $page->getCaching(),
+            'linkTarget' => $page->getLinkTarget(),
+            'slug' => $page->getSlug(),
+            'aliases' => $this->getAliasArray($page),
+            'editingStatus' => $page->getEditingStatus(),
+                /* 'display'       =>  $page->getDisplay(),
+                  'active'        =>  $page->getActive(),
+                  'updatedAt'     =>  $page->getUpdatedAt(), */
+        );
 
         return $pageArray;
     }
@@ -438,8 +508,7 @@ class JSONPage {
      * @param Cx\Model\ContentManager\Page $page Page to get the aliases of
      * @return Array<String>
      */
-    private function getAliasArray($page)
-    {
+    private function getAliasArray($page) {
         $pages = $page->getAliases();
         $aliases = array();
         foreach ($pages as $alias) {
@@ -448,4 +517,3 @@ class JSONPage {
         return $aliases;
     }
 }
-?>

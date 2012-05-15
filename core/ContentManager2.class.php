@@ -8,28 +8,28 @@
  * @package     contrexx
  * @subpackage  admin
  */
-
 use Doctrine\Common\Util\Debug as DoctrineDebug;
+use \Cx\Core\Json\Adapter\JsonPage;
 
-require ASCMS_CORE_PATH.'/BackendTable.class.php';
-require ASCMS_CORE_PATH.'/Module.class.php';
-require ASCMS_CORE_PATH.'/routing/LanguageExtractor.class.php';
-require_once 'JSONPage.class.php';
+require ASCMS_CORE_PATH . '/BackendTable.class.php';
+require ASCMS_CORE_PATH . '/Module.class.php';
+require ASCMS_CORE_PATH . '/routing/LanguageExtractor.class.php';
+require_once ASCMS_CORE_PATH . '/json/adapter/JsonPage.class.php';
 
-
-class ContentManagerException extends ModuleException {}
+class ContentManagerException extends ModuleException {
+    
+}
 
 class ContentManager extends Module {
+
     //doctrine entity manager
     protected $em = null;
     //the mysql connection
     protected $db = null;
     //the init object
     protected $init = null;
-
     protected $pageRepository = null;
     protected $nodeRepository = null;
-
     //renderCM access state
     protected $backendGroups = array();
     protected $frontendGroups = array();
@@ -42,29 +42,25 @@ class ContentManager extends Module {
      * @param $db the ADODB db object
      * @param $init the Init object
      */
-	public function __construct($act, $template, $db, $init) {
+    public function __construct($act, $template, $db, $init) {
         parent::__construct($act, $template);
         switch ($this->act) {
-            case 'saveToggleStatuses':
-                $this->saveToggleStatuses();
-                exit;
-                break;
             case 'new':
             default:
                 break;
         }
-        if($this->act == 'new')
+        if ($this->act == 'new')
             $this->act = ''; //default action;
-    
+
         $this->em = Env::em();
         $this->db = $db;
         $this->init = $init;
         $this->pageRepository = $this->em->getRepository('Cx\Model\ContentManager\Page');
         $this->nodeRepository = $this->em->getRepository('Cx\Model\ContentManager\Node');
         $this->defaultAct = 'actRenderCM';
-	}
+    }
 
-	protected function actRenderCM() {
+    protected function actRenderCM() {
         global $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
         JS::activate('cx');
@@ -80,7 +76,7 @@ class ContentManager extends Module {
         $this->template->touchBlock('content_manager_meat');
 
         $_CORELANG['TXT_CORE_CM_SLUG_INFO'] = sprintf($_CORELANG['TXT_CORE_CM_SLUG_INFO'], 'example.org');
-                
+
         if (\Permission::checkAccess(78, 'static', true) &&
                 \Permission::checkAccess(115, 'static', true)) {
             JS::registerCode("var publishAllowed = true;");
@@ -92,9 +88,9 @@ class ContentManager extends Module {
             $alias_denial = "block";
         }
         $this->template->setVariable(array(
-            'ALIAS_PERMISSION'  =>  $alias_permission,
-            'ALIAS_DENIAL'      =>  $alias_denial,
-            'CONTREXX_BASE_URL' =>  ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/',
+            'ALIAS_PERMISSION' => $alias_permission,
+            'ALIAS_DENIAL' => $alias_denial,
+            'CONTREXX_BASE_URL' => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . '/',
         ));
 
         $this->setLanguageVars(array(
@@ -103,11 +99,11 @@ class ContentManager extends Module {
             //type tab
             'TXT_CORE_CM_PAGE', 'TXT_CORE_CM_META', 'TXT_CORE_CM_ACCESS', 'TXT_CORE_CM_SETTINGS', 'TXT_CORE_CM_HISTORY', 'TXT_CORE_CM_PAGE_NAME', 'TXT_CORE_CM_PAGE_NAME_INFO', 'TXT_CORE_CM_PAGE_TITLE', 'TXT_CORE_CM_PAGE_TITLE_INFO', 'TXT_CORE_CM_TYPE', 'TXT_CORE_CM_TYPE_CONTENT', 'TXT_CORE_CM_TYPE_REDIRECT', 'TXT_CORE_CM_TYPE_APPLICATION', 'TXT_CORE_CM_TYPE_FALLBACK', 'TXT_CORE_CM_TYPE_CONTENT_INFO', 'TXT_CORE_CM_TYPE_REDIRECT_TARGET', 'TXT_CORE_CM_BROWSE', 'TXT_CORE_CM_TYPE_REDIRECT_INFO', 'TXT_CORE_CM_TYPE_APPLICATION', 'TXT_CORE_CM_TYPE_APPLICATION', 'TXT_CORE_CM_TYPE_APPLICATION_AREA', 'TXT_CORE_CM_TYPE_APPLICATION_INFO', 'TXT_CORE_CM_TYPE_FALLBACK_INFO', 'TXT_CORE_CM_SCHEDULED_PUBLISHING', 'TXT_CORE_CM_SCHEDULED_PUBLISHING_INFO',
             //meta tab
-'TXT_CORE_CM_SE_INDEX', 'TXT_CORE_CM_METATITLE', 'TXT_CORE_CM_METATITLE_INFO', 'TXT_CORE_CM_METADESC', 'TXT_CORE_CM_METADESC_INFO', 'TXT_CORE_CM_METAKEYS', 'TXT_CORE_CM_METAKEYS_INFO',
+            'TXT_CORE_CM_SE_INDEX', 'TXT_CORE_CM_METATITLE', 'TXT_CORE_CM_METATITLE_INFO', 'TXT_CORE_CM_METADESC', 'TXT_CORE_CM_METADESC_INFO', 'TXT_CORE_CM_METAKEYS', 'TXT_CORE_CM_METAKEYS_INFO',
             //access tab
-'TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND', 'TXT_CORE_CM_ACCESS_PROTECTION_BACKEND',
+            'TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND', 'TXT_CORE_CM_ACCESS_PROTECTION_BACKEND',
             //advanced tab
-'TXT_CORE_CM_THEMES', 'TXT_CORE_CM_THEMES_INFO', 'TXT_CORE_CM_CUSTOM_CONTENT', 'TXT_CORE_CM_CUSTOM_CONTENT_INFO', 'TXT_CORE_CM_CSS_CLASS', 'TXT_CORE_CM_CSS_CLASS_INFO', 'TXT_CORE_CM_CACHE', 'TXT_CORE_CM_NAVIGATION', 'TXT_CORE_CM_LINK_TARGET', 'TXT_CORE_CM_LINK_TARGET_INO', 'TXT_CORE_CM_SLUG', 'TXT_CORE_CM_SLUG_INFO', 'TXT_CORE_CM_ALIAS', 'TXT_CORE_CM_ALIAS_INFO', 'TXT_CORE_CM_CSS_NAV_CLASS', 'TXT_CORE_CM_CSS_NAV_CLASS_INFO', 'TXT_CORE_CM_SOURCE_MODE',
+            'TXT_CORE_CM_THEMES', 'TXT_CORE_CM_THEMES_INFO', 'TXT_CORE_CM_CUSTOM_CONTENT', 'TXT_CORE_CM_CUSTOM_CONTENT_INFO', 'TXT_CORE_CM_CSS_CLASS', 'TXT_CORE_CM_CSS_CLASS_INFO', 'TXT_CORE_CM_CACHE', 'TXT_CORE_CM_NAVIGATION', 'TXT_CORE_CM_LINK_TARGET', 'TXT_CORE_CM_LINK_TARGET_INO', 'TXT_CORE_CM_SLUG', 'TXT_CORE_CM_SLUG_INFO', 'TXT_CORE_CM_ALIAS', 'TXT_CORE_CM_ALIAS_INFO', 'TXT_CORE_CM_CSS_NAV_CLASS', 'TXT_CORE_CM_CSS_NAV_CLASS_INFO', 'TXT_CORE_CM_SOURCE_MODE',
             //settings tab
             'TXT_CORE_APPLICATION_AREA', 'TXT_CORE_APPLICATION', 'TXT_CORE_AREA', 'TXT_CORE_OPTICS_STYLE', 'TXT_CORE_SKIN', 'TXT_CORE_SPECIAL_CONTENT_PAGE', 'TXT_CORE_CUSTOMCONTENT', 'TXT_CORE_REDIRECTION', 'TXT_CORE_TARGET', 'TXT_CORE_PERFORMANCE_OPTIMIZATION', 'TXT_CORE_CACHING', 'TXT_CORE_LINK', 'TXT_CORE_SLUG', 'TXT_CORE_CSSNAME',
             //bottom buttons
@@ -134,7 +130,7 @@ class ContentManager extends Module {
             ));
         }
 
-        $modules = $this->db->Execute("SELECT * FROM ".DBPREFIX."modules");
+        $modules = $this->db->Execute("SELECT * FROM " . DBPREFIX . "modules");
         while (!$modules->EOF) {
             $this->template->setVariable('MODULE_KEY', $modules->fields['name']);
 //            $this->template->setVariable('MODULE_TITLE', $_CORELANG[$modules->fields['description_variable']]);
@@ -142,15 +138,15 @@ class ContentManager extends Module {
             $this->template->parse('module_option');
             $modules->MoveNext();
         }
-        
+
         if (\Permission::checkAccess(78, 'static', true)) {
             $this->template->hideBlock('release_button');
         } else {
             $this->template->hideBlock('publish_button');
             $this->template->hideBlock('refuse_button');
         }
-        
-        $cm_hidden = ''; 
+
+        $cm_hidden = '';
         $hide_list = '';
         if (isset($_GET['act']) && $_GET['act'] == 'new') {
             $hide_list = 'shrunk';
@@ -159,9 +155,11 @@ class ContentManager extends Module {
             $cm_hidden = ' style="display: none !important;"';
         }
 
-        ContrexxJavascript::getInstance()->setVariable('confirmDeleteQuestion', $_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE'] );
-        ContrexxJavaScript::getInstance()->setVariable('cleanAccessData', JSONPage::getAccessData());
-        
+        $cxjs = ContrexxJavascript::getInstance();
+        $cxjs->setVariable('confirmDeleteQuestion', $_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE']);
+        $cxjs->setVariable('cleanAccessData', JsonPage::getAccessData());
+        $cxjs->setVariable('contentTemplates', $this->getCustomContentTemplates());
+
         // TODO: move including of add'l JS dependencies to cx obj from /cadmin/index.html
         $this->template->setVariable('CXJS_INIT_JS', ContrexxJavascript::getInstance()->initJs());
         $this->template->setVariable('SKIN_OPTIONS', $this->getSkinOptions());
@@ -171,7 +169,7 @@ class ContentManager extends Module {
         $this->template->setVariable('LANGUAGE_LABELS', json_encode($this->getLangLabels()));
         $this->template->setVariable('CM_HIDDEN', $cm_hidden);
         $this->template->setVariable('CM_HIDE_LIST', $hide_list);
-	}
+    }
 
     /**
      * Sub of actRenderCM.
@@ -181,36 +179,39 @@ class ContentManager extends Module {
         $backendGroups = array();
         $frontendGroups = array();
 
-        $objResult = $objDatabase->Execute("SELECT group_id, group_name FROM ".DBPREFIX."access_user_groups");
+        $objResult = $objDatabase->Execute("SELECT group_id, group_name FROM " . DBPREFIX . "access_user_groups");
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $groupId = $objResult->fields['group_id'];
                 $groupName = $objResult->fields['group_name'];
                 $type = $objResult->fields['type'];
-                if($type == 'frontend')
-                    $frontendGroups[$groupId]=$groupName;
+                if ($type == 'frontend')
+                    $frontendGroups[$groupId] = $groupName;
                 else
-                    $backendGroups[$groupId]=$groupName;
+                    $backendGroups[$groupId] = $groupName;
 
                 $objResult->MoveNext();
             }
         }
         return $arrGroups;
+    }
+    
+    protected function getThemes() {
+        $query = "SELECT id,themesname FROM " . DBPREFIX . "skins ORDER BY id";
+        $rs = $this->db->Execute($query);
 
-        
+        $themes = array();
+        while (!$rs->EOF) {
+            $themes[$rs->fields['id']] = $rs->fields['themesname'];
+            $rs->MoveNext();
+        }
+        return $themes;
     }
 
     protected function getSkinOptions() {
-        $query = "SELECT id,themesname FROM ".DBPREFIX."skins ORDER BY id";
-        $rs = $this->db->Execute($query);
-
         $options = '';
-        while(!$rs->EOF) {
-            $id = $rs->fields['id'];
-            $name = $rs->fields['themesname'];
-            $options .= "<option value=\"$id\">$name</option>\n";
-            
-            $rs->MoveNext();
+        foreach ($this->getThemes() as $id=>$name) {
+            $options .= '<option value="' . $id . '">' . $name . '</option>' . "\n";
         }
         return $options;
     }
@@ -219,7 +220,7 @@ class ContentManager extends Module {
         $output = '';
         foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
             $selected = $lang['id'] == FRONTEND_LANG_ID ? ' selected="selected"' : '';
-            $output .= '<option value="'.FWLanguage::getLanguageCodeById($lang['id']).'"'.$selected.'>'.$lang['name'].'</option>';
+            $output .= '<option value="' . FWLanguage::getLanguageCodeById($lang['id']) . '"' . $selected . '>' . $lang['name'] . '</option>';
         }
         return $output;
     }
@@ -257,20 +258,20 @@ class ContentManager extends Module {
 
     protected function setLanguageVars($ids) {
         global $_CORELANG;
-        foreach($ids as $id) {
+        foreach ($ids as $id) {
             $this->template->setVariable($id, $_CORELANG[$id]);
         }
     }
 
-    protected function actAjaxGetHistoryTable() {       
-        if(!isset($_GET['pageId']))
+    protected function actAjaxGetHistoryTable() {
+        if (!isset($_GET['pageId']))
             throw new ContentManagerException('please provide a pageId');
 
         //(I) get the right page
         $id = $_GET['pageId'];
         $page = $this->pageRepository->findOneById($id);
 
-        if(!$page) {
+        if (!$page) {
             throw new ContentManagerException("could not find page with id $id");
         }
 
@@ -278,23 +279,23 @@ class ContentManager extends Module {
         $table = new BackendTable(array('width' => '100%'));
         $table->setAutoGrow(true);
 
-        $table->setHeaderContents(0,0,'Date');
-        $table->setHeaderContents(0,1,'Title');
-        $table->setHeaderContents(0,2,'Author');
+        $table->setHeaderContents(0, 0, 'Date');
+        $table->setHeaderContents(0, 1, 'Title');
+        $table->setHeaderContents(0, 2, 'Author');
         //make sure those are th's too
-        $table->setHeaderContents(0,3,'');
-        $table->setHeaderContents(0,4,'');
+        $table->setHeaderContents(0, 3, '');
+        $table->setHeaderContents(0, 4, '');
 
         //(III) collect page informations - path, virtual language directory
         $path = $this->getPageRepository()->getPath($page);
         $pageHasDraft = $page->getEditingStatus() != '' ? true : false;
-        
+
         $le = new \Cx\Core\Routing\LanguageExtractor($this->db, DBPREFIX);
         $langDir = $le->getShortNameOfLanguage($page->getLang());
-        
+
         $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
         $logs = $logRepo->getLogEntries($page);
-        
+
         //currently user of this page
         $user = json_decode($logs[0]->getUsername());
         $username = $user->{'name'};
@@ -312,28 +313,30 @@ class ContentManager extends Module {
             try {
                 $logRepo->revert($page, $version);
                 $page->setUpdatedAt($logs[$i]->getLoggedAt());
+
+                $this->addHistoryEntries($page, $username, $table, $row, $version, $langDir . '/' . $path, $pageHasDraft);
+            } catch (\Gedmo\Exception\UnexpectedValueException $e) {
                 
-                $this->addHistoryEntries($page, $username, $table, $row, $version, $langDir.'/'.$path, $pageHasDraft);
-            } catch (\Gedmo\Exception\UnexpectedValueException $e) {}
+            }
         }
 
         //(VI) render
         die($table->toHtml());
     }
 
-    protected function addHistoryEntries($page, $username, $table, $row, $version='', $path='', $pageHasDraft=true) {
+    protected function addHistoryEntries($page, $username, $table, $row, $version = '', $path = '', $pageHasDraft = true) {
         global $_ARRAYLANG;
 
         $dateString = $page->getUpdatedAt()->format(ASCMS_DATE_FORMAT);
 
         if ($row == 2 && $pageHasDraft) {
-            $dateString .= ' ('.$_ARRAYLANG['TXT_CORE_DRAFT'].')';
+            $dateString .= ' (' . $_ARRAYLANG['TXT_CORE_DRAFT'] . ')';
         } else if ($row > 1) { //not the current page
-            $table->setCellContents($row, 3, '<a href="javascript:loadHistoryVersion('.$page->getId().','.$version.')">'.$_ARRAYLANG['TXT_CORE_LOAD'].'</a>');
-            $historyLink = ASCMS_PATH_OFFSET.'/'.$path.'?history='.$version;
-            $table->setCellContents($row, 4, '<a href="'.$historyLink.'" target="_blank">'.$_ARRAYLANG['TXT_CORE_PREVIEW'].'</a>');
+            $table->setCellContents($row, 3, '<a href="javascript:loadHistoryVersion(' . $page->getId() . ',' . $version . ')">' . $_ARRAYLANG['TXT_CORE_LOAD'] . '</a>');
+            $historyLink = ASCMS_PATH_OFFSET . '/' . $path . '?history=' . $version;
+            $table->setCellContents($row, 4, '<a href="' . $historyLink . '" target="_blank">' . $_ARRAYLANG['TXT_CORE_PREVIEW'] . '</a>');
         } else { //current page state
-            $dateString .= ' ('. $_ARRAYLANG['TXT_CORE_CURRENT'] . ')';
+            $dateString .= ' (' . $_ARRAYLANG['TXT_CORE_CURRENT'] . ')';
         }
 
         $table->setCellContents($row, 0, $dateString);
@@ -341,8 +344,14 @@ class ContentManager extends Module {
         $table->setCellContents($row, 2, $username);
     }
 
-    protected function actAjaxGetCustomContentTemplates() {
-        if(!isset($_GET['themeId']))
+    protected function getCustomContentTemplates() {
+        $templates = array();
+        // foreach theme
+        foreach ($this->getThemes() as $id=>$name) {
+            $templates[$id] = $this->init->getCustomContentTemplatesForTheme($id);
+        }
+        return $templates;
+        if (!isset($_GET['themeId']))
             throw new ContentManagerException('please provide a value for "themeId".');
 
         $module = isset($_GET['module']) ? $_GET['module'] : '';
@@ -352,150 +361,40 @@ class ContentManager extends Module {
         $templates = $this->init->getCustomContentTemplatesForTheme($themeId);
         $matchingTemplates = array();
 
-        foreach($templates as $name) {
-            $isHomeTemplate = substr($name,0,4) == 'home';
-            if($isHomeTemplate && $isHomeRequest)
+        foreach ($templates as $name) {
+            $isHomeTemplate = substr($name, 0, 4) == 'home';
+            if ($isHomeTemplate && $isHomeRequest)
                 $matchingTemplates[] = $name;
-            else if(!$isHomeTemplate && !$isHomeRequest)
-                $matchingTemplates[] = $name;              
+            else if (!$isHomeTemplate && !$isHomeRequest)
+                $matchingTemplates[] = $name;
         }
-        
-        die(json_encode($matchingTemplates));
+
+        return $matchingTemplates;
     }
 
-    protected function actAjaxRevert() {       
-        if(!isset($_POST['pageId']))
-            throw new ContentManagerException('please provide a pageId');
-        if(!isset($_POST['version']))
-            throw new ContentManagerException('please provide a version you want to revert to');
-
-        $id = $_POST['pageId'];
-        $version = $_POST['version'];
-        $page = $this->getPageRepository()->findOneById($id);
-
-        if(!$page)
-            new ContentManagerException("could not find page with id $id");
-       
-        $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
-        
-        $logRepo->revert($page, $version);
-
-        $this->em->persist($page);
-        $this->em->flush();
-    }
-
-    protected function actions()
-    {
-        require_once ASCMS_CORE_PATH."/ActionsRenderer.class.php";
+    protected function actions() {
+        require_once ASCMS_CORE_PATH . "/ActionsRenderer.class.php";
 
         $nodeId = intval($_GET['node']);
         $langId = FWLanguage::getLanguageIdByCode($_GET['lang']);
         $node = $this->getNodeRepository()->find($nodeId);
         $page = $node->getPage($langId);
         if ($page != null) {
-            echo ActionsRenderer::render($page);
+            return ActionsRenderer::render($page);
         } else {
-            echo ActionsRenderer::renderNew($nodeId, $langId);
+            return ActionsRenderer::renderNew($nodeId, $langId);
         }
-
-        exit(0);
-    }
-
-    protected function pageStatus()
-    {
-        header('Content-Type: application/json');
-
-        $pageId = isset($_GET['page']) ? intval($_GET['page']) : null;
-
-        if ($pageId != null) {
-            $page = $this->pageRepository->find($pageId);
-        }
-
-        $action = $_GET['action'];
-        switch ($action) {
-            case 'publish':
-                if (isset($page)) {
-                    $page->setActive(true);
-                } else {
-                    $nodeId = intval($_GET['node']);
-                    $langId = intval($_GET['lang']);
-                    $arrFbLang = FWLanguage::getFallbackLanguageArray();
-                    $fbLang = isset($arrFbLang[$langId]) ? $arrFbLang[$langId] : null;
-                    if ($fbLang != null && $fbLang != $langId) {
-                        $node = $this->getNodeRepository()->find($nodeId);
-                        $page = new \Cx\Model\ContentManager\Page();
-                        $page->setLang($langId);
-                        $page->setNode($node);
-                        $page->setUsername(FWUser::getFWUserObject()->objUser->getUsername());
-                        $fbPage = $node->getPage($fbLang);
-                        if ($fbPage) {
-                            $page->setType('fallback');
-                            $page->setTitle($fbPage->getTitle());
-                            $page->setContentTitle($fbPage->getContentTitle());
-                            $page->setSlug($fbPage->getSlug());
-                            $page->setMetatitle($page->getMetatitle());
-                            $page->setMetadesc($fbPage->getMetadesc());
-                            $page->setMetakeys($fbPage->getMetakeys());
-                            $page->setMetarobots($page->getMetarobots());
-                            $this->em->persist($page);
-                        }
-                    } else {
-                        echo json_encode(array(
-                            'action' => 'new',
-                            'node' =>  $nodeId,
-                        ));
-                        exit(0);
-                    }
-                }
-                break;
-            case 'unpublish':
-                $page->setActive(false);
-                break;
-            case 'visible':
-                $page->setDisplay(true);
-                break;
-            case 'hidden':
-                $page->setDisplay(false);
-                break;
-            default:
-                $action = 'error';
-        }
-        $this->em->flush();
-        $result = array(
-          'nodeId' => $page->getNode()->getId(),
-          'pageId' => $page->getId(),
-          'lang'   => FWLanguage::getLanguageCodeById($page->getLang()),
-          'action' => $action,
-        );
-        echo json_encode($result);
-        exit(0);
     }
 
     protected function publishDraft() {
-
+        
     }
 
-    function getPageRepository()
-    {
+    function getPageRepository() {
         return $this->pageRepository;
     }
 
-    function getNodeRepository()
-    {
+    function getNodeRepository() {
         return $this->nodeRepository;
     }
-
-    public function saveToggleStatuses() {
-        print_r($_POST);
-        $arrToggleStatuses = array();
-        foreach ($_POST as $tabKey => $tabValue) {
-            foreach ($tabValue as $toggleKey => $toggleValue) {
-                $arrToggleStatuses[contrexx_input2raw($tabKey)][contrexx_input2raw($toggleKey)] = contrexx_input2raw($toggleValue);
-            }
-        }
-        print_r($arrToggleStatuses);
-        $_SESSION['contentManager']['toggleStatuses'] = $_POST;
-        return print_r($_SESSION);
-    }
 }
-?>
