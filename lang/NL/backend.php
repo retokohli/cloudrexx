@@ -99,7 +99,6 @@ $_ARRAYLANG['TXT_PASSWORD_MD5_ENCRYPTED'] = "Het wachtwoord is sterk beveiligd d
 $_ARRAYLANG['TXT_VALUE'] = "Waarde";
 $_ARRAYLANG['TXT_VALUE_CONTROL_LANGUAGE'] = "Waarde variabele";
 $_ARRAYLANG['TXT_CONTROLLED'] = "controleren";
-$_ARRAYLANG['TXT_ADMINISTRATION_INDEX'] = "Beheer";
 $_ARRAYLANG['TXT_SIZE'] = "Bestandsformaat";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Database query error!";
 $_ARRAYLANG['TXT_EDIT_PAGE'] = "Bewerk site";

@@ -203,7 +203,7 @@ class adminMenu
                         }
                     }
 
-                    $cssClass = $this->activeCmd == $linkCmd ? ' class="active"' : '';
+                    $cssClass = !empty($this->activeCmd) && ($this->activeCmd == $linkCmd) ? ' class="active"' : '';
                     $navigation.= "<li$cssClass><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
                 }
             }

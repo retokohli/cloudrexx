@@ -99,7 +99,6 @@ $_ARRAYLANG['TXT_PASSWORD_MD5_ENCRYPTED'] = "Das Passwort wird mit dem MD5 Logar
 $_ARRAYLANG['TXT_VALUE'] = "Wert";
 $_ARRAYLANG['TXT_VALUE_CONTROL_LANGUAGE'] = "Inhaltswert";
 $_ARRAYLANG['TXT_CONTROLLED'] = "kontrolliert";
-$_ARRAYLANG['TXT_ADMINISTRATION_INDEX'] = "Amministrazione Index";
 $_ARRAYLANG['TXT_SIZE'] = "Dateigrösse";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Fehler beim Ausführen der Datenbankabfrage!";
 $_ARRAYLANG['TXT_EDIT_PAGE'] = "Seite bearbeiten";

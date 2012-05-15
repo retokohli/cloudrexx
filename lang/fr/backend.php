@@ -99,7 +99,6 @@ $_ARRAYLANG['TXT_PASSWORD_MD5_ENCRYPTED'] = "Le mot de passe est chiffré avec l
 $_ARRAYLANG['TXT_VALUE'] = "Valeur";
 $_ARRAYLANG['TXT_VALUE_CONTROL_LANGUAGE'] = "Valeur";
 $_ARRAYLANG['TXT_CONTROLLED'] = "vérifié";
-$_ARRAYLANG['TXT_ADMINISTRATION_INDEX'] = "Index Administration";
 $_ARRAYLANG['TXT_SIZE'] = "Taille du fichier";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Erreur lors de la requête à la base de données!";
 $_ARRAYLANG['TXT_EDIT_PAGE'] = "Editer page";

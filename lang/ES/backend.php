@@ -99,7 +99,6 @@ $_ARRAYLANG['TXT_PASSWORD_MD5_ENCRYPTED'] = "La clave esta codificada mediante e
 $_ARRAYLANG['TXT_VALUE'] = "Valor";
 $_ARRAYLANG['TXT_VALUE_CONTROL_LANGUAGE'] = "Valor de la variable";
 $_ARRAYLANG['TXT_CONTROLLED'] = "Validado";
-$_ARRAYLANG['TXT_ADMINISTRATION_INDEX'] = "Administraci&oacute;n";
 $_ARRAYLANG['TXT_SIZE'] = "Tama&ntilde;o del fichero";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "\¡Error en la consulta a la base de datos!";
 $_ARRAYLANG['TXT_EDIT_PAGE'] = "Editar p&aacute;gina";

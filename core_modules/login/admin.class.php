@@ -107,7 +107,7 @@ class LoginManager {
      */
     private function showPasswordReset()
     {
-        global $_ARRAYLANG, $objFWUser;
+        global $_ARRAYLANG, $objFWUser, $sessionObj;
 
         $this->objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', '/core_modules/login/template/login_reset_password.html');
         $this->objTemplate->setVariable(array(
@@ -131,6 +131,17 @@ class LoginManager {
                 }
                 if ($this->objTemplate->blockExists('back_to_login')) {
                     $this->objTemplate->touchBlock('back_to_login');
+                }
+
+                $userFilter = array(
+                    'username'         => $username,
+                    'active'           => 1,
+                );
+
+                $objUser = FWUser::getFWUserObject()->objUser->getUsers($userFilter, null, null, null, 1);
+                if ($objUser) {
+                    // deletes all sessions which are using this user (except the session resetting the password)
+                    $sessionObj->cmsSessionDestroyByUserId($objUser->getId());
                 }
             } else {
                 $statusMessage = $objFWUser->getErrorMsg();
@@ -210,7 +221,7 @@ class LoginManager {
         if (isset($_SESSION['auth']['loginLastAuthFailed'])) {
             $this->objTemplate->setVariable(array(
                 'TXT_LOGIN_SECURITY_CODE'   => $_ARRAYLANG['TXT_LOGIN_SECURITY_CODE'],
-                'CAPTCHA_CODE'              => FWCaptcha::getInstance()->getCode(4),
+                'CAPTCHA_CODE'              => FWCaptcha::getInstance()->getCode(3),
             ));
             $this->objTemplate->parse('captcha');
         } else {

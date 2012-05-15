@@ -99,7 +99,6 @@ $_ARRAYLANG['TXT_PASSWORD_MD5_ENCRYPTED'] = "Пароль будет зашиф�
 $_ARRAYLANG['TXT_VALUE'] = "Ценность";
 $_ARRAYLANG['TXT_VALUE_CONTROL_LANGUAGE'] = "Ценность содержания";
 $_ARRAYLANG['TXT_CONTROLLED'] = "проконтролирован";
-$_ARRAYLANG['TXT_ADMINISTRATION_INDEX'] = "Административный индекс";
 $_ARRAYLANG['TXT_SIZE'] = "Размер файла";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Ошибка при осуществлении запроса в банк данных!";
 $_ARRAYLANG['TXT_EDIT_PAGE'] = "Обработать электронную страницу";

@@ -99,7 +99,6 @@ $_ARRAYLANG['TXT_PASSWORD_MD5_ENCRYPTED'] = "Kodeordet bliver krypteret med MD5 
 $_ARRAYLANG['TXT_VALUE'] = "Værdi";
 $_ARRAYLANG['TXT_VALUE_CONTROL_LANGUAGE'] = "Variabel værdi";
 $_ARRAYLANG['TXT_CONTROLLED'] = "kontrolleret";
-$_ARRAYLANG['TXT_ADMINISTRATION_INDEX'] = "Administration Index";
 $_ARRAYLANG['TXT_SIZE'] = "Filstørrelse";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Der er opstået en fejl under hentningen af databasen!";
 $_ARRAYLANG['TXT_EDIT_PAGE'] = "Rediger side";

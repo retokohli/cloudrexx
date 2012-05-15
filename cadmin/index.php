@@ -781,21 +781,21 @@ $objTemplate->setVariable(array(
 // TODO: This would better be handled by the Message class
 if (!empty($objTemplate->_variables['CONTENT_STATUS_MESSAGE'])) {
     $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] =
-        '<div id="alertbox" style="overflow:auto">'.
-        $objTemplate->_variables['CONTENT_STATUS_MESSAGE'].'</div><br />';
+        '<div id="alertbox">'.
+        $objTemplate->_variables['CONTENT_STATUS_MESSAGE'].'</div>';
 }
 if (!empty($objTemplate->_variables['CONTENT_OK_MESSAGE'])) {
     if (!isset($objTemplate->_variables['CONTENT_STATUS_MESSAGE'])) {
         $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] = '';
     }
     $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] .=
-        '<div id="okbox" style="overflow:auto">'.
-        $objTemplate->_variables['CONTENT_OK_MESSAGE'].'</div><br />';
+        '<div id="okbox">'.
+        $objTemplate->_variables['CONTENT_OK_MESSAGE'].'</div>';
 }
 if (!empty($objTemplate->_variables['CONTENT_WARNING_MESSAGE'])) {
     $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] .=
-        '<div class="warningbox" style="overflow: auto">'.
-        $objTemplate->_variables['CONTENT_WARNING_MESSAGE'].'</div><br />';
+        '<div class="warningbox">'.
+        $objTemplate->_variables['CONTENT_WARNING_MESSAGE'].'</div>';
 }
 
 if (empty($cmd)) {
