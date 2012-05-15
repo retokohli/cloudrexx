@@ -91,7 +91,7 @@ class JsonNode implements JsonAdapter {
      * @return String HTML encoded error messages
      */
     public function getMessagesAsString() {
-        return implode("<br />", $this->messages);
+        return implode('<br />', $this->messages);
     }
 
     /**
@@ -173,6 +173,7 @@ class JsonNode implements JsonAdapter {
         ksort($sorted_tree);
 
         $output = array();
+        $actions = array();
         foreach ($sorted_tree as $node) {
             $data = array();
             $metadata = array();
@@ -181,7 +182,7 @@ class JsonNode implements JsonAdapter {
 
             foreach ($node->getPages() as $page) {
                 // don't display aliases in cm's tree
-                if ($page->getType() == "alias")
+                if ($page->getType() == 'alias')
                     continue 2;
 
                 $data[\FWLanguage::getLanguageCodeById($page->getLang())] = array(
@@ -196,8 +197,11 @@ class JsonNode implements JsonAdapter {
                                 'user' => $this->logRepo->getUsernameByLog($logs[$page->getId()]),
                             )
                         ),
-                    )
+                    ),
                 );
+                
+                $actions[\FWLanguage::getLanguageCodeById($page->getLang())][$node->getId()]
+                        = $this->getActions($node->getId(), $page->getLang());
 
                 $editingStatus = $page->getEditingStatus();
                 if ($page->isActive()) {
@@ -219,49 +223,66 @@ class JsonNode implements JsonAdapter {
                 }
 
                 $metadata[$page->getId()] = array(
-                    "visibility" => $page->getStatus(),
-                    "publishing" => $publishingStatus,
+                    'visibility' => $page->getStatus(),
+                    'publishing' => $publishingStatus,
                 );
                 $last_resort = \FWLanguage::getLanguageCodeById($page->getLang());
             }
             foreach ($fallback_langs as $lang => $fallback) {
                 if (!array_key_exists($lang, $data) && array_key_exists($fallback, $data)) {
                     $data[$lang] = array(
-                        "language" => $lang,
-                        "title" => $data[$fallback]["title"],
-                        "attr" => array(
-                            "id" => "0"
-                        )
+                        'language' => $lang,
+                        'title' => $data[$fallback]['title'],
+                        'attr' => array(
+                            'id' => '0'
+                        ),
                     );
                     $metadata[0] = array(
-                        "visibility" => "active",
-                        "publishing" => "unpublished"
+                        'visibility' => 'active',
+                        'publishing' => 'unpublished',
                     );
                 } elseif (!array_key_exists($lang, $data)) {
                     $data[$lang] = array(
-                        "language" => $lang,
-                        "title" => array_key_exists($last_resort, $data) ? $data[$last_resort]["title"] : "No Title",
-                        "attr" => array(
-                            "id" => "0"
-                        )
+                        'language' => $lang,
+                        'title' => array_key_exists($last_resort, $data) ? $data[$last_resort]['title'] : 'No Title',
+                        'attr' => array(
+                            'id' => '0'
+                        ),
                     );
                     $metadata[0] = array(
-                        "visibility" => "active",
-                        "publishing" => "unpublished"
+                        'visibility' => 'active',
+                        'publishing' => 'unpublished',
                     );
                 }
             }
+            
 
             $output[] = array(
-                "attr" => array(
-                    "id" => "node_" . $node->getId()
+                'attr' => array(
+                    'id' => 'node_' . $node->getId()
                 ),
-                "data" => array_values($data),
-                "children" => $children,
-                "metadata" => $metadata
+                'data' => array_values($data),
+                'children' => $children,
+                'metadata' => $metadata,
             );
         }
+        
+        // moving everything to 'tree' so we can add actions
+        $output['tree'] = $output;
+        $output['actions'] = $actions;
 
         return($output);
+    }
+    
+    protected function getActions($nodeId, $langId) {
+        require_once ASCMS_CORE_PATH . "/ActionsRenderer.class.php";
+
+        $node = $this->nodeRepo->find($nodeId);
+        $page = $node->getPage($langId);
+        if ($page != null) {
+            return \ActionsRenderer::render($page);
+        } else {
+            return \ActionsRenderer::renderNew($nodeId, $langId);
+        }
     }
 }

@@ -44,13 +44,10 @@ class ContentManager extends Module {
      */
     public function __construct($act, $template, $db, $init) {
         parent::__construct($act, $template);
-        switch ($this->act) {
-            case 'new':
-            default:
-                break;
-        }
-        if ($this->act == 'new')
+        
+        if ($this->act == 'new') {
             $this->act = ''; //default action;
+        }
 
         $this->em = Env::em();
         $this->db = $db;
@@ -370,20 +367,6 @@ class ContentManager extends Module {
         }
 
         return $matchingTemplates;
-    }
-
-    protected function actions() {
-        require_once ASCMS_CORE_PATH . "/ActionsRenderer.class.php";
-
-        $nodeId = intval($_GET['node']);
-        $langId = FWLanguage::getLanguageIdByCode($_GET['lang']);
-        $node = $this->getNodeRepository()->find($nodeId);
-        $page = $node->getPage($langId);
-        if ($page != null) {
-            return ActionsRenderer::render($page);
-        } else {
-            return ActionsRenderer::renderNew($nodeId, $langId);
-        }
     }
 
     protected function publishDraft() {
