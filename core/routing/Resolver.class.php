@@ -43,6 +43,18 @@ class Resolver {
      * @var array ($languageId => $fallbackLanguageId)
      */
     protected $fallbackLanguages = null;
+    
+    /**
+     * Contains the resolved module name (if any, empty string if none)
+     * @var String
+     */
+    protected $section = '';
+    
+    /**
+     * Contains the resolved module command (if any, empty string if none)
+     * @var String
+     */
+    protected $command = '';
 
     
     /**
@@ -241,6 +253,11 @@ class Resolver {
         }
         
         $this->handleFallbackContent($this->page);
+        
+        if ($this->page->getType() == 'application' || $this->page->getType() == 'fallback') {
+            $this->command = $this->page->getCmd();
+            $this->section = $this->page->getModule();
+        }
     }
 
     /**
@@ -267,5 +284,35 @@ class Resolver {
     
     public function getURL() {
         return $this->url;
+    }
+    
+    /**
+     * Returns the resolved module name (if any, empty string if none)
+     * @return String Module name
+     */
+    public function getSection() {
+        return $this->section;
+    }
+    
+    /**
+     * Returns the resolved module command (if any, empty string if none)
+     * @return String Module command
+     */
+    public function getCmd() {
+        return $this->command;
+    }
+    
+    /**
+     * Sets the value of the resolved module name and command
+     * This should not be called from any (core_)module!
+     * For legacy requests only!
+     * 
+     * @param String $section Module name
+     * @param String $cmd Module command
+     * @todo Remove this method as soon as legacy request are no longer possible
+     */
+    public function setSection($section, $command = '') {
+        $this->section = $section;
+        $this->command = $command;
     }
 }

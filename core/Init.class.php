@@ -532,14 +532,16 @@ class InitCMS
         if (!$objResult)
             return array();
 
-        $folder = $objResult->fields['foldername'];
-        $templateFiles = scandir(ASCMS_THEMES_PATH.'/'.$folder);
-
         $result = array();
-        foreach ($templateFiles as $f){
-            $match = null;
-            if (preg_match('/^(content|home)_(.+).html$/', $f, $match)) {
-                array_push($result, $f);
+        $folder = $objResult->fields['foldername'];
+        if (file_exists(ASCMS_THEMES_PATH.'/'.$folder)) {
+            $templateFiles = scandir(ASCMS_THEMES_PATH.'/'.$folder);
+
+            foreach ($templateFiles as $f){
+                $match = null;
+                if (preg_match('/^(content|home)_(.+).html$/', $f, $match)) {
+                    array_push($result, $f);
+                }
             }
         }
 

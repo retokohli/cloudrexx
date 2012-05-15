@@ -44,6 +44,7 @@ class Page extends \Cx\Model\Base\EntityBase
     private $content;
 
     /**
+     * Disables the WYSIWYG editor
      * @var boolean $sourceMode
      */
     private $sourceMode;

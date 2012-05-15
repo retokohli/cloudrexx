@@ -385,10 +385,8 @@ if ($isRegularPageRequest) {
         $page = $resolver->getPage();
 // TODO: should this check (for type 'application') moved to \Cx\Model\ContentManager\Page::getCmd()|getModule() ?
         // only set $section and $command if the requested page is an application
-        if ($page->getType() == 'application') {
-            $command = $page->getCmd();
-            $section = $page->getModule();
-        }
+        $command = $resolver->getCmd();
+        $section = $resolver->getSection();
     }
     catch (\Cx\Core\Routing\ResolverException $e) {
         /*
@@ -408,6 +406,7 @@ if ($isRegularPageRequest) {
         if(!$section && $urlPointsToHome) {
             $section = 'home';
         }
+        $resolver->setSection($section, $command);
 
         // b(, a): fallback if section and cmd are specified
         if($section) {
