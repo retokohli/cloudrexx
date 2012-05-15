@@ -99,7 +99,6 @@ $_ARRAYLANG['TXT_PASSWORD_MD5_ENCRYPTED'] = "Şifre  MD5 Logaritması ile kodlan
 $_ARRAYLANG['TXT_VALUE'] = "Değer";
 $_ARRAYLANG['TXT_VALUE_CONTROL_LANGUAGE'] = "İçerikdeğeri";
 $_ARRAYLANG['TXT_CONTROLLED'] = "kontrol edildi";
-$_ARRAYLANG['TXT_ADMINISTRATION_INDEX'] = "Yönetici İçeriği";
 $_ARRAYLANG['TXT_SIZE'] = "Veriler (Dosyalar) Büyüklüğü";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Veritabanı sorgulamasında  bir hata var!";
 $_ARRAYLANG['TXT_EDIT_PAGE'] = "Sayfayı düzenle";

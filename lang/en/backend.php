@@ -99,7 +99,6 @@ $_ARRAYLANG['TXT_PASSWORD_MD5_ENCRYPTED'] = "The password is encoded with the MD
 $_ARRAYLANG['TXT_VALUE'] = "Value";
 $_ARRAYLANG['TXT_VALUE_CONTROL_LANGUAGE'] = "Variable value";
 $_ARRAYLANG['TXT_CONTROLLED'] = "Validated";
-$_ARRAYLANG['TXT_ADMINISTRATION_INDEX'] = "Administration";
 $_ARRAYLANG['TXT_SIZE'] = "File size";
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Database Query Error!";
 $_ARRAYLANG['TXT_EDIT_PAGE'] = "Edit site";
