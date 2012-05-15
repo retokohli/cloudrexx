@@ -8,7 +8,6 @@
  * @package     contrexx
  * @subpackage  admin
  */
-
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 
 class JSONPage {
@@ -301,7 +300,7 @@ class JSONPage {
             }
 
             if ($meta['type'] == 'String') {
-                $value = $page[$field];
+                $value = contrexx_input2raw($page[$field]);
             }
 
             if (isset($meta['require']) && $page[$meta['require']] == 'off') {
