@@ -122,6 +122,11 @@ a:visited {
     margin: 0 auto 0 auto;
 }
 
+#content_login_center.password_lost,
+#content_login_center.password_reset {
+    width: 400px;
+}
+
 #content_login {
     float: left;
     width: 100%;
@@ -133,61 +138,61 @@ a:visited {
     font-size: 38px;
     font-weight: normal;
     margin: 0 0 44px 0;
-}
-
-#content_login.password_lost h1,
-#content_login.password_reset h1 {
-    margin: 0 0 24px 0;
-    font-size: 23px;
+    white-space: nowrap;
 }
 
 #content_login form {
     float: left;
-    width: 300px;
+    width: 100%;
 }
 
-#content_login form div {
+#content_login div {
     float: left;
-    width: 300px;
+    width: 100%;
     padding: 0 0 16px 0;
 }
 
-#content_login form div.error {
-    width: auto;
-    height: auto;
-    padding: 0;
+#content_login div.error {
     color: #E00500;
 }
 
-#content_login form div a {
+#content_login div.success {
+    color: #008000;
+}
+
+#content_login div a {
     float: left;
     width: auto;
 }
 
-#content_login form div label {
+#content_login div label {
     float: left;
     width: auto;
 }
 
-#content_login form div label[for] {
+#content_login div label[for] {
     cursor: pointer;
 }
 
-#content_login form div input.error {
+#content_login div input {
+    clear: both;
+}
+
+#content_login div input.error {
     border: 1px solid #E00500;
     padding: 2px;
 }
 
-#content_login form div input[type=text],
-#content_login form div input[type=password] {
+#content_login div input[type=text],
+#content_login div input[type=password] {
     float: left;
-    width: 296px;
+    width: 294px;
     height: 23px;
     line-height: 23px;
     margin: 3px 0;
 }
 
-#content_login form div input[type=checkbox] {
+#content_login div input[type=checkbox] {
     float: left;
     width: 13px;
     height: 13px;
@@ -196,17 +201,32 @@ a:visited {
     outline: 0;
 }
 
-#content_login form div input[type=submit],
-#content_login form div input[type=button] {
+#content_login div input[type=submit],
+#content_login div input[type=button] {
     float: left;
+    clear: none;
     width: auto;
-    margin: 0;
+    margin: 0 5px 0 0;
 }
 
-*+html #content_login form div input[type=submit],
-*+html #content_login form div input[type=button] {/* For IE7 */
+*+html #content_login div input[type=submit],
+*+html #content_login div input[type=button] {/* For IE7 */
     overflow: visible;
     padding: 0 9px 0 9px;
+}
+
+#content_login #captcha #coreCaptchaLabel {
+    margin: 0 0 3px 0;
+}
+
+#content_login #captcha #coreCaptchaCode {
+    width: 200px !important;
+    height: 23px;
+}
+
+#content_login #captcha #coreCaptchaImage {
+    width: 87px;
+    height: 29px;
 }
 
 
@@ -309,20 +329,10 @@ a:visited {
     margin: 0 7px 0 0;
 }
 
-#content_login #captcha #coreCaptchaCode {
-    width: 202px !important;
-    height: 23px;
-}
-
 #captcha #coreCaptchaImage {
     float: left;
     width: 66px;
     height: 22px;
-}
-
-#content_login #captcha #coreCaptchaImage {
-    width: 87px;
-    height: 29px;
 }
 
 .navigation_level_1,
@@ -359,7 +369,7 @@ a:visited {
     float: left;
     width: 184px;
     height: 30px;
-    line-height: 28px;
+    line-height: 29px;
     padding: 0 10px 0 22px;
     background: url(../images/navigation_level_1_list_style.png) no-repeat 10px 10px;
     font-size: 13px;
@@ -392,9 +402,9 @@ a:visited {
     float: left;
     width: 167px;
     height: 23px;
-    line-height: 21px;
+    line-height: 22px;
     padding: 0 10px 0 39px;
-    background: url(../images/navigation_level_2_list_style.png) no-repeat 26px 7px;
+    background: url(../images/navigation_level_2_list_style.png) no-repeat 26px 8px;
     font-size: 12px;
     font-weight: normal;
     color: #444444;
@@ -405,7 +415,7 @@ a:visited {
 .navigation_level_2 li:focus a,
 .navigation_level_2 li:active a,
 .navigation_level_2 li.active a {
-    background: url(../images/navigation_level_2_hover_list_style.png) no-repeat 26px 7px;
+    background: url(../images/navigation_level_2_hover_list_style.png) no-repeat 26px 8px;
     font-weight: normal;
     color: #1a74bd;
     cursor: pointer;

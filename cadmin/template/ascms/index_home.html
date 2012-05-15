@@ -19,9 +19,9 @@ jQuery(document).ready(function() {
                     <h2>{TXT_CREATING_AND_PUBLISHING}</h2>
                     <ul>
                         <!-- BEGIN check_access_5 --><li><a href="index.php?cmd=content&amp;act=new">{TXT_NEW_SITE}</a></li><!-- END check_access_5 -->
-                        <!-- BEGIN check_access_10 --><li><a href="index.php?cmd=news&act=add">{TXT_ADD_NEWS}</a></li><!-- END check_access_10 -->
-                        <!-- BEGIN check_access_76 --><li><a href="index.php?cmd=block&act=modify">{TXT_ADD_BLOCK}</a></li><!-- END check_access_76 -->
-                        <!-- BEGIN check_access_84_1 --><li><a href="index.php?cmd=contact&act=forms&tpl=edit">{TXT_ADD_FORM}</a></li><!-- END check_access_84_1 -->
+                        <!-- BEGIN check_access_10 --><li><a href="index.php?cmd=news&amp;act=add">{TXT_ADD_NEWS}</a></li><!-- END check_access_10 -->
+                        <!-- BEGIN check_access_76 --><li><a href="index.php?cmd=block&amp;act=modify">{TXT_ADD_BLOCK}</a></li><!-- END check_access_76 -->
+                        <!-- BEGIN check_access_84_1 --><li><a href="index.php?cmd=contact&amp;act=forms&amp;tpl=edit">{TXT_ADD_FORM}</a></li><!-- END check_access_84_1 -->
                     </ul>
                     <div class="icon"></div>
                 </div>
@@ -82,20 +82,17 @@ jQuery(document).ready(function() {
                 <li><span class="left">Die letzten 30 Tage</span><span class="right"><span class="green">15</span><span class="orange">10'000</span></span></li>
             </ul>
         </div>
+        <!-- BEGIN rssFeeds -->
         <div id="news_wrapper">
             <hr />
             <h1>{TXT_CONTREXX_NEWS}</h1>
-            <!-- BEGIN rssFeeds -->
             <ul id="news">
                 <!-- BEGIN rssRow -->
                 <li><a href="{RSS_LINK}" target="_blank">{RSS_TITLE}</a></li>
                 <!-- END rssRow -->
             </ul>
-            <!-- END rssFeeds -->
-            <!-- BEGIN rssError -->
-            <div class="error">{RSS_ERROR_MESSAGE}</div>
-            <!-- END rssError -->
         </div>
+        <!-- END rssFeeds -->
     </div>
 </div>
 

@@ -78,23 +78,20 @@ class LoginManager {
             'TXT_LOGIN_RESET_PASSWORD'  => $_ARRAYLANG['TXT_LOGIN_RESET_PASSWORD'],
             'TXT_LOGIN_BACK_TO_LOGIN'   => $_ARRAYLANG['TXT_LOGIN_BACK_TO_LOGIN'],
         ));
-        if ($this->objTemplate->blockExists('back_to_login')) {
-            $this->objTemplate->hideBlock('back_to_login');
-        }
+        $this->objTemplate->hideBlock('error_message');
+        $this->objTemplate->hideBlock('success_message');
+        $this->objTemplate->hideBlock('back_to_login');
         if (isset($_POST['email'])) {
             $email = contrexx_stripslashes($_POST['email']);
-            if (($objFWUser->restorePassword($email))) {
-                $statusMessage = str_replace("%EMAIL%", $email, $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD_MAIL_SENT']);
-                if ($this->objTemplate->blockExists('login_lost_password')) {
-                    $this->objTemplate->hideBlock('login_lost_password');
-                }
-                if ($this->objTemplate->blockExists('back_to_login')) {
-                    $this->objTemplate->touchBlock('back_to_login');
-                }
+            if ($objFWUser->restorePassword($email)) {
+                $this->objTemplate->setVariable('LOGIN_SUCCESS_MESSAGE', str_replace("%EMAIL%", $email, $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD_MAIL_SENT']));
+                $this->objTemplate->touchBlock('success_message');
+                $this->objTemplate->touchBlock('back_to_login');
+                $this->objTemplate->hideBlock('login_lost_password');
             } else {
-                $statusMessage = $objFWUser->getErrorMsg();
+                $this->objTemplate->setVariable('LOGIN_ERROR_MESSAGE', $objFWUser->getErrorMsg());
+                $this->objTemplate->touchBlock('error_message');
             }
-            $this->objTemplate->setVariable('LOGIN_STATUS_MESSAGE', $statusMessage);
         }
     }
 
@@ -114,37 +111,40 @@ class LoginManager {
             'TITLE'                     => $_ARRAYLANG['TXT_LOGIN_SET_NEW_PASSWORD'],
             'TXT_LOGIN_BACK_TO_LOGIN'   => $_ARRAYLANG['TXT_LOGIN_BACK_TO_LOGIN'],
         ));
-        if ($this->objTemplate->blockExists('back_to_login')) {
-            $this->objTemplate->hideBlock('back_to_login');
-        }
+        $this->objTemplate->hideBlock('error_message');
+        $this->objTemplate->hideBlock('success_message');
+        $this->objTemplate->hideBlock('back_to_login');
         // TODO: Why oh why isn't function resetPassword() located in the AccessLibrary?
         $username = isset($_POST['username']) ? contrexx_stripslashes($_POST['username']) : (isset($_GET['username']) ? contrexx_stripslashes($_GET['username']) : '');
         $restoreKey = isset($_POST['restore_key']) ? contrexx_stripslashes($_POST['restore_key']) : (isset($_GET['restoreKey']) ? contrexx_stripslashes($_GET['restoreKey']) : '');
         $password = isset($_POST['password']) ? trim(contrexx_stripslashes($_POST['password'])) : '';
         $confirmedPassword = isset($_POST['password2']) ? trim(contrexx_stripslashes($_POST['password2'])) : '';
-        $statusMessage = '';
+
+        $this->objTemplate->setVariable(array(
+            'LOGIN_USERNAME'    => htmlentities($username, ENT_QUOTES, CONTREXX_CHARSET),
+            'LOGIN_RESTORE_KEY' => htmlentities($restoreKey, ENT_QUOTES, CONTREXX_CHARSET),
+        ));
+
         if (isset($_POST['reset_password'])) {
             if ($objFWUser->resetPassword($username, $restoreKey, $password, $confirmedPassword, true)) {
-                $statusMessage = $_ARRAYLANG['TXT_LOGIN_PASSWORD_CHANGED_SUCCESSFULLY'];
-                if ($this->objTemplate->blockExists('login_reset_password')) {
-                    $this->objTemplate->hideBlock('login_reset_password');
-                }
-                if ($this->objTemplate->blockExists('back_to_login')) {
-                    $this->objTemplate->touchBlock('back_to_login');
-                }
+                $this->objTemplate->setVariable('LOGIN_SUCCESS_MESSAGE', $_ARRAYLANG['TXT_LOGIN_PASSWORD_CHANGED_SUCCESSFULLY']);
+                $this->objTemplate->touchBlock('success_message');
+                $this->objTemplate->hideBlock('login_reset_password');
+                $this->objTemplate->touchBlock('back_to_login');
 
                 $userFilter = array(
                     'username'         => $username,
                     'active'           => 1,
                 );
-
                 $objUser = FWUser::getFWUserObject()->objUser->getUsers($userFilter, null, null, null, 1);
                 if ($objUser) {
                     // deletes all sessions which are using this user (except the session resetting the password)
                     $sessionObj->cmsSessionDestroyByUserId($objUser->getId());
                 }
             } else {
-                $statusMessage = $objFWUser->getErrorMsg();
+                $this->objTemplate->setVariable('LOGIN_ERROR_MESSAGE', $objFWUser->getErrorMsg());
+                $this->objTemplate->touchBlock('error_message');
+
                 $this->objTemplate->setVariable(array(
                     'TXT_LOGIN_USERNAME'                    => $_ARRAYLANG['TXT_LOGIN_USERNAME'],
                     'TXT_LOGIN_PASSWORD'                    => $_ARRAYLANG['TXT_LOGIN_PASSWORD'],
@@ -154,11 +154,6 @@ class LoginManager {
                     'TXT_LOGIN_SET_NEW_PASSWORD'            => $_ARRAYLANG['TXT_LOGIN_SET_NEW_PASSWORD'],
                 ));
                 $this->objTemplate->parse('login_reset_password');
-            }
-        } elseif (!$objFWUser->resetPassword($username, $restoreKey, $password, $confirmedPassword)) {
-            $statusMessage = $objFWUser->getErrorMsg();
-            if ($this->objTemplate->blockExists('login_reset_password')) {
-                $this->objTemplate->hideBlock('login_reset_password');
             }
         } else {
             $this->objTemplate->setVariable(array(
@@ -171,11 +166,6 @@ class LoginManager {
             ));
             $this->objTemplate->parse('login_reset_password');
         }
-        $this->objTemplate->setVariable(array(
-            'LOGIN_STATUS_MESSAGE'  => $statusMessage,
-            'LOGIN_USERNAME'        => htmlentities($username, ENT_QUOTES, CONTREXX_CHARSET),
-            'LOGIN_RESTORE_KEY'     => htmlentities($restoreKey, ENT_QUOTES, CONTREXX_CHARSET),
-        ));
     }
 
     /**
