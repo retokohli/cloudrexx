@@ -106,7 +106,23 @@ class adminMenu
         global $_CORELANG, $objTemplate;
 
         $objTemplate->addBlockfile('NAVIGATION_OUTPUT', 'navigation_output', 'index_navigation.html');
+
         reset($this->arrMenuItems);
+
+        if (empty($_GET['cmd'])) {
+            setcookie('navigation_level_2_active', 'dashboard');
+            $_COOKIE['navigation_level_2_active'] = 'dashboard';
+        } else {
+            foreach ($this->arrMenuItems as $menuItem) {
+                if (preg_match('/cmd=(.+?)(?:&amp;(.+))?$/', $menuItem[2], $arrMatch)) {
+                    if ($arrMatch[1] == $this->activeCmd) {
+                        setcookie('navigation_level_2_active', $menuItem[0]);
+                        $_COOKIE['navigation_level_2_active'] = $menuItem[0];
+                    }
+                }
+            }
+        }
+
         foreach ( $this->arrMenuGroups as $group_id => $group_data ) {
             // Module group menu and module check!
             $navigation = '';
@@ -139,7 +155,6 @@ class adminMenu
                     $linkCmd = '';
                     if (preg_match('/cmd=(.+?)(?:&amp;(.+))?$/', $link_data[2], $arrMatch)) {
                         $linkCmd = $arrMatch[1];
-
                         $linkCmdSection = '';
                         if (isset($arrMatch[2])) {
                             $linkCmdSection = $arrMatch[2];
@@ -203,25 +218,20 @@ class adminMenu
                         }
                     }
 
-                    $cssClass = !empty($this->activeCmd) && ($this->activeCmd == $linkCmd) ? ' class="active"' : '';
-                    $navigation.= "<li$cssClass><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
+                    $cssClass = !empty($this->activeCmd) && ($this->activeCmd == $linkCmd) ? 'active' : 'inactive';
+                    $navigation.= "<li class='$cssClass'><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
                 }
             }
 
             if (!empty($navigation)) {
                 $objTemplate->setVariable(array(
-                    'NAVIGATION_GROUP_NAME'    => htmlentities($_CORELANG[$group_data], ENT_QUOTES, CONTREXX_CHARSET),
-                    'NAVIGATION_ID'            => $group_id,
-                    'NAVIGATION_MENU'        => $navigation,
-                    'NAVIGATION_CLASS'        => (isset($_COOKIE['navigation_level_2_active'])) && ($_COOKIE['navigation_level_2_active'] == $group_id) ? 'active' : 'inactive',
+                    'NAVIGATION_GROUP_NAME' => htmlentities($_CORELANG[$group_data], ENT_QUOTES, CONTREXX_CHARSET),
+                    'NAVIGATION_ID'         => $group_id,
+                    'NAVIGATION_MENU'       => $navigation,
+                    'NAVIGATION_CLASS'      => !empty($_COOKIE['navigation_level_2_active']) && ($_COOKIE['navigation_level_2_active'] == $group_id) ? 'active' : 'inactive',
                 ));
                 $objTemplate->parse('navigationRow');
             }
-        }
-
-        if (empty($_GET['cmd']) && !isset($_COOKIE['navigation_level_2_active'])) {
-            setcookie('navigation_level_2_active', 'dashboard');
-            $_COOKIE['navigation_level_2_active'] = 'dashboard';
         }
 
         $objTemplate->setVariable(array(
