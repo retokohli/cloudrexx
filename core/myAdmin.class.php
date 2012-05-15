@@ -50,7 +50,7 @@ class myAdminManager {
             }
             $administratorsOnline = '';
             for ($i = 0; $i < count($arrAdministratorsOnline); $i++) {
-                $administratorsOnline .= '<a href="index.php?cmd=access&act=user&tpl=modify&id='.$arrAdministratorsOnline[$i]['id'].'">'.$arrAdministratorsOnline[$i]['username'].($i == (count($arrAdministratorsOnline)-1) ? '' : ',').'</a>';
+                $administratorsOnline .= '<a href="index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id='.$arrAdministratorsOnline[$i]['id'].'">'.$arrAdministratorsOnline[$i]['username'].($i == (count($arrAdministratorsOnline)-1) ? '' : ',').'</a>';
             }
         }
         $objTemplate->setVariable('CONTENT_NAVIGATION', '<span id="administrators_online">'.$_CORELANG['TXT_ADMINISTSRATORS_ONLINE'].': </span>'.$administratorsOnline);
@@ -156,10 +156,7 @@ class myAdminManager {
                 }
             }
             $objTemplate->parse('rssFeeds');
-            $objTemplate->hideBlock('rssError');
         } else {
-            $objTemplate->setVariable('RSS_ERROR_MESSAGE', $_CORELANG['TXT_NO_DATA_FOUND']);
-            $objTemplate->parse('rssError');
             $objTemplate->hideBlock('rssFeeds');
         }
 

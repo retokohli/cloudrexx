@@ -267,6 +267,9 @@ if (!empty($plainCmd) and !in_array($plainCmd, array('fileBrowser', 'upload'))) 
 
 switch ($plainCmd) {
     case 'login':
+        if ($objFWUser->objUser->login(true)) {
+            header('location: index.php');
+        }
         if (!include_once(ASCMS_CORE_MODULE_PATH.'/login/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objLoginManager = new LoginManager();
