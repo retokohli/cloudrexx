@@ -98,8 +98,12 @@ class JsonNode implements JsonAdapter {
      * Returns the Node tree rendered for JS
      * @return String JSON data 
      */
-    public function getTree() {
-        return $this->renderTree();
+    public function getTree($parameters) {
+        $nodeId = 0;
+        if (isset($parameters['get']) && isset($parameters['get']['nodeid'])) {
+            $nodeId = contrexx_input2raw($parameters['get']['nodeid']);
+        }
+        return $this->renderTree($nodeId);
     }
 
     /**
@@ -148,11 +152,22 @@ class JsonNode implements JsonAdapter {
      * Renders a jsTree friendly representation of the Node tree (in json)
      * @return String JSON data
      */
-    private function renderTree() {
-        $root = $this->nodeRepo->getRoot();
+    private function renderTree($rootNodeId = 0) {
+        if ($rootNodeId == 0) {
+            $root = $this->nodeRepo->getRoot();
+        } else {
+            $root = current($this->nodeRepo->findById($rootNodeId));
+        }
+        if (!is_object($root)) {
+            throw new \Exception('Node not found (#' . $rootNodeId . ')');
+        }
         $logs = $this->logRepo->getLatestLogsOfAllPages();
 
-        $jsondata = $this->tree_to_jstree_array($root, $logs);
+        //$actions = array();
+        $jsondata = $this->tree_to_jstree_array($root, $logs, true/*, $actions*/);
+        //$jsondata['actions'] = $actions;
+        /*print(memory_get_usage());
+        die();*/
 
         return $jsondata;
     }
@@ -163,7 +178,7 @@ class JsonNode implements JsonAdapter {
      * @param Array $logs List of all logs (used to get the username)
      * @return String JSON data
      */
-    private function tree_to_jstree_array($root, $logs) {
+    private function tree_to_jstree_array($root, $logs, $flat = false/*, &$actions = array()*/) {
         $fallback_langs = $this->fallbacks;
 
         $sorted_tree = array();
@@ -173,11 +188,13 @@ class JsonNode implements JsonAdapter {
         ksort($sorted_tree);
 
         $output = array();
-        $actions = array();
         foreach ($sorted_tree as $node) {
             $data = array();
             $metadata = array();
-            $children = $this->tree_to_jstree_array($node, $logs);
+            $children = array();
+            if (!$flat) {
+                $children = $this->tree_to_jstree_array($node, $logs, $flat/*, $actions*/);
+            }
             $last_resort = 0;
 
             foreach ($node->getPages() as $page) {
@@ -256,21 +273,25 @@ class JsonNode implements JsonAdapter {
                 }
             }
             
+            $state = array();
+            if (!$node->getChildren()->isEmpty()) {
+                $state = array('state' => 'closed');
+            }
 
-            $output[] = array(
+            $output[] = array_merge(array(
                 'attr' => array(
                     'id' => 'node_' . $node->getId()
                 ),
                 'data' => array_values($data),
                 'children' => $children,
                 'metadata' => $metadata,
-            );
+            ), $state);
         }
         
         // moving everything to 'tree' so we can add actions
         $output['tree'] = $output;
         $output['actions'] = $actions;
-
+        
         return($output);
     }
     
