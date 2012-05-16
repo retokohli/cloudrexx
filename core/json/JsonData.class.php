@@ -95,7 +95,7 @@ class JsonData {
                 'data'    => $output,
                 'message' => $adapter->getMessagesAsString()
             ));
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->getJsonError($e->getMessage());
         }
     }
