@@ -18,6 +18,12 @@ class PageException extends \Exception {}
  */
 class Page extends \Cx\Model\Base\EntityBase
 {
+    const TYPE_CONTENT = 'content';
+    const TYPE_APPLICATION = 'application';
+    const TYPE_REDIRECT = 'redirect';
+    const TYPE_FALLBACK = 'fallback';
+    const TYPE_ALIAS = 'alias';
+    
     /**
      * @var integer $id
      */
@@ -991,14 +997,42 @@ class Page extends \Cx\Model\Base\EntityBase
     }
 
     /**
+     * DO NOT CALL THIS METHOD! USE copyToLang() OR copyToNode() INSTEAD!
      * Copies data from another Page.
-     * @todo Implement access protection cloning
      * @param boolean $includeContent Whether to copy content. Defaults to true.
      * @param boolean $includeModuleAndCmd Whether to copy module and cmd. Defaults to true.
      * @param boolean $includeName Wheter to copy title, content title and slug. Defaults to true.
      * @param boolean $includeMetaData Wheter to copy meta data. Defaults to true.
+     * @param boolean $includeProtection Wheter to copy protection. Defaults to true.
+     * @param boolean $followRedirects Wheter to return a redirection page or the page its pointing at. Defaults to false, which returns the redirection page
+     * @param boolean $followFallbacks Wheter to return a fallback page or the page its pointing at. Defaults to false, witch returns the fallback page
+     * @return \Cx\Model\ContentManager\Page The copy of $this or null on error
      */
-    private function copy($includeContent=true, $includeModuleAndCmd=true, $includeName = true, $includeMetaData = true) {
+    public function copy($includeContent=true, $includeModuleAndCmd=true,
+            $includeName = true, $includeMetaData = true,
+            $includeProtection = true, $followRedirects = false,
+            $followFallbacks = false) {
+        
+        $targetPage = null;
+        if ($followRedirects && $this->getType() == self::TYPE_REDIRECT) {
+            $targetPage = $this->getTargetNodeId()->getPage($this->getTargetLangId());
+        }
+        if ($followFallbacks && $this->getType() == self::TYPE_FALLBACK) {
+            $fallbackLanguage = \FWLanguage::getFallbackLanguageIdById($this->getLang());
+            $targetPage = $this->getNode()->getPage($fallbackLanguage);
+        }
+        if ($targetPage) {
+            return $targetPage->copy(
+                    $includeContent,
+                    $includeModuleAndCmd,
+                    $includeName,
+                    $includeMetaData,
+                    $includeProtection,
+                    $followRedirects,
+                    $followFallbacks
+            );
+        }
+        
         $page = new \Cx\Model\ContentManager\Page();
         
         if ($includeName) {
@@ -1037,9 +1071,43 @@ class Page extends \Cx\Model\Base\EntityBase
         $page->setEditingStatus($this->getEditingStatus());
         $page->setTarget($this->getTarget());
         $page->setLinkTarget($this->getLinkTarget());
-        //TODO: copy access protection
-        //\DBG::msg('\Cx\Model\ContentManager\Page::copy(): Access cloning is not yet implemented, copied page is not protected!');
+        
+        if ($includeProtection) {
+            if (!$this->copyProtection($page, true) ||
+                !$this->copyProtection($page, false)) {
+                return null;
+            }
+        }
+        
         return $page;
+    }
+    
+    /**
+     * Clones the protection of this page to another page
+     * @param \Cx\Model\ContentManager\Page $page Page to get the same protection as $this
+     * @param boolean $frontend Wheter the front- or backend protection should be cloned
+     * @return boolean True on success, false otherwise
+     */
+    private function copyProtection($page, $frontend) {
+        if ($frontend) {
+            $accessId = $this->getFrontendAccessId();
+        } else {
+            $accessId = $this->getBackendAccessId();
+        }
+        $groups = \Permission::getGroupIdsForAccessId($accessId);
+        if ($frontend) {
+            $page->setFrontendProtection(true);
+            $newAccessId = $page->getFrontentAccessId();
+        } else {
+            $page->setBackendProtection(true);
+            $newAccessId = $page->getBackendAccessId();
+        }
+        foreach ($groups as $groupId) {
+            if (!\Permission::setAccess($newAccessId, 'dynamic', $groupId)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /**
@@ -1051,8 +1119,20 @@ class Page extends \Cx\Model\Base\EntityBase
      * @param boolean $includeName Wheter to copy title, content title and slug. Defaults to true.
      * @param boolean $includeMetaData Wheter to copy meta data. Defaults to true.
      */
-    public function copyToNode($destinationNode, $includeContent=true, $includeModuleAndCmd=true, $includeName = true, $includeMetaData = true) {
-        $copy = $this->copy($includeContent, $includeModuleAndCmd, $includeName, $includeMetaData);
+    public function copyToNode($destinationNode, $includeContent=true,
+            $includeModuleAndCmd=true, $includeName = true,
+            $includeMetaData = true, $includeProtection = true,
+            $followRedirects = false, $followFallbacks = false) {
+        
+        $copy = $this->copy(
+                $includeContent,
+                $includeModuleAndCmd,
+                $includeName,
+                $includeMetaData,
+                $includeProtection,
+                $followRedirects,
+                $followFallbacks
+        );
         $copy->setNode($destinationNode);
         return $copy;
     }
@@ -1066,8 +1146,20 @@ class Page extends \Cx\Model\Base\EntityBase
      * @param boolean $includeName Wheter to copy title, content title and slug. Defaults to true.
      * @param boolean $includeMetaData Wheter to copy meta data. Defaults to true.
      */
-    public function copyToLang($destinationLang, $includeContent=true, $includeModuleAndCmd=true, $includeName = true, $includeMetaData = true) {
-        $copy = $this->copy($includeContent, $includeModuleAndCmd, $includeName, $includeMetaData);
+    public function copyToLang($destinationLang, $includeContent=true,
+            $includeModuleAndCmd=true, $includeName = true,
+            $includeMetaData = true, $includeProtection = true,
+            $followRedirects = false, $followFallbacks = false) {
+        
+        $copy = $this->copy(
+                $includeContent,
+                $includeModuleAndCmd,
+                $includeName,
+                $includeMetaData,
+                $includeProtection,
+                $followRedirects,
+                $followFallbacks
+        );
         $copy->setLang($destinationLang);
         return $copy;
     }
@@ -1293,7 +1385,7 @@ class Page extends \Cx\Model\Base\EntityBase
     {
         $target = $this->getNode()->getId() . '-' . $this->getLang() . '|';
         $crit = array(
-            'type' => 'alias',
+            'type' => self::TYPE_ALIAS,
             'target' => $target,
         );
         return \Env::em()->getRepository("Cx\Model\ContentManager\Page")->findBy($crit);
@@ -1318,28 +1410,6 @@ class Page extends \Cx\Model\Base\EntityBase
     public function setProtection($protection)
     {
         $this->protection = $protection;
-    }
-
-    /**
-     * Creates a copy of $this in the desired language and returns it.
-     *
-     * Does not flush EntityManager.
-     *
-     * @todo Check fallback logic
-     * @param \Cx\Model\ContentManager\Page $source the source page
-     * @param int $targetLang target language id
-     * @param boolean $activate whether the copy should be activated. defaults to false.
-     * @param boolean $copyContent whether the page content should be copied. defaults to false.
-     * @param boolean $copyModuleAndCmd whether module and cmd should be copied. defaults to false.
-     * @throws \Cx\Model\ContentManager\Repository\PageRepository\TranslateException if the page is already translated
-     *
-     * @returns \Cx\Model\ContentManager\Page the copy
-     */
-    public function translate($targetLang, $activate = false, $copyContent = false, $copyModuleAndCmd = false, $copyOtherProperties = false) {
-        // check if target exists -> throw...
-        $page = $this->copyToLang($targetLang, $copyContent, $copyModuleAndCmd);
-        $page->setActive($activate);
-        return $page;
     }
     
     /**

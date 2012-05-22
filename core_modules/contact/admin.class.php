@@ -2267,7 +2267,7 @@ class ContactManager extends ContactLib
                 $page->setTitle($this->arrForms[$formId]['lang'][$langId]['name']);
                 $page->setCmd($formId);
                 $page->setModule('contact');
-                $page->setType('application');
+                $page->setType(\Cx\Model\ContentManager\Page::TYPE_APPLICATION);
                 $page->setDisplay(false);
                 $page->setActive(true);
                 $page->setLang($langId);

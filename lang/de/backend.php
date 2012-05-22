@@ -1483,6 +1483,10 @@ $_ARRAYLANG['TXT_CORE_CM_HIDE'] = "Verstecken";
 $_ARRAYLANG['TXT_CORE_CM_SHOW'] = "Anzeigen";
 $_ARRAYLANG['TXT_CORE_CM_DELETE'] = "L&ouml;schen";
 $_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE'] = "Bitte bestätigen Sie, dass Sie diesen Node und alle seine Kindernodes löschen wollen.";
+$_ARRAYLANG['TXT_CORE_CM_USAGE_DENIED'] = 'Sie haben nicht genügen Rechte um den ContentManager zu verwenden!';
+$_ARRAYLANG['TXT_CORE_CM_CREATION_DENIED'] = 'Sie haben nicht genügen Rechte um Seiten zu erstellen!';
+$_ARRAYLANG['TXT_CORE_CM_DELETE_DENIED'] = 'Sie haben nicht genügen Rechte um Seiten zu löschen!';
+$_ARRAYLANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'] = 'Sie haben nicht genügen Rechte um die Zugriffsberechtigungen zu ändern!';
 
 // core captcha
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Sicherheitscode";
