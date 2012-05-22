@@ -31,36 +31,71 @@ h1{ font-size: 20px }
     background: url(../images/subnavigation_level_1.jpg) repeat-x left top;
 }
 
-#content-manager td.left {
-    display: table-cell;
-    float: none;
+#content-manager .left {
+    display: block;
+    float: left;
     width: 100%;
     padding: 0;
     border-right: 1px solid #e5e5e5;
     border-left: 1px solid #e5e5e5;
     margin: 0;
-    vertical-align: top;
 }
 
-#content-manager td.right {
+#content-manager .middle {
+    display: none;
+    float: left;
+    width: 10px;
+    height: 31px;
+    padding: 0 4px;
+    background-color: #ececec;
+    border-right: 10px solid #ffffff;
+    border-left: 10px solid #ffffff;
+    cursor: pointer;
+}
+
+#content-manager .middle:hover,
+#content-manager .middle:focus,
+#content-manager .middle:active {
+    background-color: #d2d2d2;
+}
+
+#content-manager .middle.sidebar_hide {
+    display: block;
+    background-image: url(../images/sidebar_hide.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+#content-manager .middle.sidebar_show {
+    display: none;
+    background-image: url(../images/sidebar_show.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+    border-left: 0;
+}
+
+#content-manager .right {
     display: none;
     float: none;
-    padding: 0 0 0 12px;
-    margin: 0;
-    vertical-align: top;
 }
 
-#content-manager.shrunk td.left {
-    width: 351px;
+#content-manager.shrunk .left {
+    width: 352px;
     border: 0;
 }
 
-#content-manager.shrunk td.right {
+#content-manager.shrunk .middle {
+    display: block;
+}
+
+#content-manager.shrunk .right {
     display: table-cell;
     width: 100%;
 }
 
-#content-manager td.left table.adminlist {
+#content-manager .left table.adminlist {
+    position: static;
+    bottom: 0;
     margin: 11px 0 0 0;
 }
 
@@ -132,7 +167,6 @@ h1{ font-size: 20px }
 
 #content-manager.shrunk .chzn-container {
     float: left;
-    margin: 0 -2px 0 0;
     width: 352px !important;
     position: relative;
     z-index: 999;
@@ -154,6 +188,7 @@ h1{ font-size: 20px }
 }
 
 #content-manager.shrunk #site-structure {
+    width: 350px;
     border-right: 1px solid #e5e5e5;
     border-left: 1px solid #e5e5e5;
 }
@@ -427,7 +462,6 @@ h1{ font-size: 20px }
     height: 31px;
     background: transparent;
     margin: 0;
-    border-left: 1px solid #ffffff;
     padding: 0;
 }
 
@@ -719,14 +753,6 @@ div.date img{
     width: 281px;
 }
 /* 3) Helpers */
-#content-manager .left{
-    float: left
-}
-
-#content-manager .right{
-    float: right;
-    margin: 0 0 0 10px
-}
 .t{
     padding: 0
 }
