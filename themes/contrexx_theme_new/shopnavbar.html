@@ -1,0 +1,51 @@
+<!-- start shopnavbar.html -->
+<!-- BEGIN shopCartInfo -->
+<!-- Optional static cart info, only useful when the dynamic cart is off -->
+{SHOP_CART_INFO}
+<br />
+<!-- END shopCartInfo -->
+
+<div id="shop_navigation">
+  <ul>
+    <li>
+      <a class="title" href="index.php?section=shop">{TXT_SHOP_CATEGORIES}</a>
+    </li>
+<!-- BEGIN shopNavbar -->
+    <li class="{SHOP_CATEGORY_STYLE}">
+      <a href="index.php?section=shop&amp;catId={SHOP_CATEGORY_ID}">{SHOP_CATEGORY_NAME}</a>
+    </li>
+<!-- END shopNavbar -->
+
+    <li>
+      <a class="title" href="index.php?section=shop&amp;cmd=cart">{TXT_SHOP_CART}</a>
+    </li>
+  </ul>
+  <div id="shopJsCart">
+<!-- BEGIN shopJsCart -->
+    <ul>
+<!-- BEGIN shopJsCartProducts -->
+      <li>{TXT_SHOP_CART_JS_FORMAT_PRODUCT}</li>
+<!-- END shopJsCartProducts -->
+<!-- BEGIN shopJsCartTotal -->
+      <li class="total">{TXT_SHOP_CART_JS_FORMAT_TOTAL}</li>
+      <li class="link"><a href='index.php?section=shop&amp;cmd=cart'
+          title="{TXT_SHOP_MAKE_ORDER}">{TXT_SHOP_SHOW_CART}</a></li>
+      <li class="link"><a href='index.php?section=shop&amp;act=destroy'
+          title="{TXT_SHOP_NEW_ORDER}">{TXT_SHOP_EMPTY_CART}</a></li>
+<!-- END shopJsCartTotal -->
+    </ul>
+<!-- END shopJsCart -->
+  </div>
+
+<!-- BEGIN shopCurrencies -->
+  <ul>
+    <li>
+      <a class="title" href="index.php?section=shop">{TXT_SHOP_CURRENCIES}</a>
+    </li>
+  </ul>
+  <div id="shop_currencies">
+    {SHOP_CURRENCIES}
+  </div>
+<!-- END shopCurrencies -->
+</div>
+<!-- end shopnavbar.html -->
