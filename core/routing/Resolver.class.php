@@ -144,7 +144,7 @@ class Resolver {
                     $node = new \Cx\Model\ContentManager\Node();
                     $node->setParent($this->nodeRepo->getRoot());
                     $this->nodeRepo->getRoot()->addChildren($node);
-                    $node->addPages($page);
+                    $node->addPage($page);
                     $page->setNode($node);
                     
                     $this->pageRepo->addVirtualPage($page);
