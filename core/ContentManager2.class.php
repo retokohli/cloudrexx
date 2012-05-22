@@ -113,11 +113,13 @@ class ContentManager extends Module {
         $toggleType = !empty($_SESSION['contentManager']['toggleStatuses']['tabContent']['toggleType']) ? $_SESSION['contentManager']['toggleStatuses']['tabContent']['toggleType'] : 'block';
         $toggleThemes = !empty($_SESSION['contentManager']['toggleStatuses']['tabSettings']['toggleThemes']) ? $_SESSION['contentManager']['toggleStatuses']['tabSettings']['toggleThemes'] : 'block';
         $toggleNavigation = !empty($_SESSION['contentManager']['toggleStatuses']['tabSettings']['toggleNavigation']) ? $_SESSION['contentManager']['toggleStatuses']['tabSettings']['toggleNavigation'] : 'block';
+        $toggleSidebar = !empty($_SESSION['contentManager']['toggleStatuses']['sidebar']) ? $_SESSION['contentManager']['toggleStatuses']['sidebar'] : 'block';
         $objCx = ContrexxJavascript::getInstance();
         $objCx->setVariable('toggleTitles', $toggleTitles);
         $objCx->setVariable('toggleType', $toggleType);
         $objCx->setVariable('toggleThemes', $toggleThemes);
         $objCx->setVariable('toggleNavigation', $toggleNavigation);
+        $objCx->setVariable('sidebar', $toggleSidebar);
 
         if (!empty($_GET['act']) && ($_GET['act'] == 'new')) {
             $this->template->setVariable(array(
@@ -125,6 +127,8 @@ class ContentManager extends Module {
                 'TYPE_DISPLAY_STYLE' => 'display: none;',
                 'THEMES_DISPLAY_STYLE' => 'display: block;',
                 'NAVIGATION_DISPLAY_STYLE' => 'display: block;',
+                'SIDEBAR_DISPLAY_STYLE' => 'display: block;',
+                'SIDEBAR_CLASS_NAME' => 'sidebar_hide',
             ));
         } else {
             $this->template->setVariable(array(

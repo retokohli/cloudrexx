@@ -9,40 +9,38 @@
     <li class="level_2">{SUB_MENU_TITLE}</li>
     <li class="level_3">{CONTENT_TITLE}</li>
 </ul>
-
-<table id="content-manager" class="{CM_HIDE_LIST}" width="100%">
-    <tr>
-        <td class="left" style="min-width: 351px;">
-            <div id="site-language" class="clearfix">
-                <div class="navi" style="display: none;">
-                    <a href="index.php?cmd=content&act=new">{TXT_NEW_PAGE}</a>
-                    <a href="index.php?cmd=workflow">{TXT_CONTENT_HISTORY}</a>
-                    <a href="index.php?cmd=media&archive=content">{TXT_IMAGE_ADMINISTRATION}</a>
-                </div>
-                <select class="chzn-select">{LANGSWITCH_OPTIONS}</select>
+<div id="content-manager" class="{CM_HIDE_LIST}" width="100%">
+    <div class="left" style="{SIDEBAR_DISPLAY_STYLE}">
+        <div id="site-language" class="clearfix">
+            <div class="navi" style="display: none;">
+                <a href="index.php?cmd=content&act=new">{TXT_NEW_PAGE}</a>
+                <a href="index.php?cmd=workflow">{TXT_CONTENT_HISTORY}</a>
+                <a href="index.php?cmd=media&archive=content">{TXT_IMAGE_ADMINISTRATION}</a>
             </div>
-            <div id="site-structure">
-                <table class="adminlist" width="100%">
-                    <tr>
-                        <th class="page" width="22%">Status / Seite</th>
-                        <th class="translation" width="13%">&Uuml;bersetzung</th>
-                        <th class="module" width="13%">Section / CMD</th>
-                        <th class="preview" width="13%">Ansicht</th>
-                        <th class="user" width="13%">Benutzer</th>
-                        <th class="lastupdate" width="13%">Datum</th>
-                        <th calss="actions" width="7%" style="text-align: right;">Aktionen</th>
-                    </tr>
-                </table>
-                <div id="site-tree"></div>
-            </div>
-        </td>
-        <td class="right">
-            <div id="page"{CM_HIDDEN}>
-                {CONTENT_MANAGER_MEAT}
-            </div>
-        </td>
-    </tr>
-</table>
+            <select class="chzn-select">{LANGSWITCH_OPTIONS}</select>
+        </div>
+        <div id="site-structure">
+            <table class="adminlist" width="100%">
+                <tr>
+                    <th class="page" width="22%">Status / Seite</th>
+                    <th class="translation" width="13%">&Uuml;bersetzung</th>
+                    <th class="module" width="13%">Section / CMD</th>
+                    <th class="preview" width="13%">Ansicht</th>
+                    <th class="user" width="13%">Benutzer</th>
+                    <th class="lastupdate" width="13%">Datum</th>
+                    <th calss="actions" width="7%" style="text-align: right;">Aktionen</th>
+                </tr>
+            </table>
+            <div id="site-tree"></div>
+        </div>
+    </div>
+    <div class="middle {SIDEBAR_CLASS_NAME}"></div>
+    <div class="right">
+        <div id="page"{CM_HIDDEN}>
+            {CONTENT_MANAGER_MEAT}
+        </div>
+    </div>
+</div>
 
 <script type="text/javascript">
 var languages = {LANGUAGE_ARRAY};
