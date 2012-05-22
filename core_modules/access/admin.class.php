@@ -2128,10 +2128,8 @@ class AccessManager extends AccessLib
                 $this->_objTpl->hideBlock('access_attribute_modify_function');
             }
             if ($objAttribute->isRemovable()) {
-                $this->_objTpl->hideBlock('access_attribute_no_delete_function');
                 $this->_objTpl->touchBlock('access_attribute_delete_function');
             } else {
-                $this->_objTpl->touchBlock('access_attribute_no_delete_function');
                 $this->_objTpl->hideBlock('access_attribute_delete_function');
             }
             $this->_objTpl->parse('access_attribute_list');

@@ -76,8 +76,12 @@ h1{ font-size: 20px }
     border: 1px solid #abadb3;
     border-right: 1px solid #e3d9ef;
     border-bottom: 1px solid #e3e9ef;
-    width: 700px;
+    width: 610px;
     display: block;
+}
+
+#page select {
+    width: 618px;
 }
 
 #page div.page_alias * {
@@ -114,6 +118,7 @@ h1{ font-size: 20px }
 
 #page input.title {
     padding: 6px;
+    width: 604px;
     font-size: 12pt;
 }
 
@@ -253,7 +258,7 @@ h1{ font-size: 20px }
 }
 
 #site-tree li ins.jstree-icon {
-
+    cursor: pointer;
 }
 
 #site-tree li a span.module {
@@ -296,34 +301,50 @@ h1{ font-size: 20px }
 }
 
 #site-tree ins.publishing {
-    background-image: url(../../../template/ascms/images/publishing.png);
-    background-position: -3px -4px;
+    width: 13px;
+    height: 14px;
+    background-image: url(../../../template/ascms/images/publishing-unlocked.png);
+    background-position: 0 -4px;
     margin-top: 6px;
 }
 #site-tree ins.publishing.locked {
     background-image: url(../../../template/ascms/images/publishing-locked.png);
 }
 #site-tree ins.publishing.unpublished {
-    background-position: -3px -4px;
+    background-position: -5px -5px;
+}
+#site-tree ins.publishing.unpublished.locked {
+    background-position: -4px -4px;
 }
 #site-tree ins.publishing.draft {
-    background-position: -3px -33px;
+    background-position: -5px -34px;
+}
+#site-tree ins.publishing.draft.locked {
+    background-position: -4px -33px;
 }
 #site-tree ins.publishing.draftwait {
-    background-position: -32px -33px;
+    background-position: -34px -34px;
+}
+#site-tree ins.publishing.draftwait.locked {
+    background-position: -33px -33px;
 }
 #site-tree ins.publishing.published {
-    background-position: -3px -62px; 
+    background-position: -5px -63px; 
+}
+#site-tree ins.publishing.published.locked {
+    background-position: -4px -62px; 
 }
 #site-tree ins.publishing.publishedwait {
-    background-position: -32px -62px;
+    background-position: -34px -63px;
+}
+#site-tree ins.publishing.publishedwait.locked {
+    background-position: -33px -62px;
 }
 
 #site-tree ins.page {
-    margin-top: 3px;
-    height: 24px;
-    width: 22px;
-    background-position: -3px -4px;
+    margin-top: 5px;
+    height: 17px;
+    width: 20px;
 }
 #site-tree ins.page.active {
     background-image: url(../../../template/ascms/images/page-active.png);
@@ -331,27 +352,55 @@ h1{ font-size: 20px }
 #site-tree ins.page.hidden, #site-tree ins.page {
     background-image: url(../../../template/ascms/images/page-hidden.png);
 }
+#site-tree ins.page {
+    background-position: 1px -6px;
+}
+#site-tree ins.page.use_fallback {
+    background-position: 1px -151px;
+}
 #site-tree ins.page.protected {
-    background-position: -32px -4px;
+    background-position: -33px -6px;
+}
+#site-tree ins.page.protected.use_fallback {
+    background-position: -33px -151px;
 }
 #site-tree ins.page.home {
-    background-position: -3px -33px;
+    background-position: 1px -35px;
+}
+#site-tree ins.page.home.use_fallback {
+    background-position: 1px -209px;
 }
 #site-tree ins.page.home.protected {
-    background-position: -32px -33px;
+    background-position: -33px -35px;
+}
+#site-tree ins.page.home.protected.use_fallback {
+    background-position: -33px -209px;
 }
 #site-tree ins.page.app {
-    background-position: -3px -62px;
+    background-position: 1px -64px;
+}
+#site-tree ins.page.app.use_fallback {
+    background-position: 1px -180px;
 }
 #site-tree ins.page.app.protected {
-    background-position: -32px -62px;
+    background-position: -33px -64px;
+}
+#site-tree ins.page.app.protected.use_fallback {
+    background-position: -33px -180px;
 }
 #site-tree ins.page.redir {
-    background-position: -3px -91px;
+    background-position: 1px -93px;
+}
+#site-tree ins.page.redir.use_fallback {
+    background-position: 1px -122px;
 }
 #site-tree ins.page.redir.protected {
-    background-position: -32px -91px;
+    background-position: -33px -93px;
 }
+#site-tree ins.page.redir.protected.use_fallback {
+    background-position: -33px -122px;
+}
+
 
 #site-tree li a ins.jstree-checkbox {
     position: absolute;
@@ -366,7 +415,7 @@ h1{ font-size: 20px }
     left: 0;
     width: 100%;
     height: 0;
-    margin-top: 29px;
+    margin-top: 28px;
     border-bottom: 1px solid #e5e5e5;
     z-index: auto;
 }
@@ -393,7 +442,8 @@ h1{ font-size: 20px }
     list-style-type: none;
 }
 
-#cm-tabs li a {
+#cm-tabs li a,
+.navi a {
     float: left;
     width: auto;
     height: 18px;
@@ -410,10 +460,21 @@ h1{ font-size: 20px }
 #cm-tabs a:focus,
 #cm-tabs a:active,
 #cm-tabs li.ui-state-active a,
-#cm-tabs li.ui-state-selected a {
+#cm-tabs li.ui-state-selected a,
+.navi a:hover,
+.navi a:focus,
+.navi a:active {
     background: #85be0b;
     color: #ffffff;
     cursor: pointer;
+}
+
+#content-manager .navi {
+    display: block !important;
+}
+
+#content-manager.shrunk .navi {
+    display: none !important;
 }
 
 .ui-tabs .ui-tabs-panel {
@@ -629,7 +690,9 @@ div.date img{
     color: #ffffff !important;
 }
 
-#toggle_titles label {
+.toggle label,
+.toggle_checkbox label {
+    cursor: pointer;
     color: #ffffff;
 }
 
@@ -647,13 +710,13 @@ div.date img{
 }
 
 #ckeditor {
-    width: 101.5%;
-    margin: 10px 0 10px -18px !important;
+    width: 101.7%;
+    margin: 10px 0 10px -22px !important;
 }
 
 
 #page .ms2side__select select {
-    width: 400px;
+    width: 281px;
 }
 /* 3) Helpers */
 #content-manager .left{

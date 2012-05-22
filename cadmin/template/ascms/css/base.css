@@ -37,17 +37,17 @@ h1 {
     font-weight: normal;
 }
 
-a {
-    color: #0d91d1;
+a,
+a:link,
+a:visited {
+    color: #1a74bd;
     text-decoration: none;
 }
 
 a:hover,
 a:focus,
-a:active,
-a:link,
-a:visited {
-    color: #1072ba;
+a:active {
+    color: #0b4c7a;
     cursor: pointer;
 }
 
@@ -262,7 +262,7 @@ a:visited {
 #navigation_wrapper object,
 #content select,
 #navigation_wrapper select {
-    border: 1px solid #acacac;
+    border: 1px solid #bbbbbb;
     padding: 3px;
     color: #444444;
 }
@@ -528,8 +528,8 @@ table.adminlist th a {
 table.adminlist tr a:hover,
 table.adminlist tr a:focus,
 table.adminlist tr a:active {
-    text-decoration: underline;
     cursor: pointer;
+    color: #0b4c7a;
 }
 table.adminlist tr.row0,
 table.adminlist tr.row1,
