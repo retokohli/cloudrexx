@@ -52,16 +52,13 @@ function accessDeleteAttribute(id,name)
 			<tr class="row{ACCESS_ATTRIBUTE_ROW_CLASS}">
 				<td>{ACCESS_ATTRIBUTE_NAME} ({ACCESS_ATTRIBUTE_ID})</td>
 				<td>{ACCESS_ATTRIBUTE}</td>
-				<td style="text-align:right;">&nbsp;
-					<!-- BEGIN access_attribute_modify_function -->
-					<a href="index.php?cmd=access&amp;act=config&amp;tpl=modifyAttribute&amp;id={ACCESS_ATTRIBUTE_ID}" title="{TXT_ACCESS_MODIFY_ATTRIBUTE}"><img src="images/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_ACCESS_MODIFY_ATTRIBUTE}" /></a>
-					<!-- END access_attribute_modify_function -->
+				<td>
 					<!-- BEGIN access_attribute_delete_function -->
-					<a href="javascript:accessDeleteAttribute({ACCESS_ATTRIBUTE_ID},'{ACCESS_ATTRIBUTE_NAME_JS}')" title="{TXT_ACCESS_DELETE_ATTRIBUTE}"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_ACCESS_DELETE_ATTRIBUTE}" /></a>
+					<a href="javascript:accessDeleteAttribute({ACCESS_ATTRIBUTE_ID},'{ACCESS_ATTRIBUTE_NAME_JS}')" title="{TXT_ACCESS_DELETE_ATTRIBUTE}" style="float: right; margin-left: 5px;"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_ACCESS_DELETE_ATTRIBUTE}" /></a>
 					<!-- END access_attribute_delete_function -->
-					<!-- BEGIN access_attribute_no_delete_function -->
-					<img src="images/icons/pixel.gif" width="17" height="17" border="0" alt="unquenchable" />
-					<!-- END access_attribute_no_delete_function -->
+					<!-- BEGIN access_attribute_modify_function -->
+					<a href="index.php?cmd=access&amp;act=config&amp;tpl=modifyAttribute&amp;id={ACCESS_ATTRIBUTE_ID}" title="{TXT_ACCESS_MODIFY_ATTRIBUTE}" style="float: right;"><img src="images/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_ACCESS_MODIFY_ATTRIBUTE}" /></a>
+					<!-- END access_attribute_modify_function -->
 				</td>
 			</tr>
 			<!-- END access_attribute_list -->
