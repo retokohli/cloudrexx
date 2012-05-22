@@ -99,6 +99,14 @@ class JsonNode implements JsonAdapter {
      * @return String JSON data 
      */
     public function getTree($parameters) {
+        global $_CORELANG;
+        
+        // Global access check
+        if (!\Permission::checkAccess(6, 'static', true) ||
+                !\Permission::checkAccess(35, 'static', true)) {
+            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
+        }
+        
         $nodeId = 0;
         if (isset($parameters['get']) && isset($parameters['get']['nodeid'])) {
             $nodeId = contrexx_input2raw($parameters['get']['nodeid']);
@@ -118,6 +126,9 @@ class JsonNode implements JsonAdapter {
      * @param array $arguments Arguments passed from JsonData
      */
     public function move($arguments) {
+        global $_CORELANG;
+        
+// TODO: ACCESS CHECK
         $moved_node = $this->nodeRepo->find($arguments['post']['id']);
         $parent_node = $this->nodeRepo->find($arguments['post']['ref']);
 
@@ -142,6 +153,17 @@ class JsonNode implements JsonAdapter {
      * @param array $arguments Arguments passed from JsonData
      */
     public function delete($arguments) {
+        global $_CORELANG;
+        
+        // Global access check
+        if (!\Permission::checkAccess(6, 'static', true) ||
+                !\Permission::checkAccess(35, 'static', true)) {
+            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
+        }
+        if (!\Permission::checkAccess(26, 'static', true)) {
+            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_DELETE_DENIED']);
+        }
+        
         $node = $this->nodeRepo->find($arguments['post']['id']);
 
         $this->em->remove($node);
@@ -199,7 +221,7 @@ class JsonNode implements JsonAdapter {
 
             foreach ($node->getPages() as $page) {
                 // don't display aliases in cm's tree
-                if ($page->getType() == 'alias')
+                if ($page->getType() == \Cx\Model\ContentManager\Page::TYPE_ALIAS)
                     continue 2;
 
                 $data[\FWLanguage::getLanguageCodeById($page->getLang())] = array(

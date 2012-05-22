@@ -80,6 +80,14 @@ class JsonPage implements JsonAdapter {
      * @throws Exception If the page could not be found
      */
     public function get($params) {
+        global $_CORELANG;
+        
+        // Global access check
+        if (!\Permission::checkAccess(6, 'static', true) ||
+                !\Permission::checkAccess(35, 'static', true)) {
+            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
+        }
+        
         $_GET['page'] = contrexx_input2raw($_GET['page']);
         $_GET['node'] = contrexx_input2raw($_GET['node']);
         $_GET['lang'] = contrexx_input2raw($_GET['lang']);
@@ -131,6 +139,13 @@ class JsonPage implements JsonAdapter {
      */
     public function set($params) {
         global $_CORELANG;
+        
+        // Global access check
+        if (!\Permission::checkAccess(6, 'static', true) ||
+                !\Permission::checkAccess(35, 'static', true)) {
+            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
+        }
+        
         $newpage = false;
         $pg = \Env::get('pageguard');
 
@@ -144,17 +159,16 @@ class JsonPage implements JsonAdapter {
         } elseif ($page['id'] == 0 && $page['node'] && $page['lang']) {
             // we are translating another page (to $page['lang'])
             $node = $this->nodeRepo->find($page['node']);
-
-            foreach ($node->getPages() as $pageCandidate) {
-                $source_page = $pageCandidate;
-                if ($source_page->getLang() == \FWLanguage::getLanguageIdByCode($params['post']['page']['lang']))
-                    break;
-            }
-            $page = $this->pageRepo->translate($source_page, \FWLanguage::getLanguageIdByCode($page['lang']), true, true, true);
+            
+            $page = $node->translatePage(true, $page['lang']);
 
             $reload = true;
         }
         else {
+            if (!\Permission::checkAccess(5, 'static', true)) {
+                throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_CREATION_DENIED']);
+            }
+            
             // create a new node/page combination
             $node = new \Cx\Model\ContentManager\Node();
             $node->setParent($this->nodeRepo->getRoot());
@@ -181,10 +195,18 @@ class JsonPage implements JsonAdapter {
         $page->validate();
 
         if ($page->isFrontendProtected() && isset($params['post']['frontendGroups'])) {
-            $pg->setAssignedGroupIds($page, $params['post']['frontendGroups'], true);
+            if (\Permission::checkAccess(36, 'static', true)) {
+                $pg->setAssignedGroupIds($page, $params['post']['frontendGroups'], true);
+            } else {
+                $this->messages[] = $_CORELANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'];
+            }
         }
         if ($page->isBackendProtected() && isset($params['post']['backendGroups'])) {
-            $pg->setAssignedGroupIds($page, $params['post']['backendGroups'], false);
+            if (\Permission::checkAccess(36, 'static', true)) {
+                $pg->setAssignedGroupIds($page, $params['post']['backendGroups'], false);
+            } else {
+                $this->messages[] = $_CORELANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'];
+            }
         }
 
         if ((isset($params['get']['publish']) && $params['get']['publish'])
@@ -252,7 +274,8 @@ class JsonPage implements JsonAdapter {
         $this->em->flush();
 
         // only users with publish rights can create aliases
-        if (\Permission::checkAccess(78, 'static', true)) {
+        if (\Permission::checkAccess(115, 'static', true) &&
+                \Permission::checkAccess(78, 'static', true)) {
             // aliases are updated after persist!
             $data = array();
             $data['alias'] = $params['post']['page']['alias'];
@@ -280,6 +303,14 @@ class JsonPage implements JsonAdapter {
      * @return  array  [link]     The link to the page (frontend).
      */
     public function setPagePreview($params) {
+        global $_CORELANG;
+        
+        // Global access check
+        if (!\Permission::checkAccess(6, 'static', true) ||
+                !\Permission::checkAccess(35, 'static', true)) {
+            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
+        }
+        
         $page = $this->validatePageArray($params['post']['page']);
         $page['pageId'] = $params['post']['page']['id'];
         $page['lang'] = $params['post']['page']['lang'];

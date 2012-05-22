@@ -33,7 +33,7 @@ class JsonContentManager implements JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('saveToggleStatuses');
+        return array('saveToggleStatuses', 'getAccess');
     }
 
     /**
@@ -55,5 +55,28 @@ class JsonContentManager implements JsonAdapter {
             }
         }
         $_SESSION['contentManager']['toggleStatuses'] = $arrToggleStatuses;
+    }
+    
+    /**
+     * Returns an array containing the permissions of the current user
+     * The array has the following keys with boolean values:
+     *  global      If this is false, cannot do anything in the content manager
+     *  delete      If this is true, the user can delete pages and nodes
+     *  create      If this is true, the user can create pages and nodes
+     *  access      If this is true, the user can change access to pages
+     *  publish     If this is true, the user can publish or decline drafts
+     * @todo Move this method to the ContentManager class and use it everywhere
+     * @return array Array containing the permissions of the current user
+     */
+    public function getAccess() {
+        $global =   \Permission::checkAccess(6, 'static', true) &&
+                    \Permission::checkAccess(35, 'static', true);
+        return array(
+            'global'    => $global,
+            'delete'    => $global && \Permission::checkAccess(26, 'static', true),
+            'create'    => $global && \Permission::checkAccess(5, 'static', true),
+            'access'    => $global && \Permission::checkAccess(36, 'static', true),
+            'publish'   => $global && \Permission::checkAccess(78, 'static', true),
+        );
     }
 }

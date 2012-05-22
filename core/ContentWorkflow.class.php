@@ -13,7 +13,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
 require ASCMS_CORE_PATH.'/BackendTable.class.php';
 require ASCMS_CORE_PATH.'/Module.class.php';
 require ASCMS_CORE_PATH.'/routing/LanguageExtractor.class.php';
-require_once 'JSONPage.class.php';
+require_once ASCMS_CORE_PATH.'/json/JsonPage.class.php';
 
 require_once ASCMS_CORE_PATH.'/Tree.class.php';
 require_once ASCMS_CORE_PATH.'/'.'XMLSitemap.class.php';
@@ -362,7 +362,7 @@ class ContentWorkflow extends Module {
         global $_CORELANG;
         
         switch ($page->getType()) {
-            case 'redirect':
+            case \Cx\Model\ContentManager\Page::TYPE_REDIRECT:
                 $criteria = array(
                     'nodeIdShadowed' => $page->getTargetNodeId(),
                     'lang'           => $page->getLang(),
@@ -371,12 +371,12 @@ class ContentWorkflow extends Module {
                 $type  = $_CORELANG['TXT_CORE_CM_TYPE_REDIRECT'].': ';
                 $type .= $target;
                 break;
-            case 'application':
+            case \Cx\Model\ContentManager\Page::TYPE_APPLICATION:
                 $type  = $_CORELANG['TXT_CORE_CM_TYPE_APPLICATION'].': ';
                 $type .= $page->getModule();
                 $type .= $page->getCmd() != '' ? ' | '.$page->getCmd() : '';
                 break;
-            case 'fallback':
+            case \Cx\Model\ContentManager\Page::TYPE_FALLBACK:
                 $fallbackLangId = \FWLanguage::getFallbackLanguageIdById($page->getLang());
                 if ($fallbackLangId == 0) {
                     $fallbackLangId = \FWLanguage::getDefaultLangId();

@@ -21,11 +21,13 @@ class ResolverTest extends DoctrineTestCase
         $n2 = new \Cx\Model\ContentManager\Node();
         $n3 = new \Cx\Model\ContentManager\Node();
         $n4 = new \Cx\Model\ContentManager\Node(); //redirection
+        $n5 = new \Cx\Model\ContentManager\Node(); //alias
 
         $n1->setParent($root);
         $n2->setParent($n1);
         $n3->setParent($n2);
         $n4->setParent($root);
+        $n5->setParent($root);
 
         $p1 = new \Cx\Model\ContentManager\Page();     
         $p1->setLang(1);
@@ -44,6 +46,14 @@ class ResolverTest extends DoctrineTestCase
         $p5->setTitle('subtreeTest_target');
         $p5->setNode($n3);
         $p5->setUsername('user');
+        
+        $p6 = new \Cx\Model\ContentManager\Page();
+        $p6->setLang(0);
+        $p6->setTitle('testalias');
+        $p6->setNode($n5);
+        $p6->setUsername('user');
+        $p6->setType(\Cx\Model\ContentManager\Page::TYPE_ALIAS);
+        $p6->setTarget($p4->getId().'|1');
 
         self::$em->persist($root);
         self::$em->persist($n1);
@@ -54,12 +64,13 @@ class ResolverTest extends DoctrineTestCase
         self::$em->persist($p1);
         self::$em->persist($p4);
         self::$em->persist($p5);
+        self::$em->persist($p6);
 
         self::$em->flush();
 
         $p2 = new \Cx\Model\ContentManager\Page();     
         $p2->setLang(1);
-        $p2->setType('redirect');
+        $p2->setType(\Cx\Model\ContentManager\Page::TYPE_REDIRECT);
         $p2->setTitle('redirection');
         $p2->setNode($n4);
         $p2->setTarget($n2->getId().'|?foo=test');
@@ -145,7 +156,7 @@ class ResolverTest extends DoctrineTestCase
         $p2->setTitle('pageThatsFallingBack');
         $p2->setNode($n1);
         $p2->setUsername('user');
-        $p2->setType('fallback');
+        $p2->setType(\Cx\Model\ContentManager\Page::TYPE_FALLBACK);
 
         //... will yield contents of this page as result.
         $p1 = new \Cx\Model\ContentManager\Page();     
@@ -189,5 +200,18 @@ class ResolverTest extends DoctrineTestCase
         $p->setContent('asdf');
         self::$em->persist($p);
         self::$em->flush();
+    }
+    
+    public function testAliasResolving() {
+        $this->insertFixtures();
+        
+        $url = new URL('http://example.com/testalias');
+        $resolver = new Resolver($url, 1, self::$em, '', $this->mockFallbackLanguages, true);
+        $resolver->resolveAlias();
+        $resolver->resolve();
+        $p = $resolver->getPage();
+        
+        $this->assertEquals(1, $p->getLang());
+        $this->assertEquals('testpage1_child', $p->getTitle());
     }
 }

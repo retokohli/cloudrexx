@@ -177,13 +177,13 @@ class Node extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Add pages
+     * Add a page
      *
-     * @param Cx\Model\ContentManager\Page $pages
+     * @param Cx\Model\ContentManager\Page $page
      */
-    public function addPages(\Cx\Model\ContentManager\Page $pages)
+    public function addPage(\Cx\Model\ContentManager\Page $page)
     {
-        $this->pages[] = $pages;
+        $this->pages[] = $page;
     }
 
     /**
@@ -247,10 +247,6 @@ class Node extends \Cx\Model\Base\EntityBase
         return $this->parent;
     }
 
-    public function addAssociatedPage($page) {
-        $this->pages[] = $page;
-    }
-
     /**
      * @prePersist
      */
@@ -269,5 +265,55 @@ class Node extends \Cx\Model\Base\EntityBase
     public function hasAccessByUserId($frontend = true) {
         $type = 'node_' . ($frontend ? 'frontend' : 'backend');
         return Permission::checkAccess($this->id, $type, true);        
+    }
+    
+    /**
+     * Creates a translated page in this node
+     *
+     * Does not flush EntityManager.
+     *
+     * @param boolean $activate whether the new page should be activated
+     * @param int $targetLang target language id
+     * @returns \Cx\Model\ContentManager\Page the copy
+     */
+    public function translatePage($activate, $targetLang) {
+        $type = \Cx\Model\ContentManager\Page::TYPE_FALLBACK;
+        
+        $fallback_language = \FWLanguage::getFallbackLanguageIdById($targetLang);
+        $defaultLang = \FWLanguage::getDefaultLangId();
+        
+        // copy the corresponding language version (if there is one)
+        if ($fallback_language && $this->getPage($fallback_language)) {
+            $pageToTranslate = $this->getPage($fallback_language);
+        
+        // find best page to copy if no corresponding language version is present
+        } else {
+            if ($this->getPage($defaultLang)) {
+                $pageToTranslate = $this->getPage($defaultLang);
+            } else {
+                $pageToTranslate = current($this->getPages());
+            }
+            if (!$fallback_language) {
+                $type = \Cx\Model\ContentManager\Page::TYPE_CONTENT;
+            }
+        }
+        
+        // copy page following redirects
+        $page = $pageToTranslate->copyToLang(
+                $targetLang,
+                true,   // includeContent
+                true,   // includeModuleAndCmd
+                true,   // includeName
+                true,   // includeMetaData
+                true,   // includeProtection
+                false,  // followRedirects
+                true    // followFallbacks
+        );
+        $page->setActive($activate);
+        $page->setType($type);
+        
+        $page->setupPath($targetLang);
+        
+        return $page;
     }
 }

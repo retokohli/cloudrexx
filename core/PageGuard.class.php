@@ -12,6 +12,13 @@ class PageGuard {
         $this->db = $db;
     }
     
+    /**
+     * Returns the group ids with access to front- or backend of a page
+     * @param \Cx\Model\ContentManager\Page $page Page to get the group ids of
+     * @param boolean $frontend True for frontend access groups, false for backend
+     * @return mixed Array of group ids or false on error
+     * @throws PageGuardException 
+     */
     public function getAssignedGroupIds($page, $frontend) {
         if ($frontend && !$page->isFrontendProtected()) {
             return array();
@@ -43,39 +50,12 @@ it. Contrexx encountered an error while generating a new access id.');
 	    Env::get('em')->flush();
 	}
 
-        $query = 'SELECT group_id
-            FROM '.DBPREFIX.'access_group_dynamic_ids
-            WHERE access_id='.$accessId;
-        $rs = $this->db->Execute($query);
-        if($rs === false)
-            throw new PageGuardException('Could not fetch groups for page "'.$page->getTitle().'" with id "'.$page->getId().'" (access id "'.$accessId.')"');
-        
-        $ids = array();
-        while(!$rs->EOF) {
-            $ids[] = $rs->fields['group_id'];
-            $rs->MoveNext();
-        }
-
-        return $ids;
+        return \Permission::getGroupIdsForAccessId($accessId);
     }
 
     public function setAssignedGroupIds($page, $ids, $frontend) {
         $accessId = $this->getAccessId($page, $frontend);
-
-        $query = 'DELETE FROM '.DBPREFIX.'access_group_dynamic_ids ' .
-                 'WHERE access_id = '.$accessId;
-        $result = $this->db->Execute($query);
-        if($result === false)
-            throw new PageGuardException('Could not delete group assignments for page "'.$page->getTitle().'" with id "'.$page->getId().'" (access id "'.$accessId.')"');
-        
-        $query = 'INSERT INTO '.DBPREFIX.'access_group_dynamic_ids (access_id, group_id) ' .
-                 'VALUES (?, ?);';
-	foreach ($ids as $groupId) {
-	    $result = $this->db->Execute($query, array($accessId, $groupId));
-	}
-	
-        if($result === false)
-            throw new PageGuardException('Could not delete group assignments for page "'.$page->getTitle().'" with id "'.$page->getId().'" (access id "'.$accessId.')"');
+        \Permission::setAccess($accessId, 'dynamic', $ids);
     }
 
     protected function getAccessId($page, $frontend) {
@@ -87,21 +67,12 @@ it. Contrexx encountered an error while generating a new access id.');
         return $accessId;
     }
 
+    /**
+     * Returns an array of all front- or backend groups
+     * @param boolean $frontend True for frontend access groups, false for backend
+     * @return mixed Array (id=>name) or false on error
+     */
     public function getGroups($frontend) {
-        $type = 'frontend';
-        if(!$frontend)
-            $type = 'backend';
-
-        $query = "SELECT group_id, group_name FROM ".DBPREFIX."access_user_groups WHERE type='".$type."' ORDER BY group_name";
-        $rs = $this->db->Execute($query);
-        if($rs == false)
-            throw new PageGuardException('Could not fetch "'.$type.'" groups.');
-
-        $groups = array();
-        while(!$rs->EOF) {
-            $groups[$rs->fields['group_id']] = $rs->fields['group_name'];
-            $rs->MoveNext();
-        }
-        return $groups;
+        return \Permission::getGroups($frontend);
     }
 }

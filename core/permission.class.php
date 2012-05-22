@@ -86,7 +86,7 @@ class Permission
      * @param $accessId     integer Affected Access-ID
      * @param $type         string  Permission type, which is either 'static' or 'dynamic'
      * @param $groupId      mixed   Either a single ID as integer or an array of ID's
-     * @return boolean  TRUE on success, FALSE on failure.
+     * @return boolean      TRUE on success, FALSE on failure.
      */
     public static function setAccess($accessId, $type, $groupId)
     {
@@ -137,6 +137,53 @@ class Permission
         global $objDatabase;
 
         return (bool) $objDatabase->Execute('DELETE FROM `'.DBPREFIX.'access_group_'.$type.'_ids` WHERE `access_id` = '.$accessId.(isset($groupId) ? ' AND `group_id` IN ('.(is_array($groupId) ? implode(',', $groupId) : $groupId).')' : ''));
+    }
+    
+    public static function getGroupIdsForAccessId($accessId) {
+        global $objDatabase;
+
+        $query = 'SELECT group_id
+            FROM '.DBPREFIX.'access_group_dynamic_ids
+            WHERE access_id='.$accessId;
+        $rs = $objDatabase->Execute($query);
+        if($rs === false) {
+            return false;
+        }
+        
+        $ids = array();
+        while(!$rs->EOF) {
+            $ids[] = $rs->fields['group_id'];
+            $rs->MoveNext();
+        }
+
+        return $ids;
+    }
+
+    /**
+     * Returns an array of all front- or backend groups
+     * @param boolean $frontend True for frontend access groups, false for backend
+     * @return mixed Array (id=>name) or false on error
+     */
+    public static function getGroups($frontend) {
+        global $objDatabase;
+
+        $type = 'frontend';
+        if (!$frontend) {
+            $type = 'backend';
+        }
+
+        $query = "SELECT group_id, group_name FROM ".DBPREFIX."access_user_groups WHERE type='".$type."' ORDER BY group_name";
+        $rs = $objDatabase->Execute($query);
+        if ($rs == false) {
+            return false;
+        }
+
+        $groups = array();
+        while (!$rs->EOF) {
+            $groups[$rs->fields['group_id']] = $rs->fields['group_name'];
+            $rs->MoveNext();
+        }
+        return $groups;
     }
 }
 

@@ -197,8 +197,8 @@ class Resolver {
           resolving starts over again.
          */
         $target = $this->page->getTarget();
-        $isRedirection = $this->page->getType() == 'redirect';
-        $isAlias = $this->page->getType() == 'alias';
+        $isRedirection = $this->page->getType() == \Cx\Model\ContentManager\Page::TYPE_REDIRECT;
+        $isAlias = $this->page->getType() == \Cx\Model\ContentManager\Page::TYPE_ALIAS;
         
         //handles alias redirections internal / disables external redirection
         $this->forceInternalRedirection = $this->forceInternalRedirection || $isAlias;
@@ -254,7 +254,8 @@ class Resolver {
         
         $this->handleFallbackContent($this->page);
         
-        if ($this->page->getType() == 'application' || $this->page->getType() == 'fallback') {
+        if ($this->page->getType() == \Cx\Model\ContentManager\Page::TYPE_APPLICATION
+                || $this->page->getType() == \Cx\Model\ContentManager\Page::TYPE_FALLBACK) {
             $this->command = $this->page->getCmd();
             $this->section = $this->page->getModule();
         }
@@ -267,7 +268,7 @@ class Resolver {
      */
     public function handleFallbackContent($page) {
         //handle untranslated pages - replace them by the right language version.
-        if($page->getType() == 'fallback') {
+        if($page->getType() == \Cx\Model\ContentManager\Page::TYPE_FALLBACK) {
             $langId = $this->fallbackLanguages[$page->getLang()];
             $fallbackPage = $page->getNode()->getPage($langId);
             if(!$fallbackPage)

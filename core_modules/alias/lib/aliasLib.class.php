@@ -153,8 +153,8 @@ class aliasLib
         
         $page = new \Cx\Model\ContentManager\Page();
         $page->setLang(0);
-        $page->setType("alias");
-        $page->setCmd("");
+        $page->setType(\Cx\Model\ContentManager\Page::TYPE_ALIAS);
+        $page->setCmd('');
         $page->setActive(true);
         $page->setUsername($objFWUser->objUser->getUsername());
         return $page;
@@ -186,7 +186,7 @@ class aliasLib
             }
             $page = $pages->first();
             // we won't change anything on non aliases
-            if ($page->getType() != "alias") {
+            if ($page->getType() != \Cx\Model\ContentManager\Page::TYPE_ALIAS) {
                 return false;
             }
         }

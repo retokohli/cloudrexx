@@ -142,13 +142,21 @@ class PageRepository extends EntityRepository {
         $qb->where($qb->expr()->gt('node.lvl', 0)); //exclude root node
         switch ($search_mode) {
             case self::SEARCH_MODE_ALIAS_ONLY:
-                $qb->andWhere("p.type = 'alias'"); //exclude non alias nodes
+                $qb->andWhere(
+                        'p.type = \'' . 
+                        \Cx\Model\ContentManager\Page::TYPE_ALIAS .
+                        '\''
+                ); //exclude non alias nodes
                 continue;
             case self::SEARCH_MODE_ALL:
                 continue;
             case self::SEARCH_MODE_PAGES_ONLY:
             default:
-                $qb->andWhere("p.type != 'alias'"); //exclude alias nodes
+                $qb->andWhere(
+                        'p.type != \'' . 
+                        \Cx\Model\ContentManager\Page::TYPE_ALIAS .
+                        '\''
+                ); //exclude alias nodes
                 continue;
         }
         
