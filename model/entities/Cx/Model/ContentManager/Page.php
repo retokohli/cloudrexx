@@ -559,7 +559,26 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function getStatus()
     {
-        $status = "";
+        $status = '';
+        if ($this->getType() == self::TYPE_FALLBACK) {
+            $fallback_lang = \FWLanguage::getFallbackLanguageIdById($this->getLang());
+            if ($fallback_lang !== false && $fallback_lang == 0) {
+                $fallback_lang = \FWLanguage::getDefaultLangId();
+            }
+            if ($fallback_lang) {
+                $fallback_page = $this->getNode()->getPage($fallback_lang);
+                if ($fallback_page) {
+                    return 'use_fallback ' . $fallback_page->getStatus();
+                }
+            }
+            $status .= 'use_fallback broken ';
+        } else if ($this->getType() == self::TYPE_REDIRECT) {
+            $status .= 'redir ';
+            if (!$this->target) {
+                $status .= 'broken ';
+            }
+        }
+        
         if ($this->getDisplay()) $status .= "active ";
         else $status .= "inactive ";
 
@@ -568,7 +587,6 @@ class Page extends \Cx\Model\Base\EntityBase
             if ($this->module == "home") $status .= "home ";
             else $status .= "app ";
         }
-        if ($this->target) $status .= "redir ";
         return $status;
     }
 
