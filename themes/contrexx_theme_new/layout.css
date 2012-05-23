@@ -69,7 +69,8 @@ body {
 }
 #page {
   margin: 0 auto;
-  width: 990px;  
+  width: 990px;
+  
 }
 #header {
   min-height: 65px;
@@ -3308,6 +3309,9 @@ pre .name {
 .more {
     font-family: 'Open Sans', Arial, Helvetica, sans-serif;
 }
+.more_to_read{
+    float: right;
+}
 /* paging */
 .paging {
     overflow:hidden;
@@ -3592,7 +3596,8 @@ pre .name {
 /* footer */
 #footer {
     display:table-row;
-    width:100%;
+    /*width:100%;*/
+    width: 990px;
     line-height:18px;
     background:#222;
     color:#999;
@@ -3600,7 +3605,8 @@ pre .name {
 .footer-holder {
     display:table-cell;
     height:1%;
-    width:100%;
+    /*width:100%;*/
+    width: 990px;
 }
 #footer .container {
     height:auto;
@@ -3618,6 +3624,7 @@ pre .name {
     /*background:#222;*/
     padding:28px 30px 15px;
     overflow:hidden;
+    
 }
 /* add */
 .add {
@@ -3680,25 +3687,28 @@ pre .name {
     height:28px;
     position:relative;
 }
+.newsletter br{
+    display: none;
+}
 .newsletter form:after {
     display:block;
     clear: both;
     content:'';
 }
-.newsletter .text {
+.newsletter input[type=text] {
     line-height:17px;
     color:#999;
-    width:151px;
+    width:151px !important;
     background:none;
     border:0;
     margin:0;
     float:left;
     padding:5px 9px 6px;
 }
-.newsletter .submit {
+.newsletter input[type=submit] {
     float:right;
     background:url(images/btn-submit.png) 0 4px no-repeat;
-    width:36px;
+    min-width:36px !important;
     height:28px;
     text-indent:-9999px;
     overflow:hidden;
@@ -3768,6 +3778,9 @@ pre .name {
     float:left;
     width:207px;
 }
+/*.premium{
+    margin-right: 33px;
+}*/
 .clients-info li {
     border-bottom:1px dashed #454545;
     background:url(images/bullet.png) 0 15px no-repeat;
@@ -3908,4 +3921,7 @@ pre .name {
     background: -o-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
     background: -ms-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
     background: linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
+}
+.content_home_text{
+    margin: 10px 0 15px;
 }
