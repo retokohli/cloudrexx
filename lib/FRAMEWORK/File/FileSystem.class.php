@@ -854,23 +854,17 @@ class FileSystem
      * @param   string    $file_path      The path of the file
      * @return  boolean                   True on success, false otherwise
      */
-    static function delete_file($file_path)
+    public static function delete_file($file_path)
     {
-        self::path_relative_to_root($file_path);
-//\DBG::msg("File::delete_file($file_path): File: ".ASCMS_DOCUMENT_ROOT.'/'.$file_path);
-        if (!self::exists($file_path)) {
-//\DBG::msg("File::delete_file($file_path): File does not exist: ".ASCMS_DOCUMENT_ROOT.'/'.$file_path);
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File($file_path);
+            $objFile->delete();
             return true;
+        } catch (FileSystemException $e) {
+            \DBG::msg($e->getMessage());
         }
-// TODO: isn't this chmod obsolete? // 02/26/12 - thomas.daeppen@comvation.com
-//        self::chmod($file_path, 0777);
-        @unlink(ASCMS_DOCUMENT_ROOT.'/'.$file_path);
-        clearstatcache();
-        if (self::exists($file_path)) {
-//\DBG::msg("File::delete_file($file_path): Failed to delete, trying FTP: ".ASCMS_DOCUMENT_ROOT.'/'.$file_path);
-            return self::delete_file_ftp($file_path);
-        }
-        return true;
+
+        return false;
     }
 
 

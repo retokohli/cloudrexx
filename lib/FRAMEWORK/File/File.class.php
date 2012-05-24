@@ -99,4 +99,28 @@ class File implements FileInterface
 
         return true;
     }
+
+    public function delete()
+    {
+        try {
+            $fsFile = new FileSystemFile($this->file);
+            $fsFile->delete();
+        } catch (FileSystemFileException $e) {
+            \DBG::msg('FileSystemFile: '.$e->getMessage());
+
+            // try ftp access as fall-back in case regular file access failed
+            try {
+                $ftpFile = new FTPFile($this->file);
+                $ftpFile->delete();
+            } catch (FTPFileException $e) {
+                \DBG::msg('FTPFile: '.$e->getMessage());
+                throw new \Cx\Lib\FileSystemException('File: Unable to delete file '.$this->file.'!');
+            }
+        }
+
+        clearstatcache();
+        if (file_exists($this->file)) {
+            throw new \Cx\Lib\FileSystemException('File: Unable to delete file '.$this->file.'!');
+        }
+    }
 }
