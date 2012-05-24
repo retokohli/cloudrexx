@@ -753,7 +753,7 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function setNode(\Cx\Model\ContentManager\Node $node)
     {
-        $node->addAssociatedPage($this);
+        //$node->addAssociatedPage($this);
         $this->node = $node;
     }
 

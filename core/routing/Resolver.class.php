@@ -55,7 +55,24 @@ class Resolver {
      * @var String
      */
     protected $command = '';
-
+    
+    /**
+     * Remembers if it's a page preview.
+     * @var boolean
+     */
+    protected $pagePreview = 0;
+    
+    /**
+     * Contains the history id to revert the page to an older version.
+     * @var int
+     */
+    protected $historyId = 0;
+    
+    /**
+     * Contains the page array from the session.
+     * @var array
+     */
+    protected $sessionPage = array();
     
     /**
      * @param URL $url the url to resolve
@@ -90,8 +107,10 @@ class Resolver {
         $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
         $this->nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
         $this->forceInternalRedirection = $forceInternalRedirection;
-
         $this->fallbackLanguages = $fallbackLanguages;
+        $this->pagePreview = !empty($_GET['pagePreview']) && ($_GET['pagePreview'] == 1) ? 1 : 0;
+        $this->historyId = !empty($_GET['history']) ? $_GET['history'] : 0;
+        $this->sessionPage = !empty($_SESSION['page']) ? $_SESSION['page'] : array();
     }
     
     /**
@@ -135,59 +154,35 @@ class Resolver {
             //(I) see what the model has for us, including aliases.
             $result = $this->pageRepo->getPagesAtPath($path, null, $this->lang, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
 
-            if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && !empty($_SESSION['page'])) {
-                $data = $_SESSION['page'];
+            if ($this->pagePreview && !empty($this->sessionPage)) {
+                $result['page'] = $this->getPreviewPage();
                 
-                $page = $this->pageRepo->findOneById($data['pageId']);
-                if (!$page) {
-                    $page = new \Cx\Model\ContentManager\Page();
-                    $node = new \Cx\Model\ContentManager\Node();
-                    $node->setParent($this->nodeRepo->getRoot());
-                    $this->nodeRepo->getRoot()->addChildren($node);
-                    $node->addPage($page);
-                    $page->setNode($node);
-                    
-                    $this->pageRepo->addVirtualPage($page);
-                }
+                $tree   = $this->pageRepo->getTreeByTitle(null, $this->lang, true, true, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
+                $pathes = $this->pageRepo->getPathes($path, $tree, false);
                 
-                unset($data['pageId']);
-                $page->setLang(\FWLanguage::getLanguageIdByCode($data['lang']));
-                unset($data['lang']);
-                $page->updateFromArray($data);
-                $page->setUpdatedAtToNow();
-                $page->setActive(true);
-                $page->setLinkTarget('?pagePreview=1');
-                $page->setVirtual(true);
-                $page->validate();
-                
-                $this->page = $page;
+                $result['matchedPath']   = !empty($pathes['matchedPath'])   ? $pathes['matchedPath']   : '';
+                $result['unmatchedPath'] = !empty($pathes['unmatchedPath']) ? $pathes['unmatchedPath'] : '';
             }
 
             //(II) sort out errors
             if(!$result) {
-                if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && !empty($_SESSION['page'])) {
-                    return;
-                }
                 throw new ResolverException('Unable to locate page (tried path ' . $path .').');
             }
 
             if(!$result['page']) {
-                if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && !empty($_SESSION['page'])) {
-                    return;
-                }
                 throw new ResolverException('Unable to locate page for this language. (tried path ' . $path .').');
             }
 
+            // If an older revision was requested, revert to that in-place:
+            if (!empty($this->historyId) && \Permission::checkAccess(6, 'static', true)) {
+                $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
+
+                $logRepo->revert($result['page'], $this->historyId);
+            }
+            
             //(III) extend our url object with matched path / params
             $this->url->setTargetPath($result['matchedPath']);
             $this->url->setParams($result['unmatchedPath'] . $this->url->getSuggestedParams());
-
-            // If an older revision was requested, revert to that in-place:
-            if (isset($_GET['history']) && \Permission::checkAccess(6, 'static', true)) {
-                $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
-
-                $logRepo->revert($result['page'], $_GET['history']);
-            }
 
             $this->page = $result['page'];
         }
@@ -259,6 +254,38 @@ class Resolver {
             $this->command = $this->page->getCmd();
             $this->section = $this->page->getModule();
         }
+    }
+
+    /**
+     * Returns the preview page built from the session page array.
+     * @return Cx\Model\ContentManager\Page $page
+     */
+    private function getPreviewPage() {
+        $data = $this->sessionPage;
+        
+        $page = $this->pageRepo->findOneById($data['pageId']);
+        if (!$page) {
+            $page = new \Cx\Model\ContentManager\Page();
+            $node = new \Cx\Model\ContentManager\Node();
+            $node->setParent($this->nodeRepo->getRoot());
+            $this->nodeRepo->getRoot()->addChildren($node);
+            $node->addPage($page);
+            $page->setNode($node);
+            
+            $this->pageRepo->addVirtualPage($page);
+        }
+        
+        unset($data['pageId']);
+        $page->setLang(\FWLanguage::getLanguageIdByCode($data['lang']));
+        unset($data['lang']);
+        $page->updateFromArray($data);
+        $page->setUpdatedAtToNow();
+        $page->setActive(true);
+        $page->setLinkTarget('?pagePreview=1');
+        $page->setVirtual(true);
+        $page->validate();
+        
+        return $page;
     }
 
     /**

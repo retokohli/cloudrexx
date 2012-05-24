@@ -11,9 +11,7 @@
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 use \Cx\Core\Json\Adapter\JsonPage;
 
-require ASCMS_CORE_PATH . '/BackendTable.class.php';
 require ASCMS_CORE_PATH . '/Module.class.php';
-require ASCMS_CORE_PATH . '/routing/LanguageExtractor.class.php';
 require_once ASCMS_CORE_PATH . '/json/adapter/JsonPage.class.php';
 
 class ContentManagerException extends ModuleException {
@@ -272,87 +270,6 @@ class ContentManager extends Module {
         }
     }
 
-    protected function actAjaxGetHistoryTable() {
-        if (!isset($_GET['pageId']))
-            throw new ContentManagerException('please provide a pageId');
-
-        //(I) get the right page
-        $id = $_GET['pageId'];
-        $page = $this->pageRepository->findOneById($id);
-
-        if (!$page) {
-            throw new ContentManagerException("could not find page with id $id");
-        }
-
-        //(II) build the table with headers
-        $table = new BackendTable(array('width' => '100%'));
-        $table->setAutoGrow(true);
-
-        $table->setHeaderContents(0, 0, 'Date');
-        $table->setHeaderContents(0, 1, 'Title');
-        $table->setHeaderContents(0, 2, 'Author');
-        //make sure those are th's too
-        $table->setHeaderContents(0, 3, '');
-        $table->setHeaderContents(0, 4, '');
-
-        //(III) collect page informations - path, virtual language directory
-        $path = $this->getPageRepository()->getPath($page);
-        $pageHasDraft = $page->getEditingStatus() != '' ? true : false;
-
-        $le = new \Cx\Core\Routing\LanguageExtractor($this->db, DBPREFIX);
-        $langDir = $le->getShortNameOfLanguage($page->getLang());
-
-        $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
-        $logs = $logRepo->getLogEntries($page);
-
-        //currently user of this page
-        $user = json_decode($logs[0]->getUsername());
-        $username = $user->{'name'};
-
-        //(IV) add current entry to table
-        $this->addHistoryEntries($page, $username, $table, 1);
-
-        //(V) add the history entries
-        $logCount = count($logs);
-        for ($i = 1; $i < $logCount; $i++) {
-            $version = $logs[$i]->getVersion();
-            $row = $i + 1;
-            $user = json_decode($logs[$i]->getUsername());
-            $username = $user->{'name'};
-            try {
-                $logRepo->revert($page, $version);
-                $page->setUpdatedAt($logs[$i]->getLoggedAt());
-
-                $this->addHistoryEntries($page, $username, $table, $row, $version, $langDir . '/' . $path, $pageHasDraft);
-            } catch (\Gedmo\Exception\UnexpectedValueException $e) {
-                
-            }
-        }
-
-        //(VI) render
-        die($table->toHtml());
-    }
-
-    protected function addHistoryEntries($page, $username, $table, $row, $version = '', $path = '', $pageHasDraft = true) {
-        global $_ARRAYLANG;
-
-        $dateString = $page->getUpdatedAt()->format(ASCMS_DATE_FORMAT);
-
-        if ($row == 2 && $pageHasDraft) {
-            $dateString .= ' (' . $_ARRAYLANG['TXT_CORE_DRAFT'] . ')';
-        } else if ($row > 1) { //not the current page
-            $table->setCellContents($row, 3, '<a href="javascript:loadHistoryVersion(' . $page->getId() . ',' . $version . ')">' . $_ARRAYLANG['TXT_CORE_LOAD'] . '</a>');
-            $historyLink = ASCMS_PATH_OFFSET . '/' . $path . '?history=' . $version;
-            $table->setCellContents($row, 4, '<a href="' . $historyLink . '" target="_blank">' . $_ARRAYLANG['TXT_CORE_PREVIEW'] . '</a>');
-        } else { //current page state
-            $dateString .= ' (' . $_ARRAYLANG['TXT_CORE_CURRENT'] . ')';
-        }
-
-        $table->setCellContents($row, 0, $dateString);
-        $table->setCellContents($row, 1, $page->getTitle());
-        $table->setCellContents($row, 2, $username);
-    }
-
     protected function getCustomContentTemplates() {
         $templates = array();
         // foreach theme
@@ -379,17 +296,5 @@ class ContentManager extends Module {
         }
 
         return $matchingTemplates;
-    }
-
-    protected function publishDraft() {
-        
-    }
-
-    function getPageRepository() {
-        return $this->pageRepository;
-    }
-
-    function getNodeRepository() {
-        return $this->nodeRepository;
     }
 }
