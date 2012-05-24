@@ -119,5 +119,12 @@ class FileSystemFile implements FileInterface
             throw new FileSystemFileException('Unable to set write access to file '.$this->filePath.'!');
         }
     }
+
+    public function delete()
+    {
+        if (!unlink($this->filePath)) {
+            throw new FileSystemFileException('Unable to delete file '.$this->filePath.'!');
+        }
+    }
 }
 

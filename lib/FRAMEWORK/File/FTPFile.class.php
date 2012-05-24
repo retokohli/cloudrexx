@@ -117,6 +117,15 @@ class FTPFile implements FileInterface
         }
     }
 
+    public function delete()
+    {
+        $this->initConnection();
+
+        if (!ftp_delete($this->connection, $this->filePath.'/'.$this->file)) {
+            throw new FTPFileException('Unable to delete file '.$this->filePath.'/'.$this->file.'!');
+        }
+    }
+
     private function uploadTempFile()
     {
         // navigate to specified directory on FTP server
