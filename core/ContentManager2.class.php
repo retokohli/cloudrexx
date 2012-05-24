@@ -128,7 +128,7 @@ class ContentManager extends Module {
                 'THEMES_DISPLAY_STYLE' => 'display: block;',
                 'NAVIGATION_DISPLAY_STYLE' => 'display: block;',
                 'SIDEBAR_DISPLAY_STYLE' => 'display: block;',
-                'SIDEBAR_CLASS_NAME' => 'sidebar_hide',
+                'SIDEBAR_CLASS_NAME' => 'hide',
             ));
         } else {
             $this->template->setVariable(array(

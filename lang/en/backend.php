@@ -1355,7 +1355,7 @@ $_ARRAYLANG['TXT_CORE_NONE'] = "None";
 
 
 $_ARRAYLANG['TXT_CORE_CM_PAGE'] = 'Page';
-$_ARRAYLANG['TXT_CORE_CM_META'] = 'Metadata';
+$_ARRAYLANG['TXT_CORE_CM_META'] = 'SEO';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS'] = 'Access Permissions';
 $_ARRAYLANG['TXT_CORE_CM_SETTINGS'] = 'Advanced Settings';
 $_ARRAYLANG['TXT_CORE_CM_HISTORY'] = 'History';
@@ -1395,7 +1395,7 @@ $_ARRAYLANG['TXT_CORE_CM_NAVIGATION'] = 'Navigation';
 $_ARRAYLANG['TXT_CORE_CM_LINK_TARGET'] = 'Link Target';
 $_ARRAYLANG['TXT_CORE_CM_LINK_TARGET_INO'] = 'Open the page in a new/specified window.';
 $_ARRAYLANG['TXT_CORE_CM_SLUG'] = 'URI-Slug';
-$_ARRAYLANG['TXT_CORE_CM_SLUG_INFO'] = 'Used as the page\'s name in its URI. Example: %1$s/<strong id="liveSlug">ExpressDelivery</strong>';
+$_ARRAYLANG['TXT_CORE_CM_SLUG_INFO'] = 'Used as the page\'s name in its URI. Example: %1$s/<strong id=\"liveSlug\">ExpressDelivery</strong>';
 $_ARRAYLANG['TXT_CORE_CM_CSS_NAV_CLASS'] = 'Additional CSS Navigation Class';
 $_ARRAYLANG['TXT_CORE_CM_CSS_NAV_CLASS_INFO'] = 'The specified value can be accessed as [[CSS_NAME]] in navigation contexts.';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND'] = 'Restrict Read (Frontend) Access to This Page';
