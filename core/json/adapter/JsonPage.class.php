@@ -9,6 +9,8 @@
  */
 namespace Cx\Core\Json\Adapter;
 require_once ASCMS_CORE_PATH.'/json/JsonAdapter.interface.php';
+require_once ASCMS_CORE_PATH . '/routing/LanguageExtractor.class.php';
+require_once ASCMS_CORE_PATH.'/BackendTable.class.php';
 use \Cx\Core\Json\JsonAdapter;
 
 /**
@@ -23,9 +25,11 @@ use \Cx\Core\Json\JsonAdapter;
 class JsonPage implements JsonAdapter {
 
     private $em = null;
+    private $db = null;
     private $pageRepo = null;
     private $nodeRepo = null;
     private $fallbacks;
+    private $pageId = 0;
     public $messages;
 
     /**
@@ -33,10 +37,13 @@ class JsonPage implements JsonAdapter {
      */
     function __construct() {
         $this->em = \Env::em();
+        $this->db = \Env::get('db');
         $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
         $this->nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
+        $this->logRepo  = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
         $this->messages = array();
         $this->tz = new \DateTimeZone('Europe/Berlin');
+        $this->pageId = !empty($_GET['pageId']) ? $_GET['pageId'] : 0;
 
         $fallback_lang_codes = \FWLanguage::getFallbackLanguageArray();
         $active_langs = \FWLanguage::getActiveFrontendLanguages();
@@ -61,7 +68,7 @@ class JsonPage implements JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('get', 'set', 'setPagePreview', 'setPageStatus');
+        return array('get', 'set', 'setPagePreview', 'setPageStatus', 'getHistoryTable');
     }
 
     /**
@@ -113,16 +120,14 @@ class JsonPage implements JsonAdapter {
 
         // load an older revision if asked to do so:
         if (isset($params['get']) && isset($params['get']['history'])) {
-            $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
-
-            $logRepo->revert($page, $params['get']['history']);
+            $this->logRepo->revert($page, $params['get']['history']);
         }
         // load the draft revision if one is available and we're not loading historic data:
         elseif ($page->getEditingStatus() == 'hasDraft' || $page->getEditingStatus() == 'hasDraftWaiting') {
-            $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
+            $this->logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
 
-            $availableRevisions = $logRepo->getLogEntries($page);
-            $logRepo->revert($page, $availableRevisions[1]->getVersion());
+            $availableRevisions = $this->logRepo->getLogEntries($page);
+            $this->logRepo->revert($page, $availableRevisions[1]->getVersion());
         }
 
         $pageArray = $this->getPageArray($page);
@@ -239,7 +244,6 @@ class JsonPage implements JsonAdapter {
                 $this->messages[] = $_CORELANG['TXT_CORE_SAVED_AS_DRAFT'];
             }
 
-            $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
             // gedmo-loggable generates a LogEntry (i.e. revision) on persist, so we'll have to 
             // store the draft first, then revert the current version to what it previously was.
             // in the end, we'll have the current [published] version properly stored as a page
@@ -249,7 +253,7 @@ class JsonPage implements JsonAdapter {
             // gedmo hooks in on persist/flush, so we unfortunately need to flush our em in
             // order to get a clean set of logEntries
             $this->em->flush();
-            $logEntries = $logRepo->getLogEntries($page);
+            $logEntries = $this->logRepo->getLogEntries($page);
             // $logEntries holds an array of Gedmo LogEntries, the most recent one listed first
             // we need the editing status of the page
             $logData = $logEntries[1]->getData();
@@ -257,14 +261,14 @@ class JsonPage implements JsonAdapter {
             $logEntries[1]->setData($logData);
 
             // revert to the published version
-            $logRepo->revert($page, $logEntries[1]->getVersion());
+            $this->logRepo->revert($page, $logEntries[1]->getVersion());
             $this->em->persist($page);
 
             // gedmo auto-logs slightly too much data. clean up unnecessary revisions:
             if ($updatingDraft) {
                 $this->em->flush();
 
-                $logEntries = $logRepo->getLogEntries($page);
+                $logEntries = $this->logRepo->getLogEntries($page);
                 $this->em->remove($logEntries[2]);
                 $this->em->remove($logEntries[3]);
             }
@@ -298,7 +302,6 @@ class JsonPage implements JsonAdapter {
 
     /**
      * Sets the page object in the session and returns the link to the page (frontend).
-     * @author Michael Raess <michael.raess@comvation.com>
      * @param   array  $params
      * @return  array  [link]     The link to the page (frontend).
      */
@@ -379,7 +382,7 @@ class JsonPage implements JsonAdapter {
                 case 'DateTime':
                     try {
                         $value = new \DateTime($page[$field], $this->tz);
-                    } catch (Exception $e) {
+                    } catch (\Exception $e) {
                         $value = new \DateTime('0000-00-00 00:00', $this->tz);
                     }
                     break;
@@ -401,6 +404,86 @@ class JsonPage implements JsonAdapter {
         $output['content'] = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $output['content']);
 
         return $output;
+    }
+
+    public function getHistoryTable() {
+        if (empty($this->pageId)) {
+            throw new \ContentManagerException('please provide a pageId');
+        }
+
+        //(I) get the right page
+        $page = $this->pageRepo->findOneById($this->pageId);
+
+        if (!$page) {
+            throw new \ContentManagerException('could not find page with id '.$this->pageId);
+        }
+
+        //(II) build the table with headers
+        $table = new \BackendTable(array('width' => '100%'));
+        $table->setAutoGrow(true);
+
+        $table->setHeaderContents(0, 0, 'Date');
+        $table->setHeaderContents(0, 1, 'Title');
+        $table->setHeaderContents(0, 2, 'Author');
+        //make sure those are th's too
+        $table->setHeaderContents(0, 3, '');
+        $table->setHeaderContents(0, 4, '');
+
+        //(III) collect page informations - path, virtual language directory
+        $path = $this->pageRepo->getPath($page);
+        $pageHasDraft = $page->getEditingStatus() != '' ? true : false;
+
+        $le = new \Cx\Core\Routing\LanguageExtractor($this->db, DBPREFIX);
+        $langDir = $le->getShortNameOfLanguage($page->getLang());
+
+        $logs = $this->logRepo->getLogEntries($page);
+
+        //currently user of this page
+        $user = json_decode($logs[0]->getUsername());
+        $username = $user->{'name'};
+
+        //(IV) add current entry to table
+        $this->addHistoryEntries($page, $username, $table, 1);
+
+        //(V) add the history entries
+        $logCount = count($logs);
+        for ($i = 1; $i < $logCount; $i++) {
+            $version = $logs[$i]->getVersion();
+            $row = $i + 1;
+            $user = json_decode($logs[$i]->getUsername());
+            $username = $user->{'name'};
+            try {
+                $this->logRepo->revert($page, $version);
+                $page->setUpdatedAt($logs[$i]->getLoggedAt());
+
+                $this->addHistoryEntries($page, $username, $table, $row, $version, $langDir . '/' . $path, $pageHasDraft);
+            } catch (\Gedmo\Exception\UnexpectedValueException $e) {
+                
+            }
+        }
+
+        //(VI) render
+        die($table->toHtml());
+    }
+
+    private function addHistoryEntries($page, $username, $table, $row, $version = '', $path = '', $pageHasDraft = true) {
+        global $_ARRAYLANG;
+
+        $dateString = $page->getUpdatedAt()->format(ASCMS_DATE_FORMAT);
+
+        if ($row == 2 && $pageHasDraft) {
+            $dateString .= ' (' . $_ARRAYLANG['TXT_CORE_DRAFT'] . ')';
+        } else if ($row > 1) { //not the current page
+            $table->setCellContents($row, 3, '<a href="javascript:loadHistoryVersion(' . $page->getId() . ',' . $version . ')">' . $_ARRAYLANG['TXT_CORE_LOAD'] . '</a>');
+            $historyLink = ASCMS_PATH_OFFSET . '/' . $path . '?history=' . $version;
+            $table->setCellContents($row, 4, '<a href="' . $historyLink . '" target="_blank">' . $_ARRAYLANG['TXT_CORE_PREVIEW'] . '</a>');
+        } else { //current page state
+            $dateString .= ' (' . $_ARRAYLANG['TXT_CORE_CURRENT'] . ')';
+        }
+
+        $table->setCellContents($row, 0, $dateString);
+        $table->setCellContents($row, 1, $page->getTitle());
+        $table->setCellContents($row, 2, $username);
     }
 
     /**

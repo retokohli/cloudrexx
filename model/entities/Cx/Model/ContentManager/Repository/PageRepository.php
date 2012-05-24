@@ -283,10 +283,10 @@ class PageRepository extends EntityRepository {
     /**
      * Tries to find the path's Page.
      *
-     * @param string $path e.g. Hello/APage/AModuleObject
-     * @param Node $root
-     * @param int $lang
-     * @param boolean $exact if true, returns null on partially matched path
+     * @param  string  $path e.g. Hello/APage/AModuleObject
+     * @param  Node    $root
+     * @param  int     $lang
+     * @param  boolean $exact if true, returns null on partially matched path
      * @return array (
      *     matchedPath => string (e.g. 'Hello/APage/'),
      *     unmatchedPath => string (e.g. 'AModuleObject') | null,
@@ -299,49 +299,72 @@ class PageRepository extends EntityRepository {
     public function getPagesAtPath($path, $root = null, $lang = null, $exact = false, $search_mode = self::SEARCH_MODE_PAGES_ONLY) {
         $tree = $this->getTreeByTitle($root, $lang, true, true, $search_mode);
 
-        //this is a mock strategy. if we use this method, it should be rewritten to use bottom up
-        $pathParts = explode('/', $path);
-        $matchedLen = 0;
-        $treePointer = &$tree;
-
-        foreach($pathParts as $part) {
-            if(isset($treePointer[$part])) {
-                $treePointer = &$treePointer[$part];
-                $matchedLen += strlen($part);
-                if('/' == substr($path,$matchedLen,1))
-                    $matchedLen++;
-            }
-            else {
-                if($exact)
-                    return null;
-                break;
-            }
-        }
-
-        //no level matched
-        if($matchedLen == 0)
+        $result = $this->getPathes($path, $tree, $exact);
+        if (!$result) {
             return null;
-
-        $unmatchedPath = substr($path, $matchedLen);
-        if(!$unmatchedPath) { //beautify the to empty string
-            $unmatchedPath = '';
         }
+        $treePointer = $result['treePointer'];
 
-        $result = array(
-            'matchedPath' => substr($path, 0, $matchedLen),
-            'unmatchedPath' => $unmatchedPath
-        );
-        if(!$lang) {
+        if (!$lang) {
             $result['pages'] = $treePointer['__data']['node']->getPagesByLang();
             $result['lang'] = $treePointer['__data']['lang'];
-        }
-        else {
+        } else {
             $page = $treePointer['__data']['node']->getPagesByLang();
             $page = $page[$lang];
             $result['page'] = $page;
         }
 
         return $result;
+    }
+
+    /**
+     * Returns the matched and unmatched path.
+     * 
+     * @param  string  $path e.g. Hello/APage/AModuleObject
+     * @param  array   $tree
+     * @param  boolean $exact if true, returns null on partially matched path
+     * @return array(
+     *     matchedPath   => string (e.g. 'Hello/APage/'),
+     *     unmatchedPath => string (e.g. 'AModuleObject') | null,
+     *     treePointer   => array,
+     * )
+     */
+    public function getPathes($path, $tree, $exact = false) {
+        //this is a mock strategy. if we use this method, it should be rewritten to use bottom up
+        $pathParts = explode('/', $path);
+        $matchedLen = 0;
+        $treePointer = &$tree;
+
+        foreach ($pathParts as $part) {
+            if (isset($treePointer[$part])) {
+                $treePointer = &$treePointer[$part];
+                $matchedLen += strlen($part);
+                if ('/' == substr($path, $matchedLen,1)) {
+                    $matchedLen++;
+                }
+            } else {
+                if ($exact) {
+                    return false;
+                }
+                break;
+            }
+        }
+
+        //no level matched
+        if ($matchedLen == 0) {
+            return false;
+        }
+
+        $unmatchedPath = substr($path, $matchedLen);
+        if (!$unmatchedPath) { //beautify the to empty string
+            $unmatchedPath = '';
+        }
+
+        return array(
+            'matchedPath'   => substr($path, 0, $matchedLen),
+            'unmatchedPath' => $unmatchedPath,
+            'treePointer'   => $treePointer,
+        );
     }
 
     /**
@@ -353,7 +376,7 @@ class PageRepository extends EntityRepository {
      * @return string path, e.g. 'This/Is/It'
      */
     public function getPath($page) {
-        return substr($page->getPath(), 1) . '/';
+        return substr($page->getPath(), 1);
     }
     
     /**
