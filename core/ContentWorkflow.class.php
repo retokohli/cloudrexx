@@ -289,48 +289,45 @@ class ContentWorkflow extends Module {
             foreach ($dataByNodeId as $dataByLang) {
                 if (!empty($dataByLang)) {
                     ksort($dataByLang);
-                    $style = '';
+                    $pageId   = 0;
+                    $updated  = '';
+                    $lang     = '';
+                    $type     = '';
+                    $username = '';
+                    $title    = '';
+                    $period   = '';
+                    $slug     = '';
                     
                     foreach ($dataByLang as $data) {
-                        $history  = $data['version'] - 1;
-                        $updated  = $data['updated'];
-                        $username = $data['user']->{'name'};
-                        $page     = $data['page'];
-                        $pageId   = $page->getId();
-                        $langCode = \FWLanguage::getLanguageCodeById($page->getLang());
-                        $type     = $this->getTypeByPage($page);
-
-                        $translationLinks = '';
-                        $translations = $this->pageRepo->getPageTranslations($pageId, $history);
-                        foreach ($translations as $translation) {
-                            if ($translation == $langCode) {
-                                $translationLinks .= $translation.'&nbsp;&nbsp;';
-                            } else {
-                                $translationLinks .= '<a href="#" onclick="$J(\'tr.'.$page->getNodeIdShadowed().'\').hide(); $J(\'tr.'.$page->getNodeIdShadowed().'.'.$translation.'\').show(); return false;">'.$translation.'</a>&nbsp;&nbsp;';
-                            }
-                        }
-
-                        $this->tpl->setVariable(array(
-                            'HISTORY_ROW'                   => $intRowCount % 2 == 0 ? 'row1' : 'row2',
-                            'HISTORY_CLASSES'               => $page->getNodeIdShadowed().' '.$langCode,
-                            'HISTORY_STYLE'                 => $style,
-                            'HISTORY_IMGDETAILS'            => '<a href="javascript:restoreDeleted(\''.$pageId.'\');"><img src="images/icons/import.gif" alt="'.$_CORELANG['TXT_DELETED_RESTORE'].'" title="'.$_CORELANG['TXT_DELETED_RESTORE'].'" border="0" align="middle" /></a>',
-                            'HISTORY_RID'                   => $intRowCount,
-                            'HISTORY_DATE'                  => $updated,
-                            'HISTORY_TRANSLATION'           => $translationLinks,
-                            'HISTORY_LANGUAGE'              => \FWLanguage::getLanguageCodeById($page->getLang()),
-                            'HISTORY_TYPE'                  => $type,
-                            'HISTORY_USER'                  => $username,
-                            'HISTORY_TITLE'                 => $page->getTitle(),
-                            'HISTORY_STARTDATE'             => $page->getStart() ? $page->getStart()->format('d.m.Y H:i') : '',
-                            'HISTORY_ENDDATE'               => $page->getEnd() ? $page->getEnd()->format('d.m.Y H:i') : '',
-                            'HISTORY_SLUG'                  => $page->getSlug(),
-                        ));
+                        $history = $data['version'] - 1;
+                        $page    = $data['page'];
+                        $pageId  = $page->getId();
                         
-                        $this->tpl->parse('page_row');
-                        $style = 'style="display: none;"';
+                        $updated  .= $data['updated'].'<br />';
+                        $lang     .= \FWLanguage::getLanguageCodeById($page->getLang()).'<br />';
+                        $type     .= $this->getTypeByPage($page).'<br />';
+                        $username .= $data['user']->{'name'}.'<br />';
+                        $title    .= $page->getTitle().'<br />';
+                        $start     = $page->getStart() ? $page->getStart()->format('d.m.Y H:i') : '';
+                        $end       = $page->getEnd() ? $page->getEnd()->format('d.m.Y H:i') : '';
+                        $period   .= $start.' - '.$end.'<br />';
+                        $slug     .= $page->getSlug().'<br />';
                     }
                     
+                    $this->tpl->setVariable(array(
+                        'HISTORY_ROW'                   => $intRowCount % 2 == 0 ? 'row1' : 'row2',
+                        'HISTORY_IMGDETAILS'            => '<a href="javascript:restoreDeleted(\''.$pageId.'\');"><img src="images/icons/import.gif" alt="'.$_CORELANG['TXT_DELETED_RESTORE'].'" title="'.$_CORELANG['TXT_DELETED_RESTORE'].'" border="0" align="middle" /></a>',
+                        'HISTORY_RID'                   => $intRowCount,
+                        'HISTORY_DATE'                  => $updated,
+                        'HISTORY_LANGUAGE'              => $lang,
+                        'HISTORY_TYPE'                  => $type,
+                        'HISTORY_USER'                  => $username,
+                        'HISTORY_TITLE'                 => $title,
+                        'HISTORY_PUBLICATION_PERIOD'    => $period,
+                        'HISTORY_SLUG'                  => $slug,
+                    ));
+                    
+                    $this->tpl->parse('page_row');
                     $intRowCount++;
                 }
             }
