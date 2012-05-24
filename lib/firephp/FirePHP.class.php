@@ -218,6 +218,13 @@ class FirePHP {
   protected $enabled = true;
 
   /**
+   * Flag to enable/disable logging of php error reporting
+   *
+   * @var boolean
+   */
+  protected $logPHP = false;
+
+  /**
    * The object constructor
    */
   function __construct() {
@@ -271,6 +278,11 @@ class FirePHP {
    */
   public function getEnabled() {
     return $this->enabled;
+  }
+
+  public function setPHPLogging($enabled)
+  {
+    $this->logPHP = $enabled;
   }
   
   /**
@@ -344,13 +356,15 @@ class FirePHP {
   public function errorHandler($errno, $errstr, $errfile, $errline, $errcontext)
   {
     // Don't throw exception if error reporting is switched off
+    $suppressed = '';
     if (error_reporting() == 0) {
-      return;
+       $suppressed = ' (suppressed by script) ';
+      //return;
     }
     // Only throw exceptions for errors we are asking for
-    if (error_reporting() & $errno) {
+    if ($this->logPHP & $errno) {
 
-      $exception = new ErrorException($errstr, 0, $errno, $errfile, $errline);
+      $exception = new ErrorException($suppressed.$errstr, 0, $errno, $errfile, $errline);
       if($this->throwErrorExceptions) {
         throw $exception;
       } else {

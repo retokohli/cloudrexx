@@ -401,6 +401,8 @@ class DBG
         ini_set('display_errors', 1);
         if (!self::$firephp) {
             set_error_handler('DBG::phpErrorHandler');
+        } else {
+            self::$firephp->setPHPLogging(self::$log_php);
         }
     }
 
@@ -410,6 +412,10 @@ class DBG
         self::$log_php = 0;
         error_reporting(0);
         ini_set('display_errors', 0);
+
+        if (self::$firephp) {
+            self::$firephp->setPHPLogging(self::$log_php);
+        }
     }
 
 
