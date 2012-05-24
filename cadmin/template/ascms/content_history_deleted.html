@@ -11,6 +11,7 @@ function restoreDeleted(id) {
 <style type="text/css">
     table.adminlist td {
         vertical-align: top;
+        white-space: nowrap;
     }
 </style>
 <div id="content1" class="editorTab" style="display:block">
@@ -20,20 +21,20 @@ function restoreDeleted(id) {
         </tr>
         <tr class="row3">
             <td width="10%"><b>{TXT_DATE}</b></td>
-            <td width="20%"><b>{TXT_NAVIGATION_TITLE}</b></td>
+            <td width="17%"><b>{TXT_NAVIGATION_TITLE}</b></td>
             <td width="5%"><b>{TXT_LANGUAGE}</b></td>
-            <td width="15%"><b>{TXT_PUBLICATION_PERIOD}</b></td>
-            <td width="20%"><b>{TXT_TYPE}</b></td>
+            <td width="20%"><b>{TXT_PUBLICATION_PERIOD}</b></td>
+            <td width="18%"><b>{TXT_TYPE}</b></td>
             <td width="17%"><b>{TXT_SLUG}</b></td>
             <td width="12%"><b>{TXT_USER}</b></td>
             <td width="1%"><b>{TXT_FUNCTIONS}</b></td>
         </tr>
         <!-- BEGIN page_row -->
-        <tr class="{HISTORY_ROW} {HISTORY_CLASSES}" {HISTORY_STYLE}>
+        <tr class="{HISTORY_ROW}">
             <td>{HISTORY_DATE}</td>
             <td>{HISTORY_TITLE}</td>
-            <td>{HISTORY_TRANSLATION}</td>
-            <td>{HISTORY_STARTDATE} - {HISTORY_ENDDATE}</td>
+            <td>{HISTORY_LANGUAGE}</td>
+            <td>{HISTORY_PUBLICATION_PERIOD}</td>
             <td>{HISTORY_TYPE}</td>
             <td>{HISTORY_SLUG}</td>
             <td>{HISTORY_USER}</td>
