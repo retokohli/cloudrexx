@@ -331,8 +331,6 @@ class ContentWorkflow extends Module {
                     $intRowCount++;
                 }
             }
-        } else {
-            $this->tpl->hideBlock('node_row');
         }
     }
 
