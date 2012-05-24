@@ -10,10 +10,10 @@
 
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 
-require ASCMS_CORE_PATH.'/BackendTable.class.php';
-require ASCMS_CORE_PATH.'/Module.class.php';
-require ASCMS_CORE_PATH.'/routing/LanguageExtractor.class.php';
-require_once ASCMS_CORE_PATH.'/json/JsonPage.class.php';
+require_once ASCMS_CORE_PATH.'/BackendTable.class.php';
+require_once ASCMS_CORE_PATH.'/Module.class.php';
+require_once ASCMS_CORE_PATH.'/routing/LanguageExtractor.class.php';
+require_once ASCMS_CORE_PATH.'/json/adapter/JsonPage.class.php';
 
 require_once ASCMS_CORE_PATH.'/Tree.class.php';
 require_once ASCMS_CORE_PATH.'/'.'XMLSitemap.class.php';
