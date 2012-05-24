@@ -129,6 +129,7 @@ if ($_CONFIG['systemStatus'] != 'on') {
     die(1);
 }
 Env::set('config', $_CONFIG);
+Env::set('ftpConfig', $_FTPCONFIG);
 
 /**
  * Include all the required files.

@@ -59,6 +59,7 @@ $incSettingsStatus = include_once '../config/settings.php';
 $incVersionStatus = include_once '../config/version.php';
 
 Env::set('config', $_CONFIG);
+Env::set('ftpConfig', $_FTPCONFIG);
 
 /**
  * Doctrine configuration
