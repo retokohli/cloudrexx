@@ -82,6 +82,7 @@ body {
   padding: 0 30px;
 position: relative;
 z-index: 1;
+
 }
 #content-wrap {
   /*margin: 0 auto;
@@ -116,7 +117,7 @@ z-index: 1;
 }*/
 #aside {
   float: right;
-  width: 250px;
+  width: 220px;
 }
 /*#footer {
   background: url("images/footer_bg.png") no-repeat scroll center top transparent;
@@ -444,23 +445,28 @@ input[type="submit"], input[type="button"], input[type="reset"] {
   padding: 0;
 }
 #nav-sub li {
-  float: left;
+  /*float: left;*/
   width: 250px;
+   margin-bottom: 18px;
 }
 #nav-sub li.level_2 a:hover {
-  background: none repeat scroll 0 0 #F6F6F6;
-  color: #000000;
+  /*background: none repeat scroll 0 0 #F6F6F6;
+  color: #000000;*/
+  color: #222222;
+font-weight: bold;
 }
-#nav-sub li.level_2 a.active {
-  background: url("images/subNavigation_bg.png") no-repeat scroll left top transparent;
+#nav-sub li.level_2 a.active,#nav-sub li.level_3 a.active {
+ /* background: url("images/subNavigation_bg.png") no-repeat scroll left top transparent;
   border: 0 none;
   color: #FFFFFF;
   margin-left: -5px;
   padding-left: 20px;
-  width: 223px;
+  width: 223px;*/
+ color: #222222;
+font-weight: bold;
 }
 #nav-sub a {
-  background: none repeat scroll 0 0 #FFFFFF;
+  /*background: none repeat scroll 0 0 #FFFFFF;
   border-bottom: 1px solid #F6F6F6;
   border-left: 1px solid #D4D4D4;
   border-right: 1px solid #D4D4D4;
@@ -470,29 +476,40 @@ input[type="submit"], input[type="button"], input[type="reset"] {
   font-size: 1.1em;
   line-height: 30px;
   padding-left: 15px;
-  width: 222px;
+  width: 222px;*/
+  color: #555555;
+/*float: right;*/
+font-size: 14px;
+/*padding-left: 15px;*/
+width: 222px;
+display: block;
+
 }
 #nav-sub a.active {
 }
 /* third level */
 #nav-sub li.level_3 a {
-  background: none repeat scroll 0 0 #FFFFFF;
+  /*background: none repeat scroll 0 0 #FFFFFF;
   color: #444444;
   font-size: 0.9em;
-  font-weight: bold;
+  font-weight: bold;*/
+   font-size: 14px;
+    padding-left: 10px;
 }
 #nav-sub li.level_3 a:hover {
-  background: none repeat scroll 0 0 #F6F6F6;
-  color: #000000;
+  /*background: none repeat scroll 0 0 #F6F6F6;
+  color: #000000;*/
+  color: #222222;
+font-weight: bold;
 }
 #nav-sub li.level_3 a.active {
-  background: url("images/subNavigation_bg.png") no-repeat scroll left top transparent;
+  /*background: url("images/subNavigation_bg.png") no-repeat scroll left top transparent;
   border: 0 none;
   color: #FFFFFF;
   font-weight: bold;
   margin-left: -5px;
   padding-left: 20px;
-  width: 223px;
+  width: 223px;*/
 }
 /* forth level */
 #nav-sub li.level_4 {
@@ -3459,7 +3476,7 @@ pre .name {
 .search .submit {
     float:right;
     background:url(images/btn-go.png) 0 4px no-repeat;
-    width:36px;
+    min-width:36px;
     height:28px;
     text-indent:-9999px;
     overflow:hidden;
