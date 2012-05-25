@@ -1,9 +1,17 @@
-<!-- BEGIN navigation -->
+<!-- start navbar.html -->
+<!-- BEGIN navigation_dropdown -->
+<ul id="navmenu-h">
 <!-- BEGIN level_1 -->
-<li class="{STYLE} {CSS_NAME}">
-    <a href="{URL}" class="{STYLE} {CSS_NAME}" title="{NAME}">
-        {NAME}
-    </a>
+<li>
+    <a href="{URL}" class="hide_{STYLE}" title="{NAME}">{NAME}</a>
+    {SUB_MENU}
 </li>
 <!-- END level_1 -->
-<!-- END navigation  -->
+<!-- BEGIN level_2 -->
+<li>
+    <a href="{URL}" title="{NAME}">{NAME}</a>
+</li>
+<!-- END level_2 -->
+</ul>
+<!-- END navigation_dropdown -->
+<!-- end navbar.html -->
