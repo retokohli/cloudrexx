@@ -124,13 +124,14 @@ class Navigation
             // set submenu tag
             if ($this->_objTpl->blockExists('sub_menu')) {
                 $this->subNavTag = trim($this->_objTpl->_blocks['sub_menu']);
-                $templateContent = ereg_replace('<!-- BEGIN sub_menu -->.*<!-- END sub_menu -->', NULL, $templateContent);
+                $templateContent = preg_replace('<!--\s+BEGIN\s+sub_menu\s+-->.*<!--\s+END\s+sub_menu\s+-->/ms', NULL, $templateContent);
             }
             $navi = new DropdownNavigationPageTree(Env::em(), 0, $rootNode, $this->langId, $this->page);
             $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
             $navi->setTemplate($this->_objTpl);
             $renderedNavi = $navi->render();
-            return ereg_replace('<!-- BEGIN level_. -->.*<!-- END level_. -->', $renderedNavi, $templateContent);
+            $templateContent = preg_replace('/<!--\s+BEGIN\s+level_\d+\s+-->.*<!--\s+END\s+level_\d+\s+-->/ms', $renderedNavi, $templateContent);
+            return preg_replace('/<!--\s+BEGIN\s+navigation_dropdown\s+-->(.*)<!--\s+END\s+navigation_dropdown\s+-->/ms', '\1', $templateContent);
         }
 
         if (isset($this->_objTpl->_blocks['navigation'])) {
