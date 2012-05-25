@@ -234,6 +234,7 @@ class JsonNode implements JsonAdapter {
                                 'module' => $page->getModule() . ' ' . $page->getCmd(),
                                 'lastupdate' => $page->getUpdatedAt()->format('d.m.Y H:i'),
                                 'user' => $this->logRepo->getUsernameByLog($logs[$page->getId()]),
+                                'level' => $node->getLvl(),
                             )
                         ),
                     ),
