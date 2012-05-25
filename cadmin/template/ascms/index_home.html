@@ -9,68 +9,53 @@ jQuery(document).ready(function() {
 });
 </script>
 
+<!--
+toDelete: {TXT_QUICK_ACCESS}, {TXT_HOSTNAME}
+-->
+
 <div id="dashboard">
     <div class="left">
-        <div id="quick_access_wrapper">
-            <hr />
-            <h1>{TXT_QUICK_ACCESS}</h1>
-            <div id="quick_access">
-                <div id="box_1" class="box">
-                    <h2>{TXT_CREATING_AND_PUBLISHING}</h2>
-                    <ul>
-                        <!-- BEGIN check_access_5 --><li><a href="index.php?cmd=content&amp;act=new">{TXT_NEW_SITE}</a></li><!-- END check_access_5 -->
-                        <!-- BEGIN check_access_10 --><li><a href="index.php?cmd=news&amp;act=add">{TXT_ADD_NEWS}</a></li><!-- END check_access_10 -->
-                        <!-- BEGIN check_access_76 --><li><a href="index.php?cmd=block&amp;act=modify">{TXT_ADD_BLOCK}</a></li><!-- END check_access_76 -->
-                        <!-- BEGIN check_access_84_1 --><li><a href="index.php?cmd=contact&amp;act=forms&amp;tpl=edit">{TXT_ADD_FORM}</a></li><!-- END check_access_84_1 -->
-                    </ul>
-                    <div class="icon"></div>
-                </div>
-                <div id="box_2" class="box">
-                    <h2>{TXT_EVALUATE_AND_VIEW}</h2>
-                    <ul>
-                        <li><a href="../index.php?caching=0">{TXT_SITE_PREVIEW}</a></li>
-                        <!-- BEGIN check_access_6 --><li><a href="index.php?cmd=content">{TXT_CONTENT_MANAGER}</a></li><!-- END check_access_6 -->
-                        <!-- BEGIN check_access_19 --><li><a href="index.php?cmd=stats">{TXT_STATS}</a></li><!-- END check_access_19 -->
-                        <!-- BEGIN check_access_75 --><li><a href="index.php?cmd=workflow">{TXT_WORKFLOW}</a></li><!-- END check_access_75 -->
-                        <!-- BEGIN check_access_84_2 --><li><a href="index.php?cmd=contact">{TXT_FORMS}</a></li><!-- END check_access_84_2 -->
-                    </ul>
-                    <div class="icon"></div>
-                </div>
-                <div id="box_3" class="box">
-                    <h2>{TXT_MANAGE}</h2>
-                    <ul>
-                        <!-- BEGIN check_access_17 --><li><a href="index.php?cmd=settings">{TXT_SYSTEM_SETTINGS}</a></li><!-- END check_access_17 -->
-                        <!-- BEGIN check_access_18 --><li><a href="index.php?cmd=access">{TXT_USER_MANAGER}</a></li><!-- END check_access_18 -->
-                        <!-- BEGIN check_access_7 --><li><a href="index.php?cmd=media&amp;archive=archive1">{TXT_MEDIA_MANAGER}</a></li><!-- END check_access_7 -->
-                        <!-- BEGIN check_access_32 --><li><a href="index.php?cmd=media&amp;archive=content">{TXT_IMAGE_ADMINISTRATION}</a></li><!-- END check_access_32 -->
-                        <!-- BEGIN check_access_21 --><li><a href="index.php?cmd=skins">{TXT_SKINS}</a></li><!-- END check_access_21 -->
-                    </ul>
-                    <div class="icon"></div>
-                </div>
-            </div>
+        <div id="box_1" class="box">
+            <h2>{TXT_CREATING_AND_PUBLISHING}</h2>
+            <ul>
+                <!-- BEGIN check_access_5 --><li><a href="index.php?cmd=content&amp;act=new">{TXT_NEW_SITE}</a></li><!-- END check_access_5 -->
+                <!-- BEGIN check_access_10 --><li><a href="index.php?cmd=news&amp;act=add">{TXT_ADD_NEWS}</a></li><!-- END check_access_10 -->
+                <!-- BEGIN check_access_76 --><li><a href="index.php?cmd=block&amp;act=modify">{TXT_ADD_BLOCK}</a></li><!-- END check_access_76 -->
+                <!-- BEGIN check_access_84_1 --><li><a href="index.php?cmd=contact&amp;act=forms&amp;tpl=edit">{TXT_ADD_FORM}</a></li><!-- END check_access_84_1 -->
+            </ul>
+            <div class="icon"></div>
         </div>
+        
+        <!-- BEGIN logs -->
         <div id="last_sessions_wrapper">
-            <hr />
             <h1>{TXT_LAST_LOGINS}</h1>
-            <!-- BEGIN logs -->
             <ul id="last_sessions">
                 <!-- BEGIN logRow -->
                 <li>
                     <span class="username">{LOG_USERNAME}</span>
-                    <span class="hostname">{TXT_HOSTNAME}: {LOG_REMOTE_HOST}</span>
                     <span class="time">{LOG_TIME}</span>
                 </li>
                 <!-- END logRow -->
             </ul>
-            <!-- END logs -->
             <!-- BEGIN logError -->
             <div class="error">{LOG_ERROR_MESSAGE}</div>
             <!-- END logError -->
         </div>
+        <!-- END logs -->
     </div>
-    <div class="right">
+    <div class="middle">
+        <div id="box_2" class="box">
+            <h2>{TXT_EVALUATE_AND_VIEW}</h2>
+            <ul>
+                <li><a href="../index.php?caching=0">{TXT_SITE_PREVIEW}</a></li>
+                <!-- BEGIN check_access_6 --><li><a href="index.php?cmd=content">{TXT_CONTENT_MANAGER}</a></li><!-- END check_access_6 -->
+                <!-- BEGIN check_access_19 --><li><a href="index.php?cmd=stats">{TXT_STATS}</a></li><!-- END check_access_19 -->
+                <!-- BEGIN check_access_75 --><li><a href="index.php?cmd=workflow">{TXT_WORKFLOW}</a></li><!-- END check_access_75 -->
+                <!-- BEGIN check_access_84_2 --><li><a href="index.php?cmd=contact">{TXT_FORMS}</a></li><!-- END check_access_84_2 -->
+            </ul>
+            <div class="icon"></div>
+        </div>
         <div id="stats_wrapper">
-            <hr />
             <h1>Website Statistik</h1>
             <ul id="stats">
                 <li><span class="left">Website online seit</span><span class="right">31.03.2011</span></li>
@@ -82,9 +67,21 @@ jQuery(document).ready(function() {
                 <li><span class="left">Die letzten 30 Tage</span><span class="right"><span class="green">15</span><span class="orange">10'000</span></span></li>
             </ul>
         </div>
+    </div>
+    <div class="right">
+        <div id="box_3" class="box">
+            <h2>{TXT_MANAGE}</h2>
+            <ul>
+                <!-- BEGIN check_access_17 --><li><a href="index.php?cmd=settings">{TXT_SYSTEM_SETTINGS}</a></li><!-- END check_access_17 -->
+                <!-- BEGIN check_access_18 --><li><a href="index.php?cmd=access">{TXT_USER_MANAGER}</a></li><!-- END check_access_18 -->
+                <!-- BEGIN check_access_7 --><li><a href="index.php?cmd=media&amp;archive=archive1">{TXT_MEDIA_MANAGER}</a></li><!-- END check_access_7 -->
+                <!-- BEGIN check_access_32 --><li><a href="index.php?cmd=media&amp;archive=content">{TXT_IMAGE_ADMINISTRATION}</a></li><!-- END check_access_32 -->
+                <!-- BEGIN check_access_21 --><li><a href="index.php?cmd=skins">{TXT_SKINS}</a></li><!-- END check_access_21 -->
+            </ul>
+            <div class="icon"></div>
+        </div>
         <!-- BEGIN rssFeeds -->
-        <div id="news_wrapper">
-            <hr />
+        <div id="last_sessions_wrapper">
             <h1>{TXT_CONTREXX_NEWS}</h1>
             <ul id="news">
                 <!-- BEGIN rssRow -->

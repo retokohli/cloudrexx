@@ -128,8 +128,7 @@ class myAdminManager {
                 $objTemplate->setVariable(array(
                     'TXT_HOSTNAME'		=> htmlentities($_CORELANG['TXT_HOSTNAME'], ENT_QUOTES, CONTREXX_CHARSET),
                     'LOG_USERNAME'	 	=> htmlentities($objResult->fields['username'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'LOG_TIME' 		 	=> $objResult->fields['datetime'],
-                    'LOG_REMOTE_HOST'   => $objResult->fields['remote_host']
+                    'LOG_TIME' 		 	=> substr($objResult->fields['datetime'], 0, 10),
                 ));
                 $objTemplate->parse('logRow');
                 $objResult->MoveNext();
@@ -151,7 +150,7 @@ class myAdminManager {
                 ));
                 $objTemplate->parse('rssRow');
 
-                if (++$i > 2) {
+                if (++$i > 5) {
                     break;
                 }
             }
