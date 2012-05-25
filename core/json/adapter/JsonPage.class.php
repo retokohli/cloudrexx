@@ -152,6 +152,7 @@ class JsonPage implements JsonAdapter {
         }
         
         $newpage = false;
+        $reload = false;
         $pg = \Env::get('pageguard');
 
         $page = $params['post']['page'];
@@ -291,13 +292,11 @@ class JsonPage implements JsonAdapter {
         } else {
             $this->messages[] = $_CORELANG['TXT_CORE_ALIAS_CREATION_DENIED'];
         }
-
-        if (isset($reload) && $reload) {
-            return array(
-                'reload' => 'true',
-                'id' => $page->getId()
-            );
-        }
+        
+        return array(
+            'reload' => $reload,
+            'id' => $page->getId()
+        );
     }
 
     /**
@@ -438,18 +437,19 @@ class JsonPage implements JsonAdapter {
 
         $logs = $this->logRepo->getLogEntries($page);
 
-        //currently user of this page
-        $user = json_decode($logs[0]->getUsername());
-        $username = $user->{'name'};
-
-        //(IV) add current entry to table
-        $this->addHistoryEntries($page, $username, $table, 1);
-
         //(V) add the history entries
+        $row = 0;
         $logCount = count($logs);
-        for ($i = 1; $i < $logCount; $i++) {
+        for ($i = 0; $i < $logCount; $i++) {
+            if (isset($logs[$i + 1])) {
+                $nextData = $logs[$i + 1]->getData();
+                if (isset($nextData['editingStatus']) && ($nextData['editingStatus'] == 'hasDraft' || $nextData['editingStatus'] == 'hasDraftWaiting')) {
+                    continue;
+                }
+            }
+            
             $version = $logs[$i]->getVersion();
-            $row = $i + 1;
+            $row++;
             $user = json_decode($logs[$i]->getUsername());
             $username = $user->{'name'};
             try {
@@ -469,17 +469,19 @@ class JsonPage implements JsonAdapter {
     private function addHistoryEntries($page, $username, $table, $row, $version = '', $path = '', $pageHasDraft = true) {
         global $_ARRAYLANG;
 
-        $dateString = $page->getUpdatedAt()->format(ASCMS_DATE_FORMAT);
+        $dateString  = $page->getUpdatedAt()->format(ASCMS_DATE_FILE_FORMAT);
+        $historyLink = ASCMS_PATH_OFFSET . '/' . $path . '?history=' . $version;
+        $tableStyle  = '';
 
-        if ($row == 2 && $pageHasDraft) {
-            $dateString .= ' (' . $_ARRAYLANG['TXT_CORE_DRAFT'] . ')';
-        } else if ($row > 1) { //not the current page
-            $table->setCellContents($row, 3, '<a href="javascript:loadHistoryVersion(' . $page->getId() . ',' . $version . ')">' . $_ARRAYLANG['TXT_CORE_LOAD'] . '</a>');
-            $historyLink = ASCMS_PATH_OFFSET . '/' . $path . '?history=' . $version;
-            $table->setCellContents($row, 4, '<a href="' . $historyLink . '" target="_blank">' . $_ARRAYLANG['TXT_CORE_PREVIEW'] . '</a>');
-        } else { //current page state
-            $dateString .= ' (' . $_ARRAYLANG['TXT_CORE_CURRENT'] . ')';
+        if ($row == 1) {
+            $tableStyle  = 'style="display: none;"';
+            if ($pageHasDraft) {
+                $dateString .= ' (' . $_ARRAYLANG['TXT_CORE_DRAFT'] . ')';
+            }
         }
+        
+        $table->setCellContents($row, 3, '<a id="load_'.$version.'" class="historyLoad" href="javascript:loadHistoryVersion('.$version.')" '.$tableStyle.'>' . $_ARRAYLANG['TXT_CORE_LOAD'] . '</a>');
+        $table->setCellContents($row, 4, '<a id="preview_'.$version.'" class="historyPreview" href="' . $historyLink . '" target="_blank" '.$tableStyle.'>' . $_ARRAYLANG['TXT_CORE_PREVIEW'] . '</a>');
 
         $table->setCellContents($row, 0, $dateString);
         $table->setCellContents($row, 1, $page->getTitle());
