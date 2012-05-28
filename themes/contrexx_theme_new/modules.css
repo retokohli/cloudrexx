@@ -1973,7 +1973,7 @@ textarea {
     font-weight: normal;
 }
 
-form label {
+/*form label {
     float: left;
     width: 200px;
     clear: left;
@@ -1991,4 +1991,4 @@ form select {
     resize: none;
     float: none;
     clear: right;
-}
+}*/
