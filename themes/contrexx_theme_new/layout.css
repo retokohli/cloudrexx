@@ -117,7 +117,7 @@ body {
 }*/
 #aside {
     float: right;
-    width: 220px;
+    width: 230px;
 }
 /*#footer {
   background: url("images/footer_bg.png") no-repeat scroll center top transparent;
@@ -340,9 +340,10 @@ input.radio{
 #boxes_home select {
     background: none repeat scroll 0 0 #FFFFFF;
     border: 1px solid #D3D3D3;
-    padding: 5px;
-    width: 264px;
+    padding: 4px;
+    width: 270px;
     height: 29px;
+    margin: 0.25em 0.25em 0.25em 0;
 }
 select {
     background-color: #FFFFFF;
@@ -372,12 +373,34 @@ select {
 {
     /* width: 250px;*/
 }
+#main textarea, #frame_home textarea, #boxes_home textarea {
+  border: 1px solid #BDBDBD;
+  /*box-shadow: 1px 1px 2px #DDDDDD inset;*/
+  font-size: 1em;
+  height: 60px;
+  margin: 0.25em 0.25em 0.25em 0;
+  padding: 4px;
+  width: 260px;
+}
 #main input, #frame_home input, #boxes_home input {
-    border: 1px solid #BDBDBD;
+    /*border: 1px solid #BDBDBD;
     box-shadow: 1px 1px 2px #DDDDDD inset;
     margin: 0.25em 0.25em 0.25em 0;
     padding: 4px;
+    width: 260px;*/
+    background: none repeat scroll 0 0 transparent;
+    border: 1px solid #ECEDF3;
+    border-radius: 3px 3px 3px 3px;
+    margin: 0.25em 0.25em 0.25em 0;
+    padding: 4px;
     width: 260px;
+}
+#main input[type="reset"], #frame_home input[type="reset"], #boxes_home input[type="reset"], input.reset {
+    background-color: #F6F6F6;
+    border: 1px solid #C6C6C6;
+    margin: 0.25em 0.25em 0.25em 0;
+    padding: 4px 10px;
+    width: auto;
 }
 #main input[type="submit"],
 #main input[type="button"],
@@ -462,9 +485,9 @@ input.submit, input.button {
 #boxes_home input[type="text"]:focus,
 #boxes_home select:focus,
 #boxes_home textarea:focus {
-    background-color: #FFFFDD;
+    /*background-color: #FFFFDD;
     border: 1px solid #333333;
-    box-shadow: 1px 1px 2px #DEDF99 inset;
+    box-shadow: 1px 1px 2px #DEDF99 inset;*/
 }
 #fe_PreviewContent input {
     clear: both;
@@ -499,6 +522,8 @@ input[type="submit"], input[type="button"], input[type="reset"] {
 *******************************************************************************/
 .aside-inner {
     float: left;
+    width: 220px;
+    padding-left: 10px;
 }
 #border_aside{
     float: left;
@@ -511,7 +536,7 @@ input[type="submit"], input[type="button"], input[type="reset"] {
 }
 #nav-sub li {
     /*float: left;*/
-    width: 250px;
+    /*width: 250px;*/
     margin-bottom: 18px;
 }
 #nav-sub li.level_2 a:hover {
@@ -659,7 +684,7 @@ input[type="submit"], input[type="button"], input[type="reset"] {
     height: auto !important;
     float: right;
     background: none repeat scroll 0 0 #FFFFFF;
-    width: 239px;
+    /*width: 239px;*/
 }
 #shop_navigation ul{
     margin: 0;
@@ -671,7 +696,7 @@ input[type="submit"], input[type="button"], input[type="reset"] {
     margin: 0;
 }
 #shop_navigation li a.title {
-    background: none repeat scroll 0 0 #3873C1;
+    background: none repeat scroll 0 0 #B8D30B;
     color: #FFFFFF;
     display: block;
     float: right;
@@ -679,7 +704,7 @@ input[type="submit"], input[type="button"], input[type="reset"] {
     line-height: 1;
     padding: 9px 0 9px 16px;
     text-decoration: none;
-    width: 223px;
+    width: 203px;
 }
 #shop_navigation li.shopnavbar1 a {
     background-image: none;
@@ -691,7 +716,7 @@ input[type="submit"], input[type="button"], input[type="reset"] {
     line-height: 1;
     padding: 5px 0 5px 16px;
     text-decoration: none;
-    width: 223px;
+    width: 203px;
 }
 #shop_navigation li.shopnavbar1 a:hover,
 #shop_navigation li.shopnavbar1_active a {
@@ -702,7 +727,7 @@ input[type="submit"], input[type="button"], input[type="reset"] {
     font-weight: normal;
     padding: 5px 0 5px 16px;
     text-decoration: none;
-    width: 223px;
+    width: 203px;
 }
 #shop_navigation li.shopnavbar2 a {
     display:block;
@@ -958,10 +983,10 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol, dl, textarea {
     float:left;
 }
 #guestbook textarea{
-    font-size: 16px;
-    /*height: 150px;*/
+  /*  font-size: 16px;
+    height: 150px;
     margin: 12px 0;
-    width: 100%;
+    width: 100%;*/
 }
 html body div#page div#container.group div#content-wrap.group div#wrapper_content div#content div#frame_content div#main div#fe_PreviewContent div#mediadir form p input#mediadirInputfield_138.mediadirInputfieldImage{
     display: block;
@@ -1160,10 +1185,13 @@ html body div#page div#container.group div#content-wrap.group div#wrapper_conten
     padding-bottom: 0px;
 }
 #main #livecam form input:focus#DPC_datum{
-    width: 245px !important;
-    border-left-color: #2687CC;
-    border-left-width: 5px !important;
-    border-left-style: solid;
+    /*width: 245px !important;*/
+    /* border-left-color: #2687CC;
+     border-left-width: 5px !important;
+     border-left-style: solid;*/
+}
+#main #livecam form input[type=submit]{
+    padding: 4px 6px;
 }
 .bordered {
     border-left: 5px solid #2687CC;
@@ -1403,8 +1431,8 @@ select {
     position:absolute;
     top:35px;
     left:30px;
-    background:url(images/logo.png) no-repeat;
-    width:173px;
+    background:url(images/logo-green.png) no-repeat;
+    width:109px;
     height:35px;
     text-indent:-9999px;
     overflow:hidden;
@@ -1499,6 +1527,10 @@ select {
      z-index:1;
      padding:0 30px;*/
 }
+.main_subpage{
+    width: 610px;
+    float: left;
+}
 /* intro */
 .intro {
     -webkit-box-shadow: inset 0 0 3px 0 rgba(0, 0, 0, .05);
@@ -1516,10 +1548,10 @@ select {
     padding:29px 9999px 28px;
 }
 .intro input,.intro textarea,.intro select {
-  color: #555555;
-  outline: medium none;
-  vertical-align: middle;
-   font: 12px 'Open Sans',Arial,Helvetica,sans-serif;
+    color: #555555;
+    outline: medium none;
+    vertical-align: middle;
+    font: 12px 'Open Sans',Arial,Helvetica,sans-serif;
 }
 .intro2 {
     border:solid #e8e8e8;
@@ -1623,6 +1655,8 @@ select {
     overflow:hidden;
     position:relative;
     float:left;
+    /*min-height: 397px*/
+
 }
 #holder-iframe{
     margin-bottom:-31px;
