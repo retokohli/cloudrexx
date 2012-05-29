@@ -94,7 +94,6 @@ class myAdminManager {
         }
 
         $objTemplate->setVariable(array(
-            'TXT_QUICK_ACCESS' 				=> htmlentities($_CORELANG['TXT_QUICK_ACCESS'], ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_LAST_LOGINS' 				=> htmlentities($_CORELANG['TXT_LAST_LOGINS'], ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_CONTREXX_NEWS' 			=> htmlentities($_CORELANG['TXT_CONTREXX_NEWS'], ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_CREATING_AND_PUBLISHING'   => htmlentities($_CORELANG['TXT_CREATING_AND_PUBLISHING'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -126,9 +125,8 @@ class myAdminManager {
         if ($objResult && $objResult->RecordCount() > 0) {
             while (!$objResult->EOF) {
                 $objTemplate->setVariable(array(
-                    'TXT_HOSTNAME'		=> htmlentities($_CORELANG['TXT_HOSTNAME'], ENT_QUOTES, CONTREXX_CHARSET),
                     'LOG_USERNAME'	 	=> htmlentities($objResult->fields['username'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'LOG_TIME' 		 	=> substr($objResult->fields['datetime'], 0, 10),
+                    'LOG_TIME' 		 	=> date('d.m.Y', strtotime($objResult->fields['datetime'])),
                 ));
                 $objTemplate->parse('logRow');
                 $objResult->MoveNext();
