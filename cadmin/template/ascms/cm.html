@@ -24,32 +24,34 @@
             </div>
             <a id="toggle_type" class="toggle">{TXT_CORE_CM_TYPE}</a>
             <div id="type" style="{TYPE_DISPLAY_STYLE}">
-                <input type="hidden" name="page[type]" value="off" />
-                <input type="radio" name="page[type]" value="content" id="type_content" class="radio" checked="checked" />
-                <label for="type_content">{TXT_CORE_CM_TYPE_CONTENT}</label>
-                <input type="radio" name="page[type]" value="redirect" id="type_redirect" class="radio" />
-                <label for="type_redirect">{TXT_CORE_CM_TYPE_REDIRECT}</label>
-                <input type="radio" name="page[type]" value="application" id="type_application" class="radio" />
-                <label for="type_application">{TXT_CORE_CM_TYPE_APPLICATION}</label>
-                <input type="radio" name="page[type]" value="fallback" id="type_fallback" class="radio hidable_nofallback" />
-                <label for="type_fallback" class="hidable_nofallback">{TXT_CORE_CM_TYPE_FALLBACK} <strong id="fallback"></strong></label>
-                <br style="clear: both;" />
-                <span class="info type_hidable type_content">{TXT_CORE_CM_TYPE_CONTENT_INFO}</span>
-                <label for="page_redirect" class="type_hidable type_redirect">{TXT_CORE_CM_TYPE_REDIRECT_TARGET}</label><br class="type_hidable type_redirect" />
-                <input type="text" class="type_hidable type_redirect" name="page[target]" id="page_target" />
-                <button id="targetBrowseButton" class="type_hidable type_redirect">{TXT_CORE_CM_BROWSE}</button>
-                <span class="info type_hidable type_redirect">{TXT_CORE_CM_TYPE_REDIRECT_INFO}</span>
-                <label for="page_application" class="type_hidable type_application">{TXT_CORE_CM_TYPE_APPLICATION}</label>
-                <label for="page_application_area" class="type_hidable type_application">{TXT_CORE_CM_TYPE_APPLICATION_AREA}</label><br /><!-- TODO: fix br -->
-                <select name="page[application]" class="type_hidable type_application" id="page_application">
-<!-- BEGIN module_option -->
-                    <option value="{MODULE_KEY}">{MODULE_TITLE}</option>
-<!-- END module_option -->
-                </select>
-                <input type="text" name="page[area]" class="type_hidable type_application" id="page_application_area" />
-                <span class="info type_hidable type_application">{TXT_CORE_CM_TYPE_APPLICATION_INFO}</span>
-
-                <span class="info type_hidable type_fallback">{TXT_CORE_CM_TYPE_FALLBACK_INFO}</span>
+                <div id="type_radio_buttons">
+                    <input type="hidden" name="page[type]" value="off" />
+                    <input type="radio" name="page[type]" value="content" id="type_content" class="radio" checked="checked" />
+                    <label for="type_content">{TXT_CORE_CM_TYPE_CONTENT}</label>
+                    <img class="tipmessage" src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" alt="" />
+                    <input type="radio" name="page[type]" value="redirect" id="type_redirect" class="radio" />
+                    <label for="type_redirect">{TXT_CORE_CM_TYPE_REDIRECT}</label>
+                    <img class="tipmessage" src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" alt="" />
+                    <input type="radio" name="page[type]" value="application" id="type_application" class="radio" />
+                    <label for="type_application">{TXT_CORE_CM_TYPE_APPLICATION}</label>
+                    <img class="tipmessage" src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" alt="" />
+                    <input type="radio" name="page[type]" value="fallback" id="type_fallback" class="radio hidable_nofallback" />
+                    <label for="type_fallback" class="hidable_nofallback">{TXT_CORE_CM_TYPE_FALLBACK} <strong id="fallback"></strong></label>
+                    <img class="tipmessage hidable_nofallback" src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[5],Style[0])" alt="" />
+                </div>
+                <div id="type_radio_values">
+                    <label for="page_redirect" class="type_hidable type_redirect">{TXT_CORE_CM_TYPE_REDIRECT_TARGET}</label>
+                    <input type="text" class="type_hidable type_redirect" name="page[target]" id="page_target" />
+                    <button id="targetBrowseButton" class="type_hidable type_redirect">{TXT_CORE_CM_BROWSE}</button>
+                    <label for="page_application" class="type_hidable type_application">{TXT_CORE_CM_TYPE_APPLICATION}</label>
+                    <label for="page_application_area" class="type_hidable type_application">{TXT_CORE_CM_TYPE_APPLICATION_AREA}</label>
+                    <select name="page[application]" class="type_hidable type_application" id="page_application">
+                        <!-- BEGIN module_option -->
+                        <option value="{MODULE_KEY}">{MODULE_TITLE}</option>
+                        <!-- END module_option -->
+                    </select>
+                    <input type="text" name="page[area]" class="type_hidable type_application" id="page_application_area" />
+                </div>
             </div>
             <div id="ckeditor" class="type_hidable type_application type_content">
                 <textarea id="cm_ckeditor" rows="15" cols="45" name="page[content]"></textarea>

@@ -98,7 +98,7 @@ class blockManager extends blockLibrary
     }
     private function setNavigation()
     {
-        global $objTemplate, $_ARRAYLANG;
+        global $objTemplate, $_ARRAYLANG, $_CONFIG;
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", "   "
             .($_CONFIG['blockStatus'] == '1'

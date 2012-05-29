@@ -182,7 +182,6 @@ $_ARRAYLANG['TXT_PHP_INFO'] = "Informaci&oacute;n PHP";
 $_ARRAYLANG['TXT_SITE_PREVIEW'] = "Vista previa del sitio";
 $_ARRAYLANG['TXT_WELCOME_MESSAGE'] = "Bienvenido";
 $_ARRAYLANG['TXT_ADMINISTSRATORS_ONLINE'] = "Administrators online";
-$_ARRAYLANG['TXT_QUICK_ACCESS'] = "Quick access";
 $_ARRAYLANG['TXT_LAST_LOGINS'] = "Last logins";
 $_ARRAYLANG['TXT_CONTREXX_NEWS'] = "Contrexx News";
 $_ARRAYLANG['TXT_CREATING_AND_PUBLISHING'] = "Creating and publishing";

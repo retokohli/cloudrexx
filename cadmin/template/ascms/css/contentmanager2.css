@@ -6,7 +6,6 @@
     2.2 Content Manager
     2.2.1 Type Tab
   3 Helpers
-  4 Chosen Plugin
  */
 
 /* 1) Reset */
@@ -167,6 +166,64 @@ h1{ font-size: 20px }
     margin: 11px 0 0 6px;
 }
 
+#page #type #type_radio_buttons,
+#page #type #type_radio_values {
+    float: left;
+    clear: both;
+    width: auto;
+    margin: 0 0 8px 0;
+}
+
+#page #type #type_radio_buttons .radio {
+    float: left;
+    width: auto;
+    margin: 0 3px 0 0;
+}
+
+#page #type #type_radio_buttons label {
+    float: left;
+    margin: 0 3px 0 0;
+}
+
+#page #type #type_radio_buttons .tipmessage {
+    float: left;
+    margin: 2px 15px 0 0;
+}
+
+#page #type #type_radio_values #page_target {
+    float: left;
+    clear: both;
+    width: 453px;
+    margin: 0 3px 0 0;
+}
+
+#page #type #type_radio_values #targetBrowseButton {
+    float: left;
+}
+
+#page #type #type_radio_values #page_application {
+    float: left;
+    clear: both;
+    width: 144px;
+    padding: 2px;
+    margin: 0 3px 0 0;
+}
+
+#page #type #type_radio_values #page_application_area {
+    float: left;
+    width: 418px;
+}
+
+#page #type #type_radio_values br {
+    clear: both;
+}
+
+#page #type #type_radio_values label {
+    float: left;
+    min-width: 145px;
+    margin: 0 3px 3px 0;
+}
+
 #page #navigation.special_form_style #page_aliases {
     float: left;
     clear: both;
@@ -211,24 +268,6 @@ h1{ font-size: 20px }
 #ckeditor textarea {
     width: 99.5%;
     height: 694px;
-}
-
-#type input.radio {
-    float: left;
-    width: 20px;
-    border: none;
-}
-#type label {
-    float: left;
-    min-width: 150px;
-}
-
-#page #page_application {
-    width: 143px;
-}
-
-#page #page_application_area {
-    width: 436px;
 }
 
 #site-language .chzn-select{
@@ -312,6 +351,7 @@ h1{ font-size: 20px }
 
 #site-tree div.actions, div.actions-expanded {
     position: absolute;
+    display: block;
 }
 
 #site-tree div.actions {
@@ -527,6 +567,7 @@ h1{ font-size: 20px }
     height: 28px;
     border-bottom: 1px solid #e5e5e5;
     z-index: auto;
+    display: block;
 }
 
 #site-tree li .jstree-wrapper:hover,
