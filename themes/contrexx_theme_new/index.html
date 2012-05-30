@@ -32,10 +32,13 @@
                         <script src="themes/contrexx_theme_new/js/onebyone/jquery.touchwipe.min.js"></script> 
                         <script src="themes/contrexx_theme_new/js/maxheight.js"></script>
                         <script src="themes/contrexx_theme_new/js/search.js"></script>
-                        <script>
+                        <script type="text/javascript">
                             $J(document).ready(function() {
-    
+                                //alert('hi');
                                 $J('.equHeights').equalHeight();
+                                //alert($J('[type=button]').val());
+                                //$J('[type=submit]').wrap('<span class="submit" />');
+                                //$J('[type=button]').wrap('<span class="submit" />');
                             });
                         </script>
                         <link href="themes/contrexx_theme_new/js/onebyone/css/jquery.onebyone.css" rel="stylesheet" type="text/css">
@@ -66,7 +69,11 @@
                                     </head>
 
                                     <body>
-                                        <div id="page">
+                                        <!--<div id="page">-->
+                                            <div id="wrapper">
+                                            <div class="w1">
+			<div class="w2">
+
                                             <!--            <div id="header">-->
                                             <!--                <div id="logo_part"><a id="logo" href="{NODE_2}" title="Contrexx"></a></div>-->
                                             <!--                <div id="nav-add">
@@ -86,6 +93,7 @@
                                             <!--            <div id="navigation">-->
                                             <!--                <div id="nav-main">-->
                                             <!--                    <ul class="nav-header">-->
+
                                             <header id="header">
                                                 <div class="line"></div>
                                                 <!-- logo -->
@@ -239,6 +247,9 @@
                                                             </div>
                                                         </div>-->
                                         </div>
+                                        </div>
+                                        </div>
+                                        <!--</div>-->
                                         <div id="lang_navigation" style="display: none;">
                                             {LANGUAGE_NAVBAR}
                                         </div>

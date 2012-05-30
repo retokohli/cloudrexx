@@ -374,13 +374,13 @@ select {
     /* width: 250px;*/
 }
 #main textarea, #frame_home textarea, #boxes_home textarea {
-  border: 1px solid #BDBDBD;
-  /*box-shadow: 1px 1px 2px #DDDDDD inset;*/
-  font-size: 1em;
-  height: 60px;
-  margin: 0.25em 0.25em 0.25em 0;
-  padding: 4px;
-  width: 260px;
+    border: 1px solid #ECEDF3;
+    /*box-shadow: 1px 1px 2px #DDDDDD inset;*/
+    font-size: 1em;
+    height: 60px;
+    margin: 0.25em 0.25em 0.25em 0;
+    padding: 4px;
+    width: 260px;
 }
 #main input, #frame_home input, #boxes_home input {
     /*border: 1px solid #BDBDBD;
@@ -443,6 +443,18 @@ input.submit, input.button {
 {
     height: 17px;
 }*/
+#main input[type="submit"]:hover,
+#main input[type="button"]:hover,
+#frame_home input[type="submit"]:hover,
+#frame_home input[type="button"]:hover,
+#boxes_home input[type="submit"]:hover,
+#boxes_home input[type="button"]:hover
+{
+    background: -moz-linear-gradient(center top , #B7CC0B 0%, #9EBA09 100%) repeat scroll 0 0 transparent;
+}
+
+
+
 #main input[type="submit"],
 #main input[type="button"],
 #frame_home input[type="submit"],
@@ -539,13 +551,13 @@ input[type="submit"], input[type="button"], input[type="reset"] {
     /*width: 250px;*/
     margin-bottom: 18px;
 }
-#nav-sub li.level_2 a:hover {
+#nav-sub a:hover {
     /*background: none repeat scroll 0 0 #F6F6F6;
     color: #000000;*/
     color: #222222;
     font-weight: bold;
 }
-#nav-sub li.level_2 a.active,#nav-sub li.level_3 a.active {
+#nav-sub a.active {
     /* background: url("images/subNavigation_bg.png") no-repeat scroll left top transparent;
      border: 0 none;
      color: #FFFFFF;
@@ -589,8 +601,8 @@ input[type="submit"], input[type="button"], input[type="reset"] {
 #nav-sub li.level_3 a:hover {
     /*background: none repeat scroll 0 0 #F6F6F6;
     color: #000000;*/
-    color: #222222;
-    font-weight: bold;
+    /* color: #222222;
+     font-weight: bold;*/
 }
 #nav-sub li.level_3 a.active {
     /*background: url("images/subNavigation_bg.png") no-repeat scroll left top transparent;
@@ -607,23 +619,23 @@ input[type="submit"], input[type="button"], input[type="reset"] {
     font-size: 0.9em;
 }
 #nav-sub li.level_4 a {
-    background: none repeat scroll 0 0 #FFFFFF;
-    color: #444444;
-    font-size: 0.9em;
-    font-weight: bold;
+
+    padding-left: 20px;
+    /*font-size: 0.9em;
+    font-weight: bold;*/
 }
 #nav-sub li.level_4 a:hover {
-    background: none repeat scroll 0 0 #F6F6F6;
-    color: #000000;
+    /*background: none repeat scroll 0 0 #F6F6F6;*/
+    /* color: #222;*/
 }
 #nav-sub li.level_4 a.active {
-    background: url("images/subNavigation_bg.png") no-repeat scroll left top transparent;
+    /*background: url("images/subNavigation_bg.png") no-repeat scroll left top transparent;
     border: 0 none;
-    color: #FFFFFF;
+    color: #222;
     font-weight: bold;
     margin-left: -5px;
     padding-left: 20px;
-    width: 223px;
+    width: 223px;*/
 }
 #left_sidebar {
 }
@@ -983,10 +995,10 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol, dl, textarea {
     float:left;
 }
 #guestbook textarea{
-  /*  font-size: 16px;
-    height: 150px;
-    margin: 12px 0;
-    width: 100%;*/
+    /*  font-size: 16px;
+      height: 150px;
+      margin: 12px 0;
+      width: 100%;*/
 }
 html body div#page div#container.group div#content-wrap.group div#wrapper_content div#content div#frame_content div#main div#fe_PreviewContent div#mediadir form p input#mediadirInputfield_138.mediadirInputfieldImage{
     display: block;
@@ -1521,6 +1533,12 @@ select {
 #nav ul ul li:hover ul {
     display:block;
 }
+#nav ul ul ul li a ul  {
+    display:none;
+}
+#nav ul ul ul li:hover ul  {
+    display:block;
+}
 /* main */
 #main {
     /* position:relative;
@@ -1647,6 +1665,7 @@ select {
 /* gallery */
 .gallery {
     margin-bottom:21px;
+    min-height: 340px;
 }
 .gallery-holder {
     font: 14px/18px 'Open Sans', Arial, Helvetica, sans-serif;
@@ -3100,8 +3119,8 @@ pre .name {
     line-height:18px;
     overflow:auto;
 }
-.comments-form .submit,
-.feedback .submit {
+.submit
+{
     padding:0 24px;
     display:inline-block;
     vertical-align:top;
@@ -3122,7 +3141,7 @@ pre .name {
     -moz-border-radius: 3px;
     border-radius: 3px;
     color:#fff;
-    margin:2px 0 0 160px;
+    /*  margin:2px 0 0 160px;*/
 }
 .comments-form .submit:hover,
 .feedback .submit:hover {
@@ -3135,8 +3154,7 @@ pre .name {
     background: -ms-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
     background: linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
 }
-.comments-form .submit input,
-.feedback .submit input {
+.submit input {
     position:absolute;
     top:0;
     left:0;

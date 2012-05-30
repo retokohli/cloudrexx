@@ -6,10 +6,16 @@ img,a { behavior: url(themes/contrexx_theme_new/iepngfix.htc) }
 /* CSS GLOBAL DEFINITIONS FOR FORMS IN MODULES     */
 /***************************************************/
 form p {
-    float: left;
+    /*float: left;
     margin: 0;
     width: 100%;
-    padding: 2px 0 3px 0;
+    padding: 2px 0 3px 0;*/
+}
+#female{
+    float: none;
+}
+.description{
+    float: none;
 }
 form p label.description {
     font-weight: normal;
@@ -34,13 +40,20 @@ form #contactFrame div.row {
     width: auto;
     clear: both;
 }
-form  p span {
+/*form  p span {
     font-weight: bold;
     float: left;
     width: 100%;
 }
 form p label{
     display: block;
+}*/
+form label, form span {
+  clear: left;
+  float: left;
+  font-weight: bold;
+  margin-top: 5px;
+  width: 180px;
 }
 /***************************************************/
 /* CSS GLOBAL DEFINITIONS FOR TABELS IN MODULES    */
