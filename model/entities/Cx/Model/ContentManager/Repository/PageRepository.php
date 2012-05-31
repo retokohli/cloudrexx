@@ -418,6 +418,45 @@ class PageRepository extends EntityRepository {
     }
 
     /**
+     * Returns the type of the page as string.
+     * 
+     * @param   \Cx\Model\ContentManager\Page  $page
+     * @return  string                         $type
+     */
+    public function getTypeByPage($page) {
+        global $_CORELANG;
+        
+        switch ($page->getType()) {
+            case \Cx\Model\ContentManager\Page::TYPE_REDIRECT:
+                $criteria = array(
+                    'nodeIdShadowed' => $page->getTargetNodeId(),
+                    'lang'           => $page->getLang(),
+                );
+                $target = $this->findOneBy($criteria)->getTitle();
+                $type  = $_CORELANG['TXT_CORE_CM_TYPE_REDIRECT'].': ';
+                $type .= $target;
+                break;
+            case \Cx\Model\ContentManager\Page::TYPE_APPLICATION:
+                $type  = $_CORELANG['TXT_CORE_CM_TYPE_APPLICATION'].': ';
+                $type .= $page->getModule();
+                $type .= $page->getCmd() != '' ? ' | '.$page->getCmd() : '';
+                break;
+            case \Cx\Model\ContentManager\Page::TYPE_FALLBACK:
+                $fallbackLangId = \FWLanguage::getFallbackLanguageIdById($page->getLang());
+                if ($fallbackLangId == 0) {
+                    $fallbackLangId = \FWLanguage::getDefaultLangId();
+                }
+                $type  = $_CORELANG['TXT_CORE_CM_TYPE_FALLBACK'].' ';
+                $type .= \FWLanguage::getLanguageCodeById($fallbackLangId);
+                break;
+            default:
+                $type = $_CORELANG['TXT_CORE_CM_TYPE_CONTENT'];
+        }
+        
+        return $type;
+    }
+
+    /**
      * Searches the content and returns an array that is built as needed by the search module.
      *
      * Please do not use this anywhere else, write a search method with proper results instead. Ideally, this
@@ -514,17 +553,5 @@ class PageRepository extends EntityRepository {
         $query->setMaxResults($count);
 
         return $query->getResult();
-    }
-    
-    public function getHistory($from=0, $count=30) {
-        $logRepo = $this->em->getRepository('Cx\Model\ContentManager\HistoryLogEntry');
-        $logs = $logRepo->getLogHistory('Cx\Model\ContentManager\Page', $from, $count);
-        $ids = array();
-        foreach($logs as $log) {
-            $ids[] = $logs->getId();
-        }
-
-        $pages = $this->find($ids);
-        return $pages;       
     }
 }
