@@ -10,6 +10,9 @@ form p {
     margin: 0;
     width: 100%;
     padding: 2px 0 3px 0;*/
+    float: left;
+    /*width: 100%*/
+
 }
 #female{
     float: none;
@@ -20,7 +23,7 @@ form p {
 form p label.description {
     font-weight: normal;
     float: left;
-    margin: 0px 0px 0px 10px;
+    /*margin: 0px 0px 0px 10px;*/
     padding:  0px 0px 0px 0px;
     width: 300px;
 }
@@ -48,12 +51,33 @@ form #contactFrame div.row {
 form p label{
     display: block;
 }*/
-form label, form span {
-  clear: left;
+form label{
+ /* clear: left;
   float: left;
   font-weight: bold;
   margin-top: 5px;
-  width: 180px;
+  width: 180px;*/
+color: #222222;
+float: left;
+height: 29px;
+margin-right: 30px;
+margin-top: 6px;
+text-align: right;
+width: 89px;
+}
+form span {
+ /* clear: left;
+  float: left;
+  font-weight: bold;
+  margin-top: 5px;
+  width: 180px;*/
+ clear: left;
+color: #222222;
+float: none;
+margin-right: 30px;
+margin-top: 5px;
+text-align: right;
+width: 130px;
 }
 /***************************************************/
 /* CSS GLOBAL DEFINITIONS FOR TABELS IN MODULES    */
@@ -117,7 +141,7 @@ div.row2 {
     float: left !important;
     width: auto !important;
     clear: none !important;
-    padding: 0 !important;
+    /*padding: 0 !important;*/
 }
 #captcha #coreCaptchaLabel {
     float: left;
@@ -169,6 +193,9 @@ div.row2 {
 #voting input[type=radio],
 #voting  input.radio{
     float: none;
+}
+.voting label{
+    float: none
 }
 /***************************************************/
 /* CSS DEFINITIONS FOR LIVECAM MODULE              */
@@ -365,6 +392,7 @@ div#livecam #CALBUTTONDPC_datum {
     float:left;
     height:auto !important;
 }
+
 #access div.message,
 #access div.message_ok,
 #access div.message_error,
@@ -1415,7 +1443,7 @@ table.news_meta td {
     color: #8b9581;
 }
 #knowledge #overview div div.content a.more:hover {
-    color: #3166B0;
+    color: #B8D30B;
 }
 #knowledge h2.category_list_title {
     padding: 3px;
@@ -1591,13 +1619,13 @@ dl.data_module img {
     color: black;
 }
 #downloads div.overview div.row div.category div.content a:hover {
-    color: #3166B0;
+    color: #B8D30B;
 }
 #downloads div.overview div.row div.category div.content a.more {
     color: #8b9581;
 }
 #downloads div.overview div.row div.category div.content a.more:hover {
-    color: #3166B0;
+    color: #B8D30B;
 }
 #downloads div.subcategories {
     padding: 0px 0px 15px 0px;
@@ -1951,7 +1979,7 @@ dl.data_module img {
     float:left;
 }
 label {
-    font-weight: bold;
+    /*font-weight: bold;*/
 }
 textarea {
     /*    margin: 0.5em 0.5em 0 0;*/
