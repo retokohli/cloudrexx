@@ -48,17 +48,35 @@ class PageRepository extends EntityRepository {
         return $ret;
     }
 
-    public function addVirtualPage($virtualPage, $afterSlug = '') {
+    /**
+     * Adds a virtual page to the page repository.
+     * 
+     * @param  \Cx\Model\ContentManager\Page  $virtualPage
+     * @param  boolean                        $first
+     * @param  string                         $afterSlug
+     */
+    public function addVirtualPage($virtualPage, $first = false, $afterSlug = '') {
         $virtualPage->setVirtual(true);
         if (!$virtualPage->getLang()) {
             $virtualPage->setLang(FRONTEND_LANG_ID);
         }
         $this->virtualPages[] = array(
             'page'      => $virtualPage,
+            'first'     => $first,
             'afterSlug' => $afterSlug,
         );
     }
     
+    /**
+     * Adds all virtual pages to the original tree.
+     * 
+     * @param   array    $tree         Original tree.
+     * @param   integer  $lang
+     * @param   integer  $rootNodeLvl
+     * @param   string   $rootPath
+     * 
+     * @return  array    $tree         New tree with virtual pages.
+     */
     protected function addVirtualTree($tree, $lang, $rootNodeLvl, $rootPath) {
         $tree = $this->addVirtualTreeLvl($tree, $lang, $rootNodeLvl, $rootPath);
         foreach ($tree as $slug=>$data) {
@@ -75,6 +93,16 @@ class PageRepository extends EntityRepository {
         return $tree;
     }
     
+    /**
+     * Adds the pages of the given node level to the tree.
+     * 
+     * @param   array    $tree
+     * @param   integer  $lang
+     * @param   integer  $rootNodeLvl
+     * @param   string   $rootPath
+     * 
+     * @return  array    $tree
+     */
     protected function addVirtualTreeLvl($tree, $lang, $rootNodeLvl, $rootPath) {
         foreach ($this->virtualPages as $virtualPage) {
             $page = $virtualPage['page'];
@@ -84,10 +112,22 @@ class PageRepository extends EntityRepository {
                     substr($page->getPath().'/', 0, strlen($rootPath.'/')) != $rootPath.'/') {
                 continue;
             }
-            $afterSlug = $virtualPage['afterSlug'];
             
-            if (!empty($afterSlug)) {
-                $position = array_search($afterSlug, array_keys($tree)) + 1;
+            $first = $virtualPage['first'];
+            $afterSlug = $virtualPage['afterSlug'];
+            $position = array_search($afterSlug, array_keys($tree));
+            
+            if ($first ===  true) {
+                $head[$page->getSlug()] = array(
+                    '__data' => array(
+                        'lang' => array($lang),
+                        'page' => $page,
+                        'node' => $node,
+                    ),
+                );
+                $tree = array_merge($head, $tree);
+            } else if (!empty($afterSlug) && $position !== false) {
+                $position++;
                 $head = array_splice($tree, 0, $position);
                 $insert[$page->getSlug()] = array(
                     '__data' => array(
