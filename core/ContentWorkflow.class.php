@@ -188,7 +188,7 @@ class ContentWorkflow extends Module {
                 $updated  = $data['updated'];
                 $username = $data['user']->{'name'};
                 $page     = $data['page'];
-                $type     = $this->getTypeByPage($page);
+                $type     = $this->pageRepo->getTypeByPage($page);
                 $prefix   = '';
                 
                 // Only for new, updated and unvalidated pages
@@ -303,9 +303,9 @@ class ContentWorkflow extends Module {
                         $page    = $data['page'];
                         $pageId  = $page->getId();
                         
-                        $updated  .= $data['updated'].'<br />';
+                        $updated   = $data['updated'];
                         $lang     .= \FWLanguage::getLanguageCodeById($page->getLang()).'<br />';
-                        $type     .= $this->getTypeByPage($page).'<br />';
+                        $type     .= $this->pageRepo->getTypeByPage($page).'<br />';
                         $username .= $data['user']->{'name'}.'<br />';
                         $title    .= $page->getTitle().'<br />';
                         $start     = $page->getStart() ? $page->getStart()->format('d.m.Y H:i') : '';
@@ -351,39 +351,6 @@ class ContentWorkflow extends Module {
             'TXT_FUNCTIONS'             => $_CORELANG['TXT_FUNCTIONS'],
             'TXT_DELETED_RESTORE_JS'    => $_CORELANG['TXT_DELETED_RESTORE_JS'],
         ));
-    }
-    
-    private function getTypeByPage($page) {
-        global $_CORELANG;
-        
-        switch ($page->getType()) {
-            case \Cx\Model\ContentManager\Page::TYPE_REDIRECT:
-                $criteria = array(
-                    'nodeIdShadowed' => $page->getTargetNodeId(),
-                    'lang'           => $page->getLang(),
-                );
-                $target = $this->pageRepo->findOneBy($criteria)->getTitle();
-                $type  = $_CORELANG['TXT_CORE_CM_TYPE_REDIRECT'].': ';
-                $type .= $target;
-                break;
-            case \Cx\Model\ContentManager\Page::TYPE_APPLICATION:
-                $type  = $_CORELANG['TXT_CORE_CM_TYPE_APPLICATION'].': ';
-                $type .= $page->getModule();
-                $type .= $page->getCmd() != '' ? ' | '.$page->getCmd() : '';
-                break;
-            case \Cx\Model\ContentManager\Page::TYPE_FALLBACK:
-                $fallbackLangId = \FWLanguage::getFallbackLanguageIdById($page->getLang());
-                if ($fallbackLangId == 0) {
-                    $fallbackLangId = \FWLanguage::getDefaultLangId();
-                }
-                $type  = $_CORELANG['TXT_CORE_CM_TYPE_FALLBACK'].' ';
-                $type .= \FWLanguage::getLanguageCodeById($fallbackLangId);
-                break;
-            default:
-                $type = $_CORELANG['TXT_CORE_CM_TYPE_CONTENT'];
-        }
-        
-        return $type;
     }
     
     /**
