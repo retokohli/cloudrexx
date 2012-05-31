@@ -335,15 +335,75 @@ input.radio{
     padding: 0\9;
     border: 0\9;
 }
+#main #female,#main .description,#main #male{
+    float: none;
+    vertical-align: middle;
+}
+
 #main select,
 #frame_home select,
 #boxes_home select {
+    /* background: none repeat scroll 0 0 #FFFFFF;
+     border: 1px solid #D3D3D3;
+     padding: 4px;
+     width: 270px;
+     height: 29px;
+     margin: 0.25em 0.25em 0.25em 0;*/
     background: none repeat scroll 0 0 #FFFFFF;
-    border: 1px solid #D3D3D3;
-    padding: 4px;
+    border: 1px solid #ECEDF3;
+    height: 34px;
+    margin: 0;
+    padding: 6px 19px 7px;
+    width: 490px;
+}
+select#calendarSelectcat,
+#main select[name=category],
+#main #forum select,
+#main #mediadir select,
+#main #contactFormField_Quantity select,
+#main #jobs select,
+#main #shop  select[name=manufacturerId],
+#main #podcast  select
+
+{
     width: 270px;
-    height: 29px;
-    margin: 0.25em 0.25em 0.25em 0;
+     margin: 0.25em 0.25em 0.25em 0;
+    padding: 4px;
+    height: auto;
+}
+#main #memberdir select,
+#shop  select
+
+
+{
+     margin: 0.25em 0.25em 0.25em 0;
+    padding: 4px;
+     height: auto;
+     vertical-align: middle
+}
+#access input[type=text],
+#forum input[type=text],
+#shop input[type=text]
+
+
+{
+     margin: 0.25em 0.25em 0.25em 0;
+    padding: 4px;
+     vertical-align: middle;
+}
+#main #calendar input[type=text],
+#main #memberdir input[name=keyword],
+#main #search_bg input[type=text],
+#main #downloads input[type=text],
+#main #mediadir input[type=text],
+#main #market input[name=term]
+
+
+{  margin: 0.25em 0.25em 0.25em 0;
+    padding: 4px;
+     vertical-align: middle;
+     width:260px;
+
 }
 select {
     background-color: #FFFFFF;
@@ -374,13 +434,24 @@ select {
     /* width: 250px;*/
 }
 #main textarea, #frame_home textarea, #boxes_home textarea {
-    border: 1px solid #ECEDF3;
-    /*box-shadow: 1px 1px 2px #DDDDDD inset;*/
+    /*border: 1px solid #ECEDF3;
     font-size: 1em;
     height: 60px;
     margin: 0.25em 0.25em 0.25em 0;
     padding: 4px;
-    width: 260px;
+    width: 260px;*/
+    background: none repeat scroll 0 0 transparent;
+    border: 1px solid #ECEDF3;
+    border-radius: 3px 3px 3px 3px;
+    /*float: right;*/
+    height: 148px;
+    line-height: 18px;
+    margin: 0;
+    max-width: 450px;
+    min-height: 148px;
+    overflow: auto;
+    padding: 5px 19px;
+    width: 450px !important;
 }
 #main input, #frame_home input, #boxes_home input {
     /*border: 1px solid #BDBDBD;
@@ -388,19 +459,57 @@ select {
     margin: 0.25em 0.25em 0.25em 0;
     padding: 4px;
     width: 260px;*/
-    background: none repeat scroll 0 0 transparent;
+    /* background: none repeat scroll 0 0 transparent;
+     border: 1px solid #ECEDF3;
+     border-radius: 3px 3px 3px 3px;
+     margin: 0.25em 0.25em 0.25em 0;
+     padding: 4px;
+     width: 260px;*/
+    /*background: none repeat scroll 0 0 transparent;
     border: 1px solid #ECEDF3;
     border-radius: 3px 3px 3px 3px;
+    margin: 0.25em 0.25em 0.25em 0;
+    padding: 6px 19px 7px;
+    width: 450px;*/
+    background: none repeat scroll 0 0 transparent;
+    border: 1px solid #ECEDF3;
+    /*float: right;*/
+    margin: 0 0 0;
+    padding: 6px 19px 7px;
+    width: 450px;
+    border-radius: 3px 3px 3px 3px;
+}
+#directory input{
+    width: auto;
+    margin: 0.25em 0.25em 0.25em 0;
+    padding: 4px;
+    width: 260px;
+     vertical-align: middle;
+}
+input#directory input{
+    width: auto;
     margin: 0.25em 0.25em 0.25em 0;
     padding: 4px;
     width: 260px;
 }
+    input#DPC_datum{
+        margin: 0.25em 0.25em 0.25em 0;
+    padding: 4px;
+    width: auto;
+
+}
 #main input[type="reset"], #frame_home input[type="reset"], #boxes_home input[type="reset"], input.reset {
-    background-color: #F6F6F6;
+    /*background-color: #F6F6F6;
     border: 1px solid #C6C6C6;
     margin: 0.25em 0.25em 0.25em 0;
     padding: 4px 10px;
-    width: auto;
+    width: auto;*/
+    background-color: #F6F6F6;
+border: 1px solid #C6C6C6;
+margin: 0;
+padding: 4px 10px;
+vertical-align: middle;
+width: auto;
 }
 #main input[type="submit"],
 #main input[type="button"],
@@ -420,7 +529,7 @@ input.submit, input.button {
     padding: 4px 6px;
     width: auto;*/
 
-    background: -moz-linear-gradient(center top , #C3DA0D 0%, #AECD09 100%) repeat scroll 0 0 transparent;
+   /* background: -moz-linear-gradient(center top , #C3DA0D 0%, #AECD09 100%) repeat scroll 0 0 transparent;
     border-radius: 3px 3px 3px 3px;
     color: #FFFFFF;
     cursor: pointer;
@@ -429,7 +538,33 @@ input.submit, input.button {
     padding: 4px 24px;
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
     text-transform: uppercase;
-    width: auto;
+    width: auto;*/
+
+
+
+
+    background: rgb(195,218,13);
+
+	background: -moz-linear-gradient(top,  rgba(195,218,13,1) 0%, rgba(174,205,9,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(195,218,13,1)), color-stop(100%,rgba(174,205,9,1)));
+	background: -webkit-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
+	background: -o-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
+	background: linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
+border: 1px solid #B4D50B;
+border-radius: 3px 3px 3px 3px;
+-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+color: #FFFFFF;
+cursor: pointer;
+font: 12px/30px 'Open Sans',Arial,Helvetica,sans-serif;
+margin: 0;
+padding: 5px 24px;
+position: relative;
+text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
+text-transform: uppercase;
+vertical-align: middle;
+width: auto;
 }
 /*#main input[type=text],
 #frame_home input[type=text],
@@ -453,7 +588,9 @@ input.submit, input.button {
     background: -moz-linear-gradient(center top , #B7CC0B 0%, #9EBA09 100%) repeat scroll 0 0 transparent;
 }
 
-
+#main #exposedComboUploaderStarter{
+    margin-top: 5px;
+}
 
 #main input[type="submit"],
 #main input[type="button"],
