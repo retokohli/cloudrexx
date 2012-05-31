@@ -1427,6 +1427,12 @@ $_ARRAYLANG['TXT_CORE_FALLBACK'] = "Fallback";
 $_ARRAYLANG['TXT_CORE_NONE'] = "Keine";
 
 // CORE/CM
+$_ARRAYLANG['TXT_CORE_CM_STATUS_PAGE'] = 'Status / Seite';
+$_ARRAYLANG['TXT_CORE_CM_TRANSLATIONS'] = 'Übersetzungen';
+$_ARRAYLANG['TXT_CORE_CM_SECTION_CMD'] = 'Section / CMD';
+$_ARRAYLANG['TXT_CORE_CM_DATE_USER'] = 'Datum / Benutzer';
+$_ARRAYLANG['TXT_CORE_CM_VIEW'] = 'Ansicht';
+$_ARRAYLANG['TXT_CORE_CM_ACTIONS'] = 'Aktionen';
 $_ARRAYLANG['TXT_CORE_CM_PAGE'] = 'Seite';
 $_ARRAYLANG['TXT_CORE_CM_META'] = 'SEO';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS'] = 'Zugriffsberechtigungen';

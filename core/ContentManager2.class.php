@@ -91,6 +91,8 @@ class ContentManager extends Module {
         $this->setLanguageVars(array(
             //navi
             'TXT_NEW_PAGE', 'TXT_CONTENT_HISTORY', 'TXT_IMAGE_ADMINISTRATION',
+            //site tree
+            'TXT_CORE_CM_STATUS_PAGE', 'TXT_CORE_CM_TRANSLATIONS', 'TXT_CORE_CM_SECTION_CMD', 'TXT_CORE_CM_DATE_USER',
             //categories
             'TXT_CORE_SITE_TYPE', 'TXT_CORE_SITE_CONTENT', 'TXT_CORE_SITE_ACCESS', 'TXT_CORE_SITE_SETTINGS', 'TXT_CORE_SITE_HISTORY',
             //type tab
@@ -107,12 +109,15 @@ class ContentManager extends Module {
             'TXT_CORE_PREVIEW', 'TXT_CORE_SAVE_PUBLISH', 'TXT_CORE_SAVE', 'TXT_CORE_SUBMIT_FOR_RELEASE', 'TXT_CORE_REFUSE_RELEASE'
         ));
 
+        $objCx = ContrexxJavascript::getInstance();
+        $objCx->setVariable('TXT_CORE_CM_VIEW', $_CORELANG['TXT_CORE_CM_VIEW']);
+        $objCx->setVariable('TXT_CORE_CM_ACTIONS', $_CORELANG['TXT_CORE_CM_ACTIONS']);
+
         $toggleTitles = !empty($_SESSION['contentManager']['toggleStatuses']['tabContent']['toggleTitles']) ? $_SESSION['contentManager']['toggleStatuses']['tabContent']['toggleTitles'] : 'block';
         $toggleType = !empty($_SESSION['contentManager']['toggleStatuses']['tabContent']['toggleType']) ? $_SESSION['contentManager']['toggleStatuses']['tabContent']['toggleType'] : 'block';
         $toggleThemes = !empty($_SESSION['contentManager']['toggleStatuses']['tabSettings']['toggleThemes']) ? $_SESSION['contentManager']['toggleStatuses']['tabSettings']['toggleThemes'] : 'block';
         $toggleNavigation = !empty($_SESSION['contentManager']['toggleStatuses']['tabSettings']['toggleNavigation']) ? $_SESSION['contentManager']['toggleStatuses']['tabSettings']['toggleNavigation'] : 'block';
         $toggleSidebar = !empty($_SESSION['contentManager']['toggleStatuses']['sidebar']) ? $_SESSION['contentManager']['toggleStatuses']['sidebar'] : 'block';
-        $objCx = ContrexxJavascript::getInstance();
         $objCx->setVariable('toggleTitles', $toggleTitles);
         $objCx->setVariable('toggleType', $toggleType);
         $objCx->setVariable('toggleThemes', $toggleThemes);
