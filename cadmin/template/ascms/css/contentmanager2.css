@@ -292,10 +292,6 @@ h1{ font-size: 20px }
     overflow: visible;
 }
 
-*+html #site-structure {
-    z-index: 0;
-}
-
 #content-manager.shrunk #site-structure {
     width: 350px;
     border-right: 1px solid #e5e5e5;
@@ -322,7 +318,7 @@ h1{ font-size: 20px }
     margin: 0 !important;
 }
 
-.toplevel{
+.toplevel {
     background: url(../images/contrexx_icon.png) no-repeat scroll 25px 3px transparent
 }
 
@@ -334,46 +330,102 @@ h1{ font-size: 20px }
     background: transparent;
 }
 
-#site-tree{
+#site-tree {
     padding: 0 0 0 30px;
 }
 
 #site-tree ul {
+    float: left;
+    clear: both;
     margin: 0;
 }
 
-#site-tree li a ins {
-    width: 18px;
-    height: 18px;
-    overflow: hidden;
-    float: left;
+#site-tree .jstree-wrapper {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    border-bottom: 1px solid #e5e5e5;
+    z-index: auto;
 }
 
-#site-tree div.actions, div.actions-expanded {
+#site-tree .jstree-wrapper:hover,
+#site-tree .jstree-wrapper.hover,
+#site-tree .jstree-wrapper:focus,
+#site-tree .jstree-wrapper:active,
+#site-tree .jstree-wrapper.active {
+    background: #ffffd6;
+}
+
+#site-tree span,
+#site-tree .actions,
+#site-tree .preview  {
     position: absolute;
+    top: 0;
+    float: left;
+    width: auto;
+    height: 30px;
+    line-height: 30px;
+    font-size: 11px;
+}
+
+#site-tree .show {
     display: block;
 }
 
-#site-tree div.actions {
-    bottom: 0;
-    right: 10px;
-    height: 29px;
-    line-height: 29px;
-    background-image: url(../images/content_manager_actions.png);
-    background-repeat: no-repeat;
-    background-position: left center;
-    padding-left: 16px;
+#site-tree .hide {
+    display: none;
 }
 
-#site-tree div.actions-expanded {
-    top: -6px;
-    right: 3px;
+#site-tree .module {
+    left: 53.8%;
+}
+
+#site-tree .user {
+    left: 65.6%;
+}
+
+#site-tree .lastupdate {
+    left: 77.6%;
+}
+
+#site-tree .preview {
+    left: 70.6%;
+    background: url(../images/content_manager_preview.png) no-repeat left center;
+    padding: 0 0 0 16px !important;
+}
+
+#site-tree .actions {
+    right: 10px;
+    background: url(../images/content_manager_actions_plus.png) no-repeat left center;
+    padding: 0 13px 0 16px;
+}
+
+#site-tree .actions:hover {
+    cursor: pointer;
+}
+
+#site-tree .actions div {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 13px;
+    height: 100%;
+    background: url(../images/content_manager_actions_arrow.png) no-repeat right center;
+}
+
+#site-tree .actions-expanded {
+    display: block;
+    position: absolute;
+    top: 23px;
+    right: 9px;
     z-index: 11;
 }
 
-#site-tree div.actions-expanded ul {
+#site-tree .actions-expanded ul {
+    float: left;
     background: #ffffff;
-    padding: 3px 6px;
+    padding: 12px 15px;
     border:  1px solid #d3d3d3;
     margin: 0;
     -moz-box-shadow: 2px 4px 5px rgba(153,153,153,0.5),-2px 4px 5px rgba(153,153,153,0.5);
@@ -383,62 +435,136 @@ h1{ font-size: 20px }
     -ms-filter: progid:DXImageTransform.Microsoft.Shadow(Strength=3,Direction=135,Color='#999999');
 }
 
-#site-tree div.actions-expanded ul li {
-    margin: 0;
-    text-align: right;
+#site-tree .actions-expanded ul li {
+    float: left;
+    clear: both;
+    line-height: 16px;
+    padding: 0 0 0 19px;
+    background: url(../images/content_manager_actions_default.png) no-repeat left center;
+    margin: 3px 0 3px 0;
 }
 
-#site-tree div.actions-expanded ul li.first {
-    border-top: none;
-}
-
-#site-tree div.actions-expanded ul li:hover {
-    margin: 0;
+#site-tree .actions-expanded ul li:hover {
     cursor: pointer;
 }
 
-#site-tree:hover div.actions {
-    display: inline;
-    cursor: pointer;
-}
-
-#site-tree li ins.jstree-icon {
+#site-tree .jstree-icon {
+    float: left;
+    margin-top: 6px;
     cursor: pointer;
     position: relative;
+    clear: none;/*?*/
 }
 
-#site-tree li a.preview {
+#site-tree .jstree-checkbox {
+    float: left;
     position: absolute;
-    left: 70.6%;
-    bottom: 0;
-    background: url(../images/content_manager_preview.png) no-repeat left center;
-    padding-left: 16px !important;
+    left: -38px;
+    margin-top: 7px;
+}
+*+html #site-tree .jstree-checkbox {
+    margin: 0;
 }
 
-#site-tree .jstree-wrapper span.show {
-    display: block;
+#site-tree .publishing {
+    width: 13px;
+    height: 14px;
+    background-image: url(../../../template/ascms/images/publishing-unlocked.png);
+    background-position: 0 -4px;
+    margin-top: 8px;
+}
+#site-tree .publishing.locked {
+    background-image: url(../../../template/ascms/images/publishing-locked.png);
+}
+#site-tree .publishing.unpublished {
+    background-position: -5px -5px;
+}
+#site-tree .publishing.unpublished.locked {
+    background-position: -4px -4px;
+}
+#site-tree .publishing.draft {
+    background-position: -5px -34px;
+}
+#site-tree .publishing.draft.locked {
+    background-position: -4px -33px;
+}
+#site-tree .publishing.draftwait {
+    background-position: -34px -34px;
+}
+#site-tree .publishing.draftwait.locked {
+    background-position: -33px -33px;
+}
+#site-tree .publishing.published {
+    background-position: -5px -63px; 
+}
+#site-tree .publishing.published.locked {
+    background-position: -4px -62px; 
+}
+#site-tree .publishing.publishedwait {
+    background-position: -34px -63px;
+}
+#site-tree .publishing.publishedwait.locked {
+    background-position: -33px -62px;
 }
 
-#site-tree .jstree-wrapper span.hide {
-    display: none;
+#site-tree .page {
+    margin-top: 7px;
+    height: 17px;
+    width: 20px;
 }
-
-#site-tree li  span.module {
-    position: absolute;
-    left: 53.8%;
-    top: 5px;
+#site-tree .page.active {
+    background-image: url(../../../template/ascms/images/page-active.png);
 }
-
-#site-tree li span.user {
-    position: absolute;
-    left: 65.6%;
-    top: 5px;
+#site-tree .page.hidden, #site-tree .page {
+    background-image: url(../../../template/ascms/images/page-hidden.png);
 }
-
-#site-tree li span.lastupdate {
-    position: absolute;
-    left: 77.6%;
-    top: 5px;
+#site-tree .page {
+    background-position: 1px -6px;
+}
+#site-tree .page.use_fallback {
+    background-position: 1px -151px;
+}
+#site-tree .page.protected {
+    background-position: -33px -6px;
+}
+#site-tree .page.protected.use_fallback {
+    background-position: -33px -151px;
+}
+#site-tree .page.home {
+    background-position: 1px -35px;
+}
+#site-tree .page.home.use_fallback {
+    background-position: 1px -209px;
+}
+#site-tree .page.home.protected {
+    background-position: -33px -35px;
+}
+#site-tree .page.home.protected.use_fallback {
+    background-position: -33px -209px;
+}
+#site-tree .page.app {
+    background-position: 1px -64px;
+}
+#site-tree .page.app.use_fallback {
+    background-position: 1px -180px;
+}
+#site-tree .page.app.protected {
+    background-position: -33px -64px;
+}
+#site-tree .page.app.protected.use_fallback {
+    background-position: -33px -180px;
+}
+#site-tree .page.redir {
+    background-position: 1px -93px;
+}
+#site-tree .page.redir.use_fallback {
+    background-position: 1px -122px;
+}
+#site-tree .page.redir.protected {
+    background-position: -33px -93px;
+}
+#site-tree .page.redir.protected.use_fallback {
+    background-position: -33px -122px;
 }
 
 #content-manager.shrunk #site-structure .translation,
@@ -451,139 +577,6 @@ h1{ font-size: 20px }
 
 #content-manager.shrunk #site-structure th.page {
     width: 100%;
-}
-
-*+html #site-tree li a span {
-    line-height: 17px;
-}
-
-#site-tree ins.publishing {
-    width: 13px;
-    height: 14px;
-    background-image: url(../../../template/ascms/images/publishing-unlocked.png);
-    background-position: 0 -4px;
-    margin-top: 6px;
-}
-#site-tree ins.publishing.locked {
-    background-image: url(../../../template/ascms/images/publishing-locked.png);
-}
-#site-tree ins.publishing.unpublished {
-    background-position: -5px -5px;
-}
-#site-tree ins.publishing.unpublished.locked {
-    background-position: -4px -4px;
-}
-#site-tree ins.publishing.draft {
-    background-position: -5px -34px;
-}
-#site-tree ins.publishing.draft.locked {
-    background-position: -4px -33px;
-}
-#site-tree ins.publishing.draftwait {
-    background-position: -34px -34px;
-}
-#site-tree ins.publishing.draftwait.locked {
-    background-position: -33px -33px;
-}
-#site-tree ins.publishing.published {
-    background-position: -5px -63px; 
-}
-#site-tree ins.publishing.published.locked {
-    background-position: -4px -62px; 
-}
-#site-tree ins.publishing.publishedwait {
-    background-position: -34px -63px;
-}
-#site-tree ins.publishing.publishedwait.locked {
-    background-position: -33px -62px;
-}
-
-#site-tree ins.page {
-    margin-top: 5px;
-    height: 17px;
-    width: 20px;
-}
-#site-tree ins.page.active {
-    background-image: url(../../../template/ascms/images/page-active.png);
-}
-#site-tree ins.page.hidden, #site-tree ins.page {
-    background-image: url(../../../template/ascms/images/page-hidden.png);
-}
-#site-tree ins.page {
-    background-position: 1px -6px;
-}
-#site-tree ins.page.use_fallback {
-    background-position: 1px -151px;
-}
-#site-tree ins.page.protected {
-    background-position: -33px -6px;
-}
-#site-tree ins.page.protected.use_fallback {
-    background-position: -33px -151px;
-}
-#site-tree ins.page.home {
-    background-position: 1px -35px;
-}
-#site-tree ins.page.home.use_fallback {
-    background-position: 1px -209px;
-}
-#site-tree ins.page.home.protected {
-    background-position: -33px -35px;
-}
-#site-tree ins.page.home.protected.use_fallback {
-    background-position: -33px -209px;
-}
-#site-tree ins.page.app {
-    background-position: 1px -64px;
-}
-#site-tree ins.page.app.use_fallback {
-    background-position: 1px -180px;
-}
-#site-tree ins.page.app.protected {
-    background-position: -33px -64px;
-}
-#site-tree ins.page.app.protected.use_fallback {
-    background-position: -33px -180px;
-}
-#site-tree ins.page.redir {
-    background-position: 1px -93px;
-}
-#site-tree ins.page.redir.use_fallback {
-    background-position: 1px -122px;
-}
-#site-tree ins.page.redir.protected {
-    background-position: -33px -93px;
-}
-#site-tree ins.page.redir.protected.use_fallback {
-    background-position: -33px -122px;
-}
-
-
-#site-tree li a ins.jstree-checkbox {
-    position: absolute;
-    left: -38px;
-    margin-top: 5px;
-}
-*+html #site-tree li a ins.jstree-checkbox {
-    margin: 0;
-}
-#site-tree div.jstree-wrapper {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    height: 0;
-    height: 28px;
-    border-bottom: 1px solid #e5e5e5;
-    z-index: auto;
-    display: block;
-}
-
-#site-tree li .jstree-wrapper:hover,
-#site-tree li .jstree-wrapper.hover,
-#site-tree li .jstree-wrapper:focus,
-#site-tree li .jstree-wrapper:active,
-#site-tree li .jstree-wrapper.active {
-    background: #ffffd6;
 }
 
 #cm-tabs {
