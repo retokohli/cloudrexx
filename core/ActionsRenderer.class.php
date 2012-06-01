@@ -16,15 +16,15 @@ class ActionsRenderer
         $actions = array();
 
         if ($page->isActive()) {
-            $actions[] = sprintf(self::$actionItem, "index.php?cmd=content&act=pageStatus&action=unpublish&page={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_UNPUBLISH']);
+            $actions[] = sprintf(self::$actionItem, "index.php?cmd=jsondata&object=page&act=setPageStatus&action=unpublish&page={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_UNPUBLISH']);
         } else {
-            $actions[] = sprintf(self::$actionItem, "index.php?cmd=content&act=pageStatus&action=publish&page={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_PUBLISH']);
+            $actions[] = sprintf(self::$actionItem, "index.php?cmd=jsondata&object=page&act=setPageStatus&action=publish&page={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_PUBLISH']);
         }
 
         if ($page->isVisible()) {
-            $actions[] = sprintf(self::$actionItem, "index.php?cmd=content&act=pageStatus&action=hidden&page={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_HIDE']);
+            $actions[] = sprintf(self::$actionItem, "index.php?cmd=jsondata&object=page&act=setPageStatus&action=hidden&page={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_HIDE']);
         } else {
-            $actions[] = sprintf(self::$actionItem, "index.php?cmd=content&act=pageStatus&action=visible&page={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_SHOW']);
+            $actions[] = sprintf(self::$actionItem, "index.php?cmd=jsondata&object=page&act=setPageStatus&action=visible&page={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_SHOW']);
         }
 
         if ($page->getEditingStatus() == 'hasDraftWaiting') {
@@ -41,7 +41,7 @@ class ActionsRenderer
         global $_ARRAYLANG;
         
         $actions = array();
-        $actions[] = sprintf(self::$actionItem, "index.php?cmd=content&act=pageStatus&action=publish&node=$nodeId&lang=$langId", $_ARRAYLANG['TXT_CORE_CM_PUBLISH']);
+        $actions[] = sprintf(self::$actionItem, "index.php?cmd=jsondata&object=page&act=setPageStatus&action=publish&node=$nodeId&lang=$langId", $_ARRAYLANG['TXT_CORE_CM_PUBLISH']);
         $actions[] = sprintf(self::$actionItem, "index.php?cmd=jsondata&object=node&act=delete&id={$nodeId}", $_ARRAYLANG['TXT_CORE_CM_DELETE']);
 
         return self::$header.implode("\n",$actions).self::$footer;
