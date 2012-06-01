@@ -373,6 +373,8 @@ function setModuleIndexAndReturnPlainSection($section) {
 // If standalone is set, then we will not have to initialize/load any content page related stuff
 $isRegularPageRequest = !isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false';
 
+// Get instance of FWUser object
+$objFWUser = FWUser::getFWUserObject();
 
 // Regular page request
 if ($isRegularPageRequest) {
@@ -410,7 +412,16 @@ if ($isRegularPageRequest) {
         $resolver->setSection($section, $command);
 
         // b(, a): fallback if section and cmd are specified
-        if($section) {
+        if ($section) {
+            if ($section == 'logout') {
+                if (empty($sessionObj)) {
+                    $sessionObj = new cmsSession();
+                }
+                if ($objFWUser->objUser->login()) {
+                    $objFWUser->logout();
+                }
+            }
+            
             $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
             
             $crit = array(
@@ -588,7 +599,6 @@ if (   (   $page_protected
 ) {
     if (empty($sessionObj)) $sessionObj = new cmsSession();
     $sessionObj->cmsSessionStatusUpdate('frontend');
-    $objFWUser = FWUser::getFWUserObject();
     if ($objFWUser->objUser->login()) {
         if ($page_protected) {
             if (!Permission::checkAccess($pageAccessId, 'dynamic', true)) {
@@ -1532,12 +1542,6 @@ switch ($plainSection) {
         $jobsObj->getPageTitle($page_title);
         $page_title = $jobsObj->jobsTitle;
         $page_metatitle = $jobsObj->jobsTitle;
-        break;
-
-    case 'logout':
-        if (isset($objFWUser) && is_object($objFWUser) && $objFWUser->objUser->login()) {
-            $objFWUser->logout();
-        }
         break;
 
     case 'error':
