@@ -110,14 +110,15 @@ class LoginManager {
         $this->objTemplate->setVariable(array(
             'TITLE'                     => $_ARRAYLANG['TXT_LOGIN_SET_NEW_PASSWORD'],
             'TXT_LOGIN_BACK_TO_LOGIN'   => $_ARRAYLANG['TXT_LOGIN_BACK_TO_LOGIN'],
+            'TXT_LOGIN_GO_TO_BACKEND'   => $_ARRAYLANG['TXT_LOGIN_GO_TO_BACKEND'],
         ));
         $this->objTemplate->hideBlock('error_message');
         $this->objTemplate->hideBlock('success_message');
         $this->objTemplate->hideBlock('back_to_login');
         // TODO: Why oh why isn't function resetPassword() located in the AccessLibrary?
-        $username = isset($_POST['username']) ? contrexx_stripslashes($_POST['username']) : (isset($_GET['username']) ? contrexx_stripslashes($_GET['username']) : '');
+        $username = isset($_POST['USERNAME']) ? contrexx_stripslashes($_POST['USERNAME']) : (isset($_GET['username']) ? contrexx_stripslashes($_GET['username']) : '');
         $restoreKey = isset($_POST['restore_key']) ? contrexx_stripslashes($_POST['restore_key']) : (isset($_GET['restoreKey']) ? contrexx_stripslashes($_GET['restoreKey']) : '');
-        $password = isset($_POST['password']) ? trim(contrexx_stripslashes($_POST['password'])) : '';
+        $password = isset($_POST['PASSWORD']) ? trim(contrexx_stripslashes($_POST['PASSWORD'])) : '';
         $confirmedPassword = isset($_POST['password2']) ? trim(contrexx_stripslashes($_POST['password2'])) : '';
 
         $this->objTemplate->setVariable(array(
@@ -141,6 +142,9 @@ class LoginManager {
                     // deletes all sessions which are using this user (except the session resetting the password)
                     $sessionObj->cmsSessionDestroyByUserId($objUser->getId());
                 }
+
+                $objFWUser = FWUser::getFWUserObject();
+                $objFWUser->checkAuth();
             } else {
                 $this->objTemplate->setVariable('LOGIN_ERROR_MESSAGE', $objFWUser->getErrorMsg());
                 $this->objTemplate->touchBlock('error_message');
@@ -207,6 +211,9 @@ class LoginManager {
 
         if (FWCaptcha::getInstance()->check()) {
             $this->objTemplate->setVariable('LOGIN_ERROR_MESSAGE', $objFWUser->getErrorMsg());
+            $this->objTemplate->parse('error_message');
+        } else {
+            $this->objTemplate->hideBlock('error_message');
         }
         if (isset($_SESSION['auth']['loginLastAuthFailed'])) {
             $this->objTemplate->setVariable(array(

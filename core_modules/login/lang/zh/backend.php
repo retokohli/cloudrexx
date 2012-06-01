@@ -26,3 +26,4 @@ $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD_MAIL_SENT'] = "An email with further instru
 $_ARRAYLANG['TXT_LOGIN_PASSWORD_CHANGED_SUCCESSFULLY'] = "Your password has benn successfully changed.";
 $_ARRAYLANG['TXT_LOGIN_LOGIN'] = "Login";
 $_ARRAYLANG['TXT_LOGIN_REMEMBER_ME'] = "Remember me";
+$_ARRAYLANG['TXT_LOGIN_GO_TO_BACKEND'] = "Go to backend";
