@@ -350,7 +350,8 @@ input.radio{
      height: 29px;
      margin: 0.25em 0.25em 0.25em 0;*/
     background: none repeat scroll 0 0 #FFFFFF;
-    border: 1px solid #ECEDF3;
+    /*border: 1px solid #ECEDF3;*/
+    border: 1px solid red;
     height: 34px;
     margin: 0;
     padding: 6px 19px 7px;
@@ -359,11 +360,11 @@ input.radio{
 select#calendarSelectcat,
 #main select[name=category],
 #main #forum select,
-#main #mediadir select,
 #main #contactFormField_Quantity select,
 #main #jobs select,
 #main #shop  select[name=manufacturerId],
-#main #podcast  select
+#main #podcast  select,
+#main #contactFormField_Quantity
 
 {
     width: 270px;
@@ -391,12 +392,21 @@ select#calendarSelectcat,
     padding: 4px;
      vertical-align: middle;
 }
+#main .selector select{
+    height: auto
+}
+#directory .selector {
+  clear: left;
+  margin-top: -45px;
+  padding-left: 119px;
+}
 #main #calendar input[type=text],
 #main #memberdir input[name=keyword],
 #main #search_bg input[type=text],
 #main #downloads input[type=text],
-#main #mediadir input[type=text],
-#main #market input[name=term]
+#main #mediadir .mediadirSearchForm input[name=term],
+#main #market input[name=term],
+#main .searchinput 
 
 
 {  margin: 0.25em 0.25em 0.25em 0;
@@ -433,6 +443,12 @@ select {
 {
     /* width: 250px;*/
 }
+#contactForm input[type=text]{
+    width: 450px !important
+}
+#main #CalDate{
+    width: 70px !important
+}
 #main textarea, #frame_home textarea, #boxes_home textarea {
     /*border: 1px solid #ECEDF3;
     font-size: 1em;
@@ -453,7 +469,8 @@ select {
     padding: 5px 19px;
     width: 450px !important;
 }
-#main input, #frame_home input, #boxes_home input {
+#main input, #frame_home input, #boxes_home input
+,#main #mediadir .mediadirSearchForm .normal input[name=term]{
     /*border: 1px solid #BDBDBD;
     box-shadow: 1px 1px 2px #DDDDDD inset;
     margin: 0.25em 0.25em 0.25em 0;
@@ -472,18 +489,17 @@ select {
     padding: 6px 19px 7px;
     width: 450px;*/
     background: none repeat scroll 0 0 transparent;
-    border: 1px solid #ECEDF3;
+    /*border: 1px solid #ECEDF3;*/
+    border: 1px solid red;
     /*float: right;*/
     margin: 0 0 0;
     padding: 6px 19px 7px;
     width: 450px;
     border-radius: 3px 3px 3px 3px;
 }
-#directory input{
-    width: auto;
-    margin: 0.25em 0.25em 0.25em 0;
-    padding: 4px;
-    width: 260px;
+#directory input[type=text]{
+    
+    width: 450px !important;
      vertical-align: middle;
 }
 input#directory input{
@@ -496,6 +512,7 @@ input#directory input{
         margin: 0.25em 0.25em 0.25em 0;
     padding: 4px;
     width: auto;
+    vertical-align: middle;
 
 }
 #main input[type="reset"], #frame_home input[type="reset"], #boxes_home input[type="reset"], input.reset {
@@ -506,7 +523,8 @@ input#directory input{
     width: auto;*/
     background-color: #F6F6F6;
 border: 1px solid #C6C6C6;
-margin: 0;
+/*margin: 0;*/
+margin:0.25em 0.25em 0.25em 0;
 padding: 4px 10px;
 vertical-align: middle;
 width: auto;
@@ -565,6 +583,7 @@ text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
 text-transform: uppercase;
 vertical-align: middle;
 width: auto;
+/*margin-left: 119px*/
 }
 /*#main input[type=text],
 #frame_home input[type=text],
@@ -1348,6 +1367,7 @@ html body div#page div#container.group div#content-wrap.group div#wrapper_conten
 }
 #main .notification_center input[type=button],#main .selectorCenter input[type=button]{
     min-width:39px !important;
+     margin: 0.25em 5px 0.25em 0;
 }
 #main #livecam form input[value="Today"],#main #livecam form input[value="Go to the archive..."]{
     border-width:0px !important;
@@ -4203,4 +4223,7 @@ pre .name {
 }
 .content_home_text{
     margin: 10px 0 15px;
+}
+.mediadirSearchForm{
+    float: left;
 }

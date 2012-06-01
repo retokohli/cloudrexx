@@ -79,6 +79,11 @@ margin-top: 5px;
 text-align: right;
 width: 130px;
 }
+form#contactForm input {
+  clear: right;
+  float: left;
+  margin: 0.25em 0.25em 0.25em 0
+}
 /***************************************************/
 /* CSS GLOBAL DEFINITIONS FOR TABELS IN MODULES    */
 /***************************************************/
