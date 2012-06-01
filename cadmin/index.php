@@ -185,7 +185,7 @@ $objFWUser = FWUser::getFWUserObject();
 
 /* authentification */
 $loggedIn = $objFWUser->objUser->login(true); //check if the user is already logged in
-if (!empty($_POST) && !$loggedIn) { //not logged in already - do captcha and password checks
+if (!empty($_POST) && !$loggedIn && ($_GET['cmd'] !== 'login' && $_GET['act'] !== 'resetpw')) { //not logged in already - do captcha and password checks
     $objFWUser->checkAuth();
 }
 
@@ -254,15 +254,17 @@ if ($isRegularPageRequest) {
     }
 }
 
-// CSRF protection. From this point on, we can assume that
-// the user is logged in, but nothing else has happened.
+// CSRF protection.
 // Note that we only do the check as long as there's no
 // cmd given; this is so we can reload the main screen if
 // the check has failed somehow.
 // fileBrowser is an exception, as it eats CSRF codes like
 // candy. We're doing CSRF::check_code() in the relevant
 // parts in the module instead.
-if (!empty($plainCmd) and !in_array($plainCmd, array('fileBrowser', 'upload'))) {
+// The CSRF code needn't to be checked in the login module 
+// because the user isn't logged in at this point. 
+// TODO: Why is upload excluded? The CSRF check doesn't take place in the upload module!
+if (!empty($plainCmd) and !in_array($plainCmd, array('fileBrowser', 'upload', 'login'))) {
     CSRF::check_code();
 }
 

@@ -121,7 +121,7 @@ class myAdminManager {
            'SELECT `logs`.`datetime`, `logs`.`remote_host`, `users`.`username`
             FROM `'.DBPREFIX.'log` as `logs` LEFT JOIN `'.DBPREFIX.'access_users` as `users` ON `users`.`id`=`logs`.`userid`
             WHERE `logs`.`userid` <> '.$objFWUser->objUser->getId().'
-            ORDER BY `logs`.`id` DESC', 5);
+            ORDER BY `logs`.`id` DESC', 7);
         if ($objResult && $objResult->RecordCount() > 0) {
             while (!$objResult->EOF) {
                 $objTemplate->setVariable(array(

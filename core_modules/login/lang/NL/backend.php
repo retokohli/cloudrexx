@@ -26,3 +26,4 @@ $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD_MAIL_SENT'] = "Een e-mailbericht met meer i
 $_ARRAYLANG['TXT_LOGIN_PASSWORD_CHANGED_SUCCESSFULLY'] = "Het wachtwoord is succesvol gewijzigd!";
 $_ARRAYLANG['TXT_LOGIN_LOGIN'] = "Inloggen";
 $_ARRAYLANG['TXT_LOGIN_REMEMBER_ME'] = "Remember me";
+$_ARRAYLANG['TXT_LOGIN_GO_TO_BACKEND'] = "Go to backend";

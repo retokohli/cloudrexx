@@ -53,22 +53,24 @@
             }
             /* ]]> */
             </script>
+            <!-- BEGIN error_message -->
             <div class="error">{LOGIN_ERROR_MESSAGE}</div>
-            <div class="error" id="no_username" style="display: none;">{TXT_LOGIN_ENTER_A_USERNAME}</div>
+            <!-- END error_message -->
             <div>
+                <div class="error" id="no_username" style="display: none;">{TXT_LOGIN_ENTER_A_USERNAME}</div>
                 <label for="username">{TXT_LOGIN_USERNAME}:</label>
                 <input tabindex="1" type="text" name="USERNAME" value="" id="username" />
             </div>
-            <div class="error" id="no_password" style="display: none;">{TXT_LOGIN_ENTER_A_PASSWORD}</div>
             <div>
+                <div class="error" id="no_password" style="display: none;">{TXT_LOGIN_ENTER_A_PASSWORD}</div>
                 <label for="password">{TXT_LOGIN_PASSWORD}:</label>
                 <input tabindex="2" type="password" name="hash" value="" id="password" />
                 <input type="hidden" name="PASSWORD" value="" /><br />
                 <a tabindex="6" href="index.php?cmd=login&amp;act=lostpw">{TXT_LOGIN_PASSWORD_LOST}</a>
             </div>
             <!-- BEGIN captcha -->
-            <div class="error" id="no_captcha_code" style="display: none;">{TXT_LOGIN_ENTER_CAPTCHA}</div>
             <div>
+                <div class="error" id="no_captcha_code" style="display: none;">{TXT_LOGIN_ENTER_CAPTCHA}</div>
                 {CAPTCHA_CODE}
             </div>
             <!-- END captcha -->

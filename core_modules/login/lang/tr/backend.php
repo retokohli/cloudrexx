@@ -26,3 +26,4 @@ $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD_MAIL_SENT'] = "Bir E-mail açıklamalarıyl
 $_ARRAYLANG['TXT_LOGIN_PASSWORD_CHANGED_SUCCESSFULLY'] = "Şifreniz başarıyla değiştirildi.";
 $_ARRAYLANG['TXT_LOGIN_LOGIN'] = "Giriş";
 $_ARRAYLANG['TXT_LOGIN_REMEMBER_ME'] = "Remember me";
+$_ARRAYLANG['TXT_LOGIN_GO_TO_BACKEND'] = "Go to backend";

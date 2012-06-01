@@ -156,8 +156,16 @@ a:active {
     color: #E00500;
 }
 
+#content_login div div.error {
+    padding: 0 0 3px 0;
+}
+
 #content_login div.success {
     color: #008000;
+}
+
+#content_login div div.success {
+    padding: 0 0 3px 0;
 }
 
 #content_login div a {
@@ -179,17 +187,18 @@ a:active {
 }
 
 #content_login div input.error {
-    border: 1px solid #E00500;
+    border: 1px solid #e00500 !important;
     padding: 2px;
 }
 
 #content_login div input[type=text],
 #content_login div input[type=password] {
     float: left;
-    width: 294px;
-    height: 23px;
-    line-height: 23px;
+    width: 292px;
+    padding: 3px;
+    border: 1px solid #bbbbbb;
     margin: 3px 0;
+    color: #444444;
 }
 
 #content_login div input[type=checkbox] {
@@ -206,7 +215,12 @@ a:active {
     float: left;
     clear: none;
     width: auto;
+    background: #dadada url(../images/button_bg.png) repeat-x scroll left top;
+    padding: 2px 10px;
+    border: 1px solid #BBBBBB;
     margin: 0 5px 0 0;
+    color: #444444;
+    text-shadow: 1px 1px #FFFFFF;
 }
 
 *+html #content_login div input[type=submit],
@@ -220,7 +234,7 @@ a:active {
 }
 
 #content_login #captcha #coreCaptchaCode {
-    width: 200px !important;
+    width: 198px !important;
     height: 23px;
 }
 
