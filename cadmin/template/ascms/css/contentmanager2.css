@@ -340,6 +340,15 @@ h1{ font-size: 20px }
     margin: 0;
 }
 
+*+html #site-tree ul,
+*+html #site-tree ul li {
+    width: 100%;
+}
+
+*+html #site-tree ul li ul li {
+    width: 99%;
+}
+
 #site-tree .jstree-wrapper {
     position: absolute;
     left: 0;
