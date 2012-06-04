@@ -5,14 +5,20 @@ img,a { behavior: url(themes/contrexx_theme_new/iepngfix.htc) }
 /***************************************************/
 /* CSS GLOBAL DEFINITIONS FOR FORMS IN MODULES     */
 /***************************************************/
-form p {
-    /*float: left;
+/*form p {
+    float: left;
     margin: 0;
     width: 100%;
-    padding: 2px 0 3px 0;*/
+    padding: 2px 0 3px 0;
     float: left;
-    /*width: 100%*/
+    width: 100%
 
+}*/
+form p {
+    clear: left;
+    height: 1%;
+    margin: 0;
+    padding: 2px 0 3px 190px;
 }
 #female{
     float: none;
@@ -21,10 +27,15 @@ form p {
     float: none;
 }
 form p label.description {
-    font-weight: normal;
+    /* font-weight: normal;
+     float: left;
+     margin: 0px 0px 0px 10px;
+     padding:  0px 0px 0px 0px;
+     width: 300px;*/
     float: left;
-    /*margin: 0px 0px 0px 10px;*/
-    padding:  0px 0px 0px 0px;
+    font-weight: normal;
+    margin: 0 0 0 10px;
+    padding: 0;
     width: 300px;
 }
 form p label.noCaption {
@@ -51,12 +62,12 @@ form #contactFrame div.row {
 form p label{
     display: block;
 }*/
-form label{
- /* clear: left;
+/*form label{
+  clear: left;
   float: left;
   font-weight: bold;
   margin-top: 5px;
-  width: 180px;*/
+  width: 180px;
 color: #222222;
 float: left;
 height: 29px;
@@ -66,11 +77,11 @@ text-align: right;
 width: 89px;
 }
 form span {
- /* clear: left;
+  clear: left;
   float: left;
   font-weight: bold;
   margin-top: 5px;
-  width: 180px;*/
+  width: 180px;
  clear: left;
 color: #222222;
 float: none;
@@ -78,11 +89,21 @@ margin-right: 30px;
 margin-top: 5px;
 text-align: right;
 width: 130px;
+}*/
+form p label, form p span {
+    /* float: left;
+     font-weight: bold;
+     margin-left: -190px;
+     width: 180px;*/
+    color: #222222;
+    float: left;
+    margin-left: -190px;
+    width: 180px;
 }
 form#contactForm input {
-  clear: right;
-  float: left;
-  margin: 0.25em 0.25em 0.25em 0
+    clear: right;
+    float: left;
+    margin: 0.25em 0.25em 0.25em 0
 }
 /***************************************************/
 /* CSS GLOBAL DEFINITIONS FOR TABELS IN MODULES    */
@@ -566,7 +587,10 @@ div#livecam #CALBUTTONDPC_datum {
     border-top: 1px solid #cccccc;
 }
 #directory .selector {
+    /*clear: left;*/
     clear: left;
+    margin-top: -15px;
+    padding-left: 190px;
 }
 /***************************************************/
 /* CSS DEFINITIONS FOR LOGIN MODULE                */
@@ -1046,31 +1070,31 @@ div#livecam #CALBUTTONDPC_datum {
 
 /* Inner block for the toggable shipment address */
 #shop .shipping_address {
-  clear: both;
+    clear: both;
 }
 
 /* Right align prices etc. */
 #shop .a_right {
-  text-align: right;
+    text-align: right;
 }
 /* Center quantities etc. */
 #shop .a_center {
-  text-align: center;
+    text-align: center;
 }
 /* Input for Coupon code and Dropdown menu width in the cart */
 #shop .shop_cart_input {
-  width: 150px !important;
+    width: 150px !important;
 }
 #shop .shop_cart_input:focus {
-  width: 144px !important;
-  border-left: 5px solid #2687CC;
+    width: 144px !important;
+    border-left: 5px solid #2687CC;
 }
 #shop input.shop_quantity {
-  width: 30px;
+    width: 30px;
 }
 #shop input.shop_quantity:focus {
-  width: 26px;
-  border-left: 5px solid #2687CC;
+    width: 26px;
+    border-left: 5px solid #2687CC;
 }
 
 #shop div.message_error {
@@ -1166,25 +1190,25 @@ div#livecam #CALBUTTONDPC_datum {
     float: none;
 }
 #shopping_cart {
-  background: url("images/shopping_cart.gif") no-repeat scroll 0 0 transparent;
-  float: left;
-  height: 60px;
-  margin-left: 9px;
-  width: 80px;
+    background: url("images/shopping_cart.gif") no-repeat scroll 0 0 transparent;
+    float: left;
+    height: 60px;
+    margin-left: 9px;
+    width: 80px;
 }
 #shop .discount h2 {
-  font-size: 1.6em;
-  margin-bottom: 0.5em;
-  border-bottom: 0 none;
-  font-weight: normal;
-  padding: 0;
+    font-size: 1.6em;
+    margin-bottom: 0.5em;
+    border-bottom: 0 none;
+    font-weight: normal;
+    padding: 0;
 }
 #shop .error {
-  border: 1px solid red;
+    border: 1px solid red;
 }
 #shop input.error[type=radio] {
-  background-color: red;
-  background-image: url("images/logo.png");
+    background-color: red;
+    background-image: url("images/logo.png");
 }
 /***************************************************/
 /* CSS DEFINITIONS FOR E-CARD MODULE               */
@@ -1885,6 +1909,12 @@ dl.data_module img {
 #mediadir .mediadirGoogleMap{
     clear: both;
     margin-bottom: 15px;
+    margin-top: -15px;
+    padding-left: 180px;
+
+}
+.mediadirSelectorCenter{
+    padding: 60px 5px 0 !important;
 }
 #mediadir .map{
     margin-top: 10px;

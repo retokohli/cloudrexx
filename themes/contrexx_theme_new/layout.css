@@ -307,7 +307,7 @@ table td.none {border: none;}
 #frame_content #main  form input.inputText {
     width: 178px;
 }
-* html #main input,
+* /*html #main input,
 #frame_home input,
 #boxes_home input {
     margin: 0.25em 0.25em 0.25em 0em;
@@ -319,7 +319,7 @@ table td.none {border: none;}
     -moz-box-shadow: 1px 1px 2px #ddd inset;
     -webkit-box-shadow: 1px 1px 2px #ddd inset;
     box-shadow: 1px 1px 2px #ddd inset;
-}
+}*/
 #main input[type=checkbox],
 #main input[type=radio],
 #frame_home input[type=checkbox],
@@ -335,11 +335,11 @@ input.radio{
     padding: 0\9;
     border: 0\9;
 }
-#main #female,#main .description,#main #male{
+/*#main #female,#main .description,#main #male{
     float: none;
     vertical-align: middle;
 }
-
+*/
 #main select,
 #frame_home select,
 #boxes_home select {
@@ -348,14 +348,14 @@ input.radio{
      padding: 4px;
      width: 270px;
      height: 29px;
-     margin: 0.25em 0.25em 0.25em 0;*/
-    background: none repeat scroll 0 0 #FFFFFF;
-    /*border: 1px solid #ECEDF3;*/
-    border: 1px solid red;
-    height: 34px;
-    margin: 0;
-    padding: 6px 19px 7px;
-    width: 490px;
+    */   /*  margin: 0.25em 0.25em 0.25em 0;
+        background: none repeat scroll 0 0 #FFFFFF;
+        border: 1px solid #ECEDF3;
+        border: 1px solid red;
+        height: 34px;
+        margin: 0;
+        padding: 6px 19px 7px;
+        width: 490px;*/
 }
 select#calendarSelectcat,
 #main select[name=category],
@@ -367,23 +367,23 @@ select#calendarSelectcat,
 #main #contactFormField_Quantity
 
 {
-    width: 270px;
+    /*width: 270px;
      margin: 0.25em 0.25em 0.25em 0;
     padding: 4px;
-    height: auto;
+    height: auto;*/
 }
 #main #memberdir select,
 #shop  select
 
 
 {
-     margin: 0.25em 0.25em 0.25em 0;
-    padding: 4px;
-     height: auto;
-     vertical-align: middle
+    /*  margin: 0.25em 0.25em 0.25em 0;
+     padding: 4px;
+      height: auto;
+      vertical-align: middle*/
 }
-#access input[type=text],
-#forum input[type=text],
+
+/*#forum input[type=text],
 #shop input[type=text]
 
 
@@ -406,7 +406,7 @@ select#calendarSelectcat,
 #main #downloads input[type=text],
 #main #mediadir .mediadirSearchForm input[name=term],
 #main #market input[name=term],
-#main .searchinput 
+#main .searchinput
 
 
 {  margin: 0.25em 0.25em 0.25em 0;
@@ -441,14 +441,14 @@ select {
 #fe_PreviewContent input[name=term],
 #main input[name=username]
 {
-    /* width: 250px;*/
+     width: 250px;
 }
 #contactForm input[type=text]{
     width: 450px !important
 }
 #main #CalDate{
     width: 70px !important
-}
+}*/
 #main textarea, #frame_home textarea, #boxes_home textarea {
     /*border: 1px solid #ECEDF3;
     font-size: 1em;
@@ -456,18 +456,18 @@ select {
     margin: 0.25em 0.25em 0.25em 0;
     padding: 4px;
     width: 260px;*/
-    background: none repeat scroll 0 0 transparent;
-    border: 1px solid #ECEDF3;
-    border-radius: 3px 3px 3px 3px;
-    /*float: right;*/
-    height: 148px;
-    line-height: 18px;
-    margin: 0;
-    max-width: 450px;
-    min-height: 148px;
-    overflow: auto;
-    padding: 5px 19px;
-    width: 450px !important;
+    /* background: none repeat scroll 0 0 transparent;
+     border: 1px solid #ECEDF3;
+     border-radius: 3px 3px 3px 3px;
+     float: right;
+     height: 148px;
+     line-height: 18px;
+     margin: 0;
+     max-width: 450px;
+     min-height: 148px;
+     overflow: auto;
+     padding: 5px 19px;
+     width: 450px !important;*/
 }
 #main input, #frame_home input, #boxes_home input
 ,#main #mediadir .mediadirSearchForm .normal input[name=term]{
@@ -488,28 +488,28 @@ select {
     margin: 0.25em 0.25em 0.25em 0;
     padding: 6px 19px 7px;
     width: 450px;*/
-    background: none repeat scroll 0 0 transparent;
-    /*border: 1px solid #ECEDF3;*/
+    /*background: none repeat scroll 0 0 transparent;
+    border: 1px solid #ECEDF3;
     border: 1px solid red;
-    /*float: right;*/
+    float: right;
     margin: 0 0 0;
     padding: 6px 19px 7px;
     width: 450px;
-    border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;*/
 }
-#directory input[type=text]{
-    
+/*#directory input[type=text]{
+
     width: 450px !important;
      vertical-align: middle;
-}
+}*/
 input#directory input{
     width: auto;
     margin: 0.25em 0.25em 0.25em 0;
     padding: 4px;
     width: 260px;
 }
-    input#DPC_datum{
-        margin: 0.25em 0.25em 0.25em 0;
+input#DPC_datum{
+    margin: 0.25em 0.25em 0.25em 0;
     padding: 4px;
     width: auto;
     vertical-align: middle;
@@ -522,12 +522,12 @@ input#directory input{
     padding: 4px 10px;
     width: auto;*/
     background-color: #F6F6F6;
-border: 1px solid #C6C6C6;
-/*margin: 0;*/
-margin:0.25em 0.25em 0.25em 0;
-padding: 4px 10px;
-vertical-align: middle;
-width: auto;
+    border: 1px solid #C6C6C6;
+    /*margin: 0;*/
+    margin:0.25em 0.25em 0.25em 0;
+    padding: 4px 10px;
+    vertical-align: middle;
+    width: auto;
 }
 #main input[type="submit"],
 #main input[type="button"],
@@ -547,21 +547,21 @@ input.submit, input.button {
     padding: 4px 6px;
     width: auto;*/
 
-   /* background: -moz-linear-gradient(center top , #C3DA0D 0%, #AECD09 100%) repeat scroll 0 0 transparent;
-    border-radius: 3px 3px 3px 3px;
-    color: #FFFFFF;
-    cursor: pointer;
-    font: 12px/30px 'Open Sans',Arial,Helvetica,sans-serif;
-    margin-right: 5px;
-    padding: 4px 24px;
-    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
-    text-transform: uppercase;
-    width: auto;*/
+    /* background: -moz-linear-gradient(center top , #C3DA0D 0%, #AECD09 100%) repeat scroll 0 0 transparent;
+     border-radius: 3px 3px 3px 3px;
+     color: #FFFFFF;
+     cursor: pointer;
+     font: 12px/30px 'Open Sans',Arial,Helvetica,sans-serif;
+     margin-right: 5px;
+     padding: 4px 24px;
+     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
+     text-transform: uppercase;
+     width: auto;*/
 
 
 
 
-    background: rgb(195,218,13);
+    /* background: rgb(195,218,13);
 
 	background: -moz-linear-gradient(top,  rgba(195,218,13,1) 0%, rgba(174,205,9,1) 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(195,218,13,1)), color-stop(100%,rgba(174,205,9,1)));
@@ -569,21 +569,21 @@ input.submit, input.button {
 	background: -o-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
 	background: -ms-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
 	background: linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
-border: 1px solid #B4D50B;
-border-radius: 3px 3px 3px 3px;
--webkit-border-radius: 3px;
+ border: 1px solid #B4D50B;
+ border-radius: 3px 3px 3px 3px;
+ -webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
-color: #FFFFFF;
-cursor: pointer;
-font: 12px/30px 'Open Sans',Arial,Helvetica,sans-serif;
-margin: 0;
-padding: 5px 24px;
-position: relative;
-text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
-text-transform: uppercase;
-vertical-align: middle;
-width: auto;
-/*margin-left: 119px*/
+ color: #FFFFFF;
+ cursor: pointer;
+ font: 12px/30px 'Open Sans',Arial,Helvetica,sans-serif;
+ margin: 0;
+ padding: 5px 24px;
+ position: relative;
+ text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
+ text-transform: uppercase;
+ vertical-align: middle;
+ width: auto;*/
+    /*margin-left: 119px*/
 }
 /*#main input[type=text],
 #frame_home input[type=text],
@@ -1366,8 +1366,10 @@ html body div#page div#container.group div#content-wrap.group div#wrapper_conten
     width: 5px !important;
 }
 #main .notification_center input[type=button],#main .selectorCenter input[type=button]{
-    min-width:39px !important;
-     margin: 0.25em 5px 0.25em 0;
+   /* min-width:39px !important;
+    margin: 0.25em 5px 0.25em 0;*/
+   margin: 0.25em 5px 0.25em 0;
+padding: 7px 10px;
 }
 #main #livecam form input[value="Today"],#main #livecam form input[value="Go to the archive..."]{
     border-width:0px !important;
@@ -1429,9 +1431,9 @@ noindex:-o-prefocus, input[type="submit"], input[type="button"], input[type="res
 #forum .addthread .submit_type_left{
     margin-right: -1px;
 }
-#mediadir .mediadirSearchForm .mediadirButtonSearch{
+/*#mediadir .mediadirSearchForm .mediadirButtonSearch{
     margin-left: 3px;
-}
+}*/
 
 /*  Global Messages
     See core/Message.class.php */
@@ -3767,6 +3769,7 @@ pre .name {
     cursor:pointer;
     padding:0;
     margin-right: 0;
+    box-shadow: 0 0 0 #AAAAAA;
 }
 .search_home .submit:hover {
     background-position:0 -21px
@@ -4224,6 +4227,182 @@ pre .name {
 .content_home_text{
     margin: 10px 0 15px;
 }
-.mediadirSearchForm{
+/*.mediadirSearchForm{
+    float: left;
+}*/
+
+/* polisehed theme*/
+
+
+
+
+#main input,
+#frame_home input,
+#boxes_home input {
+    /*width: 260px;
+	margin: 0.25em 0.25em 0.25em 0em;
+	padding: 4px;*/
+    /*border: 1px solid #bdbdbd;*/
+    /*-moz-box-shadow: 1px 1px 2px #ddd inset;
+    -webkit-box-shadow: 1px 1px 2px #ddd inset;
+    box-shadow: 1px 1px 2px #ddd inset;*/
+
+
+
+    background: none repeat scroll 0 0 transparent;
+    border: 1px solid #ECEDF3;
+    border-radius: 3px 3px 3px 3px;
+    margin: 0.25em 0.25em 0.25em 0;
+    padding: 4px;
+    width: 260px;
+}
+
+.contactFormClass_uploadWidget {
+
+}
+
+* html #main input,
+#frame_home input,
+#boxes_home input {
+    margin: 0.25em 0.25em 0.25em 0em;
+    padding: 4px;
+    width: auto;
+    border: 1px solid #c6c6c6;
+    float: left;
+    border: 1px solid #bdbdbd;
+    -moz-box-shadow: 1px 1px 2px #ddd inset;
+    -webkit-box-shadow: 1px 1px 2px #ddd inset;
+    box-shadow: 1px 1px 2px #ddd inset;
+}
+
+#main input[type=submit],
+#main input[type=button],
+#frame_home input[type=submit],
+#frame_home input[type=button],
+#boxes_home input[type=submit],
+#boxes_home input[type=button],
+input.submit,
+input.button {
+    margin-right: 5px;
+    /*padding: 4px 6px;*/
+    width: auto;
+    /*color: #fff;
+    background: #7AA62B url(images/submit-button.jpg) 0 0 repeat-x;*/
+    /*cursor: pointer;
+    font-weight: bold;
+    border: 1px solid #7AA62B;*/
+    /*-moz-box-shadow: 1px 1px 2px #aaa;
+    -webkit-box-shadow: 1px 1px 2px #aaa;
+    box-shadow: 1px 1px 2px #aaa;*/
+
+
+    background: -moz-linear-gradient(center top , #C3DA0D 0%, #AECD09 100%) repeat scroll 0 0 transparent;
+    border: 0 none;
+    border-radius: 3px 3px 3px 3px;
+    color: #FFFFFF;
+    font: 12px/30px 'Open Sans',Arial,Helvetica,sans-serif;
+    padding: 7px 21px;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
+    vertical-align: top;
+
+
+}
+
+#main input[type=reset],
+#frame_home input[type=reset],
+#boxes_home input[type=reset],
+input.reset {
+    width: auto;
+    margin: 0.25em 0.25em 0.25em 0em;
+    padding: 6px 21px 6px 21px;
+    background-color: #f6f6f6;
+    border: 1px solid #c6c6c6;
+
+
+
+
+    /*border: 0 none;*/
+    border-radius: 3px 3px 3px 3px;
+
+    font: 12px/30px 'Open Sans',Arial,Helvetica,sans-serif;
+    /*padding: 7px 21px;*/
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
+    vertical-align: top;
+}
+
+#main input[type=checkbox],
+#main input[type=radio],
+#frame_home input[type=checkbox],
+#frame_home input[type=radio],
+#boxes_home input[type=checkbox],
+#boxes_home input[type=radio],
+input.checkbox,
+input.radio{
+    width: auto;
+    margin: 0.25em 0.25em 0.25em 0em;
+    padding: 4px 15px 4px 15px;
     float: left;
 }
+
+#main select,
+#frame_home select,
+#boxes_home select {
+    /*width: 270px;
+	margin: 0.25em 0.25em 0.25em 0em;
+	padding: 4px 4px 4px 4px;
+  border: 1px solid #bdbdbd;
+  -moz-box-shadow: 1px 1px 2px #ddd inset;
+  -webkit-box-shadow: 1px 1px 2px #ddd inset;
+  box-shadow: 1px 1px 2px #ddd inset;*/
+
+    background: none repeat scroll 0 0 transparent;
+    border: 1px solid #ECEDF3;
+    margin: 0.25em 0.25em 0.25em 0;
+    padding: 4px;
+    width: 270px;
+}
+
+#main textarea,
+#frame_home textarea,
+#boxes_home textarea {
+    /*width: 260px;
+	margin: 0.25em 0.25em 0.25em 0em;
+	padding: 4px;
+	font-size: 1.0em;
+	height: 60px;
+  border: 1px solid #bdbdbd;
+  -moz-box-shadow: 1px 1px 2px #ddd inset;
+  -webkit-box-shadow: 1px 1px 2px #ddd inset;
+  box-shadow: 1px 1px 2px #ddd inset;*/
+    background: none repeat scroll 0 0 transparent;
+    border: 1px solid #ECEDF3;
+    border-radius: 3px 3px 3px 3px;
+    font-size: 12px;
+    height: 60px;
+    margin: 0.25em 0.25em 0.25em 0;
+    padding: 4px;
+    width: 260px;
+}
+
+#main input[type=text]:focus,
+#main select:focus,
+#main textarea:focus,
+#frame_home input[type=text]:focus,
+#frame_home select:focus,
+#frame_home textarea:focus,
+#boxes_home input[type=text]:focus,
+#boxes_home select:focus,
+#boxes_home textarea:focus {
+    /*background-color: #ffffdd;*/
+    background: none repeat scroll 0 0 transparent;
+    /*border: 1px solid #173A8B;
+  border-color: #333;
+  -moz-box-shadow: inset 1px 1px 2px #DEDF99;
+  -webkit-box-shadow: inset 1px 1px 2px #DEDF99;
+  box-shadow: inset 1px 1px 2px #DEDF99;*/
+}
+
+#main input.submit:focus,
+#boxes_home input:focus {background: #7AA62B url(images/submit-button.jpg) 0 0 repeat-x;}
