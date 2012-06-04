@@ -75,17 +75,27 @@
             </div>
         </div>
         <div id="page_access">
-	  <input type="hidden" name="page[protection_frontend]" value="off" />
-            <a class="toggle_checkbox" id="page[protection_frontend]">{TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND}</a>
-            <div id="access_protection_backend" style="display: none;">
+	        <input type="hidden" name="page[protection_frontend]" value="off" />
+	        <span class="toggle_indicator_style_fix">
+	            <input type="checkbox" class="toggle_indicator" id="checkbox_page[protection_frontend]" name="page[protection_frontend]" />
+	        </span>
+            <a class="checkbox_style" id="page[protection_frontend]">
+                <label for="checkbox_page[protection_frontend]">{TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND}</label>
+            </a>
+            <div id="access_protection_backend">
                 <select style="width: 300px; height: 250px" id="frontendAccessGroups" class="multiselect" multiple="multiple" name="frontendGroups[]">
                   <option value="test">unselected</option>
                   <option value="test2" selected="selected">selected</option>
                 </select>
             </div>
-	    <input type="hidden" name="page[protection_backend]" value="off" />
-            <a class="toggle_checkbox" id="page[protection_backend]">{TXT_CORE_CM_ACCESS_PROTECTION_BACKEND}</a>
-            <div id="access_protection_backend" style="display: none;">
+	        <input type="hidden" name="page[protection_backend]" value="off" />
+	        <span class="toggle_indicator_style_fix">
+	            <input type="checkbox" class="toggle_indicator" id="checkbox_page[protection_backend]" name="page[protection_backend]" />
+	        </span>
+	        <a class="checkbox_style" id="page[protection_backend]">
+	            <label for="checkbox_page[protection_backend]">{TXT_CORE_CM_ACCESS_PROTECTION_BACKEND}</label>
+	        </a>
+            <div id="access_protection_backend">
                 <select style="width: 300px; height: 250px" id="backendAccessGroups" class="multiselect" multiple="multiple" name="backendGroups[]">
                   <option value="test">unselected</option>
                   <option value="test2" selected="selected">selected</option>

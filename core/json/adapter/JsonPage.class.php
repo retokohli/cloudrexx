@@ -30,7 +30,7 @@ class JsonPage implements JsonAdapter {
     private $nodeRepo  = null;
     private $pageId    = 0;
     private $nodeId    = 0;
-    private $lang      = 0;
+    private $lang      = '';
     private $action    = '';
     private $fallbacks = array();
     
@@ -49,7 +49,7 @@ class JsonPage implements JsonAdapter {
         $this->tz       = new \DateTimeZone('Europe/Berlin');
         $this->pageId   = !empty($_GET['page'])   ? intval($_GET['page']) : 0;
         $this->nodeId   = !empty($_GET['node'])   ? intval($_GET['node']) : 0;
-        $this->lang     = !empty($_GET['lang'])   ? intval($_GET['lang']) : 0;
+        $this->lang     = !empty($_GET['lang'])   ? contrexx_input2raw($_GET['lang'])   : '';
         $this->action   = !empty($_GET['action']) ? contrexx_input2raw($_GET['action']) : '';
 
         $fallback_lang_codes = \FWLanguage::getFallbackLanguageArray();
@@ -299,7 +299,7 @@ class JsonPage implements JsonAdapter {
         
         return array(
             'reload' => $reload,
-            'id' => $page->getId()
+            'id'     => $page->getId()
         );
     }
 
@@ -409,26 +409,35 @@ class JsonPage implements JsonAdapter {
         return $output;
     }
 
-    protected function setPageStatus() {
-        header('Content-Type: application/json');
-
-        if ($pageId != 0) {
-            $page = $this->pageRepository->find($pageId);
+    /**
+     * Sets the new status for the page.
+     * 
+     * @return array(
+     *     nodeId,
+     *     pageId,
+     *     lang,
+     *     action
+     * )
+     */
+    public function setPageStatus($params) {
+        if (!empty($this->pageId)) {
+            $page = $this->pageRepo->find($this->pageId);
         }
 
         switch ($this->action) {
             case 'publish':
-                if (isset($page)) {
+                if (!empty($page)) {
                     $page->setActive(true);
                 } else {
-                    $arrFbLang = FWLanguage::getFallbackLanguageArray();
-                    $fbLang = isset($arrFbLang[$this->lang]) ? $arrFbLang[$this->lang] : null;
-                    if ($fbLang != null && $fbLang != $this->lang) {
-                        $node = $this->getNodeRepository()->find($this->nodeId);
+                    $langId = \FWLanguage::getLanguageIdByCode($this->lang);
+                    $arrFbLang = \FWLanguage::getFallbackLanguageArray();
+                    $fbLang = isset($arrFbLang[$langId]) ? $arrFbLang[$langId] : 0;
+                    if (!empty($fbLang) && $fbLang != $langId) {
+                        $node = $this->nodeRepo->find($this->nodeId);
                         $page = new \Cx\Model\ContentManager\Page();
-                        $page->setLang($this->lang);
+                        $node->addPage($page);
                         $page->setNode($node);
-                        $page->setUsername(FWUser::getFWUserObject()->objUser->getUsername());
+                        $page->setLang($langId);
                         $fbPage = $node->getPage($fbLang);
                         if ($fbPage) {
                             $page->setType('fallback');
@@ -439,14 +448,7 @@ class JsonPage implements JsonAdapter {
                             $page->setMetadesc($fbPage->getMetadesc());
                             $page->setMetakeys($fbPage->getMetakeys());
                             $page->setMetarobots($page->getMetarobots());
-                            $this->em->persist($page);
                         }
-                    } else {
-                        echo json_encode(array(
-                            'action' => 'new',
-                            'node'   => $this->nodeId,
-                        ));
-                        exit(0);
                     }
                 }
                 break;
@@ -461,16 +463,20 @@ class JsonPage implements JsonAdapter {
                 break;
             default:
                 $this->action = 'error';
+                return array(
+                    'action' => $this->action,
+                );
         }
+
+        $this->em->persist($page);
         $this->em->flush();
-        $result = array(
+
+        return array(
           'nodeId' => $page->getNode()->getId(),
           'pageId' => $page->getId(),
-          'lang'   => FWLanguage::getLanguageCodeById($page->getLang()),
+          'lang'   => \FWLanguage::getLanguageCodeById($page->getLang()),
           'action' => $this->action,
         );
-        echo json_encode($result);
-        exit(0);
     }
 
     public function getHistoryTable() {
