@@ -891,10 +891,34 @@ div.date img{
 }
 .cxDialog {
     position: absolute;
-    border: 1px solid #333;
+    top: 0 !important;
+    border-right: 1px solid #333;
+    border-bottom: 1px solid #333;
+    border-left: 1px solid #333;
     text-align: center;
 }
+
 .cxDialog.noTitle .ui-dialog-titlebar {
-    height: 0px;
     display: none;
+}
+
+.cxDialog .error {
+    color: #ff0000;
+}
+
+.cxDialog #loading {
+    float: none;
+    margin: 0 auto;
+    width: 95px !important;
+    height: 16px !important;
+}
+
+.cxDialog #loading img {
+    float: left;
+}
+
+.cxDialog #loading span {
+    float: left;
+    margin: 0 0 0 5px;
+    line-height: 16px;
 }
