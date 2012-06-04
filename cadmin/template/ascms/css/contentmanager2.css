@@ -841,7 +841,8 @@ div.date img{
 }
 
 .toggle,
-.toggle_checkbox {
+.toggle_checkbox,
+.checkbox_style {
     float: left;
     display: block;
     width: 100%;

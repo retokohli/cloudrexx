@@ -281,7 +281,7 @@ class JsonNode implements JsonAdapter {
                         'visibility' => 'active',
                         'publishing' => 'unpublished',
                     );
-                } elseif (!array_key_exists($lang, $data)) {
+                } else if (!array_key_exists($lang, $data)) {
                     $data[$lang] = array(
                         'language' => $lang,
                         'title' => array_key_exists($last_resort, $data) ? $data[$last_resort]['title'] : 'No Title',
@@ -294,6 +294,8 @@ class JsonNode implements JsonAdapter {
                         'publishing' => 'unpublished',
                     );
                 }
+                
+                $actions[$lang][$node->getId()] = $this->getActions($node->getId(), $lang);
             }
             
             $state = array();
