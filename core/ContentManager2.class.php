@@ -127,7 +127,7 @@ class ContentManager extends Module {
         if (!empty($_GET['act']) && ($_GET['act'] == 'new')) {
             $this->template->setVariable(array(
                 'TITLES_DISPLAY_STYLE' => 'display: block;',
-                'TYPE_DISPLAY_STYLE' => 'display: none;',
+                'TYPE_DISPLAY_STYLE' => 'display: block;',
                 'THEMES_DISPLAY_STYLE' => 'display: block;',
                 'NAVIGATION_DISPLAY_STYLE' => 'display: block;',
                 'SIDEBAR_DISPLAY_STYLE' => 'display: block;',

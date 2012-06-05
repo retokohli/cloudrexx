@@ -54,9 +54,10 @@ h1{ font-size: 20px }
     float: left;
     width: 10px;
     height: 31px;
-    padding: 0 4px;
     background-color: #ececec;
-    margin: 0 10px;
+    padding: 0 4px;
+    border-right: 1px solid #ffffff;
+    margin: 0 0 0 10px;
     cursor: pointer;
 }
 
@@ -72,11 +73,23 @@ h1{ font-size: 20px }
     background-position: center center;
 }
 
+#content-manager .middle #sidebar_toggle.hide:hover,
+#content-manager .middle #sidebar_toggle.hide:focus,
+#content-manager .middle #sidebar_toggle.hide:active {
+    background-image: url(../images/sidebar_hide_hover.png);
+}
+
 #content-manager .middle #sidebar_toggle.show {
     background-image: url(../images/sidebar_show.png);
     background-repeat: no-repeat;
     background-position: center center;
     margin-left: 0;
+}
+
+#content-manager .middle #sidebar_toggle.show:hover,
+#content-manager .middle #sidebar_toggle.show:focus,
+#content-manager .middle #sidebar_toggle.show:active {
+    background-image: url(../images/sidebar_show_hover.png);
 }
 
 #content-manager .right {
@@ -112,6 +125,22 @@ h1{ font-size: 20px }
 .ie7 #input1{ float:left; }
 .ie7 .space{ margin-bottom: 10px; }
 
+
+#page .info {
+    float: left;
+    width: 13px;
+    height: 12px;
+    background: url(../images/content_manager_info.png) no-repeat center center;
+}
+
+#page .info.input {
+    margin: 7px 6px;
+}
+
+#page .info.label {
+    margin: 2px 20px 2px 3px;
+}
+
 #page input {
     width: 566px;
 }
@@ -133,12 +162,6 @@ h1{ font-size: 20px }
     margin: 0 0 8px 0;
 }
 
-#page .special_form_style img.tipmessage {
-    float: left;
-    width: auto;
-    margin: 6px 0 0 6px;
-}
-
 #page .special_form_style label {
     float: left;
     clear: both;
@@ -146,62 +169,38 @@ h1{ font-size: 20px }
     margin: 0 0 3px 0;
 }
 
-#page #titles.special_form_style input,
-#page #titles.special_form_style textarea,
-#page #titles.special_form_style select {
-    padding: 6px;
-    font-size: 16px;
-}
-
-#page #titles.special_form_style input,
-#page #titles.special_form_style textarea {
-    width: 560px;
-}
-
-#page #titles.special_form_style select {
-    width: 574px;
-}
-
-#page #titles.special_form_style img.tipmessage {
-    margin: 11px 0 0 6px;
-}
-
-#page #type #type_radio_buttons,
-#page #type #type_radio_values {
+#page #titles #types {
     float: left;
     clear: both;
     width: auto;
     margin: 0 0 8px 0;
 }
 
-#page #type #type_radio_buttons .radio {
+#page #titles #types .radio {
     float: left;
+    clear: none;
     width: auto;
     margin: 0 3px 0 0;
 }
 
-#page #type #type_radio_buttons label {
+#page #titles #types label,
+#page #type label {
     float: left;
-    margin: 0 3px 0 0;
+    clear: none;
 }
 
-#page #type #type_radio_buttons .tipmessage {
-    float: left;
-    margin: 2px 15px 0 0;
-}
-
-#page #type #type_radio_values #page_target {
+#page #type #page_target {
     float: left;
     clear: both;
     width: 453px;
     margin: 0 3px 0 0;
 }
 
-#page #type #type_radio_values #targetBrowseButton {
+#page #type #targetBrowseButton {
     float: left;
 }
 
-#page #type #type_radio_values #page_application {
+#page #type #page_application {
     float: left;
     clear: both;
     width: 144px;
@@ -209,16 +208,17 @@ h1{ font-size: 20px }
     margin: 0 3px 0 0;
 }
 
-#page #type #type_radio_values #page_application_area {
+#page #type #page_application_area {
     float: left;
+    clear: none;
     width: 418px;
 }
 
-#page #type #type_radio_values br {
+#page #type br {
     clear: both;
 }
 
-#page #type #type_radio_values label {
+#page #type label {
     float: left;
     min-width: 145px;
     margin: 0 3px 3px 0;
@@ -241,7 +241,7 @@ h1{ font-size: 20px }
     width: auto;
 }
 
-#page #navigation.special_form_style #page_aliases span {
+#page #navigation.special_form_style #page_aliases .page_alias span {
     float: left;
     clear: both;
     height: 24px;
@@ -250,19 +250,14 @@ h1{ font-size: 20px }
     margin: 0 4px 2px 0;
 }
 
-#page #navigation.special_form_style #page_aliases input {
+#page #navigation.special_form_style #page_aliases .page_alias input {
     clear: none;
     width: 200px;
     margin: 0 0 2px 0;
 }
-#page #navigation.special_form_style #page_aliases input.warning {
+#page #navigation.special_form_style #page_aliases .page_alias input.warning {
 
     border-color: #ff0000;
-}
-
-#ckeditor {
-    width: 101.7%;
-    margin: 10px 0 10px -22px !important;
 }
 
 #ckeditor textarea {
@@ -462,7 +457,7 @@ h1{ font-size: 20px }
     margin-top: 6px;
     cursor: pointer;
     position: relative;
-    clear: none;/*?*/
+    clear: none;
 }
 
 #site-tree .jstree-checkbox {
@@ -790,16 +785,6 @@ div.date img{
 }
 
 /* 2.2.1 Type Tabs */
-.info {
-    width: 100%;
-    color: #a2a2a2;
-    font-size: 8pt;
-    display: block;
-    margin-bottom: 5px;
-    float: left;
-    clear: both;
-}
-
 #type .type_hidable {
     display: none;
 }
@@ -836,7 +821,7 @@ div.date img{
     line-height: 13px;
     background: none;
     padding: 0 !important;
-    margin: 0;
+    margin: 0 !important;
 }
 
 .toggle_open {
