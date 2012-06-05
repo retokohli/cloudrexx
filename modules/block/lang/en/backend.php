@@ -59,6 +59,7 @@ $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_ON_ALL_'] = "Show Content Block on all pages i
 $_ARRAYLANG['TXT_BLOCK_CONTENT_PAGES'] = "Frontend pages";
 $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_IN_THIS_LANGUAGE'] = "Display Content Block in this language";
 $_ARRAYLANG['TXT_BLOCK_DEACTIVATE'] = "deactivate";
+$_ARRAYLANG['TXT_DONT_SHOW_ON_PAGES'] = "On none pages";
 $_ARRAYLANG['TXT_SHOW_ON_ALL_PAGES'] = "On all pages";
 $_ARRAYLANG['TXT_SHOW_ON_SELECTED_PAGES'] = "Select pages";
 $_ARRAYLANG['TXT_BLOCK_SHOW_ON_ALL_PAGES'] = "Show Content Block on all pages in this language";

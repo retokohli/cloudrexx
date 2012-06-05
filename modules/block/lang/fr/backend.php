@@ -59,6 +59,7 @@ $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_ON_ALL_'] = "Afficher le bloc dans toutes les 
 $_ARRAYLANG['TXT_BLOCK_CONTENT_PAGES'] = "Pages du Frontend";
 $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_IN_THIS_LANGUAGE'] = "Afficher le bloc dans cette langue";
 $_ARRAYLANG['TXT_BLOCK_DEACTIVATE'] = "Désactiver";
+$_ARRAYLANG['TXT_DONT_SHOW_ON_PAGES'] = "On none pages";
 $_ARRAYLANG['TXT_SHOW_ON_ALL_PAGES'] = "Sur toutes les pages";
 $_ARRAYLANG['TXT_SHOW_ON_SELECTED_PAGES'] = "Sélectionner les pages";
 $_ARRAYLANG['TXT_BLOCK_SHOW_ON_ALL_PAGES'] = "Afficher le bloc dans toutes les pages de cette langue";

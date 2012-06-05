@@ -59,6 +59,7 @@ $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_ON_ALL_'] = "Mosrtrar Bloque de Contenidos en 
 $_ARRAYLANG['TXT_BLOCK_CONTENT_PAGES'] = "P&aacute;ginas de la zona p&uacute;blica";
 $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_IN_THIS_LANGUAGE'] = "Mostrar Bloque de Contenidos en este idioma:";
 $_ARRAYLANG['TXT_BLOCK_DEACTIVATE'] = "Desactivar";
+$_ARRAYLANG['TXT_DONT_SHOW_ON_PAGES'] = "On none pages";
 $_ARRAYLANG['TXT_SHOW_ON_ALL_PAGES'] = "En todas las p&aacute;ginas";
 $_ARRAYLANG['TXT_SHOW_ON_SELECTED_PAGES'] = "Seleccionar p&aacute;ginas";
 $_ARRAYLANG['TXT_BLOCK_SHOW_ON_ALL_PAGES'] = "Mosrtrar Bloque de Contenidos en todas las p&aacute;ginas de este idioma:";

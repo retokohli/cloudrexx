@@ -59,6 +59,7 @@ $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_ON_ALL_'] = "Block auf jeder Seite dieser Spra
 $_ARRAYLANG['TXT_BLOCK_CONTENT_PAGES'] = "Frontend sider";
 $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_IN_THIS_LANGUAGE'] = "Block in dieser Sprache anzeigen";
 $_ARRAYLANG['TXT_BLOCK_DEACTIVATE'] = "deaktiver";
+$_ARRAYLANG['TXT_DONT_SHOW_ON_PAGES'] = "On none pages";
 $_ARRAYLANG['TXT_SHOW_ON_ALL_PAGES'] = "På hver side";
 $_ARRAYLANG['TXT_SHOW_ON_SELECTED_PAGES'] = "Vælg sider";
 $_ARRAYLANG['TXT_BLOCK_SHOW_ON_ALL_PAGES'] = "Block auf jeder Seite dieser Sprache anzeigen";

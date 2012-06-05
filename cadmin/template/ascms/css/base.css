@@ -288,6 +288,7 @@ a:active {
     border: 0;
     width: 13px;
     height: 13px;
+    margin: 3px;
 }
 
 #footer {
@@ -580,7 +581,7 @@ table.adminlist td {
     line-height: 22px;
     padding: 3px;
     text-align: left;
-    vertical-align: middle;
+    vertical-align: top;
     border-bottom: #e5e5e5 1px solid;
 }
 table.adminlist tr.row3 td {
