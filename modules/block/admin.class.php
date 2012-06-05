@@ -602,8 +602,8 @@ class blockManager extends blockLibrary
         $blockId                = !empty($_REQUEST['blockId']) ? intval($_REQUEST['blockId']) : 0;
         $blockCat               = 0;
         $blockName              = '';
-        $blockStart             = time();
-        $blockEnd               = time()+3600*24*365;
+        $blockStart             = 0;
+        $blockEnd               = 0;
         $blockRandom            = 0;
         $blockRandom2           = 0;
         $blockRandom3           = 0;
@@ -623,6 +623,7 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_SAVE'                    => $_ARRAYLANG['TXT_BLOCK_SAVE'],
             'TXT_BLOCK_DEACTIVATE'              => $_ARRAYLANG['TXT_BLOCK_DEACTIVATE'],
             'TXT_BLOCK_ACTIVATE'                => $_ARRAYLANG['TXT_BLOCK_ACTIVATE'],
+            'TXT_DONT_SHOW_ON_PAGES'            => $_ARRAYLANG['TXT_DONT_SHOW_ON_PAGES'],
             'TXT_SHOW_ON_ALL_PAGES'             => $_ARRAYLANG['TXT_SHOW_ON_ALL_PAGES'],
             'TXT_SHOW_ON_SELECTED_PAGES'        => $_ARRAYLANG['TXT_SHOW_ON_SELECTED_PAGES'],
             'TXT_BLOCK_CATEGORY'                => $_ARRAYLANG['TXT_BLOCK_CATEGORY'],
@@ -701,8 +702,8 @@ class blockManager extends blockLibrary
             'BLOCK_MODIFY_TITLE'                => $pageTitle,
             'BLOCK_NAME'                        => contrexx_raw2xhtml($blockName),
             'BLOCK_CATEGORIES_PARENT_DROPDOWN'  => $this->_getCategoriesDropdown($blockCat),
-            'BLOCK_START'                       => strftime('%Y-%m-%d %H:%M', $blockStart),
-            'BLOCK_END'                         => strftime('%Y-%m-%d %H:%M', $blockEnd),
+            'BLOCK_START'                       => !empty($blockStart) ? strftime('%Y-%m-%d %H:%M', $blockStart) : $blockStart,
+            'BLOCK_END'                         => !empty($blockEnd) ? strftime('%Y-%m-%d %H:%M', $blockEnd) : $blockEnd,
             'BLOCK_RANDOM'                      => $blockRandom == '1' ? 'checked="checked"' : '',
             'BLOCK_RANDOM_2'                    => $blockRandom2 == '1' ? 'checked="checked"' : '',
             'BLOCK_RANDOM_3'                    => $blockRandom3 == '1' ? 'checked="checked"' : '',

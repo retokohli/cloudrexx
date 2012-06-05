@@ -59,6 +59,7 @@ $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_ON_ALL_'] = "Показать блок с ка
 $_ARRAYLANG['TXT_BLOCK_CONTENT_PAGES'] = "Первая страница";
 $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_IN_THIS_LANGUAGE'] = "Показaть блок этого языка";
 $_ARRAYLANG['TXT_BLOCK_DEACTIVATE'] = "Деактивировать";
+$_ARRAYLANG['TXT_DONT_SHOW_ON_PAGES'] = "On none pages";
 $_ARRAYLANG['TXT_SHOW_ON_ALL_PAGES'] = "С каждой страницы";
 $_ARRAYLANG['TXT_SHOW_ON_SELECTED_PAGES'] = "Выбрать страницы";
 $_ARRAYLANG['TXT_BLOCK_SHOW_ON_ALL_PAGES'] = "Показать блок с каждой страницы этого языка";

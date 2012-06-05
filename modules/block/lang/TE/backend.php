@@ -45,4 +45,5 @@ $_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'] = "Block %s kopieren";
 $_ARRAYLANG['TXT_BLOCK_DELETE_BLOCK'] = "Block %s löschen";
 $_ARRAYLANG['TXT_BLOCK_BLOCK_RANDOM'] = "Platzhalter für Zufallsgenerator";
 $_ARRAYLANG['TXT_BLOCK_BLOCK_GLOBAL'] = "Platzhalter für sämtliche Blöcke. Bei diesem Platzhalter wird die Seiten- und Sprachzuordnung auch berücksichtigt.";
+$_ARRAYLANG['TXT_DONT_SHOW_ON_PAGES'] = "On none pages";
 ?>
