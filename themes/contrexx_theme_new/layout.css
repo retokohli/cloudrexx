@@ -307,7 +307,7 @@ table td.none {border: none;}
 #frame_content #main  form input.inputText {
     width: 178px;
 }
-* /*html #main input,
+ /**html #main input,
 #frame_home input,
 #boxes_home input {
     margin: 0.25em 0.25em 0.25em 0em;
@@ -1552,14 +1552,7 @@ a {
 a:hover {
     color:#95a105;
 }
-input,
-textarea,
-select {
-    /* font:12px 'Open Sans', Arial, Helvetica, sans-serif;
-     vertical-align:middle;
-     color:#555;
-     outline: none;*/
-}
+
 /* wrapper */
 #wrapper {
     height:100%;
@@ -1576,7 +1569,7 @@ select {
     background:#fff;
 }
 .w2 {
-    display:table-row;
+    /*display:table-row;*/
     width:100%;
 }
 /* header */
@@ -4253,7 +4246,7 @@ pre .name {
     border: 1px solid #ECEDF3;
     border-radius: 3px 3px 3px 3px;
     margin: 0.25em 0.25em 0.25em 0;
-    padding: 4px;
+    padding: 7px 4px;
     width: 260px;
 }
 
@@ -4297,15 +4290,23 @@ input.button {
 
 
     background: -moz-linear-gradient(center top , #C3DA0D 0%, #AECD09 100%) repeat scroll 0 0 transparent;
+
+
+    background: -moz-linear-gradient(top,  rgba(195,218,13,1) 0%, rgba(174,205,9,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(195,218,13,1)), color-stop(100%,rgba(174,205,9,1)));
+	background: -webkit-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
+	background: -o-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
+	background: linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
     border: 0 none;
     border-radius: 3px 3px 3px 3px;
     color: #FFFFFF;
-    font: 12px/30px 'Open Sans',Arial,Helvetica,sans-serif;
+    font: 12px 'Open Sans',Arial,Helvetica,sans-serif;
     padding: 7px 21px;
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
     text-transform: uppercase;
     vertical-align: top;
-
+    cursor: pointer;
 
 }
 
@@ -4360,7 +4361,7 @@ input.radio{
     background: none repeat scroll 0 0 transparent;
     border: 1px solid #ECEDF3;
     margin: 0.25em 0.25em 0.25em 0;
-    padding: 4px;
+    padding: 6px 4px;
     width: 270px;
 }
 
@@ -4406,3 +4407,10 @@ input.radio{
 
 #main input.submit:focus,
 #boxes_home input:focus {background: #7AA62B url(images/submit-button.jpg) 0 0 repeat-x;}
+
+input, textarea, select {
+  color: #555555;
+  font: 12px 'Open Sans',Arial,Helvetica,sans-serif;
+  outline: medium none;
+  vertical-align: middle;
+}
