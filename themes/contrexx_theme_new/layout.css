@@ -1532,10 +1532,11 @@ table {
 /* general css reset */
 html {
     height:100%;
+    background: #1A1A1A;
     /*	overflow-y:hidden;*/
 }
 body {
-    height:100%;
+    /*height:100%;*/
     color:#555;
     font:12px/21px 'Merriweather', Arial, Helvetica, sans-serif;
     background:#fff;
