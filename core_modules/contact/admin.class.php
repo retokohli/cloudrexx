@@ -2276,7 +2276,6 @@ class ContactManager extends ContactLib
             $content = $this->_getSourceCode($formId, $langId);
 
             $page->setContent($content);
-            $page->setUsername($objFWUser->objUser->getUsername());
             
             $this->em->persist($page);
 
