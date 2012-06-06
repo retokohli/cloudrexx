@@ -779,6 +779,24 @@ div#livecam #CALBUTTONDPC_datum {
     float:left;
     height:auto !important;
 }
+#blog div.entries h2 {
+    color: #222222;
+    font: bold 16px/20px 'Open Sans',Arial,Helvetica,sans-serif;
+}
+#blog div.entries h2 a{
+    color: #222222;
+}
+#blog div.entries h2 a:hover{
+
+  color: #95A105;
+
+}
+.posted a{
+    color:#777777
+}
+.posted a:hover{
+    color:#95A105
+}
 #blog div.comments,
 #blog div.code,
 #blog div.statistics {
