@@ -1115,7 +1115,7 @@ class Page extends \Cx\Model\Base\EntityBase
         $groups = \Permission::getGroupIdsForAccessId($accessId);
         if ($frontend) {
             $page->setFrontendProtection(true);
-            $newAccessId = $page->getFrontentAccessId();
+            $newAccessId = $page->getFrontendAccessId();
         } else {
             $page->setBackendProtection(true);
             $newAccessId = $page->getBackendAccessId();
