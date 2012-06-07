@@ -54,6 +54,9 @@ form #contactFrame div.row {
     width: auto;
     clear: both;
 }
+#contactForm{
+    font: 12px/18px 'Open Sans',Arial,Helvetica,sans-serif;
+}
 /*form  p span {
     font-weight: bold;
     float: left;
@@ -788,7 +791,7 @@ div#livecam #CALBUTTONDPC_datum {
 }
 #blog div.entries h2 a:hover{
 
-  color: #95A105;
+    color: #95A105;
 
 }
 .posted a{
@@ -845,7 +848,11 @@ div#livecam #CALBUTTONDPC_datum {
     margin: 0px 0px 0px 0px;
 }
 #blog div.image img {
-    margin: 0px 15px 15px 0px;
+    /*margin: 0px 15px 15px 0px;*/
+    border: 1px solid #F5F5F5;
+    box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.1);
+    margin: 0 -1px 19px;
+    padding: 8px;
 }
 #blog div.search_date {
     float:left;

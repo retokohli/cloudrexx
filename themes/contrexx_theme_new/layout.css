@@ -41,7 +41,7 @@ h1, h2, h3, h4 {
 }
 h1 {
     font-size: 3em;
-    line-height: 1;
+    line-height: 1.comments-form .row:after;
     margin-bottom: 0.5em;
 }
 h2 {
@@ -3072,7 +3072,7 @@ pre .name {
 *+html .headline .case {
     display:inline;
 }
-.headline h2 {
+#main .headline h2 {
     margin:0;
     background:#fff;
     display:inline-block;
@@ -3081,6 +3081,7 @@ pre .name {
     text-transform:uppercase;
     color:#222;
     font:bold 16px/21px 'Open Sans', Arial, Helvetica, sans-serif;
+     border-bottom: medium none;
 }
 *+html .headline h2 {
     display:inline;
@@ -3217,51 +3218,53 @@ pre .name {
 .comments-form {
     font:12px/18px 'Open Sans', Arial, Helvetica, sans-serif;
 }
-.comments-form .headline {
-    padding:0 20px 0 130px;
+#main .headline {
+    padding:0 20px 0 0px;
     margin-bottom:37px;
 }
-.comments-form .headline h2 {
-    padding:0 20px 0 30px;
+#main .headline h2 {
+    padding:0 20px 0 0px;
 }
-.comments-form label {
+.contact.row label {
     float:left;
     text-align:right;
     width:130px;
     margin:6px 30px 0 0;
     color:#222;
 }
-.comments-form label span {
+.contact.row label strong {
     font-family: 'Merriweather', Arial, Helvetica, sans-serif;
     color:#555;
     margin-left:3px;
 }
-.comments-form .row {
+#main .contact.row {
     width:100%;
     padding-bottom:20px;
 }
-.comments-form .row:after {
+#main .contact.row:after {
     display:block;
     clear: both;
     content:'';
 }
-.comments-form .text {
+#main .contact.row .contactFormClass_text {
     float:right;
     border:1px solid #ecedf3;
     margin:0;
     padding:6px 19px 7px;
-    width:450px;
+    /*width:450px;*/
+    width:410px;
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     border-radius: 3px;
     background:none;
 }
-.comments-form textarea {
+#main .contact.row textarea {
     float:right;
     border:1px solid #ecedf3;
     margin:0;
     padding:5px 19px;
-    width:450px !important;
+    /*width:450px !important;*/
+    width:410px !important;
     max-width:450px;
     min-height:148px;
     height:148px;
@@ -3532,6 +3535,14 @@ pre .name {
 }
 .txt {
     overflow:hidden;
+}
+#main .txt .headline{
+    margin-bottom: 20px;
+padding: 0;
+}
+#main .txt .headline h2{
+    
+padding: 0;
 }
 .img {
     -webkit-border-radius: 80px;
@@ -4414,4 +4425,7 @@ input, textarea, select {
   font: 12px 'Open Sans',Arial,Helvetica,sans-serif;
   outline: medium none;
   vertical-align: middle;
+}
+#cke_frmAddComment_Comment{
+     margin-left: 0;
 }
