@@ -29,29 +29,15 @@ class Saferpay
      * @access  public
      * @var     boolean
      */
-    public $isTest = false;
+    public static $isTest = false;
 
     /**
-     * Temporary data
-     * @access  private
-     * @var     array
-     */
-    private $arrTemp = array();
-
-    /**
-     * Attributes
-     * @access  private
-     * @var     string
-     * @see     checkOut()
-     */
-    private $attributes;
-
-    /**
-     * Attributes
+     * The test account ID
+     * @todo    Implement using this
      * @access  public
      * @var     string
      */
-    private $testAccountId = '99867-94913159';
+    private static $testAccountId = '99867-94913159';
 
     /**
      * The hosting gateways
@@ -59,7 +45,7 @@ class Saferpay
      * @var     array
      * @see     checkOut(), success()
      */
-    private $gateway = array(
+    private static $gateway = array(
         'payInit'     => 'https://www.saferpay.com/hosting/CreatePayInit.asp',
         'payConfirm'  => 'https://www.saferpay.com/hosting/VerifyPayConfirm.asp',
         'payComplete' => 'https://www.saferpay.com/hosting/PayComplete.asp',
@@ -70,21 +56,22 @@ class Saferpay
      * @access  private
      * @var     array
      */
-    private $arrCurrency = array('CHF', 'CZK', 'DKK', 'EUR', 'GBP', 'PLN', 'SEK', 'USD',);
+    private static $arrCurrency = array('CHF', 'CZK', 'DKK', 'EUR', 'GBP', 'PLN', 'SEK', 'USD',);
 
     /**
      * Language codes
      * @access  private
      * @var     array
      */
-    private $arrLangId = array('en', 'de', 'fr', 'it',);
+    private static $arrLangId = array('de', 'en', 'fr', 'it',);
+//    private static $arrLangId = array('en', 'de', 'fr', 'it',);
 
     /**
      * Keys needed for the respective operations
      * @access  private
      * @var     array
      */
-    private $arrKeys = array(
+    private static $arrKeys = array(
         'payInit'     => array(
             'AMOUNT',
             'CURRENCY',
@@ -99,18 +86,17 @@ class Saferpay
         'payComplete' => array(
             'ACCOUNTID',
             'ID',
-// Not used
-//            'TOKEN',
+//            'TOKEN', // Obsolete
         )
     );
 
     /**
-     * Payment Information
-     * @access  private
+     * Error messages
+     * @access  public
      * @var     array
-     * @see     checkOut()
+     * @see
      */
-    private $arrShopOrder = array();
+    private static $arrError = array();
 
     /**
      * Error messages
@@ -118,21 +104,13 @@ class Saferpay
      * @var     array
      * @see
      */
-    private $arrError = array();
+    private static $arrWarning = array();
 
     /**
-     * Error messages
-     * @access  public
-     * @var     array
-     * @see
-     */
-    private $arrWarning = array();
-
-    /**
+     * OBSOLETE
      * Payment providers
      * @access  public
      * @var     array
-     */
     private $arrProviders = array(
         'Airplus Corporate Card'         => 486,
         'American Express'               => 1,
@@ -289,6 +267,7 @@ class Saferpay
         'VISA UBS Purchasing'            => 63,
         'VISA UBS USD'                   => 13,
     );
+     */
 
     /**
      * Window options constants
@@ -302,325 +281,269 @@ class Saferpay
     const saferpay_windowoption_id_window = 2;
     // keep this up to date!
     // Note that the class method getWindowMenuoptions() has been
-    // adapted to skip the disabled option ID 0!
+    // adapted to skip the disabled option 0!
     const saferpay_windowoption_id_count  = 3;
 
 
     /**
-     * Constructor
-     */
-    function __construct()
-    {
-    }
-
-
-    /**
      * Generates a list of all attributes
-     * @param   string  Step of the payment
+     *
+     * Note that attribute names and values are {@see urlencode()}d here, so
+     * you *MUST NOT* do that yourself before or after.
      * @access  private
-     * @return  string  Attributelist on success, empty string on failure
+     * @static
+     * @param   string  $step       The current payment step
+     * @param   array   $arrOrder   The attributes array
+     * @return  string              The URL parameter list on success,
+     *                              the empty string otherwise
      */
-    function getAttributeList($step)
+    private static function getAttributeList($step, $arrOrder)
     {
-        $this->attributes = null;
-        foreach ($this->arrKeys[$step] as $attribute) {
-            if ($this->ifExist($attribute)) {
-                if ($this->checkAttribute($attribute)) {
-                    $this->addAttribute($attribute);
-                }
+        $attributes = '';
+        foreach (self::$arrKeys[$step] as $attribute) {
+            if (empty ($arrOrder[$attribute])) {
+                self::$arrError[] = $attribute." is missing";
             }
         }
-        foreach (array_keys($this->arrShopOrder) as $attribute) {
-            if ($this->checkAttribute($attribute)) {
-                $this->addAttribute($attribute);
+        foreach ($arrOrder as $attribute => $value) {
+            $value = self::checkAttribute($attribute, $value);
+            if ($value !== NULL) {
+                $attributes .=
+                    ($attributes ? '&' : '').
+                    urlencode($attribute).'='.urlencode($arrOrder[$attribute]);
             }
         }
-        if (count($this->arrError) == 0) {
-            return $this->attributes;
+        if (empty (self::$arrError)) {
+            return $attributes;
         }
         return '';
     }
 
 
     /**
-     * Initializes the payment
-     *
-     * Generates the link for requesting the VT at Saferpay
-     * @param   array   Attributes
+     * Returns the URI for initializing the payment with Saferpay
      * @access  public
-     * @return  string  Link for payment initialisation
+     * @static
+     * @param   array   $arrOrder   The attributes array
+     * @param   boolean $is_test    If true, uses the test account.
+     *                              Defaults to NULL (real account)
+     * @return  string              The URI for the payment initialisation
+     *                              on success, the empty string otherwise
      */
-    function payInit($arrShopOrder)
+    static function payInit($arrOrder, $is_test=NULL)
     {
-        $this->arrShopOrder = $arrShopOrder;
-        $this->attributes = $this->getAttributeList('payInit');
-// TODO: This won't work without allow_url_fopen
-        $this->arrTemp['result'] =
-            file_get_contents($this->gateway['payInit'].'?'.$this->attributes);
-        if ($this->arrTemp['result']) return $this->arrTemp['result'];
+        if ($is_test) {
+            $arrOrder['ACCOUNTID'] = self::$testAccountId;
+        }
+        $attributes = self::getAttributeList('payInit', $arrOrder);
+        $result = '';
+// NOTE: This only works when cURL is available
+        if (function_exists('curl_init')) {
+            $ch = curl_init(self::$gateway['payInit'].'?'.$attributes);
+            curl_setopt($ch, 'CURLOPT_RETURNTRANSFER', true);
+            curl_setopt($ch, 'CURLOPT_PROTOCOLS', CURLPROTO_HTTPS);
+            $result = curl_exec($ch);
+        }
+        if ($result) return $result;
+        self::$arrWarning[] = "cURL is not available";
+// NOTE: These won't work without "allow_url_fopen" enabled in php.ini,
+// and PHP compiled with --configure_ssl
+        $result = file_get_contents(self::$gateway['payInit'].'?'.$attributes);
+        if ($result) return $result;
+        self::$arrWarning[] = "SSL wrapper for fopen() is not available";
         // Try socket connection as well
-        $this->arrTemp['result'] =
-            Socket::getHttp10Response(
-                $this->gateway['payInit'].'?'.$this->attributes
-            );
-        return $this->arrTemp['result'];
+        $result = Socket::getHttp10Response(
+            self::$gateway['payInit'].'?'.$attributes);
+        if ($result) return $result;
+        self::$arrWarning[] = "SSL transport for sockets is not available";
+        self::$arrError[] = "Failed to open an SSL connection";
+        return '';
     }
 
 
     /**
      * Confirms the payment transaction
      * @access  public
-     * @return  boolean     True on success, false otherwise
+     * @static
+     * @return  boolean     The transaction ID on success, NULL otherwise
      */
-    function payConfirm()
+    static function payConfirm()
     {
 //DBG::log("Saferpay::payConfirm():");
 //DBG::log("POST: ".var_export($_POST, true));
 //DBG::log("GET: ".var_export($_GET, true));
         // Predefine the variables parsed by parse_str() to avoid
         // code analyzer warnings
-        $DATA = '';
-        $SIGNATURE = '';
+        $DATA = $SIGNATURE = '';
         parse_str($_SERVER['QUERY_STRING']);
         // Note: parse_str()'s results comply with the magic quotes setting!
-        $this->arrShopOrder['DATA'] = urlencode(contrexx_input2raw($DATA));
-        $this->arrShopOrder['SIGNATURE'] = urlencode(contrexx_input2raw($SIGNATURE));
-        $this->attributes = $this->getAttributeList('payConfirm');
+        $arrOrder = array(
+            'DATA' => urlencode(contrexx_input2raw($DATA)),
+            'SIGNATURE' => urlencode(contrexx_input2raw($SIGNATURE)),
+        );
+        $attributes = self::getAttributeList('payConfirm', $arrOrder);
 // TODO: This won't work without allow_url_fopen
-        $confirmUrl = $this->gateway['payConfirm'].'?'.$this->attributes;
+        $confirmUrl = self::$gateway['payConfirm'].'?'.$attributes;
 //DBG::log("payConfirm: URL: $confirmUrl");
-        $this->arrTemp['result'] = file_get_contents($confirmUrl);
-        if (!$this->arrTemp['result']) {
+        $result = file_get_contents($confirmUrl);
+        if (!$result) {
             // Try socket connection as well
-            $this->arrTemp['result'] = Socket::getHttp10Response($confirmUrl);
+            $result = Socket::getHttp10Response($confirmUrl);
         }
-//DBG::log("payConfirm: Result: ".$this->arrTemp['result']);
-        if (substr($this->arrTemp['result'], 0, 2) == 'OK') {
+//DBG::log("payConfirm: Result: ".self::$arrTemp['result']);
+        if (substr($result, 0, 2) == 'OK') {
             $ID = '';
-            $TOKEN = '';
-            parse_str(substr($this->arrTemp['result'], 3));
-            $this->arrTemp['id'] = $ID;
-            $this->arrTemp['token'] = $TOKEN;
-//DBG::log("Saferpay::payConfirm(): SUCCESS");
-            return true;
+            parse_str(substr($result, 3));
+  //DBG::log("Saferpay::payConfirm(): SUCCESS, ID $ID");
+            return $ID;
+// Obsolete
+//            self::$token = $TOKEN;
         }
-        $this->arrError[] = $this->arrTemp['result'];
-//DBG::log("Saferpay::payConfirm(): FAIL, Error: ".join("\n", $this->arrError));
-        return false;
+        self::$arrError[] = $result;
+//DBG::log("Saferpay::payConfirm(): FAIL, Error: ".join("\n", self::$arrError));
+        return NULL;
     }
 
 
     /**
      * Completes the payment transaction
-     * @param   array       Attributes
      * @access  public
-     * @return  boolean     True on success, false otherwise
+     * @static
+     * @param   array       $arrOrder   The attributes array
+     * @return  boolean                 True on success, false otherwise
      */
-    function payComplete($arrShopOrder)
+    static function payComplete($arrOrder)
     {
-        $this->arrShopOrder = $arrShopOrder;
-        $this->arrShopOrder['ID'] = $this->arrTemp['id'];
-// Not used
-//        $this->arrShopOrder['TOKEN'] = $this->arrTemp['token'];
-        $this->attributes =
-            $this->getAttributeList('payComplete').
-            // Business account *ONLY*, like the test account
+        $attributes = self::getAttributeList('payComplete', $arrOrder).
+            // Business account *ONLY*, like the test account.
             // There is no password setting (yet), so this is for
-            // future testing porposes *ONLY*
+            // future testing purposes *ONLY*
             (SettingDb::getValue('saferpay_use_test_account')
               ? '&spPassword=XAjc3Kna'
               : '');
         // This won't work without allow_url_fopen
-        $this->arrTemp['result'] =
-            file_get_contents($this->gateway['payComplete'].'?'.$this->attributes);
-        if (!$this->arrTemp['result']) {
+        $result = file_get_contents(
+            self::$gateway['payComplete'].'?'.$attributes);
+        if (!$result) {
             // Try socket connection as well
-            $this->arrTemp['result'] =
-                Socket::getHttp10Response(
-                    $this->gateway['payComplete'].'?'.$this->attributes
-                );
+            $result = Socket::getHttp10Response(
+                self::$gateway['payComplete'].'?'.$attributes);
         }
-        if (substr($this->arrTemp['result'], 0, 2) == 'OK') {
+        if (substr($result, 0, 2) == 'OK') {
             return true;
         }
-        $this->arrError[] = $this->arrTemp['result'];
+        self::$arrError[] = $result;
         return false;
     }
 
 
     /**
-     * Returns the order ID of the transaction
+     * Returns the order ID of the current transaction
      * @access  public
-     * @return  integer The order ID
      * @static
+     * @return  integer         The Order ID
      */
     static function getOrderId()
     {
-        $arrMatches = array();
-        $strParams = urldecode(stripslashes($_GET['DATA']));
-        if (!preg_match('/\sORDERID\=\"(\d+)\"/', $strParams, $arrMatches))
+        $match = array();
+        $data = urldecode(contrexx_stripslashes($_GET['DATA']));
+        if (!preg_match('/\sORDERID\=\"(\d+)\"/', $data, $match))
             return false;
-        $orderId = $arrMatches[1];
-        return $orderId;
+        return $match[1];
     }
 
 
     /**
-     * Checks whether the given attribute exists in the array arrShopOrder.
+     * Verifies the value of an attribute
      * @access  private
-     * @param   string      Attribute to check for its existence
-     * @return  boolean     True on success, false otherwise
+     * @static
+     * @param   string  $attribute  The attribute name
+     * @param   string  $value      The attribute value
+     * @return  boolean             True for valid values, false otherwise
      */
-    function ifExist($attribute)
-    {
-        if (array_key_exists($attribute, $this->arrShopOrder)) {
-            return true;
-        }
-        $this->arrError[] = $attribute." isn't set!";
-        return false;
-    }
-
-
-    /**
-     * Verifies the value of an attribute for correctness.
-     * @access  private
-     * @param   string      Attribute to check for correctness
-     * @return  boolean     True on success, false otherwise
-     */
-    function checkAttribute($attribute)
+    private static function checkAttribute($attribute, $value)
     {
         switch ($attribute) {
             case 'AMOUNT':
-                $this->arrShopOrder[$attribute] = intval($this->arrShopOrder[$attribute]);
-                if ($this->arrShopOrder[$attribute] <= 0) {
-                    $this->arrError[] = $attribute." isn't valid.";
-                    return false;
-                }
-                return true;
+                $value = intval($value);
+                if ($value > 0) return $value;
+                break;
             case 'CURRENCY':
-                if (in_array(strtoupper($this->arrShopOrder[$attribute]),$this->arrCurrency)) {
-                    $this->arrShopOrder[$attribute] = strtoupper($this->arrShopOrder[$attribute]);
-                    return true;
-                }
-                $this->arrError[] = $attribute." isn't valid.";
-                return false;
+                $value = strtoupper($value);
+                if (in_array($value, self::$arrCurrency)) return $value;
+                break;
             case 'ACCOUNTID':
-                if ($this->arrShopOrder[$attribute] == '') {
-                    $this->arrError[] = $attribute." isn't set";
-                    return false;
-                }
-                return true;
+                if ($value != '') return $value;
+                break;
             case 'ORDERID':
-                if (strlen($this->arrShopOrder[$attribute]) > 80) {
-                    $this->arrShopOrder[$attribute] = substr($this->arrShopOrder[$attribute],0,80);
-                    $this->arrWarning[] = $attribute.' was cut to 80 characters.';
+                if (strlen($value) > 80) {
+                    $value = substr($value, 0, 80);
+                    self::$arrWarning[] = $attribute.' was cut to 80 characters.';
                 }
-                return true;
+                return $value;
             case 'SUCCESSLINK':
-                if ($this->arrShopOrder[$attribute] == null) {
-                    $this->arrError[] = $attribute." isn't set";
-                    return false;
-                }
-                return true;
             case 'FAILLINK':
-                if ($this->arrShopOrder[$attribute] == null) {
-                    $this->arrWarning[] = $attribute." isn't set";
-                    return false;
-                }
-                return true;
             case 'BACKLINK':
-                if ($this->arrShopOrder[$attribute] == null) {
-                    $this->arrWarning[] = $attribute." isn't set";
-                    return false;
-                }
-                return true;
-            case 'DESCRIPTION':
-                return true;
+            case 'NOTIFYURL':
+// TODO: Verify URLs
+                if ($value) return $value;
+                break;
             case 'ALLOWCOLLECT':
-                if ($this->arrShopOrder[$attribute] != 'yes') {
-                    $this->arrShopOrder[$attribute] = 'no';
-                }
-                return true;
             case 'DELIVERY':
-                if ($this->arrShopOrder[$attribute] != 'yes') {
-                    $this->arrShopOrder[$attribute] = 'no';
+                if ($value != 'yes') {
+                    $value = 'no';
                 }
-                return true;
-            case 'NOTIFYADDRESS':
-                return true;
-            case 'TOLERANCE':
-                return true;
+                return $value;
             case 'LANGID':
-                if (in_array(strtolower($this->arrShopOrder[$attribute]),$this->arrLangId)) {
-                    $this->arrShopOrder[$attribute] = strtolower($this->arrShopOrder[$attribute]);
-                } else {
-                    $this->arrShopOrder[$attribute] = $this->arrLangId['0'];
-                    $this->arrWarning[] = $attribute.' was set to default value "'.$this->arrLangId['0'].'".';
+                $value = strtolower($value);
+// TODO: Make static
+                if (!in_array($value, self::$arrLangId)) {
+                    $value = self::$arrLangId[0];
+                    self::$arrWarning[] = $attribute.' was set to default value "'.self::$arrLangId['0'].'".';
                 }
-                return true;
+                return $value;
             case 'DURATION':
-                if (strlen($this->arrShopOrder[$attribute]) != 14) {
-                    $this->arrWarning[] = $attribute." isn't valid.";
-                    return false;
-                }
-                return true;
+                if (strlen($value) == 14) return $value;
+            case 'DESCRIPTION':
+            case 'NOTIFYADDRESS':
+            case 'TOLERANCE':
             case 'DATA':
-                return true;
             case 'SIGNATURE':
-                return true;
             case 'ID':
-                return true;
             case 'TOKEN':
-                return true;
             case 'EXPIRATION':
-                return true;
             case 'PROVIDERID':
-                return true;
             case 'PROVIDERNAME':
-                return true;
+            case 'PAYMENTAPPLICATION':
+            case 'ACTION':
+                return $value;
             case 'PROVIDERSET':
+                self::$arrWarning[] = "$attribute is obsolete";
+                return NULL;
+/* OBSOLETE
                 // see http://www.saferpay.com/help/ProviderTable.asp
-                if (is_array($this->arrShopOrder[$attribute])) {
-                    foreach ($this->arrShopOrder[$attribute] as $provider) {
-                        if (isset($this->arrProviders[$provider])) {
-                            $arrProviders[] = $this->arrProviders[$provider];
+                if (is_array($value)) {
+                    foreach ($value as $provider) {
+                        if (isset(self::$arrProviders[$provider])) {
+                            $arrProviders[] = self::$arrProviders[$provider];
                             //$arrProviders[] = $provider;
                         } else {
-                            $this->arrWarning[] = 'Unknown provider "'.$provider.'"';
+                            self::$arrWarning[] = 'Unknown provider "'.$provider.'"';
                         }
                     }
                 }
 // fixed: $arrProviders may be undefined!
                 if (isset($arrProviders) && is_array($arrProviders)) {
-                    $this->arrShopOrder[$attribute] = urlencode(implode(',', $arrProviders));
+                    $value = urlencode(implode(',', $arrProviders));
                 } else {
-                    $this->arrShopOrder[$attribute] = '';
+                    $value = '';
                 }
-                return true;
-            case 'PAYMENTAPPLICATION':
-                return true;
-            case 'ACTION':
-                return true;
+                return $value;
+ */
             default:
-                return true;
+                self::$arrError[] = "Invalid or unknown attribute /$attribute/ value /$value/";
         }
-    }
-
-
-    /**
-     * Adds an attribute to the attributes list class variable.
-     *
-     * Also deletes the attribute from the attribute array arrShopOrder.
-     * @access  private
-     * @param   string      Attribute to add
-     * @return  boolean     True on success, false otherwise
-     */
-    function addAttribute($attribute)
-    {
-        $this->attributes .=
-            ($this->attributes != '' ? '&' : '').
-            $attribute.'='.$this->arrShopOrder[$attribute];
-        unset($this->arrShopOrder[$attribute]);
+        return NULL;
     }
 
 
@@ -644,6 +567,26 @@ class Saferpay
                 "</option>\n";
         }
         return $strMenuoptions;
+    }
+
+
+    /**
+     * Returns accumulated warnings as a HTML string
+     * @return  string          The warnings, if any, or the empty string
+     */
+    static function getWarnings()
+    {
+        return join("<br />", self::$arrWarning);
+    }
+
+
+    /**
+     * Returns accumulated warnings as a HTML string
+     * @return  string          The warnings, if any, or the empty string
+     */
+    static function getErrors()
+    {
+        return join("<br />", self::$arrError);
     }
 
 }
