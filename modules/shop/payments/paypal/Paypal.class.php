@@ -1,11 +1,7 @@
 <?php
 
 /**
- * Interface for the PayPal form
- *
- * It requires a html form to send the date to
- * PayPal. This class generates it.
- *
+ * Interface for the PayPal payment service provider
  * @link https://www.paypal.com/ch/cgi-bin/webscr?cmd=_pdn_howto_checkout_outside
  * @link https://www.paypal.com/ipn
  * @author Stefan Heinemannn <stefan.heinemann@comvation.com>
@@ -23,21 +19,9 @@
     2   Use test suite, create log files
 */
 define('_PAYPAL_DEBUG', 0);
-/**
- * IPN log mode
- * @internal
-    Log modes:
-    0   No logging
-    1   Logging to file (/dbg.log)
-*/
-define('_PAYPAL_IPN_LOG', 0);
 
 /**
- * Interface for the PayPal form
- *
- * It requires a html form to send the date to
- * PayPal. This class generates it.
- *
+ * Interface for the PayPal payment service provider
  * @link https://www.paypal.com/ch/cgi-bin/webscr?cmd=_pdn_howto_checkout_outside
  * @link https://www.paypal.com/ipn
  * @author Stefan Heinemannn <stefan.heinemann@comvation.com>
@@ -47,73 +31,90 @@ define('_PAYPAL_IPN_LOG', 0);
  */
 class PayPal
 {
+    /**
+     * Currency codes accepted by PayPal
+     *
+     * Mind that both key and value are required by the methods below.
+     * @var     array
+     */
     private static $arrAcceptedCurrencyCode = array(
-        'AUD', // Australian Dollar
-        'CAD', // Canadian Dollar
-        'CHF', // Swiss Franc
-        'CZK', // Czech Koruna
-        'DKK', // Danish Krone
-        'EUR', // Euro
-        'GBP', // Pound Sterling
-        'HKD', // Hong Kong Dollar
-        'HUF', // Hungarian Forint
-        'JPY', // Japanese Yen
-        'NOK', // Norwegian Krone
-        'NZD', // New Zealand Dollar
-        'PLN', // Polish Zloty
-        'SEK', // Swedish Krona
-        'SGD', // Singapore Dollar
-        'THB', // Thai Baht
-        'USD', // U.S. Dollar
+        'AUD' => 'AUD', // Australian Dollar
+        'CAD' => 'CAD', // Canadian Dollar
+        'CHF' => 'CHF', // Swiss Franc
+        'CZK' => 'CZK', // Czech Koruna
+        'DKK' => 'DKK', // Danish Krone
+        'EUR' => 'EUR', // Euro
+        'GBP' => 'GBP', // British Pound
+        'HKD' => 'HKD', // Hong Kong Dollar
+        'HUF' => 'HUF', // Hungarian Forint
+        'JPY' => 'JPY', // Japanese Yen
+        'NOK' => 'NOK', // Norwegian Krone
+        'NZD' => 'NZD', // New Zealand Dollar
+        'PLN' => 'PLN', // Polish Zloty
+        'SEK' => 'SEK', // Swedish Krona
+        'SGD' => 'SGD', // Singapore Dollar
+        'THB' => 'THB', // Thai Baht
+        'USD' => 'USD', // U.S. Dollar
+// 20120601 New supported currencies:
+        'ILS' => 'ILS', // Israeli New Shekel
+        'MXN' => 'MXN', // Mexican Peso
+        'PHP' => 'PHP', // Philippine Peso
+        'TWD' => 'TWD', // New Taiwan Dollar
+// Note that the following are only supported by accounts
+// in the respective countries and must be enabled here:
+//        'BRL' => 'BRL', // Brazilian Real (only for Brazilian members)
+//        'MYR' => 'MYR', // Malaysian Ringgit (only for Malaysian members)
+//        'TRY' => 'TRY', // Turkish Lira (only for Turkish members)
     );
 
 
     /**
      * Returns the PayPal form for initializing the payment process
-     * @return  string        The HTML code for the PayPal form
+     * @param   string  $account_email  The PayPal account e-mail address
+     * @param   string  $order_id       The Order ID
+     * @param   string  $currency_code  The Currency code
+     * @param   string  $amount         The amount
+     * @param   string  $item_name      The description used for the payment
+     * @return  string                  The HTML code for the PayPal form
      */
-    static function getForm()
+    static function getForm($account_email, $order_id, $currency_code,
+        $amount, $item_name)
     {
         global $_ARRAYLANG;
 
-        require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
-        $order_id = $_SESSION['shop']['order_id'];
-        $business = self::getBusiness();
-        $item_name = $_ARRAYLANG['TXT_SHOP_PAYPAL_ITEM_NAME'];
-        $currency_code = Currency::getCodeById($_SESSION['shop']['currencyId']);
-        $amount = $_SESSION['shop']['grand_total_price'];
+//        require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
         $host = ASCMS_PROTOCOL.'://'.$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET;
-        $return = $host.'/index.php?section=shop'.MODULE_INDEX.'&amp;cmd=success&amp;handler=paypal&amp;result=1&amp;order_id='.$order_id;
-        $cancel_return = $host.'/index.php?section=shop'.MODULE_INDEX.'&amp;cmd=success&amp;handler=paypal&amp;result=2&amp;order_id='.$order_id;
-        $notify_url = $host.'/index.php?section=shop'.MODULE_INDEX.'&amp;act=paypalIpnCheck';
+        $return = $host.'/index.php?section=shop'.MODULE_INDEX.
+            '&amp;cmd=success&amp;handler=paypal&amp;result=1&amp;order_id='.
+            $order_id;
+        $cancel_return = $host.'/index.php?section=shop'.MODULE_INDEX.
+            '&amp;cmd=success&amp;handler=paypal&amp;result=2&amp;order_id='.
+            $order_id;
+        $notify_url = $host.'/index.php?section=shop'.MODULE_INDEX.
+            '&amp;cmd=success&amp;handler=paypal&amp;result=-1&amp;order_id='.
+            $order_id;
         $retval = (_PAYPAL_DEBUG == 0
-            ?
-'<script type="text/javascript">
+            ? '<script type="text/javascript">
 // <![CDATA[
 function go() { document.paypal.submit(); }
 window.setTimeout("go()", 3000);
 // ]]>
 </script>
-'
-            :
-''
-        ).
-            (_PAYPAL_DEBUG == 0
-              ? "\n<form name='paypal' action='https://www.paypal.com/ch/cgi-bin/webscr' method='post'>\n"
-              : (_PAYPAL_DEBUG == 1
-                  ? "\n<form name='paypal' action='https://www.sandbox.paypal.com/ch/cgi-bin/webscr' method='post'>\n"
-                  // _PAYPAL_DEBUG == 2 or higher
-                  : "\n<form name='paypal' action='$host/index.php?section=shop".MODULE_INDEX."&amp;act=testIpn' method='post'>\n"
-            )).
-            self::getInput('cmd', '_xclick').
-            self::getInput('business', $business).
-            self::getInput('item_name', $item_name).
-            self::getInput('currency_code', $currency_code).
-            self::getInput('amount', $amount).
-            self::getInput('custom', $order_id).
-            self::getInput('notify_url', $notify_url).
-            self::getInput('return', $return).
-            self::getInput('cancel_return', $cancel_return).
+<form name="paypal" method="post"
+      action="https://www.paypal.com/ch/cgi-bin/webscr">
+' :
+'<form name="paypal" method="post"
+      action="https://www.sandbox.paypal.com/ch/cgi-bin/webscr">
+').
+            Html::getHidden('cmd', '_xclick').
+            Html::getHidden('business', $account_email).
+            Html::getHidden('item_name', $item_name).
+            Html::getHidden('currency_code', $currency_code).
+            Html::getHidden('amount', $amount).
+            Html::getHidden('custom', $order_id).
+            Html::getHidden('notify_url', $notify_url).
+            Html::getHidden('return', $return).
+            Html::getHidden('cancel_return', $cancel_return).
             $_ARRAYLANG['TXT_PAYPAL_SUBMIT'].'<br /><br />'.
             '<input type="submit" name="submitbutton" value="'.
             $_ARRAYLANG['TXT_PAYPAL_SUBMIT_BUTTON'].
@@ -123,23 +124,20 @@ window.setTimeout("go()", 3000);
 
 
     /**
-     * Generates a hidden input field
-     * @param $field Array containing the name and the value of the field
+     * Returns the Order ID taken from either the "custom" or "order_id"
+     * parameter value, in that order
+     *
+     * If none of these parameters is present in the $_REQUEST array,
+     * returns false.
+     * @return  mixed               The Order ID on success, false otherwise
      */
-    static function getInput($name, $value)
+    static function getOrderId()
     {
-        return
-            '<input type="hidden" name="'.$name.'" value="'.$value.'" />'.
-            "\n";
-    }
-
-
-    /**
-     * Reads the paypal email address from the database
-     */
-    static function getBusiness()
-    {
-        return SettingDb::getValue('paypal_account_email');
+        return (isset($_REQUEST['custom'])
+          ? intval($_REQUEST['custom'])
+          : (isset($_REQUEST['order_id'])
+              ? intval($_REQUEST['order_id'])
+              : false));
     }
 
 
@@ -148,347 +146,163 @@ window.setTimeout("go()", 3000);
      *
      * The data from the IPN is verified and answered.  After that,
      * PayPal must reply again with either the "VERIFIED" or "INVALID"
-     * keyword.  According to that reply, the status of the order
-     * concerned is updated.  See {@see Orders::update_status}.
+     * keyword.
+     * All parameter values are optional.  Any that are non-empty are
+     * compared to their respective counterparts received in the post
+     * from PayPal.  The verification fails if any comparison fails.
+     * You should consider the payment as failed whenever an empty
+     * (false or NULL) value is returned.  The latter is intended for
+     * diagnostic purposes only, but will never be returned on success.
+     * @param   string  $amount         The optional amount
+     * @param   string  $currency       The optional currency code
+     * @param   string  $order_id       The optional  order ID
+     * @param   string  $customer_email The optional customer e-mail address
+     * @param   string  $account_email  The optional PayPal account e-mail
+     * @return  boolean                 True on successful verification,
+     *                                  false on failure, or NULL when
+     *                                  an arbitrary result is received.
      */
-    static function ipnCheck()
+    static function ipnCheck($amount=NULL, $currency=NULL, $order_id=NULL,
+        $customer_email=NULL, $account_email=NULL)
     {
         global $objDatabase;
 
-if (_PAYPAL_IPN_LOG) {
-    DBG::activate(DBG_PHP|DBG_ADODB_ERROR|DBG_LOG_FILE);
-    DBG::log("-------------------------------------------------------");
-    DBG::log("Paypal::ipnCheck(): Entered on ".date("Y-m-d H:i:s"));
-}
-
-        // assign posted variables to local variables
-// The following are unused
-//        $item_name = $_POST['item_name'];
-//        $item_number = $_POST['item_number'];
-//        $payment_status = $_POST['payment_status'];
-//        $txn_id = $_POST['txn_id'];
-//        $payer_email = $_POST['payer_email'];
-        $payment_amount = (isset($_POST['mc_gross'])
-            ? $_POST['mc_gross'] : null);
-        $payment_currency = (isset($_POST['mc_currency'])
-            ? $_POST['mc_currency'] : null);
-        $receiver_email = (isset($_POST['business'])
-            ? urldecode($_POST['business']) : null);
-        $order_id = (isset($_POST['custom'])
-            ? $_POST['custom'] : null);
-        if (!(   $payment_amount && $payment_currency
-              && $receiver_email && $order_id)) {
-if (_PAYPAL_IPN_LOG) {
-    DBG::log("Invalid IPN parameter values: amount $payment_amount, currency $payment_currency, e-mail $receiver_email, order ID $order_id");
-    DBG::log("Paypal::ipnCheck(): Aborted on ".date("Y-m-d H:i:s"));
-    DBG::log("-------------------------------------------------------");
-    DBG::deactivate();
-}
-            exit;
+        self::log("Paypal::ipnCheck(): Entered");
+        if ($amount && isset($_POST['mc_gross'])) {
+            if ($amount != $_POST['mc_gross'])
+                self::log("Paypal::ipnCheck(): Invalid mc_gross {$_POST['mc_gross']}, expected $amount");
+            return false;
         }
-        $paypalAccountEmail = SettingDb::getValue('paypal_account_email');
-        $query = "
-            SELECT sum, currency_id
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
-             WHERE id=$order_id";
-        $objResult = $objDatabase->Execute($query);
-        $currencyId = null;
-        $amount = null;
-        if ($objResult && !$objResult->EOF) {
-            $currencyId = $objResult->fields['currency_id'];
-            $amount = $objResult->fields['sum'];
+        if ($currency && isset($_POST['mc_currency'])) {
+            if ($currency != $_POST['mc_currency'])
+                self::log("Paypal::ipnCheck(): Invalid mc_currency {$_POST['mc_currency']}, expected $currency");
+            return false;
         }
-        if (empty($currencyId) || empty($amount)) {
-if (_PAYPAL_IPN_LOG) {
-    DBG::log("Error querying amount ($amount) or currency ID ($currencyId) for Order ID $order_id, ignoring");
-    DBG::log("Paypal::ipnCheck(): Finished on ".date("Y-m-d H:i:s"));
-    DBG::log("-------------------------------------------------------");
-    DBG::deactivate();
-}
-            exit();
+        if ($order_id && isset($_POST['custom'])) {
+            if ($order_id != $_POST['custom'])
+                self::log("Paypal::ipnCheck(): Invalid custom {$_POST['custom']}, expected $order_id");
+            return false;
         }
-
-        $query = "
-            SELECT code
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_currencies
-             WHERE id=$currencyId";
-        $objResult = $objDatabase->Execute($query);
-        $currencyCode = null;
-        if ($objResult && !$objResult->EOF) {
-            $currencyCode = $objResult->fields['code'];
+        if ($customer_email && isset ($_POST['payer_email'])) {
+            if ($customer_email != $_POST['payer_email'])
+                self::log("Paypal::ipnCheck(): Invalid payer_email {$_POST['payer_email']}, expected $customer_email");
+            return false;
         }
-        if (empty($currencyCode)) {
-if (_PAYPAL_IPN_LOG) {
-    DBG::log("Failed to query currency code for currency ID $currencyId (Order ID $order_id), ignoring");
-    DBG::log("Paypal::ipnCheck(): Finished on ".date("Y-m-d H:i:s"));
-    DBG::log("-------------------------------------------------------");
-    DBG::deactivate();
-}
-            exit();
+        if ($account_email && isset($_POST['business'])) {
+            if ($account_email != $_POST['business'])
+                self::log("Paypal::ipnCheck(): Invalid business {$_POST['business']}, expected $account_email");
+            return false;
         }
-
-        // read the post from PayPal system and add 'cmd'
-        $req = 'cmd=_notify-validate';
-        foreach ($_POST as $key => $value) {
-            $value = urlencode($value);
-            $req .= "&$key=$value";
+        if (   empty ($_POST['mc_gross'])
+            || empty ($_POST['mc_currency'])
+            || empty ($_POST['custom'])
+            || empty ($_POST['payer_email'])
+            || empty ($_POST['business'])) {
+            self::log("Paypal::ipnCheck(): Incomplete IPN parameter values:");
+            self::log(var_export($_POST, true));
+            return false;
         }
-//if (_PAYPAL_IPN_LOG) @fwrite($log, "Made parameters: $req\r\n");
-
-        $errno = '';
-        $errstr = '';
-        $uri =
-            (_PAYPAL_DEBUG == 0
-              ? 'www.paypal.com'
-              : (_PAYPAL_DEBUG == 1
-                ? 'www.sandbox.paypal.com'
-                // _PAYPAL_IPN_LOG == 2 or higher
-                : 'localhost'));
-if (_PAYPAL_IPN_LOG) DBG::log("Sending IPN validation request to $uri");
-        $fp = fsockopen($uri, 80, $errno, $errstr, 30);
-        if (!$fp) {
-if (_PAYPAL_IPN_LOG) DBG::log("Failed to connect Socket with $uri, errno $errno, error $errstr - exiting");
-            exit();
+        // Copy the post from PayPal and prepend 'cmd'
+        $encoded = 'cmd=_notify-validate';
+        foreach($_POST as $name => $value) {
+            $encoded .= '&'.urlencode($name).'='.urlencode($value);
         }
-
-        // post back to PayPal system to validate
-        $header  =
-            (_PAYPAL_DEBUG < 2
-                ? "POST /cgi-bin/webscr HTTP/1.0\r\n"
-                : "POST ".ASCMS_PATH_OFFSET."/index.php?section=shop".
-                    MODULE_INDEX."&act=testIpnValidate HTTP/1.0\r\n").
-            "Content-Type: application/x-www-form-urlencoded\r\n".
-            "Content-Length: ".strlen($req)."\r\n\r\n";
-        fwrite($fp, $header.$req);
-if (_PAYPAL_IPN_LOG) DBG::log("Sent header and request: $header$req");
-
-        $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
-        while (!feof($fp)) {
-            $res = fgets($fp, 1024);
-if (_PAYPAL_IPN_LOG) DBG::log("PayPal response (part): ".trim($res));
-            if (preg_match('/^VERIFIED/', $res)) {
-if (_PAYPAL_IPN_LOG) {
-DBG::log("PayPal IPN successfully VERIFIED");
-                if (   $receiver_email == $paypalAccountEmail
-                    && $payment_amount == $amount
-                    && $payment_currency == $currencyCode) {
-//DBG::log("INFO: Data identical");
-                } else {
-DBG::log("NOTE: Differing data:");
-DBG::log("Account:  Expected /$paypalAccountEmail/, got /$receiver_email/");
-DBG::log("Amount:  Expected /$amount/, got /$payment_amount/");
-DBG::log("Currency:  Expected /$currencyCode/, got /$payment_currency/");
-                }
-}
-                // Update the order status to a value determined
-                // automatically.
-                $newOrderStatus = SHOP_ORDER_STATUS_PENDING;
-                break;
+        self::log("Paypal::ipnCheck(): Made parameters: $encoded");
+// 20120530 cURL version
+        $host = (_PAYPAL_DEBUG == 0
+            ? 'www.paypal.com'
+            : 'www.sandbox.paypal.com');
+        $uri = 'https://'.$host.'/cgi-bin/webscr';
+        $res = $ch = '';
+        if (function_exists('curl_init')) {
+            $ch = curl_init();
+        }
+        if ($ch) {
+            curl_setopt($ch, CURLOPT_URL, $uri);
+            // Return the received data as a string
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POST, TRUE);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $encoded);
+            $res = curl_exec($ch);
+            if (curl_errno($ch)) {
+                self::log("Paypal::ipnCheck(): ERROR: cURL: ".curl_errno($ch)." - ".curl_error($ch));
+                return false;
             }
-            if (preg_match('/^INVALID/', $res)) {
-                // The payment failed.
-                $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
-if (_PAYPAL_IPN_LOG) {
-    DBG::log("PayPal IPN is INVALID, new Order status CANCELLED (POST values: amount /$payment_amount/, currency /$payment_currency/, e-mail /$receiver_email/, order ID /$order_id/)");
-}
-                break;
+            curl_close($ch);
+        } else {
+            self::log("Paypal::ipnCheck(): WARNING: failed to init cURL, falling back to file");
+            $res = file_get_contents("$uri?$encoded");
+            if (!$res) {
+                self::log("Paypal::ipnCheck(): WARNING: failed to fget(), falling back to socket");
+                $res = Socket::getHttp10Response("$uri?$encoded");
             }
-//if (_PAYPAL_IPN_LOG) DBG::log("PayPal's response: $res");
+            if (!$res) {
+                self::log("Paypal::ipnCheck(): ERROR: failed to connect to PayPal");
+                return false;
+            }
         }
-        fclose ($fp);
-
-        // This method is now called from within here.
-        // The IPN may be received after the customer has left both
-        // the PayPal site and the Shop!
-if (_PAYPAL_IPN_LOG) DBG::log("Updating Order ID $order_id status, new value $newOrderStatus");
-        $order_status = Orders::update_status(
-            $order_id, $newOrderStatus, 'PaypalIPN');
-if (_PAYPAL_IPN_LOG) {
-    DBG::log("Updated Order status to $order_status");
-    DBG::log("Paypal::ipnCheck(): Finished on ".date("Y-m-d H:i:s"));
-    DBG::log("-------------------------------------------------------");
-    DBG::deactivate();
-}
-        exit();
+        self::log("Paypal::ipnCheck(): PayPal response: $res");
+        if (preg_match('/^VERIFIED/', $res)) {
+            self::log("Paypal::ipnCheck(): PayPal IPN verification successful (VERIFIED)");
+            return true;
+        }
+        if (preg_match('/^INVALID/', $res)) {
+            // The payment failed.
+            self::log("Paypal::ipnCheck(): PayPal IPN verification failed (INVALID)");
+            return false;
+        }
+        self::log("Paypal::ipnCheck(): WARNING: PayPal IPN verification unclear (none of the expected results)");
+        return NULL;
     }
 
 
     /**
-     * Test the IPN processing
+     * Returns the array of currency codes accepted by PayPal
      *
-     * Creates a dummy order and sends the IPN to the Shop.
-     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * Note that both keys and values of the returned array contain the
+     * same strings.
+     * @return  array           The array of currency codes
      */
-    static function testIpn()
-    {
-        global $objDatabase;
-
-        $paypalAccountEmail = SettingDb::getValue('paypal_account_email');
-/*
-TODO: Fix for version 3
-$log = @fopen(ASCMS_DOCUMENT_ROOT.'/testIpn.txt', 'w');
-
-        $currencyId = 1; // CHF
-        $amount = '99.00';
-        $query = "SELECT code FROM ".DBPREFIX."module_shop".MODULE_INDEX."_currencies WHERE id=$currencyId";
-        $objResult = $objDatabase->Execute($query);
-        $currencyCode = $objResult->fields['code'];
-        // Create order entry
-        $query = "
-            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_orders (
-            id, customer_id, currency_id, order_sum, sum,
-            date_time, status,
-            ship_prefix, ship_company, ship_firstname, ship_lastname,
-            ship_address, ship_city, ship_zip, ship_country_id, ship_phone,
-            tax_price, currency_ship_price, shipment_id, payment_id,
-            currency_payment_price,
-            customer_ip, customer_host, customer_lang, customer_browser, customer_note,
-            last_modified, modified_by
-            )
-            VALUES (
-            NULL, '0', $currencyId, '0.00', '$amount',
-            '0000-00-00 00:00:00', '0',
-            '', '', '', '',
-            '', '', NULL, NULL, '',
-            '0.00', '0.00', NULL, NULL,
-            '0.00',
-            '', '', '', '', '',
-            '0000-00-00 00:00:00', ''
-        )";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-die ("Error: Failed to insert order<br />$query<br />");
-        }
-        $order_id = $objDatabase->insert_id();
-
-        // Create request for the Shop
-        $arrRequest = array(
-            'mc_gross' => $amount,
-            'mc_currency' => $currencyCode,
-            'receiver_email' => $paypalAccountEmail,
-            'custom' => $order_id,
-        );
-        $req = '';
-        foreach ($arrRequest as $key => $value) {
-            $value = urlencode($value);
-            $req .= ($req ? '&' : '')."$key=$value";
-        }
-@fwrite($log, "Made parameters: $req\r\n");
-
-        $errno = '';
-        $errstr = '';
-        $fp = fsockopen('localhost', 80, $errno, $errstr, 30);
-        if (!$fp) {
-@fwrite($log, "no fp, errno $errno, error $errstr\r\nexiting\r\n");@fclose($log);
-            exit;
-        }
-        // Post IPN to shop
-        $header  =
-            "POST ".ASCMS_PATH_OFFSET."/index.php?section=shop".MODULE_INDEX."&act=paypalIpnCheck HTTP/1.0\r\n".
-            "Content-Type: application/x-www-form-urlencoded\r\n".
-            "Content-Length: ".strlen($req)."\r\n\r\n";
-        fwrite($fp, "$header$req");
-@fwrite($log, "sent\r\n$header$req\r\n\r\n");
-@fclose($log);
-*/
-
-        $currencyCode = $_POST['currency_code'];
-        $amount = $_POST['amount'];
-        $order_id = $_POST['custom'];
-        $host = ASCMS_PROTOCOL.'://'.$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET;
-
-die('
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html><head><title>IPN Test</title></head><body>
-<form method="post" action="'.ASCMS_PATH_OFFSET.'/index.php?section=shop'.MODULE_INDEX.'&act=paypalIpnCheck">
-<input type="hidden" name="mc_gross" value="'.$amount.'" />
-<input type="hidden" name="mc_currency" value="'.$currencyCode.'" />
-<input type="hidden" name="receiver_email" value="'.$paypalAccountEmail.'" />
-<input type="hidden" name="custom" value="'.$order_id.'" />
-<input type="submit" name="ipn" value="IPN senden" />
-</form>
-<a href="'.$host.'/index.php?section=shop'.MODULE_INDEX.'&amp;cmd=success&amp;handler=paypal&amp;result=1&amp;order_id='.$order_id.'">
-  Erfolgreiche Zahlung, zur&uuml;ck zum Shop
-</a><br />
-<a href="'.$host.'/index.php?section=shop'.MODULE_INDEX.'&amp;cmd=success&amp;handler=paypal&amp;result=2&amp;order_id='.$order_id.'">
-  Zahlung annulieren, zur&uuml;ck zum Shop
-</a><br />
-<a href="'.$host.'/index.php?section=shop'.MODULE_INDEX.'&amp;cmd=success&amp;handler=paypal&amp;result=0&amp;order_id='.$order_id.'">
-  Zahlung abbrechen, zur&uuml;ck zum Shop
-</a><br />
-</body></html>
-');
-    }
-
-
-    /**
-     * Validate the reply to the IPN message from the Shop
-     * and send back the VALID or INVALID message.
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    static function testIpnValidate()
-    {
-        global $objDatabase;
-
-$log = @fopen(ASCMS_DOCUMENT_ROOT.'/ipnValidateLog.txt', 'w');
-
-        $order_id = $_POST['custom'];
-        $paypalAccountEmail = SettingDb::getValue('paypal_account_email');
-        $query = "SELECT sum, currency_id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders WHERE id=$order_id";
-        $objResult = $objDatabase->Execute($query);
-@fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }
-        $currencyId = $objResult->fields['currency_id'];
-        $amount = $objResult->fields['sum'];
-
-        $query = "SELECT code FROM ".DBPREFIX."module_shop".MODULE_INDEX."_currencies WHERE id=$currencyId";
-        $objResult = $objDatabase->Execute($query);
-@fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }
-        $currencyCode = $objResult->fields['code'];
-
-        // read and verify the post from the Shop
-        $cmd = ($_POST['cmd'] == '_notify-validate' ? 'OK' : 'FAILED');
-        $mc_gross = ($_POST['mc_gross'] == $amount ? 'OK' : 'FAILED');
-        $mc_currency = ($_POST['mc_currency'] == $currencyCode ? 'OK' : 'FAILED');
-        $receiver_email = (urldecode($_POST['receiver_email']) == $paypalAccountEmail ? 'OK' : 'FAILED');
-@fwrite($log,
-  "cmd $cmd\r\n".
-  "mc_gross $mc_gross\r\n".
-  "mc_currency $mc_currency\r\n".
-  "receiver_email $receiver_email\r\n".
-  "order ID $order_id\r\n"
-);
-        $reply = (   $cmd == 'OK'
-                  && $mc_gross == 'OK'
-                  && $mc_currency == 'OK'
-                  && $receiver_email == 'OK'
-            ? "VERIFIED\r\n"
-            : "INVALID\r\n"
-        );
-
-        // Send reply back to Shop
-@fwrite($log, "sending reply $reply");
-@fclose($log);
-        die($reply);
-    }
-
-
     static function getAcceptedCurrencyCodeArray()
     {
         return self::$arrAcceptedCurrencyCode;
     }
 
 
-    static function getAcceptedCurrencyCodeMenuoptions($selected=0)
+    /**
+     * Returns true if the given string equals one of the currency codes
+     * accepted by PayPal
+     * @return  boolean         True if the currency code is accepted,
+     *                          false otherwise
+     */
+    static function isAcceptedCurrencyCode($currency_code)
     {
-        $strMenuoptions = '';
-        foreach (self::$arrAcceptedCurrencyCode as $code) {
-            $strMenuoptions .=
-                '<option value="'.$code.'"'.
-                ($selected == $code ? ' selected="selected"' : '').">".
-                $code.
-                "</option>\n";
-        }
-        return $strMenuoptions;
+        return isset (self::$arrAcceptedCurrencyCode[$currency_code]);
+    }
+
+
+    /**
+     * Returns HTML code representing select options for choosing one of
+     * the currency codes accepted by PayPal
+     * @param   string  $selected   The optional preselected currency code
+     * @return  string              The HTML select options
+     */
+    static function getAcceptedCurrencyCodeMenuoptions($selected='')
+    {
+        return Html::getOptions(self::$arrAcceptedCurrencyCode, $selected);
+    }
+
+
+    /**
+     * Logs the message
+     *
+     * Returns immediately if logging is not enabled in here
+     * @param   string  $message    The message to be logged
+     */
+    static function log($message)
+    {
+        if (!_PAYPAL_IPN_LOG) return;
+        DBG::log($message);
     }
 
 }

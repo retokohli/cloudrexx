@@ -538,6 +538,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
 
 
     /**
+     * CURRENTLY UNUSED
      * Returns the discount amount used with this Coupon
      *
      * The optional $customer_id limits the result to the uses of that

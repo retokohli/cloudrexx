@@ -842,6 +842,136 @@ DBG::log("Attributes::getOptionPriceSum(): ERROR: option ID $option_id is not nu
     }
 
 
+    /**
+     * Returns an array of two HTML representations of the Attributes and
+     * their respective options specified by the array given
+     *
+     * One of these representation may be used anywhere the matching Product
+     * is viewed.  The first (at index 0) is the long form best used in the
+     * cart view, the second (at index 1) is suitable for the JSCart in the
+     * sidebar.
+     * Attributes with an empty list of option IDs will not be included in
+     * the string produced.  Invalid IDs are silently skipped.
+     * Note that the format of the string can be easily customized by editing
+     * the following language entries:
+     *  TXT_SHOP_OPTION_LONG_FORMAT
+     *  TXT_SHOP_OPTION_LONG_FORMAT_JOINER
+     *  TXT_SHOP_ATTRIBUTE_LONG_FORMAT
+     *  TXT_SHOP_ATTRIBUTE_LONG_FORMAT_JOINER
+     *  TXT_SHOP_OPTION_CART_FORMAT
+     *  TXT_SHOP_OPTION_CART_FORMAT_JOINER
+     *  TXT_SHOP_ATTRIBUTE_CART_FORMAT
+     *  TXT_SHOP_ATTRIBUTE_CART_FORMAT_JOINER
+     * The array parameter must have the form
+     *  array(
+     *    Attribute ID => array(
+     *      option ID,
+     *      [...]
+     *    ),
+     *    [...],
+     *  )
+     * @global  array   $_ARRAYLANG
+     * @param   array   $arrAttributesOptions   The array of Attribute and
+     *                                          option IDs
+     * @param   float   $options_price          The sum of all option prices,
+     *                                          by reference
+     * @return  array                           The array of two HTML
+     *                                          representations of
+     *                                          the Attributes and options
+     *                                          present in the parameter array
+     */
+    static function getAsStrings($arrAttributesOptions, &$options_price=NULL)
+    {
+        global $_ARRAYLANG;
+
+//DBG::log("Attributes::getAsStrings(".var_export($arrAttributesOptions, true).", $options_price)");
+        $options_price = 0;
+        if (   !is_array($arrAttributesOptions)
+            || empty ($arrAttributesOptions)) return '';
+        $attributes_long = $attributes_cart = array();
+        foreach ($arrAttributesOptions as $attribute_id => $arrOptionIds) {
+//DBG::log("Attributes::getAsStrings(): Attribute ID $attribute_id");
+
+            if (empty ($arrOptionIds)) continue;
+            $objAttribute = Attribute::getById($attribute_id);
+            if (!$objAttribute) continue;
+//DBG::log("Attributes::getAsStrings(): Attribute ".var_export($objAttribute, true));
+            $options_long = $options_cart = array();
+            $attribute_price = 0;
+            $arrOptions = $objAttribute->getOptionArray();
+            foreach ($arrOptionIds as $option_id) {
+//DBG::log("Attributes::getAsStrings(): Option ID $option_id");
+                $option_name = '';
+                // Valid indices are: 'value', 'price', 'order'
+                $option_price = $arrOptions[$option_id]['price'];
+                // Note that this *MUST NOT* test for is_integer()
+                // (which $option_id isn't -- it's either an arbitrary
+                // string, or one that represents a positive integer),
+                // but for a *string matching a valid ID*.
+                // intval() doesn't do the job properly, as it also
+                // converts "1 but true" to 1.
+                // A good match would be done by is_numeric(); however,
+                // this would also accept floats and scientific
+                // notation...
+                if ( preg_match('/^[1-9][0-9]*$/', $option_id)
+                    && in_array($objAttribute->getType(), array(
+                    Attribute::TYPE_MENU_OPTIONAL,
+                    Attribute::TYPE_MENU_MANDATORY,
+                    Attribute::TYPE_RADIOBUTTON,
+                    Attribute::TYPE_CHECKBOX))
+                ) {
+                    $option_name = $arrOptions[$option_id]['value'];
+                } else {
+                    $option_name = ShopLibrary::stripUniqidFromFilename($option_id);
+                    $path = Order::UPLOAD_FOLDER.$option_id;
+                    if (   $option_name != $option_id
+                        && file_exists($path)) {
+                        $option_name =
+                            '<a href="'.$path.
+                            '" target="uploadimage">'.
+                            $option_name.'</a>';
+                    }
+                }
+                $options_long[] =
+                    sprintf($_ARRAYLANG['TXT_SHOP_OPTION_LONG_FORMAT'],
+                    $option_name, $option_price,
+                    Currency::getActiveCurrencyCode(),
+                    Currency::getActiveCurrencySymbol());
+                $options_cart[] =
+                    sprintf($_ARRAYLANG['TXT_SHOP_OPTION_CART_FORMAT'],
+                    $option_name, $option_price,
+                    Currency::getActiveCurrencyCode(),
+                    Currency::getActiveCurrencySymbol());
+                $options_price += $option_price;
+//DBG::log("Attributes::getAsStrings(): Price + $option_price = $options_price");
+            }
+            if ($options_long) {
+                $options_long = join(
+                    $_ARRAYLANG['TXT_SHOP_OPTION_LONG_FORMAT_JOINER'],
+                    $options_long);
+                $attributes_long[] =
+                    sprintf($_ARRAYLANG['TXT_SHOP_ATTRIBUTE_LONG_FORMAT'],
+                    $objAttribute->getName(), $options_long);
+                $options_cart = join(
+                    $_ARRAYLANG['TXT_SHOP_OPTION_CART_FORMAT_JOINER'],
+                    $options_cart);
+                $attributes_cart[] =
+                    sprintf($_ARRAYLANG['TXT_SHOP_ATTRIBUTE_CART_FORMAT'],
+                    $objAttribute->getName(), $options_cart);
+            }
+        }
+        if ($attributes_long) {
+            $attributes_long = join(
+                $_ARRAYLANG['TXT_SHOP_ATTRIBUTE_LONG_FORMAT_JOINER'],
+                $attributes_long);
+            $attributes_cart = join(
+                $_ARRAYLANG['TXT_SHOP_ATTRIBUTE_CART_FORMAT_JOINER'],
+                $attributes_cart);
+        }
+        return array($attributes_long, $attributes_cart);
+    }
+
+
     static function errorHandler()
     {
         return Attribute::errorHandler();
