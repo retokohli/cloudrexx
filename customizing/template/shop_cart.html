@@ -25,8 +25,8 @@
           <td>
             <a href="index.php?section=shop&amp;cmd=details&amp;referer=cart&amp;productId={SHOP_PRODUCT_CART_ID}">
               {SHOP_PRODUCT_TITLE}
-            </a>
-            {SHOP_PRODUCT_OPTIONS}
+            </a><!-- BEGIN attributes -->
+            <br />{SHOP_PRODUCT_OPTIONS}<!-- END attributes -->
           </td>
           <td class="a_right">
             {SHOP_PRODUCT_ITEMPRICE}&nbsp;{SHOP_PRODUCT_ITEMPRICE_UNIT}
@@ -68,7 +68,7 @@
             <b>{TXT_INTER_TOTAL}</b>
           </td>
           <td valign="top" nowrap="nowrap" class="a_right">
-            <strong>{SHOP_PRODUCT_TOTALPRICE} {SHOP_PRODUCT_TOTALPRICE_UNIT}</strong>
+            <strong>{SHOP_PRODUCT_TOTALPRICE_PLUS_VAT} {SHOP_PRODUCT_TOTALPRICE_UNIT}</strong>
           </td>
         </tr>
 <!-- BEGIN shopCoupon -->

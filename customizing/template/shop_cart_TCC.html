@@ -1,0 +1,108 @@
+<div id="shop">
+  <!-- BEGIN shopCart -->
+  <div class="cart">
+    <form action="index.php?section=shop&amp;cmd=cart" name="shopForm" method ="post">
+      <table summary="" cellspacing="0">
+        <tr valign="top">
+          <th width="69%">
+            <div align="left">
+              <b>&nbsp;[[TXT_PRODUCT]]</b>
+            </div>
+          </th>
+          <th width="10%">
+            <div align="right">
+              <b>&nbsp;[[TXT_UNIT_PRICE]]</b>
+            </div>
+          </th>
+          <th width="1%">
+            <div align="right">
+              <b>&nbsp;[[TXT_QUANTITY]]</b>
+            </div>
+          </th>
+          <th width="10%">
+            <div align="right">
+              <b>[[TXT_TOTAL]]&nbsp;</b>
+            </div>
+          </th>
+        </tr>
+<!-- BEGIN shopCartRow -->
+        <tr valign="top" class="[[SHOP_PRODUCT_ROW]]">
+          <td>
+            <div align="left">
+              <a href="index.php?section=shop&amp;cmd=details&amp;referer=cart&amp;productId=[[SHOP_PRODUCT_CART_ID]]">
+                [[SHOP_PRODUCT_TITLE]]
+              </a>
+              [[SHOP_PRODUCT_OPTIONS]]
+            </div>
+          </td>
+          <td>
+            <div align="right">[[SHOP_PRODUCT_ITEMPRICE]]&nbsp;[[SHOP_PRODUCT_ITEMPRICE_UNIT]]</div>
+          </td>
+          <td>
+            <div align="right">
+              <input class="form" type="text" name="quantity[[[SHOP_PRODUCT_CART_ID]]]"
+                  value="[[SHOP_PRODUCT_QUANTITY]]" style="width: 30px;"/>
+            </div>
+          </td>
+          <td>
+            <div align="right">
+              <b>[[SHOP_PRODUCT_PRICE]]&nbsp;[[SHOP_PRODUCT_PRICE_UNIT]]</b>
+            </div>
+          </td>
+        </tr>
+<!-- END shopCartRow -->
+<!-- BEGIN shopVat -->
+        <tr class="row3">
+          <td colspan="3" valign="top">
+            <div align="left">
+              <b>[[TXT_TAX_PREFIX]]</b>
+            </div>
+          </td>
+          <td width="25%" valign="top" nowrap="nowrap">
+            <div align="right">
+              <strong>[[SHOP_TOTAL_TAX_AMOUNT]]</strong>
+            </div>
+          </td>
+        </tr>
+<!-- END shopVat -->
+        <tr class="row3">
+          <td colspan="3" valign="top">
+            <div align="left">
+              <b>[[TXT_INTER_TOTAL]]</b>
+            </div>
+          </td>
+          <td width="25%" valign="top" nowrap="nowrap">
+            <div align="right">
+              <strong>[[SHOP_PRODUCT_TOTALPRICE]] [[SHOP_PRODUCT_TOTALPRICE_UNIT]]</strong>
+            </div>
+          </td>
+        </tr>
+<!-- BEGIN shopShippingCountry -->
+        <tr>
+          <td colspan="4" valign="top">&nbsp;</td>
+        </tr>
+        <tr class="row3">
+          <td colspan="1" valign="top">
+            <div align="left">
+              <strong>[[TXT_SHIP_COUNTRY]]</strong> [[SHOP_COUNTRIES_MENU]]
+            </div>
+          </td>
+          <td colspan="3" valign="top">
+            <div align="right">
+              <input type="submit" name="update" class="shopbutton" value="[[TXT_UPDATE]]" />&nbsp;
+              <input type="submit" name="continue" class="shopbutton" value="[[TXT_NEXT]] >>" />
+            </div>
+          </td>
+        </tr>
+<!-- END shopShippingCountry -->
+      </table>
+    </form>
+  </div>
+<!-- END shopCart -->
+  <div class="cart_links">
+    <a href="index.php?section=shop" title="[[TXT_CONTINUE_SHOPPING]]">[[TXT_CONTINUE_SHOPPING]]</a>
+    <br />
+    <a href="index.php?section=shop&amp;act=destroy" title="[[TXT_EMPTY_CART]]">[[TXT_EMPTY_CART]]</a>
+    <br />
+  </div>
+</div>

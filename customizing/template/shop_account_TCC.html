@@ -1,0 +1,103 @@
+<script language="JavaScript" type="text/javascript">
+// <![CDATA[
+function shopCopyText()
+{
+  with (document.account) {
+    if (equalAddress.checked) {
+      prefix2.value = prefix.value;
+      company2.value = company.value;
+      lastname2.value = lastname.value;
+      firstname2.value = firstname.value;
+      address2.value = address.value;
+      zip2.value = zip.value;
+      city2.value = city.value;
+      phone2.value = phone.value;
+      countryId2.value = countryId.value;
+      document.getElementById('shippingaddress').style.display = "none";
+    } else {
+      document.getElementById('shippingaddress').style.display = "block";
+    }
+  }
+}
+// ]]>
+</script>
+<div id="shop">
+  <div class="message_error">[[SHOP_ACCOUNT_STATUS]]</div>
+  <form name="account" action="[[SHOP_ACCOUNT_ACTION]]" method="post">
+    <div class="customer_address">
+      <h2>[[TXT_CUSTOMER_ADDRESS]]</h2>
+      <p><label>[[TXT_COMPANY]]</label>
+        <input type="text" value="[[SHOP_ACCOUNT_COMPANY]]" name="company" tabindex="1" /></p>
+      <p><label>[[TXT_GREETING]]<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" maxlength="50" value="[[SHOP_ACCOUNT_PREFIX]]" name="prefix" tabindex="2" /></p>
+      <p><label>[[TXT_SURNAME]]<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" value="[[SHOP_ACCOUNT_LASTNAME]]" name="lastname" tabindex="3" /></p>
+      <p><label>[[TXT_FIRSTNAME]]<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" value="[[SHOP_ACCOUNT_FIRSTNAME]]" name="firstname" tabindex="4" /></p>
+      <p><label>[[TXT_ADDRESS]]<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" value="[[SHOP_ACCOUNT_ADDRESS]]" name="address" tabindex="5" /></p>
+      <p><label>[[TXT_POSTALE_CODE]]<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" value="[[SHOP_ACCOUNT_ZIP]]" name="zip" tabindex="6" /></p>
+      <p><label>[[TXT_CITY]]<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" value="[[SHOP_ACCOUNT_CITY]]" name="city" tabindex="7" /></p>
+      <p><label>[[TXT_COUNTRY]]</label>
+        <select name="countryId" id="countryId" tabindex="8">
+          [[SHOP_ACCOUNT_COUNTRY_MENUOPTIONS]]
+        </select>
+      </p>
+      <p><label>[[TXT_PHONE_NUMBER]]<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" value="[[SHOP_ACCOUNT_PHONE]]" name="phone" tabindex="9" /></p>
+      <p><label>[[TXT_FAX_NUMBER]]</label>
+        <input type="text" value="[[SHOP_ACCOUNT_FAX]]" name="fax" tabindex="11" /></p>
+    </div>
+<!-- BEGIN shopShipmentAddress -->
+<!-- Shown only if some products need to be shipped -->
+    <div class="customer_address">
+      <p>
+        <input type="checkbox" value="checked"
+            name="equalAddress" id="equalAddress" onClick="shopCopyText();"
+            [[SHOP_ACCOUNT_EQUAL_ADDRESS]] tabindex="21" />
+        <label for="equalAddress" class="description">[[TXT_SAME_BILLING_ADDRESS]]</label>
+      </p>
+    </div>
+    <div id="shippingaddress" class="shipping_address" style="display: [[SHOP_SHIPPING_ADDRESS_DISPLAY]];">
+      <h2>[[TXT_SHIPPING_ADDRESS]]</h2>
+      <p><label>[[TXT_COMPANY]]</label>
+        <input type="text" value="[[SHOP_ACCOUNT_COMPANY2]]" name="company2" tabindex="22" /></p>
+      <p><label>[[TXT_GREETING]]<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" maxlength="50" value="[[SHOP_ACCOUNT_PREFIX2]]" name="prefix2" tabindex="23" /></p>
+      <p><label>[[TXT_SURNAME]]<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" value="[[SHOP_ACCOUNT_LASTNAME2]]" name="lastname2" tabindex="24" /></p>
+      <p><label>[[TXT_FIRSTNAME]]<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" value="[[SHOP_ACCOUNT_FIRSTNAME2]]" name="firstname2" tabindex="25" /></p>
+      <p><label>[[TXT_ADDRESS]]<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" value="[[SHOP_ACCOUNT_ADDRESS2]]" name="address2" tabindex="26" /></p>
+      <p><label>[[TXT_POSTALE_CODE]]<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" size="6" value="[[SHOP_ACCOUNT_ZIP2]]" name="zip2" tabindex="27" /></p>
+      <p><label>[[TXT_CITY]]<font color="#ff0000">&nbsp;*</font></label>
+        <input type="text" value="[[SHOP_ACCOUNT_CITY2]]" name="city2" tabindex="28" /></p>
+      <p><label>[[TXT_COUNTRY]]</label>
+        <input type="hidden" name="countryId2" id="countryId2"
+            value="[[SHOP_ACCOUNT_COUNTRY2_ID]]" />[[SHOP_ACCOUNT_COUNTRY2]]
+      </p>
+      <p><label>[[TXT_PHONE_NUMBER]]<font color="#ff0000">&nbsp;*</font></label>
+      <input type="text" value="[[SHOP_ACCOUNT_PHONE2]]" name="phone2" tabindex="29" /></p>
+    </div>
+<!-- END shopShipmentAddress -->
+<!-- BEGIN account_details -->
+      <div class="account_details">
+        <h2>[[TXT_YOUR_ACCOUNT_DETAILS]]</h2>
+        <p><label>[[TXT_EMAIL]]<font color="#ff0000">&nbsp;*</font></label>
+          <input type="text" value="[[SHOP_ACCOUNT_EMAIL]]" name="email" tabindex="31" />
+        </p>
+        <p><label>[[TXT_PASSWORD]]<font color="#ff0000">&nbsp;*</font></label>
+          <input type="password" value="" name="password" tabindex="32" />
+        </p>
+      </div>
+<!-- END account_details -->
+    <p>
+      <input type="reset" value="[[TXT_RESET]]" name="reset" tabindex="42" />
+      <input type="submit" value="[[TXT_SHOP_CONTINUE_ARROW]]" name="Submit" tabindex="41" />
+    </p>
+  </form>
+</div>
