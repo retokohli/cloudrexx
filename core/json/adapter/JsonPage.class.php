@@ -28,10 +28,6 @@ class JsonPage implements JsonAdapter {
     private $db        = null;
     private $pageRepo  = null;
     private $nodeRepo  = null;
-    private $pageId    = 0;
-    private $nodeId    = 0;
-    private $lang      = '';
-    private $action    = '';
     private $fallbacks = array();
     
     public $messages;
@@ -47,10 +43,6 @@ class JsonPage implements JsonAdapter {
         $this->logRepo  = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
         $this->messages = array();
         $this->tz       = new \DateTimeZone('Europe/Berlin');
-        $this->pageId   = !empty($_GET['page'])   ? intval($_GET['page']) : 0;
-        $this->nodeId   = !empty($_GET['node'])   ? intval($_GET['node']) : 0;
-        $this->lang     = !empty($_GET['lang'])   ? contrexx_input2raw($_GET['lang'])   : '';
-        $this->action   = !empty($_GET['action']) ? contrexx_input2raw($_GET['action']) : '';
 
         $fallback_lang_codes = \FWLanguage::getFallbackLanguageArray();
         $active_langs = \FWLanguage::getActiveFrontendLanguages();
@@ -109,15 +101,15 @@ class JsonPage implements JsonAdapter {
         // pages can be requested in two ways:
         // by page id               - default for existing pages
         // by node id + lang        - to translate an existing page into a new language, assigned to the same node
-        if (!empty($this->pageId)) {
-            $page = $this->pageRepo->find($this->pageId);
+        if (!empty($params['get']['page'])) {
+            $page = $this->pageRepo->find($params['get']['page']);
         }
 
         if (isset($page)) {
             // All is well, continue
-        } else if (!empty($this->nodeId) && !empty($this->lang)) {
-            $node = $this->nodeRepo->find($this->nodeId);
-            $pageArray = $this->getFallbackPageArray($node, $this->lang);
+        } else if (!empty($params['get']['node']) && !empty($params['get']['lang'])) {
+            $node = $this->nodeRepo->find($params['get']['node']);
+            $pageArray = $this->getFallbackPageArray($node, $params['get']['lang']);
         } else {
             throw new Exception('cannot find that page');
         }
@@ -420,20 +412,20 @@ class JsonPage implements JsonAdapter {
      * )
      */
     public function setPageStatus($params) {
-        if (!empty($this->pageId)) {
-            $page = $this->pageRepo->find($this->pageId);
+        if (!empty($params['get']['page'])) {
+            $page = $this->pageRepo->find($params['get']['page']);
         }
 
-        switch ($this->action) {
+        switch ($params['get']['action']) {
             case 'publish':
                 if (!empty($page)) {
                     $page->setActive(true);
                 } else {
-                    $langId = \FWLanguage::getLanguageIdByCode($this->lang);
+                    $langId = \FWLanguage::getLanguageIdByCode($params['get']['lang']);
                     $arrFbLang = \FWLanguage::getFallbackLanguageArray();
                     $fbLang = isset($arrFbLang[$langId]) ? $arrFbLang[$langId] : 0;
                     if (!empty($fbLang) && $fbLang != $langId) {
-                        $node = $this->nodeRepo->find($this->nodeId);
+                        $node = $this->nodeRepo->find($params['get']['node']);
                         $page = new \Cx\Model\ContentManager\Page();
                         $node->addPage($page);
                         $page->setNode($node);
@@ -462,9 +454,8 @@ class JsonPage implements JsonAdapter {
                 $page->setDisplay(false);
                 break;
             default:
-                $this->action = 'error';
                 return array(
-                    'action' => $this->action,
+                    'action' => 'error',
                 );
         }
 
@@ -475,20 +466,20 @@ class JsonPage implements JsonAdapter {
           'nodeId' => $page->getNode()->getId(),
           'pageId' => $page->getId(),
           'lang'   => \FWLanguage::getLanguageCodeById($page->getLang()),
-          'action' => $this->action,
+          'action' => $params['get']['action'],
         );
     }
 
-    public function getHistoryTable() {
-        if (empty($this->pageId)) {
+    public function getHistoryTable($params) {
+        if (empty($params['get']['page'])) {
             throw new \ContentManagerException('please provide a pageId');
         }
 
         //(I) get the right page
-        $page = $this->pageRepo->findOneById($this->pageId);
+        $page = $this->pageRepo->findOneById($params['get']['page']);
 
         if (!$page) {
-            throw new \ContentManagerException('could not find page with id '.$this->pageId);
+            throw new \ContentManagerException('could not find page with id '.$params['get']['page']);
         }
 
         //(II) build the table with headers
