@@ -815,3 +815,22 @@ table.adminlist td.nowrap {
   white-space: nowrap;
   vertical-align: top;
 }
+
+/* Icon representing a URL (module shop, Coupon) */
+.icon_url {
+  background-image: url(../../../images/icons/link.gif);
+  background-position: left top;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+/* Invisible layer whose visibility state is toggled upon clicking the
+   URL icon.  Usually contains an input text field (module shop, Coupon) */
+.layer_url {
+  display: none;
+  position: absolute;
+  right: 70px;
+  top: 80px;
+  overflow: auto;
+}
+
