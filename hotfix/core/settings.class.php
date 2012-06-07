@@ -213,8 +213,6 @@ class settingsManager
             'TXT_FRONTEND_EDITING_STATUS_HELP'    		=> $_CORELANG['TXT_SETTINGS_FRONTEND_EDITING_HELP'],
             'TXT_CORE_LIST_PROTECTED_PAGES'         	=> $_CORELANG['TXT_CORE_LIST_PROTECTED_PAGES'],
             'TXT_CORE_LIST_PROTECTED_PAGES_HELP'   		=> $_CORELANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP'],
-            'TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH'    	=> $_CORELANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH'],
-            'TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH_HELP'   => sprintf($_CORELANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH_HELP'], htmlentities($objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'name'), ENT_QUOTES, CONTREXX_CHARSET), ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.$objLanguage->getLanguageParameter($_FRONTEND_LANGID, 'lang').'/'),
             'TXT_USE_OWN_CSS_IN_EDITOR'   				=> $_CORELANG['TXT_USE_OWN_CSS_IN_EDITOR'],
             'TXT_USE_OWN_CSS_IN_EDITOR_HELP'    		=> $_CORELANG['TXT_USE_OWN_CSS_IN_EDITOR_HELP'],
         ));
@@ -255,9 +253,6 @@ class settingsManager
             'SETTINGS_GOOGLE_MAPS_API_KEY'        			=> ($arrSettings['googleMapsAPIKey']),
             'SETTINGS_LIST_PROTECTED_PAGES_ON'    			=> ($arrSettings['coreListProtectedPages'] == 'on') ? 'checked="checked"' : '',
             'SETTINGS_LIST_PROTECTED_PAGES_OFF'    			=> ($arrSettings['coreListProtectedPages'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_ON' 		=> ($arrSettings['useVirtualLanguagePath'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_OFF'    	=> ($arrSettings['useVirtualLanguagePath'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_DISABLED'   => '',
             'SETTINGS_OWN_CSS_ON'   						=> ($arrSettings['useOwnCSS'] == 'on') ? 'checked="checked"' : '',
             'SETTINGS_OWN_CSS_OFF'   						=> ($arrSettings['useOwnCSS'] == 'off') ? 'checked="checked"' : '',
         ));

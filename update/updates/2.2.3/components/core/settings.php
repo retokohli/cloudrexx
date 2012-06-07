@@ -176,11 +176,6 @@ function _updateSettings()
             'setvalue'    => '0',
             'setmodule'    => 20
         ),
-        67    => array(
-            'setname'    => 'useVirtualLanguagePath',
-            'setvalue'    => 'off',
-            'setmodule'    => 1
-        ),
         68    => array(
             'setname'    => 'dataUseModule',
             'setvalue'    => '1',
