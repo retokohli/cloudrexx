@@ -359,7 +359,7 @@ class downloads extends DownloadsLibrary
 
         //we remember the names of the uploaded files here. they are stored in the session afterwards,
         //so we can later display them highlighted.
-        $arrFiles = array(); 
+        $arrFiles = array();
 
         //rename files, delete unwanted
         $arrFilesToRename = array(); //used to remember the files we need to rename
@@ -591,7 +591,7 @@ class downloads extends DownloadsLibrary
 
         if ($this->objTemplate->blockExists('downloads_simple_file_upload')) {
             $objFWSystem = new FWSystem();
-            
+
 			//Uploader button handling
             JS::activate('cx');
             require_once ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php';
@@ -606,7 +606,8 @@ class downloads extends DownloadsLibrary
             $comboUp->setData($data);
             //set instance name to combo_uploader so we are able to catch the instance with js
             $comboUp->setJsInstanceName('exposed_combo_uploader');
-            
+// TODO: Not defined
+            $redirectUrl = '';
             $this->objTemplate->setVariable(array(
                 'COMBO_UPLOADER_CODE' 			=> $comboUp->getXHtml(true),
                 'DOWNLOADS_UPLOAD_REDIRECT_URL' => $redirectUrl,
