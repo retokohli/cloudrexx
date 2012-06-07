@@ -4,7 +4,7 @@
 function deletePayment(pId)
 {
   if (confirm('{TXT_CONFIRM_DELETE_PAYMENT}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=payment&paymentId="+pId);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=payment&delete_payment="+pId);
 }
 Text[0]=["","{TXT_FREE_OF_CHARGE_TIP}"];
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,15,-50];
@@ -16,6 +16,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 <ul id="tabmenu">
   <li><a id="paymentTab_content1" class="active" href="javascript:{}" onclick="selectTab('content1')" title="{TXT_PAYMENT_TYPE}">{TXT_PAYMENT_TYPES}</a></li>
   <li><a id="paymentTab_content2" href="javascript:{}" onclick="selectTab('content2')" title="{TXT_ADD}">{TXT_ADD}</a></li>
+  <li><a id="paymentTab_content3" href="javascript:{}" onclick="selectTab('content3')" title="{TXT_PAYMENT_HANDLER}">{TXT_PAYMENT_HANDLER}</a></li>
 </ul>
 <form name="shopForm" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=payment">
 <!-- start content1 div -->
@@ -85,5 +86,227 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
     <input type="submit" name="payment_add" value="{TXT_ADD}" />
   </div>
 <!-- end content2 div -->
+
+<!-- start content3 div -->
+<div id="content3" class="paymentTab" style="display:none;">
+  <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
+    <tr>
+      <th colspan="3">{TXT_PAYMENT_HANDLER}</th>
+    </tr>
+    <tr class="row1">
+      <td class="nowrap" width="15%"><strong>{TXT_NAME}</strong></td>
+      <td width="80%"><strong>{TXT_STATEMENT}</strong></td>
+      <td class="nowrap" width="5%"><div align="center"><strong>{TXT_ACTIVE}</strong></div></td>
+    </tr>
+    <tr valign="top" class="row2">
+      <td width="15%" class="nowrap" valign="top">{TXT_YELLOWPAY_POSTFINANCE}</td>
+      <td class="nowrap">
+        <label for="postfinance_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
+        <input name="postfinance_swapper" id="postfinance_swapper" type="checkbox" onclick="swapBlock('postfinance');" value="1" />&nbsp;
+        <div id="postfinance" style="display:none;">
+          <table width="100%" summary="">
+            <tr>
+              <td width="20%">{TXT_SHOP_YELLOWPAY_PSPID}</td>
+              <td width="80%">
+                <input type="text" name="postfinance_shop_id" value="{SHOP_YELLOWPAY_SHOP_ID}" style="width: 270px;" maxlength="50" />
+              </td>
+            </tr>
+            <tr>
+              <td>{TXT_SHOP_YELLOWPAY_HASH_SIGNATURE_IN}</td>
+              <td>
+                <input type="text" name="postfinance_hash_signature_in" value="{SHOP_YELLOWPAY_HASH_SIGNATURE_IN}" style="width: 270px;" maxlength="50" />
+              </td>
+            </tr>
+            <tr>
+              <td>{TXT_SHOP_YELLOWPAY_HASH_SIGNATURE_OUT}</td>
+              <td>
+                <input type="text" name="postfinance_hash_signature_out" value="{SHOP_YELLOWPAY_HASH_SIGNATURE_OUT}" style="width: 270px;" maxlength="50" />
+              </td>
+            </tr>
+            <tr>
+              <td>{TXT_AUTORIZATION}</td>
+              <td>
+                <select name="postfinance_authorization_type" style="width: 270px;">
+                  {SHOP_YELLOWPAY_AUTHORIZATION_TYPE_OPTIONS}
+                </select>
+              </td>
+            </tr>
+            <!-- OBSOLETE tr>
+              <td valign="top">{TXT_SHOP_ACCEPTED_PAYMENT_METHODS}</td>
+              <td>
+                {SHOP_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES}
+              </td>
+            </tr-->
+            <tr>
+              <td valign="top">{TXT_SHOP_YELLOWPAY_USE_TESTSERVER}</td>
+              <td>
+                <input id="postfinance_use_testserver" type="checkbox"
+                  name="postfinance_use_testserver" value="1"
+                  {SHOP_YELLOWPAY_USE_TESTSERVER_CHECKED} />
+              </td>
+            </tr>
+          </table>
+        </div>
+      </td>
+      <td class="nowrap"><div align="center"><input type="checkbox" name="postfinance_active" value="1" {SHOP_YELLOWPAY_STATUS} /></div></td>
+    </tr>
+
+    <tr valign="top" class="row1">
+      <td class="nowrap">{TXT_SHOP_POSTFINANCE_MOBILE}</td>
+      <td class="nowrap">
+        <label for="postfinance_mobile_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
+        <input name="postfinance_mobile_swapper" id="postfinance_mobile_swapper"
+            type="checkbox" onclick="swapBlock('postfinance_mobile');" value="1" />&nbsp;
+        <div id="postfinance_mobile" style="display: none;">
+          <table width="100%" summary="">
+            <tr>
+              <td width="20%">
+                {TXT_SHOP_POSTFINANCE_MOBILE_WEBUSER}
+              </td>
+              <td width="80%">
+                <input type="text" name="postfinance_mobile_webuser" value="{SHOP_POSTFINANCE_MOBILE_WEBUSER}" style="width: 270px;" maxlength="50" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {TXT_SHOP_POSTFINANCE_MOBILE_SIGN}
+              </td>
+              <td>
+                <input type="text" name="postfinance_mobile_sign" value="{SHOP_POSTFINANCE_MOBILE_SIGN}" style="width: 270px;" maxlength="50" />
+              </td>
+            </tr>
+            <tr>
+              <td valign="top">
+                {TXT_SHOP_POSTFINANCE_MOBILE_IJUSTWANTTOTEST}
+              </td>
+              <td>
+                <input type="checkbox" id="postfinance_mobile_ijustwanttotest_yes"
+                    name="postfinance_mobile_ijustwanttotest" value="1"
+                    {SHOP_POSTFINANCE_MOBILE_IJUSTWANTTOTEST_CHECKED} />
+              </td>
+            </tr>
+          </table>
+        </div>
+      </td>
+      <td class="nowrap"><div align="center"><input type="checkbox" name="postfinance_mobile_status" value="1" {SHOP_POSTFINANCE_MOBILE_STATUS} /></div></td>
+    </tr>
+
+    <tr valign="top" class="row2">
+      <td class="nowrap">{TXT_SHOP_DATATRANS}</td>
+      <td class="nowrap">
+        <label for="datatrans_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
+        <input name="datatrans_swapper" id="datatrans_swapper" type="checkbox" onclick="swapBlock('datatrans');" value="1" />&nbsp;
+        <div id="datatrans" style="display:none;">
+          <table width="100%" summary="">
+            <tr>
+              <td width="20%">{TXT_SHOP_DATATRANS_MERCHANT_ID}</td>
+              <td width="80%">
+                <input type="text" name="datatrans_merchant_id" value="{SHOP_DATATRANS_MERCHANT_ID}" style="width: 270px;" maxlength="50" />
+              </td>
+            </tr>
+            <tr>
+              <td>{TXT_SHOP_AUTHORIZATION}</td>
+              <td>
+                <select name="datatrans_request_type" style="width: 270px;">
+                  {SHOP_DATATRANS_AUTHORIZATION_TYPE_OPTIONS}
+                </select>
+              </td>
+            </tr>
+            <!--tr>
+              <td valign="top">{TXT_SHOP_ACCEPTED_PAYMENT_METHODS}</td>
+              <td>{SHOP_DATATRANS_ACCEPTED_PAYMENT_METHODS_CHECKBOXES}</td>
+            </tr-->
+            <tr>
+              <td valign="top">{TXT_SHOP_DATATRANS_USE_TESTSERVER}</td>
+              <td>
+                <input id="datatrans_use_testserver_yes" type="radio"
+                  name="datatrans_use_testserver" value="1"{SHOP_DATATRANS_USE_TESTSERVER_YES_CHECKED} />
+                <label for="datatrans_use_testserver_yes">{TXT_SHOP_YES}</label>
+                <br />
+                <input id="datatrans_use_testserver_no" type="radio"
+                  name="datatrans_use_testserver" value="0"{SHOP_DATATRANS_USE_TESTSERVER_NO_CHECKED} />
+                <label for="datatrans_use_testserver_no">{TXT_SHOP_NO}</label>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </td>
+      <td class="nowrap"><div align="center"><input type="checkbox" name="datatrans_active" value="1"{SHOP_DATATRANS_STATUS} /></div></td>
+    </tr>
+
+    <tr valign="top" class="row1">
+      <td class="nowrap">{TXT_SAFERPAY}</td>
+      <td class="nowrap"><label for="safperpay_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
+        <input name="safperpay_swapper" id="safperpay_swapper" type="checkbox" onclick="swapBlock('safperpay');" value="1" />&nbsp;
+        <div id="safperpay" style="display:none;">
+          <table width="100%" summary="">
+            <tr>
+              <td width="20%">{TXT_ACCOUNT_ID}</td>
+              <td width="80%">
+                <input type="text" name="saferpay_id" value="{SHOP_SAFERPAY_ID}" style="width: 270px;" maxlength="60" />
+              </td>
+            </tr>
+            <tr>
+              <td>{TXT_USE_TEST_ACCOUNT}</td>
+              <td>
+                <input type="checkbox" name="saferpay_use_test_account" value="1" {SHOP_SAFERPAY_TEST_STATUS} />
+              </td>
+            </tr>
+            <tr>
+              <td>{TXT_FINALIZE_PAYMENT}</td>
+              <td>
+                <input type="checkbox" name="saferpay_finalize_payment" value="1" {SHOP_SAFERPAY_FINALIZE_PAYMENT} />
+              </td>
+            </tr>
+            <tr>
+              <td>{TXT_INDICATE_PAYMENT_WINDOW_AS}</td>
+              <td>
+                <select name="saferpay_window_option" id="saferpay_window_option"
+                    style="width: 270px;">
+                  {SHOP_SAFERPAY_WINDOW_MENUOPTIONS}
+                </select>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </td>
+      <td class="nowrap" ><div align="center"><input type="checkbox" name="saferpay_active" value="1" {SHOP_SAFERPAY_STATUS} /></div></td>
+    </tr>
+    <tr valign="top" class="row2">
+      <td>{TXT_PAYPAL}</td>
+      <td><label for="paypal_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
+        <input name="paypal_swapper" id="paypal_swapper" type="checkbox" onclick="swapBlock('paypal');" value="1" />&nbsp;
+        <div id="paypal" style="display:none;">
+          <table width="100%" summary="">
+            <tr>
+              <td width="20%">{TXT_PAYPAL_EMAIL_ACCOUNT}</td>
+              <td width="80%">
+                <input type="text" name="paypal_account_email" value="{SHOP_PAYPAL_EMAIL}" style="width: 270px;" maxlength="254" style="margin-bottom:1px;" />
+              </td>
+            </tr>
+            <tr>
+              <td>{TXT_SHOP_PAYPAL_DEFAULT_CURRENCY}</td>
+              <td>
+                <select name="paypal_default_currency" style="width: 270px;">
+                  {SHOP_PAYPAL_DEFAULT_CURRENCY_MENUOPTIONS}
+                </select>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </td>
+      <td ><div align="center"><input type="checkbox" name="paypal_active" value="1" {SHOP_PAYPAL_STATUS} /></div></td>
+    </tr>
+    <tr class="row1">
+      <td class="nowrap">{TXT_PAYMENT_LSV}</td>
+      <td>&nbsp;</td>
+      <td ><div align="center"><input type="checkbox" name="payment_lsv_active" value="1" {SHOP_PAYMENT_LSV_STATUS} /></div></td>
+    </tr>
+  </table>
+  <br />
+  <input type="submit" name="bpayment" value="{TXT_STORE}" />
+</div>
+<!-- end content3 div -->
+
 </form>
 <!-- end module_shop_settings_payment.html -->

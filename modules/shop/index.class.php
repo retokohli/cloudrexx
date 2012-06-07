@@ -340,7 +340,9 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
             }
             $objTpl->setVariable(
                 'SHOP_LOGIN_ACTION',
-                'index.php?section=shop&amp;cmd=login&amp;redirect='.$redirect);
+// TODO: Use the alias, if any
+                CONTREXX_SCRIPT_PATH.'?section=shop'.MODULE_INDEX.
+                '&amp;cmd=login&amp;redirect='.$redirect);
         }
         // Only show the cart info when the JS cart is not active!
         global $_CONFIGURATION;
@@ -533,7 +535,9 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
             Cart::get_price().' '.
             Currency::getActiveCurrencySymbol();
         $cartInfo =
-            '<a href="index.php?section=shop'.MODULE_INDEX.'&amp;cmd=cart"'.
+// TODO: Use the alias, if any
+            '<a href="'.CONTREXX_SCRIPT_PATH.
+            '?section=shop'.MODULE_INDEX.'&amp;cmd=cart"'.
             ' title="'.$cartInfo.'">'.$cartInfo.'</a>';
         return $cartInfo;
     }
@@ -864,7 +868,8 @@ die("Failed to update the Cart!");
             }
         }
         $shopMenu =
-            '<form action="index.php?section=shop" method="post">'.
+            '<form method="post" action="'.
+            CONTREXX_SCRIPT_PATH.'?section=shop'.MODULE_INDEX.'">'.
             '<input type="text" name="term" value="'.
             htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET).
             '" style="width:150px;" />&nbsp;'.
@@ -980,6 +985,7 @@ die("Failed to update the Cart!");
             }
         }
         $uri =
+// TODO: Use the alias, if any
             '&amp;section=shop'.MODULE_INDEX.
             $pagingCatId.$pagingManId.$pagingTerm;
         self::$objTemplate->setVariable(array(
@@ -1115,7 +1121,10 @@ die("Failed to update the Cart!");
             $detailLink = null;
             if (!$product_id && !empty($longDescription)) {
                 $detailLink =
-                    '<a href="index.php?section=shop'.MODULE_INDEX.'&amp;cmd=details&amp;productId='.
+// TODO: Use the alias, if any
+                '<a href="'.
+                    CONTREXX_SCRIPT_PATH.'?section=shop'.MODULE_INDEX.
+                    '&amp;cmd=details&amp;productId='.
                     $objProduct->id().
                     '" title="'.$_ARRAYLANG['TXT_MORE_INFORMATIONS'].'">'.
                     $_ARRAYLANG['TXT_MORE_INFORMATIONS'].'</a>';
@@ -1953,9 +1962,9 @@ function addProductToCart(objForm)
   }
 // Optional:  to consistently show up-to-date contents of the cart *only*
 //  hideCart();
-  jQuery.ajax(
-    'index.php?".
-      "section=shop".MODULE_INDEX."&cmd=cart&remoteJs=addProduct'
+// TODO: Use the alias, if any
+  jQuery.ajax('".CONTREXX_SCRIPT_PATH.
+    "?section=shop".MODULE_INDEX."&cmd=cart&remoteJs=addProduct'
       +'&r='+Math.random()
       +updateProduct, {
     data: objProduct,
@@ -1982,7 +1991,7 @@ function shopGenerateCart()
   if (objCart.items.length) {
     jQuery.each(objCart.items, function(n, i) {
       cartProduct = cartProductsTpl.replace('[[SHOP_JS_PRODUCT_QUANTITY]]', i.quantity);
-      cartProduct = cartProduct.replace('[[SHOP_JS_PRODUCT_TITLE]]', i.title+i.options);
+      cartProduct = cartProduct.replace('[[SHOP_JS_PRODUCT_TITLE]]', i.title+i.options_cart);
       cartProduct = cartProduct.replace('[[SHOP_JS_PRODUCT_PRICE]]', i.price);
       cartProduct = cartProduct.replace('[[SHOP_JS_TOTAL_PRICE_UNIT]]', objCart.unit);
       cartProduct = cartProduct.replace('[[SHOP_JS_PRODUCT_ID]]', i.cart_id);
@@ -1999,7 +2008,7 @@ function shopGenerateCart()
   } else {
     showCart('<ul><li>".
       contrexx_raw2xhtml($_ARRAYLANG['TXT_EMPTY_SHOPPING_CART']).
-      "</li></ul>');
+      "<\\/li><\\/ul>');
   }
 }
 
@@ -2021,22 +2030,16 @@ function showCart(html)
   //hideCart();
   showCart('<ul><li>".
     contrexx_raw2xhtml($_ARRAYLANG['TXT_SHOP_CART_IS_LOADING']).
-    "</li></ul>');
-  \$J.ajax(
-    'index.php?".
-  // It seems that IE9 requires this -- sometimes?!
-  //(   isset($_SERVER['HTTP_USER_AGENT'])
-  // && preg_match('/MSIE\s9\.0/', $_SERVER['HTTP_USER_AGENT'])
-  //    ? htmlentities(session_name(), ENT_QUOTES, CONTREXX_CHARSET)."=".
-  //      htmlentities(session_id(), ENT_QUOTES, CONTREXX_CHARSET)
-  //    : '').
-      "&section=shop".MODULE_INDEX."&cmd=cart&remoteJs=addProduct', {
+    "<\\/li><\\/ul>');
+// TODO: Use the alias, if any
+  \$J.ajax('".CONTREXX_SCRIPT_PATH.
+    "?section=shop".MODULE_INDEX."&cmd=cart&remoteJs=addProduct', {
     dataType: 'json',
     success: shopUpdateCart,
     error: function() {
       showCart('<ul><li>".
         contrexx_raw2xhtml($_ARRAYLANG['TXT_SHOP_COULD_NOT_LOAD_CART']).
-        "</li></ul>');
+        "<\\/li><\\/ul>');
     }
   });
 });
@@ -2145,7 +2148,7 @@ function centerY(height)
                 // This is still required in confirm() (TODO: remove)
                 $_SESSION['shop']['username'] = self::$objCustomer->username();
                 $_SESSION['shop']['email'] = self::$objCustomer->email();
-//DBG::log("Shop::_authenticate(): Success! (".self::$objCustomer->firstname().' '.self::$objCustomer->lastname().', '.self::$objCustomer->username().")");
+//DBG::log("Shop::_authenticate(): Success! (".self::$objCustomer->firstname().' '.self::$objCustomer->lastname().', '.self::$objCustomer->username().', email '.self::$objCustomer->email().")");
                 $sessionObj->cmsSessionUserUpdate(self::$objCustomer->id());
                 return true;
             }
@@ -2178,7 +2181,9 @@ function centerY(height)
     {
         // go to the next step
         if (isset($_POST['continue'])) {
-            header("Location: index.php?section=shop".MODULE_INDEX."&cmd=login");
+// TODO: Use the alias, if any
+            header('Location: '.CONTREXX_SCRIPT_PATH.
+                '?section=shop'.MODULE_INDEX.'&cmd=login');
             exit;
         }
     }
@@ -2196,24 +2201,22 @@ function centerY(height)
 
         if (isset($_POST['baccount'])) {
             require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
-            HTTP::redirect(
-                CONTREXX_SCRIPT_PATH.
-                '?section=shop&cmd=account');
+// TODO: Use the alias, if any
+            HTTP::redirect(CONTREXX_SCRIPT_PATH.
+                '?section=shop'.MODULE_INDEX.'&cmd=account');
         }
         if (isset($_POST['blogin'])) {
             require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
             HTTP::redirect(
                 CONTREXX_SCRIPT_PATH.
                 '?section=login&redirect='.
-                base64_encode(
-                    CONTREXX_SCRIPT_PATH.
-                    '?section=shop&cmd=account'));
+                base64_encode(CONTREXX_SCRIPT_PATH.
+                    '?section=shop'.MODULE_INDEX.'&cmd=account'));
         }
         if (self::_authenticate()) {
             require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
-            HTTP::redirect(
-                CONTREXX_SCRIPT_PATH.
-                '?section=shop&cmd=account');
+            HTTP::redirect(CONTREXX_SCRIPT_PATH.
+                '?section=shop'.MODULE_INDEX.'&cmd=account');
         }
         $redirect = base64_encode(
               CONTREXX_SCRIPT_PATH.'?section=shop&cmd=account');
@@ -2222,9 +2225,8 @@ function centerY(height)
         }
         self::$objTemplate->setGlobalVariable($_ARRAYLANG
           + array(
-          'SHOP_LOGIN_REDIRECT' => base64_encode(
-              CONTREXX_SCRIPT_PATH.
-              '?section=shop&cmd=account')
+          'SHOP_LOGIN_REDIRECT' => base64_encode(CONTREXX_SCRIPT_PATH.
+              '?section=shop'.MODULE_INDEX.'&cmd=account')
         ));
         return true;
 /* OLD
@@ -2376,7 +2378,9 @@ die("Shop::processRedirect(): This method is obsolete!");
             'SHOP_ACCOUNT_CITY' => htmlentities($city, ENT_QUOTES, CONTREXX_CHARSET),
             'SHOP_ACCOUNT_PHONE' => htmlentities($phone, ENT_QUOTES, CONTREXX_CHARSET),
             'SHOP_ACCOUNT_FAX' => htmlentities($fax, ENT_QUOTES, CONTREXX_CHARSET),
-            'SHOP_ACCOUNT_ACTION' => 'index.php?section=shop'.MODULE_INDEX.'&amp;cmd=account',
+// TODO: Use the alias, if any
+            'SHOP_ACCOUNT_ACTION' => CONTREXX_SCRIPT_PATH.
+                '?section=shop'.MODULE_INDEX.'&amp;cmd=account',
             // New template - since 2.1.0
             'SHOP_ACCOUNT_COUNTRY_MENUOPTIONS' =>
                 Country::getMenuoptions($country_id, true),
@@ -2593,16 +2597,15 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (!isset($_SESSION['shop']['agb'])) {
             $_SESSION['shop']['agb'] = '';
         }
-//DBG::activate(DBG_ADODB);
         $page_repository = Env::em()->getRepository('Cx\Model\ContentManager\Page');
         if ($page_repository->existsModuleCmd(
             FRONTEND_LANG_ID, 'shop', 'payment')) {
-//if (InitCMS::page_count(null, 'shop', 'payment', true)) {
-//die("Shop::_gotoPaymentPage(): Redirect to payment");
-            header("Location: index.php?section=shop".MODULE_INDEX."&cmd=payment");
+// TODO: Use the alias, if any
+            header('Location: '.CONTREXX_SCRIPT_PATH.
+                '?section=shop'.MODULE_INDEX.'&cmd=payment');
         } else {
-//die("Shop::_gotoPaymentPage(): Redirect to confirm");
-            header("Location: index.php?section=shop".MODULE_INDEX."&cmd=confirm");
+            header('Location: '.CONTREXX_SCRIPT_PATH.
+                '?section=shop'.MODULE_INDEX.'&cmd=confirm');
         }
         exit;
     }
@@ -2621,7 +2624,9 @@ die("Shop::processRedirect(): This method is obsolete!");
     static function payment()
     {
         if (!self::verifySessionAddress()) {
-            header('Location: index.php?section=shop'.MODULE_INDEX);
+// TODO: Use the alias, if any
+            header('Location: '.CONTREXX_SCRIPT_PATH.
+                '?section=shop'.MODULE_INDEX);
             exit;
         }
         // Call that first, because the _initPaymentDetails method requires the
@@ -2835,9 +2840,10 @@ die("Shop::processRedirect(): This method is obsolete!");
             Message::error($_ARRAYLANG['TXT_ACCEPT_AGB']);
         }
         if ($status) {
-//die("Shop::verify_payment_details(): Redirect to confirm");
+// TODO: Use the alias, if any
             // Everything is set and valid
-            header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=confirm');
+            header('Location: '.CONTREXX_SCRIPT_PATH.
+                '?section=shop'.MODULE_INDEX.'&cmd=confirm');
             exit;
         }
         // Something is missing od invalid
@@ -3063,7 +3069,9 @@ right after the customer logs in!
 
         // If the cart or address is missing, return to the shop
         if (!self::verifySessionAddress()) {
-            header('Location: index.php?section=shop'.MODULE_INDEX);
+// TODO: Use the alias, if any
+            header('Location: '.CONTREXX_SCRIPT_PATH.
+                '?section=shop'.MODULE_INDEX);
             exit;
         }
         self::$show_currency_navbar = false;
@@ -3085,58 +3093,16 @@ right after the customer logs in!
 //                unset(Cart::get_product_id($cart_id]);
                 continue;
             }
-            $priceOptions = (empty($arrProduct['optionPrice'])
-                ? 0 : $arrProduct['optionPrice']);
+            $price_options = 0;
+            $attributes = Attributes::getAsStrings(
+                $arrProduct['options'], $price_options);
+            $attributes = $attributes[0];
             // Note:  The Attribute options' price is added
             // to the price here!
             $price = $objProduct->get_custom_price(
                 self::$objCustomer,
-                $priceOptions,
+                $price_options,
                 $arrProduct['quantity']);
-            $productOptions = '';
-            if (   is_array($arrProduct['options'])
-                && count($arrProduct['options']) > 0) {
-                foreach ($arrProduct['options'] as $attribute_id => $arrOptionIds) {
-                    if (count($arrOptionIds) > 0) {
-// TODO: Not used
-//                        $objAttribute = Attribute::getById($attribute_id);
-                        // Should be tested!
-                        //if (!$objAttribute) { ... }
-                        $productOptions .=
-                            ($productOptions ? '<br />' : '').'- '.
-                            Attribute::getNameById($attribute_id).': ';
-                        $productOptionsValues = '';
-                        foreach ($arrOptionIds as $option_id) {
-                            $optionValue = '';
-                            if (   is_integer($option_id)
-                                && in_array(Attribute::getById($attribute_id)->getType(),
-                                            array(Attribute::TYPE_MENU_OPTIONAL,
-                                                  Attribute::TYPE_MENU_MANDATORY,
-                                                  Attribute::TYPE_RADIOBUTTON,
-                                                  Attribute::TYPE_CHECKBOX))
-                            ) {
-                                $optionValue =
-                                    Attributes::getOptionNameById($option_id);
-                            } else {
-                                $optionValue = ShopLibrary::stripUniqidFromFilename($option_id);
-                                $path = Order::UPLOAD_FOLDER.$option_id;
-                                if (   $optionValue != $option_id
-                                    && file_exists($path)) {
-                                    $optionValue =
-                                        '<a href="'.$path.
-                                        '" target="uploadimage">'.
-                                        $optionValue.'</a>';
-                                }
-                            }
-                            $productOptionsValues .=
-                                ($productOptionsValues ? ', ' : '').
-                                $optionValue;
-                        }
-                        $productOptions .= $productOptionsValues;
-                    }
-                }
-            }
-
             // Test the distribution method for delivery
             $productDistribution = $objProduct->distribution();
             $weight = ($productDistribution == 'delivery'
@@ -3149,26 +3115,17 @@ right after the customer logs in!
             self::$objTemplate->setVariable(array(
                 'SHOP_PRODUCT_ID' => $arrProduct['id'],
                 'SHOP_PRODUCT_CUSTOM_ID' => $objProduct->code(),
-/*
-Version for shops without products having text or file upload attributes
-                'SHOP_PRODUCT_TITLE' =>
-                    htmlentities($objProduct->name(), ENT_QUOTES, CONTREXX_CHARSET),
-                'SHOP_PRODUCT_OPTIONS' =>
-                    '<i>'.$productOptions.'</i>',
-*/
-                'SHOP_PRODUCT_TITLE' =>
-                    str_replace(
-                        '"', '&quot;',
-                        $objProduct->name().
-                        ($productOptions
-                          ? '<br /><i>'.$productOptions.'</i>' : '')),
-                'SHOP_PRODUCT_OPTIONS' =>
-                    '<i>'.$productOptions.'</i>',
-                'SHOP_PRODUCT_PRICE' => Currency::formatPrice(($price)*$arrProduct['quantity']),
+                'SHOP_PRODUCT_TITLE' => contrexx_raw2xhtml($objProduct->name()),
+                'SHOP_PRODUCT_PRICE' => Currency::formatPrice(
+                    $price*$arrProduct['quantity']),
                 'SHOP_PRODUCT_QUANTITY' => $arrProduct['quantity'],
                 'SHOP_PRODUCT_ITEMPRICE' => Currency::formatPrice($price),
                 'SHOP_UNIT' => Currency::getActiveCurrencySymbol(),
             ));
+            if ($attributes) {
+                self::$objTemplate->setVariable(
+                    'SHOP_PRODUCT_OPTIONS', $attributes);
+            }
             if (SettingDb::getValue('weight_enable')) {
                 self::$objTemplate->setVariable(array(
                     'SHOP_PRODUCT_WEIGHT' => $weight,
@@ -3315,12 +3272,11 @@ die("Trouble! No Shipper ID defined");
             if (self::$objCustomer) {
                 Message::error($_ARRAYLANG['TXT_SHOP_CUSTOMER_REGISTERED_EMAIL']);
                 require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
-                HTTP::redirect(
-                    CONTREXX_DIRECTORY_INDEX.
-                    '?section=shop&cmd=login&redirect='.
-                    base64_encode(
-                        CONTREXX_DIRECTORY_INDEX.
-                        '?section=shop&cmd=confirm'));
+                HTTP::redirect(CONTREXX_SCRIPT_PATH.
+// TODO: Use the alias, if any
+                    '?section=shop'.MODULE_INDEX.'&cmd=login&redirect='.
+                    base64_encode(CONTREXX_SCRIPT_PATH.
+                        '?section=shop'.MODULE_INDEX.'&cmd=confirm'));
             }
 // Unregistered Customers are stored as well, as their information is needed
 // nevertheless.  Their active status, however, is set to false.
@@ -3358,7 +3314,8 @@ die("Trouble! No Shipper ID defined");
 //DBG::log("Shop::process(): ERROR: Missing reseller group");
             Message::error($_ARRAYLANG['TXT_SHOP_ERROR_USERGROUP_INVALID']);
             require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
-            HTTP::redirect(CONTREXX_DIRECTORY_INDEX.'?section=shop');
+// TODO: Use the alias, if any
+            HTTP::redirect(CONTREXX_SCRIPT_PATH.'?section=shop'.MODULE_INDEX);
         }
         if (!in_array($usergroup_id, $arrGroups)) {
 //DBG::log("Shop::process(): Customer is not in Reseller group (ID $usergroup_id)");
@@ -3368,7 +3325,9 @@ die("Trouble! No Shipper ID defined");
 //DBG::log("Shop::process(): ERROR: Missing final customer group");
                 Message::error($_ARRAYLANG['TXT_SHOP_ERROR_USERGROUP_INVALID']);
                 require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
-                HTTP::redirect(CONTREXX_DIRECTORY_INDEX.'?section=shop');
+// TODO: Use the alias, if any
+                HTTP::redirect(CONTREXX_SCRIPT_PATH.
+                    '?section=shop'.MODULE_INDEX);
             }
             if (!in_array($usergroup_id, $arrGroups)) {
 //DBG::log("Shop::process(): Customer is not in final customer group (ID $usergroup_id), either");
@@ -3541,7 +3500,9 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
                 unset($_SESSION['shop']['order_id']);
                 Message::error($_ARRAYLANG['TXT_ERROR_ACCOUNT_INFORMATION_NOT_AVAILABLE']);
                 require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
-                HTTP::redirect(CONTREXX_SCRIPT_PATH.'?section=shop&cmd=payment');
+// TODO: Use the alias, if any
+                HTTP::redirect(CONTREXX_SCRIPT_PATH.
+                    '?section=shop'.MODULE_INDEX.'&cmd=payment');
             }
             $query = "
                 INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_lsv (
@@ -3558,7 +3519,9 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
                 unset($_SESSION['shop']['order_id']);
                 Message::error($_ARRAYLANG['TXT_ERROR_INSERTING_ACCOUNT_INFORMATION']);
                 require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
-                HTTP::redirect(CONTREXX_SCRIPT_PATH.'?section=shop&cmd=payment');
+// TODO: Use the alias, if any
+                HTTP::redirect(CONTREXX_SCRIPT_PATH.
+                    '?section=shop'.MODULE_INDEX.'&cmd=payment');
             }
         }
 
@@ -3733,9 +3696,10 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
 
         if (!self::$objCustomer) {
             header(
-                'Location: index.php?section=shop'.MODULE_INDEX.
-                '&cmd=login'.
-                '&redirect='.base64_encode('section=shop&cmd=changepass'));
+// TODO: Use HTTP::redirect(), and the alias, if any
+                'Location: '.CONTREXX_SCRIPT_PATH.'?section=login'.
+                '&redirect='.base64_encode(CONTREXX_SCRIPT_PATH.
+                    '?section=shop&cmd=changepass'));
             exit;
         }
         if (isset($_POST['shopNewPassword'])) {

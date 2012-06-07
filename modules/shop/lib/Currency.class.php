@@ -436,11 +436,14 @@ class Currency
 
     /**
      * Return the currency code for the ID given
+     *
+     * Mind that some methods rely on the return value being NULL for
+     * unknown Currencies, see {@see PaymentProcessing::checkIn()}.
      * @author  Reto Kohli <reto.kohli@comvation.com>
      * @static
      * @param   integer   $currencyId   The currency ID
      * @return  mixed                   The currency code on success,
-     *                                  false otherwise
+     *                                  NULL otherwise
      * @global  ADONewConnection
      */
     static function getCodeById($currencyId)
@@ -448,7 +451,7 @@ class Currency
         if (!is_array(self::$arrCurrency)) self::init();
         if (isset(self::$arrCurrency[$currencyId]['code']))
             return self::$arrCurrency[$currencyId]['code'];
-        return false;
+        return NULL;
     }
 
 

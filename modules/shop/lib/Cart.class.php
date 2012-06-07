@@ -81,7 +81,7 @@ class Cart
                 ? contrexx_input2raw($_REQUEST['options']) : array()),
             'quantity' => floatval($_REQUEST['quantity']),
         );
-        Cart::add_product($arrProduct, $cart_id);
+        self::add_product($arrProduct, $cart_id);
     }
 
 
@@ -147,7 +147,7 @@ class Cart
                 ? 1 : intval($_POST['productQuantity'])
             ),
         );
-        Cart::add_product($arrProduct, $cart_id);
+        self::add_product($arrProduct, $cart_id);
     }
 
 
@@ -292,6 +292,7 @@ class Cart
         if (isset($arrNewProduct['options']) && count($arrNewProduct['options']) > 0) {
 //DBG::log("Cart::add_product(): Adding options: New: ".var_export($arrNewProduct['options'], true));
             foreach ($arrNewProduct['options'] as $attribute_id => $option_id) {
+                $attribute_id = intval($attribute_id);
                 // Get Attribute
                 $objAttribute = Attribute::getById($attribute_id);
                 if (!$objAttribute) continue;
@@ -308,14 +309,14 @@ class Cart
                     }
                 }
                 if (!isset($products[$cart_id]['options'][$attribute_id])) {
-                    $products[$cart_id]['options'][intval($attribute_id)] = array();
+                    $products[$cart_id]['options'][$attribute_id] = array();
                 }
                 if (is_array($option_id) && count($option_id)) {
                     foreach ($option_id as $id) {
-                        array_push($products[$cart_id]['options'][intval($attribute_id)], $id);
+                        array_push($products[$cart_id]['options'][$attribute_id], $id);
                     }
                 } elseif (!empty($option_id)) {
-                    array_push($products[$cart_id]['options'][intval($attribute_id)],
+                    array_push($products[$cart_id]['options'][$attribute_id],
                         contrexx_input2raw($option_id));
                 }
             }
@@ -422,8 +423,12 @@ class Cart
                 unset($products[$cart_id]);
                 continue;
             }
-            $options = '';
-            $options_price =  0;
+            $options_price = 0;
+            // Array!
+            $options_strings = Attributes::getAsStrings(
+                $product['options'], $options_price);
+//DBG::log("Cart::update(): options_price $options_price");
+/* Replaced by Attributes::getAsStrings()
             foreach ($product['options'] as $attribute_id => $arrOptionIds) {
                 $objAttribute = Attribute::getById($attribute_id);
                 // Should be tested!
@@ -460,6 +465,7 @@ class Cart
             if ($options_price != 0) {
                 $product['optionPrice'] = $options_price;
             }
+ */
             $quantity = $product['quantity'];
             $items += $quantity;
             $itemprice = $objProduct->get_custom_price(
@@ -491,7 +497,9 @@ class Cart
                             ? $objProduct->name()
                             : utf8_encode($objProduct->name())),
                           ENT_QUOTES, CONTREXX_CHARSET)),
-                'options' => $options,
+                'options' => $product['options'],
+                'options_long' => $options_strings[0],
+                'options_cart' => $options_strings[1],
                 'price' => Currency::formatPrice($price),
                 'quantity' => $quantity,
                 'itemprice' => Currency::formatPrice($itemprice),
@@ -726,6 +734,9 @@ class Cart
 
     /**
      * The Cart view
+     *
+     * Mind that the Cart needs to be {@see update()}d before calling this
+     * method.
      * @global  array $_ARRAYLANG   Language array
      * @param   HTML_Template_Sigma $objTemplate  The optional Template
      */
@@ -751,16 +762,14 @@ die("Cart::view(): ERROR: No template");
                     $groupCustomerId, $groupArticleId,
                     $groupCountId, $arrProduct['quantity']
                 );
-/*
-UNUSED
+/* UNUSED (and possibly obsolete, too)
                 if (isset($arrProduct['discount_string'])) {
 //DBG::log("Shop::view_cart(): Product ID ".$arrProduct['id'].": ".$arrProduct['discount_string']);
                     $objTemplate->setVariable(
                         'SHOP_DISCOUNT_COUPON_STRING',
                             $arrProduct['coupon_string']
                     );
-                }
-*/
+                }*/
                 // The fields that don't apply have been set to ''
                 // (empty string) already -- see update().
                 $objTemplate->setVariable(array(
@@ -769,7 +778,6 @@ UNUSED
                     'SHOP_PRODUCT_CODE' => $arrProduct['product_id'],
                     'SHOP_PRODUCT_CART_ID' => $arrProduct['cart_id'],
                     'SHOP_PRODUCT_TITLE' => str_replace('"', '&quot;', $arrProduct['title']),
-                    'SHOP_PRODUCT_OPTIONS' => $arrProduct['options'],
                     'SHOP_PRODUCT_PRICE' => $arrProduct['price'],  // items * qty
                     'SHOP_PRODUCT_PRICE_UNIT' => Currency::getActiveCurrencySymbol(),
                     'SHOP_PRODUCT_QUANTITY' => $arrProduct['quantity'],
@@ -778,6 +786,11 @@ UNUSED
 // TODO: Move this to (global) language variables
                     'SHOP_REMOVE_PRODUCT' => $_ARRAYLANG['TXT_SHOP_REMOVE_ITEM'],
                 ));
+//DBG::log("Attributes String: {$arrProduct['options_long']}");
+                if ($arrProduct['options_long']) {
+                    $objTemplate->setVariable(
+                        'SHOP_PRODUCT_OPTIONS', $arrProduct['options_long']);
+                }
                 if (SettingDb::getValue('weight_enable')) {
                     $objTemplate->setVariable(array(
                         'SHOP_PRODUCT_WEIGHT' => Weight::getWeightString($arrProduct['weight']),
@@ -828,9 +841,9 @@ UNUSED
             $objTemplate->parse('shopCoupon');
             if (self::get_discount_amount()) {
                 $total_discount_amount = self::get_discount_amount();
-    //DBG::log("Shop::view_cart(): Total: Amount $total_discount_amount");
+//DBG::log("Shop::view_cart(): Total: Amount $total_discount_amount");
                 $objTemplate->setVariable(array(
-    //                'SHOP_DISCOUNT_COUPON_TOTAL_AMOUNT' => $coupon_string,
+//                    'SHOP_DISCOUNT_COUPON_TOTAL_AMOUNT' => $coupon_string,
                     'SHOP_DISCOUNT_COUPON_TOTAL' =>
                         $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_AMOUNT_TOTAL'],
                     'SHOP_DISCOUNT_COUPON_TOTAL_AMOUNT' => Currency::formatPrice(

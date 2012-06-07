@@ -947,3 +947,6 @@ $_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_CHECKBOX'] = "Kontrollkästchen (ke
 // 20111103 changed
 $_ARRAYLANG['TXT_DEFINE_NAME_FOR_OPTION'] = "Sie müssen einen Namen für das Merkmal angeben";
 $_ARRAYLANG['TXT_DEFINE_VALUE_FOR_OPTION'] = "Sie müssen mindestens eine Option für dieses Merkmal definieren";
+
+// 20120601
+$_ARRAYLANG['TXT_SHOP_PAYMENT_ERROR_CANNOT_DELETE_LAST_ACTIVE'] = "Die einzige aktive Zahlungsart kann nicht gelöscht werden";

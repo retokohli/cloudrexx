@@ -139,11 +139,16 @@ class Payment
      * If PayPal is the selected payment method, any Currencies not supported
      * will be removed from the Currency array.
      * Returns the Payment IDs allowed for the given Country ID.
+     * Note that the Payment IDs are used for both the keys and values
+     * of the array returned, like:
+     *  array(
+     *    payment_id => payment_id,
+     *    [...]
+     *  )
      * @global  ADONewConnection  $objDatabase    Database connection object
      * @param    integer $countryId         The country ID
      * @param    array   $arrCurrencies     The currencies array, by reference
-     * @return   array                      Array of payment IDs, like:
-     *                                      array( index => paymentId )
+     * @return   array                      Array of Payment IDs
      */
     static function getCountriesRelatedPaymentIdArray($countryId, $arrCurrencies)
     {
@@ -159,8 +164,7 @@ class Payment
                 $arrPaypalAcceptedCurrencyCodes =
                    PayPal::getAcceptedCurrencyCodeArray();
                 foreach ($arrCurrencies as $index => $arrCurrency) {
-                    if (!in_array($arrCurrency['code'],
-                           $arrPaypalAcceptedCurrencyCodes)) {
+                    if (!PayPal::isAcceptedCurrencyCode($arrCurrency['code'])) {
                         unset($arrCurrencies[$index]);
                     }
                 }
@@ -185,7 +189,8 @@ class Payment
                 && (   self::$arrPayments[$objResult->fields['id']]['processor_id'] != 2
                     || count($arrCurrencies))
             ) {
-                $arrPaymentId[] = $objResult->fields['id'];
+                $arrPaymentId[$objResult->fields['id']] =
+                    $objResult->fields['id'];
             }
             $objResult->MoveNext();
         }
@@ -195,6 +200,8 @@ class Payment
 
     /**
      * Return HTML code for the payment dropdown menu
+     *
+     * See {@see getPaymentMenuoptions()} for details.
      * @param   string  $selectedId     Optional preselected payment ID
      * @param   string  $onchange       Optional onchange function
      * @param   integer $countryId      Country ID
@@ -203,25 +210,17 @@ class Payment
      */
     static function getPaymentMenu($selectedId=0, $onchange='', $countryId=0)
     {
-        global $_ARRAYLANG;
-
-        $menu =
-            '<select name="paymentId"'.
-            ($onchange ? ' onchange="'.$onchange.'"' : '').'>'.
-            (intval($selectedId) == 0 && $onchange
-                ? '<option value="0" selected="selected">'.
-                  $_ARRAYLANG['TXT_SHOP_PAYMENT_PLEASE_SELECT'].
-                  "</option>\n"
-                : ''
-            ).
-            self::getPaymentMenuoptions($selectedId, $countryId).
-            "</select>\n";
-        return $menu;
+        return Html::getSelectCustom('paymentId',
+            self::getPaymentMenuoptions($selectedId, $countryId),
+            FALSE, $onchange);
     }
 
 
     /**
      * Return HTML code for the payment dropdown menu options
+     *
+     * If no valid payment is selected, an additional option representing
+     * "please choose" is prepended.
      * @param   string  $selectedId     Optional preselected payment ID
      * @param   integer $countryId      Country ID
      * @return  string                  HTML code for the dropdown menu options
@@ -237,7 +236,9 @@ class Payment
             ? self::getCountriesRelatedPaymentIdArray(
                   $countryId, Currency::getCurrencyArray())
             : array_keys(self::$arrPayments));
-        $arrOption = (empty($selectedId)
+        $arrOption =
+            (   empty($arrPaymentId[$selectedId])
+             && count($arrPaymentId) > 1
               ? array(0 => $_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'])
               : array());
         foreach ($arrPaymentId as $id) {
@@ -259,7 +260,8 @@ class Payment
     static function getNameById($paymentId)
     {
         if (is_null(self::$arrPayments)) self::init();
-        return self::$arrPayments[$paymentId]['name'];
+        return (isset (self::$arrPayments[$paymentId])
+            ? self::$arrPayments[$paymentId]['name'] : '');
     }
 
 
@@ -287,25 +289,37 @@ class Payment
 
 
     /**
-     * Deletes the Payment method with its ID present in $_GET['paymentId'],
-     * if any.
+     * Deletes the Payment method with the given ID
      *
-     * Returns null if no Payment ID is present.
-     * @return    boolean           True on success, false on failure, or null
+     * Returns NULL if no valid Payment ID is given.
+     * Fails when trying to delete the only active Payment.  Add and activate
+     * a new one before trying to delete the other.
+     * @param   integer $payment_id     The Payment ID
+     * @return  boolean                 True on success, false on failure,
+     *                                  or null otherwise (NOOP)
+     * @global  ADOConnection   $objDatabase
      */
-    static function delete()
+    static function delete($payment_id)
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
-        if (empty($_GET['paymentId'])) return null;
-        $objResult = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment", 2, 0);
-        if ($objResult->RecordCount() < 2) return false;
+        $payment_id = intval($payment_id);
+        if ($payment_id <= 0) return NULL;
+        if (is_null(self::$arrPayments)) self::init();
+        if (empty(self::$arrPayments[$payment_id])) return NULL;
+        $count_active_payments = 0;
+        foreach (self::$arrPayments as $id => $arrPayment) {
+            if ($arrPayment['active']) ++$count_active_payments;
+        }
+        if ($count_active_payments < 2) {
+            return Message::error($_ARRAYLANG['TXT_SHOP_PAYMENT_ERROR_CANNOT_DELETE_LAST_ACTIVE']);
+        }
         if (!$objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment
-             WHERE payment_id=".intval($_GET['paymentId']))) return false;
+             WHERE payment_id=?", $payment_id)) return false;
         if (!$objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment
-             WHERE id=".intval($_GET['paymentId']))) return false;
+             WHERE id=?", $payment_id)) return false;
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_payment");
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment");
         return true;
@@ -468,6 +482,66 @@ class Payment
                 PaymentProcessing::getMenuoptions(-1),
             'SHOP_ZONE_SELECTION_NEW' => Zones::getMenu(0, 'zone_id_new'),
         ));
+        // Payment Service Providers
+        require_once ASCMS_MODULE_PATH.'/shop/payments/datatrans/Datatrans.class.php';
+        require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
+        require_once ASCMS_MODULE_PATH.'/shop/payments/saferpay/Saferpay.class.php';
+        require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
+        $objTemplate->setVariable(array(
+            'SHOP_SAFERPAY_ID' => SettingDb::getValue('saferpay_id'),
+            'SHOP_SAFERPAY_STATUS' => (SettingDb::getValue('saferpay_active') ? HTML_ATTRIBUTE_CHECKED : ''),
+            'SHOP_SAFERPAY_TEST_ID' => SettingDb::getValue('saferpay_use_test_account'),
+            'SHOP_SAFERPAY_TEST_STATUS' => (SettingDb::getValue('saferpay_use_test_account') ? HTML_ATTRIBUTE_CHECKED : ''),
+            'SHOP_SAFERPAY_FINALIZE_PAYMENT' => (SettingDb::getValue('saferpay_finalize_payment')
+                ? HTML_ATTRIBUTE_CHECKED : ''),
+            'SHOP_SAFERPAY_WINDOW_MENUOPTIONS' => Saferpay::getWindowMenuoptions(
+                SettingDb::getValue('saferpay_window_option')),
+            'SHOP_YELLOWPAY_SHOP_ID' => SettingDb::getValue('postfinance_shop_id'),
+            'SHOP_YELLOWPAY_STATUS' =>
+                (SettingDb::getValue('postfinance_active')
+                    ? HTML_ATTRIBUTE_CHECKED : ''),
+//                    'SHOP_YELLOWPAY_HASH_SEED' => SettingDb::getValue('postfinance_hash_seed'),
+// Replaced by
+            'SHOP_YELLOWPAY_HASH_SIGNATURE_IN' => SettingDb::getValue('postfinance_hash_signature_in'),
+            'SHOP_YELLOWPAY_HASH_SIGNATURE_OUT' => SettingDb::getValue('postfinance_hash_signature_out'),
+// OBSOLETE
+//            'SHOP_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' =>
+//                Yellowpay::getKnownPaymentMethodCheckboxes(
+//                    SettingDb::getValue('postfinance_accepted_payment_methods')),
+            'SHOP_YELLOWPAY_AUTHORIZATION_TYPE_OPTIONS' =>
+                Yellowpay::getAuthorizationMenuoptions(
+                    SettingDb::getValue('postfinance_authorization_type')),
+            'SHOP_YELLOWPAY_USE_TESTSERVER_CHECKED' =>
+                (SettingDb::getValue('postfinance_use_testserver')
+                    ? HTML_ATTRIBUTE_CHECKED : ''),
+            // Added 20100222 -- Reto Kohli
+            'SHOP_POSTFINANCE_MOBILE_WEBUSER' => SettingDb::getValue('postfinance_mobile_webuser'),
+            'SHOP_POSTFINANCE_MOBILE_SIGN' => SettingDb::getValue('postfinance_mobile_sign'),
+            'SHOP_POSTFINANCE_MOBILE_IJUSTWANTTOTEST_CHECKED' =>
+                (SettingDb::getValue('postfinance_mobile_ijustwanttotest')
+                  ? HTML_ATTRIBUTE_CHECKED : ''),
+            'SHOP_POSTFINANCE_MOBILE_STATUS' =>
+                (SettingDb::getValue('postfinance_mobile_status')
+                  ? HTML_ATTRIBUTE_CHECKED : ''),
+            'SHOP_DATATRANS_AUTHORIZATION_TYPE_OPTIONS' => Datatrans::getReqtypeMenuoptions(SettingDb::getValue('datatrans_request_type')),
+            'SHOP_DATATRANS_MERCHANT_ID' => SettingDb::getValue('datatrans_merchant_id'),
+            'SHOP_DATATRANS_STATUS' => (SettingDb::getValue('datatrans_active') ? HTML_ATTRIBUTE_CHECKED : ''),
+            'SHOP_DATATRANS_USE_TESTSERVER_YES_CHECKED' =>
+                (SettingDb::getValue('datatrans_use_testserver') ? HTML_ATTRIBUTE_CHECKED : ''),
+            'SHOP_DATATRANS_USE_TESTSERVER_NO_CHECKED' =>
+                (SettingDb::getValue('datatrans_use_testserver') ? '' : HTML_ATTRIBUTE_CHECKED),
+            // Not supported
+            //'SHOP_DATATRANS_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' => 0,
+            'SHOP_PAYPAL_EMAIL' => SettingDb::getValue('paypal_account_email'),
+            'SHOP_PAYPAL_STATUS' => (SettingDb::getValue('paypal_active') ? HTML_ATTRIBUTE_CHECKED : ''),
+            'SHOP_PAYPAL_DEFAULT_CURRENCY_MENUOPTIONS' => PayPal::getAcceptedCurrencyCodeMenuoptions(
+                SettingDb::getValue('paypal_default_currency')),
+            // LSV settings
+            'SHOP_PAYMENT_LSV_STATUS' => (SettingDb::getValue('payment_lsv_active') ? HTML_ATTRIBUTE_CHECKED : ''),
+            'SHOP_PAYMENT_DEFAULT_CURRENCY' => Currency::getDefaultCurrencySymbol(),
+            'SHOP_CURRENCY_CODE' => Currency::getCurrencyCodeById(
+                Currency::getDefaultCurrencyId()),
+        ));
         return true;
     }
 
@@ -482,6 +556,7 @@ class Payment
     static function errorHandler()
     {
         require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
+        require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
 
 //DBG::activate(DBG_DB_FIREPHP);
 

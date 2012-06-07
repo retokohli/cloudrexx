@@ -44,9 +44,6 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/ShopSettings.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Vat.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Weight.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Zones.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/payments/saferpay/Saferpay.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/payments/datatrans/Datatrans.class.php';
 // Added for Version 2.3
 require_once ASCMS_MODULE_PATH.'/shop/lib/Order.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Orders.class.php';
@@ -98,6 +95,8 @@ class Shopmanager extends ShopLibrary
             'CSRF_PARAM' => CSRF::param()
         ));
     }
+
+
     private function setNavigation()
     {
         global $objTemplate, $_ARRAYLANG;
@@ -1528,76 +1527,13 @@ class Shopmanager extends ShopLibrary
         // General settings
         self::$objTemplate->addBlockfile('SHOP_SETTINGS_FILE',
             'settings_block', 'module_shop_settings_general.html');
-        $saferpayStatus = (SettingDb::getValue('saferpay_active') ? HTML_ATTRIBUTE_CHECKED : '');
-        $saferpayTestStatus = (SettingDb::getValue('saferpay_use_test_account') ? HTML_ATTRIBUTE_CHECKED : '');
-
-        require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
-        $paypalStatus = (SettingDb::getValue('paypal_active') ? HTML_ATTRIBUTE_CHECKED : '');
-
-        // Datatrans
-        $datatrans_request_type = SettingDb::getValue('datatrans_request_type');
-        $datatrans_merchant_id = SettingDb::getValue('datatrans_merchant_id');
-        $datatrans_active = SettingDb::getValue('datatrans_active');
-        $datatrans_use_testserver = SettingDb::getValue('datatrans_use_testserver');
-
         self::$objTemplate->setVariable(array(
-            'SHOP_SAFERPAY_ID' => SettingDb::getValue('saferpay_id'),
-            'SHOP_SAFERPAY_STATUS' => $saferpayStatus,
-            'SHOP_SAFERPAY_TEST_ID' => SettingDb::getValue('saferpay_use_test_account'),
-            'SHOP_SAFERPAY_TEST_STATUS' => $saferpayTestStatus,
-            'SHOP_SAFERPAY_FINALIZE_PAYMENT' => (SettingDb::getValue('saferpay_finalize_payment')
-                ? HTML_ATTRIBUTE_CHECKED : ''),
-            'SHOP_SAFERPAY_WINDOW_MENUOPTIONS' => Saferpay::getWindowMenuoptions(
-                SettingDb::getValue('saferpay_window_option')),
-            'SHOP_YELLOWPAY_SHOP_ID' => SettingDb::getValue('postfinance_shop_id'),
-            'SHOP_YELLOWPAY_STATUS' =>
-                (SettingDb::getValue('postfinance_active')
-                    ? HTML_ATTRIBUTE_CHECKED : ''),
-//                    'SHOP_YELLOWPAY_HASH_SEED' => SettingDb::getValue('postfinance_hash_seed'),
-// Replaced by
-            'SHOP_YELLOWPAY_HASH_SIGNATURE_IN' => SettingDb::getValue('postfinance_hash_signature_in'),
-            'SHOP_YELLOWPAY_HASH_SIGNATURE_OUT' => SettingDb::getValue('postfinance_hash_signature_out'),
-// OBSOLETE
-//            'SHOP_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' =>
-//                Yellowpay::getKnownPaymentMethodCheckboxes(
-//                    SettingDb::getValue('postfinance_accepted_payment_methods')),
-            'SHOP_YELLOWPAY_AUTHORIZATION_TYPE_OPTIONS' =>
-                Yellowpay::getAuthorizationMenuoptions(
-                    SettingDb::getValue('postfinance_authorization_type')),
-            'SHOP_YELLOWPAY_USE_TESTSERVER_CHECKED' =>
-                (SettingDb::getValue('postfinance_use_testserver')
-                    ? HTML_ATTRIBUTE_CHECKED : ''),
-            // Added 20100222 -- Reto Kohli
-            'SHOP_POSTFINANCE_MOBILE_WEBUSER' => SettingDb::getValue('postfinance_mobile_webuser'),
-            'SHOP_POSTFINANCE_MOBILE_SIGN' => SettingDb::getValue('postfinance_mobile_sign'),
-            'SHOP_POSTFINANCE_MOBILE_IJUSTWANTTOTEST_CHECKED' =>
-                (SettingDb::getValue('postfinance_mobile_ijustwanttotest')
-                  ? HTML_ATTRIBUTE_CHECKED : ''),
-            'SHOP_POSTFINANCE_MOBILE_STATUS' =>
-                (SettingDb::getValue('postfinance_mobile_status')
-                  ? HTML_ATTRIBUTE_CHECKED : ''),
-            'SHOP_DATATRANS_AUTHORIZATION_TYPE_OPTIONS' => Datatrans::getReqtypeMenuoptions($datatrans_request_type),
-            'SHOP_DATATRANS_MERCHANT_ID' => $datatrans_merchant_id,
-            'SHOP_DATATRANS_STATUS' => ($datatrans_active ? HTML_ATTRIBUTE_CHECKED : ''),
-            'SHOP_DATATRANS_USE_TESTSERVER_YES_CHECKED' =>
-                ($datatrans_use_testserver ? ' checked="checked"' : ''),
-            'SHOP_DATATRANS_USE_TESTSERVER_NO_CHECKED' =>
-                ($datatrans_use_testserver ? '' : ' checked="checked"'),
-            // Not supported
-            //'SHOP_DATATRANS_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' => 0,
             'SHOP_CONFIRMATION_EMAILS' => SettingDb::getValue('email_confirmation'),
             'SHOP_CONTACT_EMAIL' => SettingDb::getValue('email'),
             'SHOP_CONTACT_COMPANY' => SettingDb::getValue('company'),
             'SHOP_CONTACT_ADDRESS' => SettingDb::getValue('address'),
             'SHOP_CONTACT_TEL' => SettingDb::getValue('telephone'),
             'SHOP_CONTACT_FAX' => SettingDb::getValue('fax'),
-            'SHOP_PAYPAL_EMAIL' => SettingDb::getValue('paypal_account_email'),
-            'SHOP_PAYPAL_STATUS' => $paypalStatus,
-            'SHOP_PAYPAL_DEFAULT_CURRENCY_MENUOPTIONS' => PayPal::getAcceptedCurrencyCodeMenuoptions(
-                SettingDb::getValue('paypal_default_currency')),
-            // LSV settings
-            'SHOP_PAYMENT_LSV_STATUS' => (SettingDb::getValue('payment_lsv_active') ? HTML_ATTRIBUTE_CHECKED : ''),
-            'SHOP_PAYMENT_DEFAULT_CURRENCY' => Currency::getDefaultCurrencySymbol(),
             // Country settings
             'SHOP_GENERAL_COUNTRY_MENUOPTIONS' => Country::getMenuoptions(
                 SettingDb::getValue('country_id'), false),

@@ -1105,6 +1105,7 @@ class Product
     {
         global $objDatabase;
 
+        if (!$id) return NULL;
         $arrSql = Text::getSqlSnippets(
             '`product`.`id`', FRONTEND_LANG_ID, 'shop',
             array(

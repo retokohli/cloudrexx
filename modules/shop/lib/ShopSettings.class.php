@@ -111,63 +111,6 @@ class ShopSettings
         SettingDb::set('fax',
             trim(strip_tags(contrexx_input2raw($_POST['fax']))));
         SettingDb::set('country_id', intval($_POST['country_id']));
-
-// OBSOLETE
-        // Postfinance (FKA yellowpay)
-//        $strYellowpayAcceptedPM = (!empty($_POST['postfinance_accepted_payment_methods'])
-//            ? addslashes(join(',', $_POST['postfinance_accepted_payment_methods']))
-//            : ''
-//        );
-        SettingDb::set('postfinance_shop_id',
-            trim(strip_tags(contrexx_input2raw($_POST['postfinance_shop_id']))));
-        SettingDb::set('postfinance_active', !empty($_POST['postfinance_active']));
-//        SettingDb::set('postfinance_hash_seed',
-//            trim(strip_tags(contrexx_input2raw($_POST['postfinance_hash_seed']);
-// Replaced by
-        SettingDb::set('postfinance_hash_signature_in',
-            trim(strip_tags(contrexx_input2raw($_POST['postfinance_hash_signature_in']))));
-        SettingDb::set('postfinance_hash_signature_out',
-            trim(strip_tags(contrexx_input2raw($_POST['postfinance_hash_signature_out']))));
-        SettingDb::set('postfinance_authorization_type',
-            trim(strip_tags(contrexx_input2raw($_POST['postfinance_authorization_type']))));
-// OBSOLETE
-//        SettingDb::set('postfinance_accepted_payment_methods', $strYellowpayAcceptedPM);
-        SettingDb::set('postfinance_use_testserver', !empty($_POST['postfinance_use_testserver']));
-
-        // Postfinance Mobile
-        SettingDb::set('postfinance_mobile_webuser',
-            trim(strip_tags(contrexx_input2raw($_POST['postfinance_mobile_webuser']))));
-        SettingDb::set('postfinance_mobile_sign',
-            trim(strip_tags(contrexx_input2raw($_POST['postfinance_mobile_sign']))));
-        SettingDb::set('postfinance_mobile_ijustwanttotest', !empty($_POST['postfinance_mobile_ijustwanttotest']));
-        SettingDb::set('postfinance_mobile_status', !empty($_POST['postfinance_mobile_status']));
-
-        // Saferpay
-        SettingDb::set('saferpay_id',
-            trim(strip_tags(contrexx_input2raw($_POST['saferpay_id']))));
-        SettingDb::set('saferpay_active', !empty($_POST['saferpay_active']));
-        SettingDb::set('saferpay_finalize_payment', !empty($_POST['saferpay_finalize_payment']));
-        SettingDb::set('saferpay_use_test_account', !empty($_POST['saferpay_use_test_account']));
-        SettingDb::set('saferpay_window_option', intval($_POST['saferpay_window_option']));
-
-        // Paypal
-        SettingDb::set('paypal_account_email',
-            trim(strip_tags(contrexx_input2raw($_POST['paypal_account_email']))));
-        SettingDb::set('paypal_active', !empty($_POST['paypal_active']));
-        SettingDb::set('paypal_default_currency',
-            trim(strip_tags(contrexx_input2raw($_POST['paypal_default_currency']))));
-
-        // Datatrans
-        SettingDb::set('datatrans_merchant_id',
-            trim(strip_tags(contrexx_input2raw($_POST['datatrans_merchant_id']))));
-        SettingDb::set('datatrans_active', !empty($_POST['datatrans_active']));
-        SettingDb::set('datatrans_request_type',
-            trim(strip_tags(contrexx_input2raw($_POST['datatrans_request_type']))));
-        SettingDb::set('datatrans_use_testserver', !empty($_POST['datatrans_use_testserver']));
-
-        // LSV
-        SettingDb::set('payment_lsv_active', !empty($_POST['payment_lsv_active']));
-
         // Thumbnail settings
         SettingDb::set('thumbnail_max_width', intval($_POST['thumbnail_max_width']));
         SettingDb::set('thumbnail_max_height', intval($_POST['thumbnail_max_height']));
@@ -254,7 +197,11 @@ class ShopSettings
      */
     static function storePayments()
     {
-        $result = Payment::delete();
+        $result = NULL;
+        if (isset ($_GET['delete_payment'])) {
+            $payment_id = intval($_GET['delete_payment']);
+            $result = Payment::delete($payment_id);
+        }
         if (isset($result)) {
             self::$changed = true;
             self::$success &= $result;
@@ -273,6 +220,70 @@ class ShopSettings
         }
 //DBG::log("after Payment::update: ".self::$success.", changed: ".self::$changed);
         Payment::reset();
+        if (empty ($_POST['bpayment'])) return;
+/*
+// OBSOLETE
+        // Postfinance (FKA yellowpay)
+//        $strYellowpayAcceptedPM = (!empty($_POST['postfinance_accepted_payment_methods'])
+//            ? addslashes(join(',', $_POST['postfinance_accepted_payment_methods']))
+//            : ''
+//        );
+*/
+// TODO: All the following should be handled by Payment::settings()
+        SettingDb::set('postfinance_shop_id',
+            trim(strip_tags(contrexx_input2raw($_POST['postfinance_shop_id']))));
+        SettingDb::set('postfinance_active',
+            !empty($_POST['postfinance_active']));
+//        SettingDb::set('postfinance_hash_seed',
+//            trim(strip_tags(contrexx_input2raw($_POST['postfinance_hash_seed']);
+// Replaced by
+        SettingDb::set('postfinance_hash_signature_in',
+            trim(strip_tags(contrexx_input2raw($_POST['postfinance_hash_signature_in']))));
+        SettingDb::set('postfinance_hash_signature_out',
+            trim(strip_tags(contrexx_input2raw($_POST['postfinance_hash_signature_out']))));
+        SettingDb::set('postfinance_authorization_type',
+            trim(strip_tags(contrexx_input2raw($_POST['postfinance_authorization_type']))));
+// OBSOLETE -- Determined by the available cards and the PostFinance
+// backend settings
+//        SettingDb::set('postfinance_accepted_payment_methods', $strYellowpayAcceptedPM);
+        SettingDb::set('postfinance_use_testserver',
+            !empty($_POST['postfinance_use_testserver']));
+        // Postfinance Mobile
+        SettingDb::set('postfinance_mobile_webuser',
+            trim(strip_tags(contrexx_input2raw($_POST['postfinance_mobile_webuser']))));
+        SettingDb::set('postfinance_mobile_sign',
+            trim(strip_tags(contrexx_input2raw($_POST['postfinance_mobile_sign']))));
+        SettingDb::set('postfinance_mobile_ijustwanttotest',
+            !empty($_POST['postfinance_mobile_ijustwanttotest']));
+        SettingDb::set('postfinance_mobile_status',
+            !empty($_POST['postfinance_mobile_status']));
+        // Saferpay
+        SettingDb::set('saferpay_id',
+            trim(strip_tags(contrexx_input2raw($_POST['saferpay_id']))));
+        SettingDb::set('saferpay_active',
+            !empty($_POST['saferpay_active']));
+        SettingDb::set('saferpay_finalize_payment',
+            !empty($_POST['saferpay_finalize_payment']));
+        SettingDb::set('saferpay_use_test_account',
+            !empty($_POST['saferpay_use_test_account']));
+        SettingDb::set('saferpay_window_option',
+            intval($_POST['saferpay_window_option']));
+        // Paypal
+        SettingDb::set('paypal_account_email',
+            trim(strip_tags(contrexx_input2raw($_POST['paypal_account_email']))));
+        SettingDb::set('paypal_active', !empty($_POST['paypal_active']));
+        SettingDb::set('paypal_default_currency',
+            trim(strip_tags(contrexx_input2raw($_POST['paypal_default_currency']))));
+        // Datatrans
+        SettingDb::set('datatrans_merchant_id',
+            trim(strip_tags(contrexx_input2raw($_POST['datatrans_merchant_id']))));
+        SettingDb::set('datatrans_active', !empty($_POST['datatrans_active']));
+        SettingDb::set('datatrans_request_type',
+            trim(strip_tags(contrexx_input2raw($_POST['datatrans_request_type']))));
+        SettingDb::set('datatrans_use_testserver', !empty($_POST['datatrans_use_testserver']));
+        // LSV
+        SettingDb::set('payment_lsv_active', !empty($_POST['payment_lsv_active']));
+// All preceding should be handled by Payment::settings()
     }
 
 
