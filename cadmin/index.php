@@ -25,15 +25,14 @@
  * will either activate or deactivate all levels.
  */
 include_once '../lib/DBG.php';
-DBG::deactivate();
 $startTime = explode(' ', microtime());
-//DBG::activate(DBG_PHP);
+//DBG::activate(DBG_ERROR_FIREPHP);
 //enable gzip compressing of the output - up to 75% smaller responses!
 //commented out with java uploader l10n using pear http_download
 //ob_start("ob_gzhandler");
 
 $adminPage = true;
-$_CONFIG = null;
+$_CONFIG = $_FTPCONFIG = $loggableListener = NULL;
 /**
  * Environment repository
  */
@@ -219,6 +218,7 @@ Env::set('lang', $_ARRAYLANG);
 CSRF::add_code();
 
 // Site start
+$objTemplate = NULL;
 if ($isRegularPageRequest) {
     $objTemplate = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
     // TODO: Does CSRF::add_placeholder() really work before a template is loaded?
@@ -231,19 +231,19 @@ if ($isRegularPageRequest) {
     JS::activate('backend');
     JS::activate('tipmessage');
     JS::activate('chosen');
-    
+
     // No longer needed in v3.0
     /*if (Permission::checkAccess(35, 'static', true)) {
         $objTemplate->addBlockfile('QUICKLINKS_CONTENT', 'quicklinks', 'quicklinks.html');
     }*/
-    
+
     $objTemplate->setVariable(array(
         'TXT_PAGE_ID'      => $_CORELANG['TXT_PAGE_ID'],
         'CONTREXX_CHARSET' => CONTREXX_CHARSET,
         'CONTAINER_CLASS'  => empty($plainCmd) ? 'backend dashboard' : 'backend',
         'USER_ID'          => $objFWUser->objUser->getId(),
     ));
-    
+
     // Skip the nav/language bar for modules which don't make use of either.
     // TODO: Remove language selector for modules which require navigation but bring their own language management.
     $skipMaster = array('content');
@@ -261,13 +261,14 @@ if ($isRegularPageRequest) {
 // fileBrowser is an exception, as it eats CSRF codes like
 // candy. We're doing CSRF::check_code() in the relevant
 // parts in the module instead.
-// The CSRF code needn't to be checked in the login module 
-// because the user isn't logged in at this point. 
+// The CSRF code needn't to be checked in the login module
+// because the user isn't logged in at this point.
 // TODO: Why is upload excluded? The CSRF check doesn't take place in the upload module!
 if (!empty($plainCmd) and !in_array($plainCmd, array('fileBrowser', 'upload', 'login'))) {
     CSRF::check_code();
 }
 
+$subMenuTitle = NULL;
 switch ($plainCmd) {
     case 'login':
         if ($objFWUser->objUser->login(true)) {
@@ -377,6 +378,7 @@ switch ($plainCmd) {
 // TODO: This probably doesn't handle an error message very well?
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $json = new \Cx\Core\Json\JsonData();
+// TODO: Verify that the arguments are actually present!
         $adapter = contrexx_input2raw($_GET['object']);
         $method = contrexx_input2raw($_GET['act']);
 // TODO: Replace arguments by something reasonable
