@@ -106,27 +106,25 @@ class JsonPage implements JsonAdapter {
         }
 
         if (isset($page)) {
-            // All is well, continue
+            // load an older revision if asked to do so:
+            if (isset($params['get']['history'])) {
+                $this->logRepo->revert($page, $params['get']['history']);
+            }
+            // load the draft revision if one is available and we're not loading historic data:
+            else if ($page->getEditingStatus() == 'hasDraft' || $page->getEditingStatus() == 'hasDraftWaiting') {
+                $this->logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
+    
+                $availableRevisions = $this->logRepo->getLogEntries($page);
+                $this->logRepo->revert($page, $availableRevisions[1]->getVersion());
+            }
+            
+            $pageArray = $this->getPageArray($page);
         } else if (!empty($params['get']['node']) && !empty($params['get']['lang'])) {
             $node = $this->nodeRepo->find($params['get']['node']);
             $pageArray = $this->getFallbackPageArray($node, $params['get']['lang']);
         } else {
             throw new Exception('cannot find that page');
         }
-
-        // load an older revision if asked to do so:
-        if (isset($params['get']) && isset($params['get']['history'])) {
-            $this->logRepo->revert($page, $params['get']['history']);
-        }
-        // load the draft revision if one is available and we're not loading historic data:
-        elseif ($page->getEditingStatus() == 'hasDraft' || $page->getEditingStatus() == 'hasDraftWaiting') {
-            $this->logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
-
-            $availableRevisions = $this->logRepo->getLogEntries($page);
-            $this->logRepo->revert($page, $availableRevisions[1]->getVersion());
-        }
-
-        $pageArray = $this->getPageArray($page);
 
         return $pageArray;
     }
@@ -421,7 +419,7 @@ class JsonPage implements JsonAdapter {
                 if (!empty($page)) {
                     $page->setActive(true);
                 } else {
-                    $langId = \FWLanguage::getLanguageIdByCode($params['get']['lang']);
+                    $langId = $params['get']['lang'];
                     $arrFbLang = \FWLanguage::getFallbackLanguageArray();
                     $fbLang = isset($arrFbLang[$langId]) ? $arrFbLang[$langId] : 0;
                     if (!empty($fbLang) && $fbLang != $langId) {
@@ -440,6 +438,11 @@ class JsonPage implements JsonAdapter {
                             $page->setMetadesc($fbPage->getMetadesc());
                             $page->setMetakeys($fbPage->getMetakeys());
                             $page->setMetarobots($page->getMetarobots());
+                        } else {
+                            return array(
+                                'nodeId' => $params['get']['node'],
+                                'action' => 'new',
+                            );
                         }
                     }
                 }

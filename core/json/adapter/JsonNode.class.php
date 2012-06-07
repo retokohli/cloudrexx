@@ -239,9 +239,6 @@ class JsonNode implements JsonAdapter {
                         ),
                     ),
                 );
-                
-                $actions[\FWLanguage::getLanguageCodeById($page->getLang())][$node->getId()]
-                        = $this->getActions($node->getId(), $page->getLang());
 
                 $editingStatus = $page->getEditingStatus();
                 if ($page->isActive()) {
@@ -295,9 +292,7 @@ class JsonNode implements JsonAdapter {
                     );
                 }
                 
-                if (!array_key_exists($lang, $data) || (!array_key_exists($lang, $data) && array_key_exists($fallback, $data))) {
-                    $actions[$lang][$node->getId()] = $this->getActions($node->getId(), $lang);
-                }
+                $actions[$lang][$node->getId()] = $this->getActions($node->getId(), \FWLanguage::getLanguageIdByCode($lang));
             }
             
             $state = array();
