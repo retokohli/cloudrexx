@@ -1,0 +1,77 @@
+[[SHOP_JAVASCRIPT_CODE]]
+<div id="shop">
+    <div class="menu">[[SHOP_MENU]]</div>
+    <!-- <div class="cart_info">[[SHOP_CART_INFO]]</div> -->
+
+    <h2>Categories</h2>
+    <!-- BEGIN subCategoriesRow -->
+    <div class="categories">
+        <!-- BEGIN subCategories -->
+        <div class="category">
+            <h3>[[SHOP_PRODUCT_TITLE]]</h3>
+            <a href="[[SHOP_PRODUCT_DETAILLINK_IMAGE]]">
+            <img border="0" alt="[[TXT_SEE_LARGE_PICTURE]]" src="[[SHOP_PRODUCT_THUMBNAIL]]" />
+            </a>
+        </div>
+        <!-- END subCategories -->
+    </div>
+    <!-- END subCategoriesRow -->
+
+    <div class="informations"><h2>[[TXT_PRODUCTS_IN_CATEGORY]]&nbsp;[[SHOP_CATEGORY_NAME]]&nbsp;</h2></div>
+
+    <!-- BEGIN shopProductRow -->
+    <div class="product [[SHOP_ROWCLASS]]">
+        <form id="[[SHOP_PRODUCT_FORM_NAME]]" name="[[SHOP_PRODUCT_FORM_NAME]]" action="index.php?section=shop&amp;cmd=cart" method="post">
+            <input type="hidden" name="productId" value="[[SHOP_PRODUCT_ID]]" />
+
+            <div class="images">
+                <!-- BEGIN productImage1 -->
+                <a href="[[SHOP_PRODUCT_THUMBNAIL_LINK_1]]"><img border="0" src="[[SHOP_PRODUCT_THUMBNAIL_1]]" alt="[[TXT_SEE_LARGE_PICTURE]]" /></a><br />
+                <!-- END productImage1 -->
+                <!-- BEGIN productImage2 -->
+                <a href="[[SHOP_PRODUCT_THUMBNAIL_LINK_2]]"><img border="0" src="[[SHOP_PRODUCT_THUMBNAIL_2]]" alt="[[TXT_SEE_LARGE_PICTURE]]" /></a><br />
+                <!-- END productImage2 -->
+                <!-- BEGIN productImage3 -->
+                <a href="[[SHOP_PRODUCT_THUMBNAIL_LINK_3]]"><img border="0" src="[[SHOP_PRODUCT_THUMBNAIL_3]]" alt="[[TXT_SEE_LARGE_PICTURE]]" /></a><br />
+                <!-- END productImage3 -->
+            </div>
+            <div class="description">
+                <h2>[[SHOP_PRODUCT_TITLE]]</h2>
+                [[SHOP_PRODUCT_DESCRIPTION]]<br /><br />
+                <div class="detail_link">[[SHOP_PRODUCT_DETAILLINK]]</div>
+
+                <!-- BEGIN shopProductOptionsRow -->
+                <div class="shop_options">
+                    [[SHOP_PRODUCT_OPTIONS_TITLE]]<br />
+                    <div id="product_options_layer[[SHOP_PRODUCT_ID]]" style="display: none;">
+                        <div class="shop_options_click">
+                            <br />
+                            <!-- BEGIN shopProductOptionsValuesRow -->
+                            <strong>[[SHOP_PRODUCT_OPTIONS_NAME]]:</strong><br />[[SHOP_PRODUCT_OPTION]]<br />
+                            <!-- END shopProductOptionsValuesRow -->
+                        </div>
+                    </div>
+                </div>
+                <!-- END shopProductOptionsRow -->
+                <br />
+
+                <!-- BEGIN shopProductWeight -->
+                <div>[[TXT_SHOP_PRODUCT_WEIGHT]] [[SHOP_PRODUCT_WEIGHT]]</div>
+                <!-- END shopProductWeight -->
+
+                <!-- BEGIN shopProductExternal -->
+                <div>[[SHOP_EXTERNAL_LINK]]</div>
+                <!-- END shopProductExternal -->
+            </div>
+            <br />
+            <div class="price">
+                <font style="font-size: 16px;"><strong>Price&nbsp;&nbsp;[[SHOP_PRODUCT_PRICE]] [[SHOP_PRODUCT_PRICE_UNIT]]&nbsp;&nbsp;<br /><font style="color:#ff0000;">[[SHOP_PRODUCT_DISCOUNTPRICE]] [[SHOP_PRODUCT_DISCOUNTPRICE_UNIT]]&nbsp;&nbsp;</font></font></strong>
+            </div>
+            <div class="functions">
+                <input type="submit" onclick="[[SHOP_PRODUCT_SUBMIT_FUNCTION]]" name="[[SHOP_PRODUCT_SUBMIT_NAME]]" value="[[TXT_ADD_TO_CARD]]" />
+            </div>
+        </form>
+    </div>
+    <!-- END shopProductRow -->
+    <div class="paging">[[SHOP_PRODUCT_PAGING]]</div>
+</div>

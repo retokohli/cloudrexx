@@ -1,0 +1,69 @@
+<div id="shop">
+  <div class="message_error">[[SHOP_ACCOUNT_STATUS]]</div>
+  <form action="index.php?section=shop&amp;cmd=payment" name="shopForm" method="post">
+    <div class="payment">
+      <table summary="" cellspacing="0" width="100%">
+        <tr>
+          <th colspan="3" align="left">[[TXT_PRODUCTS]]</th>
+        </tr>
+        <tr class="row1">
+          <td width="40%"><strong>[[TXT_TOTALLY_GOODS]]</strong>&nbsp;[[SHOP_TAX_PRODUCTS_TXT]]</td>
+          <td width="40%">[[SHOP_TOTALITEM]]&nbsp;[[TXT_PRODUCT_S]]</td>
+          <td width="20%" align="right"><strong>[[SHOP_TOTALPRICE]]&nbsp;[[SHOP_UNIT]]</strong></td>
+        </tr>
+        <!-- BEGIN shopShipment -->
+        <tr class="row2">
+          <td>
+            <strong>[[TXT_SHIPPING_METHODS]]</strong>
+            <!-- BEGIN shopWeight -->
+            &nbsp;([[TXT_TOTAL_WEIGHT]]&nbsp;[[SHOP_TOTAL_WEIGHT]])
+            <!-- END shopWeight -->
+          </td>
+          <td>[[SHOP_SHIPMENT_MENU]]&nbsp;[[TXT_SHIPPER_NO_GOOD]]</td>
+          <td align="right">[[SHOP_SHIPMENT_PRICE]]&nbsp;[[SHOP_UNIT]]</td>
+        </tr>
+        <!-- END shopShipment -->
+        <!-- BEGIN shopPayment -->
+        <tr class="row1">
+          <td><strong>[[TXT_PAYMENT_TYPES]]</strong></td>
+          <td>[[SHOP_PAYMENT_MENU]]</td>
+          <td align="right">[[SHOP_PAYMENT_PRICE]]&nbsp;[[SHOP_UNIT]]</td>
+        </tr>
+        <!-- END shopPayment -->
+        <!-- BEGIN shopTax -->
+        <tr class="row2">
+          <td colspan="2"><strong>[[TXT_TAX_PREFIX]]</strong></td>
+          <td align="right">[[SHOP_TAX_PRICE]]</strong></td>
+        </tr>
+        <!-- END shopTax -->
+        <!-- BEGIN lsv -->
+          <tr class="row1">
+            <td><strong>[[TXT_PAYMENT_LSV]]</strong></td>
+            <td colspan="2">
+              <p><label>[[TXT_ACCOUNT_HOLDER]]</label><input type="text" value="[[SHOP_ACCOUNT_HOLDER]]" name="account_holder" /></p>
+              <p><label>[[TXT_ACCOUNT_BANK]]</label><input type="text" value="[[SHOP_ACCOUNT_BANK]]" name="account_bank" /></p>
+              <p><label>[[TXT_ACCOUNT_BLZ]]</label><input type="text" value="[[SHOP_ACCOUNT_BLZ]]" name="account_blz" /></p>
+            </td>
+          </tr>
+        <!-- END lsv -->
+        <tr class="row3">
+          <td colspan="2"><strong>[[TXT_TOTAL_PRICE]]</strong>&nbsp;[[SHOP_TAX_GRAND_TXT]]</td>
+          <td align="right"><strong>[[SHOP_GRAND_TOTAL]] [[SHOP_UNIT]]</strong></td>
+        </tr>
+        <tr class="row1">
+          <td colspan="3">&nbsp;</td>
+        </tr>
+        <tr class="row1">
+          <td valign="top">[[TXT_COMMENTS]]</td>
+          <td colspan="2"><textarea name="customer_note" rows="4" cols="52">[[SHOP_CUSTOMERNOTE]]</textarea></td>
+        </tr>
+      </table>
+    </div>
+    <br />
+    <div class="message">
+      <p><input type="checkbox" value="checked" name="agb" [[SHOP_AGB]] />
+        <label class="description">[[TXT_ACCEPT_TAC]]</label></p>
+      <p><input type="submit" value="[[TXT_UPDATE]]" name="refresh" />&nbsp;<input type="submit" value="[[TXT_NEXT]]" name="check" /></p>
+    </div>
+  </form>
+</div>

@@ -18,7 +18,9 @@
         </tr><!-- BEGIN shopCartRow -->
         <tr class="row2">
           <td nowrap="nowrap">{SHOP_PRODUCT_ID}</td>
-          <td>{SHOP_PRODUCT_TITLE}</td>
+          <td>{SHOP_PRODUCT_TITLE}<!-- BEGIN attributes -->
+            <br />{SHOP_PRODUCT_OPTIONS}<!-- END attributes -->
+          </td>
           <td nowrap="nowrap" class="a_right">{SHOP_PRODUCT_ITEMPRICE} {SHOP_UNIT}</td>
           <td nowrap="nowrap" class="a_right">{SHOP_PRODUCT_QUANTITY}</td>
           <td nowrap="nowrap" class="a_right">{SHOP_PRODUCT_WEIGHT}</td>
