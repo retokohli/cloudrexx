@@ -295,7 +295,9 @@ class JsonNode implements JsonAdapter {
                     );
                 }
                 
-                $actions[$lang][$node->getId()] = $this->getActions($node->getId(), $lang);
+                if (!array_key_exists($lang, $data) || (!array_key_exists($lang, $data) && array_key_exists($fallback, $data))) {
+                    $actions[$lang][$node->getId()] = $this->getActions($node->getId(), $lang);
+                }
             }
             
             $state = array();
