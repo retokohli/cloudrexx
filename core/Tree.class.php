@@ -132,7 +132,7 @@ class ContentTree
 			}
 		}
         */
-        $this->srcTree = $this->em->getRepository('Cx\Model\ContentManager\Page')->getTreeByTitle(null, $langId);
+        $this->srcTree = $this->em->getRepository('Cx\Model\ContentManager\Page')->getTreeBySlug(null, $langId);
 		// $parcat is the starting parent id
 		$this->buildTree($this->srcTree);
     }

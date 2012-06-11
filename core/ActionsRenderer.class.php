@@ -16,19 +16,23 @@ class ActionsRenderer
         $actions = array();
 
         if ($page->isActive()) {
-            $actions[] = sprintf(self::$actionItem, ' deactivate', "index.php?cmd=jsondata&object=page&act=setPageStatus&action=unpublish&page={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_UNPUBLISH']);
+            if ($page->getEditingStatus() == 'hasDraft' || $page->getEditingStatus() == 'hasDraftWaiting') {
+                $actions[] = sprintf(self::$actionItem, ' publish', "index.php?cmd=jsondata&object=page&act=set&action=publish&pageId={$page->getId()}", $_ARRAYLANG['TXT_CORE_PUBLISH_DRAFT']);
+            } else {
+                $actions[] = sprintf(self::$actionItem, ' deactivate', "index.php?cmd=jsondata&object=page&act=set&action=deactivate&pageId={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_UNPUBLISH']);
+            }
         } else {
-            $actions[] = sprintf(self::$actionItem, ' activate', "index.php?cmd=jsondata&object=page&act=setPageStatus&action=publish&page={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_PUBLISH']);
+            if ($page->getEditingStatus() == 'hasDraft' || $page->getEditingStatus() == 'hasDraftWaiting') {
+                $actions[] = sprintf(self::$actionItem, ' publish', "index.php?cmd=jsondata&object=page&act=set&action=publish&pageId={$page->getId()}", $_ARRAYLANG['TXT_CORE_PUBLISH_DRAFT']);
+            } else {
+                $actions[] = sprintf(self::$actionItem, ' activate', "index.php?cmd=jsondata&object=page&act=set&action=activate&pageId={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_PUBLISH']);
+            }
         }
 
         if ($page->isVisible()) {
-            $actions[] = sprintf(self::$actionItem, ' hide', "index.php?cmd=jsondata&object=page&act=setPageStatus&action=hidden&page={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_HIDE']);
+            $actions[] = sprintf(self::$actionItem, ' hide', "index.php?cmd=jsondata&object=page&act=set&action=hide&pageId={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_HIDE']);
         } else {
-            $actions[] = sprintf(self::$actionItem, ' show', "index.php?cmd=jsondata&object=page&act=setPageStatus&action=visible&page={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_SHOW']);
-        }
-
-        if ($page->getEditingStatus() == 'hasDraftWaiting') {
-            $actions[] = sprintf(self::$actionItem, ' publish', "index.php?cmd=content&act=publishDraft&page={$page->getId()}", $_ARRAYLANG['TXT_CORE_PUBLISH_DRAFT']);
+            $actions[] = sprintf(self::$actionItem, ' show', "index.php?cmd=jsondata&object=page&act=set&action=show&pageId={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_SHOW']);
         }
 
         $actions[] = sprintf(self::$actionItem, ' delete', "index.php?cmd=jsondata&object=node&act=delete&id={$page->getNode()->getId()}", $_ARRAYLANG['TXT_CORE_CM_DELETE']);
@@ -41,7 +45,7 @@ class ActionsRenderer
         global $_ARRAYLANG;
         
         $actions = array();
-        $actions[] = sprintf(self::$actionItem, ' activate', "index.php?cmd=jsondata&object=page&act=setPageStatus&action=publish&node=$nodeId&lang=$langId", $_ARRAYLANG['TXT_CORE_CM_PUBLISH']);
+        $actions[] = sprintf(self::$actionItem, ' activate', "index.php?cmd=jsondata&object=page&act=set&action=publish&nodeId={$nodeId}&lang={$langId}", $_ARRAYLANG['TXT_CORE_CM_PUBLISH']);
         $actions[] = sprintf(self::$actionItem, ' delete', "index.php?cmd=jsondata&object=node&act=delete&id={$nodeId}", $_ARRAYLANG['TXT_CORE_CM_DELETE']);
 
         return self::$header.implode("\n",$actions).self::$footer;

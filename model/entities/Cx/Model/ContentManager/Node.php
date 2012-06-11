@@ -291,7 +291,8 @@ class Node extends \Cx\Model\Base\EntityBase
             if ($this->getPage($defaultLang)) {
                 $pageToTranslate = $this->getPage($defaultLang);
             } else {
-                $pageToTranslate = current($this->getPages());
+                $pages = $this->getPages();
+                $pageToTranslate = $pages[0];
             }
             if (!$fallback_language) {
                 $type = \Cx\Model\ContentManager\Page::TYPE_CONTENT;

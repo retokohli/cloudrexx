@@ -1440,10 +1440,10 @@ class Page extends \Cx\Model\Base\EntityBase
      * @return type 
      */
     public function setupPath($targetLang) {
-        $node = $this->getNode()->getParent();
-        
+        $node  = $this->getNode()->getParent();
         $pages = $node->getPagesByLang();
-        if (!isset($pages[$targetLang])) {
+        
+        if (!empty($pages) && !isset($pages[$targetLang])) {
             $page = $pages[$this->getLang()]->translate($targetLang);
             $page->setDisplay(false);
             \Env::em()->persist($page);

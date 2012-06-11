@@ -292,7 +292,7 @@ class JsonNode implements JsonAdapter {
                     );
                 }
                 
-                $actions[$lang][$node->getId()] = $this->getActions($node->getId(), \FWLanguage::getLanguageIdByCode($lang));
+                $actions[$lang][$node->getId()] = $this->getActions($node->getId(), $lang);
             }
             
             $state = array();
@@ -317,15 +317,15 @@ class JsonNode implements JsonAdapter {
         return($output);
     }
     
-    protected function getActions($nodeId, $langId) {
+    protected function getActions($nodeId, $lang) {
         require_once ASCMS_CORE_PATH . "/ActionsRenderer.class.php";
 
         $node = $this->nodeRepo->find($nodeId);
-        $page = $node->getPage($langId);
+        $page = $node->getPage(\FWLanguage::getLanguageIdByCode($lang));
         if ($page != null) {
             return \ActionsRenderer::render($page);
         } else {
-            return \ActionsRenderer::renderNew($nodeId, $langId);
+            return \ActionsRenderer::renderNew($nodeId, $lang);
         }
     }
 }
