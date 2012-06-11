@@ -1,3 +1,4 @@
+         <div id="sidebar_toggle" class="{SIDEBAR_CLASS_NAME}"></div>
          <ul id="cm-tabs" class="clearfix">
             <li><a href="#page_content" class="tab page_content">{TXT_CORE_CM_PAGE}</a></li>
             <li><a href="#page_meta" class="tab page_meta type_hidable type_content type_application type_fallback">{TXT_CORE_CM_META}</a></li>
@@ -12,8 +13,8 @@
             <input type="hidden" name="page[node]" id="pageNode" value="" />
             <input type="hidden" name="source_page" id="sourcePage" value="" />
 
-            <a id="toggle_titles" class="toggle"><label for="page_name">{TXT_CORE_CM_PAGE_NAME}</label></a>
-            <div id="titles" class="special_form_style" style="{TITLES_DISPLAY_STYLE}">
+            <div id="titles_toggle" class="toggle {TITLES_TOGGLE_CLASS}"><div class="indicator"></div><label>{TXT_CORE_CM_PAGE_NAME}</label></div>
+            <div id="titles_container" class="container special_form_style" style="{TITLES_DISPLAY_STYLE}">
                 <label for="page_name">{TXT_CORE_CM_PAGE_NAME}</label>
                 <input type="text"  name="page[name]" id="page_name" />
                 <span class="tipmessage info input" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])"></span>
@@ -38,9 +39,13 @@
                     <span class="tipmessage info label hidable_nofallback" onmouseout="htm()" onmouseover="stm(Text[5],Style[0])"></span>
                 </div>
             </div>
-            <a id="toggle_type" class="toggle">{TXT_CORE_CM_TYPE}</a>
-            <div id="type" style="{TYPE_DISPLAY_STYLE}">
+            <div id="type_toggle" class="toggle {TYPE_TOGGLE_CLASS}"><div class="indicator"></div><label>{TXT_CORE_CM_TYPE}</label></div>
+            <div id="type_container" class="container" style="{TYPE_DISPLAY_STYLE}">
                 <div class="special_form_style">
+                    <label for="page_redirect" class="type_redirect type_hidable">{TXT_CORE_CM_TYPE_REDIRECT_TARGET}</label>
+                    <input type="text" class="type_redirect type_hidable" name="page[target]" id="page_target" />
+                    <button id="targetBrowseButton" class="type_redirect type_hidable">{TXT_CORE_CM_BROWSE}</button>
+
                     <label for="page_application" class="type_application type_hidable">{TXT_CORE_CM_TYPE_APPLICATION}</label>
                     <label for="page_application_area" class="type_application type_hidable">{TXT_CORE_CM_TYPE_APPLICATION_AREA}</label>
                     <select name="page[application]" class="type_application type_hidable" id="page_application">
@@ -49,10 +54,6 @@
                         <!-- END module_option -->
                     </select>
                     <input type="text" name="page[area]" class="type_application type_hidable" id="page_application_area" />
-
-                    <label for="page_redirect" class="type_redirect type_hidable">{TXT_CORE_CM_TYPE_REDIRECT_TARGET}</label>
-                    <input type="text" class="type_redirect type_hidable" name="page[target]" id="page_target" />
-                    <button id="targetBrowseButton" class="type_redirect type_hidable">{TXT_CORE_CM_BROWSE}</button>
                 </div>
 
                 <div id="ckeditor" class="type_application type_content type_hidable">
@@ -62,8 +63,11 @@
         </div>
         <div id="page_meta" style="display: none;">
             <input type="hidden" name="page[metarobots]" value="off" />
-            <a class="toggle_checkbox" id="page[metarobots]">{TXT_CORE_CM_SE_INDEX}</a>
-            <div id="metadata" class="special_form_style" style="display: none;">
+            <div id="metarobots_checkbox" class="checkbox">
+                <input type="checkbox" class="indicator" id="page_metarobots" name="page[metarobots]" />
+                <label>{TXT_CORE_CM_SE_INDEX}</label>
+            </div>
+            <div id="metarobots_container" class="container special_form_style" style="display: none;">
                 <label for="page_metatitle">{TXT_CORE_CM_METATITLE}</label>
                 <input type="text" name="page[metatitle]" />
                 <span class="tipmessage info input" onmouseout="htm()" onmouseover="stm(Text[6],Style[0])"></span>
@@ -79,27 +83,24 @@
         </div>
         <div id="page_access" style="display: none;">
             <input type="hidden" name="page[protection_frontend]" value="off" />
-            <span class="toggle_indicator_style_fix">
-                <input type="checkbox" class="toggle_indicator" id="checkbox_page[protection_frontend]" name="page[protection_frontend]" />
-            </span>
-            <a class="checkbox_style" id="page[protection_frontend]">
-                <label for="checkbox_page[protection_frontend]">{TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND}</label>
-            </a>
-            <div id="access_protection_backend">
-                <select style="width: 300px; height: 250px" id="frontendAccessGroups" class="multiselect" multiple="multiple" name="frontendGroups[]">
+            <div id="protection_frontend_checkbox" class="checkbox no_toggle">
+                <input type="checkbox" class="indicator" id="page_protection_frontend" name="page[protection_frontend]" />
+                <label>{TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND}</label>
+            </div>
+            <div id="protection_frontend_container" class="container">
+                <select id="frontendAccessGroups" class="multiselect" multiple="multiple" name="frontendGroups[]">
                   <option value="test">unselected</option>
                   <option value="test2" selected="selected">selected</option>
                 </select>
             </div>
+
             <input type="hidden" name="page[protection_backend]" value="off" />
-            <span class="toggle_indicator_style_fix">
-                <input type="checkbox" class="toggle_indicator" id="checkbox_page[protection_backend]" name="page[protection_backend]" />
-            </span>
-            <a class="checkbox_style" id="page[protection_backend]">
-                <label for="checkbox_page[protection_backend]">{TXT_CORE_CM_ACCESS_PROTECTION_BACKEND}</label>
-            </a>
-            <div id="access_protection_backend">
-                <select style="width: 300px; height: 250px" id="backendAccessGroups" class="multiselect" multiple="multiple" name="backendGroups[]">
+            <div id="protection_backend_checkbox" class="checkbox no_toggle">
+                <input type="checkbox" class="indicator" id="page_protection_backend" name="page[protection_backend]" />
+                <label>{TXT_CORE_CM_ACCESS_PROTECTION_BACKEND}</label>
+            </div>
+            <div id="protection_backend_container" class="container">
+                <select id="backendAccessGroups" class="multiselect" multiple="multiple" name="backendGroups[]">
                   <option value="test">unselected</option>
                   <option value="test2" selected="selected">selected</option>
                 </select>
@@ -107,14 +108,17 @@
         </div>
         <div id="page_settings" style="display: none;">
             <input type="hidden" name="page[scheduled_publishing]" value="off" />
-            <a class="toggle_checkbox" id="page[scheduled_publishing]">{TXT_CORE_CM_SCHEDULED_PUBLISHING}</a>
-            <div id="scheduled_publishing" style="display: none;">
-                Von: <input type="text" name="page[start]" value="" class="date" />
-                Bis: <input type="text" name="page[end]" value="" class="date" />
+            <div id="scheduled_publishing_checkbox" class="checkbox">
+                <input type="checkbox" class="indicator" id="page_scheduled_publishing" name="page[scheduled_publishing]" />
+                <label>{TXT_CORE_CM_SCHEDULED_PUBLISHING}</label>
+            </div>
+            <div id="scheduled_publishing_container" class="container" style="display: none;">
+                <label for="page_start">Von:</label><input type="text" name="page[start]" id="page_start" value="" class="date" />
+                <label for="page_end">Bis:</label><input type="text" name="page[end]" id="page_end" value="" class="date" />
             </div>
 
-            <a href="#" class="toggle">{TXT_CORE_CM_THEMES}</a>
-            <div id="themes" class="special_form_style" style="{THEMES_DISPLAY_STYLE}">
+            <div id="themes_toggle" class="toggle {THEMES_TOGGLE_CLASS}"><div class="indicator"></div><label>{TXT_CORE_CM_THEMES}</label></div>
+            <div id="themes_container" class="container special_form_style" style="{THEMES_DISPLAY_STYLE}">
                 <label for="page_skin">{TXT_CORE_CM_THEMES}</label>
                 <select id="page_skin" name="page[skin]">
                     <option value="">(Default)</option>
@@ -130,11 +134,15 @@
                 <input type="text" name="page[cssName]" id="page_css_class" />
                 <span class="tipmessage info input" onmouseout="htm()" onmouseover="stm(Text[11],Style[0])"></span>
             </div>
+
             <input type="hidden" name="page[caching]" value="off" />
-            <a class="toggle_checkbox" id="page[caching]">{TXT_CORE_CM_CACHE}</a>
-            <div></div>
-            <a href="#" class="toggle">{TXT_CORE_CM_NAVIGATION}</a>
-            <div id="navigation" class="special_form_style" style="{NAVIGATION_DISPLAY_STYLE}">
+            <div id="caching_checkbox" class="checkbox no_toggle">
+                <input type="checkbox" class="indicator" id="page_caching" name="page[caching]" />
+                <label>{TXT_CORE_CM_CACHE}</label>
+            </div>
+
+            <div id="navigation_toggle" class="toggle {NAVIGATION_TOGGLE_CLASS}"><div class="indicator"></div><label>{TXT_CORE_CM_NAVIGATION}</label></div>
+            <div id="navigation_container" class="container special_form_style" style="{NAVIGATION_DISPLAY_STYLE}">
                 <label for="page_link_target">{TXT_CORE_CM_LINK_TARGET}</label>
                 <select id="page_link_target" name="page[link_target]">
                     <option value="">(None)</option>
@@ -163,16 +171,19 @@
                 <input type="text" name="page[cssNavName]" id="page_css_nav_class" />
                 <span class="tipmessage info input" onmouseout="htm()" onmouseover="stm(Text[15],Style[0])"></span>
             </div>
+
             <input type="hidden" name="page[sourceMode]" value="off" />
-            <a class="toggle_checkbox" id="page[sourceMode]">{TXT_CORE_CM_SOURCE_MODE}</a>
-            <div></div>
+            <div id="source_mode_checkbox no_toggle" class="checkbox">
+                <input type="checkbox" class="indicator" id="page_sourceMode" name="page[sourceMode]" />
+                <label>{TXT_CORE_CM_SOURCE_MODE}</label>
+            </div>
         </div>
       </form>
 
       <div id="page_history">
         <div id="historyContainer"></div>
       </div>
-      
+
       <div id="buttons">
         <a id="preview" class="button" href="#" onclick="return cx.cm.setPagePreview();" target="_blank">{TXT_CORE_PREVIEW}</a>
         

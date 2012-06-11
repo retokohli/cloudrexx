@@ -127,18 +127,28 @@ class ContentManager extends Module {
         if (!empty($_GET['act']) && ($_GET['act'] == 'new')) {
             $this->template->setVariable(array(
                 'TITLES_DISPLAY_STYLE' => 'display: block;',
+                'TITLES_TOGGLE_CLASS' => 'open',
                 'TYPE_DISPLAY_STYLE' => 'display: block;',
+                'TYPE_TOGGLE_CLASS' => 'open',
                 'THEMES_DISPLAY_STYLE' => 'display: block;',
+                'THEMES_TOGGLE_CLASS' => 'open',
                 'NAVIGATION_DISPLAY_STYLE' => 'display: block;',
+                'NAVIGATION_TOGGLE_CLASS' => 'open',
                 'SIDEBAR_DISPLAY_STYLE' => 'display: block;',
                 'SIDEBAR_CLASS_NAME' => 'hide',
             ));
         } else {
             $this->template->setVariable(array(
                 'TITLES_DISPLAY_STYLE' => $toggleTitles == 'none' ? 'display: none;' : 'display: block;',
+                'TITLES_TOGGLE_CLASS' => $toggleTitles == 'none' ? 'closed' : 'open',
                 'TYPE_DISPLAY_STYLE' => $toggleType == 'none' ? 'display: none;' : 'display: block;',
+                'TYPE_TOGGLE_CLASS' => $toggleType == 'none' ? 'closed' : 'open',
                 'THEMES_DISPLAY_STYLE' => $toggleThemes == 'none' ? 'display: none;' : 'display: block;',
+                'THEMES_TOGGLE_CLASS' => $toggleThemes == 'none' ? 'closed' : 'open',
                 'NAVIGATION_DISPLAY_STYLE' => $toggleNavigation == 'none' ? 'display: none;' : 'display: block;',
+                'NAVIGATION_TOGGLE_CLASS' => $toggleNavigation == 'none' ? 'closed' : 'open',
+                'SIDEBAR_DISPLAY_STYLE' => $toggleSidebar == 'none' ? 'display: none;' : 'display: block;',
+                'SIDEBAR_CLASS_NAME' => $toggleSidebar == 'none' ? 'show' : 'hide',
             ));
         }
 
