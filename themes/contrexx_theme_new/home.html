@@ -1,12 +1,11 @@
 <div id="container">
     <div id="content-wrap" class="group">
-
         <div id="main">
             <section class="intro gallery">
                 <div class="gallery-holder">
                     <div id="banner">
                         <div class="oneByOne_item">
-                            <img alt="" class="bigImage" src="themes/contrexx_theme_new/images/slider-1.png">
+                            <img alt="" class="bigImage" src="themes/extensio/images/slider-1.png">
                             <span class="slideh2">Be successful, <br>it's easy!</span>
                             <span class="slideh3">Lorem ipsum Lorem ipsum </span>
                             <span class="slideparagraph">Cras eleifend dui et diam venenatis ullamcorper. Donec felis quam, tincidunt eget porta vel,
@@ -14,7 +13,7 @@
                             <span class="slidebutton"><a target="_blank" class="btn-add" href="#">read more</a></span>
                         </div>
                         <div class="oneByOne_item">
-                            <img alt="" class="bigImage" src="themes/contrexx_theme_new/images/slider-2.png">
+                            <img alt="" class="bigImage" src="themes/extensio/images/slider-2.png">
                             <span class="slideh2_left">Solutions, <br>that you need!</span>
                             <span class="slideh3_left">Lorem ipsum Lorem ipsum </span>
                             <span class="slideparagraph_left">Cras eleifend dui et diam venenatis ullamcorper. Donec felis quam, tincidunt eget porta vel,
@@ -22,7 +21,7 @@
                             <span class="slidebutton_left"><a target="_blank" class="btn-add" href="#">read more</a></span>
                         </div>
                         <div class="oneByOne_item">
-                            <img alt="" class="bigImage" src="themes/contrexx_theme_new/images/slider-3.png">
+                            <img alt="" class="bigImage" src="themes/extensio/images/slider-3.png">
                             <span class="slideh2">A driving force <br>in your business!</span>
                             <span class="slideh3">Lorem ipsum Lorem ipsum </span>
                             <span class="slideparagraph">Cras eleifend dui et diam venenatis ullamcorper. Donec felis quam, tincidunt eget porta vel,
@@ -33,60 +32,44 @@
                 </div>
             </section>
         </div>
-        <article class="col">
-            <div class="content_home_text">
-                <h1>Welcome and Congratulations</h1>
-				Thank you for your decision to use, Contrexx ® as the basis for your business web project.
-Contrexx offers outstanding affordability, flexibility, and reliability with ability to grow with your business needs .
-
-       <h2>Successful installation of Contrexx ®</h2>
-
-Contrexx ® Web Content Management System Version 3.0 Service Pack 1 has been successfully installed. Now Contrexx ® is ready for use.
-You can now create, update, delete, or edit the content of your web site with extreme ease. Remember fresh content is always more interesting, and search engines like it .
-
-With the installation of Contrexx ®, you agree to our license conditions.
-            </div>
-
-            <h1>Further information</h1>
-            <h4>Let your potential customers  find you  </h4>
-            <!--<figure class="align-left"><img width="204" height="154" alt="image description" src="images/featured-img.jpg"></figure>-->
-            <p>
-                Make sure you take care about Search Engine Optimization while creating the first contents. This means you should fill in the Meta Tags to every article you publish. We  recommend to announce your website to all bigger search engines (Google, Yahoo, MSN etc.). If you do so, the search engine robots will be faster in visiting and indexing your website. With Contrexx you're able to track all robots activity with the built in Contrexx Statistics.
-            </p>
-            <p class="more_to_read"><a href="http://www.contrexx.com/wiki/de/index.php?title=Suchmaschinenoptimierung_(SEO)" class="out">More Tips</a></p>
-            <section class="content-vid"></section>
-            <h4>Always up to date</h4>
-            <p>
-                We're sure Contrexx is the best choice for your web project : Simple to use, Always updated and we offer a professional Support to assist you on demand. Don't miss the the news on www.contrexx.com or subscribe to our RSS-Feed. .
-            </p>
-            <p class="more_to_read"><a href="http://www.contrexx.com/feed/news_headlines_de.xml" class="out">Contrexx RSS-Feed</a></p>
-            <section class="content-vid"></section>
-            <h4>Become a reference</h4>
-            <p>
-						After launching your web project, you can apply to us to become a Contrexx reference. After a quick review we'll add your website on the reference list. You get one more link to your site and gain a better ranking at search engines.
-            </p>
-            <p class="more_to_read"><a href="http://www.contrexx.com/de/index.php?section=directory&amp;cmd=add" class="out">Announce a reference</a></p>
-            <section class="content-vid"></section>
-
-        </article>
-
-
-
-        <section class="promo">
-            <article class="col equHeights">
-                <h3>HEADLINES</h3>
-                <p>{HEADLINES_FILE}</p>
-                <!--<a href="#" class="more">Read more »</a>-->
-            </article><article class="col item2 equHeights">
-                <h3>EVENTS</h3>
-                <p>{EVENTS_FILE}</p>
-                <!--<a href="#" class="more">Read more »</a>-->
-            </article><article class="col item3 equHeights">
-                <h3>BLOG</h3>
-                <p>{BLOG_FILE}</p>
-                <!--<a href="#" class="more">Read more »</a>-->
-            </article>
+        <section class="promo-intro">
+            <h2>{CONTENT_TITLE}</h2>
+            <p>{CONTENT_TEXT}</p>
         </section>
+        {HEADLINES_FILE}
+        <div class="social-box">
+            <section class="latest-tweets">
+                <div class="headline solid">
+                    <h3>Latest from Twitter</h3>
+                </div>
+                <article class="post">
+                    {BLOCK_27}
+                </article>
+            </section>
+            <!-- testimonials-item -->
+            <section class="testimonials-item">
+                <div class="headline solid">
+                    <h3>Client Testimonials</h3>
+                </div>
+                <div class="item">
+                    {BLOCK_28}
+                </div>
+            </section>
+            
+            <iframe src="" class="feedback">
+<!--                        <form class="feedback" action="#">
+                            <fieldset>
+                                <div class="headline solid">
+                                    <h3>Let's get in touch</h3>
+                                </div>
+                                <span class="text"><input type="text" value="Your name"></span>
+                                <span class="text"><input type="text" value="Email address"></span>
+                                <span class="text"><textarea rows="10" cols="30">Your message</textarea></span>
+                                <span class="submit">Send<input type="submit" value="Send"></span>
+                            </fieldset>
+                        </form>-->
+            </iframe> 
+        </div>
         <script type="text/javascript">
             $J(document).ready(function() {
                 $J('#banner').oneByOne({
@@ -104,77 +87,6 @@ With the installation of Contrexx ®, you agree to our license conditions.
                 });
             });
         </script>
-
-    </div>
-
-</div>
-<!--<script type="text/javascript" src="lib/javascript/prototype.js"></script>
-<script type="text/javascript" src="lib/javascript/scriptaculous/scriptaculous.js"></script>
-<script type="text/javascript" src="themes/contrexx_theme_new/js/jquery-cycle-min.js"></script>
-<script type="text/javascript" src="themes/contrexx_theme_new/js/slider.js"></script>
-<div id="wrapper_banner">
-    <div id="home_slider">
-        <div id="slider_controls">
-            <ul id="slider_nav">
-                <li id="page_0"><a href="javascript:void(0);">1</a></li>
-                <li id="page_1"><a href="javascript:void(0);">2</a></li>
-                <li id="page_2"><a href="javascript:void(0);">3</a></li>
-                <li id="page_3"><a href="javascript:void(0);">4</a></li>
-                <li id="page_4"><a href="javascript:void(0);">5</a></li>
-                <li id="page_5"><a href="javascript:void(0);">6</a></li>
-            </ul>
-        </div>
-        <div class="slideshow">
-            <img alt="image1" src="themes/contrexx_theme_new/images/slider_01.jpg"/>
-            <img alt="image2" src="themes/contrexx_theme_new/images/slider_02.jpg"/>
-            <img alt="image3" src="themes/contrexx_theme_new/images/slider_03.jpg"/>
-            <img alt="image4" src="themes/contrexx_theme_new/images/slider_04.jpg"/>
-            <img alt="image5" src="themes/contrexx_theme_new/images/slider_05.jpg"/>
-            <img alt="image6" src="themes/contrexx_theme_new/images/slider_06.jpg"/>
-        </div>
     </div>
 </div>
-<div id="wrapper_content">
-    <div id="content">
-        <div id="frame_content">
-            <div id="home_boxes">
-                <div id="left_box">
-                    <div class="bottom_left_curve_bg">
-                        <div class="bottom_right_curve_bg">
-                            <div class="content_box" id="events_block">
-                                <div class="box-title"><p>Veranstaltungen</p></div>
-                                <div class="box_text">{EVENTS_FILE}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="center_box">
-                    <div class="bottom_left_curve_bg">
-                        <div class="bottom_right_curve_bg">
-                            <div class="content_box box_center" id="newsletter_block">
-                                <div class="box-title"><p>Newsmeldungen</p></div>
-                                <div id="scrollableContainer">
-                                    <div class="box_text_center">{HEADLINES_FILE}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="right_box">
-                    <div class="bottom_left_curve_bg">
-                        <div class="bottom_right_curve_bg">
-                            <div class="content_box box_right" id="news_block">
-                                <div class="box-title"><p>Podcast</p></div>
-                                <div class="box_text">{PODCAST_FILE}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="main" class="main_home">
-                <h1>{CONTENT_TITLE}</h1>
-                {CONTENT_TEXT}
-            </div>
-        </div>
-    </div>
-</div>-->
+<!--{CONTENT_TEXT}-->
