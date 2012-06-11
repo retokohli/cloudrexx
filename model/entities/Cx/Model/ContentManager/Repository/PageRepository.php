@@ -148,12 +148,12 @@ class PageRepository extends EntityRepository {
      *       the pages collection on all nodes with only those fetched pages. this means calling
      *       getPages() later on said nodes will yield a collection containing only a subset of
      *       all pages linked to the node. now, we're fetching all pages and sorting those not
-     *       matching the desired language out in @link getTreeByTitle() to prevent the
+     *       matching the desired language out in @link getTreeBySlug() to prevent the
      *       associations from being destroyed.
      *       naturally, this generates big overhead. this strategy should be rethought.
      * @todo $titlesOnly param is not respected - huge overhead.
      * @param Node $rootNode limit query to subtree.
-     * @param boolean $titlesOnly fetch titles only. You may want to use @link getTreeByTitle()
+     * @param boolean $titlesOnly fetch titles only. You may want to use @link getTreeBySitle()
      * @return array
      */
     public function getTree($rootNode = null, $titlesOnly = false, $search_mode = self::SEARCH_MODE_PAGES_ONLY) {
@@ -199,12 +199,12 @@ class PageRepository extends EntityRepository {
     }
     
     /**
-     * Get a tree mapping titles to Page, Node and language.
+     * Get a tree mapping slugs to Page, Node and language.
      *
      * @see getTree()
-     * @return array ( title => array( '__data' => array(lang => langId, page =>), child1Title => array, child2Title => array, ... ) ) recursively array-mapped tree.
+     * @return array ( slug => array( '__data' => array(lang => langId, page =>), child1Title => array, child2Title => array, ... ) ) recursively array-mapped tree.
      */
-    public function getTreeByTitle($rootNode = null, $lang = null, $titlesOnly = false, $search_mode = self::SEARCH_MODE_PAGES_ONLY) {
+    public function getTreeBySlug($rootNode = null, $lang = null, $titlesOnly = false, $search_mode = self::SEARCH_MODE_PAGES_ONLY) {
         $tree = $this->getTree($rootNode, true, $search_mode);
 
         $result = array();
@@ -221,7 +221,7 @@ class PageRepository extends EntityRepository {
                 $rightLevel = $node->getLvl() == $rootNode->getLvl() + 1;
 
             if($rightLevel)
-                $i = $this->treeByTitle($tree, $i, $result, $lang2Arr, $lang);
+                $i = $this->treeBySlug($tree, $i, $result, $lang2Arr, $lang);
             else {
                 $i++;
             }
@@ -236,7 +236,7 @@ class PageRepository extends EntityRepository {
         return $result;
     }
 
-    protected function treeByTitle(&$nodes, $startIndex, &$result, &$lang2Arr = null, $lang = null) {
+    protected function treeBySlug(&$nodes, $startIndex, &$result, &$lang2Arr = null, $lang = null) {
         //first node we treat
         $index = $startIndex;
         $node = $nodes[$index];
@@ -248,11 +248,11 @@ class PageRepository extends EntityRepository {
         $thisLevelLang2Arr = array();
         do {
             if($node->getLvl() == $minLevel) {
-                $this->treeByTitlePages($nodes[$index], $result, $lang2Arr, $lang, $thisLevelLang2Arr);
+                $this->treeBySlugPages($nodes[$index], $result, $lang2Arr, $lang, $thisLevelLang2Arr);
                 $index++;
             }
             else {
-                $index = $this->treeByTitle($nodes, $index, $result, $thisLevelLang2Arr, $lang);
+                $index = $this->treeBySlug($nodes, $index, $result, $thisLevelLang2Arr, $lang);
             }
 
             if($index == $nodeCount) //we traversed all nodes
@@ -264,7 +264,7 @@ class PageRepository extends EntityRepository {
         return $index;
     }
 
-    protected function treeByTitlePages($node, &$result, &$lang2Arr, $lang, &$thisLevelLang2Arr) {
+    protected function treeBySlugPages($node, &$result, &$lang2Arr, $lang, &$thisLevelLang2Arr) {
         //get titles of all Pages linked to this Node
         $pages = null;
 
@@ -280,8 +280,8 @@ class PageRepository extends EntityRepository {
         }
 
         foreach ($pages as $page) {
-            $title = $page->getSlug();
-            $lang  = $page->getLang();
+            $slug = $page->getSlug();
+            $lang = $page->getLang();
 
             if ($lang2Arr) { //this won't be set for the first node
                 $target = &$lang2Arr[$lang];
@@ -289,19 +289,19 @@ class PageRepository extends EntityRepository {
                 $target = &$result;
             }
 
-            if (isset($target[$title])) { //another language's Page has the same title
+            if (isset($target[$slug])) { //another language's Page has the same title
                 //add the language
-                $target[$title]['__data']['lang'][] = $lang;
+                $target[$slug]['__data']['lang'][] = $lang;
             } else {
-                $target[$title] = array();
-                $target[$title]['__data'] = array(
+                $target[$slug] = array();
+                $target[$slug]['__data'] = array(
                                                 'lang' => array($lang),
                                                 'page' => $page,
                                                 'node' => $node,
                                             );
             }
             //remember mapping for recursion
-            $thisLevelLang2Arr[$lang] = &$target[$title];
+            $thisLevelLang2Arr[$lang] = &$target[$slug];
         }
     }
 
@@ -322,7 +322,7 @@ class PageRepository extends EntityRepository {
      * )
      */
     public function getPagesAtPath($path, $root = null, $lang = null, $exact = false, $search_mode = self::SEARCH_MODE_PAGES_ONLY) {
-        $tree = $this->getTreeByTitle($root, $lang, true, $search_mode);
+        $tree = $this->getTreeBySlug($root, $lang, true, $search_mode);
 
         $result = $this->getPathes($path, $tree, $exact);
         if (!$result) {

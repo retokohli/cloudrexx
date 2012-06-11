@@ -157,7 +157,7 @@ class Resolver {
             if ($this->pagePreview && !empty($this->sessionPage)) {
                 $result['page'] = $this->getPreviewPage();
                 
-                $tree   = $this->pageRepo->getTreeByTitle(null, $this->lang, true, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
+                $tree   = $this->pageRepo->getTreeBySlug(null, $this->lang, true, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
                 $pathes = $this->pageRepo->getPathes($path, $tree, false);
                 
                 $result['matchedPath']   = !empty($pathes['matchedPath'])   ? $pathes['matchedPath']   : '';

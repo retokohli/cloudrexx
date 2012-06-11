@@ -67,7 +67,7 @@ class JsonPage implements JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('get', 'set', 'setPagePreview', 'setPageStatus', 'getHistoryTable');
+        return array('get', 'set', 'setPagePreview', 'getHistoryTable');
     }
 
     /**
@@ -91,7 +91,7 @@ class JsonPage implements JsonAdapter {
         // Global access check
         if (!\Permission::checkAccess(6, 'static', true) ||
                 !\Permission::checkAccess(35, 'static', true)) {
-            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
+            throw new \Exception($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
         }
         
         if (isset($params['get']) && isset($params['get']['history'])) {
@@ -123,7 +123,7 @@ class JsonPage implements JsonAdapter {
             $node = $this->nodeRepo->find($params['get']['node']);
             $pageArray = $this->getFallbackPageArray($node, $params['get']['lang']);
         } else {
-            throw new Exception('cannot find that page');
+            throw new \Exception('cannot find that page');
         }
 
         return $pageArray;
@@ -140,36 +140,41 @@ class JsonPage implements JsonAdapter {
         global $_CORELANG;
         
         // Global access check
-        if (!\Permission::checkAccess(6, 'static', true) ||
-                !\Permission::checkAccess(35, 'static', true)) {
-            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
+        if (!\Permission::checkAccess(6, 'static', true) || !\Permission::checkAccess(35, 'static', true)) {
+            throw new \Exception($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
         }
         
-        $newpage = false;
-        $reload = false;
-        $pg = \Env::get('pageguard');
-
-        $page = $params['post']['page'];
-        $output = $this->validatePageArray($page);
-
-        if (intval($page['id']) > 0) {
-            // if we got a page id, the page already exists and can be updated
-            $page = $this->pageRepo->find($params['post']['page']['id']);
+        $newPage = false;
+        $reload  = false;
+        $pg      = \Env::get('pageguard');
+        
+        $dataPost  = !empty($params['post'])   ? $params['post']   : array();
+        $pageArray = !empty($dataPost['page']) ? $dataPost['page'] : array(); // Only set in the editing mode.
+        
+        $pageId = !empty($pageArray['id'])    ? intval($pageArray['id'])   : (!empty($dataPost['pageId']) ? intval($dataPost['pageId']) : 0);
+        $nodeId = !empty($pageArray['node'])  ? intval($pageArray['node']) : (!empty($dataPost['nodeId']) ? intval($dataPost['nodeId']) : 0);
+        $lang   = !empty($pageArray['lang'])  ? contrexx_input2raw($pageArray['lang'])  : (!empty($dataPost['lang']) ? contrexx_input2raw($dataPost['lang']) : '');
+        $action = !empty($dataPost['action']) ? contrexx_input2raw($dataPost['action']) : '';
+        
+        if (!empty($pageId)) {
+            // If we got a page id, the page already exists and can be updated.
+            $page = $this->pageRepo->find($pageId);
             $node = $page->getNode();
-        } elseif ($page['id'] == 0 && $page['node'] && $page['lang']) {
-            // we are translating another page (to $page['lang'])
-            $node = $this->nodeRepo->find($page['node']);
+        } else if (!empty($nodeId) && !empty($lang)) {
+            // We are translating the page.
+            $node = $this->nodeRepo->find($nodeId);
+            $page = $node->translatePage(true, \FWLanguage::getLanguageIdByCode($lang));
+            $page->setNodeIdShadowed($node->getId());
+            $page->setEditingStatus('');
             
-            $page = $node->translatePage(true, $page['lang']);
-
-            $reload = true;
-        }
-        else {
+            $newPage = true;
+            $reload  = true;
+        } else if (empty($pageId) && !empty($lang)) {
             if (!\Permission::checkAccess(5, 'static', true)) {
-                throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_CREATION_DENIED']);
+                throw new \Exception($_CORELANG['TXT_CORE_CM_CREATION_DENIED']);
             }
             
-            // create a new node/page combination
+            // Create a new node/page combination.
             $node = new \Cx\Model\ContentManager\Node();
             $node->setParent($this->nodeRepo->getRoot());
 
@@ -179,56 +184,78 @@ class JsonPage implements JsonAdapter {
             $page = new \Cx\Model\ContentManager\Page();
             $page->setNode($node);
             $page->setNodeIdShadowed($node->getId());
-            $page->setLang(\FWLanguage::getLanguageIdByCode($params['post']['page']['lang']));
+            $page->setLang(\FWLanguage::getLanguageIdByCode($lang));
 
-            $newpage = true;
-            $reload = true;
+            $newPage = true;
+            $reload  = true;
+        } else {
+            throw new \Exception('Page cannot be created. There are too little information.');
         }
-
-        $page->updateFromArray($output);
+        
+        if (!empty($pageArray)) {
+            $validatedPageArray = $this->validatePageArray($pageArray);
+            $page->updateFromArray($validatedPageArray);
+        }
+        
+        if (!empty($action)) {
+            switch ($action) {
+                case 'activate':
+                case 'publish':
+                    $page->setActive(true);
+                    break;
+                case 'deactivate':
+                    $page->setActive(false);
+                    break;
+                case 'show':
+                    $page->setDisplay(true);
+                    break;
+                case 'hide':
+                    $page->setDisplay(false);
+                    break;
+            }
+            
+            if (($action != 'publish') && ($page->getEditingStatus() == '')) {
+                $action = 'publish';
+            }
+        }
+        
         $page->setUpdatedAtToNow();
-
-        if (isset($params['get']['publish']) && $params['get']['publish']) {
-            $page->setActive(true);
-        }
-
         $page->validate();
-
-        if ($page->isFrontendProtected() && isset($params['post']['frontendGroups'])) {
+        
+        if ($page->isFrontendProtected() && isset($dataPost['frontendGroups'])) {
             if (\Permission::checkAccess(36, 'static', true)) {
-                $pg->setAssignedGroupIds($page, $params['post']['frontendGroups'], true);
+                $pg->setAssignedGroupIds($page, $dataPost['frontendGroups'], true);
             } else {
                 $this->messages[] = $_CORELANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'];
             }
         }
-        if ($page->isBackendProtected() && isset($params['post']['backendGroups'])) {
+        if ($page->isBackendProtected() && isset($dataPost['backendGroups'])) {
             if (\Permission::checkAccess(36, 'static', true)) {
-                $pg->setAssignedGroupIds($page, $params['post']['backendGroups'], false);
+                $pg->setAssignedGroupIds($page, $dataPost['backendGroups'], false);
             } else {
                 $this->messages[] = $_CORELANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'];
             }
         }
-
-        if ((isset($params['get']['publish']) && $params['get']['publish'])
-                && \Permission::checkAccess(78, 'static', true)) {
-            // user w/permission clicked save&publish. we should either publish the page or submit the draft for approval
+        
+        if (($action == 'publish') && \Permission::checkAccess(78, 'static', true)) {
+            // User w/permission clicked save&publish. we should either publish the page or submit the draft for approval.
             if ($page->getEditingStatus() == 'hasDraftWaiting') {
                 $reload = true;
             }
             $page->setEditingStatus('');
             $this->messages[] = $_CORELANG['TXT_CORE_SAVED'];
-            // TODO: define what log data we want to keep in a case like this.
-            //       make adjustments, if necessary.
+            // TODO: Define what log data we want to keep in a case like this.
+            //       Make adjustments, if necessary.
         } else {
-            // user clicked save [as draft], so let's do that
-            if ($newpage) {
+            // User clicked save [as draft], so let's do that.
+            if ($newPage) {
                 $this->em->persist($page);
                 $this->em->flush();
             }
             $updatingDraft = $page->getEditingStatus() != '' ? true : false;
 
-            if (isset($params['get']['publish']) && $params['get']['publish']) {
-                // user w/o publish permission clicked save&publish. submit it as a draft
+            if ($action == 'publish') {
+                // User w/o publish permission clicked save&publish. submit it as a draft.
                 $page->setEditingStatus('hasDraftWaiting');
                 $this->messages[] = $_CORELANG['TXT_CORE_DRAFT_SUBMITTED'];
             } else {
@@ -239,27 +266,27 @@ class JsonPage implements JsonAdapter {
                 $this->messages[] = $_CORELANG['TXT_CORE_SAVED_AS_DRAFT'];
             }
 
-            // gedmo-loggable generates a LogEntry (i.e. revision) on persist, so we'll have to 
+            // Gedmo-loggable generates a LogEntry (i.e. revision) on persist, so we'll have to 
             // store the draft first, then revert the current version to what it previously was.
-            // in the end, we'll have the current [published] version properly stored as a page
-            // and the draft version stored as a gedmo LogEntry
+            // In the end, we'll have the current [published] version properly stored as a page
+            // and the draft version stored as a gedmo LogEntry.
 
             $this->em->persist($page);
-            // gedmo hooks in on persist/flush, so we unfortunately need to flush our em in
-            // order to get a clean set of logEntries
+            // Gedmo hooks in on persist/flush, so we unfortunately need to flush our em in
+            // order to get a clean set of logEntries.
             $this->em->flush();
             $logEntries = $this->logRepo->getLogEntries($page);
-            // $logEntries holds an array of Gedmo LogEntries, the most recent one listed first
-            // we need the editing status of the page
+            // $logEntries holds an array of Gedmo LogEntries, the most recent one listed first.
+            // We need the editing status of the page.
             $logData = $logEntries[1]->getData();
             $logData['editingStatus'] = $page->getEditingStatus();
             $logEntries[1]->setData($logData);
 
-            // revert to the published version
+            // Revert to the published version.
             $this->logRepo->revert($page, $logEntries[1]->getVersion());
             $this->em->persist($page);
 
-            // gedmo auto-logs slightly too much data. clean up unnecessary revisions:
+            // Gedmo auto-logs slightly too much data. clean up unnecessary revisions:
             if ($updatingDraft) {
                 $this->em->flush();
 
@@ -268,23 +295,25 @@ class JsonPage implements JsonAdapter {
                 $this->em->remove($logEntries[3]);
             }
         }
-
+        
         $this->em->persist($page);
         $this->em->flush();
-
-        // only users with publish rights can create aliases
-        if (\Permission::checkAccess(115, 'static', true) &&
-                \Permission::checkAccess(78, 'static', true)) {
-            // aliases are updated after persist!
-            $data = array();
-            $data['alias'] = $params['post']['page']['alias'];
-            $aliases = $page->getAliases();
-            $page->updateFromArray($data);
-            if ($aliases != $page->getAliases()) {
-                $reload = true;
+        
+        // Aliases are only updated in the editing mode.
+        if (!empty($pageArray)) {
+            // Only users with publish rights can create aliases.
+            if (\Permission::checkAccess(115, 'static', true) && \Permission::checkAccess(78, 'static', true)) {
+                // Aliases are updated after persist.
+                $data = array();
+                $data['alias'] = $pageArray['alias'];
+                $aliases = $page->getAliases();
+                $page->updateFromArray($data);
+                if ($aliases != $page->getAliases()) {
+                    $reload = true;
+                }
+            } else {
+                $this->messages[] = $_CORELANG['TXT_CORE_ALIAS_CREATION_DENIED'];
             }
-        } else {
-            $this->messages[] = $_CORELANG['TXT_CORE_ALIAS_CREATION_DENIED'];
         }
         
         return array(
@@ -302,9 +331,8 @@ class JsonPage implements JsonAdapter {
         global $_CORELANG;
         
         // Global access check
-        if (!\Permission::checkAccess(6, 'static', true) ||
-                !\Permission::checkAccess(35, 'static', true)) {
-            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
+        if (!\Permission::checkAccess(6, 'static', true) || !\Permission::checkAccess(35, 'static', true)) {
+            throw new \Exception($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
         }
         
         $page = $this->validatePageArray($params['post']['page']);
@@ -386,7 +414,7 @@ class JsonPage implements JsonAdapter {
                     $value = $page[$field];
                     break;
             }
-            if (isset($meta['require']) && $page[$meta['require']] == 'off') {
+            if (isset($meta['require']) && isset($page[$meta['require']]) && $page[$meta['require']] == 'off') {
                 $value = null;
             }
 
@@ -399,90 +427,16 @@ class JsonPage implements JsonAdapter {
         return $output;
     }
 
-    /**
-     * Sets the new status for the page.
-     * 
-     * @return array(
-     *     nodeId,
-     *     pageId,
-     *     lang,
-     *     action
-     * )
-     */
-    public function setPageStatus($params) {
-        if (!empty($params['get']['page'])) {
-            $page = $this->pageRepo->find($params['get']['page']);
-        }
-
-        switch ($params['get']['action']) {
-            case 'publish':
-                if (!empty($page)) {
-                    $page->setActive(true);
-                } else {
-                    $langId = $params['get']['lang'];
-                    $arrFbLang = \FWLanguage::getFallbackLanguageArray();
-                    $fbLang = isset($arrFbLang[$langId]) ? $arrFbLang[$langId] : 0;
-                    if (!empty($fbLang) && $fbLang != $langId) {
-                        $node = $this->nodeRepo->find($params['get']['node']);
-                        $page = new \Cx\Model\ContentManager\Page();
-                        $node->addPage($page);
-                        $page->setNode($node);
-                        $page->setLang($langId);
-                        $fbPage = $node->getPage($fbLang);
-                        if ($fbPage) {
-                            $page->setType('fallback');
-                            $page->setTitle($fbPage->getTitle());
-                            $page->setContentTitle($fbPage->getContentTitle());
-                            $page->setSlug($fbPage->getSlug());
-                            $page->setMetatitle($page->getMetatitle());
-                            $page->setMetadesc($fbPage->getMetadesc());
-                            $page->setMetakeys($fbPage->getMetakeys());
-                            $page->setMetarobots($page->getMetarobots());
-                        } else {
-                            return array(
-                                'nodeId' => $params['get']['node'],
-                                'action' => 'new',
-                            );
-                        }
-                    }
-                }
-                break;
-            case 'unpublish':
-                $page->setActive(false);
-                break;
-            case 'visible':
-                $page->setDisplay(true);
-                break;
-            case 'hidden':
-                $page->setDisplay(false);
-                break;
-            default:
-                return array(
-                    'action' => 'error',
-                );
-        }
-
-        $this->em->persist($page);
-        $this->em->flush();
-
-        return array(
-          'nodeId' => $page->getNode()->getId(),
-          'pageId' => $page->getId(),
-          'lang'   => \FWLanguage::getLanguageCodeById($page->getLang()),
-          'action' => $params['get']['action'],
-        );
-    }
-
     public function getHistoryTable($params) {
         if (empty($params['get']['page'])) {
-            throw new \ContentManagerException('please provide a pageId');
+            throw new \Exception('please provide a pageId');
         }
 
         //(I) get the right page
         $page = $this->pageRepo->findOneById($params['get']['page']);
 
         if (!$page) {
-            throw new \ContentManagerException('could not find page with id '.$params['get']['page']);
+            throw new \Exception('could not find page with id '.$params['get']['page']);
         }
 
         //(II) build the table with headers
@@ -576,14 +530,15 @@ class JsonPage implements JsonAdapter {
 
     /**
      * Returns the array representation of a fallback page
-     * @param \Cx\Model\ContentManager\Node $node Node to get the page of
-     * @param integer $lang Language id to get the fallback of
-     * @return array Array representing a fallback page
+     * @param   \Cx\Model\ContentManager\Node $node Node to get the page of
+     * @param   string  $lang  Language code to get the fallback of
+     * @return  array   Array  representing a fallback page
      */
     private function getFallbackPageArray($node, $lang) {
         foreach ($node->getPages() as $page) {
-            if ($page->getLang() == \FWLanguage::getLanguageIdByCode($this->fallbacks[$lang]))
+            if ($page->getLang() == \FWLanguage::getLanguageIdByCode($this->fallbacks[$lang])) {
                 break;
+            }
         }
 
         // Access Permissions

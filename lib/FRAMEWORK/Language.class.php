@@ -364,6 +364,7 @@ class FWLanguage
         if (empty(self::$arrLanguages)) self::init();
         if ($langId == self::getDefaultLangId()) return false;
         $fallback_lang = self::getLanguageParameter($langId, 'fallback');
+        if ($fallback_lang == 0) $fallback_lang = intval(self::getDefaultLangId());;
         if ($langId == $fallback_lang) return false;
         return $fallback_lang;
     }
@@ -387,8 +388,9 @@ class FWLanguage
             $fallbackLangId = intval($rs->fields['fallback']);
             
             //explicitly overwrite null (default) with the default language id
-            if($fallbackLangId === 0)
+            if($fallbackLangId === 0) {
                 $fallbackLangId = $defaultLangId;
+            }
 
             if ($langId == $fallbackLangId || $langId == self::getDefaultLangId()) {
                 $fallbackLangId = false;

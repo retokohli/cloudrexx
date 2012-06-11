@@ -80,7 +80,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
             // TODO: Add virtual pages
             static::$virtualPagesAdded = true;
         }
-        $this->tree = $this->pageRepo->getTreeByTitle($this->rootNode, $this->lang, true);
+        $this->tree = $this->pageRepo->getTreeBySlug($this->rootNode, $this->lang, true);
     }
 
     /**
