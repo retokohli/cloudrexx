@@ -2,7 +2,6 @@
    v2.0 | 20110126
    License: none (public domain)
 */
-
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -378,7 +377,6 @@ select {
     color:#fff;
     text-shadow:1px 1px 0 rgba(0, 0, 0, .1);
     background: rgb(195,218,13);
-
     background: -moz-linear-gradient(top,  rgba(195,218,13,1) 0%, rgba(174,205,9,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(195,218,13,1)), color-stop(100%,rgba(174,205,9,1)));
     background: -webkit-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
@@ -393,7 +391,6 @@ select {
 .btn-add:hover {
     color:#fff;
     background: rgb(183,204,11);
-
     background: -moz-linear-gradient(top,  rgba(183,204,11,1) 0%, rgba(158,186,9,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(183,204,11,1)), color-stop(100%,rgba(158,186,9,1)));
     background: -webkit-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
@@ -1181,7 +1178,6 @@ pre .name {
     border-radius: 3px;
     color:#fff;
     background: rgb(195,218,13);
-
     background: -moz-linear-gradient(top,  rgba(195,218,13,1) 0%, rgba(174,205,9,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(195,218,13,1)), color-stop(100%,rgba(174,205,9,1)));
     background: -webkit-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
@@ -1192,7 +1188,6 @@ pre .name {
 .btn:hover {
     color:#fff;
     background: rgb(183,204,11);
-
     background: -moz-linear-gradient(top,  rgba(183,204,11,1) 0%, rgba(158,186,9,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(183,204,11,1)), color-stop(100%,rgba(158,186,9,1)));
     background: -webkit-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
@@ -1212,7 +1207,6 @@ pre .name {
     border-radius: 3px;
     color:#fff;
     background: rgb(195,218,13);
-
     background: -moz-linear-gradient(top,  rgba(195,218,13,1) 0%, rgba(174,205,9,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(195,218,13,1)), color-stop(100%,rgba(174,205,9,1)));
     background: -webkit-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
@@ -1223,7 +1217,6 @@ pre .name {
 .btn.green:hover {
     color:#fff;
     background: rgb(183,204,11);
-
     background: -moz-linear-gradient(top,  rgba(183,204,11,1) 0%, rgba(158,186,9,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(183,204,11,1)), color-stop(100%,rgba(158,186,9,1)));
     background: -webkit-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
@@ -1233,7 +1226,6 @@ pre .name {
 }
 .btn.black {
     background: rgb(59,59,59);
-
     background: -moz-linear-gradient(top,  rgba(59,59,59,1) 0%, rgba(44,44,44,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(59,59,59,1)), color-stop(100%,rgba(44,44,44,1)));
     background: -webkit-linear-gradient(top,  rgba(59,59,59,1) 0%,rgba(44,44,44,1) 100%);
@@ -1243,7 +1235,6 @@ pre .name {
 }
 .btn.black:hover {
     background: rgb(39,39,39);
-
     background: -moz-linear-gradient(top,  rgba(39,39,39,1) 0%, rgba(29,29,29,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(39,39,39,1)), color-stop(100%,rgba(29,29,29,1)));
     background: -webkit-linear-gradient(top,  rgba(39,39,39,1) 0%,rgba(29,29,29,1) 100%);
@@ -1253,7 +1244,6 @@ pre .name {
 }
 .btn.orange {
     background: rgb(255,121,9);
-
     background: -moz-linear-gradient(top,  rgba(255,121,9,1) 0%, rgba(255,90,7,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,121,9,1)), color-stop(100%,rgba(255,90,7,1)));
     background: -webkit-linear-gradient(top,  rgba(255,121,9,1) 0%,rgba(255,90,7,1) 100%);
@@ -1263,7 +1253,6 @@ pre .name {
 }
 .btn.orange:hover {
     background: rgb(255,106,0);
-
     background: -moz-linear-gradient(top,  rgba(255,106,0,1) 0%, rgba(255,79,0,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,106,0,1)), color-stop(100%,rgba(255,79,0,1)));
     background: -webkit-linear-gradient(top,  rgba(255,106,0,1) 0%,rgba(255,79,0,1) 100%);
@@ -1273,7 +1262,6 @@ pre .name {
 }
 .btn.blue {
     background: rgb(132,210,214);
-
     background: -moz-linear-gradient(top,  rgba(132,210,214,1) 0%, rgba(98,194,200,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(132,210,214,1)), color-stop(100%,rgba(98,194,200,1)));
     background: -webkit-linear-gradient(top,  rgba(132,210,214,1) 0%,rgba(98,194,200,1) 100%);
@@ -1283,7 +1271,6 @@ pre .name {
 }
 .btn.blue:hover {
     background: rgb(52,186,201);
-
     background: -moz-linear-gradient(top,  rgba(52,186,201,1) 0%, rgba(38,162,182,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(52,186,201,1)), color-stop(100%,rgba(38,162,182,1)));
     background: -webkit-linear-gradient(top,  rgba(52,186,201,1) 0%,rgba(38,162,182,1) 100%);
@@ -1293,7 +1280,6 @@ pre .name {
 }
 .btn.red {
     background: rgb(255,63,0);
-
     background: -moz-linear-gradient(top,  rgba(255,63,0,1) 0%, rgba(255,47,0,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,63,0,1)), color-stop(100%,rgba(255,47,0,1)));
     background: -webkit-linear-gradient(top,  rgba(255,63,0,1) 0%,rgba(255,47,0,1) 100%);
@@ -1303,7 +1289,6 @@ pre .name {
 }
 .btn.red:hover {
     background: rgb(231,56,0);
-
     background: -moz-linear-gradient(top,  rgba(231,56,0,1) 0%, rgba(223,42,0,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(231,56,0,1)), color-stop(100%,rgba(223,42,0,1)));
     background: -webkit-linear-gradient(top,  rgba(231,56,0,1) 0%,rgba(223,42,0,1) 100%);
@@ -1313,7 +1298,6 @@ pre .name {
 }
 .btn.magenta {
     background: rgb(209,2,106);
-
     background: -moz-linear-gradient(top,  rgba(209,2,106,1) 0%, rgba(193,2,79,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(209,2,106,1)), color-stop(100%,rgba(193,2,79,1)));
     background: -webkit-linear-gradient(top,  rgba(209,2,106,1) 0%,rgba(193,2,79,1) 100%);
@@ -1323,7 +1307,6 @@ pre .name {
 }
 .btn.magenta:hover {
     background: rgb(182,1,86);
-
     background: -moz-linear-gradient(top,  rgba(182,1,86,1) 0%, rgba(156,1,64,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(182,1,86,1)), color-stop(100%,rgba(156,1,64,1)));
     background: -webkit-linear-gradient(top,  rgba(182,1,86,1) 0%,rgba(156,1,64,1) 100%);
@@ -1786,7 +1769,6 @@ pre .name {
     text-transform:uppercase;
     font:12px/30px 'Open Sans', Arial, Helvetica, sans-serif;
     background: rgb(195,218,13);
-
     background: -moz-linear-gradient(top,  rgba(195,218,13,1) 0%, rgba(174,205,9,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(195,218,13,1)), color-stop(100%,rgba(174,205,9,1)));
     background: -webkit-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
@@ -1803,7 +1785,6 @@ pre .name {
 .comments-form .submit:hover,
 .feedback .submit:hover {
     background: rgb(183,204,11);
-
     background: -moz-linear-gradient(top,  rgba(183,204,11,1) 0%, rgba(158,186,9,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(183,204,11,1)), color-stop(100%,rgba(158,186,9,1)));
     background: -webkit-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
@@ -1936,14 +1917,12 @@ pre .name {
     padding:0 25px 0 26px;
     background:url(images/date.png) 0 3px no-repeat;
 }
-
 .add-info li a{
     color:#777;
 }
 .add-info li a:hover{
     color:#95a105;
 }
-
 .add-info .data {
     background:url(images/categories.png) 5px 3px no-repeat;
 }
@@ -2007,14 +1986,12 @@ pre .name {
     padding:13px 0;
     background:url(images/divider.png) 100% 100% no-repeat;
 }
-
 .info-list li a {
     color:#777;
 }
 .info-list li a:hover{
     color:#95a105;
 }
-
 .info-list li:first-child {
     padding-top:0;
 }
@@ -2662,7 +2639,6 @@ pre .name {
 }
 #banner .oneByOne_item span.slidebutton a{
     background: rgb(195,218,13);
-
     background: -moz-linear-gradient(top,  rgba(195,218,13,1) 0%, rgba(174,205,9,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(195,218,13,1)), color-stop(100%,rgba(174,205,9,1)));
     background: -webkit-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
@@ -2675,7 +2651,6 @@ pre .name {
 }
 #banner .oneByOne_item span.slidebutton a:hover {
     background: rgb(183,204,11);
-
     background: -moz-linear-gradient(top,  rgba(183,204,11,1) 0%, rgba(158,186,9,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(183,204,11,1)), color-stop(100%,rgba(158,186,9,1)));
     background: -webkit-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
@@ -2688,7 +2663,6 @@ pre .name {
 }
 #banner .oneByOne_item span.slidebutton_left a{
     background: rgb(195,218,13);
-
     background: -moz-linear-gradient(top,  rgba(195,218,13,1) 0%, rgba(174,205,9,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(195,218,13,1)), color-stop(100%,rgba(174,205,9,1)));
     background: -webkit-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
@@ -2701,7 +2675,6 @@ pre .name {
 }
 #banner .oneByOne_item span.slidebutton_left a:hover {
     background: rgb(183,204,11);
-
     background: -moz-linear-gradient(top,  rgba(183,204,11,1) 0%, rgba(158,186,9,1) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(183,204,11,1)), color-stop(100%,rgba(158,186,9,1)));
     background: -webkit-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);

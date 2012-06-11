@@ -1,10 +1,14 @@
-<!-- BEGIN headlines_row -->
-<div class="content">
-    <p class="date" id="news_date">{HEADLINE_DATE}</p>
-    <h2 id="news_heading">{HEADLINE_LINK}</h2>
-    {HEADLINE_TEXT}
-</div>
-<!-- END headlines_row -->
-<div class="content">
-    <p class="more"><a class="more_news" href="index.php?section=news" title="More News">More News »</a></p>
-</div>
+<section class="info-columns">
+    <div class="container">
+        <!-- BEGIN headlines_row -->
+        <article class="col-13 info-item">
+            <figure class="visual">
+                <img width="274" height="165" alt="image description" src="{HEADLINE_IMAGE_PATH}">
+            </figure>
+            <h4>{HEADLINE_LINK}</h4>
+            <p>{HEADLINE_TEXT}</p>
+            <a class="btn grey" href="index.php?section=news" title="More News">Read more</a>
+        </article>
+        <!-- END headlines_row -->
+    </div>
+</section>

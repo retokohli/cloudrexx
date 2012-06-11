@@ -1,7 +1,7 @@
 /***************************************************/
 /* Fix the PNG transparency in IE6                 */
 /***************************************************/
-img,a { behavior: url(themes/contrexx_theme_new/iepngfix.htc) }
+img,a { behavior: url(themes/extensio/iepngfix.htc) }
 /***************************************************/
 /* CSS GLOBAL DEFINITIONS FOR FORMS IN MODULES     */
 /***************************************************/
@@ -12,7 +12,6 @@ img,a { behavior: url(themes/contrexx_theme_new/iepngfix.htc) }
     padding: 2px 0 3px 0;
     float: left;
     width: 100%
-
 }*/
 form p {
     clear: left;
@@ -421,7 +420,6 @@ div#livecam #CALBUTTONDPC_datum {
     float:left;
     height:auto !important;
 }
-
 #access div.message,
 #access div.message_ok,
 #access div.message_error,
@@ -790,9 +788,7 @@ div#livecam #CALBUTTONDPC_datum {
     color: #222222;
 }
 #blog div.entries h2 a:hover{
-
     color: #95A105;
-
 }
 .posted a{
     color:#777777
@@ -1092,12 +1088,10 @@ div#livecam #CALBUTTONDPC_datum {
     float:left;
     height:auto !important;
 }
-
 /* Inner block for the toggable shipment address */
 #shop .shipping_address {
     clear: both;
 }
-
 /* Right align prices etc. */
 #shop .a_right {
     text-align: right;
@@ -1121,7 +1115,6 @@ div#livecam #CALBUTTONDPC_datum {
     width: 26px;
     border-left: 5px solid #2687CC;
 }
-
 #shop div.message_error {
     color:#FF0000;
 }
@@ -1936,7 +1929,6 @@ dl.data_module img {
     margin-bottom: 15px;
     margin-top: -15px;
     padding-left: 180px;
-
 }
 .mediadirSelectorCenter{
     padding: 60px 5px 0 !important;
@@ -2053,7 +2045,6 @@ textarea {
     overflow: auto;
     padding: 5px;
     border-radius: 3px 3px 3px 3px;
-
 }
 /*textarea {
     padding: 0.4em;
@@ -2073,14 +2064,12 @@ textarea {
 .char_list a{
     font-weight: normal;
 }
-
 /*form label {
     float: left;
     width: 200px;
     clear: left;
     font-weight: bold;
 }
-
 form input[type="text"],
 form input[type="password"],
 form textarea,
