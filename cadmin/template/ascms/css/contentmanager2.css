@@ -24,6 +24,7 @@ h1{ font-size: 20px }
 
 /* 2.2 Content Manager */
 #content-manager {
+    display: table;
     float: left;
     width: 100%;
     height: 100%;
@@ -35,16 +36,16 @@ h1{ font-size: 20px }
 }
 
 #content-manager .left {
-    display: block;
+    display: table-cell;
     float: left;
     width: 100%;
     padding: 0;
     border-right: 1px solid #e5e5e5;
     border-left: 1px solid #e5e5e5;
-    margin: 0;
+    margin: 0 14px 0 0;
 }
 
-#content-manager .middle {
+/*#content-manager .middle {
     display: none;
     float: none;
     vertical-align: top;
@@ -90,11 +91,12 @@ h1{ font-size: 20px }
 #content-manager .middle #sidebar_toggle.show:focus,
 #content-manager .middle #sidebar_toggle.show:active {
     background-image: url(../images/sidebar_show_hover.png);
-}
+}*/
 
 #content-manager .right {
     display: none;
     float: none;
+    vertical-align: top;
 }
 
 #content-manager.shrunk .left {
@@ -117,153 +119,8 @@ h1{ font-size: 20px }
     margin: 11px 0 0 0;
 }
 
-#cm_page {
-    float: left;
-    width: 100%;
-}
-
 .ie7 #input1{ float:left; }
 .ie7 .space{ margin-bottom: 10px; }
-
-
-#page .info {
-    float: left;
-    width: 13px;
-    height: 12px;
-    background: url(../images/content_manager_info.png) no-repeat center center;
-}
-
-#page .info.input {
-    margin: 7px 6px;
-}
-
-#page .info.label {
-    margin: 2px 20px 2px 3px;
-}
-
-#page input {
-    width: 566px;
-}
-
-#page textarea {
-    width: 566px;
-    height: 200px;
-}
-
-#page select {
-    width: 574px;
-}
-
-#page .special_form_style input,
-#page .special_form_style textarea,
-#page .special_form_style select {
-    float: left;
-    clear: both;
-    margin: 0 0 8px 0;
-}
-
-#page .special_form_style label {
-    float: left;
-    clear: both;
-    width: auto;
-    margin: 0 0 3px 0;
-}
-
-#page #titles #types {
-    float: left;
-    clear: both;
-    width: auto;
-    margin: 0 0 8px 0;
-}
-
-#page #titles #types .radio {
-    float: left;
-    clear: none;
-    width: auto;
-    margin: 0 3px 0 0;
-}
-
-#page #titles #types label,
-#page #type label {
-    float: left;
-    clear: none;
-}
-
-#page #type #page_target {
-    float: left;
-    clear: both;
-    width: 453px;
-    margin: 0 3px 0 0;
-}
-
-#page #type #targetBrowseButton {
-    float: left;
-}
-
-#page #type #page_application {
-    float: left;
-    clear: both;
-    width: 144px;
-    padding: 2px;
-    margin: 0 3px 0 0;
-}
-
-#page #type #page_application_area {
-    float: left;
-    clear: none;
-    width: 418px;
-}
-
-#page #type br {
-    clear: both;
-}
-
-#page #type label {
-    float: left;
-    min-width: 145px;
-    margin: 0 3px 3px 0;
-}
-
-#page #navigation.special_form_style #page_aliases {
-    float: left;
-    clear: both;
-    width: auto;
-    margin: 0 0 8px 0;
-}
-
-#page #navigation.special_form_style #page_aliases label {
-    margin: 0;
-}
-
-#page #navigation.special_form_style #page_aliases .page_alias {
-    float: left;
-    clear: both;
-    width: auto;
-}
-
-#page #navigation.special_form_style #page_aliases .page_alias span {
-    float: left;
-    clear: both;
-    height: 24px;
-    line-height: 24px;
-    width: auto;
-    margin: 0 4px 2px 0;
-}
-
-#page #navigation.special_form_style #page_aliases .page_alias input {
-    clear: none;
-    width: 200px;
-    margin: 0 0 2px 0;
-}
-#page #navigation.special_form_style #page_aliases .page_alias input.warning {
-
-    border-color: #ff0000;
-}
-
-#ckeditor textarea {
-    width: 99.5%;
-    height: 694px;
-}
 
 #site-language .chzn-select{
     visibility: hidden;
@@ -317,14 +174,6 @@ h1{ font-size: 20px }
     background: url(../images/contrexx_icon.png) no-repeat scroll 25px 3px transparent
 }
 
-#page {
-    float: left;
-    width: 100%;
-    overflow: visible;
-    position: relative;
-    background: transparent;
-}
-
 #site-tree {
     padding: 0 0 0 30px;
 }
@@ -342,6 +191,10 @@ h1{ font-size: 20px }
 
 *+html #site-tree ul li ul li {
     width: 99%;
+}
+
+#site-tree li  a.unpublished {
+    color: #757575;
 }
 
 #site-tree .jstree-wrapper {
@@ -405,7 +258,14 @@ h1{ font-size: 20px }
     padding: 0 13px 0 16px;
 }
 
-#site-tree .actions:hover {
+#content-manager.shrunk #site-tree .actions {
+    width: 12px;
+    padding: 0;
+}
+
+#site-tree .actions:hover,
+#site-tree .actions:focus,
+#site-tree .actions:active {
     cursor: pointer;
 }
 
@@ -444,12 +304,41 @@ h1{ font-size: 20px }
     clear: both;
     line-height: 16px;
     padding: 0 0 0 19px;
-    background: url(../images/content_manager_actions_default.png) no-repeat left center;
+    background-repeat: no-repeat;
+    background-position: left center;
     margin: 3px 0 3px 0;
+    display: block !important;
 }
 
-#site-tree .actions-expanded ul li:hover {
+#site-tree .actions-expanded ul li.activate {
+    background-image: url(../images/content_manager_actions_activate.png);
+}
+
+#site-tree .actions-expanded ul li.deactivate {
+    background-image: url(../images/content_manager_actions_deactivate.png);
+}
+
+#site-tree .actions-expanded ul li.show {
+    background-image: url(../images/content_manager_actions_show.png);
+}
+
+#site-tree .actions-expanded ul li.hide {
+    background-image: url(../images/content_manager_actions_hide.png);
+}
+
+#site-tree .actions-expanded ul li.publish {
+    background-image: url(../images/content_manager_actions_publish.png);
+}
+
+#site-tree .actions-expanded ul li.delete {
+    background-image: url(../images/content_manager_actions_delete.png);
+}
+
+#site-tree .actions-expanded ul li:hover,
+#site-tree .actions-expanded ul li:focus,
+#site-tree .actions-expanded ul li:active {
     cursor: pointer;
+    color: #757575;
 }
 
 #site-tree .jstree-icon {
@@ -583,7 +472,57 @@ h1{ font-size: 20px }
     width: 100%;
 }
 
-#cm-tabs {
+
+#page,
+#page #cm_page {
+    float: left;
+    width: 100%;
+}
+
+#page #sidebar_toggle {
+    float: left;
+    width: 21px;
+    height: 31px;
+    background-color: #ececec;
+    padding: 0;
+    border-right: 1px solid #ffffff;
+    position: relative;
+    margin-bottom: -31px;
+    cursor: pointer;
+}
+
+#page #sidebar_toggle:hover,
+#page #sidebar_toggle:focus,
+#page #sidebar_toggle:active {
+    background-color: #85be0b;
+}
+
+#page #sidebar_toggle.hide {
+    background-image: url(../images/sidebar_hide.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+#page #sidebar_toggle.hide:hover,
+#page #sidebar_toggle.hide:focus,
+#page #sidebar_toggle.hide:active {
+    background-image: url(../images/sidebar_hide_hover.png);
+}
+
+#page #sidebar_toggle.show {
+    background-image: url(../images/sidebar_show.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+    margin-left: 0;
+}
+
+#page #sidebar_toggle.show:hover,
+#page #sidebar_toggle.show:focus,
+#page #sidebar_toggle.show:active {
+    background-image: url(../images/sidebar_show_hover.png);
+}
+
+#page #cm-tabs {
     position: static;
     float: left;
     width: 100%;
@@ -595,7 +534,11 @@ h1{ font-size: 20px }
     padding: 0;
 }
 
-#cm-tabs li {
+#page #cm-tabs li:first-child {
+    margin-left: 22px;
+}
+
+#page #cm-tabs li {
     position: inherit;
     float: left;
     width: auto;
@@ -606,7 +549,7 @@ h1{ font-size: 20px }
     list-style-type: none;
 }
 
-#cm-tabs li a,
+#page #cm-tabs li a,
 .navi a {
     float: left;
     width: auto;
@@ -620,7 +563,7 @@ h1{ font-size: 20px }
     color: #444444;
 }
 
-#cm-tabs a:hover,
+#page #cm-tabs a:hover,
 #cm-tabs a:focus,
 #cm-tabs a:active,
 #cm-tabs li.ui-state-active a,
@@ -629,7 +572,7 @@ h1{ font-size: 20px }
 .navi a:focus,
 .navi a:active {
     background: #85be0b;
-    color: #ffffff;
+    color: #ffffff !important;
     cursor: pointer;
 }
 
@@ -639,10 +582,6 @@ h1{ font-size: 20px }
 
 #content-manager.shrunk .navi {
     display: none !important;
-}
-
-.ui-tabs .ui-tabs-panel {
-    padding: 0 0 0 22px !important;
 }
 
 .ui-tabs #page_history.ui-tabs-panel {
@@ -789,16 +728,75 @@ div.date img{
     display: none;
 }
 
-#page #toggle_scheduled_publishing {
-    width: 16px;
+#titles,
+#type,
+#ckeditor,
+#metadata,
+#scheduled_publishing,
+#themes,
+#navigation {
     float: left;
+    width: 100%;
+    margin: 0;
+    padding: 0;
 }
 
-#scheduled_publishing input {
-    width: 150px;
-    display: inline;
+#page .toggle,
+#page .checkbox,
+#page .checkbox_style {
+    float: left;
+    clear: both;
+    display: block;
+    width: 100%;
+    height: 24px;
+    line-height: 24px;
+    padding: 3px 0;
+    margin: 10px 0 8px 0;
+    background: #0a85c8;
+    color: #ffffff !important;
+    cursor: pointer;
 }
-.toggle_indicator,
+
+#page .toggle .indicator,
+#page .checkbox .indicator,
+#page .checkbox_style .indicator {
+    float: left;
+    width: 22px;
+    height: 24px;
+}
+
+#page .checkbox .indicator,
+#page .checkbox_style .indicator {
+    margin: 0;
+    outline: 0;
+    cursor: pointer;
+}
+
+#page .toggle.open .indicator {
+    background: url(../images/content_manager_toggle_open.png) no-repeat center center;
+}
+
+#page .toggle.closed .indicator {
+    background: url(../images/content_manager_toggle_closed.png) no-repeat center center;
+}
+
+#page .toggle label,
+#page .checkbox label {
+    cursor: pointer;
+}
+
+#page .checkbox_style,
+#page .checkbox_style .indicator,
+#page .checkbox_style label {
+    cursor: default;
+}
+
+#page .container {
+    float: left;
+    margin: 0 0 0 22px;
+}
+
+/*toDelete;.toggle_indicator,
 .toggle_indicator_style_fix {
     position: relative;
     clear: both;
@@ -852,24 +850,198 @@ div.date img{
 .toggle_checkbox label {
     cursor: pointer;
     color: #ffffff;
+}*/
+
+#page .special_form_style input,
+#page .special_form_style textarea,
+#page .special_form_style select {
+    float: left;
+    clear: both;
+    margin: 0 0 8px 0;
 }
 
-#titles,
-#type,
-#ckeditor,
-#metadata,
-#scheduled_publishing,
-#themes,
-#navigation {
+#page .special_form_style label {
     float: left;
+    clear: both;
+    width: auto;
+    margin: 0 0 3px 0;
+}
+
+#page .container .info {
+    float: left;
+    width: 13px;
+    height: 12px;
+    background: url(../images/content_manager_info.png) no-repeat center center;
+}
+
+#page .container .info.input {
+    margin: 7px 6px;
+}
+
+#page .container .info.label {
+    margin: 2px 20px 2px 3px;
+}
+
+#page .container input {
+    width: 566px;
+}
+
+#page .container textarea {
+    width: 566px;
+    height: 200px;
+}
+
+#page .container select {
+    width: 574px;
+}
+
+#page #titles_container #types {
+    float: left;
+    clear: both;
+    width: auto;
+    margin: 5px 0 3px 0;
+}
+
+#page #titles_container #types input[type=radio] {
+    float: left;
+    clear: none;
+    width: auto;
+    margin: 0 3px 0 0;
+}
+
+#page #titles_container #types label {
+    float: left;
+    clear: none;
+}
+
+#page #type_container {
     width: 100%;
     margin: 0;
+}
+
+#page #type_container .special_form_style {
+    margin: 0 0 0 22px;
+}
+
+#page #type_container #cm_ckeditor {
+    width: 100%;
+    height: 700px;
     padding: 0;
 }
 
-#page .ms2side__select select {
-    width: 267px;
+#page #type_container #page_target {
+    float: left;
+    clear: both;
+    width: 453px;
+    margin: 0 3px 0 0;
 }
+
+#page #type_container #targetBrowseButton {
+    float: left;
+}
+
+#page #type_container #page_application {
+    float: left;
+    clear: both;
+    width: 144px;
+    padding: 2px;
+    margin: 0 3px 0 0;
+}
+
+#page #type_container #page_application_area {
+    float: left;
+    clear: none;
+    width: 418px;
+}
+
+#page #type_container br {
+    clear: both;
+}
+
+#page #type_container label {
+    float: left;
+    clear: none;
+    min-width: 145px;
+    margin: 0 3px 3px 0;
+}
+
+#page #protection_frontend_container,
+#page #protection_backend_container {
+    width: 620px;
+}
+
+#page #scheduled_publishing_container label {
+    float: left;
+    width: auto;
+    height: 24px;
+    line-height: 24px;
+    margin: 0 3px 0 0;
+}
+
+#page #scheduled_publishing_container input {
+    float: left;
+    width: 150px;
+    margin: 0 8px 0 0;
+}
+
+#page #navigation_container #page_aliases {
+    float: left;
+    clear: both;
+    width: auto;
+    margin: 0 0 8px 0;
+}
+
+#page #navigation_container #page_aliases label {
+    margin: 0;
+}
+
+#page #navigation_container #page_aliases .page_alias {
+    float: left;
+    clear: both;
+    width: auto;
+}
+
+#page #navigation_container #page_aliases .page_alias span {
+    float: left;
+    clear: both;
+    height: 24px;
+    line-height: 24px;
+    width: auto;
+    margin: 0 4px 2px 0;
+}
+
+#page #navigation_container #page_aliases .page_alias input {
+    clear: none;
+    width: 200px;
+    margin: 0 0 2px 0;
+}
+#page #navigation_container #page_aliases .page_alias input.warning {
+
+    border-color: #ff0000;
+}
+
+#page .container .ms2side__div {
+    padding: 0;
+}
+
+#page .container .ms2side__options p {
+    float: left;
+    width: 18px;
+    margin: 0 0 2px 0;
+    background: url(../images/button_bg.png) repeat-x left top #dadada;
+    border: 1px solid #bbbbbb;
+    padding: 2px 10px;
+    color: #444444;
+    text-shadow: 1px 1px #ffffff;
+    cursor: default;
+}
+
+#page .container .ms2side__select select {
+    width: 280px;
+    height: 94px;
+}
+
+
 /* 3) Helpers */
 .t{
     padding: 0

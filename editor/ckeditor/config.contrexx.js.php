@@ -36,6 +36,7 @@ CKEDITOR.editorConfig = function( config )
     config.skin = 'v2';
 
     config.height = 600;
+    config.uiColor = '#ececec';
 
     config.forcePasteAsPlainText = false;
     config.enterMode = CKEDITOR.ENTER_BR;
