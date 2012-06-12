@@ -1,0 +1,46 @@
+<div id="container">
+    <section class="intro">
+        <!-- search -->
+        <!--<form class="search" action="#">
+            <fieldset>
+                <input type="text" class="text" value="Click or type here to search">
+                <input type="submit" class="submit" value="go">
+            </fieldset>
+        </form>-->
+        <form action="index.php" method="get" class="search_home" id="form-globalsearch">
+            <div>
+                <!--<span id="searchField_left"></span>-->
+                <input value="search" name="section" type="hidden"/>
+                <input name="term" onblur="resetText(this)" onfocus="clearText(this)" value="Click or type here to search" id="term" class="text" type="text"/>
+                <input class="submit" type="submit" alt="suchen" />
+            </div>
+        </form>
+        <p>{CONTENT_TITLE}</p>
+    </section>
+    <div id="content-wrap" class="group main-holder">
+            <div id="content">
+                <!--<div id="frame_content" class="clearfix">-->
+                <div id="main" class="main_subpage">
+                        <!--<h1>{CONTENT_TITLE}</h1>-->
+                        {CONTENT_TEXT}
+                        <div style="border-bottom: 1px solid #ccc; margin-bottom: 10px;float: left;width: 100%;">&nbsp;</div>
+                        <div style="float: left;">
+                            {GOOGLE_PLUSONE}
+                        </div>
+                        <div style="float: left;">
+                            {FACEBOOK_LIKE_IFRAME}
+                        </div>
+                    </div>
+                <!--</div>-->
+            </div>
+        <div id="aside">
+                        <div class="aside-inner">
+                            {SUBNAVBAR_FILE}
+                            {SHOPNAVBAR_FILE}
+                            <div id="left_sidebar">
+                                {SIDEBAR_FILE}
+                            </div>
+                        </div>
+                    </div>
+    </div>
+</div>
