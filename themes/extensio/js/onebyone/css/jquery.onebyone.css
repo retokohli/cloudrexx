@@ -24,7 +24,6 @@
 .buttonArea a.active {
 	background-position: 0 -22px;
 }             
-
 .arrowButton{    
 	cursor: pointer;  
 }            
@@ -44,7 +43,6 @@
 	top: 170px;
 	right: 12px;	          
 }   
-
 .animate0{
    	-webkit-animation-duration: .6s;
 	-webkit-animation-delay: 0s;
@@ -63,7 +61,6 @@
 	animation-timing-function: ease;
 	animation-fill-mode: both;	          
 }         
-
 .animate1{
    	-webkit-animation-duration: .6s;
 	-webkit-animation-delay: .2s;
@@ -82,7 +79,6 @@
 	animation-timing-function: ease;
 	animation-fill-mode: both;	          
 } 
-
 .animate2{
    	-webkit-animation-duration: .6s;
 	-webkit-animation-delay: .4s;
@@ -101,7 +97,6 @@
 	animation-timing-function: ease;
 	animation-fill-mode: both;	          
 } 
-
 .animate3{
    	-webkit-animation-duration: .6s;
 	-webkit-animation-delay: .6s;
@@ -120,7 +115,6 @@
 	animation-timing-function: ease;
 	animation-fill-mode: both;	          
 }   
-
 .animate4{
    	-webkit-animation-duration: .6s;
 	-webkit-animation-delay: .8s;
@@ -139,7 +133,6 @@
 	animation-timing-function: ease;
 	animation-fill-mode: both;	          
 }  
-
 .animate5{
    	-webkit-animation-duration: .6s;
 	-webkit-animation-delay: 1s;
