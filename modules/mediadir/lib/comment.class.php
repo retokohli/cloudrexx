@@ -51,61 +51,41 @@ class mediaDirectoryComment extends mediaDirectoryLibrary
         
 var $strFunctionComment = function(entry)
 {
-    var postParameters = $('commentFormInputs_'+entry).serialize(true);
+    var elEntry = jQuery('#commentForm_'+entry);
+    elEntry.children().hide();
+    elEntry.prepend('<img src="images/modules/$strSection/loading.gif" border="0" alt="loading..." />');
 
-    var elEntry = $('commentForm_'+entry);
-    var oldChilds = elEntry.childElements();
-    elEntry.hide();
-    var elLoadingImg = new Element('img', {src: 'images/modules/$strSection/loading.gif', border: '0', alt:'loading...'});
-    elEntry.insert(elLoadingImg,'after');
+    jQuery.post('index.php?section=$strSection&comment=add&eid='+entry, jQuery('#commentFormInputs_'+entry).serialize()).success(function(response) {
+        var arrResponse = response.split("-");
+        var status = arrResponse[0];
+        var section = arrResponse[1];
+        var cmd = arrResponse[2];
 
-    new Ajax.Request('index.php?section=$strSection&comment=add&eid='+entry, {
-        method: 'post',
-        parameters: postParameters,
-        onSuccess: function (transport){
-            var response = transport.responseText;
-            var arrResponse = response.split("-");
-            var status = arrResponse[0];
-            var section = arrResponse[1];
-            var cmd = arrResponse[2];
-
-            if(status == 'success') {
-                $strFunctionRefreshComment(entry,section,cmd);
-            } else if (status == 'captcha') {
-                elLoadingImg.remove();
-                $$('#commentForm_'+entry+' #commentCaptcha')[0].style.border = "#ff0000 1px solid";
-                elEntry.show();
-            }
-            else {
-                $('commentForm_'+entry).className = '$strCommentErr';
-                $('commentForm_'+entry).update('$strErrMessage');
-            }
-        },
-        onFailure: function(){
-            $('commentForm_'+entry).className = '$strCommentErr';
-            $('commentForm_'+entry).update('$strErrMessage');
+        if(status == 'success') {
+            $strFunctionRefreshComment(entry,section,cmd);
+        } else if (status == 'captcha') {
+            elEntry.children('img:first').remove();
+            jQuery('#commentForm_'+entry+' #commentCaptcha')[0].css('border', '#ff0000 1px solid');
+            elEntry.children().show();
+        } else {
+            jQuery('#commentForm_'+entry).attr('class', '$strCommentErr');
+            jQuery('#commentForm_'+entry).html('$strErrMessage');
         }
+    }).error(function(){
+        jQuery('#commentForm_'+entry).attr('class', $strCommentErr);
+        jQuery('#commentForm_'+entry).html('$strErrMessage');
     });
-
 }
 
 var $strFunctionRefreshComment = function(entry,section,cmd)
 {
-    new Ajax.Request('index.php', {
-        method: 'get',
-        parameters: {section : "$strSection", comment : "refresh", eid : entry, pageSection : section, pageCmd : cmd},
-        onSuccess: function (transport){
-            var response = transport.responseText;
+    jQuery.get('index.php', {section : '$strSection', comment : 'refresh', eid : entry, pageSection : section, pageCmd : cmd}).success(function(response) {
+        jQuery('#$strNewAddedComment'+entry).attr('class', '$strNewComment');
+        jQuery('#$strNewAddedComment'+entry).html(response);
+        jQuery('#$strNewAddedComment'+entry).css('display', 'block');
 
-            $('$strNewAddedComment'+entry).className = '$strNewComment';
-            $('$strNewAddedComment'+entry).update(response);
-            $('$strNewAddedComment'+entry).setStyle({display: 'block'});
-
-            $('commentForm_'+entry).className = '$strCommentOk';
-            $('commentForm_'+entry).update('$strOkMessage');
-        },
-        onFailure: function(){
-        }
+        jQuery('#commentForm_'+entry).attr('class', '$strCommentOk');
+        jQuery('#commentForm_'+entry).html('$strOkMessage');
     });
 }
 

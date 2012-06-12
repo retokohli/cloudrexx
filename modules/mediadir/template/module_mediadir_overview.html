@@ -1,7 +1,5 @@
 <!-- START module_mediadir_overview.html -->
-<script language="JavaScript" type="text/javascript">
-//needs prototype.js
-
+<script type="text/javascript">
 //<![CDATA[
 function deleteEntry(entryId)
 {
@@ -39,7 +37,7 @@ function entriesDoAction(formId, objSelect)
     objForm = document.getElementById(formId);
 
     if (entriesAreChecked("entriesFormSelected[]", objForm) == true) {
-        switch(objSelect.value) {
+        switch (objSelect.value) {
             case "delete_entry":
                 if (confirm('{TXT_MEDIADIR_CONFIRM_DELETE_DATA}\n{TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE}')) {
                     actionValue = "index.php?cmd={MODULE_NAME}&{CSRF}&act=delete_entry";
@@ -50,7 +48,7 @@ function entriesDoAction(formId, objSelect)
                 break
         }
 
-        if(actionValue != '') {
+        if (actionValue != '') {
             objForm.action = actionValue;
             objForm.submit();
         }
@@ -63,30 +61,26 @@ function entriesDoAction(formId, objSelect)
 
 var switchState = function(id, obj, action, type)
 {
-    var img = obj.getElementsByTagName("img")[0];
-
-    if (action == 0) {
-        if(type == 'entry') {
-            img.src = "images/icons/status_red.gif";
+    jQuery.get('index.php', {cmd : '{MODULE_NAME}', act : 'switchState', id : id, state : action, type : type}).success(function() {
+        if (action) {
+            if (type == 'entry') {
+                path = 'images/icons/status_green.gif';
+            } else {
+                path = "images/icons/folder_on.gif";
+            }
+            action = 0;
         } else {
-            img.src = "images/icons/folder_off.gif";
+            if (type == 'entry') {
+                path = 'images/icons/status_red.gif';
+            } else {
+                path = "images/icons/folder_off.gif";
+            }
+            action = 1;
         }
-        obj.onclick = function() { switchState(id, obj, 1, type); }
-    } else {
-        if(type == 'entry') {
-            img.src = "images/icons/status_green.gif";
-        } else {
-            img.src = "images/icons/folder_on.gif";
-        }
-        obj.onclick = function() { switchState(id, obj, 0, type); }
-    }
 
-    if(new Ajax.Request('index.php', {
-            method: 'get',
-            parameters: {cmd : "{MODULE_NAME}", act : "switchState", id : id, state : action, type : type},
-            onSuccess: function() {}
-        })) {
-    }
+        jQuery(obj).children('img:first').attr('src', path);
+        jQuery(obj).attr('onclick', 'switchState('+id+', this, '+action+', \''+type+'\')');
+    });
 }
 //]]>
 </script>

@@ -38,34 +38,26 @@ class mediaDirectoryVoting extends mediaDirectoryLibrary
 
 var {$this->moduleName}Vote = function(votes, entry)
 {
-    $('voteForm_'+entry).update('<img src="images/modules/{$this->moduleName}/loading.gif" border="0" alt="loading..." />');
+    jQuery('#voteForm_'+entry).html('<img src="images/modules/{$this->moduleName}/loading.gif" border="0" alt="loading..." />');
 
-    if(new Ajax.Request('index.php', {
-            method: 'get',
-            parameters: {section : "{$this->moduleName}", vote : votes, eid : entry},
-            onSuccess: function (transport){
-                var response = transport.responseText;
-                var status = response.substr(0,1);
-                var votes = response.substr(1);
+    jQuery.get('index.php', {section : "{$this->moduleName}", vote : votes, eid : entry}).success(function(response) {
+        var status = response.substr(0,1);
+        var votes = response.substr(1);
 
-                if(status == 1) {
-                    $('voteForm_'+entry).className = '{$this->moduleName}VotingOk';
-                    $('votes_'+entry).className = '{$this->moduleName}NewVote';
-                    $('votes_'+entry).update(votes);
-                    $('voteForm_'+entry).update('$strOkMessage');
-                } else {
-                    $('voteForm_'+entry).className = '{$this->moduleName}VotingErr';
-                    $('votes_'+entry).update(response);
-                    $('voteForm_'+entry).update('$strErrMessage');
-                }
-
-            },
-            onFailure: function(){
-                $('voteForm_'+entry).className = '{$this->moduleName}VotingErr';
-                $('voteForm_'+entry).update('$strErrMessage');
-            }
-        })) {
-    }
+        if (status == 1) {
+            jQuery('#voteForm_'+entry).attr('class', '{$this->moduleName}VotingOk');
+            jQuery('#votes_'+entry).attr('class', '{$this->moduleName}NewVote');
+            jQuery('#votes_'+entry).html(votes);
+            jQuery('#voteForm_'+entry).html('$strOkMessage');
+        } else {
+            jQuery('#voteForm_'+entry).attr('class', '{$this->moduleName}VotingErr');
+            jQuery('#votes_'+entry).html(response);
+            jQuery('#voteForm_'+entry).html('$strErrMessage');
+        }
+    }).error(function() {
+        jQuery('#voteForm_'+entry).attr('class', '{$this->moduleName}VotingErr');
+        jQuery('#voteForm_'+entry).html('$strErrMessage');
+    });
 }
 
 EOF;

@@ -247,21 +247,12 @@ function searchElement(elementId, term){
     }
 }
 
-function refreshSelector_$intId(fieldId,elementDeselectedId,elementSelectedId,pageSection,pageCmd,entryId){
-    if(new Ajax.Request('index.php', {
-            method: 'get',
-            parameters: {section : pageSection, cmd : pageCmd,  inputfield : "refresh", field : fieldId, eid : entryId},
-            onSuccess: function (transport){
-                var response = transport.responseText;
-                var arrResponse = response.split("|");
-
-                $(elementDeselectedId).update(arrResponse[0]);
-                $(elementSelectedId).update(arrResponse[1]);
-            },
-            onFailure: function(){
-            }
-        })) {
-    }
+function refreshSelector_$intId(fieldId,elementDeselectedId,elementSelectedId,pageSection,pageCmd,entryId) {
+    jQuery.get('index.php', {section : pageSection, cmd : pageCmd,  inputfield : 'refresh', field : fieldId, eid : entryId}).success(function(response) {
+        var arrResponse = response.split("|");
+        jQuery('#'+elementDeselectedId).html(arrResponse[0]);
+        jQuery('#'+elementSelectedId).html(arrResponse[1]);
+    });
 }
 
 // ]]>
