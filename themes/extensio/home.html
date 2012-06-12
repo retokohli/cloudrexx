@@ -1,0 +1,92 @@
+<div id="container">
+    <div id="content-wrap" class="group">
+        <div id="main">
+            <section class="intro gallery">
+                <div class="gallery-holder">
+                    <div id="banner">
+                        <div class="oneByOne_item">
+                            <img alt="" class="bigImage" src="themes/extensio/images/slider-1.png">
+                            <span class="slideh2">Be successful, <br>it's easy!</span>
+                            <span class="slideh3">Lorem ipsum Lorem ipsum </span>
+                            <span class="slideparagraph">Cras eleifend dui et diam venenatis ullamcorper. Donec felis quam, tincidunt eget porta vel,
+                                lacinia eget lorem? Cras tortor justo, feugiat non semper ut, tristique eu quam.</span>
+                            <span class="slidebutton"><a target="_blank" class="btn-add" href="#">read more</a></span>
+                        </div>
+                        <div class="oneByOne_item">
+                            <img alt="" class="bigImage" src="themes/extensio/images/slider-2.png">
+                            <span class="slideh2_left">Solutions, <br>that you need!</span>
+                            <span class="slideh3_left">Lorem ipsum Lorem ipsum </span>
+                            <span class="slideparagraph_left">Cras eleifend dui et diam venenatis ullamcorper. Donec felis quam, tincidunt eget porta vel,
+                                lacinia eget lorem? Cras tortor justo, feugiat non semper ut, tristique eu quam.</span>
+                            <span class="slidebutton_left"><a target="_blank" class="btn-add" href="#">read more</a></span>
+                        </div>
+                        <div class="oneByOne_item">
+                            <img alt="" class="bigImage" src="themes/extensio/images/slider-3.png">
+                            <span class="slideh2">A driving force <br>in your business!</span>
+                            <span class="slideh3">Lorem ipsum Lorem ipsum </span>
+                            <span class="slideparagraph">Cras eleifend dui et diam venenatis ullamcorper. Donec felis quam, tincidunt eget porta vel,
+                                lacinia eget lorem? Cras tortor justo, feugiat non semper ut, tristique eu quam.</span>
+                            <span class="slidebutton"><a target="_blank" class="btn-add" href="#">continue reading</a></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <section class="promo-intro">
+            <h2>{CONTENT_TITLE}</h2>
+            <p>{CONTENT_TEXT}</p>
+        </section>
+        {HEADLINES_FILE}
+        <div class="social-box">
+            <section class="latest-tweets">
+                <div class="headline solid">
+                    <h3>Latest from Twitter</h3>
+                </div>
+                <article class="post">
+                    {BLOCK_27}
+                </article>
+            </section>
+            <!-- testimonials-item -->
+            <section class="testimonials-item">
+                <div class="headline solid">
+                    <h3>Client Testimonials</h3>
+                </div>
+                <div class="item">
+                    {BLOCK_28}
+                </div>
+            </section>
+            
+            <iframe src="" class="feedback">
+<!--                        <form class="feedback" action="#">
+                            <fieldset>
+                                <div class="headline solid">
+                                    <h3>Let's get in touch</h3>
+                                </div>
+                                <span class="text"><input type="text" value="Your name"></span>
+                                <span class="text"><input type="text" value="Email address"></span>
+                                <span class="text"><textarea rows="10" cols="30">Your message</textarea></span>
+                                <span class="submit">Send<input type="submit" value="Send"></span>
+                            </fieldset>
+                        </form>-->
+            </iframe> 
+        </div>
+        <script type="text/javascript">
+            $J(document).ready(function() {
+                $J('#banner').oneByOne({
+                    className: 'oneByOne1', // the wrapper's name
+                    easeType: 'random', //'fadeInLeft',  // the ease animation style
+                    width: 990,  // width of the slider
+                    height: 397, // height of the slider
+                    delay: 300,  // the delay of the touch/drag tween
+                    tolerance: 0.25, // the tolerance of the touch/drag
+                    enableDrag: true,  // enable or disable the drag function by mouse
+                    showArrow: false,  // display the previous/next arrow or not
+                    showButton: true,  // display the circle buttons or not
+                    slideShow: true,  // auto play the slider or not
+                    slideShowDelay: 3000 // the delay millisecond of the slidershow
+                });
+            });
+        </script>
+    </div>
+</div>
+<!--{CONTENT_TEXT}-->
