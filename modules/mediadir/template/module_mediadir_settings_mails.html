@@ -1,7 +1,5 @@
 <!-- START module_mediadir_settings_mails.html -->
-<script language="JavaScript" type="text/javascript">
-//needs prototype.js
-
+<script type="text/javascript">
 //<![CDATA[
 function deleteTemplate(templateId)
 {
@@ -12,24 +10,21 @@ function deleteTemplate(templateId)
 
 var switchState = function(id, obj, action, type)
 {
-    var img = obj.getElementsByTagName("img")[0];
-    if (action == 0) {
-        img.src = "images/icons/status_red.gif";
-        obj.onclick = function() { switchState(id, obj, 1, type); }
-    } else {
-        img.src = "images/icons/status_green.gif";
-        obj.onclick = function() { switchState(id, obj, 0, type); }
-    }
-
-    if(new Ajax.Request('index.php', {
-            method: 'get',
-            parameters: {cmd : "{MODULE_NAME}", act : "switchState", id : id, state : action, type : type},
-            onSuccess: function() {}
-        })) {
-    }
+    jQuery.get('index.php', {cmd : '{MODULE_NAME}', act : 'switchState', id : id, state : action, type : type}).success(function() {
+        if (action) {
+            path = 'images/icons/status_green.gif';
+            action = 0;
+        } else {
+            path = 'images/icons/status_red.gif';
+            action = 1;
+        }
+        jQuery(obj).children('img:first').attr('src', path);
+        jQuery(obj).attr('onclick', 'switchState('+id+', this, '+action+', \''+type+'\')');
+    });
 }
 //]]>
 </script>
+
 <form id="settingsMailsForm" action="index.php?cmd={MODULE_NAME}&act=settings&tpl=mails" method="post" >
 <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
     <tr>

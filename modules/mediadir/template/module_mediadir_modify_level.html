@@ -1,33 +1,32 @@
 <!-- START module_mediadir_modify_level.html -->
-<script language="JavaScript" type="text/javascript">
-// needs prototype.js
-
+<script type="text/javascript">
+//<![CDATA[
 function SetUrl(url, width, height, alt) {
-	switch (fileType) {
-    	case 'image':
-    	case 'webpages':
-    		document.getElementById(insertBox).value = url;
-    		break
-    	case 'link':
-    		if (insertText == '') {
-    			insertText = url;
-    		}
-    		newsInsertLink(document.getElementById(insertBox), '<a href="'+url+'">'+insertText+'</a>');
-    		break;
-	}
+    switch (fileType) {
+        case 'image':
+        case 'webpages':
+            document.getElementById(insertBox).value = url;
+            break
+        case 'link':
+            if (insertText == '') {
+                insertText = url;
+            }
+            newsInsertLink(document.getElementById(insertBox), '<a href="'+url+'">'+insertText+'</a>');
+            break;
+    }
 }
 
 function getFileBrowser(name, type)
 {
-	insertBox = name;
-	fileType = type;
+    insertBox = name;
+    fileType = type;
 
-	openWindow('?cmd=fileBrowser&standalone=true&type=mediadir','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+    openWindow('?cmd=fileBrowser&standalone=true&type=mediadir','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
 }
 
 function openWindow(theURL,winName,features){
-	browserPopup = window.open(theURL,"Browser",features);
-	browserPopup.focus();
+    browserPopup = window.open(theURL,"Browser",features);
+    browserPopup.focus();
 }
 
 function ExpandMinimize(toggle){
@@ -43,25 +42,25 @@ function ExpandMinimize(toggle){
     var masterValue = document.getElementsByName(toggle + '[0]')[0].value;
     var defaultValue = document.getElementsByName(toggle + '[{MEDIADIR_LEVEL_DEFAULT_LANG_ID}]')[0].value;
 
-	for (i = 0; i < document.levelModfyForm.elements.length; ++i) {
+    for (i = 0; i < document.levelModfyForm.elements.length; ++i) {
         var field = document.levelModfyForm.elements[i];
 
         if (field.name.match(reg)) {
-			if (field.value == '') {
-			    field.value = masterValue;
-			}
+            if (field.value == '') {
+                field.value = masterValue;
+            }
 
-			var regDefaultLang = new RegExp(toggle + '\\[{MEDIADIR_LEVEL_DEFAULT_LANG_ID}\\]');
+            var regDefaultLang = new RegExp(toggle + '\\[{MEDIADIR_LEVEL_DEFAULT_LANG_ID}\\]');
 
-			if (field.name.match(regDefaultLang)) {
-			    field.value = masterValue;
-			}
+            if (field.name.match(regDefaultLang)) {
+                field.value = masterValue;
+            }
 
-			var regMaster = new RegExp(toggle + '\\[0\\]');
+            var regMaster = new RegExp(toggle + '\\[0\\]');
 
-			if (field.name.match(regMaster)) {
-			    field.value = defaultValue;
-			}
+            if (field.name.match(regMaster)) {
+                field.value = defaultValue;
+            }
         }
     }
 
@@ -74,8 +73,9 @@ function ExpandMinimize(toggle){
 
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
 Text[0]=['','{TXT_MEDIADIR_VISIBLE_LEVEL_INFO}'];
-
+//]]>
 </script>
+
 <form name="levelModfyForm" action="index.php?cmd={MODULE_NAME}&act=modify_level" method="post" >
 <input name="levelId" type="hidden" value="{MEDIADIR_LEVEL_ID}" />
 <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
