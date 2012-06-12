@@ -4,40 +4,28 @@
  *
  * @version ${Version}
  */
-
 var Cufon = (function() {
-
 	var api = function() {
 		return api.replace.apply(null, arguments);
 	};
-
 	var DOM = api.DOM = {
-
 		ready: (function() {
-
 			var complete = false, readyStatus = { loaded: 1, complete: 1 };
-
 			var queue = [], perform = function() {
 				if (complete) return;
 				complete = true;
 				for (var fn; fn = queue.shift(); fn());
 			};
-
 			// Gecko, Opera, WebKit r26101+
-
 			if (document.addEventListener) {
 				document.addEventListener('DOMContentLoaded', perform, false);
 				window.addEventListener('pageshow', perform, false); // For cached Gecko pages
 			}
-
 			// Old WebKit, Internet Explorer
-
 			if (!window.opera && document.readyState) (function() {
 				readyStatus[document.readyState] ? perform() : setTimeout(arguments.callee, 10);
 			})();
-
 			// Internet Explorer
-
 			if (document.readyState && document.createStyleSheet) (function() {
 				try {
 					document.body.doScroll('left');
@@ -47,20 +35,15 @@ var Cufon = (function() {
 					setTimeout(arguments.callee, 1);
 				}
 			})();
-
 			addEvent(window, 'load', perform); // Fallback
-
 			return function(listener) {
 				if (!arguments.length) perform();
 				else complete ? listener() : queue.push(listener);
 			};
-
 		})(),
-
 		root: function() {
 			return document.documentElement || document.body;
 		},
-
 		strict: (function() {
 			var doctype;
 			// no doctype (doesn't always catch it though.. IE I'm looking at you)
@@ -77,36 +60,26 @@ var Cufon = (function() {
 			}
 			return true;
 		})()
-
 	};
-
 	var CSS = api.CSS = {
-
 		Size: function(value, base) {
-
 			this.value = parseFloat(value);
 			this.unit = String(value).match(/[a-z%]*$/)[0] || 'px';
-
 			this.convert = function(value) {
 				return value / base * this.value;
 			};
-
 			this.convertFrom = function(value) {
 				return value / this.value * base;
 			};
-
 			this.toString = function() {
 				return this.value + this.unit;
 			};
-
 		},
-
 		addClass: function(el, className) {
 			var current = el.className;
 			el.className = current + (current && ' ') + className;
 			return el;
 		},
-
 		color: cached(function(value) {
 			var parsed = {};
 			parsed.color = value.replace(/^rgba\((.*?),\s*([\d.]+)\)/, function($0, $1, $2) {
@@ -115,7 +88,6 @@ var Cufon = (function() {
 			});
 			return parsed;
 		}),
-
 		// has no direct CSS equivalent.
 		// @see http://msdn.microsoft.com/en-us/library/system.windows.fontstretches.aspx
 		fontStretch: cached(function(value) {
@@ -132,14 +104,12 @@ var Cufon = (function() {
 				'ultra-expanded': 2
 			}[value] || 1;
 		}),
-
 		getStyle: function(el) {
 			var view = document.defaultView;
 			if (view && view.getComputedStyle) return new Style(view.getComputedStyle(el, null));
 			if (el.currentStyle) return new Style(el.currentStyle);
 			return new Style(el.style);
 		},
-
 		gradient: cached(function(value) {
 			var gradient = {
 				id: value,
@@ -152,7 +122,6 @@ var Cufon = (function() {
 			}
 			return gradient;
 		}),
-
 		quotedList: cached(function(value) {
 			// doesn't work properly with empty quoted strings (""), but
 			// it's not worth the extra code.
@@ -160,7 +129,6 @@ var Cufon = (function() {
 			while (match = re.exec(value)) list.push(match[3] || match[1]);
 			return list;
 		}),
-
 		recognizesMedia: cached(function(media) {
 			var el = document.createElement('style'), sheet, container, supported;
 			el.type = 'text/css';
@@ -175,20 +143,17 @@ var Cufon = (function() {
 			container.removeChild(el);
 			return supported;
 		}),
-
 		removeClass: function(el, className) {
 			var re = RegExp('(?:^|\\s+)' + className +  '(?=\\s|$)', 'g');
 			el.className = el.className.replace(re, '');
 			return el;
 		},
-
 		supports: function(property, value) {
 			var checker = document.createElement('span').style;
 			if (checker[property] === undefined) return false;
 			checker[property] = value;
 			return checker[property] === value;
 		},
-
 		textAlign: function(word, style, position, wordCount) {
 			if (style.get('textAlign') == 'right') {
 				if (position > 0) word = ' ' + word;
@@ -196,7 +161,6 @@ var Cufon = (function() {
 			else if (position < wordCount - 1) word += ' ';
 			return word;
 		},
-
 		textShadow: cached(function(value) {
 			if (value == 'none') return null;
 			var shadows = [], currentShadow = {}, result, offCount = 0;
@@ -217,7 +181,6 @@ var Cufon = (function() {
 			shadows.push(currentShadow);
 			return shadows;
 		}),
-
 		textTransform: (function() {
 			var map = {
 				uppercase: function(s) {
@@ -237,7 +200,6 @@ var Cufon = (function() {
 				return transform ? transform(text) : text;
 			};
 		})(),
-
 		whiteSpace: (function() {
 			var ignore = {
 				inline: 1,
@@ -258,31 +220,23 @@ var Cufon = (function() {
 				return text;
 			};
 		})()
-
 	};
-
 	CSS.ready = (function() {
-
 		// don't do anything in Safari 2 (it doesn't recognize any media type)
 		var complete = !CSS.recognizesMedia('all'), hasLayout = false;
-
 		var queue = [], perform = function() {
 			complete = true;
 			for (var fn; fn = queue.shift(); fn());
 		};
-
 		var links = elementsByTagName('link'), styles = elementsByTagName('style');
-
 		var checkTypes = {
 			'': 1,
 			'text/css': 1
 		};
-
 		function isContainerReady(el) {
 			if (!checkTypes[el.type.toLowerCase()]) return true;
 			return el.disabled || isSheetReady(el.sheet, el.media || 'screen');
 		}
-
 		function isSheetReady(sheet, media) {
 			// in Opera sheet.disabled is true when it's still loading,
 			// even though link.disabled is false. they stay in sync if
@@ -313,7 +267,6 @@ var Cufon = (function() {
 			catch (e) {} // probably a style sheet from another domain
 			return true;
 		}
-
 		function allStylesLoaded() {
 			// Internet Explorer's style sheet model, there's no need to do anything
 			if (document.createStyleSheet) return true;
@@ -327,29 +280,23 @@ var Cufon = (function() {
 			}
 			return true;
 		}
-
 		DOM.ready(function() {
 			// getComputedStyle returns null in Gecko if used in an iframe with display: none
 			if (!hasLayout) hasLayout = CSS.getStyle(document.body).isUsable();
 			if (complete || (hasLayout && allStylesLoaded())) perform();
 			else setTimeout(arguments.callee, 10);
 		});
-
 		return function(listener) {
 			if (complete) listener();
 			else queue.push(listener);
 		};
-
 	})();
-
 	function Font(data) {
-
 		var face = this.face = data.face, wordSeparators = {
 			'\u0020': 1,
 			'\u00a0': 1,
 			'\u3000': 1
 		};
-
 		this.glyphs = (function(glyphs) {
 			var key, fallbacks = {
 				'\u2011': '\u002d',
@@ -361,14 +308,11 @@ var Cufon = (function() {
 			}
 			return glyphs;
 		})(data.glyphs);
-
 		this.w = data.w;
 		this.baseSize = parseInt(face['units-per-em'], 10);
-
 		this.family = face['font-family'].toLowerCase();
 		this.weight = face['font-weight'];
 		this.style = face['font-style'] || 'normal';
-
 		this.viewBox = (function () {
 			var parts = face.bbox.split(/\s+/);
 			var box = {
@@ -384,12 +328,9 @@ var Cufon = (function() {
 			};
 			return box;
 		})();
-
 		this.ascent = -parseInt(face.ascent, 10);
 		this.descent = -parseInt(face.descent, 10);
-
 		this.height = -this.ascent + this.descent;
-
 		this.spacing = function(chars, letterSpacing, wordSpacing) {
 			var glyphs = this.glyphs, glyph,
 				kerning, k,
@@ -415,20 +356,15 @@ var Cufon = (function() {
 			jumps.total = width;
 			return jumps;
 		};
-
 	}
-
 	function FontFamily() {
-
 		var styles = {}, mapping = {
 			oblique: 'italic',
 			italic: 'oblique'
 		};
-
 		this.add = function(font) {
 			(styles[font.style] || (styles[font.style] = {}))[font.weight] = font;
 		};
-
 		this.get = function(style, weight) {
 			var weights = styles[style] || styles[mapping[style]]
 				|| styles.normal || styles.italic || styles.oblique;
@@ -465,11 +401,8 @@ var Cufon = (function() {
 			});
 			return weights[alts[0]];
 		};
-
 	}
-
 	function HoverHandler() {
-
 		function contains(node, anotherNode) {
 			try {
 				if (node.contains) return node.contains(anotherNode);
@@ -478,7 +411,6 @@ var Cufon = (function() {
 			catch(e) {} // probably a XUL element such as a scrollbar
 			return false;
 		}
-
 		// mouseover/mouseout (standards) mode
 		function onOverOut(e) {
 			var related = e.relatedTarget;
@@ -487,7 +419,6 @@ var Cufon = (function() {
 			if (related && contains(this, related)) return;
 			trigger(this, e.type == 'mouseover');
 		}
-
 		// mouseenter/mouseleave (probably ie) mode
 		function onEnterLeave(e) {
 			if (!e) e = window.event;
@@ -495,7 +426,6 @@ var Cufon = (function() {
 			// mouseenter/leave doesn't bubble so it's fine.
 			trigger(e.target || e.srcElement, e.type == 'mouseenter');
 		}
-
 		function trigger(el, hoverState) {
 			// A timeout is needed so that the event can actually "happen"
 			// before replace is triggered. This ensures that styles are up
@@ -509,7 +439,6 @@ var Cufon = (function() {
 				api.replace(el, options, true);
 			}, 10);
 		}
-
 		this.attach = function(el) {
 			if (el.onmouseenter === undefined) {
 				addEvent(el, 'mouseover', onOverOut);
@@ -520,7 +449,6 @@ var Cufon = (function() {
 				addEvent(el, 'mouseleave', onEnterLeave);
 			}
 		};
-
 		this.detach = function(el) {
 			if (el.onmouseenter === undefined) {
 				removeEvent(el, 'mouseover', onOverOut);
@@ -531,70 +459,50 @@ var Cufon = (function() {
 				removeEvent(el, 'mouseleave', onEnterLeave);
 			}
 		};
-
 	}
-
 	function ReplaceHistory() {
-
 		var list = [], map = {};
-
 		function filter(keys) {
 			var values = [], key;
 			for (var i = 0; key = keys[i]; ++i) values[i] = list[map[key]];
 			return values;
 		}
-
 		this.add = function(key, args) {
 			map[key] = list.push(args) - 1;
 		};
-
 		this.repeat = function() {
 			var snapshot = arguments.length ? filter(arguments) : list, args;
 			for (var i = 0; args = snapshot[i++];) api.replace(args[0], args[1], true);
 		};
-
 	}
-
 	function Storage() {
-
 		var map = {}, at = 0;
-
 		function identify(el) {
 			return el.cufid || (el.cufid = ++at);
 		}
-
 		this.get = function(el) {
 			var id = identify(el);
 			return map[id] || (map[id] = {});
 		};
-
 	}
-
 	function Style(style) {
-
 		var custom = {}, sizes = {};
-
 		this.extend = function(styles) {
 			for (var property in styles) {
 				if (hasOwnProperty(styles, property)) custom[property] = styles[property];
 			}
 			return this;
 		};
-
 		this.get = function(property) {
 			return custom[property] != undefined ? custom[property] : style[property];
 		};
-
 		this.getSize = function(property, base) {
 			return sizes[property] || (sizes[property] = new CSS.Size(this.get(property), base));
 		};
-
 		this.isUsable = function() {
 			return !!style;
 		};
-
 	}
-
 	function addEvent(el, type, listener) {
 		if (el.addEventListener) {
 			el.addEventListener(type, listener, false);
@@ -604,7 +512,6 @@ var Cufon = (function() {
 			el.attachEvent('on' + type, listener);
 		}
 	}
-
 	function attach(el, options) {
 		if (options._mediatorMode) return el;
 		var storage = sharedStorage.get(el);
@@ -619,7 +526,6 @@ var Cufon = (function() {
 		storage.options = options;
 		return el;
 	}
-
 	function cached(fun) {
 		var cache = {};
 		return function(key) {
@@ -627,7 +533,6 @@ var Cufon = (function() {
 			return cache[key];
 		};
 	}
-
 	function getFont(el, style) {
 		var families = CSS.quotedList(style.get('fontFamily').toLowerCase()), family;
 		for (var i = 0; family = families[i]; ++i) {
@@ -635,15 +540,12 @@ var Cufon = (function() {
 		}
 		return null;
 	}
-
 	function elementsByTagName(query) {
 		return document.getElementsByTagName(query);
 	}
-
 	function hasOwnProperty(obj, property) {
 		return obj.hasOwnProperty(property);
 	}
-
 	function merge() {
 		var merged = {}, arg, key;
 		for (var i = 0, l = arguments.length; arg = arguments[i], i < l; ++i) {
@@ -653,7 +555,6 @@ var Cufon = (function() {
 		}
 		return merged;
 	}
-
 	function process(font, text, style, options, node, el) {
 		var fragment = document.createDocumentFragment(), processed;
 		if (text === '') return fragment;
@@ -672,7 +573,6 @@ var Cufon = (function() {
 		}
 		return fragment;
 	}
-
 	function removeEvent(el, type, listener) {
 		if (el.removeEventListener) {
 			el.removeEventListener(type, listener, false);
@@ -681,7 +581,6 @@ var Cufon = (function() {
 			el.detachEvent('on' + type, listener);
 		}
 	}
-
 	function replaceElement(el, options) {
 		var name = el.nodeName.toLowerCase();
 		if (options.ignore[name]) return;
@@ -748,7 +647,6 @@ var Cufon = (function() {
 		}
 		if (options.onAfterReplace) options.onAfterReplace(el, options);
 	}
-
 	function updateShy(context) {
 		var shys, shy, parent, glue, newGlue, next, prev, i;
 		shys = context.getElementsByTagName(TAG_SHY);
@@ -794,7 +692,6 @@ var Cufon = (function() {
 			}
 		}
 	}
-
 	function updateShyOnResize() {
 		if (ignoreResize) return; // needed for IE
 		CSS.addClass(DOM.root(), C_VIEWPORT_RESIZING);
@@ -806,13 +703,11 @@ var Cufon = (function() {
 			ignoreResize = false;
 		}, 100);
 	}
-
 	var HAS_BROKEN_REGEXP = ' '.split(/\s+/).length == 0;
 	var TAG_GLUE = 'cufonglue';
 	var TAG_SHY = 'cufonshy';
 	var C_SHY_DISABLED = 'cufon-shy-disabled';
 	var C_VIEWPORT_RESIZING = 'cufon-viewport-resizing';
-
 	var sharedStorage = new Storage();
 	var hoverHandler = new HoverHandler();
 	var replaceHistory = new ReplaceHistory();
@@ -820,7 +715,6 @@ var Cufon = (function() {
 	var trackingShy = false;
 	var shyTimer;
 	var ignoreResize = false;
-
 	var engines = {}, fonts = {}, defaultOptions = {
 		autoDetect: false,
 		engine: null,
@@ -880,7 +774,6 @@ var Cufon = (function() {
 		textShadow: 'none',
 		trim: 'advanced'
 	};
-
 	var separators = {
 		// The first pattern may cause unicode characters above
 		// code point 255 to be removed in Safari 3.0. Luckily enough
@@ -890,23 +783,19 @@ var Cufon = (function() {
 		characters: '',
 		none: /^/
 	};
-
 	api.now = function() {
 		DOM.ready();
 		return api;
 	};
-
 	api.refresh = function() {
 		replaceHistory.repeat.apply(replaceHistory, arguments);
 		return api;
 	};
-
 	api.registerEngine = function(id, engine) {
 		if (!engine) return api;
 		engines[id] = engine;
 		return api.set('engine', id);
 	};
-
 	api.registerFont = function(data) {
 		if (!data) return api;
 		var font = new Font(data), family = font.family;
@@ -914,7 +803,6 @@ var Cufon = (function() {
 		fonts[family].add(font);
 		return api.set('fontFamily', '"' + family + '"');
 	};
-
 	api.replace = function(elements, options, ignoreHistory) {
 		options = merge(defaultOptions, options);
 		if (!options.engine) return api; // there's no browser support so we'll just stop here
@@ -952,30 +840,22 @@ var Cufon = (function() {
 		});
 		return api;
 	};
-
 	api.set = function(option, value) {
 		defaultOptions[option] = value;
 		return api;
 	};
-
 	return api;
-
 })();
-
 Cufon.registerEngine('vml', (function() {
-
 	var ns = document.namespaces;
 	if (!ns) return;
 	ns.add('cvml', 'urn:schemas-microsoft-com:vml');
 	ns = null;
-
 	var check = document.createElement('cvml:shape');
 	check.style.behavior = 'url(#default#VML)';
 	if (!check.coordsize) return; // VML isn't supported
 	check = null;
-
 	var HAS_BROKEN_LINEHEIGHT = (document.documentMode || 0) < 8;
-
 	document.write(('<style type="text/css">' +
 		'cufoncanvas{text-indent:0;}' +
 		'@media screen{' +
@@ -996,11 +876,9 @@ Cufon.registerEngine('vml', (function() {
 			'cufon cufoncanvas{display:none;}' +
 		'}' +
 	'</style>').replace(/;/g, '!important;'));
-
 	function getFontSizeInPixels(el, value) {
 		return getSizeInPixels(el, /(?:em|ex|%)$|^[a-z-]+$/i.test(value) ? '1em' : value);
 	}
-
 	// Original by Dead Edwards.
 	// Combined with getFontSizeInPixels it also works with relative units.
 	function getSizeInPixels(el, value) {
@@ -1013,7 +891,6 @@ Cufon.registerEngine('vml', (function() {
 		el.runtimeStyle.left = runtimeStyle;
 		return result;
 	}
-
 	function getSpacingValue(el, style, size, property) {
 		var key = 'computed' + property, value = style[key];
 		if (isNaN(value)) {
@@ -1022,9 +899,7 @@ Cufon.registerEngine('vml', (function() {
 		}
 		return value;
 	}
-
 	var fills = {};
-
 	function gradientFill(gradient) {
 		var id = gradient.id;
 		if (!fills[id]) {
@@ -1043,19 +918,12 @@ Cufon.registerEngine('vml', (function() {
 		}
 		return fills[id];
 	}
-
 	return function(font, text, style, options, node, el, hasNext) {
-
 		var redraw = (text === null);
-
 		if (redraw) text = node.alt;
-
 		var viewBox = font.viewBox;
-
 		var size = style.computedFontSize || (style.computedFontSize = new Cufon.CSS.Size(getFontSizeInPixels(el, style.get('fontSize')) + 'px', font.baseSize));
-
 		var wrapper, canvas;
-
 		if (redraw) {
 			wrapper = node;
 			canvas = node.firstChild;
@@ -1064,65 +932,47 @@ Cufon.registerEngine('vml', (function() {
 			wrapper = document.createElement('cufon');
 			wrapper.className = 'cufon cufon-vml';
 			wrapper.alt = text;
-
 			canvas = document.createElement('cufoncanvas');
 			wrapper.appendChild(canvas);
-
 			if (options.printable) {
 				var print = document.createElement('cufontext');
 				print.appendChild(document.createTextNode(text));
 				wrapper.appendChild(print);
 			}
-
 			// ie6, for some reason, has trouble rendering the last VML element in the document.
 			// we can work around this by injecting a dummy element where needed.
 			// @todo find a better solution
 			if (!hasNext) wrapper.appendChild(document.createElement('cvml:shape'));
 		}
-
 		var wStyle = wrapper.style;
 		var cStyle = canvas.style;
-
 		var height = size.convert(viewBox.height), roundedHeight = Math.ceil(height);
 		var roundingFactor = roundedHeight / height;
 		var stretchFactor = roundingFactor * Cufon.CSS.fontStretch(style.get('fontStretch'));
 		var minX = viewBox.minX, minY = viewBox.minY;
-
 		cStyle.height = roundedHeight;
 		cStyle.top = Math.round(size.convert(minY - font.ascent));
 		cStyle.left = Math.round(size.convert(minX));
-
 		wStyle.height = size.convert(font.height) + 'px';
-
 		var color = style.get('color');
 		var chars = Cufon.CSS.textTransform(text, style).split('');
-
 		var jumps = font.spacing(chars,
 			getSpacingValue(el, style, size, 'letterSpacing'),
 			getSpacingValue(el, style, size, 'wordSpacing')
 		);
-
 		if (!jumps.length) return null;
-
 		var width = jumps.total;
 		var fullWidth = -minX + width + (viewBox.width - jumps[jumps.length - 1]);
-
 		var shapeWidth = size.convert(fullWidth * stretchFactor), roundedShapeWidth = Math.round(shapeWidth);
-
 		var coordSize = fullWidth + ',' + viewBox.height, coordOrigin;
 		var stretch = 'r' + coordSize + 'ns';
-
 		var fill = options.textGradient && gradientFill(options.textGradient);
-
 		var glyphs = font.glyphs, offsetX = 0;
 		var shadows = options.textShadow;
 		var i = -1, j = 0, chr;
-
 		while (chr = chars[++i]) {
-
 			var glyph = glyphs[chars[i]] || font.missingGlyph, shape;
 			if (!glyph) continue;
-
 			if (redraw) {
 				// some glyphs may be missing so we can't use i
 				shape = canvas.childNodes[j];
@@ -1132,20 +982,16 @@ Cufon.registerEngine('vml', (function() {
 				shape = document.createElement('cvml:shape');
 				canvas.appendChild(shape);
 			}
-
 			shape.stroked = 'f';
 			shape.coordsize = coordSize;
 			shape.coordorigin = coordOrigin = (minX - offsetX) + ',' + minY;
 			shape.path = (glyph.d ? 'm' + glyph.d + 'xe' : '') + 'm' + coordOrigin + stretch;
 			shape.fillcolor = color;
-
 			if (fill) shape.appendChild(fill.cloneNode(false));
-
 			// it's important to not set top/left or IE8 will grind to a halt
 			var sStyle = shape.style;
 			sStyle.width = roundedShapeWidth;
 			sStyle.height = roundedHeight;
-
 			if (shadows) {
 				// due to the limitations of the VML shadow element there
 				// can only be two visible shadows. opacity is shared
@@ -1165,16 +1011,11 @@ Cufon.registerEngine('vml', (function() {
 				shadow.opacity = color1.opacity || (color2 && color2.opacity) || 1;
 				shape.appendChild(shadow);
 			}
-
 			offsetX += jumps[j++];
 		}
-
 		// addresses flickering issues on :hover
-
 		var cover = shape.nextSibling, coverFill, vStyle;
-
 		if (options.forceHitArea) {
-
 			if (!cover) {
 				cover = document.createElement('cvml:rect');
 				cover.stroked = 'f';
@@ -1184,54 +1025,36 @@ Cufon.registerEngine('vml', (function() {
 				cover.appendChild(coverFill);
 				canvas.appendChild(cover);
 			}
-
 			vStyle = cover.style;
-
 			vStyle.width = roundedShapeWidth;
 			vStyle.height = roundedHeight;
-
 		}
 		else if (cover) canvas.removeChild(cover);
-
 		wStyle.width = Math.max(Math.ceil(size.convert(width * stretchFactor)), 0);
-
 		if (HAS_BROKEN_LINEHEIGHT) {
-
 			var yAdjust = style.computedYAdjust;
-
 			if (yAdjust === undefined) {
 				var lineHeight = style.get('lineHeight');
 				if (lineHeight == 'normal') lineHeight = '1em';
 				else if (!isNaN(lineHeight)) lineHeight += 'em'; // no unit
 				style.computedYAdjust = yAdjust = 0.5 * (getSizeInPixels(el, lineHeight) - parseFloat(wStyle.height));
 			}
-
 			if (yAdjust) {
 				wStyle.marginTop = Math.ceil(yAdjust) + 'px';
 				wStyle.marginBottom = yAdjust + 'px';
 			}
-
 		}
-
 		return wrapper;
-
 	};
-
 })());
-
 Cufon.registerEngine('canvas', (function() {
-
 	// Safari 2 doesn't support .apply() on native methods
-
 	var check = document.createElement('canvas');
 	if (!check || !check.getContext || !check.getContext.apply) return;
 	check = null;
-
 	var HAS_INLINE_BLOCK = Cufon.CSS.supports('display', 'inline-block');
-
 	// Firefox 2 w/ non-strict doctype (almost standards mode)
 	var HAS_BROKEN_LINEHEIGHT = !HAS_INLINE_BLOCK && (document.compatMode == 'BackCompat' || /frameset|transitional/i.test(document.doctype.publicId));
-
 	var styleSheet = document.createElement('style');
 	styleSheet.type = 'text/css';
 	styleSheet.appendChild(document.createTextNode((
@@ -1255,7 +1078,6 @@ Cufon.registerEngine('canvas', (function() {
 		'}'
 	).replace(/;/g, '!important;')));
 	document.getElementsByTagName('head')[0].appendChild(styleSheet);
-
 	function generateFromVML(path, context) {
 		var atX = 0, atY = 0;
 		var code = [], re = /([mrvxe])([^a-z]*)/g, match;
@@ -1281,24 +1103,17 @@ Cufon.registerEngine('canvas', (function() {
 		}
 		return code;
 	}
-
 	function interpret(code, context) {
 		for (var i = 0, l = code.length; i < l; ++i) {
 			var line = code[i];
 			context[line.m].apply(context, line.a);
 		}
 	}
-
 	return function(font, text, style, options, node, el) {
-
 		var redraw = (text === null);
-
 		if (redraw) text = node.getAttribute('alt');
-
 		var viewBox = font.viewBox;
-
 		var size = style.getSize('fontSize', font.baseSize);
-
 		var expandTop = 0, expandRight = 0, expandBottom = 0, expandLeft = 0;
 		var shadows = options.textShadow, shadowOffsets = [];
 		if (shadows) {
@@ -1313,23 +1128,16 @@ Cufon.registerEngine('canvas', (function() {
 				if (x < expandLeft) expandLeft = x;
 			}
 		}
-
 		var chars = Cufon.CSS.textTransform(text, style).split('');
-
 		var jumps = font.spacing(chars,
 			~~size.convertFrom(parseFloat(style.get('letterSpacing')) || 0),
 			~~size.convertFrom(parseFloat(style.get('wordSpacing')) || 0)
 		);
-
 		if (!jumps.length) return null; // there's nothing to render
-
 		var width = jumps.total;
-
 		expandRight += viewBox.width - jumps[jumps.length - 1];
 		expandLeft += viewBox.minX;
-
 		var wrapper, canvas;
-
 		if (redraw) {
 			wrapper = node;
 			canvas = node.firstChild;
@@ -1338,44 +1146,33 @@ Cufon.registerEngine('canvas', (function() {
 			wrapper = document.createElement('cufon');
 			wrapper.className = 'cufon cufon-canvas';
 			wrapper.setAttribute('alt', text);
-
 			canvas = document.createElement('canvas');
 			wrapper.appendChild(canvas);
-
 			if (options.printable) {
 				var print = document.createElement('cufontext');
 				print.appendChild(document.createTextNode(text));
 				wrapper.appendChild(print);
 			}
 		}
-
 		var wStyle = wrapper.style;
 		var cStyle = canvas.style;
-
 		var height = size.convert(viewBox.height);
 		var roundedHeight = Math.ceil(height);
 		var roundingFactor = roundedHeight / height;
 		var stretchFactor = roundingFactor * Cufon.CSS.fontStretch(style.get('fontStretch'));
 		var stretchedWidth = width * stretchFactor;
-
 		var canvasWidth = Math.ceil(size.convert(stretchedWidth + expandRight - expandLeft));
 		var canvasHeight = Math.ceil(size.convert(viewBox.height - expandTop + expandBottom));
-
 		canvas.width = canvasWidth;
 		canvas.height = canvasHeight;
-
 		// needed for WebKit and full page zoom
 		cStyle.width = canvasWidth + 'px';
 		cStyle.height = canvasHeight + 'px';
-
 		// minY has no part in canvas.height
 		expandTop += viewBox.minY;
-
 		cStyle.top = Math.round(size.convert(expandTop - font.ascent)) + 'px';
 		cStyle.left = Math.round(size.convert(expandLeft)) + 'px';
-
 		var wrapperWidth = Math.max(Math.ceil(size.convert(stretchedWidth)), 0) + 'px';
-
 		if (HAS_INLINE_BLOCK) {
 			wStyle.width = wrapperWidth;
 			wStyle.height = size.convert(font.height) + 'px';
@@ -1384,7 +1181,6 @@ Cufon.registerEngine('canvas', (function() {
 			wStyle.paddingLeft = wrapperWidth;
 			wStyle.paddingBottom = (size.convert(font.height) - 1) + 'px';
 		}
-
 		var g = canvas.getContext('2d'), scale = height / viewBox.height;
 		var pixelRatio = window.devicePixelRatio || 1;
 		if (pixelRatio != 1) {
@@ -1392,12 +1188,10 @@ Cufon.registerEngine('canvas', (function() {
 			canvas.height = canvasHeight * pixelRatio;
 			g.scale(pixelRatio, pixelRatio);
 		}
-
 		// proper horizontal scaling is performed later
 		g.scale(scale, scale * roundingFactor);
 		g.translate(-expandLeft, -expandTop);
 		g.save();
-
 		function renderText() {
 			var glyphs = font.glyphs, glyph, i = -1, j = -1, chr;
 			g.scale(stretchFactor, 1);
@@ -1418,7 +1212,6 @@ Cufon.registerEngine('canvas', (function() {
 			}
 			g.restore();
 		}
-
 		if (shadows) {
 			for (var i = shadows.length; i--;) {
 				var shadow = shadows[i];
@@ -1428,7 +1221,6 @@ Cufon.registerEngine('canvas', (function() {
 				renderText();
 			}
 		}
-
 		var gradient = options.textGradient;
 		if (gradient) {
 			var stops = gradient.stops, fill = g.createLinearGradient(0, viewBox.minY, 0, viewBox.maxY);
@@ -1438,11 +1230,7 @@ Cufon.registerEngine('canvas', (function() {
 			g.fillStyle = fill;
 		}
 		else g.fillStyle = style.get('color');
-
 		renderText();
-
 		return wrapper;
-
 	};
-
 })());

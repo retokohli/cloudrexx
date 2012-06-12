@@ -19,7 +19,6 @@
 //	});
 //	});
 //})(jQuery);
-
 // background resize init
 function initBackgroundResize() {
 	var holder = document.getElementById('bg');
@@ -31,10 +30,8 @@ function initBackgroundResize() {
 		BackgroundStretcher.setBgHolder(holder);
 	}
 }
-
 if (window.addEventListener) window.addEventListener("load", initBackgroundResize, false);
 else if (window.attachEvent) window.attachEvent("onload", initBackgroundResize);
-
 // image stretch module
 BackgroundStretcher = {
 	images: [],
@@ -51,7 +48,6 @@ BackgroundStretcher = {
 	stretchImage: function(origImg) {
 		// wrap image and apply smoothing
 		var obj = this.prepareImage(origImg);
-		
 		// handle onload
 		var img = new Image();
 		img.onload = this.bind(function(){
@@ -65,7 +61,6 @@ BackgroundStretcher = {
 		var wrapper = document.createElement('span');
 		img.parentNode.insertBefore(wrapper, img);
 		wrapper.appendChild(img);
-	
 		if(/MSIE (6|7|8)/.test(navigator.userAgent) && img.tagName.toLowerCase() === 'img') {
 			wrapper.style.position = 'absolute';
 			wrapper.style.display = 'block';
@@ -125,7 +120,6 @@ BackgroundStretcher = {
 		for(var i = 0; i < this.holders.length; i++) {
 			this.holders[i].style.width = '100%'; 
 		}
-		
 		// delay required for IE to handle resize
 		clearTimeout(this.resizeTimer);
 		this.resizeTimer = setTimeout(this.bind(function(){
@@ -133,7 +127,6 @@ BackgroundStretcher = {
 			for(var i = 0; i < this.holders.length; i++) {
 				this.holders[i].style.display = 'none';
 			}
-			
 			// calculate real page dimensions with hidden background blocks
 			if(typeof this.stretchBy === 'string') {
 				// resize by window or page dimensions
@@ -151,7 +144,6 @@ BackgroundStretcher = {
 				this.viewWidth = this.stretchBy.offsetWidth;
 				this.viewHeight = this.stretchBy.offsetHeight;
 			}
-			
 			// show and resize all background holders
 			for(i = 0; i < this.holders.length; i++) {
 				this.holders[i].style.display = 'block';
@@ -233,7 +225,6 @@ function initInputs() {
 		}
 	}
 }
-
 // input type placeholder class
 ;(function(){
 	PlaceholderInput = function() {
@@ -385,7 +376,6 @@ function initInputs() {
 			if(!el) return; else if(state) addClass(el,cls); else removeClass(el,cls);
 		}
 	}
-	
 	// utility functions
 	function hasClass(el,cls) {
 		return el.className ? el.className.match(new RegExp('(\\s|^)'+cls+'(\\s|$J)')) : false;
@@ -409,7 +399,6 @@ function initInputs() {
 		}
 	}
 }());
-
 if (window.addEventListener) window.addEventListener("load", initInputs, false);
 else if (window.attachEvent) window.attachEvent("onload", initInputs);
 // init rounded corners
@@ -427,7 +416,6 @@ function initRoundedCorners() {
 		}
 	}
 }
-
 // DOM ready
 function domReady(handler){
 	var called = false
@@ -461,11 +449,7 @@ function domReady(handler){
 	if (window.addEventListener) window.addEventListener('load', ready, false)
 	else if (window.attachEvent) window.attachEvent('onload', ready)
 }
-
 domReady(initRoundedCorners);
-
-
-
 // rounded image module
 ;(function(window){
 	// init VML for IE6, IE7, IE8
@@ -495,7 +479,6 @@ domReady(initRoundedCorners);
 			}
 		}
 	}
-
 	// browsers techniques support detection
 	var supportCanvas = !!document.createElement('canvas').getContext;
 	var supportBorderRadius = (function(){
@@ -509,7 +492,6 @@ domReady(initRoundedCorners);
 		}
 		return false;
 	}());
-	
 	// rounded image class
 	ImgCorner = function() {
 		this.options = {
@@ -535,7 +517,6 @@ domReady(initRoundedCorners);
 				this.realImage = this.options.image;
 				this.borderWidth = parseInt(this.getStyle(this.realImage, 'borderTopWidth')) || 0;
 				this.borderColor = this.getStyle(this.realImage, 'borderTopColor') || '#333';
-			
 				this.tmpImage = new Image();
 				this.tmpImage.onload = this.bind(function() {
 					this.realWidth = this.tmpImage.width;
@@ -576,12 +557,10 @@ domReady(initRoundedCorners);
 					dc.lineTo(x,y+r);
 					dc.arc(x+r,y+r,r,a*180,a*270,false); 
 				}
-			
 				// create rounded path
 				ctx = canvas.getContext('2d');
 				ctx.save();
 				createPath(ctx, this.borderWidth,this.borderWidth,this.realWidth,this.realHeight,this.options.radius, this.borderWidth);
-
 				// draw border only if needed
 				if(this.borderWidth) {
 					ctx.strokeStyle = this.borderColor;
@@ -591,7 +570,6 @@ domReady(initRoundedCorners);
 				ctx.clip();
 				ctx.drawImage(this.tmpImage,this.borderWidth,this.borderWidth);
 				ctx.restore();
-
 				// append canvas image
 				this.realImage.style.display = 'none';
 				this.realImage.parentNode.insertBefore(canvas, this.realImage);
@@ -608,7 +586,6 @@ domReady(initRoundedCorners);
 			sh.path = 'm '+r+',0 l '+(w-r)+',0 qx '+w+','+r+' l '+w+','+(h-r)+' qy '+(w-r)+','+h+' l '+r+','+h+' qx 0,'+(h-r)+' l 0,'+r+' qy '+r+',0 e';
 			sh.coordorigin = "-1 -1";
 			sh.coordsize = w+' '+h;
-
 			// draw border if needed
 			if(this.borderWidth) {
 				sh.strokecolor = this.borderColor;
@@ -617,7 +594,6 @@ domReady(initRoundedCorners);
 			} else {
 				sh.stroked = false;
 			}
-			
 			filler.style.display = 'inline-block';
 			filler.setAttribute('type', 'frame');
 			filler.setAttribute('src', this.realImage.src);
@@ -634,16 +610,13 @@ domReady(initRoundedCorners);
 			span.style.display = 'inline-block';
 			span.style.background = 'url('+this.realImage.src+')';
 			span.style.overflow = 'hiddden';
-			
 			for(var i = 0; i < borderAttr.length; i++) {
 				span.style[borderAttr[i]] = this.options.radius + 'px';
 			}
-			
 			// draw border if needed
 			if(this.borderWidth) {
 				span.style.border = this.borderWidth+'px solid '+this.borderColor;
 			}
-			
 			this.realImage.style.border = '0';
 			this.realImage.style.display = 'none';
 			this.realImage.parentNode.insertBefore(span, this.realImage);
