@@ -1,0 +1,28 @@
+#aside{
+    display: none;
+}
+.entries .heading {
+    border-bottom: 1px solid #ECEDF3;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
+#blog div.entries h2{
+    margin-bottom: 0px;
+}
+.posted img{
+    padding-right: 10px;
+     float: left;
+       padding-top: 3px;
+}
+.posted span,.posted a{
+    padding-right: 26px;
+     float: left;
+}
+
+#blog div.posted {
+    color: #555555;
+    font-size: 12px;
+    padding: 0 0 18px;
+     text-transform: capitalize;
+      font-style: normal;
+}

@@ -849,6 +849,8 @@ div#livecam #CALBUTTONDPC_datum {
     box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.1);
     margin: 0 -1px 19px;
     padding: 8px;
+    width: 634px;
+    height: 284px;
 }
 #blog div.search_date {
     float:left;
