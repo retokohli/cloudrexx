@@ -958,7 +958,7 @@ class Page extends \Cx\Model\Base\EntityBase
                 $accessId = $this->getBackendAccessId();
                 $this->eraseAccessId($accessId);
             }
-            $this->setFrontendAccessId(0);
+            $this->setBackendAccessId(0);
             $this->protection = $this->protection & ~BACKEND_PROTECTION;
         }
     }
