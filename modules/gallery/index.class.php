@@ -69,7 +69,7 @@ class Gallery
     */
     function getPage()
     {
-        if (!isset($_GET['cmd'])) {
+        if (empty($_GET['cmd'])) {
             $_GET['cmd'] = '';
         } else {
             $this->strCmd = '&amp;cmd='.intval($_GET['cmd']);
