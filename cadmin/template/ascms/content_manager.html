@@ -32,27 +32,46 @@ Text[15]=["","{TXT_CORE_CM_CSS_NAV_CLASS_INFO}"];
     <li class="level_3">{CONTENT_TITLE}</li>
 </ul>
 <div id="content-manager" class="{CM_HIDE_LIST}" width="100%">
-    <div class="left" class="{SIDEBAR_TOGGLE_CLASS}">
-        <div id="site-language" class="clearfix">
-            <div class="navi" style="display: none;">
-                <a href="index.php?cmd=content&act=new">{TXT_NEW_PAGE}</a>
-                <a href="index.php?cmd=workflow">{TXT_CONTENT_HISTORY}</a>
-                <a href="index.php?cmd=media&archive=content">{TXT_IMAGE_ADMINISTRATION}</a>
+    <div class="left_wrapper">
+        <div class="left" class="{SIDEBAR_TOGGLE_CLASS}">
+            <div id="site-language" class="clearfix">
+                <div class="navi" style="display: none;">
+                    <a href="index.php?cmd=content&act=new">{TXT_NEW_PAGE}</a>
+                    <a href="index.php?cmd=workflow">{TXT_CONTENT_HISTORY}</a>
+                    <a href="index.php?cmd=media&archive=content">{TXT_IMAGE_ADMINISTRATION}</a>
+                </div>
+                <select class="chzn-select">{LANGSWITCH_OPTIONS}</select>
             </div>
-            <select class="chzn-select">{LANGSWITCH_OPTIONS}</select>
+            <div id="site-structure">
+                <table class="adminlist" width="100%">
+                    <tr>
+                        <th class="page" width="42%">{TXT_CORE_CM_STATUS_PAGE}</th>
+                        <th class="translation" width="11%">{TXT_CORE_CM_TRANSLATIONS}</th>
+                        <th class="module" width="17%">{TXT_CORE_CM_SECTION_CMD}</th>
+                        <th class="preview" width="7%"></th>
+                        <th class="lastupdate" width="16%">{TXT_CORE_CM_DATE_USER}</th>
+                        <th class="actions" width="7%"></th>
+                    </tr>
+                </table>
+                <div id="site-tree"></div>
+            </div>
         </div>
-        <div id="site-structure">
-            <table class="adminlist" width="100%">
-                <tr>
-                    <th class="page" width="42%">{TXT_CORE_CM_STATUS_PAGE}</th>
-                    <th class="translation" width="11%">{TXT_CORE_CM_TRANSLATIONS}</th>
-                    <th class="module" width="17%">{TXT_CORE_CM_SECTION_CMD}</th>
-                    <th class="preview" width="7%"></th>
-                    <th class="lastupdate" width="16%">{TXT_CORE_CM_DATE_USER}</th>
-                    <th class="actions" width="7%"></th>
-                </tr>
-            </table>
-            <div id="site-tree"></div>
+        <div id="multiple-actions">
+            <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="" />
+            <span id="multiple-actions-marking" style="{MULTIPLE_ACTIONS_MARKING_STYLE}">
+                <a href="#" class="multiple-actions-marking checked">{TXT_SELECT_ALL}</a> /
+                <a href="#" class="multiple-actions-marking unchecked">{TXT_DESELECT_ALL}</a>
+                <img src="images/icons/strike.gif" alt="layout" />
+            </span>
+            <select action="." id="select-multiple-actions">
+                <option value="0">{TXT_MULTISELECT_SELECT}</option>
+                <option value="publish">{TXT_MULTISELECT_PUBLISH}</option>
+                <option value="activate">{TXT_MULTISELECT_ACTIVATE}</option>
+                <option value="deactivate">{TXT_MULTISELECT_DEACTIVATE}</option>
+                <option value="show">{TXT_MULTISELECT_SHOW}</option>
+                <option value="hide">{TXT_MULTISELECT_HIDE}</option>
+                <option value="delete">{TXT_MULTISELECT_DELETE}</option>
+            </select>
         </div>
     </div>
     <div class="right">

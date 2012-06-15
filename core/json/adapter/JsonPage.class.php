@@ -67,7 +67,7 @@ class JsonPage implements JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('get', 'set', 'setPagePreview', 'getHistoryTable');
+        return array('get', 'set', 'multipleSet', 'setPagePreview', 'getHistoryTable');
     }
 
     /**
@@ -318,8 +318,39 @@ class JsonPage implements JsonAdapter {
         
         return array(
             'reload' => $reload,
-            'id'     => $page->getId()
+            'id'     => $page->getId(),
+            'node'   => $page->getNode()->getId(),
+            'lang'   => \FWLanguage::getLanguageCodeById($page->getLang()),
         );
+    }
+
+    /**
+     * Sets multiple pages.
+     * 
+     * @param  array  äparam  Client parameters.
+     */
+    public function multipleSet($params) {
+        $post = $params['post'];
+        $data['post']['lang']   = $post['lang'];
+        $data['post']['action'] = $post['action'];
+        $return = array();
+        
+        foreach ($post['nodes'] as $nodeId) {
+            $data['post']['nodeId'] = $nodeId;
+            $node = $this->nodeRepo->findOneById($nodeId);
+            $page = $node->getPage(\FWLanguage::getLanguageIdByCode($post['lang']));
+            if (!empty($page)) {
+                $data['post']['pageId'] = $page->getId();
+            } else {
+                $data['post']['pageId'] = 0;
+            }
+            $result = $this->set($data);
+            if (($result['node'] == $post['currentNodeId']) && ($result['lang'] == $post['lang'])) {
+                $return['id'] = $result['id'];
+            }
+        }
+        
+        return $return;
     }
 
     /**

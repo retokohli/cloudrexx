@@ -35,14 +35,19 @@ h1{ font-size: 20px }
     background: transparent;
 }
 
+#content-manager .left_wrapper {
+    display: table-cell;
+    float: left;
+    width: 100%;
+    margin: 0 14px 70px 0;
+}
+
 #content-manager .left {
     display: table-cell;
     float: left;
     width: 100%;
-    padding: 0;
     border-right: 1px solid #e5e5e5;
     border-left: 1px solid #e5e5e5;
-    margin: 0 14px 70px 0;
 }
 
 #content-manager .right {
@@ -116,6 +121,12 @@ h1{ font-size: 20px }
     display: none;
     position: absolute;
     left: 22%;
+}
+
+#multiple-actions {
+    float: left;
+    padding: 8px;
+    
 }
 
 #subnavbar_level1 {
