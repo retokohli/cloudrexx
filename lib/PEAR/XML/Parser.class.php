@@ -40,6 +40,11 @@
 require_once ASCMS_LIBRARY_PATH.'/PEAR/PEAR.php';
 
 /**
+ * @ignore
+ */
+require_once ASCMS_LIBRARY_PATH.'/PEAR/HTTP/Request2.php';
+
+/**
  * resource could not be created
  */
 define('XML_PARSER_ERROR_NO_RESOURCE', 200);
@@ -109,11 +114,11 @@ class XML_Parser extends PEAR
     var $parser;
 
     /**
-     * File handle if parsing from a file
+     * input XML
      *
-     * @var  resource
+     * @var  string
      */
-    var $fp;
+    var $xml;
 
     /**
      * Whether to do case folding
@@ -317,105 +322,42 @@ class XML_Parser extends PEAR
         }
     }
 
-    // }}}
-    // {{{ setInputFile()
-
-    /**
-     * Sets the input xml file to be parsed
-     *
-     * @param    string      Filename (full path)
-     * @return   resource    fopen handle of the given file
-     * @throws   XML_Parser_Error
-     * @see      setInput(), setInputString(), parse()
-     * @access   public
-     */
-    function setInputFile($file)
-    {
-        /**
-         * check, if file is a remote file
-         */
-        if (eregi('^(http|ftp)://', substr($file, 0, 10))) {
-            if (!ini_get('safe_mode')) {
-                ini_set('allow_url_fopen', 1);
-            } else {
-                return $this->raiseError('Remote files cannot be parsed, as safe mode is enabled.', XML_PARSER_ERROR_REMOTE);
-            }
-        }
-
-        $fp = @fopen($file, 'rb');
-        if (is_resource($fp)) {
-        	if (empty($this->srcenc)) {
-        		$rx = '#<?xml.*encoding=[\'"]?([^\'"]+).*?>#mi';
-
-        		while (!feof($fp)) {
-				    $buffer = fgets($fp);
-				    if (preg_match($rx, $buffer, $m)) {
-				      $this->srcenc = strtoupper($m[1]);
-				      break;
-				    }
-				}
-        		rewind($fp);
-			}
-
-            $this->fp = $fp;
-            return $fp;
-        }
-        return $this->raiseError('File could not be opened.', XML_PARSER_ERROR_FILE_NOT_READABLE);
-    }
-
-    // }}}
-    // {{{ setInputString()
-
-    /**
-     * XML_Parser::setInputString()
-     *
-     * Sets the xml input from a string
-     *
-     * @param string $data a string containing the XML document
-     * @return null
-     **/
-    function setInputString($data)
-    {
-        $this->fp = $data;
-        return null;
-    }
 
     // }}}
     // {{{ setInput()
 
     /**
-     * Sets the file handle to use with parse().
+     * Sets the inputxml to use with parse().
      *
-     * You should use setInputFile() or setInputString() if you
-     * pass a string
-     *
-     * @param    mixed  $fp  Can be either a resource returned from fopen(),
-     *                       a URL, a local filename or a string.
+     * @param    string  $input  Can be either a URL, a local filename or a string.
      * @access   public
      * @see      parse()
-     * @uses     setInputString(), setInputFile()
      */
-    function setInput($fp)
+    function setInput($input)
     {
-        if (is_resource($fp)) {
-            $this->fp = $fp;
-            return true;
-        }
-        // see if it's an absolute URL (has a scheme at the beginning)
-        elseif (eregi('^[a-z]+://', substr($fp, 0, 10))) {
-            return $this->setInputFile($fp);
-        }
-        // see if it's a local file
-        elseif (file_exists($fp)) {
-            return $this->setInputFile($fp);
-        }
-        // it must be a string
-        else {
-            $this->fp = $fp;
-            return true;
+        if (eregi('^[a-z]+://', substr($input, 0, 10))) {// see if it's an absolute URL (has a scheme at the beginning)
+            $objRequest = new HTTP_Request2($input);
+            $objResponse = $objRequest->send();
+
+            if ($objResponse->getStatus() == 200) {
+                $this->xml = $objResponse->getBody();
+            } else {
+                $this->raiseError('File could not be opened.', XML_PARSER_ERROR_FILE_NOT_READABLE);
+            }
+        } elseif (file_exists($input)) {// see if it's a local file
+            $file = @fopen($input, 'rb');
+            if (is_resource($file)) {
+                $this->xml = stream_get_contents($file);
+            } else {
+                $this->raiseError('File could not be opened.', XML_PARSER_ERROR_FILE_NOT_READABLE);
+            }
+        } else {// it must be a string
+            $this->xml = $input;
         }
 
-        return $this->raiseError('Illegal input format', XML_PARSER_ERROR_INVALID_INPUT);
+        if (preg_match('#<?xml.*encoding=[\'"]?([^\'"]+).*?>#mi', $this->xml, $arrCharset)) {
+            $this->srcenc = strtoupper($arrCharset[1]);
+        }
     }
 
     // }}}
@@ -437,53 +379,10 @@ class XML_Parser extends PEAR
             return $result;
         }
 
-		if(!isset($srcEncSameAsTgtEnc)){
-			$srcEncSameAsTgtEnc = (CONTREXX_CHARSET !== $this->srcenc);
-		}
-
-
-        // if $this->fp was fopened previously
-        if (is_resource($this->fp)) {
-            while ($data = fread($this->fp, 4096)) {
-				if(empty($this->srcenc)){
-					$rx = '#<?xml.*encoding=[\'"]?([^\'"]+).*?>#mi';
-				    if (preg_match($rx, $data, $m)) {
-				      $this->srcenc = strtoupper($m[1]);
-				    } else {
-				      $this->srcenc = "UTF-8"; //XML default charset is UTF-8
-				    }
-				}
-
-//				switch($this->srcenc){
-//					case 'UTF-8':
-//					case 'ISO-8859-1':
-//						break;
-//					default:
-//						echo ""
-//				}
-
-//				if(!isset($srcEncSameAsTgtEnc)){
-//			        $srcEncSameAsTgtEnc = (CONTREXX_CHARSET !== $this->srcenc);
-//				}
-//
-//				if($srcEncSameAsTgtEnc){
-//					if($this->srcenc == 'UTF-8'){
-//						$data = utf8_encode($data);
-//					}elseif ($this->srcenc == 'ISO-8859-1'){
-//						$data = utf8_decode($data);
-//					}
-//				}
-                if (!$this->_parseString($data, feof($this->fp))) {
-                    return $this->raiseError();
-                }
-            }
-
-        // otherwise, $this->fp must be a string
-        } else {
-            if (!$this->_parseString($this->fp, true)) {
-                return $this->raiseError();
-            }
+        if (!$this->_parseString($this->xml)) {
+            return $this->raiseError();
         }
+
         $this->free();
 
         return true;
@@ -498,9 +397,9 @@ class XML_Parser extends PEAR
      * @access private
      * @see parseString()
      **/
-    function _parseString($data, $eof = false)
+    function _parseString($data)
     {
-        return xml_parse($this->parser, $data, $eof);
+        return xml_parse($this->parser, $data, true);
     }
 
     // }}}
@@ -517,13 +416,13 @@ class XML_Parser extends PEAR
      * @return   Pear Error|true   true on success or a PEAR Error
      * @see      _parseString()
      */
-    function parseString($data, $eof = false)
+    function parseString($data)
     {
         if (!isset($this->parser) || !is_resource($this->parser)) {
             $this->reset();
         }
 
-        if (!$this->_parseString($data, $eof)) {
+        if (!$this->_parseString($data)) {
            return $this->raiseError();
         }
 
@@ -546,10 +445,10 @@ class XML_Parser extends PEAR
             xml_parser_free($this->parser);
             unset( $this->parser );
         }
-        if (isset($this->fp) && is_resource($this->fp)) {
-            fclose($this->fp);
+        if (isset($this->xml) && is_resource($this->xml)) {
+            fclose($this->xml);
         }
-        unset($this->fp);
+        unset($this->xml);
         return null;
     }
 
