@@ -83,7 +83,7 @@ class JsonNode implements JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('getTree', 'delete', 'move');
+        return array('getTree', 'delete', 'multipleDelete', 'move');
     }
 
     /**
@@ -168,6 +168,26 @@ class JsonNode implements JsonAdapter {
 
         $this->em->remove($node);
         $this->em->flush();
+    }
+    
+    /**
+     * Deletes multiple nodes.
+     * 
+     * @param  array  $param  Client parameters.
+     */
+    public function multipleDelete($params) {
+        $post   = $params['post'];
+        $return = array();
+        
+        foreach ($post['nodes'] as $nodeId) {
+            $data['post']['id'] = $nodeId;
+            $this->delete($data);
+            if ($nodeId == $post['currentNodeId']) {
+                $return['deletedCurrentPage'] = true;
+            }
+        }
+        
+        return $return;
     }
 
     /**

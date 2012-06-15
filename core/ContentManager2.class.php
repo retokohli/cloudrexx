@@ -93,6 +93,8 @@ class ContentManager extends Module {
             'TXT_NEW_PAGE', 'TXT_CONTENT_HISTORY', 'TXT_IMAGE_ADMINISTRATION',
             //site tree
             'TXT_CORE_CM_STATUS_PAGE', 'TXT_CORE_CM_TRANSLATIONS', 'TXT_CORE_CM_SECTION_CMD', 'TXT_CORE_CM_DATE_USER',
+            //multiple actions
+            'TXT_SELECT_ALL', 'TXT_DESELECT_ALL', 'TXT_MULTISELECT_SELECT', 'TXT_MULTISELECT_PUBLISH', 'TXT_MULTISELECT_ACTIVATE', 'TXT_MULTISELECT_DEACTIVATE', 'TXT_MULTISELECT_SHOW', 'TXT_MULTISELECT_HIDE', 'TXT_MULTISELECT_DELETE',
             //categories
             'TXT_CORE_SITE_TYPE', 'TXT_CORE_SITE_CONTENT', 'TXT_CORE_SITE_ACCESS', 'TXT_CORE_SITE_SETTINGS', 'TXT_CORE_SITE_HISTORY',
             //type tab
@@ -136,6 +138,7 @@ class ContentManager extends Module {
                 'NAVIGATION_TOGGLE_CLASS' => 'open',
                 'SIDEBAR_DISPLAY_STYLE' => 'display: block;',
                 'SIDEBAR_CLASS_NAME' => 'hide',
+                'MULTIPLE_ACTIONS_MARKING_STYLE' => 'display: none;',
             ));
         } else {
             $this->template->setVariable(array(
