@@ -57,14 +57,14 @@ class FileSystemFile implements FileInterface
     public function write($data)
     {
         // first try 
-        $fp = @fopen($this->filePath, 'r+');
+        $fp = @fopen($this->filePath, 'w');
         if (!$fp) {
             // try to set write access
             $this->makeWritable($this->filePath);
         }
 
         // second try 
-        $fp = @fopen($this->filePath, 'r+');
+        $fp = @fopen($this->filePath, 'w');
         if (!$fp) { 
             throw new FileSystemFileException('Unable to open file '.$this->filePath.' for writting!');
         }
