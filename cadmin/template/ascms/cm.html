@@ -113,8 +113,8 @@
                 <label>{TXT_CORE_CM_SCHEDULED_PUBLISHING}</label>
             </div>
             <div id="scheduled_publishing_container" class="container" style="display: none;">
-                <label for="page_start">Von:</label><input type="text" name="page[start]" id="page_start" value="" class="date" />
-                <label for="page_end">Bis:</label><input type="text" name="page[end]" id="page_end" value="" class="date" />
+                <label for="page_start">{TXT_CORE_CM_SCHEDULED_PUBLISHING_FROM}:</label><input type="text" name="page[start]" id="page_start" value="" class="date" />
+                <label for="page_end">{TXT_CORE_CM_SCHEDULED_PUBLISHING_TO}:</label><input type="text" name="page[end]" id="page_end" value="" class="date" />
             </div>
 
             <div id="themes_toggle" class="toggle {THEMES_TOGGLE_CLASS}"><div class="indicator"></div><label>{TXT_CORE_CM_THEMES}</label></div>
@@ -185,7 +185,7 @@
       </div>
 
       <div id="buttons">
-        <a id="preview" class="button" href="#" onclick="return cx.cm.setPagePreview();" target="_blank">{TXT_CORE_PREVIEW}</a>
+        <a id="preview" class="button" href="#" target="_blank">{TXT_CORE_PREVIEW}</a>
         
         <input type="submit" id="save" value="{TXT_CORE_SAVE}" />
 
