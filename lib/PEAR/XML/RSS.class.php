@@ -129,10 +129,8 @@ class XML_RSS extends XML_Parser
     {
         $this->XML_Parser();
 
-        if (@is_resource($handle)) {
+        if (!empty($handle)) {
             $this->setInput($handle);
-        } elseif ($handle != '') {
-            $this->setInputFile($handle);
         } else {
             $this->raiseError('No filename passed.');
         }
