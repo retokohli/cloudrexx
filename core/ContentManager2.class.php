@@ -138,7 +138,8 @@ class ContentManager extends Module {
                 'NAVIGATION_TOGGLE_CLASS' => 'open',
                 'SIDEBAR_DISPLAY_STYLE' => 'display: block;',
                 'SIDEBAR_CLASS_NAME' => 'hide',
-                'MULTIPLE_ACTIONS_MARKING_STYLE' => 'display: none;',
+                'MULTIPLE_ACTIONS_STRIKE_STYLE' => 'display: none;',
+                'SELECT_MULTIPLE_ACTIONS_CLASS' => 'select-multiple-actions-shrunk',
             ));
         } else {
             $this->template->setVariable(array(
