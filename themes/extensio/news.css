@@ -9,6 +9,13 @@
 #news div.heading h2{
     margin-bottom: 0px;
 }
+#news_details {
+    float: left;
+    height: auto !important;
+    margin: 0;
+    padding: 0;
+    width: 650px;
+}
 .posted img{
     padding-right: 10px;
     float: left;
