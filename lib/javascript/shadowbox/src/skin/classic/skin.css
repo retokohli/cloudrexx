@@ -198,3 +198,8 @@ div.shadowbox_message a:visited {
   color: #fff;
   text-decoration: underline;
 }
+
+/* needed for IE8, according to http://michaeljackson.googlecode.com/issues/attachment?aid=6212039092376659716&name=shadowbox-2.0.js */
+#shadowbox_title { border: 0px solid; }
+#shadowbox_info  { border: 0px solid; }
+
