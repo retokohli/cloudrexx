@@ -123,10 +123,20 @@ h1{ font-size: 20px }
     left: 22%;
 }
 
+#flip-menu {
+    padding: 0 0 0 5px;
+    font-size: 12px;
+}
+
 #multiple-actions {
     float: left;
     padding: 8px;
-    
+}
+
+.select-multiple-actions-shrunk {
+    float: left;
+    clear: both;
+    margin: 5px 0 0 40px;
 }
 
 #subnavbar_level1 {
