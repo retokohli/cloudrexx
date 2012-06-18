@@ -544,7 +544,7 @@ table.adminlist tr a:hover,
 table.adminlist tr a:focus,
 table.adminlist tr a:active {
     cursor: pointer;
-    color: #0b4c7a;
+    color: #ECECEC;
 }
 table.adminlist tr.row0,
 table.adminlist tr.row1,

@@ -45,7 +45,16 @@ Text[15]=["","{TXT_CORE_CM_CSS_NAV_CLASS_INFO}"];
             <div id="site-structure">
                 <table class="adminlist" width="100%">
                     <tr>
-                        <th class="page" width="42%">{TXT_CORE_CM_STATUS_PAGE}</th>
+                        <th class="page" width="42%">
+                            {TXT_CORE_CM_STATUS_PAGE}
+                            <span id="flip-menu">
+                                (&nbsp;
+                                <a href="#" class="jstree-action open">{TXT_EXPAND_LINK}</a>
+                                &nbsp;|&nbsp;
+                                <a href="#" class="jstree-action close">{TXT_COLLAPS_LINK}</a>
+                                &nbsp;)
+                            </span>
+                        </th>
                         <th class="translation" width="11%">{TXT_CORE_CM_TRANSLATIONS}</th>
                         <th class="module" width="17%">{TXT_CORE_CM_SECTION_CMD}</th>
                         <th class="preview" width="7%"></th>
@@ -57,11 +66,11 @@ Text[15]=["","{TXT_CORE_CM_CSS_NAV_CLASS_INFO}"];
             </div>
         </div>
         <div id="multiple-actions">
-            <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="" />
+            <img id="multiple-actions-arrow" src="images/icons/arrow.gif" border="0" width="38" height="22" alt="" />
             <span id="multiple-actions-marking" style="{MULTIPLE_ACTIONS_MARKING_STYLE}">
-                <a href="#" class="multiple-actions-marking checked">{TXT_SELECT_ALL}</a> /
-                <a href="#" class="multiple-actions-marking unchecked">{TXT_DESELECT_ALL}</a>
-                <img src="images/icons/strike.gif" alt="layout" />
+                <a href="#" class="jstree-action check">{TXT_SELECT_ALL}</a> /
+                <a href="#" class="jstree-action uncheck">{TXT_DESELECT_ALL}</a>
+                <img id="multiple-actions-strike" src="images/icons/strike.gif" alt="layout" />
             </span>
             <select action="." id="select-multiple-actions">
                 <option value="0">{TXT_MULTISELECT_SELECT}</option>
