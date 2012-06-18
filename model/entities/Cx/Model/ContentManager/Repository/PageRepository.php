@@ -496,8 +496,9 @@ class PageRepository extends EntityRepository {
      * )
      */
     public function searchResultsForSearchModule($string) {
-        if($string == '')
+        if ($string == '') {
             return array();
+        }
 
 //TODO: use MATCH AGAINST for score
 //      Doctrine can be extended as mentioned in http://groups.google.com/group/doctrine-user/browse_thread/thread/69d1f293e8000a27
@@ -505,36 +506,33 @@ class PageRepository extends EntityRepository {
 
         $qb = $this->em->createQueryBuilder();
         $qb->add('select', 'p')
-            ->add('from', 'Cx\Model\ContentManager\Page p')
-            ->add('where',
-                $qb->expr()->andx(
-                    $qb->expr()->eq('p.lang', FRONTEND_LANG_ID),
-                    $qb->expr()->orx(
-                        $qb->expr()->like('p.content', ':searchString'),
-                        $qb->expr()->like('p.title', ':searchString')
-                    )
-                )
-            );
+           ->add('from', 'Cx\Model\ContentManager\Page p')
+           ->add('where',
+                 $qb->expr()->andx(
+                     $qb->expr()->eq('p.lang', FRONTEND_LANG_ID),
+                     $qb->expr()->orx(
+                         $qb->expr()->like('p.content', ':searchString'),
+                         $qb->expr()->like('p.title', ':searchString')
+                     )
+                 )
+             );
 
         $qb->setParameter('searchString', '%'.$string.'%');
-
-        $pages = $qb->getQuery()->getResult();
-
-        $config = \Env::get('config');
-
+        $pages   = $qb->getQuery()->getResult();
+        $config  = \Env::get('config');
         $results = array();
 
         foreach($pages as $page) {
-            if (!$page->isActive()) {
+            $isNotVisible  = ($config['searchVisibleContentOnly'] == 'on') && !$page->isVisible();
+            $hasPageAccess = true;
+            if ($page->isFrontendProtected()) {
+                $hasPageAccess = \Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true);
+            }
+            
+            if (!$page->isActive() || $isNotVisible || !$hasPageAccess) {
                 continue;
             }
-
-            if (   $config['searchVisibleContentOnly'] == 'on'
-                && !$page->isVisible()
-            ) {
-                continue;
-            }
-
+            
             $results[] = array(
                 'Score' => 100,
                 'Title' => $page->getTitle(),
