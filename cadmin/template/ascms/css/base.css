@@ -607,6 +607,50 @@ table.subnavbar {
     background: #dde4ff;
 }
 
+
+.toggle_style {
+    float: left;
+    width: 100%;
+}
+
+.toggle_style .title {
+    float: left;
+    clear: both;
+    display: block;
+    width: 100%;
+    height: 24px;
+    line-height: 24px;
+    padding: 3px 0;
+    margin: 10px 0 8px 0;
+    background: #0a85c8;
+    color: #ffffff !important;
+    cursor: pointer;
+}
+
+.toggle_style .title .indicator {
+    float: left;
+    width: 22px;
+    height: 24px;
+}
+
+.toggle_style.open .title .indicator {
+    background: url(../../../images/icons/toggle_open.png) no-repeat center center;
+}
+
+.toggle_style.closed .title .indicator {
+    background: url(../../../images/icons/toggle_closed.png) no-repeat center center;
+}
+
+.toggle_style .title label {
+    cursor: pointer;
+}
+
+.toggle_style .container {
+    float: left;
+    width: 100%;
+}
+
+
 #tabmenu,
 .tabmenu {
     float: left;
