@@ -111,8 +111,13 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
         $content = '';
         foreach ($elems as $slug => &$elem) {
             $page = $elem['__data']['page'];
-
-            if (!$page->isVisible() || !$page->isActive()) {
+            
+            $hasPageAccess = true;
+            if ($page->isFrontendProtected()) {
+                $hasPageAccess = \Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true);
+            }
+            
+            if (!$page->isVisible() || !$page->isActive() || !$hasPageAccess) {
                 continue;
             }
             
