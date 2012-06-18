@@ -559,13 +559,16 @@ h1{ font-size: 20px }
 #buttons a.button {
     float: left;
     width: auto;
-    margin: 0 5px 0 0;
+    height: 22px;
+    margin: 0 5px 0 0 !important;
     cursor: default;
 }
 
 #buttons a.button {
-    height: 18px;
-    line-height: 18px !important;
+    height: 20px;
+    line-height: 20px;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
 }
 
 #additionalInfo{
