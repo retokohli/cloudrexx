@@ -90,6 +90,10 @@ jQuery(document).ready(function() {
 </div>
 
 <script type="text/javascript" language="javascript">
-    new Ajax.Updater('newversion', 'versioncheck.php');
+    jQuery.get('versioncheck.php').success(function(data) {
+        if (data.match(/update/i)) {
+            jQuery('#new_version').html(data);
+        }
+    });
 </script>
 <!-- END index_home.html -->

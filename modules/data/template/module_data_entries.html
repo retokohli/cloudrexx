@@ -1,5 +1,6 @@
-    <!-- START module_data_entries.html -->
-<script language="JavaScript" type="text/javascript">
+<!-- START module_data_entries.html -->
+
+<script type="text/javascript">
 // needs prototype.js
 //<![CDATA[
 function deleteEntry(entryId){ 
@@ -8,34 +9,31 @@ function deleteEntry(entryId){
 }
 
 function selectMultiAction() {
-	with (document.frmShowEntries) {
-		switch (frmShowEntries_MultiAction.value) {
-			case 'delete':
-				if (confirm('{TXT_ENTRIES_SUBMIT_DELETE_JS}')) {
-					action='?cmd=data&act=multiactionEntry';
-					submit();
-				}
-			break;
-			default: //do nothing			
-		}
-	}
+    with (document.frmShowEntries) {
+        switch (frmShowEntries_MultiAction.value) {
+            case 'delete':
+                if (confirm('{TXT_ENTRIES_SUBMIT_DELETE_JS}')) {
+                    action='?cmd=data&act=multiactionEntry';
+                    submit();
+                }
+            break;
+            default: //do nothing			
+        }
+    }
 }
 
 var switchActive = function(id, obj, action)
 {
-    var img = obj.getElementsByTagName("img")[0];
-    if (action == 0) {
-        img.src = "images/icons/led_red.gif";
-        obj.onclick = function() { switchActive(id, obj, 1); }
-    } else {
-        img.src = "images/icons/led_green.gif";
-        obj.onclick = function() { switchActive(id, obj, 0); }
-    }
-    
-    new Ajax.Request('index.php', {
-        method: 'get',
-        parameters: {cmd : "data", act : "switchEntryState", id : id, switchTo : action},
-        onSuccess: function() {}
+    jQuery.get('index.php', {cmd: 'data', act: 'switchEntryState', id: id, switchTo: action}).success(function() {
+        if (action) {
+            path = 'images/icons/led_green.gif';
+            action = 0;
+        } else {
+            path = 'images/icons/led_red.gif';
+            action = 1;
+        }
+        jQuery(obj).children('img:first').attr('src', path);
+        jQuery(obj).attr('onclick', 'switchActive('+id+', this, '+action+')');
     });
 }
 
@@ -123,23 +121,17 @@ var swap_downwards = function(id)
 
 var orderChanged = function()
 {
-    var btn = $('save_order');
-    btn.disabled = false;
-    btn.style.color = "black";
+    jQuery('#save_order').prop('disabled', false);
+    jQuery('#save_order').css('color', 'black');
 }
 
 var saveOrder = function()
 {
     var jsonObj = Object.toJSON(order);
-    new Ajax.Request('index.php?cmd=data&act=saveEntryOrder', {
-        method: 'post',
-        parameters: {order : jsonObj}
-    });
+    jQuery.post('index.php?cmd=data&act=saveEntryOrder', {order: jsonObj});
     
-    var btn = $('save_order');
-    btn.disabled = true;
-    btn.style.color = "gray";
-    
+    jQuery('#save_order').prop('disabled', true);
+    jQuery('#save_order').css('color', 'grey');
 }
 
 var setRows = function()
@@ -251,13 +243,11 @@ var setRows = function()
         </td>
     </tr>
 </table>
-
 <div align="center">{ENTRIES_PAGING}</div>
+
 <script type="text/javascript">
 /* <![CDATA[ */
-
 init();
-
 /* ]]> */
 </script>
 <!-- END module_data_entries.html -->
