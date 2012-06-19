@@ -304,8 +304,7 @@ $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_NAME'] = "Block für die Felder 
 $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_NAME_TITLE'] = "Titel für das Eingabefeld Name.";
 $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_NAME_VALUE'] = "Wert für das Eingabefeld Name.";
 $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA'] = "Block für den Captcha-Code.";
-$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA_DESCRIPTION'] = "Beschreibung für das Eingabefeld Captcha.";
-$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA_PATH'] = "Pfad zum entsprechenden Captcha-Bild.";
-$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA_ALT'] = "Alternativer Text, falls das Captcha-Bild nicht geladen werden kann.";
+$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA_TITLE'] = "Titel für das Eingabefeld Captcha.";
+$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA_CODE'] = "HTML-Code für das Eingabefeld Captcha.";
 $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_TITLE_BUTTON'] = "Titel für den Button Kommentar hinzufügen.";
 ?>

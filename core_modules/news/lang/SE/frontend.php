@@ -31,4 +31,9 @@ $_ARRAYLANG['TXT_NEWS_FONT_SIZE'] = "Schriftgrösse";
 $_ARRAYLANG['TXT_NEWS_FONT'] = "Schriftart";
 $_ARRAYLANG['TXT_NEWS_DISPLAY_LIMIT'] = "Anzahl anzuzeigende Newsmeldungen";
 $_ARRAYLANG['TXT_NEWS_SHOW_NEWS_DATE'] = "Datum der Newsmeldung anzeigen";
+$_ARRAYLANG['TXT_NEWS_ADD_COMMENT'] = "Add comment";
+$_ARRAYLANG['TXT_NEWS_NAME'] = "Name";
+$_ARRAYLANG['TXT_NEWS_TITLE'] = "Title";
+$_ARRAYLANG['TXT_NEWS_COMMENT'] = "Comment";
+$_ARRAYLANG['TXT_NEWS_ADD'] = "Add";
 ?>
