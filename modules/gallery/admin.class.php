@@ -3597,7 +3597,7 @@ $strFileNew = '';
         }
 
         if (is_array($intSize)) {
-            $memoryLimit = $objSystem->_getBytes(@ini_get('memory_limit'));
+            $memoryLimit = $objSystem->getBytesOfLiteralSizeFormat(@ini_get('memory_limit'));
             // a $memoryLimit of zero means that there is no limit. so let's try it and hope that the host system has enough memory
             if (!empty($memoryLimit)) {
                    $potentialRequiredMemory = $intSize[0] * $intSize[1] * ($intSize['bits']/8) * $intSize['channels'] * 1.8 * 2;
@@ -3611,7 +3611,7 @@ $strFileNew = '';
                 if ($potentialRequiredMemory > $memoryLimit) {
                     // try to set a higher memory_limit
                     @ini_set('memory_limit', $potentialRequiredMemory);
-                    $curr_limit = $objSystem->_getBytes(@ini_get('memory_limit'));
+                    $curr_limit = $objSystem->getBytesOfLiteralSizeFormat(@ini_get('memory_limit'));
                     if ($curr_limit < $potentialRequiredMemory) {
                         return false;
                     }
