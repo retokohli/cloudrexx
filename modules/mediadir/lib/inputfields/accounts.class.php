@@ -203,7 +203,7 @@ class mediaDirectoryInputfieldAccounts extends mediaDirectoryLibrary implements 
         }
     }
 
-    function refreshSelector_$intId(fieldId,elementDeselectedId,elementSelectedId,pageSection,pageCmd,entryId){
+    function refreshSelector_$intId(fieldId,elementDeselectedId,elementSelectedId,pageSection,pageCmd,entryId) {
         \$J.ajax({
             url: 'index.php?section=' + pageSection + '&cmd=' + pageCmd + '&inputfield=refresh&field=' + fieldId + '&eid=' +  entryId,
             success:function(data){
@@ -213,21 +213,7 @@ class mediaDirectoryInputfieldAccounts extends mediaDirectoryLibrary implements 
                 InitDrag();
             }
         });
-        /*if(new Ajax.Request('index.php', {
-                method: 'get',
-                parameters: {section : pageSection, cmd : pageCmd,  inputfield : "refresh", field : fieldId, eid : entryId},
-                onSuccess: function (transport){
-                    var response = transport.responseText;
-                    var arrResponse = response.split("|");
-
-                    $(elementDeselectedId).update(arrResponse[0]);
-                    $(elementSelectedId).update(arrResponse[1]);
-                },
-                onFailure: function(){
-                }
-            })) {
-        }
-        }*/
+    }
 
 
 function searchElement(elementId, term){

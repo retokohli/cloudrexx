@@ -37,7 +37,7 @@ if ($_SERVER['HTTP_X_PROTOTYPE_VERSION']) {
     while ($l) {
         if (preg_match('#NVERSION=(\d+\.\d+\.\d+)#', $l, $r)) {
             $newversion = $r[1];
-            echo '(Update: <a style="color:black;" href="http://www.contrexx.com" target="_new">'.$newversion.'</a>)';
+            echo '(Update: <a href="http://www.contrexx.com" target="_new">'.$newversion.'</a>)';
             fclose($link);
             exit;
         }

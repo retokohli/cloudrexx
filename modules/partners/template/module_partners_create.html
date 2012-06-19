@@ -96,69 +96,69 @@ function chgRadioInAllLang(nam,val,lang,stat){
 
 function showOrHide(strElement) {
 
-	if (document.getElementById(strElement).style.display == 'none') {
-		document.getElementById(strElement).style.display = 'block';
-	} else {
-		document.getElementById(strElement).style.display = 'none';
-	}
+    if (document.getElementById(strElement).style.display == 'none') {
+        document.getElementById(strElement).style.display = 'block';
+    } else {
+        document.getElementById(strElement).style.display = 'none';
+    }
 }
 
 
 function switchBoxAndTab(objElement, strTabId) {
 
-	if (countActiveLanguages() == 0) {
-		//We just "unchecked" the last language, disallow this
-		objElement.checked = true;
-	} else {
-		//There are more active languages, hide the tab
-		switchTabVisibility(strTabId);
-	}
+    if (countActiveLanguages() == 0) {
+        //We just "unchecked" the last language, disallow this
+        objElement.checked = true;
+    } else {
+        //There are more active languages, hide the tab
+        switchTabVisibility(strTabId);
+    }
 
-	//Now make sure that a possible div is shown
-	activateAnyActiveDiv();
+    //Now make sure that a possible div is shown
+    activateAnyActiveDiv();
 }
 
 function switchTabVisibility(strTabId) {
-	if (document.getElementById(strTabId).style.display == 'none') {
+    if (document.getElementById(strTabId).style.display == 'none') {
   document.getElementById(strTabId).style.display = 'inline';
-	} else {
-		document.getElementById(strTabId).style.display = 'none';
-	}
+    } else {
+        document.getElementById(strTabId).style.display = 'none';
+    }
 }
 
 
 function countActiveLanguages() {
-	var activeLanguages = 0;
+    var activeLanguages = 0;
 
-	for (var h=0; h < document.forms.length;h++) {
-		for (var i=0; i < document.forms[h].elements.length;i++) {
-			//read out all form-elements with the loop
-			if(document.forms[h].elements[i].name.search('frmEditEntry_Languages') != -1) {
-				if(document.forms[h].elements[i].checked) {
-					activeLanguages++;
-				}
-			}
-		}
-	}
+    for (var h=0; h < document.forms.length;h++) {
+        for (var i=0; i < document.forms[h].elements.length;i++) {
+            //read out all form-elements with the loop
+            if(document.forms[h].elements[i].name.search('frmEditEntry_Languages') != -1) {
+                if(document.forms[h].elements[i].checked) {
+                    activeLanguages++;
+                }
+            }
+        }
+    }
 
-	return activeLanguages;
+    return activeLanguages;
 }
 
 function activateAnyActiveDiv() {
-	//Deactivate every div first first
-	for (var TabName in arrTabToDiv) {
-		document.getElementById(TabName).className = 'inactive';
-		document.getElementById(arrTabToDiv[TabName]).style.display = 'none';
-	}
+    //Deactivate every div first first
+    for (var TabName in arrTabToDiv) {
+        document.getElementById(TabName).className = 'inactive';
+        document.getElementById(arrTabToDiv[TabName]).style.display = 'none';
+    }
 
-	//Activate the first possible div with an acitvated checkbox
-	for (var TabName in arrTabToDiv) {
-		if (document.getElementById(TabName).style.display == 'inline') {
-			document.getElementById(TabName).className = 'active';
-			document.getElementById(arrTabToDiv[TabName]).style.display = 'inline';
-			break;
-		}
-	}
+    //Activate the first possible div with an acitvated checkbox
+    for (var TabName in arrTabToDiv) {
+        if (document.getElementById(TabName).style.display == 'inline') {
+            document.getElementById(TabName).className = 'active';
+            document.getElementById(arrTabToDiv[TabName]).style.display = 'inline';
+            break;
+        }
+    }
 }
 
 
@@ -173,89 +173,47 @@ function activateAnyActiveDiv() {
 
 
 
-//function PopulateRegions(from,idofText,valu,langu,sel1,sel2,oriFrom,lang,sel_id,e){
-function PopulateRegions(regid,curvalue,lang,otherLang,idText){
-var word=otherLang.split("-");
+//function PopulateRegions(from,idofText,valu,langu,sel1,sel2,oriFrom,lang,sel_id,e) {
+function PopulateRegions(regid,curvalue,lang,otherLang,idText) {
+    var word=otherLang.split("-");
 
-var curvalue = curvalue;
-var language = parseInt(lang);
-var regid = parseInt(regid);
-   new Ajax.Request('index.php',
-  {
+    var curvalue = curvalue;
+    var language = parseInt(lang);
+    var regid = parseInt(regid);
+    jQuery.get('index.php', {cmd: 'partners', act: 'ajaxRequest', ajax: curvalue, lang: language, regval: regid}).success(function(data) {
+        console.log(jQuery('#ajaxRequest_'+regid+'_'+language));
+        jQuery('#ajaxRequest_'+regid+'_'+language).html(data);
+    }).error(function() { alert('Something went wrong...'); });
 
-    method:'get', parameters: {cmd: 'partners', act: 'ajaxRequest',ajax: curvalue,lang:language,regval: regid},
+    var g = 0;
+    //var k = 0;
+    for (k=0;k<=word[k];k++) {
+        var combined_title = idText+word[k];
+        //alert(combined_title);
+        document.getElementById(combined_title).value = curvalue;
+        //while(k<=word[k]){
+        //alert(ajaxRequest);
+        //alert(word[k])
 
-    onSuccess: function(transport){
- //   var data = transport.responseText.evalJSON();
-      var ajaxRequest = "ajaxRequest_"+regid+"_"+language;
-      var response = transport.responseText || "no response text";
-      document.getElementById(ajaxRequest).innerHTML = response;
-
-  // $(this.ajaxRequest).insert(response.content);
-   //   alert(response);
-//      j++;
-    },
-    onFailure: function(){ alert('Something went wrong...') }
-  });
-      var g = 0;
-     // var k = 0;
-  	  for(k=0;k<=word[k];k++){
-  	  var combined_title = idText+word[k];
-//alert(combined_title);
-      document.getElementById(combined_title).value = curvalue;
-      // while(k<=word[k]){
-  	   //alert(ajaxRequest);
-  	   //alert(word[k])
-  	   
-  	   new Ajax.Request('index.php',
-       {
-
-        method:'get', parameters: {cmd: 'partners', act: 'ajaxRequest',ajax: curvalue,lang:word[k],regval: regid},
-
-        onSuccess: function(transport){
- //   var data = transport.responseText.evalJSON();
-//        alert(word[g]);
-        var ajaxRequest = "ajaxRequest_"+regid+"_"+word[g];
-        var response = transport.responseText || "no response text";
-      //alert(ajaxRequest);
-//      alert(response);
-        document.getElementById(ajaxRequest).innerHTML = response;
-
-  // $(this.ajaxRequest).insert(response.content);
-      //alert(response);
+        jQuery.get('index.php', {cmd: 'partners', act: 'ajaxRequest', ajax: curvalue, lang: word[k], regval: regid}).success(function(data) {
+            console.log(jQuery('#ajaxRequest_'+regid+'_'+word[g]));
+            jQuery('#ajaxRequest_'+regid+'_'+word[g]).html(data);
             g++;
-        },
-        onFailure: function(){ alert('Something went wrong...') }
-      });
-	 // alert(word[k]);
-	  }
+        }).error(function() { alert('Something went wrong...'); });
+
+        //alert(word[k]);
+      }
 
    }
    
 function PopulateRegions1(regid,curvalue,lang,otherLang,idText){
-var word=otherLang.split("-");
-
-var curvalue = curvalue;
-var language = parseInt(lang);
-   new Ajax.Request('index.php',
-  {
-
-    method:'get', parameters: {cmd: 'partners', act: 'ajaxRequest',ajax: curvalue,lang:language},
-
-    onSuccess: function(transport){
- //   var data = transport.responseText.evalJSON();
-      var ajaxRequest = "ajaxRequest_"+regid+"_"+language;
-      var response = transport.responseText || "no response text";
-      document.getElementById(ajaxRequest).innerHTML = response;
-
-  // $(this.ajaxRequest).insert(response.content);
-      //alert(response);
-//      j++;
-    },
-    onFailure: function(){ alert('Something went wrong...') }
-  });
-
-   }
+    var word=otherLang.split("-");
+    var curvalue = curvalue;
+    var language = parseInt(lang);
+    jQuery.get('index.php', {cmd: 'partners', act: 'ajaxRequest',ajax: curvalue, lang: language}).success(function(data) {
+      jQuery('#ajaxRequest_'+regid+'_'+language).html(data);
+    }).error(function() { alert('Something went wrong...') });
+}
 
 function AddToTheList(from,dest,add,remove,fromId,destId,chklang) {
 
@@ -269,24 +227,24 @@ var word=chklang.split("-");
 
         if (from.selectedIndex < 0){
 
-		if (from.options[0] != null)
-			from.options[0].selected = true;
+        if (from.options[0] != null)
+            from.options[0].selected = true;
 
         from.focus();
-		return false;
-	}else{
+        return false;
+    }else{
 
 
 
            count_sel = 0;
-		for (var i=0; i<from.length; i++) {
-		   var fromVals  = parseInt(from.options[i].value);
+        for (var i=0; i<from.length; i++) {
+           var fromVals  = parseInt(from.options[i].value);
             if (from.options[i].selected)
-			{
+            {
                if(fromVals > 0){
-			   if(count_sel < checkLength){
-       	     	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, true);
-		    	  for(k=0;k<=word[k];k++){
+               if(count_sel < checkLength){
+                    dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, true);
+                  for(k=0;k<=word[k];k++){
 //		    	  alert(word[k]);
                   var combined_title     = destId+word[k]+"[]";
                   var combined_title_ori = fromId+word[k]+"[]";
@@ -308,23 +266,23 @@ var word=chklang.split("-");
                 from.options[i].selected = false;
                 }
                 }
-		    	count_sel++;
+                count_sel++;
 
-   			}
-		}
-	    for (var i=from.length-1; i>=0; i--) {
+               }
+        }
+        for (var i=from.length-1; i>=0; i--) {
         if (from.options[i].selected)
-			{
-			var fromVals  = parseInt(from.options[i].value);
+            {
+            var fromVals  = parseInt(from.options[i].value);
             //	alert(from.options[i].value);
             if(fromVals > 0){
-		       from.options[i] = null;
-		       }
-		       //alert("test");
+               from.options[i] = null;
+               }
+               //alert("test");
 
-   			}
-		}
-	}
+               }
+        }
+    }
     disapleButtons(from,dest,add,remove);
     }
 }
@@ -337,20 +295,20 @@ var word=chklang.split("-");
   if(dest.options.length < 3) {
         if ( from.selectedIndex < 0){
 
-		if (from.options[0] != null)
-			from.options[0].selected = true;
+        if (from.options[0] != null)
+            from.options[0].selected = true;
 
         from.focus();
-		return false;
-	}else{
+        return false;
+    }else{
 
          count_sel = 0;
-		for (var i=0; i<from.length; i++) {
+        for (var i=0; i<from.length; i++) {
 
             if (from.options[i].selected)
-			{
-			   if(count_sel < checkLength){
-		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, true);
+            {
+               if(count_sel < checkLength){
+                dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, true);
  //	    	  for(k=0;k<=word[k];k++){
 ////		    	  alert(word[k]);
 //                  var combined_title     = destId+word[k]+"[]";
@@ -372,42 +330,42 @@ var word=chklang.split("-");
                 from.options[i].selected = false;
                 }
 
-		    	count_sel++;
+                count_sel++;
 
-   			}
-		}
-	    for (var i=from.length-1; i>=0; i--) {
+               }
+        }
+        for (var i=from.length-1; i>=0; i--) {
         if (from.options[i].selected)
-			{
+            {
 //	alert(from.options[i].value);
-		       from.options[i] = null;
-		       //alert("test");
+               from.options[i] = null;
+               //alert("test");
 
-   			}
-		}
-	}
+               }
+        }
+    }
     disapleButtons(from,dest,add,remove);
     }
 }
 
 function RemoveFromTheList(from,dest,add,remove,fromId,destId,chklang) {
 var word=chklang.split("-");
-	if ( dest.selectedIndex < 0){
-		if (dest.options[0] != null)
-			dest.options[0].selected = true;
+    if ( dest.selectedIndex < 0){
+        if (dest.options[0] != null)
+            dest.options[0].selected = true;
 
         dest.focus();
-		return false;
-	}
-	else{
+        return false;
+    }
+    else{
 
-		for (var i=0; i<dest.options.length; i++)
-		{
-  	if (dest.options[i].selected)
-			{
-		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
-		    	  for(k=0;k<=word[k];k++){
-	//	    	  alert(word[k]);
+        for (var i=0; i<dest.options.length; i++)
+        {
+      if (dest.options[i].selected)
+            {
+                from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
+                  for(k=0;k<=word[k];k++){
+    //	    	  alert(word[k]);
                   var combined_title     = destId+word[k]+"[]";
                   var combined_title_ori = fromId+word[k]+"[]";
                   //alert(combined_title);
@@ -427,39 +385,39 @@ var word=chklang.split("-");
                       }
                     }
                   }
-   			}
-		}
-	    for (var i=dest.options.length-1; i>=0; i--)
-		{
+               }
+        }
+        for (var i=dest.options.length-1; i>=0; i--)
+        {
 //		alert("test");
-			if (dest.options[i].selected)
-			{
+            if (dest.options[i].selected)
+            {
                 //alert("hai");
                 //alert(i);
-		       dest.options[i] = null;
+               dest.options[i] = null;
 
-   			}
-		}
-	}
-	disapleButtons(from,dest,add,remove);
+               }
+        }
+    }
+    disapleButtons(from,dest,add,remove);
 }
 
 function RemoveFromTheList1(from,dest,add,remove,fromId,destId,chklang) {
 var word=chklang.split("-");
-	if ( dest.selectedIndex < 0){
-		if (dest.options[0] != null)
-			dest.options[0].selected = true;
+    if ( dest.selectedIndex < 0){
+        if (dest.options[0] != null)
+            dest.options[0].selected = true;
 
         dest.focus();
-		return false;
-	}
-	else{
+        return false;
+    }
+    else{
 
-		for (var i=0; i<dest.options.length; i++)
-		{
-			if (dest.options[i].selected)
-			{
-		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
+        for (var i=0; i<dest.options.length; i++)
+        {
+            if (dest.options[i].selected)
+            {
+                from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
  //	    			    	  for(k=0;k<=word[k];k++){
 //	//	    	  alert(word[k]);
 //                  var combined_title     = destId+word[k]+"[]";
@@ -477,48 +435,48 @@ var word=chklang.split("-");
 //                      }
 //                    }
 //                  }
-   			}
-		}
-	    for (var i=dest.options.length-1; i>=0; i--)
-		{
-			if (dest.options[i].selected)
-			{
+               }
+        }
+        for (var i=dest.options.length-1; i>=0; i--)
+        {
+            if (dest.options[i].selected)
+            {
          //       alert(i);
-		       dest.options[i] = null;
+               dest.options[i] = null;
 
-   			}
-		}
-	}
-	disapleButtons(from,dest,add,remove);
+               }
+        }
+    }
+    disapleButtons(from,dest,add,remove);
 }
 
 
 function disapleButtons(from,dest,add,remove) {
-	if (from.options.length > 0 )
-	{
-		add.disabled = 0;
-	}
-	else
-		add.disabled = 1;
+    if (from.options.length > 0 )
+    {
+        add.disabled = 0;
+    }
+    else
+        add.disabled = 1;
 
-	if (dest.options.length > 0)
-		remove.disabled = 0;
-	else
-		remove.disabled = 1;
+    if (dest.options.length > 0)
+        remove.disabled = 0;
+    else
+        remove.disabled = 1;
 }
 
 function SelectAllList(CONTROL) {
-	for(var i = 0;i < CONTROL.length;i++)
-	{
-		CONTROL.options[i].selected = true;
-	}
+    for(var i = 0;i < CONTROL.length;i++)
+    {
+        CONTROL.options[i].selected = true;
+    }
 }
 
 function DeselectAllList(CONTROL) {
-	for(var i = 0;i < CONTROL.length;i++)
-	{
-		CONTROL.options[i].selected = false;
-	}
+    for(var i = 0;i < CONTROL.length;i++)
+    {
+        CONTROL.options[i].selected = false;
+    }
 }
 
 
@@ -584,44 +542,44 @@ dest.options[l].selected = false;
 
 //Following Functions are needed for Picture-Selection -------------------------------------------------------------
 function SetUrl(url, width, height, alt) {
-	document.getElementById(newsElInsertBox).value = url;
+    document.getElementById(newsElInsertBox).value = url;
 }
 
 function newsGetFileBrowser(elInsertBox) {
-	newsElInsertBox = elInsertBox;
-	openWindow('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=partners','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+    newsElInsertBox = elInsertBox;
+    openWindow('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=partners','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
 }
 
 function openWindow(theURL,winName,features){
-	partnersPopup = window.open(theURL,"partners",features);
-	partnersPopup.focus();
+    partnersPopup = window.open(theURL,"partners",features);
+    partnersPopup.focus();
 }
 //]]>
 </script>
 {JAVASRIPT_REGION}
 <form name="frmEditEntry" method="post" action="index.php?cmd=partners&act={PARTNERS_FORM_ACTION}">
-	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-		<tr>
-			<th colspan="4">{TXT_EDIT_LANGUAGES}</th>  <!-- Languages -->
-		</tr>
-		<tr class="row1">
-			<td width="10%">{TXT_EDIT_LANGUAGES}</td>
-			<td width="10%" valign="top">{EDIT_LANGUAGES_1}</td>
-			<td width="10%" valign="top">{EDIT_LANGUAGES_2}</td>
-			<td width="50%" valign="top">{EDIT_LANGUAGES_3}</td>
-		</tr>
+    <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+        <tr>
+            <th colspan="4">{TXT_EDIT_LANGUAGES}</th>  <!-- Languages -->
+        </tr>
+        <tr class="row1">
+            <td width="10%">{TXT_EDIT_LANGUAGES}</td>
+            <td width="10%" valign="top">{EDIT_LANGUAGES_1}</td>
+            <td width="10%" valign="top">{EDIT_LANGUAGES_2}</td>
+            <td width="50%" valign="top">{EDIT_LANGUAGES_3}</td>
+        </tr>
 
-	</table>
-	<br />
-	<ul id="tabmenu">
-		<!-- BEGIN showLanguageTabs -->
-		<li><a id="{TABS_LINK_ID}" class="{TABS_CLASS}" href="javascript:{}" onclick="selectTab('{TABS_DIV_ID}')" title="{TABS_NAME}" style="{TABS_DISPLAY_STYLE}">{TABS_NAME}</a></li>
-		<!-- END showLanguageTabs -->
+    </table>
+    <br />
+    <ul id="tabmenu">
+        <!-- BEGIN showLanguageTabs -->
+        <li><a id="{TABS_LINK_ID}" class="{TABS_CLASS}" href="javascript:{}" onclick="selectTab('{TABS_DIV_ID}')" title="{TABS_NAME}" style="{TABS_DISPLAY_STYLE}">{TABS_NAME}</a></li>
+        <!-- END showLanguageTabs -->
      </ul><!--<a href="javascript:showOrHide('ShowOverview');">{TXT_ADD_EXTENDED}</a>-->
 
 
 
-		<!-- BEGIN showLanguageDivs -->
+        <!-- BEGIN showLanguageDivs -->
 <div id="{DIV_ID}" class="addEntry" style="{DIV_DISPLAY_STYLE}">
   <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
     <tr>
@@ -644,9 +602,9 @@ function openWindow(theURL,winName,features){
 </tr>
 <tr class="row1">
     <td width="10%" valign="top">{TXT_CATEGORIES}</td>
-	<td width="20%" valign="top">{DIV_CATEGORIES_1}</td>
-	<td width="20%" valign="top">{DIV_CATEGORIES_2}</td>
-	<td width="40%" valign="top">{DIV_CATEGORIES_3}</td>
+    <td width="20%" valign="top">{DIV_CATEGORIES_1}</td>
+    <td width="20%" valign="top">{DIV_CATEGORIES_2}</td>
+    <td width="40%" valign="top">{DIV_CATEGORIES_3}</td>
 
 </tr>
     <tr class="row2" style="{PARTNERS_DISPLAY_LEVEL}">
@@ -659,12 +617,12 @@ function openWindow(theURL,winName,features){
     </td>
     <td width="50">
         &nbsp;<input type="button" value="&gt;&gt;" name="adduser"  onclick="AddToTheList{FUNCTION_ID}(document.frmEditEntry.elements['level_{DIV_LANGUAGE_ID}[]'],document.frmEditEntry.elements['assignedLevel_{DIV_LANGUAGE_ID}[]'],adduser,removeuser,'level_','assignedLevel_','{PASS_LANG_MULTIPLE}');" style="margin-bottom:1px;" />&nbsp;<br />
-		&nbsp;<input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList{FUNCTION_ID}(document.frmEditEntry.elements['level_{DIV_LANGUAGE_ID}[]'],document.frmEditEntry.elements['assignedLevel_{DIV_LANGUAGE_ID}[]'],adduser,removeuser,'level_','assignedLevel_','{PASS_LANG_MULTIPLE}');" />&nbsp;
+        &nbsp;<input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList{FUNCTION_ID}(document.frmEditEntry.elements['level_{DIV_LANGUAGE_ID}[]'],document.frmEditEntry.elements['assignedLevel_{DIV_LANGUAGE_ID}[]'],adduser,removeuser,'level_','assignedLevel_','{PASS_LANG_MULTIPLE}');" />&nbsp;
     </td>
     <td>
         <select name="assignedLevel_{DIV_LANGUAGE_ID}[]"  id="assignedLevel_{DIV_LANGUAGE_ID}[]" size="10" style="width:200px;"  multiple="multiple" onChange="changeInAllLang_ListBox{FUNCTION_ID}(document.frmEditEntry.elements['assignedLevel_{DIV_LANGUAGE_ID}[]'],'assignedLevel_',this.value,'{PASS_LANG_MULTIPLE}',this.options,selectedIndex,'level_');">
          {PARTNERS_LEVEL_MULTI}
-		</select>
+        </select>
     </td>
     </tr>
 </table>
@@ -680,12 +638,12 @@ function openWindow(theURL,winName,features){
         </td>
         <td width="50">
             &nbsp;<input type="button" value="&gt;&gt;" name="addprofile" onclick="AddToTheList{FUNCTION_ID}(document.frmEditEntry.elements['profile_{DIV_LANGUAGE_ID}[]'],document.frmEditEntry.elements['assignedProfile_{DIV_LANGUAGE_ID}[]'],addprofile,removeprofile,'profile_','assignedProfile_','{PASS_LANG_MULTIPLE}');" style="margin-bottom:1px;" />&nbsp;<br />
-			&nbsp;<input type="button" value="&lt;&lt;" name="removeprofile" onclick="RemoveFromTheList{FUNCTION_ID}(document.frmEditEntry.elements['profile_{DIV_LANGUAGE_ID}[]'],document.frmEditEntry.elements['assignedProfile_{DIV_LANGUAGE_ID}[]'],addprofile,removeprofile,'profile_','assignedProfile_','{PASS_LANG_MULTIPLE}');" />&nbsp;
+            &nbsp;<input type="button" value="&lt;&lt;" name="removeprofile" onclick="RemoveFromTheList{FUNCTION_ID}(document.frmEditEntry.elements['profile_{DIV_LANGUAGE_ID}[]'],document.frmEditEntry.elements['assignedProfile_{DIV_LANGUAGE_ID}[]'],addprofile,removeprofile,'profile_','assignedProfile_','{PASS_LANG_MULTIPLE}');" />&nbsp;
         </td>
         <td>
             <select name="assignedProfile_{DIV_LANGUAGE_ID}[]" id="assignedProfile_{DIV_LANGUAGE_ID}[]" size="10" style="width:200px;" multiple="multiple" onChange="changeInAllLang_ListBox{FUNCTION_ID}(document.frmEditEntry.elements['assignedProfile_{DIV_LANGUAGE_ID}[]'],'assignedProfile_',this.value,'{PASS_LANG_MULTIPLE}',this.options,selectedIndex,'profile_');">
                 {PARTNERS_PROFILE_MULTI}
-		     </select>
+             </select>
         </td>
         </tr>
 </table>
@@ -726,12 +684,12 @@ function openWindow(theURL,winName,features){
         </td>
         <td width="50">
             &nbsp;<input type="button" value="&gt;&gt;" name="addvertical" onclick="AddToTheList{FUNCTION_ID}(document.frmEditEntry.elements['vertical_{DIV_LANGUAGE_ID}[]'],document.frmEditEntry.elements['assignedVertical_{DIV_LANGUAGE_ID}[]'],addvertical,removevertical,'vertical_','assignedVertical_','{PASS_LANG_MULTIPLE}');" style="margin-bottom:1px;" />&nbsp;<br />
-			&nbsp;<input type="button" value="&lt;&lt;" name="removevertical" onclick="RemoveFromTheList{FUNCTION_ID}(document.frmEditEntry.elements['vertical_{DIV_LANGUAGE_ID}[]'],document.frmEditEntry.elements['assignedVertical_{DIV_LANGUAGE_ID}[]'],addvertical,removevertical,'vertical_','assignedVertical_','{PASS_LANG_MULTIPLE}');" />&nbsp;
+            &nbsp;<input type="button" value="&lt;&lt;" name="removevertical" onclick="RemoveFromTheList{FUNCTION_ID}(document.frmEditEntry.elements['vertical_{DIV_LANGUAGE_ID}[]'],document.frmEditEntry.elements['assignedVertical_{DIV_LANGUAGE_ID}[]'],addvertical,removevertical,'vertical_','assignedVertical_','{PASS_LANG_MULTIPLE}');" />&nbsp;
         </td>
         <td>
             <select name="assignedVertical_{DIV_LANGUAGE_ID}[]" id="assignedVertical_{DIV_LANGUAGE_ID}[]" size="10" style="width:200px;" multiple="multiple" onChange="changeInAllLang_ListBox{FUNCTION_ID}(document.frmEditEntry.elements['assignedVertical_{DIV_LANGUAGE_ID}[]'],'assignedVertical_',this.value,'{PASS_LANG_MULTIPLE}',this.options,selectedIndex,'vertical_');">
                 {PARTNERS_VERTICAL_MULTI}
-		    </select>
+            </select>
         </td>
         </tr>
    </table>
@@ -812,9 +770,9 @@ function openWindow(theURL,winName,features){
 </tr>
 
 <tr class="{PARTNERS_CLASS_TWO}">
-			<td>{TXT_DIV_LOGO}</td>
-			<td colspan="3"><input type="text" name="frmEditEntry_Image_{DIV_LANGUAGE_ID}" id="frmEditEntry_Image_{DIV_LANGUAGE_ID}" style="width:400px;" value="{DIV_IMAGE}" onChange="changeInAllLang{FUNCTION_ID}('frmEditEntry_Image_',this.value,'{PASS_LANG_MULTIPLE}');"/>&nbsp;<input type="button" value="{TXT_DIV_IMAGE_BROWSE}" onclick="newsGetFileBrowser('frmEditEntry_Image_{DIV_LANGUAGE_ID}', 'image')" /></td>
-		</tr>
+            <td>{TXT_DIV_LOGO}</td>
+            <td colspan="3"><input type="text" name="frmEditEntry_Image_{DIV_LANGUAGE_ID}" id="frmEditEntry_Image_{DIV_LANGUAGE_ID}" style="width:400px;" value="{DIV_IMAGE}" onChange="changeInAllLang{FUNCTION_ID}('frmEditEntry_Image_',this.value,'{PASS_LANG_MULTIPLE}');"/>&nbsp;<input type="button" value="{TXT_DIV_IMAGE_BROWSE}" onclick="newsGetFileBrowser('frmEditEntry_Image_{DIV_LANGUAGE_ID}', 'image')" /></td>
+        </tr>
   </table>
 
   <br />
