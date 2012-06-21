@@ -256,6 +256,7 @@ $_ARRAYLANG['TXT_MANAGE_FILES'] = "Veriler (Dosyalar) Yönetimi";
 $_ARRAYLANG['TXT_SELECT_THEME'] = "Desen seç";
 $_ARRAYLANG['TXT_THEME_NAME'] = "Desenismi";
 $_ARRAYLANG['TXT_DESIGN_OVERVIEW'] = "Genel bakış";
+$_ARRAYLANG['TXT_DESIGN_TEMPLATES'] = "Design templates";
 $_ARRAYLANG['TXT_NEW_DESIGN'] = "Yeni desen taslağı oluştur";
 $_ARRAYLANG['TXT_ACTIVATE_DESIGN'] = "Etkinle";
 $_ARRAYLANG['TXT_LANGUAGE'] = "Dil";

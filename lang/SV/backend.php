@@ -256,6 +256,7 @@ $_ARRAYLANG['TXT_MANAGE_FILES'] = "Dateien verwalten";
 $_ARRAYLANG['TXT_SELECT_THEME'] = "Design auswählen";
 $_ARRAYLANG['TXT_THEME_NAME'] = "Designname";
 $_ARRAYLANG['TXT_DESIGN_OVERVIEW'] = "Überblick ";
+$_ARRAYLANG['TXT_DESIGN_TEMPLATES'] = "Designvorlagen";
 $_ARRAYLANG['TXT_NEW_DESIGN'] = "Neue Designvorlage erstellen";
 $_ARRAYLANG['TXT_ACTIVATE_DESIGN'] = "Aktivieren";
 $_ARRAYLANG['TXT_LANGUAGE'] = "Sprache";

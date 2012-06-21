@@ -256,6 +256,7 @@ $_ARRAYLANG['TXT_MANAGE_FILES'] = "Beheer bestanden";
 $_ARRAYLANG['TXT_SELECT_THEME'] = "Kies designs";
 $_ARRAYLANG['TXT_THEME_NAME'] = "Designnaam";
 $_ARRAYLANG['TXT_DESIGN_OVERVIEW'] = "Overzicht";
+$_ARRAYLANG['TXT_DESIGN_TEMPLATES'] = "Design templates";
 $_ARRAYLANG['TXT_NEW_DESIGN'] = "Nieuw thema";
 $_ARRAYLANG['TXT_ACTIVATE_DESIGN'] = "Activeer";
 $_ARRAYLANG['TXT_LANGUAGE'] = "Taal";

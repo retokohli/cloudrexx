@@ -256,6 +256,7 @@ $_ARRAYLANG['TXT_MANAGE_FILES'] = "Administrer filer";
 $_ARRAYLANG['TXT_SELECT_THEME'] = "Valg design";
 $_ARRAYLANG['TXT_THEME_NAME'] = "Designnavn";
 $_ARRAYLANG['TXT_DESIGN_OVERVIEW'] = "Oversigt";
+$_ARRAYLANG['TXT_DESIGN_TEMPLATES'] = "Design templates";
 $_ARRAYLANG['TXT_NEW_DESIGN'] = "Ny design template";
 $_ARRAYLANG['TXT_ACTIVATE_DESIGN'] = "Aktiver";
 $_ARRAYLANG['TXT_LANGUAGE'] = "Sprog";
