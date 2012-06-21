@@ -1237,8 +1237,7 @@ switch ($plainSection) {
         /** @ignore */
         if (!@include_once ASCMS_CORE_MODULE_PATH.'/login/index.class.php')
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-// TODO: In case a session is needed here (I would expect so)
-//        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
+        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
         $objLogin = new Login($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objLogin->getContent());
         break;

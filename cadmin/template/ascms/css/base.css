@@ -320,16 +320,14 @@ a:active {
     background: #faf0e6;
 }
 
-#captcha,
-.captcha {
+#captcha {
     float: left !important;
     width: auto !important;
     clear: none !important;
     margin: 0;
     padding: 0;
 }
-#captcha #coreCaptchaLabel,
-.captcha .coreCaptchaLabel {
+#captcha #coreCaptchaLabel {
     float: left;
     width: auto;
     clear: both;
@@ -337,16 +335,14 @@ a:active {
     white-space: nowrap;
     font-weight: normal;
 }
-#captcha #coreCaptchaCode,
-.captcha .coreCaptchaCode {
+#captcha #coreCaptchaCode {
     float: left;
     width: 79px !important;
     height: 17px;
     clear: both;
     margin: 0 7px 0 0;
 }
-#captcha #coreCaptchaImage,
-.captcha .coreCaptchaImage {
+#captcha #coreCaptchaImage {
     float: left;
     width: 93px;
     height: 31px;
