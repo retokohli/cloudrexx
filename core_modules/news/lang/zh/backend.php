@@ -130,6 +130,7 @@ $_ARRAYLANG['TXT_PUBLISHED_ON'] = "Published on:";
 $_ARRAYLANG['TXT_HEADLINE_PLACEHOLLDERS_USAGE'] = "In the design Template <b>headlines.html</b>. 
 This placeholder [[HEADLINES_FILE]] may be placed either in the design template or in the content of this page.";
 $_ARRAYLANG['TXT_NEWS_IMAGE_PATH_DESCRIPTION'] = "Path to the image of the news message";
+$_ARRAYLANG['TXT_NEWS_THUMBNAIL_PATH_DESCRIPTION'] = "Path to the thumbnail of the news message";
 $_ARRAYLANG['TXT_HEADLINE_TEXT_DESCRIPTION'] = "Short text of the news message";
 $_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'] = "Teaser Boxes can be included in either Design or Content.  <br />To include the Teaser Boxes use the placeholders displazed in Teaser Administration.";
 $_ARRAYLANG['TXT_TEASER_ROW_DESCRIPTION'] = "Teaser definition content block. Starttag: <!-- BEGIN teaser_n --> Endtag: <!-- END teaser_n -->. n is the box number, beginning with 1.";

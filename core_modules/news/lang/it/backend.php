@@ -129,6 +129,7 @@ $_ARRAYLANG['TXT_NEWS_URL_DESCRIPTION'] = "Link #1 und #2 der Newsmeldung";
 $_ARRAYLANG['TXT_PUBLISHED_ON'] = "Veröffentlicht am:";
 $_ARRAYLANG['TXT_HEADLINE_PLACEHOLLDERS_USAGE'] = "In der Designvorlage <b>headlines.html</b>. Diese Seite kann mit dem Platzhalter [[HEADLINES_FILE]] im Design oder in einer Content Seite eingebunden werden.";
 $_ARRAYLANG['TXT_NEWS_IMAGE_PATH_DESCRIPTION'] = "Pfad zum Bild der Newsmeldung";
+$_ARRAYLANG['TXT_NEWS_THUMBNAIL_PATH_DESCRIPTION'] = "Pfad zum Thumbnail der Newsmeldung";
 $_ARRAYLANG['TXT_HEADLINE_TEXT_DESCRIPTION'] = "Kurzer Text der Newsmeldung";
 $_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'] = "Die Teaserboxen können im Design oder im Content eingebunden werden.<br />Verwenden Sie die Platzhalter die bei der Teaseradministration angezeigt werden,<br />um die Boxen einzubinden.";
 $_ARRAYLANG['TXT_TEASER_ROW_DESCRIPTION'] = "Block zur definierung eines Teasers. Starttag: &lt;!-- BEGIN teaser_n --&gt; Endtag: &lt;!-- END teaser_n --&gt;. n ist die Box Nummer, beginnend bei 1";

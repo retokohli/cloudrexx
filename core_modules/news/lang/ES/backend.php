@@ -129,6 +129,7 @@ $_ARRAYLANG['TXT_NEWS_URL_DESCRIPTION'] = "Enlace #1 y #2 de la noticia";
 $_ARRAYLANG['TXT_PUBLISHED_ON'] = "Publicado el:";
 $_ARRAYLANG['TXT_HEADLINE_PLACEHOLLDERS_USAGE'] = "En la plantilla de dise&ntilde;o <b>headlines.html</b>. La variable [[HEADLINES_FILE]] puede estar en la palntilla de dise&ntilde;o o en el contenido de esta p&aacute;gina.";
 $_ARRAYLANG['TXT_NEWS_IMAGE_PATH_DESCRIPTION'] = "Ruta de la imagen de la noticia";
+$_ARRAYLANG['TXT_NEWS_THUMBNAIL_PATH_DESCRIPTION'] = "Ruta de la thumbnail de la noticia";
 $_ARRAYLANG['TXT_HEADLINE_TEXT_DESCRIPTION'] = "Breve texto introductorio de la noticia";
 $_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'] = "Las introducciones pueden ser inclu&iacute;das en el dise&ntilde;o o en el contenido.  <br />Para incluirlos, usa las variables del administrador de introducciones.";
 $_ARRAYLANG['TXT_TEASER_ROW_DESCRIPTION'] = "Bloque de contenidos de la definici&oacute;n de introducciones. Apertura: <!-- BEGIN teaser_n --> Cierre: <!-- END teaser_n -->. n es el n&uacute;mero del buz&oacute;n, comenzando en 1.";

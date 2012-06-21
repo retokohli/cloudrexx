@@ -129,6 +129,7 @@ $_ARRAYLANG['TXT_NEWS_URL_DESCRIPTION'] = "Link #1 en #2 van het nieuwsbericht";
 $_ARRAYLANG['TXT_PUBLISHED_ON'] = "Gepubliceerd op:";
 $_ARRAYLANG['TXT_HEADLINE_PLACEHOLLDERS_USAGE'] = "In het designvoorbeeld <b>headlines.html</b>. Deze pagina kan met de placeholder [[HEADLINES_FILE]] in het design of in de content geplaatst worden.";
 $_ARRAYLANG['TXT_NEWS_IMAGE_PATH_DESCRIPTION'] = "Pad van de afbeelding van het nieuwsbericht";
+$_ARRAYLANG['TXT_NEWS_IMAGE_PATH_DESCRIPTION'] = "Pad van de thumbnail van het nieuwsbericht";
 $_ARRAYLANG['TXT_HEADLINE_TEXT_DESCRIPTION'] = "Korte tekst van het nieuwsbericht";
 $_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'] = "De teaservelden kunnen in het design of in de content geplaatst worden. Gebruik de placeholder die bij het teaserbeheer wordt aangegeven om de velden te plaatsen.";
 $_ARRAYLANG['TXT_TEASER_ROW_DESCRIPTION'] = "Block voor de definiering van een teaser. De starttag: <!-- BEGIN teaser_n --> en de eindtag <!-- END teaser_n -->. n is het veldnummer, beginnend bij 1.";

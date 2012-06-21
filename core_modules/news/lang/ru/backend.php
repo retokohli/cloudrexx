@@ -129,6 +129,7 @@ $_ARRAYLANG['TXT_NEWS_URL_DESCRIPTION'] = "Ссылка #1 и #2 Новости"
 $_ARRAYLANG['TXT_PUBLISHED_ON'] = "Опубликован";
 $_ARRAYLANG['TXT_HEADLINE_PLACEHOLLDERS_USAGE'] = "В шаблоне дизайна <b>headlines.html</b>. Эта страница с файлами [[HEADLINES_FILE]] включена в дизайн или страницу содержания";
 $_ARRAYLANG['TXT_NEWS_IMAGE_PATH_DESCRIPTION'] = "Путь к изображению в новости";
+$_ARRAYLANG['TXT_NEWS_THUMBNAIL_PATH_DESCRIPTION'] = "Путь к миниатюрами в новости";
 $_ARRAYLANG['TXT_HEADLINE_TEXT_DESCRIPTION'] = "Краткий текст новости";
 $_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'] = "Боксы анонсов могут быть включены в дизайн или содержание.<br />Используйте пути файлов при администрировании анонсов,<br /> для связи с боксами.";
 $_ARRAYLANG['TXT_TEASER_ROW_DESCRIPTION'] = "Блок для дифинирования Старта. Стартовый день: *lt;! - BEGIN teaser_n - *gt; конечный день: *lt;! - teaser_n - *gt;. n является боксом номера, начиная с 1";

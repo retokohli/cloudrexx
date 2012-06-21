@@ -129,6 +129,7 @@ $_ARRAYLANG['TXT_NEWS_URL_DESCRIPTION'] = "Lien #1 et #2 de l'article";
 $_ARRAYLANG['TXT_PUBLISHED_ON'] = "Publié le:";
 $_ARRAYLANG['TXT_HEADLINE_PLACEHOLLDERS_USAGE'] = "Dans le modèle de présentation <b>headlines.html</b>. Cette page peut être incluse via la variable [[HEADLINES_FILE]] dans le modèle de présentation ou dans une page de contenu.";
 $_ARRAYLANG['TXT_NEWS_IMAGE_PATH_DESCRIPTION'] = "Chemin de l'image de l'article";
+$_ARRAYLANG['TXT_NEWS_THUMBNAIL_PATH_DESCRIPTION'] = "Chemin de la thumbnail de l'article";
 $_ARRAYLANG['TXT_HEADLINE_TEXT_DESCRIPTION'] = "Texte court de l'article";
 $_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'] = "Les boîtes de texte d'accroche peuvent être incorporées dans le modèle ou le contenu.<br />Lier les boîtes à l'aide des variables visibles sous \"Textes d'accroche\".";
 $_ARRAYLANG['TXT_TEASER_ROW_DESCRIPTION'] = "Brique de définition d'un texte d'accroche. Tag de début: &lt;!-- BEGIN teaser_n --&gt; Tag de fin: &lt;!-- END teaser_n --&gt;. n pour le numéro de boîte, en commençant à 1";
