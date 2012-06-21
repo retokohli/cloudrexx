@@ -256,6 +256,7 @@ $_ARRAYLANG['TXT_MANAGE_FILES'] = "Gestion des fichiers";
 $_ARRAYLANG['TXT_SELECT_THEME'] = "Sélectionner modèle";
 $_ARRAYLANG['TXT_THEME_NAME'] = "Nom du modèle";
 $_ARRAYLANG['TXT_DESIGN_OVERVIEW'] = "Aperçu";
+$_ARRAYLANG['TXT_DESIGN_TEMPLATES'] = "Design templates";
 $_ARRAYLANG['TXT_NEW_DESIGN'] = "Nouveau modèle de présentation";
 $_ARRAYLANG['TXT_ACTIVATE_DESIGN'] = "Activer";
 $_ARRAYLANG['TXT_LANGUAGE'] = "Langue";

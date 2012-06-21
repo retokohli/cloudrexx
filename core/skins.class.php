@@ -205,8 +205,8 @@ class skins
 
         $objTemplate->setVariable("CONTENT_NAVIGATION","
             <a href='index.php?cmd=skins' class='".($this->act == '' ? 'active' : '')."'>".$_CORELANG['TXT_DESIGN_OVERVIEW']."</a>
+            <a href='index.php?cmd=skins&amp;act=templates' class='".($this->act == 'templates' ? 'active' : '')."'>".$_CORELANG['TXT_DESIGN_TEMPLATES']."</a>
             <a href='index.php?cmd=skins&amp;act=newDir' class='".($this->act == 'newDir' ? 'active' : '')."'>".$_CORELANG['TXT_NEW_DESIGN']."</a>
-            <a href='index.php?cmd=skins&amp;act=activate' class='".($this->act == 'activate' ? 'active' : '')."'>".$_CORELANG['TXT_ACTIVATE_DESIGN']."</a>
             <a href='index.php?cmd=media&amp;archive=themes'>".$_CORELANG['TXT_DESIGN_FILES_ADMINISTRATION']."</a>
             <a href='index.php?cmd=skins&amp;act=examples' class='".($this->act == 'examples' ? 'active' : '')."'>".$_CORELANG['TXT_DESIGN_REPLACEMENTS_DIR']."</a>
             <a href='index.php?cmd=skins&amp;act=manage' class='".($this->act == 'manage' ? 'active' : '')."'>".$_CORELANG['TXT_THEME_IMPORT_EXPORT']."</a>");
@@ -214,7 +214,7 @@ class skins
 
     /**
      * Gets the requested page
-     * @global   HTML_Template_Sigma
+     * @global    HTML_Template_Sigma
      * @return    string    parsed content
      */
     function getPage()
@@ -225,8 +225,8 @@ class skins
             $_GET['act']="";
         }
         switch($_GET['act']){
-            case "activate":
-                $this->_activate();
+            case "templates":
+                $this->overview();
                 break;
             case "examples":
                 $this->examples();
@@ -257,7 +257,7 @@ class skins
                 $this->newfile();
                 $this->delfile();
                 $this->deldir();
-                $this->overview();
+                $this->_activate();
         }
         $objTemplate->setVariable(array(
             'CONTENT_TITLE'             => $this->pageTitle,
@@ -280,7 +280,7 @@ class skins
 
         // initialize variables
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_content', 'skins_content.html');
-        $this->pageTitle = $_CORELANG['TXT_OVERVIEW'];
+        $this->pageTitle = $_CORELANG['TXT_DESIGN_TEMPLATES'];
         $objTemplate->setVariable(array(
             'TXT_CHOOSE_TEMPLATE_GROUP'       =>     $_CORELANG['TXT_CHOOSE_TEMPLATE_GROUP'],
             'TXT_SELECT_FILE'                 =>     $_CORELANG['TXT_SELECT_FILE'],
@@ -787,7 +787,7 @@ class skins
         Permission::checkAccess(46, 'static');
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_active', 'skins_activate.html');
-        $this->pageTitle = $_CORELANG['TXT_ACTIVATE_DESIGN'];
+        $this->pageTitle = $_CORELANG['TXT_OVERVIEW'];
         $objTemplate->setVariable(array(
             'TXT_ACTIVATE_DESIGN'      => $_CORELANG['TXT_ACTIVATE_DESIGN'],
             'TXT_ID'                   => $_CORELANG['TXT_ID'],
@@ -817,12 +817,12 @@ class skins
             }
             $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
         }
-        $objResult = $objDatabase->Execute("
-           SELECT   id,lang,name,frontend,
-                    themesid,mobile_themes_id,print_themes_id,pdf_themes_id
-           FROM     ".DBPREFIX."languages
-           ORDER BY id
-        ");
+        $objResult = $objDatabase->Execute('
+            SELECT   `id`, `lang`, `name`, `frontend`, `themesid`, `mobile_themes_id`, `print_themes_id`, `pdf_themes_id`
+            FROM     `'.DBPREFIX.'languages`
+            WHERE    `frontend` = 1
+            ORDER BY `id`
+        ');
 
         if ($objResult !== false) {
             while (!$objResult->EOF) {
@@ -831,10 +831,7 @@ class skins
                 } else {
                     $class="row2";
                 }
-
-                if ( $objResult->fields['frontend']){
-                    $class="rowWarn";
-                }
+                
                 $objTemplate->setVariable(array(
                     'THEMES_ROWCLASS'           => $class,
                     'THEMES_LANG_ID'            => $objResult->fields['id'],

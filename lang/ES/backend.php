@@ -256,6 +256,7 @@ $_ARRAYLANG['TXT_MANAGE_FILES'] = "Administrar ficheros";
 $_ARRAYLANG['TXT_SELECT_THEME'] = "Seleccionar Plantillas";
 $_ARRAYLANG['TXT_THEME_NAME'] = "Nombre de la plantilla";
 $_ARRAYLANG['TXT_DESIGN_OVERVIEW'] = "General";
+$_ARRAYLANG['TXT_DESIGN_TEMPLATES'] = "Design templates";
 $_ARRAYLANG['TXT_NEW_DESIGN'] = "Nuevo tema";
 $_ARRAYLANG['TXT_ACTIVATE_DESIGN'] = "Activar";
 $_ARRAYLANG['TXT_LANGUAGE'] = "Idioma";

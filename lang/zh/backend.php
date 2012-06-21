@@ -256,6 +256,7 @@ $_ARRAYLANG['TXT_MANAGE_FILES'] = "Manage Files";
 $_ARRAYLANG['TXT_SELECT_THEME'] = "Choose Designs";
 $_ARRAYLANG['TXT_THEME_NAME'] = "Design name";
 $_ARRAYLANG['TXT_DESIGN_OVERVIEW'] = "Overview";
+$_ARRAYLANG['TXT_DESIGN_TEMPLATES'] = "Design templates";
 $_ARRAYLANG['TXT_NEW_DESIGN'] = "New theme";
 $_ARRAYLANG['TXT_ACTIVATE_DESIGN'] = "Activate";
 $_ARRAYLANG['TXT_LANGUAGE'] = "Language";
