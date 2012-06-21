@@ -149,7 +149,8 @@ class newsHeadlines extends newsLibrary
                         'NEWS_IMAGE_LINK'    => $htmlLinkImage,
 
                         // Backward compatibility for templates pre 3.0
-                        'HEADLINE_IMAGE_PATH'=> contrexx_raw2xhtml($imageSource),
+                        'HEADLINE_IMAGE_PATH'     => contrexx_raw2xhtml($objResult->fields['teaser_image_path']),
+                        'HEADLINE_THUMBNAIL_PATH' => contrexx_raw2xhtml($imageSource),
                     ));
 
                     if ($this->_objTemplate->blockExists('news_image')) {

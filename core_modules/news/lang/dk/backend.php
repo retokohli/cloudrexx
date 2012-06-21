@@ -129,6 +129,7 @@ $_ARRAYLANG['TXT_NEWS_URL_DESCRIPTION'] = "Link #1 og #2 af nyheden";
 $_ARRAYLANG['TXT_PUBLISHED_ON'] = "Offentliggjort den:";
 $_ARRAYLANG['TXT_HEADLINE_PLACEHOLLDERS_USAGE'] = "I designskabelonen <b>headlines.html</b>. Denne side kan indflettes i designet eller i en content side med pladsholderen [[HEADLINES_FILE]] ";
 $_ARRAYLANG['TXT_NEWS_IMAGE_PATH_DESCRIPTION'] = "Sti til billede af nyheden";
+$_ARRAYLANG['TXT_NEWS_THUMBNAIL_PATH_DESCRIPTION'] = "Sti til thumbnail af nyheden";
 $_ARRAYLANG['TXT_HEADLINE_TEXT_DESCRIPTION'] = "Kort tekst af nyheden";
 $_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'] = "Teaser bokse kan indflettes i designet eller i indholdet.<br />Anvend pladsholere som bliver vist i teaseradministrationen,<br />for at indflette bokse.";
 $_ARRAYLANG['TXT_TEASER_ROW_DESCRIPTION'] = "Block til definitionen af en teaser. Starttag: <!-- BEGIN teaser_n --> Endtag: <!-- END teaser_n -->. n er boksnummeret, starter ved 1";
