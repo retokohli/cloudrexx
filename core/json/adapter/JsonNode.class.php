@@ -255,10 +255,11 @@ class JsonNode implements JsonAdapter {
                         'id' => $page->getId(),
                         'data-href' => json_encode(
                             array(
-                                'module' => $page->getModule() . ' ' . $page->getCmd(),
+                                'slug'       => $page->getSlug(),
+                                'module'     => $page->getModule() . ' ' . $page->getCmd(),
                                 'lastupdate' => $page->getUpdatedAt()->format('d.m.Y H:i'),
-                                'user' => $this->logRepo->getUsernameByLog($logs[$page->getId()]),
-                                'level' => $node->getLvl(),
+                                'user'       => $this->logRepo->getUsernameByLog($logs[$page->getId()]),
+                                'level'      => $node->getLvl(),
                             )
                         ),
                     ),
@@ -293,9 +294,9 @@ class JsonNode implements JsonAdapter {
                 if (!array_key_exists($lang, $data) && array_key_exists($fallback, $data)) {
                     $data[$lang] = array(
                         'language' => $lang,
-                        'title' => $data[$fallback]['title'],
-                        'attr' => array(
-                            'id' => '0'
+                        'title'    => $data[$fallback]['title'],
+                        'attr'     => array(
+                            'id'   => '0'
                         ),
                     );
                     $metadata[0] = array(
@@ -305,15 +306,31 @@ class JsonNode implements JsonAdapter {
                 } else if (!array_key_exists($lang, $data)) {
                     $data[$lang] = array(
                         'language' => $lang,
-                        'title' => array_key_exists($last_resort, $data) ? $data[$last_resort]['title'] : 'No Title',
-                        'attr' => array(
-                            'id' => '0'
-                        ),
                     );
-                    $metadata[0] = array(
-                        'visibility' => 'active',
-                        'publishing' => 'unpublished',
-                    );
+                    
+                    if (array_key_exists($last_resort, $data)) {
+                        $data[$lang] = array(
+                            'title'    => $data[$last_resort]['title'],
+                            'attr'     => array(
+                                'id'   => '0'
+                            ),
+                        );
+                        $metadata['broken'] = array(
+                            'visibility' => 'active',
+                            'publishing' => 'unpublished',
+                        );
+                    } else {
+                        $data[$lang] = array(
+                            'title'    => 'No Title',
+                            'attr'     => array(
+                                'id'   => 'broken'
+                            ),
+                        );
+                        $metadata['broken'] = array(
+                            'visibility' => 'active',
+                            'publishing' => 'broken',
+                        );
+                    }
                 }
                 
                 $actions[$lang][$node->getId()] = $this->getActions($node->getId(), $lang);
@@ -325,17 +342,17 @@ class JsonNode implements JsonAdapter {
             }
 
             $output[] = array_merge(array(
-                'attr' => array(
-                    'id' => 'node_' . $node->getId()
+                'attr'     => array(
+                    'id'   => 'node_' . $node->getId()
                 ),
-                'data' => array_values($data),
+                'data'     => array_values($data),
                 'children' => $children,
                 'metadata' => $metadata,
             ), $state);
         }
         
         // moving everything to 'tree' so we can add actions
-        $output['tree'] = $output;
+        $output['tree']    = $output;
         $output['actions'] = $actions;
         
         return($output);

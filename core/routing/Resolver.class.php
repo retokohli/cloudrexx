@@ -106,6 +106,7 @@ class Resolver {
         $this->pathOffset = $pathOffset;
         $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
         $this->nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
+        $this->logRepo  = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
         $this->forceInternalRedirection = $forceInternalRedirection;
         $this->fallbackLanguages = $fallbackLanguages;
         $this->pagePreview = !empty($_GET['pagePreview']) && ($_GET['pagePreview'] == 1) ? 1 : 0;
@@ -154,14 +155,25 @@ class Resolver {
             //(I) see what the model has for us, including aliases.
             $result = $this->pageRepo->getPagesAtPath($path, null, $this->lang, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
 
-            if ($this->pagePreview && !empty($this->sessionPage)) {
-                $result['page'] = $this->getPreviewPage();
-                
-                $tree   = $this->pageRepo->getTreeBySlug(null, $this->lang, true, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
-                $pathes = $this->pageRepo->getPathes($path, $tree, false);
-                
-                $result['matchedPath']   = !empty($pathes['matchedPath'])   ? $pathes['matchedPath']   : '';
-                $result['unmatchedPath'] = !empty($pathes['unmatchedPath']) ? $pathes['unmatchedPath'] : '';
+            if ($this->pagePreview) {
+                if (!empty($this->sessionPage)) {
+                    $result['page'] = $this->getPreviewPage();
+                    
+                    $tree   = $this->pageRepo->getTreeBySlug(null, $this->lang, true, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
+                    $pathes = $this->pageRepo->getPathes($path, $tree, false);
+                    
+                    $result['matchedPath']   = !empty($pathes['matchedPath'])   ? $pathes['matchedPath']   : '';
+                    $result['unmatchedPath'] = !empty($pathes['unmatchedPath']) ? $pathes['unmatchedPath'] : '';
+                } else {
+                    if (\Permission::checkAccess(6, 'static', true)) {
+                        $result['page']->setActive(true);
+                        $result['page']->setDisplay(true);
+                        if (($result['page']->getEditingStatus() == 'hasDraft') || (($result['page']->getEditingStatus() == 'hasDraftWaiting'))) {
+                            $logEntries = $this->logRepo->getLogEntries($result['page']);
+                            $this->logRepo->revert($result['page'], $logEntries[1]->getVersion());
+                        }
+                    }
+                }
             }
 
             //(II) sort out errors
@@ -175,9 +187,7 @@ class Resolver {
 
             // If an older revision was requested, revert to that in-place:
             if (!empty($this->historyId) && \Permission::checkAccess(6, 'static', true)) {
-                $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
-
-                $logRepo->revert($result['page'], $this->historyId);
+                $this->logRepo->revert($result['page'], $this->historyId);
             }
             
             //(III) extend our url object with matched path / params
