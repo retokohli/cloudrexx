@@ -1,0 +1,205 @@
+/* Update: 27.09.2010 */
+
+/* reset */
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-weight: inherit;
+  font-style: inherit;
+  font-size: 100%;
+  font-family: inherit;
+  vertical-align: baseline;
+}
+
+ul, ol {list-style: none;}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+caption, th, td {
+/*  text-align: left;*/
+  font-weight: normal;
+}
+
+table, td, th {vertical-align: top;}
+
+blockquote:before, blockquote:after,
+q:before, q:after {content: "";}
+
+blockquote, q {quotes: "" "";}
+
+a img {border: none;}
+
+textarea {overflow: auto;}
+
+/* global */
+a:link, a:visited {
+  text-decoration: none;
+  color: #609ACC;
+}
+
+a, a:hover, a:link  {outline-style:none;}
+
+a:hover, a:active, a:focus {text-decoration: underline;}
+
+p, h1, h2, h3, h4, h5, h6 {margin-bottom: 1em;}
+
+h1, h2, h3, h4, h5, h6 {font-weight: bold;}
+
+h1, h2, h3, h4 {
+  margin-bottom: .5em;
+  font-weight: normal;
+}
+
+h1 {font-size: 2em;}
+h2 {font-size: 1.6em;}
+h3 {font-size: 1.4em;}
+h4 {font-size: 1.2em;}
+
+#content {
+  float: left;
+  width: 100%;
+}
+/*.feedback {
+	float:right;
+	width:290px;
+}*/
+.feedback {  
+ /* width: 290px;
+  height: 268px;*/
+
+}
+.feedback  input {
+	float:left;
+	margin:0;
+	background:#fff;
+	border:1px solid #ecedf3;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	padding:5px 9px 6px;
+	width:270px;
+}
+.feedback  textarea {
+	float:left;
+	margin:0;
+	background:#fff;
+	border:1px solid #ecedf3;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	padding:5px 9px 6px;
+	width:270px !important;
+	max-width:270px;
+	height:77px;
+	min-height:77px;
+	overflow:auto;
+}
+.feedback :after {
+	display:block;
+	clear:both;
+	content:'';
+}
+.feedback .headline {
+	margin-bottom:18px;
+}
+#main .feedback .submit {
+	margin:0;
+}
+input, textarea, select {
+  color: #555555;
+  font: 12px 'Open Sans',Arial,Helvetica,sans-serif;
+  outline: medium none;
+  vertical-align: middle;
+}
+#main .contact.row:after {
+    clear: both;
+    content: "";
+    display: block;
+}
+#main .contact.row {
+  padding-bottom: 18px;
+  /*width: 50%;*/
+}
+.contact {
+    float: left;
+    /*margin-right: 30px;*/
+}
+.contact.row label {
+  color: #222222;
+  float: left;
+  margin: 6px 30px 0 0;
+  text-align: right;
+  width: 130px;
+}
+
+.feedback input {
+  background: none repeat scroll 0 0 #FFFFFF;
+  border: 1px solid #ECEDF3;
+  border-radius: 3px 3px 3px 3px;
+  float: left;
+  margin: 0;
+  padding: 5px 9px 6px;
+  width: 270px;
+}
+.contact.row label {
+  color: #222222;
+  float: left;
+  margin: 6px 30px 0 0;
+  text-align: right;
+  width: 130px;
+    display: none;
+}
+
+.feedback textarea {
+  background: none repeat scroll 0 0 #FFFFFF;
+  border: 1px solid #ECEDF3;
+  border-radius: 3px 3px 3px 3px;
+  float: left;
+  height: 77px;
+  margin: 0;
+  max-width: 270px;
+  min-height: 77px;
+  overflow: auto;
+  padding: 5px 9px 6px;
+  width: 270px !important;
+}
+
+#main input[type="submit"], #main input[type="button"], #frame_home input[type="submit"], #frame_home input[type="button"], #boxes_home input[type="submit"], #boxes_home input[type="button"], input.submit, input.button {
+  background: -moz-linear-gradient(center top , #C3DA0D 0%, #AECD09 100%) repeat scroll 0 0 transparent;
+  border: 0 none;
+  border-radius: 3px 3px 3px 3px;
+  color: #FFFFFF;
+  cursor: pointer;
+  font: 12px 'Open Sans',Arial,Helvetica,sans-serif;
+  margin-right: 5px;
+  padding: 7px 21px;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
+  text-transform: uppercase;
+  vertical-align: top;
+  width: auto;
+}
+#main input[type="submit"]:hover, #main input[type="button"]:hover, #frame_home input[type="submit"]:hover, #frame_home input[type="button"]:hover, #boxes_home input[type="submit"]:hover, #boxes_home input[type="button"]:hover {
+  background: -moz-linear-gradient(center top , #B7CC0B 0%, #9EBA09 100%) repeat scroll 0 0 transparent;
+}
+.social-box .headline h3 {
+  background: none repeat scroll 0 0 #FBFBFB;
+  padding-left: 0;
+  text-transform: none;
+}
+.headline.solid {
+  background: url("images/divider.png") repeat-x scroll 0 50% transparent;
+}
+.headline h3, .headline h4, .headline h5 {
+  color: #222222;
+  display: inline-block;
+  font: bold 14px/21px 'Open Sans',Arial,Helvetica,sans-serif;
+  margin: 0;
+  vertical-align: top;
+  padding: 0 20px 0 0;
+  background: #FAFAFA
+}
