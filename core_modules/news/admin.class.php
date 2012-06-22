@@ -192,7 +192,6 @@ class newsManager extends newsLibrary {
             ".($this->arrSettings['news_use_types'] == '1' ? "<a href='index.php?cmd=news&amp;act=newstype' class='".($this->act == 'newstype' ? 'active' : '')."'>".$_ARRAYLANG['TXT_TYPES_MANAGER']."</a>" : "")."
             <a href='index.php?cmd=news&amp;act=ticker' class='".($this->act == 'ticker' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWS_NEWSTICKER']."</a>
             ".($_CONFIG['newsTeasersStatus'] == '1' ? "<a href='index.php?cmd=news&amp;act=teasers' class='".($this->act == 'teasers' ? 'active' : '')."'>".$_ARRAYLANG['TXT_TEASERS']."</a>" : "")."
-            <a href='index.php?cmd=news&amp;act=placeholders' class='".($this->act == 'placeholders' ? 'active' : '')."'>".$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY']."</a>
             <a href='index.php?cmd=news&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWS_SETTINGS']."</a>");   
     }
 
@@ -307,10 +306,6 @@ class newsManager extends newsLibrary {
 
             case 'teasers':
                 $this->_teasers();
-                break;
-
-            case 'placeholders':
-                $this->_placeholders();
                 break;
 
             case 'access_user':
@@ -2904,13 +2899,50 @@ class newsManager extends newsLibrary {
         }
     }
 
-
+    /**
+     * Loads subnavbar level 2
+     *
+     * @access  private
+     * @global  array   $_CORELANG
+     */
     function settings()
+    {
+        global $_CORELANG;
+
+        $this->pageTitle = $_CORELANG['TXT_CORE_SETTINGS'];
+        $this->_objTpl->loadTemplateFile('module_news_settings.html', true, true);
+        $this->_objTpl->setVariable(array(
+            'TXT_CORE_GENERAL'      => $_CORELANG['TXT_CORE_GENERAL'],
+            'TXT_CORE_PLACEHOLDERS' => $_CORELANG['TXT_CORE_PLACEHOLDERS'],
+        ));
+
+        switch (!empty($_GET['tpl']) ? $_GET['tpl'] : '') {
+            case 'general':
+                $this->settingsGeneral();
+                break;
+            case 'placeholders':
+                $this->settingsPlaceholders();
+                break;
+            default:
+                $this->settingsGeneral();
+                break;
+        }
+    }
+
+    /**
+     * Loads and saves general settings
+     *
+     * @access  private
+     * @global  array   $_ARRAYLANG
+     * @global  array   $_CORELANG
+     * @global  array   $_CONFIG
+     * @global  object  $objDatabase
+     */
+    private function settingsGeneral()
     {
         global $objDatabase, $_CORELANG, $_ARRAYLANG, $_CONFIG;
 
-        $this->pageTitle = $_ARRAYLANG['TXT_NEWS_SETTINGS'];
-        $this->_objTpl->loadTemplateFile('module_news_settings.html',true,true);
+        $this->_objTpl->addBlockfile('NEWS_SETTINGS_CONTENT', 'settings_content', 'module_news_settings_general.html');
         // Show settings
         $objResult = $objDatabase->Execute("SELECT lang FROM ".DBPREFIX."languages WHERE id='".$this->langId."'");
         if ($objResult !== false) {
@@ -2945,7 +2977,7 @@ class newsManager extends newsLibrary {
             ));
             $this->_objTpl->parse('news_feed_description_list');
         }
-        
+
         $assignedAuthorGroups = array();
         $existingAuthorGroups = array();
         $assignedPublisherGroups = array();
@@ -2967,7 +2999,7 @@ class newsManager extends newsLibrary {
                 $existingPublisherGroups .= '<option value="'.$id.'">'.$name."</option>\n";
             }
         }
-        
+
         $this->_objTpl->setVariable(array(
             'NEWS_FEED_TITLE'                       => contrexx_raw2xhtml($newsFeedTitle),
             'NEWS_FEED_STATUS'                      => $status,
@@ -3077,6 +3109,101 @@ class newsManager extends newsLibrary {
             ));
             $this->_objTpl->parse('defaultTeasers');
         }
+
+        $this->_objTpl->parse('settings_content');
+    }
+
+    /**
+     * Shows placeholders
+     *
+     * @access  private
+     * @global  array   $_CORELANG
+     * @global  array   $_ARRAYLANG
+     */
+    private function settingsPlaceholders() {
+        global $_ARRAYLANG, $_CORELANG;
+
+        $this->_objTpl->addBlockfile('NEWS_SETTINGS_CONTENT', 'settings_content', 'module_news_settings_placeholders.html');
+        $this->_objTpl->setVariable(array(
+            'TXT_PERFORM'                                               => $_ARRAYLANG['TXT_PERFORM'],
+            'TXT_CATEGORY'                                              => $_ARRAYLANG['TXT_CATEGORY'],
+            'TXT_NEWS_TYPE'                                             => $_ARRAYLANG['TXT_NEWS_TYPE'],
+            'TXT_DATE'                                                  => $_ARRAYLANG['TXT_DATE'],
+            'TXT_TITLE'                                                 => $_ARRAYLANG['TXT_TITLE'],
+            'TXT_NEWS_SITE'                                             => $_ARRAYLANG['TXT_NEWS_SITE'],
+            'TXT_NEWS_MESSAGE'                                          => $_ARRAYLANG['TXT_NEWS_MESSAGE'],
+            'TXT_HEADLINES'                                             => $_ARRAYLANG['TXT_HEADLINES'],
+            'TXT_TOPNEWS'                                               => $_ARRAYLANG['TXT_TOPNEWS'],
+            'TXT_TEASERS'                                               => $_ARRAYLANG['TXT_TEASERS'],
+            'TXT_USAGE'                                                 => $_ARRAYLANG['TXT_USAGE'],
+            'TXT_NEWS_PLACEHOLLDERS_USAGE_TEXT'                         => $_ARRAYLANG['TXT_NEWS_PLACEHOLLDERS_USAGE_TEXT'],
+            'TXT_PLACEHOLDER_LIST'                                      => $_ARRAYLANG['TXT_PLACEHOLDER_LIST'],
+            'TXT_LANGUAGE_VARIABLES'                                    => $_ARRAYLANG['TXT_LANGUAGE_VARIABLES'],
+            'TXT_GENERAL'                                               => $_ARRAYLANG['TXT_GENERAL'],
+            'TXT_NEWS_PAGIN_DESCRIPTION'                                => $_ARRAYLANG['TXT_NEWS_PAGIN_DESCRIPTION'],
+            'TXT_NEWS_NO_CATEGORY_DESCRIPTION'                          => $_ARRAYLANG['TXT_NEWS_NO_CATEGORY_DESCRIPTION'],
+            'TXT_NEWS_NO_TYPE_DESCRIPTION'                              => $_ARRAYLANG['TXT_NEWS_NO_TYPE_DESCRIPTION'],
+            'TXT_NEWS_CAT_DROPDOWNMENU_DESCRIPTION'                     => $_ARRAYLANG['TXT_NEWS_CAT_DROPDOWNMENU_DESCRIPTION'],
+            'TXT_NEWS_TYPE_DROPDOWNMENU_DESCRIPTION'                    => $_ARRAYLANG['TXT_NEWS_TYPE_DROPDOWNMENU_DESCRIPTION'],
+            'TXT_NEWS_DATE_DESCRIPTION'                                 => $_ARRAYLANG['TXT_NEWS_DATE_DESCRIPTION'],
+            'TXT_NEWS_LONG_DATE_DESCRIPTION'                            => $_ARRAYLANG['TXT_NEWS_LONG_DATE_DESCRIPTION'],
+            'TXT_NEWS_AUTHOR_DESCRIPTION'                               => $_ARRAYLANG['TXT_NEWS_AUTHOR_DESCRIPTION'],
+            'TXT_NEWS_LINK_DESCRIPTION'                                 => $_ARRAYLANG['TXT_NEWS_LINK_DESCRIPTION'],
+            'TXT_NEWS_CATEGORY_DESCRIPTION'                             => $_ARRAYLANG['TXT_NEWS_CATEGORY_DESCRIPTION'],
+            'TXT_NEWS_TYPE_DESCRIPTION'                                 => $_ARRAYLANG['TXT_NEWS_TYPE_DESCRIPTION'],
+            'TXT_NEWS_CSS_DESCRIPTION'                                  => $_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'],
+            'TXT_NEWSROW_DESCRIPTION'                                   => $_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'],
+            'TXT_EXAMPLE'                                               => $_ARRAYLANG['TXT_EXAMPLE'],
+            'TXT_NEWS_MESSAGES'                                         => $_ARRAYLANG['TXT_NEWS_MESSAGES'],
+            'TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'                      => $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'],
+            'TXT_NEWS_TITLE_DESCRIPTION'                                => $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'],
+            'TXT_NEWS_TEXT_DESCRIPTION'                                 => $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'],
+            'TXT_NEWS_URL_DESCRIPTION'                                  => $_ARRAYLANG['TXT_NEWS_URL_DESCRIPTION'],
+            'TXT_PUBLISHED_ON'                                          => $_ARRAYLANG['TXT_PUBLISHED_ON'],
+            'TXT_HEADLINE_PLACEHOLDERS_USAGE'                           => $_ARRAYLANG['TXT_HEADLINE_PLACEHOLDERS_USAGE'],
+            'TXT_NEWS_IMAGE_PATH_DESCRIPTION'                           => $_ARRAYLANG['TXT_NEWS_IMAGE_PATH_DESCRIPTION'],
+            'TXT_NEWS_THUMBNAIL_PATH_DESCRIPTION'                       => $_ARRAYLANG['TXT_NEWS_THUMBNAIL_PATH_DESCRIPTION'],
+            'TXT_NEWS_TEXT_DESCRIPTION'                                 => $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'],
+            'TXT_MORE_NEWS'                                             => $_CORELANG['TXT_MORE_NEWS'],
+            'TXT_TEASER_PLACEHOLLDERS_USAGE'                            => $_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'],
+            'TXT_NEWS_LASTUPDATE_DESCRIPTION'                           => $_ARRAYLANG['TXT_NEWS_LASTUPDATE_DESCRIPTION'],
+            'TXT_NEWS_SOURCE_DESCRIPTION'                               => $_ARRAYLANG['TXT_NEWS_SOURCE_DESCRIPTION'],
+            'TXT_NEWS_IMAGE_DESCRIPTION'                                => $_ARRAYLANG['TXT_NEWS_IMAGE_DESCRIPTION'],
+            'TXT_NEWS_ID_DESCRIPTION'                                   => $_ARRAYLANG['TXT_NEWS_ID_DESCRIPTION'],
+            'TXT_NEWS_IMAGE_LINK_DESCRIPTION'                           => $_ARRAYLANG['TXT_NEWS_IMAGE_LINK_DESCRIPTION'],
+            'TXT_NEWS_IMAGE_SRC_DESCRIPTION'                            => $_ARRAYLANG['TXT_NEWS_IMAGE_SRC_DESCRIPTION'],
+            'TXT_NEWS_CATEGORY_NAME_DESCRIPTION'                        => $_ARRAYLANG['TXT_NEWS_CATEGORY_NAME_DESCRIPTION'],
+            'TXT_NEWS_TYPE_NAME_DESCRIPTION'                            => $_ARRAYLANG['TXT_NEWS_TYPE_NAME_DESCRIPTION'],
+            'TXT_NEWS_IMAGE_ROW_DESCRIPTION'                            => $_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'],
+            'TXT_NEWS_TEASER_TEXT_DESCRIPTION'                          => $_ARRAYLANG['TXT_NEWS_TEASER_TEXT_DESCRIPTION'],
+            'TXT_NEWS_AUTHOR_DESCRIPTION'                               => $_ARRAYLANG['TXT_NEWS_AUTHOR_DESCRIPTION'],
+            'TXT_TOP_NEWS_PLACEHOLDERS_USAGE'                           => $_ARRAYLANG['TXT_TOP_NEWS_PLACEHOLDERS_USAGE'],
+            'TXT_NEWS_COMMENTS'                                         => $_ARRAYLANG['TXT_NEWS_COMMENTS'],
+            'TXT_NEWS_COMMENT_BLOCK_COMMENT_LIST'                       => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_LIST'],
+            'TXT_NEWS_COMMENT_BLOCK_COMMENT_LIST_TITLE'                 => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_LIST_TITLE'],
+            'TXT_NEWS_COMMENT_BLOCK_COMMENT'                            => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT'],
+            'TXT_NEWS_COMMENT_BLOCK_COMMENT_USER'                       => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_USER'],
+            'TXT_NEWS_COMMENT_BLOCK_COMMENT_DATE'                       => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_DATE'],
+            'TXT_NEWS_COMMENT_BLOCK_COMMENT_TEXT'                       => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TEXT'],
+            'TXT_NEWS_COMMENT_BLOCK_NO_COMMENT'                         => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_NO_COMMENT'],
+            'TXT_NEWS_COMMENT_BLOCK_NO_COMMENT_TITLE'                   => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_NO_COMMENT_TITLE'],
+            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT'                        => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT'],
+            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_TITLE'                  => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_TITLE'],
+            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_ERROR'                  => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_ERROR'],
+            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_ERROR_TITLE'            => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_ERROR_TITLE'],
+            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_TITLE_TITLE'            => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_TITLE_TITLE'],
+            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_VALUE_TITLE'            => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_VALUE_TITLE'],
+            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_TITLE_COMMENT'          => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_TITLE_COMMENT'],
+            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_VALUE_COMMENT'          => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_VALUE_COMMENT'],
+            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_NAME'                   => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_NAME'],
+            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_NAME_TITLE'             => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_NAME_TITLE'],
+            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_NAME_VALUE'             => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_NAME_VALUE'],
+            'TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA'               => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA'],
+            'TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA_TITLE'         => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA_TITLE'],
+            'TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA_CODE'          => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA_CODE'],
+            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_TITLE_BUTTON'           => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_TITLE_BUTTON'],
+        ));
+        $this->_objTpl->parse('settings_content');
     }
 
     function _getAllUserGroups() {
@@ -3905,92 +4032,6 @@ class newsManager extends newsLibrary {
         exit();
     }
 
-    function _placeholders()
-    {
-        global $_ARRAYLANG, $_CORELANG;
-
-        $this->_objTpl->loadTemplateFile('module_news_placeholders.html');
-        $this->_objTpl->setVariable(array(
-            'TXT_PERFORM'                                               => $_ARRAYLANG['TXT_PERFORM'],
-            'TXT_CATEGORY'                                              => $_ARRAYLANG['TXT_CATEGORY'],
-            'TXT_NEWS_TYPE'                                             => $_ARRAYLANG['TXT_NEWS_TYPE'],
-            'TXT_DATE'                                                  => $_ARRAYLANG['TXT_DATE'],
-            'TXT_TITLE'                                                 => $_ARRAYLANG['TXT_TITLE'],
-            'TXT_NEWS_SITE'                                             => $_ARRAYLANG['TXT_NEWS_SITE'],
-            'TXT_NEWS_MESSAGE'                                          => $_ARRAYLANG['TXT_NEWS_MESSAGE'],
-            'TXT_HEADLINES'                                             => $_ARRAYLANG['TXT_HEADLINES'],
-            'TXT_TOPNEWS'                                               => $_ARRAYLANG['TXT_TOPNEWS'],
-            'TXT_TEASERS'                                               => $_ARRAYLANG['TXT_TEASERS'],
-            'TXT_USAGE'                                                 => $_ARRAYLANG['TXT_USAGE'],
-            'TXT_NEWS_PLACEHOLLDERS_USAGE_TEXT'                         => $_ARRAYLANG['TXT_NEWS_PLACEHOLLDERS_USAGE_TEXT'],
-            'TXT_PLACEHOLDER_LIST'                                      => $_ARRAYLANG['TXT_PLACEHOLDER_LIST'],
-            'TXT_LANGUAGE_VARIABLES'                                    => $_ARRAYLANG['TXT_LANGUAGE_VARIABLES'],
-            'TXT_GENERAL'                                               => $_ARRAYLANG['TXT_GENERAL'],
-            'TXT_NEWS_PAGIN_DESCRIPTION'                                => $_ARRAYLANG['TXT_NEWS_PAGIN_DESCRIPTION'],
-            'TXT_NEWS_NO_CATEGORY_DESCRIPTION'                          => $_ARRAYLANG['TXT_NEWS_NO_CATEGORY_DESCRIPTION'],
-            'TXT_NEWS_NO_TYPE_DESCRIPTION'                              => $_ARRAYLANG['TXT_NEWS_NO_TYPE_DESCRIPTION'],
-            'TXT_NEWS_CAT_DROPDOWNMENU_DESCRIPTION'                     => $_ARRAYLANG['TXT_NEWS_CAT_DROPDOWNMENU_DESCRIPTION'],
-            'TXT_NEWS_TYPE_DROPDOWNMENU_DESCRIPTION'                    => $_ARRAYLANG['TXT_NEWS_TYPE_DROPDOWNMENU_DESCRIPTION'],
-            'TXT_NEWS_DATE_DESCRIPTION'                                 => $_ARRAYLANG['TXT_NEWS_DATE_DESCRIPTION'],
-            'TXT_NEWS_LONG_DATE_DESCRIPTION'                            => $_ARRAYLANG['TXT_NEWS_LONG_DATE_DESCRIPTION'],
-            'TXT_NEWS_AUTHOR_DESCRIPTION'                               => $_ARRAYLANG['TXT_NEWS_AUTHOR_DESCRIPTION'],
-            'TXT_NEWS_LINK_DESCRIPTION'                                 => $_ARRAYLANG['TXT_NEWS_LINK_DESCRIPTION'],
-            'TXT_NEWS_CATEGORY_DESCRIPTION'                             => $_ARRAYLANG['TXT_NEWS_CATEGORY_DESCRIPTION'],
-            'TXT_NEWS_TYPE_DESCRIPTION'                                 => $_ARRAYLANG['TXT_NEWS_TYPE_DESCRIPTION'],
-            'TXT_NEWS_CSS_DESCRIPTION'                                  => $_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'],
-            'TXT_NEWSROW_DESCRIPTION'                                   => $_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'],
-            'TXT_EXAMPLE'                                               => $_ARRAYLANG['TXT_EXAMPLE'],
-            'TXT_NEWS_MESSAGES'                                         => $_ARRAYLANG['TXT_NEWS_MESSAGES'],
-            'TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'                      => $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'],
-            'TXT_NEWS_TITLE_DESCRIPTION'                                => $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'],
-            'TXT_NEWS_TEXT_DESCRIPTION'                                 => $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'],
-            'TXT_NEWS_URL_DESCRIPTION'                                  => $_ARRAYLANG['TXT_NEWS_URL_DESCRIPTION'],
-            'TXT_PUBLISHED_ON'                                          => $_ARRAYLANG['TXT_PUBLISHED_ON'],
-            'TXT_HEADLINE_PLACEHOLDERS_USAGE'                           => $_ARRAYLANG['TXT_HEADLINE_PLACEHOLDERS_USAGE'],
-            'TXT_NEWS_IMAGE_PATH_DESCRIPTION'                           => $_ARRAYLANG['TXT_NEWS_IMAGE_PATH_DESCRIPTION'],
-            'TXT_NEWS_THUMBNAIL_PATH_DESCRIPTION'                       => $_ARRAYLANG['TXT_NEWS_THUMBNAIL_PATH_DESCRIPTION'],
-            'TXT_NEWS_TEXT_DESCRIPTION'                                 => $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'],
-            'TXT_MORE_NEWS'                                             => $_CORELANG['TXT_MORE_NEWS'],
-            'TXT_TEASER_PLACEHOLLDERS_USAGE'                            => $_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'],
-            'TXT_NEWS_LASTUPDATE_DESCRIPTION'                           => $_ARRAYLANG['TXT_NEWS_LASTUPDATE_DESCRIPTION'],
-            'TXT_NEWS_SOURCE_DESCRIPTION'                               => $_ARRAYLANG['TXT_NEWS_SOURCE_DESCRIPTION'],
-            'TXT_NEWS_IMAGE_DESCRIPTION'                                => $_ARRAYLANG['TXT_NEWS_IMAGE_DESCRIPTION'],
-            'TXT_NEWS_ID_DESCRIPTION'                                   => $_ARRAYLANG['TXT_NEWS_ID_DESCRIPTION'],
-            'TXT_NEWS_IMAGE_LINK_DESCRIPTION'                           => $_ARRAYLANG['TXT_NEWS_IMAGE_LINK_DESCRIPTION'],
-            'TXT_NEWS_IMAGE_SRC_DESCRIPTION'                            => $_ARRAYLANG['TXT_NEWS_IMAGE_SRC_DESCRIPTION'],
-            'TXT_NEWS_CATEGORY_NAME_DESCRIPTION'                        => $_ARRAYLANG['TXT_NEWS_CATEGORY_NAME_DESCRIPTION'],
-            'TXT_NEWS_TYPE_NAME_DESCRIPTION'                            => $_ARRAYLANG['TXT_NEWS_TYPE_NAME_DESCRIPTION'],
-            'TXT_NEWS_IMAGE_ROW_DESCRIPTION'                            => $_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'],
-            'TXT_NEWS_TEASER_TEXT_DESCRIPTION'                          => $_ARRAYLANG['TXT_NEWS_TEASER_TEXT_DESCRIPTION'],
-            'TXT_NEWS_AUTHOR_DESCRIPTION'                               => $_ARRAYLANG['TXT_NEWS_AUTHOR_DESCRIPTION'],
-            'TXT_TOP_NEWS_PLACEHOLDERS_USAGE'                           => $_ARRAYLANG['TXT_TOP_NEWS_PLACEHOLDERS_USAGE'],
-            'TXT_NEWS_COMMENTS'                                         => $_ARRAYLANG['TXT_NEWS_COMMENTS'],
-            'TXT_NEWS_COMMENT_BLOCK_COMMENT_LIST'                       => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_LIST'],
-            'TXT_NEWS_COMMENT_BLOCK_COMMENT_LIST_TITLE'                 => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_LIST_TITLE'],
-            'TXT_NEWS_COMMENT_BLOCK_COMMENT'                            => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT'],
-            'TXT_NEWS_COMMENT_BLOCK_COMMENT_USER'                       => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_USER'],
-            'TXT_NEWS_COMMENT_BLOCK_COMMENT_DATE'                       => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_DATE'],
-            'TXT_NEWS_COMMENT_BLOCK_COMMENT_TEXT'                       => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TEXT'],
-            'TXT_NEWS_COMMENT_BLOCK_NO_COMMENT'                         => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_NO_COMMENT'],
-            'TXT_NEWS_COMMENT_BLOCK_NO_COMMENT_TITLE'                   => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_NO_COMMENT_TITLE'],
-            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT'                        => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT'],
-            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_TITLE'                  => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_TITLE'],
-            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_ERROR'                  => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_ERROR'],
-            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_ERROR_TITLE'            => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_ERROR_TITLE'],
-            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_TITLE_TITLE'            => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_TITLE_TITLE'],
-            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_VALUE_TITLE'            => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_VALUE_TITLE'],
-            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_TITLE_COMMENT'          => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_TITLE_COMMENT'],
-            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_VALUE_COMMENT'          => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_VALUE_COMMENT'],
-            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_NAME'                   => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_NAME'],
-            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_NAME_TITLE'             => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_NAME_TITLE'],
-            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_NAME_VALUE'             => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_NAME_VALUE'],
-            'TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA'               => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA'],
-            'TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA_TITLE'         => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA_TITLE'],
-            'TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA_CODE'          => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA_CODE'],
-            'TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_TITLE_BUTTON'           => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_TITLE_BUTTON'],
-        ));
-    }
-    
     function validateNews($locales)
     {
         if (!empty($locales['active'])) {

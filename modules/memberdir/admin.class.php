@@ -71,13 +71,12 @@ class MemberDirManager extends MemberDirLibrary
         global $objTemplate, $_ARRAYLANG;
 
         $objTemplate->setVariable("CONTENT_NAVIGATION","
-            <a href=\"?cmd=memberdir\" class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_OVERVIEW']."</a>
-            <a href=\"?cmd=memberdir&amp;act=newDir\" class='".($this->act == 'newDir' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEW_DIR']."</a>
-            <a href=\"?cmd=memberdir&amp;act=new\" class='".($this->act == 'new' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEW_MEMBER_SHORT']."</a>
-            <a href=\"?cmd=memberdir&amp;act=import\" class='".($this->act == 'import' ? 'active' : '')."'>".$_ARRAYLANG['TXT_IMPORT']."</a>
-            <a href=\"?cmd=memberdir&amp;act=export&amp;everything=1\" class='".($this->act == 'export' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DOWNLOAD']."</a>
-            <a href=\"?cmd=memberdir&amp;act=placeholders\" class='".($this->act == 'placeholders' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR']."</a>
-            <a href=\"?cmd=memberdir&amp;act=settings\" class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
+            <a href=\"index.php?cmd=memberdir\" class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_OVERVIEW']."</a>
+            <a href=\"index.php?cmd=memberdir&amp;act=newDir\" class='".($this->act == 'newDir' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEW_DIR']."</a>
+            <a href=\"index.php?cmd=memberdir&amp;act=new\" class='".($this->act == 'new' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEW_MEMBER_SHORT']."</a>
+            <a href=\"index.php?cmd=memberdir&amp;act=import\" class='".($this->act == 'import' ? 'active' : '')."'>".$_ARRAYLANG['TXT_IMPORT']."</a>
+            <a href=\"index.php?cmd=memberdir&amp;act=export&amp;everything=1\" class='".($this->act == 'export' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DOWNLOAD']."</a>
+            <a href=\"index.php?cmd=memberdir&amp;act=settings\" class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
     }
 
     /**
@@ -152,12 +151,7 @@ class MemberDirManager extends MemberDirLibrary
                 $this->_import();
                 break;
             case "settings":
-                $this->_settings();
-                break;
-            case "saveSettings":
-                $this->_saveSettings();
-                parent::__construct();
-                $this->_settings();
+                $this->settings();
                 break;
             case "showdir":
                 $this->_overviewDir();
@@ -191,9 +185,6 @@ class MemberDirManager extends MemberDirLibrary
                 $this->_activate();
                 $this->setDirs();
                 $this->_overview();
-                break;
-            case "placeholders":
-                $this->_placeholders();
                 break;
             case 'exportvcf':
                 $this->_exportVCard( intval($_GET['id']) );
@@ -1789,17 +1780,85 @@ class MemberDirManager extends MemberDirLibrary
     }
 
     /**
-     * Settings
+     * Loads subnavbar level 2
      *
-     * Shows the settings form
-     * @access private
-     * @global array
+     * @access  private
+     * @global  array   $_CORELANG
      */
-    function _settings()
+    private function settings()
     {
-        global $_ARRAYLANG;
+        global $_CORELANG;
 
-        $this->_objTpl->loadTemplateFile('module_memberdir_settings.html',true,true);
+        $this->pageTitle = $_CORELANG['TXT_CORE_SETTINGS'];
+        $this->_objTpl->loadTemplateFile('module_memberdir_settings.html', true, true);
+        $this->_objTpl->setVariable(array(
+            'TXT_CORE_GENERAL'      => $_CORELANG['TXT_CORE_GENERAL'],
+            'TXT_CORE_PLACEHOLDERS' => $_CORELANG['TXT_CORE_PLACEHOLDERS'],
+        ));
+
+        switch (!empty($_GET['tpl']) ? $_GET['tpl'] : '') {
+            case 'general':
+                $this->settingsGeneral();
+                break;
+            case 'placeholders':
+                $this->settingsPlaceholders();
+                break;
+            default:
+                $this->settingsGeneral();
+                break;
+        }
+    }
+
+    /**
+     * Loads and saves general settings
+     *
+     * @access  private
+     * @global  array               $_ARRAYLANG
+     * @global  ADONewConnection    $objDatabase
+     */
+    private function settingsGeneral() {
+        global $objDatabase, $_ARRAYLANG;
+
+        if (isset($_POST['settings_general'])) {
+            $error = false;
+
+            if (isset($_POST['default_listing'])) {
+                $query = "UPDATE ".DBPREFIX."module_memberdir_settings
+                          SET setvalue = '".contrexx_addslashes($_POST['default_listing'])."'
+                          WHERE setname = 'default_listing'";
+                if (!$objDatabase->Execute($query)) {
+                    $error = true;
+                }
+            }
+
+            if (isset($_POST['max_width'])) {
+                $query = "UPDATE ".DBPREFIX."module_memberdir_settings
+                          SET setvalue = '".contrexx_addslashes($_POST['max_width'])."'
+                          WHERE setname = 'max_width'";
+                if (!$objDatabase->Execute($query)) {
+                    $error = true;
+                }
+            }
+
+            if (isset($_POST['max_height'])) {
+                $query = "UPDATE ".DBPREFIX."module_memberdir_settings
+                          SET setvalue = '".contrexx_addslashes($_POST['max_height'])."'
+                          WHERE setname = 'max_height'";
+                if (!$objDatabase->Execute($query)) {
+                    $error = true;
+                }
+            }
+
+            if ($error) {
+                $this->statusMessage = $_ARRAYLANG['TXT_DATABASE_WRITE_ERROR'];
+            } else {
+                $this->okMessage = $_ARRAYLANG['TXT_DATABASE_SUCESSFUL'];
+            }
+        }
+
+        parent::__construct();
+
+        $this->_objTpl->addBlockfile('MEMBERDIR_SETTINGS_CONTENT', 'settings_content', 'module_memberdir_settings_general.html');
         $this->pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
 
         $this->_objTpl->setVariable(array(
@@ -1821,64 +1880,24 @@ class MemberDirManager extends MemberDirLibrary
             "YES_SELECTED"      => ($this->options['default_listing'] == 1 ? $selected : ""),
             "NO_SELECTED"       => ($this->options['default_listing'] == 0 ? $selected : "")
         ));
+
+        $this->_objTpl->parse('settings_content');
     }
 
     /**
-     * Save Settings
+     * Shows placeholders
      *
-     * @access private
-     * @global ADONewConnection
-     * @global array
+     * @access  private
+     * @global  array   $_CORELANG
      */
-    function _saveSettings()
+    private function settingsPlaceholders()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_CORELANG;
 
-        $error = false;
-
-        if (isset($_POST['default_listing'])) {
-            $query = "UPDATE ".DBPREFIX."module_memberdir_settings
-                      SET setvalue = '".contrexx_addslashes($_POST['default_listing'])."'
-                      WHERE setname = 'default_listing'";
-            if (!$objDatabase->Execute($query)) {
-                $error = true;
-            }
-        }
-
-        if (isset($_POST['max_width'])) {
-            $query = "UPDATE ".DBPREFIX."module_memberdir_settings
-                      SET setvalue = '".contrexx_addslashes($_POST['max_width'])."'
-                      WHERE setname = 'max_width'";
-            if (!$objDatabase->Execute($query)) {
-                $error = true;
-            }
-        }
-
-        if (isset($_POST['max_height'])) {
-            $query = "UPDATE ".DBPREFIX."module_memberdir_settings
-                      SET setvalue = '".contrexx_addslashes($_POST['max_height'])."'
-                      WHERE setname = 'max_height'";
-            if (!$objDatabase->Execute($query)) {
-                $error = true;
-            }
-        }
-
-        if ($error) {
-            $this->statusMessage = $_ARRAYLANG['TXT_DATABASE_WRITE_ERROR'];
-        } else {
-            $this->okMessage = $_ARRAYLANG['TXT_DATABASE_SUCESSFUL'];
-        }
-    }
-
-    function _placeholders()
-    {
-        global $_ARRAYLANG;
-
-        $this->_objTpl->loadTemplateFile('module_memberdir_placeholders.html',true,true);
-        $this->_objTpl->setVariable(array(
-            "TXT_PLACEHOLDERS" => $_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR']
-        ));
-        $this->pageTitle = $_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR'];
+        $this->_objTpl->addBlockfile('MEMBERDIR_SETTINGS_CONTENT', 'settings_content', 'module_memberdir_settings_placeholders.html');
+        $this->_objTpl->setVariable('TXT_MEMBERDIR_PLACEHOLDERS', $_CORELANG['TXT_CORE_PLACEHOLDERS']);
+        $this->pageTitle = $_CORELANG['TXT_CORE_PLACEHOLDERS'];
+        $this->_objTpl->parse('settings_content');
     }
 
     /**

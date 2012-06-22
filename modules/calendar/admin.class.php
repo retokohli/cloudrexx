@@ -50,7 +50,6 @@ class calendarManager extends calendarLibrary
             <a href='index.php?cmd=calendar".$this->mandateLink."' class='".($this->act == '' ? 'active' : '')."'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW']." </a>
             <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=new' class='".($this->act == 'new' ? 'active' : '')."'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_ENTRY']." </a>
             <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=cat' class='".($this->act == 'cat' ? 'active' : '')."'> ".$_ARRAYLANG['TXT_CALENDAR_CATEGORIES']." </a>
-            <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=placeholder' class='".($this->act == 'placeholder' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER']."</a>
             <a href='index.php?cmd=calendar".$this->mandateLink."&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'> ".$_ARRAYLANG['TXT_CALENDAR_MENU_SETTINGS']." </a>");
     }
 
@@ -145,15 +144,7 @@ class calendarManager extends calendarLibrary
                 break;
 
             case 'settings':
-                $this->_objTpl->loadTemplateFile('module_calendar_settings.html');
-                $this->settings();
-                break;
-
-            case 'saveSettings':
-                $this->saveSettings();
-                $this->setStdCat();
-                CSRF::header("Location: index.php?cmd=calendar".$this->mandateLink."&act=settings");
-                exit;
+                $this->showSettings();
                 break;
 
             case 'event_actions':
@@ -175,13 +166,11 @@ class calendarManager extends calendarLibrary
                 $this->showOverview();
                 break;
 
-            case 'placeholder':
-                $this->showPlaceholders();
-                break;
             case 'toggle_event':
                 $this->_toggleEvent();
                 $this->showOverview();
                 break;
+
             default:
                 $this->showOverview();
         }
@@ -1678,15 +1667,56 @@ class calendarManager extends calendarLibrary
         }
     }
 
-    /**
-     * Settings
+   /**
+     * Loads subnavbar level 2
      *
-     * Shows the settings page
+     * @access  private
+     * @global  array   $_CORELANG
      */
-    function settings()
+    private function showSettings()
+    {
+        global $_CORELANG;
+
+        $this->pageTitle = $_CORELANG['TXT_CORE_SETTINGS'];
+        $this->_objTpl->loadTemplateFile('module_calendar_settings.html', true, true);
+        $this->_objTpl->setVariable(array(
+            'TXT_CORE_GENERAL'      => $_CORELANG['TXT_CORE_GENERAL'],
+            'TXT_CORE_PLACEHOLDERS' => $_CORELANG['TXT_CORE_PLACEHOLDERS'],
+        ));
+
+        switch (!empty($_GET['tpl']) ? $_GET['tpl'] : '') {
+            case 'showGeneral':
+                $this->showSettingsGeneral();
+                break;
+            case 'saveGeneral':
+                $this->saveSettingsGeneral();
+                $this->setStdCat();
+                CSRF::header("location: index.php?cmd=calendar".$this->mandateLink."&act=settings&tpl=showGeneral");
+                exit;
+                break;
+            case 'showPlaceholders':
+                $this->showSettingsPlaceholders();
+                break;
+            default:
+                $this->showSettingsGeneral();
+                break;
+        }
+    }
+
+    /**
+     * Shows the general settings page
+     *
+     * @access  private
+     * @global  ADONewConnection    $objDatabase
+     * @global  array               $_ARRAYLANG
+     * @global  array               $_LANGID
+     * @global  array               $_CONFIG
+     */
+    private function showSettingsGeneral()
     {
         global $objDatabase, $_ARRAYLANG, $_LANGID, $_CONFIG;
 
+        $this->_objTpl->addBlockfile('CALENDAR_SETTINGS_CONTENT', 'settings_content', 'module_calendar_settings_general.html');
         if ($_CONFIG['calendar'.$this->mandateLink.'headlines']) {
             $headlines_checked = "checked=\"checked\"";
         } else {
@@ -1870,6 +1900,7 @@ class calendarManager extends calendarLibrary
                 $objResult->MoveNext();
             }
         }
+        $this->_objTpl->parse('settings_content');
     }
 
     // set std cat
@@ -1896,11 +1927,14 @@ class calendarManager extends calendarLibrary
 
 
     /**
-     * Save Settings
+     * Saves the general settings
      *
-     * Saves the settings
+     * @access  private
+     * @global  ADONewConnection    $objDatabase
+     * @global  settingsManager     $objSettings
+     * @global  array               $_CORELANG
      */
-    function saveSettings()
+    private function saveSettingsGeneral()
     {
         global $objDatabase, $_CORELANG, $objSettings;
 
@@ -2016,19 +2050,22 @@ class calendarManager extends calendarLibrary
     }
 
     /**
-     * Show Placeholder
-     *
      * Shows the list of the placeholder for the
      * startpage events
+     *
+     * @access  private
+     * @global  ADONewConnection    $objDatabase
+     * @global  array               $_ARRAYLANG
+     * @global  mixed               $_LANGID
      */
-    function showPlaceholders()
+    private function showSettingsPlaceholders()
     {
         global $objDatabase, $_ARRAYLANG, $_LANGID;
 
-        $this->_objTpl->loadTemplateFile('module_calendar_placeholder.html');
+        $this->_objTpl->addBlockfile('CALENDAR_SETTINGS_CONTENT', 'settings_content', 'module_calendar_settings_placeholders.html');
 
         $this->_objTpl->setVariable(array(
-            "TXT_USAGE"     => $_ARRAYLANG['TXT_USAGE'],
+            "TXT_USAGE"                         => $_ARRAYLANG['TXT_USAGE'],
             "TXT_CALENDAR_PLACEHOLDER_INTRO"    => $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_INTRO'],
             "TXT_CALENDAR_PLACEHOLDER_LIST"     => $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_LIST'],
             "TXT_CALENDAR_EVENT_STARTDATE"      => $_ARRAYLANG['TXT_CALENDAR_EVENT_STARTDATE'],
@@ -2040,6 +2077,8 @@ class calendarManager extends calendarLibrary
             "TXT_CALENDAR_EVENT_THUMBNAIL"      => $_ARRAYLANG['TXT_CALENDAR_THUMBNAIL'],
             "TXT_CALENDAR_EVENT_SHORT_DESC"     => $_ARRAYLANG['TXT_CALENDAR_EVENT_SHORT_DESC']
         ));
+
+        $this->_objTpl->parse('settings_content');
     }
 
     /**

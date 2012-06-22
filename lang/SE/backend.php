@@ -4,6 +4,8 @@
 * generated date Tue, 23 Jan 2007 14:44:20 +0100
 **/
 
+$_ARRAYLANG['TXT_CORE_GENERAL'] = "General";
+$_ARRAYLANG['TXT_CORE_PLACEHOLDERS'] = "Placeholders";
 $_ARRAYLANG['TXT_ACTION'] = "Funktionen";
 $_ARRAYLANG['TXT_ACTIVE'] = "Aktiv";
 $_ARRAYLANG['TXT_ALL_FIELDS_REQUIRED'] = "Diese Felder sind erforderlich.";
