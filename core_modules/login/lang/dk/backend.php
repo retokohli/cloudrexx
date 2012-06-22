@@ -10,11 +10,14 @@
 $_ARRAYLANG['TXT_LOGIN_ENTER_A_USERNAME'] = "Please enter a username";
 $_ARRAYLANG['TXT_LOGIN_ENTER_A_PASSWORD'] = "Please enter your password";
 $_ARRAYLANG['TXT_LOGIN_ENTER_CAPTCHA'] = "Please enter the shown captcha code";
+$_ARRAYLANG['TXT_LOGIN_ENTER_A_EMAIL'] = "Please enter your email";
+$_ARRAYLANG['TXT_LOGIN_ENTER_A_NEW_PASSWORD'] = "Please enter a new password";
+$_ARRAYLANG['TXT_LOGIN_CONFIRM_NEW_PASSWORD'] = "Please confirm the new password";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD'] = "Kodeord";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD_LOST'] = "Glemt kodeord?";
 $_ARRAYLANG['TXT_LOGIN_SECURITY_CODE'] = "Sikkerhedskoden";
 $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD'] = "Indtast venligst din e-mail adresse. En meddelelse med yderligere instruktioner vil så blive sendt omgående til denne adresse.";
-$_ARRAYLANG['TXT_LOGIN_EMAIL'] = "E-mail";
+$_ARRAYLANG['TXT_LOGIN_EMAIL'] = "Email address";
 $_ARRAYLANG['TXT_LOGIN_RESET_PASSWORD'] = "Nulstil kodeord";
 $_ARRAYLANG['TXT_LOGIN_BACK_TO_LOGIN'] = "Back to login";
 $_ARRAYLANG['TXT_LOGIN_SET_PASSWORD_TEXT'] = "Tast venligt dit nyt kodeord ind og gentag det for at bekræfte kodeordet.";

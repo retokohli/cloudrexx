@@ -10,11 +10,14 @@
 $_ARRAYLANG['TXT_LOGIN_ENTER_A_USERNAME'] = "Please enter a username";
 $_ARRAYLANG['TXT_LOGIN_ENTER_A_PASSWORD'] = "Please enter your password";
 $_ARRAYLANG['TXT_LOGIN_ENTER_CAPTCHA'] = "Please enter the shown captcha code";
+$_ARRAYLANG['TXT_LOGIN_ENTER_A_EMAIL'] = "Please enter your email";
+$_ARRAYLANG['TXT_LOGIN_ENTER_A_NEW_PASSWORD'] = "Please enter a new password";
+$_ARRAYLANG['TXT_LOGIN_CONFIRM_NEW_PASSWORD'] = "Please confirm the new password";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD'] = "Passwort";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD_LOST'] = "Passwort vergessen?";
 $_ARRAYLANG['TXT_LOGIN_SECURITY_CODE'] = "Sicherheitscode";
 $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD'] = "Geben Sie bitte Ihre E-Mail Adresse an. Eine Nachricht mit weiteren Anweisungen wird Ihnen dann in kürze zugesandt.";
-$_ARRAYLANG['TXT_LOGIN_EMAIL'] = "E-Mail";
+$_ARRAYLANG['TXT_LOGIN_EMAIL'] = "Email address";
 $_ARRAYLANG['TXT_LOGIN_RESET_PASSWORD'] = "Passwort zurücksetzen";
 $_ARRAYLANG['TXT_LOGIN_BACK_TO_LOGIN'] = "Back to login";
 $_ARRAYLANG['TXT_LOGIN_SET_PASSWORD_TEXT'] = "Geben Sie bitte Ihr gewünschtes Passwort ein und wiederholen Sie es um es zu bestätigen.";

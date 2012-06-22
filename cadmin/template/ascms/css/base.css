@@ -153,19 +153,33 @@ a:active {
 }
 
 #content_login div.error {
+    padding: 0 0 3px 0;
     color: #E00500;
 }
 
-#content_login div div.error {
-    padding: 0 0 3px 0;
-}
-
 #content_login div.success {
+    padding: 0 0 3px 0;
     color: #008000;
 }
 
-#content_login div div.success {
-    padding: 0 0 3px 0;
+#content_login #okbox,
+#content_login .okbox,
+#content_login #warningbox,
+#content_login .warningbox,
+#content_login #alertbox,
+#content_login .alertbox {
+    padding: 4px;
+    margin: 0 0 16px 0;
+    width: 390px;
+}
+
+#content_login.login #okbox,
+#content_login.login .okbox,
+#content_login.login #warningbox,
+#content_login.login .warningbox,
+#content_login.login #alertbox,
+#content_login.login .alertbox {
+    width: 290px;
 }
 
 #content_login div a {
