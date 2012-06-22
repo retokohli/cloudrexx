@@ -4332,3 +4332,8 @@ input, textarea, select {
 #cke_frmAddComment_Comment{
      margin-left: 0;
 }
+.social-box iframe{
+    float: right;
+    min-height: 287px;
+    width: 290px;
+}
