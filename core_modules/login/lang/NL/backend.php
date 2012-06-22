@@ -10,11 +10,14 @@
 $_ARRAYLANG['TXT_LOGIN_ENTER_A_USERNAME'] = "Please enter a username";
 $_ARRAYLANG['TXT_LOGIN_ENTER_A_PASSWORD'] = "Please enter your password";
 $_ARRAYLANG['TXT_LOGIN_ENTER_CAPTCHA'] = "Please enter the shown captcha code";
+$_ARRAYLANG['TXT_LOGIN_ENTER_A_EMAIL'] = "Please enter your email";
+$_ARRAYLANG['TXT_LOGIN_ENTER_A_NEW_PASSWORD'] = "Please enter a new password";
+$_ARRAYLANG['TXT_LOGIN_CONFIRM_NEW_PASSWORD'] = "Please confirm the new password";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD'] = "Wachtwoord";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD_LOST'] = "Wachtwoord vergeten?";
 $_ARRAYLANG['TXT_LOGIN_SECURITY_CODE'] = "Beveiligingscode";
 $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD'] = "Vul uw e-mailadres in. Een bericht met verdere instructies zal spoedig verstuurd worden.";
-$_ARRAYLANG['TXT_LOGIN_EMAIL'] = "E-mailadres";
+$_ARRAYLANG['TXT_LOGIN_EMAIL'] = "Email address";
 $_ARRAYLANG['TXT_LOGIN_RESET_PASSWORD'] = "Reset wachtwoord";
 $_ARRAYLANG['TXT_LOGIN_BACK_TO_LOGIN'] = "Back to login";
 $_ARRAYLANG['TXT_LOGIN_SET_PASSWORD_TEXT'] = "Vul uw gewenste wachtwoord in en herhaal dit ter controle.";

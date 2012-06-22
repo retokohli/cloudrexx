@@ -70,17 +70,21 @@ class LoginManager {
     {
         global $_ARRAYLANG, $objFWUser;
 
+        JS::activate('jquery');
         $this->objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', '/core_modules/login/template/login_lost_password.html');
         $this->objTemplate->setVariable(array(
             'TITLE'                     => $_ARRAYLANG['TXT_LOGIN_RESET_PASSWORD'],
             'TXT_LOGIN_LOST_PASSWORD'   => $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD'],
             'TXT_LOGIN_EMAIL'           => $_ARRAYLANG['TXT_LOGIN_EMAIL'],
+            'TXT_LOGIN_ENTER_A_EMAIL'   => $_ARRAYLANG['TXT_LOGIN_ENTER_A_EMAIL'],
             'TXT_LOGIN_RESET_PASSWORD'  => $_ARRAYLANG['TXT_LOGIN_RESET_PASSWORD'],
             'TXT_LOGIN_BACK_TO_LOGIN'   => $_ARRAYLANG['TXT_LOGIN_BACK_TO_LOGIN'],
+            'JAVASCRIPT'                => JS::getCode(),
         ));
         $this->objTemplate->hideBlock('error_message');
         $this->objTemplate->hideBlock('success_message');
         $this->objTemplate->hideBlock('back_to_login');
+
         if (isset($_POST['email'])) {
             $email = contrexx_stripslashes($_POST['email']);
             if ($objFWUser->restorePassword($email)) {
@@ -106,11 +110,15 @@ class LoginManager {
     {
         global $_ARRAYLANG, $objFWUser, $sessionObj;
 
+        JS::activate('jquery');
         $this->objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', '/core_modules/login/template/login_reset_password.html');
         $this->objTemplate->setVariable(array(
-            'TITLE'                     => $_ARRAYLANG['TXT_LOGIN_SET_NEW_PASSWORD'],
-            'TXT_LOGIN_BACK_TO_LOGIN'   => $_ARRAYLANG['TXT_LOGIN_BACK_TO_LOGIN'],
-            'TXT_LOGIN_GO_TO_BACKEND'   => $_ARRAYLANG['TXT_LOGIN_GO_TO_BACKEND'],
+            'TITLE'                             => $_ARRAYLANG['TXT_LOGIN_SET_NEW_PASSWORD'],
+            'TXT_LOGIN_BACK_TO_LOGIN'           => $_ARRAYLANG['TXT_LOGIN_BACK_TO_LOGIN'],
+            'TXT_LOGIN_GO_TO_BACKEND'           => $_ARRAYLANG['TXT_LOGIN_GO_TO_BACKEND'],
+            'TXT_LOGIN_ENTER_A_NEW_PASSWORD'    => $_ARRAYLANG['TXT_LOGIN_ENTER_A_NEW_PASSWORD'],
+            'TXT_LOGIN_CONFIRM_NEW_PASSWORD'    => $_ARRAYLANG['TXT_LOGIN_CONFIRM_NEW_PASSWORD'],
+            'JAVASCRIPT'                        => JS::getCode(),
         ));
         $this->objTemplate->hideBlock('error_message');
         $this->objTemplate->hideBlock('success_message');
