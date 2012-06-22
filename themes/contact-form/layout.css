@@ -182,9 +182,23 @@ input, textarea, select {
   text-transform: uppercase;
   vertical-align: top;
   width: auto;
+  background: -moz-linear-gradient(top,  rgba(195,218,13,1) 0%, rgba(174,205,9,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(195,218,13,1)), color-stop(100%,rgba(174,205,9,1)));
+	background: -webkit-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
+	background: -o-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
+	background: linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
 }
 #main input[type="submit"]:hover, #main input[type="button"]:hover, #frame_home input[type="submit"]:hover, #frame_home input[type="button"]:hover, #boxes_home input[type="submit"]:hover, #boxes_home input[type="button"]:hover {
   background: -moz-linear-gradient(center top , #B7CC0B 0%, #9EBA09 100%) repeat scroll 0 0 transparent;
+  background: rgb(183,204,11);
+
+	background: -moz-linear-gradient(top,  rgba(183,204,11,1) 0%, rgba(158,186,9,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(183,204,11,1)), color-stop(100%,rgba(158,186,9,1)));
+	background: -webkit-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
+	background: -o-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
+	background: linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
 }
 .social-box .headline h3 {
   background: none repeat scroll 0 0 #FBFBFB;
@@ -206,15 +220,15 @@ input, textarea, select {
 
 #main input[type="submit"],
 .feedback input[type="submit"] {
-	padding:0 24px;
-	display:inline-block;
+	/*padding:0 24px;*/
+	/*display:inline-block;
 	vertical-align:top;
 	cursor:pointer;
 	position:relative;
 	text-transform:uppercase;
-	font:12px/30px 'Open Sans', Arial, Helvetica, sans-serif;
+	font:12px 'Open Sans', Arial, Helvetica, sans-serif;
 	background: rgb(195,218,13);
-
+ width: auto;
 	background: -moz-linear-gradient(top,  rgba(195,218,13,1) 0%, rgba(174,205,9,1) 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(195,218,13,1)), color-stop(100%,rgba(174,205,9,1)));
 	background: -webkit-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
@@ -225,24 +239,22 @@ input, textarea, select {
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
-	color:#fff;	
+	color:#fff;	*/
 }
 #main input[type="submit"]:hover,
 .feedback input[type="submit"]:hover {
-	background: rgb(183,204,11);
+/*	background: rgb(183,204,11);
 
 	background: -moz-linear-gradient(top,  rgba(183,204,11,1) 0%, rgba(158,186,9,1) 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(183,204,11,1)), color-stop(100%,rgba(158,186,9,1)));
 	background: -webkit-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
 	background: -o-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
 	background: -ms-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
-	background: linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
+	background: linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);*/
 }
 
-
-
-
-
-
-
-
+.social-box iframe{
+    float: right;
+    min-height: 287px;
+    width: 290px;
+}
