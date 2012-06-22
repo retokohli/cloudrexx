@@ -62,7 +62,7 @@ h4 {font-size: 1.2em;}
 
 #content {
   float: left;
-  width: 100%;
+  width: 290px
 }
 /*.feedback {
 	float:right;
@@ -202,4 +202,39 @@ input, textarea, select {
   vertical-align: top;
   padding: 0 20px 0 0;
   background: #FAFAFA
+}
+
+#main input[type="submit"],
+.feedback input[type="submit"] {
+	padding:0 24px;
+	display:inline-block;
+	vertical-align:top;
+	cursor:pointer;
+	position:relative;
+	text-transform:uppercase;
+	font:12px/30px 'Open Sans', Arial, Helvetica, sans-serif;
+	background: rgb(195,218,13);
+
+	background: -moz-linear-gradient(top,  rgba(195,218,13,1) 0%, rgba(174,205,9,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(195,218,13,1)), color-stop(100%,rgba(174,205,9,1)));
+	background: -webkit-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
+	background: -o-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
+	background: linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
+	text-shadow:1px 1px 0 rgba(0, 0, 0, .1);
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	color:#fff;	
+}
+#main input[type="submit"]:hover,
+.feedback input[type="submit"]:hover {
+	background: rgb(183,204,11);
+
+	background: -moz-linear-gradient(top,  rgba(183,204,11,1) 0%, rgba(158,186,9,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(183,204,11,1)), color-stop(100%,rgba(158,186,9,1)));
+	background: -webkit-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
+	background: -o-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
+	background: linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
 }
