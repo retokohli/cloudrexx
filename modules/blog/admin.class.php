@@ -52,25 +52,22 @@ class BlogAdmin extends BlogLibrary {
 
         $isAdmin = $objFWUser->objUser->getAdminStatus();
         //if(in_array(120, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
-        	$strNavigation .= '<a href="?cmd=blog">'.$_CORELANG['TXT_BLOG_ENTRY_MANAGE_TITLE'].'</a>';
+        	$strNavigation .= '<a href="index.php?cmd=blog">'.$_CORELANG['TXT_BLOG_ENTRY_MANAGE_TITLE'].'</a>';
         //}
         if(in_array(121, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
-        	$strNavigation .= '<a href="?cmd=blog&amp;act=addEntry">'.$_CORELANG['TXT_BLOG_ENTRY_ADD_TITLE'].'</a>';
+        	$strNavigation .= '<a href="index.php?cmd=blog&amp;act=addEntry">'.$_CORELANG['TXT_BLOG_ENTRY_ADD_TITLE'].'</a>';
         }
         if(in_array(122, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
-        	$strNavigation .= '<a href="?cmd=blog&amp;act=manageCategory">'.$_CORELANG['TXT_BLOG_CATEGORY_MANAGE_TITLE'].'</a>';
+        	$strNavigation .= '<a href="index.php?cmd=blog&amp;act=manageCategory">'.$_CORELANG['TXT_BLOG_CATEGORY_MANAGE_TITLE'].'</a>';
         }
         if(in_array(125, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
-        	$strNavigation .= '<a href="?cmd=blog&amp;act=networks">'.$_CORELANG['TXT_BLOG_NETWORKS_TITLE'].'</a>';
+        	$strNavigation .= '<a href="index.php?cmd=blog&amp;act=networks">'.$_CORELANG['TXT_BLOG_NETWORKS_TITLE'].'</a>';
         }
-        //if(in_array(123, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
-        	$strNavigation .= '<a href="?cmd=blog&amp;act=block">'.$_CORELANG['TXT_BLOG_BLOCK_TITLE'].'</a>';
-        //}
         if(in_array(124, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
-        	$strNavigation .= '<a href="?cmd=blog&amp;act=settings">'.$_CORELANG['TXT_BLOG_SETTINGS_TITLE'].'</a>';
+        	$strNavigation .= '<a href="index.php?cmd=blog&amp;act=settings">'.$_CORELANG['TXT_BLOG_SETTINGS_TITLE'].'</a>';
         }
 
-        $objTemplate->setVariable('CONTENT_NAVIGATION',$strNavigation);
+        $objTemplate->setVariable('CONTENT_NAVIGATION', $strNavigation);
     }
 
 
@@ -185,9 +182,6 @@ class BlogAdmin extends BlogLibrary {
                 $this->doCategoryMultiAction($_POST['frmShowCategories_MultiAction']);
                 $this->showCategories();
                 break;
-            case 'block':
-                $this->showBlockVariables();
-                break;
             case 'networks':
                 Permission::checkAccess(125, 'static');
                 $this->showNetworks();
@@ -217,12 +211,6 @@ class BlogAdmin extends BlogLibrary {
                 $this->showNetworks();
                 break;
             case 'settings':
-                Permission::checkAccess(124, 'static');
-                $this->showSettings();
-                break;
-            case 'saveSettings':
-                Permission::checkAccess(124, 'static');
-                $this->saveSettings();
                 $this->showSettings();
                 break;
             default:
@@ -1673,14 +1661,15 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Shows the placeholder-page of the blog-module. Contains all usable Variables for the blog.html-File.
      *
-     * @global  array
-     * @global  array
+     * @access  private
+     * @global  array   $_CORELANG
+     * @global  array   $_ARRAYLANG
      */
-    function showBlockVariables() {
+    private function showSettingsPlaceholders() {
         global $_CORELANG, $_ARRAYLANG;
 
         $this->_strPageTitle = $_CORELANG['TXT_BLOG_BLOCK_TITLE'];
-        $this->_objTpl->loadTemplateFile('module_blog_block.html',true,true);
+        $this->_objTpl->addBlockfile('BLOG_SETTINGS_CONTENT', 'settings_content', 'module_blog_settings_placeholders.html');
 
         if ($this->_arrSettings['blog_block_activated'] == 0) {
             $this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_BLOCK_ERROR_DEACTIVATED'];
@@ -1726,6 +1715,7 @@ class BlogAdmin extends BlogLibrary {
             'TXT_USAGE_TITLE'                   =>  $_ARRAYLANG['TXT_BLOG_SETTINGS_BLOCK_USAGE'],
             'TXT_USAGE_HELP'                    =>  $_ARRAYLANG['TXT_BLOG_SETTINGS_BLOCK_USAGE_HELP']
         ));
+        $this->_objTpl->parse('settings_content');
     }
 
 
@@ -2051,17 +2041,58 @@ class BlogAdmin extends BlogLibrary {
 
 
 
+    /**ToDo:
+     * Loads subnavbar level 2
+     *
+     * @access  private
+     * @global  array   $_CORELANG
+     */
+    private function showSettings()
+    {
+        global $_CORELANG;
+
+        $this->pageTitle = $_CORELANG['TXT_CORE_SETTINGS'];
+        $this->_objTpl->loadTemplateFile('module_blog_settings.html', true, true);
+        $this->_objTpl->setVariable(array(
+            'TXT_CORE_GENERAL'      => $_CORELANG['TXT_CORE_GENERAL'],
+            'TXT_CORE_PLACEHOLDERS' => $_CORELANG['TXT_CORE_PLACEHOLDERS'],
+        ));
+
+        switch (!empty($_GET['tpl']) ? $_GET['tpl'] : '') {
+            case 'showGeneral':
+                Permission::checkAccess(124, 'static');
+                $this->showSettingsGeneral();
+                break;
+            case 'saveGeneral':
+                Permission::checkAccess(124, 'static');
+                $this->saveSettingsGeneral();
+                $this->showSettingsGeneral();
+                break;
+            case 'showPlaceholders':
+                $this->showSettingsPlaceholders();
+                break;
+            default:
+                Permission::checkAccess(124, 'static');
+                $this->showSettingsGeneral();
+                break;
+        }
+    }
+
+
+
     /**
      * Shows the settings-page of the blog-module.
      *
-     * @global  array
-     * @global  array
+     * @global  array               $_CORELANG
+     * @global  array               $_ARRAYLANG
+     * @global  ADONewConnection    $objDatabase
      */
-    function showSettings() {
-        global $_CORELANG, $_ARRAYLANG;
+    function showSettingsGeneral()
+    {
+        global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
         $this->_strPageTitle = $_CORELANG['TXT_BLOG_SETTINGS_TITLE'];
-        $this->_objTpl->loadTemplateFile('module_blog_settings.html',true,true);
+        $this->_objTpl->addBlockfile('BLOG_SETTINGS_CONTENT', 'settings_content', 'module_blog_settings_general.html');
 
         $this->_objTpl->setVariable(array(
             'TXT_GENERAL_TITLE'                         =>  $_ARRAYLANG['TXT_BLOG_SETTINGS_GENERAL_TITLE'],
@@ -2129,6 +2160,7 @@ class BlogAdmin extends BlogLibrary {
             'BLOG_SETTINGS_BLOCK_ACTIVATE_OFF'              =>  ($this->_arrSettings['blog_block_activated'] == '0') ? 'checked="checked"' : '',
             'BLOG_SETTINGS_BLOCK_MESSAGES'                  =>  intval($this->_arrSettings['blog_block_messages']),
         ));
+        $this->_objTpl->parse('settings_content');
     }
 
 
@@ -2136,10 +2168,11 @@ class BlogAdmin extends BlogLibrary {
     /**
      * Validate and save the settings from $_POST into the database.
      *
-     * @global  ADONewConnection
-     * @global  array
+     * @global  ADONewConnection    $objDatabase
+     * @global  array               $_ARRAYLANG
      */
-    function saveSettings() {
+    function saveSettingsGeneral()
+    {
         global $objDatabase, $_ARRAYLANG;
 
         //On-Off-Settings can only be 0 or 1.

@@ -6,6 +6,8 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_CORE_GENERAL'] = "General";
+$_ARRAYLANG['TXT_CORE_PLACEHOLDERS'] = "Placeholders";
 $_ARRAYLANG['TXT_ACTION'] = "Actions";
 $_ARRAYLANG['TXT_ACTIVE'] = "Active";
 $_ARRAYLANG['TXT_ALL_FIELDS_REQUIRED'] = "These fields are required.";
