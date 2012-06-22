@@ -53,14 +53,14 @@ CKEDITOR.editorConfig = function( config )
     config.toolbar_Default = [
         ['Source','-','NewPage','Preview','-','Templates'],
         ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Print','SpellChecker'],
-        ['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
+        ['Undo','Redo','-','Replace','-','SelectAll','RemoveFormat'],
         ['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
         ['NumberedList','BulletedList','-','Outdent','Indent', 'Blockquote'],
         ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
         ['Link','Unlink','Anchor'],
-        ['Image','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak'],
+        ['Image','Table','HorizontalRule','SpecialChar'],
         '/',
-        ['Format','Font','FontSize'],
+        ['Format'],
         ['TextColor','BGColor'],
         ['Maximize', 'ShowBlocks']
     ]
