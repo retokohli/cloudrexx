@@ -238,3 +238,15 @@ input, textarea, select {
 	background: -ms-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
 	background: linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
 }
+.social-box iframe{
+    float: right;
+    min-height: 287px;
+    width: 290px;
+}
+
+
+
+
+
+
+
