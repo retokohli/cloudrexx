@@ -971,12 +971,12 @@ div.date img{
     background: url(../images/content_manager_preview.png) no-repeat left center;
 }
 
-
 /* 3) Helpers */
-.t{
+.t {
     padding: 0
 }
-.btn{
+
+.btn {
     background: url(../images/button_bg.png) top left repeat-x;
     border: 1px solid #bbb;
     color: #333;
@@ -986,36 +986,49 @@ div.date img{
     text-shadow: #fff 1px 1px;
     padding: 0 10px
 }
-.cxDialog {
+
+
+/* jquery ui css customization */
+.ui-dialog {
     position: absolute;
     top: 0 !important;
-    border-right: 1px solid #333;
-    border-bottom: 1px solid #333;
-    border-left: 1px solid #333;
+    border-top: 0;
+    border-right: 1px solid #0a85c8;
+    border-bottom: 1px solid #0a85c8;
+    border-left: 1px solid #0a85c8;
+    border-radius: 0;
     text-align: center;
 }
-
-.cxDialog.noTitle .ui-dialog-titlebar {
+.ui-dialog.noTitle .ui-dialog-titlebar {
     display: none;
 }
-
-.cxDialog .error {
+.ui-dialog .error {
     color: #ff0000;
 }
-
-.cxDialog #loading {
+.ui-dialog #loading {
     float: none;
     margin: 0 auto;
     width: 95px !important;
     height: 16px !important;
 }
-
-.cxDialog #loading img {
+.ui-dialog #loading img {
     float: left;
 }
-
-.cxDialog #loading span {
+.ui-dialog #loading span {
     float: left;
     margin: 0 0 0 5px;
     line-height: 16px;
+}
+
+.ui-tabs {
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+}
+.ui-tabs-nav {
+    border: 0;
+    margin: 0;
+}
+.ui-tabs-panel {
+    padding: 0 !important;
 }
