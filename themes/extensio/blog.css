@@ -52,6 +52,9 @@
 #main .addcomment input[type=text]{
     width: 98%
 }
+#main .addcomment textarea{
+    width: 98% !important
+}
 table tr.row1, table tr.marketRow2 {
   background-color: #F9F9F9;
 }
