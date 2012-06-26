@@ -1,0 +1,30 @@
+#aside{
+    display: none;
+}
+.main_subpage {
+    float: left;
+    width: 100%;
+}
+.main-holder {
+  background: none;
+
+}
+#content {
+    float: left;
+    width: 100%;
+}
+.reference{
+	 border: 1px solid #F5F5F5;
+box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.1);
+-moz-box-shadow:0 0 1px 0 rgba(0, 0, 0, 0.1);
+-webkit-box-shadow:0 0 1px 0 rgba(0, 0, 0, 0.1);
+float: left;
+height: 120px;
+margin-bottom: 18px;
+margin-right: 27px;
+width: 210px;
+}
+div.reference:nth-of-type(4n+0) {
+	margin-right: 0;
+}
+
