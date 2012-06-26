@@ -20,6 +20,7 @@ var ExposedCombo = function(theConfig) {
         content: uploader,
         modal: true,
         autoOpen: false,
+        position: ['center',200],
         width: 700
     });
 
