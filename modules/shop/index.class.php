@@ -724,18 +724,19 @@ die("Failed to update the Cart!");
             // not exist.
             if (!$objCategory) {
                 // Retry using the root.
-                return self::showCategories(0);
-            }
-            // Show the parent ShopCategory's image, if available
-            $imageName = $objCategory->picture();
-            if ($imageName
-             && self::$objTemplate->blockExists('shopCategoryImage')) {
-                self::$objTemplate->setCurrentBlock('shopCategoryImage');
-                self::$objTemplate->setVariable(array(
-                    'SHOP_CATEGORY_IMAGE' =>
-                        ASCMS_SHOP_IMAGES_WEB_PATH.'/category/'.$imageName,
-                    'SHOP_CATEGORY_IMAGE_ALT' => $objCategory->name(),
-                ));
+                $parent_id = 0;
+            } else {
+                // Show the parent ShopCategory's image, if available
+                $imageName = $objCategory->picture();
+                if ($imageName
+                 && self::$objTemplate->blockExists('shopCategoryImage')) {
+                    self::$objTemplate->setCurrentBlock('shopCategoryImage');
+                    self::$objTemplate->setVariable(array(
+                        'SHOP_CATEGORY_IMAGE' =>
+                            ASCMS_SHOP_IMAGES_WEB_PATH.'/category/'.$imageName,
+                        'SHOP_CATEGORY_IMAGE_ALT' => $objCategory->name(),
+                    ));
+                }
             }
         }
         // Get all active child categories with parent ID $parent_id
@@ -1118,16 +1119,20 @@ die("Failed to update the Cart!");
             $short = $objProduct->short();
             $longDescription = $objProduct->long();
 
-            $detailLink = null;
+            $detailLink = $detail_url = null;
             if (!$product_id && !empty($longDescription)) {
+                $detail_url =
+                    CONTREXX_SCRIPT_PATH.'?section=shop'.MODULE_INDEX.
+                    '&amp;cmd=details&amp;productId='.$objProduct->id();
                 $detailLink =
 // TODO: Use the alias, if any
-                '<a href="'.
-                    CONTREXX_SCRIPT_PATH.'?section=shop'.MODULE_INDEX.
-                    '&amp;cmd=details&amp;productId='.
-                    $objProduct->id().
-                    '" title="'.$_ARRAYLANG['TXT_MORE_INFORMATIONS'].'">'.
-                    $_ARRAYLANG['TXT_MORE_INFORMATIONS'].'</a>';
+                '<a href="'.$detail_url.'"'.
+                ' title="'.$_ARRAYLANG['TXT_MORE_INFORMATIONS'].'">'.
+                $_ARRAYLANG['TXT_MORE_INFORMATIONS'].'</a>';
+                self::$objTemplate->setVariable(array(
+                    'SHOP_PRODUCT_DETAIL_URL' => $detail_url,
+                    'SHOP_PRODUCT_DETAILLINK' => $detailLink,
+                ));
             }
 
             // Check Product flags.
@@ -1153,7 +1158,7 @@ die("Failed to update the Cart!");
                 );
             }
             $shopProductFormName = "shopProductForm$formId";
-            $row = (++$formId % 2 + 1);
+            $row = $formId % 2 + 1;
             self::$objTemplate->setVariable(array(
                 'SHOP_ROWCLASS' => 'row'.$row,
                 'SHOP_PRODUCT_ID' => $objProduct->id(),
@@ -1301,9 +1306,7 @@ die("Failed to update the Cart!");
             if (self::$objTemplate->blockExists('shopProductRow')) {
                 self::$objTemplate->parse('shopProductRow');
             }
-            if (self::$objTemplate->blockExists('shopProductRow'+$row)) {
-                self::$objTemplate->parse('shopProductRow'+$row);
-            }
+            ++$formId;
         }
         return true;
     }
