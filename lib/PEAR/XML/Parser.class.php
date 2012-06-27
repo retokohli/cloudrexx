@@ -336,13 +336,17 @@ class XML_Parser extends PEAR
     function setInput($input)
     {
         if (eregi('^[a-z]+://', substr($input, 0, 10))) {// see if it's an absolute URL (has a scheme at the beginning)
-            $objRequest = new HTTP_Request2($input);
-            $objResponse = $objRequest->send();
+            try {
+                $objRequest = new HTTP_Request2($input);
+                $objResponse = $objRequest->send();
 
-            if ($objResponse->getStatus() == 200) {
-                $this->xml = $objResponse->getBody();
-            } else {
-                $this->raiseError('File could not be opened.', XML_PARSER_ERROR_FILE_NOT_READABLE);
+                if ($objResponse->getStatus() == 200) {
+                    $this->xml = $objResponse->getBody();
+                } else {
+                    $this->raiseError('File could not be opened.', XML_PARSER_ERROR_FILE_NOT_READABLE);
+                }
+            } catch(HTTP_Request2_Exception $e) {
+                DBG::msg($e->getMessage());
             }
         } elseif (file_exists($input)) {// see if it's a local file
             $file = @fopen($input, 'rb');
