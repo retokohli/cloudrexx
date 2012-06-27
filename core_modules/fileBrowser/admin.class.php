@@ -310,7 +310,7 @@ class FileBrowser {
 
         $this->_objTpl->addBlockfile('FILEBROWSER_NAVIGATION', 'fileBrowser_navigation', 'module_fileBrowser_navigation.html');
         $this->_objTpl->setVariable(array(
-            'FILEBROWSER_MEDIA_TYPE_MENU'   => $this->_getMediaTypeMenu('fileBrowserType', $this->_mediaType, 'onchange="window.location.replace(\''.CSRF::enhanceURI('index.php?cmd=fileBrowser').'&amp;standalone=true&amp;langId='.$this->_frontendLanguageId.'&amp;absoluteURIs='.$this->_absoluteURIs.'&amp;type=\'+this.value+\''.$ckEditorFuncNum.'\')" style="width:180px;"'),
+            'FILEBROWSER_MEDIA_TYPE_MENU'   => $this->_getMediaTypeMenu('fileBrowserType', $this->_mediaType, 'onchange="window.location.replace(\''.CSRF::enhanceURI('index.php?cmd=fileBrowser').'&amp;standalone=true&amp;langId='.$this->_frontendLanguageId.'&amp;absoluteURIs='.$this->_absoluteURIs.'&amp;type=\'+this.value+\''.$ckEditorFuncNum.'\')"'),
             'TXT_FILEBROWSER_PREVIEW'       => $_ARRAYLANG['TXT_FILEBROWSER_PREVIEW']
         ));
 
@@ -389,7 +389,7 @@ class FileBrowser {
                     'FILEBROWSER_FILESIZE'          => '&nbsp;',
                     'FILEBROWSER_FILE_ICON'         => $this->_iconPath.'htm.gif',
                     'FILEBROWSER_FILE_DIMENSION'    => '&nbsp;',
-                    'FILEBROWSER_SPACER'            => '<img src="images/icons/pixel.gif" width="'.($arrPage['level']*16).'" height="1" />'
+                    'FILEBROWSER_SPACING_STYLE'     => 'style="margin-left: '.($arrPage['level'] * 15).'px;"',
                 ));
                 $this->_objTpl->parse('content_files');
 
@@ -416,7 +416,7 @@ class FileBrowser {
                         'FILEBROWSER_FILE_NAME'         => $arrDirectory['name'],
                         'FILEBROWSER_FILESIZE'          => '&nbsp;',
                         'FILEBROWSER_FILE_ICON'         => $arrDirectory['icon'],
-                        'FILEBROWSER_FILE_DIMENSION'    => '&nbsp;'
+                        'FILEBROWSER_FILE_DIMENSION'    => '&nbsp;',
                     ));
                     $this->_objTpl->parse('content_files');
                     $rowNr++;

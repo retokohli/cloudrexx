@@ -1,5 +1,7 @@
 <!-- start module_fileBrowser_content.html -->
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
+/* <![CDATA[ */
+
 webPath = '{FILEBROWSER_IMAGE_PATH}';
 maxWidth = 180;
 maxHeight = 180;
@@ -40,52 +42,51 @@ function setUrl(url, width, height, alt, type) {
         });
     }
     else {
-	    window.opener.SetUrl( webPath+url, width, height, alt );
-	    if (window.opener.document.getElementById('cmbLinkProtocol') !== null && {FILEBROWSER_NOT_ABSOLUTE_URI}) {
+        window.opener.SetUrl( webPath+url, width, height, alt );
+        if (window.opener.document.getElementById('cmbLinkProtocol') !== null && {FILEBROWSER_NOT_ABSOLUTE_URI}) {
             window.opener.document.getElementById('cmbLinkProtocol').value = '';
         }
-	}
-	window.opener.focus();
-	window.top.close();
+    }
+    window.opener.focus();
+    window.top.close();
 }
 
 var aFileBrowserFiles = [{FILEBROWSER_FILES_JS}];
 
 function showPreview(fileNr, width, height) {
-	if (fileNr === '') {
-		document.getElementById('fileBrowserPreview').src = 'images/pixel.gif';
-		document.getElementById('fileBrowserPreview').width = maxWidth;
-		document.getElementById('fileBrowserPreview').height = maxHeight;
-	} else {
-		if (width > maxWidth || height > maxHeight) {
-			if (width > height) {
-				factor = width/maxWidth;
-				width = maxWidth;
-				height = height/factor;
-			} else {
-				factor = height/maxHeight;
-				height = maxHeight;
-				width = width/factor;
-			}
-		}
+    if (fileNr === '') {
+        document.getElementById('fileBrowserPreview').src = 'images/pixel.gif';
+        document.getElementById('fileBrowserPreview').width = maxWidth;
+        document.getElementById('fileBrowserPreview').height = maxHeight;
+    } else {
+        if (width > maxWidth || height > maxHeight) {
+            if (width > height) {
+                factor = width/maxWidth;
+                width = maxWidth;
+                height = height/factor;
+            } else {
+                factor = height/maxHeight;
+                height = maxHeight;
+                width = width/factor;
+            }
+        }
 
-		document.getElementById('fileBrowserPreview').style.width = width+'px';
-		document.getElementById('fileBrowserPreview').style.height = height+'px';
-		document.getElementById('fileBrowserPreview').src = webPath + aFileBrowserFiles[fileNr];
-	}
+        document.getElementById('fileBrowserPreview').style.width = width+'px';
+        document.getElementById('fileBrowserPreview').style.height = height+'px';
+        document.getElementById('fileBrowserPreview').src = webPath + aFileBrowserFiles[fileNr];
+    }
 }
+
+/* ]]> */
 </script>
-<div style="height:500px; overflow:auto;">
-	<table border="0" cellpadding="0" cellspacing="0" class="adminlist" id="contentList" summary="directory listing">
-		<tbody>
-			<!-- BEGIN content_files -->
-				<tr class="{FILEBROWSER_ROW_CLASS}" {FILEBROWSER_ROW_STYLE}>
-					<td width="75%" height="20" style="padding-left:1px;">{FILEBROWSER_SPACER}<a href="{FILEBROWSER_FILE_PATH_CLICK}" ondblclick="{FILEBROWSER_FILE_PATH_DBLCLICK}" title="{FILEBROWSER_FILE_NAME}"><img src="{FILEBROWSER_FILE_ICON}" width="16" height="16" border="0" alt="{FILEBROWSER_FILE_NAME}" />&nbsp;{FILEBROWSER_FILE_NAME}</a></td>
-					<td width="15%" height="20" style="text-align:right;">{FILEBROWSER_FILE_DIMENSION}</td>
-					<td width="10%" height="20" style="text-align:right; padding-right:1px;">{FILEBROWSER_FILESIZE}</td>
-				</tr>
-			<!-- END content_files -->
-		</tbody>
-	</table>
-</div>
+
+<table class="adminlist">
+    <!-- BEGIN content_files -->
+    <tr class="{FILEBROWSER_ROW_CLASS}" {FILEBROWSER_ROW_STYLE}>
+        <td width="80%" class="col_1"><img src="{FILEBROWSER_FILE_ICON}" width="16" height="16" alt="{FILEBROWSER_FILE_NAME}" {FILEBROWSER_SPACING_STYLE} /><a href="{FILEBROWSER_FILE_PATH_CLICK}" ondblclick="{FILEBROWSER_FILE_PATH_DBLCLICK}" title="{FILEBROWSER_FILE_NAME}">{FILEBROWSER_FILE_NAME}</a></td>
+        <td width="10%" class="col_2">{FILEBROWSER_FILE_DIMENSION}</td>
+        <td width="10%" class="col_3">{FILEBROWSER_FILESIZE}</td>
+    </tr>
+    <!-- END content_files -->
+</table>
 <!-- end module_fileBrowser_content.html -->
