@@ -1,27 +1,16 @@
 <!-- start module_fileBrowser_upload.html -->
 <form action="index.php?cmd=fileBrowser&amp;standalone=true&amp;type={FILEBROWSER_UPLOAD_TYPE}&amp;path={FILEBROWSER_UPLOAD_PATH}" method="post" enctype="multipart/form-data">
-	<input type="hidden" name="MAX_FILE_SIZE" value="{FILEBROWSER_MAX_FILE_SIZE}" />
-   	<table border="0" cellpadding="0" cellspacing="0" width="100%" style="height:30px; margin:5px;" summary="upload form">
-		<tbody>
-			<tr>
-				<td>
-					<input id="exposedComboUploaderStarter" type="button" name="exposedComboUploaderStarter" value="{TXT_UPLOAD_FILE}" />
-                    <br /><br />
-                </td>
-			</tr>
-			<tr>
-                <td><input type="text" name="newDir" /><input type="submit" name="createDir" value="{TXT_CREATE_DIRECTORY}" /></td>
-			</tr>
-		</tbody>
-	</table>
+    <input type="hidden" name="MAX_FILE_SIZE" value="{FILEBROWSER_MAX_FILE_SIZE}" />
+    <input id="exposedComboUploaderStarter" type="button" name="exposedComboUploaderStarter" value="{TXT_UPLOAD_FILE}" />
+    <input type="text" name="newDir" /><input type="submit" name="createDir" value="{TXT_CREATE_DIRECTORY}" />
 </form>
 {COMBO_UPLOADER_CODE}
 <script type="text/javascript">
-	cx.ready(function(){
-		var uploader = cx.instances.get('exposed_combo_uploader','uploader');
-		uploader.dialog().bind('close',function(){
-			window.location = '{REDIRECT_URL}';
-		});
-	},true);
+    cx.ready(function(){
+        var uploader = cx.instances.get('exposed_combo_uploader','uploader');
+        uploader.dialog().bind('close',function(){
+            window.location = '{REDIRECT_URL}';
+        });
+    },true);
 </script>
 <!-- end module_fileBrowser_upload.html -->
