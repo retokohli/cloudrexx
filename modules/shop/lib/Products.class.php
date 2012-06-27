@@ -49,9 +49,9 @@ class Products
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     public static $arrProductOrder = array(
-        1 => '`product`.`ord` ASC, `product`.`id` DESC',
-        2 => '`product`.`name` ASC, `product`.`code` ASC',
-        3 => '`product`.`code` ASC, `product`.`name` ASC',
+        1 => '`product`.`ord` ASC, `id` DESC',
+        2 => '`name` ASC, `code` ASC',
+        3 => '`code` ASC, `name` ASC',
     );
 
     /**
@@ -131,8 +131,8 @@ class Products
     ) {
         global $objDatabase, $_CONFIG;
 
-//DBG::activate(DBG_ADODB);
-//DBG::log("getByShopParams(count $count, offset $offset, product_id $product_id, category_id $category_id, manufacturer_id $manufacturer_id, pattern $pattern, flagSpecialoffer $flagSpecialoffer, flagLastFive $flagLastFive, orderSetting $orderSetting, flagIsReseller $flagIsReseller,flagShowInactive $flagShowInactive): Entered");
+//DBG::activate(DBG_ADODB_ERROR|DBG_LOG_FIREPHP);
+
         // Do not show any Products if no selection is made at all
         if (   empty($product_id)
             && empty($category_id)
@@ -157,9 +157,7 @@ class Products
             $count = 0;
             return false;
         }
-        if (empty($orderSetting))
-            $orderSetting = '`product`.`ord` ASC, `product`.`id` DESC';
-
+        if (empty($orderSetting)) $orderSetting = self::$arrProductOrder[1];
         // The name and code fields may be used for sorting.
         // Include them in the field list in order to introduce the alias
         $arrSql = Text::getSqlSnippets(
@@ -207,6 +205,7 @@ class Products
 // TODO: Extend for searching for most recently modified Products
             $limit = ($flagLastFive === true ? 5 : $flagLastFive);
             $queryOrder = ' ORDER BY `id` DESC';
+            $queryCount = "SELECT $limit AS `numof_products`";
         } else {
             // Build standard full featured query
             $querySpecialOffer =
