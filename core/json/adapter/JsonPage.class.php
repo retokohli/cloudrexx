@@ -459,6 +459,8 @@ class JsonPage implements JsonAdapter {
     }
 
     public function getHistoryTable($params) {
+        global $_CORELANG;
+        
         if (empty($params['get']['page'])) {
             throw new \Exception('please provide a pageId');
         }
@@ -474,12 +476,11 @@ class JsonPage implements JsonAdapter {
         $table = new \BackendTable(array('width' => '100%'));
         $table->setAutoGrow(true);
 
-        $table->setHeaderContents(0, 0, 'Date');
+        $table->setHeaderContents(0, 0, 'Date', array('width' => '130px'));
         $table->setHeaderContents(0, 1, 'Title');
         $table->setHeaderContents(0, 2, 'Author');
         //make sure those are th's too
-        $table->setHeaderContents(0, 3, '');
-        $table->setHeaderContents(0, 4, '');
+        $table->setHeaderContents(0, 3, $_CORELANG['TXT_FUNCTIONS'], array('style' => 'text-align: right;'));
 
         //(III) collect page informations - path, virtual language directory
         $path = $this->pageRepo->getPath($page);
@@ -533,12 +534,13 @@ class JsonPage implements JsonAdapter {
             }
         }
         
-        $table->setCellContents($row, 3, '<a id="load_'.$version.'" class="historyLoad" href="javascript:loadHistoryVersion('.$version.')" '.$tableStyle.'>' . $_ARRAYLANG['TXT_CORE_LOAD'] . '</a>');
-        $table->setCellContents($row, 4, '<a id="preview_'.$version.'" class="historyPreview" href="' . $historyLink . '" target="_blank" '.$tableStyle.'>' . $_ARRAYLANG['TXT_CORE_PREVIEW'] . '</a>');
-
+        $functions  = '<a id="preview_'.$version.'" class="historyPreview" href="' . $historyLink . '" target="_blank" '.$tableStyle.'>' . $_ARRAYLANG['TXT_CORE_PREVIEW'] . '</a>';
+        $functions .= '<a id="load_'.$version.'" class="historyLoad" href="javascript:loadHistoryVersion('.$version.')" '.$tableStyle.'>' . $_ARRAYLANG['TXT_CORE_LOAD'] . '</a>';
+        
         $table->setCellContents($row, 0, $dateString);
         $table->setCellContents($row, 1, $page->getTitle());
         $table->setCellContents($row, 2, $username);
+        $table->setCellContents($row, 3, $functions);
     }
 
     /**
@@ -566,10 +568,15 @@ class JsonPage implements JsonAdapter {
      * @return  array   Array  representing a fallback page
      */
     private function getFallbackPageArray($node, $lang) {
+        $page = null;
         foreach ($node->getPages() as $page) {
             if ($page->getLang() == \FWLanguage::getLanguageIdByCode($this->fallbacks[$lang])) {
                 break;
             }
+        }
+        
+        if (!$page) {
+            throw new \Cx\Model\ContentManager\NodeException('Node (id '.$node->getId().') has no pages.');
         }
 
         // Access Permissions

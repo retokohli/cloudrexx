@@ -2,7 +2,7 @@
 <script language="JavaScript" type="text/javascript">
 <!-- // confirm delete page
 function reloadThemesPage(){
-	document.themesForm.action = 'index.php?cmd=skins';
+	document.themesForm.action = 'index.php?cmd=skins&act=templates';
 	document.themesForm.themesDelName.value='';
 	document.themesForm.themesDelFileName.value='';
 	document.themesForm.submit();
@@ -13,7 +13,7 @@ function reloadThemesPage(){
   <tr>
     <td width="180" valign="top" nowrap>
 
-<form name="themesForm" action="index.php?cmd=skins"  method="post">
+<form name="themesForm" action="index.php?cmd=skins&amp;act=templates"  method="post">
   <table summary="" width="180" border="0" cellspacing="0" cellpadding="3" class="adminlist">
 	<tr>
 		<th width="180" nowrap="nowrap">{TXT_DESIGN_FOLDER}</th>

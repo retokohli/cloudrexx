@@ -2,6 +2,8 @@
 
 namespace Cx\Model\ContentManager;
 
+class NodeException extends \Exception {}
+
 /**
  * Cx\Model\ContentManager\Node
  */

@@ -384,6 +384,9 @@ h1{ font-size: 20px }
 #site-tree .page.hidden, #site-tree .page {
     background-image: url(../../../template/ascms/images/page-hidden.png);
 }
+#site-tree .page.broken {
+    background-image: url(../../../template/ascms/images/page_active_broken.png);
+}
 #site-tree .page {
     background-position: 1px -6px;
 }
@@ -962,11 +965,13 @@ div.date img{
 }
 
 #page_history .historyLoad {
-    padding: 0 0 0 21px;
+    float: right;
+    padding: 0 15px 0 20px;
     background: url(../images/content_manager_restore.png) no-repeat left center;
 }
 
 #page_history .historyPreview {
+    float: right;
     padding: 0 0 0 18px;
     background: url(../images/content_manager_preview.png) no-repeat left center;
 }
