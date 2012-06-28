@@ -124,7 +124,6 @@ h1{ font-size: 20px }
 }
 
 #flip-menu {
-    padding: 0 0 0 5px;
     font-size: 12px;
 }
 
@@ -335,12 +334,12 @@ h1{ font-size: 20px }
 #site-tree .publishing {
     width: 13px;
     height: 14px;
-    background-image: url(../../../template/ascms/images/publishing-unlocked.png);
+    background-image: url(../../../template/ascms/images/publishing_unlocked.png);
     background-position: 0 -4px;
     margin-top: 8px;
 }
 #site-tree .publishing.locked {
-    background-image: url(../../../template/ascms/images/publishing-locked.png);
+    background-image: url(../../../template/ascms/images/publishing_locked.png);
 }
 #site-tree .publishing.unpublished {
     background-position: -5px -5px;
@@ -379,10 +378,10 @@ h1{ font-size: 20px }
     width: 20px;
 }
 #site-tree .page.active {
-    background-image: url(../../../template/ascms/images/page-active.png);
+    background-image: url(../../../template/ascms/images/page_active.png);
 }
 #site-tree .page.hidden, #site-tree .page {
-    background-image: url(../../../template/ascms/images/page-hidden.png);
+    background-image: url(../../../template/ascms/images/page_hidden.png);
 }
 #site-tree .page.broken {
     background-image: url(../../../template/ascms/images/page_active_broken.png);

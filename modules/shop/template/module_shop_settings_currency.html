@@ -122,7 +122,7 @@ function updateExchangeRates(selectedElement)
       </td>
       <td nowrap="nowrap">
         <input type="text" name="currencyName[{SHOP_CURRENCY_ID}]"
-            value="{SHOP_CURRENCY_NAME}" size="60" maxlength="50" />
+            value="{SHOP_CURRENCY_NAME}" size="50" maxlength="50" />
       </td>
       <td nowrap="nowrap">
         <input type="text" name="currencyRate[{SHOP_CURRENCY_ID}]"
@@ -175,7 +175,7 @@ function updateExchangeRates(selectedElement)
     <tr class="row2">
       <td nowrap="nowrap">N/A</td>
       <td nowrap="nowrap">
-        <select name="currencyCodeNew" onchange="updateCurrencyCode(this)">
+        <select name="currencyCodeNew" onchange="updateCurrencyCode(this)" style="width: 200px;">
           {SHOP_CURRENCY_NAME_MENUOPTIONS}
         </select>
       </td>
@@ -183,7 +183,7 @@ function updateExchangeRates(selectedElement)
         <input name="currencySymbolNew" id="currencySymbolNew" type="text" value="" size="10" maxlength="20" />
       </td>
       <td nowrap="nowrap">
-        <input type="text" name="currencyNameNew" id="currencyNameNew" value="" size="60" maxlength="50" />
+        <input type="text" name="currencyNameNew" id="currencyNameNew" value="" size="35" maxlength="50" />
       </td>
       <td nowrap="nowrap">
         <input type="text" name="currencyRateNew" value="1.0000" size="15" maxlength="11" />

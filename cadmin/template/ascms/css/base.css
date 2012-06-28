@@ -546,7 +546,6 @@ table.adminlist th {
     text-align: left;
     font-size: 13px;
     font-weight: bold;
-    white-space: nowrap;
     color: #ffffff;
 }
 table.adminlist th a {
@@ -570,9 +569,6 @@ table.adminlist tr.row2:hover {
 table.adminlist tr.row3 {
     background: #fafafa;
     font-weight: bold;
-}
-table.adminlist tr.row3 td {
-    white-space: nowrap;
 }
 table.adminlist tr.highlighted {
     background: #ffe7e7;
@@ -599,9 +595,6 @@ table.adminlist td a:hover,
 table.adminlist td a:focus,
 table.adminlist td a:active {
     color: #0b4c7a;
-}
-table.adminlist tr.row3 td {
-    white-space: nowrap;
 }
 table.adminlist td.options {
     font-size: 10px;
@@ -721,7 +714,7 @@ table.subnavbar {
     color: #006900;
     background: #b8fd9f;
     padding: 4px;
-    margin: 0 0 40px 0;
+    margin: 0 0 20px 0;
     overflow: auto;
 }
 
@@ -731,7 +724,7 @@ table.subnavbar {
     color: #ff0000;
     background: #ffcccc;
     padding: 4px;
-    margin: 0 0 40px 0;
+    margin: 0 0 20px 0;
     overflow: auto;
 }
 
@@ -744,7 +737,7 @@ table.subnavbar {
     border: #ffb400 1px solid;
     background: #ffde8f;
     padding: 4px;
-    margin: 0 0 40px 0;
+    margin: 0 0 20px 0;
     overflow: auto;
 }
 
@@ -791,13 +784,13 @@ table.subnavbar {
 
 /* Text alignment -- Shop */
 .a_left {
-    text-align: left;
+    text-align: left !important;
 }
 .a_center {
-    text-align: center;
+    text-align: center !important;
 }
 .a_right {
-    text-align: right;
+    text-align: right !important;
 }
 
 
