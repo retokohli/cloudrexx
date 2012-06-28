@@ -583,6 +583,9 @@ table.adminlist tr.rowWarn,
 table.adminlist tr.rowwarn {
     background: #ffe7e7 !important;
 }
+table.adminlist tr.active {
+    background: #FFFFD6;
+}
 table.adminlist td {
     height: 22px;
     line-height: 22px;
@@ -616,6 +619,28 @@ table.subnavbar {
     background: #dde4ff;
 }
 
+table.reset,
+table.reset th,
+table.reset tr,
+table.reset td {
+    width: auto;
+    height: auto;
+    float: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: transparent;
+    border-collapse: collapse;
+    border-spacing: 0;
+    background: none;
+}
+
+table.reset td {
+    padding: 0 10px 0 0;
+}
 
 .toggle_style {
     float: left;
@@ -887,3 +912,18 @@ table.adminlist td.nowrap {
   overflow: auto;
 }
 
+/* Tooltip Style */
+.info {
+    float: left;
+    width: 13px;
+    height: 12px;
+    background: url(../images/content_manager_info.png) no-repeat center center;
+}
+
+.info.input {
+    margin: 7px 6px;
+}
+
+.info.label {
+    margin: 2px 20px 2px 3px;
+}
