@@ -9,8 +9,8 @@
     cx.ready(function(){
         var uploader = cx.instances.get('exposed_combo_uploader','uploader');
         uploader.dialog().bind('close',function(){
-            window.location = '{REDIRECT_URL}';
+            window.location = window.location;
         });
-    },true);
+    }, true);
 </script>
 <!-- end module_fileBrowser_upload.html -->
