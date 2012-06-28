@@ -33,7 +33,16 @@ function sameName()
 }
 // -->
 </script>
-<div id="okbox">{TXT_FTP_STATUS}</div><br />
+
+<div id="okbox">{TXT_FTP_STATUS}</div>
+
+<div id="subnavbar_level2">
+    <ul>
+        <li><a href="index.php?cmd=skins&amp;act=templates" title="{TXT_THEMES_EDIT}">{TXT_THEMES_EDIT}</a></li>
+        <li><a class="active" href="index.php?cmd=skins&amp;act=newDir" title="{TXT_THEMES_CREATE}">{TXT_THEMES_CREATE}</a></li>
+    </ul>
+</div>
+
 <form name="create_dir" method="post" action="{CREATE_DIR_ACTION}">
 	<table summary="" width="100%" cellspacing="0" cellpadding="5" border="0" class="adminlist">
 		<tr>

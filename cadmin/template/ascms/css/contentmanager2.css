@@ -778,21 +778,6 @@ div.date img{
     margin: 0 0 3px 0;
 }
 
-#page .container .info {
-    float: left;
-    width: 13px;
-    height: 12px;
-    background: url(../images/content_manager_info.png) no-repeat center center;
-}
-
-#page .container .info.input {
-    margin: 7px 6px;
-}
-
-#page .container .info.label {
-    margin: 2px 20px 2px 3px;
-}
-
 #page .container input {
     width: 566px;
 }

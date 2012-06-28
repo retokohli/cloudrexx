@@ -1,5 +1,4 @@
 <!-- start skins_manage.html -->
-
 <style type="text/css">
 <!--
 	.radiodescription{
@@ -20,6 +19,9 @@
 </style>
 <script type="text/javascript">
 // <![CDATA[
+Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
+Text[0]=["","{TXT_THEME_IMPORT_INFO_BODY}"];
+
 var	highlightcolor = "#F1F1F1";
 var	row1color = "#F4F7FF";
 var	row2color = "#FFFFFF";
@@ -36,11 +38,6 @@ var init = function(){
 	iremote = 	document.getElementById("remotearchive");
 	document.getElementById("radiolocal").className = 'noborder';
 	document.getElementById("radioremote").className = 'noborder';
-}
-
-var openPreview = function(id){
-	window.open("index.php?cmd=skins&{CSRF_PARAM}&act=manage&preview=" + id);
-	return false;
 }
 
 var confirmDelete = function(theme){
@@ -74,37 +71,6 @@ var importSelect = function(div){
 	}else if(div == "web"){
 		dlocal.style.display = "none";
 		dweb.style.display = "block";
-	}
-}
-
-var skinsHighlight = function(obj, direction){
-	if(obj.className=='rowWarn') return; //ignore active row
-	obj.style.backgroundColor = highlightcolor;
-	if(direction == 'upper'){
-		getPrevRow(obj).style.backgroundColor = highlightcolor;
-	}else{
-		getNextRow(obj).style.backgroundColor = highlightcolor;
-	}
-}
-
-var skinsUnhighlight = function(obj, direction){ //ignore active row
-	if(obj.className=='rowWarn') return;
-	if(direction == 'upper'){
-		if(getPrevRow(obj).className == 'row1'){
-			obj.style.backgroundColor = row1color;
-			getPrevRow(obj).style.backgroundColor = row1color;
-		}else{
-			obj.style.backgroundColor = row2color;
-			getPrevRow(obj).style.backgroundColor = row2color;
-		}
-	}else{
-		if(getNextRow(obj).id == 'row1'){
-			obj.style.backgroundColor = row1color;
-			getNextRow(obj).style.backgroundColor = row1color;
-		}else{
-			obj.style.backgroundColor = row2color;
-			getNextRow(obj).style.backgroundColor =	row2color;
-		}
 	}
 }
 
@@ -173,14 +139,9 @@ var clearTimer = function(timer){
 	}
 }
 
-//attach body onload event (to ensure the page has completed loading when calling init())
-//mozilla
-document.body.setAttribute('onload', 'init();');
-
-//IE
-document.body.onload = function (){
-	init();
-}
+$J(document).ready(function() {
+    init();
+});
 
 document.body.onmousemove = function(event){
 	if(typeof(window.event) != 'undefined'){
@@ -194,99 +155,104 @@ document.body.onmousemove = function(event){
 }
 // ]]>
 </script>
-<div>
+
+<ul id="tabmenu">
+    <li><a id="setTab_themes-preview" class="active" href="#" onclick="selectTab('themes-preview'); return false;" title="{TXT_THEME_THEMES}">{TXT_THEME_THEMES}</a></li>
+    <li><a id="setTab_themes-import" href="#" onclick="selectTab('themes-import'); return false;" title="{TXT_THEME_IMPORT}">{TXT_THEME_IMPORT}</a></li>
+</ul>
 
 <form name="themesForm" id="manageform" action="index.php?cmd=skins&amp;act=manage" method="post" enctype="multipart/form-data">
-<table summary="" style="width:100%" border="0" cellspacing="0" cellpadding="3"  class="adminlist">
-	<tr style="white-space: nowrap;">
-		<th>
-			{TXT_THEME_IMPORT}
-		</th>
-	</tr>
-	<tr class="row1">
-		<td width="250">
-			<div style="width: 300px;vertical-align: top;">
-				<div>
-					<input id="radiolocal" class="hidden" onclick="importSelect(this.value);" type="radio" name="src" value="local" checked="checked" /> <span class="radiodescription"> {TXT_THEME_LOCAL_FILE} </span>
-					<input id="radioremote" class="hidden" onclick="importSelect(this.value);" type="radio" name="src" value="web" /><span class="radiodescription">{TXT_THEME_SPECIFY_URL}</span> <br />
-				</div>
-
-				<div id="local" style="display: block;">
-					<input type="file" id="localarchive" name="importlocal" accept="application/zip" value="{TXT_SELECT_FILE}" />
-				</div>
-				<div id="web" style="display: none;">
-					<input type="text" id="remotearchive" name="importremote" size="30" value="http://" />
-				</div>
-			</div>
-		</td>
-	</tr>
-</table>
-<input type="submit" name="import" onclick="return importArchive();" value="{TXT_THEME_IMPORT}" />
-<br />
-<br />
-<div>
-	<div class="infobox_head">
-		{TXT_THEME_IMPORT_INFO}
-	</div>
-	<div class="infobox_body">
-		{TXT_THEME_IMPORT_INFO_BODY}
-	</div>
-</div>
-
-<br />
-<table summary="" style="width:100%" border="0" cellspacing="0" cellpadding="3" class="adminlist">
-	<tr>
-		<th colspan="4">
-			<strong>{TXT_THEME_THEMES}</strong>
-		</th>
-	</tr>
-	<tr class="row3">
-		<td colspan="3"><div style="width: 14%;">
-			<strong>{TXT_NAME}</strong>
-		</div></td>
-		<td width="5%">
-			<strong>{TXT_FUNCTIONS}</strong>
-		</td>
-	</tr>
-	<!-- BEGIN themeRow -->
-	<tr class="{ROW_CLASS}" onmouseover="skinsHighlight(this,'lower');" onmouseout="skinsUnhighlight(this,'lower');" onclick="showInfo(this);">
-		<td style="width: 200px">
-		<div style="vertical-align: top; font-size:1.1em;">
-			{THEME_NAME_EXTRA}
-		</div><br />
-			<div onclick="showInfo(this.parentNode.parentNode); return openPreview({THEME_ID});" style="background-repeat: no-repeat; background-image:url({THEME_PREVIEW});background-position: center; border: 1px solid black; height: 160px; width: 160px;">
-			</div>
-			<br />
-		</td>
-		<td style="vertical-align: center; width: 150px;">
-			<input type="button" value="{TXT_SKINS_PREVIEW}" onclick="return openPreview({THEME_ID})" />
-		</td>
-		<td>
-			<div>
-				{THEME_XML_AUTHOR}
-			</div>
-			<div>
-				{THEME_XML_VERSION}
-			</div>
-			<div>
-				{THEME_XML_DESCRIPTION}
-			</div>
-		</td>
-		<td><div style="text-align: right; vertical-align: top; white-space:nowrap;">
-			<a href="?cmd=skins&amp;act=manage&amp;export={THEME_NAME}" onclick="showInfo(this.parentNode.parentNode);" title="{TXT_THEME_EXPORT}"> <img border="0" src="images/icons/zip.gif" alt="" /> </a>
-			{THEME_ACTIVATE_LINK}
-			{THEME_DELETE_LINK}
-		</div>
-		</td>
-	</tr>
-	<tr class="hidden" onmouseover="skinsHighlight(this,'upper');" onmouseout="skinsUnhighlight(this,'upper');" onclick="hideInfo(this);">
-		<td colspan="4">
-			{THEME_XML_AUTHOR} &nbsp;&nbsp;&nbsp; {THEME_XML_VERSION} &nbsp;&nbsp;&nbsp; {THEME_XML_DESCRIPTION}
-		</td>
-	</tr>
-	<!-- END themeRow -->
-</table>
-<input id="themeid" type="hidden" name="themeid" />
+    <div id="themes-preview" class="setTab">
+        <table summary="" style="width:100%" border="0" cellspacing="0" cellpadding="3" class="adminlist">
+            <tr>
+                <th colspan="5"><strong>{TXT_THEME_THEMES}</strong></th>
+            </tr>
+            <tr class="row3">
+                <td><strong>{TXT_THEME_PREVIEW_IMAGE}</strong></td>
+                <td><strong>{TXT_THEME_INFORMATION}</strong></td>
+                <td><strong>{TXT_THEME_PREVIEW_URL}</strong></td>
+                <td><strong>{TXT_LANGUAGES}</strong></td>
+                <td width="5%"><strong>{TXT_FUNCTIONS}</strong>
+                </td>
+            </tr>
+            <!-- BEGIN themeRow -->
+            <tr class="{ROW_CLASS}">
+                <td style="width: 200px">
+                    <a href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank">
+                        <div style="background-repeat: no-repeat; background-image: url({THEME_PREVIEW}); background-position: center; border: 1px solid black; height: 150px; width: 150px;"></div>
+                    </a>
+                </td>
+                <td>
+                    <table class="reset">
+                        <tr>
+                            <td><strong>{TXT_NAME}:</strong></td>
+                            <td>{THEME_NAME}{THEME_NAME_EXTRA}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>{TXT_AUTHOR}:</strong></td>
+                            <td>{THEME_XML_AUTHOR}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>{TXT_VERSION}:</strong></td>
+                            <td>{THEME_XML_VERSION}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>{TXT_DESCRIPTION}:</strong></td>
+                            <td>{THEME_XML_DESCRIPTION}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <a href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank">{CONTREXX_BASE_URL}index.php?preview={THEME_ID}</a>
+                </td>
+                <td>
+                    {THEME_LANGUAGES}
+                </td>
+                <td>
+                    <div style="text-align: right; vertical-align: top; white-space:nowrap;">
+                        <a href="?cmd=skins&amp;act=manage&amp;export={THEME_NAME}" title="{TXT_THEME_EXPORT}"> <img border="0" src="images/icons/zip.gif" alt="" /></a>
+                        {THEME_ACTIVATE_LINK}
+                        {THEME_DELETE_LINK}
+                    </div>
+                </td>
+            </tr>
+            <tr class="hidden" onmouseover="skinsHighlight(this,'upper');" onmouseout="skinsUnhighlight(this,'upper');" onclick="hideInfo(this);">
+                <td colspan="4">
+                    {THEME_XML_AUTHOR} &nbsp;&nbsp;&nbsp; {THEME_XML_VERSION} &nbsp;&nbsp;&nbsp; {THEME_XML_DESCRIPTION}
+                </td>
+            </tr>
+            <!-- END themeRow -->
+        </table>
+        <input id="themeid" type="hidden" name="themeid" />
+    </div>
+    
+    <div id="themes-import" class="setTab" style="display: none;">
+        <table summary="" style="width:100%" border="0" cellspacing="0" cellpadding="3"  class="adminlist">
+            <tr style="white-space: nowrap;">
+                <th>
+                    {TXT_THEME_IMPORT}
+                </th>
+            </tr>
+            <tr class="row1">
+                <td width="250">
+                    <div style="width: 300px;vertical-align: top;">
+                        <div>
+                            <input id="radiolocal" class="hidden" onclick="importSelect(this.value);" type="radio" name="src" value="local" checked="checked" /> <span class="radiodescription"> {TXT_THEME_LOCAL_FILE} </span>
+                            <input id="radioremote" class="hidden" onclick="importSelect(this.value);" type="radio" name="src" value="web" /><span class="radiodescription">{TXT_THEME_SPECIFY_URL}</span> <br />
+                        </div>
+        
+                        <div id="local" style="display: block;">
+                            <input type="file" id="localarchive" name="importlocal" accept="application/zip" value="{TXT_SELECT_FILE}" />
+                        </div>
+                        <div id="web" style="display: none;">
+                            <input type="text" id="remotearchive" name="importremote" size="30" value="http://" />
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <input type="submit" name="import" onclick="return importArchive();" value="{TXT_THEME_IMPORT}" style="float: left;" />
+        <span class="tipmessage info input" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])"></span>
+    </div>
 </form>
-</div>
 <!-- end skins_manage.html -->

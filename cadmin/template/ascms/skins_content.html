@@ -9,6 +9,14 @@ function reloadThemesPage(){
 }
 // -->
 </script>
+
+<div id="subnavbar_level2">
+    <ul>
+        <li><a class="active" href="index.php?cmd=skins&amp;act=templates" title="{TXT_THEMES_EDIT}">{TXT_THEMES_EDIT}</a></li>
+        <li><a href="index.php?cmd=skins&amp;act=newDir" title="{TXT_THEMES_CREATE}">{TXT_THEMES_CREATE}</a></li>
+    </ul>
+</div>
+
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td width="180" valign="top" nowrap>
@@ -23,7 +31,8 @@ function reloadThemesPage(){
 			<select name="themes" size="9" onChange="reloadThemesPage()" style="WIDTH: 180px">
 			<option value="">--- {TXT_CHOOSE_TEMPLATE_GROUP} ----</option>
 			{THEMES_MENU}
-			</select>		</td>
+			</select>
+        </td>
 	</tr>
 	<tr valign="top" class="row1">
 	  <th width="180" nowrap="nowrap">{TXT_TEMPLATE_FILES}</th>

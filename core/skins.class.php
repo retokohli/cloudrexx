@@ -205,12 +205,11 @@ class skins
 
         $objTemplate->setVariable("CONTENT_NAVIGATION","
             <a href='index.php?cmd=skins' class='".($this->act == '' ? 'active' : '')."'>".$_CORELANG['TXT_DESIGN_OVERVIEW']."</a>
-            <a href='index.php?cmd=skins&amp;act=templates' class='".($this->act == 'templates' ? 'active' : '')."'>".$_CORELANG['TXT_DESIGN_TEMPLATES']."</a>
-            <a href='index.php?cmd=skins&amp;act=newDir' class='".($this->act == 'newDir' ? 'active' : '')."'>".$_CORELANG['TXT_NEW_DESIGN']."</a>
+            <a href='index.php?cmd=skins&amp;act=templates' class='".($this->act == 'templates' || $this->act == 'newDir' ? 'active' : '')."'>".$_CORELANG['TXT_DESIGN_TEMPLATES']."</a>
             <a href='index.php?cmd=media&amp;archive=themes'>".$_CORELANG['TXT_DESIGN_FILES_ADMINISTRATION']."</a>
             <a href='index.php?cmd=skins&amp;act=examples' class='".($this->act == 'examples' ? 'active' : '')."'>".$_CORELANG['TXT_DESIGN_REPLACEMENTS_DIR']."</a>
             <a href='index.php?cmd=skins&amp;act=manage' class='".($this->act == 'manage' ? 'active' : '')."'>".$_CORELANG['TXT_THEME_IMPORT_EXPORT']."</a>");
-    }
+        }
 
     /**
      * Gets the requested page
@@ -282,22 +281,24 @@ class skins
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_content', 'skins_content.html');
         $this->pageTitle = $_CORELANG['TXT_DESIGN_TEMPLATES'];
         $objTemplate->setVariable(array(
-            'TXT_CHOOSE_TEMPLATE_GROUP'       =>     $_CORELANG['TXT_CHOOSE_TEMPLATE_GROUP'],
-            'TXT_SELECT_FILE'                 =>     $_CORELANG['TXT_SELECT_FILE'],
-            'TXT_DESIGN_FOLDER'               =>     $_CORELANG['TXT_DESIGN_FOLDER'],
-            'TXT_TEMPLATE_FILES'              =>     $_CORELANG['TXT_TEMPLATE_FILES'],
-            'TXT_FILE_EDITOR'                 =>     $_CORELANG['TXT_FILE_EDITOR'],
-            'TXT_UPLOAD_FILES'                =>     $_CORELANG['TXT_UPLOAD_FILES'],
-            'TXT_CREATE_FILE'                 =>     $_CORELANG['TXT_CREATE_FILE'],
-            'TXT_DELETE'                      =>     $_CORELANG['TXT_DELETE'],
-            'TXT_STORE'                       =>     $_CORELANG['TXT_SAVE'],
-            'TXT_RESET'                       =>     $_CORELANG['TXT_RESET'],
-            'TXT_SELECT_ALL'                  =>     $_CORELANG['TXT_SELECT_ALL'],
-            'TXT_MANAGE_FILES'                =>     $_CORELANG['TXT_MANAGE_FILES'],
-            'TXT_SELECT_THEME'                =>     $_CORELANG['TXT_SELECT_THEME'],
-            'TXT_THEME_NAME'                  =>     $_CORELANG['TXT_THEME_NAME'],
-            'TXT_DESIGN_OVERVIEW'             =>     $_CORELANG['TXT_DESIGN_OVERVIEW'],
-            'TXT_MODE'                        =>     $_CORELANG['TXT_MODE']
+            'TXT_CHOOSE_TEMPLATE_GROUP'       => $_CORELANG['TXT_CHOOSE_TEMPLATE_GROUP'],
+            'TXT_SELECT_FILE'                 => $_CORELANG['TXT_SELECT_FILE'],
+            'TXT_DESIGN_FOLDER'               => $_CORELANG['TXT_DESIGN_FOLDER'],
+            'TXT_TEMPLATE_FILES'              => $_CORELANG['TXT_TEMPLATE_FILES'],
+            'TXT_FILE_EDITOR'                 => $_CORELANG['TXT_FILE_EDITOR'],
+            'TXT_UPLOAD_FILES'                => $_CORELANG['TXT_UPLOAD_FILES'],
+            'TXT_CREATE_FILE'                 => $_CORELANG['TXT_CREATE_FILE'],
+            'TXT_DELETE'                      => $_CORELANG['TXT_DELETE'],
+            'TXT_STORE'                       => $_CORELANG['TXT_SAVE'],
+            'TXT_RESET'                       => $_CORELANG['TXT_RESET'],
+            'TXT_SELECT_ALL'                  => $_CORELANG['TXT_SELECT_ALL'],
+            'TXT_MANAGE_FILES'                => $_CORELANG['TXT_MANAGE_FILES'],
+            'TXT_SELECT_THEME'                => $_CORELANG['TXT_SELECT_THEME'],
+            'TXT_THEME_NAME'                  => $_CORELANG['TXT_THEME_NAME'],
+            'TXT_DESIGN_OVERVIEW'             => $_CORELANG['TXT_DESIGN_OVERVIEW'],
+            'TXT_MODE'                        => $_CORELANG['TXT_MODE'],
+            'TXT_THEMES_EDIT'                 => $_CORELANG['TXT_SETTINGS_MODFIY'],
+            'TXT_THEMES_CREATE'               => $_CORELANG['TXT_CREATE'],
         ));
         $this->getDropdownContent();
     }
@@ -309,17 +310,13 @@ class skins
      */
     function _manage()
     {
-        global $_CORELANG, $objTemplate, $objDatabase;
+        global $_CORELANG, $objTemplate, $objDatabase, $_CONFIG;
 
         Permission::checkAccess(102, 'static');
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_manage', 'skins_manage.html');
         $this->pageTitle = $_CORELANG['TXT_THEME_IMPORT_EXPORT'];
         //check GETs for action
-        if (!empty($_GET['preview'])){
-            CSRF::header("Location: ../?preview=".$_GET['preview']);
-            exit;
-        }
         if (!empty($_GET['export'])){
             $archiveURL=$this->_exportFile();
             if (is_string($archiveURL)){
@@ -339,55 +336,63 @@ class skins
             $objTemplate->setVariable('THEMES_MENU', $this->getThemesDropdown());
         }
         //set template variables
-        $objTemplate->setGlobalVariable(array(  'TXT_THEME_THEMES'              => $_CORELANG['TXT_THEME_THEMES'],
-                                            'TXT_THEME_PREVIEW'             => $_CORELANG['TXT_THEME_PREVIEW'],
-                                            'TXT_THEME_IMPORT_EXPORT'       => $_CORELANG['TXT_THEME_IMPORT_EXPORT'],
-                                            'TXT_THEME_NAME'                => $_CORELANG['TXT_THEME_NAME'],
-                                            'TXT_THEME_IMPORT'              => $_CORELANG['TXT_THEME_IMPORT'],
-                                            'TXT_THEME_EXPORT'              => $_CORELANG['TXT_THEME_EXPORT'],
-                                            'TXT_THEME_PREVIEW_NEW_WINDOW'  => $_CORELANG['TXT_THEME_PREVIEW_NEW_WINDOW'],
-                                            'TXT_THEME_DIRECTORY_NAME'      => $_CORELANG['TXT_THEME_DIRECTORY_NAME'],
-                                            'TXT_THEME_SEND_ARCHIVE'        => $_CORELANG['TXT_THEME_SEND_ARCHIVE'],
-                                            'TXT_THEME_IMPORT_ARCHIVE'      => $_CORELANG['TXT_THEME_IMPORT_ARCHIVE'],
-                                            'TXT_THEME_LOCAL_FILE'          => $_CORELANG['TXT_THEME_LOCAL_FILE'],
-                                            'TXT_THEME_SPECIFY_URL'         => $_CORELANG['TXT_THEME_SPECIFY_URL'],
-                                            'TXT_THEME_CONFIRM_DELETE'      => $_CORELANG['TXT_THEME_CONFIRM_DELETE'],
-                                            'TXT_FUNCTIONS'                 => $_CORELANG['TXT_FUNCTIONS'],
-                                            'TXT_NAME'                      => $_CORELANG['TXT_NAME'],
-                                            'TXT_THEME_SHOW_PRINT_THEME'    => $_CORELANG['TXT_THEME_SHOW_PRINT_THEME'],
-                                            'TXT_THEME_NO_URL_SPECIFIED'    => $_CORELANG['TXT_THEME_NO_URL_SPECIFIED'],
-                                            'TXT_THEME_NO_FILE_SPECIFIED'   => $_CORELANG['TXT_THEME_NO_FILE_SPECIFIED'],
-                                            'TXT_THEME_DETAILS'             => $_CORELANG['TXT_THEME_DETAILS'],
-                                            'TXT_THEME_IMPORT_INFO'         => $_CORELANG['TXT_THEME_IMPORT_INFO'],
-                                            'TXT_THEME_IMPORT_INFO_BODY'    => $_CORELANG['TXT_THEME_IMPORT_INFO_BODY'],
-                                            'TXT_SKINS_PREVIEW'             => $_CORELANG['TXT_SKINS_PREVIEW'],
-                                            'THEMES_MENU'                   => $this->getThemesDropdown()
+        $objTemplate->setGlobalVariable(array('TXT_THEME_THEMES'              => $_CORELANG['TXT_THEME_THEMES'],
+                                              'TXT_THEME_PREVIEW'             => $_CORELANG['TXT_THEME_PREVIEW'],
+                                              'TXT_THEME_IMPORT_EXPORT'       => $_CORELANG['TXT_THEME_IMPORT_EXPORT'],
+                                              'TXT_THEME_NAME'                => $_CORELANG['TXT_THEME_NAME'],
+                                              'TXT_THEME_IMPORT'              => $_CORELANG['TXT_THEME_IMPORT'],
+                                              'TXT_THEME_EXPORT'              => $_CORELANG['TXT_THEME_EXPORT'],
+                                              'TXT_THEME_PREVIEW_NEW_WINDOW'  => $_CORELANG['TXT_THEME_PREVIEW_NEW_WINDOW'],
+                                              'TXT_THEME_DIRECTORY_NAME'      => $_CORELANG['TXT_THEME_DIRECTORY_NAME'],
+                                              'TXT_THEME_SEND_ARCHIVE'        => $_CORELANG['TXT_THEME_SEND_ARCHIVE'],
+                                              'TXT_THEME_IMPORT_ARCHIVE'      => $_CORELANG['TXT_THEME_IMPORT_ARCHIVE'],
+                                              'TXT_THEME_LOCAL_FILE'          => $_CORELANG['TXT_THEME_LOCAL_FILE'],
+                                              'TXT_THEME_SPECIFY_URL'         => $_CORELANG['TXT_THEME_SPECIFY_URL'],
+                                              'TXT_THEME_CONFIRM_DELETE'      => $_CORELANG['TXT_THEME_CONFIRM_DELETE'],
+                                              'TXT_FUNCTIONS'                 => $_CORELANG['TXT_FUNCTIONS'],
+                                              'TXT_NAME'                      => $_CORELANG['TXT_NAME'],
+                                              'TXT_THEME_SHOW_PRINT_THEME'    => $_CORELANG['TXT_THEME_SHOW_PRINT_THEME'],
+                                              'TXT_THEME_NO_URL_SPECIFIED'    => $_CORELANG['TXT_THEME_NO_URL_SPECIFIED'],
+                                              'TXT_THEME_NO_FILE_SPECIFIED'   => $_CORELANG['TXT_THEME_NO_FILE_SPECIFIED'],
+                                              'TXT_THEME_DETAILS'             => $_CORELANG['TXT_THEME_DETAILS'],
+                                              'TXT_THEME_IMPORT_INFO'         => $_CORELANG['TXT_THEME_IMPORT_INFO'],
+                                              'TXT_THEME_IMPORT_INFO_BODY'    => $_CORELANG['TXT_THEME_IMPORT_INFO_BODY'],
+                                              'TXT_SKINS_PREVIEW'             => $_CORELANG['TXT_SKINS_PREVIEW'],
+                                              'TXT_THEME_PREVIEW_IMAGE'       => $_CORELANG['TXT_THEME_PREVIEW_IMAGE'],
+                                              'TXT_THEME_PREVIEW_URL'         => $_CORELANG['TXT_THEME_PREVIEW_URL'],
+                                              'TXT_THEME_INFORMATION'         => $_CORELANG['TXT_THEME_INFORMATION'],
+                                              'TXT_LANGUAGES'                 => $_CORELANG['TXT_LANGUAGES'],
+                                              'TXT_NAME'                      => $_CORELANG['TXT_NAME'],
+                                              'TXT_AUTHOR'                    => $_CORELANG['TXT_AUTHOR'],
+                                              'TXT_VERSION'                   => $_CORELANG['TXT_VERSION'],
+                                              'TXT_DESCRIPTION'               => $_CORELANG['TXT_DESCRIPTION'],
+                                              'THEMES_MENU'                   => $this->getThemesDropdown(),
+                                              'CONTREXX_BASE_URL'             => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . '/',
         ));
         //create themelist
         $themes = $this->_getThemes();
         if ($themes !== false){
             $rowclass = 0;
             foreach ($this->_getThemes() as $theme) {
-                $extra = (!empty($theme['extra'])) ? $theme['extra'] : '';
-
                 $this->_getXML($theme['foldername']);
 
                 $htmlDeleteLink = '<a onclick="showInfo(this.parentNode.parentNode); return confirmDelete(\''.htmlspecialchars($theme['themesname'], ENT_QUOTES, CONTREXX_CHARSET).'\');" href="?cmd=skins&amp;act=manage&amp;delete='.urlencode($theme['themesname']).'" title="'.$_CORELANG['TXT_DELETE'].'"> <img border="0" src="images/icons/delete.gif" alt="" /> </a>';
                 $htmlActivateLink = '<a onclick="showInfo(this.parentNode.parentNode);" href="?cmd=skins&amp;act=manage&amp;activate='.$theme['id'].'" title="'.$_CORELANG['TXT_ACTIVATE_DESIGN'].'"> <img border="0" src="images/icons/check.gif" alt="" /> </a>';
 
-                $objTemplate->setVariable(array('THEME_NAME'            =>  $theme['themesname'],
-                                                'THEME_NAME_EXTRA'      =>  $theme['themesname'].' '.$extra,
-                                                'THEME_PREVIEW'         =>  $this->_getPreview($theme['themesname']),
-                                                'TXT_THEME_EXPORT'      =>  $_CORELANG['TXT_THEME_EXPORT'],
-                                                'TXT_DELETE'            =>  $_CORELANG['TXT_DELETE'],
-                                                'THEME_DELETE_LINK'     =>  (empty($extra)) ? $htmlDeleteLink : '',
-                                                'THEME_ACTIVATE_LINK'   =>  (empty($extra)) ? $htmlActivateLink : '',
-                                                'THEME_ID'              =>  $theme['id'],
-                                                'TXT_ACTIVATE_DESIGN'   =>  $_CORELANG['TXT_ACTIVATE_DESIGN'],
-                                                'ROW_CLASS'             =>  (!empty($extra) ? 'rowWarn' : (($rowclass++ % 2) ? 'row1' : 'row2')),
-                                                'THEME_XML_AUTHOR'      =>  $this->_xmlDocument['THEME']['AUTHORS']['AUTHOR']['USER']['cdata'],
-                                                'THEME_XML_VERSION'     =>  $this->_xmlDocument['THEME']['VERSION']['cdata'],
-                                                'THEME_XML_DESCRIPTION' =>  $this->_xmlDocument['THEME']['DESCRIPTION']['cdata'],
+                $objTemplate->setVariable(array('THEME_NAME'            => $theme['themesname'],
+                                                'THEME_NAME_EXTRA'      => $theme['extra'],
+                                                'THEME_LANGUAGES'       => $theme['languages'],
+                                                'THEME_PREVIEW'         => $this->_getPreview($theme['themesname']),
+                                                'TXT_THEME_EXPORT'      => $_CORELANG['TXT_THEME_EXPORT'],
+                                                'TXT_DELETE'            => $_CORELANG['TXT_DELETE'],
+                                                'THEME_DELETE_LINK'     => (empty($theme['extra'])) ? $htmlDeleteLink : '',
+                                                'THEME_ACTIVATE_LINK'   => (empty($theme['extra'])) ? $htmlActivateLink : '',
+                                                'THEME_ID'              => $theme['id'],
+                                                'TXT_ACTIVATE_DESIGN'   => $_CORELANG['TXT_ACTIVATE_DESIGN'],
+                                                'ROW_CLASS'             => (!empty($theme['extra']) ? 'active' : (($rowclass++ % 2) ? 'row1' : 'row2')),
+                                                'THEME_XML_AUTHOR'      => $this->_xmlDocument['THEME']['AUTHORS']['AUTHOR']['USER']['cdata'],
+                                                'THEME_XML_VERSION'     => $this->_xmlDocument['THEME']['VERSION']['cdata'],
+                                                'THEME_XML_DESCRIPTION' => $this->_xmlDocument['THEME']['DESCRIPTION']['cdata'],
 
 
                 ));
@@ -863,13 +868,15 @@ class skins
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_examples', 'skins_examples.html');
         $this->pageTitle = $_CORELANG['TXT_DESIGN_VARIABLES_LIST'];
         $objTemplate->setVariable(array(
-            'TXT_STANDARD_TEMPLATE_STRUCTURE' => $_CORELANG['TXT_STANDARD_TEMPLATE_STRUCTURE'],
-            'TXT_FRONTEND_EDITING_LOGIN_FRONTEND' => $_CORELANG['TXT_FRONTEND_EDITING_LOGIN_FRONTEND'],
-            'TXT_STARTPAGE'                   => $_CORELANG['TXT_STARTPAGE'],
-            'TXT_STANDARD_PAGES'              => $_CORELANG['TXT_STANDARD_PAGES'],
-            'TXT_REPLACEMENT_LIST'            => $_CORELANG['TXT_REPLACEMENT_LIST'],
-            'TXT_FILES'                       => $_CORELANG['TXT_FILES'],
-            'TXT_CONTENTS'                    => $_CORELANG['TXT_CONTENTS']
+            'TXT_STANDARD_TEMPLATE_STRUCTURE'       => $_CORELANG['TXT_STANDARD_TEMPLATE_STRUCTURE'],
+            'TXT_FRONTEND_EDITING_LOGIN_FRONTEND'   => $_CORELANG['TXT_FRONTEND_EDITING_LOGIN_FRONTEND'],
+            'TXT_STARTPAGE'                         => $_CORELANG['TXT_STARTPAGE'],
+            'TXT_STANDARD_PAGES'                    => $_CORELANG['TXT_STANDARD_PAGES'],
+            'TXT_REPLACEMENT_LIST'                  => $_CORELANG['TXT_REPLACEMENT_LIST'],
+            'TXT_FILES'                             => $_CORELANG['TXT_FILES'],
+            'TXT_CONTENTS'                          => $_CORELANG['TXT_CONTENTS'],
+            'TXT_PLACEHOLDER_DIRECTORY'             => $_CORELANG['TXT_DESIGN_REPLACEMENTS_DIR'],
+            'TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION' => $_CORELANG['TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION'], 
         ));
     }
 
@@ -899,7 +906,9 @@ class skins
             'TXT_CREATE'              => $_CORELANG['TXT_CREATE'],
             'TXT_FROM_TEMPLATE'       => $_CORELANG['TXT_FROM_TEMPLATE'],
             'THEMES_TEMPLATE_MENU'    => $this->getThemesDropdown(""),
-            'TXT_FTP_STATUS'          => $test
+            'TXT_FTP_STATUS'          => $test,
+            'TXT_THEMES_EDIT'         => $_CORELANG['TXT_SETTINGS_MODFIY'],
+            'TXT_THEMES_CREATE'       => $_CORELANG['TXT_CREATE'],
         ));
         $objTemplate->setVariable('THEMES_MENU', $this->getDropdownNotInDb());
         $this->checkTable($this->oldTable);
@@ -1867,13 +1876,16 @@ class skins
                 }
                 $languagesWithThisTheme = substr($languagesWithThisTheme, 0, -2);
                 if ($objRS->fields['foldername'] == $defaultTheme){
-                    $objRS->fields['extra'] = ' ('.$_CORELANG['TXT_DEFAULT']. (!empty($languagesWithThisTheme) ? ') - '.$languagesWithThisTheme : ')');
+                    $objRS->fields['extra'] = ' ('.$_CORELANG['TXT_DEFAULT'].')';
+                    $objRS->fields['languages'] = $languagesWithThisTheme;
                     array_unshift($themes, $objRS->fields);
                 } elseif ($objRS->fields['foldername'] == $defaultPrintTheme){
-                    $objRS->fields['extra'] = ' ('.$_CORELANG['TXT_THEME_PRINT']. (!empty($languagesWithThisTheme) ? ') - '.$languagesWithThisTheme : ')');
+                    $objRS->fields['extra'] = ' ('.$_CORELANG['TXT_THEME_PRINT'].')';
+                    $objRS->fields['languages'] = $languagesWithThisTheme;
                     array_unshift($themes, $objRS->fields);
                 } else {
-                    $objRS->fields['extra'] = !empty($languagesWithThisTheme) ? ' - '.$languagesWithThisTheme : '';
+                    $objRS->fields['extra'] = '';
+                    $objRS->fields['languages'] = $languagesWithThisTheme;
                     $themes[] = $objRS->fields;
                 }
                 $objRS->MoveNext();
