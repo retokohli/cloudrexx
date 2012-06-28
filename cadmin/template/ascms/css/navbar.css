@@ -15,6 +15,10 @@ table#subnavbar_level1 {
     display: inline-table;
 }
 
+table#subnavbar_level1.no_margin {
+    margin: 0;
+}
+
 table#subnavbar_level1 td {
     vertical-align: middle;
     white-space: nowrap;
@@ -63,7 +67,7 @@ table#subnavbar_level1 form[name="userFrontendLangIdForm"] select {
     float: left;
     width: 100%;
     background: #f5f5f5;
-    margin: -20px 0 20px 0;
+    margin: 0 0 20px 0;
 }
 
 #subnavbar_level2 ul {

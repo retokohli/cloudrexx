@@ -2,11 +2,16 @@
 <script language="JavaScript" type="text/javascript">
 <!-- //
 function logout() {
-	Check = confirm("{TXT_LOGOUT_WARNING}")
-	if(Check == true) {
-		location.href = "index.php?cmd=logout&{CSRF_PARAM}";
-	}
+    Check = confirm("{TXT_LOGOUT_WARNING}")
+    if (Check == true) {
+        location.href = "index.php?cmd=logout&{CSRF_PARAM}";
+    }
 }
+jQuery(document).ready(function() {
+    if ((jQuery('#subnavbar_level1').siblings('#okbox, .okbox, #warningbox, .warningbox, #alertbox, .alertbox').length == 0) && (jQuery('#subnavbar_level2').length > 0)) {
+        jQuery('#subnavbar_level1').addClass('no_margin');
+    }
+});
 // -->
 </script>
 <ul class="breadcrumb">
