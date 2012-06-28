@@ -290,48 +290,37 @@ class JsonNode implements JsonAdapter {
                 );
                 $last_resort = \FWLanguage::getLanguageCodeById($page->getLang());
             }
+            
             foreach ($fallback_langs as $lang => $fallback) {
                 if (!array_key_exists($lang, $data) && array_key_exists($fallback, $data)) {
-                    $data[$lang] = array(
-                        'language' => $lang,
-                        'title'    => $data[$fallback]['title'],
-                        'attr'     => array(
-                            'id'   => '0'
-                        ),
-                    );
-                    $metadata[0] = array(
-                        'visibility' => 'active',
-                        'publishing' => 'unpublished',
-                    );
+                    $data[$lang]['language'] = $lang;
+                    $data[$lang]['title'] = $data[$fallback]['title'];
+                    
+                    if ($data[$fallback]['attr']['id'] == 'broken') {
+                        $data[$lang]['attr']['id'] = 'broken';
+                    } else {
+                        $data[$lang]['attr']['id'] = '0';
+                    }
                 } else if (!array_key_exists($lang, $data)) {
-                    $data[$lang] = array(
-                        'language' => $lang,
-                    );
+                    $data[$lang]['language'] = $lang;
                     
                     if (array_key_exists($last_resort, $data)) {
-                        $data[$lang] = array(
-                            'title'    => $data[$last_resort]['title'],
-                            'attr'     => array(
-                                'id'   => '0'
-                            ),
-                        );
-                        $metadata['broken'] = array(
-                            'visibility' => 'active',
-                            'publishing' => 'unpublished',
-                        );
+                        $data[$lang]['title']      = $data[$last_resort]['title'];
+                        $data[$lang]['attr']['id'] = '0';
                     } else {
-                        $data[$lang] = array(
-                            'title'    => 'No Title',
-                            'attr'     => array(
-                                'id'   => 'broken'
-                            ),
-                        );
-                        $metadata['broken'] = array(
-                            'visibility' => 'active',
-                            'publishing' => 'broken',
-                        );
+                        $data[$lang]['title']      = 'No Title';
+                        $data[$lang]['attr']['id'] = 'broken';
                     }
                 }
+                
+                $metadata[0] = array(
+                    'visibility' => 'active',
+                    'publishing' => 'unpublished',
+                );
+                $metadata['broken'] = array(
+                    'visibility' => 'broken',
+                    'publishing' => 'unpublished',
+                );
                 
                 $actions[$lang][$node->getId()] = $this->getActions($node->getId(), $lang);
             }
