@@ -1099,10 +1099,15 @@ class skins
         if (($themesName != "") && ($themesFolder != "")) {
             $objDatabase->Execute("INSERT INTO ".DBPREFIX."skins (themesname, foldername, expert) VALUES ('".addslashes(strip_tags($themesName))."','".addslashes(strip_tags($themesFolder))."', '1')");
             $newId = $objDatabase->Insert_ID();
-            $objDatabase->Execute("UPDATE ".DBPREFIX."content_navigation
-                                      SET themes_id='".intval($newId)."'
-                                    WHERE themes_id='".intval($oldId)."'
-                                      AND themes_id!='0';");
+            $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+            $pages = $pageRepo->findBy(array(
+                'skin' => intval($oldId),
+            ));
+            foreach ($pages as $page) {
+                $page->setSkin($newId);
+                $page->persist();
+            }
+            \Env::get('em')->flush();
         }
     }
 
@@ -1190,7 +1195,17 @@ class skins
                                 $objResult->MoveNext();
                             }
                         }
-                        $objDatabase->Execute("UPDATE ".DBPREFIX."content_navigation SET themes_id ='0' WHERE themes_id = '".$themesId."'");
+                        
+                        $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+                        $pages = $pageRepo->findBy(array(
+                            'skin' => intval($themesId),
+                        ));
+                        foreach ($pages as $page) {
+                            $page->setSkin(0);
+                            $page->persist();
+                        }
+                        \Env::get('em')->flush();
+
                         $objDatabase->Execute("DELETE FROM ".DBPREFIX."skins WHERE foldername = '".$themes."'");
                         $this->strOkMessage = $themes.": ".$_CORELANG['TXT_STATUS_SUCCESSFULLY_DELETE'];
                     } else {
@@ -1204,7 +1219,17 @@ class skins
                             $objResult->MoveNext();
                         }
                     }
-                    $objDatabase->Execute("UPDATE ".DBPREFIX."content_navigation SET themes_id ='0' WHERE themes_id = '".$themesId."'");
+                    
+                    $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+                    $pages = $pageRepo->findBy(array(
+                        'skin' => intval($themesId),
+                    ));
+                    foreach ($pages as $page) {
+                        $page->setSkin(0);
+                        $page->persist();
+                    }
+                    \Env::get('em')->flush();
+                    
                     $objDatabase->Execute("DELETE FROM ".DBPREFIX."skins WHERE foldername = '".$themes."'");
                     $this->strOkMessage = $themes.": ".$_CORELANG['TXT_STATUS_SUCCESSFULLY_DELETE'];
                 }

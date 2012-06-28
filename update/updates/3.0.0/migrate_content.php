@@ -336,10 +336,10 @@ class Contrexx_Content_migration
 
         //set the type the way the type is supposed to be set. 
         if($page->getModule())
-            $page->setType('application');
+            $page->setType(\Cx\Model\ContentManager\Page::TYPE_APPLICATION);
 //TODO: migrate targets
         if($page->getTarget())
-            $page->setType('redirect');
+            $page->setType(\Cx\Model\ContentManager\Page::TYPE_REDIRECT);
     }
     
     function pageGrouping()

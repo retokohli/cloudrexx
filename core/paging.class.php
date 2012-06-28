@@ -123,13 +123,18 @@ class Paging
         if ($numof_rows % $results_per_page) {
             $corr_value = $numof_rows % $results_per_page;
         }
+        
+        $requestUrl = \Env::get('Resolver')->getUrl();
+        $requestUrl->updateCsrf();
+        $firstUrl = clone $requestUrl;
+        $firstUrl->setParam($parameter_name, 0);
+        $lastUrl = clone $requestUrl;
+        $lastUrl->setParam($parameter_name, ($numof_rows - $corr_value));
+        
         // Set up the base navigation entries
         $array_paging = array(
-            'first' => '<a class="pagingFirst" href="index.php?'.
-                       $parameter_name.'=0'.$uri_parameter.'">',
-            'last'  => '<a class="pagingLast" href="index.php?'.
-                       $parameter_name.'='.
-                       ($numof_rows - $corr_value).$uri_parameter.'">',
+            'first' => '<a class="pagingFirst" href="'.$firstUrl.'">',
+            'last'  => '<a class="pagingLast" href="'.$lastUrl.'">',
             'total' => $numof_rows,
             'lower' => ($numof_rows ? $position + 1 : 0),
             'upper' => $numof_rows,
@@ -139,15 +144,17 @@ class Paging
         }
         // Note:  previous/next link are currently unused.
         if ($position != 0) {
+            $previousUrl = clone $requestUrl;
+            $previousUrl->setParam($parameter_name, ($position - $results_per_page));
             $array_paging['previous_link'] =
-                '<a href="index.php?'.$parameter_name.'='.
-                ($position - $results_per_page).$uri_parameter.'">';
+                '<a href="'.$previousUrl.'">';
         }
         if (($numof_rows - $position) > $results_per_page) {
             $int_new_position = $position + $results_per_page;
+            $nextUrl = clone $requestUrl;
+            $nextUrl->setParam($parameter_name, $int_new_position);
             $array_paging['next_link'] =
-                '<a href="index.php?'.$parameter_name.'='.$int_new_position.
-                $uri_parameter.'">';
+                '<a href="'.$nextUrl.'">';
         }
         // Add single pages, indexed by page numbers [1 .. numof_pages]
         for ($i = 1; $i <= $numof_pages; ++$i) {
@@ -155,10 +162,10 @@ class Paging
                 $array_paging[$i] =
                     '<b class="pagingPage'.$i.'">'.$i.'</b>';
             } else {
+                $pageUrl = clone $requestUrl;
+                $pageUrl->setParam($parameter_name, (($i-1) * $results_per_page));
                 $array_paging[$i] =
-                    '<a class="pagingPage'.$i.'" href="index.php?'.
-                    $parameter_name.'='.(($i-1) * $results_per_page).
-                    $uri_parameter.'">'.$i.'</a>';
+                    '<a class="pagingPage'.$i.'" href="'.$pageUrl.'">'.$i.'</a>';
             }
         }
         $paging =

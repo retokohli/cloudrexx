@@ -740,36 +740,15 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 
     function checkPageCmd($strPageCmd)
     {
-        global $objDatabase, $_LANGID;
+        global $_LANGID;
 
-        $query = "
-            SELECT
-                content.`catid` AS `catid`,
-                module.`id` AS `id`
-            FROM
-                ".DBPREFIX."content_navigation AS content,
-                ".DBPREFIX."modules AS module
-            WHERE
-                content.`cmd` = '".contrexx_addslashes($strPageCmd)."'
-            AND
-                content.`lang`= '".intval($_LANGID)."'
-            AND
-                module.`name` = '".$this->moduleName."'
-            AND
-                content.`module` = module.`id`
-        ";
-
-        $objCheckPageCmd = $objDatabase->Execute($query);
-
-        if($objCheckPageCmd !== false) {
-            if($objCheckPageCmd->RecordCount() > 0){
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+        $pages = $pageRepo->findBy(array(
+            'cmd' => contrexx_addslashes($strPageCmd),
+            'lang' => $_LANGID,
+            'module' => $this->moduleName,
+        ));
+        return count($pages) > 0;
     }
 
 

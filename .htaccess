@@ -1,3 +1,5 @@
+# <contrexx>
+#  <core_routing>
 RewriteEngine On
 
 #RewriteLog "logs/rewrite.log"
@@ -28,3 +30,5 @@ RewriteRule   .  index.php?__cap=%{REQUEST_URI} [L,QSA]
 RewriteCond   %{REQUEST_FILENAME}  !-d
 RewriteCond   %{REQUEST_FILENAME}  !-f
 RewriteRule   .  index.php?__cap=%{REQUEST_URI} [L,QSA]
+#  </core_routing>
+# </contrexx>

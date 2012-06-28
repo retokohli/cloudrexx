@@ -91,34 +91,32 @@ class aliasLib
     
     function _fetchTarget($page)
     {
-        $target = explode("-", $page->getTarget());
-        if (count($target) == 2) {
-            $crit = array(
-                'node' => $target[0],
-                'lang' => $target[1],
-            );
-            return current($this->pageRepository->findBy($crit));
-        }
-        return null;
+        $crit = array(
+            'node' => $page->getTargetNodeId(),
+            'lang' => $page->getTargetLangId(),
+        );
+        return current($this->pageRepository->findBy($crit));
     }
     
     
     function _isLocalAliasTarget($page)
     {
-        $target = $page->getTarget();
-        // if target ends with a '|' type is local
-        return substr($target, strlen($target) - 1, 1) == "|";
+        return $page->isTargetInternal();
     }
     
     
     function _getURL($page)
     {
         $lang = FWLanguage::getLanguageCodeById($page->getLang());
-        return $this->pageRepository->getURL($page, "/".$lang, "");
+        return $page->getUrl('/' . $lang, '');
     }
     
-    function _getAliasesWithSameTarget($page)
+    function _getAliasesWithSameTarget($aliaspage)
     {
+        $page = $this->_fetchTarget($aliaspage);
+        if (!$page) {
+            return array();
+        }
         return $page->getAliases();
     }
     
@@ -156,7 +154,7 @@ class aliasLib
         $page->setType(\Cx\Model\ContentManager\Page::TYPE_ALIAS);
         $page->setCmd('');
         $page->setActive(true);
-        $page->setUsername($objFWUser->objUser->getUsername());
+        //$page->setUsername($objFWUser->objUser->getUsername());
         return $page;
     }
     

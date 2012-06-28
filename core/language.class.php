@@ -159,9 +159,12 @@ class LanguageManager
     {
         global $_CORELANG, $objDatabase;
         if (!empty($_REQUEST['id'])) {
-            $objResult = $objDatabase->Execute("SELECT lang FROM ".DBPREFIX."content_navigation WHERE lang=".intval($_REQUEST['id']));
-
-            if ($objResult !== false && $objResult->RecordCount() > 0) {
+            
+            $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+            $pages = $pageRepo->findBy(array(
+                'lang' => intval($_REQUEST['id']),
+            ));
+            if (count($pages)) {
                 if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."languages WHERE id=".intval($_REQUEST['id'])) !== false) {
                     $objDatabase->Execute("DELETE FROM ".DBPREFIX."language_variable_content WHERE lang_id=".intval($_REQUEST['id']));
                     $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_gallery_language WHERE lang_id=".intval($_REQUEST['id']));

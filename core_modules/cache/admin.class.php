@@ -207,20 +207,16 @@ class Cache extends cacheLib {
 				$strHeader .= "*/\n\n";
 
 				$strFooter .= "?>";
-
-
-				$objResult = $objDatabase->Execute('SELECT		catid
-													FROM		'.DBPREFIX.'content_navigation
-													WHERE		cachingstatus="1"
-													ORDER BY	catid ASC
-												');
-				if ($objResult->RecordCount() > 0) {
-					while (!$objResult->EOF) {
-						$strPages .= $objResult->fields['catid'].",";
-						$objResult->MoveNext();
-					}
-					$strPages = substr($strPages,0,strlen($strPages)-1);
-				}
+                    
+                                $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+                                $pages = $pageRepo->findBy(array(
+                                    'caching' => 1,
+                                ));
+                                $strPages = '';
+                                foreach ($pages as $page) {
+                                    $strPages .= $page->getId().",";
+                                }
+                                $strPages = substr($strPages,0,strlen($strPages)-1);
 
 				flock($handleFile, LOCK_EX); //semaphore
 				@fwrite($handleFile,$strHeader);

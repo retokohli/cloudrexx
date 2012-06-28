@@ -252,7 +252,7 @@ EOF;
             $objTpl->setVariable(array(
                 $this->moduleLangVar.'_ENTRY_COMMENTS' => intval($intCountComments).' '.$_ARRAYLANG['TXT_MEDIADIR_COMMENTS'],
                 'TXT_'.$this->moduleLangVar.'_COMMENTS' => $_ARRAYLANG['TXT_MEDIADIR_COMMENTS'],
-                $this->moduleLangVar.'_ENTRY_NEW_ADDED_COMMENT' => '<div id="'.$this->moduleName.'NewAddedComment_'.$intEnrtyId.'" style="display: none;">hier erscheint der gerade eben hinzugefügte Kommentar.</div>',
+                $this->moduleLangVar.'_ENTRY_NEW_ADDED_COMMENT' => '<div id="'.$this->moduleName.'NewAddedComment_'.$intEnrtyId.'" style="display: none;">hier erscheint der gerade eben hinzugefÃ¼gte Kommentar.</div>',
             ));
         }
     }
@@ -304,32 +304,19 @@ EOF;
 
 
     function refreshComments($intEnrtyId, $strPageSection, $strPageCmd) {
-        global $_ARRAYLANG, $objDatabase, $_LANGID;
+        global $_LANGID;
 
         $arrComment = $this->getLastComment($intEnrtyId);
 
-        $objRSGetContentPage = $objDatabase->SelectLimit("
-            SELECT
-                content.`content` AS content
-            FROM
-                ".DBPREFIX."content_navigation AS navigation,
-                ".DBPREFIX."modules AS modules,
-                ".DBPREFIX."content AS content
-            WHERE
-                modules.`name` = '".contrexx_addslashes($strPageSection)."'
-            AND
-                navigation.`module` = modules.`id`
-            AND
-                navigation.`cmd` = '".contrexx_addslashes($strPageCmd)."'
-            AND
-                navigation.`lang` = '".intval($_LANGID)."'
-            AND
-                navigation.`catid` = content.`id`
-        ", 1);
+        $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+        $pages = $pageRepo->findBy(array(
+            'module' => contrexx_addslashes($strPageSection),
+            'cmd' => contrexx_addslashes($strPageCmd),
+            'lang' => intval($_LANGID),
+        ));
 
-
-        if ($objRSGetContentPage !== false) {
-            $strPageContent = $objRSGetContentPage->fields['content'];
+        if (count($pages)) {
+            $strPageContent = current($pages)->getContent();
             $regexBlock = '<!-- BEGIN '.$this->moduleName.'EntryComments -->(.*?)<!-- END '.$this->moduleName.'EntryComments -->';
 
             if(preg_match("/".$regexBlock."/is", $strPageContent, $matchBlock)){
