@@ -213,7 +213,7 @@ class AliasAdmin extends aliasLib
         } else {
             $alias = $this->_createTemporaryAlias();
             // add a | at the end, to make it a local target by default
-            $alias->setTarget("|");
+            //$alias->setTarget('|');
             $aliasId = 0;
         }
 

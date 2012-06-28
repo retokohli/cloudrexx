@@ -15,7 +15,8 @@
 .jstree-default .jstree-hovered {}
 .jstree-default .jstree-clicked {}
 .jstree-default a .jstree-icon { background-position:-54px 0;}
-.jstree-default a.jstree-loading .jstree-icon { background:url("throbber.gif") center center no-repeat !important; }
+/*.jstree-default a .jstree-icon.publishing { background: red; }*/
+.jstree-default a.jstree-loading .jstree-icon.publishing { background:url("throbber.gif") center center no-repeat !important; }
 
 .jstree-default.jstree-focused { background: none repeat scroll 0 0 #FFFFFF; }
 

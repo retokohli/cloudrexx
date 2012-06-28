@@ -648,8 +648,8 @@ class Page extends \Cx\Model\Base\EntityBase
      * @return boolean
      */
     public function isTargetInternal() {
-        //internal targets are formed like <node_id>[-<lang_id>]|<querystring>
-        return preg_match('/\[\[NODE_(\d+)(_(\d+))*\]\]/', $this->target);
+        //internal targets are formed like [[NODE_<node_id>[_<lang_id>]]]<querystring>
+        return count(preg_match('/\[\[NODE_(\d+)(_(\d+))*\]\](\S)*/', $this->target)) > 0;
     }
 
     /**
@@ -668,10 +668,16 @@ class Page extends \Cx\Model\Base\EntityBase
         $t = $this->getTarget();
         $matches = array();
         
-        preg_match('/\[\[NODE_(\d+)(_(\d+))*\]\](\S)*/', $t, $matches);
+        if (!preg_match('/\[\[NODE_(\d+)(_(\d+))*\]\](\S)*/', $t, $matches)) {
+            return array(
+                'nodeId' => null,
+                'langId' => null,
+                'queryString' => $t,
+            );
+        }
         
-        // Indexes 1 and 2 are optinal
-        $matches[3] = empty($matches[3]) ? '' : $matches[3];
+        // Indexes 2 and 4 are optinal
+        $matches[3] = empty($matches[3]) ? FRONTEND_LANG_ID : $matches[3];
         $matches[4] = empty($matches[4]) ? '' : $matches[4];
         
         return array(
@@ -1393,7 +1399,7 @@ class Page extends \Cx\Model\Base\EntityBase
         foreach ($data as $alias) {
             if (!in_array($alias, $aliases)) {
                 // new alias
-                $lib->_saveAlias($alias, $this->getNode()->getId() . '-' . $this->getLang() . '|', true);
+                $lib->_saveAlias($alias, '[[' . $this->getNode()->getId() . '_' . $this->getLang() . ']]', true);
             }
         }
     }
@@ -1404,12 +1410,27 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function getAliases()
     {
-        $target = $this->getNode()->getId() . '-' . $this->getLang() . '|';
-        $crit = array(
+        $aliases = array();
+        // find aliases without specified language
+        $target = '[[NODE_' . $this->getNode()->getId() . ']]';
+        $crit1 = array(
             'type' => self::TYPE_ALIAS,
             'target' => $target,
         );
-        return \Env::em()->getRepository("Cx\Model\ContentManager\Page")->findBy($crit);
+        
+        // find aliases with language specified
+        $target = '[[NODE_' . $this->getNode()->getId() . '_' . $this->getLang() . ']]';
+        $crit2 = array(
+            'type' => self::TYPE_ALIAS,
+            'target' => $target,
+        );
+        
+        // merge both resultsets
+        $aliases = array_merge(
+                \Env::em()->getRepository("Cx\Model\ContentManager\Page")->findBy($crit1),
+                \Env::em()->getRepository("Cx\Model\ContentManager\Page")->findBy($crit2)
+        );
+        return $aliases;
     }
 
     public function updateFromArray($newData) {

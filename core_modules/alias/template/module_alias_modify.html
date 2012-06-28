@@ -20,15 +20,12 @@ function alias_get_fileBrowser()
 
 function SetUrl(node, nul1, nul2, url)
 {
-        var matches = /\[\[NODE_(\d+)_(\d+)\]\]/.exec(node);
-        var node = matches[1];
-        var lang = matches[2];
         // hidden input
 	document.getElementById('alias_local_page_url').value = url;
         // visible text box
 	document.getElementById('alias_local_page_url_box').innerHTML = url;
-        // internal id
-	document.getElementById('alias_local_source').value = node+'-'+lang+'|';
+        // set page reference as hidden input field value
+        document.getElementById("alias_local_source").value = node;
 }
 
 function alias_delete_alias(id, alias)

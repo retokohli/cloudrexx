@@ -296,22 +296,18 @@ class DataAdmin extends DataLibrary {
      */
     function getFrontendPages()
     {
-        global $objDatabase;
+        $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+        $pages = $pageRepo->findBy(array(
+            'module' => 'data',
+            'lang' => $this->_intLanguageId,
+        ));
         $pages = array();
-        $query = "SELECT catid, catname, cmd
-                  FROM ".DBPREFIX."content_navigation
-                  WHERE module = 48
-                  AND lang = ".$this->_intLanguageId;
-        $objRs = $objDatabase->Execute($query);
-        if ($objRs) {
-            while (!$objRs->EOF) {
-                $pages[] = array(
-                    'id'    => $objRs->fields['catid'],
-                    'name'  => $objRs->fields['catname'],
-                    'cmd'   => $objRs->fields['cmd']
-                );
-                $objRs->MoveNext();
-            }
+        foreach ($pages as $page) {
+            $pages[] = array(
+                'id'    => $page->getId(),
+                'name'  => $page->getTitle(),
+                'cmd'   => $page->getCmd(),
+            );
         }
         return $pages;
     }

@@ -8,6 +8,12 @@ class URLException extends \Exception {};
  */
 class URL {
     /**
+     * http or https
+     * @todo Implement protocol support (at the moment only http is supported)
+     * @var String Containing the URL protocol
+     */
+    protected $protocol = 'http';
+    /**
      * http://example.com
      * @var string
      */
@@ -122,6 +128,67 @@ class URL {
         $this->state = self::ROUTED;
         $this->params = $params;
     }
+    
+    /**
+     * @author Michael Ritter <michael.ritter@comvation.com>
+     * @todo most of the work done in this method should be done somewhere else (constructor?)
+     * @param type $name
+     * @param type $value 
+     */
+    public function setParam($name, $value) {
+        // quick and dirty fix, see @todo...
+        $params = $this->params2Array();
+        $params[$name] = $value;
+        $path = explode('?', $this->path);
+        $this->path = $path[0];
+        $this->path .= $this->array2Params($params);
+    }
+    
+    /**
+     * @author Michael Ritter <michael.ritter@comvation.com>
+     * @return array 
+     */
+    private function params2Array() {
+        $path = explode('?', $this->path);
+        if (count($path) > 1) {
+            $params = explode('&', $path[1]);
+            foreach ($params as $key=>$param) {
+                $param = explode('=', $param);
+                $params[$param[0]] = $param[1];
+                unset($params[$key]);
+            }
+        } else {
+            $params = array();
+        }
+        return $params;
+    }
+    
+    /**
+     * @author Michael Ritter <michael.ritter@comvation.com>
+     * @param string $params
+     * @return string 
+     */
+    private function array2Params($params) {
+        $path = '';
+        if (count($params)) {
+            foreach ($params as $key=>$value) {
+                $params[$key] = $key . '=' . $value;
+            }
+            $path .= '?' . implode('&', $params);
+        }
+        return $path;
+    }
+    
+    /**
+     * Call this as soon as you want to use this url as a target
+     * @author Michael Ritter <michael.ritter@comvation.com>
+     */
+    public function updateCsrf() {
+        $params = $this->params2Array();
+        if (isset($params['csrf'])) {
+            $this->setParam('csrf', \CSRF::code());
+        }
+    }
 
     public function getTargetPath() {
         return $this->targetPath;
@@ -153,13 +220,15 @@ class URL {
      * @param $string pathOffset ASCMS_PATH_OFFSET
      */
     public static function fromCapturedRequest($request, $pathOffset, $get) {
+        global $_CONFIG;
+        
         if(substr($request, 0, strlen($pathOffset)) != $pathOffset)
             throw new URLException("'$request' doesn't seem to start with provided offset '$pathOffset'");
 
         //cut offset
         $request = substr($request, strlen($pathOffset)+1);
 //TODO: correct host
-        $host = 'example.com';
+        $host = $_CONFIG['domainUrl'];
 
 //TODO: implement correct protocol finder
         $protocol = 'http';
@@ -177,7 +246,19 @@ class URL {
         return new URL($protocol.'://'.$host.'/'.$request.$getParams);
     }
 
+    /**
+     * @todo this should only return $this->protocol . '://' . $this->host . '/' . $this->path . $this->getParamsForUrl();
+     * @return type 
+     */
     public function __toString() {
-        return $this->domain.'://'.$this->path;
+        $lang_dir = '';
+        if (!defined('BACKEND_LANG_ID')) {
+            // we are in frontend mode, so we do use virtual language dirs
+            $lang_dir = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID) . '/';
+        }
+        return $this->domain . // contains protocol, hostname and a trailing slash
+                substr(ASCMS_PATH_OFFSET, 1) . '/' .
+                $lang_dir .
+                $this->path; // contains path (except for PATH_OFFSET and virtual language dir) and params
     }
 }

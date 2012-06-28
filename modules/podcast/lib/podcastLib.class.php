@@ -974,22 +974,16 @@ EOF;
             $this->_objTpl->loadTemplatefile('module_podcast_modify_medium.html');
         }else{
             //load frontend content as template
-            global $objDatabase;
-            $query = "  SELECT `content`
-                        FROM `".DBPREFIX."content`
-                        WHERE `id` = (
-                            SELECT `catid`
-                            FROM `".DBPREFIX."content_navigation`
-                            WHERE `cmd` = 'modifyMedium'
-                            AND module = (
-                                SELECT `id`
-                                FROM `".DBPREFIX."modules`
-                                WHERE `name` = 'podcast'
-                            )
-                        )";
-            $objRS = $objDatabase->SelectLimit($query, 1);
-            //overwrite template, since _modifyMedium is called in the same request as the _selectMediumSource
-            $this->_objTpl->setTemplate($objRS->fields['content']);
+            $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+            $pages = $pageRepo->findBy(array(
+                'module' => 'podcast',
+                'cmd' => 'modifyMedium',
+            ));
+            
+            if (count($pages)) {
+                //overwrite template, since _modifyMedium is called in the same request as the _selectMediumSource
+                $this->_objTpl->setTemplate(current($pages)->getContent());
+            }
         }
 
         $this->_pageTitle = $mediumId > 0 ? $_ARRAYLANG['TXT_PODCAST_MODIFY_MEDIUM'] : $_ARRAYLANG['TXT_PODCAST_ADD_MEDIUM'];

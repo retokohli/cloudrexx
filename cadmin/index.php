@@ -100,6 +100,13 @@ createModuleConversionTables();
 $objInit = new InitCMS('backend', Env::em());
 Env::set('init', $objInit);
 
+// this makes \Env::get('Resolver')->getUrl() return a sensful result
+require_once ASCMS_CORE_PATH.'/routing/URL.class.php';
+require_once(ASCMS_CORE_PATH.'/routing/Resolver.class.php');
+$request = ASCMS_PATH_OFFSET.'/cadmin';
+$url = \Cx\Core\Routing\URL::fromCapturedRequest($request, ASCMS_PATH_OFFSET, $_GET);
+\Env::set('Resolver', new \Cx\Core\Routing\Resolver($url, null, Env::em(), null, null));
+
 $sessionObj = new cmsSession();
 $sessionObj->cmsSessionStatusUpdate('backend');
 
