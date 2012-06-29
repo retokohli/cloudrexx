@@ -1,0 +1,106 @@
+#aside{
+    display: none;
+}
+.main_subpage {
+    float: left;
+    width: 100%;
+}
+
+#content {
+    float: left;
+    width: 100%;
+}
+
+.caseStudyDetail p
+{
+	margin-bottom:20px !important;
+	padding-left:0 !important;
+	width:630px !important;
+}
+
+.caseStudyDetail .imageSlides
+{
+	-moz-box-shadow:0 0 1px 0 rgba(0, 0, 0, 0.1);
+	-webkit-box-shadow:0 0 1px 0 rgba(0, 0, 0, 0.1);
+	border:1px solid #F5F5F5;
+	box-shadow:0 0 1px 0 rgba(0, 0, 0, 0.1);
+	height:410px;	
+	overflow:hidden;
+	width:630px;
+        margin-bottom: 18px;
+  padding: 8px;
+}
+
+.caseStudyDetail .categories,.caseStudyDetail .services,#meinungKunde
+{
+	float: right;
+padding: 0 0 20px 20px;
+width: 220px;
+}
+
+.caseStudyDetail .services ul
+{                                                      
+    padding:0;
+    margin: 0; 
+}
+
+.caseStudyDetail .services ul li
+{
+   list-style-image: url(images/li.gif) !important;  
+    padding:0 0 3px 0; 
+    margin: 0 0 0 15px; 
+}
+
+
+.caseStudyDetail #nav
+{
+	float:right;
+	padding:5px 35px 18px 0;
+}
+
+.caseStudyDetail #nav a
+{
+	color:#888;
+	display:block;
+	float:left;
+	line-height:10px;
+	padding:8px 10px;
+}
+
+.caseStudyDetail #nav a.activeSlide,.caseStudyDetail #nav a:hover
+{
+	background:url(images/background_slideshow.png) no-repeat;
+	color:#fff;
+	font-weight:700;
+}
+.clearfix:after {
+    clear: both;
+    content: ".";
+    display: block;
+    height: 0;
+    line-height: 0;
+    visibility: hidden;
+}
+.left {
+  float: left;
+}
+.left {
+  text-align: left;
+}
+#main ul {
+   margin: 0 ;
+}
+#main .categories ul li {
+  list-style: none outside none !important;
+
+}
+.caseStudyDetail strong{
+ font-weight:bold
+}
+.banner{
+width: 650px; 
+}
+
+
+
+
