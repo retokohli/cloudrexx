@@ -99,3 +99,47 @@ cx.ready(function() {
 });
 </script>
     
+         
+         
+<script language="JavaScript" type="text/javascript">
+/* <![CDATA[ */
+function showEditModeWindow(cmdName, pageId, nodeId) {
+    $J('#editMode_Background').css({opacity: 0.5});
+    $J('#editMode_Code_Link1').click(function() {
+        cx.cm.loadPage(pageId, nodeId, null, true);
+        closeEditModeWindow();
+    });
+    $J('#editMode_Code_Link2').click(function() {
+        cx.cm.loadPage(pageId, nodeId, null, true);
+        closeEditModeWindow();
+    });
+    $J('#editMode_Content_Link1').attr('href', '{DIRECTORY_INDEX}?cmd=' + cmdName + "&{CSRF_PARAM}");
+    $J('#editMode_Content_Link2').attr('href', '{DIRECTORY_INDEX}?cmd=' + cmdName + "&{CSRF_PARAM}");
+    $J('#editMode_Background').fadeIn('slow');
+    $J('#editMode_Window').fadeIn('slow');
+}
+
+function closeEditModeWindow() {
+    $J('#editMode_Background').fadeOut('slow');
+    $J('#editMode_Window').fadeOut('slow');
+}
+
+/* ]]> */
+</script>
+<div id="editMode_Background" style="display: none;"></div>
+<div id="editMode_Window" style="display: none;">
+  <div id="editMode_Frame">
+    <div id="editMode_Title">
+      <div class="left">{TXT_EDITMODE_TITLE}</div>
+      <div class="right"><a href="javascript:void(0)" onclick="closeEditModeWindow();">X</a></div>
+    </div>
+    <div id="editMode_Content">
+      <p style="text-align: left;">{TXT_EDITMODE_TEXT}</p>
+      <div class="left"><a title="{TXT_EDITMODE_CODE}" id="editMode_Code_Link1"><img src="images/content_manager/editmode_Code.gif" alt="{TXT_EDITMODE_CODE}" title="{TXT_EDITMODE_CODE}" /></a></div>
+      <div class="right"><a href="" title="{TXT_EDITMODE_CONTENT}" id="editMode_Content_Link1"><img src="images/content_manager/editmode_Content.gif" alt="{TXT_EDITMODE_CONTENT}" title="{TXT_EDITMODE_CONTENT}" /></a></div>
+      <br />
+      <div class="left"><a title="{TXT_EDITMODE_CODE}" id="editMode_Code_Link2">{TXT_EDITMODE_CODE}</a></div>
+      <div class="right"><a href="" title="{TXT_EDITMODE_CONTENT}" id="editMode_Content_Link2">{TXT_EDITMODE_CONTENT}</a></div>
+    </div>
+  </div>
+</div>

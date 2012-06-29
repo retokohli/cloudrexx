@@ -15,9 +15,9 @@
  * @ignore
  */
 require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
-require_once ASCMS_CORE_PATH.'/NavigationPageTree.class.php';
-require_once ASCMS_CORE_PATH.'/DropdownNavigationPageTree.class.php';
-require_once ASCMS_CORE_PATH.'/NestedNavigationPageTree.class.php';
+require_once ASCMS_CORE_PATH.'/pagetree/NavigationPageTree.class.php';
+require_once ASCMS_CORE_PATH.'/pagetree/DropdownNavigationPageTree.class.php';
+require_once ASCMS_CORE_PATH.'/pagetree/NestedNavigationPageTree.class.php';
 
 /**
  * Class Navigation

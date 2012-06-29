@@ -240,25 +240,6 @@ class LanguageManager
         ");
         $newLanguageId = $objDatabase->Insert_ID();
 
-        /* Add lost & found */
-        $objDatabase->Execute("
-            INSERT INTO ".DBPREFIX."content_navigation
-            VALUES (
-                '', '1', 0, 'Lost & Found', '', 9999, 'off', '0', '1',
-                'system', 1132500836, 'lost_and_found', ".$newLanguageId.",
-                1, '0000-00-00', '0000-00-00', 0, 0, 0, 0
-            )
-        ");
-        $newPageId = $objDatabase->Insert_ID();
-        $objDatabase->Execute("
-            INSERT INTO ".DBPREFIX."content
-            VALUES (
-                $newPageId, 'Restored categories will be added here.',
-                'Lost &amp; Found', 'Lost &amp; Found', 'Lost & Found',
-                'Lost & Found', 'index', '', '', 'y'
-            )
-        ");
-
         $objResult = $objDatabase->SelectLimit("
             SELECT id FROM ".DBPREFIX."languages
              WHERE is_default='true'", 1

@@ -194,8 +194,6 @@ class Cache extends cacheLib {
 	 * @global 	object	$objDatabase
 	 */
 	function writeCacheablePagesFile() {
-		global $objDatabase;
-
 		if (is_writable($this->strCachePath) && $this->arrSettings['cacheEnabled'] == 'on') {
 			$handleFile = fopen($this->strCachePath.$this->strCacheablePagesFile,'w+');
 			if ($handleFile) {

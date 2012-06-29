@@ -191,7 +191,11 @@ $objFWUser = FWUser::getFWUserObject();
 
 /* authentification */
 $loggedIn = $objFWUser->objUser->login(true); //check if the user is already logged in
-if (!empty($_POST) && !$loggedIn && ($_GET['cmd'] !== 'login' && $_GET['act'] !== 'resetpw')) { //not logged in already - do captcha and password checks
+if (!empty($_POST) && !$loggedIn && 
+        (
+            (!isset($_GET['cmd']) || $_GET['cmd'] !== 'login') &&
+            (!isset($_GET['act']) || $_GET['act'] !== 'resetpw')
+        )) { //not logged in already - do captcha and password checks
     $objFWUser->checkAuth();
 }
 
@@ -364,16 +368,8 @@ switch ($plainCmd) {
         $objSkins = new skins();
         $objSkins->getPage();
         break;
-// TODO: Remove this and cleanup other remnants of old CM
-    case 'content_old':
-        if (!include_once ASCMS_CORE_PATH.'/ContentManager.class.php')
-            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_CONTENT_MANAGER'];
-        $objContent = new ContentManager();
-        $objContent->getPage();
-        break;
     case 'content':
-        if (!include_once ASCMS_CORE_PATH.'/ContentManager2.class.php')
+        if (!include_once ASCMS_CORE_PATH.'/ContentManager.class.php')
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_CONTENT_MANAGER'];
         $cm = new ContentManager($act, $objTemplate, $objDatabase, $objInit);

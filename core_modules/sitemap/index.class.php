@@ -1,5 +1,5 @@
 <?php
-require_once(ASCMS_CORE_PATH.'/SitemapPageTree.class.php');
+require_once(ASCMS_CORE_PATH.'/pagetree/SitemapPageTree.class.php');
 /**
  * Sitemapping
  * @copyright   CONTREXX CMS - COMVATION AG
