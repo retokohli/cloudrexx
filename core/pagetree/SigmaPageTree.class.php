@@ -1,5 +1,5 @@
 <?php 
-require_once(ASCMS_CORE_PATH.'/PageTree.class.php');
+require_once(ASCMS_CORE_PATH.'/pagetree/PageTree.class.php');
 
 /*abstract */class SigmaPageTree extends PageTree {
         protected $template = null;

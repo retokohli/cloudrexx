@@ -154,6 +154,11 @@ class URL {
             $params = explode('&', $path[1]);
             foreach ($params as $key=>$param) {
                 $param = explode('=', $param);
+                // hide CSRF-Protection
+                if ($param[0] == 'csrf') {
+                    unset($params[$key]);
+                    continue;
+                }
                 $params[$param[0]] = $param[1];
                 unset($params[$key]);
             }
@@ -177,17 +182,6 @@ class URL {
             $path .= '?' . implode('&', $params);
         }
         return $path;
-    }
-    
-    /**
-     * Call this as soon as you want to use this url as a target
-     * @author Michael Ritter <michael.ritter@comvation.com>
-     */
-    public function updateCsrf() {
-        $params = $this->params2Array();
-        if (isset($params['csrf'])) {
-            $this->setParam('csrf', \CSRF::code());
-        }
     }
 
     public function getTargetPath() {
@@ -245,8 +239,14 @@ class URL {
 
         return new URL($protocol.'://'.$host.'/'.$request.$getParams);
     }
+    
+    public function toString() {
+        $this->domain . $this;
+    }
 
     /**
+     * Returns URL without hostname for use in internal links.
+     * Use $this->toString() for full URL including protocol and hostname
      * @todo this should only return $this->protocol . '://' . $this->host . '/' . $this->path . $this->getParamsForUrl();
      * @return type 
      */
@@ -256,8 +256,7 @@ class URL {
             // we are in frontend mode, so we do use virtual language dirs
             $lang_dir = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID) . '/';
         }
-        return $this->domain . // contains protocol, hostname and a trailing slash
-                substr(ASCMS_PATH_OFFSET, 1) . '/' .
+        return ASCMS_PATH_OFFSET . '/' .
                 $lang_dir .
                 $this->path; // contains path (except for PATH_OFFSET and virtual language dir) and params
     }

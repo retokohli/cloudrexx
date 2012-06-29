@@ -744,7 +744,7 @@ class stats extends statsLibrary
 
         $this->_objTpl->loadTemplateFile('module_stats_spiders.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_SEARCH_ENGINES'];
-
+        
         $this->_initSpiders();
 
         // set language variables

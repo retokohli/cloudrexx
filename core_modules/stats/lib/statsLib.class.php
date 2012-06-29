@@ -535,18 +535,27 @@ class statsLibrary
 
         $query = "SELECT FROM_UNIXTIME(`stats`.`last_indexed`, '%d-%m-%Y %H:%i:%s') as `last_indexed_date`,
                          `stats`.`page`,
-                         `content`.`title`,
+                         `stats`.`pageId`,
                          `stats`.`count`,
                          `stats`.`spider_useragent`,
                          `stats`.`spider_ip`,
                          `stats`.`spider_host`
                     FROM `".DBPREFIX."stats_spiders` AS `stats`
-         LEFT OUTER JOIN `".DBPREFIX."content` AS `content`
-                      ON `stats`.`pageId` = `content`.`id`
                    ORDER BY last_indexed DESC
                    ".$this->pagingLimit;
         if (($objResult = $objDatabase->Execute($query))) {
             while (!$objResult->EOF) {
+                // get page from repo
+                $crit = array(
+                    'id' => $objResult->fields['pageId'],
+                );
+                $page = current($this->pageRepository->findBy($crit));
+                if (!$page) {
+                    throw new \Cx\Model\ContentManager\Repository\PageRepositoryException(
+                            'Page not found (id "' . $this->pageId . '"'
+                    );
+                }
+                $objResult->fields['title'] = $page->getTitle();
                 $arrIndexedPage = array(
                     'last_indexed'      => $objResult->fields['last_indexed_date'],
                     'page'              => $objResult->fields['page'],

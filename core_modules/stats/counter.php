@@ -641,6 +641,16 @@ class counter
         $query = "UPDATE `".DBPREFIX."stats_requests` SET `visits` = `visits` + 1, `sid` = '".$this->md5Id."', `timestamp` = '".$this->currentTime."' WHERE `page` = '".substr($this->requestedUrl,0,255)."' AND (`sid` != '".$this->md5Id."' OR `timestamp` <= '".($this->currentTime - $this->arrConfig['reload_block_time']['value'])."')";
         $objDb->Execute($query);
         if ($objDb->Affected_Rows() == 0) {
+            // get page from repo
+            $crit = array(
+                'id' => $this->pageId,
+            );
+            $page = current($this->pageRepository->findBy($crit));
+            if (!$page) {
+                throw new \Cx\Model\ContentManager\Repository\PageRepositoryException(
+                        'Page not found (id "' . $this->pageId . '"'
+                );
+            }
             $query = "INSERT INTO `".DBPREFIX."stats_requests` (
                                         `sid`,
                                         `pageId`,
@@ -654,9 +664,7 @@ class counter
                                         '".substr($this->requestedUrl,0,255)."',
                                         '".$this->currentTime."',
                                         '1',
-                                        (
-                                            SELECT title from ".DBPREFIX."content WHERE id=".$this->pageId."
-                                        )
+                                        '" . $page->getTitle() . "'
                                         )";
             $objDb->Execute($query);
             $this->_makeStatistics(DBPREFIX.'stats_requests_summary');               

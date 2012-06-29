@@ -1,5 +1,5 @@
 <?php
-require_once(ASCMS_CORE_PATH.'/SigmaPageTree.class.php');
+require_once(ASCMS_CORE_PATH.'/pagetree/SigmaPageTree.class.php');
 class SitemapPageTree extends SigmaPageTree {
     protected $spacer = null;
     const cssPrefix = "sitemap_level";

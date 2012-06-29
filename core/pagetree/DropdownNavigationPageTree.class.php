@@ -1,5 +1,5 @@
 <?php
-require_once(ASCMS_CORE_PATH.'/SigmaPageTree.class.php');
+require_once(ASCMS_CORE_PATH.'/pagetree/SigmaPageTree.class.php');
 class DropdownNavigationPageTree extends SigmaPageTree {
    
     protected $subNavTag = '<ul id="menubuilder%s" class="menu">{SUB_MENU}</ul>';

@@ -108,10 +108,6 @@ if (isset($adminPage) && $adminPage ) {
     /**
      * @ignore
      */
-    require_once ASCMS_CORE_PATH.'/ContentSitemap.class.php';
-    /**
-     * @ignore
-     */
        require_once ASCMS_CORE_PATH.'/adminNavigation.class.php';
 } else {
     /**
@@ -239,13 +235,13 @@ function strcheck(&$string)
     $clean_string = rawurldecode($clean_string);
     $clean_string = html_entity_decode($clean_string);
 
-    $from = 'àáâãäåçèéêëìíîïñòóôõöøšùúûüµýÿ¥ž ';
+    $from = 'Ã Ã¡Ã¢Ã£Ã¤Ã¥Ã§Ã¨Ã©ÃªÃ«Ã¬Ã­Ã®Ã¯Ã±Ã²Ã³Ã´ÃµÃ¶Ã¸ÂšÃ¹ÃºÃ»Ã¼ÂµÃ½Ã¿Â¥Âž ';
     $to   = 'aaaaaaceeeeiiiinoooooosuuuuuyyyz_';
     $clean_string = strtr($clean_string, $from, $to);
 
-    $replace = array('Þ' => 'th', 'þ' => 'th', 'Ð' => 'dh', 'ð' => 'dh',
-                    'ß' => 'ss', 'Œ' => 'oe', 'œ' => 'oe', 'Æ' => 'ae',
-                    'æ' => 'ae', '$' => 's',  '¥' => 'y');
+    $replace = array('Ãž' => 'th', 'Ã¾' => 'th', 'Ã' => 'dh', 'Ã°' => 'dh',
+                    'ÃŸ' => 'ss', 'ÂŒ' => 'oe', 'Âœ' => 'oe', 'Ã†' => 'ae',
+                    'Ã¦' => 'ae', '$' => 's',  'Â¥' => 'y');
     $clean_string = strtr($clean_string, $replace);
 
     $clean_string = ereg_replace("[^a-z0-9._]", "", $clean_string);

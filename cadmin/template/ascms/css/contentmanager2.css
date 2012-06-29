@@ -1021,3 +1021,96 @@ div.date img{
 .ui-tabs-panel {
     padding: 0 !important;
 }
+
+#editMode_Background {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	background-color: #000000;
+	alpha(opacity=50);
+	-moz-opacity:0.5; 
+	opacity: 0.5;
+	z-index: 400;
+}
+
+#editMode_Window {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	width: 0px;
+	width: 100%;
+	height: 100%;
+	z-index: 500; 
+}
+
+#editMode_Frame {
+	position: fixed; 
+	top: 35%; 
+	left: 50%; 
+	width: 400px;
+	height: 164px;
+	padding: 10px;
+	margin-top: -92px; 
+	margin-left: -211px; 
+	font-size: 13px;
+	text-align: center;
+	border: 1px solid #c3dff9; 
+	background-color: #82b1ec;
+	background-image: url('images/content_manager/editmode_Background.gif');
+	background-repeat: repeat-x;
+	background-position: top;
+}
+
+#editMode_Title {
+	width: 100%;
+	padding: 0px 0px 10px 0px;
+	font-weight: bold;
+	font-size: 15px;
+	height: 16px;
+	color: #ffffff;
+}
+
+#editMode_Title a, 
+#editMode_Title a:visited, 
+#editMode_Title a:active {
+	text-decoration: none;
+	color: #ffffff;
+}
+
+#editMode_Title a:hover  {
+	color: #efefef;
+	background-color: transparent;
+}
+
+#editMode_Title .left {
+	float: left;
+	padding-left: 3px;
+}
+
+#editMode_Title .right {
+	float: right;
+	padding-right: 3px;
+}
+
+#editMode_Content {
+	height: 126px;
+	padding: 0px 10px 10px 10px;
+	border: 1px solid #4978ae; 
+	background-color: #ffffff;
+}
+
+#editMode_Content img {
+	border: 0px;
+}
+
+#editMode_Content .left {
+	width: 180px; 
+	float: left;
+}
+
+#editMode_Content .right {
+	width: 180px; 
+	float: right;
+}

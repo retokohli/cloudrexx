@@ -125,7 +125,6 @@ class Paging
         }
         
         $requestUrl = \Env::get('Resolver')->getUrl();
-        $requestUrl->updateCsrf();
         $firstUrl = clone $requestUrl;
         $firstUrl->setParam($parameter_name, 0);
         $lastUrl = clone $requestUrl;
