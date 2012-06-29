@@ -457,9 +457,10 @@ class PageRepository extends EntityRepository {
                     'nodeIdShadowed' => $page->getTargetNodeId(),
                     'lang'           => $page->getLang(),
                 );
-                $target = $this->findOneBy($criteria)->getTitle();
-                $type  = $_CORELANG['TXT_CORE_CM_TYPE_REDIRECT'].': ';
-                $type .= $target;
+                $targetPage  = $this->findOneBy($criteria);
+                $targetTitle = $targetPage ? $targetPage->getTitle() : $page->getTarget();
+                $type        = $_CORELANG['TXT_CORE_CM_TYPE_REDIRECT'].': ';
+                $type       .= $targetTitle;
                 break;
             case \Cx\Model\ContentManager\Page::TYPE_APPLICATION:
                 $type  = $_CORELANG['TXT_CORE_CM_TYPE_APPLICATION'].': ';
