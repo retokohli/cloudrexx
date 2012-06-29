@@ -28,6 +28,7 @@ class JsonPage implements JsonAdapter {
     private $db        = null;
     private $pageRepo  = null;
     private $nodeRepo  = null;
+    private $logRepo   = null;
     private $fallbacks = array();
     
     public $messages;
