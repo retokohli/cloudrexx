@@ -588,6 +588,7 @@ CREATE TABLE `contrexx_module_block_blocks` (
   `active` int(1) NOT NULL default '0',
   `order` int(1) NOT NULL default '0',
   `cat` int(10) NOT NULL default '0',
+  `wysiwyg_editor` int(1) NOT NULL default '1',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
