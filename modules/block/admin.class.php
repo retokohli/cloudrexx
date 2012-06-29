@@ -596,8 +596,9 @@ class blockManager extends blockLibrary
     private function _showModifyBlock($copy = false)
     {
         global $_ARRAYLANG;
-        
+
         JS::activate('cx');
+        JS::activate('ckeditor');
 
         $blockId                = !empty($_REQUEST['blockId']) ? intval($_REQUEST['blockId']) : 0;
         $blockCat               = 0;
@@ -609,12 +610,13 @@ class blockManager extends blockLibrary
         $blockRandom3           = 0;
         $blockRandom4           = 0;
         $blockGlobal            = 0;
+        $blockWysiwygEditor     = 1;
         $blockContent           = array();
         $blockAssociatedPageIds = array();
         $blockLangActive        = array();
 
         $this->_objTpl->loadTemplateFile('module_block_modify.html');
-        
+
         $this->_objTpl->setGlobalVariable(array(
             'TXT_BLOCK_CONTENT'                 => $_ARRAYLANG['TXT_BLOCK_CONTENT'],
             'TXT_BLOCK_NAME'                    => $_ARRAYLANG['TXT_BLOCK_NAME'],
@@ -641,8 +643,8 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_UNSELECT_ALL'            => $_ARRAYLANG['TXT_BLOCK_UNSELECT_ALL'], 
             'TXT_BLOCK_GLOBAL_PLACEHOLDERS'     => $_ARRAYLANG['TXT_BLOCK_GLOBAL_PLACEHOLDERS'],
             'TXT_BLOCK_DISPLAY_TIME'            => $_ARRAYLANG['TXT_BLOCK_DISPLAY_TIME'],
-            'TXT_BLOCK_FORM_DESC'               => $_ARRAYLANG['TXT_BLOCK_CONTENT'],            
-            'BLOCK_CONTENT_TEXT'                => get_wysiwyg_editor('blockTextEditor', '', 'shop'),
+            'TXT_BLOCK_FORM_DESC'               => $_ARRAYLANG['TXT_BLOCK_CONTENT'],
+            'TXT_BLOCK_USE_WYSIWYG_EDITOR'      => $_ARRAYLANG['TXT_BLOCK_USE_WYSIWYG_EDITOR'],
         ));
 
         if (isset($_POST['block_save_block'])) {
@@ -656,18 +658,19 @@ class blockManager extends blockLibrary
             $blockRandom3           = !empty($_POST['blockRandom3']) ? intval($_POST['blockRandom3']) : 0;
             $blockRandom4           = !empty($_POST['blockRandom4']) ? intval($_POST['blockRandom4']) : 0;
             $blockGlobal            = !empty($_POST['blockGlobal']) ? intval($_POST['blockGlobal']) : 0;
+            $blockWysiwygEditor     = isset($_POST['wysiwyg_editor']) ? 1 : 0;
             $blockAssociatedPageIds = isset($_POST['selectedPages']) ? array_map('intval', $_POST['selectedPages']) : array();
             $blockLangActive        = isset($_POST['blockFormLanguages']) ? array_map('intval', $_POST['blockFormLanguages']) : array();
 
             if ($blockId) {
-                if ($this->_updateBlock($blockId, $blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedPageIds, $blockLangActive)) {
+                if ($this->_updateBlock($blockId, $blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockWysiwygEditor, $blockAssociatedPageIds, $blockLangActive)) {
                     $this->_strOkMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_UPDATED_SUCCESSFULLY'];
                     return $this->_showOverview();
                 } else {
                     $this->_strErrMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_COULD_NOT_BE_UPDATED'];
                 }
             } else { 
-                if ($this->_addBlock($blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedPageIds, $blockLangActive)) {
+                if ($this->_addBlock($blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockWysiwygEditor, $blockAssociatedPageIds, $blockLangActive)) {
                     $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_BLOCK_BLOCK_ADDED_SUCCESSFULLY'], contrexx_raw2xhtml($blockName));
                     return $this->_showOverview();
                 } else {
@@ -683,6 +686,7 @@ class blockManager extends blockLibrary
             $blockRandom3       = $arrBlock['random3'];
             $blockRandom4       = $arrBlock['random4'];
             $blockGlobal        = $arrBlock['global'];
+            $blockWysiwygEditor = $arrBlock['wysiwyg_editor'];
             $blockActive        = $arrBlock['active'];
             $blockContent       = $arrBlock['content'];
             $blockLangActive    = $arrBlock['lang_active'];
@@ -712,6 +716,7 @@ class blockManager extends blockLibrary
             'BLOCK_GLOBAL_1'                    => $blockGlobal == '1' ? 'checked="checked"' : '',
             'BLOCK_GLOBAL_2'                    => $blockGlobal == '2' ? 'checked="checked"' : '',
             'BLOCK_SHOW_PAGE_SELECTOR'          => $blockGlobal == '2' ? 'block' : 'none',
+            'BLOCK_WYSIWYG_EDITOR'              => $blockWysiwygEditor == 1 ? 'checked="checked"' : '',
         ));
 
         // create new ContentTree instance

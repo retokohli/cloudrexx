@@ -1,5 +1,41 @@
 <!-- START module_block_block.html -->
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+        jQuery('#wysiwyg_editor').change(function() {
+            updateContent(0, true);
+            switchEditor();
+        });
+    });
+
+    function switchEditor() {
+        if (jQuery('#wysiwyg_editor').prop('checked')) {
+            if (typeof(CKEDITOR.instances.ckeditor) == 'undefined') {
+                var config = {
+                    customConfig : cx.variables.get('basePath', 'contrexx') + 'editor/ckeditor/config.contrexx.js.php',
+                    toolbar: 'Default',
+                    skin: 'kama',
+                    height: 380
+                };
+                jQuery('#ckeditor').ckeditor(config);
+            }
+
+            activeLangId = jQuery('ul.blockLang a.active').attr('id').split('_')[2];
+            CKEDITOR.instances.ckeditor.setData(jQuery('#blockFormText_'+activeLangId).val());
+        } else {
+            if (typeof(CKEDITOR.instances.ckeditor) !== 'undefined') {
+                try {
+                    CKEDITOR.instances.ckeditor.destroy();
+                } catch (e) {
+                    // this is a bug in CKEDITOR. Until we apply the patch we
+                    // just catch it. See http://dev.ckeditor.com/ticket/6203
+                }
+            }
+
+            activeLangId = jQuery('ul.blockLang a.active').attr('id').split('_')[2];
+            jQuery('#ckeditor').val(jQuery('#blockFormText_'+activeLangId).val());
+        }
+    }
+
     arrTabToDiv = new Object();
     {EDIT_JS_TAB_TO_DIV}
 
@@ -35,7 +71,7 @@
     function activateAnyActiveDiv() {
         for (var TabName in arrTabToDiv) {
             if (document.getElementById(TabName).style.display == 'inline') {
-                updateCKeditorContent(TabName.split('_')[2]);
+                updateContent(TabName.split('_')[2], false);
                 break;
             }
         }
@@ -67,7 +103,7 @@
     }
 
     function langTab(ele, id) {
-        updateCKeditorContent(id);
+        updateContent(id, false);
 
         $J('.tabmenu li a').removeClass('active').addClass('inactive');
         $J(ele).removeClass('inactive').addClass('active');
@@ -75,19 +111,26 @@
     }    
     function swapHeaderLangName(){
         $J('form[name=blockFormModifyBlock] table.block_lang th:first-child').each(
-        function(){
-            $J(this).text($J(this).text().replace(/\s\(.*?\)$/, '')+' ('+$J('#blockLanguages li a.active').text()+')')
-        }
-    )
+            function(){
+                $J(this).text($J(this).text().replace(/\s\(.*?\)$/, '')+' ('+$J('#blockLanguages li a.active').text()+')')
+            }
+        )
     }
-    function updateCKeditorContent(CurrentLangId){
-        activeLang = $J('ul.blockLang a.active').attr('id').split('_')[2];
-        
-        $J('#blockFormText_'+activeLang).val(CKEDITOR.instances.blockTextEditor.getData());
-        
-        form_text = $J('#blockFormText_'+CurrentLangId).val();
-        CKEDITOR.instances.blockTextEditor.setData(form_text);
+    function updateContent(newActiveLangId, invertChecked) {
+        oldActiveLangId = jQuery('ul.blockLang a.active').attr('id').split('_')[2];
+        wysiwygStatus = invertChecked ? !jQuery('#wysiwyg_editor').prop('checked') : jQuery('#wysiwyg_editor').prop('checked');
 
+        if (wysiwygStatus) {
+            jQuery('#blockFormText_'+oldActiveLangId).val(CKEDITOR.instances.ckeditor.getData());
+            if (newActiveLangId > 0) {
+                CKEDITOR.instances.ckeditor.setData(jQuery('#blockFormText_'+newActiveLangId).val());
+            }
+        } else {
+            jQuery('#blockFormText_'+oldActiveLangId).val(jQuery('#ckeditor').val());
+            if (newActiveLangId > 0) {
+                jQuery('#ckeditor').val(jQuery('#blockFormText_'+newActiveLangId).val());
+            }
+        }
     }
     function moveSelectedPages(from, dest, add, remove)
     {
@@ -110,8 +153,14 @@
         disableButtons(from, dest, add, remove);
     }
     function onSubmit() {
-        activeLang = $J('ul.blockLang a.active').attr('id').split('_')[2];
-        $J('#blockFormText_'+activeLang).val(CKEDITOR.instances.blockTextEditor.getData());
+        activeLangId = $J('ul.blockLang a.active').attr('id').split('_')[2];
+        
+        if (jQuery('#wysiwyg_editor').prop('checked')) {
+            jQuery('#blockFormText_'+activeLangId).val(CKEDITOR.instances.ckeditor.getData());
+        } else {
+            jQuery('#blockFormText_'+activeLangId).val(jQuery('#ckeditor').val());
+        }
+
         return true;
     }
     function disableButtons(from,dest,add,remove)
@@ -234,21 +283,14 @@
                 hideInputs();
             }
 
-            /**
-            Load content in Textarea from hidden field while page load
-             */
-            if(typeof CKEDITOR != 'undefined' && CKEDITOR.instances){
-                activeLang = $J('ul.blockLang a.active').attr('id').split('_')[2];
-                form_text = $J('#blockFormText_'+activeLang).val();
-                CKEDITOR.instances.blockTextEditor.setData(form_text);
-            }        
+            switchEditor();
             swapHeaderLangName();
         });
     })();
     // ]]>
 </script>
 
-<form name="blockFormModifyBlock" action="index.php?cmd=block&amp;act=modify" method="post" onsubmit="selectAll(document.getElementById('SelectedPages'));">
+<form name="blockFormModifyBlock" action="index.php?cmd=block&amp;act=modify" method="post" onsubmit="onSubmit();selectAll(document.getElementById('SelectedPages'));">
     <input type="hidden" name="blockId" value="{BLOCK_ID}" size="50" />
 
     <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist block_lang">
@@ -304,8 +346,8 @@
                     <tr>
                         <th>{TXT_BLOCK_FORM_DESC}</th>
                     </tr>
-                    <tr class="row2">
-                        <td>{BLOCK_CONTENT_TEXT}</td>
+                    <tr class="row2 reset">
+                        <td><textarea id="ckeditor" name="page[content]" style="width: 99.9%; height: auto; min-height: 500px; padding: 0; margin: 0;"></textarea></td>
                     </tr>
                 </tbody>
             </table>
@@ -382,11 +424,17 @@
                         </div>
                     </td>
                 </tr>
+                <tr class="row2">
+                    <td>{TXT_BLOCK_USE_WYSIWYG_EDITOR}</td>
+                    <td>
+                        <input type="checkbox" name="wysiwyg_editor" id="wysiwyg_editor" value="1" {BLOCK_WYSIWYG_EDITOR} />
+                    </td>
+                </tr>
             </tbody>
         </table>
         <br />
     </div>
 <br />
-<input type="submit" onclick="onSubmit()" name="block_save_block" value="{TXT_BLOCK_SAVE}" />
+<input type="submit" name="block_save_block" value="{TXT_BLOCK_SAVE}" />
 </form>
 <!-- END module_block_block.html -->
