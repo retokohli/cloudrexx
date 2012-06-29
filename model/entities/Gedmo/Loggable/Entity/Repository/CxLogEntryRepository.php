@@ -40,10 +40,33 @@ class CxLogEntryRepository extends \Gedmo\Loggable\Entity\Repository\LogEntryRep
     public function countLogEntries($action = '')
     {
         $counter = 0;
+        $qb = $this->em->createQueryBuilder();
+        $sqb = $this->em->createQueryBuilder();
+        
+        $qb->select('l')
+           ->from('Gedmo\Loggable\Entity\LogEntry', 'l')
+           ->where('l.action = :action')
+           ->andWhere('l.objectClass = :objectClass')
+           ->andWhere(
+               $qb->expr()->eq(
+                   'l.version',
+                   '('.$sqb->select('MAX(sl.version) AS version')
+                       ->from('Gedmo\Loggable\Entity\LogEntry', 'sl')
+                       ->where(
+                           $sqb->expr()->eq(
+                               'l.objectId',
+                               'sl.objectId'
+                           )
+                       )
+                       ->getDQL().')'
+               )
+           )
+           ->setParameter('objectClass', 'Cx\Model\ContentManager\Page');
         
         switch ($action) {
             case 'deleted':
-                $logs = $this->getLogsByAction('remove');
+                $qb->setParameter('action', 'remove');
+                $logs = $qb->getQuery()->getResult();
                 $logsByNodeId = array();
                 
                 foreach ($logs as $log) {
@@ -58,8 +81,10 @@ class CxLogEntryRepository extends \Gedmo\Loggable\Entity\Repository\LogEntryRep
                 $counter = count($logsByNodeId);
                 break;
             case 'unvalidated':
-                $logs = $this->getLogsByAction('create');
-                array_merge($logs, $this->getLogsByAction('update'));
+                $qb->orWhere('l.action = :orAction')
+                   ->setParameter('action', 'create')
+                   ->setParameter('orAction', 'update');
+                $logs = $qb->getQuery()->getResult();
                 
                 foreach ($logs as $log) {
                     $page = $this->pageRepo->findOneById($log->getObjectId());
@@ -74,7 +99,8 @@ class CxLogEntryRepository extends \Gedmo\Loggable\Entity\Repository\LogEntryRep
                 break;
             default: // create and update
                 $where = $action == 'updated' ? 'update' : 'create';
-                $logs  = $this->getLogsByAction($where);
+                $qb->setParameter('action', $where);
+                $logs = $qb->getQuery()->getResult();
                 
                 foreach ($logs as $log) {
                     $page = $this->pageRepo->findOneById($log->getObjectId());
