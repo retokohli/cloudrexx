@@ -753,6 +753,14 @@ switch ($plainCmd) {
         $objMediaDirectory = new mediaDirectoryManager();
         $objMediaDirectory->getPage();
         break;
+    case 'search':
+        if (!include_once ASCMS_CORE_MODULE_PATH.'/search/admin.class.php') {
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        }
+        $subMenuTitle = $_CORELANG['TXT_SEARCH'];
+        $objSearch    = new \Cx\Core\Search\SearchManager($act, $objTemplate, $objDatabase, $objInit);
+        $objSearch->getPage();
+        break;
     default:
         if (!include_once ASCMS_CORE_PATH.'/myAdmin.class.php')
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
