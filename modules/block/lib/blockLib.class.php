@@ -156,20 +156,21 @@ class blockLibrary
     * @global ADONewConnection
     * @return boolean true on success, false on failure
     */
-    public function _addBlock($cat, $arrContent, $name, $start, $end, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedNodeIds, $arrLangActive)
+    public function _addBlock($cat, $arrContent, $name, $start, $end, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockWysiwygEditor, $blockAssociatedNodeIds, $arrLangActive)
     {
         global $objDatabase;
 
         $query = "INSERT INTO `".DBPREFIX."module_block_blocks`
-                    SET `name`     = '".contrexx_raw2db($name)."',
-                        `cat`      = ".intval($cat).",
-                        `start`    = ".intval($start).",
-                        `end`      = ".intval($end).",
-                        `random`   = ".intval($blockRandom).",
-                        `random_2` = ".intval($blockRandom2).",
-                        `random_3` = ".intval($blockRandom3).", 
-                        `random_4` = ".intval($blockRandom4).", 
-                        `global`   = ".intval($blockGlobal).",
+                    SET `name`              = '".contrexx_raw2db($name)."',
+                        `cat`               = ".intval($cat).",
+                        `start`             = ".intval($start).",
+                        `end`               = ".intval($end).",
+                        `random`            = ".intval($blockRandom).",
+                        `random_2`          = ".intval($blockRandom2).",
+                        `random_3`          = ".intval($blockRandom3).", 
+                        `random_4`          = ".intval($blockRandom4).", 
+                        `global`            = ".intval($blockGlobal).",
+                        `wysiwyg_editor`    = ".intval($blockWysiwygEditor).",
                         `active`   = 1";
         if ($objDatabase->Execute($query) === false) {
             return false;
@@ -194,20 +195,21 @@ class blockLibrary
     * @global ADONewConnection
     * @return boolean true on success, false on failure
     */
-    public function _updateBlock($id, $cat, $arrContent, $name, $start, $end, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedNodeIds, $arrLangActive)
+    public function _updateBlock($id, $cat, $arrContent, $name, $start, $end, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockWysiwygEditor, $blockAssociatedNodeIds, $arrLangActive)
     {
         global $objDatabase;
 
         $query = "UPDATE `".DBPREFIX."module_block_blocks`
-                    SET `name`     = '".contrexx_raw2db($name)."',
-                        `cat`      = ".intval($cat).",
-                        `start`    = ".intval($start).",
-                        `end`      = ".intval($end).",
-                        `random`   = ".intval($blockRandom).",
-                        `random_2` = ".intval($blockRandom2).",
-                        `random_3` = ".intval($blockRandom3).", 
-                        `random_4` = ".intval($blockRandom4).", 
-                        `global`   = ".intval($blockGlobal)." 
+                    SET `name`              = '".contrexx_raw2db($name)."',
+                        `cat`               = ".intval($cat).",
+                        `start`             = ".intval($start).",
+                        `end`               = ".intval($end).",
+                        `random`            = ".intval($blockRandom).",
+                        `random_2`          = ".intval($blockRandom2).",
+                        `random_3`          = ".intval($blockRandom3).", 
+                        `random_4`          = ".intval($blockRandom4).", 
+                        `global`            = ".intval($blockGlobal).",
+                        `wysiwyg_editor`    = ".intval($blockWysiwygEditor)." 
                   WHERE `id` = ".intval($id);
         if ($objDatabase->Execute($query) === false) {
             return false;
@@ -289,7 +291,7 @@ class blockLibrary
     {
         global $objDatabase;
 
-        $objBlock = $objDatabase->SelectLimit("SELECT name, cat, start, end, random, random_2, random_3, random_4, global, active FROM ".DBPREFIX."module_block_blocks WHERE id=".$id, 1);
+        $objBlock = $objDatabase->SelectLimit("SELECT name, cat, start, end, random, random_2, random_3, random_4, global, active, wysiwyg_editor FROM ".DBPREFIX."module_block_blocks WHERE id=".$id, 1);
 
 
         if ($objBlock !== false && $objBlock->RecordCount() == 1) {
@@ -306,18 +308,19 @@ class blockLibrary
             }
 
             return array(
-                'cat'           => $objBlock->fields['cat'],
-                'start'         => $objBlock->fields['start'],
-                'end'           => $objBlock->fields['end'],
-                'random'        => $objBlock->fields['random'],
-                'random2'       => $objBlock->fields['random_2'],
-                'random3'       => $objBlock->fields['random_3'],
-                'random4'       => $objBlock->fields['random_4'],
-                'global'        => $objBlock->fields['global'],
-                'active'        => $objBlock->fields['active'],
-                'name'          => $objBlock->fields['name'],
-                'content'       => $arrContent,
-                'lang_active'   => $arrActive,
+                'cat'               => $objBlock->fields['cat'],
+                'start'             => $objBlock->fields['start'],
+                'end'               => $objBlock->fields['end'],
+                'random'            => $objBlock->fields['random'],
+                'random2'           => $objBlock->fields['random_2'],
+                'random3'           => $objBlock->fields['random_3'],
+                'random4'           => $objBlock->fields['random_4'],
+                'global'            => $objBlock->fields['global'],
+                'active'            => $objBlock->fields['active'],
+                'name'              => $objBlock->fields['name'],
+                'wysiwyg_editor'    => $objBlock->fields['wysiwyg_editor'],
+                'content'           => $arrContent,
+                'lang_active'       => $arrActive,
             );
         }
 

@@ -99,4 +99,5 @@ $_ARRAYLANG['TXT_BLOCK_ORDER']   = "Order";
 $_ARRAYLANG['TXT_BLOCK_INCLUDED_IN_GLOBAL_BLOCK'] = "Included in global block";
 $_ARRAYLANG['TXT_BLOCK_DISPLAY_SELECTED_PAGE'] = "Block only gets displayed on the following pages:";
 $_ARRAYLANG['TXT_BLOCK_DISPLAY_ALL_PAGE'] = "Block gets displayed on all pages";
+$_ARRAYLANG['TXT_BLOCK_USE_WYSIWYG_EDITOR'] = "Use WYSIWYG editor";
 ?>

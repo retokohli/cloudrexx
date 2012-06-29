@@ -99,4 +99,5 @@ $_ARRAYLANG['TXT_BLOCK_ORDER']   = "Reihenfolge";
 $_ARRAYLANG['TXT_BLOCK_INCLUDED_IN_GLOBAL_BLOCK'] = "Anzeige im globalen Platzhalter";
 $_ARRAYLANG['TXT_BLOCK_DISPLAY_SELECTED_PAGE'] = "Block wird nur auf den folgenden Seiten angezeigt:";
 $_ARRAYLANG['TXT_BLOCK_DISPLAY_ALL_PAGE'] = "Block wird auf jeder Seite angezeigt";
+$_ARRAYLANG['TXT_BLOCK_USE_WYSIWYG_EDITOR'] = "WYSIWYG-Editor verwenden";
 ?>

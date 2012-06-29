@@ -642,6 +642,17 @@ table.reset td {
     padding: 0 10px 0 0;
 }
 
+table tr.reset:hover,
+table tr.reset:hover,
+table tr.reset:hover {
+    background: transparent !important;
+}
+
+table tr.reset td {
+    padding: 0;
+    border: 0;
+}
+
 .toggle_style {
     float: left;
     width: 100%;
