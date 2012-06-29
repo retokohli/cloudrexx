@@ -31,14 +31,12 @@ class ImageManager
     public $orgImageHeight;
     public $orgImageType;
     public $orgImageFile;
-
     public $newImage;
     public $newImageWidth;
     public $newImageHeight;
     public $newImageQuality;
     public $newImageType;
     public $newImageFile;
-
     public $imageCheck = 1;
 
     const IMG_TYPE_GIF = 1;
@@ -94,7 +92,7 @@ class ImageManager
      * @param   integer The width of the rectangle
      * @param   integer The height of the rectangle
      */
-    function addBackgroundLayer($bgColor, $width =  null, $height = null)
+    function addBackgroundLayer($bgColor, $width=null, $height=null)
     {
         if (function_exists ("imagecreatetruecolor")) {
             $this->newImage = imagecreatetruecolor($width, $height);
@@ -105,16 +103,21 @@ class ImageManager
         } else {
             $this->newImage = ImageCreate($width, $height);
         }
-        imagefill($this->newImage, 0, 0, imagecolorallocate($this->newImage, $bgColor[0], $bgColor[1], $bgColor[2]));
-        $ratio =  max($this->orgImageWidth / $width, $this->orgImageHeight / $height);
+        imagefill($this->newImage, 0, 0,
+            imagecolorallocate($this->newImage,
+                $bgColor[0], $bgColor[1], $bgColor[2]));
+        $ratio = max($this->orgImageWidth / $width, $this->orgImageHeight / $height);
         $scaledWidth = $this->orgImageWidth / $ratio;
         $scaledHeight = $this->orgImageHeight / $ratio;
         $offsetWidth = ($width - $scaledWidth) / 2;
         $offsetHeight = ($height - $scaledHeight) / 2;
-        imagecopyresized($this->newImage, $this->orgImage, $offsetWidth, $offsetHeight, 0, 0, $scaledWidth, $scaledHeight, $this->orgImageWidth, $this->orgImageHeight);
+        imagecopyresized($this->newImage, $this->orgImage,
+            $offsetWidth, $offsetHeight, 0, 0,
+            $scaledWidth, $scaledHeight,
+            $this->orgImageWidth, $this->orgImageHeight);
         $this->imageCheck = 1;
-        $this->newImageQuality=100;
-        $this->newImageType    = $this->orgImageType;
+        $this->newImageQuality = 100;
+        $this->newImageType = $this->orgImageType;
     }
 
 
@@ -206,6 +209,7 @@ class ImageManager
         if (!$this->loadImage($strPath.$file)) return false;
         if (!$this->resizeImage($thumbWidth, $thumbHeight, $quality)) return false;
         if (is_file($strPathNew.$fileNew.$thumbNailSuffix)) {
+// TODO: Use the File class
             if (!unlink($strPathNew.$fileNew.$thumbNailSuffix)) return false;
         }
         if (!$this->saveNewImage($strPathNew.$fileNew.$thumbNailSuffix)) return false;
@@ -225,30 +229,28 @@ class ImageManager
      */
     function resizeImage($width, $height, $quality)
     {
-        if ($this->imageCheck == 1) {
-            $this->newImageWidth   = $width;
-            $this->newImageHeight  = $height;
-            $this->newImageQuality = $quality;
-            $this->newImageType    = $this->orgImageType;
-            if (function_exists ("imagecreatetruecolor")) {
-                $this->newImage = @imagecreatetruecolor($this->newImageWidth, $this->newImageHeight);
-                // GD > 2 check
-                if ($this->newImage) {
-                    $this->setTransparency();
-                } else {
-                    $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
-                }
+        if (!$this->imageCheck) return false;
+        $this->newImageWidth = $width;
+        $this->newImageHeight = $height;
+        $this->newImageQuality = $quality;
+        $this->newImageType = $this->orgImageType;
+        if (function_exists ('imagecreatetruecolor')) {
+            $this->newImage = @imagecreatetruecolor($this->newImageWidth, $this->newImageHeight);
+            // GD > 2 check
+            if ($this->newImage) {
+                $this->setTransparency();
             } else {
                 $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
             }
-            if(function_exists("imagecopyresampled")) { //resampled is gd2 only
-                imagecopyresampled($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth + 1, $this->newImageHeight + 1, $this->orgImageWidth, $this->orgImageHeight);
-            } else {
-                imagecopyresized($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth + 1, $this->newImageHeight + 1, $this->orgImageWidth, $this->orgImageHeight);
-            }
-            return true;
+        } else {
+            $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
         }
-        return false;
+        if(function_exists('imagecopyresampled')) { //resampled is gd2 only
+            imagecopyresampled($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth + 1, $this->newImageHeight + 1, $this->orgImageWidth, $this->orgImageHeight);
+        } else {
+            imagecopyresized($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth + 1, $this->newImageHeight + 1, $this->orgImageWidth, $this->orgImageHeight);
+        }
+        return true;
     }
 
 
@@ -309,39 +311,34 @@ class ImageManager
         if ($newPath == '') $newPath = $path;
         if ($newWebPath == '') $newWebPath = $webPath;
         if ($newFileName == '') $newFileName = $fileName.$thumbNailSuffix;
-
         $this->_checkTrailingSlash($path);
         $this->_checkTrailingSlash($webPath);
         $this->_checkTrailingSlash($newPath);
         $this->_checkTrailingSlash($newWebPath);
-
         $this->loadImage($path.$fileName);
-        if ($this->imageCheck == 1) { // if file is a valid image
-            $this->newImageWidth   = $width;
-            $this->newImageHeight  = $height;
-            $this->newImageQuality = $quality;
-            $this->newImageType    = $this->orgImageType;
-
-            if (function_exists ('imagecreatetruecolor')) {
-                $this->newImage = @imagecreatetruecolor($this->newImageWidth, $this->newImageHeight);
-                // GD > 2 check
-                if ($this->newImage) {
-                    $this->setTransparency();
-                } else {
-                    $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
-                }
+        if (!$this->imageCheck) return false;
+        $this->newImageWidth = $width;
+        $this->newImageHeight = $height;
+        $this->newImageQuality = $quality;
+        $this->newImageType = $this->orgImageType;
+        if (function_exists ('imagecreatetruecolor')) {
+            $this->newImage = @imagecreatetruecolor($this->newImageWidth, $this->newImageHeight);
+            // GD > 2 check
+            if ($this->newImage) {
+                $this->setTransparency();
             } else {
                 $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
             }
-            imagecopyresized(
-                $this->newImage, $this->orgImage,
-                0, 0, 0, 0,
-                $this->newImageWidth+1, $this->newImageHeight+1,
-                $this->orgImageWidth, $this->orgImageHeight
-            );
-            if ($this->saveNewImage($newPath.$newFileName)) return true;
+        } else {
+            $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
         }
-        return false;
+        imagecopyresized(
+            $this->newImage, $this->orgImage,
+            0, 0, 0, 0,
+            $this->newImageWidth+1, $this->newImageHeight+1,
+            $this->orgImageWidth, $this->orgImageHeight
+        );
+        return $this->saveNewImage($newPath.$newFileName);
     }
 
 
@@ -352,9 +349,11 @@ class ImageManager
      * @param   string  $path   The directory path
      * @return  void
      */
-    function _checkTrailingSlash(&$path) {
+    function _checkTrailingSlash(&$path)
+    {
         // add directory separator if not already provided
-        if (substr($path, -1) != DIRECTORY_SEPARATOR)  $path .= DIRECTORY_SEPARATOR;
+        if (substr($path, -1) != DIRECTORY_SEPARATOR)
+            $path .= DIRECTORY_SEPARATOR;
     }
 
 
@@ -367,31 +366,48 @@ class ImageManager
      */
     function saveNewImage($file, $forceOverwrite=false)
     {
-        if (   $this->imageCheck == 1
-            && !empty($this->newImage)
-            && (!file_exists($file) || $forceOverwrite)) {
-            $this->newImageFile = $file;
-            switch($this->newImageType) {
-                case self::IMG_TYPE_GIF:
-                    $function = 'imagegif';
-                    if (!function_exists($function)) {
-                        $function = 'imagejpeg';
-                    }
-                    break;
-                case self::IMG_TYPE_JPEG:
+// TODO: Add some sort of diagnostics (Message) here and elsewhere in this class
+        if (!$this->imageCheck) return false;
+        if (empty($this->newImage)) return false;
+        if (file_exists($file) && !$forceOverwrite) return false;
+        $this->newImageFile = $file;
+        switch($this->newImageType) {
+            case self::IMG_TYPE_GIF:
+                $function = 'imagegif';
+                if (!function_exists($function)) {
                     $function = 'imagejpeg';
-                    break;
-                case self::IMG_TYPE_PNG:  // make a jpeg thumbnail, too
-//                    $function = 'imagepng';
-                    $function = 'imagejpeg';
-                    break;
-                default:
-                    return false;
-            }
-            $function($this->newImage, $this->newImageFile, $this->newImageQuality);
-            return true;
+                }
+                break;
+            case self::IMG_TYPE_JPEG:
+                $function = 'imagejpeg';
+                break;
+            case self::IMG_TYPE_PNG:  // make a jpeg thumbnail, too
+                $function = 'imagepng';
+                break;
+            default:
+                return false;
         }
-        return false;
+        $function($this->newImage, $this->newImageFile, $this->getQuality());
+        return true;
+    }
+
+
+    /**
+     * Returns the proper quality value for creating an image of the
+     * current type
+     *
+     * The value returned is the original value set, except for type PNG.
+     * The latter requires the quality to be in the range [0..9] instead
+     * of [0..100].
+     * @return  integer             The quality, scaled for the current type
+     */
+    function getQuality()
+    {
+        switch($this->newImageType) {
+            case self::IMG_TYPE_PNG:
+                return min(9, intval($this->newImageQuality / 10));
+        }
+        return $this->newImageQuality;
     }
 
 
@@ -402,30 +418,29 @@ class ImageManager
      */
     function showNewImage()
     {
-        if ($this->imageCheck == 1 && !empty($this->newImage)) {
-            switch($this->newImageType) {
-                case self::IMG_TYPE_GIF:
-                    header("Content-type: image/gif");
-                    $function = 'imagegif';
-                    if (!function_exists($function)) {
-                        $function = 'imagejpeg';
-                    }
-                    break;
-                case self::IMG_TYPE_JPEG:
-                    header("Content-type: image/jpeg");
+        if (!$this->imageCheck == 1) return false;
+        if (empty($this->newImage)) return false;
+        switch($this->newImageType) {
+            case self::IMG_TYPE_GIF:
+                header("Content-type: image/gif");
+                $function = 'imagegif';
+                if (!function_exists($function)) {
                     $function = 'imagejpeg';
-                    break;
-                case self::IMG_TYPE_PNG:
-                    header("Content-type: image/png");
-                    $function = 'imagepng';
-                    break;
-                default:
-                    return false;
-            }
-            $function($this->newImage, '', $this->newImageQuality);
-            return true;
+                }
+                break;
+            case self::IMG_TYPE_JPEG:
+                header("Content-type: image/jpeg");
+                $function = 'imagejpeg';
+                break;
+            case self::IMG_TYPE_PNG:
+                header("Content-type: image/png");
+                $function = 'imagepng';
+                break;
+            default:
+                return false;
         }
-        return false;
+        $function($this->newImage, '', $this->getQuality());
+        return true;
     }
 
 
@@ -441,7 +456,6 @@ class ImageManager
         $this->orgImageHeight  = '';
         $this->orgImageType    = '';
         $this->orgImageFile    = '';
-
         $this->newImage        = '';
         $this->newImageWidth   = '';
         $this->newImageHeight  = '';
@@ -477,28 +491,26 @@ class ImageManager
     function getImageDim($path, $webPath, $fileName, $max=60)
     {
         $this->_checkTrailingSlash($path);
-        if (is_file($path.$fileName)) {
-            $size   = getimagesize($path.$fileName);
-            $height = $size[1];
-            $width  = $size[0];
-            $imgdim = null;
-            if ($height > $max && $height > $width) {
-                $height = $max;
-                $ratio  = ($size[1] / $height);
-                $width  = ($size[0] / $ratio);
-            } else if ($width > $max) {
-                $width  = $max;
-                $ratio  = ($size[0] / $width);
-                $height = ($size[1] / $ratio);
-            }
-            if ($width > 0 && $height > 0) {
-                $imgdim['style']  = 'style="height: '.$height.'px; width:'.$width.'px;"';
-                $imgdim['width']  = $size[0]+1;
-                $imgdim['height'] = $size[1]+1;
-            }
-            return $imgdim;
+        if (!is_file($path.$fileName)) return false;
+        $size   = getimagesize($path.$fileName);
+        $height = $size[1];
+        $width  = $size[0];
+        $imgdim = null;
+        if ($height > $max && $height > $width) {
+            $height = $max;
+            $ratio  = ($size[1] / $height);
+            $width  = ($size[0] / $ratio);
+        } else if ($width > $max) {
+            $width  = $max;
+            $ratio  = ($size[0] / $width);
+            $height = ($size[1] / $ratio);
         }
-        return false;
+        if ($width > 0 && $height > 0) {
+            $imgdim['style']  = 'style="height: '.$height.'px; width:'.$width.'px;"';
+            $imgdim['width']  = $size[0]+1;
+            $imgdim['height'] = $size[1]+1;
+        }
+        return $imgdim;
     }
 
 
@@ -569,17 +581,16 @@ class ImageManager
      */
     function _isImage($file)
     {
-        if (file_exists($file)) {
-            $imageSize = @getimagesize($file);
-            // 1 = GIF,  2 = JPG,  3 = PNG,  4 = SWF,  5 = PSD, 6 = BMP,
-            // 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order,
-            // 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC$
-            // Only accept GIF, JPG, or PNG
-            if ($imageSize[2] == 1 && function_exists('imagecreatefromgif'))
-                return $imageSize[2];
-            if ($imageSize[2] == 2 || $imageSize[2] == 3)
-                return $imageSize[2];
-        }
+        if (!file_exists($file)) return false;
+        $imageSize = @getimagesize($file);
+        // 1 = GIF,  2 = JPG,  3 = PNG,  4 = SWF,  5 = PSD, 6 = BMP,
+        // 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order,
+        // 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC$
+        // Only accept GIF, JPG, or PNG
+        if ($imageSize[2] == 1 && function_exists('imagecreatefromgif'))
+            return $imageSize[2];
+        if ($imageSize[2] == 2 || $imageSize[2] == 3)
+            return $imageSize[2];
         return false;
     }
 
@@ -604,17 +615,23 @@ class ImageManager
     /**
      * Returns the file name for the thumbnail image
      *
-     * Replaces the .png extension with .jpg, if found.
-     * This works around the PNG bug in PHP.
-     * Does append the .thumb extension if not already present.
+     * Replaces the .png extension with .jpg if a thumbnail in PNG format is
+     * already present.  This is for backwards compatibility with versions up
+     * to 2.2 which did not create PNG thumbnails.
+     * Appends the .thumb extension if not already present.
      * @param   string    $file_name        The image file name
      * @return  string                      The thumbnail file name
      */
     static function getThumbnailFilename($file_name)
     {
         if (preg_match('/\.thumb$/', $file_name)) return $file_name;
+        // Compatibility with versions up to 2.2 that create thumbnails
+        // in JPG format
         $thumb_name = preg_replace('/\.png$/', '.jpg', $file_name);
-        return $thumb_name.'.thumb';
+        if (file_exists($thumb_name.'.thumb')) {
+            return $thumb_name.'.thumb';
+        }
+        return $file_name.'.thumb';
     }
 
 }
