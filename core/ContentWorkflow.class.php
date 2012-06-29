@@ -218,7 +218,7 @@ class ContentWorkflow extends Module {
 
                         break;
                     default: // new
-                        $strIcon  = '<a href="../'.$page->getSlug().'" target="_blank"><img src="images/icons/details.gif" alt="'.$_CORELANG['TXT_WORKFLOW_PAGE_PREVIEW'].'" title="'.$_CORELANG['TXT_WORKFLOW_PAGE_PREVIEW'].'" border="0" /></a>';
+                        $strIcon  = '<a href="../'.\FWLanguage::getLanguageCodeById($page->getLang()).$page->getPath().'" target="_blank"><img src="template/ascms/images/content_manager_preview.png" alt="'.$_CORELANG['TXT_WORKFLOW_PAGE_PREVIEW'].'" title="'.$_CORELANG['TXT_WORKFLOW_PAGE_PREVIEW'].'" border="0" /></a>&nbsp;';
                         $strIcon .= '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=content&amp;loadPage='.$pageId.'#page_content" target="_blank"><img src="images/icons/edit.gif" alt="'.$_CORELANG['TXT_EDIT_PAGE'].'" title="'.$_CORELANG['TXT_EDIT_PAGE'].'" border="0" /></a>';
                 }
                 
@@ -235,6 +235,7 @@ class ContentWorkflow extends Module {
                     'HISTORY_STARTDATE'             => $page->getStart() ? $page->getStart()->format('d.m.Y H:i') : '',
                     'HISTORY_ENDDATE'               => $page->getEnd() ? $page->getEnd()->format('d.m.Y H:i') : '',
                     'HISTORY_SLUG'                  => $page->getSlug(),
+                    'HISTORY_PAGE_PATH'             => $page->getPath(),
                 ));
 
                 $this->tpl->parse('page_row');
