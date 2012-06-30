@@ -37,3 +37,8 @@ article.col-13 {
     left: 0;
     top: 0
 }
+h2 {
+    color: #525252;
+    font: bold 14px/15px 'Open Sans',Arial,Helvetica,sans-serif;
+    margin: 9px 0 0;
+}
