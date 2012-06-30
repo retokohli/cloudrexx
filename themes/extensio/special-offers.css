@@ -1,32 +1,39 @@
 #aside{
     display: none;
 }
-.main_subpage {
-    float: left;
-    width: 100%;
-}
+.main_subpage,
 #content {
     float: left;
     width: 100%;
 }
-.discount-price{
-	color: #BCD608;
-	font-size: 15px;
-	font-weight: bold
+.discount-price {
+    color: #BCD608;
+    font-size: 15px;
+    font-weight: bold
 }
-.product-price{
-	font-size: 10px;
-
+.product-price {
+    font-size: 10px;
 }
-.visual{
-margin-bottom: 0;
-padding: 0
+article.col-13 {
+    border: 1px solid #efefef; 
+    padding: 11px;
+    position: relative;
+    width: 190px;
+    margin:0 20px 20px 0
 }
-
-.on-offer{
-position: absolute;
-background: url(images/special-offers.png);
-width: 78px;
- height: 78px;
- left: 0; top: 0
+.visual {
+    margin-bottom: 0;
+    padding: 0;
+    position: relative
+}
+.price-wrapper {
+    float:right
+}
+.on-offer {
+    position: absolute;
+    background: url(images/special-offers.png);
+    width: 78px;
+    height: 78px;
+    left: 0;
+    top: 0
 }
