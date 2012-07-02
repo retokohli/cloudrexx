@@ -4,197 +4,197 @@
 
 function checkNote()
 {
-	if(document.modifyCalendarNote.inputCategory.value == 0)
-	{
-		alert('{TXT_CALENDAR_ERROR_CATEGORY}');
-		document.modifyCalendarNote.inputCategory.focus();
-		return false;
-	}
-	if(document.modifyCalendarNote.inputTitle.value == "")
-	{
-		alert('{TXT_CALENDAR_ERROR_NAME}');
-		document.modifyCalendarNote.inputTitle.focus();
-		return false;
-	}
-	if(document.modifyCalendarNote.inputEndDate.value < document.modifyCalendarNote.inputStartDate.value)
-	{
-		alert('{TXT_CALENDAR_ERROR_DATE}');
-		document.modifyCalendarNote.inputEndDate.focus();
-		return false;
-	}
+    if(document.modifyCalendarNote.inputCategory.value == 0)
+    {
+        alert('{TXT_CALENDAR_ERROR_CATEGORY}');
+        document.modifyCalendarNote.inputCategory.focus();
+        return false;
+    }
+    if(document.modifyCalendarNote.inputTitle.value == "")
+    {
+        alert('{TXT_CALENDAR_ERROR_NAME}');
+        document.modifyCalendarNote.inputTitle.focus();
+        return false;
+    }
+    if(document.modifyCalendarNote.inputEndDate.value < document.modifyCalendarNote.inputStartDate.value)
+    {
+        alert('{TXT_CALENDAR_ERROR_DATE}');
+        document.modifyCalendarNote.inputEndDate.focus();
+        return false;
+    }
 }
 
 function whole_day()
 {
-	document.getElementById('modifyCalendarNote').inputHour.value = "00";
-	document.getElementById('modifyCalendarNote').inputMinutes.value = "00";
-	document.getElementById('modifyCalendarNote').inputEndHour.value = "23";
-	document.getElementById('modifyCalendarNote').inputEndMinutes.value = "59";
+    document.getElementById('modifyCalendarNote').inputHour.value = "00";
+    document.getElementById('modifyCalendarNote').inputMinutes.value = "00";
+    document.getElementById('modifyCalendarNote').inputEndHour.value = "23";
+    document.getElementById('modifyCalendarNote').inputEndMinutes.value = "59";
 }
 
 function SetUrl(url, width, height, alt) {
-	switch (fileType) {
-	case 'image':
-	case 'webpages':
-		document.getElementById(insertBox).value = url;
-		break
-	case 'link':
-		if (insertText == '') {
-			insertText = url;
-		}
-		newsInsertLink(document.getElementById(insertBox), '<a href="'+url+'">'+insertText+'</a>');
-		break;
-	}
+    switch (fileType) {
+    case 'image':
+    case 'webpages':
+        document.getElementById(insertBox).value = url;
+        break
+    case 'link':
+        if (insertText == '') {
+            insertText = url;
+        }
+        newsInsertLink(document.getElementById(insertBox), '<a href="'+url+'">'+insertText+'</a>');
+        break;
+    }
 }
 
 function getFileBrowser(name, type)
 {
-	insertBox = name;
-	fileType = type;
+    insertBox = name;
+    fileType = type;
 
-	if (type == 'link') {
-		insertText = prompt('{TXT_NEWS_DEFINE_LINK_ALT_TEXT}', '');
-		if (insertText == null) {
-			return false;
-		}
-	}
+    if (type == 'link') {
+        insertText = prompt('{TXT_NEWS_DEFINE_LINK_ALT_TEXT}', '');
+        if (insertText == null) {
+            return false;
+        }
+    }
 
-	if (type == 'webpages') {
-		openWindow('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-	} else {
-		openWindow('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-	}
+    if (type == 'webpages') {
+        openWindow('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+    } else {
+        openWindow('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+    }
 }
 
 
 function openWindow(theURL,winName,features){
-	browserPopup = window.open(theURL,"Browser",features);
-	browserPopup.focus();
+    browserPopup = window.open(theURL,"Browser",features);
+    browserPopup.focus();
 }
 
 function calendarAddGroupToList(from,dest,add,remove)
 {
     if ( from.selectedIndex < 0)
-	{
-		if (from.options[0] != null)
-			from.options[0].selected = true;
-		from.focus();
-		return false;
-	}
-	else
-	{
-		for (var i=0; i<from.options.length; i++)
-		{
-			if (from.options[i].selected)
-			{
-		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
-   			}
-		}
-	    for (var i=from.length-1; i>=0; i--)
-		{
-			if (from.options[i].selected)
-			{
-		       from.options[i] = null;
-   			}
-		}
-	}
+    {
+        if (from.options[0] != null)
+            from.options[0].selected = true;
+        from.focus();
+        return false;
+    }
+    else
+    {
+        for (var i=0; i<from.options.length; i++)
+        {
+            if (from.options[i].selected)
+            {
+                dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
+               }
+        }
+        for (var i=from.length-1; i>=0; i--)
+        {
+            if (from.options[i].selected)
+            {
+               from.options[i] = null;
+               }
+        }
+    }
 }
 
 
 function calendarRemoveGroupFromList(from,dest,add,remove)
 {
-	if ( dest.selectedIndex < 0)
-	{
-		if (dest.options[0] != null)
-			dest.options[0].selected = true;
-		dest.focus();
-		return false;
-	}
-	else
-	{
-		for (var i=0; i<dest.options.length; i++)
-		{
-			if (dest.options[i].selected)
-			{
-		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
-   			}
-		}
-	    for (var i=dest.options.length-1; i>=0; i--)
-		{
-			if (dest.options[i].selected)
-			{
-		       dest.options[i] = null;
-   			}
-		}
-	}
+    if ( dest.selectedIndex < 0)
+    {
+        if (dest.options[0] != null)
+            dest.options[0].selected = true;
+        dest.focus();
+        return false;
+    }
+    else
+    {
+        for (var i=0; i<dest.options.length; i++)
+        {
+            if (dest.options[i].selected)
+            {
+                from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
+               }
+        }
+        for (var i=dest.options.length-1; i>=0; i--)
+        {
+            if (dest.options[i].selected)
+            {
+               dest.options[i] = null;
+               }
+        }
+    }
 }
 
 function disableButtons(from,dest,add,remove)
 {
-	if (from.options.length > 0 )
-	{
-		add.disabled = 0;
-	}
-	else
-		add.disabled = 1;
+    if (from.options.length > 0 )
+    {
+        add.disabled = 0;
+    }
+    else
+        add.disabled = 1;
 
-	if (dest.options.length > 0)
-		remove.disabled = 0;
-	else
-		remove.disabled = 1;
+    if (dest.options.length > 0)
+        remove.disabled = 0;
+    else
+        remove.disabled = 1;
 }
 
 function SelectAllList(CONTROL) {
-	for(var i = 0;i < CONTROL.length;i++)
-	{
-		CONTROL.options[i].selected = true;
-	}
+    for(var i = 0;i < CONTROL.length;i++)
+    {
+        CONTROL.options[i].selected = true;
+    }
 }
 
 function showOrHide(strElement)
 {
-	addressorSelect		= document.getElementsByName('inputRegistrationsAddresser')[0].value;
-	seriesMastSelect	= document.getElementsByName('inputSeriesType')[0].value;
+    addressorSelect		= document.getElementsByName('inputRegistrationsAddresser')[0].value;
+    seriesMastSelect	= document.getElementsByName('inputSeriesType')[0].value;
 
-	if (strElement == 'selectGroups') {
-		if(addressorSelect == 2){
-			document.getElementById(strElement).style.display = 'block';
-			document.getElementById('mailTab').style.display = 'block';
-			document.getElementById('mailTab2').style.display = 'none';
-			document.getElementById('mailAgain').style.display = 'block';
-		} else if(addressorSelect == 1) {
-			document.getElementById('mailTab').style.display = 'block';
-			document.getElementById('mailTab2').style.display = 'none';
-			document.getElementById(strElement).style.display = 'none';
-			document.getElementById('mailAgain').style.display = 'block';
-		} else {
-			document.getElementById(strElement).style.display = 'none';
-			document.getElementById('mailTab').style.display = 'none';
-			document.getElementById('mailTab2').style.display = 'block';
-			document.getElementById('mailAgain').style.display = 'none';
-		}
-	}
+    if (strElement == 'selectGroups') {
+        if(addressorSelect == 2){
+            document.getElementById(strElement).style.display = 'block';
+            document.getElementById('mailTab').style.display = 'block';
+            document.getElementById('mailTab2').style.display = 'none';
+            document.getElementById('mailAgain').style.display = 'block';
+        } else if(addressorSelect == 1) {
+            document.getElementById('mailTab').style.display = 'block';
+            document.getElementById('mailTab2').style.display = 'none';
+            document.getElementById(strElement).style.display = 'none';
+            document.getElementById('mailAgain').style.display = 'block';
+        } else {
+            document.getElementById(strElement).style.display = 'none';
+            document.getElementById('mailTab').style.display = 'none';
+            document.getElementById('mailTab2').style.display = 'block';
+            document.getElementById('mailAgain').style.display = 'none';
+        }
+    }
 
-	if (strElement == 'seriesType') {
-		if(seriesMastSelect == 1){
-			document.getElementById('seriesMaskDaily').style.display = 'block';
-			document.getElementById('seriesMaskWeekly').style.display = 'none';
-			document.getElementById('seriesMaskMonthly').style.display = 'none';
-		} else if(seriesMastSelect == 2) {
-			document.getElementById('seriesMaskDaily').style.display = 'none';
-			document.getElementById('seriesMaskWeekly').style.display = 'block';
-			document.getElementById('seriesMaskMonthly').style.display = 'none';
-		} else if(seriesMastSelect == 3) {
-			document.getElementById('seriesMaskDaily').style.display = 'none';
-			document.getElementById('seriesMaskWeekly').style.display = 'none';
-			document.getElementById('seriesMaskMonthly').style.display = 'block';
-		} else {
-			document.getElementById('seriesMaskDaily').style.display = 'block';
-			document.getElementById('seriesMaskDaily').style.display = 'block';
-			document.getElementById('seriesMaskWeekly').style.display = 'none';
-			document.getElementById('seriesMaskMonthly').style.display = 'none';
-		}
-	}
+    if (strElement == 'seriesType') {
+        if(seriesMastSelect == 1){
+            document.getElementById('seriesMaskDaily').style.display = 'block';
+            document.getElementById('seriesMaskWeekly').style.display = 'none';
+            document.getElementById('seriesMaskMonthly').style.display = 'none';
+        } else if(seriesMastSelect == 2) {
+            document.getElementById('seriesMaskDaily').style.display = 'none';
+            document.getElementById('seriesMaskWeekly').style.display = 'block';
+            document.getElementById('seriesMaskMonthly').style.display = 'none';
+        } else if(seriesMastSelect == 3) {
+            document.getElementById('seriesMaskDaily').style.display = 'none';
+            document.getElementById('seriesMaskWeekly').style.display = 'none';
+            document.getElementById('seriesMaskMonthly').style.display = 'block';
+        } else {
+            document.getElementById('seriesMaskDaily').style.display = 'block';
+            document.getElementById('seriesMaskDaily').style.display = 'block';
+            document.getElementById('seriesMaskWeekly').style.display = 'none';
+            document.getElementById('seriesMaskMonthly').style.display = 'none';
+        }
+    }
 }
 </script>
 
@@ -208,8 +208,8 @@ function showOrHide(strElement)
     var enddate = document.getElementById("modifyCalendarNote").inputEndDate.value.replace(/-/g, "");
 
     if (startdate > enddate) {
-    	var date = document.getElementById("modifyCalendarNote").inputStartDate.value;
-    	document.getElementById("modifyCalendarNote").inputEndDate.value = date;
+        var date = document.getElementById("modifyCalendarNote").inputStartDate.value;
+        document.getElementById("modifyCalendarNote").inputEndDate.value = date;
     }
   }
   // -->
@@ -230,10 +230,10 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
 
 
 <ul id="tabmenu">
-	<li><a id="calendarTab_event" class="active" href="javascript:{}" onclick="selectTab('event')" title="{TXT_CALENDAR_EVENT}">{TXT_CALENDAR_EVENT}</a></li>
-	<li><a id="calendarTab_registrations" href="javascript:{}" onclick="selectTab('registrations'); showOrHide('selectGroups');" title="{TXT_CALENDAR_REGISTRATIONS}">{TXT_CALENDAR_REGISTRATIONS}</a></li>
-	<li><a id="calendarTab_series" href="javascript:{}" onclick="selectTab('series'); showOrHide('seriesType')" title="{TXT_CALENDAR_SERIES}">{TXT_CALENDAR_SERIES}</a></li>
-	<li><a id="calendarTab_options" href="javascript:{}" onclick="selectTab('options')" title="{TXT_CALENDAR_OPTIONS}">{TXT_CALENDAR_OPTIONS}</a></li>
+    <li><a id="calendarTab_event" class="active" href="javascript:{}" onclick="selectTab('event')" title="{TXT_CALENDAR_EVENT}">{TXT_CALENDAR_EVENT}</a></li>
+    <li><a id="calendarTab_registrations" href="javascript:{}" onclick="selectTab('registrations'); showOrHide('selectGroups');" title="{TXT_CALENDAR_REGISTRATIONS}">{TXT_CALENDAR_REGISTRATIONS}</a></li>
+    <li><a id="calendarTab_series" href="javascript:{}" onclick="selectTab('series'); showOrHide('seriesType')" title="{TXT_CALENDAR_SERIES}">{TXT_CALENDAR_SERIES}</a></li>
+    <li><a id="calendarTab_options" href="javascript:{}" onclick="selectTab('options')" title="{TXT_CALENDAR_OPTIONS}">{TXT_CALENDAR_OPTIONS}</a></li>
 </ul>
 
 
@@ -244,10 +244,10 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
         <div align="left">{TXT_CALENDAR_EVENT}</div>
       </th>
     </tr>
-	<tr class="row1">
+    <tr class="row1">
       <td width="140" valign="middle">{TXT_CALENDAR_CAT}</td>
       <td valign="middle">
-	  <select name="inputCategory" style="width: 302px; ">
+      <select name="inputCategory" style="width: 302px; ">
         <option value="0">- {TXT_CALENDAR_CAT}</option>
         <!-- BEGIN calendar_cat -->
         <option value="{CALENDAR_CAT_ID}" {CALENDAR_CAT_SELECTED}>[{CALENDAR_CAT_LANG}]&nbsp;&nbsp;{CALENDAR_CAT_NAME}</option>
@@ -258,15 +258,15 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
       <td valign="middle">{TXT_CALENDAR_TITLE}</td>
       <td valign="middle">
         <input type="text" name='inputTitle' style="width: 300px;" value="{CALENDAR_TITLE}" />
-		<input type="checkbox" value="1" name="inputActive" style="margin-left: 15px;" {CALENDAR_ACTIVE} />{TXT_CALENDAR_ACTIVE}
+        <input type="checkbox" value="1" name="inputActive" style="margin-left: 15px;" {CALENDAR_ACTIVE} />{TXT_CALENDAR_ACTIVE}
       </td>
     </tr>
     <tr class="row1">
-    	<td> {TXT_CALENDAR_LINK}</td>
-    	<td>
-    		<input type="text" name='inputEventLink' value="{CALENDAR_LINK_SOURCE}" style="width: 300px;" />
-    	</td>
-	</tr>
+        <td> {TXT_CALENDAR_LINK}</td>
+        <td>
+            <input type="text" name='inputEventLink' value="{CALENDAR_LINK_SOURCE}" style="width: 300px;" />
+        </td>
+    </tr>
     <tr class="row2">
       <td valign="middle">{TXT_CALENDAR_THUMBNAIL}</td>
       <td valign="middle">
@@ -282,140 +282,140 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
     <tr class="row2">
       <td valign="middle"> {TXT_CALENDAR_START}</td>
       <td valign="middle">
-		<input type="text" name="inputStartDate" id="DPC_edit1_YYYY-MM-DD" value="{CALENDAR_START}" style="width: 8em;" />
-		<select name="inputHour" style="margin-left: 10px">
-			<!-- BEGIN hour -->
-			<option value="{CALENDAR_HOUR}" {CALENDAR_HOUR_SELECT}>{CALENDAR_HOUR}</option>
-			<!-- END hour -->
-		</select>
-		:
-		<select name="inputMinutes">
-			<!-- BEGIN minutes -->
-			<option value="{CALENDAR_MINUTES}" {CALENDAR_MINUTES_SELECT}>{CALENDAR_MINUTES}</option>
-			<!-- END minutes -->
-		</select>
+        <input type="text" name="inputStartDate" id="DPC_edit1_YYYY-MM-DD" value="{CALENDAR_START}" style="width: 8em;" />
+        <select name="inputHour" style="margin-left: 10px">
+            <!-- BEGIN hour -->
+            <option value="{CALENDAR_HOUR}" {CALENDAR_HOUR_SELECT}>{CALENDAR_HOUR}</option>
+            <!-- END hour -->
+        </select>
+        :
+        <select name="inputMinutes">
+            <!-- BEGIN minutes -->
+            <option value="{CALENDAR_MINUTES}" {CALENDAR_MINUTES_SELECT}>{CALENDAR_MINUTES}</option>
+            <!-- END minutes -->
+        </select>
 
-		 <a style="margin-left: 15px;" href="#" onclick="whole_day()">{TXT_CALENDAR_WHOLE_DAY}</a>
-	</td>
+         <a style="margin-left: 15px;" href="#" onclick="whole_day()">{TXT_CALENDAR_WHOLE_DAY}</a>
+    </td>
     </tr>
     <tr class="row1">
       <td valign="middle" > {TXT_CALENDAR_END}</td>
       <td valign="middle">
-	  	<input type="text" name="inputEndDate" id="DPC_edit2_YYYY-MM-DD" value="{CALENDAR_END}" style="width:8em;" />
-		<select name="inputEndHour" style="margin-left: 10px">
-			<!-- BEGIN endhour -->
-			<option value="{CALENDAR_END_HOUR}"{CALENDAR_END_HOUR_SELECT}>{CALENDAR_END_HOUR}</option>
-			<!-- END endhour -->
-		</select>
-		:
-		<select name="inputEndMinutes">
-			<!-- BEGIN endminutes -->
-			<option value="{CALENDAR_END_MINUTES}"{CALENDAR_END_MINUTES_SELECT}>{CALENDAR_END_MINUTES}</option>
-			<!-- END endminutes -->
-		</select>
+          <input type="text" name="inputEndDate" id="DPC_edit2_YYYY-MM-DD" value="{CALENDAR_END}" style="width:8em;" />
+        <select name="inputEndHour" style="margin-left: 10px">
+            <!-- BEGIN endhour -->
+            <option value="{CALENDAR_END_HOUR}"{CALENDAR_END_HOUR_SELECT}>{CALENDAR_END_HOUR}</option>
+            <!-- END endhour -->
+        </select>
+        :
+        <select name="inputEndMinutes">
+            <!-- BEGIN endminutes -->
+            <option value="{CALENDAR_END_MINUTES}"{CALENDAR_END_MINUTES_SELECT}>{CALENDAR_END_MINUTES}</option>
+            <!-- END endminutes -->
+        </select>
       </td>
     </tr>
-	</table>
-	<br />
-	<div id="place" style="display:block">
-	  <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-	    <tr>
-	      <th colspan="2" nowrap="nowrap">
-	        <div align="left">{TXT_CALENDAR_PLACE}</div>
-	      </th>
-	    </tr>
-	    <tr class="row1">
-	      <td valign="middle" width="140">{TXT_CALENDAR_ORGANIZER_NAME}</td>
-	      <td valign="middle">
-	        <input type="text" name='inputPlace' style="width: 300px;" value="{CALENDAR_PLACE}"/>
-	      </td>
-	    </tr>
-	    <tr class="row2">
-	      <td valign="middle">{TXT_CALENDAR_STREET_NR}</td>
-	      <td valign="middle">
-	        <input type="text" name='inputPlaceStreetNr' style="width: 300px;" value="{CALENDAR_PLACE_STREET_NR}" />
-	      </td>
-	    </tr>
-	    <tr class="row1">
-	      <td valign="middle">{TXT_CALENDAR_ZIP}</td>
-	      <td valign="middle">
-	        <input type="text" name='inputPlaceZip' style="width: 300px;" value="{CALENDAR_PLACE_ZIP}" />
-	      </td>
-	    </tr>
-	    <tr class="row2">
-	      <td valign="middle">{TXT_CALENDAR_PLACE}</td>
-	      <td valign="middle">
-	        <input type="text" name='inputPlaceCity' style="width: 300px;" value="{CALENDAR_PLACE_CITY}"/>
-	      </td>
-	    </tr>
-	    <tr class="row1">
-	      <td valign="middle">{TXT_CALENDAR_LINK}</td>
-	      <td valign="middle">
-	        <input type="text" name='inputPlaceLink' style="width: 300px;" value="{CALENDAR_PLACE_LINK_SOURCE}" />
-	      </td>
-	    </tr>
-	    <tr class="row2">
-	      <td valign="middle">{TXT_CALENDAR_MAP}</td>
-	      <td valign="middle">
-	       	 <input type="text" name="inputPlaceMap" id="inputPlaceMap" style="width: 300px;" value="{CALENDAR_PLACE_MAP_SOURCE}" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('inputPlaceMap', 'image')" />
-	      </td>
-	    </tr>
-	  </table>
-	</div>
-	<br />
-	<div id="organizer" style="display:block">
-	  <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-	    <tr>
-	      <th colspan="2" nowrap="nowrap">
-	        <div align="left">{TXT_CALENDAR_ORGANIZER}</div>
-	      </th>
-	    </tr>
-	    <tr class="row1">
-	      <td valign="middle" width="140">{TXT_CALENDAR_ORGANIZER_NAME}</td>
-	      <td valign="middle">
-	        <input type="text" name='inputOrganizer' style="width: 300px;" value="{CALENDAR_ORGANIZER}" />
-	      </td>
-	    </tr>
-	    <tr class="row2">
-	      <td valign="middle" >{TXT_CALENDAR_STREET_NR}</td>
-	      <td valign="middle">
-	        <input type="text" name='inputOrganizerStreetNr' style="width: 300px;" value="{CALENDAR_ORGANIZER_STREET_NR}" />
-	      </td>
-	    </tr>
-	    <tr class="row1">
-	      <td valign="middle" >{TXT_CALENDAR_ZIP}</td>
-	      <td valign="middle">
-	        <input type="text" name='inputOrganizerZip' style="width: 300px;" value="{CALENDAR_ORGANIZER_ZIP}" />
-	      </td>
-	    </tr>
-	        <tr class="row2">
-	      <td valign="middle" >{TXT_CALENDAR_PLACE}</td>
-	      <td valign="middle">
-	        <input type="text" name='inputOrganizerPlace' style="width: 300px;" value="{CALENDAR_ORGANIZER_PLACE}" />
-	      </td>
-	    </tr>
-	    <tr class="row1">
-	      <td valign="middle">{TXT_CALENDAR_LINK}</td>
-	      <td valign="middle">
-	        <input type="text" name='inputOrganizerLink' style="width: 300px;" value="{CALENDAR_ORGANIZER_LINK_SOURCE}" />
-	      </td>
-	    </tr>
-	    <tr class="row2">
-	      <td valign="middle" >{TXT_CALENDAR_MAIL}</td>
-	      <td valign="middle">
-	        <input type="text" name='inputOrganizerMail' style="width: 300px;" value="{CALENDAR_ORGANIZER_MAIL_SOURCE}" />
-	      </td>
-	    </tr>
-	  </table>
-	</div>
-	<br />
-	<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+    </table>
+    <br />
+    <div id="place" style="display:block">
+      <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+        <tr>
+          <th colspan="2" nowrap="nowrap">
+            <div align="left">{TXT_CALENDAR_PLACE}</div>
+          </th>
+        </tr>
+        <tr class="row1">
+          <td valign="middle" width="140">{TXT_CALENDAR_ORGANIZER_NAME}</td>
+          <td valign="middle">
+            <input type="text" name='inputPlace' style="width: 300px;" value="{CALENDAR_PLACE}"/>
+          </td>
+        </tr>
+        <tr class="row2">
+          <td valign="middle">{TXT_CALENDAR_STREET_NR}</td>
+          <td valign="middle">
+            <input type="text" name='inputPlaceStreetNr' style="width: 300px;" value="{CALENDAR_PLACE_STREET_NR}" />
+          </td>
+        </tr>
+        <tr class="row1">
+          <td valign="middle">{TXT_CALENDAR_ZIP}</td>
+          <td valign="middle">
+            <input type="text" name='inputPlaceZip' style="width: 300px;" value="{CALENDAR_PLACE_ZIP}" />
+          </td>
+        </tr>
+        <tr class="row2">
+          <td valign="middle">{TXT_CALENDAR_PLACE}</td>
+          <td valign="middle">
+            <input type="text" name='inputPlaceCity' style="width: 300px;" value="{CALENDAR_PLACE_CITY}"/>
+          </td>
+        </tr>
+        <tr class="row1">
+          <td valign="middle">{TXT_CALENDAR_LINK}</td>
+          <td valign="middle">
+            <input type="text" name='inputPlaceLink' style="width: 300px;" value="{CALENDAR_PLACE_LINK_SOURCE}" />
+          </td>
+        </tr>
+        <tr class="row2">
+          <td valign="middle">{TXT_CALENDAR_MAP}</td>
+          <td valign="middle">
+                <input type="text" name="inputPlaceMap" id="inputPlaceMap" style="width: 300px;" value="{CALENDAR_PLACE_MAP_SOURCE}" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('inputPlaceMap', 'image')" />
+          </td>
+        </tr>
+      </table>
+    </div>
+    <br />
+    <div id="organizer" style="display:block">
+      <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+        <tr>
+          <th colspan="2" nowrap="nowrap">
+            <div align="left">{TXT_CALENDAR_ORGANIZER}</div>
+          </th>
+        </tr>
+        <tr class="row1">
+          <td valign="middle" width="140">{TXT_CALENDAR_ORGANIZER_NAME}</td>
+          <td valign="middle">
+            <input type="text" name='inputOrganizer' style="width: 300px;" value="{CALENDAR_ORGANIZER}" />
+          </td>
+        </tr>
+        <tr class="row2">
+          <td valign="middle" >{TXT_CALENDAR_STREET_NR}</td>
+          <td valign="middle">
+            <input type="text" name='inputOrganizerStreetNr' style="width: 300px;" value="{CALENDAR_ORGANIZER_STREET_NR}" />
+          </td>
+        </tr>
+        <tr class="row1">
+          <td valign="middle" >{TXT_CALENDAR_ZIP}</td>
+          <td valign="middle">
+            <input type="text" name='inputOrganizerZip' style="width: 300px;" value="{CALENDAR_ORGANIZER_ZIP}" />
+          </td>
+        </tr>
+            <tr class="row2">
+          <td valign="middle" >{TXT_CALENDAR_PLACE}</td>
+          <td valign="middle">
+            <input type="text" name='inputOrganizerPlace' style="width: 300px;" value="{CALENDAR_ORGANIZER_PLACE}" />
+          </td>
+        </tr>
+        <tr class="row1">
+          <td valign="middle">{TXT_CALENDAR_LINK}</td>
+          <td valign="middle">
+            <input type="text" name='inputOrganizerLink' style="width: 300px;" value="{CALENDAR_ORGANIZER_LINK_SOURCE}" />
+          </td>
+        </tr>
+        <tr class="row2">
+          <td valign="middle" >{TXT_CALENDAR_MAIL}</td>
+          <td valign="middle">
+            <input type="text" name='inputOrganizerMail' style="width: 300px;" value="{CALENDAR_ORGANIZER_MAIL_SOURCE}" />
+          </td>
+        </tr>
+      </table>
+    </div>
+    <br />
+    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
     <tr>
       <th colspan="2" nowrap="nowrap">
         <div align="left">{TXT_CALENDAR_COMMENT}</div>
       </th>
     </tr>
-    <tr>
+    <tr class="reset">
       <td valign="top" colspan="2">
         {CALENDAR_DESCRIPTION}</td>
     </tr>
@@ -445,10 +445,10 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
       <td valign="middle" >{TXT_CALENDAR_REGISTRATIONS_ADDRESSER}</td>
       <td valign="middle">
         <select onchange="showOrHide('selectGroups')" name="inputRegistrationsAddresser" style="width: 200px; ">
-	        <option value="0" {CALENDAR_REGISTRATIONS_ADDRESSER_ALL}>{TXT_CALENDAR_REGISTRATIONS_ADDRESSER_ALL}</option>
-	        <option value="1" {CALENDAR_REGISTRATIONS_ADDRESSER_ALL_USER}>{TXT_CALENDAR_REGISTRATIONS_ADDRESSER_ALL_USER}</option>
-	        <option value="2" {CALENDAR_REGISTRATIONS_ADDRESSER_SELECT_GROUP}>{TXT_CALENDAR_REGISTRATIONS_ADDRESSER_SELECT_GROUP}</option>
-	    </select>&nbsp;&nbsp;<img src="images/icons/note.gif" alt="info" title="info" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" />
+            <option value="0" {CALENDAR_REGISTRATIONS_ADDRESSER_ALL}>{TXT_CALENDAR_REGISTRATIONS_ADDRESSER_ALL}</option>
+            <option value="1" {CALENDAR_REGISTRATIONS_ADDRESSER_ALL_USER}>{TXT_CALENDAR_REGISTRATIONS_ADDRESSER_ALL_USER}</option>
+            <option value="2" {CALENDAR_REGISTRATIONS_ADDRESSER_SELECT_GROUP}>{TXT_CALENDAR_REGISTRATIONS_ADDRESSER_SELECT_GROUP}</option>
+        </select>&nbsp;&nbsp;<img src="images/icons/note.gif" alt="info" title="info" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" />
       </td>
     </tr>
     </table>
@@ -458,30 +458,30 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
       <td valign="top" width="140">{TXT_CALENDAR_REGISTRATIONS_SELECT_GROUP}</td>
       <td valign="middle">
         <table width="100%" border="0" cellpadding="0" cellspacing="0">
-		  <tr>
-		    <td width="13%">
-		      <select id="notSelectedGroups" name="notSelectedGroups[]" size="12" style="width:200px;" multiple="multiple">
-		          {CALENDAR_REGISTRATIONS_GROUPS_UNSELECTED}
-		      </select>
-		    </td>
-		    <td width="4%">
-		      <div align="center">
-		        <input type="button" value=" &gt;&gt; " name="addgroups" onclick="calendarAddGroupToList(document.getElementById('notSelectedGroups'),document.getElementById('SelectedGroups'),document.getElementsByName('addgroups')[0],document.getElementsByName('removegroups')[0]);" />
-		        <br />
-		        <input type="button" value=" &lt;&lt; " name="removegroups" onclick="calendarRemoveGroupFromList(document.getElementById('notSelectedGroups'),document.getElementById('SelectedGroups'),document.getElementsByName('addgroups')[0],document.getElementsByName('removegroups')[0]);" />
-		        <br /><br />
-		      </div>
-		    </td>
-		    <td width="1%">
-		      <div align="left">
-		        <select id="SelectedGroups" name="selectedGroups[]" size="12" style="width:200px;" multiple="multiple">
-		        	{CALENDAR_REGISTRATIONS_GROUPS_SELECTED}
-		        </select>
-		      </div>
-		    </td>
-		    <td width="82%">&nbsp;</td>
-		  </tr>
-		</table>
+          <tr>
+            <td width="13%">
+              <select id="notSelectedGroups" name="notSelectedGroups[]" size="12" style="width:200px;" multiple="multiple">
+                  {CALENDAR_REGISTRATIONS_GROUPS_UNSELECTED}
+              </select>
+            </td>
+            <td width="4%">
+              <div align="center">
+                <input type="button" value=" &gt;&gt; " name="addgroups" onclick="calendarAddGroupToList(document.getElementById('notSelectedGroups'),document.getElementById('SelectedGroups'),document.getElementsByName('addgroups')[0],document.getElementsByName('removegroups')[0]);" />
+                <br />
+                <input type="button" value=" &lt;&lt; " name="removegroups" onclick="calendarRemoveGroupFromList(document.getElementById('notSelectedGroups'),document.getElementById('SelectedGroups'),document.getElementsByName('addgroups')[0],document.getElementsByName('removegroups')[0]);" />
+                <br /><br />
+              </div>
+            </td>
+            <td width="1%">
+              <div align="left">
+                <select id="SelectedGroups" name="selectedGroups[]" size="12" style="width:200px;" multiple="multiple">
+                    {CALENDAR_REGISTRATIONS_GROUPS_SELECTED}
+                </select>
+              </div>
+            </td>
+            <td width="82%">&nbsp;</td>
+          </tr>
+        </table>
       </td>
   </table>
   </div>
@@ -502,17 +502,17 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
   </div>
   <br />
   <div id="mailTab2" style="display:block">
-	<ul id="tabmenu">
-		<li><a id="registrationTab_formular" class="active" href="javascript:{}" onclick="selectTab('formular')" title="{TXT_CALENDAR_FORMULAR}">{TXT_CALENDAR_FORMULAR}</a></li>
-		<li><a id="registrationTab_notification" href="javascript:{}" onclick="selectTab('notification')" title="{TXT_CALENDAR_NOTIFICATION}">{TXT_CALENDAR_NOTIFICATION}</a></li>
-	</ul>
+    <ul id="tabmenu">
+        <li><a id="registrationTab_formular" class="active" href="javascript:{}" onclick="selectTab('formular')" title="{TXT_CALENDAR_FORMULAR}">{TXT_CALENDAR_FORMULAR}</a></li>
+        <li><a id="registrationTab_notification" href="javascript:{}" onclick="selectTab('notification')" title="{TXT_CALENDAR_NOTIFICATION}">{TXT_CALENDAR_NOTIFICATION}</a></li>
+    </ul>
   </div>
   <div id="mailTab" style="display:none">
-	<ul id="tabmenu">
-		<li><a id="registrationTab_formular" class="active" href="javascript:{}" onclick="selectTab('formular')" title="{TXT_CALENDAR_FORMULAR}">{TXT_CALENDAR_FORMULAR}</a></li>
-		<li><a id="registrationTab_mail" href="javascript:{}" onclick="selectTab('mail')" title="{TXT_CALENDAR_MAIL_TEMPLATE}">{TXT_CALENDAR_MAIL_TEMPLATE}</a></li>
-		<li><a id="registrationTab_notification" href="javascript:{}" onclick="selectTab('notification')" title="{TXT_CALENDAR_NOTIFICATION}">{TXT_CALENDAR_NOTIFICATION}</a></li>
-	</ul>
+    <ul id="tabmenu">
+        <li><a id="registrationTab_formular" class="active" href="javascript:{}" onclick="selectTab('formular')" title="{TXT_CALENDAR_FORMULAR}">{TXT_CALENDAR_FORMULAR}</a></li>
+        <li><a id="registrationTab_mail" href="javascript:{}" onclick="selectTab('mail')" title="{TXT_CALENDAR_MAIL_TEMPLATE}">{TXT_CALENDAR_MAIL_TEMPLATE}</a></li>
+        <li><a id="registrationTab_notification" href="javascript:{}" onclick="selectTab('notification')" title="{TXT_CALENDAR_NOTIFICATION}">{TXT_CALENDAR_NOTIFICATION}</a></li>
+    </ul>
   </div>
   <div id="formular" class="registrationTab" style="display:block">
   <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
@@ -522,14 +522,14 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
       </th>
     </tr>
     <tr class="row3">
-		<td width="2%" nowrap="nowrap"><span style="font-weight:bold;">#</span></td>
-		<td width="2%" nowrap="nowrap"><span style="font-weight:bold;">{TXT_CALENDAR_FIELD_STATUS}</td>
-		<td width="2%"  nowrap="nowrap"style="text-align: right;">&nbsp;</td>
-		<td width="15%" nowrap="nowrap"><span style="font-weight:bold;">{TXT_CALENDAR_FIELD_NAME}</td>
-		<td width="5%" nowrap="nowrap"><span style="font-weight:bold;">{TXT_CALENDAR_FIELD_TYPE}</td>
-		<td width="74%"  nowrap="nowrap"><span style="font-weight:bold;">{TXT_CALENDAR_FIELD_REQUIRED}</td>
-	</tr>
-	<!-- BEGIN calendarRegFields -->
+        <td width="2%" nowrap="nowrap"><span style="font-weight:bold;">#</span></td>
+        <td width="2%" nowrap="nowrap"><span style="font-weight:bold;">{TXT_CALENDAR_FIELD_STATUS}</td>
+        <td width="2%"  nowrap="nowrap"style="text-align: right;">&nbsp;</td>
+        <td width="15%" nowrap="nowrap"><span style="font-weight:bold;">{TXT_CALENDAR_FIELD_NAME}</td>
+        <td width="5%" nowrap="nowrap"><span style="font-weight:bold;">{TXT_CALENDAR_FIELD_TYPE}</td>
+        <td width="74%"  nowrap="nowrap"><span style="font-weight:bold;">{TXT_CALENDAR_FIELD_REQUIRED}</td>
+    </tr>
+    <!-- BEGIN calendarRegFields -->
     <tr class="{CALENDAR_FIELD_ROW}">
       <td valign="middle"><input type="hidden" name="arrFieldIds[{CALENDAR_FIELD_KEY}]" value="{CALENDAR_FIELD_ID}" /><input type="checkbox" name="arrFieldStatus[{CALENDAR_FIELD_KEY}]" value="1" {CALENDAR_FIELD_STATUS}/></td>
       <td valign="middle" style="text-align: center;"><img src="images/icons/led_{CALENDAR_FIELD_STATUS_IMG}.gif" border="0" alt="{TXT_CALENDAR_FIELD_STATUS}" title="{TXT_CALENDAR_FIELD_STATUS}" /></td>
@@ -549,44 +549,44 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
       </th>
     </tr>
     <tr class="row3">
-		<td colspan="2" nowrap="nowrap"><span style="font-weight:bold;">{TXT_CALENDAR_PLACEHOLDERS}</span></td>
-	</tr>
-	<tr class="row1">
-		<td width="140" nowrap="nowrap">{TXT_CALENDAR_FIRSTNAME}</td>
-		<td nowrap="nowrap">[[FIRSTNAME]]</td>
-	</tr>
-	<tr class="row2">
-		<td nowrap="nowrap">{TXT_CALENDAR_LASTNAME}</td>
-		<td nowrap="nowrap">[[LASTNAME]]</td>
-	</tr>
-	<tr class="row1">
-		<td nowrap="nowrap">{TXT_CALENDAR_REG_LINK}</td>
-		<td nowrap="nowrap">[[REG_LINK]]</td>
-	</tr>
-	<tr class="row2">
-		<td nowrap="nowrap">{TXT_CALENDAR_TITLE}</td>
-		<td nowrap="nowrap">[[TITLE]]</td>
-	</tr>
-	<tr class="row1">
-		<td nowrap="nowrap">{TXT_CALENDAR_START_DATE}</td>
-		<td nowrap="nowrap">[[START_DATE]]</td>
-	</tr>
-	<tr class="row2">
-		<td nowrap="nowrap">{TXT_CALENDAR_END_DATE}</td>
-		<td nowrap="nowrap">[[END_DATE]]</td>
-	</tr>
-	<tr class="row1">
-		<td nowrap="nowrap">{TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER}</td>
-		<td nowrap="nowrap">[[NUM_SUBSCRIBER]]</td>
-	</tr>
-	<tr class="row2">
-		<td nowrap="nowrap">{TXT_CALENDAR_HOST_URL}</td>
-		<td nowrap="nowrap">[[URL]]</td>
-	</tr>
-	<tr class="row1">
-		<td nowrap="nowrap">{TXT_CALENDAR_DATE}</td>
-		<td nowrap="nowrap">[[DATE]]</td>
-	</tr>
+        <td colspan="2" nowrap="nowrap"><span style="font-weight:bold;">{TXT_CALENDAR_PLACEHOLDERS}</span></td>
+    </tr>
+    <tr class="row1">
+        <td width="140" nowrap="nowrap">{TXT_CALENDAR_FIRSTNAME}</td>
+        <td nowrap="nowrap">[[FIRSTNAME]]</td>
+    </tr>
+    <tr class="row2">
+        <td nowrap="nowrap">{TXT_CALENDAR_LASTNAME}</td>
+        <td nowrap="nowrap">[[LASTNAME]]</td>
+    </tr>
+    <tr class="row1">
+        <td nowrap="nowrap">{TXT_CALENDAR_REG_LINK}</td>
+        <td nowrap="nowrap">[[REG_LINK]]</td>
+    </tr>
+    <tr class="row2">
+        <td nowrap="nowrap">{TXT_CALENDAR_TITLE}</td>
+        <td nowrap="nowrap">[[TITLE]]</td>
+    </tr>
+    <tr class="row1">
+        <td nowrap="nowrap">{TXT_CALENDAR_START_DATE}</td>
+        <td nowrap="nowrap">[[START_DATE]]</td>
+    </tr>
+    <tr class="row2">
+        <td nowrap="nowrap">{TXT_CALENDAR_END_DATE}</td>
+        <td nowrap="nowrap">[[END_DATE]]</td>
+    </tr>
+    <tr class="row1">
+        <td nowrap="nowrap">{TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER}</td>
+        <td nowrap="nowrap">[[NUM_SUBSCRIBER]]</td>
+    </tr>
+    <tr class="row2">
+        <td nowrap="nowrap">{TXT_CALENDAR_HOST_URL}</td>
+        <td nowrap="nowrap">[[URL]]</td>
+    </tr>
+    <tr class="row1">
+        <td nowrap="nowrap">{TXT_CALENDAR_DATE}</td>
+        <td nowrap="nowrap">[[DATE]]</td>
+    </tr>
   </table>
   <br />
   <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
@@ -596,13 +596,13 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
       </th>
     </tr>
     <tr class="row1">
-		<td width="140" nowrap="nowrap">{TXT_CALENDAR_TITLE}</td>
-		<td nowrap="nowrap"><input type="text" name="registrationMailTitle" value="{CALENDAR_MAIL_TITLE}" style="width:468px;"></td>
-	</tr>
-	<tr class="row2">
-		<td nowrap="nowrap" valign="top">{TXT_CALENDAR_TEXT}</td>
-		<td nowrap="nowrap"><textarea name="registrationMailContent" style="width:468px; overflow: auto;" rows='15'>{CALENDAR_MAIL_CONTENT}</textarea></td>
-	</tr>
+        <td width="140" nowrap="nowrap">{TXT_CALENDAR_TITLE}</td>
+        <td nowrap="nowrap"><input type="text" name="registrationMailTitle" value="{CALENDAR_MAIL_TITLE}" style="width:468px;"></td>
+    </tr>
+    <tr class="row2">
+        <td nowrap="nowrap" valign="top">{TXT_CALENDAR_TEXT}</td>
+        <td nowrap="nowrap"><textarea name="registrationMailContent" style="width:468px; overflow: auto;" rows='15'>{CALENDAR_MAIL_CONTENT}</textarea></td>
+    </tr>
   </table>
   </div>
 
@@ -613,14 +613,14 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
         <div align="left">{TXT_CALENDAR_NOTIFICATION}</div>
       </th>
     </tr>
-	<tr class="row1">
-		<td width="140" nowrap="nowrap">{TXT_CALENDAR_NOTIFICATION_ACTIVATE}</td>
-		<td nowrap="nowrap"><input type="checkbox" id="inputNotification" name='inputNotification' value="1" {CALENDAR_NOTIFICATION_ACTIVATED}/></td>
-	</tr>
-	<tr class="row2">
-		<td nowrap="nowrap">{TXT_CALENDAR_NOTIFICATION_ADDRESS}</td>
-		<td nowrap="nowrap"><input type="text" name='inputNotificationAddress' style="width: 198px;" value="{CALENDAR_NOTIFICATION_ADDRESS}" />&nbsp;&nbsp;<img src="images/icons/note.gif" alt="info" title="info" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
-	</tr>
+    <tr class="row1">
+        <td width="140" nowrap="nowrap">{TXT_CALENDAR_NOTIFICATION_ACTIVATE}</td>
+        <td nowrap="nowrap"><input type="checkbox" id="inputNotification" name='inputNotification' value="1" {CALENDAR_NOTIFICATION_ACTIVATED}/></td>
+    </tr>
+    <tr class="row2">
+        <td nowrap="nowrap">{TXT_CALENDAR_NOTIFICATION_ADDRESS}</td>
+        <td nowrap="nowrap"><input type="text" name='inputNotificationAddress' style="width: 198px;" value="{CALENDAR_NOTIFICATION_ADDRESS}" />&nbsp;&nbsp;<img src="images/icons/note.gif" alt="info" title="info" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
+    </tr>
   </table>
   </div>
 </div>
@@ -635,17 +635,17 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
     <tr class="row1">
       <td valign="middle" width="140">{TXT_CALENDAR_SERIES_ACTIVATE}</td>
       <td valign="middle">
-      	<input type="checkbox" name='inputSeriesStatus' value="1" {CALENDAR_SERIES_STATUS}/>
+          <input type="checkbox" name='inputSeriesStatus' value="1" {CALENDAR_SERIES_STATUS}/>
       </td>
     </tr>
     <tr class="row2">
       <td valign="middle">{TXT_CALENDAR_SERIES_PATTERN}</td>
       <td valign="middle">
-      	<select name="inputSeriesType" style="width: 282px;" onchange="showOrHide('seriesType')">
-      		<option value="1" {CALENDAR_SERIES_PATTERN_DAILY}>{TXT_CALENDAR_SERIES_PATTERN_DAILY}</option>
-      		<option value="2" {CALENDAR_SERIES_PATTERN_WEEKLY}>{TXT_CALENDAR_SERIES_PATTERN_WEEKLY}</option>
-      		<option value="3" {CALENDAR_SERIES_PATTERN_MONTHLY}>{TXT_CALENDAR_SERIES_PATTERN_MONTHLY}</option>
-      	</select>
+          <select name="inputSeriesType" style="width: 282px;" onchange="showOrHide('seriesType')">
+              <option value="1" {CALENDAR_SERIES_PATTERN_DAILY}>{TXT_CALENDAR_SERIES_PATTERN_DAILY}</option>
+              <option value="2" {CALENDAR_SERIES_PATTERN_WEEKLY}>{TXT_CALENDAR_SERIES_PATTERN_WEEKLY}</option>
+              <option value="3" {CALENDAR_SERIES_PATTERN_MONTHLY}>{TXT_CALENDAR_SERIES_PATTERN_MONTHLY}</option>
+          </select>
       </td>
     </tr>
    </table>
@@ -696,32 +696,32 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
     <tr class="row2">
       <td valign="top" width="140">{TXT_CALENDAR_SERIES_PATTERN_DURANCE}</td>
       <td valign="middle">
-      	<table cellpadding="0" cellspacing="0">
-      		<tr>
-      			<td style="border: 0px;" valign="middle" width="140">
-			        <input type="radio" name='inputSeriesDouranceType' value="1" {CALENDAR_SERIES_PATTERN_DOURANCE_1}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_NO_ENDDATE}
-			    </td>
-			    <td style="border: 0px;">
-			    	<br />
-			    </td>
-      		</tr>
-      		<tr>
-      			<td style="border: 0px;" valign="middle">
-			        <input type="radio" name='inputSeriesDouranceType' value="2" {CALENDAR_SERIES_PATTERN_DOURANCE_2}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_ENDS_AFTER}
-			    </td>
-			    <td style="border: 0px;">
-			    	<input type="text" name='inputSeriesDouranceNotes' maxlength="3" value="{CALENDAR_SERIES_PATTERN_ENDS_AFTER}" style="width: 20px;" />&nbsp;{TXT_CALENDAR_SERIES_PATTERN_APPONTMENTS}
-			    </td>
-      		</tr>
-      		<tr>
-      			<td style="border: 0px;" valign="middle">
-			        <input type="radio" name='inputSeriesDouranceType' value="3" {CALENDAR_SERIES_PATTERN_DOURANCE_3}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_ENDS}
-			    </td>
-			    <td style="border: 0px;">
-			    	<input type="text" name="inputRepeatDouranceEnd" value="{CALENDAR_SERIES_PATTERN_ENDS}" style="width: 140px;" />
-			    </td>
-      		</tr>
-      	</table>
+          <table cellpadding="0" cellspacing="0">
+              <tr>
+                  <td style="border: 0px;" valign="middle" width="140">
+                    <input type="radio" name='inputSeriesDouranceType' value="1" {CALENDAR_SERIES_PATTERN_DOURANCE_1}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_NO_ENDDATE}
+                </td>
+                <td style="border: 0px;">
+                    <br />
+                </td>
+              </tr>
+              <tr>
+                  <td style="border: 0px;" valign="middle">
+                    <input type="radio" name='inputSeriesDouranceType' value="2" {CALENDAR_SERIES_PATTERN_DOURANCE_2}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_ENDS_AFTER}
+                </td>
+                <td style="border: 0px;">
+                    <input type="text" name='inputSeriesDouranceNotes' maxlength="3" value="{CALENDAR_SERIES_PATTERN_ENDS_AFTER}" style="width: 20px;" />&nbsp;{TXT_CALENDAR_SERIES_PATTERN_APPONTMENTS}
+                </td>
+              </tr>
+              <tr>
+                  <td style="border: 0px;" valign="middle">
+                    <input type="radio" name='inputSeriesDouranceType' value="3" {CALENDAR_SERIES_PATTERN_DOURANCE_3}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_ENDS}
+                </td>
+                <td style="border: 0px;">
+                    <input type="text" name="inputRepeatDouranceEnd" value="{CALENDAR_SERIES_PATTERN_ENDS}" style="width: 140px;" />
+                </td>
+              </tr>
+          </table>
       </td>
     </tr>
   </table>
@@ -738,21 +738,21 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
       <td valign="middle" width="140">{TXT_CALENDAR_ACCESS}</td>
       <td valign="middle">
          <select name="inputAccess" style="width: 302px; ">
-	        <option value="0" {CALENDAR_ACCESS_PUBLIC}>{TXT_CALENDAR_ACCESS_PUBLIC}</option>
-	        <option value="1" {CALENDAR_ACCESS_COMMUNITY}>{TXT_CALENDAR_ACCESS_COMMUNITY}</option>
-	     </select>
+            <option value="0" {CALENDAR_ACCESS_PUBLIC}>{TXT_CALENDAR_ACCESS_PUBLIC}</option>
+            <option value="1" {CALENDAR_ACCESS_COMMUNITY}>{TXT_CALENDAR_ACCESS_COMMUNITY}</option>
+         </select>
       </td>
     </tr>
     <tr class="row2">
       <td valign="middle">{TXT_CALENDAR_PRIORITY}</td>
       <td valign="middle">
         <select name="inputPriority" style="width: 302px; ">
-	        <option value="1" {CALENDAR_PRIORITY_VERY_HEIGHT}>{TXT_CALENDAR_PRIORITY_VERY_HEIGHT}</option>
-			<option value="2" {CALENDAR_PRIORITY_HEIGHT}>{TXT_CALENDAR_PRIORITY_HEIGHT}</option>
-			<option value="3" {CALENDAR_PRIORITY_NORMAL}>{TXT_CALENDAR_PRIORITY_NORMAL}</option>
-			<option value="4" {CALENDAR_PRIORITY_LOW}>{TXT_CALENDAR_PRIORITY_LOW}</option>
-			<option value="5" {CALENDAR_PRIORITY_VERY_LOW}>{TXT_CALENDAR_PRIORITY_VERY_LOW}</option>
-	     </select>
+            <option value="1" {CALENDAR_PRIORITY_VERY_HEIGHT}>{TXT_CALENDAR_PRIORITY_VERY_HEIGHT}</option>
+            <option value="2" {CALENDAR_PRIORITY_HEIGHT}>{TXT_CALENDAR_PRIORITY_HEIGHT}</option>
+            <option value="3" {CALENDAR_PRIORITY_NORMAL}>{TXT_CALENDAR_PRIORITY_NORMAL}</option>
+            <option value="4" {CALENDAR_PRIORITY_LOW}>{TXT_CALENDAR_PRIORITY_LOW}</option>
+            <option value="5" {CALENDAR_PRIORITY_VERY_LOW}>{TXT_CALENDAR_PRIORITY_VERY_LOW}</option>
+         </select>
       </td>
     </tr>
   </table>

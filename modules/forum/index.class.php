@@ -422,9 +422,6 @@ class Forum extends ForumLibrary {
 
         if($this->_arrSettings['wysiwyg_editor'] == 1) { //IF WYSIWIG enabled..
             require ASCMS_CORE_PATH.'/wysiwyg.class.php';
-            global $wysiwygEditor, $FCKeditorBasePath;
-            $wysiwygEditor = "FCKeditor";
-            $FCKeditorBasePath = "/editor/fckeditor/";
             $strMessageInputHTML = get_wysiwyg_editor('thread_message', $content, 'forum', $_LANGID);
         }else{ //plain textarea
             $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="thread_message">'.htmlentities($content, ENT_QUOTES, CONTREXX_CHARSET).'</textarea>';
@@ -595,6 +592,7 @@ class Forum extends ForumLibrary {
     {
         global $objDatabase, $_ARRAYLANG, $objCache, $page_title;
 
+        print_r($_POST);
         $objFWUser = FWUser::getFWUserObject();
         $this->_communityLogin();
         $intThreadId = intval($intThreadId);
@@ -710,9 +708,6 @@ class Forum extends ForumLibrary {
 
         if($this->_arrSettings['wysiwyg_editor'] == 1) { //IF WYSIWIG enabled..
             require ASCMS_CORE_PATH.'/wysiwyg.class.php';
-            global $wysiwygEditor, $FCKeditorBasePath;
-            $wysiwygEditor = "FCKeditor";
-            $FCKeditorBasePath = "/editor/fckeditor/";
             $strMessageInputHTML = get_wysiwyg_editor('message', $content, 'forum');
         }else{ //plain textarea
             $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="message">'.$content.'</textarea>';

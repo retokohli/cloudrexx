@@ -288,22 +288,22 @@ class Blog extends BlogLibrary  {
             if ($objCommentsResult->RecordCount() > 0) {
                 while (!$objCommentsResult->EOF) {
 
-                	//Get username and avatar
-                	$strUserName 	= '';
-                	$strUserAvatar	= '<img src="'.ASCMS_BLOG_IMAGES_WEB_PATH.'/no_avatar.gif" alt="'.$strUserName.'" />';
-					$objUser = $objFWUser->objUser->getUser($objCommentsResult->fields['user_id']);
+                    //Get username and avatar
+                    $strUserName 	= '';
+                    $strUserAvatar	= '<img src="'.ASCMS_BLOG_IMAGES_WEB_PATH.'/no_avatar.gif" alt="'.$strUserName.'" />';
+                    $objUser = $objFWUser->objUser->getUser($objCommentsResult->fields['user_id']);
 
-                	if ($objCommentsResult->fields['user_id'] == 0 || $objUser === false) {
-						$strUserName 	= $objCommentsResult->fields['user_name'];
-                	} else {
-						$strUserName 	= htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
+                    if ($objCommentsResult->fields['user_id'] == 0 || $objUser === false) {
+                        $strUserName 	= $objCommentsResult->fields['user_name'];
+                    } else {
+                        $strUserName 	= htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 
-						if ($objUser->getProfileAttribute('picture') != '') {
-							$strUserAvatar	= '<img src="'.ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/'.$objUser->getProfileAttribute('picture').'" alt="'.$strUserName.'" />';
-						}
-                	}
+                        if ($objUser->getProfileAttribute('picture') != '') {
+                            $strUserAvatar	= '<img src="'.ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/'.$objUser->getProfileAttribute('picture').'" alt="'.$strUserName.'" />';
+                        }
+                    }
 
-					//Parse comment
+                    //Parse comment
                     $this->_objTpl->setVariable(array(
                         'BLOG_DETAILS_COMMENT_ID'       	=>  $objCommentsResult->fields['comment_id'],
                         'BLOG_DETAILS_COMMENT_TITLE'    	=>  htmlentities(stripslashes($objCommentsResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET),
@@ -326,9 +326,6 @@ class Blog extends BlogLibrary  {
 
                 //Fill Add-Comment-Form
                 require ASCMS_CORE_PATH.'/wysiwyg.class.php';
-                global $wysiwygEditor, $FCKeditorBasePath;
-                $wysiwygEditor = "FCKeditor";
-                $FCKeditorBasePath = "/editor/fckeditor/";
 
                 //Determine the desired editor
                 if ($this->_arrSettings['blog_comments_editor'] == 'wysiwyg') {
