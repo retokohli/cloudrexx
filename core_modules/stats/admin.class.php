@@ -76,12 +76,10 @@ class stats extends statsLibrary
         global $objTemplate, $_ARRAYLANG;
 
         $objTemplate->setVariable("CONTENT_NAVIGATION","
-            <a href='index.php?cmd=stats&amp;stat=visitorDetails' class='".($this->act == 'visitorDetails' ? 'active' : '')."'>".$_ARRAYLANG['TXT_VISITOR_DETAILS']."</a>
+            <a href='index.php?cmd=stats&amp;stat=visitors' class='".($this->act == 'visitors' ? 'active' : '')."'>".$_ARRAYLANG['TXT_VISITOR_DETAILS']."</a>
             <a href='index.php?cmd=stats&amp;stat=requests' class='".($this->act == 'requests' ? 'active' : '')."'>".$_ARRAYLANG['TXT_VISITORS_AND_PAGE_VIEWS']."</a>
             <a href='index.php?cmd=stats&amp;stat=referer' class='".($this->act == 'referer' ? 'active' : '')."'>".$_ARRAYLANG['TXT_REFERER']."</a>
-            <a href='index.php?cmd=stats&amp;stat=mvp' class='".($this->act == 'mvp' ? 'active' : '')."'>".$_ARRAYLANG['TXT_MOST_POPULAR_PAGES']."</a>
             <a href='index.php?cmd=stats&amp;stat=spiders' class='".($this->act == 'spiders' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SEARCH_ENGINES']."</a>
-            <a href='index.php?cmd=stats&amp;stat=clients' class='".($this->act == 'clients' ? 'active' : '')."'>".$_ARRAYLANG['TXT_USER_INFORMATION']."</a>
             <a href='index.php?cmd=stats&amp;stat=search' class='".($this->act == 'search' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SEARCH_TERMS']."</a>
             <a href='index.php?cmd=stats&amp;stat=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
     }
@@ -89,9 +87,9 @@ class stats extends statsLibrary
 
     /**
     * Get the content of the requested page
-    * @access    public
-    * @global    HTML_Template_Sigma
-    * @see    _showRequests(), _showMostViewedPages(), _showSpiders(), _showClients(), _showSearchTerms()
+    * @access   public
+    * @global   HTML_Template_Sigma
+    * @see      showVisitors(), _showRequests(), _showReferer(), _showSpiders(), _showSearchTerms(), _showSettings()
     * @return    mixed    Template content
     */
     function getContent(){
@@ -104,8 +102,8 @@ class stats extends statsLibrary
         }
 
         switch ($_GET['stat']){
-            case 'visitorDetails':
-                $this->_showVisitorDetails();
+            case 'visitors':
+                $this->showVisitors();
                 break;
 
             case 'requests': // show request stats
@@ -116,16 +114,8 @@ class stats extends statsLibrary
                 $this->_showReferer();
                 break;
 
-            case 'mvp': // most viewed pages
-                $this->_showMostViewedPages();
-                break;
-
             case 'spiders':
                 $this->_showSpiders();
-                break;
-
-            case 'clients': // show client stats
-                $this->_showClients();
                 break;
 
             case 'search': // show search term stats
@@ -138,7 +128,7 @@ class stats extends statsLibrary
                 break;
 
             default: // show overview
-                $this->_showVisitorDetails();
+                $this->showVisitors();
                 break;
         }
 
@@ -174,10 +164,32 @@ class stats extends statsLibrary
         $objDatabase->Execute($query);
     }
 
+    private function showVisitors() {
+        global $_ARRAYLANG;
+
+        $this->_objTpl->loadTemplateFile('module_stats_visitors.html', true, true);
+        $this->_objTpl->setVariable(array(
+            'TXT_VISITOR_DETAILS_TITLE'     => $_ARRAYLANG['TXT_VISITOR_DETAILS'],
+            'TXT_USER_INFORMATION_TITLE'    => $_ARRAYLANG['TXT_USER_INFORMATION'],
+        ));
+
+        switch (!empty($_GET['tpl']) ? $_GET['tpl'] : '') {
+            case 'visitorDetails':
+                $this->_showVisitorDetails();
+                break;
+            case 'clients':
+                $this->_showClients();
+                break;
+            default:
+                $this->_showVisitorDetails();
+                break;
+        }
+    }
+
     function _showVisitorDetails() {
         global $_ARRAYLANG;
 
-        $this->_objTpl->loadTemplateFile('module_stats_visitor_details.html',true,true);
+        $this->_objTpl->addBlockfile('STATS_VISITORS_CONTENT', 'visitors_content', 'module_stats_visitor_details.html');
         $this->pageTitle = $_ARRAYLANG['TXT_VISITOR_DETAILS'];
 
         $this->_initVisitorDetails();
@@ -219,6 +231,197 @@ class stats extends statsLibrary
                 'TXT_NO_DATA_AVAILABLE' => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
             ));
         }
+
+        $this->_objTpl->parse('visitors_content');
+    }
+
+    /**
+    * Show clients
+    *
+    * Show the statistics of the clients browser, operating system, javascript support, screen resolution and the colour depth
+    *
+    * @access    private
+    * @global    array
+    * @see    _initClientStatistics
+    */
+    function _showClients(){
+        global $_ARRAYLANG;
+
+        $this->_objTpl->addBlockfile('STATS_VISITORS_CONTENT', 'stats_clients', 'module_stats_clients.html');
+        $this->pageTitle = $_ARRAYLANG['TXT_USER_INFORMATION'];
+
+        // set language variables
+        $this->_objTpl->setVariable(array(
+            'TXT_BROWSERS'                         => $_ARRAYLANG['TXT_BROWSERS'],
+            'TXT_JAVASCRIPT_SUPPORT'            => $_ARRAYLANG['TXT_JAVASCRIPT_SUPPORT'],
+            'TXT_OPERATING_SYSTEMS'                => $_ARRAYLANG['TXT_OPERATING_SYSTEMS'],
+            'TXT_SCREEN_RESOLUTION'                => $_ARRAYLANG['TXT_SCREEN_RESOLUTION'],
+            'TXT_COLOUR_DEPTH'                    => $_ARRAYLANG['TXT_COLOUR_DEPTH'],
+            'TXT_CLIENT_SUPPORTS_JAVASCRIPT'    => $_ARRAYLANG['TXT_CLIENT_SUPPORTS_JAVASCRIPT'],
+            'TXT_NUMBER'                        => $_ARRAYLANG['TXT_NUMBER'],
+            'TXT_YES'                            => $_ARRAYLANG['TXT_YES'],
+            'TXT_NO'                            => $_ARRAYLANG['TXT_NO'],
+            'TXT_DOMAINS'                        => $_ARRAYLANG['TXT_DOMAINS'],
+            'TXT_DOMAIN'    => $_ARRAYLANG['TXT_DOMAIN'],
+            'TXT_COUNTRIES_OF_ORIGIN'    => $_ARRAYLANG['TXT_COUNTRIES_OF_ORIGIN'],
+            'TXT_COUNTRY_OF_ORIGIN'    => $_ARRAYLANG['TXT_COUNTRY_OF_ORIGIN'],
+            'TXT_NO_DATA_AVAILABLE'                => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
+        ));
+
+        $this->_initClientStatistics();
+
+        // set browser statistics
+        if ($this->browserSum>0) {
+            $rowClass = 0;
+            foreach ($this->arrBrowsers as $name => $count) {
+                if (!strlen($name)) {
+                    $name = $_ARRAYLANG['TXT_UNKNOWN'];
+                }
+                $this->_objTpl->setVariable(array(
+                    'STATS_CLIENTS_BROWSER_ROW_CLASS'    => $rowClass % 2 == 0 ? "row2" : "row1",
+                    'STATS_CLIENTS_BROWSER_NAME'        => htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET),
+                    'STATS_CLIENTS_BROWSER_COUNT'        => $this->_makePercentBar(200,10,100/$this->browserSum*$count,100,1,htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET)).' '.round(100/$this->browserSum*$count,2).'% ('.$count.')'
+                ));
+                $this->_objTpl->parse('stats_clients_browsers');
+                $rowClass++;
+            }
+            $this->_objTpl->hideBlock('stats_clients_browsers_nodata');
+        } else {
+            $this->_objTpl->hideBlock('stats_clients_browsers');
+        }
+
+        // set javascript statistics
+        if ($this->supportJavaScriptSum>0) {
+            $this->_objTpl->setVariable(array(
+                'STATS_CLIENTS_JAVASCRIPT_SUPPORT'        => $this->_makePercentBar(200,10,100/$this->supportJavaScriptSum*$this->arrSupportJavaScript[1],100,1,'Javascript Support unterst�tzt').' '.round(100/$this->supportJavaScriptSum*$this->arrSupportJavaScript[1],2).'% ('.$this->arrSupportJavaScript[1].')',
+                'STATS_CLIENTS_JAVASCRIPT_NO_SUPPORT'    => $this->_makePercentBar(200,10,100/$this->supportJavaScriptSum*$this->arrSupportJavaScript[0],100,1,'Javascript wird nicht unters�tzt').' '.round(100/$this->supportJavaScriptSum*$this->arrSupportJavaScript[0],2).'% ('.$this->arrSupportJavaScript[0].')'
+            ));
+            $this->_objTpl->hideBlock('stats_clients_javascript_nodata');
+        } else {
+            $this->_objTpl->hideBlock('stats_clients_javascript');
+            $this->_objTpl->touchBlock('stats_clients_javascript_nodata');
+        }
+
+        // set operating system statistics
+        if ($this->operatingSystemsSum>0) {
+            $rowClass = 0;
+            foreach ($this->arrOperatingSystems as $name => $count) {
+                if (!strlen($name)) {
+                    $name = $_ARRAYLANG['TXT_UNKNOWN'];
+                }
+
+                $this->_objTpl->setVariable(array(
+                    'STATS_CLIENTS_OS_ROW_CLASS'    => $rowClass % 2 == 0 ? "row2" : "row1",
+                    'STATS_CLIENTS_OS_NAME'            => htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET),
+                    'STATS_CLIENTS_OS_COUNT'        => $this->_makePercentBar(200,10,100/$this->operatingSystemsSum*$count,100,1,htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET)).' '.round(100/$this->operatingSystemsSum*$count,2).'% ('.$count.')'
+                ));
+                $this->_objTpl->parse('stats_clients_os');
+                $rowClass++;
+            }
+            $this->_objTpl->hideBlock('stats_clients_os_nodata');
+        } else {
+            $this->_objTpl->hideBlock('stats_clients_os');
+            $this->_objTpl->touchBlock('stats_clients_os_nodata');
+        }
+
+        // set screen resolution statistics
+        if ($this->screenResolutionSum>0) {
+            $rowClass = 0;
+            foreach ($this->arrScreenResolutions as $resolution => $count) {
+                if (!strlen($resolution)) {
+                    $resolution = $_ARRAYLANG['TXT_UNKNOWN'];
+                }
+
+                $this->_objTpl->setVariable(array(
+                    'STATS_CLIENTS_RESOLUTION_ROW_CLASS'    => $rowClass % 2 == 0 ? "row2" : "row1",
+                    'STATS_CLIENTS_RESOLUTION_NAME'            => htmlentities($resolution, ENT_QUOTES, CONTREXX_CHARSET),
+                    'STATS_CLIENTS_RESOLUTION_COUNT'        => $this->_makePercentBar(200,10,100/$this->screenResolutionSum*$count,100,1,htmlentities($resolution, ENT_QUOTES, CONTREXX_CHARSET)).' '.round(100/$this->screenResolutionSum*$count,2).'% ('.$count.')'
+                ));
+                $this->_objTpl->parse('stats_clients_resolution');
+                $rowClass++;
+            }
+            $this->_objTpl->hideBlock('stats_clients_resolution_nodata');
+        } else {
+            $this->_objTpl->hideBlock('stats_clients_resolution');
+            $this->_objTpl->touchBlock('stats_clients_resolution_nodata');
+        }
+
+        // set colour depth statistics
+        if ($this->colourDepthSum>0) {
+            $rowClass = 0;
+            foreach ($this->arrColourDepths as $depth => $count) {
+                $this->_objTpl->setVariable(array(
+                    'STATS_CLIENTS_COLOUR_ROW_CLASS'    => $rowClass % 2 == 0 ? "row2" : "row1",
+                    'STATS_CLIENTS_COLOUR_NAME'            => ($depth ? $depth.' '.$_ARRAYLANG['TXT_BIT'] : $_ARRAYLANG['TXT_UNKNOWN']).(array_key_exists($depth,$this->arrColourDefinitions) ? " (".$_ARRAYLANG[$this->arrColourDefinitions[$depth]].")" : ""),
+                    'STATS_CLIENTS_COLOUR_COUNT'        => $this->_makePercentBar(200,10,100/$this->colourDepthSum*$count,100,1,($depth ? $depth.' '.$_ARRAYLANG['TXT_BIT'] : $_ARRAYLANG['TXT_UNKNOWN'])).' '.round(100/$this->colourDepthSum*$count,2).'% ('.$count.')'
+                ));
+                $this->_objTpl->parse('stats_clients_colour');
+                $rowClass++;
+            }
+            $this->_objTpl->hideBlock('stats_clients_colour_nodata');
+        } else {
+            $this->_objTpl->hideBlock('stats_clients_colour');
+            $this->_objTpl->touchBlock('stats_clients_colour_nodata');
+        }
+
+        // set hostnames statistics
+        if (count($this->arrHostnames)>0) {
+            $rowClass = 0;
+
+            foreach ($this->arrHostnames as $hostname => $count) {
+                if (!strlen($hostname)) {
+                    $hostname = $_ARRAYLANG['TXT_UNKNOWN'];
+                }
+
+                $this->_objTpl->setVariable(array(
+                    'STATS_CLIENTS_HOSTNAME_ROW_CLASS'    => $rowClass % 2 == 0 ? "row2" : "row1",
+                    'STATS_CLIENTS_HOSTNAME'            => htmlentities($hostname, ENT_QUOTES, CONTREXX_CHARSET),
+                    'STATS_CLIENTS_HOSTNAME_COUNT'        => $this->_makePercentBar(200,10,100/$this->hostnamesSum*$count,100,1,htmlentities($hostname, ENT_QUOTES, CONTREXX_CHARSET)).' '.round(100/$this->hostnamesSum*$count,2).'% ('.$count.')'
+                ));
+                $this->_objTpl->parse('stats_clients_hostnames_list');
+                $rowClass++;
+            }
+
+            $this->_objTpl->hideBlock('stats_clients_hostnames_nodata');
+        } else {
+            $this->_objTpl->hideBlock('stats_clients_hostnames');
+            $this->_objTpl->touchBlock('stats_clients_hostnames_nodata');
+        }
+
+        // set countries of origin statistics
+        if (count($this->arrCountries)>0) {
+            $rowClass = 0;
+
+            // get country names from xml file
+            $xmlCountryFilePath  = ASCMS_CORE_MODULE_PATH.'/stats/lib/countries.xml';
+            $xml_parser = xml_parser_create();
+            xml_set_object($xml_parser,$this);
+            xml_set_element_handler($xml_parser,"_xmlCountryStartTag","_xmlCountryEndTag");
+            xml_parse($xml_parser,file_get_contents($xmlCountryFilePath));
+
+            foreach ($this->arrCountries as $countryCode => $count) {
+                $country = isset($this->arrCountryNames[$countryCode]) ? $this->arrCountryNames[$countryCode] : strtoupper($countryCode);
+                if (file_exists(ASCMS_CORE_MODULE_PATH.'/stats/flags/'.$countryCode.'.gif')) {
+                    $flag = $countryCode;
+                } else {
+                    $flag = 'other';
+                }
+                $this->_objTpl->setVariable(array(
+                    'STATS_CLIENTS_COUNTRY_ROW_CLASS'    => $rowClass % 2 == 0 ? "row2" : "row1",
+                    'STATS_CLIENTS_COUNTRY'                => '<img src="'.ASCMS_CORE_MODULE_WEB_PATH.'/stats/flags/'.$flag.'.gif" style="width:18px;height:12px;" alt="'.$country.'" />&nbsp;'.$country,
+                    'STATS_CLIENTS_COUNTRY_COUNT'        => $this->_makePercentBar(200,10,100/$this->countriesSum*$count,100,1,$country).' '.round(100/$this->countriesSum*$count,2).'% ('.$count.')'
+                ));
+                $this->_objTpl->parse('stats_clients_countries_list');
+                $rowClass++;
+            }
+
+            $this->_objTpl->hideBlock('stats_clients_countries_nodata');
+        } else {
+            $this->_objTpl->hideBlock('stats_clients_countries');
+            $this->_objTpl->touchBlock('stats_clients_countries_nodata');
+        }
+
+        $this->_objTpl->parse('stats_clients');
     }
 
     /**
@@ -226,9 +429,9 @@ class stats extends statsLibrary
     *
     * Show the request statistics
     *
-    * @access    private
-    * @global    array
-    * @see    _showRequestsToday(), _showRequestsDays(), _showRequestsMonths(), _showRequestsYears(), _showRequestsToday()
+    * @access   private
+    * @global   array
+    * @see      _showRequestsToday(), _showRequestsDays(), _showRequestsMonths(), _showRequestsYears(), _showRequestsToday()
     */
     function _showRequests(){
         global $_ARRAYLANG;
@@ -236,10 +439,11 @@ class stats extends statsLibrary
         $this->pageTitle = $_ARRAYLANG['TXT_VISITORS_AND_PAGE_VIEWS'];
 
         $this->_objTpl->setGlobalVariable(array(
-            'TXT_TODAY'                    => $_ARRAYLANG['TXT_TODAY'],
-            'TXT_DAILY_STATISTICS'        => $_ARRAYLANG['TXT_DAILY_STATISTICS'],
+            'TXT_TODAY'                 => $_ARRAYLANG['TXT_TODAY'],
+            'TXT_DAILY_STATISTICS'      => $_ARRAYLANG['TXT_DAILY_STATISTICS'],
             'TXT_MONTHLY_STATISTICS'    => $_ARRAYLANG['TXT_MONTHLY_STATISTICS'],
-            'TXT_ANNUAL_STATISTICS'        => $_ARRAYLANG['TXT_ANNUAL_STATISTICS']
+            'TXT_ANNUAL_STATISTICS'     => $_ARRAYLANG['TXT_ANNUAL_STATISTICS'],
+            'TXT_MOST_POPULAR_PAGES'    => $_ARRAYLANG['TXT_MOST_POPULAR_PAGES'],
         ));
 
         if(!isset($_GET['tpl'])){
@@ -261,6 +465,10 @@ class stats extends statsLibrary
 
             case 'years':
                 $this->_showRequestsYears();
+                break;
+
+            case 'mvp':
+                $this->_showMostViewedPages();
                 break;
 
             default:
@@ -622,6 +830,55 @@ class stats extends statsLibrary
     }
 
     /**
+    * Show most viewed pages
+    *
+    * Show a list of the most viewed pages
+    *
+    * @access    private
+    * @global    array
+    * @see    _initMostViewedPagesStatistics()
+    */
+    function _showMostViewedPages()
+    {
+        global $_ARRAYLANG;
+        $i = 0;
+
+        $this->_objTpl->addBlockfile('STATS_REQUESTS_CONTENT', 'requests_block', 'module_stats_mvp.html');
+        $this->pageTitle = $_ARRAYLANG['TXT_MOST_POPULAR_PAGES'];
+
+        $this->_initMostViewedPages();
+
+        // set language variables
+        $this->_objTpl->setVariable(array(
+            'TXT_MOST_POPULAR_PAGES'    => $_ARRAYLANG['TXT_MOST_POPULAR_PAGES'],
+            'TXT_PAGE'                    => $_ARRAYLANG['TXT_PAGE'],
+            'TXT_REQUESTS'                => $_ARRAYLANG['TXT_REQUESTS'],
+            'TXT_LAST_REQUEST'            => $_ARRAYLANG['TXT_LAST_REQUEST']
+        ));
+
+        if (count($this->arrMostViewedPages)>0) {
+            foreach ($this->arrMostViewedPages as $stats) {
+                $this->_objTpl->setVariable(array(
+                    'STATS_REQUESTS_PAGE'    => '<a href="'.ASCMS_PATH_OFFSET.$stats['page'].'" target="_blank" alt="'.$stats['title'].'" title="'.$stats['title'].'">'.$stats['title'].'</a>&nbsp;('.$stats['page'].')',
+                    'STATS_REQUESTS_REQUESTS'    => $this->_makePercentBar(300,10,($stats['requests'] * 100) / $this->mostViewedPagesSum, 100 ,1,'').'&nbsp;'.round(($stats['requests'] * 100) / $this->mostViewedPagesSum,2).'%'.' ('.$stats['requests'].')',
+                    'STATS_REQUESTS_LAST_REQUEST'    => $stats['last_request'],
+                    'STATS_REQUESTS_ROW_CLASS'    => (($i % 2) == 0) ? "row2" : "row1"
+                ));
+                $this->_objTpl->parse('stats_requests_mvp');
+                $this->_objTpl->hideBlock('stats_requests_nodata');
+                $i++;
+            }
+        } else {
+            $this->_objTpl->hideBlock('stats_requests');
+            $this->_objTpl->setVariable(array(
+                'TXT_NO_DATA_AVAILABLE'                => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
+            ));
+        }
+
+        $this->_objTpl->parse('requests_block');
+    }
+
+    /**
     * Show referer
     *
     * Show the last referers and the most referers
@@ -679,53 +936,6 @@ class stats extends statsLibrary
         } else {
             $this->_objTpl->hideBlock('stats_referer_top');
             $this->_objTpl->touchBlock('stats_referer_top_nodata');
-        }
-    }
-
-
-    /**
-    * Show most viewed pages
-    *
-    * Show a list of the most viewed pages
-    *
-    * @access    private
-    * @global    array
-    * @see    _initMostViewedPagesStatistics()
-    */
-    function _showMostViewedPages() {
-        global $_ARRAYLANG;
-        $i = 0;
-
-        $this->_objTpl->loadTemplateFile('module_stats_mvp.html',true,true);
-        $this->pageTitle = $_ARRAYLANG['TXT_MOST_POPULAR_PAGES'];
-
-        $this->_initMostViewedPages();
-
-        // set language variables
-        $this->_objTpl->setVariable(array(
-            'TXT_MOST_POPULAR_PAGES'    => $_ARRAYLANG['TXT_MOST_POPULAR_PAGES'],
-            'TXT_PAGE'                    => $_ARRAYLANG['TXT_PAGE'],
-            'TXT_REQUESTS'                => $_ARRAYLANG['TXT_REQUESTS'],
-            'TXT_LAST_REQUEST'            => $_ARRAYLANG['TXT_LAST_REQUEST']
-        ));
-
-        if (count($this->arrMostViewedPages)>0) {
-            foreach ($this->arrMostViewedPages as $stats) {
-                $this->_objTpl->setVariable(array(
-                    'STATS_REQUESTS_PAGE'    => '<a href="'.ASCMS_PATH_OFFSET.$stats['page'].'" target="_blank" alt="'.$stats['title'].'" title="'.$stats['title'].'">'.$stats['title'].'</a>&nbsp;('.$stats['page'].')',
-                    'STATS_REQUESTS_REQUESTS'    => $this->_makePercentBar(300,10,($stats['requests'] * 100) / $this->mostViewedPagesSum, 100 ,1,'').'&nbsp;'.round(($stats['requests'] * 100) / $this->mostViewedPagesSum,2).'%'.' ('.$stats['requests'].')',
-                    'STATS_REQUESTS_LAST_REQUEST'    => $stats['last_request'],
-                    'STATS_REQUESTS_ROW_CLASS'    => (($i % 2) == 0) ? "row2" : "row1"
-                ));
-                $this->_objTpl->parse('stats_requests_mvp');
-                $this->_objTpl->hideBlock('stats_requests_nodata');
-                $i++;
-            }
-        } else {
-            $this->_objTpl->hideBlock('stats_requests');
-            $this->_objTpl->setVariable(array(
-                'TXT_NO_DATA_AVAILABLE'                => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
-            ));
         }
     }
 
@@ -892,193 +1102,6 @@ class stats extends statsLibrary
     }
 
     /**
-    * Show clients
-    *
-    * Show the statistics of the clients browser, operating system, javascript support, screen resolution and the colour depth
-    *
-    * @access    private
-    * @global    array
-    * @see    _initClientStatistics
-    */
-    function _showClients(){
-        global $_ARRAYLANG;
-
-        $this->_objTpl->loadTemplateFile('module_stats_clients.html',true,true);
-        $this->pageTitle = $_ARRAYLANG['TXT_USER_INFORMATION'];
-
-        // set language variables
-        $this->_objTpl->setVariable(array(
-            'TXT_BROWSERS'                         => $_ARRAYLANG['TXT_BROWSERS'],
-            'TXT_JAVASCRIPT_SUPPORT'            => $_ARRAYLANG['TXT_JAVASCRIPT_SUPPORT'],
-            'TXT_OPERATING_SYSTEMS'                => $_ARRAYLANG['TXT_OPERATING_SYSTEMS'],
-            'TXT_SCREEN_RESOLUTION'                => $_ARRAYLANG['TXT_SCREEN_RESOLUTION'],
-            'TXT_COLOUR_DEPTH'                    => $_ARRAYLANG['TXT_COLOUR_DEPTH'],
-            'TXT_CLIENT_SUPPORTS_JAVASCRIPT'    => $_ARRAYLANG['TXT_CLIENT_SUPPORTS_JAVASCRIPT'],
-            'TXT_NUMBER'                        => $_ARRAYLANG['TXT_NUMBER'],
-            'TXT_YES'                            => $_ARRAYLANG['TXT_YES'],
-            'TXT_NO'                            => $_ARRAYLANG['TXT_NO'],
-            'TXT_DOMAINS'                        => $_ARRAYLANG['TXT_DOMAINS'],
-            'TXT_DOMAIN'    => $_ARRAYLANG['TXT_DOMAIN'],
-            'TXT_COUNTRIES_OF_ORIGIN'    => $_ARRAYLANG['TXT_COUNTRIES_OF_ORIGIN'],
-            'TXT_COUNTRY_OF_ORIGIN'    => $_ARRAYLANG['TXT_COUNTRY_OF_ORIGIN'],
-            'TXT_NO_DATA_AVAILABLE'                => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
-        ));
-
-        $this->_initClientStatistics();
-
-        // set browser statistics
-        if ($this->browserSum>0) {
-            $rowClass = 0;
-            foreach ($this->arrBrowsers as $name => $count) {
-                if (!strlen($name)) {
-                    $name = $_ARRAYLANG['TXT_UNKNOWN'];
-                }
-                $this->_objTpl->setVariable(array(
-                    'STATS_CLIENTS_BROWSER_ROW_CLASS'    => $rowClass % 2 == 0 ? "row2" : "row1",
-                    'STATS_CLIENTS_BROWSER_NAME'        => htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET),
-                    'STATS_CLIENTS_BROWSER_COUNT'        => $this->_makePercentBar(200,10,100/$this->browserSum*$count,100,1,htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET)).' '.round(100/$this->browserSum*$count,2).'% ('.$count.')'
-                ));
-                $this->_objTpl->parse('stats_clients_browsers');
-                $rowClass++;
-            }
-            $this->_objTpl->hideBlock('stats_clients_browsers_nodata');
-        } else {
-            $this->_objTpl->hideBlock('stats_clients_browsers');
-        }
-
-        // set javascript statistics
-        if ($this->supportJavaScriptSum>0) {
-            $this->_objTpl->setVariable(array(
-                'STATS_CLIENTS_JAVASCRIPT_SUPPORT'        => $this->_makePercentBar(200,10,100/$this->supportJavaScriptSum*$this->arrSupportJavaScript[1],100,1,'Javascript Support unterst�tzt').' '.round(100/$this->supportJavaScriptSum*$this->arrSupportJavaScript[1],2).'% ('.$this->arrSupportJavaScript[1].')',
-                'STATS_CLIENTS_JAVASCRIPT_NO_SUPPORT'    => $this->_makePercentBar(200,10,100/$this->supportJavaScriptSum*$this->arrSupportJavaScript[0],100,1,'Javascript wird nicht unters�tzt').' '.round(100/$this->supportJavaScriptSum*$this->arrSupportJavaScript[0],2).'% ('.$this->arrSupportJavaScript[0].')'
-            ));
-            $this->_objTpl->hideBlock('stats_clients_javascript_nodata');
-        } else {
-            $this->_objTpl->hideBlock('stats_clients_javascript');
-            $this->_objTpl->touchBlock('stats_clients_javascript_nodata');
-        }
-
-        // set operating system statistics
-        if ($this->operatingSystemsSum>0) {
-            $rowClass = 0;
-            foreach ($this->arrOperatingSystems as $name => $count) {
-                if (!strlen($name)) {
-                    $name = $_ARRAYLANG['TXT_UNKNOWN'];
-                }
-
-                $this->_objTpl->setVariable(array(
-                    'STATS_CLIENTS_OS_ROW_CLASS'    => $rowClass % 2 == 0 ? "row2" : "row1",
-                    'STATS_CLIENTS_OS_NAME'            => htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET),
-                    'STATS_CLIENTS_OS_COUNT'        => $this->_makePercentBar(200,10,100/$this->operatingSystemsSum*$count,100,1,htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET)).' '.round(100/$this->operatingSystemsSum*$count,2).'% ('.$count.')'
-                ));
-                $this->_objTpl->parse('stats_clients_os');
-                $rowClass++;
-            }
-            $this->_objTpl->hideBlock('stats_clients_os_nodata');
-        } else {
-            $this->_objTpl->hideBlock('stats_clients_os');
-            $this->_objTpl->touchBlock('stats_clients_os_nodata');
-        }
-
-        // set screen resolution statistics
-        if ($this->screenResolutionSum>0) {
-            $rowClass = 0;
-            foreach ($this->arrScreenResolutions as $resolution => $count) {
-                if (!strlen($resolution)) {
-                    $resolution = $_ARRAYLANG['TXT_UNKNOWN'];
-                }
-
-                $this->_objTpl->setVariable(array(
-                    'STATS_CLIENTS_RESOLUTION_ROW_CLASS'    => $rowClass % 2 == 0 ? "row2" : "row1",
-                    'STATS_CLIENTS_RESOLUTION_NAME'            => htmlentities($resolution, ENT_QUOTES, CONTREXX_CHARSET),
-                    'STATS_CLIENTS_RESOLUTION_COUNT'        => $this->_makePercentBar(200,10,100/$this->screenResolutionSum*$count,100,1,htmlentities($resolution, ENT_QUOTES, CONTREXX_CHARSET)).' '.round(100/$this->screenResolutionSum*$count,2).'% ('.$count.')'
-                ));
-                $this->_objTpl->parse('stats_clients_resolution');
-                $rowClass++;
-            }
-            $this->_objTpl->hideBlock('stats_clients_resolution_nodata');
-        } else {
-            $this->_objTpl->hideBlock('stats_clients_resolution');
-            $this->_objTpl->touchBlock('stats_clients_resolution_nodata');
-        }
-
-        // set colour depth statistics
-        if ($this->colourDepthSum>0) {
-            $rowClass = 0;
-            foreach ($this->arrColourDepths as $depth => $count) {
-                $this->_objTpl->setVariable(array(
-                    'STATS_CLIENTS_COLOUR_ROW_CLASS'    => $rowClass % 2 == 0 ? "row2" : "row1",
-                    'STATS_CLIENTS_COLOUR_NAME'            => ($depth ? $depth.' '.$_ARRAYLANG['TXT_BIT'] : $_ARRAYLANG['TXT_UNKNOWN']).(array_key_exists($depth,$this->arrColourDefinitions) ? " (".$_ARRAYLANG[$this->arrColourDefinitions[$depth]].")" : ""),
-                    'STATS_CLIENTS_COLOUR_COUNT'        => $this->_makePercentBar(200,10,100/$this->colourDepthSum*$count,100,1,($depth ? $depth.' '.$_ARRAYLANG['TXT_BIT'] : $_ARRAYLANG['TXT_UNKNOWN'])).' '.round(100/$this->colourDepthSum*$count,2).'% ('.$count.')'
-                ));
-                $this->_objTpl->parse('stats_clients_colour');
-                $rowClass++;
-            }
-            $this->_objTpl->hideBlock('stats_clients_colour_nodata');
-        } else {
-            $this->_objTpl->hideBlock('stats_clients_colour');
-            $this->_objTpl->touchBlock('stats_clients_colour_nodata');
-        }
-
-        // set hostnames statistics
-        if (count($this->arrHostnames)>0) {
-            $rowClass = 0;
-
-            foreach ($this->arrHostnames as $hostname => $count) {
-                if (!strlen($hostname)) {
-                    $hostname = $_ARRAYLANG['TXT_UNKNOWN'];
-                }
-
-                $this->_objTpl->setVariable(array(
-                    'STATS_CLIENTS_HOSTNAME_ROW_CLASS'    => $rowClass % 2 == 0 ? "row2" : "row1",
-                    'STATS_CLIENTS_HOSTNAME'            => htmlentities($hostname, ENT_QUOTES, CONTREXX_CHARSET),
-                    'STATS_CLIENTS_HOSTNAME_COUNT'        => $this->_makePercentBar(200,10,100/$this->hostnamesSum*$count,100,1,htmlentities($hostname, ENT_QUOTES, CONTREXX_CHARSET)).' '.round(100/$this->hostnamesSum*$count,2).'% ('.$count.')'
-                ));
-                $this->_objTpl->parse('stats_clients_hostnames_list');
-                $rowClass++;
-            }
-
-            $this->_objTpl->hideBlock('stats_clients_hostnames_nodata');
-        } else {
-            $this->_objTpl->hideBlock('stats_clients_hostnames');
-            $this->_objTpl->touchBlock('stats_clients_hostnames_nodata');
-        }
-
-        // set countries of origin statistics
-        if (count($this->arrCountries)>0) {
-            $rowClass = 0;
-
-            // get country names from xml file
-            $xmlCountryFilePath  = ASCMS_CORE_MODULE_PATH.'/stats/lib/countries.xml';
-            $xml_parser = xml_parser_create();
-            xml_set_object($xml_parser,$this);
-            xml_set_element_handler($xml_parser,"_xmlCountryStartTag","_xmlCountryEndTag");
-            xml_parse($xml_parser,file_get_contents($xmlCountryFilePath));
-
-            foreach ($this->arrCountries as $countryCode => $count) {
-                $country = isset($this->arrCountryNames[$countryCode]) ? $this->arrCountryNames[$countryCode] : strtoupper($countryCode);
-                if (file_exists(ASCMS_CORE_MODULE_PATH.'/stats/flags/'.$countryCode.'.gif')) {
-                    $flag = $countryCode;
-                } else {
-                    $flag = 'other';
-                }
-                $this->_objTpl->setVariable(array(
-                    'STATS_CLIENTS_COUNTRY_ROW_CLASS'    => $rowClass % 2 == 0 ? "row2" : "row1",
-                    'STATS_CLIENTS_COUNTRY'                => '<img src="'.ASCMS_CORE_MODULE_WEB_PATH.'/stats/flags/'.$flag.'.gif" style="width:18px;height:12px;" alt="'.$country.'" />&nbsp;'.$country,
-                    'STATS_CLIENTS_COUNTRY_COUNT'        => $this->_makePercentBar(200,10,100/$this->countriesSum*$count,100,1,$country).' '.round(100/$this->countriesSum*$count,2).'% ('.$count.')'
-                ));
-                $this->_objTpl->parse('stats_clients_countries_list');
-                $rowClass++;
-            }
-
-            $this->_objTpl->hideBlock('stats_clients_countries_nodata');
-        } else {
-            $this->_objTpl->hideBlock('stats_clients_countries');
-            $this->_objTpl->touchBlock('stats_clients_countries_nodata');
-        }
-    }
-
-    /**
     * start element handler of the xml country parser
     * @access    private
     * @todo     Remove unused argument $parser
@@ -1133,7 +1156,7 @@ class stats extends statsLibrary
             'TXT_COLOUR_DEPTH'                => $_ARRAYLANG['TXT_COLOUR_DEPTH'],
             'TXT_JAVASCRIPT_SUPPORT'        => $_ARRAYLANG['TXT_JAVASCRIPT_SUPPORT'],
             'TXT_REMOVE_REQUESTS'            => $_ARRAYLANG['TXT_REMOVE_REQUESTS'],
-			'TXT_EXCLUDE_IDENTIFYING_INFO'	 => $_ARRAYLANG['TXT_EXCLUDE_IDENTIFYING_INFO'],
+            'TXT_EXCLUDE_IDENTIFYING_INFO'	 => $_ARRAYLANG['TXT_EXCLUDE_IDENTIFYING_INFO'],
             'TXT_REMOVE_REQUESTS_INTERVAL'    => $_ARRAYLANG['TXT_REMOVE_REQUESTS_INTERVAL'],
             'TXT_STATS_COUNT_VISIOTR_NUMBER'    => $_ARRAYLANG['TXT_STATS_COUNT_VISIOTR_NUMBER'],
             'TXT_ONLINE_TIMEOUT'            => $_ARRAYLANG['TXT_ONLINE_TIMEOUT'],
@@ -1167,7 +1190,7 @@ class stats extends statsLibrary
             'STATS_SETTINGS_COUNT_RESOLUTION'    => $this->arrConfig['count_screen_resolution']['status'] ? "checked=\"checked\"" : "",
             'STATS_SETTINGS_COUNT_COLOUR'        => $this->arrConfig['count_colour_depth']['status'] ? "checked=\"checked\"" : "",
             'STATS_SETTINGS_COUNT_JAVASCRIPT'    => $this->arrConfig['count_javascript']['status'] ? "checked=\"checked\"" : "",
-			'STATS_SETTINGS_EXCLUDE_IDENTIFYING_INFO' => $this->arrConfig['exclude_identifying_info']['status'] ? "checked=\"checked\"" : "",
+            'STATS_SETTINGS_EXCLUDE_IDENTIFYING_INFO' => $this->arrConfig['exclude_identifying_info']['status'] ? "checked=\"checked\"" : "",
             'STATS_SETTINGS_REMOVE_REQUESTS'    => $this->arrConfig['remove_requests']['value'],
             'STATS_SETTINGS_REMOVE_REQUESTS_STATUS' => $this->arrConfig['remove_requests']['status'] ? "block" : "none",
             'STATS_SETTINGS_REMOVE_REQUESTS_CHECKED' => $this->arrConfig['remove_requests']['status'] ? "checked=\"checked\"" : "",
