@@ -295,6 +295,11 @@ a:active {
     color: #444444;
 }
 
+textarea.cke_source {
+    border: 0 !important;
+    padding: 0 !important;
+}
+
 #content input[type=radio],
 #navigation_wrapper input[type=radio],
 #content input[type=checkbox],

@@ -22,41 +22,41 @@ require ASCMS_CORE_PATH.'/wysiwyg.class.php';
 
 class u2u extends u2uLibrary
 {
-	/**
-	* Template object
-	*
-	* @access private
-	* @var object
-	*/
-	var $_objTpl,$strMessages;
+    /**
+    * Template object
+    *
+    * @access private
+    * @var object
+    */
+    var $_objTpl,$strMessages;
 
-	private $arrStatusMsg = array('ok' => array(), 'error' => array());
+    private $arrStatusMsg = array('ok' => array(), 'error' => array());
 
 
-	/**
-	* PHP5 constructor
-	*
-	* @global object $objTemplate
-	* @global array $_ARRAYLANG
-	*/
-	function __construct($pageContent) {
+    /**
+    * PHP5 constructor
+    *
+    * @global object $objTemplate
+    * @global array $_ARRAYLANG
+    */
+    function __construct($pageContent) {
 
         $this->_intLanguageId = intval($_LANGID);
-	    $this->_objTpl = new HTML_Template_Sigma('.');
+        $this->_objTpl = new HTML_Template_Sigma('.');
         CSRF::add_placeholder($this->_objTpl);
-		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-		$this->_objTpl->setTemplate($pageContent);
-	}
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
+        $this->_objTpl->setTemplate($pageContent);
+    }
 
 
 
 
-	/**
-	* Get content page
-	*
-	* @access public
-	*/
-	function getPage()	{
+    /**
+    * Get content page
+    *
+    * @access public
+    */
+    function getPage()	{
         if(isset($_GET['cmd'])) {
             $action=$_GET['cmd'];
         } elseif(isset($_GET['act'])) {
@@ -123,28 +123,26 @@ class u2u extends u2uLibrary
 
 
 
- 	    return $this->_objTpl->get();
-	}
+         return $this->_objTpl->get();
+    }
 
     /**
      * Show the form which is used to send the Messages..
      *
-     * @global   $_ARRAYLANG $objDatabase $wysiwygEditor $FCKeditorBasePath
+     * @global   $_ARRAYLANG $objDatabase
      */
-	function showEntries() {
-            global $_ARRAYLANG,$objDatabase,$wysiwygEditor, $FCKeditorBasePath;
+    function showEntries() {
+            global $_ARRAYLANG,$objDatabase;
 
-			$wysiwygEditor = "FCKeditor";
-			$FCKeditorBasePath = "/editor/fckeditor/";
-			$objFWUser = FWUser::getFWUserObject();
-			$id = $objFWUser->objUser->getId();
+            $objFWUser = FWUser::getFWUserObject();
+            $id = $objFWUser->objUser->getId();
 
 
             //echo "user".$objFWUser->objUser->login();
             //Permission::checkAccess($objFWUser->objUser->login());
 
-			$newMessageCount=$this->notificationEntryMessage($objFWUser->objUser->getId());
-			if($newMessageCount>0) {
+            $newMessageCount=$this->notificationEntryMessage($objFWUser->objUser->getId());
+            if($newMessageCount>0) {
 
                 $this->_objTpl->setVariable(array(
                     'TXT_PRIVATE_NOTIFICATION_LINK' => $_ARRAYLANG['TXT_PRIVATE_NOTIFICATION_LINK'],
@@ -152,8 +150,8 @@ class u2u extends u2uLibrary
                 ));
 
 
-			}
-			else {
+            }
+            else {
 
                 $this->_objTpl->hideBlock('u2u_private_notification_message_link');
             }
@@ -187,9 +185,9 @@ class u2u extends u2uLibrary
                 }
           }
 
-	}
+    }
 
-	/**
+    /**
      * List of Messages for the users on the inbox...
      *
      * @global   $_ARRAYLANG $objDatabase $_CORELANG;
@@ -197,8 +195,8 @@ class u2u extends u2uLibrary
     function listMessages() {
        global $_ARRAYLANG, $objDatabase,$_CORELANG,$_CONFIG;
 
-	   $objFWUser = FWUser::getFWUserObject();
-	   if($_REQUEST["frmShowEntries_MultiAction"]=="delete") {
+       $objFWUser = FWUser::getFWUserObject();
+       if($_REQUEST["frmShowEntries_MultiAction"]=="delete") {
             $selectedEntries=$_REQUEST["selectedEntriesId"];
             for($i=0;$i<count($selectedEntries);$i++) {
                 $this->deleteMsg($selectedEntries[$i]);
@@ -208,18 +206,18 @@ class u2u extends u2uLibrary
             ));
         }
         $pos=intval($_GET['pos']);
-	    $notification=$this->createEntryDetails($objFWUser->objUser->getId(),$pos);
-	    if(empty($notification)) {
+        $notification=$this->createEntryDetails($objFWUser->objUser->getId(),$pos);
+        if(empty($notification)) {
             $this->_objTpl->setVariable(array(
                 'PRIVATE_MESSAGE_NO_ENTRIES'        => $_ARRAYLANG['PRIVATE_MESSAGE_NO_ENTRIES']
             ));
             $this->_objTpl->hideBlock('headSection');
             $this->_objTpl->hideBlock('DeleteSection');
-	   } else {
+       } else {
             $this->_objTpl->hideBlock('noEntries');
-	   }
+       }
 
-	   foreach($notification as $MsgID=>$messageItem) {
+       foreach($notification as $MsgID=>$messageItem) {
             $this->_objTpl->setVariable(array(
                 'PRIVATE_MESSAGE_TITLE'        => $messageItem["message_title"],
                 'PRIVATE_MESSAGE_TEXT'         => $messageItem["message"],
@@ -233,7 +231,7 @@ class u2u extends u2uLibrary
                 $this->_objTpl->setVariable('INBOX_PAGING',$this->paginationCount);
             }
             $i++;
-	    }
+        }
 
         $this->_objTpl->setVariable(array(
             'TXT_NOTIFICATION_MESSAGE'           =>  $_ARRAYLANG['TXT_NOTIFICATION_PRIVATE_MESSAGE'],
@@ -245,7 +243,7 @@ class u2u extends u2uLibrary
         ));
     }
 
-   	/**
+       /**
      * List of Messages for the users on the Outbox...
      *
      * @global   $_ARRAYLANG $objDatabase $_CORELANG;
@@ -264,14 +262,14 @@ class u2u extends u2uLibrary
               ));
         }
         $pos = intval($_GET['pos']);
-	    $notification=$this->createEntryDetailsOutbox($objFWUser->objUser->getId(),$pos);
-	    if(empty($notification)) {
+        $notification=$this->createEntryDetailsOutbox($objFWUser->objUser->getId(),$pos);
+        if(empty($notification)) {
             $this->_objTpl->setVariable(array(
                  'PRIVATE_MESSAGE_NO_ENTRIES'        => $_ARRAYLANG['PRIVATE_MESSAGE_NO_ENTRIES']
             ));
             $this->_objTpl->hideBlock('headSection');
             $this->_objTpl->hideBlock('DeleteSection');
-	   } else {
+       } else {
             $this->_objTpl->hideBlock('noEntries');
        }
 
@@ -348,8 +346,8 @@ class u2u extends u2uLibrary
         $selQuery='SELECT user_id,buddies_id from '.DBPREFIX.'module_u2u_address_list WHERE user_id='.$id.'';
         $objResult=$objDatabase->Execute($selQuery);
         $count = $objResult->RecordCount();
-	    $paging = getPaging($count, $pos, "&amp;section=u2u&amp;cmd=buddiesList", "<b>".$_ARRAYLANG['TXT_ADDRESS_BOOK_PAGING']."</b>", true);
-	    $selQuery='SELECT user_id,buddies_id from '.DBPREFIX.'module_u2u_address_list WHERE user_id='.$id.'';
+        $paging = getPaging($count, $pos, "&amp;section=u2u&amp;cmd=buddiesList", "<b>".$_ARRAYLANG['TXT_ADDRESS_BOOK_PAGING']."</b>", true);
+        $selQuery='SELECT user_id,buddies_id from '.DBPREFIX.'module_u2u_address_list WHERE user_id='.$id.'';
         $objResult=$objDatabase->SelectLimit($selQuery, $_CONFIG['corePagingLimit'], $pos);
 
         if(($objResult->fields['user_id']!="")) {
@@ -453,13 +451,10 @@ class u2u extends u2uLibrary
     /**
      * Forwarding and reply to the Messages.
      *
-     * @global   $_ARRAYLANG  $objDatabase $_CORELANG,$wysiwygEditor $FCKeditorBasePath
+     * @global   $_ARRAYLANG  $objDatabase $_CORELANG
      */
-	function forwardreplyMessage()  {
-        global $_ARRAYLANG, $objDatabase,$_CORELANG,$wysiwygEditor, $FCKeditorBasePath;
-
-        $wysiwygEditor = "FCKeditor";
-		$FCKeditorBasePath = "/editor/fckeditor/";
+    function forwardreplyMessage()  {
+        global $_ARRAYLANG, $objDatabase,$_CORELANG;
 
         if(!empty($_REQUEST['msg_id'])) {
            $messageID=intval($_REQUEST['msg_id']);
@@ -492,18 +487,18 @@ class u2u extends u2uLibrary
           $this->_objTpl->hideBlock('u2u_send_confirm_error');
         }
         $this->showEntries();
-	}
+    }
 
-	/**
+    /**
      * Shows the unread notification
      *
      * @global   $_ARRAYLANG  $objDatabase $_CORELANG
      */
-	function shownotification() {
-	   global $_ARRAYLANG, $objDatabase,$_CORELANG,$_CONFIG;
+    function shownotification() {
+       global $_ARRAYLANG, $objDatabase,$_CORELANG,$_CONFIG;
 
-	   $objFWUser = FWUser::getFWUserObject();
-	   if($_REQUEST["frmShowEntries_MultiAction"]=="delete") {
+       $objFWUser = FWUser::getFWUserObject();
+       if($_REQUEST["frmShowEntries_MultiAction"]=="delete") {
             $selectedEntries=$_REQUEST["selectedEntriesId"];
             for($i=0;$i<count($selectedEntries);$i++) {
                  $this->deleteMsg($selectedEntries[$i]);
@@ -512,21 +507,21 @@ class u2u extends u2uLibrary
                 'PRIVATE_MESSAGE_DELETE_SUCCESS'  =>$_ARRAYLANG['PRIVATE_MESSAGE_DELETE_SUCCESS']
             ));
        }
-	   $pos=intval($_GET['pos']);
-	   $notification=$this->createEntryDetails($objFWUser->objUser->getId(),$pos);
+       $pos=intval($_GET['pos']);
+       $notification=$this->createEntryDetails($objFWUser->objUser->getId(),$pos);
 
-	   if(empty($notification)) {
+       if(empty($notification)) {
 
             $this->_objTpl->setVariable(array(
                'PRIVATE_MESSAGE_NO_ENTRIES'        => $_ARRAYLANG['PRIVATE_MESSAGE_NO_ENTRIES']
             ));
             $this->_objTpl->hideBlock('headSection');
             $this->_objTpl->hideBlock('DeleteSection');
-	   } else {
+       } else {
             $this->_objTpl->hideBlock('noEntries');
-	   }
+       }
 
-	   foreach($notification as $MsgID=>$messageItem) {
+       foreach($notification as $MsgID=>$messageItem) {
             $this->_objTpl->setVariable(array(
                 'PRIVATE_MESSAGE_TITLE'        => $messageItem["message_title"],
                 'PRIVATE_MESSAGE_TEXT'         => $messageItem["message"],
@@ -537,7 +532,7 @@ class u2u extends u2uLibrary
             ));
             $i++;
             $this->_objTpl->parse('privatemessage');
-	   }
+       }
        $this->_objTpl->setVariable(array(
             'TXT_NOTIFICATION_MESSAGE'           =>  $_ARRAYLANG['TXT_NEW_NOTIFICATION_PRIVATE_MESSAGE'],
             'TXT_ENTRIES_SELECT_ALL'             =>  $_ARRAYLANG['TXT_ENTRIES_SELECT_ALL'],
@@ -549,19 +544,19 @@ class u2u extends u2uLibrary
        if($_CONFIG['corePagingLimit'] < $this->counter) {
             $this->_objTpl->setVariable('NOTIFICATION_PAGING',$this->paginationCount);
        }
-	}
+    }
 
-	/**
+    /**
      * Inserts the Messages into the Databases.
      * Performs the Validations..
      *
      * @global   $_ARRAYLANG  $objDatabase $_CORELANG
      */
-	function insertMessages() {
-       	global $_ARRAYLANG, $objDatabase,$_CORELANG,$_CONFIG;
+    function insertMessages() {
+           global $_ARRAYLANG, $objDatabase,$_CORELANG,$_CONFIG;
 
-       	$errArray = array();
-       	$_REQUEST['private_message'] = stripslashes(html_entity_decode($_REQUEST['private_message'], ENT_QUOTES, CONTREXX_CHARSET));
+           $errArray = array();
+           $_REQUEST['private_message'] = stripslashes(html_entity_decode($_REQUEST['private_message'], ENT_QUOTES, CONTREXX_CHARSET));
         $this->strMessages=$_REQUEST['private_message'];
         /**
         * For display the preview***
@@ -584,7 +579,7 @@ class u2u extends u2uLibrary
                 $this->showEntries();
         } else {
             $this->_objTpl->hideBlock('u2u_preview_message');
-       	    $objFWUser = FWUser::getFWUserObject();
+               $objFWUser = FWUser::getFWUserObject();
             $arrayRecepient=$this->arrayMerge();
             $arrayRecepients=array_unique($arrayRecepient);
             $Private_Message=strip_tags($_REQUEST['private_message']);
@@ -673,16 +668,16 @@ class u2u extends u2uLibrary
                 $this->_objTpl->parse('u2u_send_confirm_success');
             }
             // $this->_objTpl->hideBlock('u2u_send_confirm_error');
-       	    $this->showEntries();
+               $this->showEntries();
         }
-	}
+    }
 
     /**
      * send notification email
      *
      */
     function sendNotificationMail($fromId, $toId) {
-		global $_CONFIG;
+        global $_CONFIG;
 
         if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
             $objMail = new phpmailer();
@@ -693,7 +688,7 @@ class u2u extends u2uLibrary
                        $objMail->Host = $arrSmtp['hostname'];
                        $objMail->Port = $arrSmtp['port'];
                        $objMail->SMTPAuth = true;
-            	       $objMail->Username = $arrSmtp['username'];
+                       $objMail->Username = $arrSmtp['username'];
                        $objMail->Password = $arrSmtp['password'];
                  }
             }
@@ -728,7 +723,7 @@ class u2u extends u2uLibrary
      * Merge the array of Bcc as well Receipents
      * explodes the array by semicolon
      */
-	function arrayMerge() {
+    function arrayMerge() {
         $string1 = $_REQUEST['recipients'];
         $string2 = $_REQUEST['bcc'];
         if($_REQUEST['rcpt_name'] !=  "") {
@@ -761,7 +756,7 @@ class u2u extends u2uLibrary
             }
         }
         return $exp1;
-	}
+    }
 
     /**
      * Store the values of the messages into the Databases..
@@ -771,7 +766,7 @@ class u2u extends u2uLibrary
     function insertEntryDataMessage($errArray) {
         global $_ARRAYLANG, $objDatabase,$_CORELANG;
 
-    	foreach($errArray as $userID => $strValue) {
+        foreach($errArray as $userID => $strValue) {
            $insMessageLog      = 'INSERT
                                    INTO	`'.DBPREFIX.'module_u2u_message_log`
                                    SET  `message_title` = "'.$errArray[$userID]['title'].'",
@@ -787,7 +782,7 @@ class u2u extends u2uLibrary
                                             `date_time`             =   "'.date("Y-m-d,h:i:s ").'"';
             $executeMessages=$objDatabase->Execute($insSentMessages);
             $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_U2U_ENTRY_ADD_SUCCESS'];
-    	}
+        }
     }
 
     /**

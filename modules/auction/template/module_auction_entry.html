@@ -3,8 +3,8 @@
 function CheckForm() {
   var errorMsg = "";
   with( document.formEntry ) {
-  	if (type.value == "") {
-    	errorMsg = errorMsg + "- {TXT_TYPE}\n";
+      if (type.value == "") {
+        errorMsg = errorMsg + "- {TXT_TYPE}\n";
     }
     if (title.value == "") {
         errorMsg = errorMsg + "- {TXT_TITLE_ENTRY}\n";
@@ -16,9 +16,9 @@ function CheckForm() {
         errorMsg = errorMsg + "- {TXT_CATEGORIE}\n";
     }
     if (price.value == "") {
-    	if(forfree.value == "" && agreement.value == ""){
-        	errorMsg = errorMsg + "- {TXT_PRICE}\n";
-    	}
+        if(forfree.value == "" && agreement.value == ""){
+            errorMsg = errorMsg + "- {TXT_PRICE}\n";
+        }
     }
     
     {END_DATE_JS}
@@ -32,9 +32,9 @@ function CheckForm() {
     if (email.value == "") {
         errorMsg = errorMsg + "- {TXT_E-MAIL}\n";
     }else{
-    	if (!matchType('^[_a-zA-Z0-9-]+(\\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(.[a-zA-Z0-9-]+)*\\.(([0-9]{1,3})|([a-zA-Z]{2,3})|(aero|coop|info|museum|name))$', email.value)){
-    		errorMsg = errorMsg + "- {TXT_E-MAIL}\n";
-    	}
+        if (!matchType('^[_a-zA-Z0-9-]+(\\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(.[a-zA-Z0-9-]+)*\\.(([0-9]{1,3})|([a-zA-Z]{2,3})|(aero|coop|info|museum|name))$', email.value)){
+            errorMsg = errorMsg + "- {TXT_E-MAIL}\n";
+        }
     }
 
     if (errorMsg != "")
@@ -42,24 +42,24 @@ function CheckForm() {
         alert ("{TXT_FIELDS_REQUIRED}\n{TXT_THOSE_FIELDS_ARE_EMPTY}\n" + errorMsg);
         return false;
     }else{
-    	return true;
+        return true;
     }
   }
 }
 
 function matchType(pattern, value) {
-	var reg = new RegExp(pattern);
-	if (value.match(reg)) {
-		return true;
-	}
-	return false;
+    var reg = new RegExp(pattern);
+    if (value.match(reg)) {
+        return true;
+    }
+    return false;
 }
 
 function DeleteImage(imgNr){
-	if(confirm('{TXT_AUCTION_DELETE_IMAGE}')){
-		document.formEntry.image_for_delete.value 	= imgNr;
-		document.formEntry.submit();
-	}
+    if(confirm('{TXT_AUCTION_DELETE_IMAGE}')){
+        document.formEntry.image_for_delete.value 	= imgNr;
+        document.formEntry.submit();
+    }
 }
 
 
@@ -68,9 +68,9 @@ function DeleteImage(imgNr){
 
 
 <ul id="tabmenu">
-	<li><a id="auktionenTab_auction" class="active" href="javascript:{}" onclick="selectTab('auction')" title="{TXT_AUCTION}">{TXT_AUCTION}</a></li>
-	<li><a id="auktionenTab_settings" href="javascript:{}" onclick="selectTab('settings');" title="{TXT_SETTINGS}">{TXT_SETTINGS}</a></li>
-	<li><a id="auktionenTab_images" href="javascript:{}" onclick="selectTab('images')" title="{TXT_IMAGES}">{TXT_IMAGES}</a></li>
+    <li><a id="auktionenTab_auction" class="active" href="javascript:{}" onclick="selectTab('auction')" title="{TXT_AUCTION}">{TXT_AUCTION}</a></li>
+    <li><a id="auktionenTab_settings" href="javascript:{}" onclick="selectTab('settings');" title="{TXT_SETTINGS}">{TXT_SETTINGS}</a></li>
+    <li><a id="auktionenTab_images" href="javascript:{}" onclick="selectTab('images')" title="{TXT_IMAGES}">{TXT_IMAGES}</a></li>
 </ul>
 
 
@@ -82,175 +82,175 @@ function DeleteImage(imgNr){
 <input type="hidden" name="image_for_delete" value="">
 
 <div id="auction" class="auktionenTab" style="display:block">
-	<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-		<tr>
-			<th colspan="2" align="left">{TXT_TITLE}</th>
-		</tr>
-		<!--
-		<tr class="row1">
-			<td nowrap="nowrap">{TXT_TYPE}</td>
-			<td>
-				<input type="radio" name="type" value="offer" {ENTRY_TYPE_OFFER} />&nbsp;{TXT_OFFER}
-				<input type="radio" name="type" value="search" {ENTRY_TYPE_SEARCH} />&nbsp;{TXT_SEARCH}
-			</td>
-		</tr>
-		-->
-		<tr valign="top" class="row2">
-			<td nowrap="nowrap" width="150">{TXT_AUCTION_TITLE}</td>
-			<td><input type="text" name="title" style="width: 300px;" maxlength="100" value="{ENTRY_TITLE}" ></td>
-		</tr>
-		<tr valign="top" class="row1">
-			<td nowrap="nowrap" width="150">{TXT_CATEGORIE}</td>
-			<td><select name="cat"  style="width: 305px;">{CATEGORIES}</select></td>
-		</td>
-	</table>
-	<br />
-	<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-		<tr>
-			<th align="left">{TXT_DESCRIPTION}</th>
-		</tr>
-		<tr valign="top" class="row1">
-			<td>{ENTRY_DESC}</td>
-		</tr>
-	</table>	
+    <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+        <tr>
+            <th colspan="2" align="left">{TXT_TITLE}</th>
+        </tr>
+        <!--
+        <tr class="row1">
+            <td nowrap="nowrap">{TXT_TYPE}</td>
+            <td>
+                <input type="radio" name="type" value="offer" {ENTRY_TYPE_OFFER} />&nbsp;{TXT_OFFER}
+                <input type="radio" name="type" value="search" {ENTRY_TYPE_SEARCH} />&nbsp;{TXT_SEARCH}
+            </td>
+        </tr>
+        -->
+        <tr valign="top" class="row2">
+            <td nowrap="nowrap" width="150">{TXT_AUCTION_TITLE}</td>
+            <td><input type="text" name="title" style="width: 300px;" maxlength="100" value="{ENTRY_TITLE}" ></td>
+        </tr>
+        <tr valign="top" class="row1">
+            <td nowrap="nowrap" width="150">{TXT_CATEGORIE}</td>
+            <td><select name="cat"  style="width: 305px;">{CATEGORIES}</select></td>
+        </td>
+    </table>
+    <br />
+    <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+        <tr>
+            <th align="left">{TXT_DESCRIPTION}</th>
+        </tr>
+        <tr valign="top" class="row1 reset">
+            <td>{ENTRY_DESC}</td>
+        </tr>
+    </table>	
   </div>
   
-	<div id="settings" class="auktionenTab" style="display:none">
-		<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-			<tr>
-				<th colspan="2" align="left">{TXT_SETTINGS}</th>
-			</tr>
-			<!--
-			<tr valign="top" class="row2">
-				<td nowrap="nowrap" width="150">{TXT_PRICE}</td>
-				<td><input type="text" name="price" style="width: 58px;" maxlength="100" value="{ENTRY_PRICE}">&nbsp;&nbsp;<input type="checkbox" name="forfree" value="1" {ENTRY_FOR_FREE}/>&nbsp;{TXT_FOR_FREE}&nbsp;<input type="checkbox" name="agreement" value="1" {ENTRY_AGREEMENT}/>&nbsp;{TXT_AGREEMENT}</td>
-			</td>
-			-->
-			<tr valign="top" class="row2">
-				<td nowrap="nowrap" width="150">{TXT_AUCTION_STARTPRICE}</td>
-				<td><input type="text" name="startprice" style="width: 58px;" maxlength="100" value="{ENTRY_STARTPRICE}">&nbsp;&nbsp;</td>
-			</td>
-			<tr valign="top" class="row1">
-				<td nowrap="nowrap" width="150">{TXT_AUCTION_INCR_STEPS}</td>
-				<td><input type="text" name="incr_steps" style="width: 58px;" maxlength="100" value="{ENTRY_INCR_STEPS}">&nbsp;&nbsp;</td>
-			</td>
-			
-			<!-- BEGIN end_date_dropdown -->
-			<!--
-			<tr valign="top" class="row1">
-				<td nowrap="nowrap" width="150">{TXT_END_DATE}</td>
-				<td><select name="days" style="width: 60px;">{DAYS_ONLINE}</select>&nbsp;&nbsp;{TXT_DAYS}</td>
-			</td>
-			-->
-			<!-- END end_date_dropdown -->
-			<tr valign="top" class="row2">
-				<td nowrap="nowrap" width="150">{TXT_AUCTION_SHOWING_UP}</td>
-				<td>
-					<select name="end_day">
-						{ENTRY_END_DAY}
-					</select>
-					.
-					<select name="end_month">
-						{ENTRY_END_MONTH}
-					</select>
-					.
-					<select name="end_year">
-						{ENTRY_END_YEAR}
-					</select>
-					&nbsp;&nbsp;&nbsp;&nbsp;
-					<select name="end_hour">
-						{ENTRY_END_HOUR}
-					</select>
-					:
-					<select name="end_minutes">
-						{ENTRY_END_MINUTES}
-					</select>
-				</td>
-			</td>
-		</table>
-		<br />
-		<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-			<tr>
-				<th colspan="2" align="left">{TXT_AUCTION_CONDITIONS}</th>
-			</tr>
-			<tr valign="top" class="row1">
-				<td nowrap="nowrap" width="150">{TXT_AUCTION_SHIPPING}</td>
-				<td><input type="text" name="shipping" value="{ENTRY_SHIPPING}" style="width: 300px;" /></td>
-			</td>
-			<tr valign="top" class="row2">
-				<td nowrap="nowrap" width="150">{TXT_AUCTION_PAYMENT}</td>
-				<td><input type="text" name="payment" value="{ENTRY_PAYMENT}" style="width: 300px;" /></td>
-			</td>
-		</table>
-		<br /><!--
-		<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-			<tr>
-				<th colspan="2" align="left">{TXT_AUCTION_OTHER_SETTINGS}</th>
-			</tr>
-			<tr valign="top" class="row1">
-				<td nowrap="nowrap" width="150">{TXT_PREMIUM}</td>
-				<td><input type="checkbox" name="premium" value="1" {ENTRY_PREMIUM} /></td>
-			</td>
-			<tr valign="top" class="row2">
-				<td nowrap="nowrap" width="150">{TXT_ADDED_BY}</td>
-				<td><input type="text" name="addedby" style="width: 300px;" maxlength="100" value="{ENTRY_ADDEDBY}"></td>
-			</td>
-			<tr valign="top" class="row1">
-				<td nowrap="nowrap" width="150">{TXT_NAME}</td>
-				<td><input type="text" name="name" style="width: 300px;" maxlength="100" value="{ENTRY_NAME}"></td>
-			</td>
-			<tr valign="top" class="row2">
-				<td nowrap="nowrap" width="150">{TXT_E-MAIL}</td>
-				<td><input type="text" name="email" style="width: 300px;" maxlength="100" value="{ENTRY_E-MAIL}"></td>
-			</td>
-			<tr valign="top" class="row1">
-				<td nowrap="nowrap" width="150">{TXT_USER_DETAIL}</td>
-				<td>
-					<input type="radio" name="userdetails" value="1" {ENTRY_USERDETAILS_ON} />&nbsp;{TXT_DETAIL_SHOW}
-					<input type="radio" name="userdetails" value="0" {ENTRY_USERDETAILS_OFF} />&nbsp;{TXT_DETAIL_HIDE}
-				</td>
-			</td>
-			-->
-			<!-- BEGIN spez_fields -->
-			<!--
-			<tr valign="top" class="{SPEZ_FIELD_ROW_CLASS}">
-				<td nowrap="nowrap" width="150">{TXT_SPEZ_FIELD_NAME}</td>
-				<td>{SPEZ_FIELD_INPUT}</td>
-			</td>
-			-->
-			<!-- END spez_fields -->
-		<!--</table>-->
-  	</div>
+    <div id="settings" class="auktionenTab" style="display:none">
+        <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+            <tr>
+                <th colspan="2" align="left">{TXT_SETTINGS}</th>
+            </tr>
+            <!--
+            <tr valign="top" class="row2">
+                <td nowrap="nowrap" width="150">{TXT_PRICE}</td>
+                <td><input type="text" name="price" style="width: 58px;" maxlength="100" value="{ENTRY_PRICE}">&nbsp;&nbsp;<input type="checkbox" name="forfree" value="1" {ENTRY_FOR_FREE}/>&nbsp;{TXT_FOR_FREE}&nbsp;<input type="checkbox" name="agreement" value="1" {ENTRY_AGREEMENT}/>&nbsp;{TXT_AGREEMENT}</td>
+            </td>
+            -->
+            <tr valign="top" class="row2">
+                <td nowrap="nowrap" width="150">{TXT_AUCTION_STARTPRICE}</td>
+                <td><input type="text" name="startprice" style="width: 58px;" maxlength="100" value="{ENTRY_STARTPRICE}">&nbsp;&nbsp;</td>
+            </td>
+            <tr valign="top" class="row1">
+                <td nowrap="nowrap" width="150">{TXT_AUCTION_INCR_STEPS}</td>
+                <td><input type="text" name="incr_steps" style="width: 58px;" maxlength="100" value="{ENTRY_INCR_STEPS}">&nbsp;&nbsp;</td>
+            </td>
+            
+            <!-- BEGIN end_date_dropdown -->
+            <!--
+            <tr valign="top" class="row1">
+                <td nowrap="nowrap" width="150">{TXT_END_DATE}</td>
+                <td><select name="days" style="width: 60px;">{DAYS_ONLINE}</select>&nbsp;&nbsp;{TXT_DAYS}</td>
+            </td>
+            -->
+            <!-- END end_date_dropdown -->
+            <tr valign="top" class="row2">
+                <td nowrap="nowrap" width="150">{TXT_AUCTION_SHOWING_UP}</td>
+                <td>
+                    <select name="end_day">
+                        {ENTRY_END_DAY}
+                    </select>
+                    .
+                    <select name="end_month">
+                        {ENTRY_END_MONTH}
+                    </select>
+                    .
+                    <select name="end_year">
+                        {ENTRY_END_YEAR}
+                    </select>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <select name="end_hour">
+                        {ENTRY_END_HOUR}
+                    </select>
+                    :
+                    <select name="end_minutes">
+                        {ENTRY_END_MINUTES}
+                    </select>
+                </td>
+            </td>
+        </table>
+        <br />
+        <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+            <tr>
+                <th colspan="2" align="left">{TXT_AUCTION_CONDITIONS}</th>
+            </tr>
+            <tr valign="top" class="row1">
+                <td nowrap="nowrap" width="150">{TXT_AUCTION_SHIPPING}</td>
+                <td><input type="text" name="shipping" value="{ENTRY_SHIPPING}" style="width: 300px;" /></td>
+            </td>
+            <tr valign="top" class="row2">
+                <td nowrap="nowrap" width="150">{TXT_AUCTION_PAYMENT}</td>
+                <td><input type="text" name="payment" value="{ENTRY_PAYMENT}" style="width: 300px;" /></td>
+            </td>
+        </table>
+        <br /><!--
+        <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+            <tr>
+                <th colspan="2" align="left">{TXT_AUCTION_OTHER_SETTINGS}</th>
+            </tr>
+            <tr valign="top" class="row1">
+                <td nowrap="nowrap" width="150">{TXT_PREMIUM}</td>
+                <td><input type="checkbox" name="premium" value="1" {ENTRY_PREMIUM} /></td>
+            </td>
+            <tr valign="top" class="row2">
+                <td nowrap="nowrap" width="150">{TXT_ADDED_BY}</td>
+                <td><input type="text" name="addedby" style="width: 300px;" maxlength="100" value="{ENTRY_ADDEDBY}"></td>
+            </td>
+            <tr valign="top" class="row1">
+                <td nowrap="nowrap" width="150">{TXT_NAME}</td>
+                <td><input type="text" name="name" style="width: 300px;" maxlength="100" value="{ENTRY_NAME}"></td>
+            </td>
+            <tr valign="top" class="row2">
+                <td nowrap="nowrap" width="150">{TXT_E-MAIL}</td>
+                <td><input type="text" name="email" style="width: 300px;" maxlength="100" value="{ENTRY_E-MAIL}"></td>
+            </td>
+            <tr valign="top" class="row1">
+                <td nowrap="nowrap" width="150">{TXT_USER_DETAIL}</td>
+                <td>
+                    <input type="radio" name="userdetails" value="1" {ENTRY_USERDETAILS_ON} />&nbsp;{TXT_DETAIL_SHOW}
+                    <input type="radio" name="userdetails" value="0" {ENTRY_USERDETAILS_OFF} />&nbsp;{TXT_DETAIL_HIDE}
+                </td>
+            </td>
+            -->
+            <!-- BEGIN spez_fields -->
+            <!--
+            <tr valign="top" class="{SPEZ_FIELD_ROW_CLASS}">
+                <td nowrap="nowrap" width="150">{TXT_SPEZ_FIELD_NAME}</td>
+                <td>{SPEZ_FIELD_INPUT}</td>
+            </td>
+            -->
+            <!-- END spez_fields -->
+        <!--</table>-->
+      </div>
   
-	<div id="images" class="auktionenTab" style="display:none">
-		<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-			<tr>
-				<th colspan="2" align="left">{TXT_IMAGES}</th>
-			</tr>
-			<tr valign="top" class="row1">
-				<td nowrap="nowrap" width="150">{TXT_PICTURE} 1</td>
-				<td><input type="file" name="pic_1" size="38" style="width: 304px;" maxlength="100"><br />{ENTRY_PICTURE_1}</td>
-			</td>
-			<tr valign="top" class="row2">
-				<td nowrap="nowrap" width="150">{TXT_PICTURE} 2</td>
-				<td><input type="file" name="pic_2" size="38" style="width: 304px;" maxlength="100"><br />{ENTRY_PICTURE_2}</td>
-			</td>
-			<tr valign="top" class="row1">
-				<td nowrap="nowrap" width="150">{TXT_PICTURE} 3</td>
-				<td><input type="file" name="pic_3" size="38" style="width: 304px;" maxlength="100"><br />{ENTRY_PICTURE_3}</td>
-			</td>
-			<tr valign="top" class="row2">
-				<td nowrap="nowrap" width="150">{TXT_PICTURE} 4</td>
-				<td><input type="file" name="pic_4" size="38" style="width: 304px;" maxlength="100"><br />{ENTRY_PICTURE_4}</td>
-			</td>
-			<tr valign="top" class="row1">
-				<td nowrap="nowrap" width="150">{TXT_PICTURE} 5</td>
-				<td><input type="file" name="pic_5" size="38" style="width: 304px;" maxlength="100"><br />{ENTRY_PICTURE_5}</td>
-			</td>
-		</table>		
-	</div>
+    <div id="images" class="auktionenTab" style="display:none">
+        <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+            <tr>
+                <th colspan="2" align="left">{TXT_IMAGES}</th>
+            </tr>
+            <tr valign="top" class="row1">
+                <td nowrap="nowrap" width="150">{TXT_PICTURE} 1</td>
+                <td><input type="file" name="pic_1" size="38" style="width: 304px;" maxlength="100"><br />{ENTRY_PICTURE_1}</td>
+            </td>
+            <tr valign="top" class="row2">
+                <td nowrap="nowrap" width="150">{TXT_PICTURE} 2</td>
+                <td><input type="file" name="pic_2" size="38" style="width: 304px;" maxlength="100"><br />{ENTRY_PICTURE_2}</td>
+            </td>
+            <tr valign="top" class="row1">
+                <td nowrap="nowrap" width="150">{TXT_PICTURE} 3</td>
+                <td><input type="file" name="pic_3" size="38" style="width: 304px;" maxlength="100"><br />{ENTRY_PICTURE_3}</td>
+            </td>
+            <tr valign="top" class="row2">
+                <td nowrap="nowrap" width="150">{TXT_PICTURE} 4</td>
+                <td><input type="file" name="pic_4" size="38" style="width: 304px;" maxlength="100"><br />{ENTRY_PICTURE_4}</td>
+            </td>
+            <tr valign="top" class="row1">
+                <td nowrap="nowrap" width="150">{TXT_PICTURE} 5</td>
+                <td><input type="file" name="pic_5" size="38" style="width: 304px;" maxlength="100"><br />{ENTRY_PICTURE_5}</td>
+            </td>
+        </table>		
+    </div>
  
-	<br />
-	<input type="submit" name="submitEntry" value="{TXT_SAVE}" />
+    <br />
+    <input type="submit" name="submitEntry" value="{TXT_SAVE}" />
 </form>
 <!-- END module_auction_entry.html -->

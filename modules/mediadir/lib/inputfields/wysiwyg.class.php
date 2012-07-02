@@ -40,11 +40,9 @@ class mediaDirectoryInputfieldWysiwyg extends mediaDirectoryLibrary implements i
 
     function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
-        global $objDatabase, $_LANGID, $objInit, $wysiwygEditor, $FCKeditorBasePath, $_ARRAYLANG;;
+        global $objDatabase, $_LANGID, $objInit, $_ARRAYLANG;;
 
         $intId = intval($arrInputfield['id']);
-        $wysiwygEditor = "FCKeditor";
-        $FCKeditorBasePath = "/editor/fckeditor/";
 
         switch ($intView) {
             default:

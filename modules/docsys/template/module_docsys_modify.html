@@ -3,30 +3,30 @@
 <!-- //
 function disableDate()
 {
-	with (document.docsys)
-	{
-		if (status.checked == false)
-		{
-			startDate.disabled = true;
-		    endDate.disabled = true;
-		}
-		else
-		{
-			startDate.disabled = false;
-		    endDate.disabled = false;
-		}
-	}
+    with (document.docsys)
+    {
+        if (status.checked == false)
+        {
+            startDate.disabled = true;
+            endDate.disabled = true;
+        }
+        else
+        {
+            startDate.disabled = false;
+            endDate.disabled = false;
+        }
+    }
 }
 
 
 function setStartDate()
 {
-	with(document.docsys)
+    with(document.docsys)
     {
-	   if(startDate.value=="")
-	   {
-	        startDate.value= "{DOCSYS_DATE}";
-	   }
+       if(startDate.value=="")
+       {
+            startDate.value= "{DOCSYS_DATE}";
+       }
     }
 }
 
@@ -34,10 +34,10 @@ function setEndDate()
 {
     with(document.docsys)
     {
-	   if(endDate.value=="")
-	   {
-	        endDate.value = "{DOCSYS_DATE}";
-	   }
+       if(endDate.value=="")
+       {
+            endDate.value = "{DOCSYS_DATE}";
+       }
     }
 }
 // -->
@@ -112,7 +112,7 @@ function setEndDate()
     <tr>
       <th valign="top">{TXT_DOCSYS_CONTENT}</th>
     </tr>
-    <tr class="row1">
+    <tr class="row1 reset">
       <td valign="top">{DOCSYS_TEXT}</td>
     </tr>
   </table>

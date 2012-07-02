@@ -33,7 +33,7 @@
 ?>
 CKEDITOR.editorConfig = function( config )
 {
-    config.skin = 'v2';
+    config.skin = 'kama';
 
     config.height = 600;
     config.uiColor = '#ececec';
