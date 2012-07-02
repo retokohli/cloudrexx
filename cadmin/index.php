@@ -792,7 +792,7 @@ $objTemplate->setVariable(array(
     'TXT_LOGGED_IN_AS' => $_CORELANG['TXT_LOGGED_IN_AS'],
     'TXT_LOG_OUT' => $_CORELANG['TXT_LOG_OUT'],
 // TODO: This function call returns the empty string -- always!  What's the use?
-    'CONTENT_WYSIWYG_CODE' => get_wysiwyg_code(),
+//    'CONTENT_WYSIWYG_CODE' => get_wysiwyg_code(),
     // Mind: The module index is not used in any non-module template
     // for the time being, but is provided for future use and convenience.
     'MODULE_INDEX' => MODULE_INDEX,
