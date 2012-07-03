@@ -26,7 +26,8 @@ function switchNavigation(navi_id) {
 <ul id="navigation_level_1_{NAVIGATION_ID}" class="navigation_level_1" onclick="switchNavigation('{NAVIGATION_ID}');"><li class="{NAVIGATION_CLASS}"><span class="{NAVIGATION_CLASS}">{NAVIGATION_GROUP_NAME}</span></li></ul>
 <ul id="navigation_level_2_{NAVIGATION_ID}" class="navigation_level_2 {NAVIGATION_CLASS}">{NAVIGATION_MENU}</ul>
 <!-- END navigationRow -->
-<form id="search" name="search" action="index.php" method="post">
-    <input name="term" type="text" value="" />
-    <input name="submit" type="submit" value="{TXT_SEARCH}" />
+<form id="search" name="search" action="index.php" method="get">
+    <input type="hidden" name="cmd" value="search" />
+    <input type="text" name="term" value="" />
+    <input type="submit" value="{TXT_SEARCH}" />
 </form>
