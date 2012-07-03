@@ -604,7 +604,6 @@ class PageRepository extends EntityRepository {
                 'Score' => 100,
                 'Title' => $page->getTitle(),
                 'Content' => substr($page->getTitle(),0, $config['searchDescriptionLength']),
-//TODO: awww this is sooo costly. @see getPath()
                 'Link' => $this->getPath($page)
             );
         }
