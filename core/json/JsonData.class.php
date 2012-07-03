@@ -9,9 +9,6 @@
  */
 
 namespace Cx\Core\Json;
-require_once ASCMS_CORE_PATH.'/json/adapter/JsonNode.class.php';
-require_once ASCMS_CORE_PATH.'/json/adapter/JsonPage.class.php';
-require_once ASCMS_CORE_PATH.'/json/adapter/JsonContentManager.class.php';
 use \Cx\Core\Json\Adapter\JsonNode;
 use \Cx\Core\Json\Adapter\JsonPage;
 use \Cx\Core\Json\Adapter\JsonContentManager;
@@ -31,13 +28,16 @@ class JsonData {
      * @var String Namespace
      */
     protected static $adapter_ns = '\\Cx\\Core\\Json\\Adapter\\';
+    protected static $adapter_path = '/json/adapter/';
     
     /**
      * List of adapter class names. Just add yours to the list...
      * @var array List of adapter class names 
      */
     protected static $adapter_classes = array(
-        'JsonNode', 'JsonPage', 'JsonContentManager'
+        'ContentManager' => array(
+            'JsonNode', 'JsonPage', 'JsonContentManager',
+        ),
     );
     
     /**
@@ -51,10 +51,13 @@ class JsonData {
      * @author Michael Ritter <michael.ritter@comvation.com>
      */
     public function __construct() {
-        foreach (self::$adapter_classes as $adapter) {
-            $adapter = self::$adapter_ns . $adapter;
-            $object = new $adapter();
-            $this->adapters[$object->getName()] = $object;
+        foreach (self::$adapter_classes as $ns=>$adapters) {
+            foreach ($adapters as $adapter) {
+                require_once ASCMS_CORE_PATH . self::$adapter_path . strtolower($ns) . '/' . $adapter . '.class.php';
+                $adapter = self::$adapter_ns . $ns . '\\' . $adapter;
+                $object = new $adapter();
+                $this->adapters[$object->getName()] = $object;
+            }
         }
     }
 
@@ -96,6 +99,7 @@ class JsonData {
                 'message' => $adapter->getMessagesAsString()
             ));
         } catch (\Exception $e) {
+            //die($e->getTraceAsString());
             return $this->getJsonError($e->getMessage());
         }
     }
