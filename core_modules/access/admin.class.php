@@ -801,36 +801,53 @@ class AccessManager extends AccessLib
     }
 
 
-    function _changePageProtection($pageId, $protect = true, $type)
+    function _changePageProtection($pageId, $protect = true, $type = 'frontend')
     {
         global $objDatabase, $_CONFIG;
 
         $objFWUser = FWUser::getFWUserObject();
 
         if (in_array($type, $objFWUser->objGroup->getTypes())) {
-            $objAccess = $objDatabase->SelectLimit('SELECT `'.$type.'_access_id` FROM `'.DBPREFIX.'content_navigation` WHERE `catid` = '.$pageId.' AND `lang` = '.FRONTEND_LANG_ID, 1);
-            if ($objAccess !== false && $objAccess->RecordCount() == 1) {
-                $currentAccessId = $objAccess->fields[$type.'_access_id'];
+            // get current access id for $pageId
+            $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+            $page = $pageRepo->findOneBy(array(
+                'id' => intval($pageId),
+            ));
+            if ($type == 'frontend') {
+                $currentAccessId = $page->getFrontendAccessId();
             } else {
-                return false;
+                $currentAccessId = $page->getBackendAccessId();
             }
 
             if ($protect) {
                 $lastAccessId = $_CONFIG['lastAccessId'];
                 $lastAccessId++;
-                if ($objDatabase->Execute('UPDATE `'.DBPREFIX.'content_navigation` SET '.($type == 'frontend' ? '`protected` = 1, ' : '').'`'.$type.'_access_id` = '.$lastAccessId.' WHERE `catid` = '.$pageId.' AND `lang` = '.FRONTEND_LANG_ID) !== false) {
-                    $_CONFIG['lastAccessId'] = $lastAccessId;
-                    $objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = ".$lastAccessId." WHERE `setname` = 'lastAccessId'");
-
-                    require_once(ASCMS_CORE_PATH.'/settings.class.php');
-                    $objSettings = new settingsManager();
-                    $objSettings->writeSettingsFile();
-
-                    return true;
+                // set new access id
+                if ($type == 'frontend') {
+                    $page->setFrontendProtection(true);
+                    $page->setFrontendAccessId($lastAccessId);
+                } else {
+                    $page->setBackendProtection(true);
+                    $page->setBackendAccessId($lastAccessId);
                 }
+                \Env::get('em')->persist($page);
+                $_CONFIG['lastAccessId'] = $lastAccessId;
+                $objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = ".$lastAccessId." WHERE `setname` = 'lastAccessId'");
+
+                require_once(ASCMS_CORE_PATH.'/settings.class.php');
+                $objSettings = new settingsManager();
+                $objSettings->writeSettingsFile();
+
+                return true;
             } else {
+                // remove access id from db
                 if ($objDatabase->Execute('DELETE FROM `'.DBPREFIX.'access_group_dynamic_ids` WHERE `access_id` = '.$currentAccessId)) {
-                    return $objDatabase->Execute('UPDATE `'.DBPREFIX.'content_navigation` SET '.($type == 'frontend' ? '`protected` = 0, ' : '').'`'.$type.'_access_id` = 0 WHERE `catid` = '.$pageId.' AND `lang` = '.FRONTEND_LANG_ID);
+                    if ($type == 'frontend') {
+                        $page->setFrontendProtection(false);
+                    } else {
+                        $page->setBackendProtection(false);
+                    }
+                    \Env::get('em')->persist($page);
                 }
             }
         }

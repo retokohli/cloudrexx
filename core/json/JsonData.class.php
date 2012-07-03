@@ -76,7 +76,14 @@ class JsonData {
             return $this->getJsonError('No such adapter');
         }
         $adapter = $this->adapters[$adapter];
-        if (!in_array($method, $adapter->getAccessableMethods())) {
+        $methods = $adapter->getAccessableMethods();
+        $realMethod = '';
+        if (in_array($method, $methods)) {
+            $realMethod = $method;
+        } else if (isset($methods[$method])) {
+            $realMethod = $methods[$method];
+        }
+        if ($realMethod == '') {
             return $this->getJsonError('No such method: ' . $method);
         }
         try {
@@ -91,7 +98,7 @@ class JsonData {
             // Search for a better way to disable CSRF!
             ini_set('url_rewriter.tags', '');
 
-            $output = call_user_func(array($adapter, $method), $arguments);
+            $output = call_user_func(array($adapter, $realMethod), $arguments);
 
             return json_encode(array(
                 'status'  => 'success',

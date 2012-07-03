@@ -83,7 +83,7 @@ class JsonNode implements JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('getTree', 'delete', 'multipleDelete', 'move');
+        return array('getTree', 'delete', 'multipleDelete', 'move', 'new'=>'newNode');
     }
 
     /**
@@ -128,7 +128,15 @@ class JsonNode implements JsonAdapter {
     public function move($arguments) {
         global $_CORELANG;
         
-// TODO: ACCESS CHECK
+        // Global access check
+        if (!\Permission::checkAccess(6, 'static', true) ||
+                !\Permission::checkAccess(35, 'static', true)) {
+            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
+        }
+        if (!\Permission::checkAccess(160, 'static', true)) {
+            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_MOVE_DENIED']);
+        }
+        
         $moved_node = $this->nodeRepo->find($arguments['post']['id']);
         $parent_node = $this->nodeRepo->find($arguments['post']['ref']);
 
@@ -142,10 +150,53 @@ class JsonNode implements JsonAdapter {
         if ($arguments['post']['position'])
             $this->nodeRepo->moveDown($moved_node, $arguments['post']['position']);
 
+        foreach ($moved_node->getPages() as $page) {
+            $page->setupPath();
+            $this->em->persist($page);
+        }
+        
         $this->em->persist($moved_node);
         $this->em->persist($parent_node);
 
         $this->em->flush();
+    }
+    
+    /**
+     * Creates a new node as first subnode of the specified one
+     * @param array $arguments Arguments passed from JsonData
+     */
+    public function newNode($arguments) {
+        global $_CORELANG;
+        
+        // Global access check
+        if (!\Permission::checkAccess(6, 'static', true) ||
+                !\Permission::checkAccess(35, 'static', true)) {
+            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
+        }
+        // This method can not create a not on rootlevel, so we do not have to
+        // check for access ID 127
+        if (!\Permission::checkAccess(5, 'static', true)) {
+            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_CREATION_DENIED']);
+        }
+        
+        // find specified node
+        $nodeId = contrexx_input2raw($arguments['get']['id']);
+        $node = $this->nodeRepo->findOneBy(array(
+            'id' => intval($nodeId),
+        ));
+        // throw exception if not found
+        if (!$node) {
+            throw new \ContentManagerException();
+        }
+        // create new node
+        $newNode = new \Cx\Model\ContentManager\Node();
+        // append new node to existing
+        $newNode->setParent($node);
+        $node->addChildren($newNode);
+        // create pages?
+        // persist everything
+        $this->em->persist($newNode);
+        $this->em->persist($node);
     }
 
     /**

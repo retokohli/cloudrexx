@@ -14,6 +14,8 @@ class ActionsRenderer
         global $_ARRAYLANG;
 
         $actions = array();
+        
+        $actions[] = sprintf(self::$actionItem, ' new', "index.php?cmd=jsondata&object=node&act=new&id={$page->getNode()->getId()}", $_ARRAYLANG['TXT_CORE_CM_NEW']);
 
         if ($page->isActive()) {
             if ($page->getEditingStatus() == 'hasDraft' || $page->getEditingStatus() == 'hasDraftWaiting') {
