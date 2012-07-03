@@ -146,7 +146,7 @@ class Page extends \Cx\Model\Base\EntityBase
     private $skin;
 
     /**
-     * Tells wheter this is a virtual (non DB) page or not
+     * @var boolean Tells wheter this is a virtual (non DB) page or not
      */
     protected $isVirtual = false;
 
@@ -554,7 +554,7 @@ class Page extends \Cx\Model\Base\EntityBase
 
     /**
      * Get active
-     *
+     * @todo Move this method to CM!
      * @return boolean $active
      */
     public function getStatus()
@@ -576,6 +576,15 @@ class Page extends \Cx\Model\Base\EntityBase
             $status .= 'redir ';
             if (!$this->target) {
                 $status .= 'broken ';
+            } else if($this->isTargetInternal()) {
+                // this should not be done here!
+                $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+                $targetPage = $pageRepo->getTargetPage($this);
+                if (!$targetPage ||
+                        !$targetPage->isVisible() ||
+                        !$targetPage->isActive()) {
+                    $status .= 'broken ';
+                }
             }
         }
         
