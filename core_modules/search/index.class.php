@@ -214,42 +214,6 @@ function search_searchQuery($section, $searchTerm)
                         AND (enddate>=CURDATE() OR enddate='0000-00-00')";
 			break;
 
-        case "content":
-             $query="SELECT n.catid AS id,
-		                    m.name AS section,
-		                    n.cmd AS cmd,
-		                    c.id AS contentid,
-		                    c.content AS content,
-		                    c.title AS title,
-                      MATCH (content,title) AGAINST ('%.".htmlentities($searchTerm, ENT_QUOTES, CONTREXX_CHARSET)."%') AS score
-                       FROM ".DBPREFIX."content AS c,
-                            ".DBPREFIX."content_navigation AS n,
-                            ".DBPREFIX."modules AS m
-                      WHERE (content LIKE ('%".htmlentities($searchTerm, ENT_QUOTES, CONTREXX_CHARSET)."%')
-                      	OR title LIKE ('%$searchTerm%'))
-                        ".(($_CONFIG['searchVisibleContentOnly'] == "on") ? "AND n.displaystatus = 'on'" : "")."
-                        AND activestatus='1'
-                        AND is_validated='1'
-                        ".(
-						!$objFWUser->objUser->login() ?
-							// user is not authenticated
-							($_CONFIG['coreListProtectedPages'] == 'off' ? 'AND n.protected=0' : '') :
-							// user is authenticated
-							(
-								!$objFWUser->objUser->getAdminStatus() ?
-									 // user is not administrator
-									'AND (n.protected=0'.(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR n.frontend_access_id IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '').')' :
-									// user is administrator
-									''
-							)
-						)."
-						AND (n.startdate<=CURDATE() OR n.startdate='0000-00-00')
-						AND (n.enddate>=CURDATE() OR n.enddate='0000-00-00')
-                        AND n.module =m.id
-                        AND n.catid = c.id
-						AND n.lang=".$_LANGID;
-            break;
-
         case "docsys":
              $query="SELECT id,
 		                    text AS content,
