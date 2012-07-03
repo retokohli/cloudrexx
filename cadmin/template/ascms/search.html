@@ -1,12 +1,31 @@
 <!-- START search.html -->
 <table class="adminlist" width="100%">
     <tr>
-        <th>Name</th>
+        <!-- BEGIN search_results_comment -->
+        <th colspan="4">{TXT_SEARCH_RESULTS_COMMENT}</th>
+        <!-- END search_results_comment -->
+        <!-- BEGIN search_no_term -->
+        <th colspan="4">{TXT_SEARCH_NO_TERM}</td>
+        <!-- END search_no_term -->
+        <!-- BEGIN search_no_results -->
+        <th colspan="4">{TXT_SEARCH_NO_RESULTS}</td>
+        <!-- END search_no_results -->
+    </tr>
+    <tr class="row3">
+        <td>{TXT_SEARCH_TITLE}</td>
+        <td>{TXT_SEARCH_LANG}</td>
+        <td>{TXT_SEARCH_CONTENT_TITLE}</td>
+        <td>{TXT_SEARCH_SLUG}</td>
     </tr>
     <!-- BEGIN search_result_row -->
     <tr>
-        <td>{SEARCH_RESULT_NAME}</td>
+        <td><a href="index.php?cmd=content&amp;loadPage={SEARCH_RESULT_ID}">{SEARCH_RESULT_TITLE}</a></td>
+        <td>{SEARCH_RESULT_LANG}</td>
+        <td>{SEARCH_RESULT_CONTENT_TITLE}</td>
+        <td>{SEARCH_RESULT_SLUG}</td>
     </tr>
     <!-- END search_result_row -->
 </table>
+<br />
+{SEARCH_PAGING}
 <!-- END search.html -->
