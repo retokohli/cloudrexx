@@ -746,72 +746,78 @@ class InitCMS
         if (count($arrLanguageName) == 1) {
             return '';
         }
+
         $action = CONTREXX_DIRECTORY_INDEX;
-        $command = (isset($_REQUEST['cmd'])
-            ? contrexx_input2raw($_REQUEST['cmd']) : '');
+        $command = isset($_REQUEST['cmd']) ? contrexx_input2raw($_REQUEST['cmd']) : '';
         switch ($command) {
-/*
-          case 'xyzzy':
-            // Variant 1:  Use selected GET parameters only
-            // Currently unused, but this could be extended by a few required
-            // parameters and might prove useful for some modules.
-            $query_string = '';
-            // Add more as needed
-            $arrParameter = array('cmd', 'act', 'tpl', 'key', );
-            foreach ($arrParameter as $parameter) {
-                $value = (isset($_GET[$parameter])
-                  ? $_GET[$parameter] : null);
-                if (isset($value)) {
-                    $query_string .= "&$parameter=".contrexx_input2raw($value);
+            /*case 'xyzzy':
+                // Variant 1:  Use selected GET parameters only
+                // Currently unused, but this could be extended by a few required
+                // parameters and might prove useful for some modules.
+                $query_string = '';
+                // Add more as needed
+                $arrParameter = array('cmd', 'act', 'tpl', 'key', );
+                foreach ($arrParameter as $parameter) {
+                    $value = (isset($_GET[$parameter])
+                      ? $_GET[$parameter] : null);
+                    if (isset($value)) {
+                        $query_string .= "&$parameter=".contrexx_input2raw($value);
+                    }
                 }
-            }
-            Html::replaceUriParameter($action, $query_string);
-            // The dropdown is built below
-            break;
-*/
-          case 'shop':
-          case 'country':
-            // Variant 2:  Use any (GET) request parameters
-            // Note that this is generally unsafe, as most modules/methods do
-            // not rely on posted data only!
-            $arrParameter = null;
-            $uri = $_SERVER['QUERY_STRING'];
-            Html::stripUriParam($uri, 'userFrontendLangId');
-            parse_str($uri, $arrParameter);
-            $first = true;
-            foreach ($arrParameter as $name => $value) {
+                Html::replaceUriParameter($action, $query_string);
+                // The dropdown is built below
+                break;*/
+            case 'shop':
+            case 'country':
+                // Variant 2:  Use any (GET) request parameters
+                // Note that this is generally unsafe, as most modules/methods do
+                // not rely on posted data only!
+                $arrParameter = null;
+                $uri = $_SERVER['QUERY_STRING'];
+                Html::stripUriParam($uri, 'userFrontendLangId');
+                parse_str($uri, $arrParameter);
+                $first = true;
+                foreach ($arrParameter as $name => $value) {
                 $action .=
                     ($first ? '?' : '&amp;').
                     $name.'='.urlencode(contrexx_input2raw($value));
                 $first = false;
-            }
-            // The dropdown is built below
+                }
+                // The dropdown is built below
             break;
-// TODO: Add your case here if variant 1 is enabled, too
-//          case 'foobar':
-          default:
-            // The old way
-            $i = 0;
-            $arrVars = array();
-            if (isset($_SERVER['QUERY_STRING'])) {
-                parse_str($_SERVER['QUERY_STRING'], $arrVars);
-            }
-            $query = isset($arrVars['cmd']) ? "?cmd=".$arrVars['cmd'] : "";
-            $return = "\n<form action='index.php".$query."' method='post' name='userFrontendLangIdForm'>\n";
-            $return .= "<select name='userFrontendLangId' size='1' class='chzn-select' onchange=\"document.forms['userFrontendLangIdForm'].submit()\">\n";
-            foreach ($this->arrLang as $id=>$value){
-                if ($this->arrLang[$id]['frontend']==1) {
-                    $i++;
-                    if ($id==$this->userFrontendLangId) {
-                        $return .= "<option value='".$id."' selected='selected'>Frontend [".htmlentities($value['name'], ENT_QUOTES, CONTREXX_CHARSET)."]</option>\n";
-                    } else {
-                        $return .= "<option value='".$id."'>Frontend [".htmlentities($value['name'], ENT_QUOTES, CONTREXX_CHARSET)."]</option>\n";
+            // TODO: Add your case here if variant 1 is enabled, too
+            //case 'foobar':
+            case 'content':
+            case 'docsys':
+            case 'recommend':
+            case 'jobs':
+            case 'alias':
+                // The old way
+                $i = 0;
+                $arrVars = array();
+                if (isset($_SERVER['QUERY_STRING'])) {
+                    parse_str($_SERVER['QUERY_STRING'], $arrVars);
+                }
+                $query = isset($arrVars['cmd']) ? "?cmd=".$arrVars['cmd'] : "";
+                $return = "\n<form action='index.php".$query."' method='post' name='userFrontendLangIdForm'>\n";
+                $return .= "<select name='userFrontendLangId' size='1' class='chzn-select' onchange=\"document.forms['userFrontendLangIdForm'].submit()\">\n";
+                foreach ($this->arrLang as $id=>$value){
+                    if ($this->arrLang[$id]['frontend']==1) {
+                        $i++;
+                        if ($id==$this->userFrontendLangId) {
+                            $return .= "<option value='".$id."' selected='selected'>Frontend [".htmlentities($value['name'], ENT_QUOTES, CONTREXX_CHARSET)."]</option>\n";
+                        } else {
+                            $return .= "<option value='".$id."'>Frontend [".htmlentities($value['name'], ENT_QUOTES, CONTREXX_CHARSET)."]</option>\n";
+                        }
                     }
                 }
-            }
-            $return .= "</select>\n</form>\n";
-            return ($i>1) ? $return : "";
+                $return .= "</select>\n</form>\n";
+                return ($i>1) ? $return : "";
+            default:
+                return '';
+                break;
         }
+
         // For those views that support it, update the selected tab index
         JS::registerCode(
             'function submitUserFrontendLanguage() {'.
