@@ -58,15 +58,13 @@ class PageRepository extends EntityRepository {
     public function findOneBy(array $criteria, $inactive_langs = false)
     {
         $activeLangs = \FWLanguage::getActiveFrontendLanguages();
-        $pages = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($criteria);
-        if (!$inactive_langs) {
-            foreach ($pages as $index=>$page) {
-                if (!in_array($page->getLang(), array_keys($activeLangs))) {
-                    unset($pages[$index]);
-                }
+        $page = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($criteria);
+        if (!$inactive_langs && $page) {
+            if (!in_array($page->getLang(), array_keys($activeLangs))) {
+                return null;
             }
         }
-        return $pages;
+        return $page;
     }
 
     /**
@@ -526,6 +524,28 @@ class PageRepository extends EntityRepository {
         }
         
         return $type;
+    }
+    
+    /**
+     * Returns the target page for a page with internal target
+     * @todo use this everywhere (resolver!)
+     * @param   \Cx\Model\ContentManager\Page  $page
+     */
+    public function getTargetPage($page) {
+        if (!$page->isTargetInternal()) {
+            throw new PageRepositoryException('Tried to get target node, but page has no internal target');
+        }
+        $nodeId = $page->getTargetNodeId();
+        $langId = $page->getTargetLangId();
+        if ($langId == 0) {
+            $langId = FRONTEND_LANG_ID;
+        }
+        $crit = array(
+            'node' => $nodeId,
+            'lang' => $langId,
+        );
+        $page = $this->findOneBy($crit);
+        return $page;
     }
 
     /**
