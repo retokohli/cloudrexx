@@ -9,10 +9,10 @@
  * @subpackage  admin
  */
 use Doctrine\Common\Util\Debug as DoctrineDebug;
-use \Cx\Core\Json\Adapter\JsonPage;
+use \Cx\Core\Json\Adapter\ContentManager\JsonPage;
 
 require ASCMS_CORE_PATH . '/Module.class.php';
-require_once ASCMS_CORE_PATH . '/json/adapter/JsonPage.class.php';
+require_once ASCMS_CORE_PATH . '/json/adapter/contentmanager/JsonPage.class.php';
 
 class ContentManagerException extends ModuleException {
     

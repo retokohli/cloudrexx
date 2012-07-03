@@ -26,6 +26,50 @@ class PageRepository extends EntityRepository {
     }
 
     /**
+     * Finds entities by a set of criteria.
+     *
+     * @param array $criteria
+     * @param boolean $inactive_langs
+     * @return array
+     * @override
+     */
+    public function findBy(array $criteria, $inactive_langs = false)
+    {
+        $activeLangs = \FWLanguage::getActiveFrontendLanguages();
+        $pages = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->loadAll($criteria);
+        if (!$inactive_langs) {
+            foreach ($pages as $index=>$page) {
+                if (!in_array($page->getLang(), array_keys($activeLangs))) {
+                    unset($pages[$index]);
+                }
+            }
+        }
+        return $pages;
+    }
+
+    /**
+     * Finds a single entity by a set of criteria.
+     *
+     * @param array $criteria
+     * @param boolean $inactive_langs
+     * @return object
+     * @override
+     */
+    public function findOneBy(array $criteria, $inactive_langs = false)
+    {
+        $activeLangs = \FWLanguage::getActiveFrontendLanguages();
+        $pages = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($criteria);
+        if (!$inactive_langs) {
+            foreach ($pages as $index=>$page) {
+                if (!in_array($page->getLang(), array_keys($activeLangs))) {
+                    unset($pages[$index]);
+                }
+            }
+        }
+        return $pages;
+    }
+
+    /**
      * An array of pages sorted by their langID for specified module and cmd.
      *
      * @param string $module
@@ -168,6 +212,8 @@ class PageRepository extends EntityRepository {
         //join the pages
         $qb->leftJoin('node.pages', 'p', $joinConditionType, $joinCondition);
         $qb->where($qb->expr()->gt('node.lvl', 0)); //exclude root node
+        $activeLangs = \FWLanguage::getActiveFrontendLanguages();
+        $qb->andWhere($qb->expr()->in('p.lang', array_keys($activeLangs)));
         switch ($search_mode) {
             case self::SEARCH_MODE_ALIAS_ONLY:
                 $qb->andWhere(

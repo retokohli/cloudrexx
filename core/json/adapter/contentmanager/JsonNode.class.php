@@ -8,7 +8,7 @@
  * @subpackage  core/json
  */
 
-namespace Cx\Core\Json\Adapter;
+namespace Cx\Core\Json\Adapter\ContentManager;
 require_once ASCMS_CORE_PATH.'/json/JsonAdapter.interface.php';
 use \Cx\Core\Json\JsonAdapter;
 
@@ -224,7 +224,7 @@ class JsonNode implements JsonAdapter {
      * @param Array $logs List of all logs (used to get the username)
      * @return String JSON data
      */
-    private function tree_to_jstree_array($root, $logs, $flat = false/*, &$actions = array()*/) {
+    private function tree_to_jstree_array($root, $logs, $flat = false, &$actions = null) {
         $fallback_langs = $this->fallbacks;
 
         $sorted_tree = array();
@@ -233,13 +233,34 @@ class JsonNode implements JsonAdapter {
         }
         ksort($sorted_tree);
 
+        // get open nodes
+        $open_nodes = array();
+        if (isset($_COOKIE['jstree_open'])) {
+            $tmp_open_nodes = explode(',', $_COOKIE['jstree_open']);
+            foreach ($tmp_open_nodes as $node) {
+                $node_id = substr($node, 6);
+                $open_nodes[$node_id] = true;
+            }
+        }
+        
+        $first = false;
+        if ($actions === null) {
+            $actions = array();
+            $first = true;
+        }
+        
         $output = array();
+        $tree = array();
         foreach ($sorted_tree as $node) {
             $data = array();
             $metadata = array();
             $children = array();
-            if (!$flat) {
-                $children = $this->tree_to_jstree_array($node, $logs, $flat/*, $actions*/);
+            
+            // if this node is expanded (toggled)
+            $toggled = (isset($open_nodes[$node->getId()]) &&
+                        $open_nodes[$node->getId()]);
+            if (!$flat || $toggled) {
+                $children = $this->tree_to_jstree_array($node, $logs, $flat, $actions);
             }
             $last_resort = 0;
 
@@ -328,9 +349,11 @@ class JsonNode implements JsonAdapter {
             $state = array();
             if (!$node->getChildren()->isEmpty()) {
                 $state = array('state' => 'closed');
+            } else if ($toggled) {
+                $state = array('state' => 'open');
             }
 
-            $output[] = array_merge(array(
+            $tree[] = array_merge(array(
                 'attr'     => array(
                     'id'   => 'node_' . $node->getId()
                 ),
@@ -340,9 +363,13 @@ class JsonNode implements JsonAdapter {
             ), $state);
         }
         
-        // moving everything to 'tree' so we can add actions
-        $output['tree']    = $output;
-        $output['actions'] = $actions;
+        if ($first) { // only add actions on first (non internal) call
+            // moving everything to 'tree' so we can add actions
+            $output['tree']    = $tree;
+            $output['actions'] = $actions;
+        } else {
+            $output = $tree;
+        }
         
         return($output);
     }

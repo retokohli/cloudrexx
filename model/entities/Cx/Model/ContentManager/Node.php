@@ -193,9 +193,19 @@ class Node extends \Cx\Model\Base\EntityBase
      *
      * @return Doctrine\Common\Collections\Collection $pages
      */
-    public function getPages()
+    public function getPages($inactive_langs = false)
     {
-        return $this->pages;
+        if ($inactive_langs) {
+            return $this->pages;
+        }
+        $activeLangs = \FWLanguage::getActiveFrontendLanguages();
+        $pages = array();
+        foreach ($this->pages as $page) {
+            if (in_array($page->getLang(), array_keys($activeLangs))) {
+                $pages[] = $page;
+            }
+        }
+        return $pages;
     }
 
 
