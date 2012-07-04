@@ -198,7 +198,8 @@ class PageRepository extends EntityRepository {
      * @param boolean $titlesOnly fetch titles only. You may want to use @link getTreeBySitle()
      * @return array
      */
-    public function getTree($rootNode = null, $titlesOnly = false, $search_mode = self::SEARCH_MODE_PAGES_ONLY) {
+    public function getTree($rootNode = null, $titlesOnly = false,
+            $search_mode = self::SEARCH_MODE_PAGES_ONLY, $inactive_langs = false) {
         $repo = $this->em->getRepository('Cx\Model\ContentManager\Node');
         $qb = $this->em->createQueryBuilder();
 
@@ -210,8 +211,10 @@ class PageRepository extends EntityRepository {
         //join the pages
         $qb->leftJoin('node.pages', 'p', $joinConditionType, $joinCondition);
         $qb->where($qb->expr()->gt('node.lvl', 0)); //exclude root node
-        $activeLangs = \FWLanguage::getActiveFrontendLanguages();
-        $qb->andWhere($qb->expr()->in('p.lang', array_keys($activeLangs)));
+        if (!$inactive_langs) {
+            $activeLangs = \FWLanguage::getActiveFrontendLanguages();
+            $qb->andWhere($qb->expr()->in('p.lang', array_keys($activeLangs)));
+        }
         switch ($search_mode) {
             case self::SEARCH_MODE_ALIAS_ONLY:
                 $qb->andWhere(

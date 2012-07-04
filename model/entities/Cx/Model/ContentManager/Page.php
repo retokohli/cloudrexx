@@ -576,7 +576,7 @@ class Page extends \Cx\Model\Base\EntityBase
             $status .= 'redir ';
             if (!$this->target) {
                 $status .= 'broken ';
-            } else if($this->isTargetInternal()) {
+            } else if ($this->isTargetInternal()) {
                 // this should not be done here!
                 $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
                 $targetPage = $pageRepo->getTargetPage($this);
@@ -658,7 +658,9 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function isTargetInternal() {
         //internal targets are formed like [[NODE_<node_id>[_<lang_id>]]]<querystring>
-        return count(preg_match('/\[\[NODE_(\d+)(_(\d+))*\]\](\S)*/', $this->target)) > 0;
+        $matches = array();
+        preg_match('/\[\[NODE_(\d+)(_(\d+))*\]\](\S)*/', $this->target, $matches);
+        return isset($matches[1]);
     }
 
     /**
@@ -1526,5 +1528,30 @@ class Page extends \Cx\Model\Base\EntityBase
             throw new PageException('Parent page not found (my page id is ' . $this->getId() . ')');
         }
         return $parent;
+    }
+    
+    /**
+     * Returns the DateTime object for the modification time (for use in sitemap or so)
+     * @return \DateTime DateTime Object 
+     */
+    public function getLastModificationDateTime() {
+        $timestamp = $this->getUpdatedAt();
+        // we don't know when the module content is updated, so we "guess"
+        if ($this->getModule() != '') {
+            $timestamp->setDate(date('Y'), date('m'), date('d'));
+        }
+        return $timestamp;
+    }
+    
+    /**
+     * Returns the change frequency in XY (for use in sitemap or so)
+     * @todo do something more sensful than checking for module
+     * @return string 'hourly' or 'weekly'
+     */
+    public function getChangeFrequency() {
+        if ($this->getModule() != '') {
+            return 'hourly';
+        }
+        return 'weekly';
     }
 }

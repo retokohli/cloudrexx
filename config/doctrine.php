@@ -5,6 +5,7 @@ use Cx\Model\Events\PageEventListener as PageEventListener;
 
 require_once(ASCMS_CORE_PATH.'/Env.class.php');
 require_once(ASCMS_MODEL_PATH.'/events/PageEventListener.class.php');
+require_once(ASCMS_CORE_PATH . '/pagetree/XmlSitemapPageTree.class.php');
 
 $doctrineDir = ASCMS_LIBRARY_PATH.'/doctrine/';
 
@@ -82,6 +83,7 @@ $evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $prefixListener)
 //page listener for unique slugs
 $pageListener = new PageEventListener();
 $evm->addEventListener(\Doctrine\ORM\Events::onFlush, $pageListener);
+$evm->addEventListener(\Doctrine\ORM\Events::postPersist, $pageListener);
 
 //$config->setSqlLogger(new Doctrine\DBAL\Logging\EchoSQLLogger());
 

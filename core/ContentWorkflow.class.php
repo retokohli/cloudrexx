@@ -16,7 +16,6 @@ require_once ASCMS_CORE_PATH.'/routing/LanguageExtractor.class.php';
 require_once ASCMS_CORE_PATH.'/json/adapter/JsonPage.class.php';
 
 require_once ASCMS_CORE_PATH.'/Tree.class.php';
-require_once ASCMS_CORE_PATH.'/'.'XMLSitemap.class.php';
 require_once ASCMS_CORE_MODULE_PATH.'/cache/admin.class.php';
 
 class ContentWorkflowException extends ModuleException {}

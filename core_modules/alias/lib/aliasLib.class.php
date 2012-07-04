@@ -56,15 +56,18 @@ class aliasLib
     
     function _getAliases($limit = null)
     {
-        $arrAliases = array();
-        $arrLocalAliases = array();
         $pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
 
-        $tree = $this->pageRepository->getTree(null, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_ALIAS_ONLY);
+        $tree = $this->pageRepository->getTree(null, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_ALIAS_ONLY, true);
         
         $pages = array();
+        $i = 0;
         foreach ($tree as $node) {
-            $pages[] = current($node->getPages()->getSnapshot());
+            $i++;
+            if ($i < $pos) {
+                continue;
+            }
+            $pages[] = current($node->getPages(true)->getSnapshot());
             if ($limit && count($pages) == $limit) {
                 break;
             }
@@ -85,7 +88,7 @@ class aliasLib
         $crit = array(
             'node' => $aliasId,
         );
-        return current($this->pageRepository->findBy($crit));
+        return current($this->pageRepository->findBy($crit, true));
     }
     
     
@@ -95,7 +98,7 @@ class aliasLib
             'node' => $page->getTargetNodeId(),
             'lang' => $page->getTargetLangId(),
         );
-        return current($this->pageRepository->findBy($crit));
+        return current($this->pageRepository->findBy($crit, true));
     }
     
     
@@ -136,7 +139,7 @@ class aliasLib
                 'lang' => $target_lang_id,
             );
             $page_repo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
-            $targetPage = $page_repo->findBy($crit);
+            $targetPage = $page_repo->findBy($crit, true);
             $targetPage = $targetPage[0];
             $targetPath = $page_repo->getPath($targetPage);
             $arrAlias['pageUrl'] = "/".$targetPath;
