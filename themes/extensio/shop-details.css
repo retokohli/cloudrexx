@@ -1,0 +1,38 @@
+#aside{
+    display: none;
+}
+.main_subpage,
+#content {
+    float: left;
+    width: 100%;
+}
+#shop div.description{
+	clear:both
+}
+#shop div.product{
+	width: 75%
+}
+
+#shop div.payment{
+	/*background: url(images/payment_cart.png) no-repeat 0 0 transparent;
+	width: 258px;
+	height: 48px*/
+	background: url("images/payment_cart.png") no-repeat scroll 0 0 transparent;
+	color: #555;
+	float: left;
+	padding: 12px;
+	width: 258px;
+}
+
+#shop div.payment_cards{
+	background: url("images/payment_all.png") no-repeat scroll 0 0 transparent;
+	float: left;
+	height: 23px;
+	position: relative;
+	top: 10px;
+	width: 205px;
+}
+#shop div.wrapper_right{
+	width: 25%;
+	float:left
+}
