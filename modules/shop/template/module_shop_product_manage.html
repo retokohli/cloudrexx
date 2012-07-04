@@ -287,11 +287,9 @@ function disableButtons(from, dest, add, remove) {
                 {TXT_SHOP_CATEGORIES_AVAILABLE}<br />
                 <select name="shopCategoriesAvailable[]" size="10" style="width: 300px;" multiple="multiple">
                   {SHOP_CATEGORIES_AVAILABLE}
-                </select>
-                <br />
-                <font size="1">
-                  <a href="javascript:void(0);" onclick="selectAll(document.formShopProduct.elements['shopCategoriesAvailable[]'])">{TXT_SHOP_SELECT_ALL}</a><br />
-                  <a href="javascript:void(0);" onclick="deselectAll(document.formShopProduct.elements['shopCategoriesAvailable[]'])">{TXT_SHOP_DESELECT_ALL}</a>
+                </select><br />
+                <a href="javascript:void(0);" onclick="selectAll(document.formShopProduct.elements['shopCategoriesAvailable[]'])">{TXT_SHOP_SELECT_ALL}</a><br />
+                <a href="javascript:void(0);" onclick="deselectAll(document.formShopProduct.elements['shopCategoriesAvailable[]'])">{TXT_SHOP_DESELECT_ALL}</a>
                 </font>
               </td>
               <td style="border-bottom: 0px;">
@@ -301,14 +299,12 @@ function disableButtons(from, dest, add, remove) {
               </td>
               <td style="border-bottom: 0px;">
                 {TXT_SHOP_CATEGORIES_ASSIGNED}<br />
-                <select name="shopCategoriesAssigned[]" size="10" style="width: 300px;" multiple="multiple">
                 {SHOP_CATEGORIES_ASSIGNED}
+                <select name="shopCategoriesAssigned[]" size="10" style="width: 300px;" multiple="multiple">
                 </select>
                 <br />
-                <font size="1">
-                  <a href="javascript:void(0);" onclick="selectAll(document.formShopProduct.elements['shopCategoriesAssigned[]'])">{TXT_SHOP_SELECT_ALL}</a> <br />
-                  <a href="javascript:void(0);" onclick="deselectAll(document.formShopProduct.elements['shopCategoriesAssigned[]'])">{TXT_SHOP_DESELECT_ALL}</a>
-                </font>
+                <a href="javascript:void(0);" onclick="selectAll(document.formShopProduct.elements['shopCategoriesAssigned[]'])">{TXT_SHOP_SELECT_ALL}</a> <br />
+                <a href="javascript:void(0);" onclick="deselectAll(document.formShopProduct.elements['shopCategoriesAssigned[]'])">{TXT_SHOP_DESELECT_ALL}</a>
               </td>
             </tr>
           </table>
@@ -408,14 +404,8 @@ function disableButtons(from, dest, add, remove) {
                 {SHOP_GROUPS_AVAILABLE}
                 </select>
                 <br />
-                <font size="1">
-                  <a href="javascript:void(0);"
-                      onclick="selectAll(document.formShopProduct.elements['groupsAvailable[]'])"
-                      style="color:blue;">{TXT_SHOP_SELECT_ALL}</a><br />
-                  <a href="javascript:void(0);"
-                      onclick="deselectAll(document.formShopProduct.elements['groupsAvailable[]'])"
-                      style="color:blue;">{TXT_SHOP_DESELECT_ALL}</a>
-                </font>
+                <a href="javascript:void(0);"onclick="selectAll(document.formShopProduct.elements['groupsAvailable[]'])">{TXT_SHOP_SELECT_ALL}</a><br />
+                <a href="javascript:void(0);" onclick="deselectAll(document.formShopProduct.elements['groupsAvailable[]'])">{TXT_SHOP_DESELECT_ALL}</a>
               </td>
               <td style="border-bottom: 0px;">
                 &nbsp;&nbsp;&nbsp;
@@ -435,14 +425,8 @@ function disableButtons(from, dest, add, remove) {
                 {SHOP_GROUPS_ASSIGNED}
                 </select>
                 <br />
-                <font size="1">
-                  <a href="javascript:void(0);"
-                      onclick="selectAll(document.formShopProduct.elements['groupsAssigned[]'])"
-                      style="color:blue;">{TXT_SHOP_SELECT_ALL}</a> <br />
-                  <a href="javascript:void(0);"
-                      onclick="deselectAll(document.formShopProduct.elements['groupsAssigned[]'])"
-                      style="color:blue;">{TXT_SHOP_DESELECT_ALL}</a>
-                </font>
+                <a href="javascript:void(0);" onclick="selectAll(document.formShopProduct.elements['groupsAssigned[]'])">{TXT_SHOP_SELECT_ALL}</a> <br />
+                <a href="javascript:void(0);" onclick="deselectAll(document.formShopProduct.elements['groupsAssigned[]'])">{TXT_SHOP_DESELECT_ALL}</a>
               </td>
             </tr>
           </table>
