@@ -566,19 +566,6 @@ if ($isRegularPageRequest) {
     $page_modified  = $page->getUpdatedAt()->getTimestamp();
 
 //TODO: history
-    /*
-    if ($history) {
-        $objPageProtection = $objDatabase->SelectLimit('SELECT backend_access_id FROM '.DBPREFIX.'content_navigation WHERE catid='.$objResult->fields['catid'].' AND backend_access_id!=0', 1);
-        if ($objPageProtection !== false) {
-            if ($objPageProtection->RecordCount() == 1) {
-                $page_protected = 1;
-                $page_access_id = $objPageProtection->fields['backend_access_id'];
-            }
-        } else {
-            $page_protected = 1;
-        }
-    }
-    */
 }
 
 

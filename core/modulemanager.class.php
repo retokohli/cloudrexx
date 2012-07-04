@@ -95,7 +95,11 @@ class modulemanager
             'CONTENT_STATUS_MESSAGE'    => $this->strErrMessage,
         ));
 
-        $this->act = $_REQUEST['act'];
+        if (isset($_REQUEST['act'])) {
+            $this->act = $_REQUEST['act'];
+        } else {
+            $this->act = '';
+        }
         $this->setNavigation();
     }
 
@@ -105,21 +109,35 @@ class modulemanager
         global $objDatabase;
 
         $arrayInstalledModules = array();
-        $objResult = $objDatabase->Execute("
-            SELECT module
-              FROM ".DBPREFIX."content_navigation
-             WHERE module!=0
-               AND lang=$this->langId
-             GROUP BY module
-        ");
-        if ($objResult) {
-            $i = 0;
-            while (!$objResult->EOF) {
-                $arrayInstalledModules[$i] = $objResult->fields['module'];
-                ++$i;
-                $objResult->MoveNext();
+        
+        $qb = \Env::em()->createQueryBuilder();
+
+        $qb->addSelect('p')
+                ->from('Cx\Model\ContentManager\Page', 'p')
+                ->where('p.module IS NOT NULL')
+                ->andWhere($qb->expr()->eq('p.lang', $this->langId));
+        $pages   = $qb->getQuery()->getResult();
+        
+        foreach ($pages as $page) {
+            if (!in_array($page->getModule(), $arrayInstalledModules)) {
+                $query = "
+                    SELECT id
+                    FROM ".DBPREFIX."modules
+                    WHERE name='" . $page->getModule() . "'
+                ";
+                $objResult = $objDatabase->Execute($query);
+                if ($objResult) {
+                    if (!$objResult->EOF) {
+                        $module_id = $objResult->fields['id'];
+                    }
+                } else {
+                    $this->errorHandling();
+                    return false;
+                }
+                $arrayInstalledModules[] = $module_id;
             }
         }
+        
         return $arrayInstalledModules;
     }
 
@@ -217,14 +235,14 @@ class modulemanager
     {
         global $objDatabase, $_CORELANG, $objInit;
 
-        $i = 1;
+        //$i = 1;
         if (empty($_POST['installModule']) || !is_array($_POST['installModule'])) {
             return false;
         }
-        $currentTime = time();
+        //$currentTime = time();
         $paridarray = array();
         foreach (array_keys($_POST['installModule']) as $moduleId) {
-            $alreadyexist = false;
+            //$alreadyexist = false;
             $id = intval($moduleId);
             $objResult = $objDatabase->Execute("
                 SELECT name
@@ -276,122 +294,50 @@ class modulemanager
             $objResult = $objDatabase->Execute($query);
             if ($objResult) {
                 while (!$objResult->EOF) {
+                    $em = \Env::get('em');
+                    $nodeRepo = $em->getRepository('\Cx\Model\ContentManager\Node');
+                    $root = false;
                     if (isset($paridarray[$objResult->fields['parid']])) {
                         $parcat = $paridarray[$objResult->fields['parid']];
                     } else {
-                        if (!$alreadyexist) {
-                            $objResult2 = $objDatabase->Execute("
-                                SELECT catid
-                                  FROM ".DBPREFIX."content_navigation
-                                 WHERE module=$id
-                                   AND lang=$this->langId
-                            ");
-                            if ($objResult2 && !$objResult2->EOF) {
-                                $objDatabase->Execute("
-                                    DELETE FROM ".DBPREFIX."content
-                                     WHERE id='".$objResult2->fields['catid']."'
-                                ");
-                            }
-                            $objDatabase->Execute("
-                                DELETE FROM ".DBPREFIX."content_navigation
-                                 WHERE module=$id
-                                   AND lang=$this->langId
-                            ");
-                        }
-                        $alreadyexist = true;
-                        $parcat = 0;
+                        $root = true;
+                        $parcat = $nodeRepo->getRoot();
                     }
                     $this->arrayInstalledModules[$module_name] = true;
-                    $moduleid = $objResult->fields['moduleid'];
+                    //$moduleid = $objResult->fields['moduleid'];
                     $content = addslashes($objResult->fields['content']);
                     $title = addslashes($objResult->fields['title']);
                     $cmd = $objResult->fields['cmd'];
-                    $displaystatus = $objResult->fields['displaystatus'];
-                    $expertmode = $objResult->fields['expertmode'];
 
-                    // Set displayorder to a high value for the parent module page
-                    $displayorder = ($i == 1 ? $this->defaultOrderValue : $objResult->fields['displayorder']);
-                    $langId = $this->langId;
-                    $modulerepid = $objResult->fields['id'];
-                    $username = $objResult->fields['username'];
-
-                    $query = "
-                        INSERT INTO ".DBPREFIX."content_navigation
-                           SET parcat='$parcat',
-                               catname='$title',
-                               module='$moduleid',
-                               cmd='$cmd',
-                               displayorder='$displayorder',
-                               username='$username',
-                               changelog='$currentTime',
-                               protected='0',
-                               displaystatus='$displaystatus',
-                               lang=$this->langId
-                    ";
-                    if ($objDatabase->Execute($query)) {
-                        $catid = $paridarray[$modulerepid] = $objDatabase->Insert_ID();
-                        $query = "
-                            INSERT INTO ".DBPREFIX."content
-                               SET id=$catid,
-                                   content='$content',
-                                   title='$title',
-                                   metatitle='$title',
-                                   metadesc='$title',
-                                   metakeys='$title',
-                                   metarobots='index',
-                                   expertmode='$expertmode'
-                        ";
-                        if ($objDatabase->Execute($query) === false) {
-                            $this->errorHandling();
-                            return false;
-                        }
-                        $parcat = $catid;
-                    } else {
-                        $this->errorHandling();
-                        return false;
-                    }
-                    ++$i;
+                    $newnode = new \Cx\Model\ContentManager\Node();
+                    $newnode->setParent($parcat); // replace root node by parent!
+                    $em->persist($newnode);
+                    $em->flush();
+                    $nodeRepo->moveDown($newnode, true); // move to the end of this level
+                    $paridarray[$objResult->fields['id']] = $newnode;
+                    
+                    $page = new \Cx\Model\ContentManager\Page();
+                    $page->setNode($newnode);
+                    $page->setNodeIdShadowed($newnode->getId());
+                    $page->setLang($this->langId);
+                    $page->setTitle($title);
+                    $page->setModule($module_name);
+                    $page->setCmd($cmd);
+                    $page->setActive(true);
+                    $page->setDisplay(!$root); // pages on root level are not active
+                    $page->setContent($content);
+                    $page->setMetatitle($title);
+                    $page->setMetadesc($title);
+                    $page->setMetakeys($title);
+                    $page->setMetarobots('index');
+                    $page->setMetatitle($title);
+                    $em->persist($page);
+                    $em->flush();
                     $objResult->MoveNext();
                 }
             } else {
                 $this->errorHandling();
                 return false;
-            }
-            $i = 1;
-
-            if (!$alreadyexist) {
-                $objFWUser = FWUser::getFWUserObject();
-                $objResult = $objDatabase->Execute("
-                    SELECT name
-                      FROM ".DBPREFIX."modules
-                     WHERE id=$id
-                ");
-                if ($objResult && !$objResult->EOF) {
-                    $name = $objResult->fields['name'];
-                }
-                $username = $objFWUser->objUser->getUsername();
-                $query = "
-                    INSERT INTO ".DBPREFIX."content_navigation
-                       SET parcat='0',
-                           catname='$name',
-                           module='$id',
-                           username='$username',
-                           changelog='$currentTime',
-                           lang=$this->langId
-                ";
-                if ($objDatabase->Execute($query)) {
-                    $catid = $objDatabase->Insert_ID();
-                    $query = "
-                        INSERT INTO ".DBPREFIX."content
-                           SET id=$catid,
-                               title='$name'
-                    ";
-                    $objDatabase->Execute($query);
-                    return true;
-                } else {
-                    $this->errorHandling();
-                    return false;
-                }
             }
         } // end foreach
 
@@ -405,40 +351,34 @@ class modulemanager
 
         if (isset($_POST['removeModule']) && is_array($_POST['removeModule'])) {
             foreach (array_keys($_POST['removeModule']) as $moduleId) {
-                $query = "SELECT catid, name
-                            FROM ".DBPREFIX."content_navigation
-                           INNER JOIN ".DBPREFIX."modules
-                              ON module=id
-                           WHERE module='$moduleId'
-                             AND lang=$this->langId
+                
+                $query = "
+                    SELECT name
+                    FROM ".DBPREFIX."modules
+                    WHERE id='" . $moduleId . "'
                 ";
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult) {
-                    while (!$objResult->EOF) {
-                        $this->arrayRemovedModules[$objResult->fields['name']] = true;
-                        $catid = $objResult->fields['catid'];
-                        $query = "
-                            DELETE FROM ".DBPREFIX."content_navigation
-                             WHERE catid='$catid'
-                        ";
-                        if ($objDatabase->Execute($query) === false) {
-                            $this->errorHandling();
-                            return false;
-                        }
-                        $query = "
-                            DELETE FROM ".DBPREFIX."content
-                             WHERE id='$catid'
-                        ";
-                        if ($objDatabase->Execute($query) === false) {
-                            $this->errorHandling();
-                            return false;
-                        }
-                        $objResult->MoveNext();
+                    if (!$objResult->EOF) {
+                        $moduleName = $objResult->fields['name'];
                     }
                 } else {
                     $this->errorHandling();
                     return false;
                 }
+
+                $em = \Env::get('em');
+                $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
+                $pages = $pageRepo->findBy(array(
+                    'module' => $moduleName,
+                    'lang' => $this->langId,
+                ));
+                $em->getConnection()->executeQuery('SET FOREIGN_KEY_CHECKS = 0');
+                foreach ($pages as $page) {
+                    $em->remove($page->getNode());
+                    $em->flush();
+                }
+                $em->getConnection()->executeQuery('SET FOREIGN_KEY_CHECKS = 1');
             }
             return true;
         } else {
