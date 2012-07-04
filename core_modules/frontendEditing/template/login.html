@@ -1,26 +1,31 @@
 {JAVASCRIPT}
 <div id="fe_Background" style="display: none;"></div>
 <div id="fe_Login" style="display: none;">
-	<div id="fe_LoginBoxFrame">
-		<div id="fe_BoxTitle">
-			<div class="left">{TXT_LOGIN_TITLE}</div>
-			<div class="right"><a href="javascript:void(0)" onclick="fe_closeLogin();">X</a></div>
-		</div>
-		<div id="fe_LoginBoxContent">
-			{LOGIN_STATUS_MESSAGE}
-			<form name="fe_LoginForm" id="fe_LoginForm" action="" method="post">
-				<div class="fe_LoginBoxLabel">{TXT_LOGIN_USERNAME}</div>
-				<div class="fe_LoginBoxValue"><input type="text" id="fe_LoginUsername" name="fe_LoginUsername" value="{LOGIN_USERNAME}" class="fe_LoginBoxUsername" /></div>
-				<div class="fe_LoginBoxLabel">{TXT_LOGIN_PASSWORD}</div>
-				<div class="fe_LoginBoxValue"><input type="password" id="fe_LoginPassword" name="fe_LoginPassword" value="" class="fe_LoginBoxPassword" /></div>
-				<div class="fe_LoginBoxLabel">{TXT_LOGIN_CAPTCHA}</div>
-				<div class="fe_LoginBoxValue">{LOGIN_CAPTCHA_CODE}</div>
-				<div class="fe_LoginBoxLabel">{TXT_LOGIN_AREA}</div>
-				<div class="fe_LoginBoxValue"><input type="radio" id="fe_LoginTypeFrontend" name="fe_LoginType" value="Frontend" checked="checked" />&nbsp;{TXT_LOGIN_AREA_FRONTEND}&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" id="fe_LoginTypeBackend" name="fe_LoginType" value="Backend" />&nbsp;{TXT_LOGIN_AREA_BACKEND}<br /></div>
-				<br />
-				<input type="button" value="{TXT_LOGIN_SUBMIT}" class="fe_LoginBoxButton" onclick="fe_doLogin();" />&nbsp;<input type="button" value="{TXT_LOGIN_CANCEL}" class="fe_LoginBoxButton" onclick="fe_closeLogin();" />
-			</form>
-			<div class="fe_LoginLostPassword"><a href="{LOGIN_LOSTPW_URL}" title="{TXT_LOGIN_PASSWORD_FORGOTTON}">{TXT_LOGIN_PASSWORD_FORGOTTON}</a></div>
-		</div>
-	</div>
+    <div id="fe_LoginBoxFrame">
+        <div id="fe_BoxTitle">
+            <div class="left">{TXT_LOGIN_TITLE}</div>
+            <div class="right"><a href="javascript:void(0)" onclick="fe_closeLogin();">X</a></div>
+        </div>
+        <div id="fe_LoginBoxContent">
+            {LOGIN_STATUS_MESSAGE}
+            <form name="fe_LoginForm" id="fe_LoginForm" action="" method="post">
+                <div class="fe_LoginBoxLabel">{TXT_LOGIN_USERNAME}</div>
+                <div class="fe_LoginBoxValue"><input type="text" id="fe_LoginUsername" name="fe_LoginUsername" value="{LOGIN_USERNAME}" class="fe_LoginBoxUsername" /></div>
+                <div class="fe_LoginBoxLabel">{TXT_LOGIN_PASSWORD}</div>
+                <div class="fe_LoginBoxValue"><input type="password" id="fe_LoginPassword" name="fe_LoginPassword" value="" class="fe_LoginBoxPassword" /></div>
+                <div class="fe_LoginBoxLabel">{TXT_LOGIN_CAPTCHA}</div>
+                <div class="fe_LoginBoxValue">{LOGIN_CAPTCHA_CODE}</div>
+                <div class="fe_LoginBoxLabel">{TXT_LOGIN_AREA}</div>
+                <div class="fe_LoginBoxValue">
+                    <input type="radio" id="fe_LoginTypeFrontend" name="fe_LoginType" value="Frontend" checked="checked" /><label for="fe_LoginTypeFrontend">{TXT_LOGIN_AREA_FRONTEND}</label>
+                    <input type="radio" id="fe_LoginTypeBackend" name="fe_LoginType" value="Backend" /><label for="fe_LoginTypeBackend">{TXT_LOGIN_AREA_BACKEND}</label>
+                </div>
+                <div class="fe_LoginBoxValue">
+                    <input type="button" value="{TXT_LOGIN_SUBMIT}" class="fe_LoginBoxButton left" onclick="fe_doLogin();" />
+                    <input type="button" value="{TXT_LOGIN_CANCEL}" class="fe_LoginBoxButton right" onclick="fe_closeLogin();" />
+                </div>
+            </form>
+            <div class="fe_LoginLostPassword"><a href="{LOGIN_LOSTPW_URL}" title="{TXT_LOGIN_PASSWORD_FORGOTTON}">{TXT_LOGIN_PASSWORD_FORGOTTON}</a></div>
+        </div>
+    </div>
 </div>

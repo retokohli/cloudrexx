@@ -1,38 +1,38 @@
 var fe_feSection                = 'frontendEditing';
 
-var fe_appearanceDuration		= 0.5;
-var fe_backgroundOpacity		= 0.5;
-var fe_loaderDivName 			= '#fe_Loader';
-var fe_containerDivName 		= '#fe_Container';
-var fe_backgroundDivName		= '#fe_Background';
+var fe_appearanceDuration       = 0.5;
+var fe_backgroundOpacity        = 0.5;
+var fe_loaderDivName            = '#fe_Loader';
+var fe_containerDivName         = '#fe_Container';
+var fe_backgroundDivName        = '#fe_Background';
 
-var fe_loginDivName				= '#fe_Login';
-var fe_loginTypeFrontend		= '#fe_LoginTypeFrontend';
+var fe_loginDivName             = '#fe_Login';
+var fe_loginTypeFrontend        = '#fe_LoginTypeFrontend';
 
-var fe_disallowedDivName		= '#fe_Disallowed';
-var fe_disallowedOpacity		= 0.9;
+var fe_disallowedDivName        = '#fe_Disallowed';
+var fe_disallowedOpacity        = 0.9;
 
-var fe_toolbarIsLoaded			= false;
-var fe_toolbarIsVisible			= false;
-var fe_toolbarDivName			= '#fe_Toolbar';
+var fe_toolbarIsLoaded          = false;
+var fe_toolbarIsVisible         = false;
+var fe_toolbarDivName           = '#fe_Toolbar';
 
-var fe_selectionDivName			= '#fe_Selection';
+var fe_selectionDivName         = '#fe_Selection';
 
-var fe_editorIsLoaded			= false;
-var fe_editorIsVisible 			= false;
-var fe_editorDivName 			= '#fe_Editor';
-var fe_editorFormDivName 		= '#fe_EditorForm';
-var fe_editorFormTitleName 		= '#fe_FormTitle';
-var fe_editorFormContentName 	= 'fe_FormContent';
-var fe_editorFormOldSuffix 		= '_Old';
-var fe_editorHighlightColor 	= '#dff1ff';
-var fe_editorWindowHeight 		= 0;
-var fe_editorWindowWidth		= 0;
+var fe_editorIsLoaded           = false;
+var fe_editorIsVisible          = false;
+var fe_editorDivName            = '#fe_Editor';
+var fe_editorFormDivName        = '#fe_EditorForm';
+var fe_editorFormTitleName      = '#fe_FormTitle';
+var fe_editorFormContentName    = 'fe_FormContent';
+var fe_editorFormOldSuffix      = '_Old';
+var fe_editorHighlightColor     = '#dff1ff';
+var fe_editorWindowHeight       = 0;
+var fe_editorWindowWidth        = 0;
 
-var fe_previewTitleName 		= '#fe_PreviewTitle';
-var fe_previewContentName 		= '#fe_PreviewContent';
-var fe_previewSaveIcon			= '#fe_saveIcon';
-var fe_previewSaveIconIsVisible	= false;
+var fe_previewTitleName         = '#fe_PreviewTitle';
+var fe_previewContentName       = '#fe_PreviewContent';
+var fe_previewSaveIcon          = '#fe_saveIcon';
+var fe_previewSaveIconIsVisible = false;
 
 jQuery(document).ready(function(){
     fe_fileForIndex = cx.variables.get('path','contrexx');
@@ -47,21 +47,22 @@ function fe_checkForLogin() {
 
 function fe_loadToolbar(showEditorAfterLoading) {
     if (!fe_toolbarIsLoaded) {
-        console.log('nocht nicht geladen');
         fe_startLoading();
-        jQuery.ajax({
-            url: fe_fileForIndex,
-            data: {	act: 'getToolbar', 
-                    section: fe_feSection,
-                    page: fe_pageId
-            },
-            success: function(transport){
-                fe_loadToolbarResponse(transport, showEditorAfterLoading);
-            },
-            complete : fe_stopLoading
+        jQuery(document).ready(function() {
+            jQuery.ajax({
+                url: fe_fileForIndex,
+                async: false,
+                data: {	act: 'getToolbar', 
+                        section: fe_feSection,
+                        page: fe_pageId
+                },
+                success: function(transport){
+                    fe_loadToolbarResponse(transport, showEditorAfterLoading);
+                },
+                complete : fe_stopLoading
+            });
         });
     } else {
-        console.log('geladen');
         fe_showToolbar();
 
         if (showEditorAfterLoading) {
@@ -109,32 +110,35 @@ function fe_doLogin() {
     fe_closeLogin();
     fe_startLoading();
     
-    postdata = {
-        section: fe_feSection,
-        doLogin: 'true',
-    };
+    jQuery(document).ready(function() {
+        postdata = {
+            section: fe_feSection,
+            doLogin: 'true'
+        };
 
-    var loginType = jQuery(fe_loginTypeFrontend).is(':checked') ? 'frontend' : 'backend';
-    if (loginType == 'frontend') {
-        postdata['act'] = 'getToolbar';
-        showEditorAfterLoading = true;
-    } else {
-        showEditorAfterLoading = false;
-        postdata['act'] = 'getAdmin';
-    }
+        var loginType = jQuery(fe_loginTypeFrontend).is(':checked') ? 'frontend' : 'backend';
+        if (loginType == 'frontend') {
+            postdata['act'] = 'getToolbar';
+            showEditorAfterLoading = true;
+        } else {
+            showEditorAfterLoading = false;
+            postdata['act'] = 'getAdmin';
+        }
 
-    jQuery.map(jQuery('#fe_LoginForm').serializeArray(), function(n, i){
-        postdata[n['name']] = n['value'];
-    });
+        jQuery.map(jQuery('#fe_LoginForm').serializeArray(), function(n, i){
+            postdata[n['name']] = n['value'];
+        });
 
-    jQuery.ajax({
-        type: 'POST',
-        url: fe_fileForIndex,
-        data: postdata,
-        success: function(transport){
-            fe_loadToolbarResponse(transport, showEditorAfterLoading);
-        },
-        complete : fe_stopLoading
+        jQuery.ajax({
+            type: 'POST',
+            async: false,
+            url: fe_fileForIndex,
+            data: postdata,
+            success: function(transport){
+                fe_loadToolbarResponse(transport, showEditorAfterLoading);
+            },
+            complete : fe_stopLoading
+        });
     });
 }
 
@@ -171,14 +175,17 @@ function fe_setToolbarVisibility(newStatus) {
     fe_userWantsToolbar = newStatus;
         
     fe_startLoading();
-    jQuery.ajax({
-        url: fe_fileForIndex,
-        data: {	act: 'setToolbarVisibility',
-                section: fe_feSection,
-                status: ((fe_userWantsToolbar == true) ? '1' : '0')
-        },
-        success: function(transport){},
-        complete : fe_stopLoading
+    jQuery(document).ready(function(){
+        jQuery.ajax({
+            url: fe_fileForIndex,
+            async: false,
+            data: {	act: 'setToolbarVisibility',
+                    section: fe_feSection,
+                    status: ((fe_userWantsToolbar == true) ? '1' : '0')
+            },
+            success: function(transport){},
+            complete : fe_stopLoading
+        });
     });
 }
 
@@ -188,19 +195,22 @@ function fe_doLogout() {
     }
     
     fe_startLoading();
-    jQuery.ajax({
-        url: fe_fileForIndex,
-        data: {	section: 'logout', standalone: 'true' },
-        success: function(transport){
-            fe_toolbarIsLoaded 	= false;
-            fe_toolbarIsVisible = false;
-            jQuery(fe_toolbarDivName).remove();
+    jQuery(document).ready(function(){
+        jQuery.ajax({
+            url: fe_fileForIndex,
+            async: false,
+            data: {	section: 'logout', standalone: 'true' },
+            success: function(transport){
+                fe_toolbarIsLoaded 	= false;
+                fe_toolbarIsVisible = false;
+                jQuery(fe_toolbarDivName).remove();
 
-            fe_editorIsLoaded	= false;
-            fe_editorIsVisible	= false;
-            fe_loadDefault();
-        },
-        complete : fe_stopLoading
+                fe_editorIsLoaded	= false;
+                fe_editorIsVisible	= false;
+                fe_loadDefault();
+            },
+            complete : fe_stopLoading
+        });
     });
 }
 
@@ -217,17 +227,20 @@ function fe_showSelection() {
 function fe_loadEditor(showSelectionIfNeeded) {
     if (!fe_editorIsLoaded) {
         fe_startLoading();
-        jQuery.ajax({
-            url: fe_fileForIndex,
-            data: {	act: 'getEditor', 
-                    section: fe_feSection,
-                    page: fe_pageId,
-                    selection: showSelectionIfNeeded
-            },
-            success: function(transport){
-                fe_loadEditorResponse(transport);
-            },
-            complete : fe_stopLoading()
+        jQuery(document).ready(function(){
+            jQuery.ajax({
+                url: fe_fileForIndex,
+                async: false,
+                data: {	act: 'getEditor', 
+                        section: fe_feSection,
+                        page: fe_pageId,
+                        selection: showSelectionIfNeeded
+                },
+                success: function(transport){
+                    fe_loadEditorResponse(transport);
+                },
+                complete : fe_stopLoading()
+            });
         });
     } else {
         fe_showEditor();
@@ -236,7 +249,7 @@ function fe_loadEditor(showSelectionIfNeeded) {
 
 function fe_loadEditorResponse(responseText) {
     var arrResponse = responseText.split(';;;', 2);
-                                                                                                                                                          
+
     jQuery(fe_containerDivName).html(arrResponse[1]);
     jQuery(fe_containerDivName).show();
                         
@@ -263,6 +276,7 @@ function fe_showEditor() {
             width: '100%',
             height: 300,
             toolbar: 'Default',
+            resize_enabled: false,
             customConfig: CKEDITOR.getUrl('config.contrexx.js.php')
         });
 
@@ -305,12 +319,15 @@ function fe_makeEditorInvisible() {
 
 function fe_loadDefault() {
     fe_startLoading();
-    jQuery.ajax({
-        data: {	frontEditing: '1' },
-        success: function(transport){
-            fe_restoreDefault(transport);
-        },
-        complete : fe_stopLoading()
+    jQuery(document).ready(function(){
+        jQuery.ajax({
+            data: {	frontEditing: '1' },
+            async: false,
+            success: function(transport){
+                fe_restoreDefault(transport);
+            },
+            complete : fe_stopLoading()
+        });
     });
 }
 
@@ -328,19 +345,22 @@ function fe_loadPreview(previewMode) {
     fe_makeEditorInvisible();
     var editorContent = CKEDITOR.instances[fe_editorFormContentName].getData()
     fe_startLoading();
-    jQuery.ajax({
-        type: 'POST',
-        data: {	frontEditing: '1',
-                previewContent: editorContent
-        },
-        success: function(transport){
-            fe_showPreview(transport);
+    jQuery(document).ready(function(){
+        jQuery.ajax({
+            type: 'POST',
+            async: false,
+            data: {	frontEditing: '1',
+                    previewContent: editorContent
+            },
+            success: function(transport){
+                fe_showPreview(transport);
 
-            if (previewMode) {
-                fe_showSaveIcon();
-            }
-        },
-        complete : fe_stopLoading()
+                if (previewMode) {
+                    fe_showSaveIcon();
+                }
+            },
+            complete : fe_stopLoading()
+        });
     });
 }
 
@@ -351,7 +371,7 @@ function fe_showPreview(previewContent) {
         fe_title.effect('highlight');
     }
 
-     jQuery(fe_previewContentName).html(previewContent);	 	
+     jQuery(fe_previewContentName).html(previewContent);
      jQuery(fe_previewContentName).effect('highlight');
 }
 
@@ -370,20 +390,23 @@ function fe_hideSaveIcon() {
 function fe_updatePage() {
     fe_makeEditorInvisible();
     fe_startLoading();
-    jQuery.ajax({
-        url: fe_fileForIndex,
-        type: 'POST',
-        data: {	act: 'doUpdate', 
-                section: fe_feSection,
-                page: fe_pageId,
-                title: jQuery(fe_editorFormTitleName).val(),
-                content: CKEDITOR.instances[fe_editorFormContentName].getData()
-        },
-        success: function(transport){
-            fe_loadPreview(false);
-            fe_hideSaveIcon();
-        },
-        complete : fe_stopLoading()
+    jQuery(document).ready(function(){
+        jQuery.ajax({
+            url: fe_fileForIndex,
+            async: false,
+            type: 'POST',
+            data: {	act: 'doUpdate', 
+                    section: fe_feSection,
+                    page: fe_pageId,
+                    title: jQuery(fe_editorFormTitleName).val(),
+                    content: CKEDITOR.instances[fe_editorFormContentName].getData()
+            },
+            success: function(transport){
+                fe_loadPreview(false);
+                fe_hideSaveIcon();
+            },
+            complete : fe_stopLoading()
+        });
     });
 }
 
@@ -393,4 +416,10 @@ function fe_startLoading() {
 
 function fe_stopLoading() {
     jQuery(fe_loaderDivName).hide();
+}
+
+function fe_redirectToBackend() {
+    jQuery(document).ready(function() {
+        window.location.href = cx.variables.get('path', 'contrexx') + 'cadmin/index.php';
+    });
 }
