@@ -2,6 +2,7 @@
 /**
  * This listener ensures slug consistency on Page objects.
  * On Flushing, all entities are scanned and changed where needed.
+ * After persist, the XMLSitemap is rewritten
  */
 namespace Cx\Model\Events;
 use \Cx\Model\ContentManager\Page as Page;
@@ -18,6 +19,14 @@ class PageEventListener {
         
         foreach ($uow->getScheduledEntityUpdates() AS $entity) {
             $this->checkValidPersistingOperation($entity);
+        }
+    }
+    
+    public function postPersist($eventArgs) {
+        global $_CONFIG;
+        
+        if ($_CONFIG['xmlSitemapStatus'] == 'on') {
+            \Cx\Core\PageTree\XmlSitemapPageTree::write();
         }
     }
 

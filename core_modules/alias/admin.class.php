@@ -16,10 +16,6 @@ require_once ASCMS_CORE_MODULE_PATH.'/alias/lib/aliasLib.class.php';
  * @ignore
  */
 require_once ASCMS_CORE_PATH.'/settings.class.php';
-/**
- * @ignore
- */
-require_once ASCMS_CORE_PATH.'/'.'XMLSitemap.class.php';
 
 /**
  * AliasAdmin
@@ -282,9 +278,6 @@ class AliasAdmin extends aliasLib
                         }
                         // load new aliases
                     }
-                    if ($_CONFIG['xmlSitemapStatus'] == 'on' && ($result = XMLSitemap::write()) !== true) {
-                        $this->arrStatusMsg['error'][] = $result;
-                    }
                     $this->arrStatusMsg['ok'][] = $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_SUCCESSFULLY_UPDATED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_SUCCESSFULLY_ADDED'];
                     return $this->_list();
                 } else {
@@ -316,8 +309,6 @@ class AliasAdmin extends aliasLib
             'TXT_ALIAS_SAVE'                    => $_ARRAYLANG['TXT_ALIAS_SAVE'],
             'TXT_ALIAS_STANDARD_RADIOBUTTON'    => $_ARRAYLANG['TXT_ALIAS_STANDARD_RADIOBUTTON']
         ));
-
-        $langPathPrefix = FWLanguage::getLanguageParameter($this->langId, 'lang');
 
         $this->_objTpl->setGlobalVariable(array(
             'TXT_ALIAS_DELETE'                  => $_ARRAYLANG['TXT_ALIAS_DELETE'],

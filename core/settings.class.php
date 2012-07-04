@@ -17,10 +17,6 @@ isset($objInit) && $objInit->mode == 'backend' ? require_once ASCMS_CORE_MODULE_
 /**
  * @ignore
  */
-require_once ASCMS_CORE_PATH.'/'.'XMLSitemap.class.php';
-/**
- * @ignore
- */
 require_once ASCMS_CORE_PATH.'/SmtpSettings.class.php';
 /**
  * @ignore
@@ -337,10 +333,6 @@ class settingsManager
             $objDatabase->Execute('    UPDATE '.DBPREFIX.'settings
                                     SET setvalue="'.$val.'"
                                     WHERE setid='.intval($intId));
-        }
-
-        if ($_CONFIG['xmlSitemapStatus'] == 'on' && ($result = XMLSitemap::write()) !== true) {
-            $this->strErrMessage[] = $result;
         }
 
         $this->strOkMessage = $_CORELANG['TXT_SETTINGS_UPDATED'];
