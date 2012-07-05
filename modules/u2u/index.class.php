@@ -555,6 +555,10 @@ class u2u extends u2uLibrary
     function insertMessages() {
            global $_ARRAYLANG, $objDatabase,$_CORELANG,$_CONFIG;
 
+           if (!isset($_REQUEST['private_message'])) {
+               return false;
+           }
+           
            $errArray = array();
            $_REQUEST['private_message'] = stripslashes(html_entity_decode($_REQUEST['private_message'], ENT_QUOTES, CONTREXX_CHARSET));
         $this->strMessages=$_REQUEST['private_message'];

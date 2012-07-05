@@ -954,7 +954,7 @@ class DataAdmin extends DataLibrary {
 					
 					// if a catId is set, we'll want to highlight that particular category (and have it
 					// displayed first)
-					if ($k == $_GET['catId']) {
+					if ($k == $intSelectedCategory) {
 						$catList = '<strong>'.$catName.'</strong>'.$separator.$catList;
 					}
 					else {

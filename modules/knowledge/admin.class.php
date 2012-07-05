@@ -1123,6 +1123,10 @@ class KnowledgeAdmin extends KnowledgeLibrary
     {
         global $_ARRAYLANG;
 
+        if (!isset($_POST['category'])) {
+            return false;
+        }
+        
         $category = $_POST['category'];
         $state = $_POST['state'];
 
@@ -1161,6 +1165,10 @@ class KnowledgeAdmin extends KnowledgeLibrary
     {
         global $_ARRAYLANG;
 
+        if (!isset($_POST['category'])) {
+            return false;
+        }
+        
         $category = $_POST['category'];
         $state = $_POST['state'];
         $id = $_POST['id'];

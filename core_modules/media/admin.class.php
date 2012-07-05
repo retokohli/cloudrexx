@@ -372,7 +372,9 @@ class MediaManager extends MediaLibrary
         //if yes, we know the added files and want to highlight them
         if (!empty($_GET['highlightUploadId'])) {
             $key = 'media_upload_files_'.intval($_GET['highlightUploadId']);
-            $sessionHighlightCandidates = $_SESSION[$key]; //an array with the filenames, set in mediaLib::uploadFinished
+            if (isset($_SESSION[$key])) {
+                $sessionHighlightCandidates = $_SESSION[$key]; //an array with the filenames, set in mediaLib::uploadFinished
+            }
             //clean up session; we do only highlight once
             unset($_SESSION[$key]);
 
@@ -802,7 +804,10 @@ class MediaManager extends MediaLibrary
         for ($i = 0; $i <=4; $i++)
         {
             $oldMediaSetting = $this->_arrSettings['media' . $i . '_frontend_changable'];
-            $newMediaSetting = $_POST['mediaSettings_Media' . $i . 'FrontendChangable'];
+            $newMediaSetting = '';
+            if (isset($_POST['mediaSettings_Media' . $i . 'FrontendChangable'])) {
+                $newMediaSetting = $_POST['mediaSettings_Media' . $i . 'FrontendChangable'];
+            }
 
             if (!is_numeric($newMediaSetting))
             {
@@ -817,10 +822,15 @@ class MediaManager extends MediaLibrary
                                                 WHERE `name` = "media' . $i . '_frontend_changable"
                                             ');
             } else {
-                $accessGroups = $_POST['media' . $i . '_access_associated_groups'];
+                $accessGroups = '';
+                if (isset($_POST['media' . $i . '_access_associated_groups'])) {
+                    $accessGroups = $_POST['media' . $i . '_access_associated_groups'];
+                }
                 // get groups
                 Permission::removeAccess($oldMediaSetting, 'dynamic');
-                $accessGroups = $_POST['media' . $i . '_access_associated_groups'];
+                if (isset($_POST['media' . $i . '_access_associated_groups'])) {
+                    $accessGroups = $_POST['media' . $i . '_access_associated_groups'];
+                }
                 // add AccessID
                 $newMediaSetting = Permission::createNewDynamicAccessId();
                 // save AccessID
@@ -834,7 +844,10 @@ class MediaManager extends MediaLibrary
             }
 
             $oldManageSetting = $this->_arrSettings['media' . $i . '_frontend_managable'];
-            $newManageSetting = $_POST['mediaSettings_Media' . $i . 'FrontendManagable'];
+            $newManageSetting = '';
+            if (isset($_POST['mediaSettings_Media' . $i . 'FrontendManagable'])) {
+                $newManageSetting = $_POST['mediaSettings_Media' . $i . 'FrontendManagable'];
+            }
             if (!is_numeric($newManageSetting))
             {
                 if (is_numeric($oldManageSetting))
@@ -848,10 +861,15 @@ class MediaManager extends MediaLibrary
                                                 WHERE `name` = "media' . $i . '_frontend_managable"
                                             ');
             } else {
-                $accessGroups = $_POST['media' . $i . '_manage_associated_groups'];
+                $accessGroups = '';
+                if (isset($_POST['media' . $i . '_manage_associated_groups'])) {
+                    $accessGroups = $_POST['media' . $i . '_manage_associated_groups'];
+                }
                 // get groups
                 Permission::removeAccess($oldManageSetting, 'dynamic');
-                $accessGroups = $_POST['media' . $i . '_manage_associated_groups'];
+                if (isset($_POST['media' . $i . '_manage_associated_groups'])) {
+                    $accessGroups = $_POST['media' . $i . '_manage_associated_groups'];
+                }
                 // add AccessID
                 $newManageSetting = Permission::createNewDynamicAccessId();
                 // save AccessID

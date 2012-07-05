@@ -855,7 +855,7 @@ if (MY_DEBUG) { echo("categoriesDelete(): \$_POST: ");var_export($_POST);echo("<
             $objSupportCategory =
                 SupportCategory::getById($id, $arrLanguageId[$id]);
             if (!$objSupportCategory) {
-if (MY_DEBUG) { echo("Support::categoriesDelete(): ERROR: Failed to get Suppoprt Category with ID $id, lang {$arrLanguageId[$id]}!<br />"); }
+if (MY_DEBUG) { echo("Support::categoriesDelete(): ERROR: Failed to get Support Category with ID $id, lang {$arrLanguageId[$id]}!<br />"); }
                 return false;
             }
             if (!$objSupportCategory->delete($arrLanguageId[$id])) {

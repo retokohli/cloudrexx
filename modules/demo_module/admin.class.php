@@ -88,7 +88,7 @@ class demoModule
 			'ADMIN_CONTENT'				=> $this->_objTpl->get()
 		));
 
-                $this->act = $_REQUEST['act'];
+                $this->act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
                 $this->setNavigation();
 	}
 }

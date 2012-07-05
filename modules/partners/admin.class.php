@@ -418,7 +418,7 @@ class PartnersAdmin extends PartnersLibrary
 
         $intPagingPosition = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
         if(empty($category))
-            $category = $_GET['category'];
+            $category = isset($_GET['category']) ? $_GET['category'] : '';
         if($category == "level") {
             $arrRenameCategories = $this->CreateRegionArray(2);
         }
@@ -576,7 +576,7 @@ class PartnersAdmin extends PartnersLibrary
         ));
         $intPagingPosition = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
         if(empty($category))
-            $category = $_GET['category'];
+            $category = isset($_GET['category']) ? $_GET['category'] : '';
 
         //Show Categories
         $arrCategories = $this->createCategoryArray($intPagingPosition, $this->getPagingLimit(),$category,$intCategoryId=0,$cat_id);
@@ -672,7 +672,7 @@ class PartnersAdmin extends PartnersLibrary
 
     function insertSort() {
         global $objDatabase, $_ARRAYLANG;
-        $cat_name = $_POST['cat_name_del'];
+        $cat_name = isset($_POST['cat_name_del']) ? $_POST['cat_name_del'] : '';
 
         switch($cat_name) {
 
@@ -843,7 +843,7 @@ class PartnersAdmin extends PartnersLibrary
 
     function insertCategory() {
         global $objDatabase, $_ARRAYLANG;
-        $cat_name = $_POST['cat_name'];
+        $cat_name = isset($_POST['cat_name']) ? $_POST['cat_name'] : '';
 
         switch($cat_name) {
 
@@ -1397,7 +1397,7 @@ class PartnersAdmin extends PartnersLibrary
         $intCategoryId = intval($intCategoryId);
 
         if(trim($category)=="") {
-            $category = $_GET['category'];
+            $category = isset($_GET['category']) ? $_GET['category'] : 0;
         }
 
 

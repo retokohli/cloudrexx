@@ -32,7 +32,7 @@ class MemberManager
 		$this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/member/template');
         CSRF::add_placeholder($this->_objTpl);
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-                $this->act = $_REQUEST['act'];
+                $this->act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
                 $this->setNavigation();
 	}
         private function setNavigation()

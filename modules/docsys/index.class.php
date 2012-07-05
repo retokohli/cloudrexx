@@ -190,6 +190,10 @@ class docSys extends docSysLibrary
         $i = 1;
         $class  = 'row1';
 
+        if (!isset($_REQUEST['cmd'])) {
+            $_REQUEST['cmd'] = '';
+        }
+        
         $this->_objTpl->setTemplate($this->pageContent);
         $this->_objTpl->setGlobalVariable('MODULE_INDEX', MODULE_INDEX);
 

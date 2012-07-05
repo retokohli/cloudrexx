@@ -185,8 +185,8 @@ class reservations extends reservationLib
     {
         global $_ARRAYLANG;
 
-        $day = $_GET['day'];
-        $unit = $_GET['unit'];
+        $day = isset($_GET['day']) ? $_GET['day'] : '';
+        $unit = isset($_GET['unit']) ? $_GET['unit'] : 0;
 
         if (empty($day) || empty($unit)) {
             CSRF::header("Location: index.php?section=reservation");
@@ -216,8 +216,8 @@ class reservations extends reservationLib
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
-        $day = $_POST['day'];
-        $unit = $_POST['unit'];
+        $day = isset($_GET['day']) ? $_GET['day'] : '';
+        $unit = isset($_GET['unit']) ? $_GET['unit'] : 0;
 
 //        $objDatabase->debug = true;
 
@@ -310,6 +310,10 @@ class reservations extends reservationLib
     {
         global $objDatabase, $_ARRAYLANG;
 
+        if (!isset($_GET['hash'])) {
+            $_GET['hash'] = '';
+        }
+        
         $id = contrexx_addslashes($_GET['id']);
 
         $query = "SELECT hash, confirmed, day FROM ".DBPREFIX."module_reservation

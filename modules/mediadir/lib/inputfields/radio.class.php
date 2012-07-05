@@ -99,7 +99,7 @@ class mediaDirectoryInputfieldRadio extends mediaDirectoryLibrary implements inp
                 $strOptions = empty($arrInputfield['default_value'][$_LANGID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$_LANGID];
                 $arrOptions = explode(",", $strOptions);
 
-                $strValue = $_GET[$intId];
+                $strValue = isset($_GET[$intId]) ? $_GET[$intId] : '';
 
                 $strInputfield = '<select name="'.$intId.'" class="'.$this->moduleName.'InputfieldSearch">';
                 $strInputfield .= '<option  value="">'.$_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHOOSE'].'</option>';

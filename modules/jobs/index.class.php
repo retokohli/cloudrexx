@@ -260,7 +260,7 @@ class jobs extends jobsLibrary
         $class  = 'row1';
         $jobscategoryform = "";
         $jobslocationform = "";
-        $category;
+        $category = null;
 
         $this->_objTpl->setTemplate($this->pageContent);
 
@@ -270,7 +270,7 @@ class jobs extends jobsLibrary
         /**
          * This overwrites $_REQUEST['catid'] but it shouldnt be set parallel anyway
          */
-        if(is_numeric($_REQUEST['cmd'])) {
+        if(isset($_REQUEST['cmd']) && is_numeric($_REQUEST['cmd'])) {
         	$category = $_REQUEST['cmd'];
         }
 

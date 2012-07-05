@@ -1176,6 +1176,9 @@ class galleryManager extends GalleryLibrary
             }
         }
 
+        if (!isset($_POST['category_status'])) {
+            return false;
+        }
         $insertStatus = $_POST['category_status'];
         $insertComment = $_POST['category_comment'];
         $insertVoting = $_POST['category_voting'];

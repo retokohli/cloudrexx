@@ -78,6 +78,10 @@ class RecommendManager extends RecommendLibrary
     {
         global $objTemplate;
         
+        if (!isset($_GET['act'])) {
+            $_GET['act'] = '';
+        }
+        
         switch ($_GET['act']) {
             case "saveSettings":
                 $this->_saveSettings();
@@ -144,17 +148,17 @@ class RecommendManager extends RecommendLibrary
             $error = true;
         }
         
-        $salutation_female  = $_POST['salutation_female'];
-        $salutation_male    = $_POST['salutation_male'];
-        $subject            = $_POST['subject'];        
-        $body               = $_POST['body'];
-        
         if ($error) {
             $this->pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
             $this->strErrMessage = $_ARRAYLANG['TXT_ERROR'];
             
-            $this->_showForm($subject, $body);
+            $this->_showForm('', '');
         } else {
+            $salutation_female  = $_POST['salutation_female'];
+            $salutation_male    = $_POST['salutation_male'];
+            $subject            = $_POST['subject'];        
+            $body               = $_POST['body'];
+
             $this->_saveValue('subject', $subject);
             $this->_saveValue('body', $body);
             $this->_saveValue('salutation_female', $salutation_female);
