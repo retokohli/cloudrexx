@@ -105,11 +105,19 @@ margin-bottom: 0
 	/* width: auto;*/
 
 }
-.product .images img {
+#shop div.images {
 	border: 1px solid #E7E7E7;
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
-	border-radius: 4px
+	border-radius: 4px;
+	width: 21%;
+	margin: 0 13px;
+}
+.product .images img {
+	/*border: 1px solid #E7E7E7;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px*/
 }
 #shop div.functions{
 /*margin: 12px 0 0 15px ;*/
