@@ -10,13 +10,15 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-error_reporting(0);
-ini_set('display_errors', 0);
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 /**
  * Includes
  */
 require_once dirname(__FILE__).'/../../config/configuration.php';
+
+require_once ASCMS_CORE_PATH.'/Env.class.php';
 
 require_once ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php';
 
@@ -31,6 +33,11 @@ $objDb->Connect($_DBCONFIG['host'], $_DBCONFIG['user'], $_DBCONFIG['password'], 
 
 if(!empty($_DBCONFIG['charset']))
   $objDb->Execute('SET CHARACTER SET '.$_DBCONFIG['charset']);
+$objDatabase = $objDb;
+require_once ASCMS_FRAMEWORK_PATH.'/Language.class.php';
+\FWLanguage::init();
+require_once dirname(__FILE__).'/../../config/doctrine.php';
+
 $counter = new counter($arrRobots, $arrBannedWords);
 
 /**
@@ -227,7 +234,7 @@ class counter
         $uriString="";
         $isAlias = false;
 
-        if (preg_match("/".$_SERVER['HTTP_HOST']."/",$_SERVER['HTTP_REFERER'])) {
+        if (isset($_SERVER['HTTP_REFERER']) && preg_match("/".$_SERVER['HTTP_HOST']."/",$_SERVER['HTTP_REFERER'])) {
             if (strpos($_SERVER['HTTP_REFERER'], '?') === false) {
                 $completeUriString = substr(strrchr($_SERVER['HTTP_REFERER'], "/"),1);
                 $isAlias = true;
@@ -645,7 +652,7 @@ class counter
             $crit = array(
                 'id' => $this->pageId,
             );
-            $page = current($this->pageRepository->findBy($crit));
+            $page = \Env::get('em')->getRepository('\Cx\Model\ContentManager\Page')->findOneBy($crit);
             if (!$page) {
                 throw new \Cx\Model\ContentManager\Repository\PageRepositoryException(
                         'Page not found (id "' . $this->pageId . '"'
