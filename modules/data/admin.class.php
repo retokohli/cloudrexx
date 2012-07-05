@@ -196,6 +196,8 @@ class DataAdmin extends DataLibrary {
     function showCategories() {
         global $_ARRAYLANG, $objDatabase;
 
+        JS::activate('jqueryui');
+
         $this->_strPageTitle = $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_TITLE'];
         $this->_objTpl->loadTemplateFile('module_data_categories.html',true,true);
 
@@ -268,11 +270,11 @@ class DataAdmin extends DataLibrary {
             $intNextCategoryId = ($objResult->RecordCount() == 1) ? $objResult->fields['currentId'] + 1 : 1;
 
             $this->_objTpl->setVariable(array(
-                'ADD_LANGUAGES_1'    =>    $arrLanguages[0],
-                'ADD_LANGUAGES_2'    =>    $arrLanguages[1],
-                'ADD_LANGUAGES_3'    =>    $arrLanguages[2],
-                'TXT_PLACEHOLDER'    => $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
-                'PLACEHOLDER'        => "CAT_".$intNextCategoryId,
+                'ADD_LANGUAGES_1'     => $arrLanguages[0],
+                'ADD_LANGUAGES_2'     => $arrLanguages[1],
+                'ADD_LANGUAGES_3'     => $arrLanguages[2],
+                'TXT_PLACEHOLDER'     => $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
+                'PLACEHOLDER'         => "CAT_".$intNextCategoryId,
                 'PAGE_SELECT_DISPLAY' => "none"
             ));
 
@@ -378,19 +380,17 @@ class DataAdmin extends DataLibrary {
             }
 
             $this->_objTpl->setGlobalVariable(array(
-                    "CATID"         => $key,
-                    "PARENT_ID"     =>  !isset($arrCategories[$key]['parent_id']) 
-                                        ? $arrCategories[$key]['parent_id'] 
-                                        : 0,
-                    "LEVEL"         => $level
-               ));
-               foreach ($children as $child) {
-                   $this->_objTpl->setVariable("CHILD_ID", $child);
-                   $this->_objTpl->parse("set_child");
-               }
-
-               $this->_objTpl->touchBlock("push_sort");
-               $this->_objTpl->parse("push_sort");
+                "CATID"         => $key,
+                "PARENT_ID"     =>  !isset($arrCategories[$key]['parent_id']) 
+                                    ? $arrCategories[$key]['parent_id'] 
+                                    : 0,
+                "LEVEL"         => $level
+            ));
+            
+            foreach ($children as $child) {
+                $this->_objTpl->setVariable("CHILD_ID", $child);
+                $this->_objTpl->parse("set_child");
+            }
 
             $this->_objTpl->parse('showCategories');
             $this->_objTpl->parse("addCategoryDropDown");
@@ -860,8 +860,10 @@ class DataAdmin extends DataLibrary {
     {
         global $_ARRAYLANG;
 
+        JS::activate('jqueryui');
+        
         $intSelectedCategory = (isset($_GET['catId'])) ? intval($_GET['catId']) : 0;
-           $intPagingPosition = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
+        $intPagingPosition = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
 
         $this->_strPageTitle = $_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_TITLE'];
         $this->_objTpl->loadTemplateFile('module_data_entries.html',true,true);
@@ -984,19 +986,14 @@ class DataAdmin extends DataLibrary {
                    ));
 
                    if ($intSelectedCategory == 0) {
-                       $this->_objTpl->hideBlock("show_arrows");
+                       $this->_objTpl->hideBlock("sort_buttons");
                    } else {
-                       $this->_objTpl->parse("show_arrows");
+                       $this->_objTpl->touchBlock("sort_buttons");
                    }
 
                    $this->_objTpl->parse('showEntries');
 
                    $intRowClass++;
-
-                   $this->_objTpl->setVariable(array(
-                    "ENTRY_ID"          => $intEntryId
-                   ));
-                   $this->_objTpl->parse("push_sort");
                }
 
                //Show paging if needed
@@ -1997,14 +1994,14 @@ class DataAdmin extends DataLibrary {
     {
         global $objDatabase;
 
-        if ($_POST['order']) {
-            require_once(ASCMS_LIBRARY_PATH."/PEAR/Services/JSON.php");
-            $objJson = new Services_JSON();
-            $order = $objJson->decode(stripslashes($_POST['order']));
-            foreach ($order as $key => $value) {
-                $query = "UPDATE ".DBPREFIX."module_data_messages
-                          SET `sort` = ".$key."
-                          WHERE `message_id` = ".$value;
+        if ($_POST['entries']) {
+            $entries = contrexx_input2db($_POST['entries']);
+            foreach ($entries as $sort => $value) {
+                $sort++;
+                $id = explode('_', $value);
+                $query = "UPDATE `".DBPREFIX."module_data_messages`
+                          SET `sort` = ".$sort."
+                          WHERE `message_id` = ".$id[1];
                 $objDatabase->Execute($query);
             }
         } else {
@@ -2023,20 +2020,14 @@ class DataAdmin extends DataLibrary {
     {
         global $objDatabase;
 
-        if ($_POST['order']) {
-            require_once(ASCMS_LIBRARY_PATH."/PEAR/Services/JSON.php");
-            $objJson = new Services_JSON();
-            $order = $objJson->decode(stripslashes($_POST['order']));
-            $finalOrder = array();
-            foreach ($order as $parent) {
-                foreach ($parent as $cat) {
-                    $finalOrder[] = $cat;
-                }
-            }
-            foreach ($finalOrder as $key => $value) {
+        if ($_POST['categories']) {
+            $categories = contrexx_input2db($_POST['categories']);
+            foreach ($categories as $sort => $value) {
+                $sort++;
+                $id = explode('_', $value);
                 $query = "UPDATE ".DBPREFIX."module_data_categories
-                          SET `sort` = ".$key."
-                          WHERE `category_id` = ".$value;
+                          SET `sort` = ".$sort."
+                          WHERE `category_id` = ".$id[1];
                 $objDatabase->Execute($query);
             }
         } else {
