@@ -53,6 +53,10 @@ class logmanager
     function getLogPage()
     {
         global $_CORELANG, $objTemplate;
+        
+        if (!isset($_GET['act'])) {
+            $_GET['act'] = '';
+        }
 
         switch($_GET['act']){
             case "del":

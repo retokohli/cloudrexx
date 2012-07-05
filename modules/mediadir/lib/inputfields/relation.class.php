@@ -178,7 +178,7 @@ class mediaDirectoryInputfieldRelation extends mediaDirectoryLibrary implements 
                 break;
             case 2:
                 //search View
-                $strValue = $_GET[$intId];
+                $strValue = isset($_GET[$intId]) ? $_GET[$intId] : '';
 
 			   // get forms
 			   $objInputfieldValue = $objDatabase->Execute("

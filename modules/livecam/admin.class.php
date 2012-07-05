@@ -225,6 +225,9 @@ class LivecamManager extends LivecamLibrary
         global $objDatabase;
 
         $id = intval($_POST['id']);
+        if (!$id) {
+            return false;
+        }
         $currentImagePath = $_POST['currentImagePath'];
         $maxImageWidth = intval($_POST['maxImageWidth']);
         $archivePath = $_POST['archivePath'];

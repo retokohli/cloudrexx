@@ -722,7 +722,7 @@ class popupManager extends popupLibrary
     {
         global $_ARRAYLANG, $objDatabase;
 
-        $arrStatusPopups = $_POST['selectedPopupId'];
+        $arrStatusPopups = isset($_POST['selectedPopupId']) ? $_POST['selectedPopupId'] : '';
         if($arrStatusPopups != null){
             foreach ($arrStatusPopups as $popupId){
                 $query = "UPDATE ".DBPREFIX."module_popup SET active='1' WHERE id=$popupId";
@@ -749,7 +749,7 @@ class popupManager extends popupLibrary
     {
         global $_ARRAYLANG, $objDatabase;
 
-        $arrStatusPopups = $_POST['selectedPopupId'];
+        $arrStatusPopups = isset($_POST['selectedPopupId']) ? $_POST['selectedPopupId'] : '';
         if($arrStatusPopups != null){
             foreach ($arrStatusPopups as $popupId){
                 $query = "UPDATE ".DBPREFIX."module_popup SET active='0' WHERE id=$popupId";

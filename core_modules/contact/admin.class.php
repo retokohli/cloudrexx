@@ -1103,8 +1103,8 @@ class ContactManager extends ContactLib
         global $_ARRAYLANG, $_CONFIG, $objDatabase;
         
         $formId  = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
-        $adding  = $_POST['copy'] || !$formId;
-        $content = $_POST['contentSiteAction'];
+        $adding  = isset($_POST['copy']) ? $_POST['copy'] || !$formId : !$formId;
+        $content = isset($_POST['contentSiteAction']) ? $_POST['contentSiteAction'] : '';
 
         if (isset($_POST['saveForm'])) {
             $emails         = $this->getPostRecipients();
@@ -1371,12 +1371,12 @@ class ContactManager extends ContactLib
         );
         
         // shorten the variables
-        $fieldNames      = $_POST['contactFormFieldName'];
-        $fieldValues     = $_POST['contactFormFieldValue'];
-        $fieldTypes      = $_POST['contactFormFieldType'];
-        $fieldRequireds  = $_POST['contactFormFieldRequired'];
-        $fieldCheckTypes = $_POST['contactFormFieldCheckType'];
-        $fieldEditType   = $_POST['contactFormFieldEditType'];
+        $fieldNames      = isset($_POST['contactFormFieldName']) ? $_POST['contactFormFieldName'] : '';
+        $fieldValues     = isset($_POST['contactFormFieldValue']) ? $_POST['contactFormFieldValue'] : '';
+        $fieldTypes      = isset($_POST['contactFormFieldType']) ? $_POST['contactFormFieldType'] : '';
+        $fieldRequireds  = isset($_POST['contactFormFieldRequired']) ? $_POST['contactFormFieldRequired'] : '';
+        $fieldCheckTypes = isset($_POST['contactFormFieldCheckType']) ? $_POST['contactFormFieldCheckType'] : '';
+        $fieldEditType   = isset($_POST['contactFormFieldEditType']) ? $_POST['contactFormFieldEditType'] : '';
 
         foreach ($fieldTypes as $id => $fieldType) {
             $id = intval($id);

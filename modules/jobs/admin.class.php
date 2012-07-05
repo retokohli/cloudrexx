@@ -191,7 +191,8 @@ class jobsManager extends jobsLibrary
         //return if location fields are not activated in the backend
         if (!$objResult->EOF) {
             if (intval($objResult->fields['value']) == 1) {
-                if (is_numeric($_REQUEST['location'])) {
+                if (isset($_REQUEST['location']) &&
+                        is_numeric($_REQUEST['location'])) {
                     $location = $_REQUEST['location'];
                     $locationFilter = ", `".DBPREFIX."module_jobs_rel_loc_jobs` AS rel WHERE rel.job = n.id AND rel.location = '".$location."' AND ";
                 }
@@ -203,7 +204,8 @@ class jobsManager extends jobsLibrary
                     '</select>';
             }
         }
-        if (is_numeric($_REQUEST['category'])) {
+        if (isset($_REQUEST['category']) &&
+                is_numeric($_REQUEST['category'])) {
             $category = $_REQUEST['category'];
             $docFilter = " n.catid='$category' AND ";
         }
@@ -837,7 +839,8 @@ class jobsManager extends jobsLibrary
         /*
         * just in case of a database or malformed URL Error, we put the POST Data back in the forms
         */
-        if ($_POST['updateFootnote'] == "true") {
+        if (isset($_POST['updateFootnote']) &&
+                $_POST['updateFootnote'] == "true") {
             $footnote = $_POST['footnote'];
             $url = $_POST['url'];
             $link = $_POST['link'];

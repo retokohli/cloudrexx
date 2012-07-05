@@ -13,7 +13,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
 require_once ASCMS_CORE_PATH.'/BackendTable.class.php';
 require_once ASCMS_CORE_PATH.'/Module.class.php';
 require_once ASCMS_CORE_PATH.'/routing/LanguageExtractor.class.php';
-require_once ASCMS_CORE_PATH.'/json/adapter/JsonPage.class.php';
+require_once ASCMS_CORE_PATH.'/json/adapter/contentmanager/JsonPage.class.php';
 
 require_once ASCMS_CORE_PATH.'/Tree.class.php';
 require_once ASCMS_CORE_MODULE_PATH.'/cache/admin.class.php';
@@ -193,7 +193,7 @@ class ContentWorkflow extends Module {
                 // Only for new, updated and unvalidated pages
                 if ($this->cmd  != 'deleted') {
                     $langDir     = $le->getShortNameOfLanguage($page->getLang());
-                    $path        = $langDir.'/'.$this->pageRepo->getPath($page);
+                    $path        = $langDir.'/'.$page->getPath();
                     $historyLink = ASCMS_PATH_OFFSET.'/'.$path.'?history='.$history;
                 }
 

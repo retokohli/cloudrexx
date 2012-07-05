@@ -21,6 +21,9 @@ class CsvLib
 	 */
 	function __construct()
 	{
+            if (!isset($_POST['import_options_csv_separator'])) {
+                return false;
+            }
 		$this->separator = contrexx_stripslashes($_POST['import_options_csv_separator']);
 		if ($this->separator == '\t') {
 			$this->separator = "\t";

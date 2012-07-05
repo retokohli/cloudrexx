@@ -543,7 +543,9 @@ class FileBrowser {
         //if yes, we know the added files and want to highlight them
         if (!empty($_GET['highlightUploadId'])) {
             $key = 'filebrowser_upload_files_'.intval($_GET['highlightUploadId']);
-            $sessionHighlightCandidates = $_SESSION[$key]; //an array with the filenames, set in FileBrowser::uploadFinished
+            if (isset($_SESSION[$key])) {
+                $sessionHighlightCandidates = $_SESSION[$key]; //an array with the filenames, set in FileBrowser::uploadFinished
+            }
             //clean up session; we do only highlight once
             unset($_SESSION[$key]);
 

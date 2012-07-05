@@ -2431,7 +2431,6 @@ class newsManager extends newsLibrary {
 
         // Modify a new category
         if (isset($_POST['modCat']) && ($_POST['modCat']==true)) {
-            $newLangData = $_POST['newsCatName'];
             if ($this->storeCategoriesLocales($_POST['newsCatName'])) {
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             } else {
@@ -2570,7 +2569,6 @@ class newsManager extends newsLibrary {
 
         // Modify a new type
         if (isset($_POST['modType']) && ($_POST['modType']==true)) {
-            $newLangData = $_POST['newsTypeName'];
             if ($this->storeTypesLocales($_POST['newsTypeName'])) {
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             } else {

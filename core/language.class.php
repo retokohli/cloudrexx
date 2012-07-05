@@ -630,8 +630,8 @@ class LanguageManager
                 $lastId = $lastId < $k ? $k : $lastId;
 
             }
-            $variableAdminzone = $_REQUEST['backend'];
-            $variableWebsite = $_REQUEST['frontend'];
+            $variableAdminzone = isset($_REQUEST['backend']) ? $_REQUEST['backend'] : '';
+            $variableWebsite = isset($_REQUEST['frontend']) ? $_REQUEST['frontend'] : '';
         }
 
         if ($variableAdminzone==1) {

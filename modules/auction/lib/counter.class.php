@@ -23,8 +23,8 @@ class AuctionCounter{
 
 	function __construct(){
 
-		$this->mode 		= $_REQUEST["mode"];
-		$this->auction_id 	= intval($_REQUEST["id"]);
+		$this->mode 		= isset($_REQUEST["mode"]) ? $_REQUEST['mode'] : '';
+		$this->auction_id 	= isset($_REQUEST['id']) ? intval($_REQUEST["id"]) : 0;
 
 		if($this->auction_id>0){
 			if($this->mode == 'countdown'){

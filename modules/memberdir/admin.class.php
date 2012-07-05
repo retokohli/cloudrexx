@@ -112,13 +112,13 @@ class MemberDirManager extends MemberDirLibrary
                 $this->_saveEditedMember();
                 break;
             case "deleteMember":
-                $id = intval($_GET['id']);
+                $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
                 if ($this->_deleteEntry($id)) {
                     $this->okMessage = $_ARRAYLANG['TXT_DATABASE_SUCESSFUL'];
                 } else {
                     $this->statusMessage = $_ARRAYLANG['TXT_DELETE_ERROR'];
                 }
-                $_GET['id'] = $_GET['dirid'];
+                $_GET['id'] = isset($_GET['dirid']) ? $_GET['dirid'] : 0;
                 $this->_overviewDir();
                 break;
             case "multiMemberDelete":
@@ -652,6 +652,9 @@ class MemberDirManager extends MemberDirLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
+        if (!isset($_GET['id'])) {
+            $_GET['id'] = 0;
+        }
         $dirid = (empty($dirid)) ? intval($_GET['id']) : $dirid;
 
         $query = "SELECT field FROM ".DBPREFIX."module_memberdir_name
@@ -669,6 +672,10 @@ class MemberDirManager extends MemberDirLibrary
 
         $error = false;
         for ($i=1; $i<=18; $i++) {
+            if (!isset($_POST['field_name_' . $i])) {
+                $error = true;
+                break;
+            }
             $name = $_POST['field_name_'.$i];
             $active = (!empty($_POST['field_active_'.$i])) ? 1 : 0;
             $query = "UPDATE ".DBPREFIX."module_memberdir_name SET
@@ -679,27 +686,29 @@ class MemberDirManager extends MemberDirLibrary
             }
         }
 
-        $name = contrexx_addslashes($_POST['dir_name']);
-        $description = contrexx_addslashes($_POST['dir_desc']);
-        $parentdir = contrexx_addslashes($_POST['parentdir']);
-        $parentdir = ($parentdir == $dirid) ? $this->directories[$dirid]['parentdir'] : $parentdir;
-        $displaymode = contrexx_addslashes($_POST['displaymode']);
-        $sort = intval($_POST['sortSelection']);
-        $lang_keys = array_keys(FWLanguage::getLanguageArray());
-        $langId = (in_array(intval($_POST['memberdirLangId']), $lang_keys) || $_POST['memberdirLangId'] == 0)
-            ? intval($_POST['memberdirLangId']) : $lang_keys[0];
-        $query = "UPDATE ".DBPREFIX."module_memberdir_directories
-                  SET `name` = '$name',
-                  `description` = '$description',
-                  `parentdir`    = '$parentdir',
-                  `displaymode` = '$displaymode',
-                  `sort` = ".$sort.",
-                  `pic1` = '" .((empty($_POST['field_active_pic1'])) ? "0" : "1") . "',
-                  `pic2` = '" .((empty($_POST['field_active_pic2'])) ? "0" : "1") . "',
-                  `lang_id` = ".$langId."
-                  WHERE dirid = '$dirid'";
-        if (!$objDatabase->Execute($query)) {
-            $error = true;
+        if (isset($_POST['dir_name'])) {
+            $name = contrexx_addslashes($_POST['dir_name']);
+            $description = contrexx_addslashes($_POST['dir_desc']);
+            $parentdir = contrexx_addslashes($_POST['parentdir']);
+            $parentdir = ($parentdir == $dirid) ? $this->directories[$dirid]['parentdir'] : $parentdir;
+            $displaymode = contrexx_addslashes($_POST['displaymode']);
+            $sort = intval($_POST['sortSelection']);
+            $lang_keys = array_keys(FWLanguage::getLanguageArray());
+            $langId = (in_array(intval($_POST['memberdirLangId']), $lang_keys) || $_POST['memberdirLangId'] == 0)
+                ? intval($_POST['memberdirLangId']) : $lang_keys[0];
+            $query = "UPDATE ".DBPREFIX."module_memberdir_directories
+                    SET `name` = '$name',
+                    `description` = '$description',
+                    `parentdir`    = '$parentdir',
+                    `displaymode` = '$displaymode',
+                    `sort` = ".$sort.",
+                    `pic1` = '" .((empty($_POST['field_active_pic1'])) ? "0" : "1") . "',
+                    `pic2` = '" .((empty($_POST['field_active_pic2'])) ? "0" : "1") . "',
+                    `lang_id` = ".$langId."
+                    WHERE dirid = '$dirid'";
+            if (!$objDatabase->Execute($query)) {
+                $error = true;
+            }
         }
 
         if ($error) {
@@ -1242,6 +1251,9 @@ class MemberDirManager extends MemberDirLibrary
     {
         global $_ARRAYLANG, $objDatabase;
 
+        if (!isset($_POST['dirid'])) {
+            return false;
+        }
         $dirid = intval($_POST['dirid']);
         $id = $_GET['id'];
 
@@ -1449,6 +1461,9 @@ class MemberDirManager extends MemberDirLibrary
     {
         global $objDatabase;
 
+        if (!isset($_GET['id'])) {
+            return false;
+        }
         $id = $_GET['id'];
 
         $query = "SELECT pic1, pic2 FROM ".DBPREFIX."module_memberdir_values
@@ -1913,6 +1928,9 @@ class MemberDirManager extends MemberDirLibrary
     {
         global $objDatabase;
 
+        if (!isset($_GET['id'])) {
+            return false;
+        }
         $id = $_GET['id'];
 
         if ($this->directories[$id]['active']) {

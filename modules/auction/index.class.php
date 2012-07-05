@@ -760,7 +760,7 @@ class Auction extends auctionLibrary
 		if ($objFWUser->objUser->login()) {
 			$FromEmail = $objFWUser->objUser->getEmail();
 		}
-		if($_REQUEST["Email"]!=''){
+		if (isset($_REQUEST['Email']) && $_REQUEST["Email"]!='') {
 			$FromEmail = $_REQUEST["Email"];
 		}
 		$FromName 			= $_REQUEST["Name"].' (User: '.$objFWUser->objUser->getUsername().')';
@@ -1106,7 +1106,8 @@ class Auction extends auctionLibrary
             //get navigatin
             $this->getNavigation($this->entries[$id]['catid']);
 
-            if ($_POST['title'] != '' && $_POST['message'] != '') {
+            if (isset($_POST['title']) && $_POST['title'] != '' && 
+                    isset($_POST['message']) && $_POST['message'] != '') {
                 //create mail
                 $sendTo        = $this->entries[$id]['email'];
                 $fromName    = $_POST['name'];

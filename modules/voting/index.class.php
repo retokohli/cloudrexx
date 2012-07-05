@@ -25,6 +25,14 @@ function votingShowCurrent($page_content){
     CSRF::add_placeholder($objTpl);
 	$objTpl->setErrorHandling(PEAR_ERROR_DIE);
 	$objTpl->setTemplate($page_content);
+        
+        if (!isset($_GET['vid'])) {
+            $_GET['vid'] = '';
+        }
+        
+        if (!isset($_POST['votingemail'])) {
+            return false;
+        }
 
 	$votingId = intval($_GET['vid']);
 	$msg = '';
@@ -300,7 +308,7 @@ function VotingSubmit(){
 function _store_additional_data($id){
 	global $objDatabase;
 
-	$email = $_POST['additional_email'];
+	$email = isset($_POST['additional_email']) ? $_POST['additional_email'] : '';
 
 	// Fallback to voting confirmation email. this way the
 	// user doesn't have to enter it twice for the stats.

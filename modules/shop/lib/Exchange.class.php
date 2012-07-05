@@ -310,8 +310,10 @@ class Exchange
                 // Check if we are in the right step
 //                if ($this->checkStep('export')) {break;}
 
-                $_SESSION['shop_exchange_export']['file']['type'] = $_POST['type'];
-                $_SESSION['shop_exchange_export']['cols'] = $_POST['cols'];
+                if (isset($_POST['type']) && isset($_POST['cols'])) {
+                    $_SESSION['shop_exchange_export']['file']['type'] = $_POST['type'];
+                    $_SESSION['shop_exchange_export']['cols'] = $_POST['cols'];
+                }
 
                 // Generates the download link
                 switch ($_SESSION['shop_exchange_export']['file']['type']) {
@@ -474,8 +476,10 @@ class Exchange
 
                 $arrImportCols = array();
 
-                $_SESSION['shop_exchange_import']['file']['type'] = $_POST['filetype'];
-                $_SESSION['shop_exchange_import']['file']['separator'] = $_POST['separator'];
+                if (isset($_POST['filetype']) && isset($_POST['separator'])) {
+                    $_SESSION['shop_exchange_import']['file']['type'] = $_POST['filetype'];
+                    $_SESSION['shop_exchange_import']['file']['separator'] = $_POST['separator'];
+                }
 
                 // Gets the col names of the selected table
                 $query = "SELECT *
@@ -588,7 +592,7 @@ class Exchange
 
                 // Assign the cols of the file to the cols of the database table
                 foreach ($_SESSION['shop_exchange_import']['importCols'] as $key) {
-                    $arrImportCols[$key] = $_POST[$key];
+                    $arrImportCols[$key] = isset($_POST[$key]) ? $_POST[$key] : '';
                 }
                 $_SESSION['shop_exchange_import']['importCols'] = $arrImportCols;
 

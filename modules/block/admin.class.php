@@ -534,6 +534,11 @@ class blockManager extends blockLibrary
      */
     function _parseTimestamp($name)
     {
+        if (!isset($_POST[$name . 'Date']) ||
+                !isset($_POST[$name . 'Hour']) ||
+                !isset($_POST[$name . 'Minute'])) {
+            return time();
+        }
         $date    = $_POST[$name.'Date'];
         $hour    = $_POST[$name.'Hour'];
         $minutes = $_POST[$name.'Minute'];
@@ -876,7 +881,7 @@ class blockManager extends blockLibrary
     {
         global $_ARRAYLANG, $objDatabase;
 
-        $arrStatusBlocks = $_POST['selectedBlockId'];
+        $arrStatusBlocks = isset($_POST['selectedBlockId']) ? $_POST['selectedBlockId'] : null;
         if($arrStatusBlocks != null){
             foreach ($arrStatusBlocks as $blockId){
                 $query = "UPDATE ".DBPREFIX."module_block_blocks SET active='1' WHERE id=$blockId";
@@ -906,7 +911,7 @@ class blockManager extends blockLibrary
     {
         global $_ARRAYLANG, $objDatabase;
 
-        $arrStatusBlocks = $_POST['selectedBlockId'];
+        $arrStatusBlocks = isset($_POST['selectedBlockId']) ? $_POST['selectedBlockId'] : null;
         if($arrStatusBlocks != null){
             foreach ($arrStatusBlocks as $blockId){
                 $query = "UPDATE ".DBPREFIX."module_block_blocks SET active='0' WHERE id=$blockId";
@@ -936,7 +941,7 @@ class blockManager extends blockLibrary
     {
         global $_ARRAYLANG, $objDatabase;
 
-        $arrStatusBlocks = $_POST['selectedBlockId'];
+        $arrStatusBlocks = isset($_POST['selectedBlockId']) ? $_POST['selectedBlockId'] : null;
         if($arrStatusBlocks != null){
             foreach ($arrStatusBlocks as $blockId){
                 $query = "UPDATE ".DBPREFIX."module_block_blocks SET global='1' WHERE id=$blockId";
@@ -957,7 +962,7 @@ class blockManager extends blockLibrary
     {
         global $objDatabase;
 
-        $arrStatusBlocks = $_POST['selectedBlockId'];
+        $arrStatusBlocks = isset($_POST['selectedBlockId']) ? $_POST['selectedBlockId'] : null;
         if($arrStatusBlocks != null){
             foreach ($arrStatusBlocks as $blockId){
                 $query = "UPDATE ".DBPREFIX."module_block_blocks SET global='0' WHERE id=".intval($blockId);

@@ -215,6 +215,9 @@ class Import extends ImportExport
 	 */
 	function cancel()
 	{
+            if (!isset($_POST['importfile'])) {
+                return false;
+            }
         $file = $_POST['importfile'];
 
         $path = ASCMS_TEMP_PATH . "/";

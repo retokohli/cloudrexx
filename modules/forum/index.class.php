@@ -1000,9 +1000,18 @@ class Forum extends ForumLibrary {
                 return false;
             }
 
-            if(empty($_POST['forum_delete_attachment']) && empty($fileInfo['name']) && !empty($_REQUEST['forum_attachment_oldname'])){
+            if (empty($_POST['forum_delete_attachment']) &&
+                    empty($fileInfo['name']) &&
+                    !empty($_REQUEST['forum_attachment_oldname'])){
                 $fileInfo['name'] = contrexx_addslashes($_REQUEST['forum_attachment_oldname']);
-            }elseif( (!empty($_POST['forum_delete_attachment']) && $_POST['forum_delete_attachment'] == 1) || (!empty($_REQUEST['forum_attachment_oldname']) && $fileInfo['name'] != $_REQUEST['forum_attachment_oldname'])){
+            } elseif ((
+                        !empty($_POST['forum_delete_attachment']) &&
+                        $_POST['forum_delete_attachment'] == 1
+                    ) || (
+                        !empty($_REQUEST['forum_attachment_oldname']) &&
+                        $fileInfo['name'] != $_REQUEST['forum_attachment_oldname']
+                    )
+                ){
                 unlink(ASCMS_FORUM_UPLOAD_PATH.'/'.str_replace(array('./', '.\\'), '', $_REQUEST['forum_attachment_oldname']));
             }
 

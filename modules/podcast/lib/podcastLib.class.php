@@ -953,6 +953,9 @@ EOF;
     {
         global $_ARRAYLANG, $_CONFIG;
 
+        if (!isset($_REQUEST['section'])) {
+            $_REQUEST['section'] = '';
+        }
         $mediumId = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
         $mediumTitle = '';
         $mediumYoutubeID = '';

@@ -127,6 +127,9 @@ class eGov extends eGovLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
+        if (!isset($_REQUEST['id'])) {
+            return false;
+        }
         $product_id = $_REQUEST['id'];
         $product_autostatus =
             eGovLibrary::GetProduktValue("product_autostatus", $product_id);
@@ -721,7 +724,7 @@ class eGov extends eGovLibrary
                     $FromName = eGovLibrary::GetSettings('set_sender_name');
                 }
 
-                $TargetMail = $_REQUEST['email'];
+                $TargetMail = isset($_REQUEST['email']) ? $_REQUEST['email'] : '';
                 if ($TargetMail == '') {
                     $TargetMail = eGovLibrary::GetEmailAdress($order_id);
                 }
