@@ -37,114 +37,28 @@ var switchActive = function(id, obj, action)
     });
 }
 
-var order = new Array();
-var objects = new Hash();
-var order_changed = false;
-
-
-var init = function()
-{
-    // do this in a function so everything is loaded first
-    <!-- BEGIN push_sort -->
-    last_id = order.push({ENTRY_ID});
-    var hash = new Hash();
-    hash.set('position', last_id-1);
-    hash.set('obj_ref',$('entry_{ENTRY_ID}'))
-
-    objects.set({ENTRY_ID}, hash);
-    <!-- END push_sort -->
-}
-
-var swap_upwards = function(id)
-{
-    /*
-        Swap the positions in the representative array
-    */
-    var cur_pos = objects.get(id).get('position');
-    if (cur_pos == 0) {
-        return;
-    }
-    var upper_pos = cur_pos - 1;
-    var upper_pos_id = order[upper_pos];
-    order[cur_pos] = upper_pos_id;
-    order[upper_pos] = id; 
-    objects.get(id).set('position', upper_pos);
-    objects.get(upper_pos_id).set('position', cur_pos);
-    
-    /*
-        Swap the actual positions in the table
-    */
-    var obj_ref_cur = objects.get(id).get('obj_ref');
-    var obj_ref_upper = objects.get(upper_pos_id).get('obj_ref');
-    var obj_parent = obj_ref_cur.parentNode;
-    obj_parent.removeChild(obj_ref_cur);
-    obj_parent.insertBefore(obj_ref_cur, obj_ref_upper);
-    
-    orderChanged();  
-    setRows(); 
-
-}
-
-var swap_downwards = function(id)
-{
-    /*
-        Swap the positions in the representative array
-    */
-    var cur_pos = objects.get(id).get('position');
-    if (cur_pos == order.length-1) {
-        return;
-    }
-    var lower_pos = cur_pos + 1;
-    var lower_pos_id = order[lower_pos];
-    order[cur_pos] = lower_pos_id;
-    order[lower_pos] = id;
-    objects.get(id).set('position', lower_pos);
-    objects.get(lower_pos_id).set('position', cur_pos);
-    
-    /*
-        Swap the actual positions in the table
-    */
-    var obj_ref_cur = objects.get(id).get('obj_ref');
-    var obj_parent = obj_ref_cur.parentNode;
-    obj_parent.removeChild(obj_ref_cur);
-    if (lower_pos +1 == order.length) {
-        obj_parent.appendChild(obj_ref_cur);
-    } else {
-        var below_lower_id = order[lower_pos+1];
-        var obj_ref_below_lower = objects.get(below_lower_id).get('obj_ref');
-        obj_parent.insertBefore(obj_ref_cur, obj_ref_below_lower);
-    }
-    
-    orderChanged();
-    setRows();
-}
-
-var orderChanged = function()
-{
-    jQuery('#save_order').prop('disabled', false);
-    jQuery('#save_order').css('color', 'black');
-}
-
 var saveOrder = function()
 {
-    var jsonObj = Object.toJSON(order);
-    jQuery.post('index.php?cmd=data&act=saveEntryOrder', {order: jsonObj});
-    
-    jQuery('#save_order').prop('disabled', true);
-    jQuery('#save_order').css('color', 'grey');
+    jQuery.post('index.php?cmd=data&act=saveEntryOrder', {
+        'entries[]': $J('#entry_list').sortable('toArray')
+    });
 }
 
-var setRows = function()
-{
-    var row = 1;
-    var tb = $('entry_list').getElementsByTagName("tr");
-    
-    for (var i = 0; i<tb.length; i++) {
-        tb[i].className = "row"+((row % 2) + 1);
-        row++;
-    }
-}
+// Return a helper with preserved width of cells
+var fixHelper = function(e, ui) {
+    ui.children().each(function() {
+        $J(this).width($J(this).width());
+    });
+    return ui;
+};
 
+$J(document).ready(function () {
+    $J('#entry_list').sortable({
+        handle: '.sort-buttons',
+        update: saveOrder,
+        helper: fixHelper
+    }).disableSelection();
+});
 //]]>
 </script>
 
@@ -168,7 +82,7 @@ var setRows = function()
         </td>
         <td style="width: 100%; padding: 0; vertical-align: top;">
             <form name="frmShowEntries" method="post" action="">
-                <table  cellspacing="0" cellpadding="3" border="0" class="adminlist">
+                <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
                     <tr>
                         <th colspan="9">{TXT_ENTRIES_TITLE} ({TITLE_CATEGORY})</th>
                     </tr>
@@ -186,18 +100,19 @@ var setRows = function()
                         <td nowrap="nowrap" style="width: 3%;">{TXT_ENTRIES_SUBTITLE_ACTIONS}</td>
                     </tr>
                     <tbody id="entry_list">
-                    <!-- BEGIN showEntries -->
+                        <!-- BEGIN showEntries -->
                         <tr class="{ENTRY_ROWCLASS}" id="entry_{ENTRY_ID}">
                             <td><input type="checkbox" name="selectedEntriesId[]" value="{ENTRY_ID}" /></td>
                             <td>
                                 <a href="javascript: void(0);" onclick="switchActive({ENTRY_ID}, this, {ACTIVE_STATE})"><img src="images/icons/led_{ACTIVE_LED}.gif" style="border: none;" alt=""/></a>
                             </td>
                             <td>
-                                <!-- BEGIN show_arrows -->
-                                
-                                <a href="javascript: void(0);" onclick="swap_downwards({ENTRY_ID})" ><img src="images/icons/down.gif" style="border: none;" alt="go one up" /></a> 
-                                <a href="javascript: void(0);" onclick="swap_upwards({ENTRY_ID})"><img src="images/icons/up.gif" style="border: none;" alt="go one down"/> </a>
-                                <!-- END show_arrows -->
+                                <!-- BEGIN sort_buttons -->
+                                <span class="sort-buttons" style="width: 35px; height: 20px; float: left; cursor: move;">
+                                    <img src="images/icons/down.gif" style="border: none;" alt="go one up" />
+                                    <img src="images/icons/up.gif" style="border: none;" alt="go one down"/>
+                                </span>
+                                <!-- END sort_buttons -->
                             </td>
                             <td><a href="?cmd=data&amp;act=editEntry&amp;id={ENTRY_ID}" target="_self" title="{ENTRY_SUBJECT}">{ENTRY_SUBJECT}</a></td>
                             <td>[[DATA_{ENTRY_PLACEHOLDER}]]</td>
@@ -214,7 +129,6 @@ var setRows = function()
                                 </div>
                             </td>
                         </tr>
-                        
                         <!-- END showEntries -->
                     </tbody>
                     <!-- BEGIN noEntries -->
@@ -223,8 +137,6 @@ var setRows = function()
                     </tr>		
                     <!-- END noEntries -->
                 </table>
-                <input type="button" value="Sortierung abspeichern" disabled="disabled" id="save_order" style="margin-top: 1em; margin-left: 3em; color: grey;" onclick="saveOrder()" />
-                <br />
                 <table cellpadding="2" cellspacing="0" border="0">
                     <tr>
                         <td>
@@ -244,10 +156,4 @@ var setRows = function()
     </tr>
 </table>
 <div align="center">{ENTRIES_PAGING}</div>
-
-<script type="text/javascript">
-/* <![CDATA[ */
-init();
-/* ]]> */
-</script>
 <!-- END module_data_entries.html -->

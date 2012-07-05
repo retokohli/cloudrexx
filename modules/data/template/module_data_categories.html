@@ -79,145 +79,28 @@ var switchAction = function(obj)
     }
 }
 
-var order = new Hash();
-var objects = new Hash();
-var order_changed = false;
-
-var init = function()
-{
-    // do this in a function so everything is loaded first
-    <!-- BEGIN push_sort -->
-    try {
-        last_id = order.get({PARENT_ID}).push({CATID});
-    } catch(e) {
-        order.set({PARENT_ID}, new Array());
-        last_id = order.get({PARENT_ID}).push({CATID});
-    }
-    var hash = new Hash();
-    hash.set('position', last_id-1);
-    hash.set('obj_ref', $('catrow_{CATID}'));
-    hash.set('parent', {PARENT_ID});
-    hash.set('children', new Array());
-    
-    <!-- BEGIN set_child -->
-    //objects.get({PARENT_ID}).get('children').push({CATID});
-    hash.get('children').push({CHILD_ID});
-    <!-- END set_child -->
-    objects.set({CATID}, hash);
-    <!-- END push_sort -->
-}
-
-var swap_upwards = function(id, children)
-{
-    /*
-        Swap positions in the position array
-    */
-    var cur_pos = objects.get(id).get('position');
-    var parent = objects.get(id).get('parent');
-    if (cur_pos == 0) {
-        // already at the top
-        return;
-    }
-    var upper_pos = cur_pos - 1;
-    var upper_pos_id = order.get(parent)[upper_pos];
-    order.get(parent)[cur_pos] = upper_pos_id;
-    order.get(parent)[upper_pos] = id;
-    objects.get(id).set('position', upper_pos);
-    objects.get(upper_pos_id).set('position', cur_pos);
-    
-    /*
-        swap the actual position in the html table
-    */
-    var obj_ref_cur = objects.get(id).get('obj_ref');
-    var obj_ref_upper = objects.get(upper_pos_id).get('obj_ref');
-    var obj_parent = obj_ref_cur.parentNode;
-    
-    
-    obj_parent.removeChild(obj_ref_cur);
-    obj_parent.insertBefore(obj_ref_cur, obj_ref_upper);
-    
-    children = objects.get(id).get('children');
-    
-    if (children.length > 0) {
-        for (var i=0; i<children.length; i++) {
-            obj_ref_cur = objects.get(children[i]).get('obj_ref');
-            obj_parent.removeChild(obj_ref_cur);
-            obj_parent.insertBefore(obj_ref_cur, obj_ref_upper);
-        }
-    }
-    
-    orderChanged();
-    setRows();
-}
-
-var swap_downwards = function(id, children)
-{   
-    /*
-        Swap the position in the order array
-    */
-    var cur_pos = objects.get(id).get('position');
-    var parent = objects.get(id).get('parent');
-    if (cur_pos == order.get(parent).length-1) {
-        //already at the bottom
-        return;
-    }
-    var lower_pos = cur_pos + 1;
-    var lower_pos_id = order.get(parent)[lower_pos];
-    order.get(parent)[cur_pos] = lower_pos_id;
-    order.get(parent)[lower_pos] = id;
-    objects.get(id).set('position', lower_pos);
-    objects.get(lower_pos_id).set('position', cur_pos);
-    
-    /*
-        Swap the actual positions in the table
-    */
-    var obj_ref_cur = objects.get(id).get('obj_ref');
-    var obj_parent = obj_ref_cur.parentNode;
-    var obj_ref_lower = objects.get(lower_pos_id).get('obj_ref');
-    
-    obj_parent.removeChild(obj_ref_lower);
-    obj_parent.insertBefore(obj_ref_lower, obj_ref_cur);
-    
-    children = objects.get(lower_pos_id).get('children');
-    
-    if (children.length > 0) {
-        for (var i=0; i<children.length; i++) {
-            obj_ref_lower = objects.get(children[i]).get('obj_ref');
-            obj_parent.removeChild(obj_ref_lower);
-            obj_parent.insertBefore(obj_ref_lower, obj_ref_cur);
-        }
-    }
-    
-    orderChanged();
-    setRows();
-}
-
-var orderChanged = function()
-{
-    jQuery('#save_order').prop('disabled', false);
-    jQuery('#save_order').css('color', 'black');
-}
-
 var saveOrder = function()
 {
-    var jsonObj = Object.toJSON(order);
-    jQuery.post('index.php?cmd=data&act=saveCategoryOrder', {order: jsonObj});
-    
-    jQuery('#save_order').prop('disabled', true);
-    jQuery('#save_order').css('color', 'grey');
+    jQuery.post('index.php?cmd=data&act=saveCategoryOrder', {
+        'categories[]': $J('#entry_list').sortable('toArray')
+    });
 }
 
-var setRows = function()
-{
-    var row = 1;
-    var tb = $('entry_list').getElementsByTagName("tr");
-    
-    for (var i = 0; i<tb.length; i++) {
-        tb[i].className = "row"+((row % 2) + 1);
-        row++;
-    }
-}
+// Return a helper with preserved width of cells
+var fixHelper = function(e, ui) {
+    ui.children().each(function() {
+        $J(this).width($J(this).width());
+    });
+    return ui;
+};
 
+$J(document).ready(function () {
+    $J('#entry_list').sortable({
+        handle: '.sort-buttons',
+        update: saveOrder,
+        helper: fixHelper
+    }).disableSelection();
+});
 //]]>
 </script>
 
@@ -236,22 +119,24 @@ var setRows = function()
                 <td style="width: 2%; white-space: nowrap;"><strong>&nbsp;&nbsp;#</strong></td>
                 <td style="width: 2%; white-space: nowrap;">&nbsp;</td>
                 <td style="width: 6%; white-space: nowrap;">&nbsp;</td>
-                <td style="width: 39%; white-space: nowrap;"><strong>{TXT_OVERVIEW_SUBTITLE_NAME}</strong></td>
+                <td style="width: 35%; white-space: nowrap;"><strong>{TXT_OVERVIEW_SUBTITLE_NAME}</strong></td>
                 <td style="width: 20%; white-space: nowrap;"><strong>{TXT_PLACEHOLDERS}</strong></td>
                 <td style="width: 10%; white-space: nowrap;"><strong>{TXT_DISPLAY_MODE}</strong></td>
                 <td style="width: 20%; white-space: nowrap;"><strong>{TXT_OVERVIEW_SUBTITLE_ACTIVE}</strong></td>
-                <td style="width: 1%; white-space: nowrap;"><div align="right"><strong>{TXT_OVERVIEW_SUBTITLE_ACTIONS}</strong></div></td>
+                <td style="width: 5%; white-space: nowrap;"><div align="right"><strong>{TXT_OVERVIEW_SUBTITLE_ACTIONS}</strong></div></td>
             </tr>
             <tbody  id="entry_list">
                 <!-- BEGIN showCategories -->
                 <tr class="{OVERVIEW_CATEGORY_ROWCLASS}" style="display: {DISPLAY};" id="catrow_{OVERVIEW_CATEGORY_ID}">
-                     <td><input type="checkbox" name="selectedCategoryId[]" value="{OVERVIEW_CATEGORY_ID}"/></td>
-                     <td>
-                         <a href="javascript: void(0);" onclick="switchActive({OVERVIEW_CATEGORY_ID}, this, {ACTIVE_STATE})"><img src="images/icons/led_{ACTIVE_LED}.gif" style="border: none;" alt=""/></a>
-                     </td>
-                     <td>
-                         <a href="javascript: void(0);" onclick="swap_downwards({OVERVIEW_CATEGORY_ID})" ><img src="images/icons/down.gif" style="border: none;" alt="go one up" /></a> 
-                         <a href="javascript: void(0);" onclick="swap_upwards({OVERVIEW_CATEGORY_ID})"><img src="images/icons/up.gif" style="border: none;" alt="go one down"/> </a>
+                    <td><input type="checkbox" name="selectedCategoryId[]" value="{OVERVIEW_CATEGORY_ID}"/></td>
+                    <td>
+                        <a href="javascript: void(0);" onclick="switchActive({OVERVIEW_CATEGORY_ID}, this, {ACTIVE_STATE})"><img src="images/icons/led_{ACTIVE_LED}.gif" style="border: none;" alt=""/></a>
+                    </td>
+                    <td>
+                        <span class="sort-buttons" style="width: 35px; height: 20px; float: left; cursor: move;">
+                            <img src="images/icons/down.gif" style="border: none;" alt="go one up" />
+                            <img src="images/icons/up.gif" style="border: none;" alt="go one down"/>
+                        </span>
                     </td>
                     <td style="padding-left: {INDENT}px;"><!-- BEGIN arrow --><img src="images/icons/sub_arrow.gif" /><!-- END arrow -->
                     <img src="images/icons/folder_on.gif" />
@@ -275,8 +160,6 @@ var setRows = function()
             </tr>
             <!-- END noCategories -->
         </table>
-        <input type="button" value="Sortierung abspeichern" disabled="disabled" id="save_order" style="margin-top: 1em; margin-left: 3em; color: grey;" onclick="saveOrder()" />
-        <br />
         <table cellpadding="2" cellspacing="0" border="0">
             <tr>
                 <td>
@@ -379,10 +262,4 @@ var setRows = function()
         <input type="submit" value="{TXT_ADD_SUBMIT}" name="frmAddCategory_Submit" />
     </form>
 </div>
-
-<script type="text/javascript">
-/* <![CDATA[ */
-init();
-/* ]]> */
-</script>
 <!-- END module_data_categories.html -->
