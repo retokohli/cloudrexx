@@ -81,7 +81,7 @@ clear: both
 	width: 205px;
 }
 #shop div.wrapper_right{
-	width: 25%;
+	/*width: 25%;*/
 	float:left;
 margin: 0 0 0 13px;
 }

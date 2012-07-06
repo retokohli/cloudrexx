@@ -6,6 +6,9 @@
     float: left;
     width: 100%;
 }
+.main-holder{
+background: none
+}
 article.col-13{
     border: 1px solid #efefef; 
     padding: 11px;

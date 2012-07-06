@@ -6,6 +6,9 @@
     float: left;
     width: 100%;
 }
+.main-holder{
+background: none
+}
 .discount-price {
     color: #BCD608;
     font-size: 15px;
