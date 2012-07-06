@@ -4,6 +4,7 @@ jQuery(document).ready(function() {
     jQuery('.box').each(function() {
         if (jQuery(this).find('ul li').length == 0) {
             jQuery(this).hide();
+            jQuery(this).next().addClass('spacer');
         }
     });
 });
