@@ -60,7 +60,7 @@ class block extends blockLibrary
                 while ($randomBlockIdx <= 4) {
                     $blockPlaceholderRegexp = '/{'.$objBlock->blockNamePrefix.'RANDOMIZER'.$placeholderSuffix.'}/';
                  
-                    if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER}/', $template)) {
+                    if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER'.$placeholderSuffix.'}/', $template)) {
                         $objBlock->setBlockRandom($template, $randomBlockIdx);
                     }
 
