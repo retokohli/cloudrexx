@@ -96,14 +96,14 @@ html, body {
     padding: 0 0 5px 0;
     font-weight: bold;
     height: auto;
-    color: #ffffff;
+    color: #fffffe;
 }
 
 #fe_BoxTitle a,
 #fe_BoxTitle a:visited,
 #fe_BoxTitle a:active {
     text-decoration: none;
-    color: #ffffff;
+    color: #fffffe;
 }
 
 #fe_BoxTitle a:hover  {
@@ -240,26 +240,34 @@ html, body {
     margin-right: 10px;
 }
 
-#fe_LoginBoxContent form input:hover {
-    background: #e8f1f6;
+#fe_LoginBoxContent form input:hover,
+#fe_LoginBoxContent form input:focus,
+#fe_LoginBoxContent form input:active {
+    background-color: #e8f1f6;
 }
 
 #fe_LoginBoxContent form .fe_LoginBoxUsername {
     width: 232px;
-    background: url(../images/login_username.gif) no-repeat 3px 3px;
+    background-image: url(../images/login_username.gif);
+    background-repeat: no-repeat;
+    background-position: 3px center;
     padding-left: 22px;
 }
 
 
 #fe_LoginBoxContent form .fe_LoginBoxPassword {
     width: 232px;
-    background: url(../images/login_password.gif) no-repeat 3px center;
+    background-image: url(../images/login_password.gif);
+    background-repeat: no-repeat;
+    background-position: 3px center;
     padding-left: 22px;
 }
 
-#fe_LoginBoxContent form .fe_LoginBoxCaptcha {
-    width: 70px;
-    background: url(../images/login_captcha.gif) no-repeat 3px 3px;
+#fe_LoginBoxContent form #coreCaptchaCode {
+    width: 79px;
+    background-image: url(../images/login_captcha.gif);
+    background-repeat: no-repeat;
+    background-position: 3px center;
     padding-left: 22px;
 }
 
@@ -415,8 +423,16 @@ html, body {
     width: 0;
     width: 100%;
     height: 100%;
-    background: #ff6666 url(../images/disallowed.gif) center center no-repeat;
-    opacity: 0.90;
-    filter: alpha(opacity=90);
+    background: url(../images/wrapper_background_disallowed.png) repeat;
     z-index: 500;
+}
+
+#fe_Disallowed span {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 200px;
+    height: 198px;
+    margin: -99px 0 0 -100px;
+    background: url(../images/disallowed.gif) no-repeat;
 }

@@ -83,7 +83,7 @@ $starttime = explode(' ', microtime());
 //ob_start("ob_gzhandler");
 
 // Makes code analyzer warnings go away
-$_CONFIG = $_CONFIGURATION = null;
+$_CONFIG = $_CONFIGURATION = $loggableListener = null;
 /**
  * Environment repository
  */
@@ -1734,7 +1734,7 @@ if ($_CONFIG['frontendEditingStatus'] == 'on'
     /** @ignore */
     && @include_once ASCMS_CORE_MODULE_PATH.'/frontendEditing/frontendEditingLib.class.php') {
     $strFeInclude   = frontendEditingLib::getIncludeCode();
-    $strFeLink      = frontendEditingLib::getLinkCode();
+    $strFeLink      = frontendEditingLib::getLinkCode($pageId);
     $strFeContent   = frontendEditingLib::getContentCode($pageId);
 }
 

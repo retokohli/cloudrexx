@@ -1,7 +1,5 @@
 var fe_feSection                = 'frontendEditing';
 
-var fe_appearanceDuration       = 0.5;
-var fe_backgroundOpacity        = 0.5;
 var fe_loaderDivName            = '#fe_Loader';
 var fe_containerDivName         = '#fe_Container';
 var fe_backgroundDivName        = '#fe_Background';
@@ -10,7 +8,6 @@ var fe_loginDivName             = '#fe_Login';
 var fe_loginTypeFrontend        = '#fe_LoginTypeFrontend';
 
 var fe_disallowedDivName        = '#fe_Disallowed';
-var fe_disallowedOpacity        = 0.9;
 
 var fe_toolbarIsLoaded          = false;
 var fe_toolbarIsVisible         = false;
@@ -21,13 +18,9 @@ var fe_selectionDivName         = '#fe_Selection';
 var fe_editorIsLoaded           = false;
 var fe_editorIsVisible          = false;
 var fe_editorDivName            = '#fe_Editor';
-var fe_editorFormDivName        = '#fe_EditorForm';
 var fe_editorFormTitleName      = '#fe_FormTitle';
 var fe_editorFormContentName    = 'fe_FormContent';
 var fe_editorFormOldSuffix      = '_Old';
-var fe_editorHighlightColor     = '#dff1ff';
-var fe_editorWindowHeight       = 0;
-var fe_editorWindowWidth        = 0;
 
 var fe_previewTitleName         = '#fe_PreviewTitle';
 var fe_previewContentName       = '#fe_PreviewContent';
@@ -40,7 +33,7 @@ jQuery(document).ready(function(){
 });
 
 function fe_checkForLogin() {
-    if(fe_userIsLoggedIn) {
+    if (fe_userIsLoggedIn && fe_userWantsToolbar) {
         fe_loadToolbar(false);
     }
 }
@@ -113,6 +106,7 @@ function fe_doLogin() {
     jQuery(document).ready(function() {
         postdata = {
             section: fe_feSection,
+            page: fe_pageId,
             doLogin: 'true'
         };
 
@@ -144,7 +138,9 @@ function fe_doLogin() {
 
 function fe_showDisallowed() {
     jQuery(fe_disallowedDivName).fadeIn();
-    jQuery(fe_disallowedDivName).effect('fade');
+    setTimeout(function() {
+        jQuery(fe_disallowedDivName).effect('fade')
+    }, 1000);
 }
 
 function fe_showToolbar() {
@@ -181,6 +177,7 @@ function fe_setToolbarVisibility(newStatus) {
             async: false,
             data: {	act: 'setToolbarVisibility',
                     section: fe_feSection,
+                    page: fe_pageId,
                     status: ((fe_userWantsToolbar == true) ? '1' : '0')
             },
             success: function(transport){},
