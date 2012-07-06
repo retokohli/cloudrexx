@@ -8,8 +8,10 @@ function logout() {
     }
 }
 jQuery(document).ready(function() {
-    if ((jQuery('#subnavbar_level1').siblings('#okbox, .okbox, #warningbox, .warningbox, #alertbox, .alertbox').length == 0) && (jQuery('#subnavbar_level2').length > 0)) {
-        jQuery('#subnavbar_level1').addClass('no_margin');
+    if (jQuery('#subnavbar_level2').length > 0) {
+        if (jQuery('#subnavbar_level2').prevAll('#okbox, .okbox, #warningbox, .warningbox, #alertbox, .alertbox').length == 0) {
+            jQuery('#subnavbar_level1').addClass('no_margin');
+        }
     }
 });
 // -->

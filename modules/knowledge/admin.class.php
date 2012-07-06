@@ -77,6 +77,9 @@ class KnowledgeAdmin extends KnowledgeLibrary
 	{
 		global $objInit, $objTemplate, $_ARRAYLANG;
 
+        JS::activate('prototype');
+        JS::activate('scriptaculous');
+
 		Permission::checkAccess(ACCESS_ID_KNOWLEDGE, 'static');
 
 		KnowledgeLibrary::__construct();
@@ -818,7 +821,6 @@ class KnowledgeAdmin extends KnowledgeLibrary
             "CATLIST"                       => $catTree,
             "EDIT_ALLOWED"                  => (Permission::checkAccess(ACCESS_ID_EDIT_ARTICLES, 'static', true)) ? "true" : "false",
             'NOT_ALLOWED_MSG'               => $_ARRAYLANG['TXT_KNOWLEDGE_ACCESS_DENIED'],
-            'TXT_ARTICLES'                  => $articlelist
         ));
 
         return $this->tpl->get();
