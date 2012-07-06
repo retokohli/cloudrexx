@@ -174,7 +174,7 @@ class frontendEditing extends frontendEditingLib {
           We've got a set of pages and we know our desired page exists - get it.
          */
         //get the right page object.
-        if(!$page)
+        if (!$page)
             return;
         
         $this->page = $page;
@@ -240,6 +240,8 @@ class frontendEditing extends frontendEditingLib {
      * @return true, if the user is allowed to access the requested url.
      */
     private function checkAccessRights() {
+        global $loggableListener;
+
         //check for login
         if (isset($_POST['doLogin']) && $_POST['doLogin'] == 'true') {
             if (!empty($_POST['fe_LoginUsername']) && !empty($_POST['fe_LoginPassword'])) {
@@ -251,9 +253,8 @@ class frontendEditing extends frontendEditingLib {
 
 
                 if (FWCaptcha::getInstance()->check()) {
-                    if ($this->objUser->checkAuth() && (Permission::hasAllAccess() || $this->isUserInBackendGroup())) {
+                    if ($this->objUser->checkAuth()) {
                         //Login successfull
-                        $_SESSION[frontendEditingLib::SESSION_LOGIN_FIELD] = true;
                         $this->setToolbarVisibility(true);
                     } else {
                         $this->boolLoginFailed = true;
@@ -268,11 +269,12 @@ class frontendEditing extends frontendEditingLib {
         }
 
         //check for enough rights to perform an action
-        if (frontendEditingLib::isUserLoggedIn()) {
-            //check for toolbar-loading (can be done by everyone)
-            if ($this->strAction == 'getToolbar' || $this->strAction == 'hideToolbar') {
-                return true;
-            }
+        if (FWUser::getFWUserObject()->objUser->login()) {
+            $userData = array(
+                'id'   => FWUser::getFWUserObject()->objUser->getId(),
+                'name' => FWUser::getFWUserObject()->objUser->getUsername(),
+            );
+            $loggableListener->setUsername(json_encode($userData));
 
             //filter out disallowed sections
             if (in_array($this->strPageSection, frontendEditingLib::$arrDisallowedSections)) {
@@ -288,35 +290,16 @@ class frontendEditing extends frontendEditingLib {
             //No admin, figure out what the user is allowed to do
             if (Permission::checkAccess(frontendEditingLib::AUTH_ID_FOR_PAGE_EDITING, 'static', true)) {
                 //unprotected page, edit
-                if(!$this->page->isBackendProtected())
+                if (!$this->page->isBackendProtected())
                     return true;
                 
-                if(Permission::checkAccess($this->page->getId(), 'page_backend', true));
+                if (Permission::checkAccess($this->page->getId(), 'page_backend', true));
                     return true;
             }
 
             $this->strErrorCode = 'disallowed';
         } else {
             $this->strErrorCode = 'login';
-        }
-
-        return false;
-    }
-
-    /**
-     * Checks, if the current user is in a backend group.
-     *
-     * @return boolean	true, if the user is in a backend group.
-     */
-    private function isUserInBackendGroup() {
-        $objGroup = $this->objUser->objGroup->getGroups(array('is_active' => true, 'type' => 'backend'), null, 'group_id');
-        $arrAssociatedGroups = $this->objUser->objUser->getAssociatedGroupIds();
-
-        while (!$objGroup->EOF) {
-            if (in_array($objGroup->getId(), $arrAssociatedGroups)) {
-                return true;
-            }
-            $objGroup->next();
         }
 
         return false;

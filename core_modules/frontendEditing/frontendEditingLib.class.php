@@ -21,23 +21,17 @@ class frontendEditingLib {
      * Path to the parent-directory of this file, relative to contrexx-root.
      */
     const FRONTENDEDITING_PATH = '/core_modules/frontendEditing/';
-    
+
     /**
      * ID of the access key which should be used for frontend editing.
      */
     const ACCESS_KEY = 9;
-    
+
     /**
      * Stores the authorization id for editing pages.
      */
     const AUTH_ID_FOR_PAGE_EDITING = 35;
-    
-    /**
-     * Name of the SESSION-Field, which stores the login-status.
-     *
-     */
-    const SESSION_LOGIN_FIELD = 'frontendEditing_LoggedIn';
-    
+
     /**
      * Name of the SESSION-Field, which stores the visibility-status.
      */
@@ -47,7 +41,7 @@ class frontendEditingLib {
      * Array containing all disallowed sections.
      */
     protected static $arrDisallowedSections = array(0	=>	'login');
-    
+
     /**
      * Array containg all sections without a backend-part.
      */
@@ -79,21 +73,35 @@ class frontendEditingLib {
         
         return $strFeInclude;
     }
-    
-    
+
+
     /**
      * Returns html-code for a login-link.
      *
      * @return html-code for a login-link
      */
-    public static function getLinkCode() {
+    public static function getLinkCode($pageId) {
         global $_CORELANG;
         
-        $strLinkDescription = (frontendEditingLib::isUserLoggedIn()) ? $_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_EDIT'] : $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'];
+        if (FWUser::getFWUserObject()->objUser->login()) {
+            $em = Env::em();
+            $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
+            $page = $pageRepo->find($pageId);
+
+            if (FWUser::getFWUserObject()->objUser->getAdminStatus() || 
+                (Permission::checkAccess(frontendEditingLib::AUTH_ID_FOR_PAGE_EDITING, 'static', true) && (!$page->isBackendProtected() || Permission::checkAccess($page->getId(), 'page_backend', true)))
+                ) {
+                $strLinkDescription = $_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_EDIT'];
+            } else {
+                return;
+            }
+        } else {
+            $strLinkDescription = $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'];
+        }
                 
         return '<a href="javascript:void(0)" onclick="fe_setToolbarVisibility(true); fe_loadToolbar(true);" accesskey="'.frontendEditingLib::ACCESS_KEY.'" title="[ALT + '.frontendEditingLib::ACCESS_KEY.'] '.$strLinkDescription.'">'.$strLinkDescription.'</a>';
     }
-    
+
     /**
      * Returns html-code with needed content-elements.
      *
@@ -101,13 +109,12 @@ class frontendEditingLib {
      */
     public static function getContentCode($pageId) {
         //Is user logged in?
-        $userIsLoggedIn = (frontendEditingLib::isUserLoggedIn()) ? 'true' : 'false';
+        $userIsLoggedIn = FWUser::getFWUserObject()->objUser->login() ? 'true' : 'false';
         
         //Should toolbar be shown?
-        $showToolbar = 'true';
-        if(isset($_SESSION[frontendEditingLib::SESSION_TOOLBAR_FIELD]) && 
-                $_SESSION[frontendEditingLib::SESSION_TOOLBAR_FIELD] == false) {
-            $showToolbar = 'false';
+        $showToolbar = 'false';
+        if (!empty($_SESSION[frontendEditingLib::SESSION_TOOLBAR_FIELD])) {
+            $showToolbar = 'true';
         }
 
         $frontendEditingJS = <<<FE_JS
@@ -121,19 +128,5 @@ FE_JS;
         $strFeContent .= '<div id="fe_Loader" style="display: none;"></div>'."\n";
         
         return $strFeContent;
-    }
-    
-    /**
-     * Checks, if the current user is successfully logged in for frontend editing. This method will return false, if the user has
-     * logged in over the "normal" login and not the frontend editing login!
-     *
-     * @return true, if the user is successfully logged in. Otherwise false.
-     */
-    public static function isUserLoggedIn() {
-        $objCurrentUser = FWUser::getFWUserObject();
-        
-        return ($objCurrentUser->objUser->login() && 
-                isset($_SESSION[frontendEditingLib::SESSION_LOGIN_FIELD]) 
-                ? ($_SESSION[frontendEditingLib::SESSION_LOGIN_FIELD] == true) : false);
     }
 }
