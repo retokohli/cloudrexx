@@ -9,9 +9,9 @@
     float: left;
    /* width: 100%;*/
 }
-#shop_account{
+#shop_acc_data{
     border: 1px solid #F2F2F2;
-    border-radius: 5px 5px 5px 5px;
+  /*  border-radius: 5px 5px 5px 5px;*/
     float: left;
     width: 650px;
 }
