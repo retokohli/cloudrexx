@@ -60,9 +60,10 @@ class settingsManager
         global $objTemplate, $_CORELANG;
 
         $objTemplate->setVariable('CONTENT_NAVIGATION','
-            <a href="?cmd=settings" class="'.($this->act == '' ? 'active' : '').'">'.$_CORELANG['TXT_SETTINGS_MENU_SYSTEM'].'</a>'.'
-            <a href="?cmd=settings&amp;act=cache" class="'.($this->act == 'cache' ? 'active' : '').'">'.$_CORELANG['TXT_SETTINGS_MENU_CACHE'].'</a>'.'
-            <a href="?cmd=settings&amp;act=smtp" class="'.($this->act == 'smtp' ? 'active' : '').'">'.$_CORELANG['TXT_SETTINGS_EMAIL'].'</a>'
+            <a href="?cmd=settings" class="'.($this->act == '' ? 'active' : '').'">'.$_CORELANG['TXT_SETTINGS_MENU_SYSTEM'].'</a>
+            <a href="?cmd=settings&amp;act=cache" class="'.($this->act == 'cache' ? 'active' : '').'">'.$_CORELANG['TXT_SETTINGS_MENU_CACHE'].'</a>
+            <a href="?cmd=settings&amp;act=smtp" class="'.($this->act == 'smtp' ? 'active' : '').'">'.$_CORELANG['TXT_SETTINGS_EMAIL'].'</a>
+            <a href="index.php?cmd=settings&amp;act=image" class="'.($this->act == 'image' ? 'active' : '').'">'.$_CORELANG['TXT_SETTINGS_IMAGE'].'</a>'
         );
     }
 
@@ -133,6 +134,14 @@ class settingsManager
 
             case 'smtp':
                 $this->smtp();
+                break;
+            
+            case 'image':
+                try {
+                    $this->image($_POST);
+                } catch (Exception $e) {
+                    DBG::msg('Image settings: '.$e->getMessage);
+                }
                 break;
 
             default:
@@ -638,6 +647,96 @@ class settingsManager
         ));
 
         $objTemplate->parse('settings_smtp_modify');
+        return true;
+    }
+    
+    /**
+     * Shows the image settings page
+     * 
+     * @access  public
+     * @return  boolean  true on success, false otherwise
+     */
+    public function image($arrData)
+    {
+        global $objDatabase, $objTemplate, $_CORELANG;
+        
+        $this->strPageTitle = $_CORELANG['TXT_SETTINGS_IMAGE'];
+        $objTemplate->addBlockfile('ADMIN_CONTENT', 'settings_image', 'settings_image.html');
+        
+        // Saves the settings
+        if (isset($arrData['submit'])) {
+            $arrSettings['image_cut_width']    = contrexx_input2db(intval($arrData['image_cut_width']));
+            $arrSettings['image_cut_height']   = contrexx_input2db(intval($arrData['image_cut_height']));
+            $arrSettings['image_scale_width']  = contrexx_input2db(intval($arrData['image_scale_width']));
+            $arrSettings['image_scale_height'] = contrexx_input2db(intval($arrData['image_scale_height']));
+            $arrSettings['image_compression']  = contrexx_input2db(intval($arrData['image_compression']));
+            
+            foreach ($arrSettings as $name => $value) {
+                $query = '
+                    UPDATE `'.DBPREFIX.'settings_image`
+                    SET `value` = "'.$value.'"
+                    WHERE `name` = "'.$name.'"
+                ';
+                $objResult = $objDatabase->Execute($query);
+                if ($objResult === false) {
+                    throw new Exception('Could not update the settings');
+                }
+            }
+            
+            $this->strOkMessage = $_CORELANG['TXT_SETTINGS_UPDATED'];
+        }
+        
+        // Gets the settings
+        $query = '
+            SELECT `name`, `value`
+            FROM `'.DBPREFIX.'settings_image`
+        ';
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult !== false) {
+            $arrSettings = array();
+            while (!$objResult->EOF) {
+                // Creates the settings array
+                $arrSettings[$objResult->fields['name']] = $objResult->fields['value'];
+                $objResult->MoveNext();
+            }
+        } else {
+            throw new Exception('Could not query the settings.');
+        }
+        
+        // Defines the compression values
+        $arrCompressionOptions = array();
+        for ($i = 1; $i <= 20 ; $i++) {
+            $arrCompressionOptions[] = $i * 5;
+        }
+        
+        // Parses the compression options
+        $imageCompression = !empty($arrSettings['image_compression']) ? intval($arrSettings['image_compression']) : 95;
+        foreach ($arrCompressionOptions as $compression) {
+            $objTemplate->setVariable(array(
+                'IMAGE_COMPRESSION_VALUE' => $compression,
+                'IMAGE_COMPRESSION_NAME'  => $compression,
+                'OPTION_SELECTED'         => $compression == $imageCompression ? 'selected="selected"' : '',
+            ));
+            $objTemplate->parse('settings_image_compression_options');
+        }
+        
+        // Parses the settings
+        $objTemplate->setVariable(array(
+            'TXT_IMAGE_TITLE'                => $_CORELANG['TXT_SETTINGS_IMAGE_TITLE'],
+            'TXT_IMAGE_CUT_WIDTH'            => $_CORELANG['TXT_SETTINGS_IMAGE_CUT_WIDTH'],
+            'TXT_IMAGE_CUT_HEIGHT'           => $_CORELANG['TXT_SETTINGS_IMAGE_CUT_HEIGHT'],
+            'TXT_IMAGE_SCALE_WIDTH'          => $_CORELANG['TXT_SETTINGS_IMAGE_SCALE_WIDTH'],
+            'TXT_IMAGE_SCALE_HEIGHT'         => $_CORELANG['TXT_SETTINGS_IMAGE_SCALE_HEIGHT'],
+            'TXT_IMAGE_COMPRESSION'          => $_CORELANG['TXT_SETTINGS_IMAGE_COMPRESSION'],
+            'TXT_SAVE'                       => $_CORELANG['TXT_SAVE'],
+            
+            'SETTINGS_IMAGE_CUT_WIDTH'       => !empty($arrSettings['image_cut_width'])    ? $arrSettings['image_cut_width']    : 0,
+            'SETTINGS_IMAGE_CUT_HEIGHT'      => !empty($arrSettings['image_cut_height'])   ? $arrSettings['image_cut_height']   : 0,
+            'SETTINGS_IMAGE_SCALE_WIDTH'     => !empty($arrSettings['image_scale_width'])  ? $arrSettings['image_scale_width']  : 0,
+            'SETTINGS_IMAGE_SCALE_HEIGHT'    => !empty($arrSettings['image_scale_height']) ? $arrSettings['image_scale_height'] : 0,
+        ));
+        $objTemplate->parse('settings_image');
+        
         return true;
     }
 }
