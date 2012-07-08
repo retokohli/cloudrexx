@@ -4031,6 +4031,15 @@ CREATE TABLE `contrexx_settings` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_settings_image` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(50) NOT NULL,
+  `value` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_settings_smtp` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(50) NOT NULL,
