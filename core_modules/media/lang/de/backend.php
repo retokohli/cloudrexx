@@ -88,4 +88,8 @@ $_ARRAYLANG['TXT_MEDIA_FRONTEND_FILE_UPLOAD_DESC'] = "Bestimmen Sie hier, für j
 $_ARRAYLANG['TXT_MEDIA_FRONTEND_FILE_UPLOAD'] = "Datei Upload im Frontend";
 $_ARRAYLANG['TXT_MEDIA_ADD'] = "Add";
 $_ARRAYLANG['TXT_MEDIA_MANAGE'] = "Verwalten";
+$_ARRAYLANG['TXT_MEDIA_RENAME'] = "Umbenennen";
+$_ARRAYLANG['TXT_MEDIA_SAVE_AS'] = "Speichern unter";
+$_ARRAYLANG['TXT_MEDIA_RENAME_FILE'] = "Media umbenennen";
+$_ARRAYLANG['TXT_MEDIA_IMAGE_MANIPULATION'] = "Bildmanipulation";
 ?>

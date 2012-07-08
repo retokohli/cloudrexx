@@ -88,4 +88,8 @@ $_ARRAYLANG['TXT_MEDIA_FRONTEND_FILE_UPLOAD_DESC'] = "Define which users should 
 $_ARRAYLANG['TXT_MEDIA_FRONTEND_FILE_UPLOAD'] = "Frontend File Upload";
 $_ARRAYLANG['TXT_MEDIA_ADD'] = "Добави";
 $_ARRAYLANG['TXT_MEDIA_MANAGE'] = "Správa";
+$_ARRAYLANG['TXT_MEDIA_RENAME'] = "Rename";
+$_ARRAYLANG['TXT_MEDIA_SAVE_AS'] = "Save as";
+$_ARRAYLANG['TXT_MEDIA_EDIT_FILE'] = "Rename media";
+$_ARRAYLANG['TXT_MEDIA_IMAGE_MANIPULATION'] = "Image manipulation";
 ?>

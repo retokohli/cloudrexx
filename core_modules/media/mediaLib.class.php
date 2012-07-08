@@ -26,13 +26,12 @@ require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
  */
 class MediaLibrary
 {
-    protected $sortBy = 'name';
-    protected $sortDesc = false;
-
-
-    public $_arrSettings           = array();
-
-   
+    protected $sortBy    = 'name';
+    protected $sortDesc  = false;
+    
+    public $_arrSettings = array();
+    
+    
     // act: newDir
     // creates a new directory through php or ftp
     function _createNewDir($dirName)
@@ -289,11 +288,11 @@ class MediaLibrary
     {
         global $objTemplate;
 
-        if (isset($this->getFile) && !empty($this->getFile)) {
-            $objTemplate->setVariable('CONTENT_OK_MESSAGE',$this->_deleteMedia2($this->getFile));
-        } elseif (isset($_POST['formSelected']) && !empty($_POST['formSelected'])) {
+        if (!empty($this->getFile)) {
+            $objTemplate->setVariable('CONTENT_OK_MESSAGE', $this->_deleteMedia2($this->getFile));
+        } elseif (!empty($_POST['formSelected'])) {
             foreach ($_POST['formSelected'] as $file) {
-                $objTemplate->setVariable('CONTENT_OK_MESSAGE',$this->_deleteMedia2($file));
+                $objTemplate->setVariable('CONTENT_OK_MESSAGE', $this->_deleteMedia2($file));
             }
         }
     }
@@ -329,7 +328,10 @@ class MediaLibrary
     }
 
 
-    function _renMedia()
+    /**
+     * Renames a media file
+     */
+    function renMedia()
     {
         global $_ARRAYLANG, $objTemplate;
 
@@ -339,7 +341,7 @@ class MediaLibrary
             $fileName = $_POST['renName'];
             $oldName  = $_POST['oldName'];
         } else {
-// TODO: $_POST['renName'] may be empty
+            // TODO: $_POST['renName'] may be empty
             $ext      =
                 (   !empty($_POST['renExt'])
                  && FWValidator::is_file_ending_harmless(
@@ -391,15 +393,115 @@ class MediaLibrary
             }
         }
 
-        // resize image
-        if (isset($_POST['editImage']) && $_POST['editImage'] == 1) {
-            if (isset($_POST['imgWidthPx']) && !empty($_POST['imgWidthPx']) && isset($_POST['imgHeightPx']) && !empty($_POST['imgWidthPx']) && !empty($_POST['imgQuality'])) {
-                $this->_objImage->loadImage($this->path.$this->dirLog);
-                $this->_objImage->resizeImage($_POST['imgWidthPx'], $_POST['imgHeightPx'], $_POST['imgQuality']);
-                //unlink($this->path.$this->dirLog);
-                $this->_objImage->saveNewImage($this->path.$this->dirLog, true);
+        // save image
+        $this->_objImage->loadImage($this->path.$this->dirLog);
+        $this->_objImage->saveNewImage($this->path.$this->dirLog, true);
+    }
+    
+    /**
+     * This method is used for the image preview.
+     * 
+     * @param   array  $arrData  Contains $_GET array.
+     * @return  image  On error, 
+     */
+    public function getImage($arrData)
+    {
+        if (!empty($this->path) && !empty($this->getFile)) {
+            // Image loader
+            if (!$this->_objImage->loadImage($this->path.$this->getFile)) {
+                throw new Exception('Could not load image');
+            }
+            
+            // Rotate image
+            if (isset($arrData['d'])) {
+                $this->_objImage->rotateImage(intval($arrData['d']));
+            }
+            
+            // Crop image
+            if (isset($arrData['x']) && isset($arrData['y']) && !empty($arrData['w']) && !empty($arrData['h'])) {
+                $this->_objImage->cropImage(intval($arrData['x']), intval($arrData['y']), intval($arrData['w']), intval($arrData['h']));
+            }
+            
+            // Resize image
+            if (!empty($arrData['rw']) && !empty($arrData['rh']) && !empty($arrData['q'])) {
+                if (!$this->_objImage->resizeImage(intval($arrData['rw']), intval($arrData['rh']), intval($arrData['q']))) {
+                    throw new Exception('Could not resize image');
+                }
+            }
+            
+            // Show edited image
+            if (!$this->_objImage->showNewImage()) {
+                throw new Exception('Is not a valid image or image type');
             }
         }
+        
+        throw new Exception('Path or file is empty');
+    }
+    
+    
+    /**
+     * Edits and saves an image.
+     * 
+     * @param  array  $arrData  Contains $_POST array.
+     * @return bool             True on success, false otherwise.
+     */
+    public function editImage($arrData)
+    {
+        global $_ARRAYLANG, $objTemplate;
+        
+        $objFile = new File();
+        $orgFile = $arrData['orgName'].'.'.$arrData['orgExt'];
+        // ToDo: localhost unnecessary
+        // $orgFile = $objFile->replaceCharacters($orgFile);
+        $newName = $arrData['newName'];
+        $newFile = $newName.'.'.$arrData['orgExt'];
+        // ToDo: localhost unnecessary
+        // $newFile = $objFile->replaceCharacters($newFile);
+        
+        // If new image name is set, image will be copied. Otherwise, image will be overwritten
+        if ($newName != '' && $newFile != $orgFile) {
+            $this->fileLog = $objFile->copyFile($this->path, $orgFile, $this->path, $newFile);
+            if ($this->fileLog == 'error') {
+                throw new Exception('Could not copy image');
+            }
+        } else {
+            $this->fileLog = $orgFile;
+        }
+        
+        // Edit image
+        if (!empty($this->path) && !empty($this->fileLog)) {
+            // Image loader
+            if (!$this->_objImage->loadImage($this->path.$this->fileLog)) {
+                throw new Exception('Could not load image');
+            }
+            
+            // Rotate image
+            if (isset($arrData['d'])) {
+                $this->_objImage->rotateImage(intval($arrData['d']));
+            }
+            
+            // Crop image
+            if (isset($arrData['x']) && isset($arrData['y']) && !empty($arrData['w']) && !empty($arrData['h'])) {
+                $this->_objImage->cropImage(intval($arrData['x']), intval($arrData['y']), intval($arrData['w']), intval($arrData['h']));
+            }
+            
+            // Resize image
+            if (!empty($arrData['rw']) && !empty($arrData['rh']) && !empty($arrData['q'])) {
+                if (!$this->_objImage->resizeImage(intval($arrData['rw']), intval($arrData['rh']), intval($arrData['q']))) {
+                    throw new Exception('Could not resize image');
+                }
+            }
+            
+            // Save new image
+            if (!$this->_objImage->saveNewImage($this->path.$this->fileLog, true)) {
+                throw new Exception('Is not a valid image or image type');
+            }
+            
+            // If no error occured, return true
+            return true;
+        }
+        
+        throw new Exception('Path or file is empty');
     }
 
 
@@ -835,7 +937,7 @@ class MediaLibrary
 
         JS::activate('jquery');
 
-        $delete_msg = $_ARRAYLANG['TXT_MEDIA_DELETE_MSG'];
+        $delete_msg = $_ARRAYLANG['TXT_MEDIA_CONFIRM_DELETE_2'];
         $code       = <<<END
                     <script language="JavaScript" type="text/javascript">
                     /* <![CDATA[ */
@@ -1086,6 +1188,34 @@ END;
             $string     = $stringName.'.'.$stringExt;
         }
         return $string;
+    }
+    
+    /**
+     * Returns the image settings array.
+     *
+     * @global  object  $objDatabase       ADONewConnection
+     * @return  array   $arrImageSettings
+     */
+    public function getImageSettings()
+    {
+        global $objDatabase;
+        
+        $query = '
+            SELECT `name`, `value`
+            FROM `'.DBPREFIX.'settings_image`
+        ';
+        $objResult = $objDatabase->Execute($query);
+        
+        $arrImageSettings = array();
+        if ($objResult === false) {
+            throw new Exception($objDatabase->ErrorMsg());
+        }
+        while (!$objResult->EOF) {
+            $arrImageSettings[$objResult->fields['name']] = intval($objResult->fields['value']);
+            $objResult->MoveNext();
+        }
+        
+        return $arrImageSettings;
     }
 
 }

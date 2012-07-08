@@ -74,4 +74,8 @@ $_ARRAYLANG['TXT_DIR_META_KEYS'] = "Meta keys";
 $_ARRAYLANG['TXT_IMAGE_SHOP'] = "Shop";
 $_ARRAYLANG['TXT_IMAGE_CONTENT'] = "Content";
 $_ARRAYLANG['TXT_MEDIA_FORCE_OVERWRITE'] = "Vorhandene Dateien überschreiben";
+$_ARRAYLANG['TXT_MEDIA_RENAME'] = "Rename";
+$_ARRAYLANG['TXT_MEDIA_SAVE_AS'] = "Save as";
+$_ARRAYLANG['TXT_MEDIA_EDIT_FILE'] = "Rename media";
+$_ARRAYLANG['TXT_MEDIA_IMAGE_MANIPULATION'] = "Image manipulation";
 ?>
