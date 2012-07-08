@@ -1,0 +1,57 @@
+<!-- START module_checkout_settings_psp.html -->
+<style type="text/css">
+    label,
+    input[type="text"],
+    input[type="password"],
+    input[type="checkbox"] {
+        float: left;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        width: 230px;
+        margin: 0;
+    }
+
+    input[type="checkbox"] {
+        margin: 4px 0 !important;
+    }
+
+    .info {
+        margin: 5px 0 0 5px;
+    }
+</style>
+<script type="text/javascript">
+/* <![CDATA[ */
+Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
+Text[0]=["","{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_PSPID_INFO}"];
+Text[1]=["","{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER_INFO}"];
+/* ]]> */
+</script>
+
+<form action="index.php?cmd=checkout&act=settings&tpl=psp" method="post">
+    <table class="adminlist" width="100%">
+        <tr>
+            <th colspan="2">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TITLE}</th>
+        </tr>
+        <tr>
+            <td width="200"><label for="yellowpay_pspid">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_PSPID}</label><span class="tipmessage info" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+            <td><input id="yellowpay_pspid" name="yellowpay[pspid]" type="text" value="{YELLOWPAY_PSPID}" /></td>
+        </tr>
+        <tr>
+            <td width="200"><label for="yellowpay_sha_in">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_SHA_IN}</label></td>
+            <td><input id="yellowpay_sha_in" name="yellowpay[sha_in]" type="password" value="{YELLOWPAY_SHA_IN}" /></td>
+        </tr>
+        <tr>
+            <td width="200"><label for="yellowpay_sha_out">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_SHA_OUT}</label></td>
+            <td><input id="yellowpay_sha_out" name="yellowpay[sha_out]" type="password" value="{YELLOWPAY_SHA_OUT}" /></td>
+        </tr>
+        <tr>
+            <td width="200"><label for="yellowpay_testserver">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER}</label><span class="tipmessage info" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" /></td>
+            <td><input id="yellowpay_testserver" name="yellowpay[testserver]" type="checkbox" vale="1" {YELLOWPAY_TESTSERVER} /></td>
+        </tr>
+    </table><br />
+
+    <input name="submit" type="submit" value="{TXT_CORE_SAVE}" />
+</form>
+<!-- END module_checkout_settings_psp.html -->

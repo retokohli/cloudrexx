@@ -1624,6 +1624,14 @@ switch ($plainSection) {
         }
         break;
 
+    case 'checkout':
+        /** @ignore */
+        if (!@include_once(ASCMS_MODULE_PATH.'/checkout/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $objCheckout = new Checkout($page_content);
+        $objTemplate->setVariable('CONTENT_TEXT', $objCheckout->getPage());
+        break;
+
     default:
         $objTemplate->setVariable('CONTENT_TEXT', $page_content);
 }
