@@ -476,7 +476,7 @@ class Checkout extends CheckoutLibrary {
     {
         global $_ARRAYLANG, $_CONFIG, $objDatabase;
 
-        /*//evaluate payment result
+        //evaluate payment result
         $status = '';
         $orderId = Yellowpay::getOrderId();
         if (Yellowpay::checkin()) {
@@ -503,12 +503,7 @@ class Checkout extends CheckoutLibrary {
         } else {
             $this->arrStatusMessages['error'][] = $_ARRAYLANG['TXT_CHECKOUT_SECURITY_CHECK_ERROR'];
             return;
-        }*/
-
-        //tmp: for testing on localhost
-        $status = self::CONFIRMED;
-        $orderId = 1;
-        $this->arrStatusMessages['ok'][] = $_ARRAYLANG['TXT_CHECKOUT_TRANSACTION_WAS_SUCCESSFUL'];
+        }
 
         //update transaction status
         $updateStatus = $this->objTransaction->updateStatus($orderId, $status);
