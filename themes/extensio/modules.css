@@ -2085,3 +2085,72 @@ form select {
     float: none;
     clear: right;
 }*/
+
+
+/***************************************/
+/* CSS DEFINITIONS FOR CHECKOUT MODULE */
+/***************************************/
+#checkout #ok_message {
+    color: #008000;
+}
+
+#checkout #error_message {
+    color: #ff0000;
+}
+
+#checkout fieldset {
+    float: left;
+    width: auto;
+    padding: 5px;
+    border: 1px solid #BDBDBD;
+    margin: 0 0 15px 0 !important;
+}
+
+#checkout fieldset legend {
+    width: auto;
+    position: static;
+    padding: 0 3px 0 3px;
+}
+
+#checkout form {
+    float: left;
+    width: 100%;
+    margin: 10px 0 0 0;
+}
+
+#checkout form p {
+    clear: both;
+}
+
+#checkout form span.required_field {
+    float: none;
+    width: auto;
+    height: auto;
+    margin: 0 0 0 3px;
+    color: #ff0000;
+}
+
+#checkout form input,
+#checkout form select,
+#checkout form textarea {
+    float: left;
+}
+
+#checkout form input.highlight,
+#checkout form select.highlight,
+#checkout form textarea.highlight {
+    border: 1px solid #ff0000;
+}
+
+#checkout form div#buttons {
+    float: left;
+    width: 100%;
+    clear: both;
+}
+
+#checkout form input[type=submit],
+#checkout form input[type=reset] {
+    float: left;
+    width: auto;
+    padding: 4px;
+}

@@ -761,6 +761,13 @@ switch ($plainCmd) {
         $objSearch    = new \Cx\Core\Search\SearchManager($act, $objTemplate, $objDatabase, $objInit);
         $objSearch->getPage();
         break;
+    case 'checkout':
+        if (!include_once ASCMS_MODULE_PATH.'/checkout/admin.class.php')
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $subMenuTitle = $_CORELANG['TXT_CHECKOUT_MODULE'];
+        $objCheckoutManager = new CheckoutManager();
+        $objCheckoutManager->getPage();
+        break;
     default:
         if (!include_once ASCMS_CORE_PATH.'/myAdmin.class.php')
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
