@@ -31,12 +31,16 @@ class ImageManager
     public $orgImageHeight;
     public $orgImageType;
     public $orgImageFile;
+	
     public $newImage;
     public $newImageWidth;
     public $newImageHeight;
     public $newImageQuality;
     public $newImageType;
     public $newImageFile;
+	public $newImagePosX;
+    public $newImagePosY;
+	
     public $imageCheck = 1;
 
     const IMG_TYPE_GIF = 1;
@@ -57,26 +61,32 @@ class ImageManager
 
 
     /**
-     * Loads an existing image into a variable
-     * @access   public
-     * @param    string [$file] path and filename of the existing image
-     * @return   bool
+     * Gets serveral image information and saves it in the image variables.
+     * This method does not use exceptions because it is called by older methods without catchers.
+     *
+     * @access  public
+     * @param   string  $file  Path and filename of the existing image.
+     * @return  bool           True on success, false otherwise.
      */
-    function loadImage($file)
+    public function loadImage($file)
     {
         $this->_resetVariables();
         $this->orgImageFile = $file;
         $this->orgImageType = $this->_isImage($this->orgImageFile);
+		
         if ($this->orgImageType) {
             $getImage             = $this->_getImageSize($this->orgImageFile);
             $this->orgImageWidth  = $getImage[0];
             $this->orgImageHeight = $getImage[1];
             $this->orgImage       = $this->_imageCreateFromFile($this->orgImageFile);
+			
             if ($this->orgImage) return true;
+            
             $this->imageCheck = 0;
             $this->_resetVariables();
             return false;
         }
+		
         $this->imageCheck = 0;
         $this->_resetVariables();
         return false;
@@ -126,6 +136,7 @@ class ImageManager
      *
      * Note that all "Path" parameters are required to bring along their
      * own trailing slash.
+	 * 
      * @param   string  $strPath
      * @param   string  $strWebPath
      * @param   string  $file
@@ -167,6 +178,7 @@ class ImageManager
      * thumbnail before attempting to write the new one.
      * Note that all "Path" parameters are required to bring along their
      * own trailing slash.
+	 * 
      * @param   string  $strPath        The image file folder
      * @param   string  $strWebPath     The image file web folder
      * @param   string  $file           The image file name
@@ -220,37 +232,52 @@ class ImageManager
 
 
     /**
-     * Resizes the original Image to the given dimensions and stores it as the new
-     * @access    public
-     * @param     string    $width    The width of the new image
-     * @param     string    $height   The height of the new image
-     * @param     string    $quality  The quality for the new image
-     * @return    booelan             True on success, false otherwise
+     * Resizes the original image to the given dimensions and stores it as a new.
+     * This method does not use exceptions because it is called by older methods without catchers.
+     *
+     * @access  public
+     * @param   string   $width    The width of the new image.
+     * @param   string   $height   The height of the new image.
+     * @param   string   $quality  The quality for the new image.
+     * @return  booelan            True on success, false otherwise.
      */
-    function resizeImage($width, $height, $quality)
+    public function resizeImage($width, $height, $quality)
     {
         if (!$this->imageCheck) return false;
+		
+		if ($this->newImage) {
+            $this->orgImage       = $this->newImage;
+            $this->orgImageWidth  = $this->newImageWidth;
+            $this->orgImageHeight = $this->newImageHeight;
+        }
+		
         $this->newImageWidth = $width;
         $this->newImageHeight = $height;
         $this->newImageQuality = $quality;
         $this->newImageType = $this->orgImageType;
+		
         if (function_exists ('imagecreatetruecolor')) {
             $this->newImage = @imagecreatetruecolor($this->newImageWidth, $this->newImageHeight);
             // GD > 2 check
             if ($this->newImage) {
                 $this->setTransparency();
             } else {
-                $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
+                $this->newImage = imagecreate($this->newImageWidth, $this->newImageHeight);
             }
         } else {
-            $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
+            $this->newImage = imagecreate($this->newImageWidth, $this->newImageHeight);
         }
-        if(function_exists('imagecopyresampled')) { //resampled is gd2 only
+		
+        if (function_exists('imagecopyresampled')) { //resampled is gd2 only
             imagecopyresampled($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth + 1, $this->newImageHeight + 1, $this->orgImageWidth, $this->orgImageHeight);
         } else {
             imagecopyresized($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth + 1, $this->newImageHeight + 1, $this->orgImageWidth, $this->orgImageHeight);
         }
-        return true;
+		
+		if ($this->newImage) {
+            return true;
+        }
+        return false;
     }
 
 
@@ -289,7 +316,7 @@ class ImageManager
     /**
      * Resize and save image
      *
-     * Resizes the loaded Image as you wish and saves the new image
+     * Resizes the loaded Image as you wish and saves the new image.
      *
      * @access  public
      * @param   string  $path         Absolute path to the directory where the image is in
@@ -311,16 +338,20 @@ class ImageManager
         if ($newPath == '') $newPath = $path;
         if ($newWebPath == '') $newWebPath = $webPath;
         if ($newFileName == '') $newFileName = $fileName.$thumbNailSuffix;
+		
         $this->_checkTrailingSlash($path);
         $this->_checkTrailingSlash($webPath);
         $this->_checkTrailingSlash($newPath);
         $this->_checkTrailingSlash($newWebPath);
+		
         $this->loadImage($path.$fileName);
         if (!$this->imageCheck) return false;
+		
         $this->newImageWidth = $width;
         $this->newImageHeight = $height;
         $this->newImageQuality = $quality;
         $this->newImageType = $this->orgImageType;
+		
         if (function_exists ('imagecreatetruecolor')) {
             $this->newImage = @imagecreatetruecolor($this->newImageWidth, $this->newImageHeight);
             // GD > 2 check
@@ -332,12 +363,14 @@ class ImageManager
         } else {
             $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
         }
+		
         imagecopyresized(
             $this->newImage, $this->orgImage,
             0, 0, 0, 0,
             $this->newImageWidth+1, $this->newImageHeight+1,
             $this->orgImageWidth, $this->orgImageHeight
         );
+		
         return $this->saveNewImage($newPath.$newFileName);
     }
 
@@ -358,19 +391,23 @@ class ImageManager
 
 
     /**
-     * Saves the new image wherever you want
+     * Saves the new image.
+     * This method does not use exceptions because it is called by older methods without catchers.
+     *
      * @access  public
-     * @param   string    $file             The path for the image file to be written
-     * @param   booelan   $forceOverwrite   Force overwriting existing files if true
-     * @return  boolean                     True on success, false otherwise
+     * @param   string    $file             The path for the image file to be written.
+     * @param   booelan   $forceOverwrite   Force overwriting existing files if true.
+     * @return  boolean                     True on success, false otherwise.
      */
-    function saveNewImage($file, $forceOverwrite=false)
+    public function saveNewImage($file, $forceOverwrite=false)
     {
 // TODO: Add some sort of diagnostics (Message) here and elsewhere in this class
         if (!$this->imageCheck) return false;
         if (empty($this->newImage)) return false;
         if (file_exists($file) && !$forceOverwrite) return false;
+        
         $this->newImageFile = $file;
+        
         switch($this->newImageType) {
             case self::IMG_TYPE_GIF:
                 $function = 'imagegif';
@@ -387,7 +424,14 @@ class ImageManager
             default:
                 return false;
         }
-        $function($this->newImage, $this->newImageFile, $this->getQuality());
+		
+		// Only adjust quality, if it is set.
+        if ($this->newImageQuality != '') {
+            $function($this->newImage, $this->newImageFile, $this->getQuality());
+        } else {
+            $function($this->newImage, $this->newImageFile);
+        }
+        
         return true;
     }
 
@@ -418,8 +462,12 @@ class ImageManager
      */
     function showNewImage()
     {
+        $this->newImage     = !empty($this->newImage)     ? $this->newImage     : $this->orgImage;
+		$this->newImageType = !empty($this->newImageType) ? $this->newImageType : $this->orgImageType;
+        
         if (!$this->imageCheck == 1) return false;
         if (empty($this->newImage)) return false;
+		
         switch($this->newImageType) {
             case self::IMG_TYPE_GIF:
                 header("Content-type: image/gif");
@@ -439,13 +487,21 @@ class ImageManager
             default:
                 return false;
         }
-        $function($this->newImage, '', $this->getQuality());
+		
+		// Only adjust quality, if it is set.
+        if ($this->newImageQuality != '') {
+            $function($this->newImage, '', $this->getQuality());
+        } else {
+            $function($this->newImage);
+        }
+		
         return true;
     }
 
 
     /**
-     * Resets all object variables
+     * Resets all object variables.
+	 * 
      * @access   private
      * @return   void
      */
@@ -456,12 +512,15 @@ class ImageManager
         $this->orgImageHeight  = '';
         $this->orgImageType    = '';
         $this->orgImageFile    = '';
+		
         $this->newImage        = '';
         $this->newImageWidth   = '';
         $this->newImageHeight  = '';
         $this->newImageQuality = '';
         $this->newImageType    = '';
         $this->newImageFile    = '';
+		$this->newImagePosX    = '';
+    	$this->newImagePosY    = '';
     }
 
 
@@ -634,4 +693,91 @@ class ImageManager
         return $file_name.'.thumb';
     }
 
+
+    /**
+     * Rotates the image 90 degrees to the left or right.
+     * 
+     * @access  public
+     * @param   float   $angle  Rotation angle, in degrees. The rotation angle is interpreted as the number of degrees to rotate the image anticlockwise.
+     * @return  bool            True on success, false otherwise.
+     */
+    public function rotateImage($angle)
+    {
+        if ($this->imageCheck == 1) {
+            $angle = ($angle <= 360) || ($angle >= 0) ? $angle : 0;
+            $this->newImage = imagerotate($this->orgImage, $angle, 0);
+            
+            if (!empty($this->newImage)) {
+                $this->newImageWidth = imagesx($this->newImage);
+                $this->newImageHeight = imagesy($this->newImage);
+                
+                return true;
+            }
+            
+            throw new Exception('Could not rotate image');
+        }
+        
+        throw new Exception('Is not a valid image');
+    }
+
+
+    /**
+     * Crops the image with the given coordinates.
+     * 
+     * @access  public
+     * @param   int   $x       X-coordinate for the new image.
+     * @param   int   $y       Y-coordinate for the new image.
+     * @param   int   $width   Width for the new image.
+     * @param   int   $height  Height for the new image.
+     * @return  bool           True on success, false otherwise.
+     */
+    public function cropImage($x, $y, $width, $height)
+    {
+        if ($this->imageCheck == 1) {
+            $this->newImagePosX   = $x;
+            $this->newImagePosY   = $y;
+            $this->newImageWidth  = $width;
+            $this->newImageHeight = $height;
+            $this->newImageType   = $this->orgImageType;
+            
+            if ($this->newImage) {
+                $this->orgImage = $this->newImage;
+            }
+            
+            if (function_exists('imagecreatetruecolor')) {
+                $this->newImage = @imagecreatetruecolor($this->newImageWidth, $this->newImageHeight);
+                // GD > 2 check
+                if ($this->newImage) {
+                    $this->setTransparency();
+                } else {
+                    $this->newImage = imagecreate($this->newImageWidth, $this->newImageHeight);
+                }
+            } else {
+                $this->newImage = imagecreate($this->newImageWidth, $this->newImageHeight);
+            }
+            
+            imagecopy (
+                $this->newImage,      // Source of new image
+                $this->orgImage,      // Source of original image
+                0,                    // X-coordinate of new image
+                0,                    // Y-coordinate of new image
+                $this->newImagePosX,  // X-coordinate of original image
+                $this->newImagePosY,  // Y-coordinate of original image
+                $this->newImageWidth, // New image width
+                $this->newImageHeight // New image height
+            );
+            
+            if (!empty($this->newImage)) {
+                return true;
+            }
+            
+            throw new Exception('Could not crop image');
+        }
+        
+        throw new Exception('Is not a valid image');
+    }
+
+
 }
+
+?>

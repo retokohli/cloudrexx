@@ -58,11 +58,13 @@ class MediaManager extends MediaLibrary
     public $_objImage;                        // object from ImageManager class
 
     public $dirLog;                           // Dir Log
+    public $fileLog;                          // File Log
     public $archive;
 
     public $_shopEnabled;
-
 	public $_strOkMessage = '';
+    
+    public $arrImageQualityValues = array(5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100);
 
 
     /**
@@ -173,7 +175,7 @@ class MediaManager extends MediaLibrary
     /**
      * checks whether the shop module is available and active
      *
-     * @return bool
+     * @return  bool
      * @todo    Move this to a Shop Library static method
      */
     function _checkForShop() {
@@ -221,8 +223,11 @@ class MediaManager extends MediaLibrary
                 $this->_deleteMedia();
                 $this->_overviewMedia();
                 break;
+            case 'rename':
+                $this->_renameMedia();
+                break;
             case 'edit':
-                $this->_editMedia();
+                $this->editMedia();
                 break;
             case 'preview':
                 $this->_previewImage();
@@ -231,8 +236,24 @@ class MediaManager extends MediaLibrary
                 $this->_previewImageSize();
                 break;
             case 'ren':
-                $this->_renMedia();
+                $this->renMedia();
                 $this->_overviewMedia();
+                break;
+            case 'getImage':
+                try {
+                    $this->getImage($_GET);
+                } catch (Exception $e) {
+                    DBG::msg('Could not get image preview: '.$e->getMessage());
+                }
+                die();
+                break;
+            case 'editImage':
+                try {
+                    $this->editImage($_POST);
+                } catch (Exception $e) {
+                    DBG::msg('Could not edit image: '.$e->getMessage());
+                }
+                die();
                 break;
             case 'settings':
                 $this->_settings();
@@ -363,7 +384,6 @@ class MediaManager extends MediaLibrary
         $comboUp->setJsInstanceName('exposed_combo_uploader');
         
         $this->_objTpl->setVariable(array(
-			  'REDIRECT_URL'					  => $redirectUrl,
               'COMBO_UPLOADER_CODE'               => $comboUp->getXHtml(true)
         ));
         //end of uploader button handling
@@ -380,6 +400,12 @@ class MediaManager extends MediaLibrary
 
             if(is_array($sessionHighlightCandidates)) //make sure we don't cause any unexpected behaviour if we lost the session data
                 $this->highlightName = $sessionHighlightCandidates;
+        }
+        
+        // Check if an image has been edited.
+        // If yes, we know the edited file and want to highlight them.
+        if (!empty($_GET['editedImage'])) {
+            $this->highlightName[] = $_GET['editedImage'];
         }
 
         // media directory tree
@@ -468,13 +494,19 @@ class MediaManager extends MediaLibrary
                             'MEDIA_FILE_NAME_IMG_SIZE' => $thbSize[3]
                         ));
                         $this->_objTpl->parse('mediaShowThumbnail');
+                        
+                        $this->_objTpl->setVariable(array(
+                            'MEDIA_FILE_EDIT_HREF'    => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;act=edit&amp;path=' . $this->webPath . '&amp;file=' . $fileName,
+                            'MEDIA_EDIT'              => $_ARRAYLANG['TXT_MEDIA_EDIT'] . ': ' . $fileName,
+                        ));
+                        $this->_objTpl->parse('mediaImageEdit');
                     }
 
                     $this->_objTpl->setVariable(array(  // action
-                        'MEDIA_FILE_EDIT_HREF'   => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;act=edit&amp;path=' . $this->webPath . '&amp;file=' . $fileName,
-                        'MEDIA_EDIT'             => $_ARRAYLANG['TXT_MEDIA_EDIT'] . ': ' . $fileName,
-                        'MEDIA_FILE_DELETE_HREF' => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;act=delete&amp;path=' . $this->webPath . '&amp;file=' . $fileName,
-                        'MEDIA_DELETE'           => $_ARRAYLANG['TXT_MEDIA_DELETE'] . ': ' . $fileName
+                        'MEDIA_FILE_RENAME_HREF'    => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;act=rename&amp;path=' . $this->webPath . '&amp;file=' . $fileName,
+                        'MEDIA_RENAME'              => $_ARRAYLANG['TXT_MEDIA_RENAME'] . ': ' . $fileName,
+                        'MEDIA_FILE_DELETE_HREF'    => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;act=delete&amp;path=' . $this->webPath . '&amp;file=' . $fileName,
+                        'MEDIA_DELETE'              => $_ARRAYLANG['TXT_MEDIA_DELETE'] . ': ' . $fileName
                     ));
                     $this->_objTpl->parse('mediaDirectoryTree');
                     $i++;
@@ -571,16 +603,16 @@ class MediaManager extends MediaLibrary
 
 
     /**
-    * Edit Media Data
+    * Rename Media Data
     *
     * @global     array     $_ARRAYLANG
     * @return    string    parsed content
     */
-    function _editMedia(){
+    function _renameMedia(){
         global $_ARRAYLANG;
 
-        $this->_objTpl->loadTemplateFile('module_media_edit.html', true, true);
-        $this->pageTitle = $_ARRAYLANG['TXT_MEDIA_EDIT_FILE'];
+        $this->_objTpl->loadTemplateFile('module_media_rename.html', true, true);
+        $this->pageTitle = $_ARRAYLANG['TXT_MEDIA_RENAME_FILE'];
 
         $check = true;
         (!isset($this->getFile) && empty($this->getFile)) ? $check = false : '';
@@ -604,15 +636,12 @@ class MediaManager extends MediaLibrary
 
             $this->_objTpl->setVariable(array(  // txt
                 'MEDIA_EDIT_ACTION'         => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;act=ren&amp;path=' . $this->webPath,
-                'MEDIA_EDIT_ACTION_PREVIEW' => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;act=preview&amp;path=' . $this->webPath .'&amp;file=' . $this->getFile,
-                'MEDIA_EDIT_ACTION_PREVIEW_S' => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;act=previewSize&amp;path=' . $this->webPath .'&amp;file=' . $this->getFile,
                 'TXT_MEDIA_EDIT_FILE'       => $_ARRAYLANG['TXT_MEDIA_EDIT_FILE'],
                 'MEDIA_DIR'                 => $this->webPath,
                 'MEDIA_FILE'                => $this->getFile,
                 'TXT_MEDIA_INSERT_AS_COPY'  => $_ARRAYLANG['TXT_MEDIA_INSERT_AS_COPY'],
                 'TXT_MEDIA_SAVE'            => $_ARRAYLANG['TXT_MEDIA_SAVE'],
                 'TXT_MEDIA_RESET'           => $_ARRAYLANG['TXT_MEDIA_RESET'],
-                'TXT_PREVIEW' => $_ARRAYLANG['TXT_PREVIEW'],
             ));
 
             $icon     = $this->_getIcon($this->path . $this->getFile);
@@ -637,38 +666,112 @@ class MediaManager extends MediaLibrary
                 'MEDIA_FILE_ICON'     => $this->iconWebPath.$icon.'.gif',
                 'MEDIA_ORGFILE_NAME'  => $fileName
             ));
-
-            // edit image
-            if ($this->_isImage($this->path.$this->getFile)) {
-                $tmpSize  = @getimagesize($this->path.$this->getFile);
-                $fileSize = $this->_formatSize($this->_getSize($this->path.$this->getFile));
-
-                $this->_objTpl->setVariable(array(
-                    'TXT_MEDIA_EDIT_IMAGE' => $_ARRAYLANG['TXT_MEDIA_EDIT_IMAGE'],
-                    'TXT_MEDIA_NO'         => $_ARRAYLANG['TXT_MEDIA_NO'],
-                    'TXT_MEDIA_YES'        => $_ARRAYLANG['TXT_MEDIA_YES'],
-                ));
-                $this->_objTpl->parse('mediaShowImage');
-                $this->_objTpl->setVariable(array(
-                    'TXT_MEDIA_EDIT_IMAGE' => $_ARRAYLANG['TXT_MEDIA_EDIT_IMAGE'],
-                    'TXT_MEDIA_FILE_SIZE'  => $_ARRAYLANG['TXT_MEDIA_FILE_SIZE'],
-                    'TXT_MEDIA_WIDTH'      => $_ARRAYLANG['TXT_MEDIA_WIDTH'],
-                    'TXT_MEDIA_HEIGHT'     => $_ARRAYLANG['TXT_MEDIA_HEIGHT'],
-                    'TXT_MEDIA_BALANCE'    => $_ARRAYLANG['TXT_MEDIA_BALANCE'],
-                    'TXT_MEDIA_QUALITY'    => $_ARRAYLANG['TXT_MEDIA_QUALITY'],
-                    'MEDIA_FILE_SIZE'      => $fileSize,
-                    'MEDIA_IMG_WIDTH'      => $tmpSize[0],
-                    'MEDIA_IMG_HEIGHT'     => $tmpSize[1],
-                    'MEDIA_FILE_IMAGE_IMG' => $this->webPath.$this->getFile,
-                ));
-               $this->_objTpl->parse('mediaFileImage');
-            }
             $this->_objTpl->parse('mediaFile');
         }
         // variables
         $this->_objTpl->setVariable(array(
-            'TXT_MEDIA_BACK'        => $_ARRAYLANG['TXT_MEDIA_BACK'],
-            'MEDIA_BACK_HREF'       => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;path='.$this->webPath,
+            'TXT_MEDIA_BACK'     => $_ARRAYLANG['TXT_MEDIA_BACK'],
+            'MEDIA_BACK_HREF'    => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;path='.$this->webPath,
+        ));
+    }
+
+
+    /**
+     * Shows the image manipulation component.
+     *
+     * @global  array   $_ARRAYLANG
+     * @return  string  Parsed content.
+     */
+    function editMedia(){
+        global $_ARRAYLANG;
+
+        $this->_objTpl->loadTemplateFile('module_media_edit.html', true, true);
+        $this->pageTitle = $_ARRAYLANG['TXT_MEDIA_EDIT_FILE'];
+        
+        // Activate jQuery and imgAreaSelect
+        JS::activate('jquery');
+        JS::activate('jquery-imgareaselect');
+        
+        try {
+            // Get quality options from the settings
+            $arrImageSettings = $this->getImageSettings();
+        } catch (Exception $e) {
+            DBG::msg('Could not query image settings: '.$e->getMessage());
+        }
+        
+        $check = true;
+        empty($this->getFile) ? $check = false : '';
+        empty($this->getPath) ? $check = false : '';
+        !file_exists($this->path.$this->getFile) ? $check = false : '';
+        
+        
+        if ($check) { // File exists
+            $this->_objTpl->setVariable(array(
+                'TXT_MEDIA_SAVE'       => $_ARRAYLANG['TXT_MEDIA_SAVE'],
+                'TXT_MEDIA_SAVE_AS'    => $_ARRAYLANG['TXT_MEDIA_SAVE_AS'],
+                'TXT_MEDIA_RESET'      => $_ARRAYLANG['TXT_MEDIA_RESET'],
+                'TXT_MEDIA_PREVIEW'    => $_ARRAYLANG['TXT_PREVIEW'],
+                'MEDIA_EDIT_ACTION'    => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;act=editImage&amp;path='.$this->webPath,
+                'MEDIA_DIR'            => $this->webPath,
+                'MEDIA_FILE'           => $this->getFile,
+            ));
+
+            $icon     = $this->_getIcon($this->path.$this->getFile);
+            $info     = pathinfo($this->getFile);
+            $fileExt  = $info['extension'];
+            $ext      = !empty($fileExt) ? '.'.$fileExt : '';
+            $fileName = substr($this->getFile, 0, strlen($this->getFile) - strlen($ext));
+
+            // Icon, file & extension name
+            $this->_objTpl->setVariable(array(
+                'MEDIA_FILE_ICON' => $this->iconWebPath.$icon.'.gif',
+                'MEDIA_FILE_NAME' => $fileName,
+                'MEDIA_FILE_EXT'  => $fileExt,
+            ));
+
+            // Edit image
+            $imageSize  = @getimagesize($this->path.$this->getFile);
+            
+            $this->_objTpl->setVariable(array(
+                'TXT_MEDIA_IMAGE_MANIPULATION' => $_ARRAYLANG['TXT_MEDIA_IMAGE_MANIPULATION'],
+                'TXT_MEDIA_WIDTH'              => $_ARRAYLANG['TXT_MEDIA_WIDTH'],
+                'TXT_MEDIA_HEIGHT'             => $_ARRAYLANG['TXT_MEDIA_HEIGHT'],
+                'TXT_MEDIA_BALANCE'            => $_ARRAYLANG['TXT_MEDIA_BALANCE'],
+                'TXT_MEDIA_QUALITY'            => $_ARRAYLANG['TXT_MEDIA_QUALITY'],
+                'MEDIA_IMG_WIDTH'              => $imageSize[0],
+                'MEDIA_IMG_HEIGHT'             => $imageSize[1],
+            ));
+            
+            foreach ($this->arrImageQualityValues as $value) {
+                $this->_objTpl->setVariable(array(
+                    'IMAGE_QUALITY_VALUE'          => $value,
+                    'IMAGE_QUALITY_OPTION_CHECKED' => $value == $arrImageSettings['image_compression'] ? 'selected="selected"' : '',
+                ));
+                $this->_objTpl->parse('mediaEditImageQualityOptions');
+            }
+
+            $this->_objTpl->parse('mediaEditImage');
+        } else { // File doesn't exist
+            $this->_objTpl->setVariable(array(
+                'TXT_MEDIA_ERROR_OCCURED'    => $_ARRAYLANG['TXT_MEDIA_ERROR_OCCURED'],
+                'TXT_MEDIA_FILE_DONT_EXISTS' => $_ARRAYLANG['TXT_MEDIA_FILE_DONT_EXISTS']
+            ));
+            $this->_objTpl->parse('mediaErrorFile');
+        }
+        
+        // Variables
+        $this->_objTpl->setVariable(array(
+        	'CSRF'						=> CSRF::param(),
+            'MEDIA_EDIT_AJAX_ACTION'    => 'index.php?cmd=media&archive='.$this->archive.'&act=editImage&path='.$this->webPath,
+            'MEDIA_EDIT_REDIRECT'       => 'index.php?cmd=media&archive='.$this->archive.'&path='.$this->webPath,
+            'MEDIA_BACK_HREF'           => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;path='.$this->webPath,
+            'MEDIA_FILE_IMAGE_SRC'      => 'index.php?cmd=media&archive='.$this->archive.'&act=getImage&path='.$this->webPath.'&file='.$this->getFile.'&'.CSRF::param(),
+            'MEDIA_IMAGE_WIDTH'         => !empty($imageSize) ? intval($imageSize[0]) : 0,
+            'MEDIA_IMAGE_HEIGHT'        => !empty($imageSize) ? intval($imageSize[1]) : 0,
+            'MEDIA_IMAGE_CROP_WIDTH'    => $arrImageSettings['image_cut_width'],
+            'MEDIA_IMAGE_CROP_HEIGHT'   => $arrImageSettings['image_cut_height'],
+            'MEDIA_IMAGE_RESIZE_WIDTH'  => $arrImageSettings['image_scale_width'],
+            'MEDIA_IMAGE_RESIZE_HEIGHT' => $arrImageSettings['image_scale_height'],
         ));
     }
 

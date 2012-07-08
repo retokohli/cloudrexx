@@ -130,6 +130,15 @@ jQuery(document).ready(function(){
             ),
             'dependencies' => array('jquery')
         ),
+        'jquery-imgareaselect' => array(
+            'jsfiles'          => array(
+                'lib/javascript/jquery/plugins/imgareaselect/jquery.imgareaselect.js',
+            ),
+            'cssfiles'         => array(
+                'lib/javascript/jquery/plugins/imgareaselect/css/imgareaselect-animated.css',
+            ),
+            'dependencies' => array('jquery'),
+        ),
         'ckeditor'     => array(
             'jsfiles'       => array(
                 'editor/ckeditor/ckeditor.js',
