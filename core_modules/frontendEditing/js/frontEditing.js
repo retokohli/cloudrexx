@@ -130,6 +130,11 @@ function fe_doLogin() {
             data: postdata,
             success: function(transport){
                 fe_loadToolbarResponse(transport, showEditorAfterLoading);
+
+                arrResponse = transport.split(';;;', 2);
+                if ((arrResponse[0] != 'login') && (arrResponse[0] != 'admin')) {
+                    jQuery('#fe_edit_link').text(cx.variables.get('TXT_FRONTEND_EDITING_TOOLBAR_EDIT', 'frontendEditing'));
+                }
             },
             complete : fe_stopLoading
         });
@@ -192,11 +197,12 @@ function fe_doLogout() {
     }
     
     fe_startLoading();
+    
     jQuery(document).ready(function(){
         jQuery.ajax({
             url: fe_fileForIndex,
             async: false,
-            data: {	section: 'logout', standalone: 'true' },
+            data: {	section: 'logout', standalone: 'false' },
             success: function(transport){
                 fe_toolbarIsLoaded 	= false;
                 fe_toolbarIsVisible = false;
@@ -205,6 +211,8 @@ function fe_doLogout() {
                 fe_editorIsLoaded	= false;
                 fe_editorIsVisible	= false;
                 fe_loadDefault();
+
+                jQuery('#fe_edit_link').text(cx.variables.get('TXT_FRONTEND_EDITING_LOGIN', 'frontendEditing'));
             },
             complete : fe_stopLoading
         });
@@ -320,7 +328,7 @@ function fe_loadDefault() {
         jQuery.ajax({
             data: {	frontEditing: '1' },
             async: false,
-            success: function(transport){
+            success: function(transport) {
                 fe_restoreDefault(transport);
             },
             complete : fe_stopLoading()

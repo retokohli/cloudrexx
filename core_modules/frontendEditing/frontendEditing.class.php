@@ -226,7 +226,6 @@ class frontendEditing extends frontendEditingLib {
                 case 'disallowed':
                     echo $this->getDisallowedPage();
                     break;
-
             }
         }
 
@@ -288,11 +287,15 @@ class frontendEditing extends frontendEditingLib {
             }
 
             //No admin, figure out what the user is allowed to do
-            if (Permission::checkAccess(frontendEditingLib::AUTH_ID_FOR_PAGE_EDITING, 'static', true)) {
+            if (Permission::checkAccess(frontendEditingLib::AUTH_ID_FOR_CONTENT_MANAGER, 'static', true) &&
+                Permission::checkAccess(frontendEditingLib::AUTH_ID_FOR_PAGE_EDITING, 'static', true) &&
+                Permission::checkAccess(frontendEditingLib::AUTH_ID_FOR_PAGE_PUBLISHING, 'static', true)
+            ) {
                 //unprotected page, edit
                 if (!$this->page->isBackendProtected())
                     return true;
-                
+
+                // TODO: checkAccess() with type "page_backend" doesn't work
                 if (Permission::checkAccess($this->page->getId(), 'page_backend', true));
                     return true;
             }

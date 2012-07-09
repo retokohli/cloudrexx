@@ -412,7 +412,7 @@ html, body {
 #fe_EditorBoxContent .cke_wrapper {
     float: left;
     width: 778px !important;
-    padding: 0;
+    margin: 0 0 0 -5px;
 }
 
 
