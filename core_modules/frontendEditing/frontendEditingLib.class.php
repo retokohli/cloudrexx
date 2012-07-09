@@ -28,9 +28,19 @@ class frontendEditingLib {
     const ACCESS_KEY = 9;
 
     /**
+     * Stores the authorization id for content manager.
+     */
+    const AUTH_ID_FOR_CONTENT_MANAGER = 6;
+
+    /**
      * Stores the authorization id for editing pages.
      */
     const AUTH_ID_FOR_PAGE_EDITING = 35;
+
+    /**
+     * Stores the authorization id for publishing pages.
+     */
+    const AUTH_ID_FOR_PAGE_PUBLISHING = 78;
 
     /**
      * Name of the SESSION-Field, which stores the visibility-status.
@@ -88,9 +98,12 @@ class frontendEditingLib {
             $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
             $page = $pageRepo->find($pageId);
 
-            if (FWUser::getFWUserObject()->objUser->getAdminStatus() || 
-                (Permission::checkAccess(frontendEditingLib::AUTH_ID_FOR_PAGE_EDITING, 'static', true) && (!$page->isBackendProtected() || Permission::checkAccess($page->getId(), 'page_backend', true)))
-                ) {
+            if ((FWUser::getFWUserObject()->objUser->getAdminStatus()) ||
+                (Permission::checkAccess(frontendEditingLib::AUTH_ID_FOR_CONTENT_MANAGER, 'static', true) &&
+                 Permission::checkAccess(frontendEditingLib::AUTH_ID_FOR_PAGE_EDITING, 'static', true) &&
+                 Permission::checkAccess(frontendEditingLib::AUTH_ID_FOR_PAGE_PUBLISHING, 'static', true) &&
+                 (!$page->isBackendProtected() || Permission::checkAccess($page->getId(), 'page_backend', true)))// TODO: checkAccess() with type "page_backend" doesn't work
+            ) {
                 $strLinkDescription = $_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_EDIT'];
             } else {
                 return;
@@ -98,8 +111,13 @@ class frontendEditingLib {
         } else {
             $strLinkDescription = $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'];
         }
-                
-        return '<a href="javascript:void(0)" onclick="fe_setToolbarVisibility(true); fe_loadToolbar(true);" accesskey="'.frontendEditingLib::ACCESS_KEY.'" title="[ALT + '.frontendEditingLib::ACCESS_KEY.'] '.$strLinkDescription.'">'.$strLinkDescription.'</a>';
+        
+        JS::activate('cx');
+        $objCx = ContrexxJavascript::getInstance();
+        $objCx->setVariable('TXT_FRONTEND_EDITING_LOGIN', $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'], 'frontendEditing');
+        $objCx->setVariable('TXT_FRONTEND_EDITING_TOOLBAR_EDIT', $_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_EDIT'], 'frontendEditing');
+
+        return '<a id="fe_edit_link" href="javascript:void(0)" onclick="fe_setToolbarVisibility(true); fe_loadToolbar(true);" accesskey="'.frontendEditingLib::ACCESS_KEY.'" title="[ALT + '.frontendEditingLib::ACCESS_KEY.'] '.$strLinkDescription.'">'.$strLinkDescription.'</a>';
     }
 
     /**
