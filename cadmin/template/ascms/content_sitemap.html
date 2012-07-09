@@ -141,36 +141,5 @@ function moveDivsToEndOfBodyTag() {
 }
 window.onload = moveDivsToEndOfBodyTag;
 
-function showEditModeWindow(cmdName, pageId) {
-	$('editMode_Code_Link1').href 		= 'index.php?cmd=content&act=edit&pageId=' + pageId + '&{CSRF_PARAM}';
-	$('editMode_Code_Link2').href 		= 'index.php?cmd=content&act=edit&pageId=' + pageId + '&{CSRF_PARAM}';
-	$('editMode_Content_Link1').href 	= 'index.php?cmd=' + cmdName + '&{CSRF_PARAM}';
-	$('editMode_Content_Link2').href 	= 'index.php?cmd=' + cmdName + '&{CSRF_PARAM}';
-
-	Effect.Appear('editMode_Background', {duration: 0.5, to: 0.5});
-	Effect.Appear('editMode_Window', {duration: 0.5});
-}
-
-function closeEditModeWindow() {
-	Effect.Fade('editMode_Background', {duration: 0.5, from: 0.5});
-	Effect.Fade('editMode_Window', {duration: 0.5, queue:{scope:'myscope', position:'end'}});
-}
 </script>
-<div id="editMode_Background" style="display: none;"></div>
-<div id="editMode_Window" style="display: none;">
-	<div id="editMode_Frame">
-		<div id="editMode_Title">
-			<div class="left">{TXT_EDITMODE_TITLE}</div>
-			<div class="right"><a href="javascript:void(0)" onclick="closeEditModeWindow();">X</a></div>
-		</div>
-		<div id="editMode_Content">
-			<p style="text-align: left;">{TXT_EDITMODE_TEXT}</p>
-			<div class="left"><a href="" title="{TXT_EDITMODE_CODE}" id="editMode_Code_Link1"><img src="images/content_manager/editmode_Code.gif" alt="{TXT_EDITMODE_CODE}" title="{TXT_EDITMODE_CODE}" /></a></div>
-			<div class="right"><a href="" title="{TXT_EDITMODE_CONTENT}" id="editMode_Content_Link1"><img src="images/content_manager/editmode_Content.gif" alt="{TXT_EDITMODE_CONTENT}" title="{TXT_EDITMODE_CONTENT}" /></a></div>
-			<br />
-			<div class="left"><a href="" title="{TXT_EDITMODE_CODE}" id="editMode_Code_Link2">{TXT_EDITMODE_CODE}</a></div>
-			<div class="right"><a href="" title="{TXT_EDITMODE_CONTENT}" id="editMode_Content_Link2">{TXT_EDITMODE_CONTENT}</a></div>
-		</div>
-	</div>
-</div>
 <!-- END content_sitemap.html -->

@@ -194,12 +194,18 @@ class ContentManager extends Module {
         $this->template->setVariable('CM_HIDDEN', $cm_hidden);
         $this->template->setVariable('CM_HIDE_LIST', $hide_list);
         
-        $this->template->setVariable(array(
-            'TXT_EDITMODE_TITLE'   => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'],
+        $editmodeTemplate = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+        $editmodeTemplate->loadTemplateFile('content_editmode.html');
+        $editmodeTemplate->setVariable(array(
             'TXT_EDITMODE_TEXT'    => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TEXT'],
             'TXT_EDITMODE_CODE'    => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_PAGE'],
             'TXT_EDITMODE_CONTENT' => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_CONTENT'],
         ));
+        ContrexxJavascript::getInstance()->initJs();
+        ContrexxJavascript::getInstance()->setVariable(array(
+            'editmodetitle'   => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'],
+            'editmodecontent' => $editmodeTemplate->get(),
+        ), 'contrexx');
     }
 
     /**
