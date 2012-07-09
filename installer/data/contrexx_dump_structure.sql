@@ -864,6 +864,46 @@ CREATE TABLE `contrexx_module_calendar_style` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_checkout_settings_mails` (
+  `id` int(11) NOT NULL auto_increment,
+  `title` text NOT NULL,
+  `content` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_checkout_settings_yellowpay` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` text NOT NULL,
+  `value` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_checkout_transactions` (
+  `id` int(11) NOT NULL auto_increment,
+  `time` int(10) NOT NULL default '0',
+  `status` enum('confirmed','waiting','cancelled') NOT NULL,
+  `invoice_number` int(11) NOT NULL,
+  `invoice_currency` int(11) NOT NULL default '1',
+  `invoice_amount` int(15) NOT NULL,
+  `contact_title` enum('mister','miss') NOT NULL,
+  `contact_forename` varchar(255) NOT NULL default '',
+  `contact_surname` varchar(255) NOT NULL default '',
+  `contact_company` varchar(255) NOT NULL default '',
+  `contact_street` varchar(255) NOT NULL default '',
+  `contact_postcode` varchar(255) NOT NULL default '',
+  `contact_place` varchar(255) NOT NULL default '',
+  `contact_country` int(11) NOT NULL default '204',
+  `contact_phone` varchar(255) NOT NULL default '',
+  `contact_email` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_contact_form` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `mails` text NOT NULL,
