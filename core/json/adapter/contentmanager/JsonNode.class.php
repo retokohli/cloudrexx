@@ -83,7 +83,7 @@ class JsonNode implements JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('getTree', 'delete', 'multipleDelete', 'move', 'new'=>'newNode');
+        return array('getTree', 'delete', 'multipleDelete', 'move');
     }
 
     /**
@@ -111,7 +111,14 @@ class JsonNode implements JsonAdapter {
         if (isset($parameters['get']) && isset($parameters['get']['nodeid'])) {
             $nodeId = contrexx_input2raw($parameters['get']['nodeid']);
         }
-        return $this->renderTree($nodeId);
+        $recursive = false;
+        if ($nodeId == 0 &&
+                isset($parameters['get']) &&
+                isset($parameters['get']['recursive']) &&
+                $parameters['get']['recursive'] == 'true') {
+            $recursive = true;
+        }
+        return $this->renderTree($nodeId, $recursive);
     }
 
     /**
@@ -159,44 +166,6 @@ class JsonNode implements JsonAdapter {
         $this->em->persist($parent_node);
 
         $this->em->flush();
-    }
-    
-    /**
-     * Creates a new node as first subnode of the specified one
-     * @param array $arguments Arguments passed from JsonData
-     */
-    public function newNode($arguments) {
-        global $_CORELANG;
-        
-        // Global access check
-        if (!\Permission::checkAccess(6, 'static', true) ||
-                !\Permission::checkAccess(35, 'static', true)) {
-            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
-        }
-        // This method can not create a not on rootlevel, so we do not have to
-        // check for access ID 127
-        if (!\Permission::checkAccess(5, 'static', true)) {
-            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_CREATION_DENIED']);
-        }
-        
-        // find specified node
-        $nodeId = contrexx_input2raw($arguments['get']['id']);
-        $node = $this->nodeRepo->findOneBy(array(
-            'id' => intval($nodeId),
-        ));
-        // throw exception if not found
-        if (!$node) {
-            throw new \ContentManagerException();
-        }
-        // create new node
-        $newNode = new \Cx\Model\ContentManager\Node();
-        // append new node to existing
-        $newNode->setParent($node);
-        $node->addChildren($newNode);
-        // create pages?
-        // persist everything
-        $this->em->persist($newNode);
-        $this->em->persist($node);
     }
 
     /**
@@ -249,7 +218,7 @@ class JsonNode implements JsonAdapter {
      * Renders a jsTree friendly representation of the Node tree (in json)
      * @return String JSON data
      */
-    private function renderTree($rootNodeId = 0) {
+    private function renderTree($rootNodeId = 0, $recursive = false) {
         if ($rootNodeId == 0) {
             $root = $this->nodeRepo->getRoot();
         } else {
@@ -261,7 +230,7 @@ class JsonNode implements JsonAdapter {
         $logs = $this->logRepo->getLatestLogsOfAllPages();
 
         //$actions = array();
-        $jsondata = $this->tree_to_jstree_array($root, $logs, true/*, $actions*/);
+        $jsondata = $this->tree_to_jstree_array($root, $logs, !$recursive/*, $actions*/);
         //$jsondata['actions'] = $actions;
         /*print(memory_get_usage());
         die();*/
@@ -320,6 +289,13 @@ class JsonNode implements JsonAdapter {
                 if ($page->getType() == \Cx\Model\ContentManager\Page::TYPE_ALIAS)
                     continue 2;
 
+                if (!isset($logs[$page->getId()])) {
+                    throw new \Cx\Model\ContentManager\PageException(
+                            'Page #' . $page->getId() .
+                            ' has no log entries! Please contact your system administrator.'
+                    );
+                }
+                $user = $this->logRepo->getUsernameByLog($logs[$page->getId()]);
                 $data[\FWLanguage::getLanguageCodeById($page->getLang())] = array(
                     'language' => \FWLanguage::getLanguageCodeById($page->getLang()),
                     'title' => $page->getTitle(),
@@ -330,7 +306,7 @@ class JsonNode implements JsonAdapter {
                                 'slug'       => $page->getSlug(),
                                 'module'     => $page->getModule() . ' ' . $page->getCmd(),
                                 'lastupdate' => $page->getUpdatedAt()->format('d.m.Y H:i'),
-                                'user'       => $this->logRepo->getUsernameByLog($logs[$page->getId()]),
+                                'user'       => $user,
                                 'level'      => $node->getLvl(),
                             )
                         ),
@@ -364,6 +340,10 @@ class JsonNode implements JsonAdapter {
             }
             
             foreach ($fallback_langs as $lang => $fallback) {
+                // fallback can be false, array_key_exists does not like booleans
+                if (!$fallback) {
+                    $fallback = null;
+                }
                 if (!array_key_exists($lang, $data) && array_key_exists($fallback, $data)) {
                     $data[$lang]['language'] = $lang;
                     $data[$lang]['title'] = $data[$fallback]['title'];
