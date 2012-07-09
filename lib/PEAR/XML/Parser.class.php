@@ -335,7 +335,7 @@ class XML_Parser extends PEAR
      */
     function setInput($input)
     {
-        if (eregi('^[a-z]+://', substr($input, 0, 10))) {// see if it's an absolute URL (has a scheme at the beginning)
+        if (preg_match('/^[a-z]+:\/\//', substr($input, 0, 10))) {// see if it's an absolute URL (has a scheme at the beginning)
             try {
                 $objRequest = new HTTP_Request2($input);
                 $objResponse = $objRequest->send();

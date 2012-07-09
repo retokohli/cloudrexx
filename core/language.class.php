@@ -143,7 +143,7 @@ class LanguageManager
             'CONTENT_STATUS_MESSAGE' => $this->strErrMessage,
         ));
 
-        $this->act = $_REQUEST['act'];
+        $this->act = $_GET['act'];
         $this->setNavigation();
     }
 
