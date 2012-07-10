@@ -11,6 +11,9 @@ class ContrexxJavascript {
     //singleton functionality: instance
     static private $instance = null;
     //singleton functionality: instance getter
+    /**
+     * @return ContrexxJavascript Singleton instance
+     */
     static public function getInstance()
     {
         if(null == self::$instance)
@@ -37,7 +40,8 @@ class ContrexxJavascript {
                 'basePath'  => ASCMS_PATH_OFFSET.'/',
                 'cadminPath'=> ASCMS_BACKEND_PATH.'/',
                 'mode'      => $objInit->mode,
-                'language'  => $langCode
+                'language'  => $langCode,
+                'csrf'      => CSRF::code(),
             ),
             'contrexx'
         );
