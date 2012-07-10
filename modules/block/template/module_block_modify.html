@@ -1,14 +1,16 @@
 <!-- START module_block_block.html -->
 <script type="text/javascript">
-    jQuery(document).ready(function() {
-        jQuery('#wysiwyg_editor').change(function() {
+    var pageTitlesTree = {BLOCK_PAGE_TITLES_TREE};
+
+    $J(document).ready(function() {
+        $J('#wysiwyg_editor').change(function() {
             updateContent(0, true);
             switchEditor();
         });
     });
 
     function switchEditor() {
-        if (jQuery('#wysiwyg_editor').prop('checked')) {
+        if ($J('#wysiwyg_editor').prop('checked')) {
             if (typeof(CKEDITOR.instances.ckeditor) == 'undefined') {
                 var config = {
                     customConfig : cx.variables.get('basePath', 'contrexx') + 'editor/ckeditor/config.contrexx.js.php',
@@ -16,11 +18,11 @@
                     skin: 'kama',
                     height: 380
                 };
-                jQuery('#ckeditor').ckeditor(config);
+                $J('#ckeditor').ckeditor(config);
             }
 
-            activeLangId = jQuery('ul.blockLang a.active').attr('id').split('_')[2];
-            CKEDITOR.instances.ckeditor.setData(jQuery('#blockFormText_'+activeLangId).val());
+            activeLangId = $J('ul.blockLang a.active').attr('id').split('_')[2];
+            CKEDITOR.instances.ckeditor.setData($J('#blockFormText_'+activeLangId).val());
         } else {
             if (typeof(CKEDITOR.instances.ckeditor) !== 'undefined') {
                 try {
@@ -31,8 +33,8 @@
                 }
             }
 
-            activeLangId = jQuery('ul.blockLang a.active').attr('id').split('_')[2];
-            jQuery('#ckeditor').val(jQuery('#blockFormText_'+activeLangId).val());
+            activeLangId = $J('ul.blockLang a.active').attr('id').split('_')[2];
+            $J('#ckeditor').val($J('#blockFormText_'+activeLangId).val());
         }
     }
 
@@ -117,18 +119,18 @@
         )
     }
     function updateContent(newActiveLangId, invertChecked) {
-        oldActiveLangId = jQuery('ul.blockLang a.active').attr('id').split('_')[2];
-        wysiwygStatus = invertChecked ? !jQuery('#wysiwyg_editor').prop('checked') : jQuery('#wysiwyg_editor').prop('checked');
+        oldActiveLangId = $J('ul.blockLang a.active').attr('id').split('_')[2];
+        wysiwygStatus = invertChecked ? !$J('#wysiwyg_editor').prop('checked') : $J('#wysiwyg_editor').prop('checked');
 
         if (wysiwygStatus) {
-            jQuery('#blockFormText_'+oldActiveLangId).val(CKEDITOR.instances.ckeditor.getData());
+            $J('#blockFormText_'+oldActiveLangId).val(CKEDITOR.instances.ckeditor.getData());
             if (newActiveLangId > 0) {
-                CKEDITOR.instances.ckeditor.setData(jQuery('#blockFormText_'+newActiveLangId).val());
+                CKEDITOR.instances.ckeditor.setData($J('#blockFormText_'+newActiveLangId).val());
             }
         } else {
-            jQuery('#blockFormText_'+oldActiveLangId).val(jQuery('#ckeditor').val());
+            $J('#blockFormText_'+oldActiveLangId).val($J('#ckeditor').val());
             if (newActiveLangId > 0) {
-                jQuery('#ckeditor').val(jQuery('#blockFormText_'+newActiveLangId).val());
+                $J('#ckeditor').val($J('#blockFormText_'+newActiveLangId).val());
             }
         }
     }
@@ -155,10 +157,10 @@
     function onSubmit() {
         activeLangId = $J('ul.blockLang a.active').attr('id').split('_')[2];
         
-        if (jQuery('#wysiwyg_editor').prop('checked')) {
-            jQuery('#blockFormText_'+activeLangId).val(CKEDITOR.instances.ckeditor.getData());
+        if ($J('#wysiwyg_editor').prop('checked')) {
+            $J('#blockFormText_'+activeLangId).val(CKEDITOR.instances.ckeditor.getData());
         } else {
-            jQuery('#blockFormText_'+activeLangId).val(jQuery('#ckeditor').val());
+            $J('#blockFormText_'+activeLangId).val($J('#ckeditor').val());
         }
 
         return true;
@@ -224,7 +226,7 @@
     }
     // ]]>
 </script>
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
     //adds the datetimepicker to the date fields
     cx.ready(function() {
         var dpOptions = {
@@ -287,6 +289,34 @@
             swapHeaderLangName();
         });
     })();
+    
+    $J(document).ready(function() {
+        refreshRadioButtons();
+        
+        $J('input[name*=blockFormLanguages]').click(function() {
+            refreshRadioButtons();
+        });
+    });
+    
+    var refreshRadioButtons = function() {
+        $J('input[name*=blockFormLanguages]:checked').each(function() {
+            $J('#changePageTitlesTo_' + $J(this).attr('id').match(/\d$/)).show();
+        });
+        $J('input[name*=blockFormLanguages]:not(:checked)').each(function() {
+            $J('#changePageTitlesTo_' + $J(this).attr('id').match(/\d$/)).hide();
+        });
+    }
+    
+    var changePageTitlesByLang = function(langCode) {
+        $J('select[name="notSelectedPages[]"] option, select[name="selectedPages[]"] option').each(function() {
+            spacer = '';
+            level  = pageTitlesTree[$J(this).val()][langCode]['level'];
+            for (i = 1; i < level; i++) {
+                spacer += '&nbsp;&nbsp;';
+            }
+            $J(this).html(spacer + pageTitlesTree[$J(this).val()][langCode]['title'] + ' (' + $J(this).val() + ')');
+        });
+    }
     // ]]>
 </script>
 
@@ -420,6 +450,16 @@
                                     <a href="javascript:selectAll(document.blockFormModifyBlock.elements['selectedPages[]']);" title="{TXT_BLOCK_SELECT_ALL}">{TXT_BLOCK_SELECT_ALL}</a><br />
                                     <a href="javascript:deselectAll(document.blockFormModifyBlock.elements['selectedPages[]']);" title="{TXT_BLOCK_UNSELECT_ALL}">{TXT_BLOCK_UNSELECT_ALL}</a>
                                 </div>
+                            </div>
+                            <div style="float: left; padding: 0 0 0 20px;">
+                                <label>{TXT_BLOCK_LANGUAGE}</label>
+                                <br />
+                                <!-- BEGIN pages_languages -->
+                                <span id="changePageTitlesTo_{BLOCK_PAGES_LANGUAGE_ID}">
+                                    <input type="radio" name="pagesLang[]" value="{BLOCK_PAGES_LANGUAGE_CODE}" id="radio_{BLOCK_PAGES_LANGUAGE_CODE}" onclick="changePageTitlesByLang('{BLOCK_PAGES_LANGUAGE_CODE}');" {BLOCK_PAGES_LANGUAGE_CHECKED} />
+                                    <label for="radio_{BLOCK_PAGES_LANGUAGE_CODE}">{BLOCK_PAGES_LANGUAGE_NAME}</label><br />
+                                </span>
+                                <!-- END pages_languages -->
                             </div>
                         </div>
                     </td>

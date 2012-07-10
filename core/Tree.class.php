@@ -28,9 +28,10 @@ class ContentTree
 *   1 getTree()               Retrieves an indexed array of the nodes from top to bottom*/
 
   var $table   = array();
-  var $node   = array();
-  var $tree   = array();
-  var $index = 0;
+  var $node    = array();
+  var $tree    = array();
+  var $srcTree = array();
+  var $index   = 0;
 
   var $em = null;
 

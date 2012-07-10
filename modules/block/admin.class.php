@@ -15,6 +15,7 @@
  */
 require_once ASCMS_MODULE_PATH.'/block/lib/blockLib.class.php';
 require_once ASCMS_CORE_PATH.'/Tree.class.php';
+require_once ASCMS_CORE_PATH.'/json/adapter/contentmanager/JsonNode.class.php';
 
 /**
  * Block
@@ -723,31 +724,48 @@ class blockManager extends blockLibrary
             'BLOCK_SHOW_PAGE_SELECTOR'          => $blockGlobal == '2' ? 'block' : 'none',
             'BLOCK_WYSIWYG_EDITOR'              => $blockWysiwygEditor == 1 ? 'checked="checked"' : '',
         ));
-
-        // create new ContentTree instance
-        $objContentTree = new ContentTree(FRONTEND_LANG_ID);
+        
+        $jsonNode =  new \Cx\Core\Json\Adapter\ContentManager\JsonNode();
+        $pageTitlesTree = $jsonNode->getPageTitlesTree();
+        
         $strSelectedPages   = '';
         $strUnselectedPages = '';
-
-        foreach ($objContentTree->getTree() as $arrData) {
-            $strSpacer  = '';
-            $intLevel   = intval($arrData['level']);
-
-            for ($i = 0; $i < $intLevel; $i++) {
-                $strSpacer .= '&nbsp;&nbsp;';
-            }
-
-            if (in_array($arrData['node_id'], $blockAssociatedPageIds)) {                
-                $strSelectedPages .= '<option value="'.$arrData['node_id'].'">'.$strSpacer.contrexx_raw2xhtml($arrData['catname']).' ('.$arrData['node_id'].') </option>'."\n";
-            } else {
-                $strUnselectedPages .= '<option value="'.$arrData['node_id'].'">'.$strSpacer.contrexx_raw2xhtml($arrData['catname']).' ('.$arrData['node_id'].') </option>'."\n";
+        
+        foreach ($pageTitlesTree as $nodeId => $languages) {
+            foreach ($languages as $langCode => $pageData) {
+                $spacer = '';
+                for ($i = 1; $i < $pageData['level']; $i++) {
+                    $spacer .= '&nbsp;&nbsp;';
+                }
+                
+                if (in_array($nodeId, $blockAssociatedPageIds)) {                
+                    $strSelectedPages[$langCode]   .= '<option value="'.$nodeId.'">'.$spacer.contrexx_raw2xhtml($pageData['title']).' ('.$nodeId.') </option>'."\n";
+                } else {
+                    $strUnselectedPages[$langCode] .= '<option value="'.$nodeId.'">'.$spacer.contrexx_raw2xhtml($pageData['title']).' ('.$nodeId.') </option>'."\n";
+                }
             }
         }
-
+        
         $this->_objTpl->setVariable(array(
-            'BLOCK_RELATION_PAGES_UNSELECTED'   => $strUnselectedPages,
-            'BLOCK_RELATION_PAGES_SELECTED'     => $strSelectedPages,
+            'BLOCK_RELATION_PAGES_UNSELECTED' => $strUnselectedPages[FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)],
+            'BLOCK_RELATION_PAGES_SELECTED'   => $strSelectedPages[FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)],
+            'BLOCK_PAGE_TITLES_TREE'          => json_encode($pageTitlesTree),
         ));
+        
+        foreach (FWLanguage::getActiveFrontendLanguages() as $langId => $arrLanguage) {
+            $checked = '';
+            if ($langId == FRONTEND_LANG_ID) {
+                $checked = 'checked="checked"';
+            }
+            
+            $this->_objTpl->setVariable(array(
+                'BLOCK_PAGES_LANGUAGE_ID'      => $langId,
+                'BLOCK_PAGES_LANGUAGE_CODE'    => $arrLanguage['lang'],
+                'BLOCK_PAGES_LANGUAGE_NAME'    => $arrLanguage['name'],
+                'BLOCK_PAGES_LANGUAGE_CHECKED' => $checked,
+            ));
+            $this->_objTpl->parse('pages_languages');
+        }
 
         $arrActiveSystemFrontendLanguages = FWLanguage::getActiveFrontendLanguages();
         if (count($arrActiveSystemFrontendLanguages) > 0) {

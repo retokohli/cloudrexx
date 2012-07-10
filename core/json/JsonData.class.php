@@ -71,7 +71,7 @@ class JsonData {
      * @param Array $arguments Arguments to pass
      * @return String JSON data to return to client
      */
-    public function jsondata($adapter, $method, $arguments) {
+    public function jsondata($adapter, $method, $arguments, $setContentType = true) {
         if (!isset($this->adapters[$adapter])) {
             return $this->getJsonError('No such adapter');
         }
@@ -87,16 +87,18 @@ class JsonData {
             return $this->getJsonError('No such method: ' . $method);
         }
         try {
-            // browsers will pass rendering of application/* MIMEs to other
-            // applications, usually.
-            // Skip the following line for debugging, if so desired
-            header('Content-Type: application/json');
-
-            // Disabling CSRF protection. That's no problem as long as we
-            // only return associative arrays or objects!
-            // https://mycomvation.com/wiki/index.php/Contrexx_Security#CSRF
-            // Search for a better way to disable CSRF!
-            ini_set('url_rewriter.tags', '');
+            if ($setContentType) {
+                // browsers will pass rendering of application/* MIMEs to other
+                // applications, usually.
+                // Skip the following line for debugging, if so desired
+                header('Content-Type: application/json');
+    
+                // Disabling CSRF protection. That's no problem as long as we
+                // only return associative arrays or objects!
+                // https://mycomvation.com/wiki/index.php/Contrexx_Security#CSRF
+                // Search for a better way to disable CSRF!
+                ini_set('url_rewriter.tags', '');
+            }
 
             $output = call_user_func(array($adapter, $realMethod), $arguments);
 
