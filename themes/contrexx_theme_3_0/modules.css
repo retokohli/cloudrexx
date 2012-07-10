@@ -1998,6 +1998,18 @@ form select {
 /***************************************/
 /* CSS DEFINITIONS FOR CHECKOUT MODULE */
 /***************************************/
+
+#checkout #ok_message,
+#checkout #error_message,
+#checkout #payment_methods,
+#checkout #description,
+#checkout form {
+    float: left;
+    clear: both;
+    width: auto;
+    margin: 0 0 20px 0;
+}
+
 #checkout #ok_message {
     color: #008000;
 }
@@ -2006,28 +2018,45 @@ form select {
     color: #ff0000;
 }
 
-#checkout fieldset {
+#checkout #payment_methods span {
     float: left;
-    width: auto;
-    padding: 5px;
-    border: 1px solid #BDBDBD;
-    margin: 0 0 15px 0 !important;
+    height: 40px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    margin: 0 10px 0 0;
 }
 
-#checkout fieldset legend {
-    width: auto;
-    position: static;
-    padding: 0 3px 0 3px;
+#checkout #payment_methods span#postfinance_card {
+    width: 49px;
+    background-image: url(../../modules/checkout/icons/postfinance_card.png);
 }
-
-#checkout form {
-    float: left;
-    width: 100%;
-    margin: 10px 0 0 0;
+#checkout #payment_methods span#postfinance_efinance {
+    width: 46px;
+    background-image: url(../../modules/checkout/icons/postfinance_efinance.png);
 }
-
-#checkout form p {
-    clear: both;
+#checkout #payment_methods span#visa {
+    width: 80px;
+    background-image: url(../../modules/checkout/icons/visa.png);
+}
+#checkout #payment_methods span#mastercard {
+    width: 95px;
+    background-image: url(../../modules/checkout/icons/mastercard.png);
+}
+#checkout #payment_methods span#american_express {
+    width: 37px;
+    background-image: url(../../modules/checkout/icons/american_express.png);
+}
+#checkout #payment_methods span#diners_club {
+    width: 50px;
+    background-image: url(../../modules/checkout/icons/diners_club.png);
+}
+#checkout #payment_methods span#jcb {
+    width: 33px;
+    background-image: url(../../modules/checkout/icons/jcb.png);
+}
+#checkout #payment_methods span#pay_pal {
+    width: 39px;
+    background-image: url(../../modules/checkout/icons/pay_pal.png);
 }
 
 #checkout form span.required_field {
@@ -2039,9 +2068,12 @@ form select {
 }
 
 #checkout form input,
-#checkout form select,
 #checkout form textarea {
-    float: left;
+    width: 300px;
+}
+
+#checkout form select {
+    width: 310px;
 }
 
 #checkout form input.highlight,
@@ -2050,15 +2082,12 @@ form select {
     border: 1px solid #ff0000;
 }
 
-#checkout form div#buttons {
-    float: left;
-    width: 100%;
-    clear: both;
+#checkout form #buttons {
+    display: block;
+    position: static;
+    margin: 20px 0 0 0;
 }
 
-#checkout form input[type=submit],
-#checkout form input[type=reset] {
-    float: left;
+#checkout form #buttons input {
     width: auto;
-    padding: 4px;
 }

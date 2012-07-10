@@ -250,7 +250,7 @@ class Yellowpay
     static function getForm(
         $arrShopOrder, $submitValue='send', $autopost=false
     ) {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $objDatabase;
 
         self::$arrShopOrder = $arrShopOrder;
         // Build the base URI from the referrer, which also includes the
@@ -336,6 +336,8 @@ class Yellowpay
      */
     private static function addHash()
     {
+        global $objDatabase;
+
         $objSettingsYellowpay = new SettingsYellowpay($objDatabase);
         $arrYellowpay = $objSettingsYellowpay->get();
 
@@ -549,6 +551,8 @@ class Yellowpay
      */
     static function checkHash()
     {
+        global $objDatabase;
+
         if (empty($_REQUEST['SHASIGN'])) {
             echo 'No SHASIGN value in request';
             self::$arrWarning[] = 'No SHASIGN value in request';

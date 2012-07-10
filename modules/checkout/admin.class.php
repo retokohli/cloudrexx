@@ -68,6 +68,8 @@ class CheckoutManager extends CheckoutLibrary {
     {
         global $objDatabase, $objTemplate, $_ARRAYLANG;
 
+        parent::__construct();
+
         $_GET['act'] = !empty($_GET['act']) ? $_GET['act'] : '';
         $_GET['tpl'] = !empty($_GET['tpl']) ? $_GET['tpl'] : '';
 

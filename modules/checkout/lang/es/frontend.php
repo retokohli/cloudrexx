@@ -7,6 +7,7 @@
  * @package     contrexx
  * @subpackage  module_checkout
  */
+$_ARRAYLANG['TXT_CHECKOUT_DESCRIPTION'] = 'Bitte füllen Sie alle Pflichtfelder aus und senden Sie dann das Formular ab. Danach gelangen Sie zum sicheren E-Payment unseres Partners PostFinance.';
 $_ARRAYLANG['TXT_CHECKOUT_ID'] = 'Transaktionsnummer';
 $_ARRAYLANG['TXT_CHECKOUT_TIME'] = 'Datum und Zeit';
 $_ARRAYLANG['TXT_CHECKOUT_STATUS_WAITING'] = 'Offen';
@@ -37,7 +38,7 @@ $_ARRAYLANG['TXT_CHECKOUT_VALIDATION_FIELD_LENGTH_EXCEEDED'] = 'Der Wert für da
 $_ARRAYLANG['TXT_CHECKOUT_VALIDATION_SELECTION_EMPTY'] = 'Bitte wählen Sie eine Option für das Feld &bdquo;{FIELD_NAME}&ldquo;.';
 $_ARRAYLANG['TXT_CHECKOUT_VALIDATION_SELECTION_INVALID_OPTION'] = 'Die ausgewählte Option für das Feld &bdquo;{FIELD_NAME}&ldquo; ist ungültig.';
 $_ARRAYLANG['TXT_CHECKOUT_VALIDATION_INVALID_EMAIL'] = 'Die eingetragene E-Mail-Adresse für das Feld &bdquo;{FIELD_NAME}&ldquo; ist ungültig.';
-$_ARRAYLANG['TXT_CHECKOUT_ENTREY_SAVED_SUCCESSFULLY'] = 'Die Eintrag wurde erfolgreich hinzugefügt. Bitte klicken Sie nun auf den untenstehenden Button um auf die Postfinance E-Payment-Seite &bdquo;Yellowpay&ldquo; zu gelangen.';
+$_ARRAYLANG['TXT_CHECKOUT_ENTREY_SAVED_SUCCESSFULLY'] = 'Der Eintrag wurde erfolgreich hinzugefügt. Bitte klicken Sie nun auf den untenstehenden Button um auf die Postfinance E-Payment-Seite &bdquo;Yellowpay&ldquo; zu gelangen.';
 $_ARRAYLANG['TXT_CHECKOUT_ENTREY_SAVED_ERROR'] = 'Der Eintrag konnte nicht hinzugefügt werden.';
 $_ARRAYLANG['TXT_CHECKOUT_FAILED_TO_INITIALISE_YELLOWPAY'] = "Fehler beim Initialisieren des Postfinance E-Payment.";
 $_ARRAYLANG['TXT_CHECKOUT_START_PAYMENT'] = "Zahlungsvorgang starten";
