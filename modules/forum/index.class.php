@@ -592,7 +592,6 @@ class Forum extends ForumLibrary {
     {
         global $objDatabase, $_ARRAYLANG, $objCache, $page_title;
 
-        print_r($_POST);
         $objFWUser = FWUser::getFWUserObject();
         $this->_communityLogin();
         $intThreadId = intval($intThreadId);

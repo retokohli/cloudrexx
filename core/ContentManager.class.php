@@ -170,13 +170,10 @@ class ContentManager extends Module {
             $this->template->hideBlock('refuse_button');
         }
 
-        $cm_hidden = '';
-        $hide_list = '';
+        $editPageCssClass = '';
         if (isset($_GET['act']) && $_GET['act'] == 'new') {
-            $hide_list = 'shrunk';
+            $editPageCssClass = 'edit_page';
             $this->template->hideBlock('refuse_button');
-        } else {
-            $cm_hidden = ' style="display: none !important;"';
         }
 
         $cxjs = ContrexxJavascript::getInstance();
@@ -191,8 +188,7 @@ class ContentManager extends Module {
         $this->template->setVariable('LANGUAGE_ARRAY', json_encode($this->getLangArray()));
         $this->template->setVariable('FALLBACK_ARRAY', json_encode($this->getFallbackArray()));
         $this->template->setVariable('LANGUAGE_LABELS', json_encode($this->getLangLabels()));
-        $this->template->setVariable('CM_HIDDEN', $cm_hidden);
-        $this->template->setVariable('CM_HIDE_LIST', $hide_list);
+        $this->template->setVariable('EDIT_PAGE_CSS_CLASS', $editPageCssClass);
         
         $editmodeTemplate = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
         $editmodeTemplate->loadTemplateFile('content_editmode.html');
