@@ -58,11 +58,11 @@ class JsonNode implements JsonAdapter {
     public function __construct() {
         $this->em = \Env::em();
         $this->nodeRepo = $this->em->getRepository('\Cx\Model\ContentManager\Node');
-        $this->logRepo = $this->em->getRepository('\Gedmo\Loggable\Entity\LogEntry');
+        $this->logRepo  = $this->em->getRepository('\Gedmo\Loggable\Entity\LogEntry');
         $this->messages = array();
 
         $fallback_lang_codes = \FWLanguage::getFallbackLanguageArray();
-        $active_langs = \FWLanguage::getActiveFrontendLanguages();
+        $active_langs        = \FWLanguage::getActiveFrontendLanguages();
 
         // get all active languages and their fallbacks
         foreach ($active_langs as $lang) {
@@ -83,7 +83,7 @@ class JsonNode implements JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('getTree', 'delete', 'multipleDelete', 'move');
+        return array('getTree', 'delete', 'multipleDelete', 'move', 'getPageTitlesTree');
     }
 
     /**
@@ -415,5 +415,66 @@ class JsonNode implements JsonAdapter {
         } else {
             return \ActionsRenderer::renderNew($nodeId, $lang);
         }
+    }
+    
+    /**
+     * Gets the page titles of all languages.
+     * 
+     * @return  array  $tree
+     */
+    public function getPageTitlesTree()
+    {        
+        $root = $this->nodeRepo->getRoot();
+        $tree = $this->buildPageTitlesTree($root);
+        
+        return $tree;
+    }
+    
+    /**
+     * Builds a tree with all page titles.
+     * 
+     * @param   array  $root
+     */
+    protected function buildPageTitlesTree($root)
+    {   
+        $sortedTree = array();
+        foreach ($root->getChildren() as $node) {
+            $sortedTree[$node->getLft()] = $node;
+        }
+        ksort($sortedTree);
+        
+        $tree     = array();
+        $children = array();
+        
+        foreach ($sortedTree as $node) {
+            $children = $this->buildPageTitlesTree($node);
+            
+            $nodeId   = $node->getId();
+            $langCode = 0;
+            
+            foreach ($node->getPages() as $page) {
+                $langCode = \FWLanguage::getLanguageCodeById($page->getLang());
+                
+                $tree[$nodeId][$langCode]['title'] = $page->getTitle();
+                $tree[$nodeId][$langCode]['level'] = $node->getLvl();
+            }
+            
+            foreach ($this->fallbacks as $lang => $fallback) {
+                $fallback = $fallback ? $fallback : null;
+                if (isset($tree[$nodeId]) && !array_key_exists($lang, $tree[$nodeId]) && array_key_exists($fallback, $tree[$nodeId])) {
+                    $tree[$nodeId][$lang]['title'] = $tree[$nodeId][$fallback]['title'];
+                    $tree[$nodeId][$lang]['level'] = $tree[$nodeId][$fallback]['level'];
+                } else if (isset($tree[$nodeId]) && !array_key_exists($lang, $tree[$nodeId])) {
+                    if (array_key_exists($langCode, $tree[$nodeId])) {
+                        $tree[$nodeId][$lang]['title'] = $tree[$nodeId][$langCode]['title'];
+                        $tree[$nodeId][$lang]['level'] = $tree[$nodeId][$langCode]['level'];
+                    }
+                }
+            }
+            
+            $tree += $children;
+        }
+        
+        return $tree;
     }
 }
