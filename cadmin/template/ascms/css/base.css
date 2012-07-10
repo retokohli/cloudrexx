@@ -700,6 +700,9 @@ table tr.reset td {
     width: 100%;
 }
 
+#language_selection .chzn-container {
+    margin-right: -1px;
+}
 
 #tabmenu,
 .tabmenu {

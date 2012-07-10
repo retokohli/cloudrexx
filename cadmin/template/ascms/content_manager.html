@@ -30,39 +30,37 @@ Text[15]=["","{TXT_CORE_CM_CSS_NAV_CLASS_INFO}"];
     <li class="level_2">{SUB_MENU_TITLE}</li>
     <li class="level_3">{CONTENT_TITLE}</li>
 </ul>
-<div id="content-manager" class="{CM_HIDE_LIST}" width="100%">
-    <div class="left_wrapper">
-        <div class="left" class="{SIDEBAR_TOGGLE_CLASS}">
-            <div id="site-language" class="clearfix">
-                <div class="navi" style="display: none;">
-                    <a href="index.php?cmd=content&act=new">{TXT_NEW_PAGE}</a>
-                    <a href="index.php?cmd=workflow">{TXT_CONTENT_HISTORY}</a>
-                    <a href="index.php?cmd=media&archive=content">{TXT_IMAGE_ADMINISTRATION}</a>
-                </div>
-                <select class="chzn-select">{LANGSWITCH_OPTIONS}</select>
+<div id="content-manager" class="{EDIT_PAGE_CSS_CLASS}" width="100%">
+    <div class="left" class="{SIDEBAR_TOGGLE_CLASS}">
+        <div id="site-language">
+            <div class="navi">
+                <a href="index.php?cmd=content&act=new">{TXT_NEW_PAGE}</a>
+                <a href="index.php?cmd=workflow">{TXT_CONTENT_HISTORY}</a>
+                <a href="index.php?cmd=media&archive=content">{TXT_IMAGE_ADMINISTRATION}</a>
             </div>
-            <div id="site-structure">
-                <table class="adminlist" width="100%">
-                    <tr>
-                        <th class="page" width="42%">
-                            {TXT_CORE_CM_STATUS_PAGE}
-                            <span id="flip-menu">
-                                (&nbsp;
-                                <a href="#" class="jstree-action open">{TXT_EXPAND_LINK}</a>
-                                &nbsp;|&nbsp;
-                                <a href="#" class="jstree-action close">{TXT_COLLAPS_LINK}</a>
-                                &nbsp;)
-                            </span>
-                        </th>
-                        <th class="translation" width="11%">{TXT_CORE_CM_TRANSLATIONS}</th>
-                        <th class="module" width="17%">{TXT_CORE_CM_SECTION_CMD}</th>
-                        <th class="preview" width="7%"></th>
-                        <th class="lastupdate" width="16%">{TXT_CORE_CM_DATE_USER}</th>
-                        <th class="actions" width="7%"></th>
-                    </tr>
-                </table>
-                <div id="site-tree"></div>
-            </div>
+            <select class="chzn-select">{LANGSWITCH_OPTIONS}</select>
+        </div>
+        <div id="site-structure">
+            <table class="adminlist" width="100%">
+                <tr>
+                    <th class="page" width="42%">
+                        {TXT_CORE_CM_STATUS_PAGE}
+                        <span id="flip-menu">
+                            (&nbsp;
+                            <a href="#" class="jstree-action open">{TXT_EXPAND_LINK}</a>
+                            &nbsp;|&nbsp;
+                            <a href="#" class="jstree-action close">{TXT_COLLAPS_LINK}</a>
+                            &nbsp;)
+                        </span>
+                    </th>
+                    <th class="translation" width="11%">{TXT_CORE_CM_TRANSLATIONS}</th>
+                    <th class="module" width="17%">{TXT_CORE_CM_SECTION_CMD}</th>
+                    <th class="preview" width="7%"></th>
+                    <th class="actions" width="7%"></th>
+                    <th class="lastupdate" width="16%">{TXT_CORE_CM_DATE_USER}</th>
+                </tr>
+            </table>
+            <div id="site-tree"></div>
         </div>
         <div id="multiple-actions">
             <img id="multiple-actions-arrow" src="images/icons/arrow.gif" border="0" width="38" height="22" alt="" />
@@ -83,7 +81,7 @@ Text[15]=["","{TXT_CORE_CM_CSS_NAV_CLASS_INFO}"];
         </div>
     </div>
     <div class="right">
-        <div id="page"{CM_HIDDEN}>
+        <div id="page">
             {CONTENT_MANAGER_MEAT}
         </div>
     </div>

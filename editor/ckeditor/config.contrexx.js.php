@@ -82,3 +82,13 @@ CKEDITOR.editorConfig = function( config )
     ];
 };
 
+//remove tab "upload" in link and image dialog
+CKEDITOR.on('dialogDefinition', function(ev) {
+    var dialogName = ev.data.name, dialogDefinition = ev.data.definition;
+    if (dialogName === 'image') {
+        dialogDefinition.removeContents('Upload');
+    }
+    if (dialogName === 'link') {
+        dialogDefinition.removeContents('upload');
+    }
+});

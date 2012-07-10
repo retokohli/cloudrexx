@@ -31,23 +31,14 @@ h1{ font-size: 20px }
     background: url(../images/subnavigation_level_1.jpg) repeat-x left top;
 }
 
-#content-manager.shrunk {
+#content-manager.edit_page {
     background: transparent;
-}
-
-#content-manager .left_wrapper {
-    display: table-cell;
-    float: left;
-    width: 100%;
-    margin: 0 14px 70px 0;
 }
 
 #content-manager .left {
     display: table-cell;
     float: left;
     width: 100%;
-    border-right: 1px solid #e5e5e5;
-    border-left: 1px solid #e5e5e5;
 }
 
 #content-manager .right {
@@ -56,16 +47,12 @@ h1{ font-size: 20px }
     vertical-align: top;
 }
 
-#content-manager.shrunk .left {
+#content-manager.edit_page .left {
     width: 352px;
-    border: 0;
+    margin-right: 14px;
 }
 
-#content-manager.shrunk .middle {
-    display: table-cell;
-}
-
-#content-manager.shrunk .right {
+#content-manager.edit_page .right {
     display: table-cell;
     width: 100%;
 }
@@ -79,18 +66,32 @@ h1{ font-size: 20px }
 .ie7 #input1{ float:left; }
 .ie7 .space{ margin-bottom: 10px; }
 
+#site-language {
+    float: left;
+    width: 100%;
+    border-right: 1px solid #e5e5e5;
+    border-left: 1px solid #e5e5e5;
+    margin-left: -1px;
+}
+
+#content-manager.edit_page #site-language {
+    border: 0;
+    margin: 0;
+}
+
 #site-language .chzn-select{
     visibility: hidden;
 }
 
-#content-manager.shrunk .chzn-container {
+#content-manager.edit_page .chzn-container {
+    position: relative;
     float: left;
     width: 352px !important;
-    position: relative;
+    margin: 0;
     z-index: 400;
 }
 
-#content-manager.shrunk .chzn-container .chzn-results {
+#content-manager.edit_page .chzn-container .chzn-results {
     width: 342px !important;
 }
 
@@ -98,13 +99,15 @@ h1{ font-size: 20px }
     position: relative;
     float: left;
     width: 100%;
+    border-right: 1px solid #e5e5e5;
+    border-left: 1px solid #e5e5e5;
+    margin-left: -1px;
     overflow: visible;
 }
 
-#content-manager.shrunk #site-structure {
+#content-manager.edit_page #site-structure {
     width: 350px;
-    border-right: 1px solid #e5e5e5;
-    border-left: 1px solid #e5e5e5;
+    margin: 0;
 }
 
 #site-structure li select {
@@ -132,7 +135,7 @@ h1{ font-size: 20px }
     padding: 8px;
 }
 
-.select-multiple-actions-shrunk {
+#content-manager.edit_page .multiple-actions-select {
     float: left;
     clear: both;
     margin: 5px 0 0 40px;
@@ -227,12 +230,7 @@ h1{ font-size: 20px }
 #site-tree .actions {
     right: 10px;
     background: url(../images/content_manager_actions_plus.png) no-repeat left center;
-    padding: 0 13px 0 16px;
-}
-
-#content-manager.shrunk #site-tree .actions {
-    width: 12px;
-    padding: 0;
+    padding: 0 0 0 16px;
 }
 
 #site-tree .actions:hover,
@@ -241,13 +239,21 @@ h1{ font-size: 20px }
     cursor: pointer;
 }
 
-#site-tree .actions div {
-    position: absolute;
-    right: 0;
-    top: 0;
+#site-tree .actions .label {
+    float: left;
+    width: auto;
+}
+
+#site-tree .actions .arrow {
+    float: left;
     width: 13px;
     height: 100%;
     background: url(../images/content_manager_actions_arrow.png) no-repeat right center;
+}
+
+#content-manager.edit_page #site-tree .actions .label,
+#content-manager.edit_page #site-tree .actions .arrow {
+    display: none;
 }
 
 #site-tree .actions-expanded {
@@ -435,15 +441,15 @@ h1{ font-size: 20px }
     background-position: -33px -122px;
 }
 
-#content-manager.shrunk #site-structure .translation,
-#content-manager.shrunk #site-structure .module,
-#content-manager.shrunk #site-structure .preview,
-#content-manager.shrunk #site-structure .user,
-#content-manager.shrunk #site-structure .lastupdate {
+#content-manager.edit_page #site-structure .translation,
+#content-manager.edit_page #site-structure .module,
+#content-manager.edit_page #site-structure .preview,
+#content-manager.edit_page #site-structure .user,
+#content-manager.edit_page #site-structure .lastupdate {
     display: none;
 }
 
-#content-manager.shrunk #site-structure th.page {
+#content-manager.edit_page #site-structure th.page {
     width: 100%;
 }
 
@@ -551,11 +557,11 @@ h1{ font-size: 20px }
     cursor: pointer;
 }
 
-#content-manager .navi {
+#content-manager .edit_page {
     display: block !important;
 }
 
-#content-manager.shrunk .navi {
+#content-manager.edit_page .navi {
     display: none !important;
 }
 

@@ -7,7 +7,7 @@
             <li><a href="#page_history" class="tab page_history">{TXT_CORE_CM_HISTORY}</a></li>
         </ul>
       <form class="clearfix" action="." enctype="multipart/form-data" id="cm_page">
-        <div id="page_content">
+        <div id="page_content" style="display: none;">
             <input type="hidden" name="page[id]" id="pageId" value="new" />
             <input type="hidden" name="page[lang]" id="pageLang" value="en" />
             <input type="hidden" name="page[node]" id="pageNode" value="" />
@@ -61,7 +61,7 @@
                 </div>
             </div>
         </div>
-        <div id="page_meta">
+        <div id="page_meta" style="display: none;">
             <input type="hidden" name="page[metarobots]" value="off" />
             <div id="metarobots_checkbox" class="checkbox">
                 <input type="checkbox" class="indicator" id="page_metarobots" name="page[metarobots]" />
@@ -81,7 +81,7 @@
                 <span class="tipmessage info input" onmouseout="htm()" onmouseover="stm(Text[8],Style[0])"></span>
             </div>
         </div>
-        <div id="page_access">
+        <div id="page_access" style="display: none;">
             <input type="hidden" name="page[protection_frontend]" value="off" />
             <div id="protection_frontend_checkbox" class="checkbox no_toggle">
                 <input type="checkbox" class="indicator" id="page_protection_frontend" name="page[protection_frontend]" />
@@ -106,7 +106,7 @@
                 </select>
             </div>
         </div>
-        <div id="page_settings">
+        <div id="page_settings" style="display: none;">
             <input type="hidden" name="page[scheduled_publishing]" value="off" />
             <div id="scheduled_publishing_checkbox" class="checkbox">
                 <input type="checkbox" class="indicator" id="page_scheduled_publishing" name="page[scheduled_publishing]" />
