@@ -980,7 +980,7 @@ CREATE TABLE `contrexx_module_contact_form_submit_data` (
   `formlabel` text NOT NULL,
   `formvalue` text NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM;
+) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
