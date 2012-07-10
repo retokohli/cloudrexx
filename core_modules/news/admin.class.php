@@ -324,7 +324,7 @@ class newsManager extends newsLibrary {
             'ADMIN_CONTENT'             => $this->_objTpl->get()
         ));
 
-        $this->act = $_REQUEST['act'];
+        $this->act = $_GET['act'];
         $this->setNavigation();
     }
 
@@ -495,7 +495,7 @@ class newsManager extends newsLibrary {
         if ($objResult != false) {
             $count = $objResult->RecordCount();
 
-            if (isset($_GET['show']) && $_GET['show'] == 'archive' && isset($_GET['pos'])) {
+            if (isset($_GET['pos'])) {
                 $pos = intval($_GET['pos']);
             } else {
                 $pos = 0;
