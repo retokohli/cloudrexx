@@ -5,7 +5,6 @@
  */
 require_once(ASCMS_MODULE_PATH.'/checkout/lib/CheckoutLibrary.class.php');
 require_once(ASCMS_MODULE_PATH.'/checkout/lib/Transaction.class.php');
-require_once(ASCMS_MODULE_PATH.'/checkout/lib/Country.class.php');
 require_once(ASCMS_MODULE_PATH.'/checkout/lib/Yellowpay.class.php');
 require_once(ASCMS_MODULE_PATH.'/checkout/lib/SettingsYellowpay.class.php');
 require_once(ASCMS_MODULE_PATH.'/checkout/lib/SettingsMails.class.php');
@@ -56,6 +55,8 @@ class Checkout extends CheckoutLibrary {
     {
         global $objDatabase;
 
+        parent::__construct();
+
         $this->objTransaction = new Transaction($objDatabase);
 
         $this->objTemplate = new HTML_Template_Sigma('.');
@@ -90,8 +91,8 @@ class Checkout extends CheckoutLibrary {
     private function parseMessages()
     {
         $this->objTemplate->setVariable(array(
-            'CHECKOUT_MSG_OK'       => count($this->arrStatusMessages['ok']) ? implode('<br />', $this->arrStatusMessages['ok']) : '',
-            'CHECKOUT_MSG_ERROR'    => count($this->arrStatusMessages['error']) ? implode('<br />', $this->arrStatusMessages['error']) : '',
+            'CHECKOUT_MSG_OK'       => count($this->arrStatusMessages['ok']) ? '<div id="ok_message">'.implode('<br />', $this->arrStatusMessages['ok']).'</div>' : '',
+            'CHECKOUT_MSG_ERROR'    => count($this->arrStatusMessages['error']) ? '<div id="error_message">'.implode('<br />', $this->arrStatusMessages['error']).'</div>' : '',
         ));
     }
 
@@ -107,8 +108,6 @@ class Checkout extends CheckoutLibrary {
         global $objDatabase, $_ARRAYLANG, $_CONFIGURATION;
 
         //initialize variables
-        $objCountry = new Country($objDatabase);
-        $arrCountries = $objCountry->getAll();
         $arrFieldsToHighlight[] = array();
         $cssHighlightingClassName = 'highlight';
         $htmlRequiredFieldCode = '<span class="required_field">&#42;</span>';
@@ -132,19 +131,36 @@ class Checkout extends CheckoutLibrary {
 
         //validate submitted user data
         if (isset($_REQUEST['submit'])) {
-            $invoiceNumber = $_REQUEST['invoice_number'];
-            $invoiceCurrency = $_REQUEST['invoice_currency'];
-            $invoiceAmount = $_REQUEST['invoice_amount'];
-            $contactTitle = contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_title']));
-            $contactForename = contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_forename']));
-            $contactSurname = contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_surname']));
-            $contactCompany = contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_company']));
-            $contactStreet = contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_street']));
-            $contactPostcode = contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_postcode']));
-            $contactPlace = contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_place']));
-            $contactCountry = $_REQUEST['contact_country'];
-            $contactPhone = contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_phone']));
-            $contactEmail = contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_email']));
+            $invoiceNumber = !empty($_REQUEST['invoice_number']) ? $_REQUEST['invoice_number'] : '';
+            $invoiceCurrency = !empty($_REQUEST['invoice_currency']) ? $_REQUEST['invoice_currency'] : '';
+            $invoiceAmount = !empty($_REQUEST['invoice_amount']) ? $_REQUEST['invoice_amount'] : '';
+            $contactTitle = !empty($_REQUEST['contact_title']) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_title'])) : '';
+            $contactForename = !empty($_REQUEST['contact_forename']) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_forename'])) : '';
+            $contactSurname = !empty($_REQUEST['contact_surname']) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_surname'])) : '';
+            $contactCompany = !empty($_REQUEST['contact_company']) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_company'])) : '';
+            $contactStreet = !empty($_REQUEST['contact_street']) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_street'])) : '';
+            $contactPostcode = !empty($_REQUEST['contact_postcode']) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_postcode'])) : '';
+            $contactPlace = !empty($_REQUEST['contact_place']) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_place'])) : '';
+            $contactCountry = !empty($_REQUEST['contact_country']) ? $_REQUEST['contact_country'] : '';
+            $contactPhone = !empty($_REQUEST['contact_phone']) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_phone'])) : '';
+            $contactEmail = !empty($_REQUEST['contact_email']) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_email'])) : '';
+
+            //get keys of passed data
+            if (!isset($this->arrCurrencies[$invoiceCurrency]) && ($key = array_search(strtoupper($invoiceCurrency), $this->arrCurrencies))) {
+                $invoiceCurrency = $key;
+            }
+            if ((strtolower($contactTitle) !== self::MISTER) && (strtolower($contactTitle) !== self::MISS)) {
+                if (ucfirst(strtolower($contactTitle)) == $_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE_MISTER']) {
+                    $contactTitle = self::MISTER;
+                } elseif (ucfirst(strtolower($contactTitle)) == $_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE_MISS']) {
+                    $contactTitle = self::MISS;
+                }
+            } else {
+                $contactTitle = strtolower($contactTitle);
+            }
+            if (!isset($this->arrCountries[$contactCountry]) && ($key = array_search(ucfirst(strtolower($contactCountry)), $this->arrCountries))) {
+                $contactCountry = $key;
+            }
 
             $arrUserData['numeric']['invoice_number']['name'] = $_ARRAYLANG['TXT_CHECKOUT_INVOICE_NUMBER'];
             $arrUserData['numeric']['invoice_number']['value'] = $invoiceNumber;
@@ -198,7 +214,7 @@ class Checkout extends CheckoutLibrary {
 
             $arrUserData['selection']['contact_country']['name'] = $_ARRAYLANG['TXT_CHECKOUT_CONTACT_COUNTRY'];
             $arrUserData['selection']['contact_country']['value'] = intval($contactCountry);
-            $arrUserData['selection']['contact_country']['options'] = $arrCountries;
+            $arrUserData['selection']['contact_country']['options'] = $this->arrCountries;
             $arrUserData['selection']['contact_country']['mandatory'] = 1;
 
             $arrUserData['text']['contact_phone']['name'] = $_ARRAYLANG['TXT_CHECKOUT_CONTACT_PHONE'];
@@ -232,8 +248,6 @@ class Checkout extends CheckoutLibrary {
                     $arrUserData['email']['contact_email']['value']
                 );
                 if ($id) {
-                    $this->arrStatusMessages['ok'][] = $_ARRAYLANG['TXT_CHECKOUT_ENTREY_SAVED_SUCCESSFULLY'];
-
                     $objSettingsYellowpay = new SettingsYellowpay($objDatabase);
                     $arrYellowpay = $objSettingsYellowpay->get();
                     
@@ -251,6 +265,8 @@ class Checkout extends CheckoutLibrary {
 
                     if (Yellowpay::$arrError) {
                         $this->arrStatusMessages['error'][] = $_ARRAYLANG['TXT_CHECKOUT_FAILED_TO_INITIALISE_YELLOWPAY'];
+                    } else {
+                        $this->arrStatusMessages['ok'][] = $_ARRAYLANG['TXT_CHECKOUT_ENTREY_SAVED_SUCCESSFULLY'];
                     }
 
                     $this->objTemplate->hideBlock('form');
@@ -275,6 +291,23 @@ class Checkout extends CheckoutLibrary {
             $contactCountry = !empty($_REQUEST['contact_country']) ? $_REQUEST['contact_country'] : '';
             $contactPhone = !empty($_REQUEST['contact_phone']) ? $_REQUEST['contact_phone'] : '';
             $contactEmail = !empty($_REQUEST['contact_email']) ? $_REQUEST['contact_email'] : '';
+
+            //get keys of passed data
+            if (!isset($this->arrCurrencies[$invoiceCurrency]) && ($key = array_search(strtoupper($invoiceCurrency), $this->arrCurrencies))) {
+                $invoiceCurrency = $key;
+            }
+            if ((strtolower($contactTitle) !== self::MISTER) && (strtolower($contactTitle) !== self::MISS)) {
+                if (ucfirst(strtolower($contactTitle)) == $_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE_MISTER']) {
+                    $contactTitle = self::MISTER;
+                } elseif (ucfirst(strtolower($contactTitle)) == $_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE_MISS']) {
+                    $contactTitle = self::MISS;
+                }
+            } else {
+                $contactTitle = strtolower($contactTitle);
+            }
+            if (!isset($this->arrCountries[$contactCountry]) && ($key = array_search(ucfirst(strtolower($contactCountry)), $this->arrCountries))) {
+                $contactCountry = $key;
+            }
         }
 
         //get currency options
@@ -290,8 +323,8 @@ class Checkout extends CheckoutLibrary {
         $arrSelectOptions['titles'][] = '<option value="'.self::MISS.'"'.$selectedMiss.'>'.$_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE_MISS'].'</option>';
 
         //get country options
-        if (!empty($arrCountries)) {
-            foreach ($arrCountries as $id => $name) {
+        if (!empty($this->arrCountries)) {
+            foreach ($this->arrCountries as $id => $name) {
                 $selected = $id == $contactCountry ? ' selected="selected"' : '';
                 $arrSelectOptions['countries'][] = '<option value="'.$id.'"'.$selected.'>'.contrexx_raw2xhtml($name).'</option>';
             }
@@ -303,6 +336,7 @@ class Checkout extends CheckoutLibrary {
         }
 
         $this->objTemplate->setVariable(array(
+            'TXT_CHECKOUT_DESCRIPTION'              => $_ARRAYLANG['TXT_CHECKOUT_DESCRIPTION'],
             'TXT_CHECKOUT_INVOICE'                  => $_ARRAYLANG['TXT_CHECKOUT_INVOICE'],
             'TXT_CHECKOUT_INVOICE_NUMBER'           => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_NUMBER'].$htmlRequiredFieldCode,
             'TXT_CHECKOUT_INVOICE_CURRENCY'         => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_CURRENCY'].$htmlRequiredFieldCode,

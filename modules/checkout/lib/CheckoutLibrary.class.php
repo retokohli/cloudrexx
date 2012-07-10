@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @ignore
+ */
+require_once(ASCMS_MODULE_PATH.'/checkout/lib/Country.class.php');
+
+/**
  * CheckoutLibrary
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -55,4 +60,19 @@ class CheckoutLibrary {
      */
     protected $arrCurrencies = array(1 => 'CHF', 2 => 'EUR', 3 => 'USD');
 
+    /**
+     * Allowed countires.
+     *
+     * @access      protected
+     * @var         array
+     */
+    protected $arrCountries;
+
+
+    public function __construct()  {
+        global $objDatabase;
+
+        $objCountry = new Country($objDatabase);
+        $this->arrCountries = $objCountry->getAll();
+    }
 }
