@@ -1,6 +1,6 @@
 Cx\Model\ContentManager\Node:
   type: entity
-  table: nodes
+  table: content_node
   repositoryClass: Cx\Model\ContentManager\Repository\NodeRepository
   gedmo:
     tree:
