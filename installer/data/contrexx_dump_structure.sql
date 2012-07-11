@@ -316,6 +316,60 @@ CREATE TABLE `contrexx_content_navigation_history` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_content_node` (
+  `id` int(11) NOT NULL auto_increment,
+  `parent_id` int(11) default NULL,
+  `lft` int(11) NOT NULL,
+  `rgt` int(11) NOT NULL,
+  `lvl` int(11) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `IDX_E5A18FDD727ACA70` (`parent_id`),
+  CONSTRAINT `contrexx_content_node_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `contrexx_content_node` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_content_page` (
+  `id` int(11) NOT NULL auto_increment,
+  `node_id` int(11) default NULL,
+  `nodeIdShadowed` int(11) default NULL,
+  `lang` int(11) NOT NULL,
+  `type` varchar(16) NOT NULL,
+  `caching` tinyint(1) NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `linkTarget` varchar(16) default NULL,
+  `contentTitle` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `content` longtext NOT NULL,
+  `sourceMode` tinyint(1) NOT NULL default '0',
+  `customContent` varchar(64) default NULL,
+  `cssName` varchar(255) default NULL,
+  `cssNavName` varchar(255) default NULL,
+  `skin` int(11) default NULL,
+  `metatitle` varchar(255) default NULL,
+  `metadesc` varchar(255) default NULL,
+  `metakeys` varchar(255) default NULL,
+  `metarobots` varchar(7) default NULL,
+  `start` datetime default NULL,
+  `end` datetime default NULL,
+  `editingStatus` varchar(16) NOT NULL,
+  `protection` int(11) NOT NULL,
+  `frontendAccessId` int(11) NOT NULL,
+  `backendAccessId` int(11) NOT NULL,
+  `display` tinyint(1) NOT NULL,
+  `active` tinyint(1) NOT NULL,
+  `target` varchar(255) default NULL,
+  `module` varchar(255) default NULL,
+  `cmd` varchar(50) NOT NULL default '',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `node_id` (`node_id`,`lang`),
+  KEY `IDX_D8E86F54460D9FD7` (`node_id`),
+  CONSTRAINT `contrexx_content_page_ibfk_1` FOREIGN KEY (`node_id`) REFERENCES `contrexx_content_node` (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_country` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `alpha2` char(2) NOT NULL default '',
@@ -359,23 +413,6 @@ CREATE TABLE `contrexx_core_text` (
   PRIMARY KEY  (`id`,`lang_id`,`section`(32),`key`(32)),
   FULLTEXT KEY `text` (`text`)
 ) ENGINE=MyISAM;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_ext_log_entries` (
-  `id` int(11) NOT NULL auto_increment,
-  `action` varchar(8) NOT NULL,
-  `logged_at` datetime NOT NULL,
-  `version` int(11) NOT NULL,
-  `object_id` varchar(32) default NULL,
-  `object_class` varchar(255) NOT NULL,
-  `data` longtext,
-  `username` varchar(255) default NULL,
-  PRIMARY KEY  (`id`),
-  KEY `log_class_lookup_idx` (`object_class`),
-  KEY `log_date_lookup_idx` (`logged_at`),
-  KEY `log_user_lookup_idx` (`username`)
-) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -440,6 +477,23 @@ CREATE TABLE `contrexx_log` (
   `referer` varchar(250) NOT NULL default '',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_log_entry` (
+  `id` int(11) NOT NULL auto_increment,
+  `action` varchar(8) NOT NULL,
+  `logged_at` datetime NOT NULL,
+  `version` int(11) NOT NULL,
+  `object_id` varchar(32) default NULL,
+  `object_class` varchar(255) NOT NULL,
+  `data` longtext,
+  `username` varchar(255) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `log_class_lookup_idx` (`object_class`),
+  KEY `log_date_lookup_idx` (`logged_at`),
+  KEY `log_user_lookup_idx` (`username`)
+) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -3991,60 +4045,6 @@ CREATE TABLE `contrexx_modules` (
   `is_core` tinyint(4) NOT NULL default '0',
   UNIQUE KEY `id` (`id`)
 ) ENGINE=MyISAM;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_nodes` (
-  `id` int(11) NOT NULL auto_increment,
-  `parent_id` int(11) default NULL,
-  `lft` int(11) NOT NULL,
-  `rgt` int(11) NOT NULL,
-  `lvl` int(11) NOT NULL,
-  PRIMARY KEY  (`id`),
-  KEY `IDX_E5A18FDD727ACA70` (`parent_id`),
-  CONSTRAINT `contrexx_nodes_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `contrexx_nodes` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_pages` (
-  `id` int(11) NOT NULL auto_increment,
-  `node_id` int(11) default NULL,
-  `nodeIdShadowed` int(11) default NULL,
-  `lang` int(11) NOT NULL,
-  `type` varchar(16) NOT NULL,
-  `caching` tinyint(1) NOT NULL,
-  `updatedAt` datetime NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `linkTarget` varchar(16) default NULL,
-  `contentTitle` varchar(255) NOT NULL,
-  `slug` varchar(255) NOT NULL,
-  `content` longtext NOT NULL,
-  `sourceMode` tinyint(1) NOT NULL default '0',
-  `customContent` varchar(64) default NULL,
-  `cssName` varchar(255) default NULL,
-  `cssNavName` varchar(255) default NULL,
-  `skin` int(11) default NULL,
-  `metatitle` varchar(255) default NULL,
-  `metadesc` varchar(255) default NULL,
-  `metakeys` varchar(255) default NULL,
-  `metarobots` varchar(7) default NULL,
-  `start` datetime default NULL,
-  `end` datetime default NULL,
-  `editingStatus` varchar(16) NOT NULL,
-  `protection` int(11) NOT NULL,
-  `frontendAccessId` int(11) NOT NULL,
-  `backendAccessId` int(11) NOT NULL,
-  `display` tinyint(1) NOT NULL,
-  `active` tinyint(1) NOT NULL,
-  `target` varchar(255) default NULL,
-  `module` varchar(255) default NULL,
-  `cmd` varchar(50) NOT NULL default '',
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `node_id` (`node_id`,`lang`),
-  KEY `IDX_D8E86F54460D9FD7` (`node_id`),
-  CONSTRAINT `contrexx_pages_ibfk_1` FOREIGN KEY (`node_id`) REFERENCES `contrexx_nodes` (`id`)
-) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
