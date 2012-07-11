@@ -204,7 +204,7 @@ if ($aliaspage != null) {
     $redirectToCorrectLanguageDir = function() use ($languageExtractor, $url, $_LANGID, $_CONFIG) {
         $languageExtractor->addLanguageDir($url, $_LANGID);
 
-        CSRF::header('Location: http://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET. '/' . $url->getPath() . $url->getSuggestedParams());
+        CSRF::header('Location: http://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET. '/' . $url->getPath());
         die();
     };
 
