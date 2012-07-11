@@ -30,6 +30,37 @@
     background: #dadada url('../images/button_bg.png') repeat-x left top;
 }
 
+#media_image_save_as #save_as_button {
+    float: left;
+    margin: 3px 0 3px 0;
+}
+
+*+html #media_image_save_as #save_as_button {
+    width: 140px;
+    padding: 2px 5px 2px 5px;
+    margin: 3px 0 3px 0;
+}
+
+#media_image_save_as #save_as_value {
+    float: left;
+    margin: 5px 0 0 10px;
+}
+
+*+html #media_image_save_as #save_as_value {
+    position: relative;
+    bottom: 15px;
+}
+
+#media_image_save_as #save_as_ext {
+    float: left;
+    margin: 6px 0 0 5px;
+}
+
+*+html #media_image_save_as #save_as_ext {
+    position: relative;
+    bottom: 15px;
+}
+
 #media_image_save_as h2 {
     margin: 0;
 }

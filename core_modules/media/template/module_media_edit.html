@@ -340,14 +340,22 @@
      * Shows the save block in the ui dialog.
      */
     function showSaveAs() {
+        if ($J.browser.msie && ($J.browser.version == '7.0')) {
+            width = 380;
+            height = 130;
+        } else {
+            width = 370;
+            height = 120;
+        }
+        
         cx.ui.dialog({
-            width: 370,
-            height: 120,
+            width: width,
+            height: height,
             title: '{TXT_MEDIA_CONFIRM_REPLACE_IMAGE}',
             content: '<div id="media_image_save_as">' + 
-                         '<input type="submit" value="{TXT_MEDIA_REPLACE}" onclick="saveImage();" /><br />' + 
-                         '<input type="submit" value="{TXT_MEDIA_SAVE_NEW_COPY}" onclick="checkImageName($J(\'#new_name\').val()); return false;" />&nbsp;&nbsp;' + 
-                         '<input type="text" name="newName" id="new_name" value="' + $J('#org_name').val() + '" /> . ' + $J('#org_ext').val() + 
+                         '<input id="save_button" type="submit" value="{TXT_MEDIA_REPLACE}" onclick="saveImage();" /><br />' + 
+                         '<input id="save_as_button" type="submit" value="{TXT_MEDIA_SAVE_NEW_COPY}" onclick="checkImageName($J(\'#new_name\').val()); return false;" />&nbsp;&nbsp;' + 
+                         '<input id="save_as_value" type="text" name="newName" id="new_name" value="' + $J('#org_name').val() + '" /><span id="save_as_ext">. ' + $J('#org_ext').val() + '</span>' + 
                      '</div>'
         });
     }
