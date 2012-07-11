@@ -16,6 +16,22 @@ function confirmDeleteForm(id, content)
 
 //-->
 </script>
+<style type="text/css">
+    .view {
+        height: 14px;
+        line-height: 13px;
+        margin: 0 0 0 20px;
+    }
+    .view span {
+        float: none;
+        margin: 0 0 0 5px;
+    }
+    .view img {
+        position: relative;
+        top: 1px;
+    }
+</style>
+
 <form action="index.php?cmd=contact&amp;act=forms&amp;tpl=edit&amp;formId=0" method="post">
   <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
     <tbody>
@@ -33,7 +49,7 @@ function confirmDeleteForm(id, content)
       <!-- BEGIN contact_contact_forms -->
         <tr class="{CONTACT_FORM_ROW_CLASS}">
           <td>{CONTACT_FORM_ID}</td>
-          <td>{CONTACT_FORM_NAME}</td>
+          <td>{CONTACT_FORM_NAME} <a class="view" href="{CONTACT_FORM_VIEW_URL}" target="_blank"><img src="images/icons/preview.png"><span>{TXT_CONTACT_VIEW}</span></a></td>
           <td>{CONTACT_FORM_LANGUAGES}</td>          
           <td>{CONTACT_FORM_LAST_ENTRY}</td>
           <td>{CONTACT_FORM_NUMBER_OF_ENTRIES}</td>

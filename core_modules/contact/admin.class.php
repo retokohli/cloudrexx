@@ -486,7 +486,7 @@ class ContactManager extends ContactLib
 
     function _contactForms()
     {
-        global $_ARRAYLANG;
+        global $_CORELANG, $_ARRAYLANG;
 
         $this->_objTpl->loadTemplateFile('module_contact_forms_overview.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'];
@@ -543,9 +543,12 @@ class ContactManager extends ContactLib
                                 ? "<a title='".FWLanguage::getLanguageCodeById($langId)."' href='index.php?cmd=content&loadPage=".$pages[$langId]->getId()."'>".FWLanguage::getLanguageCodeById($langId).'</a>'
                                 : FWLanguage::getLanguageCodeById($langId);
                 }
+
                 $langString = implode(', ',$lang);
                 
                 $formName = contrexx_raw2xhtml($arrForm['lang'][$selectedInterfaceLanguage]['name']);
+
+                $previewURL = '../'.\FWLanguage::getLanguageCodeById($selectedInterfaceLanguage).$pages[$selectedInterfaceLanguage]->getPath();
 
                 // check if the form contains submitted data
                 if ($arrForm['number'] > 0) {
@@ -558,8 +561,10 @@ class ContactManager extends ContactLib
                 }
 
                 $this->_objTpl->setVariable(array(
+                        'TXT_CONTACT_VIEW'                  => $_CORELANG['TXT_CORE_CM_VIEW'],
                         'CONTACT_FORM_ROW_CLASS'            => $rowNr % 2 == 1 ? 'row1' : 'row2',
                         'CONTACT_FORM_NAME'                 => $formName,
+                        'CONTACT_FORM_VIEW_URL'             => $previewURL,
                         'CONTACT_FORM_LAST_ENTRY'           => $arrForm['last'] ? date(ASCMS_DATE_FORMAT, $arrForm['last']) : '-',
                         'CONTACT_FORM_NUMBER_OF_ENTRIES'    => $entryCount,
                         'CONTACT_DELETE_CONTENT'            => $pageExists ? 'true' : 'false',
