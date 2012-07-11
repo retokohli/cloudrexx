@@ -51,11 +51,9 @@
     Shadowbox.loadSkin('classic','../lib/javascript/shadowbox/src/skin/');
     Shadowbox.loadLanguage('en', '../lib/javascript/shadowbox/src/lang');
     Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], '../lib/javascript/shadowbox/src/player');
-    window.onload = function(){
-        Shadowbox.init({
-            enableKeys: false
-        });
-    };
+    $J(document).ready(function() {
+        Shadowbox.init();
+    });
     
     /**
      * object imgAreaSelect
@@ -315,10 +313,9 @@
      */
     function checkImageName(name) {
         if (name == '') {
-            alert('Bitte geben Sie einen Namen ein.');
+            alert('{TXT_MEDIA_SET_IMAGE_NAME}');
         } else {
             saveImage($J('#new_name').val());
-            Shadowbox.close();
         }
     }
     
@@ -340,17 +337,16 @@
     }
     
     /**
-     * Shows the inputs for the new image name in the shadowbox.
+     * Shows the save block in the ui dialog.
      */
     function showSaveAs() {
-        Shadowbox.open({
-            width:   390,
-            height:  130,
-            player:  'html',
+        cx.ui.dialog({
+            width: 370,
+            height: 120,
+            title: '{TXT_MEDIA_CONFIRM_REPLACE_IMAGE}',
             content: '<div id="media_image_save_as">' + 
-                         '<h2>Ersetzen des Bildes bestätigen</h2><br />' + 
-                         '<input type="submit" name="save" value="Ersetzen" onclick="saveImage();" /><br />' + 
-                         '<input type="submit" value="Neue Kopie speichern" onclick="checkImageName($J(\'#new_name\').val()); return false;" />&nbsp;&nbsp;' + 
+                         '<input type="submit" value="{TXT_MEDIA_REPLACE}" onclick="saveImage();" /><br />' + 
+                         '<input type="submit" value="{TXT_MEDIA_SAVE_NEW_COPY}" onclick="checkImageName($J(\'#new_name\').val()); return false;" />&nbsp;&nbsp;' + 
                          '<input type="text" name="newName" id="new_name" value="' + $J('#org_name').val() + '" /> . ' + $J('#org_ext').val() + 
                      '</div>'
         });
@@ -421,9 +417,9 @@
                 <div id="media_image_manipulation">
                 	<div id="media_image_functions">
                 		<div id="crop_image" class="media_image_function">
-                			<div id="crop_image_title" class="media_image_function_title">Zuschneiden</div>
+                			<div id="crop_image_title" class="media_image_function_title">{TXT_MEDIA_CROP}</div>
                 			<div id="crop_image_functions" class="media_image_function_functions">
-	                			<div id="crop_image_info">W&auml;hlen Sie einen Bildausschnitt, indem Sie mit der Maus auf das Bild klicken und einen Bereich markieren.</div>
+	                			<div id="crop_image_info">{TXT_MEDIA_CROP_INFO}</div>
 		                        <table width="100%">
 		                        	<tr>
 		                        		<td>{TXT_MEDIA_WIDTH}:</td>
@@ -434,20 +430,20 @@
 		                        		<td><input type="text" name="cropHeight" value="{MEDIA_IMAGE_CROP_HEIGHT}" id="crop_height" class="crop_data" size="2" /> px</td>
 		                        	</tr>
 		                        </table>
-		                        <input type="submit" name="preview" value="Zuschneiden" id="crop_preview" onclick="imagePreview(); return false;" />&nbsp;
-		                        <input type="submit" value="Abbrechen" id="crop_cancel" onclick="cancelSelection(); return false;" style="display: none;" />
+		                        <input type="submit" name="preview" value="{TXT_MEDIA_CROP}" id="crop_preview" onclick="imagePreview(); return false;" />&nbsp;
+		                        <input type="submit" value="{TXT_MEDIA_CANCEL}" id="crop_cancel" onclick="cancelSelection(); return false;" style="display: none;" />
 	                		</div>
                 		</div>
                 		<div id="rotate_image" class="media_image_function">
-                			<div id="rotate_image_title" class="media_image_function_title">Drehen</div>
+                			<div id="rotate_image_title" class="media_image_function_title">{TXT_MEDIA_ROTATE}</div>
                 			<div id="rotate_image_functions" class="media_image_function_functions">
-	                			W&auml;hlen Sie einen Richtung, in welche Sie das Bild drehen wollen.<br />
+	                			{TXT_MEDIA_ROTATE_INFO}<br />
 	                			<img class="rotate_buttons" id="rotate_left" src="images/icons/rotate_left.jpg" alt="Rotate left" onclick="rotateImage(90);" />
 	                			<img class="rotate_buttons" id="rotate_right" src="images/icons/rotate_right.jpg" alt="Rotate left" onclick="rotateImage(-90);" />
 	                		</div>
                 		</div>
                 		<div id="scale_image" class="media_image_function">
-                			<div id="scale_image_title" class="media_image_function_title">Skalieren / Komprimieren</div>
+                			<div id="scale_image_title" class="media_image_function_title">{TXT_MEDIA_SCALE_COMPRESS}</div>
                 			<div id="scale_image_functions" class="media_image_function_functions">
                 				<table width="100%">
                 					<tr>
@@ -467,19 +463,13 @@
                                         <option value="{IMAGE_QUALITY_VALUE}" {IMAGE_QUALITY_OPTION_CHECKED}>{IMAGE_QUALITY_VALUE}</option>
                                         <!-- END mediaEditImageQualityOptions -->
                                     </select> %<br />
-                                    <span>* Beim Wert 0 wird das Bild nicht skaliert.</span>
+                                    <span>{TXT_MEDIA_SCALE_INFO}</span>
                                 </div>
 	                		</div>
                 		</div>
-                		<div id="reset_image" class="media_image_function">
-                			<div id="reset_image_title" class="media_image_function_title" onclick="resetImage();">Zur&uuml;cksetzen</div>
-                		</div>
-                		<div id="preview_image" class="media_image_function">
-                			<div id="preview_image_title" class="media_image_function_title" onclick="imagePreview();">Vorschau</div>
-                		</div>
-                		<div id="save_image" class="media_image_function">
-                			<div id="save_image_title" class="media_image_function_title" onclick="showSaveAs();">Speichern</div>
-                		</div>
+                		<input type="button" value="{TXT_MEDIA_RESET}" id="reset_image_button" onclick="resetImage(); return false;" />
+                		<input type="button" value="{TXT_MEDIA_PREVIEW}" id="preview_image_button" class="media_image_function_title" onclick="imagePreview(); return false;" />
+                		<input type="button" value="{TXT_MEDIA_SAVE}" id="save_image_button" class="media_image_function_title" onclick="showSaveAs(); return false;" />
                 		<input type="hidden" name="orgName" id="org_name" value="{MEDIA_FILE_NAME}" />
                         <input type="hidden" name="orgExt" id="org_ext" value="{MEDIA_FILE_EXT}" />
                 	</div>

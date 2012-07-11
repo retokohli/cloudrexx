@@ -5,6 +5,7 @@
 #media_image_manipulation {
     width: 838px;
     float: left;
+    border-left: 1px solid #E5E5E5;
 }
 
 #media_image_manipulation table td {
@@ -14,9 +15,8 @@
 
 #media_image_save_as {
     width: 350px;
-    height: 90px;
     float: left;
-    padding: 20px;
+    padding: 5px 0 5px 0;
     background: #FFFFFF;
 }
 
@@ -68,7 +68,10 @@
 #media_image_manipulation #media_image_wrapper #media_image {
     max-width: 600px;
     float: left;
-    margin: 0 0 10px 0;
+    margin: 0 0 20px 0;
+    border-right: 1px solid #E5E5E5;
+    border-bottom: 1px solid #E5E5E5;
+    border-left: 1px solid #E5E5E5;
 }
 
 #media_image_manipulation #fs_crop_image {
@@ -218,9 +221,8 @@
 #media_image_manipulation #media_image_functions {
 	width: 216px;
 	float: left;
-	margin: 0 20px 0 0;
+	margin: 0 20px 20px 0;
 	border-right: 1px solid #E5E5E5;
-	border-left: 1px solid #E5E5E5;
 }
 
 #media_image_manipulation #media_image_functions .media_image_function {
@@ -253,6 +255,10 @@
 	border-top: 1px solid #E5E5E5;
 }
 
+#media_image_manipulation #media_image_functions #scale_image {
+    margin: 0 0 5px 0;
+}
+
 #media_image_manipulation #media_image_functions #crop_image #crop_image_title {
 	background-image: url('../../../images/icons/crop.png');
 }
@@ -273,4 +279,12 @@
 
 #media_image_manipulation #media_image_functions #scale_image span {
 	font-size: 10px;
+}
+
+#media_image_manipulation #media_image_functions #reset_image_button,
+#media_image_manipulation #media_image_functions #preview_image_button,
+#media_image_manipulation #media_image_functions #save_image_button {
+    width: 196px;
+    float: left;
+    margin: 10px 0 0 10px;
 }

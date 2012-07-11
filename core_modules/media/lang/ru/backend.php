@@ -91,5 +91,33 @@ $_ARRAYLANG['TXT_MEDIA_MANAGE'] = "Управление";
 $_ARRAYLANG['TXT_MEDIA_RENAME'] = "Rename";
 $_ARRAYLANG['TXT_MEDIA_SAVE_AS'] = "Save as";
 $_ARRAYLANG['TXT_MEDIA_EDIT_FILE'] = "Rename media";
+$_ARRAYLANG['TXT_MEDIA_SETTINGS'] = "Settings";
+$_ARRAYLANG['TXT_MEDIA_SETTINGS_SAVE_SUCCESSFULL'] = "Settings saved successfull";
+$_ARRAYLANG['TXT_MEDIA_ACCESS_SETTINGS'] = "Access settings for change media archive";
+$_ARRAYLANG['TXT_MEDIA_ADDING_DENIED_FOR_ALL'] = "Nobody (Function disabled)";
+$_ARRAYLANG['TXT_MEDIA_ADDING_ALLOWED_FOR_ALL'] = "Everybody";
+$_ARRAYLANG['TXT_MEDIA_ADDING_ALLOWED_FOR_GROUP'] = "Only members of selected groups";
+$_ARRAYLANG['TXT_MEDIA_AVAILABLE_USER_GROUPS'] = "Available user groups";
+$_ARRAYLANG['TXT_MEDIA_ASSIGNED_USER_GROUPS'] = "Assigned user groups";
+$_ARRAYLANG['TXT_MEDIA_CHECK_ALL'] = "Select All";
+$_ARRAYLANG['TXT_MEDIA_UNCHECK_ALL'] = "Deselect All";
+$_ARRAYLANG['TXT_MEDIA_FRONTEND_FILE_UPLOAD_DESC'] = "Define which users should be allowed to upload files and create new directories from within the frontend.";
+$_ARRAYLANG['TXT_MEDIA_FRONTEND_FILE_UPLOAD'] = "Frontend File Upload";
+$_ARRAYLANG['TXT_MEDIA_ADD'] = "Add";
+$_ARRAYLANG['TXT_MEDIA_MANAGE'] = "Manage";
+
+// Media image manipulation
 $_ARRAYLANG['TXT_MEDIA_IMAGE_MANIPULATION'] = "Image manipulation";
+$_ARRAYLANG['TXT_MEDIA_SET_IMAGE_NAME'] = "Please enter a name.";
+$_ARRAYLANG['TXT_MEDIA_CONFIRM_REPLACE_IMAGE'] = "Confirm image replacement";
+$_ARRAYLANG['TXT_MEDIA_REPLACE'] = "Replace";
+$_ARRAYLANG['TXT_MEDIA_SAVE_NEW_COPY'] = "Save a new copy";
+$_ARRAYLANG['TXT_MEDIA_CROP'] = "Crop";
+$_ARRAYLANG['TXT_MEDIA_CROP_INFO'] = "Select an area (click & drag) on a image with your mouse.";
+$_ARRAYLANG['TXT_MEDIA_CANCEL'] = "Cancel";
+$_ARRAYLANG['TXT_MEDIA_ROTATE'] = "Rotate";
+$_ARRAYLANG['TXT_MEDIA_ROTATE_INFO'] = "Choose a direction in which you want to rotate.";
+$_ARRAYLANG['TXT_MEDIA_SCALE_COMPRESS'] = "Scale / Compress";
+$_ARRAYLANG['TXT_MEDIA_SCALE_INFO'] = "* If value is 0, image will not be scaled.";
+$_ARRAYLANG['TXT_MEDIA_PREVIEW'] = "Preview";
 ?>

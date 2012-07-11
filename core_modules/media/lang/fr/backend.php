@@ -88,4 +88,19 @@ $_ARRAYLANG['TXT_MEDIA_FRONTEND_FILE_UPLOAD_DESC'] = "Define which users should 
 $_ARRAYLANG['TXT_MEDIA_FRONTEND_FILE_UPLOAD'] = "Frontend File Upload";
 $_ARRAYLANG['TXT_MEDIA_ADD'] = "Ajouter";
 $_ARRAYLANG['TXT_MEDIA_MANAGE'] = "Gérer";
+
+// Media image manipulation
+$_ARRAYLANG['TXT_MEDIA_IMAGE_MANIPULATION'] = "Image manipulation";
+$_ARRAYLANG['TXT_MEDIA_SET_IMAGE_NAME'] = "Please enter a name.";
+$_ARRAYLANG['TXT_MEDIA_CONFIRM_REPLACE_IMAGE'] = "Confirm image replacement";
+$_ARRAYLANG['TXT_MEDIA_REPLACE'] = "Replace";
+$_ARRAYLANG['TXT_MEDIA_SAVE_NEW_COPY'] = "Save a new copy";
+$_ARRAYLANG['TXT_MEDIA_CROP'] = "Crop";
+$_ARRAYLANG['TXT_MEDIA_CROP_INFO'] = "Select an area (click & drag) on a image with your mouse.";
+$_ARRAYLANG['TXT_MEDIA_CANCEL'] = "Cancel";
+$_ARRAYLANG['TXT_MEDIA_ROTATE'] = "Rotate";
+$_ARRAYLANG['TXT_MEDIA_ROTATE_INFO'] = "Choose a direction in which you want to rotate.";
+$_ARRAYLANG['TXT_MEDIA_SCALE_COMPRESS'] = "Scale / Compress";
+$_ARRAYLANG['TXT_MEDIA_SCALE_INFO'] = "* If value is 0, image will not be scaled.";
+$_ARRAYLANG['TXT_MEDIA_PREVIEW'] = "Preview";
 ?>
