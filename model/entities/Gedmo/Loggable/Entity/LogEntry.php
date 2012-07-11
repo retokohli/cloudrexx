@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping\Entity;
  * Gedmo\Loggable\Entity\LogEntry
  *
  * @Table(
- *     name="ext_log_entries",
+ *     name="log_entry",
  *  indexes={
  *      @index(name="log_class_lookup_idx", columns={"object_class"}),
  *      @index(name="log_date_lookup_idx", columns={"logged_at"}),

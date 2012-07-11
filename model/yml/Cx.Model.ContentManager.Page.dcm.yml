@@ -1,6 +1,6 @@
 Cx\Model\ContentManager\Page:
   type: entity
-  table: pages
+  table: content_page
   repositoryClass: Cx\Model\ContentManager\Repository\PageRepository
   
   id:
