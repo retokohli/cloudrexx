@@ -91,5 +91,19 @@ $_ARRAYLANG['TXT_MEDIA_MANAGE'] = "Verwalten";
 $_ARRAYLANG['TXT_MEDIA_RENAME'] = "Umbenennen";
 $_ARRAYLANG['TXT_MEDIA_SAVE_AS'] = "Speichern unter";
 $_ARRAYLANG['TXT_MEDIA_RENAME_FILE'] = "Media umbenennen";
+
+// Media image manipulation
 $_ARRAYLANG['TXT_MEDIA_IMAGE_MANIPULATION'] = "Bildmanipulation";
+$_ARRAYLANG['TXT_MEDIA_SET_IMAGE_NAME'] = "Bitte geben Sie einen Namen ein.";
+$_ARRAYLANG['TXT_MEDIA_CONFIRM_REPLACE_IMAGE'] = "Ersetzen des Bildes bestätigen";
+$_ARRAYLANG['TXT_MEDIA_REPLACE'] = "Ersetzen";
+$_ARRAYLANG['TXT_MEDIA_SAVE_NEW_COPY'] = "Neue Kopie speichern";
+$_ARRAYLANG['TXT_MEDIA_CROP'] = "Zuschneiden";
+$_ARRAYLANG['TXT_MEDIA_CROP_INFO'] = "Wählen Sie einen Bildausschnitt, indem Sie mit der Maus auf das Bild klicken und einen Bereich markieren.";
+$_ARRAYLANG['TXT_MEDIA_CANCEL'] = "Abbrechen";
+$_ARRAYLANG['TXT_MEDIA_ROTATE'] = "Drehen";
+$_ARRAYLANG['TXT_MEDIA_ROTATE_INFO'] = "Wählen Sie einen Richtung, in welche Sie das Bild drehen wollen.";
+$_ARRAYLANG['TXT_MEDIA_SCALE_COMPRESS'] = "Skalieren / Komprimieren";
+$_ARRAYLANG['TXT_MEDIA_SCALE_INFO'] = "* Beim Wert 0 wird das Bild nicht skaliert.";
+$_ARRAYLANG['TXT_MEDIA_PREVIEW'] = "Vorschau";
 ?>

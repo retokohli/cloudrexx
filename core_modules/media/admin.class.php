@@ -589,6 +589,7 @@ class MediaManager extends MediaLibrary
             'TXT_MEDIA_FILE_TYPE'       => $_ARRAYLANG['TXT_MEDIA_FILE_TYPE'],
             'TXT_MEDIA_FILE_DATE'       => $_ARRAYLANG['TXT_MEDIA_FILE_DATE'],
             'TXT_MEDIA_FILE_PERM'       => $_ARRAYLANG['TXT_MEDIA_FILE_PERM'],
+            'TXT_MEDIA_FILE_FUNCTIONS'  => $_ARRAYLANG['TXT_FUNCTIONS'],
             'MEDIA_NAME_ICON'           => isset($tmpIcon['name']) ? $tmpIcon['name'] : '',
             'MEDIA_SIZE_ICON'           => isset($tmpIcon['size']) ? $tmpIcon['size'] : '',
             'MEDIA_TYPE_ICON'           => isset($tmpIcon['type']) ? $tmpIcon['type'] : '',
@@ -734,13 +735,27 @@ class MediaManager extends MediaLibrary
             $imageSize  = @getimagesize($this->path.$this->getFile);
             
             $this->_objTpl->setVariable(array(
-                'TXT_MEDIA_IMAGE_MANIPULATION' => $_ARRAYLANG['TXT_MEDIA_IMAGE_MANIPULATION'],
-                'TXT_MEDIA_WIDTH'              => $_ARRAYLANG['TXT_MEDIA_WIDTH'],
-                'TXT_MEDIA_HEIGHT'             => $_ARRAYLANG['TXT_MEDIA_HEIGHT'],
-                'TXT_MEDIA_BALANCE'            => $_ARRAYLANG['TXT_MEDIA_BALANCE'],
-                'TXT_MEDIA_QUALITY'            => $_ARRAYLANG['TXT_MEDIA_QUALITY'],
-                'MEDIA_IMG_WIDTH'              => $imageSize[0],
-                'MEDIA_IMG_HEIGHT'             => $imageSize[1],
+                'TXT_MEDIA_IMAGE_MANIPULATION'    => $_ARRAYLANG['TXT_MEDIA_IMAGE_MANIPULATION'],
+                'TXT_MEDIA_WIDTH'                 => $_ARRAYLANG['TXT_MEDIA_WIDTH'],
+                'TXT_MEDIA_HEIGHT'                => $_ARRAYLANG['TXT_MEDIA_HEIGHT'],
+                'TXT_MEDIA_BALANCE'               => $_ARRAYLANG['TXT_MEDIA_BALANCE'],
+                'TXT_MEDIA_QUALITY'               => $_ARRAYLANG['TXT_MEDIA_QUALITY'],
+                'TXT_MEDIA_SAVE'                  => $_ARRAYLANG['TXT_MEDIA_SAVE'],
+                'TXT_MEDIA_RESET'                 => $_ARRAYLANG['TXT_MEDIA_RESET'],
+                'TXT_MEDIA_SET_IMAGE_NAME'        => $_ARRAYLANG['TXT_MEDIA_SET_IMAGE_NAME'],
+                'TXT_MEDIA_CONFIRM_REPLACE_IMAGE' => $_ARRAYLANG['TXT_MEDIA_CONFIRM_REPLACE_IMAGE'],
+                'TXT_MEDIA_REPLACE'               => $_ARRAYLANG['TXT_MEDIA_REPLACE'],
+                'TXT_MEDIA_SAVE_NEW_COPY'         => $_ARRAYLANG['TXT_MEDIA_SAVE_NEW_COPY'],
+                'TXT_MEDIA_CROP'                  => $_ARRAYLANG['TXT_MEDIA_CROP'],
+                'TXT_MEDIA_CROP_INFO'             => $_ARRAYLANG['TXT_MEDIA_CROP_INFO'],
+                'TXT_MEDIA_CANCEL'                => $_ARRAYLANG['TXT_MEDIA_CANCEL'],
+                'TXT_MEDIA_ROTATE'                => $_ARRAYLANG['TXT_MEDIA_ROTATE'],
+                'TXT_MEDIA_ROTATE_INFO'           => $_ARRAYLANG['TXT_MEDIA_ROTATE_INFO'],
+                'TXT_MEDIA_SCALE_COMPRESS'        => $_ARRAYLANG['TXT_MEDIA_SCALE_COMPRESS'],
+                'TXT_MEDIA_SCALE_INFO'            => $_ARRAYLANG['TXT_MEDIA_SCALE_INFO'],
+                'TXT_MEDIA_PREVIEW'               => $_ARRAYLANG['TXT_MEDIA_PREVIEW'],
+                'MEDIA_IMG_WIDTH'                 => $imageSize[0],
+                'MEDIA_IMG_HEIGHT'                => $imageSize[1],
             ));
             
             foreach ($this->arrImageQualityValues as $value) {
