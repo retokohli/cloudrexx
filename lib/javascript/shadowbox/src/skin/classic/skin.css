@@ -77,7 +77,10 @@
   width: 100%;
   height: 100%;
 }
-#shadowbox_body, #shadowbox_loading {
+#shadowbox_body {
+  background-color: #FFFFFF;
+}
+#shadowbox_loading {
   background-color: #060606; /* should match loading image background color */
 }
 #shadowbox_loading_indicator {
