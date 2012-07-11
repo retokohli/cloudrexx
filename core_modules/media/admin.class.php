@@ -405,7 +405,8 @@ class MediaManager extends MediaLibrary
         // Check if an image has been edited.
         // If yes, we know the edited file and want to highlight them.
         if (!empty($_GET['editedImage'])) {
-            $this->highlightName[] = $_GET['editedImage'];
+            $objFile = new File();
+            $this->highlightName[] = $objFile->replaceCharacters($_GET['editedImage']);
         }
 
         // media directory tree
