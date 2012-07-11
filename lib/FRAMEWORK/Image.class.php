@@ -467,6 +467,8 @@ class ImageManager
         
         if (!$this->imageCheck == 1) return false;
         if (empty($this->newImage)) return false;
+        
+        $this->setTransparency();
 		
         switch($this->newImageType) {
             case self::IMG_TYPE_GIF:
@@ -707,7 +709,9 @@ class ImageManager
             $angle = ($angle <= 360) || ($angle >= 0) ? $angle : 0;
             $this->newImage = imagerotate($this->orgImage, $angle, 0);
             
-            if (!empty($this->newImage)) {
+            if ($this->newImage) {
+                $this->setTransparency();
+                
                 $this->newImageWidth = imagesx($this->newImage);
                 $this->newImageHeight = imagesy($this->newImage);
                 
