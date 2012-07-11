@@ -451,12 +451,10 @@ class MediaLibrary
         
         $objFile = new File();
         $orgFile = $arrData['orgName'].'.'.$arrData['orgExt'];
-        // ToDo: localhost unnecessary
-        // $orgFile = $objFile->replaceCharacters($orgFile);
+        $orgFile = $objFile->replaceCharacters($orgFile);
         $newName = $arrData['newName'];
         $newFile = $newName.'.'.$arrData['orgExt'];
-        // ToDo: localhost unnecessary
-        // $newFile = $objFile->replaceCharacters($newFile);
+        $newFile = $objFile->replaceCharacters($newFile);
         
         // If new image name is set, image will be copied. Otherwise, image will be overwritten
         if ($newName != '' && $newFile != $orgFile) {
