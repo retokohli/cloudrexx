@@ -58,6 +58,7 @@ class ContentManager extends Module {
     protected function actRenderCM() {
         global $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
+        JS::activate('jqueryui');
         JS::activate('cx');
         JS::activate('ckeditor');
         JS::activate('cx-form');
@@ -197,7 +198,6 @@ class ContentManager extends Module {
             'TXT_EDITMODE_CODE'    => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_PAGE'],
             'TXT_EDITMODE_CONTENT' => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_CONTENT'],
         ));
-        ContrexxJavascript::getInstance()->initJs();
         ContrexxJavascript::getInstance()->setVariable(array(
             'editmodetitle'   => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'],
             'editmodecontent' => $editmodeTemplate->get(),
