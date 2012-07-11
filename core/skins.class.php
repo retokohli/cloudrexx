@@ -377,7 +377,7 @@ class skins
                 $this->_getXML($theme['foldername']);
 
                 $htmlDeleteLink = '<a onclick="showInfo(this.parentNode.parentNode); return confirmDelete(\''.htmlspecialchars($theme['themesname'], ENT_QUOTES, CONTREXX_CHARSET).'\');" href="?cmd=skins&amp;act=manage&amp;delete='.urlencode($theme['themesname']).'" title="'.$_CORELANG['TXT_DELETE'].'"> <img border="0" src="images/icons/delete.gif" alt="" /> </a>';
-                $htmlActivateLink = '<a onclick="showInfo(this.parentNode.parentNode);" href="?cmd=skins&amp;act=manage&amp;activate='.$theme['id'].'" title="'.$_CORELANG['TXT_ACTIVATE_DESIGN'].'"> <img border="0" src="images/icons/check.gif" alt="" /> </a>';
+                $htmlActivateLink = '<a onclick="showInfo(this.parentNode.parentNode);" href="?cmd=skins&amp;act=manage&amp;activate='.$theme['id'].'" title="'.$_CORELANG['TXT_CORE_CM_PUBLISH'].'"> <img border="0" src="images/icons/check.gif" alt="" /> </a>';
 
                 $objTemplate->setVariable(array('THEME_NAME'            => $theme['themesname'],
                                                 'THEME_NAME_EXTRA'      => $theme['extra'],
