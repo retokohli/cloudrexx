@@ -1,22 +1,9 @@
 <script type="text/javascript">
 /* <![CDATA[ */
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[0]=["","{TXT_CORE_CM_PAGE_NAME_INFO}"];
-Text[1]=["","{TXT_CORE_CM_PAGE_TITLE_INFO}"];
-Text[2]=["","{TXT_CORE_CM_TYPE_CONTENT_INFO}"];
-Text[3]=["","{TXT_CORE_CM_TYPE_REDIRECT_INFO}"];
-Text[4]=["","{TXT_CORE_CM_TYPE_APPLICATION_INFO}"];
-Text[5]=["","{TXT_CORE_CM_TYPE_FALLBACK_INFO}"];
-Text[6]=["","{TXT_CORE_CM_METATITLE_INFO}"];
-Text[7]=["","{TXT_CORE_CM_METADESC_INFO}"];
-Text[8]=["","{TXT_CORE_CM_METAKEYS_INFO}"];
-Text[9]=["","{TXT_CORE_CM_THEMES_INFO}"];
-Text[10]=["","{TXT_CORE_CM_CUSTOM_CONTENT_INFO}"];
-Text[11]=["","{TXT_CORE_CM_CSS_CLASS_INFO}"];
-Text[12]=["","{TXT_CORE_CM_LINK_TARGET_INO}"];
-Text[13]=["","{TXT_CORE_CM_SLUG_INFO}"];
-Text[14]=["","{TXT_CORE_CM_ALIAS_INFO}"];
-Text[15]=["","{TXT_CORE_CM_CSS_NAV_CLASS_INFO}"];
+{CXJS_INIT_JS}
+var languages = {LANGUAGE_ARRAY};
+var fallbacks = {FALLBACK_ARRAY};
+var language_labels = {LANGUAGE_LABELS};
 /* ]]> */
 </script>
 
@@ -86,44 +73,6 @@ Text[15]=["","{TXT_CORE_CM_CSS_NAV_CLASS_INFO}"];
         </div>
     </div>
 </div>
-
-<script type="text/javascript">
-var languages = {LANGUAGE_ARRAY};
-var fallbacks = {FALLBACK_ARRAY};
-var language_labels = {LANGUAGE_LABELS};
-
-cx.ready(function() {
-    cx.cm();
-});
-</script>
-    
-         
-         
-<script language="JavaScript" type="text/javascript">
-/* <![CDATA[ */
-function showEditModeWindow(cmdName, pageId, nodeId) {
-    $J('#editMode_Background').css({opacity: 0.5});
-    $J('#editMode_Code_Link1').click(function() {
-        cx.cm.loadPage(pageId, nodeId, null, true);
-        closeEditModeWindow();
-    });
-    $J('#editMode_Code_Link2').click(function() {
-        cx.cm.loadPage(pageId, nodeId, null, true);
-        closeEditModeWindow();
-    });
-    $J('#editMode_Content_Link1').attr('href', '{DIRECTORY_INDEX}?cmd=' + cmdName + "&{CSRF_PARAM}");
-    $J('#editMode_Content_Link2').attr('href', '{DIRECTORY_INDEX}?cmd=' + cmdName + "&{CSRF_PARAM}");
-    $J('#editMode_Background').fadeIn('slow');
-    $J('#editMode_Window').fadeIn('slow');
-}
-
-function closeEditModeWindow() {
-    $J('#editMode_Background').fadeOut('slow');
-    $J('#editMode_Window').fadeOut('slow');
-}
-
-/* ]]> */
-</script>
 <div id="editMode_Background" style="display: none;"></div>
 <div id="editMode_Window" style="display: none;">
   <div id="editMode_Frame">

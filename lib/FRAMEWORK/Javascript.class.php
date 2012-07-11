@@ -151,7 +151,8 @@ jQuery(document).ready(function(){
 // TODO: remove & replace by cx call
         'jqueryui'     => array(
             'jsfiles'       => array(
-                'lib/javascript/jquery/ui/jquery-ui-1.8.7.custom.min.js'
+                'lib/javascript/jquery/ui/jquery-ui-1.8.7.custom.min.js',
+                'lib/javascript/jquery/ui/jquery-ui-timepicker-addon.js',
             ),
             'cssfiles'      => array(
                 'lib/javascript/jquery/ui/css/jquery-ui.css'
@@ -228,7 +229,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             'jsfiles' => array(
                 'lib/javascript/jquery/chosen/jquery.chosen.js'
             ),
-            'dependencies' => array('jquery', 'cx'),
+            'dependencies' => array('jquery'),
             'specialcode'  => '
                 $J(document).ready(function() {
                     $J(".chzn-select").chosen();
@@ -245,9 +246,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             'jsfiles' => array(
                 'lib/tipmessage1.5/main15.js'
             ),
-            'dependencies'  => array(
-                'jquery'
-            ),
+            'dependencies'  => array('jquery'),
             'specialcode'  => '
                 $J(document).ready(function() {
                     TipId = "tipMessageLayer";
