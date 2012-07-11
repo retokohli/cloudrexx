@@ -207,7 +207,7 @@ class skins
             <a href='index.php?cmd=skins' class='".($this->act == '' ? 'active' : '')."'>".$_CORELANG['TXT_DESIGN_OVERVIEW']."</a>
             <a href='index.php?cmd=skins&amp;act=templates' class='".($this->act == 'templates' || $this->act == 'newDir' ? 'active' : '')."'>".$_CORELANG['TXT_DESIGN_TEMPLATES']."</a>
             <a href='index.php?cmd=media&amp;archive=themes'>".$_CORELANG['TXT_DESIGN_FILES_ADMINISTRATION']."</a>
-            <a href='index.php?cmd=skins&amp;act=examples' class='".($this->act == 'examples' ? 'active' : '')."'>".$_CORELANG['TXT_DESIGN_REPLACEMENTS_DIR']."</a>
+            <a href='index.php?cmd=skins&amp;act=examples' class='".($this->act == 'examples' ? 'active' : '')."'>".$_CORELANG['TXT_CORE_PLACEHOLDERS']."</a>
             <a href='index.php?cmd=skins&amp;act=manage' class='".($this->act == 'manage' ? 'active' : '')."'>".$_CORELANG['TXT_THEME_IMPORT_EXPORT']."</a>");
         }
 
