@@ -1,3 +1,4 @@
+
 /* CONTENTS:
 
   1 Reset
@@ -135,7 +136,7 @@ h1{ font-size: 20px }
     padding: 8px;
 }
 
-#content-manager.edit_page .multiple-actions-select {
+#content-manager.edit_page #multiple-actions-select {
     float: left;
     clear: both;
     margin: 5px 0 0 40px;

@@ -138,7 +138,6 @@ class ContentManager extends Module {
                 'SIDEBAR_DISPLAY_STYLE' => 'display: block;',
                 'SIDEBAR_CLASS_NAME' => 'hide',
                 'MULTIPLE_ACTIONS_STRIKE_STYLE' => 'display: none;',
-                'SELECT_MULTIPLE_ACTIONS_CLASS' => 'select-multiple-actions-shrunk',
             ));
         } else {
             $this->template->setVariable(array(
