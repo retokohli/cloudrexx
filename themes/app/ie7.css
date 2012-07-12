@@ -1,0 +1,64 @@
+  
+  input[type="submit"], input[type="button"], input[type="reset"] {
+    padding: 3px 30px 3px 10px;
+}
+.submit_type_left {
+  padding: 0px 0 6px 3px;
+  height: 26px;
+}
+.submit_type_right {
+    padding: 0px 3px 6px 0;
+	height: 26px;
+}
+.functions input[name=addProduct]{
+ min-width:137px;
+}
+#main input[type=submit], #main input[type=button]{
+	padding-right: 30px;
+}
+#guestbook input[type=reset]{
+	padding-right: 10px;
+}
+#login input[name=restore_pw], #access input[name=access_signup]{
+	padding-right: 15px;
+}
+#main #livecam form input[value="Go to the archive..."]{
+	padding-right: 0px;
+}
+#contactFrame input[type=submit]{
+		margin-top: 2px;
+}
+#guestbook input[type=submit]{
+	padding-right: 0px;
+}
+#shop .submit_type_right input[value="Add To Shopping Cart"]{
+	padding-left: 8px;
+}
+input[type=submit], #content #main .submit_type_right input{
+	height:26px;
+}
+div.newsText p.more a{
+	padding:0;
+}
+div.newsText p.more{
+padding-top:50px;
+}
+#main div.ecardContainer input[type=submit] {
+	padding-left: 24px;
+}
+.newsText{
+float:none;
+}
+a{
+outline:none;
+}
+input[type=hidden]{
+	padding: 0px;
+	margin: 0px;
+}
+#knowledge #search_bg .inputText{
+	margin-right: -8px;
+}
+#content .directorySearch .submit_type_left input{
+	margin-left: -9px;
+}

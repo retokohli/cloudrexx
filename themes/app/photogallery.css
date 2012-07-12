@@ -1,0 +1,12 @@
+#aside{
+    display: none;
+}
+.main_subpage,
+#content{
+  float: left;
+    width: 100%;
+}
+#main ul.visual-list{
+list-style: none;
+margin:0
+}

@@ -1,0 +1,63 @@
+#aside{
+    display: none;
+}
+.entries .heading {
+    border-bottom: 1px solid #ECEDF3;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
+#blog div.entries h2{
+    margin-bottom: 0px;
+}
+.posted img{
+    padding-right: 10px;
+    float: left;
+    padding-top: 3px;
+}
+.posted span,.posted a{
+    padding-right: 26px;
+    float: left;
+}
+
+#blog div.posted {
+    color: #555555;
+    font-size: 12px;
+    padding: 0 0 18px;
+    text-transform: capitalize;
+    font-style: normal;
+}
+#blog {
+    float: left;
+    height: auto !important;
+    margin: 0;
+    padding: 0;
+    width: 650px;
+}
+.main_subpage {
+    float: left;
+    width: 100%;
+}
+#content {
+    float: left;
+    width: 100%;
+}
+.sidebar {
+    float: right;
+    width: 220px;
+}
+#main .sidebar ul{
+    list-style-type: none;
+    margin: 0 ;
+}
+#main .addcomment input[type=text]{
+    width: 98%
+}
+#main .addcomment textarea{
+    width: 98% !important
+}
+table tr.row1, table tr.marketRow2 {
+  background-color: #F9F9F9;
+}
+.voting table{
+    border: 1px dotted #E6E6E6;
+}
