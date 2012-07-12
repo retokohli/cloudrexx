@@ -130,7 +130,7 @@ class MediaManager extends MediaLibrary
                 <a href="index.php?cmd=skins">'.$_ARRAYLANG['TXT_DESIGN_OVERVIEW'].'</a>
                 <a href="index.php?cmd=skins&amp;act=templates">'.$_ARRAYLANG['TXT_DESIGN_TEMPLATES'].'</a>
                 <a href="index.php?cmd=media&amp;archive=themes">'.$_ARRAYLANG['TXT_DESIGN_FILES_ADMINISTRATION'].'</a>
-                <a href="index.php?cmd=skins&amp;act=examples">'.$_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR'].'</a>
+                <a href="index.php?cmd=skins&amp;act=examples">'.$_ARRAYLANG['TXT_CORE_PLACEHOLDERS'].'</a>
                 <a href="index.php?cmd=skins&amp;act=manage">'.$_ARRAYLANG['TXT_THEME_IMPORT_EXPORT'].'</a>');
                 break;
 
