@@ -498,16 +498,16 @@ class MediaManager extends MediaLibrary
                         
                         $this->_objTpl->setVariable(array(
                             'MEDIA_FILE_EDIT_HREF'    => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;act=edit&amp;path=' . $this->webPath . '&amp;file=' . $fileName,
-                            'MEDIA_EDIT'              => $_ARRAYLANG['TXT_MEDIA_EDIT'] . ': ' . $fileName,
+                            'MEDIA_EDIT'              => $_ARRAYLANG['TXT_MEDIA_EDIT'],
                         ));
                         $this->_objTpl->parse('mediaImageEdit');
                     }
 
                     $this->_objTpl->setVariable(array(  // action
                         'MEDIA_FILE_RENAME_HREF'    => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;act=rename&amp;path=' . $this->webPath . '&amp;file=' . $fileName,
-                        'MEDIA_RENAME'              => $_ARRAYLANG['TXT_MEDIA_RENAME'] . ': ' . $fileName,
+                        'MEDIA_RENAME'              => $_ARRAYLANG['TXT_MEDIA_RENAME'],
                         'MEDIA_FILE_DELETE_HREF'    => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;act=delete&amp;path=' . $this->webPath . '&amp;file=' . $fileName,
-                        'MEDIA_DELETE'              => $_ARRAYLANG['TXT_MEDIA_DELETE'] . ': ' . $fileName
+                        'MEDIA_DELETE'              => $_ARRAYLANG['TXT_MEDIA_DELETE'],
                     ));
                     $this->_objTpl->parse('mediaDirectoryTree');
                     $i++;
