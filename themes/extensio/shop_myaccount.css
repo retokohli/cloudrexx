@@ -1,9 +1,3 @@
-#aside{
-    display: block;
-}
-#nav-sub{
-    display: none;
-}
 .main_subpage,
 #content {
     float: left;
