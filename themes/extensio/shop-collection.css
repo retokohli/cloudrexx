@@ -1,9 +1,4 @@
-#aside{
-    display: none;
-}
-#nav-sub{
-    display: none;
-}
+
 #shop_payment{
     border: 1px solid #F2F2F2;    
     float: left;
@@ -29,7 +24,4 @@
 #shop form p{
     padding: 2px 0 3px 205px;   
 }
-.main-holder {
-  background: none;
- 
-}
+
