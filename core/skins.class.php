@@ -1260,7 +1260,7 @@ class skins
     function getDropdownContent()
     {
         global $objTemplate;
-        $themes = isset($_POST['themes']) ? contrexx_addslashes($_POST['themes']) : '';
+        $themes = isset($_REQUEST['themes']) ? contrexx_addslashes($_REQUEST['themes']) : '';
         $themesPage = isset($_POST['themesPage']) ? contrexx_addslashes($_POST['themesPage']) : '';
         $objTemplate->setVariable(array(
             'THEMES_PAGES_MENU'     => $this->getFilesDropdown($themes, $themesPage),

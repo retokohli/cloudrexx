@@ -6,6 +6,7 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_FRONTEND'] = 'Frontend';
 $_ARRAYLANG['TXT_CORE_GENERAL'] = "Allgemein";
 $_ARRAYLANG['TXT_CORE_PLACEHOLDERS'] = "Platzhalter";
 $_ARRAYLANG['TXT_ACTION'] = "Funktionen";
@@ -1505,6 +1506,8 @@ $_ARRAYLANG['TXT_CORE_CM_CSS_NAV_CLASS'] = 'Zus&auml;tzliche CSS-Navigationsklas
 $_ARRAYLANG['TXT_CORE_CM_CSS_NAV_CLASS_INFO'] = 'Der angegebene Wert wird in der Navigation f&uuml;r diese Seite als [[CSS_NAME]] zur Verf&uuml;gung gestellt.';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND'] = 'Lesezugriff (Frontend) einschr&auml;nken';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_BACKEND'] = 'Schreibzugriff (Backend) einschr&auml;nken';
+$_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_AVAILABLE_GROUPS'] = 'Vorhandene Gruppen';
+$_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_ASSIGNED_GROUPS'] = 'Zugeordnete Gruppen';
 $_ARRAYLANG['TXT_CORE_CM_SOURCE_MODE'] = 'F&uuml;r diese Seite keinen WYSIWYG-Editor verwenden';
 $_ARRAYLANG['TXT_CORE_CM_PUBLISH'] = "Aktivieren";
 $_ARRAYLANG['TXT_CORE_CM_UNPUBLISH'] = "Deaktivieren";

@@ -18,9 +18,10 @@ function confirmDeleteForm(id, content)
 </script>
 <style type="text/css">
     .view {
+        float: left;
         height: 14px;
         line-height: 13px;
-        margin: 0 0 0 20px;
+        margin: 3px 0 0 20px;
     }
     .view span {
         float: none;
@@ -36,12 +37,13 @@ function confirmDeleteForm(id, content)
   <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
     <tbody>
       <tr>
-        <th colspan="6">{TXT_CONTACT_CONTACT_FORMS}</th>
+        <th colspan="7">{TXT_CONTACT_CONTACT_FORMS}</th>
       </tr>
       <tr class="row3" style="white-space:nowrap;">
         <td width="1%"><b>{TXT_CONTACT_ID}</b></td>
         <td width="35%"><b>{TXT_CONTACT_NAME}</b></td>
-        <td width="30%"><b>{TXT_CONTACT_LANGUAGE}</b></td>        
+        <td width="15%"></td>
+        <td width="15%"><b>{TXT_CONTACT_LANGUAGE}</b></td>        
         <td width="15%"><b>{TXT_CONTACT_LATEST_ENTRY}</b></td>
         <td width="15%"><b>{TXT_CONTACT_NUMBER_OF_ENTRIES}</b></td>
         <td width="4%" style="text-align:right;"><b>{TXT_CONTACT_FUNCTIONS}</b></td>
@@ -49,7 +51,8 @@ function confirmDeleteForm(id, content)
       <!-- BEGIN contact_contact_forms -->
         <tr class="{CONTACT_FORM_ROW_CLASS}">
           <td>{CONTACT_FORM_ID}</td>
-          <td>{CONTACT_FORM_NAME} <a class="view" href="{CONTACT_FORM_VIEW_URL}" target="_blank"><img src="images/icons/preview.png"><span>{TXT_CONTACT_VIEW}</span></a></td>
+          <td>{CONTACT_FORM_NAME}</td>
+          <td><a class="view" href="{CONTACT_FORM_VIEW_URL}" target="_blank"><img src="images/icons/preview.png"><span>{TXT_CONTACT_VIEW}</span></a></td>
           <td>{CONTACT_FORM_LANGUAGES}</td>          
           <td>{CONTACT_FORM_LAST_ENTRY}</td>
           <td>{CONTACT_FORM_NUMBER_OF_ENTRIES}</td>

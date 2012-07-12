@@ -88,6 +88,8 @@
                 <label>{TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND}</label>
             </div>
             <div id="protection_frontend_container" class="container">
+                <label class="left">{TXT_CORE_CM_ACCESS_PROTECTION_AVAILABLE_GROUPS}</label>
+                <label class="right">{TXT_CORE_CM_ACCESS_PROTECTION_ASSIGNED_GROUPS}</label>
                 <select id="frontendAccessGroups" class="multiselect" multiple="multiple" name="frontendGroups[]">
                   <option value="test">unselected</option>
                   <option value="test2" selected="selected">selected</option>
@@ -100,6 +102,8 @@
                 <label>{TXT_CORE_CM_ACCESS_PROTECTION_BACKEND}</label>
             </div>
             <div id="protection_backend_container" class="container">
+                <label class="left">{TXT_CORE_CM_ACCESS_PROTECTION_AVAILABLE_GROUPS}</label>
+                <label class="right">{TXT_CORE_CM_ACCESS_PROTECTION_ASSIGNED_GROUPS}</label>
                 <select id="backendAccessGroups" class="multiselect" multiple="multiple" name="backendGroups[]">
                   <option value="test">unselected</option>
                   <option value="test2" selected="selected">selected</option>
@@ -125,6 +129,8 @@
                     {SKIN_OPTIONS}
                 </select>
                 <span class="tipmessage info input" onmouseout="htm()" onmouseover="stm(Text[9],Style[0])"></span>
+                <a id="page_skin_view" href="javascript:void(0)">{TXT_THEME_PREVIEW}</a>
+                <a id="page_skin_edit" href="javascript:void(0)">{TXT_EDIT}</a>
                 <label for="page_custom_content">{TXT_CORE_CM_CUSTOM_CONTENT}</label>
                 <select id="page_custom_content" name="page[customContent]">
                     <option>(Default)</option>

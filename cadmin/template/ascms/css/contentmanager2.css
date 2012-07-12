@@ -106,6 +106,10 @@ h1{ font-size: 20px }
     overflow: visible;
 }
 
+#site-structure th.lastupdate {
+    text-align: right; 
+}
+
 #content-manager.edit_page #site-structure {
     width: 350px;
     margin: 0;
@@ -218,18 +222,18 @@ h1{ font-size: 20px }
     left: 65.6%;
 }
 
-#site-tree .lastupdate {
-    left: 77.6%;
-}
-
 #site-tree .preview {
     left: 70.6%;
     background: url(../images/content_manager_preview.png) no-repeat left center;
     padding: 0 0 0 16px !important;
 }
 
-#site-tree .actions {
+#site-tree .lastupdate {
     right: 10px;
+}
+
+#site-tree .actions {
+    left: 77.6%;
     background: url(../images/content_manager_actions_plus.png) no-repeat left center;
     padding: 0 0 0 16px;
 }
@@ -252,6 +256,11 @@ h1{ font-size: 20px }
     background: url(../images/content_manager_actions_arrow.png) no-repeat right center;
 }
 
+#content-manager.edit_page #site-tree .actions {
+    left: auto;
+    right: 10px;
+}
+
 #content-manager.edit_page #site-tree .actions .label,
 #content-manager.edit_page #site-tree .actions .arrow {
     display: none;
@@ -261,8 +270,13 @@ h1{ font-size: 20px }
     display: block;
     position: absolute;
     top: 23px;
-    right: 9px;
+    left: 77.6%;
     z-index: 11;
+}
+
+#content-manager.edit_page #site-tree .actions-expanded {
+    left: auto;
+    right: 10px;
 }
 
 #site-tree .actions-expanded ul {
@@ -287,6 +301,10 @@ h1{ font-size: 20px }
     background-position: left center;
     margin: 3px 0 3px 0;
     display: block !important;
+}
+
+#site-tree .actions-expanded ul li.new {
+    background: transparent;
 }
 
 #site-tree .actions-expanded ul li.activate {
@@ -891,7 +909,28 @@ div.date img{
 
 #page #protection_frontend_container,
 #page #protection_backend_container {
+    position: relative;
     width: 620px;
+    padding: 19px 0 0 0;
+}
+
+#page #protection_frontend_container label,
+#page #protection_backend_container label {
+    position: absolute;
+    top: 0;
+    float: left;
+    width: auto;
+    margin: 0;
+}
+
+#page #protection_frontend_container label.left,
+#page #protection_backend_container label.left {
+    left: 0;
+}
+
+#page #protection_frontend_container label.right,
+#page #protection_backend_container label.right {
+    left: 336px;
 }
 
 #page #scheduled_publishing_container label {
@@ -913,6 +952,13 @@ div.date img{
     clear: both;
     width: auto;
     margin: 0 0 8px 0;
+}
+
+#page #themes_container #page_skin_view,
+#page #themes_container #page_skin_edit {
+    float: left;
+    width: auto;
+    margin: 5px 6px 5px 0;
 }
 
 #page #navigation_container #page_aliases label {
@@ -985,7 +1031,7 @@ div.date img{
 
 
 /* jquery ui css customization */
-.ui-dialog {
+.ui-dialog.cxDialog {
     position: absolute;
     top: 0 !important;
     border-top: 0;
@@ -995,6 +1041,7 @@ div.date img{
     border-radius: 0;
     text-align: center;
 }
+
 .ui-dialog.noTitle .ui-dialog-titlebar {
     display: none;
 }
@@ -1017,107 +1064,120 @@ div.date img{
 }
 
 .ui-tabs {
-    border: 0;
-    border-radius: 0;
-    padding: 0;
+    border: 0 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
 }
 .ui-tabs-nav {
-    border: 0;
-    margin: 0;
+    border: 0 !important;
+    margin: 0 !important;
 }
 .ui-tabs-panel {
     padding: 0 !important;
 }
 
+.ui-widget-content a,
+.ui-widget-content a:link,
+.ui-widget-content a:visited {
+    color: #1a74bd;
+}
+
+.ui-widget-content a:hover,
+.ui-widget-content a:focus,
+.ui-widget-content a:active {
+    color: #0b4c7a;
+    cursor: pointer;
+}
+
 #editMode_Background {
-	position: fixed;
-	top: 0px;
-	left: 0px;
-	width: 100%;
-	height: 100%;
-	background-color: #000000;
-	alpha(opacity=50);
-	-moz-opacity:0.5; 
-	opacity: 0.5;
-	z-index: 400;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+    alpha(opacity=50);
+    -moz-opacity:0.5; 
+    opacity: 0.5;
+    z-index: 400;
 }
 
 #editMode_Window {
-	position: fixed;
-	top: 0px;
-	left: 0px;
-	width: 0px;
-	width: 100%;
-	height: 100%;
-	z-index: 500; 
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 500; 
 }
 
 #editMode_Frame {
-	position: fixed; 
-	top: 35%; 
-	left: 50%; 
-	width: 400px;
-	height: 164px;
-	padding: 10px;
-	margin-top: -92px; 
-	margin-left: -211px; 
-	font-size: 13px;
-	text-align: center;
-	border: 1px solid #c3dff9; 
-	background-color: #82b1ec;
-	background-image: url('images/content_manager/editmode_Background.gif');
-	background-repeat: repeat-x;
-	background-position: top;
+    position: fixed; 
+    top: 35%; 
+    left: 50%; 
+    width: 400px;
+    height: 164px;
+    padding: 10px;
+    margin-top: -92px; 
+    margin-left: -211px; 
+    font-size: 13px;
+    text-align: center;
+    border: 1px solid #c3dff9; 
+    background-color: #82b1ec;
+    background-image: url('images/content_manager/editmode_Background.gif');
+    background-repeat: repeat-x;
+    background-position: top;
 }
 
 #editMode_Title {
-	width: 100%;
-	padding: 0px 0px 10px 0px;
-	font-weight: bold;
-	font-size: 15px;
-	height: 16px;
-	color: #ffffff;
+    width: 100%;
+    padding: 0px 0px 10px 0px;
+    font-weight: bold;
+    font-size: 15px;
+    height: 16px;
+    color: #ffffff;
 }
 
 #editMode_Title a, 
 #editMode_Title a:visited, 
 #editMode_Title a:active {
-	text-decoration: none;
-	color: #ffffff;
+    text-decoration: none;
+    color: #ffffff;
 }
 
 #editMode_Title a:hover  {
-	color: #efefef;
-	background-color: transparent;
+    color: #efefef;
+    background-color: transparent;
 }
 
 #editMode_Title .left {
-	float: left;
-	padding-left: 3px;
+    float: left;
+    padding-left: 3px;
 }
 
 #editMode_Title .right {
-	float: right;
-	padding-right: 3px;
+    float: right;
+    padding-right: 3px;
 }
 
 #editMode_Content {
-	height: 126px;
-	padding: 0px 10px 10px 10px;
-	border: 1px solid #4978ae; 
-	background-color: #ffffff;
+    height: 126px;
+    padding: 0px 10px 10px 10px;
+    border: 1px solid #4978ae; 
+    background-color: #ffffff;
 }
 
 #editMode_Content img {
-	border: 0px;
+    border: 0px;
 }
 
 #editMode_Content .left {
-	width: 180px; 
-	float: left;
+    width: 180px; 
+    float: left;
 }
 
 #editMode_Content .right {
-	width: 180px; 
-	float: right;
+    width: 180px; 
+    float: right;
 }
