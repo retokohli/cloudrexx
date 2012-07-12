@@ -235,6 +235,9 @@ class Resolver {
                     if(!isset($targetPage[0])) {
                         throw new ResolverException('Found invalid redirection target on page "'.$this->page->getTitle().'" with id "'.$this->page->getId().'": tried to find target page with node '.$nId.' and language '.$lId.', which does not exist.');
                     }
+                } elseif ($lId) {
+// TODO: shouldn't $this->lang be set to $lId ?? - by TD
+                    $this->pathOffset = ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageCodeById($lId);
                 }
 
                 $targetPage = $targetPage[0];
@@ -313,6 +316,10 @@ class Resolver {
                 throw new ResolverException('Followed fallback page, but couldn\'t find content of fallback Language');
 
             $page->getFallbackContentFrom($fallbackPage);
+// TODO: is setting $this->lang to the fallback-LANG save? - by TD
+            $this->lang = $langId;
+// TODO: is there a more proper way of setting the current URL? - by TD
+            $this->url->setSuggestedTargetPath(substr($fallbackPage->getPath(), 1));
             $this->resolve(true);
         }
     }
