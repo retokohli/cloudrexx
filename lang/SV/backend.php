@@ -6,6 +6,7 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_FRONTEND'] = 'Frontend';
 $_ARRAYLANG['TXT_CORE_GENERAL'] = "General";
 $_ARRAYLANG['TXT_CORE_PLACEHOLDERS'] = "Placeholders";
 $_ARRAYLANG['TXT_ACTION'] = "Actions";
@@ -1451,3 +1452,5 @@ $_ARRAYLANG['TXT_CORE_FINISH_UPLOADING'] = "Finish uploading";
 $_ARRAYLANG['TXT_CORE_FILES_UPLOADED'] = "file(s) uploaded";
 $_ARRAYLANG['TXT_CORE_FILES_NOT_UPLOADED'] = "Some file(s) couldn't be uploaded:";
 $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "The file extension is not allowed.";
+$_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_AVAILABLE_GROUPS'] = 'Available Groups';
+$_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_ASSIGNED_GROUPS'] = 'Assigned Groups';

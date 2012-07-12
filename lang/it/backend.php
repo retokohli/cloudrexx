@@ -6,6 +6,7 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_FRONTEND'] = 'Frontend';
 $_ARRAYLANG['TXT_CORE_GENERAL'] = "General";
 $_ARRAYLANG['TXT_CORE_PLACEHOLDERS'] = "Placeholders";
 $_ARRAYLANG['TXT_ACTION'] = "Funktionen";
@@ -1395,3 +1396,5 @@ $_ARRAYLANG['TXT_CORE_CM_CREATION_DENIED'] = "You don't have enough rights to cr
 $_ARRAYLANG['TXT_CORE_CM_DELETE_DENIED'] = "You don't have enough rights to delete pages";
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'] = "You don't have enough rights to change the access premissions.";
 $_ARRAYLANG['TXT_CORE_CM_PUBLISH_DENIED'] = "You don't have enough rights to publish pages.";
+$_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_AVAILABLE_GROUPS'] = 'Available Groups';
+$_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_ASSIGNED_GROUPS'] = 'Assigned Groups';
