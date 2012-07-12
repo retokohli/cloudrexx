@@ -246,7 +246,6 @@ class skins
                 break;
             case "createDir":
                 $this->createdir();
-                //$this->overview();
                 break;
             case "newFile":
                 $this->newfile();
@@ -326,7 +325,6 @@ class skins
         }
         if (!empty($_GET['import'])){
             $this->_importFile();
-
         }
         if (!empty($_GET['activate'])){
             $this->_activateDefault(intval($_GET['activate']));
@@ -794,16 +792,17 @@ class skins
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_active', 'skins_activate.html');
         $this->pageTitle = $_CORELANG['TXT_OVERVIEW'];
         $objTemplate->setVariable(array(
-            'TXT_ACTIVATE_DESIGN'      => $_CORELANG['TXT_ACTIVATE_DESIGN'],
-            'TXT_ID'                   => $_CORELANG['TXT_ID'],
-            'TXT_LANGUAGE'             => $_CORELANG['TXT_LANGUAGE'],
-            'TXT_ACTIVE_TEMPLATE'      => $_CORELANG['TXT_ACTIVE_TEMPLATE'],
+            'TXT_ACTIVATE_DESIGN'          => $_CORELANG['TXT_ACTIVATE_DESIGN'],
+            'TXT_ID'                       => $_CORELANG['TXT_ID'],
+            'TXT_LANGUAGE'                 => $_CORELANG['TXT_LANGUAGE'],
+            'TXT_ACTIVE_TEMPLATE'          => $_CORELANG['TXT_ACTIVE_TEMPLATE'],
             'TXT_ACTIVE_PDF_TEMPLATE'      => $_CORELANG['TXT_ACTIVE_PDF_TEMPLATE'],
-            'TXT_ACTIVE_PRINT_TEMPLATE' => $_CORELANG['TXT_ACTIVE_PRINT_TEMPLATE'],
-            'TXT_SAVE'    => $_CORELANG['TXT_SAVE'],
-            'TXT_THEME_ACTIVATE_INFO'    => $_CORELANG['TXT_THEME_ACTIVATE_INFO'],
-            'TXT_THEME_ACTIVATE_INFO_BODY'    => $_CORELANG['TXT_THEME_ACTIVATE_INFO_BODY'],
-            'TXT_ACTIVE_MOBILE_TEMPLATE' => $_CORELANG['TXT_ACTIVE_MOBILE_TEMPLATE']
+            'TXT_ACTIVE_PRINT_TEMPLATE'    => $_CORELANG['TXT_ACTIVE_PRINT_TEMPLATE'],
+            'TXT_SAVE'                     => $_CORELANG['TXT_SAVE'],
+            'TXT_THEME_ACTIVATE_INFO'      => $_CORELANG['TXT_THEME_ACTIVATE_INFO'],
+            'TXT_THEME_ACTIVATE_INFO_BODY' => $_CORELANG['TXT_THEME_ACTIVATE_INFO_BODY'],
+            'TXT_ACTIVE_MOBILE_TEMPLATE'   => $_CORELANG['TXT_ACTIVE_MOBILE_TEMPLATE'],
+            'TXT_ACTIVE_APP_TEMPLATE'      => $_CORELANG['TXT_APP'],
         ));
         $i=0;
 
@@ -820,10 +819,13 @@ class skins
             foreach ($_POST['mobileThemesId'] as $langid => $mobileThemesId) {
                 $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET mobile_themes_id='".intval($mobileThemesId)."' WHERE id=".intval($langid));
             }
+            foreach ($_POST['appThemesId'] as $langid => $appThemesId) {
+                $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET app_themes_id='".intval($appThemesId)."' WHERE id=".intval($langid));
+            }
             $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
         }
         $objResult = $objDatabase->Execute('
-            SELECT   `id`, `lang`, `name`, `frontend`, `themesid`, `mobile_themes_id`, `print_themes_id`, `pdf_themes_id`
+            SELECT   `id`, `lang`, `name`, `frontend`, `themesid`, `mobile_themes_id`, `print_themes_id`, `pdf_themes_id`, `app_themes_id`
             FROM     `'.DBPREFIX.'languages`
             WHERE    `frontend` = 1
             ORDER BY `id`
@@ -838,14 +840,15 @@ class skins
                 }
                 
                 $objTemplate->setVariable(array(
-                    'THEMES_ROWCLASS'           => $class,
-                    'THEMES_LANG_ID'            => $objResult->fields['id'],
-                    'THEMES_LANG_SHORTNAME'     => $objResult->fields['lang'],
-                    'THEMES_LANG_NAME'          => $objResult->fields['name'],
-                    'THEMES_TEMPLATE_MENU'      => $this->_getDropdownActivated($objResult->fields['themesid']),
-                    'THEMES_PRINT_TEMPLATE_MENU' => $this->_getDropdownActivated($objResult->fields['print_themes_id']),
+                    'THEMES_ROWCLASS'             => $class,
+                    'THEMES_LANG_ID'              => $objResult->fields['id'],
+                    'THEMES_LANG_SHORTNAME'       => $objResult->fields['lang'],
+                    'THEMES_LANG_NAME'            => $objResult->fields['name'],
+                    'THEMES_TEMPLATE_MENU'        => $this->_getDropdownActivated($objResult->fields['themesid']),
+                    'THEMES_PRINT_TEMPLATE_MENU'  => $this->_getDropdownActivated($objResult->fields['print_themes_id']),
                     'THEMES_MOBILE_TEMPLATE_MENU' => $this->_getDropdownActivated($objResult->fields['mobile_themes_id']),
-                    'THEMES_PDF_TEMPLATE_MENU' => $this->_getDropdownActivated($objResult->fields['pdf_themes_id']),
+                    'THEMES_PDF_TEMPLATE_MENU'    => $this->_getDropdownActivated($objResult->fields['pdf_themes_id']),
+                    'THEMES_APP_TEMPLATE_MENU'    => $this->_getDropdownActivated($objResult->fields['app_themes_id']),
                 ));
                 $objTemplate->parse('themesLangRow');
                 $i++;
@@ -860,7 +863,7 @@ class skins
      */
     function examples()
     {
-        global $_CORELANG, $objTemplate;
+        global $_CORELANG, $objTemplate, $_CONFIG;
 
         Permission::checkAccess(47, 'static');
 
@@ -876,7 +879,9 @@ class skins
             'TXT_FILES'                             => $_CORELANG['TXT_FILES'],
             'TXT_CONTENTS'                          => $_CORELANG['TXT_CONTENTS'],
             'TXT_PLACEHOLDER_DIRECTORY'             => $_CORELANG['TXT_DESIGN_REPLACEMENTS_DIR'],
-            'TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION' => $_CORELANG['TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION'], 
+            'TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION' => $_CORELANG['TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION'],
+            'TXT_CHANNELS'                          => $_CORELANG['TXT_CHANNELS'],
+            'CONTREXX_BASE_URL'                     => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . '/',
         ));
     }
 
@@ -1114,7 +1119,7 @@ class skins
             ));
             foreach ($pages as $page) {
                 $page->setSkin($newId);
-                $page->persist();
+                \Env::get('em')->persist($page);
             }
             \Env::get('em')->flush();
         }
@@ -1304,8 +1309,10 @@ class skins
             $themes = $this->selectTheme();
         }
         $defaultTheme = $this->selectTheme();
+        $defaultMobileTheme  = $this->getDefaultMobileTheme();
         $defaultPrintTheme = $this->getDefaultPrintTheme();
         $defaultPDFTheme = $this->getDefaultPDFTheme();
+        $defaultAppTheme = $this->getDefaultAppTheme();
         $objResult = $objDatabase->Execute("SELECT id,themesname,foldername FROM ".DBPREFIX."skins ORDER BY themesname,id");
         if ($objResult !== false) {
             while (!$objResult->EOF) {
@@ -1314,6 +1321,8 @@ class skins
                 } elseif ($objResult->fields['foldername'] == $defaultPrintTheme){
                     array_unshift($themelist, $objResult->fields);
                 } elseif ($objResult->fields['foldername'] == $defaultPDFTheme){
+                    array_unshift($themelist, $objResult->fields);
+                } elseif ($objResult->fields['foldername'] == $defaultAppTheme){
                     array_unshift($themelist, $objResult->fields);
                 } else {
                     $themelist[] = $objResult->fields;
@@ -1326,10 +1335,15 @@ class skins
         foreach ($themelist as $item) {
             $selected = "";
             $default = "";
+            $mobilestyle = "";
             $printstyle = "";
             $pdfstyle = "";
+            $appstyle = "";
             if ($item['foldername'] == $defaultTheme){
                 $default = "(".$_CORELANG['TXT_DEFAULT'].")";
+            }
+            if ($item['foldername'] == $defaultMobileTheme){
+                $mobilestyle = "(".$_CORELANG['TXT_ACTIVE_MOBILE_TEMPLATE'].")";
             }
             if ($item['foldername'] == $defaultPrintTheme){
                 $printstyle = "(".$_CORELANG['TXT_THEME_PRINT'].")";
@@ -1337,8 +1351,11 @@ class skins
             if ($item['foldername'] == $defaultPDFTheme){
                 $pdfstyle = "(".$_CORELANG['TXT_THEME_PDF'].")";
             }
+            if ($item['foldername'] == $defaultAppTheme){
+                $appstyle = "(".$_CORELANG['TXT_APP_VIEW'].")";
+            }
             if ($themes == $item['foldername']) $selected = "selected";
-            $tdm .='<option id="'.$item['id']."\" value='".$item['foldername']."' $selected>".contrexx_stripslashes($item['themesname'])." ".$default.$printstyle.$pdfstyle."</option>\n";
+            $tdm .='<option id="'.$item['id']."\" value='".$item['foldername']."' $selected>".contrexx_stripslashes($item['themesname'])." ".$default.$mobilestyle.$printstyle.$pdfstyle.$appstyle."</option>\n";
         }
         return $tdm;
     }
@@ -1651,6 +1668,25 @@ class skins
 
 
     /**
+     * return the foldername of the default mobile_theme
+     * @return string $default_mobile_theme_foldername
+     */
+    function getDefaultMobileTheme()
+    {
+        global $objDatabase, $_CORELANG;
+        $objResultID = $objDatabase->SelectLimit("SELECT `mobile_themes_id` FROM ".DBPREFIX."languages WHERE is_default='true'", 1);
+        if ($objResultID !== false && $objResultID->RecordCount() > 0) {
+            $objResult = $objDatabase->SelectLimit("SELECT `foldername` FROM ".DBPREFIX."skins WHERE id=".$objResultID->fields['mobile_themes_id']." ORDER BY id", 1);
+            if ($objResult !== false && $objResult->RecordCount() > 0) {
+                return $objResult->fields['foldername'];
+            }
+        }
+        $this->strErrMessage = $_CORELANG['TXT_NO_DEFAULT_THEME'];
+        return false;
+    }
+
+
+    /**
      * return the foldername of the default print_theme
      * @return string $default_print_theme_foldername
      */
@@ -1678,6 +1714,25 @@ class skins
         $objResultID = $objDatabase->SelectLimit("SELECT `pdf_themes_id` FROM ".DBPREFIX."languages WHERE is_default='true'", 1);
         if ($objResultID !== false && $objResultID->RecordCount() > 0) {
             $objResult = $objDatabase->SelectLimit("SELECT `foldername` FROM ".DBPREFIX."skins WHERE id=".$objResultID->fields['pdf_themes_id']." ORDER BY id", 1);
+            if ($objResult !== false && $objResult->RecordCount() > 0) {
+                return $objResult->fields['foldername'];
+            }
+        }
+        $this->strErrMessage = $_CORELANG['TXT_NO_DEFAULT_THEME'];
+        return false;
+    }
+
+
+    /**
+     * return the foldername of the default app_theme
+     * @return string $default_app_theme_foldername
+     */
+    function getDefaultAppTheme()
+    {
+        global $objDatabase, $_CORELANG;
+        $objResultID = $objDatabase->SelectLimit("SELECT `app_themes_id` FROM ".DBPREFIX."languages WHERE is_default='true'", 1);
+        if ($objResultID !== false && $objResultID->RecordCount() > 0) {
+            $objResult = $objDatabase->SelectLimit("SELECT `foldername` FROM ".DBPREFIX."skins WHERE id=".$objResultID->fields['app_themes_id']." ORDER BY id", 1);
             if ($objResult !== false && $objResult->RecordCount() > 0) {
                 return $objResult->fields['foldername'];
             }
@@ -1858,7 +1913,10 @@ class skins
         if ($objRS){
             $themes = array();
             $defaultTheme = $this->selectTheme();
+            $defaultMobileTheme = $this->getDefaultMobileTheme();
             $defaultPrintTheme = $this->getDefaultPrintTheme();
+            $defaultPDFTheme = $this->getDefaultPDFTheme();
+            $defaultAppTheme = $this->getDefaultAppTheme();
             while(!$objRS->EOF){
                 $languagesWithThisTheme = '';
                 $query = '  SELECT `name`
@@ -1866,7 +1924,10 @@ class skins
                             WHERE 1=1
                             AND `frontend` = 1
                             AND (`themesid` = '.$objRS->fields['id'].'
-                            OR `print_themes_id` = '.$objRS->fields['id'].')';
+                            OR `mobile_themes_id` = '.$objRS->fields['id'].'
+                            OR `print_themes_id` = '.$objRS->fields['id'].'
+                            OR `pdf_themes_id` = '.$objRS->fields['id'].'
+                            OR `app_themes_id` = '.$objRS->fields['id'].')';
                 $objRSLang = $objDatabase->Execute($query);
                 if ($objRSLang) {
                     while(!$objRSLang->EOF){
@@ -1875,17 +1936,24 @@ class skins
                     }
                 }
                 $languagesWithThisTheme = substr($languagesWithThisTheme, 0, -2);
+                $objRS->fields['languages'] = $languagesWithThisTheme;
                 if ($objRS->fields['foldername'] == $defaultTheme){
                     $objRS->fields['extra'] = ' ('.$_CORELANG['TXT_DEFAULT'].')';
-                    $objRS->fields['languages'] = $languagesWithThisTheme;
+                    array_unshift($themes, $objRS->fields);
+                } elseif ($objRS->fields['foldername'] == $defaultMobileTheme){
+                    $objRS->fields['extra'] = ' ('.$_CORELANG['TXT_ACTIVE_MOBILE_TEMPLATE'].')';
                     array_unshift($themes, $objRS->fields);
                 } elseif ($objRS->fields['foldername'] == $defaultPrintTheme){
                     $objRS->fields['extra'] = ' ('.$_CORELANG['TXT_THEME_PRINT'].')';
-                    $objRS->fields['languages'] = $languagesWithThisTheme;
+                    array_unshift($themes, $objRS->fields);
+                } elseif ($objRS->fields['foldername'] == $defaultPDFTheme) {
+                    $objRS->fields['extra'] = ' ('.$_CORELANG['TXT_THEME_PDF'].')';
+                    array_unshift($themes, $objRS->fields);
+                } elseif ($objRS->fields['foldername'] == $defaultAppTheme) {
+                    $objRS->fields['extra'] = ' ('.$_CORELANG['TXT_APP_VIEW'].')';
                     array_unshift($themes, $objRS->fields);
                 } else {
                     $objRS->fields['extra'] = '';
-                    $objRS->fields['languages'] = $languagesWithThisTheme;
                     $themes[] = $objRS->fields;
                 }
                 $objRS->MoveNext();

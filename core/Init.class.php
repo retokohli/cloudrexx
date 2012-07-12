@@ -77,24 +77,25 @@ class InitCMS
         $this->mode=$mode;
 
         $objResult = $objDatabase->Execute("
-            SELECT id, themesid, print_themes_id, pdf_themes_id,mobile_themes_id,
+            SELECT id, themesid, print_themes_id, pdf_themes_id, mobile_themes_id, app_themes_id,
                    lang, name, charset, backend, frontend, is_default
               FROM ".DBPREFIX."languages
         ");
         if ($objResult) {
             while (!$objResult->EOF) {
                 $this->arrLang[$objResult->fields['id']]= array(
-                    'id'         => $objResult->fields['id'],
-                    'themesid'   => $objResult->fields['themesid'],
-                    'print_themes_id' => $objResult->fields['print_themes_id'],
-                    'pdf_themes_id' => $objResult->fields['pdf_themes_id'],
+                    'id'               => $objResult->fields['id'],
+                    'themesid'         => $objResult->fields['themesid'],
+                    'print_themes_id'  => $objResult->fields['print_themes_id'],
+                    'pdf_themes_id'    => $objResult->fields['pdf_themes_id'],
                     'mobile_themes_id' => $objResult->fields['mobile_themes_id'],
-                    'lang'       => $objResult->fields['lang'],
-                    'name'       => $objResult->fields['name'],
-                    'charset'    => $objResult->fields['charset'],
-                    'backend'    => $objResult->fields['backend'],
-                    'frontend'   => $objResult->fields['frontend'],
-                    'is_default' => $objResult->fields['is_default']);
+                    'app_themes_id'    => $objResult->fields['app_themes_id'],
+                    'lang'             => $objResult->fields['lang'],
+                    'name'             => $objResult->fields['name'],
+                    'charset'          => $objResult->fields['charset'],
+                    'backend'          => $objResult->fields['backend'],
+                    'frontend'         => $objResult->fields['frontend'],
+                    'is_default'       => $objResult->fields['is_default']);
                 $this->arrLangNames[$objResult->fields['lang']] = $objResult->fields['id'];
                 if ($objResult->fields['is_default']=="true") {
                     $this->defaultBackendLangId = $objResult->fields['id'];
@@ -184,6 +185,10 @@ class InitCMS
         // Load mobile template
         elseif ($this->isMobileDevice and $this->arrLang[$this->frontendLangId]['mobile_themes_id']) {
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['mobile_themes_id'];
+        }
+        // Load app template
+        elseif (isset($_GET['appview']) && $_GET['appview'] == 1) {
+            $this->currentThemesId = $this->arrLang[$this->frontendLangId]['app_themes_id'];
         }
         // Load regular content template
         else {
@@ -838,29 +843,63 @@ class InitCMS
                 'size="1" class="chzn-select"')."\n</form>\n";
     }
 
-
-    function getPrintUri()
+    public function getStandardUri()
     {
-        return CONTREXX_DIRECTORY_INDEX.'?'.(!empty($_SERVER['QUERY_STRING']) ? htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES, CONTREXX_CHARSET).'&amp;' : '').'printview=1';
-                }
-
-
-    function getPDFUri()
+        $url = \Env::get('Resolver')->getUrl();
+        $myUrl = clone $url;
+        $myUrl->setParam('smallscreen', 0);
+        
+        return $myUrl;
+    }
+    
+    public function getMobileUri()
     {
-        return CONTREXX_DIRECTORY_INDEX.'?'.(!empty($_SERVER['QUERY_STRING']) ? htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES, CONTREXX_CHARSET).'&amp;' : '').'pdfview=1';
+        $url = \Env::get('Resolver')->getUrl();
+        $myUrl = clone $url;
+        $myUrl->setParam('smallscreen', 1);
+        
+        return $myUrl;
+    }
+
+    public function getPrintUri()
+    {
+        $url = \Env::get('Resolver')->getUrl();
+        $myUrl = clone $url;
+        $myUrl->setParam('printview', 1);
+        
+        return $myUrl;
     }
 
 
-    function getPageUri()
+    public function getPDFUri()
+    {
+        $url = \Env::get('Resolver')->getUrl();
+        $myUrl = clone $url;
+        $myUrl->setParam('pdfview', 1);
+        
+        return $myUrl;
+    }
+
+
+    public function getAppUri()
+    {
+        $url = \Env::get('Resolver')->getUrl();
+        $myUrl = clone $url;
+        $myUrl->setParam('appview', 1);
+        
+        return $myUrl;
+    }
+
+
+    public function getPageUri()
     {
         global $_CONFIG;
-
-        return ASCMS_PROTOCOL."://". $_CONFIG['domainUrl']. $_SERVER['REQUEST_URI'];
-        //return $_SERVER['SCRIPT_URI'];
+        
+        return ASCMS_PROTOCOL."://". $_CONFIG['domainUrl']. \Env::get('Resolver')->getUrl();
     }
 
 
-    function getCurrentPageUri()
+    public function getCurrentPageUri()
     {
         return htmlspecialchars($_SERVER['REQUEST_URI'], ENT_QUOTES, CONTREXX_CHARSET);
     }
