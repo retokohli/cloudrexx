@@ -11,77 +11,77 @@
  */
 class CsvLib
 {
-	var $separator = ";";
-	var $enclosure = "\"";
+    var $separator = ";";
+    var $enclosure = "\"";
 
-	/**
-	 * Constructor
-	 *
-	 * Gets the options
-	 */
-	function __construct()
-	{
+    /**
+     * Constructor
+     *
+     * Gets the options
+     */
+    function __construct()
+    {
             if (!isset($_POST['import_options_csv_separator'])) {
                 return false;
             }
-		$this->separator = contrexx_stripslashes($_POST['import_options_csv_separator']);
-		if ($this->separator == '\t') {
-			$this->separator = "\t";
-		}
+        $this->separator = contrexx_stripslashes($_POST['import_options_csv_separator']);
+        if ($this->separator == '\t') {
+            $this->separator = "\t";
+        }
 
-		if (strlen($_POST['import_options']) == 1) {
-			$this->enclosure = $_POST['import_options_csv_enclosure'];
-		}
-	}
+        if (strlen($_POST['import_options']) == 1) {
+            $this->enclosure = $_POST['import_options_csv_enclosure'];
+        }
+    }
 
-	/**
-	 * PHP 4 Constructor
-	 *
-	 * @return CsvLib
-	 */
-	function CsvLib()
-	{
-		$this->__construct();
-	}
+    /**
+     * PHP 4 Constructor
+     *
+     * @return CsvLib
+     */
+    function CsvLib()
+    {
+        $this->__construct();
+    }
 
 
-	/**
-	 * Returns the content of a csv file
-	 *
-	 * @param string $file
+    /**
+     * Returns the content of a csv file
+     *
+     * @param string $file
      * @param bool $columnNamesInFirstRow should the first row's values be taken as column names?
      * @param bool $firstRowIsAlsoData if columnNamesInFirstRow is true, are those fields also values?
-	 * @param bool $limit Limit
-	 * @return array
-	 *
-	 * Array
-		(
-		    [fieldnames] => Array
-		        (
-		            [0] => Name
-		            [1] => Vorname
-		            [2] => test
-		        )
+     * @param bool $limit Limit
+     * @return array
+     *
+     * Array
+        (
+            [fieldnames] => Array
+                (
+                    [0] => Name
+                    [1] => Vorname
+                    [2] => test
+                )
 
-		    [data] => Array
-		        (
-		            [0] => Array
-		                (
-		                    [0] => Wert1
-		                    [1] => Wert1.2
-		                    [2] => Wert1.3
-		                )
+            [data] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => Wert1
+                            [1] => Wert1.2
+                            [2] => Wert1.3
+                        )
 
-		        )
+                )
 
-		)
-	 */
-	function parse($file,$columnNamesInFirstRow=false, $firstRowIsAlsoData=false, $looplimit=-1)
-	{
+        )
+     */
+    function parse($file,$columnNamesInFirstRow=false, $firstRowIsAlsoData=false, $looplimit=-1)
+    {
 
-		// detect newlines correctly. bit slower, but in exchange
-		// we can import old apple CSV files.
-		ini_set('auto_detect_line_endings', 1);
+        // detect newlines correctly. bit slower, but in exchange
+        // we can import old apple CSV files.
+        ini_set('auto_detect_line_endings', 1);
 
         // try to convert the file to the system charset CONTREXX_CHARSET if required
         if(function_exists("mb_detect_encoding")) {
@@ -93,48 +93,68 @@ class CsvLib
             }
         }
 
-		$handle = fopen($file, "r");
+        $handle = fopen($file, "r");
 
-		if ($handle) {
-			$firstline = true;
+        if ($handle) {
+            $firstline = true;
+            $lastColumnEmpty = true;
 
-			// Get the longest line
-			$limit = $looplimit;
-			$len = 0;
-			while (!feof($handle) && $limit != 0) {
-				$length = strlen(fgets($handle));
-				$len = ($length > $len) ? $length : $len;
-				$limit--;
-			}
+            // Get the longest line
+            $limit = $looplimit;
+            $len = 0;
+            while (!feof($handle) && $limit != 0) {
+                $length = strlen(fgets($handle));
+                $len = ($length > $len) ? $length : $len;
+                $limit--;
+            }
 
-			// Set the pointer back to 0
-			fseek($handle, 0);
+            // Set the pointer back to 0
+            fseek($handle, 0);
 
-			$limit = $looplimit;
-			while (($data = fgetcsv($handle, $len, $this->separator, $this->enclosure)) && $limit != 0) {
-				if (!empty($data[0]) || $looplimit == 1) {
+            $limit = $looplimit;
+            while (($data = fgetcsv($handle, $len, $this->separator, $this->enclosure)) && $limit != 0) {
+                $dataAvailable = false;
+                foreach ($data as $value) {
+                    if (!empty($value)) {
+                        $dataAvailable = true;
+                        break;
+                    }
+                }
+
+                if ($dataAvailable || $looplimit == 1) {
                     //set field names if they are specified in the first row
-					if ($firstline && $columnNamesInFirstRow) {
-						foreach ($data as $index => $field) {
-							if(empty($field)){
-								$field = "emptyField_$index";
-							}
-							$retdata['fieldnames'][] = $field;
-						}
-						$firstline = false;
-					}
+                    if ($firstline && $columnNamesInFirstRow) {
+                        foreach ($data as $index => $field) {
+                            if (empty($field)){
+                                $field = "emptyField_$index";
+                            }
+                            $retdata['fieldnames'][] = $field;
+                        }
+                        $firstline = false;
+                    }
                     //add fields to data if it's not the first row and it contains only titles
-                    if(!$firstline || !$columnNamesInFirstRow || $firstRowIsAlsoData) {
-						$retdata['data'][] = $data;
-					}
-				}
-				$limit--;
-			}
+                    if (!$firstline || !$columnNamesInFirstRow || $firstRowIsAlsoData) {
+                        $retdata['data'][] = $data;
+                    }
+                }
+                $limit--;
 
-			fclose($handle);
-			return $retdata;
-		}
-	}
+                if (!empty($data[count($data)-1])) {
+                    $lastColumnEmpty = false;
+                }
+            }
+
+            if ($lastColumnEmpty) {
+                unset($retdata['fieldnames'][count($retdata['fieldnames'])-1]);
+                foreach ($retdata['data'] as &$arrValue) {
+                    unset($arrValue[count($arrValue)-1]);
+                }
+            }
+
+            fclose($handle);
+            return $retdata;
+        }
+    }
 }
 
 ?>
