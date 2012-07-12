@@ -581,7 +581,6 @@ class Page extends \Cx\Model\Base\EntityBase
                 $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
                 $targetPage = $pageRepo->getTargetPage($this);
                 if (!$targetPage ||
-                        !$targetPage->isVisible() ||
                         !$targetPage->isActive()) {
                     $status .= 'broken ';
                 }
