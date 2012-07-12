@@ -1,8 +1,9 @@
 #aside{
     display: block;
 }
-#nav-sub{
-    display: none;
+
+#shop select.shop_cart_input {
+    width: 160px !important;
 }
 .main_subpage,
 #content {

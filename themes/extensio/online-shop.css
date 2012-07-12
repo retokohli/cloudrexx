@@ -1,14 +1,12 @@
 #aside{
-    display: none;
+    display: block;
 }
 .main_subpage,
 #content {
-    float: left;
-    width: 100%;
+  /*  float: left;*/
+    width: 650px;
 }
-.main-holder{
-background: none
-}
+
 article.col-13{
     border: 1px solid #efefef; 
     padding: 11px;
@@ -90,7 +88,7 @@ span.detail_link:before{
 	clear: both
 }
 .wrapper-shop{
-	width: 75%;
+	/*width: 75%;*/
 	float:left;
 }
 #shop div.description{
@@ -113,7 +111,7 @@ margin-bottom: 0
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
-	width: 21%;
+	/*width: 21%;*/
 	margin: 0 13px;
 }
 .product .images img {

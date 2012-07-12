@@ -1,10 +1,10 @@
 #aside{
-    display: none;
+    display: block;
 }
 .main_subpage,
 #content {
     float: left;
-    width: 100%;
+    width: 650px;
 }
 #shop div.description{
 /*	width: 100%*/
