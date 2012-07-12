@@ -99,11 +99,25 @@ a:active {
     float: left;
     padding: 0 0 0 16px;
     margin: 0 0 0 20px;
-    color: #C5DBE8;
+    color: #c5dbe8;
 }
 
-#metanavigation a.profil {
-    background: url(../images/profil_icon.png) no-repeat;
+#metanavigation a.first {
+    margin: 0;
+}
+
+#metanavigation a:hover,
+#metanavigation a:focus,
+#metanavigation a:active {
+    color: #ffffff;
+}
+
+#metanavigation a.frontend {
+    background: transparent;
+}
+
+#metanavigation a.profile {
+    background: url(../images/profile_icon.png) no-repeat;
 }
 
 #metanavigation a.logout {

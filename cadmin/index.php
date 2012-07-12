@@ -232,28 +232,39 @@ CSRF::add_code();
 $objTemplate = NULL;
 if ($isRegularPageRequest) {
     $objTemplate = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
-    // TODO: Does CSRF::add_placeholder() really work before a template is loaded?
-    CSRF::add_placeholder($objTemplate);
     $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-
     $objTemplate->loadTemplateFile('index.html');
     $objTemplate->addBlockfile('CONTENT_FILE', 'index_content', 'index_content.html');
-    $objTemplate->touchBlock('backend_metanavigation');
+
     JS::activate('backend');
     JS::activate('tipmessage');
     JS::activate('chosen');
 
+    $objUser = FWUser::getFWUserObject()->objUser;
+    $firstname = $objUser->getProfileAttribute('firstname');
+    $lastname = $objUser->getProfileAttribute('lastname');
+
+    if (!empty($firstname) && !empty($lastname)) {
+        $txtProfile = $firstname.' '.$lastname;
+    } else {
+        $txtProfile = $objUser->getUsername();
+    }
+
+    $objTemplate->setVariable(array(
+        'TXT_FRONTEND'      => $_CORELANG['TXT_FRONTEND'],
+        'TXT_PROFILE'       => $txtProfile,
+        'TXT_LOGOUT'        => $_CORELANG['TXT_LOGOUT'],
+        'TXT_PAGE_ID'       => $_CORELANG['TXT_PAGE_ID'],
+        'CONTREXX_CHARSET'  => CONTREXX_CHARSET,
+        'CONTAINER_CLASS'   => empty($plainCmd) ? 'backend dashboard' : 'backend',
+        'USER_ID'           => $objFWUser->objUser->getId(),
+    ));
+    $objTemplate->touchBlock('backend_metanavigation');
+    
     // No longer needed in v3.0
     /*if (Permission::checkAccess(35, 'static', true)) {
         $objTemplate->addBlockfile('QUICKLINKS_CONTENT', 'quicklinks', 'quicklinks.html');
     }*/
-
-    $objTemplate->setVariable(array(
-        'TXT_PAGE_ID'      => $_CORELANG['TXT_PAGE_ID'],
-        'CONTREXX_CHARSET' => CONTREXX_CHARSET,
-        'CONTAINER_CLASS'  => empty($plainCmd) ? 'backend dashboard' : 'backend',
-        'USER_ID'          => $objFWUser->objUser->getId(),
-    ));
 
     // Skip the nav/language bar for modules which don't make use of either.
     // TODO: Remove language selector for modules which require navigation but bring their own language management.
