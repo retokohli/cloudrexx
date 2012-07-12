@@ -7,45 +7,44 @@
 <div id="placeholder-list" class="setTab">
     <table summary="" width="100%" border="0" cellspacing="0" cellpadding="3" class="adminlist">
         <tr>
-            <th colspan="5">
+            <th width="10%">
                 <div align="left">{TXT_REPLACEMENT_LIST}</div>
             </th>
+            <th width="15%"></th>
+            <th width="15%"></th>
+            <th width="60%"></th>
         </tr>
         <tr class="row1" valign="top">
-            <td width="10%" nowrap="nowrap"><b>{TXT_FILES}</b></td>
-            <td width="25%" nowrap="nowrap">
+            <td><b>{TXT_PLACEHOLDER_DIRECTORY}</b></td>
+            <td colspan="3">{TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2" valign="top">
+            <td><b>{TXT_FILES}</b></td>
+            <td>
         		[[JAVASCRIPT_FILE]]<br />
         		[[STYLE_FILE]]<br />
         		[[BUILDIN_STYLE_FILE]]<br />
         		[[CONTENT_FILE]]<br />
-        		[[NAVBAR_FILE]]<br />
-        		[[SUBNAVBAR_FILE]]<br />
-        		[[SHOPNAVBAR_FILE]]<br />
-        		[[SIDEBAR_FILE]]<br />
+        		[[NAVBAR_FILE]]
+        	</td>
+        	<td>
+        	    [[SUBNAVBAR_FILE]]<br />
+                [[SHOPNAVBAR_FILE]]<br />
+                [[SIDEBAR_FILE]]<br />
         		[[DIRECTORY_HOME]]<br />
-        		[[EVENTS_FILE]]<br />
-        		[[HEADLINES_FILE]]<br />
-        		[[FORUM_FILE]]<br />
-        		[[PODCAST_FILE]]<br />
-        		[[BLOG_FILE]]<br />
-                [[JAVASCRIPT]]<br />
+        		[[EVENTS_FILE]]
             </td>
-            <td width="5%" nowrap="nowrap"><b>{TXT_CONTENTS}</b></td>
-            <td width="30%">
-        		[[ACTIVE_LANGUAGE_NAME]]<br />
-        		[[CHARSET]]<br />
-        		[[CSS_NAME]]<br />
-        		[[COUNTER]]<br />
-        		[[CONTENT_TITLE]]<br />
-        		[[CONTENT_TEXT]]<br />
-        		[[DATE]]<br />
-        		[[TIME]]<br />
-        		[[LANGUAGE_NAVBAR]]<br />
-        		[[LOGGING_STATUS]]<br />
-        		[[LANGUAGE_NAVBAR]]<br />
-        		[[FACEBOOK_LIKE_IFRAME]]
+            <td>
+                [[HEADLINES_FILE]]<br />
+                [[FORUM_FILE]]<br />
+                [[PODCAST_FILE]]<br />
+                [[BLOG_FILE]]<br />
+                [[JAVASCRIPT]]
             </td>
-            <td width="30%">
+        </tr>
+        <tr>
+            <td><b>{TXT_CONTENTS}</b></td>
+            <td>
         		[[TITLE]]<br />
         		[[GLOBAL_TITLE]]<br />
         		[[METATITLE]]<br />
@@ -54,27 +53,54 @@
         		[[METADESC]]<br />
         		[[METAROBOTS]]<br />
         		[[NAVTREE]]<br />
-        		[[ONLINE_USERS]]<br />
-        		[[PARSING_TIME]]<br />
-        		[[PAGE_URL]]<br />
-        		[[PRINT_URL]]<br />
-        		[[PDF_URL]]<br />
-        		[[CURRENT_URL]]<br />
-        		[[RANDOM]]<br />
-        		[[VERSION]]
+        		[[ONLINE_USERS]]
+            </td>
+            <td>
+                [[PARSING_TIME]]<br />
+                [[PAGE_URL]]<br />
+                [[CURRENT_URL]]<br />
+                [[RANDOM]]<br />
+                [[VERSION]]<br />
+                [[ACTIVE_LANGUAGE_NAME]]<br />
+                [[CHARSET]]<br />
+                [[CSS_NAME]]<br />
+                [[COUNTER]]
+            </td>
+            <td>
+                [[CONTENT_TITLE]]<br />
+                [[CONTENT_TEXT]]<br />
+                [[DATE]]<br />
+                [[TIME]]<br />
+                [[LANGUAGE_NAVBAR]]<br />
+                [[LOGGING_STATUS]]<br />
+                [[LANGUAGE_NAVBAR]]<br />
+                [[FACEBOOK_LIKE_IFRAME]]
             </td>
         </tr>
         <tr class="row1" valign="top">
             <td><b>{TXT_FRONTEND_EDITING_LOGIN_FRONTEND}</b></td>
-            <td colspan="4">
+            <td colspan="3">
             	[[LOGIN_INCLUDE]]<br />
             	[[LOGIN_CONTENT]]<br />
             	[[LOGIN_URL]]<br />
             </td>
         </tr>
         <tr class="row2" valign="top">
-            <td><b>{TXT_PLACEHOLDER_DIRECTORY}</b></td>
-            <td colspan="4">{TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION}</td>
+            <td><b>{TXT_CHANNELS}</b></td>
+            <td>
+                [[STANDARD_URL]]<br />
+                [[MOBILE_URL]]<br />
+                [[PRINT_URL]]<br />
+                [[PDF_URL]]<br />
+                [[APP_URL]]
+            </td>
+            <td colspan="2">
+                <a href="{CONTREXX_BASE_URL}?smallscreen=0" target="_blank">{CONTREXX_BASE_URL}?smallscreen=0</a><br />
+                <a href="{CONTREXX_BASE_URL}?smallscreen=1" target="_blank">{CONTREXX_BASE_URL}?smallscreen=1</a><br />
+                <a href="{CONTREXX_BASE_URL}?printview=1" target="_blank">{CONTREXX_BASE_URL}?printview=1</a><br />
+                <a href="{CONTREXX_BASE_URL}?pdfview=1" target="_blank">{CONTREXX_BASE_URL}?pdfview=1</a><br />
+                <a href="{CONTREXX_BASE_URL}?appview=1" target="_blank">{CONTREXX_BASE_URL}?appview=1</a>
+            </td>
         </tr>
     </table>
 </div>
