@@ -690,6 +690,9 @@ class MediaManager extends MediaLibrary
         $this->_objTpl->loadTemplateFile('module_media_edit.html', true, true);
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIA_EDIT_FILE'];
         
+        // Activate cx
+        JS::activate('cx');
+        
         // Activate jQuery and imgAreaSelect
         JS::activate('jquery');
         JS::activate('jquery-imgareaselect');
