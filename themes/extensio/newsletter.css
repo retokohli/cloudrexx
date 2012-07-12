@@ -1,0 +1,58 @@
+h1{
+    clear: both;
+    color: #202028;
+    float: left;
+    font: bold 15px/26px 'Open Sans',Arial,Helvetica,sans-serif;
+    margin: 21px 0 14px;
+}
+hr{
+    background-color: #ECEDF3;
+	border: none;
+    float: left;
+	height:1px;
+    margin: 13px 0 0;
+    width: 98%;
+}
+.main_subpage {
+    width: 660px
+}
+fieldset{
+    border: 1px solid #ECEDF3;
+    padding: 0;margin:0;
+    padding-left:10px;
+}
+legend{
+    color: #202028;
+    font-size: 16px;
+    font-weight: bold;
+    position: relative;
+    left : 0
+}
+form p label, form p span{
+    margin-left: 0;
+    width: auto
+}
+form p{
+    padding: 2px 0 3px 0
+}
+form p label.description{
+    padding-right: 14px;
+    width: auto;}
+#main input[type="text"],
+#main select {
+    clear: both;
+    float: left;
+}
+#main select {
+    border-radius: 3px;
+}
+.inp-msg{
+    font-size:10px;
+    width: auto;
+    color: #8B8B8B;
+    padding: 4px 12px
+}
+.form-two-col{
+    width: 50%;
+    float:left
+}
