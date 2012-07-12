@@ -1107,17 +1107,17 @@ div#livecam #CALBUTTONDPC_datum {
 #shop .shop_cart_input {
     width: 150px !important;
 }
-#shop .shop_cart_input:focus {
+/*#shop .shop_cart_input:focus {
     width: 144px !important;
     border-left: 5px solid #2687CC;
-}
+}*/
 #shop input.shop_quantity {
     width: 30px;
 }
-#shop input.shop_quantity:focus {
+/*#shop input.shop_quantity:focus {
     width: 26px;
     border-left: 5px solid #2687CC;
-}
+}*/
 #shop div.message_error {
     color:#FF0000;
 }
