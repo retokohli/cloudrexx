@@ -244,6 +244,8 @@ class CxLogEntryRepository extends \Gedmo\Loggable\Entity\Repository\LogEntryRep
      */
     public function getLatestLogsOfAllPages()
     {
+        $result = array();
+        
         $qb = $this->em->createQueryBuilder();
         $sqb = $this->em->createQueryBuilder();
         $qb->select('l')
