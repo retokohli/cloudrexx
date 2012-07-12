@@ -444,6 +444,7 @@ CREATE TABLE `contrexx_languages` (
   `is_default` set('true','false') NOT NULL default 'false',
   `mobile_themes_id` int(2) unsigned NOT NULL default '0',
   `fallback` int(2) unsigned default '0',
+  `app_themes_id` int(2) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `lang` (`lang`),
   KEY `defaultstatus` (`is_default`)
