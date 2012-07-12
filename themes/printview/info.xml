@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <theme version="1.0">
-	<name>Print 2</name>	
-	<version>2.0.0</version>
-	<description>Neue Version der Druckansicht.</description>	
+	<name>Print</name>	
+	<version>1.0</version>
+	<description>Simple HTML-Template for the Print-View.</description>	
 	<authors>
 		<author>
-		<user>Comvation AG, Thomas Kaelin</user>
-		<email>thomas.kaelin@comvation.com</email>
+		<user>Comvation AG</user>
+		<email>info@comvation.com</email>
 		</author>
 	</authors>
 </theme>

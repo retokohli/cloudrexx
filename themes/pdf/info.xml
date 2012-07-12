@@ -1,41 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!DOCTYPE theme SYSTEM "http://www.contrexx.com/themes/theme-1.0">
 <theme version="1.0">
-	<name>
-		PDF-View
-	</name>	
-	<version>
-		1.0
-	</version>
-	<description>
-		Simple HTML-Template for PDF-View
-	</description>	
+	<name>PDF</name>	
+	<version>1.0</version>
+	<description>Simple HTML-Template for the PDF-View.</description>	
 	<authors>
 		<author>
-			<user>
-				Comvation AG
-			</user>
-			<email>
-				info@comvation.com
-			</email>
+		<user>Comvation AG</user>
+		<email>info@comvation.com</email>
 		</author>
 	</authors>
-	<filelist>
-		<file>
-			index.html
-		</file>
-		<file>
-			home.html
-		</file>
-                <file>
-			style.css
-		</file>
-	</filelist>
-	<changelog>
-		<change date="2007-08-21">
-			<comment>
-				Update CSS
-			</comment>
-		</change>
-	</changelog>
 </theme>
