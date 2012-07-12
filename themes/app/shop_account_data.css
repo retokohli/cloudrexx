@@ -1,0 +1,29 @@
+#aside{
+    display: block;
+}
+#nav-sub{
+    display: none;
+}
+.main_subpage,
+#content {
+    float: left;
+   /* width: 100%;*/
+}
+#shop_acc_data{
+    border: 1px solid #F2F2F2;
+  /*  border-radius: 5px 5px 5px 5px;*/
+    float: left;
+    width: 650px;
+}
+#shop div.message_error {
+    color: #FF0000;
+    margin: 0
+}
+#shop h2{
+    background: none repeat scroll 0 0 #F2F2F2;
+    font: bold 16px/24px 'Open Sans',Arial,Helvetica,sans-serif;
+    padding: 8px 10px 8px 15px;
+}
+.shop_text{
+    padding: 10px 15px 5px;
+}

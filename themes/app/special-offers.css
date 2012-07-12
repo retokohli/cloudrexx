@@ -1,0 +1,47 @@
+#aside{
+    display: none;
+}
+.main_subpage,
+#content {
+    float: left;
+    width: 100%;
+}
+.main-holder{
+background: none
+}
+.discount-price {
+    color: #BCD608;
+    font-size: 15px;
+    font-weight: bold
+}
+.product-price {
+    font-size: 10px;
+}
+article.col-13 {
+    border: 1px solid #efefef; 
+    padding: 11px;
+    position: relative;
+    width: 190px;
+    margin:0 20px 20px 0
+}
+.visual {
+    margin-bottom: 0;
+    padding: 0;
+    position: relative
+}
+.price-wrapper {
+    float:right
+}
+.on-offer {
+    position: absolute;
+    background: url(images/special-offers.png);
+    width: 78px;
+    height: 78px;
+    left: 0;
+    top: 0
+}
+h2 {
+    color: #525252;
+    font: bold 14px/15px 'Open Sans',Arial,Helvetica,sans-serif;
+    margin: 9px 0 0;
+}

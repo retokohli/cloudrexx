@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<theme version="1.0">
+    <name>App</name>
+    <version>1.0</version>
+    <description>Simple HTML-Template for the App-View</description>
+    <authors>
+        <author>
+            <user>Comvation AG</user>
+            <email>info@comvation.com</email>
+        </author>
+    </authors>
+</theme>
