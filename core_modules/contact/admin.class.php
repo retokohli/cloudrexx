@@ -539,16 +539,25 @@ class ContactManager extends ContactLib
                 $pages = $this->em->getRepository('Cx\Model\ContentManager\Page')->getFromModuleCmdByLang('contact', $formId);
                 $lang = array();
                 foreach ($arrForm['lang'] as $langId => $value) {
-                    $lang[] = isset($pages[$langId])
-                                ? "<a title='".FWLanguage::getLanguageCodeById($langId)."' href='index.php?cmd=content&loadPage=".$pages[$langId]->getId()."'>".FWLanguage::getLanguageCodeById($langId).'</a>'
-                                : FWLanguage::getLanguageCodeById($langId);
+                    $links = '';
+                    if (isset($pages[$langId])) {
+                        $previewURL = '../'.\FWLanguage::getLanguageCodeById($langId).$pages[$langId]->getPath();
+                        $links = FWLanguage::getLanguageCodeById($langId).
+                                '<a title="'.FWLanguage::getLanguageCodeById($langId).'" href="index.php?cmd=content&loadPage='.$pages[$langId]->getId().'">'.
+                                    '<img src="./images/icons/green_arrow_down.png" alt="Edit in Content Manager" />'.
+                                '</a>'.
+                                '<a title="'.FWLanguage::getLanguageCodeById($langId).'" target="_blank" href="'.$previewURL.'">'.
+                                    '<img src="./images/icons/blue_arrow_up.png" alt="Website view" />'.
+                                '</a>';
+                    } else {
+                        $links = FWLanguage::getLanguageCodeById($langId);
+                    }
+                    $lang[] = $links;
                 }
 
                 $langString = implode(', ',$lang);
                 
                 $formName = contrexx_raw2xhtml($arrForm['lang'][$selectedInterfaceLanguage]['name']);
-
-                $previewURL = '../'.\FWLanguage::getLanguageCodeById($selectedInterfaceLanguage).$pages[$selectedInterfaceLanguage]->getPath();
 
                 // check if the form contains submitted data
                 if ($arrForm['number'] > 0) {
@@ -564,7 +573,6 @@ class ContactManager extends ContactLib
                         'TXT_CONTACT_VIEW'                  => $_CORELANG['TXT_CORE_CM_VIEW'],
                         'CONTACT_FORM_ROW_CLASS'            => $rowNr % 2 == 1 ? 'row1' : 'row2',
                         'CONTACT_FORM_NAME'                 => $formName,
-                        'CONTACT_FORM_VIEW_URL'             => $previewURL,
                         'CONTACT_FORM_LAST_ENTRY'           => $arrForm['last'] ? date(ASCMS_DATE_FORMAT, $arrForm['last']) : '-',
                         'CONTACT_FORM_NUMBER_OF_ENTRIES'    => $entryCount,
                         'CONTACT_DELETE_CONTENT'            => $pageExists ? 'true' : 'false',
