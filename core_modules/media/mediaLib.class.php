@@ -388,7 +388,7 @@ class MediaLibrary
                     $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_EDIT']);
                 } else {
                     $this->highlightName[] = $this->dirLog;
-                     $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_EDIT']);
+                    $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_EDIT']);
                 }
             }
         }
@@ -457,7 +457,7 @@ class MediaLibrary
         $newFile = $objFile->replaceCharacters($newFile);
         
         // If new image name is set, image will be copied. Otherwise, image will be overwritten
-        if ($newName != '' && $newFile != $orgFile) {
+        if ($newName != '') {
             $this->fileLog = $objFile->copyFile($this->path, $orgFile, $this->path, $newFile);
             if ($this->fileLog == 'error') {
                 throw new Exception('Could not copy image');
@@ -496,7 +496,7 @@ class MediaLibrary
             }
             
             // If no error occured, return true
-            return true;
+            return $this->fileLog;
         }
         
         throw new Exception('Path or file is empty');

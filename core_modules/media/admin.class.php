@@ -249,11 +249,11 @@ class MediaManager extends MediaLibrary
                 break;
             case 'editImage':
                 try {
-                    $this->editImage($_POST);
+                    $data = $this->editImage($_POST);
                 } catch (Exception $e) {
                     DBG::msg('Could not edit image: '.$e->getMessage());
                 }
-                die();
+                die($data);
                 break;
             case 'settings':
                 $this->_settings();
@@ -730,6 +730,7 @@ class MediaManager extends MediaLibrary
             // Icon, file & extension name
             $this->_objTpl->setVariable(array(
                 'MEDIA_FILE_ICON' => $this->iconWebPath.$icon.'.gif',
+                'MEDIA_FILE_DIR'  => $this->webPath,
                 'MEDIA_FILE_NAME' => $fileName,
                 'MEDIA_FILE_EXT'  => $fileExt,
             ));
@@ -780,17 +781,18 @@ class MediaManager extends MediaLibrary
         
         // Variables
         $this->_objTpl->setVariable(array(
-        	'CSRF'						=> CSRF::param(),
-            'MEDIA_EDIT_AJAX_ACTION'    => 'index.php?cmd=media&archive='.$this->archive.'&act=editImage&path='.$this->webPath,
-            'MEDIA_EDIT_REDIRECT'       => 'index.php?cmd=media&archive='.$this->archive.'&path='.$this->webPath,
-            'MEDIA_BACK_HREF'           => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;path='.$this->webPath,
-            'MEDIA_FILE_IMAGE_SRC'      => 'index.php?cmd=media&archive='.$this->archive.'&act=getImage&path='.$this->webPath.'&file='.$this->getFile.'&'.CSRF::param(),
-            'MEDIA_IMAGE_WIDTH'         => !empty($imageSize) ? intval($imageSize[0]) : 0,
-            'MEDIA_IMAGE_HEIGHT'        => !empty($imageSize) ? intval($imageSize[1]) : 0,
-            'MEDIA_IMAGE_CROP_WIDTH'    => $arrImageSettings['image_cut_width'],
-            'MEDIA_IMAGE_CROP_HEIGHT'   => $arrImageSettings['image_cut_height'],
-            'MEDIA_IMAGE_RESIZE_WIDTH'  => $arrImageSettings['image_scale_width'],
-            'MEDIA_IMAGE_RESIZE_HEIGHT' => $arrImageSettings['image_scale_height'],
+        	'CSRF'					 	 => CSRF::param(),
+            'MEDIA_EDIT_AJAX_ACTION'     => 'index.php?cmd=media&archive='.$this->archive.'&act=editImage&path='.$this->webPath,
+            'MEDIA_EDIT_REDIRECT'        => 'index.php?cmd=media&archive='.$this->archive.'&path='.$this->webPath,
+            'MEDIA_BACK_HREF'            => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;path='.$this->webPath,
+            'MEDIA_FILE_IMAGE_SRC'       => 'index.php?cmd=media&archive='.$this->archive.'&act=getImage&path='.$this->webPath.'&file='.$this->getFile.'&'.CSRF::param(),
+            'MEDIA_IMAGE_WIDTH'          => !empty($imageSize) ? intval($imageSize[0]) : 0,
+            'MEDIA_IMAGE_HEIGHT'         => !empty($imageSize) ? intval($imageSize[1]) : 0,
+            'MEDIA_IMAGE_CROP_WIDTH'     => $arrImageSettings['image_cut_width'],
+            'MEDIA_IMAGE_CROP_HEIGHT'    => $arrImageSettings['image_cut_height'],
+            //'MEDIA_IMAGE_RESIZE_WIDTH'   => $arrImageSettings['image_scale_width'],
+            //'MEDIA_IMAGE_RESIZE_HEIGHT'  => $arrImageSettings['image_scale_height'],
+            'MEDIA_IMAGE_RESIZE_QUALITY' => $arrImageSettings['image_compression'],
         ));
     }
 
