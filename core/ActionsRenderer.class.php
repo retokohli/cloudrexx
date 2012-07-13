@@ -15,7 +15,7 @@ class ActionsRenderer
 
         $actions = array();
         
-        $actions[] = sprintf(self::$actionItem, ' new', "index.php?cmd=jsondata&object=node&act=new&id={$page->getNode()->getId()}", $_ARRAYLANG['TXT_CORE_CM_NEW']);
+        $actions[] = sprintf('<li class="action-item new" onclick="cx.cm.showEditor();jQuery(\'#parent_node\').val(' . $page->getNode()->getId() . ');return false;">%3$s</li>', ' new', '', $_ARRAYLANG['TXT_CORE_CM_NEW']);
 
         if ($page->isActive()) {
             if ($page->getEditingStatus() == 'hasDraft' || $page->getEditingStatus() == 'hasDraftWaiting') {

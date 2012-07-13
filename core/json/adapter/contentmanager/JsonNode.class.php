@@ -331,7 +331,11 @@ class JsonNode implements JsonAdapter {
                         $publishingStatus = 'unpublished';
                     }
                 }
-
+                if ($page->isBackendProtected() &&
+                        !\Permission::checkAccess($page->getBackendAccessId(), 'dynamic', true)) {
+                    $publishingStatus .= ' locked';
+                }
+                
                 $metadata[$page->getId()] = array(
                     'visibility' => $page->getStatus(),
                     'publishing' => $publishingStatus,

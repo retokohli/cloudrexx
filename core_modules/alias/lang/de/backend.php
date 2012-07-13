@@ -6,7 +6,7 @@
  * @package     contrexx
  * @subpackage  core_module_alias
  */
-$_ARRAYLANG['TXT_ALIAS_ALIASES'] = "SEO URL Aliase";
+$_ARRAYLANG['TXT_ALIAS_ALIASES'] = "Übersicht";
 $_ARRAYLANG['TXT_ALIAS_ALIAS'] = "SEO URL Alias";
 $_ARRAYLANG['TXT_ALIAS_SETTINGS'] = "Einstellungen";
 $_ARRAYLANG['TXT_ALIAS_DELETE'] = "Löschen";
@@ -15,13 +15,13 @@ $_ARRAYLANG['TXT_ALIAS_PAGE'] = "Seite";
 $_ARRAYLANG['TXT_ALIAS_ALIAS_ES'] = "Alias(e)";
 $_ARRAYLANG['TXT_ALIAS_FUNCTIONS'] = "Funktionen";
 $_ARRAYLANG['TXT_ALIAS_MODIFY_ALIAS'] = "Alias bearbeiten";
-$_ARRAYLANG['TXT_ALIAS_ADD_ALIAS'] = "Neues Alias hinzufügen";
+$_ARRAYLANG['TXT_ALIAS_ADD_ALIAS'] = "Alias erstellen";
 $_ARRAYLANG['TXT_ALIAS_TARGET_PAGE'] = "Ziel Seite";
 $_ARRAYLANG['TXT_ALIAS_LOCAL'] = "Lokal";
 $_ARRAYLANG['TXT_ALIAS_URL'] = "URL";
 $_ARRAYLANG['TXT_ALIAS_BROWSE'] = "Webseiten durchsuchen";
 $_ARRAYLANG['TXT_ALIAS_CONFIRM_REMOVE_ALIAS'] = "Möchten Sie das Alias %s wirklich entfernen?";
-$_ARRAYLANG['TXT_ALIAS_ADD_ANOTHER_ALIAS'] = "weiteres Alias hinzufügen";
+$_ARRAYLANG['TXT_ALIAS_ADD_ANOTHER_ALIAS'] = "Alias erstellen";
 $_ARRAYLANG['TXT_ALIAS_SAVE'] = "Speichern";
 $_ARRAYLANG['TXT_ALIAS_CANCEL'] = "Abbrechen";
 $_ARRAYLANG['TXT_ALIAS_ONE_ALIAS_REQUIRED_MSG'] = "Sie müssen mindestens ein Alias definieren!";
