@@ -256,7 +256,7 @@ class ImageManager
         $this->newImageQuality = $quality;
         $this->newImageType = $this->orgImageType;
 		
-        if (function_exists ('imagecreatetruecolor')) {
+        if (function_exists('imagecreatetruecolor')) {
             $this->newImage = @imagecreatetruecolor($this->newImageWidth, $this->newImageHeight);
             // GD > 2 check
             if ($this->newImage) {
@@ -408,6 +408,10 @@ class ImageManager
         
         $this->newImageFile = $file;
         
+        if ($this->newImageType == self::IMG_TYPE_PNG) {
+            $this->setTransparency();
+        }
+        
         switch($this->newImageType) {
             case self::IMG_TYPE_GIF:
                 $function = 'imagegif';
@@ -468,7 +472,9 @@ class ImageManager
         if (!$this->imageCheck == 1) return false;
         if (empty($this->newImage)) return false;
         
-        $this->setTransparency();
+        if ($this->newImageType == self::IMG_TYPE_PNG) {
+            $this->setTransparency();
+        }
 		
         switch($this->newImageType) {
             case self::IMG_TYPE_GIF:

@@ -667,8 +667,8 @@ class settingsManager
         if (isset($arrData['submit'])) {
             $arrSettings['image_cut_width']    = contrexx_input2db(intval($arrData['image_cut_width']));
             $arrSettings['image_cut_height']   = contrexx_input2db(intval($arrData['image_cut_height']));
-            $arrSettings['image_scale_width']  = contrexx_input2db(intval($arrData['image_scale_width']));
-            $arrSettings['image_scale_height'] = contrexx_input2db(intval($arrData['image_scale_height']));
+            //$arrSettings['image_scale_width']  = contrexx_input2db(intval($arrData['image_scale_width']));
+            //$arrSettings['image_scale_height'] = contrexx_input2db(intval($arrData['image_scale_height']));
             $arrSettings['image_compression']  = contrexx_input2db(intval($arrData['image_compression']));
             
             foreach ($arrSettings as $name => $value) {
@@ -725,15 +725,15 @@ class settingsManager
             'TXT_IMAGE_TITLE'                => $_CORELANG['TXT_SETTINGS_IMAGE_TITLE'],
             'TXT_IMAGE_CUT_WIDTH'            => $_CORELANG['TXT_SETTINGS_IMAGE_CUT_WIDTH'],
             'TXT_IMAGE_CUT_HEIGHT'           => $_CORELANG['TXT_SETTINGS_IMAGE_CUT_HEIGHT'],
-            'TXT_IMAGE_SCALE_WIDTH'          => $_CORELANG['TXT_SETTINGS_IMAGE_SCALE_WIDTH'],
-            'TXT_IMAGE_SCALE_HEIGHT'         => $_CORELANG['TXT_SETTINGS_IMAGE_SCALE_HEIGHT'],
+            //'TXT_IMAGE_SCALE_WIDTH'          => $_CORELANG['TXT_SETTINGS_IMAGE_SCALE_WIDTH'],
+            //'TXT_IMAGE_SCALE_HEIGHT'         => $_CORELANG['TXT_SETTINGS_IMAGE_SCALE_HEIGHT'],
             'TXT_IMAGE_COMPRESSION'          => $_CORELANG['TXT_SETTINGS_IMAGE_COMPRESSION'],
             'TXT_SAVE'                       => $_CORELANG['TXT_SAVE'],
             
             'SETTINGS_IMAGE_CUT_WIDTH'       => !empty($arrSettings['image_cut_width'])    ? $arrSettings['image_cut_width']    : 0,
             'SETTINGS_IMAGE_CUT_HEIGHT'      => !empty($arrSettings['image_cut_height'])   ? $arrSettings['image_cut_height']   : 0,
-            'SETTINGS_IMAGE_SCALE_WIDTH'     => !empty($arrSettings['image_scale_width'])  ? $arrSettings['image_scale_width']  : 0,
-            'SETTINGS_IMAGE_SCALE_HEIGHT'    => !empty($arrSettings['image_scale_height']) ? $arrSettings['image_scale_height'] : 0,
+            //'SETTINGS_IMAGE_SCALE_WIDTH'     => !empty($arrSettings['image_scale_width'])  ? $arrSettings['image_scale_width']  : 0,
+            //'SETTINGS_IMAGE_SCALE_HEIGHT'    => !empty($arrSettings['image_scale_height']) ? $arrSettings['image_scale_height'] : 0,
         ));
         $objTemplate->parse('settings_image');
         

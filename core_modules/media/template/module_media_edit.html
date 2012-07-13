@@ -74,9 +74,9 @@
      * object resize data
      */
     var resizeData = {
-        w: {MEDIA_IMAGE_RESIZE_WIDTH},
-        h: {MEDIA_IMAGE_RESIZE_HEIGHT},
-        q: 95
+        w: {MEDIA_IMAGE_WIDTH},
+        h: {MEDIA_IMAGE_HEIGHT},
+        q: {MEDIA_IMAGE_RESIZE_QUALITY}
     };
     
     /**
@@ -108,18 +108,30 @@
             onSelectChange: function (img, selection) {
                 $J('#crop_cancel').fadeIn(500);
                 if (selection.width != 0 && selection.height != 0) {
-                    $J('#crop_width').val(Math.round(selection.width / imageMulti));
-                    $J('#crop_height').val(Math.round(selection.height / imageMulti));
+                    selectionWidth  = Math.round(selection.width / imageMulti);
+                    selectionHeight = Math.round(selection.height / imageMulti);
+                    $J('#crop_width').val(selectionWidth);
+                    $J('#crop_height').val(selectionHeight);
+                    $J('#img_width').val(selectionWidth);
+                    $J('#img_height').val(selectionHeight);
                 }
             },
             onSelectEnd: function (img, selection) {
-                cropData.x = selection.x1;
-                cropData.y = selection.y1;
-                cropData.w = Math.round(selection.width / imageMulti);
-                cropData.h = Math.round(selection.height / imageMulti);
+                selectionWidth  = Math.round(selection.width / imageMulti);
+                selectionHeight = Math.round(selection.height / imageMulti);
+                cropData.x      = selection.x1;
+                cropData.y      = selection.y1;
+                cropData.w      = selectionWidth;
+                cropData.h      = selectionHeight;
+                resizeData.w    = selectionWidth;
+                resizeData.h    = selectionHeight;
                 imageProportion = cropData.w / cropData.h;
-                resizeData.h = parseInt(resizeData.w / imageProportion);
-                $J('#img_height').val(resizeData.h);
+                
+                $J('#crop_width').val(selectionWidth);
+                $J('#crop_height').val(selectionHeight);
+                $J('#img_width').val(selectionWidth);
+                $J('#img_height').val(selectionHeight);
+                
                 if (parseInt($J('#img_height').val()) > 2000) {
                 	imageResize('h');
                 }
@@ -149,8 +161,11 @@
             $J('#crop_height').val(cropData.h);
             
             imageProportion = cropData.w / cropData.h;
-            resizeData.h = parseInt(resizeData.w / imageProportion);
+            resizeData.w = cropData.w;
+            resizeData.h = cropData.h;
+            $J('#img_width').val(resizeData.w);
             $J('#img_height').val(resizeData.h);
+            
             if (parseInt($J('#img_height').val()) > 2000) {
             	imageResize('h');
             }
@@ -209,12 +224,14 @@
                 $J('#crop_height').val(Math.round((imgOrgHeight - cropData.y) / imageMulti));
             }
             
-            cropData.w = parseInt($J('#crop_width').val());
-            cropData.h = parseInt($J('#crop_height').val());
-            
+            cropData.w      = parseInt($J('#crop_width').val());
+            cropData.h      = parseInt($J('#crop_height').val());
+            resizeData.w    = cropData.w;
+            resizeData.h    = cropData.h;
             imageProportion = !isNaN(cropData.w / cropData.h) ? (cropData.w / cropData.h) : 1;
-            resizeData.h = parseInt(resizeData.w / imageProportion);
+            $J('#img_width').val(resizeData.w);
             $J('#img_height').val(resizeData.h);
+            
             if (parseInt($J('#img_height').val()) > 2000) {
             	imageResize('h');
             }
@@ -264,7 +281,7 @@
     function resetCoordinates() {
         $J('#crop_cancel').fadeOut(500);
         imageProportion = $J('#media_image').width() / $J('#media_image').height();
-        resizeData.w = {MEDIA_IMAGE_RESIZE_WIDTH};
+        resizeData.w = {MEDIA_IMAGE_WIDTH};
         resizeData.h = parseInt(resizeData.w / imageProportion);
         cropData.x = 0;
         cropData.y = 0;
@@ -315,7 +332,7 @@
         if (name == '') {
             alert('{TXT_MEDIA_SET_IMAGE_NAME}');
         } else {
-            saveImage($J('#new_name').val());
+            saveImage($J('#save_as_value').val());
         }
     }
     
@@ -332,7 +349,7 @@
             width:   sbWidth,
             height:  sbHeight,
             player:  'html',
-            content: '<img src="{MEDIA_FILE_IMAGE_SRC}&x=' + Math.round(cropData.x / imageMulti) + '&y=' + Math.round(cropData.y / imageMulti) + '&w=' + cropData.w + '&h=' + cropData.h + '&d=' + rotateData.d + '&rw=' + resizeData.w + '&rh=' + resizeData.h + '&q=' + resizeData.q + '" alt="Image preview" />'
+            content: '<img src="{MEDIA_FILE_IMAGE_SRC}&x=' + Math.round(cropData.x / imageMulti) + '&y=' + Math.round(cropData.y / imageMulti) + '&w=' + cropData.w + '&h=' + cropData.h + '&d=' + rotateData.d + '&rw=' + resizeData.w + '&rh=' + resizeData.h + '&q=' + resizeData.q + '" alt="" />'
         });
     }
     
@@ -341,10 +358,10 @@
      */
     function showSaveAs() {
         if ($J.browser.msie && ($J.browser.version == '7.0')) {
-            width = 380;
-            height = 130;
+            width = 400;
+            height = 140;
         } else {
-            width = 370;
+            width = 390;
             height = 120;
         }
         
@@ -354,7 +371,7 @@
             title: '{TXT_MEDIA_CONFIRM_REPLACE_IMAGE}',
             content: '<div id="media_image_save_as">' + 
                          '<input id="save_button" type="submit" value="{TXT_MEDIA_REPLACE}" onclick="saveImage();" /><br />' + 
-                         '<input id="save_as_button" type="submit" value="{TXT_MEDIA_SAVE_NEW_COPY}" onclick="checkImageName($J(\'#new_name\').val()); return false;" />&nbsp;&nbsp;' + 
+                         '<input id="save_as_button" type="submit" value="{TXT_MEDIA_SAVE_NEW_COPY}" onclick="checkImageName($J(\'#save_as_value\').val()); return false;" />' + 
                          '<input id="save_as_value" type="text" name="newName" id="new_name" value="' + $J('#org_name').val() + '" /><span id="save_as_ext">. ' + $J('#org_ext').val() + '</span>' + 
                      '</div>'
         });
@@ -391,12 +408,8 @@
                 rh:      resizeData.h,
                 q:       resizeData.q
             },
-            success: function () {
-                if (newName != '') {
-                    window.location.href = '{MEDIA_EDIT_REDIRECT}&editedImage=' + newName + '.' + orgExt + '&{CSRF}';
-                } else {
-                    window.location.href = '{MEDIA_EDIT_REDIRECT}&editedImage=' + orgName + '.' + orgExt + '&{CSRF}';
-                }
+            success: function (data) {
+                window.location.href = '{MEDIA_EDIT_REDIRECT}&editedImage=' + data + '&{CSRF}';
             }
         });
     }
@@ -418,7 +431,7 @@
 <form id="media_image_manipulation_form" name="mediaEdit" action="{MEDIA_EDIT_ACTION}" method="post" onsubmit="saveImage(); return false;">
     <table width="100%" cellspacing="0" cellpadding="5" border="0" class="adminlist">
         <tr>
-            <th>{TXT_MEDIA_IMAGE_MANIPULATION}</th>
+            <th>{TXT_MEDIA_IMAGE_MANIPULATION}: {MEDIA_FILE_DIR}{MEDIA_FILE_NAME}.{MEDIA_FILE_EXT}</th>
         </tr>
         <tr>
             <td>
@@ -459,8 +472,8 @@
                 						<td>{TXT_MEDIA_HEIGHT} *:</td>
                 					</tr>
                 					<tr>
-                						<td><input type="text" name="imgWidth" id="img_width" size="2" value="{MEDIA_IMAGE_RESIZE_WIDTH}" onkeyup="imageResize('w');" /> px</td>
-                						<td><input type="text" name="imgHeight" id="img_height" size="2" value="{MEDIA_IMAGE_RESIZE_HEIGHT}" onkeyup="imageResize('h');" /> px</td>
+                						<td><input type="text" name="imgWidth" id="img_width" size="2" value="{MEDIA_IMAGE_WIDTH}" onkeyup="imageResize('w');" /> px</td>
+                						<td><input type="text" name="imgHeight" id="img_height" size="2" value="{MEDIA_IMAGE_HEIGHT}" onkeyup="imageResize('h');" /> px</td>
                 					</tr>
                 				</table>
                 				<input type="checkbox" name="mediaImgBalance" id="img_balance" checked="checked" /> {TXT_MEDIA_BALANCE}<br />
@@ -482,7 +495,7 @@
                         <input type="hidden" name="orgExt" id="org_ext" value="{MEDIA_FILE_EXT}" />
                 	</div>
                     <div id="media_image_wrapper">
-                        <img src="{MEDIA_FILE_IMAGE_SRC}" id="media_image" onload="setImageMultiplier()" />
+                        <img src="{MEDIA_FILE_IMAGE_SRC}" id="media_image" alt="" onload="setImageMultiplier()" />
                         <input type="hidden" name="orgImageWidth" id="org_image_width" value="{MEDIA_IMG_WIDTH}" />
                         <input type="hidden" name="orgImageHeight" id="org_image_height" value="{MEDIA_IMG_HEIGHT}" />
                     </div>
