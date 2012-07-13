@@ -102,6 +102,10 @@ class CheckoutManager extends CheckoutLibrary {
                 $objTemplate->setVariable('CONTENT_TITLE', $_ARRAYLANG['TXT_CHECKOUT_OVERVIEW']);
                 $this->showOverview();
                 break;
+            case 'detail':
+                $objTemplate->setVariable('CONTENT_TITLE', $_ARRAYLANG['TXT_CHECKOUT_DETAIL']);
+                $this->showDetail();
+                break;
             case 'delete':
                 $this->deleteEntry();
                 $this->showOverview();
@@ -142,6 +146,8 @@ class CheckoutManager extends CheckoutLibrary {
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
+        JS::activate('cx');
+
         $tableRow = '';
         $pagingCount = $this->objTransaction->getRecordCount();
         $pagingPosition = !empty($_GET['pos']) ? intval($_GET['pos']) : 0;
@@ -158,13 +164,11 @@ class CheckoutManager extends CheckoutLibrary {
             'TXT_CHECKOUT_FORENAME'         => $_ARRAYLANG['TXT_CHECKOUT_FORENAME'],
             'TXT_CHECKOUT_SURNAME'          => $_ARRAYLANG['TXT_CHECKOUT_SURNAME'],
             'TXT_CHECKOUT_COMPANY'          => $_ARRAYLANG['TXT_CHECKOUT_COMPANY'],
-            'TXT_CHECKOUT_STREET'           => $_ARRAYLANG['TXT_CHECKOUT_STREET'],
-            'TXT_CHECKOUT_POSTCODE'         => $_ARRAYLANG['TXT_CHECKOUT_POSTCODE'],
-            'TXT_CHECKOUT_PLACE'            => $_ARRAYLANG['TXT_CHECKOUT_PLACE'],
-            'TXT_CHECKOUT_COUNTRY'          => $_ARRAYLANG['TXT_CHECKOUT_COUNTRY'],
             'TXT_CHECKOUT_PHONE'            => $_ARRAYLANG['TXT_CHECKOUT_PHONE'],
             'TXT_CHECKOUT_EMAIL'            => $_ARRAYLANG['TXT_CHECKOUT_EMAIL'],
+            'TXT_CHECKOUT_ACTIONS'          => $_ARRAYLANG['TXT_CHECKOUT_ACTIONS'],
             'TXT_CHECKOUT_DELETE'           => $_ARRAYLANG['TXT_CHECKOUT_DELETE'],
+            'TXT_CHECKOUT_DETAIL'           => $_ARRAYLANG['TXT_CHECKOUT_DETAIL'],
         ));
 
         $arrTransactions = $this->objTransaction->get(array(), $pagingPosition, $_CONFIG['corePagingLimit']);
@@ -217,10 +221,108 @@ class CheckoutManager extends CheckoutLibrary {
 
                 $this->objTemplate->parse('transaction');
             }
+
+            if ($pagingCount > $_CONFIG['corePagingLimit']) {
+                $this->objTemplate->setVariable('CHECKOUT_PAGING', getPaging($pagingCount, $pagingPosition, "&amp;cmd=checkout", $_ARRAYLANG['TXT_CHECKOUT_TRANSACTIONS']));
+            }
+
+            $this->objTemplate->hideBlock('no_entries');
+            $this->objTemplate->parse('transactions');
+        } else {
+            $this->objTemplate->setVariable('TXT_CHECKOUT_NO_ENTRIES', $_ARRAYLANG['TXT_CHECKOUT_NO_ENTRIES']);
+            $this->objTemplate->hideBlock('transactions');
+            $this->objTemplate->parse('no_entries');
+        }
+    }
+
+    /**
+     * Show details of requested transaction.
+     *
+     * @access      private
+     */
+    private function showDetail()
+    {
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+
+        if (empty($_GET['id'])) {
+            CSRF::header('location: index.php?cmd=checkout');
         }
 
-        if ($pagingCount > $_CONFIG['corePagingLimit']) {
-            $this->objTemplate->setVariable('CHECKOUT_PAGING', getPaging($pagingCount, $pagingPosition, "&amp;cmd=checkout", $_ARRAYLANG['TXT_CHECKOUT_TRANSACTIONS']));
+        $tableRow = '';
+
+        $this->objTemplate->loadTemplateFile('module_checkout_detail.html');
+        $this->objTemplate->setVariable(array(
+            'TXT_CHECKOUT_TRANSACTION'      => $_ARRAYLANG['TXT_CHECKOUT_TRANSACTION'],
+            'TXT_CHECKOUT_INVOICE'          => $_ARRAYLANG['TXT_CHECKOUT_INVOICE'],
+            'TXT_CHECKOUT_CONTACT'          => $_ARRAYLANG['TXT_CHECKOUT_CONTACT'],
+            'TXT_CHECKOUT_ID'               => $_ARRAYLANG['TXT_CHECKOUT_ID'],
+            'TXT_CHECKOUT_TIME'             => $_ARRAYLANG['TXT_CHECKOUT_TIME'],
+            'TXT_CHECKOUT_STATUS'           => $_ARRAYLANG['TXT_CHECKOUT_STATUS'],
+            'TXT_CHECKOUT_INVOICE_NUMBER'   => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_NUMBER'],
+            'TXT_CHECKOUT_INVOICE_AMOUNT'   => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_AMOUNT'],
+            'TXT_CHECKOUT_TITLE'            => $_ARRAYLANG['TXT_CHECKOUT_TITLE'],
+            'TXT_CHECKOUT_FORENAME'         => $_ARRAYLANG['TXT_CHECKOUT_FORENAME'],
+            'TXT_CHECKOUT_SURNAME'          => $_ARRAYLANG['TXT_CHECKOUT_SURNAME'],
+            'TXT_CHECKOUT_COMPANY'          => $_ARRAYLANG['TXT_CHECKOUT_COMPANY'],
+            'TXT_CHECKOUT_STREET'           => $_ARRAYLANG['TXT_CHECKOUT_STREET'],
+            'TXT_CHECKOUT_POSTCODE'         => $_ARRAYLANG['TXT_CHECKOUT_POSTCODE'],
+            'TXT_CHECKOUT_PLACE'            => $_ARRAYLANG['TXT_CHECKOUT_PLACE'],
+            'TXT_CHECKOUT_COUNTRY'          => $_ARRAYLANG['TXT_CHECKOUT_COUNTRY'],
+            'TXT_CHECKOUT_PHONE'            => $_ARRAYLANG['TXT_CHECKOUT_PHONE'],
+            'TXT_CHECKOUT_EMAIL'            => $_ARRAYLANG['TXT_CHECKOUT_EMAIL'],
+            'TXT_CHECKOUT_DELETE'           => $_ARRAYLANG['TXT_CHECKOUT_DELETE'],
+        ));
+
+        $arrTransactions = $this->objTransaction->get(array($_GET['id']));
+        if (!empty($arrTransactions[0])) {
+            $arrTransaction = $arrTransactions[0];
+
+            $arrTransaction['time'] = date('j.n.Y G:i:s', $arrTransaction['time']);
+
+            switch ($arrTransaction['status']) {
+                case self::WAITING:
+                    $arrTransaction['status'] = $_ARRAYLANG['TXT_CHECKOUT_STATUS_WAITING'];
+                    break;
+                case self::CONFIRMED:
+                    $arrTransaction['status'] = $_ARRAYLANG['TXT_CHECKOUT_STATUS_CONFIRMED'];
+                    break;
+                case self::CANCELLED:
+                    $arrTransaction['status'] = $_ARRAYLANG['TXT_CHECKOUT_STATUS_CANCELLED'];
+                    break;
+            }
+
+            $arrTransaction['invoice_currency'] = $this->arrCurrencies[$arrTransaction['invoice_currency']];
+            $arrTransaction['invoice_amount'] = number_format($arrTransaction['invoice_amount'], 2, '.', '\'').' '.$arrTransaction['invoice_currency'];
+
+            switch ($arrTransaction['contact_title']) {
+                case self::MISTER:
+                    $arrTransaction['contact_title'] = $_ARRAYLANG['TXT_CHECKOUT_TITLE_MISTER'];
+                    break;
+                case self::MISS:
+                    $arrTransaction['contact_title'] = $_ARRAYLANG['TXT_CHECKOUT_TITLE_MISS'];
+                    break;
+            }
+
+            $this->objTemplate->setVariable(array(
+                'CHECKOUT_ROW_CLASS'        => $tableRow++ % 2 == 1 ? 'row1' : 'row2',
+                'CHECKOUT_ID'               => $arrTransaction['id'],
+                'CHECKOUT_TIME'             => contrexx_raw2xhtml($arrTransaction['time']),
+                'CHECKOUT_STATUS'           => $arrTransaction['status'],
+                'CHECKOUT_INVOICE_NUMBER'   => $arrTransaction['invoice_number'],
+                'CHECKOUT_INVOICE_AMOUNT'   => contrexx_raw2xhtml($arrTransaction['invoice_amount']),
+                'CHECKOUT_TITLE'            => contrexx_raw2xhtml($arrTransaction['contact_title']),
+                'CHECKOUT_FORENAME'         => contrexx_raw2xhtml($arrTransaction['contact_forename']),
+                'CHECKOUT_SURNAME'          => contrexx_raw2xhtml($arrTransaction['contact_surname']),
+                'CHECKOUT_COMPANY'          => contrexx_raw2xhtml($arrTransaction['contact_company']),
+                'CHECKOUT_STREET'           => contrexx_raw2xhtml($arrTransaction['contact_street']),
+                'CHECKOUT_POSTCODE'         => contrexx_raw2xhtml($arrTransaction['contact_postcode']),
+                'CHECKOUT_PLACE'            => contrexx_raw2xhtml($arrTransaction['contact_place']),
+                'CHECKOUT_COUNTRY'          => contrexx_raw2xhtml($arrTransaction['contact_country']),
+                'CHECKOUT_PHONE'            => contrexx_raw2xhtml($arrTransaction['contact_phone']),
+                'CHECKOUT_EMAIL'            => contrexx_raw2xhtml($arrTransaction['contact_email']),
+            ));
+
+            $this->objTemplate->parse('transaction');
         }
     }
 
@@ -234,7 +336,7 @@ class CheckoutManager extends CheckoutLibrary {
         global $objDatabase, $_ARRAYLANG;
 
         if (empty($_GET['id'])) {
-            header('location: index.php?cmd=checkout');
+            CSRF::header('location: index.php?cmd=checkout');
         }
 
         if ($this->objTransaction->delete($_GET['id'])) {
@@ -251,27 +353,57 @@ class CheckoutManager extends CheckoutLibrary {
      */
     private function showSettings()
     {
-        global $_ARRAYLANG;
+        global $_CORELANG, $_ARRAYLANG;
 
         $this->objTemplate->loadTemplateFile('module_checkout_settings.html', true, true);
         $this->objTemplate->setVariable(array(
+            'TXT_CORE_GENERAL'              => $_CORELANG['TXT_CORE_GENERAL'],
             'TXT_CHECKOUT_SETTINGS_PSP'     => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP'],
             'TXT_CHECKOUT_SETTINGS_MAILS'   => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS'],
-            'MAILS_LINK_ACTIVE'             => ($_GET['tpl'] == 'mails' ? 'active' : ''),
-            'PSP_LINK_ACTIVE'               => (($_GET['tpl'] == 'psp' || $_GET['tpl'] == '') ? 'active' : ''),
+            'TXT_CORE_PLACEHOLDERS'         => $_CORELANG['TXT_CORE_PLACEHOLDERS'],
+            'GENERAL_LINK_ACTIVE'           => ($_GET['tpl'] == 'general' || $_GET['tpl'] == '') ? 'active' : '',
+            'MAILS_LINK_ACTIVE'             => $_GET['tpl'] == 'mails' ? 'active' : '',
+            'PSP_LINK_ACTIVE'               => $_GET['tpl'] == 'psp' ? 'active' : '',
+            'PLACEHOLDERS_LINK_ACTIVE'      => $_GET['tpl'] == 'placeholders' ? 'active' : '',
         ));
 
         switch ($_GET['tpl']) {
+            case 'general':
+                $this->showSettingsGeneral();
+                break;
             case 'psp':
                 $this->showSettingsPSP();
                 break;
             case 'mails':
                 $this->showSettingsMails();
                 break;
+            case 'placeholders':
+                $this->showSettingsPlaceholders();
+                break;
             default:
-                $this->showSettingsPSP();
+                $this->showSettingsGeneral();
                 break;
         }
+    }
+
+    /**
+     * Show setttings general page
+     *
+     * @access      private
+     */
+    private function showSettingsGeneral()
+    {
+        global $_ARRAYLANG;
+
+        $this->objTemplate->addBlockfile('CHECKOUT_SETTINGS_CONTENT', 'settings_content', 'module_checkout_settings_general.html');
+        $this->objTemplate->setVariable(array(
+            'TXT_CHECKOUT_SETTINGS_GENERAL_INFORMATION'                 => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_INFORMATION'],
+            'TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_NAME_TITLE'           => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_NAME_TITLE'],
+            'TXT_CHECKOUT_MODULE_NAME'                                  => $_ARRAYLANG['TXT_CHECKOUT_MODULE_NAME'],
+            'TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_DESCRIPTION_TITLE'    => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_DESCRIPTION_TITLE'],
+            'TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_DESCRIPTION'          => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_DESCRIPTION'],
+        ));
+        $this->objTemplate->touchBlock('settings_content');
     }
 
     /**
@@ -361,23 +493,6 @@ class CheckoutManager extends CheckoutLibrary {
 
         $this->objTemplate->addBlockfile('CHECKOUT_SETTINGS_CONTENT', 'settings_content', 'module_checkout_settings_mails.html');
         $this->objTemplate->setVariable(array(
-            'TXT_CHECKOUT_SETTINGS_MAILS_PLACEHOLDERS_DOMAIN'   => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_PLACEHOLDERS_DOMAIN'],
-            'TXT_CHECKOUT_SETTINGS_MAILS_PLACEHOLDERS_ID'       => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_PLACEHOLDERS_ID'],
-            'TXT_CHECKOUT_SETTINGS_MAILS_PLACEHOLDERS_STATUS'   => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_PLACEHOLDERS_STATUS'],
-            'TXT_CHECKOUT_SETTINGS_MAILS_PLACEHOLDERS_TIME'     => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_PLACEHOLDERS_TIME'],
-            'TXT_CHECKOUT_INVOICE_NUMBER'                       => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_NUMBER'],
-            'TXT_CHECKOUT_INVOICE_CURRENCY'                     => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_CURRENCY'],
-            'TXT_CHECKOUT_INVOICE_AMOUNT'                       => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_AMOUNT'],
-            'TXT_CHECKOUT_TITLE'                                => $_ARRAYLANG['TXT_CHECKOUT_TITLE'],
-            'TXT_CHECKOUT_FORENAME'                             => $_ARRAYLANG['TXT_CHECKOUT_FORENAME'],
-            'TXT_CHECKOUT_SURNAME'                              => $_ARRAYLANG['TXT_CHECKOUT_SURNAME'],
-            'TXT_CHECKOUT_COMPANY'                              => $_ARRAYLANG['TXT_CHECKOUT_COMPANY'],
-            'TXT_CHECKOUT_STREET'                               => $_ARRAYLANG['TXT_CHECKOUT_STREET'],
-            'TXT_CHECKOUT_POSTCODE'                             => $_ARRAYLANG['TXT_CHECKOUT_POSTCODE'],
-            'TXT_CHECKOUT_PLACE'                                => $_ARRAYLANG['TXT_CHECKOUT_PLACE'],
-            'TXT_CHECKOUT_COUNTRY'                              => $_ARRAYLANG['TXT_CHECKOUT_COUNTRY'],
-            'TXT_CHECKOUT_PHONE'                                => $_ARRAYLANG['TXT_CHECKOUT_PHONE'],
-            'TXT_CHECKOUT_EMAIL'                                => $_ARRAYLANG['TXT_CHECKOUT_EMAIL'],
             'TXT_CHECKOUT_SETTINGS_MAILS_ADMIN'                 => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_ADMIN'],
             'TXT_CHECKOUT_SETTINGS_MAILS_CUSTOMER'              => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_CUSTOMER'],
             'TXT_CHECKOUT_SETTINGS_MAILS_ADMIN_MAIL_CONFIRM'    => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_ADMIN_MAIL_CONFIRM'],
@@ -391,5 +506,38 @@ class CheckoutManager extends CheckoutLibrary {
             'TXT_CORE_SAVE'                                     => $_CORELANG['TXT_SAVE'],
         ));
         $this->objTemplate->touchBlock('settings_content');
+    }
+
+    /**
+     * Show placeholders page
+     *
+     * @access      private
+     */
+    private function showSettingsPlaceholders()
+    {
+        global $_CORELANG, $_ARRAYLANG;
+
+        $this->objTemplate->addBlockfile('CHECKOUT_SETTINGS_CONTENT', 'settings_content', 'module_checkout_settings_placeholders.html');
+        $this->objTemplate->setVariable(array(
+            'TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_MAILS_TITLE'    => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_MAILS_TITLE'],
+            'TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_DOMAIN'         => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_DOMAIN'],
+            'TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_ID'             => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_ID'],
+            'TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_STATUS'         => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_STATUS'],
+            'TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_TIME'           => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_TIME'],
+            'TXT_CHECKOUT_INVOICE_NUMBER'                       => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_NUMBER'],
+            'TXT_CHECKOUT_INVOICE_CURRENCY'                     => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_CURRENCY'],
+            'TXT_CHECKOUT_INVOICE_AMOUNT'                       => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_AMOUNT'],
+            'TXT_CHECKOUT_TITLE'                                => $_ARRAYLANG['TXT_CHECKOUT_TITLE'],
+            'TXT_CHECKOUT_FORENAME'                             => $_ARRAYLANG['TXT_CHECKOUT_FORENAME'],
+            'TXT_CHECKOUT_SURNAME'                              => $_ARRAYLANG['TXT_CHECKOUT_SURNAME'],
+            'TXT_CHECKOUT_COMPANY'                              => $_ARRAYLANG['TXT_CHECKOUT_COMPANY'],
+            'TXT_CHECKOUT_STREET'                               => $_ARRAYLANG['TXT_CHECKOUT_STREET'],
+            'TXT_CHECKOUT_POSTCODE'                             => $_ARRAYLANG['TXT_CHECKOUT_POSTCODE'],
+            'TXT_CHECKOUT_PLACE'                                => $_ARRAYLANG['TXT_CHECKOUT_PLACE'],
+            'TXT_CHECKOUT_COUNTRY'                              => $_ARRAYLANG['TXT_CHECKOUT_COUNTRY'],
+            'TXT_CHECKOUT_PHONE'                                => $_ARRAYLANG['TXT_CHECKOUT_PHONE'],
+            'TXT_CHECKOUT_EMAIL'                                => $_ARRAYLANG['TXT_CHECKOUT_EMAIL'],
+        ));
+        $this->objTemplate->parse('settings_content');
     }
 }

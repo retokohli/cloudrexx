@@ -6,32 +6,32 @@
     .adminlist tr.row2 td img {
         cursor: pointer;
     }
+    .adminlist td.right img {
+        float: right;
+    }
 </style>
 
 {CONTENT_OK_MESSAGE}
 {CONTENT_ALERT_MESSAGE}
 
-<table width="100%" cellpadding="3" cellspacing="0" class="adminlist">
+<!-- BEGIN transactions -->
+<table width="100%" class="adminlist">
     <tr>
         <th colspan="16">{TXT_CHECKOUT_ALL_ENTRIES}</th>
     </tr>
     <tr class="row3">
       <td width="3%">{TXT_CHECKOUT_ID}</td>
-      <td width="6%">{TXT_CHECKOUT_STATUS}</td>
-      <td width="6%">{TXT_CHECKOUT_TIME}</td>
-      <td width="6%">{TXT_CHECKOUT_INVOICE_NUMBER}</td>
-      <td width="6%">{TXT_CHECKOUT_INVOICE_AMOUNT}</td>
-      <td width="4%">{TXT_CHECKOUT_TITLE}</td>
-      <td width="8%">{TXT_CHECKOUT_FORENAME}</td>
-      <td width="8%">{TXT_CHECKOUT_SURNAME}</td>
-      <td width="8%">{TXT_CHECKOUT_COMPANY}</td>
-      <td width="8%">{TXT_CHECKOUT_STREET}</td>
-      <td width="4%">{TXT_CHECKOUT_POSTCODE}</td>
-      <td width="8%">{TXT_CHECKOUT_PLACE}</td>
-      <td width="8%">{TXT_CHECKOUT_COUNTRY}</td>
-      <td width="7%">{TXT_CHECKOUT_PHONE}</td>
-      <td width="9%">{TXT_CHECKOUT_EMAIL}</td>
-      <td width="1%">{TXT_CHECKOUT_DELETE}</td>
+      <td width="7%">{TXT_CHECKOUT_STATUS}</td>
+      <td width="9%">{TXT_CHECKOUT_TIME}</td>
+      <td width="9%">{TXT_CHECKOUT_INVOICE_NUMBER}</td>
+      <td width="9%">{TXT_CHECKOUT_INVOICE_AMOUNT}</td>
+      <td width="9%">{TXT_CHECKOUT_TITLE}</td>
+      <td width="10%">{TXT_CHECKOUT_FORENAME}</td>
+      <td width="10%">{TXT_CHECKOUT_SURNAME}</td>
+      <td width="10%">{TXT_CHECKOUT_COMPANY}</td>
+      <td width="11%">{TXT_CHECKOUT_PHONE}</td>
+      <td width="11%">{TXT_CHECKOUT_EMAIL}</td>
+      <td width="1%">{TXT_CHECKOUT_ACTIONS}</td>
     </tr>
     <!-- BEGIN transaction -->
     <tr class="{CHECKOUT_ROW_CLASS}">
@@ -44,18 +44,18 @@
         <td>{CHECKOUT_FORENAME}</td>
         <td>{CHECKOUT_SURNAME}</td>
         <td>{CHECKOUT_COMPANY}</td>
-        <td>{CHECKOUT_STREET}</td>
-        <td>{CHECKOUT_POSTCODE}</td>
-        <td>{CHECKOUT_PLACE}</td>
-        <td>{CHECKOUT_COUNTRY}</td>
         <td>{CHECKOUT_PHONE}</td>
         <td><a href="mailto:{CHECKOUT_EMAIL}">{CHECKOUT_EMAIL}</a></td>
-        <td class="right">
-            <form action="index.php?cmd=checkout&amp;act=delete&amp;id={CHECKOUT_ID}" method="post" id="form_{CHECKOUT_ID}">
-                <img title="Eintrag löschen" src="images/icons/delete.gif" onclick="getElementById('form_{CHECKOUT_ID}').submit()" style="float: right;" />
-            </form>
+        <td class="right" nowrap="nowrap">
+            <a href="index.php?cmd=checkout&amp;act=delete&amp;id={CHECKOUT_ID}"><img title="{TXT_CHECKOUT_DELETE}" src="images/icons/delete.gif" /></a>
+            <a href="index.php?cmd=checkout&amp;act=detail&amp;id={CHECKOUT_ID}"><img title="{TXT_CHECKOUT_DETAIL}" src="images/icons/pages.gif" /></a>
         </td>
     </tr>
     <!-- END transaction -->
 </table><br />
 {CHECKOUT_PAGING}
+<!-- END transactions -->
+
+<!-- BEGIN no_entries -->
+<div class="alertbox">{TXT_CHECKOUT_NO_ENTRIES}</div>
+<!-- END no_entries -->
