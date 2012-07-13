@@ -797,6 +797,7 @@ table tr.reset td {
     padding: 4px;
     margin: 0 0 20px 0;
     overflow: auto;
+    color: #e59400;
 }
 
 .note {
