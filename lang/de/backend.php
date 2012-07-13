@@ -1517,6 +1517,7 @@ $_ARRAYLANG['TXT_CORE_CM_NEW'] = "Neu innerhalb";
 $_ARRAYLANG['TXT_CORE_CM_DELETE'] = "L&ouml;schen";
 $_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE'] = "Bitte bestätigen Sie, dass Sie diesen Node und alle seine Kindernodes löschen wollen.";
 $_ARRAYLANG['TXT_CORE_CM_USAGE_DENIED'] = 'Sie haben nicht genügend Rechte, um den Content Manager zu verwenden.';
+$_ARRAYLANG['TXT_CORE_CM_READ_DENIED'] = 'Sie haben nicht genügend Rechte, um diese Seite anzuzeigen.';
 $_ARRAYLANG['TXT_CORE_CM_CREATION_DENIED'] = 'Sie haben nicht genügend Rechte, um Seiten zu erstellen.';
 $_ARRAYLANG['TXT_CORE_CM_MOVE_DENIED'] = 'Sie haben nicht genügend Rechte, um Seiten zu verschieben.';
 $_ARRAYLANG['TXT_CORE_CM_DELETE_DENIED'] = 'Sie haben nicht genügend Rechte, um Seiten zu löschen.';

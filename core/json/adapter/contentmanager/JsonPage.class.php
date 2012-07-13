@@ -107,6 +107,12 @@ class JsonPage implements JsonAdapter {
         }
 
         if (isset($page)) {
+            // Page access check
+            if ($page->isBackendProtected() &&
+                    !\Permission::checkAccess($page->getBackendAccessId(), 'dynamic', true)) {
+                throw new \Cx\Model\ContentManager\PageException($_CORELANG['TXT_CORE_CM_READ_DENIED']);
+            }
+            
             // load an older revision if asked to do so:
             if (isset($params['get']['history'])) {
                 $this->logRepo->revert($page, $params['get']['history']);
@@ -177,10 +183,24 @@ class JsonPage implements JsonAdapter {
             
             // Create a new node/page combination.
             $node = new \Cx\Model\ContentManager\Node();
-            $node->setParent($this->nodeRepo->getRoot());
+            
+            if (isset($dataPost['parent_node'])) {
+                $parentNode = $this->nodeRepo->find($dataPost['parent_node']);
+                if (!$parentNode) {
+                    $parentNode = $this->nodeRepo->getRoot();
+                }
+                $node->setParent($parentNode);
 
-            $this->em->persist($node);
-            $this->em->flush();
+                $this->em->persist($node);
+                $this->em->flush();
+                
+                $this->nodeRepo->moveUp($node, true);
+            } else {
+                $node->setParent($this->nodeRepo->getRoot());
+
+                $this->em->persist($node);
+                $this->em->flush();
+            }
 
             $page = new \Cx\Model\ContentManager\Page();
             $page->setNode($node);
@@ -191,6 +211,12 @@ class JsonPage implements JsonAdapter {
             $reload  = true;
         } else {
             throw new \Exception('Page cannot be created. There are too little information.');
+        }
+        
+        // Page access check
+        if ($page->isBackendProtected() &&
+                !\Permission::checkAccess($page->getBackendAccessId(), 'dynamic', true)) {
+            throw new \Cx\Model\ContentManager\PageException('Not allowed to read page');
         }
         
         if (!empty($pageArray)) {
@@ -223,19 +249,25 @@ class JsonPage implements JsonAdapter {
         $page->setUpdatedAtToNow();
         $page->validate();
         
-        if ($page->isFrontendProtected() && isset($dataPost['frontendGroups'])) {
-            if (\Permission::checkAccess(36, 'static', true)) {
-                $pg->setAssignedGroupIds($page, $dataPost['frontendGroups'], true);
-            } else {
-                $this->messages[] = $_CORELANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'];
+        if (\Permission::checkAccess(36, 'static', true)) {
+            if ($page->isFrontendProtected()) {
+                // remove all
+                \Permission::removeAccess($page->getFrontendAccessId(), 'dynamic');
+                if (isset($dataPost['frontendGroups'])) {
+                    // set new
+                    $pg->setAssignedGroupIds($page, $dataPost['frontendGroups'], true);
+                }
             }
-        }
-        if ($page->isBackendProtected() && isset($dataPost['backendGroups'])) {
-            if (\Permission::checkAccess(36, 'static', true)) {
-                $pg->setAssignedGroupIds($page, $dataPost['backendGroups'], false);
-            } else {
-                $this->messages[] = $_CORELANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'];
+            if ($page->isBackendProtected()) {
+                // remove all
+                \Permission::removeAccess($page->getBackendAccessId(), 'dynamic');
+                if (isset($dataPost['backendGroups'])) {
+                    // set new
+                    $pg->setAssignedGroupIds($page, $dataPost['backendGroups'], false);
+                }
             }
+        } else {
+            $this->messages[] = $_CORELANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'];
         }
         
         if (($action == 'publish') && \Permission::checkAccess(78, 'static', true)) {

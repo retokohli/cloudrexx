@@ -304,7 +304,7 @@ h1{ font-size: 20px }
 }
 
 #site-tree .actions-expanded ul li.new {
-    background: transparent;
+    background-image: url(../images/content_manager_actions_new.png);
 }
 
 #site-tree .actions-expanded ul li.activate {

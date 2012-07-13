@@ -1435,10 +1435,12 @@ class Page extends \Cx\Model\Base\EntityBase
             'target' => $target,
         );
         
+        $pageRepo = \Env::em()->getRepository("Cx\Model\ContentManager\Page");
+        
         // merge both resultsets
         $aliases = array_merge(
-                \Env::em()->getRepository("Cx\Model\ContentManager\Page")->findBy($crit1),
-                \Env::em()->getRepository("Cx\Model\ContentManager\Page")->findBy($crit2)
+                $pageRepo->findBy($crit1, true),
+                $pageRepo->findBy($crit2, true)
         );
         return $aliases;
     }

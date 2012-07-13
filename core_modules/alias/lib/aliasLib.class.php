@@ -67,7 +67,11 @@ class aliasLib
             if ($i < $pos) {
                 continue;
             }
-            $pages[] = current($node->getPages(true)->getSnapshot());
+            $page = current($node->getPages(true)->getSnapshot());
+            if (!$page) {
+                continue;
+            }
+            $pages[] = $page;
             if ($limit && count($pages) == $limit) {
                 break;
             }
@@ -167,6 +171,23 @@ class aliasLib
         if ($slug == "") {
             return false;
         }
+        
+        // is internal target
+        if ($is_local) {
+            // get target page
+            $temp_page = new \Cx\Model\ContentManager\Page();
+            $temp_page->setTarget($target);
+            $existing_aliases = $this->_getAliasesWithSameTarget($temp_page);
+            
+            // if alias exists already -> fail
+            foreach ($existing_aliases as $existing_alias) {
+                if (($id == '' || $existing_alias->getNode()->getId() != $id) &&
+                        $slug == $existing_alias->getSlug()) {
+                    return false;
+                }
+            }
+        }
+        
         if ($id == "") {
             // create new node
             $node = new \Cx\Model\ContentManager\Node();
@@ -181,7 +202,7 @@ class aliasLib
             if (!$node) {
                 return false;
             }
-            $pages = $node->getPages();
+            $pages = $node->getPages(true);
             if (count($pages) != 1) {
                 return false;
             }
@@ -206,6 +227,8 @@ class aliasLib
 	$page->validate();
         $this->em->persist($page);
         $this->em->flush();
+        $this->em->refresh($node);
+        $this->em->refresh($page);
         
         return true;
     }

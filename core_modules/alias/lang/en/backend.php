@@ -6,7 +6,7 @@
  * @package     contrexx
  * @subpackage  core_module_alias
  */
-$_ARRAYLANG['TXT_ALIAS_ALIASES'] = "SEO URL Aliases";
+$_ARRAYLANG['TXT_ALIAS_ALIASES'] = "Overview";
 $_ARRAYLANG['TXT_ALIAS_ALIAS'] = "SEO URL Alias";
 $_ARRAYLANG['TXT_ALIAS_SETTINGS'] = "Settings";
 $_ARRAYLANG['TXT_ALIAS_DELETE'] = "Delete";
@@ -15,13 +15,13 @@ $_ARRAYLANG['TXT_ALIAS_PAGE'] = "Page";
 $_ARRAYLANG['TXT_ALIAS_ALIAS_ES'] = "Alias(es)";
 $_ARRAYLANG['TXT_ALIAS_FUNCTIONS'] = "Functions";
 $_ARRAYLANG['TXT_ALIAS_MODIFY_ALIAS'] = "Edit alias";
-$_ARRAYLANG['TXT_ALIAS_ADD_ALIAS'] = "Add New Alias";
+$_ARRAYLANG['TXT_ALIAS_ADD_ALIAS'] = "Create alias";
 $_ARRAYLANG['TXT_ALIAS_TARGET_PAGE'] = "Target Page";
 $_ARRAYLANG['TXT_ALIAS_LOCAL'] = "Local";
 $_ARRAYLANG['TXT_ALIAS_URL'] = "URL";
 $_ARRAYLANG['TXT_ALIAS_BROWSE'] = "Search Page";
 $_ARRAYLANG['TXT_ALIAS_CONFIRM_REMOVE_ALIAS'] = "Are you sure you want to remove the alias %s?";
-$_ARRAYLANG['TXT_ALIAS_ADD_ANOTHER_ALIAS'] = "Add another alias";
+$_ARRAYLANG['TXT_ALIAS_ADD_ANOTHER_ALIAS'] = "Create alias";
 $_ARRAYLANG['TXT_ALIAS_SAVE'] = "Save";
 $_ARRAYLANG['TXT_ALIAS_CANCEL'] = "Cancel";
 $_ARRAYLANG['TXT_ALIAS_ONE_ALIAS_REQUIRED_MSG'] = "You need to define at least one alias!";
