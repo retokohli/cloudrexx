@@ -776,10 +776,10 @@ input[type="submit"], input[type="button"], input[type="reset"] {
 /* shop-nav */
 #shopJsCart {
     background-color: #FFFFFF;
-    float: right;
+    float: left;
     height: auto !important;
     padding: 0 0 5px;
-    width: 239px;
+    /*width: 239px;*/
 }
 #shopJsCart ul{
     margin: 0;
@@ -795,13 +795,13 @@ input[type="submit"], input[type="button"], input[type="reset"] {
     width: 223px;
 }
 #shopJsCart ul li {
-    color: #000000;
-    font-size: 0.9em;
+    color: #808080;
+    font-size: 12px;
     line-height: 1;
     padding: 5px 15px;
 }
 #shopJsCart li.total {
-    color: #000000;
+    color: #808080;
     font-size: 0.9em;
     line-height: 1;
     padding: 9px 15px;
@@ -818,7 +818,7 @@ input[type="submit"], input[type="button"], input[type="reset"] {
 #shopJsCart li.link a:hover{
     display: block;
     text-decoration: none;
-    color: #FF8000;
+    color: #B8D30B;
     font-weight: normal;
 }
 #shop_navigation {
@@ -826,6 +826,7 @@ input[type="submit"], input[type="button"], input[type="reset"] {
     height: auto !important;
     float: right;
     background: none repeat scroll 0 0 #FFFFFF;
+      /*width: 100%;*/
     /*width: 239px;*/
 }
 #shop_navigation ul{
@@ -841,35 +842,35 @@ input[type="submit"], input[type="button"], input[type="reset"] {
     background: none repeat scroll 0 0 #B8D30B;
     color: #FFFFFF;
     display: block;
-    float: right;
+    float: left;
     font-weight: bold;
     line-height: 1;
     padding: 9px 0 9px 16px;
     text-decoration: none;
-    width: 203px;
+    width: 197px;
 }
 #shop_navigation li.shopnavbar1 a {
     background-image: none;
     color: #808080;
     display: block;
-    float: right;
-    font-size: 0.9em;
+    float: left;
+    font-size: 12px;
     font-weight: normal;
     line-height: 1;
     padding: 5px 0 5px 16px;
     text-decoration: none;
-    width: 203px;
+    width: 197px;
 }
 #shop_navigation li.shopnavbar1 a:hover,
 #shop_navigation li.shopnavbar1_active a {
-    color: #FF8000;
+    color: #B8D30B;
     display: block;
-    float: right;
-    font-size: 0.9em;
+   /* float: right;
+    font-size: 12px;
     font-weight: normal;
     padding: 5px 0 5px 16px;
     text-decoration: none;
-    width: 203px;
+    width: 197px;*/
 }
 #shop_navigation li.shopnavbar2 a {
     display:block;
@@ -890,7 +891,7 @@ input[type="submit"], input[type="button"], input[type="reset"] {
     padding: 10px 0 15px 0;
     text-align: center;
     background-color: #FFFFFF;
-    float: right;
+    float: left;
     width: 239px;
 }
 #shop_currencies a {
@@ -902,7 +903,7 @@ input[type="submit"], input[type="button"], input[type="reset"] {
 }
 #shop_currencies a:hover,
 #shop_currencies a.active {
-    color:#FF8000;
+    color:#B8D30B;
 }
 /* =footer
 *******************************************************************************/
