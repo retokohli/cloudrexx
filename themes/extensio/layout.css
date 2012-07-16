@@ -802,7 +802,7 @@ input[type="submit"], input[type="button"], input[type="reset"] {
 }
 #shopJsCart li.total {
     color: #808080;
-    font-size: 0.9em;
+    font-size: 12px;
     line-height: 1;
     padding: 9px 15px;
 }
@@ -824,7 +824,7 @@ input[type="submit"], input[type="button"], input[type="reset"] {
 #shop_navigation {
     padding: 0 0 15px 0;
     height: auto !important;
-    float: right;
+    float: left;
     background: none repeat scroll 0 0 #FFFFFF;
       /*width: 100%;*/
     /*width: 239px;*/
@@ -865,12 +865,12 @@ input[type="submit"], input[type="button"], input[type="reset"] {
 #shop_navigation li.shopnavbar1_active a {
     color: #B8D30B;
     display: block;
-   /* float: right;
+    float: left;
     font-size: 12px;
     font-weight: normal;
     padding: 5px 0 5px 16px;
     text-decoration: none;
-    width: 197px;*/
+    width: 197px;
 }
 #shop_navigation li.shopnavbar2 a {
     display:block;
@@ -892,7 +892,7 @@ input[type="submit"], input[type="button"], input[type="reset"] {
     text-align: center;
     background-color: #FFFFFF;
     float: left;
-    width: 239px;
+    width: 213px;
 }
 #shop_currencies a {
     padding: 0 10px 0 0;
