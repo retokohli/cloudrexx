@@ -1309,8 +1309,9 @@ JS_CODE;
 
         $this->objTemplate->setVariable(array(
             'DOWNLOADS_SEARCH_KEYWORD'  => htmlentities($this->searchKeyword, ENT_QUOTES, CONTREXX_CHARSET),
-            'DOWNLOADS_SEARCH_URL'      => CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='.$objCategory->getId(),
-            'TXT_DOWNLOADS_SEARCH'      => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH']
+            'DOWNLOADS_SEARCH_URL'      => CONTREXX_SCRIPT_PATH,
+            'DOWNLOADS_SEARCH_CATEGORY' => $objCategory->getId(),
+            'TXT_DOWNLOADS_SEARCH'      => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH'],
         ));
     }
 
