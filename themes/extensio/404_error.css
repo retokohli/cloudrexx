@@ -1,0 +1,11 @@
+#aside{
+    display: none;
+}
+.main_subpage, 
+#content{
+    float: left;
+    width: 100%;
+}
+.main-holder {
+	background: none;
+}
