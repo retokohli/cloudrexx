@@ -1,12 +1,10 @@
 #aside{
     display: block;
 }
-
-#shop_order{
-     border: 1px solid #F2F2F2;
-    
+#main #shop_order{
+     border: 1px solid #F2F2F2;    
     float: left;
-    width: 650px;
+    width: 688px;
 }
 #shop input[type="radio"], #shop input[type="checkbox"] {
   float:left
@@ -14,11 +12,6 @@
 div.message p{
 
 padding : 2px 0 3px 246px
-}
-.main_subpage,
-#content {
-    float: left;
-   width: 650px;
 }
 #shop_acc_data{
     border: 1px solid #F2F2F2;
@@ -30,14 +23,12 @@ padding : 2px 0 3px 246px
     color: #FF0000;
     margin: 0
 }
-
 table tr.row2, table tr.marketRow3,
 #shop table tr.row3, 
 table th {
 	background: none;
         padding:3px 5px 3px 15px
 }
-
 .shop_text{
     padding: 10px 15px 5px;
 }

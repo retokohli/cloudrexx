@@ -1,12 +1,10 @@
 #aside{
     display: block;
 }
-
 #shop_payment{
-     border: 1px solid #F2F2F2;
-    
+    border: 1px solid #F2F2F2;    
     float: left;
-    width: 650px;
+    width: 688px;
 }
 #shop input[type="radio"], #shop input[type="checkbox"] {
   float:left
@@ -55,4 +53,3 @@ table td {
   padding: 3px 5px 3px 15px;
   vertical-align: top;
 }
-

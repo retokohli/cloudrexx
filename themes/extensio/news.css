@@ -85,7 +85,8 @@ table tr.row1, table tr.marketRow2 {
   border: 1px solid #F5F5F5;
   box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.1);
   height: 284px;
-  margin: 0 -1px 19px;
+  margin: 0 0 19px;
   padding: 8px;
   width: 634px;
+  float:left
 }

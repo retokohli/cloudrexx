@@ -940,6 +940,9 @@ div#livecam #CALBUTTONDPC_datum {
     height:auto !important;
 }
 #guestbook div.entry {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -o-box-sizing: border-box;
     width: 100%;
     padding: 10px 5px 10px 5px;
     margin: 0px 0px 0px 0px;
@@ -1025,7 +1028,7 @@ div#livecam #CALBUTTONDPC_datum {
     padding: 2px 0px 2px 0px;
     margin: 0px 0px 0px 0px;
     list-style: none;
-    border-bottom: 1px dotted #E6E6E6;
+    /*border-bottom: 1px dotted #E6E6E6;*/
     font-weight: normal;
 }
 #sitemap ul li.sitemap_level_1 {
@@ -2176,9 +2179,36 @@ form select {
 #checkout form #buttons {
     display: block;
     position: static;
-    margin: 20px 0 0 0;
+    margin: 20px 0 0 190px;
 }
 
 #checkout form #buttons input {
     width: auto;
+}
+
+ul#sitemap li {
+        
+    float: left;
+    list-style-type: none;
+    margin-right: 30px;
+    width: 379px;
+}
+ul#sitemap li a {
+    /*font: bold 16px/20px 'Open Sans', Arial, Helvetica, sans-serif;
+    color: #222;
+    font-size: 14px;
+    line-height: 18px;
+    margin-bottom: 11px;*/
+    color: #555555;
+}
+ul#sitemap li ul {
+   /* margin-left: 16px;*/
+}
+ul#sitemap li ul li a {
+    color: #555;
+}
+
+ul#sitemap li#menu_2, ul#sitemap li#menu_4 {
+    width: 50%;
+    min-height: 400px;
 }

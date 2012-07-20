@@ -1,11 +1,6 @@
 #aside{
     display: block;
 }
-.main_subpage,
-#content {
-    float: left;
-    width: 650px;
-}
 #shop div.description{
 /*	width: 100%*/
 	-webkit-box-sizing: border-box; 
