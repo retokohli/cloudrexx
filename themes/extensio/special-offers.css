@@ -1,14 +1,3 @@
-#aside{
-    display: none;
-}
-.main_subpage,
-#content {
-    float: left;
-    width: 100%;
-}
-.main-holder{
-background: none
-}
 .discount-price {
     color: #BCD608;
     font-size: 15px;
@@ -44,4 +33,7 @@ h2 {
     color: #525252;
     font: bold 14px/15px 'Open Sans',Arial,Helvetica,sans-serif;
     margin: 9px 0 0;
+}
+article.col-13:nth-of-type(3n) {
+	margin:0 0 20px;
 }

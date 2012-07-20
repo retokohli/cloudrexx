@@ -5,12 +5,9 @@
     width: 650px;
 }
 
-#shop_collection{
-    float: left;
-    width: 650px;
-}
 .lsv_form{
     border: 1px solid #F2F2F2;
+    
 }
 .lsv_form span{
     padding-left: 15px;
