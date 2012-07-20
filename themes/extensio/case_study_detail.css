@@ -100,7 +100,11 @@ width: 220px;
 .banner{
 width: 650px; 
 }
-
+.main-holder {
+  background: url("images/separator2.png") repeat-y scroll 680px 0 transparent;
+  margin-bottom: 30px;
+  width: 100%;
+}
 
 
 

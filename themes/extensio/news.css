@@ -90,3 +90,8 @@ table tr.row1, table tr.marketRow2 {
   width: 634px;
   float:left
 }
+.main-holder {
+  background: url("images/separator2.png") repeat-y scroll 680px 0 transparent;
+  margin-bottom: 30px;
+  width: 100%;
+}

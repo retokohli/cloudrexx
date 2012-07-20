@@ -61,3 +61,8 @@ table tr.row1, table tr.marketRow2 {
 .voting table{
     border: 1px dotted #E6E6E6;
 }
+.main-holder {
+  background: url("images/separator2.png") repeat-y scroll 680px 0 transparent;
+  margin-bottom: 30px;
+  width: 100%;
+}
