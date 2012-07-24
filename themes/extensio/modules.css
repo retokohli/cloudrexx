@@ -155,12 +155,12 @@ table td.none {
 div.row_1,
 div.row1 {
     background-color: #f9f9f9;
-    border-bottom: 1px solid #E6E6E6;
+    border-bottom: 1px solid #ECEDF3;
 }
 div.row_2,
 div.row2 {
     background-color: #ffffff;
-    border-bottom: 1px solid #E6E6E6;
+    border-bottom: 1px solid #ECEDF3;
 }
 /***************************************************/
 /* CSS GLOBAL DEFINITIONS FOR CAPTCHA              */
@@ -556,16 +556,19 @@ div#livecam #CALBUTTONDPC_datum {
 #directory div.feed h2 {
     padding: 0px 0px 5px 0px;
     margin: 0px 0px 5px 0px;
-    border-bottom: 1px solid #cccccc;
+    border-bottom: 1px solid #ECEDF3;
 }
 #directory div.image {
     float:left;
     height:auto !important;
     padding: 0px 0px 0px 0px;
     margin: 0px 0px 0px 0px;
+     width: 20%;
 }
 #directory div.image img {
     margin: 0px 15px 15px 0px;
+    box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.1);
+    padding: 8px;
 }
 #directory div.infos {
     padding: 0px 0px 0px 0px;
@@ -586,7 +589,7 @@ div#livecam #CALBUTTONDPC_datum {
     padding: 5px 0px 0px 0px;
     margin: 5px 0px 0px 0px;
     float: left;
-    border-top: 1px solid #cccccc;
+    border-top: 1px solid #ECEDF3;
 }
 #directory .selector {
     /*clear: left;*/
@@ -848,10 +851,11 @@ div#livecam #CALBUTTONDPC_datum {
     /*margin: 0px 15px 15px 0px;*/
     border: 1px solid #F5F5F5;
     box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.1);
-    margin: 0 -1px 19px;
+    margin: 0 0 19px;
     padding: 8px;
     width: 634px;
     height: 284px;
+    float: left;
 }
 #blog div.search_date {
     float:left;
@@ -2212,3 +2216,8 @@ ul#sitemap li#menu_2, ul#sitemap li#menu_4 {
     width: 50%;
     min-height: 400px;
 }
+
+#directory > div.feeds:nth-last-of-type(1) {
+	background: red;
+}
+
