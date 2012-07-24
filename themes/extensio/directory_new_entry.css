@@ -1,0 +1,43 @@
+#directory div.voting {
+   	border-bottom: 1px solid #ECEDF3;
+	float: left;
+	width: 520px;
+}
+div.row_1, div.row1 {
+    background: none;
+}
+.pagingPages b{
+    background: none repeat scroll 0 0 #B8D30B;
+    margin-right: 4px;
+    padding: 5px;
+}
+.paging a {
+ 	float: none;
+ 	color: #555555;
+	margin-right: 4px;
+	padding: 0 5px;
+}
+.paging a:hover{
+    color: #222222;
+}
+#directory div.image {
+  	width: 22%;
+}
+#directory div.image img {
+  margin: 0 15px 0 0;
+
+}
+#directory {
+    -moz-box-sizing: border-box;
+   -webkit-box-sizing: border-box;
+   -o-box-sizing: border-box;
+ padding: 8px;
+ border: 1px solid #f2f2f2;
+
+}
+#directory div.feeds:last-child{
+    border: none
+}
+/*div.feeds:nth-of-type(odd) {
+	background: red;
+}*/
