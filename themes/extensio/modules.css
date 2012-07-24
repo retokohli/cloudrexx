@@ -2216,8 +2216,3 @@ ul#sitemap li#menu_2, ul#sitemap li#menu_4 {
     width: 50%;
     min-height: 400px;
 }
-
-#directory > div.feeds:nth-last-of-type(1) {
-	background: red;
-}
-

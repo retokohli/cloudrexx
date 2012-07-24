@@ -588,7 +588,14 @@ input.submit, input.button {
 #boxes_home input[type="submit"]:hover,
 #boxes_home input[type="button"]:hover
 {
-    background: -moz-linear-gradient(center top , #B7CC0B 0%, #9EBA09 100%) repeat scroll 0 0 transparent;
+    background: rgb(183,204,11);	
+	background: -moz-linear-gradient(top,  rgba(183,204,11,1) 0%, rgba(158,186,9,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(183,204,11,1)), color-stop(100%,rgba(158,186,9,1)));
+	background: -webkit-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
+	background: -o-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
+	background: linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
+
 }
 #main #exposedComboUploaderStarter{
     margin-top: 5px;
@@ -4295,7 +4302,7 @@ input.reset {
     border: 1px solid #c6c6c6;
     /*border: 0 none;*/
     border-radius: 3px 3px 3px 3px;
-    font: 12px/30px 'Open Sans',Arial,Helvetica,sans-serif;
+    font: 12px 'Open Sans',Arial,Helvetica,sans-serif;
     /*padding: 7px 21px;*/
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
     text-transform: uppercase;
@@ -4385,7 +4392,17 @@ input, textarea, select {
     min-height: 294px;
     width: 290px;
 }
-
-
-
-
+#directory .pagingPages b{
+    background: none repeat scroll 0 0 #B8D30B;
+    margin-right: 4px;
+    padding: 5px;
+}
+#directory .paging a {
+    float: none;
+    color: #555555;
+    margin-right: 4px;
+    padding: 0 5px;
+}
+#directory .paging a:hover{
+    color: #222222;
+}
