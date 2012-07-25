@@ -685,21 +685,13 @@ input[type="submit"], input[type="button"], input[type="reset"] {
     float: left;
 }
 #nav-sub {
-    /* float: left;
-     list-style-type: none;
-     margin: 0 0 0;
-     padding: 0;*/
-
     border-right: 1px solid #ECEDF3;
     float: left;
     list-style-type: none;
     margin: 0 0 15px;
     padding: 7px 10px 2px 0;
     width: 200px;
-    /*width: 200px;*/
-    /*-moz-box-sizing: content-box;
-    -webkit-box-sizing: content-box;
-    -o-box-sizing: content-box;*/
+    font: 14px/18px 'Open Sans',Arial,Helvetica,sans-serif;    
 }
 #nav-sub li {
     /*float: left;*/
