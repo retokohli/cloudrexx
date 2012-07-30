@@ -368,10 +368,10 @@ class skins
                                               'CONTREXX_BASE_URL'             => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . '/',
         ));
         //create themelist
-        $themes = $this->_getThemes();
+        $themes = $this->getThemes();
         if ($themes !== false){
             $rowclass = 0;
-            foreach ($this->_getThemes() as $theme) {
+            foreach ($this->getThemes() as $theme) {
                 $this->_getXML($theme['foldername']);
 
                 $htmlDeleteLink = '<a onclick="showInfo(this.parentNode.parentNode); return confirmDelete(\''.htmlspecialchars($theme['themesname'], ENT_QUOTES, CONTREXX_CHARSET).'\');" href="?cmd=skins&amp;act=manage&amp;delete='.urlencode($theme['themesname']).'" title="'.$_CORELANG['TXT_DELETE'].'"> <img border="0" src="images/icons/delete.gif" alt="" /> </a>';
@@ -1904,7 +1904,7 @@ class skins
      * get all theme rows from the skins table
      * @return array
      */
-    function _getThemes()
+    function getThemes()
     {
         global $objDatabase, $_CORELANG;
 
