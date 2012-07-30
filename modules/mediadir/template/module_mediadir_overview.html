@@ -84,13 +84,39 @@ var switchState = function(id, obj, action, type)
 }
 //]]>
 </script>
+
+<style type="text/css">
+    #search {
+        padding: 0;
+        width: auto;
+    }
+</style>
+
+<table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+    <tr>
+        <th colspan="2">{TXT_FUNCTIONS}</th>
+    </tr>
+    <tr class="row1">
+        <td width="100">{TXT_ENTRY_SEARCH}</td>
+        <td>
+            <form id="search" method="post" action="index.php?cmd={MODULE_NAME}&amp;act=entries">
+                <input type="text" name="term" value="{MEDIADIR_SEARCH_TERM}" onclick="this.value=''" style="width: 200px;" />
+                <!-- BEGIN mediadirFormDropdown --><select name="form_id" style="width: 172px;"><option value="0">{TXT_MEDIADIR_ALL_FORMS}</option>{MEDIADIR_FORMS_DROPDOWN_OPTIONS}</select><!-- END mediadirFormDropdown -->
+                <!-- BEGIN mediadirLevelDropdown --><select name="level_id" style="width: 172px;"><option value="0">{TXT_MEDIADIR_ALL_LEVELS}</option>{MEDIADIR_LEVELS_DROPDOWN_OPTIONS}</select><!-- END mediadirLevelDropdown -->
+                <select name="cat_id" style="width: 172px;"><option value="0">{TXT_MEDIADIR_ALL_CATEGORIES}</option>{MEDIADIR_CATEGORIES_DROPDOWN_OPTIONS}</select>
+                <input type="submit" name="Submit" value="{TXT_SEARCH}" />
+            </form>
+        </td>
+    </tr>
+</table><br />
+
 <!-- BEGIN tabMenu -->
 <ul id="tabmenu" style="width: 30%;">
       <li><a {TAB_LEVELS_ACTIVE} id="{MODULE_NAME}Tab_levels" href="javascript:{}" onclick="selectTab('levels')" title="">{TXT_LEVELS}</a></li>
       <li><a id="{MODULE_NAME}Tab_categories" {TAB_CATEGORIES_ACTIVE} href="javascript:{}" onclick="selectTab('categories')" title="">{TXT_CATEGORIES}</a></li>
 </ul>
 <!-- END tabMenu -->
-<!-- END categoriesList -->
+
 <table border="0" width="100%" cellpadding="0" cellspacing="0">
     <tr>
         <td width="30%" valign="top">
@@ -169,20 +195,6 @@ var switchState = function(id, obj, action, type)
         </td>
         <td width="1%" valign="top"><br /></td>
         <td width="69%" valign="top">
-            <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
-                <tr>
-                    <th colspan="2">{TXT_FUNCTIONS}</th>
-                </tr>
-                <tr class="row1">
-                    <td width="100">{TXT_ENTRY_SEARCH}</td>
-                    <td>
-                        <form id="search" method="post" action="index.php?cmd={MODULE_NAME}&amp;act=entries">
-			            <input type="text" name="term" value="{MEDIADIR_SEARCH_TERM}" onclick="this.value=''" style="width: 200px;" />&nbsp;<!-- BEGIN mediadirFormDropdown --><select name="form_id" style="width: 172px;"><option value="0">{TXT_MEDIADIR_ALL_FORMS}</option>{MEDIADIR_FORMS_DROPDOWN_OPTIONS}</select>&nbsp;<!-- END mediadirFormDropdown --><!-- BEGIN mediadirLevelDropdown --><select name="level_id" style="width: 172px;"><option value="0">{TXT_MEDIADIR_ALL_LEVELS}</option>{MEDIADIR_LEVELS_DROPDOWN_OPTIONS}</select>&nbsp;<!-- END mediadirLevelDropdown --><select name="cat_id" style="width: 172px;"><option value="0">{TXT_MEDIADIR_ALL_CATEGORIES}</option>{MEDIADIR_CATEGORIES_DROPDOWN_OPTIONS}</select>&nbsp;<input type="submit" name="Submit" value="{TXT_SEARCH}" />
-			            </form>
-                    </td>
-                </tr>
-            </table>
-            <br />
             <!-- BEGIN confirmBlock -->
             <form id="confirmForm" method="post" action="index.php?cmd={MODULE_NAME}&amp;act=confirm_entry">
             <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
@@ -199,7 +211,7 @@ var switchState = function(id, obj, action, type)
                 </tr>
                 <!-- BEGIN mediadirConfirmList -->
                     <tr class="{MEDIADIR_ROW_CLASS}">
-                        <td valign="top"><input type="checkbox" name="entriesFormSelected[]" value="{MEDIADIR_ENTRY_ID}" />
+                        <td valign="top"><input type="checkbox" name="entriesFormSelected[]" value="{MEDIADIR_ENTRY_ID}" /></td>
                         <td valign="top"><b><a href="index.php?cmd={MODULE_NAME}&amp;act=modify_entry&amp;id={MEDIADIR_ENTRY_ID}" target="_self" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_VIEW}">{MEDIADIR_ENTRY_FIELD_1_POS}</a></b></td>
                         <td valign="top">{MEDIADIR_ENTRY_FORM}</td>
                         <td valign="top" nowrap="nowrap">{MEDIADIR_ENTRY_CREATE_DATE}</td>
@@ -246,7 +258,7 @@ var switchState = function(id, obj, action, type)
                 </tr>
                 <!-- BEGIN mediadirLatestList -->
                     <tr class="{MEDIADIR_ROW_CLASS}">
-                        <td valign="top"><input type="checkbox" name="entriesFormSelected[]" value="{MEDIADIR_ENTRY_ID}" />
+                        <td valign="top"><input type="checkbox" name="entriesFormSelected[]" value="{MEDIADIR_ENTRY_ID}" /></td>
                         <td valign="middle" style="text-align: center;"><a href="javascript: void(0);" onclick="switchState({MEDIADIR_ENTRY_ID}, this, {MEDIADIR_ENTRY_SWITCH_STATUS}, 'entry')"><img src="{MEDIADIR_ENTRY_STATUS}" border="0" alt="" title="" /></td>
                         <td valign="top"><b><a href="index.php?cmd={MODULE_NAME}&amp;act=modify_entry&amp;id={MEDIADIR_ENTRY_ID}" target="_self" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_EDIT}">{MEDIADIR_ENTRY_FIELD_1_POS}</a></b></td>
                         <td valign="top">{MEDIADIR_ENTRY_FORM}</td>

@@ -543,19 +543,19 @@ class ContactManager extends ContactLib
                     if (isset($pages[$langId])) {
                         $previewURL = '../'.\FWLanguage::getLanguageCodeById($langId).$pages[$langId]->getPath();
                         $links = FWLanguage::getLanguageCodeById($langId).
-                                '<a title="'.FWLanguage::getLanguageCodeById($langId).'" href="index.php?cmd=content&loadPage='.$pages[$langId]->getId().'" class="view">'.
-                                    '<img src="./images/icons/green_arrow_down.png" alt="Edit in Content Manager" />'.
+                                '<a title="'.$_CORELANG['TXT_CORE_EDIT_PAGE_LAYOUT'].'" href="index.php?cmd=content&loadPage='.$pages[$langId]->getId().'" class="view">'.
+                                    '<img src="./images/icons/green_arrow_down.png" />'.
                                 '</a>'.
-                                '<a title="'.FWLanguage::getLanguageCodeById($langId).'" target="_blank" href="'.$previewURL.'" class="view">'.
-                                    '<img src="./images/icons/blue_arrow_up.png" alt="Website view" />'.
+                                '<a title="'.$_CORELANG['TXT_CORE_SHOW_FRONTEND_VIEW'].'" target="_blank" href="'.$previewURL.'" class="view">'.
+                                    '<img src="./images/icons/blue_arrow_up.png" />'.
                                 '</a>';
                     } else {
                         $links = FWLanguage::getLanguageCodeById($langId);
                     }
-                    $lang[] = $links;
+                    $lang[] = '<span class="lang">'.$links.'</span>';
                 }
 
-                $langString = implode(', ',$lang);
+                $langString = implode($lang);
                 
                 $formName = contrexx_raw2xhtml($arrForm['lang'][$selectedInterfaceLanguage]['name']);
 
