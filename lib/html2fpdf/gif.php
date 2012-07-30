@@ -770,52 +770,52 @@ class CGIF
 	///////////////////////////////////////////////////////////////////////////
 
 	function loadFile($lpszFileName, $iIndex)
-	{
+    {
 
 
-		if($iIndex < 0) {
-			return false;
-		}
-		// READ FILE
-		if(!($fh = @fOpen($lpszFileName, "rb"))) {
-			return false;
-		}
-		//EDITEI - in order to read remote files (HTTP(s) and FTP protocols)
-		if ( strpos($lpszFileName,"http") !== false or strpos($lpszFileName,"ftp") !== false )
-		{
-
-			$contents = '';
-			while (!feof($fh)) $contents .= @fread($fh, 8192);
-		}
-		else
-		{
-			$contents = @fread($fh,@filesize($lpszFileName) );
-			//echo($contents);
-		}
-		$this->m_lpData = $contents;
-//		$this->m_lpData = @fRead($fh, @fileSize($lpszFileName));
-		fClose($fh);
+        if($iIndex < 0) {
+            return false;
+        }
+        // READ FILE
+        if (FWValidator::isUri($lpszFileName)) { // Image is a remote ressource
+            require_once ASCMS_LIBRARY_PATH.'/PEAR/HTTP/Request2.php';
+            try {
+                $request = new HTTP_Request2($lpszFileName);
+                $contents = $request->send()->getBody();
+            } catch (Exception $e) {
+                DBG::msg($e->getMessage());
+                return false;
+            }
+        } elseif(!($fh = @fOpen($lpszFileName, "rb"))) {
+            return false;
+        } else {
+            $contents = @fread($fh,@filesize($lpszFileName) );
+            fClose($fh);
+            //echo($contents);
+        }
+        $this->m_lpData = $contents;
+//      $this->m_lpData = @fRead($fh, @fileSize($lpszFileName));
 //header ("Content-type: image/gif");
 //echo($this->m_lpData);
 
-		// GET FILE HEADER
-		if(!$this->m_gfh->load($this->m_lpData, $len)) {
-			return false;
-		}
+        // GET FILE HEADER
+        if(!$this->m_gfh->load($this->m_lpData, $len)) {
+            return false;
+        }
 
-		$this->m_lpData = substr($this->m_lpData, $len);
-		do {
-			if(!$this->m_img->load($this->m_lpData, $imgLen)) {
+        $this->m_lpData = substr($this->m_lpData, $len);
+        do {
+            if(!$this->m_img->load($this->m_lpData, $imgLen)) {
 
-				return false;
-			}
-			$this->m_lpData = substr($this->m_lpData, $imgLen);
-		}
-		while($iIndex-- > 0);
+                return false;
+            }
+            $this->m_lpData = substr($this->m_lpData, $imgLen);
+        }
+        while($iIndex-- > 0);
 
-		$this->m_bLoaded = true;
-		return true;
-	}
+        $this->m_bLoaded = true;
+        return true;
+    }
 
 	///////////////////////////////////////////////////////////////////////////
 
