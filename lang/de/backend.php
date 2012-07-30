@@ -6,6 +6,8 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_CORE_EDIT_PAGE_LAYOUT'] = "Seitenlayout editieren";
+$_ARRAYLANG['TXT_CORE_SHOW_FRONTEND_VIEW'] = "Frontend-Ansicht anzeigen";
 $_ARRAYLANG['TXT_FRONTEND'] = 'Frontend';
 $_ARRAYLANG['TXT_CORE_GENERAL'] = "Allgemein";
 $_ARRAYLANG['TXT_CORE_PLACEHOLDERS'] = "Platzhalter";
