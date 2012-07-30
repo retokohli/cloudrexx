@@ -79,7 +79,7 @@ class PDF extends HTML2FPDF
         $this->content = utf8_decode($this->_ParseHTML($this->content));
 
         $pdf = new HTML2FPDF();
-
+        $pdf->ShowNOIMG_GIF();
         $pdf->DisplayPreferences('HideWindowUI');
         $pdf->AddPage();
         $pdf->WriteHTML($this->content);
@@ -128,15 +128,15 @@ class PDF extends HTML2FPDF
         global $_CONFIG;
 
         // replace $change with ''
-        $change = array('+', '¦', '"', '@', '*', '#', '°', '%', '§', '&', '¬', '/', '|', '(', '¢', ')', '=', '?', '\'', '´', '`', '^', '~', '!', '¨', '[', ']', '{', '}', '£', '$', '-', '<', '>', '\\', ';', ',', ':');
+        $change = array('+', 'ï¿½', '"', '@', '*', '#', 'ï¿½', '%', 'ï¿½', '&', 'ï¿½', '/', '|', '(', 'ï¿½', ')', '=', '?', '\'', 'ï¿½', '`', '^', '~', '!', 'ï¿½', '[', ']', '{', '}', 'ï¿½', '$', '-', '<', '>', '\\', ';', ',', ':');
 
         //echo $string;
 
         // replace $signs1 with $signs
         if ($_CONFIG['coreCharacterEncoding'] == 'UTF-8') {
-            $signs1 = array(' ', 'ã¤', 'ã¶', 'ã¼', 'ã');
+            $signs1 = array(' ', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½');
         } else {
-            $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
+            $signs1 = array(' ', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½');
         }
 
         $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
