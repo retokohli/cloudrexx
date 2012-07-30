@@ -97,7 +97,7 @@ a:active {
 
 #metanavigation a {
     float: left;
-    padding: 0 0 0 16px;
+    padding: 0 0 0 17px;
     margin: 0 0 0 20px;
     color: #c5dbe8;
 }
@@ -113,7 +113,8 @@ a:active {
 }
 
 #metanavigation a.frontend {
-    background: transparent;
+    padding-left: 20px;
+    background: url(../images/frontend_icon.png) no-repeat;
 }
 
 #metanavigation a.profile {
@@ -121,6 +122,7 @@ a:active {
 }
 
 #metanavigation a.logout {
+    padding-left: 16px;
     background: url(../images/logout_icon.png) no-repeat;
 }
 

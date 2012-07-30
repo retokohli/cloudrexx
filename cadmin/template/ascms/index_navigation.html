@@ -1,22 +1,35 @@
 <script type="text/javascript">
 // <![CDATA[
 function switchNavigation(navi_id) {
-    $J('.navigation_level_1').each(function(index, value) {
-        $J(value).children('li, span').removeClass('active');
-        $J(value).children('li, span').addClass('inactive');
-    });
-    $J('.navigation_level_2').each(function(index, value) {
-        $J(value).removeClass('active');
-        $J(value).addClass('inactive');
-    });
+    if ($J('.navigation_level_1 li.active').is('#navigation_level_1_' + navi_id + ' li.active')) {
+        if ($J('#navigation_level_2_' + navi_id).hasClass('active')) {
+            $J('.navigation_level_2').each(function(index, value) {
+                $J(value).removeClass('active');
+                $J(value).addClass('inactive');
+            });
+        } else {
+            $J('#navigation_level_2_' + navi_id).removeClass('inactive');
+            $J('#navigation_level_2_' + navi_id).addClass('active');
+        }
+    } else {
+        $J('.navigation_level_2').each(function(index, value) {
+            $J(value).removeClass('active');
+            $J(value).addClass('inactive');
+        });
 
-    $J('#navigation_level_1_' + navi_id).children('li, span, a').removeClass('inactive');
-    $J('#navigation_level_1_' + navi_id).children('li, span, a').addClass('active');
-    if ($J('#navigation_level_2_' + navi_id).length > 0) {
-        $J('#navigation_level_2_' + navi_id).removeClass('inactive');
-        $J('#navigation_level_2_' + navi_id).addClass('active');
+        $J('.navigation_level_1').each(function(index, value) {
+            $J(value).children('li, span').removeClass('active');
+            $J(value).children('li, span').addClass('inactive');
+        });
+
+        $J('#navigation_level_1_' + navi_id).children('li, span, a').removeClass('inactive');
+        $J('#navigation_level_1_' + navi_id).children('li, span, a').addClass('active');
+        if ($J('#navigation_level_2_' + navi_id).length > 0) {
+            $J('#navigation_level_2_' + navi_id).removeClass('inactive');
+            $J('#navigation_level_2_' + navi_id).addClass('active');
+        }
+        document.cookie = 'navigation_level_2_active=' + navi_id;
     }
-    document.cookie = 'navigation_level_2_active=' + navi_id;
 }
 // ]]>
 </script>
