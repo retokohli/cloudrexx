@@ -71,11 +71,11 @@ $_ARRAYLANG['TXT_JOBS_FOOTNOTE_HELP'] = "Text der unmittelbar nach jedem Angebot
 $_ARRAYLANG['TXT_JOBS_URL_HELP'] = "zum Link Text dazugehöriger Verweis auf die Bewerbung.";
 $_ARRAYLANG['TXT_JOBS_LINK_HELP'] = "Link Text. Wird unmittelbar an die Fussnote angehängt. Platzhalter:[JOBS_FOOTNOTE_LINK]";
 $_ARRAYLANG['TXT_JOBS_URL_INFO'] = "Platzhalter: %URL% = Adresse des Jobangebotes, %TITLE% = Name des Jobangebotes.";
-$_ARRAYLANG['TXT_JOBS_URL_ERROR'] = "Geben Sie eine Gültige URL im Feld ".$_ARRAYLANG['TXT_JOBS_URL']." ein";
+$_ARRAYLANG['TXT_JOBS_URL_ERROR'] = "Geben Sie eine Gültige URL im Feld 'Fussnoten Link-URL' ein";
 $_ARRAYLANG['TXT_JOBS_ASSOCIATED_LOCATIONS'] = "Zugewiesene Regionen";
 $_ARRAYLANG['TXT_JOBS_AVAILABLE_LOCATIONS'] = "Vorhandene Regionen";
 $_ARRAYLANG['TXT_JOBS_LOCATIONS_NOT_ASSIGNED'] = "Regionen konnten nicht zugewiesen werden.";
-$_ARRAYLANG['TXT_JOBS_LOCATION_NOT_DELETED'] = "Regionszuweisungen konnten nicht gel�scht werden.";
+$_ARRAYLANG['TXT_JOBS_LOCATION_NOT_DELETED'] = "Regionszuweisungen konnten nicht gelöscht werden.";
 $_ARRAYLANG['TXT_JOBS_SHOW_LOCATION_FE'] = "Regionen als Auswahl zur Verfügung stellen";
 $_ARRAYLANG['TXT_LOCATION_MANAGER'] = "Regionen";
 $_ARRAYLANG['TXT_LOCATION'] = "Regionen";
