@@ -66,6 +66,17 @@ class ContentManager extends Module {
         JS::registerJS('lib/javascript/lock.js');
         JS::registerJS('lib/javascript/jquery/jquery.history.js');
 
+        $objCx = ContrexxJavascript::getInstance();
+        if (include_once(ASCMS_CORE_PATH.'/skins.class.php')) {
+            $objSkins = new skins();
+            $objCx->setVariable('themeId', $objSkins->selectDefaultTheme(), 'theme');
+            foreach ($objSkins->getThemes() as $arrTheme) {
+                if ($arrTheme['id'] == $objSkins->selectDefaultTheme()) {
+                    $objCx->setVariable('themeName', $arrTheme['foldername'], 'theme');
+                }
+            }
+        }
+
         $this->template->addBlockfile('ADMIN_CONTENT', 'content_manager', 'content_manager.html');
         $this->template->touchBlock('content_manager');
         $this->template->addBlockfile('CONTENT_MANAGER_MEAT', 'content_manager_meat', 'cm.html');
@@ -110,7 +121,6 @@ class ContentManager extends Module {
             'TXT_CORE_PREVIEW', 'TXT_CORE_SAVE_PUBLISH', 'TXT_CORE_SAVE', 'TXT_CORE_SUBMIT_FOR_RELEASE', 'TXT_CORE_REFUSE_RELEASE'
         ));
 
-        $objCx = ContrexxJavascript::getInstance();
         $objCx->setVariable('TXT_CORE_CM_VIEW', $_CORELANG['TXT_CORE_CM_VIEW']);
         $objCx->setVariable('TXT_CORE_CM_ACTIONS', $_CORELANG['TXT_CORE_CM_ACTIONS']);
 
