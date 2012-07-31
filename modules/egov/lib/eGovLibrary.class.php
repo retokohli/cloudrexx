@@ -798,21 +798,10 @@ class eGovLibrary {
         require_once dirname(__FILE__).'/cal/calendrier.php';
         $AnzahlTxT = $_ARRAYLANG['TXT_EGOV_QUANTITY'];
         $AnzahlDropdown = eGovLibrary::_QuantityDropdown();
-        $Datum4JS = (isset($_REQUEST['date']) ? $_REQUEST['date'] : '');
-        if ($Datum4JS == '') {
-            $Datum4JS = date('Ymd');
-        }
+        $Datum4JS = isset($_REQUEST['date']) ? $_REQUEST['date'] : '';
         $QuantArray =
             eGovLibrary::_GetOrdersQuantityArray($product_id, $Datum4JS);
-        $dat1 = substr($Datum4JS, 0, 4);
-        $dat2 = substr($Datum4JS, 4, 2);
-        $dat3 = substr($Datum4JS, 6, 2);
-        if (substr($dat3, 0, 1) == '0') {
-            $dat3 = substr($dat3, 1, 1);
-        }
-        $DatumJS = "$dat3.$dat2.$dat1";
         return calendar(
-            $DatumJS,
             $QuantArray,
             $AnzahlDropdown,
             $AnzahlTxT,
@@ -821,7 +810,7 @@ class eGovLibrary {
             $ArrayRD,
             eGovLibrary::GetProduktValue('product_quantity', $product_id),
             eGovLibrary::GetProduktValue('product_quantity_limit', $product_id),
-            '',
+            $Datum4JS,
             eGovLibrary::GetSettings('set_calendar_background'),
             eGovLibrary::GetSettings('set_calendar_legende_1'),
             eGovLibrary::GetSettings('set_calendar_legende_2'),
@@ -1206,20 +1195,9 @@ class eGovLibrary {
         require_once dirname(__FILE__).'/cal/calendrier.php';
         $AnzahlTxT = $_ARRAYLANG['TXT_EGOV_QUANTITY'];
         $AnzahlDropdown = $this->_QuantityDropdown();
-        $Datum4JS = (isset($_REQUEST['date']) ? $_REQUEST['date'] : '');
-        if ($Datum4JS == '') {
-            $Datum4JS = date('Ymd');
-        }
+        $Datum4JS = isset($_REQUEST['date']) ? $_REQUEST['date'] : '';
         $QuantArray = $this->_GetOrdersQuantityArray($product_id, $Datum4JS);
-        $dat1 = substr($Datum4JS, 0, 4);
-        $dat2 = substr($Datum4JS, 4, 2);
-        $dat3 = substr($Datum4JS, 6, 2);
-        if (substr($dat3, 0, 1) == '0') {
-            $dat3 = substr($dat3, 1, 1);
-        }
-        $DatumJS = "$dat3.$dat2.$dat1";
         return calendar(
-            $DatumJS,
             $QuantArray,
             $AnzahlDropdown,
             $AnzahlTxT,
@@ -1228,7 +1206,7 @@ class eGovLibrary {
             $ArrayRD,
             eGovLibrary::GetProduktValue('product_quantity', $product_id),
             eGovLibrary::GetProduktValue('product_quantity_limit', $product_id),
-            '',
+            $Datum4JS,
             eGovLibrary::GetSettings('set_calendar_background'),
             eGovLibrary::GetSettings('set_calendar_legende_1'),
             eGovLibrary::GetSettings('set_calendar_legende_2'),
