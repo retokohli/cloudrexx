@@ -460,6 +460,10 @@ class Yellowpay
         if (empty ($uriparam)) {
             $uriparam = 'section=shop&cmd=success&handler=yellowpay';
         }
+        // This is needed by some modules in order to identify the order,
+        // i.e. egov!
+        $order_id = $arrField['ORDERID'];
+        $uriparam .= '&order_id='.$order_id;
         $base_uri =
             'http://'.$_SERVER['HTTP_HOST'].CONTREXX_SCRIPT_PATH.
             '?'.$uriparam.'&result=';
