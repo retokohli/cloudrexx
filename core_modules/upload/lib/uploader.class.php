@@ -70,8 +70,12 @@ abstract class Uploader
      *
      * The callback will be called with the arguments
      * * $tempPath, containing the path to the folder where the files are
+     * * $tempWebPath, containing the web path to the folder where the files are
      * * $data, containing the data set by @link Uploader::setData
      * * $uploadId, containing the id of the current upload
+     * * $fileInfos, containing an array ( 'originalFileNames' => array ('currentCleanFileName' => 'fileNameGivenWhenUploaded'))
+     *     add a key if you want to pass more file informations (e.g. size, mime type) to the callback!
+     * * $response, an UploadResponse object.
      *
      * The callback can either return null if he moves the files himself or
      * { <path_string> , <web_path_string> } if the files should be moved
