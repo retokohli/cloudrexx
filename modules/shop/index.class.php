@@ -371,7 +371,7 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
                 if (!$objCategory) $selectedCatId = 0;
             }
             if (empty($selectedCatId) && isset($_REQUEST['productId'])) {
-                $product_id = $_REQUEST['productId'];
+                $product_id = intval($_REQUEST['productId']);
                 if (isset($_REQUEST['referer']) && $_REQUEST['referer'] == 'cart') {
                     $product_id = Cart::get_product_id($product_id);
                 }
