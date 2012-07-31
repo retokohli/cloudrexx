@@ -182,7 +182,7 @@ $_ARRAYLANG['TXT_PROVIDE_MODULE'] = "Подготовить модуль к ра
 $_ARRAYLANG['TXT_CALENDAR'] = "Календарь";
 $_ARRAYLANG['TXT_CALENDAR_MODULE_DESCRIPTION'] = "Календарная система событий";
 $_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR'] = "Перечень заместителей";
-$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION'] = 'Eine detaillie Platzhalter-Liste finden Sie im <a href="http://www.contrexx.com/wiki/de/index.php?title=Platzhalterverzeichnis" target="_blank">Contrexx&reg; Platzhalterverzeichnis</a>.';
+$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION'] = 'A detailed list of placeholders can be found in the <a href="http://www.contrexx.com/wiki/de/index.php?title=Platzhalterverzeichnis" target="_blank">Contrexx&reg; placeholder directory</a>.';
 $_ARRAYLANG['TXT_REPLACEMENT_LIST'] = "Список заместителей";
 $_ARRAYLANG['TXT_FILES'] = "Файлы";
 $_ARRAYLANG['TXT_CONTENTS'] = "Содержания";

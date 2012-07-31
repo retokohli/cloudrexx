@@ -182,7 +182,7 @@ $_ARRAYLANG['TXT_PROVIDE_MODULE'] = "Verstrek module";
 $_ARRAYLANG['TXT_CALENDAR'] = "Kalender";
 $_ARRAYLANG['TXT_CALENDAR_MODULE_DESCRIPTION'] = "Kalendersysteem";
 $_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR'] = "Vervangende map";
-$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION'] = 'Eine detaillie Platzhalter-Liste finden Sie im <a href="http://www.contrexx.com/wiki/de/index.php?title=Platzhalterverzeichnis" target="_blank">Contrexx&reg; Platzhalterverzeichnis</a>.';
+$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION'] = 'A detailed list of placeholders can be found in the <a href="http://www.contrexx.com/wiki/de/index.php?title=Platzhalterverzeichnis" target="_blank">Contrexx&reg; placeholder directory</a>.';
 $_ARRAYLANG['TXT_REPLACEMENT_LIST'] = "Vervangende lijst";
 $_ARRAYLANG['TXT_FILES'] = "Bestanden";
 $_ARRAYLANG['TXT_CONTENTS'] = "Inhoud";
