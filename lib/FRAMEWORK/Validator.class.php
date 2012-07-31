@@ -18,7 +18,16 @@
  * @since   2.0.0
  */
 define('VALIDATOR_REGEX_EMAIL',
-    '[a-zäöü0-9!\#\$\%\&\'\*\+\/\=\?\^_\`\{\|\}\~-]+(?:\.[a-zäöü0-9!\#\$\%\&\'\*\+\/\=\?\^_\`\{\|\}\~-]+)*@(?:[a-zäöü0-9](?:[a-zäöü0-9-]*[a-zäöü0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?'
+    '[a-zäàáâöôüûñéè0-9!\#\$\%\&\'\*\+\/\=\?\^_\`\{\|\}\~-]+(?:\.[a-zäàáâöôüûñéè0-9!\#\$\%\&\'\*\+\/\=\?\^_\`\{\|\}\~-]+)*@(?:[a-zäàáâöôüûñéè0-9](?:[a-zäàáâöôüûñéè0-9-]*[a-zäàáâöôüûñéè0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?'
+);
+
+/**
+ * Regular Expression in javascript for e-mail addresses
+ * @author  Michael Räss <info@comvation.com>
+ * @since  2.2.6
+ */
+define('VALIDATOR_REGEX_EMAIL_JS',
+    '^'.VALIDATOR_REGEX_EMAIL.'$'
 );
 
 /**
@@ -29,7 +38,7 @@ define('VALIDATOR_REGEX_EMAIL',
  * @since   2.2.0
  */
 define('VALIDATOR_REGEX_URI_PROTO',
-      '(?:(?:ht|f)tps?\:\/\/)'
+    '(?:(?:ht|f)tps?\:\/\/)'
 );
 
 /**
@@ -38,9 +47,18 @@ define('VALIDATOR_REGEX_URI_PROTO',
  * @since   2.2.0
  */
 define('VALIDATOR_REGEX_URI',
-      VALIDATOR_REGEX_URI_PROTO.
-      '?((([\w\d-]{2,}\.)+[a-z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?:(\.?\d)\.)) {4}))(?:[\w\d]+)?(\/[\w\d\-\.\?\,\'\/\\\+\&\%\$\#\=\~]*)?'
-//    '(https?|ftp)\:\/\/([-a-z0-9.]+)(\/[-a-z0-9+&@#\/%=~_|!:,.;]*)?(\?[-a-z0-9+&@#\/%=~_|!:,.;]*)?'
+    VALIDATOR_REGEX_URI_PROTO.
+    '?((([\wäàáâöôüûñéè\d-]{1,}\.)+[a-z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?:(\.?\d)\.)) {4}))(?:[\w\d]+)?(\/[\w\d\-\.\?\,\'\/\\\+\&\%\$\#\=\~]*)?'
+//  '(https?|ftp)\:\/\/([-a-z0-9.]+)(\/[-a-z0-9+&@#\/%=~_|!:,.;]*)?(\?[-a-z0-9+&@#\/%=~_|!:,.;]*)?'
+);
+
+/**
+ * Regular Expression in javascript for URIs
+ * @author  Michael Räss <info@comvation.com>
+ * @since   2.2.6
+ */
+define('VALIDATOR_REGEX_URI_JS',
+    '^'.VALIDATOR_REGEX_URI.'$'
 );
 
 /**
