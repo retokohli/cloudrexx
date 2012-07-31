@@ -17,7 +17,8 @@ var ComboUploader = function(theConfig) {
     var $ = $J; //we want jquery at $ internally
 
     var config = theConfig;
-    var uploaders = theConfig.uploaders;    var div = $(config.div);
+    var uploaders = theConfig.uploaders;
+    var div = $(config.div);
 
     var curType = 'form';
 
@@ -103,7 +104,7 @@ var ComboUploader = function(theConfig) {
                 if(uploader.type == type)
                     found = true;
                 });
-            return found;successfu
+            return found;//successfull
         };
 
         //initialize correct player
