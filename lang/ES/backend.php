@@ -182,7 +182,7 @@ $_ARRAYLANG['TXT_PROVIDE_MODULE'] = "Ofrecer m&oacute;dulo";
 $_ARRAYLANG['TXT_CALENDAR'] = "Calendario de eventos";
 $_ARRAYLANG['TXT_CALENDAR_MODULE_DESCRIPTION'] = "Calendario de eventos del sistema";
 $_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR'] = "Directorio de reemplazos";
-$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION'] = 'Eine detaillie Platzhalter-Liste finden Sie im <a href="http://www.contrexx.com/wiki/de/index.php?title=Platzhalterverzeichnis" target="_blank">Contrexx&reg; Platzhalterverzeichnis</a>.';
+$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION'] = 'A detailed list of placeholders can be found in the <a href="http://www.contrexx.com/wiki/de/index.php?title=Platzhalterverzeichnis" target="_blank">Contrexx&reg; placeholder directory</a>.';
 $_ARRAYLANG['TXT_REPLACEMENT_LIST'] = "Lista de reemplazos";
 $_ARRAYLANG['TXT_FILES'] = "Ficheros";
 $_ARRAYLANG['TXT_CONTENTS'] = "Contenidos";

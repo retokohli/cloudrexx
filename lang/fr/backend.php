@@ -182,7 +182,7 @@ $_ARRAYLANG['TXT_PROVIDE_MODULE'] = "Installer le module";
 $_ARRAYLANG['TXT_CALENDAR'] = "Manifestations";
 $_ARRAYLANG['TXT_CALENDAR_MODULE_DESCRIPTION'] = "Module de gestion de manifestations";
 $_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR'] = "Variables";
-$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION'] = 'Eine detaillie Platzhalter-Liste finden Sie im <a href="http://www.contrexx.com/wiki/de/index.php?title=Platzhalterverzeichnis" target="_blank">Contrexx&reg; Platzhalterverzeichnis</a>.';
+$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION'] = 'A detailed list of placeholders can be found in the <a href="http://www.contrexx.com/wiki/de/index.php?title=Platzhalterverzeichnis" target="_blank">Contrexx&reg; placeholder directory</a>.';
 $_ARRAYLANG['TXT_REPLACEMENT_LIST'] = "Liste des variables";
 $_ARRAYLANG['TXT_FILES'] = "Fichiers";
 $_ARRAYLANG['TXT_CONTENTS'] = "Contenus";
