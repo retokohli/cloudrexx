@@ -513,7 +513,7 @@ function &_adodb_pageexecute_all_rows(&$zthis, $sql, $nrows, $page,
 	return $rsreturn;
 }
 
-// Iván Oliva version
+// Ivï¿½n Oliva version
 function &_adodb_pageexecute_no_last_page(&$zthis, $sql, $nrows, $page, $inputarr=false, $secs2cache=0)
 {
 
@@ -1042,6 +1042,7 @@ function _adodb_debug_execute(&$zthis, $sql, $inputarr)
 function _adodb_backtrace($printOrArr=true,$levels=9999,$skippy=0)
 {
     if (DBG::getMode() & DBG_LOG_FILE || DBG::getMode() & DBG_LOG_FIREPHP) {
+        DBG::time();
         DBG::stack();
         return '';
     }
