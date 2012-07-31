@@ -29,20 +29,23 @@ class eGovLibrary {
             'name' => 'TXT_EGOV_REGEX_EVERYTHING',
         ),
         2 => array(
-            'regex' => '^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.(([0-9]{1,3})|([a-zA-Z]{2,3})|(aero|coop|info|museum|name))$',
+            'regex' => VALIDATOR_REGEX_EMAIL_JS,
             'name' => 'TXT_EGOV_REGEX_EMAIL',
+            'modifiers' => 'i',
         ),
         3 => array(
-            'regex' => '^(ht|f)tp[s]?\:\/\/[A-Za-z0-9\-\:\.\?\&\=]*$',
+            'regex' => VALIDATOR_REGEX_URI_JS,
             'name' => 'TXT_EGOV_REGEX_URL',
+            'modifiers' => 'i',
         ),
         4 => array(
-            'regex' => '^[A-Za-z������������\ ]*$',
-            'name' => 'TXT_EGOV_REGEX_TEXT',
+            'regex'     => '^[a-zäàáüâûôñèöéè\ ]*[a-zäàáüâûôñèöéè]+[a-zäàáüâûôñèöéè\ ]*$',
+            'name'      => 'TXT_CONTACT_REGEX_TEXT',
+            'modifiers' => 'i'
         ),
         5 => array(
             'regex' => '^[0-9]*$',
-            'name' => 'TXT_EGOV_REGEX_NUMBERS',
+            'name'  => 'TXT_EGOV_REGEX_NUMBERS',
         ),
     );
 
