@@ -966,6 +966,7 @@ class mediaDirectoryInputfield extends mediaDirectoryLibrary
 
     function makeJavascriptInputfieldArray($intId, $strName, $intRequired, $strVerification, $strType)
     {
+        $strVerification = addslashes($strVerification);
         $this->strJavascriptInputfieldArray .= <<<EOF
 
 inputFields[$intId] = Array(
