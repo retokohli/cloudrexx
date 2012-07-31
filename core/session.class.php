@@ -86,7 +86,8 @@ class cmsSession
         }
     }
 
-    function setAdodbDebugMode() {
+    function setAdodbDebugMode()
+    {
         if (DBG::getMode() & DBG_ADODB_TRACE) {
             $this->_objDb->debug=99;
         } elseif (DBG::getMode() & DBG_ADODB || DBG::getMode() & DBG_ADODB_ERROR) {
@@ -99,10 +100,10 @@ class cmsSession
     /**
      * Expands debugging behaviour with behaviour stored in session if specified and active.
      */
-    function restoreDebuggingParams() {
-        if(isset($_SESSION['debugging']) && $_SESSION['debugging']) {
+    function restoreDebuggingParams()
+    {
+        if (isset($_SESSION['debugging']) && $_SESSION['debugging']) {
             DBG::activate(DBG::getMode() | $_SESSION['debugging_flags']);
-            $this->setAdodbDebugMode(); //might have changed
         }
     }
 
