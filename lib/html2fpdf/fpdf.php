@@ -2223,10 +2223,45 @@ function _parsejpg($file)
     );
 }
 
-function _parsepng($file)
+private function parsePNGwithAlphaChannel($file, $wpx, $hpx)
+{
+    $img = imagecreatefrompng($file);
+    if (!$img) return false;
+
+    // extract image without alpha channel
+    $imgplain = imagecreatetruecolor($wpx, $hpx);
+    imagecopy($imgplain, $img, 0, 0, 0, 0, $wpx, $hpx);
+
+    $fpm = fopen("php://memory", 'r+');
+    if ($fpm) {
+        // clean output buffer
+        $obBuffer = ob_get_clean();
+        ob_start();
+        // output image to output buffer
+        imagepng($imgplain);
+        // collect image and clean output buffer 
+        $image = ob_get_clean();
+        imagedestroy($imgplain);
+
+        // put image to memory pointer
+        fwrite($fpm, $image);
+        rewind($fpm);
+        return $this->_parsepng($file, $fpm);
+    } else {
+        $tempImage = ASCMS_TEMP_PATH.'/'.$file.'_without_alpha.png';
+        imagepng($imgplain, $tempImage);
+        $pngData = $this->_parsepng($tempImage); 
+        unlink($tempImage);
+        return $pngData;
+    }
+}
+
+function _parsepng($file, $f=null)
 {
     //Extract info from a PNG file
-    $f=fopen($file,'rb');
+    if (!isset($f)) {
+        $f=fopen($file,'rb');
+    }
     //Extract info from a PNG file
     if(!$f) {
         DBG::msg('Can\'t open image file: '.$file);
@@ -2254,6 +2289,10 @@ function _parsepng($file)
     if($ct==0) $colspace='DeviceGray';
     elseif($ct==2) $colspace='DeviceRGB';
     elseif($ct==3) $colspace='Indexed';
+    elseif($ct==6) {
+        fclose($f);
+        return $this->parsePNGwithAlphaChannel($file, $w, $h);
+    }
     //else $this->Error('Alpha channel not supported: '.$file);
     else $colspace='DeviceGray';
     if(ord(fread($f,1))!=0) {
@@ -2374,38 +2413,38 @@ function _parsegif($file) //EDITEI - GIF support is now included
 
 function _freadint($f)
 {
-	//Read a 4-byte integer from file
-	$i=ord(fread($f,1))<<24;
-	$i+=ord(fread($f,1))<<16;
-	$i+=ord(fread($f,1))<<8;
-	$i+=ord(fread($f,1));
-	return $i;
+    //Read a 4-byte integer from file
+    $i=ord(fread($f,1))<<24;
+    $i+=ord(fread($f,1))<<16;
+    $i+=ord(fread($f,1))<<8;
+    $i+=ord(fread($f,1));
+    return $i;
 }
 
 function _textstring($s)
 {
-	//Format a text string
-	return '('.$this->_escape($s).')';
+    //Format a text string
+    return '('.$this->_escape($s).')';
 }
 
 function _escape($s)
 {
-	//Add \ before \, ( and )
-	return str_replace(')','\\)',str_replace('(','\\(',str_replace('\\','\\\\',$s)));
+    //Add \ before \, ( and )
+    return str_replace(')','\\)',str_replace('(','\\(',str_replace('\\','\\\\',$s)));
 }
 
 function _putstream($s)
 {
-	$this->_out('stream');
-	$this->_out($s);
-	$this->_out('endstream');
+    $this->_out('stream');
+    $this->_out($s);
+    $this->_out('endstream');
 }
 
 function _out($s)
 {
-	//Add a line to the document
-	if($this->state==2)	$this->pages[$this->page] .= $s."\n";
-	else $this->buffer .= $s."\n";
+    //Add a line to the document
+    if($this->state==2) $this->pages[$this->page] .= $s."\n";
+    else $this->buffer .= $s."\n";
 }
 
 
@@ -2414,8 +2453,8 @@ function _out($s)
 //Handle special IE contype request
 if(isset($HTTP_SERVER_VARS['HTTP_USER_AGENT']) and $HTTP_SERVER_VARS['HTTP_USER_AGENT']=='contype')
 {
-	Header('Content-Type: application/pdf');
-	exit;
+    Header('Content-Type: application/pdf');
+    exit;
 }
 
 } //end of 'if(!class_exists('FPDF'))''
