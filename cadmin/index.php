@@ -25,11 +25,8 @@
  * will either activate or deactivate all levels.
  */
 include_once '../lib/DBG.php';
-$startTime = explode(' ', microtime());
 //DBG::activate(DBG_ERROR_FIREPHP);
-//enable gzip compressing of the output - up to 75% smaller responses!
-//commented out with java uploader l10n using pear http_download
-//ob_start("ob_gzhandler");
+$startTime = explode(' ', microtime());
 
 $adminPage = true;
 $_CONFIG = $_FTPCONFIG = $loggableListener = NULL;
@@ -855,4 +852,8 @@ if (file_exists(ASCMS_ADMIN_TEMPLATE_PATH.'/css/'.$cmd.'.css')) {
 }
 
 CSRF::add_placeholder($objTemplate);
+
+//enable gzip compressing of the output - up to 75% smaller responses!
+ob_start("ob_gzhandler");
+
 $objTemplate->show();

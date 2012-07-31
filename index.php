@@ -79,9 +79,6 @@ require_once dirname(__FILE__).'/lib/DBG.php';
 
 $starttime = explode(' ', microtime());
 
-//enable gzip compressing of the output - up to 75% smaller responses!
-//ob_start("ob_gzhandler");
-
 // Makes code analyzer warnings go away
 $_CONFIG = $_CONFIGURATION = $loggableListener = null;
 /**
@@ -1952,6 +1949,9 @@ if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
     $objPDF->Create();
     exit;
 }
+
+//enable gzip compressing of the output - up to 75% smaller responses!
+ob_start("ob_gzhandler");
 
 /**
  * Get all javascripts in the code, replace them with nothing, and register the js file
