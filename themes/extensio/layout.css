@@ -547,16 +547,16 @@ input.submit, input.button {
      text-transform: uppercase;
      width: auto;*/
     /* background: rgb(195,218,13);
-	background: -moz-linear-gradient(top,  rgba(195,218,13,1) 0%, rgba(174,205,9,1) 100%);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(195,218,13,1)), color-stop(100%,rgba(174,205,9,1)));
-	background: -webkit-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
-	background: -o-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
-	background: -ms-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
-	background: linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
+        background: -moz-linear-gradient(top,  rgba(195,218,13,1) 0%, rgba(174,205,9,1) 100%);
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(195,218,13,1)), color-stop(100%,rgba(174,205,9,1)));
+        background: -webkit-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
+        background: -o-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
+        background: -ms-linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
+        background: linear-gradient(top,  rgba(195,218,13,1) 0%,rgba(174,205,9,1) 100%);
  border: 1px solid #B4D50B;
  border-radius: 3px 3px 3px 3px;
  -webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
+        -moz-border-radius: 3px;
  color: #FFFFFF;
  cursor: pointer;
  font: 12px/30px 'Open Sans',Arial,Helvetica,sans-serif;
@@ -589,12 +589,12 @@ input.submit, input.button {
 #boxes_home input[type="button"]:hover
 {
     background: rgb(183,204,11);	
-	background: -moz-linear-gradient(top,  rgba(183,204,11,1) 0%, rgba(158,186,9,1) 100%);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(183,204,11,1)), color-stop(100%,rgba(158,186,9,1)));
-	background: -webkit-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
-	background: -o-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
-	background: -ms-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
-	background: linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
+    background: -moz-linear-gradient(top,  rgba(183,204,11,1) 0%, rgba(158,186,9,1) 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(183,204,11,1)), color-stop(100%,rgba(158,186,9,1)));
+    background: -webkit-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
+    background: -o-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
+    background: -ms-linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
+    background: linear-gradient(top,  rgba(183,204,11,1) 0%,rgba(158,186,9,1) 100%);
 
 }
 #main #exposedComboUploaderStarter{
@@ -1564,7 +1564,7 @@ a:hover {
 }
 .w1 {
     height:100%;
-    display:table;
+/*    display:table;*/
     margin:0 auto;
     width:990px;
     background:#fff;
@@ -3886,7 +3886,7 @@ pre .name {
 }
 /* footer */
 #footer {
-    display:table-row;
+/*    display:table-row;*/
     /*width:100%;*/
     width: 990px;
     line-height:18px;
@@ -3894,8 +3894,13 @@ pre .name {
     color:#999;
 }
 .footer-holder {
+<<<<<<< .mine
+/*    display:table-cell;*/
+    height:1%;
+=======
     display:table-cell;
     height:1%;
+>>>>>>> .r20679
     /*width:100%;*/
     width: 990px;
 }
@@ -4219,8 +4224,8 @@ pre .name {
 #frame_home input,
 #boxes_home input {
     /*width: 260px;
-	margin: 0.25em 0.25em 0.25em 0em;
-	padding: 4px;*/
+        margin: 0.25em 0.25em 0.25em 0em;
+        padding: 4px;*/
     /*border: 1px solid #bdbdbd;*/
     /*-moz-box-shadow: 1px 1px 2px #ddd inset;
     -webkit-box-shadow: 1px 1px 2px #ddd inset;
@@ -4317,8 +4322,8 @@ input.radio{
 #frame_home select,
 #boxes_home select {
     /*width: 270px;
-	margin: 0.25em 0.25em 0.25em 0em;
-	padding: 4px 4px 4px 4px;
+        margin: 0.25em 0.25em 0.25em 0em;
+        padding: 4px 4px 4px 4px;
   border: 1px solid #bdbdbd;
   -moz-box-shadow: 1px 1px 2px #ddd inset;
   -webkit-box-shadow: 1px 1px 2px #ddd inset;
@@ -4333,10 +4338,10 @@ input.radio{
 #frame_home textarea,
 #boxes_home textarea {
     /*width: 260px;
-	margin: 0.25em 0.25em 0.25em 0em;
-	padding: 4px;
-	font-size: 1.0em;
-	height: 60px;
+        margin: 0.25em 0.25em 0.25em 0em;
+        padding: 4px;
+        font-size: 1.0em;
+        height: 60px;
   border: 1px solid #bdbdbd;
   -moz-box-shadow: 1px 1px 2px #ddd inset;
   -webkit-box-shadow: 1px 1px 2px #ddd inset;
