@@ -3894,14 +3894,10 @@ pre .name {
     color:#999;
 }
 .footer-holder {
-<<<<<<< .mine
+
 /*    display:table-cell;*/
     height:1%;
-=======
-    display:table-cell;
-    height:1%;
->>>>>>> .r20679
-    /*width:100%;*/
+   /*width:100%;*/
     width: 990px;
 }
 #footer .container {
