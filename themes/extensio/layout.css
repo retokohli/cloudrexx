@@ -3894,8 +3894,8 @@ pre .name {
     color:#999;
 }
 .footer-holder {
-    display:table-cell;
-    height:1%;
+  /*  display:table-cell;
+    height:1%;*/
     /*width:100%;*/
     width: 990px;
 }
