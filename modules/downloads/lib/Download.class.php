@@ -1295,11 +1295,13 @@ class Download {
 
     public function getSource($langId = LANG_ID)
     {
-        return $this->sources[$langId];
+        $source = isset($this->sources[$langId]) ? isset($this->sources[$langId]) : '';
+        return $source;
     }
 
     public function getSourceName($langId = LANG_ID)
     {
+        $sourceName = isset($this->source_names[$langId]) ? $this->source_names[$langId] : '';
         return $this->source_names[$langId];
     }
 

@@ -877,6 +877,7 @@ class downloads extends DownloadsLibrary
         ));
 
         $this->objTemplate->setVariable(array(
+            'TXT_SAVE_CHANGES'                      => $_ARRAYLANG['TXT_SAVE_CHANGES'],
             'TXT_DOWNLOADS_OWNER'                   => $_ARRAYLANG['TXT_DOWNLOADS_OWNER'],
             'TXT_DOWNLOADS_CHANGE_SORT_DIRECTION'   => $_ARRAYLANG['TXT_DOWNLOADS_CHANGE_SORT_DIRECTION'],
             'TXT_DOWNLOADS_DOWNLOADS'               => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS'],
@@ -1887,6 +1888,7 @@ class downloads extends DownloadsLibrary
         } else {
             if ($operateOnSubcategories) {
                 $this->objTemplate->setVariable(array(
+                    'TXT_SAVE_CHANGES'              => $_ARRAYLANG['TXT_SAVE_CHANGES'],
                     'TXT_DOWNLOADS_CHECK_ALL'       => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
                     'TXT_DOWNLOADS_UNCHECK_ALL'     => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
                     'TXT_DOWNLOADS_SELECT_ACTION'   => $_ARRAYLANG['TXT_DOWNLOADS_SELECT_ACTION'],
@@ -2162,6 +2164,7 @@ class downloads extends DownloadsLibrary
         } else {
             $this->objTemplate->setVariable(array(
                 'DOWNLOADS_CONFIRM_UNLINK_DOWNLOADS_TXT'    => preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_UNLINK_DOWNLOADS'])),
+                'TXT_SAVE_CHANGES'                          => $_ARRAYLANG['TXT_SAVE_CHANGES'],
                 'TXT_DOWNLOADS_CHECK_ALL'                   => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
                 'TXT_DOWNLOADS_UNCHECK_ALL'                 => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
                 'TXT_DOWNLOADS_SELECT_ACTION'               => $_ARRAYLANG['TXT_DOWNLOADS_SELECT_ACTION'],

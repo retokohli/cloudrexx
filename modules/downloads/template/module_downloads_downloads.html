@@ -22,8 +22,8 @@ function downloadsDownloadDoAction(action)
 
 function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 {
-    if (event.which && event.which ==13 || event.keyCode == 13) {
-        document.getElementById(idMultiAction).value='order';
+    if (event.which && event.which == 13 || event.which == 1 || event.keyCode == 13 || event.keyCode == 1) {
+        document.getElementById(idMultiAction).value = 'order';
         elForm.submit();
     }
 }
@@ -106,15 +106,18 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
     </tr>
 <!-- END downloads_download_list -->
 </table>
-<img src="images/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
-<a href="javascript:void(0);" onclick="changeCheckboxes('downloads_download_form','downloads_download_id[]',true); return false;" title="{TXT_DOWNLOADS_CHECK_ALL}">{TXT_DOWNLOADS_CHECK_ALL}</a> /
-<a href="javascript:void(0);" onclick="changeCheckboxes('downloads_download_form','downloads_download_id[]',false); return false;" title="{TXT_DOWNLOADS_UNCHECK_ALL}">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
-<img src="images/icons/strike.gif" width="34" height="22" alt="design" />
-<select name="downloads_download_select_action" id="downloads_download_select_action" onchange="downloadsDownloadDoAction(this.value)">
-    <option value="0" selected="selected" style="border-bottom: 1px solid #000;">{TXT_DOWNLOADS_SELECT_ACTION}</option>
-    <!-- BEGIN downloads_download_change_order_action --><option value="order">{TXT_DOWNLOADS_ORDER}</option><!-- END downloads_download_change_order_action -->
-    <option value="delete">{TXT_DOWNLOADS_DELETE}</option>
-</select>
+<input type="button" value="{TXT_SAVE_CHANGES}" onclick="downloadsUpdateSortOrder(event, this.form, 'downloads_download_select_action')" style="float: left; margin: 10px 0 0 65px;" />
+<div style="clear: left;">
+    <img src="images/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
+    <a href="javascript:void(0);" onclick="changeCheckboxes('downloads_download_form','downloads_download_id[]',true); return false;" title="{TXT_DOWNLOADS_CHECK_ALL}">{TXT_DOWNLOADS_CHECK_ALL}</a> /
+    <a href="javascript:void(0);" onclick="changeCheckboxes('downloads_download_form','downloads_download_id[]',false); return false;" title="{TXT_DOWNLOADS_UNCHECK_ALL}">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
+    <img src="images/icons/strike.gif" width="34" height="22" alt="design" />
+    <select name="downloads_download_select_action" id="downloads_download_select_action" onchange="downloadsDownloadDoAction(this.value)">
+        <option value="0" selected="selected" style="border-bottom: 1px solid #000;">{TXT_DOWNLOADS_SELECT_ACTION}</option>
+        <!-- BEGIN downloads_download_change_order_action --><option value="order">{TXT_DOWNLOADS_ORDER}</option><!-- END downloads_download_change_order_action -->
+        <option value="delete">{TXT_DOWNLOADS_DELETE}</option>
+    </select>
+</div>
 <br />
 <br />
 {DOWNLOADS_DOWNLOAD_PAGING}
