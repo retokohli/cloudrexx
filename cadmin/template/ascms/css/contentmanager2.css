@@ -733,6 +733,10 @@ div.date img{
     padding: 0;
 }
 
+#page .warning {
+    border-color: #ff0000;
+}
+
 #page .toggle,
 #page .checkbox,
 #page .checkbox_style {
@@ -984,10 +988,6 @@ div.date img{
     clear: none;
     width: 200px;
     margin: 0 0 2px 0;
-}
-#page #navigation_container #page_aliases .page_alias input.warning {
-
-    border-color: #ff0000;
 }
 
 #page_history {
