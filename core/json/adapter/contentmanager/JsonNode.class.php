@@ -410,7 +410,7 @@ class JsonNode implements JsonAdapter {
     }
     
     protected function getActions($nodeId, $lang) {
-        require_once ASCMS_CORE_PATH . "/ActionsRenderer.class.php";
+        require_once ASCMS_CORE_PATH . "/contentmanager/ActionsRenderer.class.php";
 
         $node = $this->nodeRepo->find($nodeId);
         $page = $node->getPage(\FWLanguage::getLanguageIdByCode($lang));

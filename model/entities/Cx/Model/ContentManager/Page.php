@@ -591,8 +591,8 @@ class Page extends \Cx\Model\Base\EntityBase
         else $status .= "inactive ";
 
         if ($this->protection) $status .= "protected ";
-        if ($this->module) {
-            if ($this->module == "home") $status .= "home ";
+        if ($this->getModule()) {
+            if ($this->getModule() == "home" && $this->getCmd() == '') $status .= "home ";
             else $status .= "app ";
         }
         return $status;
@@ -739,6 +739,9 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function getModule()
     {
+        if ($this->getType() != self::TYPE_APPLICATION) {
+            return '';
+        }
         return $this->module;
     }
 
@@ -759,6 +762,9 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function getCmd()
     {
+        if ($this->getType() != self::TYPE_APPLICATION) {
+            return '';
+        }
         return $this->cmd;
     }
 

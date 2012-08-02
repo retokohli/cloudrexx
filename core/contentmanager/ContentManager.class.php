@@ -12,7 +12,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
 use \Cx\Core\Json\Adapter\ContentManager\JsonPage;
 
 require ASCMS_CORE_PATH . '/Module.class.php';
-require_once ASCMS_CORE_PATH . '/json/adapter/contentmanager/JsonPage.class.php';
+require_once ASCMS_CORE_PATH . '/json/JsonData.class.php';
 
 class ContentManagerException extends ModuleException {
     
@@ -82,7 +82,8 @@ class ContentManager extends Module {
         $this->template->addBlockfile('CONTENT_MANAGER_MEAT', 'content_manager_meat', 'cm.html');
         $this->template->touchBlock('content_manager_meat');
 
-        if (\Permission::checkAccess(78, 'static', true) && \Permission::checkAccess(115, 'static', true)) {
+        if (\Permission::checkAccess(78, 'static', true) &&
+                \Permission::checkAccess(115, 'static', true)) {
             JS::registerCode("var publishAllowed = true;");
             $alias_permission = "block";
             $alias_denial = "none !important";
@@ -131,6 +132,11 @@ class ContentManager extends Module {
         $objCx->setVariable('toggleThemes', $toggleThemes);
         $objCx->setVariable('toggleNavigation', $toggleNavigation);
         $objCx->setVariable('sidebar', $toggleSidebar);
+        
+        // get initial tree data
+        $objJsonData = new \Cx\Core\Json\JsonData();
+        $treeData = $objJsonData->jsondata('node', 'getTree', array(), false);
+        $objCx->setVariable('tree-data', $treeData, 'contrexx');
 
         if (!empty($_GET['act']) && ($_GET['act'] == 'new')) {
             $this->template->setVariable(array(

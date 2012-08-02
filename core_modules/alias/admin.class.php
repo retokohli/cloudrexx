@@ -64,7 +64,6 @@ class AliasAdmin extends aliasLib
     {
         global $objTemplate, $_ARRAYLANG;
 
-        // initialize FWHtAccess object
         parent::__construct();
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/alias/template');

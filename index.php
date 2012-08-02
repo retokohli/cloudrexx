@@ -104,10 +104,6 @@ $incSettingsStatus = include_once dirname(__FILE__).'/config/settings.php';
  * Adds version information to the {@link $_CONFIG[]} global array.
  */
 $incVersionStatus = include_once dirname(__FILE__).'/config/version.php';
-/**
- * Doctrine configuration
- */
-$incDoctrineStatus = include_once dirname(__FILE__).'/config/doctrine.php';
 
 // Check if system is installed
 if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
@@ -115,8 +111,17 @@ if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
     die(1);
 } elseif (   $incSettingsStatus === false
           || $incVersionStatus === false
-          || $incDoctrineStatus === false
 ) {
+    die('System halted: Unable to load basic configuration!');
+}
+
+/**
+ * Doctrine configuration
+ * Loaded after installer redirect (not configured before installer)
+ */
+$incDoctrineStatus = include_once dirname(__FILE__).'/config/doctrine.php';
+
+if ($incDoctrineStatus === false) {
     die('System halted: Unable to load basic configuration!');
 }
 

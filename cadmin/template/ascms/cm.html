@@ -160,7 +160,8 @@
                 <span class="tipmessage info input" onmouseout="htm()" onmouseover="stm(['', '{TXT_CORE_CM_LINK_TARGET_INO}'], tipMessageStyle)"></span>
 
                 <label for="page_slug">{TXT_CORE_CM_SLUG}</label>
-                <input type="text" name="page[slug]" id="page_slug" />
+                <span style="clear: both; float: left;">{CONTREXX_BASE_URL}<span id="page_slug_pre_url"></span></span>
+                <input type="text" name="page[slug]" id="page_slug" style="width: 200px; float: left; clear: none;" />
                 <span class="tipmessage info input" onmouseout="htm()" onmouseover="stm(['', '{TXT_CORE_CM_SLUG_INFO}'], tipMessageStyle)"></span>
                 
                 <div id="page_aliases">
@@ -169,7 +170,7 @@
                     <div class="page_alias empty">
                         <span class="page_alias_pre_url">{CONTREXX_BASE_URL}</span>
                         <span class="noedit" style="font-weight: bold; display: {ALIAS_DENIAL};"></span>
-                        <input type="text" name="page[alias][]" style="display: {ALIAS_PERMISSION};" />
+                        <input type="text" id="page_alias" name="page[alias][]" style="display: {ALIAS_PERMISSION};" />
                         <div style="float: none; clear: left;"></div>
                     </div>
                 </div>

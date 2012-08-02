@@ -197,7 +197,7 @@ class skins
 
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."skins");
         $this->oldTable = DBPREFIX."themes";
-        $this->_objFile->setChmod($this->path, $this->webPath, "");
+        \Cx\Lib\FileSystem::makeWritable($this->webPath);
     }
     private function setNavigation()
     {

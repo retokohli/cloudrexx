@@ -371,7 +371,7 @@ switch ($plainCmd) {
         $objSkins->getPage();
         break;
     case 'content':
-        if (!include_once ASCMS_CORE_PATH.'/ContentManager.class.php')
+        if (!include_once ASCMS_CORE_PATH.'/contentmanager/ContentManager.class.php')
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_CONTENT_MANAGER'];
         $cm = new ContentManager($act, $objTemplate, $objDatabase, $objInit);
