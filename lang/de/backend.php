@@ -1517,7 +1517,7 @@ $_ARRAYLANG['TXT_CORE_CM_NAVIGATION'] = 'Navigation';
 $_ARRAYLANG['TXT_CORE_CM_LINK_TARGET'] = 'Linkziel';
 $_ARRAYLANG['TXT_CORE_CM_LINK_TARGET_INO'] = 'Seite aus der Navigation in einem neuen/angegebenen Fenster &ouml;ffnen.';
 $_ARRAYLANG['TXT_CORE_CM_SLUG'] = 'URI-Slug';
-$_ARRAYLANG['TXT_CORE_CM_SLUG_INFO'] = 'Wird zum Aufbau des Seitenlinks verwendet. Beispiel: %1$s/<strong id=\"liveSlug\">Expressversand</strong>';
+$_ARRAYLANG['TXT_CORE_CM_SLUG_INFO'] = 'Wird zum Aufbau des Seitenlinks verwendet.';
 $_ARRAYLANG['TXT_CORE_CM_ALIAS'] = 'Aliasse';
 $_ARRAYLANG['TXT_CORE_CM_ALIAS_INFO'] = 'URL unter welcher diese Seite zusätzlich (z.B. als Landing-page) erreichbar ist';
 $_ARRAYLANG['TXT_CORE_CM_CSS_NAV_CLASS'] = 'Zus&auml;tzliche CSS-Navigationsklasse';

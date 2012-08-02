@@ -82,10 +82,7 @@ class ContentManager extends Module {
         $this->template->addBlockfile('CONTENT_MANAGER_MEAT', 'content_manager_meat', 'cm.html');
         $this->template->touchBlock('content_manager_meat');
 
-        $_CORELANG['TXT_CORE_CM_SLUG_INFO'] = sprintf($_CORELANG['TXT_CORE_CM_SLUG_INFO'], $_CONFIG['domainUrl']);
-
-        if (\Permission::checkAccess(78, 'static', true) &&
-                \Permission::checkAccess(115, 'static', true)) {
+        if (\Permission::checkAccess(78, 'static', true) && \Permission::checkAccess(115, 'static', true)) {
             JS::registerCode("var publishAllowed = true;");
             $alias_permission = "block";
             $alias_denial = "none !important";
