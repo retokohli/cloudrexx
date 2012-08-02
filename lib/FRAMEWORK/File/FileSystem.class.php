@@ -315,8 +315,7 @@ class FileSystem
             if (@ftp_delete(self::$connection, $delFile)) return $delFile;
             return 'error';
         } else {
-            //@unlink($path.$fileName);
-            @unlink($path.$fileName);
+            if (@file_exists($path.$fileName)) @unlink($path.$fileName);
             clearstatcache();
             if (@file_exists($path.$fileName)) {
                 $filesys = eregi_replace('/', '\\', $path.$fileName);
