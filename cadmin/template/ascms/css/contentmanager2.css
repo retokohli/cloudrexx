@@ -296,15 +296,18 @@ h1{ font-size: 20px }
     float: left;
     clear: both;
     line-height: 16px;
-    padding: 0 0 0 19px;
+    padding: 0 0 0 21px;
     background-repeat: no-repeat;
-    background-position: left center;
+    background-position: 2px center;
     margin: 3px 0 3px 0;
     display: block !important;
 }
 
 #site-tree .actions-expanded ul li.new {
-    background-image: url(../images/content_manager_actions_new.png);
+    background-image: url(../images/content_manager_actions_new_within.png);
+    background-position: left center;
+    height: 18px;
+    margin: 2px 0 2px 0;
 }
 
 #site-tree .actions-expanded ul li.activate {
@@ -329,6 +332,7 @@ h1{ font-size: 20px }
 
 #site-tree .actions-expanded ul li.delete {
     background-image: url(../images/content_manager_actions_delete.png);
+    background-position: 3px top;
 }
 
 #site-tree .actions-expanded ul li:hover,

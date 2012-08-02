@@ -1443,7 +1443,7 @@ $_ARRAYLANG['TXT_CORE_CM_NAVIGATION'] = 'Navigation';
 $_ARRAYLANG['TXT_CORE_CM_LINK_TARGET'] = 'Link Target';
 $_ARRAYLANG['TXT_CORE_CM_LINK_TARGET_INO'] = 'Open the page in a new/specified window.';
 $_ARRAYLANG['TXT_CORE_CM_SLUG'] = 'URI-Slug';
-$_ARRAYLANG['TXT_CORE_CM_SLUG_INFO'] = 'Used as the page\'s name in its URI. Example: %1$s/<strong id=\"liveSlug\">ExpressDelivery</strong>';
+$_ARRAYLANG['TXT_CORE_CM_SLUG_INFO'] = 'Used as the page\\\'s name in its URI.';
 $_ARRAYLANG['TXT_CORE_CM_ALIAS'] = 'Aliases';
 $_ARRAYLANG['TXT_CORE_CM_ALIAS_INFO'] = 'URL unter welcher diese Seite zusätzlich (z.B. als Landing-Page) erreichbar ist';
 $_ARRAYLANG['TXT_CORE_CM_ALIAS_INFO'] = 'URL under which this site also is accessible (eg as a landing page)';
