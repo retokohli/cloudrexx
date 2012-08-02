@@ -12,10 +12,6 @@
  * @ignore
  */
 require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
-/**
- * @ignore
- */
-require_once ASCMS_FRAMEWORK_PATH.'/FWHtAccess.class.php';
 
 /**
  * Alias library

@@ -705,6 +705,7 @@ class JsonPage implements JsonAdapter {
             'slug' => $page->getSlug(),
             'aliases' => $this->getAliasArray($page),
             'editingStatus' => $page->getEditingStatus(),
+            'parentPath' => substr($page->getParent()->getPath(), 1) . '/',
                 /* 'display'       =>  $page->getDisplay(),
                   'active'        =>  $page->getActive(),
                   'updatedAt'     =>  $page->getUpdatedAt(), */

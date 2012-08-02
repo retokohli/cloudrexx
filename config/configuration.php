@@ -52,7 +52,7 @@ $_FTPCONFIG['path']	= ''; // Ftp path to cms (must not include ascms_root_offset
 /**
 * -------------------------------------------------------------------------
 * Optional customizing exceptions
-* Shopnavbar : If set to TRUE the shopnavbar will appears on each page
+* Shopnavbar : If set to TRUE the shopnavbar will appear on each page
 * -------------------------------------------------------------------------
 */
 $_CONFIGURATION['custom']['shopnavbar'] = false; // true|false
@@ -61,7 +61,7 @@ $_CONFIGURATION['custom']['shopJsCart'] = false; // true|false
 /**
 * Set character encoding
 */
-$_CONFIG['coreCharacterEncoding'] = 'utf-8'; // example 'UTF-8'
+$_CONFIG['coreCharacterEncoding'] = 'UTF-8'; // example 'UTF-8'
 @ini_set('default_charset', $_CONFIG['coreCharacterEncoding']);
 
 /**
@@ -80,9 +80,4 @@ $_CONFIG['coreCharacterEncoding'] = 'utf-8'; // example 'UTF-8'
 * -------------------------------------------------------------------------
 */
 require_once dirname(__FILE__).'/set_constants.php';
-/**
- * Initialize doctrine
- */
-require_once dirname(__FILE__).'/doctrine.php';
-
 ?>
