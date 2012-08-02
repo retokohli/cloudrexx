@@ -53,6 +53,10 @@ class FileSystemFile implements FileInterface
             $this->filePath = ASCMS_DOCUMENT_ROOT.'/'.$file;
         }
     }
+    
+    public function isWritable() {
+        return is_writable($this->filePath);
+    }
 
     public function write($data)
     {
