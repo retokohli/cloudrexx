@@ -10,6 +10,7 @@
  * @subpackage  module_newsletter
  * @todo        Edit PHP DocBlocks!
  */
+ 
 /**
  * @ignore
  */
@@ -783,100 +784,123 @@ class newsletter extends NewsletterLib
 	function displayInBrowser() {
     	global $objDatabase, $_ARRAYLANG, $_CONFIG;
         
-        $id    = !empty($_GET['id']) ? $_GET['id'] : "";
-    	$email = !empty($_GET['email']) ? $_GET['email'] : "";
-    	$code  = !empty($_GET['code']) ? $_GET['code'] : "";
+        $id    = !empty($_GET['id'])    ? contrexx_input2raw($_GET['id'])    : '';
+    	$email = !empty($_GET['email']) ? contrexx_input2raw($_GET['email']) : '';
+    	$code  = !empty($_GET['code'])  ? contrexx_input2raw($_GET['code'])  : '';
     	
-    	if (!$this->checkCode($email, $code)) {
-    		header("location: index.php");
+    	if (!$this->checkCode($id, $email, $code)) {
+    	    CSRF::header('location: index.php');
     		exit();
     	}
     	
-    	//get newsletter content and template
-		$query = "  SELECT
-						newsletter.content,
-						template.html	
-					FROM
-						".DBPREFIX."module_newsletter as newsletter
-					LEFT JOIN
-						".DBPREFIX."module_newsletter_template as template
-					ON
-						template.id = newsletter.template
-					WHERE
-						newsletter.id = '".contrexx_addslashes($id)."';";
-		
+    	// Get newsletter content and template.
+    	$query = '
+    	        SELECT `n`.`content`, `t`.`html`
+    	          FROM `'.DBPREFIX.'module_newsletter` as `n`
+    	    INNER JOIN `'.DBPREFIX.'module_newsletter_template` as `t`
+    	            ON `n`.`template` = `t`.`id`
+    	         WHERE `n`.`id` = "'.contrexx_raw2db($id).'"
+    	';
         $objResult = $objDatabase->Execute($query);
 		
         if ($objResult->RecordCount()) {
         	$html 	 = $objResult->fields['html'];
 			$content = $objResult->fields['content'];
 		} else {
-			header("location: index.php");
-    		exit();
+		    CSRF::header('location: index.php');
+			exit();
 		}
 		
-		if (empty($content)) {
-			header("location: index.php");
-    		exit();
-		}
-		
-		
-		//get user details
-		$query = "select id, code, sex, email, uri, salutation, lastname, firstname, address, zip, city, phone_office, birthday, status, emaildate from ".DBPREFIX."module_newsletter_user where email = '".$email."';";
-        $objResult = $objDatabase->Execute($query);
-
+		// Get user details.
+		$query = '
+		    SELECT `code`, `email`, `uri`, `salutation`, `sex`, `lastname`, `firstname`, `address`, `zip`, `city`, `country_id`, `phone_office`, `birthday`, `emaildate`
+		    FROM `'.DBPREFIX.'module_newsletter_user`
+		    WHERE `email` = "'.contrexx_raw2db($email).'"
+		';
+		$objResult  = $objDatabase->Execute($query);
+        $userExists = false;
+        
         if ($objResult->RecordCount()) {
-            $code   	= $objResult->fields['code'];
-			$lastname  	= $objResult->fields['lastname'];
-            $firstname  = $objResult->fields['firstname'];
-            $address  	= $objResult->fields['address'];
-            $zip   		= $objResult->fields['zip'];
-            $city   	= $objResult->fields['city'];
-            $birthday  	= $objResult->fields['birthday'];
-            $email   	= $objResult->fields['email'];
-            $uri       	= $objResult->fields['uri'];
-            $phoneOffice= $objResult->fields['phone_office'];
-            $date  	 	= date("d.m.Y", $objResult->fields['emaildate']);
+            $userExists  = true;
+            
+            $arrRecipientTitles = $this->_getRecipientTitles();
+            $title              = $arrRecipientTitles[$objResult->fields['salutation']];
+            $birthday           = $objResult->fields['birthday'];
+            $unsubscribe        = '<a href="index.php?section=newsletter&cmd=unsubscribe&code='.$objResult->fields['code'].'&mail='.$email.'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
+            $profile            = '<a href="index.php?section=newsletter&cmd=profile&code='.$objResult->fields['code'].'&mail='.$email.'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
+        } else {
+            $query = '
+                SELECT `u`.`email`, `p`.`website` AS `uri`, `t`.`title`, `p`.`gender` AS `sex`, `p`.`lastname`, `p`.`firstname`, `p`.`address`,
+                       `p`.`zip`,   `p`.`city`, `p`.`country` AS `country_id`, `p`.`phone_office`, `p`.`birthday`, `u`.`regdate` AS `emaildate`
+                FROM `'.DBPREFIX.'access_users` AS `u`
+                INNER JOIN `'.DBPREFIX.'access_user_profile` AS `p`
+                ON `u`.`id` = `p`.`user_id`
+                INNER JOIN `'.DBPREFIX.'access_user_title` AS `t`
+                ON `p`.`title` = `t`.`id`
+                WHERE `u`.`email` = "'.contrexx_raw2db($email).'"
+            ';
+            $objResult = $objDatabase->Execute($query);
+            
+            if ($objResult->RecordCount()) {
+                $userExists  = true;
+                
+                $title       = $objResult->fields['title'];
+                $birthday    = date('d.m.Y', $objResult->fields['birthday']);
+                $unsubscribe = '<a href="index.php?section=access&cmd=settings_newsletter">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
+                $profile     = '<a href="index.php?section=access&cmd=settings_accountdata">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
+            }
+        }
 
-            switch($objResult->fields['sex']) {
+        if ($userExists) {
+            $email       = $objResult->fields['email'];
+            $uri         = $objResult->fields['uri'];
+            $lastname    = $objResult->fields['lastname'];
+            $firstname   = $objResult->fields['firstname'];
+            $address     = $objResult->fields['address'];
+            $zip         = $objResult->fields['zip'];
+            $city        = $objResult->fields['city'];
+            $phoneOffice = $objResult->fields['phone_office'];
+            $date        = date("d.m.Y", $objResult->fields['emaildate']);
+            
+            $arrCountry  = Country::getById($objResult->fields['country_id']);
+            $country     = $arrCountry['name'];
+            
+            switch ($objResult->fields['sex']) {
                 case 'm':
+                case 'gender_male':
                     $sex = $_ARRAYLANG['TXT_NEWSLETTER_MALE'];
                     break;
                 case 'f':
+                case 'gender_female':
                     $sex = $_ARRAYLANG['TXT_NEWSLETTER_FEMALE'];
                     break;
                 default:
                     $sex = '';
                     break;
-             }
-
-            $arrRecipientTitles = &$this->_getRecipientTitles();
-            $title = $arrRecipientTitles[$objResult->fields['title']];
-
-            //replace placeholders
-            $array_1 = array(
-                '[[email]]', '[[uri]]', '[[sex]]', '[[title]]', '[[lastname]]', '[[firstname]]',
-                '[[address]]', '[[zip]]', '[[city]]', '[[phone_office]]', '[[birthday]]', '[[date]]',
-                '[[unsubscribe]]', '[[profile_setup]]', '[[display_in_browser_url]]'
+            }
+            
+            $search = array(
+                '[[email]]',        '[[uri]]',      '[[title]]', '[[sex]]',         '[[lastname]]',
+                '[[firstname]]',    '[[address]]',  '[[zip]]',   '[[city]]',        '[[country]]',
+                '[[phone_office]]', '[[birthday]]', '[[date]]',  '[[unsubscribe]]', '[[profile_setup]]', '[[display_in_browser_url]]',
             );
             
-            $array_2 = array(
-                $email, $uri, $sex, $title, $lastname, $firstname,
-                $address, $zip, $city, $phoneOffice, $birthday, $date,
-                '<a href="index.php?section=newsletter&cmd=unsubscribe&code='.$code.'&mail='.$email.'">Abmelden</a>',
-                '<a href="index.php?section=newsletter&cmd=profile&code='.$code.'&mail='.$email.'">Profil bearbeiten</a>',
-                $_CONFIG['domainUrl'].'/index.php?section=newsletter&cmd=displayInBrowser&standalone=true&code='.$code.'&email='.$email.'&id='.$id
+            $replace = array(
+                $email,       $uri,      $title, $sex,         $lastname,
+                $firstname,   $address,  $zip,   $city,        $country,
+                $phoneOffice, $birthday, $date,  $unsubscribe, $profile,
+                $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/index.php?section=newsletter&cmd=displayInBrowser&standalone=true&code='.$code.'&email='.$email.'&id='.$id,
             );
             
-            //in content and template
-            $content = str_replace($array_1, $array_2, $content);
-            $html 	 = str_replace($array_1, $array_2, $html);
+            // Replaces the placeholder in the template and content.
+            $html    = str_replace($search, $replace, $html);
+            $content = str_replace($search, $replace, $content);
         }
 		
-        //finally replace content placeholder in template
-		$html = str_replace("[[content]]", $content, $html);
+        // Finally replace content placeholder in the template.
+		$html = str_replace('[[content]]', $content, $html);
 		
-		//output
+		// Output
 		die($html);
     }
     
@@ -884,16 +908,17 @@ class newsletter extends NewsletterLib
     /**
      * checks if given code matches given email adress
      *
-     * @param  string $email
-     * @param  string $code
-     * @return boolean
+     * @param   id       $$id
+     * @param   string   $email
+     * @param   string   $code
+     * @return  boolean
      */
-    function checkCode($email, $code){
+    function checkCode($id, $email, $code){
     	global $objDatabase;
-
-        $query = "SELECT code FROM ".DBPREFIX."module_newsletter_user WHERE email = '".$email."';";
+        
+        $query = 'SELECT `code` FROM `'.DBPREFIX.'module_newsletter_tmp_sending` WHERE `newsletter` = '.$id.' AND `email` = "'.$email.'";';
         $objResult = $objDatabase->Execute($query);
-
+        
         if ($objResult !== false) {
 			if($objResult->fields['code'] == $code) {
 				return true;
