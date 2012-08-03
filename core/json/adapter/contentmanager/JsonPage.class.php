@@ -669,6 +669,12 @@ class JsonPage implements JsonAdapter {
         $accessData['frontend'] = array('groups' => $pg->getGroups(true), 'assignedGroups' => $pg->getAssignedGroupIds($page, true));
         $accessData['backend'] = array('groups' => $pg->getGroups(false), 'assignedGroups' => $pg->getAssignedGroupIds($page, false));
 
+        try {
+            $parentPath = substr($page->getParent()->getPath(), 1) . '/';
+        } catch (\Cx\Model\ContentManager\PageException $e) {
+            $parentPath = '/';
+        }
+        
         $pageArray = array(
             // Editor Meta
             'id' => $page->getId(),
@@ -705,7 +711,7 @@ class JsonPage implements JsonAdapter {
             'slug' => $page->getSlug(),
             'aliases' => $this->getAliasArray($page),
             'editingStatus' => $page->getEditingStatus(),
-            'parentPath' => substr($page->getParent()->getPath(), 1) . '/',
+            'parentPath' => $parentPath,
                 /* 'display'       =>  $page->getDisplay(),
                   'active'        =>  $page->getActive(),
                   'updatedAt'     =>  $page->getUpdatedAt(), */

@@ -242,39 +242,48 @@ class CxLogEntryRepository extends \Gedmo\Loggable\Entity\Repository\LogEntryRep
      * 
      * @return  array  $result
      */
-    public function getLatestLogsOfAllPages()
-    {
+    public function getLatestLogsOfAllPages($fields = null) {
         $result = array();
-        
+
         $qb = $this->em->createQueryBuilder();
         $sqb = $this->em->createQueryBuilder();
-        $qb->select('l')
-           ->from('Gedmo\Loggable\Entity\LogEntry', 'l')
-           ->where('l.objectClass = :objectClass')
-           ->andWhere(
-               $qb->expr()->eq(
-                   'l.version',
-                   '('.$sqb->select('MAX(sl.version) AS version')
-                       ->from('Gedmo\Loggable\Entity\LogEntry', 'sl')
-                       ->where(
-                           $sqb->expr()->eq(
-                               'l.objectId',
-                               'sl.objectId'
-                           )
-                       )
-                       ->getDQL().')'
-               )
-           )
-           ->setParameter('objectClass', 'Cx\Model\ContentManager\Page');
         
-        $logs = $qb->getQuery()->getResult();
-        foreach ($logs as $log) {
-            $result[$log->getObjectId()] = $log;
+        if (is_array($fields)) {
+            foreach ($fields as $i=>$field) {
+                $fields[$i] = 'l.' . $field;
+            }
+            $select = implode(', ', $fields);
+        } else {
+            $select = 'l';
         }
         
+        $qb->select($select)
+                ->from('Gedmo\Loggable\Entity\LogEntry', 'l')
+                ->where($qb->expr()->in('l.id', '' .
+                                $sqb->select('sl.id')
+                                ->from('Gedmo\Loggable\Entity\LogEntry', 'sl')
+                                ->where('sl.objectClass = :objectClass')
+                                ->addGroupBy('sl.objectId')
+                                ->orderBy('sl.version', 'DESC')
+                                ->getDQL() . '')
+                )
+                ->setParameter('objectClass', 'Cx\Model\ContentManager\Page');
+
+        $logs = $qb->getQuery()->getResult();
+       
+        if (is_array($logs)) {
+            foreach ($logs as $log) {
+                if (!is_array($log)) {
+                    $result[$log->getObjectId()] = $log;
+                } else {
+                    $result[$log['objectId']] = $log['username'];
+                }
+            }
+        }
+
         return $result;
     }
-    
+
     /**
      * Returns the user name from the given log.
      * 
@@ -283,7 +292,12 @@ class CxLogEntryRepository extends \Gedmo\Loggable\Entity\Repository\LogEntryRep
      */
     public function getUsernameByLog($log)
     {
-        $user = json_decode($log->getUsername());
+        if (!is_object($log)) {
+            $loggedUser = $log;
+        } else {
+            $loggedUser = $log->getUsername();
+        }
+        $user = json_decode($loggedUser);
         $username = $user->{'name'};
         
         return $username;
