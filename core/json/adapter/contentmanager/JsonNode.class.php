@@ -227,7 +227,7 @@ class JsonNode implements JsonAdapter {
         if (!is_object($root)) {
             throw new \Exception('Node not found (#' . $rootNodeId . ')');
         }
-        $logs = $this->logRepo->getLatestLogsOfAllPages();
+        $logs = $this->logRepo->getLatestLogsOfAllPages(array('objectId', 'username'));
 
         //$actions = array();
         $jsondata = $this->tree_to_jstree_array($root, $logs, !$recursive/*, $actions*/);
