@@ -1,15 +1,7 @@
-#aside{
-    display: block;
-}
-
 #shop select.shop_cart_input {
     width: 160px !important;
 }
-.main_subpage,
-#content {
-    float: left;
-   /* width: 100%;*/
-}
+
 #shop_cart{
     border: 1px solid #F2F2F2;
  /*   border-radius: 5px 5px 5px 5px;*/
