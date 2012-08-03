@@ -2820,7 +2820,8 @@ class newsletter extends NewsletterLib
                         END
                     )                                           AS `id`,
                     `s`.email,
-                    `s`.type
+                    `s`.type,
+                    `s`.`code`
 
             FROM
                     `".DBPREFIX."module_newsletter_tmp_sending` AS `s`
@@ -2911,12 +2912,13 @@ class newsletter extends NewsletterLib
     {
         global $objDatabase;
 
-        $query = "
-            INSERT IGNORE INTO ".DBPREFIX."module_newsletter_tmp_sending (
-                `newsletter`, `email`, `type`
+        $query = '
+            INSERT IGNORE INTO `'.DBPREFIX.'module_newsletter_tmp_sending` (
+                `newsletter`, `email`, `type`, `code`
             ) VALUES (
-                ".$mail.", '".$email."', '".$type."'
-            )";
+                "'.$mail.'", "'.$email.'", "'.$type.'", "'.self::_emailCode().'"
+            )
+        ';
         $objDatabase->Execute($query);
     }
 
@@ -3350,8 +3352,9 @@ class newsletter extends NewsletterLib
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         $NewsletterBody = '';
-        $code = $userData['code'];
-        $country    = empty($userData['country_id'])
+        $codeResult     = $objDatabase->Execute('SELECT `code` FROM `'.DBPREFIX.'module_newsletter_tmp_sending` WHERE `newsletter` = '.$NewsletterID.' AND `email` = "'.$userData['email'].'"');
+        $code           = $codeResult->fields['code'];
+        $country        = empty($userData['country_id'])
             ? ''
             : htmlentities(
                   FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$userData['country_id'])->getName(),
@@ -3421,7 +3424,7 @@ class newsletter extends NewsletterLib
             $userData['birthday'],
             $userData['website'],
 // TODO: replace with new methode $this->GetBrowserViewURL()
-            $_CONFIG['domainUrl'].'/index.php?section=newsletter&cmd=displayInBrowser&standalone=true&code='.$code.'&email='.$userData['email'].'&id='.$NewsletterID
+            $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/index.php?section=newsletter&cmd=displayInBrowser&standalone=true&code='.$code.'&email='.$userData['email'].'&id='.$NewsletterID
         );
 
         // do the replacement
@@ -3430,8 +3433,8 @@ class newsletter extends NewsletterLib
         // Replace the links in the content
         $search         = array('[[profile_setup]]', '[[unsubscribe]]', '[[date]]');
         $replace        = array(
-            $this->GetProfileURL($code, $TargetEmail, $format, $userData['type']),
-            $this->GetUnsubscribeURL($code, $TargetEmail, $format, $userData['type']),
+            $this->GetProfileURL($userData['code'], $TargetEmail, $format, $userData['type']),
+            $this->GetUnsubscribeURL($userData['code'], $TargetEmail, $format, $userData['type']),
             date(ASCMS_DATE_SHORT_FORMAT)
         );
         $content_text = str_replace($search, $replace, $content_text);
@@ -3439,8 +3442,8 @@ class newsletter extends NewsletterLib
         // replace the links in the template
         $search         = array('[[profile_setup]]', '[[unsubscribe]]', '[[date]]');
         $replace        = array(
-            $this->GetProfileURL($code, $TargetEmail, $format, $userData['type']),
-            $this->GetUnsubscribeURL($code, $TargetEmail, $format, $userData['type']),
+            $this->GetProfileURL($userData['code'], $TargetEmail, $format, $userData['type']),
+            $this->GetUnsubscribeURL($userData['code'], $TargetEmail, $format, $userData['type']),
             date(ASCMS_DATE_SHORT_FORMAT)
         );
         $TemplateSource = str_replace($search, $replace, $TemplateSource);
