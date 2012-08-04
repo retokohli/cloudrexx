@@ -4197,7 +4197,7 @@ CREATE TABLE `contrexx_stats_requests` (
   `pageTitle` varchar(250) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`page`)
-) ENGINE=MyISAM ;
+) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -4208,7 +4208,7 @@ CREATE TABLE `contrexx_stats_requests_summary` (
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`type`,`timestamp`)
-) ENGINE=MyISAM ;
+) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
