@@ -1553,3 +1553,5 @@ $_ARRAYLANG['TXT_CORE_FILES_UPLOADED'] = "Datei(en) wurde(n) erfolgreich heraufg
 $_ARRAYLANG['TXT_CORE_FILES_NOT_UPLOADED'] = "Einige Datei(en) konnte(n) nicht heraufgeladen werden:";
 $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "Die Dateiendung ist nicht erlaubt.";
 
+// 20120419 MISSING!
+$_ARRAYLANG['TXT_HELP_SUPPORT'] = "TXT_HELP_SUPPORT";
