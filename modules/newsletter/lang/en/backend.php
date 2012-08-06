@@ -455,4 +455,5 @@ $_ARRAYLANG['TXT_NEWSLETTER_NOT_SPECIFIED'] = "Not specified";
 $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_DATE'] = "Day";
 $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_MONTH'] = "Month";
 $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_YEAR'] = "Year";
+$_ARRAYLANG['TXT_NEWSLETTER_BROWSER_VIEW'] = "Please click on the link below to open the newsletter in the web browser.";
 ?>

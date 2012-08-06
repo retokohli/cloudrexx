@@ -92,10 +92,6 @@ function SetUrl(url, width, height, alt) {
     <td width="15%">{TXT_NEWSLETTER_SUBJECT}</td>
     <td width="85%" colspan="3"><input type="text" name="newsletter_mail_subject" value="{NEWSLETTER_MAIL_SUBJECT}" size="40" maxlength="255" style="width: 300px;" /></td>
   </tr>
-  <tr class="row2">
-    <td>{TXT_NEWSLETTER_SEND_AS}</td>
-    <td colspan="3">{NEWSLETTER_MAIL_FORMAT_MENU}</td>
-  </tr>
   <tr class="row1">
     <td>{TXT_NEWSLETTER_TEMPLATE}</td>
     <td colspan="3">{NEWSLETTER_MAIL_TEMPLATE_MENU}</td>
@@ -224,7 +220,6 @@ function SetUrl(url, width, height, alt) {
 <br />
 <ul id="tabmenu">
 <!-- BEGIN newsletter_mail_html_content --><li><a id="newsletterTab_htmlContent" class="{NEWSLETTER_MAIL_HTML_CONTENT_CLASS}" href="javascript:{}" onclick="selectTab('htmlContent')" title="{TXT_NEWSLETTER_HTML_UC}">{TXT_NEWSLETTER_HTML_UC}</a></li><!-- END newsletter_mail_html_content -->
-<!-- BEGIN newsletter_mail_text_content --><li><a id="newsletterTab_textContent" class="{NEWSLETTER_MAIL_TEXT_CONTENT_CLASS}" href="javascript:{}" onclick="selectTab('textContent')" title="{TXT_NEWSLETTER_TEXT}">{TXT_NEWSLETTER_TEXT}</a></li><!-- END newsletter_mail_text_content -->
 <li><a id="newsletterTab_placeholders" href="javascript:{}" onclick="selectTab('placeholders')" title="{TXT_NEWSLETTER_PLACEHOLDER_DIRECTORY}">{TXT_NEWSLETTER_PLACEHOLDER_DIRECTORY}</a></li>
 </ul>
 <div id="htmlContent" class="newsletterTab" style="display:{NEWSLETTER_MAIL_HTML_CONTENT_STAUTS};">
@@ -234,16 +229,6 @@ function SetUrl(url, width, height, alt) {
   </tr>
   <tr class="row1 reset">
     <td style="vertical-align:top;">{NEWSLETTER_MAIL_HTML_CONTENT}</td>
-  </tr>
-</table>
-</div>
-<div id="textContent" class="newsletterTab" style="display:{NEWSLETTER_MAIL_TEXT_CONTENT_STAUTS};">
-<table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist" style="height:485px;">
-  <tr>
-    <th>{TXT_NEWSLETTER_TEXT_CONTENT}</th>
-  </tr>
-  <tr class="row1 reset">
-    <td style="vertical-align:top;">{NEWSLETTER_MAIL_TEXT_CONTENT}</td>
   </tr>
 </table>
 </div>
