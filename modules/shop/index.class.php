@@ -2036,7 +2036,8 @@ function showCart(html)
     "<\\/li><\\/ul>');
 // TODO: Use the alias, if any
   \$J.ajax('".CONTREXX_SCRIPT_PATH.
-    "?section=shop".MODULE_INDEX."&cmd=cart&remoteJs=addProduct', {
+    "?section=shop".MODULE_INDEX."&cmd=cart&remoteJs=addProduct".
+    "&r='+Math.random(), {
     dataType: 'json',
     success: shopUpdateCart,
     error: function() {

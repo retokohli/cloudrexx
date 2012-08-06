@@ -132,9 +132,6 @@ function MakeExport(groupCode)
     document.location = "index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=import&group="+groupCode;
   }
 }
-
-{SHOP_EXPORT_TIPS}
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,15,-50];
 // ]]>
 </script>
 
@@ -155,7 +152,13 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
       <th colspan="2"><b>{TXT_SHOP_IMPORT_IMPORT_CATEGORIES}</b></th>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap" width='20%'>{TXT_SHOP_IMPORT_FILE}</td>
+      <td nowrap="nowrap" width='20%'>
+        {TXT_SHOP_IMPORT_FILE}
+        &nbsp;
+        <span onmouseover='stm(["{TXT_SHOP_TIP}","{TXT_SHOP_IMPORT_CATEGORIES_TIPS}"],tm_style)'
+              onmouseout="htm()" class="note">
+        </span>
+      </td>
       <td nowrap="nowrap" width='80%'>
         <input type="file" name="importFileCategories"
           id="importFileCategories" style="width: 200px;"
@@ -171,8 +174,6 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
   <input type="button" value="{TXT_SHOP_IMPORT_IMPORT}" onclick="javascript:MakeImportCategories();" {IMPORT_BUTTON_STYLE} />
   <br />
   <br />
-  <div class="infobox_head">{TXT_SHOP_TIP}</div>
-  <div class="infobox_body">{TXT_SHOP_IMPORT_CATEGORIES_TIPS}</div>
 </form>
 
 <br />
@@ -184,13 +185,23 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
       <th colspan="2"><b>{TXT_SHOP_IMPORT_PRODUCTS}</b></th>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_SHOP_IMPORT_SELECT_TEMPLATE}</td>
+      <td nowrap="nowrap">{TXT_SHOP_IMPORT_SELECT_TEMPLATE}
+        &nbsp;
+        <span onmouseover='stm(["{TXT_SHOP_TIP}","{TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS}"],tm_style)'
+              onmouseout="htm()" class="note">
+        </span>
+      </td>
       <td nowrap="nowrap" width="80%">
         {IMAGE_CHOICE}
       </td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_SHOP_IMPORT_FILE}</td>
+      <td nowrap="nowrap">{TXT_SHOP_IMPORT_FILE}
+        &nbsp;
+        <span onmouseover='stm(["{TXT_SHOP_TIP}","{TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS}"],tm_style)'
+              onmouseout="htm()" class="note">
+        </span>
+      </td>
       <td nowrap="nowrap"><input type="file" name="importfile" id="importfile" style="width: 200px;" size="50" /></td>
     </tr>
     <tr class="row1">
@@ -202,8 +213,6 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
   <input type="button" value="{TXT_SHOP_IMPORT_IMPORT}" onclick="javascript:MakeImport();" {IMPORT_BUTTON_STYLE} />
   <br />
   <br />
-  <div class="infobox_head">{TXT_SHOP_TIP}</div>
-  <div class="infobox_body">{TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS}</div>
 </form>
 </div>
 
@@ -346,7 +355,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 <!-- BEGIN groupRow -->
     <tr class="{CLASS_NAME}">
       <td nowrap='nowrap'>
-        <span class="info" onmouseout="htm()" onmouseover="stm(Text[{SHOP_EXPORT_INDEX}],Style[0])">
+        <span class="info" onmouseout="htm()" onmouseover="stm(Text[{SHOP_EXPORT_INDEX}],tm_style)">
           {SHOP_EXPORT_GROUP}
         </span>
       </td>
