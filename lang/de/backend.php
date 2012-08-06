@@ -1541,6 +1541,7 @@ $_ARRAYLANG['TXT_CORE_CM_MOVE_DENIED'] = 'Sie haben nicht genügend Rechte, um S
 $_ARRAYLANG['TXT_CORE_CM_DELETE_DENIED'] = 'Sie haben nicht genügend Rechte, um Seiten zu löschen.';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'] = 'Sie haben nicht genügend Rechte, um die Zugriffsberechtigungen zu ändern.';
 $_ARRAYLANG['TXT_CORE_CM_PUBLISH_DENIED'] = 'Sie haben nicht genügend Rechte, um Seiten zu veröffentlichen.';
+$_ARRAYLANG['TXT_CORE_CM_VALIDATION_FAIL'] = 'Bitte füllen Sie alle erforderlichen Felder aus';
 
 // core captcha
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Sicherheitscode";

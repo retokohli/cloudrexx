@@ -69,10 +69,10 @@ class ContentManager extends Module {
         $objCx = ContrexxJavascript::getInstance();
         if (include_once(ASCMS_CORE_PATH.'/skins.class.php')) {
             $objSkins = new skins();
-            $objCx->setVariable('themeId', $objSkins->selectDefaultTheme(), 'theme');
+            $objCx->setVariable('themeId', $objSkins->selectDefaultTheme(), 'contentmanager/theme');
             foreach ($objSkins->getThemes() as $arrTheme) {
                 if ($arrTheme['id'] == $objSkins->selectDefaultTheme()) {
-                    $objCx->setVariable('themeName', $arrTheme['foldername'], 'theme');
+                    $objCx->setVariable('themeName', $arrTheme['foldername'], 'contentmanager/theme');
                 }
             }
         }
@@ -119,24 +119,25 @@ class ContentManager extends Module {
             'TXT_CORE_PREVIEW', 'TXT_CORE_SAVE_PUBLISH', 'TXT_CORE_SAVE', 'TXT_CORE_SUBMIT_FOR_RELEASE', 'TXT_CORE_REFUSE_RELEASE'
         ));
 
-        $objCx->setVariable('TXT_CORE_CM_VIEW', $_CORELANG['TXT_CORE_CM_VIEW']);
-        $objCx->setVariable('TXT_CORE_CM_ACTIONS', $_CORELANG['TXT_CORE_CM_ACTIONS']);
+        $objCx->setVariable('TXT_CORE_CM_VIEW', $_CORELANG['TXT_CORE_CM_VIEW'], 'contentmanager/lang');
+        $objCx->setVariable('TXT_CORE_CM_ACTIONS', $_CORELANG['TXT_CORE_CM_ACTIONS'], 'contentmanager/lang');
+        $objCx->setVariable('TXT_CORE_CM_VALIDATION_FAIL', $_CORELANG['TXT_CORE_CM_VALIDATION_FAIL'], 'contentmanager/lang');
 
         $toggleTitles = !empty($_SESSION['contentManager']['toggleStatuses']['tabContent']['toggleTitles']) ? $_SESSION['contentManager']['toggleStatuses']['tabContent']['toggleTitles'] : 'block';
         $toggleType = !empty($_SESSION['contentManager']['toggleStatuses']['tabContent']['toggleType']) ? $_SESSION['contentManager']['toggleStatuses']['tabContent']['toggleType'] : 'block';
         $toggleThemes = !empty($_SESSION['contentManager']['toggleStatuses']['tabSettings']['toggleThemes']) ? $_SESSION['contentManager']['toggleStatuses']['tabSettings']['toggleThemes'] : 'block';
         $toggleNavigation = !empty($_SESSION['contentManager']['toggleStatuses']['tabSettings']['toggleNavigation']) ? $_SESSION['contentManager']['toggleStatuses']['tabSettings']['toggleNavigation'] : 'block';
         $toggleSidebar = !empty($_SESSION['contentManager']['toggleStatuses']['sidebar']) ? $_SESSION['contentManager']['toggleStatuses']['sidebar'] : 'block';
-        $objCx->setVariable('toggleTitles', $toggleTitles);
-        $objCx->setVariable('toggleType', $toggleType);
-        $objCx->setVariable('toggleThemes', $toggleThemes);
-        $objCx->setVariable('toggleNavigation', $toggleNavigation);
-        $objCx->setVariable('sidebar', $toggleSidebar);
+        $objCx->setVariable('toggleTitles', $toggleTitles, 'contentmanager/toggle');
+        $objCx->setVariable('toggleType', $toggleType, 'contentmanager/toggle');
+        $objCx->setVariable('toggleThemes', $toggleThemes, 'contentmanager/toggle');
+        $objCx->setVariable('toggleNavigation', $toggleNavigation, 'contentmanager/toggle');
+        $objCx->setVariable('sidebar', $toggleSidebar, 'contentmanager/toggle');
         
         // get initial tree data
         $objJsonData = new \Cx\Core\Json\JsonData();
         $treeData = $objJsonData->jsondata('node', 'getTree', array(), false);
-        $objCx->setVariable('tree-data', $treeData, 'contrexx');
+        $objCx->setVariable('tree-data', $treeData, 'contentmanager/tree');
 
         if (!empty($_GET['act']) && ($_GET['act'] == 'new')) {
             $this->template->setVariable(array(
@@ -190,9 +191,9 @@ class ContentManager extends Module {
         }
 
         $cxjs = ContrexxJavascript::getInstance();
-        $cxjs->setVariable('confirmDeleteQuestion', $_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE']);
-        $cxjs->setVariable('cleanAccessData', JsonPage::getAccessData());
-        $cxjs->setVariable('contentTemplates', $this->getCustomContentTemplates());
+        $cxjs->setVariable('confirmDeleteQuestion', $_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE'], 'contentmanager/lang');
+        $cxjs->setVariable('cleanAccessData', JsonPage::getAccessData(), 'contentmanager');
+        $cxjs->setVariable('contentTemplates', $this->getCustomContentTemplates(), 'contentmanager');
 
         // TODO: move including of add'l JS dependencies to cx obj from /cadmin/index.html
         $this->template->setVariable('CXJS_INIT_JS', ContrexxJavascript::getInstance()->initJs());
@@ -210,10 +211,10 @@ class ContentManager extends Module {
             'TXT_EDITMODE_CODE'    => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_PAGE'],
             'TXT_EDITMODE_CONTENT' => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_CONTENT'],
         ));
-        ContrexxJavascript::getInstance()->setVariable(array(
+        $cxjs->setVariable(array(
             'editmodetitle'   => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'],
             'editmodecontent' => $editmodeTemplate->get(),
-        ), 'contrexx');
+        ), 'contentmanager');
     }
 
     /**
