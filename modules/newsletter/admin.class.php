@@ -1007,26 +1007,11 @@ class newsletter extends NewsletterLib
             'NEWSLETTER_MAIL_SEND' => $_GET['act'] == 'sendMail' ? 1 : 0
         ));
 
-        if ($mailFormat == 'text') {
-            $this->_objTpl->setVariable('TXT_NEWSLETTER_TEXT', $_ARRAYLANG['TXT_NEWSLETTER_TEXT']);
-            $this->_objTpl->touchBlock('newsletter_mail_text_content');
-            $this->_objTpl->hideBlock('newsletter_mail_html_content');
-        } elseif ($mailFormat == 'html') {
-            $this->_objTpl->setVariable('TXT_NEWSLETTER_HTML_UC', $_ARRAYLANG['TXT_NEWSLETTER_HTML_UC']);
-            $this->_objTpl->touchBlock('newsletter_mail_html_content');
-            $this->_objTpl->hideBlock('newsletter_mail_text_content');
-        } else {
-            $this->_objTpl->setVariable(array(
-                'TXT_NEWSLETTER_HTML_UC' => $_ARRAYLANG['TXT_NEWSLETTER_HTML_UC'],
-                'TXT_NEWSLETTER_TEXT' => $_ARRAYLANG['TXT_NEWSLETTER_TEXT']
-            ));
-            $this->_objTpl->touchBlock('newsletter_mail_html_content');
-            $this->_objTpl->touchBlock('newsletter_mail_text_content');
-        }
+        $this->_objTpl->setVariable('TXT_NEWSLETTER_HTML_UC', $_ARRAYLANG['TXT_NEWSLETTER_HTML_UC']);
+        $this->_objTpl->touchBlock('newsletter_mail_html_content');
 
         $this->emailEditParseLists($arrAssociatedLists);
         $this->emailEditParseGroups($arrAssociatedGroups);
-
 
         if (count($arrAttachment) > 0) {
             foreach ($arrAttachment as $attachment) {
@@ -3354,12 +3339,21 @@ class newsletter extends NewsletterLib
         $NewsletterBody = '';
         $codeResult     = $objDatabase->Execute('SELECT `code` FROM `'.DBPREFIX.'module_newsletter_tmp_sending` WHERE `newsletter` = '.$NewsletterID.' AND `email` = "'.$userData['email'].'"');
         $code           = $codeResult->fields['code'];
-        $country        = empty($userData['country_id'])
+        // TODO: replace with new methode $this->GetBrowserViewURL()
+        $browserViewUrl = $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/index.php?section=newsletter&cmd=displayInBrowser&standalone=true&code='.$code.'&email='.$userData['email'].'&id='.$NewsletterID;
+
+        if ($format == 'text') {
+            $NewsletterBody = $_ARRAYLANG['TXT_NEWSLETTER_BROWSER_VIEW']."\n".$browserViewUrl;
+            return $NewsletterBody;
+        }
+
+        $country = empty($userData['country_id'])
             ? ''
             : htmlentities(
                   FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$userData['country_id'])->getName(),
                   ENT_QUOTES, CONTREXX_CHARSET
               );
+
         switch ($userData['sex']) {
             case 'm':
                 $sex = $_ARRAYLANG['TXT_NEWSLETTER_MALE'];
@@ -3371,6 +3365,7 @@ class newsletter extends NewsletterLib
                 $sex = '';
                 break;
         }
+
         // lets prepare all links for tracker before we replace placeholders
         if ($format == 'html') {
 // TODO: migrate tracker to new URL-format
@@ -3423,13 +3418,13 @@ class newsletter extends NewsletterLib
             $userData['fax'],
             $userData['birthday'],
             $userData['website'],
-// TODO: replace with new methode $this->GetBrowserViewURL()
-            $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/index.php?section=newsletter&cmd=displayInBrowser&standalone=true&code='.$code.'&email='.$userData['email'].'&id='.$NewsletterID
+            $browserViewUrl
         );
 
         // do the replacement
         $content_text       = str_replace($search, $replace, $content_text);
         $TemplateSource     = str_replace($search, $replace, $TemplateSource);
+
         // Replace the links in the content
         $search         = array('[[profile_setup]]', '[[unsubscribe]]', '[[date]]');
         $replace        = array(
@@ -3448,25 +3443,24 @@ class newsletter extends NewsletterLib
         );
         $TemplateSource = str_replace($search, $replace, $TemplateSource);
 
-        if ($format == "html") {
-            // i believe this replaces image paths...
-            $allImg = array();
-            preg_match_all("|src=\"(.*)\"|U", $content_text, $allImg, PREG_PATTERN_ORDER);
-            $size = sizeof($allImg[1]);
-            $i = 0;
-            $port = $_SERVER['SERVER_PORT'] != 80 ? ':'.intval($_SERVER['SERVER_PORT']) : '';
+        // i believe this replaces image paths...
+        $allImg = array();
+        preg_match_all("|src=\"(.*)\"|U", $content_text, $allImg, PREG_PATTERN_ORDER);
+        $size = sizeof($allImg[1]);
+        $i = 0;
+        $port = $_SERVER['SERVER_PORT'] != 80 ? ':'.intval($_SERVER['SERVER_PORT']) : '';
 
-            while ($i < $size) {
-                $URLforReplace = $allImg[1][$i];
-                if (substr($URLforReplace, 0, 7) != ASCMS_PROTOCOL.'://') {
-                    $ReplaceWith = '"'.ASCMS_PROTOCOL.'://'.$_SERVER['SERVER_NAME'].$port.$URLforReplace.'"';
-                } else {
-                    $ReplaceWith = $URLforReplace;
-                }
-                $content_text = str_replace('"'.$URLforReplace.'"', $ReplaceWith, $content_text);
-                $i++;
+        while ($i < $size) {
+            $URLforReplace = $allImg[1][$i];
+            if (substr($URLforReplace, 0, 7) != ASCMS_PROTOCOL.'://') {
+                $ReplaceWith = '"'.ASCMS_PROTOCOL.'://'.$_SERVER['SERVER_NAME'].$port.$URLforReplace.'"';
+            } else {
+                $ReplaceWith = $URLforReplace;
             }
+            $content_text = str_replace('"'.$URLforReplace.'"', $ReplaceWith, $content_text);
+            $i++;
         }
+
         $NewsletterBody = str_replace("[[subject]]", $subject, $TemplateSource);
         $NewsletterBody = str_replace("[[content]]", $content_text, $TemplateSource);
         return $NewsletterBody;
