@@ -84,8 +84,8 @@ class DateTimeTools
             'lib/javascript/jquery/ui/i18n/'.
             'jquery.ui.datepicker-'.$language_code.'.js');
         JS::registerCode('
-jQuery(document).ready(function($) {
-  $.datepicker.setDefaults($.datepicker.regional["'.$language_code.'"]);
+jQuery(function() {
+  jQuery.datepicker.setDefaults(jQuery.datepicker.regional["'.$language_code.'"]);
 });
 ');
     }

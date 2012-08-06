@@ -128,7 +128,7 @@ jQuery(document).ready(function(){
             'jsfiles' => array(
                 'lib/javascript/jquery/tools/jquery.tools.min.js',
             ),
-            'dependencies' => array('jquery')
+            'dependencies' => array('jquery'),
         ),
         'jquery-imgareaselect' => array(
             'jsfiles'          => array(
@@ -142,9 +142,9 @@ jQuery(document).ready(function(){
         'ckeditor'     => array(
             'jsfiles'       => array(
                 'editor/ckeditor/ckeditor.js',
-                'editor/ckeditor/adapters/jquery.js'
+                'editor/ckeditor/adapters/jquery.js',
             ),
-            'dependencies' => array('jquery')
+            'dependencies' => array('jquery'),
         ),
         // Required by HTML::getDatepicker() (modules/shop)!
         // (Though other versions will do just as well)
@@ -158,7 +158,7 @@ jQuery(document).ready(function(){
                 'lib/javascript/jquery/ui/css/jquery-ui.css'
             ),
             'dependencies'  => array(
-                'jquery'
+                'jquery',
             ),
         ),
         //stuff to beautify forms.
@@ -251,6 +251,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 $J(document).ready(function() {
                     TipId = "tipMessageLayer";
                     FiltersEnabled = 0;
+                    tm_style = ["","#ffcc33","","","",,"black","#fff4c2","","","",,,,1,"#ffcc33",2,21,0.3,,2,"gray",0,,15,-5];
                     mig_clay();
                 });
             '
