@@ -51,6 +51,10 @@
                         <h1 class="logo">
                             <a href="index.php?section=home">Contrexx Template</a>
                         </h1>
+						<nav id="lang">
+							<a class="de" href="index.php?setLang=1" title="Deutsch">DE</a>
+							<a class="en" href="index.php?setLang=2" title="English">EN</a>
+						</nav>
                         <nav id="nav">
                             <ul>
                                 {NAVBAR_FILE}
@@ -140,8 +144,19 @@
                                             <li><a href="index.php?section=sitemap" title="Sitemap">Sitemap</a></li>
                                             <li><a href="index.php?section=agb" title="Terms of use">Terms of use</a></li>
                                             <li><a href="index.php?section=imprint" title="Site notice">Site notice</a></li>
+                                            <li><a href="{PRINT_URL}" title="Print View">Print View</a></li>
+											<li><a href="{PDF_URL}" title="PDF">PDF</a></li>
+                                            <li><a href="{APP_URL}" title="APP">APP</a></li>
                                         </ul>
                                     </nav>
+									<nav class="add-nav add-nav-view">
+                                        <ul>
+											<li>Page View : </li>										
+	                                        <li><a href="{STANDARD_URL}" title="Normal View">Normal</a></li>
+                                            <li><a href="{MOBILE_URL}" title="Mobile View">Mobile</a></li>
+                                           
+                                        </ul>
+									</nav>
                                 </div>
                             </div>
                         </div>

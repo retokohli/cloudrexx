@@ -957,6 +957,7 @@ input[type="submit"], input[type="button"], input[type="reset"] {
 }
 #footer p#powered {
   margin-bottom: 0;
+
   padding-top: 0;
   clear: right;
   float: right;
@@ -4398,4 +4399,23 @@ input, textarea, select {
 }
 #directory .paging a:hover{
     color: #222222;
+}
+#lang{
+	position: absolute;
+	right: 30px;
+	top: 6px;
+}
+#lang a {
+	color: #555555;
+	font: 10px/17px 'Open Sans',Arial,Helvetica,sans-serif;
+	padding-left: 5px;
+	text-transform: capitalize;
+}
+.add-nav-view {
+	clear: both;
+    margin-top: 8px;
+}
+.add-nav.add-nav-view li{
+	background: transparent;
+	padding-left: 12px
 }
