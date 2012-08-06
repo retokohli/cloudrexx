@@ -392,3 +392,6 @@ $_ARRAYLANG['TXT_WEIGHT'] = "Gewicht";
 $_ARRAYLANG['TXT_WEIGHT_INVALID_IGNORED'] = "Ungültiges Gewicht; Änderung ignoriert!";
 $_ARRAYLANG['TXT_YOUR_ACCOUNT_DETAILS'] = "Ihre persönlichen Zugangsdaten";
 $_ARRAYLANG['TXT_ZONE'] = "Zone";
+
+// 20120726
+$_ARRAYLANG['TXT_SHOP_FORM_RESET_CONFIRM'] = "Bestätigen Sie bitte, dass Sie Ihre Eingaben zurückgesetzt werden sollen.";
