@@ -163,6 +163,10 @@ class JsonPage implements JsonAdapter {
         $lang   = !empty($pageArray['lang'])  ? contrexx_input2raw($pageArray['lang'])  : (!empty($dataPost['lang']) ? contrexx_input2raw($dataPost['lang']) : '');
         $action = !empty($dataPost['action']) ? contrexx_input2raw($dataPost['action']) : '';
         
+        if (!empty($pageArray)) {
+            $validatedPageArray = $this->validatePageArray($pageArray);
+        }
+        
         if (!empty($pageId)) {
             // If we got a page id, the page already exists and can be updated.
             $page = $this->pageRepo->find($pageId);
@@ -220,7 +224,6 @@ class JsonPage implements JsonAdapter {
         }
         
         if (!empty($pageArray)) {
-            $validatedPageArray = $this->validatePageArray($pageArray);
             $page->updateFromArray($validatedPageArray);
         }
         
@@ -415,8 +418,8 @@ class JsonPage implements JsonAdapter {
     private function validatePageArray($page) {
         $fields = array(
             'type' => array('type' => 'String'),
-            'name' => array('type' => 'String', 'map_to' => 'title'),
-            'title' => array('type' => 'String', 'map_to' => 'contentTitle'),
+            'name' => array('type' => 'String', 'required' => true, 'map_to' => 'title'),
+            'title' => array('type' => 'String', 'required' => true, 'map_to' => 'contentTitle'),
             // the model can take advantage of proper NULLing, so this needn't be set
             //                  'scheduled_publishing' => array('type' => 'boolean'),
             'start' => array('type' => 'DateTime', 'require' => 'scheduled_publishing'),
@@ -450,6 +453,12 @@ class JsonPage implements JsonAdapter {
                 $page[$field] = contrexx_input2raw($page[$field]);
             } else {
                 $page[$field] = null;
+            }
+            
+            if (isset($meta['required']) && $meta['required'] === true) {
+                if ($page[$field] == '') {
+                    throw new \Cx\Model\ContentManager\PageException('Required field (' . $field . ') not set!');
+                }
             }
 
             switch ($meta['type']) {

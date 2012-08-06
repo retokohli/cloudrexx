@@ -50,7 +50,7 @@ class FolderWidget {
                 'containerSelector' => $containerSelector,
                 'instanceName' => $instanceName
             ),
-            'folderWidget_'.$this->id
+            'upload/folderWidget_'.$this->id
         );
 
         return $tpl->get();
