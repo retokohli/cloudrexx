@@ -332,6 +332,13 @@ class Shopmanager extends ShopLibrary
 
         self::$pageTitle = $_ARRAYLANG['TXT_SHOP_IMPORT_TITLE'];
         self::$objTemplate->loadTemplateFile('module_shop_import.html');
+        self::$objTemplate->setGlobalVariable(array(
+            'TXT_SHOP_IMPORT_CATEGORIES_TIPS' =>
+                contrexx_raw2xhtml($_ARRAYLANG['TXT_SHOP_IMPORT_CATEGORIES_TIPS']),
+            'TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS' =>
+                contrexx_raw2xhtml($_ARRAYLANG['TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS']),
+        ));
+        JS::activate('tipmessage');
         $objCSVimport = new CSVimport();
         // Delete template
         if (isset($_REQUEST['deleteImg'])) {
@@ -344,7 +351,6 @@ class Shopmanager extends ShopLibrary
                 Message::error($_ARRAYLANG['TXT_SHOP_IMPORT_ERROR_DELETE']);
             }
         }
-
         // Save template
         if (isset($_REQUEST['SaveImg'])) {
             $query = "
@@ -363,7 +369,6 @@ class Shopmanager extends ShopLibrary
             }
         }
         $objCSVimport->initTemplateArray();
-
         // Import Categories
         // This is not subject to change, so it's hardcoded
         if (isset($_REQUEST['ImportCategories'])) {
@@ -399,7 +404,6 @@ class Shopmanager extends ShopLibrary
             Message::ok($_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_IMPORTED_CATEGORIES'].
                 ': '.$importedLines);
         }
-
         // Import
         if (isset($_REQUEST['importFileProducts'])) {
             if (isset($_POST['clearProducts']) && $_POST['clearProducts']) {
@@ -427,7 +431,6 @@ class Shopmanager extends ShopLibrary
                     }
                 }
             }
-
             $arrTemplateFieldName = preg_split(
                 '/;/', $objResult->fields['img_fields_file'],
                 null, PREG_SPLIT_NO_EMPTY
@@ -440,7 +443,6 @@ class Shopmanager extends ShopLibrary
                     }
                 }
             }
-
             $arrProductFieldName = preg_split(
                 '/;/', $objResult->fields['img_fields_db'],
                 null, PREG_SPLIT_NO_EMPTY
@@ -454,7 +456,6 @@ class Shopmanager extends ShopLibrary
                         : '').
                     $x;
             }
-
             $importedLines = 0;
             $errorLines = 0;
             // Array of IDs of newly inserted records
@@ -786,7 +787,6 @@ class Shopmanager extends ShopLibrary
             ));
             self::$objTemplate->parse('imgRow');
         }
-
         self::$objTemplate->setVariable(array(
             'SELECT_LAYER_ONLOAD' => $jsSelectLayer,
             'NO_FILES' => (isset($jsnofiles)  ? $jsnofiles  : ''),
@@ -925,8 +925,6 @@ class Shopmanager extends ShopLibrary
             $count, Paging::getPosition(), $limit, $order, $filter);
 //DBG::log("shopmanager::_showAttributeOptions(): count ".count($arrAttributes)." of $count, limit $limit, order $order, filter $filter");
         $rowClass = 1;
-
-// TODO: Test
         foreach ($arrAttributes as $attribute_id => $objAttribute) {
             self::$objTemplate->setCurrentBlock('attributeList');
             self::$objTemplate->setVariable(array(
@@ -936,15 +934,15 @@ class Shopmanager extends ShopLibrary
                 'SHOP_PRODUCT_ATTRIBUTE_VALUE_MENU' =>
                     Attributes::getOptionMenu(
                         $attribute_id, 'option_id', '',
-                        'setSelectedValue('.$attribute_id.')', 'width: 300px;'),
+                        'setSelectedValue('.$attribute_id.')', 'width: 290px;'),
                 'SHOP_PRODUCT_ATTRIBUTE_VALUE_INPUTBOXES' =>
                     Attributes::getInputs(
                         $attribute_id, 'option_name', 'value',
-                        255, 'width: 300px;'),
+                        255, 'width: 200px;'),
                 'SHOP_PRODUCT_ATTRIBUTE_PRICE_INPUTBOXES' =>
                     Attributes::getInputs(
                         $attribute_id, 'option_price', 'price',
-                        9, 'width: 300px; text-align: right;'),
+                        9, 'width: 200px; text-align: right;'),
                 'SHOP_PRODUCT_ATTRIBUTE_DISPLAY_TYPE' =>
                     Attributes::getDisplayTypeMenu(
                         $attribute_id, $objAttribute->getType(),
@@ -1727,6 +1725,7 @@ class Shopmanager extends ShopLibrary
         global $_ARRAYLANG;
 
         if (empty($_POST['bcategory'])) {
+//DBG::log("store_category(): Nothing to do");
             return null;
         }
         $name = contrexx_input2raw($_POST['name']);
@@ -1768,6 +1767,7 @@ class Shopmanager extends ShopLibrary
             return Message::error($_ARRAYLANG['TXT_SHOP_DATABASE_QUERY_ERROR']);
         }
         if ($picture) {
+//DBG::log("store_category(): Making thumb");
             $objImage = new ImageManager();
             if (!$objImage->_createThumbWhq(
                 ASCMS_SHOP_IMAGES_PATH.'/',
@@ -2069,9 +2069,13 @@ class Shopmanager extends ShopLibrary
         // "01/01/1970" instead
         $start_date = $end_date = '';
         $start_time = strtotime($objProduct->date_start());
-        if ($start_time) $start_date = date(ASCMS_DATE_SHORT_FORMAT, $start_time);
+        // Note that the check for ">0" is necessary, as some systems return
+        // crazy values for empty dates (it may even fail like this)!
+        if ($start_time > 0) $start_date =
+            date(ASCMS_DATE_SHORT_FORMAT, $start_time);
         $end_time = strtotime($objProduct->date_end());
-        if ($end_time) $end_date = date(ASCMS_DATE_SHORT_FORMAT, $end_time);
+        if ($end_time > 0) $end_date = date(ASCMS_DATE_SHORT_FORMAT, $end_time);
+//DBG::log("Dates from ".$objProduct->date_start()." ($start_time, $start_date) to ".$objProduct->date_start()." ($end_time, $end_date)");
         self::$objTemplate->setVariable(array(
             'SHOP_PRODUCT_ID' => (isset($_REQUEST['new']) ? 0 : $objProduct->id()),
             'SHOP_PRODUCT_CODE' => $objProduct->code(),

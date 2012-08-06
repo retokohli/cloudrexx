@@ -320,6 +320,84 @@ class Saferpay
     }
 
 
+    static function getForm($arrOrder, $autopost=false)
+    {
+        global $_ARRAYLANG;
+/*        'AMOUNT'      => str_replace('.', '', $_SESSION['shop']['grand_total_price']),
+        'CURRENCY'    => Currency::getActiveCurrencyCode(),
+        'ORDERID'     => $_SESSION['shop']['order_id'],
+        'ACCOUNTID'   => SettingDb::getValue('saferpay_id'),
+        'SUCCESSLINK' => urlencode('http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=1&handler=saferpay'),
+        'FAILLINK'    => urlencode('http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=0&handler=saferpay'),
+        'BACKLINK'    => urlencode('http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=2&handler=saferpay'),
+        'DESCRIPTION' => urlencode('"'.$_ARRAYLANG['TXT_ORDER_NR'].' '.$_SESSION['shop']['order_id'].'"'),
+        'LANGID'      => FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
+        'NOTIFYURL'   => urlencode('http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=-1&handler=saferpay'),
+        'ALLOWCOLLECT' => 'no',
+        'DELIVERY'     => 'no',
+        'PROVIDERSET' = $arrCards; // if set*/
+        $payInitUrl = self::payInit($arrOrder,
+            SettingDb::getValue('saferpay_use_test_account'));
+//DBG::log("Saferpay::getForm(): payInit URL: $payInitUrl");
+        if (   !$payInitUrl
+            || strtoupper(substr($payInitUrl, 0, 5)) == 'ERROR') {
+            return
+                "<font color='red'><b>".
+                $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_SAFERPAY'].
+                "<br />Warnings:<br />".
+                Saferpay::getErrors().
+                "<br />Errors:<br />".
+                Saferpay::getWarnings().
+                "</b></font>";
+        }
+        $return = "<script src='http://www.saferpay.com/OpenSaferpayScript.js'></script>\n";
+        switch (SettingDb::getValue('saferpay_window_option')) {
+            case 0: // iframe -- UNUSED, because it does not work reliably!
+                return
+                    $return.
+                    $_ARRAYLANG['TXT_ORDER_PREPARED']."<br/><br/>\n".
+                    "<iframe src='$payInitUrl' width='580' height='400' scrolling='no' marginheight='0' marginwidth='0' frameborder='0' name='saferpay'></iframe>\n";
+            case 1: // popup
+                return
+                    $return.
+                    $_ARRAYLANG['TXT_ORDER_LINK_PREPARED'].'<br/><br/>
+<script type="text/javascript">
+function openSaferpay() {
+  strUrl = "'.$payInitUrl.'";
+  if (strUrl.indexOf("WINDOWMODE=Standalone") == -1) {
+    strUrl += "&WINDOWMODE=Standalone";
+  }
+  oWin = window.open(strUrl, "SaferpayTerminal",
+    "scrollbars=1,resizable=0,toolbar=0,location=0,directories=0,status=1,menubar=0,width=580,height=400");
+  if (oWin == null || typeof(oWin) == "undefined") {
+    alert("The payment couldn\'t be initialized.  Maybe you are using a popup blocker?");
+  }
+}
+'.($autopost
+? 'window.setTimeout(3000, openSaferpay());
+' : '').'
+</script>
+<input type="button" name="order_now" value="'.
+  $_ARRAYLANG['TXT_ORDER_NOW'].'" onclick="openSaferpay();" />
+';
+            default: //case 2: // new window
+        }
+        return
+            $return.
+            $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>
+<form method='post' action='$payInitUrl'>
+  <input type='submit' value='".$_ARRAYLANG['TXT_ORDER_NOW']."' />
+</form>
+".($autopost ? '
+<script type="text/javascript">
+window.setTimeout(3000, function() {
+  document.forms[0].submit();
+});
+</script>
+' : '');
+    }
+
+
     /**
      * Returns the URI for initializing the payment with Saferpay
      * @access  public
@@ -340,8 +418,9 @@ class Saferpay
 // NOTE: This only works when cURL is available
         if (function_exists('curl_init')) {
             $ch = curl_init(self::$gateway['payInit'].'?'.$attributes);
-            curl_setopt($ch, 'CURLOPT_RETURNTRANSFER', true);
-            curl_setopt($ch, 'CURLOPT_PROTOCOLS', CURLPROTO_HTTPS);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $result = curl_exec($ch);
         }
         if ($result) return $result;

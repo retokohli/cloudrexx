@@ -1099,10 +1099,10 @@ class ShopCategories
      */
     static function getNameArray($activeonly=false)
     {
-//echo("getNameArray():  Categories:<br />".var_export(self::$arrCategory, true)."<br />");
+//DBG::log("getNameArray():  Categories:<br />".var_export(self::$arrCategory, true)."<br />");
         if (empty(self::$arrCategory))
             self::buildTreeArray(true, $activeonly);
-//echo("getNameArray():  Categories:<br />".var_export(self::$arrCategory, true)."<br />");
+//DBG::log("getNameArray():  Categories:<br />".var_export(self::$arrCategory, true)."<br />");
         $arrName = array();
         foreach (self::$arrCategory as $arrCategory) {
             $arrName[$arrCategory['id']] = $arrCategory['name'];

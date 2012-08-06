@@ -995,6 +995,11 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
         $row = 0;
         $objCouponEdit = new Coupon();
         global $_CONFIG;
+        JS::registerCode(
+            'function click_link(id) {'."\n".
+            '  jQuery(id).show();'."\n".
+            '  jQuery(id).find("input").focus();'."\n".
+            '}'."\n");
         foreach ($arrCoupons as $index => $objCoupon) {
             $coupon_uri_id = 'coupon_uri_'.$index;
             $objTemplate->setVariable(array(
@@ -1003,17 +1008,18 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                 'SHOP_DISCOUNT_COUPON_URI' =>
 // TODO: Use Resolver methods to form the URI
 //                    Dispatcher::get_absolute_url(
-                    '<div class="icon_url" onclick="jQuery(\'#'.$coupon_uri_id.
-                    '\').toggle().find(\'input\').focus()">&nbsp;</div>'.
+                    '<div class="icon_url"'.
+                    ' onclick="click_link(\'#'.$coupon_uri_id.'\');">&nbsp;</div>'.
                     '<div class="layer_url" id="'.$coupon_uri_id.'">'.
-                    Html::getInputText('',
+                    Html::getInputText('dummy',
                         'http://'.$_CONFIG['domainUrl'].
                         ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.
                         '?section=shop'.MODULE_INDEX.
                         '&coupon_code='.$objCoupon->code(), false,
                         'readonly="readonly"'.
                         ' style="width: 420px;"'.
-                        ' onfocus="this.select();"'
+                        ' onfocus="this.select();"'.
+                        ' onblur="jQuery(\'#'.$coupon_uri_id.'\').hide();"'
                     ).'</div>',
                 'SHOP_DISCOUNT_COUPON_START_TIME' =>
                     ($objCoupon->start_time()
@@ -1082,9 +1088,9 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                             '\\n\\n'.
                             $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
                     )),
-                'SHOP_DISCOUNT_COUPON_URI_HINT' => Html::getHint(array(
-                    $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_URI'],
-                    $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_URI_HINT_TEXT'])),
+//                'SHOP_DISCOUNT_COUPON_URI_HINT' => Html::getHint(array(
+//                    $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_URI'],
+//                    $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_URI_HINT_TEXT'])),
             ));
             $objTemplate->parse('shopDiscountCouponView');
             if ($index === $edit) $objCouponEdit = $objCoupon;
@@ -1229,6 +1235,7 @@ $J(document).ready(function($) {
   $("#global").trigger("change");
 });
 ');
+        JS::activate('tipmessage');
         return $result;
     }
 

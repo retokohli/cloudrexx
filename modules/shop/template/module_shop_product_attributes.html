@@ -226,9 +226,9 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
       onclick="selectTab('content2')" title="{TXT_ADD}">{TXT_ADD}</a></li>
 </ul>
 <input type="text" name="option_name_tpl" id="option_name_tpl" value=""
-    maxlength="255" style="display: none; width: 300px;" />
+    maxlength="255" style="display: none; width: 200px;" />
 <input type="text" name="option_price_tpl" id="option_price_tpl" value="0.00"
-    maxlength="9" style="display: none; width: 300px; text-align: right;" />
+    maxlength="9" style="display: none; width: 200px; text-align: right;" />
 <!-- start content1 div -->
 <div id="content1" class="attributeTab" style="display:block">
   <form name="shopSelectOptions" id="shopSelectOptions" method="post" action="">
@@ -237,7 +237,7 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
         <th nowrap="nowrap" width="2%" class="a_center">#</th>
         <th nowrap="nowrap" width="30%">{TXT_NAME}</th>
         <th nowrap="nowrap" width="30%">{TXT_VALUES}</th>
-        <th nowrap="nowrap" width="30%">{TXT_OPTIONS}</th>
+        <th nowrap="nowrap" width="30%">{TXT_SHOP_ATTRIBUTE_TYPE}</th>
         <th nowrap="nowrap" width="8%" class="a_right">{TXT_FUNCTIONS}</th>
       </tr>
 <!-- BEGIN attributeList -->
@@ -254,18 +254,13 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
           {SHOP_PRODUCT_ATTRIBUTE_VALUE_MENU}
         </td>
         <td nowrap="nowrap">
-          <div>
-            <div style="float: left;">
-              {TXT_DISPLAY_AS}
-            </div>
-            <div style="float: right;">
-              {SHOP_PRODUCT_ATTRIBUTE_DISPLAY_TYPE}
-            </div>
+          <div style="float: right;">
+            {SHOP_PRODUCT_ATTRIBUTE_DISPLAY_TYPE}
           </div>
           <div id="optionEdit-{SHOP_PRODUCT_ATTRIBUTE_ID}"
               style="display: none;">
             <br /><br /><br />
-            <div style="display: block; height: 20px;">
+            <div style="display: block; height: 26px;">
               <div style="float: left;">
                 {TXT_VALUE}
               </div>
@@ -274,7 +269,7 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
                 {SHOP_PRODUCT_ATTRIBUTE_VALUE_INPUTBOXES}
               </div>
             </div>
-            <div style="display: block; height: 20px;">
+            <div style="display: block; height: 26px;">
               <div style="float: left;">
                 {TXT_PRICE}&nbsp;({SHOP_PRODUCT_ATTRIBUTE_CURRENCY})
               </div>
@@ -283,7 +278,7 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
                 {SHOP_PRODUCT_ATTRIBUTE_PRICE_INPUTBOXES}
               </div>
             </div>
-            <div style="display: block; height: 20px; float: right;">
+            <div style="display: block; height: 26px; float: right;">
                 <input type="button" value="{TXT_ADD_NEW_VALUE}"
                     onclick="addOption({SHOP_PRODUCT_ATTRIBUTE_ID})"
                     id="newAttributeValue-{SHOP_PRODUCT_ATTRIBUTE_ID}" />
@@ -327,7 +322,7 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
         <th nowrap="nowrap" width="2%">&nbsp;</th>
         <th nowrap="nowrap" width="30%">{TXT_NAME}</th>
         <th nowrap="nowrap" width="30%">{TXT_VALUES}</th>
-        <th nowrap="nowrap" width="30%">{TXT_OPTIONS}</th>
+        <th nowrap="nowrap" width="30%">{TXT_SHOP_ATTRIBUTE_TYPE}</th>
         <th nowrap="nowrap" width="8%">&nbsp;</th>
       </tr>
       <tr class="row1" style="vertical-align: top;">
@@ -348,25 +343,20 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
           </a>
         </td>
         <td nowrap="nowrap">
-          <div>
-            <div style="float: left;">
-              {TXT_DISPLAY_AS}
-            </div>
-            <div style="float: right;">
-              {SHOP_PRODUCT_ATTRIBUTE_TYPE_MENU}
-            </div>
+          <div style="float: right;">
+            {SHOP_PRODUCT_ATTRIBUTE_TYPE_MENU}
           </div>
           <div id="optionEdit-0"
               style="display: block;">
             <br /><br /><br />
-            <div style="display: block; height: 20px;">
+            <div style="display: block; height: 26px;">
               <div style="float: left;">
                 {TXT_VALUE}
               </div>
               <div style="float: right;" id="option_name_div-0">
               </div>
             </div>
-            <div style="display: block; height: 20px;">
+            <div style="display: block; height: 26px;">
               <div style="float: left;">
                 {TXT_PRICE}&nbsp;({SHOP_PRODUCT_ATTRIBUTE_CURRENCY})
               </div>
@@ -375,7 +365,7 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
                 {SHOP_PRODUCT_ATTRIBUTE_PRICE_INPUTBOXES}
               </div>
             </div>
-            <div style="display: block; height: 20px; float: right;">
+            <div style="display: block; height: 26px; float: right;">
                 <input type="button" value="{TXT_ADD_NEW_VALUE}"
                     onclick="addOption(0)" />
             </div>
