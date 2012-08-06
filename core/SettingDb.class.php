@@ -276,16 +276,16 @@ DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current gr
     static function set($name, $value)
     {
         if (!isset(self::$arrSettings[$name])) {
-//DBG::log("SettingDb::set($name, $value): Unknown, changed: ".self::$changed."<br />");
+//DBG::log("SettingDb::set($name, $value): Unknown, changed: ".self::$changed);
             return false;
         }
         if (self::$arrSettings[$name]['value'] == $value) {
-//DBG::log("SettingDb::set($name, $value): Identical, changed: ".self::$changed."<br />");
+//DBG::log("SettingDb::set($name, $value): Identical, changed: ".self::$changed);
             return null;
         }
         self::$changed = true;
         self::$arrSettings[$name]['value'] = $value;
-//DBG::log("SettingDb::set($name, $value): Added/updated, changed: ".self::$changed."<br />");
+//DBG::log("SettingDb::set($name, $value): Added/updated, changed: ".self::$changed);
         return true;
     }
 

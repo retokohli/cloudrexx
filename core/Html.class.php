@@ -1354,8 +1354,8 @@ var _active_tab = '.
         }
 //DBG::log("Html::getDatePicker(): Options: $strOptions");
         JS::registerCode('
-jQuery(document).ready(function($) {
-  $("#'.$id.'").datepicker({'.$strOptions.'});
+jQuery(function() {
+  jQuery("#'.$id.'").datepicker({'.$strOptions.'});
 });
 ');
         return self::getInputText($name, $date, $id, $attribute);
