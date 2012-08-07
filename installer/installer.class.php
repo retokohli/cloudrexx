@@ -1257,7 +1257,7 @@ class Installer
         // create htaccess file
         if ($result === true) {
             $result = $this->_createHtaccessFile();
-            $msg = ASCMS_WEBSERVER_SOFTWARE == 'iis' ? $_ARRLANG['TXT_CREATE_IIS_HTACCESS_FILE'] : $_ARRLANG['TXT_CREATE_APACHE_HTACCESS_FILE']
+            $msg = ASCMS_WEBSERVER_SOFTWARE == 'iis' ? $_ARRLANG['TXT_CREATE_IIS_HTACCESS_FILE'] : $_ARRLANG['TXT_CREATE_APACHE_HTACCESS_FILE'];
             $this->_setInstallationStatus($result, $msg);
        }
 
