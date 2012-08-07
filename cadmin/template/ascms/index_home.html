@@ -9,16 +9,16 @@ $J(document).ready(function() {
         }
     });
     
-    var months   = {STAT_MONTHS};
+    var dates    = {STAT_DATES};
     var visitors = {STAT_VISITORS};
     var requests = {STAT_REQUESTS};
     
     var plot = $J.jqplot('chart', [visitors, requests], {
-        //stackSeries: true,
         seriesColors: ['#4EAA09', '#0C90D0'],
         grid: {
             background: '#FFFFFF',
-            borderColor: '#CCCCCC'
+            borderColor: '#CCCCCC',
+            shadow: false
         },
         legend: {
             show: true,
@@ -26,14 +26,21 @@ $J(document).ready(function() {
             placement: 'insideGrid'
         },
         seriesDefaults: {
-            /*renderer:$J.jqplot.BarRenderer,
-            rendererOptions: {fillToZero: true},
-            pointLabels: {show: true}*/
+            renderer:$J.jqplot.BarRenderer,
+            rendererOptions: {
+                barPadding: 2,
+                barMargin: 2
+            }
         },
         axes: {
             xaxis: {
                 renderer: $J.jqplot.CategoryAxisRenderer,
-                ticks: months
+                ticks: dates,
+                tickRenderer: $J.jqplot.CanvasAxisTickRenderer,
+                tickOptions: {
+                  angle: -90,
+                  fontSize: '10px'
+                }
             }
         },
         highlighter: {
@@ -41,6 +48,9 @@ $J(document).ready(function() {
             showMarker: false,
             tooltipAxes: 'y',
             tooltipLocation:  'n',
+        },
+        cursor: {
+            tooltipLocation: 'n'
         }
     });
 });
@@ -85,9 +95,15 @@ $J(document).ready(function() {
             <div class="icon"></div>
         </div>
     </div>
-    <div class="left clearfix">
+    <div id="stats_middle" class="middle">
+        <div id="stats_wrapper">
+            <h1>Website Statistik</h1>
+            <div id="chart"></div>
+        </div>
+    </div>
+    <div class="right">
         <!-- BEGIN rssFeeds -->
-        <div id="last_sessions_wrapper">
+        <div id="news_wrapper">
             <h1>{TXT_CONTREXX_NEWS}</h1>
             <ul id="news">
                 <!-- BEGIN rssRow -->
@@ -113,12 +129,6 @@ $J(document).ready(function() {
             <!-- END logError -->
         </div>
         <!-- END logs -->
-    </div>
-    <div id="stats_middle" class="middle">
-        <div id="stats_wrapper">
-            <h1>Website Statistik</h1>
-            <div id="chart"></div>
-        </div>
     </div>
 </div>
 
