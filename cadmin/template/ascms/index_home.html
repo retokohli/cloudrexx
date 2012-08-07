@@ -14,7 +14,7 @@ $J(document).ready(function() {
     var requests = {STAT_REQUESTS};
     
     var plot = $J.jqplot('chart', [visitors, requests], {
-        stackSeries: true,
+        //stackSeries: true,
         seriesColors: ['#4EAA09', '#0C90D0'],
         grid: {
             background: '#FFFFFF',
@@ -26,9 +26,9 @@ $J(document).ready(function() {
             placement: 'insideGrid'
         },
         seriesDefaults: {
-            renderer:$J.jqplot.BarRenderer,
+            /*renderer:$J.jqplot.BarRenderer,
             rendererOptions: {fillToZero: true},
-            pointLabels: {show: true}
+            pointLabels: {show: true}*/
         },
         axes: {
             xaxis: {
