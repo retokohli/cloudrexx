@@ -43,4 +43,5 @@ $_ARRAYLANG['TXT_ALIAS_MOD_REWRITE_MISSING'] = "Da die Erweiterung <strong>mod_r
 $_ARRAYLANG['TXT_ALIAS_HTACCESS_HINT'] = "Versichern Sie sich also, dass auf diesem Server die Verwendung von .htaccess Dateien unterstützt wird.";
 $_ARRAYLANG['TXT_ALIAS_CONFIG_SUCCESSFULLY_APPLYED'] = "Die Einstellungen wurden erfolgreich übernommen.";
 $_ARRAYLANG['TXT_ALIAS_CONFIG_FAILED_APPLY'] = "Beim Speichern der Konfiguration trat ein Fehler auf!";
+$_ARRAYLANG['TXT_ALIAS_IIS_HTACCESS_NOT_REGISTERED'] = "The file &ldquo;web.config&rdquo; is not registered in the server configuration. Please contact the server administrator and request a corresponding entry.";
 ?>

@@ -18,6 +18,7 @@ define('ASCMS_PATH',                        $_PATHCONFIG['ascms_root']);
 define('ASCMS_PATH_OFFSET',                 $_PATHCONFIG['ascms_root_offset']); // example '/cms'
 define('ASCMS_BACKEND_PATH',                '/cadmin');
 define('ASCMS_PROTOCOL',                    empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off' ? 'http' : 'https');
+define('ASCMS_WEBSERVER_SOFTWARE',          !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : ''));
 
 define('CONTREXX_ESCAPE_GPC',               get_magic_quotes_gpc());
 define('CONTREXX_CHARSET',                  $_CONFIG['coreCharacterEncoding']);

@@ -52,7 +52,7 @@ $_FTPCONFIG['path']	= '%FTP_PATH%'; // Ftp path to cms
 /**
 * -------------------------------------------------------------------------
 * Optional customizing exceptions
-* Shopnavbar : If set to TRUE the shopnavbar will appears on each page
+* Shopnavbar : If set to TRUE the shopnavbar will appear on each page
 * -------------------------------------------------------------------------
 */
 $_CONFIGURATION['custom']['shopnavbar'] = false; // true|false

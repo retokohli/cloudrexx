@@ -129,6 +129,23 @@ class AliasAdmin extends aliasLib
         $this->_pageTitle = $_ARRAYLANG['TXT_ALIAS_ALIAS_ES'];
         $this->_objTpl->setGlobalVariable('TXT_ALIAS_ALIASES', $_ARRAYLANG['TXT_ALIAS_ALIASES']);
 
+        // show warning message if contrexx is running on an IIS webserver and the web.config seems not be be registred in the server configuration
+        if (ASCMS_WEBSERVER_SOFTWARE == 'iis') {
+            require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/Request2.php');
+            $objRequest = new HTTP_Request2('http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID).'/index.php?section=error');
+            try {
+                $objResponse = $objRequest->send();
+                if ($objResponse->getStatus() !== 200) {
+                    $this->_objTpl->setVariable('TXT_ALIAS_IIS_HTACCESS_NOT_REGISTERED', $_ARRAYLANG['TXT_ALIAS_IIS_HTACCESS_NOT_REGISTERED']);
+                    $this->_objTpl->parse('htaccess_warning');
+                } else {
+                    $this->_objTpl->hideBlock('htaccess_warning');
+                }
+            } catch (HTTP_Request2_Exception $objException) {
+                DBG::msg($objException->getMessage());
+            }
+        }
+
         $arrAliases = $this->_getAliases($_CONFIG['corePagingLimit']);
         $nr = 1;
         if (count($arrAliases)) {
