@@ -138,47 +138,86 @@ class myAdminManager {
         }
 
         // get statistics
-        $arrMonths     = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
-        $rangeStart    = date('n', strtotime('5 months ago'));
-        $arrRange      = range($rangeStart, date('n'));
-        $arrVisitors   = array();
-        $arrRequests   = array();
-        $months        = array();
-        $visitors      = array();
-        $requests      = array();
+        $rangeStart = date('j', strtotime('27 days ago'));
+        $rangeEnd   = date('j');
+        $arrRange   = array();
+        
+        if ($rangeStart > $rangeEnd) {
+            $first = range($rangeStart, date('t', strtotime('27 days ago')));
+            $month = date('M', strtotime('1 month ago'));
+            foreach ($first as $day) {
+                $arrRange[$day] = $day.' '.$month;
+            }
+            
+            $second = range(1, $rangeEnd);
+            $month  = date('M');
+            foreach ($second as $day) {
+                $arrRange[$day] = $day.' '.$month;
+            }
+        } else {
+            $arrDays = range($rangeStart, $rangeEnd);
+            $month = date('M');
+            foreach ($arrDays as $day) {
+                $arrRange[$day] = $day.' '.$month;
+            }
+        }
+        
+        $arrVisitors = array();
+        $arrRequests = array();
+        $dates       = array();
+        $visitors    = array();
+        $requests    = array();
 
         $query = '
-            SELECT FROM_UNIXTIME(`timestamp`, "%c") AS `month`, `count`
+            SELECT FROM_UNIXTIME(`timestamp`, "%e") AS `day`, `count`
             FROM `'.DBPREFIX.'stats_visitors_summary`
-            WHERE `type` = "month" AND `timestamp` >= "'.mktime(0, 0, 0, date('n') - 5, null, date('Y')).'"
+            WHERE `type` = "day"
+            AND `timestamp` >= "'.
+            mktime(
+                0,
+                0,
+                0,
+                $previousMonth = date('m') == 1 ? 12 : date('m') - 1,
+                date('d') == date('t', mktime(0, 0, 0, $previousMonth, 0, $previousYear = (date('m') == 1 ? date('Y') -1 : date('Y')))) ? date('d') + 1 : 1,
+                $previousYear
+            ).'"
         ';
         $objResult = $objDatabase->Execute($query);
 
         while (!$objResult->EOF) {
-            $arrVisitors[$objResult->fields['month']] = $objResult->fields['count'];
+            $arrVisitors[$objResult->fields['day']] = $objResult->fields['count'];
             $objResult->MoveNext();
         }
 
         $query = '
-            SELECT FROM_UNIXTIME(`timestamp`, "%c") AS `month`, `count`
+            SELECT FROM_UNIXTIME(`timestamp`, "%e") AS `day`, `count`
             FROM `'.DBPREFIX.'stats_requests_summary`
-            WHERE `type` = "month" AND `timestamp` >= "'.mktime(0, 0, 0, date('n') - 5, null, date('Y')).'"
+            WHERE `type` = "day"
+            AND `timestamp` >= "'.
+            mktime(
+                0,
+                0,
+                0,
+                $previousMonth = date('m') == 1 ? 12 : date('m') - 1,
+                date('d') == date('t', mktime(0, 0, 0, $previousMonth, 0, $previousYear = (date('m') == 1 ? date('Y') -1 : date('Y')))) ? date('d') + 1 : 1,
+                $previousYear
+            ).'"
         ';
         $objResult = $objDatabase->Execute($query);
 
         while (!$objResult->EOF) {
-            $arrRequests[$objResult->fields['month']] = $objResult->fields['count'];
+            $arrRequests[$objResult->fields['day']] = $objResult->fields['count'];
             $objResult->MoveNext();
         }
 
-        foreach ($arrRange as $intMonth) {
-            $months[]   = $arrMonths[$intMonth - 1];
-            $visitors[] = isset($arrVisitors[$intMonth]) ? intval($arrVisitors[$intMonth]) : 0;
-            $requests[] = isset($arrRequests[$intMonth]) ? intval($arrRequests[$intMonth]) : 0;
+        foreach ($arrRange as $day => $date) {
+            $dates[]    = $date;
+            $visitors[] = isset($arrVisitors[$day]) ? intval($arrVisitors[$day]) : 0;
+            $requests[] = isset($arrRequests[$day]) ? intval($arrRequests[$day]) : 0;
         }
 
         $objTemplate->setVariable(array(
-            'STAT_MONTHS'   => json_encode($months),
+            'STAT_DATES'     => json_encode($dates),
             'STAT_VISITORS' => json_encode($visitors),
             'STAT_REQUESTS' => json_encode($requests),
         ));
@@ -195,7 +234,7 @@ class myAdminManager {
                 ));
                 $objTemplate->parse('rssRow');
 
-                if (++$i > 5) {
+                if (++$i > 2) {
                     break;
                 }
             }

@@ -146,6 +146,7 @@ jQuery(document).ready(function(){
                 'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.categoryAxisRenderer.min.js',
                 'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.barRenderer.min.js',
                 'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.highlighter.min.js',
+                'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js'
             ),
             'cssfiles'      => array(
                 'lib/javascript/jquery/plugins/jqplot/jquery.jqplot.css',
