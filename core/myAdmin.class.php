@@ -82,6 +82,7 @@ class myAdminManager {
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'content', 'index_home.html');
 
+        JS::activate('jquery-jqplot');
 
         $arrAccessIDs = array(5, 10, 76, '84_1', 6, 19, 75, '84_2', 17, 18, 7, 32, 21);
         foreach ($arrAccessIDs as $id) {
@@ -135,6 +136,52 @@ class myAdminManager {
         } else {
             $objTemplate->setVariable('LOG_ERROR_MESSAGE', $_CORELANG['TXT_NO_DATA_FOUND']);
         }
+
+        // get statistics
+        $arrMonths     = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
+        $rangeStart    = date('n', strtotime('5 months ago'));
+        $arrRange      = range($rangeStart, date('n'));
+        $arrVisitors   = array();
+        $arrRequests   = array();
+        $months        = array();
+        $visitors      = array();
+        $requests      = array();
+
+        $query = '
+            SELECT FROM_UNIXTIME(`timestamp`, "%c") AS `month`, `count`
+            FROM `'.DBPREFIX.'stats_visitors_summary`
+            WHERE `type` = "month" AND `timestamp` >= "'.mktime(0, 0, 0, date('n') - 5, null, date('Y')).'"
+        ';
+        $objResult = $objDatabase->Execute($query);
+
+        while (!$objResult->EOF) {
+            $arrVisitors[$objResult->fields['month']] = $objResult->fields['count'];
+            $objResult->MoveNext();
+        }
+
+        $query = '
+            SELECT FROM_UNIXTIME(`timestamp`, "%c") AS `month`, `count`
+            FROM `'.DBPREFIX.'stats_requests_summary`
+            WHERE `type` = "month" AND `timestamp` >= "'.mktime(0, 0, 0, date('n') - 5, null, date('Y')).'"
+        ';
+        $objResult = $objDatabase->Execute($query);
+
+        while (!$objResult->EOF) {
+            $arrRequests[$objResult->fields['month']] = $objResult->fields['count'];
+            $objResult->MoveNext();
+        }
+
+        foreach ($arrRange as $intMonth) {
+            $months[]   = $arrMonths[$intMonth - 1];
+            $visitors[] = isset($arrVisitors[$intMonth]) ? intval($arrVisitors[$intMonth]) : 0;
+            $requests[] = isset($arrRequests[$intMonth]) ? intval($arrRequests[$intMonth]) : 0;
+        }
+
+        $objTemplate->setVariable(array(
+            'STAT_MONTHS'   => json_encode($months),
+            'STAT_VISITORS' => json_encode($visitors),
+            'STAT_REQUESTS' => json_encode($requests),
+        ));
 
         $objRss = new XML_RSS('http://www.contrexx.com/feed/news_headlines_de.xml');
         $objRss->parse();

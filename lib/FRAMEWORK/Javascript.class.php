@@ -139,6 +139,19 @@ jQuery(document).ready(function(){
             ),
             'dependencies' => array('jquery'),
         ),
+        'jquery-jqplot'    => array(
+            'jsfiles'       => array(
+                'lib/javascript/jquery/plugins/jqplot/jquery.jqplot.js',
+                'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.canvasTextRenderer.min.js',
+                'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.categoryAxisRenderer.min.js',
+                'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.barRenderer.min.js',
+                'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.highlighter.min.js',
+            ),
+            'cssfiles'      => array(
+                'lib/javascript/jquery/plugins/jqplot/jquery.jqplot.css',
+            ),
+            'dependencies' => array('jquery'),
+        ),
         'ckeditor'     => array(
             'jsfiles'       => array(
                 'editor/ckeditor/ckeditor.js',

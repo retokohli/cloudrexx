@@ -1,10 +1,46 @@
 <!-- START index_home.html -->
+<!--[if lt IE 9]><script type="text/javascript" src="../lib/javascript/jquery/plugins/jqplot/excanvas.min.js"></script><![endif]-->
 <script type="text/javascript">
-jQuery(document).ready(function() {
-    jQuery('.box').each(function() {
-        if (jQuery(this).find('ul li').length == 0) {
-            jQuery(this).hide();
-            jQuery(this).next().addClass('spacer');
+$J(document).ready(function() {
+    $J('.box').each(function() {
+        if ($J(this).find('ul li').length == 0) {
+            $J(this).hide();
+            $J(this).next().addClass('spacer');
+        }
+    });
+    
+    var months   = {STAT_MONTHS};
+    var visitors = {STAT_VISITORS};
+    var requests = {STAT_REQUESTS};
+    
+    var plot = $J.jqplot('chart', [visitors, requests], {
+        stackSeries: true,
+        seriesColors: ['#4EAA09', '#0C90D0'],
+        grid: {
+            background: '#FFFFFF',
+            borderColor: '#CCCCCC'
+        },
+        legend: {
+            show: true,
+            labels: ['Besucher', 'Seitenaufrufe'],
+            placement: 'insideGrid'
+        },
+        seriesDefaults: {
+            renderer:$J.jqplot.BarRenderer,
+            rendererOptions: {fillToZero: true},
+            pointLabels: {show: true}
+        },
+        axes: {
+            xaxis: {
+                renderer: $J.jqplot.CategoryAxisRenderer,
+                ticks: months
+            }
+        },
+        highlighter: {
+            show: true,
+            showMarker: false,
+            tooltipAxes: 'y',
+            tooltipLocation:  'n',
         }
     });
 });
@@ -22,6 +58,44 @@ jQuery(document).ready(function() {
             </ul>
             <div class="icon"></div>
         </div>
+    </div>
+    <div class="middle">
+        <div id="box_2" class="box">
+            <h2>{TXT_EVALUATE_AND_VIEW}</h2>
+            <ul>
+                <li><a href="../index.php?caching=0">{TXT_SITE_PREVIEW}</a></li>
+                <!-- BEGIN check_access_6 --><li><a href="index.php?cmd=content">{TXT_CONTENT_MANAGER}</a></li><!-- END check_access_6 -->
+                <!-- BEGIN check_access_19 --><li><a href="index.php?cmd=stats">{TXT_STATS}</a></li><!-- END check_access_19 -->
+                <!-- BEGIN check_access_75 --><li><a href="index.php?cmd=workflow">{TXT_WORKFLOW}</a></li><!-- END check_access_75 -->
+                <!-- BEGIN check_access_84_2 --><li><a href="index.php?cmd=contact">{TXT_FORMS}</a></li><!-- END check_access_84_2 -->
+            </ul>
+            <div class="icon"></div>
+        </div>
+    </div>
+    <div class="right">
+        <div id="box_3" class="box">
+            <h2>{TXT_MANAGE}</h2>
+            <ul>
+                <!-- BEGIN check_access_17 --><li><a href="index.php?cmd=settings">{TXT_SYSTEM_SETTINGS}</a></li><!-- END check_access_17 -->
+                <!-- BEGIN check_access_18 --><li><a href="index.php?cmd=access">{TXT_USER_MANAGER}</a></li><!-- END check_access_18 -->
+                <!-- BEGIN check_access_7 --><li><a href="index.php?cmd=media&amp;archive=archive1">{TXT_MEDIA_MANAGER}</a></li><!-- END check_access_7 -->
+                <!-- BEGIN check_access_32 --><li><a href="index.php?cmd=media&amp;archive=content">{TXT_IMAGE_ADMINISTRATION}</a></li><!-- END check_access_32 -->
+                <!-- BEGIN check_access_21 --><li><a href="index.php?cmd=skins">{TXT_SKINS}</a></li><!-- END check_access_21 -->
+            </ul>
+            <div class="icon"></div>
+        </div>
+    </div>
+    <div class="left clearfix">
+        <!-- BEGIN rssFeeds -->
+        <div id="last_sessions_wrapper">
+            <h1>{TXT_CONTREXX_NEWS}</h1>
+            <ul id="news">
+                <!-- BEGIN rssRow -->
+                <li><a href="{RSS_LINK}" target="_blank">{RSS_TITLE}</a></li>
+                <!-- END rssRow -->
+            </ul>
+        </div>
+        <!-- END rssFeeds -->
         
         <!-- BEGIN logs -->
         <div id="last_sessions_wrapper">
@@ -40,60 +114,18 @@ jQuery(document).ready(function() {
         </div>
         <!-- END logs -->
     </div>
-    <div class="middle">
-        <div id="box_2" class="box">
-            <h2>{TXT_EVALUATE_AND_VIEW}</h2>
-            <ul>
-                <li><a href="../index.php?caching=0">{TXT_SITE_PREVIEW}</a></li>
-                <!-- BEGIN check_access_6 --><li><a href="index.php?cmd=content">{TXT_CONTENT_MANAGER}</a></li><!-- END check_access_6 -->
-                <!-- BEGIN check_access_19 --><li><a href="index.php?cmd=stats">{TXT_STATS}</a></li><!-- END check_access_19 -->
-                <!-- BEGIN check_access_75 --><li><a href="index.php?cmd=workflow">{TXT_WORKFLOW}</a></li><!-- END check_access_75 -->
-                <!-- BEGIN check_access_84_2 --><li><a href="index.php?cmd=contact">{TXT_FORMS}</a></li><!-- END check_access_84_2 -->
-            </ul>
-            <div class="icon"></div>
-        </div>
+    <div id="stats_middle" class="middle">
         <div id="stats_wrapper">
             <h1>Website Statistik</h1>
-            <ul id="stats">
-                <li><span class="left">Website online seit</span><span class="right">31.03.2011</span></li>
-                <li><span class="left">Inhaltsseiten</span><span class="right"><span class="blue">530</span></span></li>
-                <li><span class="left">Benutzerkonten</span><span class="right"><span class="blue">20</span></span></li>
-                <li><span class="left">Jetzt online</span><span class="right"><span class="orange">2</span></span></li>
-                <li><span class="left">Die letzten 24 Stunden</span><span class="right"><span class="green">15</span><span class="orange">32</span></span></li>
-                <li><span class="left">Die letzten 7 Tage</span><span class="right"><span class="green">15</span><span class="orange">32</span></span></li>
-                <li><span class="left">Die letzten 30 Tage</span><span class="right"><span class="green">15</span><span class="orange">10'000</span></span></li>
-            </ul>
+            <div id="chart"></div>
         </div>
-    </div>
-    <div class="right">
-        <div id="box_3" class="box">
-            <h2>{TXT_MANAGE}</h2>
-            <ul>
-                <!-- BEGIN check_access_17 --><li><a href="index.php?cmd=settings">{TXT_SYSTEM_SETTINGS}</a></li><!-- END check_access_17 -->
-                <!-- BEGIN check_access_18 --><li><a href="index.php?cmd=access">{TXT_USER_MANAGER}</a></li><!-- END check_access_18 -->
-                <!-- BEGIN check_access_7 --><li><a href="index.php?cmd=media&amp;archive=archive1">{TXT_MEDIA_MANAGER}</a></li><!-- END check_access_7 -->
-                <!-- BEGIN check_access_32 --><li><a href="index.php?cmd=media&amp;archive=content">{TXT_IMAGE_ADMINISTRATION}</a></li><!-- END check_access_32 -->
-                <!-- BEGIN check_access_21 --><li><a href="index.php?cmd=skins">{TXT_SKINS}</a></li><!-- END check_access_21 -->
-            </ul>
-            <div class="icon"></div>
-        </div>
-        <!-- BEGIN rssFeeds -->
-        <div id="last_sessions_wrapper">
-            <h1>{TXT_CONTREXX_NEWS}</h1>
-            <ul id="news">
-                <!-- BEGIN rssRow -->
-                <li><a href="{RSS_LINK}" target="_blank">{RSS_TITLE}</a></li>
-                <!-- END rssRow -->
-            </ul>
-        </div>
-        <!-- END rssFeeds -->
     </div>
 </div>
 
 <script type="text/javascript" language="javascript">
-    jQuery.get('versioncheck.php').success(function(data) {
+    $J.get('versioncheck.php').success(function(data) {
         if (data.match(/update/i)) {
-            jQuery('#new_version').html(data);
+            $J('#new_version').html(data);
         }
     });
 </script>
