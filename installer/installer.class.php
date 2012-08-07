@@ -1254,11 +1254,12 @@ class Installer
 			$this->_setInstallationStatus($result, $_ARRLANG['TXT_INSERT_DATABASE_DATA']);
 		}
                 
-                // create htaccess file
-                if ($result === true) {
-                        $result = $this->_createHtaccessFile();
-                        $this->_setInstallationStatus($result, $_ARRLANG['TXT_CREATE_HTACCESS_FILE']);
-                }
+        // create htaccess file
+        if ($result === true) {
+            $result = $this->_createHtaccessFile();
+            $msg = ASCMS_WEBSERVER_SOFTWARE == 'iis' ? $_ARRLANG['TXT_CREATE_IIS_HTACCESS_FILE'] : $_ARRLANG['TXT_CREATE_APACHE_HTACCESS_FILE']
+            $this->_setInstallationStatus($result, $msg);
+       }
 
 		// create version file
 		if ($result === true) {
@@ -1410,9 +1411,7 @@ class Installer
 	}
         
         /**
-         * create .htaccess file
-         * 
-         * create the .htaccess file
+         * create htaccess file
          * 
          * @access      private
          * @global      object  $objCommon

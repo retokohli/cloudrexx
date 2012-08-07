@@ -51,4 +51,5 @@ $_ARRAYLANG['TXT_ALIAS_TARGET_ALREADY_IN_USE'] = "Псевдоним для эт
 $_ARRAYLANG['TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG'] = "Этот псевдоним нигде не активирован!<br />Кликните на иконку для повторной активации.";
 $_ARRAYLANG['TXT_ALIAS_STANDARD_RADIOBUTTON'] = "Использовать по умолчанию:";
 $_ARRAYLANG['TXT_ALIAS_OPEN_ALIAS_NEW_WINDOW'] = "Open alias in a new window";
+$_ARRAYLANG['TXT_ALIAS_IIS_HTACCESS_NOT_REGISTERED'] = "The file &ldquo;web.config&rdquo; is not registered in the server configuration. Please contact the server administrator and request a corresponding entry.";
 ?>

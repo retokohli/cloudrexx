@@ -51,4 +51,5 @@ $_ARRAYLANG['TXT_ALIAS_TARGET_ALREADY_IN_USE'] = "An alias for the page %s has a
 $_ARRAYLANG['TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG'] = "This alias isn't active anymore!<br />Click on this icon to reactive it.";
 $_ARRAYLANG['TXT_ALIAS_STANDARD_RADIOBUTTON'] = "Use as default:";
 $_ARRAYLANG['TXT_ALIAS_OPEN_ALIAS_NEW_WINDOW'] = "Open alias in a new window";
+$_ARRAYLANG['TXT_ALIAS_IIS_HTACCESS_NOT_REGISTERED'] = "The file &ldquo;web.config&rdquo; is not registered in the server configuration. Please contact the server administrator and request a corresponding entry.";
 ?>

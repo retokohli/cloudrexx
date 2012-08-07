@@ -817,13 +817,12 @@ class CommonFunctions
 		return $str;
 	}
         
-        function _getHtaccessFileTemplate() {
-                global $htaccessTemplateFile, $_CONFIG;
+    function _getHtaccessFileTemplate($file) {
                 
                 return str_replace(
 	 		array("%PATH_ROOT_OFFSET%"),
 	 		array($_SESSION['installer']['config']['offsetPath']),
-	 		@file_get_contents($htaccessTemplateFile)
+	 		@file_get_contents($file)
 	 	);
         }
 
@@ -975,28 +974,37 @@ class CommonFunctions
 		}
 	}
         
-        function createHtaccessFile() {
-		global $basePath, $offsetPath, $htaccessFile, $_ARRLANG, $_CORELANG;
+    function createHtaccessFile() {
+        global $basePath, $offsetPath, $apacheHtaccessTemplateFile, $apacheHtaccessFile, $iisHtaccessTemplateFile, $iisHtaccessFile, $_ARRLANG, $_CORELANG;
 
-		$htaccessFileContent = $this->_getHtaccessFileTemplate();
-                
-                if (!@include_once(ASCMS_LIBRARY_PATH.'/FRAMEWORK/FWHtAccess.class.php')) {
-                    die('Unable to load file '.ASCMS_LIBRARY_PATH.'/FRAMEWORK/FWHtAccess.class.php');
-                }
-                $_CORELANG = $_ARRLANG;
-                $htaccess = new FWHtAccess(dirname($basePath), $offsetPath);
-                $result = $htaccess->loadHtAccessFile($htaccessFile);
-                if ($result !== true) {
-                    return $result;
-                }
-                
-                $htaccess->setSection("core_routing", explode("\n", $htaccessFileContent));
-                $result = $htaccess->write();
-                if ($result !== true) {
-                    return $result;
-                }
-                return true;
+        if (!@include_once(ASCMS_LIBRARY_PATH.'/FRAMEWORK/FWHtAccess.class.php')) {
+            die('Unable to load file '.ASCMS_LIBRARY_PATH.'/FRAMEWORK/FWHtAccess.class.php');
         }
+        $_CORELANG = $_ARRLANG;
+
+        if (ASCMS_WEBSERVER_SOFTWARE == 'iis') {
+            require_once(ASCMS_LIBRARY_PATH.'/PEAR/File/HtAccess.php');
+            $objHtAccess = new File_HtAccess(dirname($basePath).'\\'.substr($iisHtaccessFile, 1));
+            $objHtAccess->setAdditional(explode("\n", $this->_getHtaccessFileTemplate($iisHtaccessTemplateFile)));
+            $objHtAccess->save();
+        } else {
+            
+            $objFWHtAccess = new FWHtAccess(dirname($basePath), $offsetPath);
+
+            $result = $objFWHtAccess->loadHtAccessFile($apacheHtaccessFile);
+            if ($result !== true) {
+                return $result;
+            }
+            
+            $objFWHtAccess->setSection("core_routing", explode("\n", $this->_getHtaccessFileTemplate($apacheHtaccessTemplateFile)));
+            $result = $objFWHtAccess->write();
+            if ($result !== true) {
+                return $result;
+            }
+        }
+            
+        return true;
+    }
 
 	function createConfigFile() {
 		global $configFile, $_ARRLANG;
