@@ -138,14 +138,13 @@ class myAdminManager {
         }
 
         // get statistics
-        $daysAgo    = date('t', strtotime('last month')) - 1;
-        $rangeStart = date('j', strtotime($daysAgo.' days ago'));
+        $rangeStart = date('j', strtotime('last month')) + 1;
         $rangeEnd   = date('j');
         $arrRange   = array();
         
-        if ($rangeStart > $rangeEnd) {
-            $first = range($rangeStart, date('t', strtotime($daysAgo.' days ago')));
-            $month = date('M', strtotime('1 month ago'));
+        if ($rangeStart >= $rangeEnd) {
+            $first = range($rangeStart, date('t', strtotime('last month')));
+            $month = date('M', strtotime('last month'));
             foreach ($first as $day) {
                 $arrRange[$day] = $day.' '.$month;
             }
