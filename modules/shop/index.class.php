@@ -268,6 +268,9 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
             case 'pricelist':
                 self::send_pricelist();
                 break;
+            case 'terms':
+                // Static content only (fttb)
+                break;
             case 'destroy':
                 self::destroyCart();
 // TODO: Experimental
@@ -2843,6 +2846,14 @@ die("Shop::processRedirect(): This method is obsolete!");
             $status = false;
             Message::error($_ARRAYLANG['TXT_ACCEPT_AGB']);
         }
+        // Ditto for cancellation terms
+        if (!(self::$objTemplate->placeholderExists(
+                'SHOP_CANCELLATION_TERMS_CHECKED')
+            ? (!empty($_POST['cancellation_terms']) ? true : false) : true)) {
+//DBG::log("Shop::verify_payment_details(): cancellation terms missing!");
+            $status = false;
+            Message::error($_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_PLEASE_ACCEPT']);
+        }
         if ($status) {
 // TODO: Use the alias, if any
             // Everything is set and valid
@@ -3126,7 +3137,8 @@ right after the customer logs in!
                 'SHOP_PRODUCT_ITEMPRICE' => Currency::formatPrice($price),
                 'SHOP_UNIT' => Currency::getActiveCurrencySymbol(),
             ));
-            if ($attributes) {
+            if (   $attributes
+                && self::$objTemplate->blockExists('attributes')) {
                 self::$objTemplate->setVariable(
                     'SHOP_PRODUCT_OPTIONS', $attributes);
             }

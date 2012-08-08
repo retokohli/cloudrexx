@@ -76,7 +76,7 @@ $_ARRAYLANG['TXT_OPTIONS'] = "Optionen";
 $_ARRAYLANG['TXT_ORDER_ALREADY_PLACED'] = "Ihre Bestellung wurde bereits gespeichert!";
 $_ARRAYLANG['TXT_ORDER_INFOS'] = "Bestellinformationen";
 $_ARRAYLANG['TXT_ORDER_LINK_PREPARED'] = "Die Bestellung ist nun für die Zahlung vorbereitet. Klicken Sie auf den untenstehenden Link, um zum Zahlungs Gateway zu gelangen und dort Ihre Zahlung zu tätigen.";
-$_ARRAYLANG['TXT_ORDER_NOW'] = "Bestellung jetzt ausführen >>";
+$_ARRAYLANG['TXT_ORDER_NOW'] = "Zahlungspflichtig bestellen >>";
 $_ARRAYLANG['TXT_ORDER_NR'] = "Bestell-Nr.";
 $_ARRAYLANG['TXT_ORDER_PREPARED'] = "Die Bestellung ist nun für die Zahlung vorbereitet.";
 $_ARRAYLANG['TXT_ORDER_PROCESSED'] = "Ihre Bestellung wurde erfolgreich verarbeitet. <br />Sie erhalten umgehend eine E-Mail Bestätigung mit Ihren Bestell Details.";
@@ -392,6 +392,8 @@ $_ARRAYLANG['TXT_WEIGHT'] = "Gewicht";
 $_ARRAYLANG['TXT_WEIGHT_INVALID_IGNORED'] = "Ungültiges Gewicht; Änderung ignoriert!";
 $_ARRAYLANG['TXT_YOUR_ACCOUNT_DETAILS'] = "Ihre persönlichen Zugangsdaten";
 $_ARRAYLANG['TXT_ZONE'] = "Zone";
-
 // 20120726
 $_ARRAYLANG['TXT_SHOP_FORM_RESET_CONFIRM'] = "Bestätigen Sie bitte, dass Sie Ihre Eingaben zurückgesetzt werden sollen.";
+// 20120808
+$_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_ACCEPTED'] = "Die <a href=\"index.php?section=shop&amp;cmd=terms\" target=\"_blank\">Widerrufsbelehrung</a> habe ich zur Kenntnis genommen.";
+$_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_PLEASE_ACCEPT'] = "Bitte bestätigen Sie die Kenntnisnahme der Widerrufsbelehrung.";
