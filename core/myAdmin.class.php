@@ -122,7 +122,7 @@ class myAdminManager {
            'SELECT `logs`.`datetime`, `logs`.`remote_host`, `users`.`username`
             FROM `'.DBPREFIX.'log` as `logs` LEFT JOIN `'.DBPREFIX.'access_users` as `users` ON `users`.`id`=`logs`.`userid`
             WHERE `logs`.`userid` <> '.$objFWUser->objUser->getId().'
-            ORDER BY `logs`.`id` DESC', 7);
+            ORDER BY `logs`.`id` DESC', 4);
         if ($objResult && $objResult->RecordCount() > 0) {
             while (!$objResult->EOF) {
                 $objTemplate->setVariable(array(
@@ -138,12 +138,13 @@ class myAdminManager {
         }
 
         // get statistics
-        $rangeStart = date('j', strtotime('27 days ago'));
+        $daysAgo    = date('t', strtotime('last month')) - 1;
+        $rangeStart = date('j', strtotime($daysAgo.' days ago'));
         $rangeEnd   = date('j');
         $arrRange   = array();
         
         if ($rangeStart > $rangeEnd) {
-            $first = range($rangeStart, date('t', strtotime('27 days ago')));
+            $first = range($rangeStart, date('t', strtotime($daysAgo.' days ago')));
             $month = date('M', strtotime('1 month ago'));
             foreach ($first as $day) {
                 $arrRange[$day] = $day.' '.$month;
@@ -234,7 +235,7 @@ class myAdminManager {
                 ));
                 $objTemplate->parse('rssRow');
 
-                if (++$i > 2) {
+                if (++$i > 3) {
                     break;
                 }
             }
