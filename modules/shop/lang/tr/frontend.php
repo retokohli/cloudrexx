@@ -14,7 +14,7 @@ $_ARRAYLANG['TXT_PRODUCTS'] = "Produkte";
 $_ARRAYLANG['TXT_SHIPPING_ADDRESS'] = "Lieferadresse";
 $_ARRAYLANG['TXT_PRODUCT_ID'] = "Produkt ID";
 $_ARRAYLANG['TXT_TAX_RATE'] = "Mehrwertsteuer Satz";
-$_ARRAYLANG['TXT_ORDER_NOW'] = "Bestellung absenden >>";
+$_ARRAYLANG['TXT_ORDER_NOW'] = "Zahlungspflichtig bestellen >>";
 $_ARRAYLANG['TXT_CURRENCIES'] = "Währungen";
 $_ARRAYLANG['TXT_TAXES'] = "Mehrwertsteuer";
 $_ARRAYLANG['TXT_SHIPPING_METHODS'] = "Versandarten";
@@ -256,4 +256,6 @@ $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_SAFERPAY'] = "Fehler beim initial
 $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_YELLOWPAY'] = "Fehler beim initialisieren von Yellowpay";
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_PLEASE_SELECT'] = "-- Bitte wählen --";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_PLEASE_SELECT'] = "-- Bitte wählen --";
-?>
+$_ARRAYLANG['TXT_SHOP_FORM_RESET_CONFIRM'] = "Bestätigen Sie bitte, dass Sie Ihre Eingaben zurückgesetzt werden sollen.";
+$_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_ACCEPTED'] = "Die <a href=\"index.php?section=shop&amp;cmd=terms\" target=\"_blank\">Widerrufsbelehrung</a> habe ich zur Kenntnis genommen.";
+$_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_PLEASE_ACCEPT'] = "Bitte bestätigen Sie die Kenntnisnahme der Widerrufsbelehrung.";

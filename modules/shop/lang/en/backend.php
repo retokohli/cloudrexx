@@ -79,7 +79,7 @@ $_ARRAYLANG['TXT_CURRENCIES'] = "Currencies";
 $_ARRAYLANG['TXT_CURRENCY_CONVERTER'] = "Online currency calculator";
 $_ARRAYLANG['TXT_CUSTOMER'] = "Customer";
 $_ARRAYLANG['TXT_CUSTOMER_ADDRESS'] = "Customer and billing address";
-$_ARRAYLANG['TXT_CUSTOMER_DATA'] = "Customer date";
+$_ARRAYLANG['TXT_CUSTOMER_DATA'] = "Customer details";
 $_ARRAYLANG['TXT_CUSTOMER_DELETED'] = "The customer(s) has/have been deleted";
 $_ARRAYLANG['TXT_CUSTOMER_DETAILS'] = "Customer details";
 $_ARRAYLANG['TXT_CUSTOMER_HOMEPAGE'] = "Homepage";
@@ -914,5 +914,4 @@ $_ARRAYLANG['TXT_ZONE'] = "Zone";
 $_ARRAYLANG['TXT_ZONE_LIST'] = "Zone list";
 $_ARRAYLANG['TXT_ZONE_NAME'] = "Zone name";
 $_ARRAYLANG['TXT_ZONES'] = "Zones";
-
 $_ARRAYLANG['TXT_SHOP_ATTRIBUTE_TYPE'] = "Type";

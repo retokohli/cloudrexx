@@ -383,9 +383,10 @@ $_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_INVALID_PRODUCT_ID'] = "Ungültige Produk
 $_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_INVALID_QUANTITY'] = "Ungültige Menge";
 $_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_INVALID_WEIGHT'] = "Ungültiges Gewicht";
 $_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_UPDATING'] = "Fehler beim Aktualisieren des Produkts in der Bestellung";
-
 // 20111003
 $_ARRAYLANG['TXT_SHOP_REMOVE_ITEM'] = "Produkt entfernen";
-
 // 20111004
 $_ARRAYLANG['TXT_SHOP_CUSTOMER_REGISTERED_EMAIL'] = "Ein Kunde mit dieser E-Mail Adresse ist bereits registriert.  Sie müssen sich daher anmelden, um Ihre Bestellung abzuschliessen";
+$_ARRAYLANG['TXT_SHOP_FORM_RESET_CONFIRM'] = "Bestätigen Sie bitte, dass Sie Ihre Eingaben zurückgesetzt werden sollen.";
+$_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_ACCEPTED'] = "Die <a href=\"index.php?section=shop&amp;cmd=terms\" target=\"_blank\">Widerrufsbelehrung</a> habe ich zur Kenntnis genommen.";
+$_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_PLEASE_ACCEPT'] = "Bitte bestätigen Sie die Kenntnisnahme der Widerrufsbelehrung.";
