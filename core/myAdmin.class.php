@@ -141,7 +141,7 @@ class myAdminManager {
         $rangeStart = date('j', strtotime('last month')) + 1;
         $rangeEnd   = date('j');
         $arrRange   = array();
-        
+
         if ($rangeStart >= $rangeEnd) {
             $first = range($rangeStart, date('t', strtotime('last month')));
             $month = date('M', strtotime('last month'));
@@ -161,10 +161,11 @@ class myAdminManager {
                 $arrRange[$day] = $day.' '.$month;
             }
         }
-        
+
+        $arrMonths   = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
         $arrVisitors = array();
         $arrRequests = array();
-        $dates       = array();
+        $ticks       = array();
         $visitors    = array();
         $requests    = array();
 
@@ -210,14 +211,19 @@ class myAdminManager {
             $objResult->MoveNext();
         }
 
+        $i = 1;
         foreach ($arrRange as $day => $date) {
-            $dates[]    = $date;
+            $ticks[]    = $date;
+            $timestamp  = strtotime($date);
+            $dates[$i]  = date('j', $timestamp).'. '.$arrMonths[date('n', $timestamp)].' '.date('Y', $timestamp);
             $visitors[] = isset($arrVisitors[$day]) ? intval($arrVisitors[$day]) : 0;
             $requests[] = isset($arrRequests[$day]) ? intval($arrRequests[$day]) : 0;
+            $i++;
         }
 
         $objTemplate->setVariable(array(
-            'STAT_DATES'     => json_encode($dates),
+            'STAT_TICKS'    => json_encode($ticks),
+            'STAT_DATES'    => json_encode($dates),
             'STAT_VISITORS' => json_encode($visitors),
             'STAT_REQUESTS' => json_encode($requests),
         ));

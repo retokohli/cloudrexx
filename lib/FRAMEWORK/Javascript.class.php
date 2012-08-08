@@ -142,11 +142,11 @@ jQuery(document).ready(function(){
         'jquery-jqplot'    => array(
             'jsfiles'       => array(
                 'lib/javascript/jquery/plugins/jqplot/jquery.jqplot.js',
-                'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.canvasTextRenderer.min.js',
-                'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.categoryAxisRenderer.min.js',
-                'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.barRenderer.min.js',
-                'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.highlighter.min.js',
-                'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js'
+                'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.canvasTextRenderer.js',
+                'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.categoryAxisRenderer.js',
+                'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.barRenderer.js',
+                'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.highlighter.js',
+                'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.canvasAxisTickRenderer.js'
             ),
             'cssfiles'      => array(
                 'lib/javascript/jquery/plugins/jqplot/jquery.jqplot.css',

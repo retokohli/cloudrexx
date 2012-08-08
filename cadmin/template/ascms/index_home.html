@@ -9,6 +9,7 @@ $J(document).ready(function() {
         }
     });
     
+    var ticks    = {STAT_TICKS};
     var dates    = {STAT_DATES};
     var visitors = {STAT_VISITORS};
     var requests = {STAT_REQUESTS};
@@ -16,8 +17,9 @@ $J(document).ready(function() {
     var plot = $J.jqplot('chart', [visitors, requests], {
         seriesColors: ['#4EAA09', '#0C90D0'],
         grid: {
+            gridLineColor: '#EFEFEF',
             background: '#FFFFFF',
-            borderColor: '#CCCCCC',
+            borderColor: '#EFEFEF',
             shadow: false
         },
         legend: {
@@ -25,32 +27,24 @@ $J(document).ready(function() {
             labels: ['Besucher', 'Seitenaufrufe'],
             placement: 'insideGrid'
         },
-        seriesDefaults: {
-            renderer:$J.jqplot.BarRenderer,
-            rendererOptions: {
-                barPadding: 2,
-                barMargin: 2
-            }
-        },
         axes: {
             xaxis: {
                 renderer: $J.jqplot.CategoryAxisRenderer,
-                ticks: dates,
                 tickRenderer: $J.jqplot.CanvasAxisTickRenderer,
+                ticks: ticks,
                 tickOptions: {
                   angle: -90,
-                  fontSize: '10px'
+                  fontSize: '10px',
+                  showGridline: false
                 }
             }
         },
         highlighter: {
+            //data: dates,
             show: true,
             showMarker: false,
-            tooltipAxes: 'y',
+            tooltipAxes: 'both',
             tooltipLocation:  'n',
-        },
-        cursor: {
-            tooltipLocation: 'n'
         }
     });
 });
