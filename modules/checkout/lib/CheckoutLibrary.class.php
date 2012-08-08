@@ -3,7 +3,7 @@
 /**
  * @ignore
  */
-require_once(ASCMS_MODULE_PATH.'/checkout/lib/Country.class.php');
+require_once(ASCMS_MODULE_PATH.'/checkout/lib/Countries.class.php');
 
 /**
  * CheckoutLibrary
@@ -72,7 +72,7 @@ class CheckoutLibrary {
     public function __construct()  {
         global $objDatabase;
 
-        $objCountry = new Country($objDatabase);
-        $this->arrCountries = $objCountry->getAll();
+        $objCountries = new Countries($objDatabase);
+        $this->arrCountries = $objCountries->getAll();
     }
 }
