@@ -7,14 +7,13 @@
       <select name="catId" tabindex="2" style="width: 160px;">
         {SHOP_CATEGORIES_MENUOPTIONS}
       </select>&nbsp;
-      <select name="manufacturerId" tabindex="3" style="width: 160px;">
+      <!--<select name="manufacturerId" tabindex="3" style="width: 160px;">
         {SHOP_MANUFACTURER_MENUOPTIONS}
-      </select>
-      <br />
+      </select><br />-->
       <input type="text" name="term" value="{SHOP_SEARCH_TERM}"
           tabindex="1" style="width: 170px;" />&nbsp;
       <input type="submit" name="bsubmit"
-          value="{TXT_SHOP_SEARCH}" style="width: 66px;" />
+          value="{TXT_SHOP_SEARCH}" />
     </form>
   </div>
   <!-- <div class="cart_info">{SHOP_CART_INFO}</div> -->
@@ -23,13 +22,15 @@
     <h2>{TXT_SHOP_CATEGORIES}</h2>
 <!-- BEGIN subCategoriesRow -->
 <!-- BEGIN subCategories -->
-    <div class="category">
-      <h3>{SHOP_CATEGORY_NAME}</h3>
-      <a href="index.php?section=shop{MODULE_INDEX}&amp;catId={SHOP_CATEGORY_ID}">
-        <img border="0" alt="{TXT_SHOP_GO_TO_CATEGORY}" src="{SHOP_CATEGORY_THUMBNAIL}" {SHOP_CATEGORY_THUMBNAIL_SIZE} />
-      </a>
-      <!-- {SHOP_CATEGORY_DESCRIPTION} -->
-    </div>
+    <article class="col-13 info-item">
+      <figure class="visual">
+        <h3>{SHOP_CATEGORY_NAME}</h3>
+        <a href="index.php?section=shop{MODULE_INDEX}&amp;catId={SHOP_CATEGORY_ID}">
+          <img border="0" alt="{TXT_SHOP_GO_TO_CATEGORY}" src="{SHOP_CATEGORY_THUMBNAIL}" {SHOP_CATEGORY_THUMBNAIL_SIZE} />
+        </a>
+        <span class="description">{SHOP_CATEGORY_DESCRIPTION}</span>
+      </figure>
+    </article>
 <!-- END subCategories -->
     <br style="clear: both;" />
 <!-- END subCategoriesRow -->
@@ -47,26 +48,54 @@
 <!-- BEGIN productImage1 -->
         <a href="{SHOP_PRODUCT_THUMBNAIL_LINK_1}">
         <img border="0" src="{SHOP_PRODUCT_THUMBNAIL_1}" alt="{TXT_SEE_LARGE_PICTURE}"
-        {SHOP_PRODUCT_THUMBNAIL_SIZE_1} />
+            {SHOP_PRODUCT_THUMBNAIL_SIZE_1} />
         </a><br />
 <!-- END productImage1 -->
 <!-- BEGIN productImage2 -->
-        <a href="{SHOP_PRODUCT_THUMBNAIL_LINK_2}">
+        <!--a href="{SHOP_PRODUCT_THUMBNAIL_LINK_2}">
         <img border="0" src="{SHOP_PRODUCT_THUMBNAIL_2}" alt="{TXT_SEE_LARGE_PICTURE}"
         {SHOP_PRODUCT_THUMBNAIL_SIZE_2} />
-        </a><br />
+        </a><br /-->
 <!-- END productImage2 -->
 <!-- BEGIN productImage3 -->
-        <a href="{SHOP_PRODUCT_THUMBNAIL_LINK_3}">
+        <!--a href="{SHOP_PRODUCT_THUMBNAIL_LINK_3}">
         <img border="0" src="{SHOP_PRODUCT_THUMBNAIL_3}" alt="{TXT_SEE_LARGE_PICTURE}"
         {SHOP_PRODUCT_THUMBNAIL_SIZE_3} />
-        </a><br />
+        </a><br /-->
 <!-- END productImage3 -->
       </div>
-      <div class="description">
+      <div class="wrapper-shop">
         <h3>{SHOP_PRODUCT_TITLE}</h3>
-        {SHOP_PRODUCT_DESCRIPTION}<br /><br />
-        <div class="detail_link">{SHOP_PRODUCT_DETAILLINK}</div>
+
+        <div class="price">
+<!-- BEGIN price_discount -->
+          <div class="price_discount">
+            <!--{TXT_SHOP_PRICE_DISCOUNT}&nbsp;-->
+            <span class="txt-lbl">{TXT_SHOP_PRICE}</span>
+            <span class="prod-disc-price">{SHOP_PRODUCT_DISCOUNTPRICE}</span>
+            &nbsp;{SHOP_PRODUCT_DISCOUNTPRICE_UNIT}
+            <span class="prod-price">{SHOP_PRODUCT_PRICE}</span>
+            &nbsp;{SHOP_PRODUCT_PRICE_UNIT}
+          </div>
+<!-- END price_discount -->
+        </div>
+        <div class="vat">
+          <span class="txt-lbl">{SHOP_PRODUCT_TAX_PREFIX}</span>
+          &nbsp;{SHOP_PRODUCT_TAX}
+        </div>
+<!-- BEGIN shopProductExternal -->
+        <div>{SHOP_EXTERNAL_LINK}</div>
+<!-- END shopProductExternal -->
+        <div class="functions">
+          <input type="submit" onclick="{SHOP_PRODUCT_SUBMIT_FUNCTION}"
+              name="{SHOP_PRODUCT_SUBMIT_NAME}" value="{TXT_ADD_TO_CARD}" />
+        </div>
+      </div>
+      <div class="description">
+        <h3>Details</h3>
+        {SHOP_PRODUCT_DESCRIPTION}
+        <span class="detail_link">{SHOP_PRODUCT_DETAILLINK}</span>
+        <br />
 <!-- BEGIN shopProductOptionsRow -->
         <div class="shop_options">
           {SHOP_PRODUCT_OPTIONS_TITLE}<br />
@@ -85,32 +114,13 @@
 <!-- BEGIN shopProductWeight -->
         <div>{TXT_SHOP_PRODUCT_WEIGHT} {SHOP_PRODUCT_WEIGHT}</div>
 <!-- END shopProductWeight -->
-<!-- BEGIN shopProductExternal -->
-        <div>{SHOP_EXTERNAL_LINK}</div>
-<!-- END shopProductExternal -->
-      </div>
-      <div class="price">
-<!-- BEGIN price_discount -->
-        <div class="price_discount">
-          {TXT_SHOP_PRICE_DISCOUNT}&nbsp;
-          {SHOP_PRODUCT_DISCOUNTPRICE}&nbsp;{SHOP_PRODUCT_DISCOUNTPRICE_UNIT}
-        </div>
-<!-- END price_discount -->
-        {TXT_SHOP_PRICE}&nbsp;{SHOP_PRODUCT_PRICE}&nbsp;{SHOP_PRODUCT_PRICE_UNIT}
-      </div>
-      <div class="vat">
-        {SHOP_PRODUCT_TAX_PREFIX}&nbsp;{SHOP_PRODUCT_TAX}
-      </div>
-      <div class="functions">
-        <input type="submit" onclick="{SHOP_PRODUCT_SUBMIT_FUNCTION}"
-            name="{SHOP_PRODUCT_SUBMIT_NAME}" value="{TXT_ADD_TO_CARD}" />
       </div>
     </form>
   </div>
 <!-- END shopProductRow -->
 <!-- END products -->
 <!-- BEGIN no_product -->
-  <div class="no_product"">
+  <div class="no_product">
     <h2>{TXT_SHOP_NO_PRODUCTS}</h2>
   </div>
 <!-- END no_product -->

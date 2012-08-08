@@ -1,4 +1,5 @@
 <div id="shop">
+  <div id="shop_cart">
 <!-- BEGIN core_message -->
   <span class="{MESSAGE_CLASS}">{MESSAGE_TEXT}</span>
 <!-- END core_message -->
@@ -6,7 +7,7 @@
   <div class="cart">
     <form action="index.php?section=shop&amp;cmd=cart" name="shopForm" method ="post">
       <table summary="" cellspacing="0">
-        <tr valign="top">
+          <tr valign="top" id="th_bg">
           <th width="60%">
             <b>{TXT_PRODUCT}</b>
           </th>
@@ -79,7 +80,7 @@
           <td>
             <strong>{TXT_SHOP_DISCOUNT_COUPON_CODE}</strong>
           </td>
-          <td colspan="3">
+            <td colspan="3" style="text-align: right">
             <input type="text" maxlength="20" name="coupon_code"
                 value="{SHOP_DISCOUNT_COUPON_CODE}" class="shop_cart_input"
                 onchange="document.forms['shopForm'].submit();" />
@@ -91,7 +92,7 @@
           <td valign="top">
             <label>{TXT_SHIP_COUNTRY}</label>
           </td>
-          <td colspan="3" valign="top">
+            <td colspan="3" valign="top" style="text-align: right">
             <select name="countryId2" class="shop_cart_input"
                 onchange="document.forms['shopForm'].submit()">
               {SHOP_COUNTRIES_MENUOPTIONS}
@@ -103,8 +104,14 @@
           <td colspan="4">&nbsp;</td>
         </tr>
         <tr>
-          <td colspan="4" valign="top" class="a_right">
+            <td valign="top" colspan="2" class="cart_links">
+              <a href="index.php?section=shop" title="{TXT_CONTINUE_SHOPPING}">{TXT_CONTINUE_SHOPPING}</a>
+              <a href="index.php?section=shop&amp;act=destroy" title="{TXT_EMPTY_CART}">{TXT_EMPTY_CART}</a>
+            </td>
+            <td valign="top" class="a_right">
             <input type="submit" name="update" class="shopbutton" value="{TXT_UPDATE}" />&nbsp;
+            </td>
+            <td valign="top" class="a_right">
             <input type="submit" name="continue" class="shopbutton" value="{TXT_NEXT} >>" />
           </td>
         </tr>
@@ -112,10 +119,5 @@
     </form>
   </div>
 <!-- END shopCart -->
-  <div class="cart_links">
-    <a href="index.php?section=shop" title="{TXT_CONTINUE_SHOPPING}">{TXT_CONTINUE_SHOPPING}</a>
-    <br />
-    <a href="index.php?section=shop&amp;act=destroy" title="{TXT_EMPTY_CART}">{TXT_EMPTY_CART}</a>
-    <br />
   </div>
 </div>
