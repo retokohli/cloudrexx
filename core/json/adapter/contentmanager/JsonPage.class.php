@@ -681,7 +681,7 @@ class JsonPage implements JsonAdapter {
         try {
             $parentPath = substr($page->getParent()->getPath(), 1) . '/';
         } catch (\Cx\Model\ContentManager\PageException $e) {
-            $parentPath = '/';
+            $parentPath = '';
         }
         
         $pageArray = array(

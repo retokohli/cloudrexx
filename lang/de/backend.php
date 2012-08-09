@@ -1523,6 +1523,7 @@ $_ARRAYLANG['TXT_CORE_CM_ALIAS_INFO'] = 'URL unter welcher diese Seite zusätzli
 $_ARRAYLANG['TXT_CORE_CM_CSS_NAV_CLASS'] = 'Zus&auml;tzliche CSS-Navigationsklasse';
 $_ARRAYLANG['TXT_CORE_CM_CSS_NAV_CLASS_INFO'] = 'Der angegebene Wert wird in der Navigation f&uuml;r diese Seite als [[CSS_NAME]] zur Verf&uuml;gung gestellt.';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND'] = 'Lesezugriff (Frontend) einschr&auml;nken';
+$_ARRAYLANG['TXT_CORE_CM_BLOCKS'] = 'Blöcke';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_BACKEND'] = 'Schreibzugriff (Backend) einschr&auml;nken';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_AVAILABLE_GROUPS'] = 'Vorhandene Gruppen';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_ASSIGNED_GROUPS'] = 'Zugeordnete Gruppen';
