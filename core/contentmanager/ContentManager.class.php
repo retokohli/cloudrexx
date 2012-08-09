@@ -114,7 +114,7 @@ class ContentManager extends Module {
             //advanced tab
             'TXT_CORE_CM_THEMES', 'TXT_CORE_CM_THEMES_INFO', 'TXT_CORE_CM_CUSTOM_CONTENT', 'TXT_CORE_CM_CUSTOM_CONTENT_INFO', 'TXT_CORE_CM_CSS_CLASS', 'TXT_CORE_CM_CSS_CLASS_INFO', 'TXT_CORE_CM_CACHE', 'TXT_CORE_CM_NAVIGATION', 'TXT_CORE_CM_LINK_TARGET', 'TXT_CORE_CM_LINK_TARGET_INO', 'TXT_CORE_CM_SLUG', 'TXT_CORE_CM_SLUG_INFO', 'TXT_CORE_CM_ALIAS', 'TXT_CORE_CM_ALIAS_INFO', 'TXT_CORE_CM_CSS_NAV_CLASS', 'TXT_CORE_CM_CSS_NAV_CLASS_INFO', 'TXT_CORE_CM_SOURCE_MODE',
             //blocks tab
-            'TXT_CORE_CM_BLOCKS',
+            'TXT_CORE_CM_BLOCKS', 'TXT_CORE_CM_BLOCKS_AVAILABLE', 'TXT_CORE_CM_BLOCKS_ASSIGNED',
             //settings tab
             'TXT_CORE_APPLICATION_AREA', 'TXT_CORE_APPLICATION', 'TXT_CORE_AREA', 'TXT_CORE_SKIN', 'TXT_CORE_CUSTOMCONTENT', 'TXT_CORE_REDIRECTION', 'TXT_CORE_CACHING', 'TXT_CORE_SLUG', 'TXT_CORE_CSSNAME', 'TXT_THEME_PREVIEW', 'TXT_EDIT',
             //bottom buttons
@@ -194,8 +194,9 @@ class ContentManager extends Module {
 
         $cxjs = ContrexxJavascript::getInstance();
         $cxjs->setVariable('confirmDeleteQuestion', $_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE'], 'contentmanager/lang');
-        $cxjs->setVariable('cleanAccessData', JsonPage::getAccessData(), 'contentmanager');
+        $cxjs->setVariable('cleanAccessData', $objJsonData->jsondata('page', 'getAccessData', array(), false), 'contentmanager');
         $cxjs->setVariable('contentTemplates', $this->getCustomContentTemplates(), 'contentmanager');
+        $cxjs->setVariable('availableBlocks', $objJsonData->jsondata('block', 'getBlocks', array(), false), 'contentmanager');
 
         // TODO: move including of add'l JS dependencies to cx obj from /cadmin/index.html
         $this->template->setVariable('CXJS_INIT_JS', ContrexxJavascript::getInstance()->initJs());
