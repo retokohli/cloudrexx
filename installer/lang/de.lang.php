@@ -36,6 +36,7 @@ $_ARRLANG['TXT_NEXT'] = "Weiter";
 $_ARRLANG['TXT_BACK'] = "Zurück";
 $_ARRLANG['TXT_CANCEL'] = "Abbrechen";
 $_ARRLANG['TXT_STOP'] = "Stop";
+$_ARRLANG['TXT_PLEASE_SELECT'] = "--- Bitte wählen ---";
 $_ARRLANG['TXT_USERNAME'] = "Benutzername";
 $_ARRLANG['TXT_PASSWORD'] = "Passwort";
 $_ARRLANG['TXT_GENERAL'] = "Allgemein";
@@ -163,6 +164,8 @@ $_ARRLANG['TXT_DOMAIN_URL'] = "Domain URL";
 $_ARRLANG['TXT_DOMAIN_URL_EXPLANATION'] = "Geben Sie hier den Domainnamen an, auf welchem diese Installation durchgeführt wird, z.B. 'www.ihredomain.com' (ohne http(s):// oder zusätzliche Pfade)";
 $_ARRLANG['TXT_COULD_NOT_SET_DOMAIN_URL'] = "Konnte die Domain URL nicht setzen!";
 $_ARRLANG['TXT_SET_VALID_DOMAIN_URL'] = "Geben Sie die Domain URL ohne 'http(s)://' oder zusätzliche Pfade an!";
+$_ARRLANG['TXT_TIMEZONE'] = 'Zeitzone';
+$_ARRLANG['TXT_INVALID_TIMEZONE'] = "Die angegebene Zeitzone ist ungültig.";
 $_ARRLANG['TXT_SETTINGS_ERROR_WRITABLE'] = "Die Datei %s konnte nicht geschrieben werden. Überprüfen Sie die Berechtigungen (666) der Datei.";
 
 // admin account

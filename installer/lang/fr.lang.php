@@ -36,6 +36,7 @@ $_ARRLANG['TXT_NEXT'] = "Suite";
 $_ARRLANG['TXT_BACK'] = "Retour";
 $_ARRLANG['TXT_CANCEL'] = "Annuler";
 $_ARRLANG['TXT_STOP'] = "Interrompre";
+$_ARRLANG['TXT_PLEASE_SELECT'] = "--- Please select ---";
 $_ARRLANG['TXT_USERNAME'] = "Identifiant (nom utilisateur)";
 $_ARRLANG['TXT_PASSWORD'] = "Mot de passe";
 $_ARRLANG['TXT_GENERAL'] = "Général";
@@ -159,6 +160,8 @@ $_ARRLANG['TXT_DOMAIN_URL'] = "URL du domaine";
 $_ARRLANG['TXT_DOMAIN_URL_EXPLANATION'] = "Veuillez saisir le nom de domaine sur lequel l'installation a lieu, p.ex. 'www.monsite.com' (sans http(s):// ni dossier supplémentaire)";
 $_ARRLANG['TXT_COULD_NOT_SET_DOMAIN_URL'] = "Impossible de configurer le nom de domaine!";
 $_ARRLANG['TXT_SET_VALID_DOMAIN_URL'] = "Veuillez saisir le nom de domaine sans http(s):// ni dossier supplémentaire!";
+$_ARRLANG['TXT_TIMEZONE'] = "Timezone";
+$_ARRLANG['TXT_INVALID_TIMEZONE'] = "The specified time zone is not valid.";
 $_ARRLANG['TXT_SETTINGS_ERROR_WRITABLE'] = "Impossible d'écrire dans le fichier %s. Veuillez vérifier les droits d'accès (666) au fichier.";
 
 // admin account

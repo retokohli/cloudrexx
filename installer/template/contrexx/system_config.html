@@ -52,10 +52,14 @@ Style[0]=["","","","","",,"#000000","#ecf1f9","","","",,,,1,"#3366cc",2,24,0.3,,
 		<td height="20">{TXT_DOMAIN_URL} <img src="template/contrexx/images/help.gif" alt="" width="16" height="16" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
 		<td height="20" style="text-align:right;"><input class="textBox" type="text" name="domainURL" tabindex="3" maxlength="65535" value="{DOMAIN_URL}" /></td>
 	</tr>
-	<tr class="row1">
+    <tr class="row1">
+        <td height="20">{TXT_TIMEZONE}</td>
+        <td height="20" style="text-align:right;"><select class="textBox" name="timezone" tabindex="4" style="width: 202px;">{TIMEZONE_OPTIONS}</select></td>
+    </tr>
+    <tr class="row2">
 		<td colspan="2">&nbsp;</td>
 	</tr>
-	<tr class="row2">
+	<tr class="row1">
 		<td colspan="2" height="20"><b>{TXT_CONTACT}</b></td>
 	</tr>
 	<!-- BEGIN contactErrorMsg -->
@@ -70,9 +74,9 @@ Style[0]=["","","","","",,"#000000","#ecf1f9","","","",,,,1,"#3366cc",2,24,0.3,,
 			</td>
 		</tr>
 	<!-- END contactErrorMsg -->
-	<tr class="row1">
+	<tr class="row2">
 		<td height="20">{TXT_CONTACT_EMAIL}</td>
-		<td height="20" style="text-align: right;"><input class="textBox" type="text" tabindex="4" name="contactEmail" id="contactEmail" value="{CONTACT_EMAIL}" /></td>
+		<td height="20" style="text-align: right;"><input class="textBox" type="text" tabindex="5" name="contactEmail" id="contactEmail" value="{CONTACT_EMAIL}" /></td>
 	</tr>
 </table>
 <br />

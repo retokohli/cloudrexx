@@ -36,6 +36,7 @@ $_ARRLANG['TXT_NEXT'] = "Next";
 $_ARRLANG['TXT_BACK'] = "Back";
 $_ARRLANG['TXT_CANCEL'] = "Cancel";
 $_ARRLANG['TXT_STOP'] = "Stop";
+$_ARRLANG['TXT_PLEASE_SELECT'] = "--- Please select ---";
 $_ARRLANG['TXT_USERNAME'] = "User name";
 $_ARRLANG['TXT_PASSWORD'] = "Password";
 $_ARRLANG['TXT_GENERAL'] = "General";
@@ -159,6 +160,8 @@ $_ARRLANG['TXT_DOMAIN_URL'] = "Domain URL";
 $_ARRLANG['TXT_DOMAIN_URL_EXPLANATION'] = "Provide here the domain name for the installation steps, for example 'www.yourdomain.com' (without http(s): // or additional paths)";
 $_ARRLANG['TXT_COULD_NOT_SET_DOMAIN_URL'] = "Could not set the domain URL!";
 $_ARRLANG['TXT_SET_VALID_DOMAIN_URL'] = "Provide the domain URL without 'http(s)://' or additional path information!";
+$_ARRLANG['TXT_TIMEZONE'] = "Timezone";
+$_ARRLANG['TXT_INVALID_TIMEZONE'] = "The specified time zone is not valid.";
 $_ARRLANG['TXT_SETTINGS_ERROR_WRITABLE'] = "The file %s could not be written.  Review you the file access premission (e.g. 666).";
 
 // admin account
