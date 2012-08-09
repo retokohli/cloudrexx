@@ -29,7 +29,6 @@ require_once(ASCMS_LIBRARY_PATH.'/PEAR/XML/RSS.class.php');
 class myAdminManager {
     var $statusMessage;
 
-
     /**
     * Constructor
     *
@@ -120,28 +119,50 @@ class myAdminManager {
         $objFWUser = FWUser::getFWUserObject();
         $objResult = $objDatabase->SelectLimit(
            'SELECT `logs`.`datetime`, `logs`.`remote_host`, `users`.`username`
-            FROM `'.DBPREFIX.'log` as `logs` LEFT JOIN `'.DBPREFIX.'access_users` as `users` ON `users`.`id`=`logs`.`userid`
-            WHERE `logs`.`userid` <> '.$objFWUser->objUser->getId().'
-            ORDER BY `logs`.`id` DESC', 4);
+            FROM `'.DBPREFIX.'log` AS `logs` LEFT JOIN `'.DBPREFIX.'access_users` AS `users` ON `users`.`id`=`logs`.`userid`'.
+            //'WHERE `logs`.`userid` <> '.$objFWUser->objUser->getId().'
+            'ORDER BY `logs`.`id` DESC', 1);
         if ($objResult && $objResult->RecordCount() > 0) {
-            while (!$objResult->EOF) {
-                $objTemplate->setVariable(array(
-                    'LOG_USERNAME'	 	=> htmlentities($objResult->fields['username'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'LOG_TIME' 		 	=> date('d.m.Y', strtotime($objResult->fields['datetime'])),
-                ));
-                $objTemplate->parse('logRow');
-                $objResult->MoveNext();
-            }
-            $objTemplate->parse('logs');
+            $objTemplate->setVariable(array(
+                'LOG_USERNAME'	 	=> htmlentities($objResult->fields['username'], ENT_QUOTES, CONTREXX_CHARSET),
+                'LOG_TIME' 		 	=> date('d.m.Y', strtotime($objResult->fields['datetime'])),
+            ));
+            $objTemplate->parse('log');
         } else {
             $objTemplate->setVariable('LOG_ERROR_MESSAGE', $_CORELANG['TXT_NO_DATA_FOUND']);
         }
 
-        // get statistics
+        $arrStatistics = $this->getStatistics();
+
+        $objTemplate->setVariable(array(
+            'STAT_TICKS'    => json_encode($arrStatistics['ticks']),
+            'STAT_DATES'    => json_encode($arrStatistics['dates']),
+            'STAT_VISITORS' => json_encode($arrStatistics['visitors']),
+            'STAT_REQUESTS' => json_encode($arrStatistics['requests']),
+        ));
+
+        $objRss = new XML_RSS('http://www.contrexx.com/feed/news_headlines_de.xml');
+        $objRss->parse();
+        $arrItems = $objRss->getItems();
+        if (!empty($arrItems)) {
+            $objTemplate->setVariable(array(
+                'RSS_TITLE' => $arrItems[0]['title'],
+                'RSS_LINK'  => $arrItems[0]['link'],
+            ));
+            $objTemplate->parse('rssFeed');
+        } else {
+            $objTemplate->hideBlock('rssFeed');
+        }
+    }
+
+    private function getStatistics()
+    {
+        global $_CORELANG, $objDatabase;
+        
         $rangeStart = date('j', strtotime('last month')) + 1;
         $rangeEnd   = date('j');
         $arrRange   = array();
-
+        
         if ($rangeStart >= $rangeEnd) {
             $first = range($rangeStart, date('t', strtotime('last month')));
             $month = date('M', strtotime('last month'));
@@ -161,14 +182,14 @@ class myAdminManager {
                 $arrRange[$day] = $day.' '.$month;
             }
         }
-
+        
         $arrMonths   = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
         $arrVisitors = array();
         $arrRequests = array();
         $ticks       = array();
         $visitors    = array();
         $requests    = array();
-
+        
         $query = '
             SELECT FROM_UNIXTIME(`timestamp`, "%e") AS `day`, `count`
             FROM `'.DBPREFIX.'stats_visitors_summary`
@@ -184,12 +205,12 @@ class myAdminManager {
             ).'"
         ';
         $objResult = $objDatabase->Execute($query);
-
+        
         while (!$objResult->EOF) {
             $arrVisitors[$objResult->fields['day']] = $objResult->fields['count'];
             $objResult->MoveNext();
         }
-
+        
         $query = '
             SELECT FROM_UNIXTIME(`timestamp`, "%e") AS `day`, `count`
             FROM `'.DBPREFIX.'stats_requests_summary`
@@ -205,12 +226,12 @@ class myAdminManager {
             ).'"
         ';
         $objResult = $objDatabase->Execute($query);
-
+    
         while (!$objResult->EOF) {
             $arrRequests[$objResult->fields['day']] = $objResult->fields['count'];
             $objResult->MoveNext();
         }
-
+        
         $i = 1;
         foreach ($arrRange as $day => $date) {
             $ticks[]    = $date;
@@ -220,36 +241,14 @@ class myAdminManager {
             $requests[] = isset($arrRequests[$day]) ? intval($arrRequests[$day]) : 0;
             $i++;
         }
-
-        $objTemplate->setVariable(array(
-            'STAT_TICKS'    => json_encode($ticks),
-            'STAT_DATES'    => json_encode($dates),
-            'STAT_VISITORS' => json_encode($visitors),
-            'STAT_REQUESTS' => json_encode($requests),
-        ));
-
-        $objRss = new XML_RSS('http://www.contrexx.com/feed/news_headlines_de.xml');
-        $objRss->parse();
-        $arrItems = $objRss->getItems();
-        if (!empty($arrItems)) {
-            $i = 0;
-            foreach ($arrItems as $arrItem) {
-                $objTemplate->setVariable(array(
-                    'RSS_TITLE' => $arrItem['title'],
-                    'RSS_LINK' => $arrItem['link'],
-                ));
-                $objTemplate->parse('rssRow');
-
-                if (++$i > 3) {
-                    break;
-                }
-            }
-            $objTemplate->parse('rssFeeds');
-        } else {
-            $objTemplate->hideBlock('rssFeeds');
-        }
-
-        $objTemplate->parse('content');
+        
+        return array(
+            'ticks'    => $ticks,
+            'dates'    => $dates,
+            'visitors' => $visitors,
+            'requests' => $requests,
+        );
     }
 }
+
 ?>

@@ -89,40 +89,40 @@ $J(document).ready(function() {
             <div class="icon"></div>
         </div>
     </div>
-    <div id="stats_middle" class="middle">
-        <div id="stats_wrapper">
-            <h1>Website Statistik</h1>
-            <div id="chart"></div>
+    
+    <!-- BEGIN rssFeed -->
+    <div id="news">
+        <div id="news_icon"></div>
+        <div id="news_message">
+            <a id="news_link" href="{RSS_LINK}" target="_blank">{RSS_TITLE}</a>
+            <a id="news_delete" href="#"></a>
         </div>
     </div>
-    <div class="right">
-        <!-- BEGIN rssFeeds -->
-        <div id="news_wrapper">
-            <h1>{TXT_CONTREXX_NEWS}</h1>
-            <ul id="news">
-                <!-- BEGIN rssRow -->
-                <li><a href="{RSS_LINK}" target="_blank">{RSS_TITLE}</a></li>
-                <!-- END rssRow -->
-            </ul>
-        </div>
-        <!-- END rssFeeds -->
+    <!-- END rssFeed -->
+    
+    <div id="stats_wrapper">
+        <h1 class="stats_title">Statistiken vom 1. August - 1. September</h1>
+        <div id="chart"></div>
         
-        <!-- BEGIN logs -->
-        <div id="last_sessions_wrapper">
-            <h1>{TXT_LAST_LOGINS}</h1>
-            <ul id="last_sessions">
-                <!-- BEGIN logRow -->
-                <li>
-                    <span class="username">{LOG_USERNAME}</span>
-                    <span class="time">{LOG_TIME}</span>
-                </li>
-                <!-- END logRow -->
-            </ul>
+        <div id="visitors_box" class="stat_box">
+            <span>Besucher</span><br />
+            250
+        </div>
+        
+        <div id="requests_box" class="stat_box">
+            <span>Seitenaufrufe</span><br />
+            750
+        </div>
+        
+        <div id="last_session_box" class="stat_box">
+            <!-- BEGIN log -->
+            <span>{TXT_LAST_LOGINS}</span><br />
+            {LOG_USERNAME} / {LOG_TIME}
             <!-- BEGIN logError -->
             <div class="error">{LOG_ERROR_MESSAGE}</div>
             <!-- END logError -->
+            <!-- END log -->
         </div>
-        <!-- END logs -->
     </div>
 </div>
 
