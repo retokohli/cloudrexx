@@ -2,6 +2,8 @@
          <ul id="cm-tabs" class="clearfix">
             <li><a href="#page_content" class="tab page_content">{TXT_CORE_CM_PAGE}</a></li>
             <li><a href="#page_meta" class="tab page_meta type_hidable type_content type_application type_fallback">{TXT_CORE_CM_META}</a></li>
+            <li><a href="#page_navigation" class="tab page_navigation">{TXT_CORE_CM_NAVIGATION}</a></li>
+            <li><a href="#page_blocks" class="tab page_blocks">{TXT_CORE_CM_BLOCKS}</a></li>
             <li><a href="#page_access" class="tab page_access">{TXT_CORE_CM_ACCESS}</a></li>
             <li><a href="#page_settings" class="tab page_settings">{TXT_CORE_CM_SETTINGS}</a></li>
             <li><a href="#page_history" class="tab page_history">{TXT_CORE_CM_HISTORY}</a></li>
@@ -81,6 +83,10 @@
                 <textarea id="page_metakeys" name="page[metakeys]"></textarea>
                 <span class="tipmessage info input" onmouseout="htm()" onmouseover="stm(['', '{TXT_CORE_CM_METAKEYS_INFO}'], tipMessageStyle)"></span>
             </div>
+        </div>
+        <div id="page_navigation" style="display: none;">
+        </div>
+        <div id="page_blocks" style="display: none;">
         </div>
         <div id="page_access" style="display: none;">
             <input type="hidden" name="page[protection_frontend]" value="off" />

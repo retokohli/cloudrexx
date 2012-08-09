@@ -1449,6 +1449,7 @@ $_ARRAYLANG['TXT_CORE_CM_ALIAS_INFO'] = 'URL unter welcher diese Seite zusätzli
 $_ARRAYLANG['TXT_CORE_CM_ALIAS_INFO'] = 'URL under which this site also is accessible (eg as a landing page)';
 $_ARRAYLANG['TXT_CORE_CM_CSS_NAV_CLASS'] = 'Additional CSS Navigation Class';
 $_ARRAYLANG['TXT_CORE_CM_CSS_NAV_CLASS_INFO'] = 'The specified value can be accessed as [[CSS_NAME]] in navigation contexts.';
+$_ARRAYLANG['TXT_CORE_CM_BLOCKS'] = 'Blocks';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND'] = 'Restrict Read (Frontend) Access to This Page';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_BACKEND'] = 'Restrict Write (Backend) Access to This Page';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_AVAILABLE_GROUPS'] = 'Available Groups';
