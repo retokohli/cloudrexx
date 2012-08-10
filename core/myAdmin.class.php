@@ -94,7 +94,8 @@ class myAdminManager {
         }
 
         $objTemplate->setVariable(array(
-            'TXT_LAST_LOGINS' 				=> htmlentities($_CORELANG['TXT_LAST_LOGINS'], ENT_QUOTES, CONTREXX_CHARSET),
+            'CSRF'                          => CSRF::param(),
+            'TXT_LAST_LOGIN' 				=> htmlentities($_CORELANG['TXT_LAST_LOGIN'], ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_CONTREXX_NEWS' 			=> htmlentities($_CORELANG['TXT_CONTREXX_NEWS'], ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_CREATING_AND_PUBLISHING'   => htmlentities($_CORELANG['TXT_CREATING_AND_PUBLISHING'], ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_EVALUATE_AND_VIEW' 		=> htmlentities($_CORELANG['TXT_EVALUATE_AND_VIEW'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -113,6 +114,8 @@ class myAdminManager {
             'TXT_MEDIA_MANAGER' 			=> htmlentities($_CORELANG['TXT_MEDIA_MANAGER'], ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_IMAGE_ADMINISTRATION'		=> htmlentities($_CORELANG['TXT_IMAGE_ADMINISTRATION'], ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_SKINS' 					=> htmlentities($_CORELANG['TXT_DESIGN_MANAGEMENT'], ENT_QUOTES, CONTREXX_CHARSET),
+            'TXT_VISITORS'                  => htmlentities($_CORELANG['TXT_CORE_VISITORS'], ENT_QUOTES, CONTREXX_CHARSET),
+            'TXT_REQUESTS'                  => htmlentities($_CORELANG['TXT_CORE_REQUESTS'], ENT_QUOTES, CONTREXX_CHARSET),
         ));
         $objTemplate->setGlobalVariable('TXT_LOGOUT', $_CORELANG['TXT_LOGOUT']);
 
@@ -135,10 +138,13 @@ class myAdminManager {
         $arrStatistics = $this->getStatistics();
 
         $objTemplate->setVariable(array(
-            'STAT_TICKS'    => json_encode($arrStatistics['ticks']),
-            'STAT_DATES'    => json_encode($arrStatistics['dates']),
-            'STAT_VISITORS' => json_encode($arrStatistics['visitors']),
-            'STAT_REQUESTS' => json_encode($arrStatistics['requests']),
+            'STAT_TITLE'          => $_CORELANG['TXT_CORE_STATS_FROM'].' '.reset($arrStatistics['dates']).' - '.end($arrStatistics['dates']),
+            'STAT_TICKS'          => json_encode($arrStatistics['ticks']),
+            'STAT_DATES'          => json_encode($arrStatistics['dates']),
+            'STAT_VISITORS'       => json_encode($arrStatistics['visitors']),
+            'STAT_REQUESTS'       => json_encode($arrStatistics['requests']),
+            'STAT_TOTAL_VISITORS' => array_sum($arrStatistics['visitors']),
+            'STAT_TOTAL_REQUESTS' => array_sum($arrStatistics['requests']),
         ));
 
         $objRss = new XML_RSS('http://www.contrexx.com/feed/news_headlines_de.xml');
@@ -184,6 +190,9 @@ class myAdminManager {
         }
         
         $arrMonths   = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
+        $arrDays     = explode(',', $_CORELANG['TXT_DAY_ARRAY']);
+        $arrDays[7]  = $arrDays[0];
+        unset($arrDays[0]);
         $arrVisitors = array();
         $arrRequests = array();
         $ticks       = array();
@@ -236,7 +245,7 @@ class myAdminManager {
         foreach ($arrRange as $day => $date) {
             $ticks[]    = $date;
             $timestamp  = strtotime($date);
-            $dates[$i]  = date('j', $timestamp).'. '.$arrMonths[date('n', $timestamp)].' '.date('Y', $timestamp);
+            $dates[$i]  = $arrDays[date('N', $timestamp)].', '.date('j', $timestamp).'. '.$arrMonths[date('n', $timestamp) - 1].' '.date('Y', $timestamp);
             $visitors[] = isset($arrVisitors[$day]) ? intval($arrVisitors[$day]) : 0;
             $requests[] = isset($arrRequests[$day]) ? intval($arrRequests[$day]) : 0;
             $i++;

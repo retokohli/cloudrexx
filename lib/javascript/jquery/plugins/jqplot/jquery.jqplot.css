@@ -207,11 +207,13 @@ table.jqplot-cursor-tooltip {
 }
 
 .jqplot-highlighter-tooltip, .jqplot-canvasOverlay-tooltip {
-    border: 1px solid #cccccc;
-    font-size: 0.75em;
+    padding: 3px 6px 3px 6px;
+    color: #000000;
+    font-size: 11px;
+    font-family: Arial;
     white-space: nowrap;
-    background: rgba(208,208,208,0.5);
-    padding: 1px;
+    border: 1px solid #CCCCCC;
+    background: #FFFFFF;
 }
 
 .jqplot-point-label {

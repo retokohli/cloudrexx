@@ -9,10 +9,31 @@ $J(document).ready(function() {
         }
     });
     
-    var ticks    = {STAT_TICKS};
-    var dates    = {STAT_DATES};
-    var visitors = {STAT_VISITORS};
-    var requests = {STAT_REQUESTS};
+    $J('#news_delete').click(function() {
+        $J('#news').fadeOut(500);
+    });
+    $J('#stats_delete').click(function() {
+        $J('#stats_wrapper').fadeOut(500);
+    });
+    $J('#visitors_box').click(function() {
+        location.href = 'index.php?cmd=stats&stat=visitors&{CSRF}';
+    });
+    $J('#requests_box').click(function() {
+        location.href = 'index.php?cmd=stats&stat=requests&tpl=mvp&{CSRF}';
+    });
+    $J('#last_session_box').click(function() {
+        location.href = 'index.php?cmd=log&{CSRF}';
+    });
+    
+    var ticks      = {STAT_TICKS};
+    var dates      = {STAT_DATES};
+    var visitors   = {STAT_VISITORS};
+    var requests   = {STAT_REQUESTS};
+    var labels     = ['{TXT_VISITORS}', '{TXT_REQUESTS}'];
+    var data       = new Array();
+    data['dates']  = dates;
+    data['labels'] = labels;
+    
     
     var plot = $J.jqplot('chart', [visitors, requests], {
         seriesColors: ['#4EAA09', '#0C90D0'],
@@ -24,7 +45,7 @@ $J(document).ready(function() {
         },
         legend: {
             show: true,
-            labels: ['Besucher', 'Seitenaufrufe'],
+            labels: labels,
             placement: 'insideGrid'
         },
         axes: {
@@ -40,10 +61,10 @@ $J(document).ready(function() {
             }
         },
         highlighter: {
-            //data: dates,
+            data: data,
             show: true,
             showMarker: false,
-            tooltipAxes: 'both',
+            tooltipAxes: 'data',
             tooltipLocation:  'n',
         }
     });
@@ -92,35 +113,35 @@ $J(document).ready(function() {
     
     <!-- BEGIN rssFeed -->
     <div id="news">
-        <div id="news_icon"></div>
         <div id="news_message">
             <a id="news_link" href="{RSS_LINK}" target="_blank">{RSS_TITLE}</a>
-            <a id="news_delete" href="#"></a>
+            <button id="news_delete">×</button>
         </div>
     </div>
     <!-- END rssFeed -->
     
     <div id="stats_wrapper">
-        <h1 class="stats_title">Statistiken vom 1. August - 1. September</h1>
+        <h1 class="stats_title">
+            {STAT_TITLE}
+            <button id="stats_delete">×</button>
+        </h1>
+        
         <div id="chart"></div>
         
         <div id="visitors_box" class="stat_box">
-            <span>Besucher</span><br />
-            250
+            <h2>Besucher</h2><br />
+            <span>{STAT_TOTAL_VISITORS}</span>
         </div>
         
         <div id="requests_box" class="stat_box">
-            <span>Seitenaufrufe</span><br />
-            750
+            <h2>Seitenaufrufe</h2><br />
+            <span>{STAT_TOTAL_REQUESTS}</span>
         </div>
         
         <div id="last_session_box" class="stat_box">
             <!-- BEGIN log -->
-            <span>{TXT_LAST_LOGINS}</span><br />
-            {LOG_USERNAME} / {LOG_TIME}
-            <!-- BEGIN logError -->
-            <div class="error">{LOG_ERROR_MESSAGE}</div>
-            <!-- END logError -->
+            <h2>{TXT_LAST_LOGIN}</h2>
+            {LOG_USERNAME}<span> / {LOG_TIME}</span>
             <!-- END log -->
         </div>
     </div>

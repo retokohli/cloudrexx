@@ -6,6 +6,10 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_CONTACT'] = "Kontakt";
+$_ARRAYLANG['TXT_CORE_VISITORS'] = "Besucher";
+$_ARRAYLANG['TXT_CORE_REQUESTS'] = "Seitenaufrufe";
+$_ARRAYLANG['TXT_CORE_STATS_FROM'] = "Statistiken vom";
 $_ARRAYLANG['TXT_CORE_HTML_TWINMENU_DEFAULT_LABEL_LEFT'] = "Alle Elemente";
 $_ARRAYLANG['TXT_CORE_HTML_TWINMENU_DEFAULT_LABEL_RIGHT'] = "Ausgewählte Elemente";
 $_ARRAYLANG['TXT_CORE_HTML_TWINMENU_DEFAULT_LABEL_BUTTON_MOVE_RIGHT'] = " >> ";
@@ -200,6 +204,7 @@ $_ARRAYLANG['TXT_PHP_INFO'] = "PHP Informationen";
 $_ARRAYLANG['TXT_SITE_PREVIEW'] = "Homepage Vorschau";
 $_ARRAYLANG['TXT_WELCOME_MESSAGE'] = "Willkommen";
 $_ARRAYLANG['TXT_ADMINISTSRATORS_ONLINE'] = "Administratoren online";
+$_ARRAYLANG['TXT_LAST_LOGIN'] = "Letzte Anmeldung";
 $_ARRAYLANG['TXT_LAST_LOGINS'] = "Letzte Anmeldungen";
 $_ARRAYLANG['TXT_CONTREXX_NEWS'] = "Contrexx News";
 $_ARRAYLANG['TXT_CREATING_AND_PUBLISHING'] = "Publizieren und Anlegen";
