@@ -59,7 +59,6 @@ CKEDITOR.editorConfig = function( config )
         ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
         ['Link','Unlink','Anchor'],
         ['Image','Table','HorizontalRule','SpecialChar'],
-        '/',
         ['Format'],
         ['TextColor','BGColor'],
         ['Maximize', 'ShowBlocks']

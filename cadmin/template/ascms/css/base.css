@@ -294,7 +294,7 @@ a:active {
 }
 
 #content {
-    padding: 14px 14px 28px 14px;
+    padding: 14px 14px 80px 14px;
     overflow: hidden;
 }
 
@@ -948,18 +948,10 @@ table.adminlist td.nowrap {
   overflow: auto;
 }
 
-/* Tooltip Style */
+/* info icon style */
 .info {
     float: left;
     width: 13px;
     height: 12px;
     background: url(../images/content_manager_info.png) no-repeat center center;
-}
-
-.info.input {
-    margin: 7px 6px;
-}
-
-.info.label {
-    margin: 2px 20px 2px 3px;
 }
