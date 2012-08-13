@@ -79,8 +79,8 @@
         </div>
     </div>
     <div id="page_meta" style="display: none;">
-        <input type="hidden" name="page[metarobots]" value="off" />
         <div id="metarobots_checkbox" class="checkbox">
+            <input type="hidden" name="page[metarobots]" value="off" />
             <input type="checkbox" class="indicator" id="page_metarobots" name="page[metarobots]" />
             <label>{TXT_CORE_CM_SE_INDEX}</label>
         </div>
@@ -158,33 +158,33 @@
         </div>
     </div>
     <div id="page_blocks" style="display: none;">
-        <label class="left">{TXT_CORE_CM_BLOCKS_AVAILABLE}</label>
-        <label class="right">{TXT_CORE_CM_BLOCKS_ASSIGNED}</label>
-        <select id="pageBlocks" class="multiselect" multiple="multiple" name="frontendGroups[]">
-            <option value="test">unselected</option>
-            <option value="test2" selected="selected">selected</option>
-        </select>
+        <div id="themes_toggle" class="toggle {BLOCKS_TOGGLE_CLASS}"><div class="indicator"></div><label>{TXT_CORE_CM_BLOCKS}</label></div>
+        <div id="blocks_container" class="container multiselect" style="{BLOCKS_DISPLAY_STYLE}">
+            <label for="blocksms2side__sx" class="left">{TXT_CORE_CM_BLOCKS_AVAILABLE}</label>
+            <label for="blocksms2side__dx" class="right">{TXT_CORE_CM_BLOCKS_ASSIGNED}</label>
+            <select id="pageBlocks" class="multiselect" multiple="multiple" name="blocks[]"></select>
+        </div>
     </div>
     <div id="page_permissions" style="display: none;">
-        <input type="hidden" name="page[protection_frontend]" value="off" />
         <div id="protection_frontend_checkbox" class="checkbox no_toggle">
+            <input type="hidden" name="page[protection_frontend]" value="off" />
             <input type="checkbox" class="indicator" id="page_protection_frontend" name="page[protection_frontend]" />
             <label>{TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND}</label>
         </div>
-        <div id="protection_frontend_container" class="container">
-            <label class="left">{TXT_CORE_CM_ACCESS_PROTECTION_AVAILABLE_GROUPS}</label>
-            <label class="right">{TXT_CORE_CM_ACCESS_PROTECTION_ASSIGNED_GROUPS}</label>
+        <div id="protection_frontend_container" class="container multiselect">
+            <label for="frontendGroupsms2side__sx" class="left">{TXT_CORE_CM_ACCESS_PROTECTION_AVAILABLE_GROUPS}</label>
+            <label for="frontendGroupsms2side__dx" class="right">{TXT_CORE_CM_ACCESS_PROTECTION_ASSIGNED_GROUPS}</label>
             <select id="frontendAccessGroups" class="multiselect" multiple="multiple" name="frontendGroups[]"></select>
         </div>
 
-        <input type="hidden" name="page[protection_backend]" value="off" />
         <div id="protection_backend_checkbox" class="checkbox no_toggle">
+            <input type="hidden" name="page[protection_backend]" value="off" />
             <input type="checkbox" class="indicator" id="page_protection_backend" name="page[protection_backend]" />
             <label>{TXT_CORE_CM_ACCESS_PROTECTION_BACKEND}</label>
         </div>
-        <div id="protection_backend_container" class="container">
-            <label class="left">{TXT_CORE_CM_ACCESS_PROTECTION_AVAILABLE_GROUPS}</label>
-            <label class="right">{TXT_CORE_CM_ACCESS_PROTECTION_ASSIGNED_GROUPS}</label>
+        <div id="protection_backend_container" class="container multiselect">
+            <label for="backendGroupsms2side__sx" class="left">{TXT_CORE_CM_ACCESS_PROTECTION_AVAILABLE_GROUPS}</label>
+            <label for="backendGroupsms2side__dx" class="right">{TXT_CORE_CM_ACCESS_PROTECTION_ASSIGNED_GROUPS}</label>
             <select id="backendAccessGroups" class="multiselect" multiple="multiple" name="backendGroups[]"></select>
         </div>
     </div>
