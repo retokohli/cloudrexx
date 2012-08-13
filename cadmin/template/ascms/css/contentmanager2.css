@@ -25,7 +25,6 @@ h1{ font-size: 20px }
 
 /* 2.2 Content Manager */
 #content-manager {
-    display: table;
     float: left;
     width: 100%;
     height: 100%;
@@ -37,25 +36,28 @@ h1{ font-size: 20px }
 }
 
 #content-manager .left {
-    display: table-cell;
     float: left;
-    width: 100%;
+    width: 100% !important;
 }
 
 #content-manager .right {
     display: none;
-    float: none;
-    vertical-align: top;
 }
 
 #content-manager.edit_page .left {
-    width: 352px;
-    margin-right: 14px;
+    width: 352px !important;
+    border-right: 14px solid transparent;
 }
 
 #content-manager.edit_page .right {
     display: table-cell;
+    float: none;
     width: 100%;
+}
+
+*+html #content-manager.edit_page .right {
+    display: block;
+    float: left;
 }
 
 #content-manager .left table.adminlist {
@@ -720,10 +722,6 @@ div.date img{
 }
 
 /* 2.2.1 Type Tabs */
-#type .type_hidable {
-    display: none;
-}
-
 #titles,
 #type,
 #ckeditor,
@@ -735,11 +733,6 @@ div.date img{
     width: 100%;
     margin: 0;
     padding: 0;
-}
-
-#page .info.label {
-    height: 16px !important;
-    margin: 0 4px 3px 4px !important;
 }
 
 #page .warning {
@@ -762,9 +755,7 @@ div.date img{
     cursor: pointer;
 }
 
-#page .toggle .indicator,
-#page .checkbox .indicator,
-#page .checkbox_style .indicator {
+#page .toggle .indicator {
     float: left;
     width: 22px;
     height: 23px;
@@ -772,9 +763,22 @@ div.date img{
 
 #page .checkbox .indicator,
 #page .checkbox_style .indicator {
-    margin: 0;
+    float: left;
+    height: 13px !important;
+    width: 13px !important;
+    margin: 5px 4px 5px 5px;
     outline: 0;
     cursor: pointer;
+}
+
+#page .checkbox .indicator,
+#page .checkbox_style .indicator {/* lte ie9 fix */
+    margin: 2px 4px 2px 5px\9;
+}
+
+*+html #page .checkbox .indicator,
+*+html #page .checkbox_style .indicator {/* special fix for ie7 (don't move before lte ie9 fix!) */
+    margin: 5px 5px 5px 5px !important;
 }
 
 #page .toggle.open .indicator {
@@ -796,44 +800,73 @@ div.date img{
     cursor: default;
 }
 
+/* page layout */
 #page .container {
     float: left;
-    margin: 0 0 0 22px;
-}
-
-#page .special_form_style input,
-#page .special_form_style textarea,
-#page .special_form_style select {
-    float: left;
-    clear: both;
-    margin: 0 0 8px 0;
-}
-
-#page .special_form_style label {
-    float: left;
-    clear: both;
     width: auto;
-    margin: 0 0 3px 0;
+    margin: 0 0 0 24px;
 }
 
-#page .container input {
+#page .line {
+    float: left;
+    width: auto;
+    clear: both;
+    padding: 0;
+}
+
+#page .line.small_space {
+    padding: 0 0 3px 0 !important;
+    margin: 0;
+}
+
+#page .line.big_space {
+    padding: 0 0 8px 0 !important;
+    margin: 0;
+}
+
+#page label {
+    float: left;
+    width: auto;
+}
+
+#page .info {
+    height: 16px !important;
+    margin: 0 4px 0 4px;
+}
+
+#page input,
+#page textarea,
+#page select,
+#page button {
+    float: left;
+    margin: 0;
+}
+
+#page input[type="text"] {
     width: 566px;
 }
 
-#page .container textarea {
+#page textarea {
     width: 566px;
     height: 200px;
 }
 
-#page .container select {
+#page select {
     width: 574px;
 }
 
-#page .container .ms2side__div {
+#page input[type=radio],
+#page input[type=checkbox],
+#page input[type=submit],
+#page input[type=reset] {
+    width: auto;
+}
+
+#page .ms2side__div {
     padding: 0;
 }
 
-#page .container .ms2side__options p {
+#page .ms2side__options p {
     float: left;
     width: 18px;
     margin: 0 0 2px 0;
@@ -845,85 +878,87 @@ div.date img{
     cursor: default;
 }
 
-#page .container .ms2side__select select {
+#page .ms2side__select select {
     width: 280px;
     height: 94px;
 }
 
-#page #titles_container #types {
-    float: left;
-    clear: both;
-    width: auto;
-    margin: 5px 0 3px 0;
-}
 
+/* page layout adjustments for content tab */
 #page #titles_container #types input[type=radio] {
-    float: left;
-    clear: none;
-    width: auto;
     margin: 0 3px 0 0;
 }
 
-#page #titles_container #types label {
-    float: left;
-    clear: none;
-}
-
-#page #titles_container #types .info.label {
+#page #titles_container #types .info {
     margin-right: 16px !important;
 }
 
 #page #type_container {
     width: 100%;
-    margin: 0;
+    margin: 0 !important;
 }
 
-#page #type_container .special_form_style {
+#page #type_container .container {
+    width: auto;
     margin: 0 0 0 22px;
 }
 
 #page #type_container #cm_ckeditor {
     width: 100%;
     height: 700px;
-    padding: 0;
 }
 
 #page #type_container #page_target {
-    float: left;
-    clear: both;
-    width: 453px;
-    margin: 0 3px 0 0;
+    width: 460px;
 }
 
-#page #type_container #targetBrowseButton {
-    float: left;
+*+html #page #type_container #page_target {
+    width: 434px;
 }
 
-#page #type_container #page_application {
-    float: left;
-    clear: both;
+#page #type_container .first {
     width: 144px;
-    padding: 2px;
-    margin: 0 3px 0 0;
+    margin: 0 16px 0 0;
 }
 
-#page #type_container #page_application_area {
+#page #type_container .second {
+    width: 408px;
+}
+
+/* page layout adjustments for navigation container */
+#page #navigation_container #page_alias_container {
+    padding: 0 0 5px 0 !important;
+}
+
+#page #navigation_container #page_alias_container .page_alias {
     float: left;
-    clear: none;
-    width: 418px;
-}
-
-#page #type_container br {
     clear: both;
+    width: auto;
+    margin: 0 0 3px 0;
 }
 
-#page #type_container label {
+#page #navigation_container #page_slug_container #page_slug_base_url,
+#page #navigation_container #page_slug_container #page_slug_breadcrumb,
+#page #navigation_container #page_alias_container .page_alias span {
     float: left;
-    clear: none;
-    min-width: 145px;
-    margin: 0 3px 3px 0;
+    height: 24px;
+    line-height: 24px;
+    width: auto;
+    margin: 0 4px 0 0;
 }
 
+#page #navigation_container #page_slug_container #page_slug_base_url {
+    margin: 0;
+}
+
+#page #navigation_container #page_slug_container input,
+#page #navigation_container #page_alias_container .page_alias input {
+    width: 200px;
+    margin: 0;
+}
+
+
+/* page layout adjustments for permissions tab */
 #page #protection_frontend_container,
 #page #protection_backend_container {
     position: relative;
@@ -950,72 +985,8 @@ div.date img{
     left: 336px;
 }
 
-#page #scheduled_publishing_container label {
-    float: left;
-    width: auto;
-    height: 24px;
-    line-height: 24px;
-    margin: 0 3px 0 0;
-}
 
-#page #scheduled_publishing_container input {
-    float: left;
-    width: 150px;
-    margin: 0 8px 0 0;
-}
-
-#page #navigation_container #page_slug_container,
-#page #navigation_container #page_alias_container {
-    float: left;
-    clear: both;
-    width: auto;
-    margin: 0 0 8px 0;
-}
-
-#page #navigation_container #page_alias_container {
-    margin-bottom: 5px;
-}
-
-#page #themes_container #page_skin_view,
-#page #themes_container #page_skin_edit {
-    float: left;
-    width: auto;
-    margin: 5px 0 5px 5px;
-}
-
-#page #navigation_container #page_alias_container .page_alias {
-    float: left;
-    clear: both;
-    width: auto;
-    margin: 0 0 3px 0;
-}
-
-#page #navigation_container #page_slug_container #page_slug_base_url,
-#page #navigation_container #page_slug_container #page_slug_breadcrumb,
-#page #navigation_container #page_alias_container .page_alias span {
-    float: left;
-    clear: both;
-    height: 24px;
-    line-height: 24px;
-    width: auto;
-    margin: 0 4px 0 0;
-}
-
-#page #navigation_container #page_slug_container #page_slug_base_url {
-    margin: 0;
-}
-
-#page #navigation_container #page_slug_container #page_slug_breadcrumb {
-    clear: none;
-}
-
-#page #navigation_container #page_slug_container input,
-#page #navigation_container #page_alias_container .page_alias input {
-    clear: none;
-    width: 200px;
-    margin: 0;
-}
-
+/* page layout adjustments for history container */
 #page_history .adminlist {
     margin: 12px 0 0 0;
 }
@@ -1036,6 +1007,35 @@ div.date img{
     padding: 0 0 0 18px;
     background: url(../images/content_manager_preview.png) no-repeat left center;
 }
+
+
+/* page layout adjustments for more tab */
+#page #scheduled_publishing_container label {
+    float: left;
+    width: auto;
+    height: 24px;
+    line-height: 24px;
+    margin: 0 3px 0 0;
+}
+
+#page #scheduled_publishing_container input {
+    float: left;
+    width: 150px;
+    margin: 0 8px 0 0;
+}
+
+*+html #themes_toggle {/* ie7 fix */ 
+    clear: none !important;
+}
+
+#page #themes_container #page_skin_view,
+#page #themes_container #page_skin_edit {
+    float: left;
+    height: 16px;
+    width: auto;
+    margin: 0 0 0 16px;
+}
+
 
 /* 3) Helpers */
 .t {

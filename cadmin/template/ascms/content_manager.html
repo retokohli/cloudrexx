@@ -17,54 +17,56 @@ var language_labels = {LANGUAGE_LABELS};
     <li class="level_2">{SUB_MENU_TITLE}</li>
     <li class="level_3">{CONTENT_TITLE}</li>
 </ul>
-<div id="content-manager" class="{EDIT_PAGE_CSS_CLASS}" width="100%">
-    <div class="left" class="display: block;">
-        <div id="site-language">
-            <div class="navi">
-                <a href="index.php?cmd=content&act=new">{TXT_NEW_PAGE}</a>
-                <a href="index.php?cmd=workflow">{TXT_CONTENT_HISTORY}</a>
-                <a href="index.php?cmd=media&archive=content">{TXT_IMAGE_ADMINISTRATION}</a>
+<table id="content-manager" class="{EDIT_PAGE_CSS_CLASS}">
+    <tr>
+        <td class="left" class="display: block;">
+            <div id="site-language">
+                <div class="navi">
+                    <a href="index.php?cmd=content&act=new">{TXT_NEW_PAGE}</a>
+                    <a href="index.php?cmd=workflow">{TXT_CONTENT_HISTORY}</a>
+                    <a href="index.php?cmd=media&archive=content">{TXT_IMAGE_ADMINISTRATION}</a>
+                </div>
+                <select class="chzn-select">{LANGSWITCH_OPTIONS}</select>
             </div>
-            <select class="chzn-select">{LANGSWITCH_OPTIONS}</select>
-        </div>
-        <div id="site-structure">
-            <table class="adminlist" width="100%">
-                <tr>
-                    <th class="page" width="42%">
-                        {TXT_CORE_CM_STATUS_PAGE}
-                        <span id="flip-menu">(&nbsp;<a href="#" class="jstree-action open">{TXT_EXPAND_LINK}</a>&nbsp;|&nbsp;<a href="#" class="jstree-action close">{TXT_COLLAPS_LINK}</a>&nbsp;)</span>
-                    </th>
-                    <th class="translation" width="11%">{TXT_CORE_CM_TRANSLATIONS}</th>
-                    <th class="module" width="17%">{TXT_CORE_CM_SECTION_CMD}</th>
-                    <th class="preview" width="7%"></th>
-                    <th class="actions" width="7%"></th>
-                    <th class="lastupdate" width="16%">{TXT_CORE_CM_DATE_USER}</th>
-                </tr>
-            </table>
-            <div id="site-tree"></div>
-        </div>
-        <div id="multiple-actions">
-            <img id="multiple-actions-arrow" src="images/icons/arrow.gif" border="0" width="38" height="22" alt="" />
-            <span id="multiple-actions-marking">
-                <a href="#" class="jstree-action check">{TXT_SELECT_ALL}</a> /
-                <a href="#" class="jstree-action uncheck">{TXT_DESELECT_ALL}</a>
-                <img id="multiple-actions-strike" style="{MULTIPLE_ACTIONS_STRIKE_STYLE}" src="images/icons/strike.gif" alt="Strike" />
-            </span>
-            <select action="." id="multiple-actions-select">
-                <option value="0">{TXT_MULTISELECT_SELECT}</option>
-                <option value="publish">{TXT_MULTISELECT_PUBLISH}</option>
-                <option value="activate">{TXT_MULTISELECT_ACTIVATE}</option>
-                <option value="deactivate">{TXT_MULTISELECT_DEACTIVATE}</option>
-                <option value="show">{TXT_MULTISELECT_SHOW}</option>
-                <option value="hide">{TXT_MULTISELECT_HIDE}</option>
-                <option value="delete">{TXT_MULTISELECT_DELETE}</option>
-            </select>
-        </div>
-    </div>
-    <div class="right">
-        <div id="page">{CONTENT_MANAGER_MEAT}</div>
-    </div>
-</div>
+            <div id="site-structure">
+                <table class="adminlist" width="100%">
+                    <tr>
+                        <th class="page" width="42%">
+                            {TXT_CORE_CM_STATUS_PAGE}
+                            <span id="flip-menu">(&nbsp;<a href="#" class="jstree-action open">{TXT_EXPAND_LINK}</a>&nbsp;|&nbsp;<a href="#" class="jstree-action close">{TXT_COLLAPS_LINK}</a>&nbsp;)</span>
+                        </th>
+                        <th class="translation" width="11%">{TXT_CORE_CM_TRANSLATIONS}</th>
+                        <th class="module" width="17%">{TXT_CORE_CM_SECTION_CMD}</th>
+                        <th class="preview" width="7%"></th>
+                        <th class="actions" width="7%"></th>
+                        <th class="lastupdate" width="16%">{TXT_CORE_CM_DATE_USER}</th>
+                    </tr>
+                </table>
+                <div id="site-tree"></div>
+            </div>
+            <div id="multiple-actions">
+                <img id="multiple-actions-arrow" src="images/icons/arrow.gif" border="0" width="38" height="22" alt="" />
+                <span id="multiple-actions-marking">
+                    <a href="#" class="jstree-action check">{TXT_SELECT_ALL}</a> /
+                    <a href="#" class="jstree-action uncheck">{TXT_DESELECT_ALL}</a>
+                    <img id="multiple-actions-strike" style="{MULTIPLE_ACTIONS_STRIKE_STYLE}" src="images/icons/strike.gif" alt="Strike" />
+                </span>
+                <select action="." id="multiple-actions-select">
+                    <option value="0">{TXT_MULTISELECT_SELECT}</option>
+                    <option value="publish">{TXT_MULTISELECT_PUBLISH}</option>
+                    <option value="activate">{TXT_MULTISELECT_ACTIVATE}</option>
+                    <option value="deactivate">{TXT_MULTISELECT_DEACTIVATE}</option>
+                    <option value="show">{TXT_MULTISELECT_SHOW}</option>
+                    <option value="hide">{TXT_MULTISELECT_HIDE}</option>
+                    <option value="delete">{TXT_MULTISELECT_DELETE}</option>
+                </select>
+            </div>
+        </td>
+        <td class="right">
+            <div id="page">{CONTENT_MANAGER_MEAT}</div>
+        </td>
+    </tr>
+</table>
 <div id="editMode_Background" style="display: none;"></div>
 <div id="editMode_Window" style="display: none;">
     <div id="editMode_Frame">
