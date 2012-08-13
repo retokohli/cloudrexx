@@ -191,6 +191,14 @@ class URL {
     public function getParams() {
         return $this->params;
     }
+    
+    /**
+     * @author Michael Ritter <michael.ritter@comvation.com>
+     * @return array 
+     */
+    public function getParamArray() {
+        return $this->params2Array();
+    }
 
     public function getSuggestedTargetPath() {
         return $this->suggestedTargetPath;
