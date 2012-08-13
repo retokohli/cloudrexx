@@ -51,14 +51,8 @@ class JsonContentManager implements JsonAdapter {
      */
     public function saveToggleStatuses($params) {
         $arrToggleStatuses = array();
-        foreach ($params['post'] as $tabKey => $tabValue) {
-            if (is_array($tabValue)) {
-                foreach ($tabValue as $toggleKey => $toggleValue) {
-                    $arrToggleStatuses[contrexx_input2raw($tabKey)][contrexx_input2raw($toggleKey)] = contrexx_input2raw($toggleValue);
-                }
-            } else {
-                $arrToggleStatuses[contrexx_input2raw($tabKey)] = contrexx_input2raw($tabValue);
-            }
+        foreach ($params['post'] as $toggleKey => $toggleValue) {
+            $arrToggleStatuses[contrexx_input2raw($toggleKey)] = contrexx_input2raw($toggleValue);
         }
         $_SESSION['contentManager']['toggleStatuses'] = $arrToggleStatuses;
     }

@@ -125,13 +125,15 @@ class ContentManager extends Module {
         $objCx->setVariable('TXT_CORE_CM_ACTIONS', $_CORELANG['TXT_CORE_CM_ACTIONS'], 'contentmanager/lang');
         $objCx->setVariable('TXT_CORE_CM_VALIDATION_FAIL', $_CORELANG['TXT_CORE_CM_VALIDATION_FAIL'], 'contentmanager/lang');
 
-        $toggleTitles = !empty($_SESSION['contentManager']['toggleStatuses']['tabContent']['toggleTitles']) ? $_SESSION['contentManager']['toggleStatuses']['tabContent']['toggleTitles'] : 'block';
-        $toggleType = !empty($_SESSION['contentManager']['toggleStatuses']['tabContent']['toggleType']) ? $_SESSION['contentManager']['toggleStatuses']['tabContent']['toggleType'] : 'block';
-        $toggleThemes = !empty($_SESSION['contentManager']['toggleStatuses']['tabSettings']['toggleThemes']) ? $_SESSION['contentManager']['toggleStatuses']['tabSettings']['toggleThemes'] : 'block';
-        $toggleNavigation = !empty($_SESSION['contentManager']['toggleStatuses']['tabSettings']['toggleNavigation']) ? $_SESSION['contentManager']['toggleStatuses']['tabSettings']['toggleNavigation'] : 'block';
+        $toggleTitles = !empty($_SESSION['contentManager']['toggleStatuses']['toggleTitles']) ? $_SESSION['contentManager']['toggleStatuses']['toggleTitles'] : 'block';
+        $toggleType = !empty($_SESSION['contentManager']['toggleStatuses']['toggleType']) ? $_SESSION['contentManager']['toggleStatuses']['toggleType'] : 'block';
+        $toggleBlocks = !empty($_SESSION['contentManager']['toggleStatuses']['toggleBlocks']) ? $_SESSION['contentManager']['toggleStatuses']['toggleBlocks'] : 'block';
+        $toggleThemes = !empty($_SESSION['contentManager']['toggleStatuses']['toggleThemes']) ? $_SESSION['contentManager']['toggleStatuses']['toggleThemes'] : 'block';
+        $toggleNavigation = !empty($_SESSION['contentManager']['toggleStatuses']['toggleNavigation']) ? $_SESSION['contentManager']['toggleStatuses']['toggleNavigation'] : 'block';
         $toggleSidebar = !empty($_SESSION['contentManager']['toggleStatuses']['sidebar']) ? $_SESSION['contentManager']['toggleStatuses']['sidebar'] : 'block';
         $objCx->setVariable('toggleTitles', $toggleTitles, 'contentmanager/toggle');
         $objCx->setVariable('toggleType', $toggleType, 'contentmanager/toggle');
+        $objCx->setVariable('toggleBlocks', $toggleBlocks, 'contentmanager/toggle');
         $objCx->setVariable('toggleThemes', $toggleThemes, 'contentmanager/toggle');
         $objCx->setVariable('toggleNavigation', $toggleNavigation, 'contentmanager/toggle');
         $objCx->setVariable('sidebar', $toggleSidebar, 'contentmanager/toggle');
@@ -147,6 +149,8 @@ class ContentManager extends Module {
                 'TITLES_TOGGLE_CLASS' => 'open',
                 'TYPE_DISPLAY_STYLE' => 'display: block;',
                 'TYPE_TOGGLE_CLASS' => 'open',
+                'BLOCKS_DISPLAY_STYLE' => 'display: block;',
+                'BLOCKS_TOGGLE_CLASS' => 'open',
                 'THEMES_DISPLAY_STYLE' => 'display: block;',
                 'THEMES_TOGGLE_CLASS' => 'open',
                 'NAVIGATION_DISPLAY_STYLE' => 'display: block;',
@@ -159,6 +163,8 @@ class ContentManager extends Module {
                 'TITLES_TOGGLE_CLASS' => $toggleTitles == 'none' ? 'closed' : 'open',
                 'TYPE_DISPLAY_STYLE' => $toggleType == 'none' ? 'display: none;' : 'display: block;',
                 'TYPE_TOGGLE_CLASS' => $toggleType == 'none' ? 'closed' : 'open',
+                'BLOCKS_DISPLAY_STYLE' => $toggleBlocks == 'none' ? 'display: none;' : 'display: block;',
+                'BLOCKS_TOGGLE_CLASS' => $toggleBlocks == 'none' ? 'closed' : 'open',
                 'THEMES_DISPLAY_STYLE' => $toggleThemes == 'none' ? 'display: none;' : 'display: block;',
                 'THEMES_TOGGLE_CLASS' => $toggleThemes == 'none' ? 'closed' : 'open',
                 'NAVIGATION_DISPLAY_STYLE' => $toggleNavigation == 'none' ? 'display: none;' : 'display: block;',
@@ -182,9 +188,9 @@ class ContentManager extends Module {
             $this->template->hideBlock('refuse_button');
         }
 
-        $editPageCssClass = '';
+        $editViewCssClass = '';
         if (isset($_GET['act']) && $_GET['act'] == 'new') {
-            $editPageCssClass = 'edit_page';
+            $editViewCssClass = 'edit_view';
             $this->template->hideBlock('refuse_button');
         }
 
@@ -201,7 +207,7 @@ class ContentManager extends Module {
         $this->template->setVariable('LANGUAGE_ARRAY', json_encode($this->getLangArray()));
         $this->template->setVariable('FALLBACK_ARRAY', json_encode($this->getFallbackArray()));
         $this->template->setVariable('LANGUAGE_LABELS', json_encode($this->getLangLabels()));
-        $this->template->setVariable('EDIT_PAGE_CSS_CLASS', $editPageCssClass);
+        $this->template->setVariable('EDIT_VIEW_CSS_CLASS', $editViewCssClass);
         
         $editmodeTemplate = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
         $editmodeTemplate->loadTemplateFile('content_editmode.html');
