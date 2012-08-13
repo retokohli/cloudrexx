@@ -1093,8 +1093,8 @@ $_ARRAYLANG['TXT_CORE_SETTINGS_ERROR_RETRIEVING'] = "Error while retrieving the 
 $_ARRAYLANG['TXT_CORE_SETTINGS_NONE_FOUND'] = "No settings found";
 $_ARRAYLANG['TXT_ACCESS_PRIMARY_GROUP'] = "Primary User Group";
 $_ARRAYLANG['TXT_ECARD_MODULE_DESCRIPTION'] = "Digital Postcards";
-$_ARRAYLANG['TXT_CSRF_TITLE'] = "Security information";
-$_ARRAYLANG['TXT_CSRF_DESCR'] = "You are changing the system configuration. If you see this message<ul><li>after clicking a link in the administration interface, click <strong>save changes</strong></li><li>after clicking a link inside an e-mail message or outside the administration interface, click <strong>discard changes</strong></li></ul>";
+$_ARRAYLANG['TXT_CSRF_TITLE'] = "Contrexx security information";
+$_ARRAYLANG['TXT_CSRF_DESCR'] = 'You are changing the system configuration. If you see this message<ul><li>after clicking a link in the administration interface, click <a href="%1$s">save changes</a></li><li>after clicking a link inside an e-mail message or outside the administration interface, click <a href="%2$s">discard changes</a></li></ul>';
 $_ARRAYLANG['TXT_CSRF_ABORT'] = "discard changes";
 $_ARRAYLANG['TXT_CSRF_CONTINUE'] = "save changes";
 $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'] = "The alias %s couldn't be used, because it is physically present!";
