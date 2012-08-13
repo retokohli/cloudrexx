@@ -62,7 +62,7 @@ class settingsManager
         $objTemplate->setVariable('CONTENT_NAVIGATION','
             <a href="?cmd=settings" class="'.($this->act == '' ? 'active' : '').'">'.$_CORELANG['TXT_SETTINGS_MENU_SYSTEM'].'</a>
             <a href="?cmd=settings&amp;act=cache" class="'.($this->act == 'cache' ? 'active' : '').'">'.$_CORELANG['TXT_SETTINGS_MENU_CACHE'].'</a>
-            <a href="?cmd=settings&amp;act=smtp" class="'.($this->act == 'smtp' ? 'active' : '').'">'.$_CORELANG['TXT_SETTINGS_EMAIL'].'</a>
+            <a href="?cmd=settings&amp;act=smtp" class="'.($this->act == 'smtp' ? 'active' : '').'">'.$_CORELANG['TXT_EMAIL_SERVER'].'</a>
             <a href="index.php?cmd=settings&amp;act=image" class="'.($this->act == 'image' ? 'active' : '').'">'.$_CORELANG['TXT_SETTINGS_IMAGE'].'</a>'
         );
     }
@@ -192,9 +192,13 @@ class settingsManager
             'TXT_RADIO_OFF'                   => $_CORELANG['TXT_DEACTIVATED']
         ));
         $objTemplate->setVariable(array(
-            'TXT_TITLE_SET1'                             => $_CORELANG['TXT_SETTINGS_TITLE_MISC'],
+            'TXT_TITLE_SET1'                             => $_CORELANG['TXT_SYSTEM_SETTINGS'],
             'TXT_TITLE_SET2'                             => $_CORELANG['TXT_SETTINGS_TITLE_CONTACT'],
             'TXT_TITLE_SET3'                             => $_CORELANG['TXT_SETTINGS_TITLE_DEVELOPMENT'],
+            'TXT_TITLE_WEBSITE'                          => $_CORELANG['TXT_SETTINGS_TITLE_MISC'],
+            'TXT_TITLE_ADMIN_AREA'                       => $_CORELANG['TXT_ADMIN_AREA'],
+            'TXT_TITLE_SECURITY'                         => $_CORELANG['TXT_SECURITY'],
+            'TXT_TITLE_OTHER_CONFIG_OPTIONS'             => $_CORELANG['TXT_OTHER_CONFIG_OPTIONS'],
             'TXT_DEBUGGING_STATUS'                       => $_CORELANG['TXT_DEBUGGING_STATUS'],
             'TXT_DEBUGGING_FLAGS'                        => $_CORELANG['TXT_DEBUGGING_FLAGS'],
             'TXT_DEBUGGING_FLAG_PHP'                     => $_CORELANG['TXT_DEBUGGING_FLAG_PHP'],
@@ -249,6 +253,8 @@ class settingsManager
             'TXT_CORE_LIST_PROTECTED_PAGES_HELP'         => $_CORELANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP'],
             'TXT_LICENSE_KEY'                            => $_CORELANG['TXT_LICENSE_KEY'],
             'TXT_LICENSE_KEY_HELP'                       => $_CORELANG['TXT_LICENSE_KEY_HELP'],
+            'TXT_DASHBOARD_NEWS'                         => $_CORELANG['TXT_DASHBOARD_NEWS'],
+            'TXT_DASHBOARD_STATISTICS'                   => $_CORELANG['TXT_DASHBOARD_STATISTICS'],
         ));
 
         if ($this->isWritable()) {
@@ -294,6 +300,10 @@ class settingsManager
             'SETTINGS_LIST_PROTECTED_PAGES_ON'               => ($arrSettings['coreListProtectedPages'] == 'on') ? 'checked="checked"' : '',
             'SETTINGS_LIST_PROTECTED_PAGES_OFF'              => ($arrSettings['coreListProtectedPages'] == 'off') ? 'checked="checked"' : '',
             'SETTINGS_LICENSE_KEY'                           => stripslashes($arrSettings['licenseKey']),
+            'SETTINGS_DASHBOARD_NEWS_ON'                     => ($arrSettings['dashboardNews'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_DASHBOARD_NEWS_OFF'                    => ($arrSettings['dashboardNews'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_DASHBOARD_STATISTICS_ON'               => ($arrSettings['dashboardStatistics'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_DASHBOARD_STATISTICS_OFF'              => ($arrSettings['dashboardStatistics'] == 'off') ? 'checked="checked"' : '',
         ));
 
         $objTemplate->setVariable(array(

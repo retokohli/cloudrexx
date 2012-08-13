@@ -6,6 +6,12 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_EMAIL_SERVER'] = "E-Mail Server";
+$_ARRAYLANG['TXT_ADMIN_AREA'] = "Administrationsoberfläche";
+$_ARRAYLANG['TXT_SECURITY'] = "Sicherheit";
+$_ARRAYLANG['TXT_OTHER_CONFIG_OPTIONS'] = "Weitere Konfigurationsoptionen";
+$_ARRAYLANG['TXT_DASHBOARD_NEWS'] = "Dashboard News";
+$_ARRAYLANG['TXT_DASHBOARD_STATISTICS'] = "Dashboard Statistiken";
 $_ARRAYLANG['TXT_CONTACT'] = "Kontakt";
 $_ARRAYLANG['TXT_CORE_VISITORS'] = "Besucher";
 $_ARRAYLANG['TXT_CORE_REQUESTS'] = "Seitenaufrufe";
