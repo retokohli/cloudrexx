@@ -68,7 +68,14 @@ class JsonPage implements JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('get', 'set', 'multipleSet', 'setPagePreview', 'getHistoryTable');
+        return array(
+            'get',
+            'set',
+            'multipleSet',
+            'setPagePreview',
+            'getHistoryTable',
+            'getAccessData',
+        );
     }
 
     /**
