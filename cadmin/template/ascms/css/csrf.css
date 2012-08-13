@@ -60,6 +60,11 @@ a:active {
     margin: 10px 0;
 }
 
+#container #message a {
+    font-weight: bold;
+    color: #444444;
+}
+
 #container .button {
     float: left;
     width: 268px;
@@ -73,12 +78,12 @@ a:active {
 
 #container .button#abort {
     float: left;
-    background: #15bff2 url(../../../images/csrfprotection/button_blue.jpg) repeat-y;
+    background: #acacac;
 }
 
 #container .button#continue {
     float: right;
-    background: #68c212 url(../../../images/csrfprotection/button_green.jpg) repeat-y;
+    background: #85be0b;
 }
 
 #container .button:hover,
