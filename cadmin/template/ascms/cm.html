@@ -157,7 +157,14 @@
             </div>
         </div>
     </div>
-    <div id="page_blocks" style="display: none;"></div>
+    <div id="page_blocks" style="display: none;">
+        <label class="left">{TXT_CORE_CM_BLOCKS_AVAILABLE}</label>
+        <label class="right">{TXT_CORE_CM_BLOCKS_ASSIGNED}</label>
+        <select id="pageBlocks" class="multiselect" multiple="multiple" name="frontendGroups[]">
+            <option value="test">unselected</option>
+            <option value="test2" selected="selected">selected</option>
+        </select>
+    </div>
     <div id="page_permissions" style="display: none;">
         <input type="hidden" name="page[protection_frontend]" value="off" />
         <div id="protection_frontend_checkbox" class="checkbox no_toggle">
