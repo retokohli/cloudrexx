@@ -480,8 +480,10 @@ textarea.cke_source {
 }
 
 #search input[type="text"] {
-    width: 121px;
+    width: 163px;
+    padding-right: 25px;
     margin: 0 !important;
+    background: url('../images/search_glass.png') no-repeat right center;
 }
 
 #search input[type="submit"] {
