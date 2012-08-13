@@ -38,6 +38,9 @@ class JsonData {
         'ContentManager' => array(
             'JsonNode', 'JsonPage', 'JsonContentManager',
         ),
+        'Block' => array(
+            'JsonBlock',
+        ),
     );
     
     /**
@@ -69,11 +72,37 @@ class JsonData {
      * @param String $adapter Adapter name
      * @param String $method Method name
      * @param Array $arguments Arguments to pass
+     * @param boolean $setContentType (optional) If true (default) the content type is set to application/json
      * @return String JSON data to return to client
      */
     public function jsondata($adapter, $method, $arguments, $setContentType = true) {
+        if ($setContentType) {
+            // browsers will pass rendering of application/* MIMEs to other
+            // applications, usually.
+            // Skip the following line for debugging, if so desired
+            header('Content-Type: application/json');
+
+            // Disabling CSRF protection. That's no problem as long as we
+            // only return associative arrays or objects!
+            // https://mycomvation.com/wiki/index.php/Contrexx_Security#CSRF
+            // Search for a better way to disable CSRF!
+            ini_set('url_rewriter.tags', '');
+        }
+        return json_encode($this->data($adapter, $method, $arguments));
+    }
+
+    /**
+     * Passes JSON data to the particular adapter and returns the result
+     * Called from jsondata() or any part of Contrexx
+     * @author Michael Ritter <michael.ritter@comvation.com>
+     * @param String $adapter Adapter name
+     * @param String $method Method name
+     * @param Array $arguments Arguments to pass
+     * @return String data to use for further processing
+     */
+    public function data($adapter, $method, $arguments) {
         if (!isset($this->adapters[$adapter])) {
-            return $this->getJsonError('No such adapter');
+            return $this->getError('No such adapter');
         }
         $adapter = $this->adapters[$adapter];
         $methods = $adapter->getAccessableMethods();
@@ -84,32 +113,19 @@ class JsonData {
             $realMethod = $methods[$method];
         }
         if ($realMethod == '') {
-            return $this->getJsonError('No such method: ' . $method);
+            return $this->getError('No such method: ' . $method);
         }
         try {
-            if ($setContentType) {
-                // browsers will pass rendering of application/* MIMEs to other
-                // applications, usually.
-                // Skip the following line for debugging, if so desired
-                header('Content-Type: application/json');
-    
-                // Disabling CSRF protection. That's no problem as long as we
-                // only return associative arrays or objects!
-                // https://mycomvation.com/wiki/index.php/Contrexx_Security#CSRF
-                // Search for a better way to disable CSRF!
-                ini_set('url_rewriter.tags', '');
-            }
-
             $output = call_user_func(array($adapter, $realMethod), $arguments);
 
-            return json_encode(array(
+            return array(
                 'status'  => 'success',
                 'data'    => $output,
                 'message' => $adapter->getMessagesAsString()
-            ));
+            );
         } catch (\Exception $e) {
             //die($e->getTraceAsString());
-            return $this->getJsonError($e->getMessage());
+            return $this->getError($e->getMessage());
         }
     }
     
@@ -119,10 +135,10 @@ class JsonData {
      * @author Michael Ritter <michael.ritter@comvation.com>
      * @return String JSON code
      */
-    protected function getJsonError($message) {
-        return json_encode(array(
+    protected function getError($message) {
+        return array(
             'status' => 'error',
             'message'   => $message
-        ));
+        );
     }
 }
