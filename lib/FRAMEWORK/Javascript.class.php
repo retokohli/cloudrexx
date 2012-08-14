@@ -139,8 +139,8 @@ jQuery(document).ready(function(){
             ),
             'dependencies' => array('jquery'),
         ),
-        'jquery-jqplot'    => array(
-            'jsfiles'       => array(
+        'jquery-jqplot' => array(
+            'jsfiles'   => array(
                 'lib/javascript/jquery/plugins/jqplot/jquery.jqplot.js',
                 'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.canvasTextRenderer.js',
                 'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.categoryAxisRenderer.js',
@@ -148,8 +148,17 @@ jQuery(document).ready(function(){
                 'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.highlighter.js',
                 'lib/javascript/jquery/plugins/jqplot/plugins/jqplot.canvasAxisTickRenderer.js'
             ),
-            'cssfiles'      => array(
+            'cssfiles'  => array(
                 'lib/javascript/jquery/plugins/jqplot/jquery.jqplot.css',
+            ),
+            'dependencies' => array('jquery'),
+        ),
+        'bootstrap' => array(
+            'jsfiles' => array(
+                'lib/javascript/jquery/plugins/bootstrap/bootstrap.js',
+            ),
+            'cssfiles' => array(
+                'lib/javascript/jquery/plugins/bootstrap/bootstrap.css',
             ),
             'dependencies' => array('jquery'),
         ),
