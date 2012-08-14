@@ -5,45 +5,61 @@ var supportStatus = [[SUPPORT_REQUEST_STATUS]];
 var infoFieldsShown = 0;
 var infoFieldIndexNext = [[SUPPORT_REQUEST_INFOFIELD_INDEX]];
 
+$J(function() {
+  $J("[id^=supportRequestHead]").click(function(ev) {
+    supportRequestToggle(getIndex($J(this)));
+  });
+});
+
+function getIndex(element)
+{
+  return element.attr("id").replace(/\D/g, '');
+}
+
+function markStep(index, status)
+{
+  $J("#supportRequestHead"+index).css("background-color",
+    (status ? "#aaaaff" : "#aaffaa"));
+}
+
 function supportRequestToggle(index, power)
 {
-  element = document.getElementById("supportRequestData"+index);
-  display = element.style.display;
-  switch (display) {
-    case 'none':
-      display = 'inline';
-      break;
-    case 'inline':
-    default:
-      display = 'none';
+console.log("Index: "+index);
+//  element.toggle();
+  if (power == undefined) {
+    power = $J("#supportRequestData"+index).css("display");
+console.log("Power is "+power);
   }
   switch (power) {
     case 'inline':
     case 'on':
     case 'show':
-      display = 'inline';
-      document.getElementById("supportRequestHead"+index).style.backgroundColor = '#AAAAFF'; //setAttribute('class', 'supportStepOk', true);
+    case 'block':
+      display = false;
+//      $J("#supportRequestHead"+index).css("background-color", "#AAAAFF");
+      //setAttribute('class', 'supportStepOk', true);
       break;
     case 'none':
     case 'off':
     case 'hide':
-      display = 'none';
-      document.getElementById("supportRequestHead"+index).style.backgroundColor = '#AAFFAA'; //setAttribute('class', 'supportStepOk', true);
+      display = true;
+//      $J("#supportRequestHead"+index).css("background-color", "#AAFFAA");
+      //setAttribute('class', 'supportStepOk', true);
       break;
   }
-  element.style.display = display;
+  $J("#supportRequestData"+index).toggle(display);
 }
 
 function cloneInfoField(id, index)
 {
   // The index div, parent of the name and input divs
-  infoFieldIndex  = document.getElementById('infoFieldIndex_'+id+'_'+index);
+  var infoFieldIndex = document.getElementById('infoFieldIndex_'+id+'_'+index);
 //alert("infoFieldIndex: "+infoFieldIndex.nodeName+" - id '"+infoFieldIndex.getAttribute('id')+"'");
   // Clone the index container, with all its child nodes
-  infoFieldIndexClone = infoFieldIndex.cloneNode(true);
+  var infoFieldIndexClone = infoFieldIndex.cloneNode(true);
 //alert("infoFieldIndexClone: "+infoFieldIndexClone.nodeName+" - id '"+infoFieldIndexClone.getAttribute('id')+"'");//test - OK // The div separating the containers id = infoFieldIndex.parentNode; id.appendChild(infoFieldIndexClone); return;
   // The cloned input div
-  inputNodes = infoFieldIndexClone.childNodes[3].childNodes;
+  var inputNodes = infoFieldIndexClone.childNodes[3].childNodes;
   // The next InfoField index is kept in infoFieldIndexNext.
   // Update parameters
   infoFieldIndexClone.id = infoFieldIndexClone.id.replace(/\d+$/, infoFieldIndexNext);
@@ -55,15 +71,15 @@ function cloneInfoField(id, index)
   inputNodes[5].setAttribute('onclick',
     inputNodes[5].getAttribute('onclick').replace(/\,\s?\d+\);?/, ', '+infoFieldIndexNext+');'));
   // The div separating the containers
-  id = infoFieldIndex.parentNode;
+  var id = infoFieldIndex.parentNode;
   id.appendChild(infoFieldIndexClone);
   ++infoFieldIndexNext;
 }
 
 function deleteInfoField(id, index)
 {
-  element = document.getElementById("infoFieldIndex_"+id+"_"+index);
-  parent  = element.parentNode;
+  var element = $J("#infoFieldIndex_"+id+"_"+index);
+  var parent = element.parentNode;
   if (parent.childNodes.length > 1) {
     parent.removeChild(element);
   }
@@ -71,30 +87,38 @@ function deleteInfoField(id, index)
 
 function supportContinue()
 {
-  if (document.getElementById("supportCategoryId").value <= 0) {
+  var element = $J("#supportCategoryId");
+  if (element.val() <= 0) {
     supportStatus = 0;
-    supportRequestToggle(0, 'show');
-    document.getElementById("supportCategoryId").focus();
+    markStep(0, false);
+    supportRequestToggle(0, 'hide');
+    element.focus();
     return;
   } else {
     supportStatus = 1;
-    supportRequestToggle(0, 'hide');
+    markStep(0, true);
+    supportRequestToggle(0, 'show');
   }
-  if (document.getElementById("supportSubject").value == '') {
-    supportRequestToggle(1, 'show');
-    document.getElementById("supportSubject").focus();
+  element = $J("#supportSubject");
+  if (element.val() == '') {
+    markStep(1, false);
+    supportRequestToggle(1, 'hide');
+    $J("#supportSubject").focus();
     return;
   } else {
     supportStatus = 2;
-    supportRequestToggle(1, 'hide');
+    markStep(1, true);
+    supportRequestToggle(1, 'show');
   }
-  if (document.getElementById("supportBody").value == '') {
-    supportRequestToggle(2, 'show');
-    document.getElementById("supportBody").focus();
+  if ($J("#supportBody").val() == '') {
+    markStep(2, false);
+    supportRequestToggle(2, 'hide');
+    $J("#supportBody").focus();
     return;
   } else {
     supportStatus = 3;
-    supportRequestToggle(2, 'hide');
+    markStep(2, true);
+    supportRequestToggle(2, 'show');
   }
   // Test whether mandatory InfoFields have content.
   // Assume that everything is fine -- we shall prove the contrary
@@ -137,34 +161,43 @@ function supportContinue()
   }
   if (mandatoryOkay == 0 || !infoFieldsShown) {
     infoFieldsShown = 1;
-    supportRequestToggle(3, 'show');
+    markStep(3, false);
+    supportRequestToggle(3, 'hide');
     return;
   } else {
     supportStatus = 4;
-    supportRequestToggle(3, 'hide');
+    markStep(3, true);
+    supportRequestToggle(3, 'show');
   }
-  if (document.getElementById("supportName").value == '') {
-    supportRequestToggle(4, 'show');
-    document.getElementById("supportName").focus();
+  if ($J("#supportName").value == '') {
+    markStep(4, false);
+    supportRequestToggle(4, 'hide');
+    $J("#supportName").focus();
     return;
   } else {
     supportStatus = 5;
-    supportRequestToggle(4, 'hide');
+    markStep(4, true);
+    supportRequestToggle(4, 'show');
   }
-  if (document.getElementById("supportEmail").value == '') {
-    supportRequestToggle(5, 'show');
-    document.getElementById("supportEmail").focus();
+  if ($J("#supportEmail").value == '') {
+    markStep(5, false);
+    supportRequestToggle(5, 'hide');
+    $J("#supportEmail").focus();
     return;
   } else {
     supportStatus = 6;
-    supportRequestToggle(5, 'hide');
+    markStep(5, true);
+    supportRequestToggle(5, 'show');
   }
   if (supportStatus == 6) {
-    if (document.getElementById("supportTicketId").value > 0) {
-      supportRequestToggle(6, 'show');
-    document.getElementById("supportNext").focus();
+    if ($J("#supportTicketId").value > 0) {
+      markStep(6, false);
+      supportRequestToggle(6, 'hide');
+      $J("#supportNext").focus();
       return;
     } else {
+      markStep(6, true);
+      supportRequestToggle(6, 'show');
       document.supportForm.submit();
     }
   }
@@ -172,15 +205,16 @@ function supportContinue()
 // -->
 </script>
 
-<form name="supportForm" method="post" enctype="multipart/form-data" action="">
+<form name="supportForm" method="post" enctype="multipart/form-data"
+      action="[[SUPPORT_FORM_ACTION]]">
   <!-- BEGIN requestData -->
   <div>
     [[TXT_SUPPORT_REQUEST_WELCOME]]
   </div>
   <br />
   <!-- SUPPORT_REQUEST_STATUS_START -->
-  <div id="supportRequestHead0" class="[[SUPPORT_REQUEST_CLASS_0]]" onclick="JavaScript:supportRequestToggle(0, '');">
-    [[TXT_SUPPORT_REQUEST_STATUS_0]]
+  <div id="supportRequestHead0" class="[[SUPPORT_REQUEST_CLASS_0]]">
+    [[TXT_SUPPORT_REQUEST_STATUS_CATEGORY]]
   </div>
   <br />
   <div id="supportRequestData0" style="display:[[SUPPORT_REQUEST_STYLE_0]];">
@@ -193,8 +227,8 @@ function supportContinue()
   </div>
   <br />
   <!-- SUPPORT_REQUEST_STATUS_CATEGORY -->
-  <div id="supportRequestHead1" class="[[SUPPORT_REQUEST_CLASS_1]]" onclick="JavaScript:supportRequestToggle(1, '');">
-    [[TXT_SUPPORT_REQUEST_STATUS_1]]
+  <div id="supportRequestHead1" class="[[SUPPORT_REQUEST_CLASS_1]]">
+    [[TXT_SUPPORT_REQUEST_STATUS_SUBJECT]]
   </div>
   <br />
   <div id="supportRequestData1" style="display:[[SUPPORT_REQUEST_STYLE_1]];">
@@ -209,8 +243,8 @@ function supportContinue()
   </div>
   <br />
   <!-- SUPPORT_REQUEST_STATUS_SUBJECT -->
-  <div id="supportRequestHead2" class="[[SUPPORT_REQUEST_CLASS_2]]" onclick="JavaScript:supportRequestToggle(2, '');">
-    [[TXT_SUPPORT_REQUEST_STATUS_2]]
+  <div id="supportRequestHead2" class="[[SUPPORT_REQUEST_CLASS_2]]">
+    [[TXT_SUPPORT_REQUEST_STATUS_MESSAGE]]
   </div>
   <br />
   <div id="supportRequestData2" style="display:[[SUPPORT_REQUEST_STYLE_2]];">
@@ -218,14 +252,14 @@ function supportContinue()
       [[TXT_SUPPORT_REQUEST_ENTER_MESSAGE]]<br />
     </div>
     <div>
-      <textarea id="supportBody" name="supportBody" style="width:400px;height:200px;"
-      tabindex="3" onchange="JavaScript:supportContinue();">[[SUPPORT_REQUEST_MESSAGE]]</textarea>
+      <textarea id="supportBody" name="supportBody" rows="40" cols="6" tabindex="3"
+          onchange="JavaScript:supportContinue();">[[SUPPORT_REQUEST_MESSAGE]]</textarea>
     </div>
   </div>
   <br />
 <!-- SUPPORT_REQUEST_STATUS_MESSAGE -->
-  <div id="supportRequestHead3" class="[[SUPPORT_REQUEST_CLASS_3]]" onclick="JavaScript:supportRequestToggle(3, '');">
-    [[TXT_SUPPORT_REQUEST_STATUS_3]]
+  <div id="supportRequestHead3" class="[[SUPPORT_REQUEST_CLASS_3]]">
+    [[TXT_SUPPORT_REQUEST_STATUS_INFOFIELD]]
   </div>
   <br />
   <div id="supportRequestData3" style="display:[[SUPPORT_REQUEST_STYLE_3]];">
@@ -247,8 +281,8 @@ function supportContinue()
   </div>
   <br />
 <!-- SUPPORT_REQUEST_STATUS_INFOFIELD -->
-  <div id="supportRequestHead4" class="[[SUPPORT_REQUEST_CLASS_4]]" onclick="JavaScript:supportRequestToggle(4, '');">
-    [[TXT_SUPPORT_REQUEST_STATUS_4]]
+  <div id="supportRequestHead4" class="[[SUPPORT_REQUEST_CLASS_4]]">
+    [[TXT_SUPPORT_REQUEST_STATUS_NAME]]
   </div>
   <br />
   <div id="supportRequestData4" style="display:[[SUPPORT_REQUEST_STYLE_4]];">
@@ -263,8 +297,8 @@ function supportContinue()
   </div>
   <br />
 <!-- SUPPORT_REQUEST_STATUS_NAME -->
-  <div id="supportRequestHead5" class="[[SUPPORT_REQUEST_CLASS_5]]" onclick="JavaScript:supportRequestToggle(5, '');">
-    [[TXT_SUPPORT_REQUEST_STATUS_5]]
+  <div id="supportRequestHead5" class="[[SUPPORT_REQUEST_CLASS_5]]">
+    [[TXT_SUPPORT_REQUEST_STATUS_EMAIL]]
   </div>
   <br />
   <div id="supportRequestData5" style="display:[[SUPPORT_REQUEST_STYLE_5]];">
@@ -280,8 +314,8 @@ function supportContinue()
   <br />
   <!-- END requestData -->
 <!-- SUPPORT_REQUEST_STATUS_EMAIL -->
-  <div id="supportRequestHead6" class="[[SUPPORT_REQUEST_CLASS_6]]" onclick="JavaScript:supportRequestToggle(6, '');">
-    [[TXT_SUPPORT_REQUEST_STATUS_6]]
+  <div id="supportRequestHead6" class="[[SUPPORT_REQUEST_CLASS_6]]">
+    [[TXT_SUPPORT_REQUEST_STATUS_TICKET]]
   </div>
   <br />
   <div id="supportRequestData6" style="display:[[SUPPORT_REQUEST_STYLE_6]];">
@@ -293,7 +327,7 @@ function supportContinue()
     </div>
     <br />
     <div>
-      [[TXT_SUPPORT_REQUEST_YOUR_TICKET]]
+      [[SUPPORT_REQUEST_YOUR_TICKET]]
     </div>
     <br />
     <div>
@@ -314,7 +348,7 @@ function supportContinue()
   <br />
   <div>
     <input type="button" id="supportNext"
-      value="[[TXT_SUPPORT_REQUEST_CONTINUE]]"
+      value="[[SUPPORT_REQUEST_CONTINUE]]"
       onclick="[[SUPPORT_REQUEST_CONTINUE_FUNCTION]]" />
   </div>
 </form>

@@ -188,22 +188,6 @@ class InfoField
 
 
     /**
-     * Constructor (PHP4)
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     * @version     0.0.1
-     * @see         __construct()
-     */
-    function InfoField(
-        $name, $type, $languageId,
-        $mandatory=0, $multiple=0, $status=1, $order=0, $id=0
-    ) {
-        $this->__construct(
-            $name, $type, $languageId,
-            $mandatory, $multiple, $status, $order, $id
-        );
-    }
-
-    /**
      * Constructor (PHP5)
      *
      * @author      Reto Kohli <reto.kohli@comvation.com>
@@ -224,7 +208,7 @@ class InfoField
         $this->arrName    = false;
         // No Support Categories are associated with this yet.
         $this->arrSupportCategoryId = array();
-//if (MY_DEBUG) { echo("__construct(name=$name, type=$type, lang=$languageId, mandatory=$mandatory, multiple=$multiple, status=$status, order=$order, id=$id): made ");var_export($this);echo("<br />"); }
+//DBG::log("__construct(name=$name, type=$type, lang=$languageId, mandatory=$mandatory, multiple=$multiple, status=$status, order=$order, id=$id): made ");var_export($this);
     }
 
 
@@ -428,10 +412,10 @@ class InfoField
     function delete($languageId=0)
     {
         global $objDatabase;
-//if (MY_DEBUG) echo("Debug: InfoField::delete(): entered<br />");
+//DBG::log("Debug: InfoField::delete(): entered<br />");
 
         if (!$this->id) {
-if (MY_DEBUG) echo("InfoField::delete($languageId): Error: This InfoField is missing the ID<br />");
+DBG::log("InfoField::delete($languageId): Error: This InfoField is missing the ID<br />");
             return false;
         }
         $query = "
@@ -440,24 +424,22 @@ if (MY_DEBUG) echo("InfoField::delete($languageId): Error: This InfoField is mis
                ".($languageId ? "AND language_id=$languageId" : '');
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-if (MY_DEBUG) echo("InfoField::delete($languageId): Error: Failed to delete the InfoField language entry from the database<br />");
+DBG::log("InfoField::delete($languageId): Error: Failed to delete the InfoField language entry from the database<br />");
             return false;
         }
         if (!InfoField::getById($this->id, 0, true)) {
             $objResult = $objDatabase->Execute("
                 DELETE FROM ".DBPREFIX."module_support_info_field_rel_support_category
-                 WHERE info_field_id=$this->id
-            ");
+                 WHERE info_field_id=$this->id");
             if (!$objResult) {
-if (MY_DEBUG) echo("InfoField::delete($languageId): Error: Failed to delete the InfoField-SupportCategory relations from the database<br />");
+DBG::log("InfoField::delete($languageId): Error: Failed to delete the InfoField-SupportCategory relations from the database<br />");
                 return false;
             }
             $objResult = $objDatabase->Execute("
                 DELETE FROM ".DBPREFIX."module_support_info_field
-                 WHERE id=$this->id
-            ");
+                 WHERE id=$this->id");
             if (!$objResult) {
-if (MY_DEBUG) echo("InfoField::delete($languageId): Error: Failed to delete the InfoField from the database<br />");
+DBG::log("InfoField::delete($languageId): Error: Failed to delete the InfoField from the database<br />");
                 return false;
             }
         }
@@ -491,7 +473,8 @@ if (MY_DEBUG) echo("InfoField::delete($languageId): Error: Failed to delete the 
     function update()
     {
         global $objDatabase;
-if (MY_DEBUG) { echo("update(): ");var_export($this);echo("<br />"); }
+
+//DBG::log("update(): ".var_export($this, TRUE));
         $query = "
             UPDATE ".DBPREFIX."module_support_info_field
                SET `status`=".($this->status ? 1 : 0).",
@@ -499,8 +482,7 @@ if (MY_DEBUG) { echo("update(): ");var_export($this);echo("<br />"); }
                    `type`=$this->type,
                    mandatory=".($this->mandatory ? 1 : 0).",
                    multiple=".($this->multiple ? 1 : 0)."
-             WHERE id=$this->id
-        ";
+             WHERE id=$this->id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
@@ -511,7 +493,7 @@ if (MY_DEBUG) { echo("update(): ");var_export($this);echo("<br />"); }
         if (!$this->updateRelations()) {
             return false;
         }
-//if (MY_DEBUG) echo("InfoField::update(): done<br />");
+//DBG::log("InfoField::update(): done<br />");
         return true;
     }
 
@@ -532,8 +514,7 @@ if (MY_DEBUG) { echo("update(): ");var_export($this);echo("<br />"); }
             SELECT 1
               FROM ".DBPREFIX."module_support_info_field_language
              WHERE info_field_id=$this->id
-               AND language_id=$this->languageId
-        ";
+               AND language_id=$this->languageId";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
@@ -548,13 +529,12 @@ if (MY_DEBUG) { echo("update(): ");var_export($this);echo("<br />"); }
             UPDATE ".DBPREFIX."module_support_info_field_language
                SET `name`='".contrexx_addslashes($this->name)."'
              WHERE info_field_id=$this->id
-               AND language_id=$this->languageId
-        ";
+               AND language_id=$this->languageId";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
         }
-//if (MY_DEBUG) echo("InfoField::update(): done<br />");
+//DBG::log("InfoField::update(): done<br />");
         return true;
     }
 
@@ -578,7 +558,7 @@ if (MY_DEBUG) { echo("update(): ");var_export($this);echo("<br />"); }
         $supportCategoryIdOld = current($arrSupportCategoryId);
         $supportCategoryIdNew = current($this->arrSupportCategoryId);
         // While there are elements in one or both arrays
-        while (   $supportCategoryIdNew !== false
+        while (   $supportCategoryIdOld !== false
                && $supportCategoryIdNew !== false) {
             if ($supportCategoryIdNew == $supportCategoryIdNew) {
                 // The IDs are identical, go on to the next pair
@@ -604,7 +584,7 @@ if (MY_DEBUG) { echo("update(): ");var_export($this);echo("<br />"); }
                 continue;
             }
         }
-if (MY_DEBUG) echo("InfoField::updateRelations(): done<br />");
+//DBG::log("InfoField::updateRelations(): done<br />");
         return true;
     }
 
@@ -624,8 +604,7 @@ if (MY_DEBUG) echo("InfoField::updateRelations(): done<br />");
         $query = "
             DELETE FROM ".DBPREFIX."module_support_info_field_rel_support_category
              WHERE info_field_id=$this->id
-               AND support_category_id=$supportCategoryId
-        ";
+               AND support_category_id=$supportCategoryId";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
@@ -646,15 +625,19 @@ if (MY_DEBUG) echo("InfoField::updateRelations(): done<br />");
     {
         global $objDatabase;
 
+        $supportCategoryId = intval($supportCategoryId);
+        if ($supportCategoryId <= 0) {
+DBG::log("Warning: InfoField::addRelation($supportCategoryId) called with empty supportCategoryId");
+            return false;
+        }
         $query = "
             INSERT INTO ".DBPREFIX."module_support_info_field_rel_support_category (
-                   info_field_id,
-                   support_category_id
+                info_field_id,
+                support_category_id
             ) VALUES (
-                    $this->id,
-                    $supportCategoryId
-            )
-        ";
+                $this->id,
+                $supportCategoryId
+            )";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
@@ -679,8 +662,7 @@ if (MY_DEBUG) echo("InfoField::updateRelations(): done<br />");
         $query = "
             SELECT support_category_id
               FROM ".DBPREFIX."module_support_info_field_rel_support_category
-             WHERE info_field_id=$this->id
-        ";
+             WHERE info_field_id=$this->id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
@@ -704,7 +686,7 @@ if (MY_DEBUG) echo("InfoField::updateRelations(): done<br />");
     function insert()
     {
         global $objDatabase;
-if (MY_DEBUG) { echo("insert(): ");var_export($this);echo("<br />"); }
+DBG::log("insert(): ");var_export($this);
 
         $query = "
             INSERT INTO ".DBPREFIX."module_support_info_field (
@@ -719,8 +701,7 @@ if (MY_DEBUG) { echo("insert(): ");var_export($this);echo("<br />"); }
                    $this->type,
                    ".($this->mandatory ? 1 : 0).",
                    ".($this->multiple ? 1 : 0)."
-            )
-        ";
+            )";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
@@ -735,7 +716,7 @@ if (MY_DEBUG) { echo("insert(): ");var_export($this);echo("<br />"); }
         if (!$this->updateRelations()) {
             return false;
         }
-if (MY_DEBUG) echo("InfoField::insert(): done<br />");
+DBG::log("InfoField::insert(): done<br />");
         return true;
     }
 
@@ -760,13 +741,12 @@ if (MY_DEBUG) echo("InfoField::insert(): done<br />");
                    $this->id,
                    $this->languageId,
                    '".contrexx_addslashes($this->name)."'
-            )
-        ";
+            )";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
         }
-//if (MY_DEBUG) echo("InfoField::update(): done<br />");
+//DBG::log("InfoField::update(): done<br />");
         return true;
     }
 
@@ -834,18 +814,18 @@ if (MY_DEBUG) echo("InfoField::insert(): done<br />");
             ? "AND language_id=$languageId"
             : 'ORDER BY language_id ASC'
         );
-//if (MY_DEBUG) echo("InfoField::getById($id, $languageId): query: $query<br />");
+//DBG::log("InfoField::getById($id, $languageId): query: $query<br />");
         $objResult = $objDatabase->Execute($query);
-//if (MY_DEBUG) echo("InfoField::getById($id, $languageId): objResult: '$objResult'<br />");
+//DBG::log("InfoField::getById($id, $languageId): objResult: '$objResult'<br />");
         if (!$objResult) {
-if (MY_DEBUG) echo("InfoField::getById($id, $languageId): query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
+DBG::log("InfoField::getById($id, $languageId): query failed, objResult: '$objResult', count: ".$objResult->RecordCount()."<br />");
             return false;
         }
         if ($objResult->RecordCount() == 0) {
-if (MY_DEBUG) echo("InfoField::getById($id, $languageId): no result: ".$objResult->RecordCount()."<br />");
+DBG::log("InfoField::getById($id, $languageId): no result: ".$objResult->RecordCount()."<br />");
             return false;
         }
-//if (MY_DEBUG) echo("InfoField::getById($id, $languageId): ID is ".$objResult->fields['id']."<br />");
+//DBG::log("InfoField::getById($id, $languageId): ID is ".$objResult->fields['id']."<br />");
         $arrName = array();
         $objInfoField = false;
         while (!$objResult->EOF) {
@@ -872,14 +852,10 @@ if (MY_DEBUG) echo("InfoField::getById($id, $languageId): no result: ".$objResul
         // Get the array of associated Support Category IDs
         $objInfoField->arrSupportCategoryId =
             $objInfoField->getSupportCategoryIdArray();
-        if (!$objInfoField->arrSupportCategoryId) {
-if (MY_DEBUG) { echo("InfoField::getById($id): WARNING: Failed to get related Support Categories!<br />"); }
-            // Set the array variable to false to indicate that
-            // it must be ignored.  The InfoField is used in all
-            // Support Categories.
-            $objInfoField->arrSupportCategoryId = false;
+        if ($objInfoField->arrSupportCategoryId === false) {
+DBG::log("InfoField::getById($id): WARNING: Failed to get related Support Categories!<br />");
         }
-//if (MY_DEBUG) echo("InfoField::getById($id, $languageId): my ID is ".$objInfoField->getId()."<br />");
+//DBG::log("InfoField::getById($id, $languageId): my ID is ".$objInfoField->getId()."<br />");
         return $objInfoField;
     }
 
@@ -912,6 +888,5 @@ if (MY_DEBUG) { echo("InfoField::getById($id): WARNING: Failed to get related Su
         }
         return false;
     }
-}
 
-?>
+}

@@ -312,8 +312,7 @@ if (MY_DEBUG) echo("Message::delete(): Error: This Message is missing its ID!<br
         }
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_support_message
-             WHERE id=$this->id
-        ");
+             WHERE id=$this->id");
         if (!$objResult) {
 if (MY_DEBUG) echo("Message::delete(): Error: Failed to delete the Message from the database!<br />");
             return false;
@@ -353,8 +352,7 @@ if (MY_DEBUG) echo("Message::delete(): Error: Failed to delete the Message from 
         $query = "
             UPDATE ".DBPREFIX."module_support_message
                SET `status`=$this->status,
-             WHERE id=$this->id
-        ";
+             WHERE id=$this->id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
@@ -390,8 +388,7 @@ if (MY_DEBUG) echo("Message::delete(): Error: Failed to delete the Message from 
                    '".contrexx_addslashes($this->subject)."',
                    '".contrexx_addslashes($this->body)."',
                    '".contrexx_addslashes($this->date)."'
-            )
-        ";
+            )";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
@@ -419,8 +416,7 @@ if (MY_DEBUG) echo("Message::delete(): Error: Failed to delete the Message from 
         $query = "
             SELECT `timestamp`
               FROM ".DBPREFIX."module_support_message
-             WHERE id=$this->id
-        ";
+             WHERE id=$this->id";
 if (MY_DEBUG) echo("Message::refreshTimestamp(): query: $query<br />");
         $objResult = $objDatabase->Execute($query);
 if (MY_DEBUG) echo("Message::refreshTimestamp(): objResult: '$objResult'<br />");
@@ -461,8 +457,7 @@ if (MY_DEBUG) echo("Message::deleteByTicketId(ticketId=$ticketId): ERROR: missin
         }
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_support_message
-             WHERE ticket_id=$ticketId
-        ");
+             WHERE ticket_id=$ticketId");
         if (!$objResult) {
 if (MY_DEBUG) echo("Message::deleteByTicketId(ticketId=$ticketId): ERROR: Failed to delete the Message records from the database<br />");
             return false;
@@ -488,8 +483,7 @@ if (MY_DEBUG) echo("Message::deleteByTicketId(ticketId=$ticketId): ERROR: Failed
         $query = "
             SELECT *
               FROM ".DBPREFIX."module_support_message
-             WHERE id=$id
-        ";
+             WHERE id=$id";
 //if (MY_DEBUG) echo("Message::getById($id): query: $query<br />");
         $objResult = $objDatabase->Execute($query);
 //if (MY_DEBUG) echo("Message::getById($id): objResult: '$objResult'<br />");
@@ -555,23 +549,24 @@ if (MY_DEBUG) { echo("Message::getById($id): made Message: ");var_export($objMes
      */
     //static
     function getMessageIdArray(
-        $ticketId, $status, $from, $subject, $date,
+        $ticketId,
+//        $status,
+        $from, $subject, $date,
         $order="`timestamp` DESC", $offset=0, $limit=0
     ) {
         global $objDatabase, $_CONFIG;
 
         $limit = ($limit ? $limit : $_CONFIG['corePagingLimit']);
         $query = "
-            SELECT id
-              FROM ".DBPREFIX."module_support_message
-             WHERE 1
-               ".($ticketId ? "AND ticket_id=$ticketId" : '')."
-               ".($status   ? "AND status=$status" : '')."
-               ".($from     ? "AND from='".contrexx_addslashes($from)."'" : '')."
-               ".($subject  ? "AND subject='".contrexx_addslashes($subject)."'" : '')."
-               ".($date     ? "AND date='".contrexx_addslashes($date)."'" : '')."
-          ORDER BY $order
-        ";
+            SELECT `id`
+              FROM `".DBPREFIX."module_support_message`
+             WHERE 1".
+            ($ticketId ? " AND `ticket_id`=$ticketId" : '').
+//            ($status   ? " AND status=$status" : '').
+            ($from     ? " AND `from`='".contrexx_addslashes($from)."'" : '').
+            ($subject  ? " AND `subject`='".contrexx_addslashes($subject)."'" : '').
+            ($date     ? " AND `date=`'".contrexx_addslashes($date)."'" : '')."
+          ORDER BY $order";
         $objResult = $objDatabase->SelectLimit($query, $limit, $offset);
         if (!$objResult) {
             return false;
@@ -670,19 +665,21 @@ if (MY_DEBUG) echo("Message::getMessageArray(array=$arrMessageId): ERROR: got no
      */
     //static
     function getRecordCount(
-        $ticketId, $status, $from, $subject, $date
+        $ticketId,
+//        $status,
+        $from, $subject, $date
     ) {
         global $objDatabase, $_CONFIG;
 
         $query = "
-            SELECT COUNT(*) as numof
-              FROM ".DBPREFIX."module_support_message
-             WHERE 1
-               ".($ticketId ? "AND ticket_id=$ticketId" : '')."
-               ".($status   ? "AND status=$status" : '')."
-               ".($from     ? "AND from='".contrexx_addslashes($from)."'" : '')."
-               ".($subject  ? "AND subject='".contrexx_addslashes($subject)."'" : '')."
-               ".($date     ? "AND date='".contrexx_addslashes($date)."'" : '');
+            SELECT COUNT(*) AS `numof`
+              FROM `".DBPREFIX."module_support_message`
+             WHERE 1".
+            ($ticketId ? " AND `ticket_id`=$ticketId" : '').
+//            ($status   ? " AND status=$status" : '').
+            ($from     ? " AND `from`='".contrexx_addslashes($from)."'" : '').
+            ($subject  ? " AND `subject`='".contrexx_addslashes($subject)."'" : '').
+            ($date     ? " AND `date`='".contrexx_addslashes($date)."'" : '');
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
@@ -712,8 +709,7 @@ if (MY_DEBUG) echo("Message::getMessageArray(array=$arrMessageId): ERROR: got no
             SELECT id
               FROM ".DBPREFIX."module_support_message
              WHERE ticket_id=$ticketId
-          ORDER BY `date` DESC
-        ";
+          ORDER BY `date` DESC";
         $objResult = $objDatabase->SelectLimit($query, 1);
         if (!$objResult) {
             return false;
@@ -725,8 +721,4 @@ if (MY_DEBUG) echo("Message::getMessageArray(array=$arrMessageId): ERROR: got no
         return false;
     }
 
-
-
 }
-
-?>

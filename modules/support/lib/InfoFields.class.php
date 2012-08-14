@@ -96,7 +96,7 @@ class InfoFields
     {
         $this->languageId     = intval($languageId);
         $this->flagActiveOnly = ($flagActiveOnly == true);
-//if (MY_DEBUG) { echo("__construct(lang=$languageId): made ");var_export($this);echo("<br />"); }
+//DBG::log("__construct(lang=$languageId): made ".var_export($this, TRUE));
     }
 
 
@@ -145,7 +145,7 @@ class InfoFields
      */
     function getInfoFieldArray($languageId, $flagActiveOnly=true)
     {
-//if (MY_DEBUG) echo("infofields::getInfoFieldArray(languageId=$languageId, flagActiveOnly=$flagActiveOnly): INFO: Entered.<br />");
+//DBG::log("infofields::getInfoFieldArray(languageId=$languageId, flagActiveOnly=$flagActiveOnly): INFO: Entered.");
         // if it has already been initialized with the correct language
         // and flag, just return it
         if (   is_array($this->arrInfoField)
@@ -154,7 +154,7 @@ class InfoFields
             return $this->arrInfoField;
         }
 
-//if (MY_DEBUG) echo("infofields::getInfoFieldArray(languageId=$languageId, flagActiveOnly=$flagActiveOnly): INFO: Creating new array.<br />");
+//DBG::log("infofields::getInfoFieldArray(languageId=$languageId, flagActiveOnly=$flagActiveOnly): INFO: Creating new array.");
         // The Info Field name array is invalidated by this!
         $this->languageId = $languageId;
         $this->flagActiveOnly = $flagActiveOnly;
@@ -263,7 +263,7 @@ class InfoFields
     function getArrayById($id)
     {
         if (!$this->arrInfoField) {
-if (MY_DEBUG) echo("InfoFields::getArrayById($id): ERROR: InfoField array is missing!<br />");
+DBG::log("InfoFields::getArrayById($id): ERROR: InfoField array is missing!");
             return false;
         }
         return $this->arrInfoField[$this->arrInfoFieldIndex[$id]];
@@ -293,7 +293,7 @@ if (MY_DEBUG) echo("InfoFields::getArrayById($id): ERROR: InfoField array is mis
                 as $arrField) {
             $id    = $arrField['id'];
             $name  = $arrField['name'];
-if (MY_DEBUG) echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$menuName): id $id, name $name<br />");
+DBG::log("getAdminMenu(lang=$languageId, select=$selectedId, name=$menuName): id $id, name $name");
             $menu .=
                 "<option value='$id'".
                 ($selectedId == $id ? ' selected="selected"' : '').
@@ -302,7 +302,7 @@ if (MY_DEBUG) echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$men
         if ($menuName) {
             $menu = "<select id='$menuName' name='$menuName'>\n$menu\n</select>\n";
         }
-if (MY_DEBUG) echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$menuName): made menu: ".htmlentities($menu)."<br />");
+DBG::log("getAdminMenu(lang=$languageId, select=$selectedId, name=$menuName): made menu: ".htmlentities($menu)."");
         return $menu;
     }
 
@@ -328,7 +328,7 @@ if (MY_DEBUG) echo("getAdminMenu(lang=$languageId, select=$selectedId, name=$men
         // we don't want the User to choose that from the menu.
         for ($i = 1; $i < SUPPORT_INFO_FIELD_TYPE_COUNT; ++$i) {
             $type  = InfoField::getTypeString($i);
-if (MY_DEBUG) echo("InfoFields::getTypeMenu(select=$selectedType, name=$menuName): i $i, type $type<br />");
+DBG::log("InfoFields::getTypeMenu(select=$selectedType, name=$menuName): i $i, type $type");
             $menu .=
                 "<option value='$i'".
                 ($selectedType == $i ? ' selected="selected"' : '').
@@ -337,7 +337,7 @@ if (MY_DEBUG) echo("InfoFields::getTypeMenu(select=$selectedType, name=$menuName
         if ($menuName) {
             $menu = "<select id='$menuName' name='$menuName'>\n$menu\n</select>\n";
         }
-if (MY_DEBUG) echo("InfoFields::getTypeMenu(select=$selectedType, name=$menuName): made menu: ".htmlentities($menu)."<br />");
+DBG::log("InfoFields::getTypeMenu(select=$selectedType, name=$menuName): made menu: ".htmlentities($menu)."");
         return $menu;
     }
 
@@ -366,7 +366,7 @@ if (MY_DEBUG) echo("InfoFields::getTypeMenu(select=$selectedType, name=$menuName
     {
         global $_ARRAYLANG;
 
-//if (MY_DEBUG) { echo("InfoFields::getHtml(): ");var_export($arrInfoField);echo("<br />"); }
+//DBG::log("InfoFields::getHtml(): ".var_export($arrInfoField, TRUE));
 
         $id = $arrInfoField['id'];
         $index = (!empty($arrInfoField['index']) ? $arrInfoField['index'] : 0);
@@ -449,7 +449,7 @@ if (MY_DEBUG) echo("InfoFields::getTypeMenu(select=$selectedType, name=$menuName
     function isComplete()
     {
         if (!$this->arrInfoField) {
-if (MY_DEBUG) echo("InfoFields::isComplete(): ERROR: InfoField array is missing!<br />");
+DBG::log("InfoFields::isComplete(): ERROR: InfoField array is missing!");
             return false;
         }
         $arrInfoFieldsPost =
@@ -457,10 +457,10 @@ if (MY_DEBUG) echo("InfoFields::isComplete(): ERROR: InfoField array is missing!
                 ? $_REQUEST['arrSupportInfoField'] : array()
             );
         $arrInfoFieldsPost += $_FILES['arrSupportInfoField'];
-if (MY_DEBUG) echo("InfoFields::isComplete(): INFO: made array ");var_export($arrInfoFieldsPost);echo("<br />");
+DBG::log("InfoFields::isComplete(): INFO: made array ".var_export($arrInfoFieldsPost, TRUE));
         $isComplete = true;
         $uploadSuccess = true;
-if (MY_DEBUG) { echo("InfoFields::isComplete(): FILES: ");var_export($_FILES);echo("<br />"); }
+DBG::log("InfoFields::isComplete(): FILES: ".var_export($_FILES, TRUE));
         foreach ($this->arrInfoField as $arrInfoField) {
             // Don't bother about non-mandatory fields
             if (!$arrInfoField['mandatory']) {
@@ -473,8 +473,9 @@ if (MY_DEBUG) { echo("InfoFields::isComplete(): FILES: ");var_export($_FILES);ec
                 foreach ($arrInfoFieldsPost['error'][$id] as $index => $error) {
                     if ($error != UPLOAD_ERR_OK) {
                         $name = $arrInfoFieldsPost['name'][$id][$index];
+// TODO: Language entries "TXT_PHP_UPLOAD_ERR_*" are not defined
 //                        $this->addMessage($name.': '.$_ARRAYLANG['TXT_PHP_UPLOAD_ERR_'.$error]);
-if (MY_DEBUG) echo("InfoFields::isComplete(): $name: ERROR: $error (".$_ARRAYLANG['TXT_PHP_UPLOAD_ERR_'.$error].')<br />');
+//DBG::log("InfoFields::isComplete(): $name: ERROR: $error (".$_ARRAYLANG['TXT_PHP_UPLOAD_ERR_'.$error].')');
                         $uploadSuccess = false;
                     }
                 }
@@ -482,7 +483,7 @@ if (MY_DEBUG) echo("InfoFields::isComplete(): $name: ERROR: $error (".$_ARRAYLAN
                 foreach ($arrInfoFieldsPost[$id] as $index => $infoFieldValue) {
 // TODO: Verify the value range (numbers, strings, ...)
                     if (empty($infoFieldValue)) {
-if (MY_DEBUG) echo("InfoFields::isComplete(): WARNING: $id-$index has no value!<br />");
+DBG::log("InfoFields::isComplete(): WARNING: $id-$index has no value!");
                         $isComplete = false;
                     }
                 }
@@ -508,7 +509,7 @@ if (MY_DEBUG) echo("InfoFields::isComplete(): WARNING: $id-$index has no value!<
         global $_ARRAYLANG;
 
         if (!$this->arrInfoField) {
-if (MY_DEBUG) echo("InfoFields::arrayToText(): ERROR: InfoField array is missing!<br />");
+DBG::log("InfoFields::arrayToText(): ERROR: InfoField array is missing!");
             return false;
         }
         $strInfoFields = "\n\n".$_ARRAYLANG['TXT_SUPPORT_INFOFIELDS']."\n";
@@ -521,5 +522,3 @@ if (MY_DEBUG) echo("InfoFields::arrayToText(): ERROR: InfoField array is missing
     }
 
 }
-
-?>

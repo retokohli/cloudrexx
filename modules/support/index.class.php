@@ -1,10 +1,7 @@
 <?php
 
-define('MY_DEBUG', 1);
-
 /**
  * Support system including Tickets, Knowledge Base and Mail support.
- *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     0.0.1
@@ -104,7 +101,6 @@ define('SUPPORT_REQUEST_STATUS_COMPLETE',
 
 /**
  * Support system frontend
- *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     0.0.1
@@ -193,18 +189,6 @@ class Support
 
 
     /**
-     * Constructor (PHP4)
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     * @version     0.0.1
-     * @param       string  $strTemplate
-     * @see     __construct()
-     */
-    function Support($strTemplate)
-    {
-        $this->__construct($strTemplate);
-    }
-
-    /**
      * Constructor (PHP5)
      * @param       string      $strTemplate    Template name
      * @author      Reto Kohli <reto.kohli@comvation.com>
@@ -214,14 +198,8 @@ class Support
     {
         global $objInit;
 
-        if (MY_DEBUG & 1) {
-            error_reporting(E_ALL); ini_set('display_errors', 1);
-        } else {
-            error_reporting(0); ini_set('display_errors', 0);
-        }
-        if (MY_DEBUG & 2) {
-            global $objDatabase; $objDatabase->debug = 1;
-        }
+// TODO: Temporary
+//$strTemplate = file_get_contents(ASCMS_MODULE_PATH.'/support/template/frontend_module_support_request.html');
 
         $this->objTemplate = new HTML_Template_Sigma('.');
         CSRF::add_placeholder($this->objTemplate);
@@ -232,7 +210,7 @@ class Support
             new SupportCategories(FRONTEND_LANG_ID);
         $this->objInfoFields =
             new InfoFields(FRONTEND_LANG_ID);
-if (MY_DEBUG) { echo("Support::__construct(): POST: ");var_export($_POST);echo("<br />"); }
+//DBG::log("Support::__construct(): POST: ".var_export($_POST, TRUE));
     }
 
 
@@ -245,6 +223,7 @@ if (MY_DEBUG) { echo("Support::__construct(): POST: ");var_export($_POST);echo("
      */
     function getPage()
     {
+        JS::activate('jquery');
         if (!isset($_GET['cmd'])) {
             $_GET['cmd'] = '';
         }
@@ -292,67 +271,68 @@ if (MY_DEBUG) { echo("Support::__construct(): POST: ");var_export($_POST);echo("
 
         // The status is at its default, START, before this.
         if (!empty($_REQUEST['supportCategoryId'])) {
-if (MY_DEBUG) echo("Support::supportRequest(): got category id, ");
+DBG::log("Support::supportRequest(): got category id, ");
             $this->supportCategoryId = intval($_REQUEST['supportCategoryId']);
             if ($this->supportCategoryId > 0) {
                 $this->supportStatus |= SUPPORT_REQUEST_STATUS_CATEGORY;
-if (MY_DEBUG) echo("Support::supportRequest():status is now $this->supportStatus, ");
+DBG::log("Support::supportRequest(): status is now $this->supportStatus, ");
             }
         }
         if (!empty($_REQUEST['supportSubject'])) {
-if (MY_DEBUG) echo("Support::supportRequest():got subject, ");
+DBG::log("Support::supportRequest(): got subject, ");
             $this->supportSubject = $_REQUEST['supportSubject'];
             $this->supportStatus |= SUPPORT_REQUEST_STATUS_SUBJECT;
-if (MY_DEBUG) echo("Support::supportRequest():status is now $this->supportStatus, ");
+DBG::log("Support::supportRequest(): status is now $this->supportStatus, ");
         }
         if (!empty($_REQUEST['supportBody'])) {
-if (MY_DEBUG) echo("Support::supportRequest():got body, ");
+DBG::log("Support::supportRequest(): got body, ");
             $this->supportBody = $_REQUEST['supportBody'];
             $this->supportStatus |= SUPPORT_REQUEST_STATUS_MESSAGE;
-if (MY_DEBUG) echo("Support::supportRequest():status is now $this->supportStatus, ");
+DBG::log("Support::supportRequest(): status is now $this->supportStatus, ");
         }
         if (isset($_REQUEST['arrSupportInfoField'])) {
-if (MY_DEBUG) echo("Support::supportRequest():got infofield/s, ");
+DBG::log("Support::supportRequest(): got infofield/s, ");
             $this->arrSupportInfoField = $_REQUEST['arrSupportInfoField'];
-if (MY_DEBUG) { echo("Support::supportRequest():arrIF: ");var_export($this->arrSupportInfoField);echo("<br />"); }
+DBG::log("Support::supportRequest(): arrIF: ");var_export($this->arrSupportInfoField);
             if ($this->objInfoFields->isComplete($this->arrSupportInfoField)) {
                 $this->supportStatus |= SUPPORT_REQUEST_STATUS_INFOFIELD;
             }
-if (MY_DEBUG) echo("Support::supportRequest():status is now $this->supportStatus, ");
+DBG::log("Support::supportRequest(): status is now $this->supportStatus, ");
         }
         if (!empty($_REQUEST['supportName'])) {
-if (MY_DEBUG) echo("Support::supportRequest():got name, ");
+DBG::log("Support::supportRequest(): got name, ");
             $this->supportName = $_REQUEST['supportName'];
             $this->supportStatus |= SUPPORT_REQUEST_STATUS_NAME;
-if (MY_DEBUG) echo("Support::supportRequest():status is now $this->supportStatus, ");
+DBG::log("Support::supportRequest(): status is now $this->supportStatus, ");
         }
         if (!empty($_REQUEST['supportEmail'])) {
-if (MY_DEBUG) echo("Support::supportRequest():got email, ");
+DBG::log("Support::supportRequest(): got email, ");
             $this->supportEmail = $_REQUEST['supportEmail'];
             $this->supportStatus |= SUPPORT_REQUEST_STATUS_EMAIL;
-if (MY_DEBUG) echo("Support::supportRequest():status is now $this->supportStatus, ");
+DBG::log("Support::supportRequest(): status is now $this->supportStatus, ");
         }
         if (!empty($_REQUEST['supportTicketId'])) {
-if (MY_DEBUG) echo("Support::supportRequest():got ticket id, ");
+DBG::log("Support::supportRequest(): got ticket id, ");
             $this->supportTicketId = $_REQUEST['supportTicketId'];
             $this->supportStatus |= SUPPORT_REQUEST_STATUS_TICKET;
-if (MY_DEBUG) echo("Support::supportRequest():status is now $this->supportStatus, ");
+DBG::log("Support::supportRequest(): status is now $this->supportStatus, ");
         }
-if (MY_DEBUG) echo("<br />");
-if (MY_DEBUG) echo("Support::supportRequest(): INFO: Support status is $this->supportStatus.<br />");
+//DBG::log("Support::supportRequest(): INFO: Support status is $this->supportStatus.<br />");
 
         $ticketId = 0;
-if (MY_DEBUG) echo("Support::supportRequest(): status is $this->supportStatus.<br />");
+//DBG::log("Support::supportRequest(): status is $this->supportStatus.<br />");
         if ($this->supportStatus == SUPPORT_REQUEST_STATUS_READY) {
-if (MY_DEBUG) echo("Support::supportRequest(): Requesting Ticket.<br />");
+DBG::log("Support::supportRequest(): Requesting Ticket.<br />");
             // Try to obtain a Ticket with the parameters posted.
             $ticketId = $this->requestTicket();
-if (MY_DEBUG) echo("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
+DBG::log("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
         }
 //$this->dumpTemplate($this->objTemplate);
+        $this->objTemplate->setGlobalVariable($_ARRAYLANG);
 
+        global $page;
         $this->objTemplate->setVariable(array(
-            'TXT_SUPPORT_REQUEST_CONTINUE'      =>
+            'SUPPORT_REQUEST_CONTINUE' =>
                 ($ticketId
                     ? $_ARRAYLANG['TXT_SUPPORT_REQUEST_FINISH']
                     : $_ARRAYLANG['TXT_SUPPORT_REQUEST_CONTINUE']
@@ -362,42 +342,29 @@ if (MY_DEBUG) echo("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
                     ? "JavaScript:window.location.href='index.php?".CSRF::param()."';"
                     : "JavaScript:supportContinue();"
                 ),
-            'SUPPORT_REQUEST_TICKET_ID'     => $ticketId,
-            'SUPPORT_REQUEST_STATUS'        => $this->supportStatus,
+            'SUPPORT_REQUEST_TICKET_ID' => $ticketId,
+            'SUPPORT_REQUEST_STATUS' => $this->supportStatus,
+            'SUPPORT_FORM_ACTION' =>
+                ASCMS_PATH_OFFSET.
+                Env::get('virtualLanguageDirectory').
+                $page->getPath(),
+//            $page->getPath(),
         ));
 
         if ($ticketId > 0) {
             $this->objTemplate->hideBlock('requestIncomplete');
             $this->objTemplate->hideBlock('requestData');
-            $this->objTemplate->setVariable(array(
-                'TXT_SUPPORT_REQUEST_COMPLETE'          => $_ARRAYLANG['TXT_SUPPORT_REQUEST_COMPLETE'],
-                'TXT_SUPPORT_REQUEST_YOUR_TICKET'       => sprintf($_ARRAYLANG['TXT_SUPPORT_REQUEST_YOUR_TICKET'], $ticketId),
-                'TXT_SUPPORT_REQUEST_THANK_YOU'         => $_ARRAYLANG['TXT_SUPPORT_REQUEST_THANK_YOU'],
-            ));
+            $this->objTemplate->setVariable('SUPPORT_REQUEST_YOUR_TICKET',
+                sprintf($_ARRAYLANG['TXT_SUPPORT_REQUEST_YOUR_TICKET'], $ticketId));
         } else {
             $this->objTemplate->setVariable(array(
-                // __global__ and text constants
-                'TXT_SUPPORT_REQUEST_STATUS_0'          => $_ARRAYLANG['TXT_SUPPORT_REQUEST_STATUS_CATEGORY'],
-                'TXT_SUPPORT_REQUEST_WELCOME'           => $_ARRAYLANG['TXT_SUPPORT_REQUEST_WELCOME'],
-                'TXT_SUPPORT_REQUEST_CHOOSE_CATEGORY'   => $_ARRAYLANG['TXT_SUPPORT_REQUEST_CHOOSE_CATEGORY'],
-                'TXT_SUPPORT_REQUEST_STATUS_1'          => $_ARRAYLANG['TXT_SUPPORT_REQUEST_STATUS_SUBJECT'],
-                'TXT_SUPPORT_REQUEST_ENTER_SUBJECT'     => $_ARRAYLANG['TXT_SUPPORT_REQUEST_ENTER_SUBJECT'],
-                'TXT_SUPPORT_REQUEST_STATUS_2'          => $_ARRAYLANG['TXT_SUPPORT_REQUEST_STATUS_MESSAGE'],
-                'TXT_SUPPORT_REQUEST_ENTER_MESSAGE'     => $_ARRAYLANG['TXT_SUPPORT_REQUEST_ENTER_MESSAGE'],
-                'TXT_SUPPORT_REQUEST_STATUS_3'          => $_ARRAYLANG['TXT_SUPPORT_REQUEST_STATUS_INFOFIELD'],
-                'TXT_SUPPORT_REQUEST_PROVIDE_INFO'      => $_ARRAYLANG['TXT_SUPPORT_REQUEST_PROVIDE_INFO'],
-                'TXT_SUPPORT_REQUEST_STATUS_4'          => $_ARRAYLANG['TXT_SUPPORT_REQUEST_STATUS_NAME'],
-                'TXT_SUPPORT_REQUEST_PROVIDE_NAME'      => $_ARRAYLANG['TXT_SUPPORT_REQUEST_PROVIDE_NAME'],
-                'TXT_SUPPORT_REQUEST_STATUS_5'          => $_ARRAYLANG['TXT_SUPPORT_REQUEST_STATUS_EMAIL'],
-                'TXT_SUPPORT_REQUEST_PROVIDE_EMAIL'     => $_ARRAYLANG['TXT_SUPPORT_REQUEST_PROVIDE_EMAIL'],
-                'TXT_SUPPORT_REQUEST_STATUS_6'          => $_ARRAYLANG['TXT_SUPPORT_REQUEST_STATUS_TICKET'],
-                'TXT_SUPPORT_REQUEST_INCOMPLETE'        => $_ARRAYLANG['TXT_SUPPORT_REQUEST_INCOMPLETE'],
-                'TXT_SUPPORT_REQUEST_COMPLETE_DATA'     => $_ARRAYLANG['TXT_SUPPORT_REQUEST_COMPLETE_DATA'],
-                'SUPPORT_REQUEST_CATEGORIES_MENU'       => $this->objSupportCategories->getMenu(0, $this->supportCategoryId),
-                'SUPPORT_REQUEST_SUBJECT'       => $this->supportSubject,
-                'SUPPORT_REQUEST_MESSAGE'       => $this->supportBody,
-                'SUPPORT_REQUEST_USER_NAME'     => $this->supportName,
-                'SUPPORT_REQUEST_USER_EMAIL'    => $this->supportEmail,
+                'SUPPORT_REQUEST_CATEGORIES_MENU' =>
+                    $this->objSupportCategories->getMenu(
+                        0, $this->supportCategoryId),
+                'SUPPORT_REQUEST_SUBJECT' => $this->supportSubject,
+                'SUPPORT_REQUEST_MESSAGE' => $this->supportBody,
+                'SUPPORT_REQUEST_USER_NAME' => $this->supportName,
+                'SUPPORT_REQUEST_USER_EMAIL' => $this->supportEmail,
             ));
             $this->objTemplate->hideBlock('requestComplete');
         }
@@ -486,7 +453,7 @@ if (MY_DEBUG) echo("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
                 $hideTheRest = true;
             } else {
                 // Hide all following the currently active step
-                if ($this->supportStatus & 1<<$i) {
+                if ($this->supportStatus & 1 << $i) {
                     // This step has been completed
                     $this->objTemplate->setVariable(array(
                         'SUPPORT_REQUEST_CLASS_'.$i => 'supportStepOk',
@@ -529,7 +496,7 @@ if (MY_DEBUG) echo("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
             if (!$objTicket->store()) {
                 return 0;
             }
-//if (MY_DEBUG) { echo("messageCommit(): INFO: Stored new Ticket: ");var_export($objTicket);echo("<br />"); }
+//DBG::log("messageCommit(): INFO: Stored new Ticket: ");var_export($objTicket)
             // Adding a Message to the Ticket will create a TicketEvent.
             $messageId = $objTicket->addMessage(
                 $this->supportEmail,
@@ -547,8 +514,8 @@ if (MY_DEBUG) echo("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
                 $error = $arrFile['error'];
                 if ($error == UPLOAD_ERR_OK) {
                     $tmpName = $arrFile["tmp_name"];
-                    $name    = $arrFile["name"];
-                    $type    = $arrFile["type"];
+                    $name = $arrFile["name"];
+                    $type = $arrFile["type"];
                     $content = file_get_contents($tmpName);
                     $objAttachment = new Attachment(
                         $messageId,
@@ -582,7 +549,7 @@ if (MY_DEBUG) echo("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
             $arrBlockList[] = '__global__';
         }
         foreach ($arrBlockList as $index => $block) {
-if (MY_DEBUG) echo("== $block<br />");
+DBG::log("== $block<br />");
             if (is_array($block)) {
                 foreach ($block as $index => $blockName) {
                     foreach ($blockName as $index => $block) {
@@ -592,7 +559,7 @@ if (MY_DEBUG) echo("== $block<br />");
             } else {
                 $arrPlaceholder = $this->objTemplate->getPlaceholderList($block);
                 foreach ($arrPlaceholder as $index => $placeholderName) {
-if (MY_DEBUG) echo("$placeholderName<br />");
+DBG::log("$placeholderName<br />");
                 }
             }
         }
@@ -616,22 +583,4 @@ if (MY_DEBUG) echo("$placeholderName<br />");
             $strMessage;
     }
 
-
-
 }
-
-
-/*
-if (MY_DEBUG) echo("
-CATEGORY   ".SUPPORT_REQUEST_STATUS_CATEGORY   ."<br />
-SUBJECT    ".SUPPORT_REQUEST_STATUS_SUBJECT    ."<br />
-MESSAGE    ".SUPPORT_REQUEST_STATUS_MESSAGE    ."<br />
-INFOFIELD  ".SUPPORT_REQUEST_STATUS_INFOFIELD  ."<br />
-NAME       ".SUPPORT_REQUEST_STATUS_NAME       ."<br />
-EMAIL      ".SUPPORT_REQUEST_STATUS_EMAIL      ."<br />
-TICKET     ".SUPPORT_REQUEST_STATUS_TICKET     ."<br />
-COMPLETE   ".SUPPORT_REQUEST_STATUS_COMPLETE   ."<br />
-");
-*/
-
-?>
