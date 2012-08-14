@@ -1,45 +1,47 @@
 <!-- START log.html -->
-<script language="JavaScript" type="text/javascript">
-function deleteLog(id)
-{
-    if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("index.php?cmd=log&{CSRF_PARAM}&act=del&logId="+id);
-}
+<script type="text/javascript">
+    var tipMessageStyle = ["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
 </script>
-<form name="form1" method="post" action="?cmd=log">
-<table summary="" class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
-  <tr valign=top>
-      <td width="91%">{LOG_PAGING}</td>
-      <td nowrap="nowrap" width="9%">
-        <div align="right">
-          <input type="text" name="term" value="{LOG_SEARCHTERM}" />
-          <input type="submit" name="submit" value="{TXT_SEARCH}" />
-        </div>
-      </td>
-  </tr>
-</table>
+
+<form name="form_logs" method="post" action="index.php?cmd=log">
+    <table class="adminlist" border="0" width="100%" cellpadding="3" cellspacing="0">
+        <tr>
+            <th>{TXT_SEARCH}</th>
+        </tr>
+        <tr>
+            <td>
+                <div>
+                    <input type="text" name="term" value="{LOG_SEARCHTERM}" />
+                    <input type="submit" name="submit" value="{TXT_SEARCH}" />
+                </div>
+            </td>
+        </tr>
+    </table>
 </form>
-<table summary="" class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
-  <tr valign=top>
-    <th nowrap="nowrap" width="10%"><div align="left">{TXT_LOGTIME}</div></th>
-    <th nowrap="nowrap" width="8%"><div align="left">{TXT_USERNAME}</div></th>
-    <th width="22%"><div align="left">{TXT_HOSTNAME}</div></th>
-    <th width="53%"><div align="left">{TXT_USERAGENT}</div></th>
-    <th width="10%"><div align="left">{TXT_BROWSERLANGUAGE}</div></th>
-    <th nowrap="nowrap" width="5%"><div align="left">{TXT_ACTION}</div></th>
-  </tr>
-  <!-- BEGIN logRow -->
-  <tr valign="top" class="{LOG_ROWCLASS}">
-    <td nowrap="nowrap">{LOG_TIME}</td>
-    <td nowrap="nowrap"><a href="index.php?cmd=log&act=stats&amp;logId={LOG_USERID}"><img src="images/icons/logged_as.gif" alt="User Stats" border="0" /></a>&nbsp;<a href="index.php?cmd=log&amp;act=stats&amp;logId={LOG_USERID}">{LOG_USERNAME}</a></td>
-    <td>{LOG_REMOTE_HOST}</td>
-    <td>{LOG_USERAGENT}</td>
-    <td>{LOG_USERLANGUAGE}</td>
-    <td nowrap="nowrap"><div align="right"> <a href="index.php?cmd=log&amp;act=details&amp;logId={LOG_ID}"><img src="images/icons/details.gif" alt="Detail" border="0" /></a>&nbsp; <a href="javascript:deleteLog('{LOG_ID}')"><img src="images/icons/delete.gif" alt="Delete" border="0" /></a> </div></td>
-  </tr>
-  <!-- END logRow -->
+<br />
+<table class="adminlist" border="0" width="100%" cellpadding="3" cellspacing="0">
+    <tr>
+        <th colspan="6">{TXT_SYSTEM_LOGS}</th>
+    </tr>
+    <tr class="row3">
+        <td width="13%">{TXT_LOGTIME}</td>
+        <td width="13%">{TXT_USER_NAME}</td>
+        <td width="17%">{TXT_HOSTNAME}</td>
+        <td width="17%">{TXT_IP_ADDRESS}</td>
+        <td width="22%">{TXT_BROWSERLANGUAGE}</td>
+        <td width="18%" style="text-align: right;">{TXT_USERAGENT}</td>
+    </tr>
+    <!-- BEGIN logRow -->
+    <tr class="{LOG_ROWCLASS}">
+        <td>{LOG_TIME}</td>
+        <td><a href="index.php?cmd=log&user={LOG_USERID}"><img src="images/icons/logged_as.gif" alt="User Stats" border="0" />&nbsp;{LOG_USERNAME}</a></td>
+        <td>{LOG_REMOTE_HOST}</td>
+        <td>{LOG_REMOTE_ADDR}</td>
+        <td>{LOG_USERLANGUAGE}</td>
+        <td><span class="tipmessage info" onmouseout="htm()" onmouseover="stm(['', '{LOG_USERAGENT}'], tipMessageStyle)" style="float: right; padding: 10px 10px 0 0;"></span></td>
+    </tr>
+    <!-- END logRow -->
 </table>
 <br />
 {LOG_PAGING}
-<br />
 <!-- END log.html -->

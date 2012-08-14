@@ -6,6 +6,8 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_IP_ADDRESS'] = "IP-Adresse";
+$_ARRAYLANG['TXT_SYSTEM_LOGS'] = "System Logs";
 $_ARRAYLANG['TXT_EMAIL_SERVER'] = "E-Mail Server";
 $_ARRAYLANG['TXT_ADMIN_AREA'] = "Administrationsoberfläche";
 $_ARRAYLANG['TXT_SECURITY'] = "Sicherheit";

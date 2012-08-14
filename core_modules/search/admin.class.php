@@ -94,6 +94,18 @@ class SearchManager extends \Module
         
         $this->term     = !empty($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
         $this->pos      = !empty($_GET['pos'])  ? contrexx_input2raw($_GET['pos'])  : 0;
+        
+        $this->setNavigation();
+    }
+    
+    private function setNavigation()
+    {
+        global $_ARRAYLANG;
+        
+        $this->template->setVariable(array(
+            'CONTENT_TITLE'      => $_ARRAYLANG['TXT_OVERVIEW'],
+            'CONTENT_NAVIGATION' => '<a href="index.php?cmd=search" class="active">'.$_ARRAYLANG['TXT_OVERVIEW'].'</a>',
+        ));
     }
     
     /**

@@ -350,7 +350,7 @@ switch ($plainCmd) {
         Permission::checkAccess(18, 'static');
         if (!include_once ASCMS_CORE_PATH.'/log.class.php')
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_LOG_ADMINISTRATION'];
+        $subMenuTitle = $_CORELANG['TXT_SYSTEM_LOGS'];
         $objLogManager = new logmanager();
         $objLogManager->getLogPage();
         break;
