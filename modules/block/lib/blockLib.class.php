@@ -393,6 +393,41 @@ class blockLibrary
         }
         return $arrBlocks;
     }
+    
+    function _setBlocksForPageId($pageId, $blockIds) {
+        global $objDatabase;
+
+        if (!count($blockIds)) {
+            $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_pages WHERE page_id=".$pageId);
+            return;
+        }
+        $query = '
+            INSERT IGNORE INTO
+                `' . DBPREFIX . 'module_block_rel_pages`
+                (
+                    `block_id`,
+                    `page_id`
+                )
+            VALUES';
+        foreach ($blockIds as $blockId) {
+            $query .= '
+                (
+                    \'' . intval($blockId) . '\',
+                    \'' . intval($pageId) . '\'
+                )';
+        }
+        $objDatabase->Execute($query);
+        $objDatabase->Execute('
+            DELETE FROM
+                `' . DBPREFIX . 'module_block_rel_pages`
+            WHERE
+                `page_id` = \'' . $pageId . '\' AND
+                `block_id` NOT IN
+                    (
+                        \'' . join(',', array_map('intval', $blockIds)).'\'
+                    )
+        ');
+    }
 
     /**
     * Set block
