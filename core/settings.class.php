@@ -372,7 +372,9 @@ class settingsManager
                 intval($intId) == 67 ||
                 intval($intId) == 69 ||
                 intval($intId) == 70 ||
-                intval($intId) == 71) {
+                intval($intId) == 71 ||
+                intval($intId) == 85 ||
+                intval($intId) == 86) {
                 $strValue = ($strValue == 'on') ? 'on' : 'off';
             }
 

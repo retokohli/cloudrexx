@@ -13,6 +13,7 @@
 /**
  * @ignore
  */
+require_once(ASCMS_CORE_PATH.'/settings.class.php');
 require_once(ASCMS_LIBRARY_PATH.'/PEAR/XML/RSS.class.php');
 
 /**
@@ -64,6 +65,9 @@ class myAdminManager {
         }
 
         switch($_GET['act']) {
+            case 'deactivateSetting':
+                $this->deactivateSetting($_GET['id']);
+                break;
             default:
                 $this->getHomePage();
                 break;
@@ -81,6 +85,7 @@ class myAdminManager {
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'content', 'index_home.html');
 
+        JS::activate('bootstrap');
         JS::activate('jquery-jqplot');
 
         $arrAccessIDs = array(5, 10, 76, '84_1', 6, 19, 75, '84_2', 17, 18, 7, 32, 21);
@@ -116,48 +121,64 @@ class myAdminManager {
             'TXT_SKINS' 					=> htmlentities($_CORELANG['TXT_DESIGN_MANAGEMENT'], ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_VISITORS'                  => htmlentities($_CORELANG['TXT_CORE_VISITORS'], ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_REQUESTS'                  => htmlentities($_CORELANG['TXT_CORE_REQUESTS'], ENT_QUOTES, CONTREXX_CHARSET),
+            'TXT_DASHBOARD_NEWS_ALERT'      => htmlentities($_CORELANG['TXT_DASHBOARD_NEWS_ALERT'], ENT_QUOTES, CONTREXX_CHARSET),
+            'TXT_DASHBOARD_STATS_ALERT'     => htmlentities($_CORELANG['TXT_DASHBOARD_STATS_ALERT'], ENT_QUOTES, CONTREXX_CHARSET),
         ));
         $objTemplate->setGlobalVariable('TXT_LOGOUT', $_CORELANG['TXT_LOGOUT']);
+        
+        if (Permission::checkAccess(17, 'static', true)) {
+            $objTemplate->touchBlock('news_delete');
+            $objTemplate->touchBlock('stats_delete');
+        } else {
+            $objTemplate->hide('news_delete');
+            $objTemplate->hide('stats_delete');
+        }
 
         $objFWUser = FWUser::getFWUserObject();
         $objResult = $objDatabase->SelectLimit(
-           'SELECT `logs`.`datetime`, `logs`.`remote_host`, `users`.`username`
-            FROM `'.DBPREFIX.'log` AS `logs` LEFT JOIN `'.DBPREFIX.'access_users` AS `users` ON `users`.`id`=`logs`.`userid`'.
-            //'WHERE `logs`.`userid` <> '.$objFWUser->objUser->getId().'
-            'ORDER BY `logs`.`id` DESC', 1);
+           'SELECT `logs`.`datetime`, `users`.`username`
+            FROM `'.DBPREFIX.'log` AS `logs`
+            LEFT JOIN `'.DBPREFIX.'access_users` AS `users`
+            ON `users`.`id`=`logs`.`userid`
+            ORDER BY `logs`.`id` DESC', 1);
         if ($objResult && $objResult->RecordCount() > 0) {
             $objTemplate->setVariable(array(
-                'LOG_USERNAME'	 	=> htmlentities($objResult->fields['username'], ENT_QUOTES, CONTREXX_CHARSET),
-                'LOG_TIME' 		 	=> date('d.m.Y', strtotime($objResult->fields['datetime'])),
+                'LAST_LOGIN_USERNAME' => contrexx_raw2xhtml($objResult->fields['username']),
+                'LAST_LOGIN_TIME'     => date('d.m.Y', strtotime($objResult->fields['datetime'])),
             ));
-            $objTemplate->parse('log');
+            $objTemplate->parse('last_login');
         } else {
             $objTemplate->setVariable('LOG_ERROR_MESSAGE', $_CORELANG['TXT_NO_DATA_FOUND']);
         }
 
-        $arrStatistics = $this->getStatistics();
+        if ($_CONFIG['dashboardStatistics'] == 'on') {
+            $arrStatistics = $this->getStatistics();
 
-        $objTemplate->setVariable(array(
-            'STAT_TITLE'          => $_CORELANG['TXT_CORE_STATS_FROM'].' '.reset($arrStatistics['dates']).' - '.end($arrStatistics['dates']),
-            'STAT_TICKS'          => json_encode($arrStatistics['ticks']),
-            'STAT_DATES'          => json_encode($arrStatistics['dates']),
-            'STAT_VISITORS'       => json_encode($arrStatistics['visitors']),
-            'STAT_REQUESTS'       => json_encode($arrStatistics['requests']),
-            'STAT_TOTAL_VISITORS' => array_sum($arrStatistics['visitors']),
-            'STAT_TOTAL_REQUESTS' => array_sum($arrStatistics['requests']),
-        ));
+            $objTemplate->setVariable(array(
+                'STATS_TITLE'          => $_CORELANG['TXT_CORE_STATS_FROM'].' '.reset($arrStatistics['dates']).' - '.end($arrStatistics['dates']),
+                'STATS_TICKS'          => json_encode($arrStatistics['ticks']),
+                'STATS_DATES'          => json_encode($arrStatistics['dates']),
+                'STATS_VISITORS'       => json_encode($arrStatistics['visitors']),
+                'STATS_REQUESTS'       => json_encode($arrStatistics['requests']),
+                'STATS_TOTAL_VISITORS' => array_sum($arrStatistics['visitors']),
+                'STATS_TOTAL_REQUESTS' => array_sum($arrStatistics['requests']),
+            ));
+        } else {
+            $objTemplate->hideBlock('stats');
+            $objTemplate->hideBlock('stats_javascript');
+        }
 
         $objRss = new XML_RSS('http://www.contrexx.com/feed/news_headlines_de.xml');
         $objRss->parse();
         $arrItems = $objRss->getItems();
-        if (!empty($arrItems)) {
+        if (!empty($arrItems) && ($_CONFIG['dashboardNews'] == 'on')) {
             $objTemplate->setVariable(array(
-                'RSS_TITLE' => $arrItems[0]['title'],
-                'RSS_LINK'  => $arrItems[0]['link'],
+                'NEWS_TITLE' => $arrItems[0]['title'],
+                'NEWS_LINK'  => $arrItems[0]['link'],
             ));
-            $objTemplate->parse('rssFeed');
+            $objTemplate->parse('news');
         } else {
-            $objTemplate->hideBlock('rssFeed');
+            $objTemplate->hideBlock('news');
         }
     }
 
@@ -257,6 +278,28 @@ class myAdminManager {
             'visitors' => $visitors,
             'requests' => $requests,
         );
+    }
+    
+    private function deactivateSetting($id)
+    {
+        global $objDatabase;
+        
+        if (Permission::checkAccess(17, 'static', true)) {
+            $query = '
+                UPDATE `'.DBPREFIX.'settings`
+                SET `setvalue` = "off"
+                WHERE `setid` = '.$id.'
+            ';
+            $objResult = $objDatabase->Execute($query);
+            
+            if ($objResult) {
+                $objSettings = new settingsManager();
+                $objSettings->writeSettingsFile();
+                die('success');
+            }
+        }
+        
+        die('error');
     }
 }
 
