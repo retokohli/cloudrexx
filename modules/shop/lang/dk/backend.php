@@ -901,3 +901,10 @@ $_ARRAYLANG['TXT_SHOP_PRODUCTS_ACTIVATED'] = "Die ausgewählten Artikel wurden a
 $_ARRAYLANG['TXT_SHOP_PRODUCTS_ERROR_DEACTIVATING'] = "Beim Deaktivieren der Artikel ist ein Fehler aufgetreten";
 $_ARRAYLANG['TXT_SHOP_PRODUCTS_ERROR_ACTIVATING'] = "Beim Aktivieren der Artikel ist ein Fehler aufgetreten";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_STOCK_ACTIVE'] = "Automatisch deaktivieren, wenn ausverkauft";
+
+$_ARRAYLANG['TXT_SHOP_ATTRIBUTE_TYPE'] = "Typ";
+$_ARRAYLANG['TXT_SHOP_SETTING_CART_USE_JS'] = "Dynamischen JavaScript Warenkorb verwenden";
+$_ARRAYLANG['TXT_SHOP_SETTING_SHOPNAVBAR_ON_ALL_PAGES'] = "Shop Navigation auf jeder Seite anzeigen";
+
+//$_ARRAYLANG[''] = "";
+

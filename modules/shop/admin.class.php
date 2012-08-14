@@ -1525,6 +1525,15 @@ class Shopmanager extends ShopLibrary
         // General settings
         self::$objTemplate->addBlockfile('SHOP_SETTINGS_FILE',
             'settings_block', 'module_shop_settings_general.html');
+
+// TODO: Temporary.  Remove in release with working update
+// Returns NULL on missing entries even when other settings are properly loaded
+$test = SettingDb::getValue('shopnavbar_on_all_pages');
+if ($test === NULL) {
+    ShopSettings::errorHandler();
+    SettingDb::init('shop', 'config');
+}
+
         self::$objTemplate->setVariable(array(
             'SHOP_CONFIRMATION_EMAILS' => SettingDb::getValue('email_confirmation'),
             'SHOP_CONTACT_EMAIL' => SettingDb::getValue('email'),
@@ -1551,6 +1560,12 @@ class Shopmanager extends ShopLibrary
             'SHOP_CURRENCY_CODE' => Currency::getCurrencyCodeById(
                 Currency::getDefaultCurrencyId()),
             // New extended settings in V3.0.0
+            'SHOP_SETTING_CART_USE_JS' =>
+                Html::getCheckbox('use_js_cart', 1, false,
+                    SettingDb::getValue('use_js_cart')),
+            'SHOP_SETTING_SHOPNAVBAR_ON_ALL_PAGES' =>
+                Html::getCheckbox('shopnavbar_on_all_pages', 1, false,
+                    SettingDb::getValue('shopnavbar_on_all_pages')),
             'SHOP_SETTING_REGISTER' => Html::getSelectCustom('register',
                 ShopLibrary::getRegisterMenuoptions(
                     SettingDb::getValue('register')), false, '',
