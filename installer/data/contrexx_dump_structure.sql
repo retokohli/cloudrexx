@@ -170,7 +170,7 @@ CREATE TABLE `contrexx_access_users` (
   `u2u_active` enum('0','1') NOT NULL default '1',
   PRIMARY KEY  (`id`),
   KEY `username` (`username`)
-) ENGINE=MyISAM;
+) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
