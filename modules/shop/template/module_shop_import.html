@@ -155,8 +155,9 @@ function MakeExport(groupCode)
       <td nowrap="nowrap" width='20%'>
         {TXT_SHOP_IMPORT_FILE}
         &nbsp;
-        <span onmouseover='stm(["{TXT_SHOP_TIP}","{TXT_SHOP_IMPORT_CATEGORIES_TIPS}"],tm_style)'
-              onmouseout="htm()" class="note">
+        <span class="tipmessage info"
+              onmouseover='stm(["","{TXT_SHOP_IMPORT_CATEGORIES_TIPS}"],tm_style)'
+              onmouseout="htm()">
         </span>
       </td>
       <td nowrap="nowrap" width='80%'>
@@ -187,8 +188,9 @@ function MakeExport(groupCode)
     <tr class="row1">
       <td nowrap="nowrap">{TXT_SHOP_IMPORT_SELECT_TEMPLATE}
         &nbsp;
-        <span onmouseover='stm(["{TXT_SHOP_TIP}","{TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS}"],tm_style)'
-              onmouseout="htm()" class="note">
+        <span class="tipmessage info"
+              onmouseover='stm(["","{TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS}"],tm_style)'
+              onmouseout="htm()">
         </span>
       </td>
       <td nowrap="nowrap" width="80%">
@@ -198,8 +200,9 @@ function MakeExport(groupCode)
     <tr class="row2">
       <td nowrap="nowrap">{TXT_SHOP_IMPORT_FILE}
         &nbsp;
-        <span onmouseover='stm(["{TXT_SHOP_TIP}","{TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS}"],tm_style)'
-              onmouseout="htm()" class="note">
+        <span class="tipmessage info"
+              onmouseover='stm(["","{TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS}"],tm_style)'
+              onmouseout="htm()">
         </span>
       </td>
       <td nowrap="nowrap"><input type="file" name="importfile" id="importfile" style="width: 200px;" size="50" /></td>
@@ -229,19 +232,21 @@ function MakeExport(groupCode)
     </tr>
     <tr class="row2">
       <td valign="top">
-        <b>{TXT_SHOP_IMPORT_TEXTFILE}:</b><br />
+        <b>{TXT_SHOP_IMPORT_TEXTFILE}</b>
+        <span class="tipmessage info" onmouseout="htm()"
+              onmouseover='stm(["","{TXT_SHOP_IMPORT_ASSIGNMENT_TIPS}"],tm_style)'>
+        </span>
         {FILE_FIELDS_LIST}
       </td>
       <td>&nbsp;&nbsp;</td>
       <td valign="top">
-        <b>{TXT_SHOP_IMPORT_DATABASE}:</b><br />
+        <b>{TXT_SHOP_IMPORT_DATABASE}</b>
+        <span class="tipmessage info" onmouseout="htm()"
+              onmouseover='stm(["","{TXT_SHOP_IMPORT_CATEGORY_TIPS}"],tm_style)'>
+        </span>
         {DB_FIELDS_LIST}
       </td>
       <td width="50%">
-  <div class="infobox_head">{TXT_SHOP_TIP}</div>
-  <div class="infobox_body">{TXT_SHOP_IMPORT_ASSIGNMENT_TIPS}<br /><br />
-        {TXT_SHOP_IMPORT_CATEGORY_TIPS}</div>
-
       </td>
     </tr>
     <tr class="row1">
@@ -251,12 +256,13 @@ function MakeExport(groupCode)
     </tr>
     <tr class="row2">
       <td colspan="3">
-        <b>{TXT_SHOP_IMPORT_CATEGORIES}:</b><br />
+        <b>{TXT_SHOP_IMPORT_CATEGORIES}</b>
+        <span class="tipmessage info" onmouseout="htm()"
+              onmouseover='stm(["","{TXT_SHOP_IMPORT_CATEGORY_REMOVE_TIPS}"],tm_style)'>
+        </span>
         <select name="cats" id="cats" style="width: 200px;" size="5"></select>
       </td>
       <td>
-  <div class="infobox_head">{TXT_SHOP_TIP}</div>
-  <div class="infobox_body">{TXT_SHOP_IMPORT_CATEGORY_REMOVE_TIPS}</div>
       </td>
     </tr>
     <tr class="row1">
@@ -266,15 +272,18 @@ function MakeExport(groupCode)
     </tr>
     <tr class="row2">
       <td valign="top">
-        <select name="fileList" id="pairs_left" style="width: 200px;" size="10" onchange="document.getElementById('pairs_right')[this.selectedIndex].selected=true"></select>
+        <select name="fileList" id="pairs_left" style="width: 200px;" size="10"
+                onchange="document.getElementById('pairs_right')[this.selectedIndex].selected=true">
+        </select>
+        <span class="tipmessage info" onmouseout="htm()"
+              onmouseover='stm(["","{TXT_SHOP_IMPORT_ASSIGNMENT_REMOVE_TIPS}"],tm_style)'>
+        </span>
       </td>
       <td>&nbsp;&nbsp;</td>
       <td valign="top">
         <select name="DbList" id="pairs_right" style="width: 200px;" size="10" onchange="document.getElementById('pairs_left')[this.selectedIndex].selected=true"></select>
       </td>
       <td>
-  <div class="infobox_head">{TXT_SHOP_TIP}</div>
-  <div class="infobox_body">{TXT_SHOP_IMPORT_ASSIGNMENT_REMOVE_TIPS}</div>
       </td>
     </tr>
     <tr class="row1">
@@ -284,11 +293,13 @@ function MakeExport(groupCode)
     </tr>
     <tr class="row2">
       <td colspan="3">
-        <b>{TXT_SHOP_IMPORT_TEMPLATENAME}:</b> <input type="text" name="ImgName" id="ImgName" />
+        <b>{TXT_SHOP_IMPORT_TEMPLATENAME}</b>
+        <span class="tipmessage info" onmouseout="htm()"
+              onmouseover='stm(["","{TXT_SHOP_IMPORT_TEMPLATE_SAVE_TIPS}"],tm_style)'>
+        </span>
+        <input type="text" name="ImgName" id="ImgName" />
       </td>
       <td>
-  <div class="infobox_head">{TXT_SHOP_TIP}</div>
-  <div class="infobox_body">{TXT_SHOP_IMPORT_TEMPLATE_SAVE_TIPS}</div>
       </td>
     </tr>
   </table>
@@ -324,15 +335,19 @@ function MakeExport(groupCode)
       <th><b>{TXT_SHOP_IMPORT_MAKE_NEW_TEMPLATE}</b></th>
     </tr>
     <tr class="row1">
-      <td>&nbsp;<input type="file" name="CSVfile" size="50" /></td>
+      <td>
+        <input type="file" name="CSVfile" size="50" />
+        &nbsp;
+        <span class="tipmessage info" onmouseout="htm()"
+              onmouseover='stm(["","{TXT_SHOP_IMPORT_CREATE_TEMPLATE_TIPS}"],tm_style)'>
+        </span>
+      </td>
     </tr>
   </table>
   <br />
   &nbsp;<input type="submit" value="{TXT_SHOP_IMPORT_UPLOAD}" />
   </form>
   <br />
-  <div class="infobox_head">{TXT_SHOP_TIP}</div>
-  <div class="infobox_body">{TXT_SHOP_IMPORT_CREATE_TEMPLATE_TIPS}</div>
 </div>
 
 <div id="import3" class="generalTab" style="display: none;">
@@ -355,8 +370,8 @@ function MakeExport(groupCode)
 <!-- BEGIN groupRow -->
     <tr class="{CLASS_NAME}">
       <td nowrap='nowrap'>
-        <span class="info" onmouseout="htm()" onmouseover="stm(Text[{SHOP_EXPORT_INDEX}],tm_style)">
-          {SHOP_EXPORT_GROUP}
+        <span class="tipmessage info" onmouseout="htm()"
+              onmouseover='stm(["","{SHOP_EXPORT_GROUP}"],tm_style)'>
         </span>
       </td>
       <td colspan="2">
