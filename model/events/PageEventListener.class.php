@@ -52,6 +52,7 @@ class PageEventListener {
                     'cmd' => '',
                     'lang' => $page->getLang(),
                 ));
+                reset($home);
                 if (   count($home) > 1
                     || (   count($home) == 1
                         && current($home)->getId() != $page->getId())

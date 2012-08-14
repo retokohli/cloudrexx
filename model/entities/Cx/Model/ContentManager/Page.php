@@ -1574,27 +1574,7 @@ class Page extends \Cx\Model\Base\EntityBase
      * @param array $relatedBlocks list of block IDs
      */
     public function setRelatedBlocks($relatedBlocks) {
-        //var_dump($relatedBlocks);
         $blockLib = new \BlockLibrary();
-        $oldRelations = $this->getRelatedBlocks();
-        
-        // check for removal of existing relations
-        foreach ($oldRelations as $id=>$data) {
-            $pageRelations = $newPageRelations = $blockLib->_getAssociatedPageIds($id);
-            if (!in_array($id, $relatedBlocks)) {
-                // $newPageRelations = remove entry $this->getId() from $newPageRelations
-            } else {
-                // unset $relatedBlocks entry
-            }
-            if ($newPageRelations != $pageRelations) {
-                // store $newPageRelations
-            }
-        }
-        // add new relations
-        foreach ($relatedBlocks as $blockId) {
-            $pageRelations = $blockLib->_getAssociatedPageIds($blockId);
-            $pageRelations[] = $blockId;
-            // store relations
-        }
+        $blockLib->_setBlocksForPageId($this->getId(), $relatedBlocks);
     }
 }
