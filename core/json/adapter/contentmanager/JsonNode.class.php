@@ -227,7 +227,7 @@ class JsonNode implements JsonAdapter {
         if (!is_object($root)) {
             throw new \Exception('Node not found (#' . $rootNodeId . ')');
         }
-        $logs = $this->logRepo->getLatestLogsOfAllPages(array('objectId', 'username'));
+        $logs = array();//$this->logRepo->getLatestLogsOfAllPages(array('objectId', 'username'));
 
         //$actions = array();
         $jsondata = $this->tree_to_jstree_array($root, $logs, !$recursive/*, $actions*/);
@@ -289,13 +289,13 @@ class JsonNode implements JsonAdapter {
                 if ($page->getType() == \Cx\Model\ContentManager\Page::TYPE_ALIAS)
                     continue 2;
 
-                if (!isset($logs[$page->getId()])) {
+                /*if (!isset($logs[$page->getId()])) {
                     throw new \Cx\Model\ContentManager\PageException(
                             'Page #' . $page->getId() .
                             ' has no log entries! Please contact your system administrator.'
                     );
-                }
-                $user = $this->logRepo->getUsernameByLog($logs[$page->getId()]);
+                }*/
+                $user = '';//$this->logRepo->getUsernameByLog($logs[$page->getId()]);
                 $data[\FWLanguage::getLanguageCodeById($page->getLang())] = array(
                     'language' => \FWLanguage::getLanguageCodeById($page->getLang()),
                     'title' => $page->getTitle(),
