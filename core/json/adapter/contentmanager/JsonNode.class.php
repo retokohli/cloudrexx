@@ -460,6 +460,7 @@ class JsonNode implements JsonAdapter {
                 $langCode = \FWLanguage::getLanguageCodeById($page->getLang());
                 
                 $tree[$nodeId][$langCode]['title'] = $page->getTitle();
+                $tree[$nodeId][$langCode]['id'] = $page->getId();
                 $tree[$nodeId][$langCode]['level'] = $node->getLvl();
             }
             

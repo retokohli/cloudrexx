@@ -133,7 +133,7 @@ class Page extends \Cx\Model\Base\EntityBase
     /**
      * @var int $slugSuffix
      */
-    private $slugSuffx = 0;
+    private $slugSuffix = 0;
 
     /**
      * @var int $slugBase
@@ -144,6 +144,50 @@ class Page extends \Cx\Model\Base\EntityBase
      * @var Cx\Model\ContentManager\Skin
      */
     private $skin;
+
+    /**
+     * @var string $type
+     */
+    private $type;
+    /**
+     * @var datetime $updatedAt
+     */
+    private $updatedAt;
+
+    /**
+     * @var string $slug
+     */
+    private $slug;
+    
+    /**
+     * @var string $contentTitle
+     */
+    private $contentTitle;
+    
+    /**
+     * @var string $linkTarget
+     */
+    private $linkTarget;
+    
+    /**
+     * @var integer $frontendAccessId
+     */
+    private $frontendAccessId;
+
+    /**
+     * @var integer $backendAccessId
+     */
+    private $backendAccessId;
+    
+    /**
+     * @var integer $protection
+     */
+    private $protection;
+    
+    /**
+     * @var string $cssNavName
+     */
+    private $cssNavName;
 
     /**
      * @var boolean Tells wheter this is a virtual (non DB) page or not
@@ -834,12 +878,6 @@ class Page extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * @var string $type
-     */
-    private $type;
-
-
-    /**
      * Set type
      *
      * @param string $type
@@ -884,11 +922,6 @@ class Page extends \Cx\Model\Base\EntityBase
     {
         $this->updatedAt = new \DateTime("now");
     }
-    /**
-     * @var datetime $updatedAt
-     */
-    private $updatedAt;
-
 
     /**
      * Set updatedAt
@@ -933,6 +966,7 @@ class Page extends \Cx\Model\Base\EntityBase
 
         return $accessId;            
     }
+    
     protected function eraseAccessId($id) {
         \Permission::removeAccess($id, 'dynamic');        
     }
@@ -1002,11 +1036,6 @@ class Page extends \Cx\Model\Base\EntityBase
     public function isActive() {
         return $this->active;
     }
-
-    /**
-     * @var string $slug
-     */
-    private $slug;
 
     /**
      * Set slug
@@ -1203,12 +1232,6 @@ class Page extends \Cx\Model\Base\EntityBase
         $copy->setLang($destinationLang);
         return $copy;
     }
-    
-    /**
-     * @var string $contentTitle
-     */
-    private $contentTitle;
-
 
     /**
      * Set contentTitle
@@ -1229,11 +1252,6 @@ class Page extends \Cx\Model\Base\EntityBase
     {
         return $this->contentTitle;
     }
-    /**
-     * @var string $linkTarget
-     */
-    private $linkTarget;
-
 
     /**
      * Set linkTarget
@@ -1254,16 +1272,6 @@ class Page extends \Cx\Model\Base\EntityBase
     {
         return $this->linkTarget;
     }
-    /**
-     * @var integer $frontendAccessId
-     */
-    private $frontendAccessId;
-
-    /**
-     * @var integer $backendAccessId
-     */
-    private $backendAccessId;
-
 
     /**
      * Set frontendAccessId
@@ -1304,11 +1312,6 @@ class Page extends \Cx\Model\Base\EntityBase
     {
         return $this->backendAccessId;
     }
-    /**
-     * @var integer $protection
-     */
-    private $protection;
-
 
     /**
      * Set protection
@@ -1367,12 +1370,6 @@ class Page extends \Cx\Model\Base\EntityBase
         $this->type = $page->getType();
         $this->target = $page->getTarget();
    }
-    
-    /**
-     * @var string $cssNavName
-     */
-    private $cssNavName;
-
 
     /**
      * Set cssNavName
@@ -1560,5 +1557,44 @@ class Page extends \Cx\Model\Base\EntityBase
             return 'hourly';
         }
         return 'weekly';
+    }
+    
+    /**
+     * Returns the blocks related to this page
+     * @return array 
+     */
+    public function getRelatedBlocks() {
+        $blockLib = new \BlockLibrary();
+        $blocks = $blockLib->_getBlocksForPageId($this->getId());
+        return $blocks;
+    }
+    
+    /**
+     * Sets relations to blocks
+     * @param array $relatedBlocks list of block IDs
+     */
+    public function setRelatedBlocks($relatedBlocks) {
+        //var_dump($relatedBlocks);
+        $blockLib = new \BlockLibrary();
+        $oldRelations = $this->getRelatedBlocks();
+        
+        // check for removal of existing relations
+        foreach ($oldRelations as $id=>$data) {
+            $pageRelations = $newPageRelations = $blockLib->_getAssociatedPageIds($id);
+            if (!in_array($id, $relatedBlocks)) {
+                // $newPageRelations = remove entry $this->getId() from $newPageRelations
+            } else {
+                // unset $relatedBlocks entry
+            }
+            if ($newPageRelations != $pageRelations) {
+                // store $newPageRelations
+            }
+        }
+        // add new relations
+        foreach ($relatedBlocks as $blockId) {
+            $pageRelations = $blockLib->_getAssociatedPageIds($blockId);
+            $pageRelations[] = $blockId;
+            // store relations
+        }
     }
 }

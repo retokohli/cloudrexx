@@ -156,7 +156,7 @@ class blockLibrary
     * @global ADONewConnection
     * @return boolean true on success, false on failure
     */
-    public function _addBlock($cat, $arrContent, $name, $start, $end, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockWysiwygEditor, $blockAssociatedNodeIds, $arrLangActive)
+    public function _addBlock($cat, $arrContent, $name, $start, $end, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockWysiwygEditor, $blockAssociatedPageIds, $arrLangActive)
     {
         global $objDatabase;
 
@@ -178,7 +178,7 @@ class blockLibrary
         $id = $objDatabase->Insert_ID();
 
         $this->storeBlockContent($id, $arrContent, $arrLangActive);
-        $this->storeNodeAssociations($id, $blockAssociatedNodeIds, $blockGlobal);
+        $this->storePageAssociations($id, $blockAssociatedPageIds, $blockGlobal);
 
         return true;
     }
@@ -195,7 +195,7 @@ class blockLibrary
     * @global ADONewConnection
     * @return boolean true on success, false on failure
     */
-    public function _updateBlock($id, $cat, $arrContent, $name, $start, $end, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockWysiwygEditor, $blockAssociatedNodeIds, $arrLangActive)
+    public function _updateBlock($id, $cat, $arrContent, $name, $start, $end, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockWysiwygEditor, $blockAssociatedPageIds, $arrLangActive)
     {
         global $objDatabase;
 
@@ -216,26 +216,26 @@ class blockLibrary
         }
 
         $this->storeBlockContent($id, $arrContent, $arrLangActive);
-        $this->storeNodeAssociations($id, $blockAssociatedNodeIds, $blockGlobal);
+        $this->storePageAssociations($id, $blockAssociatedPageIds, $blockGlobal);
 
         return true;
     }
 
 
-    private function storeNodeAssociations($blockId, $blockAssociatedNodeIds, $blockGlobal)
+    private function storePageAssociations($blockId, $blockAssociatedPageIds, $blockGlobal)
     {
         global $objDatabase;
 
         switch ($blockGlobal) {
             case 2:
-                foreach ($blockAssociatedNodeIds as $nodeId) {
-                    $objDatabase->Execute('INSERT IGNORE INTO '.DBPREFIX.'module_block_rel_pages SET  block_id='.intval($blockId).', page_id='.intval($nodeId).'');
+                foreach ($blockAssociatedPageIds as $pageId) {
+                    $objDatabase->Execute('INSERT IGNORE INTO '.DBPREFIX.'module_block_rel_pages SET  block_id='.intval($blockId).', page_id='.intval($pageId).'');
                 }
-                if (count($blockAssociatedNodeIds)) {
-                    $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_pages WHERE block_id=".$blockId." AND page_id NOT IN (".join(',', array_map('intval', $blockAssociatedNodeIds)).")");
+                if (count($blockAssociatedPageIds)) {
+                    $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_pages WHERE block_id=".$blockId." AND page_id NOT IN (".join(',', array_map('intval', $blockAssociatedPageIds)).")");
                     break;
                 }
-                // the missing break is intentionally, so that the system deletes all entries in case no nodes had been selected
+                // the missing break is intentionally, so that the system deletes all entries in case no pages had been selected
 
             case 0:
             case 1:
@@ -269,7 +269,7 @@ class blockLibrary
             $objDatabase->Execute(sprintf($query, DBPREFIX.'module_block_rel_lang_content',
                                                   "lang_id='".intval($langId)."',
                                                    content='".contrexx_raw2db($content)."',
-                                                   active='".intval($arrLangActive[$langId])."'",
+                                                   active='".intval((isset($arrLangActive[$langId]) ? $arrLangActive[$langId] : 0))."'",
                                                   $blockId));
         }        
         
@@ -344,6 +344,55 @@ class blockLibrary
         }
         return $arrPageIds;
     }
+    
+    function _getBlocksForPageId($pageId)
+    {
+        global $objDatabase;
+        
+        $arrBlocks = array();
+        $objResult = $objDatabase->Execute('
+            SELECT
+                `b`.`id`,
+                `b`.`cat`,
+                `b`.`name`,
+                `b`.`start`,
+                `b`.`end`,
+                `b`.`order`,
+                `b`.`random`,
+                `b`.`random_2`,
+                `b`.`random_3`,
+                `b`.`random_4`,
+                `b`.`global`,
+                `b`.`active`
+            FROM
+                `'.DBPREFIX.'module_block_blocks` AS `b`,
+                `'.DBPREFIX.'module_block_rel_pages` AS `p`
+            WHERE
+                `b`.`id` = `p`.`block_id`
+                AND `p`.`page_id` = \'' . $pageId . '\'
+            GROUP BY
+                `b`.`id`
+        ');
+        if ($objResult !== false) {
+            while (!$objResult->EOF) {
+                $arrBlocks[$objResult->fields['id']] = array(
+                    'cat'       => $objResult->fields['cat'],
+                    'start'     => $objResult->fields['start'],
+                    'end'       => $objResult->fields['end'],
+                    'order'     => $objResult->fields['order'],
+                    'random'    => $objResult->fields['random'],
+                    'random2'   => $objResult->fields['random_2'],
+                    'random3'   => $objResult->fields['random_3'],
+                    'random4'   => $objResult->fields['random_4'],
+                    'global'    => $objResult->fields['global'],
+                    'active'    => $objResult->fields['active'],
+                    'name'      => $objResult->fields['name'],
+                );
+                $objResult->MoveNext();
+            }
+        }
+        return $arrBlocks;
+    }
 
     /**
     * Set block
@@ -400,7 +449,7 @@ class blockLibrary
     * @global ADONewConnection
     * @global integer
     */
-    function _setBlockGlobal(&$code, $nodeId)
+    function _setBlockGlobal(&$code, $pageId)
     {
         global $objDatabase;
 
@@ -424,7 +473,7 @@ class blockLibrary
             INNER JOIN ".DBPREFIX."module_block_rel_pages AS tblPage
                     ON tblPage.`block_id` = tblBlock.`id`
                  WHERE tblBlock.`global` = 2
-                   AND tblPage.page_id = ".intval($nodeId)."
+                   AND tblPage.page_id = ".intval($pageId)."
                    AND tblContent.`lang_id` = ".FRONTEND_LANG_ID."
                    AND tblContent.`active` = 1
                    AND tblBlock.active=1

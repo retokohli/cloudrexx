@@ -75,7 +75,17 @@ class JsonData {
      * @param boolean $setContentType (optional) If true (default) the content type is set to application/json
      * @return String JSON data to return to client
      */
-    public function jsondata($adapter, $method, $arguments, $setContentType = true) {
+    public function jsondata($adapter, $method, $arguments = array(), $setContentType = true) {
+        return $this->json($this->data($adapter, $method, $arguments), $setContentType);
+    }
+    
+    /**
+     * Parses data into JSON
+     * @param array $data Data to JSONify
+     * @param boolean $setContentType (optional) If true (NOT default) the content type is set to application/json
+     * @return String JSON data to return to client
+     */
+    public function json($data, $setContentType = false) {
         if ($setContentType) {
             // browsers will pass rendering of application/* MIMEs to other
             // applications, usually.
@@ -88,7 +98,7 @@ class JsonData {
             // Search for a better way to disable CSRF!
             ini_set('url_rewriter.tags', '');
         }
-        return json_encode($this->data($adapter, $method, $arguments));
+        return json_encode($data);
     }
 
     /**
@@ -100,7 +110,7 @@ class JsonData {
      * @param Array $arguments Arguments to pass
      * @return String data to use for further processing
      */
-    public function data($adapter, $method, $arguments) {
+    public function data($adapter, $method, $arguments = array()) {
         if (!isset($this->adapters[$adapter])) {
             return $this->getError('No such adapter');
         }

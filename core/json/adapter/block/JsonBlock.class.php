@@ -62,6 +62,5 @@ class JsonBlock implements JsonAdapter {
             $data[$id] = $block['name'];
         }
         return $data;
-        return array('1'=>'asdf');
     }
 }

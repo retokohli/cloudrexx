@@ -1,6 +1,6 @@
 <!-- START module_block_block.html -->
 <script type="text/javascript">
-    var pageTitlesTree = {BLOCK_PAGE_TITLES_TREE};
+    var pageTitlesTree = jQuery.parseJSON(cx.variables.get('pageTitlesTree', 'block'));
 
     $J(document).ready(function() {
         $J('#wysiwyg_editor').change(function() {
@@ -162,7 +162,8 @@
         } else {
             $J('#blockFormText_'+activeLangId).val($J('#ckeditor').val());
         }
-
+        // update hidden list of active pages
+        changePageTitlesByLang(cx.variables.get("language", "contrexx"));
         return true;
     }
     function disableButtons(from,dest,add,remove)
@@ -296,6 +297,7 @@
         $J('input[name*=blockFormLanguages]').click(function() {
             refreshRadioButtons();
         });
+        changePageTitlesByLang(cx.variables.get("language", "contrexx"));
     });
     
     var refreshRadioButtons = function() {
@@ -307,22 +309,56 @@
         });
     }
     
+    /**
+     * Called on click of language switch radio buttons
+     * also on startup and before sending the form
+     */
     var changePageTitlesByLang = function(langCode) {
-        $J('select[name="notSelectedPages[]"] option, select[name="selectedPages[]"] option').each(function() {
-            spacer = '';
-            level  = pageTitlesTree[$J(this).val()][langCode]['level'];
-            for (i = 1; i < level; i++) {
-                spacer += '&nbsp;&nbsp;';
+        var cachedLang = jQuery("input#cachedLang").val();
+        var selectedOps, unselectedOps;
+        // do not overwrite data on first call, but parse it into json object
+        if (cachedLang == "") {
+            selectedOps = jQuery.parseJSON(cx.variables.get("relBlockPagesSelectedOptions", "block"));
+            unselectedOps = jQuery.parseJSON(cx.variables.get("relBlockPagesUnselectedOptions", "block"));
+        } else {
+            selectedOps = cx.variables.get("relBlockPagesSelectedOptions", "block");
+            unselectedOps = cx.variables.get("relBlockPagesUnselectedOptions", "block");
+            if (selectedOps === "") {
+                selectedOps = {};
             }
-            $J(this).html(spacer + pageTitlesTree[$J(this).val()][langCode]['title'] + ' (' + $J(this).val() + ')');
-        });
+            if (unselectedOps === "") {
+                unselectedOps = {};
+            }
+            selectedOps[cachedLang] = jQuery('select[name="selectedPages[]"]').html();
+            unselectedOps[cachedLang] = jQuery('select[name="notSelectedPages[]"]').html();
+            var activeIds = new Array();
+            jQuery.each(selectedOps, function(lang, data) {
+                jQuery.each(jQuery(data), function(index, el) {
+                    activeIds[activeIds.length] = jQuery(el).attr("value");
+                });
+            });
+            jQuery("input#selectedPagesList").val(activeIds.join(","));
+        }
+        if (selectedOps[langCode] == undefined) {
+            selectedOps[langCode] = "";
+        }
+        if (unselectedOps[langCode] == undefined) {
+            unselectedOps[langCode] = "";
+        }
+        cx.variables.set("relBlockPagesSelectedOptions", selectedOps, "block");
+        cx.variables.set("relBlockPagesUnselectedOptions", unselectedOps, "block");
+        jQuery('select[name="selectedPages[]"]').html(selectedOps[langCode]);
+        jQuery('select[name="notSelectedPages[]"]').html(unselectedOps[langCode]);
+        jQuery("input#cachedLang").val(langCode);
     }
     // ]]>
 </script>
 
 <form name="blockFormModifyBlock" action="index.php?cmd=block&amp;act=modify" method="post" onsubmit="onSubmit();selectAll(document.getElementById('SelectedPages'));">
     <input type="hidden" name="blockId" value="{BLOCK_ID}" size="50" />
-
+    <input type="hidden" id="cachedLang" name="cachedLang" value="" />
+    <input type="hidden" id="selectedPagesList" name="selectedPagesList" value="" />
+           
     <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist block_lang">
         <tr>
             <th colspan="4">{TXT_BLOCK_LANGUAGE}</th>
@@ -393,10 +429,10 @@
                 <tr class="row1">
                     <td valign="top" width="250px">{TXT_BLOCK_RANDOM}:</td>
                     <td>
-                        <input type="checkbox" name="blockRandom" value="1" {BLOCK_RANDOM}/>[[BLOCK_RANDOMIZER]]<br />
-                        <input type="checkbox" name="blockRandom2" value="1" {BLOCK_RANDOM_2}/>[[BLOCK_RANDOMIZER_2]]<br />
-                        <input type="checkbox" name="blockRandom3" value="1" {BLOCK_RANDOM_3}/>[[BLOCK_RANDOMIZER_3]]<br />
-                        <input type="checkbox" name="blockRandom4" value="1" {BLOCK_RANDOM_4}/>[[BLOCK_RANDOMIZER_4]]<br />
+                        <input type="checkbox" name="blockRandom" id="blockRandom" value="1" {BLOCK_RANDOM}/><label for="blockRandom">[[BLOCK_RANDOMIZER]]</label><br />
+                        <input type="checkbox" name="blockRandom2" id="blockRandom2" value="1" {BLOCK_RANDOM_2}/><label for="blockRandom2">[[BLOCK_RANDOMIZER_2]]</label><br />
+                        <input type="checkbox" name="blockRandom3" id="blockRandom3" value="1" {BLOCK_RANDOM_3}/><label for="blockRandom3">[[BLOCK_RANDOMIZER_3]]</label><br />
+                        <input type="checkbox" name="blockRandom4" id="blockRandom4" value="1" {BLOCK_RANDOM_4}/><label for="blockRandom4">[[BLOCK_RANDOMIZER_4]]</label><br />
                     </td>
                 </tr>
                 <tr class="row2">
@@ -423,9 +459,12 @@
                 <tr class="row1">
                     <td width="250px" valign="top">{TXT_BLOCK_GLOBAL_PLACEHOLDERS}:</td>
                     <td nowrap="nowrap">
-                        <input onclick="showOrHide('pageSelector', '0');" type="radio" name="blockGlobal" value="0" {BLOCK_GLOBAL_0} />{TXT_DONT_SHOW_ON_PAGES}<br />
-                        <input onclick="showOrHide('pageSelector', '0');" type="radio" name="blockGlobal" value="1" {BLOCK_GLOBAL_1} />{TXT_SHOW_ON_ALL_PAGES}<br />
-                        <input onclick="showOrHide('pageSelector', '1');" type="radio" name="blockGlobal" value="2" {BLOCK_GLOBAL_2} />{TXT_SHOW_ON_SELECTED_PAGES}<br />
+                        <input onclick="showOrHide('pageSelector', '0');" type="radio" name="blockGlobal" id="blockGlobal0" value="0" {BLOCK_GLOBAL_0} />
+                               <label for="blockGlobal0">{TXT_DONT_SHOW_ON_PAGES}</label><br />
+                        <input onclick="showOrHide('pageSelector', '0');" type="radio" name="blockGlobal" id="blockGlobal1" value="1" {BLOCK_GLOBAL_1} />
+                               <label for="blockGlobal1">{TXT_SHOW_ON_ALL_PAGES}</label><br />
+                        <input onclick="showOrHide('pageSelector', '1');" type="radio" name="blockGlobal" id="blockGlobal2" value="2" {BLOCK_GLOBAL_2} />
+                               <label for="blockGlobal2">{TXT_SHOW_ON_SELECTED_PAGES}</label><br />
                         <div id="pageSelector" class="blockLangTab"  style="display:{BLOCK_SHOW_PAGE_SELECTOR};">
                             <div style="float: left; width: auto;">
                                 <label name="{TXT_BLOCK_AVAILABLE_PAGES}">{TXT_BLOCK_AVAILABLE_PAGES}</label><br/>

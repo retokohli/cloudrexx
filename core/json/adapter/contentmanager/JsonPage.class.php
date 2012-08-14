@@ -280,6 +280,8 @@ class JsonPage implements JsonAdapter {
             $this->messages[] = $_CORELANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'];
         }
         
+        $page->setRelatedBlocks($dataPost['pageBlocks']);
+        
         if (($action == 'publish') && \Permission::checkAccess(78, 'static', true)) {
             // User w/permission clicked save&publish. we should either publish the page or submit the draft for approval.
             if ($page->getEditingStatus() == 'hasDraftWaiting') {
@@ -370,7 +372,7 @@ class JsonPage implements JsonAdapter {
     /**
      * Sets multiple pages.
      * 
-     * @param  array  äparam  Client parameters.
+     * @param  array  $params  Client parameters.
      */
     public function multipleSet($params) {
         $post = $params['post'];
@@ -728,12 +730,22 @@ class JsonPage implements JsonAdapter {
             'aliases' => $this->getAliasArray($page),
             'editingStatus' => $page->getEditingStatus(),
             'parentPath' => $parentPath,
+            'assignedBlocks' => $this->getBlocks($page),
                 /* 'display'       =>  $page->getDisplay(),
                   'active'        =>  $page->getActive(),
                   'updatedAt'     =>  $page->getUpdatedAt(), */
         );
 
         return $pageArray;
+    }
+    
+    private function getBlocks($page) {
+        $blocks = $page->getRelatedBlocks();
+        $data = array();
+        foreach ($blocks as $id=>$block) {
+            $data[] = $id;
+        }
+        return $data;
     }
 
     /**

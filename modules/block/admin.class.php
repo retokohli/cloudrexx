@@ -665,7 +665,7 @@ class blockManager extends blockLibrary
             $blockRandom4           = !empty($_POST['blockRandom4']) ? intval($_POST['blockRandom4']) : 0;
             $blockGlobal            = !empty($_POST['blockGlobal']) ? intval($_POST['blockGlobal']) : 0;
             $blockWysiwygEditor     = isset($_POST['wysiwyg_editor']) ? 1 : 0;
-            $blockAssociatedPageIds = isset($_POST['selectedPages']) ? array_map('intval', $_POST['selectedPages']) : array();
+            $blockAssociatedPageIds = isset($_POST['selectedPagesList']) ? array_map('intval', explode(",", $_POST['selectedPagesList'])) : array();
             $blockLangActive        = isset($_POST['blockFormLanguages']) ? array_map('intval', $_POST['blockFormLanguages']) : array();
 
             if ($blockId) {
@@ -725,32 +725,43 @@ class blockManager extends blockLibrary
             'BLOCK_WYSIWYG_EDITOR'              => $blockWysiwygEditor == 1 ? 'checked="checked"' : '',
         ));
         
+        require_once ASCMS_CORE_PATH.'/json/JsonData.class.php';
         $jsonData =  new \Cx\Core\Json\JsonData();
-        $pageTitlesTree = $jsonData->jsondata('node', 'getPageTitlesTree', array(), false);
+        $pageTitlesTree = $jsonData->data('node', 'getPageTitlesTree');
+        $pageTitlesTree = $pageTitlesTree['data'];
         
         $strSelectedPages   = '';
         $strUnselectedPages = '';
         
         foreach ($pageTitlesTree as $nodeId => $languages) {
             foreach ($languages as $langCode => $pageData) {
+                if (!isset($pageData['id'])) {
+                    unset($pageTitlesTree[$nodeId][$langCode]);
+                    continue;
+                }
                 $spacer = '';
                 for ($i = 1; $i < $pageData['level']; $i++) {
                     $spacer .= '&nbsp;&nbsp;';
                 }
                 
-                if (in_array($nodeId, $blockAssociatedPageIds)) {                
-                    $strSelectedPages[$langCode]   .= '<option value="'.$nodeId.'">'.$spacer.contrexx_raw2xhtml($pageData['title']).' ('.$nodeId.') </option>'."\n";
+                if (in_array($pageData['id'], $blockAssociatedPageIds)) {
+                    if (!isset($strSelectedPages[$langCode])) {
+                        $strSelectedPages[$langCode] = '';
+                    }
+                    $strSelectedPages[$langCode]   .= '<option value="'.$pageData['id'].'">'.$spacer.contrexx_raw2xhtml($pageData['title']).' ('.$pageData['id'].') </option>'."\n";
                 } else {
-                    $strUnselectedPages[$langCode] .= '<option value="'.$nodeId.'">'.$spacer.contrexx_raw2xhtml($pageData['title']).' ('.$nodeId.') </option>'."\n";
+                    if (!isset($strUnselectedPages[$langCode])) {
+                        $strUnselectedPages[$langCode] = '';
+                    }
+                    $strUnselectedPages[$langCode] .= '<option value="'.$pageData['id'].'">'.$spacer.contrexx_raw2xhtml($pageData['title']).' ('.$pageData['id'].') </option>'."\n";
                 }
             }
         }
         
-        $this->_objTpl->setVariable(array(
-            'BLOCK_RELATION_PAGES_UNSELECTED' => $strUnselectedPages[FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)],
-            'BLOCK_RELATION_PAGES_SELECTED'   => $strSelectedPages[FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)],
-            'BLOCK_PAGE_TITLES_TREE'          => json_encode($pageTitlesTree),
-        ));
+        $objJs = \ContrexxJavascript::getInstance();
+        $objJs->setVariable('relBlockPagesUnselectedOptions', $jsonData->json($strUnselectedPages), 'block');
+        $objJs->setVariable('relBlockPagesSelectedOptions', $jsonData->json($strSelectedPages), 'block');
+        $objJs->setVariable('pageTitlesTree', $jsonData->json($pageTitlesTree), 'block');
         
         foreach (FWLanguage::getActiveFrontendLanguages() as $langId => $arrLanguage) {
             $checked = '';
@@ -775,7 +786,7 @@ class blockManager extends blockLibrary
             $strJsTabToDiv      = '';
 
             foreach($arrActiveSystemFrontendLanguages as $langId => $arrLanguage) {
-                $boolLanguageIsActive = $blockId == 0 && $intLanguageCounter == 0 ? true : (($blockLangActive[$langId] == 1) ? true : false);
+                $boolLanguageIsActive = $blockId == 0 && $intLanguageCounter == 0 ? true : ((isset($blockLangActive[$langId]) && $blockLangActive[$langId] == 1) ? true : false);
                 
                 $arrLanguages[$intLanguageCounter%3] .= '<input id="languagebar_'.$langId.'" '.(($boolLanguageIsActive) ? 'checked="checked"' : '').' type="checkbox" name="blockFormLanguages['.$langId.']" value="1" onclick="switchBoxAndTab(this, \'lang_blockContent_'.$langId.'\');" /><label for="languagebar_'.$langId.'">'.contrexx_raw2xhtml($arrLanguage['name']).' ['.$arrLanguage['lang'].']</label><br />';
                 $strJsTabToDiv .= 'arrTabToDiv["lang_blockContent_'.$langId.'"] = "langTab_'.$langId.'";'."\n";
@@ -805,7 +816,7 @@ class blockManager extends blockLibrary
             $tmpBlockContent       = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]' ,$tmpBlockContent);
             
             if ($blockId != 0) {
-                if (!$activeFlag && $blockLangActive[$langId]) {
+                if (!$activeFlag && isset($blockLangActive[$langId])) {
                     $activeClass =  'active';
                     $activeFlag = 1;
                 }
@@ -816,7 +827,7 @@ class blockManager extends blockLibrary
             
             $this->_objTpl->setVariable(array(
                 'BLOCK_LANG_TAB_LANG_ID'        => intval($langId),
-                'BLOCK_LANG_TAB_CLASS'          => $activeClass,
+                'BLOCK_LANG_TAB_CLASS'          => isset($activeClass) ? $activeClass : '',
                 'TXT_BLOCK_LANG_TAB_LANG_NAME'  => contrexx_raw2xhtml($arrLanguage['name']),            
                 'BLOCK_LANGTAB_DISPLAY'         => $tmpBlockLangActive == 1 ? 'display:inline;' : ($blockId == 0 && $i == 0 ? 'display:inline;' : 'display:none;')
             ));
