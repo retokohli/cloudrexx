@@ -107,20 +107,19 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
             $_ARRAYLANG = array_merge($_ARRAYLANG,
                 $objInit->loadLanguageData('shop'));
         }
+        // Check session and user data, log in if present.
         // The Customer is required to properly calculate prices in the Cart
         self::_authenticate();
+        SettingDb::init('shop', 'config');
         if (isset($_REQUEST['remoteJs'])) return;
-        // Check session and user data, log in if present.
-        global $_CONFIGURATION;
         // Javascript Cart: Shown when active,
         // either on shop pages only, or on any
-        if (   !empty($_CONFIGURATION['custom']['shopJsCart'])
-            && (   !empty($_CONFIGURATION['custom']['shopnavbar'])
-                || (   isset($_REQUEST['section'])
-                    && $_REQUEST['section'] == 'shop'.MODULE_INDEX
-                    && (   empty($_REQUEST['cmd'])
-                        || in_array($_REQUEST['cmd'],
-                              array('discounts', 'details')))))
+        if (   SettingDb::getValue('use_js_cart')
+            || (   isset($_REQUEST['section'])
+                && $_REQUEST['section'] == 'shop'.MODULE_INDEX
+                && (   empty($_REQUEST['cmd'])
+                    || in_array($_REQUEST['cmd'],
+                          array('discounts', 'details'))))
 // Optionally limit to the first instance
 //            && MODULE_INDEX == ''
         ) {
@@ -143,23 +142,18 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
 //DBG::activate(DBG_ERROR_FIREPHP);
         self::init();
         self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
-
         // PEAR Sigma template
         self::$objTemplate = new HTML_Template_Sigma('.');
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         self::$objTemplate->setTemplate($template);
         // Global module index for clones
         self::$objTemplate->setGlobalVariable('MODULE_INDEX', MODULE_INDEX);
-
         // Do this *before* calling our friends, especially Customer methods!
 // TODO: Define SettingDb keys for various subsections
-        if (   !SettingDb::init('shop', 'config')
-            || !SettingDb::getValue('numof_products_per_page_frontend')) {
+        if (!SettingDb::getValue('numof_products_per_page_frontend')) {
             require_once ASCMS_MODULE_PATH.'/shop/lib/ShopSettings.class.php';
             ShopSettings::errorHandler();
         }
-
-
         // Pick the default Country for delivery
         if (empty($_SESSION['shop']['countryId2'])) {
             $_SESSION['shop']['countryId2'] =
@@ -175,7 +169,6 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
                 trim(strip_tags(contrexx_input2raw($_REQUEST['coupon_code'])));
 //DBG::log("Coupon Code: Set to ".$_SESSION['shop']['coupon_code']);
         }
-
 //DBG::log("Shop::getPage(): Entered");
         // Global placeholders that are used on (almost) all pages.
         // Add more as desired.
@@ -183,7 +176,6 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
             'SHOP_CURRENCY_CODE' => Currency::getActiveCurrencyCode(),
             'SHOP_CURRENCY_SYMBOL' => Currency::getActiveCurrencySymbol(),
         ));
-
         if (!isset($_GET['cmd'])) $_GET['cmd'] = '';
         if (!isset($_GET['act'])) $_GET['act'] = $_GET['cmd'];
         switch ($_GET['act']) {
@@ -228,7 +220,6 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
             case 'changepass';
                 self::_changepass();
                 break;
-
             // Test for PayPal IPN.
             // *DO NOT* remove this!  Needed for site testing.
             case 'testIpn':
@@ -447,6 +438,8 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
      * "shopJsCart" template block.
      * Generates the structure of the Javascript cart, puts it in the template,
      * and registers all required JS code.
+     * Note that this is only ever called when the JS cart is enabled in the
+     * extended settings!
      * @access  public
      * @global  array   $_ARRAYLANG   Language array
      * @global  array   $themesPages  Theme template array
@@ -1896,6 +1889,7 @@ function checkProductOption(objForm, productId, strAttributeIds)
     alert(msg);
     return false;
   } else {".
+// Note that $use_js_cart is false when the JS cart setting is off!
 ($flagUpload || !self::$use_js_cart ? "
     return true;
   }

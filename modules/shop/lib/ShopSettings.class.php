@@ -115,7 +115,6 @@ class ShopSettings
         SettingDb::set('thumbnail_max_width', intval($_POST['thumbnail_max_width']));
         SettingDb::set('thumbnail_max_height', intval($_POST['thumbnail_max_height']));
         SettingDb::set('thumbnail_quality', intval($_POST['thumbnail_quality']));
-
         // Extended settings
         // New in V2.something
         SettingDb::set('weight_enable', !empty($_POST['weight_enable']));
@@ -131,6 +130,10 @@ class ShopSettings
             empty($_POST['orderitems_amount_max'])
                 ? 0 : floatval($_POST['orderitems_amount_max']));
         // New in V3.0.0
+        SettingDb::set('use_js_cart',
+            intval($_POST['use_js_cart']));
+        SettingDb::set('shopnavbar_on_all_pages',
+            intval($_POST['shopnavbar_on_all_pages']));
         SettingDb::set('register',
             trim(strip_tags(contrexx_input2raw($_POST['register']))));
         SettingDb::set('numof_customers_per_page_backend',
@@ -705,7 +708,6 @@ DBG::log("ShopSettings::errorHandler(): Migrating");
             SettingDb::TYPE_TEXT, null, 'config');
         SettingDb::add('weight_enable', 0, ++$i,
             SettingDb::TYPE_TEXT, null, 'config');
-
         SettingDb::add('show_products_default', 0, ++$i,
             SettingDb::TYPE_TEXT, null, 'config');
         SettingDb::add('product_sorting', 0, ++$i,
@@ -720,8 +722,6 @@ DBG::log("ShopSettings::errorHandler(): Migrating");
             SettingDb::TYPE_TEXT, null, 'config');
         SettingDb::add('thumbnail_quality', 90, ++$i,
             SettingDb::TYPE_TEXT, null, 'config');
-
-
         SettingDb::add('saferpay_id', '1234', ++$i,
             SettingDb::TYPE_TEXT, null, 'config');
         SettingDb::add('saferpay_active', 1, ++$i,
@@ -738,7 +738,6 @@ DBG::log("ShopSettings::errorHandler(): Migrating");
             SettingDb::TYPE_TEXT, null, 'config');
         SettingDb::add('paypal_default_currency', 'CHF', ++$i,
             SettingDb::TYPE_TEXT, null, 'config');
-
         // Also see Yellowpay.class
         SettingDb::add('postfinance_shop_id', 'Ihr Kontoname', ++$i,
             SettingDb::TYPE_TEXT);
@@ -782,7 +781,13 @@ DBG::log("ShopSettings::errorHandler(): Migrating");
             SettingDb::TYPE_TEXT, null, 'config');
         SettingDb::add('payment_lsv_active', 0, ++$i,
             SettingDb::TYPE_TEXT, null, 'config');
-
+        // New for V3.0
+//  use_js_cart (true)
+        SettingDb::add('use_js_cart', '1', ++$i,
+            SettingDb::TYPE_CHECKBOX, '1');
+//  shopnavbar_on_all_pages (false)
+        SettingDb::add('shopnavbar_on_all_pages', '0', ++$i,
+            SettingDb::TYPE_CHECKBOX, '1');
         // New for v2.2(?)
         SettingDb::add('orderitems_amount_max', 0, ++$i,
             SettingDb::TYPE_TEXT, null, 'config');

@@ -72,6 +72,7 @@
  * will either activate or deactivate all levels.
  */
 require_once dirname(__FILE__).'/lib/DBG.php';
+DBG::activate(DBG_ADODB_ERROR|DBG_LOG_FIREPHP|DBG_PHP);
 
 //iconv_set_encoding('output_encoding', 'utf-8');
 //iconv_set_encoding('input_encoding', 'utf-8');
@@ -396,7 +397,7 @@ if ($isRegularPageRequest) {
           We try to locate a module page via cmd and section (if provided).
           If that doesn't work, an error is shown.
         */
-        
+
         // a: 'home' page
         $urlPointsToHome =    $url->getSuggestedTargetPath() == 'index.php'
                            || $url->getSuggestedTargetPath() == '';
@@ -416,9 +417,9 @@ if ($isRegularPageRequest) {
                     $objFWUser->logout();
                 }
             }
-            
+
             $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
-            
+
             $crit = array(
                  'module' => $section,
                  'type' => 'application',
@@ -1632,16 +1633,21 @@ switch ($plainSection) {
 }
 
 // Show the Shop navbar in the Shop, or on every page if configured to do so
-if (!$boolShop && !empty($_CONFIGURATION['custom']['shopnavbar'])) {
+if (!$boolShop
 // Optionally limit to the first instance
 // && MODULE_INDEX == ''
-    /** @ignore */
-    @require_once ASCMS_MODULE_PATH.'/shop/index.class.php';
-    Shop::init();
-    Shop::setNavbar();
-    $boolShop = true;
+) {
+    @require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
+    SettingDb::init('shop', 'config');
+    $use_js_cart = SettingDb::getValue('use_js_cart');
+    if ($use_js_cart) {
+        /** @ignore */
+        @require_once ASCMS_MODULE_PATH.'/shop/index.class.php';
+        Shop::init();
+        Shop::setNavbar();
+        $boolShop = true;
+    }
 }
-
 
 // Calendar
 // print_r($objTemplate->getPlaceholderList());
@@ -1956,7 +1962,7 @@ if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
 }
 
 //enable gzip compressing of the output - up to 75% smaller responses!
-//commented out because of certain php.inis generating a 
+//commented out because of certain php.inis generating a
 //WARNING: ob_start(): output handler 'ob_gzhandler' cannot be used after 'URL-Rewriter
 //ob_start("ob_gzhandler");
 

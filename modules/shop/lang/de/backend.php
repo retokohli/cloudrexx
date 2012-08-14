@@ -916,3 +916,8 @@ $_ARRAYLANG['TXT_ZONE_NAME'] = "Zonenname";
 $_ARRAYLANG['TXT_ZONES'] = "Zonen";
 
 $_ARRAYLANG['TXT_SHOP_ATTRIBUTE_TYPE'] = "Typ";
+$_ARRAYLANG['TXT_SHOP_SETTING_CART_USE_JS'] = "Dynamischen JavaScript Warenkorb verwenden";
+$_ARRAYLANG['TXT_SHOP_SETTING_SHOPNAVBAR_ON_ALL_PAGES'] = "Shop Navigation auf jeder Seite anzeigen";
+
+//$_ARRAYLANG[''] = "";
+

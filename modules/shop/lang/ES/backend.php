@@ -671,4 +671,10 @@ $_ARRAYLANG['TXT_SHOP_EMAIL_ADDRESS'] = "E-Mail Adresse";
 $_ARRAYLANG['TXT_SHOP_RECIPIENT_ADDRESS'] = "Empfänger E-Mail Adresse";
 $_ARRAYLANG['TXT_SHOP_PLEASE_SET_RECIPIENT_ADDRESS'] = "Bitte geben Sie eine E-Mail Adresse für den Empfänger an";
 $_ARRAYLANG['TXT_SHOP_DEL_ICON'] = "Remove Image";
-?>
+
+$_ARRAYLANG['TXT_SHOP_ATTRIBUTE_TYPE'] = "Typ";
+$_ARRAYLANG['TXT_SHOP_SETTING_CART_USE_JS'] = "Dynamischen JavaScript Warenkorb verwenden";
+$_ARRAYLANG['TXT_SHOP_SETTING_SHOPNAVBAR_ON_ALL_PAGES'] = "Shop Navigation auf jeder Seite anzeigen";
+
+//$_ARRAYLANG[''] = "";
+

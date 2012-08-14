@@ -887,7 +887,7 @@ DBG::log("Attributes::getOptionPriceSum(): ERROR: option ID $option_id is not nu
 //DBG::log("Attributes::getAsStrings(".var_export($arrAttributesOptions, true).", $options_price)");
         $options_price = 0;
         if (   !is_array($arrAttributesOptions)
-            || empty ($arrAttributesOptions)) return '';
+            || empty ($arrAttributesOptions)) return array('', '');
         $attributes_long = $attributes_cart = array();
         foreach ($arrAttributesOptions as $attribute_id => $arrOptionIds) {
 //DBG::log("Attributes::getAsStrings(): Attribute ID $attribute_id");
