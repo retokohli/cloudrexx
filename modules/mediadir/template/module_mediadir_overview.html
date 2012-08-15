@@ -86,7 +86,7 @@ var switchState = function(id, obj, action, type)
 </script>
 
 <style type="text/css">
-    #search {
+    #search_mediadir {
         padding: 0;
         width: auto;
     }
@@ -94,13 +94,12 @@ var switchState = function(id, obj, action, type)
 
 <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
     <tr>
-        <th colspan="2">{TXT_FUNCTIONS}</th>
+        <th>{TXT_FUNCTIONS}</th>
     </tr>
     <tr class="row1">
-        <td width="100">{TXT_ENTRY_SEARCH}</td>
         <td>
-            <form id="search" method="post" action="index.php?cmd={MODULE_NAME}&amp;act=entries">
-                <input type="text" name="term" value="{MEDIADIR_SEARCH_TERM}" onclick="this.value=''" style="width: 200px;" />
+            <form id="search_mediadir" method="post" action="index.php?cmd={MODULE_NAME}&amp;act=entries">
+                <input type="text" name="term" value="{TXT_MEDIADIR_ID_OR_SEARCH_TERM}" onfocus="if(this.value=='{TXT_MEDIADIR_ID_OR_SEARCH_TERM}'){this.value=''}" onblur="if(this.value==''){this.value='{TXT_MEDIADIR_ID_OR_SEARCH_TERM}'}" class="search" style="width: 240px;" />
                 <!-- BEGIN mediadirFormDropdown --><select name="form_id" style="width: 172px;"><option value="0">{TXT_MEDIADIR_ALL_FORMS}</option>{MEDIADIR_FORMS_DROPDOWN_OPTIONS}</select><!-- END mediadirFormDropdown -->
                 <!-- BEGIN mediadirLevelDropdown --><select name="level_id" style="width: 172px;"><option value="0">{TXT_MEDIADIR_ALL_LEVELS}</option>{MEDIADIR_LEVELS_DROPDOWN_OPTIONS}</select><!-- END mediadirLevelDropdown -->
                 <select name="cat_id" style="width: 172px;"><option value="0">{TXT_MEDIADIR_ALL_CATEGORIES}</option>{MEDIADIR_CATEGORIES_DROPDOWN_OPTIONS}</select>

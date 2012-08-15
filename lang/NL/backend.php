@@ -212,7 +212,6 @@ $_ARRAYLANG['TXT_HOME_MODULE_DESCRIPTION'] = "Startpagina";
 $_ARRAYLANG['TXT_NEWS_SYNDICATION'] = "Nieuws syndicatie";
 $_ARRAYLANG['TXT_SERVER_INFO'] = "Server info";
 $_ARRAYLANG['TXT_PHP_INFO'] = "PHP informatie";
-$_ARRAYLANG['TXT_SITE_PREVIEW'] = "Homepage preview";
 $_ARRAYLANG['TXT_WELCOME_MESSAGE'] = "Welkom";
 $_ARRAYLANG['TXT_ADMINISTSRATORS_ONLINE'] = "Administrators online";
 $_ARRAYLANG['TXT_LAST_LOGIN'] = "Last login";

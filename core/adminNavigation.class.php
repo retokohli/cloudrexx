@@ -238,7 +238,6 @@ class adminMenu
             'TXT_SEARCH'                    => $_CORELANG['TXT_SEARCH'],
             'TXT_HOME_LINKNAME'             => $_CORELANG['TXT_HOME'],
             'TXT_DASHBOARD_LINKNAME'        => $_CORELANG['TXT_DASHBOARD'],
-            'TXT_FRONTEND_LINKNAME'         => $_CORELANG['TXT_FRONTEND'],
             'NAVIGATION_HOME_CLASS'         => (isset($_COOKIE['navigation_level_2_active'])) && ($_COOKIE['navigation_level_2_active'] == 'home') ? 'active' : 'inactive',
             'NAVIGATION_DASHBOARD_CLASS'    => empty($_GET['cmd']) ? 'active' : 'inactive',
         ));

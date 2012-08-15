@@ -43,7 +43,7 @@ function switchNavigation(navi_id) {
 </ul>
 <ul id="navigation_level_2_home" class="navigation_level_2 {NAVIGATION_HOME_CLASS}">
     <li class="{NAVIGATION_DASHBOARD_CLASS}"><a href="index.php">{TXT_DASHBOARD_LINKNAME}</a></li>
-    <li class="inactive"><a href="../index.php" target="_blank">{TXT_FRONTEND_LINKNAME}</a></li>
+    <li class="inactive"><a href="../index.php" target="_blank">{TXT_FRONTEND}</a></li>
 </ul>
 
 <!-- BEGIN navigationRow -->
@@ -59,5 +59,5 @@ function switchNavigation(navi_id) {
 
 <form id="search" name="search" action="index.php" method="get">
     <input type="hidden" name="cmd" value="search" />
-    <input type="text" name="term" value="" />
+    <input type="text" name="term" value="" class="search" />
 </form>

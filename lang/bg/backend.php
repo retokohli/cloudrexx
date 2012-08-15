@@ -212,7 +212,6 @@ $_ARRAYLANG['TXT_HOME_MODULE_DESCRIPTION'] = "CMS Startseiten Module";
 $_ARRAYLANG['TXT_NEWS_SYNDICATION'] = "News Syndication";
 $_ARRAYLANG['TXT_SERVER_INFO'] = "Server Infos";
 $_ARRAYLANG['TXT_PHP_INFO'] = "PHP Informationen";
-$_ARRAYLANG['TXT_SITE_PREVIEW'] = "Homepage Vorschau";
 $_ARRAYLANG['TXT_WELCOME_MESSAGE'] = "Willkommen";
 $_ARRAYLANG['TXT_ADMINISTSRATORS_ONLINE'] = "Administrators online";
 $_ARRAYLANG['TXT_LAST_LOGIN'] = "Last login";

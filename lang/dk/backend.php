@@ -212,7 +212,6 @@ $_ARRAYLANG['TXT_HOME_MODULE_DESCRIPTION'] = "CMS startside moduler";
 $_ARRAYLANG['TXT_NEWS_SYNDICATION'] = "RSS feed fortegnelse";
 $_ARRAYLANG['TXT_SERVER_INFO'] = "Server informationer";
 $_ARRAYLANG['TXT_PHP_INFO'] = "PHP informationer";
-$_ARRAYLANG['TXT_SITE_PREVIEW'] = "Hjemmeside preview";
 $_ARRAYLANG['TXT_WELCOME_MESSAGE'] = "Velkommen";
 $_ARRAYLANG['TXT_ADMINISTSRATORS_ONLINE'] = "Administrators online";
 $_ARRAYLANG['TXT_LAST_LOGIN'] = "Last login";

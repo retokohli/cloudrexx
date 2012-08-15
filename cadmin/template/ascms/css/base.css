@@ -113,7 +113,7 @@ a:active {
 }
 
 #metanavigation a.frontend {
-    padding-left: 20px;
+    padding-left: 21px;
     background: url(../images/frontend_icon.png) no-repeat;
 }
 
@@ -309,6 +309,14 @@ a:active {
     border: 1px solid #bbbbbb;
     padding: 3px;
     color: #444444;
+}
+
+#content input[type=text].search,
+#navigation_wrapper input[type=text].search {
+    padding-right: 26px;
+    background-image: url(../images/search_glass.png);
+    background-repeat: no-repeat;
+    background-position: right center;
 }
 
 textarea.cke_source {
@@ -554,10 +562,8 @@ textarea.cke_source {
 }
 
 #search input[type="text"] {
-    width: 163px;
-    padding-right: 25px;
+    width: 161px;
     margin: 0 !important;
-    background: url('../images/search_glass.png') no-repeat right center;
 }
 
 #search input[type="submit"] {

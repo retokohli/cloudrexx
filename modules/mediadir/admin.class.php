@@ -191,7 +191,6 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
             'TXT_VIEW' => $_ARRAYLANG['TXT_MEDIADIR_VIEW'],
             'TXT_EDIT' => $_ARRAYLANG['TXT_MEDIADIR_EDIT'],
             'TXT_DELETE' => $_ARRAYLANG['TXT_MEDIADIR_DELETE'],
-            'TXT_ENTRY_SEARCH' => $_ARRAYLANG['TXT_MEDIADIR_ENTRY_SEARCH'],
             'TXT_SEARCH' => $_CORELANG['TXT_SEARCH'],
             'TXT_SELECT_ALL' => $_CORELANG['TXT_SELECT_ALL'],
             'TXT_DESELECT_ALL' => $_CORELANG['TXT_DESELECT_ALL'],
@@ -1081,7 +1080,6 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
 			// TODO: _FORM_ONSUBMIT not used?
             //$this->moduleLangVar.'_FORM_ONSUBMIT' =>  $strOnSubmit,
             'TXT_EDIT' => $_ARRAYLANG['TXT_MEDIADIR_EDIT'],
-            'TXT_ENTRY_SEARCH' => $_ARRAYLANG['TXT_MEDIADIR_ENTRY_SEARCH'],
             'TXT_SEARCH' => $_CORELANG['TXT_SEARCH'],
             'TXT_MEDIADIR_STATUS' => $_CORELANG['TXT_STATUS'],
             'TXT_SELECT_ALL' => $_CORELANG['TXT_SELECT_ALL'],
@@ -1098,6 +1096,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
             'TXT_'.$this->moduleLangVar.'_HITS' => $_ARRAYLANG['TXT_MEDIADIR_HITS'],
             'TXT_'.$this->moduleLangVar.'_ACTION' => $_CORELANG['TXT_HISTORY_ACTION'],
             $this->moduleLangVar.'_SEARCH_TERM' => $strTerm != null ? $strTerm : $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM'],
+            'TXT_'.$this->moduleLangVar.'_ID_OR_SEARCH_TERM' => $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM'],
             $this->moduleLangVar.'_SEARCH_CATEGORY_ID' => $intCategoryId,
             $this->moduleLangVar.'_SEARCH_LEVEL_ID' => $intLevelId,
             'TXT_'.$this->moduleLangVar.'_MOVE_ALL' => $_ARRAYLANG['TXT_MEDIADIR_MOVE_ALL'],
