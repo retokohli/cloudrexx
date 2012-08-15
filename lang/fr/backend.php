@@ -212,7 +212,6 @@ $_ARRAYLANG['TXT_HOME_MODULE_DESCRIPTION'] = "Pages de démarrage du site CMS";
 $_ARRAYLANG['TXT_NEWS_SYNDICATION'] = "Répertoire de flux RSS";
 $_ARRAYLANG['TXT_SERVER_INFO'] = "Informations sur le serveur";
 $_ARRAYLANG['TXT_PHP_INFO'] = "Informations PHP";
-$_ARRAYLANG['TXT_SITE_PREVIEW'] = "Aperçu de la page d'accueil";
 $_ARRAYLANG['TXT_WELCOME_MESSAGE'] = "Bienvenue";
 $_ARRAYLANG['TXT_ADMINISTSRATORS_ONLINE'] = "Administrators online";
 $_ARRAYLANG['TXT_LAST_LOGIN'] = "Last login";

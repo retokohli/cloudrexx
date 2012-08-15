@@ -212,7 +212,6 @@ $_ARRAYLANG['TXT_HOME_MODULE_DESCRIPTION'] = "CMS Başlangıçsayfaları Modüll
 $_ARRAYLANG['TXT_NEWS_SYNDICATION'] = "Haber Bağlantıları";
 $_ARRAYLANG['TXT_SERVER_INFO'] = "Sunucu Bilgileri";
 $_ARRAYLANG['TXT_PHP_INFO'] = "PHP Bilgileri";
-$_ARRAYLANG['TXT_SITE_PREVIEW'] = "Site Ön izlenim";
 $_ARRAYLANG['TXT_WELCOME_MESSAGE'] = "Hoşgeldiniz";
 $_ARRAYLANG['TXT_ADMINISTSRATORS_ONLINE'] = "Administrators online";
 $_ARRAYLANG['TXT_LAST_LOGIN'] = "Last login";

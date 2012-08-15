@@ -109,7 +109,6 @@ class myAdminManager {
             'TXT_ADD_NEWS' 					=> htmlentities($_CORELANG['TXT_ADD_NEWS'], ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_ADD_BLOCK' 				=> htmlentities($_CORELANG['TXT_ADD_BLOCK'], ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_ADD_FORM' 					=> htmlentities($_CORELANG['TXT_ADD_FORM'], ENT_QUOTES, CONTREXX_CHARSET),
-            'TXT_SITE_PREVIEW'				=> htmlentities($_CORELANG['TXT_SITE_PREVIEW'], ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_CONTENT_MANAGER' 			=> htmlentities($_CORELANG['TXT_CONTENT_MANAGER'], ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_STATS' 					=> htmlentities($_CORELANG['TXT_STATS'], ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_WORKFLOW'					=> htmlentities($_CORELANG['TXT_WORKFLOW'], ENT_QUOTES, CONTREXX_CHARSET),

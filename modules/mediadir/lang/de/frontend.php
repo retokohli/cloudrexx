@@ -59,7 +59,7 @@ $_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_CONFIRM'] = "erfolgreich bestätigt.";
 $_ARRAYLANG['TXT_MEDIADIR_ACCOUNT_SUCCESSFULLY_CREATED'] = "Ihr Benutzerkonto wurde erfolgreich erstellt.";
 $_ARRAYLANG['TXT_MEDIADIR_COULD_NOT_SEND_ACTIVATION_MAIL'] = "Registrierungsfehler: Konnte kein Bestätigungsmail schicken";
 $_ARRAYLANG['TXT_MEDIADIR_COULD_NOT_SEND_EMAIL'] = "Konnte keine Bestätigung per Mail senden.<br />Für weitere Informationen wenden Sie sich bitte an den Administrator %EMAIL%. ";
-$_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM'] = "ID oder Suchbegriff...";
+$_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM'] = "Eintrag suchen (ID oder Suchbegriff)";
 
 $_ARRAYLANG['TXT_MEDIADIR_GOOGLEMAPS_LINK'] = 'Link zu Googe Maps';
 $_ARRAYLANG['TXT_MEDIADIR_DISPLAYNAME'] = 'Anzeigename';

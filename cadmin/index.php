@@ -241,8 +241,8 @@ if ($isRegularPageRequest) {
         $txtProfile = $objUser->getUsername();
     }
 
+    $objTemplate->setGlobalVariable('TXT_FRONTEND', $_CORELANG['TXT_FRONTEND']);
     $objTemplate->setVariable(array(
-        'TXT_FRONTEND'      => $_CORELANG['TXT_FRONTEND'],
         'TXT_PROFILE'       => $txtProfile,
         'TXT_LOGOUT'        => $_CORELANG['TXT_LOGOUT'],
         'TXT_PAGE_ID'       => $_CORELANG['TXT_PAGE_ID'],
