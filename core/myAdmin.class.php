@@ -130,8 +130,8 @@ class myAdminManager {
             $objTemplate->touchBlock('news_delete');
             $objTemplate->touchBlock('stats_delete');
         } else {
-            $objTemplate->hide('news_delete');
-            $objTemplate->hide('stats_delete');
+            $objTemplate->hideBlock('news_delete');
+            $objTemplate->hideBlock('stats_delete');
         }
 
         $objFWUser = FWUser::getFWUserObject();
