@@ -128,9 +128,11 @@ class ContactManager extends ContactLib
     {
         global $objTemplate, $_ARRAYLANG;
 
-        $objTemplate->setVariable("CONTENT_NAVIGATION", "
-            <a href='index.php?cmd=contact' title=".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS']." class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS']."</a>
-            <a href='index.php?cmd=contact&amp;act=settings' title=".$_ARRAYLANG['TXT_CONTACT_SETTINGS']." class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CONTACT_SETTINGS']."</a>");
+        $objTemplate->setVariable("CONTENT_NAVIGATION", '
+            <a href="index.php?cmd=contact" title="'.$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'].'" class="'.($this->act == '' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'].'</a>
+            <a hreF="index.php?cmd=media&amp;archive=contact" title="'.$_ARRAYLANG['TXT_FILE_UPLOADS'].'">'.$_ARRAYLANG['TXT_FILE_UPLOADS'].'</a>
+            <a href="index.php?cmd=contact&amp;act=settings" title="'.$_ARRAYLANG['TXT_CONTACT_SETTINGS'].'" class="'.($this->act == 'settings' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CONTACT_SETTINGS'].'</a>
+        ');
     }
 
     /**
@@ -470,6 +472,7 @@ class ContactManager extends ContactLib
                         $this->_objTpl->setVariable('CONTACT_FORM_ENTRIES_CELL_CONTENT', $value);
                         $this->_objTpl->parse('contact_form_entry_data');
 
+                        $value = '';
                         $colNr++;
                     }
                     $this->_objTpl->parse('contact_form_entries');
@@ -1886,51 +1889,53 @@ class ContactManager extends ContactLib
              */
             if (!in_array($arrField['type'], $this->nonValueFormFieldTypes)) {
                 $sourcecode .= "<tr class=".($rowNr % 2 == 0 ? 'row1' : 'row2').">\n";
-                $sourcecode .= "<td style=\"vertical-align:top;\" width=\"15%\">".
+                $sourcecode .= "<td style=\"vertical-align:top;\" width=\"15%\">
+                                <strong>".
                                 contrexx_raw2xhtml($arrField['lang'][FRONTEND_LANG_ID]['name']).
-                                ($arrField['type'] == 'hidden' ? ' (hidden)' : '').                                
-                                "</td>\n";
+                                ($arrField['type'] == 'hidden' ? ' (hidden)' : '')."
+                                </strong>
+                                </td>\n";
                 $sourcecode .= "<td width=\"85%\">";
                 
                 switch ($arrField['type']) {
-                case 'checkbox':
-                    $sourcecode .= isset($arrEntry['data'][$key]) && $arrEntry['data'][$key] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO'];
-                    break;
-
-                case 'file':
-                    if(isset($arrEntry['data'][$key])) {
-                        $fieldData = $arrEntry['data'][$key];
-                        if(substr($fieldData,0,1) == '*') {
-                            $arrFiles = explode('*', substr($fieldData,1)); //the substr kills the leading '*';
-                            foreach($arrFiles as $file) {
-                                $sourcecode .= '<a href="'.ASCMS_PATH_OFFSET.htmlentities($file, ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($file, ENT_QUOTES, CONTREXX_CHARSET).'</a>';
-                                $sourcecode .= '&nbsp;';
+                    case 'checkbox':
+                        $sourcecode .= isset($arrEntry['data'][$key]) && $arrEntry['data'][$key] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO'];
+                        break;
+    
+                    case 'file':
+                        if(isset($arrEntry['data'][$key])) {
+                            $fieldData = $arrEntry['data'][$key];
+                            if(substr($fieldData,0,1) == '*') {
+                                $arrFiles = explode('*', substr($fieldData,1)); //the substr kills the leading '*';
+                                foreach($arrFiles as $file) {
+                                    $sourcecode .= '<a href="'.ASCMS_PATH_OFFSET.htmlentities($file, ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($file, ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+                                    $sourcecode .= '&nbsp;';
+                                }
+                            }
+                            else {
+                                $sourcecode .= '<a href="'.ASCMS_PATH_OFFSET.htmlentities($fieldData, ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($fieldData, ENT_QUOTES, CONTREXX_CHARSET).'</a>';
                             }
                         }
                         else {
-                            $sourcecode .= '<a href="'.ASCMS_PATH_OFFSET.htmlentities($fieldData, ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($fieldData, ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+                            $sourcecode .= '&nbsp;';
                         }
-                    }
-                    else {
-                        $sourcecode .= '&nbsp;';
-                    }
-                    break;
-                case 'recipient':
-                    $recipientId = $arrEntry['data'][$key];
-                    $sourcecode .= isset($recipient[$recipientId]['lang'][$langId]) ? htmlentities($recipient[$recipientId]['lang'][$langId], ENT_QUOTES, CONTREXX_CHARSET) : '&nbsp;';
-                    break;
-                case 'text':
-                case 'checkboxGroup':
-                case 'country':
-                case 'date':
-                case 'hidden':
-                case 'password':
-                case 'radio':
-                case 'select':
-                case 'textarea':
-                case 'special':
-                    $sourcecode .= isset($arrEntry['data'][$key]) ? nl2br(htmlentities($arrEntry['data'][$key], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
-                    break;
+                        break;
+                    case 'recipient':
+                        $recipientId = $arrEntry['data'][$key];
+                        $sourcecode .= isset($recipient[$recipientId]['lang'][$langId]) ? htmlentities($recipient[$recipientId]['lang'][$langId], ENT_QUOTES, CONTREXX_CHARSET) : '&nbsp;';
+                        break;
+                    case 'text':
+                    case 'checkboxGroup':
+                    case 'country':
+                    case 'date':
+                    case 'hidden':
+                    case 'password':
+                    case 'radio':
+                    case 'select':
+                    case 'textarea':
+                    case 'special':
+                        $sourcecode .= isset($arrEntry['data'][$key]) ? nl2br(htmlentities($arrEntry['data'][$key], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
+                        break;
                 }
 
                 $sourcecode .= "</td>\n";
