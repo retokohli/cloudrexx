@@ -6,6 +6,7 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_DASHBOARD'] = "Dashboard";
 $_ARRAYLANG['TXT_SYSTEM_LOGS'] = "System Logs";
 $_ARRAYLANG['TXT_EMAIL_SERVER'] = "E-mail server";
 $_ARRAYLANG['TXT_ADMIN_AREA'] = "Administration area";

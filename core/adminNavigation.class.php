@@ -110,8 +110,8 @@ class adminMenu
         reset($this->arrMenuItems);
 
         if (empty($_GET['cmd'])) {
-            setcookie('navigation_level_2_active', 'dashboard');
-            $_COOKIE['navigation_level_2_active'] = 'dashboard';
+            setcookie('navigation_level_2_active', 'home');
+            $_COOKIE['navigation_level_2_active'] = 'home';
         } else {
             foreach ($this->arrMenuItems as $menuItem) {
                 if (preg_match('/cmd=(.+?)(?:&amp;(.+))?$/', $menuItem[2], $arrMatch)) {
@@ -235,8 +235,12 @@ class adminMenu
         }
 
         $objTemplate->setVariable(array(
-            'TXT_SEARCH' => $_CORELANG['TXT_SEARCH'],
-            'NAVIGATION_DASHBOARD_CLASS' => (isset($_COOKIE['navigation_level_2_active'])) && ($_COOKIE['navigation_level_2_active'] == 'dashboard') ? 'active' : 'inactive',
+            'TXT_SEARCH'                    => $_CORELANG['TXT_SEARCH'],
+            'TXT_HOME_LINKNAME'             => $_CORELANG['TXT_HOME'],
+            'TXT_DASHBOARD_LINKNAME'        => $_CORELANG['TXT_DASHBOARD'],
+            'TXT_FRONTEND_LINKNAME'         => $_CORELANG['TXT_FRONTEND'],
+            'NAVIGATION_HOME_CLASS'         => (isset($_COOKIE['navigation_level_2_active'])) && ($_COOKIE['navigation_level_2_active'] == 'home') ? 'active' : 'inactive',
+            'NAVIGATION_DASHBOARD_CLASS'    => empty($_GET['cmd']) ? 'active' : 'inactive',
         ));
         $objTemplate->parse('navigation_output');
     }

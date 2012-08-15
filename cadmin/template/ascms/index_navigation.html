@@ -34,11 +34,29 @@ function switchNavigation(navi_id) {
 // ]]>
 </script>
 
-<ul id="navigation_level_1_dashboard" class="navigation_level_1 {NAVIGATION_DASHBOARD_CLASS}" onclick="switchNavigation('dashboard');"><li class="{NAVIGATION_DASHBOARD_CLASS}"><a class="{NAVIGATION_DASHBOARD_CLASS}" href="index.php">Dashboard</a></li></ul>
+<ul id="navigation_level_1_home" class="navigation_level_1" onclick="switchNavigation('home');">
+    <li class="{NAVIGATION_HOME_CLASS}">
+        <span class="icon_1"></span>
+        <span class="icon_2"></span>
+        <span class="name {NAVIGATION_HOME_CLASS}">{TXT_HOME_LINKNAME}</span>
+    </li>
+</ul>
+<ul id="navigation_level_2_home" class="navigation_level_2 {NAVIGATION_HOME_CLASS}">
+    <li class="{NAVIGATION_DASHBOARD_CLASS}"><a href="index.php">{TXT_DASHBOARD_LINKNAME}</a></li>
+    <li class="inactive"><a href="../index.php" target="_blank">{TXT_FRONTEND_LINKNAME}</a></li>
+</ul>
+
 <!-- BEGIN navigationRow -->
-<ul id="navigation_level_1_{NAVIGATION_ID}" class="navigation_level_1" onclick="switchNavigation('{NAVIGATION_ID}');"><li class="{NAVIGATION_CLASS}"><span class="{NAVIGATION_CLASS}">{NAVIGATION_GROUP_NAME}</span></li></ul>
+<ul id="navigation_level_1_{NAVIGATION_ID}" class="navigation_level_1" onclick="switchNavigation('{NAVIGATION_ID}');">
+    <li class="{NAVIGATION_CLASS}">
+        <span class="icon_1"></span>
+        <span class="icon_2"></span>
+        <span class="name">{NAVIGATION_GROUP_NAME}</span>
+    </li>
+</ul>
 <ul id="navigation_level_2_{NAVIGATION_ID}" class="navigation_level_2 {NAVIGATION_CLASS}">{NAVIGATION_MENU}</ul>
 <!-- END navigationRow -->
+
 <form id="search" name="search" action="index.php" method="get">
     <input type="hidden" name="cmd" value="search" />
     <input type="text" name="term" value="" />

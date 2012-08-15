@@ -396,10 +396,10 @@ textarea.cke_source {
     display: none;
 }
 
-.navigation_level_1 li,
-.navigation_level_2 li {
+.navigation_level_1 li {
     float: left;
-    width: auto;
+    width: 216px;
+    height: 30px;
     border-bottom: 1px solid #efefef;
 }
 
@@ -410,40 +410,114 @@ textarea.cke_source {
     background: url(../images/gradient.jpg) repeat-y left top;
     padding-bottom: 1px;
     border: 0;
-}
-
-.navigation_level_1 li span,
-.navigation_level_1 li a {
-    float: left;
-    width: 184px;
-    height: 30px;
-    line-height: 29px;
-    padding: 0 10px 0 22px;
-    background: url(../images/navigation_level_1_list_style.png) no-repeat 10px 10px;
-    font-size: 13px;
-    font-weight: bold;
-    color: #444444;
-    outline: 0;
-}
-
-.navigation_level_1 li:hover span,
-.navigation_level_1 li:focus span,
-.navigation_level_1 li:active span,
-.navigation_level_1 li.active span,
-.navigation_level_1 li:hover a,
-.navigation_level_1 li:focus a,
-.navigation_level_1 li:active a,
-.navigation_level_1 li.active a {
-    background: url(../images/navigation_level_1_hover_list_style.png) no-repeat 7px 12px;
-    color: #ffffff;
     cursor: pointer;
 }
 
-#navigation_level_1_dashboard li:hover a,
-#navigation_level_1_dashboard li:focus a,
-#navigation_level_1_dashboard li:active a,
-#navigation_level_1_dashboard li.active a {
-    background: url(../images/navigation_level_1_hover_list_style_no_submenu.png) no-repeat 10px 10px;
+.navigation_level_1 li .icon_1 {
+    float: left;
+    width: 9px;
+    height: 100%;
+    margin: 0 8px 0 11px;
+    background: url(../images/navigation_level_1_list_style.png) no-repeat center center;
+}
+
+.navigation_level_1 li:hover .icon_1,
+.navigation_level_1 li:focus .icon_1,
+.navigation_level_1 li:active .icon_1,
+.navigation_level_1 li.active .icon_1 {
+    background: url(../images/navigation_level_1_hover_list_style.png) no-repeat center center;
+}
+
+#navigation_level_1_home li:hover .icon_1,
+#navigation_level_1_home li:focus .icon_1,
+#navigation_level_1_home li:active .icon_1,
+#navigation_level_1_home li.active .icon_1 {
+    background: url(../images/navigation_level_1_hover_list_style_no_submenu.png) no-repeat center center;
+}
+
+.navigation_level_1 li .icon_2 {
+    float: left;
+    width: 16px;
+    height: 100%;
+}
+
+#navigation_level_1_home li .icon_2 {
+    background: url(../images/navigation_level_1_home.png) no-repeat 0 7px;
+}
+
+#navigation_level_1_home li:hover .icon_2,
+#navigation_level_1_home li:focus .icon_2,
+#navigation_level_1_home li:active .icon_2,
+#navigation_level_1_home li.active .icon_2 {
+    background: url(../images/navigation_level_1_home_hover.png) no-repeat center 7px;
+}
+
+#navigation_level_1_1 li .icon_2 {
+    background: url(../images/navigation_level_1_1.png) no-repeat center 7px;
+}
+
+#navigation_level_1_1 li:hover .icon_2,
+#navigation_level_1_1 li:focus .icon_2,
+#navigation_level_1_1 li:active .icon_2,
+#navigation_level_1_1 li.active .icon_2 {
+    background: url(../images/navigation_level_1_1_hover.png) no-repeat center 7px;
+}
+
+#navigation_level_1_2 li .icon_2 {
+    background: url(../images/navigation_level_1_2.png) no-repeat center 6px;
+}
+
+#navigation_level_1_2 li:hover .icon_2,
+#navigation_level_1_2 li:focus .icon_2,
+#navigation_level_1_2 li:active .icon_2,
+#navigation_level_1_2 li.active .icon_2 {
+    background: url(../images/navigation_level_1_2_hover.png) no-repeat center 6px;
+}
+
+#navigation_level_1_3 li .icon_2 {
+    background: url(../images/navigation_level_1_3.png) no-repeat center 6px;
+}
+
+#navigation_level_1_3 li:hover .icon_2,
+#navigation_level_1_3 li:focus .icon_2,
+#navigation_level_1_3 li:active .icon_2,
+#navigation_level_1_3 li.active .icon_2 {
+    background: url(../images/navigation_level_1_3_hover.png) no-repeat center 6px;
+}
+
+#navigation_level_1_4 li .icon_2 {
+    background: url(../images/navigation_level_1_4.png) no-repeat center 7px;
+}
+
+#navigation_level_1_4 li:hover .icon_2,
+#navigation_level_1_4 li:focus .icon_2,
+#navigation_level_1_4 li:active .icon_2,
+#navigation_level_1_4 li.active .icon_2 {
+    background: url(../images/navigation_level_1_4_hover.png) no-repeat center 7px;
+}
+
+.navigation_level_1 li .name {
+    float: left;
+    width: auto;
+    height: 100%;
+    line-height: 30px;
+    margin: 0 11px 0 8px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #444444;
+}
+
+.navigation_level_1 li:hover .name,
+.navigation_level_1 li:focus .name,
+.navigation_level_1 li:active .name,
+.navigation_level_1 li.active .name {
+    color: #ffffff;
+}
+
+.navigation_level_2 li {
+    float: left;
+    width: auto;
+    border-bottom: 1px solid #efefef;
 }
 
 .navigation_level_2 li a {
