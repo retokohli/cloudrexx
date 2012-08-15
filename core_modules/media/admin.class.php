@@ -61,7 +61,7 @@ class MediaManager extends MediaLibrary
     public $fileLog;                          // File Log
     public $archive;
 
-    public $_shopEnabled;
+    public $shopEnabled;
 	public $_strOkMessage = '';
     
     public $arrImageQualityValues = array(5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100);
@@ -90,18 +90,34 @@ class MediaManager extends MediaLibrary
                                     ASCMS_MEDIA4_PATH.DIRECTORY_SEPARATOR,
                                     ASCMS_CONTENT_IMAGE_PATH.DIRECTORY_SEPARATOR,
                                     ASCMS_SHOP_IMAGES_PATH.DIRECTORY_SEPARATOR,
-                                    ASCMS_THEMES_PATH.DIRECTORY_SEPARATOR);
+                                    ASCMS_THEMES_PATH.DIRECTORY_SEPARATOR,
+                                    ASCMS_ATTACH_PATH.DIRECTORY_SEPARATOR,
+                                    ASCMS_ACCESS_PATH.DIRECTORY_SEPARATOR,
+                                    ASCMS_BLOG_IMAGES_PATH.DIRECTORY_SEPARATOR,
+                                    ASCMS_CALENDAR_IMAGE_PATH.DIRECTORY_SEPARATOR,
+                                    ASCMS_DOWNLOADS_IMAGES_PATH.DIRECTORY_SEPARATOR,
+                                    ASCMS_GALLERY_PATH.DIRECTORY_SEPARATOR,
+                                    ASCMS_MEDIADIR_IMAGES_PATH.DIRECTORY_SEPARATOR,
+                                    ASCMS_PARTNERS_IMAGES_PATH.DIRECTORY_SEPARATOR,
+                                    ASCMS_PODCAST_IMAGES_PATH.DIRECTORY_SEPARATOR);
 
-        $this->arrWebPaths  = array('archive1'    => ASCMS_MEDIA1_WEB_PATH . '/',
-                                    'archive2'    => ASCMS_MEDIA2_WEB_PATH . '/',
-                                    'archive3'    => ASCMS_MEDIA3_WEB_PATH . '/',
-                                    'archive4'    => ASCMS_MEDIA4_WEB_PATH . '/',
-                                    'content'     => ASCMS_CONTENT_IMAGE_WEB_PATH . '/',
-                                    'attach'      => ASCMS_NEWSLETTER_ATTACH_WEB_PATH. '/',
-                                    'shop'        => ASCMS_SHOP_IMAGES_WEB_PATH . '/',
-                                    'themes'      => ASCMS_THEMES_WEB_PATH . '/');
-
-        $_shopEnabled = $this->_checkForShop();
+        $this->arrWebPaths  = array('archive1'     => ASCMS_MEDIA1_WEB_PATH . '/',
+                                    'archive2'     => ASCMS_MEDIA2_WEB_PATH . '/',
+                                    'archive3'     => ASCMS_MEDIA3_WEB_PATH . '/',
+                                    'archive4'     => ASCMS_MEDIA4_WEB_PATH . '/',
+                                    'content'      => ASCMS_CONTENT_IMAGE_WEB_PATH . '/',
+                                    'contact'      => ASCMS_ATTACH_WEB_PATH. '/',
+                                    'shop'         => ASCMS_SHOP_IMAGES_WEB_PATH . '/',
+                                    'themes'       => ASCMS_THEMES_WEB_PATH . '/',
+                                    'attach'       => ASCMS_ATTACH_WEB_PATH. '/',
+                                    'access'       => ASCMS_ACCESS_WEB_PATH . '/',
+                                    'blog'         => ASCMS_BLOG_IMAGES_WEB_PATH . '/',
+                                    'calendar'     => ASCMS_CALENDAR_IMAGE_WEB_PATH . '/',
+                                    'downloads'    => ASCMS_DOWNLOADS_IMAGES_WEB_PATH . '/',
+                                    'gallery'      => ASCMS_GALLERY_WEB_PATH . '/',
+                                    'mediadir'     => ASCMS_MEDIADIR_IMAGES_WEB_PATH . '/',
+                                    'partners'     => ASCMS_PARTNERS_IMAGES_WEB_PATH . '/',
+                                    'podcast'      => ASCMS_PODCAST_IMAGES_WEB_PATH . '/');
 
         if (isset($_REQUEST['archive']) && array_key_exists($_REQUEST['archive'], $this->arrWebPaths)) {
             $this->archive = $_REQUEST['archive'];
@@ -110,12 +126,13 @@ class MediaManager extends MediaLibrary
         }
 
         // get variables
-        $this->getAct   = isset($_POST['deleteMedia']) && $_POST['deleteMedia'] ? 'delete' : (!empty($_GET['act']) ? trim($_GET['act']) : '');
-        $this->getPath  = !empty($_GET['path']) && !stristr($_GET['path'], '..') ? trim($_GET['path']) : $this->arrWebPaths[$this->archive];
-        $this->getFile  = !empty($_REQUEST['file']) && !stristr($_REQUEST['file'], '..') ? trim($_REQUEST['file']) : '';
-        $this->getData  = !empty($_GET['data']) ? $_GET['data']       : '';
-        $this->sortBy   = !empty($_GET['sort']) ? trim($_GET['sort']) : 'name';
-        $this->sortDesc = !empty($_GET['sort_desc']);
+        $this->getAct      = isset($_POST['deleteMedia']) && $_POST['deleteMedia'] ? 'delete' : (!empty($_GET['act']) ? trim($_GET['act']) : '');
+        $this->getPath     = !empty($_GET['path']) && !stristr($_GET['path'], '..') ? trim($_GET['path']) : $this->arrWebPaths[$this->archive];
+        $this->getFile     = !empty($_REQUEST['file']) && !stristr($_REQUEST['file'], '..') ? trim($_REQUEST['file']) : '';
+        $this->getData     = !empty($_GET['data']) ? $_GET['data']       : '';
+        $this->sortBy      = !empty($_GET['sort']) ? trim($_GET['sort']) : 'name';
+        $this->sortDesc    = !empty($_GET['sort_desc']);
+        $this->shopEnabled = $this->checkModule('shop');
 
         if($this->archive == 'themes') {
             $_SESSION["skins"] = true;
@@ -137,18 +154,32 @@ class MediaManager extends MediaLibrary
             case 'content':
                 Permission::checkAccess(32, 'static');
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
-                    <a href="index.php?cmd=media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>'
-                    .(($_shopEnabled) ? '<a href="index.php?cmd=media&amp;archive=shop">'. $_ARRAYLANG['TXT_IMAGE_SHOP'] .'</a>' : '')
+                    <a href="index.php?cmd=media&amp;archive=content" class="active">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
+                    <a href="index.php?cmd=media&amp;archive=attach">'. $_ARRAYLANG['TXT_MODULE'] .'</a>'
                 );
                 break;
-            case 'shop':
-                Permission::checkAccess(13, 'static');
+            case 'contact':
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
-                    <a href="index.php?cmd=media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>'
-                    .(($_shopEnabled) ? '<a href="index.php?cmd=media&amp;archive=shop">'. $_ARRAYLANG['TXT_IMAGE_SHOP'] .'</a>' : '')
-                );
+                    <a href="index.php?cmd=contact" title="'.$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'].'">'.$_ARRAYLANG['TXT_FORMS'].'</a>
+                    <a hreF="index.php?cmd=media&amp;archive=contact" title="'.$_ARRAYLANG['TXT_FILE_UPLOADS'].'" class="active">'.$_ARRAYLANG['TXT_FILE_UPLOADS'].'</a>
+                    <a href="index.php?cmd=contact&amp;act=settings" title="'.$_ARRAYLANG['TXT_CONTACT_SETTINGS'].'">'.$_ARRAYLANG['TXT_CONTACT_SETTINGS'].'</a>
+                ');
                 break;
-
+            case 'attach':
+            case 'access':
+            case 'blog':
+            case 'calendar':
+            case 'downloads':
+            case 'gallery':
+            case 'mediadir':
+            case 'partners':
+            case 'podcast':
+            case 'shop':
+                $objTemplate->setVariable('CONTENT_NAVIGATION', '
+                    <a href="index.php?cmd=media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
+                    <a href="index.php?cmd=media&amp;archive=attach" class="active">'. $_ARRAYLANG['TXT_MODULE'] .'</a>
+                ');
+                break; 
             default:
                 Permission::checkAccess(7, 'static');
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
@@ -156,7 +187,7 @@ class MediaManager extends MediaLibrary
                     <a href="index.php?cmd=media&amp;archive=archive2">'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #2</a>
                     <a href="index.php?cmd=media&amp;archive=archive3">'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #3</a>
                     <a href="index.php?cmd=media&amp;archive=archive4">'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #4</a>
-                    <a href="index.php?cmd=media&amp;archive=archive1&amp;act=settings">'    . $_ARRAYLANG['TXT_MEDIA_SETTINGS'] .  '</a>
+                    <a href="index.php?cmd=media&amp;archive=archive1&amp;act=settings">' . $_ARRAYLANG['TXT_MEDIA_SETTINGS'] . '</a>
                 ');
                 break;
         }
@@ -173,18 +204,19 @@ class MediaManager extends MediaLibrary
 
 
     /**
-     * checks whether the shop module is available and active
+     * Checks whether the specified module is available and active.
      *
-     * @return  bool
-     * @todo    Move this to a Shop Library static method
+     * @return  boolean  True or false.
      */
-    function _checkForShop() {
+    private function checkModule($module) {
         global $objDatabase;
-        if ( ($objRS = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."modules WHERE name = 'shop' AND status = 'y'", 1)) != false) {
-            if ($objRS->RecordCount() > 0) {
+        
+        if (($objResult = $objDatabase->SelectLimit('SELECT `id` FROM `'.DBPREFIX.'modules` WHERE `name` = "'.$module.'" AND `status` = "y"', 1)) !== false) {
+            if ($objResult->RecordCount() > 0) {
                 return true;
             }
         }
+        
         return false;
     }
 
@@ -287,17 +319,55 @@ class MediaManager extends MediaLibrary
         $this->_objTpl->loadTemplateFile('module_media.html', true, true);
 
         switch ($this->archive) {
-        case 'themes':
-            $this->pageTitle = $_ARRAYLANG['TXT_DESIGN_FILES_ADMINISTRATION'];
-            break;
-
-        case 'content':
-            $this->pageTitle = $_ARRAYLANG['TXT_IMAGE_ADMINISTRATION'];
-            break;
-
-        default:
-            $this->pageTitle = $_ARRAYLANG['TXT_MEDIA_OVERVIEW'];
-            break;
+            case 'themes':
+                $this->pageTitle = $_ARRAYLANG['TXT_DESIGN_FILES_ADMINISTRATION'];
+                break;
+            case 'content':
+                $this->pageTitle = $_ARRAYLANG['TXT_IMAGE_ADMINISTRATION'];
+                break;
+            case 'contact':
+                $this->pageTitle = $_ARRAYLANG['TXT_FILE_UPLOADS'];
+                break;
+            case 'attach':
+            case 'access':
+            case 'blog':
+            case 'calendar':
+            case 'downloads':
+            case 'gallery':
+            case 'mediadir':
+            case 'partners':
+            case 'podcast':
+            case 'shop':
+                $classAttach    = ($this->archive == 'attach')    ? 'active' : '';
+                $classAccess    = ($this->archive == 'access')    ? 'active' : '';
+                $classBlog      = ($this->archive == 'blog')      ? 'active' : '';
+                $classCalendar  = ($this->archive == 'calendar')  ? 'active' : '';
+                $classDownloads = ($this->archive == 'downloads') ? 'active' : '';
+                $classGallery   = ($this->archive == 'gallery')   ? 'active' : '';
+                $classMediadir  = ($this->archive == 'mediadir')  ? 'active' : '';
+                $classPartners  = ($this->archive == 'partners')  ? 'active' : '';
+                $classPodcast   = ($this->archive == 'podcast')   ? 'active' : '';
+                $classShop      = ($this->archive == 'shop')      ? 'active' : '';
+                
+                $this->_objTpl->setVariable('CONTENT_SUBNAVIGATION', '
+                    <div id="subnavbar_level2">
+                        <ul>
+                            <li><a href="index.php?cmd=media&amp;archive=attach" class="'.$classAttach.'">'.$_ARRAYLANG['TXT_FILE_UPLOADS'].'</a></li>
+                            <li><a href="index.php?cmd=media&amp;archive=shop" class="'.$classShop.'">'.$_ARRAYLANG['TXT_IMAGE_SHOP'].'</a></li>
+                            <li><a href="index.php?cmd=media&amp;archive=gallery" class="'.$classGallery.'">'.$_ARRAYLANG['TXT_GALLERY_TITLE'].'</a></li>
+                            <li><a href="index.php?cmd=media&amp;archive=access" class="'.$classAccess.'">'.$_ARRAYLANG['TXT_USER_ADMINISTRATION'].'</a></li>
+                            <li><a href="index.php?cmd=media&amp;archive=mediadir" class="'.$classMediadir.'">'.$_ARRAYLANG['TXT_MEDIADIR_MODULE'].'</a></li>
+                            <li><a href="index.php?cmd=media&amp;archive=downloads" class="'.$classDownloads.'">'.$_ARRAYLANG['TXT_DOWNLOADS'].'</a></li>
+                            <li><a href="index.php?cmd=media&amp;archive=calendar" class="'.$classCalendar.'">'.$_ARRAYLANG['TXT_CALENDAR'].'</a></li>
+                            <li><a href="index.php?cmd=media&amp;archive=podcast" class="'.$classPodcast.'">'.$_ARRAYLANG['TXT_PODCAST'].'</a></li>
+                            <li><a href="index.php?cmd=media&amp;archive=blog" class="'.$classBlog.'">'.$_ARRAYLANG['TXT_BLOG_MODULE'].'</a></li>
+                            <li><a href="index.php?cmd=media&amp;archive=partners" class="'.$classPartners.'">'.$_ARRAYLANG['TXT_PARTNERS_MODULE'].'</a></li>
+                        </ul>
+                    </div>
+                ');
+            default:
+                $this->pageTitle = $_ARRAYLANG['TXT_MEDIA_OVERVIEW'];
+                break;
         }
 
         // cut, copy and paste session

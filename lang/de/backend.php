@@ -6,6 +6,8 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_FILE_UPLOADS'] = "Dateiuploads";
+$_ARRAYLANG['TXT_ATTACHEMENTS'] = "Anhänge";
 $_ARRAYLANG['TXT_DASHBOARD'] = "Dashboard";
 $_ARRAYLANG['TXT_IP_ADDRESS'] = "IP-Adresse";
 $_ARRAYLANG['TXT_SYSTEM_LOGS'] = "System Logs";
