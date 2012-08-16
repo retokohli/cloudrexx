@@ -424,10 +424,16 @@ class ContactManager extends ContactLib
                 $rowNr = 0;
                 foreach ($arrEntries as $entryId => $arrEntry) {
                     $this->_objTpl->setVariable('CONTACT_FORM_ENTRIES_ROW_CLASS', $rowNr % 2 == 0 ? 'row2' : 'row1');
-
+                    
+                    $date = date(ASCMS_DATE_SHORT_FORMAT, $arrEntry['time']);
+                    $now  = date(ASCMS_DATE_SHORT_FORMAT, strtotime('now'));
+                    if ($date == $now) {
+                        $date = $_ARRAYLANG['TXT_CORE_TODAY'];
+                    }
+                    $dateLink = '<a href="index.php?cmd=contact&amp;act=entries&amp;formId='.$formId.'&amp;entryId='.$entryId.'" title="'.$_ARRAYLANG['TXT_CONTACT_DETAILS'].'">'.$date.'</a>';
                     $this->_objTpl->setVariable(array(
-                            'CONTACT_FORM_DATE'     => '<a href="index.php?cmd=contact&amp;act=entries&amp;formId='.$formId.'&amp;entryId='.$entryId.'" title="'.$_ARRAYLANG['TXT_CONTACT_DETAILS'].'">'.date(ASCMS_DATE_FORMAT, $arrEntry['time']).'</a>',
-                            'CONTACT_FORM_ENTRY_ID' => $entryId
+                        'CONTACT_FORM_DATE'     => $dateLink,
+                        'CONTACT_FORM_ENTRY_ID' => $entryId
                     ));
 
                     $this->_objTpl->parse('contact_form_entry_data');
@@ -442,11 +448,13 @@ class ContactManager extends ContactLib
                         if (isset($arrEntry['data'][$col])) {
                             if (isset($arrFormFields[$col]) && $arrFormFields[$col]['type'] == 'file') {
                                 $fileData = $arrEntry['data'][$col];
-                                if($fileData) { 
+                                if ($fileData) {
                                     //new style entry; multiple files and links
                                     $arrFiles = explode('*', $fileData);
                                     foreach($arrFiles as $file) {
-                                        $value .= '<a href="'.ASCMS_PATH_OFFSET.contrexx_raw2xhtml($file).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.contrexx_raw2xhtml($file).'</a>&nbsp;';
+                                        $file = contrexx_raw2xhtml($file);
+                                        $img  = $this->getFileIcon($file);
+                                        $value .= '<a href="'.ASCMS_PATH_OFFSET.$file.'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.$img.basename($file).'</a><br />';
                                     }
                                 }
                             } elseif (isset($arrFormFields[$col]) && $arrFormFields[$col]['type'] == 'recipient') {
@@ -1890,14 +1898,11 @@ class ContactManager extends ContactLib
              * Fieldset and Horizontal Field Type need not be displayed in the details page
              */
             if (!in_array($arrField['type'], $this->nonValueFormFieldTypes)) {
-                $sourcecode .= "<tr class=".($rowNr % 2 == 0 ? 'row1' : 'row2').">\n";
-                $sourcecode .= "<td style=\"vertical-align:top;\" width=\"15%\">
-                                <strong>".
-                                contrexx_raw2xhtml($arrField['lang'][FRONTEND_LANG_ID]['name']).
-                                ($arrField['type'] == 'hidden' ? ' (hidden)' : '')."
-                                </strong>
-                                </td>\n";
-                $sourcecode .= "<td width=\"85%\">";
+                $sourcecode .= "<tr class=".($rowNr % 2 == 0 ? 'row1' : 'row2').">\n
+                                    <td style=\"vertical-align:top;\" width=\"15%\">
+                                        <strong>".contrexx_raw2xhtml($arrField['lang'][FRONTEND_LANG_ID]['name']).($arrField['type'] == 'hidden' ? ' (hidden)' : '')."</strong>
+                                    </td>\n
+                                <td width=\"85%\">";
                 
                 switch ($arrField['type']) {
                     case 'checkbox':
@@ -1907,18 +1912,13 @@ class ContactManager extends ContactLib
                     case 'file':
                         if(isset($arrEntry['data'][$key])) {
                             $fieldData = $arrEntry['data'][$key];
-                            if(substr($fieldData,0,1) == '*') {
-                                $arrFiles = explode('*', substr($fieldData,1)); //the substr kills the leading '*';
-                                foreach($arrFiles as $file) {
-                                    $sourcecode .= '<a href="'.ASCMS_PATH_OFFSET.htmlentities($file, ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($file, ENT_QUOTES, CONTREXX_CHARSET).'</a>';
-                                    $sourcecode .= '&nbsp;';
-                                }
+                            $arrFiles  = explode('*', $fieldData);
+                            foreach($arrFiles as $file) {
+                                $file = contrexx_raw2xhtml($file);
+                                $img  = $this->getFileIcon($file);
+                                $sourcecode .= '<a href="'.ASCMS_PATH_OFFSET.$file.'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.$img.basename($file).'</a><br />';
                             }
-                            else {
-                                $sourcecode .= '<a href="'.ASCMS_PATH_OFFSET.htmlentities($fieldData, ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($fieldData, ENT_QUOTES, CONTREXX_CHARSET).'</a>';
-                            }
-                        }
-                        else {
+                        } else {
                             $sourcecode .= '&nbsp;';
                         }
                         break;
@@ -2322,5 +2322,25 @@ class ContactManager extends ContactLib
         }
 
         $this->em->flush();
+    }
+    
+    
+    /**
+     * Returns the appropriate icon of the given file.
+     * 
+     * @param   string  $file
+     * @return  string  $img
+     */
+    private function getFileIcon($file)
+    {
+        if (is_file(ASCMS_DOCUMENT_ROOT.$file)) {
+            $info = pathinfo($file);
+            $icon = strtolower($info['extension']);
+        } else {
+            $icon = '_blank';
+        }
+        
+        $img = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/media/'.$icon.'.gif" alt="Attach" style="position: relative; top: 2px;" />&nbsp;';
+        return $img;
     }
 }
