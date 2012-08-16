@@ -2340,7 +2340,7 @@ class ContactManager extends ContactLib
             $icon = '_blank';
         }
         
-        $img = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/media/'.$icon.'.gif" alt="Attach" style="position: relative; top: 2px;" />&nbsp;';
+        $img = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/media/'.$icon.'.gif" alt="Attach" style="position: relative; top: 3px;" />&nbsp;';
         return $img;
     }
 }
