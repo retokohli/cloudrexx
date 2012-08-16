@@ -1,59 +1,89 @@
-table th{
-    background: #E7E7E7;
-    padding: 8px;
-}
 #main input, #frame_home input, #boxes_home input{
     width:180px;
 }
-table tr.row1, table tr.marketRow2 {
-    background-color: #FFFFFF;    
-}
-table{
-    border: 1px solid #E7E7E7;
+table.events{
+    border: 1px solid #E6E6E6;
     margin-bottom: 10px;
 }
-table td {
-    padding: 8px 5px;
-    vertical-align: top;
+table.events th{
+    background:  #F2F2F2;
+    padding: 8px;
 }
-#event_head h1{
+table.events td {
+    padding: 8px 5px;
+}
+h1#event_head {
     font-size: 12px;
     color:#555;
     padding: 8px;
-    border-bottom: 1px solid #E7E7E7;
-}
-.calendar h2 a{
-    float: left;
-    font-size: 12px;
-    margin-bottom: 5px;
-}
-.calendar h2{
-    float: left;
-    width:50%;
-    margin: 0;
-}
-.calendar img{
-    float: left;
-    margin-top: 6px;
-    margin-right: 15px;
-}
-.calendar p{    
-    float: left;
-    width: 50%;
-    margin: 0;
-    font-size: 12px;
+    border-bottom: 1px solid #E6E6E6;
 }
 .calendar{
-    border-bottom: 1px solid #E7E7E7;
+    border-bottom: 1px solid #E6E6E6;
     float: left;
     margin-bottom: 15px;
     padding-bottom: 10px;
+    width : 100%
+}
+#calendar div.search,
+#calendar div.notes_list{
+    float: left
+}
+.calendar h2{
+    margin: 0;
+}
+.calendar img{
+    margin: 0 15px 15px 0;
+    padding: 8px;
+    float: left;
+    box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.1);
+}
+.calendar p{
+    margin-bottom: 6px;
 }
 .calendar p.date{
     float: left;
     width: auto;
     clear: both;
-    margin-left: 135px;
+    margin: 0 0 0 135px;
     background: #F1F1F1;
     padding: 5px;
 }
+/*three month overview*/
+table.month {
+    margin: 0 6px 0 0;
+    width: 30%;
+}
+table.month:last-child {
+    margin-right: 0px;
+}
+/*details page*/
+#calendar div.details{
+    border: 1px solid #E6E6E6;
+    float: left;
+    margin-bottom: 20px
+}
+#calendar div.details tr th {
+    background: none
+}
+#calendar .details tr td b{
+    text-transform: capitalize;
+}
+#calendar .add-org-wrapper{
+    float: left;
+    width: 100%
+}
+#calendar .add-org-wrapper .adress{
+    border-right: 1px solid #E6E6E6;
+    margin: 0;
+    min-height: 180px;
+    text-transform: capitalize;
+    width: 45%;
+}
+#calendar .add-org-wrapper .organizer{
+    text-transform: capitalize;
+    width: 45%;
+    margin: 0 0 20px 50px;
+}
+
