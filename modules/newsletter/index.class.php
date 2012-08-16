@@ -889,7 +889,7 @@ class newsletter extends NewsletterLib
                 $email,       $uri,      $title, $sex,         $lastname,
                 $firstname,   $address,  $zip,   $city,        $country,
                 $phoneOffice, $birthday, $date,  $unsubscribe, $profile,
-                $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/index.php?section=newsletter&cmd=displayInBrowser&standalone=true&code='.$code.'&email='.$email.'&id='.$id,
+                ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID).'/index.php?section=newsletter&cmd=displayInBrowser&standalone=true&code='.$code.'&email='.$email.'&id='.$id,
             );
             
             // Replaces the placeholder in the template and content.
