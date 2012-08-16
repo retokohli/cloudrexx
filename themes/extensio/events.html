@@ -1,27 +1,13 @@
-<!--<div>
- BEGIN calendar_headlines_row 
-<div class="content">
-    <p class="date" id="events_date">{CALENDAR_EVENT_STARTDATE}, {CALENDAR_EVENT_STARTTIME} </p>
-    <h2 id="events_heading"><a href="index.php?section=calendar&amp;cmd=event&amp;id={CALENDAR_EVENT_ID}" title="{CALENDAR_EVENT_NAME}">{CALENDAR_EVENT_NAME}</a></h2>
-</div>
- END calendar_headlines_row 
-<div class="content">
-    <p class="more"><a class="more_events" href="index.php?section=calendar" title="More Events">More Events »</a></p>
-</div>
-</div>-->
-<div id="event_head">
-    <h1>Events</h1>
-</div>
-<!-- BEGIN calendar_headlines_row -->
-<div class="calendar">
-    <div>
+<div class="notes_list">
+    <h1 id="event_head">Events</h1>
+    <!-- BEGIN calendar_headlines_row -->
+    <div class="calendar">
         {CALENDAR_EVENT_THUMB}
-
+        <h2>
+            <a href="index.php?section=calendar&amp;cmd=event&amp;id={CALENDAR_EVENT_ID}" title="{CALENDAR_EVENT_NAME}">{CALENDAR_EVENT_NAME}</a>
+        </h2>
+        <p>{CALENDAR_EVENT_SHORT_COMMENT}</p>
+        <p class="date">Date:{CALENDAR_EVENT_STARTDATE}</p>
     </div>
-    <h2>
-        <a href="index.php?section=calendar&amp;cmd=event&amp;id={CALENDAR_EVENT_ID}" title="{CALENDAR_EVENT_NAME}">{CALENDAR_EVENT_NAME}</a>
-    </h2>
-    <p>{CALENDAR_EVENT_SHORT_COMMENT}</p>
-    <p class="date">Date:{CALENDAR_EVENT_STARTDATE}</p>
+    <!-- END calendar_headlines_row -->
 </div>
-<!-- END calendar_headlines_row -->
