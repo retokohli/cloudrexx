@@ -50,6 +50,7 @@ $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_SHA_IN'] = 'SHA-IN-Signatur';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_SHA_OUT'] = 'SHA-OUT-Signatur';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER'] = 'Testserver';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER_INFO'] = 'Aktivieren Sie diese Option, um Zahlungen in einer Testumgebung simulieren zu können.<br />Deaktivieren Sie dann die Option, wenn die reguläre Produktivumgebung aufgeschaltet werden soll.';
+$_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_MORE_INFORMATION'] = 'Weitere Informationen zum Payment Service Provider PostFinance Schweiz finden Sie unter <a href="http://www.postfinance.ch/e-payment" target="_blank">www.postfinance.ch/e-payment</a>';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS'] = 'E-Mail-Vorlagen';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_MAILS_TITLE'] = 'Platzhalter für E-Mail-Vorlagen';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_DOMAIN'] = 'Domain der Webseite, welche in den Grundeinstellungen festgelegt wurde';

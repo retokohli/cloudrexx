@@ -436,13 +436,6 @@ textarea.cke_source {
     background: url(../images/navigation_level_1_hover_list_style.png) no-repeat center center;
 }
 
-#navigation_level_1_home li:hover .icon_1,
-#navigation_level_1_home li:focus .icon_1,
-#navigation_level_1_home li:active .icon_1,
-#navigation_level_1_home li.active .icon_1 {
-    background: url(../images/navigation_level_1_hover_list_style_no_submenu.png) no-repeat center center;
-}
-
 .navigation_level_1 li .icon_2 {
     float: left;
     width: 16px;

@@ -444,6 +444,7 @@ class CheckoutManager extends CheckoutLibrary {
             'TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_SHA_OUT'           => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_SHA_OUT'],
             'TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER'        => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER'],
             'TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER_INFO'   => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER_INFO'],
+            'TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_MORE_INFORMATION'  => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_MORE_INFORMATION'],
             'YELLOWPAY_PSPID'                                       => $arrYellowpay['pspid'],
             'YELLOWPAY_SHA_IN'                                      => $arrYellowpay['sha_in'],
             'YELLOWPAY_SHA_OUT'                                     => $arrYellowpay['sha_out'],
