@@ -2502,6 +2502,7 @@ CREATE TABLE `contrexx_module_newsletter_tmp_sending` (
   `email` varchar(255) NOT NULL DEFAULT '',
   `sendt` tinyint(1) NOT NULL DEFAULT '0',
   `type` enum('access','newsletter') NOT NULL DEFAULT 'newsletter',
+  `code` varchar(10) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_email` (`newsletter`,`email`),
   KEY `email` (`email`)
