@@ -81,6 +81,8 @@ class ContactManager extends ContactLib
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         
+        $this->_objTpl->setGlobalVariable('CSRF_PARAM', CSRF::param());
+        
         $this->_arrFormFieldTypes = array(
             'text'          => $_ARRAYLANG['TXT_CONTACT_TEXTBOX'],
             'label'         => $_ARRAYLANG['TXT_CONTACT_TEXT'],
