@@ -35,7 +35,7 @@ CKEDITOR.editorConfig = function( config )
 {
     config.skin = 'kama';
 
-    config.height = 600;
+    config.height = 307;
     config.uiColor = '#ececec';
 
     config.forcePasteAsPlainText = false;
