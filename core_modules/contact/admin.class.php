@@ -449,6 +449,8 @@ class ContactManager extends ContactLib
                             if (isset($arrFormFields[$col]) && $arrFormFields[$col]['type'] == 'file') {
                                 $fileData = $arrEntry['data'][$col];
                                 if ($fileData) {
+                                    //show attach icon
+                                    $this->_objTpl->touchBlock('contact_form_entry_attach');
                                     //new style entry; multiple files and links
                                     $arrFiles = explode('*', $fileData);
                                     foreach($arrFiles as $file) {
