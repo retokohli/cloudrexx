@@ -41,7 +41,12 @@ function selectMultiAction(order)
 		<!-- BEGIN contact_form_entries -->
 			<tr class="{CONTACT_FORM_ENTRIES_ROW_CLASS}">
 				<td style="text-align:center;"><input type="checkbox" name="selectedEntries[]" id="selectedEntries" value="{CONTACT_FORM_ENTRY_ID}" /></td>
-				<td>{CONTACT_FORM_DATE}</td>
+				<td>
+				    {CONTACT_FORM_DATE}
+				    <!-- BEGIN contact_form_entry_attach -->
+				    <img src="images/icons/attach.png" alt="Attach" style="position: relative; top: 3px;" />
+				    <!-- END contact_form_entry_attach -->
+				</td>
 				<!-- BEGIN contact_form_entry_data -->
 				<td>{CONTACT_FORM_ENTRIES_CELL_CONTENT}</td>
 				<!-- END contact_form_entry_data -->
