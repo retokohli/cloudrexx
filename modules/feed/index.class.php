@@ -22,12 +22,6 @@ if (eregi('index.class.php', $_SERVER['PHP_SELF'])) {
 require_once ASCMS_LIBRARY_PATH . '/PEAR/XML/RSS.class.php';
 require_once ASCMS_MODULE_PATH . '/feed/feedLib.class.php';
 
-if(ini_get('allow_url_fopen') != 1){
-    @ini_set('allow_url_fopen', '1');
-    if(ini_get('allow_url_fopen') != 1){
-        die("Please set the variable 'allow_url_fopen' to the value 1");
-    }
-}
 
 /**
  * Feed
