@@ -61,6 +61,12 @@ $J(document).ready(function() {
     
     var plot = $J.jqplot('chart', [visitors, requests], {
         seriesColors: ['#4EAA09', '#0C90D0'],
+        seriesDefaults: {
+            lineWidth: 2,
+            markerOptions: {
+                size: 6
+            }
+        },
         grid: {
             gridLineColor: '#EFEFEF',
             background: '#FFFFFF',
