@@ -719,11 +719,9 @@ switch ($plainCmd) {
         //Temporary no-acces-file and comment
         $subMenuTitle = $_CORELANG['TXT_ACCESS_DENIED'];
         $objTemplate->setVariable(array(
-            'CONTENT_TITLE' => $_CORELANG['TXT_ACCESS_DENIED'],
-            'CONTENT_NAVIGATION' => contrexx_raw2xhtml($_CONFIG['coreCmsName']),
-//            'CONTENT_STATUS_MESSAGE' => '',
+            'CONTENT_NAVIGATION' => '<span id="noaccess_title">'.contrexx_raw2xhtml($_CONFIG['coreCmsName']).'</span>',
             'ADMIN_CONTENT' =>
-                '<img src="images/stop_hand.gif" alt="" /><br /><br />'.
+                '<img src="images/no_access.png" alt="" /><br /><br />'.
                 $_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION'],
         ));
         break;
