@@ -1027,7 +1027,7 @@ class Order
                 `shipment_id`, `shipment_amount`' : '')."
             ) VALUES (
                 $this->customer_id, $this->currency_id, $this->sum,
-                ".($this->date_time ? "'$this->date_time'" : 'NOW()').",
+                ".($this->date_time ? "'$this->date_time'" : "'".date('Y-m-d H:i:s')."'").",
                 $this->status,
                 $this->payment_id, $this->payment_amount,
                 $this->vat_amount,
@@ -1242,7 +1242,7 @@ class Order
                    `vat_amount`=".floatval($_POST['taxPrice']).",
                    `shipment_id`=".intval($_POST['shipperId']).",
                    `modified_by`='".$objUser->getUsername()."',
-                   `modified_on`=now()
+                   `modified_on`='".date('Y-m-d H:i:s')."'
              WHERE `id`=$order_id";
         // should not be changed, see above
         // ", payment_id = ".intval($_POST['paymentId']).

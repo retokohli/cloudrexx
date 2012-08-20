@@ -291,16 +291,17 @@ class news extends newsLibrary {
             return;
         }
 
-        $objDatabase->Execute("DELETE FROM `".DBPREFIX."module_news_stats_view` WHERE `time` < DATE_SUB(NOW(), INTERVAL ".intval($this->arrSettings['news_top_days'])." DAY)");
+        $objDatabase->Execute(' DELETE FROM `'.DBPREFIX.'module_news_stats_view`
+                                WHERE `time` < '.date_format(date_sub(date_create('now'), date_interval_create_from_date_string(intval($this->arrSettings['news_top_days']).' days')), 'Y-m-d H:i:s'));
         
         $uniqueUserId = $objCounter->getUniqueUserId();
 
-        $query = "
+        $query = '
             SELECT 1
-            FROM `".DBPREFIX."module_news_stats_view`
-            WHERE user_sid = '".$uniqueUserId."' 
-              AND news_id  = ".$newsMessageId."
-              AND time     > DATE_SUB(NOW(), INTERVAL 1 DAY)";
+            FROM `'.DBPREFIX.'module_news_stats_view`
+            WHERE user_sid = "'.$uniqueUserId.'" 
+              AND news_id  = '.$newsMessageId.'
+              AND time     > "'.date_format(date_sub(date_create('now'), date_interval_create_from_date_string('1 day')), 'Y-m-d H:i:s').'"';
         $objResult = $objDatabase->SelectLimit($query);
         if (!$objResult || !$objResult->EOF) {
             return;
@@ -988,7 +989,10 @@ class news extends newsLibrary {
 /*
         switch($type) {
             case 'topnews':
-                $order = 'ORDER BY (SELECT COUNT(*) FROM `'.DBPREFIX.'module_news_stats_view` WHERE `news_id`=n.`id` AND `time` > DATE_SUB(NOW(), INTERVAL '.intval($this->arrSettings['news_top_days']).' DAY)) DESC';
+                $order = '  ORDER BY (SELECT COUNT(*)
+                            FROM `'.DBPREFIX.'module_news_stats_view`
+                            WHERE   `news_id`=n.`id` AND
+                                    `time` > "'.date_format(date_sub(date_create('now'), date_interval_create_from_date_string(intval($this->arrSettings['news_top_days']).' days')), 'Y-m-d H:i:s').'" DESC';
                 break;
 
             case 'archive':
@@ -1112,8 +1116,8 @@ class news extends newsLibrary {
                                         " AND (frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR userid = ".$objFWUser->objUser->getId().") "
                                         :   " AND frontend_access_id=0 ")
                                     :   '')
-                    .'ORDER BY (SELECT COUNT(*) FROM '.DBPREFIX.'module_news_stats_view WHERE news_id=n.id AND time>DATE_SUB(NOW(), INTERVAL '.intval($this->arrSettings['news_top_days']).' DAY)) DESC';
-                    
+                    .'ORDER BY (SELECT COUNT(*) FROM '.DBPREFIX.'module_news_stats_view WHERE news_id=n.id AND time>"'.date_format(date_sub(date_create('now'), date_interval_create_from_date_string(intval($this->arrSettings['news_top_days']).' day')), 'Y-m-d H:i:s').'") DESC';
+
         /***start paging ****/
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();

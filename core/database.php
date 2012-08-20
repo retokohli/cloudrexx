@@ -22,15 +22,14 @@ require_once ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php';
  * In case of an error, the reference argument $errorMsg is set
  * to the error message.
  * @author  Comvation Development Team <info@comvation.com>
- * @access    public
- * @version    1.0.0
- * @param   string    $errorMsg     Error message
- * @param   boolean    $newInstance  Force new instance
- * @global  array                  Language array
- * @global  array                  Database configuration
- * @global  ???                   ADODB fetch mode
- * @return  boolean               True on success, false on failure
- * @todo    What datatype is $ADODB_FETCH_MODE?
+ * @access  public
+ * @version 1.0.0
+ * @param   string  $errorMsg       Error message
+ * @param   boolean $newInstance    Force new instance
+ * @global  array                   Language array
+ * @global  array                   Database configuration
+ * @global  integer                 ADODB fetch mode
+ * @return  boolean                 True on success, false on failure
  */
 function getDatabaseObject(&$errorMsg, $newInstance = false)
 {
@@ -55,6 +54,19 @@ function getDatabaseObject(&$errorMsg, $newInstance = false)
             }
             unset($objDb);
             return false;
+        }
+
+        if (!empty($_DBCONFIG['timezone'])) {
+            if (!$objDb->Execute('SET TIME_ZONE="'.$_DBCONFIG['timezone'].'"') && array_search($_DBCONFIG['timezone'], timezone_identifiers_list())) {
+                //calculate and set the timezone offset if the mysql timezone tables aren't loaded
+                $objDateTimeZone = new DateTimeZone($_DBCONFIG['timezone']);
+                $objDateTime = new DateTime('now', $objDateTimeZone);
+                $offset = $objDateTimeZone->getOffset($objDateTime);
+                $offsetHours = round(abs($offset)/3600); 
+                $offsetMinutes = round((abs($offset)-$offsetHours*3600) / 60); 
+                $offsetString = ($offset > 0 ? '+' : '-').($offsetHours < 10 ? '0' : '').$offsetHours.':'.($offsetMinutes < 10 ? '0' : '').$offsetMinutes;
+                $objDb->Execute('SET TIME_ZONE="'.$offsetString.'"');
+            }
         }
 
         if (empty($_DBCONFIG['charset']) || $objDb->Execute('SET CHARACTER SET '.$_DBCONFIG['charset']) && $objDb) {

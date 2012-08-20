@@ -27,6 +27,7 @@ $_DBCONFIG['user'] = '%DB_USER%'; // Database username
 $_DBCONFIG['password'] = '%DB_PASSWORD%'; // Database password
 $_DBCONFIG['dbType'] = 'mysql';	// Database type (e.g. mysql,postgres ..)
 $_DBCONFIG['charset'] = '%DB_CHARSET%'; // Charset (default, latin1, utf8, ..)
+$_DBCONFIG['timezone'] = '%TIMEZONE%'; // Timezone
 
 /**
 * -------------------------------------------------------------------------

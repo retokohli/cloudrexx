@@ -249,7 +249,7 @@ class GuestbookManager extends GuestbookLibrary
                         ip, location, lang_id
                     ) VALUES (
                         '$forename', '$name', '$gender',
-                        '$url', NOW(), '$mail', '$comment',
+                        '$url', '".date('Y-m-d H:i:s')."', '$mail', '$comment',
                         '$ip', '$location', '$this->langId'
                     )";
                 $objDatabase->Execute($query);
@@ -406,7 +406,7 @@ class GuestbookManager extends GuestbookLibrary
         $query = "
             SELECT id, status, forename, name, gender,
                    url, email, comment, ip, location,
-                   datetime, UNIX_TIMESTAMP(datetime) AS uTimestamp
+                   datetime
               FROM ".DBPREFIX."module_guestbook".
                     ($this->arrSettings['guestbook_only_lang_entries']
                         ? " WHERE lang_id='$this->langId'" : '').
@@ -442,7 +442,7 @@ class GuestbookManager extends GuestbookLibrary
                        'GUESTBOOK_GENDER'   => $gender,
                        'GUESTBOOK_URL'      => $url,
                        'GUESTBOOK_LOCATION' => htmlentities($objResult->fields["location"], ENT_QUOTES, CONTREXX_CHARSET),
-                       'GUESTBOOK_DATE'     => date(ASCMS_DATE_FORMAT, $objResult->fields["uTimestamp"]),
+                       'GUESTBOOK_DATE'     => date(ASCMS_DATE_FORMAT, strtotime($objResult->fields['datetime'])),
                        'GUESTBOOK_MAIL'     => $mail,
                        'GUESTBOOK_COMMENT'  => nl2br($objResult->fields["comment"]),
                        'GUESTBOOK_ID'       => $objResult->fields["id"],

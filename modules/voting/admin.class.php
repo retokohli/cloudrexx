@@ -241,7 +241,7 @@ class votingmanager
 
         $votingId = ((!isset($_GET['act']) || $_GET['act'] != "delete") && isset($_GET['votingid'])) ? intval($_GET['votingid']) : 0;
 
-           $query= "SELECT id, UNIX_TIMESTAMP(date) as datesec, question, votes FROM ".DBPREFIX."voting_system where ".($votingId > 0 ? "id=".$votingId : "status=1");
+           $query= "SELECT id, date as datesec, question, votes FROM ".DBPREFIX."voting_system where ".($votingId > 0 ? "id=".$votingId : "status=1");
         $objResult = $objDatabase->SelectLimit($query, 1);
         if ($objResult->RecordCount()==0 && $totalrows==0) {
            CSRF::header("Location: ?cmd=voting&act=add");
@@ -250,7 +250,7 @@ class votingmanager
             $votingId=$objResult->fields['id'];
             $votingTitle=stripslashes($objResult->fields['question']);
             $votingVotes=$objResult->fields['votes'];
-            $votingDate=$objResult->fields['datesec'];
+            $votingDate=strtotime($objResult->fields['datesec']);
 
             $images = 1;
             $query="SELECT id, question, votes FROM ".DBPREFIX."voting_results WHERE voting_system_id='$votingId' ORDER BY id";
@@ -291,7 +291,7 @@ class votingmanager
             $this->_objTpl->setGlobalVariable('TXT_HTML_CODE', $_ARRAYLANG['TXT_HTML_CODE']);
 
             // show other Voting entries
-            $query="SELECT id,status,submit_check, UNIX_TIMESTAMP(date) as datesec, title, votes FROM ".DBPREFIX."voting_system order by id desc";
+            $query="SELECT id,status,submit_check, date as datesec, title, votes FROM ".DBPREFIX."voting_system order by id desc";
             $objResult = $objDatabase->Execute($query);
 
             $i = 0;
@@ -299,7 +299,7 @@ class votingmanager
                 $votingid=$objResult->fields['id'];
                 $votingTitle=stripslashes($objResult->fields['title']);
                 $votingVotes=$objResult->fields['votes'];
-                $votingDate=$objResult->fields['datesec'];
+                $votingDate=strtotime($objResult->fields['datesec']);
                 $votingStatus=$objResult->fields['status'];
 
                 if ($votingStatus==0) {
@@ -648,7 +648,7 @@ class votingmanager
 
         $query= "SELECT id,
                         status,
-                        UNIX_TIMESTAMP(date) as datesec,
+                        date as datesec,
                         question,
                         votes
                    FROM ".DBPREFIX."voting_system
@@ -660,7 +660,7 @@ class votingmanager
             $votingTitle=stripslashes($objResult->fields['question']);
 // TODO: Never used
 //            $votingVotes=$objResult->fields['votes'];
-            $votingDate=$objResult->fields['datesec'];
+            $votingDate=strtotime($objResult->fields['datesec']);
 // TODO: Never used
 //            $votingStatus=$objResult->fields['status'];
         } else {

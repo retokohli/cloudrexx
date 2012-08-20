@@ -153,8 +153,8 @@ class jobs extends jobsLibrary
                          WHERE status = 1
                            AND id = $id
                            AND lang=".$this->langId."
-                           AND (startdate<=CURDATE() OR startdate='0000-00-00')
-                           AND (enddate>=CURDATE() OR enddate='0000-00-00')";
+                           AND (startdate<='".date('Y-m-d')."' OR startdate='0000-00-00')
+                           AND (enddate>='".date('Y-m-d')."' OR enddate='0000-00-00')";
             $objResult = $objDatabase->SelectLimit($query, 1);
 
             while(!$objResult->EOF) {
@@ -332,8 +332,8 @@ class jobs extends jobsLibrary
                      status = 1
                      AND n.lang=".$this->langId."
                      AND $docFilter n.catid=nc.catid
-                     AND (startdate<=CURDATE() OR startdate='0000-00-00')
-                     AND (enddate>=CURDATE() OR enddate='0000-00-00') ";
+                     AND (startdate<='".date('Y-m-d')."' OR startdate='0000-00-00')
+                     AND (enddate>='".date('Y-m-d')."' OR enddate='0000-00-00') ";
 
        if(!empty($docFilter)){
             switch($sortType){

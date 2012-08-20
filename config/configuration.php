@@ -27,6 +27,7 @@ $_DBCONFIG['user'] = 'root'; // Database username
 $_DBCONFIG['password'] = ''; // Database password
 $_DBCONFIG['dbType'] = 'mysql';	// Database type (e.g. mysql,postgres ..)
 $_DBCONFIG['charset'] = 'utf8'; // Charset (default, latin1, utf8, ..)
+$_DBCONFIG['timezone'] = 'Europe/Zurich'; // Timezone
 
 /**
 * -------------------------------------------------------------------------
@@ -73,6 +74,11 @@ $_CONFIG['coreCharacterEncoding'] = 'UTF-8'; // example 'UTF-8'
 * Set url rewriter tags
 */
 @ini_set('url_rewriter.tags', 'a=href,area=href,frame=src,iframe=src,input=src,form=,fieldset=');
+
+/**
+* Set timezone
+*/
+@ini_set('date.timezone', 'Europe/Zurich');
 
 /**
 * -------------------------------------------------------------------------
