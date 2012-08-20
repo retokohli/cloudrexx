@@ -558,7 +558,7 @@ class ContactManager extends ContactLib
                     if (isset($pages[$langId])) {
                         $previewURL = '../'.\FWLanguage::getLanguageCodeById($langId).$pages[$langId]->getPath();
                         $links = FWLanguage::getLanguageCodeById($langId).
-                                '<a title="'.$_CORELANG['TXT_CORE_EDIT_PAGE_LAYOUT'].'" href="index.php?cmd=content&loadPage='.$pages[$langId]->getId().'" class="view">'.
+                                '<a title="'.$_CORELANG['TXT_CORE_EDIT_PAGE_LAYOUT'].'" href="index.php?cmd=content&page='.$pages[$langId]->getId().'&tab=content" class="view">'.
                                     '<img src="./images/icons/green_arrow_down.png" />'.
                                 '</a>'.
                                 '<a title="'.$_CORELANG['TXT_CORE_SHOW_FRONTEND_VIEW'].'" target="_blank" href="'.$previewURL.'" class="view">'.
