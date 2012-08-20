@@ -900,7 +900,7 @@ if (!$limit) {
             UPDATE `".DBPREFIX."module_shop".MODULE_INDEX."_orders`
                SET `status`=$status,
                    `modified_by`='".addslashes($objUser->getUsername())."',
-                   `modified_on`=NOW()
+                   `modified_on`='".date('Y-m-d H:i:s')."'
              WHERE `id`=$order_id";
         return (boolean)$objDatabase->Execute($query);
     }

@@ -851,7 +851,7 @@ div.date img{
 
 #page textarea {
     width: 566px;
-    height: 200px;
+    height: 100px;
 }
 
 #page select {
@@ -892,6 +892,10 @@ div.date img{
     padding: 0;
 }
 
+#page .container.multiselect .ms2side__options {
+    padding-top: 53px;
+}
+
 #page .container.multiselect .ms2side__options p {
     float: left;
     width: 18px;
@@ -906,7 +910,7 @@ div.date img{
 
 #page .container.multiselect .ms2side__select select {
     width: 277px;
-    height: 94px;
+    height: 200px;
 }
 
 

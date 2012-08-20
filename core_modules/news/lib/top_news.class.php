@@ -102,7 +102,7 @@ class newsTop extends newsLibrary
                           : " AND frontend_access_id=0 ")
                       : '').
                    "ORDER BY
-                       (SELECT COUNT(*) FROM ".DBPREFIX."module_news_stats_view WHERE news_id=tblN.id AND time>DATE_SUB(NOW(), INTERVAL ".intval($this->arrSettings['news_top_days'])." DAY)) DESC", $newsLimit);
+                       (SELECT COUNT(*) FROM ".DBPREFIX."module_news_stats_view WHERE news_id=tblN.id AND time>'".date_format(date_sub(date_create('now'), date_interval_create_from_date_string(intval($this->arrSettings['news_top_days']).' day')), 'Y-m-d H:i:s')."') DESC", $newsLimit);
         }
 
         if ($objResult !== false && $objResult->RecordCount()) {

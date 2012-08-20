@@ -3770,7 +3770,7 @@ right after the customer logs in!
                     ".$this->objCustomer->getId().",
                     '{$_SESSION['shop']['currencyId']}',
                     '{$_SESSION['shop']['grand_total_price']}',
-                    NOW(),
+                    '".date('Y-m-d H:i:s')."',
                     '0',
                     '".trim($_SESSION['shop']['company2']," \t")."',
                     '".trim($_SESSION['shop']['prefix2']," \t")."',

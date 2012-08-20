@@ -109,8 +109,7 @@ class Guestbook extends GuestbookLibrary {
                                 comment,
                                 ip,
                                 location,
-                                datetime,
-                                UNIX_TIMESTAMP(datetime) AS uTimestamp
+                                datetime
                     FROM         " . DBPREFIX . "module_guestbook
                     WHERE         " . ($this->arrSettings['guestbook_only_lang_entries'] ? "lang_id='$this->langId' AND " : '') . "status = 1
                     ORDER BY     id DESC";
@@ -145,7 +144,7 @@ class Guestbook extends GuestbookLibrary {
                 'GUESTBOOK_NAME' => htmlentities($objResult->fields["name"], ENT_QUOTES, CONTREXX_CHARSET),
                 'GUESTBOOK_GENDER' => $gender,
                 'GUESTBOOK_LOCATION' => htmlentities($objResult->fields["location"], ENT_QUOTES, CONTREXX_CHARSET),
-                'GUESTBOOK_DATE' => date(ASCMS_DATE_FORMAT, $objResult->fields["uTimestamp"]),
+                'GUESTBOOK_DATE' => date(ASCMS_DATE_FORMAT, strtotime($objResult->fields['datetime'])),
                 'GUESTBOOK_COMMENT' => nl2br($objResult->fields["comment"]),
                 'GUESTBOOK_ID' => $objResult->fields["id"],
                 'GUESTBOOK_IP' => $objResult->fields["ip"]
@@ -279,7 +278,7 @@ class Guestbook extends GuestbookLibrary {
 						'" . addslashes($forename) . "',
                         '" . addslashes($gender) . "',
                         '" . addslashes($url) . "',
-                        NOW(),
+                        '".date('Y-m-d H:i:s')."',
                         '" . addslashes($mail) . "',
                         '" . addslashes($comment) . "',
                         '" . addslashes($_SERVER['REMOTE_ADDR']) . "',

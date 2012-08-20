@@ -297,7 +297,7 @@ class Forum extends ForumLibrary {
 
         $objFWUser = FWUser::getFWUserObject();
         $query = "    DELETE FROM `".DBPREFIX."module_forum_rating`
-                    WHERE `time`+".$this->_rateTimeout."  < unix_timestamp()";
+                    WHERE `time`+".$this->_rateTimeout."  < ".time();
         $objDatabase->Execute($query);
 
         $query = "    SELECT 1 FROM `".DBPREFIX."module_forum_rating`

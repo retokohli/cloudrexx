@@ -1380,8 +1380,8 @@ class newsManager extends newsLibrary {
                                                         publisher_id,
                                                         author,
                                                         author_id,
-                                                        UNIX_TIMESTAMP(startdate) as startdate,
-                                                        UNIX_TIMESTAMP(enddate) as enddate,
+                                                        startdate,
+                                                        enddate,
                                                         status,
                                                         userid,
                                                         frontend_access_id,
@@ -1506,9 +1506,9 @@ class newsManager extends newsLibrary {
                 $status = 'checked="checked"';
             }
 
-            $startDate = $objResult->fields['startdate'];
-            $endDate = $objResult->fields['enddate'];
-            
+            $startDate = strtotime($objResult->fields['startdate']);
+            $endDate = strtotime($objResult->fields['enddate']);
+
             if (!empty($startDate) || !empty($endDate)) {
                 $this->_objTpl->setVariable(array(
                     'NEWS_SCHEDULED'         => 'checked="checked"',
@@ -2685,8 +2685,8 @@ class newsManager extends newsLibrary {
                                 AND     tblLocale.is_active = 1
                                 AND     tblLocale.lang_id = " . $LangId . "                                
                                 AND     tblCategory.lang_id = " . $LangId . "                                
-                                AND     (tblNews.startdate <= CURDATE() OR tblNews.startdate = '0000-00-00 00:00:00')
-                                AND     (tblNews.enddate >= CURDATE() OR tblNews.enddate = '0000-00-00 00:00:00')"
+                                AND     (tblNews.startdate <= '".date('Y-m-d')."' OR tblNews.startdate = '0000-00-00 00:00:00')
+                                AND     (tblNews.enddate >= '".date('Y-m-d')."' OR tblNews.enddate = '0000-00-00 00:00:00')"
                                 .($this->arrSettings['news_message_protection'] == '1' ? " AND tblNews.frontend_access_id=0 " : '')
                                         ."ORDER BY tblNews.date DESC";
 

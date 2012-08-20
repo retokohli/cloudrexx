@@ -210,8 +210,8 @@ function search_searchQuery($section, $searchTerm)
 		                AND lang_id=".FRONTEND_LANG_ID."
                         AND status=1
                         AND is_active=1
-                        AND (startdate<=CURDATE() OR startdate='0000-00-00')
-                        AND (enddate>=CURDATE() OR enddate='0000-00-00')";
+                        AND (startdate<='".date('Y-m-d')."' OR startdate='0000-00-00')
+                        AND (enddate>='".date('Y-m-d')."' OR enddate='0000-00-00')";
 			break;
 
         case "docsys":
@@ -223,8 +223,8 @@ function search_searchQuery($section, $searchTerm)
                       WHERE (text LIKE ('%".htmlentities($searchTerm, ENT_QUOTES, CONTREXX_CHARSET)."%') OR title LIKE ('%$searchTerm%'))
                         AND lang=".$_LANGID."
                         AND status=1
-                        AND (startdate<=CURDATE() OR startdate='0000-00-00')
-                        AND (enddate>=CURDATE() OR enddate='0000-00-00')";
+                        AND (startdate<='".date('Y-m-d')."' OR startdate='0000-00-00')
+                        AND (enddate>='".date('Y-m-d')."' OR enddate='0000-00-00')";
             break;
 
         case "podcast":

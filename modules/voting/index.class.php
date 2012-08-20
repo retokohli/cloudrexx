@@ -75,25 +75,25 @@ function votingShowCurrent($page_content){
 
 	if ($_GET['vid'] != '' && $_GET['act'] != 'delete'){
 		$query= "SELECT
-			id,                                status,
-			UNIX_TIMESTAMP(date) as datesec,   question,
-			votes,                             submit_check,
-			additional_nickname,               additional_forename,
-			additional_surname,                additional_phone,
-			additional_street,                 additional_zip,
-            additional_city,                   additional_email,
+			id,                                 status,
+			date as datesec,                    question,
+			votes,                              submit_check,
+			additional_nickname,                additional_forename,
+			additional_surname,                 additional_phone,
+			additional_street,                  additional_zip,
+            additional_city,                    additional_email,
             additional_comment
 
 			FROM ".DBPREFIX."voting_system where id=".intval($_GET['vid']);
 	} else {
 		$query= "SELECT
-			id,                                status,
-			UNIX_TIMESTAMP(date) as datesec,   question,
-			votes,                             submit_check,
-			additional_nickname,               additional_forename,
-			additional_surname,                additional_phone,
-			additional_street,                 additional_zip,
-		   	additional_city,                   additional_email,
+			id,                                 status,
+			date as datesec,                    question,
+			votes,                              submit_check,
+			additional_nickname,                additional_forename,
+			additional_surname,                 additional_phone,
+			additional_street,                  additional_zip,
+		   	additional_city,                    additional_email,
             additional_comment
 
 			FROM ".DBPREFIX."voting_system where status=1";
@@ -118,7 +118,7 @@ function votingShowCurrent($page_content){
 			));
 
 		/** start paging **/
-		$query="SELECT id, UNIX_TIMESTAMP(date) as datesec, title, votes FROM ".DBPREFIX."voting_system order by id desc";
+		$query="SELECT id, date as datesec, title, votes FROM ".DBPREFIX."voting_system order by id desc";
 		$objResult = $objDatabase->SelectLimit($query, 5);
 		$count = $objResult->RecordCount();
 		$pos = intval($_GET[pos]);
@@ -127,14 +127,14 @@ function votingShowCurrent($page_content){
 		}
 		/** end paging **/
 
-		$query="SELECT id, UNIX_TIMESTAMP(date) as datesec, title, votes FROM ".DBPREFIX."voting_system order by id desc ";
+		$query="SELECT id, date as datesec, title, votes FROM ".DBPREFIX."voting_system order by id desc ";
 		$objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
 
 		while (!$objResult->EOF) {
 		    $votingid=$objResult->fields['id'];
 			$votingTitle=stripslashes($objResult->fields['title']);
 			$votingVotes=$objResult->fields['votes'];
-			$votingDate=$objResult->fields['datesec'];
+			$votingDate=strtotime($objResult->fields['datesec']);
 
 			if (($i % 2) == 0) {$class="row2";} else {$class="row1";}
 			$objTpl->setVariable(array(
@@ -154,7 +154,7 @@ function votingShowCurrent($page_content){
 			$votingId 		   = $objResult->fields['id'];
 			$votingTitle	   = stripslashes($objResult->fields['question']);
 			$votingVotes	   = $objResult->fields['votes'];
-			$votingDate		   = $objResult->fields['datesec'];
+			$votingDate		   = strtotime($objResult->fields['datesec']);
 			$votingStatus	   = $objResult->fields['status'];
 			$votingMethod	   = $objResult->fields['submit_check'];
 			$additional_fields = _create_additional_input_fields($objResult);
@@ -239,7 +239,7 @@ function votingShowCurrent($page_content){
 		// show other Poll entries
 
 		/** start paging **/
-		$query="SELECT id, UNIX_TIMESTAMP(date) as datesec, title, votes FROM ".DBPREFIX."voting_system WHERE id<>$votingId order by id desc";
+		$query="SELECT id, date as datesec, title, votes FROM ".DBPREFIX."voting_system WHERE id<>$votingId order by id desc";
 		$objResult = $objDatabase->SelectLimit($query, 5);
 		$count = $objResult->RecordCount();
 		$pos = intval($_GET[pos]);
@@ -248,7 +248,7 @@ function votingShowCurrent($page_content){
 		}
 		/** end paging **/
 
-		$query="SELECT id, UNIX_TIMESTAMP(date) as datesec, title, votes FROM ".DBPREFIX."voting_system WHERE id<>$votingId order by id desc ";
+		$query="SELECT id, date as datesec, title, votes FROM ".DBPREFIX."voting_system WHERE id<>$votingId order by id desc ";
 
 		$objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
 
@@ -265,7 +265,7 @@ function votingShowCurrent($page_content){
 		    $votingid=$objResult->fields['id'];
 			$votingTitle=stripslashes($objResult->fields['title']);
 			$votingVotes=$objResult->fields['votes'];
-			$votingDate=$objResult->fields['datesec'];
+			$votingDate=strtotime($objResult->fields['datesec']);
 
 			if (($i % 2) == 0) {$class="row2";} else {$class="row1";}
 			$objTpl->setVariable(array(
@@ -377,7 +377,7 @@ function setVotingResult($template)
 	$objTpl->setErrorHandling(PEAR_ERROR_DIE);
 	$objTpl->setTemplate($template);
 
-	    $query= "SELECT id, status, UNIX_TIMESTAMP(date) as datesec, question, votes FROM ".DBPREFIX."voting_system where status=1";
+	    $query= "SELECT id, status, date as datesec, question, votes FROM ".DBPREFIX."voting_system where status=1";
 	$objResult = $objDatabase->SelectLimit($query, 1);
 
 

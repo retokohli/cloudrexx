@@ -425,7 +425,7 @@ class Blog extends BlogLibrary  {
         if ($intMessageId > 0 && $intVoting >= 1 && $intVoting <= 10) {
             $objDatabase->Execute(' INSERT INTO '.DBPREFIX.'module_blog_votes
                                     SET message_id = '.$intMessageId.',
-                                        time_voted = UNIX_TIMESTAMP(),
+                                        time_voted = '.time().',
                                         ip_address = "'.$_SERVER['REMOTE_ADDR'].'",
                                         vote = "'.$intVoting.'"
                                 ');
@@ -514,7 +514,7 @@ class Blog extends BlogLibrary  {
                                     SET     message_id = '.$intMessageId.',
                                             lang_id = '.$this->_intLanguageId.',
                                             is_active = "'.$intIsActive.'",
-                                            time_created = UNIX_TIMESTAMP(),
+                                            time_created = '.time().',
                                             ip_address = "'.$_SERVER['REMOTE_ADDR'].'",
                                             user_id = '.$intUserId.',
                                             user_name = "'.$strName.'",
