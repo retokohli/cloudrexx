@@ -495,6 +495,9 @@ class MediaLibrary
                 throw new Exception('Is not a valid image or image type');
             }
             
+            // Update (overwrite) thumbnail
+            $this->_createThumbnail($this->path.$this->fileLog, true);
+            
             // If no error occured, return true
             return $this->fileLog;
         }
@@ -519,7 +522,7 @@ class MediaLibrary
 
 
     // creates an image thumbnail
-    function _createThumbnail($file)
+    function _createThumbnail($file, $overwrite = false)
     {
         global $_ARRAYLANG;
 
@@ -530,7 +533,7 @@ class MediaLibrary
         $tmp = new ImageManager();
         $tmp->loadImage($file);
         $tmp->resizeImage($thumbWidth, $this->thumbHeight, $this->thumbQuality);
-        $tmp->saveNewImage($thumb_name);
+        $tmp->saveNewImage($thumb_name, $overwrite);
 
         if (!file_exists($thumb_name)) {
             $img     = imagecreate(100, 50);
