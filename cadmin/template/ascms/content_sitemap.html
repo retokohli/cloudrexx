@@ -130,16 +130,4 @@ function selectMultiAction()
 <style type="text/css">@import url('template/ascms/css/contentManager_ie.css');</style>
 <![endif]-->
 <script src="../lib/javascript/scriptaculous/scriptaculous.js" type="text/javascript"></script>
-<script language="JavaScript" type="text/javascript">
-function moveDivsToEndOfBodyTag() {
-	backgroundDiv = $('editMode_Background').remove();
-	windowDiv = $('editMode_Window').remove();
-
-	body = document.getElementsByTagName("body")[0];
-	new Insertion.Bottom(body, backgroundDiv);
-	new Insertion.Bottom(body, windowDiv);
-}
-window.onload = moveDivsToEndOfBodyTag;
-
-</script>
 <!-- END content_sitemap.html -->
