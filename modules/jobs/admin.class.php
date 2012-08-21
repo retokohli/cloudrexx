@@ -408,10 +408,10 @@ class jobsManager extends jobsLibrary
                 if ($objResult->fields['status']==1) {
                     $status = "checked";
                 }
-                if ($objResult->fields['startdate']!="0000-00-00") {
+                if ($objResult->fields['startdate']!="0000-00-00 00:00:00") {
                     $startDate = $objResult->fields['startdate'];
                 }
-                if ($objResult->fields['enddate']!="0000-00-00") {
+                if ($objResult->fields['enddate']!="0000-00-00 00:00:00") {
                     $endDate = $objResult->fields['enddate'];
                 }
                 $work_start = $objResult->fields['work_start'];
@@ -589,10 +589,10 @@ class jobsManager extends jobsLibrary
             if ($objResult->fields['status']==1) {
                 $status = ' checked="checked"';
             }
-            if ($objResult->fields['startdate'] != '0000-00-00') {
+            if ($objResult->fields['startdate'] != '0000-00-00 00:00:00') {
                 $startDate = $objResult->fields['startdate'];
             }
-            if ($objResult->fields['enddate'] != '0000-00-00') {
+            if ($objResult->fields['enddate'] != '0000-00-00 00:00:00') {
                 $endDate = $objResult->fields['enddate'];
             }
             $work_start = $objResult->fields['work_start'];
