@@ -176,6 +176,7 @@ CREATE TABLE `contrexx_content_page` (
   `type` varchar(16) NOT NULL,
   `caching` tinyint(1) NOT NULL,
   `updatedAt` datetime DEFAULT NULL,
+  `updatedBy` char(40) NOT NULL,
   `title` varchar(255) NOT NULL,
   `linkTarget` varchar(16) DEFAULT NULL,
   `contentTitle` varchar(255) NOT NULL,
