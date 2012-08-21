@@ -268,7 +268,7 @@ CREATE TABLE `contrexx_content_page` (
   `lang` int(11) NOT NULL,
   `type` varchar(16) NOT NULL,
   `caching` tinyint(1) NOT NULL,
-  `updatedAt` datetime NOT NULL,
+  `updatedAt` datetime DEFAULT NULL,
   `title` varchar(255) NOT NULL,
   `linkTarget` varchar(16) DEFAULT NULL,
   `contentTitle` varchar(255) NOT NULL,
@@ -283,8 +283,8 @@ CREATE TABLE `contrexx_content_page` (
   `metadesc` varchar(255) DEFAULT NULL,
   `metakeys` varchar(255) DEFAULT NULL,
   `metarobots` varchar(7) DEFAULT NULL,
-  `start` datetime DEFAULT NULL,
-  `end` datetime DEFAULT NULL,
+  `start` timestamp NULL DEFAULT NULL,
+  `end` timestamp NULL DEFAULT NULL,
   `editingStatus` varchar(16) NOT NULL,
   `protection` int(11) NOT NULL,
   `frontendAccessId` int(11) NOT NULL,
@@ -375,7 +375,7 @@ CREATE TABLE `contrexx_lib_country` (
 CREATE TABLE `contrexx_log` (
   `id` int(6) unsigned NOT NULL AUTO_INCREMENT,
   `userid` int(6) unsigned DEFAULT NULL,
-  `datetime` datetime DEFAULT '0000-00-00 00:00:00',
+  `datetime` timestamp NULL DEFAULT '0000-00-00 00:00:00',
   `useragent` varchar(250) DEFAULT NULL,
   `userlanguage` varchar(250) DEFAULT NULL,
   `remote_addr` varchar(250) DEFAULT NULL,
@@ -389,7 +389,7 @@ CREATE TABLE `contrexx_log` (
 CREATE TABLE `contrexx_log_entry` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `action` varchar(8) NOT NULL,
-  `logged_at` datetime NOT NULL,
+  `logged_at` timestamp NULL DEFAULT NULL,
   `version` int(11) NOT NULL,
   `object_id` varchar(32) DEFAULT NULL,
   `object_class` varchar(255) NOT NULL,
@@ -1254,7 +1254,7 @@ CREATE TABLE `contrexx_module_egov_configuration` (
 ) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_egov_orders` (
   `order_id` int(11) NOT NULL AUTO_INCREMENT,
-  `order_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `order_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `order_ip` varchar(255) NOT NULL DEFAULT '',
   `order_product` int(11) NOT NULL DEFAULT '0',
   `order_values` text NOT NULL,
@@ -1569,7 +1569,7 @@ CREATE TABLE `contrexx_module_guestbook` (
   `ip` varchar(15) NOT NULL DEFAULT '',
   `location` tinytext NOT NULL,
   `lang_id` tinyint(2) NOT NULL DEFAULT '1',
-  `datetime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `datetime` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`),
   FULLTEXT KEY `comment` (`comment`)
 ) ENGINE=MyISAM ;
