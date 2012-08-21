@@ -20,7 +20,29 @@ class PageEventListener {
         $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
         
         foreach ($uow->getScheduledEntityUpdates() AS $entity) {
+            //$entity->setUpdatedBy(\FWUser::getFWUserObject()->objUser->getUsername());
             $this->checkValidPersistingOperation($pageRepo, $entity);
+        }
+    }
+    
+    /**
+     *
+     * @param \Doctrine\ORM\Event\PreUpdateEventArgs $eventArgs 
+     */
+    public function preUpdate($eventArgs) {
+        $entity = $eventArgs->getEntity();
+        $em = $eventArgs->getEntityManager();
+        $uow = $em->getUnitOfWork();
+
+        if ($entity instanceof \Cx\Model\ContentManager\Page) {
+            $entity->setUpdatedBy(
+                \FWUser::getFWUserObject()->objUser->getUsername()
+            );
+
+            $uow->recomputeSingleEntityChangeSet(
+                $em->getClassMetadata('Cx\Model\ContentManager\Page'),
+                $entity
+            );
         }
     }
     

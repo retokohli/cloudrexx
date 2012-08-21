@@ -188,6 +188,11 @@ class Page extends \Cx\Model\Base\EntityBase
      * @var string $cssNavName
      */
     private $cssNavName;
+    
+    /**
+     * @var string $updatedBy
+     */
+    private $updatedBy;
 
     /**
      * @var boolean Tells wheter this is a virtual (non DB) page or not
@@ -203,6 +208,7 @@ class Page extends \Cx\Model\Base\EntityBase
         $this->display = true;
         $this->caching = false;
         $this->sourceMode = false;
+        $this->updatedBy = '';
 
         $this->frontendAccessId = 0;
         $this->protection = 0;
@@ -941,6 +947,26 @@ class Page extends \Cx\Model\Base\EntityBase
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * Set updatedBy
+     *
+     * @param string $updatedBy
+     */
+    public function setUpdatedBy($updatedBy)
+    {
+        $this->updatedBy = $updatedBy;
+    }
+
+    /**
+     * Get updatedBy
+     *
+     * @return string $updatedBy
+     */
+    public function getUpdatedBy()
+    {
+        return $this->updatedBy;
     }
     
     /**
