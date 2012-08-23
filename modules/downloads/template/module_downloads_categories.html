@@ -66,9 +66,26 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 
 <form name="downloads_category_form" id="downloads_category_form" action="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_CATEGORY_ID}&amp;category_sort={DOWNLOADS_CATEGORY_CATEGORY_SORT}&amp;category_by={DOWNLOADS_CATEGORY_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_CATEGORY_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_CATEGORY_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_CATEGORY_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_CATEGORY_DOWNLOAD_OFFSET}" method="post">
 <input type="hidden" name="downloads_category_delete_recursive" id="downloads_category_delete_recursive" value="0" />
+
+<table width="100%" class="adminlist">
+    <tr>
+        <th>{TXT_DOWNLOADS_FILTER}</th>
+    </tr>
+    <tr>
+        <td>
+            <input type="text" class="search" name="search_term" value="{DOWNLOADS_SEARCH_TERM}" onfocus="if(this.value=='{TXT_DOWNLOADS_SEARCH_ENTRY}'){this.value='';}" onblur="if(this.value==''){this.value='{TXT_DOWNLOADS_SEARCH_ENTRY}';}" style="width: 240px;" />
+            {DOWNLOADS_CATEGORY_MENU}
+            <!-- BEGIN downloads_category_frontend_link -->
+            <a href="{DOWNLOADS_CATEGORY_FRONTEND_URI}" title="{TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND}" target="_blank" style="background: url(./images/icons/blue_arrow_up.png) no-repeat left center; padding: 1px 0 1px 18px;">{TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND}</a>
+            <!-- END downloads_category_frontend_link -->
+            <input type="button" value="{TXT_DOWNLOADS_SEARCH}" onclick="window.location.href='index.php?cmd=downloads&act=categories&parent_id='+jQuery('select[name=downloads_category_parent_id]').val()+'&search_term='+jQuery('input[name=search_term]').val()+'&csrf='+cx.variables.get('csrf', 'contrexx')" style="margin-left: 20px;" />
+        </td>
+    </tr>
+</table><br />
+
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="category list">
     <tr>
-        <th colspan="{DOWNLOADS_CATEGORY_COLSPAN}" style="padding:3px;">{TXT_DOWNLOADS_SELECTED_CATEGORY}: {DOWNLOADS_CATEGORY_MENU} <!-- BEGIN downloads_category_frontend_link --><a href="{DOWNLOADS_CATEGORY_FRONTEND_URI}" title="{TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND}" target="_blank">{TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND}</a><!-- END downloads_category_frontend_link --></th>
+        <th colspan="{DOWNLOADS_CATEGORY_COLSPAN}">{TXT_DOWNLOADS_ALL_CATEGORIES}{TXT_DOWNLOADS_CATEGORIES_OF_CATEGORY}</th>
     </tr>
 <!-- BEGIN downloads_category_data -->
     <tr class="row3" style="font-weight: bold; white-space:nowrap;">
@@ -137,7 +154,7 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
     </tr>
 <!-- END downloads_category_list -->
 </table>
-<input type="button" value="{TXT_SAVE_CHANGES}" onclick="downloadsUpdateSortOrder(event, this.form, 'downloads_category_select_action')" style="float: left; margin: 10px 0 0 65px;" />
+<input type="button" value="{TXT_SAVE_CHANGES_CATEGORIES}" onclick="downloadsUpdateSortOrder(event, this.form, 'downloads_category_select_action')" style="float: left; margin: 10px 0 0 65px;" />
 <!-- BEGIN downloads_category_action_dropdown -->
 <div style="clear: left;">
     <img src="images/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
@@ -152,7 +169,6 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 </div>
 <!-- END downloads_category_action_dropdown -->
 <br />
-<br />
 {DOWNLOADS_CATEGORY_PAGING}
 <!-- END downloads_category_data -->
 <!-- BEGIN downloads_category_no_data -->
@@ -163,12 +179,11 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 <!-- END downloads_category_no_data -->
 </form>
 <br />
-<br />
 <!-- BEGIN downloads_category_downloads -->
 <form name="downloads_download_form" id="downloads_download_form" action="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}" method="post">
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="downloads list">
     <tr>
-        <th colspan="10" style="padding:3px;">{DOWNLOADS_OF_CATEGORY_TXT}</th>
+        <th colspan="10">{TXT_DOWNLOADS_OF_CATEGORY}</th>
     </tr>
     <tr class="row3" style="font-weight: bold; white-space:nowrap;">
         <td width="1%" style="text-align: center;">#</td>
@@ -243,7 +258,7 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
     </tr>
 <!-- END downloads_download_list -->
 </table>
-<input type="button" value="{TXT_SAVE_CHANGES}" onclick="downloadsUpdateSortOrder(event, this.form, 'downloads_download_select_action')" style="float: left; margin: 10px 0 0 65px;" />
+<input type="button" value="{TXT_SAVE_CHANGES_DOWNLOADS}" onclick="downloadsUpdateSortOrder(event, this.form, 'downloads_download_select_action')" style="float: left; margin: 10px 0 0 65px;" />
 <!-- BEGIN downloads_download_action_dropdown -->
 <div style="clear: left;">
     <img src="images/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />

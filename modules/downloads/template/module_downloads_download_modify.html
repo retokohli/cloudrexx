@@ -98,7 +98,7 @@ function downloadsGetFileBrowser(elInsertBox,elImagePreview,elRemoveButton,elMim
     downloadsElImagePreview = typeof(elImagePreview) == 'undefined' ? null : elImagePreview;
     downloadsElRemoveButton = typeof(elRemoveButton) == 'undefined' ? null : elRemoveButton;
     downloadsElMimeType = typeof(elMimeType) == 'undefined' ? null : elMimeType;
-    downloadsOpenWindow('index.php?cmd=fileBrowser&{CSRF_PARAM}&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+    downloadsOpenWindow('index.php?cmd=fileBrowser&type=downloads&{CSRF_PARAM}&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
 }
 
 function downloadsOpenWindow(theURL,winName,features)
@@ -410,7 +410,7 @@ function downloadsAdjustSourceConfig()
                                 <a href="javascript:void(0);" onclick="document.getElementById('downloads_download_url_source_lang_div').style.display = (document.getElementById('downloads_download_url_source_lang_div').style.display == 'block' ? 'none' : 'block')" title="{TXT_DOWNLOADS_EXTENDED}">{TXT_DOWNLOADS_EXTENDED} &raquo;</a>
                             <div id="downloads_download_url_source_lang_div" style="display:none;">
                                 <!-- BEGIN downloads_download_url_source_list -->
-                                <input type="text" name="downloads_download_url_source[{DOWNLOADS_DOWNLOAD_LANG_ID}]" id="downloads_download_url_source_{DOWNLOADS_DOWNLOAD_LANG_ID}" value="{DOWNLOADS_DOWNLOAD_URL_SOURCE}" style="width:300px;" /> <input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="downloadsGetFileBrowser(document.getElementById('downloads_download_url_source_{DOWNLOADS_DOWNLOAD_LANG_ID}'),null,null,document.getElementById('downloads_download_mime_type'))" />{DOWNLOADS_DOWNLOAD_LANG_NAME}<br />
+                                <input type="text" name="downloads_download_url_source[{DOWNLOADS_DOWNLOAD_LANG_ID}]" id="downloads_download_url_source_{DOWNLOADS_DOWNLOAD_LANG_ID}" value="{DOWNLOADS_DOWNLOAD_URL_SOURCE}" style="width:300px;" /><br />
                                 <!-- END downloads_download_url_source_list -->
                             </div>
                         </div>
@@ -421,6 +421,22 @@ function downloadsAdjustSourceConfig()
                     <td>{TXT_DOWNLOADS_TYPE}</td>
                     <td>{DOWNLOADS_DOWNLOAD_MIME_TYPE_MENU}</td>
                 </tr>
+                <!-- BEGIN downloads_download_attr_metakeys -->
+                <tr class="row1">
+                    <td>{TXT_DOWNLOADS_METAKEYS}</td>
+                    <td>
+                        <!-- BEGIN downloads_download_metakeys -->
+                        <textarea id="downloads_download_metakeys_0" cols="10" rows="5" onchange="downloadsSyncNameFields(this.value,'textarea','downloads_download_metakeys')" style="width:300px;">{DOWNLOADS_DOWNLOAD_METAKEYS}</textarea> <a href="javascript:void(0);" onclick="document.getElementById('downloads_download_metakeys_lang_div').style.display = (document.getElementById('downloads_download_metakeys_lang_div').style.display == 'block' ? 'none' : 'block')" title="{TXT_DOWNLOADS_EXTENDED}">{TXT_DOWNLOADS_EXTENDED} &raquo;</a>
+                        <div id="downloads_download_metakeys_lang_div" style="display:none;">
+                        <!-- BEGIN downloads_download_metakeys_list -->
+                            <textarea name="downloads_download_metakeys[{DOWNLOADS_DOWNLOAD_LANG_ID}]" id="downloads_download_metakeys_{DOWNLOADS_DOWNLOAD_LANG_ID}" cols="10" rows="5" style="margin-top:1px; width:300px;">{DOWNLOADS_DOWNLOAD_METAKEYS}</textarea> {DOWNLOADS_DOWNLOAD_LANG_METAKEYS}<br />
+                        <!-- END downloads_download_metakeys_list -->
+                        </div>
+                        <!-- END downloads_download_metakeys -->
+                    </td>
+                </tr>
+                <!-- END downloads_download_attr_metakeys -->
+
                 <!-- BEGIN downloads_download_attr_size -->
                 <tr class="row{DOWNLOADS_DOWNLOAD_ATTRIBUTE_ROW}">
                     <td>{TXT_DOWNLOADS_SIZE}</td>

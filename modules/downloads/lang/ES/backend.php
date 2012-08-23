@@ -6,6 +6,10 @@
  * @package     contrexx
  * @subpackage  module_downloads
  */
+$_ARRAYLANG['TXT_DOWNLOADS_ALL_CATEGORIES'] = "All categories";
+$_ARRAYLANG['TXT_DOWNLOADS_SEARCH_ENTRY'] = "Search entry";
+$_ARRAYLANG['TXT_DOWNLOADS_METAKEYS'] = "Meta keywords";
+$_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES_OF_CATEGORY'] = "Categories within the category %s";
 $_ARRAYLANG['TXT_MANAGE_CATEGORIES'] = "Gestionar categor&iacute;as";
 $_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'] = "A&ntilde;adir categor&iacute;a";
 $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'] = "Configuraci&oacute;n";
@@ -76,7 +80,7 @@ $_ARRAYLANG['TXT_PLACEHOLDER_ICON_INFO'] = "Icono de informaci&oacute;n (info.gi
 $_ARRAYLANG['TXT_PLACEHOLDER_ICON_CATEGORY'] = "Icono de la Categor&iacute;a (category.gif o una imagen)";
 $_ARRAYLANG['TXT_PLACEHOLDER_ICON_FILE'] = "Icono del fichero. Seg&uacute;n el tipo de descarga: file.gif, archive.gif, image.gif, media.gif, text.gif";
 $_ARRAYLANG['TXT_PLACEHOLDER_ICON_DOWNLOAD'] = "Icono / boton de descarga. Seg&uacute;n permisos: download.gif o lock.gif";
-$_ARRAYLANG['TXT_DOWNLOADS_FILTER'] = "Buscar";
+$_ARRAYLANG['TXT_DOWNLOADS_FILTER'] = "Filter";
 $_ARRAYLANG['TXT_DOWNLOADS_DESIGN'] = "Dise&ntilde; / Icon Set";
 $_ARRAYLANG['TXT_DOWNLOADS_NO_ICONS'] = "No existen iconos";
 $_ARRAYLANG['TXT_DOWNLOADS_ICON_SET'] = "Icon-Set";
@@ -255,7 +259,6 @@ $_ARRAYLANG['TXT_DOWNLOADS_UNKNOWN'] = "Desconocido";
 $_ARRAYLANG['TXT_DOWNLOADS_WEBSITE'] = "Web";
 $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADED'] = "Descargado";
 $_ARRAYLANG['TXT_DOWNLOADS_VIEWED'] = "Vistas";
-$_ARRAYLANG['TXT_DOWNLOADS_SELECTED_CATEGORY'] = "Selected category";
 $_ARRAYLANG['TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND'] = "Open category in the frontend";
 $_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_DOWNLOAD_TO_CATEGORY'] = "Add a new download to this category";
 $_ARRAYLANG['TXT_DOWNLOADS_VALIDITY_EXPIRATION'] = "Expiration";
