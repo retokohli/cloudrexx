@@ -358,9 +358,13 @@ h1{ font-size: 20px }
     display: none;
     width: 16px;
     height: 16px;
-    float: right;
-    padding: 7px 0 0 10px;
+    float: left;
+    margin: 7px 0 0 10px;
     background: url('../images/move.png') no-repeat right bottom;
+}
+
+#site-tree .jstree-move * {
+    display: none;
 }
 
 #site-tree .jstree-checkbox {

@@ -158,7 +158,7 @@ class JsonNode implements JsonAdapter {
             $this->nodeRepo->moveDown($moved_node, $arguments['post']['position']);
 
         foreach ($moved_node->getPages() as $page) {
-            $page->setupPath();
+            $page->setupPath($page->getLang());
             $this->em->persist($page);
         }
         
@@ -166,6 +166,15 @@ class JsonNode implements JsonAdapter {
         $this->em->persist($parent_node);
 
         $this->em->flush();
+        
+        $nodeLevels[$moved_node->getId()] = $moved_node->getLvl();
+        foreach ($moved_node->getChildren() as $node) {
+            $nodeLevels[$node->getId()] = $node->getLvl();
+        }
+        
+        return array(
+            'nodeLevels' => $nodeLevels,
+        );
     }
 
     /**
@@ -269,12 +278,14 @@ class JsonNode implements JsonAdapter {
             $first = true;
         }
         
-        $output = array();
-        $tree = array();
+        $output     = array();
+        $tree       = array();
+        $nodeLevels = array();
+        
         foreach ($sorted_tree as $node) {
-            $data = array();
-            $metadata = array();
-            $children = array();
+            $data       = array();
+            $metadata   = array();
+            $children   = array();
             
             // if this node is expanded (toggled)
             $toggled = (isset($open_nodes[$node->getId()]) &&
@@ -301,7 +312,6 @@ class JsonNode implements JsonAdapter {
                                 'module'     => $page->getModule() . ' ' . $page->getCmd(),
                                 'lastupdate' => $page->getUpdatedAt()->format('d.m.Y H:i'),
                                 'user'       => $user,
-                                'level'      => $node->getLvl(),
                             )
                         ),
                     ),
@@ -382,22 +392,29 @@ class JsonNode implements JsonAdapter {
                 $state = array('state' => 'open');
             }
 
+            $nodeLevels[$node->getId()] = $node->getLvl();
+            if (isset($children['nodeLevels'])) {
+                $nodeLevels = $nodeLevels + $children['nodeLevels'];
+            }
+
             $tree[] = array_merge(array(
                 'attr'     => array(
                     'id'   => 'node_' . $node->getId()
                 ),
                 'data'     => array_values($data),
-                'children' => $children,
+                'children' => isset($children['tree']) ? $children['tree'] : array(),
                 'metadata' => $metadata,
             ), $state);
         }
         
         if ($first) { // only add actions on first (non internal) call
             // moving everything to 'tree' so we can add actions
-            $output['tree']    = $tree;
-            $output['actions'] = $actions;
+            $output['tree']       = $tree;
+            $output['actions']    = $actions;
+            $output['nodeLevels'] = $nodeLevels;
         } else {
-            $output = $tree;
+            $output['tree']       = $tree;
+            $output['nodeLevels'] = $nodeLevels;
         }
         
         return($output);
