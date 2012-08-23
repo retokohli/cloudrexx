@@ -50,6 +50,7 @@ class DownloadsLibrary
     protected $arrConfig = array(
         'overview_cols_count'           => 2,
         'overview_max_subcats'          => 5,
+        'use_attr_metakeys'             => 1,
         'use_attr_size'                 => 1,
         'use_attr_license'              => 1,
         'use_attr_version'              => 1,

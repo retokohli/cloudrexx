@@ -176,7 +176,7 @@ class downloads extends DownloadsLibrary
 
     private function overview()
     {
-        global $_LANGID;
+        global $_LANGID, $page_keywords;
 
         $objDownload = new Download();
         $objCategory = Category::getCategory($this->categoryId);
@@ -198,7 +198,12 @@ class downloads extends DownloadsLibrary
                 && (!$objDownload->getExpirationDate() || $objDownload->getExpirationDate() > time())
             ) {
                 /* DOWNLOAD DETAIL PAGE */
-                $this->pageTitle = htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
+                $this->pageTitle = contrexx_raw2xhtml($objDownload->getName(FRONTEND_LANG_ID));
+
+                $metakeys = $objDownload->getMetakeys(FRONTEND_LANG_ID);
+                if ($this->arrConfig['use_attr_metakeys'] && !empty($metakeys)) {
+                    $page_keywords = contrexx_raw2xhtml($metakeys);
+                }
 
                 $this->parseRelatedCategories($objDownload);
                 $this->parseRelatedDownloads($objDownload, $objCategory->getId());

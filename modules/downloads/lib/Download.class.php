@@ -49,6 +49,7 @@ class Download {
     private $categories;
     private $names;
     private $descriptions;
+    private $metakeys;
     private $expiration;
     private $validity;
     private $access_groups;
@@ -256,6 +257,7 @@ class Download {
         $this->categories = null;
         $this->names = array();
         $this->descriptions = array();
+        $this->metakeys = array();
         $this->EOF = true;
     }
 
@@ -366,6 +368,14 @@ class Download {
         return isset($this->descriptions[$langId]) ? $this->descriptions[$langId] : '';
     }
 
+    public function getMetakeys($langId = LANG_ID)
+    {
+        if (!isset($this->metakeys)) {
+            $this->loadLocales();
+        }
+        return isset($this->metakeys[$langId]) ? $this->metakeys[$langId] : '';
+    }
+
     public function loadLocales()
     {
         global $objDatabase;
@@ -376,6 +386,7 @@ class Download {
                 `lang_id`,
                 `name`,
                 `description`,
+                `metakeys`,
                 `source`,
                 `source_name`
             FROM `'.DBPREFIX.'module_downloads_download_locale`
@@ -384,6 +395,7 @@ class Download {
             while (!$objResult->EOF) {
                 $this->arrLoadedDownloads[$objResult->fields['download_id']]['names'][$objResult->fields['lang_id']] = $objResult->fields['name'];
                 $this->arrLoadedDownloads[$objResult->fields['download_id']]['descriptions'][$objResult->fields['lang_id']] = $objResult->fields['description'];
+                $this->arrLoadedDownloads[$objResult->fields['download_id']]['metakeys'][$objResult->fields['lang_id']] = $objResult->fields['metakeys'];
                 $this->arrLoadedDownloads[$objResult->fields['download_id']]['sources'][$objResult->fields['lang_id']] = $objResult->fields['source'];
                 $this->arrLoadedDownloads[$objResult->fields['download_id']]['source_names'][$objResult->fields['lang_id']] = $objResult->fields['source_name'];
 
@@ -392,6 +404,7 @@ class Download {
 
             $this->names = isset($this->arrLoadedDownloads[$this->id]['names']) ? $this->arrLoadedDownloads[$this->id]['names'] : null;
             $this->descriptions = isset($this->arrLoadedDownloads[$this->id]['descriptions']) ? $this->arrLoadedDownloads[$this->id]['descriptions'] : null;
+            $this->metakeys = isset($this->arrLoadedDownloads[$this->id]['metakeys']) ? $this->arrLoadedDownloads[$this->id]['metakeys'] : null;
             $this->sources = isset($this->arrLoadedDownloads[$this->id]['sources']) ? $this->arrLoadedDownloads[$this->id]['sources'] : null;
             $this->source_names = isset($this->arrLoadedDownloads[$this->id]['source_names']) ? $this->arrLoadedDownloads[$this->id]['source_names'] : null;
         }
@@ -476,6 +489,7 @@ class Download {
                 $this->categories = isset($this->arrLoadedDownloads[$id]['categories']) ? $this->arrLoadedDownloads[$id]['categories'] : null;
                 $this->names = isset($this->arrLoadedDownloads[$id]['names']) ? $this->arrLoadedDownloads[$id]['names'] : null;
                 $this->descriptions = isset($this->arrLoadedDownloads[$id]['descriptions']) ? $this->arrLoadedDownloads[$id]['descriptions'] : null;
+                $this->metakeys = isset($this->arrLoadedDownloads[$id]['metakeys']) ? $this->arrLoadedDownloads[$id]['metakeys'] : null;
                 $this->EOF = false;
                 $this->loadLocales();
                 return true;
@@ -1056,12 +1070,13 @@ class Download {
         $arrOldLocales = array();
         $status = true;
 
-        $objOldLocales = $objDatabase->Execute('SELECT `lang_id`, `name`, `description`, `source`, `source_name` FROM `'.DBPREFIX.'module_downloads_download_locale` WHERE `download_id` = '.$this->id);
+        $objOldLocales = $objDatabase->Execute('SELECT `lang_id`, `name`, `description`, `metakeys`, `source`, `source_name` FROM `'.DBPREFIX.'module_downloads_download_locale` WHERE `download_id` = '.$this->id);
         if ($objOldLocales !== false) {
             while (!$objOldLocales->EOF) {
                 $arrOldLocales[$objOldLocales->fields['lang_id']] = array(
                     'name'          => $objOldLocales->fields['name'],
                     'description'   => $objOldLocales->fields['description'],
+                    'metakeys'      => $objOldLocales->fields['metakeys'],
                     'source'        => $objOldLocales->fields['source'],
                     'source_name'   => $objOldLocales->fields['source_name'],
                 );
@@ -1076,7 +1091,7 @@ class Download {
         $arrUpdatedLocales = array_intersect(array_keys($this->names), array_keys($arrOldLocales));
 
         foreach ($arrNewLocales as $langId) {
-            if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_downloads_download_locale` (`lang_id`, `download_id`, `name`, `description`, `source`, `source_name`) VALUES (".$langId.", ".$this->id.", '".addslashes($this->names[$langId])."', '".addslashes($this->descriptions[$langId])."', '".addslashes($this->sources[$langId])."', '".addslashes($this->source_names[$langId])."')") === false) {
+            if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_downloads_download_locale` (`lang_id`, `download_id`, `name`, `description`, `metakeys`, `source`, `source_name`) VALUES (".$langId.", ".$this->id.", '".addslashes($this->names[$langId])."', '".addslashes($this->descriptions[$langId])."', '".addslashes($this->metakeys[$langId])."', '".addslashes($this->sources[$langId])."', '".addslashes($this->source_names[$langId])."')") === false) {
                 $status = false;
             }
         }
@@ -1090,10 +1105,11 @@ class Download {
         foreach ($arrUpdatedLocales as $langId) {
             if ($this->names[$langId] != $arrOldLocales[$langId]['name'] ||
                 $this->descriptions[$langId] != $arrOldLocales[$langId]['description'] ||
+                $this->metakeys[$langId] != $arrOldLocales[$langId]['metakeys'] ||
                 $this->sources[$langId] != $arrOldLocales[$langId]['source'] ||
                 $this->source_names[$langId] != $arrOldLocales[$langId]['source_name']
             ) {
-                if ($objDatabase->Execute("UPDATE `".DBPREFIX."module_downloads_download_locale` SET `name` = '".addslashes($this->names[$langId])."', `description` = '".addslashes($this->descriptions[$langId])."', `source` = '".addslashes($this->sources[$langId])."', `source_name` = '".addslashes($this->source_names[$langId])."' WHERE `download_id` = ".$this->id." AND `lang_id` = ".$langId) === false) {
+                if ($objDatabase->Execute("UPDATE `".DBPREFIX."module_downloads_download_locale` SET `name` = '".addslashes($this->names[$langId])."', `description` = '".addslashes($this->descriptions[$langId])."', `metakeys` = '".addslashes($this->metakeys[$langId])."', `source` = '".addslashes($this->sources[$langId])."', `source_name` = '".addslashes($this->source_names[$langId])."' WHERE `download_id` = ".$this->id." AND `lang_id` = ".$langId) === false) {
                     $status = false;
                 }
             }
@@ -1295,7 +1311,7 @@ class Download {
 
     public function getSource($langId = LANG_ID)
     {
-        $source = isset($this->sources[$langId]) ? isset($this->sources[$langId]) : '';
+        $source = isset($this->sources[$langId]) ? $this->sources[$langId] : '';
         return $source;
     }
 
@@ -1595,6 +1611,11 @@ class Download {
     public function setDescriptions($arrDescriptions)
     {
         $this->descriptions = $arrDescriptions;
+    }
+
+    public function setMetakeys($arrMetakeys)
+    {
+        $this->metakeys = $arrMetakeys;
     }
 
     public function setGroups($arrGroups)

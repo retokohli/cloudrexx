@@ -6,6 +6,10 @@
  * @package     contrexx
  * @subpackage  module_downloads
  */
+$_ARRAYLANG['TXT_DOWNLOADS_ALL_CATEGORIES'] = "All categories";
+$_ARRAYLANG['TXT_DOWNLOADS_SEARCH_ENTRY'] = "Search entry";
+$_ARRAYLANG['TXT_DOWNLOADS_METAKEYS'] = "Meta keywords";
+$_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES_OF_CATEGORY'] = "Categories within the category %s";
 $_ARRAYLANG['TXT_MANAGE_CATEGORIES'] = "Kategorien verwalten";
 $_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'] = "Kategorie hinzufügen";
 $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'] = "Settings";
@@ -76,7 +80,7 @@ $_ARRAYLANG['TXT_PLACEHOLDER_ICON_INFO'] = "Information-Icon (info.gif)";
 $_ARRAYLANG['TXT_PLACEHOLDER_ICON_CATEGORY'] = "Kategorie-Icon (category.gif oder das Kategoriebild)";
 $_ARRAYLANG['TXT_PLACEHOLDER_ICON_FILE'] = "Datei/File-Icon. Je nach Downlaodtyp: file.gif, archive.gif, image.gif, media.gif, text.gif";
 $_ARRAYLANG['TXT_PLACEHOLDER_ICON_DOWNLOAD'] = "Download-Icon/Button. Je nach Anmeldung: download.gif oder lock.gif";
-$_ARRAYLANG['TXT_DOWNLOADS_FILTER'] = "Suche";
+$_ARRAYLANG['TXT_DOWNLOADS_FILTER'] = "Filter";
 $_ARRAYLANG['TXT_DOWNLOADS_DESIGN'] = "Design / Icon-Sets";
 $_ARRAYLANG['TXT_DOWNLOADS_NO_ICONS'] = "Keine Icons";
 $_ARRAYLANG['TXT_DOWNLOADS_ICON_SET'] = "Icon-Set";
@@ -99,7 +103,7 @@ $_ARRAYLANG['TXT_DOWNLOAD_WRONG_CURRENT_PASSWORD'] = "Sie haben Ihr aktuelles Pa
 $_ARRAYLANG['TXT_DOWNLOAD_VALIDITY_UNLIMITED'] = "unlimitiert";
 $_ARRAYLANG['TXT_DOWNLOAD_LOGOUT'] = "abmelden";
 $_ARRAYLANG['TXT_DOWNLOADS'] = "Downloads";
-$_ARRAYLANG['TXT_DOWNLOADS_SEARCH'] = "Suche";
+$_ARRAYLANG['TXT_DOWNLOADS_SEARCH'] = "Suchen";
 $_ARRAYLANG['TXT_DOWNLOADS_FILTERS'] = "Suche";
 $_ARRAYLANG['TXT_DOWNLOADS_SCREENSHOT'] = "Screenshot / Vorschau";
 $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD'] = "Herunter laden";
@@ -255,7 +259,6 @@ $_ARRAYLANG['TXT_DOWNLOADS_UNKNOWN'] = "Unknown";
 $_ARRAYLANG['TXT_DOWNLOADS_WEBSITE'] = "Website";
 $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADED'] = "Downloaded";
 $_ARRAYLANG['TXT_DOWNLOADS_VIEWED'] = "Viewed";
-$_ARRAYLANG['TXT_DOWNLOADS_SELECTED_CATEGORY'] = "Selected category";
 $_ARRAYLANG['TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND'] = "Open category in the frontend";
 $_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_DOWNLOAD_TO_CATEGORY'] = "Add a new download to this category";
 $_ARRAYLANG['TXT_DOWNLOADS_VALIDITY_EXPIRATION'] = "Expiration";

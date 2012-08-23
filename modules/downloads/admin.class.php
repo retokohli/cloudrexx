@@ -78,17 +78,12 @@ class downloads extends DownloadsLibrary
         global $objTemplate, $_ARRAYLANG;
 
         $objTemplate->setVariable('CONTENT_NAVIGATION',
-            '<a href="index.php?cmd=downloads" class="'.($this->act == '' ? 'active' : '').'">'.
-            $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'].'</a>'.
-            '<a href="index.php?cmd=downloads&amp;act=download" class="'.($this->act == 'download' ? 'active' : '').'">'.
-            $_ARRAYLANG['TXT_DOWNLOADS_NEW'].'</a>'.
-            '<a href="index.php?cmd=downloads&amp;act=categories" class="'.($this->act == 'categories' ? 'active' : '').'">'.
-            $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'].'</a>'.
+            '<a href="index.php?cmd=downloads" class="'.($this->act == '' ? 'active' : '').'">'.$_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'].'</a>'.
+            '<a href="index.php?cmd=downloads&amp;act=downloads" class="'.(($this->act == 'downloads' || $this->act == 'download') ? 'active' : '').'">'.$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS'].'</a>'.
+            '<a href="index.php?cmd=downloads&amp;act=categories" class="'.(($this->act == 'categories' || $this->act == 'category') ? 'active' : '').'">'.$_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'].'</a>'.
             (Permission::checkAccess(142, 'static', true) ?
-            '<a href="index.php?cmd=downloads&amp;act=groups" class="'.($this->act == 'groups' ? 'active' : '').'">'.
-            $_ARRAYLANG['TXT_DOWNLOADS_GROUPS'].'</a>'.
-            '<a href="index.php?cmd=downloads&amp;act=settings" class="'.($this->act == 'settings' ? 'active' : '').'">'.
-            $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'].'</a>' : '')
+            '<a href="index.php?cmd=downloads&amp;act=groups" class="'.(($this->act == 'groups' || $this->act == 'group') ? 'active' : '').'">'.$_ARRAYLANG['TXT_DOWNLOADS_GROUPS'].'</a>'.
+            '<a href="index.php?cmd=downloads&amp;act=settings" class="'.($this->act == 'settings' ? 'active' : '').'">'.$_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'].'</a>' : '')
         );
     }
 
@@ -108,8 +103,9 @@ class downloads extends DownloadsLibrary
         if (!isset($_REQUEST['act'])) {
             $_REQUEST['act'] = '';
         }
-        $this->parentCategoryId = (isset($_REQUEST['parent_id'])
-            ? intval($_REQUEST['parent_id']) : 0);
+        $this->act = $_REQUEST['act'];
+
+        $this->parentCategoryId = isset($_REQUEST['parent_id']) ? intval($_REQUEST['parent_id']) : 0;
 
         switch ($_REQUEST['act']) {
             case 'get':
@@ -159,12 +155,21 @@ class downloads extends DownloadsLibrary
                 $this->category();
                 $this->parseCategoryNavigation();
                 break;
+            case 'downloads':
+                $this->loadDownloadNavigation();
+                $this->downloads();
+                $this->parseDownloadNavigation();
+                break;
             case 'download':
+                $this->loadDownloadNavigation();
                 $this->download();
+                $this->parseDownloadNavigation();
                 break;
             case 'delete_download':
+                $this->loadDownloadNavigation();
                 $this->deleteDownload();
-                $this->_downloads();
+                $this->downloads();
+                $this->parseDownloadNavigation();
                 break;
             case 'switch_download_status':
                 $this->switchDownloadStatus();
@@ -173,7 +178,9 @@ class downloads extends DownloadsLibrary
                     $this->categories();
                     $this->parseCategoryNavigation();
                 } else {
-                    $this->_downloads();
+                    $this->loadDownloadNavigation();
+                    $this->downloads();
+                    $this->parseDownloadNavigation();
                 }
                 break;
             case 'unlink_download':
@@ -183,7 +190,9 @@ class downloads extends DownloadsLibrary
                 $this->parseCategoryNavigation();
                 break;
             case 'add_new_download_to_category':
+                $this->loadDownloadNavigation();
                 $this->download();
+                $this->parseDownloadNavigation();
                 break;
             case 'add_downloads_to_category':
                 if ($this->addDownloadsToCategory()) {
@@ -195,8 +204,11 @@ class downloads extends DownloadsLibrary
             case 'settings':
                 $this->settings();
                 break;
+            case 'overview':
             default:
-                $this->_downloads();
+                $this->loadCategoryNavigation();
+                $this->categories();
+                $this->parseCategoryNavigation();
                 break;
         }
 
@@ -207,10 +219,8 @@ class downloads extends DownloadsLibrary
             'ADMIN_CONTENT'             => $this->objTemplate->get()
         ));
 
-        $this->act = $_REQUEST['act'];
         $this->setNavigation();
     }
-
 
     private function getDownload($langId)
     {
@@ -801,12 +811,13 @@ class downloads extends DownloadsLibrary
     }
 
 
-    private function _downloads()
+    private function downloads()
     {
         global $_ARRAYLANG, $_LANGID, $_CONFIG;
 
         $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'];
-        $this->objTemplate->loadTemplateFile('module_downloads_downloads.html');
+        $this->objTemplate->addBlockFile('DOWNLOADS_DOWNLOAD_TEMPLATE', 'module_downloads_downloads', 'module_downloads_downloads_overview.html');
+        JS::activate('cx');
         $objFWUser = FWUser::getFWUserObject();
 
         $limitOffset = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
@@ -1020,6 +1031,22 @@ class downloads extends DownloadsLibrary
         }
     }
 
+    private function loadDownloadNavigation()
+    {
+        $this->objTemplate->loadTemplateFile('module_downloads_downloads.html');
+    }
+
+    private function parseDownloadNavigation()
+    {
+        global $_ARRAYLANG;
+
+        $this->objTemplate->setVariable(array(
+            'TXT_DOWNLOADS_OVERVIEW'        => $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'],
+            'TXT_DOWNLOADS_ADD_DOWNLOAD'    => $_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOAD'],
+        ));
+
+        $this->objTemplate->parse('module_downloads_downloads');
+    }
 
     private function deleteDownload()
     {
@@ -1217,7 +1244,7 @@ class downloads extends DownloadsLibrary
             && (($objFWUser = FWUser::getFWUserObject()) == false || !$objFWUser->objUser->login() || $objDownload->getOwnerId() != $objFWUser->objUser->getId())
         ) {
             $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_DOWNLOADS_MODIFY_DOWNLOAD_PROHIBITED'];
-            return $this->_downloads();
+            return $this->downloads();
         }
 
         $categoryId = isset($_REQUEST['parent_id']) ? intval($_REQUEST['parent_id']) : 0;
@@ -1234,6 +1261,7 @@ class downloads extends DownloadsLibrary
         if (isset($_POST['downloads_download_save'])) {
             $objDownload->setNames(isset($_POST['downloads_download_name']) ? array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_name'])) : array());
             $objDownload->setDescriptions(isset($_POST['downloads_download_description']) ? array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_description'])) : array());
+            $this->arrConfig['use_attr_metakeys'] ? $objDownload->setMetakeys(isset($_POST['downloads_download_metakeys']) ? array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_metakeys'])) : array()) : null;
             $objDownload->setType(isset($_POST['downloads_download_type']) ? contrexx_stripslashes($_POST['downloads_download_type']) : '');
             $objDownload->setSources(isset($_POST['downloads_download_'.$objDownload->getType().'_source']) ? array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_'.$objDownload->getType().'_source'])) : array());
             $objDownload->setActiveStatus(!empty($_POST['downloads_download_is_active']));
@@ -1264,7 +1292,7 @@ class downloads extends DownloadsLibrary
                     $this->parseCategoryNavigation();
                     return true;
                 } else {
-                    return $this->_downloads();
+                    return $this->downloads();
                 }
             } else {
                 $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objDownload->getErrorMsg());
@@ -1272,7 +1300,7 @@ class downloads extends DownloadsLibrary
         }
 
         $this->_pageTitle = $objDownload->getId() ? $_ARRAYLANG['TXT_DOWNLOADS_EDIT_DOWNLOAD'] : $_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOAD'];
-        $this->objTemplate->loadTemplateFile('module_downloads_download_modify.html');
+        $this->objTemplate->addBlockFile('DOWNLOADS_DOWNLOAD_TEMPLATE', 'module_downloads_downloads', 'module_downloads_download_modify.html');
 
         $this->objTemplate->setVariable(array(
             'TXT_DOWNLOADS_GENERAL'                         => $_ARRAYLANG['TXT_DOWNLOADS_GENERAL'],
@@ -1288,6 +1316,7 @@ class downloads extends DownloadsLibrary
             'TXT_DOWNLOADS_VALIDITY_EXPIRATION'             => $_ARRAYLANG['TXT_DOWNLOADS_VALIDITY_EXPIRATION'],
             'TXT_DOWNLOADS_ACTIVE'                          => $_ARRAYLANG['TXT_DOWNLOADS_ACTIVE'],
             'TXT_DOWNLOADS_TYPE'                            => $_ARRAYLANG['TXT_DOWNLOADS_TYPE'],
+            'TXT_DOWNLOADS_METAKEYS'                        => $_ARRAYLANG['TXT_DOWNLOADS_METAKEYS'],
             'TXT_DOWNLOADS_SIZE'                            => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
             'TXT_DOWNLOADS_LICENSE'                         => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
             'TXT_DOWNLOADS_VERSION'                         => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
@@ -1341,20 +1370,30 @@ class downloads extends DownloadsLibrary
                 ));
                 $this->objTemplate->parse('downloads_download_description_list');
 
-                $this->objTemplate->setVariable(array(
-                        'DOWNLOADS_DOWNLOAD_LANG_ID'                    => $langId,
-                        'DOWNLOADS_DOWNLOAD_FILE_SOURCE'                => $objDownload->getType() == 'file' ? htmlentities($objDownload->getSource($langId), ENT_QUOTES, CONTREXX_CHARSET) : '',
-                        'TXT_DOWNLOADS_BROWSE'                          => $_ARRAYLANG['TXT_DOWNLOADS_BROWSE'],
-                        'DOWNLOADS_DOWNLOAD_LANG_NAME'                  => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET)
-                    ));
-                    $this->objTemplate->parse('downloads_download_file_source_list');
+                if ($this->arrConfig['use_attr_metakeys']) {
                     $this->objTemplate->setVariable(array(
-                        'DOWNLOADS_DOWNLOAD_LANG_ID'                    => $langId,
-                        'DOWNLOADS_DOWNLOAD_URL_SOURCE'                 => $objDownload->getType() == 'url' ? htmlentities($objDownload->getSource($langId), ENT_QUOTES, CONTREXX_CHARSET) : 'http://',
-                        'TXT_DOWNLOADS_BROWSE'                          => $_ARRAYLANG['TXT_DOWNLOADS_BROWSE'],
-                        'DOWNLOADS_DOWNLOAD_LANG_NAME'                  => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET)
+                        'DOWNLOADS_DOWNLOAD_METAKEYS'       => htmlentities($objDownload->getMetakeys($langId), ENT_QUOTES, CONTREXX_CHARSET),
+                        'DOWNLOADS_DOWNLOAD_LANG_ID'        => $langId,
+                        'DOWNLOADS_DOWNLOAD_LANG_METAKEYS'  => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET)
                     ));
-                    $this->objTemplate->parse('downloads_download_url_source_list');
+                    $this->objTemplate->parse('downloads_download_metakeys_list');
+                }
+
+                $this->objTemplate->setVariable(array(
+                    'DOWNLOADS_DOWNLOAD_LANG_ID'        => $langId,
+                    'DOWNLOADS_DOWNLOAD_FILE_SOURCE'    => $objDownload->getType() == 'file' ? htmlentities($objDownload->getSource($langId), ENT_QUOTES, CONTREXX_CHARSET) : '',
+                    'TXT_DOWNLOADS_BROWSE'              => $_ARRAYLANG['TXT_DOWNLOADS_BROWSE'],
+                    'DOWNLOADS_DOWNLOAD_LANG_NAME'      => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET)
+                ));
+                $this->objTemplate->parse('downloads_download_file_source_list');
+
+                $this->objTemplate->setVariable(array(
+                    'DOWNLOADS_DOWNLOAD_LANG_ID'    => $langId,
+                    'DOWNLOADS_DOWNLOAD_URL_SOURCE' => $objDownload->getType() == 'url' ? htmlentities($objDownload->getSource($langId), ENT_QUOTES, CONTREXX_CHARSET) : 'http://',
+                    'TXT_DOWNLOADS_BROWSE'          => $_ARRAYLANG['TXT_DOWNLOADS_BROWSE'],
+                    'DOWNLOADS_DOWNLOAD_LANG_NAME'  => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET)
+                ));
+                $this->objTemplate->parse('downloads_download_url_source_list');
              }
         }
 
@@ -1369,6 +1408,18 @@ class downloads extends DownloadsLibrary
             'TXT_DOWNLOADS_EXTENDED'            => $_ARRAYLANG['TXT_DOWNLOADS_EXTENDED']
         ));
         $this->objTemplate->parse('downloads_download_description');
+
+        // parse metakeys
+        if ($this->arrConfig['use_attr_metakeys']) {
+            $this->objTemplate->setVariable(array(
+                'DOWNLOADS_DOWNLOAD_METAKEYS'   => htmlentities($objDownload->getMetakeys(), ENT_QUOTES, CONTREXX_CHARSET),
+                'TXT_DOWNLOADS_EXTENDED'        => $_ARRAYLANG['TXT_DOWNLOADS_EXTENDED']
+            ));
+            $this->objTemplate->parse('downloads_download_metakeys');
+            $this->objTemplate->parse('downloads_download_attr_metakeys');
+        } else {
+            $this->objTemplate->hideBlock('downloads_download_attr_metakeys');
+        }
 
         // parse type
         $this->objTemplate->setVariable(array(
@@ -1397,6 +1448,7 @@ class downloads extends DownloadsLibrary
         $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_MIME_TYPE_MENU', $this->getDownloadMimeTypeMenu($objDownload->getMimeType()));
 
         $attrRow = 0;
+
         // parse size
         if ($this->arrConfig['use_attr_size']) {
             $this->objTemplate->setVariable(array(
@@ -1724,6 +1776,8 @@ class downloads extends DownloadsLibrary
 
         $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'];
         $this->objTemplate->addBlockFile('DOWNLOADS_CATEGORY_TEMPLATE', 'module_downloads_categories', 'module_downloads_categories.html');
+        $this->objTemplate->setVariable('DOWNLOADS_CATEGORY_NAVIGATION_DISPLAY', (($this->act == 'overview' || $this->act == '') ? 'none' : 'block'));
+        JS::activate('cx');
         $minColspan = 7;
 
         // parse categories multi action
@@ -1786,6 +1840,9 @@ class downloads extends DownloadsLibrary
         $downloadLimitOffset = isset($_GET['download_pos']) ? intval($_GET['download_pos']) : $pos;
         $downloadOrderDirection = !empty($_GET['download_sort']) ? $_GET['download_sort'] : 'asc';
         $downloadOrderBy = !empty($_GET['download_by']) ? $_GET['download_by'] : 'order';
+
+        $searchTerm = !empty($_GET['search_term']) ? $_GET['search_term'] : '';
+        $searchTerm = $searchTerm == $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_ENTRY'] ? '' : $searchTerm;
 
         $objSubcategory = Category::getCategories(array('parent_id' => $objCategory->getId()), null, $arrCategoryOrder, null, $_CONFIG['corePagingLimit'], $categoryLimitOffset);
 
@@ -1880,6 +1937,12 @@ class downloads extends DownloadsLibrary
             $this->objTemplate->hideBlock('downloads_add_downloads_button');
         }
 
+        if ($objCategory->getId()) {
+            $this->objTemplate->setVariable('TXT_DOWNLOADS_CATEGORIES_OF_CATEGORY', sprintf($_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES_OF_CATEGORY'], '&bdquo;'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'&ldquo;'));
+        } else {
+            $this->objTemplate->setVariable('TXT_DOWNLOADS_ALL_CATEGORIES', $_ARRAYLANG['TXT_DOWNLOADS_ALL_CATEGORIES']);
+        }
+
         $nr = 0;
         if ($objSubcategory->EOF) {
             $this->objTemplate->setVariable('TXT_DOWNLOADS_NO_CATEGORIES_AVAILABLE', $_ARRAYLANG['TXT_DOWNLOADS_NO_CATEGORIES_AVAILABLE']);
@@ -1888,7 +1951,8 @@ class downloads extends DownloadsLibrary
         } else {
             if ($operateOnSubcategories) {
                 $this->objTemplate->setVariable(array(
-                    'TXT_SAVE_CHANGES'              => $_ARRAYLANG['TXT_SAVE_CHANGES'],
+                    'TXT_SAVE_CHANGES_CATEGORIES'   => $_ARRAYLANG['TXT_SAVE_CHANGES'],
+                    'TXT_SAVE_CHANGES_DOWNLOADS'    => $_ARRAYLANG['TXT_SAVE_CHANGES'],
                     'TXT_DOWNLOADS_CHECK_ALL'       => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
                     'TXT_DOWNLOADS_UNCHECK_ALL'     => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
                     'TXT_DOWNLOADS_SELECT_ACTION'   => $_ARRAYLANG['TXT_DOWNLOADS_SELECT_ACTION'],
@@ -2112,16 +2176,17 @@ class downloads extends DownloadsLibrary
 
         // parse category id (will be used as the parent_id when creating a new directory
         $this->objTemplate->setVariable(array(
-            'TXT_DOWNLOADS_SELECTED_CATEGORY'   => $_ARRAYLANG['TXT_DOWNLOADS_SELECTED_CATEGORY'],
+            'TXT_DOWNLOADS_CATEGORY'            => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY'],
             'DOWNLOADS_CATEGORY_ID'             => $objCategory->getId(),
-            'DOWNLOADS_CATEGORY_MENU'           => $this->getCategoryMenu('read', $objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'], 'onchange="window.location.href=\''.CSRF::enhanceURI('index.php?cmd=downloads').'&amp;act=categories&amp;parent_id=\'+this.value"')
+            'DOWNLOADS_CATEGORY_MENU'           => $this->getCategoryMenu('read', $objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_ALL_CATEGORIES']),
+            'DOWNLOADS_SEARCH_TERM'             => !empty($_GET['search_term']) ? $_GET['search_term'] : $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_ENTRY'],
+            'TXT_DOWNLOADS_SEARCH_ENTRY'        => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_ENTRY'],
+            'TXT_DOWNLOADS_FILTER'              => $_ARRAYLANG['TXT_DOWNLOADS_FILTER'],
+            'TXT_DOWNLOADS_SEARCH'              => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH'],
         ));
 
         if ($objCategory->getId()) {
-            $categoryFrontendURI = ASCMS_PATH_OFFSET
-                .'/'.FWLanguage::getLanguageParameter($objInit->getFrontendLangId(), 'lang')
-                .'/'.CONTREXX_DIRECTORY_INDEX
-                .'?section=downloads&amp;category='.$objCategory->getId();
+            $categoryFrontendURI = ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID).'/'.CONTREXX_DIRECTORY_INDEX.'?section=downloads&amp;category='.$objCategory->getId();
             $this->objTemplate->setVariable(array(
                 'TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND'      => $_ARRAYLANG['TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND'],
                 'DOWNLOADS_CATEGORY_FRONTEND_URI'           => $categoryFrontendURI
@@ -2132,7 +2197,7 @@ class downloads extends DownloadsLibrary
         }
 
         if ($objCategory->getId() && $objCategory->getAssociatedDownloadsCount()) {
-            $this->parseCategoryDownloads($objCategory, $downloadOrderBy, $downloadOrderDirection, $downloadLimitOffset, $categoryOrderBy, $categoryOrderDirection, $categoryLimitOffset);
+            $this->parseCategoryDownloads($objCategory, $downloadOrderBy, $downloadOrderDirection, $downloadLimitOffset, $categoryOrderBy, $categoryOrderDirection, $categoryLimitOffset, $searchTerm);
             $this->objTemplate->parse('downloads_category_downloads');
         } else {
             $this->objTemplate->hideBlock('downloads_category_downloads');
@@ -2152,19 +2217,19 @@ class downloads extends DownloadsLibrary
     }
 
 
-    private function parseCategoryDownloads($objCategory, $downloadOrderBy, $downloadOrderDirection, $downloadLimitOffset, $categoryOrderBy, $categoryOrderDirection, $categoryLimitOffset)
+    private function parseCategoryDownloads($objCategory, $downloadOrderBy, $downloadOrderDirection, $downloadLimitOffset, $categoryOrderBy, $categoryOrderDirection, $categoryLimitOffset, $searchTerm)
     {
         global $_ARRAYLANG, $_LANGID, $_CONFIG;
 
         $objDownload = new Download();
-        $objDownload->loadDownloads(array('category_id' => $objCategory->getId()), null, array($downloadOrderBy => $downloadOrderDirection), null, $_CONFIG['corePagingLimit'], $downloadLimitOffset);
+        $objDownload->loadDownloads(array('category_id' => $objCategory->getId()), $searchTerm, array($downloadOrderBy => $downloadOrderDirection), null, $_CONFIG['corePagingLimit'], $downloadLimitOffset);
 
         if ($objDownload->EOF) {
             $this->objTemplate->hideBlock('downloads_download_action_dropdown');
         } else {
             $this->objTemplate->setVariable(array(
                 'DOWNLOADS_CONFIRM_UNLINK_DOWNLOADS_TXT'    => preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_UNLINK_DOWNLOADS'])),
-                'TXT_SAVE_CHANGES'                          => $_ARRAYLANG['TXT_SAVE_CHANGES'],
+                'TXT_SAVE_CHANGES_DOWNLOADS'                => $_ARRAYLANG['TXT_SAVE_CHANGES'],
                 'TXT_DOWNLOADS_CHECK_ALL'                   => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
                 'TXT_DOWNLOADS_UNCHECK_ALL'                 => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
                 'TXT_DOWNLOADS_SELECT_ACTION'               => $_ARRAYLANG['TXT_DOWNLOADS_SELECT_ACTION'],
@@ -2417,7 +2482,7 @@ class downloads extends DownloadsLibrary
             $objDownload->next();
         }
 
-        $this->objTemplate->setVariable('DOWNLOADS_OF_CATEGORY_TXT', sprintf($_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS_OF_CATEGORY'], htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)));
+        $this->objTemplate->setVariable('TXT_DOWNLOADS_OF_CATEGORY', sprintf($_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS_OF_CATEGORY'], '&bdquo;'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'&ldquo;'));
 
         $this->objTemplate->setVariable(array(
             //'TXT_DOWNLOADS_ID'          => $_ARRAYLANG['TXT_DOWNLOADS_ID'],
@@ -2448,6 +2513,7 @@ class downloads extends DownloadsLibrary
         if (isset($_POST['downloads_settings_save'])) {
             $this->arrConfig['overview_cols_count']         = !empty($_POST['downloads_settings_col_count']) ? intval($_POST['downloads_settings_col_count']) : $this->arrConfig['overview_cols_count'];
             $this->arrConfig['overview_max_subcats']        = !empty($_POST['downloads_settings_subcat_count']) ? intval($_POST['downloads_settings_subcat_count']) : $this->arrConfig['overview_max_subcats'];
+            $this->arrConfig['use_attr_metakeys']           = !empty($_POST['downloads_settings_attribute_metakeys']) ? intval($_POST['downloads_settings_attribute_metakeys']) : 0;
             $this->arrConfig['use_attr_size']               = !empty($_POST['downloads_settings_attribute_size']) ? intval($_POST['downloads_settings_attribute_size']) : 0;
             $this->arrConfig['use_attr_license']            = !empty($_POST['downloads_settings_attribute_license']) ? intval($_POST['downloads_settings_attribute_license']) : 0;
             $this->arrConfig['use_attr_version']            = !empty($_POST['downloads_settings_attribute_version']) ? intval($_POST['downloads_settings_attribute_version']) : 0;
@@ -2509,6 +2575,7 @@ class downloads extends DownloadsLibrary
             'TXT_DOWNLOADS_SECONDS_COMB_EXAMPLES'           => $_ARRAYLANG['TXT_DOWNLOADS_SECONDS_COMB_EXAMPLES'],
             'TXT_DOWNLOADS_ATTRIBUTES'                      => $_ARRAYLANG['TXT_DOWNLOADS_ATTRIBUTES'],
             'TXT_DOWNLOADS_ATTRIBUTES_DESC'                 => $_ARRAYLANG['TXT_DOWNLOADS_ATTRIBUTES_DESC'],
+            'TXT_DOWNLOADS_METAKEYS'                        => $_ARRAYLANG['TXT_DOWNLOADS_METAKEYS'],
             'TXT_DOWNLOADS_SIZE'                            => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
             'TXT_DOWNLOADS_LICENSE'                         => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
             'TXT_DOWNLOADS_VERSION'                         => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
@@ -2526,6 +2593,7 @@ class downloads extends DownloadsLibrary
             'TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'            => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'],
             'DOWNLOADS_SETTINGS_COL_COUNT'                  => $this->arrConfig['overview_cols_count'],
             'DOWNLOADS_SETTINGS_SUBCAT_COUNT'               => $this->arrConfig['overview_max_subcats'],
+            'DOWNLOADS_SETTINGS_ATTRIBUTE_METAKEYS_CHECKED' => $this->arrConfig['use_attr_metakeys'] ? 'checked="checked"' : '',
             'DOWNLOADS_SETTINGS_ATTRIBUTE_SIZE_CHECKED'     => $this->arrConfig['use_attr_size'] ? 'checked="checked"' : '',
             'DOWNLOADS_SETTINGS_ATTRIBUTE_LICENSE_CHECKED'  => $this->arrConfig['use_attr_license'] ? 'checked="checked"' : '',
             'DOWNLOADS_SETTINGS_ATTRIBUTE_VERSION_CHECKED'  => $this->arrConfig['use_attr_version'] ? 'checked="checked"' : '',
