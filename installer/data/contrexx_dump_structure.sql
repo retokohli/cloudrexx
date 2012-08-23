@@ -1098,6 +1098,7 @@ CREATE TABLE `contrexx_module_downloads_download_locale` (
   `source` varchar(255) DEFAULT NULL,
   `source_name` varchar(255) DEFAULT NULL,
   `description` text NOT NULL,
+  `metakeys` text NOT NULL,
   PRIMARY KEY (`lang_id`,`download_id`),
   FULLTEXT KEY `name` (`name`),
   FULLTEXT KEY `description` (`description`)
