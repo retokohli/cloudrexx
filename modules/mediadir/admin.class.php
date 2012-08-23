@@ -1057,7 +1057,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
             $intFormId = null;
         }
 
-        if(!empty($_REQUEST['term'])) {
+        if(!empty($_REQUEST['term']) && ($_REQUEST['term'] !== $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM'])) {
             $strTerm = $_REQUEST['term'];
         } else {
             $strTerm = null;
@@ -1077,7 +1077,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
         $this->_objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_PAGE_TITLE' => $this->pageTitle,
             'TXT_'.$this->moduleLangVar.'_SUBMIT' =>  $_CORELANG['TXT_SAVE'],
-			// TODO: _FORM_ONSUBMIT not used?
+            // TODO: _FORM_ONSUBMIT not used?
             //$this->moduleLangVar.'_FORM_ONSUBMIT' =>  $strOnSubmit,
             'TXT_EDIT' => $_ARRAYLANG['TXT_MEDIADIR_EDIT'],
             'TXT_SEARCH' => $_CORELANG['TXT_SEARCH'],
