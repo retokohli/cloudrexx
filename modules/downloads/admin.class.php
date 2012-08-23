@@ -815,7 +815,7 @@ class downloads extends DownloadsLibrary
     {
         global $_ARRAYLANG, $_LANGID, $_CONFIG;
 
-        $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'];
+        $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS'];
         $this->objTemplate->addBlockFile('DOWNLOADS_DOWNLOAD_TEMPLATE', 'module_downloads_downloads', 'module_downloads_downloads_overview.html');
         JS::activate('cx');
         $objFWUser = FWUser::getFWUserObject();
@@ -1774,7 +1774,7 @@ class downloads extends DownloadsLibrary
             return Permission::noAccess();
         }
 
-        $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'];
+        $this->_pageTitle = ($this->act == 'overview' || $this->act == '') ? $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'] : $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'];
         $this->objTemplate->addBlockFile('DOWNLOADS_CATEGORY_TEMPLATE', 'module_downloads_categories', 'module_downloads_categories.html');
         $this->objTemplate->setVariable('DOWNLOADS_CATEGORY_NAVIGATION_DISPLAY', (($this->act == 'overview' || $this->act == '') ? 'none' : 'block'));
         JS::activate('cx');

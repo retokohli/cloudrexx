@@ -242,7 +242,6 @@ $_ARRAYLANG['TXT_DOWNLOADS_ADDED_BY'] = "Added by";
 $_ARRAYLANG['TXT_DOWNLOADS_LAST_UPDATED'] = "Last updated";
 $_ARRAYLANG['TXT_DOWNLOADS_RELATED_CATEGORIES'] = "Related categories";
 $_ARRAYLANG['TXT_DOWNLOADS_RECENTLY_UPDATED'] = "Recently updated";
-$_ARRAYLANG['TXT_DOWNLOADS_NEW'] = "New";
 $_ARRAYLANG['TXT_DOWNLOADS_TYPE_PDF'] = "PDF document";
 $_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_DOWNLOAD'] = "Are you sure you want to delete the download %s?";
 $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_DELETE_SUCCESS'] = "The download <strong>%s</strong> has been successfully deleted.";
