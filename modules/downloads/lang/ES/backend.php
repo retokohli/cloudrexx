@@ -242,7 +242,6 @@ $_ARRAYLANG['TXT_DOWNLOADS_ADDED_BY'] = "A&ntilde;adido por";
 $_ARRAYLANG['TXT_DOWNLOADS_LAST_UPDATED'] = "&Uacute;ltima actualizaci&oacute;n";
 $_ARRAYLANG['TXT_DOWNLOADS_RELATED_CATEGORIES'] = "Categor&iacute;as relacionadas";
 $_ARRAYLANG['TXT_DOWNLOADS_RECENTLY_UPDATED'] = "Recientemente actualizada";
-$_ARRAYLANG['TXT_DOWNLOADS_NEW'] = "Nueva";
 $_ARRAYLANG['TXT_DOWNLOADS_TYPE_PDF'] = "PDF";
 $_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_DOWNLOAD'] = "Est&aacute; seguro de que desea eliminar la descarga %s?";
 $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_DELETE_SUCCESS'] = "La descarga <strong>%s</strong> ha sido eliminada con &eacute;xito";

@@ -242,7 +242,6 @@ $_ARRAYLANG['TXT_DOWNLOADS_ADDED_BY'] = "Ajouté par";
 $_ARRAYLANG['TXT_DOWNLOADS_LAST_UPDATED'] = "Récemment modifiés";
 $_ARRAYLANG['TXT_DOWNLOADS_RELATED_CATEGORIES'] = "Catégories apparentées";
 $_ARRAYLANG['TXT_DOWNLOADS_RECENTLY_UPDATED'] = "Modifié récemment";
-$_ARRAYLANG['TXT_DOWNLOADS_NEW'] = "Nouveau";
 $_ARRAYLANG['TXT_DOWNLOADS_TYPE_PDF'] = "Document PDF";
 $_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_DOWNLOAD'] = "Voulez-vous vraiment supprimer définitivement la ressource %s?";
 $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOAD_DELETE_SUCCESS'] = "Ressource <strong>%s</strong> supprimée.";
