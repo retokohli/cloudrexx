@@ -190,12 +190,9 @@ h1{ font-size: 20px }
     z-index: auto;
 }
 
-#site-tree .jstree-wrapper:hover,
 #site-tree .jstree-wrapper.hover,
-#site-tree .jstree-wrapper:focus,
-#site-tree .jstree-wrapper:active,
 #site-tree .jstree-wrapper.active {
-    background: #ffffd6;
+    background: #FFFFD6;
 }
 
 #site-tree span,
