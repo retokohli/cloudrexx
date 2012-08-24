@@ -151,7 +151,7 @@ class CSRF {
     {
         if (!self::__is_logged_in()) return;
         if (self::$already_added_code) return;
-        // do not check if it's an AJAX request.  They're secure
+        // do not add CSRF code in case current request is an AJAX request.  They're secure
         // by definition and also, they're much more delicate in
         // what can be returned - and they usually exceed the
         // request amount limit pretty quickly (see active_decrease etc)
@@ -173,10 +173,7 @@ class CSRF {
     public static function add_placeholder($tpl)
     {
         if (!self::__is_logged_in()) return true;
-        if ($_SERVER['REQUEST_METHOD'] == 'GET' && self::$frontend_mode) return;
-        if (self::$already_checked) return;
-        self::$already_checked = true;
-        // do not check if it's an AJAX request.  They're secure
+        // do not add placeholder in case current request is an AJAX request.  They're secure
         // by definition and also, they're much more delicate in
         // what can be returned - and they usually exceed the
         // request amount limit pretty quickly (see active_decrease etc)
@@ -240,7 +237,7 @@ class CSRF {
         if ($_SERVER['REQUEST_METHOD'] == 'GET' && self::$frontend_mode) return;
         if (self::$already_checked) return;
         self::$already_checked = true;
-        // do not check if it's an AJAX request.  They're secure
+        // do not check CSRF code in case current request is an AJAX request.  They're secure
         // by definition and also, they're much more delicate in
         // what can be returned - and they usually exceed the
         // request amount limit pretty quickly (see active_decrease etc)
