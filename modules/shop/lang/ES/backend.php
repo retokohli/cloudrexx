@@ -676,5 +676,6 @@ $_ARRAYLANG['TXT_SHOP_ATTRIBUTE_TYPE'] = "Typ";
 $_ARRAYLANG['TXT_SHOP_SETTING_CART_USE_JS'] = "Dynamischen JavaScript Warenkorb verwenden";
 $_ARRAYLANG['TXT_SHOP_SETTING_SHOPNAVBAR_ON_ALL_PAGES'] = "Shop Navigation auf jeder Seite anzeigen";
 
-//$_ARRAYLANG[''] = "";
-
+// 20120824
+$_ARRAYLANG['TXT_SHOP_PRODUCT_LANGUAGE_EDIT'] = "Edit in %3\$s";
+$_ARRAYLANG['TXT_SHOP_CATEGORY_LANGUAGE_EDIT'] = "Edit in %3\$s";

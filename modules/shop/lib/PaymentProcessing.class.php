@@ -5,7 +5,7 @@
  * @package     contrexx
  * @subpackage  module_shop
  * @copyright   CONTREXX CMS - COMVATION AG
- * @version     2.1.0
+ * @version     3.0.0
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  */
 
@@ -66,7 +66,7 @@ require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
  * @subpackage  module_shop
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  * @copyright   CONTREXX CMS - COMVATION AG
- * @version     2.1.0
+ * @version     3.0.0
  */
 class PaymentProcessing
 {

@@ -34,7 +34,7 @@ define('SHOP_PRODUCT_DEFAULT_VIEW_COUNT',     4);
  * @subpackage  module_shop
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     2.1.0
+ * @version     3.0.0
  */
 class Products
 {

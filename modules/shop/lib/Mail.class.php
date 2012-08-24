@@ -208,7 +208,6 @@ class ShopMail
      * encoded to be represented as URI characters".
      * @todo    This doesn't really belong here.  Should be placed into a
      *          proper core e-mail class as a static method.
-     * @version 1.0
      * @param   string  $string
      * @return  boolean
      */

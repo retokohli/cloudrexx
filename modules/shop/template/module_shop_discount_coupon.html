@@ -30,8 +30,8 @@
       <td width="08%" nowrap="nowrap"><b>{HEADER_SHOP_DISCOUNT_COUPON_PAYMENT}</b></td>
       <td width="10%" nowrap="nowrap">{TXT_SHOP_DISCOUNT_COUPON_URI}&nbsp;
         <span class="tipmessage info"
-             onmouseover='stm(["","{TXT_SHOP_DISCOUNT_COUPON_URI_HINT_TEXT}"],tm_style)'
-             onmouseout="htm()" class="note">
+              onmouseover='stm(["","{TXT_SHOP_DISCOUNT_COUPON_URI_HINT_TEXT}"],tm_style)'
+              onmouseout="htm()">
         </span>
       </td>
       <td width="01%" nowrap="nowrap"><b>{TXT_FUNCTIONS}</b></td>
@@ -49,7 +49,10 @@
       <td nowrap="nowrap">{SHOP_DISCOUNT_COUPON_CUSTOMER}</td>
       <td nowrap="nowrap">{SHOP_DISCOUNT_COUPON_PRODUCT}</td>
       <td nowrap="nowrap">{SHOP_DISCOUNT_COUPON_PAYMENT}</td>
-      <td nowrap="nowrap">{SHOP_DISCOUNT_COUPON_URI}</td>
+      <td nowrap="nowrap">
+        {SHOP_DISCOUNT_COUPON_URI_ICON}
+        {SHOP_DISCOUNT_COUPON_URI_INPUT}
+      </td>
       <td nowrap="nowrap">{SHOP_DISCOUNT_COUPON_FUNCTIONS}</td>
     </tr>
 <!-- END shopDiscountCouponView -->
@@ -145,10 +148,10 @@ function set_coupon_type(type) {
       display_rate = "none";
       display_amount = "table-row";
   }
-  document.getElementById("coupon_type_rate_row").style.display = display_rate;
-  document.getElementById("coupon_type_amount_row").style.display = display_amount;
+  jQuery("#coupon_type_rate_row").css("display", display_rate);
+  jQuery("#coupon_type_amount_row").css("display", display_amount);
 }
-set_coupon_type("{SHOP_DISCOUNT_COUPON_TYPE}");
+set_coupon_type("{SHOP_DISCOUNT_COUPON_TYPE_SELECTED}");
 // ]]>
 </script>
 

@@ -686,6 +686,8 @@ DBG::log("ShopSettings::errorHandler(): Migrating");
             SettingDb::TYPE_TEXT, null, 'config');
         SettingDb::add('fax', '+4133 2266001', ++$i,
             SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('vat_number', '12345678', ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
         SettingDb::add('vat_enabled_foreign_customer', 0, ++$i,
             SettingDb::TYPE_TEXT, null, 'config');
         SettingDb::add('vat_enabled_foreign_reseller', 0, ++$i,

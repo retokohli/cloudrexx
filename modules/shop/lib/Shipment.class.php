@@ -5,6 +5,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
+ * @version     3.0.0
  */
 
 /**
@@ -12,6 +13,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
+ * @version     3.0.0
  */
 class Shipment
 {
@@ -61,7 +63,6 @@ class Shipment
      *                                Defaults to false.
      * @return  void
      * @since   1.1
-     * @version 2.1.0
      */
     static function init($all=false)
     {

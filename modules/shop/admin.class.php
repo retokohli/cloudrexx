@@ -7,7 +7,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
- * @version     2.3.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  */
@@ -60,7 +60,7 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Orders.class.php';
  * @access      public
  * @package     contrexx
  * @subpackage  module_shop
- * @version     2.3.0
+ * @version     3.0.0
  */
 class Shopmanager extends ShopLibrary
 {
@@ -1619,7 +1619,6 @@ if ($test === NULL) {
                 return self::view_pricelists();
             }
         }
-
         $this->delete_categories();
         $this->store_category();
         $this->update_categories();
@@ -1633,7 +1632,6 @@ if ($test === NULL) {
         // Get the tree array of all ShopCategories
         $arrShopCategories =
             ShopCategories::getTreeArray(true, false, false);
-
         // Default to the list tab
         $flagEditTabActive = false;
         $parent_id = 0;
@@ -1666,7 +1664,6 @@ if ($test === NULL) {
         if (empty($max_width)) $max_width = 1e5;
         if (empty($max_height)) $max_height = 1e5;
         $count = ShopCategories::getTreeNodeCount();
-        self::$objTemplate->setCurrentBlock('category_edit');
         self::$objTemplate->setVariable(array(
             'TXT_SHOP_CATEGORY_ADD_OR_EDIT' => ($category_id
                 ? $_ARRAYLANG['TXT_SHOP_CATEGORY_EDIT']
@@ -1694,14 +1691,14 @@ if ($test === NULL) {
             'SHOP_IMAGE_HEIGHT' => $max_height,
             'SHOP_TOTAL_CATEGORIES' => $count,
         ));
-        self::$objTemplate->parseCurrentBlock();
-        self::$objTemplate->setCurrentBlock('category_row');
+        self::$objTemplate->parse('category_edit');
 // TODO: Add controls to fold parent categories
 //        $level_prev = null;
+        $arrLanguages = FWLanguage::getActiveFrontendLanguages();
         foreach ($arrShopCategories as $arrShopCategory) {
             $category_id = $arrShopCategory['id'];
             $level = $arrShopCategory['level'];
-            self::$objTemplate->setVariable(array(
+            self::$objTemplate->setGlobalVariable(array(
                 'SHOP_ROWCLASS' => 'row'.(++$i % 2 + 1),
                 'SHOP_CATEGORY_ID' => $category_id,
                 'SHOP_CATEGORY_NAME' => htmlentities(
@@ -1719,11 +1716,24 @@ if ($test === NULL) {
                 'SHOP_CATEGORY_VIRTUAL_CHECKED' => ($arrShopCategory['virtual']
                     ? HTML_ATTRIBUTE_CHECKED : ''),
             ));
+            // All languages active
+            foreach ($arrLanguages as $lang_id => $arrLanguage) {
+                self::$objTemplate->setVariable(array(
+                    'SHOP_CATEGORY_LANGUAGE_ID' => $lang_id,
+                    'SHOP_CATEGORY_LANGUAGE_EDIT' =>
+                        sprintf($_ARRAYLANG['TXT_SHOP_CATEGORY_LANGUAGE_EDIT'],
+                            $lang_id,
+                            $arrLanguage['lang'],
+                            $arrLanguage['name']),
+                ));
+                self::$objTemplate->parse('category_language');
+            }
+            self::$objTemplate->touchBlock('category_row');
 //            if ($level !== $level_prev) {
 //                self::$objTemplate->touchBlock('folder');
 //            }
 //            $level_prev = $level;
-            self::$objTemplate->parseCurrentBlock();
+            self::$objTemplate->parse('category_row');
         }
         return true;
     }
@@ -2202,7 +2212,9 @@ if ($test === NULL) {
     {
         global $_ARRAYLANG;
 
-        if (!isset($_POST['bstore'])) return null;
+        if (!isset($_POST['bstore'])) {
+            return null;
+        }
         $product_name = contrexx_input2raw($_POST['product_name']);
         $product_code = contrexx_input2raw($_POST['product_code']);
         // Multiple Categories
@@ -2482,9 +2494,9 @@ if ($test === NULL) {
      *
      * If the $order_id parameter value is empty, checks $_GET['order_id']
      * and $_POST['selectedOrderId'] in this order for Order IDs.
-     * @version   1.0                       Initial version
-     * @param     integer   $order_id       The optional Order ID to be deleted
-     * @return    boolean                   True on success, false otherwise
+     * @version 3.0.0
+     * @param   integer     $order_id   The optional Order ID to be deleted
+     * @return  boolean                 True on success, false otherwise
      */
     function delete_order($order_id=null)
     {
@@ -3060,6 +3072,7 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
             'SHOP_PRODUCTS_FILE', 'shop_products_block',
             'module_shop_product_catalog.html'
         );
+        $arrLanguages = FWLanguage::getActiveFrontendLanguages();
         self::$objTemplate->setGlobalVariable($_ARRAYLANG);
         $category_id = (empty($_REQUEST['category_id'])
             ? null : intval($_REQUEST['category_id']));
@@ -3119,7 +3132,6 @@ if (!$limit) {
             self::$objTemplate->touchBlock('no_product');
             return true;
         }
-
         self::$objTemplate->setVariable(array(
             'SHOP_HEADING_PRODUCT_ID' => $objSorting->getHeaderForField('`product`.`id`'),
             'SHOP_HEADING_PRODUCT_ACTIVE' => $objSorting->getHeaderForField('`product`.`active`'),
@@ -3149,7 +3161,7 @@ if (!$limit) {
                 $discount_active = HTML_ATTRIBUTE_CHECKED;
                 $specialOfferValue = 1;
             }
-            self::$objTemplate->setVariable(array(
+            self::$objTemplate->setGlobalVariable(array(
                 'SHOP_ROWCLASS' => 'row'.(++$i % 2 + 1),
                 'SHOP_PRODUCT_ID' => $objProduct->id(),
                 'SHOP_PRODUCT_CODE' => $objProduct->code(),
@@ -3184,6 +3196,19 @@ if (!$limit) {
                 'SHOP_PRODUCT_NAME' => htmlentities(
                     $objProduct->name(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
+            // All languages active
+            foreach ($arrLanguages as $lang_id => $arrLanguage) {
+                self::$objTemplate->setVariable(array(
+                    'SHOP_PRODUCT_LANGUAGE_ID' => $lang_id,
+                    'SHOP_PRODUCT_LANGUAGE_EDIT' =>
+                        sprintf($_ARRAYLANG['TXT_SHOP_PRODUCT_LANGUAGE_EDIT'],
+                            $lang_id,
+                            $arrLanguage['lang'],
+                            $arrLanguage['name']),
+                ));
+                self::$objTemplate->parse('product_language');
+            }
+            self::$objTemplate->touchBlock('productRow');
             self::$objTemplate->parse('productRow');
         }
         return true;

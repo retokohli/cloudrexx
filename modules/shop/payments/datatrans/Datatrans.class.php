@@ -6,7 +6,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
- * @version     2.1.0
+ * @version     3.0.0
  */
 
 
@@ -104,7 +104,7 @@ which is dedicated to the merchant for 3 months.
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
- * @version     2.1.0
+ * @version     3.0.0
  */
 class Datatrans
 {

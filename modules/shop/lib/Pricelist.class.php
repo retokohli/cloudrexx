@@ -6,7 +6,7 @@
  * Creates a PDF document with product price information
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Kaelin <gwanun@astalavista.com>
- * @version     2.3.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  */
@@ -20,7 +20,7 @@
  * Creates a PDF document with product price information
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Kaelin <gwanun@astalavista.com>
- * @version     2.3.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Font, color and basic layout should be configurable in the backend

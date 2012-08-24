@@ -2,7 +2,7 @@
 
 /**
  * Shop Product Attribute class
- * @version     2.1.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Test!
@@ -22,7 +22,7 @@
  * The type determines the kind of relation between a Product and the attribute
  * values, that is, whether it is optional or mandatory, and whether single
  * or multiple attributes may be chosen at a time.  See {@link ?} for details.
- * @version     2.1.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  * @copyright   CONTREXX CMS - COMVATION AG

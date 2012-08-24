@@ -1,6 +1,5 @@
 <!-- START shop_product_manage.html -->
-<script type="text/javascript">
-/* <![CDATA[ */
+<script type="text/javascript">// <![CDATA[
 var fieldID;
 var langID;
 var langcount = 2
@@ -14,30 +13,14 @@ var ltype;
 var elName;
 var par;
 
-function reloadPage()
-{
+function reloadPage() {
   //save_in_textarea_all(); // needed for wysiwyg
   document.formShopProduct.submit();
 }
-
-/* OBSOLETE
-function setDateToday(element)
-{
-  with (document.formShopProduct) {
-    if (element.value == "") {
-      element.value = date.value;
-    }
-  }
-}
-*/
-
-function openWindow(theURL, winName, features)
-{
+function openWindow(theURL, winName, features) {
   window.open(theURL, winName, features);
 }
-
-var openBrowser = function openBrowser(url, id, attrs)
-{
+var openBrowser = function openBrowser(url, id, attrs) {
   fieldID = id;
   try {
     if (!browserPopup.closed) {
@@ -51,15 +34,12 @@ var openBrowser = function openBrowser(url, id, attrs)
   browserPopup.focus();
   return false;
 }
-
-var SetUrl = function(url, width, height, alt)
-{
+var SetUrl = function(url, width, height, alt) {
   notDefined[fieldID] = true;
   var elInput = document.getElementById("hi_"+fieldID);
   elInput.setAttribute('name', 'productImage'+fieldID);
   elInput.setAttribute('id', 'hi_'+fieldID);
   elInput.setAttribute('value', decodeURIComponent(url));
-
   if (document.getElementById('lnk_'+fieldID) == null) {
     notDefined[fieldID] = true;
   } else {
@@ -79,16 +59,13 @@ var SetUrl = function(url, width, height, alt)
   }
   img.style.width  = width*fact+'px';
   img.style.height = height*fact+'px';
-
   // set resized width and height in hidden fields
   elInput_w = document.getElementById('hi_'+fieldID+'_w');
   elInput_w.setAttribute('name', 'productImage'+fieldID+'_width');
   elInput_w.setAttribute('value', width);
-
   elInput_h = document.getElementById('hi_'+fieldID+'_h');
   elInput_h.setAttribute('name', 'productImage'+fieldID+'_height');
   elInput_h.setAttribute('value', height);
-
   if (notDefined[fieldID]) {
     var elALink = document.createElement('a');
   } else {
@@ -98,7 +75,6 @@ var SetUrl = function(url, width, height, alt)
   elALink.setAttribute('target', '_blank');
   elALink.setAttribute('id', 'lnk_'+fieldID);
   elALink.setAttribute('title', 'product Image');
-
   if (notDefined[fieldID]) {
     elALink.appendChild(elTxt);
     img.parentNode.appendChild(elALink);
@@ -115,10 +91,8 @@ var SetUrl = function(url, width, height, alt)
 //  img.parentNode.appendChild(elInput);
   }
 }
-
-function toggleOptions(checkboxId)
-{
-  if (document.getElementById('productOptions'+checkboxId).checked == true) {
+function toggleOptions(checkboxId) {
+  if (document.getElementById('productOptions'+checkboxId).checked) {
     document.getElementById('subOptionsProductOptions'+checkboxId).style.display = 'block';
     for (var i = 0; i < document.getElementById('subOptionsProductOptions'+checkboxId).getElementsByTagName('input').length; ++i) {
       objInput = document.getElementById('subOptionsProductOptions'+checkboxId).getElementsByTagName('input')[i];
@@ -136,7 +110,6 @@ function toggleOptions(checkboxId)
     }
   }
 }
-
 function setDisplay(elementId, status) {
   if (status == 1) {
     document.getElementById(elementId).style.display = "block";
@@ -144,7 +117,6 @@ function setDisplay(elementId, status) {
     document.getElementById(elementId).style.display = "none";
   }
 }
-
 function toggleDisplay(elementId) {
   if (document.getElementById(elementId).style.display == "block") {
     document.getElementById(elementId).style.display = "none";
@@ -152,14 +124,12 @@ function toggleDisplay(elementId) {
     document.getElementById(elementId).style.display = "block";
   }
 }
-
-function distributionChanged()
-{
+function distributionChanged() {
   var selectedValue = document.getElementById("distribution").value;
   var display = (document.all ? "block" : "table-row");
   if (selectedValue == "delivery") {
     if ({SHOP_WEIGHT_ENABLED})
-    document.getElementById("shopWeightRow").style.display = display;
+      document.getElementById("shopWeightRow").style.display = display;
     document.getElementById("shopAccountRow").style.display = "none";
     document.getElementById("shopValidityRow").style.display = "none";
     document.getElementById("shopGroupsRow").style.display = "none";
@@ -177,9 +147,7 @@ function distributionChanged()
     document.getElementById("shopGroupsRow").style.display = "none";
   }
 }
-
-function accountChanged()
-{
+function accountChanged() {
   if (document.getElementById("shopCreateAccountYes").checked) {
     var display = (document.all ? "block" : "table-row");
     document.getElementById("shopValidityRow").style.display = display;
@@ -189,9 +157,7 @@ function accountChanged()
     document.getElementById("shopGroupsRow").style.display = "none";
   }
 }
-
-function moveOptions(from, dest, add, remove)
-{
+function moveOptions(from, dest, add, remove) {
   if (from.selectedIndex < 0) {
     if (from.options[0] != null)
       from.options[0].selected = true;
@@ -212,7 +178,6 @@ function moveOptions(from, dest, add, remove)
   flagMasterChanged = 1;
   disableButtons(from, dest, add, remove);
 }
-
 function selectAll(selectElement) {
   if (selectElement) {
     for (var i = 0; i < selectElement.length; ++i) {
@@ -220,7 +185,6 @@ function selectAll(selectElement) {
     }
   }
 }
-
 function deselectAll(selectElement) {
   if (selectElement) {
     for (var i = 0; i < selectElement.length; ++i) {
@@ -228,7 +192,6 @@ function deselectAll(selectElement) {
     }
   }
 }
-
 function disableButtons(from, dest, add, remove) {
   if (from.options.length > 0) {
     add.disabled = 0;
@@ -241,19 +204,17 @@ function disableButtons(from, dest, add, remove) {
     remove.disabled = 1;
   }
 }
-/* ]]> */
-</script>
+// ]]></script>
 <ul id="tabmenu">
   <li><a id="productManageTab_content1" class="active" href="javascript:{}" onclick="selectTab('content1')" title="{TXT_PRODUCT_INFORMATIONS}">{TXT_PRODUCT_INFORMATIONS}</a></li>
   <li><a id="productManageTab_content2" href="javascript:{}" onclick="selectTab('content2')" title="{TXT_PRODUCT_OPTIONS}">{TXT_PRODUCT_OPTIONS}</a></li>
   <li><a id="productManageTab_content3" href="javascript:{}" onclick="selectTab('content3')" title="{TXT_PRODUCT_IMAGE}">{TXT_PRODUCT_IMAGE}</a></li>
   <li><a id="productManageTab_content4" href="javascript:{}" onclick="selectTab('content4')" title="{TXT_PRODUCT_STATUS}">{TXT_PRODUCT_STATUS}</a></li>
 </ul>
-<!-- start content1 div -->
-
 <form name="formShopProduct" method="post"
   action="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage"
     onsubmit="selectAll(document.formShopProduct.elements['shopGroupsAssigned[]']);selectAll(document.formShopProduct.elements['shopCategoriesAssigned[]']);">
+<!-- start content1 div -->
   <div id="content1" class="productManageTab" style="display: block;">
     <input type="hidden" name="date" value="{SHOP_DATE}" />
     <input type="hidden" name="id" value="{SHOP_PRODUCT_ID}" />
@@ -299,8 +260,8 @@ function disableButtons(from, dest, add, remove) {
               </td>
               <td style="border-bottom: 0px;">
                 {TXT_SHOP_CATEGORIES_ASSIGNED}<br />
-                {SHOP_CATEGORIES_ASSIGNED}
                 <select name="shopCategoriesAssigned[]" size="10" style="width: 300px;" multiple="multiple">
+                  {SHOP_CATEGORIES_ASSIGNED}
                 </select>
                 <br />
                 <a href="javascript:void(0);" onclick="selectAll(document.formShopProduct.elements['shopCategoriesAssigned[]'])">{TXT_SHOP_SELECT_ALL}</a> <br />
@@ -401,7 +362,7 @@ function disableButtons(from, dest, add, remove) {
               <td style="border-bottom: 0px;">
                 {TXT_SHOP_GROUPS_AVAILABLE}<br />
                 <select name="groupsAvailable[]" size="10" style="width: 300px;" multiple="multiple">
-                {SHOP_GROUPS_AVAILABLE}
+                  {SHOP_GROUPS_AVAILABLE}
                 </select>
                 <br />
                 <a href="javascript:void(0);"onclick="selectAll(document.formShopProduct.elements['groupsAvailable[]'])">{TXT_SHOP_SELECT_ALL}</a><br />
@@ -422,7 +383,7 @@ function disableButtons(from, dest, add, remove) {
               <td style="border-bottom: 0px;">
                 {TXT_SHOP_GROUPS_ASSIGNED}<br />
                 <select name="groupsAssigned[]" size="10" style="width: 300px;" multiple="multiple">
-                {SHOP_GROUPS_ASSIGNED}
+                  {SHOP_GROUPS_ASSIGNED}
                 </select>
                 <br />
                 <a href="javascript:void(0);" onclick="selectAll(document.formShopProduct.elements['groupsAssigned[]'])">{TXT_SHOP_SELECT_ALL}</a> <br />
@@ -432,12 +393,13 @@ function disableButtons(from, dest, add, remove) {
           </table>
         </td>
       </tr>
-      <!-- BEGIN shopFlags
+<!-- DISABLED FTTB
+BEGIN shopFlags
       <tr class="row2">
         <td nowrap="nowrap">{TXT_SHOP_FLAGS}</td>
         <td>{SHOP_FLAGS_SELECTION}</td>
       </tr>
-      END shopFlags -->
+END shopFlags -->
       <tr valign="top" class="row2">
         <td colspan="2">{TXT_SHORT_DESCRIPTION}</td>
       </tr>
@@ -476,15 +438,15 @@ function disableButtons(from, dest, add, remove) {
         <td>
           <input maxlength=10 name="stock" size="10" value="{SHOP_STOCK}" />
           &nbsp;
-          <input type="checkbox" {SHOP_STOCK_VISIBILITY}
-              name="stock_visible" id="stock_visible" value="1" />
+          <input type="checkbox" name="stock_visible" id="stock_visible"
+                 value="1" {SHOP_STOCK_VISIBILITY} />
           <label for="stock_visible">{TXT_SHOP_PRODUCT_STOCK_ACTIVE}</label>
         </td>
       </tr>
     </table>
   </div>
-  <!-- end content1 div -->
-  <!-- start content2 div -->
+<!-- end content1 div -->
+<!-- start content2 div -->
   <div id="content2" class="productManageTab" style="display: none;">
     <table summary="" class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
       <tr valign="top">
@@ -512,7 +474,7 @@ function disableButtons(from, dest, add, remove) {
           <br />
           <div style="display: {SHOP_PRODUCTS_ATTRIBUTE_DISPLAY_TYPE}; margin-left: 50px"
               id="subOptionsProductOptions{SHOP_PRODUCTS_ATTRIBUTE_ID}">
-            <!-- BEGIN optionList -->
+<!-- BEGIN optionList -->
               <input type="checkbox" id="options{SHOP_PRODUCTS_ATTRIBUTE_VALUE_ID}"
                   name="options[{SHOP_PRODUCTS_ATTRIBUTE_VALUE_ID}]"
                   value="{SHOP_PRODUCTS_ATTRIBUTE_ID}"
@@ -521,15 +483,15 @@ function disableButtons(from, dest, add, remove) {
                 {SHOP_PRODUCTS_ATTRIBUTE_VALUE_TEXT}
               </label>
               <br />
-            <!-- END optionList -->
+<!-- END optionList -->
           </div>
         </td>
       </tr>
-      <!-- END attributeList -->
+<!-- END attributeList -->
     </table>
   </div>
-  <!-- end content2 div -->
-  <!-- start content3 div -->
+<!-- end content2 div -->
+<!-- start content3 div -->
   <div id="content3" class="productManageTab" style="display: none;">
     <table summary="" class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
       <tr>
@@ -608,8 +570,8 @@ function disableButtons(from, dest, add, remove) {
       </tr>
     </table>
   </div>
-  <!-- end content3 div -->
-  <!-- start content4 div -->
+<!-- end content3 div -->
+<!-- start content4 div -->
   <div id="content4" class="productManageTab" style="display: none;">
     <table summary="" class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
       <tr valign="top">
@@ -633,21 +595,20 @@ function disableButtons(from, dest, add, remove) {
         <td>{TXT_START_DATE}</td>
         <td>
           {SHOP_DATE_START}
-          <!--input type="text" name="date_start" size="20" maxlength="20" onClick="setDateToday(date_start)" value="{SHOP_DATE_START}" /-->
         </td>
       </tr>
       <tr valign="top" class="row1">
         <td>{TXT_END_DATE}</td>
         <td>
           {SHOP_DATE_END}
-          <!--input type="text" name="date_end" size="20" maxlength="20" onClick="setDateToday(date_end)" value="{SHOP_DATE_END}" /-->
         </td>
       </tr>
     </table>
   </div>
-  <!-- end content4 div -->
+<!-- end content4 div -->
   <br />
-    <input type="submit" value="{TXT_RESET}" name="bcancel" />
+    <input type="button" value="{TXT_SHOP_CANCEL}"
+           onclick="location='index.php?cmd=shop&act=products&{CSRF_PARAM}';" />
     <input type="submit" value="{TXT_STORE}" name="bstore" />
   {TXT_ACTION_AFTER_SAVEING}
   <select name="afterStoreAction">
