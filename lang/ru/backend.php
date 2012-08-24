@@ -6,6 +6,13 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_CORE_WHOIS'] = "Whois";
+$_ARRAYLANG['TXT_CORE_ADD_EMAIL_CAMPAIGN'] = "Add email campaign";
+$_ARRAYLANG['TXT_CORE_EMAIL_MARKETING'] = "Email marketing";
+$_ARRAYLANG['TXT_CORE_VISITORS_AND_PAGE_VIEWS'] = "Visitors and page views";
+$_ARRAYLANG['TXT_CORE_STATS'] = "Stats";
+$_ARRAYLANG['TXT_CORE_MEDIA'] = "Media";
+$_ARRAYLANG['TXT_CORE_ECOMMERCE'] = "E-commerce";
 $_ARRAYLANG['TXT_FILE_UPLOADS'] = "File uploads";
 $_ARRAYLANG['TXT_ATTACHEMENTS'] = "Attachements";
 $_ARRAYLANG['TXT_DASHBOARD'] = "Dashboard";
@@ -100,7 +107,7 @@ $_ARRAYLANG['TXT_GROUP_NAME'] = "Название группы";
 $_ARRAYLANG['TXT_NEW_CATEGORY'] = "Новая категория";
 $_ARRAYLANG['TXT_NEW_PAGE'] = "Новая страница";
 $_ARRAYLANG['TXT_NEWS_MANAGER'] = "Менеджер новостей";
-$_ARRAYLANG['TXT_NEWSLETTER'] = "Email marketing";
+$_ARRAYLANG['TXT_NEWSLETTER'] = "Newsletter";
 $_ARRAYLANG['TXT_OPEN_ISSUE'] = "Незаконченный";
 $_ARRAYLANG['TXT_SOURCE_MODE'] = "Текстовый источник mode:";
 $_ARRAYLANG['TXT_REDIRECT'] = "Непрямой URL";
@@ -414,7 +421,6 @@ $_ARRAYLANG['TXT_NEWPW_MAIL_PART4'] = "Если данное действие п
 $_ARRAYLANG['TXT_PW_TO_SHORT'] = "Вы ввели слишком короткий пароль. Пожалуйста введите мин. 6 знаков.";
 $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "Пароли не совпадают между собой";
 $_ARRAYLANG['TXT_LOST_PW_TEXT'] = "Если вы забыли пароль, вы можете запросить e-mail с вашим именем пользователя и инструкцией по возвращению пароля в первоначальное состояние.";
-$_ARRAYLANG['TXT_SYSTEM_INFO'] = "Системная информация";
 $_ARRAYLANG['TXT_LOGOUT'] = "Выход";
 $_ARRAYLANG['TXT_DOWNLOAD_MANAGER'] = "Менеджер загрузок";
 $_ARRAYLANG['TXT_DOWNLOAD_MODULE_DESCRIPTION'] = "С помощью менеджера загрузок вы можете удобно совершать желаемые загрузки. С помощью функций регистрации и подсчёта";

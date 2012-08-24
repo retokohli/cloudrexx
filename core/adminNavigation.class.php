@@ -170,6 +170,27 @@ class adminMenu
                                     $linkCmd = '';
                                 }
                                 break;
+                            case 'stats':
+                                $cssClass = 'inactive';
+                                if ($this->activeCmd == 'stats') {
+                                    if ((empty($_REQUEST['stat']) && empty($linkCmdSection)) || (!empty($_REQUEST['stat']) && !empty($linkCmdSection))) {
+                                        $cssClass = 'active';
+                                    }
+                                }
+                                break;
+                            case 'newsletter':
+                                $cssClass = 'inactive';
+                                if ($this->activeCmd == 'newsletter') {
+                                    if ((empty($_REQUEST['act']) && empty($linkCmdSection)) || (!empty($_REQUEST['act']) && !empty($linkCmdSection))) {
+                                        $cssClass = 'active';
+                                    }
+                                }
+                                break;
+                            case 'server':
+                                if ($this->activeCmd == 'nettools') {
+                                    $cssClass = 'active';
+                                }
+                                break;
                             case 'skins':
                                 if ($this->activeCmd == 'skins') {
                                     break;
@@ -218,9 +239,13 @@ class adminMenu
                         }
                     }
 
-                    $cssClass = !empty($this->activeCmd) && ($this->activeCmd == $linkCmd) ? 'active' : 'inactive';
+                    if (empty($cssClass)) {
+                        $cssClass = !empty($this->activeCmd) && ($this->activeCmd == $linkCmd) ? 'active' : 'inactive';
+                    }
                     $navigation.= "<li class='$cssClass'><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
                 }
+                
+                $cssClass = '';
             }
 
             if (!empty($navigation)) {

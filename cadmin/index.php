@@ -519,7 +519,7 @@ switch ($plainCmd) {
     case 'newsletter':
         if (!include_once ASCMS_MODULE_PATH.'/newsletter/admin.class.php')
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_NEWSLETTER'];
+        $subMenuTitle = $_CORELANG['TXT_CORE_EMAIL_MARKETING'];
         $objNewsletter = new newsletter();
         $objNewsletter->getPage();
         break;

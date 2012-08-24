@@ -53,8 +53,15 @@ class serverSettings
     {
         global $objTemplate, $_CORELANG;
 
-        $objTemplate->setVariable('CONTENT_NAVIGATION',"<a href='?cmd=server' class='".($this->act == '' ? 'active' : '')."'>".$_CORELANG['TXT_OVERVIEW']."</a>
-                                                <a href='?cmd=server&amp;act=phpinfo' class='".($this->act == 'phpinfo' ? 'active' : '')."'>".$_CORELANG['TXT_PHP_INFO']."</a>");
+        $objTemplate->setVariable('CONTENT_NAVIGATION', '
+            <a href="index.php?cmd=server" class="'.($this->act == '' ? 'active' : '').'">'.$_CORELANG['TXT_OVERVIEW'].'</a>
+            <a href="index.php?cmd=server&amp;act=phpinfo" class="'.($this->act == 'phpinfo' ? 'active' : '').'">'.$_CORELANG['TXT_PHP_INFO'].'</a>
+            <a href="index.php?cmd=nettools&amp;tpl=whois" class="'.($this->act == 'whois' ? 'active' : '').'">'.$_CORELANG['TXT_CORE_WHOIS'].'</a>
+            <a href="index.php?cmd=nettools&amp;tpl=lookup" class="'.($this->act == 'lookup' ? 'active' : '').'">'.$_CORELANG['TXT_LOOKUP'].'</a>
+            <a href="index.php?cmd=nettools&amp;tpl=mxlookup" class="'.($this->act == 'mxlookup' ? 'active' : '').'">'.$_CORELANG['TXT_MX_LOOKUP'].'</a>'.
+            (!ini_get("safe_mode") ? '<a href="index.php?cmd=nettools&amp;tpl=ping" class="'.($this->act == 'ping' ? 'active' : '').'">'.$_CORELANG['TXT_PING'].'</a>' : '').'
+            <a href="index.php?cmd=nettools&amp;tpl=port" class="'.($this->act == 'port' ? 'active' : '').'">'.$_CORELANG['TXT_CHECK_PORT'].'</a>
+        ');
     }
 
     /**

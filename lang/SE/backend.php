@@ -6,6 +6,13 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_CORE_WHOIS'] = "Whois";
+$_ARRAYLANG['TXT_CORE_ADD_EMAIL_CAMPAIGN'] = "Add email campaign";
+$_ARRAYLANG['TXT_CORE_EMAIL_MARKETING'] = "Email marketing";
+$_ARRAYLANG['TXT_CORE_VISITORS_AND_PAGE_VIEWS'] = "Visitors and page views";
+$_ARRAYLANG['TXT_CORE_STATS'] = "Stats";
+$_ARRAYLANG['TXT_CORE_MEDIA'] = "Media";
+$_ARRAYLANG['TXT_CORE_ECOMMERCE'] = "E-commerce";
 $_ARRAYLANG['TXT_FILE_UPLOADS'] = "File uploads";
 $_ARRAYLANG['TXT_ATTACHEMENTS'] = "Attachements";
 $_ARRAYLANG['TXT_DASHBOARD'] = "Dashboard";
@@ -100,7 +107,7 @@ $_ARRAYLANG['TXT_GROUP_NAME'] = "Name of the group";
 $_ARRAYLANG['TXT_NEW_CATEGORY'] = "New Category";
 $_ARRAYLANG['TXT_NEW_PAGE'] = "New page";
 $_ARRAYLANG['TXT_NEWS_MANAGER'] = "News";
-$_ARRAYLANG['TXT_NEWSLETTER'] = "Email marketing";
+$_ARRAYLANG['TXT_NEWSLETTER'] = "Newsletter";
 $_ARRAYLANG['TXT_OPEN_ISSUE'] = "Pending";
 $_ARRAYLANG['TXT_SOURCE_MODE'] = "Source code mode:";
 $_ARRAYLANG['TXT_REDIRECT'] = "Redirect URL";
@@ -165,7 +172,7 @@ $_ARRAYLANG['TXT_MODULES_REMOVED_SUCCESSFUL'] = "Module(s) %s was/were deleted s
 $_ARRAYLANG['TXT_MODULE_ACTIVATION'] = "Modul activation";
 $_ARRAYLANG['TXT_SECTION'] = "Section";
 $_ARRAYLANG['TXT_USER_LINK_INACTIVE'] = "Inactive users";
-$_ARRAYLANG['TXT_SHOP'] = "E-Commerce ";
+$_ARRAYLANG['TXT_SHOP'] = "Shop";
 $_ARRAYLANG['TXT_VOTING_MODULE_DESCRIPTION'] = "Inquires";
 $_ARRAYLANG['TXT_THIS_MODULE_DOESNT_EXISTS'] = "This module does not exist.";
 $_ARRAYLANG['TXT_PROTECTION'] = "This page is password protected";
@@ -415,7 +422,6 @@ $_ARRAYLANG['TXT_NEWPW_MAIL_PART4'] = "If this change failed, you can request a 
 $_ARRAYLANG['TXT_PW_TO_SHORT'] = "The password was too short. Please use at least 6 characters.";
 $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "The two passwords do not match.";
 $_ARRAYLANG['TXT_LOST_PW_TEXT'] = "If you forget your password, you can request a password reminder. Your username and password will be sent to you by email.";
-$_ARRAYLANG['TXT_SYSTEM_INFO'] = "System information";
 $_ARRAYLANG['TXT_LOGOUT'] = "Logout";
 $_ARRAYLANG['TXT_DOWNLOAD_MANAGER'] = "Download manager";
 $_ARRAYLANG['TXT_DOWNLOAD_MODULE_DESCRIPTION'] = "With the download manager, you can administer your downloads. With register and meter functions";

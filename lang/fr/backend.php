@@ -6,6 +6,13 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_CORE_WHOIS'] = "Whois";
+$_ARRAYLANG['TXT_CORE_ADD_EMAIL_CAMPAIGN'] = "Add email campaign";
+$_ARRAYLANG['TXT_CORE_EMAIL_MARKETING'] = "Email marketing";
+$_ARRAYLANG['TXT_CORE_VISITORS_AND_PAGE_VIEWS'] = "Visiteurs et accès";
+$_ARRAYLANG['TXT_CORE_STATS'] = "Stats";
+$_ARRAYLANG['TXT_CORE_MEDIA'] = "Media";
+$_ARRAYLANG['TXT_CORE_ECOMMERCE'] = "E-commerce";
 $_ARRAYLANG['TXT_FILE_UPLOADS'] = "File uploads";
 $_ARRAYLANG['TXT_ATTACHEMENTS'] = "Attachements";
 $_ARRAYLANG['TXT_DASHBOARD'] = "Dashboard";
@@ -100,7 +107,7 @@ $_ARRAYLANG['TXT_GROUP_NAME'] = "Nom du groupe";
 $_ARRAYLANG['TXT_NEW_CATEGORY'] = "Nouvelle catégorie";
 $_ARRAYLANG['TXT_NEW_PAGE'] = "Nouvelle page";
 $_ARRAYLANG['TXT_NEWS_MANAGER'] = "Nouvelles";
-$_ARRAYLANG['TXT_NEWSLETTER'] = "Email marketing";
+$_ARRAYLANG['TXT_NEWSLETTER'] = "Newsletter";
 $_ARRAYLANG['TXT_OPEN_ISSUE'] = "Ouvert";
 $_ARRAYLANG['TXT_SOURCE_MODE'] = "Afficher la source:";
 $_ARRAYLANG['TXT_REDIRECT'] = "URL de redirection";
@@ -414,7 +421,6 @@ $_ARRAYLANG['TXT_NEWPW_MAIL_PART4'] = "Au cas où vous n'êtes pas l'auteur de c
 $_ARRAYLANG['TXT_PW_TO_SHORT'] = "Le mot de passe doit comporter au moins 6 caractères!";
 $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "Les deux saisies de mots de passe ne sont pas identiques!";
 $_ARRAYLANG['TXT_LOST_PW_TEXT'] = "Si vous avez oublié votre mot de passe, vous pouvez en demander la réinitialisation via un E-mail, dans lequel vous trouverez les instructions sur la procédure à suivre.";
-$_ARRAYLANG['TXT_SYSTEM_INFO'] = "Informations système";
 $_ARRAYLANG['TXT_LOGOUT'] = "Déconnexion";
 $_ARRAYLANG['TXT_DOWNLOAD_MANAGER'] = "Gestion des téléchargements";
 $_ARRAYLANG['TXT_DOWNLOAD_MODULE_DESCRIPTION'] = "La gestion des ressources numériques vous permet de gérer simplement les fichiers que vous voulez offrir en téléchargement, avec des options diverses telles que l'inscription ou des compteurs";

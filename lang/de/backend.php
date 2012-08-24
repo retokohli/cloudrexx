@@ -6,6 +6,13 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_CORE_WHOIS'] = "Whois";
+$_ARRAYLANG['TXT_CORE_ADD_EMAIL_CAMPAIGN'] = "E-Mail-Kampagne hinzufügen";
+$_ARRAYLANG['TXT_CORE_EMAIL_MARKETING'] = "E-Mail-Marketing";
+$_ARRAYLANG['TXT_CORE_VISITORS_AND_PAGE_VIEWS'] = "Besucher und Seitenaufrufe";
+$_ARRAYLANG['TXT_CORE_STATS'] = "Statistiken";
+$_ARRAYLANG['TXT_CORE_MEDIA'] = "Medien";
+$_ARRAYLANG['TXT_CORE_ECOMMERCE'] = "E-Commerce";
 $_ARRAYLANG['TXT_FILE_UPLOADS'] = "Dateiuploads";
 $_ARRAYLANG['TXT_ATTACHEMENTS'] = "Anhänge";
 $_ARRAYLANG['TXT_DASHBOARD'] = "Dashboard";
@@ -101,7 +108,7 @@ $_ARRAYLANG['TXT_GROUP_NAME'] = "Name der Gruppe";
 $_ARRAYLANG['TXT_NEW_CATEGORY'] = "Neue Kategorie";
 $_ARRAYLANG['TXT_NEW_PAGE'] = "Neue Seite";
 $_ARRAYLANG['TXT_NEWS_MANAGER'] = "News";
-$_ARRAYLANG['TXT_NEWSLETTER'] = "E-Mail-Marketing";
+$_ARRAYLANG['TXT_NEWSLETTER'] = "Newsletter";
 $_ARRAYLANG['TXT_OPEN_ISSUE'] = "Pendent";
 $_ARRAYLANG['TXT_SOURCE_MODE'] = "Quelltext Mode:";
 $_ARRAYLANG['TXT_REDIRECT'] = "Redirekt URL";
@@ -166,7 +173,7 @@ $_ARRAYLANG['TXT_MODULES_REMOVED_SUCCESSFUL'] = "Modul(e) %s wurde(n) erfolgreic
 $_ARRAYLANG['TXT_MODULE_ACTIVATION'] = "Modul aktivierung";
 $_ARRAYLANG['TXT_SECTION'] = "Sektion";
 $_ARRAYLANG['TXT_USER_LINK_INACTIVE'] = "Inaktive Benutzer";
-$_ARRAYLANG['TXT_SHOP'] = "E-Commerce ";
+$_ARRAYLANG['TXT_SHOP'] = "Shop";
 $_ARRAYLANG['TXT_VOTING_MODULE_DESCRIPTION'] = "Umfragen";
 $_ARRAYLANG['TXT_THIS_MODULE_DOESNT_EXISTS'] = "Dieses Modul existiert nicht.";
 $_ARRAYLANG['TXT_PROTECTION'] = "Seite ist passwortgeschützt";
@@ -417,7 +424,6 @@ $_ARRAYLANG['TXT_NEWPW_MAIL_PART4'] = "Falls diese Änderung nicht durch Sie erf
 $_ARRAYLANG['TXT_PW_TO_SHORT'] = "Das angegebene Passwort ist zu kurz. Bitte min. 6 Zeichen angeben.";
 $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "Die beiden Passwörter stimmen nicht überein.";
 $_ARRAYLANG['TXT_LOST_PW_TEXT'] = "Falls Sie Ihr Kennwort vergessen haben, können Sie eine E-Mail anfordern, in der Ihr Benutzername und eine Anleitung zur Zurücksetzung Ihres Passwortes steht.";
-$_ARRAYLANG['TXT_SYSTEM_INFO'] = "System Informationen";
 $_ARRAYLANG['TXT_LOGOUT'] = "Abmelden";
 $_ARRAYLANG['TXT_DOWNLOAD_MANAGER'] = "Downloadmanager";
 $_ARRAYLANG['TXT_DOWNLOAD_MODULE_DESCRIPTION'] = "Mit dem DownloadManager können Sie Ihre Downloads bequem verwalten. Mit Registrier- und Zähler Funktionen";
@@ -1573,6 +1579,3 @@ $_ARRAYLANG['TXT_CORE_FINISH_UPLOADING'] = "Hochladen beenden";
 $_ARRAYLANG['TXT_CORE_FILES_UPLOADED'] = "Datei(en) wurde(n) erfolgreich heraufgeladen";
 $_ARRAYLANG['TXT_CORE_FILES_NOT_UPLOADED'] = "Einige Datei(en) konnte(n) nicht heraufgeladen werden:";
 $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "Die Dateiendung ist nicht erlaubt.";
-
-// 20120419 MISSING!
-$_ARRAYLANG['TXT_HELP_SUPPORT'] = "TXT_HELP_SUPPORT";
