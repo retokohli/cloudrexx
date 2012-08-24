@@ -2,7 +2,7 @@
 
 /**
  * Manufacturer
- * @version     2.3.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -11,7 +11,7 @@
 
 /**
  * Manufacturer
- * @version     2.3.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  * @copyright   CONTREXX CMS - COMVATION AG

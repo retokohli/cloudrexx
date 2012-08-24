@@ -7,7 +7,7 @@
  * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @access      public
- * @version     2.1.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  */
@@ -33,7 +33,7 @@ define('SHOP_CATEGORY_IMAGE_WEB_PATH',  ASCMS_SHOP_IMAGES_WEB_PATH.'/');
  * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @access      public
- * @version     2.1.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  */
@@ -81,7 +81,6 @@ class ShopCategories
      *
      * See {@link ShopCategories::getTreeArray()} for a detailed explanation
      * of the array structure.
-     * @version 2.1.0
      * @param   boolean $flagFull           If true, the full tree is built,
      *                                      only the parts visible for
      *                                      $selected_id otherwise.
@@ -154,7 +153,6 @@ class ShopCategories
      * ),
      * ... more parents
      * Note that this includes the virtual ShopCategories and their children.
-     * @version 2.1.0
      * @param   boolean $flagFull           If true, the full tree is built,
      *                                      only the parts visible for
      *                                      $selected_id otherwise.
@@ -206,7 +204,6 @@ class ShopCategories
      * {@link ShopCategories::getTreeArray()}.
      *
      * See {@link buildTreeArray()} for details.
-     * @version 2.1.0
      * @param   boolean $flagFull           If true, the full tree is built,
      *                                      only the parts visible for
      *                                      $selected_id otherwise.
@@ -283,7 +280,6 @@ class ShopCategories
      *
      * This string is used to limit the range of Product searches.
      * The IDs are comma separated, ready to be used in an SQL query.
-     * @version 1.1
      * @param   integer $parent_id          The optional root ShopCategories ID.
      *                                      Defaults to 0 (zero).
      * @param   boolean $active             Only return ShopCategories
@@ -333,7 +329,6 @@ class ShopCategories
      *
      * See {@link ShopCategories::getTrailArray()} for details on
      * the array structure.
-     * @version 2.1.0
      * @param   integer $selected_id        The selected ShopCategory ID.
      * @return  mixed                       The array of ShopCategory IDs
      *                                      on success, false on failure.
@@ -654,7 +649,6 @@ class ShopCategories
      *
      * The <select> tag pair is not included, nor the option for the root
      * ShopCategory.
-     * @version 1.0     initial version
      * @param   integer $selected_id    The optional selected ShopCategories ID.
      * @param   boolean $active         If true, only active ShopCategories
      *                                  are included, all otherwise.

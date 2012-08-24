@@ -8,7 +8,7 @@
  * @access      public
  * @package     contrexx
  * @subpackage  module_shop
- * @version     2.1.0
+ * @version     3.0.0
  */
 
 require_once ASCMS_CORE_PATH.'/Country.class.php';
@@ -47,7 +47,7 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Weight.class.php';
  * @access      public
  * @package     contrexx
  * @subpackage  module_shop
- * @version     2.1.0
+ * @version     3.0.0
  */
 class Shop extends ShopLibrary
 {

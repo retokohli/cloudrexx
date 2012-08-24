@@ -93,8 +93,18 @@ function cancelEdit()
 <br />
 
 <ul id="tabmenu">
-<li><a id="categoryTab_content1" class="{SHOP_CATEGORY_LIST_ACTIVE}" href="javascript:void(0);" onclick="selectTab('content1')" title="{TXT_SHOP_CATEGORY_LIST}">{TXT_SHOP_CATEGORY_LIST}</a></li>
-<li><a id="categoryTab_content2" class="{SHOP_CATEGORY_EDIT_ACTIVE}" href="javascript:void(0);" onclick="selectTab('content2')" title="{TXT_SHOP_CATEGORY_ADD_OR_EDIT}">{TXT_SHOP_CATEGORY_ADD_OR_EDIT}</a></li>
+  <li>
+    <a id="categoryTab_content1" class="{SHOP_CATEGORY_LIST_ACTIVE}"
+       href="javascript:void(0);" onclick="selectTab('content1')"
+       title="{TXT_SHOP_CATEGORY_LIST}">{TXT_SHOP_CATEGORY_LIST}
+    </a>
+  </li>
+  <li>
+    <a id="categoryTab_content2" class="{SHOP_CATEGORY_EDIT_ACTIVE}"
+       href="javascript:void(0);" onclick="selectTab('content2')"
+       title="{TXT_SHOP_CATEGORY_ADD_OR_EDIT}">{TXT_SHOP_CATEGORY_ADD_OR_EDIT}
+    </a>
+  </li>
 </ul>
 <div id="content1" class="categoryTab"
   style="display:{SHOP_CATEGORY_LIST_DISPLAY};">
@@ -106,18 +116,18 @@ function cancelEdit()
       </tr>
       <tr class="row3">
         <td width="01%" nowrap="nowrap"><div style="text-align:center;"><b>#</b></div></td>
-        <td width="03%" nowrap="nowrap" style="text-align: right;"><b>{TXT_ID}</b>&nbsp;&nbsp;</td>
+        <td width="03%" nowrap="nowrap" class="a_right"><b>{TXT_ID}</b>&nbsp;&nbsp;</td>
         <td width="03%" nowrap="nowrap"><b>{TXT_ACTIVE}</b></td>
         <td width="92%" nowrap="nowrap"><b>{TXT_NAME}&nbsp;&nbsp;&nbsp;</b></td>
         <!-- This feature isn't ready to use yet: td width=" 3%" nowrap="nowrap"><b>{TXT_SHOP_CATEGORY_VIRTUAL}</b></td-->
-        <td width="01%" nowrap="nowrap"><div style="text-align:right;"><b>{TXT_ACTION}</b></div></td>
+        <td width="01%" nowrap="nowrap" class="a_right"><b>{TXT_ACTION}</b></td>
       </tr>
       <!-- BEGIN category_row -->
       <tr class="{SHOP_ROWCLASS}">
         <td nowrap="nowrap">
           <input type="checkbox" name="selected_category_id[]" value="{SHOP_CATEGORY_ID}" />
         </td>
-        <td nowrap="nowrap" style="text-align: right;">
+        <td nowrap="nowrap" class="a_right">
           <input type="hidden" value="{SHOP_CATEGORY_ID}" name="update_category_id[]" />
           {SHOP_CATEGORY_ID}&nbsp;&nbsp;
         </td>
@@ -155,17 +165,24 @@ function cancelEdit()
           <input type="hidden" value="{SHOP_CATEGORY_VIRTUAL_CHECKED}"
               name="virtual_old[{SHOP_CATEGORY_ID}]" />
         </td-->
-        <td nowrap="nowrap">
-          <div style="text-align:right;">
-            <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=categories&amp;category_id={SHOP_CATEGORY_ID}"
+        <td nowrap="nowrap" class="a_right">
+
+<!-- BEGIN category_language -->
+          <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=categories&amp;category_id={SHOP_CATEGORY_ID}&amp;userFrontendLangId={SHOP_CATEGORY_LANGUAGE_ID}">
+            <img src="images/icons/edit.gif" border="0"
+                 alt="{SHOP_CATEGORY_LANGUAGE_EDIT}"
+                 title="{SHOP_CATEGORY_LANGUAGE_EDIT}" />
+          </a>&nbsp;
+<!-- END category_language -->
+<!--a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=categories&amp;category_id={SHOP_CATEGORY_ID}"
                 title="{TXT_EDIT}">
               <img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" />
-            </a>
-            <a href="javascript:deleteCategory('{SHOP_CATEGORY_ID}')"
-                title="{TXT_DELETE}">
-              <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
-            </a>
-          </div>
+            </a-->
+
+          <a href="javascript:deleteCategory('{SHOP_CATEGORY_ID}')"
+              title="{TXT_DELETE}">
+            <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
+          </a>
         </td>
       </tr><!-- END category_row -->
     </table>

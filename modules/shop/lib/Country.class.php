@@ -5,7 +5,7 @@
  *
  * Use core/Country.class.php instead.
  * Shop Country class
- * @version     2.1.0
+ * @version     3.0.0
  * @since       2.1.0
  * @package     contrexx
  * @subpackage  module_shop
@@ -17,7 +17,7 @@
 
 /**
  * Country helper methods
- * @version     2.1.0
+ * @version     3.0.0
  * @since       2.1.0
  * @package     contrexx
  * @subpackage  module_shop

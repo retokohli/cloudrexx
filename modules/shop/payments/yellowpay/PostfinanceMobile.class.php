@@ -6,7 +6,7 @@
  * Pay your bill using your mobile phone
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     2.2.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  */
@@ -22,7 +22,7 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
  * Pay your bill using your mobile phone
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     2.2.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  */

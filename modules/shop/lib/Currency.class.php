@@ -6,7 +6,7 @@
  * @package     contrexx
  * @subpackage  module_shop
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     2.1.0
+ * @version     3.0.0
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -22,7 +22,7 @@ require_once ASCMS_CORE_PATH.'/Text.class.php';
  * @package     contrexx
  * @subpackage  module_shop
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     2.1.0
+ * @version     3.0.0
  */
 class Currency
 {
@@ -394,7 +394,7 @@ class Currency
      * @param   string    $amount   The amount in decimal format
      * @return  integer             The amount in cents, rounded to one cent
      * @since   2.1.0
-     * @version 2.1.0
+     * @version 3.0.0
      */
     static function formatCents($amount)
     {
@@ -930,8 +930,8 @@ class Currency
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
             'code' => array('type' => 'CHAR(3)', 'notnull' => true, 'default' => ''),
             'symbol' => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
-            'rate' => array('type' => 'DECIMAL(10,6)', 'unsigned' => true, 'notnull' => true, 'default' => '1.000000'),
-            'increment' => array('type' => 'DECIMAL(3,2)', 'unsigned' => true, 'notnull' => false, 'default' => null),
+            'rate' => array('type' => 'DECIMAL(10,4)', 'unsigned' => true, 'notnull' => true, 'default' => '1.0000'),
+            'increment' => array('type' => 'DECIMAL(6,5)', 'unsigned' => true, 'notnull' => false, 'default' => null),
             'ord' => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'renamefrom' => 'sort_order'),
             'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'renamefrom' => 'status'),
             'default' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'renamefrom' => 'is_default'),

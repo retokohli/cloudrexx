@@ -2,7 +2,7 @@
 
 /**
  * Shop Product class
- * @version     2.1.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -42,7 +42,7 @@ require_once ASCMS_FRAMEWORK_PATH."/Image.class.php";
  * Includes access methods and data layer.
  * Do not, I repeat, do not access private fields, or even try
  * to access the database directly!
- * @version     2.1.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  * @copyright   CONTREXX CMS - COMVATION AG

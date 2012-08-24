@@ -901,6 +901,8 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                 $uses, $global, $customer_id, $product_id);
             if ($result) {
                 $code = null;
+            } else {
+                $edit = true;
             }
         }
         // Reset the end time if it's in the past
@@ -994,22 +996,30 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
         $i = 0;
         $row = 0;
         $objCouponEdit = new Coupon();
+        $objCouponEdit->code($code);
+        $objCouponEdit->payment_id($payment_id);
+        $objCouponEdit->minimum_amount($minimum_amount);
+        $objCouponEdit->discount_rate($discount_rate);
+        $objCouponEdit->discount_amount($discount_amount);
+        $objCouponEdit->start_time($start_time);
+        $objCouponEdit->end_time($end_time);
+        $objCouponEdit->uses($uses);
+        $objCouponEdit->is_global($global);
+        $objCouponEdit->customer_id($customer_id);
+        $objCouponEdit->product_id($product_id);
         global $_CONFIG;
-        JS::registerCode(
-            'function click_link(id) {'."\n".
-            '  jQuery(id).show();'."\n".
-            '  jQuery(id).find("input").focus();'."\n".
-            '}'."\n");
         foreach ($arrCoupons as $index => $objCoupon) {
             $coupon_uri_id = 'coupon_uri_'.$index;
             $objTemplate->setVariable(array(
                 'SHOP_ROWCLASS' => 'row'.(++$row % 2 + 1),
                 'SHOP_DISCOUNT_COUPON_CODE' => $objCoupon->code(),
-                'SHOP_DISCOUNT_COUPON_URI' =>
+                'SHOP_DISCOUNT_COUPON_URI_ICON' =>
 // TODO: Use Resolver methods to form the URI
 //                    Dispatcher::get_absolute_url(
                     '<div class="icon_url"'.
-                    ' onclick="click_link(\'#'.$coupon_uri_id.'\');">&nbsp;</div>'.
+//                    ' onclick="click_link(\'#'.$coupon_uri_id.'\');"'.
+                    '>&nbsp;</div>',
+                'SHOP_DISCOUNT_COUPON_URI_INPUT' =>
                     '<div class="layer_url" id="'.$coupon_uri_id.'">'.
                     Html::getInputText('dummy',
                         'http://'.$_CONFIG['domainUrl'].
@@ -1096,8 +1106,6 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             if ($index === $edit) $objCouponEdit = $objCoupon;
         }
         $objTemplate->replaceBlock('shopDiscountCouponView', '', true);
-        JS::registerCode('jQuery(function(){jQuery(".icon_url")'.
-            '.bind("click", function(){jQuery(this).toggle();});});');
         $paging = Paging::get($uri,
             $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_CODES'],
             $count, $limit);
@@ -1122,7 +1130,8 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             'SHOP_DISCOUNT_COUPON_CODE_CREATE' => Html::getInputButton(
                 'code_create', $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_CODE_NEW'],
                 'button', false,
-                'onclick="jQuery(\'#code\').val(\''.Coupon::getNewCode().'\');"'),
+                'onclick="jQuery(\'#code\').val(\''.Coupon::getNewCode().'\');'.
+                    'jQuery(this).css(\'display\', \'none\');"'),
             'SHOP_DISCOUNT_COUPON_START_TIME' =>
                 Html::getDatepicker('start_date', array(
                     'defaultDate' => date(ASCMS_DATE_SHORT_FORMAT,
@@ -1150,7 +1159,8 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                 Html::getRadioGroup('coupon_type', array(
                     'rate' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_TYPE_RATE'],
                     'amount' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_TYPE_AMOUNT'],
-                    ), $type, "set_coupon_type('rate');", '', ''),
+                    ), $type, "set_coupon_type(this.value);", '', ''),
+            'SHOP_DISCOUNT_COUPON_TYPE_SELECTED' => $type,
             'SHOP_DISCOUNT_COUPON_RATE' =>
                 Html::getInputText('discount_rate',
                     $objCouponEdit->discount_rate(), false,
@@ -1200,7 +1210,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
         ));
         $objTemplate->parse('shopDiscountCouponEdit');
         JS::registerCode('
-$J(document).ready(function($) {
+jQuery(document).ready(function($) {
   $("#end_time_unlimited").change(function() {
     if ($("#end_time_unlimited").is(":checked")) {
       $("#end_date").attr("disabled", true);
@@ -1214,16 +1224,14 @@ $J(document).ready(function($) {
               : date(ASCMS_DATE_SHORT_FORMAT)).'"
       });
     }
-  });
-  $("#end_time_unlimited").trigger("change");
+  }).change();
   $("#unlimited").change(function() {
     if ($("#unlimited").is(":checked")) {
       $("#uses").attr("disabled", true).val("");
     } else {
       $("#uses").attr("disabled", false).val("1");
     }
-  });
-  $("#unlimited").trigger("change");
+  }).change();
   $("[name=global_or_customer]").change(function() {
     if ($("#global").is(":checked")) {
       $("#customer_id").attr("disabled", true);
@@ -1231,8 +1239,13 @@ $J(document).ready(function($) {
     } else {
       $("#customer_id").attr("disabled", false);
     }
+  }).change();
+  $(function() {
+    jQuery(".icon_url").bind("click", function() {
+      jQuery(this).parents("tr").first().find(".layer_url").
+        css("display", "table-cell").find("input").focus();
+    });
   });
-  $("#global").trigger("change");
 });
 ');
         JS::activate('tipmessage');

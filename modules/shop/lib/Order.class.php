@@ -2080,7 +2080,7 @@ class Order
             UpdateUtil::table($table_name_old, $table_structure, $table_index);
             UpdateUtil::table_rename($table_name_old, $table_name);
         }
-        
+
         // LSV
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_lsv';
         $table_structure = array(

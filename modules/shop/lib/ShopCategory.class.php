@@ -6,7 +6,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @access      public
- * @version     2.1.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  */
@@ -24,7 +24,7 @@ require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @access      public
- * @version     2.1.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  */
@@ -691,7 +691,6 @@ class ShopCategory
      *   ... more parents
      * )
      * @static
-     * @version 1.1
      * @param   integer $parent_id          The optional root ShopCategory ID.
      *                                      Defaults to 0 (zero).
      * @param   boolean $active             Only return ShopCategories
@@ -769,7 +768,6 @@ class ShopCategory
      *
      * Do not call this directly, use {@link getShopCategoryMenuHierarchic()}
      * instead.
-     * @version  1.0      initial version
      * @static
      * @param    integer  $parent_id    The parent ShopCategory ID.
      * @param    integer  $level        The nesting level.

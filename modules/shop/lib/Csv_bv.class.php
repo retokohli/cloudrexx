@@ -4,7 +4,7 @@
  * Read and write CSV files
  * @package     contrexx
  * @subpackage  module_shop
- * @version     2.1.0
+ * @version     3.0.0
  * @author      Reto Kohli <reto.kohli@comvation.com> (PHP5 and fixes)
  */
 
@@ -12,7 +12,7 @@
  * CSV class for importing and exporting CSV files
  * @package     contrexx
  * @subpackage  module_shop
- * @version     2.1.0
+ * @version     3.0.0
  * @author      Reto Kohli <reto.kohli@comvation.com> (PHP5 and fixes)
  */
 class Csv_bv

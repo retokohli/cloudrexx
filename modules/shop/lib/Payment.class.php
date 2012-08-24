@@ -5,7 +5,7 @@
  * @package     contrexx
  * @copyright   CONTREXX CMS - COMVATION AG
  * @subpackage  module_shop
- * @version     2.1.0
+ * @version     3.0.0
  */
 
 require_once ASCMS_MODULE_PATH.'/shop/lib/PaymentProcessing.class.php';
@@ -16,7 +16,7 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Zones.class.php';
  * @package     contrexx
  * @copyright   CONTREXX CMS - COMVATION AG
  * @subpackage  module_shop
- * @version     2.1.0
+ * @version     3.0.0
  */
 class Payment
 {

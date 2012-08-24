@@ -6,7 +6,7 @@
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @package     contrexx
  * @subpackage  module_shop
- * @version     2.1.0
+ * @version     3.0.0
  */
 
 /**
@@ -19,7 +19,7 @@
  * @todo        Add a proper constructor that initializes the class with its
  *              various variables, and/or move the appropriate parts to
  *              a pure Shop class.
- * @version     2.1.0
+ * @version     3.0.0
  */
 class ShopLibrary
 {

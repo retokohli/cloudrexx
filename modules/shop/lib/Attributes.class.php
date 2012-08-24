@@ -3,7 +3,7 @@
 /**
  * Shop Product Attributes
  *
- * @version     2.2.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Test!
@@ -19,7 +19,7 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
  * This class provides frontend and backend helper and display functionality
  * related to the Product Attribute class.
  * See {@link Attribute} for details.
- * @version     2.2.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  * @copyright   CONTREXX CMS - COMVATION AG
