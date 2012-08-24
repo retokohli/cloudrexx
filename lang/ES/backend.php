@@ -6,6 +6,13 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_CORE_WHOIS'] = "Whois";
+$_ARRAYLANG['TXT_CORE_ADD_EMAIL_CAMPAIGN'] = "Add email campaign";
+$_ARRAYLANG['TXT_CORE_EMAIL_MARKETING'] = "Email marketing";
+$_ARRAYLANG['TXT_CORE_VISITORS_AND_PAGE_VIEWS'] = "Visitantes y p&aacute;ginas vistas";
+$_ARRAYLANG['TXT_CORE_STATS'] = "Stats";
+$_ARRAYLANG['TXT_CORE_MEDIA'] = "Media";
+$_ARRAYLANG['TXT_CORE_ECOMMERCE'] = "E-commerce";
 $_ARRAYLANG['TXT_FILE_UPLOADS'] = "File uploads";
 $_ARRAYLANG['TXT_ATTACHEMENTS'] = "Attachements";
 $_ARRAYLANG['TXT_DASHBOARD'] = "Dashboard";
@@ -100,7 +107,7 @@ $_ARRAYLANG['TXT_GROUP_NAME'] = "Nombre del grupo";
 $_ARRAYLANG['TXT_NEW_CATEGORY'] = "Nueva Categor&iacute;a";
 $_ARRAYLANG['TXT_NEW_PAGE'] = "Nueva p&aacute;gina";
 $_ARRAYLANG['TXT_NEWS_MANAGER'] = "Noticias";
-$_ARRAYLANG['TXT_NEWSLETTER'] = "Email marketing";
+$_ARRAYLANG['TXT_NEWSLETTER'] = "Bolet&iacute;n";
 $_ARRAYLANG['TXT_OPEN_ISSUE'] = "Pendientes";
 $_ARRAYLANG['TXT_SOURCE_MODE'] = "Modo c&oacute;digo fuente:";
 $_ARRAYLANG['TXT_REDIRECT'] = "Redirecci&oacute;n de URL";
@@ -414,7 +421,6 @@ $_ARRAYLANG['TXT_NEWPW_MAIL_PART4'] = "Si este cambio falla, puedes pedir una nu
 $_ARRAYLANG['TXT_PW_TO_SHORT'] = "La clave era demasiado corta. Por favor, usa al menos 6 caracteres.";
 $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "Las dos contrase&ntilde;as no coinciden.";
 $_ARRAYLANG['TXT_LOST_PW_TEXT'] = "Si olvidas tu clave, puedes pedirla de nuevo. Tu nombre de usuario y clave te ser&aacute;n enviadas por email.";
-$_ARRAYLANG['TXT_SYSTEM_INFO'] = "Informaci&oacute;n del sistema";
 $_ARRAYLANG['TXT_LOGOUT'] = "Desconectar";
 $_ARRAYLANG['TXT_DOWNLOAD_MANAGER'] = "Gestor de Descargas";
 $_ARRAYLANG['TXT_DOWNLOAD_MODULE_DESCRIPTION'] = "Con el gestor de descargas, puedes administrar tus descargas. Con el registro y las funciones";

@@ -6,6 +6,13 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_CORE_WHOIS'] = "Kim Nerede";
+$_ARRAYLANG['TXT_CORE_ADD_EMAIL_CAMPAIGN'] = "Add email campaign";
+$_ARRAYLANG['TXT_CORE_EMAIL_MARKETING'] = "Email marketing";
+$_ARRAYLANG['TXT_CORE_VISITORS_AND_PAGE_VIEWS'] = "Visitors and page views";
+$_ARRAYLANG['TXT_CORE_STATS'] = "Stats";
+$_ARRAYLANG['TXT_CORE_MEDIA'] = "Media";
+$_ARRAYLANG['TXT_CORE_ECOMMERCE'] = "E-commerce";
 $_ARRAYLANG['TXT_FILE_UPLOADS'] = "File uploads";
 $_ARRAYLANG['TXT_ATTACHEMENTS'] = "Attachements";
 $_ARRAYLANG['TXT_DASHBOARD'] = "Dashboard";
@@ -100,7 +107,7 @@ $_ARRAYLANG['TXT_GROUP_NAME'] = "Grubun ismi";
 $_ARRAYLANG['TXT_NEW_CATEGORY'] = "Yeni Kategori";
 $_ARRAYLANG['TXT_NEW_PAGE'] = "Yeni Sayfa";
 $_ARRAYLANG['TXT_NEWS_MANAGER'] = "Haber Yönetimi";
-$_ARRAYLANG['TXT_NEWSLETTER'] = "Email marketing";
+$_ARRAYLANG['TXT_NEWSLETTER'] = "Newsletter";
 $_ARRAYLANG['TXT_OPEN_ISSUE'] = "Askıda";
 $_ARRAYLANG['TXT_SOURCE_MODE'] = "Kaynakmetni Modu:";
 $_ARRAYLANG['TXT_REDIRECT'] = "URL geri emri";
@@ -414,7 +421,6 @@ $_ARRAYLANG['TXT_NEWPW_MAIL_PART4'] = "Değişiklikleri yapamadıysanız şu lin
 $_ARRAYLANG['TXT_PW_TO_SHORT'] = "Girilen Şifre çok kısa.Lütfen en az 6 karakter girin.";
 $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "Şifrelerin ikisi birbiriyle uyuşmuyor";
 $_ARRAYLANG['TXT_LOST_PW_TEXT'] = "Eğer şifrenizi unuttuysanız; kullanıcı ismi ve şifreyi yenileme açıklaması bulunan bir E-mail talep edebilirsiz.";
-$_ARRAYLANG['TXT_SYSTEM_INFO'] = "Sistem Bilgileri";
 $_ARRAYLANG['TXT_LOGOUT'] = "Çıkış";
 $_ARRAYLANG['TXT_DOWNLOAD_MANAGER'] = "İndirme Yöneticisi";
 $_ARRAYLANG['TXT_DOWNLOAD_MODULE_DESCRIPTION'] = "İndir Yönetimi ile İndirilenleri kolaylıkla yönetebilirsiniz. Kayıtlı olan ve Sayaç fonksiyonları ile birlikte.";

@@ -6,6 +6,13 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_CORE_WHOIS'] = "Whois";
+$_ARRAYLANG['TXT_CORE_ADD_EMAIL_CAMPAIGN'] = "Add email campaign";
+$_ARRAYLANG['TXT_CORE_EMAIL_MARKETING'] = "Email marketing";
+$_ARRAYLANG['TXT_CORE_VISITORS_AND_PAGE_VIEWS'] = "Visitors and page views";
+$_ARRAYLANG['TXT_CORE_STATS'] = "Stats";
+$_ARRAYLANG['TXT_CORE_MEDIA'] = "Media";
+$_ARRAYLANG['TXT_CORE_ECOMMERCE'] = "E-commerce";
 $_ARRAYLANG['TXT_FILE_UPLOADS'] = "File uploads";
 $_ARRAYLANG['TXT_ATTACHEMENTS'] = "Attachements";
 $_ARRAYLANG['TXT_DASHBOARD'] = "Dashboard";
@@ -100,7 +107,7 @@ $_ARRAYLANG['TXT_GROUP_NAME'] = "Gruppenavn";
 $_ARRAYLANG['TXT_NEW_CATEGORY'] = "Ny kategori";
 $_ARRAYLANG['TXT_NEW_PAGE'] = "Ny side";
 $_ARRAYLANG['TXT_NEWS_MANAGER'] = "News";
-$_ARRAYLANG['TXT_NEWSLETTER'] = "Email marketing";
+$_ARRAYLANG['TXT_NEWSLETTER'] = "Nyhedsbrev";
 $_ARRAYLANG['TXT_OPEN_ISSUE'] = "Ikke aktiveret endnu";
 $_ARRAYLANG['TXT_SOURCE_MODE'] = "Vis som kilde:";
 $_ARRAYLANG['TXT_REDIRECT'] = "URL til redirekt / genvej";
@@ -165,7 +172,7 @@ $_ARRAYLANG['TXT_MODULES_REMOVED_SUCCESSFUL'] = "Modul(erne) %s blev fjernet med
 $_ARRAYLANG['TXT_MODULE_ACTIVATION'] = "Modul aktivering";
 $_ARRAYLANG['TXT_SECTION'] = "Sektion";
 $_ARRAYLANG['TXT_USER_LINK_INACTIVE'] = "Inaktive brugere";
-$_ARRAYLANG['TXT_SHOP'] = "Shop ";
+$_ARRAYLANG['TXT_SHOP'] = "Shop";
 $_ARRAYLANG['TXT_VOTING_MODULE_DESCRIPTION'] = "Rundspørgelser";
 $_ARRAYLANG['TXT_THIS_MODULE_DOESNT_EXISTS'] = "Dette modul eksisterer ikke";
 $_ARRAYLANG['TXT_PROTECTION'] = "Denne side er beskyttet med et kodeord";
@@ -414,7 +421,6 @@ $_ARRAYLANG['TXT_NEWPW_MAIL_PART4'] = "Hvis det ikke har været dig, som har udf
 $_ARRAYLANG['TXT_PW_TO_SHORT'] = "Det indtastede kodeord er for kort. Det skal have en længde på min. 6 tegn.";
 $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "De to kodeord stemmer ikke overens.";
 $_ARRAYLANG['TXT_LOST_PW_TEXT'] = "Hvis du har glemt din kodeord, kan du taste din e-mail adresse ind her. Du vil så få tilsendt en e-mail med dit brugernavn og instruktioner til tilbagesætningen af kodeordet.";
-$_ARRAYLANG['TXT_SYSTEM_INFO'] = "System informationer";
 $_ARRAYLANG['TXT_LOGOUT'] = "Log ud";
 $_ARRAYLANG['TXT_DOWNLOAD_MANAGER'] = "Download manager";
 $_ARRAYLANG['TXT_DOWNLOAD_MODULE_DESCRIPTION'] = "Med downloadmanageren kan du administrere dine downloads. Med registrer- og tællerfunktion.";

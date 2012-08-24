@@ -6,6 +6,13 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_CORE_WHOIS'] = "Whois";
+$_ARRAYLANG['TXT_CORE_ADD_EMAIL_CAMPAIGN'] = "Add email campaign";
+$_ARRAYLANG['TXT_CORE_EMAIL_MARKETING'] = "Email marketing";
+$_ARRAYLANG['TXT_CORE_VISITORS_AND_PAGE_VIEWS'] = "Visitors and page views";
+$_ARRAYLANG['TXT_CORE_STATS'] = "Stats";
+$_ARRAYLANG['TXT_CORE_MEDIA'] = "Media";
+$_ARRAYLANG['TXT_CORE_ECOMMERCE'] = "E-commerce";
 $_ARRAYLANG['TXT_FILE_UPLOADS'] = "File uploads";
 $_ARRAYLANG['TXT_ATTACHEMENTS'] = "Attachements";
 $_ARRAYLANG['TXT_DASHBOARD'] = "Dashboard";
@@ -100,7 +107,7 @@ $_ARRAYLANG['TXT_GROUP_NAME'] = "Groepsnaam";
 $_ARRAYLANG['TXT_NEW_CATEGORY'] = "Nieuwe categorie";
 $_ARRAYLANG['TXT_NEW_PAGE'] = "Nieuwe pagina";
 $_ARRAYLANG['TXT_NEWS_MANAGER'] = "Nieuwsbeheer";
-$_ARRAYLANG['TXT_NEWSLETTER'] = "Email marketing";
+$_ARRAYLANG['TXT_NEWSLETTER'] = "Newsletter";
 $_ARRAYLANG['TXT_OPEN_ISSUE'] = "Openstaand";
 $_ARRAYLANG['TXT_SOURCE_MODE'] = "Broncode modus:";
 $_ARRAYLANG['TXT_REDIRECT'] = "Redirect URL";
@@ -414,7 +421,6 @@ $_ARRAYLANG['TXT_NEWPW_MAIL_PART4'] = "Indien deze wijziging mislukt is, kunt u 
 $_ARRAYLANG['TXT_PW_TO_SHORT'] = "Het wachtwoord is te kort, gebruik minstens 6 karakters!";
 $_ARRAYLANG['TXT_PW_DONOT_MATCH'] = "De twee wachtwoorden komen niet overeen!";
 $_ARRAYLANG['TXT_LOST_PW_TEXT'] = "Indien u het wachtwoord vergeten bent, kunt u per e-mail een herinnering ontvangen!";
-$_ARRAYLANG['TXT_SYSTEM_INFO'] = "Systeem informatie";
 $_ARRAYLANG['TXT_LOGOUT'] = "Uitloggen";
 $_ARRAYLANG['TXT_DOWNLOAD_MANAGER'] = "Download manager";
 $_ARRAYLANG['TXT_DOWNLOAD_MODULE_DESCRIPTION'] = "Beheer de downloads met deze manager";

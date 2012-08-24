@@ -407,7 +407,7 @@ textarea.cke_source {
 .navigation_level_1 li {
     float: left;
     width: 216px;
-    height: 30px;
+    height: 31px;
     border-bottom: 1px solid #efefef;
 }
 
@@ -425,7 +425,7 @@ textarea.cke_source {
     float: left;
     width: 9px;
     height: 100%;
-    margin: 0 8px 0 11px;
+    margin: 0 0 0 11px;
     background: url(../images/navigation_level_1_list_style.png) no-repeat center center;
 }
 
@@ -439,17 +439,16 @@ textarea.cke_source {
 .navigation_level_1 li .icon_2 {
     float: left;
     width: 16px;
+    padding: 0 8px 0 8px;
     height: 100%;
 }
 
 #navigation_level_1_home li .icon_2 {
-    background: url(../images/navigation_level_1_home.png) no-repeat 0 7px;
+    background: url(../images/navigation_level_1_home.png) no-repeat center 7px;
 }
 
-#navigation_level_1_home li:hover .icon_2,
-#navigation_level_1_home li:focus .icon_2,
-#navigation_level_1_home li:active .icon_2,
-#navigation_level_1_home li.active .icon_2 {
+#navigation_level_1_home li:hover .icon_2, #navigation_level_1_home li:focus .icon_2,
+#navigation_level_1_home li:active .icon_2, #navigation_level_1_home li.active .icon_2 {
     background: url(../images/navigation_level_1_home_hover.png) no-repeat center 7px;
 }
 
@@ -457,10 +456,8 @@ textarea.cke_source {
     background: url(../images/navigation_level_1_1.png) no-repeat center 7px;
 }
 
-#navigation_level_1_1 li:hover .icon_2,
-#navigation_level_1_1 li:focus .icon_2,
-#navigation_level_1_1 li:active .icon_2,
-#navigation_level_1_1 li.active .icon_2 {
+#navigation_level_1_1 li:hover .icon_2, #navigation_level_1_1 li:focus .icon_2,
+#navigation_level_1_1 li:active .icon_2, #navigation_level_1_1 li.active .icon_2 {
     background: url(../images/navigation_level_1_1_hover.png) no-repeat center 7px;
 }
 
@@ -468,33 +465,54 @@ textarea.cke_source {
     background: url(../images/navigation_level_1_2.png) no-repeat center 6px;
 }
 
-#navigation_level_1_2 li:hover .icon_2,
-#navigation_level_1_2 li:focus .icon_2,
-#navigation_level_1_2 li:active .icon_2,
-#navigation_level_1_2 li.active .icon_2 {
+#navigation_level_1_2 li:hover .icon_2, #navigation_level_1_2 li:focus .icon_2,
+#navigation_level_1_2 li:active .icon_2, #navigation_level_1_2 li.active .icon_2 {
     background: url(../images/navigation_level_1_2_hover.png) no-repeat center 6px;
 }
 
 #navigation_level_1_3 li .icon_2 {
-    background: url(../images/navigation_level_1_3.png) no-repeat center 6px;
+    background: url(../images/navigation_level_1_3.png) no-repeat center 7px;
 }
 
-#navigation_level_1_3 li:hover .icon_2,
-#navigation_level_1_3 li:focus .icon_2,
-#navigation_level_1_3 li:active .icon_2,
-#navigation_level_1_3 li.active .icon_2 {
-    background: url(../images/navigation_level_1_3_hover.png) no-repeat center 6px;
+#navigation_level_1_3 li:hover .icon_2, #navigation_level_1_3 li:focus .icon_2,
+#navigation_level_1_3 li:active .icon_2, #navigation_level_1_3 li.active .icon_2 {
+    background: url(../images/navigation_level_1_3_hover.png) no-repeat center 7px;
 }
 
-#navigation_level_1_4 li .icon_2 {
-    background: url(../images/navigation_level_1_4.png) no-repeat center 7px;
+#navigation_level_1_8 li .icon_2 {
+    background: url(../images/navigation_level_1_8.png) no-repeat center 6px;
 }
 
-#navigation_level_1_4 li:hover .icon_2,
-#navigation_level_1_4 li:focus .icon_2,
-#navigation_level_1_4 li:active .icon_2,
-#navigation_level_1_4 li.active .icon_2 {
-    background: url(../images/navigation_level_1_4_hover.png) no-repeat center 7px;
+#navigation_level_1_8 li:hover .icon_2, #navigation_level_1_8 li:focus .icon_2,
+#navigation_level_1_8 li:active .icon_2, #navigation_level_1_8 li.active .icon_2 {
+    background: url(../images/navigation_level_1_8_hover.png) no-repeat center 6px;
+}
+
+#navigation_level_1_15 li .icon_2 {
+    background: url(../images/navigation_level_1_15.png) no-repeat center 7px;
+}
+
+#navigation_level_1_15 li:hover .icon_2, #navigation_level_1_15 li:focus .icon_2,
+#navigation_level_1_15 li:active .icon_2, #navigation_level_1_15 li.active .icon_2 {
+    background: url(../images/navigation_level_1_15_hover.png) no-repeat center 7px;
+}
+
+#navigation_level_1_28 li .icon_2 {
+    background: url(../images/navigation_level_1_28.png) no-repeat center 7px;
+}
+
+#navigation_level_1_28 li:hover .icon_2, #navigation_level_1_28 li:focus .icon_2,
+#navigation_level_1_28 li:active .icon_2, #navigation_level_1_28 li.active .icon_2 {
+    background: url(../images/navigation_level_1_28_hover.png) no-repeat center 7px;
+}
+
+#navigation_level_1_29 li .icon_2 {
+    background: url(../images/navigation_level_1_29.png) no-repeat center 7px;
+}
+
+#navigation_level_1_29 li:hover .icon_2, #navigation_level_1_29 li:focus .icon_2,
+#navigation_level_1_29 li:active .icon_2, #navigation_level_1_29 li.active .icon_2 {
+    background: url(../images/navigation_level_1_29_hover.png) no-repeat center 7px;
 }
 
 .navigation_level_1 li .name {
@@ -502,7 +520,7 @@ textarea.cke_source {
     width: auto;
     height: 100%;
     line-height: 30px;
-    margin: 0 11px 0 8px;
+    margin: 0 11px 0 0;
     font-size: 13px;
     font-weight: bold;
     color: #444444;
