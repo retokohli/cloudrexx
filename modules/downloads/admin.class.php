@@ -105,7 +105,11 @@ class downloads extends DownloadsLibrary
         }
         $this->act = $_REQUEST['act'];
 
-        $this->parentCategoryId = isset($_REQUEST['parent_id']) ? intval($_REQUEST['parent_id']) : 0;
+        if (!empty($_REQUEST['parent_id'])) {
+            $this->parentCategoryId = intval($_REQUEST['parent_id']);
+        } elseif (!empty($_REQUEST['downloads_category_parent_id'])) {
+            $this->parentCategoryId = intval($_REQUEST['downloads_category_parent_id']);
+        }
 
         switch ($_REQUEST['act']) {
             case 'get':
@@ -206,9 +210,7 @@ class downloads extends DownloadsLibrary
                 break;
             case 'overview':
             default:
-                $this->loadCategoryNavigation();
-                $this->categories();
-                $this->parseCategoryNavigation();
+                $this->overview();
                 break;
         }
 
@@ -220,6 +222,28 @@ class downloads extends DownloadsLibrary
         ));
 
         $this->setNavigation();
+    }
+
+    private function overview()
+    {
+        global $_ARRAYLANG;
+
+        $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'];
+        $this->objTemplate->loadTemplateFile('module_downloads_overview.html');
+
+        // downloads
+        $searchTerm = !empty($_REQUEST['search_term']) ? $_REQUEST['search_term'] : Null;
+        $searchTerm = ($searchTerm == $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD']) ? Null : $searchTerm;
+
+        $objCategory = Category::getCategory($this->parentCategoryId);
+
+        $this->objTemplate->setVariable(array(
+            'TXT_DOWNLOADS_DOWNLOADS'       => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS'],
+            'TXT_DOWNLOADS_SEARCH_DOWNLOAD' => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'],
+            'DOWNLOADS_SEARCH_TERM'         => !empty($searchTerm) ? $searchTerm : $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'],
+            'DOWNLOADS_CATEGORY_MENU'       => $this->getCategoryMenu('read', $objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_ALL_CATEGORIES']),
+            'TXT_DOWNLOADS_SEARCH'          => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH'],
+        ));
     }
 
     private function getDownload($langId)
@@ -817,7 +841,6 @@ class downloads extends DownloadsLibrary
 
         $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS'];
         $this->objTemplate->addBlockFile('DOWNLOADS_DOWNLOAD_TEMPLATE', 'module_downloads_downloads', 'module_downloads_downloads_overview.html');
-        JS::activate('cx');
         $objFWUser = FWUser::getFWUserObject();
 
         $limitOffset = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
@@ -825,6 +848,8 @@ class downloads extends DownloadsLibrary
         $orderBy = !empty($_GET['by']) ? $_GET['by'] : 'order';
         $arrOrder[$orderBy] = $orderDirection;
         //$categoryId = !empty($_REQUEST['category_id']) ? intval($_REQUEST['category_id']) : 0;
+        $searchTerm = !empty($_GET['search_term']) ? $_GET['search_term'] : Null;
+        $searchTerm = ($searchTerm == $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD']) ? Null : $searchTerm;
 
         if (isset($_POST['downloads_download_select_action'])) {
             switch ($_POST['downloads_download_select_action']) {
@@ -838,13 +863,21 @@ class downloads extends DownloadsLibrary
             }
         }
 
-        // this is required so that the method Download::getFilteredIdList()
-        // will be processed
-        $filter = array('category_id' => 0);
+        $objCategory = Category::getCategory($this->parentCategoryId);
+
+        $this->objTemplate->setVariable(array(
+            'TXT_DOWNLOADS_FILTER'          => $_ARRAYLANG['TXT_DOWNLOADS_FILTER'],
+            'TXT_DOWNLOADS_SEARCH_DOWNLOAD' => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'],
+            'DOWNLOADS_SEARCH_TERM'         => !empty($searchTerm) ? $searchTerm : $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'],
+            'DOWNLOADS_CATEGORY_MENU'       => $this->getCategoryMenu('read', $objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_ALL_CATEGORIES']),
+            'TXT_DOWNLOADS_SEARCH'          => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH'],
+        ));
+
+        $filter = array('category_id' => $objCategory->getId());
 
         $objDownload = new Download();
         $objDownload->loadDownloads(
-            $filter, null, $arrOrder, null,
+            $filter, $searchTerm, $arrOrder, null,
             $_CONFIG['corePagingLimit'], $limitOffset
         );
         if ($objDownload->EOF) {
@@ -1513,7 +1546,6 @@ class downloads extends DownloadsLibrary
 
         // parse active status
         $this->objTemplate->setVariable(array(
-            'DOWNLOADS_DOWNLOAD_ATTRIBUTE_ROW_ODD'      => $attrRow++ % 2 + 1,
             'DOWNLOADS_DOWNLOAD_IS_ACTIVE_CHECKED'  => $objDownload->getActiveStatus() ? 'checked="checked"' : ''
         ));
 
@@ -1774,10 +1806,8 @@ class downloads extends DownloadsLibrary
             return Permission::noAccess();
         }
 
-        $this->_pageTitle = ($this->act == 'overview' || $this->act == '') ? $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW'] : $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'];
+        $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'];
         $this->objTemplate->addBlockFile('DOWNLOADS_CATEGORY_TEMPLATE', 'module_downloads_categories', 'module_downloads_categories.html');
-        $this->objTemplate->setVariable('DOWNLOADS_CATEGORY_NAVIGATION_DISPLAY', (($this->act == 'overview' || $this->act == '') ? 'none' : 'block'));
-        JS::activate('cx');
         $minColspan = 7;
 
         // parse categories multi action
@@ -1842,7 +1872,7 @@ class downloads extends DownloadsLibrary
         $downloadOrderBy = !empty($_GET['download_by']) ? $_GET['download_by'] : 'order';
 
         $searchTerm = !empty($_GET['search_term']) ? $_GET['search_term'] : '';
-        $searchTerm = $searchTerm == $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_ENTRY'] ? '' : $searchTerm;
+        $searchTerm = $searchTerm == $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'] ? '' : $searchTerm;
 
         $objSubcategory = Category::getCategories(array('parent_id' => $objCategory->getId()), null, $arrCategoryOrder, null, $_CONFIG['corePagingLimit'], $categoryLimitOffset);
 
@@ -2179,8 +2209,8 @@ class downloads extends DownloadsLibrary
             'TXT_DOWNLOADS_CATEGORY'            => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY'],
             'DOWNLOADS_CATEGORY_ID'             => $objCategory->getId(),
             'DOWNLOADS_CATEGORY_MENU'           => $this->getCategoryMenu('read', $objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_ALL_CATEGORIES']),
-            'DOWNLOADS_SEARCH_TERM'             => !empty($_GET['search_term']) ? $_GET['search_term'] : $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_ENTRY'],
-            'TXT_DOWNLOADS_SEARCH_ENTRY'        => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_ENTRY'],
+            'DOWNLOADS_SEARCH_TERM'             => !empty($_GET['search_term']) ? $_GET['search_term'] : $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'],
+            'TXT_DOWNLOADS_SEARCH_DOWNLOAD'     => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'],
             'TXT_DOWNLOADS_FILTER'              => $_ARRAYLANG['TXT_DOWNLOADS_FILTER'],
             'TXT_DOWNLOADS_SEARCH'              => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH'],
         ));

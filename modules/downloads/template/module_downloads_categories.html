@@ -64,28 +64,34 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 // ]]>
 </script>
 
-<form name="downloads_category_form" id="downloads_category_form" action="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_CATEGORY_ID}&amp;category_sort={DOWNLOADS_CATEGORY_CATEGORY_SORT}&amp;category_by={DOWNLOADS_CATEGORY_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_CATEGORY_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_CATEGORY_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_CATEGORY_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_CATEGORY_DOWNLOAD_OFFSET}" method="post">
-<input type="hidden" name="downloads_category_delete_recursive" id="downloads_category_delete_recursive" value="0" />
-
 <table width="100%" class="adminlist">
     <tr>
         <th>{TXT_DOWNLOADS_FILTER}</th>
     </tr>
     <tr>
         <td>
-            <input type="text" class="search" name="search_term" value="{DOWNLOADS_SEARCH_TERM}" onfocus="if(this.value=='{TXT_DOWNLOADS_SEARCH_ENTRY}'){this.value='';}" onblur="if(this.value==''){this.value='{TXT_DOWNLOADS_SEARCH_ENTRY}';}" style="width: 240px;" />
-            {DOWNLOADS_CATEGORY_MENU}
-            <!-- BEGIN downloads_category_frontend_link -->
-            <a href="{DOWNLOADS_CATEGORY_FRONTEND_URI}" title="{TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND}" target="_blank" style="background: url(./images/icons/blue_arrow_up.png) no-repeat left center; padding: 1px 0 1px 18px;">{TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND}</a>
-            <!-- END downloads_category_frontend_link -->
-            <input type="button" value="{TXT_DOWNLOADS_SEARCH}" onclick="window.location.href='index.php?cmd=downloads&act=categories&parent_id='+jQuery('select[name=downloads_category_parent_id]').val()+'&search_term='+jQuery('input[name=search_term]').val()+'&csrf='+cx.variables.get('csrf', 'contrexx')" style="margin-left: 20px;" />
+            <form action="index.php" method="get">
+                <input type="hidden" name="cmd" value="downloads" />
+                <input type="hidden" name="act" value="categories" />
+                <input type="text" class="search" name="search_term" value="{DOWNLOADS_SEARCH_TERM}" onfocus="if(this.value=='{TXT_DOWNLOADS_SEARCH_DOWNLOAD}'){this.value='';}" onblur="if(this.value==''){this.value='{TXT_DOWNLOADS_SEARCH_DOWNLOAD}';}" style="width: 240px;" />
+                {DOWNLOADS_CATEGORY_MENU}
+                <input type="submit" value="{TXT_DOWNLOADS_SEARCH}" />
+            </form>
         </td>
     </tr>
 </table><br />
 
+<form name="downloads_category_form" id="downloads_category_form" action="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_CATEGORY_ID}&amp;category_sort={DOWNLOADS_CATEGORY_CATEGORY_SORT}&amp;category_by={DOWNLOADS_CATEGORY_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_CATEGORY_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_CATEGORY_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_CATEGORY_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_CATEGORY_DOWNLOAD_OFFSET}" method="post">
+<input type="hidden" name="downloads_category_delete_recursive" id="downloads_category_delete_recursive" value="0" />
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="category list">
     <tr>
-        <th colspan="{DOWNLOADS_CATEGORY_COLSPAN}">{TXT_DOWNLOADS_ALL_CATEGORIES}{TXT_DOWNLOADS_CATEGORIES_OF_CATEGORY}</th>
+        <th colspan="{DOWNLOADS_CATEGORY_COLSPAN}">
+            {TXT_DOWNLOADS_ALL_CATEGORIES}
+            {TXT_DOWNLOADS_CATEGORIES_OF_CATEGORY}
+            <!-- BEGIN downloads_category_frontend_link -->
+            <a href="{DOWNLOADS_CATEGORY_FRONTEND_URI}" title="{TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND}" target="_blank" style="background: url(./images/icons/blue_arrow_up.png) no-repeat left center; padding: 1px 0 1px 18px; margin: 0 0 0 20px;">{TXT_DOWNLOADS_OPEN_CATEGORY_FRONTEND}</a>
+            <!-- END downloads_category_frontend_link -->
+        </th>
     </tr>
 <!-- BEGIN downloads_category_data -->
     <tr class="row3" style="font-weight: bold; white-space:nowrap;">

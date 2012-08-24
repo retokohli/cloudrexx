@@ -7,7 +7,7 @@
  * @subpackage  module_downloads
  */
 $_ARRAYLANG['TXT_DOWNLOADS_ALL_CATEGORIES'] = "All categories";
-$_ARRAYLANG['TXT_DOWNLOADS_SEARCH_ENTRY'] = "Search entry";
+$_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'] = "Search download";
 $_ARRAYLANG['TXT_DOWNLOADS_METAKEYS'] = "Meta keywords";
 $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES_OF_CATEGORY'] = "Categories within the category %s";
 $_ARRAYLANG['TXT_MANAGE_CATEGORIES'] = "Gérer les catégories";

@@ -5,7 +5,7 @@ function downloadsDeleteDownload(id, name)
 {
     strMsg = '{DOWNLOADS_CONFIRM_DELETE_DOWNLOAD_TXT}';
     if (confirm(strMsg.replace('%s', name)+'\n{TXT_DOWNLOADS_OPERATION_IRREVERSIBLE}')) {
-        window.location.href = 'index.php?cmd=downloads&act=delete_download&id='+id+'&csrf='+cx.variables.get('csrf', 'contrexx');
+        window.location.href = 'index.php?cmd=downloads&act=delete_download&id='+id+'&csrf={CSRF_KEY}';
     }
 }
 
@@ -29,10 +29,24 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 }
 // ]]>
 </script>
+<table width="100%" class="adminlist">
+    <tr>
+        <th>{TXT_DOWNLOADS_FILTER}</th>
+    </tr>
+    <tr>
+        <td>
+            <form action="index.php" method="get">
+                <input type="hidden" name="cmd" value="downloads" />
+                <input type="hidden" name="act" value="downloads" />
+                <input type="text" class="search" name="search_term" value="{DOWNLOADS_SEARCH_TERM}" onfocus="if(this.value=='{TXT_DOWNLOADS_SEARCH_DOWNLOAD}'){this.value='';}" onblur="if(this.value==''){this.value='{TXT_DOWNLOADS_SEARCH_DOWNLOAD}';}" style="width: 240px;" />
+                {DOWNLOADS_CATEGORY_MENU}
+                <input type="submit" value="{TXT_DOWNLOADS_SEARCH}" />
+        </td>
+    </tr>
+</table><br />
+
+
 <form name="downloads_download_form" id="downloads_download_form" action="index.php?cmd=downloads&amp;act=downloads" method="post">
-<!-- {DOWNLOADS_PARENT_CATEGORY_MENU}
-<br />
-<br /> -->
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="downloads list">
     <tr>
         <th colspan="10">{TXT_DOWNLOADS_DOWNLOADS}</th>
