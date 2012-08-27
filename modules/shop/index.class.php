@@ -646,8 +646,8 @@ die("Failed to update the Cart!");
                         + $_SESSION['shop']['payment_price']
                         + $_SESSION['shop']['shipment_price']
                     );
-                    $_SESSION['shop']['vat_products_txt'] = $_ARRAYLANG['TXT_SHOP_VAT_INCLUDED'];
-                    $_SESSION['shop']['vat_grand_txt'] = $_ARRAYLANG['TXT_SHOP_VAT_INCLUDED'];
+                    $_SESSION['shop']['vat_products_txt'] = $_ARRAYLANG['TXT_TAX_INCLUDED'];
+                    $_SESSION['shop']['vat_grand_txt'] = $_ARRAYLANG['TXT_TAX_INCLUDED'];
                 } else {
                     // Foreign country; subtract VAT from grand total price.
                     $_SESSION['shop']['vat_price'] = Cart::get_vat_amount();
@@ -657,8 +657,8 @@ die("Failed to update the Cart!");
                         + $_SESSION['shop']['shipment_price']
                         - $_SESSION['shop']['vat_price']
                     );
-                    $_SESSION['shop']['vat_products_txt'] = $_ARRAYLANG['TXT_SHOP_VAT_INCLUDED'];
-                    $_SESSION['shop']['vat_grand_txt'] = $_ARRAYLANG['TXT_SHOP_VAT_EXCLUDED'];
+                    $_SESSION['shop']['vat_products_txt'] = $_ARRAYLANG['TXT_TAX_INCLUDED'];
+                    $_SESSION['shop']['vat_grand_txt'] = $_ARRAYLANG['TXT_TAX_EXCLUDED'];
                 }
             } else {
                 // VAT is excluded
@@ -677,8 +677,8 @@ die("Failed to update the Cart!");
                         + $_SESSION['shop']['payment_price']
                         + $_SESSION['shop']['shipment_price']
                         + $_SESSION['shop']['vat_price']);
-                    $_SESSION['shop']['vat_products_txt'] = $_ARRAYLANG['TXT_SHOP_VAT_EXCLUDED'];
-                    $_SESSION['shop']['vat_grand_txt'] = $_ARRAYLANG['TXT_SHOP_VAT_INCLUDED'];
+                    $_SESSION['shop']['vat_products_txt'] = $_ARRAYLANG['TXT_TAX_EXCLUDED'];
+                    $_SESSION['shop']['vat_grand_txt'] = $_ARRAYLANG['TXT_TAX_INCLUDED'];
                 } else {
                     // foreign country; do not add VAT
                     $_SESSION['shop']['vat_price'] = '0.00';
@@ -686,8 +686,8 @@ die("Failed to update the Cart!");
                           Cart::get_price()
                         + $_SESSION['shop']['payment_price']
                         + $_SESSION['shop']['shipment_price']);
-                    $_SESSION['shop']['vat_products_txt'] = $_ARRAYLANG['TXT_SHOP_VAT_EXCLUDED'];
-                    $_SESSION['shop']['vat_grand_txt'] = $_ARRAYLANG['TXT_SHOP_VAT_EXCLUDED'];
+                    $_SESSION['shop']['vat_products_txt'] = $_ARRAYLANG['TXT_TAX_EXCLUDED'];
+                    $_SESSION['shop']['vat_grand_txt'] = $_ARRAYLANG['TXT_TAX_EXCLUDED'];
                 }
             }
         } else {
@@ -3057,6 +3057,15 @@ right after the customer logs in!
                         : $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_EXCL']
                     ),
             ));
+            if (Vat::isIncluded()) {
+                self::$objTemplate->setVariable(array(
+                    'SHOP_GRAND_TOTAL_EXCL_TAX' => 
+                        Currency::formatPrice(
+                        $_SESSION['shop']['grand_total_price'] - $_SESSION['shop']['vat_price']
+                    ),
+                ));
+                self::$objTemplate->touchBlock('totalExclTaxRow');
+            }
         }
         self::viewpart_lsv();
         // Custom.
@@ -3223,6 +3232,15 @@ right after the customer logs in!
                         : $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_EXCL']
                     ),
            ));
+           if (Vat::isIncluded()) {
+               self::$objTemplate->setVariable(array(
+                   'SHOP_GRAND_TOTAL_EXCL_TAX' => 
+                       Currency::formatPrice(
+                       $_SESSION['shop']['grand_total_price'] - $_SESSION['shop']['vat_price']
+                   ),
+               ));
+               self::$objTemplate->touchBlock('totalExclTaxRow');
+           }
         }
 // TODO: Make sure in payment() that those two are either both empty or
 // both non-empty!
