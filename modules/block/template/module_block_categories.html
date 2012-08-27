@@ -1,12 +1,9 @@
 <!-- START module_block_categories.html -->
 <script language="JavaScript" type="text/javascript">
 //<![CDATA[
-
-var __CSRF__ = {key:'{CSRF_KEY}', code:'{CSRF_CODE}'};
-var __CSRF__PARAM__ = __CSRF__.key+'='+__CSRF__.code;
 function deleteCategory(catId){
     if(confirm('{TXT_BLOCK_OPERATION_IRREVERSIBLE}'))
-        window.location.replace("{DIRECORY_INDEX}?cmd=block&act=deleteCategory&id="+catId+'&'+ __CSRF__PARAM__);
+        window.location.replace("{DIRECORY_INDEX}?cmd=block&act=deleteCategory&id="+catId+'&{CSRF_PARAM}');
 }
 
 function selectMultiAction() {
@@ -14,7 +11,7 @@ function selectMultiAction() {
     switch (frmShowCategoriesMultiAction.value) {
       case 'delete':
         if (confirm('{TXT_BLOCK_OPERATION_IRREVERSIBLE}')) {
-          action='{DIRECORY_INDEX}?cmd=block&act=multiactionCategory&'+ __CSRF__PARAM__;
+          action='{DIRECORY_INDEX}?cmd=block&act=multiactionCategory&{CSRF_PARAM}';
           submit();
         }
       break;

@@ -1,7 +1,5 @@
 <!-- START module_block_block.html -->
 <script type="text/javascript">
-    var pageTitlesTree = jQuery.parseJSON(cx.variables.get('pageTitlesTree', 'block'));
-
     $J(document).ready(function() {
         $J('#wysiwyg_editor').change(function() {
             updateContent(0, true);
@@ -163,7 +161,7 @@
             $J('#blockFormText_'+activeLangId).val($J('#ckeditor').val());
         }
         // update hidden list of active pages
-        changePageTitlesByLang(cx.variables.get("language", "contrexx"));
+        changePageTitlesByLang($J('input[name*=pagesLang]:checked').val());
         return true;
     }
     function disableButtons(from,dest,add,remove)
@@ -297,7 +295,9 @@
         $J('input[name*=blockFormLanguages]').click(function() {
             refreshRadioButtons();
         });
-        changePageTitlesByLang(cx.variables.get("language", "contrexx"));
+        $J('input[name*=pagesLang]').click(function() {
+            changePageTitlesByLang($J(this).val());
+        });
     });
     
     var refreshRadioButtons = function() {
@@ -307,6 +307,14 @@
         $J('input[name*=blockFormLanguages]:not(:checked)').each(function() {
             $J('#changePageTitlesTo_' + $J(this).attr('id').match(/\d$/)).hide();
         });
+        if ($J('input[name*=pagesLang]:checked').parent().is(function() {return $J(this).css('display') == 'none';}) || $J('input[name*=pagesLang]:checked').length == 0) {
+            $J('input[name*=pagesLang]:checked').prop('checked', false);
+            var element = $J('span[id*=changePageTitlesTo_]').not(function() {$J(this).css('display') == 'none'}).first().children('input');
+            element.prop('checked', true);
+            changePageTitlesByLang(element.val());
+        } else {
+            changePageTitlesByLang($J('input[name*=pagesLang]:checked').val());
+        }
     }
     
     /**
@@ -324,13 +332,13 @@
             selectedOps = cx.variables.get("relBlockPagesSelectedOptions", "block");
             unselectedOps = cx.variables.get("relBlockPagesUnselectedOptions", "block");
             if (selectedOps === "") {
-                selectedOps = {};
+                selectedOps = new Object();
             }
             if (unselectedOps === "") {
-                unselectedOps = {};
+                unselectedOps = new Object();
             }
-            selectedOps[cachedLang] = jQuery('select[name="selectedPages[]"]').html();
-            unselectedOps[cachedLang] = jQuery('select[name="notSelectedPages[]"]').html();
+            selectedOps[cachedLang] = jQuery.trim(jQuery('select[name="selectedPages[]"]').html());
+            unselectedOps[cachedLang] = jQuery.trim(jQuery('select[name="notSelectedPages[]"]').html());
             var activeIds = new Array();
             jQuery.each(selectedOps, function(lang, data) {
                 jQuery.each(jQuery(data), function(index, el) {
@@ -495,7 +503,7 @@
                                 <br />
                                 <!-- BEGIN pages_languages -->
                                 <span id="changePageTitlesTo_{BLOCK_PAGES_LANGUAGE_ID}">
-                                    <input type="radio" name="pagesLang[]" value="{BLOCK_PAGES_LANGUAGE_CODE}" id="radio_{BLOCK_PAGES_LANGUAGE_CODE}" onclick="changePageTitlesByLang('{BLOCK_PAGES_LANGUAGE_CODE}');" {BLOCK_PAGES_LANGUAGE_CHECKED} />
+                                    <input type="radio" name="pagesLang[]" value="{BLOCK_PAGES_LANGUAGE_CODE}" id="radio_{BLOCK_PAGES_LANGUAGE_CODE}" {BLOCK_PAGES_LANGUAGE_CHECKED} />
                                     <label for="radio_{BLOCK_PAGES_LANGUAGE_CODE}">{BLOCK_PAGES_LANGUAGE_NAME}</label><br />
                                 </span>
                                 <!-- END pages_languages -->

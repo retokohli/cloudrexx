@@ -81,11 +81,27 @@ class blockManager extends blockLibrary
     */
     function __construct()
     {
-        global $objTemplate, $_ARRAYLANG, $_CORELANG, $_CONFIG;
+        global $objTemplate, $_ARRAYLANG, $_CONFIG;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/block/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
+
+        if (isset($_GET['added']) && $_GET['added'] == 'true') {
+            if (!empty($_GET['blockname'])) {
+                $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_BLOCK_BLOCK_ADDED_SUCCESSFULLY'], contrexx_raw2xhtml($_GET['blockname']));
+            } else {
+                $this->_strOkMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_ADDED_SUCCESSFULLY'];
+            }
+        }
+        
+        if (isset($_GET['modified']) && $_GET['modified'] == 'true') {
+            if (!empty($_GET['blockname'])) {
+                $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_BLOCK_BLOCK_UPDATED_SUCCESSFULLY'], contrexx_raw2xhtml($_GET['blockname']));
+            } else {
+                $this->_strOkMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_UPDATED_SUCCESSFULLY'];
+            }
+        }
 
         if (isset($_POST['saveSettings'])) {
             $arrSettings = array(
@@ -93,7 +109,7 @@ class blockManager extends blockLibrary
                 'blockRandom'   => isset($_POST['blockUseBlockRandom']) ? intval($_POST['blockUseBlockRandom']) : 0
             );
             $this->_saveSettings($arrSettings);
-            $this->_strOkMessage = $_CORELANG['TXT_SETTINGS_UPDATED'];
+            $this->_strOkMessage = $_ARRAYLANG['TXT_SETTINGS_UPDATED'];
         }
         
     }
@@ -103,7 +119,7 @@ class blockManager extends blockLibrary
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", "   "
             .($_CONFIG['blockStatus'] == '1'
-                 ? "<a href='index.php?cmd=block&amp;act=overview' class='".($this->act == 'overview' ? 'active' : '')."'>".$_ARRAYLANG['TXT_BLOCK_OVERVIEW']."</a>
+                 ? "<a href='index.php?cmd=block&amp;act=overview' class='".($this->act == '' || $this->act == 'overview' || $this->act == 'del' ? 'active' : '')."'>".$_ARRAYLANG['TXT_BLOCK_OVERVIEW']."</a>
                     <a href='index.php?cmd=block&amp;act=modify' class='".($this->act == 'modify' ? 'active' : '')."'>".$_ARRAYLANG['TXT_BLOCK_ADD_BLOCK']."</a>"
                  : "")
             ."<a href='index.php?cmd=block&amp;act=categories' class='".($this->act == 'categories' ? 'active' : '')."'>".$_ARRAYLANG['TXT_BLOCK_CATEGORIES']."</a>"
@@ -257,8 +273,7 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_INCLUDED_IN_GLOBAL_BLOCK'=> $_ARRAYLANG['TXT_BLOCK_INCLUDED_IN_GLOBAL_BLOCK'],
             'BLOCK_CATEGORIES_DROPDOWN'         => $this->_getCategoriesDropdown($catId),
             'DIRECTORY_INDEX'                   => CONTREXX_DIRECTORY_INDEX,
-            'TXT_CSRF'                          => CSRF::key(),
-            'CSRF_CODE'                         => CSRF::code(),
+            'CSRF_PARAM'                        => CSRF::param(),
         ));
 
         $arrBlocks = $this->getBlocks($catId);
@@ -270,39 +285,39 @@ class blockManager extends blockLibrary
             $rowNr = 0;
             foreach ($arrBlocks as $blockId => $arrBlock) {
                 if ($arrBlock['active'] ==  '1') {
-                    $status = "<a href='index.php?cmd=block&amp;act=deactivate&amp;blockId=".$blockId."' title='".$_ARRAYLANG['TXT_BLOCK_ACTIVE']."'><img src='images/icons/led_green.gif' width='13' height='13' border='0' alt='".$_ARRAYLANG['TXT_BLOCK_ACTIVE']."' /></a>";
+                    $status = '<a href="index.php?cmd=block&amp;act=deactivate&amp;blockId='.$blockId.'" title="'.$_ARRAYLANG['TXT_BLOCK_ACTIVE'].'"><img src="images/icons/led_green.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_BLOCK_ACTIVE'].'" /></a>';
                 }else{
-                    $status = "<a href='index.php?cmd=block&amp;act=activate&amp;blockId=".$blockId."' title='".$_ARRAYLANG['TXT_BLOCK_INACTIVE']."'><img src='images/icons/led_red.gif' width='13' height='13' border='0' alt='".$_ARRAYLANG['TXT_BLOCK_INACTIVE']."' /></a>";
+                    $status = '<a href="index.php?cmd=block&amp;act=activate&amp;blockId='.$blockId.'" title="'.$_ARRAYLANG['TXT_BLOCK_INACTIVE'].'"><img src="images/icons/led_red.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_BLOCK_INACTIVE'].'" /></a>';
                 }
 
                 if ($arrBlock['random'] ==  '1') {
-                    $random = "<img src='images/icons/refresh.gif' width='16' height='16' border='0' alt='random 1' title='random 1' />";
+                    $random = '<img src="images/icons/refresh.gif" width="16" height="16" border="0" alt="random 1" onmouseout="htm()" onmouseover="stm([\'\', \''.$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'].'\'], Style[0])" />';
                 } else {
-                    $random = "<img src='images/icons/pixel.gif' width='16' height='16' border='0' alt='' title='' />";
+                    $random = '<img src="images/icons/pixel.gif" width="16" height="16" border="0" alt="" title="" />';
                 }
 
                 if ($arrBlock['random2'] ==  '1') {
-                    $random2 = "<img src='images/icons/refresh2.gif' width='16' height='16' border='0' alt='random 2' title='random 2' />";
+                    $random2 = '<img src="images/icons/refresh2.gif" width="16" height="16" border="0" alt="random 2" onmouseout="htm()" onmouseover="stm([\'\', \''.$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'].'\'], Style[0])" />';
                 } else {
-                    $random2 = "<img src='images/icons/pixel.gif' width='16' height='16' border='0' alt='' title='' />";
+                    $random2 = '<img src="images/icons/pixel.gif" width="16" height="16" border="0" alt="" title="" />';
                 }
 
                 if ($arrBlock['random3'] ==  '1') {
-                    $random3 = "<img src='images/icons/refresh3.gif' width='16' height='16' border='0' alt='random 3' title='random 3' />";
+                    $random3 = '<img src="images/icons/refresh3.gif" width="16" height="16" border="0" alt="random 3" onmouseout="htm()" onmouseover="stm([\'\', \''.$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'].'\'], Style[0])" />';
                 } else {
-                    $random3 = "<img src='images/icons/pixel.gif' width='16' height='16' border='0' alt='' title='' />";
+                    $random3 = '<img src="images/icons/pixel.gif" width="16" height="16" border="0" alt="" title="" />';
                 }
 
                 if ($arrBlock['random4'] ==  '1') {
-                    $random4 = "<img src='images/icons/refresh4.gif' width='16' height='16' border='0' alt='random 4' title='random 4' />";
+                    $random4 = '<img src="images/icons/refresh4.gif" width="16" height="16" border="0" alt="random 4" onmouseout="htm()" onmouseover="stm([\'\', \''.$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'].'\'], Style[0])" />';
                 } else {
-                    $random4 = "<img src='images/icons/pixel.gif' width='16' height='16' border='0' alt='' title='' />";
+                    $random4 = '<img src="images/icons/pixel.gif" width="16" height="16" border="0" alt="" title="" />';
                 }
 
                 if ($arrBlock['global'] ==  '1') {
-                    $global = "<img src='images/icons/upload.gif' width='16' height='16' border='0' alt='upload' title='upload' /> />";
+                    $global = '<img src="images/icons/upload.gif" width="16" height="16" border="0" alt="upload" title="upload" />';
                 } else {
-                    $global = "&nbsp;";
+                    $global = '&nbsp;';
                 }
 
                 $lang = array();
@@ -471,8 +486,7 @@ class blockManager extends blockLibrary
             'BLOCK_CATEGORIES_PARENT_DROPDOWN'      => $this->_getCategoriesDropdown($arrCategory['parent'], $catId),
             'BLOCK_CATEGORY_NAME'                   => $arrCategory['name'],
             'DIRECTORY_INDEX'                       => CONTREXX_DIRECTORY_INDEX,
-            'TXT_CSRF'                              => CSRF::key(),
-            'CSRF_CODE'                             => CSRF::code(),
+            'CSRF_PARAM'                            => CSRF::param(),
         ));
     }
 
@@ -670,15 +684,15 @@ class blockManager extends blockLibrary
 
             if ($blockId) {
                 if ($this->_updateBlock($blockId, $blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockWysiwygEditor, $blockAssociatedPageIds, $blockLangActive)) {
-                    $this->_strOkMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_UPDATED_SUCCESSFULLY'];
-                    return $this->_showOverview();
+                    CSRF::header('location: index.php?cmd=block&modified=true&blockname='.$blockName);
+                    exit();
                 } else {
                     $this->_strErrMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_COULD_NOT_BE_UPDATED'];
                 }
             } else { 
                 if ($this->_addBlock($blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockWysiwygEditor, $blockAssociatedPageIds, $blockLangActive)) {
-                    $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_BLOCK_BLOCK_ADDED_SUCCESSFULLY'], contrexx_raw2xhtml($blockName));
-                    return $this->_showOverview();
+                    CSRF::header('location: index.php?cmd=block&added=true&blockname='.$blockName);
+                    exit();
                 } else {
                     $this->_strErrMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_COULD_NOT_BE_ADDED'];
                 }
@@ -748,12 +762,12 @@ class blockManager extends blockLibrary
                     if (!isset($strSelectedPages[$langCode])) {
                         $strSelectedPages[$langCode] = '';
                     }
-                    $strSelectedPages[$langCode]   .= '<option value="'.$pageData['id'].'">'.$spacer.contrexx_raw2xhtml($pageData['title']).' ('.$pageData['id'].') </option>'."\n";
+                    $strSelectedPages[$langCode]   .= '<option value="'.$pageData['id'].'">'.$spacer.contrexx_raw2xhtml($pageData['title']).' ('.$pageData['id'].') </option>';
                 } else {
                     if (!isset($strUnselectedPages[$langCode])) {
                         $strUnselectedPages[$langCode] = '';
                     }
-                    $strUnselectedPages[$langCode] .= '<option value="'.$pageData['id'].'">'.$spacer.contrexx_raw2xhtml($pageData['title']).' ('.$pageData['id'].') </option>'."\n";
+                    $strUnselectedPages[$langCode] .= '<option value="'.$pageData['id'].'">'.$spacer.contrexx_raw2xhtml($pageData['title']).' ('.$pageData['id'].') </option>';
                 }
             }
         }
@@ -761,7 +775,6 @@ class blockManager extends blockLibrary
         $objJs = \ContrexxJavascript::getInstance();
         $objJs->setVariable('relBlockPagesUnselectedOptions', $jsonData->json($strUnselectedPages), 'block');
         $objJs->setVariable('relBlockPagesSelectedOptions', $jsonData->json($strSelectedPages), 'block');
-        $objJs->setVariable('pageTitlesTree', $jsonData->json($pageTitlesTree), 'block');
         
         foreach (FWLanguage::getActiveFrontendLanguages() as $langId => $arrLanguage) {
             $checked = '';

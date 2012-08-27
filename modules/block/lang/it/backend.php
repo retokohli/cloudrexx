@@ -88,4 +88,5 @@ $_ARRAYLANG['TXT_BLOCK_SHOW_UNTIL'] = "Anzeigen bis";
 $_ARRAYLANG['TXT_BLOCK_SHOW_ALWAYS'] = "Immer anzeigen";
 $_ARRAYLANG['TXT_BLOCK_SHOW_TIMED'] = "Zeitgesteuertes Anzeigen";
 $_ARRAYLANG['TXT_BLOCK_USE_WYSIWYG_EDITOR'] = "Use WYSIWYG editor";
+$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'] = "Blocks using the random generator are shown accordingly.";
 ?>

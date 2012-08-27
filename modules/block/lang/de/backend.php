@@ -14,7 +14,7 @@ $_ARRAYLANG['TXT_BLOCK_PLACEHOLDER'] = "Platzhalter";
 $_ARRAYLANG['TXT_BLOCK_FUNCTIONS'] = "Funktionen";
 $_ARRAYLANG['TXT_BLOCK_CONTENT'] = "Inhalt";
 $_ARRAYLANG['TXT_BLOCK_SAVE'] = "Speichern";
-$_ARRAYLANG['TXT_BLOCK_BLOCK_UPDATED_SUCCESSFULLY'] = "Der Block wurde erfolgreich aktualisiert.";
+$_ARRAYLANG['TXT_BLOCK_BLOCK_UPDATED_SUCCESSFULLY'] = "Der Block %s wurde erfolgreich aktualisiert.";
 $_ARRAYLANG['TXT_BLOCK_BLOCK_COULD_NOT_BE_UPDATED'] = "Der Block konnte nicht aktualisiert werden!";
 $_ARRAYLANG['TXT_BLOCK_SETTINGS'] = "Einstellungen";
 $_ARRAYLANG['TXT_BLOCK_USE_BLOCK_SYSTEM'] = "Block System verwenden";
@@ -98,6 +98,7 @@ $_ARRAYLANG['TXT_BLOCK_CONTENT'] = "Inhalt";
 $_ARRAYLANG['TXT_BLOCK_ORDER']   = "Reihenfolge";
 $_ARRAYLANG['TXT_BLOCK_INCLUDED_IN_GLOBAL_BLOCK'] = "Anzeige im globalen Platzhalter";
 $_ARRAYLANG['TXT_BLOCK_DISPLAY_SELECTED_PAGE'] = "Block wird nur auf den folgenden Seiten angezeigt:";
-$_ARRAYLANG['TXT_BLOCK_DISPLAY_ALL_PAGE'] = "Block wird auf jeder Seite angezeigt";
+$_ARRAYLANG['TXT_BLOCK_DISPLAY_ALL_PAGE'] = "Block wird auf jeder Seite angezeigt.";
 $_ARRAYLANG['TXT_BLOCK_USE_WYSIWYG_EDITOR'] = "WYSIWYG-Editor verwenden";
+$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'] = "Blöcke im Zufallsgenerator werden entsprechend zufällig angezeigt.";
 ?>
