@@ -117,6 +117,14 @@ if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
 }
 
 /**
+ * This needs to be initialized before loading config/doctrine.php
+ * Because we overwrite the Gedmo model (so we need to load our model
+ * before doctrine loads the Gedmo one)
+ */
+require_once dirname(__FILE__).'/core/ClassLoader/ClassLoader.class.php';
+new \Cx\Core\ClassLoader\ClassLoader();
+
+/**
  * Doctrine configuration
  * Loaded after installer redirect (not configured before installer)
  */
