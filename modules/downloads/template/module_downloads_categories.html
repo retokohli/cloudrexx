@@ -4,7 +4,7 @@
 function downloadsDeleteCategory(id,name,hasSubcategories)
 {
     strMsg = '{DOWNLOADS_CONFIRM_DELETE_CATEGORY_TXT}';
-    if (confirm(strMsg.replace('%s', name)+'\n{TXT_DOWNLOADS_OPERATION_IRREVERSIBLE}')) {
+    if (confirm(strMsg.replace('%s', '„'+name+'“')+'\n{TXT_DOWNLOADS_OPERATION_IRREVERSIBLE}')) {
         subcategories = hasSubcategories && confirm('{TXT_DOWNLOADS_DELETE_SUBCATEGORIES}');
         window.location.href = 'index.php?cmd=downloads&{CSRF_PARAM}&act=delete_category&parent_id={DOWNLOADS_CATEGORY_ID}&id='+id
         +'&subcategories='+subcategories
@@ -43,7 +43,7 @@ function downloadsDownloadDoAction(action)
 function downloadsUnlinkDownload(id,name)
 {
     strMsg = '{DOWNLOADS_CONFIRM_UNLINK_DOWNLOAD_TXT}';
-    if (confirm(strMsg.replace('%s', name))) {
+    if (confirm(strMsg.replace('%s', '„'+name+'“'))) {
         window.location.href = 'index.php?cmd=downloads&{CSRF_PARAM}&act=unlink_download&parent_id={DOWNLOADS_CATEGORY_ID}&id='+id
 	        +'&category_sort={DOWNLOADS_CATEGORY_CATEGORY_SORT}'
 	        +'&category_by={DOWNLOADS_CATEGORY_CATEGORY_SORT_BY}'
@@ -109,12 +109,12 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 <!-- BEGIN downloads_category_list -->
     <tr class="{DOWNLOADS_CATEGORY_ROW_CLASS}">
         <!-- BEGIN downloads_category_checkbox -->
-        <td style="text-align: center;">
+        <td nowrap="nowrap" style="text-align: center;">
             <input type="checkbox" name="downloads_category_id[]" value="{DOWNLOADS_CATEGORY_ID}" />
         </td>
         <!-- END downloads_category_checkbox -->
         <td nowrap="nowrap" style="text-align: center;">{DOWNLOADS_CATEGORY_ID}</td>
-        <td style="text-align: center;">
+        <td nowrap="nowrap" style="text-align: center;">
           <!-- BEGIN downloads_category_status_link_open -->
             <a href="index.php?cmd=downloads&amp;act=switch_category_status&amp;parent_id={DOWNLOADS_CATEGORY_PARENT_ID}&amp;id={DOWNLOADS_CATEGORY_ID}&amp;category_sort={DOWNLOADS_CATEGORY_CATEGORY_SORT}&amp;category_by={DOWNLOADS_CATEGORY_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_CATEGORY_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_CATEGORY_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_CATEGORY_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_CATEGORY_DOWNLOAD_OFFSET}" title="{DOWNLOADS_CATEGORY_SWITCH_STATUS_DESC}">
           <!-- END downloads_category_status_link_open -->
@@ -123,7 +123,7 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
             </a>
           <!-- END downloads_category_status_link_close -->
         </td>
-        <td style="text-align: center;">
+        <td nowrap="nowrap" style="text-align: center;">
             <!-- BEGIN downloads_category_orderbox -->
             <input name="downloads_category_order[{DOWNLOADS_CATEGORY_ID}]" size="5" maxlength="5" value="{DOWNLOADS_CATEGORY_ORDER}" type="text" onkeypress="downloadsUpdateSortOrder(event,this.form,'downloads_category_select_action')" />
             <!-- END downloads_category_orderbox -->
@@ -141,7 +141,7 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
             </a>
           <!-- END downloads_category_name_link_close -->
         </td>
-		<td nowrap="nowrap">{DOWNLOADS_CATEGORY_DESCRIPTION}</td>
+		<td>{DOWNLOADS_CATEGORY_DESCRIPTION}</td>
 		<td nowrap="nowrap">{DOWNLOADS_CATEGORY_AUTHOR}</td>
 		<td nowrap="nowrap" style="text-align: right;">
             <!-- BEGIN downloads_category_function_modify_link -->
@@ -189,13 +189,15 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 <form name="downloads_download_form" id="downloads_download_form" action="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}" method="post">
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="downloads list">
     <tr>
-        <th colspan="10">{TXT_DOWNLOADS_OF_CATEGORY}</th>
+        <th colspan="10">{TXT_DOWNLOADS_ALL_DOWNLOADS}{TXT_DOWNLOADS_OF_CATEGORY}</th>
     </tr>
     <tr class="row3" style="font-weight: bold; white-space:nowrap;">
         <td width="1%" style="text-align: center;">#</td>
         <td width="1%" style="text-align: center;"><a href="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_SORT_ID}&amp;download_by=id&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DOWNLOAD_SORT_ID_LABEL}</a></td>
         <td width="1%" style="text-align: center;"><a href="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_SORT_STATUS}&amp;download_by=is_active&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DOWNLOAD_SORT_STATUS_LABEL}</a></td>
+        <!-- BEGIN downloads_download_orderbox_label -->
         <td width="1%" style="text-align: center;"><a href="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_SORT_ORDER}&amp;download_by=order&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DOWNLOAD_SORT_ORDER_LABEL}</a></td>
+        <!-- END downloads_download_orderbox_label -->
         <td width="15%"><a href="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_SORT_NAME}&amp;download_by=name&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DOWNLOAD_SORT_NAME_LABEL}</a></td>
         <td width="63%"><a href="index.php?cmd=downloads&amp;act=categories&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_SORT_DESCRIPTION}&amp;download_by=description&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DOWNLOAD_SORT_DESCRIPTION_LABEL}</a></td>
         <td width="15%">{TXT_DOWNLOADS_OWNER}</td>
@@ -205,13 +207,13 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
     </tr>
 <!-- BEGIN downloads_download_list -->
     <tr class="{DOWNLOADS_DOWNLOAD_ROW_CLASS}">
-        <td style="text-align: center;">
+        <td nowrap="nowrap" style="text-align: center;">
             <!-- BEGIN downloads_download_checkbox -->
             <input type="checkbox" name="downloads_download_id[]" value="{DOWNLOADS_DOWNLOAD_ID}" />
             <!-- END downloads_download_checkbox -->
         </td>
         <td nowrap="nowrap" style="text-align: center;">{DOWNLOADS_DOWNLOAD_ID}</td>
-        <td style="text-align: center;">
+        <td nowrap="nowrap" style="text-align: center;">
           <!-- BEGIN downloads_download_status_link_open -->
             <a href="index.php?cmd=downloads&amp;act=switch_download_status&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_PARENT_ID}&amp;id={DOWNLOADS_DOWNLOAD_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}" title="{DOWNLOADS_DOWNLOAD_SWITCH_STATUS_DESC}">
           <!-- END downloads_download_status_link_open -->
@@ -220,7 +222,8 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
             </a>
           <!-- END downloads_download_status_link_close -->
         </td>
-        <td style="text-align: center;">
+        <!-- BEGIN downloads_download_orderbox_cell -->
+        <td nowrap="nowrap" style="text-align: center;">
             <!-- BEGIN downloads_download_orderbox -->
             <input name="downloads_download_order[{DOWNLOADS_DOWNLOAD_ID}]" size="5" maxlength="5" value="{DOWNLOADS_DOWNLOAD_ORDER}" type="text" onkeypress="downloadsUpdateSortOrder(event,this.form,'downloads_download_select_action')" />
             <!-- END downloads_download_orderbox -->
@@ -228,19 +231,20 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
             {DOWNLOADS_DOWNLOAD_ORDER}
             <!-- END downloads_download_no_orderbox -->
         </td>
+        <!-- END downloads_download_orderbox_cell -->
         <td nowrap="nowrap">
-          <!-- BEGIN downloads_download_modify_link_open -->
+            <!-- BEGIN downloads_download_modify_link_open -->
             <a href="index.php?cmd=downloads&amp;act=download&amp;parent_id={DOWNLOADS_DOWNLOAD_CATEGORY_PARENT_ID}&amp;id={DOWNLOADS_DOWNLOAD_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}" title="{TXT_DOWNLOADS_EDIT}">
-          <!-- END downloads_download_modify_link_open -->
+            <!-- END downloads_download_modify_link_open -->
             {DOWNLOADS_DOWNLOAD_NAME}
-          <!-- BEGIN downloads_download_modify_link_close -->
+            <!-- BEGIN downloads_download_modify_link_close -->
             </a>
-          <!-- END downloads_download_modify_link_close -->
+            <!-- END downloads_download_modify_link_close -->
         </td>
-        <td nowrap="nowrap">{DOWNLOADS_DOWNLOAD_DESCRIPTION}</td>
+        <td>{DOWNLOADS_DOWNLOAD_DESCRIPTION}</td>
         <td nowrap="nowrap">{DOWNLOADS_DOWNLOAD_OWNER}</td>
-        <td style="text-align:center;">{DOWNLOADS_DOWNLOAD_DOWNLOADED}</td>
-        <td style="text-align:center;">{DOWNLOADS_DOWNLOAD_VIEWED}</td>
+        <td nowrap="nowrap" style="text-align:center;">{DOWNLOADS_DOWNLOAD_DOWNLOADED}</td>
+        <td nowrap="nowrap" style="text-align:center;">{DOWNLOADS_DOWNLOAD_VIEWED}</td>
         <td nowrap="nowrap" style="text-align: right;">
             <!-- BEGIN downloads_download_function_download_link -->
             <a href="index.php?cmd=downloads&amp;act=get&amp;id={DOWNLOADS_DOWNLOAD_ID}" title="{DOWNLOADS_DOWNLOAD_SOURCE}" target="_blank"><img src="{DOWNLOADS_DOWNLOAD_DOWNLOAD_ICON}" alt="{DOWNLOADS_DOWNLOAD_SOURCE}" width="16" height="16" border="0" /></a>
@@ -282,6 +286,13 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 <br />
 {DOWNLOADS_DOWNLOAD_PAGING}
 <!-- END downloads_category_downloads -->
+<!-- BEGIN downloads_no_data -->
+    <tr class="row3">
+        <td>{TXT_DOWNLOADS_NO_DOWNLOADS_AVAILABLE}</td>
+    </tr>
+</table>
+<!-- END downloads_no_data -->
+
 <!-- BEGIN downloads_add_downloads_button -->
 <br />
 <input type="button" name="downloads_category_add_new_download" value="{TXT_DOWNLOADS_ADD_NEW_DOWNLOAD_TO_CATEGORY}" onclick="window.location.href='index.php?cmd=downloads&{CSRF_PARAM}&amp;act=add_new_download_to_category&amp;parent_id={DOWNLOADS_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}'" />

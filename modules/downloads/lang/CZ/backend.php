@@ -6,6 +6,8 @@
  * @package     contrexx
  * @subpackage  module_downloads
  */
+$_ARRAYLANG['TXT_DOWNLOADS_NO_DOWNLOADS_AVAILABLE'] = "No downloads present.";
+$_ARRAYLANG['TXT_DOWNLOADS_ALL_DOWNLOADS'] = "All downloads";
 $_ARRAYLANG['TXT_DOWNLOADS_ALL_CATEGORIES'] = "All categories";
 $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD'] = "Search download";
 $_ARRAYLANG['TXT_DOWNLOADS_METAKEYS'] = "Meta keywords";
