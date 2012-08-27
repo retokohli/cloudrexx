@@ -500,7 +500,7 @@ class Download {
         }
     }
 
-    public function loadDownloads($filter = null, $search = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = null)
+    public function loadDownloads($filter = null, $search = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = null, $subCategories = false)
     {
         global $objDatabase;
 
@@ -515,8 +515,8 @@ class Download {
         $sqlCondition = '';
 
         // set filter
-        if (isset($filter) && is_array($filter) && count($filter) || !empty($search)) {
-            $sqlCondition = $this->getFilteredIdList($filter, $search);
+        if ((isset($filter) && is_array($filter) && count($filter)) || !empty($search)) {
+            $sqlCondition = $this->getFilteredIdList($filter, $search, $subCategories);
         } elseif (!empty($filter)) {
             $sqlCondition['tables'] = array('core');
             $sqlCondition['conditions'] = array('tblD.`id` = '.intval($filter));
@@ -582,7 +582,7 @@ class Download {
         }
     }
 
-    private function getFilteredIdList($arrFilter = null, $search = null)
+    private function getFilteredIdList($arrFilter = null, $search = null, $subCategories = false)
     {
         $arrConditions = array();
         $tblLocales = false;
@@ -598,11 +598,32 @@ class Download {
 
         if (in_array('category_id', array_keys($arrFilter)) && !empty($arrFilter['category_id'])) {
             if (is_array($arrFilter['category_id'])) {
-                foreach ($arrFilter['category_id'] as $condition => $categoryId) {
-                    $arrCategoryConditions[] = 'tblRC.`category_id` '.$condition.' '.intval($categoryId);
+                if ($subCategories) {
+                    $arrSubCategories = array();
+                    foreach ($arrFilter['category_id'] as $categoryId) {
+                        $arrSubCategories[] = $categoryId;
+                        $arrSubCategories = array_merge($arrSubCategories, $this->getSubCategories($categoryId));
+                    }
+                    $arrSubCategories = array_unique($arrSubCategories);
+                    foreach ($arrSubCategories as $categoryId) {
+                        $arrCategoryConditions[] = 'tblRC.`category_id` = '.intval($categoryId);
+                    }
+                } else {
+                    foreach ($arrFilter['category_id'] as $condition => $categoryId) {
+                        $arrCategoryConditions[] = 'tblRC.`category_id` '.$condition.' '.intval($categoryId);
+                    }
                 }
             } else {
-                $arrCategoryConditions[] = 'tblRC.`category_id` = '.intval($arrFilter['category_id']);
+                if ($subCategories) {
+                    $arrCategoryConditions[] = 'tblRC.`category_id` = '.intval($arrFilter['category_id']);
+
+                    $arrSubCategories = $this->getSubCategories($arrFilter['category_id']);
+                    foreach ($arrSubCategories as $categoryId) {
+                        $arrCategoryConditions[] = 'tblRC.`category_id` = '.intval($categoryId);
+                    }
+                } else {
+                    $arrCategoryConditions[] = 'tblRC.`category_id` = '.intval($arrFilter['category_id']);
+                }
             }
             $arrConditions[] = '('.implode(' OR ', $arrCategoryConditions).')';
             $arrTables[] = 'category';
@@ -670,6 +691,51 @@ class Download {
             'tables'        => $arrTables,
             'conditions'    => $arrConditions
         );
+    }
+
+    /**
+     * Returns all children of the given category.
+     *
+     * @acces   private
+     * @param   integer     $parentId
+     */
+    private function getSubCategories($parentId)
+    {
+        global $objDatabase;
+
+        $arrSubCategories = array();
+        if ($this->hasSubCategories($parentId)) {
+            $objResult = $objDatabase->Execute('SELECT `id` FROM `'.DBPREFIX.'module_downloads_category` WHERE `parent_id` = '.intval($parentId));
+            if ($objResult && ($objResult->RecordCount() > 0)) {
+                while (!$objResult->EOF) {
+                    $id = $objResult->fields['id'];
+                    $arrSubCategories[] = $id;
+                    if ($this->hasSubCategories($id)) {
+                        $arrSubCategories = array_merge($arrSubCategories, $this->getSubCategories($id));
+                    }
+                    $objResult->MoveNext();
+                }
+            }
+        }
+        return $arrSubCategories;
+    }
+
+    /**
+     * Check if the given category has children.
+     *
+     * @acces   private
+     * @param   integer     $parentId
+     */
+    private function hasSubCategories($parentId)
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute('SELECT `id` FROM `'.DBPREFIX.'module_downloads_category` WHERE `parent_id` = '.intval($parentId));
+        if ($objResult && ($objResult->RecordCount() > 0)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 /**

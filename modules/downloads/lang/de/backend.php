@@ -6,6 +6,8 @@
  * @package     contrexx
  * @subpackage  module_downloads
  */
+$_ARRAYLANG['TXT_DOWNLOADS_NO_DOWNLOADS_AVAILABLE'] = "Es sind keine Downloads vorhanden.";
+$_ARRAYLANG['TXT_DOWNLOADS_ALL_DOWNLOADS'] = "Alle Downloads";
 $_ARRAYLANG['TXT_DOWNLOADS_ALL_CATEGORIES'] = "Alle Kategorien";
 $_ARRAYLANG['TXT_MANAGE_CATEGORIES'] = "Kategorien verwalten";
 $_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'] = "Kategorie hinzufügen";

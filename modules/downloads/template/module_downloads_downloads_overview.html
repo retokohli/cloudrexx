@@ -56,7 +56,9 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
         <td width="1%" style="text-align: center;">#</td>
         <td width="1%" style="text-align: center;"><a href="index.php?cmd=downloads&amp;act=downloads&amp;sort={DOWNLOADS_SORT_ID}&amp;by=id" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_ID}</a></td>
         <td width="1%" style="text-align: center;"><a href="index.php?cmd=downloads&amp;act=downloads&amp;sort={DOWNLOADS_SORT_STATUS}&amp;by=is_active" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_STATUS}</a></td>
+        <!-- BEGIN downloads_download_order_label -->
         <td width="1%" style="text-align: center;"><a href="index.php?cmd=downloads&amp;act=downloads&amp;sort={DOWNLOADS_SORT_ORDER}&amp;by=order" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_ORDER}</a></td>
+        <!-- END downloads_download_order_label -->
         <td width="15%"><a href="index.php?cmd=downloads&amp;act=downloads&amp;sort={DOWNLOADS_SORT_NAME}&amp;by=name" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_NAME}</a></td>
         <td width="63%"><a href="index.php?cmd=downloads&amp;act=downloads&amp;sort={DOWNLOADS_SORT_DESCRIPTION}&amp;by=description" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DESCRIPTION}</a></td>
         <td width="15%">{TXT_DOWNLOADS_OWNER}</td>
@@ -66,12 +68,12 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
         <td width="1%">{TXT_DOWNLOADS_FUNCTIONS}</td>
     </tr>
 <!-- BEGIN downloads_download_list -->
-    <tr class="{DOWNLOADS_DOWNLOAD_ROW_CLASS}" style="white-space:nowrap;">
-        <td style="text-align: center;">
+    <tr class="{DOWNLOADS_DOWNLOAD_ROW_CLASS}">
+        <td nowrap="nowrap" style="text-align: center;">
             <!-- BEGIN downloads_download_checkbox --><input type="checkbox" name="downloads_download_id[]" value="{DOWNLOADS_DOWNLOAD_ID}" /><!-- END downloads_download_checkbox -->&nbsp;
         </td>
-        <td style="text-align: center;">{DOWNLOADS_DOWNLOAD_ID}</td>
-        <td style="text-align: center;">
+        <td nowrap="nowrap" style="text-align: center;">{DOWNLOADS_DOWNLOAD_ID}</td>
+        <td nowrap="nowrap" style="text-align: center;">
             <!-- BEGIN downloads_download_status_link_open -->
             <a href="index.php?cmd=downloads&amp;act=switch_download_status&amp;id={DOWNLOADS_DOWNLOAD_ID}" title="{DOWNLOADS_DOWNLOAD_SWITCH_STATUS_DESC}">
             <!-- END downloads_download_status_link_open -->
@@ -80,7 +82,8 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
             </a>
             <!-- END downloads_download_status_link_close -->
         </td>
-        <td style="text-align: center;">
+        <!-- BEGIN downloads_download_order_cell -->
+        <td nowrap="nowrap" style="text-align: center;">
             <!-- BEGIN downloads_download_order_modify -->
             <input name="downloads_download_order[{DOWNLOADS_DOWNLOAD_ID}]" size="5" maxlength="5" value="{DOWNLOADS_DOWNLOAD_ORDER}" type="text" onkeypress="downloadsUpdateSortOrder(event,this.form,'downloads_download_select_action')" />
             <!-- END downloads_download_order_modify -->
@@ -88,7 +91,8 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
             {DOWNLOADS_DOWNLOAD_ORDER}
             <!-- END downloads_download_order_no_modify -->
         </td>        
-        <td>
+        <!-- END downloads_download_order_cell -->
+        <td nowrap="nowrap">
             <!-- BEGIN downloads_download_modify_link_open -->
             <a href="index.php?cmd=downloads&amp;act=download&amp;id={DOWNLOADS_DOWNLOAD_ID}" title="{TXT_DOWNLOADS_EDIT}">
             <!-- END downloads_download_modify_link_open -->
@@ -98,10 +102,10 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
             <!-- END downloads_download_modify_link_close -->
         </td>
         <td>{DOWNLOADS_DOWNLOAD_DESCRIPTION}</td>
-        <td>{DOWNLOADS_DOWNLOAD_OWNER}</td>
-        <td style="text-align:center;">{DOWNLOADS_DOWNLOAD_DOWNLOADED}</td>
-        <td style="text-align:center;">{DOWNLOADS_DOWNLOAD_VIEWED}</td>
-        <td style="text-align: right;">
+        <td nowrap="nowrap">{DOWNLOADS_DOWNLOAD_OWNER}</td>
+        <td nowrap="nowrap" style="text-align:center;">{DOWNLOADS_DOWNLOAD_DOWNLOADED}</td>
+        <td nowrap="nowrap" style="text-align:center;">{DOWNLOADS_DOWNLOAD_VIEWED}</td>
+        <td nowrap="nowrap" style="text-align: right;">
             <!-- BEGIN downloads_download_function_download -->
             <a href="index.php?cmd=downloads&amp;act=get&amp;id={DOWNLOADS_DOWNLOAD_ID}" title="{DOWNLOADS_DOWNLOAD_SOURCE}" target="_blank"><img src="{DOWNLOADS_DOWNLOAD_DOWNLOAD_ICON}" alt="{DOWNLOADS_DOWNLOAD_SOURCE}" width="16" height="16" border="0" /></a>
             <!-- END downloads_download_function_download -->
