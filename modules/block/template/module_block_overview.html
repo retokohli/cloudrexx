@@ -1,40 +1,37 @@
 <!-- START module_block_overview.html -->
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
 <!--
 Style[0]=["","","","","",,"black","#ffffe1","","","",,250,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
 // -->
     
 // <![CDATA[
-var __CSRF__ = {key:'{TXT_CSRF}', code:'{CSRF_CODE}'};
-var __CSRF__PARAM__ = __CSRF__.key+'='+__CSRF__.code;
-
 function selectMultiAction()
 {
   with (document.frmBlocks) {
     switch (frmBlocksMultiAction.value) {
       case 'activate':          
-        action='{DIRECTORY_INDEX}?cmd=block&act=activate&'+__CSRF__PARAM__;
+        action='{DIRECTORY_INDEX}?cmd=block&act=activate&{CSRF_PARAM}';
         submit();
         break;
 
       case 'deactivate':
-        action='{DIRECTORY_INDEX}?cmd=block&act=deactivate&'+__CSRF__PARAM__;
+        action='{DIRECTORY_INDEX}?cmd=block&act=deactivate&{CSRF_PARAM}';
         submit();
         break;     
 
       case 'global':
-        action='{DIRECTORY_INDEX}?cmd=block&act=global&'+__CSRF__PARAM__;
+        action='{DIRECTORY_INDEX}?cmd=block&act=global&{CSRF_PARAM}';
         submit();
         break;
 
       case 'global_off':
-        action='{DIRECTORY_INDEX}?cmd=block&act=global_off&'+__CSRF__PARAM__;
+        action='{DIRECTORY_INDEX}?cmd=block&act=global_off&{CSRF_PARAM}';
         submit();
         break;
 
       case 'delete':
         if (confirm('{TXT_BLOCK_DELETE_SELECTED_BLOCKS}\n{TXT_BLOCK_OPERATION_IRREVERSIBLE}')) {
-          action='{DIRECTORY_INDEX}?cmd=block&act=del&'+__CSRF__PARAM__;
+          action='{DIRECTORY_INDEX}?cmd=block&act=del&{CSRF_PARAM}';
           submit();
         }
         break;
@@ -48,7 +45,7 @@ function blockDeleteBlock(blockId, blockName)
 {
   strConfirmMsg = '{TXT_BLOCK_CONFIRM_DELETE_BLOCK}';
   if (confirm(strConfirmMsg.replace('%s', blockName)+'\n{TXT_BLOCK_OPERATION_IRREVERSIBLE}')) {
-    window.location.href = '{DIRECTORY_INDEX}?cmd=block&act=del&blockId='+blockId+'&'+__CSRF__PARAM__;
+    window.location.href = '{DIRECTORY_INDEX}?cmd=block&act=del&blockId='+blockId+'&{CSRF_PARAM}';
   }
 }
 
@@ -66,7 +63,7 @@ function blockDeleteBlock(blockId, blockName)
         <td width="2%" style="font-weight:bold;">{TXT_BLOCK_ORDER}</td>
         <td width="18%" style="font-weight:bold;">{TXT_BLOCK_NAME}</td>
         <td width="15%" style="font-weight:bold;">
-            <select name="blockCategory" onchange="location.href='{DIRECTORY_INDEX}?'+__CSRF__PARAM__+'&cmd=block&catId='+this.options[this.options.selectedIndex].value">
+            <select name="blockCategory" onchange="location.href='{DIRECTORY_INDEX}?cmd=block&catId='+this.options[this.options.selectedIndex].value+'&{CSRF_PARAM}'">
                 <option value="0">{TXT_BLOCK_CATEGORIES_ALL}</option>
                 {BLOCK_CATEGORIES_DROPDOWN}
             </select>

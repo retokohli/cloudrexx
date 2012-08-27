@@ -88,4 +88,5 @@ $_ARRAYLANG['TXT_BLOCK_SHOW_UNTIL'] = "Afficher jusqu'à ";
 $_ARRAYLANG['TXT_BLOCK_SHOW_ALWAYS'] = "Toujours afficher ";
 $_ARRAYLANG['TXT_BLOCK_SHOW_TIMED'] = "Annonces programmables";
 $_ARRAYLANG['TXT_BLOCK_USE_WYSIWYG_EDITOR'] = "Use WYSIWYG editor";
+$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'] = "Blocks using the random generator are shown accordingly.";
 ?>
