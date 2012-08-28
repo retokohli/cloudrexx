@@ -35,18 +35,18 @@ $_CONFIG = $_FTPCONFIG = $loggableListener = NULL;
  */
 require_once dirname(__FILE__).'/../core/Env.class.php';
 /**
- * Path, database, FTP configuration settings
- *
- * Initialises global settings array and constants.
- */
-include_once('../config/configuration.php');
-/**
  * User configuration settings
  *
  * This file is re-created by the CMS itself. It initializes the
  * {@link $_CONFIG[]} global array.
  */
 $incSettingsStatus = include_once '../config/settings.php';
+/**
+ * Path, database, FTP configuration settings
+ *
+ * Initialises global settings array and constants.
+ */
+include_once('../config/configuration.php');
 /**
  * Version information
  *

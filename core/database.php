@@ -33,7 +33,7 @@ require_once ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php';
  */
 function getDatabaseObject(&$errorMsg, $newInstance = false)
 {
-    global $_DBCONFIG, $ADODB_FETCH_MODE;
+    global $_DBCONFIG, $ADODB_FETCH_MODE, $_CONFIG;
     static $objDatabase;
 
     if (is_object($objDatabase) && !$newInstance) {
@@ -56,10 +56,10 @@ function getDatabaseObject(&$errorMsg, $newInstance = false)
             return false;
         }
 
-        if (!empty($_DBCONFIG['timezone'])) {
-            if (!$objDb->Execute('SET TIME_ZONE="'.$_DBCONFIG['timezone'].'"') && array_search($_DBCONFIG['timezone'], timezone_identifiers_list())) {
+        if (!empty($_CONFIG['timezone'])) {
+            if (!$objDb->Execute('SET TIME_ZONE="'.$_CONFIG['timezone'].'"') && array_search($_CONFIG['timezone'], timezone_identifiers_list())) {
                 //calculate and set the timezone offset if the mysql timezone tables aren't loaded
-                $objDateTimeZone = new DateTimeZone($_DBCONFIG['timezone']);
+                $objDateTimeZone = new DateTimeZone($_CONFIG['timezone']);
                 $objDateTime = new DateTime('now', $objDateTimeZone);
                 $offset = $objDateTimeZone->getOffset($objDateTime);
                 $offsetHours = round(abs($offset)/3600); 
