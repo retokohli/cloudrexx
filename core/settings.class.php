@@ -192,69 +192,70 @@ class settingsManager
             'TXT_RADIO_OFF'                   => $_CORELANG['TXT_DEACTIVATED']
         ));
         $objTemplate->setVariable(array(
-            'TXT_TITLE_SET1'                             => $_CORELANG['TXT_SYSTEM_SETTINGS'],
-            'TXT_TITLE_SET2'                             => $_CORELANG['TXT_SETTINGS_TITLE_CONTACT'],
-            'TXT_TITLE_SET3'                             => $_CORELANG['TXT_SETTINGS_TITLE_DEVELOPMENT'],
-            'TXT_TITLE_WEBSITE'                          => $_CORELANG['TXT_SETTINGS_TITLE_MISC'],
-            'TXT_TITLE_ADMIN_AREA'                       => $_CORELANG['TXT_ADMIN_AREA'],
-            'TXT_TITLE_SECURITY'                         => $_CORELANG['TXT_SECURITY'],
-            'TXT_TITLE_OTHER_CONFIG_OPTIONS'             => $_CORELANG['TXT_OTHER_CONFIG_OPTIONS'],
-            'TXT_DEBUGGING_STATUS'                       => $_CORELANG['TXT_DEBUGGING_STATUS'],
-            'TXT_DEBUGGING_FLAGS'                        => $_CORELANG['TXT_DEBUGGING_FLAGS'],
-            'TXT_DEBUGGING_FLAG_PHP'                     => $_CORELANG['TXT_DEBUGGING_FLAG_PHP'],
-            'TXT_DEBUGGING_FLAG_ADODB'                   => $_CORELANG['TXT_DEBUGGING_FLAG_ADODB'],
-            'TXT_DEBUGGING_FLAG_ADODB_TRACE'             => $_CORELANG['TXT_DEBUGGING_FLAG_ADODB_TRACE'],
-            'TXT_DEBUGGING_FLAG_ADODB_ERROR'             => $_CORELANG['TXT_DEBUGGING_FLAG_ADODB_ERROR'],
-            'TXT_DEBUGGING_FLAG_LOG_FILE'                => $_CORELANG['TXT_DEBUGGING_FLAG_LOG_FILE'],
-            'TXT_DEBUGGING_FLAG_LOG_FIREPHP'             => $_CORELANG['TXT_DEBUGGING_FLAG_LOG_FIREPHP'],
-            'TXT_DEBUGGING_EXPLANATION'                  => $_CORELANG['TXT_DEBUGGING_EXPLANATION'],
-            'TXT_SAVE_CHANGES'                           => $_CORELANG['TXT_SAVE'],
-            'TXT_SYSTEM_STATUS'                          => $_CORELANG['TXT_SETTINGS_SYSTEMSTATUS'],
-            'TXT_SYSTEM_STATUS_HELP'                     => $_CORELANG['TXT_SETTINGS_SYSTEMSTATUS_HELP'],
-            'TXT_IDS_STATUS'                             => $_CORELANG['TXT_SETTINGS_IDS'],
-            'TXT_IDS_STATUS_HELP'                        => $_CORELANG['TXT_SETTINGS_IDS_HELP'],
-            'TXT_HISTORY_STATUS'                         => $_CORELANG['TXT_SETTINGS_HISTORY'],
-            'TXT_HISTORY_STATUS_HELP'                    => $_CORELANG['TXT_SETTINGS_HISTORY_HELP'],
-            'TXT_XML_SITEMAP_STATUS'                     => $_CORELANG['TXT_SETTINGS_XML_SITEMAP'],
-            'TXT_XML_SITEMAP_STATUS_HELP'                => $_CORELANG['TXT_SETTINGS_XML_SITEMAP_HELP'],
-            'TXT_GLOBAL_TITLE'                           => $_CORELANG['TXT_SETTINGS_GLOBAL_TITLE'],
-            'TXT_GLOBAL_TITLE_HELP'                      => $_CORELANG['TXT_SETTINGS_GLOBAL_TITLE_HELP'],
-            'TXT_DOMAIN_URL'                             => $_CORELANG['TXT_SETTINGS_DOMAIN_URL'],
-            'TXT_DOMAIN_URL_HELP'                        => $_CORELANG['TXT_SETTINGS_DOMAIN_URL_HELP'],
-            'TXT_PAGING_LIMIT'                           => $_CORELANG['TXT_SETTINGS_PAGING_LIMIT'],
-            'TXT_PAGING_LIMIT_HELP'                      => $_CORELANG['TXT_SETTINGS_PAGING_LIMIT_HELP'],
-            'TXT_SEARCH_RESULT'                          => $_CORELANG['TXT_SETTINGS_SEARCH_RESULT'],
-            'TXT_SEARCH_RESULT_HELP'                     => $_CORELANG['TXT_SETTINGS_SEARCH_RESULT_HELP'],
-            'TXT_SESSION_LIVETIME'                       => $_CORELANG['TXT_SETTINGS_SESSION_LIVETIME'],
-            'TXT_SESSION_LIVETIME_HELP'                  => $_CORELANG['TXT_SETTINGS_SESSION_LIVETIME_HELP'],
-            'TXT_SESSION_LIFETIME_REMEMBER_ME'           => $_CORELANG['TXT_SETTINGS_SESSION_LIFETIME_REMEMBER_ME'],
-            'TXT_SESSION_LIFETIME_REMEMBER_ME_HELP'      => $_CORELANG['TXT_SETTINGS_SESSION_LIFETIME_HELP_REMEMBER_ME'],
-            'TXT_DNS_SERVER'                             => $_CORELANG['TXT_SETTINGS_DNS_SERVER'],
-            'TXT_DNS_SERVER_HELP'                        => $_CORELANG['TXT_SETTINGS_DNS_SERVER_HELP'],
-            'TXT_ADMIN_NAME'                             => $_CORELANG['TXT_SETTINGS_ADMIN_NAME'],
-            'TXT_ADMIN_EMAIL'                            => $_CORELANG['TXT_SETTINGS_ADMIN_EMAIL'],
-            'TXT_CONTACT_EMAIL'                          => $_CORELANG['TXT_SETTINGS_CONTACT_EMAIL'],
-            'TXT_CONTACT_EMAIL_HELP'                     => $_CORELANG['TXT_SETTINGS_CONTACT_EMAIL_HELP'],
-            'TXT_CONTACT_COMPANY'                        => $_CORELANG['TXT_SETTINGS_CONTACT_COMPANY'],
-            'TXT_CONTACT_ADDRESS'                        => $_CORELANG['TXT_SETTINGS_CONTACT_ADDRESS'],
-            'TXT_CONTACT_ZIP'                            => $_CORELANG['TXT_SETTINGS_CONTACT_ZIP'],
-            'TXT_CONTACT_PLACE'                          => $_CORELANG['TXT_SETTINGS_CONTACT_PLACE'],
-            'TXT_CONTACT_COUNTRY'                        => $_CORELANG['TXT_SETTINGS_CONTACT_COUNTRY'],
-            'TXT_CONTACT_PHONE'                          => $_CORELANG['TXT_SETTINGS_CONTACT_PHONE'],
-            'TXT_CONTACT_FAX'                            => $_CORELANG['TXT_SETTINGS_CONTACT_FAX'],
-            'TXT_SEARCH_VISIBLE_CONTENT_ONLY'            => $_CORELANG['TXT_SEARCH_VISIBLE_CONTENT_ONLY'],
-            'TXT_SYSTEM_DETECT_BROWSER_LANGUAGE'         => $_CORELANG['TXT_SYSTEM_DETECT_BROWSER_LANGUAGE'],
-            'TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'           => $_CORELANG['TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'],
-            'TXT_GOOGLE_MAPS_API_KEY_HELP'               => $_CORELANG['TXT_GOOGLE_MAPS_API_KEY_HELP'],
-            'TXT_GOOGLE_MAPS_API_KEY'                    => $_CORELANG['TXT_GOOGLE_MAPS_API_KEY'],
-            'TXT_FRONTEND_EDITING_STATUS'                => $_CORELANG['TXT_SETTINGS_FRONTEND_EDITING'],
-            'TXT_FRONTEND_EDITING_STATUS_HELP'           => $_CORELANG['TXT_SETTINGS_FRONTEND_EDITING_HELP'],
-            'TXT_CORE_LIST_PROTECTED_PAGES'              => $_CORELANG['TXT_CORE_LIST_PROTECTED_PAGES'],
-            'TXT_CORE_LIST_PROTECTED_PAGES_HELP'         => $_CORELANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP'],
-            'TXT_LICENSE_KEY'                            => $_CORELANG['TXT_LICENSE_KEY'],
-            'TXT_LICENSE_KEY_HELP'                       => $_CORELANG['TXT_LICENSE_KEY_HELP'],
-            'TXT_DASHBOARD_NEWS'                         => $_CORELANG['TXT_DASHBOARD_NEWS'],
-            'TXT_DASHBOARD_STATISTICS'                   => $_CORELANG['TXT_DASHBOARD_STATISTICS'],
+            'TXT_TITLE_SET1'                            => $_CORELANG['TXT_SYSTEM_SETTINGS'],
+            'TXT_TITLE_SET2'                            => $_CORELANG['TXT_SETTINGS_TITLE_CONTACT'],
+            'TXT_TITLE_SET3'                            => $_CORELANG['TXT_SETTINGS_TITLE_DEVELOPMENT'],
+            'TXT_TITLE_WEBSITE'                         => $_CORELANG['TXT_SETTINGS_TITLE_MISC'],
+            'TXT_TITLE_ADMIN_AREA'                      => $_CORELANG['TXT_ADMIN_AREA'],
+            'TXT_TITLE_SECURITY'                        => $_CORELANG['TXT_SECURITY'],
+            'TXT_TITLE_OTHER_CONFIG_OPTIONS'            => $_CORELANG['TXT_OTHER_CONFIG_OPTIONS'],
+            'TXT_DEBUGGING_STATUS'                      => $_CORELANG['TXT_DEBUGGING_STATUS'],
+            'TXT_DEBUGGING_FLAGS'                       => $_CORELANG['TXT_DEBUGGING_FLAGS'],
+            'TXT_DEBUGGING_FLAG_PHP'                    => $_CORELANG['TXT_DEBUGGING_FLAG_PHP'],
+            'TXT_DEBUGGING_FLAG_ADODB'                  => $_CORELANG['TXT_DEBUGGING_FLAG_ADODB'],
+            'TXT_DEBUGGING_FLAG_ADODB_TRACE'            => $_CORELANG['TXT_DEBUGGING_FLAG_ADODB_TRACE'],
+            'TXT_DEBUGGING_FLAG_ADODB_ERROR'            => $_CORELANG['TXT_DEBUGGING_FLAG_ADODB_ERROR'],
+            'TXT_DEBUGGING_FLAG_LOG_FILE'               => $_CORELANG['TXT_DEBUGGING_FLAG_LOG_FILE'],
+            'TXT_DEBUGGING_FLAG_LOG_FIREPHP'            => $_CORELANG['TXT_DEBUGGING_FLAG_LOG_FIREPHP'],
+            'TXT_DEBUGGING_EXPLANATION'                 => $_CORELANG['TXT_DEBUGGING_EXPLANATION'],
+            'TXT_SAVE_CHANGES'                          => $_CORELANG['TXT_SAVE'],
+            'TXT_SYSTEM_STATUS'                         => $_CORELANG['TXT_SETTINGS_SYSTEMSTATUS'],
+            'TXT_SYSTEM_STATUS_HELP'                    => $_CORELANG['TXT_SETTINGS_SYSTEMSTATUS_HELP'],
+            'TXT_IDS_STATUS'                            => $_CORELANG['TXT_SETTINGS_IDS'],
+            'TXT_IDS_STATUS_HELP'                       => $_CORELANG['TXT_SETTINGS_IDS_HELP'],
+            'TXT_HISTORY_STATUS'                        => $_CORELANG['TXT_SETTINGS_HISTORY'],
+            'TXT_HISTORY_STATUS_HELP'                   => $_CORELANG['TXT_SETTINGS_HISTORY_HELP'],
+            'TXT_XML_SITEMAP_STATUS'                    => $_CORELANG['TXT_SETTINGS_XML_SITEMAP'],
+            'TXT_XML_SITEMAP_STATUS_HELP'               => $_CORELANG['TXT_SETTINGS_XML_SITEMAP_HELP'],
+            'TXT_GLOBAL_TITLE'                          => $_CORELANG['TXT_SETTINGS_GLOBAL_TITLE'],
+            'TXT_GLOBAL_TITLE_HELP'                     => $_CORELANG['TXT_SETTINGS_GLOBAL_TITLE_HELP'],
+            'TXT_DOMAIN_URL'                            => $_CORELANG['TXT_SETTINGS_DOMAIN_URL'],
+            'TXT_DOMAIN_URL_HELP'                       => $_CORELANG['TXT_SETTINGS_DOMAIN_URL_HELP'],
+            'TXT_PAGING_LIMIT'                          => $_CORELANG['TXT_SETTINGS_PAGING_LIMIT'],
+            'TXT_PAGING_LIMIT_HELP'                     => $_CORELANG['TXT_SETTINGS_PAGING_LIMIT_HELP'],
+            'TXT_SEARCH_RESULT'                         => $_CORELANG['TXT_SETTINGS_SEARCH_RESULT'],
+            'TXT_SEARCH_RESULT_HELP'                    => $_CORELANG['TXT_SETTINGS_SEARCH_RESULT_HELP'],
+            'TXT_SESSION_LIVETIME'                      => $_CORELANG['TXT_SETTINGS_SESSION_LIVETIME'],
+            'TXT_SESSION_LIVETIME_HELP'                 => $_CORELANG['TXT_SETTINGS_SESSION_LIVETIME_HELP'],
+            'TXT_SESSION_LIFETIME_REMEMBER_ME'          => $_CORELANG['TXT_SETTINGS_SESSION_LIFETIME_REMEMBER_ME'],
+            'TXT_SESSION_LIFETIME_REMEMBER_ME_HELP'     => $_CORELANG['TXT_SETTINGS_SESSION_LIFETIME_HELP_REMEMBER_ME'],
+            'TXT_DNS_SERVER'                            => $_CORELANG['TXT_SETTINGS_DNS_SERVER'],
+            'TXT_DNS_SERVER_HELP'                       => $_CORELANG['TXT_SETTINGS_DNS_SERVER_HELP'],
+            'TXT_ADMIN_NAME'                            => $_CORELANG['TXT_SETTINGS_ADMIN_NAME'],
+            'TXT_ADMIN_EMAIL'                           => $_CORELANG['TXT_SETTINGS_ADMIN_EMAIL'],
+            'TXT_CONTACT_EMAIL'                         => $_CORELANG['TXT_SETTINGS_CONTACT_EMAIL'],
+            'TXT_CONTACT_EMAIL_HELP'                    => $_CORELANG['TXT_SETTINGS_CONTACT_EMAIL_HELP'],
+            'TXT_CONTACT_COMPANY'                       => $_CORELANG['TXT_SETTINGS_CONTACT_COMPANY'],
+            'TXT_CONTACT_ADDRESS'                       => $_CORELANG['TXT_SETTINGS_CONTACT_ADDRESS'],
+            'TXT_CONTACT_ZIP'                           => $_CORELANG['TXT_SETTINGS_CONTACT_ZIP'],
+            'TXT_CONTACT_PLACE'                         => $_CORELANG['TXT_SETTINGS_CONTACT_PLACE'],
+            'TXT_CONTACT_COUNTRY'                       => $_CORELANG['TXT_SETTINGS_CONTACT_COUNTRY'],
+            'TXT_CONTACT_PHONE'                         => $_CORELANG['TXT_SETTINGS_CONTACT_PHONE'],
+            'TXT_CONTACT_FAX'                           => $_CORELANG['TXT_SETTINGS_CONTACT_FAX'],
+            'TXT_SEARCH_VISIBLE_CONTENT_ONLY'           => $_CORELANG['TXT_SEARCH_VISIBLE_CONTENT_ONLY'],
+            'TXT_SYSTEM_DETECT_BROWSER_LANGUAGE'        => $_CORELANG['TXT_SYSTEM_DETECT_BROWSER_LANGUAGE'],
+            'TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'          => $_CORELANG['TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'],
+            'TXT_GOOGLE_MAPS_API_KEY_HELP'              => $_CORELANG['TXT_GOOGLE_MAPS_API_KEY_HELP'],
+            'TXT_GOOGLE_MAPS_API_KEY'                   => $_CORELANG['TXT_GOOGLE_MAPS_API_KEY'],
+            'TXT_FRONTEND_EDITING_STATUS'               => $_CORELANG['TXT_SETTINGS_FRONTEND_EDITING'],
+            'TXT_FRONTEND_EDITING_STATUS_HELP'          => $_CORELANG['TXT_SETTINGS_FRONTEND_EDITING_HELP'],
+            'TXT_CORE_LIST_PROTECTED_PAGES'             => $_CORELANG['TXT_CORE_LIST_PROTECTED_PAGES'],
+            'TXT_CORE_LIST_PROTECTED_PAGES_HELP'        => $_CORELANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP'],
+            'TXT_LICENSE_KEY'                           => $_CORELANG['TXT_LICENSE_KEY'],
+            'TXT_LICENSE_KEY_HELP'                      => $_CORELANG['TXT_LICENSE_KEY_HELP'],
+            'TXT_CORE_TIMEZONE'                         => $_CORELANG['TXT_CORE_TIMEZONE'],
+            'TXT_DASHBOARD_NEWS'                        => $_CORELANG['TXT_DASHBOARD_NEWS'],
+            'TXT_DASHBOARD_STATISTICS'                  => $_CORELANG['TXT_DASHBOARD_STATISTICS'],
         ));
 
         if ($this->isWritable()) {
@@ -267,55 +268,71 @@ class settingsManager
         // as every setting entry is already passed through htmlspecialchars() when
         // saved. See function updateSettings() below
         $objTemplate->setVariable(array(
-            'SETTINGS_CONTACT_EMAIL'                         => $arrSettings['contactFormEmail'],
-            'SETTINGS_CONTACT_COMPANY'                       => $arrSettings['contactCompany'],
-            'SETTINGS_CONTACT_ADDRESS'                       => $arrSettings['contactAddress'],
-            'SETTINGS_CONTACT_ZIP'                           => $arrSettings['contactZip'],
-            'SETTINGS_CONTACT_PLACE'                         => $arrSettings['contactPlace'],
-            'SETTINGS_CONTACT_COUNTRY'                       => $arrSettings['contactCountry'],
-            'SETTINGS_CONTACT_PHONE'                         => $arrSettings['contactPhone'],
-            'SETTINGS_CONTACT_FAX'                           => $arrSettings['contactFax'],
-            'SETTINGS_ADMIN_EMAIL'                           => $arrSettings['coreAdminEmail'],
-            'SETTINGS_ADMIN_NAME'                            => $arrSettings['coreAdminName'],
-            'SETTINGS_GLOBAL_TITLE'                          => $arrSettings['coreGlobalPageTitle'],
-            'SETTINGS_DOMAIN_URL'                            => $arrSettings['domainUrl'],
-            'SETTINGS_PAGING_LIMIT'                          => intval($arrSettings['corePagingLimit']),
-            'SETTINGS_SEARCH_RESULT_LENGTH'                  => intval($arrSettings['searchDescriptionLength']),
-            'SETTINGS_SESSION_LIFETIME'                      => intval($arrSettings['sessionLifeTime']),
-            'SETTINGS_SESSION_LIFETIME_REMEMBER_ME'          => $arrSettings['sessionLifeTimeRememberMe'],
-            'SETTINGS_DNS_SERVER'                            => $arrSettings['dnsServer'],
-            'SETTINGS_IDS_RADIO_ON'                          => ($arrSettings['coreIdsStatus'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_IDS_RADIO_OFF'                         => ($arrSettings['coreIdsStatus'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_XML_SITEMAP_ON'                        => ($arrSettings['xmlSitemapStatus'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_XML_SITEMAP_OFF'                       => ($arrSettings['xmlSitemapStatus'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_SYSTEMSTATUS_ON'                       => ($arrSettings['systemStatus'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_SYSTEMSTATUS_OFF'                      => ($arrSettings['systemStatus'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_SEARCH_VISIBLE_CONTENT_ON'             => ($arrSettings['searchVisibleContentOnly'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_SEARCH_VISIBLE_CONTENT_OFF'            => ($arrSettings['searchVisibleContentOnly'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_DETECT_BROWSER_LANGUAGE_ON'            => ($arrSettings['languageDetection'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_DETECT_BROWSER_LANGUAGE_OFF'           => ($arrSettings['languageDetection'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_FRONTEND_EDITING_ON'                   => ($arrSettings['frontendEditingStatus'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_FRONTEND_EDITING_OFF'                  => ($arrSettings['frontendEditingStatus'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_GOOGLE_MAPS_API_KEY'                   => $arrSettings['googleMapsAPIKey'],
-            'SETTINGS_LIST_PROTECTED_PAGES_ON'               => ($arrSettings['coreListProtectedPages'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_LIST_PROTECTED_PAGES_OFF'              => ($arrSettings['coreListProtectedPages'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_LICENSE_KEY'                           => stripslashes($arrSettings['licenseKey']),
-            'SETTINGS_DASHBOARD_NEWS_ON'                     => ($arrSettings['dashboardNews'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_DASHBOARD_NEWS_OFF'                    => ($arrSettings['dashboardNews'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_DASHBOARD_STATISTICS_ON'               => ($arrSettings['dashboardStatistics'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_DASHBOARD_STATISTICS_OFF'              => ($arrSettings['dashboardStatistics'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_CONTACT_EMAIL'                        => $arrSettings['contactFormEmail'],
+            'SETTINGS_CONTACT_COMPANY'                      => $arrSettings['contactCompany'],
+            'SETTINGS_CONTACT_ADDRESS'                      => $arrSettings['contactAddress'],
+            'SETTINGS_CONTACT_ZIP'                          => $arrSettings['contactZip'],
+            'SETTINGS_CONTACT_PLACE'                        => $arrSettings['contactPlace'],
+            'SETTINGS_CONTACT_COUNTRY'                      => $arrSettings['contactCountry'],
+            'SETTINGS_CONTACT_PHONE'                        => $arrSettings['contactPhone'],
+            'SETTINGS_CONTACT_FAX'                          => $arrSettings['contactFax'],
+            'SETTINGS_ADMIN_EMAIL'                          => $arrSettings['coreAdminEmail'],
+            'SETTINGS_ADMIN_NAME'                           => $arrSettings['coreAdminName'],
+            'SETTINGS_GLOBAL_TITLE'                         => $arrSettings['coreGlobalPageTitle'],
+            'SETTINGS_DOMAIN_URL'                           => $arrSettings['domainUrl'],
+            'SETTINGS_PAGING_LIMIT'                         => intval($arrSettings['corePagingLimit']),
+            'SETTINGS_SEARCH_RESULT_LENGTH'                 => intval($arrSettings['searchDescriptionLength']),
+            'SETTINGS_SESSION_LIFETIME'                     => intval($arrSettings['sessionLifeTime']),
+            'SETTINGS_SESSION_LIFETIME_REMEMBER_ME'         => $arrSettings['sessionLifeTimeRememberMe'],
+            'SETTINGS_DNS_SERVER'                           => $arrSettings['dnsServer'],
+            'SETTINGS_IDS_RADIO_ON'                         => ($arrSettings['coreIdsStatus'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_IDS_RADIO_OFF'                        => ($arrSettings['coreIdsStatus'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_XML_SITEMAP_ON'                       => ($arrSettings['xmlSitemapStatus'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_XML_SITEMAP_OFF'                      => ($arrSettings['xmlSitemapStatus'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_SYSTEMSTATUS_ON'                      => ($arrSettings['systemStatus'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_SYSTEMSTATUS_OFF'                     => ($arrSettings['systemStatus'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_SEARCH_VISIBLE_CONTENT_ON'            => ($arrSettings['searchVisibleContentOnly'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_SEARCH_VISIBLE_CONTENT_OFF'           => ($arrSettings['searchVisibleContentOnly'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_DETECT_BROWSER_LANGUAGE_ON'           => ($arrSettings['languageDetection'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_DETECT_BROWSER_LANGUAGE_OFF'          => ($arrSettings['languageDetection'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_FRONTEND_EDITING_ON'                  => ($arrSettings['frontendEditingStatus'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_FRONTEND_EDITING_OFF'                 => ($arrSettings['frontendEditingStatus'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_GOOGLE_MAPS_API_KEY'                  => $arrSettings['googleMapsAPIKey'],
+            'SETTINGS_LIST_PROTECTED_PAGES_ON'              => ($arrSettings['coreListProtectedPages'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_LIST_PROTECTED_PAGES_OFF'             => ($arrSettings['coreListProtectedPages'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_LICENSE_KEY'                          => stripslashes($arrSettings['licenseKey']),
+            'SETTINGS_TIMEZONE_OPTIONS'                     => $this->getTimezoneOptions($arrSettings['timezone']),
+            'SETTINGS_DASHBOARD_NEWS_ON'                    => ($arrSettings['dashboardNews'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_DASHBOARD_NEWS_OFF'                   => ($arrSettings['dashboardNews'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_DASHBOARD_STATISTICS_ON'              => ($arrSettings['dashboardStatistics'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_DASHBOARD_STATISTICS_OFF'             => ($arrSettings['dashboardStatistics'] == 'off') ? 'checked="checked"' : '',
         ));
 
         $objTemplate->setVariable(array(
-            'TXT_ADVANCED_UPLOAD_STATUS_BACKEND'       => $_CORELANG['TXT_ADVANCED_UPLOAD_STATUS_BACKEND'],
-            'TXT_ADVANCED_UPLOAD_STATUS_FRONTEND'      => $_CORELANG['TXT_ADVANCED_UPLOAD_STATUS_FRONTEND'],
-            'SETTINGS_ADVANCED_UPLOAD_BACKEND_ON'      => ($arrSettings['advancedUploadBackend'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_ADVANCED_UPLOAD_BACKEND_OFF'     => ($arrSettings['advancedUploadBackend'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_ADVANCED_UPLOAD_FRONTEND_ON'     => ($arrSettings['advancedUploadFrontend'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_ADVANCED_UPLOAD_FRONTEND_OFF'    => ($arrSettings['advancedUploadFrontend'] == 'off') ? 'checked="checked"' : ''
+            'TXT_ADVANCED_UPLOAD_STATUS_BACKEND'        => $_CORELANG['TXT_ADVANCED_UPLOAD_STATUS_BACKEND'],
+            'TXT_ADVANCED_UPLOAD_STATUS_FRONTEND'       => $_CORELANG['TXT_ADVANCED_UPLOAD_STATUS_FRONTEND'],
+            'SETTINGS_ADVANCED_UPLOAD_BACKEND_ON'       => ($arrSettings['advancedUploadBackend'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_ADVANCED_UPLOAD_BACKEND_OFF'      => ($arrSettings['advancedUploadBackend'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_ADVANCED_UPLOAD_FRONTEND_ON'      => ($arrSettings['advancedUploadFrontend'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_ADVANCED_UPLOAD_FRONTEND_OFF'     => ($arrSettings['advancedUploadFrontend'] == 'off') ? 'checked="checked"' : ''
         ));
         
         $this->setDebuggingVariables($objTemplate);
+    }
+
+    /**
+     * Returns all available timezones
+     *
+     * @access  private
+     * @param   string      $selectedTimezone   name of the selected timezone
+     * @return  string      $timezoneOptions    available timezones as HTML <option></option>
+     */
+    private function getTimezoneOptions($selectedTimezone) {
+        $timezoneOptions = '';
+        foreach (timezone_identifiers_list() as $timezone) {
+            $timezoneOptions .= '<option value="'.$timezone.'"'.(($timezone == $selectedTimezone) ? ' selected="selected"' : '').'>'.$timezone.'</option>';
+        }
+        return $timezoneOptions;
     }
 
     /**
@@ -362,49 +379,48 @@ class settingsManager
     {
         global $objDatabase, $_CORELANG, $_CONFIG;
 
-        foreach ($_POST['setvalue'] as $intId => $strValue) {
-            if (intval($intId) == 43 ||
-                intval($intId) == 50 ||
-                intval($intId) == 54 ||
-                intval($intId) == 55 ||
-                intval($intId) == 56 ||
-                intval($intId) == 63 ||
-                intval($intId) == 67 ||
-                intval($intId) == 69 ||
-                intval($intId) == 70 ||
-                intval($intId) == 71 ||
-                intval($intId) == 85 ||
-                intval($intId) == 86) {
-                $strValue = ($strValue == 'on') ? 'on' : 'off';
-            }
-
-            if (intval($intId) == 53) {
-                $arrMatch = array();
-                if (preg_match('#^https?://(.*)$#', $strValue, $arrMatch)) {
-                    $strValue = $arrMatch[1];
+        if (!in_array((!empty($_POST['setvalue'][87]) ? $_POST['setvalue'][87] : ''), timezone_identifiers_list())) {
+            $this->strErrMessage[] = $_CORELANG['TXT_CORE_TIMEZONE_INVALID'];
+        } else {
+            foreach ($_POST['setvalue'] as $id => $value) {
+                switch (intval($id)) {
+                    case 53:
+                        $arrMatch = array();
+                        if (preg_match('#^https?://(.*)$#', $value, $arrMatch)) {
+                            $value = $arrMatch[1];
+                        }
+                        $_CONFIG['domainUrl'] = htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
+                        break;
+                    case 54:
+                        $_CONFIG['xmlSitemapStatus'] = $value;
+                        break;
+                    case 71:
+                        $_CONFIG['coreListProtectedPages'] = $value;
+                        break;
+                    case 43:
+                    case 50:
+                    case 54:
+                    case 55:
+                    case 56:
+                    case 63:
+                    case 67:
+                    case 69:
+                    case 70:
+                    case 71:
+                    case 85:
+                    case 86:
+                        $value = ($value == 'on') ? 'on' : 'off';
+                        break;
                 }
-                $_CONFIG['domainUrl'] = htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET);
+
+                $objDatabase->Execute(' UPDATE `'.DBPREFIX.'settings`
+                                        SET `setvalue` = "'.contrexx_addslashes(htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET)).'"
+                                        WHERE `setid` = '.intval($id));
             }
 
-            switch (intval($intId)) {
-                case 54:
-                    $_CONFIG['xmlSitemapStatus'] = $strValue;
-                    break;
-                case 71:
-                    $_CONFIG['coreListProtectedPages'] = $strValue;
-                    break;
-            }
-
-            $val = contrexx_addslashes(htmlspecialchars($strValue, ENT_QUOTES, CONTREXX_CHARSET));
-            $objDatabase->Execute('    UPDATE '.DBPREFIX.'settings
-                                    SET setvalue="'.$val.'"
-                                    WHERE setid='.intval($intId));
+            $this->updateDebugSettings(!empty($_POST['debugging']) ? $_POST['debugging'] : null);
+            $this->strOkMessage = $_CORELANG['TXT_SETTINGS_UPDATED'];
         }
-
-        $debugging = isset($_POST['debugging']) ? $_POST['debugging'] : null;
-        $this->updateDebugSettings($debugging);
-
-        $this->strOkMessage = $_CORELANG['TXT_SETTINGS_UPDATED'];
     }
 
     /**

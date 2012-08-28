@@ -6,6 +6,8 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_CORE_TIMEZONE'] = "Timezone";
+$_ARRAYLANG['TXT_CORE_TIMEZONE_INVALID'] = "The selected timezone is not valid.";
 $_ARRAYLANG['TXT_CORE_WHOIS'] = "Kim Nerede";
 $_ARRAYLANG['TXT_CORE_ADD_EMAIL_CAMPAIGN'] = "Add email campaign";
 $_ARRAYLANG['TXT_CORE_EMAIL_MARKETING'] = "Email marketing";

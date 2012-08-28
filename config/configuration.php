@@ -78,7 +78,7 @@ $_CONFIG['coreCharacterEncoding'] = 'UTF-8'; // example 'UTF-8'
 /**
 * Set timezone
 */
-@ini_set('date.timezone', 'Europe/Zurich');
+@ini_set('date.timezone', $_CONFIG['timezone']);
 
 /**
 * -------------------------------------------------------------------------
