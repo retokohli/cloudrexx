@@ -10,10 +10,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * @ignore
- */
-require_once ASCMS_MODULE_PATH.'/block/lib/blockLib.class.php';
 
 /**
  * Block

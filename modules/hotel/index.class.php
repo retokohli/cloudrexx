@@ -11,7 +11,6 @@
 * @version      1.0.0
 */
 
-require_once ASCMS_MODULE_PATH."/hotel/HotelLib.class.php";
 
 class HotelManager extends HotelLib
 {
@@ -361,7 +360,6 @@ class HotelManager extends HotelLib
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
-        require_once(ASCMS_LIBRARY_PATH.DIRECTORY_SEPARATOR.'phpmailer'.DIRECTORY_SEPARATOR."class.phpmailer.php");
         $hotelid = intval($_REQUEST['id']);
         $this->_getFieldNames($hotelid, $this->frontLang);
         $hotelID = $this->_getFieldFromText('hotel_id');
@@ -727,7 +725,6 @@ class HotelManager extends HotelLib
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
-        require_once(ASCMS_LIBRARY_PATH.DS.'/FRAMEWORK'.DS."Validator.class.php");
         $objValidator = new FWValidator();
 
         $ids=explode('_',$_GET['id']);
@@ -753,7 +750,6 @@ class HotelManager extends HotelLib
             $error=0;
             if ($objValidator->isEmail($email)) {
                 if (!empty($name) && !empty($telephone) && !empty($email) && $hotelID > 0 && $fieldID > 0) {
-                    require_once(ASCMS_LIBRARY_PATH.DS.'/phpmailer'.DS."class.phpmailer.php");
                     $objRS = $objDatabase->SelectLimit("SELECT email
                                                 FROM ".DBPREFIX."module_hotel_contact
                                                 WHERE hotel_id = '$hotelID'

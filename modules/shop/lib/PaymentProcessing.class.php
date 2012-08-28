@@ -20,11 +20,6 @@ define('_PAYMENT_DEBUG', 0);
 define('SHOP_PAYMENT_LOGO_PATH', '/modules/shop/images/payments/');
 
 /**
- * File operations
- */
-require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
-
-/**
  * Payment Service Provider manager
  *
  * These are the requirements of the current specification
@@ -266,7 +261,6 @@ class PaymentProcessing
                 break;
             // Added 20100222 -- Reto Kohli
             case 'mobilesolutions':
-                require_once(ASCMS_MODULE_PATH.'/shop/payments/yellowpay/PostfinanceMobile.class.php');
                 $return = PostfinanceMobile::getForm(
                     intval(100 * $_SESSION['shop']['grand_total_price']),
                     $_SESSION['shop']['order_id']);
@@ -292,12 +286,10 @@ DBG::log($error);
                 $currency_code = Currency::getCodeById(
                     $_SESSION['shop']['currencyId']);
                 $amount = $_SESSION['shop']['grand_total_price'];
-                require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
                 $return = PayPal::getForm($account_email, $order_id,
                     $currency_code, $amount, $item_name);
                 break;
             case 'Dummy':
-                require_once ASCMS_MODULE_PATH.'/shop/payments/dummy/Dummy.class.php';
                 $return = Dummy::getForm();
                 break;
         }
@@ -342,7 +334,6 @@ DBG::log($error);
      */
     static function _SaferpayProcessor($arrCards=null)
     {
-        require_once ASCMS_MODULE_PATH.'/shop/payments/saferpay/Saferpay.class.php';
         global $_ARRAYLANG;
 
         $serverBase = $_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET.'/';
@@ -431,7 +422,6 @@ DBG::log($error);
      */
     static function _YellowpayProcessor()
     {
-        require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
         global $_ARRAYLANG;
 
         $language = FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
@@ -480,7 +470,6 @@ DBG::log("Yellowpay Error: $error");
     {
         global $_ARRAYLANG;
 
-        require_once(ASCMS_MODULE_PATH.'/shop/payments/datatrans/Datatrans.class.php');
         Datatrans::initialize(
             SettingDb::getValue('datatrans_merchant_id'),
             $_SESSION['shop']['order_id'],
@@ -523,7 +512,6 @@ DBG::log("Yellowpay Error: $error");
 //DBG::log("GET: ".var_export($_GET, true));
                 $arrShopOrder = array(
                     'ACCOUNTID' => SettingDb::getValue('saferpay_id'));
-                require_once ASCMS_MODULE_PATH.'/shop/payments/saferpay/Saferpay.class.php';
                 $id = Saferpay::payConfirm();
                 if (SettingDb::getValue('saferpay_finalize_payment')) {
                     $arrShopOrder['ID'] = $id;
@@ -552,12 +540,10 @@ DBG::log("Yellowpay Error: $error");
                     }
                     $currency_code = Currency::getCodeById($currency_id);
                     $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
-                    require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
                     return PayPal::ipnCheck($amount, $currency_code,
                         $order_id, $email, $customer_email);
                 }
             case 'yellowpay':
-                require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
                 $passphrase = SettingDb::getValue('postfinance_hash_signature_out');
                 return Yellowpay::checkIn($passphrase);
 //                    if (Yellowpay::$arrError || Yellowpay::$arrWarning) {
@@ -579,7 +565,6 @@ DBG::log("Yellowpay Error: $error");
 //                        && (   empty($_POST['mosoauth'])
 //                            || empty($_POST['postref'])))
                 ) return null;
-                require_once(ASCMS_MODULE_PATH.'/shop/payments/yellowpay/PostfinanceMobile.class.php');
                 $result = PostfinanceMobile::validateSign();
 if ($result) {
 //DBG::log("PaymentProcessing::checkIn(): mobilesolutions: Payment verification successful!");
@@ -589,7 +574,6 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
                 return $result;
             // Added 20081117 -- Reto Kohli
             case 'datatrans':
-                require_once(ASCMS_MODULE_PATH.'/shop/payments/datatrans/Datatrans.class.php');
                 return Datatrans::validateReturn()
                     && Datatrans::getPaymentResult() == 1;
 
@@ -609,7 +593,6 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
                 $result = '';
                 if (isset($_REQUEST['result']))
                     $result = $_REQUEST['result'];
-                require_once ASCMS_MODULE_PATH.'/shop/payments/dummy/Dummy.class.php';
                 // Returns the order ID on success, false otherwise
                 return Dummy::commit($result);
             default:
@@ -628,24 +611,19 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
         }
         switch ($_GET['handler']) {
             case 'saferpay':
-                require_once ASCMS_MODULE_PATH.'/shop/payments/saferpay/Saferpay.class.php';
                 return Saferpay::getOrderId();
             case 'paypal':
-                require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
                 return PayPal::getOrderId();
             case 'yellowpay':
-                require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
                 return Yellowpay::getOrderId();
             // Added 20100222 -- Reto Kohli
             case 'mobilesolutions':
 //DBG::log("getOrderId(): mobilesolutions");
-                require_once(ASCMS_MODULE_PATH.'/shop/payments/yellowpay/PostfinanceMobile.class.php');
                 $order_id = PostfinanceMobile::getOrderId();
 //DBG::log("getOrderId(): mobilesolutions, Order ID $order_id");
                 return $order_id;
             // Added 20081117 -- Reto Kohli
             case 'datatrans':
-                require_once(ASCMS_MODULE_PATH.'/shop/payments/datatrans/Datatrans.class.php');
                 return Datatrans::getOrderId();
             // For the remaining types, there's no need to check in, so we
             // return true and jump over the validation of the order ID
@@ -690,10 +668,7 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
     static function errorHandler()
     {
         global $objDatabase;
-        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
-        require_once(ASCMS_CORE_PATH.'/Text.class.php');
-
-        $table_name_new = DBPREFIX.'module_shop'.MODULE_INDEX.'_processors';
+        
         if (!UpdateUtil::table_exist($table_name_new)) {
             $table_structure = array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),

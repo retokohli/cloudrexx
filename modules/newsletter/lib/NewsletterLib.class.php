@@ -15,11 +15,6 @@
  */
 
 /**
- * @ignore
- */
-require_once ASCMS_CORE_PATH.'/Country.class.php';
-
-/**
  * Class newsletter library
  *
  * Newsletter module class

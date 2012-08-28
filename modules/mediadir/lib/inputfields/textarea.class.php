@@ -11,15 +11,7 @@
 /**
  * @ignore
  */
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
-/**
- * @ignore
- */
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface.php';
-/**
- * @ignore
- */
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/placeholder.class.php';
 
 /**
  * Media  Directory Inputfield Textarea Class

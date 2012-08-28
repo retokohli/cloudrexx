@@ -9,12 +9,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * Includes
- */
-require_once ASCMS_LIBRARY_PATH . '/PEAR/XML/RSS.class.php';
-require_once ASCMS_MODULE_PATH . '/feed/feedLib.class.php';
-
 
 /**
  * Feed
@@ -94,7 +88,6 @@ class feedManager extends feedLibrary
                 $this->showCatEdit();
                 break;
             case 'newsML':
-                require_once ASCMS_MODULE_PATH.'/feed/newsML.class.php';
                 $this->_objNewsML = new NewsML(true);
                 $this->_showNewsML();
                 break;
@@ -143,7 +136,6 @@ class feedManager extends feedLibrary
 
         $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".$feedNewsMLStatus."' WHERE setname='feedNewsMLStatus'");
         $_CONFIG['feedNewsMLStatus'] = (string) $feedNewsMLStatus;
-        require_once(ASCMS_CORE_PATH.'/settings.class.php');
         $objSettings = new settingsManager();
         $objSettings->writeSettingsFile();
 

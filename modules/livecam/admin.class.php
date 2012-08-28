@@ -10,11 +10,6 @@
  */
 
 /**
- * @ignore
- */
-require_once ASCMS_MODULE_PATH.'/livecam/lib/livecamLib.class.php';
-
-/**
  * Livecam
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Comvation Development Team <info@comvation.com>

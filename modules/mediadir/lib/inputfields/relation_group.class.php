@@ -12,10 +12,6 @@
  * @ignore
  */
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface.php';
-/**
- * @ignore
- */
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
 
 /**
  * Media  Directory Inputfield Relation Class

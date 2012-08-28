@@ -11,11 +11,6 @@
  */
 
 /**
- * @ignore
- */
-require_once ASCMS_MODULE_PATH . '/gallery/Lib.class.php';
-
-/**
  * Gallery
  *
  * Class to manage the gallery of the CMS
@@ -2161,7 +2156,6 @@ class galleryManager extends GalleryLibrary
         /**
          * Uploader button handling
          */
-        require_once ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php';
         //paths we want to remember for handling the uploaded files
         $paths = array(
             'path' => ASCMS_GALLERY_PATH,
@@ -3591,9 +3585,6 @@ $strFileNew = '';
             $intNewHeight     = round(($intHeight * $intNewWidth) / $intWidth,0);
         }
 
-
-
-        @include_once(ASCMS_FRAMEWORK_PATH.'/System.class.php');
         $objSystem = new FWSystem();
         if ($objSystem === false) {
             return false;
@@ -3920,7 +3911,6 @@ $strFileNew = '';
     {
         $this->sql->updateAccessId($id);
 
-        require_once(ASCMS_CORE_PATH.'/settings.class.php');
             $objSettings = new settingsManager();
             $objSettings->writeSettingsFile();
     }

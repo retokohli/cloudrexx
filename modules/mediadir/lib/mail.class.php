@@ -8,12 +8,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * Includes
- */
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/entry.class.php';
-
 class mediaDirectoryMail extends mediaDirectoryLibrary
 {
     private $intAction;
@@ -179,7 +173,7 @@ class mediaDirectoryMail extends mediaDirectoryLibrary
         if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
             $objMail = new phpmailer();
 
-            if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
                 $arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
                 if ($arrSmtp !== false) {
                     $objMail->IsSMTP();
@@ -205,7 +199,7 @@ class mediaDirectoryMail extends mediaDirectoryLibrary
                     $objMail->Send();
                     $objMail->ClearAddresses();
                 }
-            }   
-        }
+            }
     }
+}
 }

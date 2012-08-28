@@ -13,8 +13,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-require_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php';
-
 /**
  * E-Card
  *
@@ -312,7 +310,7 @@ class ecard
             // Copy motive to new file with $code as filename
             $fileExtension = preg_replace('/^.+(\.[^\.]+)$/', '$1', $objResult->fields['setting_value']);
             $fileName = $objResult->fields['setting_value'];
-            require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
+            
             $objFile = new File();
             if ($objFile->copyFile(ASCMS_ECARD_OPTIMIZED_PATH.'/', $fileName, ASCMS_ECARD_SEND_ECARDS_PATH.'/', $code.$fileExtension)) {
                 // Check e-mail settings

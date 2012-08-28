@@ -12,7 +12,6 @@
  * Includes
  */
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
 
 class mediaDirectoryInputfieldRelation extends mediaDirectoryLibrary implements inputfield
 {

@@ -10,10 +10,6 @@
  * @version     3.0.0
  */
 
-require_once ASCMS_CORE_PATH.'/MailTemplate.class.php';
-require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Zones.class.php';
 
 /**
  * Shop settings
@@ -535,8 +531,6 @@ class ShopSettings
      */
     static function errorHandler()
     {
-        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
-        require_once(ASCMS_CORE_PATH.'/SettingDb.class.php');
 
 DBG::log("ShopSettings::errorHandler(): Entered");
         SettingDb::errorHandler();

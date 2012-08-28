@@ -13,15 +13,6 @@
  */
 
 
-/**
- * Product objects
- */
-require_once ASCMS_MODULE_PATH.'/shop/lib/Product.class.php';
-/**
- * The Products helper object
- */
-require_once ASCMS_MODULE_PATH.'/shop/lib/Products.class.php';
-
 define('SHOP_CATEGORY_IMAGE_PATH',      ASCMS_SHOP_IMAGES_PATH.'/');
 define('SHOP_CATEGORY_IMAGE_WEB_PATH',  ASCMS_SHOP_IMAGES_WEB_PATH.'/');
 
@@ -1064,7 +1055,6 @@ class ShopCategories
             return '';
         }
         // Already included by the Shop.
-        require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
         $objImageManager = new ImageManager();
         // Create thumbnail.
         // Deleting the old thumb beforehand is integrated into

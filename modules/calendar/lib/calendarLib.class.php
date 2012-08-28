@@ -10,14 +10,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * Includes
- */
-require_once ASCMS_LIBRARY_PATH."/activecalendar/activecalendar.php";
-require_once ASCMS_MODULE_PATH."/calendar/lib/settings.class.php";
-require_once ASCMS_MODULE_PATH."/calendar/lib/event.class.php";
-require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
-
 if (!class_exists("calendarLibrary")) {
 /**
  * Calendar
@@ -175,7 +167,6 @@ class calendarLibrary
      */
     function _sendICal($arrEvents)
     {
-        require_once(ASCMS_LIBRARY_PATH.'/iCalcreator/iCalcreator.class.php');
 
         $c = new vcalendar();
         $c->setMethod('PUBLISH');
@@ -234,7 +225,6 @@ class calendarLibrary
      */
     function _iCalExportEvent($id)
     {
-        require_once(ASCMS_LIBRARY_PATH.'/iCalcreator/iCalcreator.class.php');
         //wrap this in an array, since it is only one event (see _sendICal() to understand)
         $this->_sendICal(array($this->getEventByID($id)));
     }
@@ -251,7 +241,6 @@ class calendarLibrary
         if ($catID == 0) {
             $this->_iCalExportAll();
         }
-        require_once(ASCMS_LIBRARY_PATH.'/iCalcreator/iCalcreator.class.php');
 // TODO: $objRS is not defined
 //        $this->_filename = html_entity_decode($objRS->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
         $this->_filename = '';
@@ -1552,7 +1541,7 @@ class calendarLibrary
         if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
             $objMail = new phpmailer();
 
-            if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
                 $objSmtpSettings = new SmtpSettings();
                 if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                     $objMail->IsSMTP();
@@ -1674,11 +1663,11 @@ class calendarLibrary
 
         $objResultReg     = $objDatabase->SelectLimit($queryReg, 1);
 
-        //get mail obj
+        //get mail obj        
         if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
             $objMail = new phpmailer();
 
-            if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
                 $objSmtpSettings = new SmtpSettings();
                 if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                     $objMail->IsSMTP();
@@ -1763,12 +1752,12 @@ class calendarLibrary
 
 
 
-        //get mail obj
+        //get mail obj        
         if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
             if ($objResultNote->fields['notification'] == 1) {
                 $objMail = new phpmailer();
 
-                if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                    if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
                     $objSmtpSettings = new SmtpSettings();
                     if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                         $objMail->IsSMTP();

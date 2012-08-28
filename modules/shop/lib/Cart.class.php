@@ -10,7 +10,6 @@
  * @todo        Test!
  */
 
-require_once ASCMS_MODULE_PATH.'/shop/lib/Coupon.class.php';
 
 /**
  * Shop Cart

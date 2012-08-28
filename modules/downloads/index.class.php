@@ -10,13 +10,6 @@
  */
 
 /**
- * @ignore
- */
-require_once dirname(__FILE__).'/lib/downloadsLib.class.php';
-require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
-require_once(ASCMS_FRAMEWORK_PATH.DIRECTORY_SEPARATOR.'Image.class.php');
-
-/**
 * Digital Asset Management Frontend
 * @copyright    CONTREXX CMS - COMVATION AG
 * @author       COMVATION Development Team <info@comvation.com>
@@ -599,7 +592,6 @@ class downloads extends DownloadsLibrary
 
 			//Uploader button handling
             JS::activate('cx');
-            require_once ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php';
             //paths we want to remember for handling the uploaded files
             $data = array(
                 'path' => ASCMS_DOWNLOADS_IMAGES_PATH,

@@ -12,8 +12,6 @@
 /**
  * Includes
  */
-require_once ASCMS_CORE_PATH . '/wysiwyg.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface.php';
 
 /**
@@ -267,7 +265,6 @@ EOF;
 
     function BBCodeToHTML($content){
         global $_ARRAYLANG;
-        require_once ASCMS_LIBRARY_PATH.'/bbcode/stringparser_bbcode.class.php';
         $objBBCode = new StringParser_BBCode();
         $objBBCode->addFilter(STRINGPARSER_FILTER_PRE, array(&$this, 'convertlinebreaks')); //unify all linebreak variants from different systems
         $objBBCode->addFilter(STRINGPARSER_FILTER_PRE, array(&$this, 'convertlinks'));

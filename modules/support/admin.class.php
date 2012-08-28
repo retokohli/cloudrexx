@@ -11,40 +11,6 @@
  */
 
 /**
- * Common functions and methods used by both front- and backend
- */
-require_once ASCMS_MODULE_PATH.'/support/lib/SupportCommon.class.php';
-/**
- * Support Category
- */
-require_once ASCMS_MODULE_PATH.'/support/lib/SupportCategory.class.php';
-/**
- * Support Categories
- */
-require_once ASCMS_MODULE_PATH.'/support/lib/SupportCategories.class.php';
-/**
- * Information Field
- */
-require_once ASCMS_MODULE_PATH.'/support/lib/InfoField.class.php';
-/**
- * Information Fields
- */
-require_once ASCMS_MODULE_PATH.'/support/lib/InfoFields.class.php';
-/**
- * Knowledge Base
- */
-require_once ASCMS_MODULE_PATH.'/support/lib/KnowledgeBase.class.php';
-/**
- * Support Ticket
- */
-require_once ASCMS_MODULE_PATH.'/support/lib/Ticket.class.php';
-/**
- * Provides clickable table headers for sorting
- */
-require_once ASCMS_CORE_PATH.'/Sorting.class.php';
-
-
-/**
  * Support system backend
  *
  * @copyright   CONTREXX CMS - COMVATION AG

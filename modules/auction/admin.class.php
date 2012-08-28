@@ -14,11 +14,6 @@
 
 error_reporting (E_ALL);
 
-/**
- * Includes
- */
-require_once ASCMS_LIBRARY_PATH . '/FRAMEWORK/File.class.php';
-require_once ASCMS_MODULE_PATH . '/auction/lib/auctionLib.class.php';
 
 /**
  * Auction

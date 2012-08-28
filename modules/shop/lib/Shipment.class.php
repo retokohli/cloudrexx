@@ -829,7 +829,6 @@ class Shipment
      */
     static function errorHandler()
     {
-        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
         static $break = false;
 
         if ($break) {

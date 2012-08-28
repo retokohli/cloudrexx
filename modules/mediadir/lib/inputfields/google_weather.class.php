@@ -12,9 +12,7 @@
  * Includes
  */
 
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface.php';
-require_once ASCMS_LIBRARY_PATH. '/googleServices/googleWeather.class.php';
 
 class mediaDirectoryInputfieldGoogle_weather extends mediaDirectoryLibrary implements inputfield
 {

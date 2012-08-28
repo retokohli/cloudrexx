@@ -9,11 +9,6 @@
  */
 
 /**
- * Includes
- */
-require_once ASCMS_MODULE_PATH.'/blog/lib/blogLib.class.php';
-
-/**
  * BlogAdmin
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
@@ -325,7 +320,6 @@ class Blog extends BlogLibrary  {
                 //Anonymous comments allowed or user is logged in
 
                 //Fill Add-Comment-Form
-                require ASCMS_CORE_PATH.'/wysiwyg.class.php';
 
                 //Determine the desired editor
                 if ($this->_arrSettings['blog_comments_editor'] == 'wysiwyg') {
@@ -462,7 +456,6 @@ class Blog extends BlogLibrary  {
         }
 
         //Create validator-object
-        require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
         $objValidator = new FWValidator();
 
         //Get general-input
@@ -536,7 +529,7 @@ class Blog extends BlogLibrary  {
                 if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
                     $objMail = new phpmailer();
 
-                    if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                        if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
                         if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                             $objMail->IsSMTP();
                             $objMail->Host = $arrSmtp['hostname'];

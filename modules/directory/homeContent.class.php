@@ -11,11 +11,6 @@
  */
 
 /**
- * Includes
- */
-require_once ASCMS_MODULE_PATH . '/directory/lib/directoryLib.class.php';
-
-/**
  * Home content
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>

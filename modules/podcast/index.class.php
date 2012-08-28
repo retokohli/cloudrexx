@@ -11,11 +11,6 @@
  */
 
 /**
- * @ignore
- */
-require_once ASCMS_MODULE_PATH.'/podcast/lib/podcastLib.class.php';
-
-/**
  * Frontend of the podcast module
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Comvation Development Team <info@comvation.com>

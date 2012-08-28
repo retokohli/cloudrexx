@@ -9,17 +9,6 @@
  * @subpackage  module_egov
  * @todo        Edit PHP DocBlocks!
  */
-
-/**
- * Includes
- */
-require_once dirname(__FILE__).'/lib/eGovLibrary.class.php';
-require_once dirname(__FILE__).'/lib/paypal.class.php';
-/**
- * Currency: Conversion, formatting.
- */
-require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
-
 /**
  * E-Government
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -207,7 +196,7 @@ class eGov extends eGovLibrary
             }
             if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
                 $objMail = new phpmailer();
-                if (!empty($_CONFIG['coreSmtpServer']) && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                    if (!empty($_CONFIG['coreSmtpServer']) && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
                     if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                         $objMail->IsSMTP();
                         $objMail->Host = $arrSmtp['hostname'];
@@ -260,7 +249,7 @@ class eGov extends eGovLibrary
                 $BodyText = html_entity_decode($BodyText);
                 if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
                     $objMail = new phpmailer();
-                    if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                        if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
                         if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                             $objMail->IsSMTP();
                             $objMail->Host = $arrSmtp['hostname'];
@@ -465,8 +454,6 @@ class eGov extends eGovLibrary
         }
 
         $languageCode = strtoupper(FWLanguage::getLanguageCodeById($_LANGID));
-        require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
-        require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
         SettingDb::init('egov', 'config');
         $arrShopOrder = array(
             'PSPID' => SettingDb::getValue('postfinance_shop_id'),
@@ -544,11 +531,9 @@ $yellowpayForm
     {
         global $_ARRAYLANG;
 
-        require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
         $result = (isset($_GET['result']) ? $_GET['result'] : 0);
         $order_id = Yellowpay::getOrderId();
         if ($result < 0) {
-            require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
             SettingDb::init('config');
             if (Yellowpay::checkIn(SettingDb::getValue(
                     'postfinance_hash_signature_out'))) {

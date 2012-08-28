@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @ignore
- */
-require_once(ASCMS_MODULE_PATH.'/checkout/lib/Countries.class.php');
 
 /**
  * CheckoutLibrary

@@ -9,32 +9,6 @@
  * @author      Reto Kohli <reto.kohli@comvation.com>
  */
 
-/**
- * Value Added Tax (VAT)
- */
-require_once ASCMS_MODULE_PATH.'/shop/lib/Vat.class.php';
-/**
- * Weight
- */
-require_once ASCMS_MODULE_PATH.'/shop/lib/Weight.class.php';
-/**
- * Distribution (aka Handler)
- */
-require_once ASCMS_MODULE_PATH."/shop/lib/Distribution.class.php";
-/**
- * Customer object with database layer.
- */
-require_once ASCMS_MODULE_PATH.'/shop/lib/Customer.class.php';
-/**
- * Product Attribute
- */
-require_once ASCMS_MODULE_PATH.'/shop/lib/Attribute.class.php';
-/**
- * Product Attributes - Helper and display methods
- */
-require_once ASCMS_MODULE_PATH.'/shop/lib/Attributes.class.php';
-
-require_once ASCMS_FRAMEWORK_PATH."/Image.class.php";
 
 /**
  * Product as available in the Shop.
@@ -1335,7 +1309,6 @@ class Product
 
     static function errorHandler()
     {
-        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
 
 //DBG::activate(DBG_DB_FIREPHP);
 

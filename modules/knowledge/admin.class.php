@@ -7,11 +7,6 @@
  * @subpackage  module_knowledge
  */
 
-/**
- * Includes
- */
-require_once ASCMS_MODULE_PATH.'/knowledge/lib/knowledgeLib.class.php';
-
 define("ACCESS_ID_KNOWLEDGE", 129);
 define("ACCESS_ID_OVERVIEW", 130);
 define("ACCESS_ID_EDIT_ARTICLES", 131);
@@ -964,7 +959,6 @@ class KnowledgeAdmin extends KnowledgeLibrary
         $response = Array();
         $response['list'] = $content;
 
-        require_once(ASCMS_LIBRARY_PATH."/PEAR/Services/JSON.php");
         $objJson = new Services_JSON();
         $jsonResponse = $objJson->encode($response);
         echo $jsonResponse;
@@ -1291,7 +1285,6 @@ class KnowledgeAdmin extends KnowledgeLibrary
         $this->tpl->parse("taglist");
         $taglist = $this->tpl->get("taglist");
 
-        require_once(ASCMS_LIBRARY_PATH."/PEAR/Services/JSON.php");
         $objJson = new Services_JSON();
         $jsonResponse = $objJson->encode(array("html" => $taglist, "available_tags" => $return_tags));
 

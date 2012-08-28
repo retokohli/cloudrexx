@@ -1,16 +1,6 @@
 <?php
 
 /**
- * @ignore
- */
-require_once(ASCMS_MODULE_PATH.'/checkout/lib/CheckoutLibrary.class.php');
-require_once(ASCMS_MODULE_PATH.'/checkout/lib/Transaction.class.php');
-require_once(ASCMS_MODULE_PATH.'/checkout/lib/Yellowpay.class.php');
-require_once(ASCMS_MODULE_PATH.'/checkout/lib/SettingsYellowpay.class.php');
-require_once(ASCMS_MODULE_PATH.'/checkout/lib/SettingsMails.class.php');
-require_once(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php');
-
-/**
  * Checkout
  *
  * @copyright   CONTREXX CMS - COMVATION AG

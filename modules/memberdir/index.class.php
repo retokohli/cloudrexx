@@ -1,5 +1,4 @@
 <?php
-require_once ASCMS_MODULE_PATH . '/memberdir/lib/MemberDirLib.class.php';
 
 /**
  * Member directory

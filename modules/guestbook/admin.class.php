@@ -11,11 +11,6 @@
  */
 
 /**
- * @ignore
- */
-require_once ASCMS_MODULE_PATH . '/guestbook/Lib.class.php';
-
-/**
  * Guestbook
  *
  * The admin class to manage all the guestbook entries

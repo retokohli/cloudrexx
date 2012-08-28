@@ -10,14 +10,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * @ignore
- */
-require_once ASCMS_MODULE_PATH.'/podcast/lib/podcastLib.class.php';
-/**
- * @ignore
- */
-require_once ASCMS_CORE_MODULE_PATH.'/cache/admin.class.php';
 
 /**
  * Backend for the podcast module
@@ -856,7 +848,6 @@ class podcastManager extends podcastLib
     function _updateHomeContentSettings()
     {
         global $objDatabase, $_CONFIG;
-        require_once(ASCMS_CORE_PATH.'/settings.class.php');
         $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".intval($_POST['setHomeContent'])."' WHERE setname='podcastHomeContent'");
         if($objResult !== false){
             $objSettings = new settingsManager();

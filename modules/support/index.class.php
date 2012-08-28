@@ -10,36 +10,6 @@
  */
 
 /**
- * Common functions and methods used by both front- and backend
- */
-require_once ASCMS_MODULE_PATH.'/support/lib/SupportCommon.class.php';
-/**
- * Support Category
- */
-require_once ASCMS_MODULE_PATH.'/support/lib/SupportCategory.class.php';
-/**
- * Support Categories
- */
-require_once ASCMS_MODULE_PATH.'/support/lib/SupportCategories.class.php';
-/**
- * Info Fields
- */
-require_once ASCMS_MODULE_PATH.'/support/lib/InfoFields.class.php';
-/**
- * Info Field
- */
-require_once ASCMS_MODULE_PATH.'/support/lib/InfoField.class.php';
-/**
- * Support Ticket
- */
-require_once ASCMS_MODULE_PATH.'/support/lib/Ticket.class.php';
-/**
- * Provides clickable table headers for sorting
-require_once ASCMS_CORE_PATH.'/Sorting.class.php';
- */
-
-
-/**
  * The initial support request state.
  * No User information is present yet, and the process is about to begin.
  */

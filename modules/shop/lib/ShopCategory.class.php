@@ -12,13 +12,6 @@
  */
 
 /**
- * Access to Products
- */
-require_once ASCMS_MODULE_PATH.'/shop/lib/Product.class.php';
-require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
-
-
-/**
  * Container for Products in the Shop.
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -867,8 +860,6 @@ class ShopCategory
      */
     static function errorHandler()
     {
-        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
-        require_once(ASCMS_MODULE_PATH.'/shop/lib/ShopSettings.class.php');
 
 //DBG::activate(DBG_DB_FIREPHP);
 

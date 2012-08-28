@@ -421,7 +421,6 @@ function _alreadyVotedWithEmail($voteingId, $email)
 function _verifyEmail($email)
 {
 	if ($arrMxRRs = _getMXHosts($email)) {
-		require_once ASCMS_LIBRARY_PATH.'/PEAR/Net/SMTP.php';
 
 		foreach ($arrMxRRs as $arrMxRR) {
 			if (!PEAR::isError($objSMTP = new Net_SMTP($arrMxRR['EXCHANGE'])) && !PEAR::isError($objSMTP->connect(2)) && !PEAR::isError($e = $objSMTP->vrfy($email))) {
@@ -437,7 +436,6 @@ function _verifyEmail($email)
 
 function _getMXHosts($email)
 {
-	require_once ASCMS_FRAMEWORK_PATH.'/MXLookup.class.php';
 
 	$objMXLookup = new MXLookup();
 

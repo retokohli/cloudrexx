@@ -11,11 +11,6 @@
  */
 
 /**
- * Includes
- */
-require_once dirname(__FILE__).'/forumLibExample.class.php';
-
-/**
  * Example module template
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>

@@ -8,15 +8,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * Includes
- */
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php'; 
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfield.class.php';    
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/category.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/level.class.php'; 
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/form.class.php'; 
-
 class mediaDirectoryInterfaces extends mediaDirectoryLibrary
 {
     /**

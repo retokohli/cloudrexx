@@ -61,8 +61,6 @@ class mediaDirectoryLibrary
         self::getSettings();
 
         if($this->arrSettings['settingsEntryDisplaydurationNotification'] >= 1) {
-            include_once ASCMS_MODULE_PATH . '/'.$this->moduleName.'/lib/entry.class.php';
-            include_once ASCMS_MODULE_PATH . '/'.$this->moduleName.'/lib/mail.class.php';
 
 	        $objEntries = new mediaDirectoryEntry();
 	        $objEntries->getEntries(null, null, null, null, null, null, true);

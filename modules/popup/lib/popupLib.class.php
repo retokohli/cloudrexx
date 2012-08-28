@@ -479,7 +479,6 @@ class popupLibrary
             $objDatabase->Execute($query);
         }
 
-        require_once(ASCMS_CORE_PATH.'/settings.class.php');
         $objSettings = new settingsManager();
         $objSettings->writeSettingsFile();
     }

@@ -12,11 +12,6 @@ $_ARRAYLANG['TXT_DIV_THUMBNAIL_TYPE'] = "Thumbnail des Bildes verwenden";
  */
 
 /**
- * Includes
- */
-require_once ASCMS_MODULE_PATH.'/data/lib/dataLib.class.php';
-
-/**
  * DataAdmin
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
@@ -1389,7 +1384,6 @@ class DataAdmin extends DataLibrary {
 
             // create thumbnail if required
             if (empty($arrEntryValues['thumbnail'])) {
-                require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
                 if (!isset($objImage)) {
                     $objImage = new ImageManager();
                 }
@@ -1754,7 +1748,6 @@ class DataAdmin extends DataLibrary {
             $objDatabase->Execute("   DELETE FROM ".DBPREFIX."module_data_placeholders
                                       WHERE ref_id = ".$intEntryId);
 
-            require_once(ASCMS_FRAMEWORK_PATH."/File.class.php");
             $objFile = new File();
             foreach (glob(ASCMS_DATA_IMAGES_PATH.'/'.$intEntryId.'_*') as $image) {
                 $objFile->delFile(ASCMS_DATA_IMAGES_PATH.'/', ASCMS_DATA_IMAGES_WEB_PATH.'/', basename($image));

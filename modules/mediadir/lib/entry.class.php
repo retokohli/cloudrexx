@@ -8,16 +8,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * Includes
- */
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfield.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/mail.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/voting.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/form.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/comment.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/comment.class.php';
-require_once ASCMS_LIBRARY_PATH. '/googleServices/googleMap.class.php';
 
 class mediaDirectoryEntry extends mediaDirectoryInputfield
 {

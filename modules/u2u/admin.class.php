@@ -8,11 +8,6 @@
  * @subpackage  module_U2U
  */
 
-/**
- * Includes
- */
-require_once ASCMS_MODULE_PATH.'/u2u/lib/u2uLib.class.php';
-require_once ASCMS_CORE_PATH.'/wysiwyg.class.php';
 
 class u2uAdmin extends u2uLibrary {
 

@@ -10,10 +10,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * Includes
- */
-require_once ASCMS_MODULE_PATH.'/popup/lib/popupLib.class.php';
 
 /**
  * Block

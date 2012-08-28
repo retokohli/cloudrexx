@@ -790,13 +790,11 @@ class Attribute
             // Note: The date regex is defined based on the value of the
             // ASCMS_DATE_SHORT_FORMAT constant and may thus be localized.
             case self::TYPE_DATE_OPTIONAL:
-                require_once ASCMS_FRAMEWORK_PATH.'/DateTimeTools.class.php';
                 return
                     '(^$|^'.
                     DateTimeTools::getRegexForDateFormat(ASCMS_DATE_SHORT_FORMAT).
                     '$)';
             case self::TYPE_DATE_MANDATORY:
-                require_once ASCMS_FRAMEWORK_PATH.'/DateTimeTools.class.php';
                 return
                     '^'.
                     DateTimeTools::getRegexForDateFormat(ASCMS_DATE_SHORT_FORMAT).
@@ -833,8 +831,6 @@ class Attribute
      */
     static function errorHandler()
     {
-        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
-        require_once(ASCMS_CORE_PATH.'/Text.class.php');
 
         $table_name_new = DBPREFIX.'module_shop'.MODULE_INDEX.'_attribute';
         if (!UpdateUtil::table_exist($table_name_new)) {
