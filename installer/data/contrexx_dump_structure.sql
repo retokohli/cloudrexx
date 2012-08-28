@@ -175,7 +175,7 @@ CREATE TABLE `contrexx_content_page` (
   `lang` int(11) NOT NULL,
   `type` varchar(16) NOT NULL,
   `caching` tinyint(1) NOT NULL,
-  `updatedAt` datetime DEFAULT NULL,
+  `updatedAt` timestamp NULL DEFAULT NULL,
   `updatedBy` char(40) NOT NULL,
   `title` varchar(255) NOT NULL,
   `linkTarget` varchar(16) DEFAULT NULL,
