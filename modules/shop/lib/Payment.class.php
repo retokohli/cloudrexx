@@ -8,8 +8,6 @@
  * @version     3.0.0
  */
 
-require_once ASCMS_MODULE_PATH.'/shop/lib/PaymentProcessing.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Zones.class.php';
 
 /**
  * Payment service manager
@@ -160,7 +158,6 @@ class Payment
             $payment_id = $_SESSION['shop']['paymentId'];
             $processor_id = self::getPaymentProcessorId($payment_id);
             if ($processor_id == 2) {
-                require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
                 $arrPaypalAcceptedCurrencyCodes =
                    PayPal::getAcceptedCurrencyCodeArray();
                 foreach ($arrCurrencies as $index => $arrCurrency) {
@@ -483,10 +480,6 @@ class Payment
             'SHOP_ZONE_SELECTION_NEW' => Zones::getMenu(0, 'zone_id_new'),
         ));
         // Payment Service Providers
-        require_once ASCMS_MODULE_PATH.'/shop/payments/datatrans/Datatrans.class.php';
-        require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
-        require_once ASCMS_MODULE_PATH.'/shop/payments/saferpay/Saferpay.class.php';
-        require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
         $objTemplate->setVariable(array(
             'SHOP_SAFERPAY_ID' => SettingDb::getValue('saferpay_id'),
             'SHOP_SAFERPAY_STATUS' => (SettingDb::getValue('saferpay_active') ? HTML_ATTRIBUTE_CHECKED : ''),
@@ -555,8 +548,6 @@ class Payment
      */
     static function errorHandler()
     {
-        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
-        require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
 
 //DBG::activate(DBG_DB_FIREPHP);
 

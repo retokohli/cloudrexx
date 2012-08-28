@@ -2042,9 +2042,6 @@ class Order
      */
     static function errorHandler()
     {
-        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
-        require_once(ASCMS_CORE_PATH.'/SettingDb.class.php');
-        require_once(ASCMS_CORE_PATH.'/Country.class.php');
 
 //DBG::activate(DBG_DB_FIREPHP);
         ShopSettings::errorHandler();

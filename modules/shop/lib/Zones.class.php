@@ -403,7 +403,6 @@ class Zones
      */
     static function errorHandler()
     {
-        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
 
 //DBG::activate(DBG_DB_FIREPHP);
 

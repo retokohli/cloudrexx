@@ -10,11 +10,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * Multilanguage text
- * @ignore
- */
-require_once ASCMS_CORE_PATH.'/Text.class.php';
 
 /**
  * Currency related static methods
@@ -918,7 +913,6 @@ class Currency
     static function errorHandler()
     {
         global $objDatabase;
-        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
 
 //DBG::activate(DBG_DB_FIREPHP);
 //DBG::log("Currency::errorHandler(): Entered");

@@ -10,13 +10,6 @@
  * @subpackage  module_jobs
  * @todo        Edit PHP DocBlocks!
  */
-
-/**
- * Includes
- */
-require_once ASCMS_MODULE_PATH . '/jobs/xmlfeed.class.php';
-require_once ASCMS_MODULE_PATH . '/jobs/lib/Library.class.php';
-
 /**
  * Jobs
  * @copyright   CONTREXX CMS - COMVATION AG

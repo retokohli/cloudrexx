@@ -10,11 +10,6 @@
  */
 
 /**
- * Includes
- */
-require_once ASCMS_MODULE_PATH.'/forum/lib/forumLib.class.php';
-
-/**
  * Forum home content
  *
  * Show Forum Block Content

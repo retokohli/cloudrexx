@@ -12,45 +12,6 @@
  * @subpackage  module_shop
  */
 
-/**
- * @ignore
- */
-require_once ASCMS_CORE_PATH.'/Country.class.php';
-require_once ASCMS_CORE_PATH.'/Html.class.php';
-require_once ASCMS_CORE_PATH.'/MailTemplate.class.php';
-require_once ASCMS_CORE_PATH.'/Message.class.php';
-require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
-require_once ASCMS_CORE_PATH.'/Text.class.php';
-require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/ShopLibrary.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Attribute.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Attributes.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/CSVimport.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Csv_bv.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Customer.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Customers.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Discount.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Distribution.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Manufacturer.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Payment.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/PaymentProcessing.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Product.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Products.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Shipment.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/ShopCategory.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/ShopCategories.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/ShopSettings.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Vat.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Weight.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Zones.class.php';
-// Added for Version 2.3
-require_once ASCMS_MODULE_PATH.'/shop/lib/Order.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Orders.class.php';
-// OBSOLETE
-//require_once ASCMS_MODULE_PATH.'/shop/lib/Exchange.class.php';
-//require_once ASCMS_MODULE_PATH.'/shop/lib/CSVimport.class.php';
-//require_once ASCMS_MODULE_PATH.'/shop/lib/Csv_bv.class.php';
 
 /**
  * Administration of the Shop
@@ -825,7 +786,6 @@ class Shopmanager extends ShopLibrary
     function makeProductThumbnailsById($arrId)
     {
         global $objDatabase, $_ARRAYLANG;
-        require_once ASCMS_FRAMEWORK_PATH."/Image.class.php";
 
         if (!is_array($arrId)) return false;
         $objImageManager = new ImageManager();
@@ -1231,7 +1191,6 @@ class Shopmanager extends ShopLibrary
                 self::view_settings_vat();
                 break;
             case 'coupon':
-                require_once ASCMS_MODULE_PATH.'/shop/lib/Coupon.class.php';
                 self::$objTemplate->addBlockfile('SHOP_SETTINGS_FILE',
                     'settings_block', 'module_shop_discount_coupon.html');
                 Coupon::edit(self::$objTemplate);
@@ -2404,7 +2363,6 @@ if ($test === NULL) {
             ? $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL']
             : $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
 
-        require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
         switch ($_POST['afterStoreAction']) {
           case 'newEmpty':
             HTTP::redirect(
@@ -3438,7 +3396,6 @@ if (!$limit) {
     function view_pricelists()
     {
         global $objDatabase, $_ARRAYLANG;
-        require_once ASCMS_MODULE_PATH.'/shop/lib/Pricelist.class.php';
 
         self::$pageTitle = $_ARRAYLANG['TXT_PDF_OVERVIEW'];
         // Note that the "list_id" index may be set but empty in order to
@@ -3476,7 +3433,6 @@ if (!$limit) {
     static function view_pricelist_edit()
     {
         global $objDatabase, $_ARRAYLANG;
-        require_once ASCMS_MODULE_PATH.'/shop/lib/Pricelist.class.php';
 
         $list_id = null;
         $objList = Pricelist::getFromPost();

@@ -75,16 +75,6 @@ $arrTicketSourceString = array(
     SUPPORT_TICKET_SOURCE_SYSTEM  => $_ARRAYLANG['TXT_SUPPORT_TICKET_SOURCE_SYSTEM'],
 );
 
-
-/**
- * Handles events on a Ticket
- */
-require_once ASCMS_MODULE_PATH.'/support/lib/TicketEvent.class.php';
-/**
- * Messages related to a Ticket
- */
-require_once ASCMS_MODULE_PATH.'/support/lib/Message.class.php';
-
 /**
  * Ticket
  *

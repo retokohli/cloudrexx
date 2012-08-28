@@ -9,25 +9,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * Includes
- */
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/entry.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/category.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/level.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/form.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfield.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/mail.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/search.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/voting.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/comment.class.php';
-
-require_once ASCMS_CORE_MODULE_PATH . '/access/admin.class.php';
-
-require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/FWUser.class.php';
-
-
 class mediaDirectory extends mediaDirectoryLibrary
 {
 

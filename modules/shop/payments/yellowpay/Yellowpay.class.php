@@ -11,14 +11,6 @@
  */
 
 /**
- * Currency: Conversion, formatting.
- */
-//require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
-//require_once ASCMS_MODULE_PATH.'/shop/lib/Settings.class.php';
-require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
-require_once ASCMS_FRAMEWORK_PATH.'/Validator.class.php';
-
-/**
  * PostFinance online payment
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>

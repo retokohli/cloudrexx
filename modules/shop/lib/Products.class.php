@@ -568,7 +568,6 @@ class Products
     {
         global $_ARRAYLANG;
 
-        require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
 
         if (!is_array($arrId))
             //$this->addMessage("Keine Produkt IDs zum erstellen der Thumbnails vorhanden ($id).");

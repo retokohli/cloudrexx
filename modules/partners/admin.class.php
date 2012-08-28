@@ -8,11 +8,6 @@
  * @subpackage  module_Partners
  */
 
-/**
- * Includes
- */
-require_once ASCMS_MODULE_PATH.'/partners/lib/partnersLib.class.php';
-
 
 class PartnersAdmin extends PartnersLibrary
 {
@@ -3813,7 +3808,6 @@ class PartnersAdmin extends PartnersLibrary
         CSRF::add_placeholder($objTpl);
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-        require_once ASCMS_LIBRARY_PATH . "/importexport/import.class.php";
         $arrCategories = $this->createCategoryArray();
         $objImport = new Import();
         $arrFields = array(

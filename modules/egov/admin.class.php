@@ -11,11 +11,6 @@
  */
 
 /**
- * Includes
- */
-require_once dirname(__FILE__).'/lib/eGovLibrary.class.php';
-
-/**
  * E-Government
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
@@ -220,7 +215,6 @@ class eGov extends eGovLibrary
             ? 'checked="checked"' : '');
 
         // PostFinance uses SettingDb
-        require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
         SettingDb::init('egov', 'config');
 // TODO: Temporary fix for the upgrade to SettingDb.
 // Remove when the whole module is migrated.
@@ -731,7 +725,7 @@ class eGov extends eGovLibrary
                 if ($TargetMail != '') {
                     if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
                         $objMail = new phpmailer();
-                        if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                            if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
                             if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                                 $objMail->IsSMTP();
                                 $objMail->Host = $arrSmtp['hostname'];
@@ -750,7 +744,7 @@ class eGov extends eGovLibrary
                         $objMail->IsHTML(false);
                         $objMail->Body = $BodyText;
                         $objMail->AddAddress($TargetMail);
-// TODO: Verify the result and show an error if sending the mail fails!
+    // TODO: Verify the result and show an error if sending the mail fails!
                         $objMail->Send();
                     }
                 }
@@ -1417,7 +1411,6 @@ class eGov extends eGovLibrary
                SET `value`='".(isset($_REQUEST['PayPal_IPN']) ? 1 : 0)."'
              WHERE `name`='set_paypal_ipn'
         ") ? true : false);
-        require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
         SettingDb::init('egov', 'config');
         $result_settingdb = SettingDb::storeFromPost(true);
         if ($result_settingdb === false) {
@@ -1609,7 +1602,7 @@ class eGov extends eGovLibrary
             }
             if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
                 $objMail = new phpmailer();
-                if (!empty($_CONFIG['coreSmtpServer']) && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                    if (!empty($_CONFIG['coreSmtpServer']) && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
                     if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                         $objMail->IsSMTP();
                         $objMail->Host = $arrSmtp['hostname'];

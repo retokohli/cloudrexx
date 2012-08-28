@@ -8,12 +8,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * @ignore
- */
-require_once dirname(__FILE__).'/../../config/configuration.php';
-require_once dirname(__FILE__).'/../../core/API.php';
-
 $csvCreator = new CsvCreator(
     contrexx_input2raw($_REQUEST['content']),
     contrexx_input2raw($_REQUEST['name']),

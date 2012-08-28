@@ -9,11 +9,6 @@
  */
 
 /**
- * Includes
- */
-require_once ASCMS_MODULE_PATH.'/data/lib/dataLib.class.php';
-
-/**
  * DataAdmin
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>              

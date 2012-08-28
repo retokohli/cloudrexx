@@ -8,11 +8,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * Includes
- */
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
-
 class mediaDirectoryPlaceholder extends mediaDirectoryLibrary
 {
     function __construct()

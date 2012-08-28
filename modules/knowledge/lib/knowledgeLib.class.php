@@ -7,18 +7,6 @@
  */
 
 /**
- * Includes
- */
-require_once ASCMS_LIBRARY_PATH.'/activecalendar/activecalendar.php';
-require_once ASCMS_MODULE_PATH.'/knowledge/lib/Category.class.php';
-require_once ASCMS_MODULE_PATH.'/knowledge/lib/Articles.class.php';
-if (!class_exists("DatabaseError")) {
-    require_once ASCMS_MODULE_PATH . '/knowledge/lib/databaseError.class.php';
-}
-require_once ASCMS_MODULE_PATH."/knowledge/lib/Settings.class.php";
-require_once ASCMS_MODULE_PATH."/knowledge/lib/Tags.class.php";
-
-/**
  * Knowledge library
  * 
  * Some basic operations for the knowledge module
@@ -80,7 +68,6 @@ class KnowledgeLibrary {
 	    global $objDatabase;
 
 	    // seems a bit dirty i know
-	    require_once ASCMS_DOCUMENT_ROOT . "/core/settings.class.php";
 	    
 	    $query = " UPDATE ".DBPREFIX."settings
 	               SET setvalue = '".$value."'

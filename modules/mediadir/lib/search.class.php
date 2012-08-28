@@ -8,15 +8,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * Includes
- */
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfield.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/category.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/level.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/form.class.php';
-
 class mediaDirectorySearch extends mediaDirectoryLibrary
 {
     public $arrFoundIds = array();
@@ -459,7 +450,7 @@ EOF;
         }
     }
     
-    //OSEC CUSTOMIZING (ev. übernehmen und für levels ausbauen)
+    //OSEC CUSTOMIZING (ev. ï¿½bernehmen und fï¿½r levels ausbauen)
     function searchLevelsCategories($intType, $strTerm, $intCmdFormId)
     {
         global $objDatabase;
@@ -505,7 +496,7 @@ EOF;
         return $arrFoundIds;
     }
     
-    //OSEC CUSTOMIZING (ev. übernehmen)
+    //OSEC CUSTOMIZING (ev. ï¿½bernehmen)
     function searchCountries($strTerm, $intCmdFormId)
     {
         global $objDatabase;

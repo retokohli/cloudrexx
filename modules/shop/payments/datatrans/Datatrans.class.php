@@ -25,11 +25,6 @@
 define('SHOP_PSP_URI_DATATRANS', 'https://payment.datatrans.biz/upp/jsp/upStart.jsp');
 define('SHOP_PSP_URI_DATATRANS_TEST', 'https://pilot.datatrans.biz/upp/jsp/upStart.jsp');
 
-/**
- * @ignore
- */
-//require_once ASCMS_MODULE_PATH.'/shop/lib/Settings.class.php';
-require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
 
 /*
 
@@ -275,7 +270,6 @@ class Datatrans
         /**
          * Currency: Conversion, formatting.
          */
-        require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
         self::$arrFieldMandatory['merchantId'] = trim(strip_tags($merchantId));
         self::$arrFieldMandatory['refno'] = trim(strip_tags($refno));
         self::$arrFieldMandatory['amount'] = Currency::formatCents($amount);

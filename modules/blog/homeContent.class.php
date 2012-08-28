@@ -8,10 +8,6 @@
  * @subpackage  module_blog
  */
 
-/**
- * Includes
- */
-require_once ASCMS_MODULE_PATH.'/blog/lib/blogLib.class.php';
 
 /**
  * BlogAdmin

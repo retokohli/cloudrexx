@@ -460,7 +460,6 @@ class podcastLib
     {
         global $objDatabase;
 
-        require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/File.class.php';
 
         $query = "SELECT `thumbnail`
                   FROM `".DBPREFIX."module_podcast_medium`
@@ -1387,7 +1386,6 @@ EOF;
             }
         }
 
-        require_once ASCMS_FRAMEWORK_PATH.'/RSSWriter.class.php';
 
         $objRSSWriter = new RSSWriter();
 

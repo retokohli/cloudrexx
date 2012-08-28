@@ -3449,7 +3449,6 @@ $selected = $default;
 
         if (intval($this->_arrSettings['blog_rss_activated'])) {
 
-            require_once ASCMS_FRAMEWORK_PATH.'/RSSWriter.class.php';
 
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
                 $arrEntries = $this->createEntryArray($intLanguageId, 0, intval($this->_arrSettings['blog_rss_messages']) );
@@ -3503,7 +3502,6 @@ $selected = $default;
 
         if (intval($this->_arrSettings['blog_rss_activated'])) {
 
-            require_once ASCMS_FRAMEWORK_PATH.'/RSSWriter.class.php';
 
             $arrCategories = $this->createCategoryArray();
 

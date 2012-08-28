@@ -11,16 +11,6 @@
  */
 
 /**
- * Includes
- */
-require_once ASCMS_LIBRARY_PATH . '/PEAR/XML/RSS.class.php';
-require_once ASCMS_MODULE_PATH . '/directory/lib/directoryLib.class.php';
-require_once ASCMS_MODULE_PATH . '/directory/lib/xmlfeed.class.php';
-require_once ASCMS_LIBRARY_PATH . '/FRAMEWORK/File.class.php';
-require_once ASCMS_LIBRARY_PATH . '/soap/googlesearch/GoogleSearch.php';
-require_once ASCMS_CORE_PATH.'/modulemanager.class.php';
-
-/**
  * RSS Directory
  *
  * functions for the directory

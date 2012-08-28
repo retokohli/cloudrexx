@@ -82,7 +82,6 @@ class PayPal
     {
         global $_ARRAYLANG;
 
-//        require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
         $host = ASCMS_PROTOCOL.'://'.$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET;
         $return = $host.'/index.php?section=shop'.MODULE_INDEX.
             '&amp;cmd=success&amp;handler=paypal&amp;result=1&amp;order_id='.

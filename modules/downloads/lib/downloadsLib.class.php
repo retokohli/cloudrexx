@@ -8,25 +8,6 @@
  * @subpackage  module_downloads
  * @version     1.0.0
  */
-
-/**
- * @ignore
- */
-require_once dirname(__FILE__).'/Group.class.php';
-/**
- * @ignore
- */
-require_once dirname(__FILE__).'/Category.class.php';
-/**
- * @ignore
- */
-require_once dirname(__FILE__).'/Download.class.php';
-/**
- * @ignore
- */
-require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
-require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
-
 /**
  * Digital Asset Management Library
  * @copyright   CONTREXX CMS - COMVATION AG

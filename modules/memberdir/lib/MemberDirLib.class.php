@@ -292,7 +292,6 @@ class MemberDirLibrary
                     WHERE `id` = ".$id;
 
         if( ($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
-            require_once(ASCMS_LIBRARY_PATH.'/PEAR/Contact_Vcard_Build.php');
 
             $vcard = new Contact_Vcard_Build();
 

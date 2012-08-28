@@ -14,8 +14,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-require_once ASCMS_MODULE_PATH . "/reservation/lib/reservationLib.class.php";
-
 class reservationManager extends reservationLib
 {
     var $okMessage='';

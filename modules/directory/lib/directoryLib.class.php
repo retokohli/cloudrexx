@@ -10,13 +10,6 @@
  */
 
 /**
- * Includes
- */
-require_once ASCMS_LIBRARY_PATH . '/FRAMEWORK/File.class.php';
-require_once ASCMS_MODULE_PATH . '/directory/lib/xmlfeed.class.php';
-require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
-
-/**
  * Directory library
  *
  * External functions for the directory
@@ -1096,7 +1089,7 @@ class directoryLibrary
 
         if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
             $objMail = new phpmailer();
-            if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
                 $arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
                 if ($arrSmtp !== false) {
                     $objMail->IsSMTP();

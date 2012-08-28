@@ -3,7 +3,6 @@
 /**
  * Includes
  */
-require_once ASCMS_MODULE_PATH.'/knowledge/lib/knowledgeLib.class.php';
 
 class KnowledgeInterface extends KnowledgeLibrary 
 {
@@ -39,7 +38,6 @@ class KnowledgeInterface extends KnowledgeLibrary
         $template = $this->settings->formatTemplate($this->settings->get("tag_cloud_sidebar_template"));
         $tpl->setTemplate($template);
         
-        require_once ASCMS_MODULE_PATH."/knowledge/lib/TagCloud.class.php";
         
         $highestFontSize = 20;
         $lowestFontSize = 10;

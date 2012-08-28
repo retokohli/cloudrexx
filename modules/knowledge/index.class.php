@@ -9,11 +9,6 @@
  */
 
 /**
- * Includes
- */
-require_once ASCMS_MODULE_PATH.'/knowledge/lib/knowledgeLib.class.php';
-
-/**
  * KnowledgeAdmin
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
@@ -468,9 +463,6 @@ class Knowledge extends KnowledgeLibrary
     {
         global $_ARRAYLANG, $_LANGID;
         static $e;
-
-        require_once ASCMS_MODULE_PATH."/knowledge/lib/searchInterface.php";
-        require_once ASCMS_MODULE_PATH."/knowledge/lib/searchInterfaces/searchKnowledge.php";
 
         $searchterm = !empty($_GET['term']) ? $_GET['term'] : "";
 

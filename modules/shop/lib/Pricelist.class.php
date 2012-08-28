@@ -11,9 +11,6 @@
  * @subpackage  module_shop
  */
 
-//require_once realpath(dirname(__FILE__)."/../../").'/config/configuration.php';
-//require_once ASCMS_CORE_PATH.'/API.php';
-
 /**
  * Pricelist
  *
@@ -321,7 +318,6 @@ class Pricelist
         if (!$this->load()) {
             return Message::error($_ARRAYLANG['TXT_SHOP_PRICELIST_ERROR_LOADING']);
         }
-        require_once ASCMS_LIBRARY_PATH.'/ezpdf/class.ezpdf.php';
         $objPdf = new Cezpdf('A4');
         $objPdf->setEncryption('', '', array('print'));
         $objPdf->selectFont(ASCMS_LIBRARY_PATH.'/ezpdf/fonts/'.$this->font);

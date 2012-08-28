@@ -10,11 +10,6 @@
  */
 
 /**
- * Includes
- */
-require_once ASCMS_MODULE_PATH.'/forum/lib/forumLib.class.php';
-
-/**
  * Forum
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
@@ -1042,7 +1037,6 @@ class ForumAdmin extends ForumLibrary {
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".intval($_POST['setHomeContent'])."' WHERE setname='forumHomeContent'");
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".intval($_POST['setTagContent'])."' WHERE setname='forumTagContent'");
 
-            require_once(ASCMS_CORE_PATH.'/settings.class.php');
             $objSettings = new settingsManager();
             $objSettings->writeSettingsFile();
             $_CONFIG['forumHomeContent'] = intval($_POST['setHomeContent']);

@@ -12,10 +12,6 @@
 
 $_ARRAYLANG['TXT_ALL_LANGUAGES'] = "Alle Sprachen";
 
-/**
- * Includes
- */
-require_once ASCMS_MODULE_PATH . '/memberdir/lib/MemberDirLib.class.php';
 
 /**
  * Member directory manager
@@ -1704,7 +1700,6 @@ class MemberDirManager extends MemberDirLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
-        require_once ASCMS_LIBRARY_PATH."/importexport/import.class.php";
 
         $importlib = new Import();
 

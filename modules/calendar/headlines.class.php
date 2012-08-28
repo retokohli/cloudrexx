@@ -11,13 +11,6 @@
  */
 
 /**
- * @ignore
- */
-require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
-require_once ASCMS_MODULE_PATH.'/calendar/lib/calendarLib.class.php';
-require_once ASCMS_MODULE_PATH.'/calendar/lib/series.class.php';
-
-/**
  * Headline news
  *
  * Gets all the calendar headlines

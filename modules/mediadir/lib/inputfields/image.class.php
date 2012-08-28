@@ -11,9 +11,7 @@
 /**
  * @ignore
  */
-require_once(ASCMS_FRAMEWORK_PATH.DIRECTORY_SEPARATOR.'Image.class.php');
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
 
 
 class mediaDirectoryInputfieldImage extends mediaDirectoryLibrary implements inputfield

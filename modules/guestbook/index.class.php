@@ -9,10 +9,6 @@
  * @subpackage  module_guestbook
  * @todo        Edit PHP DocBlocks!
  */
-/**
- * @ignore
- */
-require_once ASCMS_MODULE_PATH . '/guestbook/Lib.class.php';
 
 /**
  * Guestbook
@@ -372,7 +368,7 @@ class Guestbook extends GuestbookLibrary {
         if (@include_once ASCMS_LIBRARY_PATH . '/phpmailer/class.phpmailer.php') {
             $objMail = new phpmailer();
 
-            if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH . '/SmtpSettings.class.php') {
+                if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH . '/SmtpSettings.class.php') {
                 if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                     $objMail->IsSMTP();
                     $objMail->Host = $arrSmtp['hostname'];
@@ -398,7 +394,7 @@ class Guestbook extends GuestbookLibrary {
                 return true;
             }
         }
-
+        
         return false;
     }
 

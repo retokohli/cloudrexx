@@ -11,12 +11,6 @@
  */
 
 /**
- * Includes
- */
-require_once ASCMS_MODULE_PATH.'/popup/lib/popupLib.class.php';
-require_once ASCMS_CORE_PATH.'/Tree.class.php';
-
-/**
  * Popup admin
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>

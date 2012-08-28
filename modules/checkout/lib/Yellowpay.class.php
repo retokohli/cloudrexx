@@ -13,10 +13,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * @ignore
- */
-require_once(ASCMS_MODULE_PATH.'/checkout/lib/SettingsYellowpay.class.php');
 
 /**
  * Yellowpay plugin for online payment

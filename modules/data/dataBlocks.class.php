@@ -9,11 +9,6 @@
  * @subpackage  module_data
  */
 
-/**
- * Includes
- */
-require_once ASCMS_MODULE_PATH.'/data/lib/dataLib.class.php';
-require_once(ASCMS_FRAMEWORK_PATH.DIRECTORY_SEPARATOR.'Image.class.php');
 
 /**
  * Datablocks

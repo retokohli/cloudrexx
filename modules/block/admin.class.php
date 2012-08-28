@@ -11,13 +11,6 @@
  */
 
 /**
- * Includes
- */
-require_once ASCMS_MODULE_PATH.'/block/lib/blockLib.class.php';
-require_once ASCMS_CORE_PATH.'/Tree.class.php';
-require_once ASCMS_CORE_PATH.'/json/adapter/contentmanager/JsonNode.class.php';
-
-/**
  * Block
  *
  * block module class
@@ -739,7 +732,6 @@ class blockManager extends blockLibrary
             'BLOCK_WYSIWYG_EDITOR'              => $blockWysiwygEditor == 1 ? 'checked="checked"' : '',
         ));
         
-        require_once ASCMS_CORE_PATH.'/json/JsonData.class.php';
         $jsonData =  new \Cx\Core\Json\JsonData();
         $pageTitlesTree = $jsonData->data('node', 'getPageTitlesTree');
         $pageTitlesTree = $pageTitlesTree['data'];

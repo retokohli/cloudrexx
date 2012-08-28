@@ -7,7 +7,6 @@
  * MailTemplate.  We use it to migrate the existing templates ONLY.
  */
 
-require_once ASCMS_CORE_PATH.'/Text.class.php';
 
 /**
  * OBSOLETE -- See {@see core/MailTemplate.class.php}
@@ -339,8 +338,6 @@ class ShopMail
      */
     static function errorHandler()
     {
-        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
-        require_once ASCMS_CORE_PATH.'/MailTemplate.class.php';
 
         if (UpdateUtil::table_empty(DBPREFIX.'core_mail_template')) {
             // Make sure there are no bodies lying around

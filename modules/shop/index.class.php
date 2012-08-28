@@ -11,30 +11,6 @@
  * @version     3.0.0
  */
 
-require_once ASCMS_CORE_PATH.'/Country.class.php';
-require_once ASCMS_CORE_PATH.'/MailTemplate.class.php';
-require_once ASCMS_CORE_PATH.'/Text.class.php';
-require_once ASCMS_FRAMEWORK_PATH."/Image.class.php";
-require_once ASCMS_MODULE_PATH.'/shop/lib/ShopLibrary.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Attribute.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Attributes.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Cart.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Coupon.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Customer.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Customers.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Discount.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Manufacturer.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Order.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Orders.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Payment.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/PaymentProcessing.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Shipment.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/ShopCategory.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/ShopCategories.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Vat.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Weight.class.php';
-
 /**
  * Shop
  * @internal    Extract code from this class and move it to other classes:
@@ -151,7 +127,6 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
         // Do this *before* calling our friends, especially Customer methods!
 // TODO: Define SettingDb keys for various subsections
         if (!SettingDb::getValue('numof_products_per_page_frontend')) {
-            require_once ASCMS_MODULE_PATH.'/shop/lib/ShopSettings.class.php';
             ShopSettings::errorHandler();
         }
         // Pick the default Country for delivery
@@ -210,7 +185,6 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
                 self::login();
                 break;
             case 'paypalIpnCheck':
-                require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
                 $objPaypal = new PayPal;
                 $objPaypal->ipnCheck();
                 exit;
@@ -223,12 +197,10 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
             // Test for PayPal IPN.
             // *DO NOT* remove this!  Needed for site testing.
             case 'testIpn':
-                require_once ASCMS_MODULE_PATH."/shop/payments/paypal/Paypal.class.php";
                 PayPal::testIpn(); // die()s!
             // Test for PayPal IPN validation
             // *DO NOT* remove this!  Needed for site testing.
             case 'testIpnValidate':
-                require_once ASCMS_MODULE_PATH."/shop/payments/paypal/Paypal.class.php";
                 PayPal::testIpnValidate(); // die()s!
             // Test mail body generation
             // *DO NOT* remove this!  Needed for site testing.
@@ -2201,13 +2173,11 @@ function centerY(height)
         global $_ARRAYLANG;
 
         if (isset($_POST['baccount'])) {
-            require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
 // TODO: Use the alias, if any
             HTTP::redirect(CONTREXX_SCRIPT_PATH.
                 '?section=shop'.MODULE_INDEX.'&cmd=account');
         }
         if (isset($_POST['blogin'])) {
-            require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
             HTTP::redirect(
                 CONTREXX_SCRIPT_PATH.
                 '?section=login&redirect='.
@@ -2215,7 +2185,6 @@ function centerY(height)
                     '?section=shop'.MODULE_INDEX.'&cmd=account'));
         }
         if (self::_authenticate()) {
-            require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
             HTTP::redirect(CONTREXX_SCRIPT_PATH.
                 '?section=shop'.MODULE_INDEX.'&cmd=account');
         }
@@ -2323,7 +2292,6 @@ die("Shop::processRedirect(): This method is obsolete!");
     static function view_account()
     {
         global $_ARRAYLANG;
-        require_once(ASCMS_CORE_MODULE_PATH.'/access/lib/AccessLib.class.php');
 
         // hide currency navbar
         self::$show_currency_navbar = false;
@@ -3299,7 +3267,6 @@ die("Trouble! No Shipper ID defined");
                 $_SESSION['shop']['email']);
             if (self::$objCustomer) {
                 Message::error($_ARRAYLANG['TXT_SHOP_CUSTOMER_REGISTERED_EMAIL']);
-                require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
                 HTTP::redirect(CONTREXX_SCRIPT_PATH.
 // TODO: Use the alias, if any
                     '?section=shop'.MODULE_INDEX.'&cmd=login&redirect='.
@@ -3341,7 +3308,6 @@ die("Trouble! No Shipper ID defined");
         if (empty($usergroup_id)) {
 //DBG::log("Shop::process(): ERROR: Missing reseller group");
             Message::error($_ARRAYLANG['TXT_SHOP_ERROR_USERGROUP_INVALID']);
-            require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
 // TODO: Use the alias, if any
             HTTP::redirect(CONTREXX_SCRIPT_PATH.'?section=shop'.MODULE_INDEX);
         }
@@ -3352,7 +3318,6 @@ die("Trouble! No Shipper ID defined");
             if (empty($usergroup_id)) {
 //DBG::log("Shop::process(): ERROR: Missing final customer group");
                 Message::error($_ARRAYLANG['TXT_SHOP_ERROR_USERGROUP_INVALID']);
-                require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
 // TODO: Use the alias, if any
                 HTTP::redirect(CONTREXX_SCRIPT_PATH.
                     '?section=shop'.MODULE_INDEX);
@@ -3527,7 +3492,6 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
                 // Missing mandatory data; return to payment
                 unset($_SESSION['shop']['order_id']);
                 Message::error($_ARRAYLANG['TXT_ERROR_ACCOUNT_INFORMATION_NOT_AVAILABLE']);
-                require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
 // TODO: Use the alias, if any
                 HTTP::redirect(CONTREXX_SCRIPT_PATH.
                     '?section=shop'.MODULE_INDEX.'&cmd=payment');
@@ -3546,7 +3510,6 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
                 // Return to payment
                 unset($_SESSION['shop']['order_id']);
                 Message::error($_ARRAYLANG['TXT_ERROR_INSERTING_ACCOUNT_INFORMATION']);
-                require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
 // TODO: Use the alias, if any
                 HTTP::redirect(CONTREXX_SCRIPT_PATH.
                     '?section=shop'.MODULE_INDEX.'&cmd=payment');
@@ -4143,7 +4106,6 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
         if (!$list_id) {
             return Message::error($_ARRAYLANG['TXT_SHOP_PRICELIST_ERROR_MISSING_LIST_ID']);
         }
-        require_once ASCMS_MODULE_PATH.'/shop/lib/Pricelist.class.php';
         // Optional
         $currency_id = (isset($_GET['currency_id'])
             ? intval($_GET['currency_id']) : null);

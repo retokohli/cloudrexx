@@ -10,12 +10,6 @@
  */
 
 /**
- * Includes
- */
-require_once(ASCMS_FRAMEWORK_PATH."/File.class.php");
-include(dirname(__FILE__).'/ImmoLib.class.php');
-
-/**
  * Immo
  *
  * Immo backend

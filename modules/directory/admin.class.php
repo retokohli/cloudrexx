@@ -10,15 +10,6 @@
  */
 
 /**
- * Includes
- */
-require_once ASCMS_MODULE_PATH . '/directory/lib/directoryLib.class.php';
-require_once ASCMS_MODULE_PATH . '/directory/lib/xmlfeed.class.php';
-require_once ASCMS_LIBRARY_PATH . '/FRAMEWORK/File.class.php';
-require_once ASCMS_LIBRARY_PATH . '/PEAR/XML/RSS.class.php';
-require_once ASCMS_CORE_PATH . '/settings.class.php';
-
-/**
  * Directory
  *
  * Class to manage CMS RSS news feeds

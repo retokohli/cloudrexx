@@ -14,11 +14,6 @@
  */
 
 /**
- * @ignore
- */
-require_once ASCMS_MODULE_PATH . '/recommend/Lib.class.php';
-
-/**
  * Class RecommendManager
  *
  * Recommend module admin class

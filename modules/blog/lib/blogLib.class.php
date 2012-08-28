@@ -8,10 +8,6 @@
  * @subpackage  module_blog
  */
 
-/**
- * Includes
- */
-require_once ASCMS_LIBRARY_PATH.'/activecalendar/activecalendar.php';
 
 /**
  * Blog library
@@ -992,7 +988,6 @@ class BlogLibrary {
 
         if (intval($this->_arrSettings['blog_rss_activated'])) {
 
-            require_once ASCMS_FRAMEWORK_PATH.'/RSSWriter.class.php';
 
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
                 $arrEntries = $this->createEntryArray($intLanguageId, 0, intval($this->_arrSettings['blog_rss_messages']) );
@@ -1049,7 +1044,6 @@ class BlogLibrary {
 
         if (intval($this->_arrSettings['blog_rss_activated'])) {
 
-            require_once ASCMS_FRAMEWORK_PATH.'/RSSWriter.class.php';
             $objFWUser = FWUser::getFWUserObject();
 
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
@@ -1121,7 +1115,6 @@ class BlogLibrary {
 
         if (intval($this->_arrSettings['blog_rss_activated'])) {
 
-            require_once ASCMS_FRAMEWORK_PATH.'/RSSWriter.class.php';
 
             $arrCategories = $this->createCategoryArray();
 

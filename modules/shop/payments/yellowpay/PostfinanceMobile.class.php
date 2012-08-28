@@ -12,11 +12,6 @@
  */
 
 /**
- * Currency: Conversion, formatting.
- */
-require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
-
-/**
  * Mobile Payment
  *
  * Pay your bill using your mobile phone

@@ -10,11 +10,6 @@
  */
 
 /**
- * Socket connections to payment services
- */
-require_once ASCMS_CORE_PATH.'/Socket.class.php';
-
-/**
  * Interface to Saferpay
  * @author Comvation Development Team <info@comvation.com>
  * @copyright   CONTREXX CMS - COMVATION AG

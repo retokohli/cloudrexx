@@ -8,10 +8,6 @@
  * @subpackage  module_blog
  */
 
-/**
- * Includes
- */
-require_once ASCMS_MODULE_PATH.'/blog/lib/blogLib.class.php';
 
 /**
  * BlogAdmin
@@ -1631,7 +1627,6 @@ class BlogAdmin extends BlogLibrary {
         if (key_exists('frmEditComment_UserName',$_POST)) {
 
             //Create validator-object
-            require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
             $objValidator = new FWValidator();
 
             $strUserName = contrexx_addslashes($_POST['frmEditComment_UserName']);
@@ -1842,7 +1837,6 @@ class BlogAdmin extends BlogLibrary {
 
         if (!empty($strName) && !empty($strSubmitUrl)) {
 
-            require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
             $objValidator = new FWValidator();
 
             $strWWW         = $objValidator->getUrl($strWWW);
@@ -1950,7 +1944,6 @@ class BlogAdmin extends BlogLibrary {
 
         if ($intNetworkId > 0 && !empty($strName) && !empty($strSubmitUrl)) {
 
-            require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
             $objValidator = new FWValidator();
 
             $strWWW         = $objValidator->getUrl($strWWW);

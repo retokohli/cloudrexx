@@ -16,8 +16,6 @@ if (CALENDAR_MANDATE == 1) {
 } else {
     require_once ASCMS_MODULE_PATH . '/calendar'.CALENDAR_MANDATE.'/lib/calendarLib.class.php';
 }
-require_once ASCMS_CORE_PATH.'/settings.class.php';
-require_once ASCMS_MODULE_PATH . '/calendar/lib/series.class.php';
 
 /**
  * Calendar

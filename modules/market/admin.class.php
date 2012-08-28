@@ -13,12 +13,6 @@
 //error_reporting (E_ALL);
 
 /**
- * Includes
- */
-require_once ASCMS_LIBRARY_PATH . '/FRAMEWORK/File.class.php';
-require_once ASCMS_MODULE_PATH . '/market/lib/marketLib.class.php';
-
-/**
  * Market
  *
  * Demo market class

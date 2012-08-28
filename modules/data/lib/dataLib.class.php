@@ -9,10 +9,6 @@
  * @subpackage  module_data
  */
 
-/**
- * Includes
- */
-require_once ASCMS_LIBRARY_PATH.'/activecalendar/activecalendar.php';
 
 /**
  * Data library
@@ -1114,7 +1110,6 @@ class DataLibrary
 
         if (intval($this->_arrSettings['data_rss_activated'])) {
 
-            require_once ASCMS_FRAMEWORK_PATH.'/RSSWriter.class.php';
             $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=data&amp;cmd=details&amp;id=';
 
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
@@ -1168,7 +1163,6 @@ class DataLibrary
 
         if (intval($this->_arrSettings['data_rss_activated'])) {
 
-            require_once ASCMS_FRAMEWORK_PATH.'/RSSWriter.class.php';
             $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=data&amp;cmd=details&amp;id={ID}#comments';
 
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
@@ -1236,7 +1230,6 @@ class DataLibrary
 
         if (intval($this->_arrSettings['data_rss_activated'])) {
 
-            require_once ASCMS_FRAMEWORK_PATH.'/RSSWriter.class.php';
             $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=data&amp;cmd=details&amp;id=';
 
             $arrCategories = $this->createCategoryArray();

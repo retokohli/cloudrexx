@@ -798,7 +798,6 @@ class eGovLibrary {
                 $objResult->MoveNext();
             }
         }
-        require_once dirname(__FILE__).'/cal/calendrier.php';
         $AnzahlTxT = $_ARRAYLANG['TXT_EGOV_QUANTITY'];
         $AnzahlDropdown = eGovLibrary::_QuantityDropdown();
         $Datum4JS = isset($_REQUEST['date']) ? $_REQUEST['date'] : '';
@@ -1195,7 +1194,6 @@ class eGovLibrary {
                 $objResult->MoveNext();
             }
         }
-        require_once dirname(__FILE__).'/cal/calendrier.php';
         $AnzahlTxT = $_ARRAYLANG['TXT_EGOV_QUANTITY'];
         $AnzahlDropdown = $this->_QuantityDropdown();
         $Datum4JS = isset($_REQUEST['date']) ? $_REQUEST['date'] : '';
@@ -1276,7 +1274,6 @@ class eGovLibrary {
      */
     static function errorHandler()
     {
-        require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
         Yellowpay::errorHandler(); // Also calls SettingDb::errorHandler()
         foreach (array(
             'postfinance_accepted_payment_methods' =>

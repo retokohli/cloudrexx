@@ -816,7 +816,6 @@ class Discount
     {
 //die("Discount::errorHandler(): Disabled!<br />");
 
-        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
 
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_article_group';
         $table_structure = array(

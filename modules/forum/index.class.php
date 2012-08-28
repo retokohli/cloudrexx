@@ -10,11 +10,6 @@
  */
 
 /**
- * Includes
- */
-require_once ASCMS_MODULE_PATH.'/forum/lib/forumLib.class.php';
-
-/**
  * Forum
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
@@ -421,7 +416,6 @@ class Forum extends ForumLibrary {
         $content = !empty($_REQUEST['thread_message']) ? contrexx_stripslashes($_REQUEST['thread_message']) : '';
 
         if($this->_arrSettings['wysiwyg_editor'] == 1) { //IF WYSIWIG enabled..
-            require ASCMS_CORE_PATH.'/wysiwyg.class.php';
             $strMessageInputHTML = get_wysiwyg_editor('thread_message', $content, 'forum', $_LANGID);
         }else{ //plain textarea
             $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="thread_message">'.htmlentities($content, ENT_QUOTES, CONTREXX_CHARSET).'</textarea>';
@@ -706,7 +700,6 @@ class Forum extends ForumLibrary {
         $firstPost = current($arrPosts);
 
         if($this->_arrSettings['wysiwyg_editor'] == 1) { //IF WYSIWIG enabled..
-            require ASCMS_CORE_PATH.'/wysiwyg.class.php';
             $strMessageInputHTML = get_wysiwyg_editor('message', $content, 'forum');
         }else{ //plain textarea
             $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="message">'.$content.'</textarea>';
@@ -1228,7 +1221,6 @@ class Forum extends ForumLibrary {
      */
     function _sendNotifications($intThreadId, $strSubject, $strContent){
         global $objDatabase, $_CONFIG;
-        require_once(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php');
 
         $arrTempSubcribers = array();
         $arrSubscribers = array();

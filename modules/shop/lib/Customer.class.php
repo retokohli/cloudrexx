@@ -10,7 +10,6 @@
  * @todo        Test!
  */
 
-require_once ASCMS_MODULE_PATH.'/shop/lib/Order.class.php';
 
 /**
  * Customer as used in the Shop.
@@ -460,7 +459,6 @@ class Customer extends User
         $usergroup_id = SettingDb::getValue('usergroup_id_customer');
         if (!$usergroup_id) {
             Message::error($_ARRAYLANG['TXT_SHOP_ERROR_USERGROUP_INVALID']);
-            require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
             HTTP::redirect(CONTREXX_DIRECTORY_INDEX.'?section=shop');
         }
         $objUser = FWUser::getFWUserObject()->objUser;
@@ -642,8 +640,6 @@ class Customer extends User
     static function errorHandler()
     {
         global $objFWUser;
-        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
-        require_once ASCMS_MODULE_PATH.'/shop/lib/ShopSettings.class.php';
 
         $table_name_old = DBPREFIX."module_shop".MODULE_INDEX."_customers";
         // If the old Customer table is missing, the migration has completed

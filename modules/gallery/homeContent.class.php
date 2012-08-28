@@ -10,11 +10,6 @@
  */
 
 /**
- * @ignore
- */
-require_once ASCMS_MODULE_PATH.'/gallery/Lib.class.php';
-
-/**
  * Gallery home content
  *
  * Show Gallery Block Content (Random, Last)

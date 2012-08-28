@@ -8,11 +8,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * Includes
- */
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
-
 class mediaDirectoryForm extends mediaDirectoryLibrary
 {
     public $intFormId;

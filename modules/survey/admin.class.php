@@ -11,7 +11,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-require_once ASCMS_MODULE_PATH.'/survey/lib/surveyLib.class.php';
 
 /**
  * Class SurveyAdmin

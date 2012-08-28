@@ -9,8 +9,6 @@
  * @subpackage  module_shop
  */
 
-require_once(ASCMS_CORE_PATH.'/Sorting.class.php');
-require_once(ASCMS_MODULE_PATH.'/shop/lib/Coupon.class.php');
 
 /**
  * Shop Order Helpers

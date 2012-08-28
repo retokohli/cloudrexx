@@ -267,7 +267,6 @@ class ForumLibrary
      */
     function BBCodeToHTML($content)
     {
-        require_once ASCMS_LIBRARY_PATH.'/bbcode/stringparser_bbcode.class.php';
         $objBBCode = new StringParser_BBCode();
         $objBBCode->addFilter(STRINGPARSER_FILTER_PRE, array(&$this, 'convertlinebreaks')); //unify all linebreak variants from different systems
         $objBBCode->addFilter(STRINGPARSER_FILTER_PRE, array(&$this, 'convertlinks'));

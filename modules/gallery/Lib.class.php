@@ -11,11 +11,6 @@
  */
 
 /**
- * @ignore
- */
-require_once ASCMS_MODULE_PATH . '/gallery/sql.class.php';
-
-/**
  * Gallery library
  *
  * Library for the Gallery

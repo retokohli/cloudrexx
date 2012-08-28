@@ -11,12 +11,6 @@
  */
 
 /**
- * @ignore
- */
-require_once dirname(__FILE__).'/lib/downloadsLib.class.php';
-require_once(ASCMS_FRAMEWORK_PATH.DIRECTORY_SEPARATOR.'Image.class.php');
-
-/**
  * Digital Asset Management Backend
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>

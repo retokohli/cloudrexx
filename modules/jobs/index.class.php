@@ -9,11 +9,6 @@
  * @subpackage  module_jobs
  * @todo        Edit PHP DocBlocks!
  */
-
-/**
- * Includes
- */
-require_once ASCMS_MODULE_PATH . '/jobs/lib/Library.class.php';
 error_reporting(E_ALL);
 /**
  * DocSys

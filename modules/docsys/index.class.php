@@ -11,11 +11,6 @@
  */
 
 /**
- * Includes
- */
-require_once ASCMS_MODULE_PATH . '/docsys/lib/Library.class.php';
-
-/**
  * DocSys
  *
  * This module will get all the docSys pages

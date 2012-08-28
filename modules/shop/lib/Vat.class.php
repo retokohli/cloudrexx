@@ -9,12 +9,6 @@
  */
 
 /**
- * @ignore
- */
-//require_once ASCMS_MODULE_PATH.'/shop/lib/Settings.class.php';
-require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
-
-/**
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @access      public
@@ -722,7 +716,6 @@ class Vat
      */
     static function errorHandler()
     {
-        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
 
 //DBG::activate(DBG_DB_FIREPHP);
 

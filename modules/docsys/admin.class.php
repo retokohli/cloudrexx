@@ -11,12 +11,6 @@
  */
 
 /**
- * Includes
- */
-require_once ASCMS_MODULE_PATH . '/docsys/xmlfeed.class.php';
-require_once ASCMS_MODULE_PATH . '/docsys/lib/Library.class.php';
-
-/**
  * DocSys
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>

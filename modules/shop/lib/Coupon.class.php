@@ -933,7 +933,6 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             'product_id' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_PRODUCT'],
             'payment_id' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_PAYMENT'],
         );
-        require_once(ASCMS_CORE_PATH.'/Sorting.class.php');
         $objSorting = new Sorting(
             $uri, $arrSortingFields, true, 'order_coupon'
         );
@@ -1341,8 +1340,6 @@ jQuery(document).ready(function($) {
      */
     private static function errorHandler()
     {
-        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
-        require_once(ASCMS_MODULE_PATH.'/shop/lib/ShopSettings.class.php');
         global $objDatabase, $_ARRAYLANG;
 
 //die("Coupon::errorHandler(): Disabled");

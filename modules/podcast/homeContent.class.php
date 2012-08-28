@@ -10,10 +10,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * @ignore
- */
-require_once ASCMS_MODULE_PATH.'/podcast/lib/podcastLib.class.php';
 
 /**
  * podcast home content

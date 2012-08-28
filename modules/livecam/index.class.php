@@ -10,11 +10,6 @@
  */
 
 /**
- * Includes
- */
-require_once ASCMS_MODULE_PATH.'/livecam/lib/livecamLib.class.php';
-
-/**
  * Livecam
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Comvation Development Team <info@comvation.com>
@@ -318,7 +313,6 @@ class Livecam extends LivecamLibrary
      */
     function _getThumbs()
     {
-        require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
 
         $path = ASCMS_DOCUMENT_ROOT."/".$this->camSettings['archivePath'].'/'.$this->date.'/';
         $objDirectory = @opendir($path);

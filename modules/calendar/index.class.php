@@ -20,9 +20,6 @@ if (CALENDAR_MANDATE == 1) {
     require_once ASCMS_MODULE_PATH . '/calendar'.CALENDAR_MANDATE.'/lib/calendarLib.class.php';
 }
 
-require_once ASCMS_MODULE_PATH . '/calendar/lib/series.class.php';
-require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Image.class.php';
-
 /**
  * Calendar
  *
@@ -853,7 +850,6 @@ JSCODE;
         $objUser = $objFWUser->objUser;
 
 
-        include_once(ASCMS_CORE_PATH.'/wysiwyg.class.php');
         $AuthorisationFlag = $this->settings->get('fe_entries_ability');
         if($AuthorisationFlag == 0) {
             return $_ARRAYLANG['TXT_CALENDAR_ACTION_NOT_ACTIVATED'];

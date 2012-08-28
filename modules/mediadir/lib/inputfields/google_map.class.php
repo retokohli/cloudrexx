@@ -11,9 +11,6 @@
 /**
  * Includes
  */
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
-require_once(ASCMS_FRAMEWORK_PATH. '/Image.class.php');
-require_once ASCMS_LIBRARY_PATH. '/googleServices/googleMap.class.php';
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface.php';
 
 class mediaDirectoryInputfieldGoogle_map extends mediaDirectoryLibrary implements inputfield
@@ -134,7 +131,7 @@ class mediaDirectoryInputfieldGoogle_map extends mediaDirectoryLibrary implement
                     if($this->arrSettings['settingsGoogleMapAllowKml'] == 1) {
                         $strInputfield .= '<div class="'.$this->moduleName.'GoogleMap" style="float: left; height: auto ! important;">';
                         $strInputfield .= '<br /><fieldset class="'.$this->moduleName.'FieldsetGoogleMap">';
-                        $strInputfield .= '<legend>Routedatei beifügen</legend>';
+                        $strInputfield .= '<legend>Routedatei beifï¿½gen</legend>';
                         $strInputfield .= '<table cellpadding="0" cellspacing="0" border="0" class="'.$this->moduleName.'TableGoogleMap">';
                         $strInputfield .= '<tr><td>Datei (*.kml):&nbsp;&nbsp;</td><td>'.$strKmlPreview.'<input type="file" name="kmlUpload_'.$intId.'" value="'.$strValueKml.'" id="'.$strKmlId.'" class="'.$this->moduleName.'InputfieldGoogleMapFile" /><input name="'.$this->moduleName.'Inputfield['.$intId.'][kml]" value="'.$strValueKml.'" type="hidden"></td></tr>';
                         $strInputfield .= '</table>';

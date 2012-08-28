@@ -365,7 +365,6 @@ class NewsML
             }
             @closedir($objDir);
 
-            require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
             $objFile = new File();
             $objFile->setChmod(ASCMS_DOCUMENT_ROOT.$this->arrCategories[$categoryId]['path'],$this->arrCategories[$categoryId]['path'], '/');
 

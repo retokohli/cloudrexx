@@ -8,12 +8,6 @@
  * @subpackage  module_partners
  */
 
-/**
- * Includes
- */
-require_once ASCMS_MODULE_PATH.'/partners/lib/partnersLib.class.php';
-
-
 
 class Partners extends PartnersLibrary  {
 
