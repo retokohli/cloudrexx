@@ -873,19 +873,19 @@ class downloads extends DownloadsLibrary
         $limitOffset = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         $orderDirection = !empty($_GET['sort']) ? $_GET['sort'] : 'asc';
         $orderBy = !empty($_GET['by']) ? $_GET['by'] : 'order';
-        $arrOrder[$orderBy] = $orderDirection;
+        $arrOrder['special'] = 'tblD.`'.$orderBy.'` '.$orderDirection;
         //$categoryId = !empty($_REQUEST['category_id']) ? intval($_REQUEST['category_id']) : 0;
         $searchTerm = !empty($_GET['search_term']) ? $_GET['search_term'] : Null;
         $searchTerm = ($searchTerm == $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD']) ? Null : $searchTerm;
 
-        if (isset($_POST['downloads_download_select_action'])) {
-            switch ($_POST['downloads_download_select_action']) {
+        if (isset($_GET['downloads_download_select_action'])) {
+            switch ($_GET['downloads_download_select_action']) {
                 case 'order':
-                    $this->updateDownloadOrder(isset($_POST['downloads_download_order']) && is_array($_POST['downloads_download_order']) ? $_POST['downloads_download_order'] : array());
+                    $this->updateDownloadOrder(isset($_GET['downloads_download_order']) && is_array($_GET['downloads_download_order']) ? $_GET['downloads_download_order'] : array());
                     break;
 
                 case 'delete':
-                    $this->deleteDownloads(isset($_POST['downloads_download_id']) && is_array($_POST['downloads_download_id']) ? $_POST['downloads_download_id'] : array());
+                    $this->deleteDownloads(isset($_GET['downloads_download_id']) && is_array($_GET['downloads_download_id']) ? $_GET['downloads_download_id'] : array());
                     break;
             }
         }
@@ -984,9 +984,7 @@ class downloads extends DownloadsLibrary
 
 
         $nr = 0;
-        $arrDownloadOrder = $objCategory->getAssociatedDownloadIds();
-        while (!$objDownload->EOF)
-        {
+        while (!$objDownload->EOF) {
             $description = $objDownload->getDescription();
             if (strlen($description) > 100) {
                 $description = substr($description, 0, 97).'...';
@@ -999,34 +997,16 @@ class downloads extends DownloadsLibrary
 
             // parse order nr
             if ($changeOrderAllowed) {
-                if (isset($arrDownloadOrder[$objDownload->getId()])) {
-                    $this->objTemplate->setVariable(array(
-                        'DOWNLOADS_DOWNLOAD_ID'     => $objDownload->getId(),
-                        'DOWNLOADS_DOWNLOAD_ORDER'  => $arrDownloadOrder[$objDownload->getId()],
-                    ));
-                    $this->objTemplate->parse('downloads_download_order_modify');
-                    $this->objTemplate->hideBlock('downloads_download_order_no_modify');
-                } else {
-                    $this->objTemplate->hideBlock('downloads_download_order_modify');
-                    $this->objTemplate->hideBlock('downloads_download_order_no_modify');
-                }
+                $this->objTemplate->setVariable(array(
+                    'DOWNLOADS_DOWNLOAD_ID'     => $objDownload->getId(),
+                    'DOWNLOADS_DOWNLOAD_ORDER'  => $objDownload->getOrder(),
+                ));
+                $this->objTemplate->parse('downloads_download_order_modify');
+                $this->objTemplate->hideBlock('downloads_download_order_no_modify');
             } else {
-                if (isset($arrDownloadOrder[$objDownload->getId()])) {
-                    $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_ORDER', $arrDownloadOrder[$objDownload->getId()]);
+                    $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_ORDER', $objDownload->getOrder());
                     $this->objTemplate->parse('downloads_download_order_no_modify');
                     $this->objTemplate->hideBlock('downloads_download_order_modify');
-                } else {
-                    $this->objTemplate->hideBlock('downloads_download_order_no_modify');
-                    $this->objTemplate->hideBlock('downloads_download_order_modify');
-                }            
-            }
-
-            if (!empty($arrDownloadOrder)) {
-                $this->objTemplate->touchBlock('downloads_download_order_label');
-                $this->objTemplate->touchBlock('downloads_download_order_cell');
-            } else {
-                $this->objTemplate->hideBlock('downloads_download_order_label');
-                $this->objTemplate->hideBlock('downloads_download_order_cell');
             }
 
             if (// managers are allowed to modify/delete downloads
@@ -2334,38 +2314,20 @@ class downloads extends DownloadsLibrary
                 $this->objTemplate->parse('downloads_download_checkbox');
 
                 // order box
-                if (isset($arrDownloadOrder[$objDownload->getId()])) {
-                    $this->objTemplate->setVariable(array(
-                        'DOWNLOADS_DOWNLOAD_ID'     => $objDownload->getId(),
-                        'DOWNLOADS_DOWNLOAD_ORDER'  => $arrDownloadOrder[$objDownload->getId()]
-                    ));
-                    $this->objTemplate->parse('downloads_download_orderbox');
-                    $this->objTemplate->hideBlock('downloads_download_no_orderbox');
-                } else {
-                    $this->objTemplate->hideBlock('downloads_download_orderbox');
-                    $this->objTemplate->hideBlock('downloads_download_no_orderbox');
-                }
+                $this->objTemplate->setVariable(array(
+                    'DOWNLOADS_DOWNLOAD_ID'     => $objDownload->getId(),
+                    'DOWNLOADS_DOWNLOAD_ORDER'  => $arrDownloadOrder[$objDownload->getId()]
+                ));
+                $this->objTemplate->parse('downloads_download_orderbox');
+                $this->objTemplate->hideBlock('downloads_download_no_orderbox');
             } else {
                 // select checkbox
                 $this->objTemplate->hideBlock('downloads_download_checkbox');
 
                 // order box
-                if (isset($arrDownloadOrder[$objDownload->getId()])) {
-                    $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_ORDER', $arrDownloadOrder[$objDownload->getId()]);
-                    $this->objTemplate->parse('downloads_download_no_orderbox');
-                    $this->objTemplate->hideBlock('downloads_download_orderbox');
-                } else {
-                    $this->objTemplate->hideBlock('downloads_download_no_orderbox');
-                    $this->objTemplate->hideBlock('downloads_download_orderbox');
-                }
-            }
-
-            if (!empty($arrDownloadOrder)) {
-                $this->objTemplate->touchBlock('downloads_download_orderbox_label');
-                $this->objTemplate->touchBlock('downloads_download_orderbox_cell');
-            } else {
-                $this->objTemplate->hideBlock('downloads_download_orderbox_label');
-                $this->objTemplate->hideBlock('downloads_download_orderbox_cell');
+                $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_ORDER', $arrDownloadOrder[$objDownload->getId()]);
+                $this->objTemplate->parse('downloads_download_no_orderbox');
+                $this->objTemplate->hideBlock('downloads_download_orderbox');
             }
 
             // parse status link and modify button

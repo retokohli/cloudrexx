@@ -386,7 +386,12 @@ class Category
         global $objDatabase;
 
         $this->downloads = array();
-        $objResult = $objDatabase->Execute('SELECT `download_id`, `order` FROM `'.DBPREFIX.'module_downloads_rel_download_category` WHERE `category_id` = '.$this->id);
+        $arrSubCategories = array($this->id);
+        $arrSubCategories = array_merge($arrSubCategories, $this->getSubCategories());
+        foreach ($arrSubCategories as &$value) {
+            $value = '`category_id` = '.$value;
+        }
+        $objResult = $objDatabase->Execute('SELECT `download_id`, `order` FROM `'.DBPREFIX.'module_downloads_rel_download_category` WHERE ('.implode(' OR ', $arrSubCategories).')');
         if ($objResult) {
             while (!$objResult->EOF) {
                 $this->downloads[$objResult->fields['download_id']] = $objResult->fields['order'];
@@ -395,13 +400,44 @@ class Category
         }
     }
 
-    public function hasSubcategories()
+    public function hasSubcategories($parentId)
     {
         global $objDatabase;
 
-        $objResult = $objDatabase->SelectLimit('SELECT 1 FROM `'.DBPREFIX.'module_downloads_category` WHERE `parent_id` = '.$this->id, 1);
+        $parentId = empty($parentId) ? $this->id : $parentId;
+
+        $objResult = $objDatabase->SelectLimit('SELECT 1 FROM `'.DBPREFIX.'module_downloads_category` WHERE `parent_id` = '.$parentId, 1);
 
         return intval(!$objResult || $objResult->RecordCount());
+    }
+
+    /**
+     * Returns all children of the given category.
+     *
+     * @acces   private
+     * @param   integer     $parentId
+     */
+    private function getSubCategories($parentId)
+    {
+        global $objDatabase;
+
+        $parentId = empty($parentId) ? $this->id : $parentId;
+
+        $arrSubCategories = array();
+        if ($this->hasSubCategories($parentId)) {
+            $objResult = $objDatabase->Execute('SELECT `id` FROM `'.DBPREFIX.'module_downloads_category` WHERE `parent_id` = '.intval($parentId));
+            if ($objResult && ($objResult->RecordCount() > 0)) {
+                while (!$objResult->EOF) {
+                    $id = $objResult->fields['id'];
+                    $arrSubCategories[] = $id;
+                    if ($this->hasSubCategories($id)) {
+                        $arrSubCategories = array_merge($arrSubCategories, $this->getSubCategories($id));
+                    }
+                    $objResult->MoveNext();
+                }
+            }
+        }
+        return $arrSubCategories;
     }
 
     public function getName($langId)
@@ -1390,7 +1426,7 @@ class Category
         $objDownload = new Download();
 
         foreach ($arrDownloadOrder as $downloadId => $order) {
-            if ($objDatabase->Execute('UPDATE `'.DBPREFIX.'module_downloads_rel_download_category` SET `order` = '.intval($order).' WHERE `category_id` = '.$this->id.' AND `download_id` = '.$downloadId) === false) {
+            if ($objDatabase->Execute('UPDATE `'.DBPREFIX.'module_downloads_rel_download_category` SET `order` = '.intval($order).' WHERE `download_id` = '.$downloadId) === false) {
                 $objDownload->load($downloadId);
                 if (!$objDownload->EOF) {
                     $arrFailedDownloads[] = htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);

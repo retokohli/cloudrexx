@@ -596,7 +596,7 @@ class Download {
             }
         }
 
-        if (in_array('category_id', array_keys($arrFilter)) && !empty($arrFilter['category_id'])) {
+        if (in_array('category_id', array_keys($arrFilter)) && (($arrFilter['category_id'] == 0) || !empty($arrFilter['category_id']))) {
             if (is_array($arrFilter['category_id'])) {
                 if ($subCategories) {
                     $arrSubCategories = array();
