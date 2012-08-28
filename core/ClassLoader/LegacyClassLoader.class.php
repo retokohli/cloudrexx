@@ -27,7 +27,11 @@ class LegacyClassLoader {
             // class not in match table, guess path
             $parts = explode('\\', $name);
             // Let doctrine handle it's includes itself
-            if (in_array($parts[0], array('Symfony', 'Doctrine', 'Gedmo'))) {
+            if (in_array($parts[0], array('Symfony', 'Doctrine', 'Gedmo', 'DoctrineExtension'))) {
+                return;
+            // I don't know where they come from, but there's no need to load these
+            // I guess doctrine does load those
+            } else if (in_array($name, array('var', 'Column', 'MappedSuperclass', 'Table', 'index', 'Entity', 'Id', 'GeneratedValue'))) {
                 return;
             }
             // we do not need the namespace, it's probably wrong anyway
@@ -44,6 +48,8 @@ class LegacyClassLoader {
             if ($this->testLoad(ASCMS_FRAMEWORK_PATH.'/'.preg_replace('/FW/', '', $name).'.class.php', $origName)) { return; }
             // files in /lib/PEAR
             if ($this->testLoad(ASCMS_LIBRARY_PATH.'/PEAR/'.preg_replace('/_/', '/', preg_replace('/PEAR\//', '', $name . '/')).end(preg_split('/_/', $name)).'.php', $origName)) { return; }
+            // files in /model/entities/Cx/Model/Base
+            if ($this->testLoad(ASCMS_MODEL_PATH.'/entities/Cx/Model/Base/' . $name . '.php', $origName)) { return; }
             
             // core module and module libraries /[core_modules|modules]/{modulename}/lib/{modulename}Lib.class.php
             $moduleName = strtolower(preg_replace('/Library/', '', $name));
@@ -113,16 +119,12 @@ class LegacyClassLoader {
      * @param type $className 
      */
     private function fallbackLoad($name, $className) {
-        // I don't know where they come from, but there's no need to load these
-        // I guess doctrine does load those
-        if (in_array($name, array('var', 'Column', 'MappedSuperclass', 'Table', 'index', 'Entity', 'Id', 'GeneratedValue'))) {
-            return;
-        }
         //echo $name . '<br />';
         $namespace = substr($name, 0, strlen($name) - strlen($className) - 1);
         $path = $this->searchClass($className, $namespace);
         if ($path === false) {
             // this class does not exist!
+            return;
         }
         $this->testLoad($path, $name);
     }
