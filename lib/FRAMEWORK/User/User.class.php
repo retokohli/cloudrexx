@@ -611,7 +611,9 @@ class User extends User_Profile
 
             if (in_array('group_id', array_keys($arrFilter)) && !empty($arrFilter['group_id'])) {
                 $arrGroupConditions = array();
-                if (is_array($arrFilter['group_id'])) {
+                if ($arrFilter['group_id'] == 'groupless') {
+                    $arrGroupConditions[] = 'tblG.`group_id` IS NULL';
+                } else if (is_array($arrFilter['group_id'])) {
                     foreach ($arrFilter['group_id'] as $groupId) {
                         $arrGroupConditions[] = 'tblG.`group_id` = '.intval($groupId);
                     }
@@ -872,7 +874,12 @@ class User extends User_Profile
         }
 
         // set sort order
-        if (!($arrQuery = $this->setSortedUserIdList($arrSort, $sqlCondition, $limit, $offset))) {
+        if (isset($filter['group_id']) && $filter['group_id'] == 'groupless') {
+            $groupless = true;
+        } else {
+            $groupless = false;
+        }
+        if (!($arrQuery = $this->setSortedUserIdList($arrSort, $sqlCondition, $limit, $offset, $groupless))) {
             $this->clean();
             return false;
         }
@@ -903,7 +910,12 @@ class User extends User_Profile
             .'FROM `'.DBPREFIX.'access_users` AS tblU'
             .(count($arrSelectCoreExpressions) || $arrQuery['tables']['core'] ? ' INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id` = tblU.`id`' : '')
             .($arrQuery['tables']['custom'] ? ' INNER JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id` = tblU.`id`' : '')
-            .($arrQuery['tables']['group'] ? ' INNER JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id` = tblU.`id`' : '')
+            .($arrQuery['tables']['group']
+                ? (isset($filter['group_id']) && $filter['group_id'] == 'groupless'
+                    ? ' LEFT JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id` = tblU.`id`'
+                    : ' INNER JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id` = tblU.`id`')
+                : ''
+            )
             .($arrQuery['tables']['group'] && !FWUser::getFWUserObject()->isBackendMode() ? ' INNER JOIN `'.DBPREFIX.'access_user_groups` AS tblGF ON tblGF.`group_id` = tblG.`group_id`' : '')
             .(count($arrQuery['joins']) ? ' '.implode(' ',$arrQuery['joins']) : '')
 // TODO: some conditions are not well enclosed, so there might be a more proper solution than adding more brackes at this point
@@ -1018,7 +1030,7 @@ class User extends User_Profile
 
 
     private function setSortedUserIdList(
-        $arrSort, $sqlCondition=null, $limit=null, $offset=null
+        $arrSort, $sqlCondition=null, $limit=null, $offset=null, $groupless=false
     ) {
         global $objDatabase;
 
@@ -1079,7 +1091,12 @@ class User extends User_Profile
               FROM `'.DBPREFIX.'access_users` AS tblU'.
             ($joinCoreTbl ? ' INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id`=tblU.`id`' : '').
             ($joinCustomTbl ? ' INNER JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id`=tblU.`id`' : '').
-            ($joinGroupTbl ? ' INNER JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id`=tblU.`id`' : '').
+            ($joinGroupTbl
+                ? ($groupless
+                    ? ' LEFT JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id`=tblU.`id`'
+                    : ' INNER JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id`=tblU.`id`')
+                : ''
+            ).
             ($joinGroupTbl && !FWUser::getFWUserObject()->isBackendMode() ? ' INNER JOIN `'.DBPREFIX.'access_user_groups` AS tblGF ON tblGF.`group_id`=tblG.`group_id`' : '').
             (count($arrCustomJoins) ? ' '.implode(' ',$arrCustomJoins) : '').
             (count($arrCustomSelection) ? ' WHERE '.implode(' AND ', $arrCustomSelection) : '').

@@ -948,7 +948,7 @@ class AccessManager extends AccessLib
         $objFWUser = FWUser::getFWUserObject();
 
         $rowNr = 0;
-        $groupId = isset($_REQUEST['groupId']) ? intval($_REQUEST['groupId']) : 0;
+        $groupId = !empty($_REQUEST['groupId']) ? $_REQUEST['groupId'] : 0;
         $limitOffset = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         $orderDirection = !empty($_GET['sort']) ? $_GET['sort'] : 'desc';
         $orderBy = !empty($_GET['by']) ? $_GET['by'] : 'regdate';
@@ -982,6 +982,7 @@ class AccessManager extends AccessLib
         $userCount = $objGroup->getUserCount();
         $userFilter = array();
         if ($groupId) {
+            $groupId = $groupId == 'groupless' ? 'groupless' : intval($groupId);
             $userFilter['group_id'] = $groupId;
         }
         if ($usernameFilter !== null) {
@@ -1082,7 +1083,8 @@ class AccessManager extends AccessLib
 			));
             $this->_objTpl->parse('access_user_action_dropdown');
         } else {
-            $this->_objTpl->setVariable('ACCESS_STATUS_MSG', count($search) || $usernameFilter != '' ? $_ARRAYLANG['TXT_ACCESS_NO_USERS_FOUND'] : sprintf($_ARRAYLANG['TXT_ACCESS_NO_USER_IN_GROUP'], '&laquo;'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).'&raquo;'));
+            $groupName = $groupId == 'groupless' ? $_ARRAYLANG['TXT_ACCESS_GROUPLESS_USERS'] : htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET);
+            $this->_objTpl->setVariable('ACCESS_STATUS_MSG', count($search) || $usernameFilter != '' ? $_ARRAYLANG['TXT_ACCESS_NO_USERS_FOUND'] : sprintf($_ARRAYLANG['TXT_ACCESS_NO_USER_IN_GROUP'], '&laquo;'.$groupName.'&raquo;'));
             $this->_objTpl->parse('access_no_user');
             $this->_objTpl->hideBlock('access_has_users');
             $this->_objTpl->hideBlock('access_user_action_dropdown');
@@ -1584,13 +1586,14 @@ class AccessManager extends AccessLib
         $objFWUser = FWUser::getFWUserObject();
         $objGroup = $objFWUser->objGroup->getGroups(null, array('group_name', 'asc'), array('group_name', 'type'));
 
-        $menu = "<select".(!empty($attrs) ? " ".$attrs : "").">\n";
-        $menu .= "<option value=\"".($showAllOption ? '_' : '0')."\" style=\"border-bottom:1px solid #000000;\">".$_ARRAYLANG['TXT_ACCESS_SELECT_GROUP']."</option>\n";
-        $showAllOption ? $menu .= "<option value=\"0\" style=\"text-indent:5px;\">".$_ARRAYLANG['TXT_ACCESS_ALL']."</option>\n" : false;
+        $menu = '<select'.(!empty($attrs) ? ' '.$attrs : '').'>'."\n";
+        $menu .= '<option value="'.($showAllOption ? '_' : '0').'" style="border-bottom:1px solid #000000;">'.$_ARRAYLANG['TXT_ACCESS_SELECT_GROUP'].'</option>'."\n";
+        $showAllOption ? $menu .= '<option value="0" style="text-indent:5px;">'.$_ARRAYLANG['TXT_ACCESS_ALL'].'</option>'."\n" : false;
         while (!$objGroup->EOF) {
-            $menu .= "<option value=\"".$objGroup->getId()."\" style=\"text-indent:5px;\"".($selectedGroupId == $objGroup->getId() ? " selected=\"selected\"" : "").">".contrexx_raw2xhtml($objGroup->getName())." [".$objGroup->getType()."]</option>\n";
+            $menu .= '<option value="'.$objGroup->getId().'" style="text-indent:5px;"'.($selectedGroupId == $objGroup->getId() ? ' selected="selected"' : '').'>'.contrexx_raw2xhtml($objGroup->getName()).' ['.$objGroup->getType().']</option>'."\n";
             $objGroup->next();
         }
+        $menu .= '<option value="groupless">'.$_ARRAYLANG['TXT_ACCESS_GROUPLESS_USERS'].'</option>'."\n";
         $menu .= "</select>\n";
         return $menu;
     }

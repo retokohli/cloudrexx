@@ -274,4 +274,5 @@ $_ARRAYLANG['TXT_ACCESS_IMPORT_SUCCESS_LIST_CREATED'] = "Liste angelegt";
 $_ARRAYLANG['TXT_ACCESS_DELETE'] = "Löschen";
 $_ARRAYLANG['TXT_ACCESS_SELECT_ACTION'] = "Aktion auswählen";
 $_ARRAYLANG['TXT_ACCESS_CONFIRM_DELETE_USERS'] = "Möchten Sie die ausgewählten Benutzer wirklich löschen?";
+$_ARRAYLANG['TXT_ACCESS_GROUPLESS_USERS'] = "Gruppenlose Benutzer";
 ?>
