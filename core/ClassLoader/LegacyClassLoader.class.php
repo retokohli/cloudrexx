@@ -144,8 +144,8 @@ class LegacyClassLoader {
             // match namespace too
             $matches = array();
             
-            if (preg_match('/(?:namespace\s+([\\\\\w]+);[.\n\r]*?)?(?:class|interface)\s+' . $name . '\s+(?:extends|implements)[\\\\\s\w,\n\t\r]*?\{/', $fcontent, $matches)) {
-            //if (preg_match('/(?:namespace ([\\\\a-zA-Z0-9_]*);[\w\W]*)?(?:class|interface) ' . $name . '(?:[ a-zA-Z0-9\n\r\t\\\\_])*\{/', $fcontent, $matches)) {
+            //if (preg_match('/(?:namespace\s+([\\\\\w]+);[.\n\r]*?)?(?:class|interface)\s+' . $name . '\s+(?:extends|implements)[\\\\\s\w,\n\t\r]*?\{/', $fcontent, $matches)) {
+            if (preg_match('/(?:namespace ([\\\\a-zA-Z0-9_]*);[\w\W]*)?(?:class|interface) ' . $name . '(?:[ a-zA-Z0-9\n\r\t\\\\_])*\{/', $fcontent, $matches)) {
                 if (!isset($matches[1]) || $matches[1] == $namespace) {
                     return $file;
                 }
