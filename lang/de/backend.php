@@ -6,6 +6,8 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_GOOGLE_ANALYTICS_TRACKING_ID'] = "Google Analytics Tracking-ID";
+$_ARRAYLANG['TXT_GOOGLE_ANALYTICS_TRACKING_ID_INFO'] = "Geben Sie hier Ihre Google Analytics Tracking-ID ein. Diese finden Sie in Ihrem Google Analytics Konto unter Verwaltung => Tracking-Code.";
 $_ARRAYLANG['TXT_CORE_TIMEZONE'] = "Zeitzone";
 $_ARRAYLANG['TXT_CORE_TIMEZONE_INVALID'] = "Die gewählte Zeitzone ist ungültig.";
 $_ARRAYLANG['TXT_CORE_WHOIS'] = "Whois";
