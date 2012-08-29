@@ -280,9 +280,10 @@ class JsonPage implements JsonAdapter {
             $this->messages[] = $_CORELANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'];
         }
         
-        if (isset($dataPost['pageBlocks'])) {
-            $page->setRelatedBlocks($dataPost['pageBlocks']);
+        if (!isset($dataPost['pageBlocks'])) {
+            $dataPost['pageBlocks'] = array();
         }
+        $page->setRelatedBlocks($dataPost['pageBlocks']);
         
         if (($action == 'publish') && \Permission::checkAccess(78, 'static', true)) {
             // User w/permission clicked save&publish. we should either publish the page or submit the draft for approval.

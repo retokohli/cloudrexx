@@ -409,13 +409,15 @@ class blockLibrary
                     `page_id`
                 )
             VALUES';
+        $values = array();
         foreach ($blockIds as $blockId) {
-            $query .= '
+            $values[] = '
                 (
                     \'' . intval($blockId) . '\',
                     \'' . intval($pageId) . '\'
                 )';
         }
+        $query .= join(', ', $values);
         $objDatabase->Execute($query);
         $objDatabase->Execute('
             DELETE FROM
@@ -424,7 +426,7 @@ class blockLibrary
                 `page_id` = \'' . $pageId . '\' AND
                 `block_id` NOT IN
                     (
-                        \'' . join(',', array_map('intval', $blockIds)).'\'
+                        \'' . join('\',\'', array_map('intval', $blockIds)).'\'
                     )
         ');
     }
