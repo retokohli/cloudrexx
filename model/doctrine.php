@@ -1,9 +1,6 @@
 <?php
 //get constants
-require_once('../config/configuration.php');
 $doctrineDir = ASCMS_LIBRARY_PATH.'/doctrine/';
-
-require_once $doctrineDir.'vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
 
 // Variable $helperSet is defined inside cli-config.php
 require __DIR__ . '/cli-config.php';
