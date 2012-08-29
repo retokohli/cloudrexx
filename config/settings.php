@@ -9,40 +9,41 @@
 * Core
 * -------------------------------------------------------------------------
 */
-$_CONFIG['cacheEnabled']             = "off";
-$_CONFIG['cacheExpiration']          = 86400;
-$_CONFIG['contactAddress']           = "Adresse";
-$_CONFIG['contactCompany']           = "Ihr Firmenname";
-$_CONFIG['contactCountry']           = "Land";
-$_CONFIG['contactFax']               = "Fax";
-$_CONFIG['contactPhone']             = "Telefon";
-$_CONFIG['contactPlace']             = "Ort";
-$_CONFIG['contactZip']               = "PLZ";
-$_CONFIG['contentHistoryStatus']     = "on";
-$_CONFIG['coreAdminEmail']           = "info@example.com";
-$_CONFIG['coreAdminName']            = "Administrator";
-$_CONFIG['coreGlobalPageTitle']      = "Default Installation";
-$_CONFIG['coreIdsStatus']            = "off";
-$_CONFIG['coreListProtectedPages']   = "off";
-$_CONFIG['corePagingLimit']          = 30;
-$_CONFIG['coreSmtpServer']           = 0;
-$_CONFIG['dashboardNews']            = "on";
-$_CONFIG['dashboardStatistics']      = "on";
-$_CONFIG['dnsServer']                = "ns1.contrexxhosting.com";
-$_CONFIG['domainUrl']                = "contrexx3.dev";
-$_CONFIG['frontendEditingStatus']    = "off";
-$_CONFIG['googleMapsAPIKey']         = "";
-$_CONFIG['installationId']           = "";
-$_CONFIG['languageDetection']        = "off";
-$_CONFIG['lastAccessId']             = 57;
-$_CONFIG['licenseKey']               = "";
-$_CONFIG['searchVisibleContentOnly'] = "on";
-$_CONFIG['sessionLifeTime']          = 3600;
+$_CONFIG['cacheEnabled']              = "off";
+$_CONFIG['cacheExpiration']           = 86400;
+$_CONFIG['contactAddress']            = "Adresse";
+$_CONFIG['contactCompany']            = "Ihr Firmenname";
+$_CONFIG['contactCountry']            = "Land";
+$_CONFIG['contactFax']                = "Fax";
+$_CONFIG['contactPhone']              = "Telefon";
+$_CONFIG['contactPlace']              = "Ort";
+$_CONFIG['contactZip']                = "PLZ";
+$_CONFIG['contentHistoryStatus']      = "on";
+$_CONFIG['coreAdminEmail']            = "info@example.com";
+$_CONFIG['coreAdminName']             = "Administrator";
+$_CONFIG['coreGlobalPageTitle']       = "Default Installation";
+$_CONFIG['coreIdsStatus']             = "off";
+$_CONFIG['coreListProtectedPages']    = "off";
+$_CONFIG['corePagingLimit']           = 30;
+$_CONFIG['coreSmtpServer']            = 0;
+$_CONFIG['dashboardNews']             = "on";
+$_CONFIG['dashboardStatistics']       = "on";
+$_CONFIG['dnsServer']                 = "ns1.contrexxhosting.com";
+$_CONFIG['domainUrl']                 = "contrexx3.dev";
+$_CONFIG['frontendEditingStatus']     = "off";
+$_CONFIG['googleAnalyticsTrackingId'] = "";
+$_CONFIG['googleMapsAPIKey']          = "";
+$_CONFIG['installationId']            = "";
+$_CONFIG['languageDetection']         = "off";
+$_CONFIG['lastAccessId']              = 57;
+$_CONFIG['licenseKey']                = "";
+$_CONFIG['searchVisibleContentOnly']  = "on";
+$_CONFIG['sessionLifeTime']           = 3600;
 $_CONFIG['sessionLifeTimeRememberMe'] = 1209600;
-$_CONFIG['spamKeywords']             = "sex, viagra";
-$_CONFIG['systemStatus']             = "on";
-$_CONFIG['timezone']                 = "Europe/Zurich";
-$_CONFIG['xmlSitemapStatus']         = "on";
+$_CONFIG['spamKeywords']              = "sex, viagra";
+$_CONFIG['systemStatus']              = "on";
+$_CONFIG['timezone']                  = "Europe/Zurich";
+$_CONFIG['xmlSitemapStatus']          = "on";
 
 /**
 * -------------------------------------------------------------------------

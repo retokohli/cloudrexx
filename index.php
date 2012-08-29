@@ -1801,12 +1801,20 @@ $objTemplate->setVariable(array(
     'RANDOM'                         => md5(microtime()),
     'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],
     'MODULE_INDEX'                   => MODULE_INDEX,
-    'LOGIN_INCLUDE'                  => (isset($strFeInclude) ? $strFeInclude : ''),
-    'LOGIN_URL'                      => (isset($strFeLink) ? $strFeLink : ''),
-    'LOGIN_CONTENT'                  => (isset($strFeContent) ? $strFeContent : ''),
+    'LOGIN_INCLUDE'                  => isset($strFeInclude) ? $strFeInclude : '',
+    'LOGIN_URL'                      => isset($strFeLink) ? $strFeLink : '',
+    'LOGIN_CONTENT'                  => isset($strFeContent) ? $strFeContent : '',
     'JAVASCRIPT'                     => 'javascript_inserting_here',
     'TXT_CORE_LAST_MODIFIED_PAGE'    => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
     'LAST_MODIFIED_PAGE'             => date(ASCMS_DATE_SHORT_FORMAT, $page_modified),
+    'CONTACT_EMAIL'                  => isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '',
+    'CONTACT_COMPANY'                => isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '',
+    'CONTACT_ADDRESS'                => isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '',
+    'CONTACT_ZIP'                    => isset($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : '',
+    'CONTACT_PLACE'                  => isset($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : '',
+    'CONTACT_COUNTRY'                => isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '',
+    'CONTACT_PHONE'                  => isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '',
+    'CONTACT_FAX'                    => isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '',
     'FACEBOOK_LIKE_IFRAME'           => '<!--[if IE]>
                                          <iframe src="http://www.facebook.com/plugins/like.php?href='.urlencode('http://'.$_CONFIG['domainUrl'].$objInit->getCurrentPageUri()).'&amp;layout=standard&amp;show_faces=true&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe>
                                          <![endif]-->
@@ -1820,21 +1828,18 @@ $objTemplate->setVariable(array(
                                              });
                                          </script>
                                          <div id="plusone-div"></div>',
-    'CONTACT_EMAIL'                  => (isset ($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : ''),
-    'CONTACT_COMPANY'                => (isset ($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : ''),
-    'CONTACT_ADDRESS'                => (isset ($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : ''),
-    'CONTACT_ZIP'                    => (isset ($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : ''),
-    'CONTACT_PLACE'                  => (isset ($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : ''),
-    'CONTACT_COUNTRY'                => (isset ($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : ''),
-    'CONTACT_PHONE'                  => (isset ($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : ''),
-    'CONTACT_FAX'                    => (isset ($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : ''),
+    'GOOGLE_ANALYTICS'               => '<script type="text/javascript">
+                                             var _gaq = _gaq || [];
+                                             _gaq.push([\'_setAccount\', \''.(isset($_CONFIG['googleAnalyticsTrackingId']) ? contrexx_raw2xhtml($_CONFIG['googleAnalyticsTrackingId']) : '').'\']);
+                                             _gaq.push([\'_trackPageview\']);
+                                             
+                                             (function() {
+                                                 var ga = document.createElement(\'script\'); ga.type = \'text/javascript\'; ga.async = true;
+                                                 ga.src = (\'https:\' == document.location.protocol ? \'https://ssl\' : \'http://www\') + \'.google-analytics.com/ga.js\';
+                                                 var s = document.getElementsByTagName(\'script\')[0]; s.parentNode.insertBefore(ga, s);
+                                             })();
+                                         </script>',
 ));
-
-// Include and initialize handler to fill Social Network template variables
-//require_once 'lib/SocialNetworks.class.php');
-//$socialNetworkTemplater = new SocialNetworks($_CONFIG['domainUrl'].$objInit->getCurrentPageUri());
-// Set Social Network template variables
-$objTemplate->setVariable('SN_FACEBOOK_LIKE', 'aaaa');
 
 // ACCESS: parse access_logged_in[1-9] and access_logged_out[1-9] blocks
 FWUser::parseLoggedInOutBlocks($objTemplate);

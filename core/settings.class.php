@@ -256,6 +256,8 @@ class settingsManager
             'TXT_CORE_TIMEZONE'                         => $_CORELANG['TXT_CORE_TIMEZONE'],
             'TXT_DASHBOARD_NEWS'                        => $_CORELANG['TXT_DASHBOARD_NEWS'],
             'TXT_DASHBOARD_STATISTICS'                  => $_CORELANG['TXT_DASHBOARD_STATISTICS'],
+            'TXT_GOOGLE_ANALYTICS_TRACKING_ID'           => $_CORELANG['TXT_GOOGLE_ANALYTICS_TRACKING_ID'],
+            'TXT_GOOGLE_ANALYTICS_TRACKING_ID_INFO'      => $_CORELANG['TXT_GOOGLE_ANALYTICS_TRACKING_ID_INFO'],
         ));
 
         if ($this->isWritable()) {
@@ -306,6 +308,7 @@ class settingsManager
             'SETTINGS_DASHBOARD_NEWS_OFF'                   => ($arrSettings['dashboardNews'] == 'off') ? 'checked="checked"' : '',
             'SETTINGS_DASHBOARD_STATISTICS_ON'              => ($arrSettings['dashboardStatistics'] == 'on') ? 'checked="checked"' : '',
             'SETTINGS_DASHBOARD_STATISTICS_OFF'             => ($arrSettings['dashboardStatistics'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_GOOGLE_ANALYTICS_TRACKING_ID'          => $arrSettings['googleAnalyticsTrackingId'],
         ));
 
         $objTemplate->setVariable(array(

@@ -20,6 +20,7 @@ Text[16]=["","{TXT_CORE_LIST_PROTECTED_PAGES_HELP}"];
 Text[17]=["","{TXT_LICENSE_KEY_HELP}"];
 Text[18]=["","{TXT_SESSION_LIFETIME_REMEMBER_ME_HELP}"];
 Text[19]=["","{TXT_DEBUGGING_EXPLANATION}"];
+Text[20]=["","{TXT_GOOGLE_ANALYTICS_TRACKING_ID_INFO}"];
 // -->
 
 function toggleDebuggingFlags(show) {
@@ -153,7 +154,7 @@ function toggleDebuggingFlags(show) {
             <tr class="row3">
                 <td colspan="2">{TXT_TITLE_OTHER_CONFIG_OPTIONS}</td>
             </tr>
-            <tr class="row2">
+            <tr class="row1">
                 <td>{TXT_XML_SITEMAP_STATUS}&nbsp;</td>
                 <td>
                     <input type="radio" name="setvalue[54]" id="setvalue_54_on" value="on" {SETTINGS_XML_SITEMAP_ON} /><label for="setvalue_54_on">{TXT_RADIO_ON}</label>&nbsp;
@@ -169,17 +170,21 @@ function toggleDebuggingFlags(show) {
                     <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[15],Style[0])" alt="" />
                 </td>
             </tr>
-            <tr class="row2">
+            <tr class="row1">
                 <td>{TXT_PAGING_LIMIT}&nbsp;</td>
                 <td><input type="text" name="setvalue[18]" value="{SETTINGS_PAGING_LIMIT}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" alt="" /></td>
             </tr>
-            <tr class="row1">
+            <tr class="row2">
                 <td>{TXT_SEARCH_RESULT}&nbsp;</td>
                 <td><input type="text" name="setvalue[19]" value="{SETTINGS_SEARCH_RESULT_LENGTH}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" alt="" /></td>
             </tr>
             <tr class="row1">
                 <td>{TXT_GOOGLE_MAPS_API_KEY}&nbsp;</td>
                 <td><input type="text" name="setvalue[65]" value="{SETTINGS_GOOGLE_MAPS_API_KEY}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[14],Style[0])" alt="" /></td>
+            </tr>
+            <tr class="row2">
+                <td>{TXT_GOOGLE_ANALYTICS_TRACKING_ID}&nbsp;</td>
+                <td><input type="text" name="setvalue[87]" value="{SETTINGS_GOOGLE_ANALYTICS_TRACKING_ID}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[20],Style[0])" alt="" /></td>
             </tr>
         </table>
     </div>
