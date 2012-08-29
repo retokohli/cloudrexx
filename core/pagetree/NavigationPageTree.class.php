@@ -1,5 +1,4 @@
 <?php
-require_once(ASCMS_CORE_PATH.'/pagetree/SigmaPageTree.class.php');
 class NavigationPageTree extends SigmaPageTree {
     protected $topLevelBlockName = null;
     protected $output = '';

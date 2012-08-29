@@ -9,9 +9,6 @@
  * @author      Reto Kohli <reto.kohli@comvation.com>
  */
 
-require_once ASCMS_CORE_PATH.'/Text.class.php';
-require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
-require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
 
 /**
  * Image

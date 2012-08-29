@@ -8,15 +8,6 @@
 * @version      1.0.0
 */
 
-/**
- * @ignore
- */
-require_once ASCMS_CORE_MODULE_PATH.'/access/lib/AccessLib.class.php';
-
-/**
- * @ignore
- */
-require_once ASCMS_MODULE_PATH.'/u2u/lib/u2uLib.class.php';
 
 /**
 * Frontend for the user management

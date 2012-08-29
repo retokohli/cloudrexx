@@ -1,5 +1,4 @@
 <?php
-require_once ASCMS_CORE_MODULE_PATH.'/upload/lib/comboUploader.class.php';
 /**
  * ExposedComboUploader - ComboUploader with JQuery expose
  */

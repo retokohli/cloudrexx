@@ -49,7 +49,6 @@ class UploadFactory
     protected function initSession() {
         global $sessionObj;
         if(empty($sessionObj)) { //session hasn't been initialized so far
-            require_once(ASCMS_CORE_PATH.'/session.class.php');
             $sessionObj = new cmsSession();
         }
     }
@@ -225,7 +224,6 @@ class UploadFactory
      * @paran integer id
      */
     protected function createFolderWidget($folder, $id = 0) {
-        require_once(ASCMS_CORE_MODULE_PATH.'/upload/lib/folderWidget.class.php');
         $theWidget = new FolderWidget();
         $theWidget->setFolder($folder);
         $theWidget->setBackendRequest($this->isBackendRequest);
@@ -270,28 +268,23 @@ class UploadFactory
         $theUploader = null;
         switch($type) {
             case 'pl': //pluploader
-                require_once ASCMS_CORE_MODULE_PATH.'/upload/lib/plUploader.class.php';
                 $theUploader = new PlUploader($this->isBackendRequest);
                 break;
             
             case 'jump': //jumploader
-                require_once ASCMS_CORE_MODULE_PATH.'/upload/lib/jumpUploader.class.php';
                 $theUploader = new JumpUploader($this->isBackendRequest);
                 break;
            
             case 'form': //html file input
-                require_once ASCMS_CORE_MODULE_PATH.'/upload/lib/formUploader.class.php';
                 $theUploader = new FormUploader($this->isBackendRequest);
                 break;
 
             case 'combo': //combined version of all uploaders
-                require_once ASCMS_CORE_MODULE_PATH.'/upload/lib/comboUploader.class.php';
                 $theUploader = new ComboUploader($this->isBackendRequest);
                 $theUploader->setEnabledUploaders($this->uploaders);
                 break;
 
             case 'exposedCombo': //combined version of all uploaders, features modal dialog
-                require_once ASCMS_CORE_MODULE_PATH.'/upload/lib/exposedComboUploader.class.php';
                 $theUploader = new ExposedComboUploader($this->isBackendRequest);
                 $theUploader->setEnabledUploaders($this->uploaders);
                 break;

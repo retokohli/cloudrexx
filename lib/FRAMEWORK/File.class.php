@@ -12,15 +12,6 @@
  */
 
 /**
- * @ignore
- */
-require_once ASCMS_FRAMEWORK_PATH.'/File/FileSystem.class.php';
-/**
- * @ignore
- */
-require_once ASCMS_FRAMEWORK_PATH.'/File/File.class.php';
-
-/**
  * Legacy file manager
  *
  * <b>Don't use this anymore</b>, use the static refactored class \Cx\Lib\FileSystem

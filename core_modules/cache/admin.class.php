@@ -8,8 +8,6 @@
  * @subpackage  core_module_cache
  * @todo        Edit PHP DocBlocks!
  */
-require_once ASCMS_CORE_MODULE_PATH.'/cache/lib/cacheLib.class.php';
-require_once ASCMS_CORE_PATH.'/settings.class.php';
 
 /**
  * Cache

@@ -10,12 +10,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
-require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
-require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
-require_once ASCMS_CORE_PATH.'/Tree.class.php';
-require_once(ASCMS_FRAMEWORK_PATH.DIRECTORY_SEPARATOR.'Image.class.php');
-
 /**
  * File browser
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -497,10 +491,6 @@ class FileBrowser {
     {
         global $_ARRAYLANG, $_CONFIG;
 
-        /**
-         * Uploader handling
-         */
-        require_once ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php';
 
         //data we want to remember for handling the uploaded files
 		$data = array();

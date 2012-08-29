@@ -11,11 +11,6 @@
  */
 
 /**
- * Includes
- */
-require_once(ASCMS_FRAMEWORK_PATH."/File.class.php");
-
-/**
  * Image manager
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
@@ -610,7 +605,6 @@ class ImageManager
                 return '';
         }
 
-        require_once(ASCMS_FRAMEWORK_PATH.'/System.class.php');
         $objSystem = new FWSystem();
         if ($objSystem === false) return false;
         $memoryLimit = $objSystem->getBytesOfLiteralSizeFormat(

@@ -1,8 +1,4 @@
 <?php
-/**
- * Backend Captcha Tasks 
- */
-require_once ASCMS_CORE_MODULE_PATH.'/captcha/lib/captchaLib.class.php';
 
 class CaptchaActions extends CaptchaLib
 {

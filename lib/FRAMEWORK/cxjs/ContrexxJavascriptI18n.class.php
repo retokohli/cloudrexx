@@ -1,7 +1,6 @@
 <?php
 class ContrexxJavascriptI18nException extends ContrexxJavascriptException {}
 
-require_once ASCMS_FRAMEWORK_PATH.'/cxjs/ContrexxJavascriptI18nProvider.interface.php';
 /**
  * This handles i18n for Javascript.
  * @author Severin Räz

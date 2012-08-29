@@ -9,10 +9,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * Includes
- */
-require_once ASCMS_CORE_MODULE_PATH.'/media/mediaLib.class.php';
 
 /**
  * Media Manager
@@ -301,10 +297,6 @@ class MediaManager extends MediaLibrary
         else {
             // forms for uploading files and creating folders
             if ($this->_objTpl->blockExists('media_simple_file_upload')) {
-                /**
-                 * Uploader button handling
-                 */
-                require_once ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php';
                 //data we want to remember for handling the uploaded files
                 $data = array(
                     'path' => $this->path,
@@ -486,7 +478,6 @@ class MediaManager extends MediaLibrary
 
         switch ($_FILES[$inputField]['error']) {
             case UPLOAD_ERR_INI_SIZE:
-                include_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
                 $this->_strErrorMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_SIZE_EXCEEDS_LIMIT'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET), $this->getFormatedFileSize(FWSystem::getMaxUploadFileSize()));
                 break;
 

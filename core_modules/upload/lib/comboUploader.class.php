@@ -1,5 +1,4 @@
 <?php
-require_once ASCMS_CORE_MODULE_PATH.'/upload/lib/uploader.class.php';
 /**
  * ComboUploader - Displays a FormUploader and possibilities to invoke other types of Uploaders.
  */

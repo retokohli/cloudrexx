@@ -27,19 +27,11 @@ class FWCaptcha {
 
         switch ($config['coreCaptchaLib']) {
             case 'reCAPTCHA':
-                /**
-                 * @ignore
-                 */
-                include_once ASCMS_FRAMEWORK_PATH.'/Captcha/reCAPTCHA.class.php';
                 $this->objCaptcha = new \Cx\Lib\Captcha\reCAPTCHA($config);
                 break;
 
             case 'contrexx':
             default:
-                /**
-                 * @ignore
-                 */
-                include_once ASCMS_FRAMEWORK_PATH.'/Captcha/ContrexxCaptcha.class.php';
                 $this->objCaptcha = new \Cx\Lib\Captcha\ContrexxCaptcha($config);
                 break;
         }

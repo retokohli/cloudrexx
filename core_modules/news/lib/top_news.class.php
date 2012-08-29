@@ -10,10 +10,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * @ignore
- */
-require_once ASCMS_CORE_MODULE_PATH . '/news/lib/newsLib.class.php';
 
 /**
  * Top news

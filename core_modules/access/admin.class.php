@@ -9,10 +9,6 @@
 * @version      1.0.0
 */
 
-/**
- * @ignore
- */
-require_once ASCMS_CORE_MODULE_PATH.'/access/lib/AccessLib.class.php';
 
 /**
 * User Management Backend
@@ -504,7 +500,6 @@ class AccessManager extends AccessLib
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
-        require_once ASCMS_CORE_PATH.'/Tree.class.php';
         $objContentTree = new ContentTree();
 
         $arrAreas = array();
@@ -834,7 +829,6 @@ class AccessManager extends AccessLib
                 $_CONFIG['lastAccessId'] = $lastAccessId;
                 $objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = ".$lastAccessId." WHERE `setname` = 'lastAccessId'");
 
-                require_once(ASCMS_CORE_PATH.'/settings.class.php');
                 $objSettings = new settingsManager();
                 $objSettings->writeSettingsFile();
 
@@ -1424,8 +1418,6 @@ class AccessManager extends AccessLib
         if (empty($_POST['access_user_add_dma_category'])) {
             return true;
         }
-
-        include_once ASCMS_MODULE_PATH.'/downloads/lib/downloadsLib.class.php';
 
 // TODO: Never used
 //        $objFWUser = FWUser::getFWUserObject();
@@ -2790,8 +2782,6 @@ class AccessManager extends AccessLib
     static function import_csv($file_name)
     {
         global $_ARRAYLANG;
-        require_once(ASCMS_LIBRARY_PATH.'/importexport/lib/csv.class.php');
-        require_once(ASCMS_MODULE_PATH.'/newsletter/lib/NewsletterLib.class.php');
 
 DBG::activate(DBG_ADODB_ERROR|DBG_LOG_FIREPHP|DBG_PHP);
 

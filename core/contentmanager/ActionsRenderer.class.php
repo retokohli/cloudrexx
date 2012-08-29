@@ -1,6 +1,4 @@
 <?php
-require_once ASCMS_MODEL_PATH."/entities/Cx/Model/ContentManager/Page.php";
-
 use Cx\Model\ContentManager\Page;
 
 class ActionsRenderer

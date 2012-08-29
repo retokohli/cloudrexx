@@ -11,10 +11,6 @@
  * @subpackage  module_hotelcard
  */
 
-//require_once(ASCMS_CORE_PATH.'/HtmlTag.class.php');
-require_once(ASCMS_FRAMEWORK_PATH.'/Javascript.class.php');
-require_once(ASCMS_CORE_PATH.'/Image.class.php');
-
 /**
  * Global constants defining the names of various status
  * for almost anything
@@ -1327,7 +1323,6 @@ var _active_tab = '.
     static function getDatepicker($name, $options=null, $attribute=null, &$id=null)
     {
         static $index = 0;
-        require_once ASCMS_FRAMEWORK_PATH.'/DateTimeTools.class.php';
 
         DateTimeTools::addDatepickerJs();
         if (empty($id)) $id = ($name ? $name : 'datepicker-'.++$index);

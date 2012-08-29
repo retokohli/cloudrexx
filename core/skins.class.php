@@ -11,12 +11,6 @@
  */
 
 /**
- * @ignore
- */
-require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/File.class.php';
-require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
-
-/**
  * Skins class
  *
  * Skins and Themes management functions
@@ -632,7 +626,6 @@ class skins
     function _importFile()
     {
         global $_CORELANG;
-        require_once(ASCMS_LIBRARY_PATH.'/pclzip/pclzip.lib.php');
 
         $this->_cleantmp();
         switch($_GET['import']){
@@ -716,7 +709,6 @@ class skins
      */
     function _exportFile()
     {
-        require_once(ASCMS_LIBRARY_PATH.'/pclzip/pclzip.lib.php');
         global $_CORELANG;
         //clean up tmp folder
         $this->_cleantmp();

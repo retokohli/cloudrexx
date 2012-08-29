@@ -11,9 +11,6 @@
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 use \Cx\Core\Json\Adapter\ContentManager\JsonPage;
 
-require ASCMS_CORE_PATH . '/Module.class.php';
-require_once ASCMS_CORE_PATH . '/json/JsonData.class.php';
-
 class ContentManagerException extends ModuleException {
     
 }
@@ -67,13 +64,11 @@ class ContentManager extends Module {
         JS::registerJS('lib/javascript/jquery/jquery.history.js');
 
         $objCx = ContrexxJavascript::getInstance();
-        if (include_once(ASCMS_CORE_PATH.'/skins.class.php')) {
-            $objSkins = new skins();
-            $objCx->setVariable('themeId', $objSkins->selectDefaultTheme(), 'contentmanager/theme');
-            foreach ($objSkins->getThemes() as $arrTheme) {
-                if ($arrTheme['id'] == $objSkins->selectDefaultTheme()) {
-                    $objCx->setVariable('themeName', $arrTheme['foldername'], 'contentmanager/theme');
-                }
+        $objSkins = new skins();
+        $objCx->setVariable('themeId', $objSkins->selectDefaultTheme(), 'contentmanager/theme');
+        foreach ($objSkins->getThemes() as $arrTheme) {
+            if ($arrTheme['id'] == $objSkins->selectDefaultTheme()) {
+                $objCx->setVariable('themeName', $arrTheme['foldername'], 'contentmanager/theme');
             }
         }
 

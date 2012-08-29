@@ -10,6 +10,7 @@ class ClassLoader {
     }
     
     private function autoload($name) {
+        //print $name."<br>";
         if ($this->load($name, $path)) {
             return;
         }

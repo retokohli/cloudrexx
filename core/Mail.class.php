@@ -7,8 +7,6 @@
  * MailTemplate.  We use it to migrate the existing templates ONLY.
  */
 
-require_once ASCMS_CORE_PATH.'/Text.class.php';
-
 /**
  * OBSOLETE -- See {@see core/MailTemplate.class.php}
  */

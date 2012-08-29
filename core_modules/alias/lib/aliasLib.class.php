@@ -8,10 +8,6 @@
  * @subpackage  core_module_alias
  * @todo        Edit PHP DocBlocks!
  */
-/**
- * @ignore
- */
-require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
 
 /**
  * Alias library

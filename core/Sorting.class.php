@@ -12,8 +12,6 @@
  * @subpackage  core
  */
 
-require_once ASCMS_CORE_PATH.'/Html.class.php';
-
 /**
  * Provides methods to create sorted tables
  *

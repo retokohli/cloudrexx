@@ -8,14 +8,6 @@
  * @subpackage  core_module_alias
  * @todo        Edit PHP DocBlocks!
  */
-/**
- * @ignore
- */
-require_once ASCMS_CORE_MODULE_PATH.'/alias/lib/aliasLib.class.php';
-/**
- * @ignore
- */
-require_once ASCMS_CORE_PATH.'/settings.class.php';
 
 /**
  * AliasAdmin
@@ -131,7 +123,6 @@ class AliasAdmin extends aliasLib
 
         // show warning message if contrexx is running on an IIS webserver and the web.config seems not be be registred in the server configuration
         if (ASCMS_WEBSERVER_SOFTWARE == 'iis') {
-            require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/Request2.php');
             $objRequest = new HTTP_Request2('http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID).'/index.php?section=error');
             try {
                 $objResponse = $objRequest->send();

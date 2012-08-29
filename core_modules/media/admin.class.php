@@ -9,12 +9,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * Includes
- */
-require_once ASCMS_CORE_MODULE_PATH  . '/media/mediaLib.class.php';
-require_once ASCMS_FRAMEWORK_PATH . '/Image.class.php';
-require_once ASCMS_LIBRARY_PATH . '/FRAMEWORK/File.class.php';
 
 /**
  * Media Manager
@@ -437,10 +431,6 @@ class MediaManager extends MediaLibrary
             }
         }
 
-        /**
-         * Uploader button handling
-         */
-        require_once ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php';
         //data we want to remember for handling the uploaded files
         $data = array(
             'path' => $this->path,

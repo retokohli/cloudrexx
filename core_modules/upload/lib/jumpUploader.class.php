@@ -1,5 +1,4 @@
 <?php
-require_once ASCMS_CORE_MODULE_PATH.'/upload/lib/uploader.class.php';
 /**
  * PlUploader - Flash uploader class.
  */
@@ -64,7 +63,6 @@ class JumpUploader extends Uploader
       }
       $l10nPath .= '&lang='.$langCode;
 
-      require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
       $tpl->setVariable('CHUNK_LENGTH', FWSystem::getMaxUploadFileSize()-1000);
       $tpl->setVariable('APPLET_URL', $appletPath);
       $tpl->setVariable('LANG_URL', $l10nPath);

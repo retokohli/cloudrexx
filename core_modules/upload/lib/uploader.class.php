@@ -1,10 +1,5 @@
 <?php
 /**
- * @ignore
- */
-include_once ASCMS_CORE_MODULE_PATH.'/upload/lib/uploadResponse.class.php';
-
-/**
  * Exceptions thrown by uploader
  */
 class UploaderException extends Exception
@@ -61,7 +56,6 @@ abstract class Uploader
        //start session if it's not ready yet
        global $sessionObj;
        if(empty($sessionObj)) { //session hasn't been initialized so far
-           require_once(ASCMS_CORE_PATH.'/session.class.php');
            $sessionObj = new cmsSession();
        }
     }
@@ -389,8 +383,6 @@ abstract class Uploader
     {
         global $sessionObj;
       
-        //create a file manager
-        require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
         
         //get a writable directory
         $tempPath = $sessionObj->getTempPath();

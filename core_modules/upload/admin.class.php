@@ -1,8 +1,4 @@
 <?php
-/**
- * Backend Upload Tasks 
- */
-require_once ASCMS_CORE_MODULE_PATH.'/upload/lib/uploadLib.class.php';
 
 class Upload extends UploadLib
 {

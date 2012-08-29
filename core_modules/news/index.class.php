@@ -12,19 +12,6 @@
  */
 
 /**
- * @ignore
- */
-require_once ASCMS_CORE_MODULE_PATH.'/news/lib/newsLib.class.php';
-/**
- * @ignore
- */
-require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
-/**
- * @ignore
- */
-require_once ASCMS_CORE_MODULE_PATH.'/access/lib/AccessLib.class.php';
-
-/**
  * News
  *
  * This module will get all the news pages
@@ -1328,7 +1315,6 @@ class news extends newsLibrary {
 
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
-        require_once ASCMS_CORE_PATH.'/modulemanager.class.php';
         $objModulManager = new modulemanager();
         $arrInstalledModules = $objModulManager->getModules();
         if (in_array(23, $arrInstalledModules)) {

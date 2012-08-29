@@ -10,9 +10,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
-
-require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
 /**
  * Media Library
  *
@@ -145,7 +142,6 @@ class MediaLibrary
             default: $ctype="application/force-download";
         }
 
-        require_once ASCMS_LIBRARY_PATH.'/PEAR/Download.php';
         $dl = new HTTP_Download(array(
           "file"                  => $file,
           "contenttype"           => $ctype

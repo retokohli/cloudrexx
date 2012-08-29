@@ -9,7 +9,6 @@
 
 namespace Cx\Core\Json\Adapter\Block;
 require_once ASCMS_CORE_PATH.'/json/JsonAdapter.interface.php';
-require_once ASCMS_MODULE_PATH.'/block/lib/blockLib.class.php';
 use \Cx\Core\Json\JsonAdapter;
 
 /**

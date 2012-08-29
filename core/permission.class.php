@@ -107,19 +107,17 @@ class Permission
         $lastAccessId = $_CONFIG['lastAccessId'];
         $newAccessId = $_CONFIG['lastAccessId'] + 1;
 
-        if (include_once(ASCMS_CORE_PATH.'/settings.class.php')) {
-            $objSettings = new settingsManager();
-            if ($objSettings->isWritable()) {
-                if ($objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = ".$newAccessId." WHERE `setname` = 'lastAccessId'")
-                    && $objSettings->writeSettingsFile()
-                ) {
-                    $_CONFIG['lastAccessId'] = $newAccessId;
-                    return $newAccessId;
-                } else {
-                    $objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = ".$lastAccessId." WHERE `setname` = 'lastAccessId'");
-                }
+        $objSettings = new settingsManager();
+        if ($objSettings->isWritable()) {
+            if ($objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = ".$newAccessId." WHERE `setname` = 'lastAccessId'")
+                && $objSettings->writeSettingsFile()
+            ) {
+                $_CONFIG['lastAccessId'] = $newAccessId;
+                return $newAccessId;
+            } else {
+                $objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = ".$lastAccessId." WHERE `setname` = 'lastAccessId'");
             }
-        }
+        }        
 
         return false;
     }

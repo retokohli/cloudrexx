@@ -10,11 +10,6 @@
  */
 
 /**
- * Includes
- */
-require_once ASCMS_FRAMEWORK_PATH . '/NetToolsLib.class.php';
-
-/**
  * Net tools
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Comvation Development Team <info@comvation.com>

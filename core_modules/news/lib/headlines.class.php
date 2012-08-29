@@ -11,11 +11,6 @@
  */
 
 /**
- * @ignore
- */
-require_once ASCMS_CORE_MODULE_PATH . '/news/lib/newsLib.class.php';
-
-/**
  * News headlines
  *
  * Gets all the news headlines

@@ -9,7 +9,6 @@
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
-require_once ASCMS_CORE_PATH.'/settings.class.php';
 
 /**
  * Language Manager
@@ -1129,8 +1128,6 @@ class LanguageManager
     function createFiles()
     {
         global $objDatabase, $_CORELANG;
-
-        require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
 
         $arrModules = array();
         $arrLanguages = array();

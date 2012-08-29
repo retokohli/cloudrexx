@@ -9,8 +9,6 @@
  * @subpackage  lib_framework
  */
 
-require_once(ASCMS_FRAMEWORK_PATH.'/User/User_Profile_Attribute.class.php');
-
 /**
  * User Profile
  *

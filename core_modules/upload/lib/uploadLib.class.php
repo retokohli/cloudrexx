@@ -1,15 +1,4 @@
 <?php
-/**
- * @ignore
- */
-include_once ASCMS_CORE_MODULE_PATH.'/upload/lib/uploadResponse.class.php';
-
-/**
- * Once an Upload is approved, we get here.
- * This mainly delegates work to the uploader-classes.
- */
-require_once ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php';
-
 class UploadLib
 {
     //processes uploads sent by an uploader
@@ -43,7 +32,6 @@ class UploadLib
     //send the jumpUploader applet
     public function jumpUploaderApplet() {
         //the applet is sent via request because of basic auth problems with a path for the .jar-file that is different from the path the browser authenticated himself against.
-        require_once ASCMS_LIBRARY_PATH . '/PEAR/Download.php';
         $download = new HTTP_Download();
         $download->setFile(ASCMS_CORE_MODULE_PATH.'/upload/ressources/uploaders/jump/jumpLoader.jar');
         $download->setContentType('application/java-archive');
@@ -54,7 +42,6 @@ class UploadLib
     //send the jumpUploader messages
     public function jumpUploaderL10n($langCode) {
         //the messages are sent via request because of basic auth problems with a path for the .zip-file that is different from the path the browser authenticated himself against.
-        require_once ASCMS_LIBRARY_PATH . '/PEAR/Download.php';
         $download = new HTTP_Download();
         //load correct language file
         $objFWUser = FWUser::getFWUserObject();
