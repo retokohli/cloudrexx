@@ -6,6 +6,8 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_PASSWORD_COMPLEXITY'] = "Passwords must meet complexity requirements";
+$_ARRAYLANG['TXT_PASSWORD_COMPLEXITY_INFO'] = "Password must contain the following characters: upper, lower case and numbers";
 $_ARRAYLANG['TXT_GOOGLE_ANALYTICS_TRACKING_ID'] = "Google Analytics Tracking ID";
 $_ARRAYLANG['TXT_GOOGLE_ANALYTICS_TRACKING_ID_INFO'] = "Enter your Google Analytics tracking ID here. These can be found in your Google Analytics account under Admin => Tracking Code.";
 $_ARRAYLANG['TXT_CORE_TIMEZONE'] = "Timezone";

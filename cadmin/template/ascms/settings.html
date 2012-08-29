@@ -1,5 +1,5 @@
 <!-- START settings.html -->
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 <!-- //
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
 Text[0]=["","{TXT_PAGING_LIMIT_HELP}"];
@@ -21,6 +21,7 @@ Text[17]=["","{TXT_LICENSE_KEY_HELP}"];
 Text[18]=["","{TXT_SESSION_LIFETIME_REMEMBER_ME_HELP}"];
 Text[19]=["","{TXT_DEBUGGING_EXPLANATION}"];
 Text[20]=["","{TXT_GOOGLE_ANALYTICS_TRACKING_ID_INFO}"];
+Text[21]=["","{TXT_PASSWORD_COMPLEXITY_INFO}"];
 // -->
 
 function toggleDebuggingFlags(show) {
@@ -150,6 +151,14 @@ function toggleDebuggingFlags(show) {
                     <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" alt="" />
                 </td>
             </tr>
+            <tr class="row2">
+                <td>{TXT_PASSWORD_COMPLEXITY}&nbsp;</td>
+                <td>
+                    <input type="radio" name="setvalue[89]" id="setvalue_89_on" value="on" {SETTINGS_PASSWORD_COMPLEXITY_ON} /><label for="setvalue_89_on">{TXT_RADIO_ON}</label>&nbsp;
+                    <input type="radio" name="setvalue[89]" id="setvalue_89_off" value="off" {SETTINGS_PASSWORD_COMPLEXITY_OFF} /><label for="setvalue_89_off">{TXT_RADIO_OFF}</label>&nbsp;
+                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[21],Style[0])" alt="" />
+                </td>
+            </tr>
             
             <tr class="row3">
                 <td colspan="2">{TXT_TITLE_OTHER_CONFIG_OPTIONS}</td>
@@ -184,7 +193,7 @@ function toggleDebuggingFlags(show) {
             </tr>
             <tr class="row2">
                 <td>{TXT_GOOGLE_ANALYTICS_TRACKING_ID}&nbsp;</td>
-                <td><input type="text" name="setvalue[87]" value="{SETTINGS_GOOGLE_ANALYTICS_TRACKING_ID}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[20],Style[0])" alt="" /></td>
+                <td><input type="text" name="setvalue[88]" value="{SETTINGS_GOOGLE_ANALYTICS_TRACKING_ID}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[20],Style[0])" alt="" /></td>
             </tr>
         </table>
     </div>

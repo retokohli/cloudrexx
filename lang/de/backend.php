@@ -6,6 +6,8 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_PASSWORD_COMPLEXITY'] = "Kennwort muss Komplexitätsvoraussetzung entsprechen";
+$_ARRAYLANG['TXT_PASSWORD_COMPLEXITY_INFO'] = "Kennwort muss folgende Zeichen enthalten: Gross-, Kleinbuchstabe und Zahl";
 $_ARRAYLANG['TXT_GOOGLE_ANALYTICS_TRACKING_ID'] = "Google Analytics Tracking-ID";
 $_ARRAYLANG['TXT_GOOGLE_ANALYTICS_TRACKING_ID_INFO'] = "Geben Sie hier Ihre Google Analytics Tracking-ID ein. Diese finden Sie in Ihrem Google Analytics Konto unter Verwaltung => Tracking-Code.";
 $_ARRAYLANG['TXT_CORE_TIMEZONE'] = "Zeitzone";
