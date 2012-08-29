@@ -2112,7 +2112,18 @@ class User extends User_Profile
      */
     private static function isValidPassword($password)
     {
-        return strlen($password) >= 6;
+        global $_CONFIG;
+
+        if (strlen($password) >= 6) {
+            if (isset($_CONFIG['passwordComplexity']) && $_CONFIG['passwordComplexity'] == 'on') {
+                // Password must contain the following characters: upper, lower case and numbers
+                if (!preg_match('/[A-Z]+/', $password) || !preg_match('/[a-z]+/', $password) || !preg_match('/[0-9]+/', $password)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
 

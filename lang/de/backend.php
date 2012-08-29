@@ -6,7 +6,7 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
-$_ARRAYLANG['TXT_PASSWORD_COMPLEXITY'] = "Kennwort muss Komplexitätsvoraussetzung entsprechen";
+$_ARRAYLANG['TXT_PASSWORD_COMPLEXITY'] = "Kennwort muss der Komplexitätsvoraussetzung entsprechen";
 $_ARRAYLANG['TXT_PASSWORD_COMPLEXITY_INFO'] = "Kennwort muss folgende Zeichen enthalten: Gross-, Kleinbuchstabe und Zahl";
 $_ARRAYLANG['TXT_GOOGLE_ANALYTICS_TRACKING_ID'] = "Google Analytics Tracking-ID";
 $_ARRAYLANG['TXT_GOOGLE_ANALYTICS_TRACKING_ID_INFO'] = "Geben Sie hier Ihre Google Analytics Tracking-ID ein. Diese finden Sie in Ihrem Google Analytics Konto unter Verwaltung => Tracking-Code.";
@@ -981,7 +981,7 @@ $_ARRAYLANG['TXT_ACCESS_FIRSTNAME'] = "Vorname";
 $_ARRAYLANG['TXT_ACCESS_GENDER'] = "Geschlecht";
 $_ARRAYLANG['TXT_ACCESS_INTERESTS'] = "Interessen";
 $_ARRAYLANG['TXT_ACCESS_INVALID_EMAIL_ADDRESS'] = "Sie müssen eine gültige E-Mail Adresse angeben!";
-$_ARRAYLANG['TXT_ACCESS_INVALID_PASSWORD'] = "Das Kennwort ist ungültig! Es muss mindestens 6 Zeichen lang sein!";
+$_ARRAYLANG['TXT_ACCESS_INVALID_PASSWORD'] = "Das Kennwort ist ungültig. Es muss mindestens 6 Zeichen lang sein, sowie mindestens einen Gross-, einen Kleinbuchstaben und eine Zahl enthalten.";
 $_ARRAYLANG['TXT_ACCESS_INVALID_USERNAME'] = "Der Benutzername darf nur aus Alphanumerischen Zeichen (a-z/A-Z/0-9) und den folgenden Sonderzeichen bestehen: -_";
 $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] = "Sprache";
 $_ARRAYLANG['TXT_ACCESS_LAST_ADMIN_USER'] = "Der Benutzer %s konnte nicht gelöscht werden, da es der einzige Administrator ist!";

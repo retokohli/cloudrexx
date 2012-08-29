@@ -6,8 +6,8 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
-$_ARRAYLANG['TXT_PASSWORD_COMPLEXITY'] = "Passwords must meet complexity requirements";
-$_ARRAYLANG['TXT_PASSWORD_COMPLEXITY_INFO'] = "Password must contain the following characters: upper, lower case and numbers";
+$_ARRAYLANG['TXT_PASSWORD_COMPLEXITY'] = "Passwords must meet the complexity requirements";
+$_ARRAYLANG['TXT_PASSWORD_COMPLEXITY_INFO'] = "Password must contain the following characters: upper and lower case character and number";
 $_ARRAYLANG['TXT_GOOGLE_ANALYTICS_TRACKING_ID'] = "Google Analytics Tracking ID";
 $_ARRAYLANG['TXT_GOOGLE_ANALYTICS_TRACKING_ID_INFO'] = "Enter your Google Analytics tracking ID here. These can be found in your Google Analytics account under Admin => Tracking Code.";
 $_ARRAYLANG['TXT_CORE_TIMEZONE'] = "Timezone";
@@ -975,7 +975,7 @@ $_ARRAYLANG['TXT_ACCESS_FIRSTNAME'] = "Prénom";
 $_ARRAYLANG['TXT_ACCESS_GENDER'] = "Sexe";
 $_ARRAYLANG['TXT_ACCESS_INTERESTS'] = "Domaines d'intérêts";
 $_ARRAYLANG['TXT_ACCESS_INVALID_EMAIL_ADDRESS'] = "Veuillir saisir une adresse E-mail valide!";
-$_ARRAYLANG['TXT_ACCESS_INVALID_PASSWORD'] = "Mot de passe invalide (min. 6 caractères).";
+$_ARRAYLANG['TXT_ACCESS_INVALID_PASSWORD'] = "The password is invalid. It must be at least 6 characters long as well as contain at least one upper and one lower case character and one number.";
 $_ARRAYLANG['TXT_ACCESS_INVALID_USERNAME'] = "L'identifiant de l'utilisateur ne peut être composé que de caractères alphnumériques (a-z/A-Z/0-9) et des caractüres spöciaux suivants: -_";
 $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] = "Langue";
 $_ARRAYLANG['TXT_ACCESS_LAST_ADMIN_USER'] = "Impossible de supprimer l'utilisateurs %s, car c'est l'unique administrateur!";
