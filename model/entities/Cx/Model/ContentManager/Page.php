@@ -6,10 +6,6 @@ use Doctrine\ORM\EntityManager;
 
 define('FRONTEND_PROTECTION', 1 << 0);
 define('BACKEND_PROTECTION',  1 << 1);
-/**
- * @ignore
- */
-require_once ASCMS_CORE_MODULE_PATH.'/alias/lib/aliasLib.class.php';
 
 class PageException extends \Exception {}
 
@@ -1438,7 +1434,7 @@ class Page extends \Cx\Model\Base\EntityBase
         foreach ($data as $alias) {
             if (!in_array($alias, $aliases)) {
                 // new alias
-                $lib->_saveAlias($alias, '[[NODE_' . $this->getNode()->getId() . '_' . $this->getLang() . ']]', true);
+                $lib->_saveAlias($alias, '[[' . $this->getNode()->getId() . '_' . $this->getLang() . ']]', true);
             }
         }
     }
