@@ -37,6 +37,7 @@ $_CONFIG['installationId']            = "";
 $_CONFIG['languageDetection']         = "off";
 $_CONFIG['lastAccessId']              = 57;
 $_CONFIG['licenseKey']                = "";
+$_CONFIG['passwordComplexity']        = "on";
 $_CONFIG['searchVisibleContentOnly']  = "on";
 $_CONFIG['sessionLifeTime']           = 3600;
 $_CONFIG['sessionLifeTimeRememberMe'] = 1209600;
