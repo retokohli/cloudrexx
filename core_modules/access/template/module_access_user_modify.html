@@ -1,5 +1,13 @@
 <!-- start module_access_modify_user.html -->
 {ACCESS_JAVASCRIPT_FUNCTIONS}
+
+<script type="text/javascript">
+/* <![CDATA[ */
+Style[0] = ["", "", "", "", "",, "black", "#FFFFE1", "", "", "",,,, 1, "#000000", 2, 21, 0.3,, 2, "gray", 1,, 15, -5];
+Text[0]  = ["", "{TXT_ACCESS_PASSWORD_INFO}"];
+/* ]]> */
+</script>
+
 <style type="text/css">
 #access input[type=checkbox], #access input[type=radio]{
     width: 20px;
@@ -24,6 +32,7 @@
     height: 150px !important;
 }
 </style>
+
 <ul id="tabmenu">
 <li><a id="userTab_modifyUser1" class="active" href="javascript:void(0);" onclick="selectTab('modifyUser1')" title="{TXT_ACCESS_USER_ACCOUNT}">{TXT_ACCESS_USER_ACCOUNT}</a></li>
 <!-- BEGIN access_profile_group_assignment --><li><a id="userTab_modifyUser2" href="javascript:void(0);" onclick="selectTab('modifyUser2')" title="{TXT_ACCESS_USER_GROUP_S}">{TXT_ACCESS_USER_GROUP_S}</a></li><!-- END access_profile_group_assignment -->
@@ -48,7 +57,11 @@
 			</tr>
 			<tr class="row2">
 				<td>{TXT_ACCESS_PASSWORD}</td>
-				<td>{ACCESS_USER_PASSWORD} <font color="red">*</font> {TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS}</td>
+				<td>
+				    {ACCESS_USER_PASSWORD}&nbsp;
+				    <font color="red">*</font>&nbsp;
+				    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0], Style[0])" alt="" />
+				</td>
 			</tr>
 			<tr class="row1">
 				<td>{TXT_ACCESS_CONFIRM_PASSWORD}</td>

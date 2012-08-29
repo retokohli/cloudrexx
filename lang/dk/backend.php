@@ -6,8 +6,8 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
-$_ARRAYLANG['TXT_PASSWORD_COMPLEXITY'] = "Passwords must meet complexity requirements";
-$_ARRAYLANG['TXT_PASSWORD_COMPLEXITY_INFO'] = "Password must contain the following characters: upper, lower case and numbers";
+$_ARRAYLANG['TXT_PASSWORD_COMPLEXITY'] = "Passwords must meet the complexity requirements";
+$_ARRAYLANG['TXT_PASSWORD_COMPLEXITY_INFO'] = "Password must contain the following characters: upper and lower case character and number";
 $_ARRAYLANG['TXT_GOOGLE_ANALYTICS_TRACKING_ID'] = "Google Analytics Tracking ID";
 $_ARRAYLANG['TXT_GOOGLE_ANALYTICS_TRACKING_ID_INFO'] = "Enter your Google Analytics tracking ID here. These can be found in your Google Analytics account under Admin => Tracking Code.";
 $_ARRAYLANG['TXT_CORE_TIMEZONE'] = "Timezone";
@@ -975,7 +975,7 @@ $_ARRAYLANG['TXT_ACCESS_FIRSTNAME'] = "Fornavn";
 $_ARRAYLANG['TXT_ACCESS_GENDER'] = "Køn";
 $_ARRAYLANG['TXT_ACCESS_INTERESTS'] = "Interesser";
 $_ARRAYLANG['TXT_ACCESS_INVALID_EMAIL_ADDRESS'] = "Du skal angive en gyldig e-mail adresse!";
-$_ARRAYLANG['TXT_ACCESS_INVALID_PASSWORD'] = "Det indtastede kodeord er ugyldigt! Det skal have en længde på min. 6 tegn!";
+$_ARRAYLANG['TXT_ACCESS_INVALID_PASSWORD'] = "The password is invalid. It must be at least 6 characters long as well as contain at least one upper and one lower case character and one number.";
 $_ARRAYLANG['TXT_ACCESS_INVALID_USERNAME'] = "Brugernavnet må kun bestå af alfanumeriske tegn (a-z/A-Z/0-9) og efterfølgende specialtegn: -_";
 $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] = "Sprog";
 $_ARRAYLANG['TXT_ACCESS_LAST_ADMIN_USER'] = "Brugeren %s kunne ikke blive slettet da den er den eneste administrator!";

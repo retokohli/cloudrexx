@@ -1281,6 +1281,12 @@ class AccessManager extends AccessLib
 
         $this->attachJavaScriptFunction('accessSetWebsite');
         $this->attachJavaScriptFunction('jscalendarIncludes');
+        
+        if (isset($_CONFIG['passwordComplexity']) && $_CONFIG['passwordComplexity'] == 'on') {
+            $passwordInfo = $_ARRAYLANG['TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS_WITH_COMPLEXITY'];
+        } else {
+            $passwordInfo = $_ARRAYLANG['TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS'];
+        }
 
         $this->_objTpl->setVariable(array(
             'TXT_ACCESS_USER_ACCOUNT'                   => $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT'],
@@ -1293,7 +1299,7 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_EMAIL'                          => $_ARRAYLANG['TXT_ACCESS_EMAIL'],
             'TXT_ACCESS_LANGUAGE'                       => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'],
             'TXT_ACCESS_ADMINISTRATOR'                  => $_ARRAYLANG['TXT_ACCESS_ADMINISTRATOR'],
-            'TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS'    => $_ARRAYLANG['TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS'],
+            'TXT_ACCESS_PASSWORD_INFO'                  => $passwordInfo,
             'TXT_ACCESS_USER_ADMIN_RIGHTS'              => $_ARRAYLANG['TXT_ACCESS_USER_ADMIN_RIGHTS'],
             'TXT_ACCESS_PASSWORD_FIELD_EMPTY'           => $_ARRAYLANG['TXT_ACCESS_PASSWORD_FIELD_EMPTY'],
             'TXT_ACCESS_PASSWORD_MD5_ENCRYPTED'         => $_ARRAYLANG['TXT_ACCESS_PASSWORD_MD5_ENCRYPTED'],
