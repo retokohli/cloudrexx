@@ -1,7 +1,7 @@
 <?php 
-require_once(ASCMS_CORE_PATH.'/pagetree/PageTree.class.php');
+require_once(ASCMS_CORE_PATH.'/pagetree/PageTree2.class.php');
 
-/*abstract */class SigmaPageTree extends PageTree {
+abstract class SigmaPageTree extends PageTree2 {
         protected $template = null;
 
     /**
@@ -10,5 +10,4 @@ require_once(ASCMS_CORE_PATH.'/pagetree/PageTree.class.php');
     public function setTemplate($template) {
         $this->template = $template;
     }
-
 }

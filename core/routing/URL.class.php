@@ -251,6 +251,15 @@ class URL {
     public function toString() {
         $this->domain . $this;
     }
+    
+    public function getLangDir() {
+        $lang_dir = '';
+        if (!defined('BACKEND_LANG_ID')) {
+            // we are in frontend mode, so we do use virtual language dirs
+            $lang_dir = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID) . '/';
+        }
+        return $lang_dir;
+    }
 
     /**
      * Returns URL without hostname for use in internal links.
@@ -259,13 +268,8 @@ class URL {
      * @return type 
      */
     public function __toString() {
-        $lang_dir = '';
-        if (!defined('BACKEND_LANG_ID')) {
-            // we are in frontend mode, so we do use virtual language dirs
-            $lang_dir = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID) . '/';
-        }
         return ASCMS_PATH_OFFSET . '/' .
-                $lang_dir .
+                $this->getLangDir() .
                 $this->path; // contains path (except for PATH_OFFSET and virtual language dir) and params
     }
 }

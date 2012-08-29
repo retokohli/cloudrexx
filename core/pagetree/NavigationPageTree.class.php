@@ -71,4 +71,19 @@ class NavigationPageTree extends SigmaPageTree {
             return $this->template->get();
         }
     }
+
+    protected function preRenderElement($level, $hasChilds, $lang, $page) {}
+
+    protected function postRenderElement($level, $hasChilds, $lang, $page) {}
+    
+    protected function renderHeader($lang) {}
+    
+    protected function renderFooter($lang) {}
+    
+    protected function preRender($lang) {}
+    
+    /**
+     * Called on construction. Override if you do not want to override the ctor.
+     */
+    protected function init() {}
 }

@@ -153,4 +153,13 @@ class NestedNavigationPageTree extends SigmaPageTree {
 
         return str_repeat("\n</ul>\n</li>", $this->lastLevel - $level);
     }
+
+    protected function preRenderElement($level, $hasChilds, $lang, $page) {}
+    
+    protected function postRender($lang) {}
+    
+    /**
+     * Called on construction. Override if you do not want to override the ctor.
+     */
+    protected function init() {}
 }

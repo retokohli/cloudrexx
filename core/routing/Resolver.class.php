@@ -73,6 +73,7 @@ class Resolver {
      * @var array
      */
     protected $sessionPage = array();
+    protected $path;
     
     /**
      * @param URL $url the url to resolve
@@ -121,6 +122,7 @@ class Resolver {
     public function resolveAlias() {
         // This is our alias, if any
         $path = $this->url->getSuggestedTargetPath();
+        $this->path = $path;
 
         //(I) see what the model has for us, aliases only.
         $result = $this->pageRepo->getPagesAtPath($path, null, null, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_ALIAS_ONLY);
@@ -150,21 +152,19 @@ class Resolver {
      */
     public function resolve($internal = false) {
         $path = $this->url->getSuggestedTargetPath();
-
+        
         if (!$this->page || $internal) {
-            //(I) see what the model has for us, including aliases.
-            $result = $this->pageRepo->getPagesAtPath($path, null, $this->lang, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
-
             if ($this->pagePreview) {
                 if (!empty($this->sessionPage)) {
-                    $result['page'] = $this->getPreviewPage();
-                    
-                    $tree   = $this->pageRepo->getTreeBySlug(null, $this->lang, true, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
-                    $pathes = $this->pageRepo->getPathes($path, $tree, false);
-                    
-                    $result['matchedPath']   = !empty($pathes['matchedPath'])   ? $pathes['matchedPath']   : '';
-                    $result['unmatchedPath'] = !empty($pathes['unmatchedPath']) ? $pathes['unmatchedPath'] : '';
-                } else {
+                    $this->getPreviewPage();
+                }
+            }
+
+            //(I) see what the model has for us
+            $result = $this->pageRepo->getPagesAtPath($this->url->getLangDir().$path, null, $this->lang, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
+
+            if ($this->pagePreview) {
+                if (empty($this->sessionPage)) {
                     if (\Permission::checkAccess(6, 'static', true)) {
                         $result['page']->setActive(true);
                         $result['page']->setDisplay(true);
@@ -175,7 +175,7 @@ class Resolver {
                     }
                 }
             }
-
+            
             //(II) sort out errors
             if(!$result) {
                 throw new ResolverException('Unable to locate page (tried path ' . $path .').');
@@ -282,6 +282,7 @@ class Resolver {
             $page = new \Cx\Model\ContentManager\Page();
             $node = new \Cx\Model\ContentManager\Node();
             $node->setParent($this->nodeRepo->getRoot());
+            $node->setLvl(1);
             $this->nodeRepo->getRoot()->addChildren($node);
             $node->addPage($page);
             $page->setNode($node);
@@ -295,7 +296,6 @@ class Resolver {
         $page->updateFromArray($data);
         $page->setUpdatedAtToNow();
         $page->setActive(true);
-        $page->setLinkTarget('?pagePreview=1');
         $page->setVirtual(true);
         $page->validate();
         

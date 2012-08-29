@@ -37,13 +37,14 @@ $classLoader = new ClassLoader('Gedmo', $doctrineDir);
 $classLoader->register();
 
 $config = new \Doctrine\ORM\Configuration();
-$config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache);
-//$config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ApcCache);
-//$config->setMetadataDriverImpl($driverImpl);
+
+$cache = new \Doctrine\Common\Cache\ArrayCache();
+$config->setMetadataCacheImpl($cache);
+$config->setQueryCacheImpl($cache);
 
 $config->setProxyDir(ASCMS_MODEL_PROXIES_PATH);
 $config->setProxyNamespace('Cx\Model\Proxies');
-$config->setAutoGenerateProxyClasses(true /*dev setting*/);
+$config->setAutoGenerateProxyClasses(false);
 
 $connectionOptions = array(
     'driver' => 'pdo_mysql',
