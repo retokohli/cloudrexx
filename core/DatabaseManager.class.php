@@ -19,11 +19,6 @@ define('_DBM_DEBUG', 0);
  */
 
 /**
- * @ignore
- */
-require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
-
-/**
  * Database Manager class
  *
  * CMS Database Manager

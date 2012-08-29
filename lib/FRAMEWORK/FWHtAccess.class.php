@@ -11,10 +11,6 @@
  */
 
 /**
- * @ignore
- */
-require_once ASCMS_LIBRARY_PATH.'/PEAR/File/HtAccess.php';
-/**
  * Class FWHtAccess
  *
  * @copyright   CONTREXX CMS - COMVATION AG

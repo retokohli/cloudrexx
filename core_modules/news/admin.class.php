@@ -12,11 +12,6 @@
  */
 
 /**
- * @ignore
- */
-require_once ASCMS_CORE_MODULE_PATH . '/news/lib/newsLib.class.php';
-
-/**
  * News manager
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author Comvation Development Team <info@comvation.com>
@@ -992,7 +987,6 @@ class newsManager extends newsLibrary {
         $this->_objTpl->loadTemplateFile('module_news_modify.html');
         $this->pageTitle = $_ARRAYLANG['TXT_CREATE_NEWS'];
 
-        require_once ASCMS_CORE_MODULE_PATH . '/news/lib/teasers.class.php';
         $objTeaser = new Teasers(true);
 
         $frameIds = '';
@@ -1534,7 +1528,6 @@ class newsManager extends newsLibrary {
                 ));
             }
 
-            require_once ASCMS_CORE_MODULE_PATH . '/news/lib/teasers.class.php';
             $objTeaser = new Teasers(true);
 
             $frameIds = '';
@@ -2654,7 +2647,6 @@ class newsManager extends newsLibrary {
     {
         global $_CONFIG, $objDatabase, $_FRONTEND_LANGID;
 
-        require_once ASCMS_FRAMEWORK_PATH.'/RSSWriter.class.php';
                 
         // languages
         $arrLanguages = FWLanguage::getLanguageArray(); 
@@ -2869,7 +2861,6 @@ class newsManager extends newsLibrary {
             $this->strOkMessage = $_ARRAYLANG['TXT_NEWS_SETTINGS_SAVED'];
             $this->getSettings();
             $this->createRSS();
-            require_once(ASCMS_CORE_PATH.'/settings.class.php');
             $objSettings = new settingsManager();
             $objSettings->writeSettingsFile();
         }
@@ -3095,7 +3086,6 @@ class newsManager extends newsLibrary {
         ));
 
         // get list of all teasers
-        require_once ASCMS_CORE_MODULE_PATH . '/news/lib/teasers.class.php';
         $objTeaser = new Teasers(true);
         $arrNewsDefaultTeasers = explode(';', $this->arrSettings['news_default_teasers']);
         $frameIds = '';
@@ -3377,7 +3367,6 @@ class newsManager extends newsLibrary {
                     $this->strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWS_SET_CHMOD'], ASCMS_FEED_PATH.'/');
                 } else {
                     if ($objDatabase->Execute(($id > 0 ? "UPDATE" : "INSERT INTO")." `".DBPREFIX."module_news_ticker` SET `name` = '".addslashes($newName)."', `charset` = '".addslashes($charset)."', `urlencode` = ".$urlencode.", `prefix` = '".addslashes($prefix)."'".($id > 0 ?" WHERE `id` = ".$id : ''))) {
-                        require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
 
                         $objFile = new File();
                         $objFile->setChmod(ASCMS_FEED_PATH, ASCMS_FEED_WEB_PATH, $newName);
@@ -3631,7 +3620,6 @@ class newsManager extends newsLibrary {
     {
         global $_ARRAYLANG;
 
-        require_once ASCMS_CORE_MODULE_PATH . '/news/lib/teasers.class.php';
         $this->_objTeaser = new Teasers(true);
 
         $this->_objTpl->loadTemplateFile('module_news_teasers.html');

@@ -12,12 +12,6 @@
  */
 
 /**
- * Multilanguage text
- * @ignore
- */
-require_once ASCMS_CORE_PATH.'/Text.class.php';
-
-/**
  * Creditcard helper methods
  * @version     2.2.0
  * @since       2.2.0

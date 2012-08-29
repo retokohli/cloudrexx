@@ -11,9 +11,6 @@
  * @todo        Test!
  */
 
-require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
-require_once ASCMS_CORE_PATH.'/Text.class.php';
-
 /**
  * Core Mail and Template Class
  *
@@ -1423,7 +1420,6 @@ DBG::log("Mailtemplate::errorHandler(): Migrated table core_mail_template");
 
         // Import Mailtemplates
         // - from the Shop:
-        require_once(ASCMS_MODULE_PATH.'/shop/lib/Mail.class.php');
         ShopMail::errorHandler();
 DBG::log("Mailtemplate::errorHandler(): Migrated Shop Mailtemplates!");
 

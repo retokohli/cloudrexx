@@ -13,7 +13,6 @@
 /**
  * @ignore
  */
-require_once(ASCMS_CORE_PATH.'/settings.class.php');
 require_once(ASCMS_LIBRARY_PATH.'/PEAR/XML/RSS.class.php');
 
 /**

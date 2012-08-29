@@ -12,8 +12,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-require_once ASCMS_CORE_MODULE_PATH . '/banner/bannerLib.class.php';
-
 /**
  * Banner
  * @copyright   CONTREXX CMS - COMVATION AG

@@ -11,10 +11,6 @@ class reCAPTCHA implements CaptchaInterface {
 
     public function __construct($config)
     {
-        /**
-         * @ignore
-         */
-        include_once ASCMS_LIBRARY_PATH.'/reCAPTCHA/recaptchalib.php';
 
         $captchaConfig = json_decode($config['coreCaptchaLibConfig'], true);
 

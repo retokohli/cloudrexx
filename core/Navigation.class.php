@@ -12,14 +12,6 @@
  */
 
 /**
- * @ignore
- */
-require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
-require_once ASCMS_CORE_PATH.'/pagetree/NavigationPageTree.class.php';
-require_once ASCMS_CORE_PATH.'/pagetree/DropdownNavigationPageTree.class.php';
-require_once ASCMS_CORE_PATH.'/pagetree/NestedNavigationPageTree.class.php';
-
-/**
  * Class Navigation
  *
  * This class creates the navigation tree

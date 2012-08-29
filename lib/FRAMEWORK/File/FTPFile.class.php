@@ -9,11 +9,6 @@ namespace Cx\Lib\FileSystem;
  * @subpackage  lib_framework_file
  */
 
-/**
- * @ignore
- */
-require_once ASCMS_FRAMEWORK_PATH.'/File/File.interface.php';
-
 class FTPFileException extends \Exception {};
 
 /**

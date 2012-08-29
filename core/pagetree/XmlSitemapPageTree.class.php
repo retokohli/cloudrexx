@@ -13,12 +13,6 @@
 namespace Cx\Core\PageTree;
 
 /**
- * Includes
- */
-require_once ASCMS_FRAMEWORK_PATH . '/File.class.php';
-require_once ASCMS_CORE_PATH . '/pagetree/PageTree.class.php';
-
-/**
  * Class XmlSitemapPageTree
  *
  * @copyright   CONTREXX CMS - COMVATION AG

@@ -9,10 +9,6 @@
  * @subpackage  core_module_access
  */
 
-/**
- * @ignore
- */
-require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
 
 /**
  * Common functions used by the front- and backend
@@ -1932,8 +1928,6 @@ JSaccessValidatePrimaryGroupAssociation
     protected function parseNewsletterLists($objUser)
     {
         if (!$this->_objTpl->blockExists('newsletter_list')) return;
-
-        include_once(ASCMS_MODULE_PATH.'/newsletter/lib/NewsletterLib.class.php');
 
         $arrSubscribedNewsletterListIDs = $objUser->getSubscribedNewsletterListIDs();
         $arrNewsletterLists = NewsletterLib::getLists();

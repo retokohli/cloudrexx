@@ -5,14 +5,6 @@ namespace Cx\Lib\FileSystem;
  * @ignore
  */
 require_once ASCMS_FRAMEWORK_PATH.'/File/File.interface.php';
-/**
- * @ignore
- */
-require_once ASCMS_FRAMEWORK_PATH.'/File/FileSystemFile.class.php';
-/**
- * @ignore
- */
-require_once ASCMS_FRAMEWORK_PATH.'/File/FTPFile.class.php';
 
 class FileException extends \Exception {};
 

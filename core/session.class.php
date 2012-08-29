@@ -11,11 +11,6 @@
  */
 
 /**
- * Includes
- */
-require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
-
-/**
  * Session
  *
  * @copyright   CONTREXX CMS - COMVATION AG

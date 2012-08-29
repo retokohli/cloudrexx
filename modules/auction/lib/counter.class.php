@@ -36,7 +36,6 @@ class AuctionCounter{
 	}
 
 	function GetCountdown($id){
-		include_once('../../../config/configuration.php');
 		$content = '';
 		mysql_connect ($_DBCONFIG['host'],$_DBCONFIG['user'],$_DBCONFIG['password']);
 		$sql_query		= "select enddate from ".DBPREFIX."module_auction where id='".$id."'";

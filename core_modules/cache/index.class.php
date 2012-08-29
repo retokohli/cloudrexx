@@ -10,12 +10,6 @@
  */
 
 /**
- * Include
- */
-require_once ASCMS_CORE_MODULE_PATH.'/cache/lib/Exceptions.lib.php';
-require_once ASCMS_CORE_MODULE_PATH.'/cache/lib/cacheLib.class.php';
-
-/**
  * Cache
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>

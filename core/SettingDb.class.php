@@ -10,10 +10,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-require_once ASCMS_CORE_PATH.'/Message.class.php';
-require_once ASCMS_CORE_PATH.'/Html.class.php';
-//require_once ASCMS_LIBRARY_PATH.'/DBG.php';
-
 /**
  * Manages settings stored in the database
  *

@@ -1010,7 +1010,6 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
                     $objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = ".$lastAccessId." WHERE `setname` = 'lastAccessId'") !== false
                 ) {
                     $this->arrAttributes[$this->id]['access_id'] = $this->access_id = $_CONFIG['lastAccessId'] = $lastAccessId;
-                    require_once(ASCMS_CORE_PATH.'/settings.class.php');
                     $objSettings = new settingsManager();
                     $objSettings->writeSettingsFile();
                 } else {

@@ -17,11 +17,6 @@ if (eregi("admin.class.php",$_SERVER['PHP_SELF'])){
 }
 
 /**
- * Includes
- */
-require_once ASCMS_CORE_MODULE_PATH . '/stats/lib/statsLib.class.php';
-
-/**
  * Stats
  *
  * Class with different methodes to get statistical information about

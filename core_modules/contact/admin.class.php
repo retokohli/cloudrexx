@@ -10,10 +10,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * @ignore
- */
-require_once ASCMS_CORE_MODULE_PATH.'/contact/lib/ContactLib.class.php';
 
 /**
  * Contact manager

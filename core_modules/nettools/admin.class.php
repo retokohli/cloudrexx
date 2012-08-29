@@ -9,10 +9,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * @ignore
- */
-require_once ASCMS_FRAMEWORK_PATH . '/NetToolsLib.class.php';
 
 /**
  * Net tools manager
@@ -205,7 +201,6 @@ class netToolsManager extends NetToolsLib {
     function _showMXLookup() {
     	global $_ARRAYLANG;
 
-    	require_once ASCMS_FRAMEWORK_PATH . '/MXLookup.class.php';
     	$this->_objTpl->loadTemplateFile('module_nettools_mxlookup.html');
     	$this->pageTitle = $_ARRAYLANG['TXT_MX_LOOKUP'];
 

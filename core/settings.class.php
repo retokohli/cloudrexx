@@ -14,18 +14,6 @@
  * @ignore
  */
 isset($objInit) && $objInit->mode == 'backend' ? require_once ASCMS_CORE_MODULE_PATH.'/cache/admin.class.php' : null;
-/**
- * @ignore
- */
-require_once ASCMS_CORE_PATH.'/SmtpSettings.class.php';
-/**
- * @ignore
- */
-require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
-/**
- * @ignore
- */
-require_once ASCMS_CORE_MODULE_PATH.'/alias/lib/aliasLib.class.php';
 
 /**
  * Settings
@@ -626,7 +614,6 @@ class settingsManager
             ");
             if ($objResult) {
                 $_CONFIG['coreSmtpServer'] = $id;
-                require_once(ASCMS_CORE_PATH.'/settings.class.php');
                 $objSettings = new settingsManager();
                 $objSettings->writeSettingsFile();
                 $this->strOkMessage .= sprintf($_CORELANG['TXT_SETTINGS_DEFAULT_SMTP_CHANGED'], htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET)).'<br />';

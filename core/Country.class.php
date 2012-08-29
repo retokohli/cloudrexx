@@ -12,12 +12,6 @@
  */
 
 /**
- * Multilanguage text
- * @ignore
- */
-require_once ASCMS_CORE_PATH.'/Text.class.php';
-
-/**
  * Country helper methods
  * @version     3.0.0
  * @since       3.0.0
@@ -757,8 +751,6 @@ class Country
     static function settings()
     {
         global $_CORELANG;
-        require_once ASCMS_CORE_PATH.'/Sorting.class.php';
-        require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
 
         $objTemplateCountry = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
         $objTemplateCountry->loadTemplateFile('settings_country.html');
@@ -915,9 +907,6 @@ class Country
      */
     static function errorHandler()
     {
-
-        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
-        require_once(ASCMS_CORE_PATH.'/Text.class.php');
 
         $table_name = DBPREFIX.'core_country';
         $table_structure = array(

@@ -9,14 +9,6 @@
  * @subpackage core_module_frontendEditing
  */
 
-/**
- * @ignore
- */
-require_once ASCMS_CORE_MODULE_PATH.'/frontendEditing/frontendEditingLib.class.php';
-/**
- * @ignore
- */
-require_once ASCMS_CORE_PATH.'/wysiwyg.class.php';
 
 /**
  * This class handles the frontend editing.

@@ -16,11 +16,6 @@ class ContactException extends Exception
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * Includes
- */
-require_once ASCMS_CORE_MODULE_PATH.'/contact/lib/ContactLib.class.php';
-require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
 
 /**
  * Contact
@@ -432,7 +427,6 @@ class Contact extends ContactLib
         try {
             //init the uploader       
             JS::activate('cx'); //the uploader needs the framework
-            require_once(ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php');
             $f = UploadFactory::getInstance();
         
             //retrieve temporary location for uploaded files
@@ -743,7 +737,6 @@ class Contact extends ContactLib
                 switch ($_FILES[$file]['error']) {
                     case UPLOAD_ERR_INI_SIZE:
                         //Die hochgeladene Datei überschreitet die in der Anweisung upload_max_filesize in php.ini festgelegte Grösse.
-                        include_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
                         $this->errorMsg .= sprintf($_ARRAYLANG['TXT_CONTACT_FILE_SIZE_EXCEEDS_LIMIT'], $fileName, FWSystem::getMaxUploadFileSize()).'<br />';
                         break;
 

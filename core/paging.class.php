@@ -15,10 +15,6 @@ if (stristr(__FILE__, $_SERVER['PHP_SELF'])) {
     die();
 }
 
-/**
- * @ignore
- */
-require_once ASCMS_CORE_PATH.'/Html.class.php';
 
 /**
  * OBSOLETE

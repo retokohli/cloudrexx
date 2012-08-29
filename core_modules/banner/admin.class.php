@@ -10,9 +10,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-require_once ASCMS_CORE_MODULE_PATH . '/banner/bannerLib.class.php';
-require_once ASCMS_CORE_PATH.'/Tree.class.php';
-
 /**
  * Banner management
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -176,7 +173,6 @@ class Banner extends bannerLibrary {
                                         LIMIT    1
                                     ');
 
-                require_once(ASCMS_CORE_PATH.'/settings.class.php');
                 $objSettings = new settingsManager();
                 $objSettings->writeSettingsFile();
             }

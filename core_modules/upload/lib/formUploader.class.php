@@ -1,5 +1,4 @@
 <?php
-require_once ASCMS_CORE_MODULE_PATH.'/upload/lib/uploader.class.php';
 /**
  * FormUploader - Class for upload via HTML input-tags.
  */
@@ -18,8 +17,6 @@ class FormUploader extends Uploader
         $tempPath = $sessionObj->getTempPath();
         $webTempPath = $sessionObj->getWebTempPath();
 
-        //create a file manager
-        require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
 
         //make sure target directory exists
         if(!file_exists($tempPath.$targetDir))
@@ -109,7 +106,6 @@ class FormUploader extends Uploader
 		$tpl->setVariable('UPLOAD_FORM_ADD', $_CORELANG['UPLOAD_FORM_ADD']);
 		$tpl->setVariable('UPLOAD', $_CORELANG['UPLOAD']);
         
-        require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
         $tpl->setVariable('MAX_FILE_SIZE', FWSystem::getMaxUploadFileSize()-1000);
         
         return $tpl->get();

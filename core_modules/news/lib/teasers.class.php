@@ -11,12 +11,6 @@
  */
 
 /**
- * Includes
- */
-require_once ASCMS_CORE_MODULE_PATH . '/news/lib/newsLib.class.php';
-require_once ASCMS_FRAMEWORK_PATH ."/Image.class.php";
-
-/**
  * Teasers
  *
  * class to show the news teasers

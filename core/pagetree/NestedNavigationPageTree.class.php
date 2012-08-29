@@ -1,5 +1,4 @@
 <?php
-require_once(ASCMS_CORE_PATH.'/pagetree/SigmaPageTree.class.php');
 
 /**
  * Build nested navigation menu with unordered list

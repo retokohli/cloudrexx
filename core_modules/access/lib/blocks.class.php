@@ -9,10 +9,6 @@
  * @subpackage  core_module_access
  */
 
-/**
- * @ignore
- */
-require_once ASCMS_CORE_MODULE_PATH.'/access/lib/AccessLib.class.php';
 
 /**
  * Info Blocks about Community used in the layout
