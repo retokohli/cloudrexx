@@ -445,7 +445,8 @@ CREATE TABLE `contrexx_module_block_rel_lang_content` (
 ) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_block_rel_pages` (
   `block_id` int(7) NOT NULL DEFAULT '0',
-  `page_id` int(7) NOT NULL DEFAULT '0'
+  `page_id` int(7) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`block_id`,`page_id`)
 ) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_block_settings` (
   `id` int(7) NOT NULL AUTO_INCREMENT,
