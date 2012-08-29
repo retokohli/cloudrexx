@@ -54,17 +54,15 @@ class aliasLib
     {
         $pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
 
-        $tree = $this->pageRepository->getTree(null, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_ALIAS_ONLY, true);
+        $aliases = $this->pageRepository->findBy(array(
+            'type' => \Cx\Model\ContentManager\Page::TYPE_ALIAS,
+        ), true);
         
-        $pages = array();
         $i = 0;
-        foreach ($tree as $node) {
+        $pages = array();
+        foreach ($aliases as $page) {
             $i++;
             if ($i < $pos) {
-                continue;
-            }
-            $page = current($node->getPages(true)->getSnapshot());
-            if (!$page) {
                 continue;
             }
             $pages[] = $page;

@@ -1438,7 +1438,7 @@ class Page extends \Cx\Model\Base\EntityBase
         foreach ($data as $alias) {
             if (!in_array($alias, $aliases)) {
                 // new alias
-                $lib->_saveAlias($alias, '[[' . $this->getNode()->getId() . '_' . $this->getLang() . ']]', true);
+                $lib->_saveAlias($alias, '[[NODE_' . $this->getNode()->getId() . '_' . $this->getLang() . ']]', true);
             }
         }
     }
