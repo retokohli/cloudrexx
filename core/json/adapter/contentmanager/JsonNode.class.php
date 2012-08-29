@@ -295,7 +295,8 @@ class JsonNode implements JsonAdapter {
             }
             $last_resort = 0;
 
-            foreach ($node->getPages() as $page) {
+            // include pages with wrong language
+            foreach ($node->getPages(true) as $page) {
                 // don't display aliases in cm's tree
                 if ($page->getType() == \Cx\Model\ContentManager\Page::TYPE_ALIAS)
                     continue 2;
@@ -355,7 +356,7 @@ class JsonNode implements JsonAdapter {
                 if (!array_key_exists($lang, $data) && array_key_exists($fallback, $data)) {
                     $data[$lang]['language'] = $lang;
                     $data[$lang]['title'] = $data[$fallback]['title'];
-                    
+
                     if ($data[$fallback]['attr']['id'] == 'broken') {
                         $data[$lang]['attr']['id'] = 'broken';
                     } else {
@@ -363,7 +364,7 @@ class JsonNode implements JsonAdapter {
                     }
                 } else if (!array_key_exists($lang, $data)) {
                     $data[$lang]['language'] = $lang;
-                    
+
                     if (array_key_exists($last_resort, $data)) {
                         $data[$lang]['title']      = $data[$last_resort]['title'];
                         $data[$lang]['attr']['id'] = '0';
@@ -372,7 +373,7 @@ class JsonNode implements JsonAdapter {
                         $data[$lang]['attr']['id'] = 'broken';
                     }
                 }
-                
+
                 $metadata[0] = array(
                     'visibility' => 'active',
                     'publishing' => 'unpublished',
@@ -381,7 +382,7 @@ class JsonNode implements JsonAdapter {
                     'visibility' => 'broken',
                     'publishing' => 'unpublished',
                 );
-                
+
                 $actions[$lang][$node->getId()] = $this->getActions($node->getId(), $lang);
             }
             
