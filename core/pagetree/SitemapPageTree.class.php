@@ -5,9 +5,9 @@ class SitemapPageTree extends SigmaPageTree {
     const subTagStart = "<ul>";
     const subTagEnd = "</ul>";
    
-    protected function renderHeader() {
+    protected function renderHeader($lang) {
     }
-    protected function renderElement($title, $level, $hasChilds, $lang, $path) {
+    protected function renderElement($title, $level, $hasChilds, $lang, $path, $current, $page) {
         $width = $level*25;
         $spacer = "<img src='".ASCMS_MODULE_IMAGE_WEB_PATH."/sitemap/spacer.gif' width='$width' height='12' alt='' />";
         $this->template->setVariable(array(
@@ -21,7 +21,7 @@ class SitemapPageTree extends SigmaPageTree {
         
         $this->template->parse('sitemap');
     }
-    protected function renderFooter() {
+    protected function renderFooter($lang) {
     }
 
     protected function init() {
