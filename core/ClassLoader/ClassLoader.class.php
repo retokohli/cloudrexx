@@ -47,7 +47,6 @@ class ClassLoader {
         // find matching path
         $path = ASCMS_DOCUMENT_ROOT;
         foreach ($parts as $part) {
-            // Switch these lines after renaming things according to namespaces
             $part = '/' . $part;
             if (!is_dir($path . $part)) {
                 break;

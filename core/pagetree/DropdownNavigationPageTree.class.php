@@ -27,7 +27,7 @@ class DropdownNavigationPageTree extends SigmaPageTree {
         if (!$this->template->blockExists($blockName)) {
             return;
         }
-
+        
         // check if we're parsing a subnavigation point and if the parent block
         // even contains the {SUB_MENU} placeholder.
         // if not, we do obviously not wanna parse this level (aka subnavigation)
@@ -73,7 +73,7 @@ class DropdownNavigationPageTree extends SigmaPageTree {
 
         // parse navigation entry
         $output = str_replace('{NAME}', contrexx_raw2xhtml($title), $output);
-        $output = str_replace('{URL}', ASCMS_PATH_OFFSET.$this->virtualLanguageDirectory.contrexx_raw2encodedUrl($path), $output);
+        $output = str_replace('{URL}', ASCMS_PATH_OFFSET.$this->virtualLanguageDirectory./*contrexx_raw2encodedUrl(*/$path/*)*/, $output);
         $output = str_replace('{TARGET}', $page->getLinkTarget(), $output);
         $output = str_replace('{CSS_NAME}', $page->getCssNavName(), $output);
         $output = str_replace('{NAVIGATION_ID}', $this->navigationIds[$level], $output);
@@ -156,6 +156,23 @@ class DropdownNavigationPageTree extends SigmaPageTree {
     protected function postRender($lang)
     {
         $this->injectParsedSubnavigations();
-        return str_replace('{SUB_MENU}', '', $this->cache['level_1']); //remove remaining sub_menu tags
+        $ret = str_replace('{SUB_MENU}', '', $this->cache['level_1']); //remove remaining sub_menu tags
+        unset($this->cache);
+        return $ret;
     }
+
+    protected function preRenderElement($level, $hasChilds, $lang, $page) {}
+
+    protected function postRenderElement($level, $hasChilds, $lang, $page) {}
+    
+    protected function renderHeader($lang) {}
+    
+    protected function renderFooter($lang) {}
+    
+    protected function preRender($lang) {}
+    
+    /**
+     * Called on construction. Override if you do not want to override the ctor.
+     */
+    protected function init() {}
 }

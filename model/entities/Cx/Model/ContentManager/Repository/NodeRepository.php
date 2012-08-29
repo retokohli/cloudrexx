@@ -21,12 +21,11 @@ class NodeRepository extends NestedTreeRepository {
 
     /**
      * Returns the root node.
-     *
+     * @todo DO NOT use NestedTreeRepository->getRootNodes(), it needs a lot of RAM, implement own query to get all root nodes
      * @return \Cx\Model\ContentManager\Node
      */
     public function getRoot() {
-        $root = $this->getRootNodes();
-        return $root[0];
+        return $this->findOneBy(array('id'=>1));
     }
 }
 

@@ -96,6 +96,7 @@ class ContentManager extends Module {
             'ALIAS_PERMISSION' => $alias_permission,
             'ALIAS_DENIAL' => $alias_denial,
             'CONTREXX_BASE_URL' => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . '/',
+            'CONTREXX_LANG' => \FWLanguage::getLanguageCodeById(BACKEND_LANG_ID),
         ));
 
         $this->setLanguageVars(array(
@@ -124,6 +125,16 @@ class ContentManager extends Module {
         $objCx->setVariable('TXT_CORE_CM_VIEW', $_CORELANG['TXT_CORE_CM_VIEW'], 'contentmanager/lang');
         $objCx->setVariable('TXT_CORE_CM_ACTIONS', $_CORELANG['TXT_CORE_CM_ACTIONS'], 'contentmanager/lang');
         $objCx->setVariable('TXT_CORE_CM_VALIDATION_FAIL', $_CORELANG['TXT_CORE_CM_VALIDATION_FAIL'], 'contentmanager/lang');
+        
+        foreach (array(
+            'activate' => 'TXT_CORE_CM_PUBLISH',
+            'deactivate' => 'TXT_CORE_CM_UNPUBLISH',
+            'publish' => 'TXT_CORE_PUBLISH_DRAFT',
+            'show' => 'TXT_CORE_CM_SHOW',
+            'hide' => 'TXT_CORE_CM_HIDE',
+        ) as $action=>$langVar) {
+            $objCx->setVariable($action, $_CORELANG[$langVar], 'contentmanager/lang');
+        }
 
         $toggleTitles = !empty($_SESSION['contentManager']['toggleStatuses']['toggleTitles']) ? $_SESSION['contentManager']['toggleStatuses']['toggleTitles'] : 'block';
         $toggleType = !empty($_SESSION['contentManager']['toggleStatuses']['toggleType']) ? $_SESSION['contentManager']['toggleStatuses']['toggleType'] : 'block';

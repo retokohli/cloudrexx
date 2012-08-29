@@ -215,4 +215,12 @@ class XmlSitemapPageTree extends \PageTree {
     protected function getChangingFrequency($page) {
         return $page->getChangeFrequency();
     }
+
+    protected function init() {
+        
+    }
+
+    protected function preRenderElement($level, $hasChilds, $lang, $page) {
+        
+    }
 }

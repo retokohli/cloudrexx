@@ -92,7 +92,7 @@ class PageRepository extends EntityRepository {
 
     /**
      * Adds a virtual page to the page repository.
-     * 
+     * @todo Remembering virtual pages is no longer necessary, rewrite method to create new virtual pages
      * @param  \Cx\Model\ContentManager\Page  $virtualPage
      * @param  string                         $beforeSlug
      */
@@ -117,7 +117,7 @@ class PageRepository extends EntityRepository {
      * 
      * @return  array    $tree         New tree with virtual pages.
      */
-    protected function addVirtualTree($tree, $lang, $rootNodeLvl, $rootPath) {
+    /*protected function addVirtualTree($tree, $lang, $rootNodeLvl, $rootPath) {
         $tree = $this->addVirtualTreeLvl($tree, $lang, $rootNodeLvl, $rootPath);
         foreach ($tree as $slug=>$data) {
             if ($slug == '__data') {
@@ -131,7 +131,7 @@ class PageRepository extends EntityRepository {
             $tree[$slug] = $this->addVirtualTree($data, $lang, $rootNodeLvl + 1, $tree[$slug]['__data']['page']->getPath());
         }
         return $tree;
-    }
+    }*/
     
     /**
      * Adds the pages of the given node level to the tree.
@@ -143,7 +143,7 @@ class PageRepository extends EntityRepository {
      * 
      * @return  array    $tree
      */
-    protected function addVirtualTreeLvl($tree, $lang, $rootNodeLvl, $rootPath) {
+    /*protected function addVirtualTreeLvl($tree, $lang, $rootNodeLvl, $rootPath) {
         foreach ($this->virtualPages as $virtualPage) {
             $page = $virtualPage['page'];
             $node = $page->getNode();
@@ -181,7 +181,7 @@ class PageRepository extends EntityRepository {
         }
         
         return $tree;
-    }
+    }*/
 
     /**
      * Get a tree of all Nodes with their Pages assigned.
@@ -198,7 +198,7 @@ class PageRepository extends EntityRepository {
      * @param boolean $titlesOnly fetch titles only. You may want to use @link getTreeBySitle()
      * @return array
      */
-    public function getTree($rootNode = null, $titlesOnly = false,
+    /*public function getTree($rootNode = null, $titlesOnly = false,
             $search_mode = self::SEARCH_MODE_PAGES_ONLY, $inactive_langs = false) {
         $repo = $this->em->getRepository('Cx\Model\ContentManager\Node');
         $qb = $this->em->createQueryBuilder();
@@ -243,7 +243,7 @@ class PageRepository extends EntityRepository {
         }
 
         return $tree;
-    }
+    }*/
     
     /**
      * Get a tree mapping slugs to Page, Node and language.
@@ -251,7 +251,7 @@ class PageRepository extends EntityRepository {
      * @see getTree()
      * @return array ( slug => array( '__data' => array(lang => langId, page =>), child1Title => array, child2Title => array, ... ) ) recursively array-mapped tree.
      */
-    public function getTreeBySlug($rootNode = null, $lang = null, $titlesOnly = false, $search_mode = self::SEARCH_MODE_PAGES_ONLY) {
+    /*public function getTreeBySlug($rootNode = null, $lang = null, $titlesOnly = false, $search_mode = self::SEARCH_MODE_PAGES_ONLY) {
         $tree = $this->getTree($rootNode, true, $search_mode);
 
         $result = array();
@@ -281,9 +281,9 @@ class PageRepository extends EntityRepository {
         }
 
         return $result;
-    }
+    }*/
 
-    protected function treeBySlug(&$nodes, $startIndex, &$result, &$lang2Arr = null, $lang = null) {
+    /*protected function treeBySlug(&$nodes, $startIndex, &$result, &$lang2Arr = null, $lang = null) {
         //first node we treat
         $index = $startIndex;
         $node = $nodes[$index];
@@ -350,7 +350,7 @@ class PageRepository extends EntityRepository {
             //remember mapping for recursion
             $thisLevelLang2Arr[$lang] = &$target[$slug];
         }
-    }
+    }*/
 
     /**
      * Tries to find the path's Page.
@@ -369,9 +369,7 @@ class PageRepository extends EntityRepository {
      * )
      */
     public function getPagesAtPath($path, $root = null, $lang = null, $exact = false, $search_mode = self::SEARCH_MODE_PAGES_ONLY) {
-        $tree = $this->getTreeBySlug($root, $lang, true, $search_mode);
-
-        $result = $this->getPathes($path, $tree, $exact);
+        $result = $this->resolve($path, $search_mode);
         if (!$result) {
             return null;
         }
@@ -385,7 +383,6 @@ class PageRepository extends EntityRepository {
             $page = $page[$lang];
             $result['page'] = $page;
         }
-
         return $result;
     }
 
@@ -401,7 +398,7 @@ class PageRepository extends EntityRepository {
      *     treePointer   => array,
      * )
      */
-    public function getPathes($path, $tree, $exact = false) {
+    /*public function getPathes($path, $tree, $exact = false) {
         //this is a mock strategy. if we use this method, it should be rewritten to use bottom up
         $pathParts = explode('/', $path);
         $matchedLen = 0;
@@ -436,6 +433,77 @@ class PageRepository extends EntityRepository {
             'matchedPath'   => substr($path, 0, $matchedLen),
             'unmatchedPath' => $unmatchedPath,
             'treePointer'   => $treePointer,
+        );
+    }*/
+    
+    /**
+     * @todo We could use this in a much more efficient way. There's no need to call this method twice!
+     * @todo Remove parameter $search_mode
+     * @todo Return a single page or null
+     * @param type $path
+     * @param type $search_mode
+     * @return boolean 
+     */
+    public function resolve($path, $search_mode) {
+        // remove slash at the beginning
+        if (substr($path, 0, 1) == '/') {
+            $path = substr($path, 1);
+        }
+        $parts = explode('/', $path);
+        $lang = \FWLanguage::getLanguageIdByCode($parts[0]);
+        // let's see if path starts with a language (which it should)
+        if ($lang !== false) {
+            if ($search_mode != self::SEARCH_MODE_PAGES_ONLY) {
+                return false;
+            }
+            unset($parts[0]);
+        } else {
+            if ($search_mode != self::SEARCH_MODE_ALIAS_ONLY) {
+                return false;
+            }
+            // it's an alias we try to resolve
+            // search for alias pages with matching slug
+            $pages = $this->findBy(array(
+                'type' => \Cx\Model\ContentManager\Page::TYPE_ALIAS,
+                'slug' => $parts[0],
+            ));
+            if (count($pages) == 1) {
+                $page = $pages[0];
+                return array(
+                    'matchedPath'   => substr($page->getPath(), 1) . '/',
+                    'unmatchedPath' => implode('/', $parts),
+                    'treePointer'   => array('__data'=>array('lang'=>array($lang), 'page'=>$page, 'node'=>$page->getNode())),
+                );
+            }
+            return false;
+        }
+        
+        $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
+        
+        $page = null;
+        $node = $nodeRepo->getRoot();
+        foreach ($parts as $index=>$slug) {
+            foreach ($node->getChildren() as $child) {
+                $childPage = $child->getPage($lang);
+                if (!$childPage) {
+                    continue;
+                }
+                if ($childPage->getSlug() == $slug) {
+                    $node = $child;
+                    $page = $childPage;
+                    unset($parts[$index]);
+                    break;
+                }
+            }
+        }
+        if (!$page) {
+            // no matching page
+            return false;
+        }
+        return array(
+            'matchedPath'   => substr($page->getPath(), 1) . '/',
+            'unmatchedPath' => implode('/', $parts),
+            'treePointer'   => array('__data'=>array('lang'=>array($lang), 'page'=>$page, 'node'=>$page->getNode())),
         );
     }
 

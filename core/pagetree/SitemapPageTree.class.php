@@ -24,4 +24,24 @@ class SitemapPageTree extends SigmaPageTree {
     }
     protected function renderFooter() {
     }
+
+    protected function init() {
+        
+    }
+
+    protected function postRender($lang) {
+        
+    }
+
+    protected function postRenderElement($level, $hasChilds, $lang, $page) {
+        
+    }
+
+    protected function preRender($lang) {
+        
+    }
+
+    protected function preRenderElement($level, $hasChilds, $lang, $page) {
+        
+    }
 }
