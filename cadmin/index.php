@@ -58,6 +58,14 @@ Env::set('config', $_CONFIG);
 Env::set('ftpConfig', $_FTPCONFIG);
 
 /**
+ * This needs to be initialized before loading config/doctrine.php
+ * Because we overwrite the Gedmo model (so we need to load our model
+ * before doctrine loads the Gedmo one)
+ */
+require_once dirname(__FILE__).'/../core/ClassLoader/ClassLoader.class.php';
+new \Cx\Core\ClassLoader\ClassLoader();
+
+/**
  * Doctrine configuration
  */
 require_once '../config/doctrine.php';
