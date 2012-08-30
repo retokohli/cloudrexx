@@ -141,6 +141,7 @@ $_ARRLANG['TXT_COULD_NOT_GATHER_ALL_DATABASE_TABLES'] = "Konnte die vorhandenen 
 $_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'] = "Ihr Datenbank Server unterstützt den Zeichensatz UTF-8 nicht! Sie müssen daher eine Version von Contrexx mit dem Zeichensatz latin1 verwenden!";
 $_ARRLANG['TXT_COULD_NOT_SET_DATABASE_CHARSET'] = "Die Kollation der Datenbank konnte nicht gesetzt werden!";
 $_ARRLANG['TXT_COULD_NOT_SET_INSTALLATIONID'] = "Die Installations-ID konnte nicht gespeichert werden.";
+$_ARRLANG['TXT_COULD_NOT_SET_TIMEZONE'] = "Die Zeitzone konnte nicht gespeichert werden.";
 $_ARRLANG['TXT_CONFIG_DATABASE'] = "Datenbank Konfigurieren";
 $_ARRLANG['TXT_CORE_HTACCESS_FILE_NOT_WRITABLE'] = "Die Datei %s ist nicht beschreibbar und kann daher nicht aktualisiert werden! Setzen Sie auf diese Datei Schreibzugriff, damit das System korrekt funktioniert!";
 $_ARRLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Die HtAccess Datei %s konnte nicht ausgelesen werden, da die darin enthaltenen Contrexx spezifischen Anweisungen ungültig sind!";
