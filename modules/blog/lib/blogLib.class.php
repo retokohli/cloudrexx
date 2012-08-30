@@ -8,6 +8,10 @@
  * @subpackage  module_blog
  */
 
+/**
+ * Includes
+ */
+require_once ASCMS_LIBRARY_PATH.'/activecalendar/activecalendar.php';
 
 /**
  * Blog library

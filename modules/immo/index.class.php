@@ -305,6 +305,9 @@ class Immo extends ImmoLib
     function _showInterestForm()
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        require_once(
+            ASCMS_LIBRARY_PATH.DIRECTORY_SEPARATOR.'phpmailer'.
+            DIRECTORY_SEPARATOR."class.phpmailer.php");
 
         if (!empty($_REQUEST['immoid'])) {
             $this->_objTpl->setVariable('IMMO_ID', intval($_REQUEST['immoid']));
@@ -650,6 +653,7 @@ class Immo extends ImmoLib
             $error=0;
             if ($objValidator->isEmail($email)) {
                 if (!empty($name) && !empty($telephone) && !empty($email) && $immoID > 0 && $fieldID > 0) {
+                    require_once(ASCMS_LIBRARY_PATH.DS.'/phpmailer'.DS."class.phpmailer.php");
                     $objRS = $objDatabase->SelectLimit("SELECT email
                                                 FROM ".DBPREFIX."module_immo_contact
                                                 WHERE immo_id = '$immoID'

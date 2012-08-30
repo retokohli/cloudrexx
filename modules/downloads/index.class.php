@@ -592,6 +592,7 @@ class downloads extends DownloadsLibrary
 
 			//Uploader button handling
             JS::activate('cx');
+            require_once ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php';
             //paths we want to remember for handling the uploaded files
             $data = array(
                 'path' => ASCMS_DOWNLOADS_IMAGES_PATH,

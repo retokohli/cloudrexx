@@ -142,6 +142,7 @@ class MediaLibrary
             default: $ctype="application/force-download";
         }
 
+        require_once ASCMS_LIBRARY_PATH.'/PEAR/Download.php';
         $dl = new HTTP_Download(array(
           "file"                  => $file,
           "contenttype"           => $ctype

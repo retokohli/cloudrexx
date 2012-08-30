@@ -13,6 +13,8 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+require_once ASCMS_PATH . "/lib/activecalendar/activecalendar.php";
+
 /**
  * Frontend Reservations Class
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -261,7 +263,7 @@ class reservations extends reservationLib
                 if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
                         $objMail = new phpmailer();
 
-                            if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                        if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
                             if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                                 $objMail->IsSMTP();
                                 $objMail->Host = $arrSmtp['hostname'];
@@ -282,7 +284,7 @@ class reservations extends reservationLib
                         $objMail->AddAddress($email);
                         $objMail->Send();
                     }
-                    
+
                    $this->_objTpl->setVariable("TXT_SUCCEDED", $_ARRAYLANG['TXT_SUCCEDED']);
                    $this->_objTpl->parse("successful");
                } else {

@@ -45,7 +45,6 @@ class ComboUploader extends Uploader
         JS::registerJS('core_modules/upload/js/uploaders/combo/combo.js');
         JS::registerCSS('core_modules/upload/css/uploaders/combo/combo.css');
 
-        require_once ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php';
         $formUploader = UploadFactory::getInstance()->newUploader('form',$this->uploadId);
 
         //i18n of uploader descriptions

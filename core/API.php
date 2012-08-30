@@ -59,45 +59,7 @@ require_once ASCMS_LIBRARY_PATH.'/PEAR/HTML/Table.php';
  * @ignore
  * @todo    Is this still required?
  */
-require_once ASCMS_CORE_PATH.'/database.php';
-/**
- * @ignore
- * @todo    Is this still required?
- */
 require_once ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php';
-
-/**
- * Includes all framework files
- */
-require_once ASCMS_FRAMEWORK_PATH."/framework.php";
-/**
- * @ignore
- */
-require_once ASCMS_CORE_PATH.'/paging.class.php';
-/**
- * @ignore
- */
-require_once ASCMS_CORE_PATH.'/session.class.php';
-/**
- * @ignore
- */
-require_once ASCMS_CORE_PATH.'/Init.class.php';
-/**
- * @ignore
- */
-require_once ASCMS_CORE_PATH.'/permission.class.php';
-/**
- * @ignore
- */
-require_once(ASCMS_CORE_PATH.'/LinkGenerator.class.php');
-/**
- * @ignore
- */
-require_once(ASCMS_CORE_PATH.'/LinkSanitizer.class.php');
-/**
- * @ignore
- */
-require_once ASCMS_CORE_PATH.'/Modulechecker.class.php';
 
 global $adminPage;
 if (isset($adminPage) && $adminPage ) {

@@ -7,6 +7,14 @@
  */
 
 /**
+ * Includes
+ */
+require_once ASCMS_LIBRARY_PATH.'/activecalendar/activecalendar.php';
+if (!class_exists("DatabaseError")) {
+    require_once ASCMS_MODULE_PATH . '/knowledge/lib/databaseError.class.php';
+}
+
+/**
  * Knowledge library
  * 
  * Some basic operations for the knowledge module

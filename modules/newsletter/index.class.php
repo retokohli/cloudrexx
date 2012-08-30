@@ -10,7 +10,7 @@
  * @subpackage  module_newsletter
  * @todo        Edit PHP DocBlocks!
  */
-
+ 
 /**
  * Newsletter Modul
  *
@@ -147,6 +147,8 @@ class newsletter extends NewsletterLib
                         $subject     = $objResult_content->fields['title'];
                         $content     = $objResult_content->fields['content'];
                     }
+
+                    require_once ASCMS_LIBRARY_PATH . '/phpmailer/class.phpmailer.php';
 
                     $url            = $_SERVER['SERVER_NAME'];
                     $now             = date(ASCMS_DATE_FORMAT);

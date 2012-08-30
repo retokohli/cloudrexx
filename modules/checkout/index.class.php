@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @ignore
+ */
+require_once(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php');
+
+/**
  * Checkout
  *
  * @copyright   CONTREXX CMS - COMVATION AG

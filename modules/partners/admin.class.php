@@ -3808,6 +3808,7 @@ class PartnersAdmin extends PartnersLibrary
         CSRF::add_placeholder($objTpl);
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
+        require_once ASCMS_LIBRARY_PATH . "/importexport/import.class.php";
         $arrCategories = $this->createCategoryArray();
         $objImport = new Import();
         $arrFields = array(

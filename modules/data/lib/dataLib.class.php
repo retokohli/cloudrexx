@@ -9,6 +9,10 @@
  * @subpackage  module_data
  */
 
+/**
+ * Includes
+ */
+require_once ASCMS_LIBRARY_PATH.'/activecalendar/activecalendar.php';
 
 /**
  * Data library

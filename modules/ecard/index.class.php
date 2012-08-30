@@ -13,6 +13,8 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+require_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php';
+
 /**
  * E-Card
  *

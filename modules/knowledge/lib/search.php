@@ -6,6 +6,7 @@
  * @copyright Comvation AG <info@comvation.com>
  */
 
+require_once "searchInterface.php";
 
 /**
  * Search object
@@ -75,6 +76,7 @@ class Search {
         $this->interfacesPath = ASCMS_MODULE_PATH."/knowledge/lib/searchInterfaces";
         $this->templateFile = ASCMS_MODULE_PATH."/knowledge/lib/searchTemplate.html";
 
+        require_once(ASCMS_LIBRARY_PATH."/PEAR/Services/JSON.php");
         $this->json = new Services_JSON();
 
         // the template system
