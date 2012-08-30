@@ -33,6 +33,13 @@ $forumURI = "http://www.contrexx.com/forum/";
 $contrexxURI = "http://www.contrexx.com/";
 $useUtf8 = true;
 
+$arrTimezones = timezone_identifiers_list();
+$selectedTimezoneId = (isset($_POST['timezone']) && array_key_exists($_POST['timezone'], $arrTimezones)) ? $_POST['timezone'] : '';
+$selectedTimezoneId = (($selectedTimezoneId === '') && (isset($_SESSION['installer']['config']['timezone']) && array_key_exists($_SESSION['installer']['config']['timezone'], $arrTimezones))) ? $_SESSION['installer']['config']['timezone'] : $selectedTimezoneId;
+if ($selectedTimezoneId !== '') {
+    @ini_set('date.timezone', $arrTimezones[$selectedTimezoneId]);
+}
+
 $_CONFIG['coreCmsName']	     	= 'ContrexxÂ® Web Content Management System';
 $_CONFIG['coreCmsVersion']	  	= '1.2.0';
 $_CONFIG['coreCmsStatus']	  	= 'RC1';
@@ -139,11 +146,6 @@ $arrDatabaseTables = array(
 	'access_user_groups',
 	'backend_areas',
 	'backups',
-	'content',
-	'content_history',
-	'content_logfile',
-	'content_navigation',
-	'content_navigation_history',
 	'ids',
 	'languages',
 	'log',
