@@ -12,6 +12,10 @@
 //error_reporting (E_ALL);
 
 
+/**
+ * Includes
+ */
+require_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php';
 
 /**
  * Auction
@@ -1110,11 +1114,11 @@ class Auction extends auctionLibrary
                 $newPrice     = $_POST['newprice']!='' ? "\n\n".$_ARRAYLANG['TXT_PRICE_EXPECTATION']."\n".$_POST['newprice'] : '';
                 $oldPrice     = $_POST['price']!='' ? "\n\n".$_ARRAYLANG['TXT_AUCTION_MESSAGE_PRICE']."\n".$_POST['price'] : '';
                 $message     = $_POST['message'].$oldPrice.$newPrice;
-                
+
                 if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
                     $objMail = new phpmailer();
 
-                        if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                    if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
                         if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                             $objMail->IsSMTP();
                             $objMail->Host = $arrSmtp['hostname'];

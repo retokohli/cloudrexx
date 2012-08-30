@@ -266,11 +266,11 @@ class marketLibrary
         $fromMail    = $_CONFIG['coreAdminEmail'];
         $subject     = $mailTitle;
         $message     = $mailContent;
-        
+
         if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
             $objMail = new phpmailer();
 
-                if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+            if ($_CONFIG['coreSmtpServer'] > 0) {
                 if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                     $objMail->IsSMTP();
                     $objMail->Host = $arrSmtp['hostname'];
@@ -310,7 +310,7 @@ class marketLibrary
                     $objMail->ClearAddresses();
                 }
             }
-    }
+        }
     }
 
 
@@ -384,7 +384,7 @@ class marketLibrary
             if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
                 $objMail = new phpmailer();
 
-                    if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                if ($_CONFIG['coreSmtpServer'] > 0) {
                     if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                         $objMail->IsSMTP();
                         $objMail->Host = $arrSmtp['hostname'];
@@ -414,8 +414,8 @@ class marketLibrary
                         $objMail->ClearAddresses();
                     }
                 }
+            }
         }
-    }
     }
 
 

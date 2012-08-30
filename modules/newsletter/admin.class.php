@@ -3000,6 +3000,7 @@ class newsletter extends NewsletterLib
     ) {
         global $objDatabase, $_ARRAYLANG, $_DBCONFIG;
 
+        require_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php';
 
         $newsletterValues = $this->getNewsletterValues($NewsletterID);
         if ($newsletterValues !== false) {
@@ -3250,6 +3251,7 @@ class newsletter extends NewsletterLib
     {
         // Get the current user's email address
         $addy = FWUser::getFWUserObject()->objUser->getEmail();
+        require_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php';
         $mail = new phpmailer();
         $newsletterValues = $this->getNewsletterValues($newsletterID);
         if ($newsletterValues['smtp_server'] > 0) {
@@ -4168,6 +4170,7 @@ $WhereStatement = '';
         CSRF::add_placeholder($objTpl);
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
+        require_once ASCMS_LIBRARY_PATH."/importexport/import.class.php";
         $objImport = new Import();
         $arrFields = array(
             'email'           => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],

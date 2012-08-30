@@ -1700,6 +1700,7 @@ class MemberDirManager extends MemberDirLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
+        require_once ASCMS_LIBRARY_PATH."/importexport/import.class.php";
 
         $importlib = new Import();
 

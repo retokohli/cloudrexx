@@ -9,6 +9,11 @@
  */
 
 /**
+ * @ignore
+ */
+require_once ASCMS_LIBRARY_PATH . '/PEAR/Download.php';
+
+/**
  * Digital Asset Management Download
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>

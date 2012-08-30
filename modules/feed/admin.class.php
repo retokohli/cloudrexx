@@ -9,6 +9,10 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+/**
+ * Includes
+ */
+require_once ASCMS_LIBRARY_PATH . '/PEAR/XML/RSS.class.php';
 
 /**
  * Feed

@@ -16,6 +16,10 @@ if (eregi('index.class.php', $_SERVER['PHP_SELF'])) {
     die();
 }
 
+/**
+ * Includes
+ */
+require_once ASCMS_LIBRARY_PATH . '/PEAR/XML/RSS.class.php';
 
 /**
  * Feed

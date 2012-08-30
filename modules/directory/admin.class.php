@@ -10,6 +10,11 @@
  */
 
 /**
+ * Includes
+ */
+require_once ASCMS_LIBRARY_PATH . '/PEAR/XML/RSS.class.php';
+
+/**
  * Directory
  *
  * Class to manage CMS RSS news feeds

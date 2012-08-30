@@ -959,6 +959,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
         $response = Array();
         $response['list'] = $content;
 
+        require_once(ASCMS_LIBRARY_PATH."/PEAR/Services/JSON.php");
         $objJson = new Services_JSON();
         $jsonResponse = $objJson->encode($response);
         echo $jsonResponse;
@@ -1285,6 +1286,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
         $this->tpl->parse("taglist");
         $taglist = $this->tpl->get("taglist");
 
+        require_once(ASCMS_LIBRARY_PATH."/PEAR/Services/JSON.php");
         $objJson = new Services_JSON();
         $jsonResponse = $objJson->encode(array("html" => $taglist, "available_tags" => $return_tags));
 

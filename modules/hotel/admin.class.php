@@ -232,6 +232,7 @@ class HotelManager extends HotelLib
     }
 
     function _zipTest(){
+        require_once(ASCMS_LIBRARY_PATH.'/pclzip/pclzip.lib.php');
         error_reporting(E_ALL);ini_set('display_errors',1);
         $pcl = new PclZip(ASCMS_PATH.'/1July2007.zip');
         print_r($pcl->listContent());
@@ -394,6 +395,7 @@ class HotelManager extends HotelLib
 
         $strSeparator = !empty($_GET['sep']) ? $_GET['sep'][0] : ';';
 
+        require_once(ASCMS_LIBRARY_PATH.'/pclzip/pclzip.lib.php');
         $pcl = new PclZip($_FILES['hotel_travel_import_file']['tmp_name']);
         $arrContent = $pcl->listContent();
         $compressedFilename = $arrContent[0]['stored_filename'];
