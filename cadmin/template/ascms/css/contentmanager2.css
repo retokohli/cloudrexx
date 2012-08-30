@@ -196,8 +196,9 @@ h1{ font-size: 20px }
 }
 
 #site-tree span,
-#site-tree .actions,
-#site-tree .preview  {
+#site-tree .translations ,
+#site-tree .preview ,
+#site-tree .actions {
     position: absolute;
     top: 0;
     float: left;
@@ -213,6 +214,16 @@ h1{ font-size: 20px }
 
 #site-tree .hide {
     display: none;
+}
+
+#site-tree .translations {
+    left: 42.7%;
+}
+
+#site-tree .translations .translation {
+    float: left;
+    width: auto;
+    margin: 0 7px 0 0;
 }
 
 #site-tree .module {
@@ -478,7 +489,7 @@ h1{ font-size: 20px }
     background-position: -33px -122px;
 }
 
-#content-manager.edit_view #site-structure .translation,
+#content-manager.edit_view #site-structure .translations,
 #content-manager.edit_view #site-structure .module,
 #content-manager.edit_view #site-structure .preview,
 #content-manager.edit_view #site-structure .user,
