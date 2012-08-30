@@ -27,13 +27,21 @@ class ClassLoader {
             return false;
         }
         
-        // Exception for model, its within /model/[entities|events]/cx/model/
-        if ($parts[0] == 'Cx' && $parts[1] == 'Model') {
-            $third = 'Entities';
-            if ($parts[2] == 'Events') {
-                $third = 'Events';
+        if ($parts[0] == 'Cx') {
+            // Exception for model, its within /model/[entities|events]/cx/model/
+            if ($parts[1] == 'Model') {
+                $third = 'entities';
+                if ($parts[2] == 'Events') {
+                    $third = 'events';
+                }
+                $parts = array_merge(array('Cx', 'Model', $third), $parts);
+                
+            // Exception for lib, its within /model/FRAMEWORK/
+            } else if ($parts[1] == 'Lib') {
+                unset($parts[0]);
+                unset($parts[1]);
+                $parts = array_merge(array('Cx', 'Lib', 'FRAMEWORK'), $parts);
             }
-            $parts = array_merge(array('Cx', 'Model', $third), $parts);
         }
         
         // we don't need the Cx part

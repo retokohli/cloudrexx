@@ -12,7 +12,7 @@ namespace Cx\Lib\FileSystem;
 /**
  * @ignore
  */
-require_once ASCMS_FRAMEWORK_PATH.'/File/File.interface.php';
+require_once ASCMS_FRAMEWORK_PATH.'/FileSystem/File.interface.php';
 
 class FileSystemFileException extends \Exception {};
 
@@ -114,7 +114,7 @@ class FileSystemFile implements FileInterface
         $filePerms = $this->getFilePermissions();
 
         // set write access to file owner
-        $filePerms |= \Cx\Lib\FileSystem::CHMOD_USER_WRITE;
+        $filePerms |= \Cx\Lib\FileSystem\FileSystem::CHMOD_USER_WRITE;
 
         // log file permissions into the humand readable chmod() format
         \DBG::msg('CHMOD: '.substr(sprintf('%o', $filePerms), -4));

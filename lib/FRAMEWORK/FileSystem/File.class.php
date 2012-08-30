@@ -1,11 +1,6 @@
 <?php
 namespace Cx\Lib\FileSystem;
 
-/**
- * @ignore
- */
-require_once ASCMS_FRAMEWORK_PATH.'/File/File.interface.php';
-
 class FileException extends \Exception {};
 
 class File implements FileInterface
@@ -21,7 +16,7 @@ class File implements FileInterface
     {
         $data = file_get_contents($this->file);
         if ($data === false || empty($data)) {
-            throw new \Cx\Lib\FileSystemException('Unable to read data from file '.$this->file.'!');
+            throw new FileSystemException('Unable to read data from file '.$this->file.'!');
         }
 
         return $data;
@@ -42,7 +37,7 @@ class File implements FileInterface
                 $ftpFile->write($data);
             } catch (FTPFileException $e) {
                 \DBG::msg('FTPFile: '.$e->getMessage());
-                throw new \Cx\Lib\FileSystemException('File: Unable to write data to file '.$this->file.'!');
+                throw new FileSystemException('File: Unable to write data to file '.$this->file.'!');
             }
         }
     }
@@ -62,7 +57,7 @@ class File implements FileInterface
                 $ftpFile->touch();
             } catch (FTPFileException $e) {
                 \DBG::msg('FTPFile: '.$e->getMessage());
-                throw new \Cx\Lib\FileSystemException('File: Unable to touch file '.$this->file.'!');
+                throw new FileSystemException('File: Unable to touch file '.$this->file.'!');
             }
         }
     }
@@ -85,7 +80,7 @@ class File implements FileInterface
                 $ftpFile->makeWritable();
             } catch (FTPFileException $e) {
                 \DBG::msg('FTPFile: '.$e->getMessage());
-                throw new \Cx\Lib\FileSystemException('File: Unable to set write access to file '.$this->file.'!');
+                throw new FileSystemException('File: Unable to set write access to file '.$this->file.'!');
             }
         }
 
@@ -106,13 +101,13 @@ class File implements FileInterface
                 $ftpFile->delete();
             } catch (FTPFileException $e) {
                 \DBG::msg('FTPFile: '.$e->getMessage());
-                throw new \Cx\Lib\FileSystemException('File: Unable to delete file '.$this->file.'!');
+                throw new FileSystemException('File: Unable to delete file '.$this->file.'!');
             }
         }
 
         clearstatcache();
         if (file_exists($this->file)) {
-            throw new \Cx\Lib\FileSystemException('File: Unable to delete file '.$this->file.'!');
+            throw new FileSystemException('File: Unable to delete file '.$this->file.'!');
         }
     }
 }
