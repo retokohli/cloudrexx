@@ -1,5 +1,7 @@
 <?php
 
+use Cx\Lib\UpdateUtil as UpdateUtil;
+
 /**
  * Currency class
  * @copyright   CONTREXX CMS - COMVATION AG

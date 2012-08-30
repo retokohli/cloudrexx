@@ -1,5 +1,7 @@
 <?php
 
+namespace Cx\Lib;
+
 class UpdateException extends Exception {};
 
 

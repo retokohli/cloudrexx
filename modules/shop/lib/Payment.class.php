@@ -1,5 +1,7 @@
 <?php
 
+use Cx\Lib\UpdateUtil as UpdateUtil;
+
 /**
  * Payment service manager
  * @package     contrexx

@@ -1,5 +1,7 @@
 <?php
 
+use Cx\Lib\UpdateUtil as UpdateUtil;
+
 /**
  * Shop Product class
  * @version     3.0.0

@@ -1,5 +1,7 @@
 <?php
 
+use Cx\Lib\UpdateUtil as UpdateUtil;
+
 /**
  * Core Mail and Template Management
  * @version     3.0.0
