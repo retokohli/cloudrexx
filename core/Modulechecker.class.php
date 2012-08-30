@@ -109,25 +109,3 @@ namespace Cx\Core
         }
     }
 }
-
-
-namespace
-{
-    /**
-     * Checks if a certain module, specified by param $moduleName, is active/installed.
-     *
-     * @param   string Module name
-     * @return boolean  Either TRUE or FALSE, depending if the module in question is
-     *                  active/installed or not.
-     */
-    function contrexx_isModuleActive($moduleName)
-    {
-        static $objModuleChecker = NULL;
-
-        if (!isset($objModuleChecker)) {
-            $objModuleChecker = new \Cx\Core\ModuleChecker(\Env::get('em'), \Env::get('db'));
-        }
-        return $objModuleChecker->isModuleActive($moduleName);
-    }
-}
-
