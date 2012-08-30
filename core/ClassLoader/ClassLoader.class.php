@@ -42,6 +42,11 @@ class ClassLoader {
                 unset($parts[1]);
                 $parts = array_merge(array('Cx', 'Lib', 'FRAMEWORK'), $parts);
             }
+        
+        // Exception for overwritten gedmo classes, they are within /model/entities/Gedmo
+        // This is not ideal, maybe move the classes somewhere
+        } else if ($parts[0] == 'Gedmo') {
+            $parts = array_merge(array('Cx', 'Model', 'entities'), $parts);
         }
         
         // we don't need the Cx part
