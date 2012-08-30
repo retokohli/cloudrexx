@@ -1,34 +1,40 @@
 <?php
-    require_once('../../lib/DBG.php');
-    require_once('../../config/configuration.php');
-    require_once('../../core/settings.class.php');
-    require_once('../../core/API.php');
-    require_once('../../core/validator.inc.php');
-    require_once('../../lib/CSRF.php');
-    require_once('../../core/Html.class.php');
-    $strErrMessage = '';
-    $objDatabase = getDatabaseObject($strErrMessage);
-    $objSettings = new settingsManager();
-    $objInit = new InitCMS('backend');
-    $sessionObj = new cmsSession();
-    $sessionObj->cmsSessionStatusUpdate('backend');
-    $CSRF = '&'.CSRF::key().'='.CSRF::code();
+
+require_once(dirname(dirname(dirname(__FILE__))).'/config/configuration.php');
+require_once(dirname(dirname(dirname(__FILE__))).'/core/ClassLoader/ClassLoader.class.php');
+new \Cx\Core\ClassLoader\ClassLoader();
+
+require_once('../../lib/DBG.php');
+require_once('../../config/configuration.php');
+require_once('../../core/settings.class.php');
+require_once('../../core/API.php');
+require_once('../../core/validator.inc.php');
+require_once('../../lib/CSRF.php');
+require_once('../../core/Html.class.php');
+
+$strErrMessage = '';
+$objDatabase = getDatabaseObject($strErrMessage);
+$objSettings = new settingsManager();
+$objInit = new InitCMS('backend');
+$sessionObj = new cmsSession();
+$sessionObj->cmsSessionStatusUpdate('backend');
+$CSRF = '&'.CSRF::key().'='.CSRF::code();
 
 
-    $langId = !empty($_GET['langId']) ? $_GET['langId'] : null;
-    $absoluteURIs = !empty($_GET['absoluteURIs']) ? $_GET['absoluteURIs'] : null;
+$langId = !empty($_GET['langId']) ? $_GET['langId'] : null;
+$absoluteURIs = !empty($_GET['absoluteURIs']) ? $_GET['absoluteURIs'] : null;
 
-    //'&' must not be htmlentities, used in javascript
-    $defaultBrowser   = ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
-                       .'?cmd=fileBrowser&standalone=true&langId='.$langId
-                       .'&absoluteURIs='.$absoluteURIs.$CSRF;
-    $linkBrowser      = ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
-                       .'?cmd=fileBrowser&standalone=true&langId='.$langId
-                       .'&absoluteURIs='.$absoluteURIs.'&type=webpages'.$CSRF;
-    $defaultUploader  = ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX.'?cmd=fileBrowser'
-                       .'&act=FCKEditorUpload&standalone=true'.$CSRF;
-    $linkUploader     = ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX.'?cmd=fileBrowser'
-                       .'&act=FCKEditorUpload&standalone=true&type=webpages'.$CSRF;
+//'&' must not be htmlentities, used in javascript
+$defaultBrowser   = ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
+                   .'?cmd=fileBrowser&standalone=true&langId='.$langId
+                   .'&absoluteURIs='.$absoluteURIs.$CSRF;
+$linkBrowser      = ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
+                   .'?cmd=fileBrowser&standalone=true&langId='.$langId
+                   .'&absoluteURIs='.$absoluteURIs.'&type=webpages'.$CSRF;
+$defaultUploader  = ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX.'?cmd=fileBrowser'
+                   .'&act=FCKEditorUpload&standalone=true'.$CSRF;
+$linkUploader     = ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX.'?cmd=fileBrowser'
+                   .'&act=FCKEditorUpload&standalone=true&type=webpages'.$CSRF;
 
 ?>
 CKEDITOR.editorConfig = function( config )
