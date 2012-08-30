@@ -28,6 +28,7 @@
  * @uses /lib/PEAR/HTML/Template/Sigma/Sigma.php
  * @uses /lib/PEAR/HTML/Table.php
  * @todo Add comment for all require_once()s
+ * @todo THIS FILE SHOULD BE MANDATORY!
  */
 
 if (stristr(__FILE__, $_SERVER['PHP_SELF'])) {
@@ -59,7 +60,11 @@ require_once ASCMS_LIBRARY_PATH.'/PEAR/HTML/Table.php';
  * @ignore
  * @todo    Is this still required?
  */
-require_once ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php';
+require_once ASCMS_CORE_PATH.'/database.php';
+/**
+ * @ignore
+ */
+#require_once ASCMS_CORE_PATH.'/Modulechecker.class.php';
 
 global $adminPage;
 if (isset($adminPage) && $adminPage ) {
@@ -89,6 +94,53 @@ if (isset($adminPage) && $adminPage ) {
 //wrappers providing php functions via PEAR and other third party libraries if they're not found.
 require_once ASCMS_LIBRARY_PATH.'/wrapper/json.php';
 
+/**
+    * Checks if a certain module, specified by param $moduleName, is active/installed.
+    *
+    * @param   string Module name
+    * @return boolean  Either TRUE or FALSE, depending if the module in question is
+    *                  active/installed or not.
+    */
+function contrexx_isModuleActive($moduleName)
+{
+    static $objModuleChecker = NULL;
+
+    if (!isset($objModuleChecker)) {
+        $objModuleChecker = new \Cx\Core\ModuleChecker(\Env::get('em'), \Env::get('db'));
+    }
+    return $objModuleChecker->isModuleActive($moduleName);
+}
+
+/**
+ * OBSOLETE
+ * Use the {@see Paging::get()} method instead.
+ *
+ * Returs a string representing the complete paging HTML code for the
+ * current page.
+ * Note that the old $pos parameter is obsolete as well,
+ * see {@see getPosition()}.
+ * @copyright CONTREXX CMS - COMVATION AG
+ * @author    Comvation Development Team <info@comvation.com>
+ * @access    public
+ * @version   1.0.0
+ * @global    array       $_CONFIG        Configuration
+ * @global    array       $_CORELANG      Core language
+ * @param     int         $numof_rows     The number of rows available
+ * @param     int         $pos            The offset from the first row
+ * @param     string      $uri_parameter
+ * @param     string      $paging_text
+ * @param     boolean     $showeverytime
+ * @param     int         $results_per_page
+ * @return    string      Result
+ * @todo      Change the system to use the new, static class method,
+ *            then remove this one.
+ */
+function getPaging($numof_rows, $pos, $uri_parameter, $paging_text,
+    $showeverytime=false, $results_per_page=null
+) {
+    return Paging::get($uri_parameter, $paging_text, $numof_rows,
+        $results_per_page, $showeverytime, $pos, 'pos');
+}
 
 /**
  * Builds a (partially localized) date string from the optional timestamp.

@@ -15,39 +15,6 @@ if (stristr(__FILE__, $_SERVER['PHP_SELF'])) {
     die();
 }
 
-
-/**
- * OBSOLETE
- * Use the {@see Paging::get()} method instead.
- *
- * Returs a string representing the complete paging HTML code for the
- * current page.
- * Note that the old $pos parameter is obsolete as well,
- * see {@see getPosition()}.
- * @copyright CONTREXX CMS - COMVATION AG
- * @author    Comvation Development Team <info@comvation.com>
- * @access    public
- * @version   1.0.0
- * @global    array       $_CONFIG        Configuration
- * @global    array       $_CORELANG      Core language
- * @param     int         $numof_rows     The number of rows available
- * @param     int         $pos            The offset from the first row
- * @param     string      $uri_parameter
- * @param     string      $paging_text
- * @param     boolean     $showeverytime
- * @param     int         $results_per_page
- * @return    string      Result
- * @todo      Change the system to use the new, static class method,
- *            then remove this one.
- */
-function getPaging($numof_rows, $pos, $uri_parameter, $paging_text,
-    $showeverytime=false, $results_per_page=null
-) {
-    return Paging::get($uri_parameter, $paging_text, $numof_rows,
-        $results_per_page, $showeverytime, $pos, 'pos');
-}
-
-
 /**
  * Creates the paging
  * @package     contrexx
