@@ -191,7 +191,7 @@ class skins
 
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."skins");
         $this->oldTable = DBPREFIX."themes";
-        \Cx\Lib\FileSystem::makeWritable($this->webPath);
+        \Cx\Lib\FileSystem\FileSystem::makeWritable($this->webPath);
     }
     private function setNavigation()
     {

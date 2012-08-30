@@ -26,5 +26,5 @@
  * @package     contrexx
  * @subpackage  lib_framework_file
  */
-class File extends Cx\Lib\FileSystem{}
+class File extends Cx\Lib\FileSystem\FileSystem{}
 
