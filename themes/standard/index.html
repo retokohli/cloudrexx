@@ -21,6 +21,16 @@
         {LOGIN_CONTENT}
         {COUNTER}
         
+        <link type="text/css" rel="stylesheet" href="themes/standard/flexslider.css" />
+        <script type="text/javascript" src="themes/standard/jquery.flexslider.js"></script>
+        <script type="text/javascript">
+            $J(document).ready(function() {
+                $J('.flexslider').flexslider({
+                      animation: "fade"
+                });
+            });
+        </script>
+        
         <!--[if IE 6]>
         <script type="text/javascript" src="themes/standard/DD_belatedPNG.js"></script>
         <script>
