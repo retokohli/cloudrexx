@@ -1,5 +1,7 @@
 <?php
 
+use Cx\Lib\UpdateUtil as UpdateUtil;
+
 /**
  * Text (core version)
  * @version     2.3.0

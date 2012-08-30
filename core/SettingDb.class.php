@@ -1,5 +1,7 @@
 <?php
 
+use Cx\Lib\UpdateUtil as UpdateUtil;
+
 /**
  * Manages settings stored in the database
  * @copyright   CONTREXX CMS - COMVATION AG

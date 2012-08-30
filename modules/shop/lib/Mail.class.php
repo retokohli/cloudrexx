@@ -1,5 +1,7 @@
 <?php
 
+use Cx\Lib\UpdateUtil as UpdateUtil;
+
 /**
  * OBSOLETE -- See {@see core/MailTemplate.class.php}
  *

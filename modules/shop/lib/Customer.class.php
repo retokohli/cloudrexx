@@ -1,5 +1,7 @@
 <?php
 
+use Cx\Lib\UpdateUtil as UpdateUtil;
+
 /**
  * Shop Customer
  * @copyright   CONTREXX CMS - COMVATION AG
