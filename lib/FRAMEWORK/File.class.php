@@ -14,7 +14,7 @@
 /**
  * Legacy file manager
  *
- * <b>Don't use this anymore</b>, use the static refactored class \Cx\Lib\FileSystem
+ * <b>Don't use this anymore</b>, use the static refactored class \Cx\Lib\FileSystem\FileSystem
  * instead.
  * This class allows the instantiation of the class Cx\Lib\FileSystem by its
  * former name <File> (Cx < 3.0)

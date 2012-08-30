@@ -102,7 +102,7 @@ class FTPFile implements FileInterface
         }
 
         // set write access to file owner
-        $filePerms |= \Cx\Lib\FileSystem::CHMOD_USER_WRITE;
+        $filePerms |= \Cx\Lib\FileSystem\FileSystem::CHMOD_USER_WRITE;
 
         // log file permissions into the humand readable chmod() format
         \DBG::msg('CHMOD: '.substr(sprintf('%o', $filePerms), -4));

@@ -1,5 +1,5 @@
 <?php
-namespace Cx\Lib;
+namespace Cx\Lib\FileSystem;
 /**
  * File System
  * @copyright   CONTREXX CMS - COMVATION AG

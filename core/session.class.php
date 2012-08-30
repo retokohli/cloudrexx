@@ -168,8 +168,8 @@ class cmsSession
         $query = "DELETE FROM ".DBPREFIX."sessions WHERE sessionid = '".$aKey."'";
         $this->_objDb->Execute($query);
 
-        if (\Cx\Lib\FileSystem::exists($this->sessionPath)) {
-            \Cx\Lib\FileSystem::delete_folder($this->sessionPath, true);
+        if (\Cx\Lib\FileSystem\FileSystem::exists($this->sessionPath)) {
+            \Cx\Lib\FileSystem\FileSystem::delete_folder($this->sessionPath, true);
         }
 
         return true;
@@ -225,11 +225,11 @@ class cmsSession
     {
         $this->cleanTempPaths();
 
-        if (!\Cx\Lib\FileSystem::make_folder($this->sessionPath)) {
+        if (!\Cx\Lib\FileSystem\FileSystem::make_folder($this->sessionPath)) {
             return false;
         }
 
-        if (!is_writable(ASCMS_PATH.$this->sessionPath) && !\Cx\Lib\FileSystem::makeWritable($this->sessionPath)) {
+        if (!is_writable(ASCMS_PATH.$this->sessionPath) && !\Cx\Lib\FileSystem\FileSystem::makeWritable($this->sessionPath)) {
             return false;
         }
 
@@ -272,7 +272,7 @@ class cmsSession
 
         foreach ($sessionPaths as $sessionPath) {
             if (!in_array(substr($sessionPath, strlen($this->sessionPathPrefix)), $sessions)) {
-                \Cx\Lib\FileSystem::delete_folder(ASCMS_TEMP_WEB_PATH.'/'.$sessionPath, true);
+                \Cx\Lib\FileSystem\FileSystem::delete_folder(ASCMS_TEMP_WEB_PATH.'/'.$sessionPath, true);
             }
         }
     }

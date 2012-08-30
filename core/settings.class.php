@@ -59,7 +59,7 @@ class settingsManager
     {
         global $_CORELANG;
 
-        if (\Cx\Lib\FileSystem::makeWritable($this->strSettingsFile)
+        if (\Cx\Lib\FileSystem\FileSystem::makeWritable($this->strSettingsFile)
         ) {
             $this->writable = true;
         } else {
