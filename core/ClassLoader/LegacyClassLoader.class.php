@@ -20,20 +20,21 @@ class LegacyClassLoader {
     }
     
     public function autoload($name) {
+        $parts = explode('\\', $name);
+        // Let doctrine handle it's includes itself
+        if (in_array($parts[0], array('Symfony', 'Doctrine', 'Gedmo', 'DoctrineExtension'))) {
+            return;
+        // I don't know where they come from, but there's no need to load these
+        // I guess doctrine does load those
+        } else if (in_array($name, array('var', 'Column', 'MappedSuperclass', 'Table', 'index', 'Entity', 'Id', 'GeneratedValue'))) {
+            return;
+        }
+        //echo '<b>LegacyClassLoader handling class ' . $name . '<br />';
         $startTime = microtime(true);
         if (isset($this->mapTable[$name])) {
             $this->loadClass('.'.$this->mapTable[$name], $name);
         } else {
             // class not in match table, guess path
-            $parts = explode('\\', $name);
-            // Let doctrine handle it's includes itself
-            if (in_array($parts[0], array('Symfony', 'Doctrine', 'Gedmo', 'DoctrineExtension'))) {
-                return;
-            // I don't know where they come from, but there's no need to load these
-            // I guess doctrine does load those
-            } else if (in_array($name, array('var', 'Column', 'MappedSuperclass', 'Table', 'index', 'Entity', 'Id', 'GeneratedValue'))) {
-                return;
-            }
             // we do not need the namespace, it's probably wrong anyway
             $origName = $name;
             $name = end($parts);
