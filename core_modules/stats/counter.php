@@ -16,10 +16,11 @@ ini_set('display_errors', 0);
 /**
  * Includes
  */
-require_once dirname(__FILE__).'/../../config/configuration.php';
+require_once(dirname(dirname(dirname(__FILE__))).'/config/configuration.php');
+require_once(dirname(dirname(dirname(__FILE__))).'/core/ClassLoader/ClassLoader.class.php');
+new \Cx\Core\ClassLoader\ClassLoader();
 
 require_once ASCMS_CORE_PATH.'/Env.class.php';
-
 require_once ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php';
 
 $arrBannedWords = array();
