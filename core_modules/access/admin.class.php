@@ -1321,7 +1321,11 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_PRIVACY'                        => $_ARRAYLANG['TXT_ACCESS_PRIVACY'],
             'TXT_ACCESS_FRONTEND_DESC'                  => $_ARRAYLANG['TXT_ACCESS_FRONTEND_DESC'],
             'TXT_ACCESS_BACKEND_DESC'                   => $_ARRAYLANG['TXT_ACCESS_BACKEND_DESC'],
-            'TXT_ACCESS_VALIDITY_EXPIRATION'            => $_ARRAYLANG['TXT_ACCESS_VALIDITY_EXPIRATION']
+            'TXT_ACCESS_VALIDITY_EXPIRATION'            => $_ARRAYLANG['TXT_ACCESS_VALIDITY_EXPIRATION'],
+            'TXT_ACCESS_PASSWORD_TOO_SHORT'             => $_ARRAYLANG['TXT_ACCESS_PASSWORD_TOO_SHORT'],
+            'TXT_ACCESS_PASSWORD_WEAK'                  => $_ARRAYLANG['TXT_ACCESS_PASSWORD_WEAK'],
+            'TXT_ACCESS_PASSWORD_GOOD'                  => $_ARRAYLANG['TXT_ACCESS_PASSWORD_GOOD'],
+            'TXT_ACCESS_PASSWORD_STRONG'                => $_ARRAYLANG['TXT_ACCESS_PASSWORD_STRONG'],
         ));
 
         $this->parseAccountAttributes($objUser, true);

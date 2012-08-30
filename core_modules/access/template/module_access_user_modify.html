@@ -9,7 +9,7 @@ Text[0]  = ["", "{TXT_ACCESS_PASSWORD_INFO}"];
 
 $J(document).ready(function() {
     $J('input[name=access_user_password]').keyup(function(){
-        $J('#result').html(checkComplexity($J('input[name=access_user_password]').val()))
+        $J('#password-complexity').html(checkComplexity($J('input[name=access_user_password]').val()))
     })  
     
     /**
@@ -22,9 +22,9 @@ $J(document).ready(function() {
         
         // If the password length is less than 6, return message.
         if (password.length < 6) { 
-            $J('#result').removeClass()
-            $J('#result').addClass('short')
-            return 'Too short' 
+            $J('#password-complexity').removeClass()
+            $J('#password-complexity').addClass('short')
+            return '{TXT_ACCESS_PASSWORD_TOO_SHORT}' 
         }
         
         // Length is ok, lets continue.
@@ -48,17 +48,14 @@ $J(document).ready(function() {
         
         // If value is less than 2.
         if (strength < 2 ) {
-            $J('#result').removeClass();
-            $J('#result').addClass('weak');
-            return 'Weak';
+            $J('#password-complexity').removeClass().addClass('weak');
+            return '{TXT_ACCESS_PASSWORD_WEAK}';
         } else if (strength == 2 ) {
-            $J('#result').removeClass();
-            $J('#result').addClass('good');
-            return 'Good';
+            $J('#password-complexity').removeClass().addClass('good');
+            return '{TXT_ACCESS_PASSWORD_GOOD}';
         } else {
-            $J('#result').removeClass();
-            $J('#result').addClass('strong');
-            return 'Strong';
+            $J('#password-complexity').removeClass().addClass('strong');
+            return '{TXT_ACCESS_PASSWORD_STRONG}';
         }
     }
 });
@@ -88,7 +85,7 @@ $J(document).ready(function() {
     height: 150px !important;
 }
 
-#result {
+#password-complexity {
     padding: 4px 8px 4px 8px;
     font-weight: bold;
     border-radius: 5px;
@@ -96,20 +93,20 @@ $J(document).ready(function() {
     -webkit-border-radius: 5px;
 }
 
-#result.short,
-#result.weak {
+#password-complexity.short,
+#password-complexity.weak {
     color: #B94A48;
     border: 1px solid #EED3D7;
     background: #F2DEDE;
 }
 
-#result.good {
+#password-complexity.good {
     color: #3A87AD;
     border: 1px solid #BCE8F1;
     background: #D9EDF7;
 }
 
-#result.strong {
+#password-complexity.strong {
     color: #468847;
     border: 1px solid #D6E9C6;
     background: #DFF0D8;
@@ -144,7 +141,7 @@ $J(document).ready(function() {
 				    {ACCESS_USER_PASSWORD}&nbsp;
 				    <font color="red">*</font>&nbsp;
 				    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0], Style[0])" alt="" />&nbsp;&nbsp;
-				    <span id="result"></span>
+				    <span id="password-complexity"></span>
 				</td>
 			</tr>
 			<tr class="row1">

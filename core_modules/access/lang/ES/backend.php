@@ -276,4 +276,8 @@ $_ARRAYLANG['TXT_ACCESS_DELETE'] = "Eliminar";
 $_ARRAYLANG['TXT_ACCESS_SELECT_ACTION'] = "Seleccionar acci&oacute;n";
 $_ARRAYLANG['TXT_ACCESS_CONFIRM_DELETE_USERS'] = "Est&aacute; usted seguro de que desea eliminar las usuarios seleccionadas?";
 $_ARRAYLANG['TXT_ACCESS_GROUPLESS_USERS'] = "Groupless Users";
+$_ARRAYLANG['TXT_ACCESS_PASSWORD_TOO_SHORT'] = "Too short";
+$_ARRAYLANG['TXT_ACCESS_PASSWORD_WEAK'] = "Weak";
+$_ARRAYLANG['TXT_ACCESS_PASSWORD_GOOD'] = "Good";
+$_ARRAYLANG['TXT_ACCESS_PASSWORD_STRONG'] = "Strong";
 ?>
