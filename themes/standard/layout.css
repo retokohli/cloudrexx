@@ -1,0 +1,207 @@
+#container {
+    width: 1200px;
+    margin: 0 auto;
+}
+
+
+#header {
+    float: left;
+    width: 100%;
+    padding: 30px 0 30px 0;
+}
+
+#logo {
+    float: left;
+    width: 198px;
+    height: 24px;
+    background: url('images/logo.png') no-repeat;
+}
+
+#metanavigation {
+    float: right;
+}
+
+#metanavigation li {
+    float: left;
+    padding: 6px 15px 0 0;
+    margin: 0 15px 0 0;
+    background: url('images/divider.gif') no-repeat right 10px;
+}
+
+#metanavigation li * {
+    color: #8D8D8D;
+}
+
+#metanavigation li a:hover {
+    color: #0A85C8;
+}
+
+#metanavigation li#metanavigation-search {
+    padding: 0;
+    margin: 0;
+    background: none;
+}
+
+#metanavigation li#metanavigation-search #search-text {
+    float: left;
+    padding: 6px 15px 0 0;
+}
+
+#metanavigation li#metanavigation-search #search-left,
+#metanavigation li#metanavigation-search #search-right {
+    float: left;
+    height: 30px;
+}
+
+#metanavigation li#metanavigation-search #search-left {
+    width: 10px;
+    background: url('images/search-left.jpg');
+}
+
+#metanavigation li#metanavigation-search #search-right {
+    width: 25px;
+    background: url('images/search-right.jpg');
+}
+
+#metanavigation li#metanavigation-search #search-input {
+    float: left;
+    width: 120px;
+    height: 30px;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: url('images/search-middle.jpg') repeat-x;
+}
+
+#metanavigation li#metanavigation-search #search-input:focus {
+    outline: 0;
+}
+
+#navigation {
+    float: left;
+    width: 100%;
+    height: auto !important;
+    min-height: 51px;
+    height: 51px; /*FOR IE*/
+    border-top: 3px solid #0A85C8;
+    background: #3C3C3C url('images/nav-bg.gif') repeat-x left top;
+}
+
+#navigation li {
+    float: left;
+    padding: 0 2px 0 0;
+    background: url('images/nav-divider.gif') no-repeat right bottom;
+}
+
+#navigation li a {
+    float: left;
+    height: 19px;
+    padding: 16px 30px 16px 30px;
+    color: #FFFFFF;
+    font-size: 14px;
+}
+
+#navigation li a:hover,
+#navigation li a.starter_active {
+    background: url('images/nav-bg-hover.gif') repeat-x left bottom;
+}
+
+#navigation li ul {
+    display: none;
+}
+
+#content-wrapper {
+    float: left;
+    width: 100%;
+}
+
+#home-slider {
+    float: left;
+    width: 1180px;
+    height: 400px;
+    padding: 10px;
+    margin: 10px 0 20px 0;
+    background: #FFFFFF;
+}
+
+#home-boxes {
+    float: left;
+    width: 100%;
+}
+
+.home-box {
+    width: 380px;
+    float: left;
+    padding: 0 30px 0 0;
+}
+
+.home-box.top {
+    height: 5px;
+    padding: 0;
+    background: url('images/box-top.gif') no-repeat;
+}
+
+.home-box.middle {
+    width: 348px;
+    height: auto !important;
+    min-height: 100px;
+    height: 100px; /*FOR IE*/
+    padding: 5px 15px 10px 15px;
+    border-left: 1px solid #D6D6D6;
+    border-right: 1px solid #D6D6D6;
+    background: #F9F9F9;
+}
+
+.home-box.bottom {
+    height: 5px;
+    padding: 0;
+    background: url('images/box-bottom.gif') no-repeat;
+}
+
+.home-box.last {
+    padding: 0;
+}
+
+#footer-top {
+    float: left;
+    width: 100%;
+    padding: 20px 0 10px 0;
+}
+
+#footer-top .footer-left li {
+    float: left;
+    padding: 0 10px 0 0;
+    margin: 0 10px 0 0;
+    background: url('images/divider.gif') no-repeat right 4px;
+}
+
+#footer-top .footer-left li.last {
+    padding: 0;
+    margin: 0;
+    background: none;
+}
+
+#footer-top .footer-right li {
+    float: left;
+    padding: 0 5px 0 0;
+    margin: 0 5px 0 0;
+}
+
+#footer-top .footer-right li.last {
+    padding: 0;
+    margin: 0;
+}
+
+#footer-bottom {
+    float: left;
+    width: 100%;
+    padding: 0 0 20px 0;
+}
+
+.footer-left {
+    float: left;
+}
+
+.footer-right {
+    float: right;
+}
