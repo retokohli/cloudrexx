@@ -2013,19 +2013,31 @@ textarea {
     font-weight: normal;
 }
 
+
 /***************************************/
 /* CSS DEFINITIONS FOR CHECKOUT MODULE */
 /***************************************/
+#checkout .left {
+    display: table-cell;
+    float: none;
+    width: 350px;
+    padding: 0 20px 0 0;
+}
+#checkout .right {
+    float: none;
+    display: table-cell;
+    width: 100%;
+    padding: 0;
+}
 
 #checkout #ok_message,
 #checkout #error_message,
 #checkout #payment_methods,
 #checkout #description,
 #checkout form {
-    float: left;
     clear: both;
-    width: auto;
-    margin: 0 0 20px 0;
+    display: inline-block;
+    padding: 0 0 20px 0;
 }
 
 #checkout #ok_message {
@@ -2038,60 +2050,64 @@ textarea {
 
 #checkout #payment_methods span {
     float: left;
-    height: 40px;
+    width: 96px;
+    height: 58px;
     background-repeat: no-repeat;
     background-position: center center;
     margin: 0 10px 0 0;
 }
 
 #checkout #payment_methods span#postfinance_card {
-    width: 49px;
-    background-image: url(../../modules/checkout/icons/postfinance_card.png);
+    background-image: url(../../modules/checkout/icons/payment/postfinance_card.png);
 }
 #checkout #payment_methods span#postfinance_efinance {
-    width: 46px;
-    background-image: url(../../modules/checkout/icons/postfinance_efinance.png);
+    background-image: url(../../modules/checkout/icons/payment/postfinance_efinance.png);
 }
 #checkout #payment_methods span#visa {
-    width: 80px;
-    background-image: url(../../modules/checkout/icons/visa.png);
+    background-image: url(../../modules/checkout/icons/payment/visa.png);
 }
 #checkout #payment_methods span#mastercard {
-    width: 95px;
-    background-image: url(../../modules/checkout/icons/mastercard.png);
+    background-image: url(../../modules/checkout/icons/payment/mastercard.png);
 }
 #checkout #payment_methods span#american_express {
-    width: 37px;
-    background-image: url(../../modules/checkout/icons/american_express.png);
+    background-image: url(../../modules/checkout/icons/payment/american_express.png);
 }
 #checkout #payment_methods span#diners_club {
-    width: 50px;
-    background-image: url(../../modules/checkout/icons/diners_club.png);
+    background-image: url(../../modules/checkout/icons/payment/diners_club.png);
 }
 #checkout #payment_methods span#jcb {
-    width: 33px;
-    background-image: url(../../modules/checkout/icons/jcb.png);
+    background-image: url(../../modules/checkout/icons/payment/jcb.png);
 }
 #checkout #payment_methods span#pay_pal {
-    width: 39px;
-    background-image: url(../../modules/checkout/icons/pay_pal.png);
+    background-image: url(../../modules/checkout/icons/payment/pay_pal.png);
 }
 
-#checkout form span.required_field {
-    float: none;
+#checkout form p {
+    padding-left: 0;
     width: auto;
-    height: auto;
-    margin: 0 0 0 3px;
-    color: #ff0000;
+}
+
+#checkout form legend {
+    display: block;
 }
 
 #checkout form input,
 #checkout form textarea {
     width: 300px;
+    margin-right: 0;
+    margin-left: 0;
 }
 
 #checkout form select {
     width: 310px;
+    margin-right: 0;
+    margin-left: 0;
+}
+
+#checkout form input.label,
+#checkout form select.label,
+#checkout form textarea.label {
+    opacity: 0.6;
 }
 
 #checkout form input.highlight,
@@ -2100,16 +2116,42 @@ textarea {
     border: 1px solid #ff0000;
 }
 
+#checkout form input#invoice_amount {
+    float: left;
+    width: 200px;
+    margin-right: 3px;
+}
+
+#checkout form select#invoice_currency {
+    float: left;
+    width: 97px;
+}
+
+#checkout form input#contact_postcode  {
+    float: left;
+    width: 87px;
+    margin-right: 3px;
+}
+
+#checkout form input#contact_place {
+    float: left;
+    width: 200px;
+}
+
 #checkout form #buttons {
     display: block;
     position: static;
-    margin: 20px 0 0 190px;
+    margin: 20px 0 0 0;
 }
 
 #checkout form #buttons input {
     width: auto;
 }
 
+
+/**************************************/
+/* CSS DEFINITIONS FOR SITEMAP MODULE */
+/**************************************/
 ul#sitemap li {
 
     float: left;

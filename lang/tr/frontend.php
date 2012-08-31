@@ -6,6 +6,8 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_CORE_SUBMIT'] = "Submit";
+$_ARRAYLANG['TXT_CORE_RESET'] = "Reset";
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(enaz 6 karakter)";
 $_ARRAYLANG['TXT_ACTIVE'] = "Etkin";
 $_ARRAYLANG['TXT_ALL_FIELDS_REQUIRED'] = "Bu bölgeler zorunlu.";
