@@ -1,5 +1,7 @@
 <?php
 
+namespace Cx\Core\PageTree;
+
 /**
  * Build nested navigation menu with unordered list
  * if [[nested_navigation]] is placed in navbar.

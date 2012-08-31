@@ -1,4 +1,7 @@
 <?php
+
+namespace Cx\Core\PageTree;
+
 class NavigationPageTree extends SigmaPageTree {
     protected $topLevelBlockName = null;
     protected $output = '';

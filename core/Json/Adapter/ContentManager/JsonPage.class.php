@@ -8,7 +8,6 @@
  * @subpackage  core/json
  */
 namespace Cx\Core\Json\Adapter\ContentManager;
-require_once ASCMS_CORE_PATH.'/json/JsonAdapter.interface.php';
 use \Cx\Core\Json\JsonAdapter;
 
 /**

@@ -29,7 +29,11 @@ class LegacyClassLoader {
         } else if (in_array($name, array('var', 'Column', 'MappedSuperclass', 'Table', 'index', 'Entity', 'Id', 'GeneratedValue'))) {
             return;
         }
-        //echo '<b>LegacyClassLoader handling class ' . $name . '<br />';
+        /*if ($parts[0] == 'Cx') {
+            echo '<b>LegacyClassLoader handling class ' . $name . '</b><br />';
+        } else {
+            //echo 'LegacyClassLoader handling class ' . $name . '<br />';
+        }*/
         $startTime = microtime(true);
         if (isset($this->mapTable[$name])) {
             $this->loadClass('.'.$this->mapTable[$name], $name);

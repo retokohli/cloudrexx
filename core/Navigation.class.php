@@ -118,7 +118,7 @@ class Navigation
                 $this->subNavTag = trim($this->_objTpl->_blocks['sub_menu']);
                 $templateContent = preg_replace('<!--\s+BEGIN\s+sub_menu\s+-->.*<!--\s+END\s+sub_menu\s+-->/ms', NULL, $templateContent);
             }
-            $navi = new DropdownNavigationPageTree(Env::em(), 0, $rootNode, $this->langId, $this->page);
+            $navi = new \Cx\Core\PageTree\DropdownNavigationPageTree(Env::em(), 0, $rootNode, $this->langId, $this->page);
             $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
             $navi->setTemplate($this->_objTpl);
             $renderedNavi = $navi->render();
@@ -127,7 +127,7 @@ class Navigation
         }
 
         if (isset($this->_objTpl->_blocks['navigation'])) {
-            $navi = new NavigationPageTree(Env::em(), 0, $rootNode, $this->langId, $this->page);
+            $navi = new \Cx\Core\PageTree\NavigationPageTree(Env::em(), 0, $rootNode, $this->langId, $this->page);
             $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
             $navi->setTemplate($this->_objTpl);
             return $navi->render();
@@ -135,7 +135,7 @@ class Navigation
 
         // Create a nested list, formatted with ul and li-Tags
         if (isset($this->_objTpl->_blocks['nested_navigation'])) {
-            $navi = new NestedNavigationPageTree(Env::em(), 0, null, $this->langId, $this->page);
+            $navi = new \Cx\Core\PageTree\NestedNavigationPageTree(Env::em(), 0, null, $this->langId, $this->page);
             $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
             $navi->setTemplate($this->_objTpl);
             $renderedNavi = $navi->render();

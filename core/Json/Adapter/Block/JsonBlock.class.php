@@ -8,7 +8,6 @@
  */
 
 namespace Cx\Core\Json\Adapter\Block;
-require_once ASCMS_CORE_PATH.'/json/JsonAdapter.interface.php';
 use \Cx\Core\Json\JsonAdapter;
 
 /**

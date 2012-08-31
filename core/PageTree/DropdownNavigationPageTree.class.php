@@ -1,4 +1,7 @@
 <?php
+
+namespace Cx\Core\PageTree;
+
 class DropdownNavigationPageTree extends SigmaPageTree {
    
     protected $subNavTag = '<ul id="menubuilder%s" class="menu">{SUB_MENU}</ul>';

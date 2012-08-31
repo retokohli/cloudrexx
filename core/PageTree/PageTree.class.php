@@ -1,5 +1,7 @@
 <?php
 
+namespace Cx\Core\PageTree;
+
 /**
  * Base class for all kinds of trees such as Sitemaps and Navigation.
  *

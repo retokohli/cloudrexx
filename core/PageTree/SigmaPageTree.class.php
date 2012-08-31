@@ -1,5 +1,7 @@
 <?php 
 
+namespace Cx\Core\PageTree;
+
 abstract class SigmaPageTree extends PageTree {
         protected $template = null;
 

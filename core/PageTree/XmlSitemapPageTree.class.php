@@ -22,7 +22,7 @@ namespace Cx\Core\PageTree;
  * @package     contrexx
  * @subpackage  core
  */
-class XmlSitemapPageTree extends \PageTree {
+class XmlSitemapPageTree extends PageTree {
 
     private static $strFilePath = '';
     private static $strFileName = 'sitemap.xml';
