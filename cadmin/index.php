@@ -387,9 +387,6 @@ switch ($plainCmd) {
         break;
 // TODO: handle expired sessions in any xhr callers.
     case 'jsondata':
-        if (!include_once ASCMS_CORE_PATH.'/json/JsonData.class.php')
-// TODO: This probably doesn't handle an error message very well?
-            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $json = new \Cx\Core\Json\JsonData();
 // TODO: Verify that the arguments are actually present!
         $adapter = contrexx_input2raw($_GET['object']);
