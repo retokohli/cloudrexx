@@ -24,9 +24,33 @@
         <link type="text/css" rel="stylesheet" href="themes/standard/flexslider.css" />
         <script type="text/javascript" src="themes/standard/jquery.flexslider.js"></script>
         <script type="text/javascript">
-            $J(document).ready(function() {
+            $J(document).ready(function () {
+                $J('#navigation li').hover(function () {
+                    $J(this).children('ul').animate({
+                        height:  'toggle',
+                        opacity: 'toggle'
+                    }, 150);
+                }, function () {
+                    $J(this).children('ul').hide();
+                });
+                
                 $J('.flexslider').flexslider({
                       animation: "fade"
+                });
+                
+                $J(window).scroll(function () {
+                    if ($J(this).scrollTop() > 100) {
+                        $J('#back-top').fadeIn();
+                    } else {
+                        $J('#back-top').fadeOut();
+                    }
+                });
+                
+                $J('#back-top').click(function () {
+                    $J('body').animate({
+                        scrollTop: 0
+                    }, 800);
+                    return false;
                 });
             });
         </script>
@@ -81,5 +105,6 @@
                 <div class="footer-right">Standard Theme powered by <a href="http://www.contrexx.com" target="_blank">Contrexx &reg;</a></div>
             </div>
         </div>
+        <a id="back-top"></a>
     </body>
 </html>

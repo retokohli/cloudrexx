@@ -73,10 +73,15 @@ p {
 
 h1, h2, h3, h4, h5, h6 {
     padding: 10px 0 10px 0;
+    line-height: 1;
 }
 
 h1 {
     font-size: 26px;
+}
+
+h1.first {
+    padding-top: 0;
 }
 
 h2 {
@@ -97,4 +102,50 @@ h5 {
 
 h6 {
     font-size: 14px;
+}
+
+input,
+textarea {
+    padding: 10px 14px 9px;
+    margin: 0 0 10px 0;
+    color: #7D7D7D;
+    border: 1px solid #DDDDDD;
+    background: #FFFFFF;
+}
+
+input:hover,
+input:focus {
+    border: 1px solid #BBBBBB;
+    outline: 0;
+}
+
+input[type=submit],
+input[type=reset] {
+    display: inline-block;
+    padding: 7px 11px 6px;
+    color: #414141;
+    font-size: 12px;
+    line-height: 15px;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -o-border-radius: 5px;
+    border-color: white #F8F8F8 #F2F2F2 #F8F8F8;
+    box-shadow: 1px 1px 2px #C5C5C5;
+    -moz-box-shadow: 1px 1px 2px #C5C5C5;
+    -webkit-box-shadow: 1px 1px 2px #C5C5C5;
+    -o-box-shadow: 1px 1px 2px #C5C5C5;
+    background: url('images/link.gif') repeat-x whiteSmoke;
+    transition: all ease .2s;
+    -moz-transition: all ease .2s;
+    -webkit-transition: all ease .2s;
+    -o-transition: all ease .2s;
+}
+
+input[type=submit]:hover,
+input[type=reset]:hover {
+    background: #E8E8E8;
 }
