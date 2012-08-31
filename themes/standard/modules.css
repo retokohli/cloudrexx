@@ -1448,7 +1448,7 @@ table.news_meta td {
     padding: 3px;
 }
 #knowledge h2.article_list_title {
-    padding: 3px;
+    padding: 10px 0 5px 0;
 }
 #knowledge h2.article_list_title a {
     color: white;
