@@ -22,7 +22,7 @@ class LegacyClassLoader {
     public function autoload($name) {
         $parts = explode('\\', $name);
         // Let doctrine handle it's includes itself
-        if (in_array($parts[0], array('Symfony', 'Doctrine', 'Gedmo', 'DoctrineExtension'))) {
+        if (in_array($parts[0], array('Symfony', 'doctrine', 'Doctrine', 'Gedmo', 'DoctrineExtension'))) {
             return;
         // I don't know where they come from, but there's no need to load these
         // I guess doctrine does load those
