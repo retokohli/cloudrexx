@@ -56,7 +56,6 @@ class JsonData {
     public function __construct() {
         foreach (self::$adapter_classes as $ns=>$adapters) {
             foreach ($adapters as $adapter) {
-                require_once ASCMS_CORE_PATH . self::$adapter_path . strtolower($ns) . '/' . $adapter . '.class.php';
                 $adapter = self::$adapter_ns . $ns . '\\' . $adapter;
                 $object = new $adapter();
                 $this->adapters[$object->getName()] = $object;

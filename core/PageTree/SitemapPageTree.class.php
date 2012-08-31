@@ -1,4 +1,7 @@
 <?php
+
+namespace Cx\Core\PageTree;
+
 class SitemapPageTree extends SigmaPageTree {
     protected $spacer = null;
     const cssPrefix = "sitemap_level";

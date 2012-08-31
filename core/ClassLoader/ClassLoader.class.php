@@ -73,6 +73,9 @@ class ClassLoader {
             //echo $name . ' :: ' . $path . '/' . $className . '<br />';
             require_once($path . '/' . $className . '.class.php');
             return true;
+        } else if (file_exists($path . '/' . $className . '.interface.php')) {
+            require_once($path . '/' . $className . '.interface.php');
+            return true;
         }
         //echo '<span style="color: red;">' . implode('\\', $parts) . '</span>';
         return false;
