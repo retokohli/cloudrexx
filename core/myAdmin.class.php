@@ -185,6 +185,7 @@ class myAdminManager {
         global $_CORELANG, $objDatabase;
         
         $rangeStart = date('j', strtotime('last month')) + 1;
+        $rangeStart = $rangeStart > 31 ? 1 : $rangeStart;
         $rangeEnd   = date('j');
         $arrRange   = array();
         
