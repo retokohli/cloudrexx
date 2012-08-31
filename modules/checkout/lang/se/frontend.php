@@ -8,6 +8,8 @@
  * @subpackage  module_checkout
  */
 $_ARRAYLANG['TXT_CHECKOUT_DESCRIPTION'] = 'Bitte füllen Sie alle Pflichtfelder aus und senden Sie dann das Formular ab. Danach gelangen Sie zum sicheren E-Payment unseres Partners PostFinance.';
+$_ARRAYLANG['TXT_CHECKOUT_BILL_DATA'] = 'Rechnungsangaben';
+$_ARRAYLANG['TXT_CHECKOUT_CONTACT_DATA'] = 'Kontaktangaben';
 $_ARRAYLANG['TXT_CHECKOUT_ID'] = 'Transaktionsnummer';
 $_ARRAYLANG['TXT_CHECKOUT_TIME'] = 'Datum und Zeit';
 $_ARRAYLANG['TXT_CHECKOUT_STATUS_WAITING'] = 'Offen';
@@ -30,7 +32,6 @@ $_ARRAYLANG['TXT_CHECKOUT_CONTACT_PLACE'] = 'Ort';
 $_ARRAYLANG['TXT_CHECKOUT_CONTACT_COUNTRY'] = 'Land';
 $_ARRAYLANG['TXT_CHECKOUT_CONTACT_PHONE'] = 'Telefon';
 $_ARRAYLANG['TXT_CHECKOUT_CONTACT_EMAIL'] = 'E-Mail';
-$_ARRAYLANG['TXT_CHECKOUT_SELECTION_CHOOSE_AN_OPTION'] = 'Bitte wählen';
 $_ARRAYLANG['TXT_CHECKOUT_VALIDATION_FIELD_EMPTY'] = 'Bitte füllen Sie das Feld &bdquo;{FIELD_NAME}&ldquo; aus.';
 $_ARRAYLANG['TXT_CHECKOUT_VALIDATION_FIELD_NOT_NUMERIC'] = 'Bitte geben Sie für das Feld &bdquo;{FIELD_NAME}&ldquo; einen nummerischen Wert an.';
 $_ARRAYLANG['TXT_CHECKOUT_VALIDATION_FIELD_NOT_POSITIVE'] = 'Bitte geben Sie für das Feld &bdquo;{FIELD_NAME}&ldquo; einen Wert über 0 an.';

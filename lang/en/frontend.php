@@ -6,6 +6,8 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_CORE_SUBMIT'] = "Submit";
+$_ARRAYLANG['TXT_CORE_RESET'] = "Reset";
 $_ARRAYLANG['TXT_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 characters)";
 $_ARRAYLANG['TXT_ACTIVE'] = "Active";
 $_ARRAYLANG['TXT_ALL_FIELDS_REQUIRED'] = "These fields are required.";

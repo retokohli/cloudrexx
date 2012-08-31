@@ -100,45 +100,34 @@ class Checkout extends CheckoutLibrary {
      */
     private function renderForm()
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIGURATION;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIGURATION;
+
+        JS::activate('jquery');
 
         //initialize variables
-        $arrFieldsToHighlight[] = array();
-        $cssHighlightingClassName = 'highlight';
-        $htmlRequiredFieldCode = '<span class="required_field">&#42;</span>';
+        $arrFieldValues = array();
+        $arrFieldsToHighlight = array();
+        $arrCssClasses = array();
+        $cssHighlightingClass = 'highlight';
+        $cssLabelClass = 'label';
+        $htmlRequiredField = ' *';
         $arrSelectOptions[] = array();
-        $status = '';
-        $invoiceNumber = '';
-        $invoiceCurrency = '';
-        $invoiceAmount = '';
-        $contactTitle = '';
-        $contactForename = '';
-        $contactSurname = '';
-        $contactCompany = '';
-        $contactStreet = '';
-        $contactPostcode = '';
-        $contactPlace = '';
-        $contactCountry = '';
-        $contactPhone = '';
-        $contactEmail = '';
-
-        $this->objTemplate->hideBlock('redirect');
 
         //validate submitted user data
         if (isset($_REQUEST['submit'])) {
-            $invoiceNumber = !empty($_REQUEST['invoice_number']) ? $_REQUEST['invoice_number'] : '';
-            $invoiceCurrency = !empty($_REQUEST['invoice_currency']) ? $_REQUEST['invoice_currency'] : '';
-            $invoiceAmount = !empty($_REQUEST['invoice_amount']) ? $_REQUEST['invoice_amount'] : '';
-            $contactTitle = !empty($_REQUEST['contact_title']) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_title'])) : '';
-            $contactForename = !empty($_REQUEST['contact_forename']) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_forename'])) : '';
-            $contactSurname = !empty($_REQUEST['contact_surname']) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_surname'])) : '';
-            $contactCompany = !empty($_REQUEST['contact_company']) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_company'])) : '';
-            $contactStreet = !empty($_REQUEST['contact_street']) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_street'])) : '';
-            $contactPostcode = !empty($_REQUEST['contact_postcode']) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_postcode'])) : '';
-            $contactPlace = !empty($_REQUEST['contact_place']) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_place'])) : '';
-            $contactCountry = !empty($_REQUEST['contact_country']) ? $_REQUEST['contact_country'] : '';
-            $contactPhone = !empty($_REQUEST['contact_phone']) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_phone'])) : '';
-            $contactEmail = !empty($_REQUEST['contact_email']) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_email'])) : '';
+            $arrFieldValues['invoice_number'] = !empty($_REQUEST['invoice_number']) && ($_REQUEST['invoice_number'] !== $_ARRAYLANG['TXT_CHECKOUT_INVOICE_NUMBER'].$htmlRequiredField) ? $_REQUEST['invoice_number'] : '';
+            $arrFieldValues['invoice_currency'] = !empty($_REQUEST['invoice_currency']) ? $_REQUEST['invoice_currency'] : '';
+            $arrFieldValues['invoice_amount'] = !empty($_REQUEST['invoice_amount']) && ($_REQUEST['invoice_amount'] !== $_ARRAYLANG['TXT_CHECKOUT_INVOICE_AMOUNT'].$htmlRequiredField) ? $_REQUEST['invoice_amount'] : '';
+            $arrFieldValues['contact_title'] = !empty($_REQUEST['contact_title']) ? $_REQUEST['contact_title'] : '';
+            $arrFieldValues['contact_forename'] = !empty($_REQUEST['contact_forename']) && ($_REQUEST['contact_forename'] !== $_ARRAYLANG['TXT_CHECKOUT_CONTACT_FORENAME'].$htmlRequiredField) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_forename'])) : '';
+            $arrFieldValues['contact_surname'] = !empty($_REQUEST['contact_surname']) && ($_REQUEST['contact_surname'] !== $_ARRAYLANG['TXT_CHECKOUT_CONTACT_SURNAME'].$htmlRequiredField) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_surname'])) : '';
+            $arrFieldValues['contact_company'] = !empty($_REQUEST['contact_company']) && ($_REQUEST['contact_company'] !== $_ARRAYLANG['TXT_CHECKOUT_CONTACT_COMPANY']) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_company'])) : '';
+            $arrFieldValues['contact_street'] = !empty($_REQUEST['contact_street']) && ($_REQUEST['contact_street'] !== $_ARRAYLANG['TXT_CHECKOUT_CONTACT_STREET'].$htmlRequiredField) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_street'])) : '';
+            $arrFieldValues['contact_postcode'] = !empty($_REQUEST['contact_postcode']) && ($_REQUEST['contact_postcode'] !== $_ARRAYLANG['TXT_CHECKOUT_CONTACT_POSTCODE'].$htmlRequiredField) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_postcode'])) : '';
+            $arrFieldValues['contact_place'] = !empty($_REQUEST['contact_place']) && ($_REQUEST['contact_place'] !== $_ARRAYLANG['TXT_CHECKOUT_CONTACT_PLACE'].$htmlRequiredField) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_place'])) : '';
+            $arrFieldValues['contact_country'] = !empty($_REQUEST['contact_country']) ? $_REQUEST['contact_country'] : '';
+            $arrFieldValues['contact_phone'] = !empty($_REQUEST['contact_phone']) && ($_REQUEST['contact_phone'] !== $_ARRAYLANG['TXT_CHECKOUT_CONTACT_PHONE'].$htmlRequiredField) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_phone'])) : '';
+            $arrFieldValues['contact_email'] = !empty($_REQUEST['contact_email']) && ($_REQUEST['contact_email'] !== $_ARRAYLANG['TXT_CHECKOUT_CONTACT_EMAIL'].$htmlRequiredField) ? contrexx_input2raw(contrexx_strip_tags($_REQUEST['contact_email'])) : '';
 
             //get keys of passed data
             if (!isset($this->arrCurrencies[$invoiceCurrency]) && ($key = array_search(strtoupper($invoiceCurrency), $this->arrCurrencies))) {
@@ -158,67 +147,67 @@ class Checkout extends CheckoutLibrary {
             }
 
             $arrUserData['numeric']['invoice_number']['name'] = $_ARRAYLANG['TXT_CHECKOUT_INVOICE_NUMBER'];
-            $arrUserData['numeric']['invoice_number']['value'] = $invoiceNumber;
+            $arrUserData['numeric']['invoice_number']['value'] = $arrFieldValues['invoice_number'];
             $arrUserData['numeric']['invoice_number']['length'] = 11;
             $arrUserData['numeric']['invoice_number']['mandatory'] = 1;
 
             $arrUserData['selection']['invoice_currency']['name'] = $_ARRAYLANG['TXT_CHECKOUT_INVOICE_CURRENCY'];
-            $arrUserData['selection']['invoice_currency']['value'] = $invoiceCurrency;
+            $arrUserData['selection']['invoice_currency']['value'] = $arrFieldValues['invoice_currency'];
             $arrUserData['selection']['invoice_currency']['options'] = $this->arrCurrencies;
             $arrUserData['selection']['invoice_currency']['mandatory'] = 1;
 
             $arrUserData['numeric']['invoice_amount']['name'] = $_ARRAYLANG['TXT_CHECKOUT_INVOICE_AMOUNT'];
-            $arrUserData['numeric']['invoice_amount']['value'] = $invoiceAmount;
+            $arrUserData['numeric']['invoice_amount']['value'] = $arrFieldValues['invoice_amount'];
             $arrUserData['numeric']['invoice_amount']['length'] = 15;
             $arrUserData['numeric']['invoice_amount']['mandatory'] = 1;
 
             $arrUserData['selection']['contact_title']['name'] = $_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE'];
-            $arrUserData['selection']['contact_title']['value'] = $contactTitle;
+            $arrUserData['selection']['contact_title']['value'] = $arrFieldValues['contact_title'];
             $arrUserData['selection']['contact_title']['options'] = array(self::MISTER => '', self::MISS => '');
             $arrUserData['selection']['contact_title']['mandatory'] = 1;
 
             $arrUserData['text']['contact_forename']['name'] = $_ARRAYLANG['TXT_CHECKOUT_CONTACT_FORENAME'];
-            $arrUserData['text']['contact_forename']['value'] = $contactForename;
+            $arrUserData['text']['contact_forename']['value'] = $arrFieldValues['contact_forename'];
             $arrUserData['text']['contact_forename']['length'] = 255;
             $arrUserData['text']['contact_forename']['mandatory'] = 1;
 
             $arrUserData['text']['contact_surname']['name'] = $_ARRAYLANG['TXT_CHECKOUT_CONTACT_SURNAME'];
-            $arrUserData['text']['contact_surname']['value'] = $contactSurname;
+            $arrUserData['text']['contact_surname']['value'] = $arrFieldValues['contact_surname'];
             $arrUserData['text']['contact_surname']['length'] = 255;
             $arrUserData['text']['contact_surname']['mandatory'] = 1;
 
             $arrUserData['text']['contact_company']['name'] = $_ARRAYLANG['TXT_CHECKOUT_CONTACT_COMPANY'];
-            $arrUserData['text']['contact_company']['value'] = $contactCompany;
+            $arrUserData['text']['contact_company']['value'] = $arrFieldValues['contact_company'];
             $arrUserData['text']['contact_company']['length'] = 255;
             $arrUserData['text']['contact_company']['mandatory'] = 0;
 
             $arrUserData['text']['contact_street']['name'] = $_ARRAYLANG['TXT_CHECKOUT_CONTACT_STREET'];
-            $arrUserData['text']['contact_street']['value'] = $contactStreet;
+            $arrUserData['text']['contact_street']['value'] = $arrFieldValues['contact_street'];
             $arrUserData['text']['contact_street']['length'] = 255;
             $arrUserData['text']['contact_street']['mandatory'] = 1;
 
             $arrUserData['text']['contact_postcode']['name'] = $_ARRAYLANG['TXT_CHECKOUT_CONTACT_POSTCODE'];
-            $arrUserData['text']['contact_postcode']['value'] = $contactPostcode;
+            $arrUserData['text']['contact_postcode']['value'] = $arrFieldValues['contact_postcode'];
             $arrUserData['text']['contact_postcode']['length'] = 255;
             $arrUserData['text']['contact_postcode']['mandatory'] = 1;
 
             $arrUserData['text']['contact_place']['name'] = $_ARRAYLANG['TXT_CHECKOUT_CONTACT_PLACE'];
-            $arrUserData['text']['contact_place']['value'] = $contactPlace;
+            $arrUserData['text']['contact_place']['value'] = $arrFieldValues['contact_place'];
             $arrUserData['text']['contact_place']['length'] = 255;
             $arrUserData['text']['contact_place']['mandatory'] = 1;
 
             $arrUserData['selection']['contact_country']['name'] = $_ARRAYLANG['TXT_CHECKOUT_CONTACT_COUNTRY'];
-            $arrUserData['selection']['contact_country']['value'] = intval($contactCountry);
+            $arrUserData['selection']['contact_country']['value'] = $arrFieldValues['contact_country'];
             $arrUserData['selection']['contact_country']['options'] = $this->arrCountries;
             $arrUserData['selection']['contact_country']['mandatory'] = 1;
 
             $arrUserData['text']['contact_phone']['name'] = $_ARRAYLANG['TXT_CHECKOUT_CONTACT_PHONE'];
-            $arrUserData['text']['contact_phone']['value'] = $contactPhone;
+            $arrUserData['text']['contact_phone']['value'] = $arrFieldValues['contact_phone'];
             $arrUserData['text']['contact_phone']['length'] = 255;
             $arrUserData['text']['contact_phone']['mandatory'] = 1;
 
             $arrUserData['email']['contact_email']['name'] = $_ARRAYLANG['TXT_CHECKOUT_CONTACT_EMAIL'];
-            $arrUserData['email']['contact_email']['value'] = $contactEmail;
+            $arrUserData['email']['contact_email']['value'] = $arrFieldValues['contact_email'];
             $arrUserData['email']['contact_email']['length'] = 255;
             $arrUserData['email']['contact_email']['mandatory'] = 1;
 
@@ -254,9 +243,7 @@ class Checkout extends CheckoutLibrary {
                         'currency' => $this->arrCurrencies[$invoiceCurrency],
                     );
                     
-                    $this->objTemplate->setVariable(array(
-                        'CHECKOUT_YELLOWPAY_FORM' => Yellowpay::getForm($arrShopOrder, $_ARRAYLANG['TXT_CHECKOUT_START_PAYMENT']),
-                    ));
+                    $this->objTemplate->setVariable('CHECKOUT_YELLOWPAY_FORM', Yellowpay::getForm($arrShopOrder, $_ARRAYLANG['TXT_CHECKOUT_START_PAYMENT']));
 
                     if (Yellowpay::$arrError) {
                         $this->arrStatusMessages['error'][] = $_ARRAYLANG['TXT_CHECKOUT_FAILED_TO_INITIALISE_YELLOWPAY'];
@@ -266,6 +253,7 @@ class Checkout extends CheckoutLibrary {
 
                     $this->objTemplate->hideBlock('form');
                     $this->objTemplate->touchBlock('redirect');
+
                     return;
                 } else {
                     $this->arrStatusMessages['error'][] = $_ARRAYLANG['TXT_CHECKOUT_ENTREY_SAVED_ERROR'];
@@ -273,108 +261,120 @@ class Checkout extends CheckoutLibrary {
             }
         } else {
             //get passed data
-            $invoiceNumber = !empty($_REQUEST['invoice_number']) ? $_REQUEST['invoice_number'] : '';
-            $invoiceCurrency = !empty($_REQUEST['invoice_currency']) ? $_REQUEST['invoice_currency'] : '';
-            $invoiceAmount = !empty($_REQUEST['invoice_amount']) ? $_REQUEST['invoice_amount'] : '';
-            $contactTitle = !empty($_REQUEST['contact_title']) ? $_REQUEST['contact_title'] : '';
-            $contactForename = !empty($_REQUEST['contact_forename']) ? $_REQUEST['contact_forename'] : '';
-            $contactSurname = !empty($_REQUEST['contact_surname']) ? $_REQUEST['contact_surname'] : '';
-            $contactCompany = !empty($_REQUEST['contact_company']) ? $_REQUEST['contact_company'] : '';
-            $contactStreet = !empty($_REQUEST['contact_street']) ? $_REQUEST['contact_street'] : '';
-            $contactPostcode = !empty($_REQUEST['contact_postcode']) ? $_REQUEST['contact_postcode'] : '';
-            $contactPlace = !empty($_REQUEST['contact_place']) ? $_REQUEST['contact_place'] : '';
-            $contactCountry = !empty($_REQUEST['contact_country']) ? $_REQUEST['contact_country'] : '';
-            $contactPhone = !empty($_REQUEST['contact_phone']) ? $_REQUEST['contact_phone'] : '';
-            $contactEmail = !empty($_REQUEST['contact_email']) ? $_REQUEST['contact_email'] : '';
+            $arrFieldValues['invoice_number'] = !empty($_REQUEST['invoice_number']) ? $_REQUEST['invoice_number'] : '';
+            $arrFieldValues['invoice_currency'] = !empty($_REQUEST['invoice_currency']) ? $_REQUEST['invoice_currency'] : '';
+            $arrFieldValues['invoice_amount'] = !empty($_REQUEST['invoice_amount']) ? $_REQUEST['invoice_amount'] : '';
+            $arrFieldValues['contact_title'] = !empty($_REQUEST['contact_title']) ? $_REQUEST['contact_title'] : '';
+            $arrFieldValues['contact_forename'] = !empty($_REQUEST['contact_forename']) ? $_REQUEST['contact_forename'] : '';
+            $arrFieldValues['contact_surname'] = !empty($_REQUEST['contact_surname']) ? $_REQUEST['contact_surname'] : '';
+            $arrFieldValues['contact_company'] = !empty($_REQUEST['contact_company']) ? $_REQUEST['contact_company'] : '';
+            $arrFieldValues['contact_street'] = !empty($_REQUEST['contact_street']) ? $_REQUEST['contact_street'] : '';
+            $arrFieldValues['contact_postcode'] = !empty($_REQUEST['contact_postcode']) ? $_REQUEST['contact_postcode'] : '';
+            $arrFieldValues['contact_place'] = !empty($_REQUEST['contact_place']) ? $_REQUEST['contact_place'] : '';
+            $arrFieldValues['contact_country'] = !empty($_REQUEST['contact_country']) ? $_REQUEST['contact_country'] : '';
+            $arrFieldValues['contact_phone'] = !empty($_REQUEST['contact_phone']) ? $_REQUEST['contact_phone'] : '';
+            $arrFieldValues['contact_email'] = !empty($_REQUEST['contact_email']) ? $_REQUEST['contact_email'] : '';
 
-            //get keys of passed data
-            if (!isset($this->arrCurrencies[$invoiceCurrency]) && ($key = array_search(strtoupper($invoiceCurrency), $this->arrCurrencies))) {
-                $invoiceCurrency = $key;
+            //get keys of passed options selection
+            if (!isset($this->arrCurrencies[$arrFieldValues['invoice_currency']]) && ($key = array_search(strtoupper($arrFieldValues['invoice_currency']), $this->arrCurrencies))) {
+                $arrFieldValues['invoice_currency'] = $key;
             }
-            if ((strtolower($contactTitle) !== self::MISTER) && (strtolower($contactTitle) !== self::MISS)) {
-                if (ucfirst(strtolower($contactTitle)) == $_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE_MISTER']) {
-                    $contactTitle = self::MISTER;
-                } elseif (ucfirst(strtolower($contactTitle)) == $_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE_MISS']) {
-                    $contactTitle = self::MISS;
+            if ((strtolower($arrFieldValues['contact_title']) !== self::MISTER) && (strtolower($arrFieldValues['contact_title']) !== self::MISS)) {
+                if (ucfirst(strtolower($arrFieldValues['contact_title'])) == $_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE_MISTER']) {
+                    $arrFieldValues['contact_title'] = self::MISTER;
+                } elseif (ucfirst(strtolower($arrFieldValues['contact_title'])) == $_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE_MISS']) {
+                    $arrFieldValues['contact_title'] = self::MISS;
                 }
             } else {
-                $contactTitle = strtolower($contactTitle);
+                $arrFieldValues['contact_title'] = strtolower($arrFieldValues['contact_title']);
             }
-            if (!isset($this->arrCountries[$contactCountry]) && ($key = array_search(ucfirst(strtolower($contactCountry)), $this->arrCountries))) {
-                $contactCountry = $key;
+            if (!isset($this->arrCountries[$arrFieldValues['contact_country']]) && ($key = array_search(ucfirst(strtolower($arrFieldValues['contact_country'])), $this->arrCountries))) {
+                $arrFieldValues['contact_country'] = $key;
             }
         }
 
         //get currency options
+        $arrSelectOptions['currencies'][] = '<option value="0">'.$_ARRAYLANG['TXT_CHECKOUT_INVOICE_CURRENCY'].$htmlRequiredField.'</option>';
         foreach ($this->arrCurrencies as $id => $currency) {
-            $selected = ($id == $invoiceCurrency) ? ' selected="selected"' : '';
+            $selected = ($id == $arrFieldValues['invoice_currency']) ? ' selected="selected"' : '';
             $arrSelectOptions['currencies'][] = '<option value="'.$id.'"'.$selected.'>'.contrexx_raw2xhtml($currency).'</option>';
         }
 
         //get title options
-        $selectedMister = (self::MISTER == $contactTitle) ? ' selected="selected"' : '';
-        $selectedMiss = (self::MISS == $contactTitle) ? ' selected="selected"' : '';
+        $selectedMister = (self::MISTER == $arrFieldValues['contact_title']) ? ' selected="selected"' : '';
+        $selectedMiss = (self::MISS == $arrFieldValues['contact_title']) ? ' selected="selected"' : '';
+        $arrSelectOptions['titles'][] = '<option value="0">'.$_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE'].$htmlRequiredField.'</option>';
         $arrSelectOptions['titles'][] = '<option value="'.self::MISTER.'"'.$selectedMister.'>'.$_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE_MISTER'].'</option>';
         $arrSelectOptions['titles'][] = '<option value="'.self::MISS.'"'.$selectedMiss.'>'.$_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE_MISS'].'</option>';
 
         //get country options
         if (!empty($this->arrCountries)) {
+            $arrSelectOptions['countries'][] = '<option value="0">'.$_ARRAYLANG['TXT_CHECKOUT_CONTACT_COUNTRY'].$htmlRequiredField.'</option>';
             foreach ($this->arrCountries as $id => $name) {
-                $selected = $id == $contactCountry ? ' selected="selected"' : '';
+                $selected = $id == $arrFieldValues['contact_country'] ? ' selected="selected"' : '';
                 $arrSelectOptions['countries'][] = '<option value="'.$id.'"'.$selected.'>'.contrexx_raw2xhtml($name).'</option>';
             }
         }
 
-        //add default option
-        foreach ($arrSelectOptions as &$array) {
-            array_unshift($array,  '<option value="0">-- '.$_ARRAYLANG['TXT_CHECKOUT_SELECTION_CHOOSE_AN_OPTION'].' --</option>');
+        // check wihch css classes have to be set
+        foreach ($arrFieldValues as $name => $value) {
+            if (isset($arrFieldsToHighlight[$name])) {
+                $arrCssClasses[$name][] = $cssHighlightingClass;
+            }
+            if (empty($value)) {
+                $arrCssClasses[$name][] = $cssLabelClass;
+            }
+            $arrCssClasses[$name] = implode(' ', $arrCssClasses[$name]);
         }
 
         $this->objTemplate->setVariable(array(
             'TXT_CHECKOUT_DESCRIPTION'              => $_ARRAYLANG['TXT_CHECKOUT_DESCRIPTION'],
-            'TXT_CHECKOUT_INVOICE'                  => $_ARRAYLANG['TXT_CHECKOUT_INVOICE'],
-            'TXT_CHECKOUT_INVOICE_NUMBER'           => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_NUMBER'].$htmlRequiredFieldCode,
-            'TXT_CHECKOUT_INVOICE_CURRENCY'         => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_CURRENCY'].$htmlRequiredFieldCode,
-            'TXT_CHECKOUT_INVOICE_AMOUNT'           => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_AMOUNT'].$htmlRequiredFieldCode,
-            'TXT_CHECKOUT_CONTACT'                  => $_ARRAYLANG['TXT_CHECKOUT_CONTACT'],
-            'TXT_CHECKOUT_CONTACT_TITLE'            => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE'].$htmlRequiredFieldCode,
-            'TXT_CHECKOUT_CONTACT_FORENAME'         => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_FORENAME'].$htmlRequiredFieldCode,
-            'TXT_CHECKOUT_CONTACT_SURNAME'          => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_SURNAME'].$htmlRequiredFieldCode,
+            'TXT_CHECKOUT_BILL_DATA'                => $_ARRAYLANG['TXT_CHECKOUT_BILL_DATA'],
+            'TXT_CHECKOUT_CONTACT_DATA'             => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_DATA'],
+            'TXT_CHECKOUT_INVOICE_NUMBER'           => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_NUMBER'].$htmlRequiredField,
+            'TXT_CHECKOUT_INVOICE_CURRENCY'         => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_CURRENCY'].$htmlRequiredField,
+            'TXT_CHECKOUT_INVOICE_AMOUNT'           => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_AMOUNT'].$htmlRequiredField,
+            'TXT_CHECKOUT_CONTACT_TITLE'            => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE'].$htmlRequiredField,
+            'TXT_CHECKOUT_CONTACT_FORENAME'         => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_FORENAME'].$htmlRequiredField,
+            'TXT_CHECKOUT_CONTACT_SURNAME'          => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_SURNAME'].$htmlRequiredField,
             'TXT_CHECKOUT_CONTACT_COMPANY'          => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_COMPANY'],
-            'TXT_CHECKOUT_CONTACT_STREET'           => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_STREET'].$htmlRequiredFieldCode,
-            'TXT_CHECKOUT_CONTACT_POSTCODE'         => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_POSTCODE'].$htmlRequiredFieldCode,
-            'TXT_CHECKOUT_CONTACT_PLACE'            => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_PLACE'].$htmlRequiredFieldCode,
-            'TXT_CHECKOUT_CONTACT_COUNTRY'          => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_COUNTRY'].$htmlRequiredFieldCode,
-            'TXT_CHECKOUT_CONTACT_PHONE'            => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_PHONE'].$htmlRequiredFieldCode,
-            'TXT_CHECKOUT_CONTACT_EMAIL'            => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_EMAIL'].$htmlRequiredFieldCode,
-            'CHECKOUT_INVOICE_NUMBER'               => $invoiceNumber,
-            'CHECKOUT_INVOICE_CURRENCY_OPTIONS'     => count($arrSelectOptions['currencies']) ? implode($arrSelectOptions['currencies']) : '',
-            'CHECKOUT_INVOICE_AMOUNT'               => $invoiceAmount,
-            'CHECKOUT_CONTACT_TITLE_OPTIONS'        => count($arrSelectOptions['titles']) ? implode($arrSelectOptions['titles']) : '',
-            'CHECKOUT_CONTACT_FORENAME'             => $contactForename,
-            'CHECKOUT_CONTACT_SURNAME'              => $contactSurname,
-            'CHECKOUT_CONTACT_COMPANY'              => $contactCompany,
-            'CHECKOUT_CONTACT_STREET'               => $contactStreet,
-            'CHECKOUT_CONTACT_POSTCODE'             => $contactPostcode,
-            'CHECKOUT_CONTACT_PLACE'                => $contactPlace,
-            'CHECKOUT_CONTACT_COUNTRY_OPTIONS'      => count($arrSelectOptions['countries']) ? implode($arrSelectOptions['countries']) : '',
-            'CHECKOUT_CONTACT_PHONE'                => $contactPhone,
-            'CHECKOUT_CONTACT_EMAIL'                => $contactEmail,
-            'CHECKOUT_INVOICE_NUMBER_HIGHLIGHT'     => isset($arrFieldsToHighlight['invoice_number']) ? $cssHighlightingClassName : '',
-            'CHECKOUT_INVOICE_CURRENCY_HIGHLIGHT'   => isset($arrFieldsToHighlight['invoice_currency']) ? $cssHighlightingClassName : '',
-            'CHECKOUT_INVOICE_AMOUNT_HIGHLIGHT'     => isset($arrFieldsToHighlight['invoice_amount']) ? $cssHighlightingClassName : '',
-            'CHECKOUT_CONTACT_TITLE_HIGHLIGHT'      => isset($arrFieldsToHighlight['contact_title']) ? $cssHighlightingClassName : '',
-            'CHECKOUT_CONTACT_FORENAME_HIGHLIGHT'   => isset($arrFieldsToHighlight['contact_forename']) ? $cssHighlightingClassName : '',
-            'CHECKOUT_CONTACT_SURNAME_HIGHLIGHT'    => isset($arrFieldsToHighlight['contact_surname']) ? $cssHighlightingClassName : '',
-            'CHECKOUT_CONTACT_COMPANY_HIGHLIGHT'    => isset($arrFieldsToHighlight['contact_company']) ? $cssHighlightingClassName : '',
-            'CHECKOUT_CONTACT_STREET_HIGHLIGHT'     => isset($arrFieldsToHighlight['contact_street']) ? $cssHighlightingClassName : '',
-            'CHECKOUT_CONTACT_POSTCODE_HIGHLIGHT'   => isset($arrFieldsToHighlight['contact_postcode']) ? $cssHighlightingClassName : '',
-            'CHECKOUT_CONTACT_PLACE_HIGHLIGHT'      => isset($arrFieldsToHighlight['contact_place']) ? $cssHighlightingClassName : '',
-            'CHECKOUT_CONTACT_COUNTRY_HIGHLIGHT'    => isset($arrFieldsToHighlight['contact_country']) ? $cssHighlightingClassName : '',
-            'CHECKOUT_CONTACT_PHONE_HIGHLIGHT'      => isset($arrFieldsToHighlight['contact_phone']) ? $cssHighlightingClassName : '',
-            'CHECKOUT_CONTACT_EMAIL_HIGHLIGHT'      => isset($arrFieldsToHighlight['contact_email']) ? $cssHighlightingClassName : '',
+            'TXT_CHECKOUT_CONTACT_STREET'           => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_STREET'].$htmlRequiredField,
+            'TXT_CHECKOUT_CONTACT_POSTCODE'         => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_POSTCODE'].$htmlRequiredField,
+            'TXT_CHECKOUT_CONTACT_PLACE'            => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_PLACE'].$htmlRequiredField,
+            'TXT_CHECKOUT_CONTACT_COUNTRY'          => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_COUNTRY'].$htmlRequiredField,
+            'TXT_CHECKOUT_CONTACT_PHONE'            => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_PHONE'].$htmlRequiredField,
+            'TXT_CHECKOUT_CONTACT_EMAIL'            => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_EMAIL'].$htmlRequiredField,
+            'CHECKOUT_INVOICE_NUMBER'               => !empty($arrFieldValues['invoice_number']) ? $arrFieldValues['invoice_number'] : $_ARRAYLANG['TXT_CHECKOUT_INVOICE_NUMBER'].$htmlRequiredField,
+            'CHECKOUT_INVOICE_CURRENCY_OPTIONS'     => !empty($arrSelectOptions['currencies']) ? implode($arrSelectOptions['currencies']) : '',
+            'CHECKOUT_INVOICE_AMOUNT'               => !empty($arrFieldValues['invoice_amount']) ? $arrFieldValues['invoice_amount'] : $_ARRAYLANG['TXT_CHECKOUT_INVOICE_AMOUNT'].$htmlRequiredField,
+            'CHECKOUT_CONTACT_TITLE_OPTIONS'        => !empty($arrSelectOptions['titles']) ? implode($arrSelectOptions['titles']) : '',
+            'CHECKOUT_CONTACT_FORENAME'             => !empty($arrFieldValues['contact_forename']) ? $arrFieldValues['contact_forename'] : $_ARRAYLANG['TXT_CHECKOUT_CONTACT_FORENAME'].$htmlRequiredField,
+            'CHECKOUT_CONTACT_SURNAME'              => !empty($arrFieldValues['contact_surname']) ? $arrFieldValues['contact_surname'] : $_ARRAYLANG['TXT_CHECKOUT_CONTACT_SURNAME'].$htmlRequiredField,
+            'CHECKOUT_CONTACT_COMPANY'              => !empty($arrFieldValues['contact_company']) ? $arrFieldValues['contact_company'] : $_ARRAYLANG['TXT_CHECKOUT_CONTACT_COMPANY'],
+            'CHECKOUT_CONTACT_STREET'               => !empty($arrFieldValues['contact_street']) ? $arrFieldValues['contact_street'] : $_ARRAYLANG['TXT_CHECKOUT_CONTACT_STREET'].$htmlRequiredField,
+            'CHECKOUT_CONTACT_POSTCODE'             => !empty($arrFieldValues['contact_postcode']) ? $arrFieldValues['contact_postcode'] : $_ARRAYLANG['TXT_CHECKOUT_CONTACT_POSTCODE'].$htmlRequiredField,
+            'CHECKOUT_CONTACT_PLACE'                => !empty($arrFieldValues['contact_place']) ? $arrFieldValues['contact_place'] : $_ARRAYLANG['TXT_CHECKOUT_CONTACT_PLACE'].$htmlRequiredField,
+            'CHECKOUT_CONTACT_COUNTRY_OPTIONS'      => !empty($arrSelectOptions['countries']) ? implode($arrSelectOptions['countries']) : '',
+            'CHECKOUT_CONTACT_PHONE'                => !empty($arrFieldValues['contact_phone']) ? $arrFieldValues['contact_phone'] : $_ARRAYLANG['TXT_CHECKOUT_CONTACT_PHONE'].$htmlRequiredField,
+            'CHECKOUT_CONTACT_EMAIL'                => !empty($arrFieldValues['contact_email']) ? $arrFieldValues['contact_email'] : $_ARRAYLANG['TXT_CHECKOUT_CONTACT_EMAIL'].$htmlRequiredField,
+            'CHECKOUT_INVOICE_NUMBER_CLASS'         => $arrCssClasses['invoice_number'],
+            'CHECKOUT_INVOICE_CURRENCY_CLASS'       => $arrCssClasses['invoice_currency'],
+            'CHECKOUT_INVOICE_AMOUNT_CLASS'         => $arrCssClasses['invoice_amount'],
+            'CHECKOUT_CONTACT_TITLE_CLASS'          => $arrCssClasses['contact_title'],
+            'CHECKOUT_CONTACT_FORENAME_CLASS'       => $arrCssClasses['contact_forename'],
+            'CHECKOUT_CONTACT_SURNAME_CLASS'        => $arrCssClasses['contact_surname'],
+            'CHECKOUT_CONTACT_COMPANY_CLASS'        => $arrCssClasses['contact_company'],
+            'CHECKOUT_CONTACT_STREET_CLASS'         => $arrCssClasses['contact_street'],
+            'CHECKOUT_CONTACT_POSTCODE_CLASS'       => $arrCssClasses['contact_postcode'],
+            'CHECKOUT_CONTACT_PLACE_CLASS'          => $arrCssClasses['contact_place'],
+            'CHECKOUT_CONTACT_COUNTRY_CLASS'        => $arrCssClasses['contact_country'],
+            'CHECKOUT_CONTACT_PHONE_CLASS'          => $arrCssClasses['contact_phone'],
+            'CHECKOUT_CONTACT_EMAIL_CLASS'          => $arrCssClasses['contact_email'],
+            'TXT_CORE_SUBMIT'                       => $_CORELANG['TXT_CORE_SUBMIT'],
+            'TXT_CORE_RESET'                        => $_CORELANG['TXT_CORE_RESET'],
         ));
-        $this->objTemplate->parse('redirect');
+
+        $this->objTemplate->hideBlock('redirect');
         $this->objTemplate->parse('form');
     }
 
