@@ -69,7 +69,7 @@ class newsletter extends NewsletterLib
         if (!isset($_REQUEST['standalone'])) {
             $objTemplate->setVariable(
                 "CONTENT_NAVIGATION",
-                "<a href='index.php?cmd=newsletter&amp;act=mails'>".$_ARRAYLANG['TXT_NEWSLETTER_EMAILS']."</a>
+                "<a href='index.php?cmd=newsletter&amp;act=mails'>".$_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CAMPAIGNS']."</a>
                 <a href='index.php?cmd=newsletter&amp;act=lists'>".$_ARRAYLANG['TXT_NEWSLETTER_LISTS']."</a>
                 <a href='index.php?cmd=newsletter&amp;act=templates'>".$_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES']."</a>
                 <a href='index.php?cmd=newsletter&amp;act=users'>".$_ARRAYLANG['TXT_NEWSLETTER_RECIPIENTS']."</a>
@@ -1241,14 +1241,14 @@ class newsletter extends NewsletterLib
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
-        $this->_pageTitle = $_ARRAYLANG['TXT_NEWSLETTER_EMAILS'];
+        $this->_pageTitle = $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CAMPAIGNS'];
         $this->_objTpl->loadTemplateFile('module_newsletter_mails.html');
         $rowNr = 0;
         $pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
 
         $this->_objTpl->setVariable(array(
             'TXT_NEWSLETTER_SUBJECT' => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
-            'TXT_NEWSLETTER_EMAILS' => $_ARRAYLANG['TXT_NEWSLETTER_EMAILS'],
+            'TXT_NEWSLETTER_EMAIL_CAMPAIGNS' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CAMPAIGNS'],
             'TXT_NEWSLETTER_SENT' => $_ARRAYLANG['TXT_NEWSLETTER_SENT'],
             'TXT_NEWSLETTER_FEEDBACK' => $_ARRAYLANG['TXT_NEWSLETTER_FEEDBACK'],
             'TXT_NEWSLETTER_SENDER' => $_ARRAYLANG['TXT_NEWSLETTER_SENDER'],
