@@ -50,10 +50,15 @@ table {
 }
 /* End CSS Reset */
 
+@font-face {
+    font-family: 'Ubuntu';
+    src: url('ubuntu.ttf');
+}
+
 body {
-    color: #404040;
-    font-family: Arial, Helvetica;
-    font-size: 12px;
+    color: #323F55;
+    font-family: 'Ubuntu', Arial, Helvetica;
+    font-size: 13px;
     line-height: 1.5em;
     background: #F1F1F1 url('images/bg.gif') repeat-x;
 }
@@ -64,7 +69,7 @@ a {
 }
 
 a:hover {
-    color: #000000;
+    color: #323F55;
 }
 
 p {
@@ -77,7 +82,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-    font-size: 26px;
+    font-size: 30px;
 }
 
 h1.first {
@@ -85,27 +90,29 @@ h1.first {
 }
 
 h2 {
-    font-size: 22px;
+    font-size: 26px;
 }
 
 h3 {
-    font-size: 18px;
+    font-size: 22px;
 }
 
 h4 {
-    font-size: 16px;
+    font-size: 18px;
 }
 
 h5 {
-    font-size: 15px;
+    font-size: 17px;
 }
 
 h6 {
-    font-size: 14px;
+    font-size: 16px;
 }
 
 input,
+select,
 textarea {
+    width: 300px;
     padding: 7px 12px 8px 12px;
     margin: 0 0 10px 0;
     color: #7D7D7D;
@@ -113,10 +120,26 @@ textarea {
     background: #FFFFFF;
 }
 
+select {
+    width: 326px;
+}
+
 input:hover,
 input:focus {
     border: 1px solid #BBBBBB;
     outline: 0;
+}
+
+input[type=submit],
+input[type=reset],
+input[type=radio],
+input[type=checkbox] {
+    width: auto;
+}
+
+input[type=radio],
+input[type=checkbox] {
+    float: left;
 }
 
 input[type=text] {
@@ -127,7 +150,7 @@ input[type=submit],
 input[type=reset] {
     padding: 8px 10px 7px 10px;
     color: #414141;
-    font-size: 12px;
+    font-size: 13px;
     line-height: 17px;
     text-decoration: none;
     cursor: pointer;
@@ -151,4 +174,12 @@ input[type=reset] {
 input[type=submit]:hover,
 input[type=reset]:hover {
     background: #E8E8E8;
+}
+
+legend {
+    display: none;
+}
+
+fieldset {
+    border: 0;
 }
