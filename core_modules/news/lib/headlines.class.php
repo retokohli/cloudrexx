@@ -87,6 +87,7 @@ class newsHeadlines extends newsLibrary
                    ($catId > 0 ? " AND tblN.catid=$catId" : '')."
                    AND tblN.teaser_only='0'
                    AND tblL.lang_id=".$_LANGID."
+                   AND tblL.is_active=1
                    AND (startdate<='".date('Y-m-d H:i:s')."' OR startdate='0000-00-00 00:00:00')
                    AND (enddate>='".date('Y-m-d H:i:s')."' OR enddate='0000-00-00 00:00:00')".
                    ($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess()
