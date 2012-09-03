@@ -1043,8 +1043,28 @@ table.adminlist td.nowrap {
 
 /* info icon style */
 .info {
-    float: left;
-    width: 13px;
-    height: 12px;
-    background: url(../images/content_manager_info.png) no-repeat center center;
+    float: none;
+    display: inline-block;
+    min-width: 13px;
+    min-height: 12px;
+    background: url(../images/content_manager_info.png) no-repeat left center;
+}
+
+/* icon for frontend and backend links */
+.backend_link {
+    float: none;
+    display: inline-block;
+    min-width: 14px;
+    min-height: 16px;
+    padding-left: 17px;
+    background: url(../../../images/icons/blue_arrow_up.png) no-repeat left center;
+}
+
+.frontend_link {
+    float: none;
+    display: inline-block;
+    min-width: 13px;
+    min-height: 16px;
+    padding-left: 16px;
+    background: url(../../../images/icons/green_arrow_down.png) no-repeat left center;
 }

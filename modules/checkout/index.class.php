@@ -100,7 +100,15 @@ class Checkout extends CheckoutLibrary {
      */
     private function renderForm()
     {
-        global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIGURATION;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG;
+
+        //check the configuration of the payment service provider
+        $objSettingsGeneral = new SettingsGeneral($objDatabase);
+        if (!$objSettingsGeneral->getEpaymentStatus()) {
+            $this->arrStatusMessages['error'][] = $_ARRAYLANG['TXT_CHECKOUT_EPAYMENT_NOT_CONFIGURED'];
+            $this->objTemplate->hideblock('form');
+            $this->objTemplate->hideblock('redirect');
+        }
 
         JS::activate('jquery');
 
@@ -238,17 +246,17 @@ class Checkout extends CheckoutLibrary {
                     $arrShopOrder = array(
                         'PSPID'    => $arrYellowpay['pspid'],
                         'orderID'  => $id,
-                        'amount'   => intval($invoiceAmount * 100),
+                        'amount'   => intval($arrFieldValues['invoice_amount'] * 100),
                         'language' => strtolower(FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)).'_'.strtoupper(FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)),
-                        'currency' => $this->arrCurrencies[$invoiceCurrency],
+                        'currency' => $this->arrCurrencies[$arrFieldValues['invoice_currency']],
                     );
                     
-                    $this->objTemplate->setVariable('CHECKOUT_YELLOWPAY_FORM', Yellowpay::getForm($arrShopOrder, $_ARRAYLANG['TXT_CHECKOUT_START_PAYMENT']));
+                    $this->objTemplate->setVariable('CHECKOUT_YELLOWPAY_FORM', Yellowpay::getForm($arrShopOrder, $_ARRAYLANG['TXT_CHECKOUT_START_PAYMENT'], true));
 
                     if (Yellowpay::$arrError) {
                         $this->arrStatusMessages['error'][] = $_ARRAYLANG['TXT_CHECKOUT_FAILED_TO_INITIALISE_YELLOWPAY'];
                     } else {
-                        $this->arrStatusMessages['ok'][] = $_ARRAYLANG['TXT_CHECKOUT_ENTREY_SAVED_SUCCESSFULLY'];
+                        $this->arrStatusMessages['ok'][] = $_ARRAYLANG['TXT_CHECKOUT_ENTRY_SAVED_SUCCESSFULLY'];
                     }
 
                     $this->objTemplate->hideBlock('form');
@@ -256,7 +264,7 @@ class Checkout extends CheckoutLibrary {
 
                     return;
                 } else {
-                    $this->arrStatusMessages['error'][] = $_ARRAYLANG['TXT_CHECKOUT_ENTREY_SAVED_ERROR'];
+                    $this->arrStatusMessages['error'][] = $_ARRAYLANG['TXT_CHECKOUT_ENTRY_SAVED_ERROR'];
                 }
             }
         } else {

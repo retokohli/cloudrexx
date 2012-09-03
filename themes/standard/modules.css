@@ -2055,28 +2055,28 @@ textarea {
 }
 
 #checkout #payment_methods span#postfinance_card {
-    background-image: url(../../modules/checkout/icons/payment/postfinance_card.png);
+    background-image: url(../../modules/checkout/images/payment/postfinance_card.png);
 }
 #checkout #payment_methods span#postfinance_efinance {
-    background-image: url(../../modules/checkout/icons/payment/postfinance_efinance.png);
+    background-image: url(../../modules/checkout/images/payment/postfinance_efinance.png);
 }
 #checkout #payment_methods span#visa {
-    background-image: url(../../modules/checkout/icons/payment/visa.png);
+    background-image: url(../../modules/checkout/images/payment/visa.png);
 }
 #checkout #payment_methods span#mastercard {
-    background-image: url(../../modules/checkout/icons/payment/mastercard.png);
+    background-image: url(../../modules/checkout/images/payment/mastercard.png);
 }
 #checkout #payment_methods span#american_express {
-    background-image: url(../../modules/checkout/icons/payment/american_express.png);
+    background-image: url(../../modules/checkout/images/payment/american_express.png);
 }
 #checkout #payment_methods span#diners_club {
-    background-image: url(../../modules/checkout/icons/payment/diners_club.png);
+    background-image: url(../../modules/checkout/images/payment/diners_club.png);
 }
 #checkout #payment_methods span#jcb {
-    background-image: url(../../modules/checkout/icons/payment/jcb.png);
+    background-image: url(../../modules/checkout/images/payment/jcb.png);
 }
 #checkout #payment_methods span#pay_pal {
-    background-image: url(../../modules/checkout/icons/payment/pay_pal.png);
+    background-image: url(../../modules/checkout/images/payment/pay_pal.png);
 }
 
 #checkout form p {

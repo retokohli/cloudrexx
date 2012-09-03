@@ -490,6 +490,7 @@ h1{ font-size: 20px }
 }
 
 #content-manager.edit_view #site-structure .translations,
+#content-manager.edit_view #site-structure .translation,
 #content-manager.edit_view #site-structure .module,
 #content-manager.edit_view #site-structure .preview,
 #content-manager.edit_view #site-structure .user,
@@ -888,6 +889,7 @@ div.date img{
 }
 
 #page .info {
+    float: left;
     height: 16px !important;
     margin: 0 4px 0 4px;
 }
