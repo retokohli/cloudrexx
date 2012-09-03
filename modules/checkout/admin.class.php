@@ -19,6 +19,14 @@ class CheckoutManager extends CheckoutLibrary {
     private $objTransaction;
 
     /**
+     * SettingsMails object.
+     *
+     * @access      private
+     * @var         Setting
+     */
+    private $objSettingsGeneral;
+
+    /**
      * SettingsYellowpay object.
      *
      * @access      private
@@ -66,6 +74,7 @@ class CheckoutManager extends CheckoutLibrary {
         $_GET['tpl'] = !empty($_GET['tpl']) ? $_GET['tpl'] : '';
 
         $this->objTransaction = new Transaction($objDatabase);
+        $this->objSettingsGeneral = new SettingsGeneral($objDatabase);
         $this->objSettingsYellowpay = new SettingsYellowpay($objDatabase);
         $this->objSettingsMails = new SettingsMails($objDatabase);
 
@@ -124,8 +133,8 @@ class CheckoutManager extends CheckoutLibrary {
     private function parseMessages()
     {
         $this->objTemplate->setVariable(array(
-            'CONTENT_OK_MESSAGE'    => count($this->arrStatusMessages['ok']) ? '<div class="okbox">'.implode('<br />', $this->arrStatusMessages['ok']).'</div>' : '',
-            'CONTENT_ALERT_MESSAGE'=> count($this->arrStatusMessages['alert']) ? '<div class="alertbox">'.implode('<br />', $this->arrStatusMessages['alert']).'</div>' : '',
+            'CHECKOUT_CONTENT_OK_MESSAGE'       => count($this->arrStatusMessages['ok']) ? '<div class="okbox">'.implode('<br />', $this->arrStatusMessages['ok']).'</div>' : '',
+            'CHECKOUT_CONTENT_ALERT_MESSAGE'    => count($this->arrStatusMessages['alert']) ? '<div class="alertbox">'.implode('<br />', $this->arrStatusMessages['alert']).'</div>' : '',
         ));
     }
 
@@ -152,10 +161,8 @@ class CheckoutManager extends CheckoutLibrary {
             'TXT_CHECKOUT_STATUS'           => $_ARRAYLANG['TXT_CHECKOUT_STATUS'],
             'TXT_CHECKOUT_INVOICE_NUMBER'   => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_NUMBER'],
             'TXT_CHECKOUT_INVOICE_AMOUNT'   => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_AMOUNT'],
-            'TXT_CHECKOUT_TITLE'            => $_ARRAYLANG['TXT_CHECKOUT_TITLE'],
-            'TXT_CHECKOUT_FORENAME'         => $_ARRAYLANG['TXT_CHECKOUT_FORENAME'],
-            'TXT_CHECKOUT_SURNAME'          => $_ARRAYLANG['TXT_CHECKOUT_SURNAME'],
             'TXT_CHECKOUT_COMPANY'          => $_ARRAYLANG['TXT_CHECKOUT_COMPANY'],
+            'TXT_CHECKOUT_NAME'             => $_ARRAYLANG['TXT_CHECKOUT_NAME'],
             'TXT_CHECKOUT_PHONE'            => $_ARRAYLANG['TXT_CHECKOUT_PHONE'],
             'TXT_CHECKOUT_EMAIL'            => $_ARRAYLANG['TXT_CHECKOUT_EMAIL'],
             'TXT_CHECKOUT_ACTIONS'          => $_ARRAYLANG['TXT_CHECKOUT_ACTIONS'],
@@ -183,15 +190,6 @@ class CheckoutManager extends CheckoutLibrary {
                 $arrTransaction['invoice_currency'] = $this->arrCurrencies[$arrTransaction['invoice_currency']];
                 $arrTransaction['invoice_amount'] = number_format($arrTransaction['invoice_amount'], 2, '.', '\'').' '.$arrTransaction['invoice_currency'];
 
-                switch ($arrTransaction['contact_title']) {
-                    case self::MISTER:
-                        $arrTransaction['contact_title'] = $_ARRAYLANG['TXT_CHECKOUT_TITLE_MISTER'];
-                        break;
-                    case self::MISS:
-                        $arrTransaction['contact_title'] = $_ARRAYLANG['TXT_CHECKOUT_TITLE_MISS'];
-                        break;
-                }
-
                 $this->objTemplate->setVariable(array(
                     'CHECKOUT_ROW_CLASS'        => $tableRow++ % 2 == 1 ? 'row1' : 'row2',
                     'CHECKOUT_ID'               => $arrTransaction['id'],
@@ -199,14 +197,8 @@ class CheckoutManager extends CheckoutLibrary {
                     'CHECKOUT_STATUS'           => $arrTransaction['status'],
                     'CHECKOUT_INVOICE_NUMBER'   => $arrTransaction['invoice_number'],
                     'CHECKOUT_INVOICE_AMOUNT'   => contrexx_raw2xhtml($arrTransaction['invoice_amount']),
-                    'CHECKOUT_TITLE'            => contrexx_raw2xhtml($arrTransaction['contact_title']),
-                    'CHECKOUT_FORENAME'         => contrexx_raw2xhtml($arrTransaction['contact_forename']),
-                    'CHECKOUT_SURNAME'          => contrexx_raw2xhtml($arrTransaction['contact_surname']),
                     'CHECKOUT_COMPANY'          => contrexx_raw2xhtml($arrTransaction['contact_company']),
-                    'CHECKOUT_STREET'           => contrexx_raw2xhtml($arrTransaction['contact_street']),
-                    'CHECKOUT_POSTCODE'         => contrexx_raw2xhtml($arrTransaction['contact_postcode']),
-                    'CHECKOUT_PLACE'            => contrexx_raw2xhtml($arrTransaction['contact_place']),
-                    'CHECKOUT_COUNTRY'          => contrexx_raw2xhtml($arrTransaction['contact_country']),
+                    'CHECKOUT_NAME'             => contrexx_raw2xhtml($arrTransaction['contact_forename'].' '.$arrTransaction['contact_surname']),
                     'CHECKOUT_PHONE'            => contrexx_raw2xhtml($arrTransaction['contact_phone']),
                     'CHECKOUT_EMAIL'            => contrexx_raw2xhtml($arrTransaction['contact_email']),
                 ));
@@ -349,14 +341,14 @@ class CheckoutManager extends CheckoutLibrary {
 
         $this->objTemplate->loadTemplateFile('module_checkout_settings.html', true, true);
         $this->objTemplate->setVariable(array(
-            'TXT_CORE_GENERAL'              => $_CORELANG['TXT_CORE_GENERAL'],
-            'TXT_CHECKOUT_SETTINGS_PSP'     => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP'],
-            'TXT_CHECKOUT_SETTINGS_MAILS'   => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS'],
-            'TXT_CORE_PLACEHOLDERS'         => $_CORELANG['TXT_CORE_PLACEHOLDERS'],
-            'GENERAL_LINK_ACTIVE'           => ($_GET['tpl'] == 'general' || $_GET['tpl'] == '') ? 'active' : '',
-            'MAILS_LINK_ACTIVE'             => $_GET['tpl'] == 'mails' ? 'active' : '',
-            'PSP_LINK_ACTIVE'               => $_GET['tpl'] == 'psp' ? 'active' : '',
-            'PLACEHOLDERS_LINK_ACTIVE'      => $_GET['tpl'] == 'placeholders' ? 'active' : '',
+            'TXT_CORE_GENERAL'                  => $_CORELANG['TXT_CORE_GENERAL'],
+            'TXT_CHECKOUT_SETTINGS_PSP'         => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP'],
+            'TXT_CHECKOUT_SETTINGS_MAILS'       => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS'],
+            'TXT_CORE_PLACEHOLDERS'             => $_CORELANG['TXT_CORE_PLACEHOLDERS'],
+            'CHECKOUT_GENERAL_LINK_ACTIVE'      => ($_GET['tpl'] == 'general' || $_GET['tpl'] == '') ? 'active' : '',
+            'CHECKOUT_PSP_LINK_ACTIVE'          => $_GET['tpl'] == 'psp' ? 'active' : '',
+            'CHECKOUT_MAILS_LINK_ACTIVE'        => $_GET['tpl'] == 'mails' ? 'active' : '',
+            'CHECKOUT_PLACEHOLDERS_LINK_ACTIVE' => $_GET['tpl'] == 'placeholders' ? 'active' : '',
         ));
 
         switch ($_GET['tpl']) {
@@ -385,15 +377,81 @@ class CheckoutManager extends CheckoutLibrary {
      */
     private function showSettingsGeneral()
     {
-        global $_ARRAYLANG;
+        global $_CORELANG, $_ARRAYLANG;
 
+        JS::activate('jquery');
         $this->objTemplate->addBlockfile('CHECKOUT_SETTINGS_CONTENT', 'settings_content', 'module_checkout_settings_general.html');
+
+        if (isset($_POST['submit'])) {
+            if (!empty($_POST['epayment_status'])) {
+                //check if the Yellowpay configuration is filled out
+                $arrYellowpay = $this->objSettingsYellowpay->get();
+                $yellowpayStatus = true;
+                foreach ($arrYellowpay as $value) {
+                    if (empty($value)) {
+                        $yellowpayStatus = false;
+                    }
+                }
+
+                if ($yellowpayStatus) {
+                    if ($this->objSettingsGeneral->setEpaymentStatus($_POST['epayment_status'])) {
+                        $this->arrStatusMessages['ok'][] = $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_CHANGES_SAVED_SUCCESSFULLY'];
+                    } else {
+                        $this->arrStatusMessages['alert'][] = $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_CHANGES_COULD_NOT_BE_SAVED'];
+                    }
+                } else {
+                    $this->arrStatusMessages['alert'][] = $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_EPAYMENT_ACTIVATION_FAILED'];
+                }
+            } else {
+                if ($this->objSettingsGeneral->setEpaymentStatus(0)) {
+                    $this->arrStatusMessages['ok'][] = $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_CHANGES_SAVED_SUCCESSFULLY'];
+                } else {
+                    $this->arrStatusMessages['alert'][] = $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_CHANGES_COULD_NOT_BE_SAVED'];
+                }
+            }
+        }
+
+        $pages = Env::em()->getRepository('Cx\Model\ContentManager\Page')->getFromModuleCmdByLang('checkout');
+
+        $arrActiveFrontendLanguages = FWLanguage::getActiveFrontendLanguages();
+        if (isset($arrActiveFrontendLanguages[FRONTEND_LANG_ID]) && isset($pages[FRONTEND_LANG_ID])) {
+            $langId = FRONTEND_LANG_ID;
+        } else if (isset($arrActiveFrontendLanguages[BACKEND_LANG_ID]) && isset($pages[BACKEND_LANG_ID])) {
+            $langId = BACKEND_LANG_ID;
+        } else {
+            foreach ($arrActiveFrontendLanguages as $lang) {
+                if (isset($pages[$lang['id']])) {
+                    $langId = $lang['id'];
+                    break;
+                }
+            }
+        }
+
+        $backendLinkURL = isset($pages[$langId]) ? 'index.php?cmd=content&page='.$pages[$langId]->getId().'&tab=content' : 'javascript:void(0);';
+        $frontendLinkURL = isset($pages[$langId]) ? '../'.\FWLanguage::getLanguageCodeById($langId).$pages[$langId]->getPath() : 'javascript:void(0);';
+
+        $parameterPassingDescription = $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_PARAMETER_PASSING_DESCRIPTION'];
+        $parameterPassingDescription = str_replace('%1$s', '<img src="../modules/checkout/images/parameter_passing/url.jpg" width="792" height="36" />', $parameterPassingDescription);
+        $parameterPassingDescription = str_replace('%2$s', '<img src="../modules/checkout/images/parameter_passing/form.jpg" width="612" height="345" />', $parameterPassingDescription);
+
         $this->objTemplate->setVariable(array(
-            'TXT_CHECKOUT_SETTINGS_GENERAL_INFORMATION'                 => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_INFORMATION'],
-            'TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_NAME_TITLE'           => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_NAME_TITLE'],
-            'TXT_CHECKOUT_MODULE_NAME'                                  => $_ARRAYLANG['TXT_CHECKOUT_MODULE_NAME'],
-            'TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_DESCRIPTION_TITLE'    => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_DESCRIPTION_TITLE'],
-            'TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_DESCRIPTION'          => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_DESCRIPTION'],
+            'TXT_CHECKOUT_SETTINGS_GENERAL_STATUS'                          => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_STATUS'],
+            'TXT_CHECKOUT_SETTINGS_GENERAL_EPAYMENT_ACTIVATED'              => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_EPAYMENT_ACTIVATED'],
+            'TXT_CHECKOUT_SETTINGS_GENERAL_EPAYMENT_ACTIVATED_INFO'         => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_EPAYMENT_ACTIVATED_INFO'],
+            'CHECKOUT_EPAYMENT_STATUS_CHECKED'                              => $this->objSettingsGeneral->getEpaymentStatus() ? 'checked="checked"' : '',
+            'TXT_SAVE'                                                      => $_CORELANG['TXT_SAVE'],
+            'TXT_CHECKOUT_SETTINGS_GENERAL_INFORMATION'                     => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_INFORMATION'],
+            'TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_NAME_TITLE'               => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_NAME_TITLE'],
+            'TXT_CHECKOUT_MODULE_NAME'                                      => $_ARRAYLANG['TXT_CHECKOUT_MODULE_NAME'],
+            'TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_DESCRIPTION_TITLE'        => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_DESCRIPTION_TITLE'],
+            'TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_DESCRIPTION'              => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_DESCRIPTION'],
+            'TXT_CORE_EDIT_PAGE_LAYOUT'                                     => $_CORELANG['TXT_CORE_EDIT_PAGE_LAYOUT'],
+            'TXT_CORE_SHOW_FRONTEND_VIEW'                                   => $_CORELANG['TXT_CORE_SHOW_FRONTEND_VIEW'],
+            'TXT_CHECKOUT_LINKS'                                            => $_ARRAYLANG['TXT_CHECKOUT_LINKS'],
+            'CHECKOUT_BACKEND_LINK_URL'                                     => $backendLinkURL,
+            'CHECKOUT_FRONTEND_LINK_URL'                                    => $frontendLinkURL,
+            'TXT_CHECKOUT_SETTINGS_GENERAL_PARAMETER_PASSING_TITLE'         => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_PARAMETER_PASSING_TITLE'],
+            'TXT_CHECKOUT_SETTINGS_GENERAL_PARAMETER_PASSING_DESCRIPTION'   => $parameterPassingDescription,
         ));
         $this->objTemplate->touchBlock('settings_content');
     }
@@ -437,10 +495,10 @@ class CheckoutManager extends CheckoutLibrary {
             'TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER'        => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER'],
             'TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER_INFO'   => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER_INFO'],
             'TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_MORE_INFORMATION'  => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_MORE_INFORMATION'],
-            'YELLOWPAY_PSPID'                                       => $arrYellowpay['pspid'],
-            'YELLOWPAY_SHA_IN'                                      => $arrYellowpay['sha_in'],
-            'YELLOWPAY_SHA_OUT'                                     => $arrYellowpay['sha_out'],
-            'YELLOWPAY_TESTSERVER'                                  => !empty($arrYellowpay['testserver']) ? 'checked="checked"' : '',
+            'CHECKOUT_YELLOWPAY_PSPID'                                       => $arrYellowpay['pspid'],
+            'CHECKOUT_YELLOWPAY_SHA_IN'                                      => $arrYellowpay['sha_in'],
+            'CHECKOUT_YELLOWPAY_SHA_OUT'                                     => $arrYellowpay['sha_out'],
+            'CHECKOUT_YELLOWPAY_TESTSERVER'                                  => !empty($arrYellowpay['testserver']) ? 'checked="checked"' : '',
             'TXT_CORE_SAVE'                                         => $_CORELANG['TXT_SAVE'],
         ));
         $this->objTemplate->parse('settings_content');
@@ -492,10 +550,10 @@ class CheckoutManager extends CheckoutLibrary {
             'TXT_CHECKOUT_SETTINGS_MAILS_CUSTOMER_MAIL_CONFIRM' => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_CUSTOMER_MAIL_CONFIRM'],
             'TXT_CHECKOUT_SETTINGS_MAILS_SUBJECT'               => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_SUBJECT'],
             'TXT_CHECKOUT_SETTINGS_MAILS_CONTENT'               => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_CONTENT'],
-            'ADMIN_MAIL_TITLE'                                  => $arrAdminMail['title'],
-            'ADMIN_MAIL_CONTENT'                                => get_wysiwyg_editor('adminMail[content]', $arrAdminMail['content']),
-            'CUSTOMER_MAIL_TITLE'                               => $arrCustomerMail['title'],
-            'CUSTOMER_MAIL_CONTENT'                             => get_wysiwyg_editor('customerMail[content]', $arrCustomerMail['content']),
+            'CHECKOUT_ADMIN_MAIL_TITLE'                         => $arrAdminMail['title'],
+            'CHECKOUT_ADMIN_MAIL_CONTENT'                       => get_wysiwyg_editor('adminMail[content]', $arrAdminMail['content']),
+            'CHECKOUT_CUSTOMER_MAIL_TITLE'                      => $arrCustomerMail['title'],
+            'CHECKOUT_CUSTOMER_MAIL_CONTENT'                    => get_wysiwyg_editor('customerMail[content]', $arrCustomerMail['content']),
             'TXT_CORE_SAVE'                                     => $_CORELANG['TXT_SAVE'],
         ));
         $this->objTemplate->touchBlock('settings_content');
