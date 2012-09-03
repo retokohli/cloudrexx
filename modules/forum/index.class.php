@@ -416,6 +416,7 @@ class Forum extends ForumLibrary {
         $content = !empty($_REQUEST['thread_message']) ? contrexx_stripslashes($_REQUEST['thread_message']) : '';
 
         if($this->_arrSettings['wysiwyg_editor'] == 1) { //IF WYSIWIG enabled..
+            require ASCMS_CORE_PATH.'/wysiwyg.class.php';
             $strMessageInputHTML = get_wysiwyg_editor('thread_message', $content, 'forum', $_LANGID);
         }else{ //plain textarea
             $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="thread_message">'.htmlentities($content, ENT_QUOTES, CONTREXX_CHARSET).'</textarea>';
