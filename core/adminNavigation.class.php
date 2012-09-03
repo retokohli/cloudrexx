@@ -153,9 +153,9 @@ class adminMenu
                     // active exceptions for media and content module
                     // ask: thomas.daeppen@comvation.com
                     $linkCmd = '';
+                    $linkCmdSection = '';
                     if (preg_match('/cmd=(.+?)(?:&amp;(.+))?$/', $link_data[2], $arrMatch)) {
                         $linkCmd = $arrMatch[1];
-                        $linkCmdSection = '';
                         if (isset($arrMatch[2])) {
                             $linkCmdSection = $arrMatch[2];
                         }
@@ -173,15 +173,7 @@ class adminMenu
                             case 'stats':
                                 $cssClass = 'inactive';
                                 if ($this->activeCmd == 'stats') {
-                                    if ((empty($_REQUEST['stat']) && empty($linkCmdSection)) || (!empty($_REQUEST['stat']) && !empty($linkCmdSection))) {
-                                        $cssClass = 'active';
-                                    }
-                                }
-                                break;
-                            case 'newsletter':
-                                $cssClass = 'inactive';
-                                if ($this->activeCmd == 'newsletter') {
-                                    if ((empty($_REQUEST['act']) && empty($linkCmdSection)) || (!empty($_REQUEST['act']) && !empty($linkCmdSection))) {
+                                    if (!empty($_REQUEST['stat']) && !empty($linkCmdSection) && (strpos($linkCmdSection, $_REQUEST['stat']) !== false)) {
                                         $cssClass = 'active';
                                     }
                                 }
@@ -240,7 +232,19 @@ class adminMenu
                     }
 
                     if (empty($cssClass)) {
-                        $cssClass = !empty($this->activeCmd) && ($this->activeCmd == $linkCmd) ? 'active' : 'inactive';
+                        if ((!empty($this->activeCmd) && !empty($linkCmd) && ($this->activeCmd == $linkCmd)) &&
+                            (!empty($_REQUEST['act']) && !empty($linkCmdSection) && (strpos($linkCmdSection, $_REQUEST['act']) !== false))
+                        ) {
+                            $cssClass = 'active';
+                        } else if (!empty($this->activeCmd) && !empty($linkCmd) && ($this->activeCmd == $linkCmd)) {
+                            if (empty($_REQUEST['act'])) {
+                                $cssClass = 'active';
+                            } else  {
+                                $cssClass = 'inactive';
+                            }
+                        } else {
+                            $cssClass = 'inactive';
+                        }
                     }
                     $navigation.= "<li class='$cssClass'><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
                 }

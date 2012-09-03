@@ -394,7 +394,10 @@ error_reporting(0);
 /**
  * Includes
  */
-require_once dirname(__FILE__).'/../../config/configuration.php';
+require_once(dirname(dirname(dirname(__FILE__))).'/config/configuration.php');
+require_once(dirname(dirname(dirname(__FILE__))).'/core/ClassLoader/ClassLoader.class.php');
+new \Cx\Core\ClassLoader\ClassLoader();
+
 require_once dirname(__FILE__).'/../../lib/DBG.php';
 include ASCMS_LIBRARY_PATH.'/ykcee/ykcee.php';
 
