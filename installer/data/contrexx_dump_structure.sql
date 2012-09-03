@@ -640,6 +640,12 @@ CREATE TABLE `contrexx_module_calendar_style` (
   `stdCat` text NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_checkout_settings_general` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `value` int(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_checkout_settings_mails` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` text NOT NULL,
