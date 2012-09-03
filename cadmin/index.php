@@ -63,7 +63,7 @@ Env::set('ftpConfig', $_FTPCONFIG);
  * before doctrine loads the Gedmo one)
  */
 require_once dirname(__FILE__).'/../core/ClassLoader/ClassLoader.class.php';
-new \Cx\Core\ClassLoader\ClassLoader();
+new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT);
 
 /**
  * Doctrine configuration

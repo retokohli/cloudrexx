@@ -2,14 +2,30 @@
 namespace Cx\Core\ClassLoader;
 
 class ClassLoader {
-    private $legacyClassLoader;
+    private $basePath;
+    private $legacyClassLoader = null;
     
-    public function __construct() {
+    /**
+     * To use LegacyClassLoader config.php and set_constants.php must be loaded
+     * If they are not present, set $useLegacyAsFallback to false!
+     * @param String $basePath Base directory to load files (e.g. ASCMS_DOCUMENT_ROOT)
+     * @param boolean $useLegacyAsFallback (optional) Wheter to use LegacyClassLoader too (default) or not
+     */
+    public function __construct($basePath, $useLegacyAsFallback = true) {
+        $this->basePath = $basePath;
         spl_autoload_register(array($this, 'autoload'));
-        $this->legacyClassLoader = new LegacyClassLoader();
+        if ($useLegacyAsFallback) {
+            $this->legacyClassLoader = new LegacyClassLoader();
+        }
     }
     
-    private function autoload($name) {
+    /**
+     * This needs to be public because Doctrine tries to load a class using all
+     * registered autoloaders.
+     * @param type $name
+     * @return type void
+     */
+    public function autoload($name) {
         //print $name."<br>";
         if ($this->load($name, $path)) {
             return;
@@ -62,7 +78,7 @@ class ClassLoader {
         reset($parts);
         
         // find matching path
-        $path = ASCMS_DOCUMENT_ROOT;
+        $path = $this->basePath;
         foreach ($parts as $part) {
             $part = '/' . $part;
             if (!is_dir($path . $part)) {
@@ -85,6 +101,8 @@ class ClassLoader {
     }
     
     private function loadLegacy($name) {
-        $this->legacyClassLoader->autoload($name);
+        if ($this->legacyClassLoader) {
+            $this->legacyClassLoader->autoload($name);
+        }
     }
 }
