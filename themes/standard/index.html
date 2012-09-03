@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>{METATITLE} | {GLOBAL_TITLE} - powered by {VERSION}</title>
+        <title>{METATITLE} - {GLOBAL_TITLE} - powered by {VERSION}</title>
         <meta name="generator" content="Contrexx" /> 
         <meta name="keywords" content="{METAKEYS}" />        
         <meta name="robots" content="{METAROBOTS}" />
@@ -25,7 +25,7 @@
         <script type="text/javascript" src="themes/standard/jquery.flexslider.js"></script>
         <script type="text/javascript">
             $J(document).ready(function () {
-                $J('#navigation li').hover(function () {
+                $J('#navigation > li').hover(function () {
                     $J(this).children('ul').animate({
                         height:  'toggle',
                         opacity: 'toggle'
@@ -33,6 +33,9 @@
                 }, function () {
                     $J(this).children('ul').hide();
                 });
+                
+                $J('#navigation li.active').parents('ul.menu').siblings('a').removeClass('starter_normal').addClass('starter_active').parent().removeClass('starter_normal').addClass('starter_active');
+                $J('#subnavigation li.active').parents('ul.menu').siblings('a').removeClass('inactive').addClass('active').parent().removeClass('inactive').addClass('active');
                 
                 $J('.flexslider').flexslider({
                       animation: "fade"
