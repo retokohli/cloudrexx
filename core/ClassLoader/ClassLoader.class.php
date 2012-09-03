@@ -21,6 +21,9 @@ class ClassLoader {
     }
     
     private function load($name, &$resolvedPath) {
+        if (substr($name, 0, 1) == '\\') {
+            $name = substr($name, 1);
+        }
         $parts = explode('\\', $name);
         // new classes should be in namespace \Cx\something
         if (!in_array(current($parts), array('Cx'/*, 'Doctrine'*/, 'Gedmo'/*, 'Symfony'*/)) || count($parts) < 3) {
