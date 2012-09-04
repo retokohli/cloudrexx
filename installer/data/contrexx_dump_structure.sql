@@ -676,7 +676,7 @@ CREATE TABLE `contrexx_module_checkout_transactions` (
   `contact_phone` varchar(255) NOT NULL DEFAULT '',
   `contact_email` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM;
+) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_contact_form` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `mails` text NOT NULL,
