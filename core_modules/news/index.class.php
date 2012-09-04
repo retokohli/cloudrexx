@@ -308,7 +308,7 @@ class news extends newsLibrary {
      */
     private function parseCommentsOfMessage($messageId)
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
         // abort if template block is missing
         if (!$this->_objTpl->blockExists('news_comments')) {
