@@ -6,6 +6,7 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_CORE_FILTER'] = "Filter";
 $_ARRAYLANG['TXT_PASSWORD_COMPLEXITY'] = "Kennwort muss der Komplexitätsvoraussetzung entsprechen";
 $_ARRAYLANG['TXT_PASSWORD_COMPLEXITY_INFO'] = "Kennwort muss folgende Zeichen enthalten: Gross-, Kleinbuchstabe und Zahl";
 $_ARRAYLANG['TXT_GOOGLE_ANALYTICS_TRACKING_ID'] = "Google Analytics Tracking-ID";
