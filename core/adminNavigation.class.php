@@ -237,10 +237,10 @@ class adminMenu
                         ) {
                             $cssClass = 'active';
                         } else if (!empty($this->activeCmd) && !empty($linkCmd) && ($this->activeCmd == $linkCmd)) {
-                            if (empty($_REQUEST['act'])) {
-                                $cssClass = 'active';
-                            } else  {
+                            if (!empty($_REQUEST['act']) && !empty($linkCmdSection) && (strpos($linkCmdSection, $_REQUEST['act']) == false)) {
                                 $cssClass = 'inactive';
+                            } else  {
+                                $cssClass = 'active';
                             }
                         } else {
                             $cssClass = 'inactive';

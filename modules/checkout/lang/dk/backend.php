@@ -17,6 +17,7 @@ $_ARRAYLANG['TXT_CHECKOUT_INVOICE'] = 'Rechnung';
 $_ARRAYLANG['TXT_CHECKOUT_CONTACT'] = 'Kontakt';
 $_ARRAYLANG['TXT_CHECKOUT_ALL_ENTRIES'] = 'Alle Einträge';
 $_ARRAYLANG['TXT_CHECKOUT_NO_ENTRIES'] = 'Keine Einträge vorhanden';
+$_ARRAYLANG['TXT_CHECKOUT_EPAYMENT_DEACTIVATED'] = 'Das E-Payment ist deaktiviert. Bitte aktivieren Sie das E-Payment in den „Einstellungen“, damit im Frontend über das Checkout-Formular Transaktionen abgewickelt werden können.';
 $_ARRAYLANG['TXT_CHECKOUT_ID'] = 'ID';
 $_ARRAYLANG['TXT_CHECKOUT_TIME'] = 'Datum und Zeit';
 $_ARRAYLANG['TXT_CHECKOUT_STATUS'] = 'Status';
@@ -63,7 +64,6 @@ $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_CUSTOMER'] = 'Kunde';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_ADMIN_MAIL_CONFIRM'] = 'Benachrichtigungs-E-Mail für den Administrator';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_CUSTOMER_MAIL_CONFIRM'] = 'Bestätigungs-E-Mail für den Kunden';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_SUBJECT'] = 'Betreff';
-$_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_CONTENT'] = 'Inhalt';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_CHANGES_SAVED_SUCCESSFULLY'] = 'Die Änderungen wurden erfolgreich gespeichert.';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_CHANGES_COULD_NOT_BE_SAVED'] = 'Die Änderungen konnten nicht gespeichert werden.';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_STATUS'] = 'Status';
@@ -74,6 +74,25 @@ $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_INFORMATION'] = 'Informationen';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_NAME_TITLE'] = 'Anwendungsname';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_DESCRIPTION_TITLE'] = 'Beschreibung';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_DESCRIPTION'] = 'Unter &bdquo;Checkout&ldquo; versteht man im E-Commerce die virtuelle Kasse. Diese Anwendung ermöglicht den Kaufvorgang von beliebigen Waren aller Art über eine einzige Seite. Hier wird der Kunde zur Wahl des von ihm präferierten Zahlungsverfahrens aufgefordert und kann die Bezahlung sicher ausführen.';
-$_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_PARAMETER_PASSING_TITLE'] = 'Beispiel einer Parameterübergabe im Frontend';
-$_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_PARAMETER_PASSING_DESCRIPTION'] = 'Durch Angabe von Parametern in der URL ist es möglich, Voragabewerte für das Checkout-Formular festzulegen. Für jedes Eingabefeld existiert ein Parameter. Nachfolgend ein Beispiel dazu:<br />%1$s<br />Die oben abgebildete URL bewirkt, dass im unten abgebildeten Formular die Felder „Rechnungsnummer“, „Währung“ und „Rechnungsbetrag“ die Vorgabewerte „9874561“, „CHF“ und „550.00“ eingetragen haben.<br />%2$s';
+$_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_PARAMETER_PASSING_TITLE'] = 'Parameterübersicht';
+$_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_PARAMETER_PASSING_DESCRIPTION'] = '
+    Für das Checkout-Formular im Frontend können mittels URL-Parameter Vorgabewerte definiert werden. Folgende Übersicht zeigt welche Parameter für welche Eingabefelder bestimmt sind:
+    <ul>
+        <li>invoice_number ⇒ Rechnungsnummer</li>
+        <li>invoice_amount ⇒ Rechnungsbetrag</li>
+        <li>invoice_currency ⇒ Währung</li>
+        <li>contact_title ⇒ Anrede</li>
+        <li>contact_forename ⇒ Vorname</li>
+        <li>contact_surname ⇒ Nachname</li>
+        <li>contact_company ⇒ Firma</li>
+        <li>contact_street ⇒ Strasse</li>
+        <li>contact_postcode ⇒ PLZ</li>
+        <li>contact_place ⇒ Ort</li>
+        <li>contact_country ⇒ Land</li>
+        <li>contact_phone ⇒ Telefon</li>
+        <li>contact_email ⇒ E-Mail</li>
+    </ul>
+    Durch setzen des Parameters „submit=1“ werden beim Laden des Formulars bereits die Vorgabewerte validiert (analog dem Klick auf den Button „Absenden“).<br /><br />
+    <b>Anwendungsbeispiel</b><br />Die URL „http://www.example.com/de/index.php?section=checkout&invoice_number=987654321&invoice_amount=450.00&invoice_currency=CHF“ würde bewirken, dass die Felder „Rechnungsnummer“, „Rechnungsbetrag“ und „Währung“ die Vorgabewerte „987654321“, „450.00“ und „CHF“ erhalten.
+';
 $_ARRAYLANG['TXT_CHECKOUT_LINKS'] = 'Links';

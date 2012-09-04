@@ -134,6 +134,7 @@ class CheckoutManager extends CheckoutLibrary {
     {
         $this->objTemplate->setVariable(array(
             'CHECKOUT_CONTENT_OK_MESSAGE'       => count($this->arrStatusMessages['ok']) ? '<div class="okbox">'.implode('<br />', $this->arrStatusMessages['ok']).'</div>' : '',
+            'CHECKOUT_CONTENT_WARNING_MESSAGE'  => count($this->arrStatusMessages['warning']) ? '<div class="warningbox">'.implode('<br />', $this->arrStatusMessages['warning']).'</div>' : '',
             'CHECKOUT_CONTENT_ALERT_MESSAGE'    => count($this->arrStatusMessages['alert']) ? '<div class="alertbox">'.implode('<br />', $this->arrStatusMessages['alert']).'</div>' : '',
         ));
     }
@@ -147,13 +148,20 @@ class CheckoutManager extends CheckoutLibrary {
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
+        $this->objTemplate->loadTemplateFile('module_checkout_overview.html');
+
+        //check the payment service provider configuration
+        $objSettingsGeneral = new SettingsGeneral($objDatabase);
+        if (!$objSettingsGeneral->getEpaymentStatus()) {
+            $this->arrStatusMessages['warning'][] = $_ARRAYLANG['TXT_CHECKOUT_EPAYMENT_DEACTIVATED'];
+        }
+
         JS::activate('cx');
 
         $tableRow = '';
         $pagingCount = $this->objTransaction->getRecordCount();
         $pagingPosition = !empty($_GET['pos']) ? intval($_GET['pos']) : 0;
 
-        $this->objTemplate->loadTemplateFile('module_checkout_overview.html');
         $this->objTemplate->setVariable(array(
             'TXT_CHECKOUT_ALL_ENTRIES'      => $_ARRAYLANG['TXT_CHECKOUT_ALL_ENTRIES'],
             'TXT_CHECKOUT_ID'               => $_ARRAYLANG['TXT_CHECKOUT_ID'],
@@ -210,12 +218,12 @@ class CheckoutManager extends CheckoutLibrary {
                 $this->objTemplate->setVariable('CHECKOUT_PAGING', getPaging($pagingCount, $pagingPosition, "&amp;cmd=checkout", $_ARRAYLANG['TXT_CHECKOUT_TRANSACTIONS']));
             }
 
-            $this->objTemplate->hideBlock('no_entries');
             $this->objTemplate->parse('transactions');
         } else {
-            $this->objTemplate->setVariable('TXT_CHECKOUT_NO_ENTRIES', $_ARRAYLANG['TXT_CHECKOUT_NO_ENTRIES']);
+            if (empty($this->arrStatusMessages['warning'])) {
+                $this->arrStatusMessages['warning'][] = $_ARRAYLANG['TXT_CHECKOUT_NO_ENTRIES'];
+            }
             $this->objTemplate->hideBlock('transactions');
-            $this->objTemplate->parse('no_entries');
         }
     }
 
@@ -344,11 +352,9 @@ class CheckoutManager extends CheckoutLibrary {
             'TXT_CORE_GENERAL'                  => $_CORELANG['TXT_CORE_GENERAL'],
             'TXT_CHECKOUT_SETTINGS_PSP'         => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP'],
             'TXT_CHECKOUT_SETTINGS_MAILS'       => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS'],
-            'TXT_CORE_PLACEHOLDERS'             => $_CORELANG['TXT_CORE_PLACEHOLDERS'],
             'CHECKOUT_GENERAL_LINK_ACTIVE'      => ($_GET['tpl'] == 'general' || $_GET['tpl'] == '') ? 'active' : '',
             'CHECKOUT_PSP_LINK_ACTIVE'          => $_GET['tpl'] == 'psp' ? 'active' : '',
             'CHECKOUT_MAILS_LINK_ACTIVE'        => $_GET['tpl'] == 'mails' ? 'active' : '',
-            'CHECKOUT_PLACEHOLDERS_LINK_ACTIVE' => $_GET['tpl'] == 'placeholders' ? 'active' : '',
         ));
 
         switch ($_GET['tpl']) {
@@ -360,9 +366,6 @@ class CheckoutManager extends CheckoutLibrary {
                 break;
             case 'mails':
                 $this->showSettingsMails();
-                break;
-            case 'placeholders':
-                $this->showSettingsPlaceholders();
                 break;
             default:
                 $this->showSettingsGeneral();
@@ -388,6 +391,7 @@ class CheckoutManager extends CheckoutLibrary {
                 $arrYellowpay = $this->objSettingsYellowpay->get();
                 $yellowpayStatus = true;
                 foreach ($arrYellowpay as $value) {
+                    $value = trim($value);
                     if (empty($value)) {
                         $yellowpayStatus = false;
                     }
@@ -549,27 +553,12 @@ class CheckoutManager extends CheckoutLibrary {
             'TXT_CHECKOUT_SETTINGS_MAILS_ADMIN_MAIL_CONFIRM'    => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_ADMIN_MAIL_CONFIRM'],
             'TXT_CHECKOUT_SETTINGS_MAILS_CUSTOMER_MAIL_CONFIRM' => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_CUSTOMER_MAIL_CONFIRM'],
             'TXT_CHECKOUT_SETTINGS_MAILS_SUBJECT'               => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_SUBJECT'],
-            'TXT_CHECKOUT_SETTINGS_MAILS_CONTENT'               => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_CONTENT'],
             'CHECKOUT_ADMIN_MAIL_TITLE'                         => $arrAdminMail['title'],
             'CHECKOUT_ADMIN_MAIL_CONTENT'                       => get_wysiwyg_editor('adminMail[content]', $arrAdminMail['content']),
             'CHECKOUT_CUSTOMER_MAIL_TITLE'                      => $arrCustomerMail['title'],
             'CHECKOUT_CUSTOMER_MAIL_CONTENT'                    => get_wysiwyg_editor('customerMail[content]', $arrCustomerMail['content']),
             'TXT_CORE_SAVE'                                     => $_CORELANG['TXT_SAVE'],
-        ));
-        $this->objTemplate->touchBlock('settings_content');
-    }
-
-    /**
-     * Show placeholders page
-     *
-     * @access      private
-     */
-    private function showSettingsPlaceholders()
-    {
-        global $_CORELANG, $_ARRAYLANG;
-
-        $this->objTemplate->addBlockfile('CHECKOUT_SETTINGS_CONTENT', 'settings_content', 'module_checkout_settings_placeholders.html');
-        $this->objTemplate->setVariable(array(
+            'TXT_CORE_PLACEHOLDERS'                             => $_CORELANG['TXT_CORE_PLACEHOLDERS'],
             'TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_MAILS_TITLE'    => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_MAILS_TITLE'],
             'TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_DOMAIN'         => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_DOMAIN'],
             'TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_ID'             => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_ID'],
@@ -589,6 +578,6 @@ class CheckoutManager extends CheckoutLibrary {
             'TXT_CHECKOUT_PHONE'                                => $_ARRAYLANG['TXT_CHECKOUT_PHONE'],
             'TXT_CHECKOUT_EMAIL'                                => $_ARRAYLANG['TXT_CHECKOUT_EMAIL'],
         ));
-        $this->objTemplate->parse('settings_content');
+        $this->objTemplate->touchBlock('settings_content');
     }
 }

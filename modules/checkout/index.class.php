@@ -102,12 +102,13 @@ class Checkout extends CheckoutLibrary {
     {
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
-        //check the configuration of the payment service provider
+        //check the payment service provider configuration
         $objSettingsGeneral = new SettingsGeneral($objDatabase);
         if (!$objSettingsGeneral->getEpaymentStatus()) {
-            $this->arrStatusMessages['error'][] = $_ARRAYLANG['TXT_CHECKOUT_EPAYMENT_NOT_CONFIGURED'];
+            $this->arrStatusMessages['error'][] = $_ARRAYLANG['TXT_CHECKOUT_EPAYMENT_DEACTIVATED'];
             $this->objTemplate->hideblock('form');
             $this->objTemplate->hideblock('redirect');
+            return;
         }
 
         JS::activate('jquery');
