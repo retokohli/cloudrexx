@@ -16,18 +16,19 @@ ini_set('display_errors', 0);
 /**
  * Includes
  */
-require_once(dirname(dirname(dirname(__FILE__))).'/config/configuration.php');
-require_once(dirname(dirname(dirname(__FILE__))).'/core/ClassLoader/ClassLoader.class.php');
-new \Cx\Core\ClassLoader\ClassLoader();
+require_once(dirname(__FILE__).'/../../config/settings.php');
+require_once(dirname(__FILE__).'/../../config/configuration.php');
+require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');
+new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT);
 
-require_once ASCMS_CORE_PATH.'/Env.class.php';
-require_once ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php';
+require_once(ASCMS_CORE_PATH.'/Env.class.php');
+require_once(ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php');
 
 $arrBannedWords = array();
 $arrRobots = array();
-require_once ASCMS_CORE_MODULE_PATH.'/stats/lib/spiders.inc.php';
-require_once ASCMS_CORE_MODULE_PATH.'/stats/lib/referers.inc.php';
-require_once ASCMS_CORE_MODULE_PATH.'/stats/lib/banned.inc.php';
+require_once(ASCMS_CORE_MODULE_PATH.'/stats/lib/spiders.inc.php');
+require_once(ASCMS_CORE_MODULE_PATH.'/stats/lib/referers.inc.php');
+require_once(ASCMS_CORE_MODULE_PATH.'/stats/lib/banned.inc.php');
 
 $objDb = ADONewConnection($_DBCONFIG['dbType']); # eg 'mysql' or 'postgres'
 $objDb->Connect($_DBCONFIG['host'], $_DBCONFIG['user'], $_DBCONFIG['password'], $_DBCONFIG['database']);
@@ -35,10 +36,9 @@ $objDb->Connect($_DBCONFIG['host'], $_DBCONFIG['user'], $_DBCONFIG['password'], 
 if(!empty($_DBCONFIG['charset']))
   $objDb->Execute('SET CHARACTER SET '.$_DBCONFIG['charset']);
 $objDatabase = $objDb;
-require_once ASCMS_FRAMEWORK_PATH.'/Language.class.php';
+require_once(ASCMS_FRAMEWORK_PATH.'/Language.class.php');
 \FWLanguage::init();
-require_once dirname(__FILE__).'/../../config/doctrine.php';
-
+require_once(ASCMS_DOCUMENT_ROOT.'/config/doctrine.php');
 $counter = new counter($arrRobots, $arrBannedWords);
 
 /**

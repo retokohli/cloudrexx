@@ -7,24 +7,25 @@
  * @copyright Comvation AG <info@comvation.com>
  */
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config/configuration.php');
-require_once(dirname(dirname(dirname(__FILE__))).'/core/ClassLoader/ClassLoader.class.php');
-new \Cx\Core\ClassLoader\ClassLoader();
+require_once(dirname(__FILE__).'/../../config/settings.php');
+require_once(dirname(__FILE__).'/../../config/configuration.php');
+require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');
+new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT);
 
-include_once('../../lib/DBG.php');
-require_once "../../core/validator.inc.php";
-require_once "../../core/database.php";
-require_once "lib/databaseError.class.php";
+include_once(ASCMS_LIBRARY_PATH.'/DBG.php');
+require_once(ASCMS_CORE_PATH.'/validator.inc.php');
+require_once(ASCMS_CORE_PATH.'/database.php');
+require_once(ASCMS_MODULE_PATH.'/knowledge/lib/databaseError.class.php');
 
 //require_once '../../lib/CSRF.php';
 // Temporary fix until all GET operation requests will be replaced by POSTs
 //CSRF::setFrontendMode();
 
-require_once ASCMS_LIBRARY_PATH.'/PEAR/HTML/Template/Sigma/Sigma.php';
-require_once ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php';
+require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTML/Template/Sigma/Sigma.php');
+require_once(ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php');
 $objDb = getDatabaseObject($errorMsg);
 $objDatabase = &$objDb;
-include("lib/search.php");
+require_once(ASCMS_MODULE_PATH.'/knowledge/lib/search.php');
 $search = new Search();
 $search->performSearch();
 die();
