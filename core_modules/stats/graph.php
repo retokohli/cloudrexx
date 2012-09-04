@@ -394,15 +394,16 @@ error_reporting(0);
 /**
  * Includes
  */
-require_once(dirname(dirname(dirname(__FILE__))).'/config/configuration.php');
-require_once(dirname(dirname(dirname(__FILE__))).'/core/ClassLoader/ClassLoader.class.php');
-new \Cx\Core\ClassLoader\ClassLoader();
+require_once(dirname(__FILE__).'/../../config/settings.php');
+require_once(dirname(__FILE__).'/../../config/configuration.php');
+require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');
+new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT);
 
-require_once dirname(__FILE__).'/../../lib/DBG.php';
-include ASCMS_LIBRARY_PATH.'/ykcee/ykcee.php';
+require_once(ASCMS_LIBRARY_PATH.'/DBG.php');
+require_once(ASCMS_LIBRARY_PATH.'/ykcee/ykcee.php');
 
 $adminPage = true;
-require_once ASCMS_CORE_PATH.'/API.php';
+require_once(ASCMS_CORE_PATH.'/API.php');
 
 $errorMsg = '';
 $objDatabase = getDatabaseObject($errorMsg);

@@ -1,16 +1,16 @@
 <?php
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config/configuration.php');
-require_once(dirname(dirname(dirname(__FILE__))).'/core/ClassLoader/ClassLoader.class.php');
-new \Cx\Core\ClassLoader\ClassLoader();
+require_once(dirname(__FILE__).'/../../config/settings.php');
+require_once(dirname(__FILE__).'/../../config/configuration.php');
+require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');
+new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT);
 
-require_once('../../lib/DBG.php');
-require_once('../../config/configuration.php');
-require_once('../../core/settings.class.php');
-require_once('../../core/API.php');
-require_once('../../core/validator.inc.php');
-require_once('../../lib/CSRF.php');
-require_once('../../core/Html.class.php');
+require_once(ASCMS_LIBRARY_PATH.'/DBG.php');
+require_once(ASCMS_CORE_PATH.'/settings.class.php');
+require_once(ASCMS_CORE_PATH.'/API.php');
+require_once(ASCMS_CORE_PATH.'/validator.inc.php');
+require_once(ASCMS_LIBRARY_PATH.'/CSRF.php');
+require_once(ASCMS_CORE_PATH.'/Html.class.php');
 
 $strErrMessage = '';
 $objDatabase = getDatabaseObject($strErrMessage);
