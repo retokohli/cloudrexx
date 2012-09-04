@@ -1,6 +1,8 @@
-<?xml version="1.0" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!doctype html>
+    <!--[if lt IE 7 ]> <html class="no-js ie6" lang="en"> <![endif]-->
+    <!--[if IE 7 ]>    <html class="no-js ie7" lang="en"> <![endif]-->
+    <!--[if IE 8 ]>    <html class="no-js ie8" lang="en"> <![endif]-->
+    <!--[if (gte IE 9)|!(IE)]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
     <head>
         <title>{METATITLE} - {GLOBAL_TITLE} - powered by {VERSION}</title>
         <meta name="generator" content="Contrexx" /> 
@@ -21,54 +23,37 @@
         {LOGIN_CONTENT}
         {COUNTER}
         
-        <link type="text/css" rel="stylesheet" href="themes/standard/flexslider.css" />
-        <script type="text/javascript" src="themes/standard/jquery.flexslider.js"></script>
-        <script type="text/javascript">
-            $J(document).ready(function () {
-                $J('#navigation > li').hover(function () {
-                    $J(this).children('ul').animate({
-                        height:  'toggle',
-                        opacity: 'toggle'
-                    }, 150);
-                }, function () {
-                    $J(this).children('ul').hide();
-                });
-                
-                $J('#navigation li.active').parents('ul.menu').siblings('a').removeClass('starter_normal').addClass('starter_active').parent().removeClass('starter_normal').addClass('starter_active');
-                $J('#subnavigation li.active').parents('ul.menu').siblings('a').removeClass('inactive').addClass('active').parent().removeClass('inactive').addClass('active');
-                
-                $J('.flexslider').flexslider({
-                      animation: "fade"
-                });
-                
-                $J(window).scroll(function () {
-                    if ($J(this).scrollTop() > 100) {
-                        $J('#back-top').fadeIn();
-                    } else {
-                        $J('#back-top').fadeOut();
-                    }
-                });
-                
-                $J('#back-top').click(function () {
-                    $J('body').animate({
-                        scrollTop: 0
-                    }, 800);
-                    return false;
-                });
-            });
-        </script>
+        <script type="text/javascript" src="themes/standard/modernizr.js"></script>
+        <script type="text/javascript" src="themes/standard/jquery.cycle.js"></script>
+        <script type="text/javascript" src="themes/standard/javascript.js"></script>
         
         <!--[if IE 6]>
         <script type="text/javascript" src="themes/standard/DD_belatedPNG.js"></script>
-        <script>
-            DD_belatedPNG.fix('img, a');
+        <script type="text/javascript">
+            $J(document).ready(function () {
+                DD_belatedPNG.fix('img, .png-bg');
+            });
+        </script>
+        <![endif]-->
+        
+        <!--[if lt IE 10]>
+        <script type="text/javascript" src="themes/standard/PIE.js"></script>
+        <script type="text/javascript">
+            $J(document).ready(function () {
+                if (window.PIE) {
+                    var elements = '#back-top, #navigation, #navigation li.first, #navigation li.last, #navigation li ul, #navigation li.level-2.last';
+                    $J(elements).each(function () {
+                        PIE.attach(this);
+                    });
+                }
+            });
         </script>
         <![endif]-->
     </head>
     
     <body>
         <div id="container">
-            <div id="header">
+            <header id="header">
                 <a id="logo" href="index.php"></a>
                 <ul id="metanavigation">
                     <li><a href="#">Sitemap</a></li>
@@ -80,12 +65,15 @@
                         <div id="search-right"></div>
                     </li>
                 </ul>
-            </div>
+            </header>
+            
             {NAVBAR_FILE}
-            <div id="content-wrapper">
+            
+            <section id="content-wrapper">
                 {CONTENT_FILE}
-            </div>
-            <div id="footer-top">
+            </section>
+            
+            <footer id="footer-top">
                 <ul class="footer-left">
                     <li>Page view:&nbsp;&nbsp;<a href="{STANDARD_URL}">Normal</a></li>
                     <li><a href="{MOBILE_URL}">Mobile</a></li>
@@ -102,11 +90,11 @@
                     <li><a href="#"><img src="themes/standard/images/rss-feed-icon.png" alt="RSS Feed" /></a></li>
                     <li class="last"><a href="#"><img src="themes/standard/images/googleplus-icon.png" alt="Google Plus" /></a></li>
                 </ul>
-            </div>
-            <div id="footer-bottom">
+            </footer>
+            <footer id="footer-bottom">
                 <div class="footer-left">&copy; 2012 Contrexx &reg; Standard Theme</div>
                 <div class="footer-right">Standard Theme powered by <a href="http://www.contrexx.com" target="_blank">Contrexx &reg;</a></div>
-            </div>
+            </footer>
         </div>
         <a id="back-top"></a>
     </body>
