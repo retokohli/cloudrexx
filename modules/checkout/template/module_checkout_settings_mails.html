@@ -5,7 +5,7 @@
     }
 
     input[type="text"] {
-        width: 230px;
+        width: 250px;
         margin: 0;
     }
 </style>
@@ -14,11 +14,11 @@
 jQuery(document).ready(function() {
     jQuery('.tabmenu a').click(function() {
         jQuery('.tabmenu a').removeClass('active');
-        jQuery('form').hide();
+        jQuery('.container').hide();
 
         className = jQuery(this).attr('class');
         jQuery('.tabmenu a.'+className).addClass('active');
-        jQuery('form.'+className).show();
+        jQuery('.container.'+className).show();
     });
 });
 /* ]]> */
@@ -27,8 +27,10 @@ jQuery(document).ready(function() {
 <ul class="tabmenu">
     <li><a class="adminMail active" href="javascript:void(0)">{TXT_CHECKOUT_SETTINGS_MAILS_ADMIN}</a></li>
     <li><a class="customerMail" href="javascript:void(0)">{TXT_CHECKOUT_SETTINGS_MAILS_CUSTOMER}</a></li>
+    <li><a class="mailPlaceholders" href="javascript:void(0)">{TXT_CORE_PLACEHOLDERS}</a></li>
 </ul>
-<form class="adminMail" action="index.php?cmd=checkout&act=settings&tpl=mails" method="post">
+
+<form class="adminMail container" action="index.php?cmd=checkout&act=settings&tpl=mails" method="post">
     <table class="adminlist" width="100%">
         <tr>
             <th colspan="2">{TXT_CHECKOUT_SETTINGS_MAILS_ADMIN_MAIL_CONFIRM}</th>
@@ -37,16 +39,15 @@ jQuery(document).ready(function() {
             <td width="200"><label for="admin_mail_title">{TXT_CHECKOUT_SETTINGS_MAILS_SUBJECT}</label></td>
             <td><input id="admin_mail_title" name="adminMail[title]" type="text" value="{CHECKOUT_ADMIN_MAIL_TITLE}" /></td>
         </tr>
-        <tr>
-            <td><label for="adminMail[content]">{TXT_CHECKOUT_SETTINGS_MAILS_CONTENT}</label></td>
-            <td>{CHECKOUT_ADMIN_MAIL_CONTENT}</td>
+        <tr class="reset">
+            <td colspan="2">{CHECKOUT_ADMIN_MAIL_CONTENT}</td>
         </tr>
     </table><br />
 
     <input name="submit_admin_mail" type="submit" value="{TXT_CORE_SAVE}" />
 </form>
 
-<form class="customerMail" action="index.php?cmd=checkout&act=settings&tpl=mails" method="post" style="display: none;">
+<form class="customerMail container" action="index.php?cmd=checkout&act=settings&tpl=mails" method="post" style="display: none;">
     <table class="adminlist" width="100%">
         <tr>
             <th colspan="2">{TXT_CHECKOUT_SETTINGS_MAILS_CUSTOMER_MAIL_CONFIRM}</th>
@@ -55,11 +56,86 @@ jQuery(document).ready(function() {
             <td width="200"><label for="customer_mail_title">{TXT_CHECKOUT_SETTINGS_MAILS_SUBJECT}</label></td>
             <td><input id="customer_mail_title" name="customerMail[title]" type="text" value="{CHECKOUT_CUSTOMER_MAIL_TITLE}" /></td>
         </tr>
-        <tr>
-            <td><label for="customerMail[content]">{TXT_CHECKOUT_SETTINGS_MAILS_CONTENT}</label></td>
-            <td>{CHECKOUT_CUSTOMER_MAIL_CONTENT}</td>
+        <tr class="reset">
+            <td colspan="2">{CHECKOUT_CUSTOMER_MAIL_CONTENT}</td>
         </tr>
     </table><br />
 
     <input name="submit_customer_mail" type="submit" value="{TXT_CORE_SAVE}" />
 </form>
+
+<div class="mailPlaceholders container" style="display: none;">
+    <table class="adminlist" width="100%">
+        <tr>
+            <th colspan="2">{TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_MAILS_TITLE}</th>
+        </tr>
+        <tr>
+            <td width="200">[[DOMAIN_URL]]</td>
+            <td>{TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_DOMAIN}</td>
+        </tr>
+        <tr>
+            <td>[[TRANSACTION_ID]]</td>
+            <td>{TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_ID}</td>
+        </tr>
+        <tr>
+            <td>[[TRANSACTION_STATUS]]</td>
+            <td>{TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_STATUS}</td>
+        </tr>
+        <tr>
+            <td>[[TRANSACTION_TIME]]</td>
+            <td>{TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_TIME}</td>
+        </tr>
+        <tr>
+            <td>[[INVOICE_NUMBER]]</td>
+            <td>{TXT_CHECKOUT_INVOICE_NUMBER}</td>
+        </tr>
+        <tr>
+            <td>[[INVOICE_CURRENCY]]</td>
+            <td>{TXT_CHECKOUT_INVOICE_CURRENCY}</td>
+        </tr>
+        <tr>
+            <td>[[INVOICE_AMOUNT]]</td>
+            <td>{TXT_CHECKOUT_INVOICE_AMOUNT}</td>
+        </tr>
+        <tr>
+            <td>[[CONTACT_TITLE]]</td>
+            <td>{TXT_CHECKOUT_TITLE}</td>
+        </tr>
+        <tr>
+            <td>[[CONTACT_FORENAME]]</td>
+            <td>{TXT_CHECKOUT_FORENAME}</td>
+        </tr>
+        <tr>
+            <td>[[CONTACT_SURNAME]]</td>
+            <td>{TXT_CHECKOUT_SURNAME}</td>
+        </tr>
+        <tr>
+            <td>[[CONTACT_COMPANY]]</td>
+            <td>{TXT_CHECKOUT_COMPANY}</td>
+        </tr>
+        <tr>
+            <td>[[CONTACT_STREET]]</td>
+            <td>{TXT_CHECKOUT_STREET}</td>
+        </tr>
+        <tr>
+            <td>[[CONTACT_POSTCODE]]</td>
+            <td>{TXT_CHECKOUT_POSTCODE}</td>
+        </tr>
+        <tr>
+            <td>[[CONTACT_PLACE]]</td>
+            <td>{TXT_CHECKOUT_PLACE}</td>
+        </tr>
+        <tr>
+            <td>[[CONTACT_COUNTRY]]</td>
+            <td>{TXT_CHECKOUT_COUNTRY}</td>
+        </tr>
+        <tr>
+            <td>[[CONTACT_PHONE]]</td>
+            <td>{TXT_CHECKOUT_PHONE}</td>
+        </tr>
+        <tr>
+            <td>[[CONTACT_EMAIL]]</td>
+            <td>{TXT_CHECKOUT_EMAIL}</td>
+        </tr>
+    </table>
+</div>

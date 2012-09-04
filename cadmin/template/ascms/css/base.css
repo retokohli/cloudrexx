@@ -1054,17 +1054,17 @@ table.adminlist td.nowrap {
 .backend_link {
     float: none;
     display: inline-block;
-    min-width: 14px;
+    min-width: 13px;
     min-height: 16px;
-    padding-left: 17px;
-    background: url(../../../images/icons/blue_arrow_up.png) no-repeat left center;
+    padding-left: 16px;
+    background: url(../../../images/icons/green_arrow_down.png) no-repeat left center;
 }
 
 .frontend_link {
     float: none;
     display: inline-block;
-    min-width: 13px;
+    min-width: 14px;
     min-height: 16px;
-    padding-left: 16px;
-    background: url(../../../images/icons/green_arrow_down.png) no-repeat left center;
+    padding-left: 17px;
+    background: url(../../../images/icons/blue_arrow_up.png) no-repeat left center;
 }
