@@ -51,8 +51,13 @@ table {
 /* End CSS Reset */
 
 @font-face {
-    font-family: 'Ubuntu';
-    src: url('ubuntu.ttf');
+  font-family:'Ubuntu';
+  src: url('fonts/ubuntu.eot'); /* here you go, IE */
+}
+
+@font-face {
+  font-family:'Ubuntu';
+  src: url('fonts/ubuntu.ttf') format('truetype');
 }
 
 body {
@@ -118,6 +123,7 @@ textarea {
     color: #7D7D7D;
     border: 1px solid #DDDDDD;
     background: #FFFFFF;
+    outline: 0;
 }
 
 select {
@@ -146,6 +152,7 @@ input[type=text] {
     line-height: 17px;
 }
 
+button,
 input[type=submit],
 input[type=reset] {
     padding: 8px 10px 7px 10px;
@@ -154,7 +161,7 @@ input[type=reset] {
     line-height: 17px;
     text-decoration: none;
     cursor: pointer;
-    border: 1px solid;
+    border: 0;
     border-radius: 5px;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -171,6 +178,12 @@ input[type=reset] {
     -o-transition: all ease .2s;
 }
 
+.ie7 button,
+.ie8 button {
+    border: 1px solid #DDDDDD;
+}
+
+button:hover,
 input[type=submit]:hover,
 input[type=reset]:hover {
     background: #E8E8E8;
