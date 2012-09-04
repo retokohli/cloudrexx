@@ -14,8 +14,8 @@
 @error_reporting (0);
 @ini_set('display_errors', 0);
 $php = phpversion();
-if ($php < "5.2") {
-    errorBox("Das Contrexx CMS benötigt mindestens PHP in der Version 5.2.<br>Auf Ihrem System läuft PHP ".$php);
+if ($php < "5.3") {
+	errorBox("Das Contrexx CMS benötigt mindestens PHP in der Version 5.3.<br>Auf Ihrem System läuft PHP ".$php);
 }
 
 /**
