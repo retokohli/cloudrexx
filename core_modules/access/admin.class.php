@@ -2794,7 +2794,7 @@ class AccessManager extends AccessLib
         global $_ARRAYLANG;
         require_once(ASCMS_LIBRARY_PATH.'/importexport/lib/csv.class.php');
         
-DBG::activate(DBG_ADODB_ERROR|DBG_LOG_FIREPHP|DBG_PHP);
+//DBG::activate(DBG_ADODB_ERROR|DBG_LOG_FIREPHP|DBG_PHP);
 
         $objUser = FWUser::getFWUserObject()->objUser;
         $objCsv = new CsvLib();
