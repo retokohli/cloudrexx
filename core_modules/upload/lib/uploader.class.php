@@ -289,14 +289,14 @@ abstract class Uploader
         if(isset($_SESSION[$dataKey]))
             unset($_SESSION[$dataKey]);
         
-        if (File::exists($tempWebPath)) {
+        if (\Cx\Lib\FileSystem\FileSystem::exists($tempWebPath)) {
             //the callback could have returned a path where he wants the files moved to
             if(!is_null($ret)) { //we need to move the files
                 //gather target information
                 $path = pathinfo($ret[0]);
                 $pathWeb = pathinfo($ret[1]);
                 //make sure the target directory is writable
-                File::chmod($pathWeb['dirname'].$path['basename'], File::CHMOD_FILE);
+                \Cx\Lib\FileSystem\FileSystem::makeWritable($pathWeb['dirname'].$path['basename']);
 
                 //revert $path and $pathWeb to whole path instead of pathinfo path for copying
                 $path = $path['dirname'].'/'.$path['basename'].'/';
@@ -314,14 +314,14 @@ abstract class Uploader
                         continue;
 
                     //TODO: if return value = 'error' => react
-                    File::move($tempWebPath.$f, $pathWeb.$f, true);
+                    \Cx\Lib\FileSystem\FileSystem::move($tempWebPath.$f, $pathWeb.$f, true);
                     $response->increaseUploadedFilesCount();
                 }
                 closedir($h);
             }
 
             //delete the folder
-            File::delete_folder($tempWebPath, true);
+            \Cx\Lib\FileSystem\FileSystem::delete_folder($tempWebPath, true);
         }
 
         $response->uploadFinished();
@@ -391,7 +391,7 @@ abstract class Uploader
 
         $targetDir = $tempPath.'/'.$dirName;
         if(!file_exists($targetDir))
-            File::make_folder($webTempPath.'/'.$dirName);
+            \Cx\Lib\FileSystem\FileSystem::make_folder($webTempPath.'/'.$dirName);
 
         $cleanupTargetDir = false; // Remove old files
         $maxFileAge = 60 * 60; // Temp file age in seconds

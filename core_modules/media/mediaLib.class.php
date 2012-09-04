@@ -35,10 +35,9 @@ class MediaLibrary
     {
         global $_ARRAYLANG, $objTemplate;
 
-        $obj_file = new File();
-        $dirName = $obj_file->replaceCharacters($dirName);
-        $this->dirLog=$obj_file->mkDir($this->path, $this->webPath, $dirName);
-        if ($this->dirLog != "error") {
+        $dirName = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($dirName);
+        $status = \Cx\Lib\FileSystem\FileSystem::make_folder($this->path.$dirName);
+        if ($status) {
             $this->highlightName[] = $this->dirLog;
             $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_NEW_DIR']);
         } else {
@@ -506,8 +505,13 @@ class MediaLibrary
     // check if is image
     function _isImage($file)
     {
-        if (is_dir($file) || !file_exists($file)) return false;
+        if (is_dir($file)) return false;
+
         $img  = @getimagesize($file);
+        if ($img === false) {
+            return false;
+        }
+
         $type = $img[2];
         if ($type >= 1 && $type <= 3) {
             // 1 = gif, 2 = jpg, 3 = png
@@ -541,7 +545,6 @@ class MediaLibrary
             imagerectangle($img, 0, 0, 99, 49, $colFont);
             imagejpeg($img, $thumb_name, $this->thumbQuality);
         }
-        chmod($thumb_name, $this->chmodFile);
     }
 
     // replaces some characters

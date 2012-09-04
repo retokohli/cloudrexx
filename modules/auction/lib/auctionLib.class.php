@@ -154,7 +154,7 @@ class auctionLibrary
         		
         		if(@move_uploaded_file($_FILES['pic_'.$x]['tmp_name'], ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'])) {
                     
-        			chmod(ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'], 0777);
+        			\Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name']);
                     
                     // thumb
             		// ------------------------------------------
@@ -199,7 +199,7 @@ class auctionLibrary
 							imagepng($thumb, ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name']);
 						}
 				        
-						chmod(ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name'], 0755);
+						\Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name']);
 						
             		}
         		}
@@ -572,8 +572,7 @@ class auctionLibrary
 
                 //upload file
                 if(@move_uploaded_file($tmpFile, $this->mediaPath.$path.$fileName)) {
-                    $objFile = new File();
-                    $objFile->setChmod($this->mediaPath, $this->mediaWebPath, $path.$fileName);
+                    \Cx\Lib\FileSystem\FileSystem::makeWritable($this->mediaPath.$path.$fileName);
                     $status = $fileName;
                 }else{
                     $status = "error";
@@ -599,8 +598,7 @@ class auctionLibrary
             }
 
             if($picture != ''){
-                $objFile = new File();
-                $status = $objFile->delFile($this->mediaPath, $this->mediaWebPath, "pictures/".$picture);
+                $status = \Cx\Lib\FileSystem\FileSystem::delete_file($this->mediaPath."pictures/".$picture);
             }
 
             if($status != "error"){

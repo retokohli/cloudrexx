@@ -112,7 +112,12 @@ class LegacyClassLoader {
             $path = substr($path, strlen(ASCMS_DOCUMENT_ROOT));
             $this->loadClass($path, $name);
             $this->mapTable[$name] = $path;
-            file_put_contents(ASCMS_TEMP_PATH.'/legacyClassCache.tmp', serialize($this->mapTable));
+            try {
+                $objFile = new \Cx\Lib\FileSystem\File(ASCMS_TEMP_PATH.'/legacyClassCache.tmp');
+                $objFile->write(serialize($this->mapTable));
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                \DBG::msg($e->getMessage());
+            }
             return true;
         }
         return false;

@@ -141,7 +141,6 @@ class ImageManager
      */
     function _createThumb($strPath, $strWebPath, $file, $maxSize=80, $quality=90)
     {
-        $objFile   = new File();
         $_objImage = new ImageManager();
         $file      = basename($file);
         $tmpSize   = getimagesize($strPath.$file);
@@ -157,7 +156,7 @@ class ImageManager
         if (!$_objImage->resizeImage($thumbWidth, $thumbHeight, $quality)) return false;
         $thumb_name = self::getThumbnailFilename($file);
         if (!$_objImage->saveNewImage($strPath.$thumb_name)) return false;
-        if (!$objFile->setChmod($strPath, $strWebPath, $thumb_name)) return false;
+        if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($strPath.$thumb_name)) return false;
         return true;
     }
 
@@ -216,12 +215,10 @@ class ImageManager
         if (!$this->loadImage($strPath.$file)) return false;
         if (!$this->resizeImage($thumbWidth, $thumbHeight, $quality)) return false;
         if (is_file($strPathNew.$fileNew.$thumbNailSuffix)) {
-// TODO: Use the File class
-            if (!unlink($strPathNew.$fileNew.$thumbNailSuffix)) return false;
+            if (!\Cx\Lib\FileSystem\FileSystem::delete_file($strPathNew.$fileNew.$thumbNailSuffix)) return false;
         }
         if (!$this->saveNewImage($strPathNew.$fileNew.$thumbNailSuffix)) return false;
-        $objFile = new File();
-        if (!$objFile->setChmod($strPathNew, $strWebPathNew, $fileNew.$thumbNailSuffix)) return false;
+        if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($strPathNew.$fileNew.$thumbNailSuffix)) return false;
         return true;
     }
 
@@ -423,6 +420,7 @@ class ImageManager
             default:
                 return false;
         }
+
 		
 		// Only adjust quality, if it is set.
         if ($this->newImageQuality != '') {

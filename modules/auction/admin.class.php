@@ -12,8 +12,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-error_reporting (E_ALL);
-
 
 /**
  * Auction
@@ -879,7 +877,7 @@ class Auction extends auctionLibrary
 
             		if(@move_uploaded_file($_FILES['pic_'.$x]['tmp_name'], ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'])) {
 
-            			chmod(ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'], 0777);
+            			\Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name']);
 
 	                    // thumb
 	            		// ------------------------------------------
@@ -925,7 +923,7 @@ class Auction extends auctionLibrary
 								imagepng($thumb, ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name']);
 							}
 
-							chmod(ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name'], 0755);
+							\Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name']);
 
 //					        $objFile 	= new File();
 //		                    $objFile->setChmod(ASCMS_AUCTION_PATH, ASCMS_AUCTION_PATH, '/tmb_'.$_FILES['pic_'.$x]['name']);

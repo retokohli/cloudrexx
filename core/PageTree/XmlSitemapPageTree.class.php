@@ -141,16 +141,11 @@ class XmlSitemapPageTree extends PageTree {
      * @return boolean True on success, false otherwise
      */
     protected function prepareFileAccess($filename) {
-        $objFile = new \File();
-
-        return (
-                file_exists(ASCMS_DOCUMENT_ROOT . self::$strFilePath . '/' . $filename)
-                || touch(ASCMS_DOCUMENT_ROOT . self::$strFilePath . '/' . $filename)
-                || $objFile->touchFile(self::$strFilePath . '/' . $filename)
-                ) && (
-                is_writable(ASCMS_DOCUMENT_ROOT . self::$strFilePath . '/' . $filename)
-                || $objFile->setChmod(ASCMS_DOCUMENT_ROOT . self::$strFilePath, ASCMS_PATH_OFFSET . self::$strFilePath, '/' . $filename)
-                );
+        $file = ASCMS_DOCUMENT_ROOT . self::$strFilePath . '/' . $filename;
+        return    (
+                      file_exists($file)
+                   || \Cx\Lib\FileSystem\FileSystem::touch($file))
+               && \Cx\Lib\FileSystem\FileSystem::makeWritable($file);
     }
 
     /**

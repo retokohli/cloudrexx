@@ -346,15 +346,13 @@ class FWHtAccess
      */
     private function prepareFileAccess($path)
     {
-        $objFile = new File();
+        $file = $this->document_root.$path;
 
         return (
-                file_exists($this->document_root.$path)
-                || touch($this->document_root.$path)
-                || $objFile->touchFile($this->path_offset.$path)
+                file_exists($file)
+                || \Cx\Lib\FileSystem\FileSystem::touch($file)
             ) && (
-                is_writable($this->document_root.$path)
-                || $objFile->setChmod($this->document_root.substr($path, 0, strrpos($path, DIRECTORY_SEPARATOR)), $this->path_offset.substr($path, 0, strrpos($path, DIRECTORY_SEPARATOR)), '/'.basename($path))
+                \Cx\Lib\FileSystem\FileSystem::makeWritable($file)
         );
     }
 

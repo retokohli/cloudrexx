@@ -437,14 +437,14 @@ class Contact extends ContactLib
                 throw new ContactException("Could not create temporary upload directory '".$tup[0].'/'.$tup[2]."'");
             }
 
-            if (!is_writable($tup[0].'/'.$tup[2]) && !File::chmod($tup[1].'/'.$tup[2], File::CHMOD_FOLDER)) {
+            if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($tup[1].'/'.$tup[2])) {
                 //some hosters have problems with ftp and file system sync.
                 //this is a workaround that seems to somehow show php that
                 //the directory was created. clearstatcache() sadly doesn't
                 //work in those cases.
                 @closedir(@opendir($tup[0]));
 
-                if (!is_writable($tup[0].'/'.$tup[2]) && !File::chmod($tup[1].'/'.$tup[2], File::CHMOD_FOLDER)) {
+                if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($tup[1].'/'.$tup[2])) {
                     throw new ContactException("Could not chmod temporary upload directory '".$tup[0].'/'.$tup[2]."'");
                 }
             }
@@ -669,8 +669,8 @@ class Contact extends ContactLib
                 $folderName .= $suffix;
                 
                 //try to make the folder and change target accordingly on success
-                if(File::make_folder(ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName)) {
-                    File::chmod(ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName, File::CHMOD_FOLDER);
+                if(\Cx\Lib\FileSystem\FileSystem::make_folder(ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName)) {
+                    \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName);
                     $depositionTarget .= $folderName.'/';
                 }
                 $this->depositionTarget = $depositionTarget;

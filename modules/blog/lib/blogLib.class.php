@@ -1027,7 +1027,7 @@ class BlogLibrary {
                     $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/blog_messages_'.$arrLanguageValues['short'].'.xml';
                     $objRSSWriter->write();
 
-                    @chmod(ASCMS_FEED_PATH.'/blog_messages_'.$arrLanguageValues['short'].'.xml', 0777);
+                    \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_FEED_PATH.'/blog_messages_'.$arrLanguageValues['short'].'.xml');
                 }
             }
         }
@@ -1100,7 +1100,7 @@ class BlogLibrary {
                     $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/blog_comments_'.$arrLanguageValues['short'].'.xml';
                     $objRSSWriter->write();
 
-                    @chmod(ASCMS_FEED_PATH.'/blog_comments_'.$arrLanguageValues['short'].'.xml', 0777);
+                    \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_FEED_PATH.'/blog_comments_'.$arrLanguageValues['short'].'.xml');
                 }
             }
         }
@@ -1178,7 +1178,7 @@ class BlogLibrary {
                             $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/blog_category_'.$intCategoryId.'_'.$arrLanguageValues['short'].'.xml';
                             $objRSSWriter->write();
 
-                            @chmod(ASCMS_FEED_PATH.'/blog_category_'.$intCategoryId.'_'.$arrLanguageValues['short'].'.xml', 0777);
+                            \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_FEED_PATH.'/blog_category_'.$intCategoryId.'_'.$arrLanguageValues['short'].'.xml');
                         }
 
                     }
