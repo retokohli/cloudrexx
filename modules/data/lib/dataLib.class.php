@@ -1147,7 +1147,7 @@ class DataLibrary
                     $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/data_messages_'.$arrLanguageValues['short'].'.xml';
                     $objRSSWriter->write();
 
-                    @chmod(ASCMS_FEED_PATH.'/data_messages_'.$arrLanguageValues['short'].'.xml', 0777);
+                    \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_FEED_PATH.'/data_messages_'.$arrLanguageValues['short'].'.xml');
                 }
             }
         }
@@ -1216,7 +1216,7 @@ class DataLibrary
                     $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/data_comments_'.$arrLanguageValues['short'].'.xml';
                     $objRSSWriter->write();
 
-                    @chmod(ASCMS_FEED_PATH.'/data_comments_'.$arrLanguageValues['short'].'.xml', 0777);
+                    \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_FEED_PATH.'/data_comments_'.$arrLanguageValues['short'].'.xml');
                 }
             }
         }
@@ -1290,7 +1290,7 @@ class DataLibrary
                             $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/data_category_'.$intCategoryId.'_'.$arrLanguageValues['short'].'.xml';
                             $objRSSWriter->write();
 
-                            @chmod(ASCMS_FEED_PATH.'/data_category_'.$intCategoryId.'_'.$arrLanguageValues['short'].'.xml', 0777);
+                            \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_FEED_PATH.'/data_category_'.$intCategoryId.'_'.$arrLanguageValues['short'].'.xml');
                         }
 
                     }

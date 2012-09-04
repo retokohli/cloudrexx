@@ -27,26 +27,19 @@ class skins
      * Title of the active page
      * @var string
      */
-
     public $pageTitle;
+
     /**
      * Error message
      * @var string
      */
-
     public $strErrMessage = '';
+
     /**
      * Success message
      * @var unknown_type
      */
-
     public $strOkMessage = '';
-    /**
-     * FRAMEWORK File object
-     * @var object
-     */
-
-    public $_objFile;
 
     /**
      * Temporary archive location, relative to the document root
@@ -58,7 +51,6 @@ class skins
      * Temporary archive location, absolute path
      * @var string
      */
-
     public $_archiveTempPath;
 
     /**
@@ -177,10 +169,9 @@ class skins
         $this->themeZipPath = '/themezips/';
         $this->_archiveTempWebPath = ASCMS_TEMP_WEB_PATH.$this->themeZipPath;
         $this->_archiveTempPath = ASCMS_PATH.$this->_archiveTempWebPath;
-        $this->_objFile = new File();
         //create /tmp/zip path if it doesnt exists
         if (!file_exists($this->_archiveTempPath)){
-            if ($this->_objFile->mkDir(ASCMS_TEMP_PATH, ASCMS_TEMP_WEB_PATH, $this->themeZipPath ) == 'error'){
+            if (!\Cx\Lib\FileSystem\FileSystem::make_folder(ASCMS_TEMP_PATH.$this->themeZipPath)){
                 $this->strErrMessage=ASCMS_TEMP_PATH.$this->themeZipPath .":".$_CORELANG['TXT_THEME_UNABLE_TO_CREATE'];
             }
         }
@@ -545,12 +536,12 @@ class skins
                         return false;
                     }
 
-                    $this->_objFile->mkDir($this->path, ASCMS_THEMES_WEB_PATH.DIRECTORY_SEPARATOR, $directory);
-                    $this->_objFile->setChmod($this->path, ASCMS_THEMES_WEB_PATH.DIRECTORY_SEPARATOR, $directory);
+                    \Cx\Lib\FileSystem\FileSystem::make_folder($this->path.$directory);
+                    \Cx\Lib\FileSystem\FileSystem::makeWritable($this->path.$directory);
                     break;
                 default:
-                    $this->_objFile->mkDir($this->path, ASCMS_THEMES_WEB_PATH.DIRECTORY_SEPARATOR, $this->_contentDirs[0].DIRECTORY_SEPARATOR.$directory);
-                    $this->_objFile->setChmod($this->path, ASCMS_THEMES_WEB_PATH.DIRECTORY_SEPARATOR, $this->_contentDirs[0].DIRECTORY_SEPARATOR.$directory);
+                    \Cx\Lib\FileSystem\FileSystem::make_folder($this->path.$this->_contentDirs[0].DIRECTORY_SEPARATOR.$directory);
+                    \Cx\Lib\FileSystem\FileSystem::makeWritable($this->path.$this->_contentDirs[0].DIRECTORY_SEPARATOR.$directory);
             }
         }
         return true;
@@ -588,7 +579,7 @@ class skins
                     return false;
                 } else {
                     //if no errors, set permission
-                    $this->_objFile->setChmod($this->path, ASCMS_THEMES_WEB_PATH.DIRECTORY_SEPARATOR, $file['stored_filename']);
+                    \Cx\Lib\FileSystem\FileSystem::makeWritable($this->path.$file['stored_filename']);
                     //if file is in required files array, remove it
 					// use '/' instead of DIRECTORY_SEPARATOR; PclZip always returns posix-style paths --fs
                     if (($reqFileIndex = array_search(substr(strstr($file['stored_filename'],'/'), 1), $reqFiles)) !== false){
@@ -601,13 +592,13 @@ class skins
                 switch($reqFile){
                     //if no preview thumbnail in archive then copy default
                     case 'images'.DIRECTORY_SEPARATOR.'preview.gif':
-                        $this->_objFile->copyFile(ASCMS_ADMIN_TEMPLATE_PATH.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR, 'preview.gif', $this->path.$this->_themeDir.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR, 'preview.gif');
+                        \Cx\Lib\FileSystem\FileSystem::copy_file(ASCMS_ADMIN_TEMPLATE_PATH.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'preview.gif', $this->path.$this->_themeDir.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'preview.gif');
                         break;
                     default:
                         $fh=fopen($this->path.$this->_themeDir.DIRECTORY_SEPARATOR.$reqFile,'w+');
                         fputs($fh,'');
                         fclose($fh);
-                        $this->_objFile->setChmod($this->path.$this->_themeDir.DIRECTORY_SEPARATOR, ASCMS_THEMES_WEB_PATH.DIRECTORY_SEPARATOR.$this->_themeDir.DIRECTORY_SEPARATOR, $reqFile);
+                        \Cx\Lib\FileSystem\FileSystem::makeWritable($this->path.$this->_themeDir.DIRECTORY_SEPARATOR.$reqFile);
                 }
             }
         } else {
@@ -722,7 +713,7 @@ class skins
         }
         if (file_exists($this->path.$theme)){
             $archive = new PclZip($this->_archiveTempPath.$theme.'.zip');
-            $this->_objFile->setChmod($this->_archiveTempPath, $this->_archiveTempWebPath,'');
+            \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath);
             $files = $archive->create($this->path.$theme, PCLZIP_OPT_REMOVE_PATH, $this->path);
             if (!is_array($files)){
                 $this->strErrMessage = $this->_archiveTempPath.$theme.'.zip'.': '.$_CORELANG['TXT_THEME_UNABLE_TO_CREATE'];
@@ -734,7 +725,7 @@ class skins
                     $this->strErrMessage = $_CORELANG['TXT_THEME_ARCHIVE_ERROR'].': '.$archive->errorInfo(true);
                     return false;
                 }
-                $this->_objFile->setChmod($this->_archiveTempPath, $this->_archiveTempWebPath , $theme.'.zip');
+                \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath.$theme.'.zip');
                 return $this->_archiveTempWebPath.$theme.'.zip';
             }
 // TODO: Seems that the else block is useless; should set the error message
@@ -894,7 +885,6 @@ class skins
         // initialize variables
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_create', 'skins_create.html');
         $this->pageTitle = $_CORELANG['TXT_NEW_DIRECTORY'];
-        $test=$this->_objFile->checkConnection();
         $objTemplate->setVariable(array(
             'TXT_NEW_DIRECTORY'       => $_CORELANG['TXT_NEW_DIRECTORY'],
             'TXT_EXISTING_DIR_NAME'   => $_CORELANG['TXT_EXISTING_DIR_NAME'],
@@ -906,7 +896,6 @@ class skins
             'TXT_CREATE'              => $_CORELANG['TXT_CREATE'],
             'TXT_FROM_TEMPLATE'       => $_CORELANG['TXT_FROM_TEMPLATE'],
             'THEMES_TEMPLATE_MENU'    => $this->getThemesDropdown(""),
-            'TXT_FTP_STATUS'          => $test,
             'TXT_THEMES_EDIT'         => $_CORELANG['TXT_SETTINGS_MODFIY'],
             'TXT_THEMES_CREATE'       => $_CORELANG['TXT_CREATE'],
         ));
@@ -925,21 +914,21 @@ class skins
 
         Permission::checkAccess(47, 'static');
 
-        if ($_POST['dbName'] != "") {
+        if (!empty($_POST['dbName'])) {
             if (($_POST['dirName']!= "") && ($_POST['existingdirName'] == "")) {
                 $dirName = $this->replaceCharacters($_POST['dirName']);
                 if ($_POST['fromTheme'] == "" && $_POST['fromDB'] == "") {
-                    $this->dirLog=$this->_objFile->mkDir($this->path, $this->webPath, $dirName);
-                    if ($this->dirLog != "error") {
-                        $this->_objFile->setChmod($this->path, $this->webPath, $dirName);
-                        $this->insertIntoDb($_POST['dbName'], $this->dirLog, $_POST['fromDB']);
+                    $this->dirLog=\Cx\Lib\FileSystem\FileSystem::make_folder($this->path.$dirName);
+                    if ($this->dirLog) {
+                        \Cx\Lib\FileSystem\FileSystem::makeWritable($this->path.$dirName);
+                        $this->insertIntoDb($_POST['dbName'], $dirName, $_POST['fromDB']);
                         $this->_createDefaultFiles($this->dirLog) ? $this->overview() : $this->newdir();
                     }
                 } elseif ($_POST['fromTheme'] != "" && $_POST['fromDB'] == "") {
-                    $this->dirLog=$this->_objFile->copyDir($this->path, $this->webPath, $_POST['fromTheme'], $this->path, $this->webPath, $dirName);
-                    if ($this->dirLog != "error") {
+                    $this->dirLog=\Cx\Lib\FileSystem\FileSystem::copy_folder($this->path.$_POST['fromTheme'], $this->path.$dirName);
+                    if ($this->dirLog) {
                         $this->_replaceThemeName($this->replaceCharacters($_POST['fromTheme']), $dirName, $this->path.$dirName);
-                        $this->insertIntoDb($_POST['dbName'], $this->dirLog, $_POST['fromDB']);
+                        $this->insertIntoDb($_POST['dbName'], $dirName, $_POST['fromDB']);
                     }
                     $this->strOkMessage  = $_POST['dbName']." ". $_CORELANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
 
@@ -948,9 +937,9 @@ class skins
                     $_POST['themes'] = $this->dirLog;
                     $this->overview();
                 } elseif ($_POST['fromTheme'] == "" && $_POST['fromDB'] != "") {
-                    $this->dirLog=$this->_objFile->mkDir($this->path, $this->webPath, $dirName);
-                    if ($this->dirLog != "error") {
-                        $this->insertIntoDb($_POST['dbName'], $this->dirLog, $_POST['fromDB']);
+                    $this->dirLog=\Cx\Lib\FileSystem\FileSystem::make_folder($this->path.$dirName);
+                    if ($this->dirLog) {
+                        $this->insertIntoDb($_POST['dbName'], $dirName, $_POST['fromDB']);
                         $this->createFilesFromDB($this->dirLog, intval($_POST['fromDB']));
                     }
                     $this->newdir();
@@ -1021,13 +1010,13 @@ class skins
      */
     function setChmodDir($dir)
     {
-        $this->_objFile->setChmod($this->path, $this->webPath, $dir);
+        \Cx\Lib\FileSystem\FileSystem::makeWritable($this->path.$dir);
         $openDir=@opendir($this->path.$dir);
         $file = @readdir($openDir);
         while ($file) {
             if ($file!="." && $file!="..") {
                 if (!is_dir($this->path.$dir.DIRECTORY_SEPARATOR.$file)) {
-                    $this->_objFile->setChmod($this->path, $this->webPath, $dir.DIRECTORY_SEPARATOR.$file);
+                    \Cx\Lib\FileSystem\FileSystem::makeWritable($this->path.$dir.DIRECTORY_SEPARATOR.$file);
                 } else {
                     $this->setChmodDir($dir.DIRECTORY_SEPARATOR.$file);
                 }
@@ -1160,8 +1149,8 @@ class skins
 
         if (($themesFile!="") AND ($themes!="")){
             if ($_POST['themesPage'] != $themesFile) {
-                $this->dirLog = $this->_objFile->delFile($this->path, $this->webPath, $themes.DIRECTORY_SEPARATOR.$themesFile);
-                if ($this->dirLog != "error") {
+                $this->dirLog = \Cx\Lib\FileSystem\FileSystem::delete_file($this->path.$themes.DIRECTORY_SEPARATOR.$themesFile);
+                if ($this->dirLog) {
                     $this->strOkMessage = $themesFile.": ".$_CORELANG['TXT_STATUS_SUCCESSFULLY_DELETE'];
                 }
              } else {
@@ -1195,8 +1184,8 @@ class skins
                 $dir = ($this->path.$themes);
                 if (file_exists($dir)) {
                     //delete whole folder with subfolders
-                    $this->dirLog = $this->_objFile->delDir($this->path, $this->webPath, $themes);
-                    if ($this->dirLog != "error") {
+                    $this->dirLog = \Cx\Lib\FileSystem\FileSystem::delete_folder($this->path.$themes, true);
+                    if ($this->dirLog) {
                         $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."skins WHERE foldername = '".$themes."'");
                         if ($objResult !== false) {
                             while (!$objResult->EOF) {
@@ -1425,7 +1414,7 @@ class skins
                         );
                     }
                 }
-                elseif (!in_array(substr($strFile, strrchr($strFile, '.')), $arrAllowedFileExtensions)) {
+                elseif (!in_array(substr($strFile, strrpos($strFile, '.')), $arrAllowedFileExtensions)) {
                     $strPath = $strDir .'/'. $strFile;
                     $strFile = str_replace($this->_parentPath.'/', '', $strDir .'/'. $strFile);
                     $dirs[$strPath] = array(
@@ -1475,7 +1464,7 @@ class skins
                     if (!in_array($strPage, array('.', '..', '.svn')) && is_dir($file.'/'.$strPage)){
                         $this->subDirs = array_merge($this->subDirs, $this->_getDirListing($file.'/'.$strPage, $this->fileextensions));
                     }
-                    $extension = split("[.]",$strPage);
+                    $extension = preg_split("/\./",$strPage);
                     $x = count($extension)-1;
                     if (in_array($extension[$x], $this->fileextensions)) {
                         if (in_array($strPage, $this->filenames)) {
@@ -1541,7 +1530,7 @@ class skins
                 $themesPage = opendir ($file);
                 $page = readdir($themesPage);
                 while ($page) {
-                    $extension = split("[.]",$page);
+                    $extension = preg_split("/\./",$page);
                     $x = count($extension)-1;
                     if (in_array($extension[$x], $this->fileextensions)) {
                         if (($page != ".") && ($page != "..") && (!in_array($page, $this->filenames))) {
@@ -1766,17 +1755,17 @@ class skins
         global $_CORELANG, $_FTPCONFIG;
         $status='';
         foreach ($this->directories as $dir) {
-            $this->_objFile->mkDir($this->path.$themes.DIRECTORY_SEPARATOR,ASCMS_THEMES_WEB_PATH.DIRECTORY_SEPARATOR.$themes.DIRECTORY_SEPARATOR,$dir);
+            \Cx\Lib\FileSystem\FileSystem::make_folder($this->path.$themes.DIRECTORY_SEPARATOR.$dir);
         }
         //copy "not available" preview.gif as default preview image
-        $status = $this->_objFile->copyFile(ASCMS_ADMIN_TEMPLATE_PATH.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR,'preview.gif', $this->path.$themes.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR,'preview.gif');
+        $status = \Cx\Lib\FileSystem\FileSystem::copy_file(ASCMS_ADMIN_TEMPLATE_PATH.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'preview.gif', $this->path.$themes.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'preview.gif');
         for($x = 0; $x < count($this->filenames); $x++) {
             if (!file_exists($this->path.$themes.DIRECTORY_SEPARATOR.$this->filenames[$x])){
                 $fp = fopen ($this->path.$themes.DIRECTORY_SEPARATOR.$this->filenames[$x] ,"w");
                 @fwrite($fp,"");
                 @fclose($fp);
                 @chown($this->path.$themes.DIRECTORY_SEPARATOR.$this->filenames[$x], $_FTPCONFIG['username']);
-                @chmod($this->path.$themes.DIRECTORY_SEPARATOR.$this->filenames[$x], 0777);
+                \Cx\Lib\FileSystem\FileSystem::makeWritable($this->path.$themes.DIRECTORY_SEPARATOR.$this->filenames[$x]);
             }
         }
         if ($filesOnly){
@@ -1876,7 +1865,7 @@ class skins
             $filename = $this->path.$themes.DIRECTORY_SEPARATOR.$this->filenames[$x];
 
             //check, if file exists and is writable
-            if (is_writable($filename)) {
+            if (\Cx\Lib\FileSystem\FileSystem::makeWritable($filename)) {
                 //open file
                 if (!$handle = fopen($filename, "a")) {
                      $this->strErrMessage = $_CORELANG['TXT_STATUS_CANNOT_OPEN'];

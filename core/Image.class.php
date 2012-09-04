@@ -1046,7 +1046,7 @@ class Image
         if (File::exists($path) && !$force) return false;
         File::delete_file($path);
         if (imagejpeg($image, ASCMS_DOCUMENT_ROOT.'/'.$path, $quality)) {
-            return File::chmod($path, File::CHMOD_FILE);
+            return \Cx\Lib\FileSystem\FileSystem::makeWritable($path);
         }
         return false;
     }

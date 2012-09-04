@@ -213,30 +213,6 @@ class FileSystem
     }
 
 
-    /**
-     * Creates a new empty file on the server.
-     * @param string Name (inkl. offset path) of the file to create. E.g. $file = '/sitemap.xml'
-     * @return bolean
-     */
-    function touchFile($file)
-    {
-        global $_FTPCONFIG;
-
-        $status = false;
-        if ($_FTPCONFIG['is_activated'] && empty(self::$connection))
-            self::init();
-        if (!$_FTPCONFIG['is_activated']) return false;
-        $resource = fopen('php://memory', 'w+');
-        if ($resource) {
-            if (ftp_fput(self::$connection, self::$ftpPath.$file, $resource, FTP_ASCII)) {
-                $status = true;
-            }
-            fclose($resource);
-        }
-        return $status;
-    }
-
-
     function mkDir($path, $webPath, $dirName)
     {
         global $_FTPCONFIG;
@@ -315,7 +291,7 @@ class FileSystem
             if (@ftp_delete(self::$connection, $delFile)) return $delFile;
             return 'error';
         } else {
-            if (@file_exists($path.$fileName)) @unlink($path.$fileName);
+            @unlink($path.$fileName);
             clearstatcache();
             if (@file_exists($path.$fileName)) {
                 $filesys = eregi_replace('/', '\\', $path.$fileName);
@@ -675,24 +651,27 @@ class FileSystem
             if (!$force)
                 return false;
         } else {
-            if (!self::make_path($target_path))
+            if (!self::make_folder($target_path)) {
                 return false;
+            }
         }
         $directory = @opendir(ASCMS_DOCUMENT_ROOT.'/'.$source_path);
         $file = @readdir($directory);
         while ($file) {
-            if (preg_match('/\.\.?/', $file)) {
+            if (preg_match('/^\.\.?$/', $file)) {
                 $file = @readdir($directory);
                 continue;
             }
             if (is_file(ASCMS_DOCUMENT_ROOT.'/'.$source_path.'/'.$file)) {
                 if (!self::copy_file(
-                    $source_path.'/'.$file, $target_path.'/'.$file, $force))
+                    $source_path.'/'.$file, $target_path.'/'.$file, $force)) {
                     return false;
+                }
             } else {
                 if (!self::copy_folder(
-                    $source_path.'/'.$file, $target_path.'/'.$file, $force))
+                    $source_path.'/'.$file, $target_path.'/'.$file, $force)) {
                     return false;
+                }
             }
             $file = @readdir($directory);
         }
@@ -1012,12 +991,21 @@ class FileSystem
         return false;
     }
 
+    public static function touch($path)
+    {
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File($path);
+            $objFile->touch();
+            return true;
+        } catch (FileSystemException $e) {
+            \DBG::msg($e->getMessage());
+        }
+
+        return false;
+    }
+
     public static function makeWritable($path)
     {
-        $objFFile = new \Cx\Lib\FileSystem\FileSystemFile($path);
-        if ($objFFile->isWritable($path)) {
-            return true;
-        }
         try {
             $objFile = new \Cx\Lib\FileSystem\File($path);
             $objFile->makeWritable();

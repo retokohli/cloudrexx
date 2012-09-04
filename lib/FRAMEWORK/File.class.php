@@ -8,7 +8,7 @@
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     3.0.0
  * @package     contrexx
- * @subpackage  lib_framework_file
+ * @subpackage  lib_filesystem
  */
 
 /**
@@ -24,7 +24,7 @@
  * @version     3.0.0
  * @deprecated  deprecated since 3.0.0
  * @package     contrexx
- * @subpackage  lib_framework_file
+ * @subpackage  lib_filesystem
  */
 class File extends Cx\Lib\FileSystem\FileSystem{}
 

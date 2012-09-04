@@ -365,15 +365,14 @@ class NewsML
             }
             @closedir($objDir);
 
-            $objFile = new File();
-            $objFile->setChmod(ASCMS_DOCUMENT_ROOT.$this->arrCategories[$categoryId]['path'],$this->arrCategories[$categoryId]['path'], '/');
+            \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_DOCUMENT_ROOT.$this->arrCategories[$categoryId]['path']);
 
             foreach ($arrDocuments as $document) {
                 if ($this->_readDocument($categoryId, $document)) {
-                    $objFile->setChmod(ASCMS_DOCUMENT_ROOT.$this->arrCategories[$categoryId]['path'],$this->arrCategories[$categoryId]['path'], '/'.$document);
+                    \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_DOCUMENT_ROOT.$this->arrCategories[$categoryId]['path'].'/'.$document);
                     @copy(ASCMS_DOCUMENT_ROOT.$this->arrCategories[$categoryId]['path'].'/'.$document, ASCMS_DOCUMENT_ROOT.'/si_online_archive/'.$document);
-                    @chmod(ASCMS_DOCUMENT_ROOT.'/si_online_archive/'.$document, 0644);
-                    @unlink(ASCMS_DOCUMENT_ROOT.$this->arrCategories[$categoryId]['path'].'/'.$document);
+                    \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_DOCUMENT_ROOT.'/si_online_archive/'.$document);
+                    \Cx\Lib\FileSystem\FileSystem::delete_file(ASCMS_DOCUMENT_ROOT.$this->arrCategories[$categoryId]['path'].'/'.$document);
                 }
             }
 

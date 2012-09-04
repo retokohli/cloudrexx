@@ -6,7 +6,7 @@ namespace Cx\Lib\FileSystem;
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     3.0.0
  * @package     contrexx
- * @subpackage  lib_framework_file
+ * @subpackage  lib_filesystem
  */
 
 class FTPFileException extends \Exception {};
@@ -24,7 +24,7 @@ class FTPFileException extends \Exception {};
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     3.0.0
  * @package     contrexx
- * @subpackage  lib_framework_file
+ * @subpackage  lib_filesystem
  */
 class FTPFile implements FileInterface
 {

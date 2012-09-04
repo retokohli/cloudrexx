@@ -229,7 +229,7 @@ class cmsSession
             return false;
         }
 
-        if (!is_writable(ASCMS_PATH.$this->sessionPath) && !\Cx\Lib\FileSystem\FileSystem::makeWritable($this->sessionPath)) {
+        if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($this->sessionPath)) {
             return false;
         }
 
