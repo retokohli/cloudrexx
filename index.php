@@ -1201,10 +1201,13 @@ $objTemplate->setTemplate($themesPages['index']);
 $objTemplate->addBlock('CONTENT_FILE', 'page_template', $page_template);
 $languageExtractor->setPlaceholdersIn($page, $url, $objTemplate);
 
-// set global content variables
+// Set global content variables.
 $page_content = str_replace('{PAGE_URL}', htmlspecialchars($objInit->getPageUri()), $page_content);
+$page_content = str_replace('{STANDARD_URL}', $objInit->getStandardUri(), $page_content);
+$page_content = str_replace('{MOBILE_URL}', $objInit->getMobileUri(), $page_content);
 $page_content = str_replace('{PRINT_URL}', $objInit->getPrintUri(), $page_content);
 $page_content = str_replace('{PDF_URL}', $objInit->getPDFUri(), $page_content);
+$page_content = str_replace('{APP_URL}', $objInit->getAppUri(), $page_content);
 $page_content = str_replace('{TITLE}', $page_title, $page_content);
 
 // ACCESS: parse access_logged_in[1-9] and access_logged_out[1-9] blocks
@@ -1935,9 +1938,12 @@ $parsingtime = explode(' ', microtime());
 $time = round(((float)$parsingtime[0] + (float)$parsingtime[1]) - ((float)$starttime[0] + (float)$starttime[1]), 5);
 $objTemplate->setVariable('PARSING_TIME', $time);
 
-//Allow PRINT_URL & PDF_URL in sidebar
-$themesPages['sidebar'] = str_replace('{PRINT_URL}',$objInit->getPrintUri(), $themesPages['sidebar']);
-$themesPages['sidebar'] = str_replace('{PDF_URL}',$objInit->getPDFUri(), $themesPages['sidebar']);
+// Allow STANDARD_URL, MOBILE_URL, PRINT_URL, PDF_URL & APP_URL in sidebar.
+$themesPages['sidebar'] = str_replace('{STANDARD_URL}', $objInit->getStandardUri(), $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{MOBILE_URL}', $objInit->getMobileUri(), $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{PRINT_URL}', $objInit->getPrintUri(), $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{PDF_URL}', $objInit->getPDFUri(), $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{APP_URL}', $objInit->getAppUri(), $themesPages['sidebar']);
 
 $objTemplate->setVariable(array(
     'SIDEBAR_FILE' => $themesPages['sidebar'],
