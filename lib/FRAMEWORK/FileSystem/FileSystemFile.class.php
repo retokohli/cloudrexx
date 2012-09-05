@@ -106,7 +106,7 @@ class FileSystemFile implements FileInterface
     public function makeWritable()
     {
         // abort process in case the file is already writable
-        if (is_writable($this->file)) {
+        if (is_writable($this->filePath)) {
             return true;
         }
 
