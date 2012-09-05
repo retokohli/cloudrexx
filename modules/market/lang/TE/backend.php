@@ -29,6 +29,7 @@ $_ARRAYLANG['TXT_MARKET_SEARCH'] = "Ich suche";
 $_ARRAYLANG['TXT_MARKET_IMAGE'] = "Bild";
 $_ARRAYLANG['TXT_MARKET_FIELDS_NOT_CORRECT'] = "Folgende Felder wurden nicht korrekt ausgefüllt:";
 $_ARRAYLANG['TXT_MARKET_PRICE'] = "Preis";
+$_ARRAYLANG['TXT_MARKET_EMAIL'] = "E-Mail";
 $_ARRAYLANG['TXT_MARKET_FREE'] = "Gratis abzugeben";
 $_ARRAYLANG['TXT_MARKET_ARRANGEMENT'] = "Preis nach Absprache";
 $_ARRAYLANG['TXT_MARKET_DURATION'] = "Anzeigedauer";

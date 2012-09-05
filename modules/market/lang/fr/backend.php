@@ -31,6 +31,7 @@ $_ARRAYLANG['TXT_MARKET_SEARCH'] = "J'achète";
 $_ARRAYLANG['TXT_MARKET_IMAGE'] = "Image";
 $_ARRAYLANG['TXT_MARKET_FIELDS_NOT_CORRECT'] = "Les champs suivants contiennent des données erronées:";
 $_ARRAYLANG['TXT_MARKET_PRICE'] = "Prix";
+$_ARRAYLANG['TXT_MARKET_EMAIL'] = "E-Mail";
 $_ARRAYLANG['TXT_MARKET_FREE'] = "Gratuit";
 $_ARRAYLANG['TXT_MARKET_ARRANGEMENT'] = "Prix à négocier";
 $_ARRAYLANG['TXT_MARKET_DURATION'] = "Durée d'affichage";

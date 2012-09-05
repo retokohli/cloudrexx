@@ -31,6 +31,7 @@ $_ARRAYLANG['TXT_MARKET_SEARCH'] = "Busco";
 $_ARRAYLANG['TXT_MARKET_IMAGE'] = "Logotipo de la empresa";
 $_ARRAYLANG['TXT_MARKET_FIELDS_NOT_CORRECT'] = "Los siguientes campos contienen informaci&oacute;n incorrecta:";
 $_ARRAYLANG['TXT_MARKET_PRICE'] = "Precio";
+$_ARRAYLANG['TXT_MARKET_EMAIL'] = "E-Mail";
 $_ARRAYLANG['TXT_MARKET_FREE'] = "Gratis";
 $_ARRAYLANG['TXT_MARKET_ARRANGEMENT'] = "Precio por acuerdo";
 $_ARRAYLANG['TXT_MARKET_DURATION'] = "Duraci&oacute;n";

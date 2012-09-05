@@ -167,6 +167,7 @@ define('ASCMS_DATE_FORMAT',           'H:i:s d.m.Y');
 define('ASCMS_DATE_SHORT_FORMAT',     'd.m.Y');
 define('ASCMS_DATE_FILE_FORMAT',      'd.m.Y H:i:s');
 define('ASCMS_DATE_FORMAT_UI_DATE',   'dd.mm.yy');  // jqueryui.datepicker
+define('ASCMS_DATE_FORMAT_UI_TIME',   'hh:mm'); // jqueryui.datepicker
 // Like "Mo, 09.10.2011"
 define('ASCMS_DATE_FORMAT_DOW_D_M_Y', 'w, d.m.Y');
 // TODO: More localized formats for numbers, currencies, etc.

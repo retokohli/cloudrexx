@@ -29,6 +29,7 @@ $_ARRAYLANG['TXT_MARKET_SEARCH'] = "I look for";
 $_ARRAYLANG['TXT_MARKET_IMAGE'] = "Image";
 $_ARRAYLANG['TXT_MARKET_FIELDS_NOT_CORRECT'] = "The following fields are containing wrong input:";
 $_ARRAYLANG['TXT_MARKET_PRICE'] = "Price";
+$_ARRAYLANG['TXT_MARKET_EMAIL'] = "E-Mail";
 $_ARRAYLANG['TXT_MARKET_FREE'] = "Free of charge";
 $_ARRAYLANG['TXT_MARKET_ARRANGEMENT'] = "Price by arrangement";
 $_ARRAYLANG['TXT_MARKET_DURATION'] = "Display duration";

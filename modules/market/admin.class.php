@@ -513,12 +513,15 @@ class Market extends marketLibrary
         }
 
         $this->_objTpl->setVariable(array(
+            'TXT_CORE_MARKET_TITLE'     => $_CORELANG['TXT_CORE_MARKET_TITLE'],
+            'TXT_CORE_FILTER'           => $_CORELANG['TXT_CORE_FILTER'],
             'TXT_IMG_EDIT'                =>    $_CORELANG['TXT_EDIT'],
             'TXT_IMG_DEL'                =>    $_CORELANG['TXT_DELETE'],
             'TXT_IMG_COPY'                =>    $_CORELANG['TXT_COPY'],
             'TXT_STATUS'                =>    $_CORELANG['TXT_STATUS'],
+            'TXT_CORE_SORTING_ORDER'    =>    $_CORELANG['TXT_CORE_SORTING_ORDER'],
             'TXT_DATE'                    =>    $_CORELANG['TXT_DATE'],
-            'TXT_TITLE'                    =>    $_ARRAYLANG['TXT_MARKET_TITLE'],
+            'TXT_MARKET_TITLE'          =>    $_ARRAYLANG['TXT_MARKET_TITLE'],
             'TXT_DESC'                    =>    $_CORELANG['TXT_DESCRIPTION'],
             'TXT_ACTION'                =>    $_ARRAYLANG['TXT_MARKET_ACTION'],
             'TXT_TYP'                    =>    $_CORELANG['TXT_TYPE'],
@@ -534,7 +537,6 @@ class Market extends marketLibrary
             'ENTRY_SORT_ID'                =>  $sortId,
             'TXT_DELETE_ENTRY'            =>  $_ARRAYLANG['TXT_MARKET_DELETE_ENTRIES'],
             'TXT_SEARCH'                =>    $_ARRAYLANG['TXT_SEARCH'],
-            'TXT_OPTIONS'                =>    $_ARRAYLANG['TXT_MARKET_OPTIONS'],
         ));
 
         $this->getEntries($_SESSION['market']['sort'], $where, $like);
@@ -614,7 +616,7 @@ class Market extends marketLibrary
         $this->_objTpl->setVariable(array(
             'TXT_TITLE'                        =>    $_ARRAYLANG['TXT_NEW_ENTRY'],
             'TXT_NAME'                        =>    $_CORELANG['TXT_NAME'],
-            'TXT_E-MAIL'                    =>    $_CORELANG['TXT_EMAIL'],
+            'TXT_MARKET_EMAIL'              => $_ARRAYLANG['TXT_MARKET_EMAIL'],
             'TXT_TITLE_ENTRY'                =>    $_ARRAYLANG['TXT_MARKET_TITLE'],
 			'TXT_MARKET_COLOR'				 =>		$_ARRAYLANG['TXT_MARKET_COLOR'],
             'TXT_DESCRIPTION'                =>    $_CORELANG['TXT_DESCRIPTION'],

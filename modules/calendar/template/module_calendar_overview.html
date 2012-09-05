@@ -5,6 +5,18 @@
         margin: 2px 5px 2px 0;
     }
 
+    #calendar_search input[type=submit] {
+        margin-top: 3px;
+    }
+
+    #calendar_search input.search {
+        width: 240px;
+    }
+
+    #calendar_search input.date {
+        width: 100px;
+    }
+
     #calendar_search select {
         float: left;
         margin: 1px 5px 0 0;
@@ -20,7 +32,7 @@
 function deleteNote(id)
 {
     if (confirm('{TXT_CALENDAR_DELETE_CONFIRM}')) {
-        window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&{CSRF_PARAM}&act=delete&id="+id);
+        window.location.replace("index.php?cmd=calendar{CALENDAR_MANDATE}&{CSRF_PARAM}&act=delete&id="+id);
     }
 }
 
@@ -34,11 +46,11 @@ function selectMultiAction()
                 }
             break;
             case 'activate':
-                action='?cmd=calendar{CALENDAR_MANDATE}&act=activate';
+                action='index.php?cmd=calendar{CALENDAR_MANDATE}&act=activate';
                 submit();
             break;
             case 'deactivate':
-                action='?cmd=calendar{CALENDAR_MANDATE}&act=deactivate';
+                action='index.php?cmd=calendar{CALENDAR_MANDATE}&act=deactivate';
                 submit();
             break;
             default:
@@ -46,6 +58,10 @@ function selectMultiAction()
         }
     }
 }
+
+cx.ready(function() {
+    jQuery('.date').datetimepicker({dateFormat: cx.variables.get('ASCMS_DATE_FORMAT_UI_DATE', 'date'), timeFormat: cx.variables.get('ASCMS_DATE_FORMAT_UI_TIME', 'date')});
+});
 /* ]]> */ 
 </script>
 
@@ -58,11 +74,13 @@ function selectMultiAction()
             <form id="calendar_search" action="index.php" method="get">
                 <input type="hidden" name="cmd" value="calendar{CALENDAR_MANDATE}" />
                 <input type="hidden" name="act" value="overview" />
-                <input type="text" name="searchTerm" value="{CALENDAR_SEARCH_TERM}" class="search" onfocus="if(this.value=='{TXT_CALENDAR_KEYWORD}'){this.value=''}" onblur="if(this.value==''){this.value='{TXT_CALENDAR_KEYWORD}'}" style="width: 240px;" />
+                <input type="text" name="searchTerm" value="{CALENDAR_SEARCH_TERM}" class="search" onfocus="if(this.value=='{TXT_CALENDAR_KEYWORD}'){this.value=''}" onblur="if(this.value==''){this.value='{TXT_CALENDAR_KEYWORD}'}" />
                 <select name="categoryId">
                     <option value="0" selected="selected">{TXT_CALENDAR_ALL_CAT}</option>
                     <!-- BEGIN calendar_cat --><option value="{CALENDAR_CAT_ID}"{CALENDAR_CAT_SELECT}>[{CALENDAR_CAT_LANG}]&nbsp;&nbsp;{CALENDAR_CAT_NAME}</option><!-- END calendar_cat -->
                 </select>
+                <input type="text" name="datetimeStart" value="{CALENDAR_DATETIME_START}" class="date" onfocus="if(this.value=='{TXT_CALENDAR_STARTDATE}'){this.value=''}" onblur="if(this.value==''){this.value='{TXT_CALENDAR_STARTDATE}'}" />
+                <input type="text" name="datetimeEnd" value="{CALENDAR_DATETIME_END}" class="date" onfocus="if(this.value=='{TXT_CALENDAR_ENDDATE}'){this.value=''}" onblur="if(this.value==''){this.value='{TXT_CALENDAR_ENDDATE}'}" />
                 <input type="submit" value="{TXT_SEARCH}" name="search" />
             </form>
         </td>
@@ -77,9 +95,9 @@ function selectMultiAction()
         <tr class="row3">
             <td>#</td>
             <td nowrap="nowrap" style="text-align: center;">{TXT_CALENDAR_STATUS}</td>
-            <td nowrap="nowrap">{TXT_CALENDAR_DATE}</td>
             <td nowrap="nowrap">{TXT_CALENDAR_TITLE}</td>
             <td nowrap="nowrap">{TXT_CALENDAR_CAT}</td>
+            <td nowrap="nowrap">{TXT_CALENDAR_DATE}</td>
             <td nowrap="nowrap">{TXT_SERIES}</td>
             <td nowrap="nowrap" style="text-align: center;">{TXT_CALENDAR_SUBSCRIBER}</td>
             <td nowrap="nowrap" style="text-align: center;">{TXT_CALENDAR_REGISTRATIONS}</td>
@@ -90,9 +108,9 @@ function selectMultiAction()
         <tr class="{CALENDAR_ROW}">
             <td><input type="checkbox" name="selectedEventId[]" id="selectedEventId" value="{CALENDAR_EVENT_ID}" /></td>
             <td style="text-align: center;"><a href="index.php?cmd=calendar{MODULE_INDEX}&amp;act=toggle_event&amp;id={CALENDAR_EVENT_ID}"><img src="images/icons/led_{CALENDAR_ACTIVE_ICON}.gif" border="0" alt="{CALENDAR_EVENT_LED}" title="{CALENDAR_EVENT_LED}" /></a></td>
-            <td>{CALENDAR_EVENT_STARTDATE} - {CALENDAR_EVENT_ENDDATE}</td>
             <td><a href="index.php?cmd=calendar{CALENDAR_MANDATE}&amp;act=event&amp;id={CALENDAR_EVENT_ID}">{CALENDAR_EVENT_TITLE}</a></td>
             <td>{CALENDAR_EVENT_CAT}</td>
+            <td>{CALENDAR_EVENT_STARTDATE} - {CALENDAR_EVENT_ENDDATE}</td>
             <td>{CALENDAR_SERIES}</td>
             <td style="text-align: center;">{CALENDAR_EVENT_COUNT_SUBSCRIBER}</td>
             <td style="text-align: center;"><a href="index.php?cmd=calendar{CALENDAR_MANDATE}&amp;act=reg&amp;id={CALENDAR_EVENT_ID}">{CALENDAR_EVENT_COUNT_REG} / {CALENDAR_EVENT_COUNT_SIGNOFF}</a></td>
