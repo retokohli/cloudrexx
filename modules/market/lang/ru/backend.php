@@ -31,6 +31,7 @@ $_ARRAYLANG['TXT_MARKET_SEARCH'] = "Я ищу";
 $_ARRAYLANG['TXT_MARKET_IMAGE'] = "Изображение";
 $_ARRAYLANG['TXT_MARKET_FIELDS_NOT_CORRECT'] = "Следующие поля содержат неправильно ввод:";
 $_ARRAYLANG['TXT_MARKET_PRICE'] = "Цена";
+$_ARRAYLANG['TXT_MARKET_EMAIL'] = "E-Mail";
 $_ARRAYLANG['TXT_MARKET_FREE'] = "Бесплатно";
 $_ARRAYLANG['TXT_MARKET_ARRANGEMENT'] = "Цена по расположению";
 $_ARRAYLANG['TXT_MARKET_DURATION'] = "Продолжительность дисплея";
