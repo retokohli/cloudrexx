@@ -64,10 +64,6 @@ class File implements FileInterface
 
     public function makeWritable()
     {
-        if (is_writable($this->file)) {
-            return true;
-        }
-
         try {
             $fsFile = new FileSystemFile($this->file);
             $fsFile->makeWritable();
