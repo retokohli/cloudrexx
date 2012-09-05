@@ -144,7 +144,7 @@ function search_getSearchPage($pos, $page_content)
 
     $paging = getPaging($countResults, $pos, "&amp;section=search&amp;term=".htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET), "<b>".$_ARRAYLANG['TXT_SEARCH_RESULTS']."</b>", true);
     $objTpl->setVariable("SEARCH_PAGING", "$paging");
-    $term=htmlentities(stripslashes($term), ENT_QUOTES, CONTREXX_CHARSET);
+    $term = htmlentities(stripslashes($term), ENT_QUOTES, CONTREXX_CHARSET);
     $objTpl->setVariable("SEARCH_TERM",$term);
 
     //**************************************
@@ -154,27 +154,20 @@ function search_getSearchPage($pos, $page_content)
     //  parsing start
     //*************************************
 
-    if ($countResults > 0){
-    	$searchComment=sprintf($_ARRAYLANG['TXT_SEARCH_RESULTS_ORDER_BY_RELEVANCE'],$term,$countResults);
-        $objTpl->setVariable("SEARCH_TITLE",$searchComment."<br />");
+    if ($countResults > 0) {
+    	$searchComment = sprintf($_ARRAYLANG['TXT_SEARCH_RESULTS_ORDER_BY_RELEVANCE'], $term, $countResults);
+        $objTpl->setVariable('SEARCH_TITLE', $searchComment);
+        $arraySearchOut = array_slice($arraySearchResults, $pos, $_CONFIG['corePagingLimit']);
 
-        $arraySearchOut=array_slice($arraySearchResults,$pos,$_CONFIG['corePagingLimit']);
-
-        foreach($arraySearchOut as $kk=>$details){
-            $objTpl->setVariable("COUNT_MATCH",$_ARRAYLANG['TXT_RELEVANCE']." $details[Score]%");
-            $objTpl->setVariable("LINK", "<b><a href=\"".contrexx_raw2xhtml($details['Link'])."\" title=\"".contrexx_raw2xhtml($details['Title'])."\">".contrexx_raw2xhtml($details['Title'])."</a></b>");
-            $objTpl->setVariable("SHORT_CONTENT", $details['Content']." ..<br />");
-            $objTpl->parse("searchrow");
+        foreach($arraySearchOut as $kk => $details){
+            $objTpl->setVariable('COUNT_MATCH', $_ARRAYLANG['TXT_RELEVANCE'].' '.$details[Score].'%');
+            $objTpl->setVariable('LINK', '<b><a href="'.contrexx_raw2xhtml($details['Link']).'" title="'.contrexx_raw2xhtml($details['Title']).'">'.contrexx_raw2xhtml($details['Title']).'</a></b>');
+            $objTpl->setVariable('SHORT_CONTENT', $details['Content'].' ...');
+            $objTpl->parse('search_result');
         }
-    }
-    else
-    {
-		$noresult= ($term <>'') ? sprintf($_ARRAYLANG['TXT_NO_SEARCH_RESULTS'],$term) : sprintf($_ARRAYLANG['TXT_PLEASE_ENTER_SEARCHTERM'],$term);
-		$objTpl->setVariable("LINK", $noresult);
-		$objTpl->setVariable("SHORT_CONTENT","");
-		$objTpl->setVariable("COUNT_MATCH", "");
-		$objTpl->setVariable("SEARCH_TITLE", "");
-		$objTpl->parse("searchrow");
+    } else {
+		$noresult = $term != '' ? sprintf($_ARRAYLANG['TXT_NO_SEARCH_RESULTS'], $term) : $_ARRAYLANG['TXT_PLEASE_ENTER_SEARCHTERM'];
+		$objTpl->setVariable('SEARCH_TITLE', $noresult);
     }
     return $objTpl->get();
 }
