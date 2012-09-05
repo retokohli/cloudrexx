@@ -1006,10 +1006,6 @@ class FileSystem
 
     public static function makeWritable($path)
     {
-        if (is_writable($this->file)) {
-            return true;
-        }
-
         try {
             $objFile = new \Cx\Lib\FileSystem\File($path);
             $objFile->makeWritable();
