@@ -105,6 +105,11 @@ class FileSystemFile implements FileInterface
 
     public function makeWritable()
     {
+        // abort process in case the file is already writable
+        if (is_writable($this->file)) {
+            return true;
+        }
+
         // fetch current permissions on loaded file
         $filePerms = $this->getFilePermissions();
 
