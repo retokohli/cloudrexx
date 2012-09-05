@@ -56,13 +56,16 @@
             <header id="header">
                 <a id="logo" href="index.php"></a>
                 <ul id="metanavigation">
-                    <li><a href="#">Sitemap</a></li>
-                    <li><a href="#">Contact</a></li>
+                    <li><a href="index.php?section=sitemap">Sitemap</a></li>
+                    <li><a href="index.php?section=contact&amp;cmd=4">Contact</a></li>
                     <li id="metanavigation-search">
-                        <div id="search-text">Search</div>
-                        <div id="search-left"></div>
-                        <input id="search-input" type="text" name="search" value="" />
-                        <div id="search-right"></div>
+                        <form action="index.php" method="get">
+                            <input type="hidden" name="section" value="search" />
+                            <div id="search-text">Search</div>
+                            <div id="search-left"></div>
+                            <input id="search-input" type="text" name="term" value="" />
+                            <div id="search-right"></div>
+                        </form>
                     </li>
                 </ul>
             </header>
