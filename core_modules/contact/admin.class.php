@@ -1440,7 +1440,7 @@ class ContactManager extends ContactLib
                             $fieldValue = $fieldValues[$id];
                             break;
             
-                        case 'label':
+                        //case 'label':
                         case 'date':
                         case 'file':
                         case 'fieldset':
@@ -1688,14 +1688,16 @@ class ContactManager extends ContactLib
             if ($arrField['is_required']) {
                 $required = '<strong class="is_required">*</strong>';
             } else {
-                $required = "";
+                $required = '';
             }
 
-            $sourcecode[] = '<div class="contact row">';
+            if ($arrField['type'] != 'fieldset' && $arrField['type'] != 'hidden') {
+                $sourcecode[] = '<div class="contact row">';
+            }
+            
             switch ($arrField['type']) {
                 case 'hidden':
                 case 'horizontalLine':
-                    $sourcecode[] = '&nbsp;';
                     break;
                 case 'label':
                     $sourcecode[] = '<label for="contactFormFieldId_'.$fieldId.'">&nbsp;</label>';
@@ -1723,10 +1725,10 @@ class ContactManager extends ContactLib
             }
 
             $arrField['lang'][$lang]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$lang]['value']);
-            $fieldType                                = ($arrField['type'] != 'special') ? $arrField['type'] : $arrField['special_type'];
+            $fieldType                        = ($arrField['type'] != 'special') ? $arrField['type'] : $arrField['special_type'];
             switch ($fieldType) {
                 case 'label':
-                    $sourcecode[] = $preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['value']) : '<label class="noCaption">{'.$fieldId.'_VALUE}</label>';
+                    $sourcecode[] = /*$preview ? */contrexx_raw2xhtml($arrField['lang'][$lang]['value'])/* : '<label class="noCaption">{'.$fieldId.'_VALUE}</label>*/;
                     break;
 
                 case 'checkbox':
@@ -1830,12 +1832,16 @@ class ContactManager extends ContactLib
                     }
                     $sourcecode[] = "</select>";
                     break;
+                case 'fieldset':
+                    break;
                 default:
                     $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['value']) : '{'.$fieldId.'_VALUE}').'" />';
                     break;
-                }
+            }
 
+            if ($arrField['type'] != 'fieldset' && $arrField['type'] != 'hidden') {
                 $sourcecode[] = '</div>';
+            }
         }
 
         if ($preview) {
