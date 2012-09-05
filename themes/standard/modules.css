@@ -1,53 +1,46 @@
 /***************************************************/
 /* CSS GLOBAL DEFINITIONS FOR FORMS IN MODULES     */
 /***************************************************/
-form p {
-    clear: left;
-    height: 1%;
-    margin: 0;
-    padding: 2px 0 3px 190px;
-}
-.description{
-    float: none;
-}
-form p label.description {
+form p,
+form .contact.row {
     float: left;
-    font-weight: normal;
-    margin: 0 0 0 10px;
-    padding: 0;
-    width: 300px;
-}
-form p label.noCaption {
-    float: left;
-    width: 420px;
-    margin-left: 2px;
-    margin-top: 2px;
-    font-weight: normal;
-}
-form .contactFormGroup {
-    float: left;
-    margin-top: -15px !important;
-}
-form #contactFrame div.row {
-    float: left;
-    width: auto;
-    clear: both;
-}
-#contactForm{
-    font: 12px/18px 'Open Sans',Arial,Helvetica,sans-serif;
+    width: 100%;
+    padding: 0 0 10px 0;
 }
 
-form p label, form p span {
-    color: #222222;
-    float: left;
-    margin-left: -190px;
-    width: 180px;
+/* Start old contact form structure */
+form p {
+    padding-left: 250px;
 }
-form#contactForm input {
-    clear: right;
-    float: left;
-    margin: 0.25em 0.25em 0.25em 0
+
+form p label {
+    margin: 0 0 0 -250px;
 }
+
+form p label.description {
+    margin: 0;
+}
+
+/* END old contact form structure */
+
+form .contactFormGroup {
+    float: left;
+    width: 326px;
+}
+
+form .contactFormGroup input[type=checkbox] {
+    clear: left;
+}
+
+form label {
+    float: left;
+    width: 250px;
+}
+
+form input[type=submit] {
+    margin-right: 10px;
+}
+
 /***************************************************/
 /* CSS GLOBAL DEFINITIONS FOR TABLES IN MODULES    */
 /***************************************************/
@@ -141,6 +134,22 @@ div.row2 {
     width: 93px;
     height: 31px;
 }
+
+/***************************************************/
+/* CSS DEFINITIONS FOR CONTACT MODULE              */
+/***************************************************/
+#contactForm {
+    float: left;
+    width: 100%;
+    padding: 15px 0 0 0;
+}
+
+#contactFormError {
+    float: left;
+    width: 100%;
+    padding: 15px 0 0 0;
+}
+
 /***************************************************/
 /* CSS DEFINITIONS FOR VOTING MODULE               */
 /***************************************************/
@@ -966,37 +975,36 @@ div#livecam #CALBUTTONDPC_datum {
 /***************************************************/
 #sitemap {
     width: 100%;
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
-    float:left;
-    height:auto !important;
+    float: left;
 }
-#sitemap ul {
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
-    list-style: none;
+
+#sitemap ul li {
+    padding: 0 0 5px;
+    margin: 0 0 5px 0;
+    border-bottom: 1px solid #F1F1F1;
+    background: none;
 }
-#sitemap ul li{
-    padding: 2px 0px 2px 0px;
-    margin: 0px 0px 0px 0px;
-    list-style: none;
-    font-weight: normal;
-}
+
 #sitemap ul li.sitemap_level_1 {
     font-weight: bold;
 }
+
 #sitemap ul li.sitemap_level_2 {
     padding-left: 25px;
 }
+
 #sitemap ul li.sitemap_level_3 {
     padding-left: 50px;
 }
+
 #sitemap ul li.sitemap_level_4 {
     padding-left: 75px;
 }
+
 #sitemap ul li.sitemap_level_5 {
     padding-left: 100px;
 }
+
 /***************************************************/
 /* CSS DEFINITIONS FOR DOCSYS MODULE               */
 /***************************************************/
@@ -1960,56 +1968,6 @@ dl.data_module img {
 #media_div div.message_ok {
     color: #029202;
 }
-.mediaUploadInput {
-    padding-left: 190px;
-}
-/*globally used for delete icons*/
-.deleteIcon {
-    background-image: url(../../images/modules/access/delete.gif);
-    width: 17px;
-    height: 17px;
-    display: block;
-    float:left;
-    overflow: hidden;
-    text-indent: 30px;
-}
-#contactFormField_uploadWidget span{
-    float:left;
-}
-label {
-    /*font-weight: bold;*/
-}
-textarea {
-    /*    margin: 0.5em 0.5em 0 0;*/
-    background-color: #FFFFFF;
-    border: 1px solid #D3D3D3;
-    font-family: Verdana,sans-serif;
-    font-size: 1.2em;
-    height: 80px;
-    margin: 1px 2px 3px 0;
-    overflow: auto;
-    padding: 5px;
-    border-radius: 3px 3px 3px 3px;
-}
-/*textarea {
-    padding: 0.4em;
-}*/
-#frame_content #main  input#captcha{
-    background-image: url("css/images/field-bg.gif");
-    background-repeat: repeat-x;
-    border: 1px solid #C0C0C0;
-    color: #CC0000;
-    font-size: 12px;
-    font-weight: bold;
-    margin-bottom: 4px;
-    padding: 5px;
-    text-transform: uppercase;
-    width: 100px;
-}
-.char_list a{
-    font-weight: normal;
-}
-
 
 /***************************************/
 /* CSS DEFINITIONS FOR CHECKOUT MODULE */
@@ -2143,29 +2101,4 @@ textarea {
 
 #checkout form #buttons input {
     width: auto;
-}
-
-
-/**************************************/
-/* CSS DEFINITIONS FOR SITEMAP MODULE */
-/**************************************/
-ul#sitemap li {
-
-    float: left;
-    list-style-type: none;
-    margin-right: 30px;
-    width: 379px;
-}
-
-ul#sitemap li a {
-    color: #555555;
-}
-
-ul#sitemap li ul li a {
-    color: #555;
-}
-
-ul#sitemap li#menu_2, ul#sitemap li#menu_4 {
-    width: 50%;
-    min-height: 400px;
 }

@@ -192,6 +192,7 @@
     position: relative;
     bottom: 200px;
     left: 50px;
+    float: left;
     font-size: 50px;
 }
 
@@ -267,6 +268,10 @@
     border-left: 1px solid #D6D6D6;
     border-right: 1px solid #D6D6D6;
     background: #F9F9F9;
+}
+
+.home-box.middle input[type=text] {
+    margin: 0 0 10px 0;
 }
 
 .home-box.bottom {
