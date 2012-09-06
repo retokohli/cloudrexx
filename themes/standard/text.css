@@ -81,6 +81,10 @@ p {
     padding: 0 0 10px 0;
 }
 
+strong {
+    font-weight: bold;
+}
+
 h1, h2, h3, h4, h5, h6 {
     padding: 10px 0 10px 0;
     line-height: 1;
@@ -92,6 +96,8 @@ h1 {
 
 h1.first {
     padding-top: 0;
+    margin: 0 0 10px 0;
+    border-bottom: 1px solid #737A86;
 }
 
 h2 {

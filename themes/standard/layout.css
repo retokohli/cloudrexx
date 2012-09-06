@@ -364,34 +364,34 @@
     padding: 0 0 0 30px;
 }
 
-#footer-top {
+footer {
     float: left;
     width: 100%;
-    padding: 20px 0 10px 0;
 }
 
-#footer-top .footer-left li {
+footer li {
     float: left;
     padding: 0 10px 0 0;
     margin: 0 10px 0 0;
     background: url('images/divider.gif') no-repeat right 6px;
 }
 
-#footer-top .footer-left li.last {
+footer .no-bg li {
+    float: left;
+    padding: 0 5px 0 0;
+    margin: 0 5px 0 0;
+    background: none;
+}
+
+footer li.last,
+footer .no-bg li.last {
     padding: 0;
     margin: 0;
     background: none;
 }
 
-#footer-top .footer-right li {
-    float: left;
-    padding: 0 5px 0 0;
-    margin: 0 5px 0 0;
-}
-
-#footer-top .footer-right li.last {
-    padding: 0;
-    margin: 0;
+#footer-top {
+    padding: 20px 0 10px 0;
 }
 
 #footer-bottom {

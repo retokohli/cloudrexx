@@ -1277,109 +1277,16 @@ table.news_meta td {
 #u2u div.message_ok {
     color: #029202;
 }
+
 /***************************************************/
-/* NEW CSS DEFINITIONS FOR KNOWLEGE MODULE         */
+/* CSS DEFINITIONS FOR KNOWLEGE MODULE             */
 /***************************************************/
-#knowledge_new {
-    width: 100%;
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
-    float:left;
-    height:auto !important;
-}
-#knowledge_new  div.crumbtrail,
-#knowledge_new  div.answer,
-#knowledge_new  div.informations  {
-    width: 100%;
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 15px 0px;
-    float:left;
-    height:auto !important;
-}
-#knowledge_new .tags,
-#knowledge_new .articlelist .tags {
-    margin: 0px;
-    padding: 0px;
-    list-style: none;
-    border: none;
-}
-#knowledge_new .tags li,
-#knowledge_new .articlelist .tags li {
-    margin: 0px;
-    padding: 0px;
-    list-style: none;
-    border: none;
-}
-/***************************************************/
-/* OLD CSS DEFINITIONS FOR KNOWLEGE MODULE         */
-/***************************************************/
-.cloud {
-    margin: 0px;
-    padding: 0px;
-    list-style: none;
-    border: none;
-}
-.cloud li {
-    margin: 0px !important;
-    padding: 0px 5px !important;
-    list-style: none !important;
-    float: left !important;
-    vertical-align: bottom !important;
-    border: none !important;
-    line-height: 1em !important;
-}
-.cloud li:hover {
-    background-color: #cdcdcd;
-}
-.cloud li a{
-    color: #646464;
-}
-.knowledge_sidebar {
-    margin: 0px;
-    padding: 0px;
-}
-.knowledge_sidebar ul {
-    margin: 0px;
-    padding: 0px;
-    list-style: none;
-}
-.knowledge_sidebar li {
-    width: 100%;
-    display: block;
-    margin: 0px;
-}
-.knowledge_sidebar li:hover {
-}
-#knowledge #content_search {
-    position: relative;
-}
-#knowledge .articlelist li {
-    margin: 0px;
-    padding: 0px;
-    border-bottom: solid 1px #C6C6C6;
-}
-#knowledge .articlelist .title_row {
-    padding: 5px;
-    background-color: #F6F6F6;
-}
-#knowledge .articlelist .opener {
-    float: left;
-    width: 40px;
-}
-#knowledge .articlelist .answer {
-    margin-left: 45px;
-    position: relative;
-}
-#knowledge .articlelist .question_active {
-    background-color: #F5F5F5;
-    font-weight: bold;
-    border-bottom: solid 1px #C6C6C6;
-}
 #knowledge ul {
     list-style: none;
     padding: 0px;
     margin: 0px;
 }
+
 #knowledge li {
     padding: 0px;
     margin: 0px;
@@ -1387,35 +1294,73 @@ table.news_meta td {
     margin-bottom: 10px;
     position: relative;
 }
+
 #knowledge dd {
     margin: 0px;
     padding: 0px;
     padding-bottom: 20px;
     padding-top: 5px;
 }
+
 #knowledge dt {
     font-weight: bold;
 }
-#knowledge_search_results {
-    padding-left: 0px;
+
+#knowledge form {
+    padding: 10px 0 0 0;
 }
-#knowledge_search_results ul {
-    margin-left: 0px;
-    padding-left: 0px;
-    list-style-type: none;
+
+#knowledge #content_search {
+    position: relative;
 }
-#knowledge_search_results ul li {
-    padding: 0px;
+
+#knowledge .crumbtrail,
+#knowledge .answer,
+#knowledge .informations {
+    float: left;
+    width: 100%;
+    padding: 0 0 10px 0;
+}
+
+#knowledge .category_title {
+    padding: 15px 0 10px 0;
+}
+
+#knowledge .articlelist li {
     margin: 0px;
-    margin: 5px 5px;
-    list-style-type: none;
+    padding: 0px;
+    border-bottom: solid 1px #C6C6C6;
 }
+
+#knowledge .articlelist .title_row {
+    padding: 8px 8px 5px 8px;
+    background: #F9F9F9;
+}
+
+#knowledge .articlelist .opener {
+    float: left;
+    width: 40px;
+    padding: 2px 0 2px 0;
+}
+
+#knowledge .articlelist .question_active {
+    background-color: #F5F5F5;
+    font-weight: bold;
+    border-bottom: solid 1px #C6C6C6;
+}
+
+#knowledge #overview {
+    padding: 5px 0 0 0;
+}
+
 #knowledge #overview div.category {
     float: left;
     width: 50%;
 }
+
 #knowledge #overview div.row {
 }
+
 #knowledge #overview div.row:after {
     content: ".";
     display: block;
@@ -1424,57 +1369,90 @@ table.news_meta td {
     visibility: hidden;
     margin-bottom: 1em;
 }
-/* for ie */
+
+/* FOR IE */
 * html #knowledge #overview div.row {
     height: 1%;
 }
+
 #knowledge #overview div div.title {
     font-weight: bold;
 }
+
 #knowledge #overview div div.title a {
     display: block;
 }
+
 #knowledge #overview div div.content {
     background-color: white;
 }
-#knowledge #overview div div.content a {
-    color: black;
-}
-#knowledge #overview div div.content a:hover {
-    color: #C5252F;
-}
-#knowledge #overview div div.content a.more {
-    color: #8b9581;
-}
-#knowledge #overview div div.content a.more:hover {
-    color: #B8D30B;
-}
+
 #knowledge h2.category_list_title {
     padding: 3px;
 }
+
 #knowledge h2.article_list_title {
-    padding: 10px 0 5px 0;
+    clear: left;
+    padding: 15px 0 10px 0;
 }
+
 #knowledge h2.article_list_title a {
     color: white;
 }
+
 #knowledge .most_read {
     background-color: #DAEDC6;
     font-weight: bold;
 }
-#knowledge .tags, #knowledge .articlelist .tags {
-    margin: 0px;
-    padding: 0px;
-    list-style: none;
-    border: none;
-}
+
 #knowledge .tags li, #knowledge .articlelist .tags li {
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0 3px 0 0;
     float: left;
     list-style: none;
     border: none;
+    background: none;
 }
+
+#knowledge_search_results {
+    padding-left: 0px;
+}
+
+#knowledge_search_results ul {
+    margin-left: 0px;
+    padding-left: 0px;
+    list-style-type: none;
+}
+
+#knowledge_search_results ul li {
+    padding: 0px;
+    margin: 0px;
+    margin: 5px 5px;
+    list-style-type: none;
+}
+
+.knowledge_sidebar {
+    margin: 0px;
+    padding: 0px;
+}
+
+.knowledge_sidebar ul {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+}
+
+.knowledge_sidebar li {
+    width: 100%;
+    display: block;
+    margin: 0px;
+}
+
+.knowledge_sidebar li:hover {}
+
+/* FOR IE */
+* html .clearfix { height: 1%; }
+
 .clearfix:after {
     content: ".";
     display: block;
@@ -1482,8 +1460,7 @@ table.news_meta td {
     clear: both;
     visibility: hidden;
 }
-/* IE */
-* html .clearfix { height: 1%; }
+
 #resultbox {
     border: 1px solid #858585;
     position: absolute;
@@ -1495,11 +1472,13 @@ table.news_meta td {
     top: 25px;
     background-color: white;
 }
+
 #resultbox ul {
     list-style-type: none;
     padding: 2px;
     margin: 0px;
 }
+
 #resultbox li {
     list-style-type: none;
     display: block;
@@ -1507,15 +1486,40 @@ table.news_meta td {
     overflow: hidden;
     margin: 0px;
 }
+
 #resultbox li a {
     display: block;
 }
+
 #resultbox li:hover {
     background-color: #F0F8FA;
 }
+
 .cloud {
-    margin-bottom: 1em;
+    margin: 0 0 1em 0;
+    padding: 0px;
+    list-style: none;
+    border: none;
 }
+
+.cloud li {
+    margin: 0px !important;
+    padding: 0px 5px !important;
+    list-style: none !important;
+    float: left !important;
+    vertical-align: bottom !important;
+    border: none !important;
+    line-height: 1em !important;
+}
+
+.cloud li:hover {
+    background-color: #cdcdcd;
+}
+
+.cloud li a{
+    color: #646464;
+}
+
 /***************************************************/
 /* CSS DEFINITIONS FOR DATA MODULE                 */
 /***************************************************/
