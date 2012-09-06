@@ -1,4 +1,5 @@
 <?php
+
 /**
 * @exclude
 *
@@ -86,4 +87,3 @@ $_CONFIG['coreCharacterEncoding'] = '%CHARSET%'; // example 'UTF-8'
 * -------------------------------------------------------------------------
 */
 require_once dirname(__FILE__).'/set_constants.php';
-?>
