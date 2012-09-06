@@ -53,24 +53,13 @@
         </div>
         <div id="type_toggle" class="toggle {TYPE_TOGGLE_CLASS}"><div class="indicator"></div><label>{TXT_CORE_CM_TYPE}</label></div>
         <div id="type_container" class="container" style="{TYPE_DISPLAY_STYLE}">
-            <div class="container">
-                <div class="line small_space type_redirect type_hidable">
-                    <label for="page_target_button" class="type_redirect type_hidable">{TXT_CORE_CM_TYPE_REDIRECT_TARGET}</label>
+            <div class="container type_redirect type_hidable">
+                <div class="line small_space">
+                    <label for="page_target_button">{TXT_CORE_CM_TYPE_REDIRECT_TARGET}</label>
                 </div>
-                <div class="line big_space type_redirect type_hidable">
-                    <input type="text" class="type_redirect type_hidable" name="page[target]" id="page_target" />
-                    <button class="type_redirect type_hidable" id="page_target_browse">{TXT_CORE_CM_BROWSE}</button>
-                </div>
-
-                <div class="line small_space type_application type_hidable">
-                    <label for="page_application" class="type_application type_hidable first">{TXT_CORE_CM_TYPE_APPLICATION}</label>
-                    <label for="page_application_area" class="type_application type_hidable second">{TXT_CORE_CM_TYPE_APPLICATION_AREA}</label>
-                </div>
-                <div class="line big_space type_application type_hidable">
-                    <select name="page[application]" class="type_application type_hidable first" id="page_application">
-                        <!-- BEGIN module_option --><option value="{MODULE_KEY}">{MODULE_TITLE}</option><!-- END module_option -->
-                    </select>
-                    <input type="text" name="page[area]" class="type_application type_hidable second" id="page_application_area" />
+                <div class="line big_space">
+                    <input type="text" name="page[target]" id="page_target" />
+                    <button id="page_target_browse">{TXT_CORE_CM_BROWSE}</button>
                 </div>
             </div>
 
@@ -159,7 +148,7 @@
         </div>
     </div>
     <div id="page_blocks" style="display: none;">
-        <div id="themes_toggle" class="toggle {BLOCKS_TOGGLE_CLASS}"><div class="indicator"></div><label>{TXT_CORE_CM_BLOCKS}</label></div>
+        <div id="blocks_toggle" class="toggle {BLOCKS_TOGGLE_CLASS}"><div class="indicator"></div><label>{TXT_CORE_CM_BLOCKS}</label></div>
         <div id="blocks_container" class="container multiselect" style="{BLOCKS_DISPLAY_STYLE}">
             <label for="pageBlocksms2side__sx" class="left">{TXT_CORE_CM_BLOCKS_AVAILABLE}</label>
             <label for="pageBlocksms2side__dx" class="right">{TXT_CORE_CM_BLOCKS_ASSIGNED}</label>
@@ -200,6 +189,22 @@
             <div class="line big_space">
                 <label for="page_start">{TXT_CORE_CM_SCHEDULED_PUBLISHING_FROM}:</label><input type="text" name="page[start]" id="page_start" value="" class="date" />
                 <label for="page_end">{TXT_CORE_CM_SCHEDULED_PUBLISHING_TO}:</label><input type="text" name="page[end]" id="page_end" value="" class="date" />
+            </div>
+        </div>
+
+        <div class="type_application type_hidable">
+            <div id="application_toggle" class="toggle {APPLICATION_TOGGLE_CLASS}"><div class="indicator"></div><label>{TXT_CORE_CM_TYPE}</label></div>
+            <div id="application_container" class="container" style="{APPLICATION_DISPLAY_STYLE}">
+                <div class="line small_space">
+                    <label for="page_application" class="first">{TXT_CORE_CM_TYPE_APPLICATION}</label>
+                    <label for="page_application_area" class="second">{TXT_CORE_CM_TYPE_APPLICATION_AREA}</label>
+                </div>
+                <div class="line big_space">
+                    <select name="page[application]" class="first" id="page_application">
+                        <!-- BEGIN module_option --><option value="{MODULE_KEY}">{MODULE_TITLE}</option><!-- END module_option -->
+                    </select>
+                    <input type="text" name="page[area]" class="second" id="page_application_area" />
+                </div>
             </div>
         </div>
 

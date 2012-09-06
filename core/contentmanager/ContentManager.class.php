@@ -133,15 +133,17 @@ class ContentManager extends Module {
 
         $toggleTitles = !empty($_SESSION['contentManager']['toggleStatuses']['toggleTitles']) ? $_SESSION['contentManager']['toggleStatuses']['toggleTitles'] : 'block';
         $toggleType = !empty($_SESSION['contentManager']['toggleStatuses']['toggleType']) ? $_SESSION['contentManager']['toggleStatuses']['toggleType'] : 'block';
+        $toggleNavigation = !empty($_SESSION['contentManager']['toggleStatuses']['toggleNavigation']) ? $_SESSION['contentManager']['toggleStatuses']['toggleNavigation'] : 'block';
         $toggleBlocks = !empty($_SESSION['contentManager']['toggleStatuses']['toggleBlocks']) ? $_SESSION['contentManager']['toggleStatuses']['toggleBlocks'] : 'block';
         $toggleThemes = !empty($_SESSION['contentManager']['toggleStatuses']['toggleThemes']) ? $_SESSION['contentManager']['toggleStatuses']['toggleThemes'] : 'block';
-        $toggleNavigation = !empty($_SESSION['contentManager']['toggleStatuses']['toggleNavigation']) ? $_SESSION['contentManager']['toggleStatuses']['toggleNavigation'] : 'block';
+        $toggleApplication = !empty($_SESSION['contentManager']['toggleStatuses']['toggleApplication']) ? $_SESSION['contentManager']['toggleStatuses']['toggleApplication'] : 'block';
         $toggleSidebar = !empty($_SESSION['contentManager']['toggleStatuses']['sidebar']) ? $_SESSION['contentManager']['toggleStatuses']['sidebar'] : 'block';
         $objCx->setVariable('toggleTitles', $toggleTitles, 'contentmanager/toggle');
         $objCx->setVariable('toggleType', $toggleType, 'contentmanager/toggle');
+        $objCx->setVariable('toggleNavigation', $toggleNavigation, 'contentmanager/toggle');
         $objCx->setVariable('toggleBlocks', $toggleBlocks, 'contentmanager/toggle');
         $objCx->setVariable('toggleThemes', $toggleThemes, 'contentmanager/toggle');
-        $objCx->setVariable('toggleNavigation', $toggleNavigation, 'contentmanager/toggle');
+        $objCx->setVariable('toggleApplication', $toggleApplication, 'contentmanager/toggle');
         $objCx->setVariable('sidebar', $toggleSidebar, 'contentmanager/toggle');
         
         // get initial tree data
@@ -155,12 +157,14 @@ class ContentManager extends Module {
                 'TITLES_TOGGLE_CLASS' => 'open',
                 'TYPE_DISPLAY_STYLE' => 'display: block;',
                 'TYPE_TOGGLE_CLASS' => 'open',
+                'NAVIGATION_DISPLAY_STYLE' => 'display: block;',
+                'NAVIGATION_TOGGLE_CLASS' => 'open',
                 'BLOCKS_DISPLAY_STYLE' => 'display: block;',
                 'BLOCKS_TOGGLE_CLASS' => 'open',
                 'THEMES_DISPLAY_STYLE' => 'display: block;',
                 'THEMES_TOGGLE_CLASS' => 'open',
-                'NAVIGATION_DISPLAY_STYLE' => 'display: block;',
-                'NAVIGATION_TOGGLE_CLASS' => 'open',
+                'APPLICATION_DISPLAY_STYLE' => 'display: block;',
+                'APPLICATION_TOGGLE_CLASS' => 'open',
                 'MULTIPLE_ACTIONS_STRIKE_STYLE' => 'display: none;',
             ));
         } else {
@@ -169,12 +173,14 @@ class ContentManager extends Module {
                 'TITLES_TOGGLE_CLASS' => $toggleTitles == 'none' ? 'closed' : 'open',
                 'TYPE_DISPLAY_STYLE' => $toggleType == 'none' ? 'display: none;' : 'display: block;',
                 'TYPE_TOGGLE_CLASS' => $toggleType == 'none' ? 'closed' : 'open',
+                'NAVIGATION_DISPLAY_STYLE' => $toggleNavigation == 'none' ? 'display: none;' : 'display: block;',
+                'NAVIGATION_TOGGLE_CLASS' => $toggleNavigation == 'none' ? 'closed' : 'open',
                 'BLOCKS_DISPLAY_STYLE' => $toggleBlocks == 'none' ? 'display: none;' : 'display: block;',
                 'BLOCKS_TOGGLE_CLASS' => $toggleBlocks == 'none' ? 'closed' : 'open',
                 'THEMES_DISPLAY_STYLE' => $toggleThemes == 'none' ? 'display: none;' : 'display: block;',
                 'THEMES_TOGGLE_CLASS' => $toggleThemes == 'none' ? 'closed' : 'open',
-                'NAVIGATION_DISPLAY_STYLE' => $toggleNavigation == 'none' ? 'display: none;' : 'display: block;',
-                'NAVIGATION_TOGGLE_CLASS' => $toggleNavigation == 'none' ? 'closed' : 'open',
+                'APPLICATION_DISPLAY_STYLE' => $toggleApplication == 'none' ? 'display: none;' : 'display: block;',
+                'APPLICATION_TOGGLE_CLASS' => $toggleApplication == 'none' ? 'closed' : 'open',
             ));
         }
 

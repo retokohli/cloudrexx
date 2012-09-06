@@ -274,7 +274,7 @@ a:active {
 }
 
 
-#content_wrapper td.left {
+#content_wrapper td.content_wrapper.left {
     float: left;
     width: 217px;
     vertical-align: top;
@@ -287,7 +287,7 @@ a:active {
     padding: 39px 0;
 }
 
-#content_wrapper td.right {
+#content_wrapper td.content_wrapper.right {
     width: 100%;
     vertical-align: top;
     text-align: left;
