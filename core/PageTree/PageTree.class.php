@@ -91,6 +91,9 @@ $this->bytes = memory_get_peak_usage();
             if (!$page) {
                 continue;
             }
+            if (!$page->isActive() || !$page->isVirtual()) {
+                continue;
+            }
             // prepare data for element
             $current = false;
             if ($this->currentPage) {
