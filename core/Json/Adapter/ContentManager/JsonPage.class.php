@@ -201,8 +201,6 @@ class JsonPage implements JsonAdapter {
 
                 $this->em->persist($node);
                 $this->em->flush();
-                
-                $this->nodeRepo->moveUp($node, true);
             } else {
                 $node->setParent($this->nodeRepo->getRoot());
 
