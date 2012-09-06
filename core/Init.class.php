@@ -306,6 +306,8 @@ class InitCMS
             } else {
                 $id = FWLanguage::getLanguageIdByCode($_REQUEST['userFrontendLangId']);
             }
+        } elseif (!empty($_COOKIE['userFrontendLangId'])) {
+            $id = FWLanguage::getLanguageIdByCode($_COOKIE['userFrontendLangId']);
         } elseif (!empty($_SESSION['userFrontendLangId'])) {
             $id = intval($_SESSION['userFrontendLangId']);
         } else {
@@ -316,6 +318,7 @@ class InitCMS
         }
         $this->userFrontendLangId = $id;
         $_SESSION['userFrontendLangId'] = $id;
+        setcookie("userFrontendLangId", "", time() - 3600);
         return $this->userFrontendLangId;
     }
 
