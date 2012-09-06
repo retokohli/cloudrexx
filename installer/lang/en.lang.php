@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Installer language file
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -189,4 +190,3 @@ $_ARRLANG['TXT_INTERNET_SITE_MESSAGE'] = "The Web site is available immediately 
 $_ARRLANG['TXT_ADMIN_SITE'] = "Administrator area";
 $_ARRLANG['TXT_ADMIN_SITE_MESSAGE'] = "The site can be administered at the following address: <br /><b>[ADMIN_URL]</b>";
 $_ARRLANG['TXT_INVALID_USERNAME'] = "The username has invalid characters. You can only use the following: A-Z, 0-9, - and _";
-?>

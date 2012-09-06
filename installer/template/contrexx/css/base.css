@@ -8,126 +8,126 @@
 
 
 html, body {
-  color:  black;
-  background: #ffffff;
-  font-weight: normal;
-  font-family: Arial, Helvetica, sans-serif;
-  font-style: normal;
-  font-size: 12px;
-  text-decoration: none;
-  padding: 0px;
-  border:  0px;
-  margin: 0px;
+    color:  black;
+    background: #ffffff;
+    font-weight: normal;
+    font-family: Arial, Helvetica, sans-serif;
+    font-style: normal;
+    font-size: 12px;
+    text-decoration: none;
+    padding: 0px;
+    border:  0px;
+    margin: 0px;
 }
 
 
 
 body {
-	SCROLLBAR-FACE-COLOR: #dadada;
-	SCROLLBAR-HIGHLIGHT-COLOR: #dadada;
-	SCROLLBAR-SHADOW-COLOR: #dadada;
-	SCROLLBAR-3DLIGHT-COLOR: #dadada;
-	SCROLLBAR-ARROW-COLOR: #000000;
-	SCROLLBAR-TRACK-COLOR: #dadada;
-	SCROLLBAR-DARKSHADOW-COLOR: #2f4f4f;
-	SCROLLBAR-BASE-COLOR: #dadada
+    SCROLLBAR-FACE-COLOR: #dadada;
+    SCROLLBAR-HIGHLIGHT-COLOR: #dadada;
+    SCROLLBAR-SHADOW-COLOR: #dadada;
+    SCROLLBAR-3DLIGHT-COLOR: #dadada;
+    SCROLLBAR-ARROW-COLOR: #000000;
+    SCROLLBAR-TRACK-COLOR: #dadada;
+    SCROLLBAR-DARKSHADOW-COLOR: #2f4f4f;
+    SCROLLBAR-BASE-COLOR: #dadada
 }
 
 td {
-	font-size: 11px;
-	text-align: left;
+    font-size: 11px;
+    text-align: left;
 }
 
 form {
-	margin: 0px;
+    margin: 0px;
 }
 
 textarea,
 input,
 object,
 select {
-	BORDER-RIGHT: 1px solid;
-	BORDER-TOP: 1px solid;
-	FONT-SIZE: 12px;
-	BORDER-LEFT: 1px solid;
-	COLOR: black;
-	BORDER-BOTTOM: 1px solid;
-	BACKGROUND-COLOR: white;
-	border-color: #0A50A1
+    BORDER-RIGHT: 1px solid;
+    BORDER-TOP: 1px solid;
+    FONT-SIZE: 12px;
+    BORDER-LEFT: 1px solid;
+    COLOR: black;
+    BORDER-BOTTOM: 1px solid;
+    BACKGROUND-COLOR: white;
+    border-color: #0A50A1
 }
 
 A {
-	FONT-SIZE: 11px;
-	COLOR: #000099;
-	TEXT-DECORATION: none
+    FONT-SIZE: 11px;
+    COLOR: #000099;
+    TEXT-DECORATION: none
 }
 A:link {
-	COLOR: #000099;
-	TEXT-DECORATION: none
+    COLOR: #000099;
+    TEXT-DECORATION: none
 }
 A:visited {
-	COLOR: #000099;
-	TEXT-DECORATION: none
+    COLOR: #000099;
+    TEXT-DECORATION: none
 }
 A:hover {
-	COLOR: #000099;
-	BACKGROUND-COLOR: #ffffcc;
-	TEXT-DECORATION: none
+    COLOR: #000099;
+    BACKGROUND-COLOR: #ffffcc;
+    TEXT-DECORATION: none
 }
 A:active {
-	COLOR: #000099;
-	TEXT-DECORATION: none
+    COLOR: #000099;
+    TEXT-DECORATION: none
 }
 
 /* inline instruction */
 
 .textBox {
-	width: 200px;
+    width: 200px;
 }
 
 div#footer {
-  FONT-SIZE: 11px;
-  margin-right: 4px;
-  text-align: right;
+    FONT-SIZE: 11px;
+    margin-right: 4px;
+    text-align: right;
 }
 
 table.top {
-	background-color: #ecf2fa;
+    background-color: #ecf2fa;
 }
 
 .navigation {
-	font-size: 10px;
-	font-family: Geneva, Arial, Helvetica, sans-serif;
-	margin-left: 0px;
+    font-size: 10px;
+    font-family: Geneva, Arial, Helvetica, sans-serif;
+    margin-left: 0px;
 }
 
 .navigation ul {
-	padding: 0px;
-	margin: 0px;
-	list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+    list-style-type: none;
 }
 
 .navigation li {
-	border-bottom: 1px solid #ffffff;
+    border-bottom: 1px solid #ffffff;
     font-size: 11px;
 }
 
 .navigation li a {
-	display: block;
-	font-size: 11px;
-	padding: 3px 0px 3px 15px;
-	color: #333333;
-	text-decoration: none;
+    display: block;
+    font-size: 11px;
+    padding: 3px 0px 3px 15px;
+    color: #333333;
+    text-decoration: none;
 }
 
 .navigation li a:link {
-	color: #333333;
+    color: #333333;
 }
 .navigation li a:visited {
-	color: #333333;
+    color: #333333;
 }
 .navigation li a:active {
-	color: #333333;
+    color: #333333;
 }
 .navigation li a:hover {
     text-decoration: none;
@@ -135,187 +135,187 @@ table.top {
     background-color: rgb(10, 80, 161);
 }
 .navigation li.active a {
-	color: #ffffff;
-	text-decoration: none;
-	background-color: rgb(10, 80, 161);
+    color: #ffffff;
+    text-decoration: none;
+    background-color: rgb(10, 80, 161);
 }
 .navigation li.active a:link {
-	color: #ffffff;
-	text-decoration: none;
+    color: #ffffff;
+    text-decoration: none;
 }
 .navigation li.active a:active {
-	color: #ffffff;
-	text-decoration: none;
+    color: #ffffff;
+    text-decoration: none;
 }
 .navigation li.active a:hover {
-	color: #ffffff;
-	text-decoration: none;
+    color: #ffffff;
+    text-decoration: none;
 }
 .navigation li.active a:visited {
-	color: #ffffff;
-	text-decoration: none;
+    color: #ffffff;
+    text-decoration: none;
 }
 
 .navigation li.normal {
-	padding: 3px 0px 3px 15px;
-	color: #333333;
-	background-color: #ffffff;
+    padding: 3px 0px 3px 15px;
+    color: #333333;
+    background-color: #ffffff;
 }
 
 .navigation li.language {
-	text-decoration: none;
+    text-decoration: none;
 }
 
 
 table.adminlist {
-	FONT-SIZE: 11px;
-	BACKGROUND-COLOR: #ffffff;
+    FONT-SIZE: 11px;
+    BACKGROUND-COLOR: #ffffff;
 }
 table.adminlist th {
-	COLOR: white;
-	HEIGHT: 16px;
-	BACKGROUND-COLOR: #0A50A1;
-	text-align: left;
-	padding: 0px 0px 0px 5px;
-	marign: 0px 0px 0px 0px;
-	vertical-align: middle;
+    COLOR: white;
+    HEIGHT: 16px;
+    BACKGROUND-COLOR: #0A50A1;
+    text-align: left;
+    padding: 0px 0px 0px 5px;
+    marign: 0px 0px 0px 0px;
+    vertical-align: middle;
 }
 table.adminlist th A {
-	COLOR: white;
-	TEXT-DECORATION: underline
+    COLOR: white;
+    TEXT-DECORATION: underline
 }
 table.adminlist th A:active {
-	COLOR: white;
-	TEXT-DECORATION: underline
+    COLOR: white;
+    TEXT-DECORATION: underline
 }
 table.adminlist th A:visited {
-	COLOR: white;
-	TEXT-DECORATION: underline
+    COLOR: white;
+    TEXT-DECORATION: underline
 }
 table.adminlist TH A:hover {
-	COLOR: #0A50A1;
-	BACKGROUND-COLOR: #DCE4FF;
-	TEXT-DECORATION: none
+    COLOR: #0A50A1;
+    BACKGROUND-COLOR: #DCE4FF;
+    TEXT-DECORATION: none
 }
 table.adminlist TH.title {
-	COLOR: #333333;
-	TEXT-ALIGN: left
+    COLOR: #333333;
+    TEXT-ALIGN: left
 }
 table.adminlist tr.row1 {
-	BACKGROUND-COLOR: #F4F7FF
+    BACKGROUND-COLOR: #F4F7FF
 }
 table.adminlist tr.row2 {
-	BACKGROUND-COLOR: #ffffff
+    BACKGROUND-COLOR: #ffffff
 }
 table.adminlist tr.row3 {
-	BACKGROUND-COLOR: #DDE4FF
+    BACKGROUND-COLOR: #DDE4FF
 }
 table.adminlist tr.highlighted {
-	background-color: #ffe7e7;
+    background-color: #ffe7e7;
 }
 table.adminlist tr.highlighted:hover {
-	background-color: #ffe7e7;
+    background-color: #ffe7e7;
 }
 table.adminlist tr.rowWarn {
-	BACKGROUND-COLOR: #ffe7e7
+    BACKGROUND-COLOR: #ffe7e7
 }
 table.adminlist td {
-	BORDER-BOTTOM: #DDE4FF 1px solid
+    BORDER-BOTTOM: #DDE4FF 1px solid
 }
 table.adminlist tr.row1:hover {
-	BACKGROUND-COLOR: #f1f1f1
+    BACKGROUND-COLOR: #f1f1f1
 }
 table.adminlist tr.row2:hover {
-	BACKGROUND-COLOR: #f1f1f1
+    BACKGROUND-COLOR: #f1f1f1
 }
 table.adminlist td.options {
-	FONT-SIZE: 10px;
-	BACKGROUND-COLOR: #ffffff
+    FONT-SIZE: 10px;
+    BACKGROUND-COLOR: #ffffff
 }
 
 
 td.title {
-	vertical-align: middle;
-	FONT-SIZE: 16px;
-	BORDER-BOTTOM: 1px solid rgb(220, 228, 255);
-	FONT-FAMILY: Arial, Helvetica, sans-serif;
+    vertical-align: middle;
+    FONT-SIZE: 16px;
+    BORDER-BOTTOM: 1px solid rgb(220, 228, 255);
+    FONT-FAMILY: Arial, Helvetica, sans-serif;
 }
 
 .successful {
-	color: green;
-	font-weight: bold;
+    color: green;
+    font-weight: bold;
 }
 
 .failed {
-	color: #ff0000;
-	font-weight: bold;
+    color: #ff0000;
+    font-weight: bold;
 }
 
 .status_message {
-	padding: 15px 0px 15px 0px;
+    padding: 15px 0px 15px 0px;
 }
 .status_message table td {
     border-bottom-width: 0px;
 }
 .status_message table {
-	border: 1px solid #ff0000;
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-bottom-color: #ff0000;
-	color: #ff0000;
-	background: #FFCCCC;
-	padding: 3px 3px 3px 3px;
+    border: 1px solid #ff0000;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: #ff0000;
+    color: #ff0000;
+    background: #FFCCCC;
+    padding: 3px 3px 3px 3px;
 }
 .status_message img {
-	text-align: left;
-	vertical-align: middle;
-	padding-right: 3px;
+    text-align: left;
+    vertical-align: middle;
+    padding-right: 3px;
 }
 
 .border-top {
-	border-top: 1px solid rgb(221, 228, 255);
+    border-top: 1px solid rgb(221, 228, 255);
 }
 
 table.installer {
-/*	border: 1px solid #0A50A1;	*/
-	border: 1px solid rgb(220, 228, 255);
-	background-color: #DCE4FF;
+/*  border: 1px solid #0A50A1;*/
+    border: 1px solid rgb(220, 228, 255);
+    background-color: #DCE4FF;
 }
 
 table.installer td.title{
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 14px;
-	color: #666666;;
-	text-decoration: none;
-	font-weight: bold;
-	padding: 5px 5px 5px 5px;
-	height: 22px;
-	background-color: #dce4ff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    color: #666666;;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 5px 5px 5px 5px;
+    height: 22px;
+    background-color: #dce4ff;
 }
 
 table.installer th {
-	font-size: 11px;
-	COLOR: white;
-	HEIGHT: 22px;
-	BACKGROUND-COLOR: #0A50A1;
-	text-align: left;
-	padding: 0px 0px 0px 5px;
-	marign: 0px 0px 0px 0px;
-	vertical-align: middle;
+    font-size: 11px;
+    COLOR: white;
+    HEIGHT: 22px;
+    BACKGROUND-COLOR: #0A50A1;
+    text-align: left;
+    padding: 0px 0px 0px 5px;
+    marign: 0px 0px 0px 0px;
+    vertical-align: middle;
 }
 
 table.installer .content {
-	padding: 10px;
-	background-color: #ffffff;
+    padding: 10px;
+    background-color: #ffffff;
 }
 
 .text:link, .text:visited, .text:hover, .text:active {
-	color:  black;
-	background-color: transparent;
+    color:  black;
+    background-color: transparent;
 }
 
 .text-selected:link, .text-selected:visited, .text-selected:hover, .text-selected:active {
-	color:  black;
-	font-weight: bold;
-	background-color: transparent;
+    color:  black;
+    font-weight: bold;
+    background-color: transparent;
 }

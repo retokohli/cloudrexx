@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Installer language file
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -193,4 +194,3 @@ $_ARRLANG['TXT_INTERNET_SITE_FOR_VISITORS'] = "Internetseite für Besucher";
 $_ARRLANG['TXT_INTERNET_SITE_MESSAGE'] = "Die Internetseite steht ab sofort  unter folgender Adresse zur Verfügung: <br /><b>[WEB_URL]</b>";
 $_ARRLANG['TXT_ADMIN_SITE'] = "Administratorenbereich";
 $_ARRLANG['TXT_ADMIN_SITE_MESSAGE'] = "Die Seite kann unter folgender Adresse administriert und verwaltet werden: <br /><b>[ADMIN_URL]</b>";
-?>
