@@ -35,40 +35,33 @@ h1{ font-size: 20px }
     background: transparent;
 }
 
-#content-manager .left {
+#content-manager #cm-left {
     float: left;
     width: 100%;
-    padding: 0;
-    vertical-align: top;
 }
 
-#content-manager .right {
+#content-manager #cm-right {
     display: none;
-    padding: 0;
-    vertical-align: top;
 }
 
-#content-manager.edit_view .left {
-    width: 352px !important;
-    border-right: 14px solid transparent;
+#content-manager.edit_view #cm-left {
+    width: 352px;
 }
 
-#content-manager.edit_view .right {
-    display: table-cell;
+#content-manager.edit_view #cm-right {
     float: none;
-    width: 100% !important;
+    display: block !important;
 }
 
-*+html #content-manager.edit_view .left {
-    float: none;
+#content-manager.sidebar-hide #cm-right {
+    margin-left: 366px;
 }
 
-*+html #content-manager.edit_view .right {
-    display: block;
-    float: left;
+#content-manager.sidebar-show #cm-right {
+    margin-left: 0;
 }
 
-#content-manager .left table.adminlist {
+#content-manager #cm-left table.adminlist {
     position: static;
     bottom: 0;
     margin: 11px 0 0 0;
@@ -588,51 +581,40 @@ h1{ font-size: 20px }
     cursor: pointer;
 }
 
-#page #sidebar_toggle:hover,
-#page #sidebar_toggle:focus,
-#page #sidebar_toggle:active {
+#page #sidebar_toggle:hover {
     background-color: #85be0b;
 }
 
-#page #sidebar_toggle.hide {
+#content-manager.sidebar-hide #sidebar_toggle {
     background-image: url(../images/sidebar_hide.png);
     background-repeat: no-repeat;
     background-position: center center;
 }
 
-#page #sidebar_toggle.hide:hover,
-#page #sidebar_toggle.hide:focus,
-#page #sidebar_toggle.hide:active {
+#content-manager.sidebar-hide #sidebar_toggle:hover {
     background-image: url(../images/sidebar_hide_hover.png);
 }
 
-#page #sidebar_toggle.show {
+#content-manager.sidebar-show #sidebar_toggle {
     background-image: url(../images/sidebar_show.png);
     background-repeat: no-repeat;
     background-position: center center;
     margin-left: 0;
 }
 
-#page #sidebar_toggle.show:hover,
-#page #sidebar_toggle.show:focus,
-#page #sidebar_toggle.show:active {
+#content-manager.sidebar-show #sidebar_toggle:hover {
     background-image: url(../images/sidebar_show_hover.png);
 }
 
 #page #cm-tabs {
     position: static;
-    float: left;
-    width: 100%;
+    float: none;
     height: auto !important;
     min-height: 31px;
     height: 31px;
     background: #ececec;
     margin: 0 0 1px 0;
-    padding: 0;
-}
-
-#page #cm-tabs li:first-child {
-    margin-left: 22px;
+    padding: 0 0 0 22px;
 }
 
 #page #cm-tabs li {
@@ -671,10 +653,6 @@ h1{ font-size: 20px }
     background: #85be0b;
     color: #ffffff !important;
     cursor: pointer;
-}
-
-#content-manager .edit_view {
-    display: block !important;
 }
 
 #content-manager.edit_view .navi {
@@ -893,7 +871,6 @@ div.date img{
 
 /* page layout */
 #page .container {
-    position: relative;
     float: left;
     width: auto;
     margin: 0 0 0 24px;
@@ -959,31 +936,22 @@ div.date img{
     width: auto;
 }
 
-#page .container.multiselect {
-    padding: 19px 0 0 0;
-}
-
 *+html #page .container.multiselect {
     clear: both;
-    width: 610px;
+    min-width: 610px;
 }
 
 #page .container.multiselect label.left {
-    width: auto;
-    position: absolute;
-    top: 0;
-    left: 0;
+    float: left !important;
+    width: 277px !important;
+    border: 0 !important;
+    margin-right: 56px;
 }
 
 #page .container.multiselect label.right {
-    width: auto !important;
-    position: absolute;
-    top: 0;
-    left: 336px;
-}
-
-#page .container.multiselect .ms2side__div {
-    padding: 0;
+    float: left !important;
+    width: 277px !important;
+    border: 0 !important;
 }
 
 #page .container.multiselect .ms2side__options {
@@ -1042,7 +1010,7 @@ div.date img{
     width: 434px;
 }
 
-/* page layout adjustments for navigation container */
+/* page layout adjustments for navigation tab */
 #page #navigation_container #page_alias_container {
     padding: 0 0 5px 0 !important;
 }
@@ -1079,7 +1047,7 @@ div.date img{
 }
 
 
-/* page layout adjustments for history container */
+/* page layout adjustments for history tab */
 #page_history .adminlist {
     margin: 12px 0 0 0;
 }
@@ -1126,7 +1094,7 @@ div.date img{
     width: 408px;
 }
 
-*+html #themes_toggle {/* ie7 fix */ 
+*+html #themes_toggle {
     clear: none !important;
 }
 
@@ -1190,6 +1158,7 @@ div.date img{
 }
 
 .ui-tabs {
+    position: static !important;
     border: 0 !important;
     border-radius: 0 !important;
     padding: 0 !important;

@@ -1,4 +1,4 @@
-<div id="sidebar_toggle" class="hide"></div>
+<div id="sidebar_toggle"></div>
 <ul id="cm-tabs" class="clearfix">
     <li><a href="#page_content" class="tab page_content">{TXT_CORE_CM_PAGE}</a></li>
     <li><a href="#page_meta" class="tab page_meta type_hidable type_content type_application type_fallback">{TXT_CORE_CM_META}</a></li>
@@ -150,8 +150,10 @@
     <div id="page_blocks" style="display: none;">
         <div id="blocks_toggle" class="toggle {BLOCKS_TOGGLE_CLASS}"><div class="indicator"></div><label>{TXT_CORE_CM_BLOCKS}</label></div>
         <div id="blocks_container" class="container multiselect" style="{BLOCKS_DISPLAY_STYLE}">
-            <label for="pageBlocksms2side__sx" class="left">{TXT_CORE_CM_BLOCKS_AVAILABLE}</label>
-            <label for="pageBlocksms2side__dx" class="right">{TXT_CORE_CM_BLOCKS_ASSIGNED}</label>
+            <div class="line small_space">
+                <label for="pageBlocksms2side__sx" class="left">{TXT_CORE_CM_BLOCKS_AVAILABLE}</label>
+                <label for="pageBlocksms2side__dx" class="right">{TXT_CORE_CM_BLOCKS_ASSIGNED}</label>
+            </div>
             <select id="pageBlocks" class="multiselect" multiple="multiple" name="pageBlocks[]"></select>
         </div>
     </div>
