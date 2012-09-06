@@ -203,7 +203,7 @@
         });
         
         // Checks and calculates the image crop input.
-        $J('input.crop_data').keyup(function () {
+        $J('input.crop_data').keyup(function (event) {
             if (event.keyCode != 9 && $J(this).val() == '') {
                 cancelSelection();
                 return;
