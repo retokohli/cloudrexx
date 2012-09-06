@@ -37,13 +37,15 @@ h1{ font-size: 20px }
 
 #content-manager .left {
     float: left;
-    width: 100% !important;
+    width: 100%;
     padding: 0;
+    vertical-align: top;
 }
 
 #content-manager .right {
     display: none;
     padding: 0;
+    vertical-align: top;
 }
 
 #content-manager.edit_view .left {
@@ -54,7 +56,11 @@ h1{ font-size: 20px }
 #content-manager.edit_view .right {
     display: table-cell;
     float: none;
-    width: 100%;
+    width: 100% !important;
+}
+
+*+html #content-manager.edit_view .left {
+    float: none;
 }
 
 *+html #content-manager.edit_view .right {
@@ -222,8 +228,31 @@ h1{ font-size: 20px }
 
 #site-tree .translations .translation {
     float: left;
-    width: auto;
-    margin: 0 7px 0 0;
+    width: 21px;
+    height: 18px;
+    margin: 6px 7px 6px 0;
+    line-height: 18px;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 10px;
+    color: #ffffff;
+    opacity: 0.8;
+}
+
+#site-tree .translations .translation.existent {
+    background: #9dcb3b;
+}
+
+#site-tree .translations .translation.inexistent {
+    background: #e45f5f;
+}
+
+#site-tree .translations .translation.draft {
+    background: url(../images/translation_draft.png) no-repeat center center;
+}
+
+#site-tree .translations .translation.fallback {
+    background: #949494;
 }
 
 #site-tree .module {
@@ -368,7 +397,11 @@ h1{ font-size: 20px }
     height: 16px;
     float: left;
     margin: 7px 0 0 10px;
-    background: url('../images/move.png') no-repeat right bottom;
+    background: url(../images/move.png) no-repeat right bottom;
+}
+
+*+html #site-tree .jstree-move {
+    margin: 7px 0 0 2px !important;
 }
 
 #site-tree .jstree-move * {
@@ -873,6 +906,10 @@ div.date img{
     padding: 0;
 }
 
+*+html #page .line {
+    min-width: 624px;
+}
+
 #page .line.small_space {
     padding: 0 0 3px 0 !important;
     margin: 0;
@@ -939,7 +976,7 @@ div.date img{
 }
 
 #page .container.multiselect label.right {
-    width: auto;
+    width: auto !important;
     position: absolute;
     top: 0;
     left: 336px;
@@ -1005,15 +1042,6 @@ div.date img{
     width: 434px;
 }
 
-#page #type_container .first {
-    width: 144px;
-    margin: 0 16px 0 0;
-}
-
-#page #type_container .second {
-    width: 408px;
-}
-
 /* page layout adjustments for navigation container */
 #page #navigation_container #page_alias_container {
     padding: 0 0 5px 0 !important;
@@ -1024,6 +1052,10 @@ div.date img{
     clear: both;
     width: auto;
     margin: 0 0 3px 0;
+}
+
+*+html #page #navigation_container #page_alias_container .page_alias {
+    width: 100%;
 }
 
 #page #navigation_container #page_slug_container #page_slug_base_url,
@@ -1083,6 +1115,15 @@ div.date img{
     float: left;
     width: 150px;
     margin: 0 8px 0 0;
+}
+
+#page #application_container .first {
+    width: 144px;
+    margin: 0 16px 0 0;
+}
+
+#page #application_container .second {
+    width: 408px;
 }
 
 *+html #themes_toggle {/* ie7 fix */ 
