@@ -34,6 +34,12 @@ class JsonNode implements JsonAdapter {
     private $nodeRepo = null;
     
     /**
+     * Reference to the Doctrine PageRepo
+     * @var \Cx\Model\ContentManager\Repository\PageRepository
+     */
+    private $pageRepo = null;
+    
+    /**
      * Reference to the Doctring LogRepository
      * @var \Gedmo\Loggable\Entity\Repository\CxLogEntryRepository
      */
@@ -57,6 +63,7 @@ class JsonNode implements JsonAdapter {
     public function __construct() {
         $this->em = \Env::em();
         $this->nodeRepo = $this->em->getRepository('\Cx\Model\ContentManager\Node');
+        $this->pageRepo = $this->em->getRepository('\Cx\Model\ContentManager\Page');
         $this->logRepo  = $this->em->getRepository('\Gedmo\Loggable\Entity\LogEntry');
         $this->messages = array();
 
@@ -110,6 +117,27 @@ class JsonNode implements JsonAdapter {
         if (isset($parameters['get']) && isset($parameters['get']['nodeid'])) {
             $nodeId = contrexx_input2raw($parameters['get']['nodeid']);
         }
+        if (isset($parameters['get']) && isset($parameters['get']['page'])) {
+            $pageId = contrexx_input2raw($parameters['get']['page']);
+            $page = $this->pageRepo->findOneBy(array('id' => $pageId));
+            $node = $page->getNode();
+            // #node_{id},#node_{id}
+            $openNodes = array();
+            while ($node && $node->getId() != $nodeId) {
+                $openNodes[] = '#node_' . $node->getId();
+                $node = $node->getParent();
+            }
+            if (!isset($_COOKIE['jstree_open'])) {
+                $_COOKIE['jstree_open'] = '';
+            }
+            $openNodes2 = explode(',', $_COOKIE['jstree_open']);
+            if ($openNodes2 == array(0=>'')) {
+                $openNodes2 = array();
+            }
+            $openNodes = array_merge($openNodes, $openNodes2);
+            $_COOKIE['jstree_open'] = implode(',', $openNodes);
+        }
+
         $recursive = false;
         if ($nodeId == 0 &&
                 isset($parameters['get']) &&
@@ -235,13 +263,8 @@ class JsonNode implements JsonAdapter {
         if (!is_object($root)) {
             throw new \Exception('Node not found (#' . $rootNodeId . ')');
         }
-        $logs = array();//$this->logRepo->getLatestLogsOfAllPages(array('objectId', 'username'));
 
-        //$actions = array();
-        $jsondata = $this->tree_to_jstree_array($root, $logs, !$recursive/*, $actions*/);
-        //$jsondata['actions'] = $actions;
-        /*print(memory_get_usage());
-        die();*/
+        $jsondata = $this->tree_to_jstree_array($root, !$recursive/*, $actions*/);
 
         return $jsondata;
     }
@@ -252,7 +275,7 @@ class JsonNode implements JsonAdapter {
      * @param Array $logs List of all logs (used to get the username)
      * @return String JSON data
      */
-    private function tree_to_jstree_array($root, $logs, $flat = false, &$actions = null) {
+    private function tree_to_jstree_array($root, $flat = false, &$actions = null) {
         $fallback_langs = $this->fallbacks;
 
         $sorted_tree = array();
@@ -280,7 +303,6 @@ class JsonNode implements JsonAdapter {
         $output     = array();
         $tree       = array();
         $nodeLevels = array();
-        
         foreach ($sorted_tree as $node) {
             $data       = array();
             $metadata   = array();
@@ -290,7 +312,7 @@ class JsonNode implements JsonAdapter {
             $toggled = (isset($open_nodes[$node->getId()]) &&
                         $open_nodes[$node->getId()]);
             if (!$flat || $toggled) {
-                $children = $this->tree_to_jstree_array($node, $logs, $flat, $actions);
+                $children = $this->tree_to_jstree_array($node, $flat, $actions);
             }
             $last_resort = 0;
 
@@ -387,9 +409,11 @@ class JsonNode implements JsonAdapter {
             
             $state = array();
             if (!$node->getChildren()->isEmpty()) {
-                $state = array('state' => 'closed');
-            } else if ($toggled) {
-                $state = array('state' => 'open');
+                if ($toggled) {
+                    $state = array('state' => 'open');
+                } else {
+                    $state = array('state' => 'closed');
+                }
             }
 
             $nodeLevels[$node->getId()] = $node->getLvl();
