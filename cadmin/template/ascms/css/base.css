@@ -643,7 +643,6 @@ div.infobox_body {
 }
 
 table.adminlist {
-    position: relative;
     bottom: 1px;
     clear: both;
     empty-cells: show;
