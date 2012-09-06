@@ -1202,13 +1202,21 @@ $objTemplate->addBlock('CONTENT_FILE', 'page_template', $page_template);
 $languageExtractor->setPlaceholdersIn($page, $url, $objTemplate);
 
 // Set global content variables.
-$page_content = str_replace('{PAGE_URL}', htmlspecialchars($objInit->getPageUri()), $page_content);
-$page_content = str_replace('{STANDARD_URL}', $objInit->getStandardUri(), $page_content);
-$page_content = str_replace('{MOBILE_URL}', $objInit->getMobileUri(), $page_content);
-$page_content = str_replace('{PRINT_URL}', $objInit->getPrintUri(), $page_content);
-$page_content = str_replace('{PDF_URL}', $objInit->getPDFUri(), $page_content);
-$page_content = str_replace('{APP_URL}', $objInit->getAppUri(), $page_content);
-$page_content = str_replace('{TITLE}', $page_title, $page_content);
+$page_content = str_replace('{PAGE_URL}',        htmlspecialchars($objInit->getPageUri()), $page_content);
+$page_content = str_replace('{STANDARD_URL}',    $objInit->getStandardUri(), $page_content);
+$page_content = str_replace('{MOBILE_URL}',      $objInit->getMobileUri(),   $page_content);
+$page_content = str_replace('{PRINT_URL}',       $objInit->getPrintUri(),    $page_content);
+$page_content = str_replace('{PDF_URL}',         $objInit->getPDFUri(),      $page_content);
+$page_content = str_replace('{APP_URL}',         $objInit->getAppUri(),      $page_content);
+$page_content = str_replace('{TITLE}',           $page_title, $page_content);
+$page_content = str_replace('{CONTACT_EMAIL}',   isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '', $page_content);
+$page_content = str_replace('{CONTACT_COMPANY}', isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '', $page_content);
+$page_content = str_replace('{CONTACT_ADDRESS}', isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '', $page_content);
+$page_content = str_replace('{CONTACT_ZIP}',     isset($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : '', $page_content);
+$page_content = str_replace('{CONTACT_PLACE}',   isset($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : '', $page_content);
+$page_content = str_replace('{CONTACT_COUNTRY}', isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '', $page_content);
+$page_content = str_replace('{CONTACT_PHONE}',   isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '', $page_content);
+$page_content = str_replace('{CONTACT_FAX}',     isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '', $page_content);
 
 // ACCESS: parse access_logged_in[1-9] and access_logged_out[1-9] blocks
 FWUser::parseLoggedInOutBlocks($page_content);
@@ -1939,11 +1947,19 @@ $time = round(((float)$parsingtime[0] + (float)$parsingtime[1]) - ((float)$start
 $objTemplate->setVariable('PARSING_TIME', $time);
 
 // Allow STANDARD_URL, MOBILE_URL, PRINT_URL, PDF_URL & APP_URL in sidebar.
-$themesPages['sidebar'] = str_replace('{STANDARD_URL}', $objInit->getStandardUri(), $themesPages['sidebar']);
-$themesPages['sidebar'] = str_replace('{MOBILE_URL}', $objInit->getMobileUri(), $themesPages['sidebar']);
-$themesPages['sidebar'] = str_replace('{PRINT_URL}', $objInit->getPrintUri(), $themesPages['sidebar']);
-$themesPages['sidebar'] = str_replace('{PDF_URL}', $objInit->getPDFUri(), $themesPages['sidebar']);
-$themesPages['sidebar'] = str_replace('{APP_URL}', $objInit->getAppUri(), $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{STANDARD_URL}',    $objInit->getStandardUri(), $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{MOBILE_URL}',      $objInit->getMobileUri(),   $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{PRINT_URL}',       $objInit->getPrintUri(),    $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{PDF_URL}',         $objInit->getPDFUri(),      $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{APP_URL}',         $objInit->getAppUri(),      $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{CONTACT_EMAIL}',   isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '', $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{CONTACT_COMPANY}', isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '', $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{CONTACT_ADDRESS}', isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '', $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{CONTACT_ZIP}',     isset($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : '', $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{CONTACT_PLACE}',   isset($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : '', $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{CONTACT_COUNTRY}', isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '', $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{CONTACT_PHONE}',   isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '', $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{CONTACT_FAX}',     isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '', $themesPages['sidebar']);
 
 $objTemplate->setVariable(array(
     'SIDEBAR_FILE' => $themesPages['sidebar'],
