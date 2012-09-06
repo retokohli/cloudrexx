@@ -70,10 +70,19 @@ $this->bytes = memory_get_peak_usage();
         while (count($nodeStack)) {
             $node = array_pop($nodeStack);
             $children = $node->getChildren();
+            
+            $children2 = array();
+            foreach ($children as $child) {
+                $children2[$child->getLft()] = $child;
+            }
+            ksort($children2);
+            $children = $children2;
+            unset($children2);
+            
             $hasChilds = count($children) > 0;
             if ($hasChilds && !$dontDescend) {
-                for ($i = count($children); $i > 0; $i--) {
-                    $child = $children[$i - 1];
+                $children = array_reverse($children, true);
+                foreach ($children as $child) {
                     array_push($nodeStack, $child);
                 }
             }
