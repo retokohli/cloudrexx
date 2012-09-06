@@ -1429,6 +1429,13 @@ class Shopmanager extends ShopLibrary
     {
         global $_ARRAYLANG;
 
+// TODO: Temporary.  Remove in release with working update
+// Returns NULL on missing entries even when other settings are properly loaded
+$vat_number = SettingDb::getValue('vat_number');
+if (is_null($vat_number)) {
+    SettingDb::add('', '12345678', 1, 'text', '', 'config');
+}
+
         // Shop general settings template
         self::$objTemplate->addBlockfile('SHOP_SETTINGS_FILE',
             'settings_block', 'module_shop_settings_vat.html');
