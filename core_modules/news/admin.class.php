@@ -1500,16 +1500,16 @@ class newsManager extends newsLibrary {
                 $status = 'checked="checked"';
             }
 
-            $startDate = strtotime($objResult->fields['startdate']);
-            $endDate = strtotime($objResult->fields['enddate']);
+            $startDate = ($objResult->fields['startdate'] !== '0000-00-00 00:00:00') ? strtotime($objResult->fields['startdate']) : 0;
+            $endDate = ($objResult->fields['enddate'] !== '0000-00-00 00:00:00') ? strtotime($objResult->fields['enddate']) : 0;
 
             if (!empty($startDate) || !empty($endDate)) {
                 $this->_objTpl->setVariable(array(
                     'NEWS_SCHEDULED'         => 'checked="checked"',
-                    'NEWS_SCHEDULED_DISPLAY' => 'display:block;'
+                    'NEWS_SCHEDULED_DISPLAY' => 'display: block;'
                 ));
             } else {
-                $this->_objTpl->setVariable('NEWS_SCHEDULED_DISPLAY','display:none;');
+                $this->_objTpl->setVariable('NEWS_SCHEDULED_DISPLAY','display: none;');
             }
 
             if (empty($objResult->fields['redirect'])) {
