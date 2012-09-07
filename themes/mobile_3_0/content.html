@@ -1,0 +1,19 @@
+<div id="wrapper_navtree">
+	<a href="index.php" style="float:left;">Home&nbsp;&gt;&nbsp;</a>{NAVTREE}{TITLE}
+</div>
+
+<script type="text/javascript">
+    if(document.getElementById('ntr').innerHTML == '') {
+	    document.getElementById('nti').style.display = 'block';
+    }
+</script>
+
+<div id="subnavigation">
+{SUBNAVBAR_FILE}
+</div>
+
+<div id="wrapper_content">
+	<div style="clear: both;"><h1>{CONTENT_TITLE}</h1>{CONTENT_TEXT}</div>
+</div>
+
+<div style="clear: both;"><br /></div>
