@@ -41,7 +41,7 @@
         <script type="text/javascript">
             $J(document).ready(function () {
                 if (window.PIE) {
-                    var elements = '#back-top, #navigation, #navigation li.first, #navigation li.last, #navigation li ul, #navigation li.level-2.last';
+                    var elements = '#back-top, #navigation, #navigation li.first, #navigation li.last, #navigation li ul, #navigation li.level-2.last, #news-links';
                     $J(elements).each(function () {
                         PIE.attach(this);
                     });
@@ -77,14 +77,14 @@
             </section>
             
             <footer id="footer-top">
-                <ul class="footer-left">
+                <ul class="footer-left horizontal-list">
                     <li>Page view:&nbsp;&nbsp;<a href="{STANDARD_URL}">Normal</a></li>
                     <li><a href="{MOBILE_URL}">Mobile</a></li>
                     <li><a href="{PRINT_URL}">Print</a></li>
                     <li><a href="{PDF_URL}">PDF</a></li>
                     <li class="last"><a href="{APP_URL}">App</a></li>
                 </ul>
-                <ul class="footer-right no-bg">
+                <ul class="footer-right horizontal-list no-bg">
                     <li><a href="#"><img src="themes/standard_3_0/images/twitter-icon.png" alt="Twitter" /></a></li>
                     <li><a href="#"><img src="themes/standard_3_0/images/facebook-icon.png" alt="Facebook" /></a></li>
                     <li><a href="#"><img src="themes/standard_3_0/images/linkedin-icon.png" alt="LinkedIn" /></a></li>
@@ -97,7 +97,7 @@
             <footer id="footer-bottom">
                 <div class="footer-left">&copy; 2012 <a href="http://www.contrexx.com" target="_blank">Contrexx &reg;</a> Standard Theme</div>
                 <div class="footer-right">
-                    <ul>
+                    <ul class="horizontal-list">
                         <li><a href="Services/Rechtliche-Hinweise">Rechtliche Hinweise</a></li>
                         <li class="last"><a href="index.php?section=imprint">Impressum</a></li>
                     </ul>
