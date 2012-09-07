@@ -69,7 +69,7 @@ body {
 }
 
 a {
-    color: #0A85C8;
+    color: #036DA7;
     text-decoration: none;
 }
 
@@ -83,6 +83,19 @@ p {
 
 strong {
     font-weight: bold;
+}
+
+ul.horizontal-list li {
+    float: left;
+    padding: 0 10px 0 0;
+    margin: 0 10px 0 0;
+    background: url('images/divider.gif') no-repeat right 6px;
+}
+
+ul.horizontal-list li.last {
+    padding: 0;
+    margin: 0;
+    background: none;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -127,6 +140,7 @@ textarea {
     padding: 7px 12px 8px 12px;
     margin: 0;
     color: #7D7D7D;
+    font-family: 'Ubuntu';
     border: 1px solid #DDDDDD;
     background: #FFFFFF;
     outline: 0;

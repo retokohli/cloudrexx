@@ -355,7 +355,7 @@
 
 #subnavigation li a:hover,
 #subnavigation li a.active {
-    color: #0A85C8;
+    color: #036DA7;
 }
 
 #page {
@@ -369,24 +369,10 @@ footer {
     width: 100%;
 }
 
-footer li {
-    float: left;
-    padding: 0 10px 0 0;
-    margin: 0 10px 0 0;
-    background: url('images/divider.gif') no-repeat right 6px;
-}
-
-footer .no-bg li {
+footer .horizontal-list.no-bg li {
     float: left;
     padding: 0 5px 0 0;
     margin: 0 5px 0 0;
-    background: none;
-}
-
-footer li.last,
-footer .no-bg li.last {
-    padding: 0;
-    margin: 0;
     background: none;
 }
 
