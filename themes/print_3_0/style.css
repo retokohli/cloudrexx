@@ -1,0 +1,120 @@
+/* GENERAL  ------------------------------------------------------------------------ */
+body {
+	font-family: Tahoma;	
+	margin: 0px;
+	padding: 0px;
+	background-color: #ffffff;
+	color: #000000;
+}
+/* CONTAINER ----------------------------------------------------------------------- */
+#container {
+	width: 700px;
+	padding: 0px 0px 0px 0px;
+	margin: 20px 20px 20px 20px;
+	border: 1px solid #000000;
+}
+/* HEADER -------------------------------------------------------------------------- */
+#header {
+	width: 700px;
+	height: 40px;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	border-bottom: 1px solid #000000;
+}
+#header_left {
+	float: left;
+	width: 680px;
+	padding: 0px 0px 0px 10px;
+	margin: 0px 0px 0px 0px;
+}
+#header_left h1 {
+	margin: 0px 0px 0px 0px;
+	padding: 5px 0px 5px 0px;
+	font-size: 20px;
+	font-weight: normal;
+	color: #000000;
+}
+#header_right {
+	float: right;
+	width: 335px;
+	padding: 0px 10px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	text-align: right;
+}
+#header_right h2 {
+	margin: 0px 0px 0px 0px;
+	padding: 9px 0px 9px 0px;
+	font-size: 18px;
+	font-weight: normal;
+	color: #000000;
+}
+/* CONTENT ------------------------------------------------------------------------- */
+#content {
+	width: 700px;
+	min-height: 350px;
+	height: auto !important;
+	height: 348px;
+	padding: 5px 0px 20px 0px;
+	margin: 0px 0px 0px 0px;
+	border-bottom: 1px solid #000000;
+}
+#content h1 {
+	margin: 0px 0px 0px 0px;
+	padding: 0px 10px 5px 10px;
+	border-bottom: 1px solid #000000;
+	font-size: 14px;
+	font-weight: bold;
+	color: #000000;
+}
+#content h1 a, #content h1 a:visited {
+	text-decoration: none;	
+	color: #000000;
+}
+#content h1 a:hover {
+	color: #777777;
+}
+#content_text {
+	margin: 0px 0px 0px 0px;
+	padding: 10px 10px 10px 10px;
+	font-size: 11px;
+}
+#content_text a, #content_text a:visited {
+	text-decoration: underline;
+	font-weight: bold;
+	color: #000000;
+}
+#content_text a:hover {
+	color: #777777;
+}
+/* FOOOTER ------------------------------------------------------------------------- */
+#footer {
+	width: 700px;
+	height: 20px;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	font-size: 9px;
+}
+#footer_left {
+	float: left;
+	width: 535px;
+	padding: 4px 0px 0px 10px;
+	margin: 0px 0px 0px 0px;
+}
+#footer_right {
+	float: right;
+	width: 135px;
+	padding: 4px 10px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	text-align: right;
+}
+#footer_left a, #footer_left a:visited, #footer_right a, #foooter_right a:visited {
+	text-decoration: none;
+	color: #000000;
+}
+#footer_left a:hover, #footer_right a:hover {
+	color: #777777;
+}
+
+#newsbox {
+         display: none;
+}
