@@ -1,0 +1,214 @@
+/* Start CSS Reset */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+
+body {
+	line-height: 1;
+}
+
+ol, ul {
+	list-style: none;
+}
+
+blockquote, q {
+	quotes: none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+/* End CSS Reset */
+
+@font-face {
+  font-family:'Ubuntu';
+  src: url('fonts/ubuntu.eot'); /* here you go, IE */
+}
+
+@font-face {
+  font-family:'Ubuntu';
+  src: url('fonts/ubuntu.ttf') format('truetype');
+}
+
+body {
+    color: #323F55;
+    font-family: 'Ubuntu', Arial, Helvetica;
+    font-size: 13px;
+    line-height: 1.5em;
+    background: #F1F1F1 url('images/bg.gif') repeat-x;
+}
+
+a {
+    color: #0A85C8;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #323F55;
+}
+
+p {
+    padding: 0 0 10px 0;
+}
+
+strong {
+    font-weight: bold;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    padding: 10px 0 10px 0;
+    line-height: 1;
+}
+
+h1 {
+    font-size: 30px;
+}
+
+h1.first {
+    padding-top: 0;
+    margin: 0 0 10px 0;
+    border-bottom: 1px solid #737A86;
+}
+
+h2 {
+    font-size: 26px;
+}
+
+h3 {
+    font-size: 22px;
+}
+
+h4 {
+    font-size: 18px;
+}
+
+h5 {
+    font-size: 17px;
+}
+
+h6 {
+    font-size: 16px;
+}
+
+input,
+select,
+textarea {
+    width: 300px;
+    padding: 7px 12px 8px 12px;
+    margin: 0;
+    color: #7D7D7D;
+    border: 1px solid #DDDDDD;
+    background: #FFFFFF;
+    outline: 0;
+}
+
+select {
+    width: 326px;
+}
+
+input:hover,
+input:focus,
+select:hover,
+select:focus,
+textarea:hover,
+textarea:focus {
+    border: 1px solid #BBBBBB;
+    background: #FCFCFC;
+    outline: 0;
+}
+
+input[type=submit],
+input[type=reset],
+input[type=radio],
+input[type=checkbox] {
+    width: auto;
+}
+
+input[type=radio] {
+    float: left;
+    margin: 3px 10px 3px 0;
+}
+
+input[type=checkbox] {
+    float: left;
+    margin: 4px 10px 4px 0;
+}
+
+input[type=text] {
+    line-height: 17px;
+}
+
+button,
+input[type=submit],
+input[type=reset] {
+    padding: 8px 10px 7px 10px;
+    color: #414141;
+    font-size: 13px;
+    line-height: 17px;
+    text-decoration: none;
+    cursor: pointer;
+    border: 0;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -o-border-radius: 5px;
+    border-color: white #F8F8F8 #F2F2F2 #F8F8F8;
+    box-shadow: 1px 1px 2px #C5C5C5;
+    -moz-box-shadow: 1px 1px 2px #C5C5C5;
+    -webkit-box-shadow: 1px 1px 2px #C5C5C5;
+    -o-box-shadow: 1px 1px 2px #C5C5C5;
+    background: #F5F5F5;
+    transition: all ease .2s;
+    -moz-transition: all ease .2s;
+    -webkit-transition: all ease .2s;
+    -o-transition: all ease .2s;
+}
+
+.ie7 button,
+.ie8 button {
+    border: 1px solid #DDDDDD;
+}
+
+button:hover,
+input[type=submit]:hover,
+input[type=reset]:hover {
+    background: #E8E8E8;
+}
+
+legend {
+    display: none;
+}
+
+fieldset {
+    border: 0;
+}
