@@ -26,6 +26,10 @@ class URL {
      */
     protected $path = null;
     /**
+     * @var string Virtual language directory
+     */
+    protected $langDir = '';
+    /**
      * The/Module
      * index.php
      * The/Special/Module/With/Params
@@ -74,10 +78,10 @@ class URL {
 
         $this->domain = $matches[1];
         if(count($matches) > 2) {
-            $this->path = $matches[2];
+            $this->setPath($matches[2]);
+        } else {
+            $this->suggest();
         }
-
-        $this->suggest();
     }
     
     /**
@@ -115,6 +119,16 @@ class URL {
     }
 
     public function setPath($path) {
+        $pathOffset = substr(ASCMS_PATH_OFFSET, 1);
+        if (substr($path, 0, strlen($pathOffset)) == $pathOffset) {
+            $path = substr($path, strlen($pathOffset) + 1);
+        }
+        $path = explode('/', $path);
+        if (\FWLanguage::getLanguageIdByCode($path[0]) !== false) {
+            $this->langDir = $path[0];
+            unset($path[0]);
+        }
+        $path = implode('/', $path);
         $this->path = $path;
         $this->suggest();
     }
@@ -248,17 +262,96 @@ class URL {
         return new URL($protocol.'://'.$host.'/'.$request.$getParams);
     }
     
+    /**
+     * Returns an Url object for module, cmd and lang
+     * @todo There could be more than one page using the same module and cmd per lang
+     * @param string $module Module name
+     * @param string $cmd (optional) Module command, default is empty string
+     * @param int $lang (optional) Language to use, default is FRONTENT_LANG_ID
+     * @param array $parameters (optional) HTTP GET parameters to append
+     * @param string $protocol (optional) The protocol to use
+     * @return \Cx\Core\Routing\URL Url object for the supplied module, cmd and lang
+     */
+    public static function fromModuleAndCmd($module, $cmd = '', $lang = '', $parameters = array(), $protocol = '') {
+        if ($lang == '') {
+            $lang = FRONTEND_LANG_ID;
+        }
+        $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+        $page = $pageRepo->findOneBy(array(
+            'module' => $module,
+            'cmd' => $cmd,
+            'lang' => $lang,
+        ));
+        return static::fromPage($page, $parameters, $protocol);
+    }
+    
+    /**
+     * Returns the URL object for a page id
+     * @param int $pageId ID of the page you'd like the URL to
+     * @param array $parameters (optional) HTTP GET parameters to append
+     * @param string $protocol (optional) The protocol to use
+     * @return \Cx\Core\Routing\URL Url object for the supplied page id 
+     */
+    public static function fromPageId($pageId, $parameters = array(), $protocol = '') {
+        $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+        $page = $pageRepo->findOneBy(array(
+            'id' => $pageId,
+        ));
+        return static::fromPage($page, $parameters, $protocol);
+    }
+    
+    /**
+     * Returns the URL object for a page
+     * @global type $_CONFIG
+     * @param \Cx\Model\ContentManager\Page $page Page to get the URL to
+     * @param array $parameters (optional) HTTP GET parameters to append
+     * @param string $protocol (optional) The protocol to use
+     * @return \Cx\Core\Routing\URL Url object for the supplied page
+     */
+    public static function fromPage($page, $parameters = array(), $protocol = '') {
+        global $_CONFIG;
+        
+        if ($protocol == '') {
+            $protocol = ASCMS_PROTOCOL;
+        }
+        $host = $_CONFIG['domainUrl'];
+        $offset = ASCMS_PATH_OFFSET;
+        $path = $page->getPath();
+        $langDir = '';
+        if (!defined('BACKEND_LANG_ID')) {
+            // we are in frontend mode, so we do use virtual language dirs
+            $langDir = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
+        }
+        $getParams = '';
+        if (count($parameters)) {
+            $paramArray = array();
+            foreach ($parameters as $key=>$value) {
+                $paramArray[] = $key . '=' . $value;
+            }
+            $getParams = '?' . implode('&', $paramArray);
+        }
+        return new URL($protocol.'://'.$host.$offset.'/'.$langDir.$path.$getParams);
+    }
+    
     public function toString() {
-        $this->domain . $this;
+        return $this->domain . substr($this, 1);
     }
     
     public function getLangDir() {
         $lang_dir = '';
         if (!defined('BACKEND_LANG_ID')) {
             // we are in frontend mode, so we do use virtual language dirs
-            $lang_dir = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID) . '/';
+            if ($this->langDir == '') {
+                $lang_dir = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID) . '/';
+            } else {
+                $lang_dir = $this->langDir;
+            }
         }
         return $lang_dir;
+    }
+    
+    public function setLangDir($langDir) {
+        $this->lang_dir = $langDir;
     }
 
     /**
@@ -269,7 +362,7 @@ class URL {
      */
     public function __toString() {
         return ASCMS_PATH_OFFSET . '/' .
-                $this->getLangDir() .
+                $this->getLangDir() . '/' .
                 $this->path; // contains path (except for PATH_OFFSET and virtual language dir) and params
     }
 }
