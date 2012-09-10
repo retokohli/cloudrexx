@@ -1,9 +1,5 @@
 <!-- start mailtemplate_edit.html -->
-<script type="text/javascript">
-// <![CDATA[
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,15,-50];
-// ]]>
-</script><form name="form_mailtemplate_edit" method="post" action="{URI_BASE}&amp;act=mailtemplate_overview" >
+<form name="form_mailtemplate_edit" method="post" action="{URI_BASE}&amp;act=mailtemplate_overview" >
   <table class="adminlist" border="0" cellspacing="0" cellpadding="2" width="100%" summary="">
     <colgroup><col width="25%" /><col width="75%" /></colgroup>
     <thead>
@@ -31,8 +27,8 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
           {MAILTEMPLATE_NAME}
 <!-- BEGIN core_mailtemplate_value_note -->
           &nbsp;
-          <span class="note" onmouseout="htm()"
-              onmouseover='stm(["","{MAILTEMPLATE_VALUE_NOTE}"],Style[0]);'>
+          <span class="tipmessage info" onmouseout="htm()"
+              onmouseover='stm(["","{MAILTEMPLATE_VALUE_NOTE}"],tm_style);'>
           </span>
 <!-- END core_mailtemplate_value_note -->
         </td>
