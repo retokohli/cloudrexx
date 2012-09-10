@@ -156,11 +156,9 @@ class Navigation
         $node = $this->page->getNode()->getParent();
         $result = '';
         while($node->getLvl() > 0) {
-            $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
-
             $page = $node->getPage($lang);
             $title = $page->getTitle();
-            $path = $pageRepo->getPath($page);
+            $path = $page->getPath();
             $result = '<a href="'.$path.'" title="'.contrexx_raw2xhtml($title).'">'.contrexx_raw2xhtml($title).'</a>'.$this->separator.' '.$result;
             $node = $node->getParent();
         }
