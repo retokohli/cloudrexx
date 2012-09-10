@@ -5,7 +5,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @author      Reto Kohli <reto.kohli@comvation.com> (Rewritten statically)
- * @version     2.2.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  core
  */
@@ -19,7 +19,7 @@ if (stristr(__FILE__, $_SERVER['PHP_SELF'])) {
  * Creates the paging
  * @package     contrexx
  * @subpackage  core
- * @version     2.2.0
+ * @version     3.0.0
  * @author      Reto Kohli <reto.kohli@comvation.com> (Rewritten statically)
  */
 class Paging
@@ -86,13 +86,13 @@ class Paging
         if ($numof_rows % $results_per_page) {
             $corr_value = $numof_rows % $results_per_page;
         }
-        
+
         $requestUrl = \Env::get('Resolver')->getUrl();
         $firstUrl = clone $requestUrl;
         $firstUrl->setParam($parameter_name, 0);
         $lastUrl = clone $requestUrl;
         $lastUrl->setParam($parameter_name, ($numof_rows - $corr_value));
-        
+
         // Set up the base navigation entries
         $array_paging = array(
             'first' => '<a class="pagingFirst" href="'.$firstUrl.'">',

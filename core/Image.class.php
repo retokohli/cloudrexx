@@ -2,7 +2,7 @@
 
 /**
  * Image handling
- * @version     2.2.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  core
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -16,7 +16,7 @@
  * Includes access methods and data layer.
  * Do not, I repeat, do not access private fields, or even try
  * to access the database directly!
- * @version     2.2.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  core
  * @copyright   CONTREXX CMS - COMVATION AG

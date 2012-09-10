@@ -6,7 +6,7 @@ use Cx\Lib\UpdateUtil as UpdateUtil;
  * Manages settings stored in the database
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
- * @version     2.2.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -19,7 +19,7 @@ use Cx\Lib\UpdateUtil as UpdateUtil;
  * {@see SettingDb::init()} before calling getValue() for the first time!
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
- * @version     2.2.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
