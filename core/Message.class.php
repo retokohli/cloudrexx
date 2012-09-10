@@ -6,7 +6,7 @@
  * Handles status messages
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     0.1
+ * @version     3.0.0
  * @package     Contrexx
  * @subpackage  Core
 */
@@ -17,7 +17,7 @@
  * Handles status messages on single pages or across redirects
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     0.1
+ * @version     3.0.0
  * @package     Contrexx
  * @subpackage  Core
  * @todo        Distinguish between flash and deferred messages

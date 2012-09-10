@@ -4,7 +4,7 @@ use Cx\Lib\UpdateUtil as UpdateUtil;
 
 /**
  * Text (core version)
- * @version     2.3.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  core
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -18,7 +18,7 @@ use Cx\Lib\UpdateUtil as UpdateUtil;
  * Do not, I repeat, do not mess with protected fields, or even try
  * to access the database directly (unless you know what you are doing,
  * but you most probably don't).
- * @version     2.3.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  core
  * @copyright   CONTREXX CMS - COMVATION AG

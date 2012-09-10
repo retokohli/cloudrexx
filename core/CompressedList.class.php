@@ -7,7 +7,7 @@
  * represented as strings.
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     1.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  core
  */
@@ -59,7 +59,7 @@ require_once(ASCMS_CORE_PATH.'/validator.inc.php');
  * @todo        Add better Examples
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     1.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  core
  */

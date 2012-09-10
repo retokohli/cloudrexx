@@ -2,7 +2,7 @@
 
 /**
  * Core Creditcard class
- * @version     2.2.0
+ * @version     3.0.0
  * @since       2.2.0
  * @package     contrexx
  * @subpackage  core
@@ -13,7 +13,7 @@
 
 /**
  * Creditcard helper methods
- * @version     2.2.0
+ * @version     3.0.0
  * @since       2.2.0
  * @package     contrexx
  * @subpackage  core

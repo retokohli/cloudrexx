@@ -6,7 +6,7 @@
  * Provides some commonly used HTML elements
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     2.2.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_hotelcard
  */
@@ -48,7 +48,7 @@ define('HTML_CSS_DISPLAY_BLOCK', 'display:block;');
  * Provides some commonly used HTML elements
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     2.2.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_hotelcard
  */

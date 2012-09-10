@@ -4,7 +4,7 @@
  * HTML Tag helpers
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     2.2.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_hotelcard
  */
@@ -13,7 +13,7 @@
  * HTML Tag Class
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     2.2.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_hotelcard
  */
