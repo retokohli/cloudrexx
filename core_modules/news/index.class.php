@@ -206,15 +206,18 @@ class news extends newsLibrary {
         LinkGenerator::parseTemplate($text);
         LinkGenerator::parseTemplate($newsTeaser);
 
+        $objSubResult = $objDatabase->Execute('SELECT count(`id`) AS `countComments` FROM `'.DBPREFIX.'module_news_comments` WHERE `newsid` = '.$newsid);
+
         $this->_objTpl->setVariable(array(
-           'NEWS_DATE'          => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
-           'NEWS_TITLE'         => $newstitle,
-           'NEWS_TEXT'          => $text,
-           'NEWS_TEASER_TEXT'   => $newsTeaser,
-           'NEWS_LASTUPDATE'    => $newsLastUpdate,
-           'NEWS_SOURCE'        => $newsSource,
-           'NEWS_URL'           => $newsUrl,
-           'NEWS_CATEGORY_NAME' => contrexx_raw2xhtml($objResult->fields['catname']),
+           'NEWS_DATE'           => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
+           'NEWS_TITLE'          => $newstitle,
+           'NEWS_TEXT'           => $text,
+           'NEWS_TEASER_TEXT'    => $newsTeaser,
+           'NEWS_LASTUPDATE'     => $newsLastUpdate,
+           'NEWS_SOURCE'         => $newsSource,
+           'NEWS_URL'            => $newsUrl,
+           'NEWS_CATEGORY_NAME'  => contrexx_raw2xhtml($objResult->fields['catname']),
+           'NEWS_COUNT_COMMENTS' => contrexx_raw2xhtml($objSubResult->fields['countComments'].' '.$_ARRAYLANG['TXT_NEWS_COMMENTS']),
 // TODO: create a new methode from which we can fetch the name of the 'type' (do not fetch it from within the same SQL query of which we collect any other data!)
            //'NEWS_TYPE_NAME' => ($this->arrSettings['news_use_types'] == 1 ? htmlentities($objResult->fields['typename'], ENT_QUOTES, CONTREXX_CHARSET) : '')
         ));
@@ -698,14 +701,14 @@ class news extends newsLibrary {
     private function getHeadlines() {
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
-        $selected_cat       = '';
-        $selected_type      = '';
+        $selected_cat      = '';
+        $selected_type     = '';
         $selectedPublisher = '';
-        $selectedAuthor     = '';
-        $newsfilter = '';
-        $paging     = '';
-        $pos        = 0;
-        $i          = 0;
+        $selectedAuthor    = '';
+        $newsfilter        = '';
+        $paging            = '';
+        $pos               = 0;
+        $i                 = 0;
 
         if (isset($_GET['pos'])) {
             $pos = intval($_GET['pos']);
@@ -919,21 +922,24 @@ class news extends newsLibrary {
                 $author = FWUser::getParsedUserTitle($objResult->fields['author_id'], $objResult->fields['author']);
                 $publisher = FWUser::getParsedUserTitle($objResult->fields['publisher_id'], $objResult->fields['publisher']);
 
+                $objSubResult = $objDatabase->Execute('SELECT count(`id`) AS `countComments` FROM `'.DBPREFIX.'module_news_comments` WHERE `newsid` = '.$objResult->fields['newsid']);
+
                 $this->_objTpl->setVariable(array(
-                   'NEWS_ID'            => $newsid,
-                   'NEWS_CSS'           => 'row'.($i % 2 + 1),
-                   'NEWS_TEASER'        => nl2br($objResult->fields['teaser_text']),
-                   'NEWS_TITLE'         => contrexx_raw2xhtml($newstitle),
-                   'NEWS_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
-                   'NEWS_DATE'          => date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['newsdate']),
-                   'NEWS_LINK_TITLE'    => $htmlLinkTitle,
-                   'NEWS_LINK'          => $htmlLink,
-                   'NEWS_LINK_URL'      => contrexx_raw2xhtml($newsUrl),
-                   'NEWS_CATEGORY'      => stripslashes($objResult->fields['name']),
+                   'NEWS_ID'             => $newsid,
+                   'NEWS_CSS'            => 'row'.($i % 2 + 1),
+                   'NEWS_TEASER'         => nl2br($objResult->fields['teaser_text']),
+                   'NEWS_TITLE'          => contrexx_raw2xhtml($newstitle),
+                   'NEWS_LONG_DATE'      => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
+                   'NEWS_DATE'           => date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['newsdate']),
+                   'NEWS_LINK_TITLE'     => $htmlLinkTitle,
+                   'NEWS_LINK'           => $htmlLink,
+                   'NEWS_LINK_URL'       => contrexx_raw2xhtml($newsUrl),
+                   'NEWS_CATEGORY'       => stripslashes($objResult->fields['name']),
 // TODO: fetch typename from a newly to be created separate methode
                    //'NEWS_TYPE'          => ($this->arrSettings['news_use_types'] == 1 ? stripslashes($objResult->fields['typename']) : ''),
-                   'NEWS_PUBLISHER'     => contrexx_raw2xhtml($publisher),
-                   'NEWS_AUTHOR'        => contrexx_raw2xhtml($author),
+                   'NEWS_PUBLISHER'      => contrexx_raw2xhtml($publisher),
+                   'NEWS_AUTHOR'         => contrexx_raw2xhtml($author),
+                   'NEWS_COUNT_COMMENTS' => contrexx_raw2xhtml($objSubResult->fields['countComments'].' '.$_ARRAYLANG['TXT_NEWS_COMMENTS']),
                 ));
 
                 if (!empty($image)) {
