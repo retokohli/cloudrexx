@@ -30,7 +30,6 @@ class FileBrowser {
     public $_path = '';
     public $_iconWebPath = '';
     public $_frontendLanguageId = null;
-    public $_absoluteURIs = false;
     public $_mediaType = '';
     public $_arrWebpages = array();
     public $_arrMediaTypes = array(
@@ -67,7 +66,6 @@ class FileBrowser {
         $this->_iconPath = ASCMS_MODULE_IMAGE_WEB_PATH.'/fileBrowser/';
         $this->_path = $this->_getPath();
         $this->_setFrontendLanguageId();
-        $this->_checkURIReturnType();
         $this->_mediaType = $this->_getMediaType();
 
         $this->_shopEnabled = $this->_checkForModule('shop');
@@ -123,12 +121,6 @@ class FileBrowser {
             $this->_frontendLanguageId = intval(!empty($_GET['langId']) ? $_GET['langId'] : $_POST['langId']);
         } else {
             $this->_frontendLanguageId = $_FRONTEND_LANGID;
-        }
-    }
-
-    function _checkURIReturnType() {
-        if (!empty($_REQUEST['absoluteURIs'])) {
-            $this->_absoluteURIs = (bool) $_REQUEST['absoluteURIs'];
         }
     }
 
@@ -189,7 +181,7 @@ class FileBrowser {
 
         $this->_setNavigation();
         $this->_setUploadForm();
-        $this->_setContent(!empty($_GET['noAliases']) ? $_GET['noAliases'] : false);
+        $this->_setContent();
         $this->_showStatus();
         $this->_objTpl->show();
     }
@@ -314,7 +306,7 @@ class FileBrowser {
 
         $this->_objTpl->addBlockfile('FILEBROWSER_NAVIGATION', 'fileBrowser_navigation', 'module_fileBrowser_navigation.html');
         $this->_objTpl->setVariable(array(
-            'FILEBROWSER_MEDIA_TYPE_MENU'   => $this->_getMediaTypeMenu('fileBrowserType', $this->_mediaType, 'onchange="window.location.replace(\''.CSRF::enhanceURI('index.php?cmd=fileBrowser').'&amp;standalone=true&amp;langId='.$this->_frontendLanguageId.'&amp;absoluteURIs='.$this->_absoluteURIs.'&amp;type=\'+this.value+\''.$ckEditorFuncNum.'\')"'),
+            'FILEBROWSER_MEDIA_TYPE_MENU'   => $this->_getMediaTypeMenu('fileBrowserType', $this->_mediaType, 'onchange="window.location.replace(\''.CSRF::enhanceURI('index.php?cmd=fileBrowser').'&amp;standalone=true&amp;langId='.$this->_frontendLanguageId.'&amp;type=\'+this.value+\''.$ckEditorFuncNum.'\')"'),
             'TXT_FILEBROWSER_PREVIEW'       => $_ARRAYLANG['TXT_FILEBROWSER_PREVIEW']
         ));
 
@@ -323,7 +315,7 @@ class FileBrowser {
             if (count($this->_arrDirectories) > 0) {
                 foreach ($this->_arrDirectories as $arrDirectory) {
                     $this->_objTpl->setVariable(array(
-                        'FILEBROWSER_FILE_PATH' => "index.php?cmd=fileBrowser&amp;standalone=true&amp;langId={$this->_frontendLanguageId}&amp;absoluteURIs={$this->_absoluteURIs}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}",
+                        'FILEBROWSER_FILE_PATH' => "index.php?cmd=fileBrowser&amp;standalone=true&amp;langId={$this->_frontendLanguageId}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}",
                         'FILEBROWSER_FILE_NAME' => $arrDirectory['name'],
                         'FILEBROWSER_FILE_ICON' => $arrDirectory['icon']
                     ));
@@ -338,53 +330,27 @@ class FileBrowser {
     /**
      * Shows all files / pages in filebrowser
      */
-    function _setContent($noAliases=false)
+    function _setContent()
     {
         global $objDatabase, $_CONFIG, $_FRONTEND_LANGID;
 
         $this->_objTpl->addBlockfile('FILEBROWSER_CONTENT', 'fileBrowser_content', 'module_fileBrowser_content.html');
-        $this->_objTpl->setVariable('FILEBROWSER_NOT_ABSOLUTE_URI', !$this->_absoluteURIs ? 'true' : 'false');
 
         $ckEditorFuncNum = isset($_GET['CKEditorFuncNum']) ? '&amp;CKEditorFuncNum='.contrexx_raw2xhtml($_GET['CKEditorFuncNum']) : '';
         $rowNr = 0;
 
         switch ($this->_mediaType) {
         case 'webpages':
-            $arrModules = array();
-            $objResult = $objDatabase->Execute("SELECT id, name FROM ".DBPREFIX."modules");
-            if ($objResult !== false) {
-                while (!$objResult->EOF) {
-                    $arrModules[$objResult->fields['id']] = $objResult->fields['name'];
-                    $objResult->MoveNext();
-                }
-            }
-            $getPageId = (isset($_REQUEST['getPageId']) && $_REQUEST['getPageId'] == 'true') ? true : false;
-
             $objContentTree = new ContentTree($this->_frontendLanguageId);
-
-            $scriptPath = ($this->_absoluteURIs ?
-                $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.
-                    FWLanguage::getLanguageParameter($this->_frontendLanguageId, 'lang').'/'
-            :   null);
             foreach ($objContentTree->getTree() as $arrPage) {
-                $s = isset($arrModules[$arrPage['moduleid']]) ? $arrModules[$arrPage['moduleid']] : '';
-                $c = $arrPage['cmd'];
-                $section = ($s=="") ? "" : "&amp;section=$s";
-                $cmd = ($c=="") ? "" : "&amp;cmd=$c";
-                $link = $scriptPath.CONTREXX_DIRECTORY_INDEX.((!empty($s)) ? "?section=".$s.$cmd : "?page=".$arrPage['catid'].$section.$cmd);
-
-                $url = "'".$link."'".($getPageId ? ','.$arrPage['catid'] : '')."";
-
-                if($arrPage['alias'] && !$noAliases) {
-                    $url = "'" . '[[NODE_' . $arrPage['node_id'];
-                    // if language != current language or $alwaysReturnLanguage
-                    if ($this->_frontendLanguageId != $_FRONTEND_LANGID ||
-                            (isset($_GET['alwaysReturnLanguage']) &&
-                            $_GET['alwaysReturnLanguage'] == 'true')) {
-                        $url .= '_' . $this->_frontentLanguageId;
-                    }
-                    $url .= "]]'";
+                $url = "'" . '[[NODE_' . $arrPage['node_id'];
+                // if language != current language or $alwaysReturnLanguage
+                if ($this->_frontendLanguageId != $_FRONTEND_LANGID ||
+                        (isset($_GET['alwaysReturnLanguage']) &&
+                        $_GET['alwaysReturnLanguage'] == 'true')) {
+                    $url .= '_' . $this->_frontentLanguageId;
                 }
+                $url .= "]]'";
                 
                 $this->_objTpl->setVariable(array(
                     'FILEBROWSER_ROW_CLASS'         => $rowNr%2 == 0 ? "row1" : "row2",
@@ -416,7 +382,7 @@ class FileBrowser {
                 foreach ($this->_arrDirectories as $arrDirectory) {
                     $this->_objTpl->setVariable(array(
                         'FILEBROWSER_ROW_CLASS'         => $rowNr%2 == 0 ? "row1" : "row2",
-                        'FILEBROWSER_FILE_PATH_CLICK'   => "index.php?cmd=fileBrowser&amp;standalone=true&amp;langId={$this->_frontendLanguageId}&amp;absoluteURIs={$this->_absoluteURIs}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}&amp;CKEditor=".contrexx_raw2xhtml($_GET['CKEditor']).$ckEditorFuncNum,
+                        'FILEBROWSER_FILE_PATH_CLICK'   => "index.php?cmd=fileBrowser&amp;standalone=true&amp;langId={$this->_frontendLanguageId}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}&amp;CKEditor=".contrexx_raw2xhtml($_GET['CKEditor']).$ckEditorFuncNum,
                         'FILEBROWSER_FILE_NAME'         => $arrDirectory['name'],
                         'FILEBROWSER_FILESIZE'          => '&nbsp;',
                         'FILEBROWSER_FILE_ICON'         => $arrDirectory['icon'],
