@@ -1235,13 +1235,9 @@ div#livecam #CALBUTTONDPC_datum {
     float: left;
     width: 100%;
     padding: 5px 0 5px 0;
-    margin: 0 0 20px 0;
-    border-radius: 6px;
-    -moz-border-radius: 6px;
-    -webkit-border-radius: 6px;
-    -o-border-radius: 6px;
+    margin: 0 0 25px 0;
     border-bottom: 1px solid #E3E4E5;
-    background: #F3F4F5;
+    background: #F5F6F7;
 }
 
 #news-links ul {
@@ -1257,14 +1253,48 @@ div#livecam #CALBUTTONDPC_datum {
     border-bottom: 1px solid #D6D6D6;
 }
 
+#news-social-media li {
+    padding: 0 30px 0 0;
+    margin: 0;
+    background: none;
+}
+
+#news-social-media li.last {
+    padding: 0;
+    margin: 0;
+}
+
+#news-social-media .google-plus {
+    width: 67px;
+}
+
+#news-social-media .facebook {
+    width: 114px;
+}
+
+#news-social-media .twitter {
+    width: 92px;
+}
+
+#news-social-media .xing {
+    width: 82px;
+}
+
+#news-social-media .rss-feed a {
+    position: relative;
+    float: left;
+    width: 22px;
+    height: 22px;
+    background: url('images/feed-icon.png');
+}
+
 #news-no-comments {
     float: left;
     width: 100%;
-    padding: 0 0 20px 0;
 }
 
 #news-toggle {
-    margin: 0 0 20px 0;
+    margin: 20px 0 20px 0;
 }
 
 #news-comment-form {
@@ -1277,14 +1307,19 @@ div#livecam #CALBUTTONDPC_datum {
 .news-comment {
     float: left;
     width: 100%;
-    padding: 0 0 20px 0;
+    padding: 10px 0 10px 0;
+    border-bottom: 1px solid #E3E4E5;
+    background: #F5F6F7;
+}
+
+.news-comment-poster {
+    color: #9C9C9C;
 }
 
 .news-comment-poster,
 .news-comment-title,
-.news-comment-date,
 .news-comment-message {
-    
+    padding: 0 10px 0 10px;
 }
 
 /***************************************************/

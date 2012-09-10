@@ -17,6 +17,14 @@
         });
         $('#navigation li.active').parents('ul.menu').siblings('a').removeClass('starter_normal').addClass('starter_active').parent().removeClass('starter_normal').addClass('starter_active');
         $('#subnavigation li.active').parents('ul.menu').siblings('a').removeClass('inactive').addClass('active').parent().removeClass('inactive').addClass('active');
+        
+        if ($.trim($('#subnavigation').html()) == '') {
+            $('#subnavigation').remove();
+            $('#page').css({
+                'width': '100%',
+                'padding': 0
+            });
+        };
         /* Navigation End */
         
         /* Cycle Start */
