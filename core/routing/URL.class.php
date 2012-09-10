@@ -95,6 +95,9 @@ class URL {
      * sets $this->suggestedParams and $this->suggestedTargetPath
      */
     public function suggest() {
+        if ($this->state == self::SUGGESTED) {
+            return;
+        }
         $matches = array();
         $matchCount = preg_match('/([^\?]+)(.*)/', $this->path, $matches);
 
