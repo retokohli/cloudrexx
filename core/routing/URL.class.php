@@ -71,7 +71,7 @@ class URL {
      */
     public function __construct($url) {
         $matches = array();
-        $matchCount = preg_match('/^(http:\/\/[^\/]+\/)(.*)?/', $url, $matches);
+        $matchCount = preg_match('/^(https?:\/\/[^\/]+\/)(.*)?/', $url, $matches);
         if($matchCount == 0) {
             throw new URLException('Malformed URL: ' . $url);
         }
@@ -243,19 +243,17 @@ class URL {
 
         //cut offset
         $request = substr($request, strlen($pathOffset)+1);
-//TODO: correct host
         $host = $_CONFIG['domainUrl'];
-
-//TODO: implement correct protocol finder
-        $protocol = 'http';
+        $protocol = ASCMS_PROTOCOL;
 
         $getParams = '';
         foreach($get as $k => $v) {
             if($k == '__cap') //skip captured request from mod_rewrite
                 continue; 
             $joiner='&';
-            if($getParams == '')
+            if ($getParams == '') {
                 $joiner='?';
+            }
             $getParams .= $joiner.urlencode($k).'='.urlencode($v);
         }
 
@@ -317,11 +315,7 @@ class URL {
         $host = $_CONFIG['domainUrl'];
         $offset = ASCMS_PATH_OFFSET;
         $path = $page->getPath();
-        $langDir = '';
-        if (!defined('BACKEND_LANG_ID')) {
-            // we are in frontend mode, so we do use virtual language dirs
-            $langDir = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
-        }
+        $langDir = \FWLanguage::getLanguageCodeById($page->getLang());
         $getParams = '';
         if (count($parameters)) {
             $paramArray = array();
@@ -339,14 +333,13 @@ class URL {
     
     public function getLangDir() {
         $lang_dir = '';
-        if (!defined('BACKEND_LANG_ID')) {
-            // we are in frontend mode, so we do use virtual language dirs
-            if ($this->langDir == '') {
-                $lang_dir = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID) . '/';
-            } else {
-                $lang_dir = $this->langDir;
-            }
+
+        if ($this->langDir == '') {
+            $lang_dir = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID) . '/';
+        } else {
+            $lang_dir = $this->langDir;
         }
+
         return $lang_dir;
     }
     
