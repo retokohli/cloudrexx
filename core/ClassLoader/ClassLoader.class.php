@@ -3,6 +3,7 @@ namespace Cx\Core\ClassLoader;
 
 class ClassLoader {
     private $basePath;
+    private $customizingPath;
     private $legacyClassLoader = null;
     
     /**
@@ -11,8 +12,9 @@ class ClassLoader {
      * @param String $basePath Base directory to load files (e.g. ASCMS_DOCUMENT_ROOT)
      * @param boolean $useLegacyAsFallback (optional) Wheter to use LegacyClassLoader too (default) or not
      */
-    public function __construct($basePath, $useLegacyAsFallback = true) {
+    public function __construct($basePath, $useLegacyAsFallback = true, $customizingPath = null) {
         $this->basePath = $basePath;
+        $this->customizingPath = $customizingPath;
         spl_autoload_register(array($this, 'autoload'));
         if ($useLegacyAsFallback) {
             $this->legacyClassLoader = new LegacyClassLoader();
@@ -78,22 +80,32 @@ class ClassLoader {
         reset($parts);
         
         // find matching path
-        $path = $this->basePath;
+        $path = '';
         foreach ($parts as $part) {
             $part = '/' . $part;
-            if (!is_dir($path . $part)) {
+            if (!is_dir($this->basePath . $path . $part)) {
                 break;
             }
             $path .= $part;
         }
         $className = preg_replace('/Exception/', '', $className);
         $resolvedPath = $path . '/' . $className . '.class.php';
-        if (file_exists($path . '/' . $className . '.class.php')) {
-            //echo $name . ' :: ' . $path . '/' . $className . '<br />';
-            require_once($path . '/' . $className . '.class.php');
+        
+        // load class from customizing folder
+        if ($this->customizingPath && file_exists($this->customizingPath . $path . '/' . $className . '.class.php')) {
+            require_once($this->customizingPath . $path . '/' . $className . '.class.php');
             return true;
-        } else if (file_exists($path . '/' . $className . '.interface.php')) {
-            require_once($path . '/' . $className . '.interface.php');
+        } else if ($this->customizingPath && file_exists($this->customizingPath . $path . '/' . $className . '.interface.php')) {
+            require_once($this->customizingPath . $path . '/' . $className . '.interface.php');
+            return true;
+        
+        // load class from basepath
+        } else if (file_exists($this->basePath . $path . '/' . $className . '.class.php')) {
+            //echo $name . ' :: ' . $path . '/' . $className . '<br />';
+            require_once($this->basePath . $path . '/' . $className . '.class.php');
+            return true;
+        } else if (file_exists($this->basePath . $path . '/' . $className . '.interface.php')) {
+            require_once($this->basePath . $path . '/' . $className . '.interface.php');
             return true;
         }
         //echo '<span style="color: red;">' . implode('\\', $parts) . '</span>';
