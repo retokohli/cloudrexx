@@ -223,6 +223,7 @@ h1{ font-size: 20px }
     float: left;
     width: 21px;
     height: 18px;
+    background: #9dcb3b;
     margin: 6px 7px 6px 0;
     line-height: 18px;
     text-align: center;
@@ -232,20 +233,8 @@ h1{ font-size: 20px }
     opacity: 0.8;
 }
 
-#site-tree .translations .translation.existent {
-    background: #9dcb3b;
-}
-
-#site-tree .translations .translation.inexistent {
+#site-tree .translations .translation.unpublished {
     background: #e45f5f;
-}
-
-#site-tree .translations .translation.draft {
-    background: url(../images/translation_draft.png) no-repeat center center;
-}
-
-#site-tree .translations .translation.fallback {
-    background: #949494;
 }
 
 #site-tree .module {
@@ -415,11 +404,24 @@ h1{ font-size: 20px }
     width: 13px;
     height: 14px;
     background-image: url('../images/publishing_unlocked.png');
-    background-position: 0 -4px;
+    background-position: -34px -5px;
     margin-top: 8px;
 }
 #site-tree .publishing.locked {
     background-image: url('../images/publishing_locked.png');
+    background-position: -33px -4px;
+}
+#site-tree .publishing.draft {
+    background-position: -34px -34px;
+}
+#site-tree .publishing.draft.locked {
+    background-position: -33px -33px;
+}
+#site-tree .publishing.draft.waiting {
+    background-position: -34px -63px;
+}
+#site-tree .publishing.draft.waiting.locked {
+    background-position: -33px -62px;
 }
 #site-tree .publishing.unpublished {
     background-position: -5px -5px;
@@ -427,92 +429,86 @@ h1{ font-size: 20px }
 #site-tree .publishing.unpublished.locked {
     background-position: -4px -4px;
 }
-#site-tree .publishing.draft {
+#site-tree .publishing.unpublished.draft {
     background-position: -5px -34px;
 }
-#site-tree .publishing.draft.locked {
+#site-tree .publishing.unpublished.draft.locked {
     background-position: -4px -33px;
 }
-#site-tree .publishing.draftwait {
-    background-position: -34px -34px;
-}
-#site-tree .publishing.draftwait.locked {
-    background-position: -33px -33px;
-}
-#site-tree .publishing.published {
+#site-tree .publishing.unpublished.draft.waiting {
     background-position: -5px -63px; 
 }
-#site-tree .publishing.published.locked {
+#site-tree .publishing.unpublished.draft.waiting.locked {
     background-position: -4px -62px; 
 }
-#site-tree .publishing.publishedwait {
-    background-position: -34px -63px;
-}
-#site-tree .publishing.publishedwait.locked {
-    background-position: -33px -62px;
-}
+
 
 #site-tree .page {
     margin-top: 7px;
     height: 17px;
     width: 20px;
-}
-#site-tree .page.active {
-    background-image: url('../images/page_active.png');
-}
-#site-tree .page.hidden, #site-tree .page {
-    background-image: url('../images/page_hidden.png');
+    background-image: url(../images/page_visible.png);
 }
 #site-tree .page.broken {
-    background-image: url('../images/page_active_broken.png');
+    background-image: url(../images/page_visible_broken.png);
 }
+#site-tree .page.invisible {
+    background-image: url(../images/page_invisible.png);
+}
+#site-tree .page.invisible.broken {
+    background-image: url(../images/page_invisible_broken.png);
+}
+
 #site-tree .page {
     background-position: 1px -6px;
-}
-#site-tree .page.use_fallback {
-    background-position: 1px -151px;
 }
 #site-tree .page.protected {
     background-position: -33px -6px;
 }
-#site-tree .page.protected.use_fallback {
-    background-position: -33px -151px;
+#site-tree .page.fallback {
+    background-position: 1px -122px;
 }
+#site-tree .page.fallback.protected {
+    background-position: -33px -122px;
+}
+
 #site-tree .page.home {
     background-position: 1px -35px;
-}
-#site-tree .page.home.use_fallback {
-    background-position: 1px -209px;
 }
 #site-tree .page.home.protected {
     background-position: -33px -35px;
 }
-#site-tree .page.home.protected.use_fallback {
-    background-position: -33px -209px;
+#site-tree .page.home.fallback {
+    background-position: 1px -151px;
 }
-#site-tree .page.app {
+#site-tree .page.home.fallback.protected {
+    background-position: -33px -151px;
+}
+
+#site-tree .page.application {
     background-position: 1px -64px;
 }
-#site-tree .page.app.use_fallback {
-    background-position: 1px -180px;
-}
-#site-tree .page.app.protected {
+#site-tree .page.application.protected {
     background-position: -33px -64px;
 }
-#site-tree .page.app.protected.use_fallback {
+#site-tree .page.application.fallback {
+    background-position: 1px -180px;
+}
+#site-tree .page.application.fallback.protected {
     background-position: -33px -180px;
 }
-#site-tree .page.redir {
+
+#site-tree .page.redirection {
     background-position: 1px -93px;
 }
-#site-tree .page.redir.use_fallback {
-    background-position: 1px -122px;
-}
-#site-tree .page.redir.protected {
+#site-tree .page.redirection.protected {
     background-position: -33px -93px;
 }
-#site-tree .page.redir.protected.use_fallback {
-    background-position: -33px -122px;
+#site-tree .page.redirection.fallback {
+    background-position: 1px -209px;
+}
+#site-tree .page.redirection.fallback.protected {
+    background-position: -33px -209px;
 }
 
 #content-manager.edit_view #site-structure .translations,
