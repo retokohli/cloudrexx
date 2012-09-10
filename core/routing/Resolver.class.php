@@ -159,9 +159,9 @@ class Resolver {
                     $this->getPreviewPage();
                 }
             }
-
+            
             //(I) see what the model has for us
-            $result = $this->pageRepo->getPagesAtPath($this->url->getLangDir().$path, null, $this->lang, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
+            $result = $this->pageRepo->getPagesAtPath($this->url->getLangDir().'/'.$path, null, $this->lang, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
 
             if ($this->pagePreview) {
                 if (empty($this->sessionPage)) {
