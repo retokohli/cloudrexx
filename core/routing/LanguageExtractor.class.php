@@ -61,7 +61,7 @@ class LanguageExtractor {
             throw new LanguageExtractorException('Please do not pass an URL that has already been handled by the routing system to extractLanguage().');
         
         //extract the language
-        $path = $url->getPath();
+        $path = $url->getLangDir();
         $matches = array();
         preg_match('#^(.*?)(/|$)#', $path, $matches);
 
