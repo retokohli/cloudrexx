@@ -1730,7 +1730,7 @@ RSS2JSCODE;
         // Send a notification e-mail to administrator
         if (!@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
             DBG::msg('Unable to send e-mail notification to admin');
-            DBG::stack();
+            //DBG::stack();
             return array(true, null);
         }
 
@@ -1752,24 +1752,24 @@ RSS2JSCODE;
         $objMail->FromName  = $_CONFIG['coreGlobalPageTitle'];
         $objMail->IsHTML(false);
         $objMail->Subject   = sprintf($_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_SUBJECT'], $newsMessageTitle);
-        $manageCommentsUrl = ASCMS_PROTOCOL.'://'
-                                .$_CONFIG['domainUrl']
-                                .($_SERVER['SERVER_PORT'] == 80 ? NULL : ':'.intval($_SERVER['SERVER_PORT']))
-                                .ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=news&act=comments&newsId='.$newsMessageId;
+        $manageCommentsUrl  = ASCMS_PROTOCOL.'://'
+                              .$_CONFIG['domainUrl']
+                              .($_SERVER['SERVER_PORT'] == 80 ? NULL : ':'.intval($_SERVER['SERVER_PORT']))
+                              .ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=news&act=comments&newsId='.$newsMessageId;
         $activateCommentTxt = $this->arrSettings['news_comments_autoactivate']
                               ? ''
                               : sprintf($_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_LINK'], $manageCommentsUrl);
         $objMail->Body      = sprintf($_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_BODY'],
-                                        $_CONFIG['domainUrl'],
-                                        $newsMessageTitle,
-                                        FWUser::getParsedUserTitle($userId, $name),
-                                        $title,
-                                        nl2br($message),
-                                        $activateCommentTxt);
+                                      $_CONFIG['domainUrl'],
+                                      $newsMessageTitle,
+                                      FWUser::getParsedUserTitle($userId, $name),
+                                      $title,
+                                      nl2br($message),
+                                      $activateCommentTxt);
         $objMail->AddAddress($_CONFIG['coreAdminEmail']);
         if (!$objMail->Send()) {
             DBG::msg('Sending of notification e-mail failed');
-            DBG::stack();
+            //DBG::stack();
         }
 
         return array(true, null);
