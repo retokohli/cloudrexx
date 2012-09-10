@@ -342,17 +342,17 @@ class JsonNode implements JsonAdapter {
                 $editingStatus = $page->getEditingStatus();
                 if ($page->isActive()) {
                     if ($editingStatus == 'hasDraft') {
-                        $publishingStatus = 'publishedwait';
+                        $publishingStatus = 'published draft';
                     } else if ($editingStatus == 'hasDraftWaiting') {
-                        $publishingStatus = 'publishedwait';
+                        $publishingStatus = 'published draft waiting';
                     } else {
                         $publishingStatus = 'published';
                     }
                 } else {
                     if ($editingStatus == 'hasDraft') {
-                        $publishingStatus = 'draft';
+                        $publishingStatus = 'unpublished draft';
                     } else if ($editingStatus == 'hasDraftWaiting') {
-                        $publishingStatus = 'draftwait';
+                        $publishingStatus = 'unpublished draft waiting';
                     } else {
                         $publishingStatus = 'unpublished';
                     }

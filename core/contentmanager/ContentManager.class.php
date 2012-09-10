@@ -148,7 +148,7 @@ class ContentManager extends Module {
         
         // get initial tree data
         $objJsonData = new \Cx\Core\Json\JsonData();
-        $treeData = $objJsonData->jsondata('node', 'getTree', array(), false);
+        $treeData = $objJsonData->jsondata('node', 'getTree', array('get' => $_GET), false);
         $objCx->setVariable('tree-data', $treeData, 'contentmanager/tree');
 
         if (!empty($_GET['act']) && ($_GET['act'] == 'new')) {
