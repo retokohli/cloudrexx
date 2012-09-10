@@ -1291,10 +1291,11 @@ div#livecam #CALBUTTONDPC_datum {
 #news-no-comments {
     float: left;
     width: 100%;
+    margin: 0 0 20px 0;
 }
 
 #news-toggle {
-    margin: 20px 0 20px 0;
+    margin: 0 0 20px 0;
 }
 
 #news-comment-form {
