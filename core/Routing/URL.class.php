@@ -60,6 +60,8 @@ class URL {
     const ROUTED = 2;
 
     protected $state = 0;
+    
+    protected $langDir = '';
 
     /**
      * Initializes $domain and $path.
@@ -71,10 +73,10 @@ class URL {
         if($matchCount == 0) {
             throw new URLException('Malformed URL: ' . $url);
         }
-
+        
         $this->domain = $matches[1];
         if(count($matches) > 2) {
-            $this->path = $matches[2];
+            $this->setPath($matches[2]);
         }
 
         $this->suggest();
@@ -115,7 +117,15 @@ class URL {
     }
 
     public function setPath($path) {
-        $this->path = $path;
+        $path = explode('/', $path);
+        if (count($path) > 1) {
+            $langId = \FWLanguage::getLanguageIdByCode($path[0]);
+            if ($langId !== false) {
+                $this->langDir = $path[0];
+                unset($path[0]);
+            }
+        }
+        $this->path = implode('/', $path);
         $this->suggest();
     }
 
@@ -244,21 +254,29 @@ class URL {
                 $joiner='?';
             $getParams .= $joiner.urlencode($k).'='.urlencode($v);
         }
-
+        
         return new URL($protocol.'://'.$host.'/'.$request.$getParams);
     }
     
     public function toString() {
-        $this->domain . $this;
+        return substr($this->domain, 0, strlen($this->domain) - 1) . $this;
     }
     
     public function getLangDir() {
         $lang_dir = '';
         if (!defined('BACKEND_LANG_ID')) {
             // we are in frontend mode, so we do use virtual language dirs
-            $lang_dir = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID) . '/';
+            if (isset($this->langDir)) {
+                $lang_dir = $this->langDir;
+            } else {
+                $lang_dir = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID) . '/';
+            }
         }
         return $lang_dir;
+    }
+    
+    public function setLangDir($langDir) {
+        $this->langDir = $langDir;
     }
 
     /**
@@ -269,7 +287,7 @@ class URL {
      */
     public function __toString() {
         return ASCMS_PATH_OFFSET . '/' .
-                $this->getLangDir() .
+                $this->getLangDir() . '/' . 
                 $this->path; // contains path (except for PATH_OFFSET and virtual language dir) and params
     }
 }
