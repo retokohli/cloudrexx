@@ -9,24 +9,17 @@
  * @package     contrexx
  * @subpackage  core
  * @version     1.0.0
- * @uses /core_modules/stats/lib/statsLib.class.php
- * @uses /core/adminNavigation.class.php
- * @uses /core/auth.class.php
- * @uses /core/ContentSitemap.class.php
- * @uses /core/database.php
- * @uses /core/Init.class.php
- * @uses /core/Modulechecker.class.php
- * @uses /core/Navigation.class.php
- * @uses /core/paging.class.php
- * @uses /core/permission.class.php
- * @uses /core/Security.class.php
- * @uses /core/session.class.php
+ * @uses /config/version.php
  * @uses /core/validator.inc.php
- * @uses /core/wysiwyg.class.php
- * @uses /lib/FRAMEWORK/framework.php
- * @uses /lib/adodb/adodb.inc.php
  * @uses /lib/PEAR/HTML/Template/Sigma/Sigma.php
+ * @uses /core/database.php
  * @uses /lib/PEAR/HTML/Table.php
+ * @uses /core/wysiwyg.class.php
+ * @uses /core/adminNavigation.class.php
+ * @uses /core/Navigation.class.php
+ * @uses /core_modules/stats/lib/statsLib.class.php
+ * @uses /core/Security.class.php
+ * @uses /lib/wrapper/json.php
  * @todo Add comment for all require_once()s
  * @todo THIS FILE SHOULD BE MANDATORY!
  */
@@ -51,10 +44,6 @@ require_once ASCMS_CORE_PATH.'/validator.inc.php';
  * @ignore
  */
 require_once ASCMS_LIBRARY_PATH.'/PEAR/HTML/Template/Sigma/Sigma.php';
-/**
- * @ignore
- */
-require_once ASCMS_LIBRARY_PATH.'/PEAR/HTML/Table.php';
 
 /**
  * @ignore
@@ -68,6 +57,10 @@ require_once ASCMS_CORE_PATH.'/database.php';
 
 global $adminPage;
 if (isset($adminPage) && $adminPage ) {
+    /**
+    * @ignore
+    */
+    require_once ASCMS_LIBRARY_PATH.'/PEAR/HTML/Table.php';
     /**
      * @ignore
      */
