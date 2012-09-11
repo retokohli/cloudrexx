@@ -56,12 +56,16 @@
             <header id="header">
                 <a id="logo" href="index.php"></a>
                 <ul id="metanavigation">
+                    <li>
+                        <a id="select-language" href="#">Sprache</a>
+                        <div id="languages">{LANGUAGE_NAVBAR}</div>
+                    </li>
                     <li><a href="index.php?section=sitemap">Sitemap</a></li>
-                    <li><a href="index.php?section=contact&amp;cmd=4">Contact</a></li>
+                    <li><a href="index.php?section=contact&amp;cmd=4">Kontakt</a></li>
                     <li id="metanavigation-search">
                         <form action="index.php" method="get">
                             <input type="hidden" name="section" value="search" />
-                            <div id="search-text">Search</div>
+                            <div id="search-text">Suche</div>
                             <div id="search-left"></div>
                             <input id="search-input" type="text" name="term" value="" />
                             <div id="search-right"></div>
@@ -78,9 +82,9 @@
             
             <footer id="footer-top">
                 <ul class="footer-left horizontal-list">
-                    <li>Page view:&nbsp;&nbsp;<a href="{STANDARD_URL}">Normal</a></li>
+                    <li>Seitenansicht:&nbsp;&nbsp;<a href="{STANDARD_URL}">Normal</a></li>
                     <li><a href="{MOBILE_URL}">Mobile</a></li>
-                    <li><a href="{PRINT_URL}">Print</a></li>
+                    <li><a href="{PRINT_URL}">Druck</a></li>
                     <li><a href="{PDF_URL}">PDF</a></li>
                     <li class="last"><a href="{APP_URL}">App</a></li>
                 </ul>

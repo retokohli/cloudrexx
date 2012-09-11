@@ -1,5 +1,12 @@
 (function ($) {
     $(document).ready(function () {
+        /* Metanavigation Start */
+       $('#select-language').click(function () {
+           $('#languages').slideToggle(100);
+           return false;
+       });
+       /* Metanavigation End */
+        
         /* Navigation Start */
         $('#navigation > li').hover(function () {
             $(this).children('ul').animate({

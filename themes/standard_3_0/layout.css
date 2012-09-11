@@ -22,6 +22,7 @@
 }
 
 #metanavigation li {
+    position: relative;
     float: left;
     padding: 6px 15px 0 0;
     margin: 0 15px 0 0;
@@ -71,6 +72,28 @@
     margin: 0;
     border: 0;
     background: url('images/search-middle.jpg') repeat-x;
+}
+
+#languages {
+    display: none;
+    position: absolute;
+    top: 30px;
+    left: 0;
+    float: left;
+    width: 100px;
+    padding: 5px 10px 5px 10px;
+    border-radius: 6px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    -o-border-radius: 6px;
+    border: 1px solid #D6D6D6;
+    background: #F9F9F9;
+}
+
+#languages a {
+    float: left;
+    width: 200px;
+    color: #323F55;
 }
 
 #navigation {
