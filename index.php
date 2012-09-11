@@ -1808,6 +1808,7 @@ $objTemplate->setVariable(array(
     'BANNER'                         => isset($objBanner) ? $objBanner->getBannerJS() : '',
     'VERSION'                        => $contrexxCmsName,
     'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($languageExtractor, $page, $url),
+    'LANGUAGE_NAVBAR_SHORT'          => $objNavbar->getFrontendLangNavigation($languageExtractor, $page, $url, true),
     'ACTIVE_LANGUAGE_NAME'           => $objInit->getFrontendLangName(),
     'RANDOM'                         => md5(microtime()),
     'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],
@@ -1826,19 +1827,27 @@ $objTemplate->setVariable(array(
     'CONTACT_COUNTRY'                => isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '',
     'CONTACT_PHONE'                  => isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '',
     'CONTACT_FAX'                    => isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '',
-    'FACEBOOK_LIKE_IFRAME'           => '<!--[if IE]>
-                                         <iframe src="http://www.facebook.com/plugins/like.php?href='.urlencode('http://'.$_CONFIG['domainUrl'].$objInit->getCurrentPageUri()).'&amp;layout=standard&amp;show_faces=true&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe>
-                                         <![endif]-->
-                                         <!--[if !IE]>-->
-                                         <iframe src="http://www.facebook.com/plugins/like.php?href='.urlencode('http://'.$_CONFIG['domainUrl'].$objInit->getCurrentPageUri()).'&amp;layout=standard&amp;show_faces=true&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;"></iframe>
-                                         <!--<![endif]-->',
-    'GOOGLE_PLUSONE'                 => '<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+    'FACEBOOK_LIKE_IFRAME'           => '<div id="fb-root"></div>
                                          <script type="text/javascript">
-                                             $J(function() {
-                                                 gapi.plusone.render("plusone-div");
-                                             });
+                                             (function(d, s, id) {
+                                                 var js, fjs = d.getElementsByTagName(s)[0];
+                                                 if (d.getElementById(id)) return;
+                                                 js = d.createElement(s); js.id = id;
+                                                 js.src = "//connect.facebook.net/de_DE/all.js#xfbml=1";
+                                                 fjs.parentNode.insertBefore(js, fjs);
+                                             }(document, \'script\', \'facebook-jssdk\'));
                                          </script>
-                                         <div id="plusone-div"></div>',
+                                         <div class="fb-like" data-href="'.urlencode('http://'.$_CONFIG['domainUrl'].$objInit->getCurrentPageUri()).'" data-send="false" data-layout="button_count" data-show-faces="false" data-font="segoe ui"></div>',
+    'GOOGLE_PLUSONE'                 => '<div class="g-plusone" data-href="'.urlencode('http://'.$_CONFIG['domainUrl'].$objInit->getCurrentPageUri()).'"></div>
+                                         <script type="text/javascript">
+                                             window.___gcfg = {lang: \'de\'};
+                                             
+                                             (function() {
+                                                 var po = document.createElement(\'script\'); po.type = \'text/javascript\'; po.async = true;
+                                                 po.src = \'https://apis.google.com/js/plusone.js\';
+                                                 var s = document.getElementsByTagName(\'script\')[0]; s.parentNode.insertBefore(po, s);
+                                             })();
+                                         </script>',
     'GOOGLE_ANALYTICS'               => '<script type="text/javascript">
                                              var _gaq = _gaq || [];
                                              _gaq.push([\'_setAccount\', \''.(isset($_CONFIG['googleAnalyticsTrackingId']) ? contrexx_raw2xhtml($_CONFIG['googleAnalyticsTrackingId']) : '').'\']);
