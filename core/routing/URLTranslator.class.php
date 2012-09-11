@@ -32,8 +32,8 @@ class URLTranslator extends LanguageExtractor {
         $langIds = array_keys($this->languageShortNames);
 
         foreach($langIds as $langId) {
-            if($langId == $sourceLang)
-                continue;
+            //if ($langId == $sourceLang)
+            //    continue;
 
             try {
                 $urls[$langId] = $this->getUrlIn($langId, $page, $pageURL);
