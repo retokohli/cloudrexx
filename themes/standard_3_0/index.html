@@ -1,8 +1,10 @@
 <!doctype html>
-    <!--[if lt IE 7 ]> <html class="no-js ie6" lang="en" xmlns:fb="http://ogp.me/ns/fb#"> <![endif]-->
-    <!--[if IE 7 ]>    <html class="no-js ie7" lang="en" xmlns:fb="http://ogp.me/ns/fb#"> <![endif]-->
-    <!--[if IE 8 ]>    <html class="no-js ie8" lang="en" xmlns:fb="http://ogp.me/ns/fb#"> <![endif]-->
-    <!--[if (gte IE 9)|!(IE)]><!--> <html xmlns:fb="http://ogp.me/ns/fb#" class="no-js" lang="en"> <!--<![endif]-->
+<!--[if lt IE 7 ]><html class="no-js ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]>   <html class="no-js ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]>   <html class="no-js ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
     <head>
         <title>{METATITLE} - {GLOBAL_TITLE} - powered by {VERSION}</title>
         <meta name="generator" content="Contrexx" /> 
@@ -41,7 +43,7 @@
         <script type="text/javascript">
             $J(document).ready(function () {
                 if (window.PIE) {
-                    var elements = '#back-top, #navigation, #navigation li.first, #navigation li.last, #navigation li ul, #navigation li.level-2.last';
+                    var elements = '#search-input';
                     $J(elements).each(function () {
                         PIE.attach(this);
                     });
@@ -56,21 +58,9 @@
             <header id="header">
                 <a id="logo" href="index.php"></a>
                 <ul id="metanavigation">
-                    <li>
-                        <a id="select-language" href="#">Sprache</a>
-                        <div id="languages">{LANGUAGE_NAVBAR}</div>
-                    </li>
+                    <li class="first"><a href="index.php?section=contact&amp;cmd=10">Kontakt</a></li>
                     <li><a href="index.php?section=sitemap">Sitemap</a></li>
-                    <li><a href="index.php?section=contact&amp;cmd=4">Kontakt</a></li>
-                    <li id="metanavigation-search">
-                        <form action="index.php" method="get">
-                            <input type="hidden" name="section" value="search" />
-                            <div id="search-text">Suche</div>
-                            <div id="search-left"></div>
-                            <input id="search-input" type="text" name="term" value="" />
-                            <div id="search-right"></div>
-                        </form>
-                    </li>
+                    <li id="select-language">{LANGUAGE_NAVBAR_SHORT}</li>
                 </ul>
             </header>
             
@@ -102,6 +92,7 @@
                 <div class="footer-left">&copy; 2012 <a href="http://www.contrexx.com" target="_blank">Contrexx &reg;</a> Standard Theme</div>
                 <div class="footer-right">
                     <ul class="horizontal-list">
+                        <li><a href="index.php?section=contact&amp;cmd=10">Kontakt</a></li>
                         <li><a href="Services/Rechtliche-Hinweise">Rechtliche Hinweise</a></li>
                         <li class="last"><a href="index.php?section=imprint">Impressum</a></li>
                     </ul>
