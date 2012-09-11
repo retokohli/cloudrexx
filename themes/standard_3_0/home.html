@@ -17,34 +17,23 @@
 <div class="content">
     <div id="home-boxes">
         <div class="home-box">
-            <div class="home-box top"></div>
-            <div class="home-box middle">
-                <h2>News</h2>
-                {HEADLINES_FILE}
-                <a href="index.php?section=news">More news</a>
-            </div>
-            <div class="home-box bottom"></div>
+            <h2>Newsmeldungen</h2>
+            {HEADLINES_FILE}
+            <a href="index.php?section=news">Weitere Newsmeldungen</a>
         </div>
         <div class="home-box">
-            <div class="home-box top"></div>
-            <div class="home-box middle">
-                <h2>Media Directory</h2>
-                {MEDIADIR_LATEST}
-                <a href="index.php?section=mediadir">More entries</a>
-            </div>
-            <div class="home-box bottom"></div>
+            <h2>Referenzen</h2>
+            {MEDIADIR_LATEST}
+            <a href="index.php?section=mediadir">Weitere Referenzen</a>
         </div>
         <div class="home-box last">
-            <div class="home-box top"></div>
-            <div class="home-box middle">
-                <h2>Newsletter</h2>
-                <form name="newsletter" action="index.php?section=newsletter&amp;act=subscribe" method="post">
-                    <input type="hidden" name="list[1]" value="1" />
-                    <input type="text" onfocus="this.value=''" onblur="this.value='E-mail address'" name="email" value="E-mail address" maxlength="255" />
-                    <button name="recipient_save">Subscribe</button>
-                </form>
-            </div>
-            <div class="home-box bottom"></div>
+            <h2>Newsletter</h2>
+            Sie m&ouml;chten gerne regelm&auml;ssig &uuml;ber die neusten Themen informiert werden? Dann melden Sie sich einfach hier f&uuml;r unseren kostenlosen Newsletter an:
+            <form name="newsletter" action="index.php?section=newsletter&amp;act=subscribe" method="post">
+                <input type="hidden" name="list[1]" value="1" />
+                <input type="text" onfocus="this.value=''" onblur="this.value='E-mail address'" name="email" value="E-mail address" maxlength="255" />
+                <button name="recipient_save">Subscribe</button>
+            </form>
         </div>
     </div>
 </div>

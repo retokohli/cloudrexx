@@ -1,11 +1,19 @@
 (function ($) {
     $(document).ready(function () {
         /* Metanavigation Start */
-       $('#select-language').click(function () {
-           $('#languages').slideToggle(100);
-           return false;
-       });
-       /* Metanavigation End */
+        if ($('#select-language a').length > 1) {
+            var activeLanguage = $('#select-language a.active');
+            activeLanguage.remove();
+            $('#select-language a:not(\'.active\')').slice(0, 1).before(activeLanguage);
+            
+            $('#select-language a.active').click(function () {
+                $('#select-language').toggleClass('active');
+                return false;
+            });
+        } else {
+            $('#select-language a').addClass('alone');
+        }
+        /* Metanavigation End */
         
         /* Navigation Start */
         $('#navigation > li').hover(function () {
