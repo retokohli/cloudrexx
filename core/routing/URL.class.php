@@ -123,7 +123,7 @@ class URL {
 
     public function setPath($path) {
         $pathOffset = substr(ASCMS_PATH_OFFSET, 1);
-        if (substr($path, 0, strlen($pathOffset)) == $pathOffset) {
+        if (!empty($pathOffset) && substr($path, 0, strlen($pathOffset)) == $pathOffset) {
             $path = substr($path, strlen($pathOffset) + 1);
         }
         $path = explode('/', $path);
