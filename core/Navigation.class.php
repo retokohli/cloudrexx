@@ -171,7 +171,7 @@ class Navigation
      * @access public
      * @global InitCMS
      */
-    function getFrontendLangNavigation($URLTranslator, $page, $pageURL)
+    function getFrontendLangNavigation($URLTranslator, $page, $pageURL, $langNameContraction = false)
     {
         global $objInit;
         
@@ -182,13 +182,16 @@ class Navigation
         if (count($this->arrLang)>1) {
             foreach ($this->arrLang as $id => $value) {
                 if ($this->arrLang[$id]['frontend'] == 1) {
-                    // only urls for languages other than the actual one are set
                     if (isset($urls[$id])) {
-                        $uri = ASCMS_PATH_OFFSET.'/'.$urls[$id]->getPath();
+                        $uri = ASCMS_PATH_OFFSET.'/'.$this->arrLang[$id]['lang'].'/'.$urls[$id]->getPath();
                     } else {
-                        $uri = ASCMS_PATH_OFFSET.'/'.$this->arrLang[$id]['lang'].'/'.$pageURL->getPath();
+                        continue;
                     }
-                    $langNavigation .= '<a class="'.$this->arrLang[$id]['lang'].'" href="'.$uri.'" title="'.contrexx_raw2xhtml($value['name']).'">'.contrexx_raw2xhtml($value['name']).'</a>';
+                    
+                    $name  = contrexx_raw2xhtml($langNameContraction ? strtoupper($value['lang']) : $value['name']);
+                    $class = $id == FRONTEND_LANG_ID ? $this->arrLang[$id]['lang'].' active' : $this->arrLang[$id]['lang'];
+                    
+                    $langNavigation .= '<a class="'.$class.'" href="'.$uri.'" title="'.$name.'">'.$name.'</a>';
                 }
             }
         }
