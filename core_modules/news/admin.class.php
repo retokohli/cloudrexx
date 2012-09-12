@@ -3159,6 +3159,7 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_IMAGE_DESCRIPTION'                                => $_ARRAYLANG['TXT_NEWS_IMAGE_DESCRIPTION'],
             'TXT_NEWS_ID_DESCRIPTION'                                   => $_ARRAYLANG['TXT_NEWS_ID_DESCRIPTION'],
             'TXT_NEWS_IMAGE_LINK_DESCRIPTION'                           => $_ARRAYLANG['TXT_NEWS_IMAGE_LINK_DESCRIPTION'],
+            'TXT_NEWS_COUNT_COMMENTS_DESCRIPTION'                       => $_ARRAYLANG['TXT_NEWS_COUNT_COMMENTS_DESCRIPTION'],
             'TXT_NEWS_IMAGE_SRC_DESCRIPTION'                            => $_ARRAYLANG['TXT_NEWS_IMAGE_SRC_DESCRIPTION'],
             'TXT_NEWS_CATEGORY_NAME_DESCRIPTION'                        => $_ARRAYLANG['TXT_NEWS_CATEGORY_NAME_DESCRIPTION'],
             'TXT_NEWS_TYPE_NAME_DESCRIPTION'                            => $_ARRAYLANG['TXT_NEWS_TYPE_NAME_DESCRIPTION'],

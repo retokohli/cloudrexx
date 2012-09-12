@@ -211,6 +211,7 @@ $_ARRAYLANG['TXT_NEWS_THUMBNAIL'] = "Vignette";
 $_ARRAYLANG['TXT_NEWS_TEASER_TEXT_DESCRIPTION'] = "Texte d'accroche des nouvelles";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_NAME_DESCRIPTION'] = "Nom de la catégorie correspondante";
 $_ARRAYLANG['TXT_NEWS_IMAGE_LINK_DESCRIPTION'] = "Lien d'image vers l'annonce des news";
+$_ARRAYLANG['TXT_NEWS_COUNT_COMMENTS_DESCRIPTION'] = "Number of comments of the news message";
 $_ARRAYLANG['TXT_NEWS_IMAGE_SRC_DESCRIPTION'] = "Source / chemin de l'image";
 $_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image.<br />
 Starttag: &lt!-- BEGIN news_image --&gt;<br />
