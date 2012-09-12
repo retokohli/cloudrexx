@@ -601,7 +601,7 @@ CREATE TABLE `contrexx_module_calendar_form_fields` (
   `order` int(3) NOT NULL DEFAULT '0',
   `key` int(7) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM;
+) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_calendar_registrations` (
   `id` int(7) NOT NULL AUTO_INCREMENT,
   `note_id` int(7) NOT NULL DEFAULT '0',
