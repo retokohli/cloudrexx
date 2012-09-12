@@ -112,7 +112,7 @@ class NewsML
                 $text = str_replace(array('<p>', '</p>'), '', $arrDocuments[$documentId]['dataContent']);
                 $date = $arrWeekDays[date('w', $arrDocuments[$documentId]['thisRevisionDate'])].', '.date('j', $arrDocuments[$documentId]['thisRevisionDate']).'. '.$arrMonths[date('n', $arrDocuments[$documentId]['thisRevisionDate'])-1].' '.date('Y', $arrDocuments[$documentId]['thisRevisionDate']).' / '.date('G:i', $arrDocuments[$documentId]['thisRevisionDate']).' h';
                 $dateLong = date(ASCMS_DATE_FORMAT, $arrDocuments[$documentId]['thisRevisionDate']);
-                $dateShort = date(ASCMS_DATE_SHORT_FORMAT, $arrDocuments[$documentId]['thisRevisionDate']);
+                $dateShort = date(ASCMS_DATE_FORMAT_DATE, $arrDocuments[$documentId]['thisRevisionDate']);
                 $output .= str_replace(
                     array(
                         '{ID}',

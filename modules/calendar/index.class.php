@@ -226,15 +226,14 @@ class Calendar extends calendarLibrary
 
         JS::activate('cx');
         $code = <<<JSCODE
-//adds the datepicker to the date fields
+//adds the datetimepicker to the date fields
 cx.ready(function() {
     var dpOptions = {
-        dateFormat: 'dd.mm.yy',
         onSelect: function(dateText, inst) {
             // adjust start or end date to avoid an invalid date range
             var startDate = \$J('input[name=startDate]').datepicker('getDate');
             var endDate = \$J('input[name=endDate]').datepicker('getDate');
-            if (startDate > endDate) {
+            if ((startDate != null) && (endDate != null) && (startDate > endDate)) {
                 if (\$J(this).attr('name') == 'startDate') {
                     \$J('input[name=endDate]').datepicker('setDate', dateText);
                 } else {
@@ -244,8 +243,8 @@ cx.ready(function() {
         }
     };
 
-    \$J('input[name=startDate]').datepicker(dpOptions);
-    \$J('input[name=endDate]').datepicker(dpOptions);
+    \$J('input[name=startDate]').datetimepicker(dpOptions);
+    \$J('input[name=endDate]').datetimepicker(dpOptions);
 }, true);
 JSCODE;
         JS::registerCode($code);
@@ -352,12 +351,12 @@ JSCODE;
 					'CALENDAR_PRIORITY_IMG' 		=> $priorityImg,
 					'CALENDAR_PLACE' 				=> htmlentities($array['placeName'], ENT_QUOTES, CONTREXX_CHARSET),
 					'CALENDAR_TITLE' 				=> htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET),
-					'CALENDAR_START'		 		=> date("Y-m-d", $array['startdate']),
-					'CALENDAR_END'			 		=> date("Y-m-d", $array['enddate']),
-					'CALENDAR_START_SHOW'		 	=> date("d.m.Y", $array['startdate']),
-					'CALENDAR_END_SHOW'			 	=> date("d.m.Y", $array['enddate']),
-					'CALENDAR_START_TIME'		 	=> date("H:i", $array['startdate']),
-					'CALENDAR_END_TIME'			 	=> date("H:i", $array['enddate']),
+					'CALENDAR_START'		 		=> date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATE, $array['startdate']),
+					'CALENDAR_END'			 		=> date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATE, $array['enddate']),
+					'CALENDAR_START_SHOW'		 	=> date(ASCMS_DATE_FORMAT_DATE, $array['startdate']),
+					'CALENDAR_END_SHOW'			 	=> date(ASCMS_DATE_FORMAT_DATE, $array['enddate']),
+					'CALENDAR_START_TIME'		 	=> date(ASCMS_DATE_FORMAT_TIME, $array['startdate']),
+					'CALENDAR_END_TIME'			 	=> date(ASCMS_DATE_FORMAT_TIME, $array['enddate']),
 					"CALENDAR_ROW"	 				=> $i % 2 == 0 ? "row1" : "row2",
 					"CALENDAR_ID"	 				=> intval($key),
 					"CALENDAR_DETAIL_LINK"	 		=> $link,
@@ -534,12 +533,12 @@ JSCODE;
 		}
 
 		$this->_objTpl->setVariable(array(
-			'CALENDAR_START'		 		=> date("Y-m-d", $this->eventList[$key]['startdate']),
-			'CALENDAR_END'			 		=> date("Y-m-d", $this->eventList[$key]['enddate']),
-			'CALENDAR_START_SHOW'		 	=> date("d.m.Y", $this->eventList[$key]['startdate']),
-			'CALENDAR_END_SHOW'			 	=> date("d.m.Y",$this->eventList[$key]['enddate']),
-			'CALENDAR_START_TIME'		 	=> date("H:i", $this->eventList[$key]['startdate']),
-			'CALENDAR_END_TIME'			 	=> date("H:i", $this->eventList[$key]['enddate']),
+			'CALENDAR_START'		 		=> date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATE, $this->eventList[$key]['startdate']),
+			'CALENDAR_END'			 		=> date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATE, $this->eventList[$key]['enddate']),
+			'CALENDAR_START_SHOW'		 	=> date(ASCMS_DATE_FORMAT_DATE, $this->eventList[$key]['startdate']),
+			'CALENDAR_END_SHOW'			 	=> date(ASCMS_DATE_FORMAT_DATE,$this->eventList[$key]['enddate']),
+			'CALENDAR_START_TIME'		 	=> date(ASCMS_DATE_FORMAT_TIME, $this->eventList[$key]['startdate']),
+			'CALENDAR_END_TIME'			 	=> date(ASCMS_DATE_FORMAT_TIME, $this->eventList[$key]['enddate']),
 			'TXT_CALENDAR_CAT'            	=> $_ARRAYLANG['TXT_CALENDAR_CAT'],
 			'TXT_CALENDAR_NEW'            	=> $_ARRAYLANG['TXT_CALENDAR_NEW'],
 			'TXT_CALENDAR_NAME'	          	=> $_ARRAYLANG['TXT_CALENDAR_NAME'],

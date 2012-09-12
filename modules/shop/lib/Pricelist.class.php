@@ -342,14 +342,14 @@ class Pricelist
         if ($this->footer) { // footer should be shown
             // Old, obsolete:
             $this->footer_left = str_replace('<--DATE-->',
-                date(ASCMS_DATE_SHORT_FORMAT, time()), $this->footer_left);
+                date(ASCMS_DATE_FORMAT_DATE, time()), $this->footer_left);
             $this->footer_right = str_replace('<--DATE-->',
-                date(ASCMS_DATE_SHORT_FORMAT, time()), $this->footer_right);
+                date(ASCMS_DATE_FORMAT_DATE, time()), $this->footer_right);
             // New:
             $this->footer_left = str_replace('[DATE]',
-                date(ASCMS_DATE_SHORT_FORMAT, time()), $this->footer_left);
+                date(ASCMS_DATE_FORMAT_DATE, time()), $this->footer_left);
             $this->footer_right = str_replace('[DATE]',
-                date(ASCMS_DATE_SHORT_FORMAT, time()), $this->footer_right);
+                date(ASCMS_DATE_FORMAT_DATE, time()), $this->footer_right);
             $arrFooterLeft = explode("\n", $this->footer_left);
             $arrFooterRight = explode("\n", $this->footer_right);
             $countLeft = count($arrFooterLeft);

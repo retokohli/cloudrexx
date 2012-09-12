@@ -1055,9 +1055,9 @@ class AccessManager extends AccessLib
                     'ACCESS_USER_ADMIN_IMG'             => $objUser->getAdminStatus() ? 'admin.gif' : 'no_admin.gif',
                     'ACCESS_USER_ADMIN_TXT'             => $objUser->getAdminStatus() ? $_ARRAYLANG['TXT_ACCESS_ADMINISTRATOR'] : $_ARRAYLANG['TXT_ACCESS_NO_ADMINISTRATOR'],
                     'ACCESS_DELETE_USER_ACCOUNT'        => sprintf($_ARRAYLANG['TXT_ACCESS_DELETE_USER_ACCOUNT'],htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)),
-                    'ACCESS_USER_REGDATE'               => date(ASCMS_DATE_SHORT_FORMAT, $objUser->getRegistrationDate()),
-                    'ACCESS_USER_LAST_ACTIVITY'         => $objUser->getLastActivityTime() ? date(ASCMS_DATE_SHORT_FORMAT, $objUser->getLastActivityTime()) : '-',
-                    'ACCESS_USER_EXPIRATION'            => $objUser->getExpirationDate() ? date(ASCMS_DATE_SHORT_FORMAT, $objUser->getExpirationDate()) : '-',
+                    'ACCESS_USER_REGDATE'               => date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate()),
+                    'ACCESS_USER_LAST_ACTIVITY'         => $objUser->getLastActivityTime() ? date(ASCMS_DATE_FORMAT_DATE, $objUser->getLastActivityTime()) : '-',
+                    'ACCESS_USER_EXPIRATION'            => $objUser->getExpirationDate() ? date(ASCMS_DATE_FORMAT_DATE, $objUser->getExpirationDate()) : '-',
                     'ACCESS_USER_EXPIRATION_STYLE'      => $objUser->getExpirationDate() && $objUser->getExpirationDate() < time() ? 'color:#f00; font-weight:bold;' : null,
                     'ACCESS_CHANGE_ACCOUNT_STATUS_MSG'  => sprintf($objUser->getActiveStatus() ? $_ARRAYLANG['TXT_ACCESS_DEACTIVATE_USER'] : $_ARRAYLANG['TXT_ACCESS_ACTIVATE_USER'], htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET))
                 ));
@@ -1645,7 +1645,7 @@ class AccessManager extends AccessLib
     {
         $menu = '<select name="access_user_validity" '.($validity && $expirationDate < time() ? 'onchange="this.style.color = this.value == \'current\' ? \'#f00\' : \'#000\'"' : null).' style="width:300px;'.($validity && $expirationDate < time() ? 'color:#f00;font-weight:normal;' : 'color:#000;').'">';
         if ($validity) {
-            $menu .= '<option value="current" selected="selected" style="border-bottom:1px solid #000;'.($expirationDate < time() ? 'color:#f00;font-weight:normal;' : null).'">'.FWUser::getValidityString($validity).' ('.date(ASCMS_DATE_SHORT_FORMAT, $expirationDate).')</option>';
+            $menu .= '<option value="current" selected="selected" style="border-bottom:1px solid #000;'.($expirationDate < time() ? 'color:#f00;font-weight:normal;' : null).'">'.FWUser::getValidityString($validity).' ('.date(ASCMS_DATE_FORMAT_DATE, $expirationDate).')</option>';
         }
         $menu .= FWUser::getValidityMenuOptions(null, 'style="color:#000; font-weight:normal;"');
         $menu .= '</select>';

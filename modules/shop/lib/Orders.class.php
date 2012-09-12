@@ -1161,16 +1161,16 @@ if (!$limit) {
             'CUSTOMER_ID'         => $customer_id,
             'LANG_ID'             => $lang_id,
             'NOW'                 => date(ASCMS_DATE_FORMAT),
-            'TODAY'               => date(ASCMS_DATE_SHORT_FORMAT),
-//            'DATE'                => date(ASCMS_DATE_SHORT_FORMAT, strtotime($objOrder->date_time())),
+            'TODAY'               => date(ASCMS_DATE_FORMAT_DATE),
+//            'DATE'                => date(ASCMS_DATE_FORMAT_DATE, strtotime($objOrder->date_time())),
             'ORDER_ID'            => $order_id,
             'ORDER_ID_CUSTOM'     => ShopLibrary::getCustomOrderId($order_id),
 // TODO: Use proper localized date formats
             'ORDER_DATE'          =>
-                date(ASCMS_DATE_SHORT_FORMAT,
+                date(ASCMS_DATE_FORMAT_DATE,
                     strtotime($objOrder->date_time())),
             'ORDER_TIME'          =>
-                date(ASCMS_DATE_FORMAT_TIME,
+                date(ASCMS_DATE_FORMAT_INTERNATIONAL_TIME,
                     strtotime($objOrder->date_time())),
             'ORDER_STATUS_ID'     => $status,
             'ORDER_STATUS'        => $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$status],

@@ -309,6 +309,7 @@ class Immo extends ImmoLib
      */
     function _interests() {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        JS::activate('jqueryui');
         $interestID = intval($_GET['del']);
         if(!empty($interestID)) {
             if($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_immo_interest WHERE id = $interestID") !== false) {
@@ -736,6 +737,7 @@ class Immo extends ImmoLib
      */
     function _showStats() {
         global $_ARRAYLANG, $objDatabase, $_CONFIG;
+        JS::activate('jqueryui');
         $this->_pageTitle = $_ARRAYLANG['TXT_IMMO_STATS'];
         $this->_objTpl->loadTemplateFile('module_immo_stats.html');
         //paging data
@@ -967,6 +969,7 @@ class Immo extends ImmoLib
      */
     function _showDownloads() {
         global $_ARRAYLANG, $objDatabase, $_CONFIG;
+        JS::activate('jqueryui');
         //delete if $_GET['del'] is set
         $contactID = intval($_GET['del']);
         if(!empty($contactID)) {

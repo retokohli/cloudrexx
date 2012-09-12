@@ -141,12 +141,33 @@ var setRows = function()
     }
 }
 
+cx.ready(function() {
+    var datepickerOptions = {
+        dateFormat: 'yy-mm-dd',
+        onSelect: function(dateText, inst) {
+            // adjust start or end date to avoid an invalid date range
+            var startDate = jQuery('input[name=release_date]').datepicker('getDate');
+            var endDate = jQuery('input[name=release_date_end]').datepicker('getDate');
+
+            if ((startDate != null) && (endDate != null) && (startDate > endDate)) {
+                if (jQuery(this).attr('name') == 'release_date') {
+                    jQuery('input[name=release_date_end]').datepicker('setDate', dateText);
+                } else {
+                    jQuery('input[name=release_date]').datepicker('setDate', dateText);
+                }
+            }
+        }
+    };
+
+    jQuery('input[name=release_date]').datepicker(datepickerOptions);
+    jQuery('input[name=release_date_end]').datepicker(datepickerOptions);}
+);
+
 var changeReleaseTime = function()
 {
     if ($('radio_release_time').checked) {
         $('release_time').show();
-        DatePickerControl.relocateButtons();
-    } else{
+    } else {
         $('release_time').hide();
     }
 }
@@ -154,21 +175,20 @@ var changeReleaseTime = function()
 var selectDataTab = function(id)
 {
     selectTab(id);
-    DatePickerControl.relocateButtons();
 }
 
 var updateEndDate = function(obj)
 {
     if (obj.checked) {
-        $('DPC_dateend_YYYY-MM-DD').disable();
-        $('DPC_dateend_YYYY-MM-DD').style.color = "gray";
+        $('release_date_end').disable();
+        $('release_date_end').style.color = "gray";
         $('release_hour_end').disable();
         $('release_hour_end').style.color = "gray";
         $('release_minute_end').disable();
         $('release_minute_end').style.color = "gray";
     } else {
-        $('DPC_dateend_YYYY-MM-DD').enable();
-        $('DPC_dateend_YYYY-MM-DD').style.color = "black";
+        $('release_date_end').enable();
+        $('release_date_end').style.color = "black";
         $('release_hour_end').enable();
         $('release_hour_end').style.color = "black";
         $('release_minute_end').enable();
@@ -482,10 +502,10 @@ function fillSelects() {
         <tr id="release_time" style="display: {DISPLAY_RELEASE_TIME};" class="row1">
             <td>{TXT_DIV_RELEASE_TIME}</td>
             <td colspan="3">
-                <input type="text" name="release_date" id="DPC_date_YYYY-MM-DD" value="{RELEASE_DATE}" style="width: 8em;" />
+                <input type="text" name="release_date" id="release_date" value="{RELEASE_DATE}" style="width: 100px;" />
                 <select name="release_hour">{RELEASE_HOUR_OPTIONS}</select> : <select name="release_minute">{RELEASE_MINUTES_OPTIONS}</select>
                 <span style="margin-left: 2em; margin-right: 2em;">-</span>
-                <input type="text" name="release_date_end" id="DPC_dateend_YYYY-MM-DD" value="{RELEASE_DATE_END}" style="width: 8em; color: {RELEASE_COLOR};" {RELEASE_DISPLAY} />
+                <input type="text" name="release_date_end" id="release_date_end" value="{RELEASE_DATE_END}" style="width: 100px; color: {RELEASE_COLOR};" {RELEASE_DISPLAY} />
                 <select id="release_hour_end" name="release_hour_end" style=" color: {RELEASE_COLOR};" {RELEASE_DISPLAY}>{RELEASE_HOUR_OPTIONS_END}</select> : <select style=" color: {RELEASE_COLOR};" id="release_minute_end" name="release_minute_end" {RELEASE_DISPLAY}>{RELEASE_MINUTES_OPTIONS_END}</select>
                 <input type="checkbox" name="endless" id="endless" {ENDLESS_CHECKED} onclick="updateEndDate(this)" /> <label for="endless">{TXT_ENDDATE_ENDLESS}</label>
                 
@@ -497,5 +517,4 @@ function fillSelects() {
     <input type="hidden" name="frmEditCategory_MessageId" value="{EDIT_MESSAGE_ID}" />
     <input type="submit" value="{TXT_EDIT_SUBMIT}" name="frmEditCategory_Submit" />
 </form>
-<script src="../lib/datepickercontrol/datepickercontrol.js" type="text/javascript"></script>
 <!-- END module_data_entries_add.html -->

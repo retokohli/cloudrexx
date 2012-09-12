@@ -224,6 +224,8 @@ class docSysManager extends docSysLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
+        JS::activate('jqueryui');
+
         $objFWUser = FWUser::getFWUserObject();
         $this->_objTpl->loadTemplateFile('module_docsys_modify.html',true,true);
         // Global module index for clones
@@ -383,8 +385,8 @@ class docSysManager extends docSysLibrary
                 'DOCSYS_SOURCE'         => $objResult->fields['source'],
                 'DOCSYS_URL1'           => $objResult->fields['url1'],
                 'DOCSYS_URL2'           => $objResult->fields['url2'],
-				'DOCSYS_STARTDATE'	=> !empty($objResult->fields['startdate']) ? date(ASCMS_DATE_FORMAT, $objResult->fields['startdate']) : '',
-				'DOCSYS_ENDDATE'	=> !empty($objResult->fields['enddate']) ? date(ASCMS_DATE_FORMAT, $objResult->fields['enddate']) : '',
+				'DOCSYS_STARTDATE'	    => !empty($objResult->fields['startdate']) ? date(ASCMS_DATE_FORMAT, $objResult->fields['startdate']) : '',
+				'DOCSYS_ENDDATE'	    => !empty($objResult->fields['enddate']) ? date(ASCMS_DATE_FORMAT, $objResult->fields['enddate']) : '',
                 'DOCSYS_STATUS'         => $status,
                 'DOCSYS_DATE'           => date(ASCMS_DATE_FORMAT, $objResult->fields['date'])
             ));

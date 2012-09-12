@@ -572,7 +572,7 @@ class JsonPage implements JsonAdapter {
     private function addHistoryEntries($page, $username, $table, $row, $version = '', $path = '', $pageHasDraft = true) {
         global $_ARRAYLANG;
 
-        $dateString  = $page->getUpdatedAt()->format(ASCMS_DATE_FILE_FORMAT);
+        $dateString  = $page->getUpdatedAt()->format(ASCMS_DATE_FORMAT_DATETIME);
         $historyLink = ASCMS_PATH_OFFSET . '/' . $path . '?history=' . $version;
         $tableStyle  = '';
 

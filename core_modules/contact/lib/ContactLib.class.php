@@ -1291,10 +1291,11 @@ class ContactLib
     {
         global $objInit;
 
-// TODO: change to cx.datepicker
-        $code  = "<script src=\"lib/datepickercontrol/datepickercontrol.js\" type=\"text/javascript\"></script>\n";
-        $code .= "<script type=\"text/javascript\">\n";
+        JS::activate('jqueryui');
+
+        $code = "<script type=\"text/javascript\">\n";
         $code .= "/* <![CDATA[ */\n";
+        $code .= 'cx.ready(function() { jQuery(\'.contactFormClass_date\').datetimepicker(); });';
 
         $code .= "fields = new Array();\n";
 

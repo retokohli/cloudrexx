@@ -2,6 +2,43 @@
 <script language="JavaScript" type="text/javascript">
 // <![CDATA[
 
+cx.ready(function() {
+    var datetimepickerOptions = {
+        onSelect: function(dateText, inst) {
+            // adjust start or end date to avoid an invalid date range
+            var startDate = jQuery('input[name=inputStartDate]').datepicker('getDate');
+            var endDate = jQuery('input[name=inputEndDate]').datepicker('getDate');
+
+            if ((startDate != null) && (endDate != null) && (startDate > endDate)) {
+                if (jQuery(this).attr('name') == 'inputStartDate') {
+                    jQuery('input[name=inputEndDate]').datepicker('setDate', dateText);
+                } else {
+                    jQuery('input[name=inputStartDate]').datepicker('setDate', dateText);
+                }
+            }
+        }
+    };
+
+    jQuery('input[name=inputStartDate]').datetimepicker(datetimepickerOptions);
+    jQuery('input[name=inputEndDate]').datetimepicker(datetimepickerOptions);
+    jQuery('input[name=inputRepeatDouranceEnd]').datetimepicker();
+});
+
+function setFullDayTime()
+{
+    startDate = new Date(jQuery('input[name=inputStartDate]').datetimepicker('getDate'));
+    startDate.setHours(00);
+    startDate.setMinutes(00);
+    startDate.setSeconds(00);
+    endDate = new Date(jQuery('input[name=inputEndDate]').datetimepicker('getDate'));
+    endDate.setHours(23);
+    endDate.setMinutes(59);
+    endDate.setSeconds(59);
+
+    jQuery('input[name=inputStartDate]').datetimepicker('setDate', startDate);
+    jQuery('input[name=inputEndDate]').datetimepicker('setDate', endDate);
+}
+
 function checkNote()
 {
     if(document.modifyCalendarNote.inputCategory.value == 0)
@@ -36,14 +73,6 @@ function checkNote()
             return false;
         }
     }
-}
-
-function whole_day()
-{
-    document.getElementById('modifyCalendarNote').inputHour.value = "00";
-    document.getElementById('modifyCalendarNote').inputMinutes.value = "00";
-    document.getElementById('modifyCalendarNote').inputEndHour.value = "23";
-    document.getElementById('modifyCalendarNote').inputEndMinutes.value = "59";
 }
 
 function SetUrl(url, width, height, alt) {
@@ -210,32 +239,11 @@ function showOrHide(strElement)
         }
     }
 }
-</script>
 
-<script src="../lib/datepickercontrol/datepickercontrol.js" type="text/javascript"></script>
-
-<script language="JavaScript" type="text/javascript">
-<!--
-  DatePickerControl.onSelect = function(inputid)
-  {
-    var startdate = document.getElementById("modifyCalendarNote").inputStartDate.value.replace(/-/g, "");
-    var enddate = document.getElementById("modifyCalendarNote").inputEndDate.value.replace(/-/g, "");
-
-    if (startdate > enddate) {
-        var date = document.getElementById("modifyCalendarNote").inputStartDate.value;
-        document.getElementById("modifyCalendarNote").inputEndDate.value = date;
-    }
-  }
-  // -->
-</script>
-
-<script language="javascript" type="text/javascript">
-<!-- //
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
 Text[0]=['','{TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER_INFO}'];
 Text[1]=['','{TXT_CALENDAR_REGISTRATIONS_ADDRESSER_INFO}'];
 Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
-// -->
 </script>
 
 <form action="index.php?cmd=calendar{CALENDAR_MANDATE}&amp;act={CALENDAR_FORM_ACTION}" method="post" id="modifyCalendarNote" name="modifyCalendarNote" onsubmit="SelectAllList(document.modifyCalendarNote.elements['selectedGroups[]']); return checkNote();">
@@ -259,7 +267,7 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
       </th>
     </tr>
     <tr class="row1">
-      <td width="140" valign="middle">{TXT_CALENDAR_CAT}</td>
+      <td width="200" valign="middle">{TXT_CALENDAR_CAT}</td>
       <td valign="middle">
       <select name="inputCategory" style="width: 302px; ">
         <option value="0">- {TXT_CALENDAR_CAT}</option>
@@ -294,39 +302,16 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
       </td>
     </tr>
     <tr class="row2">
-      <td valign="middle"> {TXT_CALENDAR_START}</td>
+      <td valign="middle">{TXT_CALENDAR_START}</td>
       <td valign="middle">
-        <input type="text" name="inputStartDate" id="DPC_edit1_YYYY-MM-DD" value="{CALENDAR_START}" style="width: 8em;" />
-        <select name="inputHour" style="margin-left: 10px">
-            <!-- BEGIN hour -->
-            <option value="{CALENDAR_HOUR}" {CALENDAR_HOUR_SELECT}>{CALENDAR_HOUR}</option>
-            <!-- END hour -->
-        </select>
-        :
-        <select name="inputMinutes">
-            <!-- BEGIN minutes -->
-            <option value="{CALENDAR_MINUTES}" {CALENDAR_MINUTES_SELECT}>{CALENDAR_MINUTES}</option>
-            <!-- END minutes -->
-        </select>
-
-         <a style="margin-left: 15px;" href="#" onclick="whole_day()">{TXT_CALENDAR_WHOLE_DAY}</a>
+        <input type="text" name="inputStartDate" value="{CALENDAR_START}" style="width: 119px;" />
+        <a style="margin-left: 5px;" href="javascript:void(0);" onclick="setFullDayTime()">{TXT_CALENDAR_WHOLE_DAY}</a>
     </td>
     </tr>
     <tr class="row1">
-      <td valign="middle" > {TXT_CALENDAR_END}</td>
+      <td valign="middle">{TXT_CALENDAR_END}</td>
       <td valign="middle">
-          <input type="text" name="inputEndDate" id="DPC_edit2_YYYY-MM-DD" value="{CALENDAR_END}" style="width:8em;" />
-        <select name="inputEndHour" style="margin-left: 10px">
-            <!-- BEGIN endhour -->
-            <option value="{CALENDAR_END_HOUR}"{CALENDAR_END_HOUR_SELECT}>{CALENDAR_END_HOUR}</option>
-            <!-- END endhour -->
-        </select>
-        :
-        <select name="inputEndMinutes">
-            <!-- BEGIN endminutes -->
-            <option value="{CALENDAR_END_MINUTES}"{CALENDAR_END_MINUTES_SELECT}>{CALENDAR_END_MINUTES}</option>
-            <!-- END endminutes -->
-        </select>
+        <input type="text" name="inputEndDate" value="{CALENDAR_END}" style="width: 119px;" />
       </td>
     </tr>
     </table>
@@ -339,7 +324,7 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
           </th>
         </tr>
         <tr class="row1">
-          <td valign="middle" width="140">{TXT_CALENDAR_ORGANIZER_NAME}</td>
+          <td valign="middle" width="200">{TXT_CALENDAR_ORGANIZER_NAME}</td>
           <td valign="middle">
             <input type="text" name='inputPlace' style="width: 300px;" value="{CALENDAR_PLACE}"/>
           </td>
@@ -385,7 +370,7 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
           </th>
         </tr>
         <tr class="row1">
-          <td valign="middle" width="140">{TXT_CALENDAR_ORGANIZER_NAME}</td>
+          <td valign="middle" width="200">{TXT_CALENDAR_ORGANIZER_NAME}</td>
           <td valign="middle">
             <input type="text" name='inputOrganizer' style="width: 300px;" value="{CALENDAR_ORGANIZER}" />
           </td>
@@ -444,7 +429,7 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
       </th>
     </tr>
     <tr class="row1">
-      <td valign="middle" width="140">{TXT_CALENDAR_REGISTRATIONS_ACTIVATED}</td>
+      <td valign="middle" width="200">{TXT_CALENDAR_REGISTRATIONS_ACTIVATED}</td>
       <td valign="middle">
         <input type="checkbox" id="inputRegistrations" name='inputRegistrations' value="1" {CALENDAR_REGISTRATIONS_ACTIVATED} />
       </td>
@@ -469,7 +454,7 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
     <div id="selectGroups" style="display:none;">
     <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
     <tr class="row2">
-      <td valign="top" width="140">{TXT_CALENDAR_REGISTRATIONS_SELECT_GROUP}</td>
+      <td valign="top" width="200">{TXT_CALENDAR_REGISTRATIONS_SELECT_GROUP}</td>
       <td valign="middle">
         <table width="100%" border="0" cellpadding="0" cellspacing="0">
           <tr>
@@ -566,7 +551,7 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
         <td colspan="2" nowrap="nowrap"><span style="font-weight:bold;">{TXT_CALENDAR_PLACEHOLDERS}</span></td>
     </tr>
     <tr class="row1">
-        <td width="140" nowrap="nowrap">{TXT_CALENDAR_FIRSTNAME}</td>
+        <td width="200" nowrap="nowrap">{TXT_CALENDAR_FIRSTNAME}</td>
         <td nowrap="nowrap">[[FIRSTNAME]]</td>
     </tr>
     <tr class="row2">
@@ -610,7 +595,7 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
       </th>
     </tr>
     <tr class="row1">
-        <td width="140" nowrap="nowrap">{TXT_CALENDAR_TITLE}</td>
+        <td width="200" nowrap="nowrap">{TXT_CALENDAR_TITLE}</td>
         <td nowrap="nowrap"><input type="text" name="registrationMailTitle" value="{CALENDAR_MAIL_TITLE}" style="width:468px;"></td>
     </tr>
     <tr class="row2">
@@ -623,12 +608,10 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
   <div id="notification" class="registrationTab" style="display:none">
   <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
     <tr>
-      <th colspan="2" nowrap="nowrap">
-        <div align="left">{TXT_CALENDAR_NOTIFICATION}</div>
-      </th>
+      <th colspan="2" nowrap="nowrap">{TXT_CALENDAR_NOTIFICATION}</th>
     </tr>
     <tr class="row1">
-        <td width="140" nowrap="nowrap">{TXT_CALENDAR_NOTIFICATION_ACTIVATE}</td>
+        <td width="200" nowrap="nowrap">{TXT_CALENDAR_NOTIFICATION_ACTIVATE}</td>
         <td nowrap="nowrap"><input type="checkbox" id="inputNotification" name='inputNotification' value="1" {CALENDAR_NOTIFICATION_ACTIVATED}/></td>
     </tr>
     <tr class="row2">
@@ -647,7 +630,7 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
       </th>
     </tr>
     <tr class="row1">
-      <td valign="middle" width="140">{TXT_CALENDAR_SERIES_ACTIVATE}</td>
+      <td valign="middle" width="200">{TXT_CALENDAR_SERIES_ACTIVATE}</td>
       <td valign="middle">
           <input type="checkbox" name='inputSeriesStatus' value="1" {CALENDAR_SERIES_STATUS}/>
       </td>
@@ -667,7 +650,7 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
    <div id="seriesMaskDaily" style="display:none">
    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
     <tr class="row1">
-      <td valign="middle" width="140"><br /></td>
+      <td valign="middle" width="200"><br /></td>
       <td valign="middle">
         <input type="radio" name='inputSeriesDaily' value="1" {CALENDAR_SERIES_PATTERN_DAILY_1}/>&nbsp;{TXT_CALENDAR_ALL}&nbsp;<input type="text" name='inputSeriesDailyDays' maxlength="3" value="{CALENDAR_SERIES_PATTERN_DAILY_DAYS}" style="width: 20px;" />&nbsp;{TXT_CALENDAR_DAYS}&nbsp;&nbsp;<br />
         <input type="radio" name='inputSeriesDaily' value="2" {CALENDAR_SERIES_PATTERN_DAILY_2} />&nbsp;{TXT_CALENDAR_EVERY_2} {TXT_CALENDAR_DAYS_WORKDAY}&nbsp;&nbsp;
@@ -679,7 +662,7 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
    <div id="seriesMaskWeekly" style="display:none">
    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
     <tr class="row1">
-      <td valign="middle" width="140"><br /></td>
+      <td valign="middle" width="200"><br /></td>
       <td valign="middle">
         {TXT_CALENDAR_ALL}&nbsp;<input type="text" name='inputSeriesWeeklyWeeks' maxlength="3" value="{CALENDAR_SERIES_PATTERN_WEEKLY_WEEKS}" style="width: 20px;" />&nbsp;{TXT_CALENDAR_WEEKS}&nbsp;{TXT_CALENDAR_AT}:&nbsp;<br />
         <input class="weekday" type="checkbox" name='inputSeriesWeeklyDays[1]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_MONDAY}/>&nbsp;{TXT_CALENDAR_DAYS_MONDAY}&nbsp;&nbsp;
@@ -697,7 +680,7 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
    <div id="seriesMaskMonthly" style="display:none">
    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
     <tr class="row1">
-      <td valign="middle" width="140"><br /></td>
+      <td valign="middle" width="200"><br /></td>
       <td valign="middle">
         <input type="radio" name='inputSeriesMonthly' value="1" {CALENDAR_SERIES_PATTERN_MONTHLY_1}/>&nbsp;{TXT_CALENDAR_AT}&nbsp;<input type="text" name='inputSeriesMonthlyDay' maxlength="3" value="{CALENDAR_SERIES_PATTERN_MONTHLY_DAY}" style="width: 20px;" />.&nbsp;{TXT_CALENDAR_DAYS_DAY}&nbsp;{TXT_CALENDAR_EVERY_1}&nbsp;<input type="text" name='inputSeriesMonthlyMonth_1' maxlength="3" value="{CALENDAR_SERIES_PATTERN_MONTHLY_MONTH_1}" style="width: 20px;" />.&nbsp;{TXT_CALENDAR_MONTHS}<br />
         <input type="radio" name='inputSeriesMonthly' value="2" {CALENDAR_SERIES_PATTERN_MONTHLY_2}/>&nbsp;{TXT_CALENDAR_AT}&nbsp;<select name="inputSeriesMonthlyDayCount" style="width: 75px;">{CALENDAR_SERIES_PATTERN_MONTHLY_COUNT}</select>&nbsp;<select name="inputSeriesMonthlyWeekday" style="width: 109px;">{CALENDAR_SERIES_PATTERN_MONTHLY_WEEKDAY}</select>&nbsp;{TXT_CALENDAR_EVERY_1}&nbsp;<input type="text" name='inputSeriesMonthlyMonth_2' maxlength="3" value="{CALENDAR_SERIES_PATTERN_MONTHLY_MONTH_2}" style="width: 20px;" />.&nbsp;{TXT_CALENDAR_MONTHS}
@@ -708,11 +691,11 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
 
    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
     <tr class="row2">
-      <td valign="top" width="140">{TXT_CALENDAR_SERIES_PATTERN_DURANCE}</td>
+      <td valign="top" width="200">{TXT_CALENDAR_SERIES_PATTERN_DURANCE}</td>
       <td valign="middle">
           <table cellpadding="0" cellspacing="0">
               <tr>
-                  <td style="border: 0px;" valign="middle" width="140">
+                  <td style="border: 0px;" valign="middle" width="150">
                     <input type="radio" name='inputSeriesDouranceType' value="1" {CALENDAR_SERIES_PATTERN_DOURANCE_1}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_NO_ENDDATE}
                 </td>
                 <td style="border: 0px;">
@@ -732,7 +715,7 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
                     <input type="radio" name='inputSeriesDouranceType' value="3" {CALENDAR_SERIES_PATTERN_DOURANCE_3}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_ENDS}
                 </td>
                 <td style="border: 0px;">
-                    <input type="text" name="inputRepeatDouranceEnd" value="{CALENDAR_SERIES_PATTERN_ENDS}" style="width: 140px;" />
+                    <input type="text" name="inputRepeatDouranceEnd" value="{CALENDAR_SERIES_PATTERN_ENDS}" style="width: 200px;" />
                 </td>
               </tr>
           </table>
@@ -749,7 +732,7 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
       </th>
     </tr>
     <tr class="row1">
-      <td valign="middle" width="140">{TXT_CALENDAR_ACCESS}</td>
+      <td valign="middle" width="200">{TXT_CALENDAR_ACCESS}</td>
       <td valign="middle">
          <select name="inputAccess" style="width: 302px; ">
             <option value="0" {CALENDAR_ACCESS_PUBLIC}>{TXT_CALENDAR_ACCESS_PUBLIC}</option>

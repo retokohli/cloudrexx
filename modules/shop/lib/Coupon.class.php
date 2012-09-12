@@ -1034,11 +1034,11 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                     ).'</div>',
                 'SHOP_DISCOUNT_COUPON_START_TIME' =>
                     ($objCoupon->start_time()
-                      ? date(ASCMS_DATE_SHORT_FORMAT, $objCoupon->start_time())
+                      ? date(ASCMS_DATE_FORMAT_DATE, $objCoupon->start_time())
                       : $_ARRAYLANG['TXT_SHOP_DATE_NONE']),
                 'SHOP_DISCOUNT_COUPON_END_TIME' =>
                     ($objCoupon->end_time()
-                      ? date(ASCMS_DATE_SHORT_FORMAT, $objCoupon->end_time())
+                      ? date(ASCMS_DATE_FORMAT_DATE, $objCoupon->end_time())
                       : $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_END_TIME_UNLIMITED']),
                 'SHOP_DISCOUNT_COUPON_MINIMUM_AMOUNT' =>
                     ($objCoupon->minimum_amount() > 0
@@ -1135,7 +1135,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                     'jQuery(this).css(\'display\', \'none\');"'),
             'SHOP_DISCOUNT_COUPON_START_TIME' =>
                 Html::getDatepicker('start_date', array(
-                    'defaultDate' => date(ASCMS_DATE_SHORT_FORMAT,
+                    'defaultDate' => date(ASCMS_DATE_FORMAT_DATE,
                         ($objCouponEdit->start_time()
                           ? $objCouponEdit->start_time()
                           : time()))),
@@ -1143,7 +1143,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             'SHOP_DISCOUNT_COUPON_END_TIME' =>
                 Html::getDatepicker('end_date', array(
                     'defaultDate' => ($objCouponEdit->end_time()
-                      ? date(ASCMS_DATE_SHORT_FORMAT,
+                      ? date(ASCMS_DATE_FORMAT_DATE,
                             $objCouponEdit->end_time())
                       : '')),
                     $attribute_time),
@@ -1221,8 +1221,8 @@ jQuery(document).ready(function($) {
       $("#end_date").datepicker({
         defaultDate: "'.
             ($objCouponEdit->end_time()
-              ? date(ASCMS_DATE_SHORT_FORMAT, $objCouponEdit->end_time())
-              : date(ASCMS_DATE_SHORT_FORMAT)).'"
+              ? date(ASCMS_DATE_FORMAT_DATE, $objCouponEdit->end_time())
+              : date(ASCMS_DATE_FORMAT_DATE)).'"
       });
     }
   }).change();

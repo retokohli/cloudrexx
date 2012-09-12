@@ -126,7 +126,7 @@ class feed extends feedLibrary
                 'NEWSML_TEXT'    => $objDocument->fields['dataContent'],
                 'NEWSML_DATE'        => $arrWeekDays[date('w', $objDocument->fields['thisRevisionDate'])].', '.date('j', $objDocument->fields['thisRevisionDate']).'. '.$arrMonths[date('n', $objDocument->fields['thisRevisionDate'])-1].' '.date('Y', $objDocument->fields['thisRevisionDate']).' / '.date('G:i', $objDocument->fields['thisRevisionDate']).' h',
                 'NEWSML_LONG_DATE'    => date(ASCMS_DATE_FORMAT, $objDocument->fields['thisRevisionDate']),
-                'NEWSML_SHORT_DATE'    => date(ASCMS_DATE_SHORT_FORMAT, $objDocument->fields['thisRevisionDate'])
+                'NEWSML_SHORT_DATE'    => date(ASCMS_DATE_FORMAT_DATE, $objDocument->fields['thisRevisionDate'])
             ));
 
             $objDocument->MoveNext();

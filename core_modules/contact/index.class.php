@@ -502,7 +502,7 @@ class Contact extends ContactLib
 
                 case 'date':
                     $value = $objUser->getProfileAttribute($objAttribute->getId());
-                    $value = $value !== false && $value !== '' ? date(ASCMS_DATE_SHORT_FORMAT, intval($value)) : '';
+                    $value = $value !== false && $value !== '' ? date(ASCMS_DATE_FORMAT_DATE, intval($value)) : '';
                 break;
 
                 default:

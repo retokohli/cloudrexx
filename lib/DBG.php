@@ -564,7 +564,7 @@ class DBG
         } elseif (self::$dbg_fh) {
             fputs(self::$dbg_fh,
 // TODO: Add some flag to enable/disable timestamps
-                date(ASCMS_DATE_FORMAT_DATETIME).' '.
+                date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME).' '.
                 $text."\n");
         } else {
             echo $text;

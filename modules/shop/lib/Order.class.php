@@ -841,7 +841,7 @@ class Order
             $date_time = strtotime(trim(strip_tags($date_time)));
             if ($date_time > 0) {
                 $this->date_time =
-                    date(ASCMS_DATE_FORMAT_DATETIME, $date_time);
+                    date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME, $date_time);
             }
         }
         return $this->date_time;
@@ -866,7 +866,7 @@ class Order
             $modified_on = strtotime(trim(strip_tags($modified_on)));
             if ($modified_on > 0) {
                 $this->modified_on =
-                    date(ASCMS_DATE_FORMAT_DATETIME, $modified_on);
+                    date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME, $modified_on);
             }
         }
         return $this->modified_on;
@@ -1728,7 +1728,7 @@ class Order
         $objTemplate->setVariable(array(
             'SHOP_CUSTOMER_ID' => $customer_id,
             'SHOP_ORDERID' => $order_id,
-            'SHOP_DATE' => date(ASCMS_DATE_FORMAT_DATETIME,
+            'SHOP_DATE' => date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME,
                 strtotime($objOrder->date_time())),
             'SHOP_ORDER_STATUS' => ($edit
                 ? Orders::getStatusMenu(

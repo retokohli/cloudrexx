@@ -178,6 +178,7 @@ jQuery(document).ready(function(){
             ),
             'dependencies'  => array(
                 'jquery',
+                'cx',
             ),
         ),
         //stuff to beautify forms.
@@ -253,7 +254,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 $J(document).ready(function() {
                     $J(".chzn-select").chosen();
                 });'
-       ),
+        ),
         'backend' => array(
             'jsfiles' => array(
                 'cadmin/javascript/switching_content.js',

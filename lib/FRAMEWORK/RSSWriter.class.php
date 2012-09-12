@@ -256,7 +256,7 @@ XMLJSOUTPUT;
             $this->xmlDocument .= "rssFeedNews[".$nr."] = new Array();\n";
             $this->xmlDocument .= "rssFeedNews[".$nr."]['title'] = '".addslashes(($arrItem['title']))."';\n";
             $this->xmlDocument .= "rssFeedNews[".$nr."]['link'] = '".$arrItem['link']."';\n";
-            $this->xmlDocument .= "rssFeedNews[".$nr."]['date'] = '".date(ASCMS_DATE_SHORT_FORMAT, $arrItem['pubDate'])."';\n";
+            $this->xmlDocument .= "rssFeedNews[".$nr."]['date'] = '".date(ASCMS_DATE_FORMAT_DATE, $arrItem['pubDate'])."';\n";
             $nr++;
         }
 		$utf8_fixed = $this->_js_umlauts($this->xmlDocument);

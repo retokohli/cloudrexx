@@ -2063,9 +2063,9 @@ if ($test === NULL) {
         // Note that the check for ">0" is necessary, as some systems return
         // crazy values for empty dates (it may even fail like this)!
         if ($start_time > 0) $start_date =
-            date(ASCMS_DATE_SHORT_FORMAT, $start_time);
+            date(ASCMS_DATE_FORMAT_DATE, $start_time);
         $end_time = strtotime($objProduct->date_end());
-        if ($end_time > 0) $end_date = date(ASCMS_DATE_SHORT_FORMAT, $end_time);
+        if ($end_time > 0) $end_date = date(ASCMS_DATE_FORMAT_DATE, $end_time);
 //DBG::log("Dates from ".$objProduct->date_start()." ($start_time, $start_date) to ".$objProduct->date_start()." ($end_time, $end_date)");
         self::$objTemplate->setVariable(array(
             'SHOP_PRODUCT_ID' => (isset($_REQUEST['new']) ? 0 : $objProduct->id()),
@@ -2738,7 +2738,7 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
 //            'SHOP_CVC_CODE' => $objCustomer->getCcCode(),
             'SHOP_COMPANY_NOTE' => $objCustomer->companynote(),
             'SHOP_IS_RESELLER' => $customer_type,
-            'SHOP_REGISTER_DATE' => date(ASCMS_DATE_FILE_FORMAT,
+            'SHOP_REGISTER_DATE' => date(ASCMS_DATE_FORMAT_DATETIME,
                 $objCustomer->register_date()),
             'SHOP_CUSTOMER_STATUS' => $active,
             'SHOP_DISCOUNT_GROUP_CUSTOMER' => Discount::getCustomerGroupName(
@@ -2879,7 +2879,7 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
             'SHOP_USERNAME'   => $username,
             'SHOP_PASSWORD'   => $password,
             'SHOP_COMPANY_NOTE' => $companynote,
-            'SHOP_REGISTER_DATE' => date(ASCMS_DATE_FILE_FORMAT, $registerdate),
+            'SHOP_REGISTER_DATE' => date(ASCMS_DATE_FORMAT_DATETIME, $registerdate),
             'SHOP_COUNTRY_MENUOPTIONS' =>
                 Country::getMenuoptions($country_id),
             'SHOP_DISCOUNT_GROUP_CUSTOMER_MENUOPTIONS' =>

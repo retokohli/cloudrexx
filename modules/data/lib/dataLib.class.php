@@ -315,9 +315,9 @@ class DataLibrary
                 $intMessageId = $objResult->fields['message_id'];
 
                 $arrReturn[$intMessageId] = array(
-                    'time_created'          =>  date(ASCMS_DATE_FILE_FORMAT,$objResult->fields['time_created']),
+                    'time_created'          =>  date(ASCMS_DATE_FORMAT_DATETIME,$objResult->fields['time_created']),
                     'time_created_ts'       =>  $objResult->fields['time_created'],
-                    'time_edited'           =>  date(ASCMS_DATE_FILE_FORMAT,$objResult->fields['time_edited']),
+                    'time_edited'           =>  date(ASCMS_DATE_FORMAT_DATETIME,$objResult->fields['time_edited']),
                     'time_edited_ts'        =>  $objResult->fields['time_edited'],
                     'hits'                  =>  $objResult->fields['hits'],
                     'subject'               =>  '',

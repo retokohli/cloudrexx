@@ -518,8 +518,8 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current { float:left; }
 .ui-datepicker .ui_tpicker_time_label { height: 16px; line-height: 16px; width: 60px; margin: 0 0 5px 0; }
 .ui-datepicker .ui_tpicker_time { margin: -21px 0 5px 60px; }
-.ui-datepicker .ui_tpicker_hour_label, .ui-datepicker .ui_tpicker_minute_label { height: 18px; line-height: 18px; width: 60px; margin: 0 0 10px 0; }
-.ui-datepicker .ui_tpicker_hour, .ui-datepicker .ui_tpicker_minute { margin: -24px 0 10px 60px; }
+.ui-datepicker .ui_tpicker_hour_label, .ui-datepicker .ui_tpicker_minute_label, .ui-datepicker .ui_tpicker_second_label { height: 18px; line-height: 18px; width: 60px; margin: 0 0 10px 0; }
+.ui-datepicker .ui_tpicker_hour, .ui-datepicker .ui_tpicker_minute, .ui-datepicker .ui_tpicker_second { margin: -24px 0 10px 60px; }
 /* with multiple calendars */
 .ui-datepicker.ui-datepicker-multi { width:auto; }
 .ui-datepicker-multi .ui-datepicker-group { float:left; }

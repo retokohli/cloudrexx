@@ -1089,6 +1089,9 @@ class DataAdmin extends DataLibrary {
     function addEntry() {
         global $_ARRAYLANG, $objDatabase;
 
+        JS::activate('jqueryui');
+        JS::activate('prototype');
+
         $this->_strPageTitle = $_ARRAYLANG['TXT_DATA_ENTRY_ADD_TITLE'];
         $this->_objTpl->loadTemplateFile('module_data_entries_edit.html',true,true);
 
@@ -1404,6 +1407,9 @@ class DataAdmin extends DataLibrary {
      */
     function editEntry($intEntryId, $copy = false) {
         global $_ARRAYLANG;
+
+        JS::activate('jqueryui');
+        JS::activate('prototype');
 
         $this->_strPageTitle = $copy ? $_ARRAYLANG['TXT_DATA_ENTRY_COPY_TITLE'] : $_ARRAYLANG['TXT_DATA_ENTRY_EDIT_TITLE'];
         $this->_objTpl->loadTemplateFile('module_data_entries_edit.html',true,true);

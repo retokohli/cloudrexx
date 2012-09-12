@@ -123,7 +123,7 @@ EOF;
                     'PODCAST_MEDIUM_DESCRIPTION'    => htmlentities($arrMedium['description'], ENT_QUOTES, CONTREXX_CHARSET),
                     'PODCAST_MEDIUM_CODE'           => $mediumCode,
                     'PODCAST_MEDIUM_DATE'           => date(ASCMS_DATE_FORMAT, $arrMedium['date_added']),
-                    'PODCAST_MEDIUM_SHORT_DATE'     => date(ASCMS_DATE_SHORT_FORMAT, $arrMedium['date_added']),
+                    'PODCAST_MEDIUM_SHORT_DATE'     => date(ASCMS_DATE_FORMAT_DATE, $arrMedium['date_added']),
                     'PODCAST_MEDIUM_THUMBNAIL'      => htmlentities($arrMedium['thumbnail'], ENT_QUOTES, CONTREXX_CHARSET),
                     'PODCAST_MEDIUM_URL'            => htmlentities($arrMedium['source'], ENT_QUOTES, CONTREXX_CHARSET),
 // TODO: Spelling error. Fix the template as well and remove this
@@ -170,7 +170,7 @@ EOF;
                         'PODCAST_MEDIA_AUTHOR'              => htmlentities($arrMedium['author'], ENT_QUOTES, CONTREXX_CHARSET),
                         'PODCAST_MEDIA_DESCRIPTION'         => empty($arrMedium['description']) ? '-' : htmlentities($arrMedium['description'], ENT_QUOTES, CONTREXX_CHARSET),
                         'PODCAST_MEDIA_DATE'                => date(ASCMS_DATE_FORMAT, $arrMedium['date_added']),
-                        'PODCAST_MEDIA_SHORT_DATE'          => date(ASCMS_DATE_SHORT_FORMAT, $arrMedium['date_added']),
+                        'PODCAST_MEDIA_SHORT_DATE'          => date(ASCMS_DATE_FORMAT_DATE, $arrMedium['date_added']),
                         'PODCAST_MEDIA_URL'                 => htmlentities($arrMedium['source'], ENT_QUOTES, CONTREXX_CHARSET),
                         'PODCAST_MEDIA_THUMBNAIL'           => htmlentities($arrMedium['thumbnail'], ENT_QUOTES, CONTREXX_CHARSET),
                         'PODCAST_MEDIA_VIEWS'               => $this->_getViews($mediumId),

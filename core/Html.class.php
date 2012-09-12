@@ -1243,7 +1243,7 @@ var _active_tab = '.
         static $index = 0;
 
         JS::activate('datepicker');
-        $id += 'DPC_edit'.++$index.'_'.ASCMS_DATE_SHORT_FORMAT;
+        $id += 'DPC_edit'.++$index.'_'.ASCMS_DATE_FORMAT_DATE;
         return self::getInputText(
             $name, $value, $id, $attribute);
     }

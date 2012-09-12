@@ -870,7 +870,7 @@ class MediaLibrary
     function _formatDate($date)
     {
         if (!empty($date)) {
-            $date = date(ASCMS_DATE_FILE_FORMAT, $date);
+            $date = date(ASCMS_DATE_FORMAT_DATETIME, $date);
         } else {
             $date = '-';
         }
