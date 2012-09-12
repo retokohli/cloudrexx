@@ -48,42 +48,44 @@
         /* Navigation End */
         
         /* Cycle Start */
-        $('#cycle').wrap(
-            '<div id="cycle-wrapper" />'
-        ).after(
-            '<div class="cycle-button" id="cycle-prev" />' +
-            '<div class="cycle-button" id="cycle-next" />' +
-            '<div id="cycle-nav" />'
-        ).cycle({ 
-            fx:      'fade', 
-            speed:    1000, 
-            timeout:  0,
-            next:    '#cycle-next', 
-            prev:    '#cycle-prev',
-            pager:   '#cycle-nav'
-        });
-        
-        $('#cycle-nav a').empty();
-        
-        $('#cycle-wrapper').hover(function (e) {
-            $('#cycle-prev').stop(true, true).hide().css('left', '-35px').animate({
-                left:    '+=45',
-                opacity: 'toggle'
-            }, 100);
-            $('#cycle-next').stop(true, true).hide().css('right', '-35px').animate({
-                right:   '+=45',
-                opacity: 'toggle'
-            }, 100);
-        }, function (e) {
-            $('#cycle-prev').stop(true, true).delay(500).animate({
-                left:    '-=45',
-                opacity: 'toggle'
-            }, 100);
-            $('#cycle-next').stop(true, true).delay(500).animate({
-                right:   '-=45',
-                opacity: 'toggle'
-            }, 100);
-        });
+       if ($('#cycle').length > 0) {
+            $('#cycle').wrap(
+                '<div id="cycle-wrapper" />'
+            ).after(
+                '<div class="cycle-button" id="cycle-prev" />' +
+                '<div class="cycle-button" id="cycle-next" />' +
+                '<div id="cycle-nav" />'
+            ).cycle({ 
+                fx:      'fade', 
+                speed:    1000, 
+                timeout:  0,
+                next:    '#cycle-next', 
+                prev:    '#cycle-prev',
+                pager:   '#cycle-nav'
+            });
+            
+            $('#cycle-nav a').empty();
+            
+            $('#cycle-wrapper').hover(function (e) {
+                $('#cycle-prev').stop(true, true).hide().css('left', '-35px').animate({
+                    left:    '+=45',
+                    opacity: 'toggle'
+                }, 100);
+                $('#cycle-next').stop(true, true).hide().css('right', '-35px').animate({
+                    right:   '+=45',
+                    opacity: 'toggle'
+                }, 100);
+            }, function (e) {
+                $('#cycle-prev').stop(true, true).delay(500).animate({
+                    left:    '-=45',
+                    opacity: 'toggle'
+                }, 100);
+                $('#cycle-next').stop(true, true).delay(500).animate({
+                    right:   '-=45',
+                    opacity: 'toggle'
+                }, 100);
+            });
+        }
         /* Cycle End */
         
         /* Scroll Start */

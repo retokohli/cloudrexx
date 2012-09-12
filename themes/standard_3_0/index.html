@@ -60,6 +60,13 @@
                 <ul id="metanavigation">
                     <li class="first"><a href="index.php?section=contact&amp;cmd=10">Kontakt</a></li>
                     <li><a href="index.php?section=sitemap">Sitemap</a></li>
+                    <!-- BEGIN access_logged_out -->
+                    <li><a href="index.php?section=login">Login</a></li>
+                    <!-- END access_logged_out -->
+                    <!-- BEGIN access_logged_in -->
+                    <li><a href="index.php?section=access&amp;cmd=settings_profile">Angemeldet als {ACCESS_USER_USERNAME}</a></li>
+                    <li><a href="index.php?section=logout">Logout</a></li>
+                    <!-- END access_logged_in -->
                     <li id="select-language">{LANGUAGE_NAVBAR_SHORT}</li>
                 </ul>
             </header>
@@ -79,13 +86,10 @@
                     <li class="last"><a href="{APP_URL}">App</a></li>
                 </ul>
                 <ul class="footer-right horizontal-list no-bg">
-                    <li><a href="#"><img src="themes/standard_3_0/images/twitter-icon.png" alt="Twitter" /></a></li>
-                    <li><a href="#"><img src="themes/standard_3_0/images/facebook-icon.png" alt="Facebook" /></a></li>
-                    <li><a href="#"><img src="themes/standard_3_0/images/linkedin-icon.png" alt="LinkedIn" /></a></li>
-                    <li><a href="#"><img src="themes/standard_3_0/images/youtube-icon.png" alt="YouTube" /></a></li>
-                    <li><a href="#"><img src="themes/standard_3_0/images/stumble-upon-icon.png" alt="StumbleUpon" /></a></li>
-                    <li><a href="#"><img src="themes/standard_3_0/images/rss-feed-icon.png" alt="RSS Feed" /></a></li>
-                    <li class="last"><a href="#"><img src="themes/standard_3_0/images/googleplus-icon.png" alt="Google Plus" /></a></li>
+                    <li><a target="_blank" href="https://plus.google.com/101022530429663496888"><img src="themes/standard_3_0/images/googleplus-icon.png" alt="Google Plus" /></a></li>
+                    <li><a target="_blank" href="http://www.facebook.com/contrexxsoftware"><img src="themes/standard_3_0/images/facebook-icon.png" alt="Facebook" /></a></li>
+                    <li><a target="_blank" href="http://twitter.com/contrexx"><img src="themes/standard_3_0/images/twitter-icon.png" alt="Twitter" /></a></li>
+                    <li class="last"><a target="_blank" href="/feed/news_de.xml"><img src="themes/standard_3_0/images/rss-feed-icon.png" alt="RSS Feed" /></a></li>
                 </ul>
             </footer>
             <footer id="footer-bottom">
