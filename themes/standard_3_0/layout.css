@@ -51,7 +51,7 @@
 
 #select-language.active {
     border: 1px solid #D6D6D6;
-    background: #F9F9F9;
+    background: #FFFFFF;
 }
 
 #select-language a {
@@ -241,6 +241,7 @@
 #home-boxes {
     float: left;
     width: 100%;
+    padding: 0 0 20px 0;
 }
 
 #home-boxes input[type=text] {
@@ -256,7 +257,8 @@
     padding: 5px 15px 15px 15px;
     margin: 0 30px 0 0;
     border: 1px solid #D6D6D6;
-    background: #F9F9F9;
+    border-top: 3px solid #0A85C8;
+    background: #FFFFFF;
 }
 
 .home-box input[type=text] {
@@ -265,6 +267,29 @@
 
 .home-box.last {
     margin: 0;
+}
+
+#home-content {
+    float: left;
+    width: 1170px;
+    padding: 15px;
+    background: #FFFFFF;
+    border: 1px solid #D6D6D6;
+}
+
+#content-top {
+    float: left;
+    width: 1170px;
+    padding: 0 15px 0 15px;
+    margin: 10px 0 0 0;
+}
+
+#breadcrumb {
+    float: left;
+}
+
+#profile-links {
+    float: right;
 }
 
 #content {
@@ -290,8 +315,8 @@
 
 #subnavigation {
     float: left;
-    width: 230px;
-    padding: 10px 20px 10px 20px;
+    width: 240px;
+    padding: 5px 15px 5px 15px;
     margin: 0 0 20px 0;
     border: 1px solid #D6D6D6;
     background: #FFFFFF;
@@ -304,7 +329,7 @@
 }
 
 #subnavigation li a {
-    width: 220px;
+    width: 230px;
     float: left;
     padding: 10px 5px 10px 5px;
     color: #323F55;
@@ -312,14 +337,14 @@
 }
 
 #subnavigation li.level-3 a {
-    width: 205px;
+    width: 215px;
     padding: 0 5px 5px 20px;
     font-size: 12px;
     border: 0;
 }
 
 #subnavigation li.level-4 a {
-    width: 190px;
+    width: 200px;
     padding: 0 5px 5px 35px;
 }
 
@@ -346,8 +371,8 @@
 
 .sidebar-block {
     float: left;
-    width: 230px;
-    padding: 20px;
+    width: 240px;
+    padding: 15px;
     margin: 0 0 20px 0;
     border: 1px solid #D6D6D6;
     background: #FFFFFF;
@@ -355,11 +380,11 @@
 
 #page {
     float: left;
-    width: 876px;
+    width: 886px;
     height: auto !important;
     min-height: 400px;
     height: 400px; /*FOR IE*/
-    padding: 20px;
+    padding: 15px;
     margin: 0 0 0 10px;
     border: 1px solid #D6D6D6;
     background: #FFFFFF;
