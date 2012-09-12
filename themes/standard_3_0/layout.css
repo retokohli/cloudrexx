@@ -265,14 +265,8 @@
 
 #content {
     float: left;
-    width: 1158px;
-    height: auto !important;
-    min-height: 500px;
-    height: 500px; /*FOR IE*/
-    padding: 20px 20px 40px 20px;
-    margin: 10px 0 0 0;
-    border: 1px solid #D6D6D6;
-    background: #FFFFFF;
+    width: 1200px;
+    padding: 10px 0 0 0;   
 }
 
 .content li {
@@ -280,9 +274,21 @@
     background: url('images/marker.gif') no-repeat 2px 8px;
 }
 
-#subnavigation {
-    width: 260px;
+#sidebar {
     float: left;
+    width: 272px;
+}
+
+#subnavigation {
+    float: left;
+    width: 230px;
+    height: auto !important;
+    min-height: 200px;
+    height: 200px; /*FOR IE*/
+    padding: 10px 20px 10px 20px;
+    margin: 0 0 20px 0;
+    border: 1px solid #D6D6D6;
+    background: #FFFFFF;
 }
 
 #subnavigation li {
@@ -292,7 +298,7 @@
 }
 
 #subnavigation li a {
-    width: 250px;
+    width: 220px;
     float: left;
     padding: 10px 5px 10px 5px;
     color: #323F55;
@@ -300,12 +306,12 @@
 }
 
 #subnavigation li.level-3 a {
-    width: 235px;
+    width: 205px;
     padding: 10px 5px 10px 20px;
 }
 
 #subnavigation li.level-4 a {
-    width: 220px;
+    width: 190px;
     padding: 10px 5px 10px 35px;
 }
 
@@ -324,10 +330,28 @@
     color: #036DA7;
 }
 
+.sidebar-block {
+    float: left;
+    width: 230px;
+    height: auto !important;
+    min-height: 200px;
+    height: 200px; /*FOR IE*/
+    padding: 20px;
+    margin: 0 0 20px 0;
+    border: 1px solid #D6D6D6;
+    background: #FFFFFF;
+}
+
 #page {
     float: left;
-    width: 868px;
-    padding: 0 0 0 30px;
+    width: 864px;
+    height: auto !important;
+    min-height: 400px;
+    height: 400px; /*FOR IE*/
+    padding: 20px;
+    margin: 0 0 0 20px;
+    border: 1px solid #D6D6D6;
+    background: #FFFFFF;
 }
 
 #social-media {

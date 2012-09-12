@@ -1,5 +1,16 @@
 <div id="content" class="content">
-    {SUBNAVBAR_FILE}
+    <div id="sidebar">
+        {SUBNAVBAR_FILE}
+        <div class="sidebar-block">
+            <strong>{CONTACT_COMPANY}</strong><br />
+            {CONTACT_ADDRESS}<br />
+            {CONTACT_ZIP} {CONTACT_PLACE}<br />
+            {CONTACT_COUNTRY}<br /><br />
+            <a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a><br />
+            {CONTACT_PHONE}<br />
+            {CONTACT_FAX}
+        </div>
+    </div>
     <div id="page">
         <h1 class="first">{CONTENT_TITLE}</h1>
         {CONTENT_TEXT}
