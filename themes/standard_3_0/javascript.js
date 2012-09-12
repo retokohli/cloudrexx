@@ -36,7 +36,15 @@
             $('#subnavigation').hide();
         }
         $('#subnavigation li.active').parents('ul.menu').siblings('a').removeClass('inactive').addClass('active').parent().removeClass('inactive').addClass('active');
-        $('#subnavigation li.level-2 a:visible:last').css('border', 0);
+        if ($('#subnavigation li.level-2:visible:last ul:visible').length == 0) {
+            $('#subnavigation li.level-2 > a:visible:last').css('border', 0);
+        }
+        if ($('#subnavigation li:visible:last').hasClass('level-3')) {
+            $('#subnavigation li:visible:last').parent().css('border', 0);
+        }
+        if ($('#subnavigation li:visible:last').hasClass('level-4')) {
+            $('#subnavigation li:visible:last').parent().parent().parent().css('border', 0);
+        }
         /* Navigation End */
         
         /* Cycle Start */

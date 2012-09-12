@@ -282,9 +282,6 @@
 #subnavigation {
     float: left;
     width: 230px;
-    height: auto !important;
-    min-height: 200px;
-    height: 200px; /*FOR IE*/
     padding: 10px 20px 10px 20px;
     margin: 0 0 20px 0;
     border: 1px solid #D6D6D6;
@@ -307,12 +304,14 @@
 
 #subnavigation li.level-3 a {
     width: 205px;
-    padding: 10px 5px 10px 20px;
+    padding: 0 5px 5px 20px;
+    font-size: 12px;
+    border: 0;
 }
 
 #subnavigation li.level-4 a {
     width: 190px;
-    padding: 10px 5px 10px 35px;
+    padding: 0 5px 5px 35px;
 }
 
 #subnavigation li.level-1 > a,
@@ -325,6 +324,12 @@
     display: block;
 }
 
+#subnavigation li.active.level-2 > ul {
+    float: left;
+    padding: 5px 0 0 0;
+    border-bottom: 1px solid #D6D6D6;
+}
+
 #subnavigation li a:hover,
 #subnavigation li a.active {
     color: #036DA7;
@@ -333,9 +338,6 @@
 .sidebar-block {
     float: left;
     width: 230px;
-    height: auto !important;
-    min-height: 200px;
-    height: 200px; /*FOR IE*/
     padding: 20px;
     margin: 0 0 20px 0;
     border: 1px solid #D6D6D6;
@@ -344,12 +346,12 @@
 
 #page {
     float: left;
-    width: 864px;
+    width: 876px;
     height: auto !important;
     min-height: 400px;
     height: 400px; /*FOR IE*/
     padding: 20px;
-    margin: 0 0 0 20px;
+    margin: 0 0 0 10px;
     border: 1px solid #D6D6D6;
     background: #FFFFFF;
 }
