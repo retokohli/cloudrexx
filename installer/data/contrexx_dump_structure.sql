@@ -2247,7 +2247,7 @@ CREATE TABLE `contrexx_module_news_comments` (
   `ip_address` varchar(15) NOT NULL DEFAULT '0.0.0.0',
   `is_active` enum('0','1') NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM;
+) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_news_locale` (
   `news_id` int(11) unsigned NOT NULL DEFAULT '0',
   `lang_id` int(11) unsigned NOT NULL DEFAULT '0',
