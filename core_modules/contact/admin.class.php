@@ -421,8 +421,8 @@ class ContactManager extends ContactLib
                 foreach ($arrEntries as $entryId => $arrEntry) {
                     $this->_objTpl->setVariable('CONTACT_FORM_ENTRIES_ROW_CLASS', $rowNr % 2 == 0 ? 'row2' : 'row1');
                     
-                    $date = date(ASCMS_DATE_SHORT_FORMAT, $arrEntry['time']);
-                    $now  = date(ASCMS_DATE_SHORT_FORMAT, strtotime('now'));
+                    $date = date(ASCMS_DATE_FORMAT_DATE, $arrEntry['time']);
+                    $now  = date(ASCMS_DATE_FORMAT_DATE, strtotime('now'));
                     if ($date == $now) {
                         $date = $_ARRAYLANG['TXT_CORE_TODAY'];
                     }
@@ -1714,7 +1714,7 @@ class ContactManager extends ContactLib
                                     .$required.'</label>';
                     break;
                 case 'date':
-                    $sourcecode[] = '<label for="DPC_date'.$fieldId.'_YYYY-MM-DD">'.
+                    $sourcecode[] = '<label for="contactFormFieldId_'.$fieldId.'">'.
                                     ($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['name']) : "{".$fieldId."_LABEL}")
                                     .$required.'</label>';
                     break;
@@ -1768,7 +1768,7 @@ class ContactManager extends ContactLib
                     break;
 
                 case 'date':
-                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" type="text" name="contactFormField_'.$fieldId.'" id="DPC_date'.$fieldId.'_YYYY-MM-DD" />';
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" type="text" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'" />';
                     break;
 
                 case 'file':

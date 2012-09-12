@@ -790,16 +790,16 @@ class Attribute
             case self::TYPE_URL_MANDATORY:
                 return '^'.VALIDATOR_REGEX_URI.'$';
             // Note: The date regex is defined based on the value of the
-            // ASCMS_DATE_SHORT_FORMAT constant and may thus be localized.
+            // ASCMS_DATE_FORMAT_DATE constant and may thus be localized.
             case self::TYPE_DATE_OPTIONAL:
                 return
                     '(^$|^'.
-                    DateTimeTools::getRegexForDateFormat(ASCMS_DATE_SHORT_FORMAT).
+                    DateTimeTools::getRegexForDateFormat(ASCMS_DATE_FORMAT_DATE).
                     '$)';
             case self::TYPE_DATE_MANDATORY:
                 return
                     '^'.
-                    DateTimeTools::getRegexForDateFormat(ASCMS_DATE_SHORT_FORMAT).
+                    DateTimeTools::getRegexForDateFormat(ASCMS_DATE_FORMAT_DATE).
                     '$';
             // Note: Number formats are somewhat arbitrary and should be defined
             // more closely resembling IEEE standards (or whatever).

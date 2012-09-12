@@ -18,28 +18,29 @@ function disableDate()
     }
 }
 
+cx.ready(function() {
+    var datepickerOptions = {
+        timeFormat: 'hh:mm:ss',
+        dateFormat: 'yy-mm-dd',
+        onSelect: function(dateText, inst) {
+            // adjust start or end date to avoid an invalid date range
+            var startDate = jQuery('input[name=startDate]').datepicker('getDate');
+            var endDate = jQuery('input[name=endDate]').datepicker('getDate');
 
-function setStartDate()
-{
-    with(document.docsys)
-    {
-       if(startDate.value=="")
-       {
-            startDate.value= "{DOCSYS_DATE}";
-       }
-    }
-}
+            if ((startDate != null) && (endDate != null) && (startDate > endDate)) {
+                if (jQuery(this).attr('name') == 'startDate') {
+                    jQuery('input[name=endDate]').datepicker('setDate', dateText);
+                } else {
+                    jQuery('input[name=startDate]').datepicker('setDate', dateText);
+                }
+            }
+        }
+    };
 
-function setEndDate()
-{
-    with(document.docsys)
-    {
-       if(endDate.value=="")
-       {
-            endDate.value = "{DOCSYS_DATE}";
-       }
-    }
-}
+    jQuery('input[name=startDate]').datetimepicker(datepickerOptions);
+    jQuery('input[name=endDate]').datetimepicker(datepickerOptions);}
+);
+
 // -->
 </script>
 <form name="docsys" method="post" action="index.php?cmd=docsys{MODULE_INDEX}&act={DOCSYS_FORM_ACTION}&id={DOCSYS_ID}">
@@ -128,9 +129,9 @@ function setEndDate()
       <td height="26"><b>
         <input type="checkbox" name="status" value="1" {DOCSYS_STATUS} onClick="disableDate()" />
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>&nbsp;&nbsp;&nbsp;&nbsp;{TXT_STARTDATE}:
-        <input type="text" name="startDate" size="19" maxlength="19" onClick="setStartDate()" value="{DOCSYS_STARTDATE}" enabled />
+        <input type="text" name="startDate" size="19" maxlength="19" value="{DOCSYS_STARTDATE}" enabled />
         &nbsp;&nbsp; {TXT_ENDDATE}:
-        <input type="text" name="endDate" size="19" maxlength="19" onFocus="setEndDate()" value="{DOCSYS_ENDDATE}" enabled />
+        <input type="text" name="endDate" size="19" maxlength="19" value="{DOCSYS_ENDDATE}" enabled />
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( {TXT_OPTIONAL} )</td>
     </tr>
   </table>

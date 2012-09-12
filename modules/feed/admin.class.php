@@ -280,7 +280,7 @@ class feedManager extends feedLibrary
             'TXT_FEED_AVAILABILITY_OF_PLACEHOLDERS' => $_ARRAYLANG['TXT_FEED_AVAILABILITY_OF_PLACEHOLDERS'],
             'FEED_DATE' => $arrWeekDays[date('w')].', '.date('j').'. '.$arrMonths[date('n')-1].' '.date('Y').' / '.date('G:i').' h',
             'FEED_LONG_DATE' => date(ASCMS_DATE_FORMAT),
-            'FEED_SHORT_DATE' => date(ASCMS_DATE_SHORT_FORMAT)
+            'FEED_SHORT_DATE' => date(ASCMS_DATE_FORMAT_DATE)
         ));
 
         $categoryId = intval($_REQUEST['categoryId']);

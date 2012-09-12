@@ -1,8 +1,11 @@
 <!-- START module_immo_stats.html -->
-<script type="text/javascript" src="../lib/datepickercontrol/datepickercontrol.js">
-</script>
 <script type="text/javascript">
 //<![CDATA[
+
+cx.ready(function() {
+    jQuery('input[name=inputStartDate]').datepicker({dateFormat: 'yy-mm-dd'});
+    jQuery('input[name=inputEndDate]').datepicker({dateFormat: 'yy-mm-dd'});
+});
 
     function deleteContact(contactID) {
     	strConfirmTxt = '{TXT_IMMO_CONFIRM_DELETE_CONTACT}';
@@ -302,16 +305,11 @@
 		</th>
 	</tr>
 	<tr>
-		<td><!-- datepickercontrol options -->
-			<input type="hidden" id="DPC_TODAY_TEXT" value="heute" />
-			<input type="hidden" id="DPC_BUTTON_TITLE" value="Kalender öffnen..." />
-			<input type="hidden" id="DPC_MONTH_NAMES" value="['Januar', 'Februar', 'M&auml;rz', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']" />
-			<input type="hidden" id="DPC_DAY_NAMES" value="['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']" />
-			<!-- /datepickercontrol options -->		
-			
-			<div id="datepick">
-				{TXT_IMMO_FROM} <input type="text" name="inputStartDate" id="DPC_edit1_YYYY-MM-DD" value="{CALENDAR_TODAY}" style="width: 8em; padding: 2px;" /> 
-				{TXT_IMMO_TO} <input type="text" name="inputEndDate" id="DPC_edit2_YYYY-MM-DD" value="{CALENDAR_NEXT_MONTH}" style="width: 8em; padding: 2px;" /> 				<input type="checkbox" id="ignore_timespan" name="ignore_timespan" {IMMO_IGNORE_TIMESPAN_CHECKED} /> {TXT_IMMO_IGNORE_TIMESPAN}
+		<td>
+            <div id="datepick">
+				{TXT_IMMO_FROM} <input type="text" name="inputStartDate" value="{CALENDAR_TODAY}" style="width: 100px;" /> 
+				{TXT_IMMO_TO} <input type="text" name="inputEndDate" value="{CALENDAR_NEXT_MONTH}" style="width: 100px;" />
+                <input type="checkbox" id="ignore_timespan" name="ignore_timespan" {IMMO_IGNORE_TIMESPAN_CHECKED} /> {TXT_IMMO_IGNORE_TIMESPAN}
 				<input type="submit" name="show_entries_in_timespan" value="{TXT_IMMO_REFRESH}" />				
 			</div>
 		</td>

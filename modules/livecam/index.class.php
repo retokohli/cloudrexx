@@ -207,7 +207,12 @@ class Livecam extends LivecamLibrary
         //var_dump($this->camSettings);
 
         JS::activate("shadowbox", array('players' => array('img')));
-        JS::activate("datepicker");
+        JS::activate('jqueryui');
+        JS::registerCode("
+            cx.ready(function() {
+                jQuery('input[name=date]').datepicker({dateFormat: 'yy-mm-dd'});
+            });
+        ");
 
         if ($this->camSettings['shadowboxActivate'] == 1) {
             $imageLink = $this->camSettings['currentImagePath'];
@@ -260,7 +265,12 @@ class Livecam extends LivecamLibrary
 		global $_ARRAYLANG;
 
         JS::activate("shadowbox", array('players' => array('img')));
-        JS::activate("datepicker");
+        JS::activate('jqueryui');
+        JS::registerCode("
+            cx.ready(function() {
+                jQuery('input[name=date]').datepicker({dateFormat: 'yy-mm-dd'});
+            });
+        ");
 
         $this->camSettings = $this->getCamSettings($this->cam);
         $this->_getThumbs();

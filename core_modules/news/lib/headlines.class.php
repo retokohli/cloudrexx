@@ -120,7 +120,7 @@ class newsHeadlines extends newsLibrary
                 $this->_objTemplate->setVariable(array(
                     'NEWS_ID'           => $newsid,
                     'NEWS_CSS'          => 'row'.($i % 2 + 1),
-                    'NEWS_DATE'         => date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['date']),
+                    'NEWS_DATE'         => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['date']),
                     'NEWS_LONG_DATE'    => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
                     'NEWS_TITLE'        => contrexx_raw2xhtml($newstitle),
                     'NEWS_TEASER'       => nl2br($objResult->fields['teaser_text']),
@@ -131,7 +131,7 @@ class newsHeadlines extends newsLibrary
 
                     // Backward compatibility for templates pre 3.0
                     'HEADLINE_ID'       => $newsid,
-                    'HEADLINE_DATE'     => date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['date']),
+                    'HEADLINE_DATE'     => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['date']),
                     'HEADLINE_TEXT'     => nl2br($objResult->fields['teaser_text']),
                     'HEADLINE_LINK'     => $htmlLink,
                     'HEADLINE_AUTHOR'   => contrexx_raw2xhtml($author),

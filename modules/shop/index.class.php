@@ -3371,7 +3371,7 @@ die("Trouble! No Shipper ID defined");
 
         $objOrder->currency_id($_SESSION['shop']['currencyId']);
         $objOrder->sum($_SESSION['shop']['grand_total_price']);
-        $objOrder->date_time(date(ASCMS_DATE_FORMAT_DATETIME));
+        $objOrder->date_time(date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME));
         $objOrder->status(0);
         $objOrder->company($_SESSION['shop']['company2']);
         $objOrder->gender($_SESSION['shop']['gender2']);

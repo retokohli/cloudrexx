@@ -194,7 +194,6 @@ class calendarManager extends calendarLibrary
     {
         global $objDatabase, $_CORELANG, $_ARRAYLANG, $_LANGID;
 
-        JS::activate('cx');
         JS::activate('jqueryui');
 
         $this->pageTitle = $_ARRAYLANG['TXT_CALENDAR_OVERVIEW'];
@@ -321,10 +320,6 @@ class calendarManager extends calendarLibrary
         }
 
         // Variable assignement
-        $objCx = ContrexxJavascript::getInstance();
-        $objCx->setVariable('ASCMS_DATE_FORMAT_UI_DATE', ASCMS_DATE_FORMAT_UI_DATE, 'date');
-        $objCx->setVariable('ASCMS_DATE_FORMAT_UI_TIME', ASCMS_DATE_FORMAT_UI_TIME, 'date');
-
         $this->_objTpl->setVariable(array(
             'TXT_CORE_FILTER'               => $_CORELANG['TXT_CORE_FILTER'],
             'TXT_CALENDAR_KEYWORD'          => $_ARRAYLANG['TXT_CALENDAR_KEYWORD'],
@@ -556,6 +551,8 @@ class calendarManager extends calendarLibrary
     {
         global $objDatabase, $_ARRAYLANG, $_LANGID, $_CORELANG, $_CONFIG;
 
+        JS::activate('jqueryui');
+
         if(!empty($id)) {
             //edit note
             $this->pageTitle=$_ARRAYLANG['TXT_CALENDAR_TERMIN'];
@@ -658,8 +655,8 @@ class calendarManager extends calendarLibrary
 
 		    //data
 		    $this->_objTpl->setVariable(array(
-				'CALENDAR_START'			  				=> date("Y-m-d"),
-				'CALENDAR_END'				  				=> date("Y-m-d"),
+				'CALENDAR_START'			  				=> date('d.m.Y H:i'),
+				'CALENDAR_END'				  				=> date('d.m.Y H:i'),
 				'CALENDAR_DESCRIPTION'		  				=> $ed,
 				'CALENDAR_ACTIVE'		  					=> "checked",
 				'CALENDAR_FORM_ACTION'		  				=> "saveNew",
@@ -687,11 +684,6 @@ class calendarManager extends calendarLibrary
 		    ));
 
            $this->_getFormular('', 'backend');
-
-            $this->selectHour(12, "hour", "CALENDAR_HOUR_SELECT", "CALENDAR_HOUR");
-            $this->selectMinutes(00, "minutes", "CALENDAR_MINUTES_SELECT", "CALENDAR_MINUTES");
-            $this->selectHour(13, "endhour", "CALENDAR_END_HOUR_SELECT", "CALENDAR_END_HOUR");
-            $this->selectMinutes(30, "endminutes", "CALENDAR_END_MINUTES_SELECT", "CALENDAR_END_MINUTES");
         }
 
 	    // parse to template
@@ -833,11 +825,8 @@ class calendarManager extends calendarLibrary
         $comment        = contrexx_addslashes($_POST['inputComment']);
 
         //start 'n' end
-        $dateparts      = split("-", $_POST['inputStartDate']);
-        $startdate      = mktime(intval($_POST['inputHour']), intval($_POST['inputMinutes']),00, $dateparts[1], $dateparts[2], $dateparts[0]);
-
-        $dateparts      = split("-", $_POST['inputEndDate']);
-        $enddate        = mktime(intval($_POST['inputEndHour']), intval($_POST['inputEndMinutes']),00, $dateparts[1], $dateparts[2], $dateparts[0]);
+        $startdate = strtotime($_POST['inputStartDate']);
+        $enddate = strtotime($_POST['inputEndDate']);
 
         //place
         $place          = contrexx_addslashes(contrexx_strip_tags($_POST['inputPlace']));
@@ -888,110 +877,100 @@ class calendarManager extends calendarLibrary
 		$seriesPatternDouranceType	= 0;
 		$seriesPatternEnd			= 0;
 
-		switch($seriesType) {
-			case 1;
-				if ($seriesStatus == 1) {
-					$seriesPatternType			= intval($_POST['inputSeriesDaily']);
-					if($seriesPatternType == 1) {
-						$seriesPatternWeekday	= 0;
-						$seriesPatternDay		= intval($_POST['inputSeriesDailyDays']);;
-					} else {
-						$seriesPatternWeekday	= "1111100";
-						$seriesPatternDay		= 0;
-					}
+        if ($seriesStatus == 1) {
+            switch ($seriesType) {
+                case 1;
+                    $seriesPatternType			= intval($_POST['inputSeriesDaily']);
+                    if ($seriesPatternType == 1) {
+                        $seriesPatternWeekday	= 0;
+                        $seriesPatternDay		= intval($_POST['inputSeriesDailyDays']);;
+                    } else {
+                        $seriesPatternWeekday	= "1111100";
+                        $seriesPatternDay		= 0;
+                    }
 
-					$seriesPatternWeek			= 0;
-					$seriesPatternMonth			= 0;
-					$seriesPatternCount			= 0;
+                    $seriesPatternWeek			= 0;
+                    $seriesPatternMonth			= 0;
+                    $seriesPatternCount			= 0;
 
-					$seriesPatternDouranceType	= intval($_POST['inputSeriesDouranceType']);
-					$dateparts 					= split("-", $startdate);
-					switch($seriesPatternDouranceType) {
-						case 1:
-							$seriesPatternEnd	= 0;
-						break;
-						case 2:
-							$seriesPatternEnd	= intval($_POST['inputSeriesDouranceNotes']);
-						break;
-						case 3:
-							$dateparts 			= split("-", $_POST['inputRepeatDouranceEnd']);
-							$seriesPatternEnd	= mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
-						break;
-					}
-				}
-			break;
-			case 2;
-				if ($seriesStatus == 1) {
-					$seriesPatternWeek			= intval($_POST['inputSeriesWeeklyWeeks']);
+                    $seriesPatternDouranceType	= intval($_POST['inputSeriesDouranceType']);
+                    switch ($seriesPatternDouranceType) {
+                        case 1:
+                            $seriesPatternEnd	= 0;
+                        break;
+                        case 2:
+                            $seriesPatternEnd	= intval($_POST['inputSeriesDouranceNotes']);
+                        break;
+                        case 3:
+                            $seriesPatternEnd	= (strtotime($_POST['inputRepeatDouranceEnd']) !== false) ? strtotime($_POST['inputRepeatDouranceEnd']) : 0;
+                        break;
+                    }
+                break;
+                case 2;
+                    $seriesPatternWeek			= intval($_POST['inputSeriesWeeklyWeeks']);
 
-					for($i=1; $i <= 7; $i++) {
-						if (isset($_POST['inputSeriesWeeklyDays'][$i])) {
-							$weekdayPattern .= "1";
-						} else {
-							$weekdayPattern .= "0";
-						}
-					}
+                    for($i=1; $i <= 7; $i++) {
+                        if (isset($_POST['inputSeriesWeeklyDays'][$i])) {
+                            $weekdayPattern .= "1";
+                        } else {
+                            $weekdayPattern .= "0";
+                        }
+                    }
 
-					$seriesPatternWeekday		= $weekdayPattern;
+                    $seriesPatternWeekday		= $weekdayPattern;
 
-					$seriesPatternCount			= 0;
-					$seriesPatternDay			= 0;
-					$seriesPatternMonth			= 0;
-					$seriesPatternType			= 0;
+                    $seriesPatternCount			= 0;
+                    $seriesPatternDay			= 0;
+                    $seriesPatternMonth			= 0;
+                    $seriesPatternType			= 0;
 
-					$seriesPatternDouranceType	= intval($_POST['inputSeriesDouranceType']);
-					$dateparts 					= split("-",$startdate);
-					switch($seriesPatternDouranceType) {
-						case 1:
-							$seriesPatternEnd	= 0;
-						break;
-						case 2:
-							$seriesPatternEnd	= intval($_POST['inputSeriesDouranceNotes']);
-						break;
-						case 3:
-							$dateparts 			= split("-", $_POST['inputRepeatDouranceEnd']);
-							$seriesPatternEnd	= mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
-						break;
-					}
-				}
-			break;
-			case 3;
-				if ($seriesStatus == 1) {
-					$seriesPatternType			= intval($_POST['inputSeriesMonthly']);
-					if($seriesPatternType == 1) {
-						$seriesPatternMonth		= intval($_POST['inputSeriesMonthlyMonth_1']);
-						$seriesPatternDay		= intval($_POST['inputSeriesMonthlyDay']);
-						$seriesPatternWeekday	= 0;
-					} else {
-						$seriesPatternCount		= intval($_POST['inputSeriesMonthlyDayCount']);
-						$seriesPatternMonth		= intval($_POST['inputSeriesMonthlyMonth_2']);
+                    $seriesPatternDouranceType	= intval($_POST['inputSeriesDouranceType']);
+                    switch($seriesPatternDouranceType) {
+                        case 1:
+                            $seriesPatternEnd	= 0;
+                        break;
+                        case 2:
+                            $seriesPatternEnd	= intval($_POST['inputSeriesDouranceNotes']);
+                        break;
+                        case 3:
+                            $seriesPatternEnd	= (strtotime($_POST['inputRepeatDouranceEnd']) !== false) ? strtotime($_POST['inputRepeatDouranceEnd']) : 0;
+                        break;
+                    }
+                break;
+                case 3;
+                    $seriesPatternType			= intval($_POST['inputSeriesMonthly']);
+                    if($seriesPatternType == 1) {
+                        $seriesPatternMonth		= intval($_POST['inputSeriesMonthlyMonth_1']);
+                        $seriesPatternDay		= intval($_POST['inputSeriesMonthlyDay']);
+                        $seriesPatternWeekday	= 0;
+                    } else {
+                        $seriesPatternCount		= intval($_POST['inputSeriesMonthlyDayCount']);
+                        $seriesPatternMonth		= intval($_POST['inputSeriesMonthlyMonth_2']);
                         if ($seriesPatternMonth < 1) {
                             // the increment must be at least once a month, otherwise we will end up in a endless loop in the presence
                             $seriesPatternMonth = 1;
                         }
-						$seriesPatternWeekday	= $_POST['inputSeriesMonthlyWeekday'];
-						$seriesPatternDay		= 0;
-					}
+                        $seriesPatternWeekday	= $_POST['inputSeriesMonthlyWeekday'];
+                        $seriesPatternDay		= 0;
+                    }
 
-					$seriesPatternWeek			= 0;
+                    $seriesPatternWeek			= 0;
 
-					$seriesPatternDouranceType	= intval($_POST['inputSeriesDouranceType']);
-					$dateparts 					= split("-", $startdate);
-					switch($seriesPatternDouranceType) {
-						case 1:
-							$seriesPatternEnd	= 0;
-						break;
-						case 2:
-							$seriesPatternEnd	= intval($_POST['inputSeriesDouranceNotes']);
-						break;
-						case 3:
-							$dateparts 			= split("-", $_POST['inputRepeatDouranceEnd']);
-							$seriesPatternEnd	= mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
-						break;
-					}
-				}
-			break;
-		}
+                    $seriesPatternDouranceType	= intval($_POST['inputSeriesDouranceType']);
+                    switch($seriesPatternDouranceType) {
+                        case 1:
+                            $seriesPatternEnd	= 0;
+                        break;
+                        case 2:
+                            $seriesPatternEnd	= intval($_POST['inputSeriesDouranceNotes']);
+                        break;
+                        case 3:
+                            $seriesPatternEnd	= (strtotime($_POST['inputRepeatDouranceEnd']) !== false) ? strtotime($_POST['inputRepeatDouranceEnd']) : 0;
+                        break;
+                    }
+                break;
+            }
+        }
 
         if (!empty($link)) {
             if (!preg_match('%^(?:ftp|http|https):\/\/%', $link)) {

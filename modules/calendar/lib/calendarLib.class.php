@@ -808,12 +808,6 @@ class calendarLibrary
             //actiove
             $active = $objResultNote->fields['active'] == 1 ? 'checked="checked"' : "";
 
-            //time
-            $this->selectHour($hour, "hour", "CALENDAR_HOUR_SELECT", "CALENDAR_HOUR");
-            $this->selectMinutes($minutes, "minutes", "CALENDAR_MINUTES_SELECT", "CALENDAR_MINUTES");
-            $this->selectHour($end_hour, "endhour", "CALENDAR_END_HOUR_SELECT", "CALENDAR_END_HOUR");
-            $this->selectMinutes($end_minutes, "endminutes", "CALENDAR_END_MINUTES_SELECT", "CALENDAR_END_MINUTES");
-
             //categorie
             $query = "
                 SELECT id, name, lang
@@ -999,7 +993,7 @@ class calendarLibrary
                     $seriesPatternDourance1     = '';
                     $seriesPatternDourance2     = '';
                     $seriesPatternDourance3        = 'checked="checked"';
-                    $seriesPatternDouranceEnds     = date("Y-m-d", $objResultNote->fields['series_pattern_end']);
+                    $seriesPatternDouranceEnds     = date(ASCMS_DATE_FORMAT_DATETIME, $objResultNote->fields['series_pattern_end']);
                     break;
             }
         } else {
@@ -1027,10 +1021,10 @@ class calendarLibrary
         $this->_objTpl->setVariable(array(
             'CALENDAR_ID'                    => $objResultNote->fields['id'],
             'CALENDAR_TITLE'                 => htmlentities($objResultNote->fields['name'], ENT_QUOTES, CONTREXX_CHARSET),
-            'CALENDAR_START'                 => date("Y-m-d", $startdate),
-            'CALENDAR_END'                   => date("Y-m-d", $enddate),
-            'CALENDAR_START_SHOW'            => date("d.m.Y", $startdate),
-            'CALENDAR_END_SHOW'              => date("d.m.Y", $enddate),
+            'CALENDAR_START'                 => date(ASCMS_DATE_FORMAT_DATETIME, $startdate),
+            'CALENDAR_END'                   => date(ASCMS_DATE_FORMAT_DATETIME, $enddate),
+            'CALENDAR_START_SHOW'            => date(ASCMS_DATE_FORMAT_DATE, $startdate),
+            'CALENDAR_END_SHOW'              => date(ASCMS_DATE_FORMAT_DATE, $enddate),
             'CALENDAR_START_TIME'            => date("H:i", $startdate),
             'CALENDAR_END_TIME'              => date("H:i", $enddate),
             'CALENDAR_LINK'                  => $objResultNote->fields['link'] != '' ? "<a href='".$objResultNote->fields['link']."' target='_blank' >".$objResultNote->fields['link']."</a>" : "",

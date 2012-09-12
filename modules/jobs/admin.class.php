@@ -343,6 +343,8 @@ class jobsManager extends jobsLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
+        JS::activate('jqueryui');
+
         $objFWUser = FWUser::getFWUserObject();
         $this->pageTitle = $_ARRAYLANG['TXT_CREATE_DOCUMENT'];
         $this->_objTpl->loadTemplateFile('module_jobs_modify.html',true,true);
@@ -533,6 +535,8 @@ class jobsManager extends jobsLibrary
     function edit($id='')
     {
         global $objDatabase, $_ARRAYLANG;
+
+        JS::activate('jqueryui');
 
         if (empty($id)) {
             $id = intval($_REQUEST['id']);

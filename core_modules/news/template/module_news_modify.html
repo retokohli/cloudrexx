@@ -25,14 +25,12 @@
     //adds the datetimepicker to the date fields
     cx.ready(function() {
         var dpOptions = {
-            dateFormat: 'dd.mm.yy',
-            timeFormat: 'hh:mm',
             onSelect: function(dateText, inst) {
                 // adjust start or end date to avoid an invalid date range
                 var startDate = $J('input[name=startDate]').datepicker('getDate');
                 var endDate = $J('input[name=endDate]').datepicker('getDate');
 
-                if (endDate != null && startDate > endDate) {
+                if ((startDate != null) && (endDate != null) && (startDate > endDate)) {
                     if ($J(this).attr('name') == 'startDate') {
                         $J('input[name=endDate]').datepicker('setDate', dateText);
                     } else {
@@ -42,7 +40,7 @@
             }
         };
 
-        $J('input[name=newsDate]').datetimepicker(dpOptions);
+        $J('input[name=newsDate]').datetimepicker();
         $J('input[name=startDate]').datetimepicker(dpOptions);
         $J('input[name=endDate]').datetimepicker(dpOptions);
 

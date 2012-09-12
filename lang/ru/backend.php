@@ -1135,7 +1135,7 @@ $_ARRAYLANG['TXT_MEDIADIR_MANAGE_CATEGORIES'] = 'Manage categories';
 $_ARRAYLANG['TXT_MEDIADIR_INTERFACES'] = 'Interfaces';
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS'] = 'Settings';
 $_ARRAYLANG['TXT_MEDIADIR_MODULE_DESCRIPTION'] = 'Flexible and customizable media directory.';
-$_ARRAYLANG['TXT_CHECKOUT_MODULE'] = "Checkout";
+$_ARRAYLANG['TXT_CHECKOUT_MODULE'] = "Online Payment";
 $_ARRAYLANG['TXT_CHECKOUT_MODULE_DESCRIPTION'] = "Easy solution to process transactions on Yellowpay.";
 $_ARRAYLANG['TXT_LICENSE_KEY'] = 'License key';
 $_ARRAYLANG['TXT_LICENSE_KEY_HELP'] = 'Enter here your license key to activate this Contrexx© installation.';
@@ -1446,6 +1446,7 @@ $_ARRAYLANG['UPLOAD_FORM_ADD'] = "Weitere Dateien hinzufügen";
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Security code";
 $_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'] = "Enter the letters below.";
 
+$_ARRAYLANG['TXT_CORE_CM_TYPE_REDIRECT_INFO_ACTION'] = 'Enter an external URL or select a page.';
 $_ARRAYLANG['TXT_CORE_CM_USAGE_DENIED'] = "You don't have enough rights to use the content manager.";
 $_ARRAYLANG['TXT_CORE_CM_CREATION_DENIED'] = "You don't have enough rights to create pages.";
 $_ARRAYLANG['TXT_CORE_CM_DELETE_DENIED'] = "You don't have enough rights to delete pages";

@@ -158,7 +158,7 @@ class AccessLib
             'menu'            => '<select name="[NAME]"[STYLE]>[VALUE]</select>',
             'menu_option'     => '<option value="[VALUE]"[SELECTED][STYLE]>[VALUE_TXT]</option>',
             'url'             => '<input type="hidden" name="[NAME]" value="[VALUE]" /><em>[VALUE_TXT]</em> <a href="javascript:void(0);" onclick="elLink=null;elDiv=null;elInput=null;pntEl=this.previousSibling;while ((typeof(elInput)==\'undefined\'||typeof(elDiv)!=\'undefined\')&& pntEl!=null) {switch(pntEl.nodeName) {case\'INPUT\':elInput=pntEl;break;case\'EM\':elDiv=pntEl;if (elDiv.getElementsByTagName(\'a\').length>0) {elLink=elDiv.getElementsByTagName(\'a\')[0];}break;}pntEl=pntEl.previousSibling;}accessSetWebsite(elInput,elDiv,elLink)" title="'.$_CORELANG['TXT_ACCESS_CHANGE_WEBSITE'].'"><img align="middle" src="'.ASCMS_PATH_OFFSET.'/images/modules/access/edit.gif" width="16" height="16" border="0" alt="'.$_CORELANG['TXT_ACCESS_CHANGE_WEBSITE'].'" /></a>',
-            'date'            => '<input type="text" name="[NAME]" onfocus="Calendar.setup({inputField:this,ifFormat:\''.preg_replace('#([a-z])#i', '%$1', str_replace(array('j', 'n'), array('e', 'm'), ASCMS_DATE_SHORT_FORMAT)).'\',range:[1900,2100]})" value="[VALUE]" readonly="readonly" /><a href="javascript:void(0)" onclick="this.previousSibling.value = \'\'" title="'.$_CORELANG['TXT_ACCESS_DELETE_DATE'].'"><img src="'.ASCMS_PATH_OFFSET.'/images/modules/access/delete.gif" width="17" height="17" border="0" alt="'.$_CORELANG['TXT_ACCESS_DELETE_DATE'].'" style="vertical-align:middle;" /></a>'
+            'date'            => '<input type="text" name="[NAME]" onfocus="Calendar.setup({inputField:this,ifFormat:\''.preg_replace('#([a-z])#i', '%$1', str_replace(array('j', 'n'), array('e', 'm'), ASCMS_DATE_FORMAT_DATE)).'\',range:[1900,2100]})" value="[VALUE]" readonly="readonly" /><a href="javascript:void(0)" onclick="this.previousSibling.value = \'\'" title="'.$_CORELANG['TXT_ACCESS_DELETE_DATE'].'"><img src="'.ASCMS_PATH_OFFSET.'/images/modules/access/delete.gif" width="17" height="17" border="0" alt="'.$_CORELANG['TXT_ACCESS_DELETE_DATE'].'" style="vertical-align:middle;" /></a>'
 
         );
     }
@@ -225,7 +225,7 @@ class AccessLib
         switch ($objAttribute->getType()) {
             case 'date':
                 $value = $objUser->getProfileAttribute($attributeId, $historyId);
-                $arrPlaceholders['_VALUE'] = $value !== false && $value !== '' ? htmlentities(date(ASCMS_DATE_SHORT_FORMAT, intval($value)), ENT_QUOTES, CONTREXX_CHARSET) : '';
+                $arrPlaceholders['_VALUE'] = $value !== false && $value !== '' ? htmlentities(date(ASCMS_DATE_FORMAT_DATE, intval($value)), ENT_QUOTES, CONTREXX_CHARSET) : '';
                 $arrPlaceholders['_MONTH'] = $this->getDateMonthMenu($attributeName, date('m', intval($objUser->getProfileAttribute($attributeId, $historyId))));
                 $arrPlaceholders['_DAY'] = $this->getDateDayMenu($attributeName, date('d', intval($objUser->getProfileAttribute($attributeId, $historyId))));
                 $arrPlaceholders['_YEAR'] = $this->getDateYearMenu($attributeName, date('Y', intval($objUser->getProfileAttribute($attributeId, $historyId))));
@@ -776,7 +776,7 @@ class AccessLib
      */
     private function getDateAttributeCode($name, $value, $edit)
     {
-        $value = $value !== false && $value !== '' ? date(ASCMS_DATE_SHORT_FORMAT, intval($value)) : '';
+        $value = $value !== false && $value !== '' ? date(ASCMS_DATE_FORMAT_DATE, intval($value)) : '';
         return $edit ?
             str_replace(
                 array('[NAME]', '[VALUE]'),

@@ -790,8 +790,8 @@ class newsManager extends newsLibrary {
         if($value === null || $value === '') //not set POST-param passed, return null for the other functions to know this
             return null;
         $arrDate = array();
-        if (preg_match('/^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})\s*([0-9]{1,2})\:([0-9]{1,2})/', $value, $arrDate)) {
-            return mktime(intval($arrDate[4]), intval($arrDate[5]), 0, intval($arrDate[2]), intval($arrDate[1]), intval($arrDate[3]));
+        if (preg_match('/^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})\s*([0-9]{1,2})\:([0-9]{1,2}):([0-9]{1,2})/', $value, $arrDate)) {
+            return mktime(intval($arrDate[4]), intval($arrDate[5]), intval($arrDate[6]), intval($arrDate[2]), intval($arrDate[1]), intval($arrDate[3]));
         } else {
             return time();
         }
@@ -805,14 +805,14 @@ class newsManager extends newsLibrary {
      * @return string
      */
     function valueFromDate($value = 0) {
-        if($value === null //user provided no POST
+        if ($value === null //user provided no POST
             || $value === '0') //empty date field
             return ''; //make an empty date 
-        $format = 'd.m.Y H:i';
-        if($value)
-            return date($format,$value);
-        else
-            return date($format);
+        if ($value) {
+            return date(ASCMS_DATE_FORMAT_DATETIME, $value);
+        } else {
+            return date(ASCMS_DATE_FORMAT_DATETIME);
+        }
     }
 
 

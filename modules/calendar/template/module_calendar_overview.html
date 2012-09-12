@@ -14,7 +14,7 @@
     }
 
     #calendar_search input.date {
-        width: 100px;
+        width: 119px;
     }
 
     #calendar_search select {
@@ -60,7 +60,23 @@ function selectMultiAction()
 }
 
 cx.ready(function() {
-    jQuery('.date').datetimepicker({dateFormat: cx.variables.get('ASCMS_DATE_FORMAT_UI_DATE', 'date'), timeFormat: cx.variables.get('ASCMS_DATE_FORMAT_UI_TIME', 'date')});
+    var datetimepickerOptions = {
+        onSelect: function(dateText, inst) {
+            // adjust start or end date to avoid an invalid date range
+            var startDate = jQuery('input[name=datetimeStart]').datepicker('getDate');
+            var endDate = jQuery('input[name=datetimeEnd]').datepicker('getDate');
+
+            if ((startDate != null) && (endDate != null) && (startDate > endDate)) {
+                if (jQuery(this).attr('name') == 'datetimeStart') {
+                    jQuery('input[name=datetimeEnd]').datepicker('setDate', dateText);
+                } else {
+                    jQuery('input[name=datetimeStart]').datepicker('setDate', dateText);
+                }
+            }
+        }
+    };
+
+    jQuery('.date').datetimepicker();
 });
 /* ]]> */ 
 </script>

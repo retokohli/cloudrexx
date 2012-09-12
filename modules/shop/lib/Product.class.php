@@ -563,7 +563,7 @@ class Product
             $time_start = strtotime($date_start);
             if ($time_start) {
                 $this->date_start =
-                    date(ASCMS_DATE_FORMAT_DATETIME, $time_start);
+                    date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME, $time_start);
             } else {
 // TODO: Unused DATETIME should be NULL
                 $this->date_start = '0000-00-00 00:00:00';
@@ -584,7 +584,7 @@ class Product
             $time_end = strtotime($date_end);
             if ($time_end) {
                 $this->date_end =
-                    date(ASCMS_DATE_FORMAT_DATETIME, $time_end);
+                    date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME, $time_end);
             } else {
 // TODO: Unused DATETIME should be NULL
                 $this->date_end = '0000-00-00 00:00:00';

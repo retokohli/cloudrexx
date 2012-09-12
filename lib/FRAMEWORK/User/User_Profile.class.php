@@ -92,10 +92,10 @@ class User_Profile
                     if ($objAttribute->getType() === 'date') {
                         if (is_array($value)) {
                             $objDateTime = new DateTime("${value['month']}/${value['day']}/${value['year']}");
-                            $value = $objDateTime->format(ASCMS_DATE_SHORT_FORMAT);
+                            $value = $objDateTime->format(ASCMS_DATE_FORMAT_DATE);
                         }
 
-                        if (preg_match_all('#([djmnYy])+#', ASCMS_DATE_SHORT_FORMAT, $arrDateFormat, PREG_PATTERN_ORDER) && preg_match_all('#([0-9]+)#', $value, $arrDate)) {
+                        if (preg_match_all('#([djmnYy])+#', ASCMS_DATE_FORMAT_DATE, $arrDateFormat, PREG_PATTERN_ORDER) && preg_match_all('#([0-9]+)#', $value, $arrDate)) {
                             foreach ($arrDateFormat[1] as $charNr => $char) {
                                 $arrDateCombined[$char] = $arrDate[1][$charNr];
                             }

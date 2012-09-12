@@ -355,7 +355,7 @@ class newsletter extends NewsletterLib
             ));
 
             if ($arrList['mail_sent'] > 0) {
-                $this->_objTpl->setVariable('NEWSLETTER_LIST_LAST_MAIL', date(ASCMS_DATE_SHORT_FORMAT, $arrList['mail_sent'])." (".contrexx_raw2xhtml($arrList['mail_name']).")");
+                $this->_objTpl->setVariable('NEWSLETTER_LIST_LAST_MAIL', date(ASCMS_DATE_FORMAT_DATE, $arrList['mail_sent'])." (".contrexx_raw2xhtml($arrList['mail_name']).")");
                 $this->_objTpl->touchBlock('newsletter_list_last_mail');
                 $this->_objTpl->hideBlock('newsletter_list_no_last_mail');
             } else {
@@ -613,8 +613,8 @@ class newsletter extends NewsletterLib
                                                                                                $newsUrl);
 						$this->_impTpl->setVariable(array(
 							'NEWS_CATEGORY_NAME' => $objNews->fields['name'],
-							'NEWS_DATE' => date(ASCMS_DATE_SHORT_FORMAT, $objNews->fields['newsdate']),
-							'NEWS_LONG_DATE' => date(ASCMS_DATE_FILE_FORMAT, $objNews->fields['newsdate']),
+							'NEWS_DATE' => date(ASCMS_DATE_FORMAT_DATE, $objNews->fields['newsdate']),
+							'NEWS_LONG_DATE' => date(ASCMS_DATE_FORMAT_DATETIME, $objNews->fields['newsdate']),
 							'NEWS_TITLE' => contrexx_raw2xhtml($newstitle),
 							'NEWS_URL' => $newslink,
 							'NEWS_TEASER_TEXT' => $newsteasertext,
@@ -674,8 +674,8 @@ class newsletter extends NewsletterLib
 							'[[NEWS_CATEGORY_NAME]]'
 						);
 						$replace = array(
-							date(ASCMS_DATE_SHORT_FORMAT, $objNews->fields['newsdate']),
-							date(ASCMS_DATE_FILE_FORMAT, $objNews->fields['newsdate']),
+							date(ASCMS_DATE_FORMAT_DATE, $objNews->fields['newsdate']),
+							date(ASCMS_DATE_FORMAT_DATETIME, $objNews->fields['newsdate']),
 							$objNews->fields['newstitle'],
 							$newslink,
 							htmlentities($objNews->fields['teaser_image_thumbnail_path'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -741,8 +741,8 @@ class newsletter extends NewsletterLib
 						}
 						$this->_impTpl->setVariable(array(
 							'NEWS_CATEGORY_NAME' => $objNews->fields['catname'],
-							'NEWS_DATE' => date(ASCMS_DATE_SHORT_FORMAT, $objNews->fields['date']),
-							'NEWS_LONG_DATE' => date(ASCMS_DATE_FILE_FORMAT, $objNews->fields['date']),
+							'NEWS_DATE' => date(ASCMS_DATE_FORMAT_DATE, $objNews->fields['date']),
+							'NEWS_LONG_DATE' => date(ASCMS_DATE_FORMAT_DATETIME, $objNews->fields['date']),
 							'NEWS_TITLE' => $objNews->fields['title'],
 							'NEWS_URL' => $newslink,
 							'NEWS_IMAGE_PATH' => htmlentities($objNews->fields['teaser_image_thumbnail_path'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -785,8 +785,8 @@ class newsletter extends NewsletterLib
 							'[[NEWS_CATEGORY_NAME]]'
 						);
 						$replace = array(
-							date(ASCMS_DATE_SHORT_FORMAT, $objNews->fields['date']),
-							date(ASCMS_DATE_FILE_FORMAT, $objNews->fields['date']),
+							date(ASCMS_DATE_FORMAT_DATE, $objNews->fields['date']),
+							date(ASCMS_DATE_FORMAT_DATETIME, $objNews->fields['date']),
 							$objNews->fields['title'],
 							$newslink,
 							htmlentities($objNews->fields['teaser_image_thumbnail_path'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -3416,7 +3416,7 @@ class newsletter extends NewsletterLib
         $replace        = array(
             $this->GetProfileURL($userData['code'], $TargetEmail, $format, $userData['type']),
             $this->GetUnsubscribeURL($userData['code'], $TargetEmail, $format, $userData['type']),
-            date(ASCMS_DATE_SHORT_FORMAT)
+            date(ASCMS_DATE_FORMAT_DATE)
         );
         $content_text = str_replace($search, $replace, $content_text);
 
@@ -3425,7 +3425,7 @@ class newsletter extends NewsletterLib
         $replace        = array(
             $this->GetProfileURL($userData['code'], $TargetEmail, $format, $userData['type']),
             $this->GetUnsubscribeURL($userData['code'], $TargetEmail, $format, $userData['type']),
-            date(ASCMS_DATE_SHORT_FORMAT)
+            date(ASCMS_DATE_FORMAT_DATE)
         );
         $TemplateSource = str_replace($search, $replace, $TemplateSource);
 
@@ -3689,8 +3689,8 @@ class newsletter extends NewsletterLib
 					//'NEWS_CATEGORY_NAME' => $objNews->fields['catname'],
 					'NEWS_ID' => $objNews->fields['id'],
 					'NEWS_CATEGORY_ID' => $objNews->fields['catid'],
-                    //'NEWS_DATE' => date(ASCMS_DATE_SHORT_FORMAT, $objNews->fields['date']),
-					//'NEWS_LONG_DATE' => date(ASCMS_DATE_FILE_FORMAT, $objNews->fields['date']),
+                    //'NEWS_DATE' => date(ASCMS_DATE_FORMAT_DATE, $objNews->fields['date']),
+					//'NEWS_LONG_DATE' => date(ASCMS_DATE_FORMAT_DATETIME, $objNews->fields['date']),
                     'NEWS_TITLE' => contrexx_raw2xhtml($objNews->fields['title']),
                     //'NEWS_URL' => $newslink,
 					'NEWS_IMAGE_PATH' => contrexx_raw2encodedUrl($imageSrc),
@@ -3792,8 +3792,8 @@ class newsletter extends NewsletterLib
 
 						$this->_objTpl->setVariable(array(
 							'NEWS_CATEGORY_NAME' => $objNews->fields['name'],
-							'NEWS_DATE' => date(ASCMS_DATE_SHORT_FORMAT, $objNews->fields['newsdate']),
-							'NEWS_LONG_DATE' => date(ASCMS_DATE_FILE_FORMAT, $objNews->fields['newsdate']),
+							'NEWS_DATE' => date(ASCMS_DATE_FORMAT_DATE, $objNews->fields['newsdate']),
+							'NEWS_LONG_DATE' => date(ASCMS_DATE_FORMAT_DATETIME, $objNews->fields['newsdate']),
 							'NEWS_TITLE' => contrexx_raw2xhtml($newstitle),
 							'NEWS_URL' => $newslink,
 							'NEWS_TEASER_TEXT' => $newsteasertext,
@@ -3853,8 +3853,8 @@ class newsletter extends NewsletterLib
 							'[[NEWS_CATEGORY_NAME]]'
 						);
 						$replace = array(
-							date(ASCMS_DATE_SHORT_FORMAT, $objNews->fields['newsdate']),
-							date(ASCMS_DATE_FILE_FORMAT, $objNews->fields['newsdate']),
+							date(ASCMS_DATE_FORMAT_DATE, $objNews->fields['newsdate']),
+							date(ASCMS_DATE_FORMAT_DATETIME, $objNews->fields['newsdate']),
 							$objNews->fields['newstitle'],
 							$newslink,
 							htmlentities($objNews->fields['teaser_image_thumbnail_path'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -5515,7 +5515,7 @@ function MultiAction() {
 
     function DateForDB()
     {
-        return date(ASCMS_DATE_FORMAT_DATE);
+        return date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATE);
     }
 
 

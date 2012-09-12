@@ -94,9 +94,9 @@ class calHeadlines extends calendarLibrary
                     $parts= explode("\n", wordwrap($array['comment'], 100, "\n"));
                     $this->_objTemplate->setVariable(array(
                         'CALENDAR_EVENT_ENDTIME'       => date('H:i', $array['enddate']),
-                        'CALENDAR_EVENT_ENDDATE'       => date(ASCMS_DATE_SHORT_FORMAT, $array['enddate']),
+                        'CALENDAR_EVENT_ENDDATE'       => date(ASCMS_DATE_FORMAT_DATE, $array['enddate']),
                         'CALENDAR_EVENT_STARTTIME'     => date('H:i', $array['startdate']),
-                        'CALENDAR_EVENT_STARTDATE'     => date(ASCMS_DATE_SHORT_FORMAT, $array['startdate']),
+                        'CALENDAR_EVENT_STARTDATE'     => date(ASCMS_DATE_FORMAT_DATE, $array['startdate']),
                         'CALENDAR_EVENT_NAME'          => htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET),
                         'CALENDAR_EVENT_THUMB'         =>
                             '<img src="'.ImageManager::getThumbnailFilename(

@@ -154,20 +154,19 @@ define('ASCMS_IMAGES_FOLDER',               '/images');
 //define('ASCMS_IMAGES_HOTELCARD_F0LDER',     ASCMS_IMAGES_FOLDER.'/hotelcard');
 
 
-/******************************************
- Common and localized date and time formats
- ******************************************/
-// Note that these are universal and need not be localized.
-define('ASCMS_DATE_FORMAT_DATE',     'Y-m-d');
-define('ASCMS_DATE_FORMAT_DATETIME', 'Y-m-d H:i:s');
-define('ASCMS_DATE_FORMAT_TIME',     'H:i:s');
+/**
+ * International and localized date and time formats
+ */
+define('ASCMS_DATE_FORMAT_INTERNATIONAL_DATE',      'Y-m-d');
+define('ASCMS_DATE_FORMAT_INTERNATIONAL_TIME',      'H:i:s');
+define('ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME',  'Y-m-d H:i:s');
 
 // TODO: Localize.
-define('ASCMS_DATE_FORMAT',           'H:i:s d.m.Y');
-define('ASCMS_DATE_SHORT_FORMAT',     'd.m.Y');
-define('ASCMS_DATE_FILE_FORMAT',      'd.m.Y H:i:s');
-define('ASCMS_DATE_FORMAT_UI_DATE',   'dd.mm.yy');  // jqueryui.datepicker
-define('ASCMS_DATE_FORMAT_UI_TIME',   'hh:mm'); // jqueryui.datepicker
+define('ASCMS_DATE_FORMAT',             'H:i:s d.m.Y');
+define('ASCMS_DATE_FORMAT_DATE',        'd.m.Y');
+define('ASCMS_DATE_FORMAT_TIME',        'H:i:s');
+define('ASCMS_DATE_FORMAT_DATETIME',    'd.m.Y H:i:s');
+
 // Like "Mo, 09.10.2011"
 define('ASCMS_DATE_FORMAT_DOW_D_M_Y', 'w, d.m.Y');
 // TODO: More localized formats for numbers, currencies, etc.
