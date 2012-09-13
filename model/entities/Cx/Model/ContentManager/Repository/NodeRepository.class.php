@@ -2,11 +2,8 @@
 
 namespace Cx\Model\ContentManager\Repository;
 
-use Doctrine\Common\Util\Debug as DoctrineDebug;
-use Doctrine\ORM\EntityRepository,
-    Doctrine\ORM\EntityManager,
-    Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Query\Expr;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Gedmo\Tree\Entity\Repository\NestedTreeRepository;
 
 class NodeRepository extends NestedTreeRepository {
