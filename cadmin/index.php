@@ -79,8 +79,6 @@ if (!$incSettingsStatus || !$incVersionStatus) {
 }
 
 require_once '../core/API.php' ;
-require_once '../lib/CSRF.php' ;
-require_once '../core/PageGuard.class.php';
 
 // Initialize database object
 $strErrMessage = '';
@@ -100,8 +98,6 @@ $objInit = new InitCMS('backend', Env::em());
 Env::set('init', $objInit);
 
 // this makes \Env::get('Resolver')->getUrl() return a sensful result
-require_once ASCMS_CORE_PATH.'/routing/URL.class.php';
-require_once(ASCMS_CORE_PATH.'/routing/Resolver.class.php');
 $request = ASCMS_PATH_OFFSET.'/cadmin';
 $url = \Cx\Core\Routing\URL::fromCapturedRequest($request, ASCMS_PATH_OFFSET, $_GET);
 \Env::set('Resolver', new \Cx\Core\Routing\Resolver($url, null, Env::em(), null, null));
@@ -149,8 +145,7 @@ $act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
 
 
 // Load the JS helper class and set the offset
-require_once ASCMS_DOCUMENT_ROOT.'/lib/FRAMEWORK/Javascript.class.php';
-JS::setOffset('../');
+\JS::setOffset('../');
 
 
 // To clone any module, use an optional integer cmd suffix.
@@ -379,10 +374,8 @@ switch ($plainCmd) {
         $objSkins->getPage();
         break;
     case 'content':
-        if (!include_once ASCMS_CORE_PATH.'/contentmanager/ContentManager.class.php')
-            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_CONTENT_MANAGER'];
-        $cm = new ContentManager($act, $objTemplate, $objDatabase, $objInit);
+        $cm = new \Cx\Core\ContentManager\ContentManager($act, $objTemplate, $objDatabase, $objInit);
         $cm->getPage();
         break;
 // TODO: handle expired sessions in any xhr callers.
@@ -862,3 +855,8 @@ CSRF::add_placeholder($objTemplate);
 //ob_start("ob_gzhandler");
 
 $objTemplate->show();
+/*echo '<pre>';
+print_r($_SESSION);
+/*echo '<b>Overall time: ' . (microtime(true) - $timeAtStart) . 's<br />';
+echo 'Max RAM usage: ' . formatBytes(memory_get_peak_usage()) . '<br />';
+echo 'End RAM usage: ' . formatBytes(memory_get_usage()) . '<br /></b>';*/
