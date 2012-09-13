@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @ignore
+ */
+require_once ASCMS_MODULE_PATH.'/checkout/lib/Yellowpay.class.php';
 
 /**
  * CheckoutLibrary

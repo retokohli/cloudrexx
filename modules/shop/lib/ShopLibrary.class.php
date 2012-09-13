@@ -10,6 +10,15 @@
  */
 
 /**
+ * @ignore
+ */
+require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_MODULE_PATH.'/shop/payments/yellowpay/Yellowpay.class.php';
+
+/**
  * All the helping hands needed to run the shop
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ivan Schmid <ivan.schmid@comvation.com>

@@ -10,6 +10,11 @@
  */
 
 /**
+ * @ignore
+ */
+require_once ASCMS_MODULE_PATH.'/market/paypal/paypal.class.php';
+
+/**
  * Market library
  *
  * External functions for the market
