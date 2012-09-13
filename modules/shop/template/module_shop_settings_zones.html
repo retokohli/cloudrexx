@@ -147,11 +147,15 @@ function add_zone()
               <table border="0" cellspacing="0" cellpadding="0" width="100%">
                 <tr>
                   <td><div style="border: 0px">
-                    <input type="text" name="zone_name[{SHOP_ZONE_ID}]" value="{SHOP_ZONE_NAME}" />&nbsp;&nbsp;{TXT_ACTIVE}<input type="checkbox" name="zone_active[{SHOP_ZONE_ID}]" value="1" {ZONE_ACTIVE_STATUS} />
+                    <input type="text" name="zone_name[{SHOP_ZONE_ID}]" value="{SHOP_ZONE_NAME}" />
+                    &nbsp;&nbsp;{TXT_ACTIVE}
+                    <input type="checkbox" name="zone_active[{SHOP_ZONE_ID}]" value="1" {ZONE_ACTIVE_STATUS} />
                   </div></td>
-                  <td><div style="text-align:right;border: 0px">
-                    <a href="javascript:deleteZone('{SHOP_ZONE_ID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a>
-                  </div></td>
+                  <td class="a_right" style="border: 0px;">
+                    <a href="javascript:deleteZone('{SHOP_ZONE_ID}')" title="{TXT_DELETE}">
+                      <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
+                    </a>
+                  </td>
                 </tr>
               </table>
             </div>
@@ -173,12 +177,12 @@ function add_zone()
             <div style="width: 300px">
               <table border="0" cellspacing="0" cellpadding="0" width="100%">
                 <tr>
-                  <td><div style="text-align:center;border: 0px">
+                  <td class="a_center" style="border: 0px;">
                     <input type="button" title="{TXT_ADD_ALL}" name="add_all" value="&uarr;&uarr;" onclick="moveAllOptions(this.form['country_list[{SHOP_ZONE_ID}][]'],this.form['selected_countries[{SHOP_ZONE_ID}][]'])" />&nbsp;
                     <input type="button" title="{TXT_ADD_SELECTION}" name="add" value="&uarr;" onclick="moveSelectedOptions(this.form['country_list[{SHOP_ZONE_ID}][]'],this.form['selected_countries[{SHOP_ZONE_ID}][]'])" />&nbsp;
                     <input type="button" title="{TXT_REMOVE_SELECTION}" name="remove" value="&darr;" onclick="moveSelectedOptions(this.form['selected_countries[{SHOP_ZONE_ID}][]'],this.form['country_list[{SHOP_ZONE_ID}][]'])" />&nbsp;
                     <input type="button" title="{TXT_REMOVE_ALL}" name="remove_all" value="&darr;&darr;" onclick="moveAllOptions(this.form['selected_countries[{SHOP_ZONE_ID}][]'],this.form['country_list[{SHOP_ZONE_ID}][]'])" />
-                  </div></td>
+                  </td>
                 </tr>
               </table>
             </div>
@@ -227,12 +231,12 @@ function add_zone()
           <div style="width: 300px">
             <table border="0" cellspacing="0" cellpadding="0" width="100%">
               <tr>
-                <td><div style="text-align:center; border: 0px">
+                <td class="a_center" style="border: 0px;">
                   <input type="button" title="{TXT_ADD_ALL}" name="add_all" value="&uarr;&uarr;" onclick="moveAllOptions(this.form['country_list[]'],this.form['selected_countries[]'])" />&nbsp;
                   <input type="button" title="{TXT_ADD_SELECTION}" name="add" value="&uarr;" onclick="moveSelectedOptions(this.form['country_list[]'],this.form['selected_countries[]'])" />&nbsp;
                   <input type="button" title="{TXT_REMOVE_SELECTION}" name="remove" value="&darr;" onclick="moveSelectedOptions(this.form['selected_countries[]'],this.form['country_list[]'])" />&nbsp;
                   <input type="button" title="{TXT_REMOVE_ALL}" name="remove_all" value="&darr;&darr;" onclick="moveAllOptions(this.form['selected_countries[]'],this.form['country_list[]'])" />
-                </div></td>
+                </td>
               </tr>
             </table>
           </div>

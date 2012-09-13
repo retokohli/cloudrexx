@@ -12,7 +12,7 @@
 <div id="content1" class="generalTab" style="display:block">
   <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
     <tr>
-      <th colspan="2"> <b>{TXT_GENERAL_SETTINGS}</b></th>
+      <th colspan="2" class="f_bold">{TXT_GENERAL_SETTINGS}</th>
     </tr>
     <tr class="row1">
       <td class="nowrap">{TXT_SHOP_EMAIL}</td>
@@ -64,8 +64,8 @@
         {TXT_SHOP_THUMBNAIL_MAX_WIDTH}
       </td>
       <td width='85%'>
-        <input type="text" name="thumbnail_max_width"
-            style="text-align: right; width: 270px;"
+        <input type="text" name="thumbnail_max_width" class="a_right"
+            style="width: 270px;"
             value="{SHOP_THUMBNAIL_MAX_WIDTH}" style="width: 270px;" maxlength="3" />
       </td>
     </tr>
@@ -74,8 +74,8 @@
         {TXT_SHOP_THUMBNAIL_MAX_HEIGHT}
       </td>
       <td width='85%'>
-        <input type="text" name="thumbnail_max_height"
-            style="text-align: right; width: 270px;"
+        <input type="text" name="thumbnail_max_height" class="a_right"
+            style="width: 270px;"
             value="{SHOP_THUMBNAIL_MAX_HEIGHT}" style="width: 270px;" maxlength="3" />
       </td>
     </tr>
@@ -84,8 +84,8 @@
         {TXT_SHOP_THUMBNAIL_QUALITY}
       </td>
       <td width='85%'>
-        <input type="text" name="thumbnail_quality"
-            style="text-align: right; width: 270px;"
+        <input type="text" name="thumbnail_quality" class="a_right"
+            style="width: 270px;"
             value="{SHOP_THUMBNAIL_QUALITY}" style="width: 270px;" maxlength="3" />
       </td>
     </tr>
@@ -102,7 +102,10 @@
     </tr>
     <tr class="row2">
       <td class="nowrap">{TXT_SHOP_SETTING_WEIGHT_ENABLE}</td>
-      <td class="nowrap"><input type="checkbox" name="weight_enable" value="1"{SHOP_WEIGHT_ENABLE_CHECKED} /></td>
+      <td class="nowrap">
+        <input type="checkbox" name="weight_enable" value="1"
+               {SHOP_WEIGHT_ENABLE_CHECKED} />
+      </td>
     </tr>
     <tr class="row1">
       <td class="nowrap">{TXT_SHOP_PRODUCT_SORTING}</td>
@@ -141,7 +144,8 @@
         </span>
       </td>
       <td>
-        <input type="text" name="orderitems_amount_max" style="width: 270px; text-align: right;" maxlength='12' value="{SHOP_ORDERITEMS_AMOUNT_MAX}" />
+        <input type="text" name="orderitems_amount_max" style="width: 270px;"
+               class="a_right" maxlength='12' value="{SHOP_ORDERITEMS_AMOUNT_MAX}" />
       </td>
     </tr>
 
@@ -155,7 +159,7 @@
       <td class="nowrap">{TXT_SHOP_SETTING_NUMOF_CUSTOMERS_PER_PAGE_BACKEND}</td>
       <td class="nowrap">
         <input type="text" name="numof_customers_per_page_backend"
-            style="width: 270px; text-align: right;" maxlength='12'
+            style="width: 270px;" class="a_right" maxlength='12'
             value="{SHOP_SETTING_NUMOF_CUSTOMERS_PER_PAGE_BACKEND}" />
       </td>
     </tr>
@@ -163,7 +167,7 @@
       <td class="nowrap">{TXT_SHOP_SETTING_NUMOF_MANUFACTURERS_PER_PAGE_BACKEND}</td>
       <td class="nowrap">
         <input type="text" name="numof_manufacturers_per_page_backend"
-            style="width: 270px; text-align: right;" maxlength='12'
+            style="width: 270px;" class="a_right" maxlength='12'
             value="{SHOP_SETTING_NUMOF_MANUFACTURERS_PER_PAGE_BACKEND}" />
       </td>
     </tr>
@@ -171,7 +175,7 @@
       <td class="nowrap">{TXT_SHOP_SETTING_NUMOF_MAILTEMPLATE_PER_PAGE_BACKEND}</td>
       <td class="nowrap">
         <input type="text" name="numof_mailtemplate_per_page_backend"
-            style="width: 270px; text-align: right;" maxlength='12'
+            style="width: 270px;" class="a_right" maxlength='12'
             value="{SHOP_SETTING_NUMOF_MAILTEMPLATE_PER_PAGE_BACKEND}" />
       </td>
     </tr>

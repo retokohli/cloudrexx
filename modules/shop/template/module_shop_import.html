@@ -1,8 +1,7 @@
 <!-- BEGIN shop_import.html -->
 <script type="text/javascript">
 // <![CDATA[
-function addPair()
-{
+function addPair() {
   var selectGiven = document.getElementById("given_field");
   var selectFile = document.getElementById("file_field");
   var selectLeft = document.getElementById("pairs_left");
@@ -13,9 +12,7 @@ function addPair()
   }
   resetHidden();
 }
-
-function removePair()
-{
+function removePair() {
   var selectGiven = document.getElementById("given_field");
   var selectFile = document.getElementById("file_field");
   var selectLeft = document.getElementById("pairs_left");
@@ -28,9 +25,7 @@ function removePair()
   }
   resetHidden();
 }
-
-function removeCat()
-{
+function removeCat() {
   var cats = document.getElementById("cats");
   if (cats.selectedIndex >= 0) {
     cats[cats.selectedIndex] = null;
@@ -38,9 +33,7 @@ function removeCat()
   }
   resetKat();
 }
-
-function addCat()
-{
+function addCat() {
   var selectFile = document.getElementById("file_field");
   var selectcats = document.getElementById("cats");
   if (selectFile.selectedIndex >= 0) {
@@ -48,9 +41,7 @@ function addCat()
   }
   resetKat();
 }
-
-function resetKat()
-{
+function resetKat() {
   var cats = document.getElementById("cats");
   var category = document.getElementById("category");
   var tmp = '';
@@ -60,9 +51,7 @@ function resetKat()
   }
   category.value = tmp;
 }
-
-function resetHidden()
-{
+function resetHidden() {
   var selectLeft = document.getElementById("pairs_left");
   var selectRight = document.getElementById("pairs_right");
   var leftKeys = document.getElementById("pairs_left_keys");
@@ -83,18 +72,14 @@ function resetHidden()
   }
   rightKeys.value = tmp;
 }
-
-function SaveImage()
-{
+function SaveImage() {
   if (document.getElementById("ImgName").value != "") {
     document.forms.frmSelectFields.submit();
   } else {
     alert("{TXT_SHOP_IMPORT_ENTER_TEMPLATE_NAME}");
   }
 }
-
-function MakeImport()
-{
+function MakeImport() {
   if (document.getElementById("importfile").value != '') {
     if (   document.getElementById("clearProducts").checked == false
         || (   document.getElementById("clearProducts").checked == true
@@ -105,9 +90,7 @@ function MakeImport()
     alert("{TXT_SHOP_IMPORT_SELECT_FILE_PLEASE}");
   }
 }
-
-function MakeImportCategories()
-{
+function MakeImportCategories() {
   if (document.getElementById("importFileCategories").value != '') {
     if ((   document.getElementById("clearCategories").checked
          && confirm("{TXT_SHOP_IMPORT_CATEGORIES_WARNING}"))
@@ -118,16 +101,12 @@ function MakeImportCategories()
     alert("{TXT_SHOP_IMPORT_SELECT_FILE_PLEASE}");
   }
 }
-
-function DeleteImg(ImgID)
-{
+function DeleteImg(ImgID) {
   if (confirm("{TXT_SHOP_IMPORT_TEMPLATE_REALLY_DELETE}")) {
     document.location.href = 'index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=import&deleteImg=1&img='+ImgID;
   }
 }
-
-function MakeExport(groupCode)
-{
+function MakeExport(groupCode) {
   if (confirm("{TXT_SHOP_EXPORT_WARNING}")) {
     document.location = "index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=import&group="+groupCode;
   }
@@ -145,182 +124,201 @@ function MakeExport(groupCode)
 </ul>
 
 <div id="import1" class="generalTab" style="display:{SELECTED_LAYER_IMPORT}">
-<form name="frmImportCategories" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=import" method="post" enctype="multipart/form-data">
-  <input type="hidden" name="ImportCategories" value="1" />
-  <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
-    <tr>
-      <th colspan="2"><b>{TXT_SHOP_IMPORT_IMPORT_CATEGORIES}</b></th>
-    </tr>
-    <tr class="row2">
-      <td nowrap="nowrap" width='20%'>
-        {TXT_SHOP_IMPORT_FILE}
-        &nbsp;
-        <span class="tipmessage info"
-              onmouseover='stm(["","{TXT_SHOP_IMPORT_CATEGORIES_TIPS}"],tm_style)'
-              onmouseout="htm()">
-        </span>
-      </td>
-      <td nowrap="nowrap" width='80%'>
-        <input type="file" name="importFileCategories"
-          id="importFileCategories" style="width: 200px;"
-          size="50" />
-      </td>
-    </tr>
-    <tr class="row1">
-      <td><label for='clearCategories'>{TXT_SHOP_CLEAR_DATABASE_BEFORE_IMPORTING_CATEGORIES}</label></td>
-      <td><input type='checkbox' name='clearCategories' id='clearCategories' value='1' /></td>
-    </tr>
-  </table>
-  <br />
-  <input type="button" value="{TXT_SHOP_IMPORT_IMPORT}" onclick="javascript:MakeImportCategories();" {IMPORT_BUTTON_STYLE} />
-  <br />
-  <br />
-</form>
+  <form name="frmImportCategories"
+        action="index.php?cmd=shop{MODULE_INDEX}&amp;act=import"
+        method="post" enctype="multipart/form-data">
+    <input type="hidden" name="ImportCategories" value="1" />
+    <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
+      <tr>
+        <th colspan="2" class="f_bold">{TXT_SHOP_IMPORT_IMPORT_CATEGORIES}</th>
+      </tr>
+      <tr class="row2">
+        <td nowrap="nowrap" width='20%'>
+          {TXT_SHOP_IMPORT_FILE}
+          &nbsp;
+          <span class="tipmessage info"
+                onmouseover='stm(["","{TXT_SHOP_IMPORT_CATEGORIES_TIPS}"],tm_style)'
+                onmouseout="htm()">
+          </span>
+        </td>
+        <td nowrap="nowrap" width='80%'>
+          <input type="file" name="importFileCategories"
+            id="importFileCategories" style="width: 200px;"
+            size="50" />
+        </td>
+      </tr>
+      <tr class="row1">
+        <td><label for='clearCategories'>{TXT_SHOP_CLEAR_DATABASE_BEFORE_IMPORTING_CATEGORIES}</label></td>
+        <td><input type='checkbox' name='clearCategories' id='clearCategories' value='1' /></td>
+      </tr>
+    </table>
+    <br />
+    <input type="button" value="{TXT_SHOP_IMPORT_IMPORT}"
+           onclick="javascript:MakeImportCategories();" {IMPORT_BUTTON_STYLE} />
+    <br />
+    <br />
+  </form>
 
-<br />
+  <br />
 
-<form name="frmImportProducts" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=import" method="post" enctype="multipart/form-data">
-  <input type="hidden" name="importFileProducts" value="1" />
-  <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
-    <tr>
-      <th colspan="2"><b>{TXT_SHOP_IMPORT_PRODUCTS}</b></th>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap">{TXT_SHOP_IMPORT_SELECT_TEMPLATE}
-        &nbsp;
-        <span class="tipmessage info"
-              onmouseover='stm(["","{TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS}"],tm_style)'
-              onmouseout="htm()">
-        </span>
-      </td>
-      <td nowrap="nowrap" width="80%">
-        {IMAGE_CHOICE}
-      </td>
-    </tr>
-    <tr class="row2">
-      <td nowrap="nowrap">{TXT_SHOP_IMPORT_FILE}
-        &nbsp;
-        <span class="tipmessage info"
-              onmouseover='stm(["","{TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS}"],tm_style)'
-              onmouseout="htm()">
-        </span>
-      </td>
-      <td nowrap="nowrap"><input type="file" name="importfile" id="importfile" style="width: 200px;" size="50" /></td>
-    </tr>
-    <tr class="row1">
-      <td><label for='clearProducts'>{TXT_CLEAR_DATABASE_BEFORE_IMPORTING}</label></td>
-      <td><input type='checkbox' name='clearProducts' id='clearProducts' value='1' /></td>
-    </tr>
-  </table>
-  <br />
-  <input type="button" value="{TXT_SHOP_IMPORT_IMPORT}" onclick="javascript:MakeImport();" {IMPORT_BUTTON_STYLE} />
-  <br />
-  <br />
-</form>
+<!-- BEGIN import_products -->
+  <form name="frmImportProducts" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=import" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="importFileProducts" value="1" />
+    <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
+      <tr>
+        <th colspan="2" class="f_bold">{TXT_SHOP_IMPORT_PRODUCTS}</th>
+      </tr>
+      <tr class="row1">
+        <td nowrap="nowrap">{TXT_SHOP_IMPORT_SELECT_TEMPLATE}
+          &nbsp;
+          <span class="tipmessage info"
+                onmouseover='stm(["","{TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS}"],tm_style)'
+                onmouseout="htm()">
+          </span>
+        </td>
+        <td nowrap="nowrap" width="80%">
+          {IMAGE_CHOICE}
+        </td>
+      </tr>
+      <tr class="row2">
+        <td nowrap="nowrap">{TXT_SHOP_IMPORT_FILE}
+          &nbsp;
+          <span class="tipmessage info"
+                onmouseover='stm(["","{TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS}"],tm_style)'
+                onmouseout="htm()">
+          </span>
+        </td>
+        <td nowrap="nowrap">
+          <input type="file" name="importfile" id="importfile"
+                 style="width: 200px;" size="50" />
+        </td>
+      </tr>
+      <tr class="row1">
+        <td><label for='clearProducts'>{TXT_CLEAR_DATABASE_BEFORE_IMPORTING}</label></td>
+        <td><input type='checkbox' name='clearProducts' id='clearProducts' value='1' /></td>
+      </tr>
+    </table>
+    <br />
+    <input type="button" value="{TXT_SHOP_IMPORT_IMPORT}"
+           onclick="javascript:MakeImport();" {IMPORT_BUTTON_STYLE} />
+    <br />
+    <br />
+  </form>
+<!-- END import_products -->
+<!-- BEGIN import_products_no_template -->
+  {TXT_SHOP_IMPORT_NO_TEMPLATE}
+<!-- END import_products_no_tempalte -->
 </div>
 
 <!-- Begin FieldsSelect -->
 <form name="frmSelectFields" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=import" method="post">
-<input type="hidden" name="SaveImg" value="1" />
-<input type="hidden" name="pairs_left_keys" id="pairs_left_keys" value="" />
-<input type="hidden" name="pairs_right_keys" id="pairs_right_keys" value="" />
-<input type="hidden" name="category" id="category" value="" />
-<div id="import2" class="generalTab" style="display:{SELECTED_LAYER_IMG}">
-  <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
-    <tr>
-      <th colspan="4"><b>{TXT_SHOP_IMPORT_IMPORTTEMPLATE}</b></th>
-    </tr>
-    <tr class="row2">
-      <td valign="top">
-        <b>{TXT_SHOP_IMPORT_TEXTFILE}</b>
-        <span class="tipmessage info" onmouseout="htm()"
-              onmouseover='stm(["","{TXT_SHOP_IMPORT_ASSIGNMENT_TIPS}"],tm_style)'>
-        </span>
-        {FILE_FIELDS_LIST}
-      </td>
-      <td>&nbsp;&nbsp;</td>
-      <td valign="top">
-        <b>{TXT_SHOP_IMPORT_DATABASE}</b>
-        <span class="tipmessage info" onmouseout="htm()"
-              onmouseover='stm(["","{TXT_SHOP_IMPORT_CATEGORY_TIPS}"],tm_style)'>
-        </span>
-        {DB_FIELDS_LIST}
-      </td>
-      <td width="50%">
-      </td>
-    </tr>
-    <tr class="row1">
-      <td colspan="4">
-        <input type="button" value="{TXT_SHOP_IMPORT_ADD_FEW}" onclick="addPair();" />&nbsp;&nbsp;<input type="button" value="{TXT_SHOP_IMPORT_ADD_CATEGORY}" onclick="addCat();" />
-      </td>
-    </tr>
-    <tr class="row2">
-      <td colspan="3">
-        <b>{TXT_SHOP_IMPORT_CATEGORIES}</b>
-        <span class="tipmessage info" onmouseout="htm()"
-              onmouseover='stm(["","{TXT_SHOP_IMPORT_CATEGORY_REMOVE_TIPS}"],tm_style)'>
-        </span>
-        <select name="cats" id="cats" style="width: 200px;" size="5"></select>
-      </td>
-      <td>
-      </td>
-    </tr>
-    <tr class="row1">
-      <td colspan="4">
-        <input type="button" value="{TXT_SHOP_IMPORT_REMOVE_CATEGORY}" onclick="removeCat();" />
-      </td>
-    </tr>
-    <tr class="row2">
-      <td valign="top">
-        <select name="fileList" id="pairs_left" style="width: 200px;" size="10"
-                onchange="document.getElementById('pairs_right')[this.selectedIndex].selected=true">
-        </select>
-        <span class="tipmessage info" onmouseout="htm()"
-              onmouseover='stm(["","{TXT_SHOP_IMPORT_ASSIGNMENT_REMOVE_TIPS}"],tm_style)'>
-        </span>
-      </td>
-      <td>&nbsp;&nbsp;</td>
-      <td valign="top">
-        <select name="DbList" id="pairs_right" style="width: 200px;" size="10" onchange="document.getElementById('pairs_left')[this.selectedIndex].selected=true"></select>
-      </td>
-      <td>
-      </td>
-    </tr>
-    <tr class="row1">
-      <td colspan="4">
-        <input type="button" value="{TXT_SHOP_IMPORT_REMOVE_FEW}" onclick="removePair();" />
-      </td>
-    </tr>
-    <tr class="row2">
-      <td colspan="3">
-        <b>{TXT_SHOP_IMPORT_TEMPLATENAME}</b>
-        <span class="tipmessage info" onmouseout="htm()"
-              onmouseover='stm(["","{TXT_SHOP_IMPORT_TEMPLATE_SAVE_TIPS}"],tm_style)'>
-        </span>
-        <input type="text" name="ImgName" id="ImgName" />
-      </td>
-      <td>
-      </td>
-    </tr>
-  </table>
-  <br />
-  <input type="button" value="{TXT_SHOP_IMPORT_SAVE}" onclick="SaveImage();" />
-</div>
+  <input type="hidden" name="SaveImg" value="1" />
+  <input type="hidden" name="pairs_left_keys" id="pairs_left_keys" value="" />
+  <input type="hidden" name="pairs_right_keys" id="pairs_right_keys" value="" />
+  <input type="hidden" name="category" id="category" value="" />
+  <div id="import2" class="generalTab" style="display:{SELECTED_LAYER_IMG}">
+    <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
+      <tr>
+        <th colspan="4" class="f_bold">{TXT_SHOP_IMPORT_IMPORTTEMPLATE}</th>
+      </tr>
+      <tr class="row2">
+        <td valign="top" class="f_bold">
+          {TXT_SHOP_IMPORT_TEXTFILE}
+          <span class="tipmessage info" onmouseout="htm()"
+                onmouseover='stm(["","{TXT_SHOP_IMPORT_ASSIGNMENT_TIPS}"],tm_style)'>
+          </span>
+          {FILE_FIELDS_LIST}
+        </td>
+        <td>&nbsp;&nbsp;</td>
+        <td valign="top" class="f_bold">
+          {TXT_SHOP_IMPORT_DATABASE}
+          <span class="tipmessage info" onmouseout="htm()"
+                onmouseover='stm(["","{TXT_SHOP_IMPORT_CATEGORY_TIPS}"],tm_style)'>
+          </span>
+          {DB_FIELDS_LIST}
+        </td>
+        <td width="50%">
+        </td>
+      </tr>
+      <tr class="row1">
+        <td colspan="4">
+          <input type="button" value="{TXT_SHOP_IMPORT_ADD_FEW}" onclick="addPair();" />&nbsp;&nbsp;<input type="button" value="{TXT_SHOP_IMPORT_ADD_CATEGORY}" onclick="addCat();" />
+        </td>
+      </tr>
+      <tr class="row2">
+        <td colspan="3" class="f_bold">
+          {TXT_SHOP_IMPORT_CATEGORIES}
+          <span class="tipmessage info" onmouseout="htm()"
+                onmouseover='stm(["","{TXT_SHOP_IMPORT_CATEGORY_REMOVE_TIPS}"],tm_style)'>
+          </span>
+          <select name="cats" id="cats" style="width: 200px;" size="5"></select>
+        </td>
+        <td>
+        </td>
+      </tr>
+      <tr class="row1">
+        <td colspan="4">
+          <input type="button" value="{TXT_SHOP_IMPORT_REMOVE_CATEGORY}" onclick="removeCat();" />
+        </td>
+      </tr>
+      <tr class="row2">
+        <td valign="top">
+          <select name="fileList" id="pairs_left" style="width: 200px;" size="10"
+                  onchange="document.getElementById('pairs_right')[this.selectedIndex].selected=true">
+          </select>
+          <span class="tipmessage info" onmouseout="htm()"
+                onmouseover='stm(["","{TXT_SHOP_IMPORT_ASSIGNMENT_REMOVE_TIPS}"],tm_style)'>
+          </span>
+        </td>
+        <td>&nbsp;&nbsp;</td>
+        <td valign="top">
+          <select name="DbList" id="pairs_right" style="width: 200px;" size="10" onchange="document.getElementById('pairs_left')[this.selectedIndex].selected=true"></select>
+        </td>
+        <td>
+        </td>
+      </tr>
+      <tr class="row1">
+        <td colspan="4">
+          <input type="button" value="{TXT_SHOP_IMPORT_REMOVE_FEW}" onclick="removePair();" />
+        </td>
+      </tr>
+      <tr class="row2">
+        <td colspan="3" class="f_bold">
+          {TXT_SHOP_IMPORT_TEMPLATENAME}
+          <span class="tipmessage info" onmouseout="htm()"
+                onmouseover='stm(["","{TXT_SHOP_IMPORT_TEMPLATE_SAVE_TIPS}"],tm_style)'>
+          </span>
+          <input type="text" name="ImgName" id="ImgName" />
+        </td>
+        <td>
+        </td>
+      </tr>
+    </table>
+    <br />
+    <input type="button" value="{TXT_SHOP_IMPORT_SAVE}" onclick="SaveImage();" />
+  </div>
 </form>
 <!-- End FieldsSelect -->
 <div id="import4" class="generalTab" style="display: none;">
   <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
     <tr>
-      <th colspan="2"><b>{TXT_SHOP_IMPORT_SAVED_TEMPLATES}</b></th>
+      <th colspan="2" class="f_bold">{TXT_SHOP_IMPORT_SAVED_TEMPLATES}</th>
     </tr>
     <tr>
-      <td><b>{TXT_SHOP_IMPORT_TEMPLATENAME}</b></td>
-      <td width="8%"><div style="text-align:right;"><b>{TXT_FUNCTIONS}</b></div></td>
+      <td class="f_bold">{TXT_SHOP_IMPORT_TEMPLATENAME}</td>
+      <td width="8%" class="a_right f_bold">
+        {TXT_FUNCTIONS}
+      </td>
     </tr>
     <!-- BEGIN imgRow -->
     <tr class="{CLASS_NAME}">
       <td>{IMG_NAME}</td>
-      <td><div style="text-align:right;"><a href="javascript:DeleteImg({IMG_ID});"><img src="images/icons/delete.gif" border="0" alt="{TXT_SHOP_IMPORT_DELETE}" title="{TXT_SHOP_IMPORT_DELETE}" /></a></div></td>
+      <td class="a_right">
+        <a href="javascript:DeleteImg({IMG_ID});">
+          <img src="images/icons/delete.gif" border="0"
+               alt="{TXT_SHOP_IMPORT_DELETE}" title="{TXT_SHOP_IMPORT_DELETE}" />
+        </a>
+      </td>
     </tr>
     <!-- END imgRow -->
   </table>
@@ -332,7 +330,7 @@ function MakeExport(groupCode)
   <input type="hidden" name="SelectFields" value="1" />
   <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
     <tr>
-      <th><b>{TXT_SHOP_IMPORT_MAKE_NEW_TEMPLATE}</b></th>
+      <th class="f_bold">{TXT_SHOP_IMPORT_MAKE_NEW_TEMPLATE}</th>
     </tr>
     <tr class="row1">
       <td>
@@ -358,12 +356,12 @@ function MakeExport(groupCode)
   <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
   <colgroup><col width='10%'/><col width='10%'/><col width='80%'/></colgroup>
     <tr>
-      <th nowrap='nowrap' colspan="3"><b>{TXT_SHOP_EXPORT}</b></th>
+      <th nowrap='nowrap' colspan="3" class="f_bold">{TXT_SHOP_EXPORT}</th>
     </tr>
 <!--
     <tr class="row1">
-      <td nowrap='nowrap' valign="top" colspan="3">
-        <b>{TXT_SHOP_EXPORT_SELECTION}</b><br />
+      <td nowrap='nowrap' valign="top" colspan="3" class="f_bold">
+        {TXT_SHOP_EXPORT_SELECTION}<br />
       </td>
     </tr>
 -->

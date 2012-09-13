@@ -3,7 +3,7 @@
 <form name="formCustomer" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=neweditcustomer&amp;customer_id={SHOP_CUSTOMERID}">
   <table width="100%" cellspacing="0" cellpadding="2" class="adminlist" border="0">
     <tr>
-      <th nowrap="nowrap" colspan="4"><b>{TXT_CUSTOMER_DATA}</b></th>
+      <th nowrap="nowrap" colspan="4" class="f_bold">{TXT_CUSTOMER_DATA}</th>
     </tr>
     <tr class="row1">
       <td nowrap="nowrap" width="15%">{TXT_COMPANY}</td>
@@ -57,7 +57,7 @@
   <br />
   <table border="0" width="100%" cellspacing="0" cellpadding="2" class="adminlist">
     <tr>
-      <th nowrap="nowrap" colspan="4"><b>{TXT_PAYMENT_INFORMATIONS}</b></th>
+      <th nowrap="nowrap" colspan="4" class="f_bold">{TXT_PAYMENT_INFORMATIONS}</th>
     </tr>
     <tr class="row1">
       <td nowrap="nowrap" width="15%">{TXT_CREDIT_CARD_OWNER}</td>
@@ -75,27 +75,47 @@
   <br />
   <table width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
     <tr>
-      <th colspan="4"><b>{TXT_ORDERS}</b></th>
+      <th colspan="4" class="f_bold">{TXT_ORDERS}</th>
     </tr>
     <tr class="row1">
       <td>{TXT_ORDERNUMBER}</td>
       <td>{TXT_DATE}</td>
       <td>{TXT_ORDERSTATUS}</td>
-      <td><div style="text-align:right;">{TXT_ORDER_SUM}</div></td>
+      <td class="a_right">{TXT_ORDER_SUM}</td>
     </tr>
     <!-- BEGIN orderRow -->
       <tr class="{SHOP_ROWCLASS}">
-        <td><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=orderdetails&amp;order_id={SHOP_ORDER_ID}" title="{TXT_VIEW_DETAILS}">{SHOP_ORDER_ID}</a></td>
-        <td><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=orderdetails&amp;order_id={SHOP_ORDER_ID}" title="{TXT_VIEW_DETAILS}">{SHOP_ORDER_DATE}</a></td>
-        <td><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=orderdetails&amp;order_id={SHOP_ORDER_ID}" title="{TXT_VIEW_DETAILS}">{SHOP_ORDER_STATUS}</a></td>
-        <td><div style="text-align:right;"><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=orderdetails&amp;order_id={SHOP_ORDER_ID}" title="{TXT_VIEW_DETAILS}">{SHOP_ORDER_SUM}</a></div></td>
+        <td>
+          <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=orderdetails&amp;order_id={SHOP_ORDER_ID}"
+             title="{TXT_VIEW_DETAILS}">
+            {SHOP_ORDER_ID}
+          </a>
+        </td>
+        <td>
+          <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=orderdetails&amp;order_id={SHOP_ORDER_ID}"
+             title="{TXT_VIEW_DETAILS}">
+            {SHOP_ORDER_DATE}
+          </a>
+        </td>
+        <td>
+          <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=orderdetails&amp;order_id={SHOP_ORDER_ID}"
+             title="{TXT_VIEW_DETAILS}">
+            {SHOP_ORDER_STATUS}
+          </a>
+        </td>
+        <td class="a_right">
+          <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=orderdetails&amp;order_id={SHOP_ORDER_ID}"
+             title="{TXT_VIEW_DETAILS}">
+            {SHOP_ORDER_SUM}
+          </a>
+        </td>
       </tr>
     <!-- END orderRow -->
   </table>
   <br />
   <table border="0" width="100%" cellspacing="0" cellpadding="2" class="adminlist">
     <tr>
-      <th colspan="2" nowrap="nowrap"><b>{TXT_MORE_INFORMATIONS}</b></th>
+      <th colspan="2" nowrap="nowrap" class="f_bold">{TXT_MORE_INFORMATIONS}</th>
     </tr>
     <tr class="row1">
       <td width="15%" nowrap="nowrap">{TXT_REMARK}</td>

@@ -35,8 +35,8 @@ function deleteGroup(groupId)
   <div id="content1" class="groupTab" style="display:{SHOP_GROUP_LIST_DISPLAY};">
     <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
-        <th width="95%"><b>{TXT_SHOP_CUSTOMER_GROUP_NAME}</b></th>
-        <th width="05%" style="text-align: right;"><b>{TXT_FUNCTIONS}</b></th>
+        <th width="95%" class="f_bold">{TXT_SHOP_CUSTOMER_GROUP_NAME}</th>
+        <th width="05%" class="a_right f_bold">{TXT_FUNCTIONS}</th>
       </tr>
       <!-- BEGIN shopGroup -->
       <tr class="{SHOP_ROW_STYLE}">
@@ -46,13 +46,13 @@ function deleteGroup(groupId)
             {SHOP_GROUP_NAME}
           </a>
         </td>
-        <td nowrap="nowrap" style="text-align: right;">
-          <a href="javascript:deleteGroup({SHOP_GROUP_ID})" title="{TXT_DELETE}">
-            <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
-          </a>
+        <td nowrap="nowrap" class="a_right">
           <a href="index.php?cmd=shop&amp;act=customers&amp;tpl=groups&amp;edit=1&amp;id={SHOP_GROUP_ID}"
               title="{TXT_EDIT}">
             <img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" />
+          </a>
+          <a href="javascript:deleteGroup({SHOP_GROUP_ID})" title="{TXT_DELETE}">
+            <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
           </a>
         </td>
       </tr>
@@ -65,7 +65,7 @@ function deleteGroup(groupId)
   <div id="content2" class="groupTab" style="display: {SHOP_GROUP_EDIT_DISPLAY};">
     <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
-        <th colspan="2"><b>{TXT_SHOP_EDIT_CUSTOMER_GROUP}</b></th>
+        <th colspan="2" class="f_bold">{TXT_SHOP_EDIT_CUSTOMER_GROUP}</th>
       </tr>
       <!-- BEGIN shopGroupName -->
       <tr class="{SHOP_ROW_STYLE}">

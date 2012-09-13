@@ -27,8 +27,8 @@ function deleteGroup(groupId)
   <div id="shopContent1" class="groupTab" style="display:{SHOP_GROUP_LIST_DISPLAY};">
     <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
-        <th width="50%"><b>{TXT_SHOP_ARTICLE_GROUP_NAME}</b></th>
-        <th width="05%"><b>{TXT_FUNCTIONS}</b></th>
+        <th width="50%" class="f_bold">{TXT_SHOP_ARTICLE_GROUP_NAME}</th>
+        <th width="05%" class="f_bold">{TXT_FUNCTIONS}</th>
       </tr>
       <!-- BEGIN shopGroup -->
       <tr class="{SHOP_ROW_STYLE}">
@@ -38,16 +38,14 @@ function deleteGroup(groupId)
             {SHOP_GROUP_NAME}
           </a>
         </td>
-        <td nowrap="nowrap">
-          <div style="text-align:right">
-            <a href="javascript:deleteGroup({SHOP_GROUP_ID})" title="{TXT_DELETE}">
-              <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
-            </a>
-            <a href="index.php?cmd=shop&act=products&tpl=groups&edit=1&id={SHOP_GROUP_ID}"
-                title="{TXT_EDIT}">
-              <img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" />
-            </a>
-          </div>
+        <td nowrap="nowrap" class="a_right">
+          <a href="javascript:deleteGroup({SHOP_GROUP_ID})" title="{TXT_DELETE}">
+            <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
+          </a>
+          <a href="index.php?cmd=shop&act=products&tpl=groups&edit=1&id={SHOP_GROUP_ID}"
+              title="{TXT_EDIT}">
+            <img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" />
+          </a>
         </td>
       </tr>
       <!-- END shopGroup -->
@@ -59,7 +57,7 @@ function deleteGroup(groupId)
   <div id="shopContent2" class="groupTab" style="display:{SHOP_GROUP_EDIT_DISPLAY}">
     <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
-        <th colspan="2"><b>{TXT_SHOP_EDIT_ARTICLE_GROUP}</b></th>
+        <th colspan="2" class="f_bold">{TXT_SHOP_EDIT_ARTICLE_GROUP}</th>
       </tr>
       <!-- BEGIN shopGroupName -->
       <tr class="{SHOP_ROW_STYLE}">

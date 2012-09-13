@@ -44,22 +44,28 @@ function shopPricelistDoAction(strForm, strCheckbox, objSelect, strAct)
 <form name="form_pricelist" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=pricelists">
   <table width="100%" cellspacing="0" cellpadding="2" border="0" class="adminlist">
     <tr>
-      <th width="1%"nowrap="nowrap" style="text-align:center;">#</th>
+      <th width="1%" nowrap="nowrap" class="a_center">#</th>
       <th nowrap="nowrap" width="4%">{TXT_ID}</th>
       <th nowrap="nowrap" width="20%">{TXT_NAME}</th>
       <th nowrap="nowrap" width="70%">{TXT_PDF_LINK}</th>
-      <th nowrap="nowrap" width="5%" style="text-align:right;">{TXT_ACTION}</th>
+      <th nowrap="nowrap" width="5%" class="a_right">{TXT_ACTION}</th>
     </tr>
 <!-- BEGIN shop_pricelist -->
     <tr class="{SHOP_PRICELIST_ROWCLASS}">
-      <td nowrap="nowrap"><input type="checkbox" name="list_id" value="{SHOP_PRICELIST_ID}" /></td>
+      <td nowrap="nowrap">
+        <input type="checkbox" name="list_id" value="{SHOP_PRICELIST_ID}" />
+      </td>
       <td nowrap="nowrap">{SHOP_PRICELIST_ID}</td>
       <td nowrap="nowrap">{SHOP_PRICELIST_NAME}</td>
       <td nowrap="nowrap">{SHOP_PRICELIST_LINK_PDF}</td>
-      <td nowrap="nowrap"><div style="text-align:right;">
-        <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=categories&amp;tpl=pricelist_edit&amp;list_id={SHOP_PRICELIST_ID}" target="_self" title="{TXT_EDIT}"><img border="0" src="images/icons/edit.gif" width="16" height="16" alt="{TXT_EDIT}" /></a>
-        <a href="javascript:deleteList({SHOP_PRICELIST_ID})" target="_self" title="{TXT_DELETE}"><img border="0" src="images/icons/delete.gif" width="16" height="16" alt="{TXT_DELETE}" /></a>
-      </div></td>
+      <td nowrap="nowrap" class="a_right">
+        <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=categories&amp;tpl=pricelist_edit&amp;list_id={SHOP_PRICELIST_ID}" target="_self" title="{TXT_EDIT}">
+          <img border="0" src="images/icons/edit.gif" width="16" height="16" alt="{TXT_EDIT}" />
+        </a>
+        <a href="javascript:deleteList({SHOP_PRICELIST_ID})" target="_self" title="{TXT_DELETE}">
+          <img border="0" src="images/icons/delete.gif" width="16" height="16" alt="{TXT_DELETE}" />
+        </a>
+      </td>
     </tr>
 <!-- END shop_pricelist -->
   </table>

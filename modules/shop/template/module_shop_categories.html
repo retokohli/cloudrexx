@@ -42,7 +42,7 @@ function openBrowser(url, id, attrs)
   return false;
 }
 
-var imageMaxWidth  = {SHOP_IMAGE_WIDTH};
+var imageMaxWidth = {SHOP_IMAGE_WIDTH};
 var imageMaxHeight = {SHOP_IMAGE_HEIGHT};
 
 function SetUrl(url, width, height, alt)
@@ -115,12 +115,12 @@ function cancelEdit()
         <th colspan="6">{TXT_CATEGORIES}&nbsp;({TXT_TOTAL}&nbsp;{SHOP_TOTAL_CATEGORIES})</th>
       </tr>
       <tr class="row3">
-        <td width="01%" nowrap="nowrap"><div style="text-align:center;"><b>#</b></div></td>
-        <td width="03%" nowrap="nowrap" class="a_right"><b>{TXT_ID}</b>&nbsp;&nbsp;</td>
-        <td width="03%" nowrap="nowrap"><b>{TXT_ACTIVE}</b></td>
-        <td width="92%" nowrap="nowrap"><b>{TXT_NAME}&nbsp;&nbsp;&nbsp;</b></td>
-        <!-- This feature isn't ready to use yet: td width=" 3%" nowrap="nowrap"><b>{TXT_SHOP_CATEGORY_VIRTUAL}</b></td-->
-        <td width="01%" nowrap="nowrap" class="a_right"><b>{TXT_ACTION}</b></td>
+        <td width="01%" nowrap="nowrap" class="a_center f_bold">#</td>
+        <td width="03%" nowrap="nowrap" class="a_right f_bold">{TXT_ID}&nbsp;&nbsp;</td>
+        <td width="03%" nowrap="nowrap" class="f_bold">{TXT_ACTIVE}</td>
+        <td width="92%" nowrap="nowrap" class="f_bold">{TXT_NAME}&nbsp;&nbsp;&nbsp;</td>
+        <!-- This feature isn't ready to use yet: td width=" 3%" nowrap="nowrap" class="f_bold">{TXT_SHOP_CATEGORY_VIRTUAL}</td-->
+        <td width="01%" nowrap="nowrap" class="a_right f_bold">{TXT_ACTION}</td>
       </tr>
       <!-- BEGIN category_row -->
       <tr class="{SHOP_ROWCLASS}">
@@ -144,12 +144,10 @@ function cancelEdit()
           {SHOP_CATEGORY_LEVELSPACE}<input type="text" name="ord[{SHOP_CATEGORY_ID}]"
               value="{SHOP_CATEGORY_ORD}" size="3" maxlength="4" />
           &nbsp;
-          <b>
-            <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=categories&amp;category_id={SHOP_CATEGORY_ID}"
-                title="{SHOP_CATEGORY_NAME}">
-              {SHOP_CATEGORY_NAME}
-            </a>
-          </b>
+          <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=categories&amp;category_id={SHOP_CATEGORY_ID}"
+             title="{SHOP_CATEGORY_NAME}">
+            <b>{SHOP_CATEGORY_NAME}</b>
+          </a>
           &nbsp;
           <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;category_id={SHOP_CATEGORY_ID}"
             title="{TXT_PREVIEW}">
@@ -166,13 +164,12 @@ function cancelEdit()
               name="virtual_old[{SHOP_CATEGORY_ID}]" />
         </td-->
         <td nowrap="nowrap" class="a_right">
-
 <!-- BEGIN category_language -->
           <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=categories&amp;category_id={SHOP_CATEGORY_ID}&amp;userFrontendLangId={SHOP_CATEGORY_LANGUAGE_ID}">
             <img src="images/icons/edit.gif" border="0"
                  alt="{SHOP_CATEGORY_LANGUAGE_EDIT}"
                  title="{SHOP_CATEGORY_LANGUAGE_EDIT}" />
-          </a>&nbsp;
+          </a>
 <!-- END category_language -->
 <!--a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=categories&amp;category_id={SHOP_CATEGORY_ID}"
                 title="{TXT_EDIT}">

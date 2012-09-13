@@ -51,26 +51,28 @@ function deleteManufacturer(manufacturer_id) {
       <th colspan="5">{TXT_SHOP_MANUFACTURER}</th>
     </tr>
     <tr class="row1">
-      <td width="01%"><div style="text-align:center;"><b>#</b></div></td>
-      <td width="03%"><b>{SHOP_HEADER_ID}</b></td>
-      <td width="20%"><b>{SHOP_HEADER_NAME}</b></td>
-      <td width="75%"><b>{SHOP_HEADER_URL}</b></td>
-      <td width="01%"><div style="text-align:right;"><b>{TXT_ACTION}</b></div></td>
+      <td width="01%" class="a_center f_bold">#</td>
+      <td width="03%" class="f_bold">{SHOP_HEADER_ID}</td>
+      <td width="20%" class="f_bold">{SHOP_HEADER_NAME}</td>
+      <td width="75%" class="f_bold">{SHOP_HEADER_URL}</td>
+      <td width="01%" class="a_right f_bold">{TXT_ACTION}</td>
     </tr>
 <!-- BEGIN manufacturerRow -->
       <tr class="{SHOP_ROWCLASS}">
-        <td align="center"><b><input type="checkbox" name="selected_manufacturer_id[]" value="{SHOP_MANUFACTURER_ID}" /></b></td>
+        <td class="a_center">
+          <input type="checkbox" name="selected_manufacturer_id[]" value="{SHOP_MANUFACTURER_ID}" />
+        </td>
         <td>{SHOP_MANUFACTURER_ID}</td>
         <td>{SHOP_MANUFACTURER_NAME}</td>
         <td>{SHOP_MANUFACTURER_URL}</td>
-        <td><div style="text-align:right;">
+        <td class="a_right">
           <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=manufacturer&amp;id={SHOP_MANUFACTURER_ID}"
               title="{TXT_EDIT}">
             <img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a>
           <a href="javascript:deleteManufacturer('{SHOP_MANUFACTURER_ID}')"
               title="{TXT_DELETE}">
             <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a>
-        </div></td>
+        </td>
       </tr>
 <!-- END manufacturerRow -->
   </table>

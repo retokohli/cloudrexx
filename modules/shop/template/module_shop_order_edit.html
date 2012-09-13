@@ -55,10 +55,7 @@
     <tr class="row1">
       <td nowrap="nowrap">{TXT_COMPANY}</td>
       <td nowrap="nowrap">
-        <a href="index.php?cmd=shop&amp;act=neweditcustomer&amp;customer_id={SHOP_CUSTOMER_ID}">
-          {SHOP_COMPANY}
-        </a>
-        &nbsp;
+        <input type="text" name="billing_company" value="{SHOP_SHIP_COMPANY}" />
       </td>
       <td nowrap="nowrap">{TXT_COMPANY}</td>
       <td nowrap="nowrap">
@@ -74,57 +71,82 @@
     <tr class="row1">
       <td nowrap="nowrap">{TXT_LAST_NAME}</td>
       <td nowrap="nowrap">
-        <a href="index.php?cmd=shop&amp;act=neweditcustomer&amp;customer_id={SHOP_CUSTOMER_ID}">{SHOP_LASTNAME}</a>&nbsp;</td>
+        <input type="text" name="billing_lastname" value="{SHOP_LASTNAME}" />
+      </td>
       <td nowrap="nowrap">{TXT_LAST_NAME}</td>
       <td nowrap="nowrap">
-        <input type="text" name="shipLastname" value="{SHOP_SHIP_LASTNAME}" /></td>
+        <input type="text" name="shipLastname" value="{SHOP_SHIP_LASTNAME}" />
+      </td>
     </tr>
     <tr class="row2">
       <td nowrap="nowrap">{TXT_FIRST_NAME}</td>
       <td nowrap="nowrap">
-        <a href="index.php?cmd=shop&amp;act=neweditcustomer&amp;customer_id={SHOP_CUSTOMER_ID}">{SHOP_FIRSTNAME}</a>&nbsp;</td>
+        <input type="text" name="billing_firstname" value="{SHOP_FIRSTNAME}" />
       <td nowrap="nowrap">{TXT_FIRST_NAME}</td>
       <td nowrap="nowrap">
-        <input type="text" name="shipFirstname" value="{SHOP_SHIP_FIRSTNAME}" /></td>
+        <input type="text" name="shipFirstname" value="{SHOP_SHIP_FIRSTNAME}" />
+      </td>
     </tr>
     <tr class="row1">
       <td nowrap="nowrap">{TXT_ADDRESS}</td>
-      <td nowrap="nowrap">{SHOP_ADDRESS}&nbsp;</td>
+      <td nowrap="nowrap">
+        <input type="text" name="billing_address" value="{SHOP_ADDRESS}" />
+      </td>
       <td nowrap="nowrap">{TXT_ADDRESS}</td>
       <td nowrap="nowrap">
-        <input type="text" name="shipAddress" value="{SHOP_SHIP_ADDRESS}" /></td>
+        <input type="text" name="shipAddress" value="{SHOP_SHIP_ADDRESS}" />
+      </td>
     </tr>
     <tr class="row2">
       <td nowrap="nowrap">{TXT_ZIP_CITY}</td>
-      <td nowrap="nowrap">{SHOP_ZIP}&nbsp;{SHOP_CITY}</td>
+      <td nowrap="nowrap">
+        <input type="text" name="billing_zip" value="{SHOP_ZIP}" />
+        <input type="text" name="billing_city" value="{SHOP_CITY}" />
+      </td>
       <td nowrap="nowrap">{TXT_ZIP_CITY}</td>
       <td nowrap="nowrap">
-        <input type="text" name="shipZip" size="8" maxlength="8" value="{SHOP_SHIP_ZIP}" />&nbsp;<input type="text" name="shipCity" value="{SHOP_SHIP_CITY}" /></td>
+        <input type="text" name="shipZip" size="8" maxlength="8"
+               value="{SHOP_SHIP_ZIP}" />
+        &nbsp;
+        <input type="text" name="shipCity" value="{SHOP_SHIP_CITY}" />
+      </td>
     </tr>
     <tr class="row1">
       <td nowrap="nowrap">{TXT_COUNTRY}</td>
-      <td nowrap="nowrap">{SHOP_COUNTRY}&nbsp;</td>
+      <td nowrap="nowrap">
+        {SHOP_COUNTRY}
+      </td>
       <td nowrap="nowrap">{TXT_COUNTRY}</td>
       <td nowrap="nowrap">{SHOP_SHIP_COUNTRY}</td>
     </tr>
     <tr class="row2">
       <td nowrap="nowrap">{TXT_PHONE}</td>
-      <td nowrap="nowrap">{SHOP_PHONE}&nbsp;</td>
+      <td nowrap="nowrap">
+        <input type="text" name="billing_phone" value="{SHOP_PHONE}" />
+      </td>
       <td nowrap="nowrap">{TXT_PHONE}</td>
       <td nowrap="nowrap">
-        <input type="text" name="shipPhone" value="{SHOP_SHIP_PHONE}" /></td>
+        <input type="text" name="shipPhone" value="{SHOP_SHIP_PHONE}" />
+      </td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_FAX}</td>
-      <td nowrap="nowrap">{SHOP_FAX}&nbsp;</td>
+      <td nowrap="nowrap">
+        {TXT_FAX}
+      </td>
+      <td nowrap="nowrap">
+        <input type="text" name="billing_fax" value="{SHOP_FAX}" />
+      </td>
       <td></td>
       <td></td>
     </tr>
     <tr class="row2">
       <td nowrap="nowrap">
-        {TXT_EMAIL}<input type="hidden" name="mailTo" value="{SHOP_EMAIL}" /></td>
+        {TXT_EMAIL}<input type="hidden" name="mailTo" value="{SHOP_EMAIL}" />
+      </td>
       <td nowrap="nowrap">
-        <a href="index.php?cmd=shop&amp;act=settings&amp;tpl=mail&amp;strTab=mailSend&amp;mailTo={SHOP_EMAIL}">{SHOP_EMAIL}</a>&nbsp;</td>
+        <input type="text" name="billing_email" value="{SHOP_EMAIL}" />
+<!--        <a href="index.php?cmd=shop&amp;act=settings&amp;tpl=mail&amp;strTab=mailSend&amp;mailTo={SHOP_EMAIL}"></a>&nbsp;-->
+      </td>
       <td nowrap="nowrap">
         {TXT_SHIPPING_METHOD}</td>
       <td nowrap="nowrap">
@@ -183,13 +205,13 @@
       <th colspan="6">{TXT_BILL}</th>
     </tr>
     <tr class="row1">
-      <td width="10%" nowrap="nowrap"><b>{TXT_NUMBER}</b></td>
-      <td width="10%" nowrap="nowrap"><b>{TXT_SHOP_PRODUCT}</b></td>
-      <!--td width="40%" nowrap="nowrap"><b>{TXT_PRODUCT_NAME}</b></td-->
-      <td width="10%" nowrap='nowrap'><b>{TXT_WEIGHT}</b></td>
-      <td width="10%" nowrap="nowrap"><b>{TXT_PRODUCT_PRICE}</b></td>
-      <td width="10%" nowrap="nowrap"><b>{TXT_TAX_RATE}</b></td>
-      <td width="10%" nowrap="nowrap"><b>{TXT_SUM}</b></td>
+      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_NUMBER}</td>
+      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_SHOP_PRODUCT}</td>
+      <!--td width="40%" nowrap="nowrap" class="f_bold">{TXT_PRODUCT_NAME}</td-->
+      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_WEIGHT}</td>
+      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_PRODUCT_PRICE}</td>
+      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_TAX_RATE}</td>
+      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_SUM}</td>
     </tr>
 <!-- BEGIN orderdetailsRow -->
     <!--tr id="{SHOP_P_ID}" class="{SHOP_ROWCLASS}"-->
@@ -201,15 +223,17 @@
       </td>
       <td nowrap="nowrap">
         <input type="hidden" name="product_id_old[{SHOP_P_ID}]" value="{SHOP_P_ID}" />
-        <input type="hidden" name="product_id[{SHOP_P_ID}]" id="product_id-{SHOP_P_ID}" value="{SHOP_P_ID}" />
-        <select id="product_list-{SHOP_P_ID}" name="product_list[{SHOP_P_ID}]" size="1" onchange="changeProduct({SHOP_P_ID},this.value);">
+        <input type="hidden" name="product_id[{SHOP_P_ID}]"
+               id="product_id-{SHOP_P_ID}" value="{SHOP_P_ID}" />
+        <select id="product_list-{SHOP_P_ID}" name="product_list[{SHOP_P_ID}]"
+                size="1" onchange="changeProduct({SHOP_P_ID},this.value);">
           {SHOP_PRODUCT_IDS_MENU}
         </select>
       </td>
-      <!--td nowrap="nowrap"><div style="text-align:left;">
+      <!--td nowrap="nowrap">
         <input type="text" size="50" id="product_name-{SHOP_P_ID}"
             name="product_name[{SHOP_P_ID}]" value="{SHOP_PRODUCT_NAME}" />
-      </div></td-->
+      </td-->
       <td nowrap="nowrap">
         <input class="inputCurrency" type="text" id="productWeight-{SHOP_P_ID}"
             name="productWeight[{SHOP_P_ID}]" value="{SHOP_PRODUCT_WEIGHT}"
@@ -251,9 +275,9 @@
           {SHOP_PRODUCT_IDS_MENU_NEW}
         </select>
       </td>
-      <!--td nowrap="nowrap"><div style="text-align:left;">
+      <!--td nowrap="nowrap">
         <input type="text" size="50" id="product_name-0" name="product_name[0]" value="" />
-      </div></td-->
+      </td-->
       <td nowrap="nowrap">
         <input class="inputCurrency" type="text" id="productWeight-0"
             name="productWeight[0]" value="0 g" onchange="calcPrice(0);" />
@@ -289,8 +313,8 @@
 <!-- BEGIN netPrice -->
     <tr class="row1">
       <td colspan="4">&nbsp;</td>
-      <td nowrap="nowrap" style="text-align:right;">
-        <b>{TXT_NET_PRICE}</b>&nbsp;
+      <td nowrap="nowrap" class="a_right f_bold">
+        {TXT_NET_PRICE}&nbsp;
       </td>
       <td nowrap="nowrap">
         <input class="inputCurrency" type="text" id="netPrice"
@@ -302,7 +326,9 @@
 <!-- BEGIN taxPrice -->
     <tr>
       <td colspan="4">&nbsp;</td>
-      <td nowrap="nowrap"><div style="text-align:right;"><b>{SHOP_PART_TAX_PROCENTUAL}</b>&nbsp;</div></td>
+      <td nowrap="nowrap" class="f_bold">
+        {SHOP_PART_TAX_PROCENTUAL}&nbsp;
+      </td>
       <td nowrap="nowrap">
         <input class="inputCurrency" type="text" id="taxPrice"
             name="taxPrice" value="{SHOP_TAX_PRICE}"
@@ -313,14 +339,18 @@
     <tr><td colspan="6">&nbsp;</td></tr>
     <tr>
       <td colspan="1">&nbsp;</td>
-      <td nowrap="nowrap"><div style="text-align:right;"><b>{TXT_TOTAL_WEIGHT}</b>&nbsp;</div></td>
+      <td nowrap="nowrap" class="a_right f_bold">
+        {TXT_TOTAL_WEIGHT}&nbsp;
+      </td>
       <td nowrap="nowrap">
         <input class="inputCurrency" type="text" id="totalWeight"
             name="totalWeight" value="{SHOP_TOTAL_WEIGHT}"
             onchange="calcPrice(0);" />
       </td>
       <td colspan="1">&nbsp;</td>
-      <td nowrap="nowrap"><div style="text-align:right;"><b>{TXT_SHIPPING_PRICE}</b>&nbsp;</div></td>
+      <td nowrap="nowrap" class="a_right f_bold">
+        {TXT_SHIPPING_PRICE}&nbsp;
+      </td>
       <td nowrap="nowrap">
         <input class="inputCurrency" type="text" id="shippingPrice"
             name="shippingPrice" value="{SHOP_SHIPPING_PRICE}"
@@ -329,7 +359,9 @@
     </tr>
     <tr>
       <td colspan="4">&nbsp;</td>
-      <td nowrap="nowrap"><div style="text-align:right;"><b>{TXT_PAYMENT_COSTS}</b>&nbsp;</div></td>
+      <td nowrap="nowrap" class="a_right f_bold">
+        {TXT_PAYMENT_COSTS}&nbsp;
+      </td>
       <td nowrap="nowrap">
         <input class="inputCurrency" type="text" id="paymentPrice"
             name="paymentPrice" value="{SHOP_PAYMENT_PRICE}"
@@ -337,7 +369,9 @@
     </tr>
     <tr>
       <td colspan="4">&nbsp;</td>
-      <td nowrap="nowrap"><div style="text-align:right;"><b>{TXT_TOTAL}</b>&nbsp;</div></td>
+      <td nowrap="nowrap" class="a_right f_bold">
+        {TXT_TOTAL}&nbsp;
+      </td>
       <td nowrap="nowrap">
         <input class="inputCurrency" type="text" id="currencyOrderSum"
             name="currencyOrderSum" value="{SHOP_ORDER_SUM}"
