@@ -40,9 +40,6 @@ function shopProductsIsChecked(fieldName)
   }
   return false;
 }
-
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,15,-50];
-Text[0]=["","{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP}"];
 // ]]>
 </script>
 <form name="product_search" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=products">
@@ -56,7 +53,11 @@ Text[0]=["","{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP}"];
         {SHOP_CATEGORY_MENU}
         <input type="submit" name="submit" value="{TXT_SEARCH}" />
       </td>
-      <td><div style="text-align:right;"><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;specialoffer=1" title="{TXT_VIEW_SPECIAL_OFFERS}">{TXT_VIEW_SPECIAL_OFFERS}</a></div></td>
+      <td class="a_right">
+        <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;specialoffer=1" title="{TXT_VIEW_SPECIAL_OFFERS}">
+          {TXT_VIEW_SPECIAL_OFFERS}
+        </a>
+      </td>
     </tr>
   </table>
 </form>
@@ -71,28 +72,28 @@ Text[0]=["","{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP}"];
       <th colspan="16">{TXT_PRODUCT_CATALOG}&nbsp;({TXT_TOTAL}&nbsp;{SHOP_PRODUCT_TOTAL})</th>
     </tr>
     <tr class="row1">
-      <td width="1%" nowrap="nowrap"><div style="text-align: center;"><b>#</b></div></td>
-      <td width="1%" nowrap="nowrap" class="a_right"><b>{SHOP_HEADING_PRODUCT_ID}</b></td>
-      <td width="1%" nowrap="nowrap">
-        <div style="text-align: center;">
-          <b>{SHOP_HEADING_PRODUCT_ACTIVE}&nbsp;</b>
-        </div></td>
-      <td width="1%" nowrap="nowrap" class="a_right"><b>{SHOP_HEADING_PRODUCT_ORD}</b></td>
-      <td width="1%" nowrap="nowrap">
-        <span class="note" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">
-          <img src="images/icons/home.gif" alt="{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE}" />
-        </span>
+      <td width="1%" nowrap="nowrap" class="a_center f_bold">#</td>
+      <td width="1%" nowrap="nowrap" class="a_right f_bold">{SHOP_HEADING_PRODUCT_ID}</td>
+      <td width="1%" nowrap="nowrap" class="a_center f_bold">
+        {SHOP_HEADING_PRODUCT_ACTIVE}&nbsp;
       </td>
-      <td width="50%"><b>{SHOP_HEADING_PRODUCT_NAME}</b></td>
-      <td width="1%" nowrap="nowrap"><b>{SHOP_HEADING_PRODUCT_CODE}</b></td>
-      <td width="1%" colspan="2" nowrap="nowrap"><b>{SHOP_HEADING_PRODUCT_DISCOUNTPRICE}</b></td>
-      <td width="1%" nowrap="nowrap" class="a_right"><b>{SHOP_HEADING_PRODUCT_NORMALPRICE}</b></td>
-      <td width="1%" nowrap="nowrap" class="a_right"><b>{SHOP_HEADING_PRODUCT_RESELLERPRICE}</b></td>
-      <td width="1%" nowrap="nowrap" class="a_right"><b>{TXT_SHOP_VAT_ABBREV}</b></td>
-      <!--td width="5%" nowrap="nowrap"><b>{TXT_WEIGHT}</b></td-->
-      <td width="1%" nowrap="nowrap"><b>{SHOP_HEADING_PRODUCT_DISTRIBUTION}</b></td>
-      <td width="1%" nowrap="nowrap" class="a_right"><b>{SHOP_HEADING_PRODUCT_STOCK}</b></td>
-      <td width="1%" nowrap="nowrap" class="a_right"><b>{TXT_ACTION}</b></td>
+      <td width="1%" nowrap="nowrap" class="a_right f_bold">{SHOP_HEADING_PRODUCT_ORD}</td>
+      <td width="1%" nowrap="nowrap">
+        <img src="images/icons/home.gif" alt="{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE}" />
+        <span class="tipmessage info"
+              onmouseover='stm(["","{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP}"],tm_style)'
+              onmouseout="htm()"></span>
+      </td>
+      <td width="50%" class="f_bold">{SHOP_HEADING_PRODUCT_NAME}</td>
+      <td width="1%" nowrap="nowrap" class="f_bold">{SHOP_HEADING_PRODUCT_CODE}</td>
+      <td width="1%" colspan="2" nowrap="nowrap" class="f_bold">{SHOP_HEADING_PRODUCT_DISCOUNTPRICE}</td>
+      <td width="1%" nowrap="nowrap" class="a_right f_bold">{SHOP_HEADING_PRODUCT_NORMALPRICE}</td>
+      <td width="1%" nowrap="nowrap" class="a_right f_bold">{SHOP_HEADING_PRODUCT_RESELLERPRICE}</td>
+      <td width="1%" nowrap="nowrap" class="a_right f_bold">{TXT_SHOP_VAT_ABBREV}</td>
+      <!--td width="5%" nowrap="nowrap" class="f_bold">{TXT_WEIGHT}</td-->
+      <td width="1%" nowrap="nowrap" class="f_bold">{SHOP_HEADING_PRODUCT_DISTRIBUTION}</td>
+      <td width="1%" nowrap="nowrap" class="a_right f_bold">{SHOP_HEADING_PRODUCT_STOCK}</td>
+      <td width="1%" nowrap="nowrap" class="a_right f_bold">{TXT_ACTION}</td>
     </tr>
 <!-- BEGIN no_product -->
     <tr class="row2" style="vertical-align: top;">
@@ -112,7 +113,7 @@ Text[0]=["","{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP}"];
         <img src="images/icons/{SHOP_PRODUCT_STATUS_PICTURE}" alt="{TXT_PRODUCT_STATUS}" title="{TXT_PRODUCT_STATUS}" />
       </td>
       <td>
-        <input type="text" name="ord[{SHOP_PRODUCT_ID}]" size="5" maxlength="5"
+        <input type="text" name="ord[{SHOP_PRODUCT_ID}]" size="3" maxlength="5"
                value="{SHOP_SORT_ORDER}" class="a_right"/>
         <input type="hidden" name="ordOld[{SHOP_PRODUCT_ID}]" value="{SHOP_SORT_ORDER}" />
       </td>
@@ -159,7 +160,7 @@ Text[0]=["","{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP}"];
       <td>{SHOP_DISTRIBUTION}</td>
       <td>
         <input type="text" class="a_right" name="stock[{SHOP_PRODUCT_ID}]"
-               value="{SHOP_PRODUCT_STOCK}" size="5" maxlength="5" />
+               value="{SHOP_PRODUCT_STOCK}" size="3" maxlength="5" />
         <input type="hidden" name="stockOld[{SHOP_PRODUCT_ID}]"
                value="{SHOP_PRODUCT_STOCK}" />
       </td>
@@ -167,20 +168,20 @@ Text[0]=["","{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP}"];
         <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}&amp;new=1"
            title="{TXT_AS_TEMPLATE}">
           <img src="images/icons/press.gif" alt="{TXT_AS_TEMPLATE}" border="0" />
-        </a>&nbsp;
+        </a>
 
 <!-- BEGIN product_language -->
         <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}&amp;userFrontendLangId={SHOP_PRODUCT_LANGUAGE_ID}">
           <img src="images/icons/edit.gif" border="0"
                alt="{SHOP_PRODUCT_LANGUAGE_EDIT}"
                title="{SHOP_PRODUCT_LANGUAGE_EDIT}" />
-        </a>&nbsp;
+        </a>
 <!-- END product_language -->
 <!--        <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}"
            title="{TXT_SHOP_EDIT}">
           <img src="images/icons/edit.gif"
                alt="{TXT_SHOP_EDIT}" border="0" />
-        </a>&nbsp;-->
+        </a>-->
 
         <a href="javascript:deleteProduct('{SHOP_PRODUCT_ID}')" title="{TXT_DELETE}">
           <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />

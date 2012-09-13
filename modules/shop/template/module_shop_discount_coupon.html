@@ -14,37 +14,68 @@
 <div id="view" class="couponTab" style="display:{SHOP_DISCOUNT_COUPON_VIEW_DISPLAY}">
   <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
     <tr>
-      <th colspan="14"><b>{TXT_SHOP_DISCOUNT_COUPON_CODES}</b></th>
+      <th colspan="14" class="f_bold">{TXT_SHOP_DISCOUNT_COUPON_CODES}</th>
     </tr>
     <tr class="row3">
-      <td width="08%" nowrap="nowrap"><b>{HEADER_SHOP_DISCOUNT_COUPON_CODE}</b></td>
-      <td width="08%" nowrap="nowrap"><b>{HEADER_SHOP_DISCOUNT_COUPON_START_TIME}</b></td>
-      <td width="08%" nowrap="nowrap"><b>{HEADER_SHOP_DISCOUNT_COUPON_END_TIME}</b></td>
-      <td width="10%" nowrap="nowrap"><div style="text-align: right;"><b>{HEADER_SHOP_DISCOUNT_COUPON_MINIMUM_AMOUNT_CURRENCY}</b></div></td>
-      <td width="08%" nowrap="nowrap"><div style="text-align: right;"><b>{HEADER_SHOP_DISCOUNT_COUPON_RATE}</b></div></td>
-      <td width="08%" nowrap="nowrap"><div style="text-align: right;"><b>{HEADER_SHOP_DISCOUNT_COUPON_AMOUNT_CURRENCY}</b></div></td>
-      <td width="10%" nowrap="nowrap"><div style="text-align: right;"><b>{HEADER_SHOP_DISCOUNT_COUPON_USES}</b></div></td>
-      <td width="05%" nowrap="nowrap"><b>{HEADER_SHOP_DISCOUNT_COUPON_SCOPE}</b></td>
-      <td width="08%" nowrap="nowrap"><b>{HEADER_SHOP_DISCOUNT_COUPON_CUSTOMER}</b></td>
-      <td width="08%" nowrap="nowrap"><b>{HEADER_SHOP_DISCOUNT_COUPON_PRODUCT}</b></td>
-      <td width="08%" nowrap="nowrap"><b>{HEADER_SHOP_DISCOUNT_COUPON_PAYMENT}</b></td>
-      <td width="10%" nowrap="nowrap">{TXT_SHOP_DISCOUNT_COUPON_URI}&nbsp;
+      <td width="08%" nowrap="nowrap" class="f_bold">
+        {HEADER_SHOP_DISCOUNT_COUPON_CODE}
+      </td>
+      <td width="08%" nowrap="nowrap" class="f_bold">
+        {HEADER_SHOP_DISCOUNT_COUPON_START_TIME}
+      </td>
+      <td width="08%" nowrap="nowrap" class="f_bold">
+        {HEADER_SHOP_DISCOUNT_COUPON_END_TIME}
+      </td>
+      <td width="10%" nowrap="nowrap" class="a_right f_bold">
+        {HEADER_SHOP_DISCOUNT_COUPON_MINIMUM_AMOUNT_CURRENCY}
+      </td>
+      <td width="08%" nowrap="nowrap" class="a_right f_bold">
+        {HEADER_SHOP_DISCOUNT_COUPON_RATE}
+      </td>
+      <td width="08%" nowrap="nowrap" class="a_right f_bold">
+        {HEADER_SHOP_DISCOUNT_COUPON_AMOUNT_CURRENCY}
+      </td>
+      <td width="10%" nowrap="nowrap" class="a_right f_bold">
+        {HEADER_SHOP_DISCOUNT_COUPON_USES}
+      </td>
+      <td width="05%" nowrap="nowrap" class="f_bold">
+        {HEADER_SHOP_DISCOUNT_COUPON_SCOPE}
+      </td>
+      <td width="08%" nowrap="nowrap" class="f_bold">
+        {HEADER_SHOP_DISCOUNT_COUPON_CUSTOMER}
+      </td>
+      <td width="08%" nowrap="nowrap" class="f_bold">
+        {HEADER_SHOP_DISCOUNT_COUPON_PRODUCT}
+      </td>
+      <td width="08%" nowrap="nowrap" class="f_bold">
+        {HEADER_SHOP_DISCOUNT_COUPON_PAYMENT}
+      </td>
+      <td width="10%" nowrap="nowrap">
+        {TXT_SHOP_DISCOUNT_COUPON_URI}&nbsp;
         <span class="tipmessage info"
               onmouseover='stm(["","{TXT_SHOP_DISCOUNT_COUPON_URI_HINT_TEXT}"],tm_style)'
               onmouseout="htm()">
         </span>
       </td>
-      <td width="01%" nowrap="nowrap"><b>{TXT_FUNCTIONS}</b></td>
+      <td width="01%" nowrap="nowrap" class="f_bold">{TXT_FUNCTIONS}</td>
     </tr>
 <!-- BEGIN shopDiscountCouponView -->
     <tr class="{SHOP_ROWCLASS}">
       <td nowrap="nowrap">{SHOP_DISCOUNT_COUPON_CODE}</td>
       <td nowrap="nowrap">{SHOP_DISCOUNT_COUPON_START_TIME}</td>
       <td nowrap="nowrap">{SHOP_DISCOUNT_COUPON_END_TIME}</td>
-      <td nowrap="nowrap"><div style="text-align: right;">{SHOP_DISCOUNT_COUPON_MINIMUM_AMOUNT}</div></td>
-      <td nowrap="nowrap"><div style="text-align: right;">{SHOP_DISCOUNT_COUPON_RATE}</div></td>
-      <td nowrap="nowrap"><div style="text-align: right;">{SHOP_DISCOUNT_COUPON_AMOUNT}</div></td>
-      <td nowrap="nowrap"><div style="text-align: right;">{SHOP_DISCOUNT_COUPON_USES}</div></td>
+      <td nowrap="nowrap" class="a_right">
+        {SHOP_DISCOUNT_COUPON_MINIMUM_AMOUNT}
+      </td>
+      <td nowrap="nowrap" class="a_right">
+        {SHOP_DISCOUNT_COUPON_RATE}
+      </td>
+      <td nowrap="nowrap" class="a_right">
+        {SHOP_DISCOUNT_COUPON_AMOUNT}
+      </td>
+      <td nowrap="nowrap" class="a_right">
+        {SHOP_DISCOUNT_COUPON_USES}
+      </td>
       <td nowrap="nowrap">{SHOP_DISCOUNT_COUPON_SCOPE}</td>
       <td nowrap="nowrap">{SHOP_DISCOUNT_COUPON_CUSTOMER}</td>
       <td nowrap="nowrap">{SHOP_DISCOUNT_COUPON_PRODUCT}</td>
@@ -68,7 +99,7 @@
 <!-- BEGIN shopDiscountCouponEdit -->
     <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
-        <th colspan="2"><b>{TXT_SHOP_DISCOUNT_COUPON_ADD_OR_EDIT}</b></th>
+        <th colspan="2" class="f_bold">{TXT_SHOP_DISCOUNT_COUPON_ADD_OR_EDIT}</th>
       </tr>
       <tr class="row2">
         <td width="25%">{TXT_SHOP_DISCOUNT_COUPON_CODE}</td>

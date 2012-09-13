@@ -34,7 +34,8 @@ function setVatUnset()
         {TXT_SHOP_VAT_NUMBER}
       </td>
       <td colspan="3">
-        <input type="text" name="vat_number" value="{SHOP_VAT_NUMBER}" style="text-align: right; width: 180px;" />
+        <input type="text" name="vat_number" value="{SHOP_VAT_NUMBER}"
+               style="width: 180px;" class="a_right" />
       </td>
     </tr>
 
@@ -43,7 +44,7 @@ function setVatUnset()
         {TXT_SHOP_VAT_DEFAULT}
       </td>
       <td nowrap="nowrap">
-        <select name="vat_default_id" style="text-align: right; width: 180px;">
+        <select name="vat_default_id" style="width: 180px;" class="a_right">
           {SHOP_VAT_DEFAULT_MENUOPTIONS}
         </select>
       </td>
@@ -58,7 +59,7 @@ function setVatUnset()
         {TXT_SHOP_VAT_OTHER}
       </td>
       <td nowrap="nowrap" colspan="3">
-        <select name="vat_other_id" style="text-align: right; width: 180px;">
+        <select name="vat_other_id" style="width: 180px;" class="a_right">
           {SHOP_VAT_OTHER_MENUOPTIONS}
         </select>
       </td>
@@ -77,11 +78,11 @@ function setVatUnset()
     </tr>
     <tr class="row3">
       <td nowrap="nowrap">&nbsp;</td>
-      <td nowrap="nowrap">
-        <b>{TXT_SHOP_VAT_CUSTOMER}</b>
+      <td nowrap="nowrap" class="f_bold">
+        {TXT_SHOP_VAT_CUSTOMER}
       </td>
-      <td nowrap="nowrap" colspan="2">
-        <b>{TXT_SHOP_VAT_RESELLER}</b>
+      <td nowrap="nowrap" colspan="2" class="f_bold">
+        {TXT_SHOP_VAT_RESELLER}
       </td>
     </tr>
 
@@ -160,14 +161,14 @@ function setVatUnset()
       </tr>
       <tr class="row3">
         <td>&nbsp;</td>
-        <td nowrap="nowrap">
-          <b>{TXT_SHOP_VAT_CLASS}</b>
+        <td nowrap="nowrap" class="f_bold">
+          {TXT_SHOP_VAT_CLASS}
         </td>
-        <td nowrap="nowrap">
-          <b>{TXT_SHOP_VAT_RATE}</b>
+        <td nowrap="nowrap" class="f_bold">
+          {TXT_SHOP_VAT_RATE}
         </td>
-        <td nowrap="nowrap" style="text-align: right;">
-          <b>{TXT_FUNCTIONS}</b>
+        <td nowrap="nowrap" class="a_right f_bold">
+          {TXT_FUNCTIONS}
         </td>
       </tr>
   <!-- BEGIN vatRow -->
@@ -179,9 +180,9 @@ function setVatUnset()
         </td>
         <td nowrap="nowrap">
           <input type="text" name="vatrate[{SHOP_VAT_ID}]" value="{SHOP_VAT_RATE}"
-              maxlength="6" style="text-align: right; width: 180px;" />%
+              maxlength="6" style="width: 180px;" class="a_right" />%
         </td>
-        <td nowrap="nowrap" style="text-align: right;">
+        <td nowrap="nowrap" class="a_right">
           <a href="javascript:deleteVat({SHOP_VAT_ID})" title="{TXT_DELETE}">
             <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
           </a>
@@ -199,11 +200,11 @@ function setVatUnset()
       </tr>
       <tr class="row3">
         <td>&nbsp;</td>
-        <td nowrap="nowrap">
-          <b>{TXT_SHOP_VAT_CLASS_NEW}</b>
+        <td nowrap="nowrap" class="f_bold">
+          {TXT_SHOP_VAT_CLASS_NEW}
         </td>
-        <td nowrap="nowrap" colspan="3">
-          <b>{TXT_SHOP_VAT_RATE_NEW}</b>
+        <td nowrap="nowrap" colspan="3" class="f_bold">
+          {TXT_SHOP_VAT_RATE_NEW}
         </td>
       </tr>
       <tr class="row1">

@@ -93,7 +93,7 @@ function updateExchangeRates(selectedElement)
 <div id="content1" class="currencyTab" style="display:block">
 <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
     <tr>
-      <th colspan="7"><b>{TXT_CURRENCIES}</b></th>
+      <th colspan="7" class="f_bold">{TXT_CURRENCIES}</th>
       <th colspan="2" nowrap="nowrap" class="a_right">
         <a href="http://www.xe.com/" target="_blank">{TXT_CURRENCY_CONVERTER}</a>
       </th>
@@ -126,13 +126,13 @@ function updateExchangeRates(selectedElement)
       </td>
       <td nowrap="nowrap" class="a_right">
         <input type="text" name="currencyRate[{SHOP_CURRENCY_ID}]"
-               style="text-align: right;"
+               class="a_right"
                value="{SHOP_CURRENCY_RATE}" size="6" maxlength="11" />
       </td>
       <td nowrap="nowrap" class="a_right">
         <input type="text" name="currencyIncrement[{SHOP_CURRENCY_ID}]"
-               style="text-align: right;"
-              value="{SHOP_CURRENCY_INCREMENT}" size="4" maxlength="7" />
+               class="a_right"
+               value="{SHOP_CURRENCY_INCREMENT}" size="4" maxlength="7" />
       </td>
       <td nowrap="nowrap" class="a_center">
         <input name="currencyDefault" type="radio" value="{SHOP_CURRENCY_ID}"
@@ -159,7 +159,7 @@ function updateExchangeRates(selectedElement)
 <div id="content2" class="currencyTab" style="display:none">
 <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
     <tr>
-      <th colspan="6"><b>{TXT_ADD}</b></th>
+      <th colspan="6" class="f_bold">{TXT_ADD}</th>
       <th colspan="2" nowrap="nowrap" class="number">
         <a href="http://www.xe.com/" target="_blank">{TXT_CURRENCY_CONVERTER}</a>
       </th>
@@ -190,14 +190,12 @@ function updateExchangeRates(selectedElement)
       </td>
       <td nowrap="nowrap" class="a_right">
         <input type="text" name="currencyRateNew" value="1.0000"
-               style="text-align: right;"
-               size="6" maxlength="11" />
+               class="a_right" size="6" maxlength="11" />
       </td>
       <td nowrap="nowrap" class="a_right">
         <input type="text"
                name="currencyIncrementNew" id="currencyIncrementNew"
-               style="text-align: right;"
-               value="0.01" size="4" maxlength="7" />
+               class="a_right" value="0.01" size="4" maxlength="7" />
       </td>
       <td nowrap="nowrap" class="a_center">
         <input type="checkbox" name="currencyDefaultNew" value="1" />

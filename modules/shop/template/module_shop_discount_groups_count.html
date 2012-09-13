@@ -11,7 +11,6 @@ function deleteDiscountRate(discountRateId)
   if (confirm('{TXT_CONFIRM_DELETE_DISCOUNT_RATE}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
     window.location.href="index.php?cmd=shop&{CSRF_PARAM}&act=products&tpl=discounts&deleteDiscountRate=1&id="+discountRateId;
 }
-Text[0]=["","{TXT_SHOP_DISCOUNT_COUNT_TIP}"];
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,15,-50];
 // -->
 </script>
@@ -35,9 +34,9 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
   <div id="content1" class="discountTab" style="display:{SHOP_DISCOUNT_LIST_DISPLAY};">
     <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
-        <th width="49%"><b>{TXT_SHOP_DISCOUNT_GROUP_NAME}</b></th>
-        <th width="49%"><b>{TXT_SHOP_DISCOUNT_GROUP_UNIT}</b></th>
-        <th width="02%" style="text-align: right;"><b>{TXT_FUNCTIONS}</b></th>
+        <th width="49%" class="f_bold">{TXT_SHOP_DISCOUNT_GROUP_NAME}</th>
+        <th width="49%" class="f_bold">{TXT_SHOP_DISCOUNT_GROUP_UNIT}</th>
+        <th width="02%" class="a_right" class="f_bold">{TXT_FUNCTIONS}</th>
       </tr>
 <!-- BEGIN discount -->
       <tr class="{SHOP_DISCOUNT_ROW_STYLE}">
@@ -53,7 +52,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
             {SHOP_DISCOUNT_GROUP_UNIT}
           </a>
         </td>
-        <td nowrap="nowrap" style="text-align: right;">
+        <td nowrap="nowrap" class="a_right">
           <a href="index.php?cmd=shop&amp;act=products&amp;tpl=discounts&amp;editDiscount=1&amp;id={SHOP_DISCOUNT_ID}"
               title="{TXT_EDIT}">
             <img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" />
@@ -72,7 +71,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
   <div id="content2" class="discountTab" style="display:{SHOP_DISCOUNT_EDIT_DISPLAY}">
     <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
-        <th colspan="4"><b>{TXT_SHOP_EDIT_DISCOUNT_GROUP}</b></th>
+        <th colspan="4" class="f_bold">{TXT_SHOP_EDIT_DISCOUNT_GROUP}</th>
       </tr>
 <!-- BEGIN discountName -->
       <tr class="{SHOP_DISCOUNT_ROW_STYLE}">
@@ -92,8 +91,10 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 <!-- BEGIN discountRate -->
       <tr class="{SHOP_DISCOUNT_ROW_STYLE}">
         <td width="20%" nowrap="nowrap">
-          <span class="note" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">
-            {TXT_SHOP_DISCOUNT_MIN_COUNT}
+          {TXT_SHOP_DISCOUNT_MIN_COUNT}
+          <span class="tipmessage info"
+                onmouseover='stm(["","{TXT_SHOP_DISCOUNT_COUNT_TIP}"],tm_style)'
+                onmouseout="htm()">
           </span>
         </td>
         <td nowrap="nowrap">
@@ -105,7 +106,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
           {TXT_SHOP_DISCOUNT_RATE}
         </td>
         <td nowrap="nowrap">
-          <input type="text" size="40" style="text-align: right;"
+          <input type="text" size="40" class="a_right"
               name="discountRate[{SHOP_DISCOUNT_RATE_INDEX}]"
               value="{SHOP_DISCOUNT_RATE}" />%
         </td>
