@@ -111,8 +111,6 @@ class logmanager
     {
         global $objDatabase, $_CORELANG, $_CONFIG, $objTemplate;
 
-        JS::activate('tipmessage');
-
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'log', 'log.html');
         $objTemplate->setVariable(array(
             'TXT_SYSTEM_LOGS'            => $_CORELANG['TXT_SYSTEM_LOGS'],

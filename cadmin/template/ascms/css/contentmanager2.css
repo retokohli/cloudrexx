@@ -233,6 +233,12 @@ h1{ font-size: 20px }
     opacity: 0.8;
 }
 
+#site-tree .translations .translation:hover,
+#site-tree .translations .translation:focus,
+#site-tree .translations .translation:active {
+    cursor: pointer;
+}
+
 #site-tree .translations .translation.unpublished {
     background: #e45f5f;
 }

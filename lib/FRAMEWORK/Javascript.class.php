@@ -125,6 +125,11 @@ jQuery(document).ready(function(){
                 'lib/javascript/jquery/tools/jquery.tools.min.js',
             ),
             'dependencies' => array('jquery'),
+            'specialcode' => '
+                jQuery(document).ready(function() {
+                    jQuery(\'.tooltip-trigger\').tooltip({relative: true, position: \'center right\', offset: [0, 10]});
+                });
+            ',
         ),
         'jquery-imgareaselect' => array(
             'jsfiles'          => array(

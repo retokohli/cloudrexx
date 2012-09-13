@@ -1,8 +1,4 @@
 <!-- START log.html -->
-<script type="text/javascript">
-    var tipMessageStyle = ["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-</script>
-
 <form name="form_logs" method="post" action="index.php?cmd=log">
     <table class="adminlist" border="0" width="100%" cellpadding="3" cellspacing="0">
         <tr>
@@ -38,7 +34,7 @@
         <td><a href="index.php?cmd=nettools&amp;tpl=whois&amp;address={LOG_REMOTE_HOST}">{LOG_REMOTE_HOST}</a></td>
         <td><a href="index.php?cmd=nettools&amp;tpl=whois&amp;address={LOG_REMOTE_ADDR}">{LOG_REMOTE_ADDR}</a></td>
         <td>{LOG_USERLANGUAGE}</td>
-        <td><span class="tipmessage info" onmouseout="htm()" onmouseover="stm(['', '{LOG_USERAGENT}'], tipMessageStyle)" style="padding: 10px 0 0 5px;"></span></td>
+        <td><span class="icon-info tooltip-trigger" style="margin-top: 6px;"></span><span class="tooltip-message">{LOG_USERAGENT}</span></td>
     </tr>
     <!-- END logRow -->
 </table>

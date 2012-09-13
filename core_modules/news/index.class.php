@@ -930,7 +930,7 @@ class news extends newsLibrary {
                    'NEWS_TEASER'         => nl2br($objResult->fields['teaser_text']),
                    'NEWS_TITLE'          => contrexx_raw2xhtml($newstitle),
                    'NEWS_LONG_DATE'      => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
-                   'NEWS_DATE'           => date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['newsdate']),
+                   'NEWS_DATE'           => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['newsdate']),
                    'NEWS_LINK_TITLE'     => $htmlLinkTitle,
                    'NEWS_LINK'           => $htmlLink,
                    'NEWS_LINK_URL'       => contrexx_raw2xhtml($newsUrl),

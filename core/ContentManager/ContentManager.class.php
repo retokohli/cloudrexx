@@ -57,6 +57,7 @@ class ContentManager extends \Module {
         global $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
         \JS::activate('jqueryui');
+        \JS::activate('jquery-tools');
         \JS::activate('cx');
         \JS::activate('ckeditor');
         \JS::activate('cx-form');
@@ -122,16 +123,38 @@ class ContentManager extends \Module {
         $objCx->setVariable('TXT_CORE_CM_ACTIONS', $_CORELANG['TXT_CORE_CM_ACTIONS'], 'contentmanager/lang');
         $objCx->setVariable('TXT_CORE_CM_VALIDATION_FAIL', $_CORELANG['TXT_CORE_CM_VALIDATION_FAIL'], 'contentmanager/lang');
         
-        foreach (array(
-            'new' => 'TXT_CORE_CM_NEW',
-            'activate' => 'TXT_CORE_CM_PUBLISH',
-            'deactivate' => 'TXT_CORE_CM_UNPUBLISH',
-            'publish' => 'TXT_CORE_PUBLISH_DRAFT',
-            'show' => 'TXT_CORE_CM_SHOW',
-            'hide' => 'TXT_CORE_CM_HIDE',
-            'delete' => 'TXT_CORE_CM_DELETE',
-        ) as $action=>$langVar) {
-            $objCx->setVariable($action, $_CORELANG[$langVar], 'contentmanager/lang');
+        $arrLangVars = array(
+            'actions' => array(
+                'new'           => 'TXT_CORE_CM_ACTION_NEW',
+                'activate'      => 'TXT_CORE_CM_ACTION_PUBLISH',
+                'deactivate'    => 'TXT_CORE_CM_ACTION_UNPUBLISH',
+                'publish'       => 'TXT_CORE_CM_ACTION_PUBLISH_DRAFT',
+                'show'          => 'TXT_CORE_CM_ACTION_SHOW',
+                'hide'          => 'TXT_CORE_CM_ACTION_HIDE',
+                'delete'        => 'TXT_CORE_CM_ACTION_DELETE',
+            ),
+            'tooltip' => array(
+                'publishing'    => 'TXT_CORE_CM_PUBLISHING_INFO',
+                'draft'         => 'TXT_CORE_CM_PUBLISHING_DRAFT',
+                'waiting'       => 'TXT_CORE_CM_PUBLISHING_DRAFT_WAITING',
+                'locked'        => 'TXT_CORE_CM_PUBLISHING_LOCKED',
+                'published'     => 'TXT_CORE_CM_PUBLISHING_PUBLISHED',
+                'unpublished'   => 'TXT_CORE_CM_PUBLISHING_UNPUBLISHED',
+                'page'          => 'TXT_CORE_CM_PAGE_INFO',
+                'invisible'     => 'TXT_CORE_CM_PAGE_INVISIBLE',
+                'visible'       => 'TXT_CORE_CM_PAGE_VISIBLE',
+                'protected'     => 'TXT_CORE_CM_PAGE_PROTECTED',
+                'broken'        => 'TXT_CORE_CM_PAGE_BROKEN',
+                'fallback'      => 'TXT_CORE_CM_PAGE_FALLBACK',
+                'jstree-move'   => 'TXT_CORE_CM_PAGE_MOVE_INFO',
+                'translation'   => 'TXT_CORE_CM_TRANSLATION_INFO',
+                'preview'       => 'TXT_CORE_CM_PREVIEW_INFO',
+            )
+        );
+        foreach ($arrLangVars as $subscope => $arrLang) {
+            foreach ($arrLang as $name => $value) {
+                $objCx->setVariable($name, $_CORELANG[$value], 'contentmanager/lang/'.$subscope);
+            }
         }
 
         $toggleTitles = !empty($_SESSION['contentManager']['toggleStatuses']['toggleTitles']) ? $_SESSION['contentManager']['toggleStatuses']['toggleTitles'] : 'block';
