@@ -306,6 +306,9 @@ class JsonPage implements JsonAdapter {
                     $reload = true;
                 }
                 $page->setEditingStatus('hasDraft');
+                if (\Permission::checkAccess(78, 'static', true)) {
+                    $page->setEditingStatus('hasDraftWaiting');
+                }
                 $this->messages[] = $_CORELANG['TXT_CORE_SAVED_AS_DRAFT'];
             }
 
