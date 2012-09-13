@@ -9,6 +9,10 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+/**
+ * @ignore
+ */
+require_once ASCMS_MODULE_PATH.'/auction/paypal/paypal.class.php';
 
 /**
  * Auction library
