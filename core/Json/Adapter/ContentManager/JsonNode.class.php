@@ -10,6 +10,7 @@
 
 namespace Cx\Core\Json\Adapter\ContentManager;
 use \Cx\Core\Json\JsonAdapter;
+use \Cx\Core\ContentManager\ContentManagerException;
 
 /**
  * JSON Adapter for Cx\Model\ContentManager\Node
@@ -294,12 +295,6 @@ class JsonNode implements JsonAdapter {
             }
         }
         
-        $first = false;
-        if ($actions === null) {
-            $actions = array();
-            $first = true;
-        }
-        
         $output     = array();
         $tree       = array();
         $nodeLevels = array();
@@ -312,7 +307,7 @@ class JsonNode implements JsonAdapter {
             $toggled = (isset($open_nodes[$node->getId()]) &&
                         $open_nodes[$node->getId()]);
             if (!$flat || $toggled) {
-                $children = $this->tree_to_jstree_array($node, $flat, $actions);
+                $children = $this->tree_to_jstree_array($node, $flat);
             }
             $last_resort = 0;
 
@@ -403,8 +398,6 @@ class JsonNode implements JsonAdapter {
                     'visibility' => 'broken',
                     'publishing' => 'unpublished',
                 );
-
-                $actions[$lang][$node->getId()] = $this->getActions($node->getId(), $lang);
             }
             
             $state = array();
@@ -430,29 +423,10 @@ class JsonNode implements JsonAdapter {
                 'metadata' => $metadata,
             ), $state);
         }
-        
-        if ($first) { // only add actions on first (non internal) call
-            // moving everything to 'tree' so we can add actions
-            $output['tree']       = $tree;
-            $output['actions']    = $actions;
-            $output['nodeLevels'] = $nodeLevels;
-        } else {
-            $output['tree']       = $tree;
-            $output['nodeLevels'] = $nodeLevels;
-        }
+        $output['tree']       = $tree;
+        $output['nodeLevels'] = $nodeLevels;
         
         return($output);
-    }
-    
-    protected function getActions($nodeId, $lang) {
-
-        $node = $this->nodeRepo->find($nodeId);
-        $page = $node->getPage(\FWLanguage::getLanguageIdByCode($lang));
-        if ($page != null) {
-            return \ActionsRenderer::render($page);
-        } else {
-            return \ActionsRenderer::renderNew($nodeId, $lang);
-        }
     }
     
     /**
