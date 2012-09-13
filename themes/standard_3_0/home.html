@@ -4,31 +4,43 @@
     <div>{BLOCK_31}</div>
 </div>
 
-<div class="content">
+<div id="home-content" class="content">
+    <div id="home-page-wrapper">
+        <div id="home-page">
+            <h1 class="first">{CONTENT_TITLE}</h1>
+            {CONTENT_TEXT}
+        </div>
+        <div id="home-block">
+            <h1 class="first">Shop</h1>
+            Sind Sie auf der Suche nach etwas Aussergewöhnlichem? Profitieren Sie von unseren Spezialangeboten und attraktiven Dienstleistungen.<br /><br />
+            <button onclick="location.href='index.php?section=shop'">zum Shop</button>
+        </div>
+    </div>
+    
     <div id="home-boxes">
         <div class="home-box">
             <h2>News</h2>
             {HEADLINES_FILE}
-            <a href="index.php?section=news">Weitere News</a>
+            <a class="more-link" href="index.php?section=news">Weitere News</a>
         </div>
         <div class="home-box">
             <h2>Referenzen</h2>
-            {MEDIADIR_LATEST}
-            <a href="index.php?section=mediadir">Weitere Referenzen</a>
+            <div id="home-mediadir">
+                <img src="images/mediadir/images/customer-image.jpg" alt="" />
+                <div id="home-mediadir-text">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</div>
+            </div>
+            <a class="more-link" href="index.php?section=mediadir">Weiter</a>
         </div>
         <div class="home-box last">
             <h2>Newsletter</h2>
-            Sie m&ouml;chten gerne regelm&auml;ssig &uuml;ber die neusten Themen informiert werden? Dann melden Sie sich einfach hier f&uuml;r unseren kostenlosen Newsletter an:
-            <form name="newsletter" action="index.php?section=newsletter&amp;act=subscribe" method="post">
-                <input type="hidden" name="list[1]" value="1" />
-                <input type="text" onfocus="this.value=''" onblur="this.value='E-mail address'" name="email" value="E-mail address" maxlength="255" />
-                <button name="recipient_save">Subscribe</button>
-            </form>
+            <div id="home-newsletter">
+                Sie m&ouml;chten gerne regelm&auml;ssig &uuml;ber die neusten Themen informiert werden? Dann melden Sie sich einfach hier f&uuml;r unseren kostenlosen Newsletter an:
+                <form name="newsletter" action="index.php?section=newsletter&amp;act=subscribe" method="post">
+                    <input type="hidden" name="list[1]" value="1" />
+                    <input type="text" onfocus="this.value=''" onblur="this.value='E-mail address'" name="email" value="E-mail address" maxlength="255" />
+                    <button name="recipient_save">Subscribe</button>
+                </form>
+            </div>
         </div>
-    </div>
-    
-    <div id="home-content">
-        <h1 class="first">{CONTENT_TITLE}</h1>
-        {CONTENT_TEXT}
     </div>
 </div>

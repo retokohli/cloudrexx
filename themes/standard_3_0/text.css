@@ -61,15 +61,15 @@ table {
 }
 
 body {
-    color: #323F55;
-    font-family: 'Ubuntu', Arial, Helvetica;
+    color: #505050;
+    font-family: Arial, Helvetica;
     font-size: 14px;
     line-height: 1.5em;
     background: #F1F1F1 url('images/bg.gif') repeat-x;
 }
 
 a {
-    color: #036DA7;
+    color: #066196;
     text-decoration: none;
 }
 
@@ -100,37 +100,37 @@ ul.horizontal-list li.last {
 
 h1, h2, h3, h4, h5, h6 {
     padding: 10px 0 10px 0;
-    line-height: 1;
+    line-height: 1.4;
+    color: #151515;
+    font-family: 'Ubuntu';
 }
 
 h1 {
-    font-size: 30px;
+    font-size: 34px;
 }
 
 h1.first {
     padding-top: 0;
-    margin: 0 0 10px 0;
-    border-bottom: 1px solid #737A86;
 }
 
 h2 {
-    font-size: 26px;
-}
-
-h3 {
     font-size: 22px;
 }
 
-h4 {
+h3 {
     font-size: 18px;
 }
 
-h5 {
+h4 {
     font-size: 17px;
 }
 
-h6 {
+h5 {
     font-size: 16px;
+}
+
+h6 {
+    font-size: 15px;
 }
 
 input,
@@ -162,6 +162,7 @@ textarea:focus {
 }
 
 input[type=submit],
+input[type=button]
 input[type=reset],
 input[type=radio],
 input[type=checkbox] {
@@ -184,6 +185,7 @@ input[type=text] {
 
 button,
 input[type=submit],
+input[type=button]
 input[type=reset] {
     padding: 8px 10px 7px 10px;
     color: #414141;
