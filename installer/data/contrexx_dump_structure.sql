@@ -2316,9 +2316,7 @@ CREATE TABLE `contrexx_module_newsletter` (
   `subject` varchar(255) NOT NULL DEFAULT '',
   `template` int(11) NOT NULL DEFAULT '0',
   `content` text NOT NULL,
-  `content_text` text NOT NULL,
   `attachment` enum('0','1') NOT NULL DEFAULT '0',
-  `format` enum('text','html','html/text') NOT NULL DEFAULT 'text',
   `priority` tinyint(1) NOT NULL DEFAULT '0',
   `sender_email` varchar(255) NOT NULL DEFAULT '',
   `sender_name` varchar(255) NOT NULL DEFAULT '',
@@ -2407,7 +2405,6 @@ CREATE TABLE `contrexx_module_newsletter_template` (
   `name` varchar(255) NOT NULL DEFAULT '',
   `description` varchar(255) NOT NULL DEFAULT '',
   `html` text NOT NULL,
-  `text` text NOT NULL,
   `required` int(1) NOT NULL DEFAULT '0',
   `type` enum('e-mail','news') NOT NULL DEFAULT 'e-mail',
   PRIMARY KEY (`id`)
