@@ -279,8 +279,8 @@
 
 #content-top {
     float: left;
-    width: 1170px;
-    padding: 0 15px 0 15px;
+    width: 1190px;
+    padding: 0 5px 0 5px;
     margin: 10px 0 0 0;
 }
 
@@ -376,6 +376,49 @@
     margin: 0 0 20px 0;
     border: 1px solid #D6D6D6;
     background: #FFFFFF;
+}
+
+.contact-company,
+.contact-address,
+.contact-place,
+.contact-country,
+.contact-mail,
+.contact-phone,
+.contact-fax,
+.contact-url {
+    clear: left;
+}
+
+.contact-company {
+    font-weight: bold;
+}
+
+.contact-country,
+.contact-fax {
+    padding-bottom: 10px;
+}
+
+.contact-phone,
+.contact-fax,
+.contact-mail,
+.contact-web {
+    padding-left: 25px;
+}
+
+.contact-phone {
+    background: url('images/phone-icon.png') no-repeat 0 4px;
+}
+
+.contact-fax {
+    background: url('images/fax-icon.png') no-repeat 2px 3px;
+}
+
+.contact-mail {
+    background: url('images/mail-icon.png') no-repeat 2px 6px;
+}
+
+.contact-web {
+    background: url('images/web-icon.png') no-repeat 1px 2px;
 }
 
 #page {
