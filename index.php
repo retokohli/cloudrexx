@@ -146,8 +146,6 @@ Env::set('ftpConfig', $_FTPCONFIG);
  * Include all the required files.
  */
 require_once dirname(__FILE__).'/core/API.php';
-require_once dirname(__FILE__).'/lib/CSRF.php';
-require_once dirname(__FILE__).'/core/PageGuard.class.php';
 // Temporary fix until all GET operation requests will be replaced by POSTs
 CSRF::setFrontendMode();
 
@@ -174,16 +172,6 @@ createModuleConversionTables();
 // Initialize base system
 $objInit = new InitCMS('frontend', Env::em());
 Env::set('init', $objInit);
-
-
-/** @ignore */
-require_once ASCMS_CORE_PATH.'/routing/URL.class.php';
-/** @ignore */
-require_once ASCMS_CORE_PATH.'/routing/LanguageExtractor.class.php';
-/** @ignore */
-require_once(ASCMS_CORE_PATH.'/routing/URLTranslator.class.php');
-/** @ignore */
-require_once(ASCMS_CORE_PATH.'/routing/Resolver.class.php');
 
 $languageExtractor = new \Cx\Core\Routing\URLTranslator($objDatabase, DBPREFIX, Env::em());
 
@@ -252,7 +240,6 @@ define('CONTREXX_SCRIPT_PATH',
 /**
  * Include the cache module.  The cache is initialized right afterwards.
  */
-require_once ASCMS_CORE_MODULE_PATH.'/cache/index.class.php';
 $objCache = new Cache();
 $objCache->startCache();
 
@@ -295,11 +282,6 @@ $_GET = $objSecurity->detectIntrusion($_GET);
 $_POST = $objSecurity->detectIntrusion($_POST);
 $_COOKIE = $objSecurity->detectIntrusion($_COOKIE);
 $_REQUEST = $objSecurity->detectIntrusion($_REQUEST);
-
-
-// Check Referer -> Redirect
-//require_once ASCMS_CORE_PATH.'/redirect.class.php';
-//$objRedirect = new redirect();
 
 
 // initialize objects
@@ -621,10 +603,6 @@ if (   (   $page_protected
 $_ARRAYLANG = $objInit->loadLanguageData($plainSection);
 
 
-// Include Javascript Framework (including the Contrexx Javascript Collector)
-require_once ASCMS_DOCUMENT_ROOT.'/lib/FRAMEWORK/Javascript.class.php';
-
-
 if (!$isRegularPageRequest) {
     // ATTENTION: These requests are not protected by the content manager
     //            and must therefore be authorized by the calling component itself!
@@ -791,10 +769,6 @@ if (   file_exists($modulespath)
         || strpos($themesPages['sidebar'], $headlinesNewsPlaceholder) !== false
         || strpos($page_template, $headlinesNewsPlaceholder) !== false)
 ) {
-    /**
-     * @ignore
-    */
-    include_once $modulespath;
     $newsHeadlinesObj = new newsHeadlines($themesPages['headlines']);
     $homeHeadlines = $newsHeadlinesObj->getHomeHeadlines();
     $page_content           = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $page_content);
@@ -813,10 +787,6 @@ if (   file_exists($modulespath)
         || strpos($themesPages['sidebar'], $topNewsPlaceholder) !== false
         || strpos($page_template, $topNewsPlaceholder) !== false)
 ) {
-    /**
-     * @ignore
-    */
-    include_once $modulespath;
     $newsTopObj = new newsTop($themesPages['top_news']);
     $homeTopNews = $newsTopObj->getHomeTopNews();
     $page_content           = str_replace($topNewsPlaceholder, $homeTopNews, $page_content);
@@ -837,10 +807,6 @@ if (   MODULE_INDEX < 2
         || strpos($page_template, $eventsPlaceholder) !== false)
     && file_exists($modulespath)
 ) {
-    /**
-     * @ignore
-    */
-    include_once $modulespath;
     $calHeadlinesObj = new calHeadlines($themesPages['calendar_headlines']);
     $calHeadlines = $calHeadlinesObj->getHeadlines();
     $page_content           = str_replace($eventsPlaceholder, $calHeadlines, $page_content);
@@ -853,10 +819,6 @@ if (   MODULE_INDEX < 2
 // Get immo headline
 $modulespath = ASCMS_MODULE_PATH.'/immo/headlines/index.class.php';
 if (file_exists($modulespath)) {
-    /**
-     * @ignore
-     */
-    include_once($modulespath);
     $immoHeadlines = new immoHeadlines($themesPages['immo']);
     $immoHomeHeadlines = $immoHeadlines->getHeadlines();
     $page_content = str_replace('{IMMO_FILE}', $immoHomeHeadlines, $page_content);
@@ -1656,12 +1618,9 @@ if (!$boolShop
 // Optionally limit to the first instance
 // && MODULE_INDEX == ''
 ) {
-    @require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
     SettingDb::init('shop', 'config');
     $use_js_cart = SettingDb::getValue('use_js_cart');
     if ($use_js_cart) {
-        /** @ignore */
-        @require_once ASCMS_MODULE_PATH.'/shop/index.class.php';
         Shop::init();
         Shop::setNavbar();
         $boolShop = true;
