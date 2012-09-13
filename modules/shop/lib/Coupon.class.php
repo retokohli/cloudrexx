@@ -1,7 +1,5 @@
 <?php
 
-use Cx\Lib\UpdateUtil as UpdateUtil;
-
 /**
  * Coupon
  *
@@ -1247,6 +1245,8 @@ jQuery(document).ready(function($) {
 });
 ');
         JS::activate('tipmessage');
+// TODO: Maybe unnecessary from V3.0.0?
+        JS::activate('jquery');
         return $result;
     }
 
@@ -1342,7 +1342,7 @@ jQuery(document).ready(function($) {
         global $objDatabase, $_ARRAYLANG;
 
 //die("Coupon::errorHandler(): Disabled");
-
+        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
         // Fix settings first
         ShopSettings::errorHandler();
 

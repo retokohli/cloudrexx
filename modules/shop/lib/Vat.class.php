@@ -1,7 +1,5 @@
 <?php
 
-use Cx\Lib\UpdateUtil as UpdateUtil;
-
 /**
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
@@ -718,9 +716,8 @@ class Vat
      */
     static function errorHandler()
     {
-
 //DBG::activate(DBG_DB_FIREPHP);
-
+        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_vat';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),

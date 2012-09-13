@@ -120,10 +120,12 @@ class CSVimport
      * Return the menu options of available names that can be assigned
      * to the fields of the file to be imported.
      * @return  array           The available names
-     * @static
      */
-    static function getAvailableNamesMenuOptions()
+    function getAvailableNamesMenuOptions()
     {
+        if (empty ($this->arrName2Fieldname)) {
+            return '';
+        }
         $strOptions = '';
         foreach (array_keys($this->arrName2Fieldname) as $name) {
             $strOptions .= "<option value=\"$name\">$name</option>\n";
@@ -145,17 +147,13 @@ class CSVimport
     }
 
 
-    function GetImageChoice($Noimg)
+    function GetImageChoice()
     {
         $content = '<select name="ImportImage">';
-        if ($Noimg == '') {
-            for ($x=0; $x<count($this->arrTemplateArray); ++$x) {
-                $content .=
-                    '<option value="'.$this->arrTemplateArray[$x]['id'].'">'.
-                    $this->arrTemplateArray[$x]['name'].'</option>';
-            }
-        } else {
-            $content .= '<option value="">'.$Noimg;
+        for ($x = 0; $x < count($this->arrTemplateArray); ++$x) {
+            $content .=
+                '<option value="'.$this->arrTemplateArray[$x]['id'].'">'.
+                $this->arrTemplateArray[$x]['name'].'</option>';
         }
         $content .= '</select>';
         return $content;

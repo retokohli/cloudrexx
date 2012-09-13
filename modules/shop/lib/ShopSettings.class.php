@@ -1,7 +1,5 @@
 <?php
 
-use Cx\Lib\UpdateUtil as UpdateUtil;
-
 /**
  * Shop settings
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -11,7 +9,6 @@ use Cx\Lib\UpdateUtil as UpdateUtil;
  * @subpackage  module_shop
  * @version     3.0.0
  */
-
 
 /**
  * Shop settings
@@ -533,8 +530,8 @@ class ShopSettings
      */
     static function errorHandler()
     {
-
 DBG::log("ShopSettings::errorHandler(): Entered");
+        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
         SettingDb::errorHandler();
         SettingDb::init('shop', 'config');
 //DBG::activate(DBG_ADODB);

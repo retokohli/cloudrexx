@@ -1,7 +1,5 @@
 <?php
 
-use Cx\Lib\UpdateUtil as UpdateUtil;
-
 class Zones
 {
     /**
@@ -405,9 +403,8 @@ class Zones
      */
     static function errorHandler()
     {
-
 //DBG::activate(DBG_DB_FIREPHP);
-
+        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
         // Fix the Zone-Payment relation table
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_payment';
         $table_structure = array(

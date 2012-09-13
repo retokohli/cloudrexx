@@ -1,7 +1,5 @@
 <?php
 
-use Cx\Lib\UpdateUtil as UpdateUtil;
-
 /**
  * Payment Service Provider class
  * @package     contrexx
@@ -670,7 +668,9 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
     static function errorHandler()
     {
         global $objDatabase;
-        
+
+        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
+        $table_name_new = DBPREFIX.'module_shop'.MODULE_INDEX.'_processors';
         if (!UpdateUtil::table_exist($table_name_new)) {
             $table_structure = array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
