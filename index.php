@@ -1777,7 +1777,7 @@ $objTemplate->setVariable(array(
     'LOGIN_CONTENT'                  => isset($strFeContent) ? $strFeContent : '',
     'JAVASCRIPT'                     => 'javascript_inserting_here',
     'TXT_CORE_LAST_MODIFIED_PAGE'    => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
-    'LAST_MODIFIED_PAGE'             => date(ASCMS_DATE_SHORT_FORMAT, $page_modified),
+    'LAST_MODIFIED_PAGE'             => date(ASCMS_DATE_FORMAT_DATE, $page_modified),
     'CONTACT_EMAIL'                  => isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '',
     'CONTACT_COMPANY'                => isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '',
     'CONTACT_ADDRESS'                => isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '',

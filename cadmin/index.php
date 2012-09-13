@@ -636,7 +636,7 @@ switch ($plainCmd) {
         Permission::checkAccess(98, 'static');
         if (!include_once ASCMS_MODULE_PATH.'/market/admin.class.php')
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_MARKET_TITLE'];
+        $subMenuTitle = $_CORELANG['TXT_CORE_MARKET_TITLE'];
         $objMarket = new Market();
         $objMarket->getPage();
         break;

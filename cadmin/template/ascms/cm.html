@@ -21,13 +21,13 @@
         <div id="titles_container" class="container" style="{TITLES_DISPLAY_STYLE}">
             <div class="line small_space">
                 <label for="page_name">{TXT_CORE_CM_PAGE_NAME}</label>
-                <span class="tipmessage info" onmouseout="htm()" onmouseover="stm(['', '{TXT_CORE_CM_PAGE_NAME_INFO}'], tipMessageStyle)"></span>
+                <span class="info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_PAGE_NAME_INFO}</span>
             </div>
             <div class="line big_space"><input type="text"  name="page[name]" id="page_name" /></div>
 
             <div class="line small_space">
                 <label for="page_title">{TXT_CORE_CM_PAGE_TITLE}</label>
-                <span class="tipmessage info" onmouseout="htm()" onmouseover="stm(['', '{TXT_CORE_CM_PAGE_TITLE_INFO}'], tipMessageStyle)"></span>
+                <span class="info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_PAGE_TITLE_INFO}</span>
             </div>
             <div class="line big_space"><input type="text" name="page[title]" id="page_title" /></div>
 
@@ -36,19 +36,19 @@
                 <input type="radio" name="page[type]" value="content" id="type_content" class="radio" checked="checked" />
 
                 <label for="type_content">{TXT_CORE_CM_TYPE_CONTENT}</label>
-                <span class="tipmessage info" onmouseout="htm()" onmouseover="stm(['', '{TXT_CORE_CM_TYPE_CONTENT_INFO}'], tipMessageStyle)"></span>
+                <span class="info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_TYPE_CONTENT_INFO}</span>
                 <input type="radio" name="page[type]" value="redirect" id="type_redirect" class="radio" />
 
                 <label for="type_redirect">{TXT_CORE_CM_TYPE_REDIRECT}</label>
-                <span class="tipmessage info" onmouseout="htm()" onmouseover="stm(['', '{TXT_CORE_CM_TYPE_REDIRECT_INFO}'], tipMessageStyle)"></span>
+                <span class="info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_TYPE_REDIRECT_INFO}</span>
                 <input type="radio" name="page[type]" value="application" id="type_application" class="radio" />
 
                 <label for="type_application">{TXT_CORE_CM_TYPE_APPLICATION}</label>
-                <span class="tipmessage info" onmouseout="htm()" onmouseover="stm(['', '{TXT_CORE_CM_TYPE_APPLICATION_INFO}'], tipMessageStyle)"></span>
+                <span class="info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_TYPE_APPLICATION_INFO}</span>
                 <input type="radio" name="page[type]" value="fallback" id="type_fallback" class="radio hidable_nofallback" />
 
                 <label for="type_fallback" class="hidable_nofallback">{TXT_CORE_CM_TYPE_FALLBACK} <strong id="fallback"></strong></label>
-                <span class="tipmessage info hidable_nofallback" onmouseout="htm()" onmouseover="stm(['', '{TXT_CORE_CM_TYPE_FALLBACK_INFO}'], tipMessageStyle)"></span>
+                <span class="info tooltip-trigger hidable_nofallback"></span><span class="tooltip-message">{TXT_CORE_CM_TYPE_FALLBACK_INFO}</span>
             </div>
         </div>
         <div id="type_toggle" class="toggle {TYPE_TOGGLE_CLASS}"><div class="indicator"></div><label>{TXT_CORE_CM_TYPE}</label></div>
@@ -56,7 +56,7 @@
             <div class="container type_redirect type_hidable">
                 <div class="line small_space">
                     <label for="page_target_button">{TXT_CORE_CM_TYPE_REDIRECT_TARGET}</label>
-                    <span class="tipmessage info" onmouseout="htm()" onmouseover="stm(['', '{TXT_CORE_CM_TYPE_REDIRECT_INFO_ACTION}'], tipMessageStyle)"></span>
+                    <span class="info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_TYPE_REDIRECT_INFO_ACTION}</span>
                 </div>
                 <div class="line big_space">
                     <input type="text" name="page[target]" id="page_target" />
@@ -78,7 +78,7 @@
         <div id="metarobots_container" class="container" style="display: none;">
             <div class="line small_space">
                 <label for="page_metatitle">{TXT_CORE_CM_METATITLE}</label>
-                <span class="tipmessage info" onmouseout="htm()" onmouseover="stm(['', '{TXT_CORE_CM_METATITLE_INFO}'], tipMessageStyle)"></span>
+                <span class="info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_METATITLE_INFO}</span>
             </div>
             <div class="line big_space">
                 <input type="text" id="page_metatitle" name="page[metatitle]" />
@@ -86,7 +86,7 @@
 
             <div class="line small_space">
                 <label for="page_metadesc">{TXT_CORE_CM_METADESC}</label>
-                <span class="tipmessage info" onmouseout="htm()" onmouseover="stm(['', '{TXT_CORE_CM_METADESC_INFO}'], tipMessageStyle)"></span>
+                <span class="info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_METADESC_INFO}</span>
             </div>
             <div class="line big_space">
                 <textarea id="page_metadesc" name="page[metadesc]"></textarea>
@@ -94,7 +94,7 @@
 
             <div class="line small_space">
                 <label for="page_metakeys">{TXT_CORE_CM_METAKEYS}</label>
-                <span class="tipmessage info" onmouseout="htm()" onmouseover="stm(['', '{TXT_CORE_CM_METAKEYS_INFO}'], tipMessageStyle)"></span>
+                <span class="info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_METAKEYS_INFO}</span>
             </div>
             <div class="line big_space">
                 <textarea id="page_metakeys" name="page[metakeys]"></textarea>
@@ -106,7 +106,7 @@
         <div id="navigation_container" class="container" style="{NAVIGATION_DISPLAY_STYLE}">
             <div class="line small_space">
                 <label for="page_slug">{TXT_CORE_CM_SLUG}</label>
-                <span class="tipmessage info" onmouseout="htm()" onmouseover="stm(['', '{TXT_CORE_CM_SLUG_INFO}'], tipMessageStyle)"></span>
+                <span class="info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_SLUG_INFO}</span>
             </div>
             <div id="page_slug_container" class="line big_space">
                 <span id="page_slug_base_url">{CONTREXX_BASE_URL}</span><span id="page_slug_breadcrumb">{CONTREXX_LANG}/</span>
@@ -115,7 +115,7 @@
             
             <div class="line small_space">
                 <label for="page_alias">{TXT_CORE_CM_ALIAS}</label>
-                <span class="tipmessage info" onmouseout="htm()" onmouseover="stm(['', '{TXT_CORE_CM_ALIAS_INFO}'], tipMessageStyle)"></span>
+                <span class="info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_ALIAS_INFO}</span>
             </div>
             <div id="page_alias_container" class="line big_space">
                 <div class="page_alias empty">
@@ -128,7 +128,7 @@
 
             <div class="line small_space">
                 <label for="page_css_nav_class">{TXT_CORE_CM_CSS_NAV_CLASS}</label>
-                <span class="tipmessage info" onmouseout="htm()" onmouseover="stm(['', '{TXT_CORE_CM_CSS_NAV_CLASS_INFO}'], tipMessageStyle)"></span>
+                <span class="info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_CSS_NAV_CLASS_INFO}</span>
             </div>
             <div class="line big_space">
                 <input type="text" name="page[cssNavName]" id="page_css_nav_class" />
@@ -136,7 +136,7 @@
 
             <div class="line small_space">
                 <label for="page_link_target">{TXT_CORE_CM_LINK_TARGET}</label>
-                <span class="tipmessage info" onmouseout="htm()" onmouseover="stm(['', '{TXT_CORE_CM_LINK_TARGET_INO}'], tipMessageStyle)"></span>
+                <span class="info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_LINK_TARGET_INO}</span>
             </div>
             <div class="line big_space">
                 <select id="page_link_target" name="page[link_target]">
@@ -215,7 +215,7 @@
         <div id="themes_container" class="container" style="{THEMES_DISPLAY_STYLE}">
             <div class="line small_space">
                 <label for="page_skin">{TXT_CORE_CM_THEMES}</label>
-                <span class="tipmessage info" onmouseout="htm()" onmouseover="stm(['', '{TXT_CORE_CM_THEMES_INFO}'], tipMessageStyle)"></span>
+                <span class="info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_THEMES_INFO}</span>
                 <a id="page_skin_view" href="javascript:void(0)">{TXT_THEME_PREVIEW}</a>
                 <a id="page_skin_edit" href="javascript:void(0)">{TXT_EDIT}</a>
             </div>
@@ -228,7 +228,7 @@
 
             <div class="line small_space">
                 <label for="page_custom_content">{TXT_CORE_CM_CUSTOM_CONTENT}</label>
-                <span class="tipmessage info" onmouseout="htm()" onmouseover="stm(['', '{TXT_CORE_CM_CUSTOM_CONTENT_INFO}'], tipMessageStyle)"></span>
+                <span class="info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_CUSTOM_CONTENT_INFO}</span>
             </div>
             <div class="line big_space">
                 <select id="page_custom_content" name="page[customContent]">
@@ -238,7 +238,7 @@
 
             <div class="line small_space">
                 <label for="page_css_class">{TXT_CORE_CM_CSS_CLASS}</label>
-                <span class="tipmessage info" onmouseout="htm()" onmouseover="stm(['', '{TXT_CORE_CM_CSS_CLASS_INFO}'], tipMessageStyle)"></span>
+                <span class="info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_CSS_CLASS_INFO}</span>
             </div>
             <div class="line big_space">
                 <input type="text" name="page[cssName]" id="page_css_class" />

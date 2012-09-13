@@ -1099,9 +1099,6 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                             '\\n\\n'.
                             $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
                     )),
-//                'SHOP_DISCOUNT_COUPON_URI_HINT' => Html::getHint(array(
-//                    $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_URI'],
-//                    $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_URI_HINT_TEXT'])),
             ));
             $objTemplate->parse('shopDiscountCouponView');
             if ($index === $edit) $objCouponEdit = $objCoupon;

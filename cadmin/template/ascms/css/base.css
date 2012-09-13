@@ -295,7 +295,6 @@ a:active {
 
 #content {
     padding: 14px 14px 80px 14px;
-    overflow: hidden;
 }
 
 #content textarea,
@@ -1040,7 +1039,7 @@ table.adminlist td.nowrap {
   overflow: auto;
 }
 
-/* info icon style */
+/* icons */
 .info {
     float: none;
     display: inline-block;
@@ -1049,7 +1048,14 @@ table.adminlist td.nowrap {
     background: url(../images/content_manager_info.png) no-repeat left center;
 }
 
-/* icon for frontend and backend links */
+.icon-info {
+    float: none;
+    display: inline-block;
+    min-width: 13px;
+    min-height: 12px;
+    background: url(../images/content_manager_info.png) no-repeat left center;
+}
+
 .backend_link {
     float: none;
     display: inline-block;
@@ -1066,4 +1072,19 @@ table.adminlist td.nowrap {
     min-height: 16px;
     padding-left: 17px;
     background: url(../../../images/icons/blue_arrow_up.png) no-repeat left center;
+}
+
+
+/* jQuery Tools Tooltip */
+.tooltip-message {
+    display: none;
+    float: left;
+    background: #ffffd6;
+    width: auto;
+    max-width: 200px;
+    padding: 3px;
+    border: #bbbbbb 1px solid;
+    font-size: 11px;
+    line-height: 1.3;
+    z-index: 9999;
 }
