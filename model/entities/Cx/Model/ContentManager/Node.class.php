@@ -209,9 +209,9 @@ class Node extends \Cx\Model\Base\EntityBase
     }
 
 
-    public function getPagesByLang()
+    public function getPagesByLang($inactive_langs = false)
     {
-        $pages = $this->getPages();
+        $pages = $this->getPages($inactive_langs);
         $result = array();
 
         foreach($pages as $page){
@@ -229,11 +229,12 @@ class Node extends \Cx\Model\Base\EntityBase
      */
     public function getPage($lang)
     {
-        $pages = $this->getPages();
+        $pages = $this->getPages(true);
 
         foreach($pages as $page){
-            if($page->getLang() == $lang)
+            if($page->getLang() == $lang) {
                 return $page;
+            }
         }
 
         return null;

@@ -614,12 +614,12 @@ class Page extends \Cx\Model\Base\EntityBase
             if ($fallback_lang) {
                 $fallback_page = $this->getNode()->getPage($fallback_lang);
                 if ($fallback_page) {
-                    return 'use_fallback ' . $fallback_page->getStatus();
+                    return 'fallback ' . $fallback_page->getStatus();
                 }
             }
-            $status .= 'use_fallback broken ';
+            $status .= 'fallback broken ';
         } else if ($this->getType() == self::TYPE_REDIRECT) {
-            $status .= 'redir ';
+            $status .= 'redirection ';
             if (!$this->target) {
                 $status .= 'broken ';
             } else if ($this->isTargetInternal()) {
@@ -639,7 +639,7 @@ class Page extends \Cx\Model\Base\EntityBase
         if ($this->protection) $status .= "protected ";
         if ($this->getModule()) {
             if ($this->getModule() == "home" && $this->getCmd() == '') $status .= "home ";
-            else $status .= "app ";
+            else $status .= "application ";
         }
         return $status;
     }
