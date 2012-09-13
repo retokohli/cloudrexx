@@ -19,6 +19,7 @@
 
 #metanavigation {
     float: right;
+    font-family: 'Ubuntu';
 }
 
 #metanavigation li {
@@ -91,6 +92,7 @@
     width: 1008px;
     height: 51px;
     padding: 0 192px 0 0;
+    margin: 0 0 10px 0;
     border-top: 3px solid #0A85C8;
     background: #3C3C3C url('images/nav-bg.gif') repeat-x left top;
 }
@@ -115,6 +117,7 @@
     padding: 14px 30px 14px 30px;
     color: #FFFFFF;
     font-size: 16px;
+    font-family: 'Ubuntu';
     background: url('images/nav-divider.gif') no-repeat right bottom;
 }
 
@@ -170,6 +173,7 @@
 #content-wrapper {
     float: left;
     width: 100%;
+    padding: 0 0 20px 0;
 }
 
 #cycle-wrapper {
@@ -177,7 +181,7 @@
     float: left;
     width: 1200px;
     height: 500px;
-    margin: 10px 0 20px 0;
+    margin: 0 0 20px 0;
 }
 
 #cycle,
@@ -238,10 +242,38 @@
     background: url('images/cycle-nav-inactive.png');
 }
 
+#home-content {
+    float: left;
+    width: 1200px;
+}
+
+#home-page-wrapper {
+    float: left;
+    width: 1170px;
+    min-height: 194px;
+    padding: 20px 15px 20px 15px;
+    margin: 0 0 20px 0;
+    background: #E6E6E6 url('images/home-content-bg.jpg') repeat-x left top;
+}
+
+#home-page {
+    float: left;
+    width: 775px;
+    padding: 0 45px 0 0;
+}
+
+#home-page h1 {
+    color: #066196;
+}
+
+#home-block {
+    float: left;
+    width: 350px;
+}
+
 #home-boxes {
     float: left;
     width: 100%;
-    padding: 0 0 20px 0;
 }
 
 #home-boxes input[type=text] {
@@ -249,16 +281,20 @@
 }
 
 .home-box {
+    position: relative;
     float: left;
     width: 348px;
-    height: auto !important;
-    min-height: 200px;
-    height: 200px; /*FOR IE*/
-    padding: 5px 15px 15px 15px;
+    height: 165px;
+    padding: 15px 15px 50px 15px;
     margin: 0 30px 0 0;
+    overflow: hidden;
     border: 1px solid #D6D6D6;
     border-top: 3px solid #0A85C8;
     background: #FFFFFF;
+}
+
+.home-box h2 {
+    padding-top: 0;
 }
 
 .home-box input[type=text] {
@@ -266,26 +302,70 @@
 }
 
 .home-box.last {
+    height: 200px;
+    padding: 15px;
     margin: 0;
 }
 
-#home-content {
+.home-box .more-link {
+    position: absolute;
+    left: 15px;
+    bottom: 15px;
+    padding: 0 0 0 20px;
+    background: url('images/marker.gif') no-repeat 2px 8px;
+}
+
+#home-headlines {
     float: left;
-    width: 1170px;
-    padding: 15px;
-    background: #FFFFFF;
+    width: 100%;
+}
+
+#home-headlines li {
+    float: left;
+    width: 100%;
+    padding: 8px 0 8px 0;
+    border-bottom: 1px solid #D6D6D6;
+    background: none;
+}
+
+#home-mediadir,
+#home-newsletter  {
+    float: left;
+    width: 100%;
+    padding: 5px 0 0 0;
+}
+
+#home-mediadir img {
+    float: left;
+    width: 100px;
+    padding: 5px;
+    margin: 0 15px 0 0;
     border: 1px solid #D6D6D6;
+    background: #FFFFFF;
+}
+
+#home-mediadir-text {
+    float: left;
+    width: 221px;
 }
 
 #content-top {
     float: left;
     width: 1190px;
     padding: 0 5px 0 5px;
-    margin: 10px 0 0 0;
+    margin: 0 0 10px 0;
+    color: #888888;
+    font-size: 12px;
+    font-family: 'Ubuntu';
 }
 
 #breadcrumb {
     float: left;
+}
+
+#breadcrumb .current {
+    display: inline;
+    color: #323F55;
 }
 
 #profile-links {
@@ -295,7 +375,6 @@
 #content {
     float: left;
     width: 1200px;
-    padding: 10px 0 0 0;   
 }
 
 .content ul li {
@@ -366,7 +445,7 @@
 
 #subnavigation li a:hover,
 #subnavigation li a.active {
-    color: #036DA7;
+    color: #066196;
 }
 
 .sidebar-block {
@@ -424,9 +503,7 @@
 #page {
     float: left;
     width: 886px;
-    height: auto !important;
     min-height: 400px;
-    height: 400px; /*FOR IE*/
     padding: 15px;
     margin: 0 0 0 10px;
     border: 1px solid #D6D6D6;
@@ -462,25 +539,25 @@
     padding: 2px 0 0 0;
 }
 
-footer {
+#footer-top,
+#footer-bottom {
     float: left;
     width: 100%;
+    font-family: 'Ubuntu';
 }
 
-footer .horizontal-list.no-bg li {
+#footer-top {
+    padding: 0 0 10px 0;
+}
+
+#footer-top .horizontal-list.no-bg li {
     float: left;
     padding: 0 5px 0 0;
     margin: 0 5px 0 0;
     background: none;
 }
 
-#footer-top {
-    padding: 20px 0 10px 0;
-}
-
 #footer-bottom {
-    float: left;
-    width: 100%;
     padding: 0 0 20px 0;
 }
 
