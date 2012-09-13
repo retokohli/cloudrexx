@@ -395,29 +395,20 @@ if (!$limit) {
 //                $order_id, $objOrder->date_time()
 //            );
             $customer_id = $objOrder->customer_id();
-// 20111017 Added billing address to the Order
-// No need to load the Customer now
-//            $objCustomer = Customer::getById($customer_id);
+            // Take billing address from the Order.
+            // No need to load the Customer.
             $customer_name = '';
-//            if ($objCustomer) {
                 $company = $objOrder->billing_company();
                 $customer_name = ($company
                     ? $company
                     : $objOrder->billing_lastname().' '.
                       $objOrder->billing_firstname());
                 // Determine end date
-// Unused in the list view
-//                $validity = $objCustomer->getValidityTimePeriod();
-//                $endDate = ($validity > 0 ? date('d.m.Y', $validity) : '-');
-//            } else {
-//                $customer_name = $_ARRAYLANG['TXT_SHOP_ERROR_NO_CUSTOMER'];
-//                $customer_id = null;
-//            }
             // PHP5! $tipNote = (strlen($objResult['note'])>0) ? php_strip_whitespace($objResult['note']) : '';
             $tipNote = $objOrder->note();
             $tipLink = (!empty($tipNote)
                 ? '<img src="images/icons/comment.gif" onmouseout="htm()"'.
-                  ' onmouseover="stm(Text['.$order_id.'],Style[0])"'.
+                  ' onmouseover="stm(Text['.$order_id.'],tm_style)"'.
                   ' width="11" height="10" alt="" title="" />'
                 : ''
             );
@@ -856,13 +847,13 @@ if (!$limit) {
         global $_ARRAYLANG;
 
         $count = 0;
-        $arrOrder = Orders::getArray(
+        $arrOrderId = Orders::getIdArray(
             $count, null, array('customer_id' => $customer_id));
-        if ($arrOrder === false) {
+        if ($arrOrderId === false) {
             return Message::error($_ARRAYLANG['TXT_SHOP_ERROR_CUSTOMER_QUERYING_ORDERS']);
         }
-        foreach ($arrOrder as $objOrder) {
-            if (!$objOrder->deleteById($objOrder->id())) {
+        foreach ($arrOrderId as $order_id) {
+            if (!$objOrder->deleteById($order_id)) {
                 return Message::error($_ARRAYLANG['TXT_SHOP_ERROR_CUSTOMER_DELETING_ORDERS']);
             }
         }

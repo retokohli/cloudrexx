@@ -1,7 +1,5 @@
 <?php
 
-use Cx\Lib\UpdateUtil as UpdateUtil;
-
 /**
  * Payment service manager
  * @package     contrexx
@@ -9,7 +7,6 @@ use Cx\Lib\UpdateUtil as UpdateUtil;
  * @subpackage  module_shop
  * @version     3.0.0
  */
-
 
 /**
  * Payment service manager
@@ -550,9 +547,8 @@ class Payment
      */
     static function errorHandler()
     {
-
 //DBG::activate(DBG_DB_FIREPHP);
-
+        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
         // Fix the Text and Zones tables first
         Text::errorHandler();
         Zones::errorHandler();

@@ -1,7 +1,5 @@
 <?php
 
-use Cx\Lib\UpdateUtil as UpdateUtil;
-
 /**
  * Shop Product class
  * @version     3.0.0
@@ -10,7 +8,6 @@ use Cx\Lib\UpdateUtil as UpdateUtil;
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  */
-
 
 /**
  * Product as available in the Shop.
@@ -1311,9 +1308,8 @@ class Product
 
     static function errorHandler()
     {
-
 //DBG::activate(DBG_DB_FIREPHP);
-
+        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
         // Fix the Text, Discount, and Manufacturer tables first
         Text::errorHandler();
         Discount::errorHandler();

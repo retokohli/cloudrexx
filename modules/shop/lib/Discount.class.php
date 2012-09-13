@@ -1,7 +1,5 @@
 <?php
 
-use Cx\Lib\UpdateUtil as UpdateUtil;
-
 /**
  * Discount
  *
@@ -817,8 +815,7 @@ class Discount
     static function errorHandler()
     {
 //die("Discount::errorHandler(): Disabled!<br />");
-
-
+        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_article_group';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),

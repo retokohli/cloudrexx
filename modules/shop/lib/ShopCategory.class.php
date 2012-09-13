@@ -1,7 +1,5 @@
 <?php
 
-use Cx\Lib\UpdateUtil as UpdateUtil;
-
 /**
  * Shop Product Category
  *
@@ -862,9 +860,8 @@ class ShopCategory
      */
     static function errorHandler()
     {
-
 //DBG::activate(DBG_DB_FIREPHP);
-
+        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
         // Fix the Text and Settings table first
         Text::errorHandler();
         ShopSettings::errorHandler();

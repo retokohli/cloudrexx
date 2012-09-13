@@ -1,7 +1,5 @@
 <?php
 
-use Cx\Lib\UpdateUtil as UpdateUtil;
-
 /**
  * Currency class
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -11,7 +9,6 @@ use Cx\Lib\UpdateUtil as UpdateUtil;
  * @version     3.0.0
  * @todo        Edit PHP DocBlocks!
  */
-
 
 /**
  * Currency related static methods
@@ -918,7 +915,7 @@ class Currency
 
 //DBG::activate(DBG_DB_FIREPHP);
 //DBG::log("Currency::errorHandler(): Entered");
-
+        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
         Text::errorHandler();
 
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_currencies';

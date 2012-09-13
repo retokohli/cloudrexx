@@ -88,6 +88,12 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
         self::_authenticate();
         SettingDb::init('shop', 'config');
         if (isset($_REQUEST['remoteJs'])) return;
+// TODO: Temporary for update
+if (SettingDb::getValue('use_js_cart') === NULL) {
+    require_once ASCMS_MODULE_PATH.'/shop/lib/ShopSettings.class.php';
+    ShopSettings::errorHandler();
+    SettingDb::init('shop', 'config');
+}
         // Javascript Cart: Shown when active,
         // either on shop pages only, or on any
         if (   SettingDb::getValue('use_js_cart')
@@ -920,8 +926,9 @@ die("Failed to update the Cart!");
         if ($count == 0
          && !ShopCategories::getChildCategoryIdArray($category_id)) {
             //if ($term != '' || $manufacturer_id != 0 || $flagSpecialoffer) {
+            if (self::$objTemplate->blockExists('no_product')) {
                 self::$objTemplate->touchBlock('no_product');
-            //}
+            }
             return true;
         }
         if ($objCategory) {
@@ -961,6 +968,15 @@ die("Failed to update the Cart!");
             'SHOP_PRODUCT_PAGING' => Paging::get($uri, '',
                 $count, $limit, ($count > 0)),
             'SHOP_PRODUCT_TOTAL' => $count,
+        ));
+        // Global microdata: Seller information
+// TODO: Build the proper shop start page URI
+        $seller_url = \Cx\Core\Routing\URL::fromModuleAndCmd('shop', '')->toString();
+        $seller_name = SettingDb::getValue('company');
+        if (empty ($seller_name)) $seller_name = $seller_url;
+        self::$objTemplate->setVariable(array(
+            'SHOP_SELLER_NAME' => $seller_name,
+            'SHOP_SELLER_URL' => $seller_url,
         ));
         $formId = 0;
         $arrDefaultImageSize = $arrSize = null;
@@ -1087,20 +1103,22 @@ die("Failed to update the Cart!");
             $short = $objProduct->short();
             $longDescription = $objProduct->long();
 
-            $detailLink = $detail_url = null;
+            $detailLink = null;
+            // Detaillink is required for microdata (even when longdesc
+            // is empty)
+            $detail_url =
+                CONTREXX_SCRIPT_PATH.'?section=shop'.MODULE_INDEX.
+                '&amp;cmd=details&amp;productId='.$objProduct->id();
+            self::$objTemplate->setVariable(
+                'SHOP_PRODUCT_DETAIL_URL', $detail_url);
             if (!$product_id && !empty($longDescription)) {
-                $detail_url =
-                    CONTREXX_SCRIPT_PATH.'?section=shop'.MODULE_INDEX.
-                    '&amp;cmd=details&amp;productId='.$objProduct->id();
                 $detailLink =
 // TODO: Use the alias, if any
                 '<a href="'.$detail_url.'"'.
                 ' title="'.$_ARRAYLANG['TXT_MORE_INFORMATIONS'].'">'.
                 $_ARRAYLANG['TXT_MORE_INFORMATIONS'].'</a>';
-                self::$objTemplate->setVariable(array(
-                    'SHOP_PRODUCT_DETAIL_URL' => $detail_url,
-                    'SHOP_PRODUCT_DETAILLINK' => $detailLink,
-                ));
+                self::$objTemplate->setVariable(
+                    'SHOP_PRODUCT_DETAILLINK', $detailLink);
             }
 
             // Check Product flags.
@@ -1133,7 +1151,9 @@ die("Failed to update the Cart!");
                 'SHOP_PRODUCT_CUSTOM_ID' => htmlentities($objProduct->code(), ENT_QUOTES, CONTREXX_CHARSET),
                 'SHOP_PRODUCT_TITLE' => htmlentities($objProduct->name(), ENT_QUOTES, CONTREXX_CHARSET),
                 'SHOP_PRODUCT_DESCRIPTION' => $short,
-                'SHOP_PRODUCT_DETAILDESCRIPTION' => $longDescription,
+// TODO: Test whether this produces double descriptions in some views
+                'SHOP_PRODUCT_DETAILDESCRIPTION' => ($longDescription
+                    ? $longDescription : $short),
                 'SHOP_PRODUCT_FORM_NAME' => $shopProductFormName,
                 'SHOP_PRODUCT_SUBMIT_NAME' => $productSubmitName,
                 'SHOP_PRODUCT_SUBMIT_FUNCTION' => $productSubmitFunction,
@@ -1147,8 +1167,7 @@ die("Failed to update the Cart!");
                     ),
             ));
 
-            $manufacturer_name = '';
-            $manufacturer_url = '';
+            $manufacturer_name = $manufacturer_url = $manufacturer_link = '';
             $manufacturer_id = $objProduct->manufacturer_id();
             if ($manufacturer_id) {
                 $manufacturer_name =
@@ -1161,12 +1180,15 @@ die("Failed to update the Cart!");
                     $manufacturer_name = $manufacturer_url;
                 }
                 if (!empty($manufacturer_url)) {
-                    $manufacturer_name =
+                    $manufacturer_link =
                         '<a href="'.$manufacturer_url.'">'.
                         $manufacturer_name.'</a>';
                 }
+// TODO: Test results for any combination of name and url
                 self::$objTemplate->setVariable(array(
-                    'SHOP_MANUFACTURER_LINK' => $manufacturer_name,
+                    'SHOP_MANUFACTURER_NAME' => $manufacturer_name,
+                    'SHOP_MANUFACTURER_URL' => $manufacturer_url,
+                    'SHOP_MANUFACTURER_LINK' => $manufacturer_link,
                     'TXT_SHOP_MANUFACTURER_LINK' => $_ARRAYLANG['TXT_SHOP_MANUFACTURER_LINK'],
                 ));
             }
@@ -1187,7 +1209,7 @@ die("Failed to update the Cart!");
             }
 
             if ($price) {
-                self::$objTemplate->setVariable(array(
+                self::$objTemplate->setGlobalVariable(array(
                     'SHOP_PRODUCT_PRICE' => $price,
                     'SHOP_PRODUCT_PRICE_UNIT' => Currency::getActiveCurrencySymbol(),
                 ));
@@ -1195,10 +1217,13 @@ die("Failed to update the Cart!");
             // Only show the discount price if it's actually in use,
             // avoid an "empty <font> tag" HTML warning
             if ($discountPrice) {
-                self::$objTemplate->setVariable(array(
+                self::$objTemplate->setGlobalVariable(array(
                     'SHOP_PRODUCT_DISCOUNTPRICE' => $discountPrice,
                     'SHOP_PRODUCT_DISCOUNTPRICE_UNIT' => Currency::getActiveCurrencySymbol(),
                 ));
+                self::$objTemplate->touchBlock('price_discount');
+            } else {
+                self::$objTemplate->touchBlock('price');
             }
             // Special outlet ShopCategory with discounts varying daily.
             // This should be implemented in a more generic way, in the
@@ -3027,7 +3052,7 @@ right after the customer logs in!
             ));
             if (Vat::isIncluded()) {
                 self::$objTemplate->setVariable(array(
-                    'SHOP_GRAND_TOTAL_EXCL_TAX' => 
+                    'SHOP_GRAND_TOTAL_EXCL_TAX' =>
                         Currency::formatPrice(
                         $_SESSION['shop']['grand_total_price'] - $_SESSION['shop']['vat_price']
                     ),
@@ -3202,7 +3227,7 @@ right after the customer logs in!
            ));
            if (Vat::isIncluded()) {
                self::$objTemplate->setVariable(array(
-                   'SHOP_GRAND_TOTAL_EXCL_TAX' => 
+                   'SHOP_GRAND_TOTAL_EXCL_TAX' =>
                        Currency::formatPrice(
                        $_SESSION['shop']['grand_total_price'] - $_SESSION['shop']['vat_price']
                    ),
@@ -3284,7 +3309,7 @@ die("Trouble! No Shipper ID defined");
 //DBG::log("New User username ".$_SESSION['shop']['username'].", email ".$_SESSION['shop']['email']);
                 self::$objCustomer->username($_SESSION['shop']['username']);
                 self::$objCustomer->email($_SESSION['shop']['email']);
-// TODO: May be this is unset?
+// TODO: Maybe this is unset?
                 self::$objCustomer->password($_SESSION['shop']['password']);
                 self::$objCustomer->active(empty($_SESSION['shop']['dont_register']));
                 $new_customer = true;

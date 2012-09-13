@@ -1,7 +1,5 @@
 <?php
 
-use Cx\Lib\UpdateUtil as UpdateUtil;
-
 /**
  * Shop Customer
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -11,7 +9,6 @@ use Cx\Lib\UpdateUtil as UpdateUtil;
  * @subpackage  module_shop
  * @todo        Test!
  */
-
 
 /**
  * Customer as used in the Shop.
@@ -467,7 +464,10 @@ class Customer extends User
         $objUser = $objUser->getUsers(array(
             'email' => $email,
             'active' => false,
-            'group_id' => $usergroup_id,
+// TODO: Verify this:  We must be able to load existing Users!
+// Problem: Conflicting e-mail addresses for "new" Customers that exist as Users already.
+// Simple solution seems to be to ignore the associated groups.
+//            'group_id' => $usergroup_id,
         ));
         if (!$objUser) {
 //DBG::log("Customer::getUnregisteredByEmail($email): Found no such unregistered User");
@@ -643,6 +643,7 @@ class Customer extends User
     {
         global $objFWUser;
 
+        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
         $table_name_old = DBPREFIX."module_shop".MODULE_INDEX."_customers";
         // If the old Customer table is missing, the migration has completed
         // successfully already

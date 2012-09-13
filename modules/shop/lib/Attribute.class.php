@@ -1,7 +1,5 @@
 <?php
 
-use Cx\Lib\UpdateUtil as UpdateUtil;
-
 /**
  * Shop Product Attribute class
  * @version     3.0.0
@@ -833,7 +831,7 @@ class Attribute
      */
     static function errorHandler()
     {
-
+        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
         $table_name_new = DBPREFIX.'module_shop'.MODULE_INDEX.'_attribute';
         if (!UpdateUtil::table_exist($table_name_new)) {
             $table_name_old = DBPREFIX.'module_shop'.MODULE_INDEX.'_products_attributes_name';

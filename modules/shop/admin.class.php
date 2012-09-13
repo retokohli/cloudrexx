@@ -88,7 +88,6 @@ class Shopmanager extends ShopLibrary
     {
         global $objTemplate, $_ARRAYLANG;
 
-//DBG::activate(DBG_DB_FIREPHP);
 //DBG::activate(DBG_ERROR_FIREPHP);
 
         if (!isset($_GET['act'])) {
@@ -482,20 +481,19 @@ class Shopmanager extends ShopLibrary
                 Message::error($_ARRAYLANG['TXT_SHOP_IMPORT_NOT_SUCCESSFULLY_IMPORTED_PRODUCTS'].': '.$errorLines);
             }
         } // end import
-        $jsSelectLayer = 'selectTab("import1");';
-        if (isset($_REQUEST['mode']) && $_REQUEST['mode'] == 'ImportImg') {
-            $jsSelectLayer = 'selectTab("import2");';
-        }
         $noimg = $importButtonStyle = $jsnofiles = '';
         $fileFields = $dblist = null;
         $arrTemplateArray = $objCSVimport->getTemplateArray();
         if (isset($_REQUEST['mode']) && $_REQUEST['mode'] != 'ImportImg') {
             if (count($arrTemplateArray) == 0) {
-                $noimg = $_ARRAYLANG['TXT_SHOP_IMPORT_NO_TEMPLATES_AVAILABLE'];
-                $importButtonStyle = 'style="display: none;"';
+                self::$objTemplate->hideBlock('import_products');
+                self::$objTemplate->touchBlock('import_products_no_template');
             } else {
-                $noimg = "";
-                $importButtonStyle = '';
+                $imageChoice = $objCSVimport->GetImageChoice();
+                self::$objTemplate->setVariable(array(
+                    'IMAGE_CHOICE' => $imageChoice,
+                    'IMPORT_BUTTON_STYLE' => $importButtonStyle,
+                ));
             }
         } else {
             if (!isset($_REQUEST['SelectFields'])) {
@@ -506,18 +504,40 @@ class Shopmanager extends ShopLibrary
                 } else {
                     $jsnofiles = "selectTab('import2');";
                     $fileFields = '
-                         <select name="FileFields" id="file_field" style="width: 200px;" size="10">
-                             '.$objCSVimport->getFilefieldMenuOptions().'
-                         </select>
-                     ';
+                        <select name="FileFields" id="file_field" style="width: 200px;" size="10">
+                            '.$objCSVimport->getFilefieldMenuOptions().'
+                        </select>'."\n";
                     $dblist = '
-                         <select name="DbFields" id="given_field" style="width: 200px;" size="10">
-                             '.$objCSVimport->getAvailableNamesMenuOptions().'
-                         </select>
-                     ';
+                        <select name="DbFields" id="given_field" style="width: 200px;" size="10">
+                            '.$objCSVimport->getAvailableNamesMenuOptions().'
+                        </select>'."\n";
                 }
             }
         }
+        $jsSelectLayer = 'selectTab("import1");';
+        if (isset($_REQUEST['mode']) && $_REQUEST['mode'] == 'ImportImg') {
+            $jsSelectLayer = 'selectTab("import2");';
+        }
+        $arrTemplateArray = $objCSVimport->getTemplateArray();
+        self::$objTemplate->setCurrentBlock('imgRow');
+        for ($x = 0; $x < count($arrTemplateArray); ++$x) {
+            self::$objTemplate->setVariable(array(
+                'IMG_NAME' => $arrTemplateArray[$x]['name'],
+                'IMG_ID' => $arrTemplateArray[$x]['id'],
+                'CLASS_NAME' => 'row'.($x % 2 + 1),
+                // cms offset fix for admin images/icons:
+                'SHOP_CMS_OFFSET' => ASCMS_PATH_OFFSET,
+            ));
+            self::$objTemplate->parse('imgRow');
+        }
+        self::$objTemplate->setVariable(array(
+            'SELECT_LAYER_ONLOAD' => $jsSelectLayer,
+            'NO_FILES' => (isset($jsnofiles)  ? $jsnofiles  : ''),
+            'FILE_FIELDS_LIST' => (isset($fileFields) ? $fileFields : ''),
+            'DB_FIELDS_LIST' => (isset($dblist) ? $dblist : ''),
+            // Export: instructions added
+//            'SHOP_EXPORT_TIPS' => $tipText,
+        ));
 // TODO: !!! CSV EXPORT IS OBSOLETE AND DYSFUNCT !!!
 /*
         // Export groups -- hardcoded
@@ -735,29 +755,6 @@ class Shopmanager extends ShopLibrary
             $tipText .= 'Text['.$i.']=["","'.$_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_'.strtoupper($arrGroups[$i]).'_TIP'].'"];';
         }
 */
-        $imageChoice = $objCSVimport->GetImageChoice($noimg);
-        $arrTemplateArray = $objCSVimport->getTemplateArray();
-        self::$objTemplate->setCurrentBlock('imgRow');
-        for ($x = 0; $x < count($arrTemplateArray); ++$x) {
-            self::$objTemplate->setVariable(array(
-                'IMG_NAME' => $arrTemplateArray[$x]['name'],
-                'IMG_ID' => $arrTemplateArray[$x]['id'],
-                'CLASS_NAME' => 'row'.($x % 2 + 1),
-                // cms offset fix for admin images/icons:
-                'SHOP_CMS_OFFSET' => ASCMS_PATH_OFFSET,
-            ));
-            self::$objTemplate->parse('imgRow');
-        }
-        self::$objTemplate->setVariable(array(
-            'SELECT_LAYER_ONLOAD' => $jsSelectLayer,
-            'NO_FILES' => (isset($jsnofiles)  ? $jsnofiles  : ''),
-            'FILE_FIELDS_LIST' => (isset($fileFields) ? $fileFields : ''),
-            'DB_FIELDS_LIST' => (isset($dblist)     ? $dblist     : ''),
-            'IMAGE_CHOICE' => $imageChoice,
-            'IMPORT_BUTTON_STYLE' => $importButtonStyle,
-            // Export: instructions added
-//            'SHOP_EXPORT_TIPS' => $tipText,
-        ));
     }
 
 
@@ -1390,6 +1387,14 @@ class Shopmanager extends ShopLibrary
     {
         global $_ARRAYLANG, $_CORELANG;
 
+// TODO: TEMPORARY.  Remove when a proper update is available.
+$template = MailTemplate::get('shop', 'order_confirmation');
+//die(var_export($template, true));
+if (!$template) {
+    require_once ASCMS_MODULE_PATH.'/shop/lib/Mail.class.php';
+    ShopMail::errorHandler();
+}
+
         $result = true;
         $_REQUEST['active_tab'] = 1;
         if (   isset($_REQUEST['act'])
@@ -1661,6 +1666,9 @@ if ($test === NULL) {
 // TODO: Add controls to fold parent categories
 //        $level_prev = null;
         $arrLanguages = FWLanguage::getActiveFrontendLanguages();
+        // Intended to show an edit link for all active frontend languages.
+        // However, the design doesn't like it.  Limit to the current one.
+        $arrLanguages = array(FRONTEND_LANG_ID => $arrLanguages[FRONTEND_LANG_ID]);
         foreach ($arrShopCategories as $arrShopCategory) {
             $category_id = $arrShopCategory['id'];
             $level = $arrShopCategory['level'];
@@ -2644,9 +2652,9 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
 
         $arrCustomerId = array();
         if (isset($_GET['customer_id']) && !empty($_GET['customer_id'])) {
-            $arrCustomerId = array(0 => $_GET['customer_id']);
+            $arrCustomerId = array(intval($_GET['customer_id']));
         } elseif (!empty($_POST['selected_customer_id'])) {
-            $arrCustomerId = $_POST['selected_customer_id'];
+            $arrCustomerId = array_map("intval", $_POST['selected_customer_id']);
         }
         if (empty($arrCustomerId)) return true;
         foreach ($arrCustomerId as $customer_id) {
@@ -2658,10 +2666,10 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
             }
             // Deletes associated Orders as well!
             if (!$objCustomer->delete()) {
-// Messages set up by the parent (User) class
-//                Message::error(sprintf(
-//                    $_ARRAYLANG['TXT_SHOP_ERROR_CUSTOMER_DELETING'],
-//                    $customer_id));
+// TODO: Messages *SHOULD* be set up by the User class
+                Message::error(sprintf(
+                    $_ARRAYLANG['TXT_SHOP_ERROR_CUSTOMER_DELETING'],
+                    $customer_id));
                 return false;
             }
         }
@@ -3037,7 +3045,6 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
             'SHOP_PRODUCTS_FILE', 'shop_products_block',
             'module_shop_product_catalog.html'
         );
-        $arrLanguages = FWLanguage::getActiveFrontendLanguages();
         self::$objTemplate->setGlobalVariable($_ARRAYLANG);
         $category_id = (empty($_REQUEST['category_id'])
             ? null : intval($_REQUEST['category_id']));
@@ -3110,6 +3117,10 @@ if (!$limit) {
             'SHOP_HEADING_PRODUCT_DISTRIBUTION' => $objSorting->getHeaderForField('`product`.`distribution`'),
             'SHOP_HEADING_PRODUCT_STOCK' => $objSorting->getHeaderForField('`product`.`stock`'),
         ));
+        $arrLanguages = FWLanguage::getActiveFrontendLanguages();
+        // Intended to show an edit link for all active frontend languages.
+        // However, the design doesn't like it.  Limit to the current one.
+        $arrLanguages = array(FRONTEND_LANG_ID => $arrLanguages[FRONTEND_LANG_ID]);
         $i = 0;
         foreach ($arrProducts as $objProduct) {
             $productStatus = '';

@@ -1,14 +1,11 @@
 <?php
 
-use Cx\Lib\UpdateUtil as UpdateUtil;
-
 /**
  * OBSOLETE -- See {@see core/MailTemplate.class.php}
  *
  * Note that this partial class is left over for updating to the new
  * MailTemplate.  We use it to migrate the existing templates ONLY.
  */
-
 
 /**
  * OBSOLETE -- See {@see core/MailTemplate.class.php}
@@ -54,21 +51,12 @@ class ShopMail
         global $objDatabase;
 
         // The array has been initialized with that language already
-        if (self::$lang_id === $lang_id) return true;
-
+        if (self::$lang_id == $lang_id) return true;
         // Reset the language ID used
         self::$lang_id = null;
         // Use the current language if none is specified
         if (empty($lang_id)) $lang_id = FRONTEND_LANG_ID;
         self::$arrTemplate = array();
-
-//        $arrLanguages = FWLanguage::getLanguageArray();
-//        foreach ($arrLanguages as $arrLanguage) {
-//            if ($arrLanguage['frontend'] && $arrLanguage['is_default'] == 'true') {
-//                $defaultLangId = $arrLanguage['id'];
-//                break;
-//            }
-//        }
         $objResult = $objDatabase->Execute("
             SELECT `mail`.`id`, `mail`.`tplname`, `mail`.`protected`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_mail` AS `mail`");
@@ -90,7 +78,6 @@ class ShopMail
                    `content`.`subject`, `content`.`message`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_mail_content` AS `content`
              WHERE `content`.`lang_id`=$lang_id");
-//             ORDER BY FIELD(`content`.`lang_id`, $defaultLangId, $lang_id) DESC
         if (!$objResult) return false;
         while (!$objResult->EOF) {
             $id = $objResult->fields['tpl_id'];
@@ -340,7 +327,7 @@ class ShopMail
      */
     static function errorHandler()
     {
-
+        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
         if (UpdateUtil::table_empty(DBPREFIX.'core_mail_template')) {
             // Make sure there are no bodies lying around
             Text::deleteByKey('shop', MailTemplate::TEXT_NAME);
@@ -356,8 +343,11 @@ class ShopMail
             Text::deleteByKey('shop', MailTemplate::TEXT_ATTACHMENTS);
             Text::deleteByKey('shop', MailTemplate::TEXT_INLINE);
         }
-        // Export existing templates from the shop to the MailTemplate.
-        // These are the keys replacing the IDs
+        // Migrate existing templates from the shop to the MailTemplate.
+        // These are the keys replacing the IDs.
+// TODO: Migrate the old template using the original IDs, make them unprotected
+// TODO: Add the new default templates with the new keys
+// and have the user migrate changes herself!
         $arrKey =  array(
             // DE: Bestellungsbestätigung (includes account data, obsoletes #4)
             // EN:
@@ -380,16 +370,19 @@ class ShopMail
             // IT:
             4 => 'order_confirmation_login',
         );
-        $arrLanguages = FWLanguage::getLanguageArray();
-        if (empty($arrLanguages)) {
+        $arrLanguageId = FWLanguage::getIdArray();
+        if (empty($arrLanguageId)) {
             throw new Update_DatabaseException(
-               "Failed to get frontend languages");
+               "Failed to get frontend language IDs");
         }
-        foreach (array_keys($arrLanguages) as $lang_id) {
+        foreach ($arrLanguageId as $lang_id) {
             // Mind that the template name is single language yet!
             $arrTemplates = self::getTemplateArray($lang_id);
             if (empty($arrTemplates)) continue;
             foreach ($arrTemplates as $id => $arrTemplate) {
+// TODO: utf8_encode() may not be necessary in all cases.
+// It worked without it for me earlier, but was necessary for verkehrstheorie.ch
+                $arrTemplate = array_map("utf8_encode", $arrTemplate);
                 if (isset($arrKey[$id])) {
                     // System templates get their default key
                     $arrTemplate['key'] = $arrKey[$id];
@@ -414,7 +407,16 @@ class ShopMail
                 foreach ($arrTemplate as &$string) {
                     // Replace old <PLACEHOLDERS> with new [PLACEHOLDERS].
                     $string = preg_replace('/\\<([A-Z_]+)\\>/', '[$1]', $string);
+// TODO: This is completely unreliable.
+// Use the process as described above, not replacing the old templates,
+// but adding the new ones instead.
+//                    $string = str_replace('[ORDER_DATA]', $order_data, $string);
+//                    $string = preg_replace('/[\\w\\s\\:]+\\[USERNAME\\](?:\\n|<br\\s?\\/?
+//                          >)*[\\w\\s\\:]+\\[PASSWORD\\]/',
+//                        $login_data, $string);
                 }
+//                $arrTemplate['message_html'] = preg_replace(
+//                    '/(?:\r|\n|\r\n)/', "<br />\n", $arrTemplate['message']);
                 $arrTemplate['lang_id'] = $lang_id;
                 if (!MailTemplate::store('shop', $arrTemplate)) {
                     throw new Update_DatabaseException(

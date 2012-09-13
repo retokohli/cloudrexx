@@ -1,7 +1,5 @@
 <?php
 
-use Cx\Lib\UpdateUtil as UpdateUtil;
-
 /**
  * Shipment class
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -833,6 +831,7 @@ class Shipment
     {
         static $break = false;
 
+        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
         if ($break) {
             die("
                 Shipment::errorHandler(): Recursion detected while handling an error.<br /><br />

@@ -1,7 +1,5 @@
 <?php
 
-use Cx\Lib\UpdateUtil as UpdateUtil;
-
 /**
  * Shop Order
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -1213,14 +1211,13 @@ class Order
         }
         $objUser = FWUser::getFWUserObject()->objUser;
         // Store the order details
+// TODO: Should add verification for POSTed fields and ignore unset values!
         $query = "
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_orders
                SET `sum`=".floatval($totalOrderSum).",
                    `shipment_amount`=".floatval($_POST['shippingPrice']).",
                    `payment_amount`=".floatval($_POST['paymentPrice']).",
-                   `status`='".intval($_POST['order_status'])."',".
-// 20111017 Added billing address
-            "
+                   `status`='".intval($_POST['order_status'])."',
                    `billing_gender`='".contrexx_input2db($_POST['billing_gender'])."',
                    `billing_company`='".contrexx_input2db($_POST['billing_company'])."',
                    `billing_firstname`='".contrexx_input2db($_POST['billing_firstname'])."',
@@ -1722,9 +1719,6 @@ class Order
             'SHOP_CURRENCY' =>
                 Currency::getCurrencySymbolById($objOrder->currency_id())));
 //DBG::log("Order sum: ".Currency::formatPrice($objOrder->sum()));
-        $customer_gender = ($objOrder->billing_gender()
-            ? $_ARRAYLANG['TXT_SHOP_'.strtoupper($objOrder->billing_gender())]
-            : '');
         $objTemplate->setVariable(array(
             'SHOP_CUSTOMER_ID' => $customer_id,
             'SHOP_ORDERID' => $order_id,
@@ -1744,7 +1738,10 @@ class Order
                 : ''),
             'SHOP_ORDER_SUM' => Currency::formatPrice($objOrder->sum()),
             'SHOP_DEFAULT_CURRENCY' => Currency::getDefaultCurrencySymbol(),
-            'SHOP_GENDER' => $customer_gender,
+            'SHOP_GENDER' => ($edit
+                ? Customer::getGenderMenu(
+                    $objOrder->billing_gender(), 'billing_gender')
+                : $_ARRAYLANG['TXT_SHOP_'.strtoupper($objOrder->billing_gender())]),
 // 20111017 Added billing address
             'SHOP_COMPANY' => $objOrder->billing_company(),
             'SHOP_FIRSTNAME' => $objOrder->billing_firstname(),
@@ -1752,14 +1749,15 @@ class Order
             'SHOP_ADDRESS' => $objOrder->billing_address(),
             'SHOP_ZIP' => $objOrder->billing_zip(),
             'SHOP_CITY' => $objOrder->billing_city(),
-            'SHOP_COUNTRY' => Country::getNameById($objOrder->billing_country_id()),
+            'SHOP_COUNTRY' => ($edit
+                ? Country::getMenu('billing_country_id', $objOrder->billing_country_id())
+                : Country::getNameById($objOrder->billing_country_id())),
             'SHOP_PHONE' => $objOrder->billing_phone(),
             'SHOP_FAX' => $objOrder->billing_fax(),
             'SHOP_EMAIL' => $objOrder->billing_email(),
             'SHOP_SHIP_GENDER' => ($edit
                 ? Customer::getGenderMenu($objOrder->gender(), 'shipPrefix')
                 : $_ARRAYLANG['TXT_SHOP_'.strtoupper($objOrder->gender())]),
-            $_ARRAYLANG['TXT_SHOP_'.strtoupper($objOrder->gender())],
             'SHOP_SHIP_COMPANY' => $objOrder->company(),
             'SHOP_SHIP_FIRSTNAME' => $objOrder->firstname(),
             'SHOP_SHIP_LASTNAME' => $objOrder->lastname(),
@@ -2044,8 +2042,8 @@ class Order
      */
     static function errorHandler()
     {
-
 //DBG::activate(DBG_DB_FIREPHP);
+        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
         ShopSettings::errorHandler();
         Country::errorHandler();
 
