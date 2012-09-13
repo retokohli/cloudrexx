@@ -121,7 +121,7 @@ class JsonNode implements JsonAdapter {
         if (isset($parameters['get']) && isset($parameters['get']['page'])) {
             $pageId = contrexx_input2raw($parameters['get']['page']);
             $page = $this->pageRepo->findOneBy(array('id' => $pageId));
-            $node = $page->getNode();
+            $node = $page->getNode()->getParent();
             // #node_{id},#node_{id}
             $openNodes = array();
             while ($node && $node->getId() != $nodeId) {
