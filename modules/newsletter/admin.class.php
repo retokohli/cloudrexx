@@ -36,12 +36,6 @@ class newsletter extends NewsletterLib
     public static $strErrMessage = '';
     public static $strOkMessage = '';     
     public $months = array();
-    public $_arrMailFormat = array(
-        'text' => 'TXT_NEWSLETTER_ONLY_TEXT',
-        'html' => 'TXT_NEWSLETTER_HTML_UC',
-        'html/text' => 'TXT_NEWSLETTER_MULTIPART_TXT'
-    );
-    public $_stdMailFormat = 'html/text';
     public $_arrMailPriority = array(
         1 => 'TXT_NEWSLETTER_VERY_HIGH',
         2 => 'TXT_NEWSLETTER_HIGH',
@@ -698,124 +692,12 @@ class newsletter extends NewsletterLib
 		} else {
             $mailHtmlContent = '';
         }
-        if (isset($_POST['newsletter_mail_text_content'])) {
-            $mailTextContent = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' , contrexx_stripslashes($_POST['newsletter_mail_text_content']));
-            $mailTextContent = $this->_getBodyContent($mailTextContent);
-        } elseif (isset($_POST['selected'])) {
-			$selectedNews = contrexx_input2db($_POST['selected']);
-			$TEXT_TemplateSource_Import = $this->_getBodyContent($this->GetTemplateSource($importTemplate, 'text'));
-			$_REQUEST['standalone'] = true;
 
-			$this->_impTpl = new HTML_Template_Sigma();
-			CSRF::add_placeholder($this->_impTpl);
-			$this->_impTpl->setTemplate($TEXT_TemplateSource_Import);
-
-			$query = "SELECT n.id, n.date, nl.title, nl.text, n.catid, cl.name as catname, n.userid, nl.teaser_text, 
-			n.teaser_image_path, n.teaser_image_thumbnail_path, tl.name as typename FROM ".DBPREFIX."module_news n 
-			LEFT JOIN ".DBPREFIX."module_news_locale nl ON n.id = nl.news_id AND nl.lang_id=".$objInit->userFrontendLangId." 
-			LEFT JOIN ".DBPREFIX."module_news_categories_locale cl ON n.catid = cl.category_id AND cl.lang_id=".$objInit->userFrontendLangId." 
-			LEFT JOIN ".DBPREFIX."module_news_types_locale tl ON n.typeid = tl.type_id AND tl.lang_id=".$objInit->userFrontendLangId." 
-			WHERE n.id IN (".$selectedNews.") ORDER BY cl.name ASC, n.date DESC";
-
-			$objNews = $objDatabase->Execute($query);
-			if($this->_impTpl->blockExists('news_list')) {
-				$objFWUser = FWUser::getFWUserObject();
-				$current_category = '';
-				if ($objNews !== false) {
-					while (!$objNews->EOF) {
-						$this->_impTpl->setVariable(array(
-							'NEWS_CATEGORY_NAME' => $objNews->fields['catname']
-						));
-						if($current_category == $objNews->fields['catid'])
-							$this->_impTpl->hideBlock("news_category");
-						$current_category = $objNews->fields['catid'];
-						$newstext = substr(ltrim(strip_tags($objNews->fields['text'])), 0, 800);
-						$newstext .= "[....]";
-						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
-// TODO: use new URL-format
-						$newslink = $this->newsletterUri.ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET."/de/index.php?section=news&cmd=details&newsid=".$objNews->fields['id'];
-						if ($objNews->fields['userid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['userid']))) {
-							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
-						} else {
-							$author = $_ARRAYLANG['TXT_ANONYMOUS'];
-						}
-						$this->_impTpl->setVariable(array(
-							'NEWS_CATEGORY_NAME' => $objNews->fields['catname'],
-							'NEWS_DATE' => date(ASCMS_DATE_FORMAT_DATE, $objNews->fields['date']),
-							'NEWS_LONG_DATE' => date(ASCMS_DATE_FORMAT_DATETIME, $objNews->fields['date']),
-							'NEWS_TITLE' => $objNews->fields['title'],
-							'NEWS_URL' => $newslink,
-							'NEWS_IMAGE_PATH' => htmlentities($objNews->fields['teaser_image_thumbnail_path'], ENT_QUOTES, CONTREXX_CHARSET),
-							'NEWS_TEASER_TEXT' => $newsteasertext,
-							'NEWS_TEXT' => $newstext,
-							'NEWS_AUTHOR' => $author,
-							'NEWS_TYPE_NAME' => $objNews->fields['typename']
-						));
-						$this->_impTpl->parse("news_list");
-						$objNews->MoveNext();
-					}
-				}
-				$mailTextContent = $this->_impTpl->get();
-			}
-			else {
-				if ($objNews !== false) {
-					$mailTextContent = '';
-					while (!$objNews->EOF) {
-						$content = $TEXT_TemplateSource_Import;
-						$newstext = substr(ltrim(strip_tags($objNews->fields['text'])), 0, 800);
-						$newstext .= "[....]";
-						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
-// TODO: use new URL-format
-						$newslink = $this->newsletterUri.ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET."/de/index.php?section=news&cmd=details&newsid=".$objNews->fields['id'];
-						if ($objNews->fields['userid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['userid']))) {
-							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
-						} else {
-							$author = $_ARRAYLANG['TXT_ANONYMOUS'];
-						}
-						$search = array(
-							'[[NEWS_DATE]]',
-							'[[NEWS_LONG_DATE]]',
-							'[[NEWS_TITLE]]',
-							'[[NEWS_URL]]',
-							'[[NEWS_IMAGE_PATH]]',
-							'[[NEWS_TEASER_TEXT]]',
-							'[[NEWS_TEXT]]',
-							'[[NEWS_AUTHOR]]',
-							'[[NEWS_TYPE_NAME]]',
-							'[[NEWS_CATEGORY_NAME]]'
-						);
-						$replace = array(
-							date(ASCMS_DATE_FORMAT_DATE, $objNews->fields['date']),
-							date(ASCMS_DATE_FORMAT_DATETIME, $objNews->fields['date']),
-							$objNews->fields['title'],
-							$newslink,
-							htmlentities($objNews->fields['teaser_image_thumbnail_path'], ENT_QUOTES, CONTREXX_CHARSET),
-							$newsteasertext,
-							$newstext,
-							$author,
-							$objNews->fields['typename'],
-							$objNews->fields['catname']
-						);
-						$content = str_replace($search, $replace, $content);
-						if($mailTextContent != '')
-							$mailTextContent .= "\r\n".$content;
-						else
-							$mailTextContent = $content;
-						$objNews->MoveNext();
-					}
-				}
-			}
-			unset($_REQUEST['standalone']);
-		} else {
-            $mailTextContent = '';
-        }
         if (isset($_POST['newsletter_mail_attachment']) && is_array($_POST['newsletter_mail_attachment'])) {
             foreach ($_POST['newsletter_mail_attachment'] as $attachment) {
                 array_push($arrAttachment, contrexx_addslashes($attachment));
             }
         }
-
-        $mailFormat = isset($_POST['newsletter_mail_format']) ? contrexx_stripslashes($_POST['newsletter_mail_format']) : $this->_stdMailFormat;
 
         if (isset($_POST['newsletter_mail_priority'])) {
             $mailPriority = intval($_POST['newsletter_mail_priority']);
@@ -872,9 +754,9 @@ class newsletter extends NewsletterLib
             }
 
             if ($mailId > 0) {
-                $status = $this->_updateMail($mailId, $mailSubject, $mailFormat, $mailTemplate, $mailSenderMail, $mailSenderName, $mailReply, $mailSmtpServer, $mailPriority, $arrAttachment, $mailHtmlContent, $mailTextContent);
+                $status = $this->_updateMail($mailId, $mailSubject, $mailTemplate, $mailSenderMail, $mailSenderName, $mailReply, $mailSmtpServer, $mailPriority, $arrAttachment, $mailHtmlContent);
             } else {
-                $mailId = $this->_addMail($mailSubject, $mailFormat, $mailTemplate, $mailSenderMail, $mailSenderName, $mailReply, $mailSmtpServer, $mailPriority, $arrAttachment, $mailHtmlContent, $mailTextContent);
+                $mailId = $this->_addMail($mailSubject, $mailTemplate, $mailSenderMail, $mailSenderName, $mailReply, $mailSmtpServer, $mailPriority, $arrAttachment, $mailHtmlContent);
                 if ($mailId === false) {
                     $status = false;
                 }
@@ -907,9 +789,7 @@ class newsletter extends NewsletterLib
                 subject,
                 template,
                 content,
-                content_text,
                 attachment,
-                format,
                 priority,
                 sender_email,
                 sender_name,
@@ -922,8 +802,6 @@ class newsletter extends NewsletterLib
                     $mailSubject = $objResult->fields['subject'];
                     $mailTemplate = $objResult->fields['template'];
                     $mailHtmlContent = $objResult->fields['content'];
-                    $mailTextContent = $objResult->fields['content_text'];
-                    $mailFormat = $objResult->fields['format'];
                     $mailPriority = $objResult->fields['priority'];
                     $mailSenderMail = $objResult->fields['sender_email'];
                     $mailSenderName = $objResult->fields['sender_name'];
@@ -964,8 +842,7 @@ class newsletter extends NewsletterLib
             $mailSmtpServer = $_CONFIG['coreSmtpServer'];
 
             if (!empty($_POST['textfield'])) {
-                $mailHtmlContent =  nl2br($_POST['textfield']);
-                $mailTextContent =  $_POST['textfield'];
+                $mailHtmlContent = nl2br($_POST['textfield']);
             }
         }
 
@@ -979,13 +856,7 @@ class newsletter extends NewsletterLib
         $this->_objTpl->setVariable(array(
             'NEWSLETTER_MAIL_ID' => ($copy ? 0 : $mailId),
             'NEWSLETTER_MAIL_SUBJECT' => htmlentities($mailSubject, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_MAIL_HTML_CONTENT' => $mailFormat != 'text' ? get_wysiwyg_editor('newsletter_mail_html_content', $mailHtmlContent, null, null, true) : '<input type="hidden" name="newsletter_mail_html_content" value="'.htmlentities($mailHtmlContent, ENT_QUOTES, CONTREXX_CHARSET).'" />',
-            'NEWSLETTER_MAIL_TEXT_CONTENT' => '<textarea name="newsletter_mail_text_content" id="newsletter_mail_text_content" style="width: 100%; height: 447px;">'.htmlentities($mailTextContent, ENT_QUOTES, CONTREXX_CHARSET).'</textarea>',
-            'NEWSLETTER_MAIL_HTML_CONTENT_STAUTS' => $mailFormat != 'text' ? 'block' : 'none',
-            'NEWSLETTER_MAIL_TEXT_CONTENT_STAUTS' => $mailFormat == 'text' ? 'block' : 'none',
-            'NEWSLETTER_MAIL_HTML_CONTENT_CLASS' => $mailFormat != 'text' ? 'active' : '',
-            'NEWSLETTER_MAIL_TEXT_CONTENT_CLASS' => $mailFormat == 'text' ? 'active' : '',
-            'NEWSLETTER_MAIL_FORMAT_MENU' => $this->_getMailFormatMenu($mailFormat, 'name="newsletter_mail_format" id="newsletter_mail_format" onchange="document.getElementById(\'newsletter_mail_form\').action=\'index.php?cmd=newsletter&amp;act='.$act.'&amp;id='.$mailId.'&amp;setFormat=1\';document.getElementById(\'newsletter_mail_form\').submit()" style="width:300px;"'),
+            'NEWSLETTER_MAIL_HTML_CONTENT' => get_wysiwyg_editor('newsletter_mail_html_content', $mailHtmlContent, null, null, true),
             'NEWSLETTER_MAIL_PRIORITY_MENU' => $this->_getMailPriorityMenu($mailPriority, 'name="newsletter_mail_priority" style="width:300px;"'),
             'NEWSLETTER_MAIL_TEMPLATE_MENU' => $this->_getTemplateMenu($mailTemplate, 'name="newsletter_mail_template" style="width:300px;" onchange="document.getElementById(\'newsletter_mail_form\').action=\'index.php?cmd=newsletter&amp;act='.$act.'&amp;id='.$mailId.'&amp;setFormat=1\';document.getElementById(\'newsletter_mail_form\').submit()"'),
             'NEWSLETTER_MAIL_SENDER_MAIL' => htmlentities($mailSenderMail, ENT_QUOTES, CONTREXX_CHARSET),
@@ -1050,7 +921,6 @@ class newsletter extends NewsletterLib
             'TXT_NEWSLETTER_REMOVE_FILE' => $_ARRAYLANG['TXT_NEWSLETTER_REMOVE_FILE'],
             'TXT_NEWSLETTER_ATTACH_FILE' => $_ARRAYLANG['TXT_NEWSLETTER_ATTACH_FILE'],
             'TXT_NEWSLETTER_HTML_CONTENT' => $_ARRAYLANG['TXT_NEWSLETTER_HTML_CONTENT'],
-            'TXT_NEWSLETTER_TEXT_CONTENT' => $_ARRAYLANG['TXT_NEWSLETTER_TEXT_CONTENT'],
             'TXT_NEWSLETTER_PLACEHOLDER_DIRECTORY' => $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDER_DIRECTORY'],
             'TXT_NEWSLETTER_USER_DATA' => $_ARRAYLANG['TXT_NEWSLETTER_USER_DATA'],
             'TXT_NEWSLETTER_EMAIL_ADDRESS' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
@@ -1314,7 +1184,6 @@ class newsletter extends NewsletterLib
         $objResult = $objDatabase->SelectLimit("SELECT
             tblMail.id,
             tblMail.subject,
-            tblMail.format,
             tblMail.date_create,
             tblMail.sender_email,
             tblMail.sender_name,
@@ -1519,21 +1388,7 @@ class newsletter extends NewsletterLib
     }
 
 
-    function _getMailFormatMenu($selectedFormat = '', $attributes = '')
-    {
-        global $_ARRAYLANG;
-
-        $menu = "<select".(!empty($attributes) ? " ".$attributes : "").">\n";
-        foreach ($this->_arrMailFormat as $format => $formatTXT) {
-            $menu .= "<option value=\"".$format."\"".($selectedFormat == $format ? " selected=\"selected\"" : "").">".$_ARRAYLANG[$formatTXT]."</option>\n";
-        }
-        $menu .= "</select>\n";
-
-        return $menu;
-    }
-
-
-    function _addMail($subject, $format, $template, $senderMail, $senderName, $replyMail, $smtpServer, $priority, $arrAttachment, $htmlContent, $textContent)
+    function _addMail($subject, $template, $senderMail, $senderName, $replyMail, $smtpServer, $priority, $arrAttachment, $htmlContent)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -1542,9 +1397,7 @@ class newsletter extends NewsletterLib
                 (subject,
                 template,
                 content,
-                content_text,
                 attachment,
-                format,
                 priority,
                 sender_email,
                 sender_name,
@@ -1555,9 +1408,7 @@ class newsletter extends NewsletterLib
                 '".addslashes($subject)."',
                 ".intval($template).",
                 '".addslashes($htmlContent)."',
-                '".addslashes($textContent)."',
                 '".(count($arrAttachment) > 0 ? '1' : '0')."',
-                '".addslashes($format)."',
                 ".intval($priority).",
                 '".addslashes($senderMail)."',
                 '".addslashes($senderName)."',
@@ -1578,7 +1429,7 @@ class newsletter extends NewsletterLib
     }
 
 
-    function _updateMail($mailId, $subject, $format, $template, $senderMail, $senderName, $replyMail, $smtpServer, $priority, $arrAttachment, $htmlContent, $textContent)
+    function _updateMail($mailId, $subject, $template, $senderMail, $senderName, $replyMail, $smtpServer, $priority, $arrAttachment, $htmlContent)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -1587,9 +1438,7 @@ class newsletter extends NewsletterLib
                 SET subject='".addslashes($subject)."',
                 template=".intval($template).",
                 content='".addslashes($htmlContent)."',
-                content_text='".addslashes($textContent)."',
                 attachment='".(count($arrAttachment) > 0 ? '1' : '0')."',
-                format='".addslashes($format)."',
                 priority=".intval($priority).",
                 sender_email='".addslashes($senderMail)."',
                 sender_name='".addslashes($senderName)."',
@@ -2066,10 +1915,10 @@ class newsletter extends NewsletterLib
     }
 
 
-    function _updateTemplate($id, $name, $description, $html, $text, $type)
+    function _updateTemplate($id, $name, $description, $html, $type)
     {
         global $objDatabase;
-        if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_template SET name='".addslashes($name)."', description='".addslashes($description)."', html='".addslashes($html)."', text='".addslashes($text)."', type='".$type."' WHERE id=".$id) !== false) {
+        if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_template SET name='".addslashes($name)."', description='".addslashes($description)."', html='".addslashes($html)."', type='".$type."' WHERE id=".$id) !== false) {
             return true;
         } else {
              return false;
@@ -2077,10 +1926,10 @@ class newsletter extends NewsletterLib
     }
 
 
-    function _addTemplate($name, $description, $html, $text, $type)
+    function _addTemplate($name, $description, $html, $type)
     {
         global $objDatabase;
-        if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_template (`name`, `description`, `html`,`text`, `type`) VALUES ('".addslashes($name)."', '".addslashes($description)."', '".addslashes($html)."', '".addslashes($text)."', '".$type."')") !== false) {
+        if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_template (`name`, `description`, `html`, `type`) VALUES ('".addslashes($name)."', '".addslashes($description)."', '".addslashes($html)."', '".$type."')") !== false) {
             return true;
         } else {
              return false;
@@ -2099,7 +1948,6 @@ class newsletter extends NewsletterLib
         $description = '';
 		$type = '';
 		$html = "<html>\n<head>\n<title>[[subject]]</title>\n</head>\n<body>\n[[content]]\n<br />\n<br />\n[[profile_setup]]\n[[unsubscribe]]\n</body>\n</html>";
-		$text = "[[content]]\n\n\n[[profile_setup]]\n[[unsubscribe]]";
         $saveStatus = true;
 
         if (isset($_POST['newsletter_template_save'])) {
@@ -2132,26 +1980,13 @@ class newsletter extends NewsletterLib
                 self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_MIN_CONTENT_PLACEHOLDER_HTML_MSG']."<br />";
             }
 
-            if (isset($_POST['template_edit_text'])) {
-                $text = contrexx_stripslashes($_POST['template_edit_text']);
-            }
-            if (preg_match_all('/\[\[content\]\]/', $text, $arrContentMatches)) {
-                if (count($arrContentMatches[0]) > 1) {
-                    $saveStatus = false;
-                    self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_MAX_CONTENT_PLACEHOLDER_TEXT_MSG']."<br />";
-                }
-            } elseif ($type != 'news') {
-                $saveStatus = false;
-                self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_MIN_CONTENT_PLACEHOLDER_TEXT_MSG']."<br />";
-            }
-
             if ($saveStatus) {
                 $objTemplate = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_template WHERE id!=".$id." AND name='".addslashes($name)."' AND type='".$type."'", 1);
                 if ($objTemplate !== false && $objTemplate->RecordCount() == 0) {
                     if ($id > 0) {
-                        $this->_updateTemplate($id, $name, $description, $html, $text, $type);
+                        $this->_updateTemplate($id, $name, $description, $html, $type);
                     } else {
-                        $this->_addTemplate($name, $description, $html, $text, $type);
+                        $this->_addTemplate($name, $description, $html, $type);
                     }
 
                     return $this->_templates();
@@ -2160,13 +1995,12 @@ class newsletter extends NewsletterLib
                 }
             }
         } elseif ($id > 0) {
-            $objTemplate = $objDatabase->SelectLimit("SELECT id, name, description, html, text, type FROM ".DBPREFIX."module_newsletter_template WHERE id=".$id, 1);
+            $objTemplate = $objDatabase->SelectLimit("SELECT id, name, description, html, type FROM ".DBPREFIX."module_newsletter_template WHERE id=".$id, 1);
             if ($objTemplate !== false && $objTemplate->RecordCount() == 1) {
                 $name = $objTemplate->fields['name'];
                 $description = $objTemplate->fields['description'];
 				$type = $objTemplate->fields['type'];
                 $html = $objTemplate->fields['html'];
-                $text = $objTemplate->fields['text'];
             }
         }
 
@@ -2238,7 +2072,6 @@ class newsletter extends NewsletterLib
             'NEWSLETTER_TEMPLATE_DESCRIPTION' => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
 			'NEWSLETTER_TEMPLATE_TYPE' => $type,
             'NEWSLETTER_TEMPLATE_HTML' => get_wysiwyg_editor('template_edit_html', $html, 'fullpage', null, true),
-            'NEWSLETTER_TEMPLATE_TEXT' => htmlentities($text, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_TEMPLATE_TITLE_TEXT' => $id > 0 ? $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_TEMPLATE'] : $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATE_ADD'],
 			'NEWSLETTER_TEMPLATE_TYPE_MENU' => $typeOps,
 			'NEWSLETTER_TEMPLATE_NEWS_IMPORT_DIRECTORY_DISPLAY' => $newsImportDirectoryDisplay,
@@ -3007,8 +2840,6 @@ class newsletter extends NewsletterLib
             $subject      = $newsletterValues['subject'];
             $template     = $newsletterValues['template'];
             $content      = $newsletterValues['content'];
-            $content_text = $newsletterValues['content_text'];
-            $format       = $newsletterValues['format'];
             $priority     = $newsletterValues['priority'];
             $sender_email = $newsletterValues['sender_email'];
             $sender_name  = $newsletterValues['sender_name'];
@@ -3026,7 +2857,7 @@ class newsletter extends NewsletterLib
             $subject,
             $content,
             $HTML_TemplateSource,
-            "html",
+            '',
             $TargetEmail,
             $newsletterUserData,
             $NewsletterID
@@ -3034,80 +2865,38 @@ class newsletter extends NewsletterLib
         LinkGenerator::parseTemplate($NewsletterBody_HTML);
 
         $NewsletterBody_TEXT = $this->ParseNewsletter(
-            $subject,
-            $content_text,
-            $TEXT_TemplateSource,
-            "text",
-            $TargetEmail,
+            '',
+            '',
+            '',
+            'text',
+            '',
             $newsletterUserData,
             $NewsletterID
         );
-        $NewsletterBody_TEXT = wordwrap($NewsletterBody_TEXT, $break);
         LinkGenerator::parseTemplate($NewsletterBody_TEXT);
-
-        // Work around an oddity in phpmailer: it detects
-        // whether it's multipart/alternative by checking
-        // the length of the AltBody attribute. Now if we
-        // set it to empty (because it's not entered), it
-        // fucks up and uses the HTML content and handles
-        // it as plaintext. So we try to extract the text
-        // from the HTML code and use this.
-        if (($format == 'text/html' or $format == 'html/text' ) and $content_text == '') {
-            $new_textcontent = preg_replace('#<br/?>#i', "\r\n",     html_entity_decode($content, ENT_COMPAT, CONTREXX_CHARSET));
-            $new_textcontent = preg_replace('#<p/?>#i',  "\r\n\r\n", $new_textcontent);
-            $new_textcontent = strip_tags($new_textcontent);
-            # TODO: if there's tables, we probably should handle them in a special way...
-            $NewsletterBody_TEXT = $this->ParseNewsletter(
-                $subject,
-                $new_textcontent,
-                $TEXT_TemplateSource,
-                "text",
-                $TargetEmail,
-                $newsletterUserData,
-                $NewsletterID
-            );
-            LinkGenerator::parseTemplate($NewsletterBody_TEXT);
-        }
 
         $mail = new phpmailer();
         if ($smtpAccount > 0) {
             if (($arrSmtp = SmtpSettings::getSmtpAccount($smtpAccount)) !== false) {
                 $mail->IsSMTP();
-                $mail->Host = $arrSmtp['hostname'];
-                $mail->Port = $arrSmtp['port'];
+                $mail->Host     = $arrSmtp['hostname'];
+                $mail->Port     = $arrSmtp['port'];
                 $mail->SMTPAuth = $arrSmtp['username'] == '-' ? false : true;
                 $mail->Username = $arrSmtp['username'];
                 $mail->Password = $arrSmtp['password'];
             }
         }
-        $mail->CharSet = CONTREXX_CHARSET;
+        $mail->CharSet  = CONTREXX_CHARSET;
         $mail->From     = $sender_email;
         $mail->FromName = $sender_name;
         $mail->AddReplyTo($return_path);
-        $mail->Subject     = $subject;
+        $mail->Subject  = $subject;
         $mail->Priority = $priority;
-        //$mail->AddBCC($bcc, '');
-        switch ($format) {
-            case "text/html": # Some joker decided that we need to make the format spec as a string. Cause Constants
-            case "html/text": # are for idiots, right? Everybody can remember the right way to specify a string.. RIGHT?
-                $mail->Body     = $NewsletterBody_HTML;
-                $mail->AltBody     = $NewsletterBody_TEXT;
-                break;
-            case "html":
-                $mail->IsHTML(true);
-                $mail->Body     = $NewsletterBody_HTML;
-                break;
-            case "text":
-                $mail->IsHTML(false);
-                $mail->Body     = $NewsletterBody_TEXT;
-                break;
-            default:
-                $mail->Body     = $NewsletterBody_HTML;
-                $mail->AltBody     = $NewsletterBody_TEXT;
-                break;
-        }
-        $queryATT         = "SELECT newsletter, file_name FROM ".DBPREFIX."module_newsletter_attachment where newsletter=".$NewsletterID."";
-        $objResultATT     = $objDatabase->Execute($queryATT);
+        $mail->Body     = $NewsletterBody_HTML;
+        $mail->AltBody  = $NewsletterBody_TEXT;
+        
+        $queryATT     = "SELECT newsletter, file_name FROM ".DBPREFIX."module_newsletter_attachment where newsletter=".$NewsletterID."";
+        $objResultATT = $objDatabase->Execute($queryATT);
         if ($objResultATT !== false) {
             while (!$objResultATT->EOF) {
                 $mail->AddAttachment(ASCMS_NEWSLETTER_ATTACH_PATH."/".$objResultATT->fields['file_name'], $objResultATT->fields['file_name']);
@@ -3225,8 +3014,8 @@ class newsletter extends NewsletterLib
         global $objDatabase;
 
         $queryNewsletterValues = "
-            SELECT id, subject, template, content, content_text,
-                   attachment, format, priority, sender_email, sender_name,
+            SELECT id, subject, template, content,
+                   attachment, priority, sender_email, sender_name,
                    return_path, smtp_server, status, count,
                    date_create, date_sent
               FROM ".DBPREFIX."module_newsletter
@@ -3299,13 +3088,13 @@ class newsletter extends NewsletterLib
     }
 
 
-    function GetTemplateSource($TemplateID, $format) {
+    function GetTemplateSource($TemplateID) {
         global $objDatabase;
         $TemplateSource = '';
-        $queryPN = "select id, name, description, type, ".$format." from ".DBPREFIX."module_newsletter_template where id=".$TemplateID."";
+        $queryPN = "select id, name, description, type, html from ".DBPREFIX."module_newsletter_template where id=".$TemplateID."";
         $objResultPN = $objDatabase->Execute($queryPN);
         if ($objResultPN !== false) {
-            $TemplateSource = $objResultPN->fields[$format];
+            $TemplateSource = $objResultPN->fields['html'];
         }
         return $TemplateSource;
     }
@@ -3318,7 +3107,7 @@ class newsletter extends NewsletterLib
      */
     function ParseNewsletter(
         $subject, $content_text, $TemplateSource,
-        $format, $TargetEmail, $userData,$NewsletterID
+        $format, $TargetEmail, $userData, $NewsletterID
     ) {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
@@ -3353,10 +3142,8 @@ class newsletter extends NewsletterLib
         }
 
         // lets prepare all links for tracker before we replace placeholders
-        if ($format == 'html') {
 // TODO: migrate tracker to new URL-format
-            //$content_text = $this->_prepareNewsletterLinksForSend($NewsletterID, $content_text, ($userData['type'] == 'access' ? $userData['id'] : $userData['email']));
-        }
+        //$content_text = $this->_prepareNewsletterLinksForSend($NewsletterID, $content_text, ($userData['type'] == 'access' ? $userData['id'] : $userData['email']));
 
 // TODO: Both $arrRecipientTitles and $title are never used
 //        $arrRecipientTitles = &$this->_getRecipientTitles();
@@ -3414,8 +3201,8 @@ class newsletter extends NewsletterLib
         // Replace the links in the content
         $search         = array('[[profile_setup]]', '[[unsubscribe]]', '[[date]]');
         $replace        = array(
-            $this->GetProfileURL($userData['code'], $TargetEmail, $format, $userData['type']),
-            $this->GetUnsubscribeURL($userData['code'], $TargetEmail, $format, $userData['type']),
+            $this->GetProfileURL($userData['code'], $TargetEmail, $userData['type']),
+            $this->GetUnsubscribeURL($userData['code'], $TargetEmail, $userData['type']),
             date(ASCMS_DATE_FORMAT_DATE)
         );
         $content_text = str_replace($search, $replace, $content_text);
@@ -3423,8 +3210,8 @@ class newsletter extends NewsletterLib
         // replace the links in the template
         $search         = array('[[profile_setup]]', '[[unsubscribe]]', '[[date]]');
         $replace        = array(
-            $this->GetProfileURL($userData['code'], $TargetEmail, $format, $userData['type']),
-            $this->GetUnsubscribeURL($userData['code'], $TargetEmail, $format, $userData['type']),
+            $this->GetProfileURL($userData['code'], $TargetEmail, $userData['type']),
+            $this->GetUnsubscribeURL($userData['code'], $TargetEmail, $userData['type']),
             date(ASCMS_DATE_FORMAT_DATE)
         );
         $TemplateSource = str_replace($search, $replace, $TemplateSource);
@@ -3562,7 +3349,7 @@ class newsletter extends NewsletterLib
     /**
      * Get the URL to the page to unsubscribe
      */
-    function GetUnsubscribeURL($code, $email, $format, $type='newsletter')
+    function GetUnsubscribeURL($code, $email, $type='newsletter')
     {
         global $_ARRAYLANG, $_CONFIG;
 
@@ -3579,18 +3366,14 @@ class newsletter extends NewsletterLib
             '/'.FWLanguage::getLanguageParameter(FWLanguage::getDefaultLangId(), 'lang').
             '/'.CONTREXX_DIRECTORY_INDEX.$profileURI;
 
-        if ($format=="html") {
-            return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
-        } else {
-            return $_ARRAYLANG['TXT_UNSUBSCRIBE'].' '.$uri."\n\n";
-        }
+        return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
     }
 
 
     /**
      * Return link to the profile of a user
      */
-    function GetProfileURL($code, $email, $format, $type = 'newsletter')
+    function GetProfileURL($code, $email, $type = 'newsletter')
     {
         global $_ARRAYLANG, $_CONFIG;
 
@@ -3609,10 +3392,7 @@ class newsletter extends NewsletterLib
             '/'.FWLanguage::getLanguageParameter(FWLanguage::getDefaultLangId(), 'lang').
 // TODO: if useVirtualLanguagePath is not turned on, we shall add the url modificator langId to the profile URI
             '/'.CONTREXX_DIRECTORY_INDEX.$profileURI;
-        if ($format == "html") {
-            return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
-        }
-        return $_ARRAYLANG['TXT_EDIT_PROFILE'].' '.$uri."\n\n";
+        return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
     }
 
 
@@ -5535,7 +5315,7 @@ function MultiAction() {
         global $objDatabase;
 
         $arrTemplates = array();
-        $objTemplate = $objDatabase->Execute("SELECT id, name, description, html, text, type FROM ".DBPREFIX."module_newsletter_template WHERE type='".$type."'");
+        $objTemplate = $objDatabase->Execute("SELECT id, name, description, html, type FROM ".DBPREFIX."module_newsletter_template WHERE type='".$type."'");
         if ($objTemplate !== false) {
             while (!$objTemplate->EOF) {
                 $arrTemplates[$objTemplate->fields['id']] = array(
@@ -5543,7 +5323,6 @@ function MultiAction() {
                     'description' => $objTemplate->fields['description'],
 					'type' => $objTemplate->fields['type'],
                     'html' => $objTemplate->fields['html'],
-                    'text' => $objTemplate->fields['text']
                 );
                 $objTemplate->MoveNext();
             }
