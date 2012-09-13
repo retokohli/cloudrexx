@@ -346,6 +346,7 @@ $_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD'] = "Upload Images";
 $_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'] = "Confirm Images";
 $_ARRAYLANG['TXT_GALLERY_MENU_SETTINGS'] = "Settings";
 $_ARRAYLANG['TXT_DELETE_PAGES'] = "Delete pages";
+$_ARRAYLANG['TXT_MOVE_NODE'] = "Move pages";
 $_ARRAYLANG['TXT_EDIT_PAGES'] = "Edit pages";
 $_ARRAYLANG['TXT_ACCESS_CONTROL'] = "Access Control";
 $_ARRAYLANG['TXT_MODIFY_MEDIA_FILES'] = "Modify media files";
