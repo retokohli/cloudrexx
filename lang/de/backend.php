@@ -348,6 +348,7 @@ $_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD'] = "Bilder heraufladen";
 $_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'] = "Bilder bestätigen";
 $_ARRAYLANG['TXT_GALLERY_MENU_SETTINGS'] = "Einstellungen";
 $_ARRAYLANG['TXT_DELETE_PAGES'] = "Seiten löschen";
+$_ARRAYLANG['TXT_MOVE_NODE'] = "Seiten verschieben";
 $_ARRAYLANG['TXT_EDIT_PAGES'] = "Seiten editieren";
 $_ARRAYLANG['TXT_ACCESS_CONTROL'] = "Zugangsberechtigungen";
 $_ARRAYLANG['TXT_MODIFY_MEDIA_FILES'] = "Media Dateien verändern";
