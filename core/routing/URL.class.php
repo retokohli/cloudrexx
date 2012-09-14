@@ -1,10 +1,39 @@
 <?php
+
+/**
+ * An URL container
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @version     3.0.0
+ * @package     contrexx
+ * @subpackage  routing
+ * @todo        Edit PHP DocBlocks!
+ */
+
 namespace Cx\Core\Routing;
 
+/**
+ * URL Exception
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @version     3.0.0
+ * @package     contrexx
+ * @subpackage  routing
+ * @todo        Edit PHP DocBlocks!
+ */
 class URLException extends \Exception {};
 
 /**
- * An URL container.
+ * An URL container
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @version     3.0.0
+ * @package     contrexx
+ * @subpackage  routing
+ * @todo        Edit PHP DocBlocks!
  */
 class URL {
     /**
@@ -14,7 +43,7 @@ class URL {
      */
     protected $protocol = 'http';
     /**
-     * http://example.com
+     * http://example.com/
      * @var string
      */
     protected $domain = null;
@@ -26,7 +55,8 @@ class URL {
      */
     protected $path = null;
     /**
-     * @var string Virtual language directory
+     * Virtual language directory, like 'de' or 'en'
+     * @var string
      */
     protected $langDir = '';
     /**
@@ -39,7 +69,6 @@ class URL {
     /**
      * ?a=10&b=foo
      * ?section=x&cmd=y
-     *
      * @var string
      */
     protected $suggestedParams = '';
@@ -53,7 +82,7 @@ class URL {
     protected $targetPath = null;
     /**
      * ?a=10&b=foo
-     * 
+     *
      * /With/Param
      * @var string
      */
@@ -83,7 +112,7 @@ class URL {
             $this->suggest();
         }
     }
-    
+
     /**
      * Whether the routing already treated this url
      */
@@ -145,12 +174,12 @@ class URL {
         $this->state = self::ROUTED;
         $this->params = $params;
     }
-    
+
     /**
      * @author Michael Ritter <michael.ritter@comvation.com>
      * @todo most of the work done in this method should be done somewhere else (constructor?)
      * @param type $name
-     * @param type $value 
+     * @param type $value
      */
     public function setParam($name, $value) {
         // quick and dirty fix, see @todo...
@@ -160,13 +189,14 @@ class URL {
         $this->path = $path[0];
         $this->path .= $this->array2Params($params);
     }
-    
+
     /**
      * @author Michael Ritter <michael.ritter@comvation.com>
-     * @return array 
+     * @return array
      */
     private function params2Array() {
         $path = explode('?', $this->path);
+        $params = NULL;
         if (count($path) > 1) {
             $params = explode('&', $path[1]);
             foreach ($params as $key=>$param) {
@@ -184,11 +214,11 @@ class URL {
         }
         return $params;
     }
-    
+
     /**
      * @author Michael Ritter <michael.ritter@comvation.com>
      * @param string $params
-     * @return string 
+     * @return string
      */
     private function array2Params($params) {
         $path = '';
@@ -208,10 +238,10 @@ class URL {
     public function getParams() {
         return $this->params;
     }
-    
+
     /**
      * @author Michael Ritter <michael.ritter@comvation.com>
-     * @return array 
+     * @return array
      */
     public function getParamArray() {
         return $this->params2Array();
@@ -240,7 +270,7 @@ class URL {
      */
     public static function fromCapturedRequest($request, $pathOffset, $get) {
         global $_CONFIG;
-        
+
         if(substr($request, 0, strlen($pathOffset)) != $pathOffset)
             throw new URLException("'$request' doesn't seem to start with provided offset '$pathOffset'");
 
@@ -252,7 +282,7 @@ class URL {
         $getParams = '';
         foreach($get as $k => $v) {
             if($k == '__cap') //skip captured request from mod_rewrite
-                continue; 
+                continue;
             $joiner='&';
             if ($getParams == '') {
                 $joiner='?';
@@ -262,7 +292,7 @@ class URL {
 
         return new URL($protocol.'://'.$host.'/'.$request.$getParams);
     }
-    
+
     /**
      * Returns an Url object for module, cmd and lang
      * @todo There could be more than one page using the same module and cmd per lang
@@ -285,13 +315,13 @@ class URL {
         ));
         return static::fromPage($page, $parameters, $protocol);
     }
-    
+
     /**
      * Returns the URL object for a page id
      * @param int $pageId ID of the page you'd like the URL to
      * @param array $parameters (optional) HTTP GET parameters to append
      * @param string $protocol (optional) The protocol to use
-     * @return \Cx\Core\Routing\URL Url object for the supplied page id 
+     * @return \Cx\Core\Routing\URL Url object for the supplied page id
      */
     public static function fromPageId($pageId, $parameters = array(), $protocol = '') {
         $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
@@ -300,7 +330,7 @@ class URL {
         ));
         return static::fromPage($page, $parameters, $protocol);
     }
-    
+
     /**
      * Returns the URL object for a page
      * @global type $_CONFIG
@@ -311,7 +341,7 @@ class URL {
      */
     public static function fromPage($page, $parameters = array(), $protocol = '') {
         global $_CONFIG;
-        
+
         if ($protocol == '') {
             $protocol = ASCMS_PROTOCOL;
         }
@@ -329,23 +359,23 @@ class URL {
         }
         return new URL($protocol.'://'.$host.$offset.'/'.$langDir.$path.$getParams);
     }
-    
+
     public function toString() {
         return $this->domain . substr($this, 1);
     }
-    
+
     public function getLangDir() {
         $lang_dir = '';
 
         if ($this->langDir == '' && defined('FRONTEND_LANG_ID')) {
-            $lang_dir = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID) . '/';
+            $lang_dir = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
         } else {
             $lang_dir = $this->langDir;
         }
 
         return $lang_dir;
     }
-    
+
     public function setLangDir($langDir) {
         $this->lang_dir = $langDir;
     }
@@ -354,11 +384,14 @@ class URL {
      * Returns URL without hostname for use in internal links.
      * Use $this->toString() for full URL including protocol and hostname
      * @todo this should only return $this->protocol . '://' . $this->host . '/' . $this->path . $this->getParamsForUrl();
-     * @return type 
+     * @return type
      */
-    public function __toString() {
-        return ASCMS_PATH_OFFSET . '/' .
-                $this->getLangDir() . '/' .
-                $this->path; // contains path (except for PATH_OFFSET and virtual language dir) and params
+    public function __toString()
+    {
+        return
+            ASCMS_PATH_OFFSET.'/'.
+            $this->getLangDir().'/'.
+            $this->path; // contains path (except for PATH_OFFSET and virtual language dir) and params
     }
+
 }
