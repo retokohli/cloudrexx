@@ -10,6 +10,7 @@ form .contact.row {
 
 /* Start old contact form structure */
 form p {
+    width: 400px;
     padding-left: 250px;
 }
 
@@ -1387,11 +1388,20 @@ div#livecam #CALBUTTONDPC_datum {
     float:left;
     height:auto !important;
 }
+#u2u div.buttons {
+    float: left;
+    width: 100%;
+    padding: 20px 0 0 0;
+}
 #u2u div.message_error {
     color:#FF0000;
 }
 #u2u div.message_ok {
     color: #029202;
+}
+#u2u #cke_private_message {
+    float: left;
+    width: 100%;
 }
 
 /***************************************************/
