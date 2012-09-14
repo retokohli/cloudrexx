@@ -1498,7 +1498,7 @@ $_ARRAYLANG['TXT_CORE_DRAFT'] = "Entwurf";
 $_ARRAYLANG['TXT_CORE_SAVED_AS_DRAFT'] = "Seite als Entwurf gespeichert";
 $_ARRAYLANG['TXT_CORE_SAVED'] = "Seite gespeichert";
 $_ARRAYLANG['TXT_CORE_DRAFT_SUBMITTED'] = "Entwurf zur Ver&ouml;ffentlichung freigegeben";
-$_ARRAYLANG['TXT_CORE_CM_ACTION_PUBLISH_DRAFT'] = "Entwurf ver&ouml;ffentlichen";
+$_ARRAYLANG['TXT_CORE_CM_ACTION_PUBLISH_DRAFT'] = "Entwurf veröffentlichen";
 
 $_ARRAYLANG['TXT_CORE_ALIAS_CREATION_DENIED'] = "Aliasse konnten nicht erstellt werden";
 
@@ -1585,7 +1585,7 @@ $_ARRAYLANG['TXT_CORE_CM_ACTION_UNPUBLISH'] = "Deaktivieren";
 $_ARRAYLANG['TXT_CORE_CM_ACTION_HIDE'] = "Verstecken";
 $_ARRAYLANG['TXT_CORE_CM_ACTION_SHOW'] = "Anzeigen";
 $_ARRAYLANG['TXT_CORE_CM_ACTION_NEW'] = "Neu innerhalb";
-$_ARRAYLANG['TXT_CORE_CM_ACTION_DELETE'] = "L&ouml;schen";
+$_ARRAYLANG['TXT_CORE_CM_ACTION_DELETE'] = "Löschen";
 $_ARRAYLANG['TXT_CORE_CM_PUBLISHING_INFO'] = "Status: %1\$s<br />Klicken Sie hier um die Seite auf %2\$s zu stellen.";
 $_ARRAYLANG['TXT_CORE_CM_PUBLISHING_DRAFT'] = "Entwurf";
 $_ARRAYLANG['TXT_CORE_CM_PUBLISHING_DRAFT_WAITING'] = "Wartend";

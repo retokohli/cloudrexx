@@ -246,12 +246,12 @@ if ($isRegularPageRequest) {
 
     $objTemplate->setGlobalVariable('TXT_FRONTEND', $_CORELANG['TXT_FRONTEND']);
     $objTemplate->setVariable(array(
-        'TXT_PROFILE'       => $txtProfile,
-        'TXT_LOGOUT'        => $_CORELANG['TXT_LOGOUT'],
-        'TXT_PAGE_ID'       => $_CORELANG['TXT_PAGE_ID'],
-        'CONTREXX_CHARSET'  => CONTREXX_CHARSET,
-        'CONTAINER_CLASS'   => empty($plainCmd) ? 'backend dashboard' : 'backend',
-        'USER_ID'           => $objFWUser->objUser->getId(),
+        'TXT_PROFILE'               => $txtProfile,
+        'TXT_LOGOUT'                => $_CORELANG['TXT_LOGOUT'],
+        'TXT_PAGE_ID'               => $_CORELANG['TXT_PAGE_ID'],
+        'CONTAINER_BACKEND_CLASS'   => 'backend',
+        'CONTREXX_CHARSET'          => CONTREXX_CHARSET,
+        'USER_ID'                   => $objFWUser->objUser->getId(),
     ));
     $objTemplate->touchBlock('backend_metanavigation');
     
@@ -774,6 +774,7 @@ switch ($plainCmd) {
     default:
         if (!include_once ASCMS_CORE_PATH.'/myAdmin.class.php')
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $objTemplate->setVariable('CONTAINER_DASHBOARD_CLASS', 'dashboard');
         $objFWUser = FWUser::getFWUserObject();
         $subMenuTitle = $_CORELANG['TXT_WELCOME_MESSAGE'].", <a href='index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id=".$objFWUser->objUser->getId()."' title='".$objFWUser->objUser->getId()."'>".($objFWUser->objUser->getProfileAttribute('firstname') || $objFWUser->objUser->getProfileAttribute('lastname') ? htmlentities($objFWUser->objUser->getProfileAttribute('firstname'), ENT_QUOTES, CONTREXX_CHARSET).' '.htmlentities($objFWUser->objUser->getProfileAttribute('lastname'), ENT_QUOTES, CONTREXX_CHARSET) : htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET))."</a>";
         $objAdminNav = new myAdminManager();
@@ -829,10 +830,6 @@ if (!empty($objTemplate->_variables['CONTENT_WARNING_MESSAGE'])) {
     $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] .=
         '<div class="warningbox">'.
         $objTemplate->_variables['CONTENT_WARNING_MESSAGE'].'</div>';
-}
-
-if (empty($cmd)) {
-    $cmd = 'dashboard';
 }
 
 // Style parsing
