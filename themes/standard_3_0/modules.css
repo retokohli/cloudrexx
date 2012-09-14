@@ -73,7 +73,7 @@ table tr.marketRow1 {
 }
 
 table td {
-    padding: 5px 5px 5px 0;
+    padding: 5px;
     vertical-align:top;
 }
 
@@ -1727,11 +1727,15 @@ dl.data_module img {
 #downloads {
     width: 100%;
 }
+#downloads div.breadcrumb {
+    margin: 20px 0 0 0;
+}
 #downloads div.category {
 }
 #downloads div.overview div.row div.category {
     float: left;
     width: 50%;
+    padding: 0 0 5px 0;
 }
 #downloads div.overview div.row div.category div.title {
     font-weight: bold;
@@ -1748,23 +1752,30 @@ dl.data_module img {
 #downloads div.overview div.row div.category div.content a.more:hover {
     color: #B8D30B;
 }
+#downloads div.file_list {
+    float: left;
+    width: 100%;
+    padding: 0 0 20px 0;
+}
+#downloads div.category-info {
+    float: left;
+    width: 100%;
+    padding: 0 0 10px 0;
+}
 #downloads div.subcategories {
-    padding: 0px 0px 15px 0px;
-    margin: 0px 0px 0px 0px;
-    height:auto !important;
+    float: left;
+    width: 100%;
+    padding: 0 0 20px 0;
 }
 #downloads div.file {
+    float: left;
     width: 100%;
-    padding: 10px 0px 10px 0px;
-    margin: 0px 0px 0px 0px;
-    float:left;
-    height:auto !important;
+    padding: 10px 0 10px 0;
 }
 #downloads div.image {
-    float: right;
-    height:auto !important;
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
+    float: left;
+    width: 15%;
+    text-align: right;
 }
 #downloads div.image img {
     margin: 0px 0px 15px 0px;
@@ -1774,15 +1785,13 @@ dl.data_module img {
     float: right;
 }
 #downloads div.file_list .infos {
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
-    width: 84%;
     float: left;
+    width: 85%;
 }
-#downloads div.infos {
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
-    height:auto !important;
+#downloads div.infos,
+#downloads div.file_addon {
+    float: left;
+    width: 100%;
 }
 #downloads div.infos h3 {
     padding: 0px 0px 0px 0px;
@@ -1815,14 +1824,14 @@ dl.data_module img {
     font-size: 0.95em;
 }
 #downloads div.infos .detail_desc {
-    padding: 0px 0px 5px 0px;
-    margin: 0px 0px 0px 0px;
-    width: 84%;
     float: left;
+    width: 85%;
+    padding: 0 0 5px 0;
 }
 #downloads div.infos .file_info {
-    padding: 5px 0px 5px 5px;
-    margin: 0px 0px 0px 0px;
+    float: left;
+    width: 100%;
+    padding: 0 0 10px 0;
 }
 #downloads div.infos .file_info img {
     padding: 0px 2px 0px 0px;
@@ -1831,11 +1840,10 @@ dl.data_module img {
     height: 10px;
 }
 #downloads div.download {
-    padding: 0px 0px 10px 0px;
-    margin: 5px 0px 15px 0px;
-    width: 200px;
     position: relative;
     float: left;
+    width: 200px;
+    padding: 0 0 10px 0;
 }
 #downloads div.download h3 img {
     padding: 0 5px 0 0;
@@ -1846,9 +1854,8 @@ dl.data_module img {
     top: 16px;
 }
 #downloads div.infos .file_owner, #downloads div.infos .file_owner a {
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
-    height:auto !important;
+    float: left;
+    width: 100%;
     color: #808080;
     font-size: 0.95em;
     text-align: right;
@@ -2087,9 +2094,6 @@ dl.data_module img {
 }
 #media_div div.message_ok {
     color: #029202;
-}
-#media td {
-    padding: 5px 5px 5px 5px;
 }
 
 /***************************************/
