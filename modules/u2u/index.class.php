@@ -147,6 +147,7 @@ class u2u extends u2uLibrary
                 $this->_objTpl->hideBlock('u2u_private_notification_message_link');
             }
 
+            require ASCMS_CORE_PATH.'/wysiwyg.class.php';
             $strMessageInputHTML = get_wysiwyg_editor('private_message', $this->strMessages,'news');
 
             $this->_objTpl->setVariable(array(
