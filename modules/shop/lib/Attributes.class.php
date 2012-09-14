@@ -704,7 +704,7 @@ DBG::log("Attributes::getOptionPriceSum(): ERROR: option ID $option_id is not nu
         foreach (Attribute::$arrType as $_type => $language_postfix) {
             $strMenu .=
                 '<option value="'.$_type.'"'.
-                ($_type == $type ? HTML_ATTRIBUTE_SELECTED : '').">".
+                ($_type == $type ? Html::ATTRIBUTE_SELECTED : '').">".
                 $_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_'.$language_postfix].
                 "</option>\n";
         }

@@ -2439,7 +2439,7 @@ die("Shop::processRedirect(): This method is obsolete!");
 //DBG::log("Shop::view_account(): block_password ".var_export($block_password, true));
         self::$objTemplate->setGlobalVariable(array(
             'SHOP_ACCOUNT_PASSWORD_DISPLAY' => ($block_password
-              ? HTML_CSS_DISPLAY_BLOCK : HTML_CSS_DISPLAY_NONE),
+              ? Html::CSS_DISPLAY_BLOCK : Html::CSS_DISPLAY_NONE),
         ));
         if (!Cart::needs_shipment()) {
 //            self::$objTemplate->hideBlock('shipping_address');
@@ -2467,9 +2467,9 @@ die("Shop::processRedirect(): This method is obsolete!");
             'SHOP_ACCOUNT_PHONE2' => (empty($_SESSION['shop']['phone2'])
                 ? '' : htmlentities($_SESSION['shop']['phone2'], ENT_QUOTES, CONTREXX_CHARSET)),
             'SHOP_ACCOUNT_EQUAL_ADDRESS' => (empty($_SESSION['shop']['equal_address'])
-                ? '' : HTML_ATTRIBUTE_CHECKED),
+                ? '' : Html::ATTRIBUTE_CHECKED),
             'SHOP_SHIPPING_ADDRESS_DISPLAY' => (empty($_SESSION['shop']['equal_address'])
-                ? HTML_CSS_DISPLAY_BLOCK : HTML_CSS_DISPLAY_NONE),
+                ? Html::CSS_DISPLAY_BLOCK : Html::CSS_DISPLAY_NONE),
         ));
     }
 
@@ -2661,7 +2661,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             $_SESSION['shop']['note'] =
                 trim(strip_tags(contrexx_input2raw($_POST['customer_note'])));
         if (isset($_POST['agb']))
-            $_SESSION['shop']['agb'] = HTML_ATTRIBUTE_CHECKED;
+            $_SESSION['shop']['agb'] = Html::ATTRIBUTE_CHECKED;
 
         // if shipperId is not set, there is no use in trying to determine a shipment_price
         if (isset($_SESSION['shop']['shipperId'])) {

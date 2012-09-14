@@ -1063,7 +1063,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                 'SHOP_DISCOUNT_COUPON_PER_CUSTOMER' =>
                     (!$objCoupon->is_global()
                       ? Html::getRadio('foo_'.++$i, '', false,
-                        true, '', HTML_ATTRIBUTE_DISABLED)
+                        true, '', Html::ATTRIBUTE_DISABLED)
                       : '&nbsp;'),
                 'SHOP_DISCOUNT_COUPON_CUSTOMER' =>
                     ($objCoupon->customer_id()
@@ -1144,7 +1144,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                     $attribute_time),
             'SHOP_DISCOUNT_COUPON_END_TIME_UNLIMITED' =>
                 Html::getCheckbox('end_time_unlimited', 1, '',
-                ($objCouponEdit->end_time() ? '' : HTML_ATTRIBUTE_CHECKED)).
+                ($objCouponEdit->end_time() ? '' : Html::ATTRIBUTE_CHECKED)).
                 Html::getLabel('end_time_unlimited',
                     $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_END_TIME_UNLIMITED']),
             'SHOP_DISCOUNT_COUPON_MINIMUM_AMOUNT' =>

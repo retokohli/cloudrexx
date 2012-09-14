@@ -786,7 +786,7 @@ class ShopCategory
             $name = $objCategory->name();
             $result .=
                 "<option value='$id'".
-                ($selected == $id ? HTML_ATTRIBUTE_SELECTED : '').
+                ($selected == $id ? Html::ATTRIBUTE_SELECTED : '').
                 '>'.str_repeat('.', $level*3).
                 htmlentities($name).
                 "</option>\n";

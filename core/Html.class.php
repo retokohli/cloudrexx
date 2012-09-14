@@ -12,37 +12,6 @@
  */
 
 /**
- * Global constants defining the names of various status
- * for almost anything
- *
- * See {@see Html::getLed()}
- */
-define('HTML_STATUS_RED',    'red');
-define('HTML_STATUS_YELLOW', 'yellow');
-define('HTML_STATUS_GREEN',  'green');
-
-/**
- * Some basic and often used (and frequently misspelt) HTML attributes
- *
- * Note the leading space that allows you to add the placeholder right after
- * the preceeding attribute without wasting whitespace when it's unused
- */
-define('HTML_ATTRIBUTE_CHECKED',  ' checked="checked"');
-define('HTML_ATTRIBUTE_SELECTED', ' selected="selected"');
-define('HTML_ATTRIBUTE_DISABLED', ' disabled="disabled"');
-define('HTML_ATTRIBUTE_READONLY', ' readonly="readonly"');
-define('HTML_ATTRIBUTE_MULTIPLE', ' multiple="multiple"');
-// more...?
-
-/**
- * Some basic and frequently used (and often misspelt) CSS properties
- */
-define('HTML_CSS_DISPLAY_NONE', 'display:none;');
-define('HTML_CSS_DISPLAY_INLINE', 'display:inline;');
-define('HTML_CSS_DISPLAY_BLOCK', 'display:block;');
-// more...?
-
-/**
  * HTML class
  *
  * Provides some commonly used HTML elements
@@ -55,15 +24,45 @@ define('HTML_CSS_DISPLAY_BLOCK', 'display:block;');
 class Html
 {
     /**
-     * Icon used on the link for removing a HTML element
+     * Class constants defining the names of various (LED) status
+     *
+     * See {@see Html::getLed()}
      */
-    const ICON_ELEMENT_REMOVE  = 'images/icons/delete.gif';
+    const STATUS_RED = 'red';
+    const STATUS_YELLOW = 'yellow';
+    const STATUS_GREEN = 'green';
 
     /**
-     * Icon used on the link for adding a HTML element
+     * Some basic and often used (and frequently misspelt) HTML attributes
+     *
+     * Note the leading space that allows you to add the placeholder right after
+     * the preceeding attribute without wasting whitespace when it's unused
+     */
+    const ATTRIBUTE_CHECKED = ' checked="checked"';
+    const ATTRIBUTE_SELECTED = ' selected="selected"';
+    const ATTRIBUTE_DISABLED = ' disabled="disabled"';
+    const ATTRIBUTE_READONLY = ' readonly="readonly"';
+    const ATTRIBUTE_MULTIPLE = ' multiple="multiple"';
+    // more...?
+
+    /**
+     * Some basic and frequently used (and often misspelt) CSS properties
+     */
+    const CSS_DISPLAY_NONE = 'display:none;';
+    const CSS_DISPLAY_INLINE = 'display:inline;';
+    const CSS_DISPLAY_BLOCK = 'display:block;';
+    // more...?
+
+    /**
+     * Icon used on the link for removing an HTML element
+     */
+    const ICON_ELEMENT_REMOVE = 'images/icons/delete.gif';
+
+    /**
+     * Icon used on the link for adding an HTML element
      * @todo    Find a better icon for this
      */
-    const ICON_ELEMENT_ADD     = 'images/icons/check.gif';
+    const ICON_ELEMENT_ADD = 'images/icons/check.gif';
 
     /**
      * Icon used for omitted functions
@@ -73,22 +72,22 @@ class Html
     /**
      * Icon used on the link for viewing any entry
      */
-    const ICON_FUNCTION_VIEW  = 'images/icons/viewmag.png';
+    const ICON_FUNCTION_VIEW = 'images/icons/viewmag.png';
 
     /**
      * Icon used on the link for deleting any entry
      */
-    const ICON_FUNCTION_DELETE  = 'images/icons/delete.gif';
+    const ICON_FUNCTION_DELETE = 'images/icons/delete.gif';
 
     /**
      * Icon used on the link for copying any entry
      */
-    const ICON_FUNCTION_COPY    = 'images/icons/copy.gif';
+    const ICON_FUNCTION_COPY = 'images/icons/copy.gif';
 
     /**
      * Icon used on the link for editing any entry
      */
-    const ICON_FUNCTION_EDIT    = 'images/icons/edit.gif';
+    const ICON_FUNCTION_EDIT = 'images/icons/edit.gif';
 
     /**
      * Icon used on the link for removing an image
@@ -123,22 +122,22 @@ class Html
     /**
      * Icon used for red status
      */
-    const ICON_STATUS_RED       = 'images/icons/status_red.gif';
+    const ICON_STATUS_RED = 'images/icons/status_red.gif';
 
     /**
      * Icon used for yellow status
      */
-    const ICON_STATUS_YELLOW    = 'images/icons/status_yellow.gif';
+    const ICON_STATUS_YELLOW = 'images/icons/status_yellow.gif';
 
     /**
      * Icon used for green status
      */
-    const ICON_STATUS_GREEN     = 'images/icons/status_green.gif';
+    const ICON_STATUS_GREEN = 'images/icons/status_green.gif';
 
     /**
      * Icon used for the checked status
      */
-    const ICON_STATUS_CHECKED   = 'images/icons/check.gif';
+    const ICON_STATUS_CHECKED = 'images/icons/check.gif';
 
     /**
      * Icon used for the unchecked status
@@ -198,21 +197,21 @@ class Html
      * The current status is stored in a hidden input, its id being the same
      * but prepended with "hidden-".
      */
-    const TOGGLE_ID_BASE   = 'toggle';
+    const TOGGLE_ID_BASE = 'toggle';
     /**
      * These are the default values for the global (default) values
      * for the Toggle Javascript class handling the toggle element events.
      *
      * See {@see getToggle()}, {@see getJavascript_Toggle()}
      */
-    const TOGGLE_KEY_OFF   = '0';
-    const TOGGLE_KEY_ON    = '1';
-    const TOGGLE_KEY_NOP   = '-1';
+    const TOGGLE_KEY_OFF = '0';
+    const TOGGLE_KEY_ON = '1';
+    const TOGGLE_KEY_NOP = '-1';
     const TOGGLE_CLASS_OFF = 'room_off';
-    const TOGGLE_CLASS_ON  = 'room_on';
+    const TOGGLE_CLASS_ON = 'room_on';
     const TOGGLE_CLASS_NOP = 'room_nop';
     const TOGGLE_TITLE_OFF = '-';
-    const TOGGLE_TITLE_ON  = '0';
+    const TOGGLE_TITLE_ON = '0';
     const TOGGLE_TITLE_NOP = '/';
 
 
@@ -623,8 +622,8 @@ var _active_tab = '.
             $options .=
                 '<option value="'.$key.'"'.
                 (is_array($selected)
-                    ? (isset($selected[$key]) ? HTML_ATTRIBUTE_SELECTED : '')
-                    : ("$selected" === "$key"  ? HTML_ATTRIBUTE_SELECTED : '')
+                    ? (isset($selected[$key]) ? Html::ATTRIBUTE_SELECTED : '')
+                    : ("$selected" === "$key"  ? Html::ATTRIBUTE_SELECTED : '')
                 ).
                 ($attribute ? ' '.$attribute : '').
                 '>'.
@@ -1392,7 +1391,7 @@ jQuery(function() {
             $options['attribute_left'] .= ' style="width: 290px;"';
         }
         if (!preg_match('/\b(?:multiple)\b/i', $options['attribute_left'])) {
-            $options['attribute_left'] .= HTML_ATTRIBUTE_MULTIPLE;
+            $options['attribute_left'] .= Html::ATTRIBUTE_MULTIPLE;
         }
 
         if (empty($options['label_right']))
@@ -1417,7 +1416,7 @@ jQuery(function() {
             $options['attribute_right'] .= ' style="width: 290px;"';
         }
         if (!preg_match('/\b(?:multiple)\b/i', $options['attribute_right'])) {
-            $options['attribute_right'] .= HTML_ATTRIBUTE_MULTIPLE;
+            $options['attribute_right'] .= Html::ATTRIBUTE_MULTIPLE;
         }
 
         if (empty($options['label_button_move_right']))
@@ -1747,9 +1746,9 @@ jQuery(document).ready(function($) {
      *
      * The $arrFunction array must look something like:
      *  array(
-     *    'view'   => The view action parameter,
-     *    'copy'   => The copy action parameter,
-     *    'edit'   => The edit action parameter,
+     *    'view' => The view action parameter,
+     *    'copy' => The copy action parameter,
+     *    'edit' => The edit action parameter,
      *    'delete' => The delete action parameter,
      *  )
      * You may omit any indices that do not apply, those icons will not be
@@ -2296,7 +2295,7 @@ alert("change: ID mismatch: "+id);
       var room_type_id = roomtype.room_type_id;
       // Have to cast to integer, or JS will concatenate strings for the total
       var number_total = parseInt(roomtype.number_total);
-      var price        = roomtype.price;
+      var price = roomtype.price;
 //      if (number_total > 0) number_total_all += number_total;
       number_total_all += number_total;
       var _id = "_"+room_type_id+"_"+date;

@@ -1237,7 +1237,7 @@ Use plain text areas instead.  See below.
                 break;
 
               case 'protected':
-                $attribute = HTML_ATTRIBUTE_DISABLED;
+                $attribute = Html::ATTRIBUTE_DISABLED;
                 $input = Html::getCheckbox($name, 1, '', $value, '', $attribute);
                 break;
               case 'html':

@@ -1734,7 +1734,7 @@ class Order
                     ? 'display: inline;' : 'display: none;'),
             'SHOP_SEND_MAIL_STATUS' => ($edit
                 ? ($objOrder->status() != Order::STATUS_CONFIRMED
-                    ? HTML_ATTRIBUTE_CHECKED : '')
+                    ? Html::ATTRIBUTE_CHECKED : '')
                 : ''),
             'SHOP_ORDER_SUM' => Currency::formatPrice($objOrder->sum()),
             'SHOP_DEFAULT_CURRENCY' => Currency::getDefaultCurrencySymbol(),
