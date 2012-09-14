@@ -8,6 +8,10 @@
             
             $('#select-language a.active').click(function () {
                 $('#select-language').toggleClass('active');
+                $(':not(\'#select-language a\')').click(function () {
+                    $('#select-language').toggleClass('active');
+                    $(this).unbind('click');
+                });
                 return false;
             });
         } else {
