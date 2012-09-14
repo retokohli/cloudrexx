@@ -8,6 +8,15 @@
  * @package     contrexx
  * @subpackage  module_checkout
  */
+
+/**
+ * Transaction
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_checkout
+ */
 class Transaction {
 
     /**

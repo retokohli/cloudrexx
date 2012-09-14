@@ -1,9 +1,13 @@
 <?php
 
 /**
- * @ignore
+ * CheckoutLibrary
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_checkout
  */
-require_once ASCMS_MODULE_PATH.'/checkout/lib/Yellowpay.class.php';
 
 /**
  * CheckoutLibrary

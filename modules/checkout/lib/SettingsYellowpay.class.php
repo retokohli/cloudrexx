@@ -1,7 +1,16 @@
 <?php
 
 /**
- * PaymentServiceProvider
+ * SettingsYellowpay
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_checkout
+ */
+
+/**
+ * SettingsYellowpay
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>

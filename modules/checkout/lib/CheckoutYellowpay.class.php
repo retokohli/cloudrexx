@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Yellowpay
+ * Class CheckoutYellowpay
  *
  * Interface for the payment mask yellowpay
  *
@@ -9,7 +9,7 @@
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     3.0.0
  * @package     contrexx
- * @subpackage  module_shop
+ * @subpackage  module_checkout
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -20,7 +20,7 @@
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     3.0.0
  * @package     contrexx
- * @subpackage  module_shop
+ * @subpackage  module_checkout
  * @internal    Yellowpay must be configured to return with the follwing requests:
  * POST after payment was made:
  *      http://<my>.com/index.php?section=shop&cmd=success&handler=yellowpay&result=-1
@@ -31,7 +31,7 @@
  * GET after payment has been cancelled:
  *      http://<my>.com/index.php?section=shop&cmd=success&handler=yellowpay&result=2
  */
-class Yellowpay
+class CheckoutYellowpay
 {
     /**
      * Return string of the function getForm()
@@ -628,7 +628,7 @@ class Yellowpay
         global $_ARRAYLANG;
 
         $strOptions = '';
-        foreach (Yellowpay::$arrKnownPaymentMethod as $index => $strPaymentMethod) {
+        foreach (CheckoutYellowpay::$arrKnownPaymentMethod as $index => $strPaymentMethod) {
             $strOptions .=
                 '<input name="yellowpay_accepted_payment_methods[]" '.
                 'id="yellowpay_pm_'.$index.'" type="checkbox" '.

@@ -374,49 +374,50 @@ class settingsManager
     {
         global $objDatabase, $_CORELANG, $_CONFIG;
 
-        if (!in_array((!empty($_POST['setvalue'][87]) ? $_POST['setvalue'][87] : ''), timezone_identifiers_list())) {
+        if (isset($_POST['setvalue'][87]) && !in_array((!empty($_POST['setvalue'][87]) ? $_POST['setvalue'][87] : ''), timezone_identifiers_list())) {
             $this->strErrMessage[] = $_CORELANG['TXT_CORE_TIMEZONE_INVALID'];
-        } else {
-            foreach ($_POST['setvalue'] as $id => $value) {
-                switch (intval($id)) {
-                    case 53:
-                        $arrMatch = array();
-                        if (preg_match('#^https?://(.*)$#', $value, $arrMatch)) {
-                            $value = $arrMatch[1];
-                        }
-                        $_CONFIG['domainUrl'] = htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
-                        break;
-                    case 54:
-                        $_CONFIG['xmlSitemapStatus'] = $value;
-                        break;
-                    case 71:
-                        $_CONFIG['coreListProtectedPages'] = $value;
-                        break;
-                    case 43:
-                    case 50:
-                    case 54:
-                    case 55:
-                    case 56:
-                    case 63:
-                    case 67:
-                    case 69:
-                    case 70:
-                    case 71:
-                    case 85:
-                    case 86:
-                    case 89:
-                        $value = ($value == 'on') ? 'on' : 'off';
-                        break;
-                }
+            return;
+        }
 
-                $objDatabase->Execute(' UPDATE `'.DBPREFIX.'settings`
-                                        SET `setvalue` = "'.contrexx_addslashes(htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET)).'"
-                                        WHERE `setid` = '.intval($id));
+        foreach ($_POST['setvalue'] as $id => $value) {
+            switch (intval($id)) {
+                case 53:
+                    $arrMatch = array();
+                    if (preg_match('#^https?://(.*)$#', $value, $arrMatch)) {
+                        $value = $arrMatch[1];
+                    }
+                    $_CONFIG['domainUrl'] = htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
+                    break;
+                case 54:
+                    $_CONFIG['xmlSitemapStatus'] = $value;
+                    break;
+                case 71:
+                    $_CONFIG['coreListProtectedPages'] = $value;
+                    break;
+                case 43:
+                case 50:
+                case 54:
+                case 55:
+                case 56:
+                case 63:
+                case 67:
+                case 69:
+                case 70:
+                case 71:
+                case 85:
+                case 86:
+                case 89:
+                    $value = ($value == 'on') ? 'on' : 'off';
+                    break;
             }
 
-            $this->updateDebugSettings(!empty($_POST['debugging']) ? $_POST['debugging'] : null);
-            $this->strOkMessage = $_CORELANG['TXT_SETTINGS_UPDATED'];
+            $objDatabase->Execute(' UPDATE `'.DBPREFIX.'settings`
+                                    SET `setvalue` = "'.contrexx_addslashes(htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET)).'"
+                                    WHERE `setid` = '.intval($id));
         }
+
+        $this->updateDebugSettings(!empty($_POST['debugging']) ? $_POST['debugging'] : null);
+        $this->strOkMessage = $_CORELANG['TXT_SETTINGS_UPDATED'];
     }
 
     /**
