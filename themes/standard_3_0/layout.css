@@ -408,23 +408,32 @@
 }
 
 #subnavigation li a {
-    width: 230px;
+    width: 220px;
     float: left;
-    padding: 10px 5px 10px 5px;
+    padding: 10px 5px 10px 15px;
     color: #323F55;
     border-bottom: 1px solid #D6D6D6;
+    background-image: url('images/nav-2-inactive.png');
+    background-position: 2px 15px;
+    background-repeat: no-repeat;
 }
 
 #subnavigation li.level-3 a {
-    width: 215px;
-    padding: 0 5px 5px 20px;
-    font-size: 12px;
+    width: 205px;
+    padding: 0 5px 1px 30px;
+    font-size: 13px;
     border: 0;
+    background-image: url('images/nav-3-inactive.png');
+    background-position: 16px 6px;
 }
 
 #subnavigation li.level-4 a {
-    width: 200px;
-    padding: 0 5px 5px 35px;
+    width: 190px;
+    padding: 0 5px 0 45px;
+    font-size: 12px;
+    line-height: 1.7;
+    background-image: url('images/nav-3-inactive.png');
+    background-position: 31px 6px;
 }
 
 #subnavigation li.level-1 > a,
@@ -439,8 +448,13 @@
 
 #subnavigation li.active.level-2 > ul {
     float: left;
-    padding: 5px 0 0 0;
+    padding: 10px 0 9px 0;
     border-bottom: 1px solid #D6D6D6;
+}
+
+#subnavigation li.active.level-3 > ul {
+    float: left;
+    padding: 5px 0 5px 0;
 }
 
 #subnavigation li a:hover,
@@ -448,13 +462,63 @@
     color: #066196;
 }
 
+#subnavigation li.level-2 a.active {
+    font-weight: bold;
+}
+
+#subnavigation li.level-2 a:hover,
+#subnavigation li.level-2 a.active {
+    background-image: url('images/nav-2-active.png');
+}
+
+#subnavigation li.level-3 a:hover,
+#subnavigation li.level-3 a.active,
+#subnavigation li.level-4 a:hover,
+#subnavigation li.level-4 a.active {
+    background-image: url('images/nav-3-active.png');
+}
+
+.sidebar-block-title {
+    float: left;
+    width: 242px;
+    padding: 5px 15px 5px 15px;
+    color: #FFFFFF;
+    font-size: 15px;
+    font-weight: bold;
+    background: #0A85C8;
+}
+
 .sidebar-block {
     float: left;
     width: 240px;
-    padding: 15px;
+    min-height: 150px;
+    padding: 10px 15px 10px 15px;
     margin: 0 0 20px 0;
     border: 1px solid #D6D6D6;
     background: #FFFFFF;
+}
+
+.sidebar-block.contact-us {
+    width: 250px;
+    padding: 10px;
+    margin: 0;
+}
+
+.sidebar-block.contact-us img {
+    float: left;
+    width: 250px;
+    padding: 0 0 10px;
+}
+
+.sidebar-block.contact-us a {
+    float: left;
+    width: 200px;
+    height: 32px;
+    padding: 10px 0 0 50px;
+    color: #FFFFFF;
+    font-size: 15px;
+    font-weight: bold;
+    background: url('images/contact-us-button.jpg');
 }
 
 .contact-company,
@@ -521,6 +585,13 @@
 
 #page ol ol {
     padding: 5px 0 0 0;
+}
+
+#page-header {
+    float: left;
+    width: 886px;
+    height: 175px;
+    padding: 0 0 20px 0;
 }
 
 #social-media {
