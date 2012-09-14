@@ -311,11 +311,11 @@ class JsonNode implements JsonAdapter {
             }
             $last_resort = 0;
 
-            // include pages with wrong language
-            foreach ($node->getPages(true) as $page) {
+            foreach ($node->getPages() as $page) {
                 // don't display aliases in cm's tree
-                if ($page->getType() == \Cx\Model\ContentManager\Page::TYPE_ALIAS)
+                if ($page->getType() == \Cx\Model\ContentManager\Page::TYPE_ALIAS) {
                     continue 2;
+                }
 
                 $user = $page->getUpdatedBy();
                 $data[\FWLanguage::getLanguageCodeById($page->getLang())] = array(
