@@ -65,7 +65,7 @@ class LicenseManager {
         } else {
             if (!file_exists(ASCMS_TEMP_PATH . '/licenseManager.html')) {
                 $lc = LicenseCommunicator::getInstance();
-                $lc->update($this->license, true);
+                $lc->update($this->license, $this->config, true);
             }
             if (file_exists(ASCMS_TEMP_PATH . '/licenseManager.html')) {
                 $this->template->addBlockfile('ADMIN_CONTENT', 'licenseManager', ASCMS_TEMP_PATH . '/licenseManager.html');

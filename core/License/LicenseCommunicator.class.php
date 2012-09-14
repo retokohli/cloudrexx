@@ -32,7 +32,7 @@ class LicenseCommunicator {
         return self::$instance;
     }
     
-    public function update($license, $forceTemplate = false) {
+    public function update($license, $_CONFIG, $forceTemplate = false) {
         /**
          * request: {
          *      installationId, // optional?
@@ -43,18 +43,27 @@ class LicenseCommunicator {
          */
         $v = preg_split('#\.#', $_CONFIG['coreCmsVersion']);
         $e = $_CONFIG['coreCmsEdition'];
-
-        $version = $v[0]  * 10000 + $v[1]  * 100 + $v[2];
-        //$link = @fsockopen('www.contrexx.com',80);
-        if (!$link) {
-            exit;
+        if (count($v)) {
+            $version = $v[0] * 10000;
+            if (count($version) > 1) {
+                $version += $v[1] * 100;
+                if (count($version) > 2) {
+                    $version += $v[2];
+                }
+            }
         }
-        
+        $srvUri = 'updatesrv1.contrexx.com';
+        $srvPath = '/check.php';
+        //$link = @fsockopen($srvUri,80);
+        if (!isset($link) || !$link) {
+            return;
+        } 
+       
         $r = $_SERVER['HTTP_REFERER'];
         $a = $_SERVER['REMOTE_ADDR'];
         fwrite($link,
-            "GET /updatecenter/check.php?v=$version HTTP/1.1\n".
-            "Host: www.contrexx.com\n".
+            "GET " . $srvPath . "?v=$version HTTP/1.1\n".
+            "Host: " . $srvUri . "\n".
             "Referer: $r\n".
             "X-Edition: $e\n".
             "X-Remote-Addr: $a\n".
