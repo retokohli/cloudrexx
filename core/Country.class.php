@@ -812,7 +812,7 @@ class Country
                 'SETTINGS_COUNTRY_ROWCLASS' => (++$i % 2 + 1),
                 'SETTINGS_COUNTRY_ID' => $country_id,
                 'SETTINGS_COUNTRY_ACTIVE' =>
-                    ($arrCountry['active'] ? HTML_ATTRIBUTE_CHECKED : ''),
+                    ($arrCountry['active'] ? Html::ATTRIBUTE_CHECKED : ''),
 // Note that the ordinal value is unused other than in the settings!
                 'SETTINGS_COUNTRY_ORD' => $arrCountry['ord'],
                 'SETTINGS_COUNTRY_NAME' => $arrCountry['name'],

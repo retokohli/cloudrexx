@@ -691,7 +691,7 @@ class ShopCategories
                 // I dunno why, but the comparison "$selected_id == $id"
                 // failed for some reason -- sometimes.
                 // A little arithmetic would solve that, however.
-                ($selected_id == $id ? HTML_ATTRIBUTE_SELECTED : '').'>'.
+                ($selected_id == $id ? Html::ATTRIBUTE_SELECTED : '').'>'.
                 ($level
                     ? str_repeat('&nbsp;', 3*($level-1)).'+&nbsp;'
                     : '').

@@ -955,7 +955,7 @@ class Shopmanager extends ShopLibrary
                     'SHOP_PRODUCTS_ATTRIBUTE_VALUE_ID' => $option_id,
                     'SHOP_PRODUCTS_ATTRIBUTE_VALUE_TEXT' => $arrOption['value'].
                         ' ('.$arrOption['price'].' '.Currency::getDefaultCurrencySymbol().')',
-                    'SHOP_PRODUCTS_ATTRIBUTE_VALUE_SELECTED' => ($valueSelected ? HTML_ATTRIBUTE_CHECKED : ''),
+                    'SHOP_PRODUCTS_ATTRIBUTE_VALUE_SELECTED' => ($valueSelected ? Html::ATTRIBUTE_CHECKED : ''),
                 ));
                 self::$objTemplate->parse('optionList');
             }
@@ -963,7 +963,7 @@ class Shopmanager extends ShopLibrary
                 'SHOP_PRODUCTS_ATTRIBUTE_ROW_CLASS' => 'row'.(++$i % 2 + 1),
                 'SHOP_PRODUCTS_ATTRIBUTE_ID' => $attribute_id,
                 'SHOP_PRODUCTS_ATTRIBUTE_NAME' => $objAttribute->getName(),
-                'SHOP_PRODUCTS_ATTRIBUTE_SELECTED' => ($nameSelected ? HTML_ATTRIBUTE_CHECKED : ''),
+                'SHOP_PRODUCTS_ATTRIBUTE_SELECTED' => ($nameSelected ? Html::ATTRIBUTE_CHECKED : ''),
                 'SHOP_PRODUCTS_ATTRIBUTE_DISPLAY_TYPE' => ($nameSelected ? 'block' : 'none'),
                 'SHOP_PRODUCTS_ATTRIBUTE_SORTID' => $order,
             ));
@@ -1217,9 +1217,9 @@ class Shopmanager extends ShopLibrary
                 'SHOP_CURRENCY_RATE' => $currency['rate'],
                 'SHOP_CURRENCY_INCREMENT' => $currency['increment'],
                 'SHOP_CURRENCY_ACTIVE' => ($currency['active']
-                    ? HTML_ATTRIBUTE_CHECKED : ''),
+                    ? Html::ATTRIBUTE_CHECKED : ''),
                 'SHOP_CURRENCY_STANDARD' => ($currency['default']
-                    ? HTML_ATTRIBUTE_CHECKED : ''),
+                    ? Html::ATTRIBUTE_CHECKED : ''),
             ));
             self::$objTemplate->parse('shopCurrency');
         }
@@ -1284,7 +1284,7 @@ class Shopmanager extends ShopLibrary
                 'SHOP_ZONE_SELECTION' => Zones::getMenu(
                     $zone_id, 'zone_id['.$shipper_id.']'),
                 'SHOP_SHIPPER_STATUS' => ($arrShipper['active']
-                    ? HTML_ATTRIBUTE_CHECKED : ''),
+                    ? Html::ATTRIBUTE_CHECKED : ''),
             ));
             self::$objTemplate->parse('shopShipper');
         }
@@ -1337,7 +1337,7 @@ class Shopmanager extends ShopLibrary
             if ($zone_id == 1) continue;
             $strZoneOptions .=
                 '<option value="'.$zone_id.'"'.
-                ($selectFirst ? '' : HTML_ATTRIBUTE_SELECTED).
+                ($selectFirst ? '' : Html::ATTRIBUTE_SELECTED).
                 '>'.$arrZone['name']."</option>\n";
             $arrCountryInZone = Country::getArraysByZoneId($zone_id);
             $strSelectedCountries = '';
@@ -1356,7 +1356,7 @@ class Shopmanager extends ShopLibrary
             }
             self::$objTemplate->setVariable(array(
                 'SHOP_ZONE_ID' => $zone_id,
-                'ZONE_ACTIVE_STATUS' => ($arrZone['active'] ? HTML_ATTRIBUTE_CHECKED : '') ,
+                'ZONE_ACTIVE_STATUS' => ($arrZone['active'] ? Html::ATTRIBUTE_CHECKED : '') ,
                 'SHOP_ZONE_NAME' => $arrZone['name'],
                 'SHOP_ZONE_DISPLAY_STYLE' => ($selectFirst ? 'display: none;' : 'display: block;'),
                 'SHOP_ZONE_SELECTED_COUNTRIES_OPTIONS' => $strSelectedCountries,
@@ -1455,22 +1455,22 @@ if (is_null($vat_number)) {
         $included_foreign_reseller = SettingDb::getValue('vat_included_foreign_reseller');
         self::$objTemplate->setVariable(array(
             'SHOP_VAT_NUMBER' => SettingDb::getValue('vat_number'),
-            'SHOP_VAT_CHECKED_HOME_CUSTOMER' => ($enabled_home_customer ? HTML_ATTRIBUTE_CHECKED : ''),
+            'SHOP_VAT_CHECKED_HOME_CUSTOMER' => ($enabled_home_customer ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_VAT_DISPLAY_HOME_CUSTOMER' => ($enabled_home_customer ? 'block' : 'none'),
-            'SHOP_VAT_SELECTED_HOME_CUSTOMER_INCLUDED' => ($included_home_customer ? HTML_ATTRIBUTE_SELECTED : ''),
-            'SHOP_VAT_SELECTED_HOME_CUSTOMER_EXCLUDED' => ($included_home_customer ? '' : HTML_ATTRIBUTE_SELECTED),
-            'SHOP_VAT_CHECKED_HOME_RESELLER' => ($enabled_home_reseller ? HTML_ATTRIBUTE_CHECKED : ''),
+            'SHOP_VAT_SELECTED_HOME_CUSTOMER_INCLUDED' => ($included_home_customer ? Html::ATTRIBUTE_SELECTED : ''),
+            'SHOP_VAT_SELECTED_HOME_CUSTOMER_EXCLUDED' => ($included_home_customer ? '' : Html::ATTRIBUTE_SELECTED),
+            'SHOP_VAT_CHECKED_HOME_RESELLER' => ($enabled_home_reseller ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_VAT_DISPLAY_HOME_RESELLER' => ($enabled_home_reseller ? 'block' : 'none'),
-            'SHOP_VAT_SELECTED_HOME_RESELLER_INCLUDED' => ($included_home_reseller ? HTML_ATTRIBUTE_SELECTED : ''),
-            'SHOP_VAT_SELECTED_HOME_RESELLER_EXCLUDED' => ($included_home_reseller ? '' : HTML_ATTRIBUTE_SELECTED),
-            'SHOP_VAT_CHECKED_FOREIGN_CUSTOMER' => ($enabled_foreign_customer ? HTML_ATTRIBUTE_CHECKED : ''),
+            'SHOP_VAT_SELECTED_HOME_RESELLER_INCLUDED' => ($included_home_reseller ? Html::ATTRIBUTE_SELECTED : ''),
+            'SHOP_VAT_SELECTED_HOME_RESELLER_EXCLUDED' => ($included_home_reseller ? '' : Html::ATTRIBUTE_SELECTED),
+            'SHOP_VAT_CHECKED_FOREIGN_CUSTOMER' => ($enabled_foreign_customer ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_VAT_DISPLAY_FOREIGN_CUSTOMER' => ($enabled_foreign_customer ? 'block' : 'none'),
-            'SHOP_VAT_SELECTED_FOREIGN_CUSTOMER_INCLUDED' => ($included_foreign_customer ? HTML_ATTRIBUTE_SELECTED : ''),
-            'SHOP_VAT_SELECTED_FOREIGN_CUSTOMER_EXCLUDED' => ($included_foreign_customer ? '' : HTML_ATTRIBUTE_SELECTED),
-            'SHOP_VAT_CHECKED_FOREIGN_RESELLER' => ($enabled_foreign_reseller ? HTML_ATTRIBUTE_CHECKED : ''),
+            'SHOP_VAT_SELECTED_FOREIGN_CUSTOMER_INCLUDED' => ($included_foreign_customer ? Html::ATTRIBUTE_SELECTED : ''),
+            'SHOP_VAT_SELECTED_FOREIGN_CUSTOMER_EXCLUDED' => ($included_foreign_customer ? '' : Html::ATTRIBUTE_SELECTED),
+            'SHOP_VAT_CHECKED_FOREIGN_RESELLER' => ($enabled_foreign_reseller ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_VAT_DISPLAY_FOREIGN_RESELLER' => ($enabled_foreign_reseller ? 'block' : 'none'),
-            'SHOP_VAT_SELECTED_FOREIGN_RESELLER_INCLUDED' => ($included_foreign_reseller ? HTML_ATTRIBUTE_SELECTED : ''),
-            'SHOP_VAT_SELECTED_FOREIGN_RESELLER_EXCLUDED' => ($included_foreign_reseller ? '' : HTML_ATTRIBUTE_SELECTED),
+            'SHOP_VAT_SELECTED_FOREIGN_RESELLER_INCLUDED' => ($included_foreign_reseller ? Html::ATTRIBUTE_SELECTED : ''),
+            'SHOP_VAT_SELECTED_FOREIGN_RESELLER_EXCLUDED' => ($included_foreign_reseller ? '' : Html::ATTRIBUTE_SELECTED),
             'SHOP_VAT_DEFAULT_MENUOPTIONS' => Vat::getMenuoptions(
                 SettingDb::getValue('vat_default_id'), true),
             'SHOP_VAT_OTHER_MENUOPTIONS' => Vat::getMenuoptions(
@@ -1521,7 +1521,7 @@ if ($test === NULL) {
             'SHOP_THUMBNAIL_QUALITY' => SettingDb::getValue('thumbnail_quality'),
             // Enable weight setting
             'SHOP_WEIGHT_ENABLE_CHECKED' => (SettingDb::getValue('weight_enable')
-                ? HTML_ATTRIBUTE_CHECKED : ''),
+                ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_SHOW_PRODUCTS_DEFAULT_OPTIONS' => Products::getDefaultViewMenuoptions(
                 SettingDb::getValue('show_products_default')),
             'SHOP_PRODUCT_SORTING_MENUOPTIONS' => Products::getProductSortingMenuoptions(),
@@ -1629,7 +1629,6 @@ if ($test === NULL) {
                 }
             }
         }
-
         $max_width = intval(SettingDb::getValue('thumbnail_max_width'));
         $max_height = intval(SettingDb::getValue('thumbnail_max_height'));
         if (empty($max_width)) $max_width = 1e5;
@@ -1650,9 +1649,9 @@ if ($test === NULL) {
             'SHOP_THUMB_IMG_HREF' => $thumbPath,
             'SHOP_CATEGORY_IMAGE_FILENAME' => $pictureFilename,
             'SHOP_CATEGORY_VIRTUAL_CHECKED' =>
-                ($virtual ? HTML_ATTRIBUTE_CHECKED : ''),
+                ($virtual ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_CATEGORY_ACTIVE_CHECKED' =>
-                ($active ? HTML_ATTRIBUTE_CHECKED : ''),
+                ($active ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_CATEGORY_DESCRIPTION' => $desc,
             'SHOP_CATEGORY_EDIT_ACTIVE' => ($flagEditTabActive ? 'active' : ''),
             'SHOP_CATEGORY_EDIT_DISPLAY' => ($flagEditTabActive ? 'block' : 'none'),
@@ -1684,11 +1683,11 @@ if ($test === NULL) {
                     : $_ARRAYLANG['TXT_INACTIVE']),
                 'SHOP_CATEGORY_ACTIVE_VALUE' => intval($arrShopCategory['active']),
                 'SHOP_CATEGORY_ACTIVE_CHECKED' => ($arrShopCategory['active']
-                    ? HTML_ATTRIBUTE_CHECKED : ''),
+                    ? Html::ATTRIBUTE_CHECKED : ''),
                 'SHOP_CATEGORY_ACTIVE_PICTURE' => ($arrShopCategory['active']
                     ? 'status_green.gif' : 'status_red.gif'),
                 'SHOP_CATEGORY_VIRTUAL_CHECKED' => ($arrShopCategory['virtual']
-                    ? HTML_ATTRIBUTE_CHECKED : ''),
+                    ? Html::ATTRIBUTE_CHECKED : ''),
             ));
             // All languages active
             foreach ($arrLanguages as $lang_id => $arrLanguage) {
@@ -2085,7 +2084,7 @@ if ($test === NULL) {
             'SHOP_CUSTOMER_PRICE' => Currency::formatPrice($objProduct->price()),
             'SHOP_RESELLER_PRICE' => Currency::formatPrice($objProduct->resellerprice()),
             'SHOP_DISCOUNT' => Currency::formatPrice($objProduct->discountprice()),
-            'SHOP_SPECIAL_OFFER' => ($objProduct->discount_active() ? HTML_ATTRIBUTE_CHECKED : ''),
+            'SHOP_SPECIAL_OFFER' => ($objProduct->discount_active() ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_VAT_MENUOPTIONS' => Vat::getMenuoptions(
                 $objProduct->vat_id(), true),
             'SHOP_SHORT_DESCRIPTION' => get_wysiwyg_editor(
@@ -2103,10 +2102,10 @@ if ($test === NULL) {
             'SHOP_DATE_END' => Html::getDatepicker('date_end',
                 array('defaultDate' => $end_date),
                 ''),
-            'SHOP_ARTICLE_ACTIVE' => ($objProduct->active() ? HTML_ATTRIBUTE_CHECKED : ''),
-            'SHOP_B2B' => ($objProduct->b2b() ? HTML_ATTRIBUTE_CHECKED : ''),
-            'SHOP_B2C' => ($objProduct->b2c() ? HTML_ATTRIBUTE_CHECKED : ''),
-            'SHOP_STOCK_VISIBILITY' => ($objProduct->stock_visible() ? HTML_ATTRIBUTE_CHECKED : ''),
+            'SHOP_ARTICLE_ACTIVE' => ($objProduct->active() ? Html::ATTRIBUTE_CHECKED : ''),
+            'SHOP_B2B' => ($objProduct->b2b() ? Html::ATTRIBUTE_CHECKED : ''),
+            'SHOP_B2C' => ($objProduct->b2c() ? Html::ATTRIBUTE_CHECKED : ''),
+            'SHOP_STOCK_VISIBILITY' => ($objProduct->stock_visible() ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_MANUFACTURER_MENUOPTIONS' =>
                 Manufacturer::getMenuoptions($objProduct->manufacturer_id()),
             'SHOP_PICTURE1_IMG_SRC' =>
@@ -2162,9 +2161,9 @@ if ($test === NULL) {
             'SHOP_ACCOUNT_VALIDITY_OPTIONS' => FWUser::getValidityMenuOptions(
                 ($distribution == 'download' ? $objProduct->weight() : 0)),
             'SHOP_CREATE_ACCOUNT_YES_CHECKED' =>
-                (empty($usergroup_ids) ? '' : HTML_ATTRIBUTE_CHECKED),
+                (empty($usergroup_ids) ? '' : Html::ATTRIBUTE_CHECKED),
             'SHOP_CREATE_ACCOUNT_NO_CHECKED' =>
-                (empty($usergroup_ids) ? HTML_ATTRIBUTE_CHECKED : ''),
+                (empty($usergroup_ids) ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_DISCOUNT_GROUP_COUNT_MENU_OPTIONS' =>
                 Discount::getMenuOptionsGroupCount($discount_group_count_id),
             'SHOP_DISCOUNT_GROUP_ARTICLE_MENU_OPTIONS' =>
@@ -2861,7 +2860,7 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
         } else {
             self::$pageTitle = $_ARRAYLANG['TXT_ADD_NEW_CUSTOMER'];
             self::$objTemplate->setVariable(
-                'SHOP_SEND_LOGING_DATA_STATUS', HTML_ATTRIBUTE_CHECKED);
+                'SHOP_SEND_LOGING_DATA_STATUS', Html::ATTRIBUTE_CHECKED);
             $customer_id = null;
         }
 
@@ -3127,14 +3126,14 @@ if (!$limit) {
             $productStatusValue = '';
             $productStatusPicture = 'status_red.gif';
             if ($objProduct->active()) {
-                $productStatus = HTML_ATTRIBUTE_CHECKED;
+                $productStatus = Html::ATTRIBUTE_CHECKED;
                 $productStatusValue = 1;
                 $productStatusPicture = 'status_green.gif';
             }
             $discount_active = '';
             $specialOfferValue = '';
             if ($objProduct->discount_active()) {
-                $discount_active = HTML_ATTRIBUTE_CHECKED;
+                $discount_active = Html::ATTRIBUTE_CHECKED;
                 $specialOfferValue = 1;
             }
             self::$objTemplate->setGlobalVariable(array(
@@ -3165,7 +3164,7 @@ if (!$limit) {
                     strtoupper($objProduct->distribution())],
                 'SHOP_SHOW_PRODUCT_ON_START_PAGE_CHECKED' =>
                     ($objProduct->shown_on_startpage()
-                      ? HTML_ATTRIBUTE_CHECKED : ''),
+                      ? Html::ATTRIBUTE_CHECKED : ''),
                 'SHOP_SHOW_PRODUCT_ON_START_PAGE_OLD' =>
                     ($objProduct->shown_on_startpage() ? '1' : ''),
 // This is used when the Product name can be edited right on the overview
@@ -3351,7 +3350,7 @@ if (!$limit) {
             $strMenu .=
                 '<option value="'.$monthNumber.'"'.
                 ($selectedOption == $monthNumber
-                    ? HTML_ATTRIBUTE_SELECTED : '').
+                    ? Html::ATTRIBUTE_SELECTED : '').
                 ">$name</option>\n";
         }
         return $strMenu;
@@ -3366,7 +3365,7 @@ if (!$limit) {
             $strMenu .=
                 "<option value='$startYear'".
                 ($selectedOption == $startYear
-                    ? HTML_ATTRIBUTE_SELECTED :   ''
+                    ? Html::ATTRIBUTE_SELECTED :   ''
                 ).
                 ">$startYear</option>\n";
             ++$startYear;
@@ -3479,13 +3478,13 @@ if (!$limit) {
             'SHOP_PRICELIST_LANGUAGE_MENUOPTIONS' => Html::getOptions(
                 FWLanguage::getNameArray(), $objList->lang_id()),
             'SHOP_PRICELIST_BORDER_CHECKED' => ($objList->border()
-                ? HTML_ATTRIBUTE_CHECKED : ''),
+                ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_PRICELIST_HEADER_CHECKED' => ($objList->header()
-                ? HTML_ATTRIBUTE_CHECKED : ''),
+                ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_PRICELIST_HEADER_LEFT' => $objList->header_left(),
             'SHOP_PRICELIST_HEADER_RIGHT' => $objList->header_right(),
             'SHOP_PRICELIST_FOOTER_CHECKED' => ($objList->footer()
-                ? HTML_ATTRIBUTE_CHECKED : ''),
+                ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_PRICELIST_FOOTER_LEFT' => $objList->footer_left(),
             'SHOP_PRICELIST_FOOTER_RIGHT' => $objList->footer_right(),
         ));
@@ -3494,7 +3493,7 @@ if (!$limit) {
         if (empty($category_ids) || $category_ids == '*') {
             $category_all = true;
             self::$objTemplate->setVariable(
-                'SHOP_PRICELIST_CATEGORY_ALL_CHECKED', HTML_ATTRIBUTE_CHECKED);
+                'SHOP_PRICELIST_CATEGORY_ALL_CHECKED', Html::ATTRIBUTE_CHECKED);
         }
         $arrCategories = ShopCategories::getChildCategoriesById(0, false);
         if (empty($arrCategories)) {
@@ -3512,8 +3511,8 @@ if (!$limit) {
                 'SHOP_CATEGORY_ID' => $category_id,
                 'SHOP_CATEGORY_NAME' => $objCategory->name(),
                 'SHOP_CATEGORY_DISABLED' => ($category_all
-                    ? HTML_ATTRIBUTE_DISABLED : ''),
-                'SHOP_CATEGORY_CHECKED' => ($selected ? HTML_ATTRIBUTE_CHECKED : ''),
+                    ? Html::ATTRIBUTE_DISABLED : ''),
+                'SHOP_CATEGORY_CHECKED' => ($selected ? Html::ATTRIBUTE_CHECKED : ''),
                 'SHOP_CATEGORY_ROWCLASS' => 'row'.(++$i% 2 + 1),
             ));
             self::$objTemplate->parse('shop_category');
@@ -3620,8 +3619,9 @@ if (!$limit) {
         }
         self::$objTemplate->parse('discountName');
         self::$objTemplate->setCurrentBlock('discountRate');
-        if (isset($arrDiscountRates[$id])) {
-            foreach ($arrDiscountRates[$id] as $count => $rate) {
+        if (isset($arrDiscountRates)) {
+            $arrDiscountRates = array_reverse($arrDiscountRates, true);
+            foreach ($arrDiscountRates as $count => $rate) {
                 self::$objTemplate->setVariable(array(
                     'SHOP_DISCOUNT_COUNT' => $count,
                     'SHOP_DISCOUNT_RATE' => $rate,
@@ -3631,7 +3631,7 @@ if (!$limit) {
                 self::$objTemplate->parse('discountRate');
             }
         }
-        // Add a couple of empty rows for adding new counts and rates
+        // Add a few empty rows for adding new counts and rates
         for ($j = 0; $j < 5; ++$j) {
             self::$objTemplate->setVariable(array(
                 'SHOP_DISCOUNT_COUNT' => '',

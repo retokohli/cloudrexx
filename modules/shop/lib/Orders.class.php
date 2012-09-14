@@ -339,7 +339,7 @@ class Orders
             'SHOP_CUSTOMER_SORT_MENUOPTIONS' => Customers::getSortMenuoptions(
                 $objSorting->getOrderField()),
             'SHOP_SHOW_PENDING_ORDERS_CHECKED' =>
-                ($show_pending_orders ? HTML_ATTRIBUTE_CHECKED : ''),
+                ($show_pending_orders ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_ORDERS_ORDER_NAME' => $objSorting->getOrderParameterName(),
             'SHOP_ORDERS_ORDER_VALUE' => $objSorting->getOrderUriEncoded(),
             'SHOP_ACTION_URI_SEARCH_ENCODED' => $uri_search,
@@ -590,7 +590,7 @@ if (!$limit) {
                 'TXT_COLUMN_2_DESC' => $_ARRAYLANG['TXT_COUNT_ARTICLES'],
                 'TXT_COLUMN_3_DESC' => $_ARRAYLANG['TXT_STOCK'],
                 'SHOP_ORDERS_SELECTED' => '',
-                'SHOP_ARTICLES_SELECTED' => HTML_ATTRIBUTE_SELECTED,
+                'SHOP_ARTICLES_SELECTED' => Html::ATTRIBUTE_SELECTED,
                 'SHOP_CUSTOMERS_SELECTED' => '',
             ));
             $arrSql = Text::getSqlSnippets('`B`.`id`', FRONTEND_LANG_ID,
@@ -621,7 +621,7 @@ if (!$limit) {
                 'TXT_COLUMN_3_DESC' => $_ARRAYLANG['TXT_COUNT_ARTICLES'],
                 'SHOP_ORDERS_SELECTED' => '',
                 'SHOP_ARTICLES_SELECTED' => '',
-                'SHOP_CUSTOMERS_SELECTED' => HTML_ATTRIBUTE_SELECTED,
+                'SHOP_CUSTOMERS_SELECTED' => Html::ATTRIBUTE_SELECTED,
             ));
             $query = "
                 SELECT A.sum AS sum,
@@ -643,7 +643,7 @@ if (!$limit) {
                 'TXT_COLUMN_1_DESC' => $_ARRAYLANG['TXT_DATE'],
                 'TXT_COLUMN_2_DESC' => $_ARRAYLANG['TXT_COUNT_ORDERS'],
                 'TXT_COLUMN_3_DESC' => $_ARRAYLANG['TXT_COUNT_ARTICLES'],
-                'SHOP_ORDERS_SELECTED' => HTML_ATTRIBUTE_SELECTED,
+                'SHOP_ORDERS_SELECTED' => Html::ATTRIBUTE_SELECTED,
                 'SHOP_ARTICLES_SELECTED' => '',
                 'SHOP_CUSTOMERS_SELECTED' => '',
             ));
