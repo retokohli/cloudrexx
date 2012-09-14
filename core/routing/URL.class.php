@@ -337,7 +337,7 @@ class URL {
     public function getLangDir() {
         $lang_dir = '';
 
-        if ($this->langDir == '') {
+        if ($this->langDir == '' && defined('FRONTEND_LANG_ID')) {
             $lang_dir = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID) . '/';
         } else {
             $lang_dir = $this->langDir;

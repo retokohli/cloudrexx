@@ -235,6 +235,18 @@ $_ARRAYLANG['TXT_ERROR_MODULE_DESCRIPTION'] = "Fehleranzeige System";
 $_ARRAYLANG['TXT_HOME_MODULE_DESCRIPTION'] = "CMS Startseiten Module";
 $_ARRAYLANG['TXT_NEWS_SYNDICATION'] = "RSS Feed Verzeichnis";
 $_ARRAYLANG['TXT_SERVER_INFO'] = "Server Infos";
+$_ARRAYLANG['TXT_LICENSE'] = "Lizenzverwaltung";
+$_ARRAYLANG['TXT_LICENSE_NO_TEMPLATE'] = "Konnte die Vorlage nicht abrufen. Bitte melden Sie sich bei Ihrem System Administrator oder beim Contrexx support.";
+$_ARRAYLANG['TXT_LICENSE_OVERVIEW'] = "Übersicht";
+$_ARRAYLANG['TXT_LICENSE_STATE'] = "Status";
+$_ARRAYLANG['TXT_LICENSE_VALID_TO'] = "Gültig bis";
+$_ARRAYLANG['TXT_INSTALLATION_ID'] = "Installationsschlüssel";
+$_ARRAYLANG['TXT_LICENSE_KEY'] = 'Lizenzschlüssel';
+$_ARRAYLANG['TXT_LICENSE_KEY_HELP'] = 'Geben Sie hier Ihren Lizenzschlüssel ein, um diese Contrexx© Installation zu aktivieren.';
+$_ARRAYLANG['TXT_LICENSE_STATE_-1'] = 'Ungültig';
+$_ARRAYLANG['TXT_LICENSE_STATE_1'] = 'Gültig';
+$_ARRAYLANG['TXT_LICENSE_STATE_2'] = 'Demo';
+$_ARRAYLANG['TXT_LICENSE_STATE_3'] = 'Nicht verfügbar';
 $_ARRAYLANG['TXT_PHP_INFO'] = "PHP Informationen";
 $_ARRAYLANG['TXT_WELCOME_MESSAGE'] = "Willkommen";
 $_ARRAYLANG['TXT_ADMINISTSRATORS_ONLINE'] = "Administratoren online";
@@ -1162,8 +1174,6 @@ $_ARRAYLANG['TXT_MEDIADIR_SETTINGS'] = 'Einstellungen';
 $_ARRAYLANG['TXT_MEDIADIR_MODULE_DESCRIPTION'] = 'Flexibel konfigurierbares Medienverzeichnis.';
 $_ARRAYLANG['TXT_CHECKOUT_MODULE'] = "Online-Zahlung";
 $_ARRAYLANG['TXT_CHECKOUT_MODULE_DESCRIPTION'] = "Einfache Lösung zur Abwicklung von Transaktionen über Yellowpay.";
-$_ARRAYLANG['TXT_LICENSE_KEY'] = 'Lizenzschlüssel';
-$_ARRAYLANG['TXT_LICENSE_KEY_HELP'] = 'Geben Sie hier Ihren Lizenzschlüssel ein, um diese Contrexx© Installation zu aktivieren.';
 
 // From 2.3(?) -- are these still in use?
 $_ARRAYLANG['TXT_CSRF_BUTTON'] = "Klicken Sie hier, um fortzufahren.";
