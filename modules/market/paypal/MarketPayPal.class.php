@@ -22,7 +22,7 @@
  * @package     contrexx
  * @subpackage  module_market
  */
-class PayPal
+class MarketPayPal
 {
 	/**
 	 * e-mail address for paypal paying

@@ -22,7 +22,7 @@
  * @package     contrexx
  * @subpackage  module_auction
  */
-class PayPal
+class AuctionPayPal
 {
     /**
      * e-mail address for paypal paying
