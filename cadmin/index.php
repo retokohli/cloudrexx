@@ -378,6 +378,11 @@ switch ($plainCmd) {
         $cm = new \Cx\Core\ContentManager\ContentManager($act, $objTemplate, $objDatabase, $objInit);
         $cm->getPage();
         break;
+    case 'license':
+        $subMenuTitle = $_CORELANG['TXT_LICENSE'];
+        $lm = new \Cx\Core\License\LicenseManager($act, $objTemplate, $_CORELANG, $_CONFIG);
+        $lm->getPage($_POST);
+        break;
 // TODO: handle expired sessions in any xhr callers.
     case 'jsondata':
         $json = new \Cx\Core\Json\JsonData();
