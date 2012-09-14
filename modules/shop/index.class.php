@@ -1015,6 +1015,15 @@ die("Failed to update the Cart!");
                         $arrSize = getimagesize(ASCMS_PATH.$thumbnailPath);
                     }
                     self::scaleImageSizeToThumbnail($arrSize);
+                    // Use the first available picture in microdata, if any
+                    if (!$havePicture) {
+                        $picture_url = Cx\Core\Routing\URL::fromCapturedRequest(
+                            ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$image['img'],
+                            ASCMS_PATH_OFFSET, array());
+                        self::$objTemplate->setVariable(
+                            'SHOP_PRODUCT_IMAGE', $picture_url->toString());
+//\DBG::log("Set image to ".$picture_url->toString());
+                    }
                 }
                 $arrProductImages[] = array(
                     'THUMBNAIL' => contrexx_raw2encodedUrl($thumbnailPath),
@@ -1106,9 +1115,9 @@ die("Failed to update the Cart!");
             $detailLink = null;
             // Detaillink is required for microdata (even when longdesc
             // is empty)
-            $detail_url =
-                CONTREXX_SCRIPT_PATH.'?section=shop'.MODULE_INDEX.
-                '&amp;cmd=details&amp;productId='.$objProduct->id();
+            $detail_url = \Cx\Core\Routing\URL::fromModuleAndCmd(
+                'shop', 'details', FRONTEND_LANG_ID,
+                array('productId' => $objProduct->id()))->toString();
             self::$objTemplate->setVariable(
                 'SHOP_PRODUCT_DETAIL_URL', $detail_url);
             if (!$product_id && !empty($longDescription)) {
@@ -1148,7 +1157,6 @@ die("Failed to update the Cart!");
             self::$objTemplate->setVariable(array(
                 'SHOP_ROWCLASS' => 'row'.$row,
                 'SHOP_PRODUCT_ID' => $objProduct->id(),
-                'SHOP_PRODUCT_CUSTOM_ID' => htmlentities($objProduct->code(), ENT_QUOTES, CONTREXX_CHARSET),
                 'SHOP_PRODUCT_TITLE' => htmlentities($objProduct->name(), ENT_QUOTES, CONTREXX_CHARSET),
                 'SHOP_PRODUCT_DESCRIPTION' => $short,
 // TODO: Test whether this produces double descriptions in some views
@@ -1165,8 +1173,13 @@ die("Failed to update the Cart!");
                         ? $_ARRAYLANG['TXT_SHOP_PRODUCT_METER']
                         : $_ARRAYLANG['TXT_SHOP_PRODUCT_COUNT']
                     ),
+                'SHOP_CURRENCY_CODE' => Currency::getActiveCurrencyCode(),
             ));
-
+            if ($objProduct->code()) {
+                self::$objTemplate->setVariable(
+                    'SHOP_PRODUCT_CUSTOM_ID', htmlentities(
+                        $objProduct->code(), ENT_QUOTES, CONTREXX_CHARSET));
+            }
             $manufacturer_name = $manufacturer_url = $manufacturer_link = '';
             $manufacturer_id = $objProduct->manufacturer_id();
             if ($manufacturer_id) {
