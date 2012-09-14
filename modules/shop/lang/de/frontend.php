@@ -397,3 +397,5 @@ $_ARRAYLANG['TXT_SHOP_FORM_RESET_CONFIRM'] = "Bestätigen Sie bitte, dass Sie Ih
 // 20120808
 $_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_ACCEPTED'] = "Die <a href=\"index.php?section=shop&amp;cmd=terms\" target=\"_blank\">Widerrufsbelehrung</a> habe ich zur Kenntnis genommen.";
 $_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_PLEASE_ACCEPT'] = "Bitte bestätigen Sie die Kenntnisnahme der Widerrufsbelehrung.";
+// 20120914
+$_ARRAYLANG['TXT_SHOP_MANUFACTURER'] = "Hersteller";
