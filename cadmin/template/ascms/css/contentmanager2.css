@@ -299,13 +299,13 @@ h1{ font-size: 20px }
     display: block;
     position: absolute;
     top: 23px;
-    left: 77.6%;
+    left: 0;
     z-index: 11;
 }
 
 #content-manager.edit_view #site-tree .actions-expanded {
     left: auto;
-    right: 10px;
+    right: 3px;
 }
 
 #site-tree .actions-expanded ul {
@@ -530,6 +530,10 @@ h1{ font-size: 20px }
     width: 100%;
 }
 
+.ui-dialog.edit-mode {
+    top: 33% !important;
+    margin-top: -78px;
+}
 
 #edit_mode {
     position: relative;
