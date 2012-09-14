@@ -157,6 +157,10 @@
     padding: 12px 15px 0 0;
 }
 
+#navigation li#navigation-search:hover {
+    background: none;
+}
+
 #navigation li#navigation-search #search-input {
     float: left;
     width: 120px;
