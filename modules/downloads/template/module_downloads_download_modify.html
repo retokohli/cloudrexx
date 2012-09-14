@@ -135,7 +135,7 @@ function SetUrl(url, width, height, alt)
 
     var id = downloadsElInsertBox.id;
     var result = id.match(/(\d+)$/);
-    if (result[1] == 0) {
+    if (result && result[1] == 0) {
         downloadsSyncNameFields(downloadsElInsertBox.value,'input','downloads_download_file_source')
     }
 
