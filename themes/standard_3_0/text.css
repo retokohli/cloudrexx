@@ -162,7 +162,7 @@ textarea:focus {
 }
 
 input[type=submit],
-input[type=button]
+input[type=button],
 input[type=reset],
 input[type=radio],
 input[type=checkbox] {
@@ -185,7 +185,7 @@ input[type=text] {
 
 button,
 input[type=submit],
-input[type=button]
+input[type=button],
 input[type=reset] {
     padding: 8px 10px 7px 10px;
     color: #414141;
