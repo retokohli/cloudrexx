@@ -148,6 +148,7 @@ textarea {
 
 select {
     width: 326px;
+    padding: 6px 6px 7px 6px;
 }
 
 input:hover,
