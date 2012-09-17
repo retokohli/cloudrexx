@@ -36,6 +36,9 @@ class Permission
      */
     public static function checkAccess($accessId, $type, $return=false)
     {
+        if ($accessId === 0 && $type == 'static') {
+            return true;
+        }
         $objFWUser = FWUser::getFWUserObject();
         if ($objFWUser->objUser->login() &&
             (
