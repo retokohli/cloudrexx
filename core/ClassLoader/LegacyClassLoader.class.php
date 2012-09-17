@@ -142,7 +142,8 @@ class LegacyClassLoader {
     private function searchClass($name, $namespace, $path = ASCMS_DOCUMENT_ROOT) {
         $files = glob($path . '/*.php');
         foreach ($files as $file) {
-            if (substr($file, 0, 1) == '!') {
+            $fileParts = explode('/', $file);
+            if (substr(end($fileParts), 0, 1) == '!') {
                 continue;
             }
             $adminClass = 'admin.class.php';
@@ -165,7 +166,8 @@ class LegacyClassLoader {
             }
         }
         foreach (glob($path.'/*', GLOB_ONLYDIR|GLOB_NOSORT) as $dir) {
-            if (substr($dir, 0, 1) == '!') {
+            $dirParts = explode('/', $dir);
+            if (substr(end($dirParts), 0, 1) == '!') {
                 continue;
             }
             if (in_array($dir, array(
