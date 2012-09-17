@@ -3068,6 +3068,7 @@ CREATE TABLE `contrexx_modules` (
   `status` set('y','n') NOT NULL DEFAULT 'n',
   `is_required` tinyint(1) NOT NULL DEFAULT '0',
   `is_core` tinyint(4) NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '0',
   UNIQUE KEY `id` (`id`)
 ) ENGINE=MyISAM;
 CREATE TABLE `contrexx_sessions` (
