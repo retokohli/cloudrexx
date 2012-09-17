@@ -79,6 +79,12 @@ $this->bytes = memory_get_peak_usage();
             $children = $children2;
             unset($children2);
             
+            $page = $node->getPage($this->lang);
+            if ($page && (!$page->isActive() || !$page->isVisible())) {
+                // do not add children if page is not shown, but add them if node has no page (root node)
+                continue;
+            }
+            
             $hasChilds = count($children) > 0;
             if ($hasChilds && !$dontDescend) {
                 $children = array_reverse($children, true);
@@ -86,14 +92,11 @@ $this->bytes = memory_get_peak_usage();
                     array_push($nodeStack, $child);
                 }
             }
-
-            $page = $node->getPage($this->lang);
+            
             if (!$page) {
                 continue;
             }
-            if (!$page->isActive() || !$page->isVisible()) {
-                continue;
-            }
+
             // prepare data for element
             $current = false;
             if ($this->currentPage) {

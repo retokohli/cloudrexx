@@ -315,6 +315,42 @@ class URL {
         ));
         return static::fromPage($page, $parameters, $protocol);
     }
+    
+    /**
+     * Returns an Url object for node and language
+     * @param int $nodeId Node id
+     * @param int $lang (optional) Language to use, default is FRONTENT_LANG_ID
+     * @param array $parameters (optional) HTTP GET parameters to append
+     * @param string $protocol (optional) The protocol to use
+     * @return \Cx\Core\Routing\URL Url object for the supplied module, cmd and lang
+     */
+    public static function fromNodeId($nodeId, $lang = '', $parameters = array(), $protocol = '') {
+        if ($lang == '') {
+            $lang = FRONTEND_LANG_ID;
+        }
+        $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+        $page = $pageRepo->findOneBy(array(
+            'node' => $nodeId,
+            'lang' => $lang,
+        ));
+        return static::fromPage($page, $parameters, $protocol);
+    }
+    
+    /**
+     * Returns an Url object for node and language
+     * @param \Cx\Model\ContentManager\Node $node Node to get the Url of
+     * @param int $lang (optional) Language to use, default is FRONTENT_LANG_ID
+     * @param array $parameters (optional) HTTP GET parameters to append
+     * @param string $protocol (optional) The protocol to use
+     * @return \Cx\Core\Routing\URL Url object for the supplied module, cmd and lang
+     */
+    public static function fromNode($node, $lang = '', $parameters = array(), $protocol = '') {
+        if ($lang == '') {
+            $lang = FRONTEND_LANG_ID;
+        }
+        $page = $node->getPage($lang);
+        return static::fromPage($page, $parameters, $protocol);
+    }
 
     /**
      * Returns the URL object for a page id

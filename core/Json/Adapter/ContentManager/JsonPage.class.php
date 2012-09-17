@@ -212,6 +212,9 @@ class JsonPage implements JsonAdapter {
             $page->setNode($node);
             $page->setNodeIdShadowed($node->getId());
             $page->setLang(\FWLanguage::getLanguageIdByCode($lang));
+            $page->setUpdatedBy(
+                \FWUser::getFWUserObject()->objUser->getUsername()
+            );
 
             $newPage = true;
             $reload  = true;
