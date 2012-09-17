@@ -3,7 +3,7 @@
 * Contrexx CMS
 * generated date Tue, 23 Jan 2007 16:34:47 +0100
 **/
-
+$_ARRAYLANG['TXT_SHOP_PRODUCT_DETAILS'] = "Details";
 $_ARRAYLANG['TXT_STOCK'] = "Bestand";
 $_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'] = "Alle Produktegruppen";
 $_ARRAYLANG['TXT_SHOPPING_CART'] = "Warenkorb:";
