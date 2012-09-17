@@ -60,19 +60,31 @@ class adminMenu
             }
         }
 
-        $objResult = $objDatabase->Execute("SELECT areas.area_id AS area_id,
-                           areas.parent_area_id AS parent_area_id,
-                           areas.area_name AS area_name,
-                           areas.type AS type,
-                           areas.uri AS uri,
-                           areas.target AS target,
-                           modules.name AS module_name
-                      FROM  ".DBPREFIX."backend_areas AS areas
-                      INNER JOIN ".DBPREFIX."modules AS modules
-                      ON modules.id=areas.module_id
-                     WHERE is_active=1 AND (type = 'group' OR type = 'navigation')
-                       ".$sqlWhereString."
-                  ORDER BY areas.order_id ASC");
+        $query = "
+            SELECT
+                areas.area_id AS area_id,
+                areas.parent_area_id AS parent_area_id,
+                areas.area_name AS area_name,
+                areas.type AS type,
+                areas.uri AS uri,
+                areas.target AS target,
+                modules.name AS module_name
+            FROM
+                ".DBPREFIX."backend_areas AS areas
+            INNER JOIN
+                ".DBPREFIX."modules AS modules
+            ON
+                modules.id=areas.module_id
+            WHERE
+                areas.is_active=1
+                AND (areas.type = 'group' OR areas.type = 'navigation')
+                AND modules.is_active = 1
+                ".$sqlWhereString."
+            ORDER BY
+                areas.order_id ASC
+        ";
+        $objResult = $objDatabase->Execute($query);
+        // ADD A JOIN TO MODULE TABLE HERE TO SEE IF THE MODULE IS ACTIVE
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 if ($objResult->fields['type'] == "group") {

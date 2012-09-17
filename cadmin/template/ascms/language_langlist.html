@@ -9,6 +9,39 @@ if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
 window.location.replace("index.php?cmd=language&{CSRF_PARAM}&act=dellang&id="+id);
 }
 }
+
+jQuery(function() {
+    updateCurrent(true);
+});
+
+function updateCurrent(init) {
+    if (jQuery(".langrow .langFallback").length == 0) {
+        return;
+    }
+    jQuery(".langrow").each(function(index, el) {
+        var lang = jQuery(el);
+        var langId = lang.children(".langId").text();
+        var defField = lang.children(".langDefault").children("input");
+        var fallbackField = lang.children(".langFallback").children("select");
+        var frontendField = lang.children(".langActiveFrontend").children("input");
+        var backendField = lang.children(".langActiveBackend").children("input");
+        var functionsField = lang.children(".langFunctions").children("div");
+        if (init) {
+            fallbackField.children("option[value=" + langId + "]").remove();
+        }
+        if (defField.is(":checked")) {
+            frontendField.prop("disabled", true);
+            backendField.prop("disabled", true);
+            fallbackField.hide();
+            functionsField.hide();
+        } else {
+            frontendField.prop("disabled", false);
+            backendField.prop("disabled", false);
+            fallbackField.show();
+            functionsField.show();
+        }
+    });
+}
 // -->
 </script>
 <form name="languageForm" method="post" action="index.php?cmd=language&amp;act=modlang">
@@ -18,9 +51,9 @@ window.location.replace("index.php?cmd=language&{CSRF_PARAM}&act=dellang&id="+id
       <th colspan="6">
         <div align="left">{TXT_LANGUAGE_LIST}</div>
       </th>
-      <th colspan="3" nowrap="nowrap">
+      <!-- BEGIN extendedTitles --><th colspan="3" nowrap="nowrap">
         <div align="right" style="{LANGUAGE_ADMIN_STYLE}"><a href="javascript:{}" onclick="expandcontent('sc1')" style="cursor:hand; cursor:pointer" title="{TXT_ADD_NEW_LANGUAGE}">{TXT_ADD_NEW_LANGUAGE}</a></div>
-      </th>
+      </th><!-- END extendedTitles -->
     </tr>
     <tr class="row3">
       <td width="3%"><b>{TXT_ID}</b></td>
@@ -28,19 +61,19 @@ window.location.replace("index.php?cmd=language&{CSRF_PARAM}&act=dellang&id="+id
       <td width="10%"><b>{TXT_SHORT_FORM}</b></td>
       <td width="10%"><b>{TXT_CHARSET}</b></td>
       <td width="10%" nowrap="nowrap"><b>{TXT_DEFAULT_LANGUAGE}</b></td>
-      <td width="10%"><b>{TXT_CORE_FALLBACK}</b></td>
+      <!-- BEGIN extendedHeaders --><td width="10%"><b>{TXT_CORE_FALLBACK}</b></td>
       <td width="10%"><b>{TXT_WEB_PAGES}</b> </td>
       <td width="10%"><b>{TXT_ADMINISTRATION_PAGES}</b></td>
-      <td width="10%"><div align="right" style="{LANGUAGE_ADMIN_STYLE}"><b>{TXT_ACTION}</b></div></td>
+      <td width="10%"><div align="right"><b>{TXT_ACTION}</b></div></td><!-- END extendedHeaders -->
     </tr>
     <!-- BEGIN languageRow -->
-    <tr class="{LANGUAGE_ROWCLASS}">
-      <td><div align="left">{LANGUAGE_LANG_ID}</div></td>
-      <td><input type="text" name="langName[{LANGUAGE_LANG_ID}]" value="{LANGUAGE_LANG_NAME}" size="40" maxlength="250" /></td>
-      <td>{LANGUAGE_LANG_SHORTNAME}</td>
-      <td>{LANGUAGE_LANG_CHARSET}</td>
-      <td>{LANGUAGE_LANG_STATUS}</td>
-      <td>
+    <tr class="langrow {LANGUAGE_ROWCLASS}">
+      <td class="langId"><div align="left">{LANGUAGE_LANG_ID}</div></td>
+      <td class="langName"><input type="text" name="langName[{LANGUAGE_LANG_ID}]" value="{LANGUAGE_LANG_NAME}" size="40" maxlength="250" /></td>
+      <td class="langShortName">{LANGUAGE_LANG_SHORTNAME}</td>
+      <td class="langCharset">{LANGUAGE_LANG_CHARSET}</td>
+      <td class="langDefault">{LANGUAGE_LANG_STATUS}</td>
+      <!-- BEGIN extendedOptions --><td class="langFallback">
           <!-- BEGIN fallback -->
           <select name="fallBack[{LANGUAGE_LANG_ID}]">
               <option value="" {NONE_SELECTED}>{TXT_CORE_NONE}</option>
@@ -51,9 +84,21 @@ window.location.replace("index.php?cmd=language&{CSRF_PARAM}&act=dellang&id="+id
           </select>          
           <!-- END fallback -->
       </td>
-      <td>{LANGUAGE_ACTIVE_STATUS}</td>
-      <td>{LANGUAGE_ADMIN_STATUS}</td>
-      <td><div align="right" style="{LANGUAGE_ADMIN_STYLE}"><a href="javascript:deleteLanguage('{LANGUAGE_LANG_ID}')"><img src="images/icons/delete.gif" alt="Sprache l�schen" border="0" /></a></div></td>
+      <td class="langActiveFrontend">{LANGUAGE_ACTIVE_STATUS}</td>
+      <td class="langActiveBackend">{LANGUAGE_ADMIN_STATUS}</td>
+      <td class="langFunctions">
+          <div align="right">
+              <a href="javascript:copyPages('{LANGUAGE_LANG_ID}')">
+                  <img src="images/icons/copy.gif" alt="Sprache l�schen" border="0" />
+              </a>
+              <a href="javascript:linkPages('{LANGUAGE_LANG_ID}')">
+                  <img src="images/icons/link.gif" alt="Sprache l�schen" border="0" />
+              </a>
+              <a style="{LANGUAGE_ADMIN_STYLE}" href="javascript:deleteLanguage('{LANGUAGE_LANG_ID}')">
+                  <img src="images/icons/delete.gif" alt="Sprache l�schen" border="0" />
+              </a>
+          </div>
+      </td><!-- END extendedOptions -->
     </tr>
     <!-- END languageRow -->
   </table>
