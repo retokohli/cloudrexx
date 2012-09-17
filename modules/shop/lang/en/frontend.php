@@ -1,5 +1,6 @@
 <?php
 global $_ARRAYLANG;
+$_ARRAYLANG['TXT_SHOP_PRODUCT_DETAILS'] = "Details";
 $_ARRAYLANG['SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "I'm a registered customer.";
 $_ARRAYLANG['SHOP_ACCOUNT_LOGIN'] = "Log in >>";
 $_ARRAYLANG['SHOP_ACCOUNT_NEW_CUSTOMER'] = "I'm a new customer.";

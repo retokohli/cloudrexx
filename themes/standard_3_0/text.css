@@ -51,12 +51,12 @@ table {
 /* End CSS Reset */
 
 @font-face {
-  font-family:'Ubuntu';
+  font-family: 'Ubuntu';
   src: url('fonts/ubuntu.eot'); /* here you go, IE */
 }
 
 @font-face {
-  font-family:'Ubuntu';
+  font-family: 'Ubuntu';
   src: url('fonts/ubuntu.ttf') format('truetype');
 }
 
@@ -134,13 +134,13 @@ h6 {
 }
 
 input,
+button,
 select,
 textarea {
     width: 300px;
     padding: 7px 12px 8px 12px;
     margin: 0;
     color: #7D7D7D;
-    font-family: 'Ubuntu';
     border: 1px solid #DDDDDD;
     background: #FFFFFF;
     outline: 0;
@@ -166,7 +166,8 @@ input[type=submit],
 input[type=button],
 input[type=reset],
 input[type=radio],
-input[type=checkbox] {
+input[type=checkbox],
+button {
     width: auto;
 }
 

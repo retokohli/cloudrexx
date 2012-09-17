@@ -6,6 +6,7 @@
  * @package     contrexx
  * @subpackage  module_shop
  */
+$_ARRAYLANG['TXT_SHOP_PRODUCT_DETAILS'] = "Details";
 $_ARRAYLANG['TXT_STOCK'] = "In stock";
 $_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'] = "All products categories";
 $_ARRAYLANG['TXT_SHOPPING_CART'] = "Shopping Cart:";

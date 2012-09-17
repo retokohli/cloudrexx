@@ -1685,7 +1685,7 @@ die("Failed to update the Cart!");
                         'SHOP_PRODUCT_OPTIONS_NAME' => $objAttribute->getName(),
                         'SHOP_PRODUCT_OPTIONS_TITLE' =>
                             '<a href="javascript:{}" onclick="toggleOptions('.
-                            $product_id.')" title="'.
+                            $product_id.', this)" title="'.
                             $_ARRAYLANG['TXT_OPTIONS'].'">'.
                             $_ARRAYLANG['TXT_OPTIONS']."</a>\n",
                     ));
@@ -1793,8 +1793,9 @@ function deleteProduct(product_index)
   document.shopForm.submit();
 }
 
-function toggleOptions(productId)
+function toggleOptions(productId, event)
 {
+  \$J(event).toggleClass('active');
   if (document.getElementById('product_options_layer'+productId)) {
     if (document.getElementById('product_options_layer'+productId).style.display == 'none') {
       document.getElementById('product_options_layer'+productId).style.display = 'block';

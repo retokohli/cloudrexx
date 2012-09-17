@@ -87,7 +87,7 @@ table td.none {
 }
 
 #shop table tr.row3 {
-    background-color: #F5F5F5;
+    background-color: #FFFFFF;
 }
 
 /* Highlight for shop, now mandatory in germany */
@@ -1040,6 +1040,17 @@ div#livecam #CALBUTTONDPC_datum {
     float:left;
     height:auto !important;
 }
+#shop table tr.row1,
+#shop table tr.row2 {
+    border-bottom: 1px solid #DDDDDD;
+}
+#shop table tr.row2 {
+    background: #FFFFFF;
+}
+#shop table tr.row3 {
+    border-bottom: 1px solid #FFFFFF;
+    background: #F6F6F6;
+}
 #shop div.menu,
 #shop div.cart_info,
 #shop div.informations,
@@ -1055,11 +1066,9 @@ div#livecam #CALBUTTONDPC_datum {
 #shop div.customer_old,
 #shop div.order,
 #shop div.customer_new {
-    width: 100%;
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 15px 0px;
     float:left;
-    height:auto !important;
+    width: 100%;
+    padding: 0 0 20px 0;
 }
 /* Inner block for the toggable shipment address */
 #shop .shipping_address {
@@ -1077,8 +1086,14 @@ div#livecam #CALBUTTONDPC_datum {
 #shop .shop_cart_input {
     width: 150px !important;
 }
+#shop .delete-icon {
+    position: relative;
+    top: 4px;
+}
 #shop input.shop_quantity {
     width: 30px;
+    padding: 5px;
+    text-align: right;
 }
 #shop div.message_error {
     color:#FF0000;
@@ -1105,50 +1120,96 @@ div#livecam #CALBUTTONDPC_datum {
     width: 49%;
 }
 #shop div.paging {
-    text-align:center;
+    float: left;
     width: 100%;
-    padding: 0px 0px 0px 0px;
-    margin: 15px 0px 15px 0px;
-    float:left;
+    text-align: center;
 }
 #shop div.product {
-    width: 100%;
-    padding: 10px 0px 10px 0px;
-    margin: 0px 0px 0px 0px;
     float:left;
-    height:auto !important;
+    width: 100%;
+    padding: 0 0 20px 0;
+    margin: 0 0 20px 0;
+    border-bottom: 1px solid #DDDDDD;
+}
+#shop div.product.detail {
+    padding: 0;
+    margin: 0;
+    border: 0;
 }
 #shop div.images {
-    width: 24%;
-    margin: 0px 0px 0px 0px;
-    padding: 0px 0px 0px 0px;
-    height: auto !important;
-    float:left;
-    text-align:center;
+    float: left;
+    width: 25%;
+}
+#shop div.images a img {
+    max-width: 90%;
+}
+#shop div.info {
+    float: left;
+    width: 75%;
+}
+#shop div.short-description {
+    float: left;
+    width: 75%;
+}
+#shop div.price {
+    float: left;
+    width: 25%;
+    font-size: 20px;
+    text-align: right;
+}
+#shop div.price-detail {
+    float: left;
+    width: 100%;
+    padding: 10px 0 0 0;
+    font-size: 20px;
+    text-align: right;
 }
 #shop div.description {
-    margin: 0px 0px 15px 0px;
-    padding: 0px 0px 0px 0px;
-    height: auto !important;
-    float:left;
+    float: left;
     width: 75%;
+}
+#shop div.description table td {
+    padding: 5px 5px 5px 0;
+}
+#shop div.detail-link {
+    float: left;
+    width: 25%;
+    padding: 0 0 15px 0;
+    text-align: right;
 }
 #shop div.description h2,
 #shop div.categories h2,
 #shop div.informations h2,
+#shop div.info h3,
 #shop div.description h3,
 #shop div.informations h3 {
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 5px 0px;
+    padding: 0;
+    margin: 0 0 5px 0;
 }
 #shop div.stock,
-#shop div.manufacturer,
-#shop div.detail_link,
-#shop div.shop_options {
-    margin: 0px 0px 3px 0px;
-    padding: 0px 0px 0px 0px;
-    height: auto !important;
+#shop div.detail_link {
+    float: left;
     width: 100%;
+    padding: 0 0 5px 0;
+}
+#shop div.shop_options,
+#shop div.manufacturer {
+    float: left;
+    width: 100%;
+    padding: 20px 0 0 0;
+}
+#shop div.shop_options a {
+    float: left;
+    padding: 0 0 0 12px;
+    background: url('images/arrows.png') no-repeat 0 7px;
+}
+#shop div.shop_options a.active {
+    background-position: 0 -8px;
+}
+#shop div.shop_options_click {
+    float: left;
+    width: 100%;
+    padding: 10px 0 0 0;
 }
 #shop div.product_id {
     margin: 0px 0px 15px 0px;
@@ -1156,14 +1217,18 @@ div#livecam #CALBUTTONDPC_datum {
     height: auto !important;
     width: 100%;
 }
-#shop div.price,
 #shop div.functions {
-    margin: 0px 0px 0px 0px;
-    padding: 0px 0px 0px 0px;
-    height: auto !important;
+    float: left;
     width: 100%;
-    float:left;
-    text-align:right;
+    padding: 20px 0 0 0;
+    text-align: right;
+}
+#shop div.functions input[type=submit] {
+    margin: 0;
+}
+#shop div.vat {
+    float: left;
+    width: 100%;
 }
 #shop input[type=radio],
 #shop input[type=checkbox] {
@@ -1175,6 +1240,17 @@ div#livecam #CALBUTTONDPC_datum {
     height: 60px;
     margin-left: 9px;
     width: 80px;
+}
+#shop div.price > s,
+#shop div.price-detail > s {
+    float: right;
+    clear: right;
+}
+#shop .discount {
+    float: right;
+    clear: right;
+    padding: 0 0 5px 0;
+    color: red;
 }
 #shop .discount h2 {
     font-size: 1.6em;
@@ -1233,6 +1309,10 @@ div#livecam #CALBUTTONDPC_datum {
     font-size: 15px;
     text-align: center;
     background: #0A85C8;
+}
+
+#shop .continue-button {
+    margin: 0;
 }
 
 /***************************************************/
