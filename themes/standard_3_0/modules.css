@@ -55,7 +55,11 @@ table th {
     color: #FFFFFF;
     text-align: left;
     font-weight: bold;
-    background-color: #BBBBBB;
+    background-color: #0A85C8;
+}
+
+table th a {
+    color: #FFFFFF;
 }
 
 table tr.row1,
@@ -1029,7 +1033,7 @@ div#livecam #CALBUTTONDPC_datum {
 /***************************************************/
 /* CSS DEFINITIONS FOR SHOP MODULE                 */
 /***************************************************/
-#shop{
+#shop {
     width: 100%;
     padding: 0px 0px 0px 0px;
     margin: 0px 0px 0px 0px;
@@ -1080,11 +1084,9 @@ div#livecam #CALBUTTONDPC_datum {
     color:#FF0000;
 }
 #shop div.categories {
+    float: left;
     width: 100%;
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 25px 0px;
-    float:left;
-    height:auto !important;
+    padding: 0 0 30px 0;
 }
 #shop div.category {
     padding: 0px 0px 0px 0px;
@@ -1135,7 +1137,6 @@ div#livecam #CALBUTTONDPC_datum {
 #shop div.categories h2,
 #shop div.informations h2,
 #shop div.description h3,
-#shop div.categories h3,
 #shop div.informations h3 {
     padding: 0px 0px 0px 0px;
     margin: 0px 0px 5px 0px;
@@ -1189,6 +1190,51 @@ div#livecam #CALBUTTONDPC_datum {
     background-color: red;
     background-image: url("images/logo.png");
 }
+
+#shop figure a {
+    float: left;
+    width: 220px;
+    height: 220px;
+    margin: 0 30px 0 0;
+    border: 1px solid #DDDDDD;
+    box-shadow: 3px 3px 8px #DDDDDD;
+    -moz-box-shadow: 3px 3px 8px #DDDDDD;
+    -webkit-box-shadow: 3px 3px 8px #DDDDDD;
+    -o-box-shadow: 3px 3px 8px #DDDDDD;
+}
+
+#shop figure a:hover {
+    border: 1px solid #AAAAAA;
+    box-shadow: 3px 3px 8px #AAAAAA;
+    -moz-box-shadow: 3px 3px 8px #AAAAAA;
+    -webkit-box-shadow: 3px 3px 8px #AAAAAA;
+    -o-box-shadow: 3px 3px 8px #AAAAAA;
+}
+
+#shop figure a .categorie-image-wrapper {
+    float: left;
+    width: 200px;
+    height: 170px;
+    padding: 10px;
+    text-align: center;
+}
+
+#shop figure a .categorie-image-wrapper img {
+    max-width: 200px;
+    max-height: 170px;
+}
+
+#shop figure a h3 {
+    float: left;
+    width: 200px;
+    padding: 4px 10px 6px 10px;
+    margin: 0;
+    color: #FFFFFF;
+    font-size: 15px;
+    text-align: center;
+    background: #0A85C8;
+}
+
 /***************************************************/
 /* CSS DEFINITIONS FOR E-CARD MODULE               */
 /***************************************************/
@@ -2085,6 +2131,11 @@ dl.data_module img {
 /*************************************/
 /* CSS DEFINITIONS FOR MEDIA ARCHIVE */
 /*************************************/
+#media {
+    float: left;
+    width: 100%;
+    margin: 0 0 20px 0;
+}
 #media a img {
     border: 0px;
 }
