@@ -82,6 +82,10 @@ class LanguageManager
             <a href='index.php?cmd=language&amp;act=mod' class='".($this->act == 'mod' ? 'active' : '')."'>".$_CORELANG['TXT_ADD_LANGUAGE_VARIABLES']."</a>
             <a href='index.php?cmd=language&amp;act=writefiles' class='".($this->act == 'writefiles' ? 'active' : '')."' title='".$_CORELANG['TXT_WRITE_VARIABLES_TO_FILES']."'>".$_CORELANG['TXT_WRITE_VARIABLES_TO_FILES']."</a>": ""));
     }
+    
+    protected function isInFullMode() {
+        return false;
+    }
 
 
     /**
@@ -858,9 +862,17 @@ class LanguageManager
         // init vars
         $i=0;
 
-        $objTemplate->addBlockfile('ADMIN_CONTENT', 'langauge_langlist', 'language_langlist.html');
+        $objTemplate->addBlockfile('ADMIN_CONTENT', 'language_langlist', 'language_langlist.html');
         $this->pageTitle = $_CORELANG['TXT_LANGUAGE_LIST'];
-
+        
+        if (!$this->isInFullMode()) {
+            $this->hideVariables = true;
+            $objTemplate->hideBlock('extendedTitles');
+            $objTemplate->hideBlock('extendedHeaders');
+        } else {
+            $objTemplate->touchBlock('extendedTitles');
+        }
+        
         //begin language variables
         $objTemplate->setVariable(array(
             'TXT_ADD_NEW_LANGUAGE'             => $_CORELANG['TXT_ADD_NEW_LANGUAGE'],
@@ -910,9 +922,8 @@ class LanguageManager
                 $checked = "";
                 if ($objResult->fields['is_default']=="true") {
                   $checked = "checked";
-                  $objTemplate->hideBlock('fallback');
                 }
-                $status ="<input type='radio' name='langDefaultStatus' value='".$objResult->fields['id']."' $checked />";
+                $status ="<input type='radio' name='langDefaultStatus' onchange='updateCurrent();' value='".$objResult->fields['id']."' $checked />";
 
                 $checked = "";
                 if ($objResult->fields['frontend']==1) {
@@ -958,6 +969,9 @@ class LanguageManager
                     'LANGUAGE_ADMIN_STATUS'        => $adminStatus
                 ));
                                 
+                if (!$this->isInFullMode()) {
+                    $objTemplate->hideBlock('extendedOptions');
+                }
                 $objTemplate->parse('languageRow');
                 $objResult->MoveNext();
             }

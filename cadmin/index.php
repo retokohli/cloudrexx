@@ -26,6 +26,7 @@
  */
 include_once '../lib/DBG.php';
 //DBG::activate(DBG_ERROR_FIREPHP);
+
 $startTime = explode(' ', microtime());
 
 $adminPage = true;
@@ -284,6 +285,27 @@ if (!empty($plainCmd) and !in_array($plainCmd, array('fileBrowser', 'upload', 'l
     CSRF::check_code();
 }
 
+// check if the requested module is active:
+if ($plainCmd != 'login' && $plainCmd != 'license') {
+    $query = '
+        SELECT
+            modules.is_active
+        FROM
+            '.DBPREFIX.'modules AS modules,
+            '.DBPREFIX.'backend_areas AS areas
+        WHERE
+            areas.module_id = modules.id
+            AND (
+                areas.uri LIKE "%cmd=' . contrexx_raw2db($plainCmd) . '&%"
+                OR areas.uri LIKE "%cmd=' . contrexx_raw2db($plainCmd) . '"
+            )
+    ';
+    $res = $objDatabase->Execute($query);
+    if (!$res->fields['is_active']) {
+        $plainCmd = '';
+    }
+}
+
 $subMenuTitle = NULL;
 switch ($plainCmd) {
     case 'login':
@@ -540,6 +562,14 @@ switch ($plainCmd) {
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_LANGUAGE_SETTINGS'];
         $objLangManager = new LanguageManager();
+        $objLangManager->getLanguagePage();
+        break;
+    case 'fulllanguage':
+        Permission::checkAccess(22, 'static');
+        if (!include_once ASCMS_CORE_PATH.'/language2.class.php')
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $subMenuTitle = $_CORELANG['TXT_LANGUAGE_SETTINGS'];
+        $objLangManager = new LanguageManagerFull();
         $objLangManager->getLanguagePage();
         break;
     case 'modulemanager':
