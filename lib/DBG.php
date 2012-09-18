@@ -78,7 +78,9 @@ class DBG
         if (!self::$fileskiplength) {
             self::$fileskiplength = strlen(dirname(dirname(__FILE__))) +1;
         }
-        if (empty($mode)) {
+        if ($mode === DBG_NONE) {
+            self::$mode = DBG_NONE;
+        } elseif ($mode === null) {
             self::$mode = DBG_ALL & ~DBG_LOG_FILE & ~DBG_LOG_FIREPHP;
         } else {
             self::$mode = self::$mode | $mode;
@@ -464,6 +466,11 @@ class DBG
     static function dump($val)
     {
         if (!self::$enable_dump) return;
+
+        if ($val instanceof \Cx\Model\Base\EntityBase) {
+            $val = \Doctrine\Common\Util\Debug::export($val, 2);
+        }
+
         if (self::$log_firephp) {
             self::$firephp->log($val);
             return;
@@ -502,9 +509,7 @@ class DBG
 
     static function msg($message)
     {
-        if (self::$enable_msg) {
-            self::_log('LOGMSG: '.$message);
-        }
+        self::_log('LOGMSG: '.$message);
     }
 
 
@@ -558,6 +563,8 @@ class DBG
 
     private static function _log($text, $firephp_action='log', $additional_args=null)
     {
+        if (!self::$enable_msg) return;
+
         if (self::$log_firephp
             && method_exists(self::$firephp, $firephp_action)) {
             self::$firephp->$firephp_action($additional_args, $text);
