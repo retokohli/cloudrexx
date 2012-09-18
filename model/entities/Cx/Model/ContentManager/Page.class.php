@@ -1097,12 +1097,13 @@ class Page extends \Cx\Model\Base\EntityBase
      * @param boolean $includeProtection Wheter to copy protection. Defaults to true.
      * @param boolean $followRedirects Wheter to return a redirection page or the page its pointing at. Defaults to false, which returns the redirection page
      * @param boolean $followFallbacks Wheter to return a fallback page or the page its pointing at. Defaults to false, witch returns the fallback page
+     * @param \Cx\Model\ContentManager\Page Page to use as target
      * @return \Cx\Model\ContentManager\Page The copy of $this or null on error
      */
     public function copy($includeContent=true, $includeModuleAndCmd=true,
             $includeName = true, $includeMetaData = true,
             $includeProtection = true, $followRedirects = false,
-            $followFallbacks = false) {
+            $followFallbacks = false, $page = null) {
         
         $targetPage = null;
         if ($followRedirects && $this->getType() == self::TYPE_REDIRECT) {
@@ -1124,7 +1125,9 @@ class Page extends \Cx\Model\Base\EntityBase
             );
         }
         
-        $page = new \Cx\Model\ContentManager\Page();
+        if (!$page) {
+            $page = new \Cx\Model\ContentManager\Page();
+        }
         
         if ($includeName) {
             $page->setContentTitle($this->getContentTitle());
@@ -1132,8 +1135,12 @@ class Page extends \Cx\Model\Base\EntityBase
             $page->setSlug($this->getSlug());
         }
 
-        if($includeContent)
+        $newType = $this->getType();
+        if ($includeContent) {
             $page->setContent($this->getContent());
+        } else {
+            $newType = self::TYPE_FALLBACK;
+        }
 
         if($includeModuleAndCmd) {
             $page->setModule($this->getModule());
@@ -1151,7 +1158,7 @@ class Page extends \Cx\Model\Base\EntityBase
         $page->setActive($this->getActive());
         $page->setDisplay($this->getDisplay());
         $page->setLang($this->getLang());
-        $page->setType($this->getType());
+        $page->setType($newType);
         $page->setCaching($this->getCaching());
         $page->setCustomContent($this->getCustomContent());
         $page->setCssName($this->getCssName());
@@ -1162,6 +1169,7 @@ class Page extends \Cx\Model\Base\EntityBase
         $page->setEditingStatus($this->getEditingStatus());
         $page->setTarget($this->getTarget());
         $page->setLinkTarget($this->getLinkTarget());
+        $page->setUpdatedBy(\FWUser::getFWUserObject()->objUser->getUsername());
         
         if ($includeProtection) {
             if (!$this->copyProtection($page, true) ||
@@ -1209,11 +1217,16 @@ class Page extends \Cx\Model\Base\EntityBase
      * @param boolean $includeModuleAndCmd Whether to copy module and cmd. Defaults to true.
      * @param boolean $includeName Wheter to copy title, content title and slug. Defaults to true.
      * @param boolean $includeMetaData Wheter to copy meta data. Defaults to true.
+     * @param boolean $includeProtection Wheter to copy protection. Defaults to true.
+     * @param boolean $followRedirects Wheter to return a redirection page or the page its pointing at. Defaults to false, which returns the redirection page
+     * @param boolean $followFallbacks Wheter to return a fallback page or the page its pointing at. Defaults to false, witch returns the fallback page
+     * @param \Cx\Model\ContentManager\Page Page to use as target
+     * @return \Cx\Model\ContentManager\Page The copy of $this or null on error
      */
     public function copyToNode($destinationNode, $includeContent=true,
             $includeModuleAndCmd=true, $includeName = true,
             $includeMetaData = true, $includeProtection = true,
-            $followRedirects = false, $followFallbacks = false) {
+            $followRedirects = false, $followFallbacks = false, $page = null) {
         
         $copy = $this->copy(
                 $includeContent,
@@ -1222,7 +1235,8 @@ class Page extends \Cx\Model\Base\EntityBase
                 $includeMetaData,
                 $includeProtection,
                 $followRedirects,
-                $followFallbacks
+                $followFallbacks,
+                $page
         );
         $copy->setNode($destinationNode);
         return $copy;
@@ -1230,17 +1244,22 @@ class Page extends \Cx\Model\Base\EntityBase
     
     /**
      * Creates a copy of this page with a different language.
-     *
+     * @todo Define what to do if destination lang is not the fallback of $this->getLang() (always follow fallbacks or do not copy content)
      * @param int $destinationLang Language ID to set
      * @param boolean $includeContent Whether to copy content. Defaults to true.
      * @param boolean $includeModuleAndCmd Whether to copy module and cmd. Defaults to true.
      * @param boolean $includeName Wheter to copy title, content title and slug. Defaults to true.
      * @param boolean $includeMetaData Wheter to copy meta data. Defaults to true.
+     * @param boolean $includeProtection Wheter to copy protection. Defaults to true.
+     * @param boolean $followRedirects Wheter to return a redirection page or the page its pointing at. Defaults to false, which returns the redirection page
+     * @param boolean $followFallbacks Wheter to return a fallback page or the page its pointing at. Defaults to false, witch returns the fallback page
+     * @param \Cx\Model\ContentManager\Page Page to use as target
+     * @return \Cx\Model\ContentManager\Page The copy of $this or null on error
      */
     public function copyToLang($destinationLang, $includeContent=true,
             $includeModuleAndCmd=true, $includeName = true,
             $includeMetaData = true, $includeProtection = true,
-            $followRedirects = false, $followFallbacks = false) {
+            $followRedirects = false, $followFallbacks = false, $page = null) {
         
         $copy = $this->copy(
                 $includeContent,
@@ -1249,7 +1268,8 @@ class Page extends \Cx\Model\Base\EntityBase
                 $includeMetaData,
                 $includeProtection,
                 $followRedirects,
-                $followFallbacks
+                $followFallbacks,
+                $page
         );
         $copy->setLang($destinationLang);
         return $copy;
