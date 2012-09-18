@@ -1982,7 +1982,15 @@ function addProductToCart(objForm)
     dataType: 'json',
     success: shopUpdateCart
   });
+  showUpdateMessage();
   return false;
+}
+
+function showUpdateMessage() {
+    \$J('body').append('<div id=\"shop-product-added-info-wrapper\" style=\"display: none;\"><div id=\"shop-product-added-info-box\">".$_ARRAYLANG['TXT_SHOP_PRODUCT_ADDED_TO_CART']."</div></div>');
+    \$J('#shop-product-added-info-wrapper').fadeIn(200).delay(1000).fadeOut(200, function () {
+        \$J(this).remove();
+    });
 }
 
 function shopUpdateCart(data, textStatus, jqXHR)
@@ -2017,7 +2025,7 @@ function shopGenerateCart()
     cart = cart.replace('[[SHOP_JS_TOTAL_PRICE_UNIT]]', objCart.unit);
     showCart(cart);
   } else {
-    showCart('<ul><li>".
+    showCart('<ul><li class=\"empty\">".
       contrexx_raw2xhtml($_ARRAYLANG['TXT_EMPTY_SHOPPING_CART']).
       "<\\/li><\\/ul>');
   }
@@ -2039,7 +2047,7 @@ function showCart(html)
 
 \$J(document).ready(function(\$J) {
   //hideCart();
-  showCart('<ul><li>".
+  showCart('<ul><li class=\"loading\">".
     contrexx_raw2xhtml($_ARRAYLANG['TXT_SHOP_CART_IS_LOADING']).
     "<\\/li><\\/ul>');
 // TODO: Use the alias, if any
@@ -2049,7 +2057,7 @@ function showCart(html)
     dataType: 'json',
     success: shopUpdateCart,
     error: function() {
-      showCart('<ul><li>".
+      showCart('<ul><li class=\"not-loaded\">".
         contrexx_raw2xhtml($_ARRAYLANG['TXT_SHOP_COULD_NOT_LOAD_CART']).
         "<\\/li><\\/ul>');
     }

@@ -3,6 +3,7 @@
 * Contrexx CMS
 * generated date Tue, 23 Jan 2007 14:44:20 +0100
 **/
+$_ARRAYLANG['TXT_SHOP_PRODUCT_ADDED_TO_CART'] = "The item has been added to your cart.";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_DETAILS'] = "Details";
 $_ARRAYLANG['TXT_STOCK'] = "Bestand";
 $_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'] = "Alle Produktegruppen";
