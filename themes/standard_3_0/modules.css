@@ -315,67 +315,65 @@ div#livecam #CALBUTTONDPC_datum {
 /* CSS DEFINITIONS FOR CALENDAR MODULE             */
 /***************************************************/
 #calendar {
+    float: left;
     width: 100%;
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
-    float:left;
-    height:auto !important;
+}
+#calendar li {
+    padding: 0 0 10px 0;
+    border-bottom: 1px solid #D6D6D6;
+    background: none;
 }
 #calendar div.back,
 #calendar div.registration,
 #calendar div.categories,
 #calendar div.details,
 #calendar div.search  {
-    float: none;
+    float: left;
     width: 100%;
-    margin: 0px 0px 0px 0px;
-    padding: 0px 0px 15px 0px;
-    height: auto !important;
-    text-align:left;
+    padding: 0 0 20px 0;
+}
+#calendar ul.event-list {
+    float: left;
+    width: 100%;
+    border-top: 1px solid #DDDDDD;
 }
 #calendar div.registration  {
-    text-align:right;
+    text-align: right;
 }
 #calendar div.note {
     float: left;
     width: 100%;
-    margin: 0px 0px 0px 0px;
-    padding: 0px 0px 0px 0px;
-    height: auto !important;
 }
 #calendar div.logo {
-    float:left;
-    height:auto !important;
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
+    float: left;
 }
 #calendar div.logo img {
-    margin: 0px 15px 5px 0px;
+    max-width: 250px;
+    max-height: 250px;
+    margin: 0 15px 5px 0;
 }
 #calendar div.description {
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 15px 0px;
-    height:auto !important;
+    margin: 0 0 15px 0;
 }
 #calendar div.export {
-    float:right;
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
+    float: right;
 }
 #calendar div.export img {
-    margin: 0px 0px 5px 15px;
+    margin: 0 0 5px 15px;
 }
 #calendar div.adress,
 #calendar div.organizer {
     float: left;
     width: 50%;
-    margin: 0px 0px 0px 0px;
-    padding: 0px 0px 15px 0px;
-    height: auto !important;
 }
 #calendar div.adress address,
 #calendar div.organizer address {
     font-style: normal;
+}
+#calendar-boxes {
+    float: left;
+    width: 250px;
+    padding: 0 0 0 40px;
 }
 /***************************************************/
 /* CSS DEFINITIONS FOR ACCESS MODULE               */
@@ -1345,7 +1343,9 @@ div#livecam #CALBUTTONDPC_datum {
 #news {
     float: left;
     width: 100%;
-    padding: 10px 0 10px 0;
+    padding: 0 0 10px 0;
+    margin: 20px 0 0 0;
+    border-top: 1px solid #DDD;
 }
 
 #news li {
