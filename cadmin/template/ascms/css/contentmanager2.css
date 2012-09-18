@@ -379,6 +379,10 @@ h1{ font-size: 20px }
     clear: none;
 }
 
+#site-tree .name {
+    float: left;
+}
+
 #site-tree .jstree-move {
     display: none;
     width: 16px;
