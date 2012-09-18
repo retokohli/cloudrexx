@@ -24,10 +24,15 @@ html{ overflow-y: scroll; }
 h1{ font-size: 20px }
 
 /* 2.2 Content Manager */
+#content {
+    padding-bottom: 0;
+}
+
 #content-manager {
     float: left;
     width: 100%;
     height: 100%;
+    padding-bottom: 70px;
     background: url(../images/subnavigation_level_1.jpg) repeat-x left top;
 }
 
@@ -410,6 +415,10 @@ h1{ font-size: 20px }
     margin: 0;
 }
 
+#site-tree .name {
+    float: left;
+}
+
 #site-tree .publishing {
     width: 13px;
     height: 14px;
@@ -535,6 +544,7 @@ h1{ font-size: 20px }
 }
 
 .ui-dialog.edit-mode {
+    position: fixed !important;
     top: 33% !important;
     margin-top: -78px;
 }
