@@ -32,7 +32,7 @@ class JsonContentManager implements JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('saveToggleStatuses', 'getAccess');
+        return array('saveToggleStatuses', 'getAccess', 'copy', 'link');
     }
 
     /**
@@ -77,5 +77,48 @@ class JsonContentManager implements JsonAdapter {
             'access'    => $global && \Permission::checkAccess(36, 'static', true),
             'publish'   => $global && \Permission::checkAccess(78, 'static', true),
         );
+    }
+    
+    /**
+     * Copies the complete tree from the default language to another and copies the pages content
+     * @param array $params Array containing target language (array("get"=>array("to"=>{target}))
+     */
+    public function copy($params) {
+        return $this->performLanguageAction('copy', $params);
+    }
+    
+    /**
+     * Copies the complete tree from the default language to another and sets content type to fallback
+     * @param array $params Array containing target language (array("get"=>array("to"=>{target}))
+     */
+    public function link($params) {
+        return $this->performLanguageAction('link', $params);
+    }
+    
+    private function performLanguageAction($action, $params) {
+        if (!isset($params['get']) || !isset($params['get']['to'])) {
+            throw new \Cx\Core\ContentManager\ContentManagerException('Illegal parameter list');
+        }
+        $em = \Env::get('em');
+        $nodeRepo = $em->getRepository('Cx\Model\ContentManager\Node');
+        $targetLang = contrexx_input2raw($params['get']['to']);
+        $fromLang = \FWLanguage::getFallbackLanguageIdById($targetLang);
+        if ($fromLang === false) {
+            throw new \Cx\Core\ContentManager\ContentManagerException('Language has no fallback to copy/link from');
+        }
+        $toLangCode = \FWLanguage::getLanguageCodeById($targetLang);
+        if ($toLangCode === false) {
+            throw new \Cx\Core\ContentManager\ContentManagerException('Could not get id for language #"' . $targetLang .'"');
+        }
+        $limit = 0;
+        $offset = 0;
+        if (isset($params['get']['limit'])) {
+            $limit = contrexx_input2raw($params['get']['limit']);
+        }
+        if (isset($params['get']['offset'])) {
+            $offset = contrexx_input2raw($params['get']['offset']);
+        }
+        $result = $nodeRepo->translateRecursive($nodeRepo->getRoot(), $fromLang, $targetLang, $action == 'copy', $limit, $offset);
+        return $result;
     }
 }

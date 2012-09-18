@@ -862,6 +862,21 @@ class LanguageManager
         // init vars
         $i=0;
 
+        \JS::activate('cx');
+        $cxjs = \ContrexxJavascript::getInstance();
+        $cxjs->setVariable('copyTitle', $_CORELANG['TXT_LANGUAGE_COPY_TITLE'], 'language/lang');
+        $cxjs->setVariable('copyText', $_CORELANG['TXT_LANGUAGE_COPY_TEXT'], 'language/lang');
+        $cxjs->setVariable('copySuccess', $_CORELANG['TXT_LANGUAGE_COPY_SUCCESS'], 'language/lang');
+        $cxjs->setVariable('linkTitle', $_CORELANG['TXT_LANGUAGE_LINK_TITLE'], 'language/lang');
+        $cxjs->setVariable('linkText', $_CORELANG['TXT_LANGUAGE_LINK_TEXT'], 'language/lang');
+        $cxjs->setVariable('linkSuccess', $_CORELANG['TXT_LANGUAGE_LINK_SUCCESS'], 'language/lang');
+        $cxjs->setVariable('warningTitle', $_CORELANG['TXT_LANGUAGE_WARNING_TITLE'], 'language/lang');
+        $cxjs->setVariable('warningText', $_CORELANG['TXT_LANGUAGE_WARNING_TEXT'], 'language/lang');
+        $cxjs->setVariable('waitTitle', $_CORELANG['TXT_LANGUAGE_WAIT_TITLE'], 'language/lang');
+        $cxjs->setVariable('waitText', $_CORELANG['TXT_LANGUAGE_WAIT_TEXT'], 'language/lang');
+        $cxjs->setVariable('yesOption', $_CORELANG['TXT_YES'], 'language/lang');
+        $cxjs->setVariable('noOption', $_CORELANG['TXT_NO'], 'language/lang');
+        
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'language_langlist', 'language_langlist.html');
         $this->pageTitle = $_CORELANG['TXT_LANGUAGE_LIST'];
         
@@ -906,7 +921,8 @@ class LanguageManager
         ));
         $objTemplate->setGlobalVariable(array(
             'TXT_DEFAULT_LANGUAGE' => $_CORELANG['TXT_STANDARD_LANGUAGE'],
-            'TXT_CORE_NONE'        => $_CORELANG['TXT_CORE_NONE']            
+            'TXT_CORE_NONE'        => $_CORELANG['TXT_CORE_NONE'],
+            'CMD'                  => contrexx_input2xhtml($_GET['cmd']),
         ));        
         //end language variables
         if ($this->hideVariables == true) {
@@ -929,7 +945,7 @@ class LanguageManager
                 if ($objResult->fields['frontend']==1) {
                   $checked = "checked";
                 }
-                $activeStatus ="<input type='checkbox' name='langActiveStatus[".$objResult->fields['id']."]' value='1' $checked />";
+                $activeStatus ="<input type='checkbox' name='langActiveStatus[".$objResult->fields['id']."]' onchange='updateCurrent();' value='1' $checked />";
                 $checked = "";
                 if ($objResult->fields['backend']==1) {
                   $checked = "checked";

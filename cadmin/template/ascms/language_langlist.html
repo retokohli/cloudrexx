@@ -4,10 +4,10 @@
 // confirm delete variable
 function deleteLanguage(id)
 {
-if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-{
-window.location.replace("index.php?cmd=language&{CSRF_PARAM}&act=dellang&id="+id);
-}
+    if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
+    {
+        window.location.replace("index.php?cmd=language&{CSRF_PARAM}&act=dellang&id="+id);
+    }
 }
 
 jQuery(function() {
@@ -15,9 +15,6 @@ jQuery(function() {
 });
 
 function updateCurrent(init) {
-    if (jQuery(".langrow .langFallback").length == 0) {
-        return;
-    }
     jQuery(".langrow").each(function(index, el) {
         var lang = jQuery(el);
         var langId = lang.children(".langId").text();
@@ -26,25 +23,114 @@ function updateCurrent(init) {
         var frontendField = lang.children(".langActiveFrontend").children("input");
         var backendField = lang.children(".langActiveBackend").children("input");
         var functionsField = lang.children(".langFunctions").children("div");
+        //small language
+        if (jQuery(".langrow .langFallback").length == 0) {
+            if (defField.is(":checked")) {
+                defField.append("<input type=\"hidden\" name=\"langActiveStatus[" + langId + "]\" value=\"1\" />");
+                defField.append("<input type=\"hidden\" name=\"langAdminStatus[" + langId + "]\" value=\"1\" />");
+            } else {
+                defField.children("input[type=hidden]").remove();
+            }
+            return;
+        }
+        //full language
         if (init) {
             fallbackField.children("option[value=" + langId + "]").remove();
         }
         if (defField.is(":checked")) {
             frontendField.prop("disabled", true);
-            backendField.prop("disabled", true);
+            frontendField.after("<input type=\"hidden\" name=\"langActiveStatus[" + langId + "]\" value=\"1\" />");
             fallbackField.hide();
-            functionsField.hide();
+            functionsField.remove();
         } else {
             frontendField.prop("disabled", false);
-            backendField.prop("disabled", false);
+            frontendField.parent().children("input[type=hidden]").remove();
             fallbackField.show();
-            functionsField.show();
         }
+        var fallback = fallbackField.val();
+        if (fallback === "" || !frontendField.is(":checked") || !init) {
+            functionsField.remove();
+        }
+    });
+}
+
+function copyPages(toLangId) {
+    performLanguageAction("copy", toLangId, function(json) {
+        alert(cx.variables.get("copySuccess", "language/lang"));
+    });
+}
+
+function linkPages(toLangId) {
+    performLanguageAction("link", toLangId, function(json) {
+        alert(cx.variables.get("linkSuccess", "language/lang"));
+    });
+}
+
+function performLanguageAction(actionName, toLangId, action) {
+    var defaultLangId = jQuery(".langrow .langDefault input:checked").closest(".langrow").attr("id");
+    var fromLangId = jQuery(".langrow#" + toLangId).children(".langFallback").children("select").val();
+    if (fromLangId === "") {
+        return;
+    } else if (fromLangId == 0) {
+        fromLangId = defaultLangId;
+    }
+    var fromLangName = jQuery(".langrow#" + fromLangId).children(".langShortName").text();
+    var toLangName = jQuery(".langrow#" + toLangId).children(".langShortName").text();
+    showActionDialog(actionName, fromLangName, toLangName, function() {
+        showActionDialog("warning", fromLangName, toLangName, function() {
+            var waitDialog = cx.ui.dialog({
+                title: cx.variables.get("waitTitle", "language/lang"),
+                content: cx.variables.get("waitText", "language/lang"),
+                modal: true,
+                autoOpen: true,
+                open: function(event, ui) { jQuery(".ui-dialog-titlebar-close").hide(); }
+            });
+            var offset = 0;
+            var count = 0;
+            while ((offset < count) || offset == 0) {
+                var url = "index.php?cmd=jsondata&object=cm&act=" + actionName + "&to=" + toLangId + "&offset=" + offset + "&limit=1";
+                jQuery.ajax({
+                    async: false,
+                    url: url,
+                    dataType: "json",
+                    type: "GET",
+                    success: function(json) {
+                        if (json.status != "success") {
+                            alert(json.message, json.status);
+                            return;
+                        }
+                        offset = json.data.offset;
+                        count = json.data.count;
+                        var newText = cx.variables.get("waitText", "language/lang") + "\n\n" + offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)";
+                        //console.log(offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)");
+                        waitDialog.getElement().html(newText);
+                    }
+                });
+            }
+            waitDialog.close();
+            action();
+        });
+    });
+}
+
+function showActionDialog(action, fromLang, toLang, yesAction) {
+    var yesOption = cx.variables.get("yesOption", "language/lang");
+    var noOption = cx.variables.get("noOption", "language/lang");
+    var buttons = new Object();
+    buttons[yesOption] = function() {jQuery(this).dialog("close");yesAction();}
+    buttons[noOption] = function() {jQuery(this).dialog("close");}
+    cx.ui.dialog({
+        title: cx.variables.get(action + "Title", "language/lang"),
+        content: "<p>" + cx.variables.get(action + "Text", "language/lang").replace("%1", fromLang).replace("%2", toLang) + "</p>",
+        buttons: buttons,
+        modal: true,
+        width: 400,
+        autoOpen: true
     });
 }
 // -->
 </script>
-<form name="languageForm" method="post" action="index.php?cmd=language&amp;act=modlang">
+<form name="languageForm" method="post" action="index.php?cmd={CMD}&amp;act=modlang">
 <input type="hidden" name="modLanguage" value="true" />
   <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" style="vertical-align: top;" class="adminlist">
     <tr>
@@ -67,7 +153,7 @@ function updateCurrent(init) {
       <td width="10%"><div align="right"><b>{TXT_ACTION}</b></div></td><!-- END extendedHeaders -->
     </tr>
     <!-- BEGIN languageRow -->
-    <tr class="langrow {LANGUAGE_ROWCLASS}">
+    <tr class="langrow {LANGUAGE_ROWCLASS}" id="{LANGUAGE_LANG_ID}">
       <td class="langId"><div align="left">{LANGUAGE_LANG_ID}</div></td>
       <td class="langName"><input type="text" name="langName[{LANGUAGE_LANG_ID}]" value="{LANGUAGE_LANG_NAME}" size="40" maxlength="250" /></td>
       <td class="langShortName">{LANGUAGE_LANG_SHORTNAME}</td>
@@ -75,7 +161,7 @@ function updateCurrent(init) {
       <td class="langDefault">{LANGUAGE_LANG_STATUS}</td>
       <!-- BEGIN extendedOptions --><td class="langFallback">
           <!-- BEGIN fallback -->
-          <select name="fallBack[{LANGUAGE_LANG_ID}]">
+          <select name="fallBack[{LANGUAGE_LANG_ID}]" onchange='updateCurrent();'>
               <option value="" {NONE_SELECTED}>{TXT_CORE_NONE}</option>
               <option value="0" {LANGUAGE_DEFAULT_SELECTED}>{TXT_DEFAULT_LANGUAGE}</option>
               <!-- BEGIN fallbackLanguages -->
