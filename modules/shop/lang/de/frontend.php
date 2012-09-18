@@ -1,5 +1,6 @@
 <?php
 global $_ARRAYLANG;
+$_ARRAYLANG['TXT_SHOP_PRODUCT_ADDED_TO_CART'] = "Der Artikel wurde in Ihren Warenkorb gelegt.";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_DETAILS'] = "Details";
 $_ARRAYLANG['SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "Ich bin bereits Kunde.";
 $_ARRAYLANG['SHOP_ACCOUNT_LOGIN'] = "Anmelden >>";
