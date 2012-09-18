@@ -144,8 +144,14 @@ class FWLanguage
      */
     public static function getActiveFrontendLanguages()
     {
+        global $_CONFIG, $objDatabase;
         if (empty(self::$arrLanguages)) {
             self::init();
+        }
+        $license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase);
+        $license->check();
+        if (!$license->isInLegalComponents('fulllanguage')) {
+            return array(self::$defaultLangId=>self::$arrLanguages[self::$defaultLangId]);
         }
         $arr = array();
         foreach (self::$arrLanguages as $id => $lang) {

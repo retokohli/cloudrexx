@@ -122,14 +122,30 @@ class License {
     
     /**
      * @param \SettingDb $settings Reference to the settings manager object
-     * @return License
+     * @return \Cx\Core\License\License
      */
-    public static function getCached(&$_CONFIG) {
+    public static function getCached(&$_CONFIG, $objDb) {
         $state = isset($_CONFIG['licenseState']) ? $_CONFIG['licenseState'] : self::LICENSE_DEMO;
         $validTo = isset($_CONFIG['licenseValidTo']) ? $_CONFIG['licenseValidTo'] : null;
         $editionName = isset($_CONFIG['editionName']) ? $_CONFIG['editionName'] : null;
         $instId = isset($_CONFIG['installationId']) ? $_CONFIG['installationId'] : null;
         $licenseKey = isset($_CONFIG['licenseKey']) ? $_CONFIG['licenseKey'] : null;
-        return new static($state, $editionName, array(), $validTo, $instId, $licenseKey);
+        $query = '
+            SELECT
+                `name`
+            FROM
+                '.DBPREFIX.'modules
+            WHERE
+                `is_active` = \'1\'
+        ';
+        $result = $objDb->execute($query);
+        $activeComponents = array();
+        if ($result) {
+            while (!$result->EOF) {
+                $activeComponents[] = $result->fields['name'];
+                $result->MoveNext();
+            }
+        }
+        return new static($state, $editionName, $activeComponents, $validTo, $instId, $licenseKey);
     }
 }
