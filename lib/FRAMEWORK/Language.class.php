@@ -41,15 +41,18 @@ class FWLanguage
      */
     static function init()
     {
-        global $objDatabase;
+        global $_CONFIG, $objDatabase;
 
-         $objResult = $objDatabase->Execute("
+        $objResult = $objDatabase->Execute("
             SELECT id, lang, name, charset, themesid,
                    frontend, backend, is_default, fallback
               FROM ".DBPREFIX."languages
              ORDER BY id ASC");
-         if ($objResult) {
-             while (!$objResult->EOF) {
+        if ($objResult) {
+            $license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase);
+            $license->check();
+            $full = $license->isInLegalComponents('fulllanguage');
+            while (!$objResult->EOF) {
                 self::$arrLanguages[$objResult->fields['id']] = array(
                     'id'         => $objResult->fields['id'],
                     'lang'       => $objResult->fields['lang'],
@@ -61,6 +64,10 @@ class FWLanguage
                     'is_default' => $objResult->fields['is_default'],
                     'fallback'   => $objResult->fields['fallback'],
                 );
+                if (!$full && $objResult->fields['is_default'] != 'true') {
+                    self::$arrLanguages[$objResult->fields['id']]['frontend'] = 0;
+                    self::$arrLanguages[$objResult->fields['id']]['backend'] = 0;
+                }
                 if ($objResult->fields['is_default'] == 'true') {
                     self::$defaultLangId = $objResult->fields['id'];
                 }
@@ -144,14 +151,8 @@ class FWLanguage
      */
     public static function getActiveFrontendLanguages()
     {
-        global $_CONFIG, $objDatabase;
         if (empty(self::$arrLanguages)) {
             self::init();
-        }
-        $license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase);
-        $license->check();
-        if (!$license->isInLegalComponents('fulllanguage')) {
-            return array(self::$defaultLangId=>self::$arrLanguages[self::$defaultLangId]);
         }
         $arr = array();
         foreach (self::$arrLanguages as $id => $lang) {
