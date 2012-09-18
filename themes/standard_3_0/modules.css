@@ -1034,11 +1034,8 @@ div#livecam #CALBUTTONDPC_datum {
 /* CSS DEFINITIONS FOR SHOP MODULE                 */
 /***************************************************/
 #shop {
+    float: left;
     width: 100%;
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
-    float:left;
-    height:auto !important;
 }
 #shop table tr.row1,
 #shop table tr.row2 {
@@ -1060,8 +1057,6 @@ div#livecam #CALBUTTONDPC_datum {
 #shop div.cart,
 #shop div.cart_links,
 #shop div.message_error,
-#shop div.customer_address,
-#shop div.shipping_address,
 #shop div.account_details,
 #shop div.customer_old,
 #shop div.order,
@@ -1070,19 +1065,22 @@ div#livecam #CALBUTTONDPC_datum {
     width: 100%;
     padding: 0 0 20px 0;
 }
-/* Inner block for the toggable shipment address */
+#shop .customer_address,
 #shop .shipping_address {
-    clear: both;
+    float: left;
+    width: 100%;
+    padding: 0 0 10px 0;
 }
-/* Right align prices etc. */
+#shop div.customer_address h2,
+#shop div.shipping_address h2 {
+    padding-top: 0;
+}
 #shop .a_right {
     text-align: right;
 }
-/* Center quantities etc. */
 #shop .a_center {
     text-align: center;
 }
-/* Input for Coupon code and Dropdown menu width in the cart */
 #shop .shop_cart_input {
     width: 150px !important;
 }
@@ -1226,13 +1224,15 @@ div#livecam #CALBUTTONDPC_datum {
 #shop div.functions input[type=submit] {
     margin: 0;
 }
+#shop div.message p {
+    padding-left: 362px;
+}
+#shop div.message p label {
+    width: 370px;
+}
 #shop div.vat {
     float: left;
     width: 100%;
-}
-#shop input[type=radio],
-#shop input[type=checkbox] {
-    float: none;
 }
 #shopping_cart {
     background: url("images/shopping_cart.gif") no-repeat scroll 0 0 transparent;
@@ -1260,11 +1260,20 @@ div#livecam #CALBUTTONDPC_datum {
     padding: 0;
 }
 #shop .error {
-    border: 1px solid red;
+    color: red;
 }
 #shop input.error[type=radio] {
     background-color: red;
     background-image: url("images/logo.png");
+}
+#shop div.order table {
+    float: left;
+    width: 100%;
+    margin: 0 0 20px 0;
+}
+#shop table.order-address span {
+    float: left;
+    clear: left;
 }
 
 #shop figure a {

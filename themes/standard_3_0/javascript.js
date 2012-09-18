@@ -41,15 +41,20 @@
         }
         $('#subnavigation li.active').parents('ul.menu').siblings('a').removeClass('inactive').addClass('active').parent().removeClass('inactive').addClass('active');
         if ($('#subnavigation li.level-2:visible:last ul:visible').length == 0) {
-            $('#subnavigation li.level-2 > a:visible:last').css('border', 0);
+            $('#subnavigation li.level-2 > a:visible:last').addClass('no-border');
         }
         if ($('#subnavigation li:visible:last').hasClass('level-3')) {
-            $('#subnavigation li:visible:last').parent().css('border', 0);
+            $('#subnavigation li:visible:last').parent().addClass('no-border');
         }
         if ($('#subnavigation li:visible:last').hasClass('level-4')) {
-            $('#subnavigation li:visible:last').parent().parent().parent().css('border', 0);
+            $('#subnavigation li:visible:last').parent().parent().parent().addClass('no-border');
         }
         /* Navigation End */
+        
+        /* Shop Start */
+        $('#shop-categories li a:last').addClass('last');
+        $('#shop-currencies a:last').addClass('last');
+        /* Shop End */
         
         /* Page Start */
         $('#page-header').error(function () {
