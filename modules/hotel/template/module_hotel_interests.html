@@ -12,15 +12,6 @@
     	}
     }
 
-    /*
-	 Tooltip stuff
-	 */
-    var Style = new Array();
-    var Text = new Array();
-	Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-    <!-- BEGIN commentsArray -->
-	Text[{HOTEL_COMMENT_INDEX}]=["","{HOTEL_COMMENT_TEXT}"];<!-- END commentsArray -->
-
 	/**
 	 *  DOM userlist sorting
 	 *	remote script by savino
@@ -396,7 +387,7 @@
 	<td>{HOTEL_ZIP}&nbsp;</td>
 	<td>{HOTEL_LOCATION}&nbsp;</td>
 	<td>{HOTEL_TELEPHONE}&nbsp;</td>
-	<td><img onmouseout="htm();" onmouseover="stm(Text[{HOTEL_COMMENT_INDEX2}], Style[0])" src="images/icons/note.gif" alt="" width="12" height="12"/>&nbsp;</td>
+	<td><span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{HOTEL_COMMENT_TEXT}</span></td>
 	<td>{HOTEL_TIMESTAMP}&nbsp;</td>
 	<td style="text-align: right;">
     	<a href="?cmd=hotel&amp;act=interestdetails&amp;id={HOTEL_CONTACT_ID}" title="{TXT_HOTEL_DETAILS}"> <img style="border: none;" src="images/icons/details.gif" title="{TXT_HOTEL_DETAILS}" alt="{TXT_HOTEL_DETAILS}" /> </a>

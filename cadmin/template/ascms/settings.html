@@ -1,29 +1,5 @@
 <!-- START settings.html -->
 <script type="text/javascript">
-<!-- //
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[0]=["","{TXT_PAGING_LIMIT_HELP}"];
-Text[1]=["","{TXT_SEARCH_RESULT_HELP}"];
-Text[2]=["","{TXT_SESSION_LIVETIME_HELP}"];
-Text[3]=["","{TXT_IDS_STATUS_HELP}"];
-Text[4]=["","{TXT_CONTACT_EMAIL_HELP}"];
-Text[7]=["","{TXT_DNS_SERVER_HELP}"];
-Text[8]=["","{TXT_HISTORY_STATUS_HELP}"];
-Text[9]=["","{TXT_GLOBAL_TITLE_HELP}"];
-Text[10]=["","{TXT_DOMAIN_URL_HELP}"];
-Text[11]=["","{TXT_XML_SITEMAP_STATUS_HELP}"];
-Text[12]=["","{TXT_SYSTEM_STATUS_HELP}"];
-Text[13]=["","{TXT_SYSTEM_DEFAULT_LANGUAGE_HELP}"];
-Text[14]=["","{TXT_GOOGLE_MAPS_API_KEY_HELP}"];
-Text[15]=["","{TXT_FRONTEND_EDITING_STATUS_HELP}"];
-Text[16]=["","{TXT_CORE_LIST_PROTECTED_PAGES_HELP}"];
-Text[17]=["","{TXT_LICENSE_KEY_HELP}"];
-Text[18]=["","{TXT_SESSION_LIFETIME_REMEMBER_ME_HELP}"];
-Text[19]=["","{TXT_DEBUGGING_EXPLANATION}"];
-Text[20]=["","{TXT_GOOGLE_ANALYTICS_TRACKING_ID_INFO}"];
-Text[21]=["","{TXT_PASSWORD_COMPLEXITY_INFO}"];
-// -->
-
 function toggleDebuggingFlags(show) {
     var target = $J('#debugging_flags');
     if(show)
@@ -31,7 +7,6 @@ function toggleDebuggingFlags(show) {
     else
         target.hide();
 }
-
 </script>
 
 <ul id="tabmenu">
@@ -53,7 +28,7 @@ function toggleDebuggingFlags(show) {
                 <td width="75%">
                     <input type="radio" name="setvalue[55]" id="setvalue_55_on" value="on" {SETTINGS_SYSTEMSTATUS_ON} /><label for="setvalue_55_on">{TXT_RADIO_ON}</label>&nbsp;
                     <input type="radio" name="setvalue[55]" id="setvalue_55_off" value="off" {SETTINGS_SYSTEMSTATUS_OFF} /><label for="setvalue_55_off">{TXT_RADIO_OFF}</label>&nbsp;
-                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[12],Style[0])" alt="" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SYSTEM_STATUS_HELP}</span>
                 </td>
             </tr>
             <tr class="row1">
@@ -61,23 +36,28 @@ function toggleDebuggingFlags(show) {
                 <td>
                     <input type="radio" name="setvalue[63]" id="setvalue_63_on" value="on" {SETTINGS_DETECT_BROWSER_LANGUAGE_ON} /><label for="setvalue_63_on">{TXT_RADIO_ON}</label>&nbsp;
                     <input type="radio" name="setvalue[63]" id="setvalue_63_off" value="off" {SETTINGS_DETECT_BROWSER_LANGUAGE_OFF} /><label for="setvalue_63_off">{TXT_RADIO_OFF}</label>&nbsp;
-                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[13],Style[0])" alt="" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SYSTEM_DEFAULT_LANGUAGE_HELP}</span>
                 </td>
             </tr>
             <tr class="row1">
                 <td>{TXT_GLOBAL_TITLE}&nbsp;</td>
-                <td><input type="text" name="setvalue[51]" value="{SETTINGS_GLOBAL_TITLE}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[9],Style[0])" alt="" /></td>
+                <td>
+                    <input type="text" name="setvalue[51]" value="{SETTINGS_GLOBAL_TITLE}" size="70" maxlength="250" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_GLOBAL_TITLE_HELP}</span>
+                </td>
             </tr>
             <tr class="row2">
                 <td>{TXT_DOMAIN_URL}&nbsp;</td>
-                <td><input type="text" name="setvalue[53]" value="{SETTINGS_DOMAIN_URL}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[10],Style[0])" alt="" /></td>
+                <td>
+                    <input type="text" name="setvalue[53]" value="{SETTINGS_DOMAIN_URL}" size="70" maxlength="250" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_DOMAIN_URL_HELP}</span>
             </tr>
             <tr class="row2">
                 <td>{TXT_CORE_LIST_PROTECTED_PAGES}&nbsp;</td>
                 <td>
                     <input type="radio" name="setvalue[71]" id="setvalue_71_on" value="on" {SETTINGS_LIST_PROTECTED_PAGES_ON} /><label for="setvalue_71_on">{TXT_RADIO_ON}</label>&nbsp;
                     <input type="radio" name="setvalue[71]" id="setvalue_71_off" value="off" {SETTINGS_LIST_PROTECTED_PAGES_OFF} /><label for="setvalue_71_off">{TXT_RADIO_OFF}</label>&nbsp;
-                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[16],Style[0])" alt="" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CORE_LIST_PROTECTED_PAGES_HELP}</span>
                 </td>
             </tr>
             <tr class="row1">
@@ -121,19 +101,31 @@ function toggleDebuggingFlags(show) {
             </tr>
             <tr class="row2">
                 <td>{TXT_SESSION_LIVETIME}&nbsp;</td>
-                <td><input type="text" name="setvalue[84]" value="{SETTINGS_SESSION_LIFETIME}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" alt="" /></td>
+                <td>
+                    <input type="text" name="setvalue[84]" value="{SETTINGS_SESSION_LIFETIME}" size="70" maxlength="250" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SESSION_LIVETIME_HELP}</span>
+                </td>
             </tr>
             <tr class="row1">
                 <td>{TXT_SESSION_LIFETIME_REMEMBER_ME}&nbsp;</td>
-                <td><input type="text" name="setvalue[84]" value="{SETTINGS_SESSION_LIFETIME_REMEMBER_ME}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[18],Style[0])" alt="" /></td>
+                <td>
+                    <input type="text" name="setvalue[84]" value="{SETTINGS_SESSION_LIFETIME_REMEMBER_ME}" size="70" maxlength="250" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SESSION_LIFETIME_REMEMBER_ME_HELP}</span>
+                </td>
             </tr>
             <tr class="row2">
                 <td>{TXT_DNS_SERVER}&nbsp;</td>
-                <td><input type="text" name="setvalue[3]" value="{SETTINGS_DNS_SERVER}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[7],Style[0])" alt="" /></td>
+                <td>
+                    <input type="text" name="setvalue[3]" value="{SETTINGS_DNS_SERVER}" size="70" maxlength="250" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_DNS_SERVER_HELP}</span>
+                </td>
             </tr>
             <tr class="row1" style="line-height: 22px;">
                 <td>{TXT_LICENSE_KEY}&nbsp;</td>
-                <td><input type="text" name="setvalue[76]" value="{SETTINGS_LICENSE_KEY}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[17],Style[0])" alt="" /></td>
+                <td>
+                    <input type="text" name="setvalue[76]" value="{SETTINGS_LICENSE_KEY}" size="70" maxlength="250" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_LICENSE_KEY_HELP}</span>
+                </td>
             </tr>
             <tr class="row2" style="line-height: 22px;">
                 <td>{TXT_CORE_TIMEZONE}</td>
@@ -148,7 +140,7 @@ function toggleDebuggingFlags(show) {
                 <td>
                     <input type="radio" name="setvalue[23]" id="setvalue_23_on" value="on" {SETTINGS_IDS_RADIO_ON} /><label for="setvalue_23_on">{TXT_RADIO_ON}</label>&nbsp;
                     <input type="radio" name="setvalue[23]" id="setvalue_23_off" value="off" {SETTINGS_IDS_RADIO_OFF} /><label for="setvalue_23_off">{TXT_RADIO_OFF}</label>&nbsp;
-                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" alt="" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_IDS_STATUS_HELP}</span>
                 </td>
             </tr>
             <tr class="row2">
@@ -156,10 +148,9 @@ function toggleDebuggingFlags(show) {
                 <td>
                     <input type="radio" name="setvalue[89]" id="setvalue_89_on" value="on" {SETTINGS_PASSWORD_COMPLEXITY_ON} /><label for="setvalue_89_on">{TXT_RADIO_ON}</label>&nbsp;
                     <input type="radio" name="setvalue[89]" id="setvalue_89_off" value="off" {SETTINGS_PASSWORD_COMPLEXITY_OFF} /><label for="setvalue_89_off">{TXT_RADIO_OFF}</label>&nbsp;
-                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[21],Style[0])" alt="" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_PASSWORD_COMPLEXITY_INFO}</span>
                 </td>
             </tr>
-            
             <tr class="row3">
                 <td colspan="2">{TXT_TITLE_OTHER_CONFIG_OPTIONS}</td>
             </tr>
@@ -168,7 +159,7 @@ function toggleDebuggingFlags(show) {
                 <td>
                     <input type="radio" name="setvalue[54]" id="setvalue_54_on" value="on" {SETTINGS_XML_SITEMAP_ON} /><label for="setvalue_54_on">{TXT_RADIO_ON}</label>&nbsp;
                     <input type="radio" name="setvalue[54]" id="setvalue_54_off" value="off" {SETTINGS_XML_SITEMAP_OFF} /><label for="setvalue_54_off">{TXT_RADIO_OFF}</label>&nbsp;
-                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[11],Style[0])" alt="" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_XML_SITEMAP_STATUS_HELP}</span>
                 </td>
             </tr>
             <tr class="row2">
@@ -176,24 +167,36 @@ function toggleDebuggingFlags(show) {
                 <td>
                     <input type="radio" name="setvalue[69]" id="setvalue_69_on" value="on" {SETTINGS_FRONTEND_EDITING_ON} /><label for="setvalue_69_on">{TXT_RADIO_ON}</label>&nbsp;
                     <input type="radio" name="setvalue[69]" id="setvalue_69_off" value="off" {SETTINGS_FRONTEND_EDITING_OFF} /><label for="setvalue_69_off">{TXT_RADIO_OFF}</label>&nbsp;
-                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[15],Style[0])" alt="" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_FRONTEND_EDITING_STATUS_HELP}</span>
                 </td>
             </tr>
             <tr class="row1">
                 <td>{TXT_PAGING_LIMIT}&nbsp;</td>
-                <td><input type="text" name="setvalue[18]" value="{SETTINGS_PAGING_LIMIT}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" alt="" /></td>
+                <td>
+                    <input type="text" name="setvalue[18]" value="{SETTINGS_PAGING_LIMIT}" size="70" maxlength="250" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_PAGING_LIMIT_HELP}</span>
+                </td>
             </tr>
             <tr class="row2">
                 <td>{TXT_SEARCH_RESULT}&nbsp;</td>
-                <td><input type="text" name="setvalue[19]" value="{SETTINGS_SEARCH_RESULT_LENGTH}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" alt="" /></td>
+                <td>
+                    <input type="text" name="setvalue[19]" value="{SETTINGS_SEARCH_RESULT_LENGTH}" size="70" maxlength="250" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SEARCH_RESULT_HELP}</span>
+                </td>
             </tr>
             <tr class="row1">
                 <td>{TXT_GOOGLE_MAPS_API_KEY}&nbsp;</td>
-                <td><input type="text" name="setvalue[65]" value="{SETTINGS_GOOGLE_MAPS_API_KEY}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[14],Style[0])" alt="" /></td>
+                <td>
+                    <input type="text" name="setvalue[65]" value="{SETTINGS_GOOGLE_MAPS_API_KEY}" size="70" maxlength="250" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_GOOGLE_MAPS_API_KEY_HELP}</span>
+                </td>
             </tr>
             <tr class="row2">
                 <td>{TXT_GOOGLE_ANALYTICS_TRACKING_ID}&nbsp;</td>
-                <td><input type="text" name="setvalue[88]" value="{SETTINGS_GOOGLE_ANALYTICS_TRACKING_ID}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[20],Style[0])" alt="" /></td>
+                <td>
+                    <input type="text" name="setvalue[88]" value="{SETTINGS_GOOGLE_ANALYTICS_TRACKING_ID}" size="70" maxlength="250" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_GOOGLE_ANALYTICS_TRACKING_ID_INFO}</span>
+                </td>
             </tr>
         </table>
     </div>
@@ -212,7 +215,10 @@ function toggleDebuggingFlags(show) {
             </tr>
             <tr class="row2">
                 <td>{TXT_CONTACT_EMAIL}&nbsp;</td>
-                <td><input type="text" name="setvalue[29]" value="{SETTINGS_CONTACT_EMAIL}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" alt="" /></td>
+                <td>
+                    <input type="text" name="setvalue[29]" value="{SETTINGS_CONTACT_EMAIL}" size="70" maxlength="250" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CONTACT_EMAIL_HELP}</span>
+                </td>
             </tr>
             <tr class="row1">
                 <td>{TXT_CONTACT_COMPANY}&nbsp;</td>
@@ -255,7 +261,7 @@ function toggleDebuggingFlags(show) {
                     <div>
                         <input type="radio" id="debugging_status_on" name="debugging[status]" {SETTINGS_DEBUGGING_ON} value="on" onclick="toggleDebuggingFlags(true);"/><label for="debugging_status">{TXT_RADIO_ON}</label>&nbsp;
                         <input type="radio" id="debugging_status_off" name="debugging[status]" {SETTINGS_DEBUGGING_OFF} value="off" onclick="toggleDebuggingFlags(false);"/><label for="debugging_status">{TXT_RADIO_OFF}</label>&nbsp;
-                        <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[19],Style[0])" alt="" />
+                        <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_DEBUGGING_EXPLANATION}</span>
                     </div>
                     <div id="debugging_flags" {DEBUGGING_HIDE_FLAGS}>
                         <div>

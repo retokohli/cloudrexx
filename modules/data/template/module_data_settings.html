@@ -1,23 +1,6 @@
 <!-- START module_data_settings.html -->
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 //<![CDATA[
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[0]=["","{TXT_COMMENTS_ALLOW_HELP}"];
-Text[1]=["","{TXT_COMMENTS_ALLOW_ANONYMOUS_HELP}"];
-Text[2]=["","{TXT_COMMENTS_AUTO_ACTIVATE_HELP}"];
-Text[3]=["","{TXT_COMMENTS_NOTIFICATION_HELP}"];
-Text[4]=["","{TXT_COMMENTS_TIMEOUT_HELP}"];
-Text[5]=["","{TXT_VOTING_ALLOW_HELP}"];
-Text[6]=["","{TXT_GENERAL_INTRODUCTION_HELP}"];
-Text[7]=["","{TXT_BLOCK_ACTIVATE_HELP}"];
-Text[8]=["","{TXT_BLOCK_MESSAGES_HELP}"];
-Text[9]=["","{TXT_RSS_ACTIVATE_HELP}"];
-Text[10]=["","{TXT_RSS_MESSAGES_HELP}"];
-Text[11]=["","{TXT_RSS_COMMENTS_HELP}"];
-Text[12]=["","{TXT_COMMENTS_EDITOR_HELP}"];
-Text[13]=["","{TXT_TAG_HITLIST_HELP}"];
-Text[14]=["","{TXT_GENERAL_ACTION_HELP}"];
-
 var switchAction = function(obj)
 {
     var pageSelect = $("select_display");
@@ -77,8 +60,10 @@ var setRows = function()
     		</tr>
     		<tr>
     			<td width="15%">{TXT_GENERAL_INTRODUCTION}</td>
-    			<td width="85%"><input type="text" name="frmSettings_GeneralIntroduction" value="{DATA_SETTINGS_GENERAL_INTRODUCTION}"  maxlength="50" style="width:400px;"  />&nbsp;
-    				<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[6],Style[0])" /></td>
+    			<td width="85%">
+                    <input type="text" name="frmSettings_GeneralIntroduction" value="{DATA_SETTINGS_GENERAL_INTRODUCTION}"  maxlength="50" style="width:400px;"  />&nbsp;
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_GENERAL_INTRODUCTION_HELP}</span>
+                </td>
     		</tr>
             <tr>
                 <td>{TXT_GENERAL_ACTION}</td>
@@ -86,8 +71,8 @@ var setRows = function()
                     <select name="frmSettings_action" style="width: 408px;" onchange="switchAction(this)">
                         <option value="overlaybox" {ACTION_SELECTED_BOX}>{TXT_BOX}</option>
                         <option value="content" {ACTION_SELECTED_CONTENT}>{TXT_CONTENT_PAGE}</option>
-                    </select> &nbsp;
-                    <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[14],Style[0])" />
+                    </select>&nbsp;
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_GENERAL_ACTION_HELP}</span>
                 </td>
             </tr>
             <tr id="box_width">

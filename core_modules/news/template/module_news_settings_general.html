@@ -1,14 +1,6 @@
 <!-- START module_news_settings_general.html -->
 <script type="text/javascript">
 // <[![CDATA
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[0]=["","{TXT_NEWS_SETTINGS_COMMENTS_ALLOW_HELP}"];
-Text[1]=["","{TXT_NEWS_SETTINGS_COMMENTS_ALLOW_ANONYMOUS_HELP}"];
-Text[2]=["","{TXT_NEWS_SETTINGS_COMMENTS_AUTO_ACTIVATE_HELP}"];
-Text[3]=["","{TXT_NEWS_SETTINGS_COMMENTS_NOTIFICATION_HELP}"];
-Text[4]=["","{TXT_NEWS_SETTINGS_COMMENTS_TIMEOUT_HELP}"];
-Text[5]=["","{TXT_NEWS_DEFAULT_TEASERS_HELP}"];
-
 function SetUrl(url, width, height, alt) {
   document.getElementById('newsFeedImage').value = url;
 }
@@ -196,7 +188,7 @@ function preSubmitCheck(){
         <div id="news_teasers_configuration" style="display:{NEWS_USE_TEASERS_CONFIGURATION_DISPLAY};">
             <br />
             {TXT_NEWS_DEFAULT_TEASERS}:
-            <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[5],Style[0])" />
+            <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_NEWS_DEFAULT_TEASERS_HELP}</span>
             <br />
             <!-- BEGIN defaultTeasers -->
             <input type="checkbox" name="newsDefaultTeaserSelected[{NEWS_TEASER_ID}]" id="newsDefaultTeaserSelected_{NEWS_TEASER_ID}" value="1" {NEWS_TEASER_CHECKED} />
@@ -232,28 +224,28 @@ function preSubmitCheck(){
         <td>
             <input type="checkbox" name="newsCommentsAllow" id="newsCommentsAllow" value="1" {NEWS_SETTINGS_COMMENTS_STATUS_CHECKED} onclick="swapBlock('news_comments_configuration',this.checked);" />
             <label for="newsCommentsAllow">{TXT_NEWS_ACTIVE}</label>
-            <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
+            <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_NEWS_SETTINGS_COMMENTS_ALLOW_HELP}</span>
 
             <div style="display:{NEWS_COMMENTS_STATUS_STYLE}" id="news_comments_configuration">
                 <br />
                 <input type="checkbox" name="newsCommentsAllowAnonymous" id="newsCommentsAllowAnonymous" value="1" {NEWS_SETTINGS_COMMENTS_ALLOW_ANONYMOUS_CHECKED} />
                 <label for="newsCommentsAllowAnonymous">{TXT_NEWS_SETTINGS_COMMENTS_ALLOW_ANONYMOUS}</label>
-                <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" />
+                <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_NEWS_SETTINGS_COMMENTS_ALLOW_ANONYMOUS_HELP}</span>
                 <br />
 
                 <input type="checkbox" name="newsCommentsAutoActivate" id="newsCommentsAutoActivate" value="1" {NEWS_SETTINGS_COMMENTS_AUTO_ACTIVATE_CHECKED} />
                 <label for="newsCommentsAutoActivate">{TXT_NEWS_SETTINGS_COMMENTS_AUTO_ACTIVATE}</label>
-                <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" />
+                <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_NEWS_SETTINGS_COMMENTS_AUTO_ACTIVATE_HELP}</span>
                 <br />
 
                 <input type="checkbox" name="newsCommentsNotification" id="newsCommentsNotification" value="1" {NEWS_SETTINGS_COMMENTS_NOTIFICATION_CHECKED} />
                 <label for="newsCommentsNotification">{TXT_NEWS_SETTINGS_COMMENTS_NOTIFICATION}</label>
-                <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" />
+                <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_NEWS_SETTINGS_COMMENTS_NOTIFICATION_HELP}</span>
                 <br />
 
                 <label for="newsCommentsTimeout">{TXT_NEWS_SETTINGS_COMMENTS_TIMEOUT}</label>
                 <input type="text" name="newsCommentsTimeout" id="newsCommentsTimeout" value="{NEWS_SETTINGS_COMMENTS_TIMEOUT}" style="width:30px;" />
-                <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" />
+                <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_NEWS_SETTINGS_COMMENTS_TIMEOUT_HELP}</span>
             </div>
         </td>
     </tr>

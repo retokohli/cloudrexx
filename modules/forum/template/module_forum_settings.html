@@ -1,18 +1,6 @@
 <!-- START settings.html -->
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 <!-- //
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[0]=["","{TXT_GENERAL_THREAD_PAGING_HELP}"];
-Text[1]=["","{TXT_GENERAL_POSTING_PAGING_HELP}"];
-Text[2]=["","{TXT_LATEST_ENTRIES_COUNT_HELP}"];
-Text[3]=["","{TXT_BLOCK_TEMPLATE_HELP}"];
-Text[4]=["","{TXT_FORUM_NOTIFICATION_TEMPLATE_HELP}"];
-Text[5]=["","{TXT_FORUM_BANNED_WORDS_HELP}"];
-Text[6]=["","{TXT_FORUM_TAG_COUNT_HELP}"];
-Text[7]=["","{TXT_FORUM_WYSIWYG_EDITOR_HELP}"];
-Text[8]=["","{TXT_FORUM_LATEST_POST_PER_THREAD_HELP}"];
-Text[9]=["","{TXT_FORUM_ALLOWED_EXTENSIONS_HELP}"];
-
 function insertTag(elInsertBox, sTag) {
 	try{
 		if(!elInsertBox){
@@ -63,35 +51,35 @@ function insertTag(elInsertBox, sTag) {
 			</tr>
 			<tr class="row1">
 				<td width="20%">{TXT_GENERAL_THREAD_PAGING}&nbsp;</td>
-				<td width="80%"><input style="width:400px;" type="text" name="setvalue[1]" value="{SETTINGS_THREAD_PAGING}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+				<td width="80%"><input style="width:400px;" type="text" name="setvalue[1]" value="{SETTINGS_THREAD_PAGING}" size="70" maxlength="250" />&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_GENERAL_THREAD_PAGING_HELP}</span></td>
 			</tr>
 			<tr class="row2">
 				<td>{TXT_GENERAL_POSTING_PAGING}&nbsp;</td>
-				<td><input style="width:400px;" type="text" name="setvalue[2]" value="{SETTINGS_POSTING_PAGING}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" /></td>
+				<td><input style="width:400px;" type="text" name="setvalue[2]" value="{SETTINGS_POSTING_PAGING}" size="70" maxlength="250" />&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_GENERAL_POSTING_PAGING_HELP}</span></td>
 			</tr>
 			<tr class="row1">
 				<td width="20%">{TXT_LATEST_ENTRIES_COUNT}&nbsp;</td>
-				<td width="80%"><input style="width:400px;" type="text" name="setvalue[3]" value="{SETTINGS_LATEST_ENTRIES_COUNT}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
+				<td width="80%"><input style="width:400px;" type="text" name="setvalue[3]" value="{SETTINGS_LATEST_ENTRIES_COUNT}" size="70" maxlength="250" />&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_LATEST_ENTRIES_COUNT_HELP}</span></td>
 			</tr>
 			<tr class="row2">
 				<td width="20%">{TXT_FORUM_TAG_COUNT}&nbsp;</td>
-				<td width="80%"><input style="width:400px;" type="text" name="setvalue[11]" value="{FORUM_SETTINGS_TAG_COUNT}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[6],Style[0])" /></td>
+				<td width="80%"><input style="width:400px;" type="text" name="setvalue[11]" value="{FORUM_SETTINGS_TAG_COUNT}" size="70" maxlength="250" />&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_FORUM_TAG_COUNT_HELP}</span></td>
 			</tr>
 			<tr class="row1">
 				<td width="20%">{TXT_FORUM_BANNED_WORDS}&nbsp;</td>
-				<td width="80%"><input style="width:400px;" type="text" name="setvalue[9]" value="{FORUM_SETTINGS_BANNED_WORDS}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[5],Style[0])" /></td>
+				<td width="80%"><input style="width:400px;" type="text" name="setvalue[9]" value="{FORUM_SETTINGS_BANNED_WORDS}" size="70" maxlength="250" />&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_FORUM_BANNED_WORDS_HELP}</span></td>
 			</tr>
 			<tr class="row2">
 				<td width="20%">{TXT_FORUM_ALLOWED_EXTENSIONS}&nbsp;</td>
-				<td width="80%"><textarea name="setvalue[13]" style="width:400px; height: 80px;">{FORUM_ALLOWED_EXTENSIONS}</textarea>&nbsp;<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[9],Style[0])" /></td>
+				<td width="80%"><textarea name="setvalue[13]" style="width:400px; height: 80px;">{FORUM_ALLOWED_EXTENSIONS}</textarea>&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_FORUM_ALLOWED_EXTENSIONS_HELP}</span></td>
 			</tr>
 			<tr class="row1">
 				<td width="20%">{TXT_FORUM_WYSIWYG_EDITOR}&nbsp;</td>
-				<td width="80%"><input type="radio" name="setvalue[10]" value="1" {FORUM_SETTINGS_WYSIWYG_EDITOR_1} />&nbsp;{TXT_FORUM_ACTIVATE}&nbsp;<input type="radio" name="setvalue[10]" value="0" {FORUM_SETTINGS_WYSIWYG_EDITOR_0} />&nbsp;{TXT_FORUM_DEACTIVATE}&nbsp;<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[7],Style[0])" /></td>
+				<td width="80%"><input type="radio" name="setvalue[10]" value="1" {FORUM_SETTINGS_WYSIWYG_EDITOR_1} />&nbsp;{TXT_FORUM_ACTIVATE}&nbsp;<input type="radio" name="setvalue[10]" value="0" {FORUM_SETTINGS_WYSIWYG_EDITOR_0} />&nbsp;{TXT_FORUM_DEACTIVATE}&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_FORUM_WYSIWYG_EDITOR_HELP}</span></td>
 			</tr>
 			<tr class="row2">
 				<td width="20%">{TXT_FORUM_LATEST_POST_PER_THREAD}&nbsp;</td>
-				<td width="80%"><input type="radio" name="setvalue[12]" value="1" {FORUM_LATEST_POST_PER_THREAD_1} />&nbsp;{TXT_FORUM_ACTIVATE}&nbsp;<input type="radio" name="setvalue[12]" value="0" {FORUM_LATEST_POST_PER_THREAD_0} />&nbsp;{TXT_FORUM_DEACTIVATE}&nbsp;<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[8],Style[0])" /></td>
+				<td width="80%"><input type="radio" name="setvalue[12]" value="1" {FORUM_LATEST_POST_PER_THREAD_1} />&nbsp;{TXT_FORUM_ACTIVATE}&nbsp;<input type="radio" name="setvalue[12]" value="0" {FORUM_LATEST_POST_PER_THREAD_0} />&nbsp;{TXT_FORUM_DEACTIVATE}&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_FORUM_LATEST_POST_PER_THREAD_HELP}</span></td>
 			</tr>
 		</table>
 	</div>
@@ -164,7 +152,7 @@ function insertTag(elInsertBox, sTag) {
 			<tr class="row2">
 				<td width="20%" style="vertical-align: top;">
 					{TXT_FORUM_EMAIL_TEMPLATE}&nbsp;
-					<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_FORUM_NOTIFICATION_TEMPLATE_HELP}</span>
 				</td>
 				<td width="80%"><textarea id="forum_notification_template" name="setvalue[5]" style="width: 70%; height: 300px;">{SETTINGS_NOTIFICATION_TEMPLATE}</textarea>
 				</td>

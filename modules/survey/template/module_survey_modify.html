@@ -1,9 +1,9 @@
 <!-- START module_survey_add.html -->
 <script language="JavaScript" type="text/javascript">
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[0]=["","{TXT_JS_HELP_REDIRECT}"];
-Text[1]=["","{TXT_JS_HELP_COMMENTS}"];
-Text[2]=["","{TXT_JS_HELP_HOMEBOX}"];
+Text[0]=["","{}"];
+Text[1]=["","{}"];
+Text[2]=["","{}"];
 
 //General Functions ------------------------------------------------------------------------------
 function dezInt(num,size,prefix) { prefix=(prefix)?prefix:"0"; var minus=(num<0)?"-":"", result=(prefix=="0")?minus:""; num=Math.abs(parseInt(num,10)); size-=(""+num).length; for(var i=1;i<=size;i++) { result+=""+prefix; } result+=((prefix!="0")?minus:"")+num; return result; }
@@ -404,7 +404,7 @@ function openWindow(theURL,winName,features){
 		</tr>
 		<tr class="row1">
 			<td nowrap="nowrap">{TXT_REDIRECT}:</td>
-			<td colspan="3"><input type="text" name="frmModifySurvey_Redirect" id="surveyRedirectLink" value="{GENERAL_REDIRECT}" style="width:400px;" />&nbsp;<input type="button" value="{TXT_BROWSE}" onClick="newsGetFileBrowser('surveyRedirectLink', 'webpages')" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+			<td colspan="3"><input type="text" name="frmModifySurvey_Redirect" id="surveyRedirectLink" value="{GENERAL_REDIRECT}" style="width:400px;" />&nbsp;<input type="button" value="{TXT_BROWSE}" onClick="newsGetFileBrowser('surveyRedirectLink', 'webpages')" />&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_JS_HELP_REDIRECT}</span></td>
 		</tr>
 	</table>
 	<br />
@@ -423,16 +423,16 @@ function openWindow(theURL,winName,features){
 			<td nowrap="nowrap">{TXT_PLACEHOLDER}:</td>
 			<td colspan="3">
 				<input type="radio" id="idHomebox_Activate" name="frmModifySurvey_Homebox" value="1" {GENERAL_HOMEBOX_ACTIVATED_CHECKED} {GENERAL_HOMEBOX_ACTIVATED_DISABLED} /><label for="frmModifySurvey_Homebox">{TXT_ACTIVE}</label>
-				<input type="radio" id="idHomebox_Inactivate" name="frmModifySurvey_Homebox" value="0" {GENERAL_HOMEBOX_INACTIVATED_CHECKED} {GENERAL_HOMEBOX_INACTIVATED_DISABLED} /><label for="frmModifySurvey_Homebox">{TXT_INACTIVE}</label>
-				&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" />
+				<input type="radio" id="idHomebox_Inactivate" name="frmModifySurvey_Homebox" value="0" {GENERAL_HOMEBOX_INACTIVATED_CHECKED} {GENERAL_HOMEBOX_INACTIVATED_DISABLED} /><label for="frmModifySurvey_Homebox">{TXT_INACTIVE}</label>&nbsp;
+                <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_JS_HELP_HOMEBOX}</span>
 			</td>
 		</tr>
 		<tr class="row2">
 			<td nowrap="nowrap">{TXT_COMMENTABLE}:</td>
 			<td colspan="3">
 				<input type="radio" id="idCommentable_Activate" name="frmModifySurvey_Commentable" value="1" {GENERAL_COMMENTABLE_ACTIVATED_CHECKED} {GENERAL_COMMENTABLE_ACTIVATED_DISABLED} /><label for="frmModifySurvey_Commentable">{TXT_ACTIVE}</label>
-				<input type="radio" id="idCommentable_Inactivate" name="frmModifySurvey_Commentable" value="0" {GENERAL_COMMENTABLE_INACTIVATED_CHECKED} {GENERAL_COMMENTABLE_INACTIVATED_DISABLED} /><label for="frmModifySurvey_Commentable">{TXT_INACTIVE}</label>
-				&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" />
+				<input type="radio" id="idCommentable_Inactivate" name="frmModifySurvey_Commentable" value="0" {GENERAL_COMMENTABLE_INACTIVATED_CHECKED} {GENERAL_COMMENTABLE_INACTIVATED_DISABLED} /><label for="frmModifySurvey_Commentable">{TXT_INACTIVE}</label>&nbsp;
+                <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_JS_HELP_COMMENTS}</span>
 			</td>
 		</tr>
 	</table>

@@ -9,20 +9,6 @@
     rowNumber = 0;
 
     /*
-	 Tooltip stuff
-
-	 */
-    var Style = new Array();
-    var Text = new Array();
-	Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-    Text[0]=["","{TXT_IMMO_SETTINGS_ICON_MESSAGE_DESC}"];
-    Text[1]=["",'{TXT_IMMO_GOOGLE_KEY_INFO}'];
-    Text[2]=["",'{TXT_IMMO_PROTECTED_LINK_EMAIL_MESSAGE_BODY_INFO}'];
-    Text[3]=["",'{TXT_IMMO_CONTACT_RECEIVERS_INFO}'];
-    Text[4]=["",'{TXT_IMMO_INTEREST_INFO}'];
-    
-
-    /*
         Written by Jonathan Snook, http://www.snook.ca/jonathan
         Add-ons by Robert Nyman, http://www.robertnyman.com
     */
@@ -202,10 +188,10 @@
 
 <!-- START Tabmenu -->
 <ul id="tabmenu">
-<li><a id="editorTab_immo_addvariables" href="javascript:void(0)"  class="active" onclick="htm(); selectTab('immo_addvariables')" title="{TXT_IMMO_DEFINE_FIELDS}">{TXT_IMMO_DEFINE_FIELDS}</a></li>
-<li><a id="editorTab_immo_settings" href="javascript:void(0)" onclick="htm(); selectTab('immo_settings')" title="{TXT_SETTINGS}">{TXT_SETTINGS}</a></li>
-<li><a id="editorTab_immo_languages" href="javascript:void(0)" onclick="htm(); selectTab('immo_languages')" title="{TXT_IMMO_LANGUAGES}">{TXT_IMMO_LANGUAGES}</a></li>
-<li><a id="editorTab_immo_images" href="javascript:void(0)" onclick="htm(); selectTab('immo_images')" title="{TXT_IMMO_IMAGES}">{TXT_IMMO_IMAGES}</a></li>
+<li><a id="editorTab_immo_addvariables" href="javascript:void(0)"  class="active" onclick="selectTab('immo_addvariables')" title="{TXT_IMMO_DEFINE_FIELDS}">{TXT_IMMO_DEFINE_FIELDS}</a></li>
+<li><a id="editorTab_immo_settings" href="javascript:void(0)" onclick="selectTab('immo_settings')" title="{TXT_SETTINGS}">{TXT_SETTINGS}</a></li>
+<li><a id="editorTab_immo_languages" href="javascript:void(0)" onclick="selectTab('immo_languages')" title="{TXT_IMMO_LANGUAGES}">{TXT_IMMO_LANGUAGES}</a></li>
+<li><a id="editorTab_immo_images" href="javascript:void(0)" onclick="selectTab('immo_images')" title="{TXT_IMMO_IMAGES}">{TXT_IMMO_IMAGES}</a></li>
 </ul>
 <!-- END Tabmenu -->
 
@@ -229,7 +215,7 @@
     <tr class="row1">
         <td>{TXT_IMMO_GOOGLE_KEY} {IMMO_SETTINGS_DOMAIN1}:</td>
         <td colspan="{IMMO_LANG_COUNT}">
-            <input type="text" style="width: 450px;" value="{IMMO_SETTINGS_GOOGLE_KEY_DOMAIN1}" name="GOOGLE_API_KEY_{IMMO_SETTINGS_DOMAIN1}" /> <img src="images/icons/note.gif" alt="" width="12" height="12" onclick="htm()" onmouseover="stm(Text[1],Style[0])" />
+            <input type="text" style="width: 450px;" value="{IMMO_SETTINGS_GOOGLE_KEY_DOMAIN1}" name="GOOGLE_API_KEY_{IMMO_SETTINGS_DOMAIN1}" /><span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_IMMO_GOOGLE_KEY_INFO}</span>
         </td>
     </tr>
     <tr class="row2">
@@ -262,7 +248,7 @@
     <tr class="row1">
         <td style="vertical-align: top;">{TXT_IMMO_ICON_MESSAGE}:</td>
         <td style="vertical-align: top;" colspan="{IMMO_LANG_COUNT}">
-            <textarea rows="8" cols="5" style="width: 450px;" name="message">{IMMO_SETTINGS_ICON_MESSAGE}</textarea> <img src="images/icons/note.gif" alt="info" title="info" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
+            <textarea rows="8" cols="5" style="width: 450px;" name="message">{IMMO_SETTINGS_ICON_MESSAGE}</textarea><span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_IMMO_SETTINGS_ICON_MESSAGE_DESC}</span>
         </td>
     </tr>
     <tr class="row2">
@@ -295,7 +281,7 @@
 	<tr class="row1">
 		<td>
 			{TXT_IMMO_PROTECTED_LINK_EMAIL_MESSAGE_BODY}
-			<img src="images/icons/note.gif" alt="info" title="info" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /> 
+            <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_IMMO_PROTECTED_LINK_EMAIL_MESSAGE_BODY_INFO}</span>
 		</td>
 		<td colspan="{IMMO_LANG_COUNT}">
 			<textarea rows="8" style="width: 450px;" name="prot_link_message_body">{IMMO_PROT_LINK_MESSAGE_BODY}</textarea>
@@ -311,8 +297,8 @@
 	</tr>	
 	<tr class="row1">
 		<td>
-			{TXT_IMMO_CONTACT_RECEIVERS}
-			<img src="images/icons/note.gif" alt="info" title="info" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" /> 
+            {TXT_IMMO_CONTACT_RECEIVERS}
+            <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_IMMO_CONTACT_RECEIVERS_INFO}</span>
 		</td>
 		<td colspan="{IMMO_LANG_COUNT}">
 			<input style="width: 450px;" type="text" name="contact_receiver" value="{IMMO_CONTACT_RECEIVERS}" />
@@ -329,8 +315,7 @@
 	<tr class="row1">
 		<td>
 			{TXT_IMMO_INTEREST_CONFIRM_MESSAGE}
-			<img src="images/icons/note.gif" alt="info" title="info" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" /> 
-	
+            <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_IMMO_INTEREST_INFO}</span>
 		</td>
 		<td colspan="{IMMO_LANG_COUNT}">
 			<textarea rows="8" style="width: 450px;" name="interest_confirm_message">{IMMO_INTEREST_CONFIRM_MESSAGE}</textarea> 

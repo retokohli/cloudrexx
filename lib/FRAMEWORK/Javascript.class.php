@@ -128,6 +128,16 @@ jQuery(document).ready(function(){
             'specialcode' => '
                 jQuery(document).ready(function() {
                     jQuery(\'.tooltip-trigger\').tooltip({relative: true, position: \'center right\', offset: [0, 10]});
+                    jQuery(\'.tooltip-trigger .no-relative\').tooltip({relative: false, position: \'center right\', offset: [0, 10]});
+                    jQuery.extend({
+                        addTooltip: function(element) {
+                            if (jQuery(element).hasClass(\'no-relative\')) {
+                                jQuery(element).tooltip({relative: false, position: \'center right\', offset: [0, 10]});
+                            } else {
+                                jQuery(element).tooltip({relative: true, position: \'center right\', offset: [0, 10]});
+                            }
+                        }
+                    });
                 });
             ',
         ),
@@ -266,20 +276,6 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'cadmin/javascript/tabs.js',
                 'cadmin/javascript/set_checkboxes.js'
             )
-        ),
-        'tipmessage' => array(
-            'jsfiles' => array(
-                'lib/tipmessage1.5/main15.js'
-            ),
-            'dependencies'  => array('jquery'),
-            'specialcode'  => '
-                $J(document).ready(function() {
-                    TipId = "tipMessageLayer";
-                    FiltersEnabled = 0;
-                    tm_style = ["","#ffcc33","","","",,"black","#fff4c2","","","",,,,1,"#ffcc33",2,21,0.3,,2,"gray",0,,15,-5];
-                    mig_clay();
-                });
-            '
         ),
     );
 

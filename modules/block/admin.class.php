@@ -284,25 +284,25 @@ class blockManager extends blockLibrary
                 }
 
                 if ($arrBlock['random'] ==  '1') {
-                    $random = '<img src="images/icons/refresh.gif" width="16" height="16" border="0" alt="random 1" onmouseout="htm()" onmouseover="stm([\'\', \''.$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'].'\'], Style[0])" />';
+                    $random = '<img src="images/icons/refresh.gif" width="16" height="16" border="0" alt="random 1" class="tooltip-trigger" /><span class="tooltip-message">'.$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'].'</span>';
                 } else {
                     $random = '<img src="images/icons/pixel.gif" width="16" height="16" border="0" alt="" title="" />';
                 }
 
                 if ($arrBlock['random2'] ==  '1') {
-                    $random2 = '<img src="images/icons/refresh2.gif" width="16" height="16" border="0" alt="random 2" onmouseout="htm()" onmouseover="stm([\'\', \''.$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'].'\'], Style[0])" />';
+                    $random2 = '<img src="images/icons/refresh2.gif" width="16" height="16" border="0" alt="random 2" class="tooltip-trigger" /><span class="tooltip-message">'.$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'].'</span>';
                 } else {
                     $random2 = '<img src="images/icons/pixel.gif" width="16" height="16" border="0" alt="" title="" />';
                 }
 
                 if ($arrBlock['random3'] ==  '1') {
-                    $random3 = '<img src="images/icons/refresh3.gif" width="16" height="16" border="0" alt="random 3" onmouseout="htm()" onmouseover="stm([\'\', \''.$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'].'\'], Style[0])" />';
+                    $random3 = '<img src="images/icons/refresh3.gif" width="16" height="16" border="0" alt="random 3" class="tooltip-trigger" /><span class="tooltip-message">'.$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'].'</span>';
                 } else {
                     $random3 = '<img src="images/icons/pixel.gif" width="16" height="16" border="0" alt="" title="" />';
                 }
 
                 if ($arrBlock['random4'] ==  '1') {
-                    $random4 = '<img src="images/icons/refresh4.gif" width="16" height="16" border="0" alt="random 4" onmouseout="htm()" onmouseover="stm([\'\', \''.$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'].'\'], Style[0])" />';
+                    $random4 = '<img src="images/icons/refresh4.gif" width="16" height="16" border="0" alt="random 4" class="tooltip-trigger" /><span class="tooltip-message">'.$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'].'</span>';
                 } else {
                     $random4 = '<img src="images/icons/pixel.gif" width="16" height="16" border="0" alt="" title="" />';
                 }

@@ -679,12 +679,9 @@ class HotelManager extends HotelLib
                     'HOTEL_TELEPHONE_MOBILE'    =>    htmlspecialchars($objRS->fields['phone_mobile']),
                     'HOTEL_COMMENT'            =>    str_replace(array("\r\n", "\n"), '<br />', htmlspecialchars($objRS->fields['comment'])),
                     'HOTEL_COMMENT_TEXT'        =>    str_replace(array("\r\n", "\n"), '<br />', htmlspecialchars($objRS->fields['comment'])),
-                    'HOTEL_COMMENT_INDEX'    =>    $rowclass,
-                    'HOTEL_COMMENT_INDEX2'    =>    $rowclass,
                     'HOTEL_TIMESTAMP'        =>    date(ASCMS_DATE_FORMAT, $objRS->fields['timestamp']),
                     'ROW_CLASS'                =>    (++$rowclass % 2 ? 'row1' : 'row2'),
                 ));
-                $this->_objTpl->parse('commentsArray');
                 $this->_objTpl->parse('downloads');
                 $objRS->MoveNext();
             }
@@ -1344,7 +1341,6 @@ class HotelManager extends HotelLib
         if(($objRS = $objDatabase->Execute($query)) !== false){
             $count = $objRS->RecordCount();
             $objRS = $objDatabase->SelectLimit($query, $limit, $pos);
-            $i=0;
             while(!$objRS->EOF){
                 $this->_objTpl->setVariable(array(
                       'HOTEL_CONTACT_ID'        =>    intval($objRS->fields['id']),
@@ -1366,14 +1362,10 @@ class HotelManager extends HotelLib
                     'HOTEL_FUNDING'            =>    htmlspecialchars($objRS->fields['funding']),
                     'HOTEL_COMMENT'            =>    str_replace(array("\r\n", "\n"), '<br />', htmlspecialchars($objRS->fields['comment'])),
                     'HOTEL_COMMENT_TEXT'        =>    str_replace(array("\r\n", "\n"), '<br />', htmlspecialchars($objRS->fields['comment'])),
-                    'HOTEL_COMMENT_INDEX'    =>    $i,
-                    'HOTEL_COMMENT_INDEX2'    =>    $i,
                     'HOTEL_TIMESTAMP'        =>    date(ASCMS_DATE_FORMAT ,$objRS->fields['timestamp']),
                     'ROW_CLASS'                =>    ($rowclass++ % 2 == 0) ? 'row1' : 'row2',
                 ));
-                $this->_objTpl->parse('commentsArray');
                 $this->_objTpl->parse('downloads');
-                $i++;
                 $objRS->MoveNext();
             }
         }

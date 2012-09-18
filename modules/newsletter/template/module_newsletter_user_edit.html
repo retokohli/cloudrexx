@@ -1,12 +1,4 @@
 <!-- START module_newsletter_user_edit.html -->
-<script type="text/javascript" language="javascript">
-// <![CDATA[
-
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[0]=["","{TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL}"];
-
-// ]]>
-</script>
 <table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
   <tr>
     <th>{TXT_NEWSLETTER_USER_TITLE}</th>
@@ -30,15 +22,15 @@ Text[0]=["","{TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL}"];
               <!-- BEGIN languages -->
               <option value="{NEWSLETTER_LANGUAGE_ID}" {NEWSLETTER_LANGUAGES_SELECTED}>{NEWSLETTER_LANGUAGE_NAME}</option>
               <!-- END languages -->
-          </select>          
+          </select>
       </td>
     </tr>
     <!-- END languageOption -->
     <!-- BEGIN sendEmail -->
     <tr class="{NEWSLETTER_SEND_EMAIL_ROWCLASS}">
       <td>
-          {TXT_NEWSLETTER_SEND_EMAIL} &nbsp;
-          <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
+          {TXT_NEWSLETTER_SEND_EMAIL}&nbsp;
+          <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL}</span>
       </td>
       <td colspan="3">
           <select name="sendEmail" style="width:296px">

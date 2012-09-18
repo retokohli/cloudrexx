@@ -1,21 +1,5 @@
 <!-- START module_mediadir_settings_entries.html -->
-<script language="JavaScript" type="text/javascript">
-
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[5]=['','{TXT_MEDIADIR_SETTINGS_CONFIRM_NEW_ENTRIES_INFO}'];
-Text[6]=['','{TXT_MEDIADIR_SETTINGS_NUM_ENTRIES_PER_GROUP_INFO}'];
-Text[7]=['','{TXT_MEDIADIR_SETTINGS_CONFIRM_UPDATED_ENTRIES_INFO}'];
-Text[8]=['','{TXT_MEDIADIR_SETTINGS_COUNT_ENTRIES_INFO}'];
-Text[9]=['','{TXT_MEDIADIR_SETTINGS_ALLOW_ADD_ENTRIES_INFO}'];
-Text[10]=['','{TXT_MEDIADIR_SETTINGS_ADD_ONLY_COMMUNITY_INFO}'];
-Text[11]=['','{TXT_MEDIADIR_SETTINGS_ALLOW_EDIT_ENTRIES_INFO}'];
-Text[12]=['','{TXT_MEDIADIR_SETTINGS_ALLOW_DEL_ENTRIES_INFO}'];
-Text[13]=['','{TXT_MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG_INFO}'];
-Text[14]=['','{TXT_MEDIADIR_SETTINGS_PAGING_NUM_ENTRIES_INFO}'];
-Text[15]=['','{TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS_INFO}'];
-Text[16]=['','{TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM_INFO}'];
-Text[17]=['','{TXT_MEDIADIR_SETTINGS_MULTILANG_FRONTEND_INFO}'];
-
+<script type="text/javascript">
 function toggleDisplayDourationType(){
     elmSelect = document.getElementById('durationType');
     elmLayer = document.getElementById('durationTypePeriod');
@@ -51,43 +35,43 @@ function toggleDisplayDourationNotification(){
     <tr class="row1">
         <td width="280">{TXT_MEDIADIR_SETTINGS_CONFIRM_NEW_ENTRIES}</td>
         <td>
-            <input type="radio" name="settingsConfirmNewEntries" value="1" {MEDIADIR_SETTINGS_CONFIRM_NEW_ENTRIES_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsConfirmNewEntries" value="0" {MEDIADIR_SETTINGS_CONFIRM_NEW_ENTRIES_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[5],Style[0])" />
+            <input type="radio" name="settingsConfirmNewEntries" value="1" {MEDIADIR_SETTINGS_CONFIRM_NEW_ENTRIES_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsConfirmNewEntries" value="0" {MEDIADIR_SETTINGS_CONFIRM_NEW_ENTRIES_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_MEDIADIR_SETTINGS_CONFIRM_NEW_ENTRIES_INFO}</span>
         </td>
     </tr>
     <tr class="row2">
         <td width="280">{TXT_MEDIADIR_SETTINGS_CONFIRM_UPDATED_ENTRIES}</td>
         <td>
-            <input type="radio" name="settingsConfirmUpdatedEntries" value="1" {MEDIADIR_SETTINGS_CONFIRM_UPDATED_ENTRIES_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsConfirmUpdatedEntries" value="0" {MEDIADIR_SETTINGS_CONFIRM_UPDATED_ENTRIES_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[7],Style[0])" />
+            <input type="radio" name="settingsConfirmUpdatedEntries" value="1" {MEDIADIR_SETTINGS_CONFIRM_UPDATED_ENTRIES_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsConfirmUpdatedEntries" value="0" {MEDIADIR_SETTINGS_CONFIRM_UPDATED_ENTRIES_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_MEDIADIR_SETTINGS_CONFIRM_UPDATED_ENTRIES_INFO}</span>
         </td>
     </tr>
     <tr class="row1">
         <td width="280">{TXT_MEDIADIR_SETTINGS_ALLOW_ADD_ENTRIES}</td>
         <td>
-            <input type="radio" name="settingsAllowAddEntries" value="1" {MEDIADIR_SETTINGS_ALLOW_ADD_ENTRIES_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsAllowAddEntries" value="0" {MEDIADIR_SETTINGS_ALLOW_ADD_ENTRIES_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[9],Style[0])" />
+            <input type="radio" name="settingsAllowAddEntries" value="1" {MEDIADIR_SETTINGS_ALLOW_ADD_ENTRIES_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsAllowAddEntries" value="0" {MEDIADIR_SETTINGS_ALLOW_ADD_ENTRIES_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_MEDIADIR_SETTINGS_ALLOW_ADD_ENTRIES_INFO}</span>
         </td>
     </tr>
     <tr class="row2">
         <td width="280">{TXT_MEDIADIR_SETTINGS_ADD_ONLY_COMMUNITY}</td>
         <td>
-            <input type="radio" name="settingsAddEntriesOnlyCommunity" value="1" {MEDIADIR_SETTINGS_ADD_ONLY_COMMUNITY_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsAddEntriesOnlyCommunity" value="0" {MEDIADIR_SETTINGS_ADD_ONLY_COMMUNITY_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[10],Style[0])" />
+            <input type="radio" name="settingsAddEntriesOnlyCommunity" value="1" {MEDIADIR_SETTINGS_ADD_ONLY_COMMUNITY_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsAddEntriesOnlyCommunity" value="0" {MEDIADIR_SETTINGS_ADD_ONLY_COMMUNITY_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_MEDIADIR_SETTINGS_ADD_ONLY_COMMUNITY_INFO}</span>
         </td>
     </tr>
     <!--<tr class="row1">
         <td width="280">{TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM}</td>
         <td>
-            <input type="radio" name="settingsReadyToConfirm" value="1" {MEDIADIR_SETTINGS_READY_TO_CONFIRM_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsReadyToConfirm" value="0" {MEDIADIR_SETTINGS_READY_TO_CONFIRM_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[16],Style[0])" />
+            <input type="radio" name="settingsReadyToConfirm" value="1" {MEDIADIR_SETTINGS_READY_TO_CONFIRM_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsReadyToConfirm" value="0" {MEDIADIR_SETTINGS_READY_TO_CONFIRM_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM_INFO}</span>
         </td>
     </tr>   -->
     <tr class="row1">
         <td width="280">{TXT_MEDIADIR_SETTINGS_ALLOW_EDIT_ENTRIES}</td>
         <td>
-            <input type="radio" name="settingsAllowEditEntries" value="1" {MEDIADIR_SETTINGS_ALLOW_EDIT_ENTRIES_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsAllowEditEntries" value="0" {MEDIADIR_SETTINGS_ALLOW_EDIT_ENTRIES_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[11],Style[0])" />
+            <input type="radio" name="settingsAllowEditEntries" value="1" {MEDIADIR_SETTINGS_ALLOW_EDIT_ENTRIES_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsAllowEditEntries" value="0" {MEDIADIR_SETTINGS_ALLOW_EDIT_ENTRIES_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_MEDIADIR_SETTINGS_ALLOW_EDIT_ENTRIES_INFO}</span>
         </td>
     </tr>
     <tr class="row2">
         <td width="280">{TXT_MEDIADIR_SETTINGS_ALLOW_DEL_ENTRIES}</td>
         <td>
-            <input type="radio" name="settingsAllowDelEntries" value="1" {MEDIADIR_SETTINGS_ALLOW_DEL_ENTRIES_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsAllowDelEntries" value="0" {MEDIADIR_SETTINGS_ALLOW_DEL_ENTRIES_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[12],Style[0])" />
+            <input type="radio" name="settingsAllowDelEntries" value="1" {MEDIADIR_SETTINGS_ALLOW_DEL_ENTRIES_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsAllowDelEntries" value="0" {MEDIADIR_SETTINGS_ALLOW_DEL_ENTRIES_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_MEDIADIR_SETTINGS_ALLOW_DEL_ENTRIES_INFO}</span>
         </td>
     </tr>
     <tr class="row1">
@@ -99,7 +83,7 @@ function toggleDisplayDourationNotification(){
 <!--    <tr class="row2">
         <td width="280">{TXT_MEDIADIR_SETTINGS_COUNT_ENTRIES}</td>
         <td>
-            <input type="radio" name="settingsCountEntries" value="1" {MEDIADIR_SETTINGS_COUNT_ENTRIES_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsCountEntries" value="0" {MEDIADIR_SETTINGS_COUNT_ENTRIES_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[8],Style[0])" />
+            <input type="radio" name="settingsCountEntries" value="1" {MEDIADIR_SETTINGS_COUNT_ENTRIES_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsCountEntries" value="0" {MEDIADIR_SETTINGS_COUNT_ENTRIES_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_MEDIADIR_SETTINGS_COUNT_ENTRIES_INFO}</span>
         </td>
     </tr> -->
     <tr class="row1">
@@ -108,7 +92,7 @@ function toggleDisplayDourationNotification(){
             <table border="0" cellpadding="2" cellspacing="0">
                 <tr>
                     <td width="160" style="border: 0px;"><b>{TXT_MEDIADIR_SETTINGS_COMMUNITY_GROUP}</b></td>
-                    <td style="border: 0px;"><b>{TXT_MEDIADIR_SETTINGS_NUM}</b>&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[6],Style[0])" /></td>
+                    <td style="border: 0px;"><b>{TXT_MEDIADIR_SETTINGS_NUM}</b>&nbsp;&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_MEDIADIR_SETTINGS_NUM_ENTRIES_PER_GROUP_INFO}</span></td>
                 </tr>
                 <!-- BEGIN communityGroupList -->
                 <tr>
@@ -127,7 +111,7 @@ function toggleDisplayDourationNotification(){
     <tr class="row2">
         <td width="280">{TXT_MEDIADIR_SETTINGS_PAGING_NUM_ENTRIES}</td>
         <td>
-            <input name="settingsPagingNumEntries" type="text" style="width: 35px" value="{MEDIADIR_SETTINGS_PAGING_NUM_ENTRIES}" />&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[14],Style[0])" />
+            <input name="settingsPagingNumEntries" type="text" style="width: 35px" value="{MEDIADIR_SETTINGS_PAGING_NUM_ENTRIES}" />&nbsp;&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_MEDIADIR_SETTINGS_PAGING_NUM_ENTRIES_INFO}</span>
         </td>
     </tr>
     <tr class="row1">
@@ -163,19 +147,19 @@ function toggleDisplayDourationNotification(){
     <tr class="row1">
         <td width="280">{TXT_MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG}</td>
         <td>
-            <input type="radio" name="settingsShowEntriesInAllLang" value="1" {MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsShowEntriesInAllLang" value="0" {MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[13],Style[0])" />
+            <input type="radio" name="settingsShowEntriesInAllLang" value="1" {MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsShowEntriesInAllLang" value="0" {MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG_INFO}</span>
         </td>
     </tr>
     <tr class="row2">
         <td width="280">{TXT_MEDIADIR_SETTINGS_MULTILANG_FRONTEND}</td>
         <td>
-            <input type="radio" name="settingsFrontendUseMultilang" value="1" {MEDIADIR_SETTINGS_MULTILANG_FRONTEND_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsFrontendUseMultilang" value="0" {MEDIADIR_SETTINGS_MULTILANG_FRONTEND_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[17],Style[0])" />
+            <input type="radio" name="settingsFrontendUseMultilang" value="1" {MEDIADIR_SETTINGS_MULTILANG_FRONTEND_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsFrontendUseMultilang" value="0" {MEDIADIR_SETTINGS_MULTILANG_FRONTEND_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_MEDIADIR_SETTINGS_MULTILANG_FRONTEND_INFO}</span>
         </td>
     </tr>
     <tr class="row1">
         <td width="280">{TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS}</td>
         <td>
-            <input type="radio" name="settingsTranslationStatus" value="1" {MEDIADIR_SETTINGS_TRANSLATION_STATUS_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsTranslationStatus" value="0" {MEDIADIR_SETTINGS_TRANSLATION_STATUS_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[15],Style[0])" />
+            <input type="radio" name="settingsTranslationStatus" value="1" {MEDIADIR_SETTINGS_TRANSLATION_STATUS_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsTranslationStatus" value="0" {MEDIADIR_SETTINGS_TRANSLATION_STATUS_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS_INFO}</span>
         </td>
     </tr>
     <tr class="row2">

@@ -417,7 +417,6 @@ class Immo extends ImmoLib
         if(($objRS = $objDatabase->Execute($query)) !== false) {
             $count = $objRS->RecordCount();
             $objRS = $objDatabase->SelectLimit($query, $limit, $pos);
-            $i=0;
             while(!$objRS->EOF) {
                 $this->_objTpl->setVariable(array(
                         'IMMO_CONTACT_ID'		=>	intval($objRS->fields['id']),
@@ -436,14 +435,11 @@ class Immo extends ImmoLib
                         'IMMO_TELEPHONE_MOBILE'	=>	htmlspecialchars($objRS->fields['phone_mobile']),
                         'IMMO_COMMENT'			=>	str_replace(array("\r\n", "\n"), '<br />', htmlspecialchars($objRS->fields['comment'])),
                         'IMMO_COMMENT_TEXT'		=>	str_replace(array("\r\n", "\n"), '<br />', htmlspecialchars($objRS->fields['comment'])),
-                        'IMMO_COMMENT_INDEX'	=>	$i,
-                        'IMMO_COMMENT_INDEX2'	=>	$i,
                         'IMMO_TIMESTAMP'		=>	date(ASCMS_DATE_FORMAT, $objRS->fields['timestamp']),
                         'ROW_CLASS'				=>	($rowclass++ % 2 == 0) ? 'row1' : 'row2',
                 ));
                 $this->_objTpl->parse('commentsArray');
                 $this->_objTpl->parse('downloads');
-                $i++;
                 $objRS->MoveNext();
             }
         }
@@ -1094,7 +1090,6 @@ class Immo extends ImmoLib
         if(($objRS = $objDatabase->Execute($query)) !== false) {
             $count = $objRS->RecordCount();
             $objRS = $objDatabase->SelectLimit($query, $limit, $pos);
-            $i=0;
             while(!$objRS->EOF) {
                 $this->_objTpl->setVariable(array(
                         'IMMO_CONTACT_ID'		=>	intval($objRS->fields['id']),
@@ -1116,14 +1111,10 @@ class Immo extends ImmoLib
                         'IMMO_FUNDING'			=>	htmlspecialchars($objRS->fields['funding']),
                         'IMMO_COMMENT'			=>	str_replace(array("\r\n", "\n"), '<br />', htmlspecialchars($objRS->fields['comment'])),
                         'IMMO_COMMENT_TEXT'		=>	str_replace(array("\r\n", "\n"), '<br />', htmlspecialchars($objRS->fields['comment'])),
-                        'IMMO_COMMENT_INDEX'	=>	$i,
-                        'IMMO_COMMENT_INDEX2'	=>	$i,
                         'IMMO_TIMESTAMP'		=>	date(ASCMS_DATE_FORMAT ,$objRS->fields['timestamp']),
                         'ROW_CLASS'				=>	($rowclass++ % 2 == 0) ? 'row1' : 'row2',
                 ));
-                $this->_objTpl->parse('commentsArray');
                 $this->_objTpl->parse('downloads');
-                $i++;
                 $objRS->MoveNext();
             }
         }

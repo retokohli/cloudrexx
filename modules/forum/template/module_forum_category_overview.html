@@ -1,11 +1,5 @@
 <!-- START category_overview.html -->
-<script language="JavaScript" type="text/javascript">
-
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-<!-- BEGIN forumToolTips -->
-Text[{FORUM_TOOLTIP_INDEX}]=["","{FORUM_TOOLTIP_TEXT}"];
-<!-- END forumToolTips -->
-
+<script type="text/javascript">
 function deleteCategory(catId){
     if(confirm('{TXT_JS_DELETE_MSG}'))
         window.location.replace("?cmd=forum&{CSRF_PARAM}&act=category_delete&id="+catId);
@@ -134,7 +128,7 @@ function markCheckboxes(intSelected) {
 				<td>{CATEGORY_SPACER}{CATEGORY_TYPE_ICON}&nbsp;<input type="text" name="sortingSystem{CATEGORY_ID}" value="{CATEGORY_ORDERID}" maxlength="2" size="2" />&nbsp; <a href="?cmd=forum&amp;act=category_edit&amp;id={CATEGORY_ID}" title="edit {CATEGORY_NAME}">{CATEGORY_NAME} </a></td>
 				<td>{CATEGORY_POSTCOUNT}</td>
 				<td><div align="justify">{CATEGORY_DESC}</div></td>
-				<td><img src="images/icons/note.gif" alt="info" title="info" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[{FORUM_TOOLTIP_INDEX}],Style[0])" /></td>
+				<td><span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{FORUM_TOOLTIP_TEXT}</span></td>
 				<td nowrap="nowrap">{CATEGORY_LASTPOST}</td>
 				<td nowrap="nowrap">
 					<div align="right">

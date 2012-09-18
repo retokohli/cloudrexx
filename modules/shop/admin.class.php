@@ -298,7 +298,6 @@ class Shopmanager extends ShopLibrary
             'TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS' =>
                 contrexx_raw2xhtml($_ARRAYLANG['TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS']),
         ));
-        JS::activate('tipmessage');
         $objCSVimport = new CSVimport();
         // Delete template
         if (isset($_REQUEST['deleteImg'])) {

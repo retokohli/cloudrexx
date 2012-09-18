@@ -908,7 +908,7 @@ div.date img{
     width: auto;
 }
 
-#page .info {
+#page .icon-info {
     float: left;
     height: 16px !important;
     margin: 0 4px 0 4px;
@@ -987,7 +987,7 @@ div.date img{
     margin: 0 3px 0 0;
 }
 
-#page #titles_container #types .info {
+#page #titles_container #types .icon-info {
     margin-right: 16px !important;
 }
 

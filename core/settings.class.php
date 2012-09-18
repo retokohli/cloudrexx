@@ -201,8 +201,6 @@ class settingsManager
             'TXT_SYSTEM_STATUS_HELP'                    => $_CORELANG['TXT_SETTINGS_SYSTEMSTATUS_HELP'],
             'TXT_IDS_STATUS'                            => $_CORELANG['TXT_SETTINGS_IDS'],
             'TXT_IDS_STATUS_HELP'                       => $_CORELANG['TXT_SETTINGS_IDS_HELP'],
-            'TXT_HISTORY_STATUS'                        => $_CORELANG['TXT_SETTINGS_HISTORY'],
-            'TXT_HISTORY_STATUS_HELP'                   => $_CORELANG['TXT_SETTINGS_HISTORY_HELP'],
             'TXT_XML_SITEMAP_STATUS'                    => $_CORELANG['TXT_SETTINGS_XML_SITEMAP'],
             'TXT_XML_SITEMAP_STATUS_HELP'               => $_CORELANG['TXT_SETTINGS_XML_SITEMAP_HELP'],
             'TXT_GLOBAL_TITLE'                          => $_CORELANG['TXT_SETTINGS_GLOBAL_TITLE'],

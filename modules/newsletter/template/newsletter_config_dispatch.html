@@ -1,5 +1,5 @@
 <!-- START newsletter_config_dispatch.html -->
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
 // <![CDATA[
     function newsletterUpdate(){
         if(document.adduser.sender_email.value=="" || document.adduser.sender_name.value=="" || document.adduser.return_path.value=="" || document.adduser.mails_per_run.value==""){
@@ -9,10 +9,6 @@
             return true
         }
     }
-
-    Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-    Text[0]=["","{TXT_NEWSLETTER_INFO_ABOUT_ADMIN_INFORM}"];
-    Text[1]=["","{TXT_NEWSLETTER_INFO_ABOUT_INFORM_TEXT}"];
 // ]]>
 </script>
 <div id="subnavbar_level2">
@@ -75,13 +71,13 @@
       <input type="radio" name="newsletter_rejected_mail_task" value="deactivate" id="newsletter_rejected_mail_task_deactivate" {NEWSLETTER_REJECTED_MAIL_DEACTIVATE} /><label for="newsletter_rejected_mail_task_deactivate">{TXT_NEWSLETTER_DEACTIVATE_EMAIL}</label><br />
       <input type="radio" name="newsletter_rejected_mail_task" value="delete" id="newsletter_rejected_mail_task_delete" {NEWSLETTER_REJECTED_MAIL_DELETE} /><label for="newsletter_rejected_mail_task_delete">{TXT_NEWSLETTER_DELETE_EMAIL_ADDRESS}</label><br />
       <input type="radio" name="newsletter_rejected_mail_task" value="inform" id="newsletter_rejected_mail_task_inform" {NEWSLETTER_REJECTED_MAIL_INFORM} /><label for="newsletter_rejected_mail_task_inform">{TXT_NEWSLETTER_INFORM_ADMIN}</label>
-        <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
+      <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_NEWSLETTER_INFO_ABOUT_ADMIN_INFORM}</span>
     </td>
   </tr>
     <tr class="row2">
         <td width="20%" style="vertical-align: top;">{TXT_NEWSLETTER_REJECT_INFO_MAIL_TEXT}
-            <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" />
-</td>
+            <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_NEWSLETTER_INFO_ABOUT_INFORM_TEXT}</span>
+        </td>
         <td width="80%">
             <textarea name="reject_info_mail_text" style="width: 600px; height: 200px">{NEWSLETTER_REJECT_INFO_MAIL_TEXT}</textarea>
         </td>

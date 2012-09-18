@@ -1,5 +1,5 @@
 <!-- START gallery_edit_image.html -->
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
 function deleteComment(cId)
 {
     if(confirm('{TXT_COMMENT_DELETE_JS}'))
@@ -66,12 +66,7 @@ function copyText(strType) {
 	}
 }
 </script>
-<script language="javascript" type="text/javascript">
-<!-- //
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[0]=["","{TXT_LINKNAME_HELP}"];
-// -->
-</script>
+
 <ul id="tabmenu">
 	<li><a id="editImageTab_Settings" class="{TAB_ACTIVE_SETTINGS}" href="javascript:{}" onclick="selectTab('Settings')" title="{TXT_TAB_SETTINGS}">{TXT_TAB_SETTINGS}</a></li>
 	<!-- BEGIN tabComment -->
@@ -81,7 +76,6 @@ Text[0]=["","{TXT_LINKNAME_HELP}"];
 	<li><a id="editImageTab_Votes" class="{TAB_ACTIVE_VOTES}" href="javascript:{}" onclick="selectTab('Votes')" title="{TXT_TAB_VOTES}">{TXT_TAB_VOTES}</a></li>
 	<!-- END tabVoting -->
 </ul>
-
 <div id="Settings" class="editImageTab" style="display:{TAB_DISPLAY_SETTINGS}">
 	<form name="editImage" method="post" action="?cmd=gallery&amp;act=update_picture&amp;id={VALUE_ID}">
 	<table width="100%" cellspacing="0" cellpadding="2" border="0" align="top" class="adminlist">
@@ -102,7 +96,7 @@ Text[0]=["","{TXT_LINKNAME_HELP}"];
 			<td nowrap="nowrap" valign="top">{TXT_IMAGELINKNAME}:</td>
 			<td>
 				<input name="pictureLinkName" type="text" onchange="copyText('pictureDesc_');" value="{VALUE_LINKNAME}" size="100" />
-				<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
+                <span class="tooltip-trigger icon-warning"></span><span class="tooltip-message">{TXT_LINKNAME_HELP}</span>
 				&nbsp;<a href="javascript:showOrHide('divLang_Desc');">{TXT_EXTENDED}</a>
 				<div id="divLang_Desc" style="display: none;">
 					<!-- BEGIN showDescFields -->
@@ -115,7 +109,7 @@ Text[0]=["","{TXT_LINKNAME_HELP}"];
 			<td nowrap="nowrap">{TXT_IMAGELINK}:</td>
 			<td>
 				<input type="text" name="pictureLink" value="{VALUE_LINK}" size="100" />
-				<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
+                <span class="tooltip-trigger icon-warning"></span><span class="tooltip-message">{TXT_LINKNAME_HELP}</span>
 			</td>
 		</tr>
 		<tr class="row1">

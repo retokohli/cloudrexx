@@ -406,21 +406,13 @@ if (!$limit) {
                 // Determine end date
             // PHP5! $tipNote = (strlen($objResult['note'])>0) ? php_strip_whitespace($objResult['note']) : '';
             $tipNote = $objOrder->note();
-            $tipLink = (!empty($tipNote)
-                ? '<img src="images/icons/comment.gif" onmouseout="htm()"'.
-                  ' onmouseover="stm(Text['.$order_id.'],tm_style)"'.
-                  ' width="11" height="10" alt="" title="" />'
-                : ''
-            );
+            $tipLink = !empty($tipNote) ? '<span class="tooltip-trigger icon-comment"></span><span class="tooltip-message">'.preg_replace('/[\n\r]+/', '<br />', nl2br(contrexx_raw2xhtml($tipNote))).'</span>': '';
             $order_id = $order_id;
             $status = $objOrder->status();
             $objTemplate->setVariable(array(
                 'SHOP_ROWCLASS' => ($status == 0
                     ? 'rowwarn' : 'row'.(++$i % 2 + 1)),
                 'SHOP_ORDERID' => $order_id,
-                'SHOP_TIP_ID' => $order_id,
-                'SHOP_TIP_NOTE' => preg_replace('/[\n\r]+/', '<br />',
-                    nl2br(contrexx_raw2xhtml($tipNote))),
                 'SHOP_TIP_LINK' => $tipLink,
                 'SHOP_DATE' => $objOrder->date_time(),
                 'SHOP_NAME' => $customer_name,
@@ -435,7 +427,6 @@ if (!$limit) {
 //                'SHOP_VALIDITY' => $endDate,
             ));
             $objTemplate->parse('orderRow');
-            $objTemplate->parse('tipMessageRow');
         }
         $objTemplate->setVariable('SHOP_ORDER_PAGING', $paging);
         return true;

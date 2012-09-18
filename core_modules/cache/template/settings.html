@@ -1,13 +1,4 @@
 <!-- START settings.html -->
-
-<script language="javascript" type="text/javascript">
-<!-- //
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[0]=["","{TXT_SETTINGS_STATUS_HELP}"];
-Text[1]=["","{TXT_SETTINGS_EXPIRATION_HELP}"];
-// -->
-</script>
-
 <ul id="tabmenu">
 	<li><a id="setTab_Caching1" class="active" href="javascript:{}" onclick="selectTab('Caching1')" title="{TXT_TAB1}">{TXT_TAB1}</a></li>
 	<li><a id="setTab_Caching2" href="javascript:{}" onclick="selectTab('Caching2')" title="{TXT_TAB2}">{TXT_TAB2}</a></li>
@@ -24,14 +15,14 @@ Text[1]=["","{TXT_SETTINGS_EXPIRATION_HELP}"];
 				<td width="80%">
 					<label for="cachingStatus"><input type="radio" name="cachingStatus" value="on" {SETTINGS_STATUS_ON}>{TXT_SETTINGS_ON}</label>&nbsp;
 					<label for="cachingStatus"><input type="radio" name="cachingStatus" value="off" {SETTINGS_STATUS_OFF}>{TXT_SETTINGS_OFF}</label>&nbsp;
-					<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SETTINGS_STATUS_HELP}</span>
 				</td>
 			</tr>
 			<tr class="row1">
 				<td>{TXT_SETTINGS_EXPIRATION}</td>
 				<td>
 					<input type="text" name="cachingExpiration" value="{SETTINGS_EXPIRATION}" size="70" maxlength="250" />
-					<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SETTINGS_EXPIRATION_HELP}</span>
 				</td>
 			</tr>
 		</table>

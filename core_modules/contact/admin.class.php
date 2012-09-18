@@ -1104,7 +1104,7 @@ class ContactManager extends ContactLib
         case 'select':
         case 'radio':
             $field .= "<div style=\"display: ".$display.";\"  id=\"fieldValueTab_".$id."_".$langid."\" class=\"fieldValueTabs_".$id."\">";
-            $field .= "<input style=\"width:308px;background: #FFFFFF;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" /> &nbsp;<img src=\"images/icons/note.gif\" width=\"12\" height=\"12\" onmouseout=\"htm()\" onmouseover=\"stm(Text[4],Style[0])\" />\n";
+            $field .= "<input style=\"width:308px;background: #FFFFFF;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" />&nbsp;<span class=\"tooltip-trigger icon-info\"></span><span class=\"tooltip-message multiple-values-by-comma\">{TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA}</span>\n";
             $field .= "</div>";
             return $field;
             break;
