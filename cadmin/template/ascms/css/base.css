@@ -442,12 +442,12 @@ textarea.cke_source {
     height: 100%;
 }
 
-#navigation_level_1_home li .icon_2 {
+#navigation_level_1_184 li .icon_2 {
     background: url(../images/navigation_level_1_home.png) no-repeat center 7px;
 }
 
-#navigation_level_1_home li:hover .icon_2, #navigation_level_1_home li:focus .icon_2,
-#navigation_level_1_home li:active .icon_2, #navigation_level_1_home li.active .icon_2 {
+#navigation_level_1_184 li:hover .icon_2, #navigation_level_1_184 li:focus .icon_2,
+#navigation_level_1_184 li:active .icon_2, #navigation_level_1_184 li.active .icon_2 {
     background: url(../images/navigation_level_1_home_hover.png) no-repeat center 7px;
 }
 

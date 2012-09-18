@@ -1,0 +1,30 @@
+<form method="post" action="index.php?cmd=license&act=settings">
+    <table class="adminlist" width="100%">
+        <tr>
+            <th width="15%">{TXT_LICENSE_OVERVIEW}</th>
+            <th width="85%"></th>
+        </tr>
+        <tr>
+            <td>{TXT_LICENSE_STATE}</td>
+            <td>{LICENSE_STATE}</td>
+        </tr>
+        <tr>
+            <td>{TXT_LICENSE_EDITION}</td>
+            <td>{LICENSE_EDITION}</td>
+        </tr>
+        <tr>
+            <td>{TXT_LICENSE_VALID_TO}</td>
+            <td>{LICENSE_VALID_TO}</td>
+        </tr>
+        <tr>
+            <td>{TXT_INSTALLATION_ID}</td>
+            <td>{INSTALLATION_ID}</td>
+        </tr>
+        <tr>
+            <td>{TXT_LICENSE_KEY}</td>
+            <td><input type="text" value="{LICENSE_KEY}" size="70" name="licenseKey" /></td>
+        </tr>
+    </table>
+    <br />
+    <input type="submit" name="save" value="{TXT_SAVE}" /> <input type="submit" name="update" value="{TXT_LICENSE_UPDATE}" />
+</form>

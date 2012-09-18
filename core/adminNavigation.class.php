@@ -78,7 +78,7 @@ class adminMenu
             WHERE
                 areas.is_active=1
                 AND (areas.type = 'group' OR areas.type = 'navigation')
-                AND modules.is_active = 1
+                AND (modules.is_active = 1 OR areas.module_id = 0)
                 ".$sqlWhereString."
             ORDER BY
                 areas.order_id ASC
@@ -122,8 +122,8 @@ class adminMenu
         reset($this->arrMenuItems);
 
         if (empty($_GET['cmd'])) {
-            setcookie('navigation_level_2_active', 'home');
-            $_COOKIE['navigation_level_2_active'] = 'home';
+            setcookie('navigation_level_2_active', '184');
+            $_COOKIE['navigation_level_2_active'] = '184';
         } else {
             foreach ($this->arrMenuItems as $menuItem) {
                 if (preg_match('/cmd=(.+?)(?:&amp;(.+))?$/', $menuItem[2], $arrMatch)) {
@@ -254,6 +254,8 @@ class adminMenu
                             } else  {
                                 $cssClass = 'active';
                             }
+                        } else if (empty($this->activeCmd) && $link_data[2] == 'index.php') {
+                            $cssClass = 'active';
                         } else {
                             $cssClass = 'inactive';
                         }
