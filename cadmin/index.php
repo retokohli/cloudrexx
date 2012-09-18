@@ -402,7 +402,7 @@ switch ($plainCmd) {
         break;
     case 'license':
         $subMenuTitle = $_CORELANG['TXT_LICENSE'];
-        $lm = new \Cx\Core\License\LicenseManager($act, $objTemplate, $_CORELANG, $_CONFIG);
+        $lm = new \Cx\Core\License\LicenseManager($act, $objTemplate, $_CORELANG, $_CONFIG, $objDatabase);
         $lm->getPage($_POST);
         break;
 // TODO: handle expired sessions in any xhr callers.

@@ -11,17 +11,21 @@ namespace Cx\Core\License;
  * @author ritt0r
  */
 class License {
-    const LICENSE_OK = 1;
-    const LICENSE_NOK = -1;
-    const LICENSE_DEMO = 2;
-    const LICENSE_ERROR = 3;
+    const LICENSE_OK = 'OK';
+    const LICENSE_NOK = 'NOK';
+    const LICENSE_DEMO = 'DEMO';
+    const LICENSE_ERROR = 'ERROR';
     private $state;
+    private $editionName;
+    private $legalComponents;
     private $validTo;
     private $instId;
     private $licenseKey;
     
-    public function __construct($state = self::LICENSE_DEMO, $validTo = null, $instId = null, $licenseKey = null) {
+    public function __construct($state = self::LICENSE_DEMO, $editionName = null, $legalComponents = array(), $validTo = null, $instId = null, $licenseKey = null) {
         $this->state = $state;
+        $this->editionName = $editionName;
+        $this->legalComponents = $legalComponents;
         $this->validTo = $validTo;
         $this->instId = $instId;
         $this->licenseKey = $licenseKey;
@@ -29,6 +33,18 @@ class License {
     
     public function getState() {
         return $this->state;
+    }
+    
+    public function getEditionName() {
+        return $this->editionName;
+    }
+    
+    public function getLegalComponentsList() {
+        return $this->legalComponents;
+    }
+    
+    public function isInLegalComponents($componentName) {
+        return in_array($componentName, $this->legalComponents);
     }
     
     public function getValidToDate() {
@@ -68,16 +84,40 @@ class License {
         }
     }
     
-    public function save($settingsManager) {
+    /**
+     *
+     * @global type $_POST
+     * @param \settingsManager $settingsManager
+     * @param \ADONewConnection $objDb 
+     */
+    public function save($settingsManager, $objDb) {
         // WARNING, this is the ugly way:
         global $_POST;
         unset($_POST);
         $_POST['setvalue'][90] = $this->getState();
         $_POST['setvalue'][91] = $this->getValidToDate();
+        $_POST['setvalue'][92] = $this->getEditionName();
         $_POST['setvalue'][75] = $this->getInstallationId();
         $_POST['setvalue'][76] = $this->getLicenseKey();
         $settingsManager->updateSettings();
         $settingsManager->writeSettingsFile();
+        
+        $query = '
+            UPDATE
+                '.DBPREFIX.'modules
+            SET
+                `is_active` = \'0\'
+        ';
+        $objDb->Execute($query);
+        $query = '
+            UPDATE
+                '.DBPREFIX.'modules
+            SET
+                `is_active` = \'1\'
+            WHERE
+                `name` IN(\'' . implode('\', \'', $this->getLegalComponentsList()) . '\')
+        ';
+        $objDb->Execute($query);
     }
     
     /**
@@ -87,8 +127,9 @@ class License {
     public static function getCached(&$_CONFIG) {
         $state = isset($_CONFIG['licenseState']) ? $_CONFIG['licenseState'] : self::LICENSE_DEMO;
         $validTo = isset($_CONFIG['licenseValidTo']) ? $_CONFIG['licenseValidTo'] : null;
+        $editionName = isset($_CONFIG['editionName']) ? $_CONFIG['editionName'] : null;
         $instId = isset($_CONFIG['installationId']) ? $_CONFIG['installationId'] : null;
         $licenseKey = isset($_CONFIG['licenseKey']) ? $_CONFIG['licenseKey'] : null;
-        return new static($state, $validTo, $instId, $licenseKey);
+        return new static($state, $editionName, array(), $validTo, $instId, $licenseKey);
     }
 }
