@@ -547,7 +547,7 @@ class LanguageManager
         $variableId = "";
         $variableModule = "";
 
-        $objTemplate->addBlockfile('ADMIN_CONTENT', 'langauge_mod', 'language_mod.html');
+        $objTemplate->addBlockfile('ADMIN_CONTENT', 'language_mod', 'language_mod.html');
         $this->pageTitle = $_CORELANG['TXT_ADD_LANGUAGE_VARIABLES'];
 
         $objTemplate->setVariable(array(

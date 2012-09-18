@@ -82,7 +82,7 @@ class CommonFunctions
     /**
     * check language existence
     *
-    * check if the language file of the langauge $language exists
+    * check if the language file of the language $language exists
     *
     * @access   private
     * @param    string  $language

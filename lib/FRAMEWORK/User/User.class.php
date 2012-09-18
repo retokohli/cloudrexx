@@ -1646,7 +1646,7 @@ class User extends User_Profile
      * Validate language id
      *
      * Checks if the language ids frontend_lang_id and backend_lang_id are valid language IDs.
-     * In the case that the specified langauge isn't valid, the ID 0 is taken instead.
+     * In the case that the specified language isn't valid, the ID 0 is taken instead.
      * $scope could either be 'frontend' or 'backend'
      *
      * @param string $scope

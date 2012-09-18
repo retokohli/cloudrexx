@@ -26,10 +26,10 @@ function updateCurrent(init) {
         //small language
         if (jQuery(".langrow .langFallback").length == 0) {
             if (defField.is(":checked")) {
-                defField.append("<input type=\"hidden\" name=\"langActiveStatus[" + langId + "]\" value=\"1\" />");
-                defField.append("<input type=\"hidden\" name=\"langAdminStatus[" + langId + "]\" value=\"1\" />");
+                defField.after("<input type=\"hidden\" name=\"langActiveStatus[" + langId + "]\" value=\"1\" />");
+                defField.after("<input type=\"hidden\" name=\"langAdminStatus[" + langId + "]\" value=\"1\" />");
             } else {
-                defField.children("input[type=hidden]").remove();
+                defField.parent().children("input[type=hidden]").remove();
             }
             return;
         }
