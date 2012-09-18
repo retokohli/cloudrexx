@@ -1,12 +1,4 @@
 <!-- START module_jobs_settings.html -->
-<script language="javascript" type="text/javascript">
-<!-- //
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[0]=["","{TXT_FOOTNOTE_HELP}"];
-Text[1]=["","{TXT_LINK_HELP}"];
-Text[2]=["","{TXT_URL_HELP}"];
-// -->
-</script>
 <form name="form1" method="post" action="index.php?cmd=jobs&amp;act=settings">
 <input type="hidden" name="updateFootnote" value="true" />
 <table width="100%" border="0" cellspacing="0" cellpadding="3" class="adminlist">
@@ -18,22 +10,22 @@ Text[2]=["","{TXT_URL_HELP}"];
 	</tr>
 	<tr class="row1">
 	<td width="15%"> {TXT_FOOTNOTE}:</td>
-	<td width="85%">
+	<td width="85%" style="vertical-align: top;">
 		<textarea type="text" name="footnote" style="width: 400px;" rows="5" >{FOOTNOTE}</textarea>
-	    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
+        <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_FOOTNOTE_HELP}</span>
 	</tr>
 	<tr class="row2">
 	<td>{TXT_LINK}</td>
 	<td>
 	    <input type="text" name="link" value="{LINK}" style="width: 400px;" maxlength="250" />
-	    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" />
+        <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_LINK_HELP}</span>
 	</td>
 	</tr>
 	<tr class="row1">
 	<td>{TXT_URL}</td>
 	<td>
-	    <input type="text" name="url" value="{URL}" style="width: 400px;" maxlength="250" /> 
-	    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" />
+	    <input type="text" name="url" value="{URL}" style="width: 400px;" maxlength="250" />
+        <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_URL_HELP}</span>
 	    {TXT_URL_INFO}
 	</td>
 	</tr>

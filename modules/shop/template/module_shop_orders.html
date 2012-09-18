@@ -41,10 +41,8 @@ function changeOrderStatus(order_id, status, new_status) {
     document.getElementById("order_status-"+order_id).setAttribute("value", status);
   }
 }
-<!-- BEGIN tipMessageRow -->
-Text[{SHOP_TIP_ID}] = ["","{SHOP_TIP_NOTE}"];
-<!-- END tipMessageRow -->
 //]]></script>
+
 <form name="search_orders" method="post" action="{SHOP_ACTION_URI_SEARCH_ENCODED}&amp;act=orders">
   <table width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
     <tr>

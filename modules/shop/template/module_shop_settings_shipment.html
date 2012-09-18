@@ -42,15 +42,11 @@ function delete_shipment(cid)
         </td>
         <td width="20%" nowrap="nowrap" class="f_bold">
           {TXT_SHIPPING_MAX_WEIGHT}
-          <span class="tipmessage info"
-                onmouseover='stm(["","{TXT_MAX_WEIGHT_TIP}"],tm_style)'
-                onmouseout="htm()"></span>
+          <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_MAX_WEIGHT_TIP}</span>
         </td>
         <td width="20%" nowrap="nowrap" class="f_bold">
           {TXT_FREE_OF_CHARGE}
-          <span class="tipmessage info"
-                onmouseover='stm(["","{TXT_FREE_OF_CHARGE_TIP}"],tm_style)'
-                onmouseout="htm()"></span>
+          <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_FREE_OF_CHARGE_TIP}</span>
         </td>
         <td width="20%" nowrap="nowrap" class="f_bold">
           {TXT_SHIPPING_FEE}</td>
@@ -100,9 +96,7 @@ function delete_shipment(cid)
       <tr>
         <td colspan="3">
           {TXT_SHOP_SHIPMENT_NEW}
-          <span class="tipmessage info"
-                onmouseover='stm(["","{TXT_SHOP_SHIPMENT_NEW_TIP}"],tm_style)'
-                onmouseout="htm()"></span>
+          <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SHOP_SHIPMENT_NEW_TIP}</span>
         </td>
         <td nowrap="nowrap"><input type="text" name="max_weight_new[{SHOP_SHIPPER_ID}]" value="0 g" size="15" maxlength="50" /></td>
         <td nowrap="nowrap"><input type="text" name="free_from_new[{SHOP_SHIPPER_ID}]" value="0.00" size="15" maxlength="50" />&nbsp;{SHOP_CURRENCY}</td>

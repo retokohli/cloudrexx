@@ -3,10 +3,6 @@
 
 <script type="text/javascript">
 /* <![CDATA[ */
-// Tooltip variables
-Style[0] = ["", "", "", "", "",, "black", "#FFFFE1", "", "", "",,,, 1, "#000000", 2, 21, 0.3,, 2, "gray", 1,, 15, -5];
-Text[0]  = ["", "{TXT_ACCESS_PASSWORD_INFO}"];
-
 $J(document).ready(function() {
     $J('input[name=access_user_password]').keyup(function(){
         $J('#password-complexity').html(checkComplexity($J('input[name=access_user_password]').val()))
@@ -140,7 +136,7 @@ $J(document).ready(function() {
 				<td>
 				    {ACCESS_USER_PASSWORD}&nbsp;
 				    <font color="red">*</font>&nbsp;
-				    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0], Style[0])" alt="" />&nbsp;&nbsp;
+                        <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_ACCESS_PASSWORD_INFO}</span>&nbsp;&nbsp;
 				    <span id="password-complexity"></span>
 				</td>
 			</tr>

@@ -1,11 +1,8 @@
 ﻿<!-- START module_data_entries_add.html -->
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
 //<![CDATA[
 arrTabToDiv = new Array();
 {EDIT_JS_TAB_TO_DIV}
-
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[0]=["","{TXT_REDIRECT_HELP}"];
 
 function switchBoxAndTab(objElement, strTabId) {
 
@@ -448,8 +445,9 @@ function fillSelects() {
             <tr style="display: {DISPLAY_FORWARD_URL}" class="forwardUrl">
                 <td>{TXT_FORWARD_URL}</td>
                 <td colspan="3">
-                    <input type="text" name="frmEditEntry_ForwardUrl_{DIV_LANGUAGE_ID}" 
-                        id="frmEditEntry_ForwardUrl_{DIV_LANGUAGE_ID}" style="width: 30%;" value="{DIV_FORWARD_URL}" /> <input type="button" value="{TXT_DIV_IMAGE_BROWSE}" onClick="newsGetFileBrowser('frmEditEntry_ForwardUrl_{DIV_LANGUAGE_ID}', 'webpages')" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
+                    <input type="text" name="frmEditEntry_ForwardUrl_{DIV_LANGUAGE_ID}" id="frmEditEntry_ForwardUrl_{DIV_LANGUAGE_ID}" style="width: 30%;" value="{DIV_FORWARD_URL}" />
+                    <input type="button" value="{TXT_DIV_IMAGE_BROWSE}" onClick="newsGetFileBrowser('frmEditEntry_ForwardUrl_{DIV_LANGUAGE_ID}', 'webpages')" />&nbsp;
+                    <span class="tooltip-trigger icon-warning"></span><span class="tooltip-message">{TXT_REDIRECT_HELP}</span>
                 </td>
             </tr>
 

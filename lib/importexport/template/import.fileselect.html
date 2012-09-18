@@ -1,13 +1,6 @@
 <!-- START import_fileselect.html -->
-
 <script type="text/javascript">
 /* <![CDATA[ */
-
-	Text[0] = ["", "{TXT_DESC_DELIMITER}"];
-	Text[1] = ["", '{TXT_DESC_ENCLOSURE}'];
-
-	Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-
 	function changeType(type ) {
 		if (type == "csv") {
 		    if (navigator.userAgent.indexOf("MSIE") > 1) {
@@ -57,7 +50,7 @@
 		</td>
 		<td>
 			<input type="text" name="import_options_csv_separator" style="width: 200px;" value=";" />
-			<img src="images/icons/note.gif" alt="Note" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
+            <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_DESC_DELIMITER}</span>
 		</td>
 	</tr>
 	<tr style="display: none;" class="row2" id="csv_enclosure">
@@ -66,7 +59,7 @@
 		</td>
 		<td>
 			<input type="text" name="import_options_csv_enclosure" style="width: 200px;" maxlength="1" value="&quot;" />
-			<img src="images/icons/note.gif" alt="Note" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" />
+            <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_DESC_ENCLOSURE}</span>
 		</td>
 	</tr>
 	<!-- BEGIN additional -->

@@ -1244,7 +1244,6 @@ jQuery(document).ready(function($) {
   });
 });
 ');
-        JS::activate('tipmessage');
 // TODO: Maybe unnecessary from V3.0.0?
         JS::activate('jquery');
         return $result;

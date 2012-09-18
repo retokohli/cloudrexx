@@ -19,9 +19,6 @@
 </style>
 <script type="text/javascript">
 // <![CDATA[
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[0]=["","{TXT_THEME_IMPORT_INFO_BODY}"];
-
 var	highlightcolor = "#F1F1F1";
 var	row1color = "#F4F7FF";
 var	row2color = "#FFFFFF";
@@ -252,7 +249,7 @@ document.body.onmousemove = function(event){
             </tr>
         </table>
         <input type="submit" name="import" onclick="return importArchive();" value="{TXT_THEME_IMPORT}" style="float: left;" />
-        <span class="tipmessage info input" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])"></span>
+        <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_THEME_IMPORT_INFO_BODY}</span>
     </div>
 </form>
 <!-- end skins_manage.html -->

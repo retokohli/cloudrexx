@@ -17,11 +17,7 @@
         height: 100px;
     }
 </style>
-<script language="JavaScript" type="text/javascript">
-    
-    Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-    Text[0]=["","{TXT_NEWS_TYPE_REDIRECT_HELP}"];
-
+<script type="text/javascript">
     //adds the datetimepicker to the date fields
     cx.ready(function() {
         var dpOptions = {
@@ -484,7 +480,7 @@
                 </tr>
                 <tr class="row1">
                     <td width="12%" nowrap="nowrap">{TXT_LINK}</td>
-                    <td width="88%"><input type="text" name="newsRedirect" id="newsRedirectLink" value="{NEWS_REDIRECT}" style="width:400px;" />&nbsp;<input type="button" value="{TXT_BROWSE}" onClick="newsGetFileBrowser('newsRedirectLink', 'webpages')" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+                    <td width="88%"><input type="text" name="newsRedirect" id="newsRedirectLink" value="{NEWS_REDIRECT}" style="width:400px;" />&nbsp;<input type="button" value="{TXT_BROWSE}" onClick="newsGetFileBrowser('newsRedirectLink', 'webpages')" />&nbsp;<span class="tooltip-trigger icon-warning"></span><span class="tooltip-message">{TXT_NEWS_TYPE_REDIRECT_HELP}</span></td>
                 </tr>
             </table>
         </div>

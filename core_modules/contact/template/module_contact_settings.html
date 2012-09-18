@@ -1,10 +1,4 @@
 <!-- START module_contact_setttings.html -->
-<script type="text/javascript">
-<!--
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[0]=["","{TXT_CONTACT_SPAM_PROTECTION_WW_DESCRIPTION}"];
-// -->
-</script>
 <form action="index.php?cmd=contact&amp;act=settings&amp;tpl=save" method="post">
 <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
 	<tbody>
@@ -17,7 +11,7 @@ Text[0]=["","{TXT_CONTACT_SPAM_PROTECTION_WW_DESCRIPTION}"];
 		</tr>
 		<tr class="row1">
 			<td>{TXT_CONTACT_SPAM_PROTECTION_WORD_LIST}</td>
-			<td><input style="width:370px;" type="text" name="contactSpamProtectionWordList" value="{CONTACT_SPAM_PROTECTION_WORD_LIST}" /> <img src="images/icons/note.gif" alt="{TXT_CONTACT_SPAM_PROTECTION_WW_DESCRIPTION}" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+			<td><input style="width:370px;" type="text" name="contactSpamProtectionWordList" value="{CONTACT_SPAM_PROTECTION_WORD_LIST}" /><span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CONTACT_SPAM_PROTECTION_WW_DESCRIPTION}</span></td>
 		</tr>
 		<tr class="row2">
 			<td style="vertical-align:top;">{TXT_CONTACT_META_DATE_BY_EXPORT}</td>

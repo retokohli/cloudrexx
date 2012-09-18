@@ -232,7 +232,7 @@ if ($isRegularPageRequest) {
     $objTemplate->addBlockfile('CONTENT_FILE', 'index_content', 'index_content.html');
 
     JS::activate('backend');
-    JS::activate('tipmessage');
+    JS::activate('jquery-tools');
     JS::activate('chosen');
 
     $objUser = FWUser::getFWUserObject()->objUser;

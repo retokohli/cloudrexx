@@ -239,11 +239,6 @@ function showOrHide(strElement)
         }
     }
 }
-
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[0]=['','{TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER_INFO}'];
-Text[1]=['','{TXT_CALENDAR_REGISTRATIONS_ADDRESSER_INFO}'];
-Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
 </script>
 
 <form action="index.php?cmd=calendar{CALENDAR_MANDATE}&amp;act={CALENDAR_FORM_ACTION}" method="post" id="modifyCalendarNote" name="modifyCalendarNote" onsubmit="SelectAllList(document.modifyCalendarNote.elements['selectedGroups[]']); return checkNote();">
@@ -437,17 +432,19 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
     <tr class="row2">
       <td valign="middle">{TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER}</td>
       <td valign="middle">
-        <input type="text" style="width: 198px; id="inputRegistrationSubscriber" name='inputRegistrationSubscriber' value="{CALENDAR_REGISTRATIONS_SUBSCRIBER}" />&nbsp;&nbsp;<img src="images/icons/note.gif" alt="info" title="info" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
+        <input type="text" style="width: 198px; id="inputRegistrationSubscriber" name='inputRegistrationSubscriber' value="{CALENDAR_REGISTRATIONS_SUBSCRIBER}" />&nbsp;
+        <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER_INFO}</span>
       </td>
     </tr>
     <tr class="row1">
-      <td valign="middle" >{TXT_CALENDAR_REGISTRATIONS_ADDRESSER}</td>
+      <td valign="middle">{TXT_CALENDAR_REGISTRATIONS_ADDRESSER}</td>
       <td valign="middle">
         <select onchange="showOrHide('selectGroups')" name="inputRegistrationsAddresser" style="width: 200px; ">
             <option value="0" {CALENDAR_REGISTRATIONS_ADDRESSER_ALL}>{TXT_CALENDAR_REGISTRATIONS_ADDRESSER_ALL}</option>
             <option value="1" {CALENDAR_REGISTRATIONS_ADDRESSER_ALL_USER}>{TXT_CALENDAR_REGISTRATIONS_ADDRESSER_ALL_USER}</option>
             <option value="2" {CALENDAR_REGISTRATIONS_ADDRESSER_SELECT_GROUP}>{TXT_CALENDAR_REGISTRATIONS_ADDRESSER_SELECT_GROUP}</option>
-        </select>&nbsp;&nbsp;<img src="images/icons/note.gif" alt="info" title="info" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" />
+        </select>&nbsp;
+        <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CALENDAR_REGISTRATIONS_ADDRESSER_INFO}</span>
       </td>
     </tr>
     </table>
@@ -616,7 +613,8 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
     </tr>
     <tr class="row2">
         <td nowrap="nowrap">{TXT_CALENDAR_NOTIFICATION_ADDRESS}</td>
-        <td nowrap="nowrap"><input type="text" name='inputNotificationAddress' style="width: 198px;" value="{CALENDAR_NOTIFICATION_ADDRESS}" />&nbsp;&nbsp;<img src="images/icons/note.gif" alt="info" title="info" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
+        <td nowrap="nowrap"><input type="text" name='inputNotificationAddress' style="width: 198px;" value="{CALENDAR_NOTIFICATION_ADDRESS}" />&nbsp;
+        <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}</span>
     </tr>
   </table>
   </div>

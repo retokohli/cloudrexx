@@ -1224,31 +1224,6 @@ var _active_tab = '.
 
 
     /**
-     * Returns a date selection element
-     *
-     * Uses and activates 'datepicker' (See {@see JS::activate()}).
-     * The ID created for the element is returned in the $id parameter.
-     * @internal  Ignore the code analyzer warning for $id.
-     * @param   string    $name       The element name
-     * @param   string    $value      The optional default value
-     * @param   string    $attribute  The optional attributes
-     * @param   string    $id         The ID, returned by reference.
-     *                                *SHOULD* be the empty string.
-     * @return  string                The datepicker element HTML code
-     * @internal  Ignore the code analyzer warning about $id
-     */
-    static function getSelectDate($name, $value='', $attribute='', &$id='')
-    {
-        static $index = 0;
-
-        JS::activate('datepicker');
-        $id += 'DPC_edit'.++$index.'_'.ASCMS_DATE_FORMAT_DATE;
-        return self::getInputText(
-            $name, $value, $id, $attribute);
-    }
-
-
-    /**
      * Returns a datepicker element
      *
      * Uses and activates jQueryUI

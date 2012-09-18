@@ -70,9 +70,6 @@ function ExpandMinimize(toggle){
     elm1.style.display = (elm1.style.display=='none') ? 'block' : 'none';
     elm2.style.display = (elm2.style.display=='none') ? 'block' : 'none';
 }
-
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[0]=['','{TXT_MEDIADIR_VISIBLE_CATEGORY_INFO}'];
 //]]>
 </script>
 
@@ -131,7 +128,7 @@ Text[0]=['','{TXT_MEDIADIR_VISIBLE_CATEGORY_INFO}'];
     </tr>
     <tr class="row1">
         <td valign="top">{TXT_MEDIADIR_VISIBLE}</td>
-        <td><input type="radio" name="categoryActive" value="1" {MEDIADIR_CATEGORY_ACTIVE_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="categoryActive" value="0" {MEDIADIR_CATEGORY_ACTIVE_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+        <td><input type="radio" name="categoryActive" value="1" {MEDIADIR_CATEGORY_ACTIVE_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="categoryActive" value="0" {MEDIADIR_CATEGORY_ACTIVE_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_MEDIADIR_VISIBLE_CATEGORY_INFO}</span></td>
     </tr>
 </table>
 <br />

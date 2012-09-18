@@ -602,7 +602,6 @@ class popupManager extends popupLibrary
             'TXT_POPUP_TO'                        => $_ARRAYLANG['TXT_POPUP_TO'],
             'TXT_POPUP_DATE_DESC'                => $_ARRAYLANG['TXT_POPUP_DATE_DESC'],
             'POPUP_FORM_ONSUBMIT'                => $formOnSubmit,
-            'POPUP_SRC_NOTE_IMAGE'                => ASCMS_ADMIN_WEB_PATH.'/images/icons/note.gif',
         ));
     }
 

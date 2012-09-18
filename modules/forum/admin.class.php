@@ -187,7 +187,6 @@ class ForumAdmin extends ForumLibrary {
 
            if (count($arrForums) > 0) {
                //there are categories in database
-               $index = 0;
                foreach ($arrForums as $intCounter => $arrValues) {
                    $this->_objTpl->setVariable(array(
                     'TXT_IMGALT_CHANGE_STATUS'    =>    $_ARRAYLANG['TXT_FORUM_CATEGORY_CHANGE_STATUS'],
@@ -210,7 +209,6 @@ class ForumAdmin extends ForumLibrary {
                        'CATEGORY_ID'                =>    $arrValues['id'],
                        'CATEGORY_STATUS_ICON'        =>    ($arrValues['status'] == 1) ? 'led_green' : 'led_red',
                        'CATEGORY_TYPE_ICON'        =>    ($arrValues['level'] == 0) ? '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/forum/folder.gif" border="0" alt="'.$arrValues['name'].'" />' : '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/forum/comment.gif" border="0" alt="'.$arrValues['name'].'" />',
-                       'FORUM_TOOLTIP_INDEX'        =>    $index,
                        'FORUM_TOOLTIP_TEXT'        =>    $strLanguages,
                        'CATEGORY_SPACER'            =>    '<img src="images/icons/pixel.gif" border="0" width="'.(intval($arrValues['level'])*20).'" height="1" />',
                        'CATEGORY_ORDERID'            =>    $arrValues['order_id'],
@@ -221,13 +219,6 @@ class ForumAdmin extends ForumLibrary {
                        'CATEGORY_LASTPOST'            =>    $arrValues['last_post_str'].(!empty($arrValues['last_post_date']) ? ', '.$arrValues['last_post_date'] : '')
                    ));
                    $this->_objTpl->parse('showCategories');
-
-                   $this->_objTpl->setVariable(array(
-                       'FORUM_TOOLTIP_INDEX'        =>    $index,
-                       'FORUM_TOOLTIP_TEXT'        =>    $strLanguages,
-                   ));
-                   $this->_objTpl->parse('forumToolTips');
-                   $index++;
                }
 
                $this->_objTpl->hideBlock('noCategories');

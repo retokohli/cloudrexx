@@ -16,17 +16,10 @@
         margin: 4px 0 !important;
     }
 
-    .info {
+    .icon-info {
         margin: 5px 0 0 5px;
     }
 </style>
-<script type="text/javascript">
-/* <![CDATA[ */
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[0]=["","{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_PSPID_INFO}"];
-Text[1]=["","{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER_INFO}"];
-/* ]]> */
-</script>
 
 <form action="index.php?cmd=checkout&act=settings&tpl=psp" method="post">
     <table class="adminlist" width="100%">
@@ -34,7 +27,7 @@ Text[1]=["","{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER_INFO}"];
             <th colspan="2">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TITLE}</th>
         </tr>
         <tr>
-            <td width="200"><label for="yellowpay_pspid">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_PSPID}</label><span class="tipmessage info" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+            <td width="200"><label for="yellowpay_pspid">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_PSPID}</label><span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_PSPID_INFO}</span></td>
             <td><input id="yellowpay_pspid" name="yellowpay[pspid]" type="text" value="{CHECKOUT_YELLOWPAY_PSPID}" /></td>
         </tr>
         <tr>
@@ -46,7 +39,7 @@ Text[1]=["","{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER_INFO}"];
             <td><input id="yellowpay_sha_out" name="yellowpay[sha_out]" type="password" value="{CHECKOUT_YELLOWPAY_SHA_OUT}" /></td>
         </tr>
         <tr>
-            <td><label for="yellowpay_testserver">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER}</label><span class="tipmessage info" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" /></td>
+            <td><label for="yellowpay_testserver">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER}</label><span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER_INFO}</span></td>
             <td><input id="yellowpay_testserver" name="yellowpay[testserver]" type="checkbox" value="1" {CHECKOUT_YELLOWPAY_TESTSERVER} /></td>
         </tr>
         <tr>

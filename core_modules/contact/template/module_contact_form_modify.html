@@ -1,14 +1,6 @@
 <!-- START module_contact_form_modify.html -->
 <script type="text/javascript">
     <!--
-    Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,5];
-    Text[0]=["","{TXT_CONTACT_FEEDBACK_EXPLANATION}"];
-    Text[1]=["","{TXT_CONTACT_CAPTCHA_DESCRIPTION}"];
-    Text[2]=["","{TXT_CONTACT_SEND_COPY_DESCRIPTION}"];
-    Text[3]=["","{TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION}"];
-    Text[4]=["","{TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA}"];
-    Text[5]=["","{TXT_CONTACT_SEND_ATTACHMENT_DESCRIPTION}"];
-
     var formFieldLastId = {CONTACT_FORM_FIELD_NEXT_ID};
     var formRecipientLastId = {CONTACT_FORM_RECIPIENT_NEXT_ID};
     var sort = {CONTACT_FORM_RECIPIENT_NEXT_SORT};
@@ -442,6 +434,12 @@
 
         $J('.formValueView input').css('width','90%');
         $J('.formValueView select').css('width','93%');
+
+        if (elField.find('.tooltip-trigger').length > 0) {
+            elField.find('.tooltip-trigger').each(function() {
+                jQuery.addTooltip(this);
+            });
+        }
     }
 
     function checkFieldValue()
@@ -905,7 +903,7 @@
                 <td style="width: 20%">{TXT_CONTACT_RECEIVER_ADDRESSES}</td>
                 <td>
                     <input style="width: 300px;" type="text" name="contactFormEmail" value="{CONTACT_FORM_EMAIL}" />&nbsp;
-                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA}</span>
                 </td>
             </tr>
             <tr class="row2" style="height:20px;">
@@ -926,7 +924,7 @@
                 </td>
             </tr>
             <tr class="row1">
-                <td>{TXT_CONTACT_SEND_COPY}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
+                <td>{TXT_CONTACT_SEND_COPY}&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CONTACT_SEND_COPY_DESCRIPTION}</span></td>
                 <td><input type="radio" name="contactFormSendCopy" value="1" id="contactFormSendCopy_1" {CONTACT_FORM_SEND_COPY_YES} /><label for="contactFormSendCopy_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormSendCopy" value="0" id="contactFormSendCopy_0" {CONTACT_FORM_SEND_COPY_NO} /><label for="contactFormSendCopy_0">{TXT_CONTACT_NO}</label></td>
             </tr>
             <tr class="row2">
@@ -934,7 +932,7 @@
                 <td><input type="checkbox" name="contactFormHtmlMail" id="contactFormHtmlMail" {CONTACT_FORM_SEND_HTML_MAIL} /></td>
             </tr>
             <tr class="row1">
-                <td>{TXT_CONTACT_SEND_ATTACHMENT}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[5],Style[0])" /></td>
+                <td>{TXT_CONTACT_SEND_ATTACHMENT}&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CONTACT_SEND_ATTACHMENT_DESCRIPTION}</span>
                 <td><input type="checkbox" value="1" name="contactFormSendAttachment" {CONTACT_FORM_SEND_ATTACHMENT}/></td>
             </tr>
             <tr class="mailTemplateBlock" style="display:{CONTACT_MAIL_TEMPLATE_STYLE}"><td><br/></td></tr>
@@ -953,7 +951,7 @@
                 <th colspan="2">{CONTACT_FORM_SETTINGS}</th>
             </tr>
             <tr class="row1">
-                <td width="20%">{TXT_CONTACT_CUSTOM_STYLE}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" /></td>
+                <td width="20%">{TXT_CONTACT_CUSTOM_STYLE}&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION}</span></td>
                 <td><input type="radio" name="contactFormUseCustomStyle" value="1" id="contactFormUseCustomStyle_1" {CONTACT_FORM_USE_CUSTOM_STYLE_YES} /><label for="contactFormUseCustomStyle_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormUseCustomStyle" value="0" id="contactFormUseCustomStyle_0" {CONTACT_FORM_USE_CUSTOM_STYLE_NO} /><label for="contactFormUseCustomStyle_0">{TXT_CONTACT_NO}</label></td>
             </tr>
             <tr class="row2">
@@ -961,7 +959,7 @@
                 <td><input type="radio" name="contactFormShowForm" value="1" id="contactFormShowForm_1" {CONTACT_FORM_SHOW_FORM_YES} /><label for="contactFormShowForm_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormShowForm" value="0" id="contactFormShowForm_0" {CONTACT_FORM_SHOW_FORM_NO} /><label for="contactFormShowForm_0">{TXT_CONTACT_NO}</label></td>
             </tr>
             <tr class="row1">
-                <td>{TXT_CONTACT_CAPTCHA_PROTECTION}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" /></td>
+                <td>{TXT_CONTACT_CAPTCHA_PROTECTION}&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CONTACT_CAPTCHA_DESCRIPTION}</span></td>
                 <td><input type="radio" name="contactFormUseCaptcha" value="1" id="contactFormUseCaptcha_1" {CONTACT_FORM_USE_CAPTCHA_YES} /><label for="contactFormUseCaptcha_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormUseCaptcha" value="0" id="contactFormUseCaptcha_0" {CONTACT_FORM_USE_CAPTCHA_NO} /><label for="contactFormUseCaptcha_0">{TXT_CONTACT_NO}</label></td>
             </tr>
         </table>
