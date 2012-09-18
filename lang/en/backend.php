@@ -1543,6 +1543,7 @@ $_ARRAYLANG['TXT_CORE_CM_CREATION_DENIED'] = "You don't have enough rights to cr
 $_ARRAYLANG['TXT_CORE_CM_DELETE_DENIED'] = "You don't have enough rights to delete pages";
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'] = "You don't have enough rights to change the access premissions.";
 $_ARRAYLANG['TXT_CORE_CM_PUBLISH_DENIED'] = "You don't have enough rights to publish pages.";
+$_ARRAYLANG['TXT_CORE_CM_COPY_DENIED'] = 'You don\'t have enough rights to copy pages.';
 $_ARRAYLANG['TXT_CORE_CM_VALIDATION_FAIL'] = 'Please fill in all required fields';
 
 // upload

@@ -80,7 +80,7 @@ class Resolver {
      * @param integer $lang the language Id
      * @param $entityManager
      * @param string $pathOffset ASCMS_PATH_OFFSET
-     * @param array $fallbackLangauges (languageId => fallbackLanguageId)
+     * @param array $fallbackLanguages (languageId => fallbackLanguageId)
      * @param boolean $forceInternalRedirection does not redirect by 302 for internal redirections if set to true.
      *                this is used mainly for testing currently. 
      *                IMPORTANT: Do insert new parameters before this one if you need to and correct the tests.
@@ -95,7 +95,7 @@ class Resolver {
      * @param integer $lang the language Id
      * @param $entityManager
      * @param string $pathOffset ASCMS_PATH_OFFSET
-     * @param array $fallbackLangauges (languageId => fallbackLanguageId)
+     * @param array $fallbackLanguages (languageId => fallbackLanguageId)
      * @param boolean $forceInternalRedirection does not redirect by 302 for internal redirections if set to true.
      *                this is used mainly for testing currently. 
      *                IMPORTANT: Do insert new parameters before this one if you need to and correct the tests.
