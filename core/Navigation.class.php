@@ -158,7 +158,7 @@ class Navigation
         while($node->getLvl() > 0) {
             $page = $node->getPage($lang);
             $title = $page->getTitle();
-            $path = $page->getPath();
+            $path = \Cx\Core\Routing\URL::fromPage($page);
             $result = '<a href="'.$path.'" title="'.contrexx_raw2xhtml($title).'">'.contrexx_raw2xhtml($title).'</a>'.$this->separator.' '.$result;
             $node = $node->getParent();
         }
@@ -183,7 +183,7 @@ class Navigation
             foreach ($this->arrLang as $id => $value) {
                 if ($this->arrLang[$id]['frontend'] == 1) {
                     if (isset($urls[$id])) {
-                        $uri = ASCMS_PATH_OFFSET.'/'.$this->arrLang[$id]['lang'].'/'.$urls[$id]->getPath();
+                        $uri = $urls[$id];
                     } else {
                         continue;
                     }
