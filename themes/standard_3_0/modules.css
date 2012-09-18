@@ -2217,6 +2217,55 @@ dl.data_module img {
     padding: 10px;
     color: #FF8F8F;
 }
+#mediadir .mediadirSearchForm {
+    float: left;
+    width: 100%;
+    padding: 0 0 20px 0;
+}
+#mediadir .mediadirButtonSearch {
+    margin: 0 0 0 5px;
+}
+#mediadir .employee {
+    float: left;
+    width: 100%;
+    padding: 0 0 20px 0;
+    margin: 0 0 20px 0;
+    border-bottom: 1px solid #DDDDDD;
+}
+#mediadir .employee.last {
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+#mediadir .employee-left {
+    float: left;
+    width: 25%;
+}
+#mediadir .employee-left img {
+    float: left;
+    max-width: 90%;
+    max-height: 200px;
+}
+#mediadir .employee-middle {
+    float: left;
+    width: 30%;
+}
+#mediadir .employee-title {
+    float: left;
+    padding: 3px 0 10px 0;
+    font-size: 24px;
+}
+#mediadir .employee-description {
+    float: left;
+    clear: left;
+}
+#mediadir .employee-right {
+    float: left;
+    width: 45%;
+}
+#mediadir .employee-more {
+    float: left;
+}
 /*************************************/
 /* CSS DEFINITIONS FOR MEDIA ARCHIVE */
 /*************************************/
