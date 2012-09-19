@@ -67,7 +67,7 @@ CKEDITOR.editorConfig = function( config )
         ['Image','Table','HorizontalRule','SpecialChar'],
         ['Format'],
         ['TextColor','BGColor'],
-        ['Maximize', 'ShowBlocks']
+        ['ShowBlocks']
     ]
 
     config.toolbar_News = [
@@ -77,8 +77,7 @@ CKEDITOR.editorConfig = function( config )
         ['Bold','Italic','Underline','StrikeThrough','-','Subscript','Superscript'],
         ['OrderedList','UnorderedList','-','Outdent','Indent'],
         ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
-        ['Table','HorizontalRule','Smiley','SpecialChar'],
-        ['Maximize']
+        ['Table','HorizontalRule','Smiley','SpecialChar']
     ];
 
     config.toolbar_BBCode = [
