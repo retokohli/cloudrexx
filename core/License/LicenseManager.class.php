@@ -62,7 +62,7 @@ class LicenseManager {
         }
         if (!file_exists(ASCMS_TEMP_PATH . '/licenseManager.html')) {
             $lc = LicenseCommunicator::getInstance();
-            $lc->update($this->license, $this->config, true);
+            $lc->update($this->license, $this->config, true, true);
         }
         if (file_exists(ASCMS_TEMP_PATH . '/licenseManager.html')) {
             $remoteTemplate = new \HTML_Template_Sigma(ASCMS_TEMP_PATH);

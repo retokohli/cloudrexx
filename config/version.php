@@ -22,10 +22,10 @@
 //	Inactive
 
 $_CONFIG['coreCmsName']	     	= "Contrexx® Web Content Management System";
-$_CONFIG['coreCmsVersion']	  	= "1.1-dev";
+/*$_CONFIG['coreCmsVersion']	  	= "1.1-dev";
 $_CONFIG['coreCmsStatus']	  	= "Unstable";
 $_CONFIG['coreCmsEdition']		= "Premium";
 $_CONFIG['coreCmsCodeName']	  	= "None";
-$_CONFIG['coreCmsReleaseDate'] 	= "-";
+$_CONFIG['coreCmsReleaseDate'] 	= "-";*/
 
 ?>

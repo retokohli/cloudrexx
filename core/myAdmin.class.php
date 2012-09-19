@@ -73,7 +73,7 @@ class myAdminManager {
         }
 
         $objTemplate->setVariable(array(
-            'CONTENT_TITLE'				=> 'Version: '.htmlentities($_CONFIG['coreCmsName'], ENT_QUOTES, CONTREXX_CHARSET).' '.htmlentities($_CONFIG['coreCmsEdition'], ENT_QUOTES, CONTREXX_CHARSET).' '.htmlentities(str_replace(' Service Pack 0', '', preg_replace('#^(\d+\.\d+)\.(\d+)$#', '$1 Service Pack $2', $_CONFIG['coreCmsVersion'])), ENT_QUOTES, CONTREXX_CHARSET).' '.htmlentities($_CONFIG['coreCmsStatus'], ENT_QUOTES, CONTREXX_CHARSET).' <span id="new_version"></span>',
+            'CONTENT_TITLE'		=> 'Version: '.htmlentities($_CONFIG['coreCmsName'], ENT_QUOTES, CONTREXX_CHARSET).' '.htmlentities($_CONFIG['coreCmsEdition'], ENT_QUOTES, CONTREXX_CHARSET).' '.htmlentities(str_replace(' Service Pack 0', '', preg_replace('#^(\d+\.\d+)\.(\d+)$#', '$1 Service Pack $2', $_CONFIG['coreCmsVersion'])), ENT_QUOTES, CONTREXX_CHARSET).' '.htmlentities($_CONFIG['coreCmsStatus'], ENT_QUOTES, CONTREXX_CHARSET).' <span id="new_version"></span>',
             'CONTENT_STATUS_MESSAGE'	=> trim($this->statusMessage),
         ));
     }
@@ -130,6 +130,12 @@ class myAdminManager {
         } else {
             $objTemplate->hideBlock('news_delete');
             $objTemplate->hideBlock('stats_delete');
+        }
+        if (isset($_CONFIG['messageText'])) {
+            $objTemplate->setVariable('MESSAGE_TITLE', $_CONFIG['messageText']);
+            $objTemplate->setVariable('MESSAGE_TYPE', $_CONFIG['messageType']);
+            $objTemplate->setVariable('MESSAGE_LINK', $_CONFIG['messageLink']);
+            $objTemplate->setVariable('MESSAGE_LINK_TARGET', $_CONFIG['messageLinkTarget']);
         }
 
         $objFWUser = FWUser::getFWUserObject();
