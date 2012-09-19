@@ -120,8 +120,6 @@ class Checkout extends CheckoutLibrary {
             return;
         }
 
-        JS::activate('jquery');
-
         //initialize variables
         $arrFieldValues = array();
         $arrFieldsToHighlight = array();
@@ -164,10 +162,10 @@ class Checkout extends CheckoutLibrary {
                 $contactCountry = $key;
             }
 
-            $arrUserData['numeric']['invoice_number']['name'] = $_ARRAYLANG['TXT_CHECKOUT_INVOICE_NUMBER'];
-            $arrUserData['numeric']['invoice_number']['value'] = $arrFieldValues['invoice_number'];
-            $arrUserData['numeric']['invoice_number']['length'] = 11;
-            $arrUserData['numeric']['invoice_number']['mandatory'] = 1;
+            $arrUserData['text']['invoice_number']['name'] = $_ARRAYLANG['TXT_CHECKOUT_INVOICE_NUMBER'];
+            $arrUserData['text']['invoice_number']['value'] = $arrFieldValues['invoice_number'];
+            $arrUserData['text']['invoice_number']['length'] = 255;
+            $arrUserData['text']['invoice_number']['mandatory'] = 1;
 
             $arrUserData['selection']['invoice_currency']['name'] = $_ARRAYLANG['TXT_CHECKOUT_INVOICE_CURRENCY'];
             $arrUserData['selection']['invoice_currency']['value'] = $arrFieldValues['invoice_currency'];
@@ -235,7 +233,7 @@ class Checkout extends CheckoutLibrary {
                 //validation was successful. now add a new transaction.
                 $id = $this->objTransaction->add(
                     self::WAITING,
-                    $arrUserData['numeric']['invoice_number']['value'],
+                    $arrUserData['text']['invoice_number']['value'],
                     $arrUserData['selection']['invoice_currency']['value'],
                     $arrUserData['numeric']['invoice_amount']['value'],
                     $arrUserData['selection']['contact_title']['value'],
@@ -260,10 +258,10 @@ class Checkout extends CheckoutLibrary {
                         'language' => strtolower(FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)).'_'.strtoupper(FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)),
                         'currency' => $this->arrCurrencies[$arrFieldValues['invoice_currency']],
                     );
-                    
-                    $this->objTemplate->setVariable('CHECKOUT_YELLOWPAY_FORM', Yellowpay::getForm($arrShopOrder, $_ARRAYLANG['TXT_CHECKOUT_START_PAYMENT'], true));
 
-                    if (Yellowpay::$arrError) {
+                    $this->objTemplate->setVariable('CHECKOUT_YELLOWPAY_FORM', CheckoutYellowpay::getForm($arrShopOrder, $_ARRAYLANG['TXT_CHECKOUT_START_PAYMENT'], true));
+
+                    if (CheckoutYellowpay::$arrError) {
                         $this->arrStatusMessages['error'][] = $_ARRAYLANG['TXT_CHECKOUT_FAILED_TO_INITIALISE_YELLOWPAY'];
                     } else {
                         $this->arrStatusMessages['ok'][] = $_ARRAYLANG['TXT_CHECKOUT_ENTRY_SAVED_SUCCESSFULLY'];
@@ -345,23 +343,13 @@ class Checkout extends CheckoutLibrary {
             $arrCssClasses[$name] = implode(' ', $arrCssClasses[$name]);
         }
 
+        JS::activate('jquery');
+        JS::registerCode($this->getJavascript($htmlRequiredField));
+
         $this->objTemplate->setVariable(array(
             'TXT_CHECKOUT_DESCRIPTION'              => $_ARRAYLANG['TXT_CHECKOUT_DESCRIPTION'],
             'TXT_CHECKOUT_BILL_DATA'                => $_ARRAYLANG['TXT_CHECKOUT_BILL_DATA'],
             'TXT_CHECKOUT_CONTACT_DATA'             => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_DATA'],
-            'TXT_CHECKOUT_INVOICE_NUMBER'           => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_NUMBER'].$htmlRequiredField,
-            'TXT_CHECKOUT_INVOICE_CURRENCY'         => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_CURRENCY'].$htmlRequiredField,
-            'TXT_CHECKOUT_INVOICE_AMOUNT'           => $_ARRAYLANG['TXT_CHECKOUT_INVOICE_AMOUNT'].$htmlRequiredField,
-            'TXT_CHECKOUT_CONTACT_TITLE'            => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE'].$htmlRequiredField,
-            'TXT_CHECKOUT_CONTACT_FORENAME'         => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_FORENAME'].$htmlRequiredField,
-            'TXT_CHECKOUT_CONTACT_SURNAME'          => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_SURNAME'].$htmlRequiredField,
-            'TXT_CHECKOUT_CONTACT_COMPANY'          => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_COMPANY'],
-            'TXT_CHECKOUT_CONTACT_STREET'           => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_STREET'].$htmlRequiredField,
-            'TXT_CHECKOUT_CONTACT_POSTCODE'         => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_POSTCODE'].$htmlRequiredField,
-            'TXT_CHECKOUT_CONTACT_PLACE'            => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_PLACE'].$htmlRequiredField,
-            'TXT_CHECKOUT_CONTACT_COUNTRY'          => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_COUNTRY'].$htmlRequiredField,
-            'TXT_CHECKOUT_CONTACT_PHONE'            => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_PHONE'].$htmlRequiredField,
-            'TXT_CHECKOUT_CONTACT_EMAIL'            => $_ARRAYLANG['TXT_CHECKOUT_CONTACT_EMAIL'].$htmlRequiredField,
             'CHECKOUT_INVOICE_NUMBER'               => !empty($arrFieldValues['invoice_number']) ? $arrFieldValues['invoice_number'] : $_ARRAYLANG['TXT_CHECKOUT_INVOICE_NUMBER'].$htmlRequiredField,
             'CHECKOUT_INVOICE_CURRENCY_OPTIONS'     => !empty($arrSelectOptions['currencies']) ? implode($arrSelectOptions['currencies']) : '',
             'CHECKOUT_INVOICE_AMOUNT'               => !empty($arrFieldValues['invoice_amount']) ? $arrFieldValues['invoice_amount'] : $_ARRAYLANG['TXT_CHECKOUT_INVOICE_AMOUNT'].$htmlRequiredField,
@@ -514,6 +502,55 @@ class Checkout extends CheckoutLibrary {
     }
 
     /**
+     * Returns the javascript code for the form.
+     *
+     * @access      private
+     * @param       array       $htmlRequiredField      html code for required fields
+     * @return      string      javascript code
+     */
+    private function getJavascript($htmlRequiredField)
+    {
+        global $_ARRAYLANG;
+
+        $javascript = "
+            arrLabels = new Array();
+            arrLabels['invoice_number'] = '".$_ARRAYLANG['TXT_CHECKOUT_INVOICE_NUMBER'].$htmlRequiredField."';
+            arrLabels['invoice_amount'] = '".$_ARRAYLANG['TXT_CHECKOUT_INVOICE_AMOUNT'].$htmlRequiredField."';
+            arrLabels['invoice_currency'] = '".$_ARRAYLANG['TXT_CHECKOUT_INVOICE_CURRENCY'].$htmlRequiredField."';
+            arrLabels['contact_title'] = '".$_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE'].$htmlRequiredField."';
+            arrLabels['contact_forename'] = '".$_ARRAYLANG['TXT_CHECKOUT_CONTACT_FORENAME'].$htmlRequiredField."';
+            arrLabels['contact_surname'] = '".$_ARRAYLANG['TXT_CHECKOUT_CONTACT_SURNAME'].$htmlRequiredField."';
+            arrLabels['contact_company'] = '".$_ARRAYLANG['TXT_CHECKOUT_CONTACT_COMPANY']."';
+            arrLabels['contact_street'] = '".$_ARRAYLANG['TXT_CHECKOUT_CONTACT_STREET'].$htmlRequiredField."';
+            arrLabels['contact_postcode'] = '".$_ARRAYLANG['TXT_CHECKOUT_CONTACT_POSTCODE'].$htmlRequiredField."';
+            arrLabels['contact_place'] = '".$_ARRAYLANG['TXT_CHECKOUT_CONTACT_PLACE'].$htmlRequiredField."';
+            arrLabels['contact_country'] = '".$_ARRAYLANG['TXT_CHECKOUT_CONTACT_COUNTRY'].$htmlRequiredField."';
+            arrLabels['contact_phone'] = '".$_ARRAYLANG['TXT_CHECKOUT_CONTACT_PHONE'].$htmlRequiredField."';
+            arrLabels['contact_email'] = '".$_ARRAYLANG['TXT_CHECKOUT_CONTACT_EMAIL'].$htmlRequiredField."';
+
+            jQuery(document).ready(function() {
+                jQuery('#checkout input[type=text]').focus(function() {
+                    if (jQuery(this).val() == arrLabels[jQuery(this).attr('name')]) {
+                        jQuery(this).val('');
+                        jQuery(this).removeClass('label');
+                    }
+                });
+
+                jQuery('#checkout input[type=text]').blur(function() {
+                    if (jQuery(this).val() == '') {
+                        jQuery(this).val(arrLabels[jQuery(this).attr('name')]);
+                        jQuery(this).addClass('label');
+                    } else if (jQuery(this).val() == arrLabels[jQuery(this).attr('name')]) {
+                        jQuery(this).addClass('label');
+                    }
+                });
+            });
+        ";
+
+        return $javascript;
+    }
+
+    /**
      * Evaluate and register the payment result.
      * If the transaction was successful an email will be sent to the customer and administrator.
      *
@@ -525,8 +562,8 @@ class Checkout extends CheckoutLibrary {
 
         //evaluate payment result
         $status = '';
-        $orderId = Yellowpay::getOrderId();
-        if (Yellowpay::checkin()) {
+        $orderId = CheckoutYellowpay::getOrderId();
+        if (CheckoutYellowpay::checkin()) {
             if (abs($_GET['result']) == 1) {
                 $status = self::CONFIRMED;
                 $this->arrStatusMessages['ok'][] = $_ARRAYLANG['TXT_CHECKOUT_TRANSACTION_WAS_SUCCESSFUL'];

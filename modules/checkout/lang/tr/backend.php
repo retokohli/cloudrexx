@@ -73,7 +73,7 @@ $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_EPAYMENT_ACTIVATION_FAILED'] = 'Das E
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_INFORMATION'] = 'Informationen';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_NAME_TITLE'] = 'Anwendungsname';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_DESCRIPTION_TITLE'] = 'Beschreibung';
-$_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_DESCRIPTION'] = 'Unter &bdquo;Checkout&ldquo; versteht man im E-Commerce die virtuelle Kasse. Diese Anwendung ermöglicht den Kaufvorgang von beliebigen Waren aller Art über eine einzige Seite. Hier wird der Kunde zur Wahl des von ihm präferierten Zahlungsverfahrens aufgefordert und kann die Bezahlung sicher ausführen.';
+$_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_MODULE_DESCRIPTION'] = 'Unter „Checkout“ versteht man im E-Commerce die virtuelle Kasse. Diese Anwendung ermöglicht den Kaufvorgang von beliebigen Waren aller Art über eine einzige Seite. Hier wird der Kunde zur Wahl des von ihm präferierten Zahlungsverfahrens aufgefordert und kann die Bezahlung sicher ausführen.';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_PARAMETER_PASSING_TITLE'] = 'Parameterübersicht';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_GENERAL_PARAMETER_PASSING_DESCRIPTION'] = '
     Für das Checkout-Formular im Frontend können mittels URL-Parameter Vorgabewerte definiert werden. Folgende Übersicht zeigt welche Parameter für welche Eingabefelder bestimmt sind:

@@ -279,7 +279,7 @@ class CheckoutYellowpay
         $server = !empty($arrYellowpay['testserver']) ? 'test' : 'prod';
         self::$form =
             // The real yellowpay server or the test server
-            '<form name="yellowpay" method="post" '.
+            '<br /><form name="yellowpay" method="post" '.
             'action="https://e-payment.postfinance.ch/ncol/'.$server.'/orderstandard.asp">';//"test" for testserver, "prod" for liveserver
 
         if (!self::addHash()) {
@@ -294,14 +294,14 @@ class CheckoutYellowpay
             self::$arrError[] = 'ERROR: Failed to add keys';
             return false;
         }
+
+        self::$form .= '<input type="submit" name="go" value="'.$submitValue."\" />";
+
         if ($autopost) {
             self::$form .=
                 '<script type="text/javascript">/* <![CDATA[ */ '.
                 'document.yellowpay.submit(); '.
                 '/* ]]> */</script>';
-        } else {
-            self::$form .=
-                '<input type="submit" name="go" value="'.$submitValue."\" />";
         }
         self::$form .= "</form>";
 
