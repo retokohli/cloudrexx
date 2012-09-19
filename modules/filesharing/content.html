@@ -1,0 +1,93 @@
+{UPLOAD_WIDGET_CODE}
+{UPLOADER_CODE}
+{EXTENDED_FILE_INPUT_CODE}
+<div id="fileshare">
+    <!-- BEGIN error_file_not_found -->
+    <span class="error">{FILESHARING_ERROR_FILE_NOT_FOUND}</span>
+    <!-- END error_file_not_found -->
+    <!-- BEGIN error_no_files_uploaded -->
+    <span class="error">{FILESHARING_ERROR_NO_FILES_UPLOADED}</span>
+    <!-- END error_no_files_uploaded -->
+    Simply enter one or more files and an e-mail address, we will send the download link to the receiver.<br/>
+    <!-- BEGIN uploaded -->
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        <!-- BEGIN filesharing_file -->
+        <tbody>
+        <tr>
+            <td rowspan="3" width="120">
+                <!-- BEGIN image --><img src="{FILE_IMAGE_SRC}" width="100"/> <!-- END image --></td>
+            <td width="100">
+                <b>{FILESHARING_FILE_NAME}</b></td>
+            <td>
+                {FILE_NAME}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>{FILESHARING_DOWNLOAD_LINK}</b></td>
+            <td>
+                <a target="_blank" href="{FILE_DOWNLOAD_LINK_HREF}">{FILE_DOWNLOAD_LINK_HREF}</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>{FILESHARING_DELETE_LINK}</b></td>
+            <td>
+                <a target="_blank" href="{FILE_DELETE_LINK_HREF}">{FILE_DELETE_LINK_HREF}</a>
+            </td>
+        </tr>
+        <!-- END filesharing_file -->
+        </tbody>
+    </table>
+
+    <br/><br/>
+    <a href="{NEW_UPLOAD_HREF}">{NEW_UPLOAD}</a>
+    <!-- END uploaded -->
+    <!-- BEGIN upload_form -->
+    <form action="{FORM_ACTION}" class="fileshareForm" id="contactForm" method="{FORM_METHOD}" style="float: left;">
+        <p>
+            <input type="file" id="file_upload" disabled="disabled"/>
+        </p>
+
+        <div id="uploadFormField_uploadWidget"></div>
+
+        <p>
+            <label for="FILESHARING_FORM_EMAIL">{FILESHARING_EMAIL}</label> <input id="FILESHARING_FORM_EMAIL"
+                                                                                   name="email"
+                                                                                   placeholder="{FILESHARING_EMAIL_INFO}"
+                                                                                   type="text"/></p>
+
+        <p>
+            <label for="FILESHARING_FORM_SUBJECT">{FILESHARING_SUBJECT}</label><input type="text"
+                                                                                      id="FILESHARING_FORM_SUBJECT"
+                                                                                      name="subject"
+                                                                                      placeholder="{FILESHARING_SUBJECT_INFO}"/>
+        </p>
+
+        <p>
+            <a href="#" class="toggle">{FILESHARING_MORE}</a>
+        </p>
+
+        <div class="toggle" style="display: none;">
+            <p>
+                <label for="FILESHARING_FORM_MESSAGE">{FILESHARING_MESSAGE}</label><textarea
+                    id="FILESHARING_FORM_MESSAGE" name="message" placeholder="{FILESHARING_MESSAGE_INFO}"></textarea>
+            </p>
+
+            <p>
+                <label for="FILESHARING_FORM_EXPIRATION">{FILESHARING_EXPIRATION}</label> <select
+                    id="FILESHARING_FORM_EXPIRATION" name="expiration">
+                <option value="86400">{1D}</option>
+                <option value="864000" selected="selected">{10D}</option>
+                <option value="1728000">{20D}</option>
+                <option value="2592000">{30D}</option>
+            </select></p>
+        </div>
+        <p><input type="checkbox" name="accept_terms" value="1" id="FILESHARING_ACCEPT_TERMS"/>I agree with the <a
+                href="index.php?section=agb">terms of service</a></p>
+
+        <p>
+            <input type="submit" value="{FILESHARING_SEND}" disabled></p>
+    </form>
+    <!-- END upload_form -->
+</div>
