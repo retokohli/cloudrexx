@@ -629,28 +629,28 @@ class Checkout extends CheckoutLibrary {
 
                     //fill up placeholders in mail templates
                     $arrPlaceholders = array(
-                        'DOMAIN_URL' => $_CONFIG['domainUrl'],
-                        'TRANSACTION_ID' => $arrTransaction['id'],
-                        'TRANSACTION_TIME' => $arrTransaction['time'],
-                        'TRANSACTION_STATUS' => $arrTransaction['status'],
-                        'INVOICE_NUMBER' => $arrTransaction['invoice_number'],
-                        'INVOICE_CURRENCY' => $arrTransaction['invoice_currency'],
-                        'INVOICE_AMOUNT' => $arrTransaction['invoice_amount'],
-                        'CONTACT_TITLE' => $arrTransaction['contact_title'],
-                        'CONTACT_FORENAME' => $arrTransaction['contact_forename'],
-                        'CONTACT_SURNAME' => $arrTransaction['contact_surname'],
-                        'CONTACT_COMPANY' => $arrTransaction['contact_company'],
-                        'CONTACT_STREET' => $arrTransaction['contact_street'],
-                        'CONTACT_POSTCODE' => $arrTransaction['contact_postcode'],
-                        'CONTACT_PLACE' => $arrTransaction['contact_place'],
-                        'CONTACT_COUNTRY' => $arrTransaction['contact_country'],
-                        'CONTACT_PHONE' => $arrTransaction['contact_phone'],
-                        'CONTACT_EMAIL' => $arrTransaction['contact_email'],
+                        'DOMAIN_URL'            => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET,
+                        'TRANSACTION_ID'        => $arrTransaction['id'],
+                        'TRANSACTION_TIME'      => $arrTransaction['time'],
+                        'TRANSACTION_STATUS'    => $arrTransaction['status'],
+                        'INVOICE_NUMBER'        => $arrTransaction['invoice_number'],
+                        'INVOICE_CURRENCY'      => $arrTransaction['invoice_currency'],
+                        'INVOICE_AMOUNT'        => $arrTransaction['invoice_amount'],
+                        'CONTACT_TITLE'         => $arrTransaction['contact_title'],
+                        'CONTACT_FORENAME'      => $arrTransaction['contact_forename'],
+                        'CONTACT_SURNAME'       => $arrTransaction['contact_surname'],
+                        'CONTACT_COMPANY'       => $arrTransaction['contact_company'],
+                        'CONTACT_STREET'        => $arrTransaction['contact_street'],
+                        'CONTACT_POSTCODE'      => $arrTransaction['contact_postcode'],
+                        'CONTACT_PLACE'         => $arrTransaction['contact_place'],
+                        'CONTACT_COUNTRY'       => $arrTransaction['contact_country'],
+                        'CONTACT_PHONE'         => $arrTransaction['contact_phone'],
+                        'CONTACT_EMAIL'         => $arrTransaction['contact_email'],
                     );
                     foreach ($arrPlaceholders as $placeholder => $value) {
-                        $arrAdminMail['title'] = str_replace('[['.$placeholder.']]', contrexx_raw2xhtml($value), $arrAdminMail['title']);
-                        $arrAdminMail['content'] = str_replace('[['.$placeholder.']]', contrexx_raw2xhtml($value), $arrAdminMail['content']);
-                        $arrCustomerMail['title'] = str_replace('[['.$placeholder.']]', contrexx_raw2xhtml($value), $arrCustomerMail['title']);
+                        $arrAdminMail['title']      = str_replace('[['.$placeholder.']]', contrexx_raw2xhtml($value), $arrAdminMail['title']);
+                        $arrAdminMail['content']    = str_replace('[['.$placeholder.']]', contrexx_raw2xhtml($value), $arrAdminMail['content']);
+                        $arrCustomerMail['title']   = str_replace('[['.$placeholder.']]', contrexx_raw2xhtml($value), $arrCustomerMail['title']);
                         $arrCustomerMail['content'] = str_replace('[['.$placeholder.']]', contrexx_raw2xhtml($value), $arrCustomerMail['content']);
                     }
 

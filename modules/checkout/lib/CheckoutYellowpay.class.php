@@ -246,20 +246,11 @@ class CheckoutYellowpay
     static function getForm(
         $arrShopOrder, $submitValue='send', $autopost=false
     ) {
-        global $_ARRAYLANG, $objDatabase;
+        global $_ARRAYLANG, $objDatabase, $_CONFIG;
 
         self::$arrShopOrder = $arrShopOrder;
-        // Build the base URI from the referrer, which also includes the
-        // protocol (http:// or https://)
-        $base_uri = $_SERVER['HTTP_REFERER'];
-        $match = array();
-        if (preg_match('/^(.+section=checkout)/', $base_uri, $match)) {
-            $base_uri = $match[1];
-        } else {
-            self::$arrError[] = 'Failed to determine base URI: '.$base_uri;
-            return '';
-        }
-        $base_uri = $base_uri.'&result=';
+
+        $base_uri = ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/index.php?section=checkout&result=';
         if (empty(self::$arrShopOrder['accepturl'])) {
             self::$arrShopOrder['accepturl'] = $base_uri.'1';
         }
