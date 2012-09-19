@@ -391,3 +391,5 @@ $_ARRAYLANG['TXT_WEIGHT'] = "Weight";
 $_ARRAYLANG['TXT_WEIGHT_INVALID_IGNORED'] = "Invalid weight; your changes have been ignored";
 $_ARRAYLANG['TXT_YOUR_ACCOUNT_DETAILS'] = "Your personal account details";
 $_ARRAYLANG['TXT_ZONE'] = "Zone";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER'] = "Order without registration";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER_NOTE'] = "Check this box if you want to order without registration.";
