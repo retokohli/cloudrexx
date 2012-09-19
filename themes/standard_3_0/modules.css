@@ -1056,12 +1056,37 @@ div#livecam #CALBUTTONDPC_datum {
 #shop div.cart_links,
 #shop div.message_error,
 #shop div.account_details,
-#shop div.customer_old,
-#shop div.order,
-#shop div.customer_new {
+#shop div.order {
     float:left;
     width: 100%;
     padding: 0 0 20px 0;
+}
+#shop .customer_old {
+    float: left;
+    width: 48%;
+    padding: 0 2% 0 0;
+    margin: 0 2% 0 0;
+    border-right: 1px solid #DDDDDD;
+}
+#shop .customer_old p {
+    width: auto;
+    padding-left: 150px;
+}
+#shop .customer_old p label {
+    width: 150px;
+    margin-left: -150px;
+}
+#shop .customer_old p input[type=text],
+#shop .customer_old p input[type=password] {
+    width: 248px;
+}
+#shop .customer_new {
+    float: left;
+    width: 47%;
+}
+#shop .customer_old h2,
+#shop .customer_new h2 {
+    padding: 0 0 15px 0;
 }
 #shop .customer_address,
 #shop .shipping_address {
@@ -1137,6 +1162,7 @@ div#livecam #CALBUTTONDPC_datum {
 }
 #shop div.images a img {
     max-width: 90%;
+    max-height: 150px;
 }
 #shop div.info {
     float: left;
@@ -1144,7 +1170,11 @@ div#livecam #CALBUTTONDPC_datum {
 }
 #shop div.short-description {
     float: left;
-    width: 100%;
+    width: 80%;
+}
+#shop div.details {
+    float: left;
+    width: 20%;
 }
 #shop div.price {
     float: right;
@@ -1328,10 +1358,9 @@ div#livecam #CALBUTTONDPC_datum {
     margin: 0;
 }
 
-#shop button.details {
+#shop button.details-button {
     float: right;
     padding-right: 25px;
-    margin: 0 10px 0 0;
     color: #FFFFFF;
     font-weight: bold;
     background: #0A85C8 url('images/arrow-right-white.png') no-repeat 62px 12px;
@@ -1351,6 +1380,11 @@ div#livecam #CALBUTTONDPC_datum {
     -o-border-top-left-radius: 0;
     -o-border-bottom-left-radius: 0;
     background: #0A85C8 url('images/cart-white.png') no-repeat 10px 7px;
+}
+
+#shop button.details-button:hover,
+#shop button.add-to-cart:hover {
+    background-color: #1F97D8;
 }
 
 /***************************************************/
