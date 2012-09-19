@@ -2466,15 +2466,11 @@ dl.data_module img {
 /* CSS DEFINITIONS FOR CHECKOUT MODULE */
 /***************************************/
 #checkout .left {
-    display: table-cell;
-    float: none;
-    width: 350px;
-    padding: 0 20px 0 0;
+    width: 470px;
+    padding: 0;
 }
+
 #checkout .right {
-    float: none;
-    display: table-cell;
-    width: 100%;
     padding: 0;
 }
 
@@ -2512,11 +2508,16 @@ dl.data_module img {
     display: block;
 }
 
-#checkout form input,
+#checkout form input[type=text],
+#checkout form input[type=password],
 #checkout form textarea {
-    width: 300px;
+    width: 394px;
     margin-right: 0;
     margin-left: 0;
+}
+
+#checkout form select {
+    width: 420px;
 }
 
 #checkout form input.label,
@@ -2533,7 +2534,7 @@ dl.data_module img {
 
 #checkout form input#invoice_amount {
     float: left;
-    width: 170px;
+    width: 264px;
     margin-right: 10px;
 }
 
@@ -2544,13 +2545,13 @@ dl.data_module img {
 
 #checkout form input#contact_postcode  {
     float: left;
-    width: 64px;
+    width: 94px;
     margin-right: 10px;
 }
 
 #checkout form input#contact_place {
     float: left;
-    width: 200px;
+    width: 264px;
 }
 
 #checkout form #buttons {

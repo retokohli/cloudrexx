@@ -55,6 +55,8 @@ class Transaction {
      * @param       integer     $contactCountry
      * @param       string      $contactPhone
      * @param       string      $contactEmail
+     * @return      integer                         id of inserted record
+     * @return      boolean                         status of insertion
      */
     public function add($status, $invoiceNumber, $invoiceCurrency, $invoiceAmount, $contactTitle, $contactForename, $contactSurname, $contactCompany, $contactStreet, $contactPostcode, $contactPlace, $contactCountry, $contactPhone, $contactEmail)
     {
@@ -81,7 +83,7 @@ class Transaction {
             (
                 '.time().',
                 "'.contrexx_raw2db($status).'",
-                '.intval($invoiceNumber).',
+                "'.contrexx_raw2db($invoiceNumber).'",
                 '.intval($invoiceCurrency).',
                 '.intval($invoiceAmount * 100).',
                 "'.contrexx_raw2db($contactTitle).'",
