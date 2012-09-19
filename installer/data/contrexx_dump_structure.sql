@@ -661,7 +661,7 @@ CREATE TABLE `contrexx_module_checkout_transactions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `time` int(10) NOT NULL DEFAULT '0',
   `status` enum('confirmed','waiting','cancelled') NOT NULL,
-  `invoice_number` int(11) NOT NULL,
+  `invoice_number` varchar(255) NOT NULL,
   `invoice_currency` int(11) NOT NULL DEFAULT '1',
   `invoice_amount` int(15) NOT NULL,
   `contact_title` enum('mister','miss') NOT NULL,
