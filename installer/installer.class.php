@@ -123,9 +123,18 @@ class Installer
         $objTpl->addBlockfile('NAVIGATION', 'NAVIGATION_BLOCK', "navigation.html");
 
         foreach ($this->arrSteps as $stepId => $arrStep) {
+            if ($stepId < $_SESSION['installer']['step']) {
+                $cssClass = 'done';
+            } else if ($stepId == $_SESSION['installer']['step']) {
+                $cssClass = 'active';
+            } else {
+                $cssClass = 'upcoming';
+            }
+
             $objTpl->setVariable(array(
-                'CLASS' => $_SESSION['installer']['step'] == $stepId ? "active" : ($_SESSION['installer']['step'] < $stepId ? "normal" : ""),
-                'STEP'  => $stepId <= $_SESSION['installer']['step'] ? "<a href=\"?stepId=".$stepId."\" title=\"".$_ARRLANG[$arrStep['text']]."\">&nbsp;&nbsp;&raquo;&nbsp;".$_ARRLANG[$arrStep['text']]."</a>" : "&nbsp;&nbsp;&raquo;&nbsp;".$_ARRLANG[$arrStep['text']]
+                'CLASS' => $cssClass,
+                'STEP_NAME' => $_ARRLANG[$arrStep['text']],
+                'STEP_URL' => $stepId <= $_SESSION['installer']['step'] ? 'index.php?stepId='.$stepId : 'javascript:void(0);',
             ));
             $objTpl->parse('navtree');
         }
@@ -172,11 +181,11 @@ class Installer
         $objTpl->addBlockfile('CONTENT_NAVIGATION', 'CONTENT_NAVIGATION_BLOCK', 'content_navigation.html');
 
         if ($_SESSION['installer']['step'] == 0) {
-            $navigationBar .= "<input type=\"submit\" name=\"next\" value=\"".$_ARRLANG['TXT_NEXT']."\" tabindex=\"".$this->_getTabIndex()."\"  style=\"width: 70px\" />";
+            $navigationBar .= "<input type=\"submit\" name=\"next\" value=\"".$_ARRLANG['TXT_NEXT']."\" tabindex=\"".$this->_getTabIndex()."\" />";
         } elseif ($_SESSION['installer']['step'] != count($this->arrSteps)-1) {
-            $navigationBar = "<input type=\"button\" name=\"cancel\" value=\"".$_ARRLANG['TXT_CANCEL']."\" onclick=\"window.location='index.php?cancel';\" tabindex=\"".$this->_getTabIndex()."\" style=\"width: 70px\" />&nbsp;";
-            $navigationBar .= "<input type=\"button\" name=\"back\" value=\"".$_ARRLANG['TXT_BACK']."\" onclick=\"window.location='index.php?back';\" tabindex=\"".$this->_getTabIndex()."\"  style=\"width: 70px\" />&nbsp;";
-            $navigationBar .= "<input type=\"submit\" name=\"next\" value=\"".$_ARRLANG['TXT_NEXT']."\" tabindex=\"".$this->_getTabIndex()."\"  style=\"width: 70px\" />";
+            $navigationBar = "<input type=\"button\" name=\"cancel\" value=\"".$_ARRLANG['TXT_CANCEL']."\" onclick=\"window.location='index.php?cancel';\" tabindex=\"".$this->_getTabIndex()."\" />&nbsp;";
+            $navigationBar .= "<input type=\"button\" name=\"back\" value=\"".$_ARRLANG['TXT_BACK']."\" onclick=\"window.location='index.php?back';\" tabindex=\"".$this->_getTabIndex()."\" />&nbsp;";
+            $navigationBar .= "<input type=\"submit\" name=\"next\" value=\"".$_ARRLANG['TXT_NEXT']."\" tabindex=\"".$this->_getTabIndex()."\" />";
         }
 
         $objTpl->setVariable(array(
@@ -925,7 +934,7 @@ class Installer
 
                 $objTpl->setVariable(array(
                     'FTP_DIRECTORY_ROW_CLASS'   => $this->directoryTreeRowClassNr % 2 ? "row2" : "row1",
-                    'FTP_DIRECTORY'             => "<a class=\"".($selected ? "text-selected" : "text")."\" href=\"index.php?ftpPath=".urlencode($arrDirectory['path'].$arrDirectory['name'])."\"><input type=\"radio\" name=\"ftpPath[".$id."]\" id=\"".urlencode($inputId.$id)."\" value=\"".urlencode($arrDirectory['path'].$arrDirectory['name'])."\" ".($selected ? "checked=\"checked\"" : "")." /><label for=\"".urlencode($inputId.$id)."\"><img src=\"".$templatePath."images/".($selected ? "folder.gif" : "folder_closed.gif")."\" width=\"16\" height=\"16\" border=\"0\" />&nbsp;".$arrDirectory['name']."</label></a>",
+                    'FTP_DIRECTORY'             => "<a class=\"".($selected ? "text-selected" : "text")."\" href=\"index.php?ftpPath=".urlencode($arrDirectory['path'].$arrDirectory['name'])."\"><input type=\"radio\" name=\"ftpPath[".$id."]\" id=\"".urlencode($inputId.$id)."\" value=\"".urlencode($arrDirectory['path'].$arrDirectory['name'])."\" ".($selected ? "checked=\"checked\"" : "")." /><label for=\"".urlencode($inputId.$id)."\"><img src=\"".$templatePath."images/icons/".($selected ? "folder_closed.gif" : "folder_closed.gif")."\" width=\"16\" height=\"16\" border=\"0\" />&nbsp;".$arrDirectory['name']."</label></a>",
                     'FTP_DIRECTORY_STYLE'       => $arrDirectory['style']
                 ));
                 $objTpl->parse('ftpDirectory');
@@ -1040,8 +1049,8 @@ class Installer
             }
 
             if (!$_SESSION['installer']['config']['general'] && (!isset($_SESSION['installer']['setPermissions']) || !$_SESSION['installer']['setPermissions'])) {
-                $documentRoot = "<input class=\"textBox\" type=\"text\" name=\"documentRoot\" value=\"".$documentRoot."\" tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<img src=\"".$templatePath."images/help.gif\" alt=\"\" width=\"16\" height=\"16\" onmouseout=\"htm()\" onmouseover=\"stm(Text[0],Style[0])\" />";
-                $offsetPath = "<input class=\"textBox\" type=\"text\" name=\"offsetPath\" value=\"".$offsetPath."\" tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<img src=\"".$templatePath."images/help.gif\" alt=\"\" width=\"16\" height=\"16\" onmouseout=\"htm()\" onmouseover=\"stm(Text[1],Style[1])\" />";
+                $documentRoot = "<input type=\"text\" name=\"documentRoot\" value=\"".$documentRoot."\" tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<span class=\"icon-info tooltip-trigger\"></span><span class=\"tooltip-message\">".$_ARRLANG['TXT_DOCUMENT_ROOT_DESCRIPTION']."</span>";
+                $offsetPath = "<input class=\"textBox\" name=\"offsetPath\" value=\"".$offsetPath."\" tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<span class=\"icon-info tooltip-trigger\"></span><span class=\"tooltip-message\">".$_ARRLANG['OFFSET_PATH_DESCRIPTION']."</span>";
                 $objTpl->setVariable('OFFSET_PATH_DESCRIPTION', str_replace("[NAME]", $_CONFIG['coreCmsName'], $_ARRLANG['TXT_OFFSET_PATH_DESCRIPTION']));
             }
 
@@ -1058,24 +1067,24 @@ class Installer
                     $_SESSION['installer']['config']['createDatabase'] = false;
                 }
 
-                $dbHostname = "<input class=\"textBox\" type=\"text\" name=\"dbHostname\" value=\"".(isset($_SESSION['installer']['config']['dbHostname']) ? $_SESSION['installer']['config']['dbHostname'] : $arrDefaultConfig['dbHostname'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
-                $dbDatabaseName = "<input class=\"textBox\" type=\"text\" name=\"dbDatabaseName\" value=\"".(isset($_SESSION['installer']['config']['dbDatabaseName']) ? $_SESSION['installer']['config']['dbDatabaseName'] : $arrDefaultConfig['dbDatabaseName'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
+                $dbHostname = "<input type=\"text\" name=\"dbHostname\" value=\"".(isset($_SESSION['installer']['config']['dbHostname']) ? $_SESSION['installer']['config']['dbHostname'] : $arrDefaultConfig['dbHostname'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
+                $dbDatabaseName = "<input type=\"text\" name=\"dbDatabaseName\" value=\"".(isset($_SESSION['installer']['config']['dbDatabaseName']) ? $_SESSION['installer']['config']['dbDatabaseName'] : $arrDefaultConfig['dbDatabaseName'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
                 $dbCreateDb = "&nbsp;<input type=\"checkbox\" name=\"createDatabase\" id=\"createDatabase\" value=\"1\"".($_SESSION['installer']['config']['createDatabase'] ? "checked=\"checked\"" : "")."\" tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<label for=\"createDatabase\">".$_ARRLANG['TXT_CREATE_DATABASE']."</label>";
-                $dbUsername = "<input class=\"textBox\" type=\"text\" name=\"dbUsername\" value=\"".(isset($_SESSION['installer']['config']['dbUsername']) ? $_SESSION['installer']['config']['dbUsername'] : $arrDefaultConfig['dbUsername'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
-                $dbPassword = "<input class=\"textBox\" type=\"password\" name=\"dbPassword\" value=\"".(isset($_SESSION['installer']['config']['dbPassword']) ? $_SESSION['installer']['config']['dbPassword'] : $arrDefaultConfig['dbPassword'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
-                $dbTablePrefix = "<input class=\"textBox\" type=\"text\" name=\"dbTablePrefix\" value=\"".(isset($_SESSION['installer']['config']['dbTablePrefix']) ? $_SESSION['installer']['config']['dbTablePrefix'] : $arrDefaultConfig['dbTablePrefix'])."\" tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<img src=\"".$templatePath."images/help.gif\" alt=\"\" width=\"16\" height=\"16\" onmouseout=\"htm()\" onmouseover=\"stm(Text[2],Style[2])\" />";
+                $dbUsername = "<input type=\"text\" name=\"dbUsername\" value=\"".(isset($_SESSION['installer']['config']['dbUsername']) ? $_SESSION['installer']['config']['dbUsername'] : $arrDefaultConfig['dbUsername'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
+                $dbPassword = "<input type=\"password\" name=\"dbPassword\" value=\"".(isset($_SESSION['installer']['config']['dbPassword']) ? $_SESSION['installer']['config']['dbPassword'] : $arrDefaultConfig['dbPassword'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
+                $dbTablePrefix = "<input type=\"text\" name=\"dbTablePrefix\" value=\"".(isset($_SESSION['installer']['config']['dbTablePrefix']) ? $_SESSION['installer']['config']['dbTablePrefix'] : $arrDefaultConfig['dbTablePrefix'])."\" tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<span class=\"icon-info tooltip-trigger\"></span><span class=\"tooltip-message\">".$_ARRLANG['TXT_DB_TABLE_PREFIX_INVALID']."</span>";
 
                 if ($useUtf8 && !empty($_SESSION['installer']['config']['dbHostname']) && !empty($_SESSION['installer']['config']['dbUsername'])) {
                     if (($result = $objCommon->checkDbConnection($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword'])) === true) {
                         $mysqlServerVersion = $objCommon->getMySQLServerVersion();
                         if ($mysqlServerVersion && !$objCommon->_isNewerVersion($mysqlServerVersion, '4.1') && ($arrCollate = $objCommon->_getUtf8Collations()) !== false && count($arrCollate)) {
                             $selectedCollation = !empty($_SESSION['installer']['config']['dbCollation']) ? $_SESSION['installer']['config']['dbCollation'] : 'utf8_unicode_ci';
-                            $dbCollation = '<select name="dbCollation" style="width:202px;">';
+                            $dbCollation = '<select name="dbCollation">';
                             foreach ($arrCollate as $collate) {
                                 $dbCollation .= '<option value="'.$collate.($collate == $selectedCollation ? '" selected="selected' : '').'">'.$collate.'</option>';
                             }
                             $dbCollation .= '</select>';
-                            $dbCollation .= '&nbsp;<img src="'.$templatePath.'images/help.gif" alt="" width="16" height="16" onmouseout="htm()" onmouseover="stm(Text[4],Style[4])" />';
+                            $dbCollation .= '&nbsp;<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">'.$_ARRLANG['TXT_DB_COLLATION_DESCRIPTION'].'</span>';
                         } else {
                             $this->arrStatusMsg['database'] = $_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'];
                         }
@@ -1173,11 +1182,11 @@ class Installer
                         $objTpl->hideBlock('ftp');
                     }
                 } else {
-                    $useFtp = "<label for=\"useFtp\">".$_ARRLANG['TXT_USE_FTP']."</label>&nbsp;<input type=\"checkbox\" name=\"useFtp\" id=\"useFtp\" value=\"1\" ".($_SESSION['installer']['config']['useFtp'] ? "checked=\"checked\"" : "")." ".($_SESSION['installer']['config']['forceFtp'] ? "disabled=\"disabled\"" : "")." tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<img src=\"".$templatePath."images/help.gif\" alt=\"\" width=\"16\" height=\"16\" onmouseout=\"htm()\" onmouseover=\"stm(Text[3],Style[3])\" />";
-                    $ftpHostname = "<input class=\"textBox\" type=\"text\" name=\"ftpHostname\" value=\"".(isset($_SESSION['installer']['config']['ftpHostname']) ? $_SESSION['installer']['config']['ftpHostname'] : $arrDefaultConfig['ftpHostname']).(isset($_SESSION['installer']['config']['ftpPort']) ? ":".$_SESSION['installer']['config']['ftpPort'] : "")."\" tabindex=\"".$this->_getTabIndex()."\" />";
+                    $useFtp = "<label for=\"useFtp\">".$_ARRLANG['TXT_USE_FTP']."</label>&nbsp;<input type=\"checkbox\" name=\"useFtp\" id=\"useFtp\" value=\"1\" ".($_SESSION['installer']['config']['useFtp'] ? "checked=\"checked\"" : "")." ".($_SESSION['installer']['config']['forceFtp'] ? "disabled=\"disabled\"" : "")." tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<span class=\"icon-info tooltip-trigger\"></span><span class=\"tooltip-message\">".$_ARRLANG['TXT_FTP_DESCRIPTION']."</span>";
+                    $ftpHostname = "<input type=\"text\" name=\"ftpHostname\" value=\"".(isset($_SESSION['installer']['config']['ftpHostname']) ? $_SESSION['installer']['config']['ftpHostname'] : $arrDefaultConfig['ftpHostname']).(isset($_SESSION['installer']['config']['ftpPort']) ? ":".$_SESSION['installer']['config']['ftpPort'] : "")."\" tabindex=\"".$this->_getTabIndex()."\" />";
                     $ftpPasv = "&nbsp;<input type=\"checkbox\" name=\"ftpPasv\" id=\"ftpPasv\" value=\"1\" ".($_SESSION['installer']['config']['ftpPasv'] ? "checked=\"checked\"" : "")." tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<label for=\"ftpPasv\">".$_ARRLANG['TXT_USE_PASSIVE_FTP']."</label>";
-                    $ftpUsername = "<input class=\"textBox\" type=\"text\" name=\"ftpUsername\" value=\"".(isset($_SESSION['installer']['config']['ftpUsername']) ? $_SESSION['installer']['config']['ftpUsername'] : $arrDefaultConfig['ftpUsername'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
-                    $ftpPassword = "<input class=\"textBox\" type=\"password\" name=\"ftpPassword\" value=\"".(isset($_SESSION['installer']['config']['ftpPassword']) ? $_SESSION['installer']['config']['ftpPassword'] : $arrDefaultConfig['ftpPassword'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
+                    $ftpUsername = "<input type=\"text\" name=\"ftpUsername\" value=\"".(isset($_SESSION['installer']['config']['ftpUsername']) ? $_SESSION['installer']['config']['ftpUsername'] : $arrDefaultConfig['ftpUsername'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
+                    $ftpPassword = "<input type=\"password\" name=\"ftpPassword\" value=\"".(isset($_SESSION['installer']['config']['ftpPassword']) ? $_SESSION['installer']['config']['ftpPassword'] : $arrDefaultConfig['ftpPassword'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
 
                     $objTpl->setVariable(array(
                         'USE_FTP'       => $useFtp,
@@ -1533,7 +1542,7 @@ class Installer
         if ($result === true) {
             $objTpl->setVariable(array(
                 'PROCESS'   => $process,
-                'STATUS'    => "<img src=\"".$templatePath."images/true.gif\" width=\"16\" height=\"16\" alt=\"".$_ARRLANG['TXT_SUCCESSFULLY']."\" title=\"".$_ARRLANG['TXT_SUCCESSFULLY']."\" />"
+                'STATUS'    => "<img src=\"".$templatePath."images/icons/success.gif\" width=\"16\" height=\"16\" alt=\"".$_ARRLANG['TXT_SUCCESSFULLY']."\" title=\"".$_ARRLANG['TXT_SUCCESSFULLY']."\" />"
             ));
             $objTpl->parse('installationProcess');
         } else {
@@ -1544,7 +1553,7 @@ class Installer
 
             $objTpl->setVariable(array(
                 'PROCESS'   => $process,
-                'STATUS'    => "<img src=\"".$templatePath."images/false.gif\" width=\"16\" height=\"16\" alt=\"".$_ARRLANG['TXT_FAILED']."\" title=\"".$_ARRLANG['TXT_FAILED']."\" />"
+                'STATUS'    => "<img src=\"".$templatePath."images/icons/fail.gif\" width=\"16\" height=\"16\" alt=\"".$_ARRLANG['TXT_FAILED']."\" title=\"".$_ARRLANG['TXT_FAILED']."\" />"
             ));
             $objTpl->parse('installationProcess');
         }
