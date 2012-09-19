@@ -1144,13 +1144,23 @@ div#livecam #CALBUTTONDPC_datum {
 }
 #shop div.short-description {
     float: left;
-    width: 75%;
+    width: 100%;
 }
 #shop div.price {
-    float: left;
-    width: 25%;
-    font-size: 20px;
-    text-align: right;
+    float: right;
+    padding: 5px 10px 6px 10px;
+    color: #FFFFFF;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 5px 0 0 5px;
+    -moz-border-radius: 5px 0 0 5px;
+    -webkit-border-radius: 5px 0 0 5px;
+    -o-border-radius: 5px 0 0 5px;
+    background: #AAAAAA;
+}
+#shop div.price s {
+    padding: 0 5px 0 0;
+    text-decoration: none;
 }
 #shop div.price-detail {
     float: left;
@@ -1244,10 +1254,7 @@ div#livecam #CALBUTTONDPC_datum {
     clear: right;
 }
 #shop .discount {
-    float: right;
-    clear: right;
-    padding: 0 0 5px 0;
-    color: red;
+    color: #FF2626;
 }
 #shop .discount h2 {
     font-size: 1.6em;
@@ -1319,6 +1326,31 @@ div#livecam #CALBUTTONDPC_datum {
 
 #shop .continue-button {
     margin: 0;
+}
+
+#shop button.details {
+    float: right;
+    padding-right: 25px;
+    margin: 0 10px 0 0;
+    color: #FFFFFF;
+    font-weight: bold;
+    background: #0A85C8 url('images/arrow-right-white.png') no-repeat 62px 12px;
+}
+
+#shop button.add-to-cart {
+    float: right;
+    padding-left: 33px;
+    color: #FFFFFF;
+    font-weight: bold;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    -moz-border-top-left-radius: 0;
+    -moz-border-bottom-left-radius: 0;
+    -webkit-border-top-left-radius: 0;
+    -webkit-border-bottom-left-radius: 0;
+    -o-border-top-left-radius: 0;
+    -o-border-bottom-left-radius: 0;
+    background: #0A85C8 url('images/cart-white.png') no-repeat 10px 7px;
 }
 
 /***************************************************/

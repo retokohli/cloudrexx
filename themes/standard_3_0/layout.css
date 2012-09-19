@@ -587,8 +587,8 @@
 /* Shop Start */
 .shop-box {
     float: left;
-    width: 100%;
-    padding: 0 0 20px 0;
+    width: 180px;
+    padding: 0 10px 20px 10px;
 }
 
 #shopJsCart li {
@@ -700,19 +700,27 @@
 
 #page-left {
     float: left;
-    width: 630px;
+    width: 650px;
 }
 
 #page-right {
     float: left;
-    width: 226px;
-    padding: 0 0 0 30px;
+    width: 200px;
+    padding: 0 0 0 15px;
+    margin: 0 0 0 20px;
+    border-left: 1px solid #DDDDDD;
 }
 
 #page-right h3 {
-    padding: 0 0 10px 0;
-    margin: 0 0 10px 0;
-    border-bottom: 1px solid #DDDDDD;
+    float: left;
+    width: 180px;
+    padding: 5px 10px 5px 10px;
+    margin: 0 0 5px 0;
+    color: #FFFFFF;
+    font-size: 15px;
+    font-weight: bold;
+    font-family: Arial;
+    background: #0A85C8;
 }
 
 #page-header {
