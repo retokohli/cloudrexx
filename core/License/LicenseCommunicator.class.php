@@ -39,7 +39,11 @@ class LicenseCommunicator {
      * @param boolean $forceTemplate (optional) Wheter to force template delivery or not, defaults to false
      * @return void 
      */
-    public function update(&$license, $_CONFIG, $forceTemplate = false) {
+    public function update(&$license, $_CONFIG, $forceUpdate = false, $forceTemplate = false) {
+        if (!$forceUpdate) {
+            // last update less than one day ago?
+                // return
+        }
         $v = preg_split('#\.#', $_CONFIG['coreCmsVersion']);
         $e = $_CONFIG['coreCmsEdition'];
         if (count($v)) {
@@ -68,41 +72,55 @@ class LicenseCommunicator {
             'domainName' => $_CONFIG['domainUrl'],
             'sendTemplate' => $forceTemplate,
         );
-        $jd = new \Cx\Core\Json\JsonData();
         $a = $_SERVER['REMOTE_ADDR'];
         
         $request = new \HTTP_Request2('http://' . $srvUri . $srvPath . '?v=' . $version, \HTTP_Request2::METHOD_POST);
         $request->setHeader('X-Edition', $e);
         $request->setHeader('X-Remote-Addr', $a);
-        $request->addPostParameter('data', $jd->json($data));
+        $request->addPostParameter('data', \Cx\Core\Json\JsonData::json($data));
         try {
             $objResponse = $request->send();
             if ($objResponse->getStatus() !== 200) {
                 // error
                 echo 'ERROR';
             } else {
-                $response = json_decode($objResponse->getBody())->license;
-                //$response = $objResponse->getBody();
+                //echo $objResponse->getBody();
+                $response = json_decode($objResponse->getBody());
             }
         } catch (HTTP_Request2_Exception $objException) {
             throw $objException;
         }
         
+        // create new license
         $installationId = $license->getInstallationId();
         $licenseKey = $license->getLicenseKey();
-        if ($response->installationId != null) {
-            $installationId = $response->installationId;
+        if ($response->license->installationId != null) {
+            $installationId = $response->license->installationId;
         }
-        if ($response->key != null) {
-            $licenseKey = $response->key;
+        if ($response->license->key != null) {
+            $licenseKey = $response->license->key;
         }
+        $message = new \Cx\Core\License\Message(
+            $response->license->message->text,
+            $response->license->message->type,
+            $response->license->message->link,
+            $response->license->message->linkTarget
+        );
+        $version = new \Cx\Core\License\Version(
+            $response->versions->currentStable->number,
+            $response->versions->currentStable->codeName,
+            $response->versions->currentStable->state,
+            $response->versions->currentStable->releaseDate
+        );
         $license = new \Cx\Core\License\License(
-            $response->state,
-            $response->edition,
-            $response->legalComponents,
-            $response->validTo,
+            $response->license->state,
+            $response->license->edition,
+            $response->license->legalComponents,
+            $response->license->validTo,
             $installationId,
-            $licenseKey
+            $licenseKey,
+            $message,
+            $version
         );
         return;
     }

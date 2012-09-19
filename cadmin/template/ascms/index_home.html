@@ -10,7 +10,8 @@ $J(document).ready(function() {
         }
     });
     
-    $J('#news_delete, #stats_delete').click(function(event) {
+    $J('.message .close, #stats_delete').click(function(event) {
+        alert("LKJ");
         event.preventDefault();
         
         var elementId = $J(this).attr('id');
@@ -19,7 +20,6 @@ $J(document).ready(function() {
         } else {
             var id = 86;
         }
-        
         $J.ajax({
             url: 'index.php?act=deactivateSetting',
             data: {id: id},
@@ -104,6 +104,32 @@ $J(document).ready(function() {
 <!-- END stats_javascript -->
 
 <div id="dashboard">
+    <!-- BEGIN message -->
+    <div id="message" class="message {MESSAGE_TYPE}">
+        <!-- BEGIN message_delete -->
+        <a href="#" id="message_delete" class="close">&times;</a>
+        <!-- END message_delete -->
+        <div id="message_message" class="text">
+            <a id="message_link" class="link" href="{MESSAGE_LINK}" target="{MESSAGE_LINK_TARGET}">{MESSAGE_TITLE}</a>
+        </div>
+    </div>
+    <!-- END message -->
+    <!-- BEGIN news -->
+    <div id="news" class="message">
+        <a id="news_contrexx" class="icon" href="http://www.contrexx.com" target="_blank"></a>
+        <!-- BEGIN news_delete -->
+        <a href="#" id="news_delete" class="close">&times;</a>
+        <!-- END news_delete -->
+        <div id="news_message" class="text">
+            <a id="news_link" class="link" href="{NEWS_LINK}" target="_blank">{NEWS_TITLE}</a>
+        </div>
+    </div>
+    <!-- END news -->
+    
+    <div id="alert_news" class="alert alert-info">
+        {TXT_DASHBOARD_NEWS_ALERT}
+    </div>
+    
     <div class="left">
         <div id="box_1" class="box">
             <h2>{TXT_CREATING_AND_PUBLISHING}</h2>
@@ -143,22 +169,6 @@ $J(document).ready(function() {
         </div>
     </div>
     
-    <!-- BEGIN news -->
-    <div id="news">
-        <a id="news_contrexx" href="http://www.contrexx.com" target="_blank"></a>
-        <div id="news_message">
-            <a id="news_link" href="{NEWS_LINK}" target="_blank">{NEWS_TITLE}</a>
-            <!-- BEGIN news_delete -->
-            <a href="#" id="news_delete" class="close">&times;</a>
-            <!-- END news_delete -->
-        </div>
-    </div>
-    <!-- END news -->
-    
-    <div id="alert_news" class="alert alert-info">
-        {TXT_DASHBOARD_NEWS_ALERT}
-    </div>
-    
     <!-- BEGIN stats -->
     <div id="stats_wrapper">
         <h1 class="stats_title">
@@ -194,12 +204,4 @@ $J(document).ready(function() {
         {TXT_DASHBOARD_STATS_ALERT}
     </div>
 </div>
-
-<script type="text/javascript" language="javascript">
-    $J.get('versioncheck.php').success(function(data) {
-        if (data.match(/update/i)) {
-            $J('#new_version').html(data);
-        }
-    });
-</script>
 <!-- END index_home.html -->
