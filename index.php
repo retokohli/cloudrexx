@@ -1608,6 +1608,13 @@ switch ($plainSection) {
         $objCheckout = new Checkout($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objCheckout->getPage());
         break;
+    case 'filesharing':
+        /** @ignore */
+        if (!@include_once(ASCMS_MODULE_PATH.'/filesharing/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $objFileshare = new Filesharing($page_content);
+        $objTemplate->setVariable('CONTENT_TEXT', $objFileshare->getPage());
+        break;
 
     default:
         $objTemplate->setVariable('CONTENT_TEXT', $page_content);
