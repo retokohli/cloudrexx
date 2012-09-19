@@ -1414,9 +1414,37 @@ div#livecam #CALBUTTONDPC_datum {
 }
 
 #news li {
+    float: left;
+    width: 100%;
     padding: 0 0 10px 0;
     border-bottom: 1px solid #D6D6D6;
     background: none;
+}
+
+.news-image {
+    float: left;
+    width: 15%;
+}
+
+.news-image img {
+    max-width: 120px;
+    max-height: 120px;
+}
+
+.news-text {
+    float: left;
+    width: 85%;
+}
+
+.news-teaser {
+    float: left;
+    width: 100%;
+    padding: 0 0 10px 0;
+}
+
+.news-info {
+    float: left;
+    width: 100%;
 }
 
 #news-date {
