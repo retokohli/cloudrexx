@@ -261,3 +261,5 @@ $_ARRAYLANG['TXT_SHOP_PAYMENT_PLEASE_SELECT'] = "-- Bitte wählen --";
 $_ARRAYLANG['TXT_SHOP_FORM_RESET_CONFIRM'] = "Bestätigen Sie bitte, dass Sie Ihre Eingaben zurückgesetzt werden sollen.";
 $_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_ACCEPTED'] = "Die <a href=\"index.php?section=shop&amp;cmd=terms\" target=\"_blank\">Widerrufsbelehrung</a> habe ich zur Kenntnis genommen.";
 $_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_PLEASE_ACCEPT'] = "Bitte bestätigen Sie die Kenntnisnahme der Widerrufsbelehrung.";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER'] = "Order without registration";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER_NOTE'] = "Check this box if you want to order without registration.";
