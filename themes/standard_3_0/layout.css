@@ -585,34 +585,10 @@
 }
 
 /* Shop Start */
-#shop-categories {
-    padding: 5px 15px 5px 15px;
-}
-
-#shop-categories li {
-    padding: 0;
-    background: none;
-}
-
-#shop-categories li a {
+.shop-box {
     float: left;
-    width: 220px;
-    padding: 10px 5px 10px 15px;
-    color: #323F55;
-    border-bottom: 1px solid #D6D6D6;
-    background-image: url('images/nav-2-inactive.png');
-    background-position: 2px 15px;
-    background-repeat: no-repeat;
-}
-
-#shop-categories li a.last {
-    border: 0;
-}
-
-#shop-categories li a:hover,
-#shop-categories li.shopnavbar1_active a {
-    color: #066196;
-    background-image: url('images/nav-2-active.png');
+    width: 100%;
+    padding: 0 0 20px 0;
 }
 
 #shopJsCart li {
@@ -654,10 +630,6 @@
 
 #shopJsCart li.link.destroy a {
     background-image: url('images/destroy.png');
-}
-
-#shop-currencies {
-    text-align: center;
 }
 
 #shop-currencies a {
@@ -724,6 +696,23 @@
 
 #page ol ol {
     padding: 5px 0 0 0;
+}
+
+#page-left {
+    float: left;
+    width: 630px;
+}
+
+#page-right {
+    float: left;
+    width: 226px;
+    padding: 0 0 0 30px;
+}
+
+#page-right h3 {
+    padding: 0 0 10px 0;
+    margin: 0 0 10px 0;
+    border-bottom: 1px solid #DDDDDD;
 }
 
 #page-header {
