@@ -25,6 +25,17 @@
         {LOGIN_CONTENT}
         {COUNTER}
         
+        <script type="text/javascript">
+            $J.ajax({
+                url: '{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg',
+                statusCode: {
+                    200: function() {
+                        $J('#page').prepend('<img id="page-header" src="{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg" alt="Titelbild" />');
+                    }
+                }
+            });
+        </script>
+        
         <script type="text/javascript" src="themes/standard_3_0/modernizr.js"></script>
         <script type="text/javascript" src="themes/standard_3_0/jquery.cycle.js"></script>
         <script type="text/javascript" src="themes/standard_3_0/javascript.js"></script>
