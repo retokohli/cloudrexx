@@ -56,12 +56,6 @@
         $('#shop-currencies a:last').addClass('last');
         /* Shop End */
         
-        /* Page Start */
-        $('#page-header').error(function () {
-            $(this).hide();
-        });
-        /* Page End */
-        
         /* Cycle Start */
         if ($('#cycle').length > 0) {
             $('#cycle').wrap(
