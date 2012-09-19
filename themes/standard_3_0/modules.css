@@ -375,6 +375,33 @@ div#livecam #CALBUTTONDPC_datum {
     width: 250px;
     padding: 0 0 0 40px;
 }
+#calendar-details {
+    float: left;
+    width: 100%;
+}
+#calendar-details li a img {
+    float: left;
+    padding: 0 5px 0 0;
+}
+#calendar-info {
+    float: left;
+    width: 100%;
+    padding: 0 0 10px 0;
+}
+#calendar-info h2.first {
+    padding-top: 0;
+}
+#calendar-image {
+    float: left;
+    width: 30%;
+}
+#calendar-image img {
+    max-width: 95%;
+}
+#calendar-description {
+    float: left;
+    width: 70%;
+}
 /***************************************************/
 /* CSS DEFINITIONS FOR ACCESS MODULE               */
 /***************************************************/
@@ -1445,6 +1472,8 @@ div#livecam #CALBUTTONDPC_datum {
 .news-info {
     float: left;
     width: 100%;
+    color: #9C9C9C;
+    font-size: 12px;
 }
 
 #news-date {
