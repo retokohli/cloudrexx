@@ -180,13 +180,12 @@ class settingsManager
             'TXT_RADIO_OFF'                   => $_CORELANG['TXT_DEACTIVATED']
         ));
         $objTemplate->setVariable(array(
-            'TXT_TITLE_SET1'                            => $_CORELANG['TXT_SYSTEM_SETTINGS'],
-            'TXT_TITLE_SET2'                            => $_CORELANG['TXT_SETTINGS_TITLE_CONTACT'],
-            'TXT_TITLE_SET3'                            => $_CORELANG['TXT_SETTINGS_TITLE_DEVELOPMENT'],
-            'TXT_TITLE_WEBSITE'                         => $_CORELANG['TXT_SETTINGS_TITLE_MISC'],
-            'TXT_TITLE_ADMIN_AREA'                      => $_CORELANG['TXT_ADMIN_AREA'],
-            'TXT_TITLE_SECURITY'                        => $_CORELANG['TXT_SECURITY'],
-            'TXT_TITLE_OTHER_CONFIG_OPTIONS'            => $_CORELANG['TXT_OTHER_CONFIG_OPTIONS'],
+            'TXT_TITLE_SET1'                            => $_CORELANG['TXT_SETTINGS_TITLE_MISC'],
+            'TXT_TITLE_SET2'                            => $_CORELANG['TXT_ADMIN_AREA'],
+            'TXT_TITLE_SET3'                            => $_CORELANG['TXT_SECURITY'],
+            'TXT_TITLE_SET4'                            => $_CORELANG['TXT_SETTINGS_TITLE_CONTACT'],
+            'TXT_TITLE_SET5'                            => $_CORELANG['TXT_SETTINGS_TITLE_DEVELOPMENT'],
+            'TXT_TITLE_SET6'                            => $_CORELANG['TXT_OTHER_CONFIG_OPTIONS'],
             'TXT_DEBUGGING_STATUS'                      => $_CORELANG['TXT_DEBUGGING_STATUS'],
             'TXT_DEBUGGING_FLAGS'                       => $_CORELANG['TXT_DEBUGGING_FLAGS'],
             'TXT_DEBUGGING_FLAG_PHP'                    => $_CORELANG['TXT_DEBUGGING_FLAG_PHP'],

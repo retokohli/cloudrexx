@@ -13,15 +13,15 @@ function toggleDebuggingFlags(show) {
     <li><a id="setTab_Settings1" class="active" href="javascript:{}" onclick="selectTab('Settings1')" title="{TXT_TITLE_SET1}">{TXT_TITLE_SET1}</a></li>
     <li><a id="setTab_Settings2" href="javascript:{}" onclick="selectTab('Settings2')" title="{TXT_TITLE_SET2}">{TXT_TITLE_SET2}</a></li>
     <li><a id="setTab_Settings3" href="javascript:{}" onclick="selectTab('Settings3')" title="{TXT_TITLE_SET3}">{TXT_TITLE_SET3}</a></li>
+    <li><a id="setTab_Settings4" href="javascript:{}" onclick="selectTab('Settings4')" title="{TXT_TITLE_SET4}">{TXT_TITLE_SET4}</a></li>
+    <li><a id="setTab_Settings5" href="javascript:{}" onclick="selectTab('Settings5')" title="{TXT_TITLE_SET5}">{TXT_TITLE_SET5}</a></li>
+    <li><a id="setTab_Settings6" href="javascript:{}" onclick="selectTab('Settings6')" title="{TXT_TITLE_SET1}">{TXT_TITLE_SET6}</a></li>
 </ul>
 <form name="settings_form" method="post" action="index.php?cmd=settings&amp;act=update">
     <div id="Settings1" class="setTab" style="display:block;">
         <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
             <tr>
                 <th colspan="2">{TXT_TITLE_SET1}</th>
-            </tr>
-            <tr class="row3">
-                <td colspan="2">{TXT_TITLE_WEBSITE}</td>
             </tr>
             <tr class="row2">
                 <td width="25%">{TXT_SYSTEM_STATUS}&nbsp;</td>
@@ -74,9 +74,12 @@ function toggleDebuggingFlags(show) {
                     <input type="radio" name="setvalue[73]" id="setvalue_73_off" value="off" {SETTINGS_ADVANCED_UPLOAD_FRONTEND_OFF} /><label for="setvalue_70_off">{TXT_RADIO_OFF}</label>&nbsp;
                 </td>
             </tr>
-            
-            <tr class="row3">
-                <td colspan="2">{TXT_TITLE_ADMIN_AREA}</td>
+        </table>
+    </div>
+    <div id="Settings2" class="setTab" style="display:none;">
+        <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+            <tr>
+                <th colspan="2">{TXT_TITLE_SET2}</th>
             </tr>
             <tr class="row2">
                 <td>{TXT_DASHBOARD_NEWS}</td>
@@ -124,79 +127,35 @@ function toggleDebuggingFlags(show) {
                 <td>{TXT_CORE_TIMEZONE}</td>
                 <td><select name="setvalue[87]" style="width: 459px;">{SETTINGS_TIMEZONE_OPTIONS}</select></td>
             </tr>
-            
-            <tr class="row3">
-                <td colspan="2">{TXT_TITLE_SECURITY}</td>
-            </tr>
-            <tr class="row1">
-                <td>{TXT_IDS_STATUS}&nbsp;</td>
-                <td>
-                    <input type="radio" name="setvalue[23]" id="setvalue_23_on" value="on" {SETTINGS_IDS_RADIO_ON} /><label for="setvalue_23_on">{TXT_RADIO_ON}</label>&nbsp;
-                    <input type="radio" name="setvalue[23]" id="setvalue_23_off" value="off" {SETTINGS_IDS_RADIO_OFF} /><label for="setvalue_23_off">{TXT_RADIO_OFF}</label>&nbsp;
-                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_IDS_STATUS_HELP}</span>
-                </td>
-            </tr>
-            <tr class="row2">
-                <td>{TXT_PASSWORD_COMPLEXITY}&nbsp;</td>
-                <td>
-                    <input type="radio" name="setvalue[89]" id="setvalue_89_on" value="on" {SETTINGS_PASSWORD_COMPLEXITY_ON} /><label for="setvalue_89_on">{TXT_RADIO_ON}</label>&nbsp;
-                    <input type="radio" name="setvalue[89]" id="setvalue_89_off" value="off" {SETTINGS_PASSWORD_COMPLEXITY_OFF} /><label for="setvalue_89_off">{TXT_RADIO_OFF}</label>&nbsp;
-                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_PASSWORD_COMPLEXITY_INFO}</span>
-                </td>
-            </tr>
-            <tr class="row3">
-                <td colspan="2">{TXT_TITLE_OTHER_CONFIG_OPTIONS}</td>
-            </tr>
-            <tr class="row1">
-                <td>{TXT_XML_SITEMAP_STATUS}&nbsp;</td>
-                <td>
-                    <input type="radio" name="setvalue[54]" id="setvalue_54_on" value="on" {SETTINGS_XML_SITEMAP_ON} /><label for="setvalue_54_on">{TXT_RADIO_ON}</label>&nbsp;
-                    <input type="radio" name="setvalue[54]" id="setvalue_54_off" value="off" {SETTINGS_XML_SITEMAP_OFF} /><label for="setvalue_54_off">{TXT_RADIO_OFF}</label>&nbsp;
-                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_XML_SITEMAP_STATUS_HELP}</span>
-                </td>
-            </tr>
-            <tr class="row2">
-                <td>{TXT_FRONTEND_EDITING_STATUS}&nbsp;</td>
-                <td>
-                    <input type="radio" name="setvalue[69]" id="setvalue_69_on" value="on" {SETTINGS_FRONTEND_EDITING_ON} /><label for="setvalue_69_on">{TXT_RADIO_ON}</label>&nbsp;
-                    <input type="radio" name="setvalue[69]" id="setvalue_69_off" value="off" {SETTINGS_FRONTEND_EDITING_OFF} /><label for="setvalue_69_off">{TXT_RADIO_OFF}</label>&nbsp;
-                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_FRONTEND_EDITING_STATUS_HELP}</span>
-                </td>
-            </tr>
-            <tr class="row1">
-                <td>{TXT_PAGING_LIMIT}&nbsp;</td>
-                <td>
-                    <input type="text" name="setvalue[18]" value="{SETTINGS_PAGING_LIMIT}" size="70" maxlength="250" />
-                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_PAGING_LIMIT_HELP}</span>
-                </td>
-            </tr>
-            <tr class="row2">
-                <td>{TXT_SEARCH_RESULT}&nbsp;</td>
-                <td>
-                    <input type="text" name="setvalue[19]" value="{SETTINGS_SEARCH_RESULT_LENGTH}" size="70" maxlength="250" />
-                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SEARCH_RESULT_HELP}</span>
-                </td>
-            </tr>
-            <tr class="row1">
-                <td>{TXT_GOOGLE_MAPS_API_KEY}&nbsp;</td>
-                <td>
-                    <input type="text" name="setvalue[65]" value="{SETTINGS_GOOGLE_MAPS_API_KEY}" size="70" maxlength="250" />
-                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_GOOGLE_MAPS_API_KEY_HELP}</span>
-                </td>
-            </tr>
-            <tr class="row2">
-                <td>{TXT_GOOGLE_ANALYTICS_TRACKING_ID}&nbsp;</td>
-                <td>
-                    <input type="text" name="setvalue[88]" value="{SETTINGS_GOOGLE_ANALYTICS_TRACKING_ID}" size="70" maxlength="250" />
-                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_GOOGLE_ANALYTICS_TRACKING_ID_INFO}</span>
-                </td>
+        </table>
+    </div>
+    <div id="Settings3" class="setTab" style="display:none;">
+        <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+            <tr>
+                <th colspan="2">{TXT_TITLE_SET3}</th>
+                <tr class="row1">
+                    <td>{TXT_IDS_STATUS}&nbsp;</td>
+                    <td>
+                        <input type="radio" name="setvalue[23]" id="setvalue_23_on" value="on" {SETTINGS_IDS_RADIO_ON} /><label for="setvalue_23_on">{TXT_RADIO_ON}</label>&nbsp;
+                        <input type="radio" name="setvalue[23]" id="setvalue_23_off" value="off" {SETTINGS_IDS_RADIO_OFF} /><label for="setvalue_23_off">{TXT_RADIO_OFF}</label>&nbsp;
+                        <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_IDS_STATUS_HELP}</span>
+                    </td>
+                </tr>
+                <tr class="row2">
+                    <td>{TXT_PASSWORD_COMPLEXITY}&nbsp;</td>
+                    <td>
+                        <input type="radio" name="setvalue[89]" id="setvalue_89_on" value="on" {SETTINGS_PASSWORD_COMPLEXITY_ON} /><label for="setvalue_89_on">{TXT_RADIO_ON}</label>&nbsp;
+                        <input type="radio" name="setvalue[89]" id="setvalue_89_off" value="off" {SETTINGS_PASSWORD_COMPLEXITY_OFF} /><label for="setvalue_89_off">{TXT_RADIO_OFF}</label>&nbsp;
+                        <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_PASSWORD_COMPLEXITY_INFO}</span>
+                    </td>
+                </tr>
             </tr>
         </table>
     </div>
-    <div id="Settings2" class="setTab" style="display:none;">
+    <div id="Settings4" class="setTab" style="display:none;">
         <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
             <tr>
-                <th colspan="2">{TXT_TITLE_SET2}</th>
+                <th colspan="2">{TXT_TITLE_SET4}</th>
             </tr>
             <tr class="row2">
                 <td width="25%">{TXT_ADMIN_NAME}&nbsp;</td>
@@ -243,10 +202,10 @@ function toggleDebuggingFlags(show) {
             </tr>
         </table>
     </div>
-    <div id="Settings3" class="setTab" style="display:none;">
+    <div id="Settings5" class="setTab" style="display:none;">
         <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
             <tr>
-                <th colspan="2">{TXT_TITLE_SET3}</th>
+                <th colspan="2">{TXT_TITLE_SET5}</th>
             </tr>
             <tr class="row2">
                 <td width="25%">{TXT_DEBUGGING_STATUS}&nbsp;</td>
@@ -276,6 +235,57 @@ function toggleDebuggingFlags(show) {
                             <input type="checkbox" id="debugging_flag_log_firephp" name="debugging[flag_log_firephp]" {SETTINGS_DEBUGGING_FLAG_LOG_FIREPHP}/><label for="debugging_flag_log_firephp">{TXT_DEBUGGING_FLAG_LOG_FIREPHP}</label>&nbsp;
                         </div>
                     </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="Settings6" class="setTab" style="display:none;">
+        <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+            <tr>
+                <th colspan="2">{TXT_TITLE_SET6}</th>
+            </tr>
+            <tr class="row1">
+                <td>{TXT_XML_SITEMAP_STATUS}&nbsp;</td>
+                <td>
+                    <input type="radio" name="setvalue[54]" id="setvalue_54_on" value="on" {SETTINGS_XML_SITEMAP_ON} /><label for="setvalue_54_on">{TXT_RADIO_ON}</label>&nbsp;
+                    <input type="radio" name="setvalue[54]" id="setvalue_54_off" value="off" {SETTINGS_XML_SITEMAP_OFF} /><label for="setvalue_54_off">{TXT_RADIO_OFF}</label>&nbsp;
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_XML_SITEMAP_STATUS_HELP}</span>
+                </td>
+            </tr>
+            <tr class="row2">
+                <td>{TXT_FRONTEND_EDITING_STATUS}&nbsp;</td>
+                <td>
+                    <input type="radio" name="setvalue[69]" id="setvalue_69_on" value="on" {SETTINGS_FRONTEND_EDITING_ON} /><label for="setvalue_69_on">{TXT_RADIO_ON}</label>&nbsp;
+                    <input type="radio" name="setvalue[69]" id="setvalue_69_off" value="off" {SETTINGS_FRONTEND_EDITING_OFF} /><label for="setvalue_69_off">{TXT_RADIO_OFF}</label>&nbsp;
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_FRONTEND_EDITING_STATUS_HELP}</span>
+                </td>
+            </tr>
+            <tr class="row1">
+                <td>{TXT_PAGING_LIMIT}&nbsp;</td>
+                <td>
+                    <input type="text" name="setvalue[18]" value="{SETTINGS_PAGING_LIMIT}" size="70" maxlength="250" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_PAGING_LIMIT_HELP}</span>
+                </td>
+            </tr>
+            <tr class="row2">
+                <td>{TXT_SEARCH_RESULT}&nbsp;</td>
+                <td>
+                    <input type="text" name="setvalue[19]" value="{SETTINGS_SEARCH_RESULT_LENGTH}" size="70" maxlength="250" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SEARCH_RESULT_HELP}</span>
+                </td>
+            </tr>
+            <tr class="row1">
+                <td>{TXT_GOOGLE_MAPS_API_KEY}&nbsp;</td>
+                <td>
+                    <input type="text" name="setvalue[65]" value="{SETTINGS_GOOGLE_MAPS_API_KEY}" size="70" maxlength="250" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_GOOGLE_MAPS_API_KEY_HELP}</span>
+                </td>
+            </tr>
+            <tr class="row2">
+                <td>{TXT_GOOGLE_ANALYTICS_TRACKING_ID}&nbsp;</td>
+                <td>
+                    <input type="text" name="setvalue[88]" value="{SETTINGS_GOOGLE_ANALYTICS_TRACKING_ID}" size="70" maxlength="250" />
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_GOOGLE_ANALYTICS_TRACKING_ID_INFO}</span>
                 </td>
             </tr>
         </table>
