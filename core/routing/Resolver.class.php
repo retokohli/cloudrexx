@@ -234,6 +234,16 @@ class Resolver {
                 } else {
                     $targetPage = $this->pageRepo->findOneByModuleCmdLang($module, $cmd, $langId);
 
+                    // in case we were unable to find the requested page, this could mean that we are
+                    // trying to retrive a module page that uses an ID as CMD.
+                    // therefore, lets try to find the module by using the INT in $langId as CMD.
+                    // in case $langId is really the requested CMD then we will have to set the 
+                    // resolved language back to our original language $this->lang.
+                    if(!$targetPage) {
+                        $targetPage = $this->pageRepo->findOneByModuleCmdLang($module, $langId, $this->lang);
+                        $langId = $this->lang;
+                    }
+
                     // revert to default language if we could not retrieve the specified langauge by the redirection.
                     // so lets try to load the redirection of the current language
                     if(!$targetPage) {
