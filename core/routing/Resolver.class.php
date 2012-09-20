@@ -162,7 +162,6 @@ class Resolver {
             
             //(I) see what the model has for us
             $result = $this->pageRepo->getPagesAtPath($this->url->getLangDir().'/'.$path, null, $this->lang, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
-
             if ($this->pagePreview) {
                 if (empty($this->sessionPage)) {
                     if (\Permission::checkAccess(6, 'static', true)) {
@@ -209,60 +208,78 @@ class Resolver {
         $this->forceInternalRedirection = $this->forceInternalRedirection || $isAlias;
         
         if($target && ($isRedirection || $isAlias)) {
+            // Check if page is a internal redirection and if so handle it
             if($this->page->isTargetInternal()) {
 //TODO: add check for endless/circular redirection (a -> b -> a -> b ... and more complex)
                 $nId = $this->page->getTargetNodeId();
                 $lId = $this->page->getTargetLangId();
+                $module = $this->page->getTargetModule();
+                $cmd = $this->page->getTargetCmd();
                 $qs = $this->page->getTargetQueryString();
                 
-                $crit = array(
-                    'node' => $nId
-                );
-                if($lId)
-                    $crit['lang'] = $lId;
-                else
-                    $crit['lang'] = $this->lang;
+                $langId = $lId ? $lId : $this->lang;
 
-                $targetPage = $this->pageRepo->findBy($crit);
-                //revert to default language if we could not retrieve the current language
-                if(!isset($targetPage[0])) { 
-                    if($lId != 0) { //make sure we weren't already retrieving the default language
-                        $crit['lang'] = $this->lang;
-                        $targetPage = $this->pageRepo->findBy($crit);
-                    }
+                // try to find the redirection target page
+                if ($nId) {
+                    $targetPage = $this->pageRepo->findOneBy(array('node' => $nId, 'lang' => $langId));
 
-                    //check whether we have a page now.
-                    if(!isset($targetPage[0])) {
-                        throw new ResolverException('Found invalid redirection target on page "'.$this->page->getTitle().'" with id "'.$this->page->getId().'": tried to find target page with node '.$nId.' and language '.$lId.', which does not exist.');
+                    // revert to default language if we could not retrieve the specified langauge by the redirection.
+                    // so lets try to load the redirection of the current language
+                    if(!$targetPage) {
+                        if($langId != 0) { //make sure we weren't already retrieving the default language
+                            $targetPage = $this->pageRepo->findOneBy(array('node' => $nId, 'lang' => $this->lang));
+                            $langId = $this->lang;
+                        }
                     }
-                } elseif ($lId) {
-// TODO: shouldn't $this->lang be set to $lId ?? - by TD
-                    $this->pathOffset = ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageCodeById($lId);
+                } else {
+                    $targetPage = $this->pageRepo->findOneByModuleCmdLang($module, $cmd, $langId);
+
+                    // revert to default language if we could not retrieve the specified langauge by the redirection.
+                    // so lets try to load the redirection of the current language
+                    if(!$targetPage) {
+                        if($langId != 0) { //make sure we weren't already retrieving the default language
+                            $targetPage = $this->pageRepo->findOneByModuleCmdLang($module, $cmd, $this->lang);
+                            $langId = $this->lang;
+                        }
+                    }
                 }
 
-                $targetPage = $targetPage[0];
+                //check whether we have a page now.
+                if(!$targetPage) {
+                    throw new ResolverException('Found invalid redirection target on page "'.$this->page->getTitle().'" with id "'.$this->page->getId().'": tried to find target page with node '.$nId.' and language '.$langId.', which does not exist.');
+                }
+
+                // the redirection page is located within a different language.
+                // therefore, we must set $this->lang to the target's language of the redirection.
+                // this is required because we will next try to resolve the redirection target
+                if ($langId != $this->lang) {
+                    $this->lang = $langId;
+                    $this->url->setLangDir(\FWLanguage::getLanguageCodeById($langId));
+                    $this->pathOffset = ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageCodeById($langId);
+                }
 
                 $targetPath = substr($targetPage->getPath(), 1);
 
                 $this->url->setPath($targetPath.$qs);
                 $this->isRedirection = true;
                 $this->resolve(true);
-            }
-            else { //external target - redirect via HTTP 302
+            } else { //external target - redirect via HTTP 302
                 header('Location: '.$target);
-                die();
+                exit;
             }
         }
         
         //if we followed one or more redirections, the user shall be redirected by 302.
-        if($this->isRedirection && !$this->forceInternalRedirection) {
+        if ($this->isRedirection && !$this->forceInternalRedirection) {
             $params = $this->url->getSuggestedParams();
             header('Location: '.$this->page->getURL($this->pathOffset, $params));
-            die();
+            exit;
         }
         
-        $this->handleFallbackContent($this->page);
+        // in case the requested page is of type fallback, we will now handle/load this page
+        $this->handleFallbackContent($this->page, !$internal);
         
+        // set legacy <section> and <cmd> in case the requested page is an application
         if ($this->page->getType() == \Cx\Model\ContentManager\Page::TYPE_APPLICATION
                 || $this->page->getType() == \Cx\Model\ContentManager\Page::TYPE_FALLBACK) {
             $this->command = $this->page->getCmd();
@@ -305,21 +322,35 @@ class Resolver {
     /**
      * Checks whether $page is of type 'fallback'. Loads fallback content if yes.
      * @param Cx\Model\ContentManager $page
+     * @param boolean $requestedPage Set to TRUE (default) if the $page passed by $page is the first resolved page (actual requested page)
      * @throws ResolverException
      */
-    public function handleFallbackContent($page) {
+    public function handleFallbackContent($page, $requestedPage = true) {
         //handle untranslated pages - replace them by the right language version.
         if($page->getType() == \Cx\Model\ContentManager\Page::TYPE_FALLBACK) {
+            // in case the first resolved page (= original requested page) is a fallback page
+            // we must check here if this very page is active.
+            // If we miss this check, we would only check if the referenced fallback page is active!
+            if ($requestedPage && !$page->isActive()) {
+                return;
+            }
+
             $langId = $this->fallbackLanguages[$page->getLang()];
             $fallbackPage = $page->getNode()->getPage($langId);
             if(!$fallbackPage)
                 throw new ResolverException('Followed fallback page, but couldn\'t find content of fallback Language');
 
             $page->getFallbackContentFrom($fallbackPage);
-// TODO: is setting $this->lang to the fallback-LANG save? - by TD
+
+            // due that the fallback is located within a different language
+            // we must set $this->lang to the fallback's language.
+            // this is required because we will next try to resolve the page
+            // that is referenced by the fallback page
             $this->lang = $langId;
-// TODO: is there a more proper way of setting the current URL? - by TD
+            $this->url->setLangDir(\FWLanguage::getLanguageCodeById($langId));
             $this->url->setSuggestedTargetPath(substr($fallbackPage->getPath(), 1));
+
+            // now lets resolve the page that is referenced by our fallback page
             $this->resolve(true);
         }
     }

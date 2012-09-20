@@ -1,7 +1,7 @@
 <?php
 class LinkGeneratorException {}
 /**
- * Handles the [[NODE_<ID>]], [[NODE_<ID>_<LANGID>]] placeholders.
+ * Handles the node-Url placeholders: [[ NODE_(<node_id>|<module>[_<cmd>])[_<lang_id>] ]]
  */
 class LinkGenerator {
     /**
@@ -42,18 +42,40 @@ class LinkGenerator {
      */
     public function scan(&$content) {
         $this->fetchingDone = false;
-        
-        $regex = '/\{(NODE_(\d+)(?:_(\d+))?)\}/';
+
+        $regex = '/\{'.\Cx\Model\ContentManager\Page::NODE_URL_PCRE.'\}/xi';
 
         $matches = array();
-        preg_match_all($regex, $content, $matches);
-
-        if(count($matches) == 0)
+        if (!preg_match_all($regex, $content, $matches)) {
             return;
+        }
 
         for($i = 0; $i < count($matches[0]); $i++) {           
-            $langId = empty($matches[3][$i]) ? FRONTEND_LANG_ID : $matches[3][$i];
-            $this->placeholders[$matches[1][$i]] = array('nodeid' => $matches[2][$i], 'lang' => $langId);
+            $nodeId = isset($matches[\Cx\Model\ContentManager\Page::NODE_URL_NODE_ID][$i]) ?$matches[\Cx\Model\ContentManager\Page::NODE_URL_NODE_ID][$i] : 0;
+            $module = isset($matches[\Cx\Model\ContentManager\Page::NODE_URL_MODULE][$i]) ? strtolower($matches[\Cx\Model\ContentManager\Page::NODE_URL_MODULE][$i]) : '';
+            $cmd = isset($matches[\Cx\Model\ContentManager\Page::NODE_URL_CMD][$i]) ? strtolower($matches[\Cx\Model\ContentManager\Page::NODE_URL_CMD][$i]) : '';
+
+            if (empty($matches[\Cx\Model\ContentManager\Page::NODE_URL_LANG_ID][$i])) {
+                $langId = FRONTEND_LANG_ID;
+            } else {
+                $langId = $matches[\Cx\Model\ContentManager\Page::NODE_URL_LANG_ID][$i];
+            }
+
+            if ($nodeId) {
+                # page is referenced by NODE-ID (i.e.: [[NODE_1]])
+                $type = 'id';
+            } else {
+                # page is referenced by NODE-ID (i.e.: [[NODE_1]])
+                $type = 'module';
+            }
+
+            $this->placeholders[$matches[\Cx\Model\ContentManager\Page::NODE_URL_PLACEHOLDER][$i]] = array(
+                'type'      => $type,
+                'nodeid'    => $nodeId,
+                'module'    => $module,
+                'cmd'       => $cmd,
+                'lang'      => $langId,
+            );
         }
     }
 
@@ -76,49 +98,88 @@ class LinkGenerator {
         //build a big or with all the node ids and pages 
         $arrExprs = null;
         $fetchedPages = array();
+        $pIdx = 0;
         foreach($this->placeholders as $placeholder => $data) {
-            if (isset($fetchedPages[$data['nodeid']][$data['lang']])) {
-                continue;
+            if ($data['type'] == 'id') {
+                # page is referenced by NODE-ID (i.e.: [[NODE_1]])
+
+                if (isset($fetchedPages[$data['nodeid']][$data['lang']])) {
+                    continue;
+                }
+
+                $arrExprs[] = $qb->expr()->andx(
+                    $qb->expr()->eq('p.node', $data['nodeid']),
+                    $qb->expr()->eq('p.lang', $data['lang'])
+                );
+
+                $fetchedPages[$data['nodeid']][$data['lang']] = true;
+            } else {
+                # page is referenced by module (i.e.: [[NODE_SHOP_CART]])
+
+                if (isset($fetchedPages[$data['module']][$data['cmd']][$data['lang']])) {
+                    continue;
+                }
+
+                $arrExprs[] = $qb->expr()->andx(
+                    $qb->expr()->eq('p.type', ':type'),
+                    $qb->expr()->eq('p.module', ':module_'.$pIdx),
+                    $qb->expr()->eq('p.cmd', ':cmd_'.$pIdx),
+                    $qb->expr()->eq('p.lang', $data['lang'])
+                );
+                $qb->setParameter('module_'.$pIdx, $data['module']);
+                $qb->setParameter('cmd_'.$pIdx, empty($data['cmd']) ? null : $data['cmd']);
+                $qb->setParameter('type', \Cx\Model\ContentManager\Page::TYPE_APPLICATION);
+
+                $fetchedPages[$data['module']][$data['cmd']][$data['lang']] = true;
+
+                $pIdx++;
             }
-
-            $arrExprs[] = $qb->expr()->andx(
-                $qb->expr()->eq('p.node', $data['nodeid']),
-                $qb->expr()->eq('p.lang', $data['lang'])
-            );
-
-            $fetchedPages[$data['nodeid']][$data['lang']] = true;
         }
 
         //fetch the nodes if there are any in the query
         if($arrExprs) {
-            $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
-
             foreach ($arrExprs as $expr) {
                 $qb->orWhere($expr);
             }
 
             $pages = $qb->getQuery()->getResult();
             foreach($pages as $page) {
-                $prefix = ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageCodeById($page->getLang()).'/';
+                // build placeholder's value -> URL
+                $url = \Cx\Core\Routing\URL::fromPage($page);
 
-                $placeholder = 'NODE_'.$page->getNode()->getId().'_'.$page->getLang();
-                //build placeholder's value
-                $this->placeholders[$placeholder] = $prefix . $pageRepo->getPath($page);
+                $placeholderByApp = '';
+                $placeholderById = \Cx\Model\ContentManager\Page::PLACEHOLDER_PREFIX.$page->getNode()->getId();
+                $this->placeholders[$placeholderById.'_'.$page->getLang()] = $url;
+
+                if ($page->getType() == \Cx\Model\ContentManager\Page::TYPE_APPLICATION) {
+                    $module = $page->getModule();
+                    $cmd = $page->getCmd();
+                    $placeholderByApp = \Cx\Model\ContentManager\Page::PLACEHOLDER_PREFIX;
+                    $placeholderByApp .= strtoupper($module.(empty($cmd) ? '' : '_'.$cmd));
+                    $this->placeholders[$placeholderByApp.'_'.$page->getLang()] = $url;
+                }
 
                 if ($page->getLang() == FRONTEND_LANG_ID) {
-                    $placeholder = 'NODE_'.$page->getNode()->getId();
-                    //build placeholder's value
-                    $this->placeholders[$placeholder] = $prefix . $pageRepo->getPath($page);
+                    $this->placeholders[$placeholderById] = $url;
+
+                    if (!empty($placeholderByApp)) {
+                        $this->placeholders[$placeholderByApp] = $url;
+                    }
                 }
             }
         }
 
-        //remove the placeholders we could not find a link for
-        //(maybe we'll build a 404 link later or store the fails somewhere
-        // to notify the user of dead links?)
+        // there might be some placeholders we were unable to resolve.
+        // try to resolve them by using the fallback-language-reverse-lookup
+        // methode provided by \Cx\Core\Routing\URL::fromModuleAndCmd().
         foreach($this->placeholders as $placeholder => $data) {
-            if(!is_string($data))
-                unset($this->placeholders[$placeholder]);
+            if (!$data instanceof \Cx\Core\Routing\URL) {
+                if (!empty($data['module'])) {
+                    $this->placeholders[$placeholder] = \Cx\Core\Routing\URL::fromModuleAndCmd($data['module'], $data['cmd'], $data['lang']);
+                } else {
+                    $this->placeholders[$placeholder] = \Cx\Core\Routing\URL::fromModuleAndCmd('error', '', $data['lang']);
+                }
+            }
         }
 
         $this->fetchingDone = true;
@@ -139,3 +200,4 @@ class LinkGenerator {
         }
     }
 }
+

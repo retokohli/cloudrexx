@@ -19,6 +19,64 @@ class Page extends \Cx\Model\Base\EntityBase
     const TYPE_REDIRECT = 'redirect';
     const TYPE_FALLBACK = 'fallback';
     const TYPE_ALIAS = 'alias';
+
+    /**
+     * Prefex used in placeholders for Node-Urls:
+     * [[ NODE_(<node_id>|<module>[_<cmd>])[_<lang_id>] ]]
+     */
+    const PLACEHOLDER_PREFIX = 'NODE_';
+
+    /**
+     * Regular expression to match a node-url in placeholder notation
+     */
+    const NODE_URL_PCRE = '(
+        # placeholder prefix
+        NODE_
+        (?:
+            (?:
+                # REFERENCE BY NODE-ID
+                # node-id
+                (\d+)
+            |   # REFERENCE BY MODULE & CMD
+                # module name
+                ([A-Z1-9]+)
+                # module cmd (optional)
+                (?U)(?:_(\w+))?
+            )
+            # Language-id (optional)
+            (?-U)(?:_(\d+))?
+        )
+     )';
+
+    /**
+     * Node Url regular expression back reference
+     * index for the whole placeholder
+     */
+    const NODE_URL_PLACEHOLDER = 1;
+
+    /**
+     * Node Url regular expression back reference
+     * index for the node id
+     */
+    const NODE_URL_NODE_ID = 2;
+
+    /**
+     * Node Url regular expression back reference
+     * index for the module
+     */
+    const NODE_URL_MODULE = 3;
+
+    /**
+     * Node Url regular expression back reference
+     * index for the module cmd
+     */
+    const NODE_URL_CMD = 4;
+
+    /**
+     * Node Url regular expression back reference
+     * index for the language id
+     */
+    const NODE_URL_LANG_ID = 5;
     
     /**
      * @var integer $id
@@ -702,10 +760,9 @@ class Page extends \Cx\Model\Base\EntityBase
      * @return boolean
      */
     public function isTargetInternal() {
-        //internal targets are formed like [[NODE_<node_id>[_<lang_id>]]]<querystring>
+        //internal targets are formed like [[ NODE_(<node_id>|<module>[_<cmd>])[_<lang_id>] ]]<querystring>
         $matches = array();
-        preg_match('/\[\[NODE_(\d+)(_(\d+))*\]\](\S)*/', $this->target, $matches);
-        return isset($matches[1]);
+        return preg_match('/\[\['.self::NODE_URL_PCRE.'\]\](\S)?/ix', $this->target, $matches);
     }
 
     /**
@@ -724,22 +781,28 @@ class Page extends \Cx\Model\Base\EntityBase
         $t = $this->getTarget();
         $matches = array();
         
-        if (!preg_match('/\[\[NODE_(\d+)(_(\d+))*\]\](\S)*/', $t, $matches)) {
+        if (!preg_match('/\[\['.self::NODE_URL_PCRE.'\]\](\S)?/ix', $t, $matches)) {
             return array(
-                'nodeId' => null,
-                'langId' => null,
+                'nodeId'      => null,
+                'module'      => null,
+                'cmd'         => null,
+                'langId'      => null,
                 'queryString' => $t,
             );
         }
         
-        // Indexes 2 and 4 are optinal
-        $matches[3] = empty($matches[3]) ? FRONTEND_LANG_ID : $matches[3];
-        $matches[4] = empty($matches[4]) ? '' : $matches[4];
+        $nodeId      = empty($matches[self::NODE_URL_NODE_ID]) ? 0                : $matches[self::NODE_URL_NODE_ID];
+        $module      = empty($matches[self::NODE_URL_MODULE])  ? ''               : $matches[self::NODE_URL_MODULE];
+        $cmd         = empty($matches[self::NODE_URL_CMD])     ? ''               : $matches[self::NODE_URL_CMD];
+        $langId      = empty($matches[self::NODE_URL_LANG_ID]) ? FRONTEND_LANG_ID : $matches[self::NODE_URL_LANG_ID];
+        $queryString = empty($matches[6]) ? '' : $matches[6];
         
         return array(
-            'nodeId' => $matches[1],
-            'langId' => $matches[3],
-            'queryString' => $matches[4],
+            'nodeId'      => $nodeId,
+            'module'      => $module,
+            'cmd'         => $cmd,
+            'langId'      => $langId,
+            'queryString' => $queryString,
         );
     }
 
@@ -753,6 +816,30 @@ class Page extends \Cx\Model\Base\EntityBase
 
         $c = $this->cutTarget();
         return intval($c['langId']);
+    }
+
+    /**
+     * Get the target pages' module name
+     * @return mixed module name if set, otherwise NULL
+     */
+    public function getTargetModule() {
+        if(!$this->isTargetInternal())
+            return null;
+
+        $c = $this->cutTarget();
+        return strtolower($c['module']);
+    }
+
+    /**
+     * Get the target pages' module cmd
+     * @return mixed module cmd if set, otherwise NULL
+     */
+    public function getTargetCmd() {
+        if(!$this->isTargetInternal())
+            return null;
+
+        $c = $this->cutTarget();
+        return strtolower($c['cmd']);
     }
 
     /**
@@ -1467,14 +1554,14 @@ class Page extends \Cx\Model\Base\EntityBase
     {
         $aliases = array();
         // find aliases without specified language
-        $target = '[[NODE_' . $this->getNode()->getId() . ']]';
+        $target = '[[' . self::PLACEHOLDER_PREFIX . $this->getNode()->getId() . ']]';
         $crit1 = array(
             'type' => self::TYPE_ALIAS,
             'target' => $target,
         );
         
         // find aliases with language specified
-        $target = '[[NODE_' . $this->getNode()->getId() . '_' . $this->getLang() . ']]';
+        $target = '[[' . self::PLACEHOLDER_PREFIX . $this->getNode()->getId() . '_' . $this->getLang() . ']]';
         $crit2 = array(
             'type' => self::TYPE_ALIAS,
             'target' => $target,
@@ -1606,7 +1693,7 @@ class Page extends \Cx\Model\Base\EntityBase
      * @return array 
      */
     public function getRelatedBlocks() {
-        $blockLib = new \BlockLibrary();
+        $blockLib = new \blockLibrary();
         $blocks = $blockLib->_getBlocksForPageId($this->getId());
         return $blocks;
     }
@@ -1616,7 +1703,7 @@ class Page extends \Cx\Model\Base\EntityBase
      * @param array $relatedBlocks list of block IDs
      */
     public function setRelatedBlocks($relatedBlocks) {
-        $blockLib = new \BlockLibrary();
+        $blockLib = new \blockLibrary();
         $blockLib->_setBlocksForPageId($this->getId(), $relatedBlocks);
     }
 }
