@@ -78,25 +78,12 @@ table tr.marketRow1 {
 }
 
 table td {
-    padding: 5px;
+    padding: 6px 8px 6px 8px;
     vertical-align:top;
 }
 
 table td.none {
     border: 0;
-}
-
-#shop table tr.row3 {
-    background-color: #FFFFFF;
-}
-
-/* Highlight for shop, now mandatory in germany */
-#shop table.highlight tr.row2 {
-    background-color: #B8D30B;
-}
-
-#shop table.highlight tr.row3 {
-    background-color: #C0DD13;
 }
 
 /***************************************************/
@@ -1075,7 +1062,6 @@ div.row2 {
 #shop div.payment,
 #shop div.message,
 #shop div.lsv_form,
-#shop div.cart,
 #shop div.cart_links,
 #shop div.message_error,
 #shop div.account_details,
@@ -1201,7 +1187,7 @@ div.row2 {
 }
 #shop div.price {
     float: right;
-    padding: 5px 10px 6px 10px;
+    padding: 7px 10px 5px 10px;
     color: #FFFFFF;
     font-size: 15px;
     font-weight: bold;
@@ -1276,10 +1262,8 @@ div.row2 {
     width: 100%;
 }
 #shop div.functions {
-    float: left;
-    width: 100%;
+    float: right;
     padding: 20px 0 0 0;
-    text-align: right;
 }
 #shop div.functions input[type=submit] {
     margin: 0;
@@ -1317,6 +1301,9 @@ div.row2 {
     padding: 0;
 }
 #shop .error {
+    float: left;
+    width: 100%;
+    padding: 0 0 10px 0;
     color: red;
 }
 #shop input.error[type=radio] {
@@ -1381,17 +1368,28 @@ div.row2 {
     margin: 0;
 }
 
+#shop .cart-links {
+    float: left;
+    padding: 10px 0 0 8px;
+}
+
+#shop .cart-buttons {
+    float: right;
+    padding: 10px 8px 0 0;
+}
+
 #shop button.details-button {
     float: right;
     padding-right: 25px;
     color: #FFFFFF;
     font-weight: bold;
-    background: #0A85C8 url('images/arrow-right-white.png') no-repeat 62px 12px;
+    background: #0A85C8 url('images/arrow-right-white.png') no-repeat 62px 13px;
 }
 
 #shop button.add-to-cart {
     float: right;
-    padding-left: 33px;
+    height: 33px;
+    padding: 5.5px 10px 7px 33px;
     color: #FFFFFF;
     font-weight: bold;
     border-top-left-radius: 0;
