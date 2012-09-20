@@ -185,7 +185,9 @@ class Navigation
                     if (isset($urls[$id])) {
                         $uri = $urls[$id];
                     } else {
-                        continue;
+                        // link to error page in case there exists no associated page
+                        // in the frontend language ($id)
+                        $uri = \Cx\Core\Routing\URL::fromModuleAndCmd('error', '', $id);
                     }
                     
                     $name  = contrexx_raw2xhtml($langNameContraction ? strtoupper($value['lang']) : $value['name']);
