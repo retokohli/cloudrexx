@@ -14,6 +14,7 @@ abstract class PageTree {
     protected $depth = null;
     protected $em = null;
     protected $currentPage = null;
+    protected $pageIdsAtCurrentPath = array();
     protected $currentPageOnRootNode = false;
     protected $currentPagePath = null;
     protected $pageRepo = null;
@@ -23,7 +24,7 @@ abstract class PageTree {
      * @param int $maxDepth maximum depth to fetch, 0 means everything
      * @param \Cx\Model\ContentManager\Node $rootNode node to use as root
      * @param int $lang the language
-     * @param \Cx\Model\ContentManager\Node $currentPage if set, renderElement() will receive a correctly set $current flag.
+     * @param \Cx\Model\ContentManager\Page $currentPage if set, renderElement() will receive a correctly set $current flag.
      */
     public function __construct($entityManager, $maxDepth = 0, $rootNode = null, $lang = null, $currentPage = null) {
         $this->lang = $lang;
@@ -31,6 +32,15 @@ abstract class PageTree {
         $this->em = $entityManager;
         $this->rootNode = $rootNode;
         $this->currentPage = $currentPage;
+        $pageI = $currentPage;
+        while ($pageI) {
+            $this->pageIdsAtCurrentPath[] = $pageI->getId();
+            try {
+                $pageI = $pageI->getParent();
+            } catch (\Cx\Model\ContentManager\PageException $e) {
+                $pageI = null;
+            }
+        }
         $this->startLevel = 1;
         $this->startPath = '';
         $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
@@ -98,10 +108,7 @@ $this->bytes = memory_get_peak_usage();
             }
 
             // prepare data for element
-            $current = false;
-            if ($this->currentPage) {
-                $current = $this->currentPage->getId() == $page->getId();
-            }
+            $current = in_array($page->getId(), $this->pageIdsAtCurrentPath);
             
             $href = $page->getPath();
             if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1) {
