@@ -2213,15 +2213,23 @@ function centerY(height)
 
     /**
      * Show the login page
+     *
+     * Redirects to the appropriate page, if necessary.
+     * Verifies and handles requests for (not) registering as a customer.
      * @global  array   $_ARRAYLANG Language array
      * @see     _authenticate(), is_auth()
-     * @return  boolean             True
+     * @return  boolean             True, except when redirecting
      */
     static function login()
     {
         global $_ARRAYLANG;
 
-        if (isset($_POST['baccount'])) {
+        if (   isset($_POST['bnoaccount'])
+            && SettingDb::getValue('register') != self::REGISTER_MANDATORY) {
+            $_SESSION['shop']['dont_register'] = true;
+        }
+        if (   isset($_POST['baccount'])
+            || isset($_POST['bnoaccount'])) {
 // TODO: Use the alias, if any
             HTTP::redirect(CONTREXX_SCRIPT_PATH.
                 '?section=shop'.MODULE_INDEX.'&cmd=account');
@@ -2247,6 +2255,22 @@ function centerY(height)
           'SHOP_LOGIN_REDIRECT' => base64_encode(CONTREXX_SCRIPT_PATH.
               '?section=shop'.MODULE_INDEX.'&cmd=account')
         ));
+        switch (SettingDb::getValue('register')) {
+            case self::REGISTER_MANDATORY:
+                if (self::$objTemplate->blockExists('register'))
+                    self::$objTemplate->touchBlock('register');
+                break;
+            case self::REGISTER_NONE:
+                if (self::$objTemplate->blockExists('dont_register'))
+                self::$objTemplate->touchBlock('dont_register');
+                break;
+            case self::REGISTER_OPTIONAL:
+                if (self::$objTemplate->blockExists('register'))
+                    self::$objTemplate->touchBlock('register');
+                if (self::$objTemplate->blockExists('dont_register'))
+                    self::$objTemplate->touchBlock('dont_register');
+                break;
+        }
         return true;
 /* OLD
         // Fails and returns when not logged in, redirects otherwise.
