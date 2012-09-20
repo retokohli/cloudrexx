@@ -156,7 +156,7 @@ jQuery(document).ready(function(){
             ),
             'dependencies' => array('jquery'),
         ),
-        'bootstrap' => array(
+        'jquery-bootstrap' => array(
             'jsfiles' => array(
                 'lib/javascript/jquery/plugins/bootstrap/bootstrap.js',
             ),

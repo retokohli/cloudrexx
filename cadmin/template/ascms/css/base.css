@@ -893,12 +893,6 @@ table tr.reset td {
     color: #e59400;
 }
 
-.note {
-    padding-left: 18px;
-    background: url(../../../images/icons/note.gif) no-repeat 0 50%;
-    z-index: 1000;
-}
-
 .sort-handle { /*the drag handle*/
                cursor: move;
                width: 17px;

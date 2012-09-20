@@ -84,7 +84,7 @@ class myAdminManager {
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'content', 'index_home.html');
 
-        JS::activate('bootstrap');
+        JS::activate('jquery-bootstrap');
         JS::activate('jquery-jqplot');
 
         $arrAccessIDs = array(5, 10, 76, '84_1', 6, 19, 75, '84_2', 17, 18, 7, 32, 21);
