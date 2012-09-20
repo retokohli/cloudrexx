@@ -953,13 +953,6 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             'SHOP_DISCOUNT_COUPON_EDIT_ACTIVE' => $edit ? 'active' : '',
             'SHOP_DISCOUNT_COUPON_VIEW_DISPLAY' => $edit ? 'none' : 'block',
             'SHOP_DISCOUNT_COUPON_EDIT_DISPLAY' => $edit ? 'block' : 'none',
-            // Datepicker language and settings
-//            'DPC_DEFAULT_FORMAT' => 'DD.MM.YYYY',
-//            'DPC_TODAY_TEXT' => $_CORELANG['TXT_CORE_TODAY'],
-//            'DPC_BUTTON_TITLE' => $_CORELANG['TXT_CORE_CALENDAR_OPEN'],
-//            'DPC_MONTH_NAMES' => "'".join("','", $arrMoy)."'",
-            // Format the weekday string as "'Su','Mo','Tu','We','Th','Fr','Sa'"
-            'DPC_DAY_NAMES' => "'".join("','", $arrDow2)."'",
             'HEADER_SHOP_DISCOUNT_COUPON_CODE' =>
                 $objSorting->getHeaderForField('code'),
             'HEADER_SHOP_DISCOUNT_COUPON_START_TIME' =>

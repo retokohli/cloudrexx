@@ -154,12 +154,6 @@ div.row2 {
         float: none;
 }
 
-/***************************************************/
-/* CSS DEFINITIONS FOR LIVECAM MODULE              */
-/***************************************************/
-div#livecam #CALBUTTONDPC_datum {
-    display: none;
-}
 
 /***************************************************/
 /* CSS DEFINITIONS FOR GALLERY MODULE              */

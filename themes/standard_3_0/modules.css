@@ -192,12 +192,8 @@ div.row2 {
 .voting label{
     float: none
 }
-/***************************************************/
-/* CSS DEFINITIONS FOR LIVECAM MODULE              */
-/***************************************************/
-div#livecam #CALBUTTONDPC_datum {
-    display: none;
-}
+
+
 /***************************************************/
 /* CSS DEFINITIONS FOR GALLERY MODULE              */
 /***************************************************/
