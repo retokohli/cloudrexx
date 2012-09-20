@@ -402,4 +402,5 @@ $_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_PLEASE_ACCEPT'] = "Bitte bestätigen Si
 // 20120914
 $_ARRAYLANG['TXT_SHOP_MANUFACTURER'] = "Hersteller";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER'] = "Ohne Registrierung bestellen";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_REGISTER_NOW'] = "Jetzt registrieren";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER_NOTE'] = "Markieren Sie dieses Kästchen, wenn Sie ohne Registrierung bestellen möchten.";
