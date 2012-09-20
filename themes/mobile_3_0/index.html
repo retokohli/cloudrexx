@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de" class="no-js">
+    <head>
+        <title>{GLOBAL_TITLE} - {METATITLE} - powered by {VERSION}</title>
+        <meta name="description" content="{METADESC}"/>
+        <meta name="keywords" content="{METAKEYS}"/>
+        <meta http-equiv="Content-Type" content="text/html; charset={CHARSET}" />        
+        <meta name="robots" content="{METAROBOTS}"/>
+        <meta name="generator" content="{VERSION}"/>        
+        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;" />
+        
+        <link rel="stylesheet" type="text/css" href="themes/mobile_3_0/style.css" />
+        <link rel="alternate" type="application/rss+xml" title="{GLOBAL_TITLE}" href="{BASE_URL}/feed/news_headlines_de.xml" />
+        
+        {JAVASCRIPT}
+        {STYLE_FILE}
+        {LOGIN_INCLUDE}
+        
+        <script type="text/javascript" src="themes/mobile_3_0/langnavbar.js"></script>
+        <script type="text/javascript" src="themes/mobile_3_0/js/mobile-javascript-default.js"></script>
+        <script type="text/javascript" src="themes/mobile_3_0/js/webtrends.js"></script>
+        <script type="text/javascript" src="themes/mobile_3_0/js/jquery.cookie.js"></script>
+        
+        <script>
+            $J(document).ready(function(){
+                if($J.cookie('langId') == 1){
+                    $J('#nav-lang li a.de').addClass('lang_active');
+                } else if($J.cookie('langId') == 2) {
+                    $J('#nav-lang li a.en').addClass('lang_active');
+                }
+            });
+        </script>
+           
+        <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="themes/mobile_3_0/ie.css" /><![endif]-->
+    </head>
+    <body>
+        <div  data-theme="e" data-role="page" >
+            <div id="container">
+                <header>
+                    <a href="index.php?section=home" class="logo" data-role="none"> <img alt="" src="themes/mobile_3_0/images/logo.png"></a>                    
+                    <a href="#address" class="contact header_icons">Kontakt</a>
+                    <a href="#search" class="search header_icons">Suche</a>                   
+                </header>
+                <section id="search" >
+                    <form method="GET" action="index.php">
+                        <fieldset>
+                            <label class="visuallyhidden" for="searchfield">Suche</label>
+                            <input value="search" name="section" type="hidden"/>
+                            <input id="searchfield" class="text" type="search" name="term"  />
+                            <button type="submit" data-role="none">Suche</button>
+                        </fieldset>
+                    </form>
+                </section>
+                <section id="address">                   
+                    <address>
+                        {CONTACT_COMPANY}<br>
+                        <a class="telephone" href="tel:{CONTACT_PHONE}">{CONTACT_PHONE}</a><br>
+                        <a href="#" title="E-Mail">{CONTACT_EMAIL}</a><br>
+                    </address>
+                </section>
+                {CONTENT_FILE}                
+                <footer data-role="footer">                   
+                    <ul role="navigation" class="noprint ">
+                        <li>
+                            <a rel="external" title="Rechtliche Hinweise" href="Services/Rechtliche-Hinweise"><span class="link">Rechtlichee Hinweise</span></a>
+                        </li>	
+                        <li>
+                            <a rel="external" title="Impressum" href="index.php?section=imprint" ><span class="link">Impressum</span></a>
+                        </li>	
+                    </ul>
+                    <ul id="nav-lang">
+                        <li><a class="de" href="index.php?setLang=1" >DE</a></li>                        
+                        <li><a class="en" href="index.php?setLang=2">EN</a></li>
+                    </ul>
+                    <a href="index.php?smallscreen=0">Zur klassischen Ansicht wechseln</a>                    
+                </footer>               
+            </div>
+        </div>
+        {COUNTER}
+        {LOGIN_CONTENT}
+    </body>
+</html>
