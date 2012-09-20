@@ -136,7 +136,7 @@ if ($incDoctrineStatus === false) {
 
 // Check if system is running
 if ($_CONFIG['systemStatus'] != 'on') {
-    header('location: offline.html');
+    header('Location: offline.html');
     die(1);
 }
 Env::set('config', $_CONFIG);
@@ -196,8 +196,8 @@ if ($aliaspage != null) {
     $redirectToCorrectLanguageDir = function() use ($languageExtractor, $url, $_LANGID, $_CONFIG) {
         $languageExtractor->addLanguageDir($url, $_LANGID);
 
-        CSRF::header('Location: http://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET. '/' . $url->getLangDir() . '/' . $url->getPath());
-        die();
+        CSRF::header('Location: '.$url);
+        exit;
     };
 
     try {
@@ -409,42 +409,14 @@ if ($isRegularPageRequest) {
             }
 
             $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
-
-            $crit = array(
-                 'module' => $section,
-                 'type' => 'application',
-                 'lang' => FRONTEND_LANG_ID,
-                 'cmd' => $command
-            );
-
-            $page = $pageRepo->findOneBy($crit);
-
-            // if no page was found so far,
-            // but, because the request was done using the legacy module request notation (?section=module)
-            // there might be a chance that there exists a version of the requested page in the fallback language
-            if (!$page) {
-                $crit = array(
-                     'module' => $section,
-                     'lang' => FWLanguage::getFallbackLanguageIdById(FRONTEND_LANG_ID),
-                     'cmd' => $command
-                );
-
-                $page = $pageRepo->findOneBy($crit);
-
-                // check if, we did find the requested module page in the fallback language
-                if ($page) {
-                    // we did find the requested module page in the fallback language,
-                    // now let's try to load its associated page of the requested language
-                    $node = $page->getNode();
-                    $page = $node->getPage(FRONTEND_LANG_ID);
-                }
-            }
+            $page = $pageRepo->findOneByModuleCmdLang($section, $command, FRONTEND_LANG_ID);
         }
 
         //fallback content
         if($page) {
             try {
                 $resolver->handleFallbackContent($page);
+                $page = $resolver->getPage();
             }
             catch(ResolverException $e) {
                 //page should have fallback content, none found.
@@ -464,7 +436,7 @@ if ($isRegularPageRequest) {
         }
         else {
             //page not found, redirect to error page.
-            CSRF::header('Location: http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.Env::get('virtualLanguageDirectory').'/index.php?section=error&id=404');
+            header('Location: '.\Cx\Core\Routing\URL::fromModuleAndCmd('error'));
             exit;
         }
     }
@@ -576,20 +548,20 @@ if (   (   $page_protected
         if ($page_protected) {
             if (!Permission::checkAccess($pageAccessId, 'dynamic', true)) {
                 $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-                CSRF::header ('Location: '.CONTREXX_SCRIPT_PATH.'?section=login&cmd=noaccess&redirect='.$link);
+                CSRF::header('Location: '.\Cx\Core\Routing\URL::fromModuleAndCmd('login', 'noaccess', '', array('redirect' => $link)));
                 exit;
             }
         }
         if ($history && !Permission::checkAccess(78, 'static', true)) {
             $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-            CSRF::header ('Location: '.CONTREXX_SCRIPT_PATH.'?section=login&cmd=noaccess&redirect='.$link);
+            CSRF::header('Location: '.\Cx\Core\Routing\URL::fromModuleAndCmd('login', 'noaccess', '', array('redirect' => $link)));
             exit;
         }
     } elseif (!empty($_COOKIE['PHPSESSID']) && !$page_protected) {
         unset($_COOKIE['PHPSESSID']);
     } else {
         $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-        CSRF::header ('Location: '.CONTREXX_SCRIPT_PATH.'?section=login&redirect='.$link);
+        CSRF::header('Location: '.\Cx\Core\Routing\URL::fromModuleAndCmd('login', '', '', array('redirect' => $link)));
         exit;
     }
 }

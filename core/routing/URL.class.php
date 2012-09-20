@@ -301,25 +301,64 @@ class URL {
      * @param int $lang (optional) Language to use, default is FRONTENT_LANG_ID
      * @param array $parameters (optional) HTTP GET parameters to append
      * @param string $protocol (optional) The protocol to use
+     * @param boolean $returnErrorPageOnError (optional) If set to TRUE, this method will return an URL object that point to the error page of Contrexx. Defaults to TRUE.
      * @return \Cx\Core\Routing\URL Url object for the supplied module, cmd and lang
      */
-    public static function fromModuleAndCmd($module, $cmd = '', $lang = '', $parameters = array(), $protocol = '') {
+    public static function fromModuleAndCmd($module, $cmd = '', $lang = '', $parameters = array(), $protocol = '', $returnErrorPageOnError = true) {
         if ($lang == '') {
             $lang = FRONTEND_LANG_ID;
         }
         $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
-        $page = $pageRepo->findOneBy(array(
-            'module' => $module,
-            'cmd' => $cmd,
-            'lang' => $lang,
-        ));
+        $page = $pageRepo->findOneByModuleCmdLang($module, $cmd, $lang);
+
+        // In case we were unable to locate the requested page, we shall
+        // return the URL to the error page
+        if (!$page && $returnErrorPageOnError && $module != 'error') {
+            $page = $pageRepo->findOneByModuleCmdLang('error', '', $lang);
+        }
+
+        // In case we were unable to locate the requested page
+        // and were also unable to locate the error page, we shall
+        // return the URL to the Homepage
+        if (!$page && $returnErrorPageOnError) {
+            return static::fromDocumentRoot($lang, $protocol);
+        }
+
+        // Throw an exception if we still were unable to locate 
+        // any usfull page till now
+        if (!$page) {
+            throw new URLException("Unable to find a page with MODULE:$module and CMD:$cmd in language:$lang!");
+        }
+
         return static::fromPage($page, $parameters, $protocol);
+    }
+
+    /**
+     * Returns an Url object pointing to the documentRoot of the website
+     * @param int $lang (optional) Language to use, default is FRONTEND_LANG_ID
+     * @param string $protocol (optional) The protocol to use
+     * @return \Cx\Core\Routing\URL Url object for the documentRoot of the website
+     */
+    public static function fromDocumentRoot($lang = '', $protocol = '')
+    {
+        global $_CONFIG;
+
+        if ($lang == '') {
+            $lang = FRONTEND_LANG_ID;
+        }
+        if ($protocol == '') {
+            $protocol = ASCMS_PROTOCOL;
+        }
+        $host = $_CONFIG['domainUrl'];
+        $offset = ASCMS_PATH_OFFSET;
+        $langDir = \FWLanguage::getLanguageCodeById($lang);
+        return new URL($protocol.'://'.$host.$offset.'/'.$langDir);
     }
     
     /**
      * Returns an Url object for node and language
      * @param int $nodeId Node id
-     * @param int $lang (optional) Language to use, default is FRONTENT_LANG_ID
+     * @param int $lang (optional) Language to use, default is FRONTEND_LANG_ID
      * @param array $parameters (optional) HTTP GET parameters to append
      * @param string $protocol (optional) The protocol to use
      * @return \Cx\Core\Routing\URL Url object for the supplied module, cmd and lang
@@ -413,7 +452,7 @@ class URL {
     }
 
     public function setLangDir($langDir) {
-        $this->lang_dir = $langDir;
+        $this->langDir = $langDir;
     }
 
     /**

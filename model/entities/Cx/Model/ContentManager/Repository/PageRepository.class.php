@@ -68,6 +68,93 @@ class PageRepository extends EntityRepository {
     }
 
     /**
+     * Find a single page specified by module, cmd and lang.
+     * Use to find a specific module page within a certain language.
+     *
+     * @param   string $module Module name
+     * @param   string $cmd Cmd of the module
+     * @param   int    $lang Language-Id
+     * @return  \Cx\Model\ContentManager\Page
+     */
+    public function findOneByModuleCmdLang($module, $cmd, $lang)
+    {
+        $page = $this->findOneBy(array(
+            'module' => $module,
+            'cmd'    => $cmd,
+            'lang'   => $lang,
+        ));
+        if (!$page) {
+            // try to fetch the requested page by doing a reverse lookup
+            // through the fallback-logic
+            $page = $this->lookupPageFromModuleAndCmdByFallbackLanguage($module, $cmd, $lang);
+        }
+
+        return $page;
+    }
+
+    /**
+     * Tries to find a page that acts as a module page, but that does physically 
+     * not exist in the specified language, but might exist as a fallback page.
+     *
+     * @param   string  $module
+     * @param   string  $cmd
+     * @param   int     $lang
+     * @return  mixed   \Cx\Model\ContentManager\Page if a page was found, otherwise NULL
+     */
+    private function lookupPageFromModuleAndCmdByFallbackLanguage($module, $cmd, $lang)
+    {
+        $fallbackLangId = \FWLanguage::getFallbackLanguageIdById($lang);
+
+        // The language of the requested page does not have a fallback-language,
+        // therefore we can stop here.
+        if (!$fallbackLangId) {
+            return null;
+        }
+
+        // 1. try to fetch the requested module page from the fallback-language
+        //$pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+        $page = $this->findOneBy(array(
+            'module' => $module,
+            'cmd'    => $cmd,
+            'lang'   => $fallbackLangId,
+        ));
+
+        if (!$page) {
+            // We could not find the requested module page in the fallback-language.
+            // Lets try to find the requested module page in the fallback-language
+            // of the fallback-language (this will start a recursion until we will 
+            // reach the end of the fallback-language tree)
+            $page = $this->lookupPageFromModuleAndCmdByFallbackLanguage($module, $cmd, $fallbackLangId);
+        }
+
+        // In case we have not found the requested module page within the
+        // fallback-language tree, we can stop here.
+        if (!$page) {
+            return null;
+        }
+
+        // 2. We found the requested module page in the fallback-language.
+        // Now lets check if the associated NODE also has a page in the
+        // language we were originally looking for. If not, we can stop here.
+        $page = $page->getNode()->getPage($lang);
+        if (!$page) {
+            return null;
+        }
+
+        // 3. We found a page in our language!
+        // Now lets do a final check if this page is of type fallback.
+        // If so, we were unlucky and have to stop here.
+        if ($page->getType() != \Cx\Model\ContentManager\Page::TYPE_FALLBACK) {
+            return null;
+        }
+
+        // Reaching this point, means that our reverse lookup was successfull.
+        // Meaning the we found the requested module page.
+        return $page;
+    }
+
+
+    /**
      * An array of pages sorted by their langID for specified module and cmd.
      *
      * @param string $module
@@ -606,15 +693,26 @@ class PageRepository extends EntityRepository {
         if (!$page->isTargetInternal()) {
             throw new PageRepositoryException('Tried to get target node, but page has no internal target');
         }
+
+// TODO: basically the method \Cx\Model\ContentManager\Page::cutTarget() would provide us a ready to use $crit array
+//       Check if we could directly use the array from cutTarget() and implement a public method to cutTarget()
         $nodeId = $page->getTargetNodeId();
+        $module = $page->getTargetModule();
+        $cmd    = $page->getTargetCmd();
         $langId = $page->getTargetLangId();
         if ($langId == 0) {
             $langId = FRONTEND_LANG_ID;
         }
-        $crit = array(
-            'node' => $nodeId,
-            'lang' => $langId,
-        );
+
+        $crit = array();
+        if ($nodeId) {
+            $crit['node'] = $nodeId;
+        } else {
+            $crit['module'] = $module;
+            $crit['cmd'] = $cmd;
+        }
+        $crit['lang'] = $langId;
+
         $page = $this->findOneBy($crit);
         return $page;
     }
