@@ -175,7 +175,13 @@ class LinkGenerator {
         foreach($this->placeholders as $placeholder => $data) {
             if (!$data instanceof \Cx\Core\Routing\URL) {
                 if (!empty($data['module'])) {
-                    $this->placeholders[$placeholder] = \Cx\Core\Routing\URL::fromModuleAndCmd($data['module'], $data['cmd'], $data['lang']);
+                    try {
+                        $this->placeholders[$placeholder] = \Cx\Core\Routing\URL::fromModuleAndCmd($data['module'], $data['cmd'], $data['lang'], array(), '', false);
+                    } catch (\Cx\Core\Routing\URLException $e) {
+                        if ($data['lang'] && empty($data['cmd'])) {
+                            $this->placeholders[$placeholder] = \Cx\Core\Routing\URL::fromModuleAndCmd($data['module'], $data['lang'], FRONTEND_LANG_ID);
+                        }
+                    }
                 } else {
                     $this->placeholders[$placeholder] = \Cx\Core\Routing\URL::fromModuleAndCmd('error', '', $data['lang']);
                 }
