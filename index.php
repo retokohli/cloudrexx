@@ -1960,13 +1960,9 @@ if (!empty($moduleStyleFile))
 
 if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
     require_once ASCMS_CORE_PATH.'/pdf.class.php';
-    $objPDF = new PDF();
-    $objPDF->title = $page_title.(empty($page_title) ? null : '.pdf');
-    // replace links from before contrexx 3
-    $ls = new LinkSanitizer(
-        ASCMS_PATH_OFFSET.Env::get('virtualLanguageDirectory').'/',
-        $objTemplate->get());
-    $objPDF->content = $ls->replace();
+    $objPDF          = new PDF();
+    $objPDF->title   = $page_title.(empty($page_title) ? null : '.pdf');
+    $objPDF->content = $objTemplate->get();
     $objPDF->Create();
     exit;
 }
