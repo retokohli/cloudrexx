@@ -343,7 +343,7 @@ class FileBrowser {
         case 'webpages':
             $objContentTree = new ContentTree($this->_frontendLanguageId);
             foreach ($objContentTree->getTree() as $arrPage) {
-                $url = "'" . '[[NODE_' . $arrPage['node_id'];
+                $url = "'" . '[[' . \Cx\Model\ContentManager\Page::PLACEHOLDER_PREFIX . $arrPage['node_id'];
                 // if language != current language or $alwaysReturnLanguage
                 if ($this->_frontendLanguageId != $_FRONTEND_LANGID ||
                         (isset($_GET['alwaysReturnLanguage']) &&
