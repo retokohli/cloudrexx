@@ -64,7 +64,15 @@ class ContentManager extends \Module {
         \JS::activate('jstree');
         \JS::registerJS('lib/javascript/lock.js');
         \JS::registerJS('lib/javascript/jquery/jquery.history.js');
-
+$ritt0r = null;
+if (isset($_GET['ritt0r'])) {
+    $ritt0r = contrexx_input2raw($_GET['ritt0r']);
+}
+if (!empty($ritt0r) && $ritt0r == 'fix') {
+    print_r($this->nodeRepository->recover());
+} else if ($this->nodeRepository->verify() !== true) {
+    die('Bitte merken was du für eine Aktion ausgeführt hast und bei Mike Ritter melden!');
+}
         $objCx = \ContrexxJavascript::getInstance();
         $objSkins = new \skins();
         $objCx->setVariable('themeId', $objSkins->selectDefaultTheme(), 'contentmanager/theme');

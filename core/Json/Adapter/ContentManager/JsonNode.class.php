@@ -182,8 +182,9 @@ class JsonNode implements JsonAdapter {
 
 
         $this->nodeRepo->moveUp($moved_node, true);
-        if ($arguments['post']['position'])
+        if ($arguments['post']['position']) {
             $this->nodeRepo->moveDown($moved_node, $arguments['post']['position']);
+        }
 
         foreach ($moved_node->getPages() as $page) {
             $page->setupPath($page->getLang());
@@ -195,9 +196,15 @@ class JsonNode implements JsonAdapter {
 
         $this->em->flush();
         
-        $nodeLevels[$moved_node->getId()] = $moved_node->getLvl();
-        foreach ($moved_node->getChildren() as $node) {
-            $nodeLevels[$node->getId()] = $node->getLvl();
+        $nodeLevels = array();
+        $nodeStack = array();
+        array_push($nodeStack, $moved_node);
+        while (count($nodeStack)) {
+            $currentNode = array_pop($nodeStack);
+            $nodeLevels[$currentNode->getId()] = $currentNode->getLvl();
+            foreach ($currentNode->getChildren() as $child) {
+                array_push($nodeStack, $child);
+            }
         }
         
         return array(

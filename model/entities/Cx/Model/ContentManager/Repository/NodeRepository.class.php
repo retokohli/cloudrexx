@@ -80,5 +80,49 @@ class NodeRepository extends NestedTreeRepository {
         }
         return array('count'=>count($nodes), 'offset'=>$i);
     }
+
+    /**
+     * Tries to recover the tree
+     *
+     * @throws RuntimeException - if something fails in transaction
+     * @return void
+     */
+    public function recover()
+    {
+        if ($this->verify() === true) {
+            return;
+        }
+        $left = 1;
+        $startNode = $this->findOneBy(array('id'=>1));
+        $startNode->setLft($left);
+        $this->recoverBranch($startNode, $left);
+        return $this->verify();
+    }
+    
+    /**
+     * Tries to recover a branch - assuming that level and left of $rootNode are correct!
+     * @param \Cx\Model\ContentManager\Node $rootNode Node to start with
+     */
+    private function recoverBranch($rootNode, &$left = null, $level = null)
+    {
+        if ($left == null) {
+            $left = $rootNode->getLft();
+        }
+        if ($level == null) {
+            $level = $rootNode->getLvl();
+        }
+        echo $rootNode->getId() . '<br />';
+        $level++;
+        foreach ($rootNode->getChildren() as $child) {
+            $left++;
+            $child->setLft($left);
+            $child->setLvl($level);
+            $this->recoverBranch($child, $left, $level);
+        }
+        $left++;
+        $rootNode->setRgt($left);
+        $this->em->persist($rootNode);
+        $this->em->flush();
+    }
 }
 
