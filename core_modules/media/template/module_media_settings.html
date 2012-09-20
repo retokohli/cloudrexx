@@ -51,6 +51,7 @@ function BeforeSubmit() {
 }
 
 </script>
+<!-- BEGIN mediaarchive_section -->
 <table cellspacing="0" cellpadding="2" width="100%" border="0" class="adminlist">
 	<tr>
 		<th>{TXT_MEDIA_SETTINGS}</th>
@@ -165,4 +166,52 @@ function BeforeSubmit() {
     <br />
     <input type="submit" value="{TXT_BUTTON_SAVE}" name="save_settings" onclick="BeforeSubmit();"/>
 </form>
+<!-- END mediaarchive_section -->
+<!-- BEGIN filesharing_section -->
+<ul id="tabmenu" class="media_settings">
+    <li><a id="messageTab_information" class="active" href="javascript:{}" onclick="selectTab('information')" title="{FILESHARING_INFO}">{FILESHARING_INFO}</a></li>
+    <li><a id="messageTab_mailtemplates" href="javascript:{}" onclick="selectTab('mailtemplates')" title="{FILESHARING_MAIL_TEMPLATES}">{FILESHARING_MAIL_TEMPLATES}</a></li>
+</ul>
+<div id="information" class="messageTab">
+    <table class="adminlist" width="100%">
+        <tbody><tr>
+            <th colspan="2">{FILESHARING_INFO}</th>
+        </tr>
+        <tr>
+            <td width="200">{TXT_FILESHARING_APPLICATION_NAME}</td>
+            <td>{FILESHARING_APPLICATION_NAME}</td>
+        </tr>
+        <tr>
+            <td>{TXT_FILESHARING_DESCRIPTION}</td>
+            <td>{FILESHARING_DESCRIPTION}</td>
+        </tr>
+        <tr>
+            <td>{TXT_FILESHARING_MANUAL}</td>
+            <td>
+                {FILESHARING_MANUAL}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div id="mailtemplates" class="messageTab" style="display: none;">
+    <!-- BEGIN filesharing_email_template -->
+    <table cellpadding="0" cellspacing="0" width="100%" class="adminlist">
+        <tr class="row3">
+            <th colspan="2">{LANG_NAME}</th>
+        </tr>
+        <tr class="row1">
+            <td width="100"><b>{TXT_MAIL_SUBJECT}</b></td>
+            <td><input type="text" name="filesharingMail[{LANG}][subject]" style="width: 300px" value="{FILESHARING_MAIL_SUBJECT}" /></td>
+        </tr>
+        <tr class="row2">
+            <td><b>{TXT_MAIL_CONTENT}</b></td>
+            <td><textarea style="width: 300px; height: 100px;" name="filesharingMail[{LANG}][content]">{FILESHARING_MAIL_CONTENT}</textarea></td>
+        </tr>
+    </table><br /><br />
+    <!-- END filesharing_email_template -->
+    <br />
+    <input type="submit" value="{TXT_BUTTON_SAVE}" name="save_settings"/>
+</div>
+<!-- END filesharing_section -->
 <!-- END module_media_settings.html -->

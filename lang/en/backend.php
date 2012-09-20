@@ -134,7 +134,9 @@ $_ARRAYLANG['TXT_LANGUAGE_DEPENDANT_SYSTEM_VARIABLES'] = "System variables depen
 $_ARRAYLANG['TXT_TRANSLATION'] = "Translation";
 $_ARRAYLANG['TXT_BROWSERLANGUAGE'] = "Language";
 $_ARRAYLANG['TXT_LANGUAGE_SETTINGS'] = "Languages";
-$_ARRAYLANG['TXT_LANGUAGE_LIST'] = "Language overview";
+$_ARRAYLANG['TXT_LANGUAGE_LIST'] = "Overview";
+$_ARRAYLANG['TXT_LANGUAGE_ACTION_COPY'] = 'Copy contents from this language\'s fallback language to this language';
+$_ARRAYLANG['TXT_LANGUAGE_ACTION_LINK'] = 'Link contents from this language\'s fallback language to this language';
 $_ARRAYLANG['TXT_STANDARD_LANGUAGE'] = "Default language";
 $_ARRAYLANG['TXT_STANDARD_PAGES'] = "Standard pages";
 $_ARRAYLANG['TXT_START_DATE'] = "Start date";
@@ -1172,6 +1174,8 @@ $_ARRAYLANG['TXT_MEDIADIR_SETTINGS'] = 'Settings';
 $_ARRAYLANG['TXT_MEDIADIR_MODULE_DESCRIPTION'] = 'Flexible and customizable media directory.';
 $_ARRAYLANG['TXT_CHECKOUT_MODULE'] = "Online Payment";
 $_ARRAYLANG['TXT_CHECKOUT_MODULE_DESCRIPTION'] = "Easy solution to process transactions on Yellowpay.";
+$_ARRAYLANG['TXT_FILESHARING_MODULE'] = "Filesharing";
+$_ARRAYLANG['TXT_FILESHARING_MODULE_DESCRIPTION'] = "Upload files and share them with your friends or business associates.";
 
 //content manager
 $_ARRAYLANG['TXT_CORE_PREVIEW'] = "Preview";

@@ -1,5 +1,4 @@
 <?php
-include_once ASCMS_MODULE_PATH . "/filesharing/lib/FilesharingLib.class.php";
 /**
  * Filesharing module
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -9,7 +8,7 @@ include_once ASCMS_MODULE_PATH . "/filesharing/lib/FilesharingLib.class.php";
  * @subpackage  filesharing
  */
 
-class Filesharing extends FilesharingLib
+class FilesharingAdmin extends FilesharingLib
 {
     private $_objTpl;
 

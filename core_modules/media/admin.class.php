@@ -82,6 +82,7 @@ class MediaManager extends MediaLibrary
                                     ASCMS_MEDIA2_PATH.DIRECTORY_SEPARATOR,
                                     ASCMS_MEDIA3_PATH.DIRECTORY_SEPARATOR,
                                     ASCMS_MEDIA4_PATH.DIRECTORY_SEPARATOR,
+                                    ASCMS_FILESHARING_PATH.DIRECTORY_SEPARATOR,
                                     ASCMS_CONTENT_IMAGE_PATH.DIRECTORY_SEPARATOR,
                                     ASCMS_SHOP_IMAGES_PATH.DIRECTORY_SEPARATOR,
                                     ASCMS_THEMES_PATH.DIRECTORY_SEPARATOR,
@@ -99,6 +100,7 @@ class MediaManager extends MediaLibrary
                                     'archive2'     => ASCMS_MEDIA2_WEB_PATH . '/',
                                     'archive3'     => ASCMS_MEDIA3_WEB_PATH . '/',
                                     'archive4'     => ASCMS_MEDIA4_WEB_PATH . '/',
+                                    'filesharing'  => ASCMS_FILESHARING_WEB_PATH . '/',
                                     'content'      => ASCMS_CONTENT_IMAGE_WEB_PATH . '/',
                                     'contact'      => ASCMS_ATTACH_WEB_PATH. '/',
                                     'shop'         => ASCMS_SHOP_IMAGES_WEB_PATH . '/',
@@ -157,6 +159,13 @@ class MediaManager extends MediaLibrary
                     <a href="index.php?cmd=contact" title="'.$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'].'">'.$_ARRAYLANG['TXT_FORMS'].'</a>
                     <a hreF="index.php?cmd=media&amp;archive=contact" title="'.$_ARRAYLANG['TXT_FILE_UPLOADS'].'" class="active">'.$_ARRAYLANG['TXT_FILE_UPLOADS'].'</a>
                     <a href="index.php?cmd=contact&amp;act=settings" title="'.$_ARRAYLANG['TXT_CONTACT_SETTINGS'].'">'.$_ARRAYLANG['TXT_CONTACT_SETTINGS'].'</a>
+                ');
+                break;
+            case 'filesharing':
+                Permission::checkAccess(7, 'static');
+                $objTemplate->setVariable('CONTENT_NAVIGATION', '
+                    <a href="index.php?cmd=media&amp;archive=filesharing"' . (!isset($_GET['act']) ? ' class="active"' : '') . '>' . $_ARRAYLANG['TXT_FILESHARING_MODULE'] . '</a>
+                    <a href="index.php?cmd=media&amp;archive=filesharing&amp;act=settings"' . (isset($_GET['act']) && $_GET['act'] == 'settings' ? ' class="active"' : '') . '>' . $_ARRAYLANG['TXT_MEDIA_SETTINGS'] . '</a>
                 ');
                 break;
             case 'attach':
@@ -254,6 +263,11 @@ class MediaManager extends MediaLibrary
                 break;
             case 'edit':
                 $this->editMedia();
+                break;
+            case 'filesharing':
+                $objFilesharing = new FilesharingAdmin($this->_objTpl);
+                $objFilesharing->getDetailPage();
+                $this->pageTitle = $_ARRAYLANG['TXT_FILESHARING_MODULE'];
                 break;
             case 'preview':
                 $this->_previewImage();
@@ -361,6 +375,9 @@ class MediaManager extends MediaLibrary
                 ');
             default:
                 $this->pageTitle = $_ARRAYLANG['TXT_MEDIA_OVERVIEW'];
+                if ($this->archive == "filesharing") {
+                    FilesharingLib::cleanUp();
+                }
                 break;
         }
 
@@ -562,12 +579,14 @@ class MediaManager extends MediaLibrary
                         ));
                         $this->_objTpl->parse('mediaImageEdit');
                     }
-
                     $this->_objTpl->setVariable(array(  // action
                         'MEDIA_FILE_RENAME_HREF'    => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;act=rename&amp;path=' . $this->webPath . '&amp;file=' . $fileName,
                         'MEDIA_RENAME'              => $_ARRAYLANG['TXT_MEDIA_RENAME'],
                         'MEDIA_FILE_DELETE_HREF'    => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;act=delete&amp;path=' . $this->webPath . '&amp;file=' . $fileName,
                         'MEDIA_DELETE'              => $_ARRAYLANG['TXT_MEDIA_DELETE'],
+                        'MEDIA_FILE_FILESHARING_HREF' => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;act=filesharing&amp;path=' . $this->webPath . '&amp;file=' . $fileName,
+                        'MEDIA_FILESHARING'         => $_ARRAYLANG['TXT_FILESHARING_MODULE'],
+                        'MEDIA_FILESHARING_STATE'   => (FilesharingLib::isShared(null,str_replace(ASCMS_PATH_OFFSET, '', (isset($_GET['path']) ? $_GET['path'] : '')) . $fileName) ? '' : '_inactive'),
                     ));
                     $this->_objTpl->parse('mediaDirectoryTree');
                     $i++;
@@ -863,7 +882,7 @@ class MediaManager extends MediaLibrary
      */
     function _settings()
     {
-        global $_CORELANG, $_ARRAYLANG;
+        global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
         JS::activate('jquery');
         $this->_arrSettings = $this->createSettingsArray();
@@ -871,10 +890,25 @@ class MediaManager extends MediaLibrary
         $objFWUser = FWUser::getFWUserObject();
 
         $this->_objTpl->loadTemplateFile('module_media_settings.html', true, true);
+        $archive = '';
+        if (isset($_GET['archive'])) {
+            $archive = contrexx_input2raw($_GET['archive']);
+        }
+        if ($archive == 'filesharing') {
+            $this->_objTpl->hideBlock('mediaarchive_section');
+            $this->_objTpl->touchBlock('filesharing_section');
+            $objFileshare = new FilesharingAdmin($this->_objTpl, false);
+            $objFileshare->parseSettingsPage();
+        } else {
+            $this->_objTpl->hideBlock('filesharing_section');
+            $this->_objTpl->touchBlock('mediaarchive_section');
+        }
+
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIA_SETTINGS'];
 
         $this->_objTpl->setGlobalVariable(array(
             'TXT_MEDIA_ARCHIVE'                     => $_ARRAYLANG['TXT_MEDIA_ARCHIVE'],
+            'TXT_FILESHARING'                       => $_ARRAYLANG['TXT_FILESHARING_MODULE'],
             'TXT_MEDIA_SETTINGS'                    => $_ARRAYLANG['TXT_MEDIA_SETTINGS'],
             'TXT_MEDIA_ADD'                         => $_ARRAYLANG['TXT_MEDIA_ADD'],
             'TXT_MEDIA_MANAGE'                      => $_ARRAYLANG['TXT_MEDIA_MANAGE'],
@@ -969,9 +1003,30 @@ class MediaManager extends MediaLibrary
                     'MEDIA_MANAGE_DISPLAY'                  => (is_numeric($this->_arrSettings['media' . $k . '_frontend_managable'])) ? 'block' : 'none',
                     'MEDIA_MANAGE_ASSOCIATED_GROUPS'        => implode("\n", $arrAssociatedGroupManageOptions),
                     'MEDIA_MANAGE_NOT_ASSOCIATED_GROUPS'    => implode("\n", $arrNotAssociatedGroupManageOptions),
-                ));
+            ));
             $this->_objTpl->parse("mediaAccessSection");
         }
+
+        $arrActiveSystemFrontendLanguages = FWLanguage::getActiveFrontendLanguages();
+        foreach($arrActiveSystemFrontendLanguages as $activeLang) {
+            $objMailTemplate = $objDatabase->Execute("SELECT `subject`, `content` FROM " . DBPREFIX . "module_filesharing_mail_template WHERE `lang_id` = ?", array($activeLang["id"]));
+            if ($objMailTemplate !== false) {
+                $content = str_replace(array('{', '}'), array('[[', ']]'), $objMailTemplate->fields["content"]);
+                $this->_objTpl->setVariable(array(
+                    'FILESHARING_MAIL_SUBJECT' => htmlentities($objMailTemplate->fields["subject"], ENT_QUOTES, CONTREXX_CHARSET),
+                    'FILESHARING_MAIL_CONTENT' => htmlentities($content, ENT_QUOTES, CONTREXX_CHARSET),
+                ));
+            }
+            $this->_objTpl->setVariable(array(
+                'TXT_MAIL_SUBJECT' => $_ARRAYLANG['TXT_MAIL_SUBJECT'],
+                'TXT_MAIL_CONTENT' => $_ARRAYLANG['TXT_MAIL_CONTENT'],
+
+                'LANG_NAME' => $activeLang["name"],
+                'LANG' => $activeLang["id"],
+            ));
+            $this->_objTpl->parse('filesharing_email_template');
+        }
+
     }
 
     /**
@@ -1069,6 +1124,19 @@ class MediaManager extends MediaLibrary
                                             ');
             }
         }
+
+        foreach ($_POST["filesharingMail"] as $lang => $inputs) {
+            $objMailTemplate = $objDatabase->Execute("SELECT `subject`, `content` FROM " . DBPREFIX . "module_filesharing_mail_template WHERE `lang_id` = ?", array($lang));
+
+            $content = str_replace(array('{', '}'), array('[[', ']]'), contrexx_input2db($inputs["content"]));
+            $data = array(contrexx_input2db($inputs["subject"]), $content, $lang);
+            if ($objMailTemplate === false) {
+                $objDatabase->Execute("INSERT INTO " . DBPREFIX . "module_filesharing_mail_template (`subject`, `content`, `lang_id`) VALUES (?, ?, ?)", $data);
+            } else {
+                $objDatabase->Execute("UPDATE " . DBPREFIX . "module_filesharing_mail_template SET `subject` = ?, `content` = ? WHERE `lang_id` = ?", $data);
+            }
+        }
+
 
         $this->_arrSettings  = $this->createSettingsArray();
         $this->_strOkMessage = $_ARRAYLANG['TXT_MEDIA_SETTINGS_SAVE_SUCCESSFULL'];

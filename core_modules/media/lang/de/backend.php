@@ -106,4 +106,6 @@ $_ARRAYLANG['TXT_MEDIA_ROTATE_INFO'] = "Wählen Sie einen Richtung, in welche Si
 $_ARRAYLANG['TXT_MEDIA_SCALE_COMPRESS'] = "Skalieren / Komprimieren";
 $_ARRAYLANG['TXT_MEDIA_SCALE_INFO'] = "* Beim Wert 0 wird das Bild nicht skaliert.";
 $_ARRAYLANG['TXT_MEDIA_PREVIEW'] = "Vorschau";
+$_ARRAYLANG['TXT_MAIL_SUBJECT'] = "E-Mail Betreff";
+$_ARRAYLANG['TXT_MAIL_CONTENT'] = "E-Mail Inhalt";
 ?>
