@@ -1322,6 +1322,24 @@ CREATE TABLE `contrexx_module_feed_newsml_providers` (
   `path` text NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_filesharing` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `file` varchar(250) NOT NULL,
+  `source` varchar(250) NOT NULL,
+  `cmd` varchar(50) NOT NULL,
+  `hash` varchar(50) NOT NULL,
+  `check` varchar(50) NOT NULL,
+  `expiration_date` timestamp NULL DEFAULT NULL,
+  `upload_id` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_filesharing_mail_template` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `lang_id` int(1) NOT NULL,
+  `subject` varchar(250) NOT NULL,
+  `content` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_forum_access` (
   `category_id` int(5) unsigned NOT NULL DEFAULT '0',
   `group_id` int(5) unsigned NOT NULL DEFAULT '0',
