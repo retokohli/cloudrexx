@@ -90,14 +90,6 @@ class JS
                 'prototype'
             ),
         ),
-        'datepicker'    => array(
-            'jsfiles'       => array(
-                'lib/javascript/datepickercontrol/datepickercontrol.js'
-            ),
-            'cssfiles'      => array(
-                'lib/javascript/datepickercontrol/datepickercontrol.css'
-            )
-        ),
         'shadowbox'     => array(
             'jsfiles'       => array(
                 'lib/javascript/shadowbox/shadowbox.js'

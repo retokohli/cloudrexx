@@ -1243,7 +1243,6 @@ switch ($plainSection) {
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objLivecam = new Livecam($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objLivecam->getPage());
-        $moduleStyleFile = ASCMS_MODULE_WEB_PATH.'/livecam/datepicker/datepickercontrol.css';
         break;
 
     case 'guestbook':
