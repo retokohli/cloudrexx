@@ -1234,9 +1234,11 @@ die("Failed to update the Cart!");
                     'SHOP_PRODUCT_DISCOUNTPRICE' => $discountPrice,
                     'SHOP_PRODUCT_DISCOUNTPRICE_UNIT' => Currency::getActiveCurrencySymbol(),
                 ));
-                self::$objTemplate->touchBlock('price_discount');
+                if (self::$objTemplate->blockExists('price_discount'))
+                    self::$objTemplate->touchBlock('price_discount');
             } else {
-                self::$objTemplate->touchBlock('price');
+                if (self::$objTemplate->blockExists('price'))
+                    self::$objTemplate->touchBlock('price');
             }
             // Special outlet ShopCategory with discounts varying daily.
             // This should be implemented in a more generic way, in the
