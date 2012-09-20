@@ -53,7 +53,7 @@ class JsonBlock implements JsonAdapter {
      * @return array List of blocks (lang => id )
      */
     public function getBlocks() {
-        $blockLib = new \BlockLibrary();
+        $blockLib = new \blockLibrary();
         $blocks = $blockLib->getBlocks();
         $data = array();
         foreach ($blocks as $id=>$block) {
