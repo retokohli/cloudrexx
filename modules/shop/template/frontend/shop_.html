@@ -1,106 +1,79 @@
-<div id="shop"><!-- BEGIN core_message -->
-  <span class="{MESSAGE_CLASS}">{MESSAGE_TEXT}</span><!-- END core_message -->
-  <div class="menu">
-    <form name="shopSearch" action="index.php?section=shop" method="post">
-      <select name="catId" tabindex="2" style="width: 160px;">
-        {SHOP_CATEGORIES_MENUOPTIONS}
-      </select>&nbsp;
-      <!--<select name="manufacturerId" tabindex="3" style="width: 160px;">
-        {SHOP_MANUFACTURER_MENUOPTIONS}
-      </select><br />-->
-      <input type="text" name="term" value="{SHOP_SEARCH_TERM}"
-          tabindex="1" style="width: 170px;" />&nbsp;
-      <input type="submit" name="bsubmit"
-          value="{TXT_SHOP_SEARCH}" />
-    </form>
-  </div>
-  <!-- <div class="cart_info">{SHOP_CART_INFO}</div> --><!-- BEGIN categories -->
-  <div class="categories">
-    <h2>{TXT_SHOP_CATEGORIES}</h2><!-- BEGIN subCategoriesRow --><!-- BEGIN subCategories -->
-    <article class="col-13 info-item">
-      <figure class="visual">
-        <h3>{SHOP_CATEGORY_NAME}</h3>
-        <a href="index.php?section=shop{MODULE_INDEX}&amp;catId={SHOP_CATEGORY_ID}">
-          <img border="0" alt="{TXT_SHOP_GO_TO_CATEGORY}" src="{SHOP_CATEGORY_THUMBNAIL}" {SHOP_CATEGORY_THUMBNAIL_SIZE} />
-        </a>
-        <span class="description">{SHOP_CATEGORY_DESCRIPTION}</span>
-      </figure>
-    </article><!-- END subCategories -->
-    <br style="clear: both;" /><!-- END subCategoriesRow -->
-  </div><!-- END categories --><!-- BEGIN products -->
-  <div class="informations"><h2>{SHOP_PRODUCTS_IN_CATEGORY}</h2></div><!-- BEGIN shopProductRow -->
-  <div class="product {SHOP_ROWCLASS}">
-    <form id="{SHOP_PRODUCT_FORM_NAME}" name="{SHOP_PRODUCT_FORM_NAME}"
-        action="index.php?section=shop&amp;cmd=cart" method="post"
-        {SHOP_FORM_ENCTYPE}>
-      <input type="hidden" name="productId" value="{SHOP_PRODUCT_ID}" />
-      <div class="images"><!-- BEGIN productImage1 -->
-        <a href="{SHOP_PRODUCT_THUMBNAIL_LINK_1}">
-        <img border="0" src="{SHOP_PRODUCT_THUMBNAIL_1}" alt="{TXT_SEE_LARGE_PICTURE}"
-            {SHOP_PRODUCT_THUMBNAIL_SIZE_1} />
-        </a><br /><!-- END productImage1 --><!-- BEGIN productImage2 -->
-        <!--a href="{SHOP_PRODUCT_THUMBNAIL_LINK_2}">
-        <img border="0" src="{SHOP_PRODUCT_THUMBNAIL_2}" alt="{TXT_SEE_LARGE_PICTURE}"
-        {SHOP_PRODUCT_THUMBNAIL_SIZE_2} />
-        </a><br /--><!-- END productImage2 --><!-- BEGIN productImage3 -->
-        <!--a href="{SHOP_PRODUCT_THUMBNAIL_LINK_3}">
-        <img border="0" src="{SHOP_PRODUCT_THUMBNAIL_3}" alt="{TXT_SEE_LARGE_PICTURE}"
-        {SHOP_PRODUCT_THUMBNAIL_SIZE_3} />
-        </a><br /--><!-- END productImage3 -->
-      </div>
-      <div class="wrapper-shop">
-        <h3>{SHOP_PRODUCT_TITLE}</h3>
-        <div class="price">
-          <strong>
-            {TXT_SHOP_PRICE}&nbsp;<!-- BEGIN price_discount -->
-            <span itemprop="price">{SHOP_PRODUCT_DISCOUNTPRICE}</span>
-            &nbsp;
-            <span itemprop="priceCurrency">{SHOP_PRODUCT_DISCOUNTPRICE_UNIT}</span>
-            <s>
-              {SHOP_PRODUCT_PRICE}
-              &nbsp;
-              {SHOP_PRODUCT_PRICE_UNIT}
-            </s><!-- END price_discount --><!-- BEGIN price -->
-            <span itemprop="price">{SHOP_PRODUCT_PRICE}</span>
-            &nbsp;
-            <span itemprop="priceCurrency">{SHOP_PRODUCT_PRICE_UNIT}</span><!-- END price -->
-          </strong>
-          <br />
-        </div>
-        <div class="vat">
-          <span class="txt-lbl">{SHOP_PRODUCT_TAX_PREFIX}</span>
-          &nbsp;{SHOP_PRODUCT_TAX}
-        </div><!-- BEGIN shopProductExternal -->
-        <div>{SHOP_EXTERNAL_LINK}</div><!-- END shopProductExternal -->
-        <div class="functions">
-          <input type="submit" onclick="{SHOP_PRODUCT_SUBMIT_FUNCTION}"
-              name="{SHOP_PRODUCT_SUBMIT_NAME}" value="{TXT_ADD_TO_CARD}" />
-        </div>
-      </div>
-      <div class="description">
-        <h3>Details</h3>
-        {SHOP_PRODUCT_DESCRIPTION}
-        <span class="detail_link">{SHOP_PRODUCT_DETAILLINK}</span>
-        <br /><!-- BEGIN shopProductOptionsRow -->
-        <div class="shop_options">
-          {SHOP_PRODUCT_OPTIONS_TITLE}<br />
-          <div id="product_options_layer{SHOP_PRODUCT_ID}" style="display: none;">
-            <div class="shop_options_click">
-              <br /><!-- BEGIN shopProductOptionsValuesRow -->
-              <strong>{SHOP_PRODUCT_OPTIONS_NAME}<!-- BEGIN product_attribute_mandatory -->
-                <span class="mandatory">&nbsp;*</span><!-- END product_attribute_mandatory -->
-              </strong><br />
-              {SHOP_PRODUCT_OPTION}<br /><!-- END shopProductOptionsValuesRow -->
+<div id="shop">
+    <!-- BEGIN core_message -->
+    <span class="[[MESSAGE_CLASS]]">[[MESSAGE_TEXT]]</span><!-- END core_message -->
+    <div class="menu">
+        <form name="shopSearch" action="index.php?section=shop" method="post">
+            <select name="catId" tabindex="2">
+            [[SHOP_CATEGORIES_MENUOPTIONS]]
+            </select>&nbsp;
+            <input type="text" name="term" value="[[SHOP_SEARCH_TERM]]" tabindex="1" style="width: 170px;" />&nbsp;
+            <input type="submit" name="bsubmit" value="[[TXT_SHOP_SEARCH]]" />
+        </form>
+    </div>
+    <!-- BEGIN categories -->
+    <div class="categories">
+        <h2>[[TXT_SHOP_CATEGORIES]]</h2>
+        <!-- BEGIN subCategoriesRow -->
+        <!-- BEGIN subCategories -->
+        <article class="col-13 info-item">
+            <figure class="visual">
+                <a href="index.php?section=shop[[MODULE_INDEX]]&amp;catId=[[SHOP_CATEGORY_ID]]">
+                    <div class="categorie-image-wrapper">
+                        <img border="0" alt="[[TXT_SHOP_GO_TO_CATEGORY]]" src="[[SHOP_CATEGORY_THUMBNAIL]]" />
+                    </div>
+                    <h3>[[SHOP_CATEGORY_NAME]]</h3>
+                </a>
+            </figure>
+        </article>
+        <!-- END subCategories -->
+        <br style="clear: both;" />
+        <!-- END subCategoriesRow -->
+    </div>
+    <!-- END categories -->
+    <!-- BEGIN products -->
+    <div class="informations">
+        <h2>[[SHOP_PRODUCTS_IN_CATEGORY]]</h2>
+    </div>
+    <!-- BEGIN shopProductRow -->
+    <div class="product">
+        <form id="[[SHOP_PRODUCT_FORM_NAME]]" name="[[SHOP_PRODUCT_FORM_NAME]]" action="index.php?section=shop&amp;cmd=cart" method="post" [[SHOP_FORM_ENCTYPE]]>
+            <input type="hidden" name="productId" value="[[SHOP_PRODUCT_ID]]" />
+            <div class="images">
+                <!-- BEGIN productImage1 -->
+                <a href="[[SHOP_PRODUCT_THUMBNAIL_LINK_1]]">
+                    <img border="0" src="[[SHOP_PRODUCT_THUMBNAIL_1]]" alt="[[TXT_SEE_LARGE_PICTURE]]" />
+                </a>
+                <!-- END productImage1 -->
             </div>
-          </div>
-        </div><!-- END shopProductOptionsRow -->
-        <br /><!-- BEGIN shopProductWeight -->
-        <div>{TXT_SHOP_PRODUCT_WEIGHT} {SHOP_PRODUCT_WEIGHT}</div><!-- END shopProductWeight -->
-      </div>
-    </form>
-  </div><!-- END shopProductRow --><!-- END products --><!-- BEGIN no_product -->
-  <div class="no_product">
-    <h2>{TXT_SHOP_NO_PRODUCTS}</h2>
-  </div><!-- END no_product -->
-  <div class="paging">{SHOP_PRODUCT_PAGING}</div>
+            <div class="info">
+                <h3>[[SHOP_PRODUCT_TITLE]]</h3>
+                <div class="short-description">[[SHOP_PRODUCT_DESCRIPTION]]</div>
+                <div class="details">
+                    <button class="details-button" type="button" onclick="location.href='[[SHOP_PRODUCT_DETAIL_URL]]'">[[TXT_SHOP_PRODUCT_DETAILS]]</button>
+                </div>
+            </div>
+            <div class="functions">
+                <button class="add-to-cart" type="submit" onclick="[[SHOP_PRODUCT_SUBMIT_FUNCTION]]" name="[[SHOP_PRODUCT_SUBMIT_NAME]]">[[TXT_ADD_TO_CARD]]</button>
+                <div class="price">
+                    <!-- BEGIN price -->
+                    <span itemprop="priceCurrency">[[SHOP_PRODUCT_PRICE_UNIT]]</span> <span itemprop="price">[[SHOP_PRODUCT_PRICE]]</span>
+                    <!-- END price -->
+                    <!-- BEGIN price_discount -->
+                    statt <span itemprop="price">[[SHOP_PRODUCT_PRICE]]</span>
+                    <span class="discount">
+                        nur <span itemprop="priceCurrency">[[SHOP_PRODUCT_DISCOUNTPRICE_UNIT]]</span> <span itemprop="price">[[SHOP_PRODUCT_DISCOUNTPRICE]]</span>
+                    </span>
+                    <!-- END price_discount -->
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- END shopProductRow -->
+    <!-- END products -->
+    <!-- BEGIN no_product -->
+    <div class="no_product">
+        <h2>[[TXT_SHOP_NO_PRODUCTS]]</h2>
+    </div>
+    <!-- END no_product -->
+    <div class="paging">[[SHOP_PRODUCT_PAGING]]</div>
 </div>
