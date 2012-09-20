@@ -75,8 +75,8 @@ body {
 #navigation li a {
     float: left;
     width: 170px;
-    height: 23px;
-    line-height: 23px;
+    height: 25px;
+    line-height: 25px;
     padding-left: 30px;
     border-bottom: 1px solid #e8e8e8;
     color: #444444;
@@ -107,8 +107,8 @@ body {
     float: left;
     width: 520px;
     height: auto;
-    min-height: 433px;
-    padding: 15px 15px 52px 15px;
+    min-height: 418px;
+    padding: 15px 15px 67px 15px;
     border-left: 1px solid #e8e8e8;
     margin-left: -1px;
 }
@@ -117,15 +117,25 @@ body {
     margin: 0 0 15px 0;
 }
 
-#content #buttons {
+#content #buttons-left,
+#content #buttons-right {
     position: absolute;
-    right: 15px;
     bottom: 15px;
-    float: right;
     width: auto;
 }
 
-#content #buttons * {
+#content #buttons-left {
+    left: 15px;
+    float: left;
+}
+
+#content #buttons-right {
+    right: 15px;
+    float: right;
+}
+
+#content #buttons-left *,
+#content #buttons-right * {
     margin: 0;
 }
 

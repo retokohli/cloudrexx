@@ -29,9 +29,9 @@ $sqlDumpFile = DIRECTORY_SEPARATOR."installer".DIRECTORY_SEPARATOR."data".DIRECT
 $dbPrefix = "contrexx_";
 $templatePath = "template/contrexx/";
 $supportEmail = "support@contrexx.com";
-$supportURI = "http://www.contrexx.com/index.php?page=754";
+$supportURI = "http://www.contrexx.com/support";
 $forumURI = "http://www.contrexx.com/forum/";
-$contrexxURI = "http://www.contrexx.com/";
+$contrexxURI = "http://www.contrexx.com";
 $useUtf8 = true;
 
 define('ASCMS_LIBRARY_PATH', realpath(dirname(__FILE__).'/../../lib'));
