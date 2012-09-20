@@ -1,6 +1,6 @@
 <div id="shop">
     <!-- BEGIN core_message -->
-    <span class="[[MESSAGE_CLASS]]">[[MESSAGE_TEXT]]</span>
+    <div class="[[MESSAGE_CLASS]]">[[MESSAGE_TEXT]]</div>
     <!-- END core_message -->
     <div id="shop_payment">
         <form action="index.php?section=shop&amp;cmd=payment" name="shopForm" method="post">
@@ -11,30 +11,30 @@
                     </tr>
                     <tr class="row1">
                         <td width="40%">
-                            <strong>[[TXT_TOTALLY_GOODS]]</strong>&nbsp;[[SHOP_TAX_PRODUCTS_TXT]]
+                            [[TXT_TOTALLY_GOODS]]&nbsp;[[SHOP_TAX_PRODUCTS_TXT]]
                         </td>
                         <td width="40%">
                             [[SHOP_TOTALITEM]]&nbsp;[[TXT_PRODUCT_S]]
                         </td>
                         <td width="20%" style="text-align: right;">
-                            <strong>[[SHOP_TOTALPRICE]]&nbsp;[[SHOP_UNIT]]</strong>
+                            [[SHOP_TOTALPRICE]]&nbsp;[[SHOP_UNIT]]
                         </td>
                     </tr>
                     <!-- BEGIN shopCouponTotal -->
-                    <tr valign="top" class="row3">
+                    <tr valign="top" class="row1">
                         <td>
-                            <strong>[[SHOP_DISCOUNT_COUPON_TOTAL]]</strong>
+                            [[SHOP_DISCOUNT_COUPON_TOTAL]]
                         </td>
                         <td>&nbsp;</td>
                         <td style="text-align: right;">
-                            <strong>[[SHOP_DISCOUNT_COUPON_TOTAL_AMOUNT]]&nbsp;[[SHOP_UNIT]]</strong>
+                            [[SHOP_DISCOUNT_COUPON_TOTAL_AMOUNT]]&nbsp;[[SHOP_UNIT]]
                         </td>
                     </tr>
                     <!-- END shopCouponTotal -->
                     <!-- BEGIN shopShipment -->
                     <tr class="row3">
                         <td>
-                            <strong>[[TXT_SHIPPING_METHODS]]</strong>
+                            [[TXT_SHIPPING_METHODS]]
                             <!-- BEGIN shopWeight -->
                             &nbsp;([[TXT_TOTAL_WEIGHT]]&nbsp;[[SHOP_TOTAL_WEIGHT]])
                             <!-- END shopWeight -->
@@ -53,7 +53,7 @@
                     <!-- BEGIN shopPayment -->
                     <tr class="row3">
                         <td>
-                            <strong>[[TXT_PAYMENT_TYPES]]</strong>
+                            [[TXT_PAYMENT_TYPES]]
                         </td>
                         <td>
                             [[SHOP_PAYMENT_MENU]]
@@ -66,7 +66,7 @@
                     <!-- BEGIN shopCoupon -->
                     <tr class="row3">
                         <td>
-                            <strong>[[TXT_SHOP_DISCOUNT_COUPON_CODE]]</strong>
+                            [[TXT_SHOP_DISCOUNT_COUPON_CODE]]
                         </td>
                         <td>
                             <input type="text" maxlength="20" name="coupon_code" value="[[SHOP_DISCOUNT_COUPON_CODE]]" onchange="document.forms['shopForm'].submit();" />
@@ -77,7 +77,7 @@
                     <!-- BEGIN totalExclTaxRow -->
                     <tr class="row1">
                         <td colspan="2">
-                            <strong>[[TXT_NET_PRICE]]</strong>
+                            [[TXT_NET_PRICE]]
                         </td>
                         <td style="text-align: right;">
                             [[SHOP_GRAND_TOTAL_EXCL_TAX]] [[SHOP_UNIT]]
@@ -87,7 +87,7 @@
                     <!-- BEGIN shopTax -->
                     <tr class="row1">
                         <td colspan="2">
-                            <strong>[[TXT_TAX_PREFIX]]</strong>
+                            [[TXT_TAX_PREFIX]]
                         </td>
                         <td style="text-align: right;">
                             [[SHOP_TAX_PRICE]]
@@ -95,8 +95,8 @@
                     </tr>
                     <!-- END shopTax -->
                     <!-- BEGIN lsv -->
-                    <tr class="row1">
-                        <td><strong>[[TXT_PAYMENT_LSV]]</strong></td>
+                    <tr class="row3">
+                        <td>[[TXT_PAYMENT_LSV]]</td>
                         <td colspan="2">
                             <p>
                                 <label>[[TXT_ACCOUNT_HOLDER]]</label>
@@ -125,7 +125,7 @@
                         <td colspan="3">&nbsp;</td>
                     </tr>
                     <tr class="row3">
-                        <td valign="top"><b>[[TXT_COMMENTS]]</b></td>
+                        <td valign="top">[[TXT_COMMENTS]]</td>
                         <td colspan="2">
                             <textarea name="customer_note" rows="4" cols="52">[[SHOP_CUSTOMERNOTE]]</textarea>
                         </td>
@@ -139,8 +139,7 @@
                     <label for="agb" class="description">[[TXT_ACCEPT_TAC]]</label>
                 </p>
                 <p>
-                    <input type="checkbox" value="checked" name="cancellation_terms"
-                    id="cancellation_terms" [[SHOP_CANCELLATION_TERMS_CHECKED]] />
+                    <input type="checkbox" value="checked" name="cancellation_terms" id="cancellation_terms" [[SHOP_CANCELLATION_TERMS_CHECKED]] />
                     <label for="cancellation_terms" class="description">[[TXT_SHOP_CANCELLATION_TERMS_ACCEPTED]]</label>
                 </p>
                 <p>

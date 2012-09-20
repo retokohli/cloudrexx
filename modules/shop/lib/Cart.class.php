@@ -802,8 +802,8 @@ die("Cart::view(): ERROR: No template");
                         'SHOP_PRODUCT_TAX_RATE' => ($arrProduct['vat_rate']
                             ? Vat::format($arrProduct['vat_rate']) : ''),
                         'SHOP_PRODUCT_TAX_AMOUNT' =>
-                            '('.$arrProduct['vat_amount'].'&nbsp;'.
-                            Currency::getActiveCurrencySymbol().')',
+                            $arrProduct['vat_amount'].'&nbsp;'.
+                            Currency::getActiveCurrencySymbol(),
                     ));
                 }
                 $objTemplate->parse('shopCartRow');
@@ -865,6 +865,13 @@ die("Cart::view(): ERROR: No template");
                     '&nbsp;'.Currency::getActiveCurrencySymbol(),
 
             ));
+            if (Vat::isIncluded()) {
+                $objTemplate->setVariable(array(
+                    'SHOP_GRAND_TOTAL_EXCL_TAX' =>
+                        Currency::formatPrice($_SESSION['shop']['grand_total_price'] - $_SESSION['shop']['vat_price']).'&nbsp;'.
+                        Currency::getActiveCurrencySymbol(),
+                ));
+            }
         }
         if (self::needs_shipment()) {
             $objTemplate->setVariable(array(

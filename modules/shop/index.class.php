@@ -2227,6 +2227,8 @@ function centerY(height)
         if (   isset($_POST['bnoaccount'])
             && SettingDb::getValue('register') != self::REGISTER_MANDATORY) {
             $_SESSION['shop']['dont_register'] = true;
+        } else {
+            $_SESSION['shop']['dont_register'] = false;
         }
         if (   isset($_POST['baccount'])
             || isset($_POST['bnoaccount'])) {
@@ -2465,6 +2467,7 @@ die("Shop::processRedirect(): This method is obsolete!");
  *    but hidden when not applicable.
  */
         $block_password = false;
+        $dontRegisterChecked = false;
         if (!self::$objCustomer) {
             // Touches the entire surrounding block
             self::$objTemplate->setVariable(
@@ -2475,6 +2478,8 @@ die("Shop::processRedirect(): This method is obsolete!");
                 if (empty($_SESSION['shop']['dont_register'])) {
 //DBG::log("Shop::view_account(): Register -> block password");
                     $block_password = true;
+                } else {
+                    $dontRegisterChecked = true;
                 }
             }
             if ($register == ShopLibrary::REGISTER_MANDATORY) {
@@ -2488,6 +2493,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         self::$objTemplate->setGlobalVariable(array(
             'SHOP_ACCOUNT_PASSWORD_DISPLAY' => ($block_password
               ? Html::CSS_DISPLAY_BLOCK : Html::CSS_DISPLAY_NONE),
+            'SHOP_DONT_REGISTER_CHECKED' => $dontRegisterChecked ? Html::ATTRIBUTE_CHECKED : '',
         ));
         if (!Cart::needs_shipment()) {
 //            self::$objTemplate->hideBlock('shipping_address');
@@ -3105,7 +3111,6 @@ right after the customer logs in!
                         $_SESSION['shop']['grand_total_price'] - $_SESSION['shop']['vat_price']
                     ),
                 ));
-                self::$objTemplate->touchBlock('totalExclTaxRow');
             }
         }
         self::viewpart_lsv();
@@ -3272,16 +3277,15 @@ right after the customer logs in!
                         ? $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_INCL']
                         : $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_EXCL']
                     ),
-           ));
-           if (Vat::isIncluded()) {
-               self::$objTemplate->setVariable(array(
-                   'SHOP_GRAND_TOTAL_EXCL_TAX' =>
-                       Currency::formatPrice(
-                       $_SESSION['shop']['grand_total_price'] - $_SESSION['shop']['vat_price']
-                   ),
-               ));
-               self::$objTemplate->touchBlock('totalExclTaxRow');
-           }
+            ));
+            if (Vat::isIncluded()) {
+                self::$objTemplate->setVariable(array(
+                    'SHOP_GRAND_TOTAL_EXCL_TAX' =>
+                        Currency::formatPrice(
+                        $_SESSION['shop']['grand_total_price'] - $_SESSION['shop']['vat_price']
+                    ),
+                ));
+            }
         }
 // TODO: Make sure in payment() that those two are either both empty or
 // both non-empty!

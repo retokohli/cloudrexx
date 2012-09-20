@@ -1,5 +1,7 @@
 <?php
 global $_ARRAYLANG;
+$_ARRAYLANG['TXT_SHOP_BUTTON_REGISTRATION'] = "Register now";
+$_ARRAYLANG['TXT_SHOP_BUTTON_NO_REGISTRATION'] = "Order without registration";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_ADDED_TO_CART'] = "The item has been added to your cart.";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_DETAILS'] = "Details";
 $_ARRAYLANG['SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "I'm a registered customer.";
