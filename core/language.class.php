@@ -917,12 +917,14 @@ class LanguageManager
             'TXT_ADMINISTRATION_PAGES'       => $_CORELANG['TXT_ADMINISTRATION_PAGES'],
             'TXT_WEB_PAGES'                  => $_CORELANG['TXT_WEB_PAGES'],
             'TXT_SECTION'                    => $_CORELANG['TXT_SECTION'],            
-            'TXT_CORE_FALLBACK'              => $_CORELANG['TXT_CORE_FALLBACK'],        
+            'TXT_CORE_FALLBACK'              => $_CORELANG['TXT_CORE_FALLBACK'],
         ));
         $objTemplate->setGlobalVariable(array(
             'TXT_DEFAULT_LANGUAGE' => $_CORELANG['TXT_STANDARD_LANGUAGE'],
             'TXT_CORE_NONE'        => $_CORELANG['TXT_CORE_NONE'],
             'CMD'                  => contrexx_input2xhtml($_GET['cmd']),
+            'TXT_LANGUAGE_ACTION_COPY'       => $_CORELANG['TXT_LANGUAGE_ACTION_COPY'],
+            'TXT_LANGUAGE_ACTION_LINK'       => $_CORELANG['TXT_LANGUAGE_ACTION_LINK'],
         ));        
         //end language variables
         if ($this->hideVariables == true) {

@@ -1,6 +1,4 @@
 <?php
-include_once ASCMS_CORE_PATH . '/routing/ParameterParser.class.php';
-include_once ASCMS_CORE_PATH . '/routing/URL.class.php';
 
 /**
  * Filesharing Lib

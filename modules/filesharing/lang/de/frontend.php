@@ -12,7 +12,7 @@ $_ARRAYLANG["TXT_FILESHARING_SUBJECT"] = "Betreff";
 $_ARRAYLANG["TXT_FILESHARING_SUBJECT_INFO"] = "Betreff für den Empfänger";
 $_ARRAYLANG["TXT_FILESHARING_MESSAGE"] = "Nachricht";
 $_ARRAYLANG["TXT_FILESHARING_MESSAGE_INFO"] = "Nachricht für den Empfänger";
-$_ARRAYLANG["TXT_FILESHARING_EXPIRATION"] = "Ablauf des Datums";
+$_ARRAYLANG["TXT_FILESHARING_EXPIRATION"] = "Ablauf des Downloads";
 $_ARRAYLANG["TXT_FILESHARING_FILE_NAME"] = "Dateiname";
 $_ARRAYLANG["TXT_FILESHARING_DOWNLOAD_LINK"] = "Downloadlink";
 $_ARRAYLANG["TXT_FILESHARING_DELETE_LINK"] = "Löschlink";
@@ -26,4 +26,8 @@ $_ARRAYLANG["TXT_FILESHARING_EXPIRATION_DATES"] = array(
 );
 $_ARRAYLANG["TXT_FILESHARING_ERROR_FILE_NOT_FOUND"] = "Die angeforderte Datei existiert nicht!";
 $_ARRAYLANG["TXT_FILESHARING_ERROR_NO_FILES_UPLOADED"] = "Keine Dateien hochgeladen!";
+$_ARRAYLANG['TXT_FILESHARING_EXPLANATION'] = 'Geben Sie einfach eine oder mehrere Datei(en) und eine E-Mail Adresse an, wir senden dem Empfänger dann einen Download-Link.';
+$_ARRAYLANG["TXT_FILESHARING_I_AGREE"] = "Ich stimme den";
+$_ARRAYLANG["TXT_FILESHARING_TERMS_OF_SERVICE"] = "allgemeinen Geschäftsbedingungen";
+$_ARRAYLANG["TXT_FILESHARING_I_ACCEPT"] = "zu";
 ?>

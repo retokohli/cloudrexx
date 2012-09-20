@@ -26,4 +26,8 @@ $_ARRAYLANG["TXT_FILESHARING_EXPIRATION_DATES"] = array(
 );
 $_ARRAYLANG["TXT_FILESHARING_ERROR_FILE_NOT_FOUND"] = "The requested file does not exist!";
 $_ARRAYLANG["TXT_FILESHARING_ERROR_NO_FILES_UPLOADED"] = "No files uploaded!";
+$_ARRAYLANG['TXT_FILESHARING_EXPLANATION'] = 'Simply enter one or more files and an e-mail address, we will send the download link to the receiver.';
+$_ARRAYLANG["TXT_FILESHARING_I_AGREE"] = "I agree with the";
+$_ARRAYLANG["TXT_FILESHARING_TERMS_OF_SERVICE"] = "terms of service";
+$_ARRAYLANG["TXT_FILESHARING_I_ACCEPT"] = "";
 ?>

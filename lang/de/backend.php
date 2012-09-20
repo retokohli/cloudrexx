@@ -135,7 +135,9 @@ $_ARRAYLANG['TXT_LANGUAGE_DEPENDANT_SYSTEM_VARIABLES'] = "Sprachabhängige Syste
 $_ARRAYLANG['TXT_TRANSLATION'] = "Übersetzung";
 $_ARRAYLANG['TXT_BROWSERLANGUAGE'] = "Sprache";
 $_ARRAYLANG['TXT_LANGUAGE_SETTINGS'] = "Sprachen";
-$_ARRAYLANG['TXT_LANGUAGE_LIST'] = "Sprachen Überblick";
+$_ARRAYLANG['TXT_LANGUAGE_LIST'] = "Überblick";
+$_ARRAYLANG['TXT_LANGUAGE_ACTION_COPY'] = 'Inhalte der Fallbacksprache in diese Sprache kopieren';
+$_ARRAYLANG['TXT_LANGUAGE_ACTION_LINK'] = 'Inhalte der Fallbacksprache in diese Sprache verknüpfen';
 $_ARRAYLANG['TXT_STANDARD_LANGUAGE'] = "Standard Sprache";
 $_ARRAYLANG['TXT_STANDARD_PAGES'] = "Standardseiten";
 $_ARRAYLANG['TXT_START_DATE'] = "Startdatum";
@@ -1175,6 +1177,8 @@ $_ARRAYLANG['TXT_MEDIADIR_SETTINGS'] = 'Einstellungen';
 $_ARRAYLANG['TXT_MEDIADIR_MODULE_DESCRIPTION'] = 'Flexibel konfigurierbares Medienverzeichnis.';
 $_ARRAYLANG['TXT_CHECKOUT_MODULE'] = "Online-Zahlung";
 $_ARRAYLANG['TXT_CHECKOUT_MODULE_DESCRIPTION'] = "Einfache Lösung zur Abwicklung von Transaktionen über Yellowpay.";
+$_ARRAYLANG['TXT_FILESHARING_MODULE'] = "Dateifreigabe";
+$_ARRAYLANG['TXT_FILESHARING_MODULE_DESCRIPTION'] = "Lade Dateien hoch und gib diese für deine Freunde und Geschäftsfreunde frei.";
 
 // From 2.3(?) -- are these still in use?
 $_ARRAYLANG['TXT_CSRF_BUTTON'] = "Klicken Sie hier, um fortzufahren.";
