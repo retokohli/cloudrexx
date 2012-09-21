@@ -286,7 +286,7 @@ abstract class Uploader
         unset($_SESSION[$sessionKey]);
         //same goes for the data
         $dataKey = 'upload_data_'.$this->uploadId;
-        if(isset($_SESSION[$dataKey]))
+        //if(isset($_SESSION[$dataKey]))
 // TODO: unset this when closing the uploader dialog, but not before
 //            unset($_SESSION[$dataKey]);
         
