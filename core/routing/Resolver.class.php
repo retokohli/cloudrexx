@@ -297,6 +297,56 @@ class Resolver {
         }
     }
 
+    public function legacyResolve($url, $section, $command)
+    {
+        global $sessionObj;
+
+        $objFWUser = \FWUser::getFWUserObject();
+
+        /*
+          The Resolver couldn't find a page.
+          We're looking at one of the following situations, which are treated in the listed order:
+           a) Request for the 'home' page
+           b) Legacy request with section / cmd
+           c) Request for inexistant page
+          We try to locate a module page via cmd and section (if provided).
+          If that doesn't work, an error is shown.
+        */
+
+        // a: 'home' page
+        $urlPointsToHome =    $url->getSuggestedTargetPath() == 'index.php'
+                           || $url->getSuggestedTargetPath() == '';
+        //    user probably tried requesting the home-page
+        if(!$section && $urlPointsToHome) {
+            $section = 'home';
+        }
+        $this->setSection($section, $command);
+
+        // b(, a): fallback if section and cmd are specified
+        if ($section) {
+            if ($section == 'logout') {
+                if (empty($sessionObj)) {
+                    $sessionObj = new cmsSession();
+                }
+                if ($objFWUser->objUser->login()) {
+                    $objFWUser->logout();
+                }
+            }
+
+            $pageRepo = \Env::em()->getRepository('Cx\Model\ContentManager\Page');
+            $this->page = $pageRepo->findOneByModuleCmdLang($section, $command, FRONTEND_LANG_ID);
+
+            //fallback content
+            if (!$this->page) {
+                return;
+            }
+
+            $this->handleFallbackContent($this->page);
+        }
+
+        // c: inexistant page gets catched below.
+    }
+
     /**
      * Returns the preview page built from the session page array.
      * @return Cx\Model\ContentManager\Page $page
