@@ -20,6 +20,10 @@
  */
 class Distribution
 {
+    const TYPE_DELIVERY = 'delivery';  // Needs shipping, default
+    const TYPE_DOWNLOAD = 'download';  // Creates a User account
+    const TYPE_NONE = 'none';          // Why would you buy this, anyway?
+    const TYPE_COUPON = 'coupon';      // Creates a new Coupon
     /**
      * The types of distribution
      * @static
@@ -27,10 +31,10 @@ class Distribution
      * @var     array
      */
     private static $arrDistributionTypes = array(
-        'delivery',  // Needs shipping, default
-        'download',  // Creates a User account
-        'none',      // Why would you buy this, anyway?
-        'coupon',    // Creates a new Coupon
+        self::TYPE_DELIVERY,
+        self::TYPE_DOWNLOAD,
+        self::TYPE_NONE,
+        self::TYPE_COUPON,
     );
 
     /**

@@ -211,23 +211,30 @@ if (SettingDb::getValue('use_js_cart') === NULL) {
             // Test mail body generation
             // *DO NOT* remove this!  Needed for site testing.
             case 'testMail':
+                // Test with
+                // http://localhost/contrexx_300/index.php?section=shop&cmd=testMail&key=[KEY]&order_id=[ORDER_ID]
 //MailTemplate::errorHandler();die();
                 $order_id = (isset($_GET['order_id']) ? $_GET['order_id'] : 10);
-                $arrSubstitution =
-                    Orders::getSubstitutionArray($order_id);
+                $key = (isset($_GET['key']) ? $_GET['key'] : 'order_confirmation');
+                $arrSubstitution = Orders::getSubstitutionArray($order_id);
+                $customer_id = $arrSubstitution['CUSTOMER_ID'];
+                $objCustomer = Customer::getById($customer_id);
+                if (!$objCustomer) {
+die("Failed to get Customer for ID $customer_id");
+                    return false;
+                }
+                $arrSubstitution +=
+                      $objCustomer->getSubstitutionArray($customer_id)
+                    + self::getSubstitutionArray();
                 $arrMailTemplate = array(
                     'section' => 'shop',
-                    'key' => 'order_confirmation',
+                    'key' => $key,
                     'lang_id' => $arrSubstitution['LANG_ID'],
                     'substitution' => &$arrSubstitution,
                     'to' => 'reto.kohli@comvation.com',
 //                            $arrSubstitution['CUSTOMER_EMAIL'].','.
 //                            SettingDb::getValue('email_confirmation'),
                 );
-                $customer_id = $arrMailTemplate['substitution']['CUSTOMER_ID'];
-                $objCustomer = Customer::getById($customer_id);
-                if (!$objCustomer) die("No Customer for ID $customer_id");
-                $arrMailTemplate['substitution'] += $objCustomer->getSubstitutionArray();
                 DBG::deactivate(DBG_LOG_FIREPHP);
                 DBG::activate(DBG_LOG_FILE);
                 DBG::log(var_export($arrMailTemplate, true));
@@ -2468,10 +2475,10 @@ die("Shop::processRedirect(): This method is obsolete!");
  */
         $block_password = false;
         $dontRegisterChecked = false;
+        // Touches the entire surrounding block
+        self::$objTemplate->setVariable(
+            'SHOP_ACCOUNT_EMAIL', contrexx_raw2xhtml($email));
         if (!self::$objCustomer) {
-            // Touches the entire surrounding block
-            self::$objTemplate->setVariable(
-                'SHOP_ACCOUNT_EMAIL', contrexx_raw2xhtml($email));
             if ($register == ShopLibrary::REGISTER_OPTIONAL) {
 //DBG::log("Shop::view_account(): Optional -> e-mail, dont_register");
                 self::$objTemplate->touchBlock('dont_register');
@@ -3831,9 +3838,11 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
         if (!$objCustomer || $objCustomer->EOF) {
             return Message::error($_ARRAYLANG['TXT_SHOP_NO_ACCOUNT_WITH_EMAIL']);
         }
-        $arrSubstitution = $objCustomer->getSubstitutionArray();
+        $arrSubstitution =
+              $objCustomer->getSubstitutionArray()
+            + self::getSubstitutionArray();
         if (!$arrSubstitution) return false;
-        $arrSubstitution['CUSTOMER_PASSWORD'] = $password;
+        $arrSubstitution['CUSTOMER_LOGIN'][0]['CUSTOMER_PASSWORD'] = $password;
         // Defaults to FRONTEND_LANG_ID
         $arrMailTemplate = array(
             'section' => 'shop',
