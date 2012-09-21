@@ -2816,7 +2816,7 @@ CREATE TABLE `contrexx_module_shop_importimg` (
   `img_fields_file` text NOT NULL,
   `img_fields_db` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`img_id`)
-) ENGINE=MyISAM;
+) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_shop_lsv` (
   `order_id` int(10) unsigned NOT NULL,
   `holder` tinytext NOT NULL,
