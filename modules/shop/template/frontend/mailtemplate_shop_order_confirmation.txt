@@ -1,6 +1,6 @@
 [CUSTOMER_SALUTATION],
 
-Herzlichen Dank für Ihre Bestellung im {COMPANY} Online Shop.
+Herzlichen Dank für Ihre Bestellung im [SHOP_COMPANY] Online Shop.
 
 Ihre Auftrags-Nr. lautet: [ORDER_ID]
 Ihre Kunden-Nr. lautet: [CUSTOMER_ID]
@@ -31,7 +31,7 @@ Gesamtsumme                                                [ORDER_SUM] [CURRENCY
 
 Ihre Kundenadresse:
 [CUSTOMER_COMPANY]
-[CUSTOMER_PREFIX] [CUSTOMER_FIRSTNAME] [CUSTOMER_LASTNAME]
+[CUSTOMER_FIRSTNAME] [CUSTOMER_LASTNAME]
 [CUSTOMER_ADDRESS]
 [CUSTOMER_ZIP] [CUSTOMER_CITY]
 [CUSTOMER_COUNTRY][[SHIPPING_ADDRESS]
@@ -39,22 +39,22 @@ Ihre Kundenadresse:
 
 Lieferadresse:
 [SHIPPING_COMPANY]
-[SHIPPING_PREFIX] [SHIPPING_FIRSTNAME] [SHIPPING_LASTNAME]
+[SHIPPING_FIRSTNAME] [SHIPPING_LASTNAME]
 [SHIPPING_ADDRESS]
 [SHIPPING_ZIP] [SHIPPING_CITY]
 [SHIPPING_COUNTRY][SHIPPING_ADDRESS]]
 
-Ihr Link zum Online Store: {HOMEPAGE}[[CUSTOMER_LOGIN]
+Ihr Link zum Online Store: [SHOP_HOMEPAGE][[CUSTOMER_LOGIN]
 
 Ihre Zugangsdaten zum Shop:
 Benutzername:   [CUSTOMER_USERNAME]
 Passwort:       [CUSTOMER_PASSWORD][CUSTOMER_LOGIN]]
 
-Wir freuen uns auf Ihren nächsten Besuch im {COMPANY} Online Store und wünschen Ihnen noch einen schönen Tag.
+Wir freuen uns auf Ihren nächsten Besuch im [SHOP_COMPANY] Online Store und wünschen Ihnen noch einen schönen Tag.
 
 P.S. Diese Auftragsbestätigung wurde gesendet an: [CUSTOMER_EMAIL]
 
 Mit freundlichen Grüssen
-Ihr {COMPANY} Online Shop Team
+Ihr [SHOP_COMPANY] Online Shop Team
 
-{HOMEPAGE}
+[SHOP_HOMEPAGE]

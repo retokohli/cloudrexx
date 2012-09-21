@@ -5,6 +5,6 @@ Benutzername: [CUSTOMER_USERNAME]
 Passwort: [CUSTOMER_PASSWORD][CUSTOMER_LOGIN]]
 
 Mit freundlichen Grüssen
-Ihr {COMPANY} Online Shop Team
+Ihr [SHOP_COMPANY] Online Shop Team
 
-{HOMEPAGE}
+[SHOP_HOMEPAGE]
