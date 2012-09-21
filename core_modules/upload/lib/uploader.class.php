@@ -287,11 +287,13 @@ abstract class Uploader
         //same goes for the data
         $dataKey = 'upload_data_'.$this->uploadId;
         if(isset($_SESSION[$dataKey]))
-            unset($_SESSION[$dataKey]);
+// TODO: unset this when closing the uploader dialog, but not before
+//            unset($_SESSION[$dataKey]);
         
         if (\Cx\Lib\FileSystem\FileSystem::exists($tempWebPath)) {
             //the callback could have returned a path where he wants the files moved to
-            if(!is_null($ret)) { //we need to move the files
+            // check that $ret[1] is not empty is VERY important!!!
+            if(!is_null($ret) && !empty($ret[1])) { //we need to move the files
                 //gather target information
                 $path = pathinfo($ret[0]);
                 $pathWeb = pathinfo($ret[1]);
@@ -318,10 +320,14 @@ abstract class Uploader
                     $response->increaseUploadedFilesCount();
                 }
                 closedir($h);
+            } else {
+// TODO: what now????
             }
 
             //delete the folder
             \Cx\Lib\FileSystem\FileSystem::delete_folder($tempWebPath, true);
+        } else {
+// TODO: output error message to user that no files had been uploaded!!!
         }
 
         $response->uploadFinished();
@@ -500,8 +506,8 @@ abstract class Uploader
                 throw new UploaderException('Failed to open output stream.');
             }
         }
-        
-        // Send HTTP header to force the browser to send the next file-chunk
+
+        // Send HTTP header to force the browser to send the next file-chunt
         // through a new connection. File-chunks that are sent through the
         // same connection get dropped by the web-server.
         header('Connection: close');
