@@ -1330,7 +1330,8 @@ div#container > footer ul li {
     list-style-type: none;
 }
 
-div#container > footer ul li a
+div#container > footer ul li a,
+#nav-lang a
 {
     border-right: 1px solid rgb(128,111,96);
     padding: 0 11px 0 0;
@@ -1339,20 +1340,19 @@ div#container > footer ul li a
     line-height: 12px;
     color: #505050;
 }
-div#container > footer ul li a.lang_active {
+
+#nav-lang a.active {
     padding: 0 11px 0 0;
     margin: 0 11px 0 0;
     display: block;
     line-height: 12px;
-}
-
-div#container > footer ul li a.lang_active {
     color: #151515;
     font-weight: bold;
     text-decoration: none;
 }
 
-div#container > footer ul li:last-child a {
+div#container > footer ul li:last-child a,
+div#container > footer #nav-lang a:last-child {
     border: none;
     margin: 0;
     padding: 0;
@@ -1368,7 +1368,13 @@ div#container > footer > a {
     margin: 30px -16px 0;    
 }
 
+#nav-lang {
+    float: right;
+}
 
+#nav-lang a {
+    float: left;
+}
 
 a.dwb, a.dwb:active, a.dwb:visited {
     color: #fff;
