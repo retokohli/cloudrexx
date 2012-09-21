@@ -2383,7 +2383,7 @@ CREATE TABLE `contrexx_module_newsletter_email_link` (
   `url` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `email_id` (`email_id`)
-) ENGINE=MyISAM;
+) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_newsletter_email_link_feedback` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `link_id` int(11) unsigned NOT NULL,
