@@ -34,11 +34,11 @@ class CSVimport
         $this->arrName2Fieldname = array(
 // TODO: Optional.  Include it?
 //            $_ARRAYLANG['TXT_SHOP_ID'] => 'id',
-            $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'] => 'product_id',
-            $_ARRAYLANG['TXT_SHOP_IMAGE'] => 'picture',
-            $_ARRAYLANG['TXT_PRODUCT_NAME'] => 'title',
-            $_ARRAYLANG['TXT_DISTRIBUTION'] => 'handler',
-            $_ARRAYLANG['TXT_CUSTOMER_PRICE'] => 'normalprice',
+            $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'] => 'code',
+            $_ARRAYLANG['TXT_SHOP_IMAGE'] => 'pictures',
+            $_ARRAYLANG['TXT_PRODUCT_NAME'] => 'name',
+            $_ARRAYLANG['TXT_DISTRIBUTION'] => 'distribution',
+            $_ARRAYLANG['TXT_CUSTOMER_PRICE'] => 'price',
             $_ARRAYLANG['TXT_RESELLER_PRICE'] => 'resellerprice',
             $_ARRAYLANG['TXT_SHOP_PRICE_SPECIAL_OFFER'] => 'discountprice',
             $_ARRAYLANG['TXT_SPECIAL_OFFER'] => 'discount_active',
@@ -56,6 +56,22 @@ class CSVimport
     function getTemplateArray()
     {
         return $this->arrTemplateArray;
+    }
+
+
+    /**
+     * Returns an array of template names, indexed by respective IDs
+     * @return  array           The array of template names
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @since   3.0.0
+     */
+    function getNameArray()
+    {
+        $arrName = array();
+        foreach ($this->arrTemplateArray as $index => $arrTemplate) {
+            $arrName[$arrTemplate['id']] = $arrTemplate['name'];
+        }
+        return $arrName;
     }
 
 
