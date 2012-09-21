@@ -19,16 +19,9 @@
         <script type="text/javascript" src="themes/mobile_3_0/langnavbar.js"></script>
         <script type="text/javascript" src="themes/mobile_3_0/js/mobile-javascript-default.js"></script>
         <script type="text/javascript" src="themes/mobile_3_0/js/webtrends.js"></script>
-        <script type="text/javascript" src="themes/mobile_3_0/js/jquery.cookie.js"></script>
         
         <script>
             $J(document).ready(function(){
-                if ($J.cookie('langId') == 1){
-                    $J('#nav-lang li a.de').addClass('lang_active');
-                } else if($J.cookie('langId') == 2) {
-                    $J('#nav-lang li a.en').addClass('lang_active');
-                }
-                
                 $J('#back-to-top').click(function () {
                     $J('body').scrollTop(0);
                     return false;
@@ -66,16 +59,15 @@
                 <footer data-role="footer">                   
                     <ul role="navigation" class="noprint ">
                         <li>
-                            <a rel="external" title="Rechtliche Hinweise" href="{NODE_PRIVACY}"><span class="link">Rechtlichee Hinweise</span></a>
+                            <a rel="external" title="Rechtliche Hinweise" href="{NODE_PRIVACY}"><span class="link">Rechtliche Hinweise</span></a>
                         </li>	
                         <li>
                             <a rel="external" title="Impressum" href="{NODE_IMPRINT}" ><span class="link">Impressum</span></a>
                         </li>	
                     </ul>
-                    <ul id="nav-lang">
-                        <li><a class="de" href="index.php?setLang=1" >DE</a></li>                        
-                        <li><a class="en" href="index.php?setLang=2">EN</a></li>
-                    </ul>
+                    <div id="nav-lang">
+                        {LANGUAGE_NAVBAR_SHORT}
+                    </div>
                     <a href="{STANDARD_URL}">Zur klassischen Ansicht wechseln</a>                    
                 </footer>               
             </div>
