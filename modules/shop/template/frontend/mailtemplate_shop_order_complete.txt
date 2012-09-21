@@ -6,6 +6,6 @@ Herzlichen Dank für das Vertrauen.
 Wir würden uns freuen, wenn Sie uns weiterempfehlen und wünschen Ihnen noch einen schönen Tag.
 
 Mit freundlichen Grüssen
-Ihr {COMPANY} Online Shop Team
+Ihr [SHOP_COMPANY] Online Shop Team
 
-{HOMEPAGE}
+[SHOP_HOMEPAGE]
