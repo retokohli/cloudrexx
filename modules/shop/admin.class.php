@@ -334,12 +334,11 @@ class Shopmanager extends ShopLibrary
             // delete existing categories on request only!
             // mind that this necessarily also clears all products and
             // their associated attributes!
-            if (isset($_POST['clearCategories']) && $_POST['clearCategories']) {
-                $query = 'DELETE FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_products';
-                $objDatabase->Execute($query);
-                Attributes::deleteAll();
-                $query = 'DELETE FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_categories';
-                $objDatabase->Execute($query);
+            if (!empty($_POST['clearCategories'])) {
+                Products::deleteByShopCategory(0, false, true);
+                ShopCategories::deleteAll();
+// NOTE: Removing Attributes is now disabled.  Optionally enable this.
+//                Attributes::deleteAll();
             }
             $objCsv = new Csv_bv($_FILES['importFileCategories']['tmp_name']);
             $importedLines = 0;
@@ -366,10 +365,11 @@ class Shopmanager extends ShopLibrary
         // Import
         if (isset($_REQUEST['importFileProducts'])) {
             if (isset($_POST['clearProducts']) && $_POST['clearProducts']) {
-                Products::deleteAll();
-                Attributes::deleteAll();
+                Products::deleteByShopCategory(0, false, true);
                 // The categories need not be removed, but it is done by design!
                 ShopCategories::deleteAll();
+// NOTE: Removing Attributes is now disabled.  Optionally enable this.
+//                Attributes::deleteAll();
             }
             $arrFileContent = $objCSVimport->GetFileContent();
             $query = '
@@ -420,38 +420,12 @@ class Shopmanager extends ShopLibrary
             // Array of IDs of newly inserted records
             $arrId = array();
             for ($x = 1; $x < count($arrFileContent); ++$x) {
-                $strColumnNames = '';
-                $strColumnValues = '';
-                $counter = 0;
-                foreach ($arrProductDatabaseFieldName as $index => $strFieldIndex) {
-                    $strColumnNames .=
-                        ($strColumnNames ? ',' : '').
-                        $index;
-                    if (strpos($strFieldIndex, ';')) {
-                        $prod2line = split(';', $strFieldIndex);
-                        $spaltenValuesTmp = '';
-                        for ($z = 0; $z < count($prod2line); ++$z) {
-                            $spaltenValuesTmp .=
-                                $arrFileContent[$x][$arrDatabaseFieldIndex[$prod2line[$z]]].
-                                '<br />';
-                        }
-                        $strColumnValues .=
-                            ($strColumnValues ? ',' : '').
-                            '"'.addslashes($spaltenValuesTmp).'"';
-                    } else {
-                        $strColumnValues .=
-                            ($strColumnValues ? ',' : '').
-                            '"'.addslashes($arrFileContent[$x][$arrDatabaseFieldIndex[$strFieldIndex]]).'"';
-                    }
-                    ++$counter;
-                }
                 $category_id = false;
-                for ($cat=0; $cat < count($arrCategoryColumnIndex); $cat++) {
+                for ($cat = 0; $cat < count($arrCategoryColumnIndex); ++$cat) {
                     $catName = $arrFileContent[$x][$arrCategoryColumnIndex[$cat]];
                     if (empty($catName) && !empty($category_id)) {
                         break;
                     }
-
                     if (empty($catName)) {
                         $category_id = $objCSVimport->GetFirstCat();
                     } else {
@@ -461,11 +435,24 @@ class Shopmanager extends ShopLibrary
                 if ($category_id == 0) {
                     $category_id = $objCSVimport->GetFirstCat();
                 }
-                $query = "
-                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products
-                    ($strColumnNames, catid) VALUES ($strColumnValues, $category_id)";
-                $objResult = $objDatabase->Execute($query);
-                if ($objResult) {
+                $objProduct = new Product(
+                    '', $category_id, '', '', 0, 1, 0, 0, 0);
+                foreach ($arrProductDatabaseFieldName as $index => $strFieldIndex) {
+                    $value = '';
+                    if (strpos($strFieldIndex, ';')) {
+                        $prod2line = split(';', $strFieldIndex);
+                        for ($z = 0; $z < count($prod2line); ++$z) {
+                            $value .=
+                                $arrFileContent[$x][$arrDatabaseFieldIndex[$prod2line[$z]]].
+                                '<br />';
+                        }
+                    } else {
+                        $value =
+                            $arrFileContent[$x][$arrDatabaseFieldIndex[$strFieldIndex]];
+                    }
+                    $objProduct->$index($value);
+                }
+                if ($objProduct->store()) {
                     $arrId[] = $objDatabase->Insert_ID();
                     ++$importedLines;
                 } else {
@@ -518,7 +505,14 @@ class Shopmanager extends ShopLibrary
             $jsSelectLayer = 'selectTab("import2");';
         }
         $arrTemplateArray = $objCSVimport->getTemplateArray();
-        self::$objTemplate->setCurrentBlock('imgRow');
+        if ($arrTemplateArray) {
+            $arrName = $objCSVimport->getNameArray();
+            self::$objTemplate->setVariable(
+                'SHOP_IMPORT_TEMPLATE_MENU', Html::getSelect(
+                    'ImportImage', $arrName));
+        } else {
+            self::$objTemplate->touchBlock('import_products_no_template');
+        }
         for ($x = 0; $x < count($arrTemplateArray); ++$x) {
             self::$objTemplate->setVariable(array(
                 'IMG_NAME' => $arrTemplateArray[$x]['name'],

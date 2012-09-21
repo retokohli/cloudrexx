@@ -1,6 +1,5 @@
 <!-- BEGIN shop_import.html -->
-<script type="text/javascript">
-// <![CDATA[
+<script type="text/javascript">//<![CDATA[
 function addPair() {
   var selectGiven = document.getElementById("given_field");
   var selectFile = document.getElementById("file_field");
@@ -13,8 +12,8 @@ function addPair() {
   resetHidden();
 }
 function removePair() {
-  var selectGiven = document.getElementById("given_field");
-  var selectFile = document.getElementById("file_field");
+//  var selectGiven = document.getElementById("given_field");
+//  var selectFile = document.getElementById("file_field");
   var selectLeft = document.getElementById("pairs_left");
   var selectRight = document.getElementById("pairs_right");
   if (selectLeft.selectedIndex >= 0 || selectRight.selectedIndex >= 0) {
@@ -37,7 +36,9 @@ function addCat() {
   var selectFile = document.getElementById("file_field");
   var selectcats = document.getElementById("cats");
   if (selectFile.selectedIndex >= 0) {
-    selectcats[selectcats.length] =  new Option(selectFile[selectFile.selectedIndex].text,selectFile[selectFile.selectedIndex].value);
+    selectcats[selectcats.length] = new Option(
+      selectFile[selectFile.selectedIndex].text,
+      selectFile[selectFile.selectedIndex].value);
   }
   resetKat();
 }
@@ -63,7 +64,6 @@ function resetHidden() {
       selectLeft[i].value;
   }
   leftKeys.value = tmp;
-
   tmp = '';
   for (var i = 0; i < selectRight.length; i++) {
     tmp +=
@@ -111,8 +111,7 @@ function MakeExport(groupCode) {
     document.location = "index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=import&group="+groupCode;
   }
 }
-// ]]>
-</script>
+//]]></script>
 
 <ul id="tabmenu">
   <li><a id="generalTab_import1" class="active" href="javascript:{}" onclick="selectTab('import1')" title="{TXT_SHOP_IMPORT_IMPORT}">{TXT_SHOP_IMPORT_IMPORT}</a></li>
@@ -150,11 +149,10 @@ function MakeExport(groupCode) {
     </table>
     <br />
     <input type="button" value="{TXT_SHOP_IMPORT_IMPORT}"
-           onclick="javascript:MakeImportCategories();" {IMPORT_BUTTON_STYLE} />
+           onclick="MakeImportCategories();" {IMPORT_BUTTON_STYLE} />
     <br />
     <br />
   </form>
-
   <br />
 
 <!-- BEGIN import_products -->
@@ -169,7 +167,7 @@ function MakeExport(groupCode) {
           <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS}</span>
         </td>
         <td nowrap="nowrap" width="80%">
-          {IMAGE_CHOICE}
+          {SHOP_IMPORT_TEMPLATE_MENU}
         </td>
       </tr>
       <tr class="row2">
@@ -195,7 +193,7 @@ function MakeExport(groupCode) {
 <!-- END import_products -->
 <!-- BEGIN import_products_no_template -->
   {TXT_SHOP_IMPORT_NO_TEMPLATE}
-<!-- END import_products_no_tempalte -->
+<!-- END import_products_no_template -->
 </div>
 
 <!-- Begin FieldsSelect -->
@@ -265,7 +263,8 @@ function MakeExport(groupCode) {
       <tr class="row2">
         <td colspan="3" class="f_bold">
           {TXT_SHOP_IMPORT_TEMPLATENAME}
-          <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SHOP_IMPORT_TEMPLATE_SAVE_TIPS}</span>
+          <span class="tooltip-trigger icon-info"></span>
+          <span class="tooltip-message">{TXT_SHOP_IMPORT_TEMPLATE_SAVE_TIPS}</span>
           <input type="text" name="ImgName" id="ImgName" />
         </td>
         <td>

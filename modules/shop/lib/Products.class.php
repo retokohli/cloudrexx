@@ -280,13 +280,17 @@ class Products
      * immediately without trying to delete the remaining Products.
      * Deleting the ShopCategory after this method failed will most
      * likely result in Product bodies in the database!
-     * @param   integer   $category_id    The ShopCategory ID
-     * @return  boolean                   True on success, null on noop,
-     *                                    false otherwise
+     * @param   integer     $category_id        The ShopCategory ID
+     * @param   boolean     $flagDeleteImages   Delete images, if true
+     * @param   boolean     $recursive          Delete Products from
+     *                                          subcategories, if true
+     * @return  boolean                         True on success, null on noop,
+     *                                          false otherwise
      * @static
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function deleteByShopCategory($category_id, $flagDeleteImages=false)
+    static function deleteByShopCategory($category_id, $flagDeleteImages=false,
+        $recursive=false)
     {
         // Verify that the Category still exists
         $objShopCategory = ShopCategory::getById($category_id);
@@ -361,6 +365,17 @@ class Products
 //                        $flagDeleteImages)
 //                    ) return false;
                     if (!$objProduct->delete()) return false;
+                }
+            }
+        }
+        if ($recursive) {
+            $arrCategoryId =
+                ShopCategories::getChildCategoriesById($category_id);
+            foreach ($arrCategoryId as $category_id) {
+                if (!self::deleteByShopCategory(
+                    $category_id, $flagDeleteImages, $recursive)) {
+DBG::log("ERROR: Failed to delete Products in Category ID $category_id");
+                    return false;
                 }
             }
         }
