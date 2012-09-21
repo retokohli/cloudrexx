@@ -33,6 +33,8 @@ class LinkSanitizer {
 
                 # ..and neither start with a protocol (http:, ftp:, javascript:, mailto:, etc)
                 (?!([a-z]+):)
+                # ..and neither start with a backslash which would indicate that the url lies within some javascript code
+                (?!\\\)
             /x", '\1'.$this->offset, $this->content);
     }
 }
