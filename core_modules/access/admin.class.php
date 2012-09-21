@@ -62,7 +62,7 @@ class AccessManager extends AccessLib
               $_ARRAYLANG['TXT_ACCESS_OVERVIEW'].'</a>'.*/
             (Permission::checkAccess(18, 'static', true)
               ? '<a href="index.php?cmd=access&amp;act=user" title="'.
-              $_ARRAYLANG['TXT_ACCESS_USERS'].'" class="'.($this->act == 'user' ? 'active' : '').'">'.
+              $_ARRAYLANG['TXT_ACCESS_USERS'].'" class="'.(($this->act == '' || $this->act == 'user') ? 'active' : '').'">'.
               $_ARRAYLANG['TXT_ACCESS_USERS'].'</a>' : '').
             (Permission::checkAccess(18, 'static', true)
               ? '<a href="index.php?cmd=access&amp;act=group" title="'.

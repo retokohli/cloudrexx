@@ -186,11 +186,11 @@ class MediaManager extends MediaLibrary
             default:
                 Permission::checkAccess(7, 'static');
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
-                    <a href="index.php?cmd=media&amp;archive=archive1">'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #1</a>
-                    <a href="index.php?cmd=media&amp;archive=archive2">'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #2</a>
-                    <a href="index.php?cmd=media&amp;archive=archive3">'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #3</a>
-                    <a href="index.php?cmd=media&amp;archive=archive4">'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #4</a>
-                    <a href="index.php?cmd=media&amp;archive=archive1&amp;act=settings">' . $_ARRAYLANG['TXT_MEDIA_SETTINGS'] . '</a>
+                    <a href="index.php?cmd=media&amp;archive=archive1" ' . ($this->archive == 'archive1' && !isset($_GET['act']) ? ' class="active"' : '') . '>'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #1</a>
+                    <a href="index.php?cmd=media&amp;archive=archive2" ' . ($this->archive == 'archive2' ? ' class="active"' : '') . '>'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #2</a>
+                    <a href="index.php?cmd=media&amp;archive=archive3" ' . ($this->archive == 'archive3' ? ' class="active"' : '') . '>'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #3</a>
+                    <a href="index.php?cmd=media&amp;archive=archive4" ' . ($this->archive == 'archive4' ? ' class="active"' : '') . '>'. $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] .' #4</a>
+                    <a href="index.php?cmd=media&amp;archive=archive1&amp;act=settings" ' . ($this->archive == 'archive1' && $_GET['act'] == 'settings' ? ' class="active"' : '') . '>' . $_ARRAYLANG['TXT_MEDIA_SETTINGS'] . '</a>
                 ');
                 break;
         }

@@ -46,6 +46,7 @@ class newsletter extends NewsletterLib
     public $_stdMailPriority = 3;
     public $_attachmentPath = '/images/attach/';
 
+    private $act = '';
 
     /**
      * PHP5 constructor
@@ -60,15 +61,17 @@ class newsletter extends NewsletterLib
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-        if (!isset($_REQUEST['standalone'])) {
+        $this->act = isset($_GET['act']) ? $_GET['act'] : '';
+
+        if (!isset($_REQUEST['standalone'])) {            
             $objTemplate->setVariable(
                 "CONTENT_NAVIGATION",
-                "<a href='index.php?cmd=newsletter&amp;act=mails'>".$_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CAMPAIGNS']."</a>
-                <a href='index.php?cmd=newsletter&amp;act=lists'>".$_ARRAYLANG['TXT_NEWSLETTER_LISTS']."</a>
-                <a href='index.php?cmd=newsletter&amp;act=templates'>".$_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES']."</a>
-                <a href='index.php?cmd=newsletter&amp;act=users'>".$_ARRAYLANG['TXT_NEWSLETTER_RECIPIENTS']."</a>
-                <a href='index.php?cmd=newsletter&amp;act=news'>".$_ARRAYLANG['TXT_NEWSLETTER_NEWS']."</a>
-                <a href='index.php?cmd=newsletter&amp;act=dispatch'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
+                "<a href='index.php?cmd=newsletter&amp;act=mails' class='".(($this->act == '' || $this->act == 'mails') ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CAMPAIGNS']."</a>
+                <a href='index.php?cmd=newsletter&amp;act=lists' class='".($this->act == 'lists' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_LISTS']."</a>
+                <a href='index.php?cmd=newsletter&amp;act=templates' class='".($this->act == 'templates' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES']."</a>
+                <a href='index.php?cmd=newsletter&amp;act=users' class='".($this->act == 'users' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_RECIPIENTS']."</a>
+                <a href='index.php?cmd=newsletter&amp;act=news' class='".($this->act == 'news' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_NEWS']."</a>
+                <a href='index.php?cmd=newsletter&amp;act=dispatch' class='".($this->act == 'dispatch' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
         }
         $months = explode(',', $_ARRAYLANG['TXT_NEWSLETTER_MONTHS_ARRAY']);
         $i = 0;
