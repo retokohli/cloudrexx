@@ -416,7 +416,10 @@ if ($isRegularPageRequest) {
         if($page) {
             try {
                 $resolver->handleFallbackContent($page);
-                $page = $resolver->getPage();
+                $fallbackPage = $resolver->getPage();
+                if ($fallbackPage) {
+                    $page = $fallbackPage;
+                }
             }
             catch(ResolverException $e) {
                 //page should have fallback content, none found.
