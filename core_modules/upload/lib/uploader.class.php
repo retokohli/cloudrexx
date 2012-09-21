@@ -501,7 +501,7 @@ abstract class Uploader
             }
         }
         
-        // Send HTTP header to force the browser to send the next file-chunt
+        // Send HTTP header to force the browser to send the next file-chunk
         // through a new connection. File-chunks that are sent through the
         // same connection get dropped by the web-server.
         header('Connection: close');
