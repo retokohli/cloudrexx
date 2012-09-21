@@ -38,8 +38,7 @@ class NavigationPageTree extends SigmaPageTree {
             $parentPath = '/';
         }
         
-        if($this->topLevelBlockName && !$hideLevel &&
-                $this->isPagePathActive($parentPath, $lang) && $page->isVisible()) {
+        if($this->topLevelBlockName && !$hideLevel && $page->isVisible()) {
 //TODO: invisible childs
 //      maybe the return value of this function could set whether the childs
 //      are rendered.
