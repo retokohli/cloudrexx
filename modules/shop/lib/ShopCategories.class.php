@@ -564,8 +564,8 @@ class ShopCategories
         $arrSql = Text::getSqlSnippets('`category`.`id`',
             FRONTEND_LANG_ID, 'shop',
             array(
-                'name' => self::TEXT_NAME,
-                'description' => self::TEXT_DESCRIPTION,
+                'name' => ShopCategory::TEXT_NAME,
+                'description' => ShopCategory::TEXT_DESCRIPTION,
             )
         );
         $query = "
@@ -770,15 +770,13 @@ class ShopCategories
     {
         global $objDatabase;
 
-        $parent_id = max(0, intval($parent_id));
-        $query = "
+        $objResult = $objDatabase->Execute("
            SELECT `id`
              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_categories`
-            WHERE `parent_id`=$parent_id".
+            WHERE `parent_id`=?".
             ($active ? ' AND `active`=1' : '')."
-            ORDER BY `ord` ASC";
-        // Query flags: OR flags LIKE '%parent:$parent_id%'
-        $objResult = $objDatabase->Execute($query);
+            ORDER BY `ord` ASC",
+            array($parent_id));
         if (!$objResult) return ShopCategory::errorHandler();
         $arrChildShopCategoryId = array();
         while (!$objResult->EOF) {
@@ -812,18 +810,20 @@ class ShopCategories
     {
         global $objDatabase;
 
-        $arrSqlName = Text::getSqlSnippets('`category`.`id`',
-            FRONTEND_LANG_ID, 'shop', array('name' => self::TEXT_NAME));
-        $query = "
-           SELECT `id`
-             FROM `".DBPREFIX."module_shop".MODULE_INDEX."_categories` AS `category`, ".
-            $arrSqlName['join']."
-            WHERE `name`='".addslashes($strName)."'".
-            ($active ? ' AND `active`=1' : '').
-            (is_null($parent_id) ? '' : ' AND `parent_id`=$parent_id')."
-            ORDER BY `ord` ASC";
+        $arrSqlName = Text::getSqlSnippets('`category`.`id`', FRONTEND_LANG_ID,
+            'shop', array('name' => ShopCategory::TEXT_NAME));
+DBG::log("getChildNamed($strName, $parent_id, $active): SQL: ".var_export($arrSqlName, true));
+DBG::log("getChildNamed(): JOIN: ".var_export($arrSqlName['join'], true));
+        $parent_id = max(0, intval($parent_id));
         // Qquery flags: OR flags LIKE '%parent:$parent_id%'
-        $objResult = $objDatabase->Execute($query);
+        $objResult = $objDatabase->Execute("
+           SELECT `category`.`id`
+             FROM `".DBPREFIX."module_shop".MODULE_INDEX."_categories` AS `category`".
+            $arrSqlName['join']."
+            WHERE ".$arrSqlName['alias']['name']."='".addslashes($strName)."'".
+            ($active ? ' AND `active`=1' : '').
+            (is_null($parent_id) ? '' : " AND `parent_id`=$parent_id")."
+            ORDER BY `ord` ASC");
         if (!$objResult) return ShopCategory::errorHandler();
         if ($objResult->RecordCount() > 1) return false;
         if ($objResult->EOF) return null;
