@@ -395,3 +395,4 @@ $_ARRAYLANG['TXT_YOUR_ACCOUNT_DETAILS'] = "Your personal account details";
 $_ARRAYLANG['TXT_ZONE'] = "Zone";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER'] = "Order without registration";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER_NOTE'] = "Check this box if you want to order without registration.";
+$_ARRAYLANG['TXT_FREE_OF_CHARGE'] = "Free of charge from";

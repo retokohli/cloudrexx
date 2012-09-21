@@ -11,21 +11,6 @@
  */
 
 /**
- * Storage path for product images (absolute path)
- */
-define('PRODUCT_IMAGE_PATH',     ASCMS_SHOP_IMAGES_PATH.'/');
-/**
- * Storage path for product images (relativ pat)
- */
-define('PRODUCT_IMAGE_WEB_PATH', ASCMS_SHOP_IMAGES_WEB_PATH.'/');
-
-define('SHOP_PRODUCT_DEFAULT_VIEW_NONE',      0);
-define('SHOP_PRODUCT_DEFAULT_VIEW_MARKED',    1);
-define('SHOP_PRODUCT_DEFAULT_VIEW_DISCOUNTS', 2);
-define('SHOP_PRODUCT_DEFAULT_VIEW_LASTFIVE',  3);
-define('SHOP_PRODUCT_DEFAULT_VIEW_COUNT',     4);
-
-/**
  * Product helper object
  *
  * Provides methods for accessing sets of Products, displaying menus
@@ -38,6 +23,12 @@ define('SHOP_PRODUCT_DEFAULT_VIEW_COUNT',     4);
  */
 class Products
 {
+    const DEFAULT_VIEW_NONE = 0;
+    const DEFAULT_VIEW_MARKED = 1;
+    const DEFAULT_VIEW_DISCOUNTS = 2;
+    const DEFAULT_VIEW_LASTFIVE = 3;
+    const DEFAULT_VIEW_COUNT = 4;
+
     /**
      * Sorting order strings according to the corresponding setting
      *
@@ -200,7 +191,7 @@ class Products
                 ? $_CONFIG['corePagingLimit'] : 10));
         $querySpecialOffer = '';
         if (   $flagLastFive
-            || $flagSpecialoffer === SHOP_PRODUCT_DEFAULT_VIEW_LASTFIVE) {
+            || $flagSpecialoffer === self::DEFAULT_VIEW_LASTFIVE) {
             // Select last five (or so) products added to the database
 // TODO: Extend for searching for most recently modified Products
             $limit = ($flagLastFive === true ? 5 : $flagLastFive);
@@ -209,10 +200,10 @@ class Products
         } else {
             // Build standard full featured query
             $querySpecialOffer =
-                (   $flagSpecialoffer === SHOP_PRODUCT_DEFAULT_VIEW_DISCOUNTS
+                (   $flagSpecialoffer === self::DEFAULT_VIEW_DISCOUNTS
                  || $flagSpecialoffer === true // Old behavior!
                   ? ' AND `product`.`discount_active`=1'
-                  : ($flagSpecialoffer === SHOP_PRODUCT_DEFAULT_VIEW_MARKED
+                  : ($flagSpecialoffer === self::DEFAULT_VIEW_MARKED
                       ? " AND `product`.`flags` LIKE '%__SHOWONSTARTPAGE__%'" : '')
                 );
             // Limit Products by Manufacturer ID, if any
@@ -592,7 +583,7 @@ class Products
                 continue;
             }
             $imageName = $objProduct->pictures();
-            $imagePath = PRODUCT_IMAGE_PATH.'/'.$imageName;
+            $imagePath = ASCMS_SHOP_IMAGES_PATH.'/'.$imageName;
             // only try to create thumbs from entries that contain a
             // plain text file name (i.e. from an import)
             if (   $imageName == ''
@@ -626,8 +617,8 @@ class Products
                 // Deleting the old thumb beforehand is integrated into
                 // _createThumbWhq().
                 $thumbResult = $objImageManager->_createThumbWhq(
-                    PRODUCT_IMAGE_PATH.'/',
-                    PRODUCT_IMAGE_WEB_PATH.'/',
+                    ASCMS_SHOP_IMAGES_PATH.'/',
+                    ASCMS_SHOP_IMAGES_WEB_PATH.'/',
                     $imageName,
                     SettingDb::getValue('thumbnail_max_width'),
                     SettingDb::getValue('thumbnail_max_height'),
@@ -882,7 +873,7 @@ class Products
      * view on the Shop starting page.
      *
      * Possible choices are defined by global constants
-     * SHOP_PRODUCT_DEFAULT_VIEW_* and corresponding language variables.
+     * self::DEFAULT_VIEW_* and corresponding language variables.
      * @static
      * @param   integer   $selected     The optional preselected view index
      * @return  string                  The HTML menu options
@@ -892,11 +883,11 @@ class Products
         global $_ARRAYLANG;
 
         $strMenuoptions = '';
-        for ($i = 0; $i < SHOP_PRODUCT_DEFAULT_VIEW_COUNT; ++$i) {
+        for ($i = 0; $i < self::DEFAULT_VIEW_COUNT; ++$i) {
             $strMenuoptions .=
                 "<option value='$i'".
                 ($selected == $i ? ' selected="selected"' : '').'>'.
-                $_ARRAYLANG['TXT_SHOP_PRODUCT_DEFAULT_VIEW_'.$i].
+                $_ARRAYLANG['TXT_self::DEFAULT_VIEW_'.$i].
                 "</option>\n";
         }
         return $strMenuoptions;

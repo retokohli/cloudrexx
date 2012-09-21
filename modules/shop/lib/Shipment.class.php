@@ -724,6 +724,26 @@ class Shipment
 
     /**
      * Returns an array containing all the active shipment conditions.
+     *
+     * The array has the form
+     *  array(
+     *    Shipper name => array(
+     *      'countries'  => array(
+     *        country ID => Country name, [...]
+     *      ),
+     *      'conditions' => array(
+     *        Maximum weight => array(
+     *          'max_weight' => maximum weight (formatted, or "unlimited"),
+     *          'free_from' => no charge lower limit (amount),
+     *          'fee' => shipping fee (amount),
+     *        ),
+     *        [... more ...]
+     *      ),
+     *    ),
+     *    [... more ...]
+     *  )
+     * Countries are ordered by ascending names.
+     * Conditions are ordered by ascending maximum weight.
      * @global  ADONewConnection  $objDatabase
      * @global  array   $_ARRAYLANG
      * @return  array             Countries and conditions array on success,
@@ -746,12 +766,12 @@ class Shipment
         foreach (self::$arrShippers as $shipper_id => $shipper) {
             // Get countries covered by this shipper
             $arrSqlName = Country::getSqlSnippets();
-            $query ="
-                SELECT DISTINCT `country`.`id`".
+            $objResult = $objDatabase->Execute("
+                SELECT DISTINCT `country`.`id`,".
                        $arrSqlName['field']."
                   FROM `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` AS `shipper`
                  INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipper` AS `rel_shipper`
-                    ON `shipper`.`id`=`rel_shipper`.`shipment_id`
+                    ON `shipper`.`id`=`rel_shipper`.`shipper_id`
                  INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `zone`
                     ON `rel_shipper`.`zone_id`=`zone`.`id`
                  INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `rel_country`
@@ -759,11 +779,12 @@ class Shipment
                  INNER JOIN `".DBPREFIX."core_country` AS `country`
                     ON `rel_country`.`country_id`=`country`.`id`".
                        $arrSqlName['join']."
-                 WHERE `shipper`.`shipment_id`=$shipper_id
+                 WHERE `shipper`.`id`=?
                    AND `zone`.`active`=1
                    AND `shipper`.`active`=1
-                 ORDER BY ".$arrSqlName['name']." ASC";
-            $objResult = $objDatabase->Execute($query);
+                   AND `country`.`active`=1
+                 ORDER BY ".$arrSqlName['alias']['name']." ASC",
+                $shipper_id);
             if (!$objResult) return self::errorHandler();
             $arrCountries = array();
             while (!$objResult->EOF) {

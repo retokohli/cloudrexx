@@ -392,3 +392,4 @@ $_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_ACCEPTED'] = "Die <a href=\"index.php?s
 $_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_PLEASE_ACCEPT'] = "Bitte bestätigen Sie die Kenntnisnahme der Widerrufsbelehrung.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER'] = "Order without registration";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER_NOTE'] = "Check this box if you want to order without registration.";
+$_ARRAYLANG['TXT_FREE_OF_CHARGE'] = "Gebührenfrei ab";
