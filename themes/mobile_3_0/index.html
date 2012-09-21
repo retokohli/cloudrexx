@@ -42,15 +42,14 @@
         <div  data-theme="e" data-role="page" >
             <div id="container">
                 <header>
-                    <a href="index.php?section=home" class="logo" data-role="none"> <img alt="" src="themes/mobile_3_0/images/logo.png"></a>                    
+                    <a href="{NODE_HOME}" class="logo" data-role="none"> <img alt="" src="themes/mobile_3_0/images/logo.png"></a>                    
                     <a href="#address" id="contact-button" class="contact header_icons">Kontakt</a>
                     <a href="#search" id="search-button" class="search header_icons">Suche</a>                   
                 </header>
                 <section id="search" >
-                    <form method="GET" action="index.php">
+                    <form method="GET" action="{NODE_SEARCH}">
                         <fieldset>
                             <label class="visuallyhidden" for="searchfield">Suche</label>
-                            <input value="search" name="section" type="hidden"/>
                             <input id="searchfield" class="text" type="search" name="term"  />
                             <button type="submit" data-role="none">Suche</button>
                         </fieldset>
@@ -67,17 +66,17 @@
                 <footer data-role="footer">                   
                     <ul role="navigation" class="noprint ">
                         <li>
-                            <a rel="external" title="Rechtliche Hinweise" href="Services/Rechtliche-Hinweise"><span class="link">Rechtlichee Hinweise</span></a>
+                            <a rel="external" title="Rechtliche Hinweise" href="{NODE_PRIVACY}"><span class="link">Rechtlichee Hinweise</span></a>
                         </li>	
                         <li>
-                            <a rel="external" title="Impressum" href="index.php?section=imprint" ><span class="link">Impressum</span></a>
+                            <a rel="external" title="Impressum" href="{NODE_IMPRINT}" ><span class="link">Impressum</span></a>
                         </li>	
                     </ul>
                     <ul id="nav-lang">
                         <li><a class="de" href="index.php?setLang=1" >DE</a></li>                        
                         <li><a class="en" href="index.php?setLang=2">EN</a></li>
                     </ul>
-                    <a href="index.php?smallscreen=0">Zur klassischen Ansicht wechseln</a>                    
+                    <a href="{STANDARD_URL}">Zur klassischen Ansicht wechseln</a>                    
                 </footer>               
             </div>
         </div>
