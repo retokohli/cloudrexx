@@ -343,7 +343,19 @@ class FileBrowser {
         case 'webpages':
             $objContentTree = new ContentTree($this->_frontendLanguageId);
             foreach ($objContentTree->getTree() as $arrPage) {
-                $url = "'" . '[[' . \Cx\Model\ContentManager\Page::PLACEHOLDER_PREFIX . $arrPage['node_id'];
+                $url = "'" . '[[' . \Cx\Model\ContentManager\Page::PLACEHOLDER_PREFIX;
+
+                if ($arrPage['type'] == \Cx\Model\ContentManager\Page::TYPE_APPLICATION) {
+                    $url .= $arrPage['modulename'];
+                    if (!empty($arrPage['cmd'])) {
+                        $url .= '_' . $arrPage['cmd'];
+                    }
+
+                    $url = strtoupper($url);
+                } else {
+                    $url .= $arrPage['node_id'];
+                }
+
                 // if language != current language or $alwaysReturnLanguage
                 if ($this->_frontendLanguageId != $_FRONTEND_LANGID ||
                         (isset($_GET['alwaysReturnLanguage']) &&
