@@ -1232,6 +1232,8 @@ class Page extends \Cx\Model\Base\EntityBase
         if($includeModuleAndCmd) {
             $page->setModule($this->getModule());
             $page->setCmd($this->getCmd());
+        } else {
+            $page->setCmd('');
         }
         
         if ($includeMetaData) {
