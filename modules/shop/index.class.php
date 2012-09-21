@@ -807,7 +807,7 @@ die("Failed to update the Cart!");
 
         $flagSpecialoffer = intval(SettingDb::getValue('show_products_default'));
         if (isset($_REQUEST['cmd']) && $_REQUEST['cmd'] == 'discounts') {
-            $flagSpecialoffer = SHOP_PRODUCT_DEFAULT_VIEW_DISCOUNTS;
+            $flagSpecialoffer = Products::DEFAULT_VIEW_DISCOUNTS;
         }
         $flagLastFive = isset($_REQUEST['lastFive']);
         $product_id = (isset($_REQUEST['productId'])
@@ -945,7 +945,7 @@ die("Failed to update the Cart!");
 // TODO: There are other cases of flag combinations that are not indivuidually
 // handled here yet.
             if ($term == '') {
-                if ($flagSpecialoffer == SHOP_PRODUCT_DEFAULT_VIEW_DISCOUNTS) {
+                if ($flagSpecialoffer == Products::DEFAULT_VIEW_DISCOUNTS) {
                     self::$objTemplate->setVariable(
                         'SHOP_PRODUCTS_IN_CATEGORY',
                             $_ARRAYLANG['TXT_SHOP_PRODUCTS_SPECIAL_OFFER']);
@@ -3940,6 +3940,11 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
         global $_ARRAYLANG;
 
         if (self::$objTemplate->blockExists('shopShipper')) {
+// TODO: Should be set by the calling view, if any
+            self::$objTemplate->setGlobalVariable($_ARRAYLANG + array(
+                'SHOP_CURRENCY_SYMBOL' => Currency::getActiveCurrencySymbol(),
+                'SHOP_CURRENCY_CODE' => Currency::getActiveCurrencyCode(),
+            ));
             $arrShipment = Shipment::getShipmentConditions();
             foreach ($arrShipment as $strShipperName => $arrContent) {
                 $strCountries = join(', ', $arrContent['countries']);
@@ -3950,18 +3955,15 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
                         'SHOP_MAX_WEIGHT' => $arrData['max_weight'],
                         'SHOP_COST_FREE' => $arrData['free_from'],
                         'SHOP_COST' => $arrData['fee'],
-                        'SHOP_UNIT' => Currency::getActiveCurrencySymbol(),
                     ));
-                    self::$objTemplate->parseCurrentBlock();
+                    self::$objTemplate->parse('shopShipment');
                 }
-                self::$objTemplate->setCurrentBlock('shopShipper');
+//                self::$objTemplate->setCurrentBlock('shopShipper');
                 self::$objTemplate->setVariable(array(
                     'SHOP_SHIPPER' => $strShipperName,
                     'SHOP_COUNTRIES' => $strCountries,
                 ));
-// TODO: Should be set by the calling view
-//            self::$objTemplate->setGlobalVariable($_ARRAYLANG);
-            self::$objTemplate->parseCurrentBlock();
+                self::$objTemplate->parse('shopShipper');
             }
         }
     }

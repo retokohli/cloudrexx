@@ -406,3 +406,4 @@ $_ARRAYLANG['TXT_SHOP_MANUFACTURER'] = "Hersteller";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER'] = "Ohne Registrierung bestellen";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_REGISTER_NOW'] = "Jetzt registrieren";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER_NOTE'] = "Markieren Sie dieses Kästchen, wenn Sie ohne Registrierung bestellen möchten.";
+$_ARRAYLANG['TXT_FREE_OF_CHARGE'] = "Gebührenfrei ab";
