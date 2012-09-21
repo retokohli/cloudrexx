@@ -6,7 +6,7 @@ var ExtendedFileInput = function(options) {
     //...and the corresponding dialog.
     var fileUploaderDialog = fileUploader.dialog();
     //fetch the upload widget
-    var uploadWidget = cx.instances.get('uploadWidget','folderWidget');
+    var uploadWidget = cx.instances.get('uploadWidget','upload/folderWidget');
 
     //called if user clicks on the field
     var inputClicked = function() {
