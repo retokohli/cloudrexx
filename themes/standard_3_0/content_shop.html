@@ -1,14 +1,14 @@
 <div id="content-top">
     <div id="breadcrumb">
-        Sie befinden sich hier:&nbsp;&nbsp;&nbsp;<a href="index.php">Home</a> &gt; {NAVTREE}<div class="current">{NAVTITLE}</div>
+        Sie befinden sich hier:&nbsp;&nbsp;&nbsp;<a href="{NODE_HOME}">Home</a> &gt; {NAVTREE}<div class="current">{NAVTITLE}</div>
     </div>
     <ul id="profile-links" class="horizontal-list">
         <!-- BEGIN access_logged_out -->
-        <li class="last"></li><a href="index.php?section=login">Login</a></li>
+        <li class="last"></li><a href="{NODE_LOGIN}">Login</a></li>
         <!-- END access_logged_out -->
         <!-- BEGIN access_logged_in -->
-        <li><a href="index.php?section=access&amp;cmd=settings_profile">Angemeldet als {ACCESS_USER_USERNAME}</a></li>
-        <li class="last"><a href="index.php?section=logout">Logout</a></li>
+        <li><a href="{NODE_ACCESS_SETTINGS_PROFILE}">Angemeldet als {ACCESS_USER_USERNAME}</a></li>
+        <li class="last"><a href="{NODE_LOGOUT}">Logout</a></li>
         <!-- END access_logged_in -->
     </ul>
 </div>
