@@ -71,6 +71,7 @@ class ContentTree {
             'startdate' => $page->getStart(),
             'enddate' => $page->getEnd(),
             'protected' => $page->getProtection(),
+            'type'  => $page->getType(),
 //TODO:
             'frontend_access_id' => 0,
 //TODO:
