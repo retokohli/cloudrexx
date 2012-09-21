@@ -296,10 +296,10 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
 //die("Failed to get Customer for ID $customer_id");
             return false;
         }
-
 // TODO: Test mail with login data!
-
-        $arrSubstitution += $objCustomer->getSubstitutionArray();
+        $arrSubstitution +=
+              $objCustomer->getSubstitutionArray()
+            + self::getSubstitutionArray();
 //die("sendConfirmationMail($order_id, $create_accounts): Subs: ".var_export($arrSubstitution, true));
         if (empty($arrSubstitution)) return false;
         // Prepared template for order confirmation
@@ -349,4 +349,23 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
         return Html::getOptions(self::getRegisterArray(), $selected);
     }
 
+
+    /**
+     * Returns an array of values to be substituted
+     *
+     * Contains the following keys and values:
+     *  'SHOP_COMPANY' => The company name (from the settings)
+     *  'SHOP_HOMEPAGE' => The shop starting page URL
+     * Used primarily for all MailTemplates.
+     * Indexed by placeholder names.
+     * @return  array           The substitution array
+     */
+    static function getSubstitutionArray()
+    {
+        return array(
+            'SHOP_COMPANY' => SettingDb::getValue('company'),
+            'SHOP_HOMEPAGE' => Cx\Core\Routing\URL::fromModuleAndCmd(
+                'shop', '', FRONTEND_LANG_ID),
+        );
+    }
 }

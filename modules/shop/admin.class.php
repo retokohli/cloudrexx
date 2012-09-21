@@ -435,8 +435,8 @@ class Shopmanager extends ShopLibrary
                 if ($category_id == 0) {
                     $category_id = $objCSVimport->GetFirstCat();
                 }
-                $objProduct = new Product(
-                    '', $category_id, '', '', 0, 1, 0, 0, 0);
+                $objProduct = new Product('', $category_id, '',
+                    Distribution::TYPE_DELIVERY, 0, 1, 0, 0, 0);
                 foreach ($arrProductDatabaseFieldName as $index => $strFieldIndex) {
                     $value = '';
                     if (strpos($strFieldIndex, ';')) {
@@ -3524,7 +3524,9 @@ if (!$limit) {
     {
         global $objDatabase, $_ARRAYLANG;
 
-        $arrSubstitution = Orders::getSubstitutionArray($order_id);
+        $arrSubstitution =
+              Orders::getSubstitutionArray($order_id)
+            + self::getSubstitutionArray();
         $lang_id = $arrSubstitution['LANG_ID'];
         // Select template for: "Your order has been processed"
         $arrMailTemplate = array(
