@@ -23,11 +23,16 @@
         
         <script>
             $J(document).ready(function(){
-                if($J.cookie('langId') == 1){
+                if ($J.cookie('langId') == 1){
                     $J('#nav-lang li a.de').addClass('lang_active');
                 } else if($J.cookie('langId') == 2) {
                     $J('#nav-lang li a.en').addClass('lang_active');
                 }
+                
+                $J('#back-to-top').click(function () {
+                    $J('body').scrollTop(0);
+                    return false;
+                });
             });
         </script>
            
@@ -38,8 +43,8 @@
             <div id="container">
                 <header>
                     <a href="index.php?section=home" class="logo" data-role="none"> <img alt="" src="themes/mobile_3_0/images/logo.png"></a>                    
-                    <a href="#address" class="contact header_icons">Kontakt</a>
-                    <a href="#search" class="search header_icons">Suche</a>                   
+                    <a href="#address" id="contact-button" class="contact header_icons">Kontakt</a>
+                    <a href="#search" id="search-button" class="search header_icons">Suche</a>                   
                 </header>
                 <section id="search" >
                     <form method="GET" action="index.php">

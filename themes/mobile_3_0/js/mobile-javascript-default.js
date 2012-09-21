@@ -5764,8 +5764,8 @@ jQuery.noConflict();
         $.mobile.loadingMessage = null;
 
         /* function Init */
-        searchBtn( $("a[href=#search]"), $("#search") );
-        addressBtn( $("a[href=#address]"), $("#address") );
+        searchBtn( $("#search-button"), $("#search") );
+        addressBtn( $("#contact-button"), $("#address") );
         touchSlider( $("div.slider") );
         ajaxList( $(".linklist ul"),$(".showmore a") );
         showMoreContent( $("span.moreContent"), ".morecontent" );
