@@ -378,57 +378,16 @@ if ($isRegularPageRequest) {
         $section = $resolver->getSection();
     }
     catch (\Cx\Core\Routing\ResolverException $e) {
-        /*
-          The Resolver couldn't find a page.
-          We're looking at one of the following situations, which are treated in the listed order:
-           a) Request for the 'home' page
-           b) Legacy request with section / cmd
-           c) Request for inexistant page
-          We try to locate a module page via cmd and section (if provided).
-          If that doesn't work, an error is shown.
-        */
-
-        // a: 'home' page
-        $urlPointsToHome =    $url->getSuggestedTargetPath() == 'index.php'
-                           || $url->getSuggestedTargetPath() == '';
-        //    user probably tried requesting the home-page
-        if(!$section && $urlPointsToHome) {
-            $section = 'home';
+        try {
+            $resolver->legacyResolve($url, $section, $command);
+            $page = $resolver->getPage();
+            $command = $resolver->getCmd();
+            $section = $resolver->getSection();
+        } catch(\Cx\Core\Routing\ResolverException $e) {
+            // legacy resolving also failed.
+            // provoke a 404
+            $page = null;
         }
-        $resolver->setSection($section, $command);
-
-        // b(, a): fallback if section and cmd are specified
-        if ($section) {
-            if ($section == 'logout') {
-                if (empty($sessionObj)) {
-                    $sessionObj = new cmsSession();
-                }
-                if ($objFWUser->objUser->login()) {
-                    $objFWUser->logout();
-                }
-            }
-
-            $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
-            $page = $pageRepo->findOneByModuleCmdLang($section, $command, FRONTEND_LANG_ID);
-        }
-
-        //fallback content
-        if($page) {
-            try {
-                $resolver->handleFallbackContent($page);
-                $fallbackPage = $resolver->getPage();
-                if ($fallbackPage) {
-                    $page = $fallbackPage;
-                }
-            }
-            catch(ResolverException $e) {
-                //page should have fallback content, none found.
-                //provoke a 404
-                $page = null;
-            }
-        }
-
-        // c: inexistant page gets catched below.
     }
 
     if(!$page || !$page->isActive()) {
