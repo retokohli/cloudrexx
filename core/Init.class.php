@@ -844,57 +844,41 @@ class InitCMS
 
     public function getStandardUri()
     {
-        $url = \Env::get('Resolver')->getUrl();
-        $myUrl = clone $url;
-        $myUrl->setParam('smallscreen', 0);
-        
-        return $myUrl;
+// TODO: add URL modificators (params)
+        return \Cx\Core\Routing\URL::fromPage(\Env::get('Resolver')->getPage(), array('smallscreen' => 0));
     }
     
     public function getMobileUri()
     {
-        $url = \Env::get('Resolver')->getUrl();
-        $myUrl = clone $url;
-        $myUrl->setParam('smallscreen', 1);
-        
-        return $myUrl;
+// TODO: add URL modificators (params)
+        return \Cx\Core\Routing\URL::fromPage(\Env::get('Resolver')->getPage(), array('smallscreen' => 1));
     }
 
     public function getPrintUri()
     {
-        $url = \Env::get('Resolver')->getUrl();
-        $myUrl = clone $url;
-        $myUrl->setParam('printview', 1);
-        
-        return $myUrl;
+// TODO: add URL modificators (params)
+        return \Cx\Core\Routing\URL::fromPage(\Env::get('Resolver')->getPage(), array('printview' => 1));
     }
 
 
     public function getPDFUri()
     {
-        $url = \Env::get('Resolver')->getUrl();
-        $myUrl = clone $url;
-        $myUrl->setParam('pdfview', 1);
-        
-        return $myUrl;
+// TODO: add URL modificators (params)
+        return \Cx\Core\Routing\URL::fromPage(\Env::get('Resolver')->getPage(), array('pdfview' => 1));
     }
 
 
     public function getAppUri()
     {
-        $url = \Env::get('Resolver')->getUrl();
-        $myUrl = clone $url;
-        $myUrl->setParam('appview', 1);
-        
-        return $myUrl;
+// TODO: add URL modificators (params)
+        return \Cx\Core\Routing\URL::fromPage(\Env::get('Resolver')->getPage(), array('appview' => 1));
     }
 
 
     public function getPageUri()
     {
-        global $_CONFIG;
-        
-        return ASCMS_PROTOCOL."://". $_CONFIG['domainUrl']. \Env::get('Resolver')->getUrl();
+// TODO: add URL modificators (params)
+        return \Cx\Core\Routing\URL::fromPage(\Env::get('Resolver')->getPage());
     }
 
 
