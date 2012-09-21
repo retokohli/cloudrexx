@@ -158,7 +158,7 @@ class Filesharing extends FilesharingLib
 
             // check whether the check code is the same as in the database
             if ($objResult->fields["check"] == $check) {
-                \Cx\Lib\FileSystem::delete_file(ASCMS_PATH . ASCMS_PATH_OFFSET . $objResult->fields["source"]);
+                \Cx\Lib\FileSystem\FileSystem::delete_file(ASCMS_PATH . ASCMS_PATH_OFFSET . $objResult->fields["source"]);
                 $objDatabase->Execute("DELETE FROM " . DBPREFIX . "module_filesharing WHERE `id` = ?", array($objResult->fields["id"]));
             }
         }
@@ -347,7 +347,7 @@ class Filesharing extends FilesharingLib
                 $filePath = explode("/", $objResult->fields["source"]);
                 $fileNameSource = end($filePath);
 
-                $fileSystem = new \Cx\Lib\FileSystem();
+                $fileSystem = new \Cx\Lib\FileSystem\FileSystem();
                 $directory = \Env::get('Resolver')->getCmd();
                 if ($directory != 'downloads') {
                     $newPath = ASCMS_FILESHARING_PATH . '/' . $directory . '/';

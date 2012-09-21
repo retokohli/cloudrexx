@@ -75,7 +75,7 @@ CODE
         }
 
         $folderWidget = UploadFactory::getInstance()->newFolderWidget($tempPaths[0] . '/' . $tempPaths[2], $uploaderInstanceName);
-        $this->objTemplate->setVariable('UPLOAD_WIDGET_CODE', $folderWidget->getXHtml($uploaderFolderWidgetContainer, $uploaderInstanceName));
+        $this->objTemplate->setVariable('UPLOAD_WIDGET_CODE', $folderWidget->getXHtml($uploaderFolderWidgetContainer, 'uploadWidget'));
 
         // return the upload id
         return $uploadId;
@@ -131,8 +131,8 @@ CODE
 
         // create target folder if the directory does not exist
         if (!is_dir($targetPath)) {
-            \Cx\Lib\FileSystem::make_folder($targetPath);
-            \Cx\Lib\FileSystem::makeWritable($targetPath);
+            \Cx\Lib\FileSystem\FileSystem::make_folder($targetPath);
+            \Cx\Lib\FileSystem\FileSystem::makeWritable($targetPath);
         }
 
         // write the uploaded files into database
@@ -288,7 +288,7 @@ CODE
                     $fileExists = file_exists(ASCMS_PATH . ASCMS_PATH_OFFSET . $objFiles->fields["source"]);
                     // if the file is only expired delete the file from directory
                     if ($fileExists) {
-                        \Cx\Lib\FileSystem::delete_file(ASCMS_PATH . ASCMS_PATH_OFFSET . $objFiles->fields["source"]);
+                        \Cx\Lib\FileSystem\FileSystem::delete_file(ASCMS_PATH . ASCMS_PATH_OFFSET . $objFiles->fields["source"]);
                     }
                     $arrToDelete[] = $objFiles->fields["id"];
                 }
