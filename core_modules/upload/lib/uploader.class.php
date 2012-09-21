@@ -496,9 +496,15 @@ abstract class Uploader
                     throw new UploaderException('Failed to open input stream.');
 
                 fclose($out);
-            } else
+            } else {
                 throw new UploaderException('Failed to open output stream.');
-           }
+            }
+        }
+        
+        // Send HTTP header to force the browser to send the next file-chunt
+        // through a new connection. File-chunks that are sent through the
+        // same connection get dropped by the web-server.
+        header('Connection: close');
     }
 
     protected function addHarmfulFileToResponse($fileName) {
