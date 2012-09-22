@@ -4,7 +4,7 @@ include_once ASCMS_CORE_PATH.'/routing/Resolver.class.php';
 include_once('../testCases/DoctrineTestCase.php');
 
 use Cx\Core\Routing\Resolver as Resolver;
-use Cx\Core\Routing\URL as URL;
+use Cx\Core\Routing\Url as Url;
 
 class ResolverTest extends DoctrineTestCase
 {
@@ -89,7 +89,7 @@ class ResolverTest extends DoctrineTestCase
 
         $lang = 1;
 
-        $url = new URL('http://example.com/testpage1/testpage1_child/?foo=test');
+        $url = new Url('http://example.com/testpage1/testpage1_child/?foo=test');
         $resolver = new Resolver($url, $lang, self::$em, '', $this->mockFallbackLanguages);
         $resolver->resolve();
 
@@ -104,7 +104,7 @@ class ResolverTest extends DoctrineTestCase
 
         $lang = 1;
 
-        $url = new URL('http://example.com/testpage1/testpage1_child/?foo=test');
+        $url = new Url('http://example.com/testpage1/testpage1_child/?foo=test');
         $resolver = new Resolver($url, $lang, self::$em, '', $this->mockFallbackLanguages);
         $resolver->resolve();
 
@@ -120,7 +120,7 @@ class ResolverTest extends DoctrineTestCase
 
         $lang = 1;
 
-        $url = new URL('http://example.com/inexistantPage/?foo=test');
+        $url = new Url('http://example.com/inexistantPage/?foo=test');
         $resolver = new Resolver($url, $lang, self::$em, '', $this->mockFallbackLanguages);
         $resolver->resolve();
 
@@ -132,7 +132,7 @@ class ResolverTest extends DoctrineTestCase
 
         $lang = 1;
 
-        $url = new URL('http://example.com/redirection/');
+        $url = new Url('http://example.com/redirection/');
         $resolver = new Resolver($url, $lang, self::$em, '', $this->mockFallbackLanguages, true);
         $resolver->resolve();
 
@@ -175,7 +175,7 @@ class ResolverTest extends DoctrineTestCase
         self::$em->flush();
         self::$em->clear();
 
-        $url = new URL('http://example.com/pageThatsFallingBack/');
+        $url = new Url('http://example.com/pageThatsFallingBack/');
         $resolver = new Resolver($url, 1, self::$em, '', $this->mockFallbackLanguages, true);
         $resolver->resolve();
         $p = $resolver->getPage();
@@ -205,7 +205,7 @@ class ResolverTest extends DoctrineTestCase
     public function testAliasResolving() {
         $this->insertFixtures();
         
-        $url = new URL('http://example.com/testalias');
+        $url = new Url('http://example.com/testalias');
         $resolver = new Resolver($url, 1, self::$em, '', $this->mockFallbackLanguages, true);
         $resolver->resolveAlias();
         $resolver->resolve();

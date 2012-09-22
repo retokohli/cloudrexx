@@ -145,7 +145,7 @@ class LinkGenerator {
             $pages = $qb->getQuery()->getResult();
             foreach($pages as $page) {
                 // build placeholder's value -> URL
-                $url = \Cx\Core\Routing\URL::fromPage($page);
+                $url = \Cx\Core\Routing\Url::fromPage($page);
 
                 $placeholderByApp = '';
                 $placeholderById = \Cx\Model\ContentManager\Page::PLACEHOLDER_PREFIX.$page->getNode()->getId();
@@ -171,19 +171,21 @@ class LinkGenerator {
 
         // there might be some placeholders we were unable to resolve.
         // try to resolve them by using the fallback-language-reverse-lookup
-        // methode provided by \Cx\Core\Routing\URL::fromModuleAndCmd().
+        // methode provided by \Cx\Core\Routing\Url::fromModuleAndCmd().
         foreach($this->placeholders as $placeholder => $data) {
-            if (!$data instanceof \Cx\Core\Routing\URL) {
+            if (!$data instanceof \Cx\Core\Routing\Url) {
                 if (!empty($data['module'])) {
                     try {
-                        $this->placeholders[$placeholder] = \Cx\Core\Routing\URL::fromModuleAndCmd($data['module'], $data['cmd'], $data['lang'], array(), '', false);
-                    } catch (\Cx\Core\Routing\URLException $e) {
+                        $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd($data['module'], $data['cmd'], $data['lang'], array(), '', false);
+                    } catch (\Cx\Core\Routing\UrlException $e) {
                         if ($data['lang'] && empty($data['cmd'])) {
-                            $this->placeholders[$placeholder] = \Cx\Core\Routing\URL::fromModuleAndCmd($data['module'], $data['lang'], FRONTEND_LANG_ID);
+                            $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd($data['module'], $data['lang'], FRONTEND_LANG_ID);
+                        } else {
+                            $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd('error', '', $data['lang']);
                         }
                     }
                 } else {
-                    $this->placeholders[$placeholder] = \Cx\Core\Routing\URL::fromModuleAndCmd('error', '', $data['lang']);
+                    $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd('error', '', $data['lang']);
                 }
             }
         }

@@ -4,7 +4,7 @@ namespace Cx\Core\Routing;
 class LanguageExtractorException extends \Exception {};
 
 /**
- * Takes Cx\Core\Routing\URL objects, removes all references to the language from them
+ * Takes Cx\Core\Routing\Url objects, removes all references to the language from them
  * and finds the language id.
  *
  * URL (example.com/de/a/path) => URL (example.com/a/path), langId
@@ -53,7 +53,7 @@ class LanguageExtractor {
     }
 
     /**
-     * @param \Cx\Core\Routing\URL $url where information gets extracted from (URL will be changed to a language-less version of itself
+     * @param \Cx\Core\Routing\Url $url where information gets extracted from (URL will be changed to a language-less version of itself
      * @return integer the language id
      */
     public function extractLanguage(&$url) {
@@ -85,7 +85,7 @@ class LanguageExtractor {
 
     /**
      * Add virtual language dir for $langId to $url
-     * @param \Cx\Core\Routing\URL $url
+     * @param \Cx\Core\Routing\Url $url
      * @param integer $langId
      */
     public function addLanguageDir(&$url, $langId) {

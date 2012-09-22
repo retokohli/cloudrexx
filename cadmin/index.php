@@ -15,7 +15,7 @@
  *   DBG_PHP             - show PHP errors/warnings/notices
  *   DBG_ADODB           - show ADODB queries
  *   DBG_ADODB_TRACE     - show ADODB queries with backtrace
- *   DBG_ADODB_ERROR     - show ADODB queriy errors only
+ *   DBG_ADODB_ERROR     - show ADODB query errors only
  *   DBG_LOG_FILE        - DBG: log to file (/dbg.log)
  *   DBG_LOG_FIREPHP     - DBG: log via FirePHP
  *
@@ -26,6 +26,7 @@
  */
 include_once '../lib/DBG.php';
 //DBG::activate(DBG_ERROR_FIREPHP);
+//\DBG::activate(DBG_PHP);
 
 $startTime = explode(' ', microtime());
 
@@ -100,7 +101,7 @@ Env::set('init', $objInit);
 
 // this makes \Env::get('Resolver')->getUrl() return a sensful result
 $request = ASCMS_PATH_OFFSET.'/cadmin';
-$url = \Cx\Core\Routing\URL::fromCapturedRequest($request, ASCMS_PATH_OFFSET, $_GET);
+$url = \Cx\Core\Routing\Url::fromCapturedRequest($request, ASCMS_PATH_OFFSET, $_GET);
 \Env::set('Resolver', new \Cx\Core\Routing\Resolver($url, null, Env::em(), null, null));
 
 $sessionObj = new cmsSession();
