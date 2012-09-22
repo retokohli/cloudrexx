@@ -46,7 +46,7 @@
 
 #select-language {
     position: relative;
-    z-index: 7;
+    z-index: 6;
     padding: 0 !important;
 }
 
@@ -87,6 +87,7 @@
 }
 
 #navigation {
+    z-index: 5;
     position: relative;
     float: left;
     width: 1008px;
@@ -98,7 +99,7 @@
 }
 
 #navigation * {
-    z-index: 6;
+    z-index: 5;
 }
 
 #navigation li {
