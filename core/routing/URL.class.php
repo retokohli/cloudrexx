@@ -289,6 +289,7 @@ class URL {
             }
             $getParams .= $joiner.urlencode($k).'='.urlencode($v);
         }
+        $request = preg_replace('/index.php/', '', $request);
 
         return new URL($protocol.'://'.$host.'/'.$request.$getParams);
     }

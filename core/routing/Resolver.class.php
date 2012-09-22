@@ -395,8 +395,11 @@ class Resolver {
                 return;
             }
 
-            $langId = $this->fallbackLanguages[$page->getLang()];
-            $fallbackPage = $page->getNode()->getPage($langId);
+            $fallbackPage = null;
+            if (isset($this->fallbackLanguages[$page->getLang()])) {
+                $langId = $this->fallbackLanguages[$page->getLang()];
+                $fallbackPage = $page->getNode()->getPage($langId);
+            }
             if(!$fallbackPage)
                 throw new ResolverException('Followed fallback page, but couldn\'t find content of fallback Language');
 
