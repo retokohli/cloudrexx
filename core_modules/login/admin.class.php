@@ -200,6 +200,11 @@ class LoginManager {
     private function showLogin()
     {
         global $_ARRAYLANG, $objFWUser;
+        
+        if (isset($_GET['jsondata'])) {
+            $jd = new \Cx\Core\Json\JsonData();
+            die($jd->json($jd->getErrorData($_ARRAYLANG['TXT_LOGIN_NOAUTH_JSON']), true));
+        }
 
         $this->objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', '/core_modules/login/template/login.html');
         $this->objTemplate->setVariable(array(

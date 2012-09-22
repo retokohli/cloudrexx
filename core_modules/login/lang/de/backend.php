@@ -30,3 +30,4 @@ $_ARRAYLANG['TXT_LOGIN_PASSWORD_CHANGED_SUCCESSFULLY'] = "Ihr Passwort wurde erf
 $_ARRAYLANG['TXT_LOGIN_LOGIN'] = "Anmelden";
 $_ARRAYLANG['TXT_LOGIN_REMEMBER_ME'] = "Angemeldet bleiben";
 $_ARRAYLANG['TXT_LOGIN_GO_TO_BACKEND'] = "Weiter zur Administrationsoberfläche";
+$_ARRAYLANG['TXT_LOGIN_NOAUTH_JSON'] = 'Ihre Sitzung ist abgelaufen. <a href="./index.php" target="_blank">Klicken Sie hier um sich erneut anzumelden.</a>';
