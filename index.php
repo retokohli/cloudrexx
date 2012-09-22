@@ -456,7 +456,7 @@ if ($isRegularPageRequest) {
 
     $themesPages = $objInit->getTemplates();
 
-    //replace the {{NODE_<ID>_<LANG>}}- placeholders
+    //replace the {NODE_<ID>_<LANG>}- placeholders
     LinkGenerator::parseTemplate($themesPages);
 
     // Frontend Editing: content has to be replaced with preview code if needed.
@@ -1126,7 +1126,7 @@ $page_content = str_replace('{CONTACT_FAX}',     isset($_CONFIG['contactFax'])  
 // ACCESS: parse access_logged_in[1-9] and access_logged_out[1-9] blocks
 FWUser::parseLoggedInOutBlocks($page_content);
 
-//replace the {{NODE_<ID>_<LANG>}}- placeholders
+//replace the {NODE_<ID>_<LANG>}- placeholders
 LinkGenerator::parseTemplate($page_content);
 
 $boolShop = false;
@@ -1915,13 +1915,15 @@ if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
 //WARNING: ob_start(): output handler 'ob_gzhandler' cannot be used after 'URL-Rewriter
 //ob_start("ob_gzhandler");
 
+// fetch the parsed webpage
+$endcode = $objTemplate->get();
+
 /**
  * Get all javascripts in the code, replace them with nothing, and register the js file
  * to the javascript lib. This is because we don't want something twice, and there could be
  * a theme that requires a javascript, which then could be used by a module too and therefore would
  * be loaded twice.
  */
-$endcode = $objTemplate->get();
 /* Finds all uncommented script tags, strips them out of the HTML and
  * stores them internally so we can put them in the placeholder later
  * (see JS::getCode() below)
@@ -1935,6 +1937,9 @@ JS::findJavascripts($endcode);
 // i know this is ugly, but is there another way
 $endcode = str_replace('javascript_inserting_here', JS::getCode(), $endcode);
 
+// do a final replacement of all those node-urls ({NODE_<ID>_<LANG>}- placeholders) that haven't been captured earlier
+$endcode = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $endcode);
+LinkGenerator::parseTemplate($endcode);
 
 // replace links from before contrexx 3
 $ls = new LinkSanitizer(
