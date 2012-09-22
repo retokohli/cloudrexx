@@ -415,6 +415,7 @@ class Resolver {
 
             // now lets resolve the page that is referenced by our fallback page
             $this->resolve(true);
+            $this->page = $page;
         }
     }
 

@@ -306,6 +306,14 @@ if ($plainCmd != 'login' && $plainCmd != 'license') {
         $plainCmd = '';
     }
 }
+if ($loggedIn) {
+    $license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase);
+    $license->check();
+    if ($license->getState() == \Cx\Core\License\License::LICENSE_NOK) {
+        $plainCmd = 'license';
+        $license->save(new \settingsManager(), $objDatabase);
+    }
+}
 
 $subMenuTitle = NULL;
 switch ($plainCmd) {
