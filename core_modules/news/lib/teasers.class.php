@@ -287,7 +287,12 @@ class Teasers extends newsLibrary
                         $teaserBlockCode = str_replace('{TEASER_LONG_DATE}', date(ASCMS_DATE_FORMAT, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']), $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_TITLE}', contrexx_raw2xhtml($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['title']), $teaserBlockCode);
                         if ($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_show_link']) {
-                            $teaserBlockCode = str_replace('{TEASER_URL}', empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect']) ? CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['id'].'&amp;teaserId='.$this->arrTeaserFrames[$id]['id'] : $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'], $teaserBlockCode);
+                            $teaserBlockCode = str_replace(
+                                '{TEASER_URL}', 
+                                empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'])
+                                    ? \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', FRONTEND_LANG_ID, array('newsid' => $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['id'], 'teaserId' => $this->arrTeaserFrames[$id]['id']))
+                                    : $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'], $teaserBlockCode
+                            );
                             $teaserBlockCode = str_replace('{TEASER_URL_TARGET}', empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect']) ? '_self' : '_blank', $teaserBlockCode);
                             $teaserBlockCode = str_replace('<!-- BEGIN teaser_link -->', '', $teaserBlockCode);
                             $teaserBlockCode = str_replace('<!-- END teaser_link -->', '', $teaserBlockCode);

@@ -108,7 +108,7 @@ class newsTop extends newsLibrary
                 $author     = FWUser::getParsedUserTitle($objResult->fields['author_id'], $objResult->fields['author']);
                 $publisher  = FWUser::getParsedUserTitle($objResult->fields['publisher_id'], $objResult->fields['publisher']);
                 $newsUrl    = empty($objResult->fields['redirect'])
-                                ? CONTREXX_SCRIPT_PATH.'?section=news&cmd=details&newsid='.$newsid
+                                ? \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', FRONTEND_LANG_ID, array('newsid' => $newsid))
                                 : $objResult->fields['redirect'];
                 $htmlLink   = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle));
 
@@ -159,4 +159,3 @@ class newsTop extends newsLibrary
     }
 }
 
-?>

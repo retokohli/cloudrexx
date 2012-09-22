@@ -750,7 +750,7 @@ class newsManager extends newsLibrary {
                 $langString = implode(', ',$lang);
                 
                 $this->_objTpl->setVariable(array(
-                    'NEWS_ID'               => $news['id'],
+                    'NEWS_ID'               => $newsId,
                     'NEWS_DATE'             => date(ASCMS_DATE_FORMAT, $news['date']),
                     'NEWS_TITLE'            => contrexx_raw2xhtml($news['lang'][$selectedInterfaceLanguage]['title']),
                     'NEWS_USER'             => $author,
@@ -2016,7 +2016,7 @@ class newsManager extends newsLibrary {
             $newsPublisherId        = !empty($_POST['newsPublisherId']) ? contrexx_input2raw($_POST['newsPublisherId']) : '0';
             $newsAuthorId           = !empty($_POST['newsAuthorId']) ? contrexx_input2raw($_POST['newsAuthorId']) : '0';
             $catId                  = intval($_POST['newsCat']);
-            $typeId                 = intval($_POST['newsType']);
+            $typeId                 = !empty($_POST['newsType']) ? intval($_POST['newsType']) : 0;
             $newsScheduledActive    = !empty($_POST['newsScheduled']) ? intval($_POST['newsScheduled']) : 0;
 
             $status     = empty($_POST['status']) ? $status = 0 : intval($_POST['status']);
@@ -2805,7 +2805,7 @@ class newsManager extends newsLibrary {
                             WHERE name = 'news_feed_status'");
 
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings
-                              SET value='".contrexx_addslashes($_POST['newsFeedImage'])."'
+                              SET value='".contrexx_input2db($_POST['newsFeedImage'])."'
                             WHERE name='news_feed_image'");
 
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings
@@ -2832,27 +2832,29 @@ class newsManager extends newsLibrary {
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$newsCommentsAllowAnonymous."' WHERE name='news_comments_anonymous'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$newsCommentsAutoActivate."' WHERE name='news_comments_autoactivate'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$newsCommentsNotification."' WHERE name='news_comments_notification'");
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".abs(intval($_POST['newsCommentsTimeout']))."' WHERE name='news_comments_timeout'");
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".(!empty($_POST['newsCommentsTimeout']) ? abs(intval($_POST['newsCommentsTimeout'])) : 30)."' WHERE name='news_comments_timeout'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUseTop'])."' WHERE name='news_use_top'");
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".intval($_POST['newsUseTypes'])."' WHERE name = 'news_use_types'");
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUseTypes'])."' WHERE name = 'news_use_types'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUseTop'])."' WHERE name='news_use_top'");
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".intval($_POST['newsTopDays'])."' WHERE name = 'news_top_days'");
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".intval($_POST['newsTopLimit'])."' WHERE name = 'news_top_limit'");
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".(!empty($_POST['newsTopDays']) ? intval($_POST['newsTopDays']) : 10)."' WHERE name = 'news_top_days'");
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".(!empty($_POST['newsTopLimit']) ? intval($_POST['newsTopLimit']) : 10)."' WHERE name = 'news_top_limit'");
             
             $newsFilterPublisher =  isset($_POST['newsFilterPublisher']) ? intval($_POST['newsFilterPublisher']) : 0;
             $newsFilterAuthor    =  isset($_POST['newsFilterAuthor']) ? intval($_POST['newsFilterAuthor']) : 0;
             
-            $assignedPublisherGroups =  (isset($_POST['newsAssignedPublisherGroups']) && $newsFilterPublisher) ? implode(',', contrexx_input2raw($_POST['newsAssignedPublisherGroups'])) : 0;
-            $assignedAuthorGroups    =  (isset($_POST['newsAssignedAuthorGroups']) && $newsFilterAuthor) ? implode(',', contrexx_input2raw($_POST['newsAssignedAuthorGroups'])) : 0;
+            $assignedPublisherGroups =  (isset($_POST['newsAssignedPublisherGroups']) && $newsFilterPublisher) ? implode(',', contrexx_input2db($_POST['newsAssignedPublisherGroups'])) : 0;
+            $assignedAuthorGroups    =  (isset($_POST['newsAssignedAuthorGroups']) && $newsFilterAuthor) ? implode(',', contrexx_input2db($_POST['newsAssignedAuthorGroups'])) : 0;
             
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$assignedPublisherGroups."' WHERE name = 'news_assigned_publisher_groups'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$assignedAuthorGroups."' WHERE name = 'news_assigned_author_groups'");
             
             // save default teasers
             $defaultTeasers = array();
-            foreach ($_POST['newsDefaultTeaserSelected'] as $key => $value) {
-                if (!empty($value)) {
-                    $defaultTeasers[] = intval($key);
+            if (isset($_POST['newsDefaultTeaserSelected'])) {
+                foreach ($_POST['newsDefaultTeaserSelected'] as $key => $value) {
+                    if (!empty($value)) {
+                        $defaultTeasers[] = intval($key);
+                    }
                 }
             }
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='" . implode(";", $defaultTeasers) . "' WHERE name='news_default_teasers'");
@@ -2967,10 +2969,10 @@ class newsManager extends newsLibrary {
             $this->_objTpl->parse('news_feed_description_list');
         }
 
-        $assignedAuthorGroups = array();
-        $existingAuthorGroups = array();
-        $assignedPublisherGroups = array();
-        $existingPublisherGroups = array();
+        $assignedAuthorGroups = '';
+        $existingAuthorGroups = '';
+        $assignedPublisherGroups = '';
+        $existingPublisherGroups = '';
         $availableUserGroups = $this->_getAllUserGroups();
         $arrAssignedAuthorGroups = explode(',',$this->arrSettings['news_assigned_author_groups']);
         $arrAssignedPublisherGroups = explode(',',$this->arrSettings['news_assigned_publisher_groups']);
@@ -4032,4 +4034,4 @@ class newsManager extends newsLibrary {
         return false;
     }
 }
-?>
+
