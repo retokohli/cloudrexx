@@ -844,41 +844,55 @@ class InitCMS
 
     public function getStandardUri()
     {
-// TODO: add URL modificators (params)
-        return \Cx\Core\Routing\Url::fromPage(\Env::get('Resolver')->getPage(), array('smallscreen' => 0));
+        $url = \Env::get('Resolver')->getUrl();
+        $myUrl = clone $url;
+        $myUrl->setParam('smallscreen', 0);
+        
+        return $myUrl;
     }
     
     public function getMobileUri()
     {
-// TODO: add URL modificators (params)
-        return \Cx\Core\Routing\Url::fromPage(\Env::get('Resolver')->getPage(), array('smallscreen' => 1));
+        $url = \Env::get('Resolver')->getUrl();
+        $myUrl = clone $url;
+        $myUrl->setParam('smallscreen', 1);
+        
+        return $myUrl;
     }
 
     public function getPrintUri()
     {
-// TODO: add URL modificators (params)
-        return \Cx\Core\Routing\Url::fromPage(\Env::get('Resolver')->getPage(), array('printview' => 1));
+        $url = \Env::get('Resolver')->getUrl();
+        $myUrl = clone $url;
+        $myUrl->setParam('printview', 1);
+        
+        return $myUrl;
     }
 
 
     public function getPDFUri()
     {
-// TODO: add URL modificators (params)
-        return \Cx\Core\Routing\Url::fromPage(\Env::get('Resolver')->getPage(), array('pdfview' => 1));
+        $url = \Env::get('Resolver')->getUrl();
+        $myUrl = clone $url;
+        $myUrl->setParam('pdfview', 1);
+        
+        return $myUrl;
     }
 
 
     public function getAppUri()
     {
-// TODO: add URL modificators (params)
-        return \Cx\Core\Routing\Url::fromPage(\Env::get('Resolver')->getPage(), array('appview' => 1));
+        $url = \Env::get('Resolver')->getUrl();
+        $myUrl = clone $url;
+        $myUrl->setParam('appview', 1);
+        
+        return $myUrl;
     }
 
 
     public function getPageUri()
     {
-// TODO: add URL modificators (params)
-        return \Cx\Core\Routing\Url::fromPage(\Env::get('Resolver')->getPage());
+        return \Env::get('Resolver')->getUrl();
     }
 
 
