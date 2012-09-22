@@ -104,7 +104,7 @@ class Url {
         if($matchCount == 0) {
             throw new UrlException('Malformed URL: ' . $url);
         }
-
+        
         $this->domain = $matches[1];
         if(count($matches) > 2) {
             $this->setPath($matches[2]);
@@ -216,6 +216,8 @@ class Url {
     }
 
     /**
+     * If a parameter is set to null, it will be removed
+     * Set it to '' if you want to add an empty parameter
      * @author Michael Ritter <michael.ritter@comvation.com>
      * @param string $params
      * @return string
@@ -224,6 +226,9 @@ class Url {
         $path = '';
         if (count($params)) {
             foreach ($params as $key=>$value) {
+                if ($value === null) {
+                    continue;
+                }
                 $params[$key] = $key . '=' . $value;
             }
             $path .= '?' . implode('&', $params);

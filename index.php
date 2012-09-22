@@ -174,11 +174,28 @@ createModuleConversionTables();
 $objInit = new InitCMS('frontend', Env::em());
 Env::set('init', $objInit);
 
+// make sure license data is up to date (this updates active available modules)
+$license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase);
+$oldState = $license->getState();
+$license->check();
+if ($oldState != $license->getState()) {
+    $license->save(new \settingsManager(), $objDatabase);
+}
+
 $request = !empty($_GET['__cap']) ? $_GET['__cap'] : '';
 $url = \Cx\Core\Routing\Url::fromCapturedRequest($request, ASCMS_PATH_OFFSET, $_GET);
 $resolver = new \Cx\Core\Routing\Resolver($url, null, Env::em(), null, null);
 \Env::set('Resolver', $resolver);
 $aliaspage = $resolver->resolveAlias();
+
+$_LANGID = '';
+$redirectToCorrectLanguageDir = function() use ($url, &$_LANGID, $_CONFIG) {
+    $url->setLangDir(\FWLanguage::getLanguageCodeById($_LANGID));
+
+    CSRF::header('Location: '.$url);
+    exit;
+};
+
 if ($aliaspage != null) {
     $_LANGID = $aliaspage->getTargetLangId();
 } else {
@@ -192,12 +209,6 @@ if ($aliaspage != null) {
     //try to find the language in the url
     $extractedLanguage = 0;
 
-    $redirectToCorrectLanguageDir = function() use ($url, $_LANGID, $_CONFIG) {
-        $url->setLangDir(\FWLanguage::getLanguageCodeById($_LANGID));
-
-        CSRF::header('Location: '.$url);
-        exit;
-    };
     $extractedLanguage = \FWLanguage::getLanguageIdByCode($url->getLangDir());
     if (!$extractedLanguage) {
         $redirectToCorrectLanguageDir();
@@ -209,6 +220,10 @@ if ($aliaspage != null) {
     else if($_LANGID != $extractedLanguage) { //the user wants to change the language, but we're still inside the wrong language directory.
         $redirectToCorrectLanguageDir();
     }
+}
+if (!$license->isInLegalComponents('fulllanguage') && $_LANGID != \FWLanguage::getDefaultLangId()) {
+    $_LANGID = \FWLanguage::getDefaultLangId();
+    $redirectToCorrectLanguageDir();
 }
 
 // Post-2.1

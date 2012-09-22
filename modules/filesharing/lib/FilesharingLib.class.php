@@ -68,10 +68,10 @@ CODE
         $uploadId = $uploader->getUploadId();
         $tempPaths = self::getTemporaryFilePaths($uploadId);
         if (!is_dir($tempPaths[0] . '/' . $tempPaths[2])) {
-            //\Cx\Lib\FileSystem::make_folder($tempPaths[0] . '/' . $tempPaths[2]);
-            mkdir($tempPaths[0] . '/' . $tempPaths[2]);
-            //\Cx\Lib\FileSystem::makeWritable($tempPaths[0] . '/' . $tempPaths[2]);
-            chmod($tempPaths[0] . '/' . $tempPaths[2], 0777);
+            \Cx\Lib\FileSystem\FileSystem::make_folder($tempPaths[0] . '/' . $tempPaths[2]);
+            //mkdir($tempPaths[0] . '/' . $tempPaths[2]);
+            \Cx\Lib\FileSystem\FileSystem::makeWritable($tempPaths[0] . '/' . $tempPaths[2]);
+            //chmod($tempPaths[0] . '/' . $tempPaths[2], 0777);
         }
 
         $folderWidget = UploadFactory::getInstance()->newFolderWidget($tempPaths[0] . '/' . $tempPaths[2], $uploaderInstanceName);
@@ -91,8 +91,8 @@ CODE
         if (!isset($sessionObj)) $sessionObj = new cmsSession();
 
         return array(
-            $sessionObj->getTempPath(),
-            $sessionObj->getWebTempPath(),
+            $sessionObj->getTempPath() . '/',
+            $sessionObj->getWebTempPath() . '/',
             'filesharing_' . $uploadId,
         );
     }
@@ -119,14 +119,17 @@ CODE
         // the directory which will be made from the given cmd
         $directory = $data["directory"];
 
+        if (!$directory) {
+            $directory = '';
+        }
         // get target path
         // if the cmd is "downloads" add these files to the digital asset management module directory
         if ($directory == 'downloads') {
             $targetPath = ASCMS_DOWNLOADS_IMAGES_PATH;
             $targetPathWeb = ASCMS_DOWNLOADS_IMAGES_WEB_PATH;
         } else {
-            $targetPath = ASCMS_FILESHARING_PATH . '/' . $directory;
-            $targetPathWeb = ASCMS_FILESHARING_WEB_PATH . '/' . $directory;
+            $targetPath = ASCMS_FILESHARING_PATH . (!empty($directory) ? '/' . $directory : '');
+            $targetPathWeb = ASCMS_FILESHARING_WEB_PATH . (!empty($directory) ? '/' . $directory : '');
         }
 
         // create target folder if the directory does not exist
@@ -137,7 +140,7 @@ CODE
 
         // write the uploaded files into database
         $path = str_replace(ASCMS_PATH_OFFSET, '', $targetPathWeb);
-        foreach ($fileInfos["originalFileNames"] as $cleanedName => $rawName) {
+        foreach ($fileInfos["originalFileNames"] as $rawName => $cleanedName) {
             $file = $cleanedName;
             $source = $path . '/' . $rawName;
 
@@ -190,11 +193,12 @@ CODE
     {
         global $objDatabase;
         $objResult = $objDatabase->SelectLimit("SELECT `cmd`, `hash` FROM " . DBPREFIX . "module_filesharing WHERE `id` = ?", 1, 0, array($fileId));
-        $pageSlug = self::getFilesharingPageSlug($objResult->fields["cmd"]);
         $objUrl = clone \Env::get('Resolver')->getUrl();
 
         if ($objResult !== false) {
-            return $objUrl->getDomain() . (ASCMS_PATH_OFFSET ? ASCMS_PATH_OFFSET . "/" : "") . $pageSlug . "?hash=" . $objResult->fields["hash"];
+            $objUrl->setParam('uploadId', null);
+            $objUrl->setParam('hash', $objResult->fields["hash"]);
+            return $objUrl->toString();
         } else {
             return false;
         }
@@ -237,11 +241,13 @@ CODE
     {
         global $objDatabase;
         $objResult = $objDatabase->SelectLimit("SELECT `cmd`, `hash`, `check` FROM " . DBPREFIX . "module_filesharing WHERE `id` = ?", 1, 0, array($fileId));
-        $pageSlug = self::getFilesharingPageSlug($objResult->fields["cmd"]);
         $objUrl = clone \Env::get('Resolver')->getUrl();
 
         if ($objResult !== false) {
-            return $objUrl->getDomain() . (ASCMS_PATH_OFFSET ? ASCMS_PATH_OFFSET . "/" : "") . $pageSlug . "?hash=" . $objResult->fields["hash"] . "&amp;check=" . $objResult->fields["check"];
+            $objUrl->setParam('uploadId', null);
+            $objUrl->setParam('hash', $objResult->fields["hash"]);
+            $objUrl->setParam('check', $objResult->fields["check"]);
+            return $objUrl->toString();
         } else {
             return false;
         }
