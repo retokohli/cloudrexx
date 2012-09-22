@@ -672,7 +672,11 @@ class Page extends \Cx\Model\Base\EntityBase
             if ($fallback_lang) {
                 $fallback_page = $this->getNode()->getPage($fallback_lang);
                 if ($fallback_page) {
-                    return 'fallback ' . $fallback_page->getStatus();
+                    $fallback_status = $fallback_page->getStatus();
+                    if ($this->protection && !preg_match('/protected/', $fallback_status)) {
+                        $fallback_status .= 'protected ';
+                    }
+                    return 'fallback ' . $fallback_status;
                 }
             }
             $status .= 'fallback broken ';
