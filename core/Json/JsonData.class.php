@@ -111,7 +111,7 @@ class JsonData {
      */
     public function data($adapter, $method, $arguments = array()) {
         if (!isset($this->adapters[$adapter])) {
-            return $this->getError('No such adapter');
+            return $this->getErrorData('No such adapter');
         }
         $adapter = $this->adapters[$adapter];
         $methods = $adapter->getAccessableMethods();
@@ -122,7 +122,7 @@ class JsonData {
             $realMethod = $methods[$method];
         }
         if ($realMethod == '') {
-            return $this->getError('No such method: ' . $method);
+            return $this->getErrorData('No such method: ' . $method);
         }
         try {
             $output = call_user_func(array($adapter, $realMethod), $arguments);
@@ -134,7 +134,7 @@ class JsonData {
             );
         } catch (\Exception $e) {
             //die($e->getTraceAsString());
-            return $this->getError($e->getMessage());
+            return $this->getErrorData($e->getMessage());
         }
     }
     
@@ -144,7 +144,7 @@ class JsonData {
      * @author Michael Ritter <michael.ritter@comvation.com>
      * @return String JSON code
      */
-    protected function getError($message) {
+    public function getErrorData($message) {
         return array(
             'status' => 'error',
             'message'   => $message
