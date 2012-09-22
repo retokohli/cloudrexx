@@ -66,7 +66,8 @@
                 if (newsElLinkText == '') {
                     newsElLinkText = url;
                 }
-                newsInsertLink(document.getElementById(newsElInsertBox), '<a href="'+url+'">'+newsElLinkText+'</a>');
+                // splitting the A-tag is required to prevent the CSRF system from adding a token to the href attribute
+                newsInsertLink(document.getElementById(newsElInsertBox), '<'+'a href="'+url+'">'+newsElLinkText+'</a>');
                 break;
         }
     }
@@ -83,10 +84,12 @@
             }
         }
 
+        var langId = jQuery("a.langtab.active").attr("id").slice(14);
+
         if (sType == 'webpages') {
-            openWindow('index.php?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+            openWindow('index.php?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=webpages&langId='+langId,'','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
         } else {
-            openWindow('index.php?cmd=fileBrowser&{CSRF_PARAM}&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+            openWindow('index.php?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&langId='+langId,'','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
         }
     }
 

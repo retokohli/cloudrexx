@@ -105,7 +105,7 @@ class newsHeadlines extends newsLibrary
                 $newsid    = $objResult->fields['id'];
                 $newstitle = $objResult->fields['title'];
                 $newsUrl    = empty($objResult->fields['redirect'])
-                                ? CONTREXX_SCRIPT_PATH.'?section=news&cmd=details&newsid='.$newsid
+                                ? \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', FRONTEND_LANG_ID, array('newsid' => $newsid))
                                 : $objResult->fields['redirect'];
                 $htmlLink   = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle), 'headlineLink');
 
@@ -170,4 +170,3 @@ class newsHeadlines extends newsLibrary
     }
 }
 
-?>

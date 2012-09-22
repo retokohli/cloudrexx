@@ -108,7 +108,7 @@ class news extends newsLibrary {
         $newsid = intval($_GET['newsid']);
 
         if (!$newsid) {
-            CSRF::header('Location: index.php?section=news');
+            header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('news'));
             exit;
         }
 
@@ -155,7 +155,7 @@ class news extends newsLibrary {
                                                 
 
         if (!$objResult || $objResult->EOF) {
-            CSRF::header('Location: index.php?section=news');
+            header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('news'));
             exit;
         }
 
@@ -569,7 +569,7 @@ class news extends newsLibrary {
             $newsUrl        = empty($objResult->fields['redirect'])
                                 ? (empty($objResult->fields['newscontent'])
                                     ? ''
-                                    : CONTREXX_SCRIPT_PATH.'?section=news&cmd=details&newsid='.$newsid)
+                                    : \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', FRONTEND_LANG_ID, array('newsid' => $newsid)))
                                 : $objResult->fields['redirect'];
 
             $htmlLink       = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]'));
@@ -796,7 +796,7 @@ class news extends newsLibrary {
         }
 
         if ($this->_objTpl->placeholderExists('NEWS_PUBLISHER_DROPDOWNMENU')) {
-            $publisherMenu    = '<select onchange="window.location=\'index.php?section=news&amp;cmd='.intval($_REQUEST['cmd']).'&amp;publisher=\'+this.value" name="publisher">'."\n";
+            $publisherMenu    = '<select onchange="window.location=\''.\Cx\Core\Routing\Url::fromModuleAndCmd('news', intval($_REQUEST['cmd'])).'&amp;publisher=\'+this.value" name="publisher">'."\n";
             $publisherMenu   .= '<option value="" selected="selected">'.$_ARRAYLANG['TXT_NEWS_PUBLISHER'].'</option>'."\n";
             $publisherMenu   .= $this->getPublisherMenu($selectedPublisher, $selected_cat)."\n";
             $publisherMenu   .= '</select>'."\n";
@@ -879,6 +879,7 @@ class news extends newsLibrary {
             $category = '&amp;category='.$selected_cat;
         }
 
+        $type = '';
         if (isset($_REQUEST['type'])) {
             $type = '&amp;type='.$selected_type;
         }
@@ -892,7 +893,7 @@ class news extends newsLibrary {
         }
 
         if ($count>intval($_CONFIG['corePagingLimit'])) {
-            $paging = getPaging($count, $pos, '&amp;section=news'.$category.$type, $_ARRAYLANG['TXT_NEWS_MESSAGES'], true);
+            $paging = getPaging($count, $pos, ''.$category.$type, $_ARRAYLANG['TXT_NEWS_MESSAGES'], true);
         }
         $this->_objTpl->setVariable('NEWS_PAGING', $paging);
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
@@ -905,7 +906,7 @@ class news extends newsLibrary {
                 $newsUrl        = empty($objResult->fields['redirect'])
                                     ? (empty($objResult->fields['newscontent'])
                                         ? ''
-                                        : CONTREXX_SCRIPT_PATH.'?section=news&cmd=details&newsid='.$newsid)
+                                        : \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', FRONTEND_LANG_ID, array('newsid' => $newsid)))
                                     : $objResult->fields['redirect'];
 
                 $htmlLink       = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]'));
@@ -1115,7 +1116,7 @@ class news extends newsLibrary {
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();
         if ($count>intval($_CONFIG['corePagingLimit'])) {
-            $paging = getPaging($count, $pos, '&amp;section=topnews', $_ARRAYLANG['TXT_NEWS_MESSAGES'], true);
+            $paging = getPaging($count, $pos, '', $_ARRAYLANG['TXT_NEWS_MESSAGES'], true);
         }
         $this->_objTpl->setVariable('NEWS_PAGING', $paging);
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
@@ -1128,7 +1129,7 @@ class news extends newsLibrary {
                 $newsUrl        = empty($objResult->fields['redirect'])
                                     ? (empty($objResult->fields['newscontent'])
                                         ? ''
-                                        : CONTREXX_SCRIPT_PATH.'?section=news&cmd=details&newsid='.$newsid)
+                                        : \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', FRONTEND_LANG_ID, array('newsid' => $newsid)))
                                     : $objResult->fields['redirect'];
 
                 $htmlLink       = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]'));
@@ -1207,9 +1208,8 @@ class news extends newsLibrary {
         }
     }
 
-    private function _notify_by_email($news_id) {
-// TODO: Refactor this method
-        global $objDatabase;
+    private function notifyWebmasterAboutNewlySubmittedNewsMessage($news_id)
+    {
         $user_id  = intval($this->arrSettings['news_notify_user']);
         $group_id = intval($this->arrSettings['news_notify_group']);
         $users_in_group = array();
@@ -1229,31 +1229,22 @@ class news extends newsLibrary {
         // Now we have fetched all user IDs that
         // are to be notified. Now send those emails!
         foreach ($users_in_group as $user_id) {
-            $this->_notify_user_by_email($user_id, $news_id);
+            $this->sendNotificationEmailAboutNewlySubmittedNewsMessage($user_id, $news_id);
         }
     }
 
-    private function _notify_user_by_email($user_id, $news_id) {
-// TODO: Refactor this method
+    private function sendNotificationEmailAboutNewlySubmittedNewsMessage($user_id, $news_id)
+    {
         global $_ARRAYLANG, $_CONFIG;
         // First, load recipient infos.
-        try {
-            $objFWUser = FWUser::getFWUserObject();
-            $objUser = $objFWUser->objUser->getUser($user_id);
-        }
-        catch (Exception $e) {
-        }
+        $objFWUser = FWUser::getFWUserObject();
+        $objUser = $objFWUser->objUser->getUser($user_id);
 
         if (!$objUser) {
             return false;
         }
-        $user  = $objUser->getUsername();
-        $first = $objUser->getProfileAttribute('firstname');
-        $last  = $objUser->getProfileAttribute('lastname');
-        $email = $objUser->getEmail();
 
-        // Adress user with username if no first, lastname is defined.
-        $name = ($first && $last) ? "$first $last" : $user;
+        $name = FWUser::getParsedUserTitle($objUser);
 
         $msg  = $_ARRAYLANG['TXT_NOTIFY_ADDRESS'] . " $name\n\n";
         // Split the message text into lines
@@ -1272,7 +1263,11 @@ class news extends newsLibrary {
             }
         }
         $msg .= "$line\n";
-        $msg .= '  http://'.$_SERVER['SERVER_NAME'].  $serverPort.ASCMS_PATH_OFFSET . '/cadmin/index.php?cmd=news'
+        $msg .= ' '
+                .ASCMS_PROTOCOL.'://'
+                .$_CONFIG['domainUrl']
+                .($_SERVER['SERVER_PORT'] == 80 ? NULL : ':'.intval($_SERVER['SERVER_PORT']))
+                .ASCMS_PATH_OFFSET . '/cadmin/index.php?cmd=news'
             . "&act=edit&newsId=$news_id&validate=true";
         $msg .= "\n\n";
         $msg .= $_CONFIG['coreAdminName'];
@@ -1298,7 +1293,7 @@ class news extends newsLibrary {
             $objMail->IsHTML(false);
             $objMail->Body = $msg;
 
-            $objMail->AddAddress($email, $name);
+            $objMail->AddAddress($objUser->getEmail(), $name);
             $objMail->Send();
         }
         return true;
@@ -1316,236 +1311,313 @@ class news extends newsLibrary {
     */
     private function _submit()
     {
-// TODO: refactor this method before activating it again. Framework usage is outdated!
-        return false;
-
-        global $_ARRAYLANG, $_CORELANG, $objDatabase;
-
-        $objModulManager = new modulemanager();
-        $arrInstalledModules = $objModulManager->getModules();
-        if (in_array(23, $arrInstalledModules)) {
-            $communityModul = true;
-        } else {
-            $communityModul = false;
+        // redirect to the news overview page in case the submit function has been disabled
+        if (!$this->arrSettings['news_submit_news'] == '1') {
+            header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('news'));
+            exit;
         }
 
-        if (!$this->arrSettings['news_submit_news'] == '1' || (!$communityModul && $this->arrSettings['news_submit_only_community'] == '1')) {
-            CSRF::header('Location: '.CONTREXX_SCRIPT_PATH.'?section=news');
-            exit;
-        } elseif ($this->arrSettings['news_submit_only_community'] == '1') {
+        // check if the currently logged in user is allowed to submit a news message,
+        // in case anonymous submitting has been disabled
+        if ($this->arrSettings['news_submit_only_community'] == '1') {
             $objFWUser = FWUser::getFWUserObject();
-            if ($objFWUser->objUser->login()) {
-                if (!Permission::checkAccess(61, 'static')) {
-                    CSRF::header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=login&cmd=noaccess');
-                    exit;
-                }
-            } else {
+            if (!$objFWUser->objUser->login()) {
                 $link = base64_encode(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
-                CSRF::header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=login&redirect='.$link);
+                header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('login', '', FRONTEND_LANG_ID, array('redirect' => $link)));
+                exit;
+            }
+
+            if (!Permission::checkAccess(61, 'static')) {
+                header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('login', 'noaccess', FRONTEND_LANG_ID));
                 exit;
             }
         }
 
-        $newsCat = '';
-        $newsType = '';
-        $newsText = '';
-        $newsTeaserText = '';
-        $newsTitle = '';
-        $newsRedirect = 'http://';
-        $newsSource = 'http://';
-        $newsUrl1 = 'http://';
-        $newsUrl2 = 'http://';
-        $insertStatus = false;
+        $newsId = false;
+        $msg = '';
 
-        if (isset($_POST['submitNews'])) {
-            $objValidator = new FWValidator();
+        // fetch submitted news message
+        list($hasMessageBeenSubmitted, $data) = $this->fetchSubmittedData();
+        if ($hasMessageBeenSubmitted) {
+            // try to add the submitted news message
+            list($newsId, $msg) = $this->storeSubmittedNewsMessage($data);
 
-            $_POST['newsTitle'] = contrexx_input2raw(html_entity_decode($_POST['newsTitle'], ENT_QUOTES, CONTREXX_CHARSET));
-            $_POST['newsTeaserText'] = contrexx_input2raw(html_entity_decode($_POST['newsTeaserText'], ENT_QUOTES, CONTREXX_CHARSET));
-            $_POST['newsRedirect'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsRedirect'], ENT_QUOTES, CONTREXX_CHARSET)));
-            $_POST['newsText'] = contrexx_remove_script_tags(contrexx_input2raw(html_entity_decode($_POST['newsText'], ENT_QUOTES, CONTREXX_CHARSET)));
-            $_POST['newsText'] = $this->filterBodyTag(html_entity_decode($_POST['newsText'], ENT_QUOTES, CONTREXX_CHARSET));
-            $_POST['newsSource'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsSource'], ENT_QUOTES, CONTREXX_CHARSET)));
-            $_POST['newsUrl1'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsUrl1'], ENT_QUOTES, CONTREXX_CHARSET)));
-            $_POST['newsUrl2'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsUrl2'], ENT_QUOTES, CONTREXX_CHARSET)));
-            $_POST['newsCat'] = intval($_POST['newsCat']);
-            $_POST['newsType'] = isset($_POST['newsType']) ? intval($_POST['newsType']) : 0;
+            if ($newsId) {
+                // lets notify the webmaster about the newly submitted message
+                $this->notifyWebmasterAboutNewlySubmittedNewsMessage($newsId);
 
-            if (!empty($_POST['newsTitle']) && FWCaptcha::getInstance()->check() &&
-               (!empty($_POST['newsText']) || (!empty($_POST['newsRedirect']) && $_POST['newsRedirect'] != 'http://'))) {
-                    $insertStatus = $this->_insert();
-                    if (!$insertStatus) {
-                        $newsTitle = $_POST['newsTitle'];
-                        $newsTeaserText = $_POST['newsTeaserText'];
-                        $newsRedirect = $_POST['newsRedirect'];
-                        $newsSource = $_POST['newsSource'];
-                        $newsUrl1 = $_POST['newsUrl1'];
-                        $newsUrl2 = $_POST['newsUrl2'];
-                        $newsCat = $_POST['newsCat'];
-                        $newsType = $_POST['newsType'];
-                        $newsText = $_POST['newsText'];
-                    }
-                    else {
-                        $this->_notify_by_email($insertStatus);
-                    }
-                } else {
-                    $newsTitle = $_POST['newsTitle'];
-                    $newsTeaserText = $_POST['newsTeaserText'];
-                    $newsRedirect = $_POST['newsRedirect'];
-                    $newsSource = $_POST['newsSource'];
-                    $newsUrl1 = $_POST['newsUrl1'];
-                    $newsUrl2 = $_POST['newsUrl2'];
-                    $newsCat = $_POST['newsCat'];
-                    $newsType = $_POST['newsType'];
-                    $newsText = $_POST['newsText'];
-
-                    if ( (empty($_POST['newsTitle']) || (empty($_POST['newsText']) || $_POST['newsText'] == '&nbsp;' || $_POST['newsText'] == '<br />' )) &&
-                         (empty($_POST['newsRedirect']) || $_POST['newsRedirect'] == 'http://') ) {
-                        $this->_submitMessage = $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT'].'<br /><br />';
-                    }
+                // show status message about successfully submitted message
+                if ($this->_objTpl->blockExists('news_submitted')) {
+                    $this->_objTpl->touchBlock('news_submitted');
                 }
+            }
         }
 
-        if ($insertStatus) {
+        // set $display to false in case we just added a newly submitted message.
+        // setting $display to false will hide the submit form.
+        $this->showSubmitForm($data, $display = !$newsId);
+
+        $this->_objTpl->setVariable('NEWS_STATUS_MESSAGE', $msg);
+        return $this->_objTpl->get();
+    }
+
+    private function fetchSubmittedData()
+    {
+        // set default values
+        $data['newsText'] = '';
+        $data['newsTeaserText'] = '';
+        $data['newsTitle'] = '';
+        $data['newsRedirect'] = 'http://';
+        $data['newsSource'] = 'http://';
+        $data['newsUrl1'] = 'http://';
+        $data['newsUrl2'] = 'http://';
+        $data['newsCat'] = '';
+        $data['newsType'] = '';
+
+        if (!isset($_POST['submitNews'])) {
+            return array(false, $data);
+        }
+
+        $objValidator = new FWValidator();
+
+        // set POST data
+        $data['newsTitle'] = contrexx_input2raw(html_entity_decode($_POST['newsTitle'], ENT_QUOTES, CONTREXX_CHARSET));
+        $data['newsTeaserText'] = contrexx_input2raw(html_entity_decode($_POST['newsTeaserText'], ENT_QUOTES, CONTREXX_CHARSET));
+        $data['newsRedirect'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsRedirect'], ENT_QUOTES, CONTREXX_CHARSET)));
+        $data['newsText'] = contrexx_remove_script_tags($this->filterBodyTag(contrexx_input2raw(html_entity_decode($_POST['newsText'], ENT_QUOTES, CONTREXX_CHARSET))));
+        $data['newsSource'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsSource'], ENT_QUOTES, CONTREXX_CHARSET)));
+        $data['newsUrl1'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsUrl1'], ENT_QUOTES, CONTREXX_CHARSET)));
+        $data['newsUrl2'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsUrl2'], ENT_QUOTES, CONTREXX_CHARSET)));
+        $data['newsCat'] = !empty($_POST['newsCat']) ? intval($_POST['newsCat']) : 0;
+        $data['newsType'] = !empty($_POST['newsType']) ? intval($_POST['newsType']) : 0;
+
+        return array(true, $data);
+    }
+
+    private function showSubmitForm($data, $display)
+    {
+        global $_ARRAYLANG, $_CORELANG;
+
+        if (!$display) {
             if ($this->_objTpl->blockExists('news_submit_form')) {
                 $this->_objTpl->hideBlock('news_submit_form');
             }
-            if ($this->_objTpl->blockExists('news_submitted')) {
-                $this->_objTpl->touchBlock('news_submitted');
+            return;
+        }
+
+        require ASCMS_CORE_PATH.'/wysiwyg.class.php';
+
+        $this->_objTpl->setVariable(array(
+            'TXT_NEWS_MESSAGE'          => $_ARRAYLANG['TXT_NEWS_MESSAGE'],
+            'TXT_TITLE'                 => $_ARRAYLANG['TXT_TITLE'],
+            'TXT_CATEGORY'              => $_ARRAYLANG['TXT_CATEGORY'],
+            'TXT_TYPE'                  => ($this->arrSettings['news_use_types'] == 1 ? $_ARRAYLANG['TXT_TYPE'] : ''),
+            'TXT_HYPERLINKS'            => $_ARRAYLANG['TXT_HYPERLINKS'],
+            'TXT_EXTERNAL_SOURCE'       => $_ARRAYLANG['TXT_EXTERNAL_SOURCE'],
+            'TXT_LINK'                  => $_ARRAYLANG['TXT_LINK'],
+            'TXT_NEWS_NEWS_CONTENT'     => $_ARRAYLANG['TXT_NEWS_NEWS_CONTENT'],
+            'TXT_NEWS_TEASER_TEXT'      => $_ARRAYLANG['TXT_NEWS_TEASER_TEXT'],
+            'TXT_SUBMIT_NEWS'           => $_ARRAYLANG['TXT_SUBMIT_NEWS'],
+            'TXT_NEWS_REDIRECT'         => $_ARRAYLANG['TXT_NEWS_REDIRECT'],
+            'TXT_NEWS_NEWS_URL'         => $_ARRAYLANG['TXT_NEWS_NEWS_URL'],
+            'TXT_CAPTCHA'               => $_ARRAYLANG['TXT_CAPTCHA'],
+            'NEWS_TEXT'                 => get_wysiwyg_editor('newsText', $data['newsText'], 'news'),
+            'NEWS_CAT_MENU'             => $this->getCategoryMenu($data['newsCat']),
+            'NEWS_TYPE_MENU'            => ($this->arrSettings['news_use_types'] == 1 ? $this->getTypeMenu($data['newsType']) : ''),
+            'NEWS_TITLE'                => contrexx_raw2xhtml($data['newsTitle']),
+            'NEWS_SOURCE'               => contrexx_raw2xhtml($data['newsSource']),
+            'NEWS_URL1'                 => contrexx_raw2xhtml($data['newsUrl1']),
+            'NEWS_URL2'                 => contrexx_raw2xhtml($data['newsUrl2']),
+            'NEWS_TEASER_TEXT'          => contrexx_raw2xhtml($data['newsTeaserText']),
+            'NEWS_REDIRECT'             => contrexx_raw2xhtml($data['newsRedirect']),
+        ));
+
+        if (FWUser::getFWUserObject()->objUser->login()) {
+            if ($this->_objTpl->blockExists('news_submit_form_captcha')) {
+                $this->_objTpl->hideBlock('news_submit_form_captcha');
             }
         } else {
-            require ASCMS_CORE_PATH.'/wysiwyg.class.php';
-
             $this->_objTpl->setVariable(array(
-                'TXT_NEWS_MESSAGE'          => $_ARRAYLANG['TXT_NEWS_MESSAGE'],
-                'TXT_TITLE'                 => $_ARRAYLANG['TXT_TITLE'],
-                'TXT_CATEGORY'              => $_ARRAYLANG['TXT_CATEGORY'],
-                'TXT_TYPE'                  => ($this->arrSettings['news_use_types'] == 1 ? $_ARRAYLANG['TXT_TYPE'] : ''),
-                'TXT_HYPERLINKS'            => $_ARRAYLANG['TXT_HYPERLINKS'],
-                'TXT_EXTERNAL_SOURCE'       => $_ARRAYLANG['TXT_EXTERNAL_SOURCE'],
-                'TXT_LINK'                  => $_ARRAYLANG['TXT_LINK'],
-                'TXT_NEWS_NEWS_CONTENT'     => $_ARRAYLANG['TXT_NEWS_NEWS_CONTENT'],
-                'TXT_NEWS_TEASER_TEXT'      => $_ARRAYLANG['TXT_NEWS_TEASER_TEXT'],
-                'TXT_SUBMIT_NEWS'           => $_ARRAYLANG['TXT_SUBMIT_NEWS'],
-                'TXT_NEWS_REDIRECT'         => $_ARRAYLANG['TXT_NEWS_REDIRECT'],
-                'TXT_NEWS_NEWS_URL'         => $_ARRAYLANG['TXT_NEWS_NEWS_URL'],
-                'TXT_CORE_CAPTCHA'          => $_CORELANG['TXT_CORE_CAPTCHA'],
-                'NEWS_TEXT'                 => get_wysiwyg_editor('newsText', $newsText, 'news'),
-                'NEWS_CAT_MENU'             => $this->getCategoryMenu($newsCat),
-                'NEWS_TYPE_MENU'            => ($this->arrSettings['news_use_types'] == 1 ? $this->getTypeMenu($newsType) : ''),
-                'NEWS_TITLE'                => contrexx_raw2xhtml($newsTitle),
-                'NEWS_SOURCE'               => contrexx_raw2xhtml($newsSource),
-                'NEWS_URL1'                 => contrexx_raw2xhtml($newsUrl1),
-                'NEWS_URL2'                 => contrexx_raw2xhtml($newsUrl2),
-                'NEWS_TEASER_TEXT'          => contrexx_raw2xhtml($newsTeaserText),
-                'NEWS_REDIRECT'             => contrexx_raw2xhtml($newsRedirect),
+                'TXT_NEWS_CAPTCHA'          => $_CORELANG['TXT_CORE_CAPTCHA'],
                 'NEWS_CAPTCHA_CODE'         => FWCaptcha::getInstance()->getCode(),
             ));
-
-            if ($this->_objTpl->blockExists('news_category_menu')) {
-                $objResult = $objDatabase->Execute('SELECT category_id as catid, name FROM '.DBPREFIX.'module_news_categories_locale WHERE lang_id='.FRONTEND_LANG_ID.' ORDER BY name asc');
-
-                if ($objResult !== false) {
-                    while (!$objResult->EOF) {
-                        $this->_objTpl->setVariable(array(
-                            'NEWS_CATEGORY_ID'      => $objResult->fields['catid'],
-                            'NEWS_CATEGORY_TITLE'   => contrexx_raw2xhtml($objResult->fields['name'])
-                        ));
-                        $this->_objTpl->parse('news_category_menu');
-                        $objResult->MoveNext();
-                    }
-                }
-            }
-
-            if ($this->_objTpl->blockExists('news_type_menu') && $this->arrSettings['news_use_types'] == 1) {
-                $objResult = $objDatabase->Execute('SELECT type_id as typeid, name FROM '.DBPREFIX.'module_news_types_locale WHERE lang_id='.FRONTEND_LANG_ID.' ORDER BY name asc');
-
-                if ($objResult !== false) {
-                    while (!$objResult->EOF) {
-                        $this->_objTpl->setVariable(array(
-                            'NEWS_CATEGORY_ID'      => $objResult->fields['catid'],
-                            'NEWS_CATEGORY_TITLE'   => contrexx_raw2xhtml($objResult->fields['name']),
-                            'NEWS_TYPE_ID'          => $objResult->fields['typeid'],
-                            'NEWS_TYPE_TITLE'       => contrexx_raw2xhtml($objResult->fields['name'])
-
-                        ));
-                        $this->_objTpl->parse('news_type_menu');
-                        $objResult->MoveNext();
-                    }
-                }
-            }
-
-
-            if ($this->_objTpl->blockExists('news_submit_form')) {
-                $this->_objTpl->parse('news_submit_form');
+            if ($this->_objTpl->blockExists('news_submit_form_captcha')) {
+                $this->_objTpl->parse('news_submit_form_captcha');
             }
         }
 
-        $this->_objTpl->setVariable('NEWS_STATUS_MESSAGE', $this->_submitMessage);
-        return $this->_objTpl->get();
+        $this->parseCategoryMenu();
+        $this->parseNewsTypeMenu();
+
+
+        if ($this->_objTpl->blockExists('news_submit_form')) {
+            $this->_objTpl->parse('news_submit_form');
+        }
+    }
+
+    private function parseCategoryMenu()
+    {
+        global $objDatabase;
+
+        if (!$this->_objTpl->blockExists('news_category_menu')) {
+            return;
+        }
+
+        $objResult = $objDatabase->Execute('SELECT category_id as catid, name FROM '.DBPREFIX.'module_news_categories_locale WHERE lang_id='.FRONTEND_LANG_ID.' ORDER BY name asc');
+
+        if (!$objResult) {
+            return;
+        }
+
+        while (!$objResult->EOF) {
+            $this->_objTpl->setVariable(array(
+                'NEWS_CATEGORY_ID'      => $objResult->fields['catid'],
+                'NEWS_CATEGORY_TITLE'   => contrexx_raw2xhtml($objResult->fields['name'])
+            ));
+            $this->_objTpl->parse('news_category_menu');
+            $objResult->MoveNext();
+        }
+    }
+
+    private function parseNewsTypeMenu()
+    {
+        global $objDatabase;
+
+        if (   !$this->_objTpl->blockExists('news_type_menu')
+            || !$this->arrSettings['news_use_types'] == 1
+        ) {
+            return;
+        }
+
+        $objResult = $objDatabase->Execute('SELECT type_id as typeid, name FROM '.DBPREFIX.'module_news_types_locale WHERE lang_id='.FRONTEND_LANG_ID.' ORDER BY name asc');
+        if (!$objResult) {
+            return;
+        }
+
+        while (!$objResult->EOF) {
+            $this->_objTpl->setVariable(array(
+                'NEWS_TYPE_ID'          => $objResult->fields['typeid'],
+                'NEWS_TYPE_TITLE'       => contrexx_raw2xhtml($objResult->fields['name'])
+
+            ));
+            $this->_objTpl->parse('news_type_menu');
+            $objResult->MoveNext();
+        }
     }
 
 
     /**
     * Insert a new news message
-    * @global ADONewConnection
-    * @global array
-    * @return boolean true on success - false on failure
+    * @param    array   Data of news message to store
+    * @global   ADONewConnection
+    * @global   array
+    * @return   array Index 0: true on success - false on failure
+    *                 Index 1: status message
     */
-    private function _insert()
+    private function storeSubmittedNewsMessage($data)
     {
         global $objDatabase, $_ARRAYLANG;
 
-        $objFWUser = FWUser::getFWUserObject();
+        $error = '';
+        $status = true;
 
-        $date         = time();
-        $newstitle    = $_POST['newsTitle'];
-        $newstext     = $_POST['newsText'];
-        $newsRedirect = $_POST['newsRedirect'];
-        if ($newsRedirect == 'http://') {
-            $newsRedirect = '';
+        if (   !FWUser::getFWUserObject()->objUser->login()
+            && !FWCaptcha::getInstance()->check()) {
+            $status = false;
+            $error = $_ARRAYLANG['TXT_CAPTCHA_ERROR'] . '<br />';
         }
-        $newsTeaserText = $_POST['newsTeaserText'];
-        $newssource     = $_POST['newsSource'];
-        $newsurl1       = $_POST['newsUrl1'];
-        $newsurl2       = $_POST['newsUrl2'];
-        $newscat        = $_POST['newsCat'];
-        $newstype       = isset($_POST['newstype']) ? $_POST['newstype'] : 0;
-        $userid         = $objFWUser->objUser->getId();
 
-        $enable = $this->arrSettings['news_activate_submitted_news'] == '1' ? '1' : '0';
-        $query = SQL::insert('module_news', array(
-            'date' => $date,
-            'redirect' => $newsRedirect,
-            'source' => $newssource,
-            'url1' => $newsurl1,
-            'url2' => $newsurl2,
-            'catid' => $newscat,
-            'typeid' => $newstype,
-            'status' => $enable,
-            'validated' => $enable,
-            'userid' => $userid,
-            'changelog' => $date,
-            //the following are empty defaults for the text fields.
-            //text fields can't have a default and we need one in SQL_STRICT_TRANS_MODE
-            'teaser_frames' => '',
-            'teaser_image_path' => '',
-            'teaser_image_thumbnail_path' => '',
-        ), array(
-            'escape' => true
-            ));
+        if ($data['newsRedirect'] == 'http://') {
+            $data['newsRedirect'] = '';
+        }
+
+        // check if all mandadory data had been set (title and text or redirect)
+        if (   empty($data['newsTitle'])
+            || (  (   empty($data['newsText'])
+                   || $data['newsText'] == '&nbsp;'
+                   || $data['newsText'] == '<br />')
+               && empty($data['newsRedirect']))
+        ) {
+            $status = false;
+            $error .= $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT'].'<br /><br />';
+        }
+
+        if (!$status) {
+            return array(false, $error);
+        }
+
+        $date = time();
+        $userid = FWUser::getFWUserObject()->objUser->getId();
+
+        $enable = intval($this->arrSettings['news_activate_submitted_news']);
+        $query = "INSERT INTO `".DBPREFIX."module_news`
+            SET `date` = $date,
+                `redirect` = '".contrexx_raw2db($data['newsRedirect'])."',
+                `source` = '".contrexx_raw2db($data['newsSource'])."',
+                `url1` = '".contrexx_raw2db($data['newsUrl1'])."',
+                `url2` = '".contrexx_raw2db($data['newsUrl2'])."',
+                `catid` = '".contrexx_raw2db($data['newsCat'])."',
+                `typeid` = '".contrexx_raw2db($data['newsType'])."',
+                `status` = '$enable',
+                `validated` = '$enable',
+                `userid` = '$userid',
+                `changelog` = '$date',
+
+                # the following are empty defaults for the text fields.
+                # text fields can't have a default and we need one in SQL_STRICT_TRANS_MODE
+
+                `teaser_frames` = '',
+                `teaser_image_path` = '',
+                `teaser_image_thumbnail_path` = ''";
 
         $objResult = $objDatabase->Execute($query);
-        if ($objResult !== false) {
-            $this->_submitMessage = $_ARRAYLANG['TXT_NEWS_SUCCESSFULLY_SUBMITED'].'<br /><br />';
-            $ins_id = $objDatabase->Insert_ID();
-            $this->submitLocales($ins_id, $newstitle, $newstext, $newsTeaserText);
-            return $ins_id;
-        } else {
-            $this->_submitMessage = $_ARRAYLANG['TXT_NEWS_SUBMIT_ERROR'].'<br /><br />';
+        if (!$objResult) {
+            return array(false, $_ARRAYLANG['TXT_NEWS_SUBMIT_ERROR'].'<br /><br />');
+        }
+
+        $ins_id = $objDatabase->Insert_ID();
+
+// TODO: add fail check
+        $this->storeLocalesOfSubmittedNewsMessage($ins_id, $data['newsTitle'], $data['newsText'], $data['newsTeaserText']);
+
+        return array($ins_id, $_ARRAYLANG['TXT_NEWS_SUCCESSFULLY_SUBMITED'].'<br /><br />');
+    }
+
+    /**
+     * Insert new locales after submit news from frontend
+     * @global ADONewConnection
+     * @param Integer   $newsId
+     * @param String    $title
+     * @param String    $text
+     * @param String    $teaser_text
+     * @return Boolean
+     */
+    private function storeLocalesOfSubmittedNewsMessage($newsId, $title, $text, $teaser_text)
+    {
+        global $objDatabase;
+
+        if (empty($newsId)) {
             return false;
         }
+
+        $status = true;
+        $arrActiveFrontendLanguages = array_keys(FWLanguage::getActiveFrontendLanguages());
+        foreach ($arrActiveFrontendLanguages as $langId) {
+            $query = "INSERT INTO ".DBPREFIX."module_news_locale (`lang_id`, `news_id`, `title`, `text`, `teaser_text`)
+                VALUES ("
+                    . intval($langId) . ", "
+                    . intval($newsId) . ", '"
+                    . contrexx_raw2db($title) . "', '"
+                    . contrexx_raw2db($text) . "', '"
+                    . contrexx_raw2db($teaser_text) . "')";
+            if (!$objDatabase->Execute($query)) {
+                $status = false;
+            }
+        }
+
+        return $status;
     }
+
 
 
     /**
@@ -1892,7 +1964,7 @@ RSS2JSCODE;
                 foreach ($value['news'] as $news) {
                     $newstitle = contrexx_raw2xhtml($news['newstitle']);
                     $this->_objTpl->setVariable(array(
-                        'NEWS_LINK_TITLE'    => (empty($news['newsredirect'])) ? '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$news['id'].'" title="'.$newstitle.'">'.$newstitle.'</a>' : '<a href="'.$news['newsredirect'].'" title="'.$newstitle.'">'.$newstitle.'</a>',
+                        'NEWS_LINK_TITLE'    => (empty($news['newsredirect'])) ? '<a href="'.\Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', FRONTEND_LANG_ID, array('newsid' => $news['id'])).'" title="'.$newstitle.'">'.$newstitle.'</a>' : '<a href="'.$news['newsredirect'].'" title="'.$newstitle.'">'.$newstitle.'</a>',
                     ));
                     $this->_objTpl->parse('month_news_list_item');
                 }
@@ -1907,4 +1979,4 @@ RSS2JSCODE;
         return $this->_objTpl->get();
     }
 }
-?>
+
