@@ -73,6 +73,7 @@
  */
 require_once dirname(__FILE__).'/lib/DBG.php';
 //DBG::activate(DBG_ADODB_ERROR|DBG_LOG_FIREPHP|DBG_PHP);
+//\DBG::activate(DBG_PHP);
 
 //iconv_set_encoding('output_encoding', 'utf-8');
 //iconv_set_encoding('input_encoding', 'utf-8');
@@ -173,10 +174,8 @@ createModuleConversionTables();
 $objInit = new InitCMS('frontend', Env::em());
 Env::set('init', $objInit);
 
-$languageExtractor = new \Cx\Core\Routing\URLTranslator($objDatabase, DBPREFIX, Env::em());
-
 $request = !empty($_GET['__cap']) ? $_GET['__cap'] : '';
-$url = \Cx\Core\Routing\URL::fromCapturedRequest($request, ASCMS_PATH_OFFSET, $_GET);
+$url = \Cx\Core\Routing\Url::fromCapturedRequest($request, ASCMS_PATH_OFFSET, $_GET);
 $resolver = new \Cx\Core\Routing\Resolver($url, null, Env::em(), null, null);
 \Env::set('Resolver', $resolver);
 $aliaspage = $resolver->resolveAlias();
@@ -193,19 +192,14 @@ if ($aliaspage != null) {
     //try to find the language in the url
     $extractedLanguage = 0;
 
-    $redirectToCorrectLanguageDir = function() use ($languageExtractor, $url, $_LANGID, $_CONFIG) {
-        $languageExtractor->addLanguageDir($url, $_LANGID);
+    $redirectToCorrectLanguageDir = function() use ($url, $_LANGID, $_CONFIG) {
+        $url->setLangDir(\FWLanguage::getLanguageCodeById($_LANGID));
 
         CSRF::header('Location: '.$url);
         exit;
     };
-
-    try {
-        $extractedLanguage = $languageExtractor->extractLanguage($url);
-    }
-    catch(\Cx\Core\Routing\LanguageExtractorException $e) {
-        //we could not extract any language information - rely on $_LANGID
-        //to redirect the user to an url with prepended virtual language directory
+    $extractedLanguage = \FWLanguage::getLanguageIdByCode($url->getLangDir());
+    if (!$extractedLanguage) {
         $redirectToCorrectLanguageDir();
     }
     //only set langid according to url if the user has not explicitly requested a language change.
@@ -224,7 +218,7 @@ define('LANG_ID', $_LANGID);
 
 //expose the virtual language directory to the rest of the cms
 //please do not access this variable directly, use Env::get().
-$virtualLanguageDirectory = '/'.$languageExtractor->getShortNameOfLanguage(FRONTEND_LANG_ID);
+$virtualLanguageDirectory = '/'.$url->getLangDir();
 Env::set('virtualLanguageDirectory', $virtualLanguageDirectory);
 
 // TODO: this constanst used to be located in config/set_constants.php, but needed to be relocated to this very place,
@@ -398,7 +392,7 @@ if ($isRegularPageRequest) {
         }
         else {
             //page not found, redirect to error page.
-            header('Location: '.\Cx\Core\Routing\URL::fromModuleAndCmd('error'));
+            header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('error'));
             exit;
         }
     }
@@ -510,20 +504,20 @@ if (   (   $page_protected
         if ($page_protected) {
             if (!Permission::checkAccess($pageAccessId, 'dynamic', true)) {
                 $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-                CSRF::header('Location: '.\Cx\Core\Routing\URL::fromModuleAndCmd('login', 'noaccess', '', array('redirect' => $link)));
+                CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('login', 'noaccess', '', array('redirect' => $link)));
                 exit;
             }
         }
         if ($history && !Permission::checkAccess(78, 'static', true)) {
             $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-            CSRF::header('Location: '.\Cx\Core\Routing\URL::fromModuleAndCmd('login', 'noaccess', '', array('redirect' => $link)));
+            CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('login', 'noaccess', '', array('redirect' => $link)));
             exit;
         }
     } elseif (!empty($_COOKIE['PHPSESSID']) && !$page_protected) {
         unset($_COOKIE['PHPSESSID']);
     } else {
         $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-        CSRF::header('Location: '.\Cx\Core\Routing\URL::fromModuleAndCmd('login', '', '', array('redirect' => $link)));
+        CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('login', '', '', array('redirect' => $link)));
         exit;
     }
 }
@@ -1095,7 +1089,7 @@ if (@include_once ASCMS_MODULE_PATH.'/mediadir/placeholders.class.php') {
 
 $objTemplate->setTemplate($themesPages['index']);
 $objTemplate->addBlock('CONTENT_FILE', 'page_template', $page_template);
-$languageExtractor->setPlaceholdersIn($page, $url, $objTemplate);
+$objNavbar->setLanguagePlaceholders($url, $objTemplate);
 
 // Set global content variables.
 $page_content = str_replace('{PAGE_URL}',        htmlspecialchars($objInit->getPageUri()), $page_content);
@@ -1707,8 +1701,8 @@ $objTemplate->setVariable(array(
     'COUNTER'                        => $objCounter->getCounterTag(),
     'BANNER'                         => isset($objBanner) ? $objBanner->getBannerJS() : '',
     'VERSION'                        => $contrexxCmsName,
-    'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($languageExtractor, $page, $url),
-    'LANGUAGE_NAVBAR_SHORT'          => $objNavbar->getFrontendLangNavigation($languageExtractor, $page, $url, true),
+    'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($url),
+    'LANGUAGE_NAVBAR_SHORT'          => $objNavbar->getFrontendLangNavigation($url, true),
     'ACTIVE_LANGUAGE_NAME'           => $objInit->getFrontendLangName(),
     'RANDOM'                         => md5(microtime()),
     'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],
