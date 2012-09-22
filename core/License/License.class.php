@@ -16,6 +16,7 @@ class License {
     const LICENSE_DEMO = 'DEMO';
     const LICENSE_ERROR = 'ERROR';
     private $state;
+    private $frontendLocked = false;
     private $editionName;
     private $legalComponents;
     private $validTo;
@@ -46,6 +47,10 @@ class License {
     
     public function getState() {
         return $this->state;
+    }
+    
+    public function isFrontendLocked() {
+        return $this->frontendLocked;
     }
     
     public function getEditionName() {
@@ -103,6 +108,7 @@ class License {
             $this->state = self::LICENSE_NOK;
             $validTo = 0;
             $this->legalComponents = array('license');
+            $this->frontendLocked = true;
         }
     }
     
