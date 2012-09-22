@@ -845,40 +845,40 @@ class InitCMS
     public function getStandardUri()
     {
 // TODO: add URL modificators (params)
-        return \Cx\Core\Routing\URL::fromPage(\Env::get('Resolver')->getPage(), array('smallscreen' => 0));
+        return \Cx\Core\Routing\Url::fromPage(\Env::get('Resolver')->getPage(), array('smallscreen' => 0));
     }
     
     public function getMobileUri()
     {
 // TODO: add URL modificators (params)
-        return \Cx\Core\Routing\URL::fromPage(\Env::get('Resolver')->getPage(), array('smallscreen' => 1));
+        return \Cx\Core\Routing\Url::fromPage(\Env::get('Resolver')->getPage(), array('smallscreen' => 1));
     }
 
     public function getPrintUri()
     {
 // TODO: add URL modificators (params)
-        return \Cx\Core\Routing\URL::fromPage(\Env::get('Resolver')->getPage(), array('printview' => 1));
+        return \Cx\Core\Routing\Url::fromPage(\Env::get('Resolver')->getPage(), array('printview' => 1));
     }
 
 
     public function getPDFUri()
     {
 // TODO: add URL modificators (params)
-        return \Cx\Core\Routing\URL::fromPage(\Env::get('Resolver')->getPage(), array('pdfview' => 1));
+        return \Cx\Core\Routing\Url::fromPage(\Env::get('Resolver')->getPage(), array('pdfview' => 1));
     }
 
 
     public function getAppUri()
     {
 // TODO: add URL modificators (params)
-        return \Cx\Core\Routing\URL::fromPage(\Env::get('Resolver')->getPage(), array('appview' => 1));
+        return \Cx\Core\Routing\Url::fromPage(\Env::get('Resolver')->getPage(), array('appview' => 1));
     }
 
 
     public function getPageUri()
     {
 // TODO: add URL modificators (params)
-        return \Cx\Core\Routing\URL::fromPage(\Env::get('Resolver')->getPage());
+        return \Cx\Core\Routing\Url::fromPage(\Env::get('Resolver')->getPage());
     }
 
 

@@ -76,7 +76,7 @@ class Resolver {
     protected $path;
     
     /**
-     * @param URL $url the url to resolve
+     * @param Url $url the url to resolve
      * @param integer $lang the language Id
      * @param $entityManager
      * @param string $pathOffset ASCMS_PATH_OFFSET
@@ -91,7 +91,7 @@ class Resolver {
     
     
     /**
-     * @param URL $url the url to resolve
+     * @param Url $url the url to resolve
      * @param integer $lang the language Id
      * @param $entityManager
      * @param string $pathOffset ASCMS_PATH_OFFSET

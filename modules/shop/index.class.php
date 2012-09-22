@@ -978,7 +978,7 @@ die("Failed to update the Cart!");
         ));
         // Global microdata: Seller information
 // TODO: Build the proper shop start page URI
-        $seller_url = \Cx\Core\Routing\URL::fromModuleAndCmd('shop', '')->toString();
+        $seller_url = \Cx\Core\Routing\Url::fromModuleAndCmd('shop', '')->toString();
         $seller_name = SettingDb::getValue('company');
         if (empty ($seller_name)) $seller_name = $seller_url;
         self::$objTemplate->setVariable(array(
@@ -1024,7 +1024,7 @@ die("Failed to update the Cart!");
                     self::scaleImageSizeToThumbnail($arrSize);
                     // Use the first available picture in microdata, if any
                     if (!$havePicture) {
-                        $picture_url = Cx\Core\Routing\URL::fromCapturedRequest(
+                        $picture_url = Cx\Core\Routing\Url::fromCapturedRequest(
                             ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$image['img'],
                             ASCMS_PATH_OFFSET, array());
                         self::$objTemplate->setVariable(
@@ -1122,7 +1122,7 @@ die("Failed to update the Cart!");
             $detailLink = null;
             // Detaillink is required for microdata (even when longdesc
             // is empty)
-            $detail_url = \Cx\Core\Routing\URL::fromModuleAndCmd(
+            $detail_url = \Cx\Core\Routing\Url::fromModuleAndCmd(
                 'shop', 'details', FRONTEND_LANG_ID,
                 array('productId' => $objProduct->id()))->toString();
             self::$objTemplate->setVariable(

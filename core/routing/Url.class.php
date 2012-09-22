@@ -23,7 +23,7 @@ namespace Cx\Core\Routing;
  * @subpackage  routing
  * @todo        Edit PHP DocBlocks!
  */
-class URLException extends \Exception {};
+class UrlException extends \Exception {};
 
 /**
  * An URL container
@@ -35,7 +35,7 @@ class URLException extends \Exception {};
  * @subpackage  routing
  * @todo        Edit PHP DocBlocks!
  */
-class URL {
+class Url {
     /**
      * http or https
      * @todo Implement protocol support (at the moment only http is supported)
@@ -102,7 +102,7 @@ class URL {
         $matches = array();
         $matchCount = preg_match('/^(https?:\/\/[^\/]+\/)(.*)?/', $url, $matches);
         if($matchCount == 0) {
-            throw new URLException('Malformed URL: ' . $url);
+            throw new UrlException('Malformed URL: ' . $url);
         }
 
         $this->domain = $matches[1];
@@ -272,7 +272,7 @@ class URL {
         global $_CONFIG;
 
         if(substr($request, 0, strlen($pathOffset)) != $pathOffset)
-            throw new URLException("'$request' doesn't seem to start with provided offset '$pathOffset'");
+            throw new UrlException("'$request' doesn't seem to start with provided offset '$pathOffset'");
 
         //cut offset
         $request = substr($request, strlen($pathOffset)+1);
@@ -291,7 +291,7 @@ class URL {
         }
         $request = preg_replace('/index.php/', '', $request);
 
-        return new URL($protocol.'://'.$host.'/'.$request.$getParams);
+        return new Url($protocol.'://'.$host.'/'.$request.$getParams);
     }
 
     /**
@@ -303,7 +303,7 @@ class URL {
      * @param array $parameters (optional) HTTP GET parameters to append
      * @param string $protocol (optional) The protocol to use
      * @param boolean $returnErrorPageOnError (optional) If set to TRUE, this method will return an URL object that point to the error page of Contrexx. Defaults to TRUE.
-     * @return \Cx\Core\Routing\URL Url object for the supplied module, cmd and lang
+     * @return \Cx\Core\Routing\Url Url object for the supplied module, cmd and lang
      */
     public static function fromModuleAndCmd($module, $cmd = '', $lang = '', $parameters = array(), $protocol = '', $returnErrorPageOnError = true) {
         if ($lang == '') {
@@ -328,7 +328,7 @@ class URL {
         // Throw an exception if we still were unable to locate 
         // any usfull page till now
         if (!$page) {
-            throw new URLException("Unable to find a page with MODULE:$module and CMD:$cmd in language:$lang!");
+            throw new UrlException("Unable to find a page with MODULE:$module and CMD:$cmd in language:$lang!");
         }
 
         return static::fromPage($page, $parameters, $protocol);
@@ -338,7 +338,7 @@ class URL {
      * Returns an Url object pointing to the documentRoot of the website
      * @param int $lang (optional) Language to use, default is FRONTEND_LANG_ID
      * @param string $protocol (optional) The protocol to use
-     * @return \Cx\Core\Routing\URL Url object for the documentRoot of the website
+     * @return \Cx\Core\Routing\Url Url object for the documentRoot of the website
      */
     public static function fromDocumentRoot($lang = '', $protocol = '')
     {
@@ -353,7 +353,7 @@ class URL {
         $host = $_CONFIG['domainUrl'];
         $offset = ASCMS_PATH_OFFSET;
         $langDir = \FWLanguage::getLanguageCodeById($lang);
-        return new URL($protocol.'://'.$host.$offset.'/'.$langDir);
+        return new Url($protocol.'://'.$host.$offset.'/'.$langDir);
     }
     
     /**
@@ -362,7 +362,7 @@ class URL {
      * @param int $lang (optional) Language to use, default is FRONTEND_LANG_ID
      * @param array $parameters (optional) HTTP GET parameters to append
      * @param string $protocol (optional) The protocol to use
-     * @return \Cx\Core\Routing\URL Url object for the supplied module, cmd and lang
+     * @return \Cx\Core\Routing\Url Url object for the supplied module, cmd and lang
      */
     public static function fromNodeId($nodeId, $lang = '', $parameters = array(), $protocol = '') {
         if ($lang == '') {
@@ -382,7 +382,7 @@ class URL {
      * @param int $lang (optional) Language to use, default is FRONTENT_LANG_ID
      * @param array $parameters (optional) HTTP GET parameters to append
      * @param string $protocol (optional) The protocol to use
-     * @return \Cx\Core\Routing\URL Url object for the supplied module, cmd and lang
+     * @return \Cx\Core\Routing\Url Url object for the supplied module, cmd and lang
      */
     public static function fromNode($node, $lang = '', $parameters = array(), $protocol = '') {
         if ($lang == '') {
@@ -397,7 +397,7 @@ class URL {
      * @param int $pageId ID of the page you'd like the URL to
      * @param array $parameters (optional) HTTP GET parameters to append
      * @param string $protocol (optional) The protocol to use
-     * @return \Cx\Core\Routing\URL Url object for the supplied page id
+     * @return \Cx\Core\Routing\Url Url object for the supplied page id
      */
     public static function fromPageId($pageId, $parameters = array(), $protocol = '') {
         $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
@@ -413,7 +413,7 @@ class URL {
      * @param \Cx\Model\ContentManager\Page $page Page to get the URL to
      * @param array $parameters (optional) HTTP GET parameters to append
      * @param string $protocol (optional) The protocol to use
-     * @return \Cx\Core\Routing\URL Url object for the supplied page
+     * @return \Cx\Core\Routing\Url Url object for the supplied page
      */
     public static function fromPage($page, $parameters = array(), $protocol = '') {
         global $_CONFIG;
@@ -433,7 +433,7 @@ class URL {
             }
             $getParams = '?' . implode('&', $paramArray);
         }
-        return new URL($protocol.'://'.$host.$offset.'/'.$langDir.$path.$getParams);
+        return new Url($protocol.'://'.$host.$offset.'/'.$langDir.$path.$getParams);
     }
 
     public function toString() {
