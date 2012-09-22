@@ -143,24 +143,23 @@ class RSSWriter {
     {
         global $_CORELANG;
 
-        if ($this->_create()) {
-            if (($xmlDocument = @fopen($this->xmlDocumentPath, "w+")) !== false) {
-                $writeStatus = @fwrite($xmlDocument, $this->xmlDocument);
-                @fclose($xmlDocument);
+        if (!$this->_create()) {
+            return false;
+        }
 
-                if ($writeStatus) {
-                    return true;
-                } else {
-                    array_push($this->arrErrorMsg, sprintf($_CORELANG['TXT_UNABLE_TO_WRITE_TO_FILE'], $this->xmlDocumentPath));
-                    return false;
-                }
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File($this->xmlDocumentPath);
+            $objFile->write($this->xmlDocument);
+        } catch (\Cx\Lib\FileSystem\FileException $e) {
+            if (file_exists($this->xmlDocumentPath)) {
+                array_push($this->arrErrorMsg, sprintf($_CORELANG['TXT_UNABLE_TO_WRITE_TO_FILE'], $this->xmlDocumentPath));
             } else {
                 array_push($this->arrErrorMsg, sprintf($_CORELANG['TXT_UNABLE_TO_CREATE_FILE'], $this->xmlDocumentPath));
             }
-            return true;
-        } else {
             return false;
         }
+
+        return true;
     }
 
     /**
