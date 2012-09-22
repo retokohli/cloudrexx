@@ -449,6 +449,9 @@ class HTML_Template_Sigma extends PEAR
     function errorMessage($code, $data = null)
     {
         static $errorMessages;
+
+        \DBG::stack();
+
         if (!isset($errorMessages)) {
             $errorMessages = array(
                 SIGMA_ERROR                 => 'unknown error',
