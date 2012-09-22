@@ -102,6 +102,7 @@ class License {
         if (empty($this->instId) || empty($this->licenseKey) || $validTo < time()) {
             $this->state = self::LICENSE_NOK;
             $validTo = 0;
+            $this->legalComponents = array('license');
         }
     }
     
@@ -114,6 +115,7 @@ class License {
     public function save($settingsManager, $objDb) {
         // WARNING, this is the ugly way:
         global $_POST;
+        $oldpost = $_POST;
         unset($_POST);
         
         $_POST['setvalue'][75] = $this->getInstallationId();                // installationId
@@ -151,6 +153,8 @@ class License {
                 `name` IN(\'' . implode('\', \'', $this->getLegalComponentsList()) . '\')
         ';
         $objDb->Execute($query);
+        unset($_POST);
+        $_POST = $oldpost;
     }
     
     /**
