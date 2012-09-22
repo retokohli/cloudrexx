@@ -37,8 +37,11 @@ form #uploadFormField_uploadWidget {
 }
 
 form .contactFormUpload,
-form .formUploadedFiles {
+form .formUploadedFiles,
+form .contactFormUpload div,
+form .formUploadedFiles div {
     float: left;
+    width: 326px;
 }
 
 form .contactFormUpload ul,
@@ -72,7 +75,7 @@ form .formUploadedFiles .deleteIcon {
     margin: 2px 0 0 0;
     overflow: hidden;
     text-indent: 16px;
-    background: url('../../cadmin/images/icons/delete.gif') no-repeat right 0;
+    background: url('../../cadmin/images/icons/delete.gif') no-repeat;
 }
 
 form label {
