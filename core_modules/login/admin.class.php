@@ -201,7 +201,7 @@ class LoginManager {
     {
         global $_ARRAYLANG, $objFWUser;
         
-        if (isset($_GET['jsondata'])) {
+        if (isset($_GET['cmd']) && $_GET['cmd'] == 'jsondata') {
             $jd = new \Cx\Core\Json\JsonData();
             die($jd->json($jd->getErrorData($_ARRAYLANG['TXT_LOGIN_NOAUTH_JSON']), true));
         }
