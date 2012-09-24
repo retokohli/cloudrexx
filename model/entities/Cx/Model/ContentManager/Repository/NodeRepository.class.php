@@ -49,13 +49,17 @@ class NodeRepository extends NestedTreeRepository {
                 break;
             }
             $page = $node->getPage($fromLanguage);
+            $destPage = $node->getPage($toLanguage);
             if (!$page) {
                 // no page in this lang, we don't care
+                if ($destPage) {
+                    $this->em->remove($destPage);
+                    $this->em->flush();
+                }
                 $i++;
                 continue;
             }
             // if the target page exists, we just customize it
-            $destPage = $node->getPage($toLanguage);
             try {
                 $pageCopy = $page->copyToLang(
                     $toLanguage,
