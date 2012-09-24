@@ -669,7 +669,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
               case self::TYPE_WYSIWYG:
                 // These must be treated differently, as wysiwyg editors
                 // claim the full width
-                $element = get_wysiwyg_editor($name, $value);
+                $element = new \Cx\Core\Wysiwyg($name, $value);
                 $objTemplateLocal->setVariable(array(
                     'CORE_SETTINGDB_ROW' => $_ARRAYLANG[$prefix.strtoupper($name)],
                     'CORE_SETTINGDB_ROWCLASS1' => (++$i % 2 ? '1' : '2'),

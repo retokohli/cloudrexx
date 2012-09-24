@@ -859,7 +859,7 @@ class newsletter extends NewsletterLib
         $this->_objTpl->setVariable(array(
             'NEWSLETTER_MAIL_ID' => ($copy ? 0 : $mailId),
             'NEWSLETTER_MAIL_SUBJECT' => htmlentities($mailSubject, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_MAIL_HTML_CONTENT' => get_wysiwyg_editor('newsletter_mail_html_content', $mailHtmlContent, null, null, true),
+            'NEWSLETTER_MAIL_HTML_CONTENT' => new \Cx\Core\Wysiwyg('newsletter_mail_html_content', $mailHtmlContent, null, null, true),
             'NEWSLETTER_MAIL_PRIORITY_MENU' => $this->_getMailPriorityMenu($mailPriority, 'name="newsletter_mail_priority" style="width:300px;"'),
             'NEWSLETTER_MAIL_TEMPLATE_MENU' => $this->_getTemplateMenu($mailTemplate, 'name="newsletter_mail_template" style="width:300px;" onchange="document.getElementById(\'newsletter_mail_form\').action=\'index.php?cmd=newsletter&amp;act='.$act.'&amp;id='.$mailId.'&amp;setFormat=1\';document.getElementById(\'newsletter_mail_form\').submit()"'),
             'NEWSLETTER_MAIL_SENDER_MAIL' => htmlentities($mailSenderMail, ENT_QUOTES, CONTREXX_CHARSET),
@@ -2074,7 +2074,7 @@ class newsletter extends NewsletterLib
             'NEWSLETTER_TEMPLATE_NAME' => htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_TEMPLATE_DESCRIPTION' => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
 			'NEWSLETTER_TEMPLATE_TYPE' => $type,
-            'NEWSLETTER_TEMPLATE_HTML' => get_wysiwyg_editor('template_edit_html', $html, 'fullpage', null, true),
+            'NEWSLETTER_TEMPLATE_HTML' => new \Cx\Core\Wysiwyg('template_edit_html', $html, 'fullpage', null, true),
             'NEWSLETTER_TEMPLATE_TITLE_TEXT' => $id > 0 ? $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_TEMPLATE'] : $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATE_ADD'],
 			'NEWSLETTER_TEMPLATE_TYPE_MENU' => $typeOps,
 			'NEWSLETTER_TEMPLATE_NEWS_IMPORT_DIRECTORY_DISPLAY' => $newsImportDirectoryDisplay,

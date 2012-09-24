@@ -14,7 +14,6 @@
  * @uses /lib/PEAR/HTML/Template/Sigma/Sigma.php
  * @uses /core/database.php
  * @uses /lib/PEAR/HTML/Table.php
- * @uses /core/wysiwyg.class.php
  * @uses /core/adminNavigation.class.php
  * @uses /core/Navigation.class.php
  * @uses /core_modules/stats/lib/statsLib.class.php
@@ -61,10 +60,6 @@ if (isset($adminPage) && $adminPage ) {
     * @ignore
     */
     require_once ASCMS_LIBRARY_PATH.'/PEAR/HTML/Table.php';
-    /**
-     * @ignore
-     */
-    require_once ASCMS_CORE_PATH.'/wysiwyg.class.php';
     /**
      * @ignore
      */
