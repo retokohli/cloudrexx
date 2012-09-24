@@ -12,12 +12,14 @@ namespace Cx\Core\License;
  */
 class Version {
     private $number;
+    private $name;
     private $codeName;
     private $state;
     private $releaseDate;
     
-    public function __construct($number, $codeName, $state, $releaseDate) {
+    public function __construct($number, $name, $codeName, $state, $releaseDate) {
         $this->number = $number;
+        $this->name = $name;
         $this->codeName = $codeName;
         $this->state = $state;
         $this->releaseDate = $releaseDate;
@@ -28,6 +30,10 @@ class Version {
             return $this->stringNumberToInt($this->number);
         }
         return $this->number;
+    }
+    
+    public function getName() {
+        return $this->name;
     }
     
     public function getCodeName() {

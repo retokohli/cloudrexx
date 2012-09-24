@@ -11,9 +11,6 @@ class LegacyClassLoader {
     
     public function __construct() {
         self::$instance = $this;
-        /*global $mapTable;
-        require_once(dirname(__FILE__) . '/LegacyClassCache.php');
-        $this->mapTable = $mapTable;*/
         if (file_exists(ASCMS_TEMP_PATH.'/legacyClassCache.tmp')) {
             $this->mapTable = unserialize(file_get_contents(ASCMS_TEMP_PATH.'/legacyClassCache.tmp'));
         }
@@ -24,8 +21,7 @@ class LegacyClassLoader {
         // Let doctrine handle it's includes itself
         if (in_array($parts[0], array('Symfony', 'doctrine', 'Doctrine', 'Gedmo', 'DoctrineExtension'))) {
             return;
-        // I don't know where they come from, but there's no need to load these
-        // I guess doctrine does load those
+        // They come from doctrine, there's no need to load these, doctrine does it
         } else if (in_array($name, array('var', 'Column', 'MappedSuperclass', 'Table', 'index', 'Entity', 'Id', 'GeneratedValue'))) {
             return;
         }
@@ -173,7 +169,8 @@ class LegacyClassLoader {
             if (in_array($dir, array(
                 ASCMS_DOCUMENT_ROOT . '/hotfix',
                 ASCMS_DOCUMENT_ROOT . '/update',
-                ASCMS_DOCUMENT_ROOT . '/testing'
+                ASCMS_TEST_PATH,
+                ASCMS_CUSTOMIZING_PATH,
             ))) {
                 continue;
             }
@@ -186,9 +183,15 @@ class LegacyClassLoader {
     }
     
     private function loadClass($path, $name) {
+        global $_CONFIG;
+        
         $this->tab++;
         $bytes = memory_get_peak_usage();
-        require_once ASCMS_DOCUMENT_ROOT . '/' . $path;
+        if ($_CONFIG['useCustomizings'] == 'on' && file_exists(ASCMS_CUSTOMIZING_PATH . '/' . $path)) {
+            require_once ASCMS_CUSTOMIZING_PATH . '/' . $path;
+        } else {
+            require_once ASCMS_DOCUMENT_ROOT . '/' . $path;
+        }
         $bytes = memory_get_peak_usage()-$bytes;
         $this->tab--;
         $ownBytes = '';

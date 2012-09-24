@@ -1066,24 +1066,6 @@ class CommonFunctions
         return sprintf($_ARRLANG['TXT_CANNOT_CREATE_FILE']."<br />", $configFilePath);
     }
 
-    function createVersionFile() {
-        global $versionFile, $_ARRLANG;
-
-        $versionFileContent = $this->_getVersionTemplateFile();
-        $versionFilePath = $_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'].$versionFile;
-
-        try {
-            $objFile = new \Cx\Lib\FileSystem\File($versionFilePath);
-            $objFile->touch();
-            $objFile->write($versionFileContent);
-            return true;
-        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            DBG::msg($e->getMessage());
-        }
-
-        return sprintf($_ARRLANG['TXT_CANNOT_CREATE_FILE']."<br />", $versionFilePath);
-    }
-
     function getSystemLanguages() {
         global $dbType;
 

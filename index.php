@@ -10,7 +10,6 @@
  * @todo        Capitalize all class names in project
  * @uses        /config/configuration.php
  * @uses        /config/settings.php
- * @uses        /config/version.php
  * @uses        /core/API.php
  * @uses        /core_modules/cache/index.class.php
  * @uses        /core/error.class.php
@@ -100,21 +99,18 @@ $incSettingsStatus = include_once dirname(__FILE__).'/config/settings.php';
  * Initialises global settings array and constants.
  */
 include_once dirname(__FILE__).'/config/configuration.php';
-/**
- * Version information
- *
- * Adds version information to the {@link $_CONFIG[]} global array.
- */
-$incVersionStatus = include_once dirname(__FILE__).'/config/version.php';
 
 // Check if system is installed
 if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
     header('Location: installer/index.php');
     die(1);
-} elseif (   $incSettingsStatus === false
-          || $incVersionStatus === false
-) {
+} elseif (   $incSettingsStatus === false) {
     die('System halted: Unable to load basic configuration!');
+}
+
+$customizing = null;
+if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
+    $customizing = ASCMS_CUSTOMIZING_PATH;
 }
 
 /**
@@ -123,7 +119,7 @@ if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
  * before doctrine loads the Gedmo one)
  */
 require_once dirname(__FILE__).'/core/ClassLoader/ClassLoader.class.php';
-new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT);
+new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $customizing);
 
 /**
  * Doctrine configuration
@@ -396,7 +392,7 @@ if ($isRegularPageRequest) {
             $page = null;
         }
     }
-
+    
     if(!$page || !$page->isActive()) {
         //fallback for inexistant error page
         if($section == 'error') {

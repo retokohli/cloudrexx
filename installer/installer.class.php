@@ -1304,12 +1304,6 @@ class Installer
             $msg = ASCMS_WEBSERVER_SOFTWARE == 'iis' ? $_ARRLANG['TXT_CREATE_IIS_HTACCESS_FILE'] : $_ARRLANG['TXT_CREATE_APACHE_HTACCESS_FILE'];
             $this->_setInstallationStatus($result, $msg);
        }
-
-        // create version file
-        if ($result === true) {
-            $result = $this->_createVersionFile();
-            $this->_setInstallationStatus($result, $_ARRLANG['TXT_CREATE_VERSION_FILE']);
-        }
     }
 
     /**

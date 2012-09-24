@@ -23,7 +23,6 @@ $apacheHtaccessFile = "/.htaccess";
 $apacheHtaccessTemplateFile = "data".DIRECTORY_SEPARATOR."apache_htaccess.tpl";
 $iisHtaccessFile = "/web.config";
 $iisHtaccessTemplateFile = "data".DIRECTORY_SEPARATOR."iis_htaccess.tpl";
-$versionFile = "/config/version.php";
 $versionTemplateFile = "data".DIRECTORY_SEPARATOR."version.tpl";
 $sqlDumpFile = DIRECTORY_SEPARATOR."installer".DIRECTORY_SEPARATOR."data".DIRECTORY_SEPARATOR."contrexx_dump";
 $dbPrefix = "contrexx_";

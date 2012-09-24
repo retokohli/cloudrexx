@@ -110,7 +110,7 @@ if (!empty($ritt0r) && $ritt0r == 'fix') {
             //site tree
             'TXT_CORE_CM_STATUS_PAGE', 'TXT_EXPAND_LINK', 'TXT_COLLAPS_LINK', 'TXT_CORE_CM_TRANSLATIONS', 'TXT_CORE_CM_SECTION_CMD', 'TXT_CORE_CM_DATE_USER',
             //multiple actions
-            'TXT_SELECT_ALL', 'TXT_DESELECT_ALL', 'TXT_MULTISELECT_SELECT', 'TXT_MULTISELECT_PUBLISH', 'TXT_MULTISELECT_ACTIVATE', 'TXT_MULTISELECT_DEACTIVATE', 'TXT_MULTISELECT_SHOW', 'TXT_MULTISELECT_HIDE', 'TXT_MULTISELECT_DELETE',
+            'TXT_SELECT_ALL', 'TXT_DESELECT_ALL', 'TXT_MULTISELECT_SELECT', 'TXT_MULTISELECT_PUBLISH', 'TXT_MULTISELECT_ACTIVATE', 'TXT_MULTISELECT_DEACTIVATE', 'TXT_MULTISELECT_SHOW', 'TXT_MULTISELECT_HIDE', 'TXT_MULTISELECT_UNPROTECT', 'TXT_MULTISELECT_DELETE',
             //type tab
             'TXT_CORE_CM_PAGE', 'TXT_CORE_CM_META', 'TXT_CORE_CM_PERMISSIONS', 'TXT_CORE_CM_MORE', 'TXT_CORE_CM_HISTORY', 'TXT_CORE_CM_PAGE_NAME', 'TXT_CORE_CM_PAGE_NAME_INFO', 'TXT_CORE_CM_PAGE_TITLE', 'TXT_CORE_CM_PAGE_TITLE_INFO', 'TXT_CORE_CM_TYPE', 'TXT_CORE_CM_TYPE_CONTENT', 'TXT_CORE_CM_TYPE_REDIRECT', 'TXT_CORE_CM_TYPE_APPLICATION', 'TXT_CORE_CM_TYPE_FALLBACK', 'TXT_CORE_CM_TYPE_CONTENT_INFO', 'TXT_CORE_CM_TYPE_REDIRECT_TARGET', 'TXT_CORE_CM_BROWSE', 'TXT_CORE_CM_TYPE_REDIRECT_INFO', 'TXT_CORE_CM_TYPE_APPLICATION', 'TXT_CORE_CM_TYPE_APPLICATION', 'TXT_CORE_CM_TYPE_APPLICATION_AREA', 'TXT_CORE_CM_TYPE_APPLICATION_INFO', 'TXT_CORE_CM_TYPE_FALLBACK_INFO', 'TXT_CORE_CM_SCHEDULED_PUBLISHING', 'TXT_CORE_CM_SCHEDULED_PUBLISHING_FROM', 'TXT_CORE_CM_SCHEDULED_PUBLISHING_TO', 'TXT_CORE_CM_SCHEDULED_PUBLISHING_INFO',
             //meta tab
@@ -133,13 +133,14 @@ if (!empty($ritt0r) && $ritt0r == 'fix') {
         
         $arrLangVars = array(
             'actions' => array(
-                'new'           => 'TXT_CORE_CM_ACTION_NEW',
-                'activate'      => 'TXT_CORE_CM_ACTION_PUBLISH',
-                'deactivate'    => 'TXT_CORE_CM_ACTION_UNPUBLISH',
-                'publish'       => 'TXT_CORE_CM_ACTION_PUBLISH_DRAFT',
-                'show'          => 'TXT_CORE_CM_ACTION_SHOW',
-                'hide'          => 'TXT_CORE_CM_ACTION_HIDE',
-                'delete'        => 'TXT_CORE_CM_ACTION_DELETE',
+                'new'                                           => 'TXT_CORE_CM_ACTION_NEW',
+                'activate'                                      => 'TXT_CORE_CM_ACTION_PUBLISH',
+                'deactivate'                                    => 'TXT_CORE_CM_ACTION_UNPUBLISH',
+                'publish'                                       => 'TXT_CORE_CM_ACTION_PUBLISH_DRAFT',
+                'show'                                          => 'TXT_CORE_CM_ACTION_SHOW',
+                'hide'                                          => 'TXT_CORE_CM_ACTION_HIDE',
+                'delete'                                        => 'TXT_CORE_CM_ACTION_DELETE',
+                'recursiveQuestion'                             => 'TXT_CORE_CM_RECURSIVE_QUESTION',
             ),
             'tooltip' => array(
                 'TXT_CORE_CM_PUBLISHING_INFO_STATUSES'          => 'TXT_CORE_CM_PUBLISHING_INFO_STATUSES',
@@ -166,7 +167,7 @@ if (!empty($ritt0r) && $ritt0r == 'fix') {
                 'TXT_CORE_CM_PAGE_MOVE_INFO'                    => 'TXT_CORE_CM_PAGE_MOVE_INFO',
                 'TXT_CORE_CM_TRANSLATION_INFO'                  => 'TXT_CORE_CM_TRANSLATION_INFO',
                 'TXT_CORE_CM_PREVIEW_INFO'                      => 'TXT_CORE_CM_PREVIEW_INFO',
-            )
+            ),
         );
         foreach ($arrLangVars as $subscope => $arrLang) {
             foreach ($arrLang as $name => $value) {
