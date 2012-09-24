@@ -282,7 +282,7 @@ function fe_showEditor() {
             height: 300,
             toolbar: 'Default',
             resize_enabled: false,
-            customConfig: CKEDITOR.getUrl('config.contrexx.js.php')
+            customConfig: CKEDITOR.getUrl('../../core/Wysiwyg/ckeditor.config.js.php')
         });
 
         CKEDITOR.on("instanceReady", function(event){

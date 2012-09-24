@@ -37,7 +37,7 @@ class Wysiwyg
     
             $loadBBCodePlugin = $this->mode == 'forum' ? 1 : 0;
             $arrCKEditorOptions = array(
-                "customConfig: CKEDITOR.getUrl('config.contrexx.js.php?langId=".$this->languageId."&absoluteURIs=".$this->absoluteUris."&bbcode=".$loadBBCodePlugin."')",
+                "customConfig: CKEDITOR.getUrl('../../core/Wysiwyg/ckeditor.config.js.php?langId=".$this->languageId."&absoluteURIs=".$this->absoluteUris."&bbcode=".$loadBBCodePlugin."')",
             );
             $onReady = array("
                 CKEDITOR.replace('".$this->name."', {
