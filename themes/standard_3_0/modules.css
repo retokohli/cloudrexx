@@ -2,7 +2,7 @@
 /* CSS GLOBAL DEFINITIONS FOR FORMS IN MODULES     */
 /***************************************************/
 form p,
-form .contact.row {
+form > fieldset > div {
     float: left;
     width: 100%;
     padding: 0 0 10px 0;
@@ -22,6 +22,11 @@ form p label.description {
     margin: 0;
 }
 /* END old contact form structure */
+
+form .is_required {
+    padding: 0 0 0 5px;
+    color: #FF0000;
+}
 
 form .contactFormGroup {
     float: left;
