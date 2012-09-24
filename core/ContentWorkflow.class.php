@@ -171,7 +171,6 @@ class ContentWorkflow extends Module {
         
         if (!empty($data)) {
             $intRowCount = 0;
-            $le = new \Cx\Core\Routing\LanguageExtractor($this->db, DBPREFIX);
             
             foreach ($data as $pageId => $data) {
                 $act      = $data['action'];
@@ -184,7 +183,7 @@ class ContentWorkflow extends Module {
                 
                 // Only for new, updated and unvalidated pages
                 if ($this->cmd  != 'deleted') {
-                    $langDir     = $le->getShortNameOfLanguage($page->getLang());
+                    $langDir     = \FWLanguage::getLanguageCodeById($page->getLang());
                     $path        = $langDir.'/'.$page->getPath();
                     $historyLink = ASCMS_PATH_OFFSET.'/'.$path.'?history='.$history;
                 }

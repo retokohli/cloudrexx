@@ -538,13 +538,10 @@ class JsonPage implements JsonAdapter {
         $table->setHeaderContents(0, 3, $_CORELANG['TXT_FUNCTIONS'], array('style' => 'text-align: right;'));
 
         //(III) collect page informations - path, virtual language directory
-        $path = $this->pageRepo->getPath($page);
+        $path         = $this->pageRepo->getPath($page);
         $pageHasDraft = $page->getEditingStatus() != '' ? true : false;
-
-        $le = new \Cx\Core\Routing\LanguageExtractor($this->db, DBPREFIX);
-        $langDir = $le->getShortNameOfLanguage($page->getLang());
-
-        $logs = $this->logRepo->getLogEntries($page);
+        $langDir      = \FWLanguage::getLanguageCodeById($page->getLang());
+        $logs         = $this->logRepo->getLogEntries($page);
 
         //(V) add the history entries
         $row = 0;
