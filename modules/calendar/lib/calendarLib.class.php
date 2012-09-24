@@ -763,7 +763,7 @@ class calendarLibrary
             $attachNamelength = strlen($objResultNote->fields['attachment']);
             $attachName        = substr($objResultNote->fields['attachment'], $attachNamePos+1, $attachNamelength);
         } else {
-            $ed = get_wysiwyg_editor('inputComment',$objResultNote->fields['comment']);
+            $ed = new \Cx\Core\Wysiwyg('inputComment',$objResultNote->fields['comment']);
             //calender boxes
             $calendarbox = $this->getBoxes($numBoxes, $year, $month, $day);
             //priority

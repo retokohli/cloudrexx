@@ -1223,7 +1223,7 @@ Use plain text areas instead.  See below.
                 $objTemplate->parse('core_mailtemplate_special');
                 $objTemplate->setVariable(array(
                     'MAILTEMPLATE_ROWCLASS' => (++$i % 2 + 1),
-                    'MAILTEMPLATE_SPECIAL' => get_wysiwyg_editor($name, $value),
+                    'MAILTEMPLATE_SPECIAL' => new \Cx\Core\Wysiwyg($name, $value),
                 ));
                 $objTemplate->touchBlock('core_mailtemplate_special');
                 $objTemplate->parse('core_mailtemplate_special');
