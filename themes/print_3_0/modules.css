@@ -2,7 +2,7 @@
 /* CSS GLOBAL DEFINITIONS FOR FORMS IN MODULES     */
 /***************************************************/
 form p,
-form .contact.row {
+form > fieldset > div {
     float: left;
     width: 100%;
     padding: 0 0 10px 0;
@@ -21,8 +21,12 @@ form p label {
 form p label.description {
     margin: 0;
 }
-
 /* END old contact form structure */
+
+form .is_required {
+    padding: 0 0 0 5px;
+    color: #FF0000;
+}
 
 form .contactFormGroup {
     float: left;
@@ -31,6 +35,52 @@ form .contactFormGroup {
 
 form .contactFormGroup input[type=checkbox] {
     clear: left;
+}
+
+form #uploadFormField_uploadWidget {
+    padding: 0 0 0 250px;
+}
+
+form .contactFormUpload,
+form .formUploadedFiles,
+form .contactFormUpload div,
+form .formUploadedFiles div {
+    float: left;
+    width: 326px;
+}
+
+form .contactFormUpload ul,
+form .formUploadedFiles ul {
+    float: left;
+    width: 326px;
+    padding: 0 0 5px 0;
+}
+
+form .contactFormUpload li,
+form .formUploadedFiles li {
+    float: left;
+    width: 306px;
+    padding: 0 0 5px 20px;
+    margin: 0 0 5px 0;
+    border-bottom: 1px solid #DDDDDD;
+}
+
+form .contactFormUpload span,
+form .formUploadedFiles span {
+    float: left;
+    width: 280px;
+    padding: 0 10px 0 0;
+}
+
+form .contactFormUpload .deleteIcon,
+form .formUploadedFiles .deleteIcon {
+    float: left;
+    width: 16px;
+    height: 16px;
+    margin: 2px 0 0 0;
+    overflow: hidden;
+    text-indent: 16px;
+    background: url('../../cadmin/images/icons/delete.gif') no-repeat;
 }
 
 form label {
