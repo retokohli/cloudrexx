@@ -56,13 +56,21 @@ function updateCurrent(init) {
 
 function copyPages(toLangId) {
     performLanguageAction("copy", toLangId, function(json) {
-        alert(cx.variables.get("copySuccess", "language/lang"));
+        cx.ui.dialog({
+            content: cx.variables.get("copySuccess", "language/lang"),
+            modal: true,
+            autoOpen: true
+        });
     });
 }
 
 function linkPages(toLangId) {
     performLanguageAction("link", toLangId, function(json) {
-        alert(cx.variables.get("linkSuccess", "language/lang"));
+        cx.ui.dialog({
+            content: cx.variables.get("linkSuccess", "language/lang"),
+            modal: true,
+            autoOpen: true
+        });
     });
 }
 
@@ -77,56 +85,81 @@ function performLanguageAction(actionName, toLangId, action) {
     var fromLangName = jQuery(".langrow#" + fromLangId).children(".langShortName").text();
     var toLangName = jQuery(".langrow#" + toLangId).children(".langShortName").text();
     showActionDialog(actionName, fromLangName, toLangName, function() {
-        showActionDialog("warning", fromLangName, toLangName, function() {
-            var waitDialog = cx.ui.dialog({
-                title: cx.variables.get("waitTitle", "language/lang"),
-                content: cx.variables.get("waitText", "language/lang"),
-                modal: true,
-                autoOpen: true,
-                open: function(event, ui) { jQuery(".ui-dialog-titlebar-close").hide(); }
-            });
-            var offset = 0;
-            var count = 0;
-            while ((offset < count) || offset == 0) {
-                var url = "index.php?cmd=jsondata&object=cm&act=" + actionName + "&to=" + toLangId + "&offset=" + offset + "&limit=1";
-                jQuery.ajax({
-                    async: false,
-                    url: url,
-                    dataType: "json",
-                    type: "GET",
-                    success: function(json) {
-                        if (json.status != "success") {
-                            alert(json.message, json.status);
-                            return;
-                        }
-                        offset = json.data.offset;
-                        count = json.data.count;
-                        var newText = cx.variables.get("waitText", "language/lang") + "\n\n" + offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)";
-                        //console.log(offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)");
-                        waitDialog.getElement().html(newText);
-                    }
-                });
-            }
-            waitDialog.close();
-            action();
+        var waitDialog = cx.ui.dialog({
+            title: cx.variables.get("waitTitle", "language/lang"),
+            content: cx.variables.get("waitText", "language/lang"),
+            modal: true,
+            autoOpen: true,
+            open: function(event, ui) { jQuery(".ui-dialog-titlebar-close").hide(); }
         });
-    });
+        var offset = 0;
+        var count = 0;
+        while ((offset < count) || offset == 0) {
+            var url = "index.php?cmd=jsondata&object=cm&act=" + actionName + "&to=" + toLangId + "&offset=" + offset + "&limit=1";
+            jQuery.ajax({
+                async: false,
+                url: url,
+                dataType: "json",
+                type: "GET",
+                success: function(json) {
+                    if (json.status != "success") {
+                        cx.ui.dialog({
+                            title: json.status,
+                            content: json.message,
+                            modal: true,
+                            autoOpen: true
+                        });
+                        return;
+                    }
+                    offset = json.data.offset;
+                    count = json.data.count;
+                    var newText = cx.variables.get("waitText", "language/lang") + "\n\n" + offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)";
+                    //console.log(offset + " / " + count + " (" + Math.round(offset * 100 / count) + "%)");
+                    waitDialog.getElement().html(newText);
+                }
+            });
+        }
+        waitDialog.close();
+        action();
+    }, cx.variables.get("warningText", "language/lang").replace("%1", fromLangName).replace("%2", toLangName));
 }
 
-function showActionDialog(action, fromLang, toLang, yesAction) {
+/**
+ * @param string action Name of action
+ * @param string fromLang Language name to copy from
+ * @param string toLang Language name to copy to
+ * @param function yesAction Function to call when "yes" is clicked
+ * @param string checkboxText (optional) Text for checkbox label. If null, no checkbox is shown
+ * @return cx.ui.dialog Cx Ui Dialog object
+ */
+function showActionDialog(action, fromLang, toLang, yesAction, checkboxText) {
     var yesOption = cx.variables.get("yesOption", "language/lang");
     var noOption = cx.variables.get("noOption", "language/lang");
     var buttons = new Object();
-    buttons[yesOption] = function() {jQuery(this).dialog("close");yesAction();}
+    buttons[yesOption] = function() {
+        jQuery(this).dialog("close");
+        if (checkboxText) {
+            if (!dialog.getElement().children().children("#really").is(":checked")) {
+                return;
+            }
+        }
+        yesAction();
+    };
     buttons[noOption] = function() {jQuery(this).dialog("close");}
-    cx.ui.dialog({
+    var content = "<p>" + cx.variables.get(action + "Text", "language/lang").replace("%1", fromLang).replace("%2", toLang);
+    if (checkboxText) {
+        content += "<br /><br /><input type=\"checkbox\" id=\"really\" value=\"true\" /> <label for=\"really\">" + checkboxText + "</label>";
+    }
+    content += "</p>";
+    var dialog = cx.ui.dialog({
         title: cx.variables.get(action + "Title", "language/lang"),
-        content: "<p>" + cx.variables.get(action + "Text", "language/lang").replace("%1", fromLang).replace("%2", toLang) + "</p>",
+        content: content,
         buttons: buttons,
         modal: true,
         width: 400,
         autoOpen: true
     });
+    return dialog;
 }
 // -->
 </script>
@@ -178,7 +211,7 @@ function showActionDialog(action, fromLang, toLang, yesAction) {
                   <img src="images/icons/copy.gif" alt="{TXT_LANGUAGE_ACTION_COPY}" border="0" />
               </a>
               <a href="javascript:linkPages('{LANGUAGE_LANG_ID}')" title="{TXT_LANGUAGE_ACTION_LINK}">
-                  <img src="images/icons/link.gif" alt="{TXT_LANGUAGE_ACTION_LINK}" border="0" />
+                  <img src="images/icons/linkcopy.gif" alt="{TXT_LANGUAGE_ACTION_LINK}" border="0" />
               </a>
               <a style="{LANGUAGE_ADMIN_STYLE}" href="javascript:deleteLanguage('{LANGUAGE_LANG_ID}')">
                   <img src="images/icons/delete.gif" alt="Sprache l�schen" border="0" />
