@@ -106,9 +106,6 @@ $J(document).ready(function() {
 <div id="dashboard">
     <!-- BEGIN message -->
     <div id="message" class="message {MESSAGE_TYPE}">
-        <!-- BEGIN message_delete -->
-        <a href="#" id="message_delete" class="close">&times;</a>
-        <!-- END message_delete -->
         <div id="message_message" class="text">
             <a id="message_link" class="link" href="{MESSAGE_LINK}" target="{MESSAGE_LINK_TARGET}">{MESSAGE_TITLE}</a>
         </div>
@@ -118,7 +115,9 @@ $J(document).ready(function() {
     <div id="news" class="message">
         <a id="news_contrexx" class="icon" href="http://www.contrexx.com" target="_blank"></a>
         <!-- BEGIN news_delete -->
-        <a href="#" id="news_delete" class="close">&times;</a>
+        <div class="close_wrapper">
+            <a href="#" id="news_delete" class="close">&times;</a>
+        </div>
         <!-- END news_delete -->
         <div id="news_message" class="text">
             <a id="news_link" class="link" href="{NEWS_LINK}" target="_blank">{NEWS_TITLE}</a>
