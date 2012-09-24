@@ -151,6 +151,10 @@ class Resolver {
      * Does the resolving work, extends $this->url with targetPath and params.
      */
     public function resolve($internal = false) {
+        if (isset($_REQUEST['section'])) {
+            throw new ResolverException('Legacy request');
+        }
+        
         $path = $this->url->getSuggestedTargetPath();
         
         if (!$this->page || $internal) {
@@ -326,7 +330,7 @@ class Resolver {
         if ($section) {
             if ($section == 'logout') {
                 if (empty($sessionObj)) {
-                    $sessionObj = new cmsSession();
+                    $sessionObj = new \cmsSession();
                 }
                 if ($objFWUser->objUser->login()) {
                     $objFWUser->logout();
