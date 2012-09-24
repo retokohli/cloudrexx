@@ -1108,11 +1108,12 @@ $objNavbar->setLanguagePlaceholders($url, $objTemplate);
 
 // Set global content variables.
 $page_content = str_replace('{PAGE_URL}',        htmlspecialchars($objInit->getPageUri()), $page_content);
-$page_content = str_replace('{STANDARD_URL}',    $objInit->getStandardUri(), $page_content);
-$page_content = str_replace('{MOBILE_URL}',      $objInit->getMobileUri(),   $page_content);
-$page_content = str_replace('{PRINT_URL}',       $objInit->getPrintUri(),    $page_content);
-$page_content = str_replace('{PDF_URL}',         $objInit->getPDFUri(),      $page_content);
-$page_content = str_replace('{APP_URL}',         $objInit->getAppUri(),      $page_content);
+$page_content = str_replace('{STANDARD_URL}',    $objInit->getUriBy('smallscreen', 0),     $page_content);
+$page_content = str_replace('{MOBILE_URL}',      $objInit->getUriBy('smallscreen', 1),     $page_content);
+$page_content = str_replace('{PRINT_URL}',       $objInit->getUriBy('printview', 1),       $page_content);
+$page_content = str_replace('{PDF_URL}',         $objInit->getUriBy('pdfview', 1),         $page_content);
+$page_content = str_replace('{APP_URL}',         $objInit->getUriBy('appview', 1),         $page_content);
+$page_content = str_replace('{LOGOUT_URL}',      $objInit->getUriBy('section', 'logout'),  $page_content);
 $page_content = str_replace('{TITLE}',           $page_title, $page_content);
 $page_content = str_replace('{CONTACT_EMAIL}',   isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '', $page_content);
 $page_content = str_replace('{CONTACT_COMPANY}', isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '', $page_content);
@@ -1695,11 +1696,12 @@ $objTemplate->setVariable(array(
     'METAROBOTS'                     => $page_robots,
     'CONTENT_TITLE'                  => '<span id="fe_PreviewTitle">'.$page_title.'</span>',
     'CSS_NAME'                       => $pageCssName,
-    'STANDARD_URL'                   => $objInit->getStandardUri(),
-    'MOBILE_URL'                     => $objInit->getMobileUri(),
-    'PRINT_URL'                      => $objInit->getPrintUri(),
-    'PDF_URL'                        => $objInit->getPDFUri(),
-    'APP_URL'                        => $objInit->getAppUri(),
+    'STANDARD_URL'                   => $objInit->getUriBy('smallscreen', 0),
+    'MOBILE_URL'                     => $objInit->getUriBy('smallscreen', 1),
+    'PRINT_URL'                      => $objInit->getUriBy('printview', 1),
+    'PDF_URL'                        => $objInit->getUriBy('pdfview', 1),
+    'APP_URL'                        => $objInit->getUriBy('appview', 1),
+    'LOGOUT_URL'                     => $objInit->getUriBy('section', 'logout'),
     'PAGE_URL'                       => htmlspecialchars($objInit->getPageUri()),
     'CURRENT_URL'                    => $objInit->getCurrentPageUri(),
     'DATE'                           => showFormattedDate(),
@@ -1864,12 +1866,12 @@ $parsingtime = explode(' ', microtime());
 $time = round(((float)$parsingtime[0] + (float)$parsingtime[1]) - ((float)$starttime[0] + (float)$starttime[1]), 5);
 $objTemplate->setVariable('PARSING_TIME', $time);
 
-// Allow STANDARD_URL, MOBILE_URL, PRINT_URL, PDF_URL & APP_URL in sidebar.
-$themesPages['sidebar'] = str_replace('{STANDARD_URL}',    $objInit->getStandardUri(), $themesPages['sidebar']);
-$themesPages['sidebar'] = str_replace('{MOBILE_URL}',      $objInit->getMobileUri(),   $themesPages['sidebar']);
-$themesPages['sidebar'] = str_replace('{PRINT_URL}',       $objInit->getPrintUri(),    $themesPages['sidebar']);
-$themesPages['sidebar'] = str_replace('{PDF_URL}',         $objInit->getPDFUri(),      $themesPages['sidebar']);
-$themesPages['sidebar'] = str_replace('{APP_URL}',         $objInit->getAppUri(),      $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{STANDARD_URL}',    $objInit->getUriBy('smallscreen', 0),    $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{MOBILE_URL}',      $objInit->getUriBy('smallscreen', 1),    $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{PRINT_URL}',       $objInit->getUriBy('printview', 1),      $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{PDF_URL}',         $objInit->getUriBy('pdfview', 1),        $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{APP_URL}',         $objInit->getUriBy('appview', 1),        $themesPages['sidebar']);
+$themesPages['sidebar'] = str_replace('{LOGOUT_URL}',      $objInit->getUriBy('section', 'logout'), $themesPages['sidebar']);
 $themesPages['sidebar'] = str_replace('{CONTACT_EMAIL}',   isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '', $themesPages['sidebar']);
 $themesPages['sidebar'] = str_replace('{CONTACT_COMPANY}', isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '', $themesPages['sidebar']);
 $themesPages['sidebar'] = str_replace('{CONTACT_ADDRESS}', isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '', $themesPages['sidebar']);

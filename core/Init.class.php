@@ -842,49 +842,16 @@ class InitCMS
                 'size="1" class="chzn-select"')."\n</form>\n";
     }
 
-    public function getStandardUri()
+
+    public function getUriBy($key = '', $value = '')
     {
-        $url = \Env::get('Resolver')->getUrl();
-        $myUrl = clone $url;
-        $myUrl->setParam('smallscreen', 0);
+        if ($key == '' || $value == '') {
+            return '';
+        }
         
-        return $myUrl;
-    }
-    
-    public function getMobileUri()
-    {
         $url = \Env::get('Resolver')->getUrl();
         $myUrl = clone $url;
-        $myUrl->setParam('smallscreen', 1);
-        
-        return $myUrl;
-    }
-
-    public function getPrintUri()
-    {
-        $url = \Env::get('Resolver')->getUrl();
-        $myUrl = clone $url;
-        $myUrl->setParam('printview', 1);
-        
-        return $myUrl;
-    }
-
-
-    public function getPDFUri()
-    {
-        $url = \Env::get('Resolver')->getUrl();
-        $myUrl = clone $url;
-        $myUrl->setParam('pdfview', 1);
-        
-        return $myUrl;
-    }
-
-
-    public function getAppUri()
-    {
-        $url = \Env::get('Resolver')->getUrl();
-        $myUrl = clone $url;
-        $myUrl->setParam('appview', 1);
+        $myUrl->setParam($key, $value);
         
         return $myUrl;
     }
