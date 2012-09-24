@@ -324,8 +324,6 @@ if ($section == 'captcha') {
     FWCaptcha::getInstance()->getPage();
 }
 if ($section == 'frontendEditing') {
-    if (!include_once(ASCMS_CORE_MODULE_PATH.'/frontendEditing/frontendEditing.class.php'))
-        die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
     $sessionObj = new cmsSession();
     $objFrontendEditing = new frontendEditing(Env::em());
     $objFrontendEditing->performAction();
