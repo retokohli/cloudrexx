@@ -261,27 +261,35 @@ function toggleDebuggingFlags(show) {
                 </td>
             </tr>
             <tr class="row1">
+                <td>{TXT_USE_CUSTOMIZING_STATUS}&nbsp;</td>
+                <td>
+                    <input type="radio" name="setvalue[113]" id="setvalue_113_on" value="on" {SETTINGS_USE_CUSTOMIZING_ON} /><label for="setvalue_113_on">{TXT_RADIO_ON}</label>&nbsp;
+                    <input type="radio" name="setvalue[113]" id="setvalue_113_off" value="off" {SETTINGS_USE_CUSTOMIZING_OFF} /><label for="setvalue_113_off">{TXT_RADIO_OFF}</label>&nbsp;
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_USE_CUSTOMIZING_STATUS_HELP}</span>
+                </td>
+            </tr>
+            <tr class="row2">
                 <td>{TXT_PAGING_LIMIT}&nbsp;</td>
                 <td>
                     <input type="text" name="setvalue[18]" value="{SETTINGS_PAGING_LIMIT}" size="70" maxlength="250" />
                     <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_PAGING_LIMIT_HELP}</span>
                 </td>
             </tr>
-            <tr class="row2">
+            <tr class="row1">
                 <td>{TXT_SEARCH_RESULT}&nbsp;</td>
                 <td>
                     <input type="text" name="setvalue[19]" value="{SETTINGS_SEARCH_RESULT_LENGTH}" size="70" maxlength="250" />
                     <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SEARCH_RESULT_HELP}</span>
                 </td>
             </tr>
-            <tr class="row1">
+            <tr class="row2">
                 <td>{TXT_GOOGLE_MAPS_API_KEY}&nbsp;</td>
                 <td>
                     <input type="text" name="setvalue[65]" value="{SETTINGS_GOOGLE_MAPS_API_KEY}" size="70" maxlength="250" />
                     <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_GOOGLE_MAPS_API_KEY_HELP}</span>
                 </td>
             </tr>
-            <tr class="row2">
+            <tr class="row1">
                 <td>{TXT_GOOGLE_ANALYTICS_TRACKING_ID}&nbsp;</td>
                 <td>
                     <input type="text" name="setvalue[88]" value="{SETTINGS_GOOGLE_ANALYTICS_TRACKING_ID}" size="70" maxlength="250" />

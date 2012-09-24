@@ -247,6 +247,9 @@ class JsonPage implements JsonAdapter {
                 case 'hide':
                     $page->setDisplay(false);
                     break;
+                case 'unprotect':
+                    $page->setFrontendProtection(false);
+                    break;
             }
             
             if (($action != 'publish') && ($page->getEditingStatus() == '')) {
@@ -382,12 +385,55 @@ class JsonPage implements JsonAdapter {
         $post = $params['post'];
         $data['post']['lang']   = $post['lang'];
         $data['post']['action'] = $post['action'];
+        $recursive = (isset($params['get']['recursive']) && $params['get']['recursive'] == 'true');
         $return = array();
         
-        foreach ($post['nodes'] as $nodeId) {
+        $nodeIdStack = $post['nodes'];
+        while (count($nodeIdStack)) {
+            $nodeId = array_pop($nodeIdStack);
             $data['post']['nodeId'] = $nodeId;
             $node = $this->nodeRepo->findOneById($nodeId);
+            if ($recursive) {
+                foreach ($node->getChildren() as $child) {
+                    array_push($nodeIdStack, $child->getId());
+                }
+            }
             $page = $node->getPage(\FWLanguage::getLanguageIdByCode($post['lang']));
+            switch ($data['post']['action']) {
+                case 'activate':
+                    if ($page->isActive()) {
+                        // we have that already, continue
+                        continue;
+                    }
+                    break;
+                case 'deactivate':
+                    if (!$page->isActive()) {
+                        // we have that already, continue
+                        continue;
+                    }
+                    break;
+                case 'show':
+                    if ($page->isVisible()) {
+                        // we have that already, continue
+                        continue;
+                    }
+                    break;
+                case 'hide':
+                    if (!$page->isVisible()) {
+                        // we have that already, continue
+                        continue;
+                    }
+                    break;
+                case 'unprotect':
+                    if (!$page->isFrontendProtected()) {
+                        // we have that already, continue
+                        continue;
+                    }
+                    break;
+                default:
+                    // just set what we got, continue
+                    break;
+            }
             if (!empty($page)) {
                 $data['post']['pageId'] = $page->getId();
             } else {
@@ -398,6 +444,7 @@ class JsonPage implements JsonAdapter {
                 $return['id'] = $result['id'];
             }
         }
+        unset($nodeIdStack);
         
         return $return;
     }

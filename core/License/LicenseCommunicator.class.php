@@ -100,14 +100,36 @@ class LicenseCommunicator {
         if ($response->license->key != null) {
             $licenseKey = $response->license->key;
         }
+        if (!empty($response->common->template)) {
+            if (\FWUser::getFWUserObject()->objUser->login()) {
+                try {
+                    $file = new \Cx\Lib\FileSystem\File(ASCMS_TEMP_PATH.'/licenseManager.html');
+                    $file->write($response->common->template);
+                } catch (\Cx\Lib\FileSystem\FileSystemException $e) {}
+            }
+        }
         $message = new \Cx\Core\License\Message(
             $response->license->message->text,
             $response->license->message->type,
             $response->license->message->link,
             $response->license->message->linkTarget
         );
+        $customer = new \Cx\Core\License\Customer(
+            $response->license->customer->companyName,
+            $response->license->customer->title,
+            $response->license->customer->firstname,
+            $response->license->customer->lastname,
+            $response->license->customer->address,
+            $response->license->customer->zip,
+            $response->license->customer->city,
+            $response->license->customer->country,
+            $response->license->customer->phone,
+            $response->license->customer->url,
+            $response->license->customer->mail
+        );
         $version = new \Cx\Core\License\Version(
             $response->versions->currentStable->number,
+            $response->versions->currentStable->name,
             $response->versions->currentStable->codeName,
             $response->versions->currentStable->state,
             $response->versions->currentStable->releaseDate
@@ -120,7 +142,8 @@ class LicenseCommunicator {
             $installationId,
             $licenseKey,
             $message,
-            $version
+            $version,
+            $customer
         );
         return;
     }

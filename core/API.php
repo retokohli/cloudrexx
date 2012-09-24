@@ -9,7 +9,6 @@
  * @package     contrexx
  * @subpackage  core
  * @version     1.0.0
- * @uses /config/version.php
  * @uses /core/validator.inc.php
  * @uses /lib/PEAR/HTML/Template/Sigma/Sigma.php
  * @uses /core/database.php
@@ -26,13 +25,6 @@
 if (stristr(__FILE__, $_SERVER['PHP_SELF'])) {
     Header("Location: index.php");
     die();
-}
-
-/**
- * Include version information
- */
-if (!include_once(ASCMS_DOCUMENT_ROOT.'/config/version.php')) {
-    die("PATH ERROR: please check your \$_PATHCONFIG[\"ascms_root_offset\"] variable in the configuration.php file!");
 }
 
 /**

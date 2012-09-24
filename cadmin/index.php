@@ -49,12 +49,6 @@ $incSettingsStatus = include_once '../config/settings.php';
  * Initialises global settings array and constants.
  */
 include_once('../config/configuration.php');
-/**
- * Version information
- *
- * Adds version information to the {@link $_CONFIG[]} global array.
- */
-$incVersionStatus = include_once '../config/version.php';
 
 Env::set('config', $_CONFIG);
 Env::set('ftpConfig', $_FTPCONFIG);
@@ -76,7 +70,7 @@ if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
     header("Location: ../installer/index.php");
     exit;
 }
-if (!$incSettingsStatus || !$incVersionStatus) {
+if (!$incSettingsStatus) {
     die('System halted: Unable to load basic configuration!');
 }
 

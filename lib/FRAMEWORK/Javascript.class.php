@@ -233,13 +233,18 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             //    Opacity of outer image when cropping
         ),
 */
+        'md5' => array(
+            'jsfiles' => array(
+                'lib/javascript/jquery/jquery.md5.js',
+            ),
+        ),
         'cx' => array(
             'jsfiles' => array(
                 'lib/javascript/cx/contrexxJs.js',
                 'lib/javascript/cx/contrexxJs-tools.js',
                 'lib/javascript/jquery/jquery.includeMany-1.2.2.js' //to dynamically include javascript files
             ),
-            'dependencies' => array('jquery')
+            'dependencies' => array('jquery', 'md5')
             //we insert the specialCode for the Contrexx-API later in getCode()
         ),
         'jstree' => array(

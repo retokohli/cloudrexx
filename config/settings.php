@@ -11,14 +11,13 @@
 */
 $_CONFIG['cacheEnabled']              = "off";
 $_CONFIG['cacheExpiration']           = 86400;
-$_CONFIG['contactAddress']            = "Adresse";
+$_CONFIG['contactAddress']            = "Musterstrasse 12";
 $_CONFIG['contactCompany']            = "Ihr Firmenname";
-$_CONFIG['contactCountry']            = "Land";
-$_CONFIG['contactFax']                = "Fax";
-$_CONFIG['contactPhone']              = "Telefon";
-$_CONFIG['contactPlace']              = "Ort";
-$_CONFIG['contactZip']                = "PLZ";
-$_CONFIG['contentHistoryStatus']      = "on";
+$_CONFIG['contactCountry']            = "Musterland";
+$_CONFIG['contactFax']                = "033 123 45 68";
+$_CONFIG['contactPhone']              = "033 123 45 67";
+$_CONFIG['contactPlace']              = "Musterhausen";
+$_CONFIG['contactZip']                = 3600;
 $_CONFIG['coreAdminEmail']            = "info@example.com";
 $_CONFIG['coreAdminName']             = "Administrator";
 $_CONFIG['coreGlobalPageTitle']       = "Default Installation";
@@ -35,7 +34,7 @@ $_CONFIG['googleAnalyticsTrackingId'] = "";
 $_CONFIG['googleMapsAPIKey']          = "";
 $_CONFIG['installationId']            = "";
 $_CONFIG['languageDetection']         = "off";
-$_CONFIG['lastAccessId']              = 57;
+$_CONFIG['lastAccessId']              = 382;
 $_CONFIG['licenseKey']                = "";
 $_CONFIG['passwordComplexity']        = "on";
 $_CONFIG['searchVisibleContentOnly']  = "on";
@@ -45,109 +44,139 @@ $_CONFIG['spamKeywords']              = "sex, viagra";
 $_CONFIG['systemStatus']              = "on";
 $_CONFIG['timezone']                  = "Europe/Zurich";
 $_CONFIG['xmlSitemapStatus']          = "on";
+$_CONFIG['useCustomizings']           = "off";
 
 /**
 * -------------------------------------------------------------------------
 * Search
 * -------------------------------------------------------------------------
 */
-$_CONFIG['searchDescriptionLength']  = 150;
+$_CONFIG['searchDescriptionLength']   = 150;
 
 /**
 * -------------------------------------------------------------------------
 * Contact
 * -------------------------------------------------------------------------
 */
-$_CONFIG['contactFormEmail']         = "info@example.com";
+$_CONFIG['contactFormEmail']          = "info@example.com";
 
 /**
 * -------------------------------------------------------------------------
 * Block
 * -------------------------------------------------------------------------
 */
-$_CONFIG['blockRandom']              = 1;
-$_CONFIG['blockStatus']              = 1;
+$_CONFIG['blockRandom']               = 1;
+$_CONFIG['blockStatus']               = 1;
 
 /**
 * -------------------------------------------------------------------------
 * News
 * -------------------------------------------------------------------------
 */
-$_CONFIG['newsTeasersStatus']        = 1;
+$_CONFIG['newsTeasersStatus']         = 1;
 
 /**
 * -------------------------------------------------------------------------
 * Directory
 * -------------------------------------------------------------------------
 */
-$_CONFIG['directoryHomeContent']     = 0;
+$_CONFIG['directoryHomeContent']      = 0;
 
 /**
 * -------------------------------------------------------------------------
 * Forum
 * -------------------------------------------------------------------------
 */
-$_CONFIG['forumHomeContent']         = 1;
-$_CONFIG['forumTagContent']          = 0;
+$_CONFIG['forumHomeContent']          = 1;
+$_CONFIG['forumTagContent']           = 0;
 
 /**
 * -------------------------------------------------------------------------
 * Calendar
 * -------------------------------------------------------------------------
 */
-$_CONFIG['calendardefaultcount']     = 16;
-$_CONFIG['calendarheadlines']        = 1;
-$_CONFIG['calendarheadlinescat']     = 0;
-$_CONFIG['calendarheadlinescount']   = 5;
+$_CONFIG['calendardefaultcount']      = 16;
+$_CONFIG['calendarheadlines']         = 1;
+$_CONFIG['calendarheadlinescat']      = 0;
+$_CONFIG['calendarheadlinescount']    = 5;
 
 /**
 * -------------------------------------------------------------------------
 * Feed
 * -------------------------------------------------------------------------
 */
-$_CONFIG['feedNewsMLStatus']         = 0;
+$_CONFIG['feedNewsMLStatus']          = 0;
 
 /**
 * -------------------------------------------------------------------------
 * 
 * -------------------------------------------------------------------------
 */
-$_CONFIG['bannerStatus']             = 0;
+$_CONFIG['bannerStatus']              = 0;
 
 /**
 * -------------------------------------------------------------------------
 * Podcast
 * -------------------------------------------------------------------------
 */
-$_CONFIG['podcastHomeContent']       = 1;
+$_CONFIG['podcastHomeContent']        = 1;
 
 /**
 * -------------------------------------------------------------------------
 * Alias
 * -------------------------------------------------------------------------
 */
-$_CONFIG['aliasStatus']              = "";
+$_CONFIG['aliasStatus']               = "";
 
 /**
 * -------------------------------------------------------------------------
 * Data
 * -------------------------------------------------------------------------
 */
-$_CONFIG['dataUseModule']            = 1;
+$_CONFIG['dataUseModule']             = 1;
 
 /**
 * -------------------------------------------------------------------------
 * Upload
 * -------------------------------------------------------------------------
 */
-$_CONFIG['advancedUploadBackend']    = "on";
-$_CONFIG['advancedUploadFrontend']   = "off";
+$_CONFIG['advancedUploadBackend']     = "on";
+$_CONFIG['advancedUploadFrontend']    = "off";
 
 /**
 * -------------------------------------------------------------------------
 * Knowledge
 * -------------------------------------------------------------------------
 */
-$_CONFIG['useKnowledgePlaceholders'] = 1;
+$_CONFIG['useKnowledgePlaceholders']  = 1;
+
+/**
+* -------------------------------------------------------------------------
+* License
+* -------------------------------------------------------------------------
+*/
+$_CONFIG['coreCmsCodeName']           = "Nikola Tesla";
+$_CONFIG['coreCmsEdition']            = "Premium";
+$_CONFIG['coreCmsName']               = "Contrexx";
+$_CONFIG['coreCmsReleaseDate']        = 1348783200;
+$_CONFIG['coreCmsStatus']             = "stable";
+$_CONFIG['coreCmsVersion']            = "3.0.0";
+$_CONFIG['licenseHolderAddress']      = "Burgstrasse 20";
+$_CONFIG['licenseHolderCity']         = "Thun";
+$_CONFIG['licenseHolderCompany']      = "Comvation AG";
+$_CONFIG['licenseHolderCountry']      = "Switzerland";
+$_CONFIG['licenseHolderFirstname']    = "Hans";
+$_CONFIG['licenseHolderLastname']     = "Muster";
+$_CONFIG['licenseHolderMail']         = "info@comvation.com";
+$_CONFIG['licenseHolderPhone']        = "+41 (0)33 226 6000";
+$_CONFIG['licenseHolderTitle']        = "Mr.";
+$_CONFIG['licenseHolderUrl']          = "http://www.comvation.com/";
+$_CONFIG['licenseHolderZip']          = 3600;
+$_CONFIG['licenseState']              = "DEMO";
+$_CONFIG['licenseValidTo']            = 1353774105;
+$_CONFIG['messageLink']               = "http://license.contrexx.com/";
+$_CONFIG['messageLinkTarget']         = "_blank";
+$_CONFIG['messageText']               = "Sie benutzen im Fall noch so eine Demo Version. Wenn Sie hier klicken können Sie eine anständige käuflich erwerben!";
+$_CONFIG['messageType']               = "warningbox";
 
 ?>

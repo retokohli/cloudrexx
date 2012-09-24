@@ -671,9 +671,9 @@ class Page extends \Cx\Model\Base\EntityBase
             }
             if ($fallback_lang) {
                 $fallback_page = $this->getNode()->getPage($fallback_lang);
-                if ($fallback_page) {
+                if ($fallback_page && $fallback_page->isActive()) {
                     $fallback_status = $fallback_page->getStatus();
-                    if ($this->protection && !preg_match('/protected/', $fallback_status)) {
+                    if ($this->isFrontendProtected() && !preg_match('/protected/', $fallback_status)) {
                         $fallback_status .= 'protected ';
                     }
                     return 'fallback ' . $fallback_status;
@@ -698,7 +698,7 @@ class Page extends \Cx\Model\Base\EntityBase
         if ($this->getDisplay()) $status .= "active ";
         else $status .= "inactive ";
 
-        if ($this->protection) $status .= "protected ";
+        if ($this->isFrontendProtected()) $status .= "protected ";
         if ($this->getModule()) {
             if ($this->getModule() == "home" && $this->getCmd() == '') $status .= "home ";
             else $status .= "application ";
