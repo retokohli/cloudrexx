@@ -64,7 +64,7 @@ function selectMultiAction() {
 	<tr class="row{MAINTENANCE_TABLES_ROW}">
 		<td><input type="checkbox" name="selectedTablesName[]" value="{MAINTENANCE_TABLES_NAME}" /></td>
 		<td>
-			<!-- BEGIN showTableContentLink --><a href="index.php?cmd=dbm&amp;act=showTable&amp;table={MAINTENANCE_TABLES_NAME}" title="{TXT_MAINTENANCE_SHOW_TABLE}: {MAINTENANCE_TABLES_NAME}">{MAINTENANCE_TABLES_NAME}</a><!-- END showTableContentLink -->
+			<!-- BEGIN showTableContentLink -->{MAINTENANCE_TABLES_NAME}<!-- END showTableContentLink -->
 			<!-- BEGIN showTableContentNoLink -->{MAINTENANCE_TABLES_NAME}<!-- END showTableContentNoLink -->
 		</td>
 		<td style="text-align: center;">{MAINTENANCE_TABLES_ROWS}</td>
