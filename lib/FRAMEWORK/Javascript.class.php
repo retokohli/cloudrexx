@@ -167,8 +167,8 @@ jQuery(document).ready(function(){
         ),
         'ckeditor'     => array(
             'jsfiles'       => array(
-                'editor/ckeditor/ckeditor.js',
-                'editor/ckeditor/adapters/jquery.js',
+                'lib/ckeditor/ckeditor.js',
+                'lib/ckeditor/adapters/jquery.js',
             ),
             'dependencies' => array('jquery'),
         ),
