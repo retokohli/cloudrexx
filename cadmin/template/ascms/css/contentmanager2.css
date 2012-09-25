@@ -337,6 +337,10 @@ h1{ font-size: 20px }
     display: block !important;
 }
 
+#site-tree .actions-expanded ul li::-moz-selection {
+    background: none;
+}
+
 #site-tree .actions-expanded ul li.new {
     background-image: url(../images/content_manager_actions_new_within.png);
     background-position: left center;
