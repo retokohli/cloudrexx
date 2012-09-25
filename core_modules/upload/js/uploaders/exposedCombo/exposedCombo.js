@@ -21,10 +21,7 @@ var ExposedCombo = function(theConfig) {
         modal: true,
         autoOpen: false,
         position: ['center',200],
-        width: 700,
-        open: function () {
-            $J('.ui-dialog').css('top', '30%');
-        }
+        width: 700
     });
 
     var uploadId = theConfig.uploadId;
