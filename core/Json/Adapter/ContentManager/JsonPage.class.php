@@ -358,7 +358,7 @@ class JsonPage implements JsonAdapter {
                 || (isset($dataPost['inheritCssNavName']) && $dataPost['inheritCssNavName'] == 'on')
                 || (isset($dataPost['inheritCaching']) && $dataPost['inheritCaching'] == 'on')
         ) {
-            $pageStack = array();
+            $pageStack = $page->getChildren();
             while (count($pageStack)) {
                 $currentPage = array_pop($pageStack);
                 foreach ($currentPage->getChildren() as $child) {
@@ -404,7 +404,8 @@ class JsonPage implements JsonAdapter {
                     $reload = true;
                 }
             } else {
-                $this->messages[] = $_CORELANG['TXT_CORE_ALIAS_CREATION_DENIED'];
+                // Users without permission shouldn't see the aliasses anyway
+                //$this->messages[] = $_CORELANG['TXT_CORE_ALIAS_CREATION_DENIED'];
             }
         }
         

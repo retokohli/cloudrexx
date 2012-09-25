@@ -117,7 +117,7 @@ class LicenseCommunicator {
             $licenseKey = $response->license->key;
         }
         if (!empty($response->common->template)) {
-            if (\FWUser::getFWUserObject()->objUser->login()) {
+            if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
                 try {
                     $file = new \Cx\Lib\FileSystem\File(ASCMS_TEMP_PATH.'/licenseManager.html');
                     $file->write($response->common->template);
@@ -129,10 +129,10 @@ class LicenseCommunicator {
             $this->requestInterval = 1;
         }
         $message = new \Cx\Core\License\Message(
-            $response->license->message->text,
-            $response->license->message->type,
-            $response->license->message->link,
-            $response->license->message->linkTarget
+            contrexx_raw2xhtml($response->license->message->text),
+            contrexx_raw2xhtml($response->license->message->type),
+            contrexx_raw2xhtml($response->license->message->link),
+            contrexx_raw2xhtml($response->license->message->linkTarget)
         );
         $customer = new \Cx\Core\License\Customer(
             $response->license->customer->companyName,
