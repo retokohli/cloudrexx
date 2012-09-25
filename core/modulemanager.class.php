@@ -348,7 +348,7 @@ class modulemanager
     function removeModules()
     {
         global $objDatabase;
-
+return false;
         if (isset($_POST['removeModule']) && is_array($_POST['removeModule'])) {
             foreach (array_keys($_POST['removeModule']) as $moduleId) {
                 
@@ -373,12 +373,10 @@ class modulemanager
                     'module' => $moduleName,
                     'lang' => $this->langId,
                 ));
-                $em->getConnection()->executeQuery('SET FOREIGN_KEY_CHECKS = 0');
                 foreach ($pages as $page) {
                     $em->remove($page->getNode());
                     $em->flush();
                 }
-                $em->getConnection()->executeQuery('SET FOREIGN_KEY_CHECKS = 1');
             }
             return true;
         } else {

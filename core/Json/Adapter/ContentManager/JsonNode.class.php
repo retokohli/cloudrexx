@@ -230,12 +230,8 @@ class JsonNode implements JsonAdapter {
         
         $node = $this->nodeRepo->find($arguments['post']['id']);
         
-        $this->em->getConnection()->executeQuery('SET FOREIGN_KEY_CHECKS = 0');
-        
         $this->em->remove($node);
         $this->em->flush();
-        
-        $this->em->getConnection()->executeQuery('SET FOREIGN_KEY_CHECKS = 1');
     }
     
     /**
