@@ -1661,9 +1661,7 @@ if (   $mediadirCheck
 
 // Frontend Editing: prepare needed code-fragments
 $strFeInclude = $strFeLink = $strFeContent = null;
-if ($_CONFIG['frontendEditingStatus'] == 'on'
-    /** @ignore */
-    && @include_once ASCMS_CORE_MODULE_PATH.'/frontendEditing/frontendEditingLib.class.php') {
+if ($_CONFIG['frontendEditingStatus'] == 'on') {
     $strFeInclude   = frontendEditingLib::getIncludeCode();
     $strFeLink      = frontendEditingLib::getLinkCode($pageId);
     $strFeContent   = frontendEditingLib::getContentCode($pageId);
