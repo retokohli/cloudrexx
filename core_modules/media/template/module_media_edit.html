@@ -373,10 +373,7 @@
                          '<input id="save_button" type="submit" value="{TXT_MEDIA_REPLACE}" onclick="saveImage();" /><br />' + 
                          '<input id="save_as_button" type="submit" value="{TXT_MEDIA_SAVE_NEW_COPY}" onclick="checkImageName($J(\'#save_as_value\').val()); return false;" />' + 
                          '<input id="save_as_value" type="text" name="newName" id="new_name" value="' + $J('#org_name').val() + '" /><span id="save_as_ext">. ' + $J('#org_ext').val() + '</span>' + 
-                     '</div>',
-            open: function () {
-                $J('.ui-dialog').css('top', '30%');
-            }
+                     '</div>'
         });
     }
     

@@ -1010,6 +1010,16 @@ select#jobsCat,
     width: 365px !important;
 }
 
+label.really {
+    float: left;
+    width: 330px;
+}
+
+input[type=checkbox].really {
+    float: left;
+    margin: 2px 10px 0 2px;
+}
+
 table.adminlist td.nowrap {
   white-space: nowrap;
   vertical-align: top;

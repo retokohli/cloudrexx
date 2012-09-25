@@ -59,10 +59,7 @@ function copyPages(toLangId) {
         cx.ui.dialog({
             content: cx.variables.get("copySuccess", "language/lang"),
             modal: true,
-            autoOpen: true,
-            open: function () {
-                $J('.ui-dialog').css('top', '30%');
-            }
+            autoOpen: true
         });
     });
 }
@@ -72,10 +69,7 @@ function linkPages(toLangId) {
         cx.ui.dialog({
             content: cx.variables.get("linkSuccess", "language/lang"),
             modal: true,
-            autoOpen: true,
-            open: function () {
-                $J('.ui-dialog').css('top', '30%');
-            }
+            autoOpen: true
         });
     });
 }
@@ -98,7 +92,6 @@ function performLanguageAction(actionName, toLangId, action) {
             autoOpen: true,
             open: function(event, ui) {
                 jQuery(".ui-dialog-titlebar-close").hide();
-                $J('.ui-dialog').css('top', '30%');
             }
         });
         var offset = 0;
@@ -116,10 +109,7 @@ function performLanguageAction(actionName, toLangId, action) {
                             title: json.status,
                             content: json.message,
                             modal: true,
-                            autoOpen: true,
-                            open: function () {
-                                $J('.ui-dialog').css('top', '30%');
-                            }
+                            autoOpen: true
                         });
                         return;
                     }
@@ -160,7 +150,7 @@ function showActionDialog(action, fromLang, toLang, yesAction, checkboxText) {
     buttons[noOption] = function() {jQuery(this).dialog("close");}
     var content = "<p>" + cx.variables.get(action + "Text", "language/lang").replace("%1", fromLang).replace("%2", toLang);
     if (checkboxText) {
-        content += "<br /><br /><input type=\"checkbox\" id=\"really\" value=\"true\" /> <label for=\"really\">" + checkboxText + "</label>";
+        content += "<br /><br /><input type=\"checkbox\" id=\"really\" class=\"really\" value=\"true\" /> <label for=\"really\" class=\"really\">" + checkboxText + "</label>";
     }
     content += "</p>";
     var dialog = cx.ui.dialog({
@@ -169,10 +159,7 @@ function showActionDialog(action, fromLang, toLang, yesAction, checkboxText) {
         buttons: buttons,
         modal: true,
         width: 400,
-        autoOpen: true,
-        open: function () {
-            $J('.ui-dialog').css('top', '30%');
-        }
+        autoOpen: true
     });
     return dialog;
 }
