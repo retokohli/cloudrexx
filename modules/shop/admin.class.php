@@ -2080,9 +2080,9 @@ if ($test === NULL) {
             'SHOP_SPECIAL_OFFER' => ($objProduct->discount_active() ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_VAT_MENUOPTIONS' => Vat::getMenuoptions(
                 $objProduct->vat_id(), true),
-            'SHOP_SHORT_DESCRIPTION' => new \Cx\Core\Wysiwyg(
+            'SHOP_SHORT_DESCRIPTION' => new \Cx\Core\Wysiwyg\Wysiwyg(
                 'short', $objProduct->short(), 'shop'),
-            'SHOP_DESCRIPTION' => new \Cx\Core\Wysiwyg(
+            'SHOP_DESCRIPTION' => new \Cx\Core\Wysiwyg\Wysiwyg(
                 'long', $objProduct->long(), 'shop'),
             'SHOP_STOCK' => $objProduct->stock(),
             'SHOP_MANUFACTURER_URL' => htmlentities(

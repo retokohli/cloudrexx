@@ -99,7 +99,7 @@ class u2uAdmin extends u2uLibrary {
         $settingEmailFrom    = $this->_getEmailFromDetails();
         $settingEmailMessage = $this->_getEmailMessageDetails();
         $this->strMessages   = contrexx_stripslashes($settingEmailMessage['email_message']);
-        $strEmailInputHTML   = new \Cx\Core\Wysiwyg('private_message',$this->strMessages,'default ');
+        $strEmailInputHTML   = new \Cx\Core\Wysiwyg\Wysiwyg('private_message',$this->strMessages,'default ');
 
         $this->_objTpl->setVariable(array(
             'TXT_U2U_MAX_POSTING_SIZE'	             => $settingMaxPosting['max_posting_size'],

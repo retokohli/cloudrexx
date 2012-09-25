@@ -1419,7 +1419,7 @@ class news extends newsLibrary {
             'TXT_NEWS_REDIRECT'         => $_ARRAYLANG['TXT_NEWS_REDIRECT'],
             'TXT_NEWS_NEWS_URL'         => $_ARRAYLANG['TXT_NEWS_NEWS_URL'],
             'TXT_CAPTCHA'               => $_ARRAYLANG['TXT_CAPTCHA'],
-            'NEWS_TEXT'                 => new \Cx\Core\Wysiwyg('newsText', $data['newsText'], 'news'),
+            'NEWS_TEXT'                 => new \Cx\Core\Wysiwyg\Wysiwyg('newsText', $data['newsText'], 'news'),
             'NEWS_CAT_MENU'             => $this->getCategoryMenu($data['newsCat']),
             'NEWS_TYPE_MENU'            => ($this->arrSettings['news_use_types'] == 1 ? $this->getTypeMenu($data['newsType']) : ''),
             'NEWS_TITLE'                => contrexx_raw2xhtml($data['newsTitle']),

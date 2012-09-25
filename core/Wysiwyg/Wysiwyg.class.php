@@ -1,5 +1,5 @@
 <?php
-namespace Cx\Core;
+namespace Cx\Core\Wysiwyg;
 
 /**
  * Wysiqyg class
