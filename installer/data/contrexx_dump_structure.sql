@@ -303,6 +303,7 @@ CREATE TABLE `contrexx_log_entry` (
   `data` longtext,
   `username` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `log_class_unique_version_idx` (`version`,`object_id`,`object_class`),
   KEY `log_class_lookup_idx` (`object_class`),
   KEY `log_date_lookup_idx` (`logged_at`),
   KEY `log_user_lookup_idx` (`username`)
