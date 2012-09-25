@@ -1097,5 +1097,4 @@ table.adminlist td.nowrap {
 /* jquery ui dialog */
 .ui-dialog {
     position: fixed !important;
-    top: 15% !important;
 }
