@@ -44,7 +44,7 @@ class sitemap
     * @param  string
     * @access public
     */
-    function __construct($pageContent)
+    function __construct($pageContent, $license)
     {
         $this->pageContent = $pageContent;
         $this->_objTpl = new HTML_Template_Sigma('.');
@@ -54,7 +54,7 @@ class sitemap
         $this->_objTpl->setTemplate($this->pageContent);
 
         if(isset($this->_objTpl->_blocks['sitemap'])) {
-            $sm = new \Cx\Core\PageTree\SitemapPageTree(Env::em(), 0, null, FRONTEND_LANG_ID);
+            $sm = new \Cx\Core\PageTree\SitemapPageTree(Env::em(), $license, 0, null, FRONTEND_LANG_ID);
             $sm->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
             $sm->setTemplate($this->_objTpl);
             $sm->render();

@@ -158,7 +158,7 @@ class DropdownNavigationPageTree extends SigmaPageTree {
     protected function postRender($lang)
     {
         $this->injectParsedSubnavigations();
-        $ret = str_replace('{SUB_MENU}', '', $this->cache['level_1']); //remove remaining sub_menu tags
+        $ret = str_replace('{SUB_MENU}', '', isset($this->cache['level_1']) ? $this->cache['level_1'] : ''); //remove remaining sub_menu tags
         unset($this->cache);
         return $ret;
     }

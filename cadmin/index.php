@@ -307,6 +307,8 @@ if ($loggedIn) {
         $plainCmd = 'license';
         $license->save(new \settingsManager(), $objDatabase);
     }
+    $lc = \Cx\Core\License\LicenseCommunicator::getInstance($_CONFIG);
+    $lc->addJsUpdateCode();
 }
 
 $subMenuTitle = NULL;
@@ -794,7 +796,7 @@ switch ($plainCmd) {
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         }
         $subMenuTitle = $_CORELANG['TXT_SEARCH'];
-        $objSearch    = new \Cx\Core\Search\SearchManager($act, $objTemplate, $objDatabase, $objInit);
+        $objSearch    = new \Cx\Core\Search\SearchManager($act, $objTemplate, $objDatabase, $objInit, $license);
         $objSearch->getPage();
         break;
     case 'checkout':

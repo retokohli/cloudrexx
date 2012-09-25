@@ -177,6 +177,10 @@ $license->check();
 if ($oldState != $license->getState()) {
     $license->save(new \settingsManager(), $objDatabase);
 }
+if ($license->isFrontendLocked()) {
+    header('Location: offline.html');
+    die(1);
+}
 
 $request = !empty($_GET['__cap']) ? $_GET['__cap'] : '';
 $url = \Cx\Core\Routing\Url::fromCapturedRequest($request, ASCMS_PATH_OFFSET, $_GET);
@@ -393,7 +397,8 @@ if ($isRegularPageRequest) {
         }
     }
     
-    if(!$page || !$page->isActive()) {
+    if(!$page || !$page->isActive() ||
+            (isset($section) && !$license->isInLegalFrontendComponents($section))) {
         //fallback for inexistant error page
         if($section == 'error') {
             // If the error module is not installed, show this
@@ -1266,7 +1271,7 @@ switch ($plainSection) {
         if (!@include_once ASCMS_CORE_MODULE_PATH.'/search/index.class.php')
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $pos = (isset($_GET['pos'])) ? intval($_GET['pos']) : '';
-        $objTemplate->setVariable('CONTENT_TEXT', search_getSearchPage($pos, $page_content));
+        $objTemplate->setVariable('CONTENT_TEXT', search_getSearchPage($pos, $page_content, $license));
         unset($pos);
         break;
 
@@ -1287,7 +1292,7 @@ switch ($plainSection) {
         /** @ignore */
         if (!@include_once ASCMS_CORE_MODULE_PATH.'/sitemap/index.class.php')
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $sitemap = new sitemap($page_content);
+        $sitemap = new sitemap($page_content, $license);
         $objTemplate->setVariable('CONTENT_TEXT', $sitemap->getSitemapContent());
         break;
 
@@ -1699,12 +1704,12 @@ $objTemplate->setVariable(array(
     'DATE'                           => showFormattedDate(),
     'TIME'                           => date('H:i', time()),
     'NAVTREE'                        => $objNavbar->getTrail(),
-    'SUBNAVBAR_FILE'                 => $objNavbar->getSubnavigation($themesPages['subnavbar'],$boolShop),
-    'SUBNAVBAR2_FILE'                => $objNavbar->getSubnavigation($themesPages['subnavbar2'],$boolShop),
-    'SUBNAVBAR3_FILE'                => $objNavbar->getSubnavigation($themesPages['subnavbar3'],$boolShop),
-    'NAVBAR_FILE'                    => $objNavbar->getNavigation($themesPages['navbar'], $boolShop),
-    'NAVBAR2_FILE'                   => $objNavbar->getNavigation($themesPages['navbar2'], $boolShop),
-    'NAVBAR3_FILE'                   => $objNavbar->getNavigation($themesPages['navbar3'], $boolShop),
+    'SUBNAVBAR_FILE'                 => $objNavbar->getSubnavigation($themesPages['subnavbar'], $license,$boolShop),
+    'SUBNAVBAR2_FILE'                => $objNavbar->getSubnavigation($themesPages['subnavbar2'], $license,$boolShop),
+    'SUBNAVBAR3_FILE'                => $objNavbar->getSubnavigation($themesPages['subnavbar3'], $license,$boolShop),
+    'NAVBAR_FILE'                    => $objNavbar->getNavigation($themesPages['navbar'], $license, $boolShop),
+    'NAVBAR2_FILE'                   => $objNavbar->getNavigation($themesPages['navbar2'], $license, $boolShop),
+    'NAVBAR3_FILE'                   => $objNavbar->getNavigation($themesPages['navbar3'], $license, $boolShop),
     'ONLINE_USERS'                   => $objCounter->getOnlineUsers(),
     'VISITOR_NUMBER'                 => $objCounter->getVisitorNumber(),
     'COUNTER'                        => $objCounter->getCounterTag(),

@@ -159,8 +159,14 @@ function showActionDialog(action, fromLang, toLang, yesAction, checkboxText) {
         buttons: buttons,
         modal: true,
         width: 400,
-        autoOpen: true
+        autoOpen: false
     });
+    var yesButton = dialog.getElement().siblings(".ui-dialog-buttonpane").children(".ui-dialog-buttonset").children("button").first();
+    yesButton.hide();
+    jQuery("#really").change(function() {
+        yesButton.toggle(jQuery("#really").is(":checked"));
+    });
+    dialog.open();
     return dialog;
 }
 // -->

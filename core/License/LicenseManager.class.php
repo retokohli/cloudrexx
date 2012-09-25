@@ -50,8 +50,8 @@ class LicenseManager {
             $license->check();
             $this->license = $license;
         } else if (isset($_POST['update'])) {
-            $lc = LicenseCommunicator::getInstance();
-            $lc->update($this->license, $this->config);
+            $lc = LicenseCommunicator::getInstance($this->config);
+            $lc->update($this->license, $this->config, true);
             $this->license->save(new \settingsManager(), $this->db);
         }
         $date = $this->license->getValidToDate();
@@ -61,8 +61,9 @@ class LicenseManager {
             $formattedDate = '';
         }
         if (!file_exists(ASCMS_TEMP_PATH . '/licenseManager.html')) {
-            $lc = LicenseCommunicator::getInstance();
+            $lc = LicenseCommunicator::getInstance($this->config);
             $lc->update($this->license, $this->config, true, true);
+            $this->license->save(new \settingsManager(), $this->db);
         }
         if (file_exists(ASCMS_TEMP_PATH . '/licenseManager.html')) {
             $remoteTemplate = new \HTML_Template_Sigma(ASCMS_TEMP_PATH);

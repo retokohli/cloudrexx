@@ -13,11 +13,15 @@ namespace Cx\Core\License;
  */
 class LicenseCommunicator {
     private static $instance = null;
+    private $requestInterval = 1;
+    private $lastUpdate;
     
-    public function __construct() {
+    public function __construct(&$_CONFIG) {
         if (self::$instance) {
             throw new \BadMethodCallException('Cannot construct a second instance, use ::getInstance()');
         }
+        $this->requestInterval = $_CONFIG['licenseUpdateInterval'];
+        $this->lastUpdate = $_CONFIG['licenseSuccessfulUpdate'];
         self::$instance = $this;
     }
     
@@ -25,11 +29,21 @@ class LicenseCommunicator {
      *
      * @return \Cx\Core\License\LicenseCommunicator 
      */
-    public function getInstance() {
+    public function getInstance(&$_CONFIG) {
         if (!self::$instance) {
-            new self();
+            new self($_CONFIG);
         }
         return self::$instance;
+    }
+    
+    /**
+     * Tells wheter its time to update or not
+     * @return boolean True if license is outdated, false otherwise
+     */
+    public function isTimeToUpdate() {
+        $offset = $this->requestInterval *60*60;
+        // if offset date lies in future, we do not update yet
+        return ($this->lastUpdate + $offset <= time());
     }
     
     /**
@@ -40,9 +54,8 @@ class LicenseCommunicator {
      * @return void 
      */
     public function update(&$license, $_CONFIG, $forceUpdate = false, $forceTemplate = false) {
-        if (!$forceUpdate) {
-            // last update less than one day ago?
-                // return
+        if (!$forceUpdate && !$this->isTimeToUpdate($_CONFIG)) {
+            return;
         }
         $v = preg_split('#\.#', $_CONFIG['coreCmsVersion']);
         $e = $_CONFIG['coreCmsEdition'];
@@ -81,14 +94,17 @@ class LicenseCommunicator {
         try {
             $objResponse = $request->send();
             if ($objResponse->getStatus() !== 200) {
-                // error
-                echo 'ERROR';
+                $license->setState(License::LICENSE_ERROR);
+                $license->check();
+                return;
             } else {
                 //echo $objResponse->getBody();
                 $response = json_decode($objResponse->getBody());
             }
         } catch (HTTP_Request2_Exception $objException) {
-            throw $objException;
+            $license->setState(License::LICENSE_ERROR);
+            $license->check();
+            return;
         }
         
         // create new license
@@ -107,6 +123,10 @@ class LicenseCommunicator {
                     $file->write($response->common->template);
                 } catch (\Cx\Lib\FileSystem\FileSystemException $e) {}
             }
+        }
+        $this->requestInterval = $response->license->settings->requestInterval;
+        if (!is_int($this->requestInterval) || $this->requestInterval < 0 || $this->requestInterval > (365*24)) {
+            $this->requestInterval = 1;
         }
         $message = new \Cx\Core\License\Message(
             $response->license->message->text,
@@ -143,8 +163,50 @@ class LicenseCommunicator {
             $licenseKey,
             $message,
             $version,
-            $customer
+            $customer,
+            $response->license->settings->grayZoneTime,
+            $response->license->settings->frontendLockTime,
+            $this->requestInterval,
+            0,
+            time()
         );
         return;
+    }
+    
+    public function addJsUpdateCode() {
+        $lc = LicenseCommunicator::getInstance($this->config);
+        if ($lc->isTimeToUpdate($this->config)) {
+            \JS::activate('jquery');
+            \JS::registerCode('
+                jQuery(document).ready(function() {
+                    var messageBar = jQuery("#message_message");
+                    var oldMsg = messageBar.children("a").html();
+                    var oldClass = messageBar.parent().attr("class");
+                    var oldLink = messageBar.children("a").attr("href");
+                    var oldTarget = messageBar.children("a").attr("target");
+                    messageBar.children("a").attr("href", "#");
+                    messageBar.children("a").attr("target", "_self");
+                    messageBar.children("a").html("Lizenz wird aktualisiert...");
+                    messageBar.parent().attr("class", "message okbox");
+                    var revertMessage = function() {
+                        messageBar.children("a").html(oldMsg);
+                        messageBar.parent().attr("class", oldClass);
+                        messageBar.children("a").attr("href", oldLink);
+                        messageBar.children("a").attr("target", oldTarget);
+                    }
+                    jQuery.get(
+                        "../core/License/versioncheck.php"
+                    ).success(function(data) {
+                        data = jQuery.parseJSON(data);
+                        messageBar.children("a").html(data.text);
+                        messageBar.parent().attr("class", "message " + data.class);
+                        messageBar.children("a").attr("href", data.link);
+                        messageBar.children("a").attr("target", data.target);
+                    }).error(function(data) {
+                        revertMessage();
+                    });
+                });
+            ');
+        }
     }
 }

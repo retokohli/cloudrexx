@@ -349,6 +349,46 @@ class JsonPage implements JsonAdapter {
         }
         
         $this->em->persist($page);
+        
+        if ((isset($dataPost['inheritFrontendAccess']) && $dataPost['inheritFrontendAccess'] == 'on')
+                || (isset($dataPost['inheritBackendAccess']) && $dataPost['inheritBackendAccess'] == 'on')
+                || (isset($dataPost['inheritSkin']) && $dataPost['inheritSkin'] == 'on')
+                || (isset($dataPost['inheritCustomContent']) && $dataPost['inheritCustomContent'] == 'on')
+                || (isset($dataPost['inheritCssName']) && $dataPost['inheritCssName'] == 'on')
+                || (isset($dataPost['inheritCssNavName']) && $dataPost['inheritCssNavName'] == 'on')
+                || (isset($dataPost['inheritCaching']) && $dataPost['inheritCaching'] == 'on')
+        ) {
+            $pageStack = array();
+            while (count($pageStack)) {
+                $currentPage = array_pop($pageStack);
+                foreach ($currentPage->getChildren() as $child) {
+                    array_push($pageStack, $child);
+                }
+                if (isset($dataPost['inheritFrontendAccess']) && $dataPost['inheritFrontendAccess'] == 'on'/*frontendprotection*/) {
+                    $page->copyProtection($currentPage, true);
+                }
+                if (isset($dataPost['inheritBackendAccess']) && $dataPost['inheritBackendAccess'] == 'on'/*backendprotection*/) {
+                    $page->copyProtection($currentPage, false);
+                }
+                if (isset($dataPost['inheritSkin']) && $dataPost['inheritSkin'] == 'on'/*theme*/) {
+                    $currentPage->setSkin($page->getSkin());
+                }
+                if (isset($dataPost['inheritCustomContent']) && $dataPost['inheritCustomContent'] == 'on'/*customContent*/) {
+                    $currentPage->setSourceMode($page->getSourceMode());
+                }
+                if (isset($dataPost['inheritCssName']) && $dataPost['inheritCssName'] == 'on'/*cssName*/) {
+                    $currentPage->setCssName($page->getCssName());
+                }
+                if (isset($dataPost['inheritCssNavName']) && $dataPost['inheritCssNavName'] == 'on'/*cssNavName*/) {
+                    $currentPage->setCssNavName($page->getCssNavName());
+                }
+                if (isset($dataPost['inheritCaching']) && $dataPost['inheritCaching'] == 'on'/*caching*/) {
+                    $currentPage->setCaching($page->getCaching());
+                }
+                $this->em->persist($currentPage);
+            }
+        }
+        
         $this->em->flush();
         
         // Aliases are only updated in the editing mode.

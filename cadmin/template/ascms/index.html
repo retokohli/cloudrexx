@@ -15,14 +15,7 @@
         <!-- END additional_style -->
 
         {JAVASCRIPT}
-
-        <script type="text/javascript" language="javascript">
-            jQuery.get("../core/License/versioncheck.php").success(function(data) {
-                if (data.match(/update/i)) {
-                    jQuery('#new_version').html(data);
-                }
-            });
-        </script>
+        
     </head>
     <body>
         <div id="loading" style="display: none;"><img src="../lib/javascript/jquery/jstree/themes/default/throbber.gif" alt="" /><span>Loading...</span></div>
