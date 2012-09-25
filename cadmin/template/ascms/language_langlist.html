@@ -59,7 +59,10 @@ function copyPages(toLangId) {
         cx.ui.dialog({
             content: cx.variables.get("copySuccess", "language/lang"),
             modal: true,
-            autoOpen: true
+            autoOpen: true,
+            open: function () {
+                $J('.ui-dialog').css('top', '30%');
+            }
         });
     });
 }
@@ -69,7 +72,10 @@ function linkPages(toLangId) {
         cx.ui.dialog({
             content: cx.variables.get("linkSuccess", "language/lang"),
             modal: true,
-            autoOpen: true
+            autoOpen: true,
+            open: function () {
+                $J('.ui-dialog').css('top', '30%');
+            }
         });
     });
 }
@@ -90,7 +96,10 @@ function performLanguageAction(actionName, toLangId, action) {
             content: cx.variables.get("waitText", "language/lang"),
             modal: true,
             autoOpen: true,
-            open: function(event, ui) { jQuery(".ui-dialog-titlebar-close").hide(); }
+            open: function(event, ui) {
+                jQuery(".ui-dialog-titlebar-close").hide();
+                $J('.ui-dialog').css('top', '30%');
+            }
         });
         var offset = 0;
         var count = 0;
@@ -107,7 +116,10 @@ function performLanguageAction(actionName, toLangId, action) {
                             title: json.status,
                             content: json.message,
                             modal: true,
-                            autoOpen: true
+                            autoOpen: true,
+                            open: function () {
+                                $J('.ui-dialog').css('top', '30%');
+                            }
                         });
                         return;
                     }
@@ -157,7 +169,10 @@ function showActionDialog(action, fromLang, toLang, yesAction, checkboxText) {
         buttons: buttons,
         modal: true,
         width: 400,
-        autoOpen: true
+        autoOpen: true,
+        open: function () {
+            $J('.ui-dialog').css('top', '30%');
+        }
     });
     return dialog;
 }

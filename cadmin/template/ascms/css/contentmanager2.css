@@ -543,12 +543,6 @@ h1{ font-size: 20px }
     width: 100%;
 }
 
-.ui-dialog.edit-mode {
-    position: fixed !important;
-    top: 33% !important;
-    margin-top: -78px;
-}
-
 #edit_mode {
     position: relative;
     float: left;
