@@ -13,6 +13,7 @@ abstract class PageTree {
     protected $rootNode = null;
     protected $depth = null;
     protected $em = null;
+    protected $license = null;
     protected $currentPage = null;
     protected $pageIdsAtCurrentPath = array();
     protected $currentPageOnRootNode = false;
@@ -21,15 +22,17 @@ abstract class PageTree {
     
     /**
      * @param $entityManager the doctrine em
+     * @param \Cx\Core\License\License $license License used to check if a module is allowed in frontend
      * @param int $maxDepth maximum depth to fetch, 0 means everything
      * @param \Cx\Model\ContentManager\Node $rootNode node to use as root
      * @param int $lang the language
      * @param \Cx\Model\ContentManager\Page $currentPage if set, renderElement() will receive a correctly set $current flag.
      */
-    public function __construct($entityManager, $maxDepth = 0, $rootNode = null, $lang = null, $currentPage = null) {
+    public function __construct($entityManager, $license, $maxDepth = 0, $rootNode = null, $lang = null, $currentPage = null) {
         $this->lang = $lang;
         $this->depth = $maxDepth;
         $this->em = $entityManager;
+        $this->license = $license;
         $this->rootNode = $rootNode;
         $this->currentPage = $currentPage;
         $pageI = $currentPage;
@@ -104,6 +107,10 @@ $this->bytes = memory_get_peak_usage();
             }
             
             if (!$page) {
+                continue;
+            }
+            
+            if ($page->getModule() != '' && !$this->license->isInLegalFrontendComponents($page->getModule())) {
                 continue;
             }
 

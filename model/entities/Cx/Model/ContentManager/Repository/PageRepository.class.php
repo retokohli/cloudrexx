@@ -731,7 +731,7 @@ class PageRepository extends EntityRepository {
      *     'Link' => string
      * )
      */
-    public function searchResultsForSearchModule($string) {
+    public function searchResultsForSearchModule($string, $license) {
         if ($string == '') {
             return array();
         }
@@ -749,11 +749,16 @@ class PageRepository extends EntityRepository {
                      $qb->expr()->orx(
                          $qb->expr()->like('p.content', ':searchString'),
                          $qb->expr()->like('p.title', ':searchString')
+                     ),
+                     $qb->expr()->orX(
+                        'p.module = \'\'',
+                        'p.module IS NULL',
+                        'p.module IN (:modules)'
                      )
                  )
-             );
-
-        $qb->setParameter('searchString', '%'.$string.'%');
+           )
+           ->setParameter('searchString', '%'.$string.'%')
+           ->setParameter('modules', $license->getLegalFrontendComponentsList());
         $pages   = $qb->getQuery()->getResult();
         $config  = \Env::get('config');
         $results = array();

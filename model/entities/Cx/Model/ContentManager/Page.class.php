@@ -1280,7 +1280,7 @@ class Page extends \Cx\Model\Base\EntityBase
      * @param boolean $frontend Wheter the front- or backend protection should be cloned
      * @return boolean True on success, false otherwise
      */
-    private function copyProtection($page, $frontend) {
+    public function copyProtection($page, $frontend) {
         if ($frontend) {
             $accessId = $this->getFrontendAccessId();
         } else {
@@ -1667,6 +1667,22 @@ class Page extends \Cx\Model\Base\EntityBase
             throw new PageException('Parent page not found (my page id is ' . $this->getId() . ')');
         }
         return $parent;
+    }
+    
+    /**
+     * Returns an array of child pages (pages of the same language of all subnodes)
+     * @return array List of page objects
+     */
+    public function getChildren() {
+        $childNodes = $this->getNode()->getChildren();
+        $children = array();
+        foreach ($childNodes as $childNode) {
+            $child = $childNode->getPage($this->getLang());
+            if ($child) {
+                $children[] = $child;
+            }
+        }
+        return $children;
     }
     
     /**

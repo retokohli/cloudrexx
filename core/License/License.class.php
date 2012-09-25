@@ -19,12 +19,18 @@ class License {
     private $frontendLocked = false;
     private $editionName;
     private $legalComponents;
+    private $legalFrontendComponents;
     private $validTo;
     private $instId;
     private $licenseKey;
     private $message;
     private $version;
     private $customer;
+    private $grayzoneTime;
+    private $frontendLockTime;
+    private $requestInterval;
+    private $firstFailedUpdate;
+    private $lastSuccessfulUpdate;
     
     public function __construct(
             $state = self::LICENSE_DEMO,
@@ -35,7 +41,12 @@ class License {
             $licenseKey = '',
             $message = '',
             $version = '',
-            $customer = ''
+            $customer = '',
+            $grayzoneTime = 14,
+            $frontendLockTime = 10,
+            $requestInterval = 1,
+            $firstFailedUpdate = 0,
+            $lastSuccessfulUpdate = 0
     ) {
         $this->state = $state;
         $this->editionName = $editionName;
@@ -46,10 +57,22 @@ class License {
         $this->message = $message;
         $this->version = $version;
         $this->customer = $customer;
+        $this->grayzoneTime = $grayzoneTime;
+        $this->frontendLockTime = $frontendLockTime;
+        $this->requestInterval = $requestInterval;
+        $this->setFirstFailedUpdateTime($firstFailedUpdate);
+        $this->setLastSuccessfulUpdateTime($lastSuccessfulUpdate);
     }
     
     public function getState() {
         return $this->state;
+    }
+    
+    public function setState($state) {
+        $this->state = $state;
+        if ($this->state == self::LICENSE_ERROR) {
+            $this->setFirstFailedUpdateTime(time());
+        }
     }
     
     public function isFrontendLocked() {
@@ -66,6 +89,17 @@ class License {
     
     public function isInLegalComponents($componentName) {
         return in_array($componentName, $this->legalComponents);
+    }
+    
+    public function getLegalFrontendComponentsList() {
+        if (!$this->legalFrontendComponents) {
+            return $this->getLegalComponentsList();
+        }
+        return $this->legalFrontendComponents;
+    }
+    
+    public function isInLegalFrontendComponents($componentName) {
+        return in_array($componentName, $this->getLegalFrontendComponentsList());
     }
     
     public function getValidToDate() {
@@ -88,6 +122,10 @@ class License {
         $this->licenseKey = $key;
     }
     
+    /**
+     *
+     * @return Message
+     */
     public function getMessage() {
         return $this->message;
     }
@@ -100,6 +138,35 @@ class License {
         return $this->customer;
     }
     
+    public function getGrayzoneTime() {
+        return $this->grayzoneTime;
+    }
+    
+    public function getFrontendLockTime() {
+        return $this->frontendLockTime;
+    }
+    
+    public function getFirstFailedUpdateTime() {
+        return $this->firstFailedUpdate;
+    }
+    
+    public function setFirstFailedUpdateTime($time) {
+        if ($this->firstFailedUpdate == 0) {
+            $this->firstFailedUpdate = $time;
+        }
+    }
+    
+    public function getLastSuccessfulUpdateTime() {
+        return $this->lastSuccessfulUpdate;
+    }
+    
+    public function setLastSuccessfulUpdateTime($time) {
+        if ($time > $this->firstFailedUpdate) {
+            $this->firstFailedUpdate = 0;
+            $this->lastSuccessfulUpdate = $time;
+        }
+    }
+    
     public function check() {
         $validTo = 0;
         switch ($this->state) {
@@ -108,15 +175,20 @@ class License {
                 $validTo = $this->validTo;
                 break;
             case self::LICENSE_ERROR:
-                $validTo = time() + 60*60*24*$this->grayzoneTime;
+                $this->setFirstFailedUpdateTime(time());
+                $validTo = $this->getFirstFailedUpdateTime() + 60*60*24*$this->grayzoneTime;
                 break;
         }
-        if (empty($this->instId) || empty($this->licenseKey) || $validTo < time()) {
+        if (empty($this->instId) || empty($this->licenseKey) || $validTo < time() || $this->state == self::LICENSE_NOK) {
             $this->state = self::LICENSE_NOK;
-            $validTo = 0;
+            $this->legalFrontendComponents = $this->legalComponents;
             $this->legalComponents = array('license');
-            $this->frontendLocked = true;
+            if ($validTo + 60*60*24*$this->frontendLockTime >= time()) {
+                $this->frontendLocked = true;
+                $this->legalFrontendComponents = array('license');
+            }
         }
+        $this->setValidToDate($validTo);
     }
     
     /**
@@ -160,6 +232,13 @@ class License {
         $_POST['setvalue'][111] = $this->getCustomer()->getMail();          // licenseHolderMail
         
         $_POST['setvalue'][112] = $this->getVersion()->getName();           // coreCmsName
+        
+        $_POST['setvalue'][114] = $this->getGrayzoneTime();                 // licenseGrayzoneTime
+        $_POST['setvalue'][115] = $this->getFrontendLockTime();             // licenseLockTime
+        $_POST['setvalue'][116] = $this->requestInterval;                   // licenseUpdateInterval
+        
+        $_POST['setvalue'][117] = $this->getFirstFailedUpdateTime();        // licenseFailedUpdate
+        $_POST['setvalue'][118] = $this->getLastSuccessfulUpdateTime();     // licenseSuccessfulUpdate
         
         $settingsManager->updateSettings();
         $settingsManager->writeSettingsFile();
@@ -233,6 +312,12 @@ class License {
         $versionReleaseDate = isset($_CONFIG['coreCmsReleaseDate']) ? $_CONFIG['coreCmsReleaseDate'] : null;
         $version = new Version($versionNumber, $versionName, $versionCodeName, $versionState, $versionReleaseDate);
         
+        $grayzoneTime = isset($_CONFIG['licenseGrayzoneTime']) ? $_CONFIG['licenseGrayzoneTime'] : null;
+        $lockTime = isset($_CONFIG['licenseLockTime']) ? $_CONFIG['licenseLockTime'] : null;
+        $updateInterval = isset($_CONFIG['licenseUpdateInterval']) ? $_CONFIG['licenseUpdateInterval'] : null;
+        $failedUpdate = isset($_CONFIG['licenseFailedUpdate']) ? $_CONFIG['licenseFailedUpdate'] : null;
+        $successfulUpdate = isset($_CONFIG['licenseSuccessfulUpdate']) ? $_CONFIG['licenseSuccessfulUpdate'] : null;
+        
         $query = '
             SELECT
                 `name`
@@ -258,7 +343,12 @@ class License {
             $licenseKey,
             $message,
             $version,
-            $customer
+            $customer,
+            $grayzoneTime,
+            $lockTime,
+            $updateInterval,
+            $failedUpdate,
+            $successfulUpdate
         );
     }
 }

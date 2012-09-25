@@ -12,7 +12,7 @@
  */
 
 //Security-Check
-if (eregi("index.class.php",$_SERVER['PHP_SELF'])) {
+if (preg_match('/index.class.php/',$_SERVER['PHP_SELF'])) {
     Header("Location: ../../index.php");
     die();
 }
@@ -27,7 +27,7 @@ if (eregi("index.class.php",$_SERVER['PHP_SELF'])) {
 * @param     string        $page_content get the content from index.php
 * @return    string        Result page content
 */
-function search_getSearchPage($pos, $page_content)
+function search_getSearchPage($pos, $page_content, $license)
 {
     global $_CONFIG, $_ARRAYLANG,$objDatabase;
 
@@ -77,7 +77,7 @@ function search_getSearchPage($pos, $page_content)
     //Prm: Query,Section,Cmd,PageVar
     //$arrayContent=search_getResultArray($query,"","","page=",$term);
     $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
-    $arrayContent = $pageRepo->searchResultsForSearchModule($term);
+    $arrayContent = $pageRepo->searchResultsForSearchModule($term, $license);
     
     $arrayNews=search_getResultArray($querynews,"news","details","newsid=",$term);
     $arrayDocsys = array();
@@ -160,7 +160,7 @@ function search_getSearchPage($pos, $page_content)
         $arraySearchOut = array_slice($arraySearchResults, $pos, $_CONFIG['corePagingLimit']);
 
         foreach($arraySearchOut as $kk => $details){
-            $objTpl->setVariable('COUNT_MATCH', $_ARRAYLANG['TXT_RELEVANCE'].' '.$details[Score].'%');
+            $objTpl->setVariable('COUNT_MATCH', $_ARRAYLANG['TXT_RELEVANCE'].' '.$details['Score'].'%');
             $objTpl->setVariable('LINK', '<b><a href="'.contrexx_raw2xhtml($details['Link']).'" title="'.contrexx_raw2xhtml($details['Title']).'">'.contrexx_raw2xhtml($details['Title']).'</a></b>');
             $objTpl->setVariable('SHORT_CONTENT', $details['Content'].' ...');
             $objTpl->parse('search_result');
@@ -435,7 +435,7 @@ function search_getResultArray($query,$section,$command,$pagevar,$term)
                 break;
         }
 
-        $searchcontent = trim(stripslashes(strip_tags($objResult->fields['content'])));
+        $searchcontent = trim(stripslashes(strip_tags(isset($objResult->fields['content']) ? $objResult->fields['content'] : '')));
         $searchcontent = preg_replace(
             array(
                 '/\{[a-z0-9_]+\}/',

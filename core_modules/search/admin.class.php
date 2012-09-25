@@ -73,11 +73,15 @@ class SearchManager extends \Module
      * @access private
      */
     private $pos = 0;
+    /**
+     * @var \Cx\Core\License\License
+     */
+    private $license = null;
     
     /**
      * Constructor
      */
-    function __construct($act, $tpl, $db, $init)
+    function __construct($act, $tpl, $db, $init, $license)
     {
         parent::__construct($act, $tpl);
         $this->defaultAct = 'getSearchResults';
@@ -87,6 +91,7 @@ class SearchManager extends \Module
         $this->act      = $act;
         $this->tpl      = $tpl;
         $this->init     = $init;
+        $this->license  = $license;
         
         $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
         $this->nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
@@ -167,17 +172,25 @@ class SearchManager extends \Module
     private function getSearchQueryBuilder()
     {
         $qb = $this->em->createQueryBuilder();
+        //$qb = new Doctrine\ORM\Query\Expr();
         $qb->select('p')
-           ->from('Cx\Model\ContentManager\Page', 'p')
-           ->where(
-               $qb->expr()->orx(
-                   $qb->expr()->like('p.slug', ':searchTerm'),
-                   $qb->expr()->like('p.title', ':searchTerm'),
-                   $qb->expr()->like('p.contentTitle', ':searchTerm')
-               )
-           )
-           ->setParameter('searchTerm', '%'.$this->term.'%');
-        
+            ->from('Cx\Model\ContentManager\Page', 'p')
+            ->where(
+                $qb->expr()->andX(
+                    $qb->expr()->orX(
+                        $qb->expr()->like('p.slug', ':searchTerm'),
+                        $qb->expr()->like('p.title', ':searchTerm'),
+                        $qb->expr()->like('p.contentTitle', ':searchTerm')
+                    ),
+                    $qb->expr()->orX(
+                        'p.module = \'\'',
+                        'p.module IS NULL',
+                        'p.module IN (:modules)'
+                    )
+                )
+            )
+            ->setParameter('searchTerm', '%'.$this->term.'%')
+            ->setParameter('modules', $this->license->getLegalComponentsList());
         return $qb;
     }
     
