@@ -237,6 +237,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             'jsfiles' => array(
                 'lib/javascript/jquery/jquery.md5.js',
             ),
+            'dependencies' => array('jquery'),
         ),
         'cx' => array(
             'jsfiles' => array(

@@ -42,17 +42,19 @@ class LicenseManager {
     }
     
     public function getPage($_POST) {
-        if (isset($_POST['save']) && isset($_POST['licenseKey'])) {
-            $license = License::getCached($this->config, $this->db);
-            $license->setLicenseKey(contrexx_input2db($_POST['licenseKey']));
-            // save it before we check it, so we only change the license key
-            $license->save(new \settingsManager(), $this->db);
-            $license->check();
-            $this->license = $license;
-        } else if (isset($_POST['update'])) {
-            $lc = LicenseCommunicator::getInstance($this->config);
-            $lc->update($this->license, $this->config, true);
-            $this->license->save(new \settingsManager(), $this->db);
+        if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
+            if (isset($_POST['save']) && isset($_POST['licenseKey'])) {
+                $license = License::getCached($this->config, $this->db);
+                $license->setLicenseKey(contrexx_input2db($_POST['licenseKey']));
+                // save it before we check it, so we only change the license key
+                $license->save(new \settingsManager(), $this->db);
+                $license->check();
+                $this->license = $license;
+            } else if (isset($_POST['update'])) {
+                $lc = LicenseCommunicator::getInstance($this->config);
+                $lc->update($this->license, $this->config, true);
+                $this->license->save(new \settingsManager(), $this->db);
+            }
         }
         $date = $this->license->getValidToDate();
         if ($date) {
@@ -66,6 +68,7 @@ class LicenseManager {
             $this->license->save(new \settingsManager(), $this->db);
         }
         if (file_exists(ASCMS_TEMP_PATH . '/licenseManager.html')) {
+            \JS::activate('cx');
             $remoteTemplate = new \HTML_Template_Sigma(ASCMS_TEMP_PATH);
             $remoteTemplate->loadTemplateFile('/licenseManager.html');
             $remoteTemplate->touchBlock('licenseManager');
@@ -88,6 +91,13 @@ class LicenseManager {
                 'INSTALLATION_ID' => $this->license->getInstallationId(),
                 'LICENSE_KEY' => $this->license->getLicenseKey(),
             ));
+            if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
+                $remoteTemplate->touchBlock('licenseAdmin');
+                $remoteTemplate->hideBlock('licenseNotAdmin');
+            } else {
+                $remoteTemplate->hideBlock('licenseAdmin');
+                $remoteTemplate->touchBlock('licenseNotAdmin');
+            }
             $this->template->setVariable('ADMIN_CONTENT', $remoteTemplate->get());
         } else {
             $this->template->setVariable('ADMIN_CONTENT', $this->lang['TXT_LICENSE_NO_TEMPLATE']);

@@ -58,6 +58,7 @@ class adminMenu
             } else {
                 $sqlWhereString = " AND areas.access_id='' ";
             }
+            $sqlWhereString = " OR areas.access_id='0' ";
         }
 
         $query = "
@@ -159,8 +160,8 @@ class adminMenu
             }
 
             //(3/3) display a nice ordered menu.
+            $subentryActive = false;
             foreach ($arrMatchingItems as $link_data) {
-                $subentryActive = false;
                 if ($group_id != 2 ||  $this->moduleExists($link_data[4])) {
 
                     // active exceptions for media and content module
@@ -213,7 +214,16 @@ class adminMenu
                                 }
 
                                 switch ($requestedArchive) {
+                                    case 'attach':
                                     case 'shop':
+                                    case 'gallery':
+                                    case 'access':
+                                    case 'mediadir':
+                                    case 'downloads':
+                                    case 'calendar':
+                                    case 'podcast':
+                                    case 'blog':
+                                    case 'partners':
                                         $requestedArchive = 'content';
                                         break;
                                     case 'themes':
@@ -233,11 +243,28 @@ class adminMenu
                                     }
 
                                 }
-
+                                
                                 if (!$isRequestedMediaArchive) {
                                     $linkCmd = '';
                                 }
 
+                                break;
+                            case 'newsletter':
+                                if (!isset($_REQUEST['act'])) {
+                                    $_REQUEST['act'] = 'mails';
+                                }
+                                switch ($_REQUEST['act']) {
+                                    case 'interface':
+                                    case 'confightml':
+                                    case 'activatemail':
+                                    case 'confirmmail':
+                                    case 'notificationmail':
+                                    case 'system':
+                                        $_REQUEST['act'] = 'dispatch';
+                                        break;
+                                    default:
+                                        break;
+                                }
                                 break;
                             default:
                                 break;
@@ -250,10 +277,10 @@ class adminMenu
                         ) {
                             $cssClass = 'active';
                         } else if (!empty($this->activeCmd) && !empty($linkCmd) && ($this->activeCmd == $linkCmd)) {
-                            if (!empty($_REQUEST['act']) && !empty($linkCmdSection) && (strpos($linkCmdSection, $_REQUEST['act']) == false)) {
-                                $cssClass = 'inactive';
-                            } else  {
+                            if (empty($_REQUEST['act']) || empty($linkCmdSection) || (strpos($_SERVER['QUERY_STRING'], $linkCmdSection) != false)) {
                                 $cssClass = 'active';
+                            } else  {
+                                $cssClass = 'inactive';
                             }
                         } else if (empty($this->activeCmd) && $link_data[2] == 'index.php') {
                             $cssClass = 'active';
@@ -275,7 +302,7 @@ class adminMenu
                     'NAVIGATION_GROUP_NAME' => htmlentities($_CORELANG[$group_data], ENT_QUOTES, CONTREXX_CHARSET),
                     'NAVIGATION_ID'         => $group_id,
                     'NAVIGATION_MENU'       => $navigation,
-                    'NAVIGATION_CLASS'      => $subentryActive || (!empty($_COOKIE['navigation_level_2_active']) && ($_COOKIE['navigation_level_2_active'] == $group_id)) ? 'active' : 'inactive',
+                    'NAVIGATION_CLASS'      => $subentryActive ? 'active' : 'inactive',
                 ));
                 $objTemplate->parse('navigationRow');
             }
