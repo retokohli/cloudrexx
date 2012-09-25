@@ -561,7 +561,7 @@ class calendarManager extends calendarLibrary
             $this->getNoteData($id, "edit", 0);
 
             //get editor
-            $ed = new \Cx\Core\Wysiwyg('inputComment');
+            $ed = new \Cx\Core\Wysiwyg\Wysiwyg('inputComment');
 
             //show send mail again
             $this->_objTpl->parse('sendMailAgain');
@@ -608,7 +608,7 @@ class calendarManager extends calendarLibrary
                 }
             }
 
-            $ed = new \Cx\Core\Wysiwyg('inputComment');
+            $ed = new \Cx\Core\Wysiwyg\Wysiwyg('inputComment');
 
             //get mail template
             $query          = "SELECT setvalue

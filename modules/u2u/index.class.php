@@ -147,7 +147,7 @@ class u2u extends u2uLibrary
                 $this->_objTpl->hideBlock('u2u_private_notification_message_link');
             }
 
-            $strMessageInputHTML = new \Cx\Core\Wysiwyg('private_message', $this->strMessages,'news');
+            $strMessageInputHTML = new \Cx\Core\Wysiwyg\Wysiwyg('private_message', $this->strMessages,'news');
 
             $this->_objTpl->setVariable(array(
                 'TXT_SEND_PRIVATE_MESSAGE'           =>  $_ARRAYLANG['TXT_SEND_PRIVATE_MESSAGE'],

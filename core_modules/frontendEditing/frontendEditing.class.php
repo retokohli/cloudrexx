@@ -460,7 +460,7 @@ class frontendEditing extends frontendEditingLib {
      */
     private function getWysiwyg() {
         $strContent = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $this->strContent);
-        return new \Cx\Core\Wysiwyg('fe_FormContent', $strContent, 'frontendEditing');
+        return new \Cx\Core\Wysiwyg\Wysiwyg('fe_FormContent', $strContent, 'frontendEditing');
     }
 
     /**

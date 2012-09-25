@@ -718,7 +718,7 @@ class BlogAdmin extends BlogLibrary {
                     'DIV_CATEGORIES_1'  =>  $arrCategoriesContent[0],
                     'DIV_CATEGORIES_2'  =>  $arrCategoriesContent[1],
                     'DIV_CATEGORIES_3'  =>  $arrCategoriesContent[2],
-                    'DIV_CONTENT'       =>  new \Cx\Core\Wysiwyg('frmEditEntry_Content_'.$intLanguageId, null, null, $intLanguageId),
+                    'DIV_CONTENT'       =>  new \Cx\Core\Wysiwyg\Wysiwyg('frmEditEntry_Content_'.$intLanguageId, null, null, $intLanguageId),
                 ));
                 $this->_objTpl->parse('showLanguageDivs');
 
@@ -918,7 +918,7 @@ class BlogAdmin extends BlogLibrary {
                         'DIV_CATEGORIES_1'  =>  $arrCategoriesContent[0],
                         'DIV_CATEGORIES_2'  =>  $arrCategoriesContent[1],
                         'DIV_CATEGORIES_3'  =>  $arrCategoriesContent[2],
-                        'DIV_CONTENT'       =>  new \Cx\Core\Wysiwyg('frmEditEntry_Content_'.$intLanguageId, $arrEntries[$intEntryId]['translation'][$intLanguageId]['content'], null, $intLanguageId),
+                        'DIV_CONTENT'       =>  new \Cx\Core\Wysiwyg\Wysiwyg('frmEditEntry_Content_'.$intLanguageId, $arrEntries[$intEntryId]['translation'][$intLanguageId]['content'], null, $intLanguageId),
                     ));
 
                     $this->_objTpl->parse('showLanguageDivs');
@@ -1578,7 +1578,7 @@ class BlogAdmin extends BlogLibrary {
                 'COMMENT_USER_WWW'      =>  $strUserWWW.'&nbsp;'.$strUserWWWIcon,
                 'COMMENT_SUBJECT'       =>  htmlentities(stripslashes($objCommentResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET),
                 //'COMMENT_CONTENT'     =>  htmlentities(stripslashes($objCommentResult->fields['comment']), ENT_QUOTES, CONTREXX_CHARSET),
-                'COMMENT_CONTENT'       =>  new \Cx\Core\Wysiwyg('frmEditComment_Content', stripslashes($objCommentResult->fields['comment']), 'news')
+                'COMMENT_CONTENT'       =>  new \Cx\Core\Wysiwyg\Wysiwyg('frmEditComment_Content', stripslashes($objCommentResult->fields['comment']), 'news')
             ));
         } else {
             $this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_EDIT_ERROR'];

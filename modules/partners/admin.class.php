@@ -2504,7 +2504,7 @@ class PartnersAdmin extends PartnersLibrary
                         'PARTNERS_EMAIL'        => $errArray["email"][$intLanguageId],
                         'PARTNERS_WEBSITE'      => $errArray["website"][$intLanguageId],
                         'PASS_LANG_MULTIPLE'    => $lang_multiple,
-                        'PARTNERS_TEXT'         => new \Cx\Core\Wysiwyg('partnersText_'.$intLanguageId)
+                        'PARTNERS_TEXT'         => new \Cx\Core\Wysiwyg\Wysiwyg('partnersText_'.$intLanguageId)
                 ));
 
                 $pass_java_language .= $intLanguageId."-";
@@ -3049,7 +3049,7 @@ class PartnersAdmin extends PartnersLibrary
                             'PARTNERS_REGION'       =>  $this->_getListLevelMenu($arrEntries[$intEntryId]['translation'][$intLanguageId]['region'],$titleName_region,'name="region_'.$intLanguageId.'" id = "region_'.$intLanguageId.'" multiple size="10" style="width:200px;"','backend',$intLanguageId,$_ARRAYLANG['TXT_PARTNERS_SELECT']."&nbsp;".$this->_getCategoryname('6'),$arrEntries[$intEntryId]['translation'][$intLanguageId]['country'],$arrEntries[$intEntryId]['translation'][$intLanguageId]['region']),
                             'PARTNERS_VERTICAL'     =>  $this->_getEditOtherLevelMenu($intEntryId,$titleName_vertical,'name="vertical_'.$intLanguageId.'[]" size="10" multiple style="width:200px;"','backend',$intLanguageId,$_ARRAYLANG['TXT_PARTNERS_SELECT']."&nbsp;".$this->_getCategoryname('5')),
                             'PARTNERS_VERTICAL_MULTI'=> $this->_getEditLevelMenu($intEntryId,$titleName_vertical,'name="editvertical_'.$intLanguageId.'[]" size="10" multiple style="width:200px;"','backend',$intLanguageId,$_ARRAYLANG['TXT_PARTNERS_SELECT']."&nbsp;".$this->_getCategoryname('5')),
-                            'PARTNERS_TEXT'         =>  new \Cx\Core\Wysiwyg('partnersText_'.$intLanguageId,$arrEntries[$intEntryId]['translation'][$intLanguageId]['content']),
+                            'PARTNERS_TEXT'         =>  new \Cx\Core\Wysiwyg\Wysiwyg('partnersText_'.$intLanguageId,$arrEntries[$intEntryId]['translation'][$intLanguageId]['content']),
                             'DIV_IMAGE'			    =>	$arrEntries[$intEntryId]['translation'][$intLanguageId]['image'],
                             'PASS_LANG_MULTIPLE'    => $lang_multiple,
                             'DIV_CATEGORIES_1'	    =>	$arrCategoriesContent[0],

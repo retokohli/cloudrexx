@@ -1091,7 +1091,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
 
             if ($first) {
                 $this->tpl->setVariable(array(
-                    "ANSWER_PREVIEW"        => new \Cx\Core\Wysiwyg('answer_preview',
+                    "ANSWER_PREVIEW"        => new \Cx\Core\Wysiwyg\Wysiwyg('answer_preview',
                                                isset($article['content'][$langId]) ?
                                                $article['content'][$langId]['answer']
                                                : ''),
