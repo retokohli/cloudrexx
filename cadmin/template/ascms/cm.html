@@ -31,7 +31,7 @@
             </div>
             <div class="line big_space"><input type="text" name="page[title]" id="page_title" /></div>
 
-            <div class="line big_space" id="types">
+            <div class="line big_space last" id="types">
                 <input type="hidden" name="page[type]" value="off" />
                 <input type="radio" name="page[type]" value="content" id="type_content" class="radio" checked="checked" />
 
@@ -96,7 +96,7 @@
                 <label for="page_metakeys">{TXT_CORE_CM_METAKEYS}</label>
                 <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_METAKEYS_INFO}</span>
             </div>
-            <div class="line big_space">
+            <div class="line big_space last">
                 <textarea id="page_metakeys" name="page[metakeys]"></textarea>
             </div>
         </div>
@@ -132,13 +132,17 @@
             </div>
             <div class="line big_space">
                 <input type="text" name="page[cssNavName]" id="page_css_nav_class" />
+                <div class="inherit">
+                    <input type="checkbox" name="inheritCssNavName" value="on" id="inherit-css-nav-name" />
+                    <label for="inherit-css-nav-name">{TXT_RECURSIVE_CHANGE}</label>
+                </div>
             </div>
 
             <div class="line small_space">
                 <label for="page_link_target">{TXT_CORE_CM_LINK_TARGET}</label>
                 <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_LINK_TARGET_INO}</span>
             </div>
-            <div class="line big_space">
+            <div class="line big_space last">
                 <select id="page_link_target" name="page[link_target]">
                     <option value="">(None)</option>
                     <option value="_blank">New Window (_blank)</option>
@@ -151,10 +155,8 @@
     <div id="page_blocks" style="display: none;">
         <div id="blocks_toggle" class="toggle {BLOCKS_TOGGLE_CLASS}"><div class="indicator"></div><label>{TXT_CORE_CM_BLOCKS}</label></div>
         <div id="blocks_container" class="container multiselect" style="{BLOCKS_DISPLAY_STYLE}">
-            <div class="line small_space">
-                <label for="pageBlocksms2side__sx" class="left">{TXT_CORE_CM_BLOCKS_AVAILABLE}</label>
-                <label for="pageBlocksms2side__dx" class="right">{TXT_CORE_CM_BLOCKS_ASSIGNED}</label>
-            </div>
+            <label for="pageBlocksms2side__sx" class="left">{TXT_CORE_CM_BLOCKS_AVAILABLE}</label>
+            <label for="pageBlocksms2side__dx" class="right">{TXT_CORE_CM_BLOCKS_ASSIGNED}</label>
             <select id="pageBlocks" class="multiselect" multiple="multiple" name="pageBlocks[]"></select>
         </div>
     </div>
@@ -168,6 +170,10 @@
             <label for="frontendGroupsms2side__sx" class="left">{TXT_CORE_CM_ACCESS_PROTECTION_AVAILABLE_GROUPS}</label>
             <label for="frontendGroupsms2side__dx" class="right">{TXT_CORE_CM_ACCESS_PROTECTION_ASSIGNED_GROUPS}</label>
             <select id="frontendAccessGroups" class="multiselect" multiple="multiple" name="frontendGroups[]"></select>
+            <div class="inherit">
+                <input type="checkbox" name="inheritFrontendAccess" value="on" id="inherit-frontend-access" />
+                <label for="inherit-frontend-access">{TXT_RECURSIVE_CHANGE}</label>
+            </div>
         </div>
 
         <div id="protection_backend_checkbox" class="checkbox no_toggle">
@@ -179,6 +185,10 @@
             <label for="backendGroupsms2side__sx" class="left">{TXT_CORE_CM_ACCESS_PROTECTION_AVAILABLE_GROUPS}</label>
             <label for="backendGroupsms2side__dx" class="right">{TXT_CORE_CM_ACCESS_PROTECTION_ASSIGNED_GROUPS}</label>
             <select id="backendAccessGroups" class="multiselect" multiple="multiple" name="backendGroups[]"></select>
+            <div class="inherit">
+                <input type="checkbox" name="inheritBackendAccess" value="on" id="inherit-backend-access" />
+                <label for="inherit-backend-access">{TXT_RECURSIVE_CHANGE}</label>
+            </div>
         </div>
     </div>
     <div id="page_history"></div>
@@ -189,7 +199,7 @@
             <label>{TXT_CORE_CM_SCHEDULED_PUBLISHING}</label>
         </div>
         <div id="scheduled_publishing_container" class="container" style="display: none;">
-            <div class="line big_space">
+            <div class="line big_space last">
                 <label for="page_start">{TXT_CORE_CM_SCHEDULED_PUBLISHING_FROM}:</label><input type="text" name="page[start]" id="page_start" value="" class="date" />
                 <label for="page_end">{TXT_CORE_CM_SCHEDULED_PUBLISHING_TO}:</label><input type="text" name="page[end]" id="page_end" value="" class="date" />
             </div>
@@ -224,6 +234,10 @@
                     <option value="">(Default)</option>
                     {SKIN_OPTIONS}
                 </select>
+                <div class="inherit">
+                    <input type="checkbox" name="inheritSkin" value="on" id="inherit-skin" />
+                    <label for="inherit-skin">{TXT_RECURSIVE_CHANGE}</label>
+                </div>
             </div>
 
             <div class="line small_space">
@@ -234,14 +248,22 @@
                 <select id="page_custom_content" name="page[customContent]">
                     <option>(Default)</option>
                 </select>
+                <div class="inherit">
+                    <input type="checkbox" name="inheritCustomContent" value="on" id="inherit-custom-content" />
+                    <label for="inherit-custom-content">{TXT_RECURSIVE_CHANGE}</label>
+                </div>
             </div>
 
             <div class="line small_space">
                 <label for="page_css_class">{TXT_CORE_CM_CSS_CLASS}</label>
                 <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_CSS_CLASS_INFO}</span>
             </div>
-            <div class="line big_space">
+            <div class="line big_space last">
                 <input type="text" name="page[cssName]" id="page_css_class" />
+                <div class="inherit">
+                    <input type="checkbox" name="inheritCssName" value="on" id="inherit-css-name" />
+                    <label for="inherit-css-name">{TXT_RECURSIVE_CHANGE}</label>
+                </div>
             </div>
         </div>
 
@@ -249,6 +271,10 @@
             <input type="hidden" name="page[caching]" value="off" />
             <input type="checkbox" class="indicator" id="page_caching" name="page[caching]" />
             <label>{TXT_CORE_CM_CACHE}</label>
+        </div>
+        <div class="inherit caching">
+            <input type="checkbox" name="inheritCaching" value="on" id="inherit-caching" />
+            <label for="inherit-caching">{TXT_RECURSIVE_CHANGE}</label>
         </div>
 
         <div id="source_mode_checkbox no_toggle" class="checkbox">

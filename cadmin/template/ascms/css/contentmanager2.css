@@ -906,13 +906,17 @@ div.date img{
 }
 
 #page .line.small_space {
-    padding: 0 0 3px 0 !important;
+    padding: 0 0 5px 0 !important;
     margin: 0;
 }
 
 #page .line.big_space {
-    padding: 0 0 8px 0 !important;
+    padding: 0 0 12px 0 !important;
     margin: 0;
+}
+
+#page .line.big_space.last {
+    padding: 0 !important;
 }
 
 #page label {
@@ -964,12 +968,14 @@ div.date img{
     width: 277px !important;
     border: 0 !important;
     margin-right: 56px;
+    margin-bottom: 5px;
 }
 
 #page .container.multiselect label.right {
     float: left !important;
     width: 277px !important;
     border: 0 !important;
+    margin-bottom: 5px;
 }
 
 #page .container.multiselect .ms2side__options {
@@ -991,6 +997,25 @@ div.date img{
 #page .container.multiselect .ms2side__select select {
     width: 277px;
     height: 200px;
+}
+
+#page .inherit {
+    float: left;
+    clear: left;
+    width: 574px;
+    padding: 5px 0 0 0;
+}
+
+#page .inherit.caching {
+    padding: 0 0 0 20px;
+}
+
+#page .inherit input[type=checkbox] {
+    margin: 2px 6px 0 1px;
+}
+
+#page .inherit.caching input[type=checkbox] {
+    margin-left: 5px;
 }
 
 
@@ -1030,7 +1055,7 @@ div.date img{
 
 /* page layout adjustments for navigation tab */
 #page #navigation_container #page_alias_container {
-    padding: 0 0 5px 0 !important;
+    padding: 0 0 9px 0 !important;
 }
 
 #page #navigation_container #page_alias_container .page_alias {
