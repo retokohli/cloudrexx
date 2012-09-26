@@ -31,4 +31,5 @@ $_ARRAYLANG["TXT_FILESHARING_I_AGREE"] = "Ich stimme den";
 $_ARRAYLANG["TXT_FILESHARING_TERMS_OF_SERVICE"] = "allgemeinen Geschäftsbedingungen";
 $_ARRAYLANG["TXT_FILESHARING_I_ACCEPT"] = "zu";
 $_ARRAYLANG["TXT_FILESHARING_FILES"] = "Dateien";
+$_ARRAYLANG["TXT_FILESHARING_NO_ACCESS"] = "Sie haben keine Berechtigungen diese Seite zu verwenden.";
 ?>
