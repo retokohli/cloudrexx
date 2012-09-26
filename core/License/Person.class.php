@@ -5,11 +5,11 @@
  */
 namespace Cx\Core\License;
 /**
- * Description of Customer
+ * Description of Person
  *
  * @author Michael Ritter <michael.ritter@comvation.com>
  */
-class Customer {
+class Person {
     private $companyName;
     private $title;
     private $firstname;

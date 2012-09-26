@@ -131,11 +131,13 @@ class myAdminManager {
             $objTemplate->hideBlock('news_delete');
             $objTemplate->hideBlock('stats_delete');
         }
-        if (isset($_CONFIG['messageText'])) {
-            $objTemplate->setVariable('MESSAGE_TITLE', $_CONFIG['messageText']);
-            $objTemplate->setVariable('MESSAGE_TYPE', $_CONFIG['messageType']);
-            $objTemplate->setVariable('MESSAGE_LINK', $_CONFIG['messageLink']);
-            $objTemplate->setVariable('MESSAGE_LINK_TARGET', $_CONFIG['messageLinkTarget']);
+        $license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase);
+        $message = $license->getMessage(\FWLanguage::getLanguageCodeById(BACKEND_LANG_ID));
+        if ($message && $message->showInDashboard()) {
+            $objTemplate->setVariable('MESSAGE_TITLE', $message->getText());
+            $objTemplate->setVariable('MESSAGE_TYPE', $message->getType());
+            $objTemplate->setVariable('MESSAGE_LINK', $message->getLink());
+            $objTemplate->setVariable('MESSAGE_LINK_TARGET', $message->getLinkTarget());
         }
 
         $objFWUser = FWUser::getFWUserObject();

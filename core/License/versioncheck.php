@@ -1,6 +1,6 @@
 <?php
-/*ini_set('display_errors', 1);
-error_reporting(E_ALL);*/
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 // load requirements
 require_once('../../config/settings.php');              // needed for configuration.php
@@ -31,7 +31,17 @@ $license->save(new settingsManager(), $objDatabase);
 
 // show info
 //echo $license->getState().' '.$license->getVersion()->getNumber().' '.$license->getEditionName();
-$message = $license->getMessage();
+$lang = 'de';
+if (isset($_GET['lang'])) {
+    $lang = $_GET['lang'];
+}
+$message = $license->getMessage($lang);
+if (!$message) {
+    $message = $license->getMessage('de');
+}
+if (!$message) {
+    die('No message');
+}
 echo json_encode(array(
     'link' => $message->getLink(),
     'target' => $message->getLinkTarget(),

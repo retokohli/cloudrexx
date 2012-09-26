@@ -128,13 +128,31 @@ class LicenseCommunicator {
         if (!is_int($this->requestInterval) || $this->requestInterval < 0 || $this->requestInterval > (365*24)) {
             $this->requestInterval = 1;
         }
-        $message = new \Cx\Core\License\Message(
-            contrexx_raw2xhtml($response->license->message->text),
-            contrexx_raw2xhtml($response->license->message->type),
-            contrexx_raw2xhtml($response->license->message->link),
-            contrexx_raw2xhtml($response->license->message->linkTarget)
+        $messages = array();
+        foreach ($response->license->messages as $lang=>$message) {
+            $messages[$lang] = new \Cx\Core\License\Message(
+                $lang,
+                $message->text,
+                $message->type,
+                $message->link,
+                $message->linkTarget,
+                $message->showInDashboard
+            );
+        }
+        $partner = new \Cx\Core\License\Person(
+            $response->license->partner->companyName,
+            $response->license->partner->title,
+            $response->license->partner->firstname,
+            $response->license->partner->lastname,
+            $response->license->partner->address,
+            $response->license->partner->zip,
+            $response->license->partner->city,
+            $response->license->partner->country,
+            $response->license->partner->phone,
+            $response->license->partner->url,
+            $response->license->partner->mail
         );
-        $customer = new \Cx\Core\License\Customer(
+        $customer = new \Cx\Core\License\Person(
             $response->license->customer->companyName,
             $response->license->customer->title,
             $response->license->customer->firstname,
@@ -161,8 +179,9 @@ class LicenseCommunicator {
             $response->license->validTo,
             $installationId,
             $licenseKey,
-            $message,
+            $messages,
             $version,
+            $partner,
             $customer,
             $response->license->settings->grayZoneTime,
             $response->license->settings->frontendLockTime,
