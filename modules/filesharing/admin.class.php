@@ -12,18 +12,24 @@ class FilesharingAdmin extends FilesharingLib
 {
     private $_objTpl;
 
-    public function __construct(&$objTpl, $loadTemplate=true) {
+    public function __construct(&$objTpl)
+    {
         global $_ARRAYLANG, $objInit;
         $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('filesharing'));
 
         $this->_objTpl = $objTpl;
-        if ($loadTemplate) {
-            $this->_objTpl->loadTemplateFile('module_media_filesharing.html', true, true);
+        $this->_objTpl->setRoot(ASCMS_MODULE_PATH . '/filesharing/template');
+        if ($_GET['act'] == 'settings') {
+            $templateFile = 'module_filesharing_settings.html';
+        } else {
+            $templateFile = 'module_filesharing_detail.html';
         }
+        $this->_objTpl->loadTemplateFile($templateFile, true, true);
         JS::activate("cx");
     }
 
-    public function getDetailPage() {
+    public function getDetailPage()
+    {
         global $_ARRAYLANG, $objDatabase;
         $file = str_replace(ASCMS_PATH_OFFSET, '', $_GET["path"]) . $_GET["file"];
         $objResult = $objDatabase->Execute("SELECT `id`, `file`, `source`, `hash`, `check`, `expiration_date` FROM " . DBPREFIX . "module_filesharing WHERE `source` = ?", array($file));
@@ -89,7 +95,7 @@ class FilesharingAdmin extends FilesharingLib
             'FILESHARING_NEVER' => $_ARRAYLANG['TXT_FILESHARING_NEVER'],
             'FILESHARING_EXPIRATION_CHECKED' => htmlentities($objResult->fields["expiration_date"] == NULL ? 'checked="checked"' : '', ENT_QUOTES, CONTREXX_CHARSET),
             'FILESHARING_EXPIRATION_DATE' => htmlentities($objResult->fields["expiration_date"] != NULL ?
-                date('d.m.Y H:i', strtotime($objResult->fields["expiration_date"])) : date('d.m.Y H:i', time()+3600*24*7), ENT_QUOTES, CONTREXX_CHARSET),
+                    date('d.m.Y H:i', strtotime($objResult->fields["expiration_date"])) : date('d.m.Y H:i', time() + 3600 * 24 * 7), ENT_QUOTES, CONTREXX_CHARSET),
 
             'FILESHARING_SEND_MAIL' => $_ARRAYLANG['TXT_FILESHARING_SEND_MAIL'],
             'FILESHARING_EMAIL' => $_ARRAYLANG["TXT_FILESHARING_EMAIL"],
@@ -103,12 +109,24 @@ class FilesharingAdmin extends FilesharingLib
         ));
     }
 
-    public function parseSettingsPage() {
-        global $_ARRAYLANG;
+    public function parseSettingsPage()
+    {
+        global $_ARRAYLANG, $objDatabase;
+
+        SettingDb::init('filesharing', 'config');
+        if (!SettingDb::getValue('permission')) {
+            SettingDb::add('permission', 'off');
+        }
+
+        if (isset($_POST['save_settings'])) {
+            $this->saveSettings();
+        }
 
         $this->_objTpl->setVariable(array(
             'FILESHARING_INFO' => $_ARRAYLANG["TXT_FILESHARING_SETTINGS_GENERAL_INFORMATION"],
             'FILESHARING_MAIL_TEMPLATES' => $_ARRAYLANG["TXT_FILESHARING_MAIL_TEMPLATES"],
+
+            'TXT_FILESHARING_SECURITY' => $_ARRAYLANG["TXT_FILESHARING_SECURITY"],
 
             'TXT_FILESHARING_APPLICATION_NAME' => $_ARRAYLANG["TXT_FILESHARING_SETTINGS_GENERAL_MODULE_NAME_TITLE"],
             'FILESHARING_APPLICATION_NAME' => $_ARRAYLANG["TXT_FILESHARING_MODULE"],
@@ -117,6 +135,148 @@ class FilesharingAdmin extends FilesharingLib
             'TXT_FILESHARING_MANUAL' => $_ARRAYLANG["TXT_FILESHARING_SETTINGS_GENERAL_MODULE_MANUAL_TITLE"],
             'FILESHARING_MANUAL' => $_ARRAYLANG["TXT_FILESHARING_SETTINGS_GENERAL_MODULE_MANUAL"],
         ));
+
+        /**
+         * parse mailtemplates
+         */
+        $arrActiveSystemFrontendLanguages = FWLanguage::getActiveFrontendLanguages();
+        foreach ($arrActiveSystemFrontendLanguages as $activeLang) {
+            $objMailTemplate = $objDatabase->Execute("SELECT `subject`, `content` FROM " . DBPREFIX . "module_filesharing_mail_template WHERE `lang_id` = ?", array($activeLang["id"]));
+            if ($objMailTemplate !== false) {
+                $content = str_replace(array('{', '}'), array('[[', ']]'), $objMailTemplate->fields["content"]);
+                $this->_objTpl->setVariable(array(
+                    'FILESHARING_MAIL_SUBJECT' => htmlentities($objMailTemplate->fields["subject"], ENT_QUOTES, CONTREXX_CHARSET),
+                    'FILESHARING_MAIL_CONTENT' => htmlentities($content, ENT_QUOTES, CONTREXX_CHARSET),
+                ));
+            }
+            $this->_objTpl->setVariable(array(
+                'TXT_MAIL_SUBJECT' => $_ARRAYLANG['TXT_MAIL_SUBJECT'],
+                'TXT_MAIL_CONTENT' => $_ARRAYLANG['TXT_MAIL_CONTENT'],
+
+                'LANG_NAME' => $activeLang["name"],
+                'LANG' => $activeLang["id"],
+            ));
+            $this->_objTpl->parse('filesharing_email_template');
+        }
+
+        /**
+         * parse permissions
+         */
+        $oldFilesharingPermission = SettingDb::getValue('permission');
+        $objFWUser = FWUser::getFWUserObject();
+
+        if (!is_numeric($oldFilesharingPermission)) {
+            // Get all groups
+            $objGroup = $objFWUser->objGroup->getGroups();
+        } else {
+            // Get access groups
+            $objGroup = $objFWUser->objGroup->getGroups(
+                array('dynamic' => $oldFilesharingPermission)
+            );
+            $arrAssociatedGroups = $objGroup->getLoadedGroupIds();
+        }
+
+
+        $objGroup = $objFWUser->objGroup->getGroups();
+        while (!$objGroup->EOF) {
+            $option = '<option value="' . $objGroup->getId() . '">' . htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET) . ' [' . $objGroup->getType() . ']</option>';
+
+            if (in_array($objGroup->getId(), $arrAssociatedGroups)) {
+                $arrAssociatedGroupOptions[] = $option;
+            } else {
+                $arrNotAssociatedGroupOptions[] = $option;
+            }
+
+            $objGroup->next();
+        }
+
+        if (!is_numeric($mediaManageSetting)) {
+            // Get all groups
+            $objGroup = $objFWUser->objGroup->getGroups();
+        } else {
+            // Get access groups
+            $objGroup = $objFWUser->objGroup->getGroups(
+                array('dynamic' => $mediaManageSetting)
+            );
+            $arrAssociatedManageGroups = $objGroup->getLoadedGroupIds();
+        }
+
+        $objGroup = $objFWUser->objGroup->getGroups();
+        while (!$objGroup->EOF) {
+            $option = '<option value="' . $objGroup->getId() . '">' . htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET) . ' [' . $objGroup->getType() . ']</option>';
+
+            if (in_array($objGroup->getId(), $arrAssociatedManageGroups)) {
+                $arrAssociatedGroupManageOptions[] = $option;
+            } else {
+                $arrNotAssociatedGroupManageOptions[] = $option;
+            }
+
+            $objGroup->next();
+        }
+
+        $this->_objTpl->setVariable(array(
+            'FILESHARING_ALLOW_USER_UPLOAD_ON' => ($oldFilesharingPermission == 'on') ? 'checked="checked"' : '',
+            'FILESHARING_ALLOW_USER_UPLOAD_OFF' => ($oldFilesharingPermission == 'off') ? 'checked="checked"' : '',
+            'FILESHARING_ALLOW_USER_UPLOAD_GROUP' => (is_numeric($oldFilesharingPermission)) ? 'checked="checked"' : '',
+            'FILESHARING_ACCESS_DISPLAY' => (is_numeric($oldFilesharingPermission)) ? 'block' : 'none',
+            'FILESHARING_ACCESS_ASSOCIATED_GROUPS' => implode("\n", $arrAssociatedGroupOptions),
+            'FILESHARING_ACCESS_NOT_ASSOCIATED_GROUPS' => implode("\n", $arrNotAssociatedGroupOptions),
+            'FILESHARING_SECURITY' => $_ARRAYLANG["TXT_FILESHARING_SECURITY"],
+        ));
+        $this->_objTpl->parse('filesharing_security');
+    }
+
+    private function saveSettings()
+    {
+        global $objDatabase;
+        /**
+         * save mailtemplates
+         */
+        foreach ($_POST["filesharingMail"] as $lang => $inputs) {
+            $objMailTemplate = $objDatabase->Execute("SELECT `subject`, `content` FROM " . DBPREFIX . "module_filesharing_mail_template WHERE `lang_id` = ?", array($lang));
+
+            $content = str_replace(array('{', '}'), array('[[', ']]'), contrexx_input2db($inputs["content"]));
+            $data = array(contrexx_input2db($inputs["subject"]), $content, $lang);
+            if ($objMailTemplate === false or $objMailTemplate->RecordCount() == 0) {
+                $objDatabase->Execute("INSERT INTO " . DBPREFIX . "module_filesharing_mail_template (`subject`, `content`, `lang_id`) VALUES (?, ?, ?)", $data);
+            } else {
+                $objDatabase->Execute("UPDATE " . DBPREFIX . "module_filesharing_mail_template SET `subject` = ?, `content` = ? WHERE `lang_id` = ?", $data);
+            }
+        }
+
+        /**
+         * save permissions
+         */
+        SettingDb::init('filesharing', 'config');
+        $oldFilesharingSetting = SettingDb::getValue('permission');
+        $newFilesharingSetting = $_POST['filesharingSettingsPermission'];
+        if (!is_numeric($newFilesharingSetting)) {
+            if (is_numeric($oldFilesharingSetting)) {
+                // remove AccessId
+                Permission::removeAccess($oldFilesharingSetting, 'dynamic');
+            }
+        } else {
+            $accessGroups = '';
+            if (isset($_POST['filesharing_access_associated_groups'])) {
+                $accessGroups = $_POST['filesharing_access_associated_groups'];
+            }
+            // get groups
+            Permission::removeAccess($oldFilesharingSetting, 'dynamic');
+            if (isset($_POST['filesharing_access_associated_groups'])) {
+                $accessGroups = $_POST['filesharing_access_associated_groups'];
+            }
+
+            // add AccessID
+            $newFilesharingSetting = Permission::createNewDynamicAccessId();
+
+            // save AccessID
+            if (count($accessGroups)) {
+                Permission::setAccess($newFilesharingSetting, 'dynamic', $accessGroups);
+            }
+        }
+        // save new setting
+        SettingDb::set('permission', $newFilesharingSetting);
+        SettingDb::updateAll();
     }
 }
 

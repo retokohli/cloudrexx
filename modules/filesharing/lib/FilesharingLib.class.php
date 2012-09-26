@@ -193,40 +193,17 @@ CODE
     {
         global $objDatabase;
         $objResult = $objDatabase->SelectLimit("SELECT `cmd`, `hash` FROM " . DBPREFIX . "module_filesharing WHERE `id` = ?", 1, 0, array($fileId));
-        $objUrl = clone \Env::get('Resolver')->getUrl();
 
         if ($objResult !== false) {
-            $objUrl->setParam('uploadId', null);
-            $objUrl->setParam('hash', $objResult->fields["hash"]);
+            $params = array(
+                'hash' => $objResult->fields['hash'],
+            );
+            try {
+                $objUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('filesharing', $objResult->fields['cmd'], FRONTEND_LANG_ID, $params, '', false);
+            } catch (\Cx\Core\Routing\UrlException $e) {
+                $objUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('filesharing', '', FRONTEND_LANG_ID, $params);
+            }
             return $objUrl->toString();
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * @static
-     * @param string $cmd the cmd of the upload page
-     * @return bool
-     */
-    private static function getFilesharingPageSlug($cmd)
-    {
-        global $_LANGID;
-        $repo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
-        $page = $repo->findOneBy(array(
-            'module' => 'filesharing',
-            'cmd' => $cmd,
-            'lang' => $_LANGID,
-        ));
-        // if the page with the upload cmd does not exist fall back to an other site with section filesharing
-        if ($page == null) {
-            $page = $repo->findOneBy(array(
-                'module' => 'filesharing',
-                'lang' => $_LANGID,
-            ));
-        }
-        if ($page) {
-            return $page->getSlug();
         } else {
             return false;
         }
@@ -241,12 +218,18 @@ CODE
     {
         global $objDatabase;
         $objResult = $objDatabase->SelectLimit("SELECT `cmd`, `hash`, `check` FROM " . DBPREFIX . "module_filesharing WHERE `id` = ?", 1, 0, array($fileId));
-        $objUrl = clone \Env::get('Resolver')->getUrl();
+
 
         if ($objResult !== false) {
-            $objUrl->setParam('uploadId', null);
-            $objUrl->setParam('hash', $objResult->fields["hash"]);
-            $objUrl->setParam('check', $objResult->fields["check"]);
+            $params = array(
+                'hash' => $objResult->fields['hash'],
+                'check' => $objResult->fields['check'],
+            );
+            try {
+                $objUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('filesharing', $objResult->fields['cmd'], FRONTEND_LANG_ID, $params, '', false);
+            } catch (\Cx\Core\Routing\UrlException $e) {
+                $objUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('filesharing', '', FRONTEND_LANG_ID, $params);
+            }
             return $objUrl->toString();
         } else {
             return false;
@@ -261,6 +244,7 @@ CODE
     public static function isShared($fileId = null, $fileSource = null)
     {
         global $objDatabase;
+        $fileSource = str_replace(ASCMS_PATH_OFFSET, '', $fileSource);
         if ($fileSource != NULL) {
             $objResult = $objDatabase->SelectLimit("SELECT `id` FROM " . DBPREFIX . "module_filesharing WHERE `source` = ?", 1, -1, array($fileSource));
             if ($objResult !== false && $objResult->RecordCount() > 0) {
@@ -288,8 +272,8 @@ CODE
             while (!$objFiles->EOF) {
                 // if the file is expired or does not exist
                 if (($objFiles->fields["expiration_date"] < date('Y-m-d H:i:s')
-                    && $objFiles->fields["expiration_date"] != NULL)
-                    || !file_exists(ASCMS_PATH . ASCMS_PATH_OFFSET . $objFiles->fields["source"])
+                        && $objFiles->fields["expiration_date"] != NULL)
+                        || !file_exists(ASCMS_PATH . ASCMS_PATH_OFFSET . $objFiles->fields["source"])
                 ) {
                     $fileExists = file_exists(ASCMS_PATH . ASCMS_PATH_OFFSET . $objFiles->fields["source"]);
                     // if the file is only expired delete the file from directory
