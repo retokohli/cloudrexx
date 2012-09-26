@@ -506,35 +506,7 @@ $_GET['section'] = $_POST['section'] = $_REQUEST['section'] = $section;
 $plainSection = setModuleIndexAndReturnPlainSection($section);
 
 // Authentification for protected pages
-if (   (   $page_protected
-        || $history
-        || !empty($_COOKIE['PHPSESSID']))
-    && (   !isset($_REQUEST['section'])
-        || $_REQUEST['section'] != 'login')
-) {
-    if (empty($sessionObj)) $sessionObj = new cmsSession();
-    $sessionObj->cmsSessionStatusUpdate('frontend');
-    if ($objFWUser->objUser->login()) {
-        if ($page_protected) {
-            if (!Permission::checkAccess($pageAccessId, 'dynamic', true)) {
-                $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-                CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('login', 'noaccess', '', array('redirect' => $link)));
-                exit;
-            }
-        }
-        if ($history && !Permission::checkAccess(78, 'static', true)) {
-            $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-            CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('login', 'noaccess', '', array('redirect' => $link)));
-            exit;
-        }
-    } elseif (!empty($_COOKIE['PHPSESSID']) && !$page_protected) {
-        unset($_COOKIE['PHPSESSID']);
-    } else {
-        $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-        CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('login', '', '', array('redirect' => $link)));
-        exit;
-    }
-}
+$resolver->checkPageFrontendProtection($page, $history);
 
 
 // Load interface language data

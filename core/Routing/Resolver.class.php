@@ -398,14 +398,11 @@ class Resolver {
             if ($requestedPage && !$page->isActive()) {
                 return;
             }
+            
+            // if this page is protected, we do not follow fallback
+            $this->checkPageFrontendProtection($page);
 
-            $fallbackPage = null;
-            if (isset($this->fallbackLanguages[$page->getLang()])) {
-                $langId = $this->fallbackLanguages[$page->getLang()];
-                $fallbackPage = $page->getNode()->getPage($langId);
-            }
-            if(!$fallbackPage)
-                throw new ResolverException('Followed fallback page, but couldn\'t find content of fallback Language');
+            $fallbackPage = $this->getFallbackPage($page);
 
             $page->getFallbackContentFrom($fallbackPage);
 
@@ -413,13 +410,89 @@ class Resolver {
             // we must set $this->lang to the fallback's language.
             // this is required because we will next try to resolve the page
             // that is referenced by the fallback page
-            $this->lang = $langId;
-            $this->url->setLangDir(\FWLanguage::getLanguageCodeById($langId));
+            $this->lang = $page->getLang();
+            $this->url->setLangDir(\FWLanguage::getLanguageCodeById($this->lang));
             $this->url->setSuggestedTargetPath(substr($fallbackPage->getPath(), 1));
-
+            
             // now lets resolve the page that is referenced by our fallback page
             $this->resolve(true);
             $this->page = $page;
+        }
+    }
+    
+    public function getFallbackPage($page) {
+        $fallbackPage = null;
+        if (isset($this->fallbackLanguages[$page->getLang()])) {
+            $langId = $this->fallbackLanguages[$page->getLang()];
+            $fallbackPage = $page->getNode()->getPage($langId);
+        }
+        if (!$fallbackPage) {
+            throw new ResolverException('Followed fallback page, but couldn\'t find content of fallback Language');
+        }
+        return $fallbackPage;
+    }
+    
+    /**
+     * Checks if this page can be displayed in frontend, redirects to login of not
+     * @param \Cx\Model\ContentManager\Page $page Page to check
+     * @param int $history (optional) Revision of page to use, 0 means current, default 0
+     */
+    public function checkPageFrontendProtection($page, $history = 0) {
+        global $sessionObj;
+        
+        $page_protected = $page->isFrontendProtected();
+        $pageAccessId = $page->getFrontendAccessId();
+        if ($history) {
+            $pageAccessId = $page->getBackendAccessId();
+        }
+        
+        // login pages are unprotected by design
+        $checkLogin = array($page);
+        while (count($checkLogin)) {
+            $currentPage = array_pop($checkLogin);
+            if ($currentPage->getType() == \Cx\Model\ContentManager\Page::TYPE_FALLBACK) {
+                try {
+                    array_push($checkLogin, $this->getFallbackPage($currentPage));
+                } catch (ResolverException $e) {}
+            }
+            if ($currentPage->getModule() == 'login') {
+                return;
+            }
+        }
+        
+        // Authentification for protected pages
+        if (   (   $page_protected
+                || $history
+                || !empty($_COOKIE['PHPSESSID']))
+            && (   !isset($_REQUEST['section'])
+                || $_REQUEST['section'] != 'login')
+        ) {
+            if (empty($sessionObj)) $sessionObj = new \cmsSession();
+            $sessionObj->cmsSessionStatusUpdate('frontend');
+            if (\FWUser::getFWUserObject()->objUser->login()) {
+                if ($page_protected) {
+                    if (!\Permission::checkAccess($pageAccessId, 'dynamic', true)) {
+                        $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
+                        \CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('login', 'noaccess', '', array('redirect' => $link)));
+                        exit;
+                    }
+                }
+                if ($history && !\Permission::checkAccess(78, 'static', true)) {
+                    $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
+                    \CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('login', 'noaccess', '', array('redirect' => $link)));
+                    exit;
+                }
+            } elseif (!empty($_COOKIE['PHPSESSID']) && !$page_protected) {
+                unset($_COOKIE['PHPSESSID']);
+            } else {
+                if (isset($_GET['redirect'])) {
+                    $link = $_GET['redirect'];
+                } else {
+                    $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
+                }
+                \CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('login', '', '', array('redirect' => $link)));
+                exit;
+            }
         }
     }
 
