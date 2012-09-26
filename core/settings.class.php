@@ -323,7 +323,12 @@ class settingsManager
     private function getTimezoneOptions($selectedTimezone) {
         $timezoneOptions = '';
         foreach (timezone_identifiers_list() as $timezone) {
-            $timezoneOptions .= '<option value="'.$timezone.'"'.(($timezone == $selectedTimezone) ? ' selected="selected"' : '').'>'.$timezone.'</option>';
+            $dateTimeZone = new DateTimeZone($timezone);
+            $dateTime     = new DateTime('now', $dateTimeZone);
+            $timeOffset   = $dateTimeZone->getOffset($dateTime);
+            $plusOrMinus  = $timeOffset < 0 ? '-' : '+';
+            $gmt          = 'GMT ' . $plusOrMinus . ' ' . gmdate('g:i', $timeOffset);
+            $timezoneOptions .= '<option value="'.$timezone.'"'.(($timezone == $selectedTimezone) ? ' selected="selected"' : '').'>'.$timezone.' ('.$gmt.')</option>';
         }
         return $timezoneOptions;
     }
