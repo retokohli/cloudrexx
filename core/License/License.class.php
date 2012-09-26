@@ -223,15 +223,18 @@ class License {
         $_POST['setvalue'][91] = $this->getValidToDate();                   // licenseValidTo
         $_POST['setvalue'][92] = $this->getEditionName();                   // coreCmsEdition
         
-        $_POST['setvalue'][93] = serialize($this->getMessages());           // messageText --> licenseMessage
+        // we must encode the serialized objects to prevent that non-ascii chars
+        // get written into the config/settings.php file
+        $_POST['setvalue'][93] = base64_encode(serialize($this->getMessages()));           // messageText --> licenseMessage
         
         $_POST['setvalue'][97] = $this->getVersion()->getNumber();          // coreCmsVersion
         $_POST['setvalue'][98] = $this->getVersion()->getCodeName();        // coreCmsCodeName
         $_POST['setvalue'][99] = $this->getVersion()->getState();           // coreCmsStatus
         $_POST['setvalue'][100] = $this->getVersion()->getReleaseDate();    // coreCmsReleaseDate
         
-        $_POST['setvalue'][101] = serialize($this->getPartner());           // licenseHolderCompany --> licensePartner
-        $_POST['setvalue'][102] = serialize($this->getCustomer());          // licenseHolderTitle --> licenseCustomer
+        // see comment above why we encode the serialized data here
+        $_POST['setvalue'][101] = base64_encode(serialize($this->getPartner()));           // licenseHolderCompany --> licensePartner
+        $_POST['setvalue'][102] = base64_encode(serialize($this->getCustomer()));          // licenseHolderTitle --> licenseCustomer
         
         $_POST['setvalue'][112] = $this->getVersion()->getName();           // coreCmsName
         
@@ -276,10 +279,10 @@ class License {
         $instId = isset($_CONFIG['installationId']) ? $_CONFIG['installationId'] : null;
         $licenseKey = isset($_CONFIG['licenseKey']) ? $_CONFIG['licenseKey'] : null;
         
-        $messages = isset($_CONFIG['licenseMessage']) ? unserialize(htmlspecialchars_decode($_CONFIG['licenseMessage'])) : array();
+        $messages = isset($_CONFIG['licenseMessage']) ? unserialize(base64_decode(htmlspecialchars_decode($_CONFIG['licenseMessage']))) : array();
         
-        $partner = isset($_CONFIG['licensePartner']) ? unserialize(htmlspecialchars_decode($_CONFIG['licensePartner'])) : null;
-        $customer = isset($_CONFIG['licenseCustomer']) ? unserialize(htmlspecialchars_decode($_CONFIG['licenseCustomer'])) : null;
+        $partner = isset($_CONFIG['licensePartner']) ? unserialize(base64_decode(htmlspecialchars_decode($_CONFIG['licensePartner']))) : null;
+        $customer = isset($_CONFIG['licenseCustomer']) ? unserialize(base64_decode(htmlspecialchars_decode($_CONFIG['licenseCustomer']))) : null;
         
         $versionNumber = isset($_CONFIG['coreCmsVersion']) ? $_CONFIG['coreCmsVersion'] : null;
         $versionName = isset($_CONFIG['coreCmsName']) ? $_CONFIG['coreCmsName'] : null;
