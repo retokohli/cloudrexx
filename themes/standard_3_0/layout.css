@@ -747,6 +747,12 @@
     padding: 2px 0 0 0;
 }
 
+#footer {
+    float: left;
+    width: 1088px;
+    padding: 13px 0 30px 0;
+}
+
 #footer-top,
 #footer-bottom {
     float: left;
@@ -755,7 +761,7 @@
 }
 
 #footer-top {
-    padding: 0 0 10px 0;
+    padding: 0 0 19px 0;
 }
 
 #footer-top .horizontal-list.no-bg li {
@@ -765,16 +771,20 @@
     background: none;
 }
 
-#footer-bottom {
-    padding: 0 0 20px 0;
-}
-
 .footer-left {
     float: left;
 }
 
 .footer-right {
     float: right;
+}
+
+#qr-code {
+    float: left;
+    width: 90px;
+    height: 90px;
+    margin: 0 0 0 20px;
+    border: 1px solid #CCCCCC;
 }
 
 #back-top {
