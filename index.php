@@ -398,7 +398,7 @@ if ($isRegularPageRequest) {
     }
     
     if(!$page || !$page->isActive() ||
-            (isset($section) && !$license->isInLegalFrontendComponents($section))) {
+            (!empty($section) && !$license->isInLegalFrontendComponents($section))) {
         //fallback for inexistant error page
         if($section == 'error') {
             // If the error module is not installed, show this
