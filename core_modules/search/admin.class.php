@@ -185,12 +185,14 @@ class SearchManager extends \Module
                     $qb->expr()->orX(
                         'p.module = \'\'',
                         'p.module IS NULL',
-                        'p.module IN (:modules)'
+                        $qb->expr()->in(
+                            'p.module',
+                            $this->license->getLegalComponentsList()
+                        )
                     )
                 )
             )
-            ->setParameter('searchTerm', '%'.$this->term.'%')
-            ->setParameter('modules', $this->license->getLegalComponentsList());
+            ->setParameter('searchTerm', '%'.$this->term.'%');
         return $qb;
     }
     
