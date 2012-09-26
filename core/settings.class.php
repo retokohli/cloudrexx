@@ -51,7 +51,8 @@ class settingsManager
             <a href="?cmd=settings" class="'.($this->act == '' ? 'active' : '').'">'.$_CORELANG['TXT_SETTINGS_MENU_SYSTEM'].'</a>
             <a href="?cmd=settings&amp;act=cache" class="'.($this->act == 'cache' ? 'active' : '').'">'.$_CORELANG['TXT_SETTINGS_MENU_CACHE'].'</a>
             <a href="?cmd=settings&amp;act=smtp" class="'.($this->act == 'smtp' ? 'active' : '').'">'.$_CORELANG['TXT_EMAIL_SERVER'].'</a>
-            <a href="index.php?cmd=settings&amp;act=image" class="'.($this->act == 'image' ? 'active' : '').'">'.$_CORELANG['TXT_SETTINGS_IMAGE'].'</a>'
+            <a href="index.php?cmd=settings&amp;act=image" class="'.($this->act == 'image' ? 'active' : '').'">'.$_CORELANG['TXT_SETTINGS_IMAGE'].'</a>
+            <a href="index.php?cmd=license">'.$_CORELANG['TXT_LICENSE'].'</a>'
         );
     }
 
