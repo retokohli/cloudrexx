@@ -143,6 +143,20 @@ h1{ font-size: 20px }
     font-size: 12px;
 }
 
+#flip-menu .jstree-action {
+    padding: 0 0 0 19px;
+    background-position: center 0;
+    background-repeat: no-repeat;
+}
+
+#flip-menu .jstree-action.open {
+    background-image: url('../../../images/icons/expand.png');
+}
+
+#flip-menu .jstree-action.close {
+    background-image: url('../../../images/icons/close.png');
+}
+
 #multiple-actions {
     float: left;
     padding: 8px;
