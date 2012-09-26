@@ -59,7 +59,7 @@ class ContentTree {
         return array(
             'catname' => $page->getTitle(),
 //TODO:
-            'catid' => 0,
+            'catid' => $page->getId(),
 //TODO:
             'parcat' => 0,
             'node_id' => $page->getNode()->getId(),
