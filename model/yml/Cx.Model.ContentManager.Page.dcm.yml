@@ -38,6 +38,8 @@ Cx\Model\ContentManager\Page:
     updatedBy:
       type: string
       length: 40
+      gedmo:
+        - versioned
 
     #navigation
     title:
@@ -199,13 +201,14 @@ Cx\Model\ContentManager\Page:
       gedmo:
         - versioned
 
-  manyToOne:
+  manyToOne: # owning side
     node:
       targetEntity: Cx\Model\ContentManager\Node
       inversedBy: pages
       joinColumn:
         name: node_id
         referencedColumnName: id
+        cascade: [remove]
 
   lifecycleCallbacks:
       prePersist: [ validate ]

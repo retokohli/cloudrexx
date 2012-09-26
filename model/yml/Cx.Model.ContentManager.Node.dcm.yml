@@ -23,25 +23,24 @@ Cx\Model\ContentManager\Node:
       type: integer
       gedmo:
         - treeLevel
-  manyToOne:
+  manyToOne: # owning side
     parent:
       targetEntity: Cx\Model\ContentManager\Node
       inversedBy: children
       joinColumn:
         name: parent_id
         referencedColumnName: id
+        cascade: [remove]
       gedmo:
         - treeParent
-  oneToMany:
+  oneToMany: # inverse side
     children:
       fetch: EAGER #progressive fetching
       targetEntity: Cx\Model\ContentManager\Node
       mappedBy: parent
-      cascade: [remove]
     pages:
       targetEntity: Cx\Model\ContentManager\Page
       mappedBy: node
-      cascade: [remove]
 
   lifecycleCallbacks:
       prePersist: [ validate ]
