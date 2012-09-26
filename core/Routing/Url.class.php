@@ -230,13 +230,14 @@ class Url {
     private function array2Params($params) {
         $path = '';
         if (count($params)) {
+            $realParams = array();
             foreach ($params as $key=>$value) {
                 if ($value === null) {
                     continue;
                 }
-                $params[$key] = $key . '=' . $value;
+                $realParams[$key] = $key . '=' . $value;
             }
-            $path .= '?' . implode('&', $params);
+            $path .= '?' . implode('&', $realParams);
         }
         return $path;
     }
