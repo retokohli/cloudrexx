@@ -64,14 +64,19 @@ class ContentManager extends \Module {
         \JS::activate('jstree');
         \JS::registerJS('lib/javascript/lock.js');
         \JS::registerJS('lib/javascript/jquery/jquery.history.js');
-$ritt0r = null;
-if (isset($_GET['ritt0r'])) {
-    $ritt0r = contrexx_input2raw($_GET['ritt0r']);
+
+// this can be used to debug the tree, just add &tree=verify or &tree=fix
+$tree = null;
+if (isset($_GET['tree'])) {
+    $tree = contrexx_input2raw($_GET['tree']);
 }
-if (!empty($ritt0r) && $ritt0r == 'fix') {
-    print_r($this->nodeRepository->recover());
-} else if ($this->nodeRepository->verify() !== true) {
-    die('Bitte merken was du für eine Aktion ausgeführt hast und bei Mike Ritter melden!');
+if ($tree == 'verify') {
+    echo '<pre>';
+    print_r($this->nodeRepository->verify());
+    echo '</pre>';
+} else if ($tree == 'fix') {
+    // this should print "bool(true)"
+    var_dump($this->nodeRepository->recover());
 }
         $objCx = \ContrexxJavascript::getInstance();
         $objSkins = new \skins();
@@ -110,7 +115,7 @@ if (!empty($ritt0r) && $ritt0r == 'fix') {
             //site tree
             'TXT_CORE_CM_STATUS_PAGE', 'TXT_EXPAND_LINK', 'TXT_COLLAPS_LINK', 'TXT_CORE_CM_TRANSLATIONS', 'TXT_CORE_CM_APPLICATION', 'TXT_CORE_CM_VIEW', 'TXT_CORE_CM_ACTIONS', 'TXT_CORE_CM_DATE_USER',
             //multiple actions
-            'TXT_SELECT_ALL', 'TXT_DESELECT_ALL', 'TXT_MULTISELECT_SELECT', 'TXT_MULTISELECT_PUBLISH', 'TXT_MULTISELECT_ACTIVATE', 'TXT_MULTISELECT_DEACTIVATE', 'TXT_MULTISELECT_SHOW', 'TXT_MULTISELECT_HIDE', 'TXT_MULTISELECT_UNPROTECT', 'TXT_MULTISELECT_DELETE',
+            'TXT_SELECT_ALL', 'TXT_DESELECT_ALL', 'TXT_MULTISELECT_SELECT', 'TXT_MULTISELECT_ACTIVATE', 'TXT_MULTISELECT_DEACTIVATE', 'TXT_MULTISELECT_SHOW', 'TXT_MULTISELECT_HIDE', 'TXT_MULTISELECT_UNPROTECT', 'TXT_MULTISELECT_DELETE',
             //type tab
             'TXT_CORE_CM_PAGE', 'TXT_CORE_CM_META', 'TXT_CORE_CM_PERMISSIONS', 'TXT_CORE_CM_MORE', 'TXT_CORE_CM_HISTORY', 'TXT_CORE_CM_PAGE_NAME', 'TXT_CORE_CM_PAGE_NAME_INFO', 'TXT_CORE_CM_PAGE_TITLE', 'TXT_CORE_CM_PAGE_TITLE_INFO', 'TXT_CORE_CM_TYPE', 'TXT_CORE_CM_TYPE_CONTENT', 'TXT_CORE_CM_TYPE_REDIRECT', 'TXT_CORE_CM_TYPE_APPLICATION', 'TXT_CORE_CM_TYPE_FALLBACK', 'TXT_CORE_CM_TYPE_CONTENT_INFO', 'TXT_CORE_CM_TYPE_REDIRECT_TARGET', 'TXT_CORE_CM_BROWSE', 'TXT_CORE_CM_TYPE_REDIRECT_INFO', 'TXT_CORE_CM_TYPE_APPLICATION', 'TXT_CORE_CM_TYPE_APPLICATION', 'TXT_CORE_CM_TYPE_APPLICATION_AREA', 'TXT_CORE_CM_TYPE_APPLICATION_INFO', 'TXT_CORE_CM_TYPE_FALLBACK_INFO', 'TXT_CORE_CM_SCHEDULED_PUBLISHING', 'TXT_CORE_CM_SCHEDULED_PUBLISHING_FROM', 'TXT_CORE_CM_SCHEDULED_PUBLISHING_TO', 'TXT_CORE_CM_SCHEDULED_PUBLISHING_INFO',
             //meta tab
