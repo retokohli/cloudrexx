@@ -164,7 +164,7 @@ class MediaManager extends MediaLibrary
             case 'filesharing':
                 Permission::checkAccess(7, 'static');
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
-                    <a href="index.php?cmd=media&amp;archive=filesharing"' . (!isset($_GET['act']) ? ' class="active"' : '') . '>' . $_ARRAYLANG['TXT_FILESHARING_MODULE'] . '</a>
+                    <a href="index.php?cmd=media&amp;archive=filesharing"' . (!isset($_GET['act']) || $_GET['act'] == 'filesharing' ? ' class="active"' : '') . '>' . $_ARRAYLANG['TXT_FILESHARING_MODULE'] . '</a>
                     <a href="index.php?cmd=media&amp;archive=filesharing&amp;act=settings"' . (isset($_GET['act']) && $_GET['act'] == 'settings' ? ' class="active"' : '') . '>' . $_ARRAYLANG['TXT_MEDIA_SETTINGS'] . '</a>
                 ');
                 break;
@@ -586,8 +586,13 @@ class MediaManager extends MediaLibrary
                         'MEDIA_DELETE'              => $_ARRAYLANG['TXT_MEDIA_DELETE'],
                         'MEDIA_FILE_FILESHARING_HREF' => 'index.php?cmd=media&amp;archive='.$this->archive.'&amp;act=filesharing&amp;path=' . $this->webPath . '&amp;file=' . $fileName,
                         'MEDIA_FILESHARING'         => $_ARRAYLANG['TXT_FILESHARING_MODULE'],
-                        'MEDIA_FILESHARING_STATE'   => (FilesharingLib::isShared(null,str_replace(ASCMS_PATH_OFFSET, '', (isset($_GET['path']) ? $_GET['path'] : '')) . $fileName) ? '' : '_inactive'),
+                        'MEDIA_FILESHARING_STATE'   => (FilesharingLib::isShared(null,(isset($_GET['path']) ? $_GET['path'] : ASCMS_FILESHARING_WEB_PATH . '/') . $fileName) ? '_green' : '_red'),
                     ));
+                    if($this->archive == "filesharing" && !is_dir($this->path . $fileName)) {
+                        $this->_objTpl->parse('mediaFilesharing');
+                    } else {
+                        $this->_objTpl->hideBlock('mediaFilesharing');
+                    }
                     $this->_objTpl->parse('mediaDirectoryTree');
                     $i++;
                 }
@@ -896,11 +901,9 @@ class MediaManager extends MediaLibrary
         }
         if ($archive == 'filesharing') {
             $this->_objTpl->hideBlock('mediaarchive_section');
-            $this->_objTpl->touchBlock('filesharing_section');
-            $objFileshare = new FilesharingAdmin($this->_objTpl, false);
+            $objFileshare = new FilesharingAdmin($this->_objTpl);
             $objFileshare->parseSettingsPage();
         } else {
-            $this->_objTpl->hideBlock('filesharing_section');
             $this->_objTpl->touchBlock('mediaarchive_section');
         }
 
@@ -1004,29 +1007,10 @@ class MediaManager extends MediaLibrary
                     'MEDIA_MANAGE_ASSOCIATED_GROUPS'        => implode("\n", $arrAssociatedGroupManageOptions),
                     'MEDIA_MANAGE_NOT_ASSOCIATED_GROUPS'    => implode("\n", $arrNotAssociatedGroupManageOptions),
             ));
-            $this->_objTpl->parse("mediaAccessSection");
-        }
-
-        $arrActiveSystemFrontendLanguages = FWLanguage::getActiveFrontendLanguages();
-        foreach($arrActiveSystemFrontendLanguages as $activeLang) {
-            $objMailTemplate = $objDatabase->Execute("SELECT `subject`, `content` FROM " . DBPREFIX . "module_filesharing_mail_template WHERE `lang_id` = ?", array($activeLang["id"]));
-            if ($objMailTemplate !== false) {
-                $content = str_replace(array('{', '}'), array('[[', ']]'), $objMailTemplate->fields["content"]);
-                $this->_objTpl->setVariable(array(
-                    'FILESHARING_MAIL_SUBJECT' => htmlentities($objMailTemplate->fields["subject"], ENT_QUOTES, CONTREXX_CHARSET),
-                    'FILESHARING_MAIL_CONTENT' => htmlentities($content, ENT_QUOTES, CONTREXX_CHARSET),
-                ));
+            if ($this->_objTpl->blockExists("mediaAccessSection")) {
+                $this->_objTpl->parse("mediaAccessSection");
             }
-            $this->_objTpl->setVariable(array(
-                'TXT_MAIL_SUBJECT' => $_ARRAYLANG['TXT_MAIL_SUBJECT'],
-                'TXT_MAIL_CONTENT' => $_ARRAYLANG['TXT_MAIL_CONTENT'],
-
-                'LANG_NAME' => $activeLang["name"],
-                'LANG' => $activeLang["id"],
-            ));
-            $this->_objTpl->parse('filesharing_email_template');
         }
-
     }
 
     /**
@@ -1124,19 +1108,6 @@ class MediaManager extends MediaLibrary
                                             ');
             }
         }
-
-        foreach ($_POST["filesharingMail"] as $lang => $inputs) {
-            $objMailTemplate = $objDatabase->Execute("SELECT `subject`, `content` FROM " . DBPREFIX . "module_filesharing_mail_template WHERE `lang_id` = ?", array($lang));
-
-            $content = str_replace(array('{', '}'), array('[[', ']]'), contrexx_input2db($inputs["content"]));
-            $data = array(contrexx_input2db($inputs["subject"]), $content, $lang);
-            if ($objMailTemplate === false) {
-                $objDatabase->Execute("INSERT INTO " . DBPREFIX . "module_filesharing_mail_template (`subject`, `content`, `lang_id`) VALUES (?, ?, ?)", $data);
-            } else {
-                $objDatabase->Execute("UPDATE " . DBPREFIX . "module_filesharing_mail_template SET `subject` = ?, `content` = ? WHERE `lang_id` = ?", $data);
-            }
-        }
-
 
         $this->_arrSettings  = $this->createSettingsArray();
         $this->_strOkMessage = $_ARRAYLANG['TXT_MEDIA_SETTINGS_SAVE_SUCCESSFULL'];

@@ -242,44 +242,58 @@ class Filesharing extends FilesharingLib
     private function getForm()
     {
         global $_ARRAYLANG;
-        // parse the upload form
 
-        // init uploader
-        $uploadId = $this->initUploader();
+        SettingDb::init('filesharing', 'config');
+        $permissionNeeded = SettingDb::getValue('permission');
+        if (!$permissionNeeded) {
+            SettingDb::add('permission', 'off');
+            $permissionNeeded = SettingDb::getValue('permission');
+        }
 
-        // set form parameters
-        $formAction = clone \Env::get("Resolver")->getUrl();
-        $formAction->setParam("uploadId", $uploadId);
-        $formAction->setParam("check", false);
-        $formAction->setParam("hash", false);
+        if ($permissionNeeded == 'off' || (is_numeric($permissionNeeded) && !Permission::checkAccess($permissionNeeded, 'dynamic'))) {
+            $this->objTemplate->touchBlock('no_access');
+            $this->objTemplate->hideBlock('upload_form');
+            $this->objTemplate->hideBlock('uploaded');
+        } else {
+            // parse the upload form
 
-        $this->objTemplate->setVariable(array(
-            "FORM_ACTION" => $formAction,
-            "FORM_METHOD" => "POST",
+            // init uploader
+            $uploadId = $this->initUploader();
 
-            "FILESHARING_EMAIL" => $_ARRAYLANG["TXT_EMAIL"],
-            "FILESHARING_EMAIL_INFO" => $_ARRAYLANG["TXT_FILESHARING_EMAIL_INFO"],
-            "FILESHARING_SUBJECT" => $_ARRAYLANG["TXT_FILESHARING_SUBJECT"],
-            "FILESHARING_SUBJECT_INFO" => $_ARRAYLANG["TXT_FILESHARING_SUBJECT_INFO"],
-            "FILESHARING_MESSAGE" => $_ARRAYLANG["TXT_FILESHARING_MESSAGE"],
-            "FILESHARING_MESSAGE_INFO" => $_ARRAYLANG["TXT_FILESHARING_MESSAGE_INFO"],
-            "FILESHARING_EXPIRATION" => $_ARRAYLANG["TXT_FILESHARING_EXPIRATION"],
-            //"FILESHARING_ACCEPT_TERMS" => $_ARRAYLANG["TXT_FILESHARING_ACCEPT_TERMS"],
-            "FILESHARING_SEND" => $_ARRAYLANG["TXT_FILESHARING_SEND"],
-            "FILESHARING_MORE" => $_ARRAYLANG["TXT_FILESHARING_MORE"],
+            // set form parameters
+            $formAction = clone \Env::get("Resolver")->getUrl();
+            $formAction->setParam("uploadId", $uploadId);
+            $formAction->setParam("check", false);
+            $formAction->setParam("hash", false);
 
-            "FILESHARING_ERROR_FILE_NOT_FOUND" => $_ARRAYLANG["TXT_FILESHARING_ERROR_FILE_NOT_FOUND"],
-            "FILESHARING_ERROR_NO_FILES_UPLOADED" => $_ARRAYLANG["TXT_FILESHARING_ERROR_NO_FILES_UPLOADED"],
-            
-            'TXT_FILESHARING_EXPLANATION' => $_ARRAYLANG['TXT_FILESHARING_EXPLANATION'],
-            'TXT_FILESHARING_I_AGREE' => $_ARRAYLANG['TXT_FILESHARING_I_AGREE'],
-            'TXT_FILESHARING_TERMS_OF_SERVICE' => $_ARRAYLANG['TXT_FILESHARING_TERMS_OF_SERVICE'],
-            'TXT_FILESHARING_I_ACCEPT' => $_ARRAYLANG['TXT_FILESHARING_I_ACCEPT'],
-            'TXT_FILESHARING_FILES' => $_ARRAYLANG['TXT_FILESHARING_FILES'],
-        ));
+            $this->objTemplate->setVariable(array(
+                "FORM_ACTION" => $formAction,
+                "FORM_METHOD" => "POST",
 
-        $this->objTemplate->touchBlock("upload_form");
-        $this->objTemplate->hideBlock("uploaded");
+                "FILESHARING_EMAIL" => $_ARRAYLANG["TXT_EMAIL"],
+                "FILESHARING_EMAIL_INFO" => $_ARRAYLANG["TXT_FILESHARING_EMAIL_INFO"],
+                "FILESHARING_SUBJECT" => $_ARRAYLANG["TXT_FILESHARING_SUBJECT"],
+                "FILESHARING_SUBJECT_INFO" => $_ARRAYLANG["TXT_FILESHARING_SUBJECT_INFO"],
+                "FILESHARING_MESSAGE" => $_ARRAYLANG["TXT_FILESHARING_MESSAGE"],
+                "FILESHARING_MESSAGE_INFO" => $_ARRAYLANG["TXT_FILESHARING_MESSAGE_INFO"],
+                "FILESHARING_EXPIRATION" => $_ARRAYLANG["TXT_FILESHARING_EXPIRATION"],
+                //"FILESHARING_ACCEPT_TERMS" => $_ARRAYLANG["TXT_FILESHARING_ACCEPT_TERMS"],
+                "FILESHARING_SEND" => $_ARRAYLANG["TXT_FILESHARING_SEND"],
+                "FILESHARING_MORE" => $_ARRAYLANG["TXT_FILESHARING_MORE"],
+
+                "FILESHARING_ERROR_FILE_NOT_FOUND" => $_ARRAYLANG["TXT_FILESHARING_ERROR_FILE_NOT_FOUND"],
+                "FILESHARING_ERROR_NO_FILES_UPLOADED" => $_ARRAYLANG["TXT_FILESHARING_ERROR_NO_FILES_UPLOADED"],
+
+                'TXT_FILESHARING_EXPLANATION' => $_ARRAYLANG['TXT_FILESHARING_EXPLANATION'],
+                'TXT_FILESHARING_I_AGREE' => $_ARRAYLANG['TXT_FILESHARING_I_AGREE'],
+                'TXT_FILESHARING_TERMS_OF_SERVICE' => $_ARRAYLANG['TXT_FILESHARING_TERMS_OF_SERVICE'],
+                'TXT_FILESHARING_I_ACCEPT' => $_ARRAYLANG['TXT_FILESHARING_I_ACCEPT'],
+                'TXT_FILESHARING_FILES' => $_ARRAYLANG['TXT_FILESHARING_FILES'],
+            ));
+
+            $this->objTemplate->touchBlock("upload_form");
+            $this->objTemplate->hideBlock("uploaded");
+        }
     }
 
     /**
