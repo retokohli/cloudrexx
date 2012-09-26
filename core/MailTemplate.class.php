@@ -1396,10 +1396,8 @@ Use plain text areas instead.  See below.
     static function errorHandler()
     {
         global $objDatabase;
-        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
 
         Text::errorHandler();
-
 //DBG::activate(DBG_DB_FIREPHP);
         $table_name = DBPREFIX."core_mail_template";
         $table_structure = array(
