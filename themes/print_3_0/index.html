@@ -62,8 +62,12 @@
                 {CONTENT_FILE}
             </section>
             
-            <footer id="footer">
-                &copy; 2012 <a href="http://www.contrexx.com" target="_blank">Contrexx &reg;</a> Print Theme
+            <footer id="footer-wrapper">
+                <footer id="footer">
+                    <footer id="footer-copyright">&copy; 2012 <a href="http://www.contrexx.com" target="_blank">Contrexx &reg;</a> Print Theme</footer>
+                    <a id="footer-link" href="http://{DOMAIN_URL}{PAGE_URL}">http://{DOMAIN_URL}{PAGE_URL}</a>
+                </footer>
+                <img src="https://chart.googleapis.com/chart?cht=qr&amp;chs=90x90&amp;chl=http://{DOMAIN_URL}{PAGE_URL}" alt="QR-Code" id="qr-code" />
             </footer>
         </div>
     </body>
