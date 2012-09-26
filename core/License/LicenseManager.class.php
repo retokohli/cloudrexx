@@ -58,9 +58,15 @@ class LicenseManager {
         }
         $date = $this->license->getValidToDate();
         if ($date) {
-            $formattedDate = date(ASCMS_DATE_FORMAT_DATE, $date);
+            $formattedValidityDate = date(ASCMS_DATE_FORMAT_DATE, $date);
         } else {
-            $formattedDate = '';
+            $formattedValidityDate = '';
+        }
+        $date = $this->license->getCreatedAtDate();
+        if ($date) {
+            $formattedCreateDate = date(ASCMS_DATE_FORMAT_DATE, $date);
+        } else {
+            $formattedCreateDate = '';
         }
         if (!file_exists(ASCMS_TEMP_PATH . '/licenseManager.html')) {
             $lc = LicenseCommunicator::getInstance($this->config);
@@ -71,7 +77,6 @@ class LicenseManager {
             \JS::activate('cx');
             $remoteTemplate = new \HTML_Template_Sigma(ASCMS_TEMP_PATH);
             $remoteTemplate->loadTemplateFile('/licenseManager.html');
-            $remoteTemplate->touchBlock('licenseManager');
             $remoteTemplate->setVariable($this->lang);
             $remoteTemplate->setVariable(array(
                 'LICENSE_STATE' => $this->lang['TXT_LICENSE_STATE_' . $this->license->getState()],
@@ -87,10 +92,18 @@ class LicenseManager {
                 'LICENSE_HOLDER_PHONE' => $this->license->getCustomer()->getPhone(),
                 'LICENSE_HOLDER_URL' => $this->license->getCustomer()->getUrl(),
                 'LICENSE_HOLDER_MAIL' => $this->license->getCustomer()->getMail(),
-                'LICENSE_VALID_TO' => $formattedDate,
+                'LICENSE_VALID_TO' => $formattedValidityDate,
+                'LICENSE_CREATED_AT' => $formattedCreateDate,
                 'INSTALLATION_ID' => $this->license->getInstallationId(),
                 'LICENSE_KEY' => $this->license->getLicenseKey(),
             ));
+            if ($remoteTemplate->blockExists('licenseDomain')) {
+                foreach ($this->license->getRegisteredDomains() as $domain) {
+                    $remoteTemplate->setVariable('LICENSE_DOMAIN', $domain);
+                    $remoteTemplate->parse('licenseDomain');
+                }
+            }
+            $remoteTemplate->setVariable('MESSAGE_TITLE', 'message');
             if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
                 $remoteTemplate->touchBlock('licenseAdmin');
                 $remoteTemplate->hideBlock('licenseNotAdmin');
