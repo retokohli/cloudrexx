@@ -5,7 +5,6 @@ use Cx\Model\Events\PageEventListener as PageEventListener;
 
 require_once(ASCMS_CORE_PATH.'/Env.class.php');
 require_once(ASCMS_MODEL_PATH.'/events/PageEventListener.class.php');
-require_once(ASCMS_CORE_PATH . '/PageTree/XmlSitemapPageTree.class.php');
 
 $doctrineDir = ASCMS_LIBRARY_PATH.'/doctrine/';
 
