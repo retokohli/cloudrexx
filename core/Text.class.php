@@ -897,10 +897,6 @@ die("Obsolete method Text::getIdArrayBySearch() called");
      */
     static function errorHandler()
     {
-        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
-
-//die("Text::errorHandler(): Disabled!<br />");
-
         $table_name = DBPREFIX."core_text";
         if (!UpdateUtil::table_exist($table_name)) {
             $query = "

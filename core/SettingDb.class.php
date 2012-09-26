@@ -1074,10 +1074,6 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
      */
     static function errorHandler()
     {
-        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
-
-//DBG::activate(DBG_DB_FIREPHP);
-
         $table_name = DBPREFIX.'core_setting';
         $table_structure = array(
             'section' => array('type' => 'TINYTEXT', 'default' => ''),
