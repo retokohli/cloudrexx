@@ -1243,8 +1243,7 @@ class Installer
                 && (!$_SESSION['installer']['config']['createDatabase'] || ($_SESSION['installer']['config']['createDatabase'] && (isset($_SESSION['installer']['createDatabase']) && $_SESSION['installer']['createDatabase'])))
                 && isset($_SESSION['installer']['createDatabaseTables']) && $_SESSION['installer']['createDatabaseTables']
                 && isset($_SESSION['installer']['checkDatabaseTables']) && $_SESSION['installer']['checkDatabaseTables']
-                && isset($_SESSION['installer']['insertDatabaseData']) && $_SESSION['installer']['insertDatabaseData']
-                && isset($_SESSION['installer']['createVersionFile']) && $_SESSION['installer']['createVersionFile'])
+                && isset($_SESSION['installer']['insertDatabaseData']) && $_SESSION['installer']['insertDatabaseData'])
             {
                 $_SESSION['installer']['step']++;
             }
