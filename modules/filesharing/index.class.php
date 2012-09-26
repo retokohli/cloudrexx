@@ -251,7 +251,8 @@ class Filesharing extends FilesharingLib
         }
 
         if ($permissionNeeded == 'off' || (is_numeric($permissionNeeded) && !Permission::checkAccess($permissionNeeded, 'dynamic'))) {
-            $this->objTemplate->touchBlock('no_access');
+            $this->objTemplate->setVariable('FILESHARING_NO_ACCESS', $_ARRAYLANG['TXT_FILESHARING_NO_ACCESS']);
+            $this->objTemplate->parse('no_access');
             $this->objTemplate->hideBlock('upload_form');
             $this->objTemplate->hideBlock('uploaded');
         } else {
