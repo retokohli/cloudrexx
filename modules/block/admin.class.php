@@ -331,7 +331,7 @@ class blockManager extends blockLibrary
                         $strSelectedPages = '';
                         
                         foreach ($objContentTree->getTree() as $arrData) {
-                            if (in_array($arrData['node_id'], $blockAssociatedPageIds)) {                
+                            if (in_array($arrData['catid'], $blockAssociatedPageIds)) {                
                                 $selectedPages[] = contrexx_raw2xhtml($arrData['catname']);
                             }
                         } 
