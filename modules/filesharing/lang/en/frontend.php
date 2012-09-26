@@ -31,5 +31,5 @@ $_ARRAYLANG["TXT_FILESHARING_I_AGREE"] = "I agree with the";
 $_ARRAYLANG["TXT_FILESHARING_TERMS_OF_SERVICE"] = "terms of service";
 $_ARRAYLANG["TXT_FILESHARING_I_ACCEPT"] = "";
 $_ARRAYLANG["TXT_FILESHARING_FILES"] = "Files";
-$_ARRAYLANG["TXT_FILESHARING_NO_ACCESS"] = "Sie haben keine Berechtigungen diese Seite zu verwenden.";
+$_ARRAYLANG["TXT_FILESHARING_NO_ACCESS"] = "You have no permission to access this page.";
 ?>
