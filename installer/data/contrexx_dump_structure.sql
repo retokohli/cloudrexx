@@ -3255,7 +3255,7 @@ CREATE TABLE `contrexx_stats_visitors` (
   `proxy_useragent` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique` (`sid`)
-) ENGINE=MyISAM;
+) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_stats_visitors_summary` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `type` varchar(10) NOT NULL DEFAULT '',
@@ -3263,7 +3263,7 @@ CREATE TABLE `contrexx_stats_visitors_summary` (
   `count` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique` (`type`,`timestamp`)
-) ENGINE=MyISAM;
+) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_voting_additionaldata` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nickname` varchar(80) NOT NULL DEFAULT '',
