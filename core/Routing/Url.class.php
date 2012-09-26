@@ -129,16 +129,19 @@ class Url {
         }
         $matches = array();
         $matchCount = preg_match('/([^\?]+)(.*)/', $this->path, $matches);
-
+        
+        $parts = explode('?', $this->path);
         if($matchCount == 0) {//seemingly, no parameters are set.
             $this->suggestedTargetPath = $this->path;
             $this->suggestedParams = '';
-        } else if (count($matches) == 3 && empty($matches[2])) { // no path, just parameters
-            $this->suggestedTargetPath = '';
-            $this->suggestedParams = $this->path;
         } else {
-            $this->suggestedTargetPath = $matches[1];
-            $this->suggestedParams = $matches[2];
+            if ($parts[0] == '') { // we have no path or filename, just set parameters
+                $this->suggestedTargetPath = '';
+                $this->suggestedParams = $this->path;
+            } else {
+                $this->suggestedTargetPath = $matches[1];
+                $this->suggestedParams = $matches[2];
+            }
         }
 
         $this->state = self::SUGGESTED;
