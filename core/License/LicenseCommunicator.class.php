@@ -177,6 +177,8 @@ class LicenseCommunicator {
             $response->license->edition,
             $response->license->legalComponents,
             $response->license->validTo,
+            $response->license->createdAt,
+            $response->license->registeredDomains,
             $installationId,
             $licenseKey,
             $messages,

@@ -21,6 +21,8 @@ class License {
     private $legalComponents;
     private $legalFrontendComponents;
     private $validTo;
+    private $createdAt;
+    private $registeredDomains = array();
     private $instId;
     private $licenseKey;
     private $messages;
@@ -38,6 +40,8 @@ class License {
             $editionName = '',
             $legalComponents = array('license'),
             $validTo = '',
+            $createdAt = '',
+            $registeredDomains = array(),
             $instId = '',
             $licenseKey = '',
             $messages = array(),
@@ -54,6 +58,8 @@ class License {
         $this->editionName = $editionName;
         $this->legalComponents = $legalComponents;
         $this->validTo = $validTo;
+        $this->createdAt = $createdAt;
+        $this->registeredDomains = $registeredDomains;
         $this->instId = $instId;
         $this->licenseKey = $licenseKey;
         $this->messages = $messages;
@@ -111,6 +117,14 @@ class License {
     
     public function setValidToDate($timestamp) {
         $this->validTo = $timestamp;
+    }
+    
+    public function getCreatedAtDate() {
+        return $this->createdAt;
+    }
+    
+    public function getRegisteredDomains() {
+        return $this->registeredDomains;
     }
     
     public function getInstallationId() {
@@ -227,6 +241,9 @@ class License {
         // get written into the config/settings.php file
         $_POST['setvalue'][93] = base64_encode(serialize($this->getMessages()));           // messageText --> licenseMessage
         
+        $_POST['setvalue'][94] = $this->getCreatedAtDate();                 // licenseCreatedAt
+        $_POST['setvalue'][95] = base64_encode(serialize($this->getRegisteredDomains()));  // licenseDomains
+        
         $_POST['setvalue'][97] = $this->getVersion()->getNumber();          // coreCmsVersion
         $_POST['setvalue'][98] = $this->getVersion()->getCodeName();        // coreCmsCodeName
         $_POST['setvalue'][99] = $this->getVersion()->getState();           // coreCmsStatus
@@ -281,6 +298,9 @@ class License {
         
         $messages = isset($_CONFIG['licenseMessage']) ? unserialize(base64_decode(htmlspecialchars_decode($_CONFIG['licenseMessage']))) : array();
         
+        $createdAt = isset($_CONFIG['licenseCreatedAt']) ? $_CONFIG['licenseCreatedAt'] : null;
+        $registeredDomains = isset($_CONFIG['licenseDomains']) ? unserialize(base64_decode(htmlspecialchars_decode($_CONFIG['licenseDomains']))) : array();
+        
         $partner = isset($_CONFIG['licensePartner']) ? unserialize(base64_decode(htmlspecialchars_decode($_CONFIG['licensePartner']))) : null;
         $customer = isset($_CONFIG['licenseCustomer']) ? unserialize(base64_decode(htmlspecialchars_decode($_CONFIG['licenseCustomer']))) : null;
         
@@ -318,6 +338,8 @@ class License {
             $editionName,
             $activeComponents,
             $validTo,
+            $createdAt,
+            $registeredDomains,
             $instId,
             $licenseKey,
             $messages,
