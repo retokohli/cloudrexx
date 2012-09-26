@@ -242,7 +242,12 @@ class CommonFunctions
         }
         $options = '<option value="-1"'.($selected == -1 ? ' selected="selected"' : '').'>'.$_ARRLANG['TXT_PLEASE_SELECT'].'</option>';
         foreach ($arrTimezoneIdentifiers as $id => $name) {
-            $options .= '<option value="'.$id.'"'.($selected == $id ? ' selected="selected"' : '').'>'.$name.'</option>';
+            $dateTimeZone = new DateTimeZone($name);
+            $dateTime     = new DateTime('now', $dateTimeZone);
+            $timeOffset   = $dateTimeZone->getOffset($dateTime);
+            $plusOrMinus  = $timeOffset < 0 ? '-' : '+';
+            $gmt          = 'GMT ' . $plusOrMinus . ' ' . gmdate('g:i', $timeOffset);
+            $options .= '<option value="'.$id.'"'.($selected == $id ? ' selected="selected"' : '').'>'.$name.' ('.$gmt.')'.'</option>';
         }
         return $options;
     }
