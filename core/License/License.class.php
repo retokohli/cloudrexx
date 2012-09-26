@@ -23,8 +23,9 @@ class License {
     private $validTo;
     private $instId;
     private $licenseKey;
-    private $message;
+    private $messages;
     private $version;
+    private $partner;
     private $customer;
     private $grayzoneTime;
     private $frontendLockTime;
@@ -39,8 +40,9 @@ class License {
             $validTo = '',
             $instId = '',
             $licenseKey = '',
-            $message = '',
+            $messages = array(),
             $version = '',
+            $partner = '',
             $customer = '',
             $grayzoneTime = 14,
             $frontendLockTime = 10,
@@ -54,8 +56,9 @@ class License {
         $this->validTo = $validTo;
         $this->instId = $instId;
         $this->licenseKey = $licenseKey;
-        $this->message = $message;
+        $this->messages = $messages;
         $this->version = $version;
+        $this->partner = $partner;
         $this->customer = $customer;
         $this->grayzoneTime = $grayzoneTime;
         $this->frontendLockTime = $frontendLockTime;
@@ -122,16 +125,27 @@ class License {
         $this->licenseKey = $key;
     }
     
+    public function getMessages() {
+        return $this->messages;
+    }
+    
     /**
      *
      * @return Message
      */
-    public function getMessage() {
-        return $this->message;
+    public function getMessage($langCode) {
+        if (!isset($this->messages[$langCode])) {
+            return null;
+        }
+        return $this->messages[$langCode];
     }
     
     public function getVersion() {
         return $this->version;
+    }
+    
+    public function getPartner() {
+        return $this->partner;
     }
     
     public function getCustomer() {
@@ -209,27 +223,15 @@ class License {
         $_POST['setvalue'][91] = $this->getValidToDate();                   // licenseValidTo
         $_POST['setvalue'][92] = $this->getEditionName();                   // coreCmsEdition
         
-        $_POST['setvalue'][93] = $this->getMessage()->getText();            // messageText
-        $_POST['setvalue'][94] = $this->getMessage()->getType();            // messageType
-        $_POST['setvalue'][95] = $this->getMessage()->getLink();            // messageLink
-        $_POST['setvalue'][96] = $this->getMessage()->getLinkTarget();      // messageLinkTarget
+        $_POST['setvalue'][93] = serialize($this->getMessages());           // messageText --> licenseMessage
         
         $_POST['setvalue'][97] = $this->getVersion()->getNumber();          // coreCmsVersion
         $_POST['setvalue'][98] = $this->getVersion()->getCodeName();        // coreCmsCodeName
         $_POST['setvalue'][99] = $this->getVersion()->getState();           // coreCmsStatus
         $_POST['setvalue'][100] = $this->getVersion()->getReleaseDate();    // coreCmsReleaseDate
         
-        $_POST['setvalue'][101] = $this->getCustomer()->getCompanyName();   // licenseHolderCompany
-        $_POST['setvalue'][102] = $this->getCustomer()->getTitle();         // licenseHolderTitle
-        $_POST['setvalue'][103] = $this->getCustomer()->getFirstname();     // licenseHolderFirstname
-        $_POST['setvalue'][104] = $this->getCustomer()->getLastname();      // licenseHolderLastname
-        $_POST['setvalue'][105] = $this->getCustomer()->getAddress();       // licenseHolderAddress
-        $_POST['setvalue'][106] = $this->getCustomer()->getZip();           // licenseHolderZip
-        $_POST['setvalue'][107] = $this->getCustomer()->getCity();          // licenseHolderCity
-        $_POST['setvalue'][108] = $this->getCustomer()->getCountry();       // licenseHolderCountry
-        $_POST['setvalue'][109] = $this->getCustomer()->getPhone();         // licenseHolderPhone
-        $_POST['setvalue'][110] = $this->getCustomer()->getUrl();           // licenseHolderUrl
-        $_POST['setvalue'][111] = $this->getCustomer()->getMail();          // licenseHolderMail
+        $_POST['setvalue'][101] = serialize($this->getPartner());           // licenseHolderCompany --> licensePartner
+        $_POST['setvalue'][102] = serialize($this->getCustomer());          // licenseHolderTitle --> licenseCustomer
         
         $_POST['setvalue'][112] = $this->getVersion()->getName();           // coreCmsName
         
@@ -274,36 +276,10 @@ class License {
         $instId = isset($_CONFIG['installationId']) ? $_CONFIG['installationId'] : null;
         $licenseKey = isset($_CONFIG['licenseKey']) ? $_CONFIG['licenseKey'] : null;
         
-        $messageText = isset($_CONFIG['messageText']) ? $_CONFIG['messageText'] : null;
-        $messageType = isset($_CONFIG['messageType']) ? $_CONFIG['messageType'] : null;
-        $messageLink = isset($_CONFIG['messageLink']) ? $_CONFIG['messageLink'] : null;
-        $messageLinkTarget = isset($_CONFIG['messageLinkTarget']) ? $_CONFIG['messageLinkTarget'] : null;
-        $message = new Message($messageText, $messageType, $messageLink, $messageLinkTarget);
+        $messages = isset($_CONFIG['licenseMessage']) ? unserialize(htmlspecialchars_decode($_CONFIG['licenseMessage'])) : array();
         
-        $customerCompanyName = isset($_CONFIG['licenseHolderCompany']) ? $_CONFIG['licenseHolderCompany'] : null;
-        $customerTitle = isset($_CONFIG['licenseHolderTitle']) ? $_CONFIG['licenseHolderTitle'] : null;
-        $customerFirstname = isset($_CONFIG['licenseHolderFirstname']) ? $_CONFIG['licenseHolderFirstname'] : null;
-        $customerLastname = isset($_CONFIG['licenseHolderLastname']) ? $_CONFIG['licenseHolderLastname'] : null;
-        $customerAddress = isset($_CONFIG['licenseHolderAddress']) ? $_CONFIG['licenseHolderAddress'] : null;
-        $customerZip = isset($_CONFIG['licenseHolderZip']) ? $_CONFIG['licenseHolderZip'] : null;
-        $customerCity = isset($_CONFIG['licenseHolderCity']) ? $_CONFIG['licenseHolderCity'] : null;
-        $customerCountry = isset($_CONFIG['licenseHolderCountry']) ? $_CONFIG['licenseHolderCountry'] : null;
-        $customerPhone = isset($_CONFIG['licenseHolderPhone']) ? $_CONFIG['licenseHolderPhone'] : null;
-        $customerUrl = isset($_CONFIG['licenseHolderUrl']) ? $_CONFIG['licenseHolderUrl'] : null;
-        $customerMail = isset($_CONFIG['licenseHolderMail']) ? $_CONFIG['licenseHolderMail'] : null;
-        $customer = new Customer(
-            $customerCompanyName,
-            $customerTitle,
-            $customerFirstname,
-            $customerLastname,
-            $customerAddress,
-            $customerZip,
-            $customerCity,
-            $customerCountry,
-            $customerPhone,
-            $customerUrl,
-            $customerMail
-        );
+        $partner = isset($_CONFIG['licensePartner']) ? unserialize(htmlspecialchars_decode($_CONFIG['licensePartner'])) : null;
+        $customer = isset($_CONFIG['licenseCustomer']) ? unserialize(htmlspecialchars_decode($_CONFIG['licenseCustomer'])) : null;
         
         $versionNumber = isset($_CONFIG['coreCmsVersion']) ? $_CONFIG['coreCmsVersion'] : null;
         $versionName = isset($_CONFIG['coreCmsName']) ? $_CONFIG['coreCmsName'] : null;
@@ -341,8 +317,9 @@ class License {
             $validTo,
             $instId,
             $licenseKey,
-            $message,
+            $messages,
             $version,
+            $partner,
             $customer,
             $grayzoneTime,
             $lockTime,

@@ -12,16 +12,24 @@ namespace Cx\Core\License;
  * @author ritt0r
  */
 class Message {
+    private $langCode;
     private $text;
     private $type;
     private $link;
     private $linkTarget;
+    private $showInDashboard = true;
     
-    public function __construct($text, $type, $link, $linkTarget) {
+    public function __construct($langCode, $text, $type, $link, $linkTarget, $showInDashboard = true) {
+        $this->langCode = $langCode;
         $this->text = $text;
         $this->type = $type;
         $this->link = $link;
         $this->linkTarget = $linkTarget;
+        $this->showInDashboard = $showInDashboard;
+    }
+    
+    public function getLangCode() {
+        return $this->langCode;
     }
     
     public function getText() {
@@ -38,5 +46,9 @@ class Message {
     
     public function getLinkTarget() {
         return $this->linkTarget;
+    }
+    
+    public function showInDashboard() {
+        return $this->showInDashboard;
     }
 }
