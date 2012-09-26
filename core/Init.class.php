@@ -845,10 +845,6 @@ class InitCMS
 
     public function getUriBy($key = '', $value = '')
     {
-        if ($key == '' || $value == '') {
-            return '';
-        }
-        
         $url = \Env::get('Resolver')->getUrl();
         $myUrl = clone $url;
         $myUrl->setParam($key, $value);
