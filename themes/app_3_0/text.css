@@ -94,9 +94,9 @@ ul.horizontal-list li {
 }
 
 ul.horizontal-list li.last {
-    padding: 0;
-    margin: 0;
-    background: none;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: none !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
