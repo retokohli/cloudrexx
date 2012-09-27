@@ -1,3 +1,13 @@
+    <!-- BEGIN message -->
+    <div id="message" class="message {MESSAGE_TYPE}">
+        <div id="message_message" class="text">
+            <a id="message_link" class="link" href="{MESSAGE_LINK}" target="{MESSAGE_LINK_TARGET}">{MESSAGE_TITLE}</a>
+        </div>
+    </div>
+    <!-- END message -->
+<!-- BEGIN status -->
+<div id="{STATUS_TYPE}">{STATUS_MESSAGE}</div>
+<!-- END status -->
 <form method="post" action="index.php?cmd=license">
     <table class="adminlist" width="100%">
         <tr>
@@ -13,12 +23,11 @@
             <td>{LICENSE_EDITION}</td>
         </tr>
         <tr>
-            <td>{TXT_LICENSE_HOLDER}</td>
+            <td>{TXT_LICENSE_REGISTERED_DOMAINS}</td>
             <td>
-                {LICENSE_HOLDER_TITLE}<br />
-                {LICENSE_HOLDER_LASTNAME} {LICENSE_HOLDER_FIRSTNAME}<br />
-                {LICENSE_HOLDER_COMPANY}<br />
-                {LICENSE_HOLDER_MAIL}
+<!-- BEGIN licenseDomain -->
+                <div>{LICENSE_DOMAIN}</div>
+<!-- END licenseDomain -->
             </td>
         </tr>
         <tr>
@@ -26,9 +35,14 @@
             <td>{LICENSE_VALID_TO}</td>
         </tr>
         <tr>
+            <td>{TXT_LICENSE_CREATED_AT}</td>
+            <td>{LICENSE_CREATED_AT}</td>
+        </tr>
+        <tr>
             <td>{TXT_INSTALLATION_ID}</td>
             <td>{INSTALLATION_ID}</td>
         </tr>
+<!-- BEGIN licenseAdmin -->
         <tr>
             <td>{TXT_LICENSE_KEY}</td>
             <td><input type="text" value="{LICENSE_KEY}" size="70" name="licenseKey" /></td>
@@ -36,4 +50,12 @@
     </table>
     <br />
     <input type="submit" name="save" value="{TXT_SAVE}" /> <input type="submit" name="update" value="{TXT_LICENSE_UPDATE}" />
+<!-- END licenseAdmin -->
+<!-- BEGIN licenseNotAdmin -->
+        <tr>
+            <td>{TXT_LICENSE_KEY}</td>
+            <td>{LICENSE_KEY}</td>
+        </tr>
+    </table>
+<!-- END licenseNotAdmin -->
 </form>

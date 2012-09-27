@@ -134,10 +134,10 @@ class myAdminManager {
         $license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase);
         $message = $license->getMessage(\FWLanguage::getLanguageCodeById(BACKEND_LANG_ID));
         if ($message && $message->showInDashboard()) {
-            $objTemplate->setVariable('MESSAGE_TITLE', $message->getText());
-            $objTemplate->setVariable('MESSAGE_TYPE', $message->getType());
-            $objTemplate->setVariable('MESSAGE_LINK', $message->getLink());
-            $objTemplate->setVariable('MESSAGE_LINK_TARGET', $message->getLinkTarget());
+            $objTemplate->setVariable('MESSAGE_TITLE', contrexx_raw2xhtml($message->getText()));
+            $objTemplate->setVariable('MESSAGE_TYPE', contrexx_raw2xhtml($message->getType()));
+            $objTemplate->setVariable('MESSAGE_LINK', contrexx_raw2xhtml($message->getLink()));
+            $objTemplate->setVariable('MESSAGE_LINK_TARGET', contrexx_raw2xhtml($message->getLinkTarget()));
         }
 
         $objFWUser = FWUser::getFWUserObject();

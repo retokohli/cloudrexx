@@ -66,9 +66,9 @@ if (!$message) {
     die('No message');
 }
 echo json_encode(array(
-    'status' => $license->getState(),
-    'link' => $message->getLink(),
-    'target' => $message->getLinkTarget(),
-    'text' => $message->getText(),
-    'class' => $message->getType(),
+    'status' => contrexx_raw2xhtml($license->getState()),
+    'link' => contrexx_raw2xhtml($message->getLink()),
+    'target' => contrexx_raw2xhtml($message->getLinkTarget()),
+    'text' => contrexx_raw2xhtml($message->getText()),
+    'class' => contrexx_raw2xhtml($message->getType()),
 ));
