@@ -716,7 +716,7 @@ class CommonFunctions
     {
         $hostType = @ftp_systype($objFtp);
         if ($hostType !== false) {
-            if (eregi('win', $hostType)) {
+            if (preg_match('/win/i', $hostType)) {
                 return true;
             } else {
                 return false;
@@ -1060,7 +1060,7 @@ class CommonFunctions
         }
         $_CORELANG = $_ARRLANG;
 
-        if (ASCMS_WEBSERVER_SOFTWARE == 'iis') {
+        if ($this->getWebserverSoftware() == 'iis') {
             require_once(ASCMS_LIBRARY_PATH.'/PEAR/File/HtAccess.php');
             $objHtAccess = new File_HtAccess(ASCMS_DOCUMENT_ROOT.$iisHtaccessFile);
             $objHtAccess->setAdditional(explode("\n", $this->_getHtaccessFileTemplate($iisHtaccessTemplateFile)));
@@ -1518,6 +1518,11 @@ class CommonFunctions
             }
         }
         return $arrDirectories;
+    }
+
+    public function getWebserverSoftware()
+    {
+        return !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');;
     }
 
     function updateCheck() {

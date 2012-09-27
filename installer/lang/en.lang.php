@@ -137,6 +137,8 @@ $_ARRLANG['TXT_PRESS_REFRESH_TO_CONTINUE_INSTALLATION'] = "Press <b>Next</b> in 
 $_ARRLANG['TXT_REFRESH'] = "Update";
 $_ARRLANG['TXT_CREATE_CONFIG_FILE'] = "Create configuration file";
 $_ARRLANG['TXT_SET_WRITE_PERMISSION_TO_FILES'] = "You must assign write-permission to the following files:";
+$_ARRLANG['TXT_CREATE_APACHE_HTACCESS_FILE'] = ".htaccess created";
+$_ARRLANG['TXT_CREATE_IIS_HTACCESS_FILE'] = "web.config created";
 $_ARRLANG['TXT_CREATE_VERSION_FILE'] = "Create version file";
 $_ARRLANG['TXT_COULD_NOT_GATHER_ALL_DATABASE_TABLES'] = "Could not find the available database tables!";
 $_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'] = "Your database server doesn't support the character set UTF-8! You need the a version of Contrexx which uses the latin1 character set instead!";
@@ -144,6 +146,8 @@ $_ARRLANG['TXT_COULD_NOT_SET_DATABASE_CHARSET'] = "Could not set database collat
 $_ARRLANG['TXT_COULD_NOT_SET_INSTALLATIONID'] = "The installation ID could not be set.";
 $_ARRLANG['TXT_COULD_NOT_SET_TIMEZONE'] = "The timezone could not be set.";
 $_ARRLANG['TXT_CONFIG_DATABASE'] = "Config database";
+$_ARRLANG['TXT_CORE_HTACCESS_FILE_NOT_WRITABLE'] = "The file %s can't be updated due it's write-protected! Please remove the write-protection for letting the system working properly.";
+$_ARRLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Unable to read the HtAccess file %s due to invalid Contrexx specific directives!";
 
 // system configuration
 $_ARRLANG['TXT_ADMIN_EMAIL'] = "Administrator e-mail address";
@@ -171,6 +175,7 @@ $_ARRLANG['TXT_SETTINGS_ERROR_WRITABLE'] = "The file %s could not be written.  R
 // admin account
 $_ARRLANG['TXT_ADMIN_ACCOUNT_DESC'] = "Provide an administrator's user name and password.";
 $_ARRLANG['TXT_SET_USERNAME'] = "You must define a user name!";
+$_ARRLANG['TXT_INVALID_USERNAME'] = "The username may only contain alphanumeric characters (a-z, A-Z, 0-9) and the following special characters: -_";
 $_ARRLANG['TXT_SET_PASSWORD'] = "You must define a password!";
 $_ARRLANG['TXT_PASSWORD_LENGTH_DESC'] = "(min. 6 characters)";
 $_ARRLANG['TXT_PASSWORD_LENGTH'] = "Password must be at least 6 characters in length!";
@@ -191,4 +196,3 @@ $_ARRLANG['TXT_INTERNET_SITE_FOR_VISITORS'] = "Internet site for visitors";
 $_ARRLANG['TXT_INTERNET_SITE_MESSAGE'] = "The Web site is available immediately at the following address: <br /><b>[WEB_URL]</b>";
 $_ARRLANG['TXT_ADMIN_SITE'] = "Administrator area";
 $_ARRLANG['TXT_ADMIN_SITE_MESSAGE'] = "The site can be administered at the following address: <br /><b>[ADMIN_URL]</b>";
-$_ARRLANG['TXT_INVALID_USERNAME'] = "The username has invalid characters. You can only use the following: A-Z, 0-9, - and _";
