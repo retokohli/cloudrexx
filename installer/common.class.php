@@ -488,6 +488,20 @@ class CommonFunctions
         return false;
     }
 
+    public function enableApc()
+    {
+        if (extension_loaded('apc')) {
+            if (!ini_get('apc.enabled')) {
+                ini_set('apc.enabled', 1);
+                if (!ini_get('apc.enabled')) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
     /**
     * check rss support
     *

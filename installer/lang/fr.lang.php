@@ -59,6 +59,7 @@ $_ARRLANG['TXT_PHP_CONFIGURATION'] = "Configuration PHP";
 $_ARRLANG['TXT_ALLOW_URL_FOPEN'] = "allow_url_fopen";
 $_ARRLANG['TXT_GD_VERSION']	= "GD (Graphics Draw) Version";
 $_ARRLANG['TXT_FTP_SUPPORT'] = "Support FTP";
+$_ARRLANG['TXT_APC_SUPPORT'] = "APC (Alternative PHP Cache)";
 $_ARRLANG['TXT_YES'] = "Oui";
 $_ARRLANG['TXT_NO'] = "Non";
 $_ARRLANG['TXT_ON']	= "On";

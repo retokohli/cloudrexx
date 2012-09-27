@@ -11,19 +11,12 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-@error_reporting (0);
 @ini_set('display_errors', 0);
-$php = phpversion();
-if ($php < "5.3") {
-    errorBox("Das Contrexx CMS benötigt mindestens PHP in der Version 5.3.<br>Auf Ihrem System läuft PHP ".$php);
-}
+@error_reporting(E_ALL);
 
-/**
- * Display error message
- */
-function errorBox($errmsg){
-    print "<html><body>" .$errmsg . "</body></html>";
-    die;
+$php = phpversion();
+if ($php < '5.3') {
+    die('Das Contrexx CMS ben&uml;tigt mindestens PHP in der Version 5.3.<br>Auf Ihrem System l&auml;uft PHP '.$php);
 }
 
 $offsetPath = '';
@@ -63,6 +56,26 @@ if (!@include_once($basePath.'/../core/Env.class.php')) {
 
 $objCommon = new CommonFunctions;
 $objInstaller = new Installer;
+
+function getMemoryLimit() {
+    preg_match('/^\d+/', ini_get('memory_limit'), $memoryLimit);
+    return $memoryLimit[0];
+}
+
+function checkMemoryLimit($memoryLimit) {
+    if (getMemoryLimit() < $memoryLimit) {
+        ini_set('memory_limit', $memoryLimit.'M');
+        if (getMemoryLimit() < $memoryLimit) {
+            die('The memory_limit must be at least '.$memoryLimit.'M (now '.ini_get('memory_limit').').');
+        }
+    }
+}
+
+if ($objCommon->enableApc()) {
+    checkMemoryLimit(32);
+} else {
+    checkMemoryLimit(48);
+}
 
 $objCommon->initLanguage();
 $objTpl = new HTML_Template_Sigma($templatePath);

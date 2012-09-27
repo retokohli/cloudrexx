@@ -483,6 +483,7 @@ class Installer
         $mysqlSupport = $objCommon->checkMySQLSupport();
         $gdVersion = $objCommon->checkGDSupport();
         $ftpSupport = $objCommon->checkFTPSupport();
+        $apcSupport = $objCommon->enableApc();
 
         if ($phpVersion < $requiredPHPVersion) {
             $this->arrStatusMsg['php'] .= str_replace("[VERSION]", $requiredPHPVersion, $_ARRLANG['TXT_PHP_VERSION_REQUIRED']."<br /><br />".$_ARRLANG['TXT_IGNORE_PHP_REQUIREMENT']."<br />"
@@ -505,20 +506,22 @@ class Installer
 
         // set template variables
         $objTpl->setVariable(array(
-            'PHP_REQUIRED_VERION'   => $_ARRLANG['TXT_PHP_VERSION']." >= ".$requiredPHPVersion,
+            'PHP_REQUIRED_VERION'   => $_ARRLANG['TXT_PHP_VERSION'].' >= '.$requiredPHPVersion,
             'PHP_VERSION'           => $phpVersion,
-            'PHP_VERSION_CLASS'     => ($phpVersion >= $requiredPHPVersion) ? "successful" : "failed",
+            'PHP_VERSION_CLASS'     => $phpVersion >= $requiredPHPVersion ? 'successful' : 'failed',
             'MYSQL_SUPPORT'         => $mysqlSupport ? $_ARRLANG['TXT_YES'] : $_ARRLANG['TXT_NO'],
-            'MYSQL_SUPPORT_CLASS'   => $mysqlSupport ? "successful" : "failed",
-            'GD_REQUIRED_VERSION'   => $_ARRLANG['TXT_GD_VERSION']." >= ".$requiredGDVersion,
+            'MYSQL_SUPPORT_CLASS'   => $mysqlSupport ? 'successful' : 'failed',
+            'GD_REQUIRED_VERSION'   => $_ARRLANG['TXT_GD_VERSION'].' >= '.$requiredGDVersion,
             'GD_VERSION'            => $gdVersion,
-            'GD_VERSION_CLASS'      => ($gdVersion >= $requiredGDVersion) ? "successful" : "failed",
+            'GD_VERSION_CLASS'      => $gdVersion >= $requiredGDVersion ? 'successful' : 'failed',
             'FTP_SUPPORT'           => $ftpSupport ? $_ARRLANG['TXT_YES'] : $_ARRLANG['TXT_NO'],
-            'FTP_SUPPORT_CLASS'     => $ftpSupport ? "successful" : "failed"
+            'FTP_SUPPORT_CLASS'     => $ftpSupport ? 'successful' : 'failed',
+            'APC_SUPPORT'           => $apcSupport ? $_ARRLANG['TXT_YES'] : $_ARRLANG['TXT_NO'],
+            'APC_SUPPORT_CLASS'     => $apcSupport ? 'successful' : 'failed',
         ));
 
         // news syndication status
-        if ($_CONFIG['coreCmsEdition'] == "Standard" || $_CONFIG['coreCmsEdition'] == "Premium") {
+        if ($_CONFIG['coreCmsEdition'] == 'General' || $_CONFIG['coreCmsEdition'] == 'Standard' || $_CONFIG['coreCmsEdition'] == 'Premium') {
             $allowUrlFopen = $objCommon->checkRSSSupport();
             if (!$allowUrlFopen) {
                 $this->arrStatusMsg['config'] .= $_ARRLANG['TXT_ALLOW_URL_FOPEN_FOR_RSS_REQUIRED']."<br />";
