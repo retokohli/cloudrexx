@@ -14,30 +14,58 @@ function accessSwitchCheckboxStatus(id)
 	}
 }
 
-function accessChangeProtection(id, isProtected)
+function accessChangeProtection(triggerLink, nodeId, lang, backend)
 {
-	msg = isProtected ? '{ACCESS_UNPROTECT_PAGE_TXT}' : '{ACCESS_PROTECT_PAGE_TXT}';
+    var lockedKey = 'locked';
+    var pageIsLocked = jQuery(triggerLink).attr('rel') == lockedKey;
+	var msg = pageIsLocked ? '{ACCESS_UNPROTECT_PAGE_TXT}' : '{ACCESS_PROTECT_PAGE_TXT}';
 
 	if (confirm(msg+'\n\n{TXT_ACCESS_PROMT_EXEC_WARNING}')) {
-        accessSelectAllGroups(document.getElementById('access_group_associated_users'));
-
-		if (typeof(window.pageYOffset) != 'undefined') {
-			offset = window.pageYOffset;
-		} else {
-			offset = document.documentElement.scrollTop;
-		}
-
-		document.getElementById('access_group_form').action += '&pageId='+id+'&protect='+!isProtected+'&scrollPos='+offset;
-		document.getElementById('access_group_form').submit();
+        if (backend) {
+            action = pageIsLocked ? 'unlock' : 'lock';
+        } else {
+            action = pageIsLocked ? 'unprotect' : 'protect';
+        }
+        data = {action: action, lang: lang, nodes: [nodeId]};
+        jQuery.post('index.php?cmd=jsondata&object=page&act=multipleSet', data, function(response) {
+            if (response.status == 'success') {
+                if (pageIsLocked) {
+                    jQuery(triggerLink).find('ins').removeClass(lockedKey);
+                    jQuery(triggerLink).attr('rel', '');
+                    jQuery('#access_webpage_access_id_'+nodeId+'_'+lang).css('display', 'none');
+                } else {
+                    jQuery(triggerLink).find('ins').addClass(lockedKey);
+                    jQuery(triggerLink).attr('rel', lockedKey);
+                    jQuery('#access_webpage_access_id_'+nodeId+'_'+lang).css('display', '');
+                }
+            }
+        });
 	}
 }
 
-function accessSetScrollPos()
-{
-	window.scrollTo(0, {ACCESS_SCROLL_POS});
-}
 // ]]>
 </script>
+<style type="text/css">
+table.adminlist td {
+    height: auto; 
+    line-height: normal;
+    padding: 0px 3px 0px 3px;
+    border-bottom: 0px;
+}
+
+table.adminlist .rowFirst td {
+    padding-top: 3px;
+}
+table.adminlist .rowLast td {
+    height: auto; 
+    line-height: normal;
+    padding-bottom: 3px;
+    border-bottom: 1px solid #E5E5E5;
+}
+#site-tree .publishing {
+    margin-top: 0;
+}
+</style>
 <ul id="tabmenu">
 <li><a id="groupTab_modifyGroup1" {ACCESS_GENERAL_TAB_BUTTON_STATUS} href="javascript:void(0);" onclick="selectTab('modifyGroup1')" title="{TXT_ACCESS_GENERAL}">{TXT_ACCESS_GENERAL}</a></li>
 <li><a id="groupTab_modifyGroup2" {ACCESS_PERMISSION_TAB_BUTTON_STATUS} href="javascript:void(0);" onclick="selectTab('modifyGroup2')" title="{TXT_ACCESS_PERMISSIONS}">{TXT_ACCESS_PERMISSIONS}</a></li>
@@ -46,7 +74,7 @@ function accessSetScrollPos()
 <input type="hidden" name="access_change_protection" value="1" />
 <input type="hidden" name="access_group_type" value="{ACCESS_GROUP_TYPE}" />
 	<!-- start modifyGroup1 div -->
-	<div id="modifyGroup1" class="groupTab" style="display:{ACCESS_GENERAL_TAB_STATUS}">
+	<div id="modifyGroup1" class="groupTab" style="display:block">
 		<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
 			<thead>
 				<tr>
@@ -102,7 +130,7 @@ function accessSetScrollPos()
 	</div>
 	<!-- end modifyGroup1 div -->
 	<!-- start modifyGroup2 div -->
-	<div id="modifyGroup2" class="groupTab" style="display:{ACCESS_PERMISSION_TAB_STATUS};">
+	<div id="modifyGroup2" class="groupTab" style="display:none;">
 		<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
 			<thead>
 				<tr>
@@ -124,7 +152,7 @@ function accessSetScrollPos()
 			</ul>
 			<!-- END access_permission_tabs_menu -->
 			<div id="modifyPermission0" class="permissionTab" style="display:block; clear:left;">
-				<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" style="cursor:default;">
+				<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" style="cursor:default;" id="site-tree">
 					<tbody style="white-space:nowrap;">
 						<tr class="row3" style="font-weight:bold;">
 							<td width="1%" style="text-align:center;">Zugriff</td>
@@ -133,27 +161,31 @@ function accessSetScrollPos()
 							<td width="5%" style="text-align:right;">Funktionen</td>
 						</tr>
 						<!-- BEGIN access_permission_website -->
-							<tr class="row{ACCESS_WEBPAGE_STYLE_NR}">
+							<tr class="{ACCESS_WEBPAGE_CSS_CLASS}">
 								<td style="text-align:center;">&nbsp;
-									<!-- BEGIN access_permission_webpage_box -->
-										<input type="checkbox" name="access_webpage_access_id[]" id="access_webpage_access_id_{ACCESS_WEBPAGE_ID}" value="{ACCESS_WEBPAGE_ACCESS_ID}" {ACCESS_WEBPAGE_ALLOWED} />
-									<!-- END access_permission_webpage_box -->
+                                    <input type="checkbox" name="access_page_id[]" id="access_webpage_access_id_{ACCESS_NODE_ID}_{ACCESS_NODE_LANG}" value="{ACCESS_PAGE_ID}" style="display:{ACCESS_PAGE_SELECTION_DISPLAY};" {ACCESS_PAGE_CHECKED} />
 								</td>
-								<td style="text-align:center;"><a href="javascript:accessChangeProtection({ACCESS_WEBPAGE_ID},{ACCESS_WEBPAGE_STATUS})" title="{ACCESS_CLICK_TO_CHANGE_PROTECTION_TXT}"><img src="images/icons/{ACCESS_WEBPAGE_STATUS_IMG}" width="12" height="13" alt="{ACCESS_CLICK_TO_CHANGE_PROTECTION_TXT}" border="0" /></a></td>
-								<td style="text-indent:{ACCESS_WEBPAGE_TEXT_INDENT}px;" onclick="accessSwitchCheckboxStatus('access_webpage_access_id_{ACCESS_WEBPAGE_ID}')">
+								<td style="text-align:center;">
+                                    <a href="javascript:void(0)" onclick="accessChangeProtection(this,{ACCESS_NODE_ID},'{ACCESS_NODE_LANG}',{ACCESS_PAGE_PROTECT_BACKEND})" rel="{ACCESS_PAGE_PROTECTED}" title="{ACCESS_CLICK_TO_CHANGE_PROTECTION_TXT}">
+                                        <ins aiotitle="" class="jstree-icon publishing {ACCESS_PAGE_PUBLISHING} {ACCESS_PAGE_PROTECTED}"></ins>
+                                    </a>
+                                </td>
+								<td style="text-indent:{ACCESS_WEBPAGE_TEXT_INDENT}px;" onclick="accessSwitchCheckboxStatus('access_webpage_access_id_{ACCESS_NODE_ID}_{ACCESS_NODE_LANG}')">
 									{ACCESS_WEBPAGE_NAME}
 								</td>
 								<td style="text-align:right;">
-									<a href="{ACCESS_WEBPAGE_LINK}" target="_blank" title="{TXT_ACCESS_SHOW_PAGE_IN_NEW_DOCUMENT}"><img src="images/icons/details.gif" width="16" height="16" border="0" alt="{TXT_ACCESS_SHOW_PAGE_IN_NEW_DOCUMENT}" /></a>
-									<a href="index.php?cmd=content&amp;act=edit&amp;pageId={ACCESS_WEBPAGE_ID}" target="_blank" title="{TXT_ACCESS_MODIFY_PAGE_IN_NEW_DOCUMENT}"><img src="images/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_ACCESS_MODIFY_PAGE_IN_NEW_DOCUMENT}" /></a>
+									<!-- BEGIN access_permission_webpage_preview -->
+                                        <a href="{ACCESS_WEBPAGE_LINK}" target="_blank" title="{TXT_ACCESS_SHOW_PAGE_IN_NEW_DOCUMENT}"><img src="template/ascms/images/content_manager_preview.png" width="13" height="13" border="0" alt="{TXT_ACCESS_SHOW_PAGE_IN_NEW_DOCUMENT}" /></a>
+									<!-- END access_permission_webpage_preview -->
+									<a href="index.php?cmd=content&amp;page={ACCESS_PAGE_ID}&amp;tab=content" target="_blank" title="{TXT_ACCESS_MODIFY_PAGE_IN_NEW_DOCUMENT}"><img src="images/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_ACCESS_MODIFY_PAGE_IN_NEW_DOCUMENT}" /></a>
 								</td>
 							</tr>
 						<!-- END access_permission_website -->
 					</tbody>
 				</table>
 				<img src="images/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
-				<a href="javascript:void(0);" onclick="for (i in document.getElementsByName('access_webpage_access_id[]')) {document.getElementsByName('access_webpage_access_id[]')[i].checked=true;}" title="{TXT_ACCESS_CHECK_ALL}">{TXT_ACCESS_CHECK_ALL}</a> /
-				<a href="javascript:void(0);" onclick="for (i in document.getElementsByName('access_webpage_access_id[]')) {document.getElementsByName('access_webpage_access_id[]')[i].checked=false;}" title="{TXT_ACCESS_UNCHECK_ALL}">{TXT_ACCESS_UNCHECK_ALL}</a>
+				<a href="javascript:void(0);" onclick="jQuery('#site-tree').find('input[type=checkbox]').each(function(i,el){jQuery(el).attr('checked',true);})" title="{TXT_ACCESS_CHECK_ALL}">{TXT_ACCESS_CHECK_ALL}</a> /
+				<a href="javascript:void(0);" onclick="jQuery('#site-tree').find('input[type=checkbox]').each(function(i,el){jQuery(el).attr('checked',false);})" title="{TXT_ACCESS_UNCHECK_ALL}">{TXT_ACCESS_UNCHECK_ALL}</a>
 				<br />
 			</div>
 			<!-- BEGIN access_permission_tabs -->
@@ -186,13 +218,4 @@ function accessSetScrollPos()
 		<input type="submit" name="access_save_group" value="{TXT_ACCESS_SAVE}" />
 	</div>
 </form>
-<script type="text/javascript">
-// <![CDATA[
-if (document.body.attachEvent) {
-	document.body.attachEvent('onload', accessSetScrollPos);
-} else {
-	document.body.setAttribute('onload', accessSetScrollPos());
-}
-// ]]>
-</script>
 <!-- end module_access_group_modify.html -->
