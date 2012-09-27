@@ -414,13 +414,15 @@ class settingsManager
                     $value = ($value == 'on') ? 'on' : 'off';
                     break;
             }
-
+            
             $objDatabase->Execute(' UPDATE `'.DBPREFIX.'settings`
                                     SET `setvalue` = "'.contrexx_addslashes(htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET)).'"
                                     WHERE `setid` = '.intval($id));
         }
 
-        $this->updateDebugSettings(!empty($_POST['debugging']) ? $_POST['debugging'] : null);
+        if (isset($_POST['debugging'])) {
+            $this->updateDebugSettings(!empty($_POST['debugging']) ? $_POST['debugging'] : null);
+        }
         $this->strOkMessage = $_CORELANG['TXT_SETTINGS_UPDATED'];
     }
 

@@ -30,6 +30,7 @@ class License {
     private $partner;
     private $customer;
     private $grayzoneTime;
+    private $grayzoneMessages;
     private $frontendLockTime;
     private $requestInterval;
     private $firstFailedUpdate;
@@ -49,6 +50,7 @@ class License {
             $partner = '',
             $customer = '',
             $grayzoneTime = 14,
+            $grayzoneMessages = array(),
             $frontendLockTime = 10,
             $requestInterval = 1,
             $firstFailedUpdate = 0,
@@ -67,6 +69,7 @@ class License {
         $this->partner = $partner;
         $this->customer = $customer;
         $this->grayzoneTime = $grayzoneTime;
+        $this->grayzoneMessages = $grayzoneMessages;
         $this->frontendLockTime = $frontendLockTime;
         $this->requestInterval = $requestInterval;
         $this->setFirstFailedUpdateTime($firstFailedUpdate);
@@ -148,12 +151,19 @@ class License {
      * @return Message
      */
     public function getMessage($langCode) {
+        if ($this->getState() == self::LICENSE_ERROR) {
+            return $this->getGrayzoneMessage($langCode);
+        }
         if (!isset($this->messages[$langCode])) {
             return null;
         }
         return $this->messages[$langCode];
     }
     
+    /**
+     *
+     * @return Version
+     */
     public function getVersion() {
         return $this->version;
     }
@@ -170,8 +180,27 @@ class License {
         return $this->grayzoneTime;
     }
     
+    public function getGrayzoneMessages() {
+        return $this->grayzoneMessages;
+    }
+    
+    /**
+     *
+     * @return Message
+     */
+    public function getGrayzoneMessage($langCode) {
+        if (!isset($this->grayzoneMessages[$langCode])) {
+            return null;
+        }
+        return $this->grayzoneMessages[$langCode];
+    }
+    
     public function getFrontendLockTime() {
         return $this->frontendLockTime;
+    }
+    
+    public function getRequestInterval() {
+        return $this->requestInterval;
     }
     
     public function getFirstFailedUpdateTime() {
@@ -231,36 +260,37 @@ class License {
         $oldpost = $_POST;
         unset($_POST);
         
-        $_POST['setvalue'][75] = $this->getInstallationId();                // installationId
-        $_POST['setvalue'][76] = $this->getLicenseKey();                    // licenseKey
-        $_POST['setvalue'][90] = $this->getState();                         // licenseState
-        $_POST['setvalue'][91] = $this->getValidToDate();                   // licenseValidTo
-        $_POST['setvalue'][92] = $this->getEditionName();                   // coreCmsEdition
+        $_POST['setvalue'][75] = $this->getInstallationId();                                // installationId
+        $_POST['setvalue'][76] = $this->getLicenseKey();                                    // licenseKey
+        $_POST['setvalue'][90] = $this->getState();                                         // licenseState
+        $_POST['setvalue'][91] = $this->getValidToDate();                                   // licenseValidTo
+        $_POST['setvalue'][92] = $this->getEditionName();                                   // coreCmsEdition
         
         // we must encode the serialized objects to prevent that non-ascii chars
         // get written into the config/settings.php file
-        $_POST['setvalue'][93] = base64_encode(serialize($this->getMessages()));           // messageText --> licenseMessage
+        $_POST['setvalue'][93] = base64_encode(serialize($this->getMessages()));            // licenseMessage
         
-        $_POST['setvalue'][94] = $this->getCreatedAtDate();                 // licenseCreatedAt
-        $_POST['setvalue'][95] = base64_encode(serialize($this->getRegisteredDomains()));  // licenseDomains
+        $_POST['setvalue'][94] = $this->getCreatedAtDate();                                 // licenseCreatedAt
+        $_POST['setvalue'][95] = base64_encode(serialize($this->getRegisteredDomains()));   // licenseDomains
+        $_POST['setvalue'][96] = base64_encode(serialize($this->getGrayzoneMessages()));    // licenseGrayzoneMessages
         
-        $_POST['setvalue'][97] = $this->getVersion()->getNumber();          // coreCmsVersion
-        $_POST['setvalue'][98] = $this->getVersion()->getCodeName();        // coreCmsCodeName
-        $_POST['setvalue'][99] = $this->getVersion()->getState();           // coreCmsStatus
-        $_POST['setvalue'][100] = $this->getVersion()->getReleaseDate();    // coreCmsReleaseDate
+        $_POST['setvalue'][97] = $this->getVersion()->getNumber();                          // coreCmsVersion
+        $_POST['setvalue'][98] = $this->getVersion()->getCodeName();                        // coreCmsCodeName
+        $_POST['setvalue'][99] = $this->getVersion()->getState();                           // coreCmsStatus
+        $_POST['setvalue'][100] = $this->getVersion()->getReleaseDate();                    // coreCmsReleaseDate
         
         // see comment above why we encode the serialized data here
-        $_POST['setvalue'][101] = base64_encode(serialize($this->getPartner()));           // licenseHolderCompany --> licensePartner
-        $_POST['setvalue'][102] = base64_encode(serialize($this->getCustomer()));          // licenseHolderTitle --> licenseCustomer
+        $_POST['setvalue'][101] = base64_encode(serialize($this->getPartner()));            // licensePartner
+        $_POST['setvalue'][102] = base64_encode(serialize($this->getCustomer()));           // licenseCustomer
         
-        $_POST['setvalue'][112] = $this->getVersion()->getName();           // coreCmsName
+        $_POST['setvalue'][112] = $this->getVersion()->getName();                           // coreCmsName
         
-        $_POST['setvalue'][114] = $this->getGrayzoneTime();                 // licenseGrayzoneTime
-        $_POST['setvalue'][115] = $this->getFrontendLockTime();             // licenseLockTime
-        $_POST['setvalue'][116] = $this->requestInterval;                   // licenseUpdateInterval
+        $_POST['setvalue'][114] = $this->getGrayzoneTime();                                 // licenseGrayzoneTime
+        $_POST['setvalue'][115] = $this->getFrontendLockTime();                             // licenseLockTime
+        $_POST['setvalue'][116] = $this->getRequestInterval();                              // licenseUpdateInterval
         
-        $_POST['setvalue'][117] = $this->getFirstFailedUpdateTime();        // licenseFailedUpdate
-        $_POST['setvalue'][118] = $this->getLastSuccessfulUpdateTime();     // licenseSuccessfulUpdate
+        $_POST['setvalue'][117] = $this->getFirstFailedUpdateTime();                        // licenseFailedUpdate
+        $_POST['setvalue'][118] = $this->getLastSuccessfulUpdateTime();                     // licenseSuccessfulUpdate
         
         $settingsManager->updateSettings();
         $settingsManager->writeSettingsFile();
@@ -290,32 +320,34 @@ class License {
      * @return \Cx\Core\License\License
      */
     public static function getCached(&$_CONFIG, $objDb) {
-        $state = isset($_CONFIG['licenseState']) ? $_CONFIG['licenseState'] : self::LICENSE_DEMO;
-        $validTo = isset($_CONFIG['licenseValidTo']) ? $_CONFIG['licenseValidTo'] : null;
-        $editionName = isset($_CONFIG['coreCmsEdition']) ? $_CONFIG['coreCmsEdition'] : null;
-        $instId = isset($_CONFIG['installationId']) ? $_CONFIG['installationId'] : null;
-        $licenseKey = isset($_CONFIG['licenseKey']) ? $_CONFIG['licenseKey'] : null;
+        $state = isset($_CONFIG['licenseState']) ? htmlspecialchars_decode($_CONFIG['licenseState']) : self::LICENSE_DEMO;
+        $validTo = isset($_CONFIG['licenseValidTo']) ? htmlspecialchars_decode($_CONFIG['licenseValidTo']) : null;
+        $editionName = isset($_CONFIG['coreCmsEdition']) ? htmlspecialchars_decode($_CONFIG['coreCmsEdition']) : null;
+        $instId = isset($_CONFIG['installationId']) ? htmlspecialchars_decode($_CONFIG['installationId']) : null;
+        $licenseKey = isset($_CONFIG['licenseKey']) ? htmlspecialchars_decode($_CONFIG['licenseKey']) : null;
         
         $messages = isset($_CONFIG['licenseMessage']) ? unserialize(base64_decode(htmlspecialchars_decode($_CONFIG['licenseMessage']))) : array();
         
-        $createdAt = isset($_CONFIG['licenseCreatedAt']) ? $_CONFIG['licenseCreatedAt'] : null;
+        $createdAt = isset($_CONFIG['licenseCreatedAt']) ? htmlspecialchars_decode($_CONFIG['licenseCreatedAt']) : null;
         $registeredDomains = isset($_CONFIG['licenseDomains']) ? unserialize(base64_decode(htmlspecialchars_decode($_CONFIG['licenseDomains']))) : array();
+        
+        $grayzoneMessages = isset($_CONFIG['licenseGrayzoneMessages']) ? unserialize(base64_decode(htmlspecialchars_decode($_CONFIG['licenseGrayzoneMessages']))) : array();
         
         $partner = isset($_CONFIG['licensePartner']) ? unserialize(base64_decode(htmlspecialchars_decode($_CONFIG['licensePartner']))) : null;
         $customer = isset($_CONFIG['licenseCustomer']) ? unserialize(base64_decode(htmlspecialchars_decode($_CONFIG['licenseCustomer']))) : null;
         
-        $versionNumber = isset($_CONFIG['coreCmsVersion']) ? $_CONFIG['coreCmsVersion'] : null;
-        $versionName = isset($_CONFIG['coreCmsName']) ? $_CONFIG['coreCmsName'] : null;
-        $versionCodeName = isset($_CONFIG['coreCmsCodeName']) ? $_CONFIG['coreCmsCodeName'] : null;
-        $versionState = isset($_CONFIG['coreCmsStatus']) ? $_CONFIG['coreCmsStatus'] : null;
-        $versionReleaseDate = isset($_CONFIG['coreCmsReleaseDate']) ? $_CONFIG['coreCmsReleaseDate'] : null;
+        $versionNumber = isset($_CONFIG['coreCmsVersion']) ? htmlspecialchars_decode($_CONFIG['coreCmsVersion']) : null;
+        $versionName = isset($_CONFIG['coreCmsName']) ? htmlspecialchars_decode($_CONFIG['coreCmsName']) : null;
+        $versionCodeName = isset($_CONFIG['coreCmsCodeName']) ? htmlspecialchars_decode($_CONFIG['coreCmsCodeName']) : null;
+        $versionState = isset($_CONFIG['coreCmsStatus']) ? htmlspecialchars_decode($_CONFIG['coreCmsStatus']) : null;
+        $versionReleaseDate = isset($_CONFIG['coreCmsReleaseDate']) ? htmlspecialchars_decode($_CONFIG['coreCmsReleaseDate']) : null;
         $version = new Version($versionNumber, $versionName, $versionCodeName, $versionState, $versionReleaseDate);
         
-        $grayzoneTime = isset($_CONFIG['licenseGrayzoneTime']) ? $_CONFIG['licenseGrayzoneTime'] : null;
-        $lockTime = isset($_CONFIG['licenseLockTime']) ? $_CONFIG['licenseLockTime'] : null;
-        $updateInterval = isset($_CONFIG['licenseUpdateInterval']) ? $_CONFIG['licenseUpdateInterval'] : null;
-        $failedUpdate = isset($_CONFIG['licenseFailedUpdate']) ? $_CONFIG['licenseFailedUpdate'] : null;
-        $successfulUpdate = isset($_CONFIG['licenseSuccessfulUpdate']) ? $_CONFIG['licenseSuccessfulUpdate'] : null;
+        $grayzoneTime = isset($_CONFIG['licenseGrayzoneTime']) ? htmlspecialchars_decode($_CONFIG['licenseGrayzoneTime']) : null;
+        $lockTime = isset($_CONFIG['licenseLockTime']) ? htmlspecialchars_decode($_CONFIG['licenseLockTime']) : null;
+        $updateInterval = isset($_CONFIG['licenseUpdateInterval']) ? htmlspecialchars_decode($_CONFIG['licenseUpdateInterval']) : null;
+        $failedUpdate = isset($_CONFIG['licenseFailedUpdate']) ? htmlspecialchars_decode($_CONFIG['licenseFailedUpdate']) : null;
+        $successfulUpdate = isset($_CONFIG['licenseSuccessfulUpdate']) ? htmlspecialchars_decode($_CONFIG['licenseSuccessfulUpdate']) : null;
         
         $query = '
             SELECT
@@ -347,6 +379,7 @@ class License {
             $partner,
             $customer,
             $grayzoneTime,
+            $grayzoneMessages,
             $lockTime,
             $updateInterval,
             $failedUpdate,

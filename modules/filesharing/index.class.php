@@ -70,8 +70,6 @@ class Filesharing extends FilesharingLib
      */
     public function getPage()
     {
-        FilesharingLib::cleanUp();
-
         $hash = contrexx_input2raw($this->uriParams["hash"]);
         $check = contrexx_input2raw($this->uriParams["check"]);
 
@@ -111,6 +109,8 @@ class Filesharing extends FilesharingLib
                 $this->uploadPage();
                 break;
         }
+        
+        FilesharingLib::cleanUp();
 
         return $this->objTemplate->get();
     }

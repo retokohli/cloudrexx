@@ -139,6 +139,17 @@ class LicenseCommunicator {
                 $message->showInDashboard
             );
         }
+        $gzMessages = array();
+        foreach ($response->license->settings->grayZoneMessages as $lang=>$message) {
+            $gzMessages[$lang] = new \Cx\Core\License\Message(
+                $lang,
+                $message->text,
+                $message->type,
+                $message->link,
+                $message->linkTarget,
+                $message->showInDashboard
+            );
+        }
         $partner = new \Cx\Core\License\Person(
             $response->license->partner->companyName,
             $response->license->partner->title,
@@ -182,10 +193,11 @@ class LicenseCommunicator {
             $installationId,
             $licenseKey,
             $messages,
-            $version,
+            $license->getVersion(),
             $partner,
             $customer,
             $response->license->settings->grayZoneTime,
+            $gzMessages,
             $response->license->settings->frontendLockTime,
             $this->requestInterval,
             0,
