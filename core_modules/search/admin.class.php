@@ -172,7 +172,6 @@ class SearchManager extends \Module
     private function getSearchQueryBuilder()
     {
         $qb = $this->em->createQueryBuilder();
-        //$qb = new Doctrine\ORM\Query\Expr();
         $qb->select('p')
             ->from('Cx\Model\ContentManager\Page', 'p')
             ->where(
@@ -189,10 +188,15 @@ class SearchManager extends \Module
                             'p.module',
                             $this->license->getLegalComponentsList()
                         )
+                    ),
+                    $qb->expr()->in(
+                        'p.lang',
+                        \FWLanguage::getIdArray('frontend')
                     )
                 )
             )
             ->setParameter('searchTerm', '%'.$this->term.'%');
+        
         return $qb;
     }
     
