@@ -121,22 +121,24 @@ class JsonNode implements JsonAdapter {
         if (isset($parameters['get']) && isset($parameters['get']['page'])) {
             $pageId = contrexx_input2raw($parameters['get']['page']);
             $page = $this->pageRepo->findOneBy(array('id' => $pageId));
-            $node = $page->getNode()->getParent();
-            // #node_{id},#node_{id}
-            $openNodes = array();
-            while ($node && $node->getId() != $nodeId) {
-                $openNodes[] = '#node_' . $node->getId();
-                $node = $node->getParent();
+            if ($page) {
+                $node = $page->getNode()->getParent();
+                // #node_{id},#node_{id}
+                $openNodes = array();
+                while ($node && $node->getId() != $nodeId) {
+                    $openNodes[] = '#node_' . $node->getId();
+                    $node = $node->getParent();
+                }
+                if (!isset($_COOKIE['jstree_open'])) {
+                    $_COOKIE['jstree_open'] = '';
+                }
+                $openNodes2 = explode(',', $_COOKIE['jstree_open']);
+                if ($openNodes2 == array(0=>'')) {
+                    $openNodes2 = array();
+                }
+                $openNodes = array_merge($openNodes, $openNodes2);
+                $_COOKIE['jstree_open'] = implode(',', $openNodes);
             }
-            if (!isset($_COOKIE['jstree_open'])) {
-                $_COOKIE['jstree_open'] = '';
-            }
-            $openNodes2 = explode(',', $_COOKIE['jstree_open']);
-            if ($openNodes2 == array(0=>'')) {
-                $openNodes2 = array();
-            }
-            $openNodes = array_merge($openNodes, $openNodes2);
-            $_COOKIE['jstree_open'] = implode(',', $openNodes);
         }
 
         $recursive = false;
