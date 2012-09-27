@@ -425,6 +425,6 @@ function fe_stopLoading() {
 
 function fe_redirectToBackend() {
     jQuery(document).ready(function() {
-        window.location.href = cx.variables.get('path', 'contrexx') + 'cadmin/index.php';
+        window.location.href = cx.variables.get('basePath', 'contrexx') + 'cadmin/index.php';
     });
 }
