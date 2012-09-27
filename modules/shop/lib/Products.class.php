@@ -902,7 +902,7 @@ DBG::log("ERROR: Failed to delete Products in Category ID $category_id");
             $strMenuoptions .=
                 "<option value='$i'".
                 ($selected == $i ? ' selected="selected"' : '').'>'.
-                $_ARRAYLANG['TXT_DEFAULT_VIEW_'.$i].
+                $_ARRAYLANG['TXT_SHOP_PRODUCT_DEFAULT_VIEW_'.$i].
                 "</option>\n";
         }
         return $strMenuoptions;

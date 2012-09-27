@@ -212,10 +212,10 @@ if (SettingDb::getValue('use_js_cart') === NULL) {
             // *DO NOT* remove this!  Needed for site testing.
             case 'testMail':
                 // Test with
-                // http://localhost/contrexx_300/index.php?section=shop&cmd=testMail&key=[KEY]&order_id=[ORDER_ID]
+                // http://localhost/contrexx_300/de/index.php?section=shop&act=testMail&key=&order_id=5
 //MailTemplate::errorHandler();die();
-                $order_id = (isset($_GET['order_id']) ? $_GET['order_id'] : 10);
-                $key = (isset($_GET['key']) ? $_GET['key'] : 'order_confirmation');
+                $order_id = (!empty($_GET['order_id']) ? $_GET['order_id'] : 10);
+                $key = (!empty($_GET['key']) ? $_GET['key'] : 'order_confirmation');
                 $arrSubstitution = Orders::getSubstitutionArray($order_id);
                 $customer_id = $arrSubstitution['CUSTOMER_ID'];
                 $objCustomer = Customer::getById($customer_id);
@@ -232,8 +232,9 @@ die("Failed to get Customer for ID $customer_id");
                     'lang_id' => $arrSubstitution['LANG_ID'],
                     'substitution' => &$arrSubstitution,
                     'to' => 'reto.kohli@comvation.com',
-//                            $arrSubstitution['CUSTOMER_EMAIL'].','.
-//                            SettingDb::getValue('email_confirmation'),
+//                        $arrSubstitution['CUSTOMER_EMAIL'].','.
+//                        SettingDb::getValue('email_confirmation'),
+                    'do_not_strip_empty_placeholders' => true,
                 );
                 DBG::deactivate(DBG_LOG_FIREPHP);
                 DBG::activate(DBG_LOG_FILE);
@@ -709,9 +710,7 @@ die("Failed to update the Cart!");
             } else {
                 // Show the parent ShopCategory's image, if available
                 $imageName = $objCategory->picture();
-                if ($imageName
-                 && self::$objTemplate->blockExists('shopCategoryImage')) {
-                    self::$objTemplate->setCurrentBlock('shopCategoryImage');
+                if ($imageName) {
                     self::$objTemplate->setVariable(array(
                         'SHOP_CATEGORY_IMAGE' =>
                             ASCMS_SHOP_IMAGES_WEB_PATH.'/category/'.$imageName,
@@ -728,7 +727,6 @@ die("Failed to update the Cart!");
         }
         $cell = 0;
         $arrDefaultImageSize = false;
-        self::$objTemplate->setCurrentBlock();
         // For all child categories do...
         foreach ($arrShopCategory as $objCategory) {
             $id = $objCategory->id();
@@ -824,12 +822,18 @@ die("Failed to update the Cart!");
             $cart_id = $product_id;
             $product_id = Cart::get_product_id($cart_id);
         }
-        $category_id = (isset($_REQUEST['catId'])
-            ? intval($_REQUEST['catId']) : null);
         $manufacturer_id = (isset($_REQUEST['manufacturerId'])
             ? intval($_REQUEST['manufacturerId']) : null);
         $term = (isset($_REQUEST['term'])
             ? trim(contrexx_input2raw($_REQUEST['term'])) : null);
+        $category_id = (isset($_REQUEST['catId'])
+            ? intval($_REQUEST['catId']) : null);
+        if (!(   $product_id || $category_id || $manufacturer_id
+              || $term || $cart_id)) {
+            // NOTE: This is different from NULL
+            // in that it enables listing the subcategories
+            $category_id = 0;
+        }
         // Validate parameters
         if ($product_id && empty($category_id)) {
             if (isset($_SESSION['shop']['previous_category_id'])) {
@@ -1068,11 +1072,9 @@ die("Failed to update the Cart!");
                 );
                 ++$i;
             }
-
             $stock = ($objProduct->stock_visible()
                 ? $_ARRAYLANG['TXT_STOCK'].': '.intval($objProduct->stock())
                 : '');
-
             $price = $objProduct->get_custom_price(
                 self::$objCustomer,
                 0,    // No options yet
