@@ -449,17 +449,14 @@ class File_HtAccess {
 
         $str  = $this->getContent();
 
-        $fd = @fopen($this->getFile(), 'w');
-        if ($fd) {
-            fwrite($fd, $str, strlen($str));
-        } else {
-            $retval = PEAR::raiseError('Could not open ' . $this->getFile() .
-                                       ' for writing.');
-
+        try {
+            $objFile = new \Cx\lib\FileSystem\File($this->getFile());
+            $objFile->write($str);
+        } catch (\Cx\Lib\FileSystem\FileException $e) {
+            return $e->getMessage();
         }
 
         return($retval);
-
     }
 
     /**
