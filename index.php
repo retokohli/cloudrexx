@@ -74,6 +74,31 @@ require_once dirname(__FILE__).'/lib/DBG.php';
 //DBG::activate(DBG_ADODB_ERROR|DBG_LOG_FIREPHP|DBG_PHP);
 //\DBG::activate(DBG_PHP);
 
+// Try to enable APC
+$apcEnabled = false;
+if (extension_loaded('apc')) {
+    if (ini_get('apc.enabled')) {
+        $apcEnabled = true;
+    } else {
+        ini_set('apc.enabled', 1);
+        if (ini_get('apc.enabled')) {
+            $apcEnabled = true;
+        }
+    }
+}
+
+// Try to set required memory_limit if not enough
+preg_match('/^\d+/', ini_get('memory_limit'), $memoryLimit);
+if ($apcEnabled) {
+    if ($memoryLimit[0] < 32) {
+        ini_set('memory_limit', '32M');
+    }
+} else {
+    if ($memoryLimit[0] < 48) {
+        ini_set('memory_limit', '48M');
+    }
+}
+
 //iconv_set_encoding('output_encoding', 'utf-8');
 //iconv_set_encoding('input_encoding', 'utf-8');
 //iconv_set_encoding('internal_encoding', 'utf-8');
