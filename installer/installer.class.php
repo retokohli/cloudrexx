@@ -197,8 +197,7 @@ class Installer
         if (!empty($_SESSION['installer']['config']['useFtp'])) {
             global $objCommon;
 
-            \Env::set('ftpConfig',
-                array(
+            $ftpConfig = array(
                     'is_activated'  => $_SESSION['installer']['config']['useFtp'],
                     'use_passive'   => $_SESSION['installer']['config']['ftpPasv'],
                     'host'          => $_SESSION['installer']['config']['ftpHostname'],
@@ -206,7 +205,8 @@ class Installer
                     'username'      => $_SESSION['installer']['config']['ftpUsername'],
                     'password'      => $_SESSION['installer']['config']['ftpPassword'],
                     'path'          => $_SESSION['installer']['config']['ftpPath'],
-            ));
+            );
+            \Env::set('ftpConfig', $ftpConfig);
         }
 
         switch ($this->arrSteps[$_SESSION['installer']['step']]['step']) {

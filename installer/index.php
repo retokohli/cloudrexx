@@ -57,6 +57,9 @@ if (!@include_once($basePath.'/common.class.php')) {
 if (!@include_once($basePath.'/installer.class.php')) {
     die('Unable to load file '.$basePath.'/installer.class.php');
 }
+if (!@include_once($basePath.'/../core/Env.class.php')) {
+    die('Unable to load file '.$basePath.'/../core/Env.class.php');
+}
 
 $objCommon = new CommonFunctions;
 $objInstaller = new Installer;
