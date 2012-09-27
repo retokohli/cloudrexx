@@ -28,6 +28,31 @@ include_once '../lib/DBG.php';
 //DBG::activate(DBG_ERROR_FIREPHP);
 //\DBG::activate(DBG_PHP);
 
+// Try to enable APC
+$apcEnabled = false;
+if (extension_loaded('apc')) {
+    if (ini_get('apc.enabled')) {
+        $apcEnabled = true;
+    } else {
+        ini_set('apc.enabled', 1);
+        if (ini_get('apc.enabled')) {
+            $apcEnabled = true;
+        }
+    }
+}
+
+// Try to set required memory_limit if not enough
+preg_match('/^\d+/', ini_get('memory_limit'), $memoryLimit);
+if ($apcEnabled) {
+    if ($memoryLimit[0] < 32) {
+        ini_set('memory_limit', '32M');
+    }
+} else {
+    if ($memoryLimit[0] < 48) {
+        ini_set('memory_limit', '48M');
+    }
+}
+
 $startTime = explode(' ', microtime());
 
 $adminPage = true;
