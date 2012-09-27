@@ -336,6 +336,10 @@ class JsonNode implements JsonAdapter {
                                 'user'       => $user,
                             )
                         ),
+                        'frontend_access_id' => $page->getFrontendAccessId(),
+                        'backend_access_id' => $page->getBackendAccessId(),
+                        'protected' => $page->isFrontendProtected(),
+                        'locked'    => $page->isBackendProtected(),
                     ),
                 );
 
@@ -421,7 +425,8 @@ class JsonNode implements JsonAdapter {
 
             $tree[] = array_merge(array(
                 'attr'     => array(
-                    'id'   => 'node_' . $node->getId()
+                    'id'   => 'node_' . $node->getId(),
+                    'rel_id'   => $node->getId(),
                 ),
                 'data'     => array_values($data),
                 'children' => isset($children['tree']) ? $children['tree'] : array(),

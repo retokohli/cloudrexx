@@ -504,13 +504,13 @@ class AccessManager extends AccessLib
 
         $arrAreas = array();
         $associatedUsers = '';
+        $arrContentAccessIds = array();
+        $arrSelectedAccessIds = array();
         $notAssociatedUsers = '';
-        $changeProtection = false;
-        $scrollPos = 0;
         $objFWUser = FWUser::getFWUserObject();
 
         $objGroup = $objFWUser->objGroup->getGroup(isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
-        if (isset($_POST['access_save_group']) || isset($_POST['access_change_protection'])) {
+        if (isset($_POST['access_save_group'])) {
             // only administrators are allowed to modify a group
             if (!Permission::hasAllAccess()) {
                 Permission::noAccess();
@@ -525,21 +525,47 @@ class AccessManager extends AccessLib
             $objGroup->setStaticPermissionIds(isset($_POST['access_area_id']) && is_array($_POST['access_area_id']) ? $_POST['access_area_id'] : array());
 
             // set dynamic access ids
-            foreach ($objContentTree->getTree() as $arrPage) {
-                if ($arrPage[$objGroup->getType().'_access_id']) {
-                    $arrContentAccessIds[] = $arrPage[$objGroup->getType().'_access_id'];
+            $arrSelectedPageIds = isset($_POST['access_page_id']) && is_array($_POST['access_page_id']) ? $_POST['access_page_id'] : array();
+            $objJsonData =  new \Cx\Core\Json\JsonData();
+            $jsonData = $objJsonData->data('node', 'getTree', array('get' => array('recursive' => 'true')));
+            $nodeStack = $jsonData['data']['tree'];
+            while (count($nodeStack)) {
+                $node = array_pop($nodeStack);
+
+                foreach ($node['data'] as $page) {
+                    if ($page['attr']['id'] == 'broken') {
+                        continue;
+                    }
+
+                    if (empty($page['attr'][$objGroup->getType().'_access_id'])) {
+                        continue;
+                    }
+
+                    $arrContentAccessIds[] = $page['attr'][$objGroup->getType().'_access_id'];
+
+                    if (in_array($page['attr']['id'], $arrSelectedPageIds)) {
+                        $arrSelectedAccessIds[] = $page['attr'][$objGroup->getType().'_access_id'];
+                    }
+                }
+
+                $children = $node['children'];
+                $hasChilds = count($children) > 0;
+                if ($hasChilds) {
+                    foreach ($children as $child) {
+                        array_push($nodeStack, $child);
+                    }
                 }
             }
-            $arrNewAccessIds = isset($_POST['access_webpage_access_id']) && is_array($_POST['access_webpage_access_id']) ? $_POST['access_webpage_access_id'] : array();
+
             $arrCurrentAccessIds = $objGroup->getDynamicPermissionIds();
             foreach ($arrContentAccessIds as $accessId) {
                 // add new access ids
-                if (in_array($accessId, $arrNewAccessIds) && !in_array($accessId, $arrCurrentAccessIds)) {
+                if (in_array($accessId, $arrSelectedAccessIds) && !in_array($accessId, $arrCurrentAccessIds)) {
                     $arrCurrentAccessIds[] = $accessId;
                 }
 
                 // delete access ids
-                if (!in_array($accessId, $arrNewAccessIds) && in_array($accessId, $arrCurrentAccessIds)) {
+                if (!in_array($accessId, $arrSelectedAccessIds) && in_array($accessId, $arrCurrentAccessIds)) {
                     unset($arrCurrentAccessIds[array_search($accessId, $arrCurrentAccessIds)]);
                 }
             }
@@ -555,18 +581,6 @@ class AccessManager extends AccessLib
                 } else {
                     self::$arrStatusMsg['error'][] = $objGroup->getErrorMsg();
                 }
-            } else {
-                $changeProtection = true;
-
-                $pageId = isset($_GET['pageId']) ? intval($_GET['pageId']) : 0;
-                $protect = isset($_GET['protect']) && $_GET['protect'] == 'false' ? false : true;
-                if (!$this->_changePageProtection($pageId, $protect, $objGroup->getType())) {
-                    self::$arrStatusMsg['error'][] = $protect ? $_ARRAYLANG['TXT_ACCESS_FAILED_PROTECT_PAGE'] : $_ARRAYLANG['TXT_ACCESS_FAILED_RELEASE_PAGE'];
-                }
-            }
-
-            if (isset($_GET['scrollPos'])) {
-                $scrollPos = intval($_GET['scrollPos']);
             }
         } elseif (isset($_POST['access_create_group'])) {
             $objGroup->setType(isset($_POST['access_group_type']) ? $_POST['access_group_type'] : '');
@@ -617,47 +631,11 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_UNCHECK_ALL'                    => $_ARRAYLANG['TXT_ACCESS_UNCHECK_ALL']
         ));
 
-        $rowNr = 0;
-        $objContentTree = new ContentTree();
-        foreach ($objContentTree->getTree() as $arrPage) {
-            $s = isset($arrModules[$arrPage['moduleid']]) ? $arrModules[$arrPage['moduleid']] : '';
-            $c = $arrPage['cmd'];
-            $section = ($s=="") ? "" : "&amp;section=$s";
-            $cmd = ($c=="") ? "" : "&amp;cmd=$c";
-            $link = (!empty($s)) ? "?section=".$s.$cmd : "?page=".$arrPage['catid'].$section.$cmd;
-
-            $this->_objTpl->setGlobalVariable('ACCESS_WEBPAGE_ID', $arrPage['catid']);
-
-            $this->_objTpl->setVariable(array(
-                'ACCESS_WEBPAGE_ACCESS_ID'  => $arrPage[$objGroup->getType().'_access_id'],
-                'ACCESS_WEBPAGE_STYLE_NR'   => $rowNr % 2 + 1,
-                'ACCESS_WEBPAGE_TEXT_INDENT'=> $arrPage['level'] * 20,
-                'ACCESS_WEBPAGE_NAME'       => htmlentities($arrPage['catname'], ENT_QUOTES, CONTREXX_CHARSET),
-                'ACCESS_WEBPAGE_LINK'       => ASCMS_PATH_OFFSET.'/index.php'.$link,
-                'ACCESS_CLICK_TO_CHANGE_PROTECTION_TXT' => $objGroup->getType() == 'backend' ? ($arrPage[$objGroup->getType().'_access_id'] > 0 ? $_ARRAYLANG['TXT_ACCESS_CLICK_UNLOCK_PAGE_MODIF'] : $_ARRAYLANG['TXT_ACCESS_CLICK_LOCK_PAGE_MODIFY']) : ($arrPage[$objGroup->getType().'_access_id'] > 0 ? $_ARRAYLANG['TXT_ACCESS_CLICK_UNLOCK_PAGE_ACCESS'] : $_ARRAYLANG['TXT_ACCESS_CLICK_LOCK_PAGE_ACCESS'])
-            ));
-
-            if ($arrPage[$objGroup->getType().'_access_id'] > 0) {
-                $this->_objTpl->setVariable(array(
-                    'ACCESS_WEBPAGE_ALLOWED'    => in_array($arrPage[$objGroup->getType().'_access_id'], $objGroup->getDynamicPermissionIds()) ? 'checked="checked"' : '',
-                    'ACCESS_WEBPAGE_STATUS_IMG' => 'lock_closed.gif',
-                    'ACCESS_WEBPAGE_STATUS_TXT' => $_ARRAYLANG['TXT_ACCESS_PROTECTED'],
-                    'ACCESS_WEBPAGE_STATUS'     => 1
-                ));
-                $this->_objTpl->parse('access_permission_webpage_box');
-            } else {
-                $this->_objTpl->setVariable(array(
-                    'ACCESS_WEBPAGE_STATUS_IMG' => 'lock_open.gif',
-                    'ACCESS_WEBPAGE_STATUS_TXT' => $_ARRAYLANG['TXT_ACCESS_PUBLIC'],
-                    'ACCESS_WEBPAGE_STATUS'     => 0
-                ));
-                $this->_objTpl->hideBlock('access_permission_webpage_box');
-            }
-
-            $this->_objTpl->parse('access_permission_website');
-
-            $rowNr++;
-        }
+        JS::registerCSS(ASCMS_BACKEND_PATH.'/template/ascms/css/contentmanager2.css');
+        $objJsonData =  new \Cx\Core\Json\JsonData();
+        $jsonData = $objJsonData->data('node', 'getTree', array('get' => array('recursive' => 'true')));
+        $nodeTree = $jsonData['data']['tree'];
+        $this->parseContentTree($nodeTree, $objGroup->getType(), $objGroup->getDynamicPermissionIds());
 
         $objResult = $objDatabase->Execute("
             SELECT
@@ -785,67 +763,80 @@ class AccessManager extends AccessLib
             'ACCESS_GROUP_ASSOCIATED_USERS'     => $associatedUsers,
             'ACCESS_PROTECT_PAGE_TXT'           => $objGroup->getType() == 'backend' ? $_ARRAYLANG['TXT_ACCESS_CONFIRM_LOCK_PAGE'] : $_ARRAYLANG['TXT_ACCESS_CONFIRM_PROTECT_PAGE'],
             'ACCESS_UNPROTECT_PAGE_TXT'         => $objGroup->getType() == 'backend' ? $_ARRAYLANG['TXT_ACCESS_CONFIRM_UNLOCK_PAGE'] : $_ARRAYLANG['TXT_ACCESS_CONFIRM_UNPROTECT_PAGE'],
-            'ACCESS_GENERAL_TAB_MENU_STATUS'    => !$changeProtection ? 'class="active"' : '',
-            'ACCESS_GENERAL_TAB_STATUS'         => !$changeProtection ? 'block' : 'none',
-            'ACCESS_PERMISSION_TAB_MENU_STATUS' => $changeProtection ? 'class="active"' : '',
-            'ACCESS_PERMISSION_TAB_STATUS'      => $changeProtection ? 'block' : 'none',
-            'ACCESS_SCROLL_POS'                 => $scrollPos,
             'ACCESS_JAVASCRIPT_FUNCTIONS'       => $this->getJavaScriptCode(),
         ));
         $this->_objTpl->parse('module_access_group_modify');
     }
 
-
-    function _changePageProtection($pageId, $protect = true, $type = 'frontend')
+    private function parseContentTree($nodeTree, $userGroupType, $arrDynamicPermissionIdsOfGroup, $cssRowClassNr = 1, $level = 0)
     {
-        global $objDatabase, $_CONFIG;
+        global $_ARRAYLANG;
 
-        $objFWUser = FWUser::getFWUserObject();
+        foreach ($nodeTree as $nodeData) {
+            $pages = $nodeData['data'];
 
-        if (in_array($type, $objFWUser->objGroup->getTypes())) {
-            // get current access id for $pageId
-            $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
-            $page = $pageRepo->findOneBy(array(
-                'id' => intval($pageId),
-            ));
-            if ($type == 'frontend') {
-                $currentAccessId = $page->getFrontendAccessId();
-            } else {
-                $currentAccessId = $page->getBackendAccessId();
+            // remove non-existent pages
+            foreach ($pages as $idx => $pageData) {
+                if (!$pageData['attr']['id']) {
+                    unset($pages[$idx]);
+                }
             }
 
-            if ($protect) {
-                $lastAccessId = $_CONFIG['lastAccessId'];
-                $lastAccessId++;
-                // set new access id
-                if ($type == 'frontend') {
-                    $page->setFrontendProtection(true);
-                    $page->setFrontendAccessId($lastAccessId);
+            $numberOfPages = count($pages);
+            foreach ($pages as $idx => $pageData) {
+// TODO: handle broken pages differently
+                if ($pageData['attr']['id'] == 'broken') {
+                    //continue;
+                }
+
+                $rowCssClass = array();
+
+                if ($idx == 0) {
+                    $rowCssClass[] = 'rowFirst';
+                }
+                if ($idx + 1 == $numberOfPages) {
+                    $rowCssClass[] = 'rowLast';
+                }
+
+                $protected =    ($userGroupType == 'backend' && $pageData['attr']['locked'])
+                             || ($userGroupType == 'frontend' && $pageData['attr']['protected']);
+                if ($protected) {
+                    $rowCssClass[] = 'active';
+                }
+
+                $published = $nodeData['metadata'][$pageData['attr']['id']]['publishing'] == 'published'; 
+
+                $this->_objTpl->setVariable(array(
+                    'ACCESS_PAGE_ID'            => $pageData['attr']['id'],
+                    'ACCESS_NODE_ID'            => $nodeData['attr']['rel_id'],
+                    'ACCESS_NODE_LANG'          => $pageData['language'],
+                    'ACCESS_WEBPAGE_CSS_CLASS'  => join(' ', $rowCssClass),
+                    'ACCESS_PAGE_SELECTION_DISPLAY'  => $protected ? '' : 'none',
+                    'ACCESS_PAGE_PUBLISHING'    => $published ? 'published' : 'unpublished',
+                    'ACCESS_PAGE_PROTECTED'     => $protected ? 'locked' : '',
+                    'ACCESS_PAGE_PROTECT_BACKEND'=> (int) $userGroupType == 'backend',
+                    'ACCESS_WEBPAGE_TEXT_INDENT'=> $level * 20,
+                    'ACCESS_WEBPAGE_NAME'       => contrexx_raw2xhtml($pageData['title']).' ['.$pageData['language'].']',
+                    'ACCESS_PAGE_CHECKED'       => $protected && in_array($pageData['attr'][$userGroupType.'_access_id'], $arrDynamicPermissionIdsOfGroup) ? 'checked="checked"' : '',
+                    'ACCESS_CLICK_TO_CHANGE_PROTECTION_TXT' => $userGroupType == 'backend'
+                                                         ? ($protected ? $_ARRAYLANG['TXT_ACCESS_CLICK_UNLOCK_PAGE_MODIF'] : $_ARRAYLANG['TXT_ACCESS_CLICK_LOCK_PAGE_MODIFY'])
+                                                         : ($protected ? $_ARRAYLANG['TXT_ACCESS_CLICK_UNLOCK_PAGE_ACCESS'] : $_ARRAYLANG['TXT_ACCESS_CLICK_LOCK_PAGE_ACCESS']),
+                ));
+
+                if ($published) {
+                    $this->_objTpl->setVariable('ACCESS_WEBPAGE_LINK', \Cx\Core\Routing\URL::fromPageId($pageData['attr']['id']));
+                    $this->_objTpl->parse('access_permission_webpage_preview');
                 } else {
-                    $page->setBackendProtection(true);
-                    $page->setBackendAccessId($lastAccessId);
+                    $this->_objTpl->hideBlock('access_permission_webpage_preview');
                 }
-                \Env::get('em')->persist($page);
-                $_CONFIG['lastAccessId'] = $lastAccessId;
-                $objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = ".$lastAccessId." WHERE `setname` = 'lastAccessId'");
 
-                $objSettings = new settingsManager();
-                $objSettings->writeSettingsFile();
+                $this->_objTpl->parse('access_permission_website');
+            }
 
-                return true;
-            } else {
-                // remove access id from db
-                if ($objDatabase->Execute('DELETE FROM `'.DBPREFIX.'access_group_dynamic_ids` WHERE `access_id` = '.$currentAccessId)) {
-                    if ($type == 'frontend') {
-                        $page->setFrontendProtection(false);
-                    } else {
-                        $page->setBackendProtection(false);
-                    }
-                    \Env::get('em')->persist($page);
-                }
+            if (isset($nodeData['children'])) {
+                $this->parseContentTree($nodeData['children'], $userGroupType, $arrDynamicPermissionIdsOfGroup, $cssRowClassNr, $level + 1);
             }
         }
-        return false;
     }
 
 

@@ -248,8 +248,17 @@ class JsonPage implements JsonAdapter {
                 case 'hide':
                     $page->setDisplay(false);
                     break;
+                case 'protect':
+                    $page->setFrontendProtection(true);
+                    break;
                 case 'unprotect':
                     $page->setFrontendProtection(false);
+                    break;
+                case 'lock':
+                    $page->setBackendProtection(true);
+                    break;
+                case 'unlock':
+                    $page->setBackendProtection(false);
                     break;
             }
             
@@ -475,8 +484,26 @@ class JsonPage implements JsonAdapter {
                         continue;
                     }
                     break;
+                case 'protect':
+                    if ($page->isFrontendProtected()) {
+                        // we have that already, continue
+                        continue;
+                    }
+                    break;
                 case 'unprotect':
                     if (!$page->isFrontendProtected()) {
+                        // we have that already, continue
+                        continue;
+                    }
+                    break;
+                case 'lock':
+                    if ($page->isBackendProtected()) {
+                        // we have that already, continue
+                        continue;
+                    }
+                    break;
+                case 'unlock':
+                    if (!$page->isBackendProtected()) {
                         // we have that already, continue
                         continue;
                     }
