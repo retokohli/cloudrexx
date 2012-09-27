@@ -31,19 +31,29 @@
         <td>{TXT_APC_SUPPORT}</td>
         <td class="{APC_SUPPORT_CLASS}">{APC_SUPPORT}</td>
     </tr>
-    <!-- BEGIN phpConfiguration -->
-        <tr>
-            <td colspan="2">&nbsp;</td>
-        </tr>
-        <tr>
-            <th colspan="2">{TXT_PHP_CONFIGURATION}</th>
-        </tr>
-        <!-- BEGIN configErrorMsg --><tr><td colspan="2"><div class="message-alert">{CONFIG_ERROR_MSG}</div></td></tr><!-- END configErrorMsg -->
-        <tr class="row1">
-            <td>{TXT_ALLOW_URL_FOPEN}</td>
-            <td class="{ALLOW_URL_FOPEN_CLASS}">{ALLOW_URL_FOPEN}</td>
-        </tr>
-    <!-- END phpConfiguration -->
+    <tr>
+        <td colspan="2">&nbsp;</td>
+    </tr>
+    <tr>
+        <th colspan="2">{TXT_PHP_CONFIGURATION}</th>
+    </tr>
+    <!-- BEGIN allowUrlFopen -->
+    <!-- BEGIN configErrorMsg -->
+    <tr>
+        <td colspan="2">
+            <div class="message-alert">{CONFIG_ERROR_MSG}</div>
+        </td>
+    </tr>
+    <!-- END configErrorMsg -->
+    <tr class="row2">
+        <td>{TXT_ALLOW_URL_FOPEN}</td>
+        <td class="{ALLOW_URL_FOPEN_CLASS}">{ALLOW_URL_FOPEN}</td>
+    </tr>
+    <!-- END allowUrlFopen -->
+    <tr>
+        <td class="row1">{TXT_MEMORY_LIMIT}</td>
+        <td class="{MEMORY_LIMIT_CLASS}">{MEMORY_LIMIT}</td>
+    </tr>
 </table>
 <br />
 <!-- end requirements.html -->

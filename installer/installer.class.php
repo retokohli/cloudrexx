@@ -484,6 +484,12 @@ class Installer
         $gdVersion = $objCommon->checkGDSupport();
         $ftpSupport = $objCommon->checkFTPSupport();
         $apcSupport = $objCommon->enableApc();
+        
+        if ($apcSupport) {
+            $memoryLimit = $objCommon->checkMemoryLimit(32);
+        } else {
+            $memoryLimit = $objCommon->checkMemoryLimit(48);
+        }
 
         if ($phpVersion < $requiredPHPVersion) {
             $this->arrStatusMsg['php'] .= str_replace("[VERSION]", $requiredPHPVersion, $_ARRLANG['TXT_PHP_VERSION_REQUIRED']."<br /><br />".$_ARRLANG['TXT_IGNORE_PHP_REQUIREMENT']."<br />"
@@ -516,8 +522,11 @@ class Installer
             'GD_VERSION_CLASS'      => $gdVersion >= $requiredGDVersion ? 'successful' : 'failed',
             'FTP_SUPPORT'           => $ftpSupport ? $_ARRLANG['TXT_YES'] : $_ARRLANG['TXT_NO'],
             'FTP_SUPPORT_CLASS'     => $ftpSupport ? 'successful' : 'failed',
-            'APC_SUPPORT'           => $apcSupport ? $_ARRLANG['TXT_YES'] : $_ARRLANG['TXT_NO'],
+            'APC_SUPPORT'           => $apcSupport ? $_ARRLANG['TXT_ON'] : $_ARRLANG['TXT_OFF'],
             'APC_SUPPORT_CLASS'     => $apcSupport ? 'successful' : 'failed',
+            'TXT_MEMORY_LIMIT'      => $_ARRLANG['TXT_MEMORY_LIMIT'].' (>= '.$memoryLimit['required'].'M)',
+            'MEMORY_LIMIT'          => $memoryLimit['available'].'M',
+            'MEMORY_LIMIT_CLASS'    => $memoryLimit['result'] ? 'successful' : 'failed',
         ));
 
         // news syndication status
@@ -542,9 +551,9 @@ class Installer
                 $objTpl->hideBlock('configErrorMsg');
             }
 
-            $objTpl->parse('phpConfiguration');
+            $objTpl->parse('allowUrlFopen');
         } else {
-            $objTpl->hideBlock('phpConfiguration');
+            $objTpl->hideBlock('allowUrlFopen');
         }
 
         // set php error message

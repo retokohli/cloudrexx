@@ -502,6 +502,29 @@ class CommonFunctions
         return false;
     }
 
+    public function getMemoryLimit()
+    {
+        preg_match('/^\d+/', ini_get('memory_limit'), $memoryLimit);
+        return $memoryLimit[0];
+    }
+    
+    public function checkMemoryLimit($memoryLimit)
+    {
+        $result = true;
+        if ($this->getMemoryLimit() < $memoryLimit) {
+            ini_set('memory_limit', $memoryLimit.'M');
+            if ($this->getMemoryLimit() < $memoryLimit) {
+                $result = false;
+            }
+        }
+        
+        return array(
+            'result'    => $result,
+            'required'  => $memoryLimit,
+            'available' => $this->getMemoryLimit(),
+        );
+    }
+
     /**
     * check rss support
     *
