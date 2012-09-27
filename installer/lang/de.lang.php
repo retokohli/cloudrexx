@@ -110,6 +110,7 @@ $_ARRLANG['TXT_DB_COLLATION_DESCRIPTION'] = "Der Zeichensatz für die MySQL Verb
 // installation
 $_ARRLANG['TXT_COULD_NOT_DEACTIVATE_UNUSED_LANGUAGES'] = "Konnte die überflüssigen Sprachen nicht deaktivieren!";
 $_ARRLANG['TXT_COULD_NOT_ACTIVATE_DEFAULT_LANGUAGE'] = "Konnte die Standard Sprachen nicht aktivieren!";
+$_ARRLANG['TXT_COULD_NOT_ACTIVATE_CURRENT_LANGUAGE'] = "Konnte die aktuelle Sprache nicht aktivieren.";
 $_ARRLANG['TXT_COULD_NOT_CHANGE_PERMISSIONS'] = "Konnte die Berechtigungen nicht ändern: ";
 $_ARRLANG['TXT_CANNOT_OPEN_FILE'] = "Kann die Datei [FILENAME] nicht öffnen";
 $_ARRLANG['TXT_CANNOT_CREATE_FILE'] = "Kann die Datei %s nicht erstellen";

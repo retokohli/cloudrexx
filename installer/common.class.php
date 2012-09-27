@@ -1149,7 +1149,7 @@ class CommonFunctions
                              `password` = '".md5($_SESSION['installer']['account']['password'])."',
                              `regdate` = '".time()."',
                              `email` = '".$_SESSION['installer']['account']['email']."',
-                             `frontend_lang_id` = '".$userLangId."',
+                             `frontend_lang_id` = 1,
                              `backend_lang_id` = '".$userLangId."',
                              `active` = 1
                        WHERE `id` = 1";
@@ -1214,12 +1214,22 @@ class CommonFunctions
             if (!@$objDb->Execute($query)) {
                 $statusMsg .= $_ARRLANG['TXT_COULD_NOT_DEACTIVATE_UNUSED_LANGUAGES']."<br />";
             }
-
-            // set active language
-            $query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."languages`
-                         SET `frontend` = '1', `backend` = '1', `is_default` = 'true' WHERE `id` = ".$userLangId;
+            
+            // set default language
+            $query = '
+                UPDATE `'.$_SESSION['installer']['config']['dbTablePrefix'].'languages`
+                   SET `frontend` = 1, backend = 1, `is_default` = "true"
+                 WHERE `lang` = "de"
+            ';
             if (!@$objDb->Execute($query)) {
                 $statusMsg .= $_ARRLANG['TXT_COULD_NOT_ACTIVATE_DEFAULT_LANGUAGE']."<br />";
+            }
+
+            // activate current language
+            $query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."languages`
+                         SET `frontend` = '1', `backend` = '1' WHERE `id` = ".$userLangId;
+            if (!@$objDb->Execute($query)) {
+                $statusMsg .= $_ARRLANG['TXT_COULD_NOT_ACTIVATE_CURRENT_LANGUAGE']."<br />";
             }
 
             // set admin email

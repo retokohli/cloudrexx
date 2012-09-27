@@ -110,6 +110,7 @@ $_ARRLANG['TXT_DB_COLLATION_DESCRIPTION'] = "The connection collation is used to
 // installation
 $_ARRLANG['TXT_COULD_NOT_DEACTIVATE_UNUSED_LANGUAGES'] = "Could not deactivate the unused languages!";
 $_ARRLANG['TXT_COULD_NOT_ACTIVATE_DEFAULT_LANGUAGE'] = "Could not activate default language!";
+$_ARRLANG['TXT_COULD_NOT_ACTIVATE_CURRENT_LANGUAGE'] = "Could not activate current language.";
 $_ARRLANG['TXT_COULD_NOT_CHANGE_PERMISSIONS'] = "Could not change the permissions: ";
 $_ARRLANG['TXT_CANNOT_OPEN_FILE'] = "Cannot open the file [FILENAME]";
 $_ARRLANG['TXT_CANNOT_CREATE_FILE'] = "Cannot create file %s";
