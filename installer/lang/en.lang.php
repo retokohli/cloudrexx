@@ -28,7 +28,7 @@ $_ARRLANG['TXT_HELP'] = "Help";
 
 // welcome
 $_ARRLANG['TXT_WELCOME'] = "Welcome";
-$_ARRLANG['TXT_WELCOME_MSG'] = "<b>Welcome to the Contrexx Web Installer</b><br />You will install the [EDITION] version [VERSION] of [NAME].";
+$_ARRLANG['TXT_WELCOME_MSG'] = "<b>Welcome to the Contrexx Web Installer</b><br />You will install the version [VERSION] of [NAME].";
 $_ARRLANG['TXT_LANGUAGE'] = "Language";
 $_ARRLANG['TXT_NEW_VERSION'] = "A newer version of [NAME] is released.<br />Newest version: [VERSION]";
 
@@ -86,7 +86,7 @@ $_ARRLANG['TXT_HOSTNAME'] = "Hostname";
 $_ARRLANG['TXT_DATABASE_NAME'] = "Database name";
 $_ARRLANG['TXT_TABLE_PREFIX'] = "Table prefix";
 $_ARRLANG['TXT_FTP_PATH'] = "Path to the Document Root directory";
-$_ARRLANG['TXT_FTP_PATH_DESCRIPTION'] = "Provide the path to where you putted the files of the Contrexx WCMS on the FTP server.";
+$_ARRLANG['TXT_FTP_PATH_DESCRIPTION'] = "Specify the path in which you saved the files of Contrexx CMS on the FTP server.";
 $_ARRLANG['TXT_FTP'] = "FTP";
 $_ARRLANG['TXT_DOCUMENT_ROOT_NEEDED'] = "You must provide the local path to the Contrexx WCMS on your Web server!";
 $_ARRLANG['TXT_DB_HOSTNAME_NEEDED'] = "You must provide the computer name of your database server!";
