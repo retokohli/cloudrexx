@@ -1,27 +1,33 @@
 <?php
-ini_set('display_errors', 1);
+/*ini_set('display_errors', 1);
 error_reporting(E_ALL);
-echo '<pre>';
-// load requirements
-require_once('../../config/settings.php');              // needed for configuration.php
-require_once('../../config/configuration.php');         // needed for API
-require_once('../API.php');                             // needed for getDatabaseObject()
-require_once('../../lib/FRAMEWORK/User/User_Setting_Mail.class.php');
-require_once('../../lib/FRAMEWORK/User/User_Setting.class.php');
-require_once('../../lib/FRAMEWORK/User/User_Profile_Attribute.class.php');
-require_once('../../lib/FRAMEWORK/User/User_Profile.class.php');
-require_once('../../lib/FRAMEWORK/User/UserGroup.class.php');
-require_once('../../lib/FRAMEWORK/User/User.class.php');
-require_once('../../lib/FRAMEWORK/FWUser.class.php');
-require_once('../../lib/PEAR/HTTP/Request2.php');
-require_once('../../lib/DBG.php');
-require_once('../../core/Init.class.php');
-require_once('../settings.class.php');
-require_once('../session.class.php');
-require_once('../ClassLoader/ClassLoader.class.php');
-new \Cx\Core\ClassLoader\ClassLoader('../../', false);
+echo '<pre>';*/
 
-global $_CONFIG, $sessionObj, $objInit, $objDatabase;
+global $_CONFIG, $sessionObj, $objInit, $objDatabase, $documentRoot;
+
+// when included in installer, this is set
+if (!isset($documentRoot)) {
+    $documentRoot = '../..';
+}
+
+// load requirements
+require_once($documentRoot.'/config/settings.php');              // needed for configuration.php
+require_once($documentRoot.'/config/configuration.php');         // needed for API
+require_once($documentRoot.'/core/API.php');                             // needed for getDatabaseObject()
+require_once($documentRoot.'/lib/FRAMEWORK/User/User_Setting_Mail.class.php');
+require_once($documentRoot.'/lib/FRAMEWORK/User/User_Setting.class.php');
+require_once($documentRoot.'/lib/FRAMEWORK/User/User_Profile_Attribute.class.php');
+require_once($documentRoot.'/lib/FRAMEWORK/User/User_Profile.class.php');
+require_once($documentRoot.'/lib/FRAMEWORK/User/UserGroup.class.php');
+require_once($documentRoot.'/lib/FRAMEWORK/User/User.class.php');
+require_once($documentRoot.'/lib/FRAMEWORK/FWUser.class.php');
+require_once($documentRoot.'/lib/PEAR/HTTP/Request2.php');
+require_once($documentRoot.'/lib/DBG.php');
+require_once($documentRoot.'/core/Init.class.php');
+require_once($documentRoot.'/core/settings.class.php');
+require_once($documentRoot.'/core/session.class.php');
+require_once($documentRoot.'/core/ClassLoader/ClassLoader.class.php');
+new \Cx\Core\ClassLoader\ClassLoader($documentRoot, false);
 
 $objDatabase = getDatabaseObject($strErrMessage);
 $objInit = new InitCMS('backend', null);
