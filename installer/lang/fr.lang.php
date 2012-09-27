@@ -110,6 +110,7 @@ $_ARRLANG['TXT_DB_COLLATION_DESCRIPTION'] = "Le jeu de caractères de la connexi
 // installation
 $_ARRLANG['TXT_COULD_NOT_DEACTIVATE_UNUSED_LANGUAGES'] = "Impossible de désactiver les langues inutilisées!";
 $_ARRLANG['TXT_COULD_NOT_ACTIVATE_DEFAULT_LANGUAGE'] = "Impossible d'activer la langue standard!";
+$_ARRLANG['TXT_COULD_NOT_ACTIVATE_CURRENT_LANGUAGE'] = "Impossible d'activer la langue actuel.";
 $_ARRLANG['TXT_COULD_NOT_CHANGE_PERMISSIONS'] = "Impossible de modifier les droits d'accès: ";
 $_ARRLANG['TXT_CANNOT_OPEN_FILE'] = "Impossible d'ouvrir le fichier [FILENAME]";
 $_ARRLANG['TXT_CANNOT_CREATE_FILE'] = "Impossible de créer le fichier %s";
