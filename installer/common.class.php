@@ -890,14 +890,21 @@ class CommonFunctions
         return $str;
     }
         
-    function _getHtaccessFileTemplate($file) {
-                
-                return str_replace(
-             array("%PATH_ROOT_OFFSET%"),
-             array($_SESSION['installer']['config']['offsetPath']),
-             @file_get_contents($file)
-         );
+    function _getHtaccessFileTemplate($file)
+    {
+        $pathOffset = $_SESSION['installer']['config']['offsetPath'];
+        // in case no offset path is set (contrexx runs directly in the document root)
+        // then, we must set pathOffset to /. Path offset is used as RewriteBase.
+        // Otherwise, an empty RewriteBase would be invalid
+        if (empty($pathOffset)) {
+            $pathOffset = '/';
         }
+        return str_replace(
+            array("%PATH_ROOT_OFFSET%"),
+            array($pathOffset),
+            @file_get_contents($file)
+        );
+    }
 
     /**
     * get version template file
