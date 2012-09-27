@@ -1820,7 +1820,7 @@ class Installer
     }
 
     function _showTermination() {
-        global $objTpl, $_ARRLANG, $_CONFIG, $objCommon;
+        global $objTpl, $_ARRLANG, $_CONFIG, $objCommon, $basePath, $documentRoot;
 
         // load template file
         $objTpl->addBlockfile('CONTENT', 'CONTENT_BLOCK', "termination.html");
@@ -1874,6 +1874,10 @@ class Installer
             $objTpl->parse('termination');
 
             @session_destroy();
+
+            $_GET['force'] = 'true';
+            $documentRoot = dirname($basePath);
+            require_once($documentRoot.'/core/License/versioncheck.php');
         }
     }
 
