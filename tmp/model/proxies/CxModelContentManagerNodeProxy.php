@@ -33,6 +33,12 @@ class CxModelContentManagerNodeProxy extends \Cx\Model\ContentManager\Node imple
         return parent::getUniqueIdentifier();
     }
 
+    public function setId($id)
+    {
+        $this->_load();
+        return parent::setId($id);
+    }
+
     public function getId()
     {
         $this->_load();
@@ -93,22 +99,22 @@ class CxModelContentManagerNodeProxy extends \Cx\Model\ContentManager\Node imple
         return parent::getChildren($lang);
     }
 
-    public function addPages(\Cx\Model\ContentManager\Page $pages)
+    public function addPage(\Cx\Model\ContentManager\Page $page)
     {
         $this->_load();
-        return parent::addPages($pages);
+        return parent::addPage($page);
     }
 
-    public function getPages()
+    public function getPages($inactive_langs = false)
     {
         $this->_load();
-        return parent::getPages();
+        return parent::getPages($inactive_langs);
     }
 
-    public function getPagesByLang()
+    public function getPagesByLang($inactive_langs = false)
     {
         $this->_load();
-        return parent::getPagesByLang();
+        return parent::getPagesByLang($inactive_langs);
     }
 
     public function getPage($lang)
@@ -129,24 +135,6 @@ class CxModelContentManagerNodeProxy extends \Cx\Model\ContentManager\Node imple
         return parent::getParent();
     }
 
-    public function addAssociatedPage($page)
-    {
-        $this->_load();
-        return parent::addAssociatedPage($page);
-    }
-
-    public function setType($type)
-    {
-        $this->_load();
-        return parent::setType($type);
-    }
-
-    public function getType()
-    {
-        $this->_load();
-        return parent::getType();
-    }
-
     public function validate()
     {
         $this->_load();
@@ -157,6 +145,12 @@ class CxModelContentManagerNodeProxy extends \Cx\Model\ContentManager\Node imple
     {
         $this->_load();
         return parent::hasAccessByUserId($frontend);
+    }
+
+    public function translatePage($activate, $targetLang)
+    {
+        $this->_load();
+        return parent::translatePage($activate, $targetLang);
     }
 
 
