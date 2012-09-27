@@ -11,6 +11,7 @@ if (!isset($documentRoot)) {
 }
 
 // load requirements
+require_once($documentRoot.'/core/Env.class.php');               // needed for FileSystem
 require_once($documentRoot.'/config/settings.php');              // needed for configuration.php
 require_once($documentRoot.'/config/configuration.php');         // needed for API
 require_once($documentRoot.'/core/API.php');                             // needed for getDatabaseObject()
@@ -28,6 +29,9 @@ require_once($documentRoot.'/core/settings.class.php');
 require_once($documentRoot.'/core/session.class.php');
 require_once($documentRoot.'/core/ClassLoader/ClassLoader.class.php');
 new \Cx\Core\ClassLoader\ClassLoader($documentRoot, false);
+
+Env::set('config', $_CONFIG);
+Env::set('ftpConfig', $_FTPCONFIG);
 
 $objDatabase = getDatabaseObject($strErrMessage, true);
 $objInit = new InitCMS('backend', null);

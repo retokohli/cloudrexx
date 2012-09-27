@@ -36,14 +36,11 @@ $useUtf8 = true;
 define('ASCMS_LIBRARY_PATH', realpath(dirname(__FILE__).'/../../lib'));
 define('ASCMS_FRAMEWORK_PATH', realpath(dirname(__FILE__).'/../../lib/FRAMEWORK'));
 define('ASCMS_CORE_MODULE_PATH', realpath(dirname(__FILE__).'/../../core_modules'));
+define('CONTREXX_CHARSET', 'UTF-8');
 
 if (!empty($_SESSION['installer']['config']['documentRoot'])) {
     define('ASCMS_PATH', $_SESSION['installer']['config']['documentRoot']);
-}
-if (!empty($_SESSION['installer']['config']['offsetPath'])) {
     define('ASCMS_PATH_OFFSET', $_SESSION['installer']['config']['offsetPath']);
-}
-if (!empty($_SESSION['installer']['config']['documentRoot']) && !empty($_SESSION['installer']['config']['offsetPath'])) {
     define('ASCMS_DOCUMENT_ROOT', ASCMS_PATH.ASCMS_PATH_OFFSET);
 }
 

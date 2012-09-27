@@ -1874,6 +1874,13 @@ class Installer
 
             @session_destroy();
 
+            // we will now initialize a new session and will login the administrator (userID = 1).
+            // this is required to allow the License system (versioncheck.php) to update
+            // the license section template
+            if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
+            $userId = 1;
+            $sessionObj->cmsSessionUserUpdate($userId);
+
             $_GET['force'] = 'true';
             $documentRoot = dirname($basePath);
             require_once($documentRoot.'/core/License/versioncheck.php');
