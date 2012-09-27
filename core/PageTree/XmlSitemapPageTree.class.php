@@ -136,19 +136,6 @@ class XmlSitemapPageTree extends PageTree {
 
 
     /**
-     * Creates a file (if it does not already exist) and sets write permission
-     * @param String $filename Name of the file
-     * @return boolean True on success, false otherwise
-     */
-    protected function prepareFileAccess($filename) {
-        $file = ASCMS_DOCUMENT_ROOT . self::$strFilePath . '/' . $filename;
-        return    (
-                      file_exists($file)
-                   || \Cx\Lib\FileSystem\FileSystem::touch($file))
-               && \Cx\Lib\FileSystem\FileSystem::makeWritable($file);
-    }
-
-    /**
      * Write sitemap-file
      *
      * @global     object
@@ -159,21 +146,14 @@ class XmlSitemapPageTree extends PageTree {
     protected function writeXML() {
         $filename = \FWLanguage::getLanguageCodeById($this->lang) ? sprintf(self::$strFileNameWithLang, \FWLanguage::getLanguageCodeById($this->lang)) : self::$strFileName;
 
-        if (!$this->prepareFileAccess($filename)) {
-            return false;
-        }
-        
         $xml = $this->render();
         
-        $handleFile = fopen(ASCMS_DOCUMENT_ROOT . self::$strFilePath . '/' . $filename, 'w');
-        if ($handleFile) {
-            //Write values
-            flock($handleFile, LOCK_EX); //set semaphore
-
-            fwrite($handleFile, $xml);
-
-            flock($handleFile, LOCK_UN); //release semaphore
-            fclose($handleFile);
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT . self::$strFilePath . '/' . $filename);
+            $objFile->write($xml);
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::log($e->getMessage());
+            return false;
         }
 
         return true;
@@ -213,3 +193,4 @@ class XmlSitemapPageTree extends PageTree {
         
     }
 }
+
