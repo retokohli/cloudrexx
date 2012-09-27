@@ -29,7 +29,7 @@ require_once($documentRoot.'/core/session.class.php');
 require_once($documentRoot.'/core/ClassLoader/ClassLoader.class.php');
 new \Cx\Core\ClassLoader\ClassLoader($documentRoot, false);
 
-$objDatabase = getDatabaseObject($strErrMessage);
+$objDatabase = getDatabaseObject($strErrMessage, true);
 $objInit = new InitCMS('backend', null);
 
 // update license
@@ -45,7 +45,8 @@ if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new \cmsSessio
 
 $objUser = \FWUser::getFWUserObject()->objUser;
 if (!$objUser->login(true)) {
-    die();
+    // do not use die() here, or installer will not show success page
+    return;
 }
 
 // show info

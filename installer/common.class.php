@@ -1192,7 +1192,7 @@ class CommonFunctions
     * @access   public
     */
     function setSystemConfig() {
-        global $_ARRLANG, $_CONFIG, $arrLanguages, $language, $basePath, $documentRoot;
+        global $_ARRLANG, $_CONFIG, $arrLanguages, $language;
 
         $userLangId = "";
         foreach ($arrLanguages as $langId => $arrLanguage) {
@@ -1369,13 +1369,7 @@ class CommonFunctions
         }
 
         if (empty($statusMsg)) {
-            $res = $this->_createSettingsFile();
-            
-            $_GET['force'] = 'true';
-            $documentRoot = dirname($basePath);
-            require_once($documentRoot.'/core/License/versioncheck.php');
-            
-            return $res;
+            return $this->_createSettingsFile();
         } else {
             return $statusMsg;
         }

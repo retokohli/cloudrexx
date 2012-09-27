@@ -103,10 +103,13 @@ class LicenseManager {
                     $remoteTemplate->parse('licenseDomain');
                 }
             }
-            $remoteTemplate->setVariable('MESSAGE_TITLE', $this->license->getMessage(BACKEND_LANG_ID)->getText());
-            $remoteTemplate->setVariable('MESSAGE_LINK', $this->license->getMessage(BACKEND_LANG_ID)->getLink());
-            $remoteTemplate->setVariable('MESSAGE_LINK_TARGET', $this->license->getMessage(BACKEND_LANG_ID)->getLinkTarget());
-            $remoteTemplate->setVariable('MESSAGE_TYPE', $this->license->getMessage(BACKEND_LANG_ID)->getType());
+            $message = $this->license->getMessage(\FWLanguage::getLanguageCodeById(BACKEND_LANG_ID));
+            if ($message) {
+                $remoteTemplate->setVariable('MESSAGE_TITLE', $message->getText());
+                $remoteTemplate->setVariable('MESSAGE_LINK', $message->getLink());
+                $remoteTemplate->setVariable('MESSAGE_LINK_TARGET', $message->getLinkTarget());
+                $remoteTemplate->setVariable('MESSAGE_TYPE', $message->getType());
+            }
             if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
                 $remoteTemplate->touchBlock('licenseAdmin');
                 $remoteTemplate->hideBlock('licenseNotAdmin');
