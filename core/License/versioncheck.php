@@ -3,7 +3,7 @@
 error_reporting(E_ALL);
 echo '<pre>';*/
 
-global $_CONFIG, $sessionObj, $objInit, $objDatabase, $documentRoot;
+global $_CONFIG, $_DBCONFIG, $sessionObj, $objInit, $objDatabase, $documentRoot;
 
 // when included in installer, this is set
 if (!isset($documentRoot)) {
