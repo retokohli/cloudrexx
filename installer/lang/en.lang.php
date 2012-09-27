@@ -60,6 +60,7 @@ $_ARRLANG['TXT_ALLOW_URL_FOPEN'] = "allow_url_fopen";
 $_ARRLANG['TXT_GD_VERSION'] = "GD (Graphics Draw) version";
 $_ARRLANG['TXT_FTP_SUPPORT'] = "FTP support";
 $_ARRLANG['TXT_APC_SUPPORT'] = "APC (Alternative PHP Cache)";
+$_ARRLANG['TXT_MEMORY_LIMIT'] = "memory_limit";
 $_ARRLANG['TXT_YES'] = "Yes";
 $_ARRLANG['TXT_NO'] = "No";
 $_ARRLANG['TXT_ON'] = "On";

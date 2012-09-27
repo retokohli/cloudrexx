@@ -57,26 +57,6 @@ if (!@include_once($basePath.'/../core/Env.class.php')) {
 $objCommon = new CommonFunctions;
 $objInstaller = new Installer;
 
-function getMemoryLimit() {
-    preg_match('/^\d+/', ini_get('memory_limit'), $memoryLimit);
-    return $memoryLimit[0];
-}
-
-function checkMemoryLimit($memoryLimit) {
-    if (getMemoryLimit() < $memoryLimit) {
-        ini_set('memory_limit', $memoryLimit.'M');
-        if (getMemoryLimit() < $memoryLimit) {
-            die('The memory_limit must be at least '.$memoryLimit.'M (now '.ini_get('memory_limit').').');
-        }
-    }
-}
-
-if ($objCommon->enableApc()) {
-    checkMemoryLimit(32);
-} else {
-    checkMemoryLimit(48);
-}
-
 $objCommon->initLanguage();
 $objTpl = new HTML_Template_Sigma($templatePath);
 $objTpl->setErrorHandling(PEAR_ERROR_DIE);
