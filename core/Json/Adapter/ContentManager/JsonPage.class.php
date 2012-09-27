@@ -27,6 +27,7 @@ class JsonPage implements JsonAdapter {
     private $nodeRepo  = null;
     private $logRepo   = null;
     private $fallbacks = array();
+    private $multipleSetState = null;
     
     public $messages;
 
@@ -423,13 +424,18 @@ class JsonPage implements JsonAdapter {
      * @param  array  $params  Client parameters.
      */
     public function multipleSet($params) {
+        register_shutdown_function(array($this, 'multipleSetShutdown'));
+        
         $post = $params['post'];
         $data['post']['lang']   = $post['lang'];
         $data['post']['action'] = $post['action'];
         $recursive = (isset($params['get']['recursive']) && $params['get']['recursive'] == 'true');
+        $requestedOffset = (isset($params['get']['offset']) ? $params['get']['offset'] : 0);
         $return = array();
         
         $nodeIdStack = $post['nodes'];
+        $this->multipleSetState = array('state' => 'running', 'offset' => 0, 'stack' => $nodeIdStack);
+        $offset = 0;
         while (count($nodeIdStack)) {
             $nodeId = array_pop($nodeIdStack);
             $data['post']['nodeId'] = $nodeId;
@@ -438,6 +444,10 @@ class JsonPage implements JsonAdapter {
                 foreach ($node->getChildren() as $child) {
                     array_push($nodeIdStack, $child->getId());
                 }
+            }
+            $offset++;
+            if ($requestedOffset > $offset) {
+                continue;
             }
             $page = $node->getPage(\FWLanguage::getLanguageIdByCode($post['lang']));
             switch ($data['post']['action']) {
@@ -484,10 +494,19 @@ class JsonPage implements JsonAdapter {
             if (($result['node'] == $post['currentNodeId']) && ($result['lang'] == $post['lang'])) {
                 $return['id'] = $result['id'];
             }
+            $this->multipleSetState['offset']++;
         }
+        $this->multipleSetState = null;
         unset($nodeIdStack);
         
         return $return;
+    }
+    
+    public function multipleSetShutdown() {
+        if ($this->multipleSetState) {
+            $this->multipleSetState['state'] = 'timeout';
+            echo \Cx\Core\Json\JsonData::json($this->multipleSetState, true);
+        }
     }
 
     /**

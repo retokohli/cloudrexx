@@ -77,7 +77,7 @@ class LanguageManager
         global $objTemplate, $_CORELANG;
 
         $objTemplate->setVariable("CONTENT_NAVIGATION","
-            <a href='index.php?cmd=language' class='".($this->act == '' ? 'active' : '')."'>".$_CORELANG['TXT_LANGUAGE_LIST']."</a>"
+            <a href='index.php?cmd=".($this->isInFullMode() ? 'fulllanguage' : 'language')."' class='".($this->act == '' ? 'active' : '')."'>".$_CORELANG['TXT_LANGUAGE_LIST']."</a>"
             .($this->hideVariables == false ? "<a href='index.php?cmd=language&amp;act=vars' class='".($this->act == 'vars' ? 'active' : '')."'>".$_CORELANG['TXT_VARIABLE_LIST']."</a>
             <a href='index.php?cmd=language&amp;act=mod' class='".($this->act == 'mod' ? 'active' : '')."'>".$_CORELANG['TXT_ADD_LANGUAGE_VARIABLES']."</a>
             <a href='index.php?cmd=language&amp;act=writefiles' class='".($this->act == 'writefiles' ? 'active' : '')."' title='".$_CORELANG['TXT_WRITE_VARIABLES_TO_FILES']."'>".$_CORELANG['TXT_WRITE_VARIABLES_TO_FILES']."</a>": ""));
