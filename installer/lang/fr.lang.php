@@ -28,7 +28,7 @@ $_ARRLANG['TXT_HELP'] = "Aide";
 
 // welcome
 $_ARRLANG['TXT_WELCOME'] = "Bienvenue";
-$_ARRLANG['TXT_WELCOME_MSG'] = "<b>Bienvenue dans le programme d'installation de Contrexx</b><br />Vous êtes sur le point d'installer [EDITION] Version [VERSION] de [NAME].";
+$_ARRLANG['TXT_WELCOME_MSG'] = "<b>Bienvenue dans le programme d'installation de Contrexx</b><br />Vous êtes sur le point d'installer version [VERSION] de [NAME].";
 $_ARRLANG['TXT_LANGUAGE'] = "Langue";
 $_ARRLANG['TXT_NEW_VERSION'] = "Une version plus récente de [NAME] a été publiée.<br />Dernière version disponible: [VERSION]";
 

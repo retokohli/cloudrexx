@@ -338,8 +338,7 @@ class Installer
         // load content
         $objTpl->addBlockfile('CONTENT', 'CONTENT_BLOCK', 'welcome.html');
 
-        $welcomeMsg = str_replace("[EDITION]", $_CONFIG['coreCmsEdition'], $_ARRLANG['TXT_WELCOME_MSG']);
-        $welcomeMsg = str_replace("[VERSION]", str_replace(' Service Pack 0', '', preg_replace('#^(\d+\.\d+)\.(\d+)$#', '$1 Service Pack $2', $_CONFIG['coreCmsVersion'])), $welcomeMsg);
+        $welcomeMsg = str_replace("[VERSION]", str_replace(' Service Pack 0', '', preg_replace('#^(\d+\.\d+)\.(\d+)$#', '$1 Service Pack $2', $_CONFIG['coreCmsVersion'])), $_ARRLANG['TXT_WELCOME_MSG']);
         $welcomeMsg = str_replace("[NAME]", $_CONFIG['coreCmsName'], $welcomeMsg);
 
         $objTpl->setVariable(array(
