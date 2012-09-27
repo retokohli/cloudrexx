@@ -721,7 +721,7 @@ class Installer
                     }
 
                     $_POST['ftpHostname'] = preg_replace(
-                        '/^\w*:?\\/?\\/?/', '', $_POST['ftpHostname']);
+                        '/^\w*:\/\//', '', $_POST['ftpHostname']);
                     if ($ftpPortPos = intval(strpos($_POST['ftpHostname'], ":"))) {
                         if (($ftpPort = intval(substr($_POST['ftpHostname'],$ftpPortPos+1))) != 0) {
                             $_SESSION['installer']['config']['ftpPort'] = $ftpPort;
@@ -1312,7 +1312,7 @@ class Installer
         // create htaccess file
         if ($result === true) {
             $result = $this->_createHtaccessFile();
-            $msg = ASCMS_WEBSERVER_SOFTWARE == 'iis' ? $_ARRLANG['TXT_CREATE_IIS_HTACCESS_FILE'] : $_ARRLANG['TXT_CREATE_APACHE_HTACCESS_FILE'];
+            $msg = $objCommon->getWebserverSoftware() == 'iis' ? $_ARRLANG['TXT_CREATE_IIS_HTACCESS_FILE'] : $_ARRLANG['TXT_CREATE_APACHE_HTACCESS_FILE'];
             $this->_setInstallationStatus($result, $msg);
        }
     }

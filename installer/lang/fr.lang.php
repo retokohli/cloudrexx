@@ -137,6 +137,8 @@ $_ARRLANG['TXT_PRESS_REFRESH_TO_CONTINUE_INSTALLATION'] = "Cliquer sur <b>Actual
 $_ARRLANG['TXT_REFRESH'] = "Actualiser";
 $_ARRLANG['TXT_CREATE_CONFIG_FILE'] = "Fichier de configuration créé";
 $_ARRLANG['TXT_SET_WRITE_PERMISSION_TO_FILES'] = "Vous devez affecter un droit d'écriture sur les fichiers suivants:";
+$_ARRLANG['TXT_CREATE_APACHE_HTACCESS_FILE'] = ".htaccess created";
+$_ARRLANG['TXT_CREATE_IIS_HTACCESS_FILE'] = "web.config created";
 $_ARRLANG['TXT_CREATE_VERSION_FILE'] = "Fichier de version créé";
 $_ARRLANG['TXT_COULD_NOT_GATHER_ALL_DATABASE_TABLES'] = "Impossible de détecter toutes les tables!";
 $_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'] = "Le serveur de base de données ne supporte pas UTF-8! Veuillez utiliser une Version de Contrexx avec le jeu de caractère latin1!";
@@ -144,6 +146,8 @@ $_ARRLANG['TXT_COULD_NOT_SET_DATABASE_CHARSET'] = "Impossible de paramétrer la 
 $_ARRLANG['TXT_COULD_NOT_SET_INSTALLATIONID'] = "Le ID d'installation n'a pa pu être enrgistré.";
 $_ARRLANG['TXT_COULD_NOT_SET_TIMEZONE'] = "The timezone could not be set.";
 $_ARRLANG['TXT_CONFIG_DATABASE'] = "Configuration de la base de données";
+$_ARRLANG['TXT_CORE_HTACCESS_FILE_NOT_WRITABLE'] = "The file %s can't be updated due it's write-protected! Please remove the write-protection for letting the system working properly.";
+$_ARRLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Unable to read the HtAccess file %s due to invalid Contrexx specific directives!";
 
 // system configuration
 $_ARRLANG['TXT_ADMIN_EMAIL'] = "Adresse E-mail de l'administrateur";
@@ -171,6 +175,7 @@ $_ARRLANG['TXT_SETTINGS_ERROR_WRITABLE'] = "Impossible d'écrire dans le fichier
 // admin account
 $_ARRLANG['TXT_ADMIN_ACCOUNT_DESC'] = "Veuillez définir les identifiants (nom d'utilisateur et mot de passe) qui permettront de se connecter en tant qu'administrateur.";
 $_ARRLANG['TXT_SET_USERNAME'] = "Un nom d'utilisateur est requis!";
+$_ARRLANG['TXT_INVALID_USERNAME'] = "The username may only contain alphanumeric characters (a-z, A-Z, 0-9) and the following special characters: -_";
 $_ARRLANG['TXT_SET_PASSWORD'] = "Un mot de passe est requis!";
 $_ARRLANG['TXT_PASSWORD_LENGTH_DESC'] = "(min. 6 caractères)";
 $_ARRLANG['TXT_PASSWORD_LENGTH'] = "Le mot de passe doit comporter au minimum 6 caractères!";
