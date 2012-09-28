@@ -1086,7 +1086,7 @@ class Installer
                 $timeOffset   = $dateTimeZone->getOffset($dateTime);
                 $plusOrMinus  = $timeOffset < 0 ? '-' : '+';
                 $gmt          = 'GMT ' . $plusOrMinus . ' ' . gmdate('g:i', $timeOffset);
-                $timezone .= ' (' . $gmt . ')';
+                $timezone .= ' (' . $gmt . ')<input type="hidden" name="timezone" value="' . $_SESSION['installer']['config']['timezone'] . '" />';
             } else {
                 $timezone = '<select name="timezone">'.$objCommon->getTimezoneOptions().'</select>';
             }
