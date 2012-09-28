@@ -2908,7 +2908,7 @@ class newsletter extends NewsletterLib
             $newsletterUserData,
             $NewsletterID
         );
-        LinkGenerator::parseTemplate($NewsletterBody_HTML);
+        LinkGenerator::parseTemplate($NewsletterBody_HTML, true);
 
         $NewsletterBody_TEXT = $this->ParseNewsletter(
             '',
@@ -2919,7 +2919,7 @@ class newsletter extends NewsletterLib
             $newsletterUserData,
             $NewsletterID
         );
-        LinkGenerator::parseTemplate($NewsletterBody_TEXT);
+        LinkGenerator::parseTemplate($NewsletterBody_TEXT, true);
 
         $mail = new phpmailer();
         if ($smtpAccount > 0) {
@@ -5484,8 +5484,9 @@ function MultiAction() {
                 $attrKey = 1;
                 $textKey = 2;
                 for ($i = 0; $i < $tagCount; $i++) {
-                    if (!preg_match("/href=[\"]http/i", $matches[$attrKey][$i])) {
-                       continue;
+                    if (!preg_match("/href=[\"]/i", $matches[$attrKey][$i])) {
+                        // we might have a placeholder link here, it will be parsed on send
+                        continue;
                     }
                     $rel = '';
                     $href = '';
@@ -5615,7 +5616,7 @@ function MultiAction() {
                         } else {
                             $newUrl->setParam('m', $UserId);
                         }
-                        $matches[$attrKey][$i] = preg_replace("/href=\"https?:\/\/[^\"]+\"/i", "href=\"".$newUrl->toString()."\"", $matches[$attrKey][$i]);
+                        $matches[$attrKey][$i] = preg_replace("/href=\"[^\"]+\"/i", "href=\"".$newUrl->toString()."\"", $matches[$attrKey][$i]);
                     }
                     $result = preg_replace("/".self::_prepareForRegExp($matches[$fullKey][$i])."/i", "<a ".$matches[$attrKey][$i].">".$matches[$textKey][$i]."</a>", $result, 1);
                 }
