@@ -11,7 +11,7 @@
  */
 
 $requiredPHPVersion = "5.3.0";
-$requiredMySQLVersion = "5.1";
+$requiredMySQLVersion = "5.0";
 $requiredGDVersion = "1.6";
 $dbType = "mysql";
 $defaultLanguage = "de";
