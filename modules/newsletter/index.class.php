@@ -994,6 +994,8 @@ class newsletter extends NewsletterLib
         }     
         $url = $objLink->fields['url'];
         
+        \LinkGenerator::parseTemplate($url, true);
+        
         if (intval($recipientId)) {
             // save feedback for valid user
             $query = "INSERT IGNORE INTO ".DBPREFIX."module_newsletter_email_link_feedback
