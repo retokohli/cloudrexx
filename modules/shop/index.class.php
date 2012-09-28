@@ -121,7 +121,8 @@ if (SettingDb::getValue('use_js_cart') === NULL) {
      */
     static function getPage($template)
     {
-//DBG::activate(DBG_ERROR_FIREPHP);
+//DBG::deactivate(DBG_LOG_FIREPHP);
+//DBG::activate(DBG_LOG_FILE);
         self::init();
         self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
         // PEAR Sigma template
@@ -191,6 +192,7 @@ if (SettingDb::getValue('use_js_cart') === NULL) {
                 self::login();
                 break;
             case 'paypalIpnCheck':
+                // OBSOLETE -- Handled by PaymentProcessing::checkIn() now
                 $objPaypal = new PayPal;
                 $objPaypal->ipnCheck();
                 exit;
@@ -3765,7 +3767,7 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
             && $_REQUEST['result'] < 0) die('');
         self::$objTemplate->setVariable($_ARRAYLANG);
         // Comment this for testing, so you can reuse the same account and cart
-        self::destroyCart();
+//        self::destroyCart();
         // Clear the Order ID instead, so you can do it again
         unset($_SESSION['shop']['order_id']);
         // Clear backup ID, avoid success() from being run again
