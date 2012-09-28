@@ -117,7 +117,7 @@ class frontendEditingLib {
         $objCx->setVariable('TXT_FRONTEND_EDITING_LOGIN', $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'], 'frontendEditing');
         $objCx->setVariable('TXT_FRONTEND_EDITING_TOOLBAR_EDIT', $_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_EDIT'], 'frontendEditing');
 
-        return '<a id="fe_edit_link" href="javascript:void(0)" onclick="fe_setToolbarVisibility(true); fe_loadToolbar(true);" accesskey="'.frontendEditingLib::ACCESS_KEY.'" title="[ALT + '.frontendEditingLib::ACCESS_KEY.'] '.$strLinkDescription.'">'.$strLinkDescription.'</a>';
+        return '<a id="fe_edit_link" href="javascript:void(0)" onclick="fe_setToolbarVisibility(true); fe_loadToolbar(true);" accesskey="'.frontendEditingLib::ACCESS_KEY.'" title="'.$strLinkDescription.'">'.$strLinkDescription.'</a>';
     }
 
     /**
