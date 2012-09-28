@@ -628,8 +628,7 @@ class newsletter extends NewsletterLib
 						$newstext = substr(ltrim(strip_tags($objNews->fields['newscontent'])), 0, 800);
 						$newstext .= "[....]";
 						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
-// TODO: use new URL-format
-						$newslink = $this->newsletterUri.ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET."/de/index.php?section=news&cmd=details&newsid=".$objNews->fields['newsid'];
+						$newslink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'detals', '', array('newsid' => $objNews->fields['newsid']));;
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {
 							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 						} else {
@@ -682,8 +681,7 @@ class newsletter extends NewsletterLib
 						$newstext = substr(ltrim(strip_tags($objNews->fields['newscontent'])), 0, 800);
 						$newstext .= "[....]";
 						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
-// TODO: use new URL-format
-						$newslink = $this->newsletterUri.ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET."/de/index.php?section=news&cmd=details&newsid=".$objNews->fields['newsid'];
+						$newslink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'detals', '', array('newsid' => $objNews->fields['newsid']));;
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {
 							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 						} else {
@@ -1190,21 +1188,7 @@ class newsletter extends NewsletterLib
 
         $arrTemplates = &$this->_getTemplates();
         // feedback counting
-        $arrLinks = array();
         $arrFeedback = array();
-        $objLinks = $objDatabase->SelectLimit("SELECT
-            tblMail.id,
-            COUNT(tblMailLink.id) AS link_count
-            FROM ".DBPREFIX."module_newsletter AS tblMail
-                INNER JOIN ".DBPREFIX."module_newsletter_email_link AS tblMailLink ON tblMailLink.email_id = tblMail.id
-            GROUP BY tblMail.id
-            ORDER BY status, id DESC", $_CONFIG['corePagingLimit'], $pos);
-        if ($objLinks !== false) {
-            while (!$objLinks->EOF) {
-                $arrLinks[$objLinks->fields['id']] = $objLinks->fields['link_count'];
-                $objLinks->MoveNext();
-            }
-        }
         $objFeedback = $objDatabase->SelectLimit("SELECT
             tblMail.id,
             COUNT(DISTINCT tblMailLinkFB.recipient_id,tblMailLinkFB.recipient_type) AS feedback_count
@@ -1243,9 +1227,9 @@ class newsletter extends NewsletterLib
                     'NEWSLETTER_MAIL_SENDER_NAME' => htmlentities($objResult->fields['sender_name'], ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_MAIL_SENDER_EMAIL' => htmlentities($objResult->fields['sender_email'], ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_MAIL_FEEDBACK' => $feedback,
-                    'NEWSLETTER_FEEDBACK_OVERVIEW' => sprintf($_ARRAYLANG['TXT_NEWSLETTER_FEEDBACK_OVERVIEW'], $recipientcount),
+                    'NEWSLETTER_FEEDBACK_OVERVIEW' => sprintf($_ARRAYLANG['TXT_NEWSLETTER_FEEDBACK_OVERVIEW'], $feedbackCount),
                     'NEWSLETTER_MAIL_SENT_DATE' => $objResult->fields['date_sent'] > 0 ? date(ASCMS_DATE_FORMAT_DATETIME, $objResult->fields['date_sent']) : '-',
-                    'NEWSLETTER_MAIL_FORMAT' => $objResult->fields['format'],
+                    //'NEWSLETTER_MAIL_FORMAT' => $objResult->fields['format'],
                     'NEWSLETTER_MAIL_TEMPLATE' => htmlentities($arrTemplates[$objResult->fields['template']]['name'], ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_MAIL_DATE' => date(ASCMS_DATE_FORMAT_DATETIME, $objResult->fields['date_create']),
                     'NEWSLETTER_MAIL_COUNT' => $objResult->fields['count'],
@@ -3619,8 +3603,7 @@ class newsletter extends NewsletterLib
 						$newstext = substr(ltrim(strip_tags($objNews->fields['newscontent'])), 0, 800);
 						$newstext .= "[....]";
 						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
-// TODO: use new URL-format
-						$newslink = /*$this->newsletterUri.*/ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET."/de/index.php?section=news&cmd=details&newsid=".$objNews->fields['newsid'];
+						$newslink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'detals', '', array('newsid' => $objNews->fields['newsid']));;
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {
 							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 						} else {
@@ -3675,8 +3658,7 @@ class newsletter extends NewsletterLib
 						$newstext = substr(ltrim(strip_tags($objNews->fields['newscontent'])), 0, 800);
 						$newstext .= "[....]";
 						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
-// TODO: use new URL-format
-						$newslink = $this->newsletterUri.ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET."/de/index.php?section=news&cmd=details&newsid=".$objNews->fields['newsid'];
+						$newslink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'detals', '', array('newsid' => $objNews->fields['newsid']));;
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {
 							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 						} else {
