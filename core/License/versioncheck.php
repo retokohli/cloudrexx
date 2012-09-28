@@ -53,6 +53,10 @@ if (!$objUser->login(true)) {
     return;
 }
 
+if (isset($_GET['silent']) && $_GET['silent'] == 'true') {
+    return;
+}
+
 // show info
 $lang = 'de';
 if (isset($_GET['lang'])) {

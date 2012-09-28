@@ -1890,6 +1890,7 @@ class Installer
             $sessionObj->cmsSessionUserUpdate($userId);
 
             $_GET['force'] = 'true';
+            $_GET['silent'] = 'true';
             require_once($documentRoot.'/core/License/versioncheck.php');
         }
     }
