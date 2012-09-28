@@ -2611,12 +2611,18 @@ die("Shop::processRedirect(): This method is obsolete!");
         }
         // Registered Customers are okay now
         if (self::$objCustomer) return $status;
-        if (strlen(trim($_SESSION['shop']['password'])) < 6) {
+        if (!User::isValidPassword(trim($_SESSION['shop']['password']))) {
             $status = false;
-            Message::error($_ARRAYLANG['TXT_INVALID_PASSWORD']);
+            global $objInit;
+            $objInit->loadLanguageData('access');
+            Message::error(AccessLib::getPasswordInfo());
         }
         if (!FWValidator::isEmail($_SESSION['shop']['email'])) {
-            return Message::error($_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS']);
+            $status = false;
+            Message::error($_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS']);
+        }
+        if (!$status) {
+            return false;
         }
         // Ignore "unregistered" Customers.  These will silently be updated
         if (Customer::getUnregisteredByEmail($_SESSION['shop']['email'])) {
@@ -2653,6 +2659,9 @@ die("Shop::processRedirect(): This method is obsolete!");
         }
         if (!isset($_SESSION['shop']['agb'])) {
             $_SESSION['shop']['agb'] = '';
+        }
+        if (!isset($_SESSION['shop']['cancellation_terms'])) {
+            $_SESSION['shop']['cancellation_terms'] = '';
         }
         $page_repository = Env::em()->getRepository('Cx\Model\ContentManager\Page');
         if ($page_repository->existsModuleCmd(
@@ -2716,16 +2725,15 @@ die("Shop::processRedirect(): This method is obsolete!");
         }
         if (empty($_SESSION['shop']['paymentId']))
             $_SESSION['shop']['paymentId'] = null;
-
         // hide currency navbar
         self::$show_currency_navbar = false;
-
         if (isset($_POST['customer_note']))
             $_SESSION['shop']['note'] =
                 trim(strip_tags(contrexx_input2raw($_POST['customer_note'])));
         if (isset($_POST['agb']))
             $_SESSION['shop']['agb'] = Html::ATTRIBUTE_CHECKED;
-
+        if (isset($_POST['cancellation_terms']))
+            $_SESSION['shop']['cancellation_terms'] = Html::ATTRIBUTE_CHECKED;
         // if shipperId is not set, there is no use in trying to determine a shipment_price
         if (isset($_SESSION['shop']['shipperId'])) {
             $shipmentPrice = self::_calculateShipmentPrice(
@@ -3048,7 +3056,6 @@ right after the customer logs in!
                 'SHOP_TOTAL_WEIGHT' => Weight::getWeightString(Cart::get_weight()),
             ));
         }
-
         if (!Cart::needs_shipment()) {
             unset($_SESSION['shop']['shipperId']);
         } else {
@@ -3058,7 +3065,6 @@ right after the customer logs in!
                 'SHOP_SHIPMENT_MENU' => self::_getShipperMenu(),
             ));
         }
-
         if (   Cart::get_price()
             || $_SESSION['shop']['shipment_price']
             || $_SESSION['shop']['vat_price']) {
@@ -3068,7 +3074,6 @@ right after the customer logs in!
                 'SHOP_PAYMENT_MENU' => self::get_payment_menu(),
             ));
         }
-
         if (empty($_SESSION['shop']['coupon_code'])) {
             $_SESSION['shop']['coupon_code'] = '';
         }
@@ -3098,6 +3103,7 @@ right after the customer logs in!
                   $_SESSION['shop']['grand_total_price']),
             'SHOP_CUSTOMERNOTE' => $_SESSION['shop']['note'],
             'SHOP_AGB' => $_SESSION['shop']['agb'],
+            'SHOP_CANCELLATION_TERMS_CHECKED' => $_SESSION['shop']['cancellation_terms'],
         ));
         if (Vat::isEnabled()) {
             self::$objTemplate->setVariable(array(
@@ -3371,7 +3377,12 @@ die("Trouble! No Shipper ID defined");
                 self::$objCustomer->username($_SESSION['shop']['username']);
                 self::$objCustomer->email($_SESSION['shop']['email']);
 // TODO: Maybe this is unset?
-                self::$objCustomer->password($_SESSION['shop']['password']);
+                if (!self::$objCustomer->password($_SESSION['shop']['password'])) {
+                    Message::error($_ARRAYLANG['TXT_INVALID_PASSWORD']);
+                    HTTP::redirect(CONTREXX_SCRIPT_PATH.
+// TODO: Use the alias, if any
+                        '?section=shop'.MODULE_INDEX.'&cmd=account');
+                }
                 self::$objCustomer->active(empty($_SESSION['shop']['dont_register']));
                 $new_customer = true;
             }
@@ -3429,7 +3440,9 @@ die("Trouble! No Shipper ID defined");
             // Fails for "unregistered" Customers!
             if (self::$objCustomer->auth(
                 $_SESSION['shop']['username'], $_SESSION['shop']['password'])) {
-                self::_authenticate();
+                if (!self::_authenticate()) {
+                    return Message::error($_ARRAYLANG['TXT_SHOP_CUSTOMER_ERROR_STORING']);
+                }
             }
         }
 //die();
