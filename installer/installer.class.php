@@ -528,33 +528,6 @@ class Installer
             'MEMORY_LIMIT_CLASS'    => $memoryLimit['result'] ? 'successful' : 'failed',
         ));
 
-        // news syndication status
-        if ($_CONFIG['coreCmsEdition'] == 'General' || $_CONFIG['coreCmsEdition'] == 'Standard' || $_CONFIG['coreCmsEdition'] == 'Premium') {
-            $allowUrlFopen = $objCommon->checkRSSSupport();
-            if (!$allowUrlFopen) {
-                $this->arrStatusMsg['config'] .= $_ARRLANG['TXT_ALLOW_URL_FOPEN_FOR_RSS_REQUIRED']."<br />";
-            }
-
-            $objTpl->setVariable(array(
-                'ALLOW_URL_FOPEN'       => $allowUrlFopen ? $_ARRLANG['TXT_ON'] : $_ARRLANG['TXT_OFF'],
-                'ALLOW_URL_FOPEN_CLASS' => $allowUrlFopen ? "successful" : "failed"
-            ));
-
-            // set config error message
-            if (!empty($this->arrStatusMsg['config'])) {
-                $objTpl->setVariable(array(
-                    'CONFIG_ERROR_MSG' => $this->arrStatusMsg['config']
-                ));
-                $objTpl->parse('configErrorMsg');
-            } else {
-                $objTpl->hideBlock('configErrorMsg');
-            }
-
-            $objTpl->parse('allowUrlFopen');
-        } else {
-            $objTpl->hideBlock('allowUrlFopen');
-        }
-
         // set php error message
         if (!empty($this->arrStatusMsg['php'])) {
             $objTpl->setVariable(array(
@@ -1819,7 +1792,7 @@ class Installer
     }
 
     function _showTermination() {
-        global $objTpl, $_ARRLANG, $_CONFIG, $objCommon, $basePath, $documentRoot;
+        global $objTpl, $_ARRLANG, $_CONFIG, $objCommon, $basePath, $documentRoot, $sessionObj;
 
         // load template file
         $objTpl->addBlockfile('CONTENT', 'CONTENT_BLOCK', "termination.html");
@@ -1878,12 +1851,14 @@ class Installer
             // this is required to allow the License system (versioncheck.php) to update
             // the license section template
             $documentRoot = dirname($basePath);
-            //require_once($documentRoot.'/core/API.php');                             // needed for getDatabaseObject()
-            //require_once($documentRoot.'/core/session.class.php');
-            //if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
+            require_once($documentRoot.'/config/settings.php');              // needed for configuration.php
+            require_once($documentRoot.'/config/configuration.php');         // needed for API
+            require_once($documentRoot.'/core/API.php');                     // needed for getDatabaseObject()
+            require_once($documentRoot.'/core/session.class.php');
+            if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
 
             $userId = 1;
-            //$sessionObj->cmsSessionUserUpdate($userId);
+            $sessionObj->cmsSessionUserUpdate($userId);
 
             $_GET['force'] = 'true';
             require_once($documentRoot.'/core/License/versioncheck.php');
@@ -1906,5 +1881,3 @@ class Installer
 
     }
 }
-?>
-
