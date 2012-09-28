@@ -345,6 +345,8 @@ class FileBrowser {
             foreach ($objContentTree->getTree() as $arrPage) {
                 $url = "'" . '[[' . \Cx\Model\ContentManager\Page::PLACEHOLDER_PREFIX;
 
+// TODO: This only works for regular application pages. Pages of type fallback that are linked to an application
+//       will be parsed using their node-id ({NODE_<ID>})
                 if ($arrPage['type'] == \Cx\Model\ContentManager\Page::TYPE_APPLICATION) {
                     $url .= $arrPage['modulename'];
                     if (!empty($arrPage['cmd'])) {
@@ -360,7 +362,7 @@ class FileBrowser {
                 if ($this->_frontendLanguageId != $_FRONTEND_LANGID ||
                         (isset($_GET['alwaysReturnLanguage']) &&
                         $_GET['alwaysReturnLanguage'] == 'true')) {
-                    $url .= '_' . $this->_frontentLanguageId;
+                    $url .= '_' . $this->_frontendLanguageId;
                 }
                 $url .= "]]'";
                 
