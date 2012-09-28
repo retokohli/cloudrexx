@@ -82,16 +82,24 @@ class PayPal
     {
         global $_ARRAYLANG;
 
-        $host = ASCMS_PROTOCOL.'://'.$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET;
-        $return = $host.'/index.php?section=shop'.MODULE_INDEX.
-            '&amp;cmd=success&amp;handler=paypal&amp;result=1&amp;order_id='.
-            $order_id;
-        $cancel_return = $host.'/index.php?section=shop'.MODULE_INDEX.
-            '&amp;cmd=success&amp;handler=paypal&amp;result=2&amp;order_id='.
-            $order_id;
-        $notify_url = $host.'/index.php?section=shop'.MODULE_INDEX.
-            '&amp;cmd=success&amp;handler=paypal&amp;result=-1&amp;order_id='.
-            $order_id;
+        $return = \Cx\Core\Routing\Url::fromModuleAndCmd(
+            'shop', 'success', FRONTEND_LANG_ID, array(
+                'handler' => 'paypal',
+                'result' => '1',
+                'order_id' => $order_id,
+            ))->toString();
+        $cancel_return = \Cx\Core\Routing\Url::fromModuleAndCmd(
+            'shop', 'success', FRONTEND_LANG_ID, array(
+                'handler' => 'paypal',
+                'result' => '2',
+                'order_id' => $order_id,
+            ))->toString();
+        $notify_url = \Cx\Core\Routing\Url::fromModuleAndCmd(
+            'shop', 'success', FRONTEND_LANG_ID, array(
+                'handler' => 'paypal',
+                'result' => '-1',
+                'order_id' => $order_id,
+            ))->toString();
         $retval = (_PAYPAL_DEBUG == 0
             ? '<script type="text/javascript">
 // <![CDATA[
