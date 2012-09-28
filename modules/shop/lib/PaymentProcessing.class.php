@@ -521,7 +521,6 @@ DBG::log("Yellowpay Error: $error");
                 return (boolean)$id;
             case 'paypal':
                 if ($result < 0) {
-                    $paypalAccountEmail = SettingDb::getValue('paypal_account_email');
                     $order_id = (isset($_SESSION['shop']['order_id'])
                         ? $_SESSION['shop']['order_id']
                         : (isset ($_SESSION['shop']['order_id_checkin'])
@@ -541,7 +540,8 @@ DBG::log("Yellowpay Error: $error");
                     $currency_code = Currency::getCodeById($currency_id);
                     $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
                     return PayPal::ipnCheck($amount, $currency_code,
-                        $order_id, $email, $customer_email);
+                        $order_id, $customer_email,
+                        SettingDb::getValue('paypal_account_email'));
                 }
             case 'yellowpay':
                 $passphrase = SettingDb::getValue('postfinance_hash_signature_out');
