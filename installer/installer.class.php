@@ -1792,7 +1792,7 @@ class Installer
     }
 
     function _showTermination() {
-        global $objTpl, $_ARRLANG, $_CONFIG, $objCommon, $basePath, $documentRoot, $sessionObj;
+        global $objTpl, $_ARRLANG, $_CONFIG, $_DBCONFIG, $objCommon, $basePath, $sessionObj, $objInit, $objDatabse, $objDatabase, $documentRoot;
 
         // load template file
         $objTpl->addBlockfile('CONTENT', 'CONTENT_BLOCK', "termination.html");
@@ -1846,15 +1846,31 @@ class Installer
             $objTpl->parse('termination');
 
             @session_destroy();
-
+            
             // we will now initialize a new session and will login the administrator (userID = 1).
             // this is required to allow the License system (versioncheck.php) to update
             // the license section template
+            // We might have some overhead, since versioncheck.php does more or less the same again
             $documentRoot = dirname($basePath);
+            require_once($documentRoot.'/core/Env.class.php');               // needed for FileSystem
             require_once($documentRoot.'/config/settings.php');              // needed for configuration.php
             require_once($documentRoot.'/config/configuration.php');         // needed for API
-            require_once($documentRoot.'/core/API.php');                     // needed for getDatabaseObject()
+            require_once($documentRoot.'/core/API.php');                             // needed for getDatabaseObject()
+            require_once($documentRoot.'/lib/FRAMEWORK/User/User_Setting_Mail.class.php');
+            require_once($documentRoot.'/lib/FRAMEWORK/User/User_Setting.class.php');
+            require_once($documentRoot.'/lib/FRAMEWORK/User/User_Profile_Attribute.class.php');
+            require_once($documentRoot.'/lib/FRAMEWORK/User/User_Profile.class.php');
+            require_once($documentRoot.'/lib/FRAMEWORK/User/UserGroup.class.php');
+            require_once($documentRoot.'/lib/FRAMEWORK/User/User.class.php');
+            require_once($documentRoot.'/lib/FRAMEWORK/FWUser.class.php');
+            require_once($documentRoot.'/lib/PEAR/HTTP/Request2.php');
+            require_once($documentRoot.'/lib/DBG.php');
+            require_once($documentRoot.'/core/Init.class.php');
+            require_once($documentRoot.'/core/settings.class.php');
             require_once($documentRoot.'/core/session.class.php');
+            require_once($documentRoot.'/core/ClassLoader/ClassLoader.class.php');
+            $objDatabase = getDatabaseObject($strErrMessage, true);
+            $objInit = new InitCMS('backend', null);
             if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
 
             $userId = 1;
