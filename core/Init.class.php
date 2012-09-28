@@ -953,6 +953,6 @@ class InitCMS
      */
     public function hasCustomContent()
     {
-        return strlen($this->customContentTemplate) > 0 ? true : false;
+        return !empty($this->customContentTemplate) && strlen($this->customContentTemplate) > 0 ? true : false;
     }
 }
