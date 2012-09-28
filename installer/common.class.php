@@ -1204,7 +1204,7 @@ class CommonFunctions
                 $statusMsg .= $_ARRLANG['TXT_COULD_NOT_DEACTIVATE_UNUSED_LANGUAGES']."<br />";
             }
             
-            // set default language
+            // activate german and set it to default
             $query = '
                 UPDATE `'.$_SESSION['installer']['config']['dbTablePrefix'].'languages`
                    SET `frontend` = 1, backend = 1, `is_default` = "true"
@@ -1214,9 +1214,9 @@ class CommonFunctions
                 $statusMsg .= $_ARRLANG['TXT_COULD_NOT_ACTIVATE_DEFAULT_LANGUAGE']."<br />";
             }
 
-            // activate current language
-            $query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."languages`
-                         SET `frontend` = '1', `backend` = '1' WHERE `id` = ".$userLangId;
+            // activate english
+            $query = 'UPDATE `'.$_SESSION['installer']['config']['dbTablePrefix'].'languages`
+                         SET `frontend` = "1", `backend` = "1" WHERE `lang` = "en"';
             if (!@$objDb->Execute($query)) {
                 $statusMsg .= $_ARRLANG['TXT_COULD_NOT_ACTIVATE_CURRENT_LANGUAGE']."<br />";
             }
