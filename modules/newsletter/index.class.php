@@ -987,4 +987,3 @@ class newsletter extends NewsletterLib
 
 }
 
-?>

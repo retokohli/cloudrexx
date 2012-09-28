@@ -3146,7 +3146,7 @@ class newsletter extends NewsletterLib
 
         // lets prepare all links for tracker before we replace placeholders
 // TODO: migrate tracker to new URL-format
-        //$content_text = $this->_prepareNewsletterLinksForSend($NewsletterID, $content_text, ($userData['type'] == 'access' ? $userData['id'] : $userData['email']));
+        $content_text = $this->_prepareNewsletterLinksForSend($NewsletterID, $content_text, ($userData['type'] == 'access' ? $userData['id'] : $userData['email']));
 
 // TODO: Both $arrRecipientTitles and $title are never used
 //        $arrRecipientTitles = &$this->_getRecipientTitles();
@@ -5539,6 +5539,7 @@ function MultiAction() {
                     $objLinks->MoveNext();
                 }
             }
+
             // replace links
             if (count($arrLinks) > 0) {
                 $tagCount = count($matches[0]);
