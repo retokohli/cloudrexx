@@ -1877,12 +1877,15 @@ class Installer
             // we will now initialize a new session and will login the administrator (userID = 1).
             // this is required to allow the License system (versioncheck.php) to update
             // the license section template
-            if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
+            $documentRoot = dirname($basePath);
+            //require_once($documentRoot.'/core/API.php');                             // needed for getDatabaseObject()
+            //require_once($documentRoot.'/core/session.class.php');
+            //if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
+
             $userId = 1;
-            $sessionObj->cmsSessionUserUpdate($userId);
+            //$sessionObj->cmsSessionUserUpdate($userId);
 
             $_GET['force'] = 'true';
-            $documentRoot = dirname($basePath);
             require_once($documentRoot.'/core/License/versioncheck.php');
         }
     }
