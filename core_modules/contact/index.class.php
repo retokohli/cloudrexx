@@ -426,12 +426,23 @@ class Contact extends ContactLib
      * Inits the uploader when displaying a contact form.
      */
     protected function initUploader() {
-// TODO: uploader gets initialized every time, no matter if he'll be used or required
         try {
             //init the uploader       
             JS::activate('cx'); //the uploader needs the framework
             $f = UploadFactory::getInstance();
         
+            /**
+            * Name of the upload instance
+            */
+            $uploaderInstanceName = 'exposed_combo_uploader';
+
+            /**
+            * jQuery selector of the HTML-element where the upload folder-widget shall be put in
+            */
+            $uploaderFolderWidgetContainer = '#contactFormField_uploadWidget';
+
+
+
             //retrieve temporary location for uploaded files
             $tup = self::getTemporaryUploadPath($this->submissionId);
 
@@ -454,14 +465,14 @@ class Contact extends ContactLib
             //initialize the widget displaying the folder contents   
             $folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2]);
 
-            $this->objTemplate->setVariable('UPLOAD_WIDGET_CODE',$folderWidget->getXHtml('#contactFormField_uploadWidget','uploadWidget'));
         
             $uploader = $f->newUploader('exposedCombo');       
-            $uploader->setJsInstanceName('exposed_combo_uploader');
+            $uploader->setJsInstanceName($uploaderInstanceName);
             $uploader->setFinishedCallback(array(ASCMS_CORE_MODULE_PATH.'/contact/index.class.php','Contact','uploadFinished'));
             $uploader->setData($this->submissionId);
 
             $this->objTemplate->setVariable('UPLOADER_CODE',$uploader->getXHtml());
+            $this->objTemplate->setVariable('UPLOAD_WIDGET_CODE',$folderWidget->getXHtml($uploaderFolderWidgetContainer, 'uploadWidget'));
         }
         catch (Exception $e) {
             $this->objTemplate->setVariable('UPLOADER_CODE','<!-- failed initializing uploader, exception '.get_class($e).' with message "'.$e->getMessage().'" -->');            
@@ -912,6 +923,9 @@ class Contact extends ContactLib
                     default:
                         if ($field['check_type']) {
                             $validationRegex = "#".$this->arrCheckTypes[$field['check_type']]['regex'] ."#";
+                            if (!empty($this->arrCheckTypes[$field['check_type']]['modifiers'])) {
+                                $validationRegex .= $this->arrCheckTypes[$field['check_type']]['modifiers'];
+                            }
                         }
                         $value = isset($arrFields['data'][$fieldId]) ? $arrFields['data'][$fieldId] : '';
                         break;
