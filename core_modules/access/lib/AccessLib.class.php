@@ -112,7 +112,7 @@ class AccessLib
      * HTML_Template_Sigma template block shop_customer_profile_attribute_firstname
      * in the case of the profile attribute firstname.
      * Defaults to 'access_profile_attribute'
-     * 
+     *
      * @param string    HTML_Template_Sigma template block prefix to be used
      * @see AccessLib::parseAttribute()
      */
@@ -131,7 +131,7 @@ class AccessLib
      * variable SHOP_PROFILE_ATTRIBUTE_FIRSTNAME in the case of the profile
      * attribute firstname.
      * Defaults to 'ACCESS_'
-     * 
+     *
      * @param string    HTML_Template_Sigma variable prefix to be used
      * @see AccessLib::parseAttribute()
      */
@@ -594,7 +594,7 @@ class AccessLib
                         continue 2;
                     }
                     break;
-                
+
                 case 'frontend_language':
                     if (count(FWLanguage::getActiveFrontendLanguages()) == 1) {
                         if ($this->_objTpl->blockExists('access_user_'.$attributeId)) {
@@ -1951,6 +1951,24 @@ JSaccessValidatePrimaryGroupAssociation
 
         if ($this->_objTpl->blockExists('newsletter_lists')) $this->_objTpl->touchBlock('newsletter_lists');
     }
-}
 
-?>
+
+    /**
+     * Returns the password information string
+     *
+     * The string returned depends on the password complexity setting
+     * @return  string          The password complexity information
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    public static function getPasswordInfo()
+    {
+        global $_CONFIG, $_ARRAYLANG;
+
+        if (   isset($_CONFIG['passwordComplexity'])
+            && $_CONFIG['passwordComplexity'] == 'on') {
+            return $_ARRAYLANG['TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS_WITH_COMPLEXITY'];
+        }
+        return $_ARRAYLANG['TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS'];
+    }
+
+}
