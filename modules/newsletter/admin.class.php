@@ -66,12 +66,11 @@ class newsletter extends NewsletterLib
         if (!isset($_REQUEST['standalone'])) {            
             $objTemplate->setVariable(
                 "CONTENT_NAVIGATION",
-                "<a href='index.php?cmd=newsletter&amp;act=mails' class='".(($this->act == '' || $this->act == 'mails') ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CAMPAIGNS']."</a>
-                <a href='index.php?cmd=newsletter&amp;act=lists' class='".($this->act == 'lists' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_LISTS']."</a>
-                <a href='index.php?cmd=newsletter&amp;act=templates' class='".($this->act == 'templates' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES']."</a>
-                <a href='index.php?cmd=newsletter&amp;act=users' class='".($this->act == 'users' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_RECIPIENTS']."</a>
-                <a href='index.php?cmd=newsletter&amp;act=news' class='".($this->act == 'news' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_NEWS']."</a>
-                <a href='index.php?cmd=newsletter&amp;act=dispatch' class='".($this->act == 'dispatch' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
+                "<a href='index.php?cmd=newsletter&amp;act=mails' class='".(($this->act == '' || $this->act == 'mails') ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CAMPAIGNS']."</a>"
+                .(Permission::checkAccess(172, 'static', true) ? "<a href='index.php?cmd=newsletter&amp;act=lists' class='".($this->act == 'lists' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_LISTS']."</a>" : '')
+                .(Permission::checkAccess(174, 'static', true) ? "<a href='index.php?cmd=newsletter&amp;act=users' class='".($this->act == 'users' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_RECIPIENTS']."</a>" : '')
+                .(Permission::checkAccess(175, 'static', true) ? "<a href='index.php?cmd=newsletter&amp;act=news' class='".($this->act == 'news' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_NEWS']."</a>" : '')
+                .(Permission::checkAccess(176, 'static', true) ? "<a href='index.php?cmd=newsletter&amp;act=dispatch' class='".(in_array($this->act, array('dispatch', 'templates', 'interface', 'confightml', 'activatemail', 'confirmmail', 'notificationmail', 'system', 'tpledit')) ? 'active' : '')."'>".$_ARRAYLANG['TXT_SETTINGS']."</a>" : ''));
         }
         $months = explode(',', $_ARRAYLANG['TXT_NEWSLETTER_MONTHS_ARRAY']);
         $i = 0;
@@ -97,101 +96,132 @@ class newsletter extends NewsletterLib
 
         switch ($_GET['act']) {
             case "lists":
+                Permission::checkAccess(172, 'static');
                 $this->_lists();
                 break;
             case "editlist":
+                Permission::checkAccess(172, 'static');
                 $this->_editList();
                 break;
             case "flushList":
+                Permission::checkAccess(172, 'static');
                 $this->_flushList();
                 $this->_lists();
                 break;
             case "changeListStatus":
+                Permission::checkAccess(172, 'static');
                 $this->_changeListStatus();
                 $this->_lists();
                 break;
             case "deleteList":
+                Permission::checkAccess(172, 'static');
                 $this->_deleteList();
                 $this->_lists();
                 break;
             case "gethtml":
+                Permission::checkAccess(172, 'static');
                 $this->_getListHTML();
                 break;
             case "mails":
+                Permission::checkAccess(171, 'static');
                 $this->_mails();
                 break;
             case "deleteMail":
+                Permission::checkAccess(171, 'static');
                 $this->_deleteMail();
                 break;
             case "copyMail":
+                Permission::checkAccess(171, 'static');
                 $this->_copyMail();
                 break;
             case "editMail":
+                Permission::checkAccess(171, 'static');
                 $this->_editMail();
                 break;
             case "sendMail":
+                Permission::checkAccess(171, 'static');
                 $this->_sendMailPage();
                 break;
             case "send":
+                Permission::checkAccess(171, 'static');
                 $this->_sendMail();
                 break;
             case "newsletter":
+                Permission::checkAccess(152, 'static');
                 $this->newsletterOverview();
                 break;
             case "news":
+                Permission::checkAccess(175, 'static');
                 $this->_getNewsPage();
                 break;
             case "newspreview":
+                Permission::checkAccess(175, 'static');
                 $this->_getNewsPreviewPage();
                 break;
             case "users":
+                Permission::checkAccess(174, 'static');
                 $this->_users();
                 break;
             case "config":
+                Permission::checkAccess(176, 'static');
                 $this->configOverview();
                 break;
             case "system":
+                Permission::checkAccess(176, 'static');
                 $this->ConfigSystem();
                 break;
             case "editusersort":
+                Permission::checkAccess(174, 'static');
                 $this->edituserSort();
                 break;
             case "dispatch":
+                Permission::checkAccess(176, 'static');
                 $this->ConfigDispatch();
                 break;
             case "confightml":
+                Permission::checkAccess(176, 'static');
                 $this->ConfigHTML();
                 break;
             case "interface":
+                Permission::checkAccess(176, 'static');
                 $this->interfaceSettings();
                 break;            
             case "templates":
+                Permission::checkAccess(176, 'static');
                 $this->_templates();
                 break;
             case "tpledit":
+                Permission::checkAccess(176, 'static');
                 $this->_editTemplate();
                 break;
             case "tpldel":
+                Permission::checkAccess(176, 'static');
                 $this->delTemplate();
                 $this->_templates();
                 break;
             case "confirmmail":
+                Permission::checkAccess(176, 'static');
                 $this->ConfirmMail();
                 break;
             case "notificationmail":
+                Permission::checkAccess(176, 'static');
                 $this->NotificationMail();
                 break;
             case "activatemail":
+                Permission::checkAccess(176, 'static');
                 $this->ActivateMail();
                 break;
             case "update":
+                Permission::checkAccess(171, 'static');
                 $this->_update();
                 break;
             case "deleteInactive":
+                Permission::checkAccess(174, 'static');
                 $this->_deleteInactiveRecipients();
                 $this->_users();
                 break;
             case "feedback":
+                Permission::checkAccess(171, 'static');
                 if (isset($_GET['id'])) {
                     $this->_showEmailFeedbackAnalysis();
                     break;
@@ -204,6 +234,7 @@ class newsletter extends NewsletterLib
                     break;
                 }
             default:
+                Permission::checkAccess(152, 'static');
                 $this->_mails();
                 //$this->overview();
                 break;
@@ -804,7 +835,7 @@ class newsletter extends NewsletterLib
                 if ($objResult->RecordCount() == 1) {
                     $mailSubject = $objResult->fields['subject'];
                     $mailTemplate = $objResult->fields['template'];
-                    $mailHtmlContent = $objResult->fields['content'];
+                    $mailHtmlContent = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $objResult->fields['content']);
                     $mailPriority = $objResult->fields['priority'];
                     $mailSenderMail = $objResult->fields['sender_email'];
                     $mailSenderName = $objResult->fields['sender_name'];
@@ -894,7 +925,7 @@ class newsletter extends NewsletterLib
             'NEWSLETTER_MAIL_ATTACHMENT_BOX' => $attachmentNr > 0 ? 'block' : 'none',
         ));
 
-        if ($mailId > 0 && $mailSendDate > 0) {
+        if (!$copy && $mailId > 0 && $mailSendDate > 0) {
             $this->_objTpl->touchBlock('associatedListToolTip');
             $this->_objTpl->touchBlock('associatedGroupToolTip');
             
@@ -1121,7 +1152,10 @@ class newsletter extends NewsletterLib
 
         $this->_objTpl->setVariable(array(
             'TXT_NEWSLETTER_SUBJECT' => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
+            'TXT_NEWSLETTER_NAME_OF_EMAIL_CAMPAIGN' => $_ARRAYLANG['TXT_NEWSLETTER_NAME_OF_EMAIL_CAMPAIGN'],
+            'TXT_NEWSLETTER_STATS' => $_ARRAYLANG['TXT_NEWSLETTER_STATS'],
             'TXT_NEWSLETTER_EMAIL_CAMPAIGNS' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CAMPAIGNS'],
+            'TXT_NEWSLETTER_OVERVIEW' => $_ARRAYLANG['TXT_NEWSLETTER_OVERVIEW'],
             'TXT_NEWSLETTER_SENT' => $_ARRAYLANG['TXT_NEWSLETTER_SENT'],
             'TXT_NEWSLETTER_FEEDBACK' => $_ARRAYLANG['TXT_NEWSLETTER_FEEDBACK'],
             'TXT_NEWSLETTER_SENDER' => $_ARRAYLANG['TXT_NEWSLETTER_SENDER'],
@@ -1134,6 +1168,7 @@ class newsletter extends NewsletterLib
             'TXT_NEWSLETTER_WITH_SELECTED' => $_ARRAYLANG['TXT_NEWSLETTER_WITH_SELECTED'],
             'TXT_NEWSLETTER_DELETE' => $_ARRAYLANG['TXT_NEWSLETTER_DELETE'],
             'TXT_NEWSLETTER_CREATE_NEW_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_CREATE_NEW_EMAIL'],
+            'TXT_NEWSLETTER_CREATE_NEW_EMAIL_WITH_NEWS' => $_ARRAYLANG['TXT_NEWSLETTER_CREATE_NEW_EMAIL_WITH_NEWS'],
             'TXT_NEWSLETTER_CONFIRM_DELETE_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_DELETE_MAIL'],
             'TXT_NEWSLETTER_CANNOT_UNDO_OPERATION' => $_ARRAYLANG['TXT_NEWSLETTER_CANNOT_UNDO_OPERATION'],
             'TXT_NEWSLETTER_CONFIRM_DELETE_CHECKED_EMAILS' => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_DELETE_CHECKED_EMAILS']
@@ -1144,7 +1179,6 @@ class newsletter extends NewsletterLib
             'TXT_NEWSLETTER_MODIFY_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_EMAIL'],            
             'TXT_NEWSLETTER_COPY_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_COPY_EMAIL'],
             'TXT_NEWSLETTER_DELETE_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_DELETE_EMAIL'],
-            'TXT_NEWSLETTER_FEEDBACK_OVERVIEW' => $_ARRAYLANG['TXT_NEWSLETTER_FEEDBACK_OVERVIEW']
         ));
 
         $objResultCount = $objDatabase->SelectLimit("SELECT COUNT(1) AS mail_count FROM ".DBPREFIX."module_newsletter", 1);
@@ -1173,7 +1207,7 @@ class newsletter extends NewsletterLib
         }
         $objFeedback = $objDatabase->SelectLimit("SELECT
             tblMail.id,
-            COUNT(tblMailLinkFB.id) AS feedback_count
+            COUNT(DISTINCT tblMailLinkFB.recipient_id,tblMailLinkFB.recipient_type) AS feedback_count
             FROM ".DBPREFIX."module_newsletter AS tblMail
                 INNER JOIN ".DBPREFIX."module_newsletter_email_link_feedback AS tblMailLinkFB ON tblMailLinkFB.email_id = tblMail.id
             GROUP BY tblMail.id
@@ -1199,26 +1233,28 @@ class newsletter extends NewsletterLib
         if ($objResult !== false) {
             $arrMailRecipientCount = $this->_getMailRecipientCount(NULL, $_CONFIG['corePagingLimit'], $pos);
             while (!$objResult->EOF) {
-                $linkCount = isset($arrLinks[$objResult->fields['id']]) ? $arrLinks[$objResult->fields['id']] : 0;
                 $feedbackCount = isset($arrFeedback[$objResult->fields['id']]) ? $arrFeedback[$objResult->fields['id']] : 0;
-                $feedback = ($objResult->fields['count'] > 0 && $linkCount > 0) ? round(100 / ($objResult->fields['count'] * $linkCount) * $feedbackCount) : 0;
+                $feedbackStrFormat = '%1$s (%2$s%%)';
+                $feedbackPercent = ($objResult->fields['count'] > 0 && $feedbackCount  > 0) ? round(100 / $objResult->fields['count'] * $feedbackCount) : 0;
+                $feedback = sprintf($feedbackStrFormat, $feedbackCount, $feedbackPercent);
                 $this->_objTpl->setVariable(array(
                     'NEWSLETTER_MAIL_ROW_CLASS' => $rowNr % 2 == 1 ? 'row1' : 'row2',
                     'NEWSLETTER_MAIL_SUBJECT' => htmlentities($objResult->fields['subject'], ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_MAIL_SENDER_NAME' => htmlentities($objResult->fields['sender_name'], ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_MAIL_SENDER_EMAIL' => htmlentities($objResult->fields['sender_email'], ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_MAIL_FEEDBACK' => $feedback,
-                    'NEWSLETTER_MAIL_SENT_DATE' => $objResult->fields['date_sent'] > 0 ? date(ASCMS_DATE_FORMAT, $objResult->fields['date_sent']) : '-',
+                    'NEWSLETTER_FEEDBACK_OVERVIEW' => sprintf($_ARRAYLANG['TXT_NEWSLETTER_FEEDBACK_OVERVIEW'], $recipientcount),
+                    'NEWSLETTER_MAIL_SENT_DATE' => $objResult->fields['date_sent'] > 0 ? date(ASCMS_DATE_FORMAT_DATETIME, $objResult->fields['date_sent']) : '-',
                     'NEWSLETTER_MAIL_FORMAT' => $objResult->fields['format'],
                     'NEWSLETTER_MAIL_TEMPLATE' => htmlentities($arrTemplates[$objResult->fields['template']]['name'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'NEWSLETTER_MAIL_DATE' => date(ASCMS_DATE_FORMAT, $objResult->fields['date_create']),
+                    'NEWSLETTER_MAIL_DATE' => date(ASCMS_DATE_FORMAT_DATETIME, $objResult->fields['date_create']),
                     'NEWSLETTER_MAIL_COUNT' => $objResult->fields['count'],
                     'NEWSLETTER_MAIL_USERS' => isset($arrMailRecipientCount[$objResult->fields['id']]) ? $arrMailRecipientCount[$objResult->fields['id']] : 0
                 ));
 
                 $this->_objTpl->setGlobalVariable('NEWSLETTER_MAIL_ID', $objResult->fields['id']);
 
-                if ($objResult->fields['count'] > 0 && $linkCount > 0) {
+                if ($objResult->fields['count'] > 0 && $feedbackCount > 0) {
                     $this->_objTpl->touchBlock('newsletter_mail_feedback_link');
                     $this->_objTpl->hideBlock('newsletter_mail_feedback_empty');
                 } else {
@@ -1579,6 +1615,7 @@ class newsletter extends NewsletterLib
             'TXT_TITLE' => $_ARRAYLANG['TXT_GENERATE_HTML'],
             'TXT_SELECT_ALL' => $_ARRAYLANG['TXT_SELECT_ALL'],
             'TXT_DISPATCH_SETINGS' => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
+            'TXT_NEWSLETTER_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
             'TXT_NEWSLETTER_INTERFACE' => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
             'TXT_GENERATE_HTML' => $_ARRAYLANG['TXT_GENERATE_HTML'],
             'TXT_PLACEHOLDER' => $_ARRAYLANG['TXT_PLACEHOLDER'],
@@ -1702,6 +1739,7 @@ class newsletter extends NewsletterLib
         
         $this->_objTpl->setVariable(array(                             
             'TXT_DISPATCH_SETINGS'          => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
+            'TXT_NEWSLETTER_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
             'TXT_NEWSLETTER_INTERFACE'      => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],            
             'TXT_GENERATE_HTML'             => $_ARRAYLANG['TXT_GENERATE_HTML'],
             'TXT_ACTIVATE_MAIL'             => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],            
@@ -1806,6 +1844,7 @@ class newsletter extends NewsletterLib
             'TXT_ACTIVATE_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
             'TXT_DISPATCH_SETINGS' => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
             'TXT_GENERATE_HTML' => $_ARRAYLANG['TXT_GENERATE_HTML'],
+            'TXT_NEWSLETTER_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
             'TXT_NEWSLETTER_INTERFACE' => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
             'TXT_BREAK_AFTER' => $_ARRAYLANG['TXT_NEWSLETTER_BREAK_AFTER'],
             'TXT_TEST_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_TEST_RECIPIENT'],
@@ -1863,6 +1902,7 @@ class newsletter extends NewsletterLib
         $rowNr = 0;
         $this->_pageTitle = $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'];
         $this->_objTpl->loadTemplateFile('module_newsletter_templates.html');
+        $this->_objTpl->setVariable('TXT_TITLE', $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES']);
 
         $this->_objTpl->setVariable(array(
             'TXT_NEWSLETTER_CANNOT_UNDO_OPERATION' => $_ARRAYLANG['TXT_NEWSLETTER_CANNOT_UNDO_OPERATION'],
@@ -1873,7 +1913,15 @@ class newsletter extends NewsletterLib
             'TXT_NEWSLETTER_DESCRIPTION' => $_ARRAYLANG['TXT_NEWSLETTER_DESCRIPTION'],
 			'TXT_NEWSLETTER_TYPE' => $_ARRAYLANG['TXT_NEWSLETTER_TYPE'],
             'TXT_NEWSLETTER_FUNCTIONS' => $_ARRAYLANG['TXT_NEWSLETTER_FUNCTIONS'],
-            'TXT_TEMPLATE_ADD_NEW_TEMPLATE' => $_ARRAYLANG['TXT_TEMPLATE_ADD_NEW_TEMPLATE']
+            'TXT_TEMPLATE_ADD_NEW_TEMPLATE' => $_ARRAYLANG['TXT_TEMPLATE_ADD_NEW_TEMPLATE'],
+            'TXT_CONFIRM_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_EMAIL'],
+            'TXT_ACTIVATE_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
+            'TXT_DISPATCH_SETINGS' => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
+            'TXT_GENERATE_HTML' => $_ARRAYLANG['TXT_GENERATE_HTML'],
+            'TXT_SYSTEM_SETINGS' => "System",
+            'TXT_NOTIFICATION_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
+            'TXT_NEWSLETTER_INTERFACE' => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
+            'TXT_NEWSLETTER_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
         ));
 
         $this->_objTpl->setGlobalVariable(array(
@@ -2066,7 +2114,15 @@ class newsletter extends NewsletterLib
 			'TXT_NEWSLETTER_NEWS_TEXT' => $_ARRAYLANG['TXT_NEWSLETTER_NEWS_TEXT'],
             'TXT_NEWSLETTER_NEWS_AUTHOR' => $_ARRAYLANG['TXT_NEWSLETTER_NEWS_AUTHOR'],
 			'TXT_NEWSLETTER_NEWS_TYPE_NAME' => $_ARRAYLANG['TXT_NEWSLETTER_NEWS_TYPE_NAME'],
-			'TXT_NEWSLETTER_NEWS_CATEGORY_NAME' => $_ARRAYLANG['TXT_NEWSLETTER_NEWS_CATEGORY_NAME']
+			'TXT_NEWSLETTER_NEWS_CATEGORY_NAME' => $_ARRAYLANG['TXT_NEWSLETTER_NEWS_CATEGORY_NAME'],
+            'TXT_CONFIRM_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_EMAIL'],
+            'TXT_ACTIVATE_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
+            'TXT_DISPATCH_SETINGS' => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
+            'TXT_GENERATE_HTML' => $_ARRAYLANG['TXT_GENERATE_HTML'],
+            'TXT_SYSTEM_SETINGS' => "System",
+            'TXT_NOTIFICATION_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
+            'TXT_NEWSLETTER_INTERFACE' => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
+            'TXT_NEWSLETTER_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
         ));
 
         $this->_objTpl->setVariable(array(
@@ -2159,6 +2215,7 @@ class newsletter extends NewsletterLib
             'TXT_GENERATE_HTML' => $_ARRAYLANG['TXT_GENERATE_HTML'],
             'TXT_SYSTEM_SETINGS' => "System",
             'TXT_NOTIFICATION_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
+            'TXT_NEWSLETTER_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
             'TXT_NEWSLETTER_INTERFACE' => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
         ));
     }
@@ -2207,6 +2264,7 @@ class newsletter extends NewsletterLib
             'TXT_GENERATE_HTML' => $_ARRAYLANG['TXT_GENERATE_HTML'],
             'TXT_SYSTEM_SETINGS' => "System",
             'TXT_NOTIFICATION_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
+            'TXT_NEWSLETTER_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
             'TXT_NEWSLETTER_INTERFACE' => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
         ));
     }
@@ -2303,6 +2361,7 @@ class newsletter extends NewsletterLib
             'TXT_FIRSTNAME' => $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'],
             'TXT_LASTNAME' => $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
             'TXT_E-MAIL' => $_ARRAYLANG['TXT_EMAIL'],
+            'TXT_NEWSLETTER_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
             'TXT_NEWSLETTER_INTERFACE' => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
         ));
     }
@@ -5421,6 +5480,7 @@ function MultiAction() {
             'TXT_SAVE' => $_CORELANG['TXT_SETTINGS_SAVE'],
             'UNSUBSCRIBE_DEACTIVATE_ON' => $deactivate,
             'UNSUBSCRIBE_DELETE_ON' => $delete,
+            'TXT_NEWSLETTER_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
             'TXT_NEWSLETTER_INTERFACE' => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
         ));
     }
