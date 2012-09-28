@@ -1010,9 +1010,12 @@ class Product
                 vat_id=$this->vat_id,
                 weight=$this->weight,
                 flags='".addslashes($this->flags)."',
-                usergroup_ids='$this->usergroup_ids',
-                group_id=$this->group_id,
-                article_id=$this->article_id
+                usergroup_ids=".($this->usergroup_ids
+                    ? $this->usergroup_ids : 'NULL').",
+                group_id=".($this->group_id
+                    ? $this->group_id : 'NULL').",
+                article_id=".($this->article_id
+                    ? $this->article_id : 'NULL')."
           WHERE id=$this->id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
@@ -1054,8 +1057,9 @@ class Product
                 $this->manufacturer_id,
                 $this->ord, $this->vat_id, $this->weight,
                 '".addslashes($this->flags)."',
-                '$this->usergroup_ids',
-                $this->group_id, $this->article_id
+                '".($this->usergroup_ids ? $this->usergroup_ids : 'NULL')."',
+                ".($this->group_id ? $this->group_id : 'NULL').",
+                ".($this->article_id ? $this->article_id : 'NULL')."
             )";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
