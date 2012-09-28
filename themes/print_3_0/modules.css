@@ -190,9 +190,11 @@ div.row2 {
 }
 
 #contactFormError {
+    display: none;
     float: left;
     width: 100%;
     padding: 15px 0 0 0;
+    color: #FF0000;
 }
 
 /***************************************************/
