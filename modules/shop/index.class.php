@@ -3760,7 +3760,7 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
             && $_REQUEST['result'] < 0) die('');
         self::$objTemplate->setVariable($_ARRAYLANG);
         // Comment this for testing, so you can reuse the same account and cart
-//        self::destroyCart();
+        self::destroyCart();
         // Clear the Order ID instead, so you can do it again
         unset($_SESSION['shop']['order_id']);
         // Clear backup ID, avoid success() from being run again
