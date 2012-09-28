@@ -82,7 +82,7 @@ class PayPal
     {
         global $_ARRAYLANG;
 
-DBG::log("getForm($account_email, $order_id, $currency_code, $amount, $item_name): Entered");
+//DBG::log("getForm($account_email, $order_id, $currency_code, $amount, $item_name): Entered");
         $return = \Cx\Core\Routing\Url::fromModuleAndCmd(
             'shop', 'success', FRONTEND_LANG_ID, array(
                 'handler' => 'paypal',
@@ -175,53 +175,32 @@ window.setTimeout("go()", 3000);
     {
         global $objDatabase;
 
-DBG::log("ipnCheck($amount, $currency, $order_id, $customer_email, $account_email): Entered");
-        DBG::log("Paypal::ipnCheck(): Entered");
-        if ($amount && isset($_POST['mc_gross'])) {
-            if ($amount != $_POST['mc_gross'])
-DBG::log("Paypal::ipnCheck(): Invalid mc_gross {$_POST['mc_gross']}, expected $amount");
-            return false;
-        }
-        if ($currency && isset($_POST['mc_currency'])) {
-            if ($currency != $_POST['mc_currency'])
-DBG::log("Paypal::ipnCheck(): Invalid mc_currency {$_POST['mc_currency']}, expected $currency");
-            return false;
-        }
-        if ($order_id && isset($_POST['custom'])) {
-            if ($order_id != $_POST['custom'])
-DBG::log("Paypal::ipnCheck(): Invalid custom {$_POST['custom']}, expected $order_id");
-            return false;
-        }
-        if ($customer_email && isset ($_POST['payer_email'])) {
-            if ($customer_email != $_POST['payer_email'])
-DBG::log("Paypal::ipnCheck(): Invalid payer_email {$_POST['payer_email']}, expected $customer_email");
-            return false;
-        }
-        if ($account_email && isset($_POST['business'])) {
-            if ($account_email != $_POST['business'])
-DBG::log("Paypal::ipnCheck(): Invalid business {$_POST['business']}, expected $account_email");
-            return false;
-        }
+//DBG::log("ipnCheck($amount, $currency, $order_id, $customer_email, $account_email): Entered");
+//DBG::log("Paypal::ipnCheck(): Checking POST");
         if (   empty ($_POST['mc_gross'])
             || empty ($_POST['mc_currency'])
             || empty ($_POST['custom'])
             || empty ($_POST['payer_email'])
             || empty ($_POST['business'])) {
-DBG::log("Paypal::ipnCheck(): Incomplete IPN parameter values:");
-DBG::log(var_export($_POST, true));
+//DBG::log("Paypal::ipnCheck(): Incomplete IPN parameter values:");
+//DBG::log(var_export($_POST, true));
             return false;
         }
         // Copy the post from PayPal and prepend 'cmd'
         $encoded = 'cmd=_notify-validate';
+        // Mind: It is absolutely necessary to clear keys not required for
+        // the verification.  Otherwise, PayPal comes up with... nothing!
+        unset ($_POST['section']);
+        unset ($_POST['cmd']);
         foreach($_POST as $name => $value) {
             $encoded .= '&'.urlencode($name).'='.urlencode($value);
         }
-DBG::log("Paypal::ipnCheck(): Made parameters: $encoded");
+//DBG::log("Paypal::ipnCheck(): Made parameters: $encoded");
 // 20120530 cURL version
         $host = (SettingDb::getValue('paypal_active')
             ? 'www.paypal.com'
             : 'www.sandbox.paypal.com');
-        $uri = 'https://'.$host.'/cgi-bin/webscr';
+        $uri = 'https://'.$host.'/cgi-bin/webscr?'.$encoded;
         $res = $ch = '';
         if (function_exists('curl_init')) {
             $ch = curl_init();
@@ -230,37 +209,33 @@ DBG::log("Paypal::ipnCheck(): Made parameters: $encoded");
             curl_setopt($ch, CURLOPT_URL, $uri);
             // Return the received data as a string
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_POST, TRUE);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $encoded);
             $res = curl_exec($ch);
             if (curl_errno($ch)) {
-DBG::log("Paypal::ipnCheck(): ERROR: cURL: ".curl_errno($ch)." - ".curl_error($ch));
+//DBG::log("Paypal::ipnCheck(): ERROR: cURL: ".curl_errno($ch)." - ".curl_error($ch));
                 return false;
             }
             curl_close($ch);
         } else {
-DBG::log("Paypal::ipnCheck(): WARNING: failed to init cURL, falling back to file");
-            $res = file_get_contents("$uri?$encoded");
+            $res = file_get_contents($uri);
             if (!$res) {
-DBG::log("Paypal::ipnCheck(): WARNING: failed to fget(), falling back to socket");
-                $res = Socket::getHttp10Response("$uri?$encoded");
+                $res = Socket::getHttp10Response($uri);
             }
             if (!$res) {
-DBG::log("Paypal::ipnCheck(): ERROR: failed to connect to PayPal");
+//DBG::log("Paypal::ipnCheck(): ERROR: failed to connect to PayPal");
                 return false;
             }
         }
-DBG::log("Paypal::ipnCheck(): PayPal response: $res");
+//DBG::log("Paypal::ipnCheck(): PayPal response: $res");
         if (preg_match('/^VERIFIED/', $res)) {
-DBG::log("Paypal::ipnCheck(): PayPal IPN verification successful (VERIFIED)");
+//DBG::log("Paypal::ipnCheck(): PayPal IPN verification successful (VERIFIED)");
             return true;
         }
         if (preg_match('/^INVALID/', $res)) {
             // The payment failed.
-DBG::log("Paypal::ipnCheck(): PayPal IPN verification failed (INVALID)");
+//DBG::log("Paypal::ipnCheck(): PayPal IPN verification failed (INVALID)");
             return false;
         }
-DBG::log("Paypal::ipnCheck(): WARNING: PayPal IPN verification unclear (none of the expected results)");
+//DBG::log("Paypal::ipnCheck(): WARNING: PayPal IPN verification unclear (none of the expected results)");
         return NULL;
     }
 

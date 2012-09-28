@@ -3703,13 +3703,6 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
             $newOrderStatus = Order::STATUS_PENDING;
 //DBG::log("success(): Order ID is *null* (new Status $newOrderStatus)");
         }
-
-        // Also, this method *MUST NOT* be called by the PayPal IPN handler.
-        if (isset($_GET['handler']) && $_GET['handler'] == 'PaypalIPN') {
-            $newOrderStatus = Order::STATUS_CANCELLED;
-//DBG::log("success(): This method *MUST NOT* be called for the PayPal IPN URL! Handler in Request: ".$_GET['handler'].", Status: $newOrderStatus");
-        }
-
         // Verify the Order ID with the session, if available
         if (   isset($_SESSION['shop']['order_id_checkin'])
             && $order_id != $_SESSION['shop']['order_id_checkin']) {

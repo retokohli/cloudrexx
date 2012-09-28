@@ -906,7 +906,7 @@ if (!$limit) {
      *                              if the order status can be changed
      *                              accordingly, zero otherwise
      */
-    static function update_status($order_id, $newOrderStatus=0, $handler=null)
+    static function update_status($order_id, $newOrderStatus=0, $handler=NULL)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -946,20 +946,8 @@ if (!$limit) {
 //if (!$processor_id) DBG::log("update_status($order_id, $newOrderStatus): Failed to find Processor ID for Payment ID $payment_id");
         $processorName = PaymentProcessing::getPaymentProcessorName($processor_id);
 //if (!$processorName) DBG::log("update_status($order_id, $newOrderStatus): Failed to find Processor Name for Processor ID $processor_id");
-        // The payment processor *MUST* match the handler
-        // returned.  In the case of PayPal, the order status is only
-        // updated if this method is called by Paypal::ipnCheck() with the
-        // 'PaypalIPN' handler argument or if the new order status is
-        // set to force the order to be cancelled.
-        if ($processorName == 'Paypal') {
-            if (   $handler != 'PaypalIPN'
-                && $newOrderStatus != Order::STATUS_CANCELLED
-            ) {
-                return $status;
-            }
-        } elseif (
-               $handler
-            && !preg_match("/^$handler/i", $processorName)) {
+        // The payment processor *MUST* match the handler returned.
+        if (!preg_match("/^$handler/i", $processorName)) {
 //DBG::log("update_status($order_id, $newOrderStatus): Mismatching Handlers: Order $processorName, Request ".$_GET['handler']);
             return Order::STATUS_CANCELLED;
         }
