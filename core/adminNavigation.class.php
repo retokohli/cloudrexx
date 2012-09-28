@@ -58,7 +58,7 @@ class adminMenu
             } else {
                 $sqlWhereString = " AND areas.access_id='' ";
             }
-            $sqlWhereString = " OR areas.access_id='0' ";
+            $sqlWhereString .= " OR areas.access_id='0' ";
         }
 
         $query = "
@@ -255,6 +255,8 @@ class adminMenu
                                 }
                                 switch ($_REQUEST['act']) {
                                     case 'interface':
+                                    case 'templates':
+                                    case 'tpledit':
                                     case 'confightml':
                                     case 'activatemail':
                                     case 'confirmmail':
