@@ -5524,7 +5524,7 @@ function MultiAction() {
         return $result;
     }
     
-    function _prepareNewsletterLinksForSend($MailId, $MailHtmlContent, $UserId)
+    function _prepareNewsletterLinksForSend($MailId, $MailHtmlContent, $UserId, $realUser)
     {
         global $objDatabase, $_CONFIG;
 
@@ -5565,8 +5565,15 @@ function MultiAction() {
                     // replace href attribute
                     if (isset($arrLinks[$linkId])) {
 // TODO: use new URL-format
-                        $newUrl = $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/de/index.php?section=newsletter&cmd=tracker&n='.$MailId.'&l='.$linkId.'&r='.urlencode($UserId).'&s='.urlencode($url);
-                        $matches[$attrKey][$i] = preg_replace("/href=\"https?:\/\/[^\"]+\"/i", "href=\"http://".$newUrl."\"", $matches[$attrKey][$i]);
+                        $newUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('newsletter');
+                        $newUrl->setParam('n', $MailId);
+                        $newUrl->setParam('l', $linkId);
+                        if ($realUser) {
+                            $newUrl->setParam('r', $UserId);
+                        } else {
+                            $newUrl->setParam('m', $UserId);
+                        }
+                        $matches[$attrKey][$i] = preg_replace("/href=\"https?:\/\/[^\"]+\"/i", "href=\"".$newUrl->toString()."\"", $matches[$attrKey][$i]);
                     }
                     $result = preg_replace("/".self::_prepareForRegExp($matches[$fullKey][$i])."/i", "<a ".$matches[$attrKey][$i].">".$matches[$textKey][$i]."</a>", $result, 1);
                 }
