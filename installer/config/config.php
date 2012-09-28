@@ -37,6 +37,7 @@ define('ASCMS_LIBRARY_PATH', realpath(dirname(__FILE__).'/../../lib'));
 define('ASCMS_FRAMEWORK_PATH', realpath(dirname(__FILE__).'/../../lib/FRAMEWORK'));
 define('ASCMS_CORE_MODULE_PATH', realpath(dirname(__FILE__).'/../../core_modules'));
 define('CONTREXX_CHARSET', 'UTF-8');
+define('ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME',  'Y-m-d H:i:s');
 
 if (!empty($_SESSION['installer']['config']['documentRoot'])) {
     define('ASCMS_PATH', $_SESSION['installer']['config']['documentRoot']);
@@ -91,10 +92,6 @@ $arrLanguages = array(
 );
 
 $arrFiles = array(
-    '/cadmin/backup' => array(
-        'mode'      => '0777',
-        'mode_oct'  => 0777,
-    ),
     '/config' => array(
         'mode'      => '0777',
         'mode_oct'  => 0777,
@@ -125,10 +122,6 @@ $arrFiles = array(
         'sub_dirs'  => true,
     ),
     '/cache' => array(
-        'mode'      => '0777',
-        'mode_oct'  => 0777,
-    ),
-    '/sitemap.xml' => array(
         'mode'      => '0777',
         'mode_oct'  => 0777,
     ),
