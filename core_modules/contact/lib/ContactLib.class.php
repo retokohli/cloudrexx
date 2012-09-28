@@ -844,19 +844,7 @@ class ContactLib
 
         $objDatabase->execute($query);
 
-        /* if checkmenu is checked for select menu field, 'please select' option is appended */
         foreach ($field['lang'] as $langID => $values) {
-            if ($field['type'] == 'select') {
-// TODO: this is bullshit! the option 'please select' must be added dynamically when generating the form!
-                $replaceString = $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'].',';
-                if ($field['is_required'] == 1) {
-                    if (strpos($values['value'], $replaceString) === false) {
-                        $values['value'] = $replaceString.$values['value'];
-                    }
-                } else {
-                    $values['value'] = str_replace($replaceString, '', $values['value']);
-                }
-            }
             $this->setFormFieldLang($fieldID, $langID, $values);
         }
     }
@@ -894,16 +882,11 @@ class ContactLib
                 "'.$field['order_id'].'"
             )
             ';
-
+print_r($field);
         $objDatabase->execute($query);
         $fieldID = $objDatabase->insert_id();
 
-        /* if checkmenu is checked for select menu field, 'please select' option is appended */
         foreach ($field['lang'] as $langID => $values) {
-            if ($field['type'] == 'select' && $field['is_required'] == 1) {
-// TODO: this is bullshit! the option 'please select' must be added dynamically when generating the form!
-                $values['value'] = $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'].','.$values['value'];
-            }
             $this->setFormFieldLang($fieldID, $langID, $values);
         }
 

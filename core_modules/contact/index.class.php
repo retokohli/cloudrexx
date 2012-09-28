@@ -250,8 +250,11 @@ class Contact extends ContactLib
                         }
                     }
                     break;
-                case 'select':                             
+                case 'select':
                     $options = explode(',', $arrField['lang'][$_LANGID]['value']);
+                    if ($arrField['is_required']) {
+                        $options = array_merge(array($_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT']), $options);
+                    }
                     foreach ($options as $index => $option) {
                         if (preg_match($userProfileRegExp, $option)) {
                             $valuePlaceholderBlock = 'contact_value_placeholder_block_'.$fieldId.'_'.$index;
