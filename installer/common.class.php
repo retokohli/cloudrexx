@@ -526,24 +526,6 @@ class CommonFunctions
     }
 
     /**
-    * check rss support
-    *
-    * check if the rss function can be used
-    *
-    * @access   public
-    * @return   boolean
-    */
-    function checkRSSSupport() {
-        if (ini_get('allow_url_fopen') != "1") {
-            @ini_set('allow_url_fopen', "1");
-            if (ini_get('allow_url_fopen') != "1") {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
     * check CMS path
     *
     * check if the cms could be found in the specified path
