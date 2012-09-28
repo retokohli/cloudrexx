@@ -82,6 +82,7 @@ class DateTimeTools
 // TODO: Add more languages to the i18n folder!
         JS::registerJS(
             'lib/javascript/jquery/ui/i18n/'.
+// TODO: Append the locale code ("-GB", "-US") as well!
             'jquery.ui.datepicker-'.$language_code.'.js');
         JS::registerCode('
 jQuery(function() {
