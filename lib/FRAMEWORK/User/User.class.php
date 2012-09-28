@@ -1866,12 +1866,10 @@ class User extends User_Profile
                 $this->error_msg[] = $_CORELANG['TXT_ACCESS_PASSWORD_NOT_CONFIRMED'];
                 return false;
             }
-
             $this->password = md5($password);
             return true;
-        } else {
-            $this->error_msg[] = $_CORELANG['TXT_ACCESS_INVALID_PASSWORD'];
         }
+        $this->error_msg[] = $_CORELANG['TXT_ACCESS_INVALID_PASSWORD'];
         return false;
     }
 
@@ -2110,7 +2108,7 @@ class User extends User_Profile
      * @param   string    $password
      * @return  boolean
      */
-    private static function isValidPassword($password)
+    public static function isValidPassword($password)
     {
         global $_CONFIG;
 
