@@ -203,13 +203,12 @@ class FileSystem
                 $newFileName  = $part . '_' . (time()) . $exte;
             }
         }
-        if (!copy($orgPath.$orgFileName, $newPath.$newFileName)) {
-            $status = 'error';
+        if (copy($orgPath.$orgFileName, $newPath.$newFileName)) {
+            \Cx\Lib\FileSystem\FileSystem::makeWritable($newPath.$newFileName);
         } else {
-            $this->setChmod($newPath, str_replace(ASCMS_PATH,'', $newPath), $newFileName);
-            $status = $newFileName;
+            $newFileName = 'error';
         }
-        return $status;
+        return $newFileName;
     }
 
 
@@ -225,16 +224,18 @@ class FileSystem
         if ($_FTPCONFIG['is_activated'] && empty(self::$connection))
             self::init();
         if ($_FTPCONFIG['is_activated']) {
-            ftp_mkdir(self::$connection, $newDir);
-            ftp_chmod(self::$connection, self::CHMOD_FOLDER, $newDir);
-            return $dirName;
+            if (!ftp_mkdir(self::$connection, $newDir)) {
+                $dirName = 'error';
+            }
         } else {
-            if (@mkdir($path.$dirName)) {
-                @chmod($path.$dirName, self::CHMOD_FOLDER);
-                return $dirName;
+            if (!@mkdir($path.$dirName)) {
+                $dirName = 'error';
             }
         }
-        return 'error';
+        if ($dirName != 'error') {
+            \Cx\Lib\FileSystem\FileSystem::makeWritable($path.$dirName);
+        }
+        return $dirName;
     }
 
 
