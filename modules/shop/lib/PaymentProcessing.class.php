@@ -499,6 +499,9 @@ DBG::log("Yellowpay Error: $error");
      */
     static function checkIn()
     {
+//DBG::log("PaymentProcessing::checkIn(): Entered");
+//DBG::log("POST: ".var_export($_POST, true));
+//DBG::log("GET: ".var_export($_GET, true));
         $result = NULL;
         if (isset($_GET['result'])) {
             $result = abs(intval($_GET['result']));
@@ -507,9 +510,6 @@ DBG::log("Yellowpay Error: $error");
         if (empty($_GET['handler'])) return false;
         switch ($_GET['handler']) {
             case 'saferpay':
-//DBG::log("PaymentProcessing::checkIn():");
-//DBG::log("POST: ".var_export($_POST, true));
-//DBG::log("GET: ".var_export($_GET, true));
                 $arrShopOrder = array(
                     'ACCOUNTID' => SettingDb::getValue('saferpay_id'));
                 $id = Saferpay::payConfirm();
@@ -520,29 +520,34 @@ DBG::log("Yellowpay Error: $error");
 //DBG::log("Transaction: ".var_export($transaction, true));
                 return (boolean)$id;
             case 'paypal':
-                if ($result < 0) {
-                    $order_id = (isset($_SESSION['shop']['order_id'])
-                        ? $_SESSION['shop']['order_id']
-                        : (isset ($_SESSION['shop']['order_id_checkin'])
-                            ? $_SESSION['shop']['order_id_checkin']
-                            : NULL));
-                    $order = Order::getById($order_id);
-                    $amount = $currency_id = $customer_email = NULL;
-                    if ($order) {
-                        $amount = $order->sum();
-                        $currency_id = $order->currency_id();
-                        $customer_id = $order->customer_id();
-                        $customer = Customer::getById($customer_id);
-                        if ($customer) {
-                            $customer_email = $customer->email();
-                        }
-                    }
-                    $currency_code = Currency::getCodeById($currency_id);
-                    $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
-                    return PayPal::ipnCheck($amount, $currency_code,
-                        $order_id, $customer_email,
-                        SettingDb::getValue('paypal_account_email'));
+                if (empty ($_POST['custom'])) {
+//DBG::log("PaymentProcessing::checkIn(): No custom parameter, returning NULL");
+                    return NULL;
                 }
+                $order_id = PayPal::getOrderId();
+//                    if (!$order_id) {
+//                        $order_id = (isset($_SESSION['shop']['order_id'])
+//                            ? $_SESSION['shop']['order_id']
+//                            : (isset ($_SESSION['shop']['order_id_checkin'])
+//                                ? $_SESSION['shop']['order_id_checkin']
+//                                : NULL));
+//                    }
+                $order = Order::getById($order_id);
+                $amount = $currency_id = $customer_email = NULL;
+                if ($order) {
+                    $amount = $order->sum();
+                    $currency_id = $order->currency_id();
+                    $customer_id = $order->customer_id();
+                    $customer = Customer::getById($customer_id);
+                    if ($customer) {
+                        $customer_email = $customer->email();
+                    }
+                }
+                $currency_code = Currency::getCodeById($currency_id);
+                $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
+                return PayPal::ipnCheck($amount, $currency_code,
+                    $order_id, $customer_email,
+                    SettingDb::getValue('paypal_account_email'));
             case 'yellowpay':
                 $passphrase = SettingDb::getValue('postfinance_hash_signature_out');
                 return Yellowpay::checkIn($passphrase);
