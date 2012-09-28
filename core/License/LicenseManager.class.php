@@ -146,11 +146,15 @@ class LicenseManager {
             }
             
             $message = $this->license->getMessage(\FWLanguage::getLanguageCodeById(BACKEND_LANG_ID));
-            if ($message) {
+            if ($message && strlen($message->getText())) {
                 $remoteTemplate->setVariable('MESSAGE_TITLE', contrexx_raw2xhtml($message->getText()));
                 $remoteTemplate->setVariable('MESSAGE_LINK', contrexx_raw2xhtml($message->getLink()));
                 $remoteTemplate->setVariable('MESSAGE_LINK_TARGET', contrexx_raw2xhtml($message->getLinkTarget()));
                 $remoteTemplate->setVariable('MESSAGE_TYPE', contrexx_raw2xhtml($message->getType()));
+            } else {
+                if ($remoteTemplate->blockExists('message')) {
+                    $remoteTemplate->hideBlock('message');
+                }
             }
             
             if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
