@@ -384,7 +384,7 @@ class JsonPage implements JsonAdapter {
                     $currentPage->setSkin($page->getSkin());
                 }
                 if (isset($dataPost['inheritCustomContent']) && $dataPost['inheritCustomContent'] == 'on'/*customContent*/) {
-                    $currentPage->setSourceMode($page->getSourceMode());
+                    $currentPage->setCustomContent($page->getCustomContent());
                 }
                 if (isset($dataPost['inheritCssName']) && $dataPost['inheritCssName'] == 'on'/*cssName*/) {
                     $currentPage->setCssName($page->getCssName());
