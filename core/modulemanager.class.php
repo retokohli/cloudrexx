@@ -114,8 +114,8 @@ class modulemanager
 
         $qb->addSelect('p')
                 ->from('Cx\Model\ContentManager\Page', 'p')
-                ->where('p.module IS NOT NULL')
-                ->andWhere($qb->expr()->eq('p.lang', $this->langId));
+                ->where('p.module IS NOT NULL');
+//                ->andWhere($qb->expr()->eq('p.lang', $this->langId));
         $pages   = $qb->getQuery()->getResult();
         
         foreach ($pages as $page) {
@@ -321,6 +321,7 @@ class modulemanager
                     $page->setNodeIdShadowed($newnode->getId());
                     $page->setLang($this->langId);
                     $page->setTitle($title);
+                    $page->setType(\Cx\Model\ContentManager\Page::TYPE_APPLICATION);
                     $page->setModule($module_name);
                     $page->setCmd($cmd);
                     $page->setActive(true);
