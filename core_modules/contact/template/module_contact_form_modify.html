@@ -305,7 +305,7 @@
         if ($J(copy).find('.formValueView select').length != 0) {
             $J(copy).find('.formValueView select option:eq(0)').attr('selected','selected');
         }
-        $J(copy).find('input').val('');
+        $J(copy).find('input').not("[type=checkbox]").val('');
         $J(copy).find('input[type=hidden]').val('new');
         $J(copy).find('input[type=checkbox]').attr("checked", false);
     }
