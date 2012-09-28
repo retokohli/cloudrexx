@@ -923,6 +923,26 @@ class newsletter extends NewsletterLib
 		return false;
     }
     
+    public static function isTrackLink() {
+        if (!isset($_GET['n'])) {
+            return false;
+        }
+        if (!isset($_GET['l'])) {
+            return false;
+        }
+        if (!isset($_GET['r']) && !isset($_GET['m'])) {
+            return false;
+        }
+        return true;
+                        $newUrl->setParam('n', $MailId);
+                        $newUrl->setParam('l', $linkId);
+                        if ($realUser) {
+                            $newUrl->setParam('r', $UserId);
+                        } else {
+                            $newUrl->setParam('m', $UserId);
+                        }
+    }
+    
     /**
      * track link: save feedback to database
      *
@@ -933,43 +953,47 @@ class newsletter extends NewsletterLib
         global $objDatabase;
         
         $recipientId = 0;
-        $recipient = isset($_GET['r']) ? urldecode($_GET['r']) : '';
-        $emailId = isset($_GET['n']) ? intval($_GET['n']) : 0;
-        $linkId = isset($_GET['l']) ? intval($_GET['l']) : 0;
-        $url = isset($_GET['s']) ? urldecode($_GET['s']) : '';
+        $realUser = true;
+        if (isset($_GET['m'])) {
+            $recipientId = contrexx_input2raw($_GET['m']);
+            $realUser = false;
+        } else if (isset($_GET['r'])) {
+            $recipientId = contrexx_input2raw($_GET['r']);
+        } else {
+            return false;
+        }
+        $emailId = isset($_GET['n']) ? contrexx_input2raw($_GET['n']) : 0;
+        $linkId = isset($_GET['l']) ? contrexx_input2raw($_GET['l']) : 0;
         
         // find out recipient type
-        if (preg_match('/[0-9]+/', $recipient)) {
-            $objUser = FWUser::getFWUserObject()->objUser->getUser(intval($recipient));
-            if ($objUser !== false) {
-                $recipientId = $objUser->getId();
-                $recipientType = 'access';
+        if ($realUser) {
+            $objUser = FWUser::getFWUserObject()->objUser->getUser(intval($recipientId));
+            if ($objUser === false) {
+                return false;
             }
+            $recipientId = $objUser->getId();
+            $recipientType = 'access';
         }
         else {
-            $objUser = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_raw2db($recipient)."'", 1);
-            if ($objUser !== false && $objUser->RecordCount() == 1) {
-                $recipientId = $objUser->fields['id'];
-                $recipientType = 'newsletter';
+            $objUser = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."module_newsletter_user WHERE id='".contrexx_raw2db($recipientId)."'", 1);
+            if ($objUser === false || $objUser->RecordCount() != 1) {
+                return false;
             }
-            /*$objUser = FWUser::getFWUserObject()->objUser->getUser($recipient);
-            if ($objUser !== false) {
-                $recipientId = $objUser->getId();
-                $recipientType = 'newsletter';
-            }*/
+            $recipientId = $objUser->fields['id'];
+            $recipientType = 'newsletter';
         }
         
         /*
         * Request must be redirected to the newsletter $linkId URL. If the $linkId 
-        * can�t be looked up in the database (by what reason  so ever), then the request shall be 
+        * can't be looked up in the database (by what reason  so ever), then the request shall be 
         * redirected to the URL provided by the url-modificator s of the request
         */
         $objLink = $objDatabase->SelectLimit("SELECT `url` FROM ".DBPREFIX."module_newsletter_email_link WHERE id=".$linkId." AND email_id=".$emailId, 1);
-        if ($objLink !== false && $objLink->RecordCount() == 1) {
-            $url = $objLink->fields['url'];
+        if ($objLink === false || $objLink->RecordCount() != 1) {
+            return false;
         }     
+        $url = $objLink->fields['url'];
         
-        // we allow to collect stat even if we didn't find link above
         if (intval($recipientId)) {
             // save feedback for valid user
             $query = "INSERT IGNORE INTO ".DBPREFIX."module_newsletter_email_link_feedback
@@ -979,10 +1003,8 @@ class newsletter extends NewsletterLib
             $objDatabase->Execute($query);
         }
         
-        if ($url) {
-            CSRF::header('Location: '.$url);
-            exit;
-        }
+        CSRF::header('Location: '.$url);
+        exit;
     }
 
 }
