@@ -353,6 +353,19 @@ if ($section == 'frontendEditing') {
     $objFrontendEditing = new frontendEditing(Env::em());
     $objFrontendEditing->performAction();
 }
+// handle link tracker from newsletter, since user should be redirected to the link url
+if ($section == "newsletter" && $command == "tracker")
+{
+    /*
+     * Newsletter Module
+     *
+     * Generates no output, requests are answered by a redirect to foreign site
+     *
+     */
+    $newsletter = new Newsletter();
+    $newsletter->trackLink();
+    //execution should never reach this point
+}
 
 // Initialize page meta
 $page = null;
