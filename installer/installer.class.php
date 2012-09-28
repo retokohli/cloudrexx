@@ -1077,12 +1077,25 @@ class Installer
                     }
                 }
             }
+            
+            if (isset($_SESSION['installer']['config']['timezone'])) {
+                $timezones = timezone_identifiers_list();
+                $timezone = $timezones[$_SESSION['installer']['config']['timezone']];
+                $dateTimeZone = new DateTimeZone($timezone);
+                $dateTime     = new DateTime('now', $dateTimeZone);
+                $timeOffset   = $dateTimeZone->getOffset($dateTime);
+                $plusOrMinus  = $timeOffset < 0 ? '-' : '+';
+                $gmt          = 'GMT ' . $plusOrMinus . ' ' . gmdate('g:i', $timeOffset);
+                $timezone .= ' (' . $gmt . ')';
+            } else {
+                $timezone = '<select name="timezone">'.$objCommon->getTimezoneOptions().'</select>';
+            }
 
             // set general and database configuration options
             $objTpl->setVariable(array(
                 'DOCUMENT_ROOT'     => $documentRoot,
                 'OFFSET_PATH'       => $serverName.(empty($offsetPath) ? "&nbsp;" : $offsetPath),
-                'TIMEZONE_OPTIONS'  => $objCommon->getTimezoneOptions(),
+                'TIMEZONE_OPTIONS'  => $timezone,
                 'DB_HOSTNAME'       => $dbHostname,
                 'CREATE_DB'         => $dbCreateDb,
                 'DB_USERNAME'       => (empty($dbUsername) ? "&nbsp;" : $dbUsername),
