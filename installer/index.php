@@ -15,7 +15,7 @@
 @error_reporting(E_ALL);
 
 $php = phpversion();
-if ($php < '5.1') {
+if ($php < '5.3') {
     die('Das Contrexx CMS ben&uml;tigt mindestens PHP in der Version 5.1.<br>Auf Ihrem System l&auml;uft PHP '.$php);
 }
 
