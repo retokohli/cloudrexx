@@ -82,4 +82,6 @@ $_ARRAYLANG['TXT_ACCESS_TOS'] = "Terms of Service";
 $_ARRAYLANG['TXT_ACCESS_TOS_NOT_CHECKED'] = "You have to accept the Terms of Service to sign up!";
 $_ARRAYLANG['TXT_ACCESS_CAPTCHA'] = "Security Code";
 $_ARRAYLANG['TXT_ACCESS_NEWSLETTERS_SUBSCRIBE_COLON'] = "Folgende Newsletter abonnieren:";
-?>
+
+$_ARRAYLANG['TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS'] = "Das Passwort muss mindestens 6 Zeichen lang sein.";
+$_ARRAYLANG['TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS_WITH_COMPLEXITY'] = "Das Passwort muss mindestens 6 Zeichen lang sein und mindestens einen Gross-, einen Kleinbuchstaben und eine Zahl enthalten.";

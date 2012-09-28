@@ -50,12 +50,12 @@ class AccessManager extends AccessLib
         parent::__construct();
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/access/template');
         CSRF::add_placeholder($this->_objTpl);
-        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);        
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
     }
     private function setNavigation()
     {
         global $objTemplate, $_ARRAYLANG;
-        
+
         $objTemplate->setVariable('CONTENT_NAVIGATION',
             /*' <a href="index.php?cmd=access" title="'.
               $_ARRAYLANG['TXT_ACCESS_OVERVIEW'].'" class="'.($this->act == '' ? 'active' : '').'">'.
@@ -1150,11 +1150,11 @@ class AccessManager extends AccessLib
         if (($objUser = $objFWUser->objUser->getUser(isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0)) === false) {
             $objUser = new User();
         }
-        
-        if ($objFWUser->objUser->getAdminStatus()) {   
-            $cssDisplayStatus = 'none';           
-        } else {      
-            $cssDisplayStatus = '';    
+
+        if ($objFWUser->objUser->getAdminStatus()) {
+            $cssDisplayStatus = 'none';
+        } else {
+            $cssDisplayStatus = '';
         }
 
         if (isset($_POST['access_save_user'])) {
@@ -1269,16 +1269,9 @@ class AccessManager extends AccessLib
         } else {
             $this->_objTpl->hideBlock('access_profile_group_assignment');
         }
-
         $this->attachJavaScriptFunction('accessSetWebsite');
         $this->attachJavaScriptFunction('jscalendarIncludes');
-        
-        if (isset($_CONFIG['passwordComplexity']) && $_CONFIG['passwordComplexity'] == 'on') {
-            $passwordInfo = $_ARRAYLANG['TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS_WITH_COMPLEXITY'];
-        } else {
-            $passwordInfo = $_ARRAYLANG['TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS'];
-        }
-
+        $passwordInfo = self::getPasswordInfo();
         $this->_objTpl->setVariable(array(
             'TXT_ACCESS_USER_ACCOUNT'                   => $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT'],
             'TXT_ACCESS_USER_GROUP_S'                   => $_ARRAYLANG['TXT_ACCESS_USER_GROUP_S'],
@@ -2784,7 +2777,7 @@ class AccessManager extends AccessLib
     {
         global $_ARRAYLANG;
         require_once(ASCMS_LIBRARY_PATH.'/importexport/lib/csv.class.php');
-        
+
 //DBG::activate(DBG_ADODB_ERROR|DBG_LOG_FIREPHP|DBG_PHP);
 
         $objUser = FWUser::getFWUserObject()->objUser;

@@ -81,4 +81,6 @@ $_ARRAYLANG['TXT_ACCESS_TOS'] = "Conditions générales";
 $_ARRAYLANG['TXT_ACCESS_TOS_NOT_CHECKED'] = "Vous devez accepter les conditions générales!";
 $_ARRAYLANG['TXT_ACCESS_CAPTCHA'] = "Code d'entrée de sécurité ";
 $_ARRAYLANG['TXT_ACCESS_NEWSLETTERS_SUBSCRIBE_COLON'] = "Abonner le bulletin d'information suivant:";
-?>
+
+$_ARRAYLANG['TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS'] = "Das Passwort muss mindestens 6 Zeichen lang sein.";
+$_ARRAYLANG['TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS_WITH_COMPLEXITY'] = "Das Passwort muss mindestens 6 Zeichen lang sein und mindestens einen Gross-, einen Kleinbuchstaben und eine Zahl enthalten.";
