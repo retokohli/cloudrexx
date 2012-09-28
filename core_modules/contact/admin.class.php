@@ -342,6 +342,7 @@ class ContactManager extends ContactLib
 
             case 'newContent':
                 $this->_createContentPage();
+                $this->_contactForms();
                 break;
 
             case 'updateContent':
@@ -1353,9 +1354,12 @@ class ContactManager extends ContactLib
 
     /*
      * Delete Site content for all languages even though language is not active
+     * @todo implement
      */
     function _deleteContentSite($formId)
     {
+        return;
+
         global $objDatabase, $_ARRAYLANG;
 
         Permission::checkAccess(26, 'static');
@@ -1364,11 +1368,15 @@ class ContactManager extends ContactLib
 
         $pageRepo = $this->em->getRepository('\Cx\Model\ContentManager\Page');
         $pages = $pageRepo->findBy(array('module' => 'contact', 'cmd' => $formId));
+        $nodes = array();
         foreach($pages as $page) {
             $this->em->remove($page);
+            $nodes[] = $page->getNode();
         }
 
         $this->em->flush();
+
+// TODO: Delete empty nodes
     }
 
     /**
@@ -2168,12 +2176,6 @@ class ContactManager extends ContactLib
 
         $formId = intval($_REQUEST['formId']);;
         $this->_handleContentPage($formId);
-
-//TODO: needs replacement with url of new cm
-        //header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=content&act=edit&formId=".$formId."&".CSRF::param());
-        header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=contact");
-        
-        exit;
     }
 
     function _updateContentSite()
@@ -2322,7 +2324,7 @@ class ContactManager extends ContactLib
             //$this->em->persist($page);
             //$this->em->flush();
             //DBG::dump(count($node->getPages()));
-            // TODO: Delete empty nodes
+// TODO: Delete empty nodes
         }
 
         $this->em->flush();
