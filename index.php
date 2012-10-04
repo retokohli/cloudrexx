@@ -421,7 +421,7 @@ if ($isRegularPageRequest) {
             $page = null;
         }
     }
-    
+
     if(!$page || !$page->isActive() ||
             (!empty($section) && !$license->isInLegalFrontendComponents($section))) {
         //fallback for inexistant error page
@@ -1578,8 +1578,7 @@ if (!$boolShop
 // && MODULE_INDEX == ''
 ) {
     SettingDb::init('shop', 'config');
-    $use_js_cart = SettingDb::getValue('use_js_cart');
-    if ($use_js_cart) {
+    if (SettingDb::getValue('shopnavbar_on_all_pages')) {
         Shop::init();
         Shop::setNavbar();
         $boolShop = true;
@@ -1759,7 +1758,7 @@ $objTemplate->setVariable(array(
     'GOOGLE_PLUSONE'                 => '<div class="g-plusone" data-href="'.urlencode('http://'.$_CONFIG['domainUrl'].$objInit->getCurrentPageUri()).'"></div>
                                          <script type="text/javascript">
                                              window.___gcfg = {lang: \'de\'};
-                                             
+
                                              (function() {
                                                  var po = document.createElement(\'script\'); po.type = \'text/javascript\'; po.async = true;
                                                  po.src = \'https://apis.google.com/js/plusone.js\';
@@ -1770,7 +1769,7 @@ $objTemplate->setVariable(array(
                                              var _gaq = _gaq || [];
                                              _gaq.push([\'_setAccount\', \''.(isset($_CONFIG['googleAnalyticsTrackingId']) ? contrexx_raw2xhtml($_CONFIG['googleAnalyticsTrackingId']) : '').'\']);
                                              _gaq.push([\'_trackPageview\']);
-                                             
+
                                              (function() {
                                                  var ga = document.createElement(\'script\'); ga.type = \'text/javascript\'; ga.async = true;
                                                  ga.src = (\'https:\' == document.location.protocol ? \'https://ssl\' : \'http://www\') + \'.google-analytics.com/ga.js\';
