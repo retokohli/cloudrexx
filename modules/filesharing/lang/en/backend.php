@@ -29,15 +29,15 @@ $_ARRAYLANG["TXT_FILESHARING_MAIL_TEMPLATES"] = "Mail templates";
 $_ARRAYLANG["TXT_FILESHARING_LINK_BACK"] = "Cancel";
 $_ARRAYLANG["TXT_FILESHARING_SECURITY"] = "Permissions";
 
-$_ARRAYLANG['TXT_FILESHARING_SETTINGS_GENERAL_INFORMATION'] = 'Informationen';
-$_ARRAYLANG['TXT_FILESHARING_SETTINGS_GENERAL_MODULE_NAME_TITLE'] = 'Anwendungsname';
-$_ARRAYLANG['TXT_FILESHARING_SETTINGS_GENERAL_MODULE_DESCRIPTION_TITLE'] = 'Beschreibung';
-$_ARRAYLANG['TXT_FILESHARING_SETTINGS_GENERAL_MODULE_DESCRIPTION'] = 'Unter &bdquo;Dateifreigabe&ldquo; versteht man eine Hochlademöglichkeit für einen beliebigen Website Besucher. Die hochgeladenen Dateien können mit Hilfe eines Links direkt an eine dritte Perosn weitergeleitet werden. Der Zugriff auf die Datei ist nur mit einem direkten Link möglich.';
-$_ARRAYLANG['TXT_FILESHARING_SETTINGS_GENERAL_MODULE_MANUAL_TITLE'] = 'Kurzanleitung';
+$_ARRAYLANG['TXT_FILESHARING_SETTINGS_GENERAL_INFORMATION'] = 'Informations';
+$_ARRAYLANG['TXT_FILESHARING_SETTINGS_GENERAL_MODULE_NAME_TITLE'] = 'Application name';
+$_ARRAYLANG['TXT_FILESHARING_SETTINGS_GENERAL_MODULE_DESCRIPTION_TITLE'] = 'Description';
+$_ARRAYLANG['TXT_FILESHARING_SETTINGS_GENERAL_MODULE_DESCRIPTION'] = 'With the module filesharing it is possible to upload and share files. A link to the uploaded files can be shared by email with a third person. The access to download the file is only possible with the direct download link.';
+$_ARRAYLANG['TXT_FILESHARING_SETTINGS_GENERAL_MODULE_MANUAL_TITLE'] = 'Short manual';
 $_ARRAYLANG['TXT_FILESHARING_SETTINGS_GENERAL_MODULE_MANUAL'] = '
-    Bei der Installation des Moduls wird eine standardmässige Inhaltsseite mit der section "filesharing" generiert.<br /><br />
+    After the installation of the module you will find a default content page with the section "filesharing".<br /><br />
 
-    Diese kann als Vorlage für eine andere Seite verwendet werden. Sie können eine Inhaltsseite mit einem beliebigen cmd erstellen.<br />
-    Das cmd entspricht beim Hochladen auf der Seite dem Ziel-Ordner. Sofern das cmd "downloads" verwendet wird, werden die hochgeladenen Dateien in den Ordner des Digital Asset Management Moduls, kurz: Downloads, verschoben und können dadurch einfacher im Modul ausgewählt werden.
+    You can use the default page as a sample for new pages. If you create a new page with a custom cmd, the filesharing module creates a correspondent directory and moves the uploaded files into the folder.<br />
+    If you specify the cmd "downloads", the uploaded files are going to be moved to the Digital Asset Management module\'s images directory.
 ';
 ?>
