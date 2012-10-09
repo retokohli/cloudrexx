@@ -73,9 +73,9 @@ class NavigationPageTree extends SigmaPageTree {
         }
     }
     
-    public function preRenderLevel($level, $lang) {}
+    public function preRenderLevel($level, $lang, $parentNode) {}
     
-    public function postRenderLevel($level, $lang) {}
+    public function postRenderLevel($level, $lang, $parentNode) {}
 
     protected function preRenderElement($level, $hasChilds, $lang, $page) {}
 

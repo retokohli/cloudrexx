@@ -89,9 +89,9 @@ class XmlSitemapPageTree extends PageTree {
                 "\n\t" . '</url>' . "\n";
     }
     
-    public function preRenderLevel($level, $lang) {}
+    public function preRenderLevel($level, $lang, $parentNode) {}
     
-    public function postRenderLevel($level, $lang) {}
+    public function postRenderLevel($level, $lang, $parentNode) {}
 
     /**
      * PageTree override (unused)

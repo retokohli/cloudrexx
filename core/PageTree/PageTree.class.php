@@ -83,7 +83,7 @@ $this->bytes = memory_get_peak_usage();
         while (count($nodeStack)) {
             $node = array_pop($nodeStack);
             if (is_callable($node)) {
-                $node();
+                $content .= $node();
                 continue;
             }
             $children = $node->getChildren();
@@ -114,8 +114,8 @@ $this->bytes = memory_get_peak_usage();
                 $pageTree = $this;
                 $level = $node->getLvl() + 1;
                 $lang = $this->lang;
-                array_push($nodeStack, function() use($pageTree, &$content, $level, $lang) {
-                    $content .= $pageTree->postRenderLevel($level, $lang);
+                array_push($nodeStack, function() use($pageTree, &$content, $level, $lang, $node) {
+                    return $pageTree->postRenderLevel($level, $lang, $node);
                 });
                 // add children to stack
                 $children = array_reverse($children, true);
@@ -123,8 +123,8 @@ $this->bytes = memory_get_peak_usage();
                     array_push($nodeStack, $child);
                 }
                 // add postRenderLevel to stack
-                array_push($nodeStack, function() use($pageTree, &$content, $level, $lang) {
-                    $content .= $pageTree->preRenderLevel($level, $lang);
+                array_push($nodeStack, function() use($pageTree, &$content, $level, $lang, $node) {
+                    return $pageTree->preRenderLevel($level, $lang, $node);
                 });
             }
             
@@ -189,9 +189,9 @@ $this->bytes = memory_get_peak_usage();
 
     protected abstract function postRenderElement($level, $hasChilds, $lang, $page);
     
-    public abstract function preRenderLevel($level, $lang);
+    public abstract function preRenderLevel($level, $lang, $parentNode);
     
-    public abstract function postRenderLevel($level, $lang);
+    public abstract function postRenderLevel($level, $lang, $parentNode);
     
     protected abstract function renderHeader($lang);
     
