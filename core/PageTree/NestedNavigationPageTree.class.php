@@ -108,14 +108,26 @@ class NestedNavigationPageTree extends SigmaPageTree {
         return $output;
     }
     
-    public function preRenderLevel($level, $lang) {
+    public function preRenderLevel($level, $lang, $parentNode) {
+        //make sure the node to render is inside our branch
+        if (!$this->isNodeInsideCurrentBranch($parentNode)) {
+            return '';
+        }
+
+        //are we inside the layer bounds?
         if (!$this->isLevelInsideLayerBound($level)) {
             return '';
         }
         return "\n" . '<ul class="'.self::CssPrefix.$level.'">'."\n";
     }
     
-    public function postRenderLevel($level, $lang) {
+    public function postRenderLevel($level, $lang, $parentNode) {
+        //make sure the node to render is inside our branch
+        if (!$this->isNodeInsideCurrentBranch($parentNode)) {
+            return '';
+        }
+
+        //are we inside the layer bounds?
         if (!$this->isLevelInsideLayerBound($level)) {
             return '';
         }
@@ -136,6 +148,9 @@ class NestedNavigationPageTree extends SigmaPageTree {
 
     private function isParentNodeInsideCurrentBranch($node)
     {
+        if (!$node->getParent()) {
+            return true;
+        }
         return $this->isNodeInsideCurrentBranch($node->getParent());
     }
 
