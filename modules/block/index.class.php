@@ -44,7 +44,7 @@ class block extends blockLibrary
 
             // Set global block [[BLOCK_GLOBAL]]
             if (preg_match('/{'.$objBlock->blockNamePrefix.'GLOBAL}/', $template)) {
-                $objBlock->setBlockGlobal($template, $page->getNode()->getId());
+                $objBlock->setBlockGlobal($template, $page->getId());
             }
 
             /* Set random blocks [[BLOCK_RANDOMIZER]], [[BLOCK_RANDOMIZER_2]],
