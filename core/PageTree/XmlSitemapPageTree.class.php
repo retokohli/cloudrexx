@@ -88,6 +88,10 @@ class XmlSitemapPageTree extends PageTree {
                 "\n\t\t" . '<priority>0.5</priority>' .
                 "\n\t" . '</url>' . "\n";
     }
+    
+    public function preRenderLevel($level, $lang) {}
+    
+    public function postRenderLevel($level, $lang) {}
 
     /**
      * PageTree override (unused)

@@ -162,6 +162,10 @@ class DropdownNavigationPageTree extends SigmaPageTree {
         unset($this->cache);
         return $ret;
     }
+    
+    public function preRenderLevel($level, $lang) {}
+    
+    public function postRenderLevel($level, $lang) {}
 
     protected function preRenderElement($level, $hasChilds, $lang, $page) {}
 

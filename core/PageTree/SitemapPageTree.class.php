@@ -24,6 +24,11 @@ class SitemapPageTree extends SigmaPageTree {
         
         $this->template->parse('sitemap');
     }
+    
+    public function preRenderLevel($level, $lang) {}
+    
+    public function postRenderLevel($level, $lang) {}
+    
     protected function renderFooter($lang) {
     }
 
