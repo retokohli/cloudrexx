@@ -75,12 +75,6 @@ class NestedNavigationPageTree extends SigmaPageTree {
         
         $output = "  <li>".$block;
 
-        //only do uls for childs in current branch
-        if ($hasChilds && $this->isNodeInsideCurrentBranch($page->getNode())) {
-            $cssStyle = self::CssPrefix.($level+1);
-            $output .= "\n<ul id='".$cssStyle."'>\n";
-        }
-
         //check if we need to close any <ul>'s
         $this->lastLevel = $level;
 
@@ -107,13 +101,28 @@ class NestedNavigationPageTree extends SigmaPageTree {
         }
 
         $output = '';
-        if ($hasChilds && $this->isNodeInsideCurrentBranch($page->getNode())) {
-            $output .= "</ul>\n";
+        if (!$hasChilds || !$this->isLevelInsideLayerBound($level + 1)) {
+                $output .= "  </li>\n";
         }
 
-        $output .= "  </li>\n";
-
         return $output;
+    }
+    
+    public function preRenderLevel($level, $lang) {
+        if (!$this->isLevelInsideLayerBound($level)) {
+            return '';
+        }
+        return "\n" . '<ul class="'.self::CssPrefix.$level.'">'."\n";
+    }
+    
+    public function postRenderLevel($level, $lang) {
+        if (!$this->isLevelInsideLayerBound($level)) {
+            return '';
+        }
+        if ($level == $this->levelFrom) {
+            return '</ul>' . "\n";
+        }
+        return '</ul>' . "\n" . '</li>'."\n";
     }
 
     private function isNodeInsideCurrentBranch($node)
@@ -137,23 +146,9 @@ class NestedNavigationPageTree extends SigmaPageTree {
                    || $this->levelTo == 0);
     }
 
-    protected function renderHeader($lang) {
-        //wrap everyting in an <ul>
-        return "<ul id='".self::CssPrefix.$this->levelFrom."'>\n";
-    }
-    protected function renderFooter($lang) {
-        //wrap everything in an <ul>
-        $output = "</ul>\n";
-
-        return $output;
-    }
-
-    protected function getClosingTags($level = 0) {
-        if($this->lastLevel == 0 || $level >= $this->lastLevel)
-            return '';
-
-        return str_repeat("\n</ul>\n</li>", $this->lastLevel - $level);
-    }
+    protected function renderHeader($lang) {}
+    
+    protected function renderFooter($lang) {}
 
     protected function preRenderElement($level, $hasChilds, $lang, $page) {}
     

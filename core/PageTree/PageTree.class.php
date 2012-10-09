@@ -82,10 +82,20 @@ $this->bytes = memory_get_peak_usage();
         array_push($nodeStack, $node);
         while (count($nodeStack)) {
             $node = array_pop($nodeStack);
+            if (is_callable($node)) {
+                $node();
+                continue;
+            }
             $children = $node->getChildren();
             
             $children2 = array();
             foreach ($children as $child) {
+                $page = $child->getPage($this->lang);
+                if (!$page || !$page->isActive() || !$page->isVisible()
+                        || ($page->getModule() != '' && !$this->license->isInLegalFrontendComponents($page->getModule()))) {
+                    // do not add children if page is not shown, but add them if node has no page (root node)
+                    continue;
+                }
                 $children2[$child->getLft()] = $child;
             }
             ksort($children2);
@@ -100,10 +110,22 @@ $this->bytes = memory_get_peak_usage();
             
             $hasChilds = count($children) > 0;
             if ($hasChilds && !$dontDescend) {
+                // add preRenderLevel to stack
+                $pageTree = $this;
+                $level = $node->getLvl() + 1;
+                $lang = $this->lang;
+                array_push($nodeStack, function() use($pageTree, &$content, $level, $lang) {
+                    $content .= $pageTree->postRenderLevel($level, $lang);
+                });
+                // add children to stack
                 $children = array_reverse($children, true);
                 foreach ($children as $child) {
                     array_push($nodeStack, $child);
                 }
+                // add postRenderLevel to stack
+                array_push($nodeStack, function() use($pageTree, &$content, $level, $lang) {
+                    $content .= $pageTree->preRenderLevel($level, $lang);
+                });
             }
             
             if (!$page) {
@@ -166,6 +188,10 @@ $this->bytes = memory_get_peak_usage();
     protected abstract function renderElement($title, $level, $hasChilds, $lang, $path, $current, $page);
 
     protected abstract function postRenderElement($level, $hasChilds, $lang, $page);
+    
+    public abstract function preRenderLevel($level, $lang);
+    
+    public abstract function postRenderLevel($level, $lang);
     
     protected abstract function renderHeader($lang);
     
