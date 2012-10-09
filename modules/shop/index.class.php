@@ -714,9 +714,9 @@ die("Failed to update the Cart!");
                 $imageName = $objCategory->picture();
                 if ($imageName) {
                     self::$objTemplate->setVariable(array(
-                        'SHOP_CATEGORY_IMAGE' =>
-                            ASCMS_SHOP_IMAGES_WEB_PATH.'/category/'.$imageName,
-                        'SHOP_CATEGORY_IMAGE_ALT' => $objCategory->name(),
+                        'SHOP_CATEGORY_CURRENT_IMAGE' =>
+                            ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$imageName,
+                        'SHOP_CATEGORY_CURRENT_IMAGE_ALT' => $objCategory->name(),
                     ));
                 }
             }
@@ -761,10 +761,17 @@ die("Failed to update the Cart!");
                     self::scaleImageSizeToThumbnail($arrSize);
                 }
             }
+            if ($imageName) {
+                self::$objTemplate->setVariable(
+                    'SHOP_CATEGORY_IMAGE',
+                    contrexx_raw2encodedUrl(
+                        ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$imageName));
+            }
             self::$objTemplate->setVariable(array(
                 'SHOP_CATEGORY_ID' => $id,
                 'SHOP_CATEGORY_NAME' => htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET),
-                'SHOP_CATEGORY_THUMBNAIL' => $thumbnailPath,
+                'SHOP_CATEGORY_THUMBNAIL' => contrexx_raw2encodedUrl(
+                    $thumbnailPath),
                 'SHOP_CATEGORY_THUMBNAIL_SIZE' => $arrSize[3],
                 'SHOP_CATEGORY_DESCRIPTION' => $description,
 // OBSOLETE since V3.0.0, as are any placeholders for Categories
