@@ -289,7 +289,7 @@ function createModuleConversionTables()
     $module2id = array();
     //above arrays' counterpart
     $id2module = array();
-    $rs = $db->Query('SELECT id, name FROM contrexx_modules');
+    $rs = $db->Query('SELECT id, name FROM '.DBPREFIX.'modules');
     while(!$rs->EOF) {
         $module2id[$rs->fields['name']] = $rs->fields['id'];
         $id2module[$rs->fields['id']] = $rs->fields['name'];

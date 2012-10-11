@@ -45,13 +45,16 @@ $config->setProxyDir(ASCMS_MODEL_PROXIES_PATH);
 $config->setProxyNamespace('Cx\Model\Proxies');
 $config->setAutoGenerateProxyClasses(false);
 
+$connection = new \PDO(
+    'mysql:dbname=' . $_DBCONFIG['database'] . ';host='.$_DBCONFIG['host'],
+    $_DBCONFIG['user'],
+    $_DBCONFIG['password']
+);
+$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
+
 $connectionOptions = array(
-    'driver' => 'pdo_mysql',
-    'user' => $_DBCONFIG['user'],
-    'password' => $_DBCONFIG['password'],
-    'host' => $_DBCONFIG['host'],
-    'dbname' => $_DBCONFIG['database']
-                           );
+    'pdo' => $connection,
+);
 
 $evm = new \Doctrine\Common\EventManager();
 

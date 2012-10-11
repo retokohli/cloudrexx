@@ -186,6 +186,7 @@ class LicenseCommunicator {
         $license = new \Cx\Core\License\License(
             $response->license->state,
             $response->license->edition,
+            $response->license->availableComponents,
             $response->license->legalComponents,
             $response->license->validTo,
             $response->license->createdAt,

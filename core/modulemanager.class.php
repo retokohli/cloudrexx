@@ -234,6 +234,8 @@ class modulemanager
     function installModules()
     {
         global $objDatabase, $_CORELANG, $objInit;
+        $em = \Env::get('em');
+        $nodeRepo = $em->getRepository('\Cx\Model\ContentManager\Node');
 
         //$i = 1;
         if (empty($_POST['installModule']) || !is_array($_POST['installModule'])) {
@@ -242,7 +244,6 @@ class modulemanager
         //$currentTime = time();
         $paridarray = array();
         foreach (array_keys($_POST['installModule']) as $moduleId) {
-            //$alreadyexist = false;
             $id = intval($moduleId);
             $objResult = $objDatabase->Execute("
                 SELECT name
@@ -257,45 +258,18 @@ class modulemanager
                 $this->errorHandling();
                 return false;
             }
-
-            $q_check_repo_lang = "
-                SELECT 
-                    count(lang) as langcount,
-                    lang
-                FROM ".DBPREFIX."module_repository
-                WHERE moduleid=$id
-                GROUP BY lang
-                HAVING langcount > 0
-                ORDER BY langcount ASC
-            ";
-            $check_repo_lang = $objDatabase->Execute($q_check_repo_lang);
-
-            // figure out what repository langid to use and store
-            // it in $repo_lang_id
-            while ($check_repo_lang and !$check_repo_lang->EOF) {
-                $repo_lang_id = $check_repo_lang->fields['lang'];
-                // preference in this order: current language id, default id, lowest id
-                if ($this->langId                   == $repo_lang_id) break;
-                if ($objInit->defaultFrontendLangId == $repo_lang_id) break;
             
-                // lowest id is the last, so we just loop till the 
-                // end (or until we find something better). 
-                $check_repo_lang->MoveNext();
-            }
-            unset($check_repo_lang);
-
+            // get content from repo
             $query = "SELECT *
-                     FROM ".DBPREFIX."module_repository
-                     WHERE moduleid=$id
-                     AND lang='$repo_lang_id'
-                     ORDER BY parid ASC";
+            FROM ".DBPREFIX."module_repository
+            WHERE moduleid=$id
+            ORDER BY parid ASC";
 
 
             $objResult = $objDatabase->Execute($query);
             if ($objResult) {
                 while (!$objResult->EOF) {
-                    $em = \Env::get('em');
-                    $nodeRepo = $em->getRepository('\Cx\Model\ContentManager\Node');
+                    // define parent node
                     $root = false;
                     if (isset($paridarray[$objResult->fields['parid']])) {
                         $parcat = $paridarray[$objResult->fields['parid']];
@@ -304,11 +278,12 @@ class modulemanager
                         $parcat = $nodeRepo->getRoot();
                     }
                     $this->arrayInstalledModules[$module_name] = true;
-                    //$moduleid = $objResult->fields['moduleid'];
+                    // prepare values
                     $content = addslashes($objResult->fields['content']);
                     $title = addslashes($objResult->fields['title']);
                     $cmd = $objResult->fields['cmd'];
-
+                    
+                    // create node
                     $newnode = new \Cx\Model\ContentManager\Node();
                     $newnode->setParent($parcat); // replace root node by parent!
                     $em->persist($newnode);
@@ -316,23 +291,36 @@ class modulemanager
                     $nodeRepo->moveDown($newnode, true); // move to the end of this level
                     $paridarray[$objResult->fields['id']] = $newnode;
                     
-                    $page = new \Cx\Model\ContentManager\Page();
-                    $page->setNode($newnode);
-                    $page->setNodeIdShadowed($newnode->getId());
-                    $page->setLang($this->langId);
-                    $page->setTitle($title);
-                    $page->setType(\Cx\Model\ContentManager\Page::TYPE_APPLICATION);
-                    $page->setModule($module_name);
-                    $page->setCmd($cmd);
-                    $page->setActive(true);
-                    $page->setDisplay(!$root); // pages on root level are not active
-                    $page->setContent($content);
-                    $page->setMetatitle($title);
-                    $page->setMetadesc($title);
-                    $page->setMetakeys($title);
-                    $page->setMetarobots('index');
-                    $page->setMetatitle($title);
-                    $em->persist($page);
+                    // add content to default lang
+                    // add content to all langs without fallback
+                    // link content to all langs with fallback
+                    foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
+                        var_dump($lang['fallback']);
+                        if ($lang['is_default'] === 'true' || $lang['fallback'] == null) {
+                            $page = $this->createPage(
+                                $newnode,
+                                $lang['id'],
+                                $title,
+                                \Cx\Model\ContentManager\Page::TYPE_APPLICATION,
+                                $module_name,
+                                $cmd,
+                                !$root,
+                                $content
+                            );
+                        } else {
+                            $page = $this->createPage(
+                                $newnode,
+                                $lang['id'],
+                                $title,
+                                \Cx\Model\ContentManager\Page::TYPE_FALLBACK,
+                                $module_name,
+                                $cmd,
+                                !$root,
+                                ''
+                            );
+                        }
+                        $em->persist($page);
+                    }
                     $em->flush();
                     $objResult->MoveNext();
                 }
@@ -345,6 +333,26 @@ class modulemanager
         return true;
     }
 
+    private function createPage($parentNode, $lang, $title, $type, $module, $cmd, $display, $content) {
+        $page = new \Cx\Model\ContentManager\Page();
+        $page->setNode($parentNode);
+        $page->setNodeIdShadowed($parentNode->getId());
+        $page->setLang($lang);
+        $page->setTitle($title);
+        $page->setType($type);
+        $page->setModule($module);
+        $page->setCmd($cmd);
+        $page->setActive(true);
+        $page->setDisplay($display); // pages on root level are not active
+        $page->setContent($content);
+        $page->setMetatitle($title);
+        $page->setMetadesc($title);
+        $page->setMetakeys($title);
+        $page->setMetarobots('index');
+        $page->setMetatitle($title);
+        $page->setUpdatedBy(\FWUser::getFWUserObject()->objUser->getUsername());
+        return $page;
+    }
 
     function removeModules()
     {

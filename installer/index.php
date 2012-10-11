@@ -16,7 +16,7 @@
 
 $php = phpversion();
 if ($php < '5.3') {
-    die('Das Contrexx CMS ben&uml;tigt mindestens PHP in der Version 5.1.<br>Auf Ihrem System l&auml;uft PHP '.$php);
+    die('Das Contrexx CMS ben&uml;tigt mindestens PHP in der Version 5.3.<br />Auf Ihrem System l&auml;uft PHP '.$php);
 }
 
 $offsetPath = '';
@@ -36,8 +36,7 @@ if (!@include_once($basePath.'/config/config.php')) {
     die('Unable to load file '.$basePath.'/config/config.php');
 }
 
-require_once($basePath.'/../core/ClassLoader/ClassLoader.class.php');
-new \Cx\Core\ClassLoader\ClassLoader($basePath, false);
+require_once($basePath.'/classloader.inc.php');
 
 @header('content-type: text/html; charset='.($useUtf8 ? 'UTF-8' : 'ISO-8859-1'));
 
