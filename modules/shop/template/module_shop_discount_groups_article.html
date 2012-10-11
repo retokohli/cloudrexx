@@ -4,7 +4,7 @@
 function deleteGroup(groupId)
 {
   if (confirm('{TXT_SHOP_CONFIRM_DELETE_ARTICLE_GROUP}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.href="index.php?cmd=shop&act=products&tpl=groups&delete=1&id="+groupId;
+    window.location.href="index.php?{CSRF_PARAM}&cmd=shop&act=products&tpl=groups&delete=1&id="+groupId;
 }
 // -->
 </script>
@@ -75,7 +75,7 @@ function deleteGroup(groupId)
     <br />
     <input type="submit" name="store" value="{TXT_STORE}" />
     <input type="button" name="cancel" value="{TXT_SHOP_CANCEL}"
-        onclick="javascript:window.location.href='index.php?cmd=shop&amp;act=products&amp;tpl=groups';"
+        onclick="window.location.href='index.php?{CSRF_PARAM}&cmd=shop&amp;act=products&amp;tpl=groups';"
     />
   </div>
 <!-- end content2 div -->

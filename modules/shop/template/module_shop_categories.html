@@ -4,7 +4,7 @@
 function deleteCategory(id)
 {
   if (confirm('{TXT_CONFIRM_DELETE_SHOP_CATEGORIES}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=categories&delete_category_id="+id);
+    window.location.replace("index.php?{CSRF_PARAM}&cmd=shop{MODULE_INDEX}&act=categories&delete_category_id="+id);
 }
 
 function shopCatDoAction(strForm, strCheckbox, objSelect, strAct)
@@ -79,7 +79,7 @@ function SetUrl(url, width, height, alt)
 
 function cancelEdit()
 {
-  window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=categories");
+  window.location.replace("index.php?{CSRF_PARAM}&cmd=shop{MODULE_INDEX}&act=categories");
 }
 // ]]>
 </script>

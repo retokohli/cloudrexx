@@ -68,7 +68,7 @@ class CSVimport
     function getNameArray()
     {
         $arrName = array();
-        foreach ($this->arrTemplateArray as $index => $arrTemplate) {
+        foreach ($this->arrTemplateArray as $arrTemplate) {
             $arrName[$arrTemplate['id']] = $arrTemplate['name'];
         }
         return $arrName;

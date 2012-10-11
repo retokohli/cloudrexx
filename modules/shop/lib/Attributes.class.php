@@ -673,8 +673,6 @@ DBG::log("Attributes::getOptionPriceSum(): ERROR: option ID $option_id is not nu
      */
     static function deleteAll()
     {
-        global $objDatabase;
-
         $arrAttributes = self::getArray();
         foreach (array_keys($arrAttributes) as $attribute_id) {
             $objAttribute = Attribute::getById($attribute_id);
@@ -896,7 +894,6 @@ DBG::log("Attributes::getOptionPriceSum(): ERROR: option ID $option_id is not nu
             if (!$objAttribute) continue;
 //DBG::log("Attributes::getAsStrings(): Attribute ".var_export($objAttribute, true));
             $options_long = $options_cart = array();
-            $attribute_price = 0;
             $arrOptions = $objAttribute->getOptionArray();
             foreach ($arrOptionIds as $option_id) {
 //DBG::log("Attributes::getAsStrings(): Option ID $option_id");

@@ -119,6 +119,7 @@ class ShopMail
     static function send(
         $mailTo, $mailFrom, $mailSender, $mailSubject, $mailBody
     ) {
+die("ShopMail::send(): Obsolete method called!");
         global $_CONFIG;
 
         if (!@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
@@ -164,6 +165,7 @@ class ShopMail
      */
     static function getTemplate($template_id, $lang_id=0)
     {
+die("ShopMail::getTemplate(): Obsolete method called!");
         if (empty($lang_id)) $lang_id = FRONTEND_LANG_ID;
         self::init($lang_id);
         return self::$arrTemplate[$template_id];
@@ -201,6 +203,7 @@ class ShopMail
      */
     function isValidAddress($string)
     {
+die("ShopMail::isValidAddress(): Obsolete method called!");
         if (preg_match(
             '/^[a-z0-9]+([-_\.a-z0-9]+)*'.  // user
             '@([a-z0-9]+([-\.a-z0-9]+)*)+'. // domain
@@ -213,6 +216,7 @@ class ShopMail
 
     static function store()
     {
+die("ShopMail::store(): Obsolete method called!");
         if (empty(self::$arrTemplate)) self::init();
         $total_result = true;
         $result = self::deleteTemplate();
@@ -231,6 +235,7 @@ class ShopMail
      */
     static function deleteTemplate()
     {
+die("ShopMail::deleteTemplate(): Obsolete method called!");
         global $objDatabase;
 
         if (empty($_GET['delTplId'])) return '';
@@ -256,6 +261,7 @@ class ShopMail
      */
     function storeTemplate()
     {
+die("ShopMail::storeTemplate(): Obsolete method called!");
         global $objDatabase;
 
         if (empty($_POST['mails'])) return '';

@@ -844,7 +844,7 @@ if (!$limit) {
             return Message::error($_ARRAYLANG['TXT_SHOP_ERROR_CUSTOMER_QUERYING_ORDERS']);
         }
         foreach ($arrOrderId as $order_id) {
-            if (!$objOrder->deleteById($order_id)) {
+            if (!Order::deleteById($order_id)) {
                 return Message::error($_ARRAYLANG['TXT_SHOP_ERROR_CUSTOMER_DELETING_ORDERS']);
             }
         }
@@ -1057,8 +1057,6 @@ if (!$limit) {
      */
     static function getStatusMenuoptions($selected='', $flagFilter=false)
     {
-        global $_ARRAYLANG;
-
         return Html::getOptions(self::getStatusArray($flagFilter), $selected);
     }
 

@@ -332,7 +332,7 @@ DBG::log($error);
      * @return  string                The HTML code
      * @static
      */
-    static function _SaferpayProcessor($arrCards=null)
+    static function _SaferpayProcessor()
     {
         global $_ARRAYLANG;
 
@@ -361,10 +361,6 @@ DBG::log($error);
             'ALLOWCOLLECT' => 'no',
             'DELIVERY'     => 'no',
         );
-// Obsolete
-//        if ($arrCards) {
-//            $arrShopOrder['PROVIDERSET'] = $arrCards;
-//        }
         $payInitUrl = Saferpay::payInit($arrShopOrder,
             SettingDb::getValue('saferpay_use_test_account'));
 //DBG::log("PaymentProcessing::_SaferpayProcessor(): payInit URL: $payInitUrl");
@@ -544,7 +540,6 @@ DBG::log("Yellowpay Error: $error");
                     }
                 }
                 $currency_code = Currency::getCodeById($currency_id);
-                $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
                 return PayPal::ipnCheck($amount, $currency_code,
                     $order_id, $customer_email,
                     SettingDb::getValue('paypal_account_email'));
@@ -672,8 +667,6 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
      */
     static function errorHandler()
     {
-        global $objDatabase;
-
         if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
         $table_name_new = DBPREFIX.'module_shop'.MODULE_INDEX.'_processors';
         if (!UpdateUtil::table_exist($table_name_new)) {
@@ -686,6 +679,7 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
                 'status' => array('type' => 'TINYINT(10)', 'unsigned' => true, 'default' => 1),
                 'picture' => array('type' => 'VARCHAR(255)', 'default' => ''),
             );
+            UpdateUtil::table($table_name_new, $table_structure);
         }
         $arrPsp = array(
             array(01, 'external', 'Saferpay',

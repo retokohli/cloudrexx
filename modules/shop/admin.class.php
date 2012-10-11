@@ -204,10 +204,11 @@ class Shopmanager extends ShopLibrary
         ));
 
         $count = 0;
+// TODO: Implement the filter in the Manufacturer class
         $filter = null;
         $limit = SettingDb::getValue('numof_manufacturers_per_page_backend');
-        $arrManufacturers = Manufacturer::getArray($count, $filter,
-            $objSorting->getOrder(), Paging::getPosition(), $limit);
+        $arrManufacturers = Manufacturer::getArray($count,
+            $objSorting->getOrder(), Paging::getPosition(), $limit, $filter);
         $i = 0;
         foreach ($arrManufacturers as $manufacturer_id => $arrManufacturer) {
             self::$objTemplate->setVariable(array(
@@ -467,7 +468,7 @@ class Shopmanager extends ShopLibrary
                 Message::error($_ARRAYLANG['TXT_SHOP_IMPORT_NOT_SUCCESSFULLY_IMPORTED_PRODUCTS'].': '.$errorLines);
             }
         } // end import
-        $noimg = $importButtonStyle = $jsnofiles = '';
+        $jsnofiles = '';
         $fileFields = $dblist = null;
         $arrTemplateArray = $objCSVimport->getTemplateArray();
         if (isset($_REQUEST['mode']) && $_REQUEST['mode'] != 'ImportImg') {
@@ -478,7 +479,6 @@ class Shopmanager extends ShopLibrary
                 $imageChoice = $objCSVimport->GetImageChoice();
                 self::$objTemplate->setVariable(array(
                     'IMAGE_CHOICE' => $imageChoice,
-                    'IMPORT_BUTTON_STYLE' => $importButtonStyle,
                 ));
             }
         } else {
@@ -1027,7 +1027,7 @@ class Shopmanager extends ShopLibrary
      */
     function _updateAttributeOptions()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $arrAttributeName = contrexx_input2raw($_POST['attribute_name']);
         $arrAttributeType = contrexx_input2int($_POST['attribute_type']);
@@ -1109,7 +1109,7 @@ class Shopmanager extends ShopLibrary
      */
     function _deleteAttribute($attribute_id)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $arrAttributeId = $attribute_id;
         if (!is_array($attribute_id)) {
@@ -1143,7 +1143,7 @@ class Shopmanager extends ShopLibrary
      */
     static function view_settings()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         SettingDb::init('shop', 'config');
         if (ShopSettings::storeSettings() === false) {
@@ -1378,7 +1378,7 @@ class Shopmanager extends ShopLibrary
      */
     static function view_settings_mail()
     {
-        global $_ARRAYLANG, $_CORELANG;
+        global $_CORELANG;
 
 // TODO: TEMPORARY.  Remove when a proper update is available.
 $template = MailTemplate::get('shop', 'order_confirmation');
@@ -1694,7 +1694,8 @@ if ($test === NULL) {
                 ));
                 self::$objTemplate->parse('category_language');
             }
-            self::$objTemplate->touchBlock('category_row');
+// TODO: Implement a folded hierarchy view
+//            self::$objTemplate->touchBlock('category_row');
 //            if ($level !== $level_prev) {
 //                self::$objTemplate->touchBlock('folder');
 //            }
@@ -2432,7 +2433,7 @@ if ($test === NULL) {
      */
     function view_order_details($edit=false)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         // Storing can only fail if an order is posted.
         // If there is nothing to do, it will return null.
@@ -2465,7 +2466,7 @@ if ($test === NULL) {
      */
     function delete_order($order_id=null)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $arrOrderId = array();
 
@@ -2497,7 +2498,7 @@ if ($test === NULL) {
      */
     function view_customers()
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG;
 
         $template = (isset($_GET['tpl']) ? $_GET['tpl'] : '');
         if ($template == 'discounts') {
@@ -2640,7 +2641,7 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
      */
     function delete_customer()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $arrCustomerId = array();
         if (isset($_GET['customer_id']) && !empty($_GET['customer_id'])) {
@@ -2744,7 +2745,7 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
             'SHOP_DISCOUNT_GROUP_CUSTOMER' => Discount::getCustomerGroupName(
                 $objCustomer->group_id()),
         ));
-
+// TODO: Use Orders methods
         $query = "
             SELECT date_time, id, status, currency_id, sum
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
@@ -2781,7 +2782,7 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
      */
     function view_customer_edit()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         self::$objTemplate->loadTemplateFile("module_shop_edit_customer.html");
         $customer_id = (isset($_REQUEST['customer_id'])
@@ -2905,7 +2906,7 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
      */
     static function storeCustomerFromPost()
     {
-        global $_ARRAYLANG, $_CORELANG;
+        global $_ARRAYLANG;
 
         $username = trim(strip_tags(contrexx_input2raw($_POST['username'])));
         $password = trim(strip_tags(contrexx_input2raw($_POST['password'])));
@@ -3021,7 +3022,7 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
      */
     function view_product_overview()
     {
-        global $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG;
 
         if (isset($_POST['bsubmit'])) {
             $this->update_products();
@@ -3405,7 +3406,7 @@ if (!$limit) {
      */
     function view_pricelists()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         self::$pageTitle = $_ARRAYLANG['TXT_PDF_OVERVIEW'];
         // Note that the "list_id" index may be set but empty in order to
@@ -3442,7 +3443,7 @@ if (!$limit) {
      */
     static function view_pricelist_edit()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $list_id = null;
         $objList = Pricelist::getFromPost();
@@ -3522,8 +3523,6 @@ if (!$limit) {
      */
     static function sendProcessedMail($order_id)
     {
-        global $objDatabase, $_ARRAYLANG;
-
         $arrSubstitution =
               Orders::getSubstitutionArray($order_id)
             + self::getSubstitutionArray();
@@ -3816,14 +3815,10 @@ if (!$limit) {
      */
     function view_customer_discounts()
     {
-        global $_ARRAYLANG;
-
         if (!empty($_POST['store'])) {
             $this->store_discount_customer();
         }
-
         self::$objTemplate->loadTemplateFile("module_shop_discount_customer.html");
-
         // Discounts overview
         $arrCustomerGroups = Discount::getCustomerGroupArray();
         $arrArticleGroups = Discount::getArticleGroupArray();

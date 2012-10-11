@@ -286,8 +286,6 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
      */
     static function sendConfirmationMail($order_id, $create_accounts=true)
     {
-        global $objDatabase;
-
         $arrSubstitution =
             Orders::getSubstitutionArray($order_id, $create_accounts);
         $customer_id = $arrSubstitution['CUSTOMER_ID'];

@@ -157,8 +157,6 @@ class Payment
             $payment_id = $_SESSION['shop']['paymentId'];
             $processor_id = self::getPaymentProcessorId($payment_id);
             if ($processor_id == 2) {
-                $arrPaypalAcceptedCurrencyCodes =
-                   PayPal::getAcceptedCurrencyCodeArray();
                 foreach ($arrCurrencies as $index => $arrCurrency) {
                     if (!PayPal::isAcceptedCurrencyCode($arrCurrency['code'])) {
                         unset($arrCurrencies[$index]);
@@ -304,7 +302,7 @@ class Payment
         if (is_null(self::$arrPayments)) self::init();
         if (empty(self::$arrPayments[$payment_id])) return NULL;
         $count_active_payments = 0;
-        foreach (self::$arrPayments as $id => $arrPayment) {
+        foreach (self::$arrPayments as $arrPayment) {
             if ($arrPayment['active']) ++$count_active_payments;
         }
         if ($count_active_payments < 2) {

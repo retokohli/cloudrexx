@@ -270,8 +270,6 @@ class Manufacturer
      * database table.
      * See {@link init()} for details on the array.
      * @param   integer   $count    The count, by reference
-     * @param   array     $filter   NOT IMPLEMENTED: The optional filter array.
-     *                              Defaults to null
      * @param   string    $order    The optional sorting order.
      *                              Defaults to null
      * @param   integer   $offset   The optional record offset.
@@ -280,12 +278,13 @@ class Manufacturer
      *                              Defaults to null (all records)
      * @return  array               The Manufacturer array on success,
      *                              null otherwise
+     * //@param   array     $filter   NOT IMPLEMENTED: The optional filter array.
+     * //                             Defaults to null
      * @todo    Implement the filter
      */
-    static function getArray(
-        &$count, $filter=null, $order=null, $offset=0, $limit=null
-    ) {
-        $filter; // Shut up the code analyzer
+    static function getArray(&$count, $order=null, $offset=0, $limit=null)//, $filter=null)
+    {
+//        $filter; // Shut up the code analyzer
         if (is_null(self::$arrManufacturer)) self::init($order);
         $count = count(self::$arrManufacturer);
         return array_slice(self::$arrManufacturer, $offset, $limit, true);
@@ -303,11 +302,10 @@ class Manufacturer
     static function getNameArray()
     {
         static $arrManufacturerName = null;
-
         if (is_null($arrManufacturerName)) {
             $arrManufacturerName = array();
             $count = 0;
-            foreach (self::getArray($count, null, '`name` ASC')
+            foreach (self::getArray($count, '`name` ASC', 0, 1000)
                     as $id => $arrManufacturer) {
                 $arrManufacturerName[$id] = $arrManufacturer['name'];
             }
