@@ -394,7 +394,6 @@ if (!$limit) {
 //            $order_id_custom = ShopLibrary::getCustomOrderId(
 //                $order_id, $objOrder->date_time()
 //            );
-            $customer_id = $objOrder->customer_id();
             // Take billing address from the Order.
             // No need to load the Customer.
             $customer_name = '';
@@ -435,10 +434,11 @@ if (!$limit) {
 
     /**
      * Sets up the Order statistics
-     * @param     HTML_Template_Sigma   $objTemplate  The optional Template,
+     * @param   HTML_Template_Sigma     $objTemplate  The optional Template,
      *                                                by reference
-     * @global    ADONewConnection
-     * @global    array      $_ARRAYLANG
+     * @global  ADONewConnection        $objDatabase
+     * @global  array                   $_ARRAYLANG
+     * @todo    Rewrite the statistics in a seperate class, extending Order
      */
     function view_statistics(&$objTemplate=null)
     {
@@ -527,12 +527,11 @@ if (!$limit) {
                 'SHOP_END_YEAR' => $this->shop_getYearDropdwonMenu(
                     $orderStartyear, intval($_REQUEST['stopyear'])),
             ));
-// NOTE: Aww, use date functions
+// TODO: Use proper date functions
             $startDate =
                 intval($_REQUEST['startyear']).'-'.
                 sprintf('%02s', intval($_REQUEST['startmonth'])).
                 '-01 00:00:00';
-// NOTE: ... and here
             $stopDate =
                 intval($_REQUEST['stopyear']).'-'.
                 sprintf('%02s', intval($_REQUEST['stopmonth'])).
@@ -619,10 +618,10 @@ if (!$limit) {
                        A.currency_id AS currency_id,
                        sum(B.quantity) AS shopColumn3,
                        A.customer_id AS id
-                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS A,
-                       ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS B
-                 WHERE A.id=B.order_id
-                   AND A.date_time>='$startDate'
+                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS A
+                  JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS B
+                    ON A.id=B.order_id
+                 WHERE A.date_time>='$startDate'
                    AND A.date_time<='$stopDate'
                    AND (   A.status=".Order::STATUS_CONFIRMED."
                         OR A.status=".Order::STATUS_COMPLETED.")
@@ -702,13 +701,13 @@ if (!$limit) {
                     SettingDb::getValue('usergroup_id_customer'),
                     SettingDb::getValue('usergroup_id_reseller'),
             )));
-//DBG::log("User: ".var_export($objUser, true));
             while (!$objResult->EOF) {
                 Currency::setActiveCurrencyId($objResult->fields['currency_id']);
                 $key = $objResult->fields['id'];
                 $objUser = FWUser::getFWUserObject()->objUser;
                 $objUser = $objUser->getUser($key);
-                $company = $name = '';
+                $company = '';
+                $name = $_ARRAYLANG['TXT_SHOP_CUSTOMER_NOT_FOUND'];
                 if ($objUser) {
                     $company = $objUser->getProfileAttribute('company');
                     $name =
