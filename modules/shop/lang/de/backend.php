@@ -922,3 +922,5 @@ $_ARRAYLANG['TXT_SHOP_SETTING_SHOPNAVBAR_ON_ALL_PAGES'] = "Shop Navigation auf j
 // 20120824
 $_ARRAYLANG['TXT_SHOP_PRODUCT_LANGUAGE_EDIT'] = "Produkt in %3\$s bearbeiten";
 $_ARRAYLANG['TXT_SHOP_CATEGORY_LANGUAGE_EDIT'] = "Rubrik in %3\$s bearbeiten";
+// 20121011
+$_ARRAYLANG['TXT_SHOP_CUSTOMER_NOT_FOUND'] = "Information nicht vorhanden (der entsprechende Benutzer ist gelöscht worden)";
