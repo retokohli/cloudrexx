@@ -18,6 +18,7 @@ class License {
     private $state;
     private $frontendLocked = false;
     private $editionName;
+    private $availableComponents;
     private $legalComponents;
     private $legalFrontendComponents;
     private $validTo;
@@ -39,7 +40,8 @@ class License {
     public function __construct(
             $state = self::LICENSE_DEMO,
             $editionName = '',
-            $legalComponents = array('license'),
+            $availableComponents = array(),
+            $legalComponents = array('license', 'logout', 'error'),
             $validTo = '',
             $createdAt = '',
             $registeredDomains = array(),
@@ -58,6 +60,7 @@ class License {
     ) {
         $this->state = $state;
         $this->editionName = $editionName;
+        $this->availableComponents = $availableComponents;
         $this->legalComponents = $legalComponents;
         $this->validTo = $validTo;
         $this->createdAt = $createdAt;
@@ -93,6 +96,10 @@ class License {
     
     public function getEditionName() {
         return $this->editionName;
+    }
+    
+    public function getAvailableComponents() {
+        return $this->availableComponents;
     }
     
     public function getLegalComponentsList() {
@@ -283,6 +290,8 @@ class License {
         $_POST['setvalue'][101] = base64_encode(serialize($this->getPartner()));            // licensePartner
         $_POST['setvalue'][102] = base64_encode(serialize($this->getCustomer()));           // licenseCustomer
         
+        $_POST['setvalue'][103] = base64_encode(serialize($this->getAvailableComponents()));// availableComponents
+        
         $_POST['setvalue'][112] = $this->getVersion()->getName();                           // coreCmsName
         
         $_POST['setvalue'][114] = $this->getGrayzoneTime();                                 // licenseGrayzoneTime
@@ -349,16 +358,20 @@ class License {
         $failedUpdate = isset($_CONFIG['licenseFailedUpdate']) ? htmlspecialchars_decode($_CONFIG['licenseFailedUpdate']) : null;
         $successfulUpdate = isset($_CONFIG['licenseSuccessfulUpdate']) ? htmlspecialchars_decode($_CONFIG['licenseSuccessfulUpdate']) : null;
         
+        $activeComponents = isset($_CONFIG['availableComponents']) ? unserialize(base64_decode(htmlspecialchars_decode($_CONFIG['availableComponents']))) : array();
+        
         $query = '
             SELECT
                 `name`
             FROM
                 '.DBPREFIX.'modules
             WHERE
+                `distributor` != \'Comvation AG\'
+                OR
                 `is_active` = \'1\'
         ';
         $result = $objDb->execute($query);
-        $activeComponents = array();
+        $availableComponents = array();
         if ($result) {
             while (!$result->EOF) {
                 $activeComponents[] = $result->fields['name'];
@@ -368,6 +381,7 @@ class License {
         return new static(
             $state,
             $editionName,
+            $availableComponents,
             $activeComponents,
             $validTo,
             $createdAt,

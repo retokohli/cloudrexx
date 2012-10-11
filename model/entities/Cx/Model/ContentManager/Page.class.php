@@ -876,7 +876,9 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function getModule()
     {
-        if ($this->getType() != self::TYPE_APPLICATION) {
+        if ($this->getType() == self::TYPE_FALLBACK) {
+            return $this->getFallback()->getModule();
+        } else if ($this->getType() != self::TYPE_APPLICATION) {
             return '';
         }
         return $this->module;
@@ -899,7 +901,9 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function getCmd()
     {
-        if ($this->getType() != self::TYPE_APPLICATION) {
+        if ($this->getType() == self::TYPE_FALLBACK) {
+            return $this->getFallback()->getCmd();
+        } else if ($this->getType() != self::TYPE_APPLICATION) {
             return '';
         }
         return $this->cmd;
@@ -1683,6 +1687,21 @@ class Page extends \Cx\Model\Base\EntityBase
             }
         }
         return $children;
+    }
+    
+    /**
+     * Returns the fallback page of this page
+     * @return \Cx\Model\ContentManager\Page Fallback page or null if none
+     */
+    public function getFallback() {
+        if ($this->getType() != self::TYPE_FALLBACK) {
+            return null;
+        }
+        $fallbackLanguage = \FWLanguage::getFallbackLanguageIdById($this->getLang());
+        if (!$fallbackLanguage) {
+            return null;
+        }
+        return $this->getNode()->getPage($fallbackLanguage);
     }
     
     /**

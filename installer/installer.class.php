@@ -1046,6 +1046,15 @@ class Installer
                 $dbDatabaseName = $_SESSION['installer']['config']['dbDatabaseName'];
                 $dbTablePrefix = $_SESSION['installer']['config']['dbTablePrefix'];
                 $dbCollation = !empty($_SESSION['installer']['config']['dbCollation']) ? $_SESSION['installer']['config']['dbCollation'] : '';
+                
+                $timezones = timezone_identifiers_list();
+                $timezone = $timezones[$_SESSION['installer']['config']['timezone']];
+                $dateTimeZone = new DateTimeZone($timezone);
+                $dateTime     = new DateTime('now', $dateTimeZone);
+                $timeOffset   = $dateTimeZone->getOffset($dateTime);
+                $plusOrMinus  = $timeOffset < 0 ? '-' : '+';
+                $gmt          = 'GMT ' . $plusOrMinus . ' ' . gmdate('g:i', $timeOffset);
+                $timezone .= ' (' . $gmt . ')<input type="hidden" name="timezone" value="' . $_SESSION['installer']['config']['timezone'] . '" />';
             } else {
                 if (!isset($_SESSION['installer']['config']['createDatabase'])) {
                     $_SESSION['installer']['config']['createDatabase'] = false;
@@ -1057,6 +1066,7 @@ class Installer
                 $dbUsername = "<input type=\"text\" name=\"dbUsername\" value=\"".(isset($_SESSION['installer']['config']['dbUsername']) ? $_SESSION['installer']['config']['dbUsername'] : $arrDefaultConfig['dbUsername'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
                 $dbPassword = "<input type=\"password\" name=\"dbPassword\" value=\"".(isset($_SESSION['installer']['config']['dbPassword']) ? $_SESSION['installer']['config']['dbPassword'] : $arrDefaultConfig['dbPassword'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
                 $dbTablePrefix = "<input type=\"text\" name=\"dbTablePrefix\" value=\"".(isset($_SESSION['installer']['config']['dbTablePrefix']) ? $_SESSION['installer']['config']['dbTablePrefix'] : $arrDefaultConfig['dbTablePrefix'])."\" tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<span class=\"icon-info tooltip-trigger\"></span><span class=\"tooltip-message\">".$_ARRLANG['TXT_DB_TABLE_PREFIX_INVALID']."</span>";
+                $timezone = '<select name="timezone">'.$objCommon->getTimezoneOptions().'</select>';
 
                 if ($useUtf8 && !empty($_SESSION['installer']['config']['dbHostname']) && !empty($_SESSION['installer']['config']['dbUsername'])) {
                     if (($result = $objCommon->checkDbConnection($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword'])) === true) {
@@ -1076,19 +1086,6 @@ class Installer
                         $this->arrStatusMsg['database'] = $result;
                     }
                 }
-            }
-            
-            if (isset($_SESSION['installer']['config']['timezone'])) {
-                $timezones = timezone_identifiers_list();
-                $timezone = $timezones[$_SESSION['installer']['config']['timezone']];
-                $dateTimeZone = new DateTimeZone($timezone);
-                $dateTime     = new DateTime('now', $dateTimeZone);
-                $timeOffset   = $dateTimeZone->getOffset($dateTime);
-                $plusOrMinus  = $timeOffset < 0 ? '-' : '+';
-                $gmt          = 'GMT ' . $plusOrMinus . ' ' . gmdate('g:i', $timeOffset);
-                $timezone .= ' (' . $gmt . ')<input type="hidden" name="timezone" value="' . $_SESSION['installer']['config']['timezone'] . '" />';
-            } else {
-                $timezone = '<select name="timezone">'.$objCommon->getTimezoneOptions().'</select>';
             }
 
             // set general and database configuration options
