@@ -172,10 +172,13 @@ class JsonPage implements JsonAdapter {
             $validatedPageArray = $this->validatePageArray($pageArray);
         }
         
+        // UPDATE
         if (!empty($pageId)) {
             // If we got a page id, the page already exists and can be updated.
             $page = $this->pageRepo->find($pageId);
             $node = $page->getNode();
+            
+        // TRANSLATE
         } else if (!empty($nodeId) && !empty($lang)) {
             // We are translating the page.
             $node = $this->nodeRepo->find($nodeId);
@@ -185,6 +188,8 @@ class JsonPage implements JsonAdapter {
             
             $newPage = true;
             $reload  = true;
+        
+        // CREATE
         } else if (empty($pageId) && !empty($lang)) {
             if (!\Permission::checkAccess(5, 'static', true)) {
                 throw new \Exception($_CORELANG['TXT_CORE_CM_CREATION_DENIED']);
@@ -193,15 +198,31 @@ class JsonPage implements JsonAdapter {
             // Create a new node/page combination.
             $node = new \Cx\Model\ContentManager\Node();
             
+            // CREATE WITHIN
             if (isset($dataPost['parent_node'])) {
                 $parentNode = $this->nodeRepo->find($dataPost['parent_node']);
                 if (!$parentNode) {
                     $parentNode = $this->nodeRepo->getRoot();
                 }
                 $node->setParent($parentNode);
+                
+                // add parent node to ID, so the node containing the new page is opened
+                if (!isset($_COOKIE['jstree_open'])) {
+                    $_COOKIE['jstree_open'] = '';
+                }
+                $openNodes = explode(',', $_COOKIE['jstree_open']);
+                if ($openNodes == array(0=>'')) {
+                    $openNodes = array();
+                }
+                if (!in_array('#node_' . $parentNode->getId(), $openNodes)) {
+                    $openNodes[] = '#node_' . $parentNode->getId();
+                }
+                setcookie('jstree_open', implode(',', $openNodes));
 
                 $this->em->persist($node);
                 $this->em->flush();
+            
+            // CREATE
             } else {
                 $node->setParent($this->nodeRepo->getRoot());
 

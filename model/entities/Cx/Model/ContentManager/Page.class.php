@@ -877,7 +877,11 @@ class Page extends \Cx\Model\Base\EntityBase
     public function getModule()
     {
         if ($this->getType() == self::TYPE_FALLBACK) {
-            return $this->getFallback()->getModule();
+            $fallback = $this->getFallback();
+            if (!$fallback) {
+                return $this->module;
+            }
+            return $fallback->getModule();
         } else if ($this->getType() != self::TYPE_APPLICATION) {
             return '';
         }
@@ -902,7 +906,11 @@ class Page extends \Cx\Model\Base\EntityBase
     public function getCmd()
     {
         if ($this->getType() == self::TYPE_FALLBACK) {
-            return $this->getFallback()->getCmd();
+            $fallback = $this->getFallback();
+            if (!$fallback) {
+                return $this->cmd;
+            }
+            return $fallback->getCmd();
         } else if ($this->getType() != self::TYPE_APPLICATION) {
             return '';
         }
