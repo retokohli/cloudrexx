@@ -545,7 +545,7 @@ class Currency
             return false;
         }
         $code = contrexx_input2raw($_POST['currencyCodeNew']);
-        foreach (self::$arrCurrency as $id => $currency) {
+        foreach (self::$arrCurrency as $currency) {
             if ($code == $currency['code']) {
                 Message::error(sprintf(
                     $_ARRAYLANG['TXT_SHOP_CURRENCY_EXISTS'],

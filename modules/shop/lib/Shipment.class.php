@@ -638,8 +638,6 @@ class Shipment
      */
     private static function _rename_shipper($shipper_id, $name)
     {
-        global $objDatabase;
-
         if (empty(self::$arrShippers)) self::init();
         if (!Text::replace($shipper_id, FRONTEND_LANG_ID, 'shop',
             self::TEXT_NAME, $name)) {

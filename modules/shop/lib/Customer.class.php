@@ -486,8 +486,6 @@ class Customer extends User
      */
     static function getRegisteredByEmail($email)
     {
-        global $_ARRAYLANG;
-
         // Any Customers
         $objUser = FWUser::getFWUserObject()->objUser;
         $objUser = $objUser->getUsers(array(

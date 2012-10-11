@@ -772,8 +772,6 @@ class ShopCategory
     static function getShopCategoryMenuHierarchicRecurse(
         $parent_id, $level, $selected=0
     ) {
-        global $objDatabase;
-
         $arrChildShopCategories =
             ShopCategory::getChildCategoriesById($parent_id);
         if (   !is_array($arrChildShopCategories
@@ -838,8 +836,6 @@ class ShopCategory
      */
     static function getNextShopCategoryId($shopCategoryId=0)
     {
-        global $objDatabase;
-
         // Get the parent ShopCategory ID
         $parentShopCategoryId =
             ShopCategory::getParentCategoryId($shopCategoryId);

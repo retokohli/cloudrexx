@@ -413,7 +413,7 @@ die("Failed to get Customer for ID $customer_id");
      */
     static function setNavbar()
     {
-        global $objTemplate, $themesPages;
+        global $objTemplate;
 
         $objTemplate->setVariable('SHOPNAVBAR_FILE', self::getNavbar());
     }
@@ -496,7 +496,6 @@ die("Failed to get Customer for ID $customer_id");
               array('\\\'', '\n', '\\/'),
               $div_product)."';\n"
         );
-        JS::registerJS('modules/shop/lib/html2dom.js');
     }
 
 
@@ -700,8 +699,6 @@ die("Failed to update the Cart!");
      */
     static function showCategories($parent_id=0)
     {
-        global $_ARRAYLANG;
-
         if ($parent_id) {
             $objCategory = ShopCategory::getById($parent_id);
             // If we can't get this ShopCategory, it most probably does
@@ -3919,8 +3916,6 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
      */
     static function showCustomerDiscount($orderAmount)
     {
-        global $_ARRAYLANG;
-
         if (!self::$objCustomer) {
             return false;
         }
@@ -4007,8 +4002,6 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
     static function showDiscountInfo(
         $groupCustomerId, $groupArticleId, $groupCountId, $count
     ) {
-        global $_ARRAYLANG;
-
         // Pick the unit for this product (count, meter, kilo, ...)
         $unit = Discount::getUnit($groupCountId);
         if (!empty($unit)) {
@@ -4016,7 +4009,6 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
                 'SHOP_PRODUCT_UNIT', $unit
             );
         }
-
         if ($groupCustomerId > 0) {
             $rateCustomer = Discount::getDiscountRateCustomer(
                 $groupCustomerId, $groupArticleId
@@ -4029,7 +4021,6 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
                 ));
             }
         }
-
         if ($groupCountId > 0) {
             $rateCount = Discount::getDiscountRateCount($groupCountId, $count);
             $listCount = self::getDiscountCountString($groupCountId);
@@ -4138,8 +4129,6 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
      */
     static function verifySessionAddress()
     {
-        global $_ARRAYLANG;
-
         // Note that the Country IDs are either set already, or chosen in a
         // dropdown menu, so if everything else is set, so are they.
         // They may thus be disabled entirely without affecting this.

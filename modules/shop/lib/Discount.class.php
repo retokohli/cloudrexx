@@ -233,8 +233,6 @@ class Discount
      */
     static function getDiscountCountArray()
     {
-        global $objDatabase;
-
         if (is_null(self::$arrDiscountCountName)) self::init();
         return self::$arrDiscountCountName;
     }
@@ -255,8 +253,6 @@ class Discount
      */
     static function getDiscountCountRateArray($group_id)
     {
-        global $objDatabase;
-
         if (empty($group_id)) return null;
         if (is_null(self::$arrDiscountCountRate)) self::init();
         if (isset (self::$arrDiscountCountRate[$group_id])) {
@@ -281,8 +277,6 @@ class Discount
      */
     static function getDiscountRateCount($group_id, $count=1)
     {
-        global $objDatabase;
-
         // Unknown group ID.  No discount.
         if (empty($group_id)) return 0;
         if (is_null(self::$arrDiscountCountRate)) self::init();
@@ -307,8 +301,6 @@ class Discount
      */
     static function getUnit($group_id)
     {
-        global $objDatabase;
-
         $group_id = intval($group_id);
         if (empty($group_id)) return '';
         if (is_null(self::$arrDiscountCountName)) self::init();
@@ -489,8 +481,6 @@ class Discount
      */
     static function getCustomerGroupArray()
     {
-        global $objDatabase;
-
         if (is_null(self::$arrCustomerGroup)) self::init();
         return self::$arrCustomerGroup;
     }
@@ -507,8 +497,6 @@ class Discount
      */
     static function getArticleGroupArray()
     {
-        global $objDatabase;
-
         if (is_null(self::$arrArticleGroup)) self::init();
         return self::$arrArticleGroup;
     }
@@ -531,8 +519,6 @@ class Discount
      */
     static function getDiscountRateCustomerArray()
     {
-        global $objDatabase;
-
         if (is_null(self::$arrDiscountRateCustomer)) self::init();
         return self::$arrDiscountRateCustomer;
     }
@@ -552,8 +538,6 @@ class Discount
      */
     static function getDiscountRateCustomer($groupCustomerId, $groupArticleId)
     {
-        global $objDatabase;
-
         if (is_null(self::$arrDiscountRateCustomer)) self::init();
         $groupCustomerId = intval($groupCustomerId);
         $groupArticleId = intval($groupArticleId);

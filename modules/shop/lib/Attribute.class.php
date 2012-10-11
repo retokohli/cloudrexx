@@ -678,8 +678,6 @@ class Attribute
      */
     static function getNameById($nameId)
     {
-        global $objDatabase;
-
         return Text::getById($nameId, 'shop',
             self::TEXT_ATTRIBUTE_NAME, FRONTEND_LANG_ID)->content();
     }

@@ -319,8 +319,6 @@ DBG::log("Coupon::get($code): ERROR: Query failed");
     static function available($code, $order_amount,
         $customer_id=null, $product_id=null, $payment_id=null
     ) {
-        global $objDatabase;
-
         // See if the code exists and is still valid
         $objCoupon = self::get($code);
         if ($objCoupon === false) {
@@ -845,7 +843,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
      */
     static function edit($objTemplate)
     {
-        global $_ARRAYLANG, $_CORELANG;
+        global $_ARRAYLANG;
 
 //DBG::activate(DBG_ADODB|DBG_LOG_FIREPHP|DBG_PHP);
 
@@ -907,11 +905,6 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
         }
         // Reset the end time if it's in the past
         if ($end_time < time()) $end_time = 0;
-        // Abbreviations for day of the week
-        $arrDow2 = explode(',', $_CORELANG['TXT_CORE_DAY_ABBREV2_ARRAY']);
-        // Months of the year
-        $arrMoy = explode(',', $_CORELANG['TXT_CORE_MONTH_ARRAY']);
-        unset($arrMoy[0]);
         $uri = Html::getRelativeUri_entities();
         Html::stripUriParam($uri, 'view');
         Html::stripUriParam($uri, 'edit');
@@ -1331,8 +1324,6 @@ jQuery(document).ready(function($) {
      */
     private static function errorHandler()
     {
-        global $objDatabase, $_ARRAYLANG;
-
 //die("Coupon::errorHandler(): Disabled");
         if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
         // Fix settings first
