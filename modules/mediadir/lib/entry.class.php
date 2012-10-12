@@ -434,7 +434,10 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 	                            'TXT_'.$this->moduleLangVar.'_ENTRY_CATEGORIES' =>  $_ARRAYLANG['TXT_MEDIADIR_CATEGORIES'],
 	                            'TXT_'.$this->moduleLangVar.'_ENTRY_LEVELS' =>  $_ARRAYLANG['TXT_MEDIADIR_LEVELS'],
 	                        ));
-                               
+
+                            $this->parseCategoryLevels(1, $arrEntry['entryId'], $objTpl);
+                            $this->parseCategoryLevels(2, $arrEntry['entryId'], $objTpl);
+
                             foreach ($arrEntry['entryFields'] as $key => $strFieldValue) {
                                 $intPos = $key+1;
 
@@ -589,6 +592,9 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                                     'TXT_'.$this->moduleLangVar.'_ENTRY_CATEGORIES' =>  $_ARRAYLANG['TXT_MEDIADIR_CATEGORIES'],
                                     'TXT_'.$this->moduleLangVar.'_ENTRY_LEVELS' =>  $_ARRAYLANG['TXT_MEDIADIR_LEVELS'],
                                 ));
+
+                                $this->parseCategoryLevels(1, $arrEntry['entryId'], $objTpl);
+                                $this->parseCategoryLevels(2, $arrEntry['entryId'], $objTpl);
                                    
                                 foreach ($arrEntry['entryFields'] as $key => $strFieldValue) {
                                     $intPos = $key+1;
@@ -1268,51 +1274,92 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 
         return $strDropdownUsers;
     }
+
+    function parseCategoryLevels($intType, $intEntryId=null, $objTpl) {
+        if ($intType == 1) {
+            // categories
+            $objCategoriesLevels = $this->getCategories($intEntryId);
+            $list = 'CATEGORY';
+        } else {
+            // levels
+            $objCategoriesLevels = $this->getLevels($intEntryId);
+            $list = 'LEVEL';
+        }
+
+        if (!$objTpl->blockExists('mediadir_' . strtolower($list))) {
+            return false;
+        }
+
+        if ($objCategoriesLevels !== false && $objCategoriesLevels->RecordCount() > 0) {
+            while(!$objCategoriesLevels->EOF) {
+                $objTpl->setVariable(array(
+                    $this->moduleLangVar . '_ENTRY_' . $list . '_ID' => $objCategoriesLevels->fields['elm_id'],
+                    $this->moduleLangVar . '_ENTRY_' . $list . '_NAME' => $objCategoriesLevels->fields['elm_name'],
+                ));
+                $objTpl->parse('mediadir_' . strtolower($list));
+                $objCategoriesLevels->MoveNext();
+            }
+        } else {
+            $objTpl->hide('mediadir_' . strtolower($list));
+        }
+    }
+
+
+    function getCategories($intEntryId = null) {
+        global $objDatabase, $_LANGID;
+        $query = "SELECT
+            cat_rel.`category_id` AS `elm_id`,
+            cat_name.`category_name` AS `elm_name`
+          FROM
+            ".DBPREFIX."module_mediadir_rel_entry_categories AS cat_rel,
+            ".DBPREFIX."module_mediadir_categories_names AS cat_name
+          WHERE
+            cat_rel.`category_id` = cat_name.`category_id`
+          AND
+            cat_rel.`entry_id` = '?'
+          AND
+            cat_name.`lang_id` = '?'
+          ORDER BY
+            cat_name.`category_name` ASC
+          ";
+
+        return $objDatabase->Execute($query, array($intEntryId, $_LANGID));
+    }
+
+
+    function getLevels($intEntryId = null) {
+        global $objDatabase, $_LANGID;
+        $query = "SELECT
+            level_rel.`level_id` AS `elm_id`,
+            level_name.`level_name` AS `elm_name`
+          FROM
+            ".DBPREFIX."module_mediadir_rel_entry_levels AS level_rel,
+            ".DBPREFIX."module_mediadir_level_names AS level_name
+          WHERE
+            level_rel.`level_id` = level_name.`level_id`
+          AND
+            level_rel.`entry_id` = '?'
+          AND
+            level_name.`lang_id` = '?'
+          ORDER BY
+            level_name.`level_name` ASC
+          ";
+
+        return $objDatabase->Execute($query, array($intEntryId, $_LANGID));
+    }
     
     
     function getCategoriesLevels($intType, $intEntryId=null)
     {
-        global $objDatabase, $_LANGID;
-        
         if($intType == 1) {
             //categories
-            $query = "SELECT
-                    cat_rel.`category_id` AS `elm_id`,
-                    cat_name.`category_name` AS `elm_name`
-                  FROM
-                    ".DBPREFIX."module_mediadir_rel_entry_categories AS cat_rel,
-                    ".DBPREFIX."module_mediadir_categories_names AS cat_name
-                  WHERE
-                    cat_rel.`category_id` = cat_name.`category_id`
-                  AND
-                    cat_rel.`entry_id` = '".intval($intEntryId)."'
-                  AND
-                    cat_name.`lang_id` = '".intval($_LANGID)."'
-                  ORDER BY
-                    cat_name.`category_name` ASC
-                  ";
+            $objEntryCategoriesLevels = $this->getCategories($intEntryId);
             $strParamName = "&cid=";
         } else {
             //levels
-            $query = "SELECT
-                    level_rel.`level_id` AS `elm_id`,
-                    level_name.`level_name` AS `elm_name`
-                  FROM
-                    ".DBPREFIX."module_mediadir_rel_entry_levels AS level_rel,
-                    ".DBPREFIX."module_mediadir_level_names AS level_name
-                  WHERE
-                    level_rel.`level_id` = level_name.`level_id`
-                  AND
-                    level_rel.`entry_id` = '".intval($intEntryId)."'
-                  AND
-                    level_name.`lang_id` = '".intval($_LANGID)."'
-                  ORDER BY
-                    level_name.`level_name` ASC
-                  ";
+            $objEntryCategoriesLevels = $this->getLevels($intEntryId);
             $strParamName = "&lid=";
         }
-        
-        $objEntryCategoriesLevels = $objDatabase->Execute($query);
         $strSection = isset($_GET['section']) ? "?section=".$_GET['section'] : '';
         
         if ($objEntryCategoriesLevels !== false) {
