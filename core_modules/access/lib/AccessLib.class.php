@@ -232,7 +232,7 @@ class AccessLib
                 break;
             case 'text':
             case 'mail':
-                $arrPlaceholders['_VALUE'] = html_entity_decode($objUser->getProfileAttribute($attributeId, $historyId), ENT_QUOTES, CONTREXX_CHARSET);
+                $arrPlaceholders['_VALUE'] = $edit ? htmlentities($objUser->getProfileAttribute($attributeId, $historyId), ENT_QUOTES, CONTREXX_CHARSET) : html_entity_decode(nl2br($objUser->getProfileAttribute($attributeId, $historyId)), ENT_QUOTES, CONTREXX_CHARSET);
                 break;
             case 'uri':
                 $uri = $objUser->getProfileAttribute($attributeId, $historyId);

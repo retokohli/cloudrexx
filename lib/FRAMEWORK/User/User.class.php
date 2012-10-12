@@ -711,10 +711,10 @@ class User extends User_Profile
     public function getProfileAttribute($attributeId, $historyId = 0)
     {
         if (isset($this->arrLoadedUsers[$this->id]['profile'][$attributeId][$historyId])) {
-            return nl2br($this->arrLoadedUsers[$this->id]['profile'][$attributeId][$historyId]);
+            return $this->arrLoadedUsers[$this->id]['profile'][$attributeId][$historyId];
         }
         if (isset($this->arrCachedUsers[$this->id]['profile'][$attributeId][$historyId])) {
-            return nl2br($this->arrCachedUsers[$this->id]['profile'][$attributeId][$historyId]);
+            return $this->arrCachedUsers[$this->id]['profile'][$attributeId][$historyId];
         }
         return false;
     }
