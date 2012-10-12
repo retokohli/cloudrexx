@@ -447,8 +447,8 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
                     if (!empty($company)) {
                         $nameFragments[] = $company;
                     }
-                    if (!empty($lastname) || !empty($firstname)) {
-                        $nameFragments[] = trim($lastname.' '.$firstname);
+                    if (!empty($firstname) || !empty($lastname)) {
+                        $nameFragments[] = trim($firstname.' '.$lastname);
                     }
                     $name = join(', ', $nameFragments);
 
