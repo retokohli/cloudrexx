@@ -90,8 +90,8 @@ class Access extends AccessLib
                 }
             }
 
-            $metaPageTitle = $objUser->getUsername()."'s Profil";
-            $pageTitle = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)."'s Profil";
+            $metaPageTitle = FWUser::getParsedUserTitle($objUser);
+            $pageTitle = contrexx_raw2xhtml(FWUser::getParsedUserTitle($objUser));
             $this->_objTpl->setGlobalVariable(array(
                 'ACCESS_USER_ID'            => $objUser->getId(),
                 'ACCESS_USER_USERNAME'      => contrexx_raw2xhtml($objUser->getUsername()),
