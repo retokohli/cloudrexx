@@ -1318,7 +1318,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         if ($objEntryCategoriesLevels !== false) {
             $strList = '<ul>';
             while (!$objEntryCategoriesLevels->EOF) {
-                $strList .= '<li><a href="index.php'.$strSection.$strParamName.intval($objEntryCategoriesLevels->fields['elm_id']).'">'.htmlspecialchars($objEntryCategoriesLevels->fields['elm_name'], ENT_QUOTES, CONTREXX_CHARSET).'</li>';
+                $strList .= '<li><a href="index.php'.$strSection.$strParamName.intval($objEntryCategoriesLevels->fields['elm_id']).'">'.htmlspecialchars($objEntryCategoriesLevels->fields['elm_name'], ENT_QUOTES, CONTREXX_CHARSET).'</a></li>';
                 $objEntryCategoriesLevels->MoveNext();
             }
             $strList .= '</ul>';
