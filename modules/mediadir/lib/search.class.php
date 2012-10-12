@@ -336,7 +336,7 @@ EOF;
 
             if($arrData['type'] == 'exp') {
                 //build expanded search query
-                $arrExternals = array('section', 'type', 'cmd', 'term', 'lid', 'cid', 'search', 'pos','scid','langId');
+                $arrExternals = array('__cap', 'section', 'type', 'cmd', 'term', 'lid', 'cid', 'search', 'pos','scid','langId');
                 foreach ($arrData as $intInputfieldId => $strExpTerm) {
                     if(!in_array($intInputfieldId, $arrExternals) && $strExpTerm != null) {
                         $objInputfields = new mediaDirectoryInputfield(null, true);
