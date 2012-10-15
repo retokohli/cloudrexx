@@ -22,4 +22,4 @@ if ($php < '5.3') {
     die('Das Contrexx CMS ben&uml;tigt mindestens PHP in der Version 5.3.<br />Auf Ihrem System l&auml;uft PHP '.$php);
 }
 
-require_once(dirname(__FILE__).'/init.php');
+require_once(dirname(dirname(__FILE__)).'/core/initBackend.php');
