@@ -546,20 +546,13 @@ class FileSystem
      */
     static function path_relative_to_root(&$path)
     {
-        // Note that the regex below is transformed to /[\\\/]\w+/,
-        // which is what we want, and valid!
-        // If ASCMS_PATH_OFFSET is empty, this method won't work!
-        if (!preg_match('/[\\\\\\/]\w+/', ASCMS_PATH_OFFSET)) {
-//echo("File::path_relative_to_root(): invalid offset (".ASCMS_PATH_OFFSET."), won't change path $path<br />");
-            return;
+        if (strpos($path, ASCMS_DOCUMENT_ROOT) === 0) {
+            $path = substr($path, strlen(ASCMS_DOCUMENT_ROOT) + 1);
+        } elseif (ASCMS_PATH_OFFSET && strpos($path, ASCMS_PATH_OFFSET) === 0) {
+            $path = substr($path, strlen(ASCMS_PATH_OFFSET) + 1);
+        } elseif (strpos($path, '/') === 0) {
+            $path = substr($path, 1);
         }
-//echo("File::path_relative_to_root(): Incoming path $path<br />");
-        $path = preg_replace(
-            '/^(?:.*'.preg_quote(ASCMS_PATH_OFFSET, '/').')?[\\\\\\/]*/',
-             '',
-             $path
-        );
-//echo("File::path_relative_to_root(): Fixed path using ".ASCMS_PATH_OFFSET." to $path<br />");
     }
 
 
