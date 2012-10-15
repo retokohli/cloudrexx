@@ -15,7 +15,7 @@
  */
 require_once dirname(__FILE__).'/lib/DBG.php';
 //DBG::activate(DBG_ADODB_ERROR|DBG_LOG_FIREPHP|DBG_PHP);
-\DBG::activate(DBG_PHP);
+//\DBG::activate(DBG_PHP);
 
 $php = phpversion();
 if ($php < '5.3') {
