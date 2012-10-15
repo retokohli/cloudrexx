@@ -316,7 +316,7 @@ class JsonNode implements JsonAdapter {
             }
             $last_resort = 0;
 
-            foreach ($node->getPages() as $page) {
+            foreach ($node->getPages(false, true) as $page) {
                 // don't display aliases in cm's tree
                 if ($page->getType() == \Cx\Model\ContentManager\Page::TYPE_ALIAS) {
                     continue 2;
@@ -331,6 +331,7 @@ class JsonNode implements JsonAdapter {
                         'data-href' => json_encode(
                             array(
                                 'slug'       => $page->getSlug(),
+                                'path'       => $page->getPath(),
                                 'module'     => $page->getModule() . ' ' . $page->getCmd(),
                                 'lastupdate' => $page->getUpdatedAt()->format('d.m.Y H:i'),
                                 'user'       => $user,
