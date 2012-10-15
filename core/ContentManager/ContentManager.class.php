@@ -259,6 +259,8 @@ if ($tree == 'verify') {
         $cxjs->setVariable('confirmDeleteQuestion', $_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE'], 'contentmanager/lang');
         $cxjs->setVariable('cleanAccessData', $objJsonData->jsondata('page', 'getAccessData', array(), false), 'contentmanager');
         $cxjs->setVariable('contentTemplates', $this->getCustomContentTemplates(), 'contentmanager');
+        $cxjs->setVariable('defaultTemplates', $this->getDefaultTemplates(), 'contentmanager/themes');
+        $cxjs->setVariable('templateFolders', $this->getTemplateFolders(), 'contentmanager/themes');
         $cxjs->setVariable('availableBlocks', $objJsonData->jsondata('block', 'getBlocks', array(), false), 'contentmanager');
 
         // TODO: move including of add'l JS dependencies to cx obj from /cadmin/index.html
@@ -382,24 +384,29 @@ if ($tree == 'verify') {
             $templates[$id] = $this->init->getCustomContentTemplatesForTheme($id);
         }
         return $templates;
-        if (!isset($_GET['themeId']))
-            throw new ContentManagerException('please provide a value for "themeId".');
+    }
+    
+    protected function getDefaultTemplates() {
+        $query = 'SELECT `id`, `lang`, `themesid` FROM `' . DBPREFIX . 'languages`';
+        $rs = $this->db->Execute($query);
 
-        $module = isset($_GET['module']) ? $_GET['module'] : '';
-        $themeId = intval($_GET['themeId']);
-        $isHomeRequest = $module == 'home';
-
-        $templates = $this->init->getCustomContentTemplatesForTheme($themeId);
-        $matchingTemplates = array();
-
-        foreach ($templates as $name) {
-            $isHomeTemplate = substr($name, 0, 4) == 'home';
-            if ($isHomeTemplate && $isHomeRequest)
-                $matchingTemplates[] = $name;
-            else if (!$isHomeTemplate && !$isHomeRequest)
-                $matchingTemplates[] = $name;
+        $defaultThemes = array();
+        while (!$rs->EOF) {
+            $defaultThemes[$rs->fields['lang']] = $rs->fields['themesid'];
+            $rs->MoveNext();
         }
+        return $defaultThemes;
+    }
+    
+    protected function getTemplateFolders() {
+        $query = 'SELECT `id`, `foldername` FROM `' . DBPREFIX . 'skins`';
+        $rs = $this->db->Execute($query);
 
-        return $matchingTemplates;
+        $folderNames = array();
+        while (!$rs->EOF) {
+            $folderNames[$rs->fields['id']] = $rs->fields['foldername'];
+            $rs->MoveNext();
+        }
+        return $folderNames;
     }
 }
