@@ -92,20 +92,20 @@ $_CONFIG = $_CONFIGURATION = $loggableListener = null;
 /**
  * Environment repository
  */
-require_once dirname(__FILE__).'/core/Env.class.php';
+require_once dirname(__FILE__).'/Env.class.php';
 /**
  * User configuration settings
  *
  * This file is re-created by the CMS itself. It initializes the
  * {@link $_CONFIG[]} global array.
  */
-$incSettingsStatus = include_once dirname(__FILE__).'/config/settings.php';
+$incSettingsStatus = include_once dirname(dirname(__FILE__)).'/config/settings.php';
 /**
  * Path, database, FTP configuration settings
  *
  * Initialises global settings array and constants.
  */
-include_once dirname(__FILE__).'/config/configuration.php';
+include_once dirname(dirname(__FILE__)).'/config/configuration.php';
 
 // Check if system is installed
 if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
@@ -125,14 +125,14 @@ if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
  * Because we overwrite the Gedmo model (so we need to load our model
  * before doctrine loads the Gedmo one)
  */
-require_once dirname(__FILE__).'/core/ClassLoader/ClassLoader.class.php';
+require_once dirname(__FILE__).'/ClassLoader/ClassLoader.class.php';
 new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $customizing);
 
 /**
  * Doctrine configuration
  * Loaded after installer redirect (not configured before installer)
  */
-$incDoctrineStatus = include_once dirname(__FILE__).'/config/doctrine.php';
+$incDoctrineStatus = include_once dirname(dirname(__FILE__)).'/config/doctrine.php';
 
 if ($incDoctrineStatus === false) {
     die('System halted: Unable to load basic configuration!');
@@ -149,7 +149,7 @@ Env::set('ftpConfig', $_FTPCONFIG);
 /**
  * Include all the required files.
  */
-require_once dirname(__FILE__).'/core/API.php';
+require_once dirname(__FILE__).'/API.php';
 // Temporary fix until all GET operation requests will be replaced by POSTs
 CSRF::setFrontendMode();
 
