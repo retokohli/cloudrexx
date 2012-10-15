@@ -882,7 +882,7 @@ class ContactLib
                 "'.$field['order_id'].'"
             )
             ';
-print_r($field);
+
         $objDatabase->execute($query);
         $fieldID = $objDatabase->insert_id();
 
