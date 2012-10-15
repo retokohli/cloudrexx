@@ -322,6 +322,11 @@ h1{ font-size: 20px }
     overflow: hidden;
 }
 
+*+html #content-manager.edit_view #site-tree > ul {
+    position: relative;
+    width: 320px;
+}
+
 #content-manager.edit_view #site-tree .actions {
     left: auto;
     right: 10px;
