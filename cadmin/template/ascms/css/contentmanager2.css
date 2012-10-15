@@ -140,10 +140,18 @@ h1{ font-size: 20px }
 }
 
 #flip-menu {
+    display: inline-block;
     font-size: 12px;
 }
 
+*+html #flip-menu {
+    display: inline;
+    zoom: 1;
+}
+
 #flip-menu .jstree-action {
+    display: inline;
+    zoom: 1;
     padding: 0 0 0 19px;
     background-position: center 0;
     background-repeat: no-repeat;
