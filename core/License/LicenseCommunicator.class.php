@@ -53,7 +53,7 @@ class LicenseCommunicator {
      * @param boolean $forceTemplate (optional) Wheter to force template delivery or not, defaults to false
      * @return void 
      */
-    public function update(&$license, $_CONFIG, $forceUpdate = false, $forceTemplate = false) {
+    public function update(&$license, $_CONFIG, $forceUpdate = false, $forceTemplate = false, $_CORELANG = array()) {
         if (!$forceUpdate && !$this->isTimeToUpdate($_CONFIG)) {
             return;
         }
@@ -74,6 +74,9 @@ class LicenseCommunicator {
         $srvPath = '/';
         $link = @fsockopen($srvUri,80);
         if (!isset($link) || !$link) {
+            $license->setState(License::LICENSE_ERROR);
+            $license->setGrayzoneMessages(array(\FWLanguage::getLanguageCodeById(LANG_ID) => new Message(\FWLanguage::getLanguageCodeById(LANG_ID), $_CORELANG['TXT_LICENSE_COMMUNICATION_ERROR'])));
+            $license->check();
             return;
         }
         
@@ -95,6 +98,7 @@ class LicenseCommunicator {
             $objResponse = $request->send();
             if ($objResponse->getStatus() !== 200) {
                 $license->setState(License::LICENSE_ERROR);
+                $license->setGrayzoneMessages(array(\FWLanguage::getLanguageCodeById(LANG_ID) => new Message(\FWLanguage::getLanguageCodeById(LANG_ID), $_CORELANG['TXT_LICENSE_COMMUNICATION_ERROR'])));
                 $license->check();
                 return;
             } else {
@@ -103,6 +107,7 @@ class LicenseCommunicator {
             }
         } catch (HTTP_Request2_Exception $objException) {
             $license->setState(License::LICENSE_ERROR);
+            $license->setGrayzoneMessages(array(\FWLanguage::getLanguageCodeById(LANG_ID) => new Message(\FWLanguage::getLanguageCodeById(LANG_ID), $_CORELANG['TXT_LICENSE_COMMUNICATION_ERROR'])));
             $license->check();
             return;
         }

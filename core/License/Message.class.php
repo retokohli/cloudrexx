@@ -19,8 +19,8 @@ class Message {
     private $linkTarget;
     private $showInDashboard = true;
     
-    public function __construct($langCode, $text, $type, $link, $linkTarget, $showInDashboard = true) {
-        $this->langCode = $langCode;
+    public function __construct($langCode = null, $text = '', $type = 'alertbox', $link = '', $linkTarget = '_blank', $showInDashboard = true) {
+        $this->langCode = $langCode ? $langCode : \FWLanguage::getLanguageCodeById(LANG_ID);
         $this->text = $text;
         $this->type = $type;
         $this->link = $link;

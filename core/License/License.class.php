@@ -49,8 +49,8 @@ class License {
             $licenseKey = '',
             $messages = array(),
             $version = '',
-            $partner = '',
-            $customer = '',
+            $partner = null,
+            $customer = null,
             $grayzoneTime = 14,
             $grayzoneMessages = array(),
             $frontendLockTime = 10,
@@ -64,15 +64,26 @@ class License {
         $this->legalComponents = $legalComponents;
         $this->validTo = $validTo;
         $this->createdAt = $createdAt;
-        $this->registeredDomains = $registeredDomains;
+        $this->registeredDomains = is_array($registeredDomains) ? $registeredDomains : array();
         $this->instId = $instId;
         $this->licenseKey = $licenseKey;
-        $this->messages = $messages;
+        $this->messages = is_array($messages) ? $messages : array();
         $this->version = $version;
-        $this->partner = $partner;
-        $this->customer = $customer;
+
+        if ($partner instanceof Person) {
+            $this->partner = $partner;
+        } else { 
+            $this->partner = new Person();
+        }
+
+        if ($customer instanceof Person) {
+            $this->customer = $customer;
+        } else {
+            $this->customer = new Person();
+        }
+
         $this->grayzoneTime = $grayzoneTime;
-        $this->grayzoneMessages = $grayzoneMessages;
+        $this->grayzoneMessages = is_array($grayzoneMessages) ? $grayzoneMessages : array();
         $this->frontendLockTime = $frontendLockTime;
         $this->requestInterval = $requestInterval;
         $this->setFirstFailedUpdateTime($firstFailedUpdate);
@@ -152,19 +163,55 @@ class License {
     public function getMessages() {
         return $this->messages;
     }
-    
+
+    public function setMessages($messages) {
+        $this->messages = $messages;
+    }    
+
+    public function setGrayZoneMessages($grayzoneMessages) {
+        $this->grayzoneMessages = $grayzoneMessages;
+    }    
+
     /**
      *
      * @return Message
      */
     public function getMessage($langCode) {
+        // return gray zone message in case of an error
         if ($this->getState() == self::LICENSE_ERROR) {
             return $this->getGrayzoneMessage($langCode);
         }
-        if (!isset($this->messages[$langCode])) {
-            return null;
+
+        // return message in prefered localized version
+        return $this->getMessageInPreferedLanguage($this->messages, $langCode);
+    }
+
+    /**
+     * Select the prefered locale version of a message
+     * @param   array   Array containing all localized versions of a message with its language code as index
+     * @param   string  Preferend Language code
+     * @return  mixed   Either the prefered message as string or NULL if $messages is empty
+     */
+    private function getMessageInPreferedLanguage($messages, $langCode)
+    {
+        // check if a message is available
+        if (empty($messages)) {
+            return new Message();
         }
-        return $this->messages[$langCode];
+
+        // return message in selected (=> current interface) language
+        if (isset($messages[$langCode])) {
+            return $messages[$langCode];
+        }
+
+        // return message in default language
+        if (isset($messages[\FWLanguage::getLanguageCodeById(\FWLanguage::getDefaultLangId())])) {
+            return $messages[\FWLanguage::getLanguageCodeById(\FWLanguage::getDefaultLangId())];
+        }
+
+        // return message in what ever language it is available
+        reset($messages);
+        return current($messages);
     }
     
     /**
@@ -196,10 +243,12 @@ class License {
      * @return Message
      */
     public function getGrayzoneMessage($langCode) {
-        if (!isset($this->grayzoneMessages[$langCode])) {
-            return null;
+        if (empty($this->grayzoneMessages)) {
+            $this->setGrayzoneMessages(array($langCode => new Message($langCode, $_CORELANG['TXT_LICENSE_DEFAULT_GRAYZONE_MESSAGE'])));
         }
-        return $this->grayzoneMessages[$langCode];
+
+        // return message in prefered localized version
+        return $this->getMessageInPreferedLanguage($this->grayzoneMessages, $langCode);
     }
     
     public function getFrontendLockTime() {
@@ -243,6 +292,12 @@ class License {
                 $validTo = $this->getFirstFailedUpdateTime() + 60*60*24*$this->grayzoneTime;
                 break;
         }
+
+        // in case if one of the following is TRUE, the system will be in lock-down-mode
+        // - no installation-ID set
+        // - no license-Key available
+        // - license has expired
+        // - license is invalid
         if (empty($this->instId) || empty($this->licenseKey) || $validTo < time() || $this->state == self::LICENSE_NOK) {
             $this->state = self::LICENSE_NOK;
             $this->legalFrontendComponents = $this->legalComponents;
@@ -342,8 +397,8 @@ class License {
         
         $grayzoneMessages = isset($_CONFIG['licenseGrayzoneMessages']) ? unserialize(base64_decode(htmlspecialchars_decode($_CONFIG['licenseGrayzoneMessages']))) : array();
         
-        $partner = isset($_CONFIG['licensePartner']) ? unserialize(base64_decode(htmlspecialchars_decode($_CONFIG['licensePartner']))) : null;
-        $customer = isset($_CONFIG['licenseCustomer']) ? unserialize(base64_decode(htmlspecialchars_decode($_CONFIG['licenseCustomer']))) : null;
+        $partner = isset($_CONFIG['licensePartner']) ? unserialize(base64_decode(htmlspecialchars_decode($_CONFIG['licensePartner']))) : Person();
+        $customer = isset($_CONFIG['licenseCustomer']) ? unserialize(base64_decode(htmlspecialchars_decode($_CONFIG['licenseCustomer']))) : Person();
         
         $versionNumber = isset($_CONFIG['coreCmsVersion']) ? htmlspecialchars_decode($_CONFIG['coreCmsVersion']) : null;
         $versionName = isset($_CONFIG['coreCmsName']) ? htmlspecialchars_decode($_CONFIG['coreCmsName']) : null;
