@@ -209,6 +209,9 @@ class LicenseCommunicator {
             0,
             time()
         );
+
+        $license->check();
+
         return;
     }
     
