@@ -69,10 +69,11 @@ class InitCMS
     /**
      * Constructor
      */
-    function __construct($mode='frontend', $entityManager)
+    function __construct($mode='frontend', $entityManager = null)
     {
         global $objDatabase;
 
+// TODO: what is this used for?
         $this->em = $entityManager;
         $this->mode=$mode;
 
