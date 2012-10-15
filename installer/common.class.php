@@ -161,8 +161,19 @@ class CommonFunctions
                 unset($objDb);
                 return false;
             }
-
             if ($objDb) {
+                // Check for InnoDB
+                $res = $objDb->Execute('SHOW ENGINES');
+                $engines = array();
+                while (!$res->EOF) {
+                    $engines = $row->Engine;
+                    $res->MoveNext();
+                }
+                if (!in_array('InnoDB', $engines)) {
+                    $statusMsg = $_ARRLANG['TXT_ENGINGE_NOT_SUPPORTED'];
+                    return false;
+                }
+                
                 $this->setTimezone($objDb);
 
                 if (($mysqlServerVersion = $this->getMySQLServerVersion()) !== false && !$this->_isNewerVersion($mysqlServerVersion, '4.1')) {

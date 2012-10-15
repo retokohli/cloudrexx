@@ -143,6 +143,7 @@ $_ARRLANG['TXT_CREATE_IIS_HTACCESS_FILE'] = "web.config created";
 $_ARRLANG['TXT_CREATE_VERSION_FILE'] = "Fichier de version créé";
 $_ARRLANG['TXT_COULD_NOT_GATHER_ALL_DATABASE_TABLES'] = "Impossible de détecter toutes les tables!";
 $_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'] = "Le serveur de base de données ne supporte pas UTF-8! Veuillez utiliser une Version de Contrexx avec le jeu de caractère latin1!";
+$_ARRLANG['TXT_ENGINGE_NOT_SUPPORTED'] = 'Le serveur de base de données ne supporte pas InnoDB. Contrexx ne peux pas être installé!';
 $_ARRLANG['TXT_COULD_NOT_SET_DATABASE_CHARSET'] = "Impossible de paramétrer la collation de la base de données!";
 $_ARRLANG['TXT_COULD_NOT_SET_INSTALLATIONID'] = "Le ID d'installation n'a pa pu être enrgistré.";
 $_ARRLANG['TXT_COULD_NOT_SET_TIMEZONE'] = "The timezone could not be set.";

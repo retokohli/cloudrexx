@@ -10,7 +10,7 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-// help
+// helpTXT_
 $_ARRLANG['TXT_HELP_MSG'] = "Bei Problemen mit der Installation des [NAME] haben Sie die folgenden Möglichkeiten wie Sie vorgehen können:<br /><ul><li>Im [FORUM] nach Hilfe suchen</li><li>Schauen Sie im [SUPPORT] vorbei</li><li>Senden Sie uns eine E-Mail an [EMAIL] mit einer Beschreibung des Problems und der Ausgabe der [PHPINFO]</li></ul>";
 $_ARRLANG['TXT_PHP_INFO'] = "PHP-Konfiguration";
 $_ARRLANG['TXT_FORUM'] = "Forum";
@@ -143,6 +143,7 @@ $_ARRLANG['TXT_CREATE_IIS_HTACCESS_FILE'] = "web.config erstellt";
 $_ARRLANG['TXT_CREATE_VERSION_FILE'] = "Versionsdatei erstellt";
 $_ARRLANG['TXT_COULD_NOT_GATHER_ALL_DATABASE_TABLES'] = "Konnte die vorhandenen Datenbanktabellen nicht ausfindig machen!";
 $_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'] = "Ihr Datenbank Server unterstützt den Zeichensatz UTF-8 nicht! Sie müssen daher eine Version von Contrexx mit dem Zeichensatz latin1 verwenden!";
+$_ARRLANG['TXT_ENGINGE_NOT_SUPPORTED'] = 'Ihr Datenbank Server unterstützt den Tabellentyp InnoDB nicht. Contrexx kann daher auf diesem System nicht installiert werden!';
 $_ARRLANG['TXT_COULD_NOT_SET_DATABASE_CHARSET'] = "Die Kollation der Datenbank konnte nicht gesetzt werden!";
 $_ARRLANG['TXT_COULD_NOT_SET_INSTALLATIONID'] = "Die Installations-ID konnte nicht gespeichert werden.";
 $_ARRLANG['TXT_COULD_NOT_SET_TIMEZONE'] = "Die Zeitzone konnte nicht gespeichert werden.";
