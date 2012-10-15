@@ -2690,8 +2690,22 @@ CREATE TABLE `contrexx_module_mediadir_rel_entry_inputfields` (
   `form_id` int(7) NOT NULL,
   `field_id` int(7) NOT NULL,
   `value` longtext NOT NULL,
+  UNIQUE KEY `entry_id` (`entry_id`,`lang_id`,`form_id`,`field_id`),
   FULLTEXT KEY `value` (`value`)
 ) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_rel_entry_inputfields_clean1` (
+  `id` int(11) NOT NULL auto_increment,
+  `entry_id` int(7) NOT NULL,
+  `lang_id` int(7) NOT NULL,
+  `form_id` int(7) NOT NULL,
+  `field_id` int(7) NOT NULL,
+  `value` longtext NOT NULL,
+  PRIMARY KEY  (`id`),
+  FULLTEXT KEY `value` (`value`)
+) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
