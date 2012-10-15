@@ -358,7 +358,7 @@ class License {
         $failedUpdate = isset($_CONFIG['licenseFailedUpdate']) ? htmlspecialchars_decode($_CONFIG['licenseFailedUpdate']) : null;
         $successfulUpdate = isset($_CONFIG['licenseSuccessfulUpdate']) ? htmlspecialchars_decode($_CONFIG['licenseSuccessfulUpdate']) : null;
         
-        $activeComponents = isset($_CONFIG['availableComponents']) ? unserialize(base64_decode(htmlspecialchars_decode($_CONFIG['availableComponents']))) : array();
+        $availableComponents = isset($_CONFIG['availableComponents']) ? unserialize(base64_decode(htmlspecialchars_decode($_CONFIG['availableComponents']))) : array();
         
         $query = '
             SELECT
@@ -371,7 +371,7 @@ class License {
                 `is_active` = \'1\'
         ';
         $result = $objDb->execute($query);
-        $availableComponents = array();
+        $activeComponents = array();
         if ($result) {
             while (!$result->EOF) {
                 $activeComponents[] = $result->fields['name'];
