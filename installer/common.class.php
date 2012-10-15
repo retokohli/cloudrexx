@@ -166,7 +166,7 @@ class CommonFunctions
                 $res = $objDb->Execute('SHOW ENGINES');
                 $engines = array();
                 while (!$res->EOF) {
-                    $engines = $row->Engine;
+                    $engines[] = $res->fields['Engine'];
                     $res->MoveNext();
                 }
                 if (!in_array('InnoDB', $engines)) {
