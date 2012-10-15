@@ -285,10 +285,11 @@ class License {
         switch ($this->state) {
             case self::LICENSE_DEMO:
             case self::LICENSE_OK:
+            case self::LICENSE_NOK:
                 $validTo = $this->validTo;
                 break;
             case self::LICENSE_ERROR:
-                $this->setFirstFailedUpdateTime(time());
+                $this->setFirstFailedUpdateTime(mktime(0,0,0,date('n'),date('j'),date('Y')));
                 $validTo = $this->getFirstFailedUpdateTime() + 60*60*24*$this->grayzoneTime;
                 break;
         }
@@ -298,11 +299,11 @@ class License {
         // - no license-Key available
         // - license has expired
         // - license is invalid
-        if (empty($this->instId) || empty($this->licenseKey) || $validTo < time() || $this->state == self::LICENSE_NOK) {
+        if ($validTo + 60*60*24 < time() || $this->state == self::LICENSE_NOK) {
             $this->state = self::LICENSE_NOK;
             $this->legalFrontendComponents = $this->legalComponents;
             $this->legalComponents = array('license');
-            if ($validTo + 60*60*24*$this->frontendLockTime >= time()) {
+            if ($validTo + 60*60*24*($this->frontendLockTime + 1) < time()) {
                 $this->frontendLocked = true;
                 $this->legalFrontendComponents = array('license');
             }
