@@ -40,7 +40,7 @@ class FileSystemFile implements FileInterface
 
         if (strpos($file, ASCMS_DOCUMENT_ROOT) === 0) {
             $this->filePath = $file;
-        } elseif (strpos($file, ASCMS_PATH_OFFSET) === 0) {
+        } elseif (ASCMS_PATH_OFFSET && strpos($file, ASCMS_PATH_OFFSET) === 0) {
             $this->filePath = ASCMS_PATH.$file;
         } elseif (strpos($file, '/') === 0) {
             $this->filePath = ASCMS_DOCUMENT_ROOT.$file;
