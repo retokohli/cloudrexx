@@ -22,7 +22,7 @@ class Person {
     private $url;
     private $mail;
     
-    public function __construct($companyName, $title, $firstname, $lastname, $address, $zip, $city, $country, $phone, $url, $mail) {
+    public function __construct($companyName = '', $title = '', $firstname = '', $lastname = '', $address = '', $zip = '', $city = '', $country = '', $phone = '', $url = '', $mail = '') {
         $this->companyName = $companyName;
         $this->title = $title;
         $this->firstname = $firstname;

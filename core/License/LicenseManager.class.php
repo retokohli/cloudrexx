@@ -52,7 +52,7 @@ class LicenseManager {
                 $this->license = $license;
             } else if (isset($_POST['update'])) {
                 $lc = LicenseCommunicator::getInstance($this->config);
-                $lc->update($this->license, $this->config, true);
+                $lc->update($this->license, $this->config, true, false, $this->lang);
                 $this->license->save(new \settingsManager(), $this->db);
             }
         }
@@ -70,7 +70,7 @@ class LicenseManager {
         }
         if (!file_exists(ASCMS_TEMP_PATH . '/licenseManager.html')) {
             $lc = LicenseCommunicator::getInstance($this->config);
-            $lc->update($this->license, $this->config, true, true);
+            $lc->update($this->license, $this->config, true, true, $this->lang);
             $this->license->save(new \settingsManager(), $this->db);
         }
         if (file_exists(ASCMS_TEMP_PATH . '/licenseManager.html')) {
