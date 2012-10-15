@@ -254,6 +254,9 @@ class adminMenu
                                     $_REQUEST['act'] = 'mails';
                                 }
                                 switch ($_REQUEST['act']) {
+                                    case 'editMail':
+                                        $_REQUEST['act'] = 'mail';
+                                        break;
                                     case 'interface':
                                     case 'templates':
                                     case 'tpledit':
