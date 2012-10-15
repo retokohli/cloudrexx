@@ -176,10 +176,6 @@ h1{ font-size: 20px }
     background: url(../images/contrexx_icon.png) no-repeat scroll 25px 3px transparent
 }
 
-#site-tree {
-    padding: 0 0 0 30px;
-}
-
 #site-tree ul {
     float: left;
     clear: both;
@@ -304,6 +300,20 @@ h1{ font-size: 20px }
     background: url(../images/content_manager_actions_arrow.png) no-repeat right center;
 }
 
+#content-manager #site-tree {
+    padding: 0 0 0 30px;
+}
+
+#content-manager.edit_view #site-tree {
+    padding: 0;
+}
+
+#content-manager.edit_view #site-tree > ul {
+    width: 285px;
+    padding: 0 0 0 30px;
+    overflow: hidden;
+}
+
 #content-manager.edit_view #site-tree .actions {
     left: auto;
     right: 10px;
@@ -402,21 +412,32 @@ h1{ font-size: 20px }
     clear: none;
 }
 
+*+html .jstree-default .jstree-closed > ins {
+    bottom: 3px;
+}
+
 #site-tree .name {
-    float: left;
+    display: inline-block;
+}
+
+*+html #site-tree .name {
+    display: inline;
+    zoom: 1;
 }
 
 #site-tree .jstree-move {
     display: none;
+    position: relative;
+    top: 3px;
     width: 16px;
     height: 16px;
-    float: left;
-    margin: 7px 0 0 10px;
+    margin: 0 0 0 10px;
     background: url(../images/move.png) no-repeat right bottom;
 }
 
 *+html #site-tree .jstree-move {
-    margin: 7px 0 0 2px !important;
+    top: -7px;
+    margin: 0 0 0 2px !important;
 }
 
 #site-tree .jstree-move * {
@@ -429,13 +450,6 @@ h1{ font-size: 20px }
     left: -38px;
     margin-top: 7px;
 }
-*+html #site-tree .jstree-checkbox {
-    margin: 0;
-}
-
-#site-tree .name {
-    float: left;
-}
 
 #site-tree .publishing {
     width: 13px;
@@ -443,6 +457,9 @@ h1{ font-size: 20px }
     background-image: url('../images/publishing_unlocked.png');
     background-position: -34px -5px;
     margin-top: 8px;
+}
+*+html #site-tree .publishing {
+    bottom: 8px;
 }
 #site-tree .publishing.locked {
     background-image: url('../images/publishing_locked.png');
@@ -485,6 +502,9 @@ h1{ font-size: 20px }
     height: 17px;
     width: 20px;
     background-image: url(../images/page_visible.png);
+}
+*+html #site-tree .page {
+    bottom: 7px;
 }
 #site-tree .page.broken {
     background-image: url(../images/page_visible_broken.png);
