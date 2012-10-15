@@ -156,9 +156,9 @@ class aliasLib
     }
     
 
-    function _saveAlias($slug, $target, $is_local, $id = "")
+    function _saveAlias($slug, $target, $is_local, $id = '')
     {
-        if ($slug == "") {
+        if ($slug == '') {
             return false;
         }
         
@@ -169,7 +169,7 @@ class aliasLib
             $temp_page->setTarget($target);
             $existing_aliases = $this->_getAliasesWithSameTarget($temp_page);
             
-            // if alias exists already -> fail
+            // if alias already exists -> fail
             foreach ($existing_aliases as $existing_alias) {
                 if (($id == '' || $existing_alias->getNode()->getId() != $id) &&
                         $slug == $existing_alias->getSlug()) {
@@ -178,7 +178,7 @@ class aliasLib
             }
         }
         
-        if ($id == "") {
+        if ($id == '') {
             // create new node
             $node = new \Cx\Model\ContentManager\Node();
             $node->setParent($this->nodeRepository->getRoot());
@@ -234,6 +234,7 @@ class aliasLib
         $this->em->remove($alias->getNode());
         $this->em->remove($alias);
         $this->em->flush();
+        $this->em->clear();
         return true;
     }
 }
