@@ -67,7 +67,8 @@ CKEDITOR.editorConfig = function( config )
         ['Image','Table','HorizontalRule','SpecialChar'],
         ['Format'],
         ['TextColor','BGColor'],
-        ['ShowBlocks']
+        ['ShowBlocks'],
+        ['Maximize']
     ]
 
     config.toolbar_News = [

@@ -46,7 +46,7 @@ h1{ font-size: 20px }
 }
 
 #content-manager #cm-right {
-    display: none;
+    /*display: none;*/
 }
 
 #content-manager.edit_view #cm-left {
