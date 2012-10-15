@@ -1064,7 +1064,10 @@ class CommonFunctions
             require_once(ASCMS_LIBRARY_PATH.'/PEAR/File/HtAccess.php');
             $objHtAccess = new File_HtAccess(ASCMS_DOCUMENT_ROOT.$iisHtaccessFile);
             $objHtAccess->setAdditional(explode("\n", $this->_getHtaccessFileTemplate($iisHtaccessTemplateFile)));
-            $objHtAccess->save();
+            $result = $objHtAccess->save();
+			if ($result !== true) {
+				return $result;
+			}
         } else {
             
             $objFWHtAccess = new FWHtAccess(ASCMS_DOCUMENT_ROOT, ASCMS_PATH_OFFSET);
@@ -1347,7 +1350,7 @@ class CommonFunctions
             $query = "UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."settings`
                          SET `setvalue` = '".$_SESSION['installer']['sysConfig']['iid']."'
                        WHERE `setname` = 'installationId'";
-            if (!@$objDb->Execute($query) || empty($_SESSION['installer']['sysConfig']['iid'])) {
+            if (!@$objDb->Execute($query)) {
                 $statusMsg .= $_ARRLANG['TXT_COULD_NOT_SET_INSTALLATIONID']."<br />";
             }
 
