@@ -90,10 +90,11 @@ class FormUploader extends Uploader
         $uploadPath = $this->getUploadPath('form');
 
         $redirectUrl = '';   
-        if($this->isBackendRequest)
+        if($this->isBackendRequest) {
             $redirectUrl = ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=upload&act=formUploaderFrameFinished&uploadId='.$this->uploadId;
-        else
-            $redirectUrl = ASCMS_PATH_OFFSET.'/index.php?section=upload&cmd=formUploaderFrameFinished&uploadId='.$this->uploadId;
+        } else {
+            $redirectUrl = CONTREXX_SCRIPT_PATH.'?section=upload&cmd=formUploaderFrameFinished&uploadId='.$this->uploadId;
+        }
         $this->setRedirectUrl($redirectUrl);
       
         $tpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/uploaders');
