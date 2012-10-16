@@ -308,7 +308,7 @@ if ($plainCmd != 'login' && $plainCmd != 'license') {
     }
 }
 if ($loggedIn) {
-    $license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase);
+    $license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase, $_CORELANG);
     $license->check();
     if ($license->getState() == \Cx\Core\License\License::LICENSE_NOK) {
         $plainCmd = 'license';
@@ -415,7 +415,7 @@ switch ($plainCmd) {
     case 'license':
         $subMenuTitle = $_CORELANG['TXT_LICENSE'];
         $lm = new \Cx\Core\License\LicenseManager($act, $objTemplate, $_CORELANG, $_CONFIG, $objDatabase);
-        $lm->getPage($_POST);
+        $lm->getPage($_POST, $_CORELANG);
         break;
 // TODO: handle expired sessions in any xhr callers.
     case 'jsondata':
