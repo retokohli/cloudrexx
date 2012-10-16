@@ -334,6 +334,7 @@ class JsonNode implements JsonAdapter {
                                 'path'       => $page->getPath(),
                                 'module'     => $page->getModule() . ' ' . $page->getCmd(),
                                 'lastupdate' => $page->getUpdatedAt()->format('d.m.Y H:i'),
+                                'level'      => $page->getNode()->getLvl(),
                                 'user'       => $user,
                             )
                         ),
