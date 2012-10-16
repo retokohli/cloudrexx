@@ -295,7 +295,6 @@ class modulemanager
                     // add content to all langs without fallback
                     // link content to all langs with fallback
                     foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
-                        var_dump($lang['fallback']);
                         if ($lang['is_default'] === 'true' || $lang['fallback'] == null) {
                             $page = $this->createPage(
                                 $newnode,
