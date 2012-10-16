@@ -1560,24 +1560,18 @@ class CommonFunctions
             $v = $_CONFIG['coreCmsVersion'] . $_CONFIG['coreCmsStatus'];
             $url = base64_decode('d3d3LmNvbnRyZXh4LmNvbQ==');
             $file = base64_decode("L3VwZGF0ZWNlbnRlci9pbmRleC5waHA=").'?host='.$serverName.$_SESSION['installer']['config']['offsetPath'].'&ip='.$ip.'&version='.$v.'&edition='.$_CONFIG['coreCmsEdition'];
-            $fp = fsockopen($url, 80, $errno, $errstr, 3);
-            if ($fp)
-            {
-                $out = "GET $file HTTP/1.1\r\n";
-                $out .= "Host: $url\r\n";
-                $out .= "Connection: Close\r\n\r\n";
-                fwrite($fp, $out);
-                $ret = '';
-                while (!feof($fp)) {
-                    $ret .= fgets($fp);
+            $request = new \HTTP_Request2('http://'.$url.$file, \HTTP_Request2::METHOD_GET);
+            try {
+                $objResponse = $request->send();
+                if ($objResponse->getStatus() == 200) {
+                    $iid = $objResponse->getBody();
+                    $_SESSION['installer']['updateCheck'] = true;
+                } else {
+                    $_SESSION['installer']['updateCheckImage']="<img src='".$url."' width='1' height='1' />";
                 }
-                fclose($fp);
-                $iid = substr($ret, strpos($ret, "\r\n\r\n") + 4);
-                $_SESSION['installer']['updateCheckImage']="";
-            } else {
+            } catch (HTTP_Request2_Exception $objException) {
                 $_SESSION['installer']['updateCheckImage']="<img src='".$url."' width='1' height='1' />";
             }
-            $_SESSION['installer']['updateCheck'] = true;
             return $iid;
         }
     }
