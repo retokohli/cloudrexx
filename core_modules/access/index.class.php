@@ -34,7 +34,7 @@ class Access extends AccessLib
     public function getPage(&$metaPageTitle, &$pageTitle)
     {
         $cmd = isset($_REQUEST['cmd']) ? explode('_', $_REQUEST['cmd']) : array(0 => null);
-
+        $groupId = isset($cmd[1]) ? intval($cmd[1]) : null;
 
         CSRF::add_code();
         switch ($cmd[0]) {
@@ -47,7 +47,7 @@ class Access extends AccessLib
                 break;
 
             case 'members':
-                $this->members();
+                $this->members($groupId);
                 break;
 
             case 'user':
@@ -124,11 +124,11 @@ class Access extends AccessLib
         }
     }
 
-    private function members()
+    private function members($groupId = null)
     {
         global $_ARRAYLANG, $_CONFIG;
 
-        $groupId = isset($_REQUEST['groupId']) ? intval($_REQUEST['groupId']) : 0;
+        $groupId = !empty($groupId) ? $groupId : (isset($_REQUEST['groupId']) ? intval($_REQUEST['groupId']) : 0);
         $search = isset($_REQUEST['search']) && !empty($_REQUEST['search']) ? preg_split('#\s+#', $_REQUEST['search']) : array();
         $limitOffset = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         $usernameFilter = isset($_REQUEST['username_filter']) && $_REQUEST['username_filter'] != '' && in_array(ord($_REQUEST['username_filter']), array_merge(array(48), range(65, 90))) ? $_REQUEST['username_filter'] : null;
