@@ -45,7 +45,7 @@ define('LANG_ID', $_LANGID);
 $_CORELANG = $objInit->loadLanguageData('core');
 
 // update license
-$license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase);
+$license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase, $_CORELANG);
 $licenseCommunicator = \Cx\Core\License\LicenseCommunicator::getInstance($_CONFIG);
 $licenseCommunicator->update($license, $_CONFIG, (isset($_GET['force']) && $_GET['force'] == 'true'), false, $_CORELANG);
 $license->check();

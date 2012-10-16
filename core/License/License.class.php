@@ -56,7 +56,8 @@ class License {
             $frontendLockTime = 10,
             $requestInterval = 1,
             $firstFailedUpdate = 0,
-            $lastSuccessfulUpdate = 0
+            $lastSuccessfulUpdate = 0,
+            $lang = array()
     ) {
         $this->state = $state;
         $this->editionName = $editionName;
@@ -88,6 +89,7 @@ class License {
         $this->requestInterval = $requestInterval;
         $this->setFirstFailedUpdateTime($firstFailedUpdate);
         $this->setLastSuccessfulUpdateTime($lastSuccessfulUpdate);
+        $this->lang = $lang;
     }
     
     public function getState() {
@@ -244,7 +246,7 @@ class License {
      */
     public function getGrayzoneMessage($langCode) {
         if (empty($this->grayzoneMessages)) {
-            $this->setGrayzoneMessages(array($langCode => new Message($langCode, $_CORELANG['TXT_LICENSE_DEFAULT_GRAYZONE_MESSAGE'])));
+            $this->setGrayzoneMessages(array($langCode => new Message($langCode, $this->lang['TXT_LICENSE_DEFAULT_GRAYZONE_MESSAGE'])));
         }
 
         // return message in prefered localized version
@@ -384,7 +386,7 @@ class License {
      * @param \SettingDb $settings Reference to the settings manager object
      * @return \Cx\Core\License\License
      */
-    public static function getCached(&$_CONFIG, $objDb) {
+    public static function getCached(&$_CONFIG, $objDb, $_CORELANG) {
         $state = isset($_CONFIG['licenseState']) ? htmlspecialchars_decode($_CONFIG['licenseState']) : self::LICENSE_DEMO;
         $validTo = isset($_CONFIG['licenseValidTo']) ? htmlspecialchars_decode($_CONFIG['licenseValidTo']) : null;
         $editionName = isset($_CONFIG['coreCmsEdition']) ? htmlspecialchars_decode($_CONFIG['coreCmsEdition']) : null;
@@ -453,7 +455,8 @@ class License {
             $lockTime,
             $updateInterval,
             $failedUpdate,
-            $successfulUpdate
+            $successfulUpdate,
+            $_CORELANG
         );
     }
 }

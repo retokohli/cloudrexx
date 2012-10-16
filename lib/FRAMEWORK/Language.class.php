@@ -41,7 +41,7 @@ class FWLanguage
      */
     static function init()
     {
-        global $_CONFIG, $objDatabase;
+        global $_CONFIG, $objDatabase, $_CORELANG;
 
         $objResult = $objDatabase->Execute("
             SELECT id, lang, name, charset, themesid,
@@ -49,7 +49,7 @@ class FWLanguage
               FROM ".DBPREFIX."languages
              ORDER BY id ASC");
         if ($objResult) {
-            $license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase);
+            $license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase, $_CORELANG);
             $license->check();
             $full = $license->isInLegalComponents('fulllanguage');
             while (!$objResult->EOF) {

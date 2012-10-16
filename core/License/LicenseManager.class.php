@@ -34,7 +34,7 @@ class LicenseManager {
         $this->lang = $_CORELANG;
         $this->config = $_CONFIG;
         $this->db = $objDb;
-        $this->license = License::getCached($_CONFIG, $this->db);
+        $this->license = License::getCached($_CONFIG, $this->db, $_CORELANG);
         $this->license->check();
         $this->template->setVariable('CONTENT_NAVIGATION', '
             <a href="index.php?cmd=license" class="active">'.$_CORELANG['TXT_LICENSE'].'</a>
@@ -44,7 +44,7 @@ class LicenseManager {
     public function getPage($_POST) {
         if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
             if (isset($_POST['save']) && isset($_POST['licenseKey'])) {
-                $license = License::getCached($this->config, $this->db);
+                $license = License::getCached($this->config, $this->db, $_CORELANG);
                 $license->setLicenseKey(contrexx_input2db($_POST['licenseKey']));
                 // save it before we check it, so we only change the license key
                 $license->save(new \settingsManager(), $this->db);
