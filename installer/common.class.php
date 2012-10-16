@@ -1560,6 +1560,7 @@ class CommonFunctions
             $v = $_CONFIG['coreCmsVersion'] . $_CONFIG['coreCmsStatus'];
             $url = base64_decode('d3d3LmNvbnRyZXh4LmNvbQ==');
             $file = base64_decode("L3VwZGF0ZWNlbnRlci9pbmRleC5waHA=").'?host='.$serverName.$_SESSION['installer']['config']['offsetPath'].'&ip='.$ip.'&version='.$v.'&edition='.$_CONFIG['coreCmsEdition'];
+            require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/Request2.php');
             $request = new \HTTP_Request2('http://'.$url.$file, \HTTP_Request2::METHOD_GET);
             try {
                 $objResponse = $request->send();
