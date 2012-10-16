@@ -7,6 +7,10 @@ function switchNavigation(navi_id) {
                 $J(value).removeClass('active');
                 $J(value).addClass('inactive');
             });
+            $J('.navigation_level_1').each(function(index, value) {
+                $J(value).children('li, span').removeClass('active');
+                $J(value).children('li, span').addClass('inactive');
+            });
         } else {
             $J('#navigation_level_2_' + navi_id).removeClass('inactive');
             $J('#navigation_level_2_' + navi_id).addClass('active');
