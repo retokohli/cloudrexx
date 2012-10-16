@@ -394,6 +394,7 @@ class AccessLib
                     $this->_objTpl->parse($this->attributeNamePrefix.'_list'.$historyPostfix);
                 } elseif (!$useMagicBlock) {
                     $this->parseAttributePlaceholders($arrPlaceholders, true, $attributeIdUC, 0, 0);
+                    $parsed = empty($historyPostfix);
                 } else {
                     $parsed = false;
                 }
