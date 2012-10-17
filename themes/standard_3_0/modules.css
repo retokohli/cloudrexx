@@ -456,13 +456,12 @@ div.row2 {
 #access div.letter_index,
 #access div.search,
 #access div.functions {
+    float: left;
     width: 100%;
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 15px 0px;
-    float:left;
-    height:auto !important;
+    padding: 0 0 15px 0;
 }
 #access div.message_error {
+    padding: 5px 0 10px 0;
     color: #ff0000;
 }
 #access div.message_ok {

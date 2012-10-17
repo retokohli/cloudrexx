@@ -983,6 +983,7 @@ $_ARRAYLANG['TXT_ACCESS_FIRSTNAME'] = "First name";
 $_ARRAYLANG['TXT_ACCESS_GENDER'] = "Geschlecht";
 $_ARRAYLANG['TXT_ACCESS_INTERESTS'] = "Interessen";
 $_ARRAYLANG['TXT_ACCESS_INVALID_EMAIL_ADDRESS'] = "Sie müssen eine gültige E-Mail Adresse angeben!";
+$_ARRAYLANG['TXT_ACCESS_INVALID_PASSWORD'] = "The password is invalid. It must contain at least 6 characters.";
 $_ARRAYLANG['TXT_ACCESS_INVALID_PASSWORD'] = "The password is invalid. It must be at least 6 characters long as well as contain at least one upper and one lower case character and one number.";
 $_ARRAYLANG['TXT_ACCESS_INVALID_USERNAME'] = "Der Benutzername darf nur aus Alphanumerischen Zeichen (a-z/A-Z/0-9) und den folgenden Sonderzeichen bestehen: -_";
 $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] = "Sprache";

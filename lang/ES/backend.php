@@ -980,6 +980,7 @@ $_ARRAYLANG['TXT_ACCESS_FIRSTNAME'] = "Nombre";
 $_ARRAYLANG['TXT_ACCESS_GENDER'] = "G&eacute;nero";
 $_ARRAYLANG['TXT_ACCESS_INTERESTS'] = "Intereses";
 $_ARRAYLANG['TXT_ACCESS_INVALID_EMAIL_ADDRESS'] = "\¡Es necesario que introduzca una direcci&oacute;n de e-mail v&aacute;lida!";
+$_ARRAYLANG['TXT_ACCESS_INVALID_PASSWORD'] = "The password is invalid. It must contain at least 6 characters.";
 $_ARRAYLANG['TXT_ACCESS_INVALID_PASSWORD'] = "The password is invalid. It must be at least 6 characters long as well as contain at least one upper and one lower case character and one number.";
 $_ARRAYLANG['TXT_ACCESS_INVALID_USERNAME'] = "El nombre de usuario s&oacute;lo puede contener caracteres alfanum&eacute;ricos (a-z, A-Z, 0-9) y los siguientes caracteres especiales: -_";
 $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] = "Idioma";

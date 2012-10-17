@@ -508,8 +508,8 @@ class Access extends AccessLib
         if ($this->_objTpl->blockExists('access_captcha')) {
             if ($arrSettings['user_captcha']['status']) {
                 $this->_objTpl->setVariable(array(
-                    'ACCESS_CAPTCHA_CODE'            => FWCaptcha::getInstance()->getCode(),
-                    'TXT_ACCESS_CAPTCHA'            => $_CORELANG['TXT_CORE_CAPTCHA'],
+                    'ACCESS_CAPTCHA_CODE' => FWCaptcha::getInstance()->getCode(),
+                    'TXT_ACCESS_CAPTCHA'  => $_CORELANG['TXT_CORE_CAPTCHA'],
                 ));
                 $this->_objTpl->parse('access_captcha');
             } else {
@@ -540,11 +540,11 @@ class Access extends AccessLib
         global $_ARRAYLANG;
 
         $arrSettings = User_Setting::getSettings();
-
-        if(!$arrSettings['user_captcha']['status'] || FWCaptcha::getInstance()->check()) {
+        if (!$arrSettings['user_captcha']['status'] || FWCaptcha::getInstance()->check()) {
             return true;
         }
 
+        $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_INVALID_CAPTCHA_CODE'];
         return false;
     }
 
