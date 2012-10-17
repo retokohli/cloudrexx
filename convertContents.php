@@ -7,7 +7,7 @@
 $documentRoot = dirname(__FILE__);
 
 require_once($documentRoot.'/lib/DBG.php');
-DBG::activate(DBG_PHP);
+//DBG::activate(DBG_PHP);
 require_once($documentRoot.'/core/Env.class.php');                       // needed to get EM
 require_once($documentRoot.'/config/settings.php');                      // needed for doctrine.php
 require_once($documentRoot.'/config/configuration.php');                 // needed for doctrine.php
