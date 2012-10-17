@@ -18,9 +18,17 @@ $J(document).ready(function() {
         
         // If the password length is less than 6, return message.
         if (password.length < 6) { 
-            $J('#password-complexity').removeClass()
-            $J('#password-complexity').addClass('short')
-            return '{TXT_ACCESS_PASSWORD_TOO_SHORT}' 
+            $J('#password-complexity').removeClass();
+            $J('#password-complexity').addClass('short');
+            return '{TXT_ACCESS_PASSWORD_TOO_SHORT}';
+        }
+        
+        if ('{ACCESS_PASSWORT_COMPLEXITY}' == 'on') {
+            if (!password.match(/([a-zA-Z])/) || !password.match(/([0-9])/) || !password.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/)) {
+                $J('#password-complexity').removeClass();
+                $J('#password-complexity').addClass('short');
+                return '{TXT_ACCESS_PASSWORD_INVALID}';
+            }
         }
         
         // Length is ok, lets continue.

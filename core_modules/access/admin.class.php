@@ -1307,6 +1307,7 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_FRONTEND_DESC'                  => $_ARRAYLANG['TXT_ACCESS_FRONTEND_DESC'],
             'TXT_ACCESS_BACKEND_DESC'                   => $_ARRAYLANG['TXT_ACCESS_BACKEND_DESC'],
             'TXT_ACCESS_VALIDITY_EXPIRATION'            => $_ARRAYLANG['TXT_ACCESS_VALIDITY_EXPIRATION'],
+            'TXT_ACCESS_PASSWORD_INVALID'               => $_ARRAYLANG['TXT_ACCESS_PASSWORD_INVALID'],
             'TXT_ACCESS_PASSWORD_TOO_SHORT'             => $_ARRAYLANG['TXT_ACCESS_PASSWORD_TOO_SHORT'],
             'TXT_ACCESS_PASSWORD_WEAK'                  => $_ARRAYLANG['TXT_ACCESS_PASSWORD_WEAK'],
             'TXT_ACCESS_PASSWORD_GOOD'                  => $_ARRAYLANG['TXT_ACCESS_PASSWORD_GOOD'],
@@ -1333,6 +1334,7 @@ class AccessManager extends AccessLib
             'ACCESS_USER_VALIDITY_OPTION_DISPLAY'  => $objUser->getAdminStatus() ? 'none' : '',
             'ACCESS_JAVASCRIPT_FUNCTIONS'          => $this->getJavaScriptCode(),
             'CSS_DISPLAY_STATUS'                   => $cssDisplayStatus,
+            'ACCESS_PASSWORT_COMPLEXITY'           => isset($_CONFIG['passwordComplexity']) ? $_CONFIG['passwordComplexity'] : 'off',
         ));
 
         $rowNr = 0;
