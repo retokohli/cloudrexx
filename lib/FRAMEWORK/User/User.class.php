@@ -342,13 +342,16 @@ class User extends User_Profile
     public function checkPassword($password)
     {
         global $objDatabase;
-
-        return (boolean)$objResult = $objDatabase->SelectLimit("
+        
+        $query = '
             SELECT 1
-              FROM `".DBPREFIX."access_users`
-             WHERE `id`=$this->id
-               AND `password`='".md5($password)."'", 1)
-            && $objResult->RecordCount() == 1;
+              FROM `'.DBPREFIX.'access_users`
+             WHERE `id` = '.$this->id.'
+               AND `password` = "'.md5($password).'"
+        ';
+        (bool) $objResult = $objDatabase->SelectLimit($query, 1);
+        
+        return $objResult;
     }
 
 
@@ -1856,7 +1859,7 @@ class User extends User_Profile
      */
     public function setPassword($password, $confirmedPassword=null, $reset=false)
     {
-        global $_CORELANG;
+        global $_CORELANG, $_CONFIG;
 
         if (empty($password) && empty($confirmedPassword) && $this->id && !$reset) {
             return true;
@@ -1869,7 +1872,12 @@ class User extends User_Profile
             $this->password = md5($password);
             return true;
         }
-        $this->error_msg[] = $_CORELANG['TXT_ACCESS_INVALID_PASSWORD'];
+        if (isset($_CONFIG['passwordComplexity']) && $_CONFIG['passwordComplexity'] == 'on') {
+            $errorMsg = $_CORELANG['TXT_ACCESS_INVALID_PASSWORD_WITH_COMPLEXITY'];
+        } else {
+            $errorMsg = $_CORELANG['TXT_ACCESS_INVALID_PASSWORD'];
+        }
+        $this->error_msg[] = $errorMsg;
         return false;
     }
 

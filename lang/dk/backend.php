@@ -983,6 +983,7 @@ $_ARRAYLANG['TXT_ACCESS_FIRSTNAME'] = "Fornavn";
 $_ARRAYLANG['TXT_ACCESS_GENDER'] = "Køn";
 $_ARRAYLANG['TXT_ACCESS_INTERESTS'] = "Interesser";
 $_ARRAYLANG['TXT_ACCESS_INVALID_EMAIL_ADDRESS'] = "Du skal angive en gyldig e-mail adresse!";
+$_ARRAYLANG['TXT_ACCESS_INVALID_PASSWORD'] = "The password is invalid. It must contain at least 6 characters.";
 $_ARRAYLANG['TXT_ACCESS_INVALID_PASSWORD'] = "The password is invalid. It must be at least 6 characters long as well as contain at least one upper and one lower case character and one number.";
 $_ARRAYLANG['TXT_ACCESS_INVALID_USERNAME'] = "Brugernavnet må kun bestå af alfanumeriske tegn (a-z/A-Z/0-9) og efterfølgende specialtegn: -_";
 $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] = "Sprog";
