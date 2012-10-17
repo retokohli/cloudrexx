@@ -399,7 +399,6 @@ class DBG
 
     static function enable_error_reporting()
     {
-        if (!defined('E_DEPRECATED')) define('E_DEPRECATED', 8192);
         self::$log_php =
             E_ALL
 // Suppress all deprecated warnings
@@ -407,7 +406,7 @@ class DBG
 //          & ~E_DEPRECATED
 // Enable strict warnings
 // (enable this line and fix all warnings before release!)
-//          | E_STRICT
+          | E_STRICT
         ;
         error_reporting(self::$log_php);
         ini_set('display_errors', 1);
@@ -541,8 +540,38 @@ class DBG
                 case E_NOTICE:
                     $type = 'NOTICE';
                     break;
+                case E_CORE_ERROR:
+                    $type = 'E_CORE_ERROR';
+                    break;
+                case E_CORE_WARNING:
+                    $type = 'E_CORE_WARNING';
+                    break;
+                case E_COMPILE_ERROR:
+                    $type = 'E_COMPILE_ERROR';
+                    break;
+                case E_COMPILE_WARNING:
+                    $type = 'E_COMPILE_WARNING';
+                    break;
+                case E_USER_ERROR:
+                    $type = 'E_USER_ERROR';
+                    break;
+                case E_USER_WARNING:
+                    $type = 'E_USER_WARNING';
+                    break;
+                case E_USER_NOTICE:
+                    $type = 'E_USER_NOTICE';
+                    break;
                 case E_STRICT:
                     $type = 'STRICT';
+                    break;
+                case E_RECOVERABLE_ERROR:
+                    $type = 'E_RECOVERABLE_ERROR';
+                    break;
+                case E_DEPRECATED:
+                    $type = 'E_DEPRECATED';
+                    break;
+                case E_USER_DEPRECATED:
+                    $type = 'E_USER_DEPRECATED';
                     break;
             }
             if (self::$log_file) {
