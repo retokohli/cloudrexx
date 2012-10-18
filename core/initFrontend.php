@@ -88,24 +88,7 @@ if ($apcEnabled) {
 $starttime = explode(' ', microtime());
 
 // Makes code analyzer warnings go away
-$_CONFIG = $_CONFIGURATION = $loggableListener = null;
-/**
- * Environment repository
- */
-require_once dirname(__FILE__).'/Env.class.php';
-/**
- * User configuration settings
- *
- * This file is re-created by the CMS itself. It initializes the
- * {@link $_CONFIG[]} global array.
- */
-$incSettingsStatus = include_once dirname(dirname(__FILE__)).'/config/settings.php';
-/**
- * Path, database, FTP configuration settings
- *
- * Initialises global settings array and constants.
- */
-include_once dirname(dirname(__FILE__)).'/config/configuration.php';
+$loggableListener = null;
 
 // Check if system is installed
 if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
@@ -115,24 +98,25 @@ if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
     die('System halted: Unable to load basic configuration!');
 }
 
-$customizing = null;
-if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
-    $customizing = ASCMS_CUSTOMIZING_PATH;
-}
-
 /**
  * This needs to be initialized before loading config/doctrine.php
  * Because we overwrite the Gedmo model (so we need to load our model
  * before doctrine loads the Gedmo one)
  */
-require_once dirname(__FILE__).'/ClassLoader/ClassLoader.class.php';
-new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $customizing);
+require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');
+$cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $customizing);
+
+/**
+ * Environment repository
+ */
+require_once($cl->getFilePath(ASCMS_CORE_PATH.'/Env.class.php'));
+\Env::set('ClassLoader', $cl);
 
 /**
  * Doctrine configuration
  * Loaded after installer redirect (not configured before installer)
  */
-$incDoctrineStatus = include_once dirname(dirname(__FILE__)).'/config/doctrine.php';
+$incDoctrineStatus = include_once($cl->getFilePath(ASCMS_PATH.ASCMS_PATH_OFFSET.'/config/doctrine.php'));
 
 if ($incDoctrineStatus === false) {
     die('System halted: Unable to load basic configuration!');
@@ -149,7 +133,7 @@ Env::set('ftpConfig', $_FTPCONFIG);
 /**
  * Include all the required files.
  */
-require_once dirname(__FILE__).'/API.php';
+require_once($cl->getFilePath(ASCMS_CORE_PATH.'/API.php'));
 // Temporary fix until all GET operation requests will be replaced by POSTs
 CSRF::setFrontendMode();
 
@@ -303,9 +287,9 @@ $_REQUEST = $objSecurity->detectIntrusion($_REQUEST);
 // initialize objects
 /**
  * Template object
- * @global HTML_Template_Sigma $objTemplate
+ * @global \Cx\Core\Html\Sigma $objTemplate
  */
-$objTemplate = new HTML_Template_Sigma(ASCMS_THEMES_PATH);
+$objTemplate = new \Cx\Core\Html\Sigma(ASCMS_THEMES_PATH);
 $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
 
@@ -315,7 +299,7 @@ $page    = isset($_REQUEST['page']) ? intval($_REQUEST['page']) : 0;
 $history = isset($_REQUEST['history']) ? intval($_REQUEST['history']) : 0;
 $sessionObj = null;
 if ($section == 'upload') { //handle uploads separately, since they have no content
-    if (!include_once ASCMS_CORE_MODULE_PATH.'/upload/index.class.php')
+    if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/upload/index.class.php'))
         die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
     $objUploadModule = new Upload();
     $objUploadModule->getPage();
@@ -543,14 +527,14 @@ if (!$isRegularPageRequest) {
     switch ($plainSection) {
         case 'newsletter':
             /** @ignore */
-            if (!@include_once ASCMS_MODULE_PATH.'/newsletter/index.class.php')
+            if (!$cl->loadFile(ASCMS_MODULE_PATH.'/newsletter/index.class.php'))
                 die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
             $newsletter = new newsletter();
             $newsletter->getPage();
             break;
         case 'immo':
             /** @ignore */
-            if (!@include_once ASCMS_MODULE_PATH.'/immo/index.class.php')
+            if (!$cl->loadFile(ASCMS_MODULE_PATH.'/immo/index.class.php'))
                 die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
             $objImmo = new Immo('');
             $objImmo->getPage();
@@ -587,7 +571,7 @@ $objCounter->checkForSpider();
 // Set Blocks
 if ($_CONFIG['blockStatus'] == '1') {
     /** @ignore */
-    if (@include_once ASCMS_MODULE_PATH.'/block/index.class.php') {
+    if ($cl->loadFile(ASCMS_MODULE_PATH.'/block/index.class.php')) {
         block::setBlocks($page_content, $page);
         block::setBlocks($themesPages, $page);
 // TODO: this call in unhappy, becase the content/home template already gets parsed just the line above
@@ -596,7 +580,7 @@ if ($_CONFIG['blockStatus'] == '1') {
 }
 
 // make the replacements for the data module
-if ($_CONFIG['dataUseModule'] && @include_once ASCMS_MODULE_PATH.'/data/dataBlocks.class.php') {
+if ($_CONFIG['dataUseModule'] && $cl->loadFile(ASCMS_MODULE_PATH.'/data/dataBlocks.class.php')) {
     $lang = $objInit->loadLanguageData('data');
     $dataBlocks = new dataBlocks($lang);
     $page_content = $dataBlocks->replace($page_content);
@@ -610,7 +594,7 @@ if ($_CONFIG['newsTeasersStatus'] == '1') {
     // set news teasers in the content
     if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', $page_content, $arrMatches)) {
         /** @ignore */
-        if (@include_once ASCMS_CORE_MODULE_PATH.'/news/lib/teasers.class.php') {
+        if ($cl->loadFile(ASCMS_CORE_MODULE_PATH.'/news/lib/teasers.class.php')) {
             $objTeasers = new Teasers();
             $objTeasers->setTeaserFrames($arrMatches[1], $page_content);
         }
@@ -618,7 +602,7 @@ if ($_CONFIG['newsTeasersStatus'] == '1') {
     // set news teasers in the page design
     if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', $page_template, $arrMatches)) {
         /** @ignore */
-        if (@include_once ASCMS_CORE_MODULE_PATH.'/news/lib/teasers.class.php') {
+        if ($cl->loadFile(ASCMS_CORE_MODULE_PATH.'/news/lib/teasers.class.php')) {
             $objTeasers = new Teasers();
             $objTeasers->setTeaserFrames($arrMatches[1], $page_template);
         }
@@ -626,7 +610,7 @@ if ($_CONFIG['newsTeasersStatus'] == '1') {
     // set news teasers in the website design
     if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', $themesPages['index'], $arrMatches)) {
         /** @ignore */
-        if (@include_once ASCMS_CORE_MODULE_PATH.'/news/lib/teasers.class.php') {
+        if ($cl->loadFile(ASCMS_CORE_MODULE_PATH.'/news/lib/teasers.class.php')) {
             $objTeasers = new Teasers();
             $objTeasers->setTeaserFrames($arrMatches[1], $themesPages['index']);
         }
@@ -635,7 +619,7 @@ if ($_CONFIG['newsTeasersStatus'] == '1') {
 // Set download groups
 if (preg_match_all('/{DOWNLOADS_GROUP_([0-9]+)}/', $page_content, $arrMatches)) {
     /** @ignore */
-    if (@include_once ASCMS_MODULE_PATH.'/downloads/lib/downloadsLib.class.php') {
+    if ($cl->loadFile(ASCMS_MODULE_PATH.'/downloads/lib/downloadsLib.class.php')) {
         $objDownloadLib = new DownloadsLibrary();
         $objDownloadLib->setGroups($arrMatches[1], $page_content);
     }
@@ -647,7 +631,7 @@ if (preg_match_all('/{DOWNLOADS_GROUP_([0-9]+)}/', $page_content, $arrMatches)) 
 $downloadBlock = preg_replace_callback(
     "/<!--\s+BEGIN\s+downloads_category_(\d+)_list\s+-->(.*)<!--\s+END\s+downloads_category_\g1_list\s+-->/s",
     function($matches) {
-        if (isset($matches[0]) && @include_once(ASCMS_MODULE_PATH.'/downloads/index.class.php')) {
+        if (isset($matches[0]) && $cl->loadFile(ASCMS_MODULE_PATH.'/downloads/index.class.php')) {
             $objDownloadsModule = new downloads($matches[0], array('category' => $matches[1]));
             return $objDownloadsModule->getPage();
         }
@@ -659,21 +643,21 @@ $page_content = $downloadBlock;
 if ($_CONFIG['feedNewsMLStatus'] == '1') {
     if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/', $page_content, $arrMatches)) {
         /** @ignore */
-        if (@include_once ASCMS_MODULE_PATH.'/feed/newsML.class.php') {
+        if ($cl->loadFile(ASCMS_MODULE_PATH.'/feed/newsML.class.php')) {
             $objNewsML = new NewsML();
             $objNewsML->setNews($arrMatches[1], $page_content);
         }
     }
     if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/', $page_template, $arrMatches)) {
         /** @ignore */
-        if (@include_once ASCMS_MODULE_PATH.'/feed/newsML.class.php') {
+        if ($cl->loadFile(ASCMS_MODULE_PATH.'/feed/newsML.class.php')) {
             $objNewsML = new NewsML();
             $objNewsML->setNews($arrMatches[1], $page_template);
         }
     }
     if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/', $themesPages['index'], $arrMatches)) {
         /** @ignore */
-        if (@include_once ASCMS_MODULE_PATH.'/feed/newsML.class.php') {
+        if ($cl->loadFile(ASCMS_MODULE_PATH.'/feed/newsML.class.php')) {
             $objNewsML = new NewsML();
             $objNewsML->setNews($arrMatches[1], $themesPages['index']);
         }
@@ -684,7 +668,7 @@ if ($_CONFIG['feedNewsMLStatus'] == '1') {
 // Set popups
 if (preg_match('/{POPUP_JS_FUNCTION}/', $themesPages['index'])) {
     /** @ignore */
-    if (@include_once ASCMS_MODULE_PATH.'/popup/index.class.php') {
+    if ($cl->loadFile(ASCMS_MODULE_PATH.'/popup/index.class.php')) {
         $objPopup = new popup();
         if (preg_match('/{POPUP}/', $themesPages['index'])) {
             $objPopup->setPopup($themesPages['index'], $page->getNode()->getId());
@@ -763,7 +747,7 @@ if (file_exists($modulespath)) {
 
 // get Newsletter
 /** @ignore */
-if (@include_once ASCMS_MODULE_PATH.'/newsletter/index.class.php') {
+if ($cl->loadFile(ASCMS_MODULE_PATH.'/newsletter/index.class.php')) {
     $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('newsletter'));
     $newsletter = new newsletter('');
     if (preg_match('/{NEWSLETTER_BLOCK}/', $page_content)) {
@@ -780,7 +764,7 @@ if (@include_once ASCMS_MODULE_PATH.'/newsletter/index.class.php') {
 
 // get knowledge content
 if (MODULE_INDEX < 2 && !empty($_CONFIG['useKnowledgePlaceholders'])) {
-    if (@include_once ASCMS_MODULE_PATH.'/knowledge/interface.class.php') {
+    if ($cl->loadFile(ASCMS_MODULE_PATH.'/knowledge/interface.class.php')) {
 
         $knowledgeInterface = new KnowledgeInterface();
         if (preg_match('/{KNOWLEDGE_[A-Za-z0-9_]+}/i', $page_content)) {
@@ -798,7 +782,7 @@ if (MODULE_INDEX < 2 && !empty($_CONFIG['useKnowledgePlaceholders'])) {
 
 // get Directory Homecontent
 if ($_CONFIG['directoryHomeContent'] == '1') {
-    if (@include_once ASCMS_MODULE_PATH.'/directory/homeContent.class.php') {
+    if ($cl->loadFile(ASCMS_MODULE_PATH.'/directory/homeContent.class.php')) {
 
         $dirc = $themesPages['directory_content'];
         if (preg_match('/{DIRECTORY_FILE}/', $page_content)) {
@@ -817,7 +801,7 @@ if ($_CONFIG['directoryHomeContent'] == '1') {
 // get + replace forum latest entries content
 if ($_CONFIG['forumHomeContent'] == '1') {
     /** @ignore */
-    if (@include_once ASCMS_MODULE_PATH.'/forum/homeContent.class.php') {
+    if ($cl->loadFile(ASCMS_MODULE_PATH.'/forum/homeContent.class.php')) {
         $forumHomeContentInPageContent = false;
         $forumHomeContentInPageTemplate = false;
         $forumHomeContentInThemesPage = false;
@@ -852,7 +836,7 @@ if ($_CONFIG['forumHomeContent'] == '1') {
 // get + replace forum tagcloud
 if (!empty($_CONFIG['forumTagContent'])) {
     /** @ignore */
-    if (@include_once ASCMS_MODULE_PATH.'/forum/homeContent.class.php') {
+    if ($cl->loadFile(ASCMS_MODULE_PATH.'/forum/homeContent.class.php')) {
         $objForumHome = new ForumHomeContent();
         //Forum-TagCloud
         $forumHomeTagCloudInContent = $objForumHome->searchKeywordInContent('FORUM_TAG_CLOUD', $page_content);
@@ -876,7 +860,7 @@ if (!empty($_CONFIG['forumTagContent'])) {
 
 // Get Gallery-Images (Latest, Random)
 /** @ignore */
-if (@include_once ASCMS_MODULE_PATH.'/gallery/homeContent.class.php') {
+if ($cl->loadFile(ASCMS_MODULE_PATH.'/gallery/homeContent.class.php')) {
     $objGalleryHome = new GalleryHomeContent();
     if ($objGalleryHome->checkRandom()) {
         if (preg_match('/{GALLERY_RANDOM}/', $page_content)) {
@@ -915,7 +899,7 @@ $podcastFirstBlock = false;
 $podcastContent = null;
 if (!empty($_CONFIG['podcastHomeContent'])) {
     /** @ignore */
-    if (@include_once ASCMS_MODULE_PATH.'/podcast/homeContent.class.php') {
+    if ($cl->loadFile(ASCMS_MODULE_PATH.'/podcast/homeContent.class.php')) {
         $podcastHomeContentInPageContent = false;
         $podcastHomeContentInPageTemplate = false;
         $podcastHomeContentInThemesPage = false;
@@ -957,7 +941,7 @@ if (!empty($_CONFIG['podcastHomeContent'])) {
 
 // get voting
 /** @ignore */
-if (@include_once ASCMS_MODULE_PATH.'/voting/index.class.php') {
+if ($cl->loadFile(ASCMS_MODULE_PATH.'/voting/index.class.php')) {
     $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('voting'));
 //  if ($objTemplate->blockExists('voting_result')) {
 //      $objTemplate->_blocks['voting_result'] = setVotingResult($objTemplate->_blocks['voting_result']);
@@ -979,7 +963,7 @@ if (@include_once ASCMS_MODULE_PATH.'/voting/index.class.php') {
 
 // Get content for the blog-module.
 /** @ignore */
-if (@include_once ASCMS_MODULE_PATH.'/blog/homeContent.class.php') {
+if ($cl->loadFile(ASCMS_MODULE_PATH.'/blog/homeContent.class.php')) {
     $objBlogHome = new BlogHomeContent($themesPages['blog_content']);
     if ($objBlogHome->blockFunktionIsActivated()) {
         //Blog-File
@@ -1060,7 +1044,7 @@ if (@include_once ASCMS_MODULE_PATH.'/blog/homeContent.class.php') {
 
 // Media directory: set placeholders I
 /** @ignore */
-if (@include_once ASCMS_MODULE_PATH.'/mediadir/placeholders.class.php') {
+if ($cl->loadFile(ASCMS_MODULE_PATH.'/mediadir/placeholders.class.php')) {
     $objMadiadirPlaceholders = new mediaDirectoryPlaceholders();
     // Level/Category Navbar
     if (preg_match('/{MEDIADIR_NAVBAR}/', $page_content)) {
@@ -1126,7 +1110,7 @@ $moduleStyleFile = null;
 // start module switches
 switch ($plainSection) {
     case 'access':
-        if (!@include_once ASCMS_CORE_MODULE_PATH.'/access/index.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/access/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objAccess = new Access($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objAccess->getPage($page_metatitle, $page_title));
@@ -1134,7 +1118,7 @@ switch ($plainSection) {
 
     case 'login':
         /** @ignore */
-        if (!@include_once ASCMS_CORE_MODULE_PATH.'/login/index.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/login/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
         $objLogin = new Login($page_content);
@@ -1143,7 +1127,7 @@ switch ($plainSection) {
 
     case 'nettools':
         /** @ignore */
-        if (!@include_once ASCMS_CORE_MODULE_PATH.'/nettools/index.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/nettools/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objNetTools = new NetTools($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objNetTools->getPage());
@@ -1151,7 +1135,7 @@ switch ($plainSection) {
 
     case 'shop':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/shop/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/shop/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objTemplate->setVariable('CONTENT_TEXT', Shop::getPage($page_content));
         $boolShop = true;
@@ -1159,7 +1143,7 @@ switch ($plainSection) {
 
     case 'news':
         /** @ignore */
-        if (!@include_once ASCMS_CORE_MODULE_PATH.'/news/index.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/news/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $newsObj= new news($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $newsObj->getNewsPage());
@@ -1174,7 +1158,7 @@ switch ($plainSection) {
 
     case 'livecam':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/livecam/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/livecam/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objLivecam = new Livecam($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objLivecam->getPage());
@@ -1182,7 +1166,7 @@ switch ($plainSection) {
 
     case 'guestbook':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/guestbook/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/guestbook/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objGuestbook = new Guestbook($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objGuestbook->getPage());
@@ -1190,7 +1174,7 @@ switch ($plainSection) {
 
     case 'memberdir':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/memberdir/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/memberdir/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objMemberDir = new memberDir($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objMemberDir->getPage());
@@ -1198,7 +1182,7 @@ switch ($plainSection) {
 
     case 'data':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/data/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/data/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         //if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
         #if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
@@ -1209,7 +1193,7 @@ switch ($plainSection) {
 
     case 'download':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/download/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/download/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objDownload = new Download($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objDownload->getPage());
@@ -1217,7 +1201,7 @@ switch ($plainSection) {
 
     case 'recommend':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/recommend/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/recommend/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objRecommend = new Recommend($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objRecommend->getPage());
@@ -1225,7 +1209,7 @@ switch ($plainSection) {
 
     case 'ecard':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/ecard/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/ecard/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objEcard = new Ecard($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objEcard->getPage());
@@ -1233,7 +1217,7 @@ switch ($plainSection) {
 
     case 'tools':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/tools/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/tools/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objTools = new Tools($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objTools->getPage());
@@ -1241,7 +1225,7 @@ switch ($plainSection) {
 
     case 'dataviewer':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/dataviewer/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/dataviewer/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objDataviewer = new Dataviewer($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objDataviewer->getPage());
@@ -1249,7 +1233,7 @@ switch ($plainSection) {
 
     case 'docsys':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/docsys/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/docsys/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $docSysObj= new docSys($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $docSysObj->getDocSysPage());
@@ -1260,7 +1244,7 @@ switch ($plainSection) {
 
     case 'search':
         /** @ignore */
-        if (!@include_once ASCMS_CORE_MODULE_PATH.'/search/index.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/search/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $pos = (isset($_GET['pos'])) ? intval($_GET['pos']) : '';
         $objTemplate->setVariable('CONTENT_TEXT', search_getSearchPage($pos, $page_content, $license));
@@ -1269,7 +1253,7 @@ switch ($plainSection) {
 
     case 'contact':
         /** @ignore */
-        if (!@include_once ASCMS_CORE_MODULE_PATH.'/contact/index.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/contact/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $contactObj = new Contact($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $contactObj->getContactPage());
@@ -1282,7 +1266,7 @@ switch ($plainSection) {
 
     case 'sitemap':
         /** @ignore */
-        if (!@include_once ASCMS_CORE_MODULE_PATH.'/sitemap/index.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/sitemap/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $sitemap = new sitemap($page_content, $license);
         $objTemplate->setVariable('CONTENT_TEXT', $sitemap->getSitemapContent());
@@ -1290,7 +1274,7 @@ switch ($plainSection) {
 
     case 'media':
         /** @ignore */
-        if (!@include_once ASCMS_CORE_MODULE_PATH.'/media/index.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/media/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objMedia = new MediaManager($page_content, $plainSection.MODULE_INDEX);
         $objTemplate->setVariable('CONTENT_TEXT', $objMedia->getMediaPage());
@@ -1298,7 +1282,7 @@ switch ($plainSection) {
 
     case 'newsletter':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/newsletter/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/newsletter/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $newsletter = new newsletter($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $newsletter->getPage());
@@ -1306,7 +1290,7 @@ switch ($plainSection) {
 
     case 'gallery':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/gallery/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/gallery/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objGallery = new Gallery($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objGallery->getPage());
@@ -1320,14 +1304,14 @@ switch ($plainSection) {
 
     case 'voting':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/voting/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/voting/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objTemplate->setVariable('CONTENT_TEXT', votingShowCurrent($page_content));
         break;
 
     case 'feed':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/feed/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/feed/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objFeed = new feed($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objFeed->getFeedPage());
@@ -1335,7 +1319,7 @@ switch ($plainSection) {
 
     case 'immo':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/immo/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/immo/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objImmo = new Immo($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objImmo->getPage());
@@ -1348,7 +1332,7 @@ switch ($plainSection) {
     case 'calendar':
         define('CALENDAR_MANDATE', MODULE_INDEX);
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/calendar'.MODULE_INDEX.'/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/calendar'.MODULE_INDEX.'/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objCalendar = new Calendar($page_content, MODULE_INDEX);
         $objTemplate->setVariable('CONTENT_TEXT', $objCalendar->getCalendarPage());
@@ -1360,7 +1344,7 @@ switch ($plainSection) {
 
     case 'reservation':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/reservation/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/reservation/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
             $objReservationModule = new reservations($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objReservationModule->getPage());
@@ -1369,7 +1353,7 @@ switch ($plainSection) {
 
     case 'directory':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/directory/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/directory/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $directory = new rssDirectory($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $directory->getPage());
@@ -1387,7 +1371,7 @@ switch ($plainSection) {
 
     case 'market':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/market/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/market/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $market = new Market($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $market->getPage());
@@ -1395,7 +1379,7 @@ switch ($plainSection) {
 
     case 'podcast':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/podcast/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/podcast/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objPodcast = new podcast($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objPodcast->getPage($podcastFirstBlock));
@@ -1403,7 +1387,7 @@ switch ($plainSection) {
 
     case 'forum':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/forum/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/forum/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objForum = new Forum($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objForum->getPage());
@@ -1412,7 +1396,7 @@ switch ($plainSection) {
 
     case 'blog':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/blog/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/blog/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objBlog = new Blog($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objBlog->getPage());
@@ -1420,7 +1404,7 @@ switch ($plainSection) {
 
     case 'knowledge':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/knowledge/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/knowledge/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objKnowledge = new Knowledge($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objKnowledge->getPage());
@@ -1432,7 +1416,7 @@ switch ($plainSection) {
 
     case 'jobs':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/jobs/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/jobs/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $jobsObj= new jobs($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $jobsObj->getJobsPage());
@@ -1443,7 +1427,7 @@ switch ($plainSection) {
 
     case 'error':
         /** @ignore */
-        if (!@include(ASCMS_CORE_PATH.'/error.class.php'))
+        if (!$cl->loadFile(ASCMS_CORE_PATH.'/error.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $errorObj = new error($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $errorObj->getErrorPage());
@@ -1451,7 +1435,7 @@ switch ($plainSection) {
 
     case 'egov':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/egov/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/egov/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objEgov = new eGov($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objEgov->getPage());
@@ -1465,7 +1449,7 @@ switch ($plainSection) {
          * @version 0.0.1 alpha
          */
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/support/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/support/index.class.php'))
             die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objSupport = new support($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objSupport->getPage());
@@ -1473,7 +1457,7 @@ switch ($plainSection) {
 
     case 'partners':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/partners/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/partners/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objPartners = new PartnersFrontend($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objPartners->getPage());
@@ -1481,7 +1465,7 @@ switch ($plainSection) {
 
     case 'u2u':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/u2u/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/u2u/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objU2u = new u2u($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objU2u->getPage($page_metatitle, $page_title));
@@ -1489,7 +1473,7 @@ switch ($plainSection) {
 
     case 'auction':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/auction/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/auction/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $auction = new Auction($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $auction->getPage());
@@ -1497,7 +1481,7 @@ switch ($plainSection) {
 
     case 'downloads':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/downloads/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/downloads/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objDownloadsModule = new downloads($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objDownloadsModule->getPage());
@@ -1510,7 +1494,7 @@ switch ($plainSection) {
 
     case 'printshop':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/printshop/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/printshop/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objPrintshopModule = new Printshop($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objPrintshopModule->getPage());
@@ -1521,7 +1505,7 @@ switch ($plainSection) {
 
     case 'mediadir':
         /** @ignore */
-        if (!@include_once ASCMS_MODULE_PATH.'/mediadir/index.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/mediadir/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objMediaDirectory = new mediaDirectory($page_content);
         $objMediaDirectory->pageTitle = $page_title;
@@ -1537,14 +1521,14 @@ switch ($plainSection) {
 
     case 'checkout':
         /** @ignore */
-        if (!@include_once(ASCMS_MODULE_PATH.'/checkout/index.class.php'))
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/checkout/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objCheckout = new Checkout($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objCheckout->getPage());
         break;
     case 'filesharing':
         /** @ignore */
-        if (!@include_once(ASCMS_MODULE_PATH.'/filesharing/index.class.php'))
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/filesharing/index.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objFileshare = new Filesharing($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objFileshare->getPage());
@@ -1574,7 +1558,7 @@ if (MODULE_INDEX < 2) {
     $calendarCheck2 = $objTemplate->placeholderExists('CALENDAR_EVENTS');
     if (   ($calendarCheck1 || $calendarCheck2)
         /** @ignore */
-        && @include_once ASCMS_MODULE_PATH.'/calendar/HomeCalendar.class.php') {
+        && $cl->loadFile(ASCMS_MODULE_PATH.'/calendar/HomeCalendar.class.php')) {
         $objHomeCalendar = new HomeCalendar();
         if (!empty($calendarCheck1)) {
             $objTemplate->setVariable('CALENDAR', $objHomeCalendar->getHomeCalendar());
@@ -1596,7 +1580,7 @@ for ($i = 1; $i <= 10; $i++) {
 }
 if (   !empty($directoryCheck)
     /** @ignore */
-    && @include_once ASCMS_MODULE_PATH.'/directory/index.class.php') {
+    && $cl->loadFile(ASCMS_MODULE_PATH.'/directory/index.class.php')) {
     $objDirectory = new rssDirectory('');
     if (!empty($directoryCheck)) {
         $objTemplate->setVariable('TXT_DIRECTORY_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
@@ -1609,7 +1593,7 @@ if (   !empty($directoryCheck)
 $marketCheck = $objTemplate->blockExists('marketLatest');
 if (   $marketCheck
     /** @ignore */
-    && @include_once ASCMS_MODULE_PATH.'/market/index.class.php') {
+    && $cl->loadFile(ASCMS_MODULE_PATH.'/market/index.class.php')) {
     $objMarket = new Market('');
     $objTemplate->setVariable('TXT_MARKET_LATEST', $_CORELANG['TXT_MARKET_LATEST']);
     $objMarket->getBlockLatest();
@@ -1620,7 +1604,7 @@ if (   $marketCheck
 $objBanner = null;
 if (   $_CONFIG['bannerStatus']
        /** @ignore */
-    && @include_once ASCMS_CORE_MODULE_PATH.'/banner/index.class.php') {
+    && $cl->loadFile(ASCMS_CORE_MODULE_PATH.'/banner/index.class.php')) {
     $objBanner = new Banner();
     $objTemplate->setVariable(array(
         'BANNER_GROUP_1' => $objBanner->getBannerCode(1, $page->getNode()->getId()),
@@ -1648,7 +1632,7 @@ for ($i = 1; $i <= 10; ++$i) {
 }
 if (   $mediadirCheck
     /** @ignore */
-    && @include_once ASCMS_MODULE_PATH.'/mediadir/index.class.php') {
+    && $cl->loadFile(ASCMS_MODULE_PATH.'/mediadir/index.class.php')) {
     $objMediadir = new mediaDirectory('');
     $objTemplate->setVariable('TXT_MEDIADIR_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
     $objMediadir->getHeadlines($mediadirCheck);
@@ -1770,7 +1754,7 @@ if ($objTemplate->blockExists('access_currently_online_member_list')) {
         && (    $objTemplate->blockExists('access_currently_online_female_members')
             ||  $objTemplate->blockExists('access_currently_online_male_members')
             ||  $objTemplate->blockExists('access_currently_online_members'))) {
-        if (@include_once ASCMS_CORE_MODULE_PATH.'/access/lib/blocks.class.php')
+        if ($cl->loadFile(ASCMS_CORE_MODULE_PATH.'/access/lib/blocks.class.php'))
             $objAccessBlocks = new Access_Blocks();
         if ($objTemplate->blockExists('access_currently_online_female_members'))
             $objAccessBlocks->setCurrentlyOnlineUsers('female');
@@ -1790,7 +1774,7 @@ if ($objTemplate->blockExists('access_last_active_member_list')) {
             ||  $objTemplate->blockExists('access_last_active_male_members')
             ||  $objTemplate->blockExists('access_last_active_members'))) {
         if (   !$objAccessBlocks
-            && @include_once ASCMS_CORE_MODULE_PATH.'/access/lib/blocks.class.php')
+            && $cl->loadFile(ASCMS_CORE_MODULE_PATH.'/access/lib/blocks.class.php'))
             $objAccessBlocks = new Access_Blocks();
         if ($objTemplate->blockExists('access_last_active_female_members'))
             $objAccessBlocks->setLastActiveUsers('female');
@@ -1810,7 +1794,7 @@ if ($objTemplate->blockExists('access_latest_registered_member_list')) {
             ||  $objTemplate->blockExists('access_latest_registered_male_members')
             ||  $objTemplate->blockExists('access_latest_registered_members'))) {
         if (   !$objAccessBlocks
-            && @include_once ASCMS_CORE_MODULE_PATH.'/access/lib/blocks.class.php')
+            && $cl->loadFile(ASCMS_CORE_MODULE_PATH.'/access/lib/blocks.class.php'))
             $objAccessBlocks = new Access_Blocks();
         if ($objTemplate->blockExists('access_latest_registered_female_members'))
             $objAccessBlocks->setLatestRegisteredUsers('female');
@@ -1830,7 +1814,7 @@ if ($objTemplate->blockExists('access_birthday_member_list')) {
             ||  $objTemplate->blockExists('access_birthday_male_members')
             ||  $objTemplate->blockExists('access_birthday_members'))) {
         if (   !$objAccessBlocks
-            && @include_once ASCMS_CORE_MODULE_PATH.'/access/lib/blocks.class.php')
+            && $cl->loadFile(ASCMS_CORE_MODULE_PATH.'/access/lib/blocks.class.php'))
             $objAccessBlocks = new Access_Blocks();
         if ($objAccessBlocks->isSomeonesBirthdayToday()) {
             if ($objTemplate->blockExists('access_birthday_female_members'))
@@ -1892,7 +1876,7 @@ if (!empty($moduleStyleFile))
     );
 
 if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
-    require_once ASCMS_CORE_PATH.'/pdf.class.php';
+    $cl->loadFile(ASCMS_CORE_PATH.'/pdf.class.php');
     $objPDF          = new PDF();
     $objPDF->title   = $page_title.(empty($page_title) ? null : '.pdf');
     $objPDF->content = $objTemplate->get();

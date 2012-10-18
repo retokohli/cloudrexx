@@ -754,7 +754,7 @@ class Country
     {
         global $_CORELANG;
 
-        $objTemplateCountry = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+        $objTemplateCountry = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
         $objTemplateCountry->loadTemplateFile('settings_country.html');
 
         // Adds messages

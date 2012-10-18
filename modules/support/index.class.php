@@ -81,7 +81,7 @@ class Support
 {
     /**
      * @access  private
-     * @var     HTML_Template_Sigma
+     * @var     \Cx\Core\Html\Sigma
      */
     var $objTemplate;
 
@@ -171,7 +171,7 @@ class Support
 // TODO: Temporary
 //$strTemplate = file_get_contents(ASCMS_MODULE_PATH.'/support/template/frontend_module_support_request.html');
 
-        $this->objTemplate = new HTML_Template_Sigma('.');
+        $this->objTemplate = new \Cx\Core\Html\Sigma('.');
         CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($strTemplate);
@@ -503,10 +503,10 @@ DBG::log("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
 
 
     /**
-     * Dump a HTML_Template_Sigma object
+     * Dump a \Cx\Core\Html\Sigma object
      *
      * This is a test.
-     * @param   HTML_Template_Sigma     $objTemplate    The template
+     * @param   \Cx\Core\Html\Sigma     $objTemplate    The template
      * @param   string                  $block          The optional block name
      * @return  boolean                                 Always true
      */

@@ -8,7 +8,7 @@ class LicenseManager {
      */
     private $act;
     /**
-     * @var \HTML_Template_Sigma
+     * @var \Cx\Core\Html\Sigma
      */
     private $template;
     /**
@@ -34,7 +34,7 @@ class LicenseManager {
         $this->lang = $_CORELANG;
         $this->config = $_CONFIG;
         $this->db = $objDb;
-        $this->license = License::getCached($_CONFIG, $this->db, $_CORELANG);
+        $this->license = License::getCached($_CONFIG, $this->db);
         $this->license->check();
         $this->template->setVariable('CONTENT_NAVIGATION', '
             <a href="index.php?cmd=license" class="active">'.$_CORELANG['TXT_LICENSE'].'</a>
@@ -44,7 +44,7 @@ class LicenseManager {
     public function getPage($_POST) {
         if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
             if (isset($_POST['save']) && isset($_POST['licenseKey'])) {
-                $license = License::getCached($this->config, $this->db, $_CORELANG);
+                $license = License::getCached($this->config, $this->db);
                 $license->setLicenseKey(contrexx_input2db($_POST['licenseKey']));
                 // save it before we check it, so we only change the license key
                 $license->save(new \settingsManager(), $this->db);
@@ -75,7 +75,7 @@ class LicenseManager {
         }
         if (file_exists(ASCMS_TEMP_PATH . '/licenseManager.html')) {
             \JS::activate('cx');
-            $remoteTemplate = new \HTML_Template_Sigma(ASCMS_TEMP_PATH);
+            $remoteTemplate = new \Cx\Core\Html\Sigma(ASCMS_TEMP_PATH);
             $remoteTemplate->loadTemplateFile('/licenseManager.html');
             
             if (isset($_POST['save']) && isset($_POST['licenseKey'])) {
@@ -145,7 +145,7 @@ class LicenseManager {
                 }
             }
             
-            $message = $this->license->getMessage(\FWLanguage::getLanguageCodeById(BACKEND_LANG_ID));
+            $message = $this->license->getMessage(\FWLanguage::getLanguageCodeById(BACKEND_LANG_ID), $this->lang);
             if ($message && strlen($message->getText())) {
                 $remoteTemplate->setVariable('MESSAGE_TITLE', contrexx_raw2xhtml($message->getText()));
                 $remoteTemplate->setVariable('MESSAGE_LINK', contrexx_raw2xhtml($message->getLink()));

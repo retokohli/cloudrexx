@@ -24,7 +24,7 @@ class LoginManager {
      */
     public function __construct()
     {
-        $this->objTemplate = new HTML_Template_Sigma(ASCMS_DOCUMENT_ROOT);
+        $this->objTemplate = new \Cx\Core\Html\Sigma(ASCMS_DOCUMENT_ROOT);
         CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->loadTemplateFile('/cadmin/template/ascms/index.html');

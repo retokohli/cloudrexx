@@ -53,7 +53,7 @@ class dataBlocks extends DataLibrary
             return;
         }
         $this->_arrSettings = $this->createSettingsArray();
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_THEMES_PATH);
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_THEMES_PATH);
         CSRF::add_placeholder($this->_objTpl);
         $this->langVars = $objInit->loadLanguageData('data');
     }

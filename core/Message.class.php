@@ -204,7 +204,7 @@ class Message
      * Shows the collected messages
      *
      * Decides which view to use, and clears the messages
-     * @param   HTML_Template_Sigma   $objTemplateLocal
+     * @param   \Cx\Core\Html\Sigma   $objTemplateLocal
      *                                              The optional Template
      */
     static function show($objTemplateLocal=null)
@@ -223,7 +223,7 @@ class Message
      * Shows the collected messages, if any
      *
      * Backend use only.
-     * @param   HTML_Template_Sigma   $objTemplateLocal
+     * @param   \Cx\Core\Html\Sigma   $objTemplateLocal
      *                                              The optional Template
      * @todo    Add the missing classes CLASS_INFO and CLASS_WARN
      *          to the backend views
@@ -273,7 +273,7 @@ class Message
      *  - null, if no message is present
      *  - false, if any message of class CLASS_ERROR is encountered
      *  - true, if no messages of class CLASS_ERROR are found
-     * @param   HTML_Template_Sigma   $objTemplateLocal
+     * @param   \Cx\Core\Html\Sigma   $objTemplateLocal
      *                                              The optional Template
      * @return  boolean                             The status
      */

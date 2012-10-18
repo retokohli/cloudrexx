@@ -94,7 +94,7 @@ class Navigation
             return;
         }
 
-        $this->_objTpl = new HTML_Template_Sigma('.');
+        $this->_objTpl = new \Cx\Core\Html\Sigma('.');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($templateContent);
@@ -193,7 +193,7 @@ class Navigation
     /**
      * Sets the language placeholders in the provided template
      * @param \Cx\Core\Routing\Url $pageUrl
-     * @param \HTML_Template_Sigma $objTemplate 
+     * @param \Cx\Core\Html\Sigma $objTemplate 
      */
     public function setLanguagePlaceholders($pageUrl, $objTemplate) {
         $activeLanguages = \FWLanguage::getActiveFrontendLanguages();

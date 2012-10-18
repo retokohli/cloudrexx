@@ -1641,7 +1641,7 @@ class Order
     /**
      * Set up the detail view of the selected order
      * @access  public
-     * @param   HTML_Template_Sigma $objTemplate    The Template, by reference
+     * @param   \Cx\Core\Html\Sigma $objTemplate    The Template, by reference
      * @param   boolean             $edit           Edit if true, view otherwise
      * @global  ADONewConnection    $objDatabase    Database connection object
      * @global  array               $_ARRAYLANG     Language array
@@ -1665,7 +1665,7 @@ class Order
             $template_name = ($edit
               ? 'module_shop_order_edit.html'
               : 'module_shop_order_details.html');
-            $objTemplate = new HTML_Template_Sigma(
+            $objTemplate = new \Cx\Core\Html\Sigma(
                 ASCMS_MODULE_PATH.'/shop/template');
 //DBG::log("Orders::view_list(): new Template: ".$objTemplate->get());
             $objTemplate->loadTemplateFile($template_name);

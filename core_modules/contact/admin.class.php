@@ -63,7 +63,7 @@ class ContactManager extends ContactLib
 
     /**
      * PHP5 constructor
-     * @global HTML_Template_Sigma
+     * @global \Cx\Core\Html\Sigma
      * @global array
      * @global array
      */
@@ -73,7 +73,7 @@ class ContactManager extends ContactLib
 
         $this->em = Env::em();
 
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/contact/template');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/contact/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         
@@ -139,7 +139,7 @@ class ContactManager extends ContactLib
      * Get the development page
      *
      * @access public
-     * @global HTML_Template_Sigma
+     * @global \Cx\Core\Html\Sigma
      */
     function getPage()
     {

@@ -44,7 +44,7 @@ class Shop extends ShopLibrary
 
     /**
      * The PEAR Template Sigma object
-     * @var     HTML_Template_Sigma
+     * @var     \Cx\Core\Html\Sigma
      * @access  private
      * @static
      */
@@ -126,7 +126,7 @@ if (SettingDb::getValue('use_js_cart') === NULL) {
         self::init();
         self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
         // PEAR Sigma template
-        self::$objTemplate = new HTML_Template_Sigma('.');
+        self::$objTemplate = new \Cx\Core\Html\Sigma('.');
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         self::$objTemplate->setTemplate($template);
         // Global module index for clones
@@ -291,7 +291,7 @@ die("Failed to get Customer for ID $customer_id");
         if ($strContent) {
             return $strContent;
         }
-        $objTpl = new HTML_Template_Sigma('.');
+        $objTpl = new \Cx\Core\Html\Sigma('.');
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $objTpl->setTemplate($themesPages['shopnavbar']);
         $objTpl->setGlobalVariable($_ARRAYLANG);
@@ -438,7 +438,7 @@ die("Failed to get Customer for ID $customer_id");
     {
         global $_ARRAYLANG, $themesPages;
 
-        $objTemplate = new HTML_Template_Sigma('.');
+        $objTemplate = new \Cx\Core\Html\Sigma('.');
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $match = null;
         $div_cart = $div_product = '';
@@ -1355,7 +1355,7 @@ die("Failed to update the Cart!");
         $_ARRAYLANG += $objInit->loadLanguageData('shop');
         if (!SettingDb::init('shop', 'config')) return false;
         $original_REQUEST = &$_REQUEST;
-        self::$objTemplate = new HTML_Template_Sigma();
+        self::$objTemplate = new \Cx\Core\Html\Sigma();
         self::$objTemplate->setTemplate($content);
         // You might add more parameters here!
         $_REQUEST = array('catId' => $category_id);

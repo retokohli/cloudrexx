@@ -89,7 +89,7 @@ class CheckoutManager extends CheckoutLibrary {
 
         $objTemplate->setVariable('CONTENT_NAVIGATION', '<a href="index.php?cmd=checkout&amp;act=overview"'.(($_GET['act'] == 'overview' || $_GET['act'] == '') ? ' class="active"' : '').'>'.$_ARRAYLANG['TXT_CHECKOUT_OVERVIEW'].'</a>
                                                          <a href="index.php?cmd=checkout&amp;act=settings"'.($_GET['act'] == 'settings' ? ' class="active"' : '').'>'.$_ARRAYLANG['TXT_CHECKOUT_SETTINGS'].'</a>');
-        $this->objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/checkout/template');
+        $this->objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/checkout/template');
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
     }
 

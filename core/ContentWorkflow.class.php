@@ -48,7 +48,7 @@ class ContentWorkflow extends Module {
     * Constructor
     *
     * @param     ADONewConnection
-    * @param     HTML_Template_Sigma
+    * @param     \Cx\Core\Html\Sigma
     * @param     string    $act
     * @param     object    $init
     * @global    array     Configuration
@@ -96,7 +96,7 @@ class ContentWorkflow extends Module {
     /**
      * Sets the content workflow navigation
      * 
-     * @global    HTML_Template_Sigma
+     * @global    \Cx\Core\Html\Sigma
      * @global    array    Core language
      */
     protected function setNavigation() {
@@ -115,7 +115,7 @@ class ContentWorkflow extends Module {
     /**
     * Show logfile-entries (new, updated or deleted)
     *
-    * @global     HTML_Template_Sigma
+    * @global     \Cx\Core\Html\Sigma
     * @global     array        Core language
     * @global     array        Configuration
     */

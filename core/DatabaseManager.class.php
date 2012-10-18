@@ -48,7 +48,7 @@ class DatabaseManager
 
     /**
      * Constructor
-     * @global  HTML_Template_Sigma
+     * @global  \Cx\Core\Html\Sigma
      * @global  array
      */
     function __construct() {}
@@ -69,7 +69,7 @@ class DatabaseManager
 
     /**
      * Dispatches to the desired function.
-     * @global  HTML_Template_Sigma $objTemplate
+     * @global  \Cx\Core\Html\Sigma $objTemplate
      * @global  array               $_CORELANG
      */
     function getPage()
@@ -124,7 +124,7 @@ class DatabaseManager
     /**
      * Shows useful information about the database.
      *
-     * @global  HTML_Template_Sigma
+     * @global  \Cx\Core\Html\Sigma
      * @global  ADONewConnection
      * @global  array
      * @global  array
@@ -230,7 +230,7 @@ class DatabaseManager
     /**
      * Shows the database-maintenance page.
      *
-     * @global     HTML_Template_Sigma
+     * @global     \Cx\Core\Html\Sigma
      * @global     ADONewConnection
      * @global     array
      */

@@ -27,7 +27,7 @@ class Shopmanager extends ShopLibrary
 {
     /**
      * The Template object
-     * @var   HTML_Template_Sigma
+     * @var   \Cx\Core\Html\Sigma
      */
     private static $objTemplate;
     private static $pageTitle = '';
@@ -46,7 +46,7 @@ class Shopmanager extends ShopLibrary
 
         SettingDb::init('shop', 'config');
         self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
-        self::$objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/shop/template');
+        self::$objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/shop/template');
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 //DBG::log("ARRAYLANG: ".var_export($_ARRAYLANG, true));
         self::$objTemplate->setGlobalVariable(

@@ -590,7 +590,7 @@ class InitCMS
                 $objResult->MoveNext();
             }
             // add special modules
-            $this->arrModulePath['media'] = ASCMS_CORE_MODULE_PATH.'/media/lang/';;
+            $this->arrModulePath['media'] = ASCMS_CORE_MODULE_PATH.'/media/lang/';
         }
     }
 
@@ -654,12 +654,25 @@ class InitCMS
     }
 
     protected function getLangFilePath($module, $langId) {
+        global $_CONFIG;
         // check whether the language file exists
         $path = $this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$this->mode.'.php';
+        
+        $customizingPath = preg_replace('#'.ASCMS_PATH.ASCMS_PATH_OFFSET.'#', ASCMS_CUSTOMIZING_PATH, $path);
+        if ($_CONFIG['useCustomizings'] == 'on' && file_exists($customizingPath)) {
+            $path = $customizingPath;
+        }
+        
         if (!file_exists($path)) {
             $path = '';
             $langId = $this->mode == 'backend' ? $this->getBackendDefaultLangId() : $this->getFrontendDefaultLangId();
             $path = $this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$this->mode.'.php';
+
+            $customizingPath = preg_replace('#'.ASCMS_PATH.ASCMS_PATH_OFFSET.'#', ASCMS_CUSTOMIZING_PATH, $path);
+            if ($_CONFIG['useCustomizings'] == 'on' && file_exists($customizingPath)) {
+                $path = $customizingPath;
+            }
+
             if (!file_exists($path)) {
                 $path = '';
             }

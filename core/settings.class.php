@@ -78,7 +78,7 @@ class settingsManager
      * Perform the requested function depending on $_GET['act']
      *
      * @global  array   Core language
-     * @global  HTML_Template_Sigma
+     * @global  \Cx\Core\Html\Sigma
      * @return  void
      */
     function getPage()
@@ -153,7 +153,7 @@ class settingsManager
      * Set the cms system settings
      * @global  ADONewConnection
      * @global  array   Core language
-     * @global  HTML_Template_Sigma
+     * @global  \Cx\Core\Html\Sigma
      */
     function showSettings()
     {

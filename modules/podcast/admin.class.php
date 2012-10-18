@@ -60,14 +60,14 @@ class podcastManager extends podcastLib
     /**
     * PHP5 constructor
     *
-    * @global HTML_Template_Sigma
+    * @global \Cx\Core\Html\Sigma
     * @global array
     */
     function __construct()
     {
         global $objTemplate, $_ARRAYLANG;
 
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/podcast/template');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/podcast/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         
@@ -91,7 +91,7 @@ class podcastManager extends podcastLib
     * Set the backend page
     *
     * @access public
-    * @global HTML_Template_Sigma
+    * @global \Cx\Core\Html\Sigma
     * @global array
     * @global ADONewConnection
     */

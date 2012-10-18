@@ -59,7 +59,7 @@ class FileBrowser {
     * @global array
     */
     function __construct() {
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/fileBrowser/template');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/fileBrowser/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 

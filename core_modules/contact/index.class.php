@@ -43,7 +43,7 @@ class Contact extends ContactLib
     /**
      * Template object
      *
-     * This object contains an instance of the HTML_Template_Sigma class
+     * This object contains an instance of the \Cx\Core\Html\Sigma class
      * which is used as the template system.
      * @var unknown_type
      */
@@ -97,11 +97,11 @@ class Contact extends ContactLib
      * which will be used to display the contact form or the
      * feedback/error message.
      * @param string Content page template
-     * @see objTemplate, HTML_Template_Sigma::setErrorHandling(), HTML_Template_Sigma::setTemplate()
+     * @see objTemplate, \Cx\Core\Html\Sigma::setErrorHandling(), \Cx\Core\Html\Sigma::setTemplate()
      */
     function __construct($pageContent)
     {
-        $this->objTemplate = new HTML_Template_Sigma('.');
+        $this->objTemplate = new \Cx\Core\Html\Sigma('.');
         CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($pageContent);
@@ -116,7 +116,7 @@ class Contact extends ContactLib
      * Show the contact page
      *
      * Parse a contact form submit request and show the contact page
-     * @see _getContactFormData(), _checkValues(), _insertIntoDatabase(), sendMail(), _showError(), _showFeedback(), _getParams(), HTML_Template_Sigma::get(), HTML_Template_Sigma::blockExists(), HTML_Template_Sigma::hideBlock(), HTML_Template_Sigma::touchBlock()
+     * @see _getContactFormData(), _checkValues(), _insertIntoDatabase(), sendMail(), _showError(), _showFeedback(), _getParams(), \Cx\Core\Html\Sigma::get(), \Cx\Core\Html\Sigma::blockExists(), \Cx\Core\Html\Sigma::hideBlock(), \Cx\Core\Html\Sigma::touchBlock()
      * @return string Parse contact form page
      */
     function getContactPage()
@@ -1113,7 +1113,7 @@ class Contact extends ContactLib
         // check if we shall send the email as multipart (text/html)
         if ($isHtml) {
             // setup html mail template
-            $objTemplate = new HTML_Template_Sigma('.');
+            $objTemplate = new \Cx\Core\Html\Sigma('.');
             $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
             $objTemplate->setTemplate($arrFormData['mailTemplate']);
 
@@ -1385,7 +1385,7 @@ class Contact extends ContactLib
      * This parsed the feedback message and outputs it
      * @access private
      * @param array Details of the requested form
-     * @see _getError(), HTML_Template_Sigma::setVariable
+     * @see _getError(), \Cx\Core\Html\Sigma::setVariable
      */
     function _showFeedback($arrFormData)
     {
@@ -1429,7 +1429,7 @@ class Contact extends ContactLib
      *
      * Set the error message
      * @access private
-     * @see HTML_Template_Sigma::setVariable(), HTML_Template_Sigma::get()
+     * @see \Cx\Core\Html\Sigma::setVariable(), \Cx\Core\Html\Sigma::get()
      * @return string Contact page
      */
     function _showError()
@@ -1463,7 +1463,7 @@ class Contact extends ContactLib
      * then this method will parse the value and will set it in the template
      * @access private
      * @global ADONewConnection
-     * @see HTML_Template_Sigma::setVariable
+     * @see \Cx\Core\Html\Sigma::setVariable
      */
     function _getParams()
     {

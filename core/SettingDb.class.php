@@ -515,7 +515,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
      * If you want your settings to be stored, you *MUST* handle the post
      * request, check for the 'bsubmit' index in the $_POST array, and call
      * {@see SettingDb::store()}.
-     * @param   HTML_Template_Sigma $objTemplateLocal   Template object
+     * @param   \Cx\Core\Html\Sigma $objTemplateLocal   Template object
      * @param   string              $uriBase      The base URI for the module.
      * @param   string              $section      The optional section header
      *                                            text to add
@@ -594,7 +594,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
      * Display a section of settings present in the $arrSettings class array
      *
      * See the description of {@see show()} for details.
-     * @param   HTML_Template_Sigma $objTemplateLocal   The Template object,
+     * @param   \Cx\Core\Html\Sigma $objTemplateLocal   The Template object,
      *                                                  by reference
      * @param   string              $section      The optional section header
      *                                            text to add
@@ -800,7 +800,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
      * The content must contain the full view, including the surrounding form
      * tags and submit button.
      * Note that these are always appended on the right end of the tab list.
-     * @param   HTML_Template_Sigma $objTemplateLocal   Template object
+     * @param   \Cx\Core\Html\Sigma $objTemplateLocal   Template object
      * @param   string              $tab_name           The tab name to add
      * @param   string              $content            The external content
      * @return  boolean                                 True on success
@@ -815,7 +815,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
 
         if (   empty($objTemplateLocal)
             || !$objTemplateLocal->blockExists('core_settingdb_row')) {
-            $objTemplateLocal = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+            $objTemplateLocal = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
             if (!$objTemplateLocal->loadTemplateFile('settingDb.html'))
                 die("Failed to load template settingDb.html");
         }
@@ -848,14 +848,14 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
      *
      * Die()s if the template given is invalid, and settingDb.html cannot be
      * loaded to replace it.
-     * @param   HTML_Template_Sigma $objTemplateLocal   The template,
+     * @param   \Cx\Core\Html\Sigma $objTemplateLocal   The template,
      *                                                  by reference
      */
     static function verify_template(&$objTemplateLocal)
     {
         // "instanceof" considers subclasses of Sigma to be a Sigma, too!
-        if (!($objTemplateLocal instanceof HTML_Template_Sigma)) {
-            $objTemplateLocal = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+        if (!($objTemplateLocal instanceof \Cx\Core\Html\Sigma)) {
+            $objTemplateLocal = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
         }
         if (!$objTemplateLocal->blockExists('core_settingdb_row')) {
             $objTemplateLocal->setRoot(ASCMS_ADMIN_TEMPLATE_PATH);

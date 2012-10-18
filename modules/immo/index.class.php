@@ -26,10 +26,10 @@ class Immo extends ImmoLib
 {
     /**
      * PEAR Sigma Template object
-     * @var      HTML_Template_Sigma
+     * @var      \Cx\Core\Html\Sigma
      * @access   private
      * @see      /lib/PEAR/HTML/*
-     * @link     http://pear.php.net/package/HTML_Template_Sigma
+     * @link     http://pear.php.net/package/\Cx\Core\Html\Sigma
      */
     private $_objTpl;
 
@@ -86,7 +86,7 @@ class Immo extends ImmoLib
         $objRS=$objDatabase->Execute("    SELECT count(1) as cnt FROM ".DBPREFIX."module_immo_fieldname WHERE
                                         lang_id = 1 AND lower(name) LIKE '%aufzählung%'");
         $this->_listingCount = $objRS->fields['cnt'];
-        $this->_objTpl = new HTML_Template_Sigma('.');
+        $this->_objTpl = new \Cx\Core\Html\Sigma('.');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($pageContent);

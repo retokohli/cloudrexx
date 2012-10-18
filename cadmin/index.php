@@ -22,4 +22,28 @@ if ($php < '5.3') {
     die('Das Contrexx CMS ben&uml;tigt mindestens PHP in der Version 5.3.<br />Auf Ihrem System l&auml;uft PHP '.$php);
 }
 
-require_once(dirname(dirname(__FILE__)).'/core/initBackend.php');
+$_DBCONFIG = $_CONFIGURATION = $_CONFIG = null;
+/**
+ * User configuration settings
+ *
+ * This file is re-created by the CMS itself. It initializes the
+ * {@link $_CONFIG[]} global array.
+ */
+$incSettingsStatus = include_once dirname(dirname(__FILE__)).'/config/settings.php';
+/**
+ * Path, database, FTP configuration settings
+ *
+ * Initialises global settings array and constants.
+ */
+include_once dirname(dirname(__FILE__)).'/config/configuration.php';
+
+$customizing = null;
+if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
+    $customizing = ASCMS_CUSTOMIZING_PATH;
+}
+
+if ($customizing && file_exists(ASCMS_CUSTOMIZING_PATH.'/core/initBackend.php')) {
+    require_once(ASCMS_CUSTOMIZING_PATH.'/core/initBackend.php');
+} else {
+    require_once(ASCMS_CORE_PATH.'/initBackend.php');
+}

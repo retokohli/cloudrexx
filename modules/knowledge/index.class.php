@@ -39,7 +39,7 @@ class Knowledge extends KnowledgeLibrary
 
         $this->languageId = intval($_LANGID);
 
-        $this->tpl = new HTML_Template_Sigma('.');
+        $this->tpl = new \Cx\Core\Html\Sigma('.');
         CSRF::add_placeholder($this->tpl);
         $this->tpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->tpl->setTemplate($pageContent);

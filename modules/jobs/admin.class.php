@@ -25,7 +25,7 @@ error_reporting(E_STRICT);
 class jobsManager extends jobsLibrary
 {
     /**
-     * @var    HTML_Template_Sigma
+     * @var    \Cx\Core\Html\Sigma
      */
     public $_objTpl;
     public $pageTitle;
@@ -47,7 +47,7 @@ class jobsManager extends jobsLibrary
         global  $_ARRAYLANG, $objInit, $objTemplate;
 
         $this->pageTitle = $_ARRAYLANG["TXT_JOBS_MANAGER"];
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/jobs/template');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/jobs/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);        
         $this->langId=$objInit->userFrontendLangId;

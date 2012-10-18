@@ -48,7 +48,7 @@ class Gallery
         $this->pageContent = $pageContent;
         $this->langId= $_LANGID;
 
-        $this->_objTpl = new HTML_Template_Sigma('.');
+        $this->_objTpl = new \Cx\Core\Html\Sigma('.');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -409,7 +409,7 @@ class Gallery
         }
 
         // POPUP Code
-        $objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/gallery/template');
+        $objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/gallery/template');
         $objTpl->loadTemplateFile('module_gallery_show_picture.html',true,true);
 
         // get category description

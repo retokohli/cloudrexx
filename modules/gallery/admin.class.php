@@ -46,14 +46,14 @@ class galleryManager extends GalleryLibrary
      * Constructor    -> Create the menu and copy the template
      *
      * @global    array
-     * @global    HTML_Template_Sigma
+     * @global    \Cx\Core\Html\Sigma
      * @global    InitCMS
      */
     function __construct()
     {
         global $_ARRAYLANG, $objTemplate, $objInit;
 
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/gallery/template');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/gallery/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -99,7 +99,7 @@ class galleryManager extends GalleryLibrary
 
     /**
      * Determine the page to display and call the appropriate methods
-     * @global    HTML_Template_Sigma
+     * @global    \Cx\Core\Html\Sigma
      * @global    array
      */
     function getPage()

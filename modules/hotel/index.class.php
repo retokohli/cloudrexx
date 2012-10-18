@@ -212,7 +212,7 @@ class HotelManager extends HotelLib
         $objRS=$objDatabase->Execute("  SELECT count(1) as cnt FROM ".DBPREFIX."module_hotel_fieldname WHERE
                                         lang_id = 1 AND lower(name) LIKE '%hlung%'"); // aufzählung
         $this->_listingCount = $objRS->fields['cnt'];
-        $this->_objTpl = new HTML_Template_Sigma('.');
+        $this->_objTpl = new \Cx\Core\Html\Sigma('.');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($pageContent);

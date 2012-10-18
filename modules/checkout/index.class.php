@@ -63,7 +63,7 @@ class Checkout extends CheckoutLibrary {
 
         $this->objTransaction = new Transaction($objDatabase);
 
-        $this->objTemplate = new HTML_Template_Sigma('.');
+        $this->objTemplate = new \Cx\Core\Html\Sigma('.');
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($pageContent);
         CSRF::add_placeholder($this->objTemplate);

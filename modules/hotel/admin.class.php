@@ -89,7 +89,7 @@ class HotelManager extends HotelLib
     function __construct()
     {
         global $objTemplate, $_ARRAYLANG;
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/hotel/template');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/hotel/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);     
         $this->_objFile = new File();
@@ -2667,7 +2667,7 @@ WHERE id = $hotelID )";
      */
     function _showMapPopup(){
         global $_ARRAYLANG;
-        $objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/hotel/template');
+        $objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/hotel/template');
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $objTpl->loadTemplateFile('module_hotel_map_popup.html');
         $googlekey = (!empty($this->arrSettings['GOOGLE_API_KEY_'.$_SERVER['SERVER_NAME']])) ? $this->arrSettings['GOOGLE_API_KEY_'.$_SERVER['SERVER_NAME']] : '';

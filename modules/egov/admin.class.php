@@ -23,7 +23,7 @@ class eGov extends eGovLibrary
 {
     /**
      * Template
-     * @var HTML_Template_Sigma
+     * @var \Cx\Core\Html\Sigma
      */
     private $objTemplate;
     private $_arrFormFieldTypes;
@@ -48,7 +48,7 @@ class eGov extends eGovLibrary
             'textarea' => $_ARRAYLANG['TXT_EGOV_TEXTAREA']
         );
         $this->initContactForms();
-        $this->objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/egov/template');
+        $this->objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/egov/template');
         CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->imagePath = ASCMS_MODULE_IMAGE_WEB_PATH;
@@ -223,9 +223,9 @@ class eGov extends eGovLibrary
             self::errorHandler();
         }
         /**
-         * @var     HTML_Template_Sigma
+         * @var     \Cx\Core\Html\Sigma
          */
-        $objTemplateLocal = new HTML_Template_Sigma();
+        $objTemplateLocal = new \Cx\Core\Html\Sigma();
         if (SettingDb::show_section($objTemplateLocal,
                 $_ARRAYLANG['TXT_EGOV_POSTFINANCE'], 'TXT_EGOV_')) {
             $objTemplateLocal->parse('core_settingdb_sections');

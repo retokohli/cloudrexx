@@ -839,7 +839,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
 
     /**
      * Edit coupons
-     * @param   HTML_Template_Sigma   $objTemplate    The Template
+     * @param   \Cx\Core\Html\Sigma   $objTemplate    The Template
      */
     static function edit($objTemplate)
     {

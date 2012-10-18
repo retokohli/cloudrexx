@@ -178,7 +178,7 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
 
     private static function loadTemplate($template)
     {
-        $objTemplate = new HTML_Template_Sigma(ASCMS_THEMES_PATH);
+        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_THEMES_PATH);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->setTemplate($template[0]);
         self::parseLoggedInOutBlocks($objTemplate);
@@ -195,7 +195,7 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
         $accessLoggedOutTplBlock = $accessLoggedOutBlock.$accessLoggedInOutBlockIdx;
 
         if (!is_object($template)) {
-            // content provided instead of HTML_Template_Sigma object
+            // content provided instead of \Cx\Core\Html\Sigma object
             $template = preg_replace_callback('/<!--\s+BEGIN\s+(access_logged_in[0-9]*)\s+-->.*<!--\s+END\s+\1\s+-->/sm', array('self', 'loadTemplate'), $template);
             return;
         } else {

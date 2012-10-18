@@ -40,7 +40,7 @@ class GuestbookManager extends GuestbookLibrary
     {
         global  $objDatabase, $_ARRAYLANG, $objTemplate, $objInit;
 
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/guestbook/template');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/guestbook/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->imagePath = ASCMS_MODULE_IMAGE_WEB_PATH;
@@ -63,7 +63,7 @@ class GuestbookManager extends GuestbookLibrary
      * Gets the requested methods
      * @global   array
      * @global   array
-     * @global   HTML_Template_Sigma
+     * @global   \Cx\Core\Html\Sigma
      * @return   string    parsed content
      */
     function getPage()

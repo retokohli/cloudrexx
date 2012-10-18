@@ -67,7 +67,7 @@ class blockManager extends blockLibrary
     /**
     * PHP5 constructor
     *
-    * @global HTML_Template_Sigma
+    * @global \Cx\Core\Html\Sigma
     * @global array
     * @global array
     * @global array
@@ -76,7 +76,7 @@ class blockManager extends blockLibrary
     {
         global $objTemplate, $_ARRAYLANG, $_CONFIG;
 
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/block/template');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/block/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -125,7 +125,7 @@ class blockManager extends blockLibrary
     * Get a page of the block system administration
     *
     * @access public
-    * @global HTML_Template_Sigma
+    * @global \Cx\Core\Html\Sigma
     * @global array
     */
     function getPage()

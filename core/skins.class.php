@@ -198,7 +198,7 @@ class skins
 
     /**
      * Gets the requested page
-     * @global    HTML_Template_Sigma
+     * @global    \Cx\Core\Html\Sigma
      * @return    string    parsed content
      */
     function getPage()
@@ -765,7 +765,7 @@ class skins
      * @access   private
      * @global   ADONewConnection
      * @global   array
-     * @global   HTML_Template_Sigma
+     * @global   \Cx\Core\Html\Sigma
      * @return   string   parsed content
      */
     function _activate()

@@ -438,7 +438,7 @@ class Payment
 
     /**
      * Sets up the Payment settings view
-     * @param   HTML_Template_Sigma $objTemplate    The optional Template,
+     * @param   \Cx\Core\Html\Sigma $objTemplate    The optional Template,
      *                                              by reference
      * @return  boolean                             True on success,
      *                                              false otherwise
@@ -446,7 +446,7 @@ class Payment
     static function view_settings(&$objTemplate=null)
     {
         if (!$objTemplate) {
-            $objTemplate = new HTML_Template_Sigma();
+            $objTemplate = new \Cx\Core\Html\Sigma();
             $objTemplate->loadTemplateFile('module_shop_settings_payment.html');
         } else {
             $objTemplate->addBlockfile('SHOP_SETTINGS_FILE',

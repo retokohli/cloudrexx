@@ -59,14 +59,14 @@ class rssDirectory extends directoryLibrary
     * @access   public
     * @global    array
     * @global    InitCMS
-    * @global    HTML_Template_Sigma
+    * @global    \Cx\Core\Html\Sigma
     * @global    ADONewConnection
     */
     function __construct()
     {
         global  $_ARRAYLANG, $objInit, $objTemplate, $objDatabase;
 
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/directory/template');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/directory/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -107,7 +107,7 @@ class rssDirectory extends directoryLibrary
     * Do the requested newsaction
     *
     * @global    ADONewConnection
-    * @global    HTML_Template_Sigma
+    * @global    \Cx\Core\Html\Sigma
     * @return    string    parsed content
     */
     function getPage()

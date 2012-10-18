@@ -984,13 +984,13 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
      * @param   string    $group        The group
      * @param   integer   $limit        The optional limit for the number
      *                                  of templates to be shown
-     * @return  HTML_Template_Sigma     The template object
+     * @return  \Cx\Core\Html\Sigma     The template object
      */
     static function overview($section, $group, $limit=0)
     {
         global $_CORELANG;
 
-        $objTemplateLocal = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+        $objTemplateLocal = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
         $objTemplateLocal->setErrorHandling(PEAR_ERROR_DIE);
         if (!$objTemplateLocal->loadTemplateFile('mailtemplate_overview.html'))
             die("Failed to load template mailtemplate_overview.html");
@@ -1137,7 +1137,7 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
      *                                  to be edited
      * @param   string    $key          The optional key of the mail template
      *                                  to be edited
-     * @return  HTML_Template_Sigma     The template object
+     * @return  \Cx\Core\Html\Sigma     The template object
      */
     static function edit($section, $key='')
     {
@@ -1160,7 +1160,7 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
         }
         // Copy the template?
         if (isset($_REQUEST['copy'])) $arrTemplate['key'] = '';
-        $objTemplate = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         if (!$objTemplate->loadTemplateFile('mailtemplate_edit.html'))
             die("Failed to load template mailtemplate_edit.html");

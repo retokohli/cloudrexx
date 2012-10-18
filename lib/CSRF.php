@@ -168,7 +168,7 @@ class CSRF {
      * Adds a placeholder for the CSRF code to the given template.
      * This is so you can easily patch javascript code that handles
      * URLs, as this cannot be done by add_code().
-     * @param   HTML_Template_Sigma     $tpl    Template object
+     * @param   \Cx\Core\Html\Sigma     $tpl    Template object
      */
     public static function add_placeholder($tpl)
     {
@@ -267,7 +267,7 @@ class CSRF {
 
         $data = ($_SERVER['REQUEST_METHOD'] == 'GET' ? $_GET : $_POST);
         self::add_code();
-        $tpl = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+        $tpl = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
         $tpl->loadTemplateFile('csrfprotection.html');
         $form = '';

@@ -45,7 +45,7 @@ define('LANG_ID', $_LANGID);
 $_CORELANG = $objInit->loadLanguageData('core');
 
 // update license
-$license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase, $_CORELANG);
+$license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase);
 $licenseCommunicator = \Cx\Core\License\LicenseCommunicator::getInstance($_CONFIG);
 $licenseCommunicator->update($license, $_CONFIG, (isset($_GET['force']) && $_GET['force'] == 'true'), false, $_CORELANG);
 $license->check();
@@ -66,7 +66,7 @@ if (isset($_GET['silent']) && $_GET['silent'] == 'true') {
 }
 
 // show info
-$message = $license->getMessage(\FWLanguage::getLanguageCodeById(LANG_ID));
+$message = $license->getMessage(\FWLanguage::getLanguageCodeById(LANG_ID), $_CORELANG);
 echo json_encode(array(
     'status' => contrexx_raw2xhtml($license->getState()),
     'link' => contrexx_raw2xhtml($message->getLink()),

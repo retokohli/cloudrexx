@@ -272,7 +272,7 @@ if ($tree == 'verify') {
         $this->template->setVariable('LANGUAGE_LABELS', json_encode($this->getLangLabels()));
         $this->template->setVariable('EDIT_VIEW_CSS_CLASS', $editViewCssClass);
         
-        $editmodeTemplate = new \HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+        $editmodeTemplate = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
         $editmodeTemplate->loadTemplateFile('content_editmode.html');
         $editmodeTemplate->setVariable(array(
             'TXT_EDITMODE_TEXT'    => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TEXT'],

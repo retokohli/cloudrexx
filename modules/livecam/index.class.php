@@ -97,7 +97,7 @@ class Livecam extends LivecamLibrary
     {
         $this->pageContent = $pageContent;
 
-        $this->_objTpl = new HTML_Template_Sigma('.');
+        $this->_objTpl = new \Cx\Core\Html\Sigma('.');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 

@@ -1,0 +1,34 @@
+<?php
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+namespace Cx\Core\Html;
+
+/**
+ * Description of Sigma
+ *
+ * @author Michael Ritter <michael.ritter@comvation.com>
+ */
+class Sigma extends \HTML_Template_Sigma {
+    
+    /**
+     * Reads the file and returns its content
+     *
+     * @param    string    filename
+     * @return   string    file content (or error object)
+     * @access   private
+     */
+    function _getFile($filename)
+    {
+        $filename = \Env::get('ClassLoader')->getFilePath($filename);
+        if (!($fh = @fopen($filename, 'r'))) {
+            return $this->raiseError($this->errorMessage(SIGMA_TPL_NOT_FOUND, $filename), SIGMA_TPL_NOT_FOUND);
+        }
+        $content = fread($fh, filesize($filename));
+        fclose($fh);
+        return $content;
+    }
+}

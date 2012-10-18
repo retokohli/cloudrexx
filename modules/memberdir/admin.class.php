@@ -43,15 +43,15 @@ class MemberDirManager extends MemberDirLibrary
      * sets the CONTENT_NAVIGATION
      * @global ADONewConnection
      * @global array
-     * @global HTML_Template_Sigma
+     * @global \Cx\Core\Html\Sigma
      * @global InitCMS
-     * @see MemberDirLibrary::__construct(), HTML_Template_Sigma::setErrorHandling(), imagePath, langId
+     * @see MemberDirLibrary::__construct(), \Cx\Core\Html\Sigma::setErrorHandling(), imagePath, langId
      */
     function __construct()
     {
         global $_ARRAYLANG, $objTemplate, $objInit;
 
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/memberdir/template');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/memberdir/template');
         CSRF::add_placeholder($this->_objTpl);
 
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
@@ -80,7 +80,7 @@ class MemberDirManager extends MemberDirLibrary
     *
     * @global   array
     * @global   array
-    * @global   HTML_Template_Sigma
+    * @global   \Cx\Core\Html\Sigma
     * @access public
     */
     function getPage()

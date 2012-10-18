@@ -49,7 +49,7 @@ class Banner extends bannerLibrary {
     {
         global  $_ARRAYLANG, $objInit, $objTemplate;
 
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/banner/template');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/banner/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);     
         $this->pageTitle = $_ARRAYLANG['TXT_BANNER_ADMINISTRATION'];

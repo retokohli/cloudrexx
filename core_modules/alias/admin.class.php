@@ -49,7 +49,7 @@ class AliasAdmin extends aliasLib
     /**
     * PHP5 constructor
     *
-    * @global HTML_Template_Sigma
+    * @global \Cx\Core\Html\Sigma
     * @global array
     */
     function __construct()
@@ -58,7 +58,7 @@ class AliasAdmin extends aliasLib
 
         parent::__construct();
 
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/alias/template');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/alias/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);        
     }
@@ -76,7 +76,7 @@ class AliasAdmin extends aliasLib
     * Set the backend page
     *
     * @access public
-    * @global HTML_Template_Sigma
+    * @global \Cx\Core\Html\Sigma
     * @global array
     */
     function getPage()

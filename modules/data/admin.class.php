@@ -42,14 +42,14 @@ class DataAdmin extends DataLibrary {
     * Constructor    -> Create the module-menu and an internal template-object
     *
     * @global   InitCMS
-    * @global    HTML_Template_Sigma
+    * @global    \Cx\Core\Html\Sigma
     * @global    array
     */
     function __construct() {
         global $objInit, $objTemplate, $_ARRAYLANG;
 
         DataLibrary::__construct();
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/data/template');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/data/template');
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
          $this->_intLanguageId = $objInit->userFrontendLangId;        
@@ -70,7 +70,7 @@ class DataAdmin extends DataLibrary {
     /**
     * Perform the right operation depending on the $_GET-params
     *
-    * @global     HTML_Template_Sigma
+    * @global     \Cx\Core\Html\Sigma
     */
     function getPage() {
         global /*$objPerm,*/ $objTemplate;
