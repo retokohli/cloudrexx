@@ -943,6 +943,7 @@ class MediaLibrary
         JS::activate('jquery');
 
         $delete_msg = $_ARRAYLANG['TXT_MEDIA_CONFIRM_DELETE_2'];
+        $csrfCode   = CSRF::code();
         $code       = <<<END
                     <script language="JavaScript" type="text/javascript">
                     /* <![CDATA[ */
@@ -962,12 +963,14 @@ class MediaLibrary
                             prev.focus();
                         }
 
-                        function mediaConfirmDelete()
+                        function mediaConfirmDelete(file)
                         {
                             if(confirm('$delete_msg')) {
-                                return true;
+                                \$J(document.fileList.deleteMedia).attr('value', '1');
+                                \$J(document.fileList.file).attr('value', file);
+                                document.fileList.action = 'index.php?cmd=media&archive=$this->archive&path=$this->webPath&csrf=$csrfCode';
+                                document.fileList.submit();
                             }
-                            return false;
                         }
         
                         /*
