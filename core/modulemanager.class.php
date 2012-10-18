@@ -278,10 +278,6 @@ class modulemanager
                         $parcat = $nodeRepo->getRoot();
                     }
                     $this->arrayInstalledModules[$module_name] = true;
-                    // prepare values
-                    $content = addslashes($objResult->fields['content']);
-                    $title = addslashes($objResult->fields['title']);
-                    $cmd = $objResult->fields['cmd'];
                     
                     // create node
                     $newnode = new \Cx\Model\ContentManager\Node();
@@ -299,21 +295,21 @@ class modulemanager
                             $page = $this->createPage(
                                 $newnode,
                                 $lang['id'],
-                                $title,
+                                $objResult->fields['title'],
                                 \Cx\Model\ContentManager\Page::TYPE_APPLICATION,
                                 $module_name,
-                                $cmd,
+                                $objResult->fields['cmd'],
                                 !$root,
-                                $content
+                                $objResult->fields['content']
                             );
                         } else {
                             $page = $this->createPage(
                                 $newnode,
                                 $lang['id'],
-                                $title,
+                                $objResult->fields['title'],
                                 \Cx\Model\ContentManager\Page::TYPE_FALLBACK,
                                 $module_name,
-                                $cmd,
+                                $objResult->fields['cmd'],
                                 !$root,
                                 ''
                             );
