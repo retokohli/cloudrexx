@@ -26,7 +26,7 @@ require_once ASCMS_LIBRARY_PATH . '/PEAR/XML/RSS.class.php';
 class feedManager extends feedLibrary
 {
     /**
-     * @var    HTML_Template_Sigma
+     * @var    \Cx\Core\Html\Sigma
      */
     public $_objTpl;
     public $pageTitle;
@@ -42,7 +42,7 @@ class feedManager extends feedLibrary
     {
         global  $_ARRAYLANG, $objTemplate, $_CONFIG;
 
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/feed/template');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/feed/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 

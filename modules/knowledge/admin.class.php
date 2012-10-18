@@ -78,7 +78,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
 		Permission::checkAccess(ACCESS_ID_KNOWLEDGE, 'static');
 
 		KnowledgeLibrary::__construct();
-		$this->tpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/knowledge'.MODULE_INDEX.'/template');
+		$this->tpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/knowledge'.MODULE_INDEX.'/template');
         CSRF::add_placeholder($this->tpl);
 		$this->tpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -883,7 +883,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
             die($e->plain());
         }
 
-        $tpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH."/knowledge/template/");
+        $tpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH."/knowledge/template/");
         CSRF::add_placeholder($tpl);
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
 

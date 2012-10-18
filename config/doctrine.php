@@ -1,4 +1,5 @@
 <?php
+global $_DBCONFIG, $loggableListener;
 
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 use Cx\Model\Events\PageEventListener as PageEventListener;

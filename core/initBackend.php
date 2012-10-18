@@ -38,40 +38,29 @@ if ($apcEnabled) {
 $startTime = explode(' ', microtime());
 
 $adminPage = true;
-$_CONFIG = $_FTPCONFIG = $loggableListener = NULL;
-/**
- * Environment repository
- */
-require_once dirname(__FILE__).'/../core/Env.class.php';
-/**
- * User configuration settings
- *
- * This file is re-created by the CMS itself. It initializes the
- * {@link $_CONFIG[]} global array.
- */
-$incSettingsStatus = include_once '../config/settings.php';
-/**
- * Path, database, FTP configuration settings
- *
- * Initialises global settings array and constants.
- */
-include_once('../config/configuration.php');
-
-Env::set('config', $_CONFIG);
-Env::set('ftpConfig', $_FTPCONFIG);
+$loggableListener = null;
 
 /**
  * This needs to be initialized before loading config/doctrine.php
  * Because we overwrite the Gedmo model (so we need to load our model
  * before doctrine loads the Gedmo one)
  */
-require_once dirname(__FILE__).'/../core/ClassLoader/ClassLoader.class.php';
-new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT);
+require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');
+$cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $customizing);
+
+/**
+ * Environment repository
+ */
+require_once($cl->getFilePath(ASCMS_CORE_PATH.'/Env.class.php'));
+
+Env::set('config', $_CONFIG);
+Env::set('ftpConfig', $_FTPCONFIG);
+\Env::set('ClassLoader', $cl);
 
 /**
  * Doctrine configuration
  */
-require_once '../config/doctrine.php';
+$incDoctrineStatus = $cl->loadFile(ASCMS_PATH.ASCMS_PATH_OFFSET.'/config/doctrine.php');
 // Check whether the system is installed
 if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
     header("Location: ../installer/index.php");
@@ -81,7 +70,7 @@ if (!$incSettingsStatus) {
     die('System halted: Unable to load basic configuration!');
 }
 
-require_once '../core/API.php' ;
+require_once($cl->getFilePath(ASCMS_CORE_PATH.'/API.php'));
 
 // Initialize database object
 $strErrMessage = '';
@@ -228,7 +217,7 @@ CSRF::add_code();
 // Site start
 $objTemplate = NULL;
 if ($isRegularPageRequest) {
-    $objTemplate = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+    $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
     $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
     $objTemplate->loadTemplateFile('index.html');
     $objTemplate->addBlockfile('CONTENT_FILE', 'index_content', 'index_content.html');
@@ -308,7 +297,7 @@ if ($plainCmd != 'login' && $plainCmd != 'license') {
     }
 }
 if ($loggedIn) {
-    $license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase, $_CORELANG);
+    $license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase);
     $license->check();
     if ($license->getState() == \Cx\Core\License\License::LICENSE_NOK) {
         $plainCmd = 'license';
@@ -324,13 +313,13 @@ switch ($plainCmd) {
         if ($objFWUser->objUser->login(true)) {
             header('location: index.php');
         }
-        if (!include_once(ASCMS_CORE_MODULE_PATH.'/login/admin.class.php'))
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/login/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objLoginManager = new LoginManager();
         $objLoginManager->getPage();
         break;
     case 'access':
-        if (!include_once ASCMS_CORE_MODULE_PATH."/access/admin.class.php")
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH."/access/admin.class.php"))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_COMMUNITY'];
         $objAccessManager = new AccessManager();
@@ -338,7 +327,7 @@ switch ($plainCmd) {
         break;
     case 'egov':
         Permission::checkAccess(109, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/egov/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/egov/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_EGOVERNMENT'];
         $objEgov = new eGov();
@@ -346,7 +335,7 @@ switch ($plainCmd) {
         break;
     case 'banner':
         // Permission::checkAccess(??, 'static');
-        if (!include_once ASCMS_CORE_MODULE_PATH.'/banner/admin.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/banner/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_BANNER_ADMINISTRATION'];
         $objBanner = new Banner();
@@ -354,14 +343,14 @@ switch ($plainCmd) {
         break;
     case 'jobs':
         Permission::checkAccess(11, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/jobs/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/jobs/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_JOBS_MANAGER'];
         $objJobs = new jobsManager();
         $objJobs->getJobsPage();
         break;
     case 'fileBrowser':
-        if (!include_once ASCMS_CORE_MODULE_PATH.'/fileBrowser/admin.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/fileBrowser/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objFileBrowser = new FileBrowser();
         $objFileBrowser->getPage();
@@ -369,7 +358,7 @@ switch ($plainCmd) {
         break;
     case 'feed':
         Permission::checkAccess(27, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/feed/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/feed/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_NEWS_SYNDICATION'];
         $objFeed = new feedManager();
@@ -377,7 +366,7 @@ switch ($plainCmd) {
         break;
     case 'server':
         Permission::checkAccess(4, 'static');
-        if (!include_once ASCMS_CORE_PATH.'/serverSettings.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_PATH.'/serverSettings.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_SERVER_INFO'];
         $objServer = new serverSettings();
@@ -385,7 +374,7 @@ switch ($plainCmd) {
         break;
     case 'log':
         Permission::checkAccess(18, 'static');
-        if (!include_once ASCMS_CORE_PATH.'/log.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_PATH.'/log.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_SYSTEM_LOGS'];
         $objLogManager = new logmanager();
@@ -393,7 +382,7 @@ switch ($plainCmd) {
         break;
     case 'shop':
         Permission::checkAccess($intAccessIdOffset+13, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/shop/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/shop/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_SHOP_ADMINISTRATION'];
         $objShopManager = new shopmanager();
@@ -401,7 +390,7 @@ switch ($plainCmd) {
         break;
     case 'skins':
         //Permission::checkAccess(18, 'static');
-        if (!include_once ASCMS_CORE_PATH.'/skins.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_PATH.'/skins.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_DESIGN_MANAGEMENT'];
         $objSkins = new skins();
@@ -428,7 +417,7 @@ switch ($plainCmd) {
         echo $json->jsondata($adapter, $method, $arguments);
         die();
     case 'workflow':
-        if (!include_once ASCMS_CORE_PATH.'/ContentWorkflow.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_PATH.'/ContentWorkflow.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_CONTENT_HISTORY'];
         $wf = new ContentWorkflow($act, $objTemplate, $objDatabase, $objInit);
@@ -436,7 +425,7 @@ switch ($plainCmd) {
         break;
     case 'docsys':
         Permission::checkAccess(11, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/docsys/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/docsys/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_DOC_SYS_MANAGER'];
         $objDocSys = new docSysManager();
@@ -444,7 +433,7 @@ switch ($plainCmd) {
         break;
     case 'news':
         Permission::checkAccess(10, 'static');
-        if (!include_once ASCMS_CORE_MODULE_PATH.'/news/admin.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/news/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_NEWS_MANAGER'];
         $objNews = new NewsManager();
@@ -452,14 +441,14 @@ switch ($plainCmd) {
         break;
     case 'contact':
         // Permission::checkAccess(10, 'static');
-        if (!include_once ASCMS_CORE_MODULE_PATH.'/contact/admin.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/contact/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_CONTACTS'];
         $objContact = new contactManager();
         $objContact->getPage();
         break;
     case 'immo':
-        if (!include_once ASCMS_MODULE_PATH.'/immo/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/immo/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_IMMO_MANAGEMENT'];
         $objImmo = new Immo();
@@ -467,7 +456,7 @@ switch ($plainCmd) {
         break;
     case 'livecam':
         // Permission::checkAccess(9, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/livecam/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/livecam/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_LIVECAM'];
         $objLivecam = new LivecamManager();
@@ -475,7 +464,7 @@ switch ($plainCmd) {
         break;
     case 'guestbook':
         Permission::checkAccess(9, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/guestbook/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/guestbook/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_GUESTBOOK'];
         $objGuestbook = new GuestbookManager();
@@ -484,7 +473,7 @@ switch ($plainCmd) {
         // dataviewer
     case 'dataviewer':
         Permission::checkAccess(9, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/dataviewer/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/dataviewer/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_DATAVIEWER'];
         $objDataviewer = new Dataviewer();
@@ -492,7 +481,7 @@ switch ($plainCmd) {
         break;
     case 'memberdir':
         Permission::checkAccess(83, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/memberdir/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/memberdir/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_MEMBERDIR'];
         $objMemberdir = new MemberDirManager();
@@ -500,14 +489,14 @@ switch ($plainCmd) {
         break;
     case 'download':
         Permission::checkAccess(57, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/download/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/download/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_DOWNLOAD_MANAGER'];
         $objDownload = new DownloadManager();
         $objDownload->getPage();
         break;
     case 'media':
-        if (!include_once ASCMS_CORE_MODULE_PATH.'/media/admin.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/media/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_MEDIA_MANAGER'];
         $objMedia = new MediaManager();
@@ -515,14 +504,14 @@ switch ($plainCmd) {
         break;
     case 'development':
         Permission::checkAccess(81, 'static');
-        if (!include_once ASCMS_CORE_MODULE_PATH.'/development/admin.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/development/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_DEVELOPMENT'];
         $objDevelopment = new Development();
         $objDevelopment->getPage();
         break;
     case 'dbm':
-        if (!include_once ASCMS_CORE_PATH.'/DatabaseManager.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_PATH.'/DatabaseManager.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_DATABASE_MANAGER'];
         $objDatabaseManager = new DatabaseManager();
@@ -530,7 +519,7 @@ switch ($plainCmd) {
         break;
     case 'stats':
         Permission::checkAccess(19, 'static');
-        if (!include_once ASCMS_CORE_MODULE_PATH.'/stats/admin.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/stats/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_STATISTIC'];
         $statistic= new stats();
@@ -539,7 +528,7 @@ switch ($plainCmd) {
     case 'alias':
         Permission::checkAccess(115, 'static');
         Permission::checkAccess(78, 'static');
-        if (!include_once ASCMS_CORE_MODULE_PATH.'/alias/admin.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/alias/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_ALIAS_ADMINISTRATION'];
         $objAlias = new AliasAdmin();
@@ -547,14 +536,14 @@ switch ($plainCmd) {
         break;
     case 'nettools':
         Permission::checkAccess(54, 'static');
-        if (!include_once ASCMS_CORE_MODULE_PATH.'/nettools/admin.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/nettools/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_NETWORK_TOOLS'];
         $nettools = new netToolsManager();
         $nettools->getContent();
         break;
     case 'newsletter':
-        if (!include_once ASCMS_MODULE_PATH.'/newsletter/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/newsletter/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_CORE_EMAIL_MARKETING'];
         $objNewsletter = new newsletter();
@@ -562,7 +551,7 @@ switch ($plainCmd) {
         break;
     case 'settings':
         Permission::checkAccess(17, 'static');
-        if (!include_once ASCMS_CORE_PATH.'/settings.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_PATH.'/settings.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_SYSTEM_SETTINGS'];
         $objSettings = new settingsManager();
@@ -570,7 +559,7 @@ switch ($plainCmd) {
         break;
     case 'language':
         Permission::checkAccess(22, 'static');
-        if (!include_once ASCMS_CORE_PATH.'/language.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_PATH.'/language.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_LANGUAGE_SETTINGS'];
         $objLangManager = new LanguageManager();
@@ -578,7 +567,7 @@ switch ($plainCmd) {
         break;
     case 'fulllanguage':
         Permission::checkAccess(22, 'static');
-        if (!include_once ASCMS_CORE_PATH.'/language2.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_PATH.'/language2.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_LANGUAGE_SETTINGS'];
         $objLangManager = new LanguageManagerFull();
@@ -586,14 +575,14 @@ switch ($plainCmd) {
         break;
     case 'modulemanager':
         Permission::checkAccess(23, 'static');
-        if (!include_once ASCMS_CORE_PATH.'/modulemanager.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_PATH.'/modulemanager.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_MODULE_MANAGER'];
         $objModuleManager = new modulemanager();
         $objModuleManager->getModulesPage();
         break;
     case 'ecard':
-        if (!include_once ASCMS_MODULE_PATH.'/ecard/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/ecard/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_ECARD_TITLE'];
         $objEcard = new ecard();
@@ -601,7 +590,7 @@ switch ($plainCmd) {
         break;
     case 'voting':
         Permission::checkAccess(14, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/voting/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/voting/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_CONTENT_MANAGER'];
         $objvoting = new votingmanager();
@@ -609,7 +598,7 @@ switch ($plainCmd) {
         break;
     case 'survey':
         Permission::checkAccess(111, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/survey/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/survey/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_SURVEY'];
         $objSurvey = new SurveyAdmin();
@@ -618,14 +607,14 @@ switch ($plainCmd) {
     case 'calendar':
         Permission::checkAccess(16, 'static');
         define('CALENDAR_MANDATE', MODULE_INDEX);
-        if (!include_once ASCMS_MODULE_PATH.'/calendar'.MODULE_INDEX.'/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/calendar'.MODULE_INDEX.'/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_CALENDAR'];
         $objCalendar = new calendarManager();
         $objCalendar->getCalendarPage();
         break;
     case 'reservation':
-        if (!include_once ASCMS_MODULE_PATH.'/reservation/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/reservation/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_RESERVATION_MODULE'];
         $objReservationModule = new reservationManager();
@@ -633,7 +622,7 @@ switch ($plainCmd) {
         break;
     case 'recommend':
         Permission::checkAccess(64, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/recommend/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/recommend/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_RECOMMEND'];
         $objCalendar = new RecommendManager();
@@ -641,7 +630,7 @@ switch ($plainCmd) {
         break;
     case 'forum':
         Permission::checkAccess(106, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/forum/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/forum/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_FORUM'];
         $objForum = new ForumAdmin();
@@ -649,7 +638,7 @@ switch ($plainCmd) {
         break;
     case 'gallery':
         Permission::checkAccess(12, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/gallery/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/gallery/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_GALLERY_TITLE'];
         $objGallery = new galleryManager();
@@ -657,7 +646,7 @@ switch ($plainCmd) {
         break;
     case 'directory':
         //Permission::checkAccess(18, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/directory/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/directory/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_LINKS_MODULE_DESCRIPTION'];
         $objDirectory = new rssDirectory();
@@ -665,7 +654,7 @@ switch ($plainCmd) {
         break;
     case 'block':
         Permission::checkAccess(76, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/block/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/block/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_BLOCK_SYSTEM'];
         $objBlock = new blockManager();
@@ -673,7 +662,7 @@ switch ($plainCmd) {
         break;
     case 'popup':
         Permission::checkAccess(117, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/popup/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/popup/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_POPUP_SYSTEM'];
         $objPopup = new popupManager();
@@ -681,7 +670,7 @@ switch ($plainCmd) {
         break;
     case 'market':
         Permission::checkAccess(98, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/market/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/market/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_CORE_MARKET_TITLE'];
         $objMarket = new Market();
@@ -689,7 +678,7 @@ switch ($plainCmd) {
         break;
     case 'data':
         Permission::checkAccess(122, 'static'); // ID !!
-        if (!include_once ASCMS_MODULE_PATH."/data/admin.class.php")
+        if (!$cl->loadFile(ASCMS_MODULE_PATH."/data/admin.class.php"))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_DATA_MODULE'];
         $objData = new DataAdmin();
@@ -697,7 +686,7 @@ switch ($plainCmd) {
         break;
     case 'podcast':
         Permission::checkAccess(87, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/podcast/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/podcast/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_PODCAST'];
         $objPodcast = new podcastManager();
@@ -707,7 +696,7 @@ switch ($plainCmd) {
         // TODO: Assign a proper access ID to the support module
         //Permission::checkAccess(??, 'static');
         Permission::checkAccess(87, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/support/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/support/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_SUPPORT_SYSTEM'];
         $objSupport = new Support();
@@ -715,7 +704,7 @@ switch ($plainCmd) {
         break;
     case 'blog':
         Permission::checkAccess(119, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/blog/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/blog/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_BLOG_MODULE'];
         $objBlog = new BlogAdmin();
@@ -723,7 +712,7 @@ switch ($plainCmd) {
         break;
     case 'knowledge':
         Permission::checkAccess(129, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/knowledge/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/knowledge/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_KNOWLEDGE'];
         $objKnowledge = new KnowledgeAdmin();
@@ -731,7 +720,7 @@ switch ($plainCmd) {
         break;
     case 'u2u':
         Permission::checkAccess(141, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/u2u/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/u2u/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_U2U_MODULE'];
         $objU2u = new u2uAdmin();
@@ -739,7 +728,7 @@ switch ($plainCmd) {
         break;
     case 'partners':
         Permission::checkAccess(140, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/partners/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/partners/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_PARTNERS_MODULE'];
         $objPartner = new PartnersAdmin();
@@ -747,14 +736,14 @@ switch ($plainCmd) {
         break;
     case 'auction':
         Permission::checkAccess(143, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/auction/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/auction/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_AUCTION_TITLE'];
         $objAuction = new Auction();
         $objAuction->getPage();
         break;
     case 'upload':
-        if (!include_once ASCMS_CORE_MODULE_PATH.'/upload/admin.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/upload/admin.class.php'))
             die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objUploadModule = new Upload();
         $objUploadModule->getPage();
@@ -774,7 +763,7 @@ switch ($plainCmd) {
         $objFWUser->logout();
         exit;
     case 'downloads':
-        if (!include_once ASCMS_MODULE_PATH.'/downloads/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/downloads/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_DOWNLOADS'];
         $objDownloadsModule = new downloads();
@@ -785,21 +774,21 @@ switch ($plainCmd) {
         define('PERMISSION_COUNTRY_VIEW', 145);
         define('PERMISSION_COUNTRY_EDIT', 146);
         Permission::checkAccess(PERMISSION_COUNTRY_VIEW, 'static');
-        if (!include_once ASCMS_CORE_PATH.'/Country.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_PATH.'/Country.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_CORE_COUNTRY'];
         Country::getPage();
         break;
     case 'mediadir':
         Permission::checkAccess(153, 'static');
-        if (!include_once ASCMS_MODULE_PATH.'/mediadir/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/mediadir/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_MEDIADIR_MODULE'];
         $objMediaDirectory = new mediaDirectoryManager();
         $objMediaDirectory->getPage();
         break;
     case 'search':
-        if (!include_once ASCMS_CORE_MODULE_PATH.'/search/admin.class.php') {
+        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/search/admin.class.php')) {
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         }
         $subMenuTitle = $_CORELANG['TXT_SEARCH'];
@@ -807,14 +796,14 @@ switch ($plainCmd) {
         $objSearch->getPage();
         break;
     case 'checkout':
-        if (!include_once ASCMS_MODULE_PATH.'/checkout/admin.class.php')
+        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/checkout/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_CHECKOUT_MODULE'];
         $objCheckoutManager = new CheckoutManager();
         $objCheckoutManager->getPage();
         break;
     default:
-        if (!include_once ASCMS_CORE_PATH.'/myAdmin.class.php')
+        if (!$cl->loadFile(ASCMS_CORE_PATH.'/myAdmin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objTemplate->setVariable('CONTAINER_DASHBOARD_CLASS', 'dashboard');
         $objFWUser = FWUser::getFWUserObject();

@@ -23,7 +23,7 @@ class downloads extends DownloadsLibrary
     /**
      * Template object
      * @access  private
-     * @var     HTML_Template_Sigma
+     * @var     \Cx\Core\Html\Sigma
      */
     public $objTemplate;
    /**
@@ -61,7 +61,7 @@ class downloads extends DownloadsLibrary
     {
         global $objTemplate, $_ARRAYLANG;
 
-        $this->objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/downloads/template');
+        $this->objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/downloads/template');
         CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);        
         parent::__construct();

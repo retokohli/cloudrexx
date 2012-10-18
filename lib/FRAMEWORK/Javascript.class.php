@@ -449,7 +449,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             return true;
         }
         if (!preg_match('#^https?://#', $file)) {
-            if (!file_exists(($file[0] == '/' ? ASCMS_PATH : ASCMS_DOCUMENT_ROOT.'/').$file)) {
+            if (!file_exists(\Env::get('ClassLoader')->getFilePath(($file[0] == '/' ? ASCMS_PATH : ASCMS_DOCUMENT_ROOT.'/').$file))) {
                 self::$error .= "The file ".$file." doesn't exist\n";
                 return false;
             }
@@ -471,7 +471,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      */
     public static function registerCSS($file)
     {
-        if (!file_exists(ASCMS_DOCUMENT_ROOT.'/'.$file)) {
+        if (!file_exists(\Env::get('ClassLoader')->getFilePath(ASCMS_DOCUMENT_ROOT.'/'.$file))) {
             self::$error = "The file ".$file." doesn't exist\n";
             return false;
         }
@@ -579,6 +579,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      */
     private static function makeJSFiles($files)
     {
+        global $_CONFIG;
         $code = "";
 
         foreach ($files as $file) {
@@ -586,7 +587,12 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             if (array_search($file, self::$registeredJsFiles) !== false)
                 continue;
             self::$registeredJsFiles[] = $file;
-            $code .= "<script type=\"text/javascript\" src=\"".self::$offset.$file."\"></script>\n\t";
+            $path = self::$offset;
+            if ($_CONFIG['useCustomizings'] == 'on' && file_exists(ASCMS_CUSTOMIZING_PATH.'/'.$file)) {
+                $path .= preg_replace('#'.ASCMS_DOCUMENT_ROOT.'/#', '', ASCMS_CUSTOMIZING_PATH) . '/';
+            }
+            $path .= $file;
+            $code .= "<script type=\"text/javascript\" src=\"".$path."\"></script>\n\t";
         }
         return $code;
     }
@@ -601,9 +607,15 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      */
     private static function makeCSSFiles($files)
     {
+        global $_CONFIG;
         $code = "";
         foreach ($files as $file) {
-            $code .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"".self::$offset.$file."\" />\n\t";
+            $path = self::$offset;
+            if ($_CONFIG['useCustomizings'] == 'on' && file_exists(ASCMS_CUSTOMIZING_PATH.'/'.$file)) {
+                $path .= preg_replace('#'.ASCMS_DOCUMENT_ROOT.'/#', '', ASCMS_CUSTOMIZING_PATH) . '/';
+            }
+            $path .= $file;
+            $code .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"".$path."\" />\n\t";
         }
         return $code;
     }

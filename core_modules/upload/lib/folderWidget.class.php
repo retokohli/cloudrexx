@@ -31,7 +31,7 @@ class FolderWidget {
      */
     public function getXhtml($containerSelector, $instanceName)
     {
-        $tpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/');
+        $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/');
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
         
         $tpl->loadTemplateFile('folderWidget.html');

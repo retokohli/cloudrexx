@@ -91,24 +91,36 @@ class ClassLoader {
         $className = preg_replace('/Exception/', '', $className);
         $resolvedPath = $path . '/' . $className . '.class.php';
         
-        // load class from customizing folder
-        if ($this->customizingPath && file_exists($this->customizingPath . $path . '/' . $className . '.class.php')) {
-            require_once($this->customizingPath . $path . '/' . $className . '.class.php');
+        if ($this->loadFile($path.'/'.$className.'.class.php')) {
             return true;
-        } else if ($this->customizingPath && file_exists($this->customizingPath . $path . '/' . $className . '.interface.php')) {
-            require_once($this->customizingPath . $path . '/' . $className . '.interface.php');
-            return true;
-        
-        // load class from basepath
-        } else if (file_exists($this->basePath . $path . '/' . $className . '.class.php')) {
-            //echo $name . ' :: ' . $path . '/' . $className . '<br />';
-            require_once($this->basePath . $path . '/' . $className . '.class.php');
-            return true;
-        } else if (file_exists($this->basePath . $path . '/' . $className . '.interface.php')) {
-            require_once($this->basePath . $path . '/' . $className . '.interface.php');
+        } else if ($this->loadFile($path.'/'.$className.'.interface.php')) {
             return true;
         }
         //echo '<span style="color: red;">' . implode('\\', $parts) . '</span>';
+        return false;
+    }
+    
+    public function loadFile($path) {
+        
+        $path = $this->getFilePath($path);
+        if (!$path) {
+            return false;
+        }
+        require_once($path);
+        return true;
+    }
+    
+    public function getFilePath($file) {
+        $file = preg_replace('#'.ASCMS_PATH.ASCMS_PATH_OFFSET.'#', '', $file);
+        
+        // load class from customizing folder
+        if ($this->customizingPath && file_exists($this->customizingPath.$file)) {
+            return $this->customizingPath.$file;
+        
+        // load class from basepath
+        } else if (file_exists($this->basePath.$file)) {
+            return $this->basePath.$file;
+        }
         return false;
     }
     

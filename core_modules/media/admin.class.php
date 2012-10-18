@@ -71,7 +71,7 @@ class MediaManager extends MediaLibrary
         global  $_ARRAYLANG, $_FTPCONFIG, $objTemplate;
 
         // sigma template
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/media/template');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/media/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 

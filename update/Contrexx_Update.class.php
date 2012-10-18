@@ -29,7 +29,7 @@ class Contrexx_Update
 
         @header('content-type: text/html; charset='.(UPDATE_UTF8 ? 'utf-8' : 'iso-8859-1'));
         $this->_loadLanguage();
-        $this->objTemplate = new HTML_Template_Sigma(UPDATE_TPL);
+        $this->objTemplate = new \Cx\Core\Html\Sigma(UPDATE_TPL);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->loadTemplateFile('index.html');
         $this->objTemplate->setGlobalVariable(array(

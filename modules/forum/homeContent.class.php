@@ -31,7 +31,7 @@ class ForumHomeContent extends ForumLibrary {
 	function __construct($pageContent) {
 		global $_LANGID;
 	    $this->_pageContent = $pageContent;
-	    $this->_objTpl = new HTML_Template_Sigma('.');
+	    $this->_objTpl = new \Cx\Core\Html\Sigma('.');
         CSRF::add_placeholder($this->_objTpl);
 	    $this->_intLangId = $_LANGID;
 		$this->_arrSettings = $this->createSettingsArray();

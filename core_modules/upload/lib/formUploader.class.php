@@ -70,7 +70,7 @@ class FormUploader extends Uploader
         else
             $iframeUrl = CONTREXX_SCRIPT_PATH.'?section=upload&cmd=formUploaderFrame&uploadId='.$this->uploadId;
       
-        $tpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/uploaders');
+        $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/uploaders');
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $tpl->loadTemplateFile('form.html');
@@ -97,7 +97,7 @@ class FormUploader extends Uploader
         }
         $this->setRedirectUrl($redirectUrl);
       
-        $tpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/uploaders');
+        $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/uploaders');
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
         
         $tpl->loadTemplateFile('formFrame.html');
@@ -114,7 +114,7 @@ class FormUploader extends Uploader
 
     public function getFrameFinishedXHtml() {
         global $_CORELANG;
-        $tpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/uploaders');
+        $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/uploaders');
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $tpl->loadTemplateFile('formFrameFinished.html');

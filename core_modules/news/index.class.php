@@ -46,7 +46,7 @@ class news extends newsLibrary {
     {
         $this->getSettings();
 
-        $this->_objTpl = new HTML_Template_Sigma();
+        $this->_objTpl = new \Cx\Core\Html\Sigma();
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($pageContent);
@@ -636,7 +636,7 @@ class news extends newsLibrary {
 
     /**
      * Parses a user's account and profile data specified by $userId.
-     * If the HTML_Template_Sigma template block specified by $blockName
+     * If the \Cx\Core\Html\Sigma template block specified by $blockName
      * exists, then the user's data will be parsed inside this block.
      * Otherwise, it will try to parse a template variable by the same
      * name. For instance, if $blockName is set to news_publisher,
@@ -646,7 +646,7 @@ class news extends newsLibrary {
      * @param   integer User-ID
      * @param   string  User name/title that shall be used as fallback,
      *                  if no user account specified by $userId could be found
-     * @param   string  Name of the HTML_Template_Sigma template block to parse.
+     * @param   string  Name of the \Cx\Core\Html\Sigma template block to parse.
      *                  For instance if you have a block like:
      *                      <!-- BEGIN/END news_publisher -->
      *                  set $blockName to:
@@ -1306,7 +1306,7 @@ class news extends newsLibrary {
     *
     * @global array
     * @global ADONewConnection
-    * @see HTML_Template_Sigma::setTemplate(), modulemanager::getModules(), Permission::checkAccess()
+    * @see \Cx\Core\Html\Sigma::setTemplate(), modulemanager::getModules(), Permission::checkAccess()
     * @return string content
     */
     private function _submit()

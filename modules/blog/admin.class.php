@@ -27,7 +27,7 @@ class BlogAdmin extends BlogLibrary {
     /**
     * Constructor   -> Create the module-menu and an internal template-object
     * @global   InitCMS
-    * @global   HTML_Template_Sigma
+    * @global   \Cx\Core\Html\Sigma
     * @global   array
     */
     function __construct()
@@ -35,7 +35,7 @@ class BlogAdmin extends BlogLibrary {
         global $objInit, $objTemplate, $_CORELANG;
 
         BlogLibrary::__construct();
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/blog/template');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/blog/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -70,7 +70,7 @@ class BlogAdmin extends BlogLibrary {
     /**
     * Perform the right operation depending on the $_GET-params
     *
-    * @global   HTML_Template_Sigma
+    * @global   \Cx\Core\Html\Sigma
     */
     function getPage() {
         global $objTemplate;

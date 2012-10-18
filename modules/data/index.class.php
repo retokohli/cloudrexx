@@ -22,7 +22,7 @@ $_ARRAYLANG['TXT_DATA_DOWNLOAD_ATTACHMENT'] = "Anhang herunterladen";
 class Data extends DataLibrary
 {
     /**
-     * @var   HTML_Template_Sigma
+     * @var   \Cx\Core\Html\Sigma
      */
     public $_objTpl;
     public $_strStatusMessage = '';
@@ -43,7 +43,7 @@ class Data extends DataLibrary
         DataLibrary::__construct();
         $this->_intLanguageId = intval($_LANGID);
         $this->_intCurrentUserId = (isset($_SESSION['auth']['userid'])) ? intval($_SESSION['auth']['userid']) : 0;
-        $this->_objTpl = new HTML_Template_Sigma('.');
+        $this->_objTpl = new \Cx\Core\Html\Sigma('.');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($strPageContent);
@@ -339,7 +339,7 @@ class Data extends DataLibrary
         $content = $entry['translation'][$lang]['content'];
         $picture = (!empty($entry['translation'][$lang]['image'])) ? $entry['translation'][$lang]['image'] : "none";
 
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_THEMES_PATH);
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_THEMES_PATH);
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setCurrentBlock("shadowbox");
 

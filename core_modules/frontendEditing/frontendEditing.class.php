@@ -134,7 +134,7 @@ class frontendEditing extends frontendEditingLib {
 
         //Template
         $this->strTemplatePath = ASCMS_CORE_MODULE_PATH.'/frontendEditing/template';
-        $this->objTemplate = new HTML_Template_Sigma($this->strTemplatePath);
+        $this->objTemplate = new \Cx\Core\Html\Sigma($this->strTemplatePath);
         CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 

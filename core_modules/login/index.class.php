@@ -38,7 +38,7 @@ class Login
     */
     function __construct($pageContent)
     {
-        $this->_objTpl = new HTML_Template_Sigma('.');
+        $this->_objTpl = new \Cx\Core\Html\Sigma('.');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($pageContent);
@@ -84,7 +84,7 @@ class Login
     *
     * @global array
     * @see FWUser::restorePassword()
-    * @return string HTML_Template_Sigma::get()
+    * @return string \Cx\Core\Html\Sigma::get()
     */
     function _lostPassword()
     {
@@ -124,7 +124,7 @@ class Login
     *
     * @access private
     * @see FWUser::resetPassword()
-    * @return string HTML_Template_Sigma::get()
+    * @return string \Cx\Core\Html\Sigma::get()
     */
     function _resetPassword()
     {
@@ -188,7 +188,7 @@ class Login
     * Displays the noaccess page of the login module
     *
     * @global array
-    * @return string HTML_Template_Sigma::get()
+    * @return string \Cx\Core\Html\Sigma::get()
     */
     function _noaccess()
     {
@@ -213,8 +213,8 @@ class Login
     *
     * @access private
     * @global array
-    * @see cmsSession::cmsSessionStatusUpdate(), contrexx_strip_tags, HTML_Template_Sigma::get()
-    * @return string HTML_Template_Sigma::get()
+    * @see cmsSession::cmsSessionStatusUpdate(), contrexx_strip_tags, \Cx\Core\Html\Sigma::get()
+    * @return string \Cx\Core\Html\Sigma::get()
     */
     function _login()
     {

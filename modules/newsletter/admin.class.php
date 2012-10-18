@@ -50,14 +50,14 @@ class newsletter extends NewsletterLib
 
     /**
      * PHP5 constructor
-     * @global HTML_Template_Sigma
+     * @global \Cx\Core\Html\Sigma
      * @global array $_ARRAYLANG
      */
     function __construct()
     {
         global $objTemplate, $_ARRAYLANG;
 
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/newsletter/template');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/newsletter/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -83,7 +83,7 @@ class newsletter extends NewsletterLib
     /**
      * Set the backend page
      * @access public
-     * @global HTML_Template_Sigma
+     * @global \Cx\Core\Html\Sigma
      * @global array $_ARRAYLANG
      */
     function getPage()
@@ -576,7 +576,7 @@ class newsletter extends NewsletterLib
 			$HTML_TemplateSource_Import = $this->_getBodyContent($this->_prepareNewsPreview($this->GetTemplateSource($importTemplate, 'html')));
 			$_REQUEST['standalone'] = true;
 
-			$this->_impTpl = new HTML_Template_Sigma();
+			$this->_impTpl = new \Cx\Core\Html\Sigma();
 			CSRF::add_placeholder($this->_impTpl);
 			$this->_impTpl->setTemplate($HTML_TemplateSource_Import);
 
@@ -3551,7 +3551,7 @@ class newsletter extends NewsletterLib
 			$HTML_TemplateSource_Import = $this->_getBodyContent($this->_prepareNewsPreview($this->GetTemplateSource($importTemplate, 'html')));
 
 			$_REQUEST['standalone'] = true;
-			$this->_objTpl = new HTML_Template_Sigma();
+			$this->_objTpl = new \Cx\Core\Html\Sigma();
 			CSRF::add_placeholder($this->_objTpl);
 			$this->_objTpl->setTemplate($HTML_TemplateSource_Import);
 
@@ -3990,7 +3990,7 @@ $WhereStatement = '';
     {
         global $objDatabase, $_ARRAYLANG;
 
-        $objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/newsletter/template');
+        $objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/newsletter/template');
         CSRF::add_placeholder($objTpl);
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
 

@@ -23,7 +23,7 @@ class Support
 {
     /**
      * @access  private
-     * @var     HTML_Template_Sigma
+     * @var     \Cx\Core\Html\Sigma
      */
     private $objTemplate;
 
@@ -232,7 +232,7 @@ class Support
     {
         global $objTemplate, $_ARRAYLANG, $objInit;
 
-        $this->objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        $this->objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/support/template');
         CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->loadTemplateFile('module_support_main.html');
@@ -780,7 +780,7 @@ DBG::log("Support::categoriesDelete(): ERROR: Failed to get Suppoprt Category wi
         global $_ARRAYLANG, $objInit;
 
         $this->pageTitle = $_ARRAYLANG['TXT_SUPPORT_CATEGORIES_EDIT'];
-        $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/support/template');
         CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_category_edit.html', true, true);
@@ -909,7 +909,7 @@ DBG::log("failed to get Support Category tree");
     {
         global $moduloRow, $_ARRAYLANG;
 
-        $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/support/template');
         CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_category_row.html', true, true);
@@ -1129,7 +1129,7 @@ DBG::log("Support::categoriesStore(): ERROR: Failed to get Support Category id=$
         global $_ARRAYLANG, $objInit;
 
         $this->pageTitle = $_ARRAYLANG['TXT_SUPPORT_TICKET'];
-        $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/support/template');
         CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_ticket_data.html', true, true);
@@ -1238,7 +1238,7 @@ DBG::log("Support::ticketData(): ERROR: Could not get the Ticket with ID $suppor
             '?cmd=support&amp;act=ticketTable'.
             $this->getFilterValuesUri();
         $this->pageTitle = $_ARRAYLANG['TXT_SUPPORT_TICKET_OVERVIEW'];
-        $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/support/template');
         CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_ticket_table.html', true, true);
@@ -1361,7 +1361,7 @@ DBG::log("ticketTable(): sorting order: ".$objSorting->getOrder()."");
     {
         global $_ARRAYLANG, $objInit;
 
-        $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/support/template');
         CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_ticket_row.html', true, true);
@@ -1479,7 +1479,7 @@ DBG::log("REACHED");exit;
     ) {
         global $_ARRAYLANG;
 
-        $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/support/template');
         CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_message_table.html', true, true);
@@ -1566,7 +1566,7 @@ DBG::log("Support::messageTable(ticketId=$supportTicketId, flagShowSelectionColu
     {
         global $_ARRAYLANG;
 
-        $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/support/template');
         CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_message_data.html', true, true);
@@ -1642,7 +1642,7 @@ DBG::log("Support::messageData(supportMessageId=$supportMessageId): ERROR: Could
     {
         global $_ARRAYLANG;
 
-        $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/support/template');
         CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_message_row.html', true, true);
@@ -1711,7 +1711,7 @@ DBG::log("Support::messageRow(): ERROR: Could not get Message with ID $supportMe
         global $_ARRAYLANG, $objInit;
 
         $this->pageTitle = $_ARRAYLANG['TXT_SUPPORT_MESSAGE_EDIT'];
-        $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/support/template');
         CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_message_edit.html', true, true);
@@ -1956,7 +1956,7 @@ DBG::log("infoFields(): ERROR: Failed to get InfoField with ID $id!");
         global $_ARRAYLANG, $objInit;
 
         $this->pageTitle = $_ARRAYLANG['TXT_SUPPORT_INFO_FIELDS_EDIT'];
-        $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/support/template');
         CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_info_field_edit.html', true, true);
@@ -2073,7 +2073,7 @@ DBG::log("infoFieldsEdit(): id is ".var_export($this->supportInfoFieldId, TRUE))
     {
         global $moduloRow;
 
-        $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/support/template');
         CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_info_field_row.html', true, true);

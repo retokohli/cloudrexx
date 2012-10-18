@@ -40,7 +40,7 @@ class AccessManager extends AccessLib
     /**
     * Constructor
     *
-    * @global HTML_Template_Sigma
+    * @global \Cx\Core\Html\Sigma
     * @global array
     */
     public function __construct()
@@ -48,7 +48,7 @@ class AccessManager extends AccessLib
         global $objTemplate, $_ARRAYLANG;
 
         parent::__construct();
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/access/template');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/access/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
     }
@@ -203,7 +203,7 @@ class AccessManager extends AccessLib
 
     /**
     * Get page
-    * @global HTML_Template_Sigma
+    * @global \Cx\Core\Html\Sigma
     */
     public function getPage()
     {

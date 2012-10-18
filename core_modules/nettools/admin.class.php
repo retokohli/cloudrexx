@@ -44,7 +44,7 @@ class netToolsManager extends NetToolsLib {
     function __construct(){
     	global $objTemplate, $_ARRAYLANG;
 
-    	$this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/nettools/template');
+    	$this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/nettools/template');
         CSRF::add_placeholder($this->_objTpl);
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);		
     }
@@ -69,7 +69,7 @@ class netToolsManager extends NetToolsLib {
     * Get the content of the requested page
     *
     * @access    public
-    * @global    HTML_Template_Sigma
+    * @global    \Cx\Core\Html\Sigma
     * @see    _showRequests(), _showMostViewedPages(), _showSpiders(), _showClients(), _showSearchTerms()
     * @return    mixed    Template content
     */

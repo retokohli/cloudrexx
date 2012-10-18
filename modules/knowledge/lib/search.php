@@ -80,7 +80,7 @@ class Search {
         $this->json = new Services_JSON();
 
         // the template system
-        $this->tpl = new HTML_Template_Sigma('');
+        $this->tpl = new \Cx\Core\Html\Sigma('');
         $this->tpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->tpl->loadTemplateFile($this->templateFile);
 

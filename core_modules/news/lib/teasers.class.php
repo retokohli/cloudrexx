@@ -46,14 +46,14 @@ class Teasers extends newsLibrary
 
     /**
     * PHP5 constructor
-    * @global HTML_Template_Sigma
-    * @see HTML_Template_Sigma::setErrorHandling, HTML_Template_Sigma::setVariable, initialize()
+    * @global \Cx\Core\Html\Sigma
+    * @see \Cx\Core\Html\Sigma::setErrorHandling, \Cx\Core\Html\Sigma::setVariable, initialize()
     */
     function __construct($administrate = false)
     {
         $this->administrate = $administrate;
 
-        $this->_objTpl = new HTML_Template_Sigma('.');
+        $this->_objTpl = new \Cx\Core\Html\Sigma('.');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_initialize();

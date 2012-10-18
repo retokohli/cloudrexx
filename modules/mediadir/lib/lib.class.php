@@ -47,7 +47,7 @@ class mediaDirectoryLibrary
      */
     function __construct($tplPath)
     {
-    	$this->_objTpl = new HTML_Template_Sigma($tplPath);
+    	$this->_objTpl = new \Cx\Core\Html\Sigma($tplPath);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
     	$this->_objTpl->setGlobalVariable(array(

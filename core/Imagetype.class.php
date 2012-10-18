@@ -585,7 +585,7 @@ class Imagetype
      * If you want your imagetypes to be stored, you *MUST* handle the parameter
      * 'act=imagetypes_edit' in your modules' getPage(), and call this method
      * again.
-     * @return  HTML_Template_Sigma   The Template object
+     * @return  \Cx\Core\Html\Sigma   The Template object
      */
     static function edit()
     {
@@ -615,7 +615,7 @@ class Imagetype
 //$objTemplate->setCurrentBlock();
 //echo(nl2br(htmlentities(var_export($objTemplate->getPlaceholderList()))));
 
-        $objTemplateLocal = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+        $objTemplateLocal = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
 // TODO: Needed?
         CSRF::add_placeholder($objTemplateLocal);
         $objTemplateLocal->setErrorHandling(PEAR_ERROR_DIE);

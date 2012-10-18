@@ -329,7 +329,7 @@ CODE
             /**
              * Load mail template and parse it
              */
-            $objTemplate = new HTML_Template_Sigma('.');
+            $objTemplate = new \Cx\Core\Html\Sigma('.');
             $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
             $objTemplate->setTemplate($content);
 

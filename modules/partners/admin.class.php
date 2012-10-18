@@ -30,7 +30,7 @@ class PartnersAdmin extends PartnersLibrary
         global $objInit, $objTemplate, $_ARRAYLANG;
 
         PartnersLibrary::__construct();
-        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/partners/template');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/partners/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -3804,7 +3804,7 @@ class PartnersAdmin extends PartnersLibrary
 
     function importuser() {
         global $objDatabase, $_ARRAYLANG,$_CORELANG;
-        $objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/partners/template');
+        $objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/partners/template');
         CSRF::add_placeholder($objTpl);
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
 

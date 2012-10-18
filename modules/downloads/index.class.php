@@ -28,7 +28,7 @@ class downloads extends DownloadsLibrary
     private $cmd = '';
     private $pageTitle;
     /**
-     * @var HTML_Template_Sigma
+     * @var \Cx\Core\Html\Sigma
      */
     private $objTemplate;
     /**
@@ -55,7 +55,7 @@ class downloads extends DownloadsLibrary
         $objFWUser = FWUser::getFWUserObject();
         $this->userId = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
         $this->parseURLModifiers($queryParams);
-        $this->objTemplate = new HTML_Template_Sigma('.');
+        $this->objTemplate = new \Cx\Core\Html\Sigma('.');
         CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($strPageContent);

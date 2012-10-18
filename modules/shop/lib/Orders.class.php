@@ -220,7 +220,7 @@ class Orders
      *
      * Sets the $objTemplate parameter to the default backend template,
      * if empty.
-     * @param   HTML_Template_Sigma $objTemplate    The Template, by reference
+     * @param   \Cx\Core\Html\Sigma $objTemplate    The Template, by reference
      * @return  boolean                             True on success,
      *                                              false otherwise
      */
@@ -229,7 +229,7 @@ class Orders
         global $_ARRAYLANG;
 
         if (!$objTemplate) {
-            $objTemplate = new HTML_Template_Sigma(
+            $objTemplate = new \Cx\Core\Html\Sigma(
                 ASCMS_MODULE_PATH.'/shop/template');
 //DBG::log("Orders::view_list(): new Template: ".$objTemplate->get());
             $objTemplate->loadTemplateFile('module_shop_orders.html');
@@ -434,7 +434,7 @@ if (!$limit) {
 
     /**
      * Sets up the Order statistics
-     * @param   HTML_Template_Sigma     $objTemplate  The optional Template,
+     * @param   \Cx\Core\Html\Sigma     $objTemplate  The optional Template,
      *                                                by reference
      * @global  ADONewConnection        $objDatabase
      * @global  array                   $_ARRAYLANG
@@ -445,7 +445,7 @@ if (!$limit) {
         global $objDatabase, $_ARRAYLANG;
 
         if (!$objTemplate || !$objTemplate->blockExists('no_order')) {
-            $objTemplate = new HTML_Template_Sigma(
+            $objTemplate = new \Cx\Core\Html\Sigma(
                 ASCMS_MODULE_PATH.'/shop/template');
             $objTemplate->loadTemplateFile('module_shop_statistic.html');
         }

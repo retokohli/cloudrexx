@@ -23,7 +23,7 @@ class AccessLib
 {
     /**
      * @access private
-     * @var     HTML_Template_Sigma
+     * @var     \Cx\Core\Html\Sigma
      * @todo This is probably not meant to be public, but protected instead
      */
     public $_objTpl;
@@ -67,11 +67,11 @@ class AccessLib
      * profile attributes from within the whole framework. To do so, follow
      * the following steps:
      * 1. Initialize an object from this class and pass the target
-     *    HTML_Template_Sigma object as a paramater to it.
-     * 2. Call {@link AccessLib::setModulePrefix()} to set the HTML_Template_Sigma's
+     *    \Cx\Core\Html\Sigma object as a paramater to it.
+     * 2. Call {@link AccessLib::setModulePrefix()} to set the \Cx\Core\Html\Sigma's
      *    placeholders prefix. Where the passed argument would be like: ACCESS_
      * 3. Call {@link AccessLib::setAttributeNamePrefix()} to set the
-     *    HTML_Template_Sigma's block prefix used in the user's profile attribute
+     *    \Cx\Core\Html\Sigma's block prefix used in the user's profile attribute
      *    template blocks. Where the passed argument would be like: access_profile_attribute
      * 4. Finaly, call {@link AccessLib::parseAttribute()} to parse a user account's profile attribute
      *    template block or to return the generated HTML code of a user account's profile attribute.
@@ -82,7 +82,7 @@ class AccessLib
      *    $objAccessLib->setAttributeNamePrefix('shop_customer_profile_attribute');
      *    $objAccessLib->parseAttribute($objUser, 'firstname', 0, false, false, false, false, false);
      *
-     * @param   HTML_Template_Sigma HTML_Template_Sigma object in case this object's use is intended
+     * @param   \Cx\Core\Html\Sigma \Cx\Core\Html\Sigma object in case this object's use is intended
      *                              to parse a user profile's attribute from within a different
      *                              place than the access module.
      * @see AccessLib::setModulePrefix()
@@ -109,11 +109,11 @@ class AccessLib
      * a user's profile attribute.
      * For instance when setting the prefix to 'shop_customer_profile_attribute',
      * then the method {@link AccessLib::parseAttribute()) will try to parse the
-     * HTML_Template_Sigma template block shop_customer_profile_attribute_firstname
+     * \Cx\Core\Html\Sigma template block shop_customer_profile_attribute_firstname
      * in the case of the profile attribute firstname.
      * Defaults to 'access_profile_attribute'
      *
-     * @param string    HTML_Template_Sigma template block prefix to be used
+     * @param string    \Cx\Core\Html\Sigma template block prefix to be used
      * @see AccessLib::parseAttribute()
      */
     public function setAttributeNamePrefix($prefix)
@@ -127,12 +127,12 @@ class AccessLib
      * use this method to specify the template placeholder prefix to be used when
      * parsing a user's profile attribute.
      * For instance when setting the prefix to 'SHOP_', then the method
-     * {@link AccessLib::parseAttribute()) will parse the HTML_Template_Sigma
+     * {@link AccessLib::parseAttribute()) will parse the \Cx\Core\Html\Sigma
      * variable SHOP_PROFILE_ATTRIBUTE_FIRSTNAME in the case of the profile
      * attribute firstname.
      * Defaults to 'ACCESS_'
      *
-     * @param string    HTML_Template_Sigma variable prefix to be used
+     * @param string    \Cx\Core\Html\Sigma variable prefix to be used
      * @see AccessLib::parseAttribute()
      */
     public function setModulePrefix($prefix)
@@ -166,7 +166,7 @@ class AccessLib
 
     /**
      * This method has two purposes (see param $return):
-     * 1. Parse the HTML_Template_Sigma template block of a specific profile attribute
+     * 1. Parse the \Cx\Core\Html\Sigma template block of a specific profile attribute
      * 2. Generate the HTML code of a specific profile attribute and return it
      *
      * @param User      User object of whoem's profile attribute shall be parsed
@@ -174,7 +174,7 @@ class AccessLib
      * @param integer   History version of the profile attribute to be parsed
      * @param boolean   If the profile attribute's value shall be modifyable (set to TRUE)
      *                  or not (set to FALSE)
-     * @param boolean   If the profile attribute's HTML_Template_Sigma template block
+     * @param boolean   If the profile attribute's \Cx\Core\Html\Sigma template block
      *                  shall be parsed (set to FALSE) or the HTML code of the profile
      *                  attribute shall be generated and returned instead (set to TRUE).
      * @param boolean   In case the profile attribute to be parsed is an other profile
@@ -182,12 +182,12 @@ class AccessLib
      * @param boolean   In case the profile attribute to be parsed is located within an
      *                  other profile attribute of the type frame, set this to TRUE,
      *                  otherwise to FALSE
-     * @param boolean   The method can use the magic block HTML_Template_Sigma template
+     * @param boolean   The method can use the magic block \Cx\Core\Html\Sigma template
      *                  block access_profile_attribute_list (set to TRUE), instead of using
      *                  the profile attribute specific block like for instance
      *                  access_profile_attribute_firstname (set to FALSE)
      * @param array     Pass additional, preparsed placeholders. The array must be an associated
-     *                  array, where the key represents the HTML_Template_Sigma variable suffix
+     *                  array, where the key represents the \Cx\Core\Html\Sigma variable suffix
      *                  and the value the placeholder's value.
      *                  For instance: array('_CSS' => 'someSpecialCSSClass');
      */

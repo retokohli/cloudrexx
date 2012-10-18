@@ -34,7 +34,7 @@ require_once ASCMS_LIBRARY_PATH . '/PEAR/XML/RSS.class.php';
 class feed extends feedLibrary
 {
 	/**
-	 * @var    HTML_Template_Sigma
+	 * @var    \Cx\Core\Html\Sigma
 	 */
     public $_objTpl;
     public $pageTitle;
@@ -45,7 +45,7 @@ class feed extends feedLibrary
     function __construct($pageContent)
     {
         $this->pageContent = $pageContent;
-        $this->_objTpl = new HTML_Template_Sigma('.');
+        $this->_objTpl = new \Cx\Core\Html\Sigma('.');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
     }

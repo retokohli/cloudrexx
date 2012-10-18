@@ -38,7 +38,7 @@ class LanguageManager
      * Constructor
      * @global  ADONewConnection
      * @global  array
-     * @global  HTML_Template_Sigma
+     * @global  \Cx\Core\Html\Sigma
      * @return  void
      */
     function __construct()
@@ -92,7 +92,7 @@ class LanguageManager
      * Gets the requested methods
      *
      * @global   array
-     * @global   HTML_Template_Sigma
+     * @global   \Cx\Core\Html\Sigma
      * @return   string    Parsed content
      */
     function getLanguagePage()
@@ -536,7 +536,7 @@ class LanguageManager
     *
     * @global    ADONewConnection
     * @global    array
-    * @global    HTML_Template_Sigma
+    * @global    \Cx\Core\Html\Sigma
     * @return    void
     */
     function modifyVariables()
@@ -677,7 +677,7 @@ class LanguageManager
      *
      * @global    array
      * @global    ADONewConnection
-     * @global    HTML_Template_Sigma
+     * @global    \Cx\Core\Html\Sigma
      * @return    void
      */
     function listVariables()
@@ -853,7 +853,7 @@ class LanguageManager
      *
      * @global    array
      * @global    ADONewConnection
-     * @global    HTML_Template_Sigma
+     * @global    \Cx\Core\Html\Sigma
      * @return    void
      */
     function languageOverview()

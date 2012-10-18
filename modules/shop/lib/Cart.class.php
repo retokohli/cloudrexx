@@ -737,7 +737,7 @@ class Cart
      * Mind that the Cart needs to be {@see update()}d before calling this
      * method.
      * @global  array $_ARRAYLANG   Language array
-     * @param   HTML_Template_Sigma $objTemplate  The optional Template
+     * @param   \Cx\Core\Html\Sigma $objTemplate  The optional Template
      */
     static function view($objTemplate=null)
     {

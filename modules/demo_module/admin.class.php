@@ -54,7 +54,7 @@ class demoModule
 	{
 		global $objTemplate, $_ARRAYLANG;
 
-		$this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/demo_module/template');
+		$this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/demo_module/template');
         CSRF::add_placeholder($this->_objTpl);
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);    	
 	}

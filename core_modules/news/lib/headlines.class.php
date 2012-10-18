@@ -31,7 +31,7 @@ class newsHeadlines extends newsLibrary
     {
         $this->getSettings();
         $this->_pageContent = $pageContent;
-        $this->_objTemplate = new HTML_Template_Sigma('.');
+        $this->_objTemplate = new \Cx\Core\Html\Sigma('.');
         CSRF::add_placeholder($this->_objTemplate);
     }
 

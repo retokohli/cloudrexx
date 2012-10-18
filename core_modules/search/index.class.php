@@ -31,7 +31,7 @@ function search_getSearchPage($pos, $page_content, $license)
 {
     global $_CONFIG, $_ARRAYLANG,$objDatabase;
 
-    $objTpl = new HTML_Template_Sigma('.');
+    $objTpl = new \Cx\Core\Html\Sigma('.');
     CSRF::add_placeholder($objTpl);
     $objTpl->setErrorHandling(PEAR_ERROR_DIE);
     $objTpl->setTemplate($page_content);
