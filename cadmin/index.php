@@ -13,14 +13,15 @@
  * Calling these methods without specifying a debug level
  * will either activate or deactivate all levels.
  */
-include_once '../lib/DBG.php';
-//DBG::activate(DBG_ERROR_FIREPHP);
-//\DBG::activate(DBG_PHP);
 
 $php = phpversion();
 if ($php < '5.3') {
     die('Das Contrexx CMS ben&uml;tigt mindestens PHP in der Version 5.3.<br />Auf Ihrem System l&auml;uft PHP '.$php);
 }
+
+include_once '../lib/DBG.php';
+//DBG::activate(DBG_ERROR_FIREPHP);
+//\DBG::activate(DBG_PHP);
 
 $_DBCONFIG = $_CONFIGURATION = $_CONFIG = null;
 /**
