@@ -291,7 +291,7 @@
     width: 348px;
     height: 165px;
     padding: 15px 15px 50px 15px;
-    margin: 0 30px 0 0;
+    margin: 0 28px 0 0;
     overflow: hidden;
     border: 1px solid #D6D6D6;
     border-top: 3px solid #0A85C8;
@@ -307,6 +307,7 @@
 }
 
 .home-box.last {
+    float: right;
     height: 200px;
     padding: 15px;
     margin: 0;
@@ -749,7 +750,7 @@
 
 #footer {
     float: left;
-    width: 1088px;
+    width: 1084px;
     padding: 13px 0 30px 0;
 }
 
@@ -780,7 +781,7 @@
 }
 
 #qr-code {
-    float: left;
+    float: right;
     width: 90px;
     height: 90px;
     margin: 0 0 0 20px;
