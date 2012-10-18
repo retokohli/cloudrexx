@@ -299,7 +299,7 @@ class modulemanager
                                 \Cx\Model\ContentManager\Page::TYPE_APPLICATION,
                                 $module_name,
                                 $objResult->fields['cmd'],
-                                !$root,
+                                !$root && $objResult->fields['displaystatus'],
                                 $objResult->fields['content']
                             );
                         } else {
@@ -310,7 +310,7 @@ class modulemanager
                                 \Cx\Model\ContentManager\Page::TYPE_FALLBACK,
                                 $module_name,
                                 $objResult->fields['cmd'],
-                                !$root,
+                                !$root && $objResult->fields['displaystatus'],
                                 ''
                             );
                         }
