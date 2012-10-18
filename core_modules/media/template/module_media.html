@@ -9,7 +9,6 @@ function mediaCheckNewDir()
     }
 }
 
-
 function mediaCheckUploadFiles() {
     var x = 0;
     for (var i = 0; i < document.upload_files.elements.length; i++) {
@@ -25,7 +24,6 @@ function mediaCheckUploadFiles() {
         return false;
     }
 }
-
 
 function mediaSelectAll(e) {
     if (e.checked) { // check all
@@ -49,7 +47,6 @@ function mediaSelectAll(e) {
   }
 }
 
-
 function mediaIsChecked(fieldName)
 {
     var x = 0;
@@ -66,21 +63,20 @@ function mediaIsChecked(fieldName)
     }
 }
 
-
 function mediaDoAction()
 {
     if (mediaIsChecked("formSelected[]") == true) {
         if (document.fileList.selectAction.value == "cut") {
-            document.fileList.action = "index.php?cmd=media&act=cut&archive={MEDIA_ARCHIVE}&path={MEDIA_DO_ACTION_PATH}";
+            document.fileList.action = "index.php?cmd=media&act=cut&archive={MEDIA_ARCHIVE}&path={MEDIA_DO_ACTION_PATH}&{CSRF}";
             document.fileList.submit();
         }
         if (document.fileList.selectAction.value == "copy") {
-            document.fileList.action = "index.php?cmd=media&act=copy&archive={MEDIA_ARCHIVE}&path={MEDIA_DO_ACTION_PATH}";
+            document.fileList.action = "index.php?cmd=media&act=copy&archive={MEDIA_ARCHIVE}&path={MEDIA_DO_ACTION_PATH}&{CSRF}";
             document.fileList.submit();
         }
         if (document.fileList.selectAction.value == "delete") {
             if (confirm("{TXT_MEDIA_CONFIRM_DELETE_2}")) {
-                document.fileList.action = "index.php?cmd=media&act=delete&archive={MEDIA_ARCHIVE}&path={MEDIA_DO_ACTION_PATH}";
+                document.fileList.action = "index.php?cmd=media&act=delete&archive={MEDIA_ARCHIVE}&path={MEDIA_DO_ACTION_PATH}&{CSRF}";
                 document.fileList.submit();
             }
         }
@@ -153,7 +149,8 @@ function openWindow(theURL,winName,features)
 
 <form name="fileList" method="post" action="index.php?cmd=media">
     <input type="hidden" name="deleteMedia" value="0" />
-    <input type="hidden" name="file"   value="" />
+    <input type="hidden" name="file" value="" />
+    
     <table width="100%" cellspacing="0" cellpadding="5" border="0" align="center" class="adminlist">
       <tr>
           <th width="16"><div align="center">#</div></th>
@@ -241,7 +238,7 @@ function openWindow(theURL,winName,features)
                 <a href="{MEDIA_FILE_FILESHARING_HREF}" title="{MEDIA_FILESHARING}"><img src="images/icons/cloud{MEDIA_FILESHARING_STATE}.png" width="16" height="16" alt="filesharing" style="border: 0px;" /></a>
                 <!-- END mediaFilesharing -->
                 <a href="{MEDIA_FILE_RENAME_HREF}" title="{MEDIA_RENAME}"><img src="images/icons/edit.gif" width="16" height="16" alt="rename" style="border: 0px;" /></a>&nbsp;
-                <a href="{MEDIA_FILE_DELETE_HREF}" onclick="return mediaConfirmDelete();" title="{MEDIA_DELETE}"><img src="images/icons/delete.gif" width="16" height="16" alt="delete" style="border: 0px;" /></a>
+                <a href="javascript:mediaConfirmDelete('{MEDIA_FILE_NAME}');" title="{MEDIA_DELETE}"><img src="images/icons/delete.gif" width="16" height="16" alt="delete" style="border: 0px;" /></a>
             </td>
         </tr>
       <!-- END mediaDirectoryTree -->
