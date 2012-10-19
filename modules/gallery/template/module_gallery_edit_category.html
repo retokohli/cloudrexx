@@ -1,5 +1,5 @@
 <!-- START gallery_new_category.html -->
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
 function disableCategorySelection()
 {
 	document.newcat.select_category_id.disabled = true;
@@ -36,14 +36,9 @@ function copyText(strType)
 /*
     Show or hide the access boxes
 */
-var swapAccessMapping = function(type)
+var swapAccessMapping = function(type, showOrHide)
 {
-    id = type+"GroupMapping";
-    if($(id).visible()) {
-        $(id).style.display = "none";
-    } else {
-        $(id).style.display = "block";
-    }
+    $J('#' + type + 'GroupMapping').toggle(showOrHide);
 }
 
 /*
@@ -51,8 +46,8 @@ var swapAccessMapping = function(type)
 */
 var addToList = function(src, dst)
 {
-    var sBox = $(src);
-    var dBox = $(dst);
+    var sBox = document.getElementById(src);
+    var dBox = document.getElementById(dst);
     if (sBox.selectedIndex > -1) {
         // if nothing is selected the index is -1
         var cur_group = sBox.options[sBox.selectedIndex];
@@ -66,7 +61,7 @@ var addToList = function(src, dst)
 */
 var selectWholeList = function(boxName) 
 {
-    var box = $(boxName);
+    var box = document.getElementById(boxName);
 	for(var i = 0;i < box.length;i++) {
 		box.options[i].selected = true;
 	}
@@ -159,9 +154,9 @@ var pre_submit = function()
 	       </tr>
 	       <tr class="row1">
 	           <td colspan="3">
-	               <input type="radio" id="radioPublicAccessFrontend" name="category_protected_frontend" value="0" {PUBLIC_ACCESS_CHECKED_FRONTEND} onclick="swapAccessMapping('frontend')" />
+	               <input type="radio" id="radioPublicAccessFrontend" name="category_protected_frontend" value="0" {PUBLIC_ACCESS_CHECKED_FRONTEND} onclick="swapAccessMapping('frontend', false)" />
 	               <label for="radioPublicAccessFrontend">{TXT_PUBLIC_ACCESS}</label ><br />
-	               <input type="radio" id="radioRestrictedAccessFrontend"  name="category_protected_frontend" value="1" {RESTRICTED_ACCESS_CHECKED_FRONTEND} onclick="swapAccessMapping('frontend')" />
+	               <input type="radio" id="radioRestrictedAccessFrontend"  name="category_protected_frontend" value="1" {RESTRICTED_ACCESS_CHECKED_FRONTEND} onclick="swapAccessMapping('frontend', true)" />
 	               <label for="radioRestrictedAccessFrontend">{TXT_RESTRICTED_ACCESS}</label>
 	           </td>
 	       </tr>
@@ -192,9 +187,9 @@ var pre_submit = function()
 	       </tr>
 	       <tr class="row1">
 	           <td colspan="3">
-	               <input type="radio" id="radioPublicAccessBackend" name="category_protected_backend" value="0" {PUBLIC_ACCESS_CHECKED_BACKEND} onclick="swapAccessMapping('backend')" />
+	               <input type="radio" id="radioPublicAccessBackend" name="category_protected_backend" value="0" {PUBLIC_ACCESS_CHECKED_BACKEND} onclick="swapAccessMapping('backend', false)" />
 	               <label for="radioPublicAccessBackend" >{TXT_NO_RESTRICTIONS}</label><br />
-	               <input type="radio" id="radioRestrictedAccessBackend" name="category_protected_backend" value="1" {RESTRICTED_ACCESS_CHECKED_BACKEND} onclick="swapAccessMapping('backend')" />
+	               <input type="radio" id="radioRestrictedAccessBackend" name="category_protected_backend" value="1" {RESTRICTED_ACCESS_CHECKED_BACKEND} onclick="swapAccessMapping('backend', true)" />
 	               <label for="radioRestrictedAccessBackend" >{TXT_RESTRICTED_ACCESS_BACKEND}</label>
 	           </td>
 	       </tr>
