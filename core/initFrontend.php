@@ -297,8 +297,9 @@ $section = isset($_REQUEST['section']) ? $_REQUEST['section'] : '';
 $command = isset($_REQUEST['cmd']) ? contrexx_addslashes($_REQUEST['cmd']) : '';
 $page    = isset($_REQUEST['page']) ? intval($_REQUEST['page']) : 0;
 $history = isset($_REQUEST['history']) ? intval($_REQUEST['history']) : 0;
-$sessionObj = null;
+
 if ($section == 'upload') { //handle uploads separately, since they have no content
+    $sessionObj = new cmsSession();
     if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/upload/index.class.php'))
         die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
     $objUploadModule = new Upload();
