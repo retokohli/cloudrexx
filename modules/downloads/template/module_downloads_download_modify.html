@@ -1,5 +1,5 @@
 <!-- start module_downloads_download_modify.html -->
-<script language="javascript">
+<script type="text/javascript">
 // <![CDATA[
 
 function downloadsSelectAll()
@@ -408,7 +408,7 @@ function downloadsAdjustSourceConfig()
                                 <a href="javascript:void(0);" onclick="document.getElementById('downloads_download_file_source_lang_div').style.display = (document.getElementById('downloads_download_file_source_lang_div').style.display == 'block' ? 'none' : 'block')" title="{TXT_DOWNLOADS_EXTENDED}">{TXT_DOWNLOADS_EXTENDED} &raquo;</a>
                             <div id="downloads_download_file_source_lang_div" style="display:none;">
                                 <!-- BEGIN downloads_download_file_source_list -->
-                                <input type="text" name="downloads_download_file_source[{DOWNLOADS_DOWNLOAD_LANG_ID}]" id="downloads_download_file_source_{DOWNLOADS_DOWNLOAD_LANG_ID}" value="{DOWNLOADS_DOWNLOAD_FILE_SOURCE}" style="width:300px;" /> <input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="downloadsGetFileBrowser(document.getElementById('downloads_download_file_source_{DOWNLOADS_DOWNLOAD_LANG_ID}'),null,null,document.getElementById('downloads_download_mime_type'))" />{DOWNLOADS_DOWNLOAD_LANG_NAME}<br />
+                                <input type="text" name="downloads_download_file_source[{DOWNLOADS_DOWNLOAD_LANG_ID}]" id="downloads_download_file_source_{DOWNLOADS_DOWNLOAD_LANG_ID}" value="{DOWNLOADS_DOWNLOAD_FILE_SOURCE}" style="width:300px;" /> <input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="downloadsGetFileBrowser(document.getElementById('downloads_download_file_source_{DOWNLOADS_DOWNLOAD_LANG_ID}'),null,null,document.getElementById('downloads_download_mime_type'))" /> {DOWNLOADS_DOWNLOAD_LANG_NAME}<br />
                                 <!-- END downloads_download_file_source_list -->
                             </div>
                         </div>
@@ -417,7 +417,7 @@ function downloadsAdjustSourceConfig()
                                 <a href="javascript:void(0);" onclick="document.getElementById('downloads_download_url_source_lang_div').style.display = (document.getElementById('downloads_download_url_source_lang_div').style.display == 'block' ? 'none' : 'block')" title="{TXT_DOWNLOADS_EXTENDED}">{TXT_DOWNLOADS_EXTENDED} &raquo;</a>
                             <div id="downloads_download_url_source_lang_div" style="display:none;">
                                 <!-- BEGIN downloads_download_url_source_list -->
-                                <input type="text" name="downloads_download_url_source[{DOWNLOADS_DOWNLOAD_LANG_ID}]" id="downloads_download_url_source_{DOWNLOADS_DOWNLOAD_LANG_ID}" value="{DOWNLOADS_DOWNLOAD_URL_SOURCE}" style="width:300px;" /><br />
+                                <input type="text" name="downloads_download_url_source[{DOWNLOADS_DOWNLOAD_LANG_ID}]" id="downloads_download_url_source_{DOWNLOADS_DOWNLOAD_LANG_ID}" value="{DOWNLOADS_DOWNLOAD_URL_SOURCE}" style="width:300px;" /> {DOWNLOADS_DOWNLOAD_LANG_NAME}<br />
                                 <!-- END downloads_download_url_source_list -->
                             </div>
                         </div>
