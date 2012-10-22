@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Contact library
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -8,6 +9,11 @@
  * @subpackage  core_module_contact
  * @todo        Edit PHP DocBlocks!
  */
+
+/**
+ * @ignore
+ */
+\Env::get('ClassLoader')->loadFile(ASCMS_FRAMEWORK_PATH.'/Validator.class.php');
 
 /**
  * Contact library
@@ -1273,6 +1279,7 @@ class ContactLib
     function _getJsSourceCode($id, $formFields, $preview = false, $show = false)
     {
         global $objInit;
+        $this->initCheckTypes();
 
         JS::activate('jqueryui');
 
@@ -1290,7 +1297,7 @@ class ContactLib
             $code .= "\t'". contrexx_raw2xhtml($field['lang'][FRONTEND_LANG_ID]['name']) ."',\n";
             $code .= "\t".  ($field['is_required'] ? 'true' : 'false' ) .",\n";
 
-            $code .= "\t'".  ($this->arrCheckTypes[$field['check_type']]['regex']) .$modifiers."',\n";
+            $code .= "\t".  '/'.($this->arrCheckTypes[$field['check_type']]['regex']).'/'.$modifiers.",\n";
             $code .= "\t'". (($field['type'] != 'special') ? $field['type'] : $field['special_type']) ."');\n";
         }
 
@@ -1304,12 +1311,12 @@ function checkAllFields() {
             value = document.getElementsByName('contactFormField_' + field)[0].value;
             if (\$J.trim(value) == "" && isRequiredNorm(fields[field][1], value)) {
                 isOk = false;
-                document.getElementsByName('contactFormField_' + field)[0].style.border = "red 1px solid";
+                \$J('#contactFormFieldId_'+field).css('border', '1px solid red');
             } else if (value != "" && !matchType(fields[field][2], value)) {
                 isOk = false;
-                document.getElementsByName('contactFormField_' + field)[0].style.border = "red 1px solid";
+                \$J('#contactFormFieldId_'+field).css('border', '1px solid red');
             } else {
-                document.getElementsByName('contactFormField_' + field)[0].style.borderColor = '';
+                \$J('#contactFormFieldId_'+field).attr('style', '');
             }
         } else if (type == 'checkbox') {
             if (!isRequiredCheckbox(fields[field][1], field)) {
@@ -1328,7 +1335,9 @@ function checkAllFields() {
             var folderWidget = cx.instances.get('uploadWidget', 'folderWidget');
             if(required && folderWidget.isEmpty()) {
                 isOk = false;
-                document.getElementsByName('contactFormField_upload')[0].style.border = "red 1px solid";
+                \$J([name=contactFormField_upload]).css('border', '1px solid red');
+            } else {
+                \$J([name=contactFormField_upload]).attr('style', '');
             }
         } else if (type == 'select' || type == 'country' || type == 'access_country') {
             if (!isRequiredSelect(fields[field][1], field)) {
