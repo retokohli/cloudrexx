@@ -433,4 +433,5 @@ $_ARRAYLANG['TXT_NEWSLETTER_NEWS_AUTHOR'] = "Name of author";
 $_ARRAYLANG['TXT_NEWSLETTER_NEWS_TYPE_NAME'] = "Name of the associated type";
 $_ARRAYLANG['TXT_NEWSLETTER_NEWS_CATEGORY_NAME'] = "Name of the associated category";
 $_ARRAYLANG['TXT_NEWSLETTER_BROWSER_VIEW'] = "Please click on the link below to open the newsletter in the web browser.";
+$_ARRAYLANG['TXT_NEWSLETTER_NO_LISTS'] = "No lists available.";
 ?>

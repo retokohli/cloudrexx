@@ -458,4 +458,5 @@ $_ARRAYLANG['TXT_NEWSLETTER_BROWSER_VIEW'] = "Klicken Sie bitte auf folgenden Li
 $_ARRAYLANG['TXT_NEWSLETTER_CREATE_NEW_EMAIL_WITH_NEWS'] = "E-Mail-Kampagne mit News-Wizard hinzufügen";
 $_ARRAYLANG['TXT_NEWSLETTER_NAME_OF_EMAIL_CAMPAIGN'] = "Name der E-Mail-Kampagne";
 $_ARRAYLANG['TXT_NEWSLETTER_STATS'] = "Statistik";
+$_ARRAYLANG['TXT_NEWSLETTER_NO_LISTS'] = "Keine Verteilerlisten vorhanden.";
 ?>

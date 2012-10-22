@@ -369,30 +369,36 @@ class newsletter extends NewsletterLib
             'TXT_NEWSLETTER_NOTIFY_ON_UNSUBSCRIBE' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFY_ON_UNSUBSCRIBE'],
         ));
 
-        foreach ($arrLists as $id => $arrList) {
-            $this->_objTpl->setVariable(array(
-                'NEWSLETTER_LIST_ID' => $id,
-                'NEWSLETTER_ROW_CLASS' => $rowNr % 2 == 1 ? "row1" : "row2",
-                'NEWSLETTER_LIST_STATUS_IMG' => $arrList['status'] == 1 ? "folder_on.gif" : "folder_off.gif",
-                'NEWSLETTER_LIST_NAME' => contrexx_raw2xhtml($arrList['name']),
-                'NEWSLETTER_LAST_MAIL_ID' => $arrList['mail_id'],
-                'NEWSLETTER_LIST_RECIPIENT' => $arrList['recipients'] > 0 ? '<a href="index.php?cmd=newsletter&amp;act=users&amp;newsletterListId='.$id.'" title="'.
-                                                        sprintf($_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_LIST'], contrexx_raw2xhtml($arrList['name'])).'">'.$arrList['recipients'].'</a>' : '-',
-                'NEWSLETTER_LIST_STATUS_MSG' => $arrList['status'] == 1 ? $_ARRAYLANG['TXT_NEWSLETTER_VISIBLE_STATUS_TXT'] : $_ARRAYLANG['TXT_NEWSLETTER_INVISIBLE_STATUS_TXT'],
-                'NEWSLETTER_NOTIFICATION_EMAIL' => trim($arrList['notification_email']) == '' ? '-' : contrexx_raw2xhtml($arrList['notification_email']),
-            ));
-
-            if ($arrList['mail_sent'] > 0) {
-                $this->_objTpl->setVariable('NEWSLETTER_LIST_LAST_MAIL', date(ASCMS_DATE_FORMAT_DATE, $arrList['mail_sent'])." (".contrexx_raw2xhtml($arrList['mail_name']).")");
-                $this->_objTpl->touchBlock('newsletter_list_last_mail');
-                $this->_objTpl->hideBlock('newsletter_list_no_last_mail');
-            } else {
-                $this->_objTpl->hideBlock('newsletter_list_last_mail');
-                $this->_objTpl->touchBlock('newsletter_list_no_last_mail');
+        if (!empty($arrLists)) {
+            foreach ($arrLists as $id => $arrList) {
+                $this->_objTpl->setVariable(array(
+                    'NEWSLETTER_LIST_ID' => $id,
+                    'NEWSLETTER_ROW_CLASS' => $rowNr % 2 == 1 ? "row1" : "row2",
+                    'NEWSLETTER_LIST_STATUS_IMG' => $arrList['status'] == 1 ? "folder_on.gif" : "folder_off.gif",
+                    'NEWSLETTER_LIST_NAME' => contrexx_raw2xhtml($arrList['name']),
+                    'NEWSLETTER_LAST_MAIL_ID' => $arrList['mail_id'],
+                    'NEWSLETTER_LIST_RECIPIENT' => $arrList['recipients'] > 0 ? '<a href="index.php?cmd=newsletter&amp;act=users&amp;newsletterListId='.$id.'" title="'.
+                                                            sprintf($_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_LIST'], contrexx_raw2xhtml($arrList['name'])).'">'.$arrList['recipients'].'</a>' : '-',
+                    'NEWSLETTER_LIST_STATUS_MSG' => $arrList['status'] == 1 ? $_ARRAYLANG['TXT_NEWSLETTER_VISIBLE_STATUS_TXT'] : $_ARRAYLANG['TXT_NEWSLETTER_INVISIBLE_STATUS_TXT'],
+                    'NEWSLETTER_NOTIFICATION_EMAIL' => trim($arrList['notification_email']) == '' ? '-' : contrexx_raw2xhtml($arrList['notification_email']),
+                ));
+    
+                if ($arrList['mail_sent'] > 0) {
+                    $this->_objTpl->setVariable('NEWSLETTER_LIST_LAST_MAIL', date(ASCMS_DATE_FORMAT_DATE, $arrList['mail_sent'])." (".contrexx_raw2xhtml($arrList['mail_name']).")");
+                    $this->_objTpl->touchBlock('newsletter_list_last_mail');
+                    $this->_objTpl->hideBlock('newsletter_list_no_last_mail');
+                } else {
+                    $this->_objTpl->hideBlock('newsletter_list_last_mail');
+                    $this->_objTpl->touchBlock('newsletter_list_no_last_mail');
+                }
+    
+                $this->_objTpl->parse('newsletter_lists');
+                $rowNr++;
             }
-
-            $this->_objTpl->parse('newsletter_lists');
-            $rowNr++;
+        } else {
+            $this->_objTpl->hideBlock('newsletter_lists');
+            $this->_objTpl->setVariable('TXT_NEWSLETTER_NO_LISTS', $_ARRAYLANG['TXT_NEWSLETTER_NO_LISTS']);
+            $this->_objTpl->parse('newsletter_no_lists');
         }
     }
 
