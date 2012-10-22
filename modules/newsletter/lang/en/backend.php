@@ -459,4 +459,5 @@ $_ARRAYLANG['TXT_NEWSLETTER_BROWSER_VIEW'] = "Please click on the link below to 
 $_ARRAYLANG['TXT_NEWSLETTER_CREATE_NEW_EMAIL_WITH_NEWS'] = "Create New E-Mail from News";
 $_ARRAYLANG['TXT_NEWSLETTER_NAME_OF_EMAIL_CAMPAIGN'] = "Name of E-Mail-Campaign";
 $_ARRAYLANG['TXT_NEWSLETTER_STATS'] = "Statistics";
+$_ARRAYLANG['TXT_NEWSLETTER_NO_LISTS'] = "No lists available.";
 ?>
