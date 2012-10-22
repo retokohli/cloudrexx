@@ -91,9 +91,8 @@ $this->bytes = memory_get_peak_usage();
             $children2 = array();
             foreach ($children as $child) {
                 $page = $child->getPage($this->lang);
-                if (!$page || !$page->isActive() || !$page->isVisible()
-                        || ($page->getModule() != '' && !$this->license->isInLegalFrontendComponents($page->getModule()))) {
-                    // do not add children if page is not shown, but add them if node has no page (root node)
+                if (!$page) {
+                    // do not add children node has no pages (root node)
                     continue;
                 }
                 $children2[$child->getLft()] = $child;
@@ -103,10 +102,6 @@ $this->bytes = memory_get_peak_usage();
             unset($children2);
             
             $page = $node->getPage($this->lang);
-            if ($page && (!$page->isActive() || !$page->isVisible())) {
-                // do not add children if page is not shown, but add them if node has no page (root node)
-                continue;
-            }
             
             $hasChilds = count($children) > 0;
             if ($hasChilds && !$dontDescend) {
@@ -128,8 +123,17 @@ $this->bytes = memory_get_peak_usage();
                 });
             }
             
-            if (!$page) {
+            if (!$page || !$page->isActive() || !$page->isVisible()) {
                 continue;
+            }
+            
+            try {
+                // if parent is invisible or unpublished and parent node is not start node
+                if ($page->getParent() && (!$page->getParent()->isVisible() || !$page->getParent()->isActive()) && $page->getParent()->getNode() != $this->rootNode) {
+                    continue;
+                }
+            } catch (\Cx\Model\ContentManager\PageException $e) {
+                // if parent page does not exist, parent is root
             }
             
             if ($page->getModule() != '' && !$this->license->isInLegalFrontendComponents($page->getModule())) {

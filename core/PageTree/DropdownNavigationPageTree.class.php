@@ -15,6 +15,10 @@ class DropdownNavigationPageTree extends SigmaPageTree {
 
     protected $menuIndex = 0;
     protected $navigationIds = array();
+    
+    protected function init() {
+        $this->previousLevel = $this->rootNode->getLvl() + 1;
+    }
 
     protected function renderElement($title, $level, $hasChilds, $lang, $path, $current, $page) {
         $output = '';
@@ -91,8 +95,10 @@ class DropdownNavigationPageTree extends SigmaPageTree {
             //\DBG::msg('__first SUB ('.$level.'): '.$this->cache[$blockName]);
         } else {
             // we're parsing the next page on the same level (first page of this level has already been parsed)
-
             if ($isSubNavigation) {
+                if (!isset($this->cache[$blockName])) {
+                    $this->cache[$blockName] = '{NEXT_MENU}';
+                }
                 // parsing a page on a subnavigation level > 1
                 $this->cache[$blockName] = str_replace("{NEXT_MENU}", $output.'{NEXT_MENU}', $this->cache[$blockName]);
                 //\DBG::msg('__additional SUB-PAGE ('.$level.'): '.$this->cache[$blockName]);
@@ -157,6 +163,9 @@ class DropdownNavigationPageTree extends SigmaPageTree {
     
     protected function postRender($lang)
     {
+        if (!isset($this->cache['level_1'])) {
+            $this->cache['level_1'] = '{SUB_MENU}';
+        }
         $this->injectParsedSubnavigations();
         $ret = str_replace('{SUB_MENU}', '', isset($this->cache['level_1']) ? $this->cache['level_1'] : ''); //remove remaining sub_menu tags
         unset($this->cache);
@@ -176,9 +185,4 @@ class DropdownNavigationPageTree extends SigmaPageTree {
     protected function renderFooter($lang) {}
     
     protected function preRender($lang) {}
-    
-    /**
-     * Called on construction. Override if you do not want to override the ctor.
-     */
-    protected function init() {}
 }
