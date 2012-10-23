@@ -150,11 +150,6 @@ class Html
     const ICON_COMMENT = 'images/icons/comment.gif';
 
     /**
-     * Icon used for Notes (with tooltip containing the text)
-     */
-    const ICON_NOTE = 'images/icons/info.gif';
-
-    /**
      * Icon used for gift text (with tooltip containing the text)
      * Only for the hotelcard module
      */

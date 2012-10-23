@@ -25,9 +25,10 @@ $_ARRAYLANG["TXT_FILESHARING_SHARED"] = "Diese Datei ist freigegeben.";
 $_ARRAYLANG["TXT_FILESHARING_NOT_SHARED"] = "Diese Datei ist nicht freigegeben.";
 $_ARRAYLANG["TXT_FILESHARING_STOP_SHARING"] = "Freigabe stoppen";
 $_ARRAYLANG["TXT_FILESHARING_START_SHARING"] = "Freigabe starten";
-$_ARRAYLANG["TXT_FILESHARING_MAIL_TEMPLATES"] = "Mailvorlagen";
+$_ARRAYLANG["TXT_FILESHARING_MAIL_TEMPLATES"] = "E-Mail-Vorlagen";
 $_ARRAYLANG["TXT_FILESHARING_LINK_BACK"] = "Abbrechen";
 $_ARRAYLANG["TXT_FILESHARING_SECURITY"] = "Zugriffsberechtigung";
+$_ARRAYLANG["TXT_FILESHARING_SECURITY_INFO"] = "Bestimmen Sie hier, welche Benutzer über das Frontend Dateien hochladen und freigeben dürfen.";
 
 $_ARRAYLANG['TXT_FILESHARING_SETTINGS_GENERAL_INFORMATION'] = 'Informationen';
 $_ARRAYLANG['TXT_FILESHARING_SETTINGS_GENERAL_MODULE_NAME_TITLE'] = 'Anwendungsname';
