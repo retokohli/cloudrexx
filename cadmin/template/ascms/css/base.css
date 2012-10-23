@@ -1054,9 +1054,9 @@ table.adminlist td.nowrap {
 .icon-warning {
     float: none;
     display: inline-block;
-    width: 12px;
+    width: 13px;
     height: 12px;
-    background: url(../../../images/icons/note.gif) no-repeat left center;
+    background: url(../../../images/icons/warning.png) no-repeat left center;
 }
 
 .icon-comment {

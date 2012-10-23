@@ -41,12 +41,9 @@ function BeforeSubmit() {
 
 </script>
 <ul id="tabmenu" class="media_settings">
-    <li><a id="messageTab_information" class="active" href="javascript:{}" onclick="selectTab('information')"
-           title="{FILESHARING_INFO}">{FILESHARING_INFO}</a></li>
-    <li><a id="messageTab_mailtemplates" href="javascript:{}" onclick="selectTab('mailtemplates')"
-           title="{FILESHARING_MAIL_TEMPLATES}">{FILESHARING_MAIL_TEMPLATES}</a></li>
-    <li><a id="messageTab_security" href="javascript:{}" onclick="selectTab('security'); init();" title="{TXT_FILESHARING_SECURITY}">{TXT_FILESHARING_SECURITY}</a>
-    </li>
+    <li><a id="messageTab_information" class="active" href="javascript:{}" onclick="selectTab('information')" title="{FILESHARING_INFO}">{FILESHARING_INFO}</a></li>
+    <li><a id="messageTab_mailtemplates" href="javascript:{}" onclick="selectTab('mailtemplates')" title="{FILESHARING_MAIL_TEMPLATES}">{FILESHARING_MAIL_TEMPLATES}</a></li>
+    <li><a id="messageTab_security" href="javascript:{}" onclick="selectTab('security'); init();" title="{TXT_FILESHARING_SECURITY}">{TXT_FILESHARING_SECURITY}</a></li>
 </ul>
 <div id="information" class="messageTab">
     <table class="adminlist" width="100%">
@@ -99,8 +96,11 @@ function BeforeSubmit() {
     <!-- BEGIN filesharing_security -->
     <form action="index.php?cmd=media&amp;archive=filesharing&amp;act=settings" method="post" name="settings">
         <table cellspacing="0" cellpadding="2" width="100%" border="0" class="adminlist">
-            <tr class="row3">
+            <tr>
                 <th colspan="2">{FILESHARING_SECURITY}</th>
+            </tr>
+            <tr class="row3">
+                <td colspan="2">{TXT_FILESHARING_SECURITY_INFO}</td>
             </tr>
             <tr class="row1">
                 <td>

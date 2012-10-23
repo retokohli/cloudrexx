@@ -25,9 +25,10 @@ $_ARRAYLANG["TXT_FILESHARING_SHARED"] = "This file is shared";
 $_ARRAYLANG["TXT_FILESHARING_NOT_SHARED"] = "This file is not shared yet";
 $_ARRAYLANG["TXT_FILESHARING_STOP_SHARING"] = "Stop filesharing now";
 $_ARRAYLANG["TXT_FILESHARING_START_SHARING"] = "Start filesharing now";
-$_ARRAYLANG["TXT_FILESHARING_MAIL_TEMPLATES"] = "Mail templates";
+$_ARRAYLANG["TXT_FILESHARING_MAIL_TEMPLATES"] = "E-Mail Templates";
 $_ARRAYLANG["TXT_FILESHARING_LINK_BACK"] = "Cancel";
 $_ARRAYLANG["TXT_FILESHARING_SECURITY"] = "Permissions";
+$_ARRAYLANG["TXT_FILESHARING_SECURITY_INFO"] = "Define which users should be allowed to upload and share files in the frontend.";
 
 $_ARRAYLANG['TXT_FILESHARING_SETTINGS_GENERAL_INFORMATION'] = 'Informations';
 $_ARRAYLANG['TXT_FILESHARING_SETTINGS_GENERAL_MODULE_NAME_TITLE'] = 'Application name';
