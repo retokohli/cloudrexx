@@ -372,7 +372,7 @@
                 elemToCopy = $J('#formField'+fieldType+'Attribute_0 div').clone();
                 elemToCopy.attr('id', 'fieldValueTab_'+elId+'_'+langId);
                 elemToCopy.attr('class', 'fieldValueTabs_'+elId);
-                elemToCopy.find('input').attr('name', 'contactFormFieldValue['+elId+']['+langId+']');
+                elemToCopy.find('input, textarea').attr('name', 'contactFormFieldValue['+elId+']['+langId+']');
                 if ($J(this).hasClass('active')) {
                     elemToCopy.css('display','block');
                 }
@@ -388,48 +388,57 @@
         Add or remove the mandatory checkbox and value type select box
         with respect to change in the fields type select box
         */
-        switch(fieldType){
-        case 'label':
-        case 'hidden':
-        case 'recipient':
-        case 'horizontalLine':
-        case 'fieldset':
-            ($J('#contactFormFieldRequired_'+elId).length > 0) ? $J('#contactFormFieldRequired_'+elId).remove() : '';
-            ($J('#contactFormFieldCheckType_'+elId).length > 0) ? $J('#contactFormFieldCheckType_'+elId).remove() : '';
-        break;
-
-        case 'checkbox':
-        case 'checkboxGroup':
-        case 'access_country':
-        case 'country':
-        case 'date':
-        case 'file':
-        case 'radio':
-        case 'select':
-            var requiredCopy = $J('#contactFormFieldRequired_0').clone(true);
-            $J(requiredCopy).attr('id', 'contactFormFieldRequired_'+elId);
-            $J(requiredCopy).attr('name', 'contactFormFieldRequired[' + elId+']');
-            ($J('#contactFormFieldRequired_'+elId).length == 0) ? $J('#contactFormFieldCheckBox_'+elId).append(requiredCopy) : '';
-            ($J('#contactFormFieldCheckType_'+elId).length > 0) ? $J('#contactFormFieldCheckType_'+elId).remove() : '';
-        break;
-        /*
-         *Default applies for textbox, password, multiline text and all user profile fields except access_country field
-         */
-        default:
-             if($J('#contactFormFieldRequired_'+elId).length == 0){
+        switch (fieldType) {
+            case 'label':
+                $J('#fieldNameTab_'+elId+'_1').hide();
+                ($J('#contactFormFieldRequired_'+elId).length > 0) ? $J('#contactFormFieldRequired_'+elId).remove() : '';
+                ($J('#contactFormFieldCheckType_'+elId).length > 0) ? $J('#contactFormFieldCheckType_'+elId).remove() : '';
+            break;
+            
+            case 'hidden':
+            case 'recipient':
+            case 'horizontalLine':
+            case 'fieldset':
+                ($J('#contactFormFieldRequired_'+elId).length > 0) ? $J('#contactFormFieldRequired_'+elId).remove() : '';
+                ($J('#contactFormFieldCheckType_'+elId).length > 0) ? $J('#contactFormFieldCheckType_'+elId).remove() : '';
+            break;
+    
+            case 'checkbox':
+            case 'checkboxGroup':
+            case 'access_country':
+            case 'country':
+            case 'date':
+            case 'file':
+            case 'radio':
+            case 'select':
                 var requiredCopy = $J('#contactFormFieldRequired_0').clone(true);
                 $J(requiredCopy).attr('id', 'contactFormFieldRequired_'+elId);
                 $J(requiredCopy).attr('name', 'contactFormFieldRequired[' + elId+']');
-                $J('#contactFormFieldCheckBox_'+elId).append(requiredCopy);
-            }
+                ($J('#contactFormFieldRequired_'+elId).length == 0) ? $J('#contactFormFieldCheckBox_'+elId).append(requiredCopy) : '';
+                ($J('#contactFormFieldCheckType_'+elId).length > 0) ? $J('#contactFormFieldCheckType_'+elId).remove() : '';
+            break;
+            /*
+             *Default applies for textbox, password, multiline text and all user profile fields except access_country field
+             */
+            default:
+                 if($J('#contactFormFieldRequired_'+elId).length == 0){
+                    var requiredCopy = $J('#contactFormFieldRequired_0').clone(true);
+                    $J(requiredCopy).attr('id', 'contactFormFieldRequired_'+elId);
+                    $J(requiredCopy).attr('name', 'contactFormFieldRequired[' + elId+']');
+                    $J('#contactFormFieldCheckBox_'+elId).append(requiredCopy);
+                }
+    
+                if($J('#contactFormFieldCheckType_'+elId).length == 0){
+                    var checkTypeCopy = $J('#contactFormFieldCheckType_0').clone(true);
+                    $J(checkTypeCopy).attr('id', 'contactFormFieldCheckType_'+elId);
+                    $J(checkTypeCopy).attr('name', 'contactFormFieldCheckType[' + elId+']');
+                    $J('#contactFormFieldCheckMenu_'+elId).append(checkTypeCopy);
+                }
+            break;
+        }
 
-            if($J('#contactFormFieldCheckType_'+elId).length == 0){
-                var checkTypeCopy = $J('#contactFormFieldCheckType_0').clone(true);
-                $J(checkTypeCopy).attr('id', 'contactFormFieldCheckType_'+elId);
-                $J(checkTypeCopy).attr('name', 'contactFormFieldCheckType[' + elId+']');
-                $J('#contactFormFieldCheckMenu_'+elId).append(checkTypeCopy);
-            }
-        break;
+        if (fieldType != 'label') {
+            $J('#fieldNameTab_'+elId+'_1').show();
         }
 
         $J('.formValueView input').css('width','90%');
@@ -647,12 +656,17 @@
         swapHeaderLangName();
         
         /**
-        Check for recipent field to hide/show recipient list
-        */
-        $J('.formField').each(function(e){
-            if ($J(this).find('.contactFormFieldType').val() == 'recipient') {
-                $J('.tab_recipients').css('display','block');
-                return true;
+         * Check for recipent field to hide/show recipient list.
+         */
+        $J('.formField').each(function(e) {
+            switch ($J(this).find('.contactFormFieldType').val()) {
+                case 'recipient':
+                    $J('.tab_recipients').css('display','block');
+                break;
+                case 'label':
+                    id = $J(this).attr('id').split('_')[1];
+                    $J(this).find('#fieldNameTab_'+id+'_1').hide();
+                break;
             }
         });
 
@@ -697,6 +711,9 @@
 <div style="display:none;">
     <div style="display:inline;" id="formFieldtextAttribute_0">
         {CONTACT_FORM_FIELD_TEXT_TPL}
+    </div>
+    <div style="display:inline;" id="formFieldlabelAttribute_0">
+        {CONTACT_FORM_FIELD_LABEL_TPL}
     </div>
     <div style="display:inline;" id="formFieldcheckboxAttribute_0">
         {CONTACT_FORM_FIELD_CHECKBOX_TPL}

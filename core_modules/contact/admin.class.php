@@ -1069,10 +1069,16 @@ class ContactManager extends ContactLib
         switch ($type) {
         case 'text':
         case 'hidden':
-        case 'label':
         case 'special':
             $field .= "<div style=\"display: ".$display.";\"  id=\"fieldValueTab_".$id."_".$langid."\" class=\"fieldValueTabs_".$id."\">";
             $field .= "<input style=\"width:308px;background: #FFFFFF;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" />\n";
+            $field .= "</div>";
+            return $field;
+            break;
+
+        case 'label':
+            $field .= "<div style=\"display: ".$display.";\"  id=\"fieldValueTab_".$id."_".$langid."\" class=\"fieldValueTabs_".$id."\">";
+            $field .= "<textarea style=\"width: 90%;background: #FFFFFF\" name=\"contactFormFieldValue[".$id."][".$langid."]\">".$attr."</textarea>\n";
             $field .= "</div>";
             return $field;
             break;
@@ -1704,11 +1710,9 @@ class ContactManager extends ContactLib
             }
             
             switch ($arrField['type']) {
+                case 'label':
                 case 'hidden':
                 case 'horizontalLine':
-                    break;
-                case 'label':
-                    $sourcecode[] = '<label for="contactFormFieldId_'.$fieldId.'">&nbsp;</label>';
                     break;
                 case 'fieldset':
                     $sourcecode[] = '</fieldset>';
@@ -1736,7 +1740,7 @@ class ContactManager extends ContactLib
             $fieldType                        = ($arrField['type'] != 'special') ? $arrField['type'] : $arrField['special_type'];
             switch ($fieldType) {
                 case 'label':
-                    $sourcecode[] = /*$preview ? */contrexx_raw2xhtml($arrField['lang'][$lang]['value'])/* : '<label class="noCaption">{'.$fieldId.'_VALUE}</label>*/;
+                    $sourcecode[] = '<div class="contactFormClass_'.$arrField['type'].'">'.contrexx_raw2xhtml($arrField['lang'][$lang]['value']).'</div>';
                     break;
 
                 case 'checkbox':
