@@ -334,25 +334,20 @@
     background: none;
 }
 
-#home-mediadir,
+#home-event,
 #home-newsletter  {
     float: left;
     width: 100%;
     padding: 5px 0 0 0;
 }
 
-#home-mediadir img {
+#home-event img {
     float: left;
     width: 100px;
     padding: 5px;
     margin: 0 15px 0 0;
     border: 1px solid #D6D6D6;
     background: #FFFFFF;
-}
-
-#home-mediadir-text {
-    float: left;
-    width: 221px;
 }
 
 #content-top {
