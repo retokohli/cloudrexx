@@ -340,125 +340,173 @@ class FileBrowser {
         $rowNr = 0;
 
         switch ($this->_mediaType) {
-        case 'webpages':
-            $objContentTree = new ContentTree($this->_frontendLanguageId);
-            foreach ($objContentTree->getTree() as $arrPage) {
-                $url = "'" . '[[' . \Cx\Model\ContentManager\Page::PLACEHOLDER_PREFIX;
-
+            case 'webpages':
+                $jd = new \Cx\Core\Json\JsonData();
+                $data = $jd->data('node', 'getTree', array('get' => array('recursive' => 'true')));
+                $pageStack = array();
+                $ref = 0;
+                $data['data']['tree'] = array_reverse($data['data']['tree']);
+                foreach ($data['data']['tree'] as &$entry) {
+                    $entry['attr']['level'] = 0;
+                    array_push($pageStack, $entry);
+                }
+                while (count($pageStack)) {
+                    $entry = array_pop($pageStack);
+                    $page = $entry['data'][0];
+                    $arrPage['level'] = $entry['attr']['level'];
+                    $children = $entry['children'];
+                    $children = array_reverse($children);
+                    foreach ($children as &$entry) {
+                        $entry['attr']['level'] = $arrPage['level'] + 1;
+                        array_push($pageStack, $entry);
+                    }
+                    $arrPage['catname'] = $page['title'];
+                    $arrPage['catid'] = $page['attr']['id'];
+                    $arrPage['node_id'] = $entry['attr']['rel_id'];
+                    $arrPage['lang'] = BACKEND_LANG_ID;
+                    $arrPage['protected'] = $page['attr']['protected'];
+                    $arrPage['type'] = \Cx\Model\ContentManager\Page::TYPE_CONTENT;
+                    $arrPage['alias'] = $page['title'];
+                    $arrPage['frontend_access_id'] = $page['attr']['frontend_access_id'];
+                    $arrPage['backend_access_id'] = $page['attr']['backend_access_id'];
+                    
+                    // JsonNode does not provide those
+                    //$arrPage['level'] = ;
+                    //$arrPage['type'] = ;
+                    //$arrPage['parcat'] = ;
+                    //$arrPage['displaystatus'] = ;
+                    //$arrPage['moduleid'] = ;
+                    //$arrPage['startdate'] = ;
+                    //$arrPage['enddate'] = ;
+                    
+                    // But we can simulate level and type for our purposes: (level above)
+                    $jsondata = json_decode($page['attr']['data-href']);
+                    if ($jsondata->module != '') {
+                        $arrPage['type'] = \Cx\Model\ContentManager\Page::TYPE_APPLICATION;
+                        $module = explode(' ', $jsondata->module, 2);
+                        $arrPage['modulename'] = $module[0];
+                        if (count($module) > 1) {
+                            $arrPage['cmd'] = $module[1];
+                        }
+                    }
+                    
+                    $url = "'" . '[[' . \Cx\Model\ContentManager\Page::PLACEHOLDER_PREFIX;
+    
 // TODO: This only works for regular application pages. Pages of type fallback that are linked to an application
 //       will be parsed using their node-id ({NODE_<ID>})
-                if ($arrPage['type'] == \Cx\Model\ContentManager\Page::TYPE_APPLICATION) {
-                    $url .= $arrPage['modulename'];
-                    if (!empty($arrPage['cmd'])) {
-                        $url .= '_' . $arrPage['cmd'];
+                    if ($arrPage['type'] == \Cx\Model\ContentManager\Page::TYPE_APPLICATION) {
+                        $url .= $arrPage['modulename'];
+                        if (!empty($arrPage['cmd'])) {
+                            $url .= '_' . $arrPage['cmd'];
+                        }
+    
+                        $url = strtoupper($url);
+                    } else {
+                        $url .= $arrPage['node_id'];
                     }
-
-                    $url = strtoupper($url);
-                } else {
-                    $url .= $arrPage['node_id'];
-                }
-
-                // if language != current language or $alwaysReturnLanguage
-                if ($this->_frontendLanguageId != $_FRONTEND_LANGID ||
-                        (isset($_GET['alwaysReturnLanguage']) &&
-                        $_GET['alwaysReturnLanguage'] == 'true')) {
-                    $url .= '_' . $this->_frontendLanguageId;
-                }
-                $url .= "]]'";
-                
-                $this->_objTpl->setVariable(array(
-                    'FILEBROWSER_ROW_CLASS'         => $rowNr%2 == 0 ? "row1" : "row2",
-                    'FILEBROWSER_FILE_PATH_CLICK'   => "javascript:{setUrl($url,null,null,'".FWLanguage::getLanguageCodeById($this->_frontendLanguageId)."/".$arrPage['alias']."','page')}",
-                    'FILEBROWSER_FILE_NAME'         => $arrPage['catname'],
-                    'FILEBROWSER_FILESIZE'          => '&nbsp;',
-                    'FILEBROWSER_FILE_ICON'         => $this->_iconPath.'htm.gif',
-                    'FILEBROWSER_FILE_DIMENSION'    => '&nbsp;',
-                    'FILEBROWSER_SPACING_STYLE'     => 'style="margin-left: '.($arrPage['level'] * 15).'px;"',
-                ));
-                $this->_objTpl->parse('content_files');
-
-                $rowNr++;
-            }
-            break;
-        case 'media1':
-        case 'media2':
-        case 'media3':
-        case 'media4':
-            Permission::checkAccess(7, 'static');       //Access Media-Archive
-            Permission::checkAccess(38, 'static');  //Edit Media-Files
-            Permission::checkAccess(39, 'static');  //Upload Media-Files
-
-        //Hier soll wirklich kein break stehen! Beabsichtig!
-
-
-        default:
-            if (count($this->_arrDirectories) > 0) {
-                foreach ($this->_arrDirectories as $arrDirectory) {
+    
+                    // if language != current language or $alwaysReturnLanguage
+                    if ($this->_frontendLanguageId != $_FRONTEND_LANGID ||
+                            (isset($_GET['alwaysReturnLanguage']) &&
+                            $_GET['alwaysReturnLanguage'] == 'true')) {
+                        $url .= '_' . $this->_frontendLanguageId;
+                    }
+                    $url .= "]]'";
+                    
                     $this->_objTpl->setVariable(array(
                         'FILEBROWSER_ROW_CLASS'         => $rowNr%2 == 0 ? "row1" : "row2",
-                        'FILEBROWSER_FILE_PATH_CLICK'   => "index.php?cmd=fileBrowser&amp;standalone=true&amp;langId={$this->_frontendLanguageId}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}&amp;CKEditor=".contrexx_raw2xhtml($_GET['CKEditor']).$ckEditorFuncNum,
-                        'FILEBROWSER_FILE_NAME'         => $arrDirectory['name'],
+                        'FILEBROWSER_FILE_PATH_CLICK'   => "javascript:{setUrl($url,null,null,'".FWLanguage::getLanguageCodeById($this->_frontendLanguageId)."/".$arrPage['alias']."','page')}",
+                        'FILEBROWSER_FILE_NAME'         => $arrPage['catname'],
                         'FILEBROWSER_FILESIZE'          => '&nbsp;',
-                        'FILEBROWSER_FILE_ICON'         => $arrDirectory['icon'],
+                        'FILEBROWSER_FILE_ICON'         => $this->_iconPath.'htm.gif',
                         'FILEBROWSER_FILE_DIMENSION'    => '&nbsp;',
+                        'FILEBROWSER_SPACING_STYLE'     => 'style="margin-left: '.($arrPage['level'] * 15).'px;"',
                     ));
                     $this->_objTpl->parse('content_files');
+    
                     $rowNr++;
                 }
-            }
-
-            if (count($this->_arrFiles) > 0) {
-                $arrEscapedPaths = array();
-                foreach ($this->_arrFiles as $arrFile) {
-                    $arrEscapedPaths[] = contrexx_raw2encodedUrl($arrFile['path']);
-                    $this->_objTpl->setVariable(array(
-                        'FILEBROWSER_ROW_CLASS'             => $rowNr%2 == 0 ? "row1" : "row2",
-                        'FILEBROWSER_ROW_STYLE'				=> in_array($arrFile['name'], $this->highlightedFiles) ? ' style="background: '.$this->highlightColor.';"' : '',
-                        'FILEBROWSER_FILE_PATH_DBLCLICK'    => "setUrl('".contrexx_raw2xhtml($arrFile['path'])."',".$arrFile['width'].",".$arrFile['height'].",'')",
-                        'FILEBROWSER_FILE_PATH_CLICK'       => "javascript:{showPreview(".(count($arrEscapedPaths)-1).",".$arrFile['width'].",".$arrFile['height'].")}",
-                        'FILEBROWSER_FILE_NAME'             => contrexx_stripslashes($arrFile['name']),
-                        'FILEBROWSER_FILESIZE'              => $arrFile['size'].' KB',
-                        'FILEBROWSER_FILE_ICON'             => $arrFile['icon'],
-                        'FILEBROWSER_FILE_DIMENSION'        => (empty($arrFile['width']) && empty($arrFile['height'])) ? '' : intval($arrFile['width']).'x'.intval($arrFile['height'])
-                    ));
-                    $this->_objTpl->parse('content_files');
-                    $rowNr++;
+                break;
+            case 'media1':
+            case 'media2':
+            case 'media3':
+            case 'media4':
+                Permission::checkAccess(7, 'static');       //Access Media-Archive
+                Permission::checkAccess(38, 'static');  //Edit Media-Files
+                Permission::checkAccess(39, 'static');  //Upload Media-Files
+    
+            //Hier soll wirklich kein break stehen! Beabsichtig!
+    
+    
+            default:
+                if (count($this->_arrDirectories) > 0) {
+                    foreach ($this->_arrDirectories as $arrDirectory) {
+                        $this->_objTpl->setVariable(array(
+                            'FILEBROWSER_ROW_CLASS'         => $rowNr%2 == 0 ? "row1" : "row2",
+                            'FILEBROWSER_FILE_PATH_CLICK'   => "index.php?cmd=fileBrowser&amp;standalone=true&amp;langId={$this->_frontendLanguageId}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}&amp;CKEditor=".contrexx_raw2xhtml($_GET['CKEditor']).$ckEditorFuncNum,
+                            'FILEBROWSER_FILE_NAME'         => $arrDirectory['name'],
+                            'FILEBROWSER_FILESIZE'          => '&nbsp;',
+                            'FILEBROWSER_FILE_ICON'         => $arrDirectory['icon'],
+                            'FILEBROWSER_FILE_DIMENSION'    => '&nbsp;',
+                        ));
+                        $this->_objTpl->parse('content_files');
+                        $rowNr++;
+                    }
                 }
-
-                $this->_objTpl->setVariable('FILEBROWSER_FILES_JS', "'".implode("','",$arrEscapedPaths)."'");
-            }
-
-            switch ($this->_mediaType) {
-                case 'media1':
-                    $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIA1_WEB_PATH);
-                    break;
-                case 'media2':
-                    $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIA2_WEB_PATH);
-                    break;
-                case 'media3':
-                    $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIA3_WEB_PATH);
-                    break;
-                case 'media4':
-                    $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIA4_WEB_PATH);
-                    break;
-                case 'shop':
-                    $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_SHOP_IMAGES_WEB_PATH);
-                    break;
-                case 'blog':
-                    $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_BLOG_IMAGES_WEB_PATH);
-                    break;
-                case 'podcast':
-                    $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_PODCAST_IMAGES_WEB_PATH);
-                    break;
-                case 'downloads':
-                    $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_DOWNLOADS_IMAGES_WEB_PATH);
-                    break;
-                case 'mediadir':
-                    $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIADIR_IMAGES_WEB_PATH);
-                    break;
-                default:
-                    $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_CONTENT_IMAGE_WEB_PATH);
-            }
+    
+                if (count($this->_arrFiles) > 0) {
+                    $arrEscapedPaths = array();
+                    foreach ($this->_arrFiles as $arrFile) {
+                        $arrEscapedPaths[] = contrexx_raw2encodedUrl($arrFile['path']);
+                        $this->_objTpl->setVariable(array(
+                            'FILEBROWSER_ROW_CLASS'             => $rowNr%2 == 0 ? "row1" : "row2",
+                            'FILEBROWSER_ROW_STYLE'				=> in_array($arrFile['name'], $this->highlightedFiles) ? ' style="background: '.$this->highlightColor.';"' : '',
+                            'FILEBROWSER_FILE_PATH_DBLCLICK'    => "setUrl('".contrexx_raw2xhtml($arrFile['path'])."',".$arrFile['width'].",".$arrFile['height'].",'')",
+                            'FILEBROWSER_FILE_PATH_CLICK'       => "javascript:{showPreview(".(count($arrEscapedPaths)-1).",".$arrFile['width'].",".$arrFile['height'].")}",
+                            'FILEBROWSER_FILE_NAME'             => contrexx_stripslashes($arrFile['name']),
+                            'FILEBROWSER_FILESIZE'              => $arrFile['size'].' KB',
+                            'FILEBROWSER_FILE_ICON'             => $arrFile['icon'],
+                            'FILEBROWSER_FILE_DIMENSION'        => (empty($arrFile['width']) && empty($arrFile['height'])) ? '' : intval($arrFile['width']).'x'.intval($arrFile['height'])
+                        ));
+                        $this->_objTpl->parse('content_files');
+                        $rowNr++;
+                    }
+    
+                    $this->_objTpl->setVariable('FILEBROWSER_FILES_JS', "'".implode("','",$arrEscapedPaths)."'");
+                }
+    
+                switch ($this->_mediaType) {
+                    case 'media1':
+                        $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIA1_WEB_PATH);
+                        break;
+                    case 'media2':
+                        $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIA2_WEB_PATH);
+                        break;
+                    case 'media3':
+                        $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIA3_WEB_PATH);
+                        break;
+                    case 'media4':
+                        $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIA4_WEB_PATH);
+                        break;
+                    case 'shop':
+                        $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_SHOP_IMAGES_WEB_PATH);
+                        break;
+                    case 'blog':
+                        $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_BLOG_IMAGES_WEB_PATH);
+                        break;
+                    case 'podcast':
+                        $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_PODCAST_IMAGES_WEB_PATH);
+                        break;
+                    case 'downloads':
+                        $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_DOWNLOADS_IMAGES_WEB_PATH);
+                        break;
+                    case 'mediadir':
+                        $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIADIR_IMAGES_WEB_PATH);
+                        break;
+                    default:
+                        $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_CONTENT_IMAGE_WEB_PATH);
+                }
+            break;
         }
         $this->_objTpl->parse('fileBrowser_content');
     }
