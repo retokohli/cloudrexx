@@ -100,7 +100,7 @@ class calHeadlines extends calendarLibrary
                         'CALENDAR_EVENT_NAME'          => htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET),
                         'CALENDAR_EVENT_THUMB'         =>
                             '<img src="'.ImageManager::getThumbnailFilename(
-                            $array['pic']).'" border="0" alt="'.
+                            $array['pic']).'" alt="'.
                             htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET).
                             '" />',
                         'CALENDAR_EVENT_THUMB_SOURCE'  => $array['pic'],

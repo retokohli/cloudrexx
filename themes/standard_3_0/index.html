@@ -12,9 +12,7 @@
         <meta name="keywords" content="{METAKEYS}" />
         <meta name="robots" content="{METAROBOTS}" />
         <meta name="description" content="{METADESC}" />
-        <meta http-equiv="pragma" content="no-cache" />
-        <meta http-equiv="cache-control" content="no-cache" />
-        <meta http-equiv="Content-Type" content="text/html; charset={CHARSET}" />
+        <meta charset="{CHARSET}" />
         
         <link type="images/x-icon" rel="icon" href="favicon.ico">
         <link type="text/css" rel="stylesheet" href="themes/standard_3_0/layout.css" />
@@ -24,8 +22,6 @@
         {JAVASCRIPT}
         {STYLE_FILE}
         {LOGIN_INCLUDE}
-        {LOGIN_CONTENT}
-        {COUNTER}
         
         <script type="text/javascript">
             $J.ajax({
@@ -84,7 +80,7 @@
             </section>
             
             <footer id="footer">
-                <footer id="footer-top">
+                <div id="footer-top">
                     <ul class="footer-left horizontal-list">
                         <li>Seitenansicht:&nbsp;&nbsp;<a href="{STANDARD_URL}">Normal</a></li>
                         <li><a href="{MOBILE_URL}">Mobile</a></li>
@@ -98,9 +94,9 @@
                         <li><a target="_blank" href="http://twitter.com/contrexx"><img src="themes/standard_3_0/images/twitter-icon.png" alt="Twitter" /></a></li>
                         <li class="last"><a target="_blank" href="/feed/news_de.xml"><img src="themes/standard_3_0/images/rss-feed-icon.png" alt="RSS Feed" /></a></li>
                     </ul>
-                </footer>
+                </div>
                 
-                <footer id="footer-bottom">
+                <div id="footer-bottom">
                     <div class="footer-left">&copy; 2012 <a href="http://www.contrexx.com" target="_blank">Contrexx &reg;</a> Standard Theme</div>
                     <div class="footer-right">
                         <ul class="horizontal-list">
@@ -110,12 +106,15 @@
                             <li class="last">{LOGIN_URL}</li>
                         </ul>
                     </div>
-                </footer>
+                </div>
             </footer>
             
             <img src="https://chart.googleapis.com/chart?cht=qr&amp;chs=90x90&amp;chl=http://{DOMAIN_URL}{PAGE_URL}" alt="QR-Code" id="qr-code" />
         </div>
         
         <div id="back-top">&nbsp;</div>
+        
+        {LOGIN_CONTENT}
+        {COUNTER}
     </body>
 </html>
