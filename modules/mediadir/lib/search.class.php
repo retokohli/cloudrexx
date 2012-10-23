@@ -29,13 +29,13 @@ class mediaDirectorySearch extends mediaDirectoryLibrary
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
 
-        if(isset($_GET['cmd'])) {
+        if (isset($_GET['cmd'])) {
             $strSearchFormCmd = '<input name="cmd" value="'.$_GET['cmd'].'" type="hidden" />';
         } else {
             $strSearchFormCmd = '';
         }
 
-        if(isset($_GET['term'])) {
+        if (isset($_GET['term'])) {
             $strSearchFormTerm = $_GET['term'];
         } else {
             $strSearchFormTerm = '';
@@ -95,10 +95,11 @@ EOF;
     {
         global $_ARRAYLANG, $objDatabase, $_LANGID;
 
+        $formId = null;
         $strPleaseChoose = $_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHOOSE'];
 
         //get ids
-        /*if(isset($_GET['cmd'])) {
+        /*if (isset($_GET['cmd'])) {
             $arrIds = explode("-", $_GET['cmd']);
             
 	        $arrFormCmd = array();
@@ -107,16 +108,16 @@ EOF;
 	            
 	            
             foreach ($objForms->arrForms as $intFormId => $arrForm) {
-                if(!empty($arrForm['formCmd'])) {
+                if (!empty($arrForm['formCmd'])) {
                     $arrFormCmd[$arrForm['formCmd']] = intval($intFormId);
                 }
             }
 	                
-            if(!empty($arrFormCmd[$_GET['cmd']])) {
+            if (!empty($arrFormCmd[$_GET['cmd']])) {
                 $intCmdFormId = intval($arrFormCmd[$_GET['cmd']]);
             }
             
-            if(empty($intCmdFormId)) {
+            if (empty($intCmdFormId)) {
 	            $bolShowLevelSelector = in_array(1, $this->arrSettings['levelSelectorExpSearch']);
 	            $bolShowCategorySelector = in_array(1, $this->arrSettings['categorySelectorExpSearch']);
             } else {
@@ -127,33 +128,27 @@ EOF;
         	$bolShowLevelSelector = in_array(1, $this->arrSettings['levelSelectorExpSearch']);
             $bolShowCategorySelector = in_array(1, $this->arrSettings['categorySelectorExpSearch']);
         } */
-        
-        if(isset($_GET['cmd'])) {
+
+        if (!empty($_GET['cmd'])) {
             $bolShowLevelSelector = false;
             $bolShowCategorySelector = false;
 
-            $arrIds = explode("-", $_GET['cmd']);  
+            $arrIds = explode('-', $_GET['cmd']);  
 
-            if($arrIds[0] != 'search' && $arrIds[0] != 'alphabetical'){
-                $arrFormCmd = array();
-
+            if ($arrIds[0] != 'search' && $arrIds[0] != 'alphabetical'){
                 $objForms = new mediaDirectoryForm();
-                foreach ($objForms->arrForms as $intFormId => $arrForm) {
-                    if(!empty($arrForm['formCmd']) && $arrForm['formCmd'] == $_GET['cmd']) {
-                        $arrFormCmd[] = intval($intFormId);
+                foreach ($objForms->arrForms as $id => $arrForm) {
+                    if (!empty($arrForm['formCmd']) && ($arrForm['formCmd'] == $_GET['cmd'])) {
+                        $formId = intval($id);
                     }
                 }
-                
-                if(!empty($arrFormCmd[$_GET['cmd']])) {
-                    $intCmdFormId = intval($arrFormCmd[$_GET['cmd']]);
+
+                if (($objForms->arrForms[$formId]['formUseLevel'] == 1) && ($this->arrSettings['levelSelectorExpSearch'][$formId] == 1)) {
+                    $bolShowLevelSelector = true;
                 }
-                                                                      
-                if($this->arrSettings['levelSelectorExpSearch'][$intCmdFormId] == 1 && $objForms->arrForms[$intCmdFormId]['formUseLevel'] == 1) {
-                    $bolShowLevelSelector  = true;
+                if (($objForms->arrForms[$formId]['formUseCategory'] == 1) && ($this->arrSettings['categorySelectorExpSearch'][$formId] == 1)) {
+                    $bolShowCategorySelector = true;
                 }
-                if($this->arrSettings['categorySelectorExpSearch'][$intCmdFormId] == 1 && $objForms->arrForms[$intCmdFormId]['formUseCategory'] == 1) {
-                    $bolShowCategorySelector  = true;
-                }  
             } else {
                 $bolShowLevelSelector = in_array(1, $this->arrSettings['levelSelectorExpSearch']);
                 $bolShowCategorySelector = in_array(1, $this->arrSettings['categorySelectorExpSearch']);
@@ -161,10 +156,10 @@ EOF;
         } else {
             $bolShowLevelSelector = in_array(1, $this->arrSettings['levelSelectorExpSearch']);
             $bolShowCategorySelector = in_array(1, $this->arrSettings['categorySelectorExpSearch']);
-        }                                             
-        
-        if($this->arrSettings['settingsShowLevels'] && $bolShowLevelSelector) {
-            if(intval($arrIds[0]) != 0) {
+        }
+
+        if ($this->arrSettings['settingsShowLevels'] && $bolShowLevelSelector) {
+            if (intval($arrIds[0]) != 0) {
                 $intLevelId = intval($arrIds[0]);
             } else {
                 $intLevelId = 0;
@@ -181,20 +176,20 @@ EOF;
 <p><label>$strLevelName</label><select class="$strInputfieldSearch" name="lid"><option value="">$strPleaseChoose</option>$strLevelDropdown</select></p>
 EOF;
 
-            if(intval($arrIds[1]) != 0) {
+            if (intval($arrIds[1]) != 0) {
                 $intCategoryCmd = $arrIds[1];
             } else {
                 $intCategoryCmd = 0;
             }
         } else {
-            if(intval($arrIds[0]) != 0) {
+            if (intval($arrIds[0]) != 0) {
                 $intCategoryCmd = $arrIds[0];
             } else {
                 $intCategoryCmd = 0;
             }
         }
 
-        if($intCategoryCmd != 0) {
+        if ($intCategoryCmd != 0) {
             $intCategoryId = intval($intCategoryCmd);
         } else {
             $intCategoryId = 0;
@@ -202,17 +197,17 @@ EOF;
 
         $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : $intCategoryId;
 
-        if($bolShowCategorySelector) {
+        if ($bolShowCategorySelector) {
         	$objCategories = new mediaDirectoryCategory(null, null, 1);
             $strCategoryDropdown = $objCategories->listCategories($this->_objTpl, 3, $intCategoryId);
             $strCategoryName = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY'];
-    
+
             $strExpandedInputfields .= <<<EOF
 <p><label>$strCategoryName</label><select class="mediadirInputfieldSearch" name="cid"><option value="">$strPleaseChoose</option>$strCategoryDropdown</select></p>
 EOF;
         }
 
-        $objInputfields = new mediaDirectoryInputfield($intCmdFormId, true);
+        $objInputfields = new mediaDirectoryInputfield($formId, true);
         $strExpandedInputfields .= $objInputfields->listInputfields(null, 4, null);
 
         return $strExpandedInputfields;
@@ -235,17 +230,17 @@ EOF;
         //build search term query
         $arrData['term'] = trim($arrData['term']);
         
-        if(isset($_GET['cmd']) && $_GET['cmd'] != 'search') {
+        if (isset($_GET['cmd']) && $_GET['cmd'] != 'search') {
             $arrFormCmd = array();
                 
             $objForms = new mediaDirectoryForm();
             foreach ($objForms->arrForms as $intFormId => $arrForm) {
-                if(!empty($arrForm['formCmd'])) {
+                if (!empty($arrForm['formCmd'])) {
                     $arrFormCmd[$arrForm['formCmd']] = intval($intFormId);
                 }
             }
                 
-            if(!empty($arrFormCmd[$_GET['cmd']])) {
+            if (!empty($arrFormCmd[$_GET['cmd']])) {
                 $intCmdFormId = intval($arrFormCmd[$_GET['cmd']]);
             }
         }
@@ -279,7 +274,7 @@ EOF;
             $arrOrder[]     = "rel_inputfield.`value` ASC";
         }
 
-        if($arrData['type'] == 'exp') {
+        if ($arrData['type'] == 'exp') {
             //build level search query
             if (intval($arrData['lid']) != 0 && $arrData['type'] == 'exp') {
                 array_push($this->arrSearchLevels, intval($arrData['lid']));
@@ -315,11 +310,11 @@ EOF;
         $arrFoundCountries = $this->searchCountries($strTerm, $intCmdFormId);
         $arrFoundIds = array_merge($arrFoundIds, $arrFoundCountries);
         
-        if($intCmdFormId != 0) {
+        if ($intCmdFormId != 0) {
             $arrWhere[] = "rel_inputfield.`form_id` = '".$intCmdFormId."'";
         }
 
-        if(!empty($arrSelect) && !empty($arrFrom) && !empty($arrWhere) && !empty($arrOrder)) {
+        if (!empty($arrSelect) && !empty($arrFrom) && !empty($arrWhere) && !empty($arrOrder)) {
             $query = "
                 SELECT
                     ".join(',', $arrSelect)."
@@ -334,18 +329,18 @@ EOF;
                     ".join(',', $arrOrder)."
             ";
 
-            if($arrData['type'] == 'exp') {
+            if ($arrData['type'] == 'exp') {
                 //build expanded search query
                 $arrExternals = array('__cap', 'section', 'type', 'cmd', 'term', 'lid', 'cid', 'search', 'pos','scid','langId');
                 foreach ($arrData as $intInputfieldId => $strExpTerm) {
-                    if(!in_array($intInputfieldId, $arrExternals) && $strExpTerm != null) {
+                    if (!in_array($intInputfieldId, $arrExternals) && $strExpTerm != null) {
                         $objInputfields = new mediaDirectoryInputfield(null, true);
                         $intInputfieldType = $objInputfields->arrInputfields[$intInputfieldId]['type'];
                         $strExpTerm = contrexx_addslashes(trim($strExpTerm));
                         $strTableName = "rel_inputfield_".intval($intInputfieldId);
                         $arrExpJoin[]  = "LEFT JOIN ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS $strTableName ON rel_inputfield.`entry_id` = $strTableName.`entry_id`";
 
-                        if($intInputfieldType == '11') {
+                        if ($intInputfieldType == '11') {
                             switch ($this->arrSettings['settingsClassificationSearch']) {
                                 case 1:
                                     $strSearchOperator = '>=';
@@ -359,7 +354,7 @@ EOF;
                             }
 
                             $arrExpWhere[] = "($strTableName.`field_id` = ".intval($intInputfieldId)." AND $strTableName.`value` $strSearchOperator '$strExpTerm')";
-                        } else if($intInputfieldType == '3') {
+                        } else if ($intInputfieldType == '3') {
                             $arrExpWhere[] = "($strTableName.`field_id` = $intInputfieldId AND $strTableName.`value` = '$strExpTerm')";
                         } else {
                             $arrExpWhere[] = "($strTableName.`field_id` = ".intval($intInputfieldId)." AND $strTableName.`value` LIKE '%$strExpTerm%')";
@@ -367,7 +362,7 @@ EOF;
                     }
                 }
 
-                if(!empty($arrExpJoin) && !empty($arrExpWhere)) {
+                if (!empty($arrExpJoin) && !empty($arrExpWhere)) {
                     if (!empty($arrData['term'])) {  
                         $query = "
                             SELECT
@@ -401,7 +396,7 @@ EOF;
 
             if ($objRsSearchEntries !== false) {
                 while (!$objRsSearchEntries->EOF) {
-                    if(!in_array(intval($objRsSearchEntries->fields['entry_id']), $this->arrFoundIds)) {
+                    if (!in_array(intval($objRsSearchEntries->fields['entry_id']), $this->arrFoundIds)) {
                         $this->arrFoundIds[] = intval($objRsSearchEntries->fields['entry_id']);
                     }
                     $objRsSearchEntries->MoveNext();
@@ -457,7 +452,7 @@ EOF;
         
         $arrFoundIds = array();
         
-        if($intCmdFormId != 0) {
+        if ($intCmdFormId != 0) {
             $strWhereForm = "AND ".DBPREFIX."module_".$this->moduleTablePrefix."_entries.form_id = '".$intCmdFormId."'";
         }
         
@@ -503,7 +498,7 @@ EOF;
         
         $arrFoundIds = array();
         
-        if($intCmdFormId != 0) {
+        if ($intCmdFormId != 0) {
             $strWhereForm = "AND ".DBPREFIX."module_".$this->moduleTablePrefix."_entries.form_id = '".$intCmdFormId."'";
         }
         
