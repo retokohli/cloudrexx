@@ -1364,16 +1364,16 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         }
 
         $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
-        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $cmdName.'', FRONTEND_LANG_ID);
+        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $cmdName, FRONTEND_LANG_ID);
 
         if ($objEntryCategoriesLevels !== false) {
             $list = '<ul>';
             while (!$objEntryCategoriesLevels->EOF) {
                 $paramValue = intval($objEntryCategoriesLevels->fields['elm_id']);
-                $url = $page ? \Cx\Core\Routing\URL::fromPage($page, array($paramName => $paramValue))->__toString() : 'asdf';
+                $url = $page ? \Cx\Core\Routing\URL::fromPage($page, array($paramName => $paramValue)) : '';
                 $name = htmlspecialchars($objEntryCategoriesLevels->fields['elm_name'], ENT_QUOTES, CONTREXX_CHARSET);
                 $list .= '<li>';
-                $list .= $page ? '<a href="'.$url.'">'.$name.'</a>' : $name;
+                $list .= !empty($url) ? '<a href="'.$url.'">'.$name.'</a>' : $name;
                 $list .= '</li>';
                 $objEntryCategoriesLevels->MoveNext();
             }
