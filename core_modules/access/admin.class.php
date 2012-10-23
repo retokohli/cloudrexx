@@ -500,8 +500,6 @@ class AccessManager extends AccessLib
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
-        $objContentTree = new ContentTree();
-
         $arrAreas = array();
         $associatedUsers = '';
         $arrContentAccessIds = array();
