@@ -226,29 +226,63 @@ EOF;
         $arrFoundIds = array();
         $arrFoundLevelsCategories = array();
         $arrFoundCountries = array();
+        $intCmdFormId = null;
 
         //build search term query
         $arrData['term'] = trim($arrData['term']);
-        
+
         if (isset($_GET['cmd']) && $_GET['cmd'] != 'search') {
-            $arrFormCmd = array();
-                
             $objForms = new mediaDirectoryForm();
             foreach ($objForms->arrForms as $intFormId => $arrForm) {
-                if (!empty($arrForm['formCmd'])) {
-                    $arrFormCmd[$arrForm['formCmd']] = intval($intFormId);
+                if (!empty($arrForm['formCmd']) && ($arrForm['formCmd'] == $_GET['cmd'])) {
+                    $intCmdFormId = intval($intFormId);
                 }
             }
-                
-            if (!empty($arrFormCmd[$_GET['cmd']])) {
-                $intCmdFormId = intval($arrFormCmd[$_GET['cmd']]);
+
+            //extract cid and lid from cmd
+            if (empty($intCmdFormId)) {
+                $arrLevelCategoryId = explode('-', $_GET['cmd']);
+                if (count($arrLevelCategoryId) == 1) {
+                    if (empty($this->arrSettings['settingsShowLevels']) && empty($arrData['cid'])) {
+                        $arrData['cid'] = $arrLevelCategoryId[0];
+                    } elseif (!empty($this->arrSettings['settingsShowLevels']) && empty($arrData['lid'])) {
+                        $arrData['lid'] = $arrLevelCategoryId[0];
+                    }
+                } elseif (count($arrLevelCategoryId) == 2) {
+                    if (empty($this->arrSettings['settingsShowLevels'])) {
+                        $arrData['cid'] = empty($arrData['cid']) ? $arrLevelCategoryId[0] : $arrData['cid'];
+                    } elseif (!empty($this->arrSettings['settingsShowLevels'])) {
+                        $arrData['lid'] = empty($arrData['cid']) ? $arrLevelCategoryId[0] : $arrData['lid'];
+                        $arrData['cid'] = empty($arrData['cid']) ? $arrLevelCategoryId[1] : $arrData['cid'];
+                    }
+                }
             }
         }
-        
+
+        //build level search query
+        if (!empty($arrData['lid'])) {
+            array_push($this->arrSearchLevels, intval($arrData['lid']));
+            $this->getSearchLevelIds(intval($arrData['lid']));
+
+            $levelFilterWhere   = "(rel_level.level_id IN (".join(',', $this->arrSearchLevels).") AND rel_level.entry_id=rel_inputfield.entry_id)";
+            $arrWhere[]         = $levelFilterWhere;
+            $arrFrom[]          = DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS rel_level";
+        }
+
+        //build category search query
+        if (!empty($arrData['cid'])) {
+            array_push($this->arrSearchCategories, intval($arrData['cid']));
+            $this->getSearchCategoryIds(intval($arrData['cid']));
+
+            $categoryFilterWhere    = "(rel_category.category_id IN (".join(',', $this->arrSearchCategories).") AND rel_category.entry_id=rel_inputfield.entry_id)";
+            $arrWhere[]             = $categoryFilterWhere;
+            $arrFrom[]              = DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS rel_category";
+        }
+
         //$arrSelect[]    = 'rel_inputfield.`value` AS `value`';
         $arrFrom[]      = DBPREFIX."module_".$this->moduleName."_entries AS entry";
         $arrWhere[]     = '(entry.`id` = rel_inputfield.`entry_id` AND entry.`confirmed` = 1 AND entry.`active` = 1)';
-        
+
         if (!empty($arrData['term'])) {
             $strTerm        = contrexx_addslashes(trim($arrData['term']));
 
@@ -274,32 +308,6 @@ EOF;
             $arrOrder[]     = "rel_inputfield.`value` ASC";
         }
 
-        if ($arrData['type'] == 'exp') {
-            //build level search query
-            if (intval($arrData['lid']) != 0 && $arrData['type'] == 'exp') {
-                array_push($this->arrSearchLevels, intval($arrData['lid']));
-                $this->getSearchLevelIds(intval($arrData['lid']));
-
-                if (!empty($this->arrSearchLevels)) {
-                    foreach ($this->arrSearchLevels as $intLevelId) {
-                        $strWhereLevels .= "(rel_level.level_id='".$intLevelId."' AND rel_level.entry_id=rel_inputfield.entry_id) OR ";
-                    }
-                }
-
-                $arrWhere[]     = "(rel_level.level_id IN (".join(',', $this->arrSearchLevels).") AND rel_level.entry_id=rel_inputfield.entry_id)";
-                $arrFrom[]      = DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS rel_level";
-            }
-
-            //build category search query
-            if (intval($arrData['cid']) != 0 && $arrData['type'] == 'exp') {
-            	array_push($this->arrSearchCategories, intval($arrData['cid']));
-                $this->getSearchCategoryIds(intval($arrData['cid']));
-
-                $arrWhere[]     = "(rel_category.category_id IN (".join(',', $this->arrSearchCategories).") AND rel_category.entry_id=rel_inputfield.entry_id)";
-                $arrFrom[]      = DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS rel_category";
-            } 
-        } 
-        
         //search levels and categorie names
         if (intval($arrData['cid']) == 0 && $arrData['type'] == 'exp') {
             $arrFoundLevelsCategories = $this->searchLevelsCategories(1, $strTerm, $intCmdFormId);
@@ -363,12 +371,21 @@ EOF;
                 }
 
                 if (!empty($arrExpJoin) && !empty($arrExpWhere)) {
+                    if (!empty($levelFilterWhere)) {
+                        $arrExpWhere[] = $levelFilterWhere;
+                    }
+                    if (!empty($categoryFilterWhere)) {
+                        $arrExpWhere[] = $categoryFilterWhere;
+                    }
+
                     if (!empty($arrData['term'])) {  
                         $query = "
                             SELECT
                                 rel_inputfield_final.`entry_id` AS `entry_id`
                             FROM
-                                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield_final
+                                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS rel_level,
+                                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS rel_category,
+                                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield_final 
                             LEFT JOIN
                                  (".$query.") AS rel_inputfield
                              ON rel_inputfield_final.`entry_id` = rel_inputfield.`entry_id`
@@ -383,7 +400,9 @@ EOF;
                             SELECT
                                 rel_inputfield.`entry_id` AS `entry_id`
                             FROM
-                                ".DBPREFIX."module_mediadir_rel_entry_inputfields AS rel_inputfield    
+                                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS rel_level,
+                                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS rel_category,
+                                ".DBPREFIX."module_mediadir_rel_entry_inputfields AS rel_inputfield
                                 ".join(' ', $arrExpJoin)."
                             WHERE
                                 ".join(' AND ', $arrExpWhere)."
