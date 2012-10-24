@@ -237,19 +237,18 @@ document.body.onmousemove = function(event){
                             <input id="radiolocal" class="hidden" onclick="importSelect(this.value);" type="radio" name="src" value="local" checked="checked" /> <span class="radiodescription"> {TXT_THEME_LOCAL_FILE} </span>
                             <input id="radioremote" class="hidden" onclick="importSelect(this.value);" type="radio" name="src" value="web" /><span class="radiodescription">{TXT_THEME_SPECIFY_URL}</span> <br />
                         </div>
-        
-                        <div id="local" style="display: block;">
+                        <div id="local" style="display: block; float: left;">
                             <input type="file" id="localarchive" name="importlocal" accept="application/zip" value="{TXT_SELECT_FILE}" />
                         </div>
-                        <div id="web" style="display: none;">
+                        <div id="web" style="display: none; float: left;">
                             <input type="text" id="remotearchive" name="importremote" size="30" value="http://" />
                         </div>
+                        <span class="tooltip-trigger icon-info" style="margin: 11px 0 0 5px;"></span><span class="tooltip-message">{TXT_THEME_IMPORT_INFO_BODY}</span>
                     </div>
                 </td>
             </tr>
         </table>
         <input type="submit" name="import" onclick="return importArchive();" value="{TXT_THEME_IMPORT}" style="float: left;" />
-        <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_THEME_IMPORT_INFO_BODY}</span>
     </div>
 </form>
 <!-- end skins_manage.html -->
