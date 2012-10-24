@@ -9,7 +9,10 @@
 			<th>&nbsp;{TXT_DAILY_STATISTICS}</th>
 		</tr>
 		<tr class="row1">
-			<td nowrap="nowrap" width="100%"><a href="javascript:{}" onclick="selectTab('statsRequests2')" title="{TXT_VIEW_DETAILS}">{STATS_REQUESTS_GRAPH}</a></td>
+			<td nowrap="nowrap" width="100%">
+			    <!-- Inline style definitions (width & height) are necessary for the jqplot plugin -->
+                <div id="chart" style="width: 800px; height: 300px;"></div>
+			</td>
 		</tr>
 	</table>
 </div>

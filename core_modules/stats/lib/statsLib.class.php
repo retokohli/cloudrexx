@@ -353,27 +353,29 @@ class statsLibrary
         $this->_removeOutdatedEntries();
 
         // get statistics
-        $query = "SELECT FROM_UNIXTIME(`timestamp`, '%H' ) AS `hour` , `count`
+        $query = "SELECT `timestamp`, `count`
             FROM `".DBPREFIX."stats_visitors_summary`
             WHERE `type` = 'hour' AND `count` > 0 AND `timestamp` >= '".(time()-86400)."'";
         $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
-            $this->arrRequests[$objResult->fields['hour']]['visitors'] = $objResult->fields['count'];
+            $hour = date('H', $objResult->fields['timestamp']);
+            $this->arrRequests[$hour]['visitors'] = $objResult->fields['count'];
             $this->totalVisitors += $objResult->fields['count'];
             $objResult->MoveNext();
         }
 
-        $query = "SELECT FROM_UNIXTIME(`timestamp`, '%H' ) AS `hour` , `count`
+        $query = "SELECT `timestamp`, `count`
             FROM `".DBPREFIX."stats_requests_summary`
             WHERE `type` = 'hour' AND `count` > 0 AND `timestamp` >= '".(time()-86400)."'";
         $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
-            $this->arrRequests[$objResult->fields['hour']]['requests'] = $objResult->fields['count'];
+            $hour = date('H', $objResult->fields['timestamp']);
+            $this->arrRequests[$hour]['requests'] = $objResult->fields['count'];
             $this->totalRequests += $objResult->fields['count'];
             $objResult->MoveNext();
         }
 
-        $query = "SELECT client_ip, client_host, client_useragent, proxy_ip, proxy_host, proxy_useragent, FROM_UNIXTIME(`timestamp`,'%H:%i:%s') AS last_request
+        $query = "SELECT client_ip, client_host, client_useragent, proxy_ip, proxy_host, proxy_useragent, `timestamp`
                     FROM ".DBPREFIX."stats_visitors WHERE `timestamp` > '".mktime(0,0,0,date('m'),date('d'),date('Y'))."'
                     ORDER BY `timestamp` DESC
                     ".$this->pagingLimit."";
@@ -386,7 +388,7 @@ class statsLibrary
                                     'proxy_ip'          => $objResult->fields['proxy_ip'],
                                     'proxy_host'        => $objResult->fields['proxy_host'],
                                     'proxy_useragent'   => $objResult->fields['proxy_useragent'],
-                                    'last_request'      => $objResult->fields['last_request']
+                                    'last_request'      => date('H:i:s', $objResult->fields['timestamp'])
                                     );
                 array_push($this->arrVisitorsDetails,$arrVisitor);
                 $objResult->MoveNext();
@@ -401,7 +403,7 @@ class statsLibrary
         $this->_removeOutdatedEntries();
 
         // get statistics
-        $query = "SELECT FROM_UNIXTIME(`timestamp`, '%e' ) AS `day` , `count`
+        $query = "SELECT `timestamp`, `count`
                     FROM `".DBPREFIX."stats_visitors_summary`
                            WHERE `type` = 'day' AND `count` > 0 AND `timestamp` >= '".
                             mktime(
@@ -414,12 +416,13 @@ class statsLibrary
                             )."'";
         $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
-            $this->arrRequests[$objResult->fields['day']]['visitors'] = $objResult->fields['count'];
+            $day = date('j', $objResult->fields['timestamp']);
+            $this->arrRequests[$day]['visitors'] = $objResult->fields['count'];
             $this->totalVisitors += $objResult->fields['count'];
             $objResult->MoveNext();
         }
 
-        $query = "SELECT FROM_UNIXTIME(`timestamp`, '%e' ) AS `day` , `count`
+        $query = "SELECT `timestamp`, `count`
                     FROM `".DBPREFIX."stats_requests_summary`
                            WHERE `type` = 'day' AND `count` > 0 AND `timestamp` >= '".
                             mktime(
@@ -432,7 +435,8 @@ class statsLibrary
                             )."'";
         $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
-            $this->arrRequests[$objResult->fields['day']]['requests'] = $objResult->fields['count'];
+            $day = date('j', $objResult->fields['timestamp']);
+            $this->arrRequests[$day]['requests'] = $objResult->fields['count'];
             $this->totalRequests += $objResult->fields['count'];
             $objResult->MoveNext();
         }
@@ -447,22 +451,26 @@ class statsLibrary
         $this->_removeOutdatedEntries();
 
         // get statistics
-        $query = "SELECT FROM_UNIXTIME(`timestamp`, '%c' ) AS `month` , FROM_UNIXTIME(`timestamp`, '%y' ) AS `year` , `count`
+        $query = "SELECT `timestamp`, `count`
             FROM `".DBPREFIX."stats_visitors_summary`
             WHERE `type` = 'month' AND `count` > 0 AND `timestamp` >= '".mktime(0, 0, 0, date('m'), null, date('Y')-2)."'";
         $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
-            $this->arrRequests[$objResult->fields['year']][$objResult->fields['month']]['visitors'] = $objResult->fields['count'];
+            $year  = date('y', $objResult->fields['timestamp']);
+            $month = date('n', $objResult->fields['timestamp']);
+            $this->arrRequests[$year][$month]['visitors'] = $objResult->fields['count'];
             $this->totalVisitors += $objResult->fields['count'];
             $objResult->MoveNext();
         }
 
-        $query = "SELECT FROM_UNIXTIME(`timestamp`, '%c' ) AS `month` , FROM_UNIXTIME(`timestamp`, '%y' ) AS `year` ,`count`
+        $query = "SELECT `timestamp`, `count`
             FROM `".DBPREFIX."stats_requests_summary`
             WHERE `type` = 'month' AND `count` > 0 AND `timestamp` >= '".mktime(0, 0, 0, date('m'), null, date('Y')-2)."'";
         $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
-            $this->arrRequests[$objResult->fields['year']][$objResult->fields['month']]['requests'] = $objResult->fields['count'];
+            $year  = date('y', $objResult->fields['timestamp']);
+            $month = date('n', $objResult->fields['timestamp']);
+            $this->arrRequests[$year][$month]['requests'] = $objResult->fields['count'];
             $this->totalRequests += $objResult->fields['count'];
             $objResult->MoveNext();
         }
@@ -475,24 +483,26 @@ class statsLibrary
         $this->_removeOutdatedEntries();
 
         // get statistics
-        $query = "SELECT FROM_UNIXTIME(`timestamp`, '%Y' ) AS `year` , `count`
+        $query = "SELECT `timestamp`, `count`
             FROM `".DBPREFIX."stats_visitors_summary`
             WHERE `type` = 'year'
-            ORDER BY `year`";
+            ORDER BY `timestamp`";
         $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
-            $this->arrRequests[$objResult->fields['year']]['visitors'] = $objResult->fields['count'];
+            $year = date('Y', $objResult->fields['timestamp']);
+            $this->arrRequests[$year]['visitors'] = $objResult->fields['count'];
             $this->totalVisitors += $objResult->fields['count'];
             $objResult->MoveNext();
         }
 
-        $query = "SELECT FROM_UNIXTIME(`timestamp`, '%Y' ) AS `year` , `count`
+        $query = "SELECT `timestamp`, `count`
             FROM `".DBPREFIX."stats_requests_summary`
             WHERE `type` = 'year'
-            ORDER BY `year`";
+            ORDER BY `timestamp`";
         $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
-            $this->arrRequests[$objResult->fields['year']]['requests'] = $objResult->fields['count'];
+            $year = date('Y', $objResult->fields['timestamp']);
+            $this->arrRequests[$year]['requests'] = $objResult->fields['count'];
             $this->totalRequests +=$objResult->fields['count'];
             $objResult->MoveNext();
         }
@@ -502,9 +512,9 @@ class statsLibrary
     function _initMostViewedPages() {
         global $objDatabase;
 
-        $query = "SELECT pageTitle, page, visits, FROM_UNIXTIME(timestamp,'%d-%m-%Y %H:%i:%s') AS last_request
-                    FROM ".DBPREFIX."stats_requests
-                ORDER BY visits DESC, last_request DESC
+        $query = "SELECT `pageTitle`, `page`, `visits`, `timestamp`
+                    FROM `".DBPREFIX."stats_requests`
+                ORDER BY `visits` DESC, `timestamp` DESC
                          ".$this->pagingLimit;
 
         if (($objResult = $objDatabase->Execute($query))) {
@@ -513,7 +523,7 @@ class statsLibrary
                     'title' => $objResult->fields['pageTitle'],
                     'page' => $objResult->fields['page'],
                     'requests' => $objResult->fields['visits'],
-                    'last_request' => $objResult->fields['last_request']
+                    'last_request' => date('d-m-Y H:i:s', $objResult->fields['timestamp'])
                 );
                 array_push($this->arrMostViewedPages, $arrPage);
                 $this->mostViewedPagesSum += $objResult->fields['visits'];
@@ -533,15 +543,15 @@ class statsLibrary
     function _initSpiders() {
         global $objDatabase;
 
-        $query = "SELECT FROM_UNIXTIME(`stats`.`last_indexed`, '%d-%m-%Y %H:%i:%s') as `last_indexed_date`,
-                         `stats`.`page`,
-                         `stats`.`pageId`,
-                         `stats`.`count`,
-                         `stats`.`spider_useragent`,
-                         `stats`.`spider_ip`,
-                         `stats`.`spider_host`
-                    FROM `".DBPREFIX."stats_spiders` AS `stats`
-                   ORDER BY last_indexed DESC
+        $query = "SELECT `last_indexed`,
+                         `page`,
+                         `pageId`,
+                         `count`,
+                         `spider_useragent`,
+                         `spider_ip`,
+                         `spider_host`
+                    FROM `".DBPREFIX."stats_spiders`
+                   ORDER BY `last_indexed` DESC
                    ".$this->pagingLimit;
         if (($objResult = $objDatabase->Execute($query))) {
             while (!$objResult->EOF) {
@@ -557,7 +567,7 @@ class statsLibrary
                 }
                 $objResult->fields['title'] = $page->getTitle();
                 $arrIndexedPage = array(
-                    'last_indexed'      => $objResult->fields['last_indexed_date'],
+                    'last_indexed'      => date('d-m-Y H:i:s', $objResult->fields['last_indexed']),
                     'page'              => $objResult->fields['page'],
                     'title'             => strlen($objResult->fields['title'])>0 ? $objResult->fields['title'] : "No title",
                     'count'             => $objResult->fields['count'],
@@ -570,7 +580,7 @@ class statsLibrary
             }
         }
 
-        $query = "SELECT name, FROM_UNIXTIME(`timestamp`, '%d-%m-%Y %H:%i:%s') as last_indexed, `count`
+        $query = "SELECT name, `timestamp`, `count`
                     FROM ".DBPREFIX."stats_spiders_summary
                 ORDER BY `count` DESC, `timestamp` DESC
                    ".$this->pagingLimit;
@@ -579,7 +589,7 @@ class statsLibrary
                 $arrSpider = array(
                     'name'          => $objResult->fields['name'],
                     'count'         => $objResult->fields['count'],
-                    'last_indexed'  => $objResult->fields['last_indexed']
+                    'last_indexed'  => date('d-m-Y H:i:s', $objResult->fields['timestamp'])
                 );
                 array_push($this->arrSpiders, $arrSpider);
                 $objResult->MoveNext();
@@ -1267,6 +1277,425 @@ class statsLibrary
             }
         }
         return $statusMessage;
+    }
+
+
+    /**
+     * Get javascript code for the jqplot chart.
+     * 
+     * @param   string  $id
+     * @param   array   $data
+     * @return  string  $code
+     */
+    protected function getChartJavascriptBy($id, $data, $renderer = '')
+    {
+        global $_ARRAYLANG;
+        
+        JS::activate('jquery-jqplot');
+        
+        $ticks    = json_encode($data['ticks']);
+        $dates    = json_encode($data['dates']);
+        $visitors = json_encode($data['visitors']);
+        $requests = json_encode($data['requests']);
+        
+        if ($renderer == 'bar') {
+            $seriesDefault = '
+                stackSeries: true,
+                seriesDefaults: {
+                    renderer: $J.jqplot.BarRenderer,
+                    rendererOptions: {
+                        barWidth: 100
+                    }
+                },
+            ';
+        } else {
+            $seriesDefault = '
+                seriesDefaults: {
+                    lineWidth: 2,
+                    markerOptions: {
+                        size: 6
+                    }
+                },
+            ';
+        }
+        
+        
+        $code = '
+            <!--[if lt IE 9]>
+            <script type="text/javascript" src="../lib/javascript/jquery/plugins/jqplot/excanvas.min.js"></script>
+            <![endif]-->
+            <script type="text/javascript">
+            $J(document).ready(function() {
+                var ticks        = '.$ticks.';
+                var dates        = '.$dates.';
+                var visitors     = '.$visitors.';
+                var requests     = '.$requests.';
+                var labels       = [\''.$_ARRAYLANG['TXT_VISITOR'].'\', \''.$_ARRAYLANG['TXT_PAGE_VIEWS'].'\'];
+                var data         = new Array();
+                data[\'dates\']  = dates;
+                data[\'labels\'] = labels;
+                
+                var plot = $J.jqplot(\''.$id.'\', [visitors, requests], {
+                    '.$seriesDefault.'
+                    seriesColors: [\'#4EAA09\', \'#0C90D0\'],
+                    grid: {
+                        gridLineColor: \'#EFEFEF\',
+                        background: \'#FFFFFF\',
+                        borderColor: \'#EFEFEF\',
+                        shadow: false
+                    },
+                    legend: {
+                        show: true,
+                        labels: labels,
+                        placement: \'insideGrid\'
+                    },
+                    axes: {
+                        xaxis: {
+                            renderer: $J.jqplot.CategoryAxisRenderer,
+                            tickRenderer: $J.jqplot.CanvasAxisTickRenderer,
+                            ticks: ticks,
+                            tickOptions: {
+                              angle: -90,
+                              fontSize: \'10px\',
+                              showGridline: false
+                            }
+                        }
+                    },
+                    highlighter: {
+                        data: data,
+                        show: true,
+                        showMarker: false,
+                        tooltipAxes: \'data\',
+                        tooltipLocation:  \'n\'
+                    }
+                });
+            });
+            </script>
+        ';
+        
+        return $code;
+    }
+
+
+    /**
+     * Get hourly statistics data.
+     * 
+     * @param   string  $param  (hour, day, month or year)
+     * @return  array(
+     *              ticks,
+     *              dates,
+     *              visitors,
+     *              requests
+     *          )
+     */
+    protected function getStatsDataBy($param)
+    {
+        global $_CORELANG, $objDatabase;
+        
+        $arrRange = $this->getStatsRangeBy($param);
+        
+        $arrMonths   = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
+        $arrDays     = explode(',', $_CORELANG['TXT_DAY_ARRAY']);
+        $arrDays[7]  = $arrDays[0];
+        unset($arrDays[0]);
+        
+        $statsData   = $this->getStatsDataSummaryBy($param);
+        $arrVisitors = $statsData['visitors'];
+        $arrRequests = $statsData['requests'];
+        
+        $ticks       = array();
+        $visitors    = array();
+        $requests    = array();
+        $i = 1;
+        
+        foreach ($arrRange as $unit => $date) {
+            $ticks[]   = $date['tick'];
+            $timestamp = $date['timestamp'];
+            
+            switch ($param) {
+                case 'day':
+                    $dates[$i]  = $arrDays[date('N', $timestamp)].', '.date('j', $timestamp).'. '.$arrMonths[date('n', $timestamp) - 1].' '.date('Y', $timestamp);
+                    break;
+                case 'month':
+                    $dates[$i]  = $arrMonths[date('n', $timestamp) - 1].' '.date('Y', $timestamp);
+                    break;
+                case 'year':
+                    $dates[$i]  = date('Y', $timestamp);
+                    break;
+                case 'hour':
+                default:
+                    $dates[$i]  = date('H', $timestamp).':00';
+                    break;
+            }
+            
+            $visitors[] = isset($arrVisitors[$unit]) ? intval($arrVisitors[$unit]) : 0;
+            $requests[] = isset($arrRequests[$unit]) ? intval($arrRequests[$unit]) : 0;
+            
+            $i++;
+        }
+        
+        return array(
+            'ticks'    => $ticks,
+            'dates'    => $dates,
+            'visitors' => $visitors,
+            'requests' => $requests,
+        );
+    }
+
+
+    /**
+     * Get statistics range by parameter.
+     * 
+     * @param   string  $param  (hour, day, month or year)
+     * @return  array   $arrRange
+     */
+    private function getStatsRangeBy($param)
+    {
+        global $objDatabase;
+        
+        switch ($param) {
+            case 'day':
+                $rangeStart = date('j', strtotime('last month')) + 1;
+                $rangeStart = $rangeStart > 31 ? 1 : $rangeStart;
+                $rangeEnd   = date('j');
+                $arrRange   = array();
+                
+                if ($rangeStart >= $rangeEnd) {
+                    $timestamp = strtotime('last month');
+                    $first     = range($rangeStart, date('t', $timestamp));
+                    $month     = date('M', $timestamp);
+                    $year      = date('Y', $timestamp);
+                    foreach ($first as $day) {
+                        $arrRange[$day]['tick'] = $day.' '.$month;
+                        $arrRange[$day]['timestamp'] = strtotime($day.' '.$month.' '.$year);
+                    }
+                    
+                    $second = range(1, $rangeEnd);
+                    $month  = date('M');
+                    $year   = date('Y');
+                    foreach ($second as $day) {
+                        $arrRange[$day]['tick']      = $day.' '.$month;
+                        $arrRange[$day]['timestamp'] = strtotime($day.' '.$month.' '.$year);
+                    }
+                } else {
+                    $arrDays = range($rangeStart, $rangeEnd);
+                    $month = date('M');
+                    $year  = date('Y');
+                    foreach ($arrDays as $day) {
+                        $arrRange[$day]['tick']      = $day.' '.$month;
+                        $arrRange[$day]['timestamp'] = strtotime($day.' '.$month.' '.$year);
+                    }
+                }
+                break;
+            case 'month':
+                $rangeStart = date('n', strtotime('-23 months'));
+                $rangeEnd   = date('n');
+                $arrRange   = array();
+                
+                if ($rangeStart != 1) { // Range starts 2 years ago
+                    $first = range($rangeStart, 12);
+                    $year  = date('Y', strtotime('-2 years'));
+                    foreach ($first as $month) {
+                        $monthName = date('M', mktime(0, 0, 0, $month));
+                        $month     = date('m', mktime(0, 0, 0, $month));
+                        $arrRange[$month.'-'.$year]['tick']      = $monthName.' '.$year;
+                        $arrRange[$month.'-'.$year]['timestamp'] = strtotime($monthName.' '.$year);
+                    }
+                }
+                
+                $second = range(1, 12);
+                $year   = date('Y', strtotime('last year'));
+                foreach ($second as $month) {
+                    $monthName = date('M', mktime(0, 0, 0, $month));
+                    $month     = date('m', mktime(0, 0, 0, $month));
+                    $arrRange[$month.'-'.$year]['tick']      = $monthName.' '.$year;
+                    $arrRange[$month.'-'.$year]['timestamp'] = strtotime($monthName.' '.$year);
+                }
+                
+                $third = range(1, $rangeEnd);
+                $year  = date('Y');
+                foreach ($third as $month) {
+                    $monthName = date('M', mktime(0, 0, 0, $month));
+                    $month     = date('m', mktime(0, 0, 0, $month));
+                    $arrRange[$month.'-'.$year]['tick']      = $monthName.' '.$year;
+                    $arrRange[$month.'-'.$year]['timestamp'] = strtotime($monthName.' '.$year);
+                }
+                break;
+            case 'year':
+                $query = '
+                    SELECT `timestamp`
+                    FROM `'.DBPREFIX.'stats_visitors_summary`
+                    WHERE `type` = "year"
+                ';
+                $objResult = $objDatabase->Execute($query);
+                $arrRange = array();
+                
+                if ($objResult !== false) {
+                    while (!$objResult->EOF) {
+                        $year = date('Y', $objResult->fields['timestamp']);
+                        $arrRange[$year]['tick']      = $year;
+                        $arrRange[$year]['timestamp'] = $objResult->fields['timestamp'];
+                        $objResult->MoveNext();
+                    }
+                    ksort($arrRange);
+                }
+                
+                if (empty($arrRange)) {
+                    $year = date('Y');
+                    $arrRange[$year]['tick']      = $year;
+                    $arrRange[$year]['timestamp'] = strtotime('now');
+                }
+                break;
+            case 'hour':
+            default:
+                $rangeStart = date('G', strtotime('-23 hours'));
+                $rangeEnd   = date('G');
+                $arrRange   = array();
+                
+                if ($rangeStart != 0) {
+                    $first     = range($rangeStart, 23);
+                    $timestamp = strtotime('-1 day');
+                    $day       = date('j', $timestamp);
+                    $month     = date('M', $timestamp);
+                    $year      = date('Y', $timestamp);
+                    foreach ($first as $hour) {
+                        $hour = date('H', mktime($hour));
+                        $arrRange[$hour]['tick']      = $hour.':00';
+                        $arrRange[$hour]['timestamp'] = strtotime($day.' '.$month.' '.$year.' '.$hour.':00');
+                    }
+                    
+                    $second = range(0, $rangeEnd);
+                    $day    = date('j');
+                    $month  = date('M');
+                    $year   = date('Y');
+                    foreach ($second as $hour) {
+                        $hour = date('H', mktime($hour));
+                        $arrRange[$hour]['tick']      = $hour.':00';
+                        $arrRange[$hour]['timestamp'] = strtotime($day.' '.$month.' '.$year.' '.$hour.':00');
+                    }
+                } else {
+                    $arrHours = range($rangeStart, $rangeEnd);
+                    $day      = date('j');
+                    $month    = date('M');
+                    $year     = date('Y');
+                    foreach ($arrHours as $hour) {
+                        $hour = date('H', mktime($hour));
+                        $arrRange[$hour]['tick']      = $hour.':00';
+                        $arrRange[$hour]['timestamp'] = strtotime($day.' '.$month.' '.$year.' '.$hour.':00');
+                    }
+                }
+                break;
+        }
+        
+        return $arrRange;
+    }
+
+
+    /**
+     * Get visitors and requests data.
+     * 
+     * @param   string  $param  (hour, day, month or year)
+     * @return  array(
+     *              visitors,
+     *              requests
+     *          )
+     */
+    private function getStatsDataSummaryBy($param)
+    {
+        global $objDatabase;
+        
+        $select    = '';
+        $timestamp = '';
+        
+        switch ($param) {
+            case 'day':
+                $format = 'j';
+                $timestamp = '
+                    AND `timestamp` >= "'.
+                    mktime(
+                        0, 0, 0,
+                        $previousMonth = date('m') == 1 ? 12 : date('m') - 1,
+                        date('d') == date('t', mktime(0, 0, 0, $previousMonth, 0, $previousYear = (date('m') == 1 ? date('Y') - 1 : date('Y')))) ? date('d') + 1 : 1,
+                        $previousYear
+                    ).'"
+                ';
+                break;
+            case 'month':
+                $format = 'm';
+                $timestamp = '
+                    AND `timestamp` >= "'.
+                    strtotime('-23 months').'"
+                ';
+                break;
+            case 'year':
+                $format = 'Y';
+                break;
+            case 'hour':
+            default:
+                $format = 'H';
+                $timestamp = '
+                    AND `timestamp` >= "'.
+                    strtotime('-23 hours').'"
+                ';
+                break;
+        }
+        
+        $query = '
+            SELECT `timestamp`, `count`
+            FROM `'.DBPREFIX.'stats_visitors_summary`
+            WHERE `type` = "'.$param.'"
+            '.$timestamp.'
+        ';
+        $objResult = $objDatabase->Execute($query);
+        
+        $arrVisitory = array();
+        if ($objResult !== false) {
+            if ($param == 'month') {
+                while (!$objResult->EOF) {
+                    $month = date($format, $objResult->fields['timestamp']);
+                    $year  = date('Y', $objResult->fields['timestamp']);
+                    $arrVisitors[$month.'-'.$year] = $objResult->fields['count'];
+                    $objResult->MoveNext();
+                }
+            } else {
+                while (!$objResult->EOF) {
+                    $key = date($format, $objResult->fields['timestamp']);
+                    $arrVisitors[$key] = $objResult->fields['count'];
+                    $objResult->MoveNext();
+                }
+            }
+        }
+        
+        $query = '
+            SELECT `timestamp`, `count`
+            FROM `'.DBPREFIX.'stats_requests_summary`
+            WHERE `type` = "'.$param.'"
+            '.$timestamp.'
+        ';
+        $objResult = $objDatabase->Execute($query);
+        
+        $arrRequests = array();
+        if ($objResult !== false) {
+            if ($param == 'month') {
+                while (!$objResult->EOF) {
+                    $month = date($format, $objResult->fields['timestamp']);
+                    $year  = date('Y', $objResult->fields['timestamp']);
+                    $arrRequests[$month.'-'.$year] = $objResult->fields['count'];
+                    $objResult->MoveNext();
+                }
+            } else {
+                while (!$objResult->EOF) {
+                    $key = date($format, $objResult->fields['timestamp']);
+                    $arrRequests[$key] = $objResult->fields['count'];
+                    $objResult->MoveNext();
+                }
+            }
+        }
+        
+        return array(
+            'visitors' => $arrVisitors,
+            'requests' => $arrRequests,
+        );
     }
 }
 ?>

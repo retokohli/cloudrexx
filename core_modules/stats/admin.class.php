@@ -474,16 +474,17 @@ class stats extends statsLibrary
         $this->_objTpl->parse('requests_block');
     }
 
-     /**
-    * Show requests today
-    *
-    * Show the page requests and visitors of today
-    *
-    * @access    private
-    * @see    _initStatisticsToday()
-    * @global    array
-    * @global    integer
-    */
+
+    /**
+     * Show requests today
+     *
+     * Show the page requests and visitors of today
+     *
+     * @access    private
+     * @see    _initStatisticsToday()
+     * @global    array
+     * @global    integer
+     */
     function _showRequestsToday()
     {
         global $_ARRAYLANG;
@@ -545,16 +546,10 @@ class stats extends statsLibrary
         ));
         $this->_objTpl->parse('stats_requests_today');
 
-        // set statistic graph
-        if (count($this->arrRequests)>0) {
-            $this->_objTpl->setVariable(array(
-                'STATS_REQUESTS_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/stats/graph.php?stats=requests_today" width="600" height="250" alt="'.$_ARRAYLANG['TXT_VIEW_DETAILS'].'" />'
-            ));
-        } else {
-            $this->_objTpl->setVariable(array(
-                'STATS_REQUESTS_GRAPH' => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
-            ));
-        }
+        $statsData = $this->getStatsDataBy('hour');
+        $this->_objTpl->setVariable(array(
+            'STATS_CHART_JAVASCRIPT' => $this->getChartJavascriptBy('chart', $statsData),
+        ));
 
         $this->_objTpl->parse('requests_block');
     }
@@ -645,16 +640,10 @@ class stats extends statsLibrary
         ));
         $this->_objTpl->parse('stats_requests_days');
 
-        // set statistic graph
-        if (count($this->arrRequests)>0) {
-            $this->_objTpl->setVariable(array(
-                'STATS_REQUESTS_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/stats/graph.php?stats=requests_days" width="600" height="250" alt="'.$_ARRAYLANG['TXT_VIEW_DETAILS'].'" />',
-            ));
-        } else {
-            $this->_objTpl->setVariable(array(
-                'STATS_REQUESTS_GRAPH' => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
-            ));
-        }
+        $statsData = $this->getStatsDataBy('day');
+        $this->_objTpl->setVariable(array(
+            'STATS_CHART_JAVASCRIPT' => $this->getChartJavascriptBy('chart', $statsData),
+        ));
 
 
         $this->_objTpl->parse('requests_block');
@@ -732,16 +721,10 @@ class stats extends statsLibrary
         ));
         $this->_objTpl->parse('stats_requests_months');
 
-        // set statistic graph
-        if (count($this->arrRequests)>0) {
-            $this->_objTpl->setVariable(array(
-                'STATS_REQUESTS_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/stats/graph.php?stats=requests_months" width="600" height="250" alt="'.$_ARRAYLANG['TXT_VIEW_DETAILS'].'" />',
-            ));
-        } else {
-            $this->_objTpl->setVariable(array(
-                'STATS_REQUESTS_GRAPH' => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
-            ));
-        }
+        $statsData = $this->getStatsDataBy('month');
+        $this->_objTpl->setVariable(array(
+            'STATS_CHART_JAVASCRIPT' => $this->getChartJavascriptBy('chart', $statsData),
+        ));
 
         $this->_objTpl->parse('requests_block');
     }
@@ -810,16 +793,10 @@ class stats extends statsLibrary
             $this->_objTpl->parse('stats_requests_years');
         }
 
-        // set statistic graph
-        if (count($this->arrRequests)>0) {
-            $this->_objTpl->setVariable(array(
-                'STATS_REQUESTS_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/stats/graph.php?stats=requests_years" width="600" height="250" alt="'.$_ARRAYLANG['TXT_VIEW_DETAILS'].'" />',
-            ));
-        } else {
-            $this->_objTpl->setVariable(array(
-                'STATS_REQUESTS_GRAPH' => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
-            ));
-        }
+        $statsData = $this->getStatsDataBy('year');
+        $this->_objTpl->setVariable(array(
+            'STATS_CHART_JAVASCRIPT' => $this->getChartJavascriptBy('chart', $statsData, 'bar'),
+        ));
 
         $this->_objTpl->parse('requests_block');
     }
