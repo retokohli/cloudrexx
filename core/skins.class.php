@@ -312,7 +312,7 @@ class skins
             $this->_importFile();
         }
         if (!empty($_GET['activate'])){
-            $this->_activateDefault(intval($_GET['activate']));
+            $this->activateDefault(intval($_GET['activate']));
         }
         if (!empty($_GET['delete'])){
             $this->deldir(true);
@@ -648,7 +648,7 @@ class skins
                 if (substr($this->_themeName, -1) == '/'){
                     $this->_themeName = substr($this->_themeName, 0, -1);
                 }
-                $this->insertIntoDb(contrexx_addslashes($this->_themeName), $this->_themeDir);
+                $this->insertSkinIntoDb($this->_themeName, $this->_themeDir);
                 $this->strOkMessage = $this->_themeName.' ('.$this->_themeDir.') '.$_CORELANG['TXT_THEME_SUCCESSFULLY_IMPORTED'];
                 break;
             //everything else should never be the case
@@ -737,20 +737,41 @@ class skins
 
 
     /**
-     * Activates the Theme for the current default language
-     * @access private
-     * @return boolean
+     * activates the theme for the current default language
+     *
+     * @access  private
+     * @global  ADONewConnection
+     * @global  array   $_CORELANG
+     * @return  boolean
      */
-    function _activateDefault(){
+    private function activateDefault()
+    {
         global $objDatabase, $_CORELANG;
-        $themeID = intval($_GET['activate']);
-        if ($themeID == 0){
+
+        $newThemeId = intval($_GET['activate']);
+        if (empty($newThemeId)){
             $this->strErrMessage = "GET value error. Must be numeric ID.";
         }
-        $objRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."languages WHERE is_default = 'true' LIMIT 1");
-        if ($objRS->RecordCount() != 0){
-            $langID = $objRS->fields['id'];
-            $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET themesid='".intval($themeID)."' WHERE id=".intval($langID));
+
+        $objResult = $objDatabase->Execute('SELECT `id`, `themesid` FROM `'.DBPREFIX.'languages` WHERE `is_default` = "true" LIMIT 1');
+        if ($objResult->RecordCount() > 0){
+            $langId = $objResult->fields['id'];
+            $oldThemeId = $objResult->fields['themesid'];
+            
+            $objDatabase->Execute('UPDATE `'.DBPREFIX.'languages` SET `themesid` = "'.$newThemeId.'" WHERE `id` = '.$langId);
+
+            $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+            $pages = $pageRepo->findBy(array(
+                'skin' => intval($oldThemeId),
+            ));
+            foreach ($pages as $page) {
+                if ($page->getSkin() != 0) {
+                    $page->setSkin($newThemeId);
+                    \Env::get('em')->persist($page);
+                }
+            }
+            \Env::get('em')->flush();
+
             $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
         } else {
             $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
@@ -1084,29 +1105,51 @@ class skins
     }
 
     /**
-     * insert Skin into DB
-     * @global   ADONewConnection
-     * @param    string   $path
-     * @param    string   $folder
-     * @param    string   $themesname
-     * @access   public
+     * insert Skin into db and activate the theme on content pages
+     *
+     * @access  private
+     * @global  ADONewConnection
+     * @param   string     $themesName
+     * @param   string     $themesFolder
+     * @param   integer    $oldId
      */
-    function insertIntoDb($themesName, $themesFolder, $oldId="")
+    private function insertIntoDb($themesName, $themesFolder, $oldId='')
     {
-        global  $objDatabase;
-        if (($themesName != "") && ($themesFolder != "")) {
-            $objDatabase->Execute("INSERT INTO ".DBPREFIX."skins (themesname, foldername, expert) VALUES ('".addslashes(strip_tags($themesName))."','".addslashes(strip_tags($themesFolder))."', '1')");
-            $newId = $objDatabase->Insert_ID();
+        global $objDatabase;
+
+        if (!empty($themesName) && !empty($themesFolder)) {
+            $newId = $this->insertSkinIntoDb($themesName, $themesFolder);
+
             $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
             $pages = $pageRepo->findBy(array(
                 'skin' => intval($oldId),
             ));
             foreach ($pages as $page) {
-                $page->setSkin($newId);
-                \Env::get('em')->persist($page);
+                if ($page->getSkin() != 0) {
+                    $page->setSkin($newId);
+                    \Env::get('em')->persist($page);
+                }
             }
             \Env::get('em')->flush();
         }
+    }
+
+    /**
+     * insert skin into db
+     *
+     * @access  public
+     * @global  ADONewConnection
+     * @param   string              $themesName
+     * @param   string              $themesFolder
+     * @return  integer
+     */
+    private function insertSkinIntoDb($themesName, $themesFolder)
+    {
+        global $objDatabase;
+
+        $objDatabase->Execute('INSERT INTO `'.DBPREFIX.'skins` (`themesname`, `foldername`, `expert`) VALUES ("'.addslashes(strip_tags($themesName)).'", "'.addslashes(strip_tags($themesFolder)).'", 1)');
+
+        return $objDatabase->Insert_ID();
     }
 
     /**
