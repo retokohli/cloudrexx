@@ -37,7 +37,7 @@ function accessChangeGroupStatus(id)
 			<td width="5%">{TXT_ACCESS_USERS}</td>
 			<td width="5%" style="white-space:nowrap;">
 			{TXT_EXPORT}
-             (<a href="index.php?cmd=access&act=export"><img style="border: 0px;width:10px;" src="images/icons/icon_excel.gif" title="{TXT_EXPORT}" alt="{TXT_EXPORT}" align="absmiddle" /> {TXT_USER_ALL}</a>)</td>
+             (<a href="index.php?cmd=access&act=export">{TXT_USER_ALL}</a>)</td>
 			<td width="5%" style="text-align:right;">{TXT_ACCESS_FUNCTIONS}</td>
 		</tr>
 		<!-- BEGIN access_group_list -->
@@ -49,7 +49,7 @@ function accessChangeGroupStatus(id)
 				<td>{ACCESS_GROUP_TYPE}</td>
 				<td><a href="index.php?cmd=access&amp;act=user&amp;groupId={ACCESS_GROUP_ID}" title="{ACCESS_SHOW_USERS_OF_GROUP}">{ACCESS_GROUP_USER_COUNT}</a></td>
 				<td style="white-space: nowrap;">
-				   <img src="images/icons/icon_excel.gif" title="{TXT_EXPORT}" alt="{TXT_EXPORT}" align="absmiddle" />  <a href="index.php?cmd=access&act=export&groupId={ACCESS_GROUP_ID}">{TXT_USER_ALL}</a><!-- BEGIN languages -->, <a href="index.php?cmd=access&act=export&groupId={ACCESS_GROUP_ID}&langId={ACCESS_LANG_ID}">{ACCESS_LANG_NAME}</a><!-- END languages -->
+				   <img src="images/icons/csv.gif" title="{TXT_EXPORT}" alt="{TXT_EXPORT}" align="absmiddle" />  <a href="index.php?cmd=access&act=export&groupId={ACCESS_GROUP_ID}">{TXT_USER_ALL}</a><!-- BEGIN languages -->, <a href="index.php?cmd=access&act=export&groupId={ACCESS_GROUP_ID}&langId={ACCESS_LANG_ID}">{ACCESS_LANG_NAME}</a><!-- END languages -->
 				</td>
 				<td style="text-align:right;">
 					<a href="index.php?cmd=access&amp;act=group&amp;tpl=modify&amp;id={ACCESS_GROUP_ID}" title="{TXT_ACCESS_MODIFY_GROUP}"><img src="images/icons/edit.gif" width="16" height="16 "border="0" alt="{TXT_ACCESS_MODIFY_GROUP}" /></a>
