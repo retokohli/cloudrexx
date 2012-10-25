@@ -1285,7 +1285,7 @@ class ContactLib
 
         $code = "<script type=\"text/javascript\">\n";
         $code .= "/* <![CDATA[ */\n";
-        $code .= 'cx.ready(function() { jQuery(\'.contactFormClass_date\').datetimepicker(); });';
+        $code .= 'cx.ready(function() { jQuery(\'.date\').datetimepicker(); });';
 
         $code .= "fields = new Array();\n";
 
@@ -1297,7 +1297,7 @@ class ContactLib
             $code .= "\t'". contrexx_raw2xhtml($field['lang'][FRONTEND_LANG_ID]['name']) ."',\n";
             $code .= "\t".  ($field['is_required'] ? 'true' : 'false' ) .",\n";
 
-            $code .= "\t".  '/'.($this->arrCheckTypes[$field['check_type']]['regex']).'/'.$modifiers.",\n";
+            $code .= "\t".(!empty($this->arrCheckTypes[$field['check_type']]['regex']) ? '/'.($this->arrCheckTypes[$field['check_type']]['regex']).'/'.$modifiers : "''").",\n";
             $code .= "\t'". (($field['type'] != 'special') ? $field['type'] : $field['special_type']) ."');\n";
         }
 
@@ -1307,12 +1307,12 @@ function checkAllFields() {
     
     for (var field in fields) {
         var type = fields[field][3];
-        if (type == 'text' || type == 'password' || type == 'textarea') {
+        if ((type == 'text') || (type == 'password') || (type == 'textarea') || (type == 'date') || ((type.match(/access_/) != null) && (type != 'access_country'))) {
             value = document.getElementsByName('contactFormField_' + field)[0].value;
-            if (\$J.trim(value) == "" && isRequiredNorm(fields[field][1], value)) {
+            if ((\$J.trim(value) == '') && isRequiredNorm(fields[field][1], value)) {
                 isOk = false;
                 \$J('#contactFormFieldId_'+field).css('border', '1px solid red');
-            } else if (value != "" && !matchType(fields[field][2], value)) {
+            } else if ((value != '') && !matchType(fields[field][2], value)) {
                 isOk = false;
                 \$J('#contactFormFieldId_'+field).css('border', '1px solid red');
             } else {

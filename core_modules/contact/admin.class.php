@@ -98,7 +98,6 @@ class ContactManager extends ContactLib
         );
 
         $this->_arrUserAccountData = array(
-            'access_picture'       => $_ARRAYLANG['TXT_CONTACT_PICTURE'],
             'access_gender'        => $_ARRAYLANG['TXT_CONTACT_GENDER'],
             'access_title'         => $_ARRAYLANG['TXT_CONTACT_TITLE'],
             'access_firstname'     => $_ARRAYLANG['TXT_CONTACT_FIRST_NAME'],
@@ -1537,11 +1536,11 @@ class ContactManager extends ContactLib
         $menu = "<select name=\"".$name."\" ".$attrs.">\n";
         $menu .= "<option disabled=\"disabled\" style=\"color:#000;font-weight:bold;\">".$_ARRAYLANG['TXT_CONTACT_FIELDS']."</option>\n";
         foreach ($this->_arrFormFieldTypes as $type => $desc) {
-            $menu .= "<option value=\"".$type."\"".($selectedType == $type ? 'selected="selected"' : '')."  style=\"padding-left:10px;\"><!--[if IE]>&nbsp;&nbsp;&nbsp;&nbsp;<![endif]-->".$desc."</option>\n";
+            $menu .= "<option value=\"".$type."\"".($selectedType == $type ? 'selected="selected"' : '')."  style=\"padding-left:10px;\">&nbsp;&nbsp;".$desc."</option>\n";
         }
         $menu .= "<option disabled=\"disabled\" style=\"color:#000;font-weight:bold;\">".$_ARRAYLANG['TXT_CONTACT_USER_DATA']."</option>\n";
         foreach ($this->_arrUserAccountData as $type => $desc) {
-            $menu .= "<option value=\"".$type."\"".($selectedType == $type ? 'selected="selected"' : '')."  style=\"padding-left:10px;\"><!--[if IE]>&nbsp;&nbsp;&nbsp;&nbsp;<![endif]-->".$desc."</option>\n";
+            $menu .= "<option value=\"".$type."\"".($selectedType == $type ? 'selected="selected"' : '')."  style=\"padding-left:10px;\">&nbsp;&nbsp;".$desc."</option>\n";
         }
         $menu .= "</select>\n";
         return  $menu;
@@ -1780,7 +1779,10 @@ class ContactManager extends ContactLib
                     break;
 
                 case 'date':
-                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" type="text" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'" />';
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].' date" type="text" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'" />';
+                    break;
+                case 'access_birthday':
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].' date" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['value']) : '{'.$fieldId.'_VALUE}').'" />';
                     break;
 
                 case 'file':
