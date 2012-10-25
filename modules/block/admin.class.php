@@ -324,7 +324,7 @@ class blockManager extends blockLibrary
                         $checkImage = "images/icons/check.gif";
                         break;
                     case '2':
-                        $checkImage = "images/icons/check_gray.gif";
+                        $checkImage = "images/icons/check.gif";
                         
                         $blockAssociatedPageIds = $this->_getAssociatedPageIds($blockId);
                         $selectedPages    = array();
