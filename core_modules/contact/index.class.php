@@ -147,9 +147,6 @@ class Contact extends ContactLib
              */
              if ($isLoggedin && empty($_GET[$fieldId]) && empty($_POST['contactFormField_'.$fieldId])) {
                 switch ($arrField['special_type']) {
-                case 'access_picture':                    
-                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PICTURE]]';
-                    break;
                 case 'access_gender':
                     $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_GENDER]]';
                     break;
