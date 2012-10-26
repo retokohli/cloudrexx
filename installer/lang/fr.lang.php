@@ -60,7 +60,9 @@ $_ARRLANG['TXT_ALLOW_URL_FOPEN'] = "allow_url_fopen";
 $_ARRLANG['TXT_GD_VERSION']	= "GD (Graphics Draw) Version";
 $_ARRLANG['TXT_FTP_SUPPORT'] = "Support FTP";
 $_ARRLANG['TXT_APC_SUPPORT'] = "APC (Alternative PHP Cache)";
+$_ARRLANG['TXT_APC_SUPPORT_INFO'] = "APC is an additional module for PHP, which allows an accelerated execution of PHP. This module is for the operation of Contrexx 3 advantageous, but not necessary.";
 $_ARRLANG['TXT_MEMORY_LIMIT'] = "memory_limit";
+$_ARRLANG['TXT_IIS_URL_REWRITE_MODULE_SUPPORT'] = "IIS URL Rewrite Module";
 $_ARRLANG['TXT_YES'] = "Oui";
 $_ARRLANG['TXT_NO'] = "Non";
 $_ARRLANG['TXT_ON']	= "On";
@@ -137,7 +139,7 @@ $_ARRLANG['TXT_CHECK_DATABASE_TABLES'] = "Structure de la base de données véri
 $_ARRLANG['TXT_PRESS_REFRESH_TO_CONTINUE_INSTALLATION'] = "Cliquer sur <b>Actualiser</b> pour continuer l'installation!";
 $_ARRLANG['TXT_REFRESH'] = "Actualiser";
 $_ARRLANG['TXT_CREATE_CONFIG_FILE'] = "Fichier de configuration créé";
-$_ARRLANG['TXT_SET_WRITE_PERMISSION_TO_FILES'] = "Vous devez affecter un droit d'écriture sur les fichiers suivants:";
+$_ARRLANG['TXT_SET_WRITE_PERMISSION_TO_FILES'] = "Vous devez attribuer l'autorisation d'écriture aux répertoires suivants, ainsi que ses sous-répertoires et fichiers:";
 $_ARRLANG['TXT_CREATE_APACHE_HTACCESS_FILE'] = ".htaccess created";
 $_ARRLANG['TXT_CREATE_IIS_HTACCESS_FILE'] = "web.config created";
 $_ARRLANG['TXT_CREATE_VERSION_FILE'] = "Fichier de version créé";
@@ -150,6 +152,7 @@ $_ARRLANG['TXT_COULD_NOT_SET_TIMEZONE'] = "The timezone could not be set.";
 $_ARRLANG['TXT_CONFIG_DATABASE'] = "Configuration de la base de données";
 $_ARRLANG['TXT_CORE_HTACCESS_FILE_NOT_WRITABLE'] = "The file %s can't be updated due it's write-protected! Please remove the write-protection for letting the system working properly.";
 $_ARRLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Unable to read the HtAccess file %s due to invalid Contrexx specific directives!";
+$_ARRLANG['TXT_NO_WRITE_PERMISSION'] = "The file \"%s\" could not be created or is not writable.<br />Please create the file manually on the web server in the root directory of your website and give the file write permissions or contact your server administrator.";
 
 // system configuration
 $_ARRLANG['TXT_ADMIN_EMAIL'] = "Adresse E-mail de l'administrateur";

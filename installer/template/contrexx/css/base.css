@@ -289,6 +289,10 @@ table.adminlist td {
     font-weight: bold;
 }
 
+.warning {
+    color: #E59400;
+    font-weight: bold;
+}
 
 /* icons */
 .icon-info {
