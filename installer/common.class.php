@@ -757,21 +757,26 @@ class CommonFunctions
     }
 
     /**
-    * Check permisssions
+    * Check permisssions.
     *
-    * Check if the files of the array $arrFiles are writable
+    * Check if the files of the array $arrFiles are writable.
     *
-    * @access public
-    * @param    array   $arrFiles
-    * @return   mixed   true on success, string with error message on faiure
+    * @access  public
+    * @param   array   $arrFiles
+    * @return  mixed   true on success, string with error message on faiure
     */
     function checkPermissions($arrFiles) {
         global $_ARRLANG;
 
-        $statusMessage = "";
+        $statusMessage = '';
         $path = $_SESSION['installer']['config']['documentRoot'].$_SESSION['installer']['config']['offsetPath'];
 
         foreach ($arrFiles as $file => $arrAttributes) {
+            if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($path.$file)) {
+                $statusMessage = $this->setStatusMessage($path.$file, $statusMessage);
+                continue;
+            }
+            
             $arrAllFiles = array();
             $arrSubDirs = array();
 
@@ -784,22 +789,39 @@ class CommonFunctions
 
             foreach ($arrAllFiles as $checkFile) {
                 if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($path.$checkFile)) {
-                    if ($this->isWindows()) {
-                        if (empty($statusMessage)) {
-                            $statusMessage = $_ARRLANG['TXT_SET_WRITE_PERMISSION_TO_FILES']."<br />";
-                        }
-                        $statusMessage .= $path.$checkFile."<br />";
-                    } else {
-                        $statusMessage .= $_ARRLANG['TXT_COULD_NOT_CHANGE_PERMISSIONS'].' '.$file."<br />";
-                    }
+                    $statusMessage = $this->setStatusMessage($path.$checkFile, $statusMessage);
                 }
             }
         }
+        
         if (empty($statusMessage)) {
             return true;
         } else {
             return $statusMessage;
         }
+    }
+
+    /**
+     * Set the status message of the given directory or file.
+     * 
+     * @param   string  $path
+     * @param   string  $statusMessage
+     * @return  string  $statusMessage
+     */
+    private function setStatusMessage($path, $statusMessage)
+    {
+        global $_ARRLANG;
+        
+        if ($this->isWindows()) {
+            if (empty($statusMessage)) {
+                $statusMessage = $_ARRLANG['TXT_SET_WRITE_PERMISSION_TO_FILES']."<br />";
+            }
+            $statusMessage .= $path.$checkFile."<br />";
+        } else {
+            $statusMessage .= $_ARRLANG['TXT_COULD_NOT_CHANGE_PERMISSIONS'].' '.$file."<br />";
+        }
+        
+        return $statusMessage;
     }
 
     /**
@@ -825,9 +847,12 @@ class CommonFunctions
                     array_push($arrDirectories, $directory.DIRECTORY_SEPARATOR.$file);
 
                     if (is_dir(realpath($path))) {
-                        $arrDirectoriesRec = $this->_getSubDirs($directory.DIRECTORY_SEPARATOR.$file);
-                        if (count($arrDirectoriesRec)>0) {
-                            $arrDirectories = array_merge($arrDirectories, $arrDirectoriesRec);
+                        if (\Cx\Lib\FileSystem\FileSystem::makeWritable($path)) {
+                            $arrDirectoriesRec = $this->_getSubDirs($directory.DIRECTORY_SEPARATOR.$file);
+                            
+                            if (count($arrDirectoriesRec) > 0) {
+                                $arrDirectories = array_merge($arrDirectories, $arrDirectoriesRec);
+                            }
                         }
                     }
                 }
@@ -886,12 +911,14 @@ class CommonFunctions
     function _getHtaccessFileTemplate($file)
     {
         $pathOffset = $_SESSION['installer']['config']['offsetPath'];
+        
         // in case no offset path is set (contrexx runs directly in the document root)
         // then, we must set pathOffset to /. Path offset is used as RewriteBase.
         // Otherwise, an empty RewriteBase would be invalid
         if (empty($pathOffset)) {
             $pathOffset = '/';
         }
+        
         return str_replace(
             array("%PATH_ROOT_OFFSET%"),
             array($pathOffset),
@@ -1066,7 +1093,7 @@ class CommonFunctions
             $objHtAccess->setAdditional(explode("\n", $this->_getHtaccessFileTemplate($iisHtaccessTemplateFile)));
             $result = $objHtAccess->save();
 			if ($result !== true) {
-				return $result;
+				return sprintf($_ARRLANG['TXT_NO_WRITE_PERMISSION'], $iisHtaccessFile);
 			}
         } else {
             
@@ -1080,7 +1107,7 @@ class CommonFunctions
             $objFWHtAccess->setSection("core_routing", explode("\n", $this->_getHtaccessFileTemplate($apacheHtaccessTemplateFile)));
             $result = $objFWHtAccess->write();
             if ($result !== true) {
-                return $result;
+                return sprintf($_ARRLANG['TXT_NO_WRITE_PERMISSION'], $apacheHtaccessFile);
             }
         }
             

@@ -450,7 +450,13 @@ class Installer
                 $ftpSupport = true;
             }
 
-            if (($phpVersion >= $requiredPHPVersion || isset($_POST['ignore_php_requirement'])) && ($mysqlSupport) && ($gdVersion >= $requiredGDVersion) && ($ftpSupport)) {
+            if ($objCommon->getWebserverSoftware() == 'iis') {
+                $iisUrlRewriteModuleSupport = isset($_SERVER['IIS_UrlRewriteModule']);
+            } else {
+                $iisUrlRewriteModuleSupport = true;
+            }
+
+            if (($phpVersion >= $requiredPHPVersion || isset($_POST['ignore_php_requirement'])) && $mysqlSupport && ($gdVersion >= $requiredGDVersion) && $ftpSupport && $iisUrlRewriteModuleSupport) {
                 $_SESSION['installer']['step']++;
             }
         }
@@ -478,11 +484,11 @@ class Installer
         $objTpl->addBlockfile('CONTENT', 'CONTENT_BLOCK', "requirements.html");
 
         // get sytem informations
-        $phpVersion = $objCommon->getPHPVersion();
+        $phpVersion   = $objCommon->getPHPVersion();
         $mysqlSupport = $objCommon->checkMySQLSupport();
-        $gdVersion = $objCommon->checkGDSupport();
-        $ftpSupport = $objCommon->checkFTPSupport();
-        $apcSupport = $objCommon->enableApc();
+        $gdVersion    = $objCommon->checkGDSupport();
+        $ftpSupport   = $objCommon->checkFTPSupport();
+        $apcSupport   = $objCommon->enableApc();
         
         if ($apcSupport) {
             $memoryLimit = $objCommon->checkMemoryLimit(32);
@@ -511,22 +517,34 @@ class Installer
 
         // set template variables
         $objTpl->setVariable(array(
-            'PHP_REQUIRED_VERION'   => $_ARRLANG['TXT_PHP_VERSION'].' >= '.$requiredPHPVersion,
-            'PHP_VERSION'           => $phpVersion,
-            'PHP_VERSION_CLASS'     => $phpVersion >= $requiredPHPVersion ? 'successful' : 'failed',
-            'MYSQL_SUPPORT'         => $mysqlSupport ? $_ARRLANG['TXT_YES'] : $_ARRLANG['TXT_NO'],
-            'MYSQL_SUPPORT_CLASS'   => $mysqlSupport ? 'successful' : 'failed',
-            'GD_REQUIRED_VERSION'   => $_ARRLANG['TXT_GD_VERSION'].' >= '.$requiredGDVersion,
-            'GD_VERSION'            => $gdVersion,
-            'GD_VERSION_CLASS'      => $gdVersion >= $requiredGDVersion ? 'successful' : 'failed',
-            'FTP_SUPPORT'           => $ftpSupport ? $_ARRLANG['TXT_YES'] : $_ARRLANG['TXT_NO'],
-            'FTP_SUPPORT_CLASS'     => $ftpSupport ? 'successful' : 'failed',
-            'APC_SUPPORT'           => $apcSupport ? $_ARRLANG['TXT_ON'] : $_ARRLANG['TXT_OFF'],
-            'APC_SUPPORT_CLASS'     => $apcSupport ? 'successful' : 'failed',
-            'TXT_MEMORY_LIMIT'      => $_ARRLANG['TXT_MEMORY_LIMIT'].' (>= '.$memoryLimit['required'].'M)',
-            'MEMORY_LIMIT'          => $memoryLimit['available'].'M',
-            'MEMORY_LIMIT_CLASS'    => $memoryLimit['result'] ? 'successful' : 'failed',
+            'PHP_REQUIRED_VERION'    => $_ARRLANG['TXT_PHP_VERSION'].' >= '.$requiredPHPVersion,
+            'PHP_VERSION'            => $phpVersion,
+            'PHP_VERSION_CLASS'      => $phpVersion >= $requiredPHPVersion ? 'successful' : 'failed',
+            'MYSQL_SUPPORT'          => $mysqlSupport ? $_ARRLANG['TXT_YES'] : $_ARRLANG['TXT_NO'],
+            'MYSQL_SUPPORT_CLASS'    => $mysqlSupport ? 'successful' : 'failed',
+            'GD_REQUIRED_VERSION'    => $_ARRLANG['TXT_GD_VERSION'].' >= '.$requiredGDVersion,
+            'GD_VERSION'             => $gdVersion,
+            'GD_VERSION_CLASS'       => $gdVersion >= $requiredGDVersion ? 'successful' : 'failed',
+            'FTP_SUPPORT'            => $ftpSupport ? $_ARRLANG['TXT_YES'] : $_ARRLANG['TXT_NO'],
+            'FTP_SUPPORT_CLASS'      => $ftpSupport ? 'successful' : 'failed',
+            'APC_SUPPORT'            => $apcSupport ? $_ARRLANG['TXT_ON'] : $_ARRLANG['TXT_OFF'],
+            'APC_SUPPORT_CLASS'      => $apcSupport ? 'successful' : 'warning',
+            'TXT_MEMORY_LIMIT'       => $_ARRLANG['TXT_MEMORY_LIMIT'].' (>= '.$memoryLimit['required'].'M)',
+            'MEMORY_LIMIT'           => $memoryLimit['available'].'M',
+            'MEMORY_LIMIT_CLASS'     => $memoryLimit['result'] ? 'successful' : 'failed',
         ));
+
+        if ($objCommon->getWebserverSoftware() == 'iis') {
+            $iisUrlRewriteModuleSupport = isset($_SERVER['IIS_UrlRewriteModule']);
+            $objTpl->setVariable(array(
+                'TXT_IIS_URL_REWRITE_MODULE_SUPPORT'    => $_ARRLANG['TXT_IIS_URL_REWRITE_MODULE_SUPPORT'],
+                'IIS_URL_REWRITE_MODULE_SUPPORT'        => $iisUrlRewriteModuleSupport ? $_ARRLANG['TXT_YES'] : $_ARRLANG['TXT_NO'],
+                'IIS_URL_REWRITE_MODULE_CLASS'          => $iisUrlRewriteModuleSupport ? 'successful' : 'failed',
+            ));
+            $objTpl->parse('iis_url_rewrite_module');
+        } else {
+            $objTpl->hideBlock('iis_url_rewrite_module');
+        }
 
         // set php error message
         if (!empty($this->arrStatusMsg['php'])) {
@@ -1449,19 +1467,19 @@ class Installer
          * @return      mixed   true on success, error message on failure
          */
         function _createHtaccessFile() {
-        global $objCommon;
+            global $objCommon;
 
-        if (isset($_SESSION['installer']['createHtaccessFile']) && $_SESSION['installer']['createHtaccessFile']) {
-            return true;
-        } else {
-            $result = $objCommon->createHtaccessFile();
-            if ($result !== true) {
-                return $result;
-            } else {
-                $_SESSION['installer']['createHtaccessFile'] = true;
+            if (isset($_SESSION['installer']['createHtaccessFile']) && $_SESSION['installer']['createHtaccessFile']) {
                 return true;
+            } else {
+                $result = $objCommon->createHtaccessFile();
+                if ($result !== true) {
+                    return $result;
+                } else {
+                    $_SESSION['installer']['createHtaccessFile'] = true;
+                    return true;
+                }
             }
-        }
         }
 
     /**

@@ -60,7 +60,9 @@ $_ARRLANG['TXT_ALLOW_URL_FOPEN'] = "allow_url_fopen";
 $_ARRLANG['TXT_GD_VERSION']	= "GD (Graphics Draw) Version";
 $_ARRLANG['TXT_FTP_SUPPORT'] = "FTP Unterstützung";
 $_ARRLANG['TXT_APC_SUPPORT'] = "APC (Alternativer PHP Cache)";
+$_ARRLANG['TXT_APC_SUPPORT_INFO'] = "APC (Alternativer PHP Cache) ist ein Zusatzmodul für PHP, das eine beschleunigte Ausführung von PHP ermöglicht. Dieses Zusatzmodul ist für den Betrieb von Contrexx 3 von Vorteil, jedoch nicht notwendig.";
 $_ARRLANG['TXT_MEMORY_LIMIT'] = "memory_limit";
+$_ARRLANG['TXT_IIS_URL_REWRITE_MODULE_SUPPORT'] = "IIS URL Rewrite Modul";
 $_ARRLANG['TXT_YES'] = "Ja";
 $_ARRLANG['TXT_NO'] = "Nein";
 $_ARRLANG['TXT_ON']	= "An";
@@ -137,7 +139,7 @@ $_ARRLANG['TXT_CHECK_DATABASE_TABLES'] = "Datenbank Struktur überprüft";
 $_ARRLANG['TXT_PRESS_REFRESH_TO_CONTINUE_INSTALLATION'] = "Drücken Sie anschliessend auf <b>Weiter</b> um die Installation weiter zu führen!";
 $_ARRLANG['TXT_REFRESH'] = "Aktualisieren";
 $_ARRLANG['TXT_CREATE_CONFIG_FILE'] = "Konfigurationsdatei erstellt";
-$_ARRLANG['TXT_SET_WRITE_PERMISSION_TO_FILES'] = "Sie müssen den folgenden Dateien Schreibberechtigung zuweisen:";
+$_ARRLANG['TXT_SET_WRITE_PERMISSION_TO_FILES'] = "Sie müssen den folgenden Verzeichnissen, sowie deren Unterverzeichnissen und Dateien Schreibberechtigung zuweisen:";
 $_ARRLANG['TXT_CREATE_APACHE_HTACCESS_FILE'] = ".htaccess erstellt";
 $_ARRLANG['TXT_CREATE_IIS_HTACCESS_FILE'] = "web.config erstellt";
 $_ARRLANG['TXT_CREATE_VERSION_FILE'] = "Versionsdatei erstellt";
@@ -150,6 +152,7 @@ $_ARRLANG['TXT_COULD_NOT_SET_TIMEZONE'] = "Die Zeitzone konnte nicht gespeichert
 $_ARRLANG['TXT_CONFIG_DATABASE'] = "Datenbank Konfigurieren";
 $_ARRLANG['TXT_CORE_HTACCESS_FILE_NOT_WRITABLE'] = "Die Datei %s ist nicht beschreibbar und kann daher nicht aktualisiert werden! Setzen Sie auf diese Datei Schreibzugriff, damit das System korrekt funktioniert!";
 $_ARRLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Die HtAccess Datei %s konnte nicht ausgelesen werden, da die darin enthaltenen Contrexx spezifischen Anweisungen ungültig sind!";
+$_ARRLANG['TXT_NO_WRITE_PERMISSION'] = "Die Datei \"%s\" konnte nicht erstellt werden oder hat keine Schreibrechte.<br />Bitte erstellen Sie die Datei von Hand auf dem Webserver im Root-Verzeichnis Ihrer Webseite und geben Sie der Datei Schreibrechte oder kontaktieren Sie Ihren Server-Administrator.";
 
 // system configuration
 $_ARRLANG['TXT_ADMIN_EMAIL'] = "E-Mail Adresse des Administrators";

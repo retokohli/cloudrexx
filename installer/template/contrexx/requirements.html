@@ -23,12 +23,21 @@
         <td>{TXT_FTP_SUPPORT}</td>
         <td class="{FTP_SUPPORT_CLASS}">{FTP_SUPPORT}</td>
     </tr>
+    <!-- BEGIN iis_url_rewrite_module -->
+    <tr>
+        <td>{TXT_IIS_URL_REWRITE_MODULE_SUPPORT}</td>
+        <td class="{IIS_URL_REWRITE_MODULE_CLASS}">{IIS_URL_REWRITE_MODULE_SUPPORT}</td>
+    </tr>
+    <!-- END iis_url_rewrite_module -->
     <tr class="row1">
         <td>{GD_REQUIRED_VERSION}</td>
         <td class="{GD_VERSION_CLASS}">{GD_VERSION}</td>
     </tr>
     <tr class="row2">
-        <td>{TXT_APC_SUPPORT}</td>
+        <td>
+            {TXT_APC_SUPPORT} <span class="icon-info tooltip-trigger"></span>
+            <span class="tooltip-message">{TXT_APC_SUPPORT_INFO}</span>
+        </td>
         <td class="{APC_SUPPORT_CLASS}">{APC_SUPPORT}</td>
     </tr>
     <tr>
