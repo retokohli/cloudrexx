@@ -2946,7 +2946,7 @@ class newsletter extends NewsletterLib
         $mail->Priority = $priority;
         $mail->Body     = $NewsletterBody_HTML;
         $mail->AltBody  = $NewsletterBody_TEXT;
-        
+
         $queryATT     = "SELECT newsletter, file_name FROM ".DBPREFIX."module_newsletter_attachment where newsletter=".$NewsletterID."";
         $objResultATT = $objDatabase->Execute($queryATT);
         if ($objResultATT !== false) {
@@ -5490,16 +5490,16 @@ function MultiAction() {
                 $attrKey = 1;
                 $textKey = 2;
                 for ($i = 0; $i < $tagCount; $i++) {
-                    if (!preg_match("/href=[\"]/i", $matches[$attrKey][$i])) {
+                    if (!preg_match("/href\s*=\s*['\"][^#]/i", $matches[$attrKey][$i])) {
                         // we might have a placeholder link here, it will be parsed on send
                         continue;
                     }
                     $rel = '';
                     $href = '';
-                    if (preg_match("/rel=\"([^\"]+)\"/i", $matches[$attrKey][$i], $rmatches)) {
+                    if (preg_match("/rel\s*=\s*['\"]([^'\"]+)['\"]/i", $matches[$attrKey][$i], $rmatches)) {
                         $rel = $rmatches[1];
                     }
-                    if (preg_match("/href=\"([^\"]+)\"/i", $matches[$attrKey][$i], $rmatches)) {
+                    if (preg_match("/href\s*=\s*['\"]([^'\"]+)['\"]/i", $matches[$attrKey][$i], $rmatches)) {
                         $href = $rmatches[1];
                     }
                     if ($rel) {
@@ -5518,7 +5518,7 @@ function MultiAction() {
                             if ($objDatabase->Execute($query)) {
                                 $linkId = $objDatabase->Insert_ID();
                                 $linkIds[] = $linkId;
-                                $matches[$attrKey][$i] = preg_replace("/rel=\"([^\"]+)\"/i", "rel=\"\\1 newsletter_link_".$linkId."\"", $matches[$attrKey][$i]);
+                                $matches[$attrKey][$i] = preg_replace("/rel\s*=\s*['\"]([^'\"]+)['\"]/i", "rel=\"\\1 newsletter_link_".$linkId."\"", $matches[$attrKey][$i]);
                             } 
                         }
                     } else {
@@ -5557,13 +5557,13 @@ function MultiAction() {
             $attrKey = 1;
             $textKey = 2;
             for ($i = 0; $i < $tagCount; $i++) {
-                if (!preg_match("/href=[\"]http/i", $matches[$attrKey][$i])) {
+                if (!preg_match("/href\s*=\s*['\"]/i", $matches[$attrKey][$i])) {
                    continue;
                 }
                 // remove newsletter_link_N from rel attribute
                 $matches[$attrKey][$i] = preg_replace("/newsletter_link_([0-9]+)/i", "", $matches[$attrKey][$i]);
                 // remove empty rel attribute
-                $matches[$attrKey][$i] = preg_replace("/\srel=\"\s*\"/i", "", $matches[$attrKey][$i]);
+                $matches[$attrKey][$i] = preg_replace("/\s*rel\s*=\s*['\"]\s*['\"]/i", "", $matches[$attrKey][$i]);
                 // remove left and right spaces
                 $matches[$attrKey][$i] = preg_replace("/([^=])\s*\"/i", "\\1\"", $matches[$attrKey][$i]);
                 $matches[$attrKey][$i] = preg_replace("/=\"\s*/i", "=\"", $matches[$attrKey][$i]);
@@ -5601,13 +5601,13 @@ function MultiAction() {
                     }
                     $linkId = $rmatches[1];
                     $url = '';
-                    if (preg_match("/href=\"([^\"]+)\"/i", $matches[$attrKey][$i], $rmatches)) {
+                    if (preg_match("/href\s*=\s*['\"]([^'\"]+)['\"]/i", $matches[$attrKey][$i], $rmatches)) {
                         $url = $rmatches[1];
                     }
                     // remove newsletter_link_N from rel attribute
                     $matches[$attrKey][$i] = preg_replace("/newsletter_link_".$linkId."/i", "", $matches[$attrKey][$i]);
                     // remove empty rel attribute
-                    $matches[$attrKey][$i] = preg_replace("/\srel=\"\s*\"/i", "", $matches[$attrKey][$i]);
+                    $matches[$attrKey][$i] = preg_replace("/\s*rel=\s*['\"]\s*['\"]/i", "", $matches[$attrKey][$i]);
                     // remove left and right spaces
                     $matches[$attrKey][$i] = preg_replace("/([^=])\s*\"/i", "\\1\"", $matches[$attrKey][$i]);
                     $matches[$attrKey][$i] = preg_replace("/=\"\s*/i", "=\"", $matches[$attrKey][$i]);
@@ -5622,7 +5622,7 @@ function MultiAction() {
                         } else {
                             $newUrl->setParam('m', $UserId);
                         }
-                        $matches[$attrKey][$i] = preg_replace("/href=\"[^\"]+\"/i", "href=\"".$newUrl->toString()."\"", $matches[$attrKey][$i]);
+                        $matches[$attrKey][$i] = preg_replace("/href\s*=\s*['\"][^'\"]+['\"]/i", "href=\"".$newUrl->toString()."\"", $matches[$attrKey][$i]);
                     }
                     $result = preg_replace("/".self::_prepareForRegExp($matches[$fullKey][$i])."/i", "<a ".$matches[$attrKey][$i].">".$matches[$textKey][$i]."</a>", $result, 1);
                 }
