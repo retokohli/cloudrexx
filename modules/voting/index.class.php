@@ -25,15 +25,15 @@ function votingShowCurrent($page_content){
     CSRF::add_placeholder($objTpl);
 	$objTpl->setErrorHandling(PEAR_ERROR_DIE);
 	$objTpl->setTemplate($page_content);
-        
-        if (!isset($_GET['vid'])) {
-            $_GET['vid'] = '';
-        }
-        
-        if (!isset($_POST['votingemail'])) {
-            return false;
-        }
-
+    
+    if (!isset($_GET['vid'])) {
+        $_GET['vid'] = '';
+    }
+    
+    if (!isset($_POST['votingemail'])) {
+        $_POST['votingemail'] = '';
+    }
+    
 	$votingId = intval($_GET['vid']);
 	$msg = '';
 	$voted = false;
