@@ -20,10 +20,10 @@ if ($php < '5.3') {
 }
 
 require_once dirname(__FILE__).'/lib/DBG.php';
-//DBG::activate(DBG_ADODB_ERROR|DBG_LOG_FIREPHP|DBG_PHP);
 //\DBG::activate(DBG_PHP);
 
 $_CONFIGURATION = $_CONFIG = null;
+
 /**
  * User configuration settings
  *
@@ -31,12 +31,21 @@ $_CONFIGURATION = $_CONFIG = null;
  * {@link $_CONFIG[]} global array.
  */
 $incSettingsStatus = include_once dirname(__FILE__).'/config/settings.php';
+
 /**
  * Path, database, FTP configuration settings
  *
  * Initialises global settings array and constants.
  */
 include_once dirname(__FILE__).'/config/configuration.php';
+
+// Check if the system is installed
+if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
+    header('Location: installer/index.php');
+    exit;
+} else if ($incSettingsStatus === false) {
+    die('System halted: Unable to load basic configuration!');
+}
 
 $customizing = null;
 if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {

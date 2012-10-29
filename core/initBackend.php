@@ -61,14 +61,6 @@ Env::set('ftpConfig', $_FTPCONFIG);
  * Doctrine configuration
  */
 $incDoctrineStatus = $cl->loadFile(ASCMS_PATH.ASCMS_PATH_OFFSET.'/config/doctrine.php');
-// Check whether the system is installed
-if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
-    header("Location: ../installer/index.php");
-    exit;
-}
-if (!$incSettingsStatus) {
-    die('System halted: Unable to load basic configuration!');
-}
 
 require_once($cl->getFilePath(ASCMS_CORE_PATH.'/API.php'));
 

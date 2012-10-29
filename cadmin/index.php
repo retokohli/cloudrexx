@@ -19,11 +19,11 @@ if ($php < '5.3') {
     die('Das Contrexx CMS ben&uml;tigt mindestens PHP in der Version 5.3.<br />Auf Ihrem System l&auml;uft PHP '.$php);
 }
 
-include_once '../lib/DBG.php';
-//DBG::activate(DBG_ERROR_FIREPHP);
+require_once dirname(dirname(__FILE__)).'/lib/DBG.php';
 //\DBG::activate(DBG_PHP);
 
 $_DBCONFIG = $_CONFIGURATION = $_CONFIG = null;
+
 /**
  * User configuration settings
  *
@@ -31,12 +31,21 @@ $_DBCONFIG = $_CONFIGURATION = $_CONFIG = null;
  * {@link $_CONFIG[]} global array.
  */
 $incSettingsStatus = include_once dirname(dirname(__FILE__)).'/config/settings.php';
+
 /**
  * Path, database, FTP configuration settings
  *
  * Initialises global settings array and constants.
  */
 include_once dirname(dirname(__FILE__)).'/config/configuration.php';
+
+// Check if the system is installed
+if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
+    header('Location: ../installer/index.php');
+    exit;
+} else if ($incSettingsStatus === false) {
+    die('System halted: Unable to load basic configuration!');
+}
 
 $customizing = null;
 if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
