@@ -143,7 +143,7 @@ class mediaDirectoryInputfieldText extends mediaDirectoryLibrary implements inpu
 
     function saveInputfield($intInputfieldId, $strValue)
     {
-        $strValue = contrexx_strip_tags(contrexx_input2raw($strValue));
+        $strValue = contrexx_input2raw(strip_tags($strValue));
         return $strValue;
     }
 
