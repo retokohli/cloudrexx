@@ -92,38 +92,22 @@ $arrLanguages = array(
 );
 
 $arrFiles = array(
-    '/config' => array(
-        'mode'      => '0777',
-        'mode_oct'  => 0777,
-    ),
+    '/cache' => array(),
+    '/config' => array(),
     '/feed' => array(
-        'mode'      => '0777',
-        'mode_oct'  => 0777,
-        'sub_dirs'  => true,
-    ),
-    '/media' => array(
-        'mode'      => '0777',
-        'mode_oct'  => 0777,
         'sub_dirs'  => true,
     ),
     '/images' => array(
-        'mode'      => '0777',
-        'mode_oct'  => 0777,
+        'sub_dirs'  => true,
+    ),
+    '/media' => array(
         'sub_dirs'  => true,
     ),
     '/themes' => array(
-        'mode'      => '0777',
-        'mode_oct'  => 0777,
         'sub_dirs'  => true,
     ),
     '/tmp' => array(
-        'mode'      => '0777',
-        'mode_oct'  => 0777,
         'sub_dirs'  => true,
-    ),
-    '/cache' => array(
-        'mode'      => '0777',
-        'mode_oct'  => 0777,
     ),
 );
 
