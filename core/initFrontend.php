@@ -90,14 +90,6 @@ $starttime = explode(' ', microtime());
 // Makes code analyzer warnings go away
 $loggableListener = null;
 
-// Check if system is installed
-if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
-    header('Location: installer/index.php');
-    die(1);
-} elseif (   $incSettingsStatus === false) {
-    die('System halted: Unable to load basic configuration!');
-}
-
 /**
  * This needs to be initialized before loading config/doctrine.php
  * Because we overwrite the Gedmo model (so we need to load our model
