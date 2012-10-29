@@ -1891,14 +1891,14 @@ div.row2 {
 }
 
 #resultbox {
-    border: 1px solid #858585;
+    border: 1px solid #BBBBBB;
     position: absolute;
     width: 60%;
     padding: 5px;
     overflow: auto;
     z-index: 10;
     left: 0px;
-    top: 25px;
+    top: 43px;
     background-color: white;
 }
 
