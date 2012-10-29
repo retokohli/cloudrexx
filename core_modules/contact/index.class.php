@@ -581,7 +581,7 @@ class Contact extends ContactLib
             $arrFormData['uploadedFiles'] = $this->_uploadFiles($arrFormData['fields']);
             
             foreach ($_POST as $key => $value) {
-				if ((isset($value) && trim($value) != '' || (is_array($value) && count($value))) && !in_array($key, array('Submit', 'submitContactForm', 'contactFormCaptcha'))) {
+				if ((($value == 0) || !empty($value)) && !in_array($key, array('Submit', 'submitContactForm', 'contactFormCaptcha'))) {
                     $id = intval(substr($key, 17));
                     if (isset($arrFormData['fields'][$id])) {
                         $key = $arrFormData['fields'][$id]['lang'][$_LANGID]['name'];
@@ -928,7 +928,7 @@ class Contact extends ContactLib
                         break;
                 }
 
-                if ($isRequired && (is_null($arrFields[$source][$field['name']]) || trim($arrFields[$source][$field['name']])=='')) {
+                if ($isRequired && ($value != 0) && empty($value)) {
                     $error = true;
                 } elseif (empty($value)) {
                     continue;
