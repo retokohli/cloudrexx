@@ -1,5 +1,17 @@
 <!-- START module_gallery_validate_details_all.html -->
-<script language="JavaScript" type="text/javascript">
+<style type="text/css">
+    input[type=button][disabled],
+    input[type=submit][disabled],
+    input[type=button][disabled=disabled],
+    input[type=submit][disabled=disabled],
+    input[type=button]:disabled,
+    input[type=submit]:disabled {
+        opacity: 0.5;
+        filter: alpha(opacity=50);
+    }
+</style>
+
+<script type="text/javascript">
 function deleteImage(imageId)
 { 
     if(confirm('{TXT_DELETE_IMAGE_MSG}')) 
@@ -169,6 +181,7 @@ function copyText(strType,strValue) {
 	}	
 }
 </script>
+
 <form name="gallery_validate" method="post" action="?cmd=gallery&amp;act=validate_all_pictures&amp;type=all">
   <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
     <tr> 

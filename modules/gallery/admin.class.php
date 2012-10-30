@@ -2108,14 +2108,14 @@ class galleryManager extends GalleryLibrary
             //the value is not allowed, set it to 'off'
             $_POST['show_random'] = 'off';
         }
-        if ($_POST['image_width'] > 2000) {
+        if ($_POST['image_width'] <= 0) {
             $_POST['image_width'] = 2000;
         }
-        if (intval($_POST['quality']) > 95 || intval($_POST['quality']) <= 0) {
-            // the value shouldn't be above 95 otherwise the image becomes larger
+        if (intval($_POST['quality']) > 100 || intval($_POST['quality']) <= 0) {
+            // the value shouldn't be above 100 otherwise the image becomes larger
             $_POST['quality'] = 95;
         }
-        if (intval($_POST['standard_quality']) > 95 || intval($_POST['standard_quality']) <= 0) {
+        if (intval($_POST['standard_quality']) > 100 || intval($_POST['standard_quality']) <= 0) {
             // the value shouldn't be above 95 otherwise the image becomes larger
             $_POST['standard_quality'] = 95;
         }
