@@ -13,7 +13,10 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-require_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php';
+/**
+ * @ignore
+ */
+require_once(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php');
 
 /**
  * E-Card
@@ -315,6 +318,8 @@ class ecard
             
             $objFile = new File();
             if ($objFile->copyFile(ASCMS_ECARD_OPTIMIZED_PATH.'/', $fileName, ASCMS_ECARD_SEND_ECARDS_PATH.'/', $code.$fileExtension)) {
+                $objMail = new phpmailer();
+
                 // Check e-mail settings
                 if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
                     $objSmtpSettings = new SmtpSettings();
@@ -329,7 +334,6 @@ class ecard
                 }
 
                 // Send notification mail to ecard-recipient
-                $objMail = new phpmailer();
                 $objMail->CharSet = CONTREXX_CHARSET;
                 $objMail->From = $senderEmail;
                 $objMail->FromName = $senderName;
