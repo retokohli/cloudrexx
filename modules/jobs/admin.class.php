@@ -426,7 +426,6 @@ class jobsManager extends jobsLibrary
                     'JOBS_ENDDATE'    => $endDate,
                     'JOBS_STATUS'        => $status,
                     'JOBS_DATE'       => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
-                    'JOBS_JS_DATE'    => date('Y-m-d', $objResult->fields['date']),
                 ));
             }
 
@@ -466,7 +465,6 @@ class jobsManager extends jobsLibrary
                 'JOBS_STARTDATE'       => "",
                 'JOBS_ENDDATE' => "",
                 'JOBS_DATE'  => date(ASCMS_DATE_FORMAT, time()),
-                //'JOBS_JS_DATE'    => date('Y-m-d', $objResult->fields['date']), // there is no result here....
                 'TXT_AUTHOR' => $_ARRAYLANG['TXT_AUTHOR'],
                 'JOBS_AUTHOR' => htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
@@ -609,7 +607,6 @@ class jobsManager extends jobsLibrary
                 'JOBS_ENDDATE'    => $endDate,
                 'JOBS_STATUS'        => $status,
                 'JOBS_DATE'       => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
-                'JOBS_JS_DATE'    => date('Y-m-d', $objResult->fields['date']),
             ));
         }
         $this->_objTpl->setVariable(array(

@@ -4,6 +4,25 @@
 
 cx.ready(function() {
     jQuery('input[name=work_start]').datepicker({dateFormat: 'yy-mm-dd'});
+
+    var options = {
+        onSelect: function(dateText, inst) {
+            //adjust start or end date to avoid an invalid date range
+            var startDate = jQuery('input[name=startDate]').datetimepicker('getDate');
+            var endDate = jQuery('input[name=endDate]').datetimepicker('getDate');
+            if ((startDate != null) && (endDate != null) && (startDate > endDate)) {
+                if (jQuery(this).attr('name') == 'startDate') {
+                    jQuery('input[name=endDate]').datetimepicker('setDate', dateText);
+                } else {
+                    jQuery('input[name=startDate]').datetimepicker('setDate', dateText);
+                }
+            }
+        },
+        dateFormat: 'yy-mm-dd',
+        timeFormat: 'hh:mm:ss'
+    }
+    jQuery('input[name=startDate]').datetimepicker(options);
+    jQuery('input[name=endDate]').datetimepicker(options);
 });
 
 function checkfields() 
@@ -40,30 +59,9 @@ function disableDate()
   }
 }
 
-
-function setStartDate()
-{
-  with(document.jobs)
-    {
-     if(startDate.value=="")
-     {
-          startDate.value= "{JOBS_JS_DATE} 00:00:00";
-     }
-    }
-}
-
-function setEndDate()
-{
-    with(document.jobs)
-    {
-     if(endDate.value=="")
-     {
-          endDate.value = "{JOBS_JS_DATE} 00:00:00";
-     }
-    }
-}
 // -->
 </script>
+
 <form name="jobs" method="post" action="index.php?cmd=jobs&act={JOBS_FORM_ACTION}&id={JOBS_ID}" onsubmit="return checkfields();">
   <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
     <tr>
@@ -260,9 +258,9 @@ function DeselectAllLocations(CONTROL)
       <td height="26"><b>
         <input type="checkbox" name="status" value="1" {JOBS_STATUS} onClick="disableDate()" />
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>&nbsp;&nbsp;&nbsp;&nbsp;{TXT_STARTDATE}:
-        <input type="text" name="startDate" size="19" maxlength="19" onClick="setStartDate()" value="{JOBS_STARTDATE}" enabled />
+        <input type="text" name="startDate" size="19" maxlength="19" value="{JOBS_STARTDATE}" enabled />
         &nbsp;&nbsp; {TXT_ENDDATE}:
-        <input type="text" name="endDate" size="19" maxlength="19" onFocus="setEndDate()" value="{JOBS_ENDDATE}" enabled />
+        <input type="text" name="endDate" size="19" maxlength="19" value="{JOBS_ENDDATE}" enabled />
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( {TXT_OPTIONAL} )</td>
     </tr>
   </table>
