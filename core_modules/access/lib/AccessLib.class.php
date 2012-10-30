@@ -150,6 +150,12 @@ class AccessLib
     {
         global $_CORELANG;
 
+        JS::activate('jqueryui');
+        JS::registerCode("
+            cx.ready(function() {
+                jQuery('.access_date').datepicker({dateFormat: 'dd.mm.yy'});
+            });
+        ");
         $this->arrAttributeTypeTemplates = array(
             'textarea'        => '<textarea name="[NAME]" rows="1" cols="1">[VALUE]</textarea>',
             'text'            => '<input type="text" name="[NAME]" value="[VALUE]" />',
@@ -158,8 +164,7 @@ class AccessLib
             'menu'            => '<select name="[NAME]"[STYLE]>[VALUE]</select>',
             'menu_option'     => '<option value="[VALUE]"[SELECTED][STYLE]>[VALUE_TXT]</option>',
             'url'             => '<input type="hidden" name="[NAME]" value="[VALUE]" /><em>[VALUE_TXT]</em> <a href="javascript:void(0);" onclick="elLink=null;elDiv=null;elInput=null;pntEl=this.previousSibling;while ((typeof(elInput)==\'undefined\'||typeof(elDiv)!=\'undefined\')&& pntEl!=null) {switch(pntEl.nodeName) {case\'INPUT\':elInput=pntEl;break;case\'EM\':elDiv=pntEl;if (elDiv.getElementsByTagName(\'a\').length>0) {elLink=elDiv.getElementsByTagName(\'a\')[0];}break;}pntEl=pntEl.previousSibling;}accessSetWebsite(elInput,elDiv,elLink)" title="'.$_CORELANG['TXT_ACCESS_CHANGE_WEBSITE'].'"><img align="middle" src="'.ASCMS_PATH_OFFSET.'/images/modules/access/edit.gif" width="16" height="16" border="0" alt="'.$_CORELANG['TXT_ACCESS_CHANGE_WEBSITE'].'" /></a>',
-            'date'            => '<input type="text" name="[NAME]" onfocus="Calendar.setup({inputField:this,ifFormat:\''.preg_replace('#([a-z])#i', '%$1', str_replace(array('j', 'n'), array('e', 'm'), ASCMS_DATE_FORMAT_DATE)).'\',range:[1900,2100]})" value="[VALUE]" readonly="readonly" /><a href="javascript:void(0)" onclick="this.previousSibling.value = \'\'" title="'.$_CORELANG['TXT_ACCESS_DELETE_DATE'].'"><img src="'.ASCMS_PATH_OFFSET.'/images/modules/access/delete.gif" width="17" height="17" border="0" alt="'.$_CORELANG['TXT_ACCESS_DELETE_DATE'].'" style="vertical-align:middle;" /></a>'
-
+            'date'            => '<input type="text" name="[NAME]" class="access_date" value="[VALUE]" /><a href="javascript:void(0)" onclick="this.previousSibling.value = \'\'" title="'.$_CORELANG['TXT_ACCESS_DELETE_DATE'].'"><img src="'.ASCMS_PATH_OFFSET.'/images/modules/access/delete.gif" width="17" height="17" border="0" alt="'.$_CORELANG['TXT_ACCESS_DELETE_DATE'].'" style="vertical-align:middle;" /></a>'
         );
     }
 
@@ -1217,11 +1222,6 @@ function accessRemoveChildsOfElement(obj)
 // ]]>
 </script>
 JSaccessRemoveChildsOfElement
-                ,
-                'jscalendarIncludes' => '<style type="text/css">@import url('.ASCMS_PATH_OFFSET.'/lib/jscalendar/skins/aqua/theme.css);</style>'
-                                        .'<script type="text/javascript" src="'.ASCMS_PATH_OFFSET.'/lib/jscalendar/calendar.js"></script>'
-                                        .'<script type="text/javascript" src="'.ASCMS_PATH_OFFSET.'/lib/jscalendar/lang/calendar-de.js"></script>'
-                                        .'<script type="text/javascript" src="'.ASCMS_PATH_OFFSET.'/lib/jscalendar/calendar-setup.js"></script>'
                 ,
                 'accessSelectAllGroups'    => <<<JSaccessSelectAllGroups
 <script type="text/javascript">
