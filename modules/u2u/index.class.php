@@ -48,12 +48,12 @@ class u2u extends u2uLibrary
     * @access public
     */
     function getPage()	{
-        if(isset($_GET['cmd'])) {
-            $action=$_GET['cmd'];
-        } elseif(isset($_GET['act'])) {
-            $action=$_GET['act'];
+        if (isset($_GET['act'])) {
+            $action = $_GET['act'];
+        } else if(isset($_GET['cmd'])) {
+            $action = $_GET['cmd'];
         } else {
-            $action='';
+            $action = '';
         }
 
         $objFWUser = FWUser::getFWUserObject();
