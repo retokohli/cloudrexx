@@ -154,7 +154,7 @@ class Blog extends BlogLibrary  {
      * @param   integer     $intMessageId: The details of this page will be shown
      */
     function showDetails($intMessageId) {
-        global $_ARRAYLANG, $objDatabase, $_CONFIG;
+        global $_CORELANG, $_ARRAYLANG, $objDatabase, $_CONFIG;
 
         $this->initUserId();
         $intMessageId = intval($intMessageId);
@@ -178,7 +178,7 @@ class Blog extends BlogLibrary  {
         //Check for new comments
         if (isset($_POST['frmAddComment_MessageId'])) {
             $this->addComment();
-            if (!empty($this->_strErrorMessage) || !FWCaptcha::getInstance()->check()) {
+            if (!empty($this->_strErrorMessage) || (!FWUser::getFWUserObject()->objUser->login() && !FWCaptcha::getInstance()->check())) {
                 //Error occured, get previous entered values
                 $strName        = htmlentities($_POST['frmAddComment_Name'], ENT_QUOTES, CONTREXX_CHARSET);
                 $strEMail       = htmlentities($_POST['frmAddComment_EMail'], ENT_QUOTES, CONTREXX_CHARSET);
@@ -254,11 +254,19 @@ class Blog extends BlogLibrary  {
                 'TXT_COMMENT_ADD_WWW'       =>  $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_WWW'],
                 'TXT_COMMENT_ADD_SUBJECT'   =>  $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_SUBJECT'],
                 'TXT_COMMENT_ADD_COMMENT'   =>  $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_COMMENT'],
-                'TXT_COMMENT_ADD_SPAM'      =>  $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_SPAM'],
-                'TXT_COMMENT_ADD_SPAM_DESC' =>  $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_SPAM_DESC'],
                 'TXT_COMMENT_ADD_RESET'     =>  $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_RESET'],
                 'TXT_COMMENT_ADD_SUBMIT'    =>  $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_SUBMIT'],
             ));
+
+            if (FWUser::getFWUserObject()->objUser->login()) {
+                $this->_objTpl->hideBlock('comment_captcha');
+            } else {
+                $this->_objTpl->setVariable(array(
+                    'TXT_COMMENT_CAPTCHA'   => $_CORELANG['TXT_CORE_CAPTCHA'],
+                    'COMMENT_CAPTCHA_CODE'  => FWCaptcha::getInstance()->getCode(),
+                ));
+                $this->_objTpl->parse('comment_captcha');
+            }
 
             $this->_objTpl->setVariable(array(
                 'BLOG_DETAILS_COMMENTS_JAVASCRIPT'  =>  $this->getJavascript('comments')
@@ -335,7 +343,6 @@ class Blog extends BlogLibrary  {
                     'BLOG_DETAILS_COMMENT_ADD_WWW'              =>  ($this->_intCurrentUserId == 0) ? '<input type="text" name="frmAddComment_WWW" value="'.$strWWW.'" class="blogCommentInput" />' : htmlentities($objFWUser->objUser->getProfileAttribute('website'), ENT_QUOTES, CONTREXX_CHARSET),
                     'BLOG_DETAILS_COMMENT_ADD_SUBJECT'          =>  $strSubject,
                     'BLOG_DETAILS_COMMENT_ADD_COMMENT'          =>  $strEditor,
-                    'BLOG_DETAILS_COMMENT_ADD_SPAM_CODE'        =>  FWCaptcha::getInstance()->getCode(),
                 ));
             } else {
                 //Anonymous comments arent allowed and the user isn't logged in -> Hide block!
@@ -500,8 +507,13 @@ class Blog extends BlogLibrary  {
             if (!$objValidator->isEmail($strEMail)) {               $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_EMAIL']); }
         }
 
+        $captchaCheck = true;
+        if (!FWUser::getFWUserObject()->objUser->login() && !FWCaptcha::getInstance()->check()) {
+            $captchaCheck = false;
+        }
+        
         //Now check error-string
-        if (empty($this->_strErrorMessage) && FWCaptcha::getInstance()->check()) {
+        if (empty($this->_strErrorMessage) && $captchaCheck) {
             //No errors, insert entry
             $objDatabase->Execute(' INSERT INTO '.DBPREFIX.'module_blog_comments
                                     SET     message_id = '.$intMessageId.',
