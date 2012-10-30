@@ -145,8 +145,9 @@ class SearchManager extends \Module
                         'SEARCH_RESULT_ID'            => $page->getId(),
                         'SEARCH_RESULT_TITLE'         => $page->getTitle(),
                         'SEARCH_RESULT_CONTENT_TITLE' => $page->getContentTitle(),
-                        'SEARCH_RESULT_SLUG'          => $page->getSlug(),
+                        'SEARCH_RESULT_SLUG'          => substr($page->getPath(), 1),
                         'SEARCH_RESULT_LANG'          => \FWLanguage::getLanguageCodeById($page->getLang()),
+                        'SEARCH_RESULT_FRONTEND_LINK' => \Cx\Core\Routing\Url::fromPage($page),
                     ));
                     
                     $this->template->parse('search_result_row');
