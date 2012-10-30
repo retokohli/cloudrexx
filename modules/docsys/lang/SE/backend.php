@@ -50,7 +50,7 @@ $_ARRAYLANG['TXT_CATEGORY_LIST'] = "Kategorienliste";
 $_ARRAYLANG['TXT_ID'] = "ID";
 $_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Änderungen übernehmen";
 $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "Diese Aktion kann die Systemfunktionalität beeinflussen!";
-$_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'] = "Die Kategorie konnte nicht gelöscht werden! Bitte löschen Sie zuerst alle Untergruppen.";
+$_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'] = "The category could not be deleted because there are entries that are associated with that category.";
 $_ARRAYLANG['TXT_NO_DOCUMENTS_FOUND'] = "Es wurden keine Dokumente gefunden";
 $_ARRAYLANG['TXT_DELETE'] = "Löschen";
 ?>
