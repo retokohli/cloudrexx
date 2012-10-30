@@ -99,36 +99,6 @@ EOF;
         $strPleaseChoose = $_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHOOSE'];
 
         //get ids
-        /*if (isset($_GET['cmd'])) {
-            $arrIds = explode("-", $_GET['cmd']);
-            
-	        $arrFormCmd = array();
-	                
-	        $objForms = new mediaDirectoryForm();
-	            
-	            
-            foreach ($objForms->arrForms as $intFormId => $arrForm) {
-                if (!empty($arrForm['formCmd'])) {
-                    $arrFormCmd[$arrForm['formCmd']] = intval($intFormId);
-                }
-            }
-	                
-            if (!empty($arrFormCmd[$_GET['cmd']])) {
-                $intCmdFormId = intval($arrFormCmd[$_GET['cmd']]);
-            }
-            
-            if (empty($intCmdFormId)) {
-	            $bolShowLevelSelector = in_array(1, $this->arrSettings['levelSelectorExpSearch']);
-	            $bolShowCategorySelector = in_array(1, $this->arrSettings['categorySelectorExpSearch']);
-            } else {
-                $bolShowLevelSelector = (in_array(1, $this->arrSettings['levelSelectorExpSearch']) && $objForms->arrForms[$intCmdFormId]['formUseLevel']) ? 1 : 0;
-	            $bolShowCategorySelector = (in_array(1, $this->arrSettings['categorySelectorExpSearch']) && $objForms->arrForms[$intCmdFormId]['formUseCategory']) ? 1 : 0;
-            }
-        } else {
-        	$bolShowLevelSelector = in_array(1, $this->arrSettings['levelSelectorExpSearch']);
-            $bolShowCategorySelector = in_array(1, $this->arrSettings['categorySelectorExpSearch']);
-        } */
-
         if (!empty($_GET['cmd'])) {
             $bolShowLevelSelector = false;
             $bolShowCategorySelector = false;
