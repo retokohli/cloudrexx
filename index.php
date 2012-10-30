@@ -20,7 +20,7 @@ if ($php < '5.3') {
 }
 
 require_once dirname(__FILE__).'/lib/DBG.php';
-\DBG::activate(DBG_PHP);
+//\DBG::activate(DBG_PHP);
 
 $_CONFIGURATION = $_CONFIG = null;
 
