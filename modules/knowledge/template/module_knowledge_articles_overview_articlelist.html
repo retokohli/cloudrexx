@@ -4,7 +4,6 @@
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
 Text[0]=["","{TXT_SORT}"];
 
-
 var hoverIn = function(obj) {
 	if (navigator.appName.indexOf("Explorer") == -1) {
 		obj.style.background = '#ffffcc';
@@ -20,11 +19,10 @@ var hoverOut = function(obj) {
 if (navigator.appName.indexOf("Explorer") == -1) {
 	$('not_ie').style.width = "100%";
 }
-
 /* ]]> */
 </script>
 
-<div style="min-height: 1%; height: 1%; float:left; " id="not_ie">
+<div style="width: 100%; min-height: 1%; height: 1%; float:left; " id="not_ie">
     <table style="width: 100%; font-weight: bold;" class="adminlist" cellspacing="0" cellpadding="3">
         <tr>
             <th colspan="6">
@@ -41,7 +39,7 @@ if (navigator.appName.indexOf("Explorer") == -1) {
         </tr>
     </table>
     <div>
-	    <ul id="articlelist"  >
+	    <ul id="articlelist">
 		<!-- BEGIN row -->
 			<li id="article_{ARTICLEID}" style=" z-index: 1000;">
 	            <table style="width: 100%">
@@ -115,7 +113,7 @@ setRows();
 </script>
 
  <!-- END jsinit -->
- <br style="clear: both;"/>
+<br style="clear: both;"/>
 
 <!-- END content -->
 
