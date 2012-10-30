@@ -116,7 +116,7 @@ class Guestbook extends GuestbookLibrary {
             $gender = ($objResult->fields["gender"] == "M") ? $_ARRAYLANG['guestbookGenderMale'] : $_ARRAYLANG['guestbookGenderFemale']; // N/A
 
             if ($objResult->fields['url'] != "") {
-                $this->_objTpl->setVariable('GUESTBOOK_URL', '<a href="' . $objResult->fields['url'] . '"><img alt="' . $objResult->fields['url'] . '" src="' . ASCMS_MODULE_IMAGE_WEB_PATH . '/guestbook/www.gif" style="vertical-align:baseline" border="0" /></a>');
+                $this->_objTpl->setVariable('GUESTBOOK_URL', '<a href="' . $objResult->fields['url'] . '" target="_blank"><img alt="' . $objResult->fields['url'] . '" src="' . ASCMS_MODULE_IMAGE_WEB_PATH . '/guestbook/www.gif" style="vertical-align:baseline" border="0" /></a>');
             }
             if ($objResult->fields['email'] != "") {
                 if ($this->arrSettings['guestbook_replace_at']) {
@@ -179,34 +179,34 @@ class Guestbook extends GuestbookLibrary {
 
         $this->_objTpl->setTemplate($this->pageContent);
 
-        $checked = "checked=\"checked\"";
-
         if (!empty($this->error)) {
             $errors = "<span style=\"color: red\">";
             foreach ($this->error as $error) {
                 $errors .= $error . "<br />";
             }
             $errors .= "</span>";
-
-            if ($_POST['malefemale'] == "F") {
-                $female_checked = $checked;
-                $male_checked = "";
-            } else {
-                $female_checked = "";
-                $male_checked = $checked;
-            }
-
-            $this->_objTpl->setVariable(array(
-                "FORENAME" => htmlentities($_POST['forename'], ENT_QUOTES, CONTREXX_CHARSET),
-                "NAME" => htmlentities($_POST['name'], ENT_QUOTES, CONTREXX_CHARSET),
-                "COMMENT" => $_POST['comment'],
-                "FEMALE_CHECKED" => $female_checked,
-                "MALE_CHECKED" => $male_checked,
-                "LOCATION" => htmlentities($_POST['location'], ENT_QUOTES, CONTREXX_CHARSET),
-                "HOMEPAGE" => htmlentities($_POST['url'], ENT_QUOTES, CONTREXX_CHARSET),
-                "EMAIL" => htmlentities($_POST['email'], ENT_QUOTES, CONTREXX_CHARSET)
-            ));
         }
+        
+        $checked = "checked=\"checked\"";
+
+        if ($_POST['malefemale'] == "F") {
+            $female_checked = $checked;
+            $male_checked = "";
+        } else {
+            $female_checked = "";
+            $male_checked = $checked;
+        }
+
+        $this->_objTpl->setVariable(array(
+            "FORENAME" => htmlentities($_POST['forename'], ENT_QUOTES, CONTREXX_CHARSET),
+            "NAME" => htmlentities($_POST['name'], ENT_QUOTES, CONTREXX_CHARSET),
+            "COMMENT" => $_POST['comment'],
+            "FEMALE_CHECKED" => $female_checked,
+            "MALE_CHECKED" => $male_checked,
+            "LOCATION" => htmlentities($_POST['location'], ENT_QUOTES, CONTREXX_CHARSET),
+            "HOMEPAGE" => htmlentities($_POST['url'], ENT_QUOTES, CONTREXX_CHARSET),
+            "EMAIL" => htmlentities($_POST['email'], ENT_QUOTES, CONTREXX_CHARSET)
+        ));
 
         $this->_objTpl->setVariable(array(
             "ERROR" => $errors,
@@ -305,6 +305,7 @@ class Guestbook extends GuestbookLibrary {
         global $_ARRAYLANG;
 
         $objValidator = new FWValidator();
+        $captchaCheck = true;
 
         $_POST['forename'] = strip_tags(contrexx_stripslashes($_POST['forename']));
         $_POST['name'] = strip_tags(contrexx_stripslashes($_POST['name']));
@@ -313,8 +314,8 @@ class Guestbook extends GuestbookLibrary {
         $_POST['email'] = strip_tags(contrexx_stripslashes($_POST['email']));
         $_POST['url'] = strip_tags(contrexx_stripslashes($_POST['url']));
 
-        if (!FWCaptcha::getInstance()->check()) {
-            $this->error[] = FWCaptcha::getInstance()->getErrro();
+        if (!FWUser::getFWUserObject()->objUser->login() && !FWCaptcha::getInstance()->check()) {
+            $captchaCheck = false;
         }
 
         if (empty($_POST['name']) || empty($_POST['forename'])) {
@@ -337,7 +338,7 @@ class Guestbook extends GuestbookLibrary {
             $this->makeError($_ARRAYLANG['TXT_EMAIL']);
         }
 
-        if (empty($this->error)) {
+        if (empty($this->error) && $captchaCheck) {
             return true;
         } else {
             return false;
