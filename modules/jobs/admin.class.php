@@ -1247,6 +1247,9 @@ class jobsManager extends jobsLibrary
     */
     function filterBodyTag($fullContent)
     {
+        if (empty($fullContent)) {
+            return $fullContent;
+        }
         $posBody = 0;
         $posStartBodyContent = 0;
         $arrayMatches = array();
@@ -1276,15 +1279,14 @@ class jobsManager extends jobsLibrary
     */
     function createRSS()
     {
-        $RSS = new rssFeed();
-        //$RSS->channelTitle = $_CONFIG['backendXmlChannelTitle'];
-        //$RSS->channelDescription = $_CONFIG['backendXmlChannelDescription'];
-        $RSS->channelTitle = "Jobsystem";
-        $RSS->channelDescription = "";
-        $RSS->xmlType = "headlines";
-        $RSS->createXML();
-        $RSS->xmlType = "fulltext";
-        $RSS->createXML();
+        \Env::get('ClassLoader')->loadFile(ASCMS_MODULE_PATH.'/jobs/xmlfeed.class.php');
+        $rssFeed = new rssFeed();
+        $rssFeed->channelTitle = "Jobsystem";
+        $rssFeed->channelDescription = "";
+        $rssFeed->xmlType = "headlines";
+        $rssFeed->createXML();
+        $rssFeed->xmlType = "fulltext";
+        $rssFeed->createXML();
     }
 
 }
