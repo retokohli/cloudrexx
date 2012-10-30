@@ -1269,7 +1269,6 @@ class AccessManager extends AccessLib
             $this->_objTpl->hideBlock('access_profile_group_assignment');
         }
         $this->attachJavaScriptFunction('accessSetWebsite');
-        $this->attachJavaScriptFunction('jscalendarIncludes');
         $passwordInfo = self::getPasswordInfo();
         $this->_objTpl->setVariable(array(
             'TXT_ACCESS_USER_ACCOUNT'                   => $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT'],
@@ -2098,7 +2097,6 @@ class AccessManager extends AccessLib
         $this->_objTpl->addBlockfile('ACCESS_CONFIG_TEMPLATE', 'module_access_config_attribute_list', 'module_access_config_attribute_list.html');
 
         $this->attachJavaScriptFunction('accessSetWebsite');
-        $this->attachJavaScriptFunction('jscalendarIncludes');
 
         $this->_objTpl->setVariable(array(
             'TXT_ACCESS_NAME'                       => $_ARRAYLANG['TXT_ACCESS_NAME'],
@@ -2214,7 +2212,6 @@ class AccessManager extends AccessLib
         $this->_objTpl->addBlockfile('ACCESS_CONFIG_TEMPLATE', 'module_access_config_attribute_modify', 'module_access_config_attribute_modify.html');
 
         $this->attachJavaScriptFunction('accessSetWebsite');
-        $this->attachJavaScriptFunction('jscalendarIncludes');
         $this->attachJavaScriptFunction('accessSelectAllGroups');
         $this->attachJavaScriptFunction('accessDeselectAllGroups');
         $this->attachJavaScriptFunction('accessAddGroupToList');

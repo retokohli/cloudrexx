@@ -317,7 +317,6 @@ class Access extends AccessLib
         }
 
         $this->attachJavaScriptFunction('accessSetWebsite');
-        $this->attachJavaScriptFunction('jscalendarIncludes');
 
         $this->_objTpl->setVariable(array(
             'ACCESS_DELETE_ACCOUNT_BUTTON'  => '<input type="submit" name="access_delete_account" value="'.$_ARRAYLANG['TXT_ACCESS_DELETE_ACCOUNT'].'" />',
@@ -496,7 +495,6 @@ class Access extends AccessLib
         $this->parseNewsletterLists($objUser);
 
         $this->attachJavaScriptFunction('accessSetWebsite');
-        $this->attachJavaScriptFunction('jscalendarIncludes');
 
         $this->_objTpl->setVariable(array(
             'ACCESS_SIGNUP_BUTTON'          => '<input type="submit" name="access_signup" value="'.$_ARRAYLANG['TXT_ACCESS_CREATE_ACCOUNT'].'" />',
