@@ -16,11 +16,11 @@
 
 $php = phpversion();
 if ($php < '5.3') {
-    die('Das Contrexx CMS ben&uml;tigt mindestens PHP in der Version 5.3.<br />Auf Ihrem System l&auml;uft PHP '.$php);
+    die('Das Contrexx CMS ben&ouml;tigt mindestens PHP in der Version 5.3.<br />Auf Ihrem System l&auml;uft PHP '.$php);
 }
 
 require_once dirname(__FILE__).'/lib/DBG.php';
-//\DBG::activate(DBG_PHP);
+\DBG::activate(DBG_PHP);
 
 $_CONFIGURATION = $_CONFIG = null;
 
