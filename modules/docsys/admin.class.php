@@ -710,29 +710,31 @@ class docSysManager extends docSysLibrary
     }
 
 
-
     /**
     * Delete the news categories
     *
     * @global    ADONewConnection
-    * @global    array
-    * @param     string     $pageContent
+    * @global    array      $_ARRAYLANG
     */
     function deleteCat(){
-        global $objDatabase,$_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
-        if(isset($_GET['catId'])) {
-            $catId=intval($_GET['catId']);
-            $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_docsys".MODULE_INDEX." WHERE catid=$catId");
+        if (isset($_GET['catId'])) {
+            $catId = intval($_GET['catId']);
+            $objResult = $objDatabase->Execute('SELECT `entry` FROM `'.DBPREFIX.'module_docsys'.MODULE_INDEX.'_entry_category` WHERE `category`='.$catId);
 
-            if (!$objResult->EOF) {
-                 $this->strErrMessage = $_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'];
-            } else {
-                if($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_docsys".MODULE_INDEX."_categories WHERE catid=$catId")) {
-                    $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
+            if ($objResult) {
+                if ($objResult->RecordCount() == 0) {
+                    if ($objDatabase->Execute('DELETE FROM `'.DBPREFIX.'module_docsys'.MODULE_INDEX.'_categories` WHERE `catid` = '.$catId)) {
+                        $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
+                    } else {
+                        $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+                    }
                 } else {
-                    $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+                     $this->strErrMessage = $_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'];
                 }
+            } else {
+                $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
             }
         }
     }
@@ -777,16 +779,15 @@ class docSysManager extends docSysLibrary
     {
         global $_CONFIG;
 
-        $RSS = new rssFeed();
-        //$RSS->channelTitle = $_CONFIG['backendXmlChannelTitle'];
-        //$RSS->channelDescription = $_CONFIG['backendXmlChannelDescription'];
-        $RSS->channelTitle = "Dokumentensystem";
-        $RSS->channelDescription = "";
+        \Env::get('ClassLoader')->loadFile(ASCMS_MODULE_PATH.'/docsys/xmlfeed.class.php');
+        $objRssFeed = new rssFeed();
+        $objRssFeed->channelTitle = "Dokumentensystem";
+        $objRssFeed->channelDescription = "";
 
-        $RSS->xmlType = "headlines";
-        $RSS->createXML();
-        $RSS->xmlType = "fulltext";
-        $RSS->createXML();
+        $objRssFeed->xmlType = "headlines";
+        $objRssFeed->createXML();
+        $objRssFeed->xmlType = "fulltext";
+        $objRssFeed->createXML();
     }
 }
 ?>
