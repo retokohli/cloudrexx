@@ -798,6 +798,7 @@ class eGovLibrary {
                 $objResult->MoveNext();
             }
         }
+        \Env::get('ClassLoader')->loadFile(ASCMS_MODULE_PATH.'/egov/lib/cal/calendrier.php');
         $AnzahlTxT = $_ARRAYLANG['TXT_EGOV_QUANTITY'];
         $AnzahlDropdown = eGovLibrary::_QuantityDropdown();
         $Datum4JS = isset($_REQUEST['date']) ? $_REQUEST['date'] : '';
@@ -1194,6 +1195,7 @@ class eGovLibrary {
                 $objResult->MoveNext();
             }
         }
+        \Env::get('ClassLoader')->loadFile(ASCMS_MODULE_PATH.'/egov/lib/cal/calendrier.php');
         $AnzahlTxT = $_ARRAYLANG['TXT_EGOV_QUANTITY'];
         $AnzahlDropdown = $this->_QuantityDropdown();
         $Datum4JS = isset($_REQUEST['date']) ? $_REQUEST['date'] : '';
