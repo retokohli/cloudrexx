@@ -1706,6 +1706,9 @@ div.row2 {
     float: left;
     width: 100%;
 }
+#u2u div.functions table td {
+    vertical-align: middle;
+}
 
 /***************************************************/
 /* CSS DEFINITIONS FOR KNOWLEGE MODULE             */
