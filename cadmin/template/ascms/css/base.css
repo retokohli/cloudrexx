@@ -404,6 +404,7 @@ textarea.cke_source {
 }
 
 .navigation_level_1 li {
+    position: relative;
     float: left;
     width: 216px;
     height: 31px;
@@ -516,10 +517,10 @@ textarea.cke_source {
 
 .navigation_level_1 li .name {
     float: left;
-    width: auto;
+    width: 140px;
     height: 100%;
     line-height: 30px;
-    margin: 0 11px 0 0;
+    margin: 0 24px 0 0;
     font-size: 13px;
     font-weight: bold;
     color: #444444;
@@ -532,7 +533,18 @@ textarea.cke_source {
     color: #ffffff;
 }
 
+.navigation_level_1 li .upgrade {
+    position: absolute;
+    top: 9px;
+    right: 6px;
+    float: left;
+    width: 12px;
+    height: 12px;
+    background: url(../images/navigation_upgrade.png) no-repeat;
+}
+
 .navigation_level_2 li {
+    position: relative;
     float: left;
     width: auto;
     border-bottom: 1px solid #efefef;
@@ -540,11 +552,14 @@ textarea.cke_source {
 
 .navigation_level_2 li a {
     float: left;
-    width: 167px;
+    width: 153px;
+    height: auto !important;
+    min-height: 23px;
     height: 23px;
     line-height: 22px;
-    padding: 0 10px 0 39px;
     background: url(../images/navigation_level_2_list_style.png) no-repeat 26px 8px;
+    padding: 0 0 0 39px;
+    margin: 0 24px 0 0;
     font-size: 12px;
     font-weight: normal;
     color: #444444;
@@ -563,6 +578,16 @@ textarea.cke_source {
 
 .navigation_level_2 li.active a {
     font-weight: bold;
+}
+
+.navigation_level_2 li .upgrade {
+    position: absolute;
+    top: 5px;
+    right: 6px;
+    float: left;
+    width: 12px;
+    height: 12px;
+    background: url(../images/navigation_upgrade.png) no-repeat;
 }
 
 #search {
