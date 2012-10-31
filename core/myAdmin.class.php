@@ -233,14 +233,12 @@ class myAdminManager {
         $requests    = array();
         
         $query = '
-            SELECT FROM_UNIXTIME(`timestamp`, "%e") AS `day`, `count`
+            SELECT `timestamp`, `count`
             FROM `'.DBPREFIX.'stats_visitors_summary`
             WHERE `type` = "day"
             AND `timestamp` >= "'.
             mktime(
-                0,
-                0,
-                0,
+                0, 0, 0,
                 $previousMonth = date('m') == 1 ? 12 : date('m') - 1,
                 date('d') == date('t', mktime(0, 0, 0, $previousMonth, 0, $previousYear = (date('m') == 1 ? date('Y') -1 : date('Y')))) ? date('d') + 1 : 1,
                 $previousYear
@@ -249,19 +247,18 @@ class myAdminManager {
         $objResult = $objDatabase->Execute($query);
         
         while (!$objResult->EOF) {
-            $arrVisitors[$objResult->fields['day']] = $objResult->fields['count'];
+            $day = date('j', $objResult->fields['timestamp']);
+            $arrVisitors[$day] = $objResult->fields['count'];
             $objResult->MoveNext();
         }
         
         $query = '
-            SELECT FROM_UNIXTIME(`timestamp`, "%e") AS `day`, `count`
+            SELECT `timestamp`, `count`
             FROM `'.DBPREFIX.'stats_requests_summary`
             WHERE `type` = "day"
             AND `timestamp` >= "'.
             mktime(
-                0,
-                0,
-                0,
+                0, 0, 0,
                 $previousMonth = date('m') == 1 ? 12 : date('m') - 1,
                 date('d') == date('t', mktime(0, 0, 0, $previousMonth, 0, $previousYear = (date('m') == 1 ? date('Y') -1 : date('Y')))) ? date('d') + 1 : 1,
                 $previousYear
@@ -270,7 +267,8 @@ class myAdminManager {
         $objResult = $objDatabase->Execute($query);
     
         while (!$objResult->EOF) {
-            $arrRequests[$objResult->fields['day']] = $objResult->fields['count'];
+            $day = date('j', $objResult->fields['timestamp']);
+            $arrRequests[$day] = $objResult->fields['count'];
             $objResult->MoveNext();
         }
         
