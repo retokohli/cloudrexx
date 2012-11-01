@@ -136,10 +136,11 @@ class myAdminManager {
             $objTemplate->hideBlock('news_delete');
             $objTemplate->hideBlock('stats_delete');
         }
-        $license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase);
-        $message = $license->getMessage(\FWLanguage::getLanguageCodeById(BACKEND_LANG_ID), $_CORELANG);
-        if ($message && $message->showInDashboard()) {
-            $objTemplate->setVariable('MESSAGE_TITLE', contrexx_raw2xhtml($message->getText()));
+        $license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
+        $message = $license->getMessage(true, \FWLanguage::getLanguageCodeById(BACKEND_LANG_ID), $_CORELANG);
+        if ($message && strlen($message->getText()) && $message->showInDashboard()) {
+            $licenseManager = new \Cx\Core_Modules\License\LicenseManager('', null, $_CORELANG, $_CONFIG, $objDatabase);
+            $objTemplate->setVariable('MESSAGE_TITLE', contrexx_raw2xhtml($licenseManager->getReplacedMessageText($message)));
             $objTemplate->setVariable('MESSAGE_TYPE', contrexx_raw2xhtml($message->getType()));
             $objTemplate->setVariable('MESSAGE_LINK', contrexx_raw2xhtml($message->getLink()));
             $objTemplate->setVariable('MESSAGE_LINK_TARGET', contrexx_raw2xhtml($message->getLinkTarget()));

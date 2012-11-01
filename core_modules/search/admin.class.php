@@ -74,7 +74,7 @@ class SearchManager extends \Module
      */
     private $pos = 0;
     /**
-     * @var \Cx\Core\License\License
+     * @var \Cx\Core_Modules\License\License
      */
     private $license = null;
     

@@ -154,7 +154,7 @@ $objInit = new InitCMS('frontend', Env::em());
 Env::set('init', $objInit);
 
 // make sure license data is up to date (this updates active available modules)
-$license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase);
+$license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
 $oldState = $license->getState();
 $license->check();
 if ($oldState != $license->getState()) {
