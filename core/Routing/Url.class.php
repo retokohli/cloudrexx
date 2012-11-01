@@ -333,7 +333,7 @@ class Url {
         // and were also unable to locate the error page, we shall
         // return the URL to the Homepage
         if (!$page && $returnErrorPageOnError) {
-            return static::fromDocumentRoot($lang, $protocol);
+            return static::fromDocumentRoot(null, $lang, $protocol);
         }
 
         // Throw an exception if we still were unable to locate 
@@ -351,7 +351,7 @@ class Url {
      * @param string $protocol (optional) The protocol to use
      * @return \Cx\Core\Routing\Url Url object for the documentRoot of the website
      */
-    public static function fromDocumentRoot($lang = '', $protocol = '')
+    public static function fromDocumentRoot($arrParameters = array(), $lang = '', $protocol = '')
     {
         global $_CONFIG;
 
@@ -364,7 +364,16 @@ class Url {
         $host = $_CONFIG['domainUrl'];
         $offset = ASCMS_PATH_OFFSET;
         $langDir = \FWLanguage::getLanguageCodeById($lang);
-        return new Url($protocol.'://'.$host.$offset.'/'.$langDir);
+        $parameters = '';
+        if (count($arrParameters)) {
+            $arrParams = array();
+            foreach ($arrParameters as $key => $value) {
+                $arrParams[] = $key.'='.$value;
+            }
+            $parameters = '?'.implode('&', $arrParams);
+        }
+
+        return new Url($protocol.'://'.$host.$offset.'/'.$langDir.'/'.$parameters);
     }
     
     /**

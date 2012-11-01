@@ -965,22 +965,23 @@ class newsletter extends NewsletterLib
         $emailId = isset($_GET['n']) ? contrexx_input2raw($_GET['n']) : 0;
         $linkId = isset($_GET['l']) ? contrexx_input2raw($_GET['l']) : 0;
         
-        // find out recipient type
-        if ($realUser) {
-            $objUser = FWUser::getFWUserObject()->objUser->getUser(intval($recipientId));
-            if ($objUser === false) {
-                return false;
+        if (!empty($recipientId)) {
+            // find out recipient type
+            if ($realUser) {
+                $objUser = FWUser::getFWUserObject()->objUser->getUser(intval($recipientId));
+                if ($objUser === false) {
+                    return false;
+                }
+                $recipientId = $objUser->getId();
+                $recipientType = 'access';
+            } else {
+                $objUser = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."module_newsletter_user WHERE id='".contrexx_raw2db($recipientId)."'", 1);
+                if ($objUser === false || $objUser->RecordCount() != 1) {
+                    return false;
+                }
+                $recipientId = $objUser->fields['id'];
+                $recipientType = 'newsletter';
             }
-            $recipientId = $objUser->getId();
-            $recipientType = 'access';
-        }
-        else {
-            $objUser = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."module_newsletter_user WHERE id='".contrexx_raw2db($recipientId)."'", 1);
-            if ($objUser === false || $objUser->RecordCount() != 1) {
-                return false;
-            }
-            $recipientId = $objUser->fields['id'];
-            $recipientType = 'newsletter';
         }
         
         /*
@@ -988,7 +989,7 @@ class newsletter extends NewsletterLib
         * can't be looked up in the database (by what reason  so ever), then the request shall be 
         * redirected to the URL provided by the url-modificator s of the request
         */
-        $objLink = $objDatabase->SelectLimit("SELECT `url` FROM ".DBPREFIX."module_newsletter_email_link WHERE id=".$linkId." AND email_id=".$emailId, 1);
+        $objLink = $objDatabase->SelectLimit("SELECT `url` FROM ".DBPREFIX."module_newsletter_email_link WHERE id=".contrexx_raw2db($linkId)." AND email_id=".contrexx_raw2db($emailId), 1);
         if ($objLink === false || $objLink->RecordCount() != 1) {
             return false;
         }     
@@ -996,12 +997,12 @@ class newsletter extends NewsletterLib
         
         \LinkGenerator::parseTemplate($url, true);
         
-        if (intval($recipientId)) {
+        if (!empty($recipientId)) {
             // save feedback for valid user
-            $query = "INSERT IGNORE INTO ".DBPREFIX."module_newsletter_email_link_feedback
-                (link_id, email_id, recipient_id, recipient_type) VALUES (
-                ".$linkId.", ".$emailId.", ".$recipientId.", '".$recipientType."'
-                )";
+            $query = "
+                INSERT IGNORE INTO ".DBPREFIX."module_newsletter_email_link_feedback (link_id, email_id, recipient_id, recipient_type)
+                VALUES (".contrexx_raw2db($linkId).", ".contrexx_raw2db($emailId).", ".contrexx_raw2db($recipientId).", '".contrexx_raw2db($recipientType)."')
+            ";
             $objDatabase->Execute($query);
         }
         
