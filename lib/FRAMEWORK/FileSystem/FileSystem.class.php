@@ -331,7 +331,7 @@ class FileSystem
 
 
     // replaces some characters
-    function replaceCharacters($string) {
+    public static function replaceCharacters($string) {
         // replace $change with ''
         $change = array('+', '¦', '"', '@', '*', '#', '°', '%', '§', '&', '¬', '/', '|', '(', '¢', ')', '=', '?', '\'', '´', '`', '^', '~', '!', '¨', '[', ']', '{', '}', '£', '$', '-', '<', '>', '\\', ';', ',', ':');
         // replace $signs1 with $signs
@@ -575,6 +575,8 @@ class FileSystem
 //DBG::log("File::make_folder($folder_path): FAIL, a file of the name $folder_path exists already<br />");
             return false;
         }
+
+        \Cx\Lib\FileSystem\FileSystem::makeWritable(dirname(ASCMS_DOCUMENT_ROOT.'/'.$folder_path));
         @mkdir(ASCMS_DOCUMENT_ROOT.'/'.$folder_path);
         if (!self::exists($folder_path)) {
 //DBG::log("File::make_folder($folder_path): FAIL, cannot create folder ".ASCMS_DOCUMENT_ROOT."/$folder_path<br />");
@@ -637,7 +639,7 @@ class FileSystem
      * @param   string    $force          Force copying if true
      * @return  boolean                   True on success, false otherwise
      */
-    function copy_folder($source_path, $target_path, $force=false)
+    public static function copy_folder($source_path, $target_path, $force=false)
     {
         self::path_relative_to_root($source_path);
         self::path_relative_to_root($target_path);
@@ -767,7 +769,7 @@ class FileSystem
      * @param   boolean   $force        If true, deletes contents of the folder
      * @return  boolean                 True on success, false otherwise
      */
-    function delete_folder($folder_path, $force=false)
+    public static function delete_folder($folder_path, $force=false)
     {
         self::path_relative_to_root($folder_path);
         $resource = @opendir(ASCMS_DOCUMENT_ROOT.'/'.$folder_path);
@@ -792,6 +794,7 @@ class FileSystem
         }
         closedir($resource);
 
+        \Cx\Lib\FileSystem\FileSystem::makeWritable(dirname(ASCMS_DOCUMENT_ROOT.'/'.$folder_path));
         if (@rmdir(ASCMS_DOCUMENT_ROOT.'/'.$folder_path))
             return true;
         return self::delete_folder_ftp($folder_path);
