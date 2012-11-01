@@ -161,7 +161,7 @@ if ($oldState != $license->getState()) {
     $license->save(new \settingsManager(), $objDatabase);
 }
 if ($license->isFrontendLocked()) {
-    header('Location: offline.html');
+    print file_get_contents(ASCMS_DOCUMENT_ROOT.'/offline.html');
     die(1);
 }
 
@@ -312,6 +312,17 @@ if ($section == 'frontendEditing') {
     $objFrontendEditing = new frontendEditing(Env::em());
     $objFrontendEditing->performAction();
 }
+if ($section == 'jsondata') {
+// TODO: handle expired sessions in any xhr callers.
+    $json = new \Cx\Core\Json\JsonData();
+// TODO: Verify that the arguments are actually present!
+    $adapter = contrexx_input2raw($_GET['object']);
+    $method = contrexx_input2raw($_GET['act']);
+// TODO: Replace arguments by something reasonable
+    $arguments = array('get' => $_GET, 'post' => $_POST);
+    echo $json->jsondata($adapter, $method, $arguments);
+    die();
+}
 if ($section == "newsletter" && Newsletter::isTrackLink()) {//handle link tracker from newsletter, since user should be redirected to the link url
     /*
      * Newsletter Module
@@ -323,6 +334,7 @@ if ($section == "newsletter" && Newsletter::isTrackLink()) {//handle link tracke
     $newsletter->trackLink();
     //execution should never reach this point
 }
+
 
 // Initialize page meta
 $page = null;
