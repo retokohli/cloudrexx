@@ -239,7 +239,7 @@ class mediaDirectoryInputfield extends mediaDirectoryLibrary
                             $this->moduleLangVar.'_SETTINGS_INPUTFIELD_MUSTFIELD' => $strMustfield,
                             $this->moduleLangVar.'_SETTINGS_INPUTFIELD_EXP_SEARCH' => $strExpSearch,
                             $this->moduleLangVar.'_SETTINGS_INPUTFIELD_NAME_MASTER' => $arrInputfield['name'][0],
-                            $this->moduleLangVar.'_SETTINGS_INPUTFIELD_DEFAULTVALUE_MASTER' => $arrInputfield['default_value'][0],
+                            $this->moduleLangVar.'_SETTINGS_INPUTFIELD_DEFAULTVALUE_MASTER' => contrexx_raw2xhtml($arrInputfield['default_value'][0]),
                             $this->moduleLangVar.'_SETTINGS_INPUTFIELD_INFO_MASTER' => $arrInputfield['info'][0],
                         ));
 
@@ -260,7 +260,7 @@ class mediaDirectoryInputfield extends mediaDirectoryLibrary
                                 $this->moduleLangVar.'_INPUTFIELD_DEFAULTVALUE_LANG_ID' => $arrLang['id'],
                                 $this->moduleLangVar.'_INPUTFIELD_DEFAULTVALUE_LANG_SHORTCUT' => $arrLang['lang'],
                                 $this->moduleLangVar.'_INPUTFIELD_DEFAULTVALUE_LANG_NAME' => $arrLang['name'],
-                                $this->moduleLangVar.'_SETTINGS_INPUTFIELD_DEFAULTVALUE' => $arrInputfield['default_value'][$arrLang['id']],
+                                $this->moduleLangVar.'_SETTINGS_INPUTFIELD_DEFAULTVALUE' => contrexx_raw2xhtml($arrInputfield['default_value'][$arrLang['id']]),
                             ));
                             $objTpl->parse($this->moduleName.'InputfieldDefaultvalueList');
                         }
