@@ -274,16 +274,16 @@ table.adminlist td {
 /* messages */
 .message-alert {
     margin: 10px 0 10px 0;
-    background: #ffcccc;
-    padding: 3px;
-    border: 1px solid #ff0000;
-    color: #ff0000;
+    background: #f2dede;
+    padding: 8px;
+    color: #b94a48;
 }
 
 .successful {
     color: #008000;
     font-weight: bold;
 }
+
 .failed {
     color: #ff0000;
     font-weight: bold;
