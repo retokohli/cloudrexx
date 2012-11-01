@@ -101,6 +101,22 @@ class FTPFile implements FileInterface
             throw new FTPFileException($e->getMessage());
         }
 
+        if (is_writable($this->passedFilePath)) {
+            return true;
+        }
+
+        // this is probably not required for FTP - TD / 11/1/2012
+        /*$parentDirectory = dirname($this->passedFilePath);
+        if (!is_writable($parentDirectory)) {
+            if (strpos($parentDirectory, ASCMS_DOCUMENT_ROOT) === 0) {
+                // parent directory lies within the Contrexx installation directory,
+                // therefore, we shall try to make it writable
+                \Cx\Lib\FileSystem\FileSystem::makeWritable($parentDirectory);
+            } else {
+                \DBG::msg('Parent directory '.$parentDirectory.' lies outside of Contrexx installation and can therefore not be made writable!');
+            }
+        }*/
+
         // set write access to file owner
         $filePerms |= \Cx\Lib\FileSystem\FileSystem::CHMOD_USER_WRITE;
 

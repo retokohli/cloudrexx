@@ -83,7 +83,7 @@ class FileSystemFile implements FileInterface
 
     public function touch()
     {
-        \Cx\Lib\FileSystem\FileSystem::makeWritable(dirname($this->filePath));
+        \Cx\Lib\FileSystem\FileSystem::makeWritable($this->filePath);
         if (!touch($this->filePath)) {
             throw new FileSystemFileException('Unable to touch file in file system!');
         }
@@ -109,6 +109,17 @@ class FileSystemFile implements FileInterface
         // abort process in case the file is already writable
         if (is_writable($this->filePath)) {
             return true;
+        }
+
+        $parentDirectory = dirname($this->filePath);
+        if (!is_writable($parentDirectory)) {
+            if (strpos($parentDirectory, ASCMS_DOCUMENT_ROOT) === 0) {
+                // parent directory lies within the Contrexx installation directory,
+                // therefore, we shall try to make it writable
+                \Cx\Lib\FileSystem\FileSystem::makeWritable($parentDirectory);
+            } else {
+                \DBG::msg('Parent directory '.$parentDirectory.' lies outside of Contrexx installation and can therefore not be made writable!');
+            }
         }
 
         // fetch current permissions on loaded file
