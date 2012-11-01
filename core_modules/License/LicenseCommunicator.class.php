@@ -257,7 +257,7 @@ class LicenseCommunicator {
                         messageBar.children("a").attr("target", oldTarget);
                     }
                     jQuery.get(
-                        "../core/License/versioncheck.php"
+                        "../core_modules/License/versioncheck.php"
                     ).success(function(data) {
                         data = jQuery.parseJSON(data);
                         messageBar.children("a").html(data.text);
