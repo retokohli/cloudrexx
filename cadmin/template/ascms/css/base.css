@@ -1225,7 +1225,7 @@ table.adminlist td.nowrap {
 }
 
 #upgradeButton:nth-of-type(1n) {
-    height: 16px;
+    height: 16px\9;
 }
 
 input[type=submit]::-moz-focus-inner {
