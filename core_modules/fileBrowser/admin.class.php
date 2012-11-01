@@ -354,6 +354,7 @@ class FileBrowser {
                     $entry = array_pop($pageStack);
                     $page = $entry['data'][0];
                     $arrPage['level'] = $entry['attr']['level'];
+                    $arrPage['node_id'] = $entry['attr']['rel_id'];
                     $children = $entry['children'];
                     $children = array_reverse($children);
                     foreach ($children as &$entry) {
@@ -362,7 +363,6 @@ class FileBrowser {
                     }
                     $arrPage['catname'] = $page['title'];
                     $arrPage['catid'] = $page['attr']['id'];
-                    $arrPage['node_id'] = $entry['attr']['rel_id'];
                     $arrPage['lang'] = BACKEND_LANG_ID;
                     $arrPage['protected'] = $page['attr']['protected'];
                     $arrPage['type'] = \Cx\Model\ContentManager\Page::TYPE_CONTENT;
