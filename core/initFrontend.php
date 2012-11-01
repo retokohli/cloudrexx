@@ -290,7 +290,7 @@ $command = isset($_REQUEST['cmd']) ? contrexx_addslashes($_REQUEST['cmd']) : '';
 $page    = isset($_REQUEST['page']) ? intval($_REQUEST['page']) : 0;
 $history = isset($_REQUEST['history']) ? intval($_REQUEST['history']) : 0;
 
-if ($section == 'upload') { //handle uploads separately, since they have no content
+if ($section == 'upload') {//handle uploads separately, since they have no content
     $sessionObj = new cmsSession();
     if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/upload/index.class.php'))
         die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -311,6 +311,17 @@ if ($section == 'frontendEditing') {
     $sessionObj = new cmsSession();
     $objFrontendEditing = new frontendEditing(Env::em());
     $objFrontendEditing->performAction();
+}
+if ($section == "newsletter" && Newsletter::isTrackLink()) {//handle link tracker from newsletter, since user should be redirected to the link url
+    /*
+     * Newsletter Module
+     *
+     * Generates no output, requests are answered by a redirect to foreign site
+     *
+     */
+    $newsletter = new Newsletter();
+    $newsletter->trackLink();
+    //execution should never reach this point
 }
 
 // Initialize page meta
@@ -479,20 +490,6 @@ if ($isRegularPageRequest) {
 
 //TODO: history
 }
-// handle link tracker from newsletter, since user should be redirected to the link url
-if ($section == "newsletter" && Newsletter::isTrackLink())
-{
-    /*
-     * Newsletter Module
-     *
-     * Generates no output, requests are answered by a redirect to foreign site
-     *
-     */
-    $newsletter = new Newsletter();
-    $newsletter->trackLink();
-    //execution should never reach this point
-}
-
 
 // TODO: refactor system to be able to remove this backward compatibility
 // Backwards compatibility for code pre Contrexx 3.0 (update)

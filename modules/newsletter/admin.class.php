@@ -5614,15 +5614,14 @@ function MultiAction() {
                     // replace href attribute
                     if (isset($arrLinks[$linkId])) {
 // TODO: use new URL-format
-                        $newUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('newsletter');
-                        $newUrl->setParam('n', $MailId);
-                        $newUrl->setParam('l', $linkId);
-                        if ($realUser) {
-                            $newUrl->setParam('r', $UserId);
-                        } else {
-                            $newUrl->setParam('m', $UserId);
-                        }
-                        $matches[$attrKey][$i] = preg_replace("/href\s*=\s*['\"][^'\"]+['\"]/i", "href=\"".$newUrl->toString()."\"", $matches[$attrKey][$i]);
+                        $arrParameters = array(
+                            'section'               => 'newsletter',
+                            'n'                     => $MailId,
+                            'l'                     => $linkId,
+                            ($realUser ? 'r' : 'm') => $UserId,
+                        );
+                        $newUrl = \Cx\Core\Routing\Url::fromDocumentRoot($arrParameters, null, null)->toString();
+                        $matches[$attrKey][$i] = preg_replace("/href\s*=\s*['\"][^'\"]+['\"]/i", "href=\"".$newUrl."\"", $matches[$attrKey][$i]);
                     }
                     $result = preg_replace("/".self::_prepareForRegExp($matches[$fullKey][$i])."/i", "<a ".$matches[$attrKey][$i].">".$matches[$textKey][$i]."</a>", $result, 1);
                 }
