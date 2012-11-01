@@ -423,7 +423,7 @@ class MediaManager extends MediaLibrary
         }
 
         $obj_file = new File();
-        $dir_name = $obj_file->replaceCharacters($dir_name);
+        $dir_name = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($dir_name);
         $creationStatus = $obj_file->mkDir($this->path, $this->webPath, $dir_name);
         if ($creationStatus != "error") {
             $this->highlightName[] = $dir_name;
