@@ -105,10 +105,10 @@ class CxModelContentManagerNodeProxy extends \Cx\Model\ContentManager\Node imple
         return parent::addPage($page);
     }
 
-    public function getPages($inactive_langs = false)
+    public function getPages($inactive_langs = false, $aliases = false)
     {
         $this->_load();
-        return parent::getPages($inactive_langs);
+        return parent::getPages($inactive_langs, $aliases);
     }
 
     public function getPagesByLang($inactive_langs = false)
