@@ -22,17 +22,22 @@ class LinkSanitizer {
      */
     function replace() {
         return preg_replace("/
-                (     # match all SRC and HREF attributes 
-                      \s(src|href|action)\s*=\s*['\"]
-
-                   |  # or match all CSS @import statements
-                      @import\s+url\s*\(                             )
+                (
+                    # match all SRC and HREF attributes 
+                    \s*(src|href|action)\s*=\s*['\"]
+                    |
+                    # or match all CSS @import statements
+                    @import\s+url\s*\(                             
+                )
 
                 # but only those who's values don't start with a slash..
                 (?=[^\/])
 
                 # ..and neither start with a protocol (http:, ftp:, javascript:, mailto:, etc)
-                (?!([a-z]+):)
+                (?![a-z]+:)
+
+                # ..and neither start width an ampersand followed by a sharp and end with a semicolon (which would indicate that the url contains html codes for ascii characters)
+                (?!&\#\d+;)
 
                 # ..and neither start with a sharp
                 (?!\#)
