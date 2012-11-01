@@ -298,7 +298,7 @@ abstract class Uploader
                 $path = pathinfo($ret[0]);
                 $pathWeb = pathinfo($ret[1]);
                 //make sure the target directory is writable
-                \Cx\Lib\FileSystem\FileSystem::makeWritable($pathWeb['dirname'].$path['basename']);
+                \Cx\Lib\FileSystem\FileSystem::makeWritable($pathWeb['dirname'].'/'.$path['basename']);
 
                 //revert $path and $pathWeb to whole path instead of pathinfo path for copying
                 $path = $path['dirname'].'/'.$path['basename'].'/';
