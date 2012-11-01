@@ -63,9 +63,11 @@ class JsonNode implements JsonAdapter {
      */
     public function __construct() {
         $this->em = \Env::em();
-        $this->nodeRepo = $this->em->getRepository('\Cx\Model\ContentManager\Node');
-        $this->pageRepo = $this->em->getRepository('\Cx\Model\ContentManager\Page');
-        $this->logRepo  = $this->em->getRepository('\Gedmo\Loggable\Entity\LogEntry');
+        if ($this->em) {
+            $this->nodeRepo = $this->em->getRepository('\Cx\Model\ContentManager\Node');
+            $this->pageRepo = $this->em->getRepository('\Cx\Model\ContentManager\Page');
+            $this->logRepo  = $this->em->getRepository('\Gedmo\Loggable\Entity\LogEntry');
+        }
         $this->messages = array();
 
         $fallback_lang_codes = \FWLanguage::getFallbackLanguageArray();
