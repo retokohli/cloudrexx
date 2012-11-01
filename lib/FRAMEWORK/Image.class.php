@@ -383,9 +383,10 @@ class ImageManager
 
 
     /**
-     * Saves the new image.
-     * This method does not use exceptions because it is called by older methods without catchers.
-     *
+     * Saves the new image wherever you want
+     * @todo    In case the PHP script has no write access to the location set by $this->newImageFile,
+     *          the image shall be sent to the output buffer and then be put into the new file
+     *          location using the FileSystemFile object.
      * @access  public
      * @param   string    $file             The path for the image file to be written.
      * @param   booelan   $forceOverwrite   Force overwriting existing files if true.
@@ -396,7 +397,20 @@ class ImageManager
 // TODO: Add some sort of diagnostics (Message) here and elsewhere in this class
         if (!$this->imageCheck) return false;
         if (empty($this->newImage)) return false;
-        if (file_exists($file) && !$forceOverwrite) return false;
+        if (file_exists($file)) {
+            if (!$forceOverwrite) {
+                return false;
+            }
+            \Cx\Lib\FileSystem\FileSystem::makeWritable($file);
+        } else {
+            try {
+                $objFile = new \Cx\Lib\FileSystem\File($file);
+                $objFile->touch();
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                \DBG::msg($e->getMessage());
+            }
+        }
+        \Cx\Lib\FileSystem\FileSystem::chmod($file, 0666);//\Cx\Lib\FileSystem\FileSystem::CHMOD_FILE);
         
         $this->newImageFile = $file;
         
@@ -428,7 +442,7 @@ class ImageManager
         } else {
             $function($this->newImage, $this->newImageFile);
         }
-        
+
         return true;
     }
 
@@ -488,14 +502,12 @@ class ImageManager
             default:
                 return false;
         }
-		
 		// Only adjust quality, if it is set.
         if ($this->newImageQuality != '') {
             $function($this->newImage, '', $this->getQuality());
         } else {
             $function($this->newImage);
         }
-		
         return true;
     }
 
