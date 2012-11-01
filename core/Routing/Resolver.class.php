@@ -351,6 +351,8 @@ class Resolver {
             $pageRepo = \Env::em()->getRepository('Cx\Model\ContentManager\Page');
             $this->page = $pageRepo->findOneByModuleCmdLang($section, $command, FRONTEND_LANG_ID);
 
+            checkPageFrontendProtection($page);
+            
             //fallback content
             if (!$this->page) {
                 return;
