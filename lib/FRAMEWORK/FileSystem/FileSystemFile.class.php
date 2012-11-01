@@ -83,6 +83,7 @@ class FileSystemFile implements FileInterface
 
     public function touch()
     {
+        \Cx\Lib\FileSystem\FileSystem::makeWritable(dirname($this->filePath));
         if (!touch($this->filePath)) {
             throw new FileSystemFileException('Unable to touch file in file system!');
         }
@@ -126,6 +127,7 @@ class FileSystemFile implements FileInterface
 
     public function delete()
     {
+        \Cx\Lib\FileSystem\FileSystem::makeWritable(dirname($this->filePath));
         if (!unlink($this->filePath)) {
             throw new FileSystemFileException('Unable to delete file '.$this->filePath.'!');
         }
