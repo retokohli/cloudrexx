@@ -1906,7 +1906,7 @@ class Installer
 
             $_GET['force'] = 'true';
             $_GET['silent'] = 'true';
-            require_once($documentRoot.'/core/License/versioncheck.php');
+            require_once($documentRoot.'/core_modules/License/versioncheck.php');
         }
     }
 
