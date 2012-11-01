@@ -133,14 +133,14 @@ class Resolver {
             return null;
         }
 
-        if(!$result['pages']) {
+        if(!$result['page']) {
             // no alias
             return null;
         }
-        if (count($result['pages']) != 1) {
+        if (count($result['page']) != 1) {
             throw new ResolverException('Unable to match a single page for this alias (tried path ' . $path . ').');
         }
-        $page = current($result['pages']);
+        $page = current($result['page']);
         if (!$page->isActive()) {
             throw new ResolverException('Alias found, but it is not active.');
         }
@@ -284,6 +284,7 @@ class Resolver {
 
                 $targetPath = substr($targetPage->getPath(), 1);
 
+                $this->url->setTargetPath($targetPath.$qs);
                 $this->url->setPath($targetPath.$qs);
                 $this->isRedirection = true;
                 $this->resolve(true);

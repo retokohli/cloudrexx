@@ -463,7 +463,7 @@ class PageRepository extends EntityRepository {
         $treePointer = $result['treePointer'];
 
         if (!$lang) {
-            $result['pages'] = $treePointer['__data']['node']->getPagesByLang();
+            $result['page'] = $treePointer['__data']['node']->getPagesByLang($search_mode == self::SEARCH_MODE_ALIAS_ONLY);
             $result['lang'] = $treePointer['__data']['lang'];
         } else {
             $page = $treePointer['__data']['node']->getPagesByLang();
@@ -553,7 +553,7 @@ class PageRepository extends EntityRepository {
             $pages = $this->findBy(array(
                 'type' => \Cx\Model\ContentManager\Page::TYPE_ALIAS,
                 'slug' => $parts[0],
-            ));
+            ), true);
             if (count($pages) == 1) {
                 $page = $pages[0];
                 return array(

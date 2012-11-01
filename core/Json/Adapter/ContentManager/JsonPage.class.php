@@ -291,7 +291,7 @@ class JsonPage implements JsonAdapter {
         $page->setUpdatedAtToNow();
         $page->validate();
         
-        if (\Permission::checkAccess(36, 'static', true)) {
+        if (empty($action) && \Permission::checkAccess(36, 'static', true)) {
             if ($page->isFrontendProtected()) {
                 // remove all
                 \Permission::removeAccess($page->getFrontendAccessId(), 'dynamic');
@@ -308,7 +308,7 @@ class JsonPage implements JsonAdapter {
                     $pg->setAssignedGroupIds($page, $dataPost['backendGroups'], false);
                 }
             }
-        } else {
+        } else if (empty($action)) {
             $this->messages[] = $_CORELANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'];
         }
         
