@@ -22,7 +22,7 @@ abstract class PageTree {
     
     /**
      * @param $entityManager the doctrine em
-     * @param \Cx\Core\License\License $license License used to check if a module is allowed in frontend
+     * @param \Cx\Core_Modules\License\License $license License used to check if a module is allowed in frontend
      * @param int $maxDepth maximum depth to fetch, 0 means everything
      * @param \Cx\Model\ContentManager\Node $rootNode node to use as root
      * @param int $lang the language
@@ -77,6 +77,7 @@ $this->bytes = memory_get_peak_usage();
      * @param type $dontDescend 
      */
     private function internalRender($node, $dontDescend = false) {
+        global $_CONFIG;
         $content = '';
         $nodeStack = array();
         array_push($nodeStack, $node);
@@ -129,13 +130,22 @@ $this->bytes = memory_get_peak_usage();
             
             try {
                 // if parent is invisible or unpublished and parent node is not start node
-                if ($page->getParent() && (!$page->getParent()->isVisible() || !$page->getParent()->isActive()) && $page->getParent()->getNode() != $this->rootNode) {
+                if ($page->getParent() &&
+                        (!$page->getParent()->isVisible() || !$page->getParent()->isActive()) &&
+                        $page->getNode()->getParent()->getId() != $this->rootNode->getId()
+                    ) {
                     continue;
                 }
             } catch (\Cx\Model\ContentManager\PageException $e) {
                 // if parent page does not exist, parent is root
             }
-            
+            // if page is protected, user has not sufficent permissions and protected pages are hidden
+            if ($page->isFrontendProtected() && $_CONFIG['coreListProtectedPages'] != 'on' &&
+                    !\Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true)
+                ) {
+                continue;
+            }
+
             if ($page->getModule() != '' && !$this->license->isInLegalFrontendComponents($page->getModule())) {
                 continue;
             }
