@@ -1794,6 +1794,9 @@ die("Failed to update the Cart!");
 
         JS::activate('shadowbox');
         JS::activate('jquery');
+
+        ContrexxJavascript::getInstance()->setVariable("url", (String)\Cx\Core\Routing\URL::fromModuleAndCMd('shop'.MODULE_INDEX, 'cart', FRONTEND_LANG_ID, array('remoteJs' => 'addProduct')), 'shop/cart');
+
         JS::registerCode("
 // Obsolete
 function viewPicture(picture,features)
@@ -1990,9 +1993,7 @@ function addProductToCart(objForm)
   }
 // Optional:  to consistently show up-to-date contents of the cart *only*
 //  hideCart();
-// TODO: Use the alias, if any
-  jQuery.ajax('".CONTREXX_SCRIPT_PATH.
-    "?section=shop".MODULE_INDEX."&cmd=cart&remoteJs=addProduct'
+  jQuery.ajax(cx.variables.get('url', 'shop/cart')
       +'&r='+Math.random()
       +updateProduct, {
     data: objProduct,
@@ -2067,10 +2068,8 @@ function showCart(html)
   showCart('<ul><li class=\"loading\">".
     contrexx_raw2xhtml($_ARRAYLANG['TXT_SHOP_CART_IS_LOADING']).
     "<\\/li><\\/ul>');
-// TODO: Use the alias, if any
-  \$J.ajax('".CONTREXX_SCRIPT_PATH.
-    "?section=shop".MODULE_INDEX."&cmd=cart&remoteJs=addProduct".
-    "&r='+Math.random(), {
+  \$J.ajax(cx.variables.get('url', 'shop/cart')
+    +'&r='+Math.random(), {
     dataType: 'json',
     success: shopUpdateCart,
     error: function() {
