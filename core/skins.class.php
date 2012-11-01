@@ -60,24 +60,6 @@ class skins
     public $_themeDir;
 
     /**
-     * Name of the theme
-     * @var string
-     */
-    public $_themeName;
-
-    /**
-     * Holds archive files, for later purposes (see skins::_validateArchiveStructure())
-     * @var array
-     */
-    public $_contentFiles = array();
-
-    /**
-     * Holds archive directories
-     * @var array
-     */
-    public $_contentDirs = array();
-
-    /**
      * Character encoding used by the XML parser
      * @access private
      * @var string
@@ -149,7 +131,6 @@ class skins
     public $getAct;                           // $_GET['act']
     public $getPath;                          // $_GET['path']
     public $path;                             // current path
-    public $dirLog;                           // Dir Log
     public $webPath;                          // current web path
     public $tableExists;                      // Table exists
     public $oldTable;                         // old Theme-Table name
@@ -162,7 +143,7 @@ class skins
 
         $this->_xmlParserCharacterEncoding = CONTREXX_CHARSET;
         //add preview.gif to required files
-        $this->filenames[] = "images".DIRECTORY_SEPARATOR."preview.gif";
+        $this->filenames[] = 'images/preview.gif';
         //get path variables
         $this->path = ASCMS_THEMES_PATH.'/';
         $this->arrWebPaths  = array(ASCMS_THEMES_WEB_PATH.'/');
@@ -182,7 +163,7 @@ class skins
 
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."skins");
         $this->oldTable = DBPREFIX."themes";
-        \Cx\Lib\FileSystem\FileSystem::makeWritable($this->webPath);
+        //\Cx\Lib\FileSystem\FileSystem::makeWritable($this->webPath);
     }
     private function setNavigation()
     {
@@ -210,13 +191,16 @@ class skins
         }
         switch($_GET['act']){
             case "templates":
+                $this->newfile();
+                $this->delfile();
+                $this->deldir();
                 $this->overview();
                 break;
             case "examples":
                 $this->examples();
                 break;
             case "manage":
-                $this->_manage();
+                $this->manage();
                 break;
             case "upload":
                 $this->upload();
@@ -232,14 +216,7 @@ class skins
             case "createDir":
                 $this->createdir();
                 break;
-            case "newFile":
-                $this->newfile();
-                $this->overview();
-                break;
             default:
-                $this->newfile();
-                $this->delfile();
-                $this->deldir();
                 $this->_activate();
         }
         $objTemplate->setVariable(array(
@@ -255,7 +232,7 @@ class skins
      * show the overview page
      * @access   public
      */
-    function overview()
+    private function overview()
     {
         global $_CORELANG, $objTemplate;
 
@@ -292,7 +269,7 @@ class skins
      * call specific function depending on $_GET
      * @access private
      */
-    function _manage()
+    private function manage()
     {
         global $_CORELANG, $objTemplate, $objDatabase, $_CONFIG;
 
@@ -309,7 +286,7 @@ class skins
             }
         }
         if (!empty($_GET['import'])){
-            $this->_importFile();
+            $this->importFile();
         }
         if (!empty($_GET['activate'])){
             $this->activateDefault(intval($_GET['activate']));
@@ -392,7 +369,7 @@ class skins
      * @return string
      */
     function _getPreview($themedir){
-        if (file_exists($this->path.$themedir.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'preview.gif')){
+        if (file_exists($this->path.$themedir.'/images/preview.gif')){
             return ASCMS_THEMES_WEB_PATH . '/'.$themedir.'/images/preview.gif';
         } else {
             return ASCMS_ADMIN_TEMPLATE_WEB_PATH.'/images/preview.gif';
@@ -427,7 +404,7 @@ class skins
      * @return unknown
      */
 
-    function _checkUpload()
+    private function checkUpload()
     {
         global $_CORELANG;
 
@@ -439,7 +416,8 @@ class skins
         // (not all browsers provide the type)
         if (   is_uploaded_file($_FILES['importlocal']['tmp_name'])
             && is_file($_FILES['importlocal']['tmp_name'])) {
-            if (isset($_FILES['importlocal']['type'])) {
+            // this is unreliable
+            /*if (isset($_FILES['importlocal']['type'])) {
                 if (   !preg_match('/zip$/i', $_FILES['importlocal']['type'])
                    && !(   preg_match('/binary$/', $_FILES['importlocal']['type'])
                         || preg_match('/application\/octet\-?stream/', $_FILES['importlocal']['type'])
@@ -450,7 +428,7 @@ class skins
                         $_FILES['importlocal']['type'];
                     return false;
                 }
-            }
+            }*/
         } else {
             $this->strErrMessage = $_CORELANG['TXT_COULD_NOT_UPLOAD_FILE'];
             return false;
@@ -465,13 +443,13 @@ class skins
 
 
     /**
-     * check for valid archive structure, put directories and files into _contentDirs and _contentFiles array
+     * check for valid archive structure, put directories into $arrDirectories
      * set errormessage if structure not valid
      * @access private
      * @param array $content file and directory list
      * @return boolean
      */
-    function _validateArchiveStructure($content)
+    private function validateArchiveStructure($content, &$themeDirectory, &$themeDirectoryFromArchive, &$themeName, $arrDirectories)
     {
         global $_CORELANG;
 
@@ -482,39 +460,43 @@ class skins
         }
 
         $first_item = $content[0];
-        $this->_themeDir  = substr($first_item['stored_filename'], 0, strpos($first_item['stored_filename'], '/'));
-        $this->_themeName = (!empty($_POST['theme_dbname'])) ? contrexx_addslashes($_POST['theme_dbname']) : $this->_themeDir ;
+        $themeDirectoryFromArchive = substr($first_item['stored_filename'], 0, strpos($first_item['stored_filename'], '/'));
+        $themeDirectory = $themeDirectoryFromArchive;
 
-        $this->_contentDirs[] = $this->_themeDir;
+        // ensure that we're creating a new directory and not trying to overwrite an existing one
+        $suffix = '';
+        while (file_exists($this->path.$themeDirectory.$suffix)) {
+            $suffix++;
+        }
+        $themeDirectory .= $suffix;
+
+        $themeName = !empty($_POST['theme_dbname']) ? contrexx_input2raw($_POST['theme_dbname']) : $themeDirectoryFromArchive;
+
+        $arrDirectories[] = $themeDirectory;
 
         foreach ($content as $item){
             //check if current file/directory contains the base directory and abort when not true
-            if (strpos($item['stored_filename'], $this->_themeDir) !== 0){
+            if (strpos($item['stored_filename'], $themeDirectoryFromArchive) !== 0) {
                 $this->strErrMessage = $_FILES['importlocal']['name'].': '.$_CORELANG['TXT_THEME_ARCHIVE_WRONG_STRUCTURE'];
                 return false;
             }
 
-            //check if current archive item is a directory
-            if ($item['folder'] == 1){
-                //check if its the base directory
-                if (basename($item['stored_filename']) == $this->_themeDir){
-                    //take the whole string, this is the archive base dircotry
-                    $this->_contentDirs[] = $item['stored_filename'];
-                } else {
-                    //only take the most top directory
-                    $this->_contentDirs[] = substr($item['stored_filename'], strlen($this->_contentDirs[0]));
-                }
+            // skip files
+            if (!$item['folder']) {
+                continue;
+            }
+
+            //check if its the base directory
+            if (basename($item['stored_filename']) == $themeDirectoryFromArchive) {
+                //take the whole string, this is the archive base directory
+                //$arrDirectories[] = $item['stored_filename'];
+                $arrDirectories[] = $themeDirectory;
             } else {
-                //its a file, only take the part relative to the base directory
-                $this->_contentFiles[] = substr($item['stored_filename'], strlen($this->_contentDirs[0]));
+                //only take the most top directory
+                $arrDirectories[] = substr($item['stored_filename'], strlen($themeDirectoryFromArchive));
             }
         }
-        //add images directory if it wasn't in the archive
-        foreach ($this->directories as $dir) {
-            if (!in_array($dir, $this->_contentDirs)){
-                $this->_contentDirs[] = $dir;
-            }
-        }
+
         return true;
     }
 
@@ -523,27 +505,33 @@ class skins
      * @return boolean
      */
 
-    function _createDirStructure(){
+    private function createDirectoryStructure($themeDirectory, $arrDirectories)
+    {
         global $_CORELANG;
         //create archive structure and set permissions
         //this is an important step on hostings where the FTP user ID differs from the PHP user ID
-        foreach ($this->_contentDirs as $index => $directory){
+        foreach ($arrDirectories as $index => $directory){
             switch($index){
                 //check if theme directory already exists
                 case 0:
                     if (file_exists($this->path.$directory)){
-                        $this->strErrMessage = $this->_themeDir.': '.$_CORELANG['TXT_THEME_FOLDER_ALREADY_EXISTS'].'! '.$_CORELANG['TXT_THEME_FOLDER_DELETE_FIRST'].'.';
+                        // basically this should never happen, because the directory $themeDirectory should have been renamed
+                        // automatically in case a directory with the same name is already present
+                        $this->strErrMessage = $themeDirectory.': '.$_CORELANG['TXT_THEME_FOLDER_ALREADY_EXISTS'].'! '.$_CORELANG['TXT_THEME_FOLDER_DELETE_FIRST'].'.';
                         return false;
                     }
 
                     \Cx\Lib\FileSystem\FileSystem::make_folder($this->path.$directory);
-                    \Cx\Lib\FileSystem\FileSystem::makeWritable($this->path.$directory);
+                    //\Cx\Lib\FileSystem\FileSystem::makeWritable($this->path.$directory);
                     break;
+
                 default:
-                    \Cx\Lib\FileSystem\FileSystem::make_folder($this->path.$this->_contentDirs[0].DIRECTORY_SEPARATOR.$directory);
-                    \Cx\Lib\FileSystem\FileSystem::makeWritable($this->path.$this->_contentDirs[0].DIRECTORY_SEPARATOR.$directory);
+                    \Cx\Lib\FileSystem\FileSystem::make_folder($this->path.$themeDirectory.'/'.$directory);
+                    //\Cx\Lib\FileSystem\FileSystem::makeWritable($this->path.$themeDirectory.'/'.$directory);
+                    break;
             }
         }
+
         return true;
     }
 
@@ -553,9 +541,10 @@ class skins
      * @param pclZip Object $archive
      * @return boolean
      */
-    function _extractArchive($archive)
+    private function extractArchive($archive, $themeDirectory, $themeDirectoryFromArchive)
     {
         global $_CORELANG;
+
         $valid_exts = array(
             "txt","doc","xls","pdf","ppt","gif","jpg","png","xml",
             "odt","ott","sxw","stw","dot","rtf","sdw","wpd","jtd",
@@ -569,42 +558,23 @@ class skins
             "sgl","odb","odf","sxm","smf","mml","zip","rar","htm",
             "html","shtml","css","js","tpl","thumb","ico"
         );
-        if (($files = $archive->extract(PCLZIP_OPT_PATH, $this->path, PCLZIP_OPT_BY_PREG, '/('.implode('|', $valid_exts).')$/')) != 0){
-            //required files array
-            $reqFiles = $this->filenames;
+
+        if (($files = $archive->extract(PCLZIP_OPT_PATH, $this->path.$themeDirectory, PCLZIP_OPT_REMOVE_PATH, $themeDirectoryFromArchive, PCLZIP_OPT_BY_PREG, '/('.implode('|', $valid_exts).')$/')) != 0){
             foreach ($files as $file) {
                 //check status for errors while extracting the archive
                 if (!in_array($file['status'],array('ok','filtered','already_a_directory'))){
                     $this->strErrMessage = $_CORELANG['TXT_THEME_ARCHIVE_ERROR'].': '.$archive->errorInfo(true);
                     return false;
-                } else {
-                    //if no errors, set permission
-                    \Cx\Lib\FileSystem\FileSystem::makeWritable($this->path.$file['stored_filename']);
-                    //if file is in required files array, remove it
-					// use '/' instead of DIRECTORY_SEPARATOR; PclZip always returns posix-style paths --fs
-                    if (($reqFileIndex = array_search(substr(strstr($file['stored_filename'],'/'), 1), $reqFiles)) !== false){
-                        unset($reqFiles[$reqFileIndex]);
-                    }
                 }
             }
-            //all files left in $reqFiles haven't been found, create empty files
-            foreach ($reqFiles as $reqFile){
-                switch($reqFile){
-                    //if no preview thumbnail in archive then copy default
-                    case 'images'.DIRECTORY_SEPARATOR.'preview.gif':
-                        \Cx\Lib\FileSystem\FileSystem::copy_file(ASCMS_ADMIN_TEMPLATE_PATH.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'preview.gif', $this->path.$this->_themeDir.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'preview.gif');
-                        break;
-                    default:
-                        $fh=fopen($this->path.$this->_themeDir.DIRECTORY_SEPARATOR.$reqFile,'w+');
-                        fputs($fh,'');
-                        fclose($fh);
-                        \Cx\Lib\FileSystem\FileSystem::makeWritable($this->path.$this->_themeDir.DIRECTORY_SEPARATOR.$reqFile);
-                }
-            }
+
+            // add eventually missing required theme files
+            $this->createDefaultFiles($themeDirectory);
         } else {
             $this->strErrMessage = $_CORELANG['TXT_THEME_ARCHIVE_ERROR'].': '.$archive->errorInfo(true);
             return false;
         }
+
         return true;
     }
 
@@ -614,47 +584,55 @@ class skins
      * @access   private
      * @param    string   $themes
      */
-    function _importFile()
+    private function importFile()
     {
         global $_CORELANG;
         require_once(ASCMS_LIBRARY_PATH.'/pclzip/pclzip.lib.php');
 
         $this->_cleantmp();
-        switch($_GET['import']){
+        switch($_GET['import']) {
             case 'remote':
                 $archiveFile = $this->_fetchRemoteFile($_POST['importremote']);
-                if ($archiveFile === false){
+                if ($archiveFile === false) {
                     return false;
                 }
                 $archive = new PclZip($archiveFile);
                 //no break
             case 'local':
-                if (empty($archive)){
-                    if ($this->_checkUpload() === false){
+                if (empty($archive)) {
+                    if ($this->checkUpload() === false) {
                         return false;
                     }
                     $archive = new PclZip($this->_archiveTempPath.basename($_FILES['importlocal']['name']));
                 }
                 $content = $archive->listContent();
-                if ($this->_validateArchiveStructure($content) === false){
+                $themeName = '';
+                $themeDirectory = '';
+                $themeDirectoryFromArchive = '';
+                $arrDirectories = array();
+
+                // analyze theme archive
+                if (!$this->validateArchiveStructure($content, $themeDirectory, $themeDirectoryFromArchive, $themeName, $arrDirectories)) {
                     return false;
                 }
-                if ($this->_createDirStructure() ===  false){
+                // prepare directory structure of new theme
+                if (!$this->createDirectoryStructure($themeDirectory, $arrDirectories)) {
                     return false;
                 }
+
                 //extract archive files
-                $this->_extractArchive($archive);
+                $this->extractArchive($archive, $themeDirectory, $themeDirectoryFromArchive);
+
                 //create database entry
-                if (substr($this->_themeName, -1) == '/'){
-                    $this->_themeName = substr($this->_themeName, 0, -1);
-                }
-                $this->insertSkinIntoDb($this->_themeName, $this->_themeDir);
-                $this->strOkMessage = $this->_themeName.' ('.$this->_themeDir.') '.$_CORELANG['TXT_THEME_SUCCESSFULLY_IMPORTED'];
+                self::validateThemeName($themeName);
+                $this->insertSkinIntoDb($themeName, $themeDirectory);
+                $this->strOkMessage = contrexx_raw2xhtml($themeName).' ('.$themeDirectory.') '.$_CORELANG['TXT_THEME_SUCCESSFULLY_IMPORTED'];
                 break;
             //everything else should never be the case
             default:
                 $this->strErrMessage="GET Request Error. 'import' should be either 'local' or 'remote'";
                 return false;
+                break;
         }
         return true;
     }
@@ -683,7 +661,8 @@ class skins
             }
             $tmpfilename = basename($URL['path']);
             if (strlen($tmpfilename) < 3) $tmpfilename = '_unknown_upload_';
-            $tempFile = ASCMS_TEMP_PATH.DIRECTORY_SEPARATOR.$tmpfilename.microtime().'.zip';
+// TODO: use session temp
+            $tempFile = ASCMS_TEMP_PATH.'/'.$tmpfilename.microtime().'.zip';
             $fh = fopen($tempFile,'w');
             fputs($fh, $archive);
             return $tempFile;
@@ -925,56 +904,104 @@ class skins
 //      $this->newdir();
     }
 
+    private static function validateThemeName(&$themeName)
+    {
+        global $objDatabase;
+
+        static $arrExistingThemeNames;
+
+        if (!isset($arrExistingThemeNames)) {
+            $arrExistingThemeNames = array();
+
+            $objResult = $objDatabase->Execute('SELECT themesname FROM '.DBPREFIX.'skins');
+            if ($objResult !== false) {
+                while (!$objResult->EOF) {
+                    $arrExistingThemeNames[] = $objResult->fields['themesname'];
+                    $objResult->MoveNext();
+                }
+            }
+        }
+
+        $themeName = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($themeName);
+
+        $suffix = '';
+        while (in_array($themeName.$suffix, $arrExistingThemeNames)) {
+            $suffix++;
+        }
+
+        $themeName .= $suffix;
+    }
+
     /**
      * create skin folder
      * @access   public
      */
-    function createdir()
+    private function createdir()
     {
         global $_CORELANG, $objTemplate;
 
         Permission::checkAccess(47, 'static');
 
-        if (!empty($_POST['dbName'])) {
-            if (($_POST['dirName']!= "") && ($_POST['existingdirName'] == "")) {
-                $dirName = $this->replaceCharacters($_POST['dirName']);
-                if ($_POST['fromTheme'] == "" && $_POST['fromDB'] == "") {
-                    $this->dirLog=\Cx\Lib\FileSystem\FileSystem::make_folder($this->path.$dirName);
-                    if ($this->dirLog) {
-                        \Cx\Lib\FileSystem\FileSystem::makeWritable($this->path.$dirName);
-                        $this->insertIntoDb($_POST['dbName'], $dirName, $_POST['fromDB']);
-                        $this->_createDefaultFiles($this->dirLog) ? $this->overview() : $this->newdir();
-                    }
-                } elseif ($_POST['fromTheme'] != "" && $_POST['fromDB'] == "") {
-                    $this->dirLog=\Cx\Lib\FileSystem\FileSystem::copy_folder($this->path.$_POST['fromTheme'], $this->path.$dirName);
-                    if ($this->dirLog) {
-                        $this->_replaceThemeName($this->replaceCharacters($_POST['fromTheme']), $dirName, $this->path.$dirName);
-                        $this->insertIntoDb($_POST['dbName'], $dirName, $_POST['fromDB']);
-                    }
-                    $this->strOkMessage  = $_POST['dbName']." ". $_CORELANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
+        $themeName = !empty($_POST['dbName']) ? contrexx_input2raw($_POST['dbName']) : null;
+        $copyFromTheme = !empty($_POST['fromTheme']) && !stristr($_POST['fromTheme'], '..') ? contrexx_input2raw($_POST['fromTheme']) : null;
+        $existingThemeInFilesystem = !empty($_POST['existingdirName']) && !stristr($_POST['existingdirName'], '..') ? contrexx_input2raw($_POST['existingdirName']) : null;
+        $createFromDatabase = !empty($_POST['fromDB']) ? contrexx_input2raw($_POST['fromDB']) : null;
+        $dirName = !empty($_POST['dirName']) && !stristr($_POST['dirName'], '..') ? contrexx_input2raw($_POST['dirName']) : null;
+        $dirName = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($dirName);
 
-                    # people, why are you doing such ugly hacks?
-                    #$_POST['themes'] = $_POST['dbName'];
-                    $_POST['themes'] = $this->dirLog;
-                    $this->overview();
-                } elseif ($_POST['fromTheme'] == "" && $_POST['fromDB'] != "") {
-                    $this->dirLog=\Cx\Lib\FileSystem\FileSystem::make_folder($this->path.$dirName);
-                    if ($this->dirLog) {
-                        $this->insertIntoDb($_POST['dbName'], $dirName, $_POST['fromDB']);
-                        $this->createFilesFromDB($this->dirLog, intval($_POST['fromDB']));
+        if (!$themeName) {
+            $this->strErrMessage = $_CORELANG['TXT_STATUS_CHECK_INPUTS'];
+            $this->newdir();
+            return;
+        }
+
+        self::validateThemeName($themeName);
+
+        if (!empty($dirName) && empty($existingThemeInFilesystem)) {
+
+            // ensure that we're creating a new directory and not trying to overwrite an existing one
+            $suffix = '';
+            while (file_exists($this->path.$dirName.$suffix)) {
+                $suffix++;
+            }
+            $dirName .= $suffix;
+
+            if (empty($copyFromTheme) && empty($createFromDatabase)) {
+                // Create new empty theme
+                if (\Cx\Lib\FileSystem\FileSystem::make_folder($this->path.$dirName)) {
+                    //\Cx\Lib\FileSystem\FileSystem::makeWritable($this->path.$dirName);
+                    $this->insertSkinIntoDb($themeName, $dirName);
+                    if ($this->createDefaultFiles($dirName)) {
+                        $this->strOkMessage  = contrexx_raw2xhtml($themeName).' '.$_CORELANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
+                        $_POST['themes'] = $dirName;
+                        $this->overview();
+                        return true;
                     }
                     $this->newdir();
                 }
-            } elseif (($_POST['dirName'] == "") && ($_POST['existingdirName'] != "")) {
-                $this->insertIntoDb($_POST['dbName'], $_POST['existingdirName']);
-                $this->setChmodDir($_POST['existingdirName']);
-                $this->strOkMessage  = $_POST['existingdirName']." ". $_CORELANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
-                $_POST['themes'] = $_POST['existingdirName'];
+            } elseif (!empty($copyFromTheme) && empty($createFromDatabase)) {
+                // Create new theme based on existing theme
+                if (\Cx\Lib\FileSystem\FileSystem::copy_folder($this->path.$copyFromTheme, $this->path.$dirName)) {
+                    $this->replaceThemeName(\Cx\Lib\FileSystem\FileSystem::replaceCharacters($copyFromTheme), $dirName, $this->path.$dirName);
+                    $this->insertSkinIntoDb($themeName, $dirName);
+                }
+                $this->strOkMessage  = $themeName." ". $_CORELANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
+                $_POST['themes'] = $dirName;
                 $this->overview();
-            } else {
-                $this->strErrMessage = $_CORELANG['TXT_STATUS_CHECK_INPUTS'];
+            } elseif (empty($copyFromTheme) && !empty($createFromDatabase)) {
+// TODO: remove this function -> migrate all pending themes in the update process
+                // Create new theme from database (migrate existing theme from database to filesystem)
+                if (\Cx\Lib\FileSystem\FileSystem::make_folder($this->path.$dirName)) {
+                    $this->insertIntoDb($themeName, $dirName, $createFromDatabase);
+                    $this->createFilesFromDB($dirName, intval($createFromDatabase));
+                }
                 $this->newdir();
             }
+        } elseif (empty($dirName) && !empty($existingThemeInFilesystem)) {
+            $this->insertSkinIntoDb($themeName, $existingThemeInFilesystem);
+            $this->strOkMessage  = contrexx_raw2xhtml($themeName).' '.$_CORELANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
+            $_POST['themes'] = $existingThemeInFilesystem;
+            $this->overview();
         } else {
             $this->strErrMessage = $_CORELANG['TXT_STATUS_CHECK_INPUTS'];
             $this->newdir();
@@ -992,7 +1019,7 @@ class skins
      * @return string "error" on error, else empty string
      * @see skins::createDir()
      */
-    function _replaceThemeName($org, $copy, $path)
+    private function replaceThemeName($org, $copy, $path)
     {
         //extensions of files that could contain links still pointing to the old template
         $regexValidExtensions = '\.css|\.htm|\.html';
@@ -1012,40 +1039,23 @@ class skins
                         //replace name of old template with new template's name
                         $fileContents = file_get_contents($ourFile);
                         $fileContents = str_replace($org,$copy,$fileContents);
-                        file_put_contents($ourFile, $fileContents);
+                        try {
+                            $objFile = new \Cx\Lib\FileSystem\File($ourFile);
+                            $objFile->write($fileContents);
+                        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                            \DBG::msg($e->getMessage());
+                        }
                     }
                 }
                 else //directory, call this function again to process it
                 {
-                    $this->_replaceThemeName($org,$copy,$ourFile);
+                    $this->replaceThemeName($org,$copy,$ourFile);
                 }
             }
             $file=readdir($dir);
         }
     }
 
-
-    /**
-     * sets all CHMOD for Files and folder ind this directory
-     * @param    string   $dir
-     */
-    function setChmodDir($dir)
-    {
-        \Cx\Lib\FileSystem\FileSystem::makeWritable($this->path.$dir);
-        $openDir=@opendir($this->path.$dir);
-        $file = @readdir($openDir);
-        while ($file) {
-            if ($file!="." && $file!="..") {
-                if (!is_dir($this->path.$dir.DIRECTORY_SEPARATOR.$file)) {
-                    \Cx\Lib\FileSystem\FileSystem::makeWritable($this->path.$dir.DIRECTORY_SEPARATOR.$file);
-                } else {
-                    $this->setChmodDir($dir.DIRECTORY_SEPARATOR.$file);
-                }
-            }
-            $file = @readdir($openDir);
-        }
-        closedir($openDir);
-    }
 
     /**
      * Gets the dropdown menu of filesystem dirs which are not in the DB
@@ -1091,42 +1101,51 @@ class skins
     {
         Permission::checkAccess(47, 'static');
 
-        $themes = $_POST['themes'];
-        $themesPage = $_POST['themesPage'];
-        $pageContent = contrexx_stripslashes($_POST['content']);
+        $themes = !empty($_POST['themes']) && !stristr($_POST['themes'], '..') ? contrexx_input2raw($_POST['themes']) : null;
+        $themesPage = !empty($_POST['themesPage']) &&  !stristr($_POST['themesPage'], '..') ? contrexx_input2raw($_POST['themesPage']) : null;
+
+        if (empty($themes) || empty($themesPage)) {
+            return false;
+        }
+
+        $pageContent = contrexx_input2raw($_POST['content']);
+
         // Change the replacement variables from [[TITLE]] into {TITLE}
         $pageContent = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' ,$pageContent);
-        if (!$fp = @fopen($this->path.$themes.DIRECTORY_SEPARATOR.$themesPage ,"w")) {
-            $this->setChmodDir($themes);
+
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File($this->path.$themes.'/'.$themesPage);
+            $objFile->write($pageContent);
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::msg($e->getMessage());
         }
-        $fp = fopen ($this->path.$themes.DIRECTORY_SEPARATOR.$themesPage ,"w");
-        fwrite($fp, $pageContent);
-        fclose($fp);
     }
 
     /**
      * insert Skin into db and activate the theme on content pages
      *
-     * @access  private
-     * @global  ADONewConnection
      * @param   string     $themesName
      * @param   string     $themesFolder
-     * @param   integer    $oldId
+     * @param   integer    $themeIdFromDatabaseBasedTheme
      */
-    private function insertIntoDb($themesName, $themesFolder, $oldId='')
+    private function insertIntoDb($themesName, $themesFolder, $themeIdFromDatabaseBasedTheme = null)
     {
         global $objDatabase;
 
-        if (!empty($themesName) && !empty($themesFolder)) {
-            $newId = $this->insertSkinIntoDb($themesName, $themesFolder);
+        if (empty($themesName) || empty($themesFolder)) {
+            return;
+        }
 
+        $themeId = $this->insertSkinIntoDb($themesName, $themesFolder);
+
+        if ($themeIdFromDatabaseBasedTheme) {
             $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
             $pages = $pageRepo->findBy(array(
-                'skin' => intval($oldId),
+                'skin' => intval($themeIdFromDatabaseBasedTheme),
             ));
             foreach ($pages as $page) {
                 if ($page->getSkin() != 0) {
-                    $page->setSkin($newId);
+                    $page->setSkin($themeId);
                     \Env::get('em')->persist($page);
                 }
             }
@@ -1147,7 +1166,7 @@ class skins
     {
         global $objDatabase;
 
-        $objDatabase->Execute('INSERT INTO `'.DBPREFIX.'skins` (`themesname`, `foldername`, `expert`) VALUES ("'.addslashes(strip_tags($themesName)).'", "'.addslashes(strip_tags($themesFolder)).'", 1)');
+        $objDatabase->Execute('INSERT INTO `'.DBPREFIX.'skins` (`themesname`, `foldername`, `expert`) VALUES ("'.contrexx_raw2db($themesName).'", "'.contrexx_raw2db($themesFolder).'", 1)');
 
         return $objDatabase->Insert_ID();
     }
@@ -1156,20 +1175,30 @@ class skins
      * add new skin file
      * @access   public
      */
-    function newfile()
+    private function newfile()
     {
         global $_CORELANG;
 
         Permission::checkAccess(47, 'static');
 
-        $themes = isset($_POST['themes']) ? $_POST['themes'] : '';
-        $themesFile = isset($_POST['themesNewFileName']) ? $this->replaceCharacters($_POST['themesNewFileName']) : '';
-        if (($themesFile!="") AND ($themes!="") && (FWValidator::is_file_ending_harmless($themesFile))) {
-            $fp = fopen ($this->path.$themes.DIRECTORY_SEPARATOR.$themesFile ,"w");
-            fwrite($fp,"");
-            fclose($fp);
-            $this->strOkMessage = $themesFile." ".$_CORELANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
+        $themes = !empty($_POST['themes']) && !stristr($_POST['themes'], '..') ? contrexx_input2raw($_POST['themes']) : null;
+        $themesFile = !empty($_POST['themesNewFileName']) && !stristr($_POST['themesNewFileName'], '..') ? \Cx\Lib\FileSystem\FileSystem::replaceCharacters($_POST['themesNewFileName']) : null;
+        if (empty($themesFile) || empty($themes)) {
+            return false;
         }
+        if (!FWValidator::is_file_ending_harmless($themesFile)) {
+            return false;
+        }
+
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File($this->path.$themes.'/'.$themesFile);
+            $objFile->touch();
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::msg($e->getMessage());
+            return false;
+        }
+
+        $this->strOkMessage = $themesFile." ".$_CORELANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
     }
 
     /**
@@ -1192,8 +1221,7 @@ class skins
 
         if (($themesFile!="") AND ($themes!="")){
             if ($_POST['themesPage'] != $themesFile) {
-                $this->dirLog = \Cx\Lib\FileSystem\FileSystem::delete_file($this->path.$themes.DIRECTORY_SEPARATOR.$themesFile);
-                if ($this->dirLog) {
+                if (\Cx\Lib\FileSystem\FileSystem::delete_file($this->path.$themes.'/'.$themesFile)) {
                     $this->strOkMessage = $themesFile.": ".$_CORELANG['TXT_STATUS_SUCCESSFULLY_DELETE'];
                 }
              } else {
@@ -1219,16 +1247,15 @@ class skins
         if ($themes == '' && !empty($_GET['delete'])){
             $themes = addslashes($_GET['delete']);
         }
-// TODO: Unused
-//        $theme = str_replace(array('..','/'), '', $themes);
+
+        $themes = str_replace(array('..','/'), '', $themes);
         if ($themes!="") {
             $_POST['themes'] = (!empty($_POST['themes'])) ? contrexx_addslashes($_POST['themes']) : '';
             if ($_POST['themes'] != $themes || $nocheck) {
                 $dir = ($this->path.$themes);
                 if (file_exists($dir)) {
                     //delete whole folder with subfolders
-                    $this->dirLog = \Cx\Lib\FileSystem\FileSystem::delete_folder($this->path.$themes, true);
-                    if ($this->dirLog) {
+                    if (\Cx\Lib\FileSystem\FileSystem::delete_folder($this->path.$themes, true)) {
                         $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."skins WHERE foldername = '".$themes."'");
                         if ($objResult !== false) {
                             while (!$objResult->EOF) {
@@ -1287,8 +1314,8 @@ class skins
     function getDropdownContent()
     {
         global $objTemplate;
-        $themes = isset($_REQUEST['themes']) ? contrexx_addslashes($_REQUEST['themes']) : '';
-        $themesPage = isset($_POST['themesPage']) ? contrexx_addslashes($_POST['themesPage']) : '';
+        $themes = !empty($_REQUEST['themes']) && !stristr($_REQUEST['themes'], '..') ? contrexx_input2raw($_REQUEST['themes']) : '';
+        $themesPage = !empty($_POST['themesPage']) && !stristr($_REQUEST['themes'], '..') ? contrexx_addslashes($_POST['themesPage']) : '';
         $objTemplate->setVariable(array(
             'THEMES_PAGES_MENU'     => $this->getFilesDropdown($themes, $themesPage),
             'THEMES_MENU'           => $this->getThemesDropdown($themes),
@@ -1607,7 +1634,7 @@ class skins
             $themesPage = "index.html";
         }
         if ($themes != "" && $themesPage != ""){
-            $file = $this->path.$themes.DIRECTORY_SEPARATOR.$themesPage;
+            $file = $this->path.$themes.'/'.$themesPage;
             if (file_exists($file)) {
                 $contenthtml = file_get_contents($file);
                 $contenthtml = preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $contenthtml);
@@ -1623,43 +1650,12 @@ class skins
                 $objTemplate->setVariable(array(
                     'THEMES_SELECTED_THEME'    => $themes,
                     'THEMES_SELECTED_PAGENAME' => $themesPage,
-                    'THEMES_FULL_PATH'         => $this->webPath.$themes.DIRECTORY_SEPARATOR.$themesPage,
+                    'THEMES_FULL_PATH'         => $this->webPath.$themes.'/'.$themesPage,
                     'CONTENT_HTML'             => $contenthtml,
                 ));
                 //return $fileContent;
             }
         }
-    }
-
-
-    /**
-     * replaces some characters
-     * @access   public
-     * @param    string   $themes
-     */
-    function replaceCharacters($string)
-    {
-        // replace $change with ''
-        $change = array('+', '¦', '"', '@', '*', '#', '°', '%', '§', '&', '¬', '/', '|', '(', '¢', ')', '=', '?', '\'', '´', '`', '^', '~', '!', '¨', '[', ']', '{', '}', '£', '$', '-', '<', '>', '\\', ';', ',', ':');
-        // replace $signs1 with $signs
-        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
-        $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
-        $string = strtolower($string);
-        foreach($change as $str) {
-            $string = str_replace($str, '', $string);
-        }
-        for($x = 0; $x < count($signs1); $x++) {
-            $string = str_replace($signs1[$x], $signs2[$x], $string);
-        }
-        $string = str_replace('__', '_', $string);
-        if (strlen($string) > 40) {
-            $info       = pathinfo($string);
-            $stringExt  = $info['extension'];
-            $stringName = substr($string, 0, strlen($string) - (strlen($stringExt) + 1));
-            $stringName = substr($stringName, 0, 40 - (strlen($stringExt) + 1));
-            $string     = $stringName . '.' . $stringExt;
-        }
-        return $string;
     }
 
     /**
@@ -1790,38 +1786,42 @@ class skins
 
     /**
      * create default themepages
-     * @access   public
-     * @param    string   $themes
+     * @todo    add proper error handling
      */
-    function _createDefaultFiles($themes, $filesOnly = false)
+    private function createDefaultFiles($themeDirectory)
     {
         global $_CORELANG, $_FTPCONFIG;
-        $status='';
+
         foreach ($this->directories as $dir) {
-            \Cx\Lib\FileSystem\FileSystem::make_folder($this->path.$themes.DIRECTORY_SEPARATOR.$dir);
-        }
-        //copy "not available" preview.gif as default preview image
-        $status = \Cx\Lib\FileSystem\FileSystem::copy_file(ASCMS_ADMIN_TEMPLATE_PATH.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'preview.gif', $this->path.$themes.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'preview.gif');
-        for($x = 0; $x < count($this->filenames); $x++) {
-            if (!file_exists($this->path.$themes.DIRECTORY_SEPARATOR.$this->filenames[$x])){
-                $fp = fopen ($this->path.$themes.DIRECTORY_SEPARATOR.$this->filenames[$x] ,"w");
-                @fwrite($fp,"");
-                @fclose($fp);
-                @chown($this->path.$themes.DIRECTORY_SEPARATOR.$this->filenames[$x], $_FTPCONFIG['username']);
-                \Cx\Lib\FileSystem\FileSystem::makeWritable($this->path.$themes.DIRECTORY_SEPARATOR.$this->filenames[$x]);
+            if (!\Cx\Lib\FileSystem\FileSystem::make_folder($this->path.$themeDirectory.'/'.$dir)) {
+                $this->strErrMessage = sprintf($_CORELANG['TXT_UNABLE_TO_CREATE_FILE'], contrexx_raw2xhtml($this->path.$themeDirectory.'/'.$dir));
+                return false;
             }
         }
-        if ($filesOnly){
-            return true;
+
+        //copy "not available" preview.gif as default preview image
+        if (!file_exists($this->path.$themeDirectory.'/images/preview.gif')) {
+            if (!\Cx\Lib\FileSystem\FileSystem::copy_file(ASCMS_ADMIN_TEMPLATE_PATH.'/images/preview.gif', $this->path.$themeDirectory.'/images/preview.gif')) {
+                $this->strErrMessage = sprintf($_CORELANG['TXT_UNABLE_TO_CREATE_FILE'], contrexx_raw2xhtml($this->path.$themeDirectory.'/images/preview.gif'));
+                return false;
+            }
         }
-        if ($status == 'error'){
-            $this->strErrMessage = __FUNCTION__.'(): '.$_CORELANG['TXT_ERRORS_WHILE_READING_THE_FILE'];
-            return false;
-        } else {
-            $this->strOkMessage  = $themes ."  ".$_CORELANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
-            $_POST['themes'] = $themes;
-            return true;
+
+        foreach ($this->filenames as $file) {
+            if (!file_exists($this->path.$themeDirectory.'/'.$file)) {
+                try {
+                    $objFile = new \Cx\Lib\FileSystem\File($this->path.$themeDirectory.'/'.$file);
+                    $objFile->touch();
+                    //$objFile->makeWritable();
+                } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                    \DBG::msg($e->getMessage());
+                    $this->strErrMessage = sprintf($_CORELANG['TXT_UNABLE_TO_CREATE_FILE'], contrexx_raw2xhtml($this->path.$themeDirectory.'/'.$file));
+                    return false;
+                }
+            }
         }
+
+        return true;
     }
 
     /**
@@ -1879,6 +1879,8 @@ class skins
      */
     function createFilesFromDB($themes, $fromDB)
     {
+// TODO: remove this function -> migrate all pending themes in the update process
+// TODO: migrate to new filesystem \Cx\Lib\FileSystem
         global $objDatabase, $_CORELANG;
 
         $themePages = array();
@@ -1901,11 +1903,11 @@ class skins
         }
 
         for($x = 0; $x < count($this->filenames); $x++) {
-            $fp = fopen ($this->path.$themes.DIRECTORY_SEPARATOR.$this->filenames[$x] ,"w");
+            $fp = fopen ($this->path.$themes.'/'.$this->filenames[$x] ,"w");
             fwrite($fp,"");
             fclose($fp);
 
-            $filename = $this->path.$themes.DIRECTORY_SEPARATOR.$this->filenames[$x];
+            $filename = $this->path.$themes.'/'.$this->filenames[$x];
 
             //check, if file exists and is writable
             if (\Cx\Lib\FileSystem\FileSystem::makeWritable($filename)) {
@@ -2023,7 +2025,7 @@ class skins
      */
     function _getXML($themes)
     {
-        $xmlFilePath = ASCMS_THEMES_PATH.DIRECTORY_SEPARATOR.$themes.DIRECTORY_SEPARATOR.'info.xml';
+        $xmlFilePath = ASCMS_THEMES_PATH.'/'.$themes.'/info.xml';
         $xml_parser = xml_parser_create($this->_xmlParserCharacterEncoding);
         xml_set_object($xml_parser, $this);
         xml_set_element_handler($xml_parser,"_xmlStartTag","_xmlEndTag");
