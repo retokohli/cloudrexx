@@ -154,7 +154,13 @@ class Resolver {
      * Does the resolving work, extends $this->url with targetPath and params.
      */
     public function resolve($internal = false) {
-        if (isset($_REQUEST['section'])) {
+        // Abort here in case we're handling a legacy request.
+        // The legacy request will be handled by $this->legacyResolve().
+        // Important: We must check for $internal == FALSE here, to abort the resolving process
+        //            only when we're resolving the initial (original) request.
+        //            Internal resolving requests might be called by $this->legacyResolve()
+        //            and shall therefore be processed.
+        if (!$internal && isset($_REQUEST['section'])) {
             throw new ResolverException('Legacy request');
         }
         
