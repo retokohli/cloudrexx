@@ -26,7 +26,7 @@ $J(document).ready(function() {
                 if (data == 'success') {
                     if (elementId == 'news_delete') {
                         $J('#news').hide();
-                        $J('#alert_news').fadeIn(500).delay(5000).fadeOut(500);
+                        $J('#alert_news_wrapper').fadeIn(500).delay(5000).fadeOut(500);
                     } else {
                         $J('#stats_wrapper').hide();
                         $J('#alert_stats').fadeIn(500).delay(5000).fadeOut(500);
@@ -124,8 +124,8 @@ $J(document).ready(function() {
     </div>
     <!-- END news -->
     
-    <div id="alert_news" class="alert alert-info">
-        {TXT_DASHBOARD_NEWS_ALERT}
+    <div id="alert_news_wrapper">
+        <div id="alert_news" class="alert alert-info">{TXT_DASHBOARD_NEWS_ALERT}</div>
     </div>
     
     <div class="left">
