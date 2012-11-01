@@ -69,7 +69,9 @@ class adminMenu
                 areas.type AS type,
                 areas.uri AS uri,
                 areas.target AS target,
-                modules.name AS module_name
+                modules.name AS module_name,
+                modules.is_active,
+                areas.module_id
             FROM
                 ".DBPREFIX."backend_areas AS areas
             INNER JOIN
@@ -79,7 +81,8 @@ class adminMenu
             WHERE
                 areas.is_active=1
                 AND (areas.type = 'group' OR areas.type = 'navigation')
-                AND (modules.is_active = 1 OR areas.module_id = 0)
+                ".//AND (modules.is_active = 1 OR areas.module_id = 0)
+                "
                 ".$sqlWhereString."
             ORDER BY
                 areas.order_id ASC
@@ -98,7 +101,8 @@ class adminMenu
                       ? $_CORELANG[$objResult->fields['area_name']] : ''),
                     $objResult->fields['uri'],
                     $objResult->fields['target'],
-                    $objResult->fields['module_name']
+                    $objResult->fields['module_name'],
+                    ($objResult->fields['is_active'] == 1 || $objResult->fields['module_id'] == 0),
                 );
                 $objResult->MoveNext();
             }
@@ -161,6 +165,7 @@ class adminMenu
 
             //(3/3) display a nice ordered menu.
             $subentryActive = false;
+            $nonUpgradeEntry = false;
             foreach ($arrMatchingItems as $link_data) {
                 if ($group_id != 2 ||  $this->moduleExists($link_data[4])) {
 
@@ -296,7 +301,17 @@ class adminMenu
                     if ($cssClass == 'active') {
                         $subentryActive = true;
                     }
-                    $navigation.= "<li class='$cssClass'><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
+                    $upgrade = '';
+                    if (!$link_data[5]) {
+                        $upgrade = '<span class="upgrade"></span>';
+                    } else {
+                        $nonUpgradeEntry = true;
+                    }
+                    $navigation .= "<li class='$cssClass'>" . $upgrade . "
+                        <a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>
+                            ".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."
+                        </a>
+                    </li>\n";
                 }
                 
                 $cssClass = '';
@@ -305,6 +320,7 @@ class adminMenu
             if (!empty($navigation)) {
                 $objTemplate->setVariable(array(
                     'NAVIGATION_GROUP_NAME' => htmlentities($_CORELANG[$group_data], ENT_QUOTES, CONTREXX_CHARSET),
+                    'NAVIGATION_GROUP_UPGRADE' => (!$nonUpgradeEntry ? '<span class="upgrade"></span>' : ''),
                     'NAVIGATION_ID'         => $group_id,
                     'NAVIGATION_MENU'       => $navigation,
                     'NAVIGATION_CLASS'      => $subentryActive ? 'active' : 'inactive',

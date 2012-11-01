@@ -135,7 +135,7 @@ class Navigation
 
         // Create a nested list, formatted with ul and li-Tags
         if (isset($this->_objTpl->_blocks['nested_navigation'])) {
-            $navi = new \Cx\Core\PageTree\NestedNavigationPageTree(Env::em(), $license, 0, null, $this->langId, $this->page);
+            $navi = new \Cx\Core\PageTree\NestedNavigationPageTree(Env::em(), $license, 0, $rootNode, $this->langId, $this->page);
             $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
             $navi->setTemplate($this->_objTpl);
             $renderedNavi = $navi->render();
