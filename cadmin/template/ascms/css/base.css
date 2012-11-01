@@ -1207,3 +1207,27 @@ table.adminlist td.nowrap {
     color: #000000;
     font-size: 24px;
 }
+
+#upgradeButton {
+    display: inline-block;
+    height: 17px;
+    padding: 3px 30px 0 30px;
+    margin: 0 0 0 5px;
+    color: #FFFFFF;
+    border: 1px solid #D37912;
+    background: #E78403 url('../images/bg-upgrade-button.jpg') repeat-x;
+}
+
+*+html #upgradeButton {
+    position: relative;
+    bottom: 1px;
+    height: 20px;
+}
+
+#upgradeButton:nth-of-type(1n) {
+    height: 16px;
+}
+
+input[type=submit]::-moz-focus-inner {
+    border: 0;
+}
