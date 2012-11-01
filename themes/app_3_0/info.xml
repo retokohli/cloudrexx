@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <theme>
-    <name>pdf_3_0</name>
+    <name>app_3_0</name>
     <version>3.0</version>
-    <description>Default theme for PDFs</description>
+    <description>Default app theme</description>
     <authors>
         <author>
             <user>Comvation AG</user>

@@ -365,7 +365,7 @@ class skins
                 $objTemplate->setVariable(array('THEME_NAME'            => $theme['themesname'],
                                                 'THEME_NAME_EXTRA'      => $theme['extra'],
                                                 'THEME_LANGUAGES'       => $theme['languages'],
-                                                'THEME_PREVIEW'         => $this->_getPreview($theme['themesname']),
+                                                'THEME_PREVIEW'         => $this->_getPreview($theme['foldername']),
                                                 'TXT_THEME_EXPORT'      => $_CORELANG['TXT_THEME_EXPORT'],
                                                 'TXT_DELETE'            => $_CORELANG['TXT_DELETE'],
                                                 'THEME_DELETE_LINK'     => (empty($theme['extra'])) ? $htmlDeleteLink : '',

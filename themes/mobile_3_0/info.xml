@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-<theme version="1.0">
-    <name>Mobile_black</name>
-    <version>Mobile_black 1.0</version>
-    <description>Mobile_black Theme</description>
+<?xml version="1.0" encoding="UTF-8" ?>
+<theme>
+    <name>mobile_3_0</name>
+    <version>3.0</version>
+    <description>Default theme for mobile devices</description>
     <authors>
         <author>
-            <user>Soft_Solutions4U Team</user>
-            <email>info@softsolutions4u.com</email>
+            <user>Comvation AG</user>
+            <email>info@comvation.com</email>
         </author>
     </authors>
 </theme>
