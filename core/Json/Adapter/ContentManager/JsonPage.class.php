@@ -37,9 +37,11 @@ class JsonPage implements JsonAdapter {
     function __construct() {
         $this->em = \Env::em();
         $this->db = \Env::get('db');
-        $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
-        $this->nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
-        $this->logRepo  = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
+        if ($this->em) {
+            $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
+            $this->nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
+            $this->logRepo  = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
+        }
         $this->messages = array();
         $this->tz       = new \DateTimeZone('Europe/Berlin');
 
