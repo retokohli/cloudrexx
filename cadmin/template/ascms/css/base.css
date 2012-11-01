@@ -112,6 +112,11 @@ a:active {
     color: #ffffff;
 }
 
+#metanavigation a.upgrade {
+    padding-left: 16px;
+    background: url(../images/navigation_upgrade.png) no-repeat 0 1.5px;
+}
+
 #metanavigation a.frontend {
     padding-left: 21px;
     background: url(../images/frontend_icon.png) no-repeat;
