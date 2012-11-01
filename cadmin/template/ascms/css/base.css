@@ -113,8 +113,8 @@ a:active {
 }
 
 #metanavigation a.upgrade {
-    padding-left: 16px;
-    background: url(../images/navigation_upgrade.png) no-repeat 0 1.5px;
+    padding-left: 18px;
+    background: url(../images/metanavigation_upgrade.png) no-repeat;
 }
 
 #metanavigation a.frontend {
