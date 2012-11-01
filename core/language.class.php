@@ -84,7 +84,8 @@ class LanguageManager
     }
     
     protected function isInFullMode() {
-        return false;
+        global $_CONFIG, $objDatabase;
+        return \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase)->isInLegalComponents("fulllanguage");
     }
 
 

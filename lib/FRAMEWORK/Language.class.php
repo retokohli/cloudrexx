@@ -49,7 +49,7 @@ class FWLanguage
               FROM ".DBPREFIX."languages
              ORDER BY id ASC");
         if ($objResult) {
-            $license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase);
+            $license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
             $license->check();
             $full = $license->isInLegalComponents('fulllanguage');
             while (!$objResult->EOF) {

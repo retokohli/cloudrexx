@@ -208,6 +208,7 @@ CSRF::add_code();
 
 // Site start
 $objTemplate = NULL;
+$license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
 if ($isRegularPageRequest) {
     $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
     $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
@@ -228,7 +229,10 @@ if ($isRegularPageRequest) {
         $txtProfile = $objUser->getUsername();
     }
 
-    $objTemplate->setGlobalVariable('TXT_FRONTEND', $_CORELANG['TXT_FRONTEND']);
+    $objTemplate->setGlobalVariable(array(
+        'TXT_FRONTEND'              => $_CORELANG['TXT_FRONTEND'],
+        'TXT_UPGRADE'               => $_CORELANG['TXT_UPGRADE'],
+    ));
     $objTemplate->setVariable(array(
         'TXT_PROFILE'               => $txtProfile,
         'TXT_LOGOUT'                => $_CORELANG['TXT_LOGOUT'],
@@ -238,6 +242,13 @@ if ($isRegularPageRequest) {
         'USER_ID'                   => $objFWUser->objUser->getId(),
     ));
     $objTemplate->touchBlock('backend_metanavigation');
+    if ($objTemplate->blockExists('upgradable')) {
+        if ($license->isUpgradable()) {
+            $objTemplate->touchBlock('upgradable');
+        } else {
+            $objTemplate->hideBlock('upgradable');
+        }
+    }
     
     // No longer needed in v3.0
     /*if (Permission::checkAccess(35, 'static', true)) {
@@ -269,7 +280,7 @@ if (!empty($plainCmd) and !in_array($plainCmd, array('fileBrowser', 'upload', 'l
 }
 
 // check if the requested module is active:
-if ($plainCmd != 'login' && $plainCmd != 'license') {
+if (!in_array($plainCmd, array('login', 'license', ''))) {
     $query = '
         SELECT
             modules.is_active
@@ -285,17 +296,16 @@ if ($plainCmd != 'login' && $plainCmd != 'license') {
     ';
     $res = $objDatabase->Execute($query);
     if (!$res->fields['is_active']) {
-        $plainCmd = '';
+        $plainCmd = 'license';
     }
 }
 if ($loggedIn) {
-    $license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase);
     $license->check();
-    if ($license->getState() == \Cx\Core\License\License::LICENSE_NOK) {
+    if ($license->getState() == \Cx\Core_Modules\License\License::LICENSE_NOK) {
         $plainCmd = 'license';
         $license->save(new \settingsManager(), $objDatabase);
     }
-    $lc = \Cx\Core\License\LicenseCommunicator::getInstance($_CONFIG);
+    $lc = \Cx\Core_Modules\License\LicenseCommunicator::getInstance($_CONFIG);
     $lc->addJsUpdateCode();
 }
 
@@ -395,8 +405,8 @@ switch ($plainCmd) {
         break;
     case 'license':
         $subMenuTitle = $_CORELANG['TXT_LICENSE'];
-        $lm = new \Cx\Core\License\LicenseManager($act, $objTemplate, $_CORELANG, $_CONFIG, $objDatabase);
-        $lm->getPage($_POST, $_CORELANG);
+        $lm = new \Cx\Core_Modules\License\LicenseManager($act, $objTemplate, $_CORELANG, $_CONFIG, $objDatabase);
+        $lm->getPage($_POST);
         break;
 // TODO: handle expired sessions in any xhr callers.
     case 'jsondata':
@@ -555,14 +565,6 @@ switch ($plainCmd) {
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_LANGUAGE_SETTINGS'];
         $objLangManager = new LanguageManager();
-        $objLangManager->getLanguagePage();
-        break;
-    case 'fulllanguage':
-        Permission::checkAccess(22, 'static');
-        if (!$cl->loadFile(ASCMS_CORE_PATH.'/language2.class.php'))
-            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_LANGUAGE_SETTINGS'];
-        $objLangManager = new LanguageManagerFull();
         $objLangManager->getLanguagePage();
         break;
     case 'modulemanager':
