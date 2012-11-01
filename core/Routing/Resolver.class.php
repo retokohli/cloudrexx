@@ -141,6 +141,9 @@ class Resolver {
             throw new ResolverException('Unable to match a single page for this alias (tried path ' . $path . ').');
         }
         $page = current($result['pages']);
+        if (!$page->isActive()) {
+            throw new ResolverException('Alias found, but it is not active.');
+        }
 
         $this->page = $page;
         
@@ -187,6 +190,13 @@ class Resolver {
             if(!$result['page']) {
                 throw new ResolverException('Unable to locate page for this language. (tried path ' . $path .').');
             }
+            
+            if (!$result['page']->isActive()) {
+                throw new ResolverException('Page found, but it is not active.');
+            }
+            
+            // if user has no rights to see this page, we redirect to login
+            $this->checkPageFrontendProtection($result['page']);
 
             // If an older revision was requested, revert to that in-place:
             if (!empty($this->historyId) && \Permission::checkAccess(6, 'static', true)) {
