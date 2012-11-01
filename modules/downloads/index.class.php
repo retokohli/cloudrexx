@@ -353,7 +353,7 @@ class downloads extends DownloadsLibrary
         $objCategory = Category::getCategory($data['category_id']);
 
         // check for sufficient permissions
-        if ($objCategory->getAddFilesAccessId() && !Permission::checkAccess($objCategory->getAddFilesAccessId(), 'dynamic', true) && $objCategory->getOwnerId() != $objFWUser->objUser->getId()) { return; }
+        if ($objCategory->getAddFilesAccessId() && !Permission::checkAccess($objCategory->getAddFilesAccessId(), 'dynamic', true) && $objCategory->getOwnerId() != FWUser::getFWUserObject()->objUser->getId()) { return; }
 
         //we remember the names of the uploaded files here. they are stored in the session afterwards,
         //so we can later display them highlighted.
