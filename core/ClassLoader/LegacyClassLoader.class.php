@@ -25,7 +25,7 @@ class LegacyClassLoader {
         } else if (in_array($name, array('var', 'Column', 'MappedSuperclass', 'Table', 'index', 'Entity', 'Id', 'GeneratedValue'))) {
             return;
         }
-        if ($parts[0] == 'Cx') {
+        /*if ($parts[0] == 'Cx') {
             echo '<b>LegacyClassLoader handling class ' . $name . '</b><br />';
         } else {
             //echo 'LegacyClassLoader handling class ' . $name . '<br />';
