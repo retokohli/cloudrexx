@@ -704,16 +704,11 @@ class PageRepository extends EntityRepository {
             $langId = FRONTEND_LANG_ID;
         }
 
-        $crit = array();
-        if ($nodeId) {
-            $crit['node'] = $nodeId;
-        } else {
-            $crit['module'] = $module;
-            $crit['cmd'] = $cmd;
+        $page = $this->findOneByModuleCmdLang($module, $cmd, $langId);
+        if(!$page) {
+            $page = $this->findOneByModuleCmdLang($module, $langId, FRONTEND_LANG_ID);
         }
-        $crit['lang'] = $langId;
 
-        $page = $this->findOneBy($crit);
         return $page;
     }
 
