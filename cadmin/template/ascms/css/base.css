@@ -112,7 +112,7 @@ a:active {
     color: #ffffff;
 }
 
-#metanavigation a.upgrade {
+#metanavigation a.license-upgrade {
     padding-left: 18px;
     background: url(../images/metanavigation_upgrade.png) no-repeat;
 }
@@ -892,52 +892,6 @@ table tr.reset td {
     color: #ffffff;
 }
 
-.infobox,
-.okbox, #okbox,
-.warningbox, #warningbox,
-.alertbox, #alertbox {
-    clear: both;
-    padding: 9px;
-    margin: 0 0 20px 0;
-    overflow: auto;
-}
-
-.infobox {
-    background: #d9edf7;
-    color: #3a87ad;
-}
-
-.infobox a, #infobox a {
-    color: #25556D;
-}
-
-.okbox, #okbox {
-    background: #dff0d8;
-    color: #39950c;
-}
-
-.okbox a, #okbox a {
-    color: #215507;
-}
-
-.alertbox, #alertbox {
-    color: #b94a48;
-    background: #f2dede;
-}
-
-.alertbox a, #alertbox a {
-    color: #391716;
-}
-
-.warningbox, #warningbox {
-    background: #fef0d0;
-    color: #da7a0a;
-}
-
-.warningbox a, #warningbox a {
-    color: #5a3304;
-}
-
 .sort-handle { /*the drag handle*/
                cursor: move;
                width: 17px;
@@ -1154,104 +1108,133 @@ table.adminlist td.nowrap {
     position: fixed !important;
 }
 
-/* message box style */
-.message {
-    width: 100%;
-    height: 31px;
-    float: left;
-    margin: 15px 0 15px 0;
-    padding: 0;
-    border: 0;
+/* Style of info, ok, warning, alert, upgrade and news boxes */
+.okbox, #okbox,
+.infobox, #infobox,
+.alertbox, #alertbox,
+.warningbox, #warningbox {
+    display: block;
+    padding: 8px;
+    margin: 0 0 15px 0;
+    overflow: auto;
 }
 
-#message.message {
-    margin: -5px 0 15px 0;
-    border: 0;
+*+html .okbox, *+html #okbox,
+*+html .infobox, *+html #infobox,
+*+html .alertbox, *+html #alertbox,
+*+html .warningbox, *+html #warningbox {
     overflow: hidden;
 }
 
-/*#message.message a:hover {
-    background: transparent;
-}*/
-
-.message.info {
-    background-color: #D9EDF7;
-    border-color: #BDE8F1;
+.okbox a, #okbox a ,
+.infobox a, #infobox a,
+.alertbox a, #alertbox a,
+.warningbox a, #warningbox a {
+    font-weight: bold;
+    line-height: 1.3;
 }
 
-.message.success {
-    background-color: #D9F7D9;
-    border-color: #BDF1C3;
+.okbox, #okbox {
+    background: #DFF0D8;
+    color: #39950C;
 }
 
-.message.warning {
-    background-color: #F7F7D9;
-    border-color: #F1F0BD;
+.okbox a, #okbox a {
+    color: #215507;
 }
 
-.message .icon {
-    width: 30px;
+.infobox {
+    background: #D9EDF7;
+    color: #3a87ad;
+}
+
+.infobox a, #infobox a {
+    color: #25556D;
+}
+
+.alertbox, #alertbox {
+    color: #B94A48;
+    background: #F2DEDE;
+}
+
+.alertbox a, #alertbox a {
+    color: #391716;
+}
+
+.warningbox, #warningbox {
+    background: #FEF0D0;
+    color: #DA7A0A;
+}
+
+.warningbox a, #warningbox a {
+    color: #DB7A0A;
+}
+
+.news,
+.upgrade {
+    position: relative;
+    clear: left;
     height: 31px;
-    float: left;
-    background: url('../images/news-icon.png') no-repeat 8px 5px;
+    padding: 0;
 }
 
-.message .text .link {
+*+html .news,
+*+html .upgrade {
+    clear: none;
+}
+
+.news > a,
+.upgrade > a {
     display: block;
     height: 15px;
-    padding: 8px;
-    color: #000000;
-    overflow: hidden;
+    padding: 8px 0 8px 40px;
+    margin: 0 30px 0 0;
+    background-repeat: no-repeat;
+    background-position: 8px 5px;
 }
 
-/*.message .text .link:hover {
-    background: #FFFFD6;
-}*/
-
-.close_wrapper {
-    float: right;
-    width: 30px;
-    height: 31px;
+*+html .news > a,
+*+html .upgrade > a {
+    padding: 7px 0 9px 40px;
 }
 
-.message .close {
-    float: right;
-    width: 13px;
-    padding: 6px 8px 5px 8px;
+.news > a {
+    background-image: url('../images/icon-news.png');
+}
+
+.upgrade > a {
+    background-image: url('../images/icon-upgrade.png');
+}
+
+.news > .link,
+.upgrade > .link {
+    float: left;
+}
+
+.news > .close,
+.upgrade > .close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 15px;
+    padding: 6px 8px 7px 8px;
     color: #000000;
     font-size: 24px;
 }
 
-#message_link {
-    float: left;
-    height: 24px;
-    padding: 7px 0 0 40px;
-    color: #DB7A0A;
-    font-weight: bold;
-    line-height: 1.5;
-    background: url('../images/upgrade-icon.png') no-repeat 8px 5px;
-}
-
-#upgradeButton {
+#button_upgrade {
     float: left;
     height: 20px;
     padding: 0 30px 0 30px;
-    margin: 5px 0 0 30px;
+    margin: 5px 0 0 0;
     color: #FFFFFF;
+    line-height: 1.6;
     border: 1px solid #D37912;
     background: #E78403 url('../images/bg-upgrade-button.jpg') repeat-x;
 }
 
-*+html #upgradeButton {
+*+html #button_upgrade {
     position: relative;
     bottom: 1px;
     height: 20px;
-}
-
-#upgradeButton:nth-of-type(1n) {
-    height: 16px\9;
-}
-
-input[type=submit]::-moz-focus-inner {
-    border: 0;
 }

@@ -9,7 +9,7 @@
 table#subnavbar_level1 {
     float: left;
     width: 100%;
-    margin: 0 0 20px 0;
+    margin: 0 0 15px 0;
     background: #ececec;
     z-index: 0;
     display: inline-table;
@@ -75,7 +75,7 @@ table#subnavbar_level1 form[name="userFrontendLangIdForm"] select {
     float: left;
     width: 100%;
     background: #f5f5f5;
-    margin: 0 0 20px 0;
+    margin: 0 0 15px 0;
 }
 
 #subnavbar_level2 ul {
