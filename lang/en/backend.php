@@ -256,6 +256,7 @@ $_ARRAYLANG['TXT_LICENSE_STATE_OK'] = 'Valid';
 $_ARRAYLANG['TXT_LICENSE_STATE_DEMO'] = 'Trial';
 $_ARRAYLANG['TXT_LICENSE_STATE_ERROR'] = 'N/A';
 $_ARRAYLANG['TXT_LICENSE_UPDATE'] = 'Update license';
+$_ARRAYLANG['TXT_LICENSE_UPDATING'] = 'Updating license...';
 $_ARRAYLANG['TXT_LICENSE_COMMUNICATION_ERROR'] = 'Unable to establish a connection to the license server!';
 $_ARRAYLANG['TXT_LICENSE_DEFAULT_GRAYZONE_MESSAGE'] = 'Unable to verify your license!';
 $_ARRAYLANG['TXT_UPGRADE'] = 'Upgrade';
