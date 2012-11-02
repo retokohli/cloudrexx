@@ -10,7 +10,7 @@ $J(document).ready(function() {
         }
     });
     
-    $J('.message .close, #stats_delete').click(function(event) {
+    $J('#news_delete, #stats_delete').click(function(event) {
         event.preventDefault();
         
         var elementId = $J(this).attr('id');
@@ -25,7 +25,7 @@ $J(document).ready(function() {
             success: function(data) {
                 if (data == 'success') {
                     if (elementId == 'news_delete') {
-                        $J('#news').hide();
+                        $J('#news_message').hide();
                         $J('#alert_news_wrapper').fadeIn(500).delay(5000).fadeOut(500);
                     } else {
                         $J('#stats_wrapper').hide();
@@ -104,21 +104,21 @@ $J(document).ready(function() {
 
 <div id="dashboard">
     <!-- BEGIN message -->
-    <div id="message" class="message {MESSAGE_TYPE}">
-        <a id="message_link" class="link" href="{MESSAGE_LINK}" target="{MESSAGE_LINK_TARGET}">{MESSAGE_TITLE}</a>
+    <div id="license_message" class="upgrade {MESSAGE_TYPE}">
+        <a href="{MESSAGE_LINK}" target="{MESSAGE_LINK_TARGET}">
+            {MESSAGE_TITLE}
+        </a>
     </div>
     <!-- END message -->
+    
     <!-- BEGIN news -->
-    <div id="news" class="message">
-        <a id="news_contrexx" class="icon" href="http://www.contrexx.com" target="_blank"></a>
+    <div id="news_message" class="news infobox">
+        <a href="{NEWS_LINK}" target="_blank">
+            {NEWS_TITLE}
+        </a>
         <!-- BEGIN news_delete -->
-        <div class="close_wrapper">
-            <a href="#" id="news_delete" class="close">&times;</a>
-        </div>
+        <span id="news_delete" class="close">&times;</span>
         <!-- END news_delete -->
-        <div id="news_message" class="text">
-            <a id="news_link" class="link" href="{NEWS_LINK}" target="_blank">{NEWS_TITLE}</a>
-        </div>
     </div>
     <!-- END news -->
     
