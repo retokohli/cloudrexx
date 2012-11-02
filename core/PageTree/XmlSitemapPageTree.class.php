@@ -154,6 +154,7 @@ class XmlSitemapPageTree extends PageTree {
         
         try {
             $objFile = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT . self::$strFilePath . '/' . $filename);
+            $objFile->touch();
             $objFile->write($xml);
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::log($e->getMessage());
