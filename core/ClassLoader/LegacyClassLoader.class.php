@@ -56,6 +56,14 @@ class LegacyClassLoader {
             $moduleName = strtolower(preg_replace('/Library/', '', $name));
             // exception for mediadir
             $moduleName = preg_replace('/mediadirectory/', 'mediadir', $moduleName);
+
+            // core module and module indexes /[core_modules|modules]/{modulename}/[index.class.php|admin.class.php]
+            $lowerModuleName = strtolower($name);
+            if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $lowerModuleName . '/index.class.php', $origName)) { return; }
+            if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $lowerModuleName . '/admin.class.php', $origName)) { return; }
+            if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $lowerModuleName . '/index.class.php', $origName)) { return; }
+            if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $lowerModuleName . '/admin.class.php', $origName)) { return; }
+
             if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $moduleName . '/lib/' . $moduleName . 'Lib.class.php', $origName)) { return; }
             if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $moduleName . '/lib/Lib.class.php', $origName)) { return; }
             if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $moduleName . '/lib/lib.class.php', $origName)) { return; }
@@ -77,14 +85,7 @@ class LegacyClassLoader {
             if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $moduleName . '/lib/' . $nameWithoutModuleLowercase . '.class.php', $origName)) { return; }
             // exception for data module
             if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $moduleName . '/' . $name . '.class.php', $origName)) { return; }
-            
-            // core module and module indexes /[core_modules|modules]/{modulename}/[index.class.php|admin.class.php]
-            $moduleName = strtolower($name);
-            if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $moduleName . '/index.class.php', $origName)) { return; }
-            if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $moduleName . '/admin.class.php', $origName)) { return; }
-            if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $moduleName . '/index.class.php', $origName)) { return; }
-            if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $moduleName . '/admin.class.php', $origName)) { return; }
-            
+
             // core module and module model classes not containing module name
             if ($this->testLoad(ASCMS_MODULE_PATH.'/shop/lib/' . $name . '.class.php', $origName)) { return; }
             
@@ -154,9 +155,9 @@ class LegacyClassLoader {
             // match namespace too
             $matches = array();
             
-            //if (preg_match('/(?:namespace\s+([\\\\\w]+);[.\n\r]*?)?(?:class|interface)\s+' . $name . '\s+(?:extends|implements)[\\\\\s\w,\n\t\r]*?\{/', $fcontent, $matches)) {
+            //if (preg_match('/(?:namespace\s+([\\\\\w]+);[.\n\r]*?)?(?:class|interface)\s+' . $name . '\s+(?:extends|implements)?[\\\\\s\w,\n\t\r]*?\{/', $fcontent, $matches)) {
             if (preg_match('/(?:namespace ([\\\\a-zA-Z0-9_]*);[\w\W]*)?(?:class|interface) ' . $name . '(?:[ a-zA-Z0-9\n\r\t\\\\_])*\{/', $fcontent, $matches)) {
-                if (!isset($matches[1]) || $matches[1] == $namespace) {
+                if (isset($matches[0]) && (!isset($matches[1]) || $matches[1] == $namespace)) {
                     return $file;
                 }
             }
