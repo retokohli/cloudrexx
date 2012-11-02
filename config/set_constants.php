@@ -117,7 +117,7 @@ define('ASCMS_PARTNERS_IMAGES_PATH',        ASCMS_DOCUMENT_ROOT.'/images/partner
 define('ASCMS_PARTNERS_IMAGES_WEB_PATH',    ASCMS_PATH_OFFSET.'/images/partners');
 define('ASCMS_MODEL_PATH',                  ASCMS_DOCUMENT_ROOT.'/model');
 define('ASCMS_MODEL_PROXIES_PATH',          ASCMS_MODEL_PATH.'/proxies');
-define('ASCMS_CUSTOMIZING_PATH',            ASCMS_DOCUMENT_ROOT.'/customizings');
+define('ASCMS_CUSTOMIZING_PATH',            ASCMS_DOCUMENT_ROOT.'/customizing');
 define('ASCMS_CUSTOMIZING_WEB_PATH',        ASCMS_PATH_OFFSET.'/customizing');
 
 // This is like the usual *_WEB_PATH, relative to ASCMS_PATH.
