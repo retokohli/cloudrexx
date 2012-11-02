@@ -7,7 +7,7 @@ Diese Lizenzvereinbarung bezieht sich auf das von der COMVATION AG veröffentlic
 
 Contrexx ist eine urheberrechtlich geschützte Arbeit. Das Urheberrecht liegt bei der COMVATION AG, 3600 Thun, Switzerland. Alle Rechte an Contrexx, die mit dieser Lizenzvereinbarung nicht ausdrücklich an den Lizenznehmer übertragen werden, bleiben ausschliesslich dem Lizenzgeber vorbehalten.
 
-Sollten Sie Fragen zu dieser Lizenzvereinbarung haben, wenden Sie sich bitte an die COMVATION AG <info@comvation.com>. Weitere Informationen finden Sie unter http://www.contrexx.com/.
+Sollten Sie Fragen zu dieser Lizenzvereinbarung haben, wenden Sie sich bitte an die COMVATION AG, info@comvation.com. Weitere Informationen finden Sie unter http://www.contrexx.com/.
 
 2. Verwendung
 
