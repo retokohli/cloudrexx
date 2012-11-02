@@ -235,35 +235,32 @@ class LicenseCommunicator {
         return;
     }
     
-    public function addJsUpdateCode() {
+    public function addJsUpdateCode(&$_CORELANG) {
         $lc = LicenseCommunicator::getInstance($this->config);
         if ($lc->isTimeToUpdate($this->config)) {
             \JS::activate('jquery');
             \JS::registerCode('
                 jQuery(document).ready(function() {
-                    var messageBar = jQuery("#message_message");
-                    var oldMsg = messageBar.children("a").html();
-                    var oldClass = messageBar.parent().attr("class");
-                    var oldLink = messageBar.children("a").attr("href");
-                    var oldTarget = messageBar.children("a").attr("target");
-                    messageBar.children("a").attr("href", "#");
-                    messageBar.children("a").attr("target", "_self");
-                    messageBar.children("a").html("Lizenz wird aktualisiert...");
-                    messageBar.parent().attr("class", "message okbox");
+                    var licenseMessage      = jQuery("#license_message");
+                    var cloneLicenseMessage = jQuery("#license_message").clone();
+                    
+                    licenseMessage.attr("class", "infobox");
+                    licenseMessage.text("' . $_CORELANG['TXT_LICENSE_UPDATING'] . '");
+                    
                     var revertMessage = function() {
-                        messageBar.children("a").html(oldMsg);
-                        messageBar.parent().attr("class", oldClass);
-                        messageBar.children("a").attr("href", oldLink);
-                        messageBar.children("a").attr("target", oldTarget);
+                        licenseMessage.replaceWith(cloneLicenseMessage);
                     }
+                    
                     jQuery.get(
                         "../core_modules/License/versioncheck.php"
                     ).success(function(data) {
-                        data = jQuery.parseJSON(data);
-                        messageBar.children("a").html(data.text);
-                        messageBar.parent().attr("class", "message " + data.class);
-                        messageBar.children("a").attr("href", data.link);
-                        messageBar.children("a").attr("target", data.target);
+                        var data = jQuery.parseJSON(data);
+                        revertMessage();
+                        
+                        licenseMessage.attr("class", "upgrade " + data.class);
+                        licenseMessage.children("a:first").attr("href", data.link);
+                        licenseMessage.children("a:first").attr("target", data.target);
+                        licenseMessage.children("a:first").html(data.text);
                     }).error(function(data) {
                         revertMessage();
                     });
