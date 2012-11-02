@@ -281,6 +281,8 @@ class Access extends AccessLib
                 $objFWUser->objUser->setProfile($arrProfile);
             }
 
+            $objFWUser->objUser->setSubscribedNewsletterListIDs(isset($_POST['access_user_newsletters']) && is_array($_POST['access_user_newsletters']) ? $_POST['access_user_newsletters'] : array());
+
             if ($status) {
                 if ($objFWUser->objUser->checkMandatoryCompliance()
                     && $objFWUser->objUser->store()
@@ -295,11 +297,8 @@ class Access extends AccessLib
                 $msg = implode('<br />', $result);
             }
             $this->_objTpl->setVariable('ACCESS_SETTINGS_MESSAGE', $msg);
-        } elseif (isset($_POST['access_set_newsletters'])) {
-            $arrSubscribedNewsletterListIDs = isset($_POST['access_user_newsletters']) && is_array($_POST['access_user_newsletters']) ? $_POST['access_user_newsletters'] : array();
-            $objFWUser->objUser->setSubscribedNewsletterListIDs($arrSubscribedNewsletterListIDs);
-            $objFWUser->objUser->store();
         }
+
         $this->parseAccountAttributes($objFWUser->objUser, true);
         $this->parseNewsletterLists($objFWUser->objUser);
 
@@ -323,7 +322,6 @@ class Access extends AccessLib
             'ACCESS_USER_PASSWORD_INPUT'    => '<input type="password" name="access_user_password" />',
             'ACCESS_STORE_BUTTON'           => '<input type="submit" name="access_store" value="'.$_ARRAYLANG['TXT_ACCESS_SAVE'].'" />',
             'ACCESS_CHANGE_PASSWORD_BUTTON' => '<input type="submit" name="access_change_password" value="'.$_ARRAYLANG['TXT_ACCESS_CHANGE_PASSWORD'].'" />',
-            'ACCESS_SET_NEWSLETTER_BUTTON'  => '<input type="submit" name="access_set_newsletters" value="'.$_ARRAYLANG['TXT_ACCESS_SAVE'] .'" />',
             'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode(),
         ));
 
@@ -412,10 +410,7 @@ class Access extends AccessLib
 
             $objUser->setGroups(explode(',', $arrSettings['assigne_to_groups']['value']));
 
-            if (isset($_POST['access_set_newsletters'])) {
-                $arrSubscribedNewsletterListIDs = isset($_POST['access_user_newsletters']) && is_array($_POST['access_user_newsletters']) ? $_POST['access_user_newsletters'] : array();
-                $objUser->setSubscribedNewsletterListIDs($arrSubscribedNewsletterListIDs);
-            }
+            $objUser->setSubscribedNewsletterListIDs(isset($_POST['access_user_newsletters']) && is_array($_POST['access_user_newsletters']) ? $_POST['access_user_newsletters'] : array());
 
             if (
                 (

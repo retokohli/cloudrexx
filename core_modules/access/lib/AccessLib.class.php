@@ -164,7 +164,7 @@ class AccessLib
             'menu'            => '<select name="[NAME]"[STYLE]>[VALUE]</select>',
             'menu_option'     => '<option value="[VALUE]"[SELECTED][STYLE]>[VALUE_TXT]</option>',
             'url'             => '<input type="hidden" name="[NAME]" value="[VALUE]" /><em>[VALUE_TXT]</em> <a href="javascript:void(0);" onclick="elLink=null;elDiv=null;elInput=null;pntEl=this.previousSibling;while ((typeof(elInput)==\'undefined\'||typeof(elDiv)!=\'undefined\')&& pntEl!=null) {switch(pntEl.nodeName) {case\'INPUT\':elInput=pntEl;break;case\'EM\':elDiv=pntEl;if (elDiv.getElementsByTagName(\'a\').length>0) {elLink=elDiv.getElementsByTagName(\'a\')[0];}break;}pntEl=pntEl.previousSibling;}accessSetWebsite(elInput,elDiv,elLink)" title="'.$_CORELANG['TXT_ACCESS_CHANGE_WEBSITE'].'"><img align="middle" src="'.ASCMS_PATH_OFFSET.'/images/modules/access/edit.gif" width="16" height="16" border="0" alt="'.$_CORELANG['TXT_ACCESS_CHANGE_WEBSITE'].'" /></a>',
-            'date'            => '<input type="text" name="[NAME]" class="access_date" value="[VALUE]" /><a href="javascript:void(0)" onclick="this.previousSibling.value = \'\'" title="'.$_CORELANG['TXT_ACCESS_DELETE_DATE'].'"><img src="'.ASCMS_PATH_OFFSET.'/images/modules/access/delete.gif" width="17" height="17" border="0" alt="'.$_CORELANG['TXT_ACCESS_DELETE_DATE'].'" style="vertical-align:middle;" /></a>'
+            'date'            => '<input type="text" name="[NAME]" class="access_date" value="[VALUE]" />',
         );
     }
 
@@ -1928,29 +1928,36 @@ JSaccessValidatePrimaryGroupAssociation
      */
     protected function parseNewsletterLists($objUser)
     {
-        if (!$this->_objTpl->blockExists('newsletter_list')) return;
+        global $_CONFIG, $objDatabase;
 
-        $arrSubscribedNewsletterListIDs = $objUser->getSubscribedNewsletterListIDs();
-        $arrNewsletterLists = NewsletterLib::getLists();
+        if (!$this->_objTpl->blockExists('access_newsletter')) return;
 
-        if (!count($arrNewsletterLists)) {
-            $this->_objTpl->hideBlock('newsletter_list');
-            if ($this->_objTpl->blockExists('newsletter_lists')) $this->_objTpl->hideBlock('newsletter_lists');
-            return;
+        if (\Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase)->isInLegalComponents('newsletter')) {
+            $arrSubscribedNewsletterListIDs = $objUser->getSubscribedNewsletterListIDs();
+            $arrNewsletterLists = NewsletterLib::getLists();
+
+            if (!count($arrNewsletterLists)) {
+                $this->_objTpl->hideBlock('access_newsletter_list');
+                return;
+            }
+
+            $row = 0;
+            foreach ($arrNewsletterLists as $listId => $arrList) {
+                $this->_objTpl->setVariable(array(
+                    $this->modulePrefix.'NEWSLETTER_ID'        => $listId,
+                    $this->modulePrefix.'NEWSLETTER_NAME'      => contrexx_raw2xhtml($arrList['name']),
+                    $this->modulePrefix.'NEWSLETTER_SELECTED'  => in_array($listId, $arrSubscribedNewsletterListIDs) ? 'checked="checked"' : '',
+                    $this->modulePrefix.'NEWSLETTER_ROW_CLASS' => ($row++ % 2) + 1,
+                ));
+                $this->_objTpl->parse('access_newsletter_list');
+            }
+
+            $this->_objTpl->touchBlock('access_newsletter');
+            if ($this->_objTpl->blockExists('access_newsletter_tab')) $this->_objTpl->touchBlock('access_newsletter_tab');
+        } else {
+            $this->_objTpl->hideBlock('access_newsletter');
+            if ($this->_objTpl->blockExists('access_newsletter_tab')) $this->_objTpl->hideBlock('access_newsletter_tab');
         }
-
-        $row = 0;
-        foreach ($arrNewsletterLists as $listId => $arrList) {
-            $this->_objTpl->setVariable(array(
-                $this->modulePrefix.'NEWSLETTER_ID'        => $listId,
-                $this->modulePrefix.'NEWSLETTER_NAME'      => contrexx_raw2xhtml($arrList['name']),
-                $this->modulePrefix.'NEWSLETTER_SELECTED'  => in_array($listId, $arrSubscribedNewsletterListIDs) ? 'checked="checked"' : '',
-                $this->modulePrefix.'NEWSLETTER_ROW_CLASS' => ($row++ % 2) + 1,
-            ));
-            $this->_objTpl->parse('newsletter_list');
-        }
-
-        if ($this->_objTpl->blockExists('newsletter_lists')) $this->_objTpl->touchBlock('newsletter_lists');
     }
 
 

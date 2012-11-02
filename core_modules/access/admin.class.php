@@ -1372,9 +1372,9 @@ class AccessManager extends AccessLib
         if (contrexx_isModuleActive('downloads')) {
             $this->parseDigitalAssetManagementExtension($rowNr);
             $status = true;
-            $this->_objTpl->parse('access_additional_functions_dma');
+            $this->_objTpl->parse('access_additional_functions_dam');
         } else {
-            $this->_objTpl->hideBlock('access_additional_functions_dma');
+            $this->_objTpl->hideBlock('access_additional_functions_dam');
         }
 
         if ($status) {
