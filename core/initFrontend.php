@@ -1650,11 +1650,6 @@ if ($_CONFIG['frontendEditingStatus'] == 'on') {
 }
 
 
-// remove the registered-sign from the cms name
-$contrexxCmsName = $_CONFIG['coreCmsName'];
-$contrexxCmsName[8] = ' ';
-$contrexxCmsName[9] = ' ';
-
 // set global template variables
 $objTemplate->setVariable(array(
     'CHARSET'                        => $objInit->getFrontendLangCharset(),
@@ -1691,7 +1686,7 @@ $objTemplate->setVariable(array(
     'VISITOR_NUMBER'                 => $objCounter->getVisitorNumber(),
     'COUNTER'                        => $objCounter->getCounterTag(),
     'BANNER'                         => isset($objBanner) ? $objBanner->getBannerJS() : '',
-    'VERSION'                        => $contrexxCmsName,
+    'VERSION'                        => contrexx_raw2xhtml($_CONFIG['coreCmsName']),
     'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($url),
     'LANGUAGE_NAVBAR_SHORT'          => $objNavbar->getFrontendLangNavigation($url, true),
     'ACTIVE_LANGUAGE_NAME'           => $objInit->getFrontendLangName(),
