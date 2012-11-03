@@ -387,7 +387,8 @@ class Category
 
         $this->downloads = array();
         $arrSubCategories = array($this->id);
-        $arrSubCategories = array_merge($arrSubCategories, $this->getSubCategories());
+// TODO: Only load downloads of subcategories if we're not modifying a category
+        //$arrSubCategories = array_merge($arrSubCategories, $this->getSubCategories());
         foreach ($arrSubCategories as &$value) {
             $value = '`category_id` = '.$value;
         }
@@ -400,7 +401,7 @@ class Category
         }
     }
 
-    public function hasSubcategories($parentId)
+    public function hasSubcategories($parentId = 0)
     {
         global $objDatabase;
 
