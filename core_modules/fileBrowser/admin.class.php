@@ -381,7 +381,7 @@ class FileBrowser {
                     
                     // But we can simulate level and type for our purposes: (level above)
                     $jsondata = json_decode($page['attr']['data-href']);
-                    if ($jsondata->module != '') {
+                    if (trim($jsondata->module) != '') {
                         $arrPage['type'] = \Cx\Model\ContentManager\Page::TYPE_APPLICATION;
                         $module = explode(' ', $jsondata->module, 2);
                         $arrPage['modulename'] = $module[0];
