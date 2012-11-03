@@ -282,6 +282,7 @@ if ($tree == 'verify') {
         $cxjs->setVariable(array(
             'editmodetitle'   => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'],
             'editmodecontent' => $editmodeTemplate->get(),
+            'ckeditorconfigpath' => substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH.'/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT)+1),
         ), 'contentmanager');
     }
 

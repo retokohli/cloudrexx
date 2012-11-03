@@ -116,6 +116,7 @@ class frontendEditingLib {
         $objCx = ContrexxJavascript::getInstance();
         $objCx->setVariable('TXT_FRONTEND_EDITING_LOGIN', $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'], 'frontendEditing');
         $objCx->setVariable('TXT_FRONTEND_EDITING_TOOLBAR_EDIT', $_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_EDIT'], 'frontendEditing');
+        $objCx->setVariable('ckeditorconfigpath', substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH.'/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT)+1), 'frontendEditing');
 
         return '<a id="fe_edit_link" href="javascript:void(0)" onclick="fe_setToolbarVisibility(true); fe_loadToolbar(true);" accesskey="'.frontendEditingLib::ACCESS_KEY.'" title="'.$strLinkDescription.'">'.$strLinkDescription.'</a>';
     }

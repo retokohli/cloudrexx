@@ -767,6 +767,7 @@ class blockManager extends blockLibrary
         $objJs = \ContrexxJavascript::getInstance();
         $objJs->setVariable('relBlockPagesUnselectedOptions', $jsonData->json($strUnselectedPages), 'block');
         $objJs->setVariable('relBlockPagesSelectedOptions', $jsonData->json($strSelectedPages), 'block');
+        $objJs->setVariable('ckeditorconfigpath', substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH.'/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT)+1), 'block');
         
         foreach (FWLanguage::getActiveFrontendLanguages() as $langId => $arrLanguage) {
             $checked = '';

@@ -11,7 +11,7 @@
         if ($J('#wysiwyg_editor').prop('checked')) {
             if (typeof(CKEDITOR.instances.ckeditor) == 'undefined') {
                 var config = {
-                    customConfig : cx.variables.get('basePath', 'contrexx') + 'core/Wysiwyg/ckeditor.config.js.php',
+                    customConfig : cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'block'),
                     toolbar: 'Default',
                     skin: 'kama',
                     height: 380

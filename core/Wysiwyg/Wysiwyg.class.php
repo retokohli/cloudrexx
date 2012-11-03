@@ -36,8 +36,9 @@ class Wysiwyg
             \JS::activate('jquery');
     
             $loadBBCodePlugin = $this->mode == 'forum' ? 1 : 0;
+            $configPath = substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH.'/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT));
             $arrCKEditorOptions = array(
-                "customConfig: CKEDITOR.getUrl('../../core/Wysiwyg/ckeditor.config.js.php?langId=".$this->languageId."&absoluteURIs=".$this->absoluteUris."&bbcode=".$loadBBCodePlugin."')",
+                "customConfig: CKEDITOR.getUrl('".$configPath."?langId=".$this->languageId."&absoluteURIs=".$this->absoluteUris."&bbcode=".$loadBBCodePlugin."')",
             );
             $onReady = array("
                 CKEDITOR.replace('".$this->name."', {
