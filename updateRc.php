@@ -37,7 +37,7 @@ require_once($documentRoot.'/core/session.class.php');
 $objDatabase = getDatabaseObject($strErrMessage, true);
 
 // note that license does not get any language vars, so it won't be able to display the fallback message
-$license = \Cx\Core\License\License::getCached($_CONFIG, $objDatabase);
+$license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
 
 $objInit = new InitCMS('backend', null);
 
@@ -203,7 +203,7 @@ if ($fp !== false) {
                     $sqlQuery = '';
                     continue;
                 }
-                $sqlQuery = preg_replace('#`'.DBPREFIX.'(contrexx_module_repository)`#', '`'.DBPREFIX.'$1`', $sqlQuery);
+                $sqlQuery = preg_replace('#`contrexx_module_repository`#', '`'.DBPREFIX.'module_repository`', $sqlQuery);
                 $result = $objDatabase->Execute($sqlQuery);
                 if ($result === false) {
                     die('Update failed!');
