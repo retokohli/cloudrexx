@@ -31,9 +31,7 @@ class LegacyClassLoader {
             //echo 'LegacyClassLoader handling class ' . $name . '<br />';
         }//*/
         $startTime = microtime(true);
-        if (isset($this->mapTable[$name])) {
-            $this->loadClass('.'.$this->mapTable[$name], $name);
-        } else {
+        if (!$this->loadFromCache($name)) {
             // class not in match table, guess path
             // we do not need the namespace, it's probably wrong anyway
             $origName = $name;
@@ -59,10 +57,13 @@ class LegacyClassLoader {
 
             // core module and module indexes /[core_modules|modules]/{modulename}/[index.class.php|admin.class.php]
             $lowerModuleName = strtolower($name);
-            if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $lowerModuleName . '/index.class.php', $origName)) { return; }
-            if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $lowerModuleName . '/admin.class.php', $origName)) { return; }
-            if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $lowerModuleName . '/index.class.php', $origName)) { return; }
-            if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $lowerModuleName . '/admin.class.php', $origName)) { return; }
+            if (\Env::get('init')->mode != 'backend') {
+                if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $lowerModuleName . '/index.class.php', $origName)) { return; }
+                if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $lowerModuleName . '/index.class.php', $origName)) { return; }
+            } else {
+                if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $lowerModuleName . '/admin.class.php', $origName)) { return; }
+                if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $lowerModuleName . '/admin.class.php', $origName)) { return; }
+            }
 
             if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $moduleName . '/lib/' . $moduleName . 'Lib.class.php', $origName)) { return; }
             if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $moduleName . '/lib/Lib.class.php', $origName)) { return; }
@@ -102,6 +103,22 @@ class LegacyClassLoader {
         }
         $endTime = microtime(true);
         $this->timeUsed += ($endTime - $startTime);
+    }
+    
+    private function loadFromCache($name) {
+        if (isset($this->mapTable[$name])) {
+            $file = $this->mapTable[$name];
+            $ending = explode('/', $file);
+            $ending = end($ending);
+            if (\Env::get('init')->mode == 'backend' && $ending == 'index.class.php') {
+                return false;
+            } else if (\Env::get('init')->mode != 'backend' && $ending == 'admin.class.php') {
+                return false;
+            }
+            $this->loadClass('.'.$file, $name);
+            return true;
+        }
+        return false;
     }
     
     private function testLoad($path, $name) {
