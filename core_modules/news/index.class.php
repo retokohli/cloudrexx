@@ -277,7 +277,7 @@ class news extends newsLibrary {
             return;
         }
 
-        if ($objCounter->isSpider()) {
+        if (checkForSpider()) {
             return;
         }
 

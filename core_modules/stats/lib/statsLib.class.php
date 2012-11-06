@@ -661,7 +661,21 @@ class statsLibrary
         return false;
     }
 
-     /**
+    /**
+     * Get unique user id
+     * @return unique user id as md5-string
+     */
+    public function getUniqueUserId()
+    {
+        if (!$this->md5Id) {
+            $this->_getClientInfos();
+        }
+
+        return $this->md5Id;
+    }
+    
+    
+    /**
     * Get client informations
     *
     * Get the clientinfos like useragent, langugage, ip, proxy, host and referer
