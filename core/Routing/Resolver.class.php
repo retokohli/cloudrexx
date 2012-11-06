@@ -255,19 +255,28 @@ class Resolver {
                     $targetPage = $this->pageRepo->findOneByModuleCmdLang($module, $cmd, $langId);
 
                     // in case we were unable to find the requested page, this could mean that we are
-                    // trying to retrive a module page that uses an ID as CMD.
-                    // therefore, lets try to find the module by using the INT in $langId as CMD.
+                    // trying to retrieve a module page that uses a string with an ID (STRING_ID) as CMD.
+                    // therefore, lets try to find the module by using the string in $cmd and INT in $langId as CMD.
                     // in case $langId is really the requested CMD then we will have to set the 
                     // resolved language back to our original language $this->lang.
-                    if(!$targetPage) {
+                    if (!$targetPage) {
+                        $targetPage = $this->pageRepo->findoneBymoduleCmdLang($module, $cmd.'_'.$langId, $this->lang);
+                        $langId = $this->lang;
+                    }
+
+                    // try to retrieve a module page that uses only an ID as CMD.
+                    // lets try to find the module by using the INT in $langId as CMD.
+                    // in case $langId is really the requested CMD then we will have to set the 
+                    // resolved language back to our original language $this->lang.
+                    if (!$targetPage) {
                         $targetPage = $this->pageRepo->findOneByModuleCmdLang($module, $langId, $this->lang);
                         $langId = $this->lang;
                     }
 
                     // revert to default language if we could not retrieve the specified langauge by the redirection.
                     // so lets try to load the redirection of the current language
-                    if(!$targetPage) {
-                        if($langId != 0) { //make sure we weren't already retrieving the default language
+                    if (!$targetPage) {
+                        if ($langId != 0) { //make sure we weren't already retrieving the default language
                             $targetPage = $this->pageRepo->findOneByModuleCmdLang($module, $cmd, $this->lang);
                             $langId = $this->lang;
                         }

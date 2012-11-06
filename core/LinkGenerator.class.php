@@ -178,7 +178,9 @@ class LinkGenerator {
                     try {
                         $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd($data['module'], $data['cmd'], $data['lang'], array(), '', false);
                     } catch (\Cx\Core\Routing\UrlException $e) {
-                        if ($data['lang'] && empty($data['cmd'])) {
+                        if ($data['lang'] && $data['cmd']) {
+                            $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd($data['module'], $data['cmd'].'_'.$data['lang'], FRONTEND_LANG_ID);
+                        } else if ($data['lang'] && empty($data['cmd'])) {
                             $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd($data['module'], $data['lang'], FRONTEND_LANG_ID);
                         } else {
                             $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd('error', '', $data['lang']);
