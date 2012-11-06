@@ -1289,7 +1289,7 @@ class galleryManager extends GalleryLibrary
      */
     function showCategoryDetails($intCatId)
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG, $objInit;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         try {
             if (!$this->checkCategoryAccess($intCatId)) {
@@ -1387,7 +1387,7 @@ class galleryManager extends GalleryLibrary
                 $objSubResult = $objDatabase->Execute('    SELECT    name
                                                         FROM    '.DBPREFIX.'module_gallery_language_pics
                                                         WHERE    picture_id='.$objResult->fields['id'].' AND
-                                                                lang_id='.$objInit->getFrontendLangId().'
+                                                                lang_id='.FRONTEND_LANG_ID.'
                                                         LIMIT    1
                                                     ');
 
@@ -3572,7 +3572,22 @@ $strFileNew = '';
         $intWidth    = $intSize[0]; //die Breite des Bildes
         $intHeight    = $intSize[1]; //die H�he des Bildes
         $strType    = $intSize[2]; //type des Bildes
-        @touch($strPathNew.$strFileNew);
+
+        if (file_exists($strPathNew.$strFileNew)) {
+            \Cx\Lib\FileSystem\FileSystem::makeWritable($strPathNew.$strFileNew);
+        } else {
+            try {
+                $objFile = new \Cx\Lib\FileSystem\File($strPathNew.$strFileNew);
+                $objFile->touch();
+                $objFile->makeWritable();
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                \DBG::msg($e->getMessage());
+            }
+        }
+// TODO: Unfortunately, the functions imagegif(), imagejpeg() and imagepng() can't use the Contrexx FileSystem wrapper,
+//       therefore we need to set the global write access image files.
+//       This issue might be solved by using the output-buffer and write the image manually afterwards.
+        \Cx\Lib\FileSystem\FileSystem::chmod($strPathNew.$strFileNew, 0666);//\Cx\Lib\FileSystem\FileSystem::CHMOD_FILE);
 
         //fix cases of zeroes
         if ($intNewWidth == 0) {
