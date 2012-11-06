@@ -1304,7 +1304,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 $objCategoriesLevels->MoveNext();
             }
         } else {
-            $objTpl->hide('mediadir_' . strtolower($list));
+            $objTpl->hideBlock('mediadir_' . strtolower($list));
         }
     }
 
