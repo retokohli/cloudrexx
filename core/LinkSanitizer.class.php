@@ -24,7 +24,7 @@ class LinkSanitizer {
         return preg_replace("/
                 (
                     # match all SRC and HREF attributes 
-                    \s*(src|href|action)\s*=\s*['\"]
+                    \s+(src|href|action)\s*=\s*['\"]
                     |
                     # or match all CSS @import statements
                     @import\s+url\s*\(                             
