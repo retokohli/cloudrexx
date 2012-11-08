@@ -472,8 +472,13 @@ class Url {
         return $lang_dir;
     }
 
-    public function setLangDir($langDir) {
+    public function setLangDir($langDir, $page = null) {
         $this->langDir = $langDir;
+ 
+        if ($page) {
+            $langId = \FWLanguage::getLanguageIdByCode($langDir);
+            $this->setPath(substr($page->getNode()->getPage($langId)->getPath(), 1));
+        }
     }
 
     /**

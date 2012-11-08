@@ -172,16 +172,14 @@ class Navigation
      * @param boolean $langNameContraction
      * @return string 
      */
-    function getFrontendLangNavigation($pageUrl, $langNameContraction = false)
+    function getFrontendLangNavigation($page, $pageUrl, $langNameContraction = false)
     {
         $activeLanguages = \FWLanguage::getActiveFrontendLanguages();
-        
-        $myUrl = clone $pageUrl;
-        
+
         $langNavigation = '';
-        foreach ($activeLanguages as $langId=>$langData) {
-            $myUrl->setLangDir($langData['lang']);
-            
+        foreach ($activeLanguages as $langId => $langData) {
+            $myUrl = clone $pageUrl;
+            $myUrl->setLangDir($langData['lang'], $page);
             $name  = contrexx_raw2xhtml($langNameContraction ? strtoupper($langData['lang']) : $langData['name']);
             $class = $langId == FRONTEND_LANG_ID ? $langData['lang'].' active' : $langData['lang'];
             
@@ -195,20 +193,19 @@ class Navigation
      * @param \Cx\Core\Routing\Url $pageUrl
      * @param \Cx\Core\Html\Sigma $objTemplate 
      */
-    public function setLanguagePlaceholders($pageUrl, $objTemplate) {
+    public function setLanguagePlaceholders($page, $pageUrl, $objTemplate) {
         $activeLanguages = \FWLanguage::getActiveFrontendLanguages();
-        
+
         $myUrl = clone $pageUrl;
         $selectedLangName = $pageUrl->getLangDir();
-        
+
         $placeholders = array();
         foreach ($activeLanguages as $langId=>$langData) {
-            $myUrl->setLangDir($langData['lang']);
+            $myUrl->setLangDir($langData['lang'], $page);
             $langName = $langData['lang'];
             $name = 'LANG_CHANGE_'.strtoupper($langName);
             $selectedName = 'LANG_SELECTED_'.strtoupper($langName);
-            $content = ASCMS_PATH_OFFSET.'/'.$myUrl->getPath();
-            $placeholders[$name] = $content;
+            $placeholders[$name] = $myUrl->__toString();
             $placeholders[$selectedName] = '';
         }
         $selectedName = 'LANG_SELECTED_'.strtoupper($selectedLangName);
