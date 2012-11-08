@@ -31,29 +31,32 @@ define('ASCMS_ADMIN_PATH',                  ASCMS_DOCUMENT_ROOT. ASCMS_BACKEND_P
 define('ASCMS_ADMIN_WEB_PATH',              ASCMS_PATH_OFFSET. ASCMS_BACKEND_PATH);
 define('ASCMS_ADMIN_TEMPLATE_PATH',         ASCMS_DOCUMENT_ROOT. ASCMS_BACKEND_PATH.'/template/ascms');
 define('ASCMS_ADMIN_TEMPLATE_WEB_PATH',     ASCMS_PATH_OFFSET. ASCMS_BACKEND_PATH.'/template/ascms');
-define('ASCMS_API_PATH',                    ASCMS_DOCUMENT_ROOT.'/core/API');
-define('ASCMS_ATTACH_PATH',                 ASCMS_DOCUMENT_ROOT.'/images/attach');
-define('ASCMS_ATTACH_WEB_PATH',             ASCMS_PATH_OFFSET.'/images/attach');
-define('ASCMS_FRAMEWORK_PATH',              ASCMS_DOCUMENT_ROOT.'/lib/FRAMEWORK');
+define('ASCMS_CORE_FOLDER',                 '/core');
+define('ASCMS_API_PATH',                    ASCMS_DOCUMENT_ROOT.ASCMS_CORE_FOLDER.'/API');
+define('ASCMS_IMAGES_FOLDER',               '/images');
+define('ASCMS_ATTACH_PATH',                 ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/attach');
+define('ASCMS_ATTACH_WEB_PATH',             ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/attach');
+define('ASCMS_LIBRARY_FOLDER',              '/lib');
+define('ASCMS_FRAMEWORK_PATH',              ASCMS_DOCUMENT_ROOT.ASCMS_LIBRARY_FOLDER.'/FRAMEWORK');
 define('ASCMS_BACKUP_PATH',                 ASCMS_DOCUMENT_ROOT. ASCMS_BACKEND_PATH.'/backup');
 define('ASCMS_BACKUP_WEB_PATH',             ASCMS_PATH_OFFSET. ASCMS_BACKEND_PATH.'/backup');
-define('ASCMS_CALENDAR_IMAGE_PATH',         ASCMS_DOCUMENT_ROOT.'/images/calendar');
-define('ASCMS_CALENDAR_IMAGE_WEB_PATH',     ASCMS_PATH_OFFSET.'/images/calendar');
-define('ASCMS_CORE_PATH',                   ASCMS_DOCUMENT_ROOT.'/core');
-define('ASCMS_CONTENT_IMAGE_PATH',          ASCMS_DOCUMENT_ROOT.'/images/content');
-define('ASCMS_CONTENT_IMAGE_WEB_PATH',      ASCMS_PATH_OFFSET.'/images/content');
+define('ASCMS_CALENDAR_IMAGE_PATH',         ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/calendar');
+define('ASCMS_CALENDAR_IMAGE_WEB_PATH',     ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/calendar');
+define('ASCMS_CORE_PATH',                   ASCMS_DOCUMENT_ROOT.ASCMS_CORE_FOLDER);
+define('ASCMS_CONTENT_IMAGE_PATH',          ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/content');
+define('ASCMS_CONTENT_IMAGE_WEB_PATH',      ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/content');
 define('ASCMS_FEED_PATH',                   ASCMS_DOCUMENT_ROOT.'/feed');
 define('ASCMS_FEED_WEB_PATH',               ASCMS_PATH_OFFSET.'/feed');
 define('ASCMS_FORUM_UPLOAD_PATH',           ASCMS_DOCUMENT_ROOT.'/media/forum/upload');
 define('ASCMS_FORUM_UPLOAD_WEB_PATH',       ASCMS_PATH_OFFSET.'/media/forum/upload');
-define('ASCMS_GALLERY_THUMBNAIL_WEB_PATH',  ASCMS_PATH_OFFSET.'/images/gallery_thumbs');
-define('ASCMS_GALLERY_THUMBNAIL_PATH',      ASCMS_DOCUMENT_ROOT.'/images/gallery_thumbs');
-define('ASCMS_GALLERY_IMPORT_WEB_PATH',     ASCMS_PATH_OFFSET.'/images/gallery_import');
-define('ASCMS_GALLERY_IMPORT_PATH',         ASCMS_DOCUMENT_ROOT.'/images/gallery_import');
-define('ASCMS_GALLERY_WEB_PATH',            ASCMS_PATH_OFFSET.'/images/gallery');
-define('ASCMS_GALLERY_PATH',                ASCMS_DOCUMENT_ROOT.'/images/gallery');
+define('ASCMS_GALLERY_THUMBNAIL_WEB_PATH',  ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/gallery_thumbs');
+define('ASCMS_GALLERY_THUMBNAIL_PATH',      ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/gallery_thumbs');
+define('ASCMS_GALLERY_IMPORT_WEB_PATH',     ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/gallery_import');
+define('ASCMS_GALLERY_IMPORT_PATH',         ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/gallery_import');
+define('ASCMS_GALLERY_WEB_PATH',            ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/gallery');
+define('ASCMS_GALLERY_PATH',                ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/gallery');
 define('ASCMS_LANGUAGE_PATH',               ASCMS_DOCUMENT_ROOT.'/lang');
-define('ASCMS_LIBRARY_PATH',                ASCMS_DOCUMENT_ROOT.'/lib');
+define('ASCMS_LIBRARY_PATH',                ASCMS_DOCUMENT_ROOT.ASCMS_LIBRARY_FOLDER);
 define('ASCMS_MEDIA1_PATH',                 ASCMS_DOCUMENT_ROOT.'/media/archive1');
 define('ASCMS_MEDIA1_WEB_PATH',             ASCMS_PATH_OFFSET.'/media/archive1');
 define('ASCMS_MEDIA2_PATH',                 ASCMS_DOCUMENT_ROOT.'/media/archive2');
@@ -66,40 +69,42 @@ define('ASCMS_MEDIA_PATH',                  ASCMS_DOCUMENT_ROOT.'/media');
 define('ASCMS_MEDIA_WEB_PATH',              ASCMS_PATH_OFFSET.'/media');
 define('ASCMS_FILESHARING_PATH',            ASCMS_DOCUMENT_ROOT.'/media/filesharing');
 define('ASCMS_FILESHARING_WEB_PATH',        ASCMS_PATH_OFFSET.'/media/filesharing');
-define('ASCMS_MODULE_PATH',                 ASCMS_DOCUMENT_ROOT.'/modules');
-define('ASCMS_MODULE_WEB_PATH',             ASCMS_PATH_OFFSET.'/modules');
-define('ASCMS_CORE_MODULE_PATH',            ASCMS_DOCUMENT_ROOT.'/core_modules');
-define('ASCMS_CORE_MODULE_WEB_PATH',        ASCMS_PATH_OFFSET.'/core_modules');
-define('ASCMS_MODULE_IMAGE_WEB_PATH',       ASCMS_PATH_OFFSET.'/images/modules');
-define('ASCMS_MODULE_IMAGE_PATH',           ASCMS_DOCUMENT_ROOT.'/images/modules');
-define('ASCMS_NEWSLETTER_ATTACH_PATH',      ASCMS_DOCUMENT_ROOT.'/images/attach');
-define('ASCMS_NEWSLETTER_ATTACH_WEB_PATH',  ASCMS_PATH_OFFSET.'/images/attach');
+define('ASCMS_MODULE_FOLDER',               '/modules');
+define('ASCMS_MODULE_PATH',                 ASCMS_DOCUMENT_ROOT.ASCMS_MODULE_FOLDER);
+define('ASCMS_MODULE_WEB_PATH',             ASCMS_PATH_OFFSET.ASCMS_MODULE_FOLDER);
+define('ASCMS_CORE_MODULE_FOLDER',          '/core_modules');
+define('ASCMS_CORE_MODULE_PATH',            ASCMS_DOCUMENT_ROOT.ASCMS_CORE_MODULE_FOLDER);
+define('ASCMS_CORE_MODULE_WEB_PATH',        ASCMS_PATH_OFFSET.ASCMS_CORE_MODULE_FOLDER);
+define('ASCMS_MODULE_IMAGE_WEB_PATH',       ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/modules');
+define('ASCMS_MODULE_IMAGE_PATH',           ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/modules');
+define('ASCMS_NEWSLETTER_ATTACH_PATH',      ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/attach');
+define('ASCMS_NEWSLETTER_ATTACH_WEB_PATH',  ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/attach');
 define('ASCMS_NEWSLETTER_ATTACHMENT',       ASCMS_MODULE_PATH.'/newsletter/upload');
-define('ASCMS_SHOP_IMAGES_PATH',            ASCMS_DOCUMENT_ROOT.'/images/shop');
-define('ASCMS_SHOP_IMAGES_WEB_PATH',        ASCMS_PATH_OFFSET.'/images/shop');
-define('ASCMS_BLOG_IMAGES_PATH',            ASCMS_DOCUMENT_ROOT.'/images/blog');
-define('ASCMS_BLOG_IMAGES_WEB_PATH',        ASCMS_PATH_OFFSET.'/images/blog');
-define('ASCMS_PODCAST_IMAGES_PATH',         ASCMS_DOCUMENT_ROOT.'/images/podcast');
-define('ASCMS_PODCAST_IMAGES_WEB_PATH',     ASCMS_PATH_OFFSET.'/images/podcast');
-define('ASCMS_DOWNLOADS_IMAGES_PATH',       ASCMS_DOCUMENT_ROOT.'/images/downloads');
-define('ASCMS_DOWNLOADS_IMAGES_WEB_PATH',   ASCMS_PATH_OFFSET.'/images/downloads');
-define('ASCMS_DATA_IMAGES_PATH',            ASCMS_DOCUMENT_ROOT.'/images/data');
-define('ASCMS_DATA_IMAGES_WEB_PATH',        ASCMS_PATH_OFFSET.'/images/data');
+define('ASCMS_SHOP_IMAGES_PATH',            ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/shop');
+define('ASCMS_SHOP_IMAGES_WEB_PATH',        ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/shop');
+define('ASCMS_BLOG_IMAGES_PATH',            ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/blog');
+define('ASCMS_BLOG_IMAGES_WEB_PATH',        ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/blog');
+define('ASCMS_PODCAST_IMAGES_PATH',         ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/podcast');
+define('ASCMS_PODCAST_IMAGES_WEB_PATH',     ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/podcast');
+define('ASCMS_DOWNLOADS_IMAGES_PATH',       ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/downloads');
+define('ASCMS_DOWNLOADS_IMAGES_WEB_PATH',   ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/downloads');
+define('ASCMS_DATA_IMAGES_PATH',            ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/data');
+define('ASCMS_DATA_IMAGES_WEB_PATH',        ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/data');
 define('ASCMS_THEMES_WEB_PATH',             ASCMS_PATH_OFFSET.'/themes');
 define('ASCMS_THEMES_PATH',                 ASCMS_DOCUMENT_ROOT.'/themes');
-define('ASCMS_ACCESS_PATH',                 ASCMS_DOCUMENT_ROOT.'/images/access');
-define('ASCMS_ACCESS_WEB_PATH',             ASCMS_PATH_OFFSET.'/images/access');
-define('ASCMS_ACCESS_PROFILE_IMG_WEB_PATH', ASCMS_PATH_OFFSET.'/images/access/profile');
-define('ASCMS_ACCESS_PROFILE_IMG_PATH',     ASCMS_DOCUMENT_ROOT.'/images/access/profile');
-define('ASCMS_ACCESS_PHOTO_IMG_WEB_PATH',   ASCMS_PATH_OFFSET.'/images/access/photo');
-define('ASCMS_ACCESS_PHOTO_IMG_PATH',       ASCMS_DOCUMENT_ROOT.'/images/access/photo');
-//define('ASCMS_THEMES_IMAGE_PATH',           ASCMS_DOCUMENT_ROOT.'/images/themes');
-//define('ASCMS_THEMES_IMAGE_WEB_PATH',       ASCMS_PATH_OFFSET.'/images/themes');
-define('ASCMS_IMAGE_PATH',                  ASCMS_PATH_OFFSET.'/images');
+define('ASCMS_ACCESS_PATH',                 ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/access');
+define('ASCMS_ACCESS_WEB_PATH',             ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/access');
+define('ASCMS_ACCESS_PROFILE_IMG_WEB_PATH', ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/access/profile');
+define('ASCMS_ACCESS_PROFILE_IMG_PATH',     ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/access/profile');
+define('ASCMS_ACCESS_PHOTO_IMG_WEB_PATH',   ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/access/photo');
+define('ASCMS_ACCESS_PHOTO_IMG_PATH',       ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/access/photo');
+//define('ASCMS_THEMES_IMAGE_PATH',           ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/themes');
+//define('ASCMS_THEMES_IMAGE_WEB_PATH',       ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/themes');
+define('ASCMS_IMAGE_PATH',                  ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'');
 define('ASCMS_TEMP_PATH',                   ASCMS_DOCUMENT_ROOT.'/tmp');
 define('ASCMS_TEMP_WEB_PATH',               ASCMS_PATH_OFFSET.'/tmp');
-define('ASCMS_DIR_PATH',                    ASCMS_DOCUMENT_ROOT.'/modules/directory');
-define('ASCMS_DIR_WEB_PATH',                ASCMS_PATH_OFFSET.'/modules/directory');
+define('ASCMS_DIR_PATH',                    ASCMS_DOCUMENT_ROOT.ASCMS_MODULE_FOLDER.'/directory');
+define('ASCMS_DIR_WEB_PATH',                ASCMS_PATH_OFFSET.ASCMS_MODULE_FOLDER.'/directory');
 define('ASCMS_DIRECTORY_FEED_PATH',         ASCMS_DOCUMENT_ROOT.'/media/directory/feeds');
 define('ASCMS_DIRECTORY_FEED_WEB_PATH',     ASCMS_PATH_OFFSET.'/media/directory/feeds');
 define('ASCMS_MODULE_MEDIA_PATH',           ASCMS_DOCUMENT_ROOT.'/media/directory');
@@ -107,15 +112,16 @@ define('ASCMS_MODULE_MEDIA_WEB_PATH',       ASCMS_PATH_OFFSET.'/media/directory'
 define('ASCMS_MARKET_MEDIA_PATH',           ASCMS_DOCUMENT_ROOT.'/media/market');
 define('ASCMS_MARKET_MEDIA_WEB_PATH',       ASCMS_PATH_OFFSET.'/media/market');
 define('ASCMS_CACHE_PATH',                  ASCMS_DOCUMENT_ROOT.'/cache');
-define('ASCMS_ECARD_OPTIMIZED_PATH',        ASCMS_DOCUMENT_ROOT.'/images/modules/ecard/ecards_optimized');
-define('ASCMS_ECARD_OPTIMIZED_WEB_PATH',    ASCMS_PATH_OFFSET.'/images/modules/ecard/ecards_optimized');
-define('ASCMS_ECARD_SEND_ECARDS_PATH',      ASCMS_DOCUMENT_ROOT.'/images/modules/ecard/send_ecards');
-define('ASCMS_ECARD_SEND_ECARDS_WEB_PATH',  ASCMS_PATH_OFFSET.'/images/modules/ecard/send_ecards');
-define('ASCMS_ECARD_THUMBNAIL_PATH',        ASCMS_DOCUMENT_ROOT.'/images/modules/ecard/thumbnails');
-define('ASCMS_ECARD_THUMBNAIL_WEB_PATH',    ASCMS_PATH_OFFSET.'/images/modules/ecard/thumbnails');
-define('ASCMS_PARTNERS_IMAGES_PATH',        ASCMS_DOCUMENT_ROOT.'/images/partners');
-define('ASCMS_PARTNERS_IMAGES_WEB_PATH',    ASCMS_PATH_OFFSET.'/images/partners');
-define('ASCMS_MODEL_PATH',                  ASCMS_DOCUMENT_ROOT.'/model');
+define('ASCMS_ECARD_OPTIMIZED_PATH',        ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/modules/ecard/ecards_optimized');
+define('ASCMS_ECARD_OPTIMIZED_WEB_PATH',    ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/modules/ecard/ecards_optimized');
+define('ASCMS_ECARD_SEND_ECARDS_PATH',      ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/modules/ecard/send_ecards');
+define('ASCMS_ECARD_SEND_ECARDS_WEB_PATH',  ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/modules/ecard/send_ecards');
+define('ASCMS_ECARD_THUMBNAIL_PATH',        ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/modules/ecard/thumbnails');
+define('ASCMS_ECARD_THUMBNAIL_WEB_PATH',    ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/modules/ecard/thumbnails');
+define('ASCMS_PARTNERS_IMAGES_PATH',        ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/partners');
+define('ASCMS_PARTNERS_IMAGES_WEB_PATH',    ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/partners');
+define('ASCMS_MODEL_FOLDER',                '/model');
+define('ASCMS_MODEL_PATH',                  ASCMS_DOCUMENT_ROOT.ASCMS_MODEL_FOLDER);
 define('ASCMS_MODEL_PROXIES_PATH',          ASCMS_MODEL_PATH.'/proxies');
 define('ASCMS_CUSTOMIZING_PATH',            ASCMS_DOCUMENT_ROOT.'/customizing');
 define('ASCMS_CUSTOMIZING_WEB_PATH',        ASCMS_PATH_OFFSET.'/customizing');
@@ -124,39 +130,16 @@ define('ASCMS_CUSTOMIZING_WEB_PATH',        ASCMS_PATH_OFFSET.'/customizing');
 // Like this, only one path needs to be defined for each purpose,
 // the new File class methods will prepend ASCMS_PATH themselves
 // when needed.
-define('ASCMS_HOTELCARD_IMAGES_FOLDER',     ASCMS_PATH_OFFSET.'/images/hotelcard');
+define('ASCMS_HOTELCARD_IMAGES_FOLDER',     ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/hotelcard');
 
-define('ASCMS_MEDIADIR_IMAGES_WEB_PATH',    ASCMS_PATH_OFFSET.'/images/mediadir');
-define('ASCMS_MEDIADIR_IMAGES_PATH',        ASCMS_DOCUMENT_ROOT.'/images/mediadir');
+define('ASCMS_MEDIADIR_IMAGES_WEB_PATH',    ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/mediadir');
+define('ASCMS_MEDIADIR_IMAGES_PATH',        ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/mediadir');
 
 // For convenience, as seen in the frontend
 define('ADMIN_SCRIPT_PATH',                 ASCMS_ADMIN_WEB_PATH.'/'.CONTREXX_DIRECTORY_INDEX);
 
 // Testing
 define('ASCMS_TEST_PATH',                   ASCMS_DOCUMENT_ROOT.'/testing');
-
-
-/***********************************
- Proposed new folder constant format
- ***********************************
-The new proposed short folder constants replace both old *_WEB_PATH and
-*_PATH versions above.  They *ALWAYS* end in "_FOLDER", and are relative to
-ASCMS_DOCUMENT_ROOT, so you prepend them with either that, ASCMS_PATH_OFFSET,
-or nothing.  Note that the rewritten (static) File class methods take full
-advantage of paths created like this.
-File and folder paths created and stored this way are portable and will
-never break when migrating systems!
-Remove the old constants above once you have rewritten your module.
-*/
-// TODO: Write methods File::contrexx_require/-_once() and maybe
-// File::contrexx_include()
-// Common folders
-define('ASCMS_MODULE_FOLDER',               '/modules');
-define('ASCMS_CORE_MODULE_FOLDER',          '/core_modules');
-define('ASCMS_IMAGES_FOLDER',               '/images');
-// Append the MODULE_NAME to ASCMS_IMAGES_FOLDER when appropriate, i.e.
-//define('ASCMS_IMAGES_HOTELCARD_F0LDER',     ASCMS_IMAGES_FOLDER.'/hotelcard');
-
 
 /**
  * International and localized date and time formats
