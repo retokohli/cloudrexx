@@ -1081,7 +1081,7 @@ if ($cl->loadFile(ASCMS_MODULE_PATH.'/mediadir/placeholders.class.php')) {
 
 $objTemplate->setTemplate($themesPages['index']);
 $objTemplate->addBlock('CONTENT_FILE', 'page_template', $page_template);
-$objNavbar->setLanguagePlaceholders($url, $objTemplate);
+$objNavbar->setLanguagePlaceholders($page, $url, $objTemplate);
 
 // Set global content variables.
 $page_content = str_replace('{PAGE_URL}',        htmlspecialchars($objInit->getPageUri()), $page_content);
@@ -1687,8 +1687,8 @@ $objTemplate->setVariable(array(
     'COUNTER'                        => $objCounter->getCounterTag(),
     'BANNER'                         => isset($objBanner) ? $objBanner->getBannerJS() : '',
     'VERSION'                        => contrexx_raw2xhtml($_CONFIG['coreCmsName']),
-    'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($url),
-    'LANGUAGE_NAVBAR_SHORT'          => $objNavbar->getFrontendLangNavigation($url, true),
+    'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($page, $url),
+    'LANGUAGE_NAVBAR_SHORT'          => $objNavbar->getFrontendLangNavigation($page, $url, true),
     'ACTIVE_LANGUAGE_NAME'           => $objInit->getFrontendLangName(),
     'RANDOM'                         => md5(microtime()),
     'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],
