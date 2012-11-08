@@ -85,6 +85,7 @@ class LicenseCommunicator {
             'licenseKey' => $license->getLicenseKey(),
             'edition' => $license->getEditionName(),
             'version' => $_CONFIG['coreCmsVersion'],
+            'versionstate' => $_CONFIG['coreCmsStatus'],
             'domainName' => $_CONFIG['domainUrl'],
             'sendTemplate' => $forceTemplate,
         );
