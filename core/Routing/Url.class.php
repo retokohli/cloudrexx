@@ -477,7 +477,9 @@ class Url {
  
         if ($page) {
             $langId = \FWLanguage::getLanguageIdByCode($langDir);
-            $this->setPath(substr($page->getNode()->getPage($langId)->getPath(), 1));
+            if ($page = $page->getNode()->getPage($langId)) {
+                $this->setPath(substr($page->getPath(), 1));
+            }
         }
     }
 

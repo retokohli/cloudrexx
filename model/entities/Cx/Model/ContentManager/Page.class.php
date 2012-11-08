@@ -732,10 +732,20 @@ class Page extends \Cx\Model\Base\EntityBase
     /**
      * Get status
      *
-     * @return boolean $status
+     * @param   boolean $disregardScheduledPublishing
+     * @return  boolean $status
      */
-    public function getActive()
+    public function getActive($disregardScheduledPublishing = false)
     {
+        if (!$disregardScheduledPublishing) {
+            $start = $this->getStart();
+            $end = $this->getEnd();
+            if ((!empty($start) && empty($end) && ($start->getTimestamp() > time())) ||
+                (empty($start) && !empty($end) && ($end->getTimestamp() < time())) ||
+                (!empty($start) && !empty($end) && !($start->getTimestamp() < time() && $end->getTimestamp() > time()))) {
+                return false;
+            }
+        }
         return $this->active;
     }
 
@@ -1156,10 +1166,12 @@ class Page extends \Cx\Model\Base\EntityBase
     /**
      * Alias for getActive()
      *
+     * @param   boolean $disregardScheduledPublishing
      * @return boolean
      */
-    public function isActive() {
-        return $this->active;
+    public function isActive($disregardScheduledPublishing = false)
+    {
+        return $this->getActive($disregardScheduledPublishing);
     }
 
     /**

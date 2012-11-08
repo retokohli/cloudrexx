@@ -175,17 +175,24 @@ class Navigation
     function getFrontendLangNavigation($page, $pageUrl, $langNameContraction = false)
     {
         $activeLanguages = \FWLanguage::getActiveFrontendLanguages();
+        $node = $page->getNode();
 
-        $langNavigation = '';
+        $langNavigation = array();
         foreach ($activeLanguages as $langId => $langData) {
-            $myUrl = clone $pageUrl;
-            $myUrl->setLangDir($langData['lang'], $page);
-            $name  = contrexx_raw2xhtml($langNameContraction ? strtoupper($langData['lang']) : $langData['name']);
-            $class = $langId == FRONTEND_LANG_ID ? $langData['lang'].' active' : $langData['lang'];
-            
-            $langNavigation .= '<a class="'.$class.'" href="'.$myUrl.'" title="'.$name.'">'.$name.'</a>';
+            $targetPage = $node->getPage($langId);
+            if ($targetPage && $targetPage->isActive()) {
+                $url = clone $pageUrl;
+                $url->setLangDir($langData['lang']);
+                $url->setPath(substr($targetPage->getPath(), 1));
+
+                $name  = contrexx_raw2xhtml($langNameContraction ? strtoupper($langData['lang']) : $langData['name']);
+                $class = $langId == FRONTEND_LANG_ID ? $langData['lang'].' active' : $langData['lang'];
+
+                $langNavigation[] = '<a class="'.$class.'" href="'.$url.'" title="'.$name.'">'.$name.'</a>';
+            }
         }
-        return $langNavigation;
+
+        return implode('', $langNavigation);
     }
 
     /**
@@ -193,23 +200,26 @@ class Navigation
      * @param \Cx\Core\Routing\Url $pageUrl
      * @param \Cx\Core\Html\Sigma $objTemplate 
      */
-    public function setLanguagePlaceholders($page, $pageUrl, $objTemplate) {
+    public function setLanguagePlaceholders($page, $pageUrl, $objTemplate)
+    {
         $activeLanguages = \FWLanguage::getActiveFrontendLanguages();
-
-        $myUrl = clone $pageUrl;
-        $selectedLangName = $pageUrl->getLangDir();
+        $node = $page->getNode();
 
         $placeholders = array();
-        foreach ($activeLanguages as $langId=>$langData) {
-            $myUrl->setLangDir($langData['lang'], $page);
-            $langName = $langData['lang'];
-            $name = 'LANG_CHANGE_'.strtoupper($langName);
-            $selectedName = 'LANG_SELECTED_'.strtoupper($langName);
-            $placeholders[$name] = $myUrl->__toString();
-            $placeholders[$selectedName] = '';
+        foreach ($activeLanguages as $langId => $langData) {
+            $url = clone $pageUrl;
+            $url->setLangDir($langData['lang']);
+
+            if (($targetPage = $node->getPage($langId)) && $targetPage->isActive()) {
+                $url->setPath(substr($targetPage->getPath(), 1));
+                $link = $url->__toString();
+            } else {
+                $link = $url->fromModuleAndCmd('error', '', $langId);
+            }
+            $placeholders['LANG_CHANGE_'.strtoupper($langData['lang'])] = $link;
+            $placeholders['LANG_SELECTED_'.strtoupper($langData['lang'])] = '';
         }
-        $selectedName = 'LANG_SELECTED_'.strtoupper($selectedLangName);
-        $placeholders[$selectedName] = 'selected';
+        $placeholders['LANG_SELECTED_'.strtoupper($pageUrl->getLangDir())] = 'selected';
         $objTemplate->setVariable($placeholders);
     }
 
