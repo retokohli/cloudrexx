@@ -143,9 +143,34 @@ class LegacyClassLoader {
      * @param type $className 
      */
     private function fallbackLoad($name, $className) {
+        global $_CONFIG;
+        
         //echo $name . '<br />';
         $namespace = substr($name, 0, strlen($name) - strlen($className) - 1);
-        $path = $this->searchClass($className, $namespace);
+        $globDirs = array(
+            ASCMS_CORE_MODULE_PATH,
+            ASCMS_CORE_PATH,
+            ASCMS_LIBRARY_PATH,
+            ASCMS_MODULE_PATH,
+        );
+        $customizingGlobDirs = array(
+            ASCMS_CUSTOMIZING_PATH.ASCMS_CORE_MODULE_FOLDER,
+            ASCMS_CUSTOMIZING_PATH.ASCMS_CORE_FOLDER,
+            ASCMS_CUSTOMIZING_PATH.ASCMS_LIBRARY_FOLDER,
+            ASCMS_CUSTOMIZING_PATH.ASCMS_MODEL_FOLDER,
+            ASCMS_CUSTOMIZING_PATH.ASCMS_MODULE_FOLDER,
+        );
+        if ($_CONFIG['useCustomizings'] == 'on' && file_exists(ASCMS_CUSTOMIZING_PATH)) {
+            // search in customizing folders first, because we expect the most changes there
+            $globDirs = array_merge($customizingGlobDirs, $globDirs);
+        }
+        $path = false;
+        foreach ($globDirs as $dir) {
+            $path = $this->searchClass($className, $namespace, $dir);
+            if ($path !== false) {
+                break;
+            }
+        }
         if ($path === false) {
             // this class does not exist!
             return;
@@ -182,14 +207,6 @@ class LegacyClassLoader {
         foreach (glob($path.'/*', GLOB_ONLYDIR|GLOB_NOSORT) as $dir) {
             $dirParts = explode('/', $dir);
             if (substr(end($dirParts), 0, 1) == '!') {
-                continue;
-            }
-            if (in_array($dir, array(
-                ASCMS_DOCUMENT_ROOT . '/hotfix',
-                ASCMS_DOCUMENT_ROOT . '/update',
-                ASCMS_TEST_PATH,
-                ASCMS_CUSTOMIZING_PATH,
-            ))) {
                 continue;
             }
             $result = $this->searchClass($name, $namespace, $dir);
