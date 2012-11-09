@@ -104,7 +104,16 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
         $weAreCountingEntries = ($this->arrSettings['settingsCountEntries'] == 1 || $objInit->mode == 'backend');
         $arrEntryCounts = array();
         if($weAreCountingEntries) {
-            $query = "SELECT level_id, COUNT(*) AS c FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels GROUP BY level_id";
+            $query = '
+                SELECT `level_id`, COUNT(1) AS `c`
+                FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_levels` AS `rel_levels`
+                WHERE (
+                    SELECT COUNT(1)
+                    FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields` AS `rel_inputfields`
+                    WHERE `rel_levels`.`entry_id` = `rel_inputfields`.`entry_id`
+                ) > 0
+                GROUP BY `level_id`
+            ';
             $rs = $objDatabase->Execute($query);
             while(!$rs->EOF) {
                 $arrEntryCounts[$rs->fields['level_id']] = $rs->fields['c'];
