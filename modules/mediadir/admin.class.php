@@ -1209,7 +1209,11 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
         $objEntries->getEntries(null,$intLevelId,$intCategoryId,$strTerm,null,null,null,null,'n',null,null,$intFormId);
         $objEntries->listEntries($this->_objTpl, 1);
 
-        if(empty($objEntries->arrEntries)) {
+        if (!empty($strTerm)) {
+            $this->_objTpl->setVariable($this->moduleLangVar.'_SEARCH_TERM_PARAMETER', '&term='.$strTerm);
+        }
+
+        if (empty($objEntries->arrEntries)) {
              $this->_objTpl->hideBlock($this->moduleName.'EntriesSelectAction');
         } else {
              $this->_objTpl->touchBlock($this->moduleName.'EntriesSelectAction');

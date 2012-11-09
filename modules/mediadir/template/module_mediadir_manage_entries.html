@@ -4,7 +4,7 @@
 function deleteEntry(entryId)
 {
     if (confirm('{TXT_MEDIADIR_CONFIRM_DELETE_DATA}\n{TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE}')) {
-        window.location.replace("index.php?cmd={MODULE_NAME}&{CSRF}&act=delete_entry&id="+entryId);
+        window.location.replace("index.php?cmd={MODULE_NAME}&{CSRF}&act=delete_entry&id="+entryId+"{MEDIADIR_SEARCH_TERM_PARAMETER}");
     }
 }
 
