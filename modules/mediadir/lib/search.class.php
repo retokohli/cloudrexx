@@ -229,14 +229,18 @@ EOF;
             }
         }
 
+        $arrFinalFrom = array();
+
         //build level search query
         if (!empty($arrData['lid'])) {
             array_push($this->arrSearchLevels, intval($arrData['lid']));
             $this->getSearchLevelIds(intval($arrData['lid']));
 
-            $levelFilterWhere   = "(rel_level.level_id IN (".join(',', $this->arrSearchLevels).") AND rel_level.entry_id=rel_inputfield.entry_id)";
+            $levelFilterWhere   = '(rel_level.level_id IN ('.join(',', $this->arrSearchLevels).') AND rel_level.entry_id=rel_inputfield.entry_id)';
             $arrWhere[]         = $levelFilterWhere;
-            $arrFrom[]          = DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS rel_level";
+            $levelFrom          = DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_levels AS rel_level';
+            $arrFrom[]          = $levelFrom;
+            $arrFinalFrom[]     = $levelFrom;
         }
 
         //build category search query
@@ -244,38 +248,38 @@ EOF;
             array_push($this->arrSearchCategories, intval($arrData['cid']));
             $this->getSearchCategoryIds(intval($arrData['cid']));
 
-            $categoryFilterWhere    = "(rel_category.category_id IN (".join(',', $this->arrSearchCategories).") AND rel_category.entry_id=rel_inputfield.entry_id)";
+            $categoryFilterWhere    = '(rel_category.category_id IN ('.join(',', $this->arrSearchCategories).') AND rel_category.entry_id=rel_inputfield.entry_id)';
             $arrWhere[]             = $categoryFilterWhere;
-            $arrFrom[]              = DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS rel_category";
+            $categoryFrom           = DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_categories AS rel_category';
+            $arrFrom[]              = $categoryFrom;
+            $arrFinalFrom[]         = $categoryFrom;
         }
 
         //$arrSelect[]    = 'rel_inputfield.`value` AS `value`';
-        $arrFrom[]      = DBPREFIX."module_".$this->moduleName."_entries AS entry";
+        $arrFrom[]      = DBPREFIX.'module_'.$this->moduleName.'_entries AS entry';
         $arrWhere[]     = '(entry.`id` = rel_inputfield.`entry_id` AND entry.`confirmed` = 1 AND entry.`active` = 1)';
 
         if (!empty($arrData['term'])) {
             $strTerm        = contrexx_addslashes(trim($arrData['term']));
 
             $arrSelect[]    = 'rel_inputfield.`entry_id` AS `entry_id`';
-            $arrSelect[]    = "MATCH (rel_inputfield.`value`) AGAINST ('%".$strTerm."%')  AS score";
-            $arrFrom[]      = DBPREFIX."module_".$this->moduleName."_rel_entry_inputfields AS rel_inputfield";
-            $arrFrom[]      = DBPREFIX."module_".$this->moduleName."_inputfields AS inputfield";
-            $arrWhere[]     = 'rel_inputfield.`entry_id` != 0';
+            $arrSelect[]    = 'MATCH (rel_inputfield.`value`) AGAINST ("%'.$strTerm.'%")  AS score';
+            
+            $arrFrom[]      = DBPREFIX.'module_'.$this->moduleName.'_rel_entry_inputfields AS rel_inputfield';
+            $arrFrom[]      = DBPREFIX.'module_'.$this->moduleName.'_inputfields AS inputfield';
 
-            $strReplace     = "%' AND rel_inputfield.`value` LIKE '%";
-            $strReplace     = preg_replace("/\s+/", $strReplace, $strTerm);
-            $arrWhere[]     = "(rel_inputfield.`value` LIKE '%".$strReplace."%' AND (rel_inputfield.`field_id` = inputfield.`id` AND inputfield.`type` NOT IN (7,8,15,16,21)))";
-            //$arrWhere[]     = "((rel_inputfield.`value` LIKE '%".$strReplace."%' AND (rel_inputfield.`field_id` = inputfield.`id` AND inputfield.`type` NOT IN (7,8,15,16,21))) OR (".DBPREFIX."module_".$this->moduleName."_inputfield_names.field_default_value LIKE '%".$strTerm."%'  AND ".DBPREFIX."module_".$this->moduleName."_inputfield_names.lang_id = '".$_LANGID."'))";
+            $strReplace     = '%" AND rel_inputfield.`value` LIKE "%';
+            $strReplace     = preg_replace('/\s+/', $strReplace, $strTerm);
             
-            $arrOrder[]     = "score DESC, rel_inputfield.`value` ASC";
+            $arrWhere[]     = 'rel_inputfield.`entry_id` != 0';
+            $arrWhere[]     = '(rel_inputfield.`value` LIKE "%'.$strReplace.'%" AND (rel_inputfield.`field_id` = inputfield.`id` AND inputfield.`type` NOT IN (7,8,15,16,21)))';
             
-            //$arrJoins[]     = "INNER JOIN ".DBPREFIX."module_".$this->moduleName."_inputfield_names ON ".DBPREFIX."module_".$this->moduleName."_rel_entry_inputfields.field_id = ".DBPREFIX."module_".$this->moduleName."_inputfield_names.field_id"; 
+            $arrOrder[]     = 'score DESC, rel_inputfield.`value` ASC';
         } else {
             $arrSelect[]    = 'rel_inputfield.`entry_id` AS `entry_id`';
-            $arrFrom[]      = DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield";
+            $arrFrom[]      = DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields AS rel_inputfield';
             $arrWhere[]     = 'rel_inputfield.`entry_id` != 0';
-
-            $arrOrder[]     = "rel_inputfield.`value` ASC";
+            $arrOrder[]     = 'rel_inputfield.`value` ASC';
         }
 
         //search levels and categorie names
@@ -293,19 +297,19 @@ EOF;
         }
 
         if (!empty($arrSelect) && !empty($arrFrom) && !empty($arrWhere) && !empty($arrOrder)) {
-            $query = "
+            $query = '
                 SELECT
-                    ".join(',', $arrSelect)."
+                    '.join(',', $arrSelect).'
                 FROM
-                    ".join(',', $arrFrom)."
-                    ".join(',', $arrJoins)."
+                    '.join(',', $arrFrom).'
+                    '.join(',', $arrJoins).'
                 WHERE
-                    ".join(' AND ', $arrWhere)."
+                    '.join(' AND ', $arrWhere).'
                 GROUP BY
                     rel_inputfield.`entry_id`
                 ORDER BY
-                    ".join(',', $arrOrder)."
-            ";
+                    '.join(',', $arrOrder).'
+            ';
 
             if ($arrData['type'] == 'exp') {
                 //build expanded search query
@@ -315,9 +319,9 @@ EOF;
                         $objInputfields = new mediaDirectoryInputfield(null, true);
                         $intInputfieldType = $objInputfields->arrInputfields[$intInputfieldId]['type'];
                         $strExpTerm = contrexx_addslashes(trim($strExpTerm));
-                        $strTableName = "rel_inputfield_".intval($intInputfieldId);
-                        $arrExpJoin[]  = "LEFT JOIN ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS $strTableName ON rel_inputfield.`entry_id` = $strTableName.`entry_id`";
-
+                        $strTableName = 'rel_inputfield_'.intval($intInputfieldId);
+                        $arrExpJoin[]  = 'INNER JOIN '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields AS '.$strTableName.' ON rel_inputfield_final.`entry_id` = '.$strTableName.'.`entry_id`';
+                        
                         if ($intInputfieldType == '11') {
                             switch ($this->arrSettings['settingsClassificationSearch']) {
                                 case 1:
@@ -331,11 +335,11 @@ EOF;
                                     break;
                             }
 
-                            $arrExpWhere[] = "($strTableName.`field_id` = ".intval($intInputfieldId)." AND $strTableName.`value` $strSearchOperator '$strExpTerm')";
-                        } else if ($intInputfieldType == '3') {
-                            $arrExpWhere[] = "($strTableName.`field_id` = $intInputfieldId AND $strTableName.`value` = '$strExpTerm')";
+                            $arrExpWhere[] = '('.$strTableName.'.`field_id` = '.intval($intInputfieldId).' AND '.$strTableName.'.`value` '.$strSearchOperator.' "'.$strExpTerm.'")';
+                        } else if ($intInputfieldType == '3' || $intInputfieldType == '25') {
+                            $arrExpWhere[] = '('.$strTableName.'.`field_id` = '.$intInputfieldId.' AND '.$strTableName.'.`value` = "'.$strExpTerm.'")';
                         } else {
-                            $arrExpWhere[] = "($strTableName.`field_id` = ".intval($intInputfieldId)." AND $strTableName.`value` LIKE '%$strExpTerm%')";
+                            $arrExpWhere[] = '('.$strTableName.'.`field_id` = '.intval($intInputfieldId).' AND '.$strTableName.'.`value` LIKE "%'.$strExpTerm.'%")';
                         }
                     }
                 }
@@ -347,36 +351,43 @@ EOF;
                     if (!empty($categoryFilterWhere)) {
                         $arrExpWhere[] = $categoryFilterWhere;
                     }
+                    if (!empty($arrFinalFrom)) {
+                        $finalFrom = join(',', $arrFinalFrom).',';
+                    }
+                    
+                    $expJoin  = join(' ', $arrExpJoin);
+                    $expWhere = join(' AND ', $arrExpWhere);
 
                     if (!empty($arrData['term'])) {  
-                        $query = "
+                        $query = '
                             SELECT
                                 rel_inputfield_final.`entry_id` AS `entry_id`
                             FROM
-                                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS rel_level,
-                                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS rel_category,
-                                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield_final 
-                            LEFT JOIN
-                                 (".$query.") AS rel_inputfield
-                             ON rel_inputfield_final.`entry_id` = rel_inputfield.`entry_id`
-
-
-                                ".join(' ', $arrExpJoin)."
+                                '.$finalFrom.'
+                                '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields AS rel_inputfield_final
+                            
+                            INNER JOIN
+                                 ('.$query.') AS rel_inputfield
+                            ON rel_inputfield_final.`entry_id` = rel_inputfield.`entry_id`
+                            
+                            '.$expJoin.'
+                            
                             WHERE
-                                ".join(' AND ', $arrExpWhere)."
-                        ";
+                                '.$expWhere.'
+                        ';
                     } else {
-                        $query = "
+                        $query = '
                             SELECT
-                                rel_inputfield.`entry_id` AS `entry_id`
+                                rel_inputfield_final.`entry_id` AS `entry_id`
                             FROM
-                                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS rel_level,
-                                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS rel_category,
-                                ".DBPREFIX."module_mediadir_rel_entry_inputfields AS rel_inputfield
-                                ".join(' ', $arrExpJoin)."
+                                '.$finalFrom.'
+                                '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields AS rel_inputfield_final
+                            
+                            '.$expJoin.'
+                            
                             WHERE
-                                ".join(' AND ', $arrExpWhere)."
-                        ";
+                                '.$expWhere.'
+                        ';
                    }
                 } 
             }
