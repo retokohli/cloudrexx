@@ -60,7 +60,6 @@ class LicenseCommunicator {
         $v = preg_split('#\.#', $_CONFIG['coreCmsVersion']);
         $e = $_CONFIG['coreCmsEdition'];
         
-        \DBG::activate(DBG_PHP);
         $version = current($v);
         unset($v[key($v)]);
         foreach ($v as $part) {
