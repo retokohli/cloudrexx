@@ -2704,8 +2704,6 @@ die("Shop::processRedirect(): This method is obsolete!");
         // Shipment ID which it stores in the session array.
         self::_getShipperMenu();
         self::_initPaymentDetails();
-// TODO: Moved to _initPaymentDetails()
-//        self::update_session();
         // Will redirect to the confirmation page if all payment and shipment
         // data is complete
         self::verify_payment_details();
@@ -2761,7 +2759,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                 $_SESSION['shop']['paymentId'],
                 $cart_amount
             );
-        Cart::update();
+        Cart::update(self::$objCustomer);
         self::update_session();
     }
 
@@ -3683,7 +3681,6 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
 //DBG::deactivate();
 //DBG::activate(DBG_LOG_FILE);
 //DBG::log("success(): Restored Order ID ".var_export($order_id, true));
-
         // Default new order status: As long as it's pending (0, zero),
         // update_status() will choose the new value automatically.
         $newOrderStatus = Order::STATUS_PENDING;
@@ -3761,7 +3758,7 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
         // Avoid any output if the result is negative
         if (   isset($_REQUEST['result'])
             && $_REQUEST['result'] < 0) die('');
-        self::$objTemplate->setVariable($_ARRAYLANG);
+        self::$objTemplate->setGlobalVariable($_ARRAYLANG);
         // Comment this for testing, so you can reuse the same account and cart
         self::destroyCart();
         // Clear the Order ID instead, so you can do it again

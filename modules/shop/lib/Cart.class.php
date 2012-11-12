@@ -373,13 +373,15 @@ class Cart
      * Also computes the new count of items in the cart and calculates the
      * amount.
      * Stores details of the Products in the Cart in $products.
-     * @param   Customer    $objCustomer          The Customer, or null
+     * Note that the $objCustomer parameter is mandatory, but may be empty
+     * in case it is a new Customer shopping.
+     * @param   Customer    $objCustomer          The Customer
      * @global  ADONewConnection  $objDatabase    Database connection object
      * @return  boolean                           True on success,
      *                                            false otherwise
      * @static
      */
-    static function update($objCustomer=null)
+    static function update($objCustomer)
     {
 //DBG::log("Cart::update(): Cart: ".var_export($_SESSION['shop']['cart'], true));
         if (empty($_SESSION['shop']['cart'])) {

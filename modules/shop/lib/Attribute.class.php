@@ -85,8 +85,11 @@ class Attribute
         self::TYPE_MENU_MANDATORY => 'TYPE_MENU_MANDATORY',
         self::TYPE_TEXT_OPTIONAL => 'TYPE_TEXT_OPTIONAL',
         self::TYPE_TEXT_MANDATORY => 'TYPE_TEXT_MANDATORY',
-        self::TYPE_UPLOAD_OPTIONAL => 'TYPE_UPLOAD_OPTIONAL',
-        self::TYPE_UPLOAD_MANDATORY => 'TYPE_UPLOAD_MANDATORY',
+// TODO: Disabled FTTB.  Feature for 3.1.0
+// TODO: Include upload path with corresponding backend setting
+// TODO: Set form type for multipart
+//        self::TYPE_UPLOAD_OPTIONAL => 'TYPE_UPLOAD_OPTIONAL',
+//        self::TYPE_UPLOAD_MANDATORY => 'TYPE_UPLOAD_MANDATORY',
         self::TYPE_TEXTAREA_OPTIONAL => 'TYPE_TEXTAREA_OPTIONAL',
         self::TYPE_TEXTAREA_MANDATORY => 'TYPE_TEXTAREA_MANDATORY',
         self::TYPE_EMAIL_OPTIONAL => 'TYPE_EMAIL_OPTIONAL',

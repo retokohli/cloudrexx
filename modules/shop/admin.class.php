@@ -3529,6 +3529,7 @@ if (!$limit) {
         $lang_id = $arrSubstitution['LANG_ID'];
         // Select template for: "Your order has been processed"
         $arrMailTemplate = array(
+            'section' => 'shop',
             'key' => 'order_complete',
             'lang_id' => $lang_id,
             'to' =>
