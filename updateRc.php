@@ -216,32 +216,34 @@ foreach ($updates as $update) {
     }
 }
 
-// reimport module repository
-$sqlQuery = '';
-$fp = @fopen ($documentRoot.'/installer/data/contrexx_dump_data.sql', 'r');
-if ($fp !== false) {
-    while (!feof($fp)) {
-        $buffer = fgets($fp);
-        if ((substr($buffer,0,1) != '#') && (substr($buffer,0,2) != '--')) {
-            $sqlQuery .= $buffer;
-            if (preg_match('/;[ \t\r\n]*$/', $buffer)) {
-                $sqlQuery = preg_replace('/SET FOREIGN_KEY_CHECKS = 0;/', '', $sqlQuery);
-                if (substr(trim($sqlQuery), 0, 40) != 'INSERT INTO `contrexx_module_repository`') {
+if ($version != 'stable') {
+    // reimport module repository
+    $sqlQuery = '';
+    $fp = @fopen ($documentRoot.'/installer/data/contrexx_dump_data.sql', 'r');
+    if ($fp !== false) {
+        while (!feof($fp)) {
+            $buffer = fgets($fp);
+            if ((substr($buffer,0,1) != '#') && (substr($buffer,0,2) != '--')) {
+                $sqlQuery .= $buffer;
+                if (preg_match('/;[ \t\r\n]*$/', $buffer)) {
+                    $sqlQuery = preg_replace('/SET FOREIGN_KEY_CHECKS = 0;/', '', $sqlQuery);
+                    if (substr(trim($sqlQuery), 0, 40) != 'INSERT INTO `contrexx_module_repository`') {
+                        $sqlQuery = '';
+                        continue;
+                    }
+                    $sqlQuery = preg_replace('#`contrexx_module_repository`#', '`'.DBPREFIX.'module_repository`', $sqlQuery);
+                    $result = $objDatabase->Execute($sqlQuery);
+                    if ($result === false) {
+                        echo $sqlQuery;
+                        die('Update failed!');
+                    }
                     $sqlQuery = '';
-                    continue;
                 }
-                $sqlQuery = preg_replace('#`contrexx_module_repository`#', '`'.DBPREFIX.'module_repository`', $sqlQuery);
-                $result = $objDatabase->Execute($sqlQuery);
-                if ($result === false) {
-                    echo $sqlQuery;
-                    die('Update failed!');
-                }
-                $sqlQuery = '';
             }
         }
+    } else {
+        die('Could not read data dump file!');
     }
-} else {
-    die('Could not read data dump file!');
 }
 
 if ($version == 'rc1') {
