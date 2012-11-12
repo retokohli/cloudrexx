@@ -16,10 +16,10 @@ require_once($documentRoot.'/lib/DBG.php');
 DBG::deactivate();
 require_once($documentRoot.'/config/settings.php');                      // needed for doctrine.php
 require_once($documentRoot.'/config/configuration.php');                 // needed for doctrine.php
-require_once($documentRoot.'/core/API.php');                             // needed for getDatabaseObject()
 require_once($documentRoot.'/core/Env.class.php');                       // needed to get EM
 require_once($documentRoot.'/core/ClassLoader/ClassLoader.class.php');
-new \Cx\Core\ClassLoader\ClassLoader($documentRoot, false);
+$cl = new \Cx\Core\ClassLoader\ClassLoader($documentRoot, true);
+\Env::set('ClassLoader', $cl);
 require_once($documentRoot.'/config/doctrine.php');
 require_once($documentRoot.'/lib/FRAMEWORK/Language.class.php');         // needed by page repo
 require_once($documentRoot.'/core/API.php');                             // needed for getDatabaseObject()
