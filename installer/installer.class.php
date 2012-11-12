@@ -1890,7 +1890,7 @@ class Installer
             // TODO: webinstaller check: has ASCMS_CUSTOMIZING_PATH already been defined in the installation process?
                 $customizing = ASCMS_CUSTOMIZING_PATH;
             }
-            $cl = new \Cx\Core\ClassLoader\ClassLoader($documentRoot, false, $customizing);
+            $cl = new \Cx\Core\ClassLoader\ClassLoader($documentRoot, true, $customizing);
             \Env::set('ClassLoader', $cl);
 
             require_once($documentRoot.'/core/API.php');                             // needed for getDatabaseObject()
