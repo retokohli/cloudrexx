@@ -24,6 +24,7 @@ require_once($documentRoot.'/config/doctrine.php');
 require_once($documentRoot.'/lib/FRAMEWORK/Language.class.php');         // needed by page repo
 require_once($documentRoot.'/core/API.php');                             // needed for getDatabaseObject()
 require_once($documentRoot.'/core/Init.class.php');
+require_once($documentRoot.'/core/settings.class.php');
 require_once($documentRoot.'/lib/FRAMEWORK/User/User_Setting_Mail.class.php');
 require_once($documentRoot.'/lib/FRAMEWORK/User/User_Setting.class.php');
 require_once($documentRoot.'/lib/FRAMEWORK/User/User_Profile_Attribute.class.php');
@@ -57,8 +58,10 @@ if ($objResultRc1->fields['target'] != '_blank') {
     $version = 'rc1';
 } elseif ($objResultRc2->fields['order_id'] != 6) {
     $version = 'rc2';
+} elseif ($_CONFIG['coreCmsVersion'] == '3.0.0') {
+    $version = 'stable';
 } else {
-    die('You have already installed the stable...');
+    die('You have already installed the current stable...');
 }
 
 
@@ -192,9 +195,19 @@ $updatesRc2ToStable = array(
         TRUNCATE TABLE `'.DBPREFIX.'module_repository`
     ',
 );
+$updatesStableToHotfix = array(
+    'UPDATE `contrexx_settings` SET `setvalue` = \'3.0.0.1\' WHERE `setname` = \'coreCmsVersion\'',
+);
+$updatesRc1ToHotfix = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix);
+$updatesRc2ToHotfix = array_merge($updatesRc2ToStable, $updatesStableToHotfix);
 
-$updatesRc1ToStable = array_merge($updatesRc1ToRc2, $updatesRc2ToStable);
-$updates = ($version == 'rc1') ? $updatesRc1ToStable : $updatesRc2ToStable;
+if ($version == 'rc1') {
+    $updates = $updatesRc1ToHotfix;
+} else if ($version == 'rc2') {
+    $updates = $updatesRc2ToHotfix;
+} else {
+    $updates = $updatesStableToHotfix;
+}
 foreach ($updates as $update) {
     $result = $objDatabase->Execute($update);
     if (!$result) {
@@ -246,6 +259,9 @@ if ($version == 'rc1') {
     }
     $em->flush();
 }
+
+$objSettings = new \settingsManager();
+$objSettings->writeSettingsFile();
 
 $_GET['force'] = 'true';
 $_GET['silent'] = 'true';
