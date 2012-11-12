@@ -30,49 +30,50 @@ if (stristr(__FILE__, $_SERVER['PHP_SELF'])) {
 /**
  * @ignore
  */
-require_once ASCMS_CORE_PATH.'/validator.inc.php';
+\Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/validator.inc.php');
 /**
  * @ignore
  */
-require_once ASCMS_LIBRARY_PATH.'/PEAR/HTML/Template/Sigma/Sigma.php';
+\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/PEAR/HTML/Template/Sigma/Sigma.php');
 
 /**
  * @ignore
  * @todo    Is this still required?
  */
-require_once ASCMS_CORE_PATH.'/database.php';
+\Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/database.php');
+
 /**
  * @ignore
  */
-#require_once ASCMS_CORE_PATH.'/Modulechecker.class.php';
+#ASCMS_CORE_PATH.'/Modulechecker.class.php';
 
 global $adminPage;
 if (isset($adminPage) && $adminPage ) {
     /**
     * @ignore
     */
-    require_once ASCMS_LIBRARY_PATH.'/PEAR/HTML/Table.php';
+    \Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/PEAR/HTML/Table.php');
     /**
      * @ignore
      */
-       require_once ASCMS_CORE_PATH.'/adminNavigation.class.php';
+    \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/adminNavigation.class.php');
 } else {
     /**
      * @ignore
      */
-    require_once ASCMS_CORE_PATH.'/Navigation.class.php';
+    \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/Navigation.class.php');
     /**
      * @ignore
      */
-    require_once ASCMS_CORE_MODULE_PATH.'/stats/lib/statsLib.class.php';
+    \Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH.'/stats/lib/statsLib.class.php');
     /**
      * @ignore
      */
-    require_once ASCMS_CORE_PATH.'/Security.class.php';
+    \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/Security.class.php');
 }
 
 //wrappers providing php functions via PEAR and other third party libraries if they're not found.
-require_once ASCMS_LIBRARY_PATH.'/wrapper/json.php';
+\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/wrapper/json.php');
 
 /**
     * Checks if a certain module, specified by param $moduleName, is active/installed.

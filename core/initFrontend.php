@@ -125,7 +125,7 @@ Env::set('ftpConfig', $_FTPCONFIG);
 /**
  * Include all the required files.
  */
-require_once($cl->getFilePath(ASCMS_CORE_PATH.'/API.php'));
+$cl->loadFile(ASCMS_CORE_PATH.'/API.php');
 // Temporary fix until all GET operation requests will be replaced by POSTs
 CSRF::setFrontendMode();
 

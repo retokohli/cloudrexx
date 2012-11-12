@@ -3,36 +3,45 @@
 error_reporting(E_ALL);
 echo '<pre>';//*/
 
-global $_CONFIG, $_DBCONFIG, $sessionObj, $objInit, $objDatabase, $documentRoot;
+global $_CONFIG, $_FTPCONFIG, $_DBCONFIG, $sessionObj, $objInit, $objDatabase, $documentRoot;
 
 // when included in installer, this is set
 if (!isset($documentRoot)) {
-    $documentRoot = '../..';
+    $documentRoot = dirname(dirname(dirname(__FILE__)));
 }
 
 // load requirements
 require_once($documentRoot.'/lib/DBG.php');
-require_once($documentRoot.'/core/Env.class.php');               // needed for FileSystem
 require_once($documentRoot.'/config/settings.php');              // needed for configuration.php
 require_once($documentRoot.'/config/configuration.php');         // needed for API
-require_once($documentRoot.'/core/API.php');                             // needed for getDatabaseObject()
-require_once($documentRoot.'/lib/FRAMEWORK/User/User_Setting_Mail.class.php');
-require_once($documentRoot.'/lib/FRAMEWORK/User/User_Setting.class.php');
-require_once($documentRoot.'/lib/FRAMEWORK/User/User_Profile_Attribute.class.php');
-require_once($documentRoot.'/lib/FRAMEWORK/User/User_Profile.class.php');
-require_once($documentRoot.'/lib/FRAMEWORK/User/UserGroup.class.php');
-require_once($documentRoot.'/lib/FRAMEWORK/User/User.class.php');
-require_once($documentRoot.'/lib/FRAMEWORK/Language.class.php');
-require_once($documentRoot.'/lib/FRAMEWORK/FWUser.class.php');
-require_once($documentRoot.'/lib/PEAR/HTTP/Request2.php');
-require_once($documentRoot.'/core/Init.class.php');
-require_once($documentRoot.'/core/settings.class.php');
-require_once($documentRoot.'/core/session.class.php');
-require_once($documentRoot.'/core/ClassLoader/ClassLoader.class.php');
-new \Cx\Core\ClassLoader\ClassLoader($documentRoot, false);
 
+$customizing = null;
+if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
+// TODO: webinstaller check: has ASCMS_CUSTOMIZING_PATH already been defined in the installation process?
+    $customizing = ASCMS_CUSTOMIZING_PATH;
+}
+
+require_once($documentRoot.'/core/ClassLoader/ClassLoader.class.php');
+$cl = new \Cx\Core\ClassLoader\ClassLoader($documentRoot, false, $customizing);
+
+$cl->loadFile($documentRoot.'/core/Env.class.php');               // needed for FileSystem
+Env::set('ClassLoader', $cl);
 Env::set('config', $_CONFIG);
 Env::set('ftpConfig', $_FTPCONFIG);
+
+$cl->loadFile($documentRoot.'/core/API.php');                             // needed for getDatabaseObject()
+$cl->loadFile($documentRoot.'/lib/FRAMEWORK/User/User_Setting_Mail.class.php');
+$cl->loadFile($documentRoot.'/lib/FRAMEWORK/User/User_Setting.class.php');
+$cl->loadFile($documentRoot.'/lib/FRAMEWORK/User/User_Profile_Attribute.class.php');
+$cl->loadFile($documentRoot.'/lib/FRAMEWORK/User/User_Profile.class.php');
+$cl->loadFile($documentRoot.'/lib/FRAMEWORK/User/UserGroup.class.php');
+$cl->loadFile($documentRoot.'/lib/FRAMEWORK/User/User.class.php');
+$cl->loadFile($documentRoot.'/lib/FRAMEWORK/Language.class.php');
+$cl->loadFile($documentRoot.'/lib/FRAMEWORK/FWUser.class.php');
+$cl->loadFile($documentRoot.'/lib/PEAR/HTTP/Request2.php');
+$cl->loadFile($documentRoot.'/core/Init.class.php');
+$cl->loadFile($documentRoot.'/core/settings.class.php');
+$cl->loadFile($documentRoot.'/core/session.class.php');
 
 $objDatabase = getDatabaseObject($strErrMessage, true);
 $objInit = new InitCMS('backend', null);
@@ -66,7 +75,7 @@ if (isset($_GET['silent']) && $_GET['silent'] == 'true') {
 }
 
 // show info
-$message = $license->getMessage(\FWLanguage::getLanguageCodeById(LANG_ID), $_CORELANG);
+$message = $license->getMessage(false, \FWLanguage::getLanguageCodeById(LANG_ID), $_CORELANG);
 echo json_encode(array(
     'status' => contrexx_raw2xhtml($license->getState()),
     'link' => contrexx_raw2xhtml($message->getLink()),
