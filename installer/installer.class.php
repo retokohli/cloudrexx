@@ -1883,6 +1883,16 @@ class Installer
             require_once($documentRoot.'/core/Env.class.php');               // needed for FileSystem
             require_once($documentRoot.'/config/settings.php');              // needed for configuration.php
             require_once($documentRoot.'/config/configuration.php');         // needed for API
+            require_once($documentRoot.'/core/ClassLoader/ClassLoader.class.php');
+
+            $customizing = null;
+            if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
+            // TODO: webinstaller check: has ASCMS_CUSTOMIZING_PATH already been defined in the installation process?
+                $customizing = ASCMS_CUSTOMIZING_PATH;
+            }
+            $cl = new \Cx\Core\ClassLoader\ClassLoader($documentRoot, false, $customizing);
+            \Env::set('ClassLoader', $cl);
+
             require_once($documentRoot.'/core/API.php');                             // needed for getDatabaseObject()
             require_once($documentRoot.'/lib/FRAMEWORK/User/User_Setting_Mail.class.php');
             require_once($documentRoot.'/lib/FRAMEWORK/User/User_Setting.class.php');
@@ -1896,7 +1906,6 @@ class Installer
             require_once($documentRoot.'/core/Init.class.php');
             require_once($documentRoot.'/core/settings.class.php');
             require_once($documentRoot.'/core/session.class.php');
-            require_once($documentRoot.'/core/ClassLoader/ClassLoader.class.php');
             $objDatabase = getDatabaseObject($strErrMessage, true);
             $objInit = new InitCMS('backend', null);
             if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
