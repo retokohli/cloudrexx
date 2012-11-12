@@ -51,7 +51,7 @@ $cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $customizi
 /**
  * Environment repository
  */
-require_once($cl->getFilePath(ASCMS_CORE_PATH.'/Env.class.php'));
+$cl->loadFile(ASCMS_CORE_PATH.'/Env.class.php');
 
 Env::set('config', $_CONFIG);
 Env::set('ftpConfig', $_FTPCONFIG);
@@ -62,7 +62,7 @@ Env::set('ftpConfig', $_FTPCONFIG);
  */
 $incDoctrineStatus = $cl->loadFile(ASCMS_PATH.ASCMS_PATH_OFFSET.'/config/doctrine.php');
 
-require_once($cl->getFilePath(ASCMS_CORE_PATH.'/API.php'));
+$cl->loadFile(ASCMS_CORE_PATH.'/API.php');
 
 // Initialize database object
 $strErrMessage = '';

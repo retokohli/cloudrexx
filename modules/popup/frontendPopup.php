@@ -15,10 +15,18 @@
     require_once(dirname(__FILE__).'/../../config/settings.php');
     require_once(dirname(__FILE__).'/../../config/configuration.php');
     require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');
-    new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT);
+
+    $customizing = null;
+    if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
+    // TODO: webinstaller check: has ASCMS_CUSTOMIZING_PATH already been defined in the installation process?
+        $customizing = ASCMS_CUSTOMIZING_PATH;
+    }
+
+    $cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $customizing);
+    \Env::set('ClassLoader', $cl);
 
     require_once(ASCMS_CORE_PATH.'/database.php');
-    require_once(ASCMS_CORE_PATH.'/API.php');
+    $cl->loadFile(ASCMS_CORE_PATH.'/API.php');
     
     
     //-------------------------------------------------------
