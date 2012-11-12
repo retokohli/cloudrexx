@@ -3405,9 +3405,9 @@ class newsletter extends NewsletterLib
     {
         global $_ARRAYLANG, $_CONFIG;
 
-        $profileURI = 'index.php?section=newsletter&cmd=unsubscribe&code='.$code.'&mail='.urlencode($email);
+        $profileURI = '?section=newsletter&cmd=unsubscribe&code='.$code.'&mail='.urlencode($email);
         if ($type == 'access') {
-            $profileURI  = 'index.php?section=access&cmd=settings_newsletter';
+            $profileURI  = '?section=access&cmd=settings_newsletter';
         }
         $uri =
             ASCMS_PROTOCOL.'://'.
@@ -3429,10 +3429,10 @@ class newsletter extends NewsletterLib
     {
         global $_ARRAYLANG, $_CONFIG;
 
-        $profileURI = 'index.php?section=newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email);
+        $profileURI = '?section=newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email);
         if ($type == 'access') {
 // TODO: the acces profile URI is dynamic. Therefore we shall check for a CMD like 'settings_newsletter'. In case that there is no such CMD, we shall fetch the first CMD that starts with 'settings'.
-            $profileURI = 'index.php?section=access&cmd=settings_accountdata';
+            $profileURI = '?section=access&cmd=settings_accountdata';
         }
         $uri =
             ASCMS_PROTOCOL.'://'.
