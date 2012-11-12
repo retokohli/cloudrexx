@@ -59,26 +59,26 @@ class LicenseCommunicator {
         }
         $v = preg_split('#\.#', $_CONFIG['coreCmsVersion']);
         $e = $_CONFIG['coreCmsEdition'];
-        if (count($v)) {
-            $version = $v[0] * 10000;
-            if (count($version) > 1) {
-                $version += $v[1] * 100;
-                if (count($version) > 2) {
-                    $version += $v[2];
-                }
-            }
+        
+        \DBG::activate(DBG_PHP);
+        $version = current($v);
+        unset($v[key($v)]);
+        foreach ($v as $part) {
+            $version *= 100;
+            $version += $part;
         }
-        // for debugging only:
-        $version = 30000;
+        
         $srvUri = 'updatesrv1.contrexx.com';
         $srvPath = '/';
+        // for debugging only:
+        /*$version = 30000;
         $link = @fsockopen($srvUri,80);
         if (!isset($link) || !$link) {
             $license->setState(License::LICENSE_ERROR);
             $license->setGrayzoneMessages(array(\FWLanguage::getLanguageCodeById(LANG_ID) => new Message(\FWLanguage::getLanguageCodeById(LANG_ID), $_CORELANG['TXT_LICENSE_COMMUNICATION_ERROR'])));
             $license->check();
             return;
-        }
+        }*/
         
         $data = array(
             'installationId' => $license->getInstallationId(),
