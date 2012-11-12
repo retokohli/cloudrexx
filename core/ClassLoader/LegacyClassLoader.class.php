@@ -106,13 +106,15 @@ class LegacyClassLoader {
     }
     
     private function loadFromCache($name) {
+        global $objInit;
+        
         if (isset($this->mapTable[$name])) {
             $file = $this->mapTable[$name];
             $ending = explode('/', $file);
             $ending = end($ending);
-            if (\Env::get('init')->mode == 'backend' && $ending == 'index.class.php') {
+            if ($objInit && $objInit->mode == 'backend' && $ending == 'index.class.php') {
                 return false;
-            } else if (\Env::get('init')->mode != 'backend' && $ending == 'admin.class.php') {
+            } else if ((!$objInit || $objInit->mode != 'backend') && $ending == 'admin.class.php') {
                 return false;
             }
             $this->loadClass('.'.$file, $name);
