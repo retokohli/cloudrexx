@@ -267,4 +267,4 @@ $_GET['force'] = 'true';
 $_GET['silent'] = 'true';
 require_once($documentRoot.'/core_modules/License/versioncheck.php');
 
-echo 'Update successful. Now you have installed the stable.';
+echo 'Update successful. Now you have installed the current stable.';
