@@ -236,8 +236,8 @@ EOF;
             array_push($this->arrSearchLevels, intval($arrData['lid']));
             $this->getSearchLevelIds(intval($arrData['lid']));
 
-            $levelFilterWhere   = '(rel_level.level_id IN ('.join(',', $this->arrSearchLevels).') AND rel_level.entry_id=rel_inputfield.entry_id)';
-            $arrWhere[]         = $levelFilterWhere;
+            $arrWhere[]         = '(rel_level.level_id IN ('.join(',', $this->arrSearchLevels).') AND rel_level.entry_id=rel_inputfield.entry_id)';
+            $levelFilterWhere   = '(rel_level.level_id IN ('.join(',', $this->arrSearchLevels).') AND rel_level.entry_id=rel_inputfield_final.entry_id)';
             $levelFrom          = DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_levels AS rel_level';
             $arrFrom[]          = $levelFrom;
             $arrFinalFrom[]     = $levelFrom;
@@ -248,14 +248,13 @@ EOF;
             array_push($this->arrSearchCategories, intval($arrData['cid']));
             $this->getSearchCategoryIds(intval($arrData['cid']));
 
-            $categoryFilterWhere    = '(rel_category.category_id IN ('.join(',', $this->arrSearchCategories).') AND rel_category.entry_id=rel_inputfield.entry_id)';
-            $arrWhere[]             = $categoryFilterWhere;
+            $arrWhere[]             = '(rel_category.category_id IN ('.join(',', $this->arrSearchCategories).') AND rel_category.entry_id=rel_inputfield.entry_id)';
+            $categoryFilterWhere    = '(rel_category.category_id IN ('.join(',', $this->arrSearchCategories).') AND rel_category.entry_id=rel_inputfield_final.entry_id)';
             $categoryFrom           = DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_categories AS rel_category';
             $arrFrom[]              = $categoryFrom;
             $arrFinalFrom[]         = $categoryFrom;
         }
 
-        //$arrSelect[]    = 'rel_inputfield.`value` AS `value`';
         $arrFrom[]      = DBPREFIX.'module_'.$this->moduleName.'_entries AS entry';
         $arrWhere[]     = '(entry.`id` = rel_inputfield.`entry_id` AND entry.`confirmed` = 1 AND entry.`active` = 1)';
 
