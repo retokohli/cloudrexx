@@ -167,11 +167,14 @@ div.row2 {
     white-space: nowrap;
     font-weight: normal;
 }
+#captcha .row {
+    clear: both;
+    display: block;
+}
 #captcha #coreCaptchaCode {
     float: left;
     width: 79px !important;
     height: 17px;
-    clear: both;
     margin: 0 7px 0 0;
 }
 #captcha #coreCaptchaImage {
