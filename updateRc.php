@@ -264,6 +264,7 @@ if ($version == 'rc1') {
 
 $objSettings = new \settingsManager();
 $objSettings->writeSettingsFile();
+require($documentRoot.'/config/settings.php');
 
 $_GET['force'] = 'true';
 $_GET['silent'] = 'true';
