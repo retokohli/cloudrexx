@@ -307,4 +307,5 @@ $_ARRAYLANG['TXT_MEDIADIR_NEW_EXPORT_MASK'] = "Neue Export Maske";
 $_ARRAYLANG['TXT_MEDIADIR_EDIT_EXPORT_MASK'] = "Export Maske bearbeiten";      
 $_ARRAYLANG['TXT_MEDIADIR_FORM_TEMPLATE'] = "Formular Vorlage";      
 $_ARRAYLANG['TXT_MEDIADIR_EXPORT_FORMAT'] = "Export Format";         
+$_ARRAYLANG['TXT_MEDIADIR_OWNER'] = "Besitzer";
 ?>
