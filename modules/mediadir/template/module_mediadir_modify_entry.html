@@ -46,6 +46,11 @@ cx.ready(function() {
 {MEDIADIR_JAVASCRIPT}
 
 <style type="text/css">
+    .ui-autocomplete {
+        max-height: 150px;
+        overflow-y: auto;
+    }
+    
     .ui-autocomplete-loading {
         background: #FFFFFF url('../lib/javascript/jquery/ui/images/ui-anim_basic_16x16.gif') 278px center no-repeat !important;
     }
@@ -112,7 +117,7 @@ cx.ready(function() {
         <td width="200" >{TXT_MEDIADIR_OWNER}</td>
         <td>
             <input type="hidden" name="userId" id="owner-id" value="{MEDIADIR_OWNER_ID}" />
-            <input type="text" name="userData" id="owner-data" class="search" value="{MEDIADIR_OWNER_DATA}" style="width: 271px;" />
+            <input type="text" name="userData" id="owner-data" class="search" value="{MEDIADIR_OWNER_DATA}" placeholder="{TXT_MEDIADIR_SEARCH_USER}..." style="width: 271px;" />
         </td>
     </tr>
     <!-- END mediadirOwnerList -->
