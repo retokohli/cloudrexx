@@ -61,11 +61,14 @@ class JsonUser implements JsonAdapter {
             'lastname'  => $term,
             'username'  => $term,
         );
+        $arrAttributes = array(
+            'company', 'firstname', 'lastname', 'username',
+        );
         
         $arrUsers  = array();
         $objFWUser = \FWUser::getFWUserObject();
         
-        if ($objUser = $objFWUser->objUser->getUsers(null, $arrSearch)) {
+        if ($objUser = $objFWUser->objUser->getUsers(null, $arrSearch, null, $arrAttributes)) {
             while (!$objUser->EOF) {
                 $id    = $objUser->getId();
                 $title = $objFWUser->getParsedUserTitle($objUser);
