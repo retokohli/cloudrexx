@@ -41,6 +41,9 @@ class JsonData {
         'Block' => array(
             'JsonBlock',
         ),
+        'User' => array(
+            'JsonUser',
+        ),
     );
     
     /**

@@ -45,6 +45,12 @@ cx.ready(function() {
 
 {MEDIADIR_JAVASCRIPT}
 
+<style type="text/css">
+    .ui-autocomplete-loading {
+        background: #FFFFFF url('../lib/javascript/jquery/ui/images/ui-anim_basic_16x16.gif') 278px center no-repeat !important;
+    }
+</style>
+
 <form name="entryModfyForm" action="index.php?cmd={MODULE_NAME}&act=modify_entry" onsubmit="{MEDIADIR_FORM_ONSUBMIT}" method="post" enctype="multipart/form-data">
 <input name="entryId" type="hidden" value="{MEDIADIR_ENTRY_ID}" />
 <input name="formId" type="hidden" value="{MEDIADIR_FORM_ID}" />
@@ -100,14 +106,16 @@ cx.ready(function() {
         </td>
     </tr>
     <!-- END mediadirTranslationStatus -->
-    <!-- BEGIN mediadirUserList -->
-    <tr class="{MEDIADIR_USER_ROW}">
-        <td width="200" >{TXT_MEDIADIR_CHOOSE_USER}</td>
+    
+    <!-- BEGIN mediadirOwnerList -->
+    <tr class="{MEDIADIR_OWNER_ROW}">
+        <td width="200" >{TXT_MEDIADIR_OWNER}</td>
         <td>
-            {MEDIADIR_USER_LIST}
+            <input type="hidden" name="userId" id="owner-id" value="{MEDIADIR_OWNER_ID}" />
+            <input type="text" name="userData" id="owner-data" class="search" value="{MEDIADIR_OWNER_DATA}" style="width: 271px;" />
         </td>
     </tr>
-    <!-- END mediadirUserList -->
+    <!-- END mediadirOwnerList -->
 
     <!-- END mediadirSpezfieldList -->
     

@@ -313,6 +313,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
 
         JS::activate('cx');
+        JS::activate('jqueryui');
 
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleName.'_modify_entry.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_ENTRIES'];
@@ -408,7 +409,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
 
                 //get translation status date
                 if($this->arrSettings['settingsTranslationStatus'] == 1) {
-                	$strUserRowClass = "row1";
+                	$ownerRowClass = "row1";
 
                 	foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                         if($intEntryId != 0) {
@@ -430,7 +431,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
 
                     $this->_objTpl->parse($this->moduleName.'TranslationStatus');
                 } else {
-                    $strUserRowClass = "row2";
+                    $ownerRowClass = "row2";
                     $this->_objTpl->hideBlock($this->moduleName.'TranslationStatus');
                 }
 
@@ -439,21 +440,53 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                     $intEntryDourationEnd = 2;
 
                     //get user data
-                	$this->_objTpl->setVariable(array(
-		                'TXT_'.$this->moduleLangVar.'_CHOOSE_USER' => $_ARRAYLANG['TXT_MEDIADIR_CHOOSE_USER'],
-                        $this->moduleLangVar.'_USER_ROW' => $strUserRowClass,
-		                $this->moduleLangVar.'_USER_LIST' => $objEntry->getUsers($intEntryId),
-		            ));
-
-		            $this->_objTpl->parse($this->moduleName.'UserList');
-		            
+                    $objFWUser = FWUser::getFWUserObject();
+                    $objUser   = $objFWUser->objUser;
+                    $addedBy   = $objEntry->arrEntries[$intEntryId]['entryAddedBy'];
+                    
+                    if ($objUser = $objUser->getUser($addedBy)) {
+                        $this->_objTpl->setVariable(array(
+                            'TXT_'.$this->moduleLangVar.'_OWNER' => $_ARRAYLANG['TXT_MEDIADIR_OWNER'],
+                            $this->moduleLangVar.'_OWNER_ROW'    => $ownerRowClass,
+                            $this->moduleLangVar.'_OWNER_ID'     => $objUser->getId(),
+                            $this->moduleLangVar.'_OWNER_DATA'   => $objFWUser->getParsedUserTitle($objUser),
+                        ));
+                        
+                        JS::registerCode('
+                            $J(document).ready(function() {
+                                $J("#owner-data").autocomplete({
+                                    source: function(request, response) {
+                                        $J.getJSON("index.php?cmd=jsondata&object=user&act=getUsers", {
+                                            term: request.term
+                                        }, function(data) {
+                                            var users = new Array();
+                                            for (id in data.data) {
+                                                var user = {
+                                                    label: data.data[id],
+                                                    value: id
+                                                };
+                                                users.push(user);
+                                            }
+                                            response(users);
+                                        });
+                                    },
+                                    select: function(event, ui) {
+                                        event.preventDefault();
+                                        $J("#owner-id").val(ui.item.value);
+                                        $J("#owner-data").val(ui.item.label);
+                                    }
+                                });
+                            });
+                        ');
+                    } else {
+                        $this->_objTpl->hideBlock($this->moduleName.'OwnerList');
+                    }
 		            
 	                //parse contact data
-                    $objFWUser  = FWUser::getFWUserObject();
-                    $objUser    = $objFWUser->objUser;
-                    $intUserId  = intval($objUser->getId());
-                    $strUserMail  = '<a href="mailto:'.contrexx_raw2xhtml($objUser->getEmail()).'">'.contrexx_raw2xhtml($objUser->getEmail()).'</a>';
-                    $intUserLang  = intval($objUser->getFrontendLanguage());
+                    $objUser     = $objFWUser->objUser;
+                    $intUserId   = intval($objUser->getId());
+                    $strUserMail = '<a href="mailto:'.contrexx_raw2xhtml($objUser->getEmail()).'">'.contrexx_raw2xhtml($objUser->getEmail()).'</a>';
+                    $intUserLang = intval($objUser->getFrontendLanguage());
 		            
 					if ($objUser = $objUser->getUser($id = $intUserId)) {
 						//get lang
@@ -487,16 +520,13 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                             $this->moduleLangVar.'_CONTACT_ATTRIBUT_MAIL' => $strUserMail,
                             $this->moduleLangVar.'_CONTACT_ATTRIBUT_LANG' => $strUserLang,
 	                    ));
-					} else {
-                        $this->_objTpl->hideBlock($this->moduleName.'UserList');
 					}
 		            
 	                $this->_objTpl->parse($this->moduleName.'ContactData');
                 } else {
-
                 	$intEntryDourationStart = 1;
                     $intEntryDourationEnd = 2;
-                	$this->_objTpl->hideBlock($this->moduleName.'UserList');
+                	$this->_objTpl->hideBlock($this->moduleName.'OwnerList');
                     $this->_objTpl->hideBlock($this->moduleName.'ContactData');
                 }
 

@@ -292,4 +292,5 @@ $_ARRAYLANG['TXT_MEDIADIR_NEW_EXPORT_MASK'] = "new export mask";
 $_ARRAYLANG['TXT_MEDIADIR_EDIT_EXPORT_MASK'] = "edit export mask";      
 $_ARRAYLANG['TXT_MEDIADIR_FORM_TEMPLATE'] = "form template";      
 $_ARRAYLANG['TXT_MEDIADIR_EXPORT_FORMAT'] = "export format";         
+$_ARRAYLANG['TXT_MEDIADIR_OWNER'] = "Owner";
 ?>
