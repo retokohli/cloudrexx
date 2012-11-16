@@ -6,6 +6,7 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_CORE_SEARCH_USER'] = "Search user";
 $_ARRAYLANG['TXT_CORE_FILTER'] = "Filter";
 $_ARRAYLANG['TXT_PASSWORD_COMPLEXITY'] = "Passwords must meet the complexity requirements";
 $_ARRAYLANG['TXT_PASSWORD_COMPLEXITY_INFO'] = "Password must contain the following characters: upper and lower case character and number";

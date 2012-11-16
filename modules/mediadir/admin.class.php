@@ -446,44 +446,13 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                     
                     if ($objUser = $objUser->getUser($addedBy)) {
                         $this->_objTpl->setVariable(array(
-                            'TXT_'.$this->moduleLangVar.'_OWNER'       => $_ARRAYLANG['TXT_MEDIADIR_OWNER'],
-                            'TXT_'.$this->moduleLangVar.'_SEARCH_USER' => $_ARRAYLANG['TXT_MEDIADIR_SEARCH_USER'],
-                            $this->moduleLangVar.'_OWNER_ROW'          => $ownerRowClass,
-                            $this->moduleLangVar.'_OWNER_ID'           => $objUser->getId(),
-                            $this->moduleLangVar.'_OWNER_DATA'         => $objFWUser->getParsedUserTitle($objUser),
+                            'TXT_'.$this->moduleLangVar.'_OWNER' => $_ARRAYLANG['TXT_MEDIADIR_OWNER'],
+                            $this->moduleLangVar.'_OWNER_ROW'    => $ownerRowClass,
+                            $this->moduleLangVar.'_OWNER_ID'     => $objUser->getId(),
+                            $this->moduleLangVar.'_OWNER_TITLE'  => $objFWUser->getParsedUserTitle($objUser),
                         ));
                         
-                        JS::registerCode('
-                            $J(document).ready(function() {
-                                $J("#owner-data").autocomplete({
-                                    source: function(request, response) {
-                                        $J.getJSON("index.php?cmd=jsondata&object=user&act=getUsers", {
-                                            term: request.term
-                                        }, function(data) {
-                                            var users = new Array();
-                                            for (id in data.data) {
-                                                var user = {
-                                                    label: data.data[id],
-                                                    value: id
-                                                };
-                                                users.push(user);
-                                            }
-                                            response(users);
-                                        });
-                                    },
-                                    search: function() {
-                                        if ($J.trim(this.value).length < 3) {
-                                            return false;
-                                        }
-                                    },
-                                    select: function(event, ui) {
-                                        event.preventDefault();
-                                        $J("#owner-id").val(ui.item.value);
-                                        $J("#owner-data").val(ui.item.label);
-                                    }
-                                });
-                            });
-                        ');
+                        JS::registerCode(FWUser::getUserSearchDialogCode());
                     } else {
                         $this->_objTpl->hideBlock($this->moduleName.'OwnerList');
                     }
