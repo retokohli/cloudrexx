@@ -116,8 +116,12 @@ cx.ready(function() {
     <tr class="{MEDIADIR_OWNER_ROW}">
         <td width="200" >{TXT_MEDIADIR_OWNER}</td>
         <td>
-            <input type="hidden" name="userId" id="owner-id" value="{MEDIADIR_OWNER_ID}" />
-            <input type="text" name="userData" id="owner-data" class="search" value="{MEDIADIR_OWNER_DATA}" placeholder="{TXT_MEDIADIR_SEARCH_USER}..." style="width: 271px;" />
+            <input type="hidden" name="userId" id="user-id" value="{MEDIADIR_OWNER_ID}" />
+            <img src="images/icons/admin.gif" alt="User icon" style="float: left; padding: 3px 2px 0 0;" />
+            <span id="user-title" style="float: left; padding: 2px 0 0 0;">{MEDIADIR_OWNER_TITLE}</span>
+            <a id="user-edit" href="#" style="float: left; padding: 3px 0 0 20px;">
+                <img src="images/icons/edit.gif" alt="Edit user" />
+            </a>
         </td>
     </tr>
     <!-- END mediadirOwnerList -->

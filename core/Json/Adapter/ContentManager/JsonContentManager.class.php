@@ -96,13 +96,15 @@ class JsonContentManager implements JsonAdapter {
     }
     
     private function performLanguageAction($action, $params) {
+        global $_CORELANG;
+        
         // Global access check
         if (!\Permission::checkAccess(6, 'static', true) ||
                 !\Permission::checkAccess(35, 'static', true)) {
-            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
+            throw new \Cx\Core\ContentManager\ContentManagerException($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
         }
         if (!\Permission::checkAccess(53, 'static', true)) {
-            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_COPY_DENIED']);
+            throw new \Cx\Core\ContentManager\ContentManagerException($_CORELANG['TXT_CORE_CM_COPY_DENIED']);
         }
         if (!isset($params['get']) || !isset($params['get']['to'])) {
             throw new \Cx\Core\ContentManager\ContentManagerException('Illegal parameter list');

@@ -656,5 +656,83 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
         }
         return $ret;
     }
+    
+    
+    /**
+     * Returns the user search dialog code.
+     * 
+     * @param   array   $arrSelectors
+     * @param   array   $arrOptions
+     * @return  string  $code
+     */
+    public static function getUserSearchDialogCode($arrSelectors = array(), $arrOptions = array())
+    {
+        global $_CORELANG;
+        
+        // Selectors to change the user id/name and for the edit link
+        $arrSelectors['selUserId']     = !empty($arrSelectors['selUserId'])     ? $arrSelectors['selUserId']            : 'user-id';
+        $arrSelectors['selUserTitle']  = !empty($arrSelectors['selUserTitle'])  ? $arrSelectors['selUserTitle']         : 'user-title';
+        $arrSelectors['selUserEdit']   = !empty($arrSelectors['selUserEdit'])   ? $arrSelectors['selUserEdit']          : 'user-edit';
+        
+        // Options for the dialog
+        $arrOptions['minLength']       = !empty($arrOptions['minLength'])       ? (int)  $arrOptions['minLength']       : 3;
+        $arrOptions['allowCustomUser'] = !empty($arrOptions['allowCustomUser']) ? (bool) $arrOptions['allowCustomUser'] : false;
+        
+        $customUserButton = '';
+        
+        if ($arrOptions['allowCustomUser'] === true) {
+            $customUserButton = '<input id=\"button-custom-user\" type=\"button\" value=\"Wählen\" />';
+        }
+        
+        $code = '
+            cx.ready(function() {
+                var userSearchDialog = cx.ui.dialog({
+                    width: 500,
+                    height: 100,
+                    autoOpen: false,
+                    dialogClass: "dialog-user-search",
+                    title: "'.$_CORELANG['TXT_CORE_SEARCH_USER'].'",
+                    content: "<input id=\"user-search\" placeholder=\"'.$_CORELANG['TXT_CORE_SEARCH_USER'].'...\" style=\"width: 460px; height: 15px; padding: 5px; margin: 5px 0 0 0; font-size: 13px;\" />" +
+                             "'.$customUserButton.'"
+                });
+                
+                $J("#user-search").autocomplete({
+                    source: function(request, response) {
+                        $J.getJSON("index.php?cmd=jsondata&object=user&act=getUsers", {
+                            term: request.term
+                        }, function(data) {
+                            var users = new Array();
+                            for (id in data.data) {
+                                var user = {
+                                    id: id,
+                                    value: data.data[id]
+                                };
+                                users.push(user);
+                            }
+                            response(users);
+                        });
+                    },
+                    search: function() {
+                        if ($J.trim(this.value).length < '.$arrOptions['minLength'].') {
+                            return false;
+                        }
+                    },
+                    select: function(event, ui) {
+                        $J("#'.$arrSelectors['selUserId'].'").val(ui.item.id);
+                        $J("#'.$arrSelectors['selUserTitle'].'").text(ui.item.value);
+                        ui.item.value = "";
+                        userSearchDialog.close();
+                    }
+                });
+                
+                $J("#'.$arrSelectors['selUserEdit'].'").click(function(event) {
+                    event.preventDefault();
+                    userSearchDialog.open();
+                });
+            });
+        ';
+        
+        return $code;
+    }
 
 }

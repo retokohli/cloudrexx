@@ -53,6 +53,14 @@ class JsonUser implements JsonAdapter {
      * @return array List of users
      */
     public function getUsers() {
+        global $objInit;
+        
+        $objFWUser = \FWUser::getFWUserObject();
+        
+        if (!\FWUser::getFWUserObject()->objUser->login() || $objInit->mode != 'backend') {
+            throw new \Exception($_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']);
+        }
+        
         $term = !empty($_GET['term']) ? trim($_GET['term']) : '';
         
         $arrSearch = array(
@@ -64,9 +72,7 @@ class JsonUser implements JsonAdapter {
         $arrAttributes = array(
             'company', 'firstname', 'lastname', 'username',
         );
-        
-        $arrUsers  = array();
-        $objFWUser = \FWUser::getFWUserObject();
+        $arrUsers = array();
         
         if ($objUser = $objFWUser->objUser->getUsers(null, $arrSearch, null, $arrAttributes)) {
             while (!$objUser->EOF) {

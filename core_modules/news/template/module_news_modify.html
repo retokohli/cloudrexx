@@ -1,20 +1,12 @@
 <!-- START module_news_modify.html -->
 <style>
-    .ui-autocomplete-loading { background: white url('template/ascms/images/ui-anim_basic_16x16.gif') right center no-repeat; }
     .ui-autocomplete {
-        max-height: 100px;
+        max-height: 150px;
         overflow-y: auto;
-        /* prevent horizontal scrollbar */
-        overflow-x: hidden;
-        /* add padding to account for vertical scrollbar */
-        padding-right: 10px;
-        border: 1px solid #CCCCCC;
     }
-    /* IE 6 doesn't support max-height
-     * we use height instead, but this forces the menu to always be this tall
-     */
-    * html .ui-autocomplete {
-        height: 100px;
+    
+    .ui-autocomplete-loading {
+        background: #FFFFFF url('../lib/javascript/jquery/ui/images/ui-anim_basic_16x16.gif') 284px center no-repeat !important;
     }
 </style>
 <script type="text/javascript">
@@ -40,17 +32,37 @@
         $J('input[name=startDate]').datetimepicker(dpOptions);
         $J('input[name=endDate]').datetimepicker(dpOptions);
 
-        $J('.newsAutoComplete').autocomplete({
-            minLength: 1,
-            search: function( event, ui) {
-                userType = $J(this).attr('id');
-                $J('.newsAutoComplete').autocomplete("option", "source", "index.php?cmd=news&act=access_user&type="+userType);
+        var updateUserId = function(selector, ui) {
+            var object = $J(selector);
+            ui.item ? object.next("input").val(ui.item.id) : object.next("input").val(0);
+        };
+
+        $J(".newsAutoComplete").autocomplete({
+            source: function(request, response) {
+                $J.getJSON("index.php?cmd=jsondata&object=user&act=getUsers", {
+                    term: request.term
+                }, function(data) {
+                    var users = new Array();
+                    for (id in data.data) {
+                        var user = {
+                            id: id,
+                            value: data.data[id]
+                        };
+                        users.push(user);
+                    }
+                    response(users);
+                });
             },
-            change: function( event, ui ) {
-                (ui.item) ? $J(this).next('input').val(ui.item.id) : $J(this).next('input').val(0);
+            search: function() {
+                if ($J.trim(this.value).length < 3) {
+                    return false;
+                }
             },
-            select: function( event, ui ) {
-                (ui.item) ? $J(this).next('input').val(ui.item.id) : $J(this).next('input').val(0);
+            select: function(event, ui) {
+                updateUserId(this, ui);
+            },
+            change: function(event, ui) {
+                updateUserId(this, ui);
             }
         });
 
@@ -386,14 +398,14 @@
             <tr class="row1">
                 <td nowrap="nowrap">{TXT_NEWS_PUBLISHER}</td>
                 <td nowrap="nowrap">
-                    <input id="newsPublisherName" class="newsAutoComplete" type="text" name="newsPublisherName" value="{NEWS_PUBLISHER_NAME}" style="width:300px;" />
+                    <input id="newsPublisherName" class="newsAutoComplete search" type="text" name="newsPublisherName" value="{NEWS_PUBLISHER_NAME}" placeholder="{TXT_CORE_SEARCH_USER}..." style="width: 277px;" />
                     <input id="newsPublisherId" type="hidden" name="newsPublisherId" value="{NEWS_PUBLISHER_ID}" />
                 </td>
             </tr>
             <tr class="row2">
                 <td nowrap="nowrap">{TXT_NEWS_AUTHOR}</td>
                 <td nowrap="nowrap">
-                    <input id="newsAuthorName" class="newsAutoComplete" type="text" name="newsAuthorName" value="{NEWS_AUTHOR_NAME}" style="width:300px;" />
+                    <input id="newsAuthorName" class="newsAutoComplete search" type="text" name="newsAuthorName" value="{NEWS_AUTHOR_NAME}" placeholder="{TXT_CORE_SEARCH_USER}..." style="width: 277px;" />
                     <input id="newsAuthorId" type="hidden" name="newsAuthorId" value="{NEWS_AUTHOR_ID}" />
                 </td>
             </tr>            
