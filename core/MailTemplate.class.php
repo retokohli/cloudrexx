@@ -1321,6 +1321,7 @@ Use plain text areas instead.  See below.
         $to_test = contrexx_input2raw($_POST['to_test']);
         $objTemplate->setVariable('CORE_MAILTEMPLATE_TO_TEST', $to_test);
         $sent = self::send(array(
+            'section' => $section,
             'key' => $key,
             'to' => $to_test,
             'do_not_strip_empty_placeholders' => true, ));
