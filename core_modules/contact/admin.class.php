@@ -97,25 +97,26 @@ class ContactManager extends ContactLib
             'recipient'     => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'],
         );
 
+        $objUserAttribute = \FWUser::getFWUserObject()->objUser->objAttribute;
         $this->_arrUserAccountData = array(
-            'access_gender'        => $_ARRAYLANG['TXT_CONTACT_GENDER'],
-            'access_title'         => $_ARRAYLANG['TXT_CONTACT_TITLE'],
-            'access_firstname'     => $_ARRAYLANG['TXT_CONTACT_FIRST_NAME'],
-            'access_lastname'      => $_ARRAYLANG['TXT_CONTACT_LAST_NAME'],
-            'access_company'       => $_ARRAYLANG['TXT_CONTACT_COMPANY'],
-            'access_address'       => $_ARRAYLANG['TXT_CONTACT_ADDRESS'],
-            'access_city'          => $_ARRAYLANG['TXT_CONTACT_CITY'],
-            'access_zip'           => $_ARRAYLANG['TXT_CONTACT_ZIP'],
-            'access_country'       => $_ARRAYLANG['TXT_CONTACT_COUNTRY'],
-            'access_phone_office'  => $_ARRAYLANG['TXT_CONTACT_PHONE_OFFICE'],
-            'access_phone_private' => $_ARRAYLANG['TXT_CONTACT_PHONE_PRIVATE'],
-            'access_phone_mobile'  => $_ARRAYLANG['TXT_CONTACT_PHONE_MOBILE'],
-            'access_phone_fax'     => $_ARRAYLANG['TXT_CONTACT_PHONE_FAX'],
-            'access_birthday'      => $_ARRAYLANG['TXT_CONTACT_BIRTHDAY'],
-            'access_website'       => $_ARRAYLANG['TXT_CONTACT_WEBSITE'],
-            'access_profession'    => $_ARRAYLANG['TXT_CONTACT_PROFESSION'],
-            'access_interests'     => $_ARRAYLANG['TXT_CONTACT_INTERESTS'],
-            'access_signature'     => $_ARRAYLANG['TXT_CONTACT_SIGNATURE']
+            'access_gender'        => contrexx_raw2xhtml($objUserAttribute->getById('gender')->getName()),
+            'access_title'         => contrexx_raw2xhtml($objUserAttribute->getById('title')->getName()),
+            'access_firstname'     => contrexx_raw2xhtml($objUserAttribute->getById('firstname')->getName()),
+            'access_lastname'      => contrexx_raw2xhtml($objUserAttribute->getById('lastname')->getName()),
+            'access_company'       => contrexx_raw2xhtml($objUserAttribute->getById('company')->getName()),
+            'access_address'       => contrexx_raw2xhtml($objUserAttribute->getById('address')->getName()),
+            'access_city'          => contrexx_raw2xhtml($objUserAttribute->getById('city')->getName()),
+            'access_zip'           => contrexx_raw2xhtml($objUserAttribute->getById('zip')->getName()),
+            'access_country'       => contrexx_raw2xhtml($objUserAttribute->getById('country')->getName()),
+            'access_phone_office'  => contrexx_raw2xhtml($objUserAttribute->getById('phone_office')->getName()),
+            'access_phone_private' => contrexx_raw2xhtml($objUserAttribute->getById('phone_private')->getName()),
+            'access_phone_mobile'  => contrexx_raw2xhtml($objUserAttribute->getById('phone_mobile')->getName()),
+            'access_phone_fax'     => contrexx_raw2xhtml($objUserAttribute->getById('phone_fax')->getName()),
+            'access_birthday'      => contrexx_raw2xhtml($objUserAttribute->getById('birthday')->getName()),
+            'access_website'       => contrexx_raw2xhtml($objUserAttribute->getById('website')->getName()),
+            'access_profession'    => contrexx_raw2xhtml($objUserAttribute->getById('profession')->getName()),
+            'access_interests'     => contrexx_raw2xhtml($objUserAttribute->getById('interests')->getName()),
+            'access_signature'     => contrexx_raw2xhtml($objUserAttribute->getById('signature')->getName()),
         );
 
         $this->initContactForms();
