@@ -85,7 +85,6 @@ class Contact extends ContactLib
 
     /**
      * Determines whether this form has a file upload field.
-     * Set in @link _getParams()
      * @var boolean
      */
     protected $hasFileField;
@@ -116,7 +115,7 @@ class Contact extends ContactLib
      * Show the contact page
      *
      * Parse a contact form submit request and show the contact page
-     * @see _getContactFormData(), _checkValues(), _insertIntoDatabase(), sendMail(), _showError(), _showFeedback(), _getParams(), \Cx\Core\Html\Sigma::get(), \Cx\Core\Html\Sigma::blockExists(), \Cx\Core\Html\Sigma::hideBlock(), \Cx\Core\Html\Sigma::touchBlock()
+     * @see _getContactFormData(), _checkValues(), _insertIntoDatabase(), sendMail(), _showError(), _showFeedback(), \Cx\Core\Html\Sigma::get(), \Cx\Core\Html\Sigma::blockExists(), \Cx\Core\Html\Sigma::hideBlock(), \Cx\Core\Html\Sigma::touchBlock()
      * @return string Parse contact form page
      */
     function getContactPage()
@@ -140,217 +139,247 @@ class Contact extends ContactLib
 
         if ($this->objTemplate->blockExists('contact_form')) {
             $recipients = $this->getRecipients($formId);
+
             foreach ($arrFields as $fieldId => $arrField) {
+                /*
+                 * Set values for special field types if the user is authenticated
+                 */
+                if ($isLoggedin && empty($_GET[$fieldId]) && empty($_POST['contactFormField_'.$fieldId])) {
+                    switch ($arrField['special_type']) {
+                        case 'access_gender':
+                            $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_GENDER]]';
+                            break;
 
-            /*
-             * Set values for special field types if the user is authenticated
-             */
-             if ($isLoggedin && empty($_GET[$fieldId]) && empty($_POST['contactFormField_'.$fieldId])) {
-                switch ($arrField['special_type']) {
-                case 'access_gender':
-                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_GENDER]]';
-                    break;
-                case 'access_title':
-                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_TITLE]]';
-                    break;
-                case 'access_firstname':
-                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_FIRSTNAME]]';
-                    break;
-                case 'access_lastname':
-                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_LASTNAME]]';
-                    break;
-                case 'access_company':
-                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_COMPANY]]';
-                    break;
-                case 'access_address':
-                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_ADDRESS]]';
-                    break;
-                case 'access_city':
-                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_CITY]]';
-                    break;
-                case 'access_zip':
-                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_ZIP]]';
-                    break;
-                case 'access_country':
-                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_COUNTRY]]';
-                    break;
-                case 'access_phone_office':
-                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_OFFICE]]';
-                    break;
-                case 'access_phone_private':
-                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_PRIVATE]]';
-                    break;
-                case 'access_phone_mobile':
-                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_MOBILE]]';
-                    break;
-                case 'access_phone_fax':
-                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_FAX]]';
-                    break;
-                case 'access_birthday':
-                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_BIRTHDAY]]';
-                    break;
-                case 'access_website':
-                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_WEBSITE]]';
-                    break;
-                case 'access_profession':
-                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PROFESSION]]';
-                    break;
-                case 'access_interests':
-                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_INTERESTS]]';
-                    break;
-                case 'access_signature':
-                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_SIGNATURE]]';
-                    break;
+                        case 'access_title':
+                            $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_TITLE]]';
+                            break;
+
+                        case 'access_firstname':
+                            $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_FIRSTNAME]]';
+                            break;
+
+                        case 'access_lastname':
+                            $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_LASTNAME]]';
+                            break;
+
+                        case 'access_company':
+                            $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_COMPANY]]';
+                            break;
+
+                        case 'access_address':
+                            $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_ADDRESS]]';
+                            break;
+
+                        case 'access_city':
+                            $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_CITY]]';
+                            break;
+
+                        case 'access_zip':
+                            $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_ZIP]]';
+                            break;
+
+                        case 'access_country':
+                            $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_COUNTRY]]';
+                            break;
+
+                        case 'access_phone_office':
+                            $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_OFFICE]]';
+                            break;
+
+                        case 'access_phone_private':
+                            $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_PRIVATE]]';
+                            break;
+
+                        case 'access_phone_mobile':
+                            $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_MOBILE]]';
+                            break;
+
+                        case 'access_phone_fax':
+                            $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_FAX]]';
+                            break;
+
+                        case 'access_birthday':
+                            $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_BIRTHDAY]]';
+                            break;
+
+                        case 'access_website':
+                            $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_WEBSITE]]';
+                            break;
+
+                        case 'access_profession':
+                            $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PROFESSION]]';
+                            break;
+
+                        case 'access_interests':
+                            $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_INTERESTS]]';
+                            break;
+
+                        case 'access_signature':
+                            $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_SIGNATURE]]';
+                            break;
+
+                        default:
+                            break;
+                    }
                 }
-             }
              
-            $arrField['lang'][$_LANGID]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$_LANGID]['value']);
+                $arrField['lang'][$_LANGID]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$_LANGID]['value']);
 
-            $this->objTemplate->setVariable(array(
-                $formId.'_FORM_NAME'    => wordwrap($this->arrForms[$formId]['lang'][$_LANGID]['name'], 90, "<br/>\n", true),
-                $formId.'_FORM_TEXT'    => $this->arrForms[$formId]['lang'][$_LANGID]['text'],
-            // TODO: why do we wordwrap here?
-                $fieldId.'_LABEL'       => ($arrField['lang'][$_LANGID]['name'] != "") ? wordwrap($arrField['lang'][$_LANGID]['name'], 90, "<br/>\n", true) : "&nbsp;"
-            ));
+                $this->objTemplate->setVariable(array(
+                    $formId.'_FORM_NAME'    => wordwrap($this->arrForms[$formId]['lang'][$_LANGID]['name'], 90, "<br/>\n", true),
+                    $formId.'_FORM_TEXT'    => $this->arrForms[$formId]['lang'][$_LANGID]['text'],
+// TODO: why do we wordwrap here?
+                    $fieldId.'_LABEL'       => ($arrField['lang'][$_LANGID]['name'] != "") ? wordwrap($arrField['lang'][$_LANGID]['name'], 90, "<br/>\n", true) : "&nbsp;"
+                ));
 
-            /*
-             * Generate values for dropdown checkbox and radio fields
-             */
-            $userProfileRegExp = '/\{([A-Z_]+)\}/';
-            $fieldType = ($arrField['type'] != 'special') ? $arrField['type'] : $arrField['special_type'];
-            switch ($fieldType) {
-                case 'checkbox':
-                    if ($arrField['lang'][$_LANGID]['value'] == 1) {
-                        $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'checked="checked"');
-                    }
-                    break;
-                case 'checkboxGroup':
-                case 'radio':
-                    $options = explode(',', $arrField['lang'][$_LANGID]['value']);
-                    foreach ($options as $index => $option) {
-                        if (preg_match($userProfileRegExp, $option)) {
-                            $valuePlaceholderBlock = 'contact_value_placeholder_block_'.$fieldId.'_'.$index;
-                            $this->objTemplate->addBlock($fieldId.'_'.$index.'_VALUE', $valuePlaceholderBlock, contrexx_raw2xhtml($option));
-                        } else {
-                            $this->objTemplate->setVariable($fieldId.'_'.$index.'_VALUE', contrexx_raw2xhtml($option));
+                /*
+                 * Generate values for dropdown checkbox and radio fields
+                 */
+                $userProfileRegExp = '/\{([A-Z_]+)\}/';
+                $fieldType = ($arrField['type'] != 'special') ? $arrField['type'] : $arrField['special_type'];
+                switch ($fieldType) {
+                    case 'checkbox':
+                        if ($arrField['lang'][$_LANGID]['value'] == 1) {
+                            $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'checked="checked"');
                         }
+                        break;
 
-                        if (!empty($_POST['contactFormField_'.$fieldId])) {
-                            if (in_array($option, $_POST['contactFormField_'.$fieldId]) ||
-                                $option == $_POST['contactFormField_'.$fieldId]) {
-                                $this->objTemplate->setVariable('SELECTED_'.$fieldId.'_'.$index, 'checked="checked"');
+                    case 'checkboxGroup':
+                    case 'radio':
+                        $options = explode(',', $arrField['lang'][$_LANGID]['value']);
+                        foreach ($options as $index => $option) {
+                            if (preg_match($userProfileRegExp, $option)) {
+                                $valuePlaceholderBlock = 'contact_value_placeholder_block_'.$fieldId.'_'.$index;
+                                $this->objTemplate->addBlock($fieldId.'_'.$index.'_VALUE', $valuePlaceholderBlock, contrexx_raw2xhtml($option));
+                            } else {
+                                $this->objTemplate->setVariable($fieldId.'_'.$index.'_VALUE', contrexx_raw2xhtml($option));
                             }
-                        } elseif (!empty($_GET[$fieldId])) {
-                            if ($option == $_GET[$fieldId]) {
-                                $this->objTemplate->setVariable('SELECTED_'.$fieldId.'_'.$index, 'checked="checked"');
-                            }
-                        }
-                    }
-                    break;
-                case 'select':
-                    $options = explode(',', $arrField['lang'][$_LANGID]['value']);
-                    if ($arrField['is_required']) {
-                        $options = array_merge(array($_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT']), $options);
-                    }
-                    foreach ($options as $index => $option) {
-                        if (preg_match($userProfileRegExp, $option)) {
-                            $valuePlaceholderBlock = 'contact_value_placeholder_block_'.$fieldId.'_'.$index;
-                            $this->objTemplate->addBlock($fieldId.'_VALUE', $valuePlaceholderBlock, contrexx_raw2xhtml($option));
-                        } else {
-                            $this->objTemplate->setVariable($fieldId.'_VALUE', contrexx_raw2xhtml($option));
-                        }
-                        if (!empty($_POST['contactFormField_'.$fieldId])) {
-                            if ($index == array_search($_POST['contactFormField_'.$fieldId], explode(',', $arrField['lang'][$_LANGID]['value']))) {
-                                $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
-                            }
-                        } elseif (!empty($_GET[$fieldId])) {
-                            if ($index == array_search(contrexx_input2raw($_GET[$fieldId]), explode(',' ,$arrField['lang'][$_LANGID]['value']))) {
-                                $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
+
+                            if (!empty($_POST['contactFormField_'.$fieldId])) {
+                                if (in_array($option, $_POST['contactFormField_'.$fieldId]) ||
+                                    $option == $_POST['contactFormField_'.$fieldId]) {
+                                    $this->objTemplate->setVariable('SELECTED_'.$fieldId.'_'.$index, 'checked="checked"');
+                                }
+                            } elseif (!empty($_GET[$fieldId])) {
+                                if ($option == $_GET[$fieldId]) {
+                                    $this->objTemplate->setVariable('SELECTED_'.$fieldId.'_'.$index, 'checked="checked"');
+                                }
                             }
                         }
+                        break;
 
-                        $this->objTemplate->parse('field_'.$fieldId);
-                    }
-                    break;
-                case 'recipient':
-                    foreach ($recipients as $index => $recipient) {
-                        $recipient['lang'][$_LANGID] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $recipient['lang'][$_LANGID]);
-                        if (preg_match($userProfileRegExp, $recipient['lang'][$_LANGID])) {
-                            $valuePlaceholderBlock = 'contact_value_placeholder_block_'.$fieldId.'_'.$index;
-                            $this->objTemplate->addBlock($fieldId.'_VALUE', $valuePlaceholderBlock, $recipient['lang'][$_LANGID]);
-                        } else {
+                    case 'select':
+                        $options = explode(',', $arrField['lang'][$_LANGID]['value']);
+                        if ($arrField['is_required']) {
+                            $options = array_merge(array($_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT']), $options);
+                        }
+                        foreach ($options as $index => $option) {
+                            if (preg_match($userProfileRegExp, $option)) {
+                                $valuePlaceholderBlock = 'contact_value_placeholder_block_'.$fieldId.'_'.$index;
+                                $this->objTemplate->addBlock($fieldId.'_VALUE', $valuePlaceholderBlock, contrexx_raw2xhtml($option));
+                            } else {
+                                $this->objTemplate->setVariable($fieldId.'_VALUE', contrexx_raw2xhtml($option));
+                            }
+                            if (!empty($_POST['contactFormField_'.$fieldId])) {
+                                if ($index == array_search($_POST['contactFormField_'.$fieldId], explode(',', $arrField['lang'][$_LANGID]['value']))) {
+                                    $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
+                                }
+                            } elseif (!empty($_GET[$fieldId])) {
+                                if ($index == array_search(contrexx_input2raw($_GET[$fieldId]), explode(',' ,$arrField['lang'][$_LANGID]['value']))) {
+                                    $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
+                                }
+                            }
+
+                            $this->objTemplate->parse('field_'.$fieldId);
+                        }
+                        break;
+
+                    case 'recipient':
+                        foreach ($recipients as $index => $recipient) {
+                            $recipient['lang'][$_LANGID] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $recipient['lang'][$_LANGID]);
+                            if (preg_match($userProfileRegExp, $recipient['lang'][$_LANGID])) {
+                                $valuePlaceholderBlock = 'contact_value_placeholder_block_'.$fieldId.'_'.$index;
+                                $this->objTemplate->addBlock($fieldId.'_VALUE', $valuePlaceholderBlock, $recipient['lang'][$_LANGID]);
+                            } else {
+                                $this->objTemplate->setVariable(array(
+                                    $fieldId.'_VALUE'    => $recipient['lang'][$_LANGID]
+                                ));
+                            }
                             $this->objTemplate->setVariable(array(
-                                $fieldId.'_VALUE'    => $recipient['lang'][$_LANGID]
+                                $fieldId.'_VALUE_ID'    => $index
                             ));
+                            if (!empty($_POST['contactFormField_'.$fieldId]) &&
+                                $recipient['lang'][$_LANGID] == $_POST['contactFormField_'.$fieldId]) {
+                                    $this->objTemplate->setVariable(array(
+                                        'SELECTED_'.$fieldId => 'selected = "selected"'
+                                    ));
+                                } elseif (!empty($_GET[$fieldId]) &&
+                                          $recipient['lang'][$_LANGID] == $_GET[$fieldId]) {
+                                     $this->objTemplate->setVariable(array(
+                                         'SELECTED_'.$fieldId => 'selected = "selected"'
+                                     ));
+                            }
+                            $this->objTemplate->parse('field_'.$fieldId);
+                        }
+                        break;
+
+                    case 'access_country':
+                    case 'country':
+                        $objResult = $objDatabase->Execute("SELECT * FROM " . DBPREFIX . "lib_country");
+                        if (preg_match($userProfileRegExp, $arrField['lang'][$_LANGID]['value'])) {
+                            $arrField['lang'][$_LANGID]['value'] = $this->objTemplate->_variables[trim($arrField['lang'][$_LANGID]['value'],'{}')];
+                        }
+                        
+                        while (!$objResult->EOF) {
+// TODO: where is this 'name' field comming from? do we have to escape it?
+                            $this->objTemplate->setVariable($fieldId.'_VALUE', $objResult->fields['name']);
+                                
+                            if ((!empty($_POST['contactFormField_'.$fieldId]))) {
+                              if (strcasecmp($objResult->fields['name'], $_POST['contactFormField_'.$fieldId]) == 0) {
+                                  $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
+                              }  
+                            } elseif ((!empty($_GET[$fieldId]))) {                            
+                                if (strcasecmp($objResult->fields['name'], $_GET[$fieldId]) == 0) {
+                                    $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
+                                }
+                            } elseif ($objResult->fields['name'] == $arrField['lang'][$_LANGID]['value']) {
+                                    $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');                                
+                            }
+                            $objResult->MoveNext();
+                            $this->objTemplate->parse('field_'.$fieldId);
                         }
                         $this->objTemplate->setVariable(array(
-                            $fieldId.'_VALUE_ID'    => $index
+                            'TXT_CONTACT_PLEASE_SELECT' => $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'],
+                            'TXT_CONTACT_NOT_SPECIFIED' => $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED']
                         ));
-                        if (!empty($_POST['contactFormField_'.$fieldId]) &&
-                            $recipient['lang'][$_LANGID] == $_POST['contactFormField_'.$fieldId]) {
-                                $this->objTemplate->setVariable(array(
-                                    'SELECTED_'.$fieldId => 'selected = "selected"'
-                                ));
-                            } elseif (!empty($_GET[$fieldId]) &&
-                                      $recipient['lang'][$_LANGID] == $_GET[$fieldId]) {
-                                 $this->objTemplate->setVariable(array(
-                                     'SELECTED_'.$fieldId => 'selected = "selected"'
-                                 ));
+                        break;
+
+                    case 'file':
+                        $this->hasFileField = true; 
+                        //break intentionally left out here.
+                    default:
+                        /*
+                         * Set default field value through User profile attribute
+                         */
+                        $arrField['lang'][$_LANGID]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$_LANGID]['value']);
+                        if (preg_match($userProfileRegExp, $arrField['lang'][$_LANGID]['value'])) {
+                            $valuePlaceholderBlock = 'contact_value_placeholder_block_'.$fieldId;
+                            $this->objTemplate->addBlock($fieldId.'_VALUE', $valuePlaceholderBlock, contrexx_raw2xhtml($arrField['lang'][$_LANGID]['value']));
+                        } elseif (!empty($_POST['contactFormField_'.$fieldId])) {
+                            $this->objTemplate->setVariable($fieldId.'_VALUE', contrexx_raw2xhtml($_POST['contactFormField_'.$fieldId]));
+                        } elseif (!empty($_GET[$fieldId])) {
+                            $this->objTemplate->setVariable($fieldId.'_VALUE', contrexx_raw2xhtml($_GET[$fieldId]));
+                        } else {
+                            $this->objTemplate->setVariable($fieldId.'_VALUE', contrexx_raw2xhtml($arrField['lang'][$_LANGID]['value']));
                         }
-                        $this->objTemplate->parse('field_'.$fieldId);
-                    }
-                    break;
-                case 'access_country':
-                case 'country':
-                    $objResult = $objDatabase->Execute("SELECT * FROM " . DBPREFIX . "lib_country");
-                    if (preg_match($userProfileRegExp, $arrField['lang'][$_LANGID]['value'])) {
-                        $arrField['lang'][$_LANGID]['value'] = $this->objTemplate->_variables[trim($arrField['lang'][$_LANGID]['value'],'{}')];
-                    }
-                    
-                    while (!$objResult->EOF) {
-// TODO: where is this 'name' field comming from? do we have to escape it?
-                        $this->objTemplate->setVariable($fieldId.'_VALUE', $objResult->fields['name']);
-                            
-                        if ((!empty($_POST['contactFormField_'.$fieldId]))) {
-                          if (strcasecmp($objResult->fields['name'], $_POST['contactFormField_'.$fieldId]) == 0) {
-                              $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
-                          }  
-                        } elseif ((!empty($_GET[$fieldId]))) {                            
-                            if (strcasecmp($objResult->fields['name'], $_GET[$fieldId]) == 0) {
-                                $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
-                            }
-                        } elseif ($objResult->fields['name'] == $arrField['lang'][$_LANGID]['value']) {
-                                $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');                                
-                        }
-                        $objResult->MoveNext();
-                        $this->objTemplate->parse('field_'.$fieldId);
-                    }
-                    $this->objTemplate->setVariable(array(
-                        'TXT_CONTACT_PLEASE_SELECT' => $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'],
-                        'TXT_CONTACT_NOT_SPECIFIED' => $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED']
-                    ));
-                    break;
-                case 'file':
-                    $this->hasFileField = true; 
-                    //break intentionally left out here.
-                default :
-                    /*
-                     * Set default field value through User profile attribute
-                     */
-                    if (preg_match($userProfileRegExp, $arrField['lang'][$_LANGID]['value'])) {
-                        $valuePlaceholderBlock = 'contact_value_placeholder_block_'.$fieldId;
-                        $this->objTemplate->addBlock($fieldId.'_VALUE', $valuePlaceholderBlock, contrexx_raw2xhtml($arrField['lang'][$_LANGID]['value']));
-                    } elseif (!empty($_POST['contactFormField_'.$fieldId])) {
-                        $this->objTemplate->setVariable($fieldId.'_VALUE', contrexx_raw2xhtml($_POST['contactFormField_'.$fieldId]));
-                    } elseif (!empty($_GET[$fieldId])) {
-                        $this->objTemplate->setVariable($fieldId.'_VALUE', contrexx_raw2xhtml($_GET[$fieldId]));
-                    }
+                        break;
                 }
+
                 /*
                  * Parse the blocks created for parsing user profile data using addBlock()
                  */
                 if(!empty($valuePlaceholderBlock) && $this->objTemplate->blockExists($valuePlaceholderBlock)){
-                    $this->objTemplate->parse($valuePlaceholderBlock);
+                    $this->objTemplate->touchBlock($valuePlaceholderBlock);
                 }
             }
         }
@@ -359,7 +388,6 @@ class Contact extends ContactLib
             $this->checkLegacyMode();
 
             $showThanks = (isset($_GET['cmd']) && $_GET['cmd'] == 'thanks') ? true : false;
-            //$this->_getParams();
             $arrFormData = $this->_getContactFormData();
             if ($arrFormData) {
                 if ($this->_checkValues($arrFormData, $useCaptcha) && $this->_insertIntoDatabase($arrFormData)) { //validation ok
@@ -389,7 +417,6 @@ class Contact extends ContactLib
                 $this->objTemplate->touchBlock('formText');
             }
             $this->setCaptcha($useCaptcha);
-            //$this->_getParams();
             if($this->hasFileField) {
                 $this->initUploader();
             }
@@ -521,7 +548,7 @@ class Contact extends ContactLib
                 break;
             }
             
-            $this->objTemplate->setVariable('ACCESS_PROFILE_ATTRIBUTE_'.strtoupper($objAttribute->getId()), htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET));
+            $this->objTemplate->setGlobalVariable('ACCESS_PROFILE_ATTRIBUTE_'.strtoupper($objAttribute->getId()), htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET));
             $objUser->objAttribute->next();
         }
         return true;
@@ -716,7 +743,7 @@ class Contact extends ContactLib
                 }                    
             }
             //cleanup
-            //TODO: this does not work for certain reloads - add cleanup routine
+//TODO: this does not work for certain reloads - add cleanup routine
             //@rmdir($tmpUploadDir);
             return $arrFiles;
         }
@@ -1099,6 +1126,9 @@ class Contact extends ContactLib
         
         $plaintextBody = '';
         $replyAddress = '';
+        $firstname = '';
+        $lastname = '';
+        $senderName = '';
         $isHtml = $arrFormData['htmlMail'] == 1
                   ? true : false;
 
@@ -1146,7 +1176,30 @@ class Contact extends ContactLib
                         break;
                     }
                 }
+                if ($arrField['type'] == 'special') {
+                    switch ($arrField['special_type']) {
+                         case 'access_firstname':
+                            $firstname = trim($arrFormData['data'][$fieldId]);
+                            break;
+
+                         case 'access_lastname':
+                            $lastname = trim($arrFormData['data'][$fieldId]);
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
             }
+
+        }
+
+        if (   $arrFormData['useEmailOfSender'] == 1
+            && (!empty($firstname) || !empty($lastname))
+        ) {
+            $senderName = trim($firstname.' '.$lastname);
+        } else {
+            $senderName = $_CONFIG['coreGlobalPageTitle'];
         }
 
         // fill the html and plaintext body with the submitted form data
@@ -1287,7 +1340,7 @@ class Contact extends ContactLib
 
             $objMail->CharSet = CONTREXX_CHARSET;
             $objMail->From = $_CONFIG['coreAdminEmail'];
-            $objMail->FromName = $_CONFIG['coreGlobalPageTitle'];
+            $objMail->FromName = $senderName;
             if (!empty($replyAddress)) {
                 $objMail->AddReplyTo($replyAddress);
 
@@ -1457,63 +1510,6 @@ class Contact extends ContactLib
     }
 
     /**
-     * Get request parameters
-     *
-     * If a form field's value has been set through the http request,
-     * then this method will parse the value and will set it in the template
-     * @access private
-     * @global ADONewConnection
-     * @see \Cx\Core\Html\Sigma::setVariable
-     */
-    function _getParams()
-    {
-        global $objDatabase, $_LANGID;
-        $arrFields = array();
-
-        if (isset($_GET['cmd']) && ($formId = intval($_GET['cmd'])) && !empty($formId)) {
-            $objFields = $objDatabase->Execute('SELECT `tblField`.`id`, `tblField`.`type`, `tblFieldLang`.`attributes` FROM `'
-                                                    .DBPREFIX.'module_contact_form_field` AS tblField LEFT JOIN `'
-                                                    .DBPREFIX.'module_contact_form_field_lang` AS tblFieldLang
-                                                        ON `tblField`.`id` = `tblFieldLang`.`fieldID`
-                                                        WHERE `tblField`.`id_form`='.$formId.'
-                                                        AND `tblFieldLang`.`langID`='.$_LANGID);
-            if ($objFields !== false) {
-                while (!$objFields->EOF) {
-                    if ($objFields->fields['type'] == 'recipient') {
-                        if (!empty($_GET['contactFormField_recipient'])) {
-                            $_POST['contactFormField_recipient'] = $_GET['contactFormField_recipient'];
-                        }
-                        if (!empty($_POST['contactFormField_recipient'])) {
-                            $arrFields['SELECTED_'.$objFields->fields['id'].'_'.$_POST['contactFormField_recipient']] = 'selected="selected"';
-                        }
-
-                    }
-                    else if($objFields->fields['type'] == 'file'){ //set hasFileField
-                        $this->hasFileField = true;
-                    }
-                    if (!empty($_GET[$objFields->fields['id']])) {
-                        if (in_array($objFields->fields['type'], array('select', 'radio'))) {
-                            $index                                                      = array_search($_GET['contactFormField_'.$objFields->fields['id']], explode(',' ,$objFields->fields['attributes']));
-                            $arrFields['SELECTED_'.$objFields->fields['id'].'_'.$index] = 'selected="selected"';
-                        }
-                        $arrFields[$objFields->fields['id'].'_VALUE'] = $_GET[$objFields->fields['id']];
-                    }
-                    if (!empty($_POST['contactFormField_'.$objFields->fields['id']])) {
-                        if (in_array($objFields->fields['type'], array('select', 'radio'))) {
-                            $index                                                      = array_search($_POST['contactFormField_'.$objFields->fields['id']], explode(',', $objFields->fields['attributes']));
-                            $arrFields['SELECTED_'.$objFields->fields['id'].'_'.$index] = 'selected="selected"';
-                        }
-                        $arrFields[$objFields->fields['id'].'_VALUE'] = contrexx_stripslashes($_POST['contactFormField_'.$objFields->fields['id']]);
-                    }
-                    $objFields->MoveNext();
-                }
-                
-                $this->objTemplate->setVariable($arrFields);
-            }
-        }
-    }
-
-    /**
      * Gets the temporary upload location for files.
      * @param integer $submissionId
      * @return array('path','webpath', 'dirname')
@@ -1540,10 +1536,8 @@ class Contact extends ContactLib
 
     //Uploader callback
     public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos) {
-        //TODO: remove files with bad file extensions
-        //TODO: rename files
         $tup = self::getTemporaryUploadPath($data);
         return array($tup[0].'/'.$tup[2],$tup[1].'/'.$tup[2]);
     }
 }
-?>
+

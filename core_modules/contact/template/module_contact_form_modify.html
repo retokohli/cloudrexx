@@ -362,14 +362,14 @@
         elField.html('');
             
         //Change the value fields dynamically with respect to type field
-        fieldType = (type.indexOf('access_') !== -1 && type != 'access_country') ? 'text' : type;
-        if($J('#formField'+fieldType+'Attribute_0').length > 0 &&
-            ('formField'+fieldType+'Attribute_0' != 'formFieldcheckboxAttribute_0' &&
-            'formField'+fieldType+'Attribute_0' != 'formFieldcountryAttribute_0' &&
-            'formField'+fieldType+'Attribute_0' != 'formFieldaccess_countryAttribute_0')){
+        if (   $J('#formField'+type+'Attribute_0').length > 0
+            && (   type != 'checkbox'
+                && type != 'country'
+                && type.indexOf('access_') == -1)
+        ) {
             $J('#contentLanguages li a').each(function(){
                 langId = $J(this).attr('id').split('_')[1];
-                elemToCopy = $J('#formField'+fieldType+'Attribute_0 div').clone();
+                elemToCopy = $J('#formField'+type+'Attribute_0 div').clone();
                 elemToCopy.attr('id', 'fieldValueTab_'+elId+'_'+langId);
                 elemToCopy.attr('class', 'fieldValueTabs_'+elId);
                 elemToCopy.find('input, textarea').attr('name', 'contactFormFieldValue['+elId+']['+langId+']');
@@ -388,7 +388,7 @@
         Add or remove the mandatory checkbox and value type select box
         with respect to change in the fields type select box
         */
-        switch (fieldType) {
+        switch (type) {
             case 'label':
                 $J('#fieldNameTab_'+elId+'_1').hide();
                 ($J('#contactFormFieldRequired_'+elId).length > 0) ? $J('#contactFormFieldRequired_'+elId).remove() : '';
@@ -437,7 +437,7 @@
             break;
         }
 
-        if (fieldType != 'label') {
+        if (type != 'label') {
             $J('#fieldNameTab_'+elId+'_1').show();
         }
 
