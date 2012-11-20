@@ -192,5 +192,5 @@ $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] = "Nicht angegeben";
 $_ARRAYLANG['TXT_CONTACT_SEND_ATTACHMENT_DESCRIPTION'] = "Bei Aktivierung dieser Option hochgeladene Datei wird als Anhang versendet werden in Benachrichtigungs-E-Mail.";
 $_ARRAYLANG['TXT_CONTACT_SEND_ATTACHMENT'] = "Send Anlage";
 $_ARRAYLANG['TXT_CONTACT_USE_EMAIL_OF_SENDER'] = "E-Mail der Kontaktperson";
-$_ARRAYLANG['TXT_CONTACT_USE_EMAIL_OF_SENDER_DESCRIPTION'] = "Durch das Aktivieren dieser Option, wird die E-Mail-Adresse der Kontaktperson als Absender-E-Mail-Adresse (SMTP-From) bei der E-Mail-Benachrichtigung verwendet.";
+$_ARRAYLANG['TXT_CONTACT_USE_EMAIL_OF_SENDER_DESCRIPTION'] = "Durch das Aktivieren dieser Option, wird die E-Mail-Adresse der Kontaktperson als Absender-E-Mail-Adresse (SMTP-From) bei der E-Mail-Benachrichtigung verwendet.<br />Achtung: Diese Funktion wird nicht von allen E-Mail Servern (SMTP) unterstützt! Des Weiteren besteht durch Aktivierung dieser Option die Gefahr, dass Ihre Kontaktanfragen als SPAM gekennzeichnet werden und somit nicht in Ihrem Postfach ankommen!";
 ?>

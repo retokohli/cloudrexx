@@ -192,5 +192,5 @@ $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] = "Not Specified";
 $_ARRAYLANG['TXT_CONTACT_SEND_ATTACHMENT_DESCRIPTION'] = "By activating this option uploaded file will be send as a attachment in notification e-mail.";
 $_ARRAYLANG['TXT_CONTACT_SEND_ATTACHMENT'] = "Send Attachment";
 $_ARRAYLANG['TXT_CONTACT_USE_EMAIL_OF_SENDER'] = "Use E-Mail of contact";
-$_ARRAYLANG['TXT_CONTACT_USE_EMAIL_OF_SENDER_DESCRIPTION'] = "By activating this option, the e-mail address of the contact person will be used as the sender's address (smtp-from) for the notification e-mail.";
+$_ARRAYLANG['TXT_CONTACT_USE_EMAIL_OF_SENDER_DESCRIPTION'] = "By activating this option, the e-mail address of the contact person will be used as the sender's address (smtp-from) for the notification e-mail.<br />Warning: This feature is not supported by all e-mail servers (SMTP). Furthermore, using this feature increases the possability that your contact requests will be marked as SPAM and will therefore never reach you!";
 ?>
