@@ -564,7 +564,7 @@ class Contact extends ContactLib
         if (isset($_POST) && !empty($_POST)) {
             $arrFormData = array();
             $arrFormData['id'] = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
-            if ($this->getContactFormDetails($arrFormData['id'], $arrFormData['emails'], $arrFormData['subject'], $arrFormData['feedback'], $arrFormData['mailTemplate'], $arrFormData['showForm'], $arrFormData['useCaptcha'], $arrFormData['sendCopy'], $arrFormData['htmlMail'], $arrFormData['sendAttachment'])) {
+            if ($this->getContactFormDetails($arrFormData['id'], $arrFormData['emails'], $arrFormData['subject'], $arrFormData['feedback'], $arrFormData['mailTemplate'], $arrFormData['showForm'], $arrFormData['useCaptcha'], $arrFormData['sendCopy'], $arrFormData['useEmailOfSender'], $arrFormData['htmlMail'], $arrFormData['sendAttachment'])) {
                 $arrFormData['fields'] = $this->getFormFields($arrFormData['id']);
                 foreach ($arrFormData['fields'] as $field) {
                     $this->arrFormFields[] = $field['lang'][$_LANGID]['name'];
@@ -1295,6 +1295,9 @@ class Contact extends ContactLib
                     $objMail->AddAddress($replyAddress);
                 }
 
+                if ($arrFormData['useEmailOfSender'] == 1) {
+                    $objMail->From = $replyAddress;
+                }
             }
             $objMail->Subject = $arrFormData['subject'];
 

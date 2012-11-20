@@ -77,6 +77,7 @@ class ContactLib
                          `use_captcha`,
                          `use_custom_style`,
                          `send_copy`,
+                         `use_email_of_sender`,
                          `html_mail`,
                          `send_attachment`
                     FROM `'.DBPREFIX.'module_contact_form`';
@@ -89,6 +90,7 @@ class ContactLib
                     'useCaptcha'        => $objResult->fields['use_captcha'],
                     'useCustomStyle'    => $objResult->fields['use_custom_style'],
                     'sendCopy'          => $objResult->fields['send_copy'],
+                    'useEmailOfSender'  => $objResult->fields['use_email_of_sender'],
                     'htmlMail'          => $objResult->fields['html_mail'],
                     'sendAttachment'    => $objResult->fields['send_attachment'],
                     'recipients'        => $this->getRecipients($objResult->fields['id'], true),
@@ -200,12 +202,12 @@ class ContactLib
         return $this->_arrSettings;
     }
 
-    function getContactFormDetails($id, &$arrEmails, &$subject, &$feedback, &$mailTemplate, &$showForm, &$useCaptcha, &$sendCopy, &$htmlMail, &$sendAttachment)
+    function getContactFormDetails($id, &$arrEmails, &$subject, &$feedback, &$mailTemplate, &$showForm, &$useCaptcha, &$sendCopy, &$useEmailOfSender, &$htmlMail, &$sendAttachment)
     {
         global $objDatabase, $_CONFIG, $_ARRAYLANG, $_LANGID;
 
         $objContactForm = $objDatabase->SelectLimit("SELECT f.mails, l.subject, l.feedback, l.mailTemplate, f.showForm,
-                                                            f.use_captcha, f.send_copy, f.html_mail, f.send_attachment
+                                                            f.use_captcha, f.send_copy, f.use_email_of_sender, f.html_mail, f.send_attachment
                                                      FROM ".DBPREFIX."module_contact_form AS f
                                                      LEFT JOIN ".DBPREFIX."module_contact_form_lang AS l
                                                      ON ( f.id = l.formID )
@@ -222,6 +224,7 @@ class ContactLib
             $showForm            = $objContactForm->fields['showForm'];
             $useCaptcha          = $objContactForm->fields['use_captcha'];
             $sendCopy            = $objContactForm->fields['send_copy'];
+            $useEmailOfSender    = $objContactForm->fields['use_email_of_sender'];
             $htmlMail            = $objContactForm->fields['html_mail'];
             $sendAttachment      = $objContactForm->fields['send_attachment'];
             return true;
@@ -590,6 +593,7 @@ class ContactLib
         $useCaptcha,
         $useCustomStyle,
         $sendCopy,
+        $useEmailOfSender,
         $sendHtmlMail,
         $sendAttachment
     )
@@ -605,6 +609,7 @@ class ContactLib
                 use_captcha         = ".$useCaptcha.",
                 use_custom_style    = ".$useCustomStyle.",
                 send_copy           = ".$sendCopy.",
+                use_email_of_sender = ".$useEmailOfSender.",
                 html_mail           = ".$sendHtmlMail.",
                 send_attachment     = ".$sendAttachment." 
             WHERE 
@@ -631,6 +636,7 @@ class ContactLib
         $useCaptcha,
         $useCustomStyle,
         $sendCopy,
+        $useEmailOfSender,
         $sendHtmlMail,
         $sendAttachment
     )
@@ -646,6 +652,7 @@ class ContactLib
                 `use_captcha`,
                 `use_custom_style`,
                 `send_copy`,
+                `use_email_of_sender`,
                 `html_mail`,
                 `send_attachment`
             )
@@ -656,6 +663,7 @@ class ContactLib
                 ".$useCaptcha.",
                 ".$useCustomStyle.",
                 ".$sendCopy.",
+                ".$useEmailOfSender.",
                 ".$sendHtmlMail.",
                 ".$sendAttachment."
             )";
