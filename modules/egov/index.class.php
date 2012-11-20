@@ -424,11 +424,6 @@ class eGov extends eGovLibrary
     {
         global $_ARRAYLANG, $_LANGID;
 
-        $paymentMethods =
-            (!empty($_REQUEST['handler'])
-                ? $_REQUEST['handler']
-                : '' // Any
-        );
         // Prepare payment using current settings and customer selection
         $product_id = self::GetOrderValue('order_product', $order_id);
         if (empty($product_id)) {
@@ -453,26 +448,15 @@ class eGov extends eGovLibrary
             $FormFields .= 'contactFormField_Quantity='.$_REQUEST['contactFormField_Quantity'];
         }
 
-        $languageCode = strtoupper(FWLanguage::getLanguageCodeById($_LANGID));
         SettingDb::init('egov', 'config');
         $arrShopOrder = array(
-            'PSPID' => SettingDb::getValue('postfinance_shop_id'),
-            'AMOUNT' => $product_amount,
-            'LANGUAGE' => $languageCode,
-            'CURRENCY' => self::GetProduktValue('product_paypal_currency', $product_id),
-            'ORDERID' => $order_id,
-            'PARAMPLUS' => "source=egov&order_id=$order_id",
-            'OPERATION' => SettingDb::getValue('postfinance_authorization_type'),
-            'PMLIST' => $paymentMethods,
-            'COM' => self::GetProduktValue('product_name', $product_id),
+            'ORDERID'   => $order_id,
+            'AMOUNT'    => $product_amount,
+            'CURRENCY'  => self::GetProduktValue('product_paypal_currency', $product_id),
+            'PARAMPLUS' => 'section=egov&order_id='.$order_id.'&handler=yellowpay',
+            'COM'       => self::GetProduktValue('product_name', $product_id),
         );
-        $accepted_payment_indices =
-            SettingDb::getValue('postfinance_accepted_payment_methods');
-        if ($accepted_payment_indices) {
-            $arrShopOrder['PMLIST'] =
-                Yellowpay::getAcceptedPaymentMethodsString(
-                    $accepted_payment_indices);
-        };
+
         $_POST = contrexx_input2raw($_POST);
         // Note that none of these fields is present in the post in the current
         // implementation!  The meaning cannot be guessed from the actual field
@@ -482,9 +466,7 @@ class eGov extends eGovLibrary
             $arrShopOrder['CN'] = $_POST['Vorname'];
         }
         if (!empty($_POST['Nachname'])) {
-            $arrShopOrder['CN'] .=
-            ($arrShopOrder['CN'] ? ' ' : '').
-            $_POST['Nachname'];
+            $arrShopOrder['CN'] .= ($arrShopOrder['CN'] ? ' ' : '').$_POST['Nachname'];
         }
         if (!empty($_POST['Adresse'])) {
             $arrShopOrder['OWNERADDRESS'] = $_POST['Adresse'];
@@ -504,9 +486,9 @@ class eGov extends eGovLibrary
         if (!empty($_POST['EMail'])) {
             $arrShopOrder['EMAIL'] = $_POST['EMail'];
         }
-        $yellowpayForm = Yellowpay::getForm(
-            $arrShopOrder, 'send', true, null,
-           'section=egov&handler=yellowpay');
+
+        $yellowpayForm = Yellowpay::getForm('egov', $arrShopOrder);
+
         if (count(Yellowpay::$arrError)) {
             DBG::log(
                 "Yellowpay could not be initialized:\n".
@@ -531,31 +513,28 @@ $yellowpayForm
     {
         global $_ARRAYLANG;
 
-        $result = (isset($_GET['result']) ? $_GET['result'] : 0);
+        $result = isset($_REQUEST['result']) ? $_REQUEST['result'] : 0;
         $order_id = Yellowpay::getOrderId();
         if ($result < 0) {
-            SettingDb::init('config');
-            if (Yellowpay::checkIn(SettingDb::getValue(
-                    'postfinance_hash_signature_out'))) {
+            SettingDb::init('egov', 'config');
+            if (Yellowpay::checkIn(SettingDb::getValue('postfinance_hash_signature_out'))) {
                 // Silently process yellowpay notifications and die().
-                $this->updateOrder($order_id);
+                if (abs($_REQUEST['result']) == 1) {
+                    $this->updateOrder($order_id);
+                }
             }
             die();
         }
 
         $strReturn = '';
         if ($order_id) {
-            $order_id = intval($_GET['order_id']);
+            $order_id = intval($_REQUEST['order_id']);
             $product_id = self::GetOrderValue('order_product', $order_id);
             if (empty($product_id)) {
                 $strReturn = 'alert("'.$_ARRAYLANG['TXT_EGOV_ERROR_PROCESSING_ORDER']."\");\n";
             }
             $status = self::GetOrderValue('order_state', $order_id);
             switch ($status) {
-              case 0:
-                // Payment failed, or has been cancelled
-                $strReturn = 'alert("'.$_ARRAYLANG['TXT_EGOV_YELLOWPAY_NOT_VALID']."\");\n";
-                break;
               case 1:
                 // The payment has been completed.
                 // The direct payment notification (with result == -1) has
@@ -569,15 +548,14 @@ $yellowpayForm
               // Mind that the payment result (cancelled or failed) is not
               // available outside of the direct payment request from
               // PostFinance!  Thus, this outcome is never encountered.
+              case 0:
               case 2:
               default:
-                // Payment was cancelled
+                // Payment failed, or has been cancelled
                 $strReturn = 'alert("'.$_ARRAYLANG['TXT_EGOV_YELLOWPAY_CANCEL']."\");\n";
             }
         }
-        return
-            $strReturn.
-            'document.location.href="'.$_SERVER['PHP_SELF']."?section=egov\";\n";
+        return $strReturn.'document.location.href="'.$_SERVER['PHP_SELF']."?section=egov\";\n";
     }
 
 

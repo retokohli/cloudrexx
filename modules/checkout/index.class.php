@@ -252,16 +252,20 @@ class Checkout extends CheckoutLibrary {
                     $arrYellowpay = $objSettingsYellowpay->get();
                     
                     $arrShopOrder = array(
-                        'PSPID'    => $arrYellowpay['pspid'],
-                        'orderID'  => $id,
-                        'amount'   => intval($arrFieldValues['invoice_amount'] * 100),
-                        'language' => strtolower(FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)).'_'.strtoupper(FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)),
-                        'currency' => $this->arrCurrencies[$arrFieldValues['invoice_currency']],
+                        'ORDERID'   => $id,
+                        'AMOUNT'    => intval($arrFieldValues['invoice_amount'] * 100),
+                        'CURRENCY'  => $this->arrCurrencies[$arrFieldValues['invoice_currency']],
+                        'PARAMPLUS' => 'section=checkout',
                     );
 
-                    $this->objTemplate->setVariable('CHECKOUT_YELLOWPAY_FORM', CheckoutYellowpay::getForm($arrShopOrder, $_ARRAYLANG['TXT_CHECKOUT_START_PAYMENT'], true));
+                    $settings['postfinance_shop_id']['value'] = $arrYellowpay['pspid'];
+                    $settings['postfinance_hash_signature_in']['value'] = $arrYellowpay['sha_in'];
+                    $settings['postfinance_authorization_type']['value'] = $arrYellowpay['operation'];
+                    $settings['postfinance_use_testserver']['value'] = $arrYellowpay['testserver'];
 
-                    if (CheckoutYellowpay::$arrError) {
+                    $this->objTemplate->setVariable('CHECKOUT_YELLOWPAY_FORM', Yellowpay::getForm('checkout', $arrShopOrder, $_ARRAYLANG['TXT_CHECKOUT_START_PAYMENT'], false, $settings));
+
+                    if (Yellowpay::$arrError) {
                         $this->arrStatusMessages['error'][] = $_ARRAYLANG['TXT_CHECKOUT_FAILED_TO_INITIALISE_YELLOWPAY'];
                     } else {
                         $this->arrStatusMessages['ok'][] = $_ARRAYLANG['TXT_CHECKOUT_ENTRY_SAVED_SUCCESSFULLY'];
@@ -560,23 +564,32 @@ class Checkout extends CheckoutLibrary {
     {
         global $_ARRAYLANG, $_CONFIG, $objDatabase;
 
+        $objSettingsYellowpay = new SettingsYellowpay($objDatabase);
+        $arrYellowpay = $objSettingsYellowpay->get();
+
         //evaluate payment result
         $status = '';
-        $orderId = CheckoutYellowpay::getOrderId();
-        if (CheckoutYellowpay::checkin()) {
-            if (abs($_GET['result']) == 1) {
-                $status = self::CONFIRMED;
-                $this->arrStatusMessages['ok'][] = $_ARRAYLANG['TXT_CHECKOUT_TRANSACTION_WAS_SUCCESSFUL'];
+        $orderId = Yellowpay::getOrderId();
+        $arrTransaction = $this->objTransaction->get(array($orderId));
 
-                $arrTransaction = $this->objTransaction->get(array($orderId));
+        if (Yellowpay::checkin($arrYellowpay['sha_out'])) {
+            if (abs($_REQUEST['result']) == 1) {
+                $status = self::CONFIRMED;
+
+                if (($arrTransaction[0]['status'] == self::WAITING) || ($arrTransaction[0]['status'] == $status)) {
+                    $this->arrStatusMessages['ok'][] = $_ARRAYLANG['TXT_CHECKOUT_TRANSACTION_WAS_SUCCESSFUL'];
+                }
+
                 if ($arrTransaction[0]['status'] == $status) {
                     return;
                 }
-            } else if (($_GET['result'] == 0) || (abs($_GET['result']) == 2)) {
+            } else if (($_REQUEST['result'] == 0) || (abs($_REQUEST['result']) == 2)) {
                 $status = self::CANCELLED;
-                $this->arrStatusMessages['error'][] = $_ARRAYLANG['TXT_CHECKOUT_TRANSACTION_WAS_CANCELLED'];
 
-                $arrTransaction = $this->objTransaction->get(array($orderId));
+                if (($arrTransaction[0]['status'] == self::WAITING) || ($arrTransaction[0]['status'] == $status)) {
+                    $this->arrStatusMessages['error'][] = $_ARRAYLANG['TXT_CHECKOUT_TRANSACTION_WAS_CANCELLED'];
+                }
+
                 if ($arrTransaction[0]['status'] == $status) {
                     return;
                 }
@@ -589,36 +602,36 @@ class Checkout extends CheckoutLibrary {
             return;
         }
 
-        //update transaction status
-        $updateStatus = $this->objTransaction->updateStatus($orderId, $status);
+        if ($arrTransaction[0]['status'] == self::WAITING) {
+            //update transaction status
+            $this->objTransaction->updateStatus($orderId, $status);
 
-        //send confirmation email (if the payment was successful)
-        if ($status == self::CONFIRMED) {
-            $arrTransactions = $this->objTransaction->get(array($orderId));
+            //send confirmation email (if the payment was successful)
+            if ($status == self::CONFIRMED) {
+                $arrTransaction = $this->objTransaction->get(array($orderId));
 
-            if (!empty($arrTransactions)) {
-                foreach ($arrTransactions as $arrTransaction) {
+                if (!empty($arrTransaction[0])) {
                     //prepare transaction data for output
-                    $arrTransaction['time'] = date('j.n.Y G:i:s', $arrTransaction['time']);
-                    switch ($arrTransaction['status']) {
+                    $arrTransaction[0]['time'] = date('j.n.Y G:i:s', $arrTransaction[0]['time']);
+                    switch ($arrTransaction[0]['status']) {
                         case self::WAITING:
-                            $arrTransaction['status'] = $_ARRAYLANG['TXT_CHECKOUT_STATUS_WAITING'];
+                            $arrTransaction[0]['status'] = $_ARRAYLANG['TXT_CHECKOUT_STATUS_WAITING'];
                             break;
                         case self::CONFIRMED:
-                            $arrTransaction['status'] = $_ARRAYLANG['TXT_CHECKOUT_STATUS_CONFIRMED'];
+                            $arrTransaction[0]['status'] = $_ARRAYLANG['TXT_CHECKOUT_STATUS_CONFIRMED'];
                             break;
                         case self::CANCELLED:
-                            $arrTransaction['status'] = $_ARRAYLANG['TXT_CHECKOUT_STATUS_CANCELLED'];
+                            $arrTransaction[0]['status'] = $_ARRAYLANG['TXT_CHECKOUT_STATUS_CANCELLED'];
                             break;
                     }
-                    $arrTransaction['invoice_currency'] = $this->arrCurrencies[$arrTransaction['invoice_currency']];
-                    $arrTransaction['invoice_amount'] = number_format($arrTransaction['invoice_amount'], 2, '.', '\'');
-                    switch ($arrTransaction['contact_title']) {
+                    $arrTransaction[0]['invoice_currency'] = $this->arrCurrencies[$arrTransaction[0]['invoice_currency']];
+                    $arrTransaction[0]['invoice_amount'] = number_format($arrTransaction[0]['invoice_amount'], 2, '.', '\'');
+                    switch ($arrTransaction[0]['contact_title']) {
                         case self::MISTER:
-                            $arrTransaction['contact_title'] = $_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE_MISTER'];
+                            $arrTransaction[0]['contact_title'] = $_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE_MISTER'];
                             break;
                         case self::MISS:
-                            $arrTransaction['contact_title'] = $_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE_MISS'];
+                            $arrTransaction[0]['contact_title'] = $_ARRAYLANG['TXT_CHECKOUT_CONTACT_TITLE_MISS'];
                             break;
                     }
 
@@ -630,22 +643,22 @@ class Checkout extends CheckoutLibrary {
                     //fill up placeholders in mail templates
                     $arrPlaceholders = array(
                         'DOMAIN_URL'            => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET,
-                        'TRANSACTION_ID'        => $arrTransaction['id'],
-                        'TRANSACTION_TIME'      => $arrTransaction['time'],
-                        'TRANSACTION_STATUS'    => $arrTransaction['status'],
-                        'INVOICE_NUMBER'        => $arrTransaction['invoice_number'],
-                        'INVOICE_CURRENCY'      => $arrTransaction['invoice_currency'],
-                        'INVOICE_AMOUNT'        => $arrTransaction['invoice_amount'],
-                        'CONTACT_TITLE'         => $arrTransaction['contact_title'],
-                        'CONTACT_FORENAME'      => $arrTransaction['contact_forename'],
-                        'CONTACT_SURNAME'       => $arrTransaction['contact_surname'],
-                        'CONTACT_COMPANY'       => $arrTransaction['contact_company'],
-                        'CONTACT_STREET'        => $arrTransaction['contact_street'],
-                        'CONTACT_POSTCODE'      => $arrTransaction['contact_postcode'],
-                        'CONTACT_PLACE'         => $arrTransaction['contact_place'],
-                        'CONTACT_COUNTRY'       => $arrTransaction['contact_country'],
-                        'CONTACT_PHONE'         => $arrTransaction['contact_phone'],
-                        'CONTACT_EMAIL'         => $arrTransaction['contact_email'],
+                        'TRANSACTION_ID'        => $arrTransaction[0]['id'],
+                        'TRANSACTION_TIME'      => $arrTransaction[0]['time'],
+                        'TRANSACTION_STATUS'    => $arrTransaction[0]['status'],
+                        'INVOICE_NUMBER'        => $arrTransaction[0]['invoice_number'],
+                        'INVOICE_CURRENCY'      => $arrTransaction[0]['invoice_currency'],
+                        'INVOICE_AMOUNT'        => $arrTransaction[0]['invoice_amount'],
+                        'CONTACT_TITLE'         => $arrTransaction[0]['contact_title'],
+                        'CONTACT_FORENAME'      => $arrTransaction[0]['contact_forename'],
+                        'CONTACT_SURNAME'       => $arrTransaction[0]['contact_surname'],
+                        'CONTACT_COMPANY'       => $arrTransaction[0]['contact_company'],
+                        'CONTACT_STREET'        => $arrTransaction[0]['contact_street'],
+                        'CONTACT_POSTCODE'      => $arrTransaction[0]['contact_postcode'],
+                        'CONTACT_PLACE'         => $arrTransaction[0]['contact_place'],
+                        'CONTACT_COUNTRY'       => $arrTransaction[0]['contact_country'],
+                        'CONTACT_PHONE'         => $arrTransaction[0]['contact_phone'],
+                        'CONTACT_EMAIL'         => $arrTransaction[0]['contact_email'],
                     );
                     foreach ($arrPlaceholders as $placeholder => $value) {
                         $arrAdminMail['title']      = str_replace('[['.$placeholder.']]', contrexx_raw2xhtml($value), $arrAdminMail['title']);
@@ -656,9 +669,11 @@ class Checkout extends CheckoutLibrary {
 
                     //send mail to administrator and customer
                     $this->sendConfirmationMail($_CONFIG['contactFormEmail'], $arrAdminMail);
-                    $this->sendConfirmationMail($arrTransaction['contact_email'], $arrCustomerMail);
+                    $this->sendConfirmationMail($arrTransaction[0]['contact_email'], $arrCustomerMail);
                 }
             }
+
+            exit();
         }
     }
 
@@ -695,4 +710,5 @@ class Checkout extends CheckoutLibrary {
         $objPHPMailer->Body = $arrMail['content'];
         $objPHPMailer->Send();
     }
+
 }

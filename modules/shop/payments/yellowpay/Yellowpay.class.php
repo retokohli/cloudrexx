@@ -30,6 +30,15 @@
  */
 class Yellowpay
 {
+
+    /**
+     * section name
+     *
+     * @access  private
+     * @var     string
+     */
+    private static $sectionName = null;
+
     /**
      * Error messages
      * @access  public
@@ -78,6 +87,8 @@ class Yellowpay
         'DECLINEURL',
         'EXCEPTIONURL',
         'CANCELURL',
+        // needed for payment redirection
+        'PARAMPLUS',
     );
 
 
@@ -416,107 +427,94 @@ class Yellowpay
      *
      * The parameters in $uriparam are appended to the base index URI.
      * If empty, this defaults to "section=shop&cmd=success".
+     *
      * @access  public
      * @global  array       $_ARRAYLANG
      * @param   array       $arrField       The parameter array
-     * @param   string      $submitValue    The optional label for the submit
-     *                                      button
-     * @param   boolean     $autopost       If true, the form is automatically
-     *                                      submitted.  Defaults to false
-     * @param   string      $passphrase     The optional passphrase for
-     *                                      generating the SHASign.
-     *                                      Defaults to the setting
-     *                                      "postfinance_hash_signature_in",
-     *                                      if available
+     * @param   string      $submitValue    The optional label for the submit button
+     * @param   boolean     $autopost       If true, the form is automatically submitted.
+     *                                      Defaults to false
+     * @param   array       $settings       Settings from SettingDb
      * @param   string      $uriparam       The optional URI parameter string
      * @return  string                      The HTML Form code
      */
-    static function getForm($arrField, $submitValue='send', $autopost=false,
-        $settings=null, $uriparam='')
+    static function getForm($sectionName, $arrField, $submitValue='Send', $autopost=false, $settings=null, $uriParam='')
     {
         global $_ARRAYLANG;
 
-        if (empty ($settings)) {
-            $settings = SettingDb::getArray('shop', 'config');
+        if (!empty($sectionName)) {
+            self::$sectionName = $sectionName;
+        } else {
+            self::$arrError[] = 'No section name passed.';
         }
-        if (empty ($arrField['OPERATION'])) {
-            $arrField['OPERATION'] =
-                $settings['postfinance_authorization_type']['value'];
+
+        if (empty($settings)) {
+            $settingDb = SettingDb::getArray($sectionName, 'config');
+            if (!empty($settingDb) && $settingDb['postfinance_active']['value']) {
+                $settings = $settingDb;
+            } else {
+                self::$arrError[] = "Could not load settings";
+            }
         }
-// OBSOLETE
-        // There needs to be at least one accepted payment method,
-        // if there is none, accept all.
-//        $strAcceptedPaymentMethods = self::getAcceptedPaymentMethodsString(
-//            $settings['postfinance_accepted_payment_methods']['value']);
-        // Build the base URI, which also includes the protocol (http://)
-        if (empty ($uriparam)) {
-            $uriparam = 'section=shop&cmd=success&handler=yellowpay';
+
+        if (empty($arrField['PSPID'])) {
+            $arrField['PSPID'] = $settings['postfinance_shop_id']['value'];
         }
-        // This is needed by some modules in order to identify the order,
-        // i.e. egov!
-        $order_id = $arrField['ORDERID'];
-        $uriparam .= '&order_id='.$order_id;
-        $base_uri =
-            'http://'.$_SERVER['HTTP_HOST'].CONTREXX_SCRIPT_PATH.
-            '?'.$uriparam.'&result=';
+        if (empty($arrField['OPERATION'])) {
+            $arrField['OPERATION'] = $settings['postfinance_authorization_type']['value'];
+        }
+        if (empty($arrField['LANGUAGE'])) {
+            $arrField['LANGUAGE'] = strtolower(FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)).'_'.strtoupper(FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID));
+        }
+
+        $baseUri = 'http://'.$_SERVER['HTTP_HOST'].CONTREXX_SCRIPT_PATH.'?'.$uriParam.(empty($uriParam) ? '' : '&').'result=';
         if (empty($arrField['ACCEPTURL'])) {
-            $arrField['ACCEPTURL'] = $base_uri.'1';
+            $arrField['ACCEPTURL'] = $baseUri.'1';
         }
         if (empty($arrField['DECLINEURL'])) {
-            $arrField['DECLINEURL'] = $base_uri.'2';
+            $arrField['DECLINEURL'] = $baseUri.'2';
         }
         if (empty($arrField['EXCEPTIONURL'])) {
-            $arrField['EXCEPTIONURL'] = $base_uri.'2';
+            $arrField['EXCEPTIONURL'] = $baseUri.'2';
         }
         if (empty($arrField['CANCELURL'])) {
-            $arrField['CANCELURL'] = $base_uri.'0';
+            $arrField['CANCELURL'] = $baseUri.'0';
         }
-        $form =
-            $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n".
-            '    '.
-            '<form name="yellowpay" method="post" '.
-            // Yellowpay dummy, for testing only
-            //'action="modules/shop/payments/yellowpay/YellowpayDummy.class.php"'.
-            // Current Postfinance E-Commerce URI, as of 2011
-            'action="https://e-payment.postfinance.ch/ncol/'.
-            // The real yellowpay server or the test server
-            ($settings['postfinance_use_testserver']['value'] ? 'test' : 'prod').
-//            'test'.
-//            'prod'.
-            '/orderstandard'.
-            (CONTREXX_CHARSET == 'UTF-8' ? '_utf8' : '').
-            '.asp"'.
-            ">\n";
+        if (empty($arrField['BACKURL'])) {
+            $arrField['BACKURL'] = $baseUri.'2';
+        }
+
+
         if (!self::setFields($arrField)) {
             self::$arrError[] = 'Failed to verify keys';
             return false;
         }
-// TODO: Remove passphrase as a parameter, use $settings only
-        if (empty ($passphrase))
-            $passphrase = $settings['postfinance_hash_signature_in']['value'];
-        $arrField['SHASIGN'] = self::signature($arrField, $passphrase);
+        $arrField['SHASIGN'] = self::signature($arrField, $settings['postfinance_hash_signature_in']['value']);
+
+        $server = $settings['postfinance_use_testserver']['value'] ? 'test' : 'prod';
+        $charset = (CONTREXX_CHARSET == 'UTF-8') ? '_utf8' : '';
+
+        $hiddenFields = '';
         foreach ($arrField as $name => $value) {
-            $form .=
-                '      '.
-                Html::getHidden($name, $value)."\n";
+            $hiddenFields .= Html::getHidden($name, $value);
         }
-        $form .=
-            '      '.
-            '<input type="submit" name="go" value="'.$submitValue.'" />'.
-            "\n";
-        $form .=
-            '    '.
+
+        $autoSubmit = !$autopost ? '' : '
+            <script type="text/javascript">
+            /* <![CDATA[ */ 
+                document.yellowpay.submit();
+            /* ]]> */
+            </script>
+        ';
+
+        $form =
+            $_ARRAYLANG['TXT_ORDER_LINK_PREPARED'].'<br/><br/>'.
+            '<form name="yellowpay" method="post" action="https://e-payment.postfinance.ch/ncol/'.$server.'/orderstandard'.$charset.'.asp">'.
+                $hiddenFields.
+                '<input type="submit" name="go" value="'.$submitValue.'" />'.
             '</form>'.
-            "\n";
-        if ($autopost) {
-            $form .=
-                '    '.
-                '<script type="text/javascript">/* <![CDATA[ */ '.
-                'document.yellowpay.submit(); '.
-                '/* ]]> */</script>'.
-                "\n";
-        }
-//self::$arrError[] = "Test for error handling";
+            $autoSubmit;
+
         return $form;
     }
 
@@ -545,6 +543,9 @@ class Yellowpay
                 return false;
             }
         }
+
+        self::prependSectionNameToOrderId($arrField);
+
         foreach (array_keys($arrField) as $name) {
             $value = $arrField[$name];
             unset($arrField[$name]);
@@ -559,6 +560,16 @@ class Yellowpay
         return true;
     }
 
+    /**
+     * Prepend section name to the field "ORDERID".
+     * This is needed to avoid id conflicts (since multiple modules use the same Yellowpay account).
+     *
+     * @param   array   $arrField   The parameter array, by reference
+     */
+    static function prependSectionNameToOrderId(&$arrField=null)
+    {
+        $arrField['ORDERID'] = self::$sectionName.'_'.$arrField['ORDERID'];
+    }
 
     /**
      * Verifies a name/value pair
@@ -576,7 +587,7 @@ class Yellowpay
         switch ($name) {
             // Mandatory
             case 'ORDERID':
-                if (intval($value)) return intval($value);
+                if ($value) return $value;
                 break;
             case 'AMOUNT':
                 // Fix cents, like "1.23" to "123"
@@ -606,6 +617,7 @@ class Yellowpay
             case 'DECLINEURL':
             case 'EXCEPTIONURL':
             case 'CANCELURL':
+            case 'BACKURL':
 //                if (FWValidator::isUri($value)) return $value;
 // *SHOULD* verify the URIs, but the expression is not fit
                 if ($value) return $value;
@@ -773,11 +785,11 @@ class Yellowpay
 //DBG::activate(DBG_LOG_FILE);
 //DBG::log("Yellowpay::checkIn(): POST: ".var_export($_POST, true));
 //DBG::log("Yellowpay::checkIn(): GET: ".var_export($_GET, true));
-        if (empty($_POST['SHASIGN'])) {
+        if (empty($_REQUEST['SHASIGN'])) {
             self::$arrError[] = 'No SHASIGN value in request';
             return false;
         }
-        $arrField = contrexx_input2raw($_POST);
+        $arrField = contrexx_input2raw($_REQUEST);
         $shasign_request = $arrField['SHASIGN'];
         // If the hash is correct, so is the Order (and ID)
         $shasign_computed = self::signature($arrField, $passphrase, true);
@@ -787,13 +799,18 @@ class Yellowpay
 
 
     /**
-     * Returns the Order ID from the POST request, if present
-     * @return  integer           The order ID, or false
+     * Returns the order id from the request, if present
+     *
+     * @return  integer     The order id, or false
      */
     static function getOrderId()
     {
-        if (isset($_POST['orderID'])) return $_POST['orderID'];
-        return false;
+        if (isset($_REQUEST['orderID'])) {
+            $orderId = explode('_', $_REQUEST['orderID']);
+            return $orderId[1];
+        } else {
+            return false;
+        }
     }
 
 

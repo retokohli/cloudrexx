@@ -481,12 +481,14 @@ class CheckoutManager extends CheckoutLibrary {
         $arrYellowpay['pspid'] = '';
         $arrYellowpay['sha_in'] = '';
         $arrYellowpay['sha_out'] = '';
+        $arrYellowpay['operation'] = '';
         $arrYellowpay['testserver'] = '';
 
         if (isset($_POST['submit'])) {
             $arrYellowpay['pspid'] = !empty($_POST['yellowpay']['pspid']) ? contrexx_input2raw($_POST['yellowpay']['pspid']) : '';
             $arrYellowpay['sha_in'] = !empty($_POST['yellowpay']['sha_in']) ? contrexx_input2raw($_POST['yellowpay']['sha_in']) : '';
             $arrYellowpay['sha_out'] = !empty($_POST['yellowpay']['sha_out']) ? contrexx_input2raw($_POST['yellowpay']['sha_out']) : '';
+            $arrYellowpay['operation'] = !empty($_POST['yellowpay']['operation']) ? contrexx_input2raw($_POST['yellowpay']['operation']) : '';
             $arrYellowpay['testserver'] = !empty($_POST['yellowpay']['testserver']) ? contrexx_input2raw($_POST['yellowpay']['testserver']) : '';
 
             if ($this->objSettingsYellowpay->update($arrYellowpay)) {
@@ -498,6 +500,12 @@ class CheckoutManager extends CheckoutLibrary {
             $arrYellowpay = $this->objSettingsYellowpay->get();
         }
 
+        $yellowpayOperationOptions = '
+            <option value="SAL"'.(($arrYellowpay['operation'] == 'SAL') ? ' selected="selected"' : '').'>Verkauf</option>
+            <option value="RES"'.(($arrYellowpay['operation'] == 'RES') ? ' selected="selected"' : '').'>Authorisierung</option>
+        ';
+        $yellowpayTestserverChecked = !empty($arrYellowpay['testserver']) ? 'checked="checked"' : '';
+
         $this->objTemplate->addBlockfile('CHECKOUT_SETTINGS_CONTENT', 'settings_content', 'module_checkout_settings_psp.html');
         $this->objTemplate->setVariable(array(
             'TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TITLE'             => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TITLE'],
@@ -505,13 +513,15 @@ class CheckoutManager extends CheckoutLibrary {
             'TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_PSPID_INFO'        => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_PSPID_INFO'],
             'TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_SHA_IN'            => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_SHA_IN'],
             'TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_SHA_OUT'           => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_SHA_OUT'],
+            'TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_OPERATION'         => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_OPERATION'],
             'TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER'        => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER'],
             'TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER_INFO'   => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER_INFO'],
             'TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_MORE_INFORMATION'  => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_MORE_INFORMATION'],
-            'CHECKOUT_YELLOWPAY_PSPID'                                       => $arrYellowpay['pspid'],
-            'CHECKOUT_YELLOWPAY_SHA_IN'                                      => $arrYellowpay['sha_in'],
-            'CHECKOUT_YELLOWPAY_SHA_OUT'                                     => $arrYellowpay['sha_out'],
-            'CHECKOUT_YELLOWPAY_TESTSERVER'                                  => !empty($arrYellowpay['testserver']) ? 'checked="checked"' : '',
+            'CHECKOUT_YELLOWPAY_PSPID'                              => $arrYellowpay['pspid'],
+            'CHECKOUT_YELLOWPAY_SHA_IN'                             => $arrYellowpay['sha_in'],
+            'CHECKOUT_YELLOWPAY_SHA_OUT'                            => $arrYellowpay['sha_out'],
+            'CHECKOUT_YELLOWPAY_OPERATION_OPTIONS'                  => $yellowpayOperationOptions,
+            'CHECKOUT_YELLOWPAY_TESTSERVER_CHECKED'                 => $yellowpayTestserverChecked,
             'TXT_CORE_SAVE'                                         => $_CORELANG['TXT_SAVE'],
         ));
         $this->objTemplate->parse('settings_content');
