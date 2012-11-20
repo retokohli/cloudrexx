@@ -50,6 +50,7 @@ $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_PSPID'] = 'PSPID';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_PSPID_INFO'] = 'Name Ihres Händlerkontos';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_SHA_IN'] = 'SHA-IN-Signatur';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_SHA_OUT'] = 'SHA-OUT-Signatur';
+$_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_OPERATION'] = 'Standardoperationswert für Transaktionen';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER'] = 'Testserver';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER_INFO'] = 'Aktivieren Sie diese Option, um Zahlungen in einer Testumgebung simulieren zu können.<br />Deaktivieren Sie dann die Option, wenn die reguläre Produktivumgebung aufgeschaltet werden soll.';
 $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_MORE_INFORMATION'] = 'Weitere Informationen zum Payment Service Provider PostFinance Schweiz finden Sie unter <a href="http://www.postfinance.ch/e-payment" target="_blank">www.postfinance.ch/e-payment</a>';

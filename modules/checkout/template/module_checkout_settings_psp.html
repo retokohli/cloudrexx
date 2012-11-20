@@ -12,6 +12,10 @@
         margin: 0;
     }
 
+    select {
+        width: 238px;
+    }
+
     input[type="checkbox"] {
         margin: 4px 0 !important;
     }
@@ -27,7 +31,7 @@
             <th colspan="2">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TITLE}</th>
         </tr>
         <tr>
-            <td width="200"><label for="yellowpay_pspid">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_PSPID}</label><span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_PSPID_INFO}</span></td>
+            <td width="250"><label for="yellowpay_pspid">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_PSPID}</label><span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_PSPID_INFO}</span></td>
             <td><input id="yellowpay_pspid" name="yellowpay[pspid]" type="text" value="{CHECKOUT_YELLOWPAY_PSPID}" /></td>
         </tr>
         <tr>
@@ -39,8 +43,12 @@
             <td><input id="yellowpay_sha_out" name="yellowpay[sha_out]" type="password" value="{CHECKOUT_YELLOWPAY_SHA_OUT}" /></td>
         </tr>
         <tr>
+            <td><label for="yellowpay_operation">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_OPERATION}</label></td>
+            <td><select id="yellowpay_operation" name="yellowpay[operation]">{CHECKOUT_YELLOWPAY_OPERATION_OPTIONS}</select></td>
+        </tr>
+        <tr>
             <td><label for="yellowpay_testserver">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER}</label><span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_TESTSERVER_INFO}</span></td>
-            <td><input id="yellowpay_testserver" name="yellowpay[testserver]" type="checkbox" value="1" {CHECKOUT_YELLOWPAY_TESTSERVER} /></td>
+            <td><input id="yellowpay_testserver" name="yellowpay[testserver]" type="checkbox" value="1" {CHECKOUT_YELLOWPAY_TESTSERVER_CHECKED} /></td>
         </tr>
         <tr>
             <td colspan="2">{TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_MORE_INFORMATION}</td>

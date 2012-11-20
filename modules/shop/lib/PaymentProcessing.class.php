@@ -420,20 +420,14 @@ DBG::log($error);
     {
         global $_ARRAYLANG;
 
-        $language = FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
-        $language = strtolower($language).'_'.strtoupper($language);
         $arrShopOrder = array(
 // 20111227 - Note that all parameter names should now be uppercase only
-            'PSPID'    => SettingDb::getValue('postfinance_shop_id'),
             'ORDERID'   => $_SESSION['shop']['order_id'],
             'AMOUNT'    => intval($_SESSION['shop']['grand_total_price']*100),
-            'LANGUAGE'  => $language,
             'CURRENCY'  => Currency::getActiveCurrencyCode(),
-            'OPERATION' => SettingDb::getValue('postfinance_authorization_type'),
+            'PARAMPLUS' => 'section=shop'.MODULE_INDEX.'&cmd=success&handler=yellowpay',
         );
-        $return = Yellowpay::getForm(
-            $arrShopOrder, $_ARRAYLANG['TXT_ORDER_NOW']
-        );
+        $return = Yellowpay::getForm('shop'.MODULE_INDEX, $arrShopOrder, $_ARRAYLANG['TXT_ORDER_NOW']);
         if (_PAYMENT_DEBUG && Yellowpay::$arrError) {
             $strError =
                 '<font color="red"><b>'.
@@ -711,7 +705,7 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
                 'LSV with internal form',
                 '', 1, ''),
             array(10, 'external', 'Datatrans',
-                'Die professionelle und komplette Payment-Lösung - all inclusive. Ein einziges Interface für sämtliche Zahlungsmethoden (Kreditkarten, Postcard, Kundenkarten). Mit variablem Angebot für unterschiedliche Kundenbedürfnisse.',
+                'Die professionelle und komplette Payment-LÃ¶sung - all inclusive. Ein einziges Interface fÃ¼r sÃ¤mtliche Zahlungsmethoden (Kreditkarten, Postcard, Kundenkarten). Mit variablem Angebot fÃ¼r unterschiedliche KundenbedÃ¼rfnisse.',
                 'http://datatrans.biz/', 1, 'logo_datatrans.gif'),
             array(11, 'external', 'mobilesolutions',
                 'PostFinance Mobile',
