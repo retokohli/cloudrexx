@@ -256,8 +256,11 @@ class LicenseCommunicator {
                     ).success(function(data) {
                         var data = jQuery.parseJSON(data);
                         revertMessage();
+                        if (data == null) {
+                            return;
+                        }
                         
-                        licenseMessage.attr("class", "upgrade " + data.class);
+                        licenseMessage.attr("class", "upgrade " + data[\'class\']);
                         licenseMessage.children("a:first").attr("href", data.link);
                         licenseMessage.children("a:first").attr("target", data.target);
                         licenseMessage.children("a:first").html(data.text);
