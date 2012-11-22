@@ -434,28 +434,27 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                     $ownerRowClass = "row2";
                     $this->_objTpl->hideBlock($this->moduleName.'TranslationStatus');
                 }
+                
+                //get user data
+                $objFWUser = FWUser::getFWUserObject();
+                $addedBy   = $objEntry->arrEntries[$intEntryId]['entryAddedBy'];
+                if ($objUser = $objFWUser->objUser->getUser($addedBy)) {
+                    $userId  = $objUser->getId();
+                } else {
+                    $userId  = $objFWUser->objUser->getId();
+                }
+                
+                $this->_objTpl->setVariable(array(
+                    'TXT_'.$this->moduleLangVar.'_OWNER' => $_ARRAYLANG['TXT_MEDIADIR_OWNER'],
+                    $this->moduleLangVar.'_OWNER_ROW'    => $ownerRowClass,
+                    $this->moduleLangVar.'_OWNER_ID'     => $userId,
+                ));
+                
+                FWUser::getUserLiveSearch($userId);
 
-                if($intEntryId != 0) {
+                if ($intEntryId != 0) {
                     $intEntryDourationStart = 1;
                     $intEntryDourationEnd = 2;
-
-                    //get user data
-                    $objFWUser = FWUser::getFWUserObject();
-                    $objUser   = $objFWUser->objUser;
-                    $addedBy   = $objEntry->arrEntries[$intEntryId]['entryAddedBy'];
-                    
-                    if ($objUser = $objUser->getUser($addedBy)) {
-                        $this->_objTpl->setVariable(array(
-                            'TXT_'.$this->moduleLangVar.'_OWNER' => $_ARRAYLANG['TXT_MEDIADIR_OWNER'],
-                            $this->moduleLangVar.'_OWNER_ROW'    => $ownerRowClass,
-                            $this->moduleLangVar.'_OWNER_ID'     => $objUser->getId(),
-                            $this->moduleLangVar.'_OWNER_TITLE'  => $objFWUser->getParsedUserTitle($objUser),
-                        ));
-                        
-                        JS::registerCode(FWUser::getUserSearchDialogCode());
-                    } else {
-                        $this->_objTpl->hideBlock($this->moduleName.'OwnerList');
-                    }
 		            
 	                //parse contact data
                     $objUser     = $objFWUser->objUser;
@@ -501,7 +500,6 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                 } else {
                 	$intEntryDourationStart = 1;
                     $intEntryDourationEnd = 2;
-                	$this->_objTpl->hideBlock($this->moduleName.'OwnerList');
                     $this->_objTpl->hideBlock($this->moduleName.'ContactData');
                 }
 

@@ -659,80 +659,34 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
     
     
     /**
-     * Returns the user search dialog code.
+     * Activates the user live search.
      * 
-     * @param   array   $arrSelectors
+     * @param   int     $userId
      * @param   array   $arrOptions
-     * @return  string  $code
+     * @return  void
      */
-    public static function getUserSearchDialogCode($arrSelectors = array(), $arrOptions = array())
+    public static function getUserLiveSearch($userId = 0, $arrOptions = array())
     {
         global $_CORELANG;
         
-        // Selectors to change the user id/name and for the edit link
-        $arrSelectors['selUserId']     = !empty($arrSelectors['selUserId'])     ? $arrSelectors['selUserId']            : 'user-id';
-        $arrSelectors['selUserTitle']  = !empty($arrSelectors['selUserTitle'])  ? $arrSelectors['selUserTitle']         : 'user-title';
-        $arrSelectors['selUserEdit']   = !empty($arrSelectors['selUserEdit'])   ? $arrSelectors['selUserEdit']          : 'user-edit';
+        $userId  = intval($userId);
+        $objUser = self::getFWUserObject()->objUser;
         
-        // Options for the dialog
-        $arrOptions['minLength']       = !empty($arrOptions['minLength'])       ? (int)  $arrOptions['minLength']       : 3;
-        $arrOptions['allowCustomUser'] = !empty($arrOptions['allowCustomUser']) ? (bool) $arrOptions['allowCustomUser'] : false;
-        
-        $customUserButton = '';
-        
-        if ($arrOptions['allowCustomUser'] === true) {
-            $customUserButton = '<input id=\"button-custom-user\" type=\"button\" value=\"Wählen\" />';
+        if (!empty($userId)) {
+            $objUser = $objUser->getUser($userId);
         }
         
-        $code = '
-            cx.ready(function() {
-                var userSearchDialog = cx.ui.dialog({
-                    width: 500,
-                    height: 100,
-                    autoOpen: false,
-                    dialogClass: "dialog-user-search",
-                    title: "'.$_CORELANG['TXT_CORE_SEARCH_USER'].'",
-                    content: "<input id=\"user-search\" placeholder=\"'.$_CORELANG['TXT_CORE_SEARCH_USER'].'...\" style=\"width: 460px; height: 15px; padding: 5px; margin: 5px 0 0 0; font-size: 13px;\" />" +
-                             "'.$customUserButton.'"
-                });
-                
-                $J("#user-search").autocomplete({
-                    source: function(request, response) {
-                        $J.getJSON("index.php?cmd=jsondata&object=user&act=getUsers", {
-                            term: request.term
-                        }, function(data) {
-                            var users = new Array();
-                            for (id in data.data) {
-                                var user = {
-                                    id: id,
-                                    value: data.data[id]
-                                };
-                                users.push(user);
-                            }
-                            response(users);
-                        });
-                    },
-                    search: function() {
-                        if ($J.trim(this.value).length < '.$arrOptions['minLength'].') {
-                            return false;
-                        }
-                    },
-                    select: function(event, ui) {
-                        $J("#'.$arrSelectors['selUserId'].'").val(ui.item.id);
-                        $J("#'.$arrSelectors['selUserTitle'].'").text(ui.item.value);
-                        ui.item.value = "";
-                        userSearchDialog.close();
-                    }
-                });
-                
-                $J("#'.$arrSelectors['selUserEdit'].'").click(function(event) {
-                    event.preventDefault();
-                    userSearchDialog.open();
-                });
-            });
-        ';
+        // Options for the dialog
+        $arrOptions['minLength'] = !empty($arrOptions['minLength']) ? intval($arrOptions['minLength']) : 3;
         
-        return $code;
+        $scope = 'user/live-search';
+        $objCx = ContrexxJavascript::getInstance();
+        $objCx->setVariable('userTitle', self::getParsedUserTitle($objUser), $scope);
+        $objCx->setVariable('userMinLength', $arrOptions['minLength'], $scope);
+        $objCx->setVariable('txtUserSearch', $_CORELANG['TXT_CORE_SEARCH_USER'], $scope);
+        $objCx->setVariable('txtUserSearchInfo', sprintf($_CORELANG['TXT_CORE_SEARCH_USER_INFO'], $arrOptions['minLength']), $scope);
+        
+        JS::activate('user-live-search');
     }
 
 }

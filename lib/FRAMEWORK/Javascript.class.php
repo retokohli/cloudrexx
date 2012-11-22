@@ -275,6 +275,16 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'cadmin/javascript/set_checkboxes.js'
             )
         ),
+        'user-live-search' => array(
+            'jsfiles' => array(
+                'lib/javascript/user-live-search.js',
+            ),
+            'dependencies' => array(
+                'jquery',
+                'cx',
+                'jqueryui',
+            ),
+        ),
     );
 
     /**
