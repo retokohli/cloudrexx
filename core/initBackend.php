@@ -280,7 +280,7 @@ if (!empty($plainCmd) and !in_array($plainCmd, array('fileBrowser', 'upload', 'l
 }
 
 // check if the requested module is active:
-if (!in_array($plainCmd, array('login', 'license', ''))) {
+if (!in_array($plainCmd, array('login', 'license', 'noaccess', ''))) {
     $query = '
         SELECT
             modules.is_active
