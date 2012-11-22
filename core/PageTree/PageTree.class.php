@@ -104,7 +104,15 @@ $this->bytes = memory_get_peak_usage();
             
             $page = $node->getPage($this->lang);
             
-            $hasChilds = count($children) > 0;
+            $hasChilds = false;
+            if (!$page || $page->isVisible()) {
+                foreach ($children as $child) {
+                    if ($child->getPage($this->lang) && $child->getPage($this->lang)->isVisible()) {
+                        $hasChilds = true;
+                        break;
+                    }
+                }
+            }
             if ($hasChilds && !$dontDescend) {
                 // add preRenderLevel to stack
                 $pageTree = $this;
