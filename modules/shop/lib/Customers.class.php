@@ -237,13 +237,16 @@ die("Customer::getNameById(): Obsolete method called");
      */
     static function getNameArray($inactive=false, $format=null)
     {
-        $objCustomer = Customers::get(
-            ($inactive ? null : array('active' => true)),
-            null,
+        // Consider members of the customer groups only
+        $arrFilter = array('group' => array(
+            SettingDb::getValue('usergroup_id_reseller'),
+            SettingDb::getValue('usergroup_id_customer'),
+        ));
+        if (!$inactive) $arrFilter['active'] = true;
+        $objCustomer = Customers::get($arrFilter, null,
             array('lastname' => 'ASC', 'firstname' => 'ASC', ));
         $arrNames = array();
-        while (!$objCustomer->EOF) {
-//$objCustomer = new Customer();
+        while ($objCustomer && !$objCustomer->EOF) {
             $name = $objCustomer->getName($format);
             $arrNames[$objCustomer->id()] = $name;
             $objCustomer->next();
