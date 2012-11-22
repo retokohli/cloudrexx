@@ -1175,7 +1175,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                 Html::getSelect(
                     'customer_id',
                       array(0 => $_ARRAYLANG['TXT_SHOP_CUSTOMER_ANY'])
-                    + Customers::getNameArray(false), $objCouponEdit->customer_id(),
+                    + Customers::getNameArray(), $objCouponEdit->customer_id(),
                     'customer_id', '', $attribute_customer),
             'SHOP_DISCOUNT_COUPON_PRODUCT' =>
                 Html::getSelect(
