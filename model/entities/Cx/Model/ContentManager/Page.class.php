@@ -795,7 +795,7 @@ class Page extends \Cx\Model\Base\EntityBase
         $t = $this->getTarget();
         $matches = array();
         
-        if (!preg_match('/\[\['.self::NODE_URL_PCRE.'\]\](\S)?/ix', $t, $matches)) {
+        if (!preg_match('/\[\['.self::NODE_URL_PCRE.'\]\](\S*)?/ix', $t, $matches)) {
             return array(
                 'nodeId'      => null,
                 'module'      => null,
