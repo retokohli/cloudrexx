@@ -432,18 +432,17 @@ class Resolver {
 
             $fallbackPage = $this->getFallbackPage($page);
 
-            $page->getFallbackContentFrom($fallbackPage);
-
             // due that the fallback is located within a different language
             // we must set $this->lang to the fallback's language.
             // this is required because we will next try to resolve the page
             // that is referenced by the fallback page
-            $this->lang = $page->getLang();
+            $this->lang = $fallbackPage->getLang();
             $this->url->setLangDir(\FWLanguage::getLanguageCodeById($this->lang));
             $this->url->setSuggestedTargetPath(substr($fallbackPage->getPath(), 1));
             
             // now lets resolve the page that is referenced by our fallback page
             $this->resolve(true);
+            $page->getFallbackContentFrom($this->page);
             $this->page = $page;
         }
     }
