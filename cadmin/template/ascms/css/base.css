@@ -1238,3 +1238,33 @@ table.adminlist td.nowrap {
     bottom: 1px;
     height: 20px;
 }
+
+/* User live search */
+.live-search-user-icon {
+    float: left;
+    padding: 4px 5px 0 0;
+}
+
+.live-search-user-title {
+    float: left;
+    padding: 2px 0 0 0;
+}
+
+.live-search-user-edit {
+    float: left;
+    padding: 4px 0 0 30px;
+}
+
+.live-search-user-input {
+    width: 455px;
+    height: 15px;
+    padding: 6px;
+    margin: 10px 0 0 0;
+    font-size: 13px;
+    border: 1px solid #BBBBBB;
+    background: url('../images/search_glass.png') no-repeat right center;
+}
+
+.live-search-user-info {
+    padding: 4px 0 0 2px;
+}

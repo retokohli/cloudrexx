@@ -52,7 +52,7 @@ cx.ready(function() {
     }
     
     .ui-autocomplete-loading {
-        background: #FFFFFF url('../lib/javascript/jquery/ui/images/ui-anim_basic_16x16.gif') 278px center no-repeat !important;
+        background: #FFFFFF url('../lib/javascript/jquery/ui/images/ui-anim_basic_16x16.gif') 448px center no-repeat !important;
     }
 </style>
 
@@ -112,19 +112,14 @@ cx.ready(function() {
     </tr>
     <!-- END mediadirTranslationStatus -->
     
-    <!-- BEGIN mediadirOwnerList -->
+    <!-- BEGIN mediadirOwner -->
     <tr class="{MEDIADIR_OWNER_ROW}">
         <td width="200" >{TXT_MEDIADIR_OWNER}</td>
         <td>
-            <input type="hidden" name="userId" id="user-id" value="{MEDIADIR_OWNER_ID}" />
-            <img src="images/icons/admin.gif" alt="User icon" style="float: left; padding: 3px 2px 0 0;" />
-            <span id="user-title" style="float: left; padding: 2px 0 0 0;">{MEDIADIR_OWNER_TITLE}</span>
-            <a id="user-edit" href="#" style="float: left; padding: 3px 0 0 20px;">
-                <img src="images/icons/edit.gif" alt="Edit user" />
-            </a>
+            <input class="live-search-user-id" type="text" name="userId" value="{MEDIADIR_OWNER_ID}" />
         </td>
     </tr>
-    <!-- END mediadirOwnerList -->
+    <!-- END mediadirOwner -->
 
     <!-- END mediadirSpezfieldList -->
     

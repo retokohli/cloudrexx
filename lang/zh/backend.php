@@ -6,6 +6,7 @@
  * @package     contrexx
  * @subpackage  core_module_core
  */
+$_ARRAYLANG['TXT_CORE_SEARCH_USER_INFO'] = "Enter at least %s character(s).";
 $_ARRAYLANG['TXT_CORE_SEARCH_USER'] = "Search user";
 $_ARRAYLANG['TXT_CORE_FILTER'] = "Filter";
 $_ARRAYLANG['TXT_PASSWORD_COMPLEXITY'] = "Passwords must meet the complexity requirements";
