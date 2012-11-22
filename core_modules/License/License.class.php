@@ -20,7 +20,8 @@ class License {
         'logout',
         'error',
         'captcha',
-        'upgrade'
+        'upgrade',
+        'noaccess',
     );
     private $state;
     private $frontendLocked = false;
