@@ -2616,7 +2616,10 @@ die("Shop::processRedirect(): This method is obsolete!");
         }
         // Registered Customers are okay now
         if (self::$objCustomer) return $status;
-        if (!User::isValidPassword(trim($_SESSION['shop']['password']))) {
+        if (   (   SettingDb::getValue('register') == ShopLibrary::REGISTER_MANDATORY
+                || (   SettingDb::getValue('register') == ShopLibrary::REGISTER_OPTIONAL
+                    && empty($_SESSION['shop']['dont_register'])))
+            && !User::isValidPassword(trim($_SESSION['shop']['password']))) {
             $status = false;
             global $objInit;
             $objInit->loadLanguageData('access');
