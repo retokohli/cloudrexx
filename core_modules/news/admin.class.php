@@ -844,6 +844,7 @@ class newsManager extends newsLibrary {
         global $_ARRAYLANG, $_CONFIG, $objDatabase, $objInit;
 
         JS::activate('cx');
+        FWUser::getUserLiveSearch();
 
         if (!$this->hasCategories()) {
             return $this->manageCategories();
@@ -1292,6 +1293,7 @@ class newsManager extends newsLibrary {
         global $objDatabase,$_ARRAYLANG, $_CONFIG;
 
         JS::activate('cx');
+        FWUser::getUserLiveSearch();
 
         if (!$this->hasCategories()) {
             return $this->manageCategories();
@@ -1570,8 +1572,6 @@ class newsManager extends newsLibrary {
                 'NEWS_SUBMIT_NAME'              => isset($_GET['validate']) ? 'validate' : 'store',
                 'NEWS_SUBMIT_NAME_TEXT'         => isset($_GET['validate']) ? $_ARRAYLANG['TXT_CONFIRM'] : $_ARRAYLANG['TXT_STORE']
             ));
-
-            FWUser::getUserLiveSearch();
 
             if ($this->arrSettings['news_message_protection'] == '1') {
                 if ($this->arrSettings['news_message_protection_restricted'] == '1') {
