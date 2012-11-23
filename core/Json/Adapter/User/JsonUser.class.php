@@ -37,7 +37,7 @@ class JsonUser implements JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('getUsers');
+        return array('getUserById', 'getUsers');
     }
 
     /**
@@ -49,7 +49,35 @@ class JsonUser implements JsonAdapter {
     }
     
     /**
-     * Return all users according to the given term
+     * Returns the user with the given user id.
+     * If the user does not exist then return the currently logged in user.
+     * 
+     * @return array User id and title
+     */
+    public function getUserById() {
+        global $objInit;
+        
+        $objFWUser = \FWUser::getFWUserObject();
+        
+        if (!\FWUser::getFWUserObject()->objUser->login() || $objInit->mode != 'backend') {
+            throw new \Exception($_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']);
+        }
+        
+        $id = !empty($_GET['id']) ? intval($_GET['id']) : 0;
+        
+        if (!$objUser = $objFWUser->objUser->getUser($id)) {
+            $objUser = $objFWUser->objUser;
+        }
+        
+        return array(
+            'id'    => $objUser->getId(),
+            'title' => $objFWUser::getParsedUserTitle($objUser),
+        );
+    }
+    
+    /**
+     * Returns all users according to the given term.
+     * 
      * @return array List of users
      */
     public function getUsers() {

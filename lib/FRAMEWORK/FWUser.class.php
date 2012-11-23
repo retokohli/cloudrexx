@@ -661,11 +661,10 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
     /**
      * Activates the user live search.
      * 
-     * @param   int     $userId
      * @param   array   $arrOptions
      * @return  void
      */
-    public static function getUserLiveSearch($userId = 0, $arrOptions = array())
+    public static function getUserLiveSearch($arrOptions = array())
     {
         global $_CORELANG;
         
@@ -681,7 +680,6 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
         
         $scope = 'user/live-search';
         $objCx = ContrexxJavascript::getInstance();
-        $objCx->setVariable('userTitle', self::getParsedUserTitle($objUser), $scope);
         $objCx->setVariable('userMinLength', $arrOptions['minLength'], $scope);
         $objCx->setVariable('txtUserSearch', $_CORELANG['TXT_CORE_SEARCH_USER'], $scope);
         $objCx->setVariable('txtUserSearchInfo', sprintf($_CORELANG['TXT_CORE_SEARCH_USER_INFO'], $arrOptions['minLength']), $scope);

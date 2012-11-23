@@ -450,7 +450,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                     $this->moduleLangVar.'_OWNER_ID'     => $userId,
                 ));
                 
-                FWUser::getUserLiveSearch($userId);
+                FWUser::getUserLiveSearch();
 
                 if ($intEntryId != 0) {
                     $intEntryDourationStart = 1;
