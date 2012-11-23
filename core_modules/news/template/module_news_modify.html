@@ -1,14 +1,4 @@
 <!-- START module_news_modify.html -->
-<style>
-    .ui-autocomplete {
-        max-height: 150px;
-        overflow-y: auto;
-    }
-    
-    .ui-autocomplete-loading {
-        background: #FFFFFF url('../lib/javascript/jquery/ui/images/ui-anim_basic_16x16.gif') 284px center no-repeat !important;
-    }
-</style>
 <script type="text/javascript">
     //adds the datetimepicker to the date fields
     cx.ready(function() {
@@ -31,41 +21,6 @@
         $J('input[name=newsDate]').datetimepicker();
         $J('input[name=startDate]').datetimepicker(dpOptions);
         $J('input[name=endDate]').datetimepicker(dpOptions);
-
-        var updateUserId = function(selector, ui) {
-            var object = $J(selector);
-            ui.item ? object.next("input").val(ui.item.id) : object.next("input").val(0);
-        };
-
-        $J(".newsAutoComplete").autocomplete({
-            source: function(request, response) {
-                $J.getJSON("index.php?cmd=jsondata&object=user&act=getUsers", {
-                    term: request.term
-                }, function(data) {
-                    var users = new Array();
-                    for (id in data.data) {
-                        var user = {
-                            id: id,
-                            value: data.data[id]
-                        };
-                        users.push(user);
-                    }
-                    response(users);
-                });
-            },
-            search: function() {
-                if ($J.trim(this.value).length < 3) {
-                    return false;
-                }
-            },
-            select: function(event, ui) {
-                updateUserId(this, ui);
-            },
-            change: function(event, ui) {
-                updateUserId(this, ui);
-            }
-        });
-
     }, true);
 
     function SetUrl(url, width, height, alt) {
@@ -398,15 +353,15 @@
             <tr class="row1">
                 <td nowrap="nowrap">{TXT_NEWS_PUBLISHER}</td>
                 <td nowrap="nowrap">
-                    <input id="newsPublisherName" class="newsAutoComplete search" type="text" name="newsPublisherName" value="{NEWS_PUBLISHER_NAME}" placeholder="{TXT_CORE_SEARCH_USER}..." style="width: 277px;" />
-                    <input id="newsPublisherId" type="hidden" name="newsPublisherId" value="{NEWS_PUBLISHER_ID}" />
+                    <input class="live-search-user-id" id="newsPublisherId" type="hidden" name="newsPublisherId" value="{NEWS_PUBLISHER_ID}" />
+                    <input class="live-search-user-name" id="newsPublisherName" type="hidden" name="newsPublisherName" value="{NEWS_PUBLISHER_NAME}" placeholder="{TXT_CORE_SEARCH_USER}..." style="width: 277px;" />
                 </td>
             </tr>
             <tr class="row2">
                 <td nowrap="nowrap">{TXT_NEWS_AUTHOR}</td>
                 <td nowrap="nowrap">
-                    <input id="newsAuthorName" class="newsAutoComplete search" type="text" name="newsAuthorName" value="{NEWS_AUTHOR_NAME}" placeholder="{TXT_CORE_SEARCH_USER}..." style="width: 277px;" />
-                    <input id="newsAuthorId" type="hidden" name="newsAuthorId" value="{NEWS_AUTHOR_ID}" />
+                    <input class="live-search-user-id" id="newsAuthorId" type="hidden" name="newsAuthorId" value="{NEWS_AUTHOR_ID}" />
+                    <input class="live-search-user-name" id="newsAuthorName" type="hidden" name="newsAuthorName" value="{NEWS_AUTHOR_NAME}" placeholder="{TXT_CORE_SEARCH_USER}..." style="width: 277px;" />
                 </td>
             </tr>            
             <tr class="row1">
