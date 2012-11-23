@@ -1571,6 +1571,8 @@ class newsManager extends newsLibrary {
                 'NEWS_SUBMIT_NAME_TEXT'         => isset($_GET['validate']) ? $_ARRAYLANG['TXT_CONFIRM'] : $_ARRAYLANG['TXT_STORE']
             ));
 
+            FWUser::getUserLiveSearch();
+
             if ($this->arrSettings['news_message_protection'] == '1') {
                 if ($this->arrSettings['news_message_protection_restricted'] == '1') {
                     $userGroupIds = $objFWUser->objUser->getAssociatedGroupIds();
