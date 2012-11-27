@@ -9,10 +9,27 @@ class NavigationPageTree extends SigmaPageTree {
     const styleNameActive = "active";
     const styleNameNormal = "inactive";
 
+    protected $branchNodeIds = array(); //holds all ids of the $currentPage's Node and it's parents
+
+    public function __construct($entityManager, $license, $maxDepth = 0, $activeNode = null, $lang = null, $currentPage = null) { 
+        parent::__construct($entityManager, $license, $maxDepth, $activeNode, $lang, $currentPage);
+
+        //go up the branch and collect all node ids. used later in renderElement().
+        $node = $currentPage->getNode();        
+        while($node) {
+            $this->branchNodeIds[] = $node->getId();
+            $node = $node->getParent();
+        }
+    }
+
     /**
      * @see PageTree::renderElement()
      */
     protected function renderElement($title, $level, $hasChilds, $lang, $path, $current, $page) {
+        if (!$this->isParentNodeInsideCurrentBranch($page->getNode())) {
+            return '';
+        }
+        
         $blockName = 'level_'.$level;
         $hideLevel = false;
         $hasCustomizedBlock = $this->template->blockExists($blockName);
@@ -71,6 +88,19 @@ class NavigationPageTree extends SigmaPageTree {
 
             return $this->template->get();
         }
+    }
+    
+    private function isNodeInsideCurrentBranch($node)
+    {
+        return in_array($node->getId(), $this->branchNodeIds);
+    }
+
+    private function isParentNodeInsideCurrentBranch($node)
+    {
+        if (!$node->getParent()) {
+            return true;
+        }
+        return $this->isNodeInsideCurrentBranch($node->getParent());
     }
     
     public function preRenderLevel($level, $lang, $parentNode) {}
