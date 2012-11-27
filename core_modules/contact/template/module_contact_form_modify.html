@@ -390,7 +390,7 @@
         */
         switch (type) {
             case 'label':
-                $J('#fieldNameTab_'+elId+'_1').hide();
+                $J('.fieldNameTabs_'+elId).addClass('hide-important');
                 ($J('#contactFormFieldRequired_'+elId).length > 0) ? $J('#contactFormFieldRequired_'+elId).remove() : '';
                 ($J('#contactFormFieldCheckType_'+elId).length > 0) ? $J('#contactFormFieldCheckType_'+elId).remove() : '';
             break;
@@ -438,7 +438,7 @@
         }
 
         if (type != 'label') {
-            $J('#fieldNameTab_'+elId+'_1').show();
+            $J('.fieldNameTabs_'+elId).removeClass('hide-important');
         }
 
         $J('.formValueView input').css('width','90%');
@@ -665,7 +665,7 @@
                 break;
                 case 'label':
                     id = $J(this).attr('id').split('_')[1];
-                    $J(this).find('#fieldNameTab_'+id+'_1').hide();
+                    $J(this).find('.fieldNameTabs_'+id).addClass('hide-important');
                 break;
             }
         });
@@ -706,6 +706,10 @@
 
     // -->
 </script>
+
+<style type="text/css">
+    .hide-important { display: none !important; }
+</style>
 
 <!-- Template of Field elements that is to be added dynamically.  -->
 <div style="display:none;">
