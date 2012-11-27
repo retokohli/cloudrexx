@@ -134,7 +134,7 @@ class googleMap
     private function getMapMarkers()
     {
         foreach ($this->mapMarkers as $id => $marker) {
-            if(intval($marker['lon']) != 0 && intval($marker['lat']) != 0) {
+            if($marker['lon'] >= 0 && $marker['lat'] >= 0) {
                 if ($marker['kml'] != null) {
                     $kml = "var kml$id = new GGeoXml('".$marker['kml']."');";
                 } else {
