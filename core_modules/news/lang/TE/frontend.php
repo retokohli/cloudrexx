@@ -36,5 +36,6 @@ $_ARRAYLANG['TXT_NEWS_NAME'] = "Name";
 $_ARRAYLANG['TXT_NEWS_TITLE'] = "Title";
 $_ARRAYLANG['TXT_NEWS_COMMENT'] = "Comment";
 $_ARRAYLANG['TXT_NEWS_ADD'] = "Add";
+$_ARRAYLANG['TXT_NEWS_REDIRECT_INSTRUCTION'] = "The following link takes you to the message:";
 $_ARRAYLANG['TXT_NEWS_COMMENTS_NONE_EXISTING'] = "No comments yet.";
 ?>
