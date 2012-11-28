@@ -609,7 +609,8 @@ if (preg_match_all('/{DOWNLOADS_GROUP_([0-9]+)}/', $page_content, $arrMatches)) 
 $downloadBlock = preg_replace_callback(
     "/<!--\s+BEGIN\s+downloads_category_(\d+)_list\s+-->(.*)<!--\s+END\s+downloads_category_\g1_list\s+-->/s",
     function($matches) {
-        if (isset($matches[0]) && $cl->loadFile(ASCMS_MODULE_PATH.'/downloads/index.class.php')) {
+        \Env::get('init')->loadLanguageData('downloads');
+        if (isset($matches[0])) {
             $objDownloadsModule = new downloads($matches[0], array('category' => $matches[1]));
             return $objDownloadsModule->getPage();
         }
