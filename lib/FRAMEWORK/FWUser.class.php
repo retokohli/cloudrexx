@@ -668,13 +668,6 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
     {
         global $_CORELANG;
         
-        $userId  = intval($userId);
-        $objUser = self::getFWUserObject()->objUser;
-        
-        if (!empty($userId)) {
-            $objUser = $objUser->getUser($userId);
-        }
-        
         // Options for the dialog
         $arrOptions['minLength'] = !empty($arrOptions['minLength']) ? intval($arrOptions['minLength']) : 3;
         
