@@ -12,18 +12,25 @@
 
 class mediaDirectoryManager extends mediaDirectoryLibrary
 {
-    private $strOkMessage;
     public $strErrMessage;
+    
+    private $strOkMessage;
     private $pageTitle;
 
     private $act = '';
+    private $limit = 30;
+    private $offset = 0;
     
     /**
      * Constructor
      */
     function __construct()
     {
-        global  $_ARRAYLANG, $_CORELANG, $objTemplate;
+        global  $_ARRAYLANG, $_CORELANG, $objTemplate, $_CONFIG;
+
+        $this->act = !empty($_GET['act']) ? $_GET['act'] : '';
+        $this->limit = $_CONFIG['corePagingLimit'];
+        $this->offset = !empty($_GET['pos']) ? $_GET['pos'] : 0;
 
         parent::__construct(ASCMS_MODULE_PATH.'/'.$this->moduleName.'/template');
         parent::getFrontendLanguages();        
@@ -52,11 +59,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
     {
         global  $_ARRAYLANG, $objTemplate;
 
-		if (!isset($_GET['act'])) {
-			$_GET['act'] = '';
-		}
-
-        switch ($_GET['act']) {
+        switch ($this->act) {
             case 'modify_entry':
                 $this->modifyEntry();
                 break;
@@ -101,7 +104,6 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
             'ADMIN_CONTENT'          => $this->_objTpl->get(),
         ));
 
-        $this->act = $_REQUEST['act'];
         $this->setNavigation();
         
         return $this->_objTpl->get();
@@ -1209,7 +1211,13 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                 break;
         }
 
-        $objEntries->getEntries(null,$intLevelId,$intCategoryId,$strTerm,null,null,null,null,'n',null,null,$intFormId);
+        // Paging
+        $count  = $objEntries->countEntries(null, null, null, $strTerm);
+        $term   = !empty($strTerm) ? '&amp;term=' . $strTerm : '';
+        $paging = getPaging($count, $this->offset, $term, '', true);
+        $this->_objTpl->setGlobalVariable($this->moduleLangVar . '_PAGING', $paging);
+
+        $objEntries->getEntries(null, $intLevelId, $intCategoryId, $strTerm, null, null, null, null, 'n', null, null, $intFormId, null, $this->limit, $this->offset);
         $objEntries->listEntries($this->_objTpl, 1);
 
         if (!empty($strTerm)) {

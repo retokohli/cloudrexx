@@ -24,6 +24,8 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
     private $bolPopular;
     private $intCmdFormId;
     private $bolReadyToConfirm;
+    private $intLimit;
+    private $intOffset;
 
     private $arrSubCategories = array();
     private $arrSubLevels = array();
@@ -45,7 +47,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         parent::getFrontendLanguages();
     }
 
-    function getEntries($intEntryId=null, $intLevelId=null, $intCatId=null, $strSearchTerm=null, $bolLatest=null, $bolUnconfirmed=null, $bolActive=null, $intLimitStart=null, $intLimitEnd='n', $intUserId=null, $bolPopular=null, $intCmdFormId=null, $bolReadyToConfirm=null)
+    function getEntries($intEntryId=null, $intLevelId=null, $intCatId=null, $strSearchTerm=null, $bolLatest=null, $bolUnconfirmed=null, $bolActive=null, $intLimitStart=null, $intLimitEnd='n', $intUserId=null, $bolPopular=null, $intCmdFormId=null, $bolReadyToConfirm=null, $intLimit=0, $intOffset=0)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID, $objInit;
  
@@ -62,6 +64,8 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         $this->bolPopular = intval($bolPopular);
         $this->intCmdFormId = intval($intCmdFormId);
         $this->bolReadyToConfirm = intval($bolReadyToConfirm);
+        $this->intLimit = intval($intLimit);
+        $this->intOffset = intval($intOffset);
 
 		$strWhereEntryId = '';
 		$strWhereLevel = '';
@@ -180,6 +184,15 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 	        	$strWhereLangId = "AND (entry.`lang_id` = ".$_LANGID.") ";
 	        }
         }
+        
+        $strLimit  = '';
+        $strOffset = '';
+        if ($this->intLimit > 0) {
+            $strLimit = 'LIMIT ' . $this->intLimit;
+        }
+        if ($this->intOffset > 0) {
+            $strOffset = 'OFFSET ' . $this->intOffset;
+        }
 
         $query = "
             SELECT
@@ -227,6 +240,8 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
             ORDER BY
                 ".$strOrder."
                 ".$strSelectLimit."
+            ".$strLimit."
+            ".$strOffset."
         ";
 
         $objEntries = $objDatabase->Execute($query);
@@ -1211,9 +1226,17 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 
 
 
-    function countEntries($intCategoryId, $intLevelId, $formId = null)
+    function countEntries($intCategoryId, $intLevelId, $formId = null, $searchTerm = '')
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
+
+        $strWhereLevel      = '';
+        $strFromLevel       = '';
+        $strWhereCategory   = '';
+        $strFromCategory    = '';
+        $strWhereForm       = '';
+        $strWhereSearchTerm = '';
+        $strFromInputfield  = '';
 
         if(!empty($intLevelId)) {
             $strWhereLevel = "AND ((level.`level_id` = ".$intLevelId.") AND (level.`entry_id` = entry.`id`)) ";
@@ -1226,7 +1249,14 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         }
 
         if (!empty($formId)) {
-            $strWhereForm = "AND (entry.`form_id` = ".$formId.")";
+            $strWhereForm = "AND (entry.`form_id` = ".$formId.") ";
+        }
+        
+        if (!empty($searchTerm) && $searchTerm != $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM']) {
+            $term = contrexx_input2db($searchTerm);
+            $strWhereSearchTerm  = 'AND (rel_inputfield.`entry_id` = entry.`id`) ';
+            $strWhereSearchTerm .= 'AND ((`rel_inputfield`.`value` LIKE "%' . $term . '%") OR (`entry`.`id` = "' . $term . '"))';
+            $strFromInputfield   = ', `' . DBPREFIX . 'module_' . $this->moduleTablePrefix . '_rel_entry_inputfields` AS `rel_inputfield`';
         }
 
         $query = "SELECT
@@ -1235,6 +1265,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                     ".DBPREFIX."module_".$this->moduleTablePrefix."_entries AS entry
                     ".$strFromCategory."
                     ".$strFromLevel."
+                    ".$strFromInputfield."
                   WHERE
                     (entry.`id` != 0)
                   AND
@@ -1242,6 +1273,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                     ".$strWhereCategory."
                     ".$strWhereLevel."
                     ".$strWhereForm."
+                    ".$strWhereSearchTerm."
                   GROUP BY
                     entry.`id`";
 

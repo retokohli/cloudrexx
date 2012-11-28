@@ -141,7 +141,7 @@ var switchState = function(id, obj, action, type)
 <!-- BEGIN mediadirEntriesSelectAction -->
 <table border="0" cellpadding="3" cellspacing="0" width="100%">
     <tr>
-        <td valign="top">
+        <td valign="top" style="vertical-align: middle;">
         <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="" />
         <a href="javascript:{void(0)};" onclick="changeCheckboxes('manageEntriesForm','entriesFormSelected[]',true); return false;">{TXT_SELECT_ALL}</a> / <a href="javascript:{void(0)};" onclick="changeCheckboxes('manageEntriesForm','entriesFormSelected[]',false); return false;">{TXT_DESELECT_ALL}</a>
         <img src="images/icons/strike.gif" width="34" height="22" alt="strike" />
@@ -157,5 +157,6 @@ var switchState = function(id, obj, action, type)
 </table>
 <!-- END mediadirEntriesSelectAction -->
 <br />
+{MEDIADIR_PAGING}
 </form>
 <!-- END module_mediadir_modify_category.html -->
