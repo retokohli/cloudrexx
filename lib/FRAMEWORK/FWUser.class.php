@@ -419,7 +419,7 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
     public static function getParsedUserTitle($user, $name = '', $showUsername = false)
     {
         global $_CORELANG;
-    
+
         static $arrTitles = array();
 
         if ($user) {
@@ -436,7 +436,7 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
                 if (!is_object($user)) {
                     $user = FWUser::getFWUserObject()->objUser->getUser($userId);
                 }
-                
+
                 if ($user) {
                     $company   = trim($user->getProfileAttribute('company'));
                     $lastname  = trim($user->getProfileAttribute('lastname'));
@@ -656,27 +656,36 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
         }
         return $ret;
     }
-    
-    
+
+
     /**
      * Activates the user live search.
-     * 
      * @param   array   $arrOptions
      * @return  void
      */
     public static function getUserLiveSearch($arrOptions = array())
     {
         global $_CORELANG;
-        
+
         // Options for the dialog
-        $arrOptions['minLength'] = !empty($arrOptions['minLength']) ? intval($arrOptions['minLength']) : 3;
-        
+        $arrOptions['minLength'] = empty($arrOptions['minLength'])
+            ? 3 : intval($arrOptions['minLength']);
+// TODO: Implement an optional cancel button in the dialog
+//      that closes the dialog without changes
+        $arrOptions['canCancel'] = empty($arrOptions['canCancel']) ? 0 : 1;
+// TODO: Implement an optional clear button in the widget
+//      that sets the User ID to 0 (zero) and clears the name
+        $arrOptions['canClear'] = empty($arrOptions['canClear']) ? 0 : 1;
         $scope = 'user/live-search';
         $objCx = ContrexxJavascript::getInstance();
         $objCx->setVariable('userMinLength', $arrOptions['minLength'], $scope);
-        $objCx->setVariable('txtUserSearch', $_CORELANG['TXT_CORE_SEARCH_USER'], $scope);
-        $objCx->setVariable('txtUserSearchInfo', sprintf($_CORELANG['TXT_CORE_SEARCH_USER_INFO'], $arrOptions['minLength']), $scope);
-        
+        $objCx->setVariable('userCanCancel', $arrOptions['canCancel'], $scope);
+        $objCx->setVariable('userCanClear', $arrOptions['canClear'], $scope);
+        $objCx->setVariable('txtUserSearch', $_CORELANG['TXT_CORE_SEARCH_USER'],
+            $scope);
+        $objCx->setVariable('txtUserSearchInfo',
+            sprintf($_CORELANG['TXT_CORE_SEARCH_USER_INFO'],
+                $arrOptions['minLength']), $scope);
         JS::activate('user-live-search');
     }
 
