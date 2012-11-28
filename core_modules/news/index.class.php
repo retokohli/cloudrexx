@@ -118,6 +118,7 @@ class news extends newsLibrary {
 //       is setup to use the content of the fallback-language
         $objResult = $objDatabase->SelectLimit('SELECT  news.id                 AS id,
                                                         news.userid             AS userid,
+                                                        news.redirect           AS redirect,
                                                         news.source             AS source,
                                                         news.changelog          AS changelog,
                                                         news.url1               AS url1,
@@ -159,16 +160,19 @@ class news extends newsLibrary {
             exit;
         }
 
-        $lastUpdate     = $objResult->fields['changelog'];
-        $sourceHref     = contrexx_raw2encodedUrl($objResult->fields['source']);
-        $url1Href       = contrexx_raw2encodedUrl($objResult->fields['url1']);
-        $url2Href       = contrexx_raw2encodedUrl($objResult->fields['url2']);
-        $source         = contrexx_raw2xhtml($objResult->fields['source']);
-        $url1           = contrexx_raw2xhtml($objResult->fields['url1']);
-        $url2           = contrexx_raw2xhtml($objResult->fields['url2']);
-        $newsUrl        = '';
-        $newsSource     = '';
-        $newsLastUpdate = '';
+        $newsCommentActive  = $objResult->fields['commentactive'];        
+        $lastUpdate         = $objResult->fields['changelog'];
+        $text               = $objResult->fields['text'];
+        $redirect           = contrexx_raw2xhtml($objResult->fields['redirect']);
+        $sourceHref         = contrexx_raw2encodedUrl($objResult->fields['source']);
+        $url1Href           = contrexx_raw2encodedUrl($objResult->fields['url1']);
+        $url2Href           = contrexx_raw2encodedUrl($objResult->fields['url2']);
+        $source             = contrexx_raw2xhtml($objResult->fields['source']);
+        $url1               = contrexx_raw2xhtml($objResult->fields['url1']);
+        $url2               = contrexx_raw2xhtml($objResult->fields['url2']);
+        $newsUrl            = '';
+        $newsSource         = '';
+        $newsLastUpdate     = '';
 
         if (!empty($url1)) {
           $strUrl1 = contrexx_raw2xhtml($objResult->fields['url1']);
@@ -199,11 +203,6 @@ class news extends newsLibrary {
 // TODO: check if this makes actually sence to first convert the title to XHTML and afterwards to strip any HTML tags. Check what happens with $this->newsTitle later
         $this->newsTitle = strip_tags($newstitle);
         $newsTeaser = nl2br($objResult->fields['teaser_text']);
-
-        $text = $objResult->fields['text'];
-        $text = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $text);
-        $newsTeaser = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $newsTeaser);
-        LinkGenerator::parseTemplate($text);
         LinkGenerator::parseTemplate($newsTeaser);
 
         $objSubResult = $objDatabase->Execute('SELECT count(`id`) AS `countComments` FROM `'.DBPREFIX.'module_news_comments` WHERE `newsid` = '.$newsid);
@@ -211,13 +210,12 @@ class news extends newsLibrary {
         $this->_objTpl->setVariable(array(
            'NEWS_DATE'           => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
            'NEWS_TITLE'          => $newstitle,
-           'NEWS_TEXT'           => $text,
            'NEWS_TEASER_TEXT'    => $newsTeaser,
            'NEWS_LASTUPDATE'     => $newsLastUpdate,
            'NEWS_SOURCE'         => $newsSource,
            'NEWS_URL'            => $newsUrl,
            'NEWS_CATEGORY_NAME'  => contrexx_raw2xhtml($objResult->fields['catname']),
-           'NEWS_COUNT_COMMENTS' => contrexx_raw2xhtml($objSubResult->fields['countComments'].' '.$_ARRAYLANG['TXT_NEWS_COMMENTS']),
+           'NEWS_COUNT_COMMENTS' => ($newsCommentActive && $this->arrSettings['news_comments_activated']) ? contrexx_raw2xhtml($objSubResult->fields['countComments'].' '.$_ARRAYLANG['TXT_NEWS_COMMENTS']) : '',
 // TODO: create a new methode from which we can fetch the name of the 'type' (do not fetch it from within the same SQL query of which we collect any other data!)
            //'NEWS_TYPE_NAME' => ($this->arrSettings['news_use_types'] == 1 ? htmlentities($objResult->fields['typename'], ENT_QUOTES, CONTREXX_CHARSET) : '')
         ));
@@ -228,9 +226,8 @@ class news extends newsLibrary {
         $this->parseUserAccountData($objResult->fields['publisherid'], $objResult->fields['publisher'], 'news_publisher');
 
         // show comments
-        $newsComment = $objResult->fields['commentactive'];        
-        $this->parseMessageCommentForm($newsid, $newstitle, $newsComment);
-        $this->parseCommentsOfMessage($newsid);        
+        $this->parseMessageCommentForm($newsid, $newstitle, $newsCommentActive);
+        $this->parseCommentsOfMessage($newsid, $newsCommentActive);
 
         // Show related_messages
         $this->parseRelatedMessagesOfMessage($newsid, 'category', $objResult->fields['catid']);
@@ -259,7 +256,23 @@ class news extends newsLibrary {
                 $this->_objTpl->hideBlock('news_image');
             }
         }
-        
+
+        if (empty($redirect)) {
+            $text = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $text);
+            $newsTeaser = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $newsTeaser);
+            LinkGenerator::parseTemplate($text);
+            $this->_objTpl->setVariable('NEWS_TEXT', $text);
+            $this->_objTpl->parse('news_text');
+            $this->_objTpl->hideBlock('news_redirect');
+        } else {
+            $this->_objTpl->setVariable(array(
+                'TXT_NEWS_REDIRECT_INSTRUCTION' => $_ARRAYLANG['TXT_NEWS_REDIRECT_INSTRUCTION'],
+                'NEWS_REDIRECT_URL'             => $redirect,
+            ));
+            $this->_objTpl->parse('news_redirect');
+            $this->_objTpl->hideBlock('news_text');
+        }
+
         $this->countNewsMessageView($newsid);
         $objResult->MoveNext();
 
@@ -309,7 +322,7 @@ class news extends newsLibrary {
      * @param   integer News message-ID 
      * @global  ADONewConnection
      */
-    private function parseCommentsOfMessage($messageId)
+    private function parseCommentsOfMessage($messageId, $newsCommentActive)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -321,6 +334,11 @@ class news extends newsLibrary {
         // abort if commenting system is not active
         if (!$this->arrSettings['news_comments_activated']) {
             $this->_objTpl->hideBlock('news_comments');
+            return;
+        }
+
+        // abort if comment deactivated for this news
+        if (!$newsCommentActive) {
             return;
         }
 
@@ -404,7 +422,7 @@ class news extends newsLibrary {
         }
         
         // abort if comment deactivated for this news
-        if ($newsCommentActive == 0) {
+        if (!$newsCommentActive) {
             return;
         }
 
