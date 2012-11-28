@@ -2,7 +2,7 @@
 
 namespace Cx\Lib;
 
-class UpdateException extends Exception {};
+class UpdateException extends \Exception {};
 
 
 class Update_DatabaseException extends UpdateException {
