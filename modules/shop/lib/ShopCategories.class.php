@@ -131,16 +131,16 @@ class ShopCategories
      *
      * The resulting array looks like:
      * array(
-     *    'id           => ShopCategory ID
-     *    'name'        => Category name,
+     *    'id => ShopCategory ID
+     *    'name' => Category name,
      *    'description' => Category description,
-     *    'parent_id'   => parent ID
-     *    'ord'         => order value,
-     *    'active'      => active flag (boolean),
-     *    'picture'     => 'picture name',
-     *    'flags'       => 'Category flags' (string),
-     *    'virtual'     => virtual flag status (boolean),
-     *    'level'       => nesting level,
+     *    'parent_id' => parent ID
+     *    'ord' => order value,
+     *    'active' => active flag (boolean),
+     *    'picture' => 'picture name',
+     *    'flags' => 'Category flags' (string),
+     *    'virtual' => virtual flag status (boolean),
+     *    'level' => nesting level,
      * ),
      * ... more parents
      * Note that this includes the virtual ShopCategories and their children.
@@ -236,16 +236,16 @@ class ShopCategories
 //            $index = count(self::$arrCategory);
 //            self::$arrCategory[$index] = array(
             self::$arrCategory[$id] = array(
-                'id'          => $id,
-                'name'        => $objCategory->name(),
+                'id' => $id,
+                'name' => $objCategory->name(),
                 'description' => $objCategory->description(),
-                'parent_id'   => $objCategory->parent_id(),
-                'ord'         => $objCategory->ord(),
-                'active'      => $objCategory->active(),
-                'picture'     => $objCategory->picture(),
-                'flags'       => $objCategory->flags(),
-                'virtual'     => $objCategory->virtual(),
-                'level'       => $level,
+                'parent_id' => $objCategory->parent_id(),
+                'ord' => $objCategory->ord(),
+                'active' => $objCategory->active(),
+                'picture' => $objCategory->picture(),
+                'flags' => $objCategory->flags(),
+                'virtual' => $objCategory->virtual(),
+                'level' => $level,
             );
 //            self::$arrCategoryIndex[$id] = $index;
             // Get the grandchildren if

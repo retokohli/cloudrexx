@@ -46,13 +46,13 @@ class Shipment
      * Reads the shipping options from the shipper (s) and shipment_cost (c)
      * tables.  For each shipper, creates array entries like:
      * arrShippers[s.id] = array (
-     *      name       => s.name,
-     *      status     => s.status
+     *      name => s.name,
+     *      status => s.status
      * )
      * arrShipments[s.id][c.id] = array (
      *      max_weight => c.max_weight,
      *      free_from => c.free_from,
-     *      fee       => c.fee
+     *      fee => c.fee
      * )
      * Note that the table module_shop_shipment has been replaced by
      * module_shop_shipper (id, name, status) and
@@ -109,8 +109,8 @@ class Shipment
             self::$arrShipments[$objResult->fields['shipper_id']]
                     [$objResult->fields['id']] = array(
                 'max_weight' => Weight::getWeightString($objResult->fields['max_weight']),
-                'free_from'  => $objResult->fields['free_from'],
-                'fee'        => $objResult->fields['fee'],
+                'free_from' => $objResult->fields['free_from'],
+                'fee' => $objResult->fields['fee'],
             );
             $objResult->MoveNext();
         }
@@ -726,7 +726,7 @@ class Shipment
      * The array has the form
      *  array(
      *    Shipper name => array(
-     *      'countries'  => array(
+     *      'countries' => array(
      *        country ID => Country name, [...]
      *      ),
      *      'conditions' => array(
@@ -815,7 +815,7 @@ class Shipment
             }
             krsort($arrConditions);
             $arrResult[$shipper['name']] = array(
-                'countries'  => $arrCountries,
+                'countries' => $arrCountries,
                 'conditions' => $arrConditions,
             );
         }
@@ -848,14 +848,14 @@ class Shipment
      */
     static function errorHandler()
     {
+// Shipment
+// TODO: Resolve recursion!
         static $break = false;
-
-        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
         if ($break) {
             die("
                 Shipment::errorHandler(): Recursion detected while handling an error.<br /><br />
                 This should not happen.  We are very sorry for the inconvenience.<br />
-                Please contact customer support: support@comvation.com");
+                Please contact customer support: helpdesk@comvation.com");
         }
         $break = true;
 
@@ -871,13 +871,13 @@ class Shipment
             'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'renamefrom' => 'status'),
         );
         $table_index = array();
-        if (UpdateUtil::table_exist($table_name)) {
-            if (UpdateUtil::column_exist($table_name, 'name')) {
+        if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
                 Text::deleteByKey('shop', self::TEXT_NAME);
                 $query = "
                     SELECT `id`, `name`
                       FROM `$table_name`";
-                $objResult = UpdateUtil::sql($query);
+                $objResult = Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
                     throw new Update_DatabaseException(
                         "Failed to query names", $query);
@@ -894,7 +894,7 @@ class Shipment
                 }
             }
         }
-        UpdateUtil::table($table_name, $table_structure, $table_index);
+        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         $table_name = DBPREFIX.'module_shop_shipment_cost';
         $table_structure = array(
@@ -905,9 +905,7 @@ class Shipment
             'free_from' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'notnull' => false, 'default' => null, 'renamefrom' => 'price_free'),
         );
         $table_index = array();
-        UpdateUtil::table($table_name, $table_structure, $table_index);
-
-        // More to come...
+        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         // Always!
         return false;

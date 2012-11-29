@@ -1,7 +1,5 @@
 <?php
 
-use Cx\Lib\UpdateUtil as UpdateUtil;
-
 /**
  * Text (core version)
  * @version     3.0.0
@@ -898,7 +896,7 @@ die("Obsolete method Text::getIdArrayBySearch() called");
     static function errorHandler()
     {
         $table_name = DBPREFIX."core_text";
-        if (!UpdateUtil::table_exist($table_name)) {
+        if (!Cx\Lib\UpdateUtil::table_exist($table_name)) {
             $query = "
                 CREATE TABLE `".DBPREFIX."core_text` (
                   `id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
@@ -909,7 +907,7 @@ die("Obsolete method Text::getIdArrayBySearch() called");
                   PRIMARY KEY `id` (`id`, `lang_id`, `section`(32), `key`(32)),
                   FULLTEXT `text` (`text`)
                 ) ENGINE=MyISAM";
-            $objResult = UpdateUtil::sql($query);
+            $objResult = Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
                 throw new Update_DatabaseException(
                    'Failed to create Text table', $query);

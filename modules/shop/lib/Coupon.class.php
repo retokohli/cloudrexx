@@ -167,7 +167,7 @@ class Coupon
      */
     function is_global($global=null)
     {
-        if (isset($global)) $this->global = $global;
+        if (isset($global)) $this->global = (boolean)$global;
         return $this->global;
     }
 
@@ -185,7 +185,7 @@ class Coupon
      */
     function customer_id($customer_id=null)
     {
-        if (isset($customer_id)) $this->customer_id = $customer_id;
+        if (isset($customer_id)) $this->customer_id = intval($customer_id);
         return $this->customer_id;
     }
 
@@ -610,17 +610,17 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
      * The array returned looks like
      *  array(
      *    'code-payment_id' => array(
-     *      code            => The Coupon code,
-     *      minimum_amount  => The minimum amount for which the coupon is valid,
-     *      discount_rate   => The discount rate,
+     *      code => The Coupon code,
+     *      minimum_amount => The minimum amount for which the coupon is valid,
+     *      discount_rate => The discount rate,
      *      discount_amount => The discount amount,
-     *      start_time      => The validity period start time,
-     *      end_time        => The validity period end time,
-     *      uses            => The available number of uses,
-     *      global          => Flag for globally available coupons,
-     *      customer_id     => The Customer ID,
-     *      product_id      => The Product ID,
-     *      payment_id      => The Payment ID,
+     *      start_time => The validity period start time,
+     *      end_time => The validity period end time,
+     *      uses => The available number of uses,
+     *      global => Flag for globally available coupons,
+     *      customer_id => The Customer ID,
+     *      product_id => The Product ID,
+     *      payment_id => The Payment ID,
      *    ),
      *    ... more ...
      *  )
@@ -671,7 +671,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             $objCoupon->customer_id($objResult->fields['customer_id']);
             $objCoupon->product_id($objResult->fields['product_id']);
             $objCoupon->used = $objCoupon->getUsedCount();
-            $arrCoupons[$code] = $objCoupon;
+            $arrCoupons[$code.'-'.$objCoupon->customer_id()] = $objCoupon;
             $objResult->MoveNext();
         }
         $query = "
@@ -812,6 +812,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                 $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_ERROR_ADDING_INVALID_USES']);
         }
         $customer_id = max(0, intval($customer_id));
+        if ($global) $customer_id = 0;
         $query = "
             REPLACE INTO `".DBPREFIX."module_shop".MODULE_INDEX."_discount_coupon` (
               `code`, `payment_id`,
@@ -819,12 +820,14 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
               `start_time`, `end_time`, `uses`, `global`,
               `customer_id`, `product_id`
             ) VALUES (
-              '".addslashes($code)."', $payment_id,
-              $minimum_amount, $discount_rate, $discount_amount,
-              $start_time, $end_time, $uses, ".intval($global).",
-              $customer_id, $product_id
+              ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
             )";
-        if ($objDatabase->Execute($query)) {
+        if ($objDatabase->Execute($query, array(
+            $code, $payment_id, $minimum_amount,
+            $discount_rate, $discount_amount,
+            $start_time, $end_time, $uses, ($global ? 1 : 0),
+            $customer_id, $product_id)
+        )) {
             return Message::ok(sprintf(
                 ($update
                   ? $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_UPDATED_SUCCESSFULLY']
@@ -888,9 +891,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             ? 0 : intval($_POST['customer_id']);
         $product_id = empty($_POST['product_id'])
             ? 0 : intval($_POST['product_id']);
-        $global = empty($customer_id)
-         && (   empty($_POST['global_or_customer'])
-             || contrexx_input2raw($_POST['global_or_customer']) == 'global');
+        $global = !empty($_POST['global_or_customer']);
 //DBG::log("code $code, start_time $start_time, end_time $end_time, minimum amount $minimum_amount, discount_rate $discount_rate, discount_amount $discount_amount, uses $uses, customer_id $customer_id");
         if (isset($code)) {
             $result &= self::storeCode(
@@ -900,7 +901,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             if ($result) {
                 $code = null;
             } else {
-                $edit = true;
+                $edit = "$code-$customer_id";
             }
         }
         // Reset the end time if it's in the past
@@ -1099,7 +1100,8 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
         $attribute_discount_amount = 'style="width: 230px; text-align: right;" maxlength="9"';
         $attribute_minimum_amount = 'style="width: 230px; text-align: right;" maxlength="9"';
         $attribute_uses = 'style="width: 230px; text-align: right;" maxlength="6"';
-        $attribute_customer = 'style="width: 230px;"';
+// Superseded by the widget, see below
+//        $attribute_customer = 'style="width: 230px;"';
         $attribute_product = 'style="width: 230px;"';
         $attribute_payment = 'style="width: 230px;"';
         $type = ($objCouponEdit->discount_rate() > 0 ? 'rate' : 'amount');
@@ -1141,7 +1143,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                 Html::getRadioGroup('coupon_type', array(
                     'rate' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_TYPE_RATE'],
                     'amount' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_TYPE_AMOUNT'],
-                    ), $type, "set_coupon_type(this.value);", '', ''),
+                    ), $type),
             'SHOP_DISCOUNT_COUPON_TYPE_SELECTED' => $type,
             'SHOP_DISCOUNT_COUPON_RATE' =>
                 Html::getInputText('discount_rate',
@@ -1162,21 +1164,16 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                 Html::getLabel('unlimited',
                     $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_USES_UNLIMITED']),
             'SHOP_DISCOUNT_COUPON_GLOBALLY' =>
-                Html::getRadio('global_or_customer', 'global',
+                Html::getRadio('global_or_customer', '1',
                     'global', $objCouponEdit->is_global()).
                 Html::getLabel('global',
                     $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_GLOBALLY']),
             'SHOP_DISCOUNT_COUPON_PER_CUSTOMER' =>
-                Html::getRadio('global_or_customer', 'customer',
+                Html::getRadio('global_or_customer', '0',
                     'customer', !$objCouponEdit->is_global()).
                 Html::getLabel('customer',
                     $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_PER_CUSTOMER']),
-            'SHOP_DISCOUNT_COUPON_CUSTOMER' =>
-                Html::getSelect(
-                    'customer_id',
-                      array(0 => $_ARRAYLANG['TXT_SHOP_CUSTOMER_ANY'])
-                    + Customers::getNameArray(), $objCouponEdit->customer_id(),
-                    'customer_id', '', $attribute_customer),
+            'SHOP_DISCOUNT_COUPON_CUSTOMER_ID' => $objCouponEdit->customer_id(),
             'SHOP_DISCOUNT_COUPON_PRODUCT' =>
                 Html::getSelect(
                     'product_id',
@@ -1189,49 +1186,17 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                       array(0 => $_ARRAYLANG['TXT_SHOP_PAYMENT_ANY'])
                     + $arrPaymentName, $objCouponEdit->payment_id(), false, '',
                     $attribute_payment),
+            'SHOP_DISCOUNT_COUPON_CUSTOMER_WIDGET_DISPLAY' =>
+                ($objCouponEdit->is_global()
+                    ? Html::CSS_DISPLAY_NONE : Html::CSS_DISPLAY_INLINE),
         ));
         $objTemplate->parse('shopDiscountCouponEdit');
-        JS::registerCode('
-jQuery(document).ready(function($) {
-  $("#end_time_unlimited").change(function() {
-    if ($("#end_time_unlimited").is(":checked")) {
-      $("#end_date").attr("disabled", true);
-      $("#end_date").val("");
-    } else {
-      $("#end_date").attr("disabled", false);
-      $("#end_date").datepicker({
-        defaultDate: "'.
-            ($objCouponEdit->end_time()
-              ? date(ASCMS_DATE_FORMAT_DATE, $objCouponEdit->end_time())
-              : date(ASCMS_DATE_FORMAT_DATE)).'"
-      });
-    }
-  }).change();
-  $("#unlimited").change(function() {
-    if ($("#unlimited").is(":checked")) {
-      $("#uses").attr("disabled", true).val("");
-    } else {
-      $("#uses").attr("disabled", false).val("1");
-    }
-  }).change();
-  $("[name=global_or_customer]").change(function() {
-    if ($("#global").is(":checked")) {
-      $("#customer_id").attr("disabled", true);
-      $("#customer_id").val("0");
-    } else {
-      $("#customer_id").attr("disabled", false);
-    }
-  }).change();
-  $(function() {
-    jQuery(".icon_url").bind("click", function() {
-      jQuery(this).parents("tr").first().find(".layer_url").
-        css("display", "table-cell").find("input").focus();
-    });
-  });
-});
-');
-// TODO: Maybe unnecessary from V3.0.0?
-        JS::activate('jquery');
+        // Depends on, and thus implies loading jQuery as well!
+        FWUser::getUserLiveSearch(array(
+            'minLength' => 3,
+// TODO: The options 'canCancel' and 'canClear' are not yet implemented!
+            'canCancel' => true,
+            'canClear' => true));
         return $result;
     }
 
@@ -1325,7 +1290,7 @@ jQuery(document).ready(function($) {
     private static function errorHandler()
     {
 //die("Coupon::errorHandler(): Disabled");
-        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
+// Coupon
         // Fix settings first
         ShopSettings::errorHandler();
 
@@ -1344,7 +1309,7 @@ jQuery(document).ready(function($) {
             'discount_rate' => array('type' => 'decimal(3,0)', 'unsigned' => true, 'default' => '0'),
         );
         $table_index = array();
-        UpdateUtil::table($table_name, $table_structure, $table_index);
+        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         $table_name = DBPREFIX.'module_shop_rel_customer_coupon';
         $table_structure = array(
@@ -1355,7 +1320,7 @@ jQuery(document).ready(function($) {
             'amount' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'default' => '0.00'),
         );
         $table_index = array();
-        UpdateUtil::table($table_name, $table_structure, $table_index);
+        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         // Always
         return false;

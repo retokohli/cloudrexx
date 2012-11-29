@@ -406,8 +406,7 @@ class Manufacturer
      */
     static function errorHandler()
     {
-//DBG::activate(DBG_DB_FIREPHP);
-        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
+// Manufacturer
         // Fix the Text table first
         Text::errorHandler();
 
@@ -416,8 +415,8 @@ class Manufacturer
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
         );
         $table_index =  array();
-        if (UpdateUtil::table_exist($table_name)) {
-            if (UpdateUtil::column_exist($table_name, 'name')) {
+        if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
                 // Get rid of bodies
                 Text::deleteByKey('shop', self::TEXT_NAME);
                 Text::deleteByKey('shop', self::TEXT_URI);
@@ -425,7 +424,7 @@ class Manufacturer
                 $query = "
                     SELECT `id`, `name`, `url`
                       FROM `".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer`";
-                $objResult = UpdateUtil::sql($query);
+                $objResult = Cx\Lib\UpdateUtil::sql($query);
                 while (!$objResult->EOF) {
                     $id = $objResult->fields['id'];
                     $name = $objResult->fields['name'];
@@ -444,7 +443,7 @@ class Manufacturer
                 }
             }
         }
-        UpdateUtil::table($table_name, $table_structure, $table_index);
+        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         // Always
         return false;

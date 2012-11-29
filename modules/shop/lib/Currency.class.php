@@ -913,9 +913,7 @@ class Currency
     {
         global $objDatabase;
 
-//DBG::activate(DBG_DB_FIREPHP);
-//DBG::log("Currency::errorHandler(): Entered");
-        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
+// Currency
         Text::errorHandler();
 
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_currencies';
@@ -931,14 +929,14 @@ class Currency
         );
         $table_index = array();
 
-        if (UpdateUtil::table_exist($table_name)) {
-            if (UpdateUtil::column_exist($table_name, 'name')) {
+        if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
                 // Migrate all Currency names to the Text table first
                 Text::deleteByKey('shop', self::TEXT_NAME);
                 $query = "
                     SELECT `id`, `code`, `name`
                       FROM `$table_name`";
-                $objResult = UpdateUtil::sql($query);
+                $objResult = Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
                     throw new Update_DatabaseException(
                        "Failed to query Currency names", $query);
@@ -954,7 +952,7 @@ class Currency
                     $objResult->MoveNext();
                 }
             }
-            UpdateUtil::table($table_name, $table_structure, $table_index);
+            Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
             return false;
         }
 
@@ -969,7 +967,7 @@ class Currency
             'United States Dollars' => array('USD', '$', 0.880000, '0.01', 3, 1, 0),
         );
         // There is no previous version, so don't use DbTools::table()
-        if (!UpdateUtil::create_table($table_name, $table_structure)) {
+        if (!Cx\Lib\UpdateUtil::create_table($table_name, $table_structure)) {
             throw new Update_DatabaseException(
                 "Failed to create Currency table");
         }
@@ -982,7 +980,7 @@ class Currency
                 ) VALUES (
                     '".join("','", $arrCurrency)."'
                 )";
-            $objResult = UpdateUtil::sql($query);
+            $objResult = Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
                 throw new Update_DatabaseException(
                     "Failed to insert default Currencies");

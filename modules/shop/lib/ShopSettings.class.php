@@ -530,21 +530,18 @@ class ShopSettings
      */
     static function errorHandler()
     {
-DBG::log("ShopSettings::errorHandler(): Entered");
-        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
+// ShopSettings
         SettingDb::errorHandler();
         SettingDb::init('shop', 'config');
-//DBG::activate(DBG_ADODB);
-DBG::log("ShopSettings::errorHandler(): Migrating");
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_config';
         $i = 0;
-        if (UpdateUtil::table_exist($table_name)) {
+        if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
             // Migrate all entries using the SettingDb class
             $query = "
                 SELECT `name`, `value`, `status`
                   FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
                  ORDER BY `id` ASC";
-            $objResult = UpdateUtil::sql($query);
+            $objResult = Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
                 throw new Update_DatabaseException(
                    'Failed to query old Shop settings', $query);
@@ -553,7 +550,6 @@ DBG::log("ShopSettings::errorHandler(): Migrating");
                 $name = $objResult->fields['name'];
                 $value = $objResult->fields['value'];
                 $status = $objResult->fields['status'];
-//DBG::log("ShopSettings::errorHandler(): Migrating '$name'");
                 $name_status = null;
                 switch ($name) {
                   // OBSOLETE
@@ -564,7 +560,6 @@ DBG::log("ShopSettings::errorHandler(): Migrating");
                     // Ignore, do not migrate!
                     $name = null;
                     break;
-
                   // VALUE ONLY (RE: arrConfig\[.*?\]\[.value.\])
                   case 'confirmation_emails':
                     $name = 'email_confirmation';
@@ -623,7 +618,6 @@ DBG::log("ShopSettings::errorHandler(): Migrating");
                     // Obsolete
                     $name = null;
                     break;
-
                   // VALUE & STATUS
                   case 'paypal_account_email':
                     $name_status = 'paypal_active';
@@ -635,7 +629,6 @@ DBG::log("ShopSettings::errorHandler(): Migrating");
                     $name = 'postfinance_shop_id';
                     $name_status = 'postfinance_active';
                     break;
-
                   // STATUS ONLY (RE: arrConfig\[.*?\]\[.status.\])
                   case 'payment_lsv_status':
                     $name_status = 'payment_lsv_active';
@@ -651,14 +644,12 @@ DBG::log("ShopSettings::errorHandler(): Migrating");
                         throw new Update_DatabaseException(
                            "Failed to add SettingDb entry for '$name'");
                     }
-//DBG::log("ShopSettings::errorHandler(): Added '$name' => '$value'");
                 }
                 if ($name_status) {
                     if (!SettingDb::add($name_status, $status, ++$i)) {
                         throw new Update_DatabaseException(
                            "Failed to add SettingDb entry for status '$name_status'");
                     }
-//DBG::log("ShopSettings::errorHandler(): Added status '$name_status' => '$status'");
                 }
                 $objResult->MoveNext();
             }
@@ -819,9 +810,7 @@ DBG::log("ShopSettings::errorHandler(): Migrating");
 
         // Add more new/missing settings here
 
-DBG::log("ShopSettings::errorHandler(): Done adding");
-
-        UpdateUtil::drop_table($table_name);
+        Cx\Lib\UpdateUtil::drop_table($table_name);
 
         // Always
         return false;

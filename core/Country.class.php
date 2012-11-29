@@ -1,7 +1,5 @@
 <?php
 
-use Cx\Lib\UpdateUtil as UpdateUtil;
-
 /**
  * Core Country and Region class
  * @version     3.0.0
@@ -909,7 +907,6 @@ class Country
      */
     static function errorHandler()
     {
-
         $table_name = DBPREFIX.'core_country';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -919,21 +916,21 @@ class Country
             'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'renamefrom' => 'is_active'),
         );
 //        if (!
-        UpdateUtil::table($table_name, $table_structure);
+        Cx\Lib\UpdateUtil::table($table_name, $table_structure);
 //        ) {
 //            throw new Update_DatabaseException(
 //               "Failed to to create Country table");
 //        }
-        if (UpdateUtil::table_empty($table_name)) {
+        if (Cx\Lib\UpdateUtil::table_empty($table_name)) {
             Text::deleteByKey('core', self::TEXT_NAME);
             // Copy the Countries from the Shop module if possible
-            if (UpdateUtil::table_exist(DBPREFIX."module_shop_countries")) {
+            if (Cx\Lib\UpdateUtil::table_exist(DBPREFIX."module_shop_countries")) {
                 $query = "
                     SELECT `countries_id`, `countries_name`,
                            `countries_iso_code_2`, `countries_iso_code_3`,
                            `activation_status`
                       FROM ".DBPREFIX."module_shop_countries";
-                $objResult = UpdateUtil::sql($query);
+                $objResult = Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
                     throw new Update_DatabaseException(
                        "Failed to to query Country names", $query);
@@ -953,7 +950,7 @@ class Country
                     }
                     $objResult->MoveNext();
                 }
-                UpdateUtil::drop_table(DBPREFIX.'modules_shop_countries');
+                Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'modules_shop_countries');
             }
         }
 
@@ -961,7 +958,7 @@ class Country
 // USE FOR NEW INSTALLATIONS ONLY!
 // These records will lead to inconsistencies with Country references in
 // other tables otherwise.
-        if (UpdateUtil::table_empty($table_name)) {
+        if (Cx\Lib\UpdateUtil::table_empty($table_name)) {
             // Add new Country records if available
             if (@include_once(ASCMS_CORE_PATH.'/countries_iso_3166-2.php')) {
 //DBG::log("Country::errorHandler(): Included ISO file");

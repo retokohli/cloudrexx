@@ -1312,11 +1312,10 @@ class Product
 
     static function errorHandler()
     {
-//DBG::activate(DBG_DB_FIREPHP);
-        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
+// Product
         // Fix the Text, Discount, and Manufacturer tables first
         Text::errorHandler();
-        Discount::errorHandler();
+//        Discount::errorHandler(); // Called by Customer::errorHandler();
         Manufacturer::errorHandler();
 
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_products';
@@ -1354,8 +1353,8 @@ class Product
             'article_id' => array('fields' => array('article_id')),
             'flags' => array('fields' => array('flags'), 'type' => 'FULLTEXT', ),
         );
-        if (UpdateUtil::table_exist($table_name)) {
-            if (UpdateUtil::column_exist($table_name, 'title')) {
+        if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            if (Cx\Lib\UpdateUtil::column_exist($table_name, 'title')) {
                 // Migrate all Product strings to the Text table first
                 Text::deleteByKey('shop', self::TEXT_NAME);
                 Text::deleteByKey('shop', self::TEXT_SHORT);
@@ -1367,7 +1366,7 @@ class Product
                     SELECT `id`, `title`, `shortdesc`, `description`,
                            `product_id`, `external_link`, `keywords`
                       FROM `$table_name`";
-                $objResult = UpdateUtil::sql($query);
+                $objResult = Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
                     throw new Update_DatabaseException(
                         "Failed to query Product strings", $query);
@@ -1414,7 +1413,7 @@ class Product
                 }
             }
         }
-        UpdateUtil::table($table_name, $table_structure, $table_index);
+        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         // Also fix Customer and some related tables
         Customer::errorHandler();

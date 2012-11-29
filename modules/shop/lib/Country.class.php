@@ -81,7 +81,7 @@ die("Obsolete class modules/shop/lib/Country.class.php called");
         if (!$objResult) return false;
         while (!$objResult->EOF) {
             self::$arrCountryRelations[] = array(
-                'zone_id'    => $objResult->fields['zone_id'],
+                'zone_id' => $objResult->fields['zone_id'],
                 'country_id' => $objResult->fields['country_id']
             );
             $objResult->MoveNext();

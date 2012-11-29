@@ -874,8 +874,8 @@ DBG::log("ERROR: Failed to delete Products in Category ID $category_id");
             $shopImage_width  = base64_decode($shopImage_width);
             $shopImage_height = base64_decode($shopImage_height);
             $arrPictures[++$i] = array(
-                'img'    => $shopImage,
-                'width'  => $shopImage_width,
+                'img' => $shopImage,
+                'width' => $shopImage_width,
                 'height' => $shopImage_height,
             );
         }

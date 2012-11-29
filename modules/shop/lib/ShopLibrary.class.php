@@ -303,9 +303,9 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
         // Prepared template for order confirmation
         $arrMailTemplate = array(
             'section' => 'shop',
-            'key'     => 'order_confirmation',
+            'key' => 'order_confirmation',
             'lang_id' => $arrSubstitution['LANG_ID'],
-            'to'      =>
+            'to' =>
                 $arrSubstitution['CUSTOMER_EMAIL'].','.
                 SettingDb::getValue('email_confirmation'),
             'substitution' => &$arrSubstitution,

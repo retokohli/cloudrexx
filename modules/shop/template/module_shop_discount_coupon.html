@@ -143,8 +143,13 @@
         <td valign="top">{TXT_SHOP_DISCOUNT_COUPON_SCOPE}</td>
         <td>
           {SHOP_DISCOUNT_COUPON_GLOBALLY}<br />
-          {SHOP_DISCOUNT_COUPON_PER_CUSTOMER}<br />
-          {SHOP_DISCOUNT_COUPON_CUSTOMER}
+          {SHOP_DISCOUNT_COUPON_PER_CUSTOMER}
+          <div id="customer_widget"
+               style="display: {SHOP_DISCOUNT_COUPON_CUSTOMER_WIDGET_DISPLAY}">
+            <!--<input class="live-search-user-name" name="..." value="..." />-->
+            <input class="live-search-user-id" name="customer_id"
+                   value="" />
+          </div>
         </td>
       </tr>
       <tr class="row2">
@@ -165,22 +170,66 @@
         tabindex="1002" />
   </form>
 </div>
+<script type="text/javascript">// <[CDATA[
 
-<script type="text/javascript">
-// <![CDATA[
-function set_coupon_type(type) {
-  var display_rate = "table-row";
-  var display_amount = "none";
-  switch (type) {
-    case 'amount':
-      display_rate = "none";
-      display_amount = "table-row";
-  }
-  jQuery("#coupon_type_rate_row").css("display", display_rate);
-  jQuery("#coupon_type_amount_row").css("display", display_amount);
-}
-set_coupon_type("{SHOP_DISCOUNT_COUPON_TYPE_SELECTED}");
+jQuery(function($) {
+  $("#end_time_unlimited").change(function() {
+    if ($("#end_time_unlimited").is(":checked")) {
+      $("#end_date").attr("disabled", true);
+      $("#end_date").val("");
+    } else {
+      $("#end_date").attr("disabled", false);
+      $("#end_date").datepicker({
+// TODO: Maybe have to set the default again here?
+//        defaultDate: "'.
+//            ($objCouponEdit->end_time()
+//              ? date(ASCMS_DATE_FORMAT_DATE, $objCouponEdit->end_time())
+//              : date(ASCMS_DATE_FORMAT_DATE)).'"
+      });
+    }
+  }).change();
+  $("#unlimited").change(function() {
+    if ($("#unlimited").is(":checked")) {
+      $("#uses").attr("disabled", true).val("");
+    } else {
+      $("#uses").attr("disabled", false).val("1");
+    }
+  }).change();
+  var customer_id = "{SHOP_DISCOUNT_COUPON_CUSTOMER_ID}";
+  $("[name=global_or_customer]").change(function() {
+    var element = $("#customer_widget").find("input[name=customer_id]");
+    if ($("#global").is(":checked")) {
+      customer_id = element.val();
+      element.val("0");
+      $("#customer_widget").hide();
+    } else {
+      element.val(customer_id);
+      $("#customer_widget").show();
+    }
+  }).change();
+  $(".icon_url").bind("click", function() {
+    $(this).parents("tr").first().find(".layer_url").
+      css("display", "table-cell").find("input").focus();
+  });
+  $("#coupon_type-1").click(function() {
+    change_type("rate")
+  });
+  $("#coupon_type-2").click(function() {
+    change_type("amount")
+  });
+  function change_type(selected) {
+    var display_rate = "table-row";
+    var display_amount = "none";
+    switch (selected) {
+      case "amount":
+        display_rate = "none";
+        display_amount = "table-row";
+    }
+    $("#coupon_type_rate_row").css("display", display_rate);
+    $("#coupon_type_amount_row").css("display", display_amount);
+  };
+  change_type("{SHOP_DISCOUNT_COUPON_TYPE_SELECTED}");
+});
 // ]]>
 </script>
-
 <!-- END module_shop_discount_coupon.html -->
