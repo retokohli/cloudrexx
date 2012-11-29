@@ -1226,7 +1226,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 
 
 
-    function countEntries($intCategoryId, $intLevelId, $formId = null, $searchTerm = '')
+    function countEntries($intCategoryId, $intLevelId, $formId = null, $searchTerm = '', $countAllEntries = false)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -1237,6 +1237,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         $strWhereForm       = '';
         $strWhereSearchTerm = '';
         $strFromInputfield  = '';
+        $strWhereActive     = '';
 
         if(!empty($intLevelId)) {
             $strWhereLevel = "AND ((level.`level_id` = ".$intLevelId.") AND (level.`entry_id` = entry.`id`)) ";
@@ -1258,6 +1259,10 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
             $strWhereSearchTerm .= 'AND ((`rel_inputfield`.`value` LIKE "%' . $term . '%") OR (`entry`.`id` = "' . $term . '"))';
             $strFromInputfield   = ', `' . DBPREFIX . 'module_' . $this->moduleTablePrefix . '_rel_entry_inputfields` AS `rel_inputfield`';
         }
+        
+        if (!$countAllEntries) {
+            $strWhereActive = 'AND (entry.`active` = 1 AND entry.`confirmed` = 1)';
+        }
 
         $query = "SELECT
                     entry.`id` AS `id`
@@ -1268,8 +1273,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                     ".$strFromInputfield."
                   WHERE
                     (entry.`id` != 0)
-                  AND
-                    (entry.`active` = 1 AND entry.`confirmed` = 1)
+                    ".$strWhereActive."
                     ".$strWhereCategory."
                     ".$strWhereLevel."
                     ".$strWhereForm."
