@@ -57,23 +57,11 @@ class Paging
     ) {
         global $_CONFIG, $_CORELANG;
 
-        if (empty($results_per_page))
-            $results_per_page = intval($_CONFIG['corePagingLimit']);
+        if (empty($results_per_page)) $results_per_page = intval($_CONFIG['corePagingLimit']);
         if ($numof_rows <= $results_per_page && !$showeverytime) return '';
-        if (empty($parameter_name)) {
-            $parameter_name = self::getParametername();//'pos';
-        }
-        // Remove the old position parameter from the URI
-        Html::stripUriParam($uri_parameter, $parameter_name);
-        // Strip script path and name from the URI
-        $uri_parameter = preg_replace('/^.*?index.php/', '', $uri_parameter);
-        // Remove leading '?', '&', or '&amp;'
-        $uri_parameter = preg_replace(
-            '/^(?:\?|\&(?:amp;)?)?/', '', $uri_parameter);
-        // Prepend an encoded ampersand only if the query is not empty
-        if ($uri_parameter) $uri_parameter = '&amp;'.$uri_parameter;
         if (empty($parameter_name)) $parameter_name = self::getParametername();
         if (!isset($position)) $position = self::getPosition($parameter_name);
+        
         // Fix illegal values:
         // The position must be in the range [0 .. numof_rows - 1].
         // If it's outside this range, reset it
@@ -89,8 +77,10 @@ class Paging
 
         $requestUrl = \Env::get('Resolver')->getUrl();
         $firstUrl = clone $requestUrl;
+        $firstUrl->setParams($uri_parameter);
         $firstUrl->setParam($parameter_name, 0);
         $lastUrl = clone $requestUrl;
+        $lastUrl->setParams($uri_parameter);
         $lastUrl->setParam($parameter_name, ($numof_rows - $corr_value));
 
         // Set up the base navigation entries
@@ -107,6 +97,7 @@ class Paging
         // Note:  previous/next link are currently unused.
         if ($position != 0) {
             $previousUrl = clone $requestUrl;
+            $previousUrl->setParams($uri_parameter);
             $previousUrl->setParam($parameter_name, ($position - $results_per_page));
             $array_paging['previous_link'] =
                 '<a href="'.$previousUrl.'">';
@@ -114,6 +105,7 @@ class Paging
         if (($numof_rows - $position) > $results_per_page) {
             $int_new_position = $position + $results_per_page;
             $nextUrl = clone $requestUrl;
+            $nextUrl->setParams($uri_parameter);
             $nextUrl->setParam($parameter_name, $int_new_position);
             $array_paging['next_link'] =
                 '<a href="'.$nextUrl.'">';
@@ -125,6 +117,7 @@ class Paging
                     '<b class="pagingPage'.$i.'">'.$i.'</b>';
             } else {
                 $pageUrl = clone $requestUrl;
+                $pageUrl->setParams($uri_parameter);
                 $pageUrl->setParam($parameter_name, (($i-1) * $results_per_page));
                 $array_paging[$i] =
                     '<a class="pagingPage'.$i.'" href="'.$pageUrl.'">'.$i.'</a>';
