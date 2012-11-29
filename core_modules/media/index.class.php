@@ -94,11 +94,11 @@ class MediaManager extends MediaLibrary
     * @param  string default web path
     * @return string  cleaned web path
     */
-    function getWebPath($defaultWebPath) {
+    function getWebPath($defaultWebPath)
+    {
+        $webPath = $defaultWebPath;
         if (isset($_GET['path']) AND !empty($_GET['path']) AND !stristr($_GET['path'],'..')) {
             $webPath = trim($_GET['path']);
-        } else {
-            $webPath = $defaultWebPath;
         }
         if (substr($webPath, 0, strlen($defaultWebPath)) != $defaultWebPath || !file_exists($this->docRoot.$webPath)) {
             $webPath = $defaultWebPath;
@@ -206,8 +206,6 @@ class MediaManager extends MediaLibrary
                             $this->_objTpl->hideBlock('manage_access_option');
                         }
                     }
-                    
-
                     $this->_objTpl->setVariable(array(  // file
                         'MEDIA_DIR_TREE_ROW'  => $class,
                         'MEDIA_FILE_ICON'     => $this->iconWebPath . $dirTree[$key]['icon'][$x] . '.gif',
@@ -218,7 +216,7 @@ class MediaManager extends MediaLibrary
                         'MEDIA_RENAME_TITLE'  => $_ARRAYLANG['TXT_MEDIA_RENAME'],
                         'MEDIA_DELETE_TITLE'  => $_ARRAYLANG['TXT_MEDIA_DELETE'],
                     ));
-
+                    $tmpHref = $delHref = '';
                     if ($key == 'dir') {
                         $tmpHref = CONTREXX_SCRIPT_PATH.'?section=' . $this->archive . $this->getCmd . '&amp;path=' . rawurlencode($this->webPath . $dirTree[$key]['name'][$x] . '/');
                         $delHref = CONTREXX_SCRIPT_PATH.'?section=' . $this->archive . $this->getCmd . '&amp;act=delete&amp;path=' . rawurlencode($this->webPath . $dirTree[$key]['name'][$x] . '/');
@@ -233,7 +231,7 @@ class MediaManager extends MediaLibrary
                     }
                     $this->_objTpl->setVariable(array(
                         'MEDIA_FILE_NAME_HREF'  => $tmpHref,
-                        'MEDIA_FILE_DELETE_HREF'=> $delHref
+                        'MEDIA_FILE_DELETE_HREF'=> $delHref,
                     ));
                     $this->_objTpl->parse('mediaDirectoryTree');
                     $i++;
@@ -263,7 +261,6 @@ class MediaManager extends MediaLibrary
                 $this->_objTpl->hideBlock('manage_access_header');
             }
         }
-        
         $this->_objTpl->setVariable(array(  // parse dir content
             'MEDIA_NAME_HREF'     => $tmpHref.'&amp;sort=name&amp;sort_desc='.($this->sortBy == 'name' && !$this->sortDesc),
             'MEDIA_SIZE_HREF'     => $tmpHref.'&amp;sort=size&amp;sort_desc='.($this->sortBy == 'size' && !$this->sortDesc),
@@ -449,12 +446,13 @@ class MediaManager extends MediaLibrary
      */
     function _uploadFiles()
     {
+        global $_ARRAYLANG;
+
         // check permissions
         if (!$this->uploadAccessGranted()) {
             $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_DIRCREATION_NOT_ALLOWED'];
             return;
         }
-
         $this->processFormUpload();
     }
 
@@ -541,7 +539,6 @@ class MediaManager extends MediaLibrary
             $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_DIRCREATION_NOT_ALLOWED'];
             return false;
         }
-        
         if (isset($_GET['newfile']) && file_exists($this->path.$this->getFile)) {
             $newFile = trim(preg_replace('/[^a-z0-9_\-\. ]/i', '_', $_GET['newfile']));
             if ($newFile != "") {
@@ -620,17 +617,13 @@ class MediaManager extends MediaLibrary
             }
         }
         closedir($dir_handle);
-        
         rmdir($dirName);
         /* Redirect to previous path */
         $new_path_arr = explode("/", trim($this->webPath, "/"));
         array_pop($new_path_arr);
         $newPath = "/".implode("/", $new_path_arr)."/";
-        
         header("Location: index.php?section=" . $this->archive . $this->getCmd . "&deletefolder=success&path=". rawurlencode($newPath));
         return true;
     }
 
 }
-
-?>

@@ -916,7 +916,7 @@ class MediaLibrary
         $delete_msg = $_ARRAYLANG['TXT_MEDIA_CONFIRM_DELETE_2'];
         $csrfCode   = CSRF::code();
         $code       = <<<END
-                    <script language="JavaScript" type="text/javascript">
+                    <script type="text/javascript">
                     /* <![CDATA[ */
                         function preview(file, width, height)
                         {
