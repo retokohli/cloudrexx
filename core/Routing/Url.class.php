@@ -80,13 +80,6 @@ class Url {
      * @var string
      */
     protected $targetPath = null;
-    /**
-     * ?a=10&b=foo
-     *
-     * /With/Param
-     * @var string
-     */
-    protected $params = null;
 
     //the different states of an url
     const SUGGESTED = 1;
@@ -165,8 +158,16 @@ class Url {
             $this->langDir = $path[0];
             unset($path[0]);
         }
+
+        //keep parameters to append them after setting the new path (since parameters are stored in path)
+        if (strpos($this->path, '?') !== false) {
+            $params = explode('?', $this->path);
+            $params = $params[1];
+        }
+
         $path = implode('/', $path);
         $this->path = $path;
+        $this->path .= !empty($params) ? '?'.$params : '';
         $this->suggest();
     }
 
@@ -175,9 +176,29 @@ class Url {
         $this->targetPath = $path;
     }
 
+    /**
+     * Set multiple parameters.
+     *
+     * @param   array or string     $params
+     */
     public function setParams($params) {
-        $this->state = self::ROUTED;
-        $this->params = $params;
+        if (is_array($params)) {
+            foreach ($params as $key => $value) {
+                $this->setParam($key, $value);
+            }
+        } else {
+            if (strpos($params, '?') !== false) {
+                $strParemters = explode('?', $params);
+                $strParemters = $strParemters[1];
+            } else {
+                $strParemters = $params;
+            }
+            $arrParemters = explode('&', $strParemters);
+            foreach ($arrParemters as $strParam) {
+                $arrParam = explode('=', $strParam);
+                $this->setParam($arrParam[0], $arrParam[1]);
+            }
+        }
     }
 
     /**
