@@ -1213,7 +1213,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
 
         // Paging
         $count  = $objEntries->countEntries(null, null, null, $strTerm);
-        $term   = !empty($strTerm) ? '&amp;term=' . $strTerm : '';
+        $term   = !empty($strTerm) ? 'term=' . $strTerm : '';
         $paging = getPaging($count, $this->offset, $term, '', true);
         $this->_objTpl->setGlobalVariable($this->moduleLangVar . '_PAGING', $paging);
 
