@@ -3008,41 +3008,36 @@ die("Shop::processRedirect(): This method is obsolete!");
         $shopAddress = (SettingDb::getValue('shop_address')
             ? SettingDb::getValue('shop_address') : '');
         $shopAddress = preg_replace('/[\012\015]+/', ', ', $shopAddress);
-/*
-This information should be read and stored in the session
-right after the customer logs in!
-        // fill in the address for known customers
-        if (self::$objCustomer) {
-            $_SESSION['shop']['gender'] = ...
-            $_SESSION['shop']['firstname'] =
-            $_SESSION['shop']['lastname'] =
-            $_SESSION['shop']['address'] =
-            $_SESSION['shop']['zip'] =
-            $_SESSION['shop']['city'] =
-            $_SESSION['shop']['phone'] =
-            $_SESSION['shop']['fax'] =
-            $_SESSION['shop']['email'] =
-        }
-*/
         self::$objTemplate->setGlobalVariable($_ARRAYLANG);
         self::$objTemplate->setVariable(array(
-            'SHOP_CUSTOMER_TITLE' => (isset($_SESSION['shop']['gender'])     ? stripslashes($_SESSION['shop']['gender'])    : ''),
-            'SHOP_CUSTOMER_FIRST_NAME' => (isset($_SESSION['shop']['firstname']) ? stripslashes($_SESSION['shop']['firstname']) : ''),
-            'SHOP_CUSTOMER_LAST_NAME' => (isset($_SESSION['shop']['lastname'])  ? stripslashes($_SESSION['shop']['lastname'])  : ''),
-            'SHOP_CUSTOMER_ADDRESS' => (isset($_SESSION['shop']['address'])   ? stripslashes($_SESSION['shop']['address'])   : ''),
-            'SHOP_CUSTOMER_ZIP' => (isset($_SESSION['shop']['zip'])       ? stripslashes($_SESSION['shop']['zip'])       : ''),
-            'SHOP_CUSTOMER_CITY' => (isset($_SESSION['shop']['city'])      ? stripslashes($_SESSION['shop']['city'])      : ''),
-            'SHOP_CUSTOMER_PHONE' => (isset($_SESSION['shop']['phone'])     ? stripslashes($_SESSION['shop']['phone'])     : ''),
-            'SHOP_CUSTOMER_FAX' => (isset($_SESSION['shop']['fax'])       ? stripslashes($_SESSION['shop']['fax'])       : ''),
-            'SHOP_CUSTOMER_EMAIL' => (isset($_SESSION['shop']['email'])     ? stripslashes($_SESSION['shop']['email'])     : ''),
+            'SHOP_CUSTOMER_TITLE' => (isset($_SESSION['shop']['gender'])
+                ? contrexx_raw2xhtml($_SESSION['shop']['gender']) : ''),
+            'SHOP_CUSTOMER_FIRST_NAME' => (isset($_SESSION['shop']['firstname'])
+                ? contrexx_raw2xhtml($_SESSION['shop']['firstname']) : ''),
+            'SHOP_CUSTOMER_LAST_NAME' => (isset($_SESSION['shop']['lastname'])
+                ? contrexx_raw2xhtml($_SESSION['shop']['lastname']) : ''),
+            'SHOP_CUSTOMER_ADDRESS' => (isset($_SESSION['shop']['address'])
+                ? contrexx_raw2xhtml($_SESSION['shop']['address']) : ''),
+            'SHOP_CUSTOMER_ZIP' => (isset($_SESSION['shop']['zip'])
+                ? contrexx_raw2xhtml($_SESSION['shop']['zip']) : ''),
+            'SHOP_CUSTOMER_CITY' => (isset($_SESSION['shop']['city'])
+                ? contrexx_raw2xhtml($_SESSION['shop']['city']) : ''),
+            'SHOP_CUSTOMER_PHONE' => (isset($_SESSION['shop']['phone'])
+                ? contrexx_raw2xhtml($_SESSION['shop']['phone']) : ''),
+            'SHOP_CUSTOMER_FAX' => (isset($_SESSION['shop']['fax'])
+                ? contrexx_raw2xhtml($_SESSION['shop']['fax']) : ''),
+            'SHOP_CUSTOMER_EMAIL' => (isset($_SESSION['shop']['email'])
+                ? contrexx_raw2xhtml($_SESSION['shop']['email']) : ''),
             //'SHOP_LSV_EE_PRODUCTS' => '',
-            'SHOP_CUSTOMER_BANK' =>  (isset($_SESSION['shop']['account_bank']) ? $_SESSION['shop']['account_bank']   : ''),
-            'SHOP_CUSTOMER_BANKCODE' =>  (isset($_SESSION['shop']['account_blz'])  ? $_SESSION['shop']['account_blz']    : ''),
-            'SHOP_CUSTOMER_ACCOUNT' =>  '', // not available
-            'SHOP_DATE' =>  date("j.n.Y"),
-            'SHOP_FAX' => SettingDb::getValue('fax'),
-            'SHOP_COMPANY' => SettingDb::getValue('shop_company'),
-            'SHOP_ADDRESS' => $shopAddress,
+            'SHOP_CUSTOMER_BANK' => (isset($_SESSION['shop']['account_bank'])
+                ? contrexx_raw2xhtml($_SESSION['shop']['account_bank']) : ''),
+            'SHOP_CUSTOMER_BANKCODE' => (isset($_SESSION['shop']['account_blz'])
+                ? contrexx_raw2xhtml($_SESSION['shop']['account_blz']) : ''),
+            'SHOP_CUSTOMER_ACCOUNT' => '', // not available
+            'SHOP_DATE' => date(ASCMS_DATE_FORMAT_DATE),
+            'SHOP_FAX' => contrexx_raw2xhtml(SettingDb::getValue('fax')),
+            'SHOP_COMPANY' => contrexx_raw2xhtml(SettingDb::getValue('shop_company')),
+            'SHOP_ADDRESS' => contrexx_raw2xhtml($shopAddress),
         ));
     }
 

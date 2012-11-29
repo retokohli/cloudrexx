@@ -501,7 +501,7 @@ class Yellowpay
 
         $autoSubmit = !$autopost ? '' : '
             <script type="text/javascript">
-            /* <![CDATA[ */ 
+            /* <![CDATA[ */
                 document.yellowpay.submit();
             /* ]]> */
             </script>
@@ -934,6 +934,7 @@ die("Obsolete method called: Yellowpay::getKnownPaymentMethodCheckboxes()");
      */
     static function errorHandler()
     {
+// Yellowpay
         SettingDb::errorHandler();
         // You *MUST* call this yourself beforehand, using the proper section!
         //SettingDb::init('shop', 'config');

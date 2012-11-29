@@ -185,10 +185,10 @@ DBG::log("Customers::getCount(): ERROR: Failed to get Usergroup for ID $usergrou
         global $_ARRAYLANG;
 
         $arrField = array(
-            'id'        => $_ARRAYLANG['TXT_SHOP_ID'],
-            'lastname'  => $_ARRAYLANG['TXT_LAST_NAME'],
+            'id' => $_ARRAYLANG['TXT_SHOP_ID'],
+            'lastname' => $_ARRAYLANG['TXT_LAST_NAME'],
             'firstname' => $_ARRAYLANG['TXT_FIRST_NAME'],
-            'company'   => $_ARRAYLANG['TXT_COMPANY'],
+            'company' => $_ARRAYLANG['TXT_COMPANY'],
         );
         return Html::getOptions($arrField, $selected);
     }
@@ -209,10 +209,6 @@ DBG::log("Customers::getCount(): ERROR: Failed to get Usergroup for ID $usergrou
      */
     static function getNameById($customer_id, $format=null)
     {
-        ++$customer_id;
-        ++$format;
-die("Customer::getNameById(): Obsolete method called");
-/*
         $objCustomer = Customer::getById($customer_id);
         if (!$objCustomer) return false;
         if (!isset($format)) $format = '%2$s %1$s (%3$u)';
@@ -221,7 +217,6 @@ die("Customer::getNameById(): Obsolete method called");
             $objCustomer->lastname(),
             $objCustomer->id()
         );
-*/
     }
 
 

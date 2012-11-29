@@ -62,13 +62,13 @@ class Payment
                 if ($objText) $strName = $objText->content();
             }
             self::$arrPayments[$id] = array(
-                'id'           => $id,
+                'id' => $id,
                 'processor_id' => $objResult->fields['processor_id'],
-                'name'         => $strName,
-                'fee'          => $objResult->fields['fee'],
-                'free_from'    => $objResult->fields['free_from'],
-                'ord'          => $objResult->fields['ord'],
-                'active'       => $objResult->fields['active'],
+                'name' => $strName,
+                'fee' => $objResult->fields['fee'],
+                'free_from' => $objResult->fields['free_from'],
+                'ord' => $objResult->fields['ord'],
+                'active' => $objResult->fields['active'],
             );
             $objResult->MoveNext();
         }
@@ -545,8 +545,7 @@ class Payment
      */
     static function errorHandler()
     {
-//DBG::activate(DBG_DB_FIREPHP);
-        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
+// Payment
         // Fix the Text and Zones tables first
         Text::errorHandler();
         Zones::errorHandler();
@@ -562,14 +561,14 @@ class Payment
             'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1', 'renamefrom' => 'status'),
         );
         $table_index = array();
-        if (UpdateUtil::table_exist($table_name)) {
-            if (UpdateUtil::column_exist($table_name, 'name')) {
+        if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
                 // Migrate all Payment names to the Text table first
                 Text::deleteByKey('shop', self::TEXT_NAME);
                 $query = "
                     SELECT `id`, `name`
                       FROM `$table_name";
-                $objResult = UpdateUtil::sql($query);
+                $objResult = Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
                     throw new Update_DatabaseException(
                         "Failed to query Payment names", $query);
@@ -586,7 +585,7 @@ class Payment
                 }
             }
         }
-        UpdateUtil::table($table_name, $table_structure, $table_index);
+        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_payment';
         $table_structure = array(
@@ -594,7 +593,7 @@ class Payment
             'zone_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'primary' => true, 'renamefrom' => 'zones_id'),
         );
         $table_index = array();
-        UpdateUtil::table($table_name, $table_structure, $table_index);
+        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         // Always
         return false;

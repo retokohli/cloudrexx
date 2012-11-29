@@ -675,9 +675,9 @@ class ShopCategory
      * array(
      *   parent ID => array(
      *     child ID => array(
-     *       'ord'    => val,
+     *       'ord' => val,
      *       'active' => val,
-     *       'level'  => val,
+     *       'level' => val,
      *     ),
      *     ... more children
      *   ),
@@ -713,9 +713,9 @@ class ShopCategory
         foreach ($arrChildShopCategories as $objChildShopCategory) {
             $childCategoryId = $objChildShopCategory->id();
             $arrCategoryTree[$parent_id][$childCategoryId] = array(
-                'ord'    => $objChildShopCategory->ord(),
+                'ord' => $objChildShopCategory->ord(),
                 'active' => $objChildShopCategory->active(),
-                'level'  => $level,
+                'level' => $level,
             );
             // get the grandchildren
             foreach (ShopCategory::getCategoryTree(
@@ -856,8 +856,7 @@ class ShopCategory
      */
     static function errorHandler()
     {
-//DBG::activate(DBG_DB_FIREPHP);
-        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
+// ShopCategory
         // Fix the Text and Settings table first
         Text::errorHandler();
         ShopSettings::errorHandler();
@@ -874,15 +873,15 @@ class ShopCategory
         $table_index =  array(
             'flags' => array('fields' => 'flags', 'type' => 'FULLTEXT'),
         );
-        if (UpdateUtil::table_exist($table_name)) {
-            if (UpdateUtil::column_exist($table_name, 'catname')) {
+        if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            if (Cx\Lib\UpdateUtil::column_exist($table_name, 'catname')) {
                 // Migrate all ShopCategory names to the Text table first
                 Text::deleteByKey('shop', self::TEXT_NAME);
                 Text::deleteByKey('shop', self::TEXT_DESCRIPTION);
                 $query = "
                     SELECT `catid`, `catname`
                       FROM `$table_name`";
-                $objResult = UpdateUtil::sql($query);
+                $objResult = Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
                     throw new Update_DatabaseException(
                         "Failed to query ShopCategory names");
@@ -895,12 +894,11 @@ class ShopCategory
                         throw new Update_DatabaseException(
                             "Failed to migrate ShopCategory name '$name'");
                     }
-DBG::log("ShopCategory::errorHandler(): Migrated Category $name (ID $id)");
                     $objResult->MoveNext();
                 }
             }
         }
-        UpdateUtil::table($table_name, $table_structure, $table_index);
+        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         // Always
         return false;

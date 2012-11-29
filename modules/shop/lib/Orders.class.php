@@ -1125,57 +1125,57 @@ if (!$limit) {
         $shipment_id = $objOrder->shipment_id();
         $arrSubstitution = array (
             // Must be present in the Order, so the Customer can be found
-            'CUSTOMER_ID'         => $customer_id,
-            'LANG_ID'             => $lang_id,
-            'NOW'                 => date(ASCMS_DATE_FORMAT),
-            'TODAY'               => date(ASCMS_DATE_FORMAT_DATE),
-//            'DATE'                => date(ASCMS_DATE_FORMAT_DATE, strtotime($objOrder->date_time())),
-            'ORDER_ID'            => $order_id,
-            'ORDER_ID_CUSTOM'     => ShopLibrary::getCustomOrderId($order_id),
+            'CUSTOMER_ID' => $customer_id,
+            'LANG_ID' => $lang_id,
+            'NOW' => date(ASCMS_DATE_FORMAT),
+            'TODAY' => date(ASCMS_DATE_FORMAT_DATE),
+//            'DATE' => date(ASCMS_DATE_FORMAT_DATE, strtotime($objOrder->date_time())),
+            'ORDER_ID' => $order_id,
+            'ORDER_ID_CUSTOM' => ShopLibrary::getCustomOrderId($order_id),
 // TODO: Use proper localized date formats
-            'ORDER_DATE'          =>
+            'ORDER_DATE' =>
                 date(ASCMS_DATE_FORMAT_DATE,
                     strtotime($objOrder->date_time())),
-            'ORDER_TIME'          =>
+            'ORDER_TIME' =>
                 date(ASCMS_DATE_FORMAT_INTERNATIONAL_TIME,
                     strtotime($objOrder->date_time())),
-            'ORDER_STATUS_ID'     => $status,
-            'ORDER_STATUS'        => $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$status],
-            'MODIFIED'            =>
+            'ORDER_STATUS_ID' => $status,
+            'ORDER_STATUS' => $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$status],
+            'MODIFIED' =>
                 date(ASCMS_DATE_FORMAT,
                     strtotime($objOrder->modified_on())),
-            'REMARKS'             => $objOrder->note(),
-            'ORDER_SUM'           => sprintf('% 9.2f', $objOrder->sum()),
-            'CURRENCY'            => Currency::getCodeById($objOrder->currency_id()),
+            'REMARKS' => $objOrder->note(),
+            'ORDER_SUM' => sprintf('% 9.2f', $objOrder->sum()),
+            'CURRENCY' => Currency::getCodeById($objOrder->currency_id()),
         );
         if ($shipment_id) {
             $arrSubstitution += array (
                 'SHIPMENT' => array(0 => array(
-                    'SHIPMENT_NAME'  => sprintf('%-40s', Shipment::getShipperName($shipment_id)),
+                    'SHIPMENT_NAME' => sprintf('%-40s', Shipment::getShipperName($shipment_id)),
                     'SHIPMENT_PRICE' => sprintf('% 9.2f', $objOrder->shipment_amount()),
                 )),
 // Unused
-//                'SHIPMENT_ID'    => $objOrder->shipment_id(),
+//                'SHIPMENT_ID' => $objOrder->shipment_id(),
                 'SHIPPING_ADDRESS' => array(0 => array(
-                    'SHIPPING_COMPANY'    => $objOrder->company(),
-                    'SHIPPING_TITLE'      =>
+                    'SHIPPING_COMPANY' => $objOrder->company(),
+                    'SHIPPING_TITLE' =>
                         $_ARRAYLANG['TXT_SHOP_'.strtoupper($objOrder->gender())],
-                    'SHIPPING_FIRSTNAME'  => $objOrder->firstname(),
-                    'SHIPPING_LASTNAME'   => $objOrder->lastname(),
-                    'SHIPPING_ADDRESS'    => $objOrder->address(),
-                    'SHIPPING_ZIP'        => $objOrder->zip(),
-                    'SHIPPING_CITY'       => $objOrder->city(),
+                    'SHIPPING_FIRSTNAME' => $objOrder->firstname(),
+                    'SHIPPING_LASTNAME' => $objOrder->lastname(),
+                    'SHIPPING_ADDRESS' => $objOrder->address(),
+                    'SHIPPING_ZIP' => $objOrder->zip(),
+                    'SHIPPING_CITY' => $objOrder->city(),
                     'SHIPPING_COUNTRY_ID' => $objOrder->country_id(),
-                    'SHIPPING_COUNTRY'    => Country::getNameById(
+                    'SHIPPING_COUNTRY' => Country::getNameById(
                         $objOrder->country_id()),
-                    'SHIPPING_PHONE'      => $objOrder->phone(),
+                    'SHIPPING_PHONE' => $objOrder->phone(),
                 )),
             );
         }
         if ($payment_id) {
             $arrSubstitution += array (
                 'PAYMENT' => array(0 => array(
-                    'PAYMENT_NAME'  => sprintf('%-40s', Payment::getNameById($payment_id)),
+                    'PAYMENT_NAME' => sprintf('%-40s', Payment::getNameById($payment_id)),
                     'PAYMENT_PRICE' => sprintf('% 9.2f', $objOrder->payment_amount()),
                 )),
             );
@@ -1356,15 +1356,15 @@ die("Product ID $product_id not found");
                         $objUser->setFrontendLanguage(FRONTEND_LANG_ID);
                         $objUser->setBackendLanguage(FRONTEND_LANG_ID);
                         $objUser->setProfile(array(
-                            'firstname'    => array(0 => $arrSubstitution['CUSTOMER_FIRSTNAME']),
-                            'lastname'     => array(0 => $arrSubstitution['CUSTOMER_LASTNAME']),
-                            'company'      => array(0 => $arrSubstitution['CUSTOMER_COMPANY']),
-                            'address'      => array(0 => $arrSubstitution['CUSTOMER_ADDRESS']),
-                            'zip'          => array(0 => $arrSubstitution['CUSTOMER_ZIP']),
-                            'city'         => array(0 => $arrSubstitution['CUSTOMER_CITY']),
-                            'country'      => array(0 => $arrSubstitution['CUSTOMER_COUNTRY_ID']),
+                            'firstname' => array(0 => $arrSubstitution['CUSTOMER_FIRSTNAME']),
+                            'lastname' => array(0 => $arrSubstitution['CUSTOMER_LASTNAME']),
+                            'company' => array(0 => $arrSubstitution['CUSTOMER_COMPANY']),
+                            'address' => array(0 => $arrSubstitution['CUSTOMER_ADDRESS']),
+                            'zip' => array(0 => $arrSubstitution['CUSTOMER_ZIP']),
+                            'city' => array(0 => $arrSubstitution['CUSTOMER_CITY']),
+                            'country' => array(0 => $arrSubstitution['CUSTOMER_COUNTRY_ID']),
                             'phone_office' => array(0 => $arrSubstitution['CUSTOMER_PHONE']),
-                            'phone_fax'    => array(0 => $arrSubstitution['CUSTOMER_FAX']),
+                            'phone_fax' => array(0 => $arrSubstitution['CUSTOMER_FAX']),
                         ));
                         if (!$objUser->store()) {
                             Shop::addMessage(implode(

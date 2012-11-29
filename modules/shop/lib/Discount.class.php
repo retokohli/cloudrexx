@@ -799,24 +799,24 @@ class Discount
     static function errorHandler()
     {
 //die("Discount::errorHandler(): Disabled!<br />");
-        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
+// Discount
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_article_group';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
         );
         $table_index = array();
-        if (!UpdateUtil::table_exist($table_name)) {
-            if (!UpdateUtil::create_table($table_name, $table_structure, $table_index)) {
+        if (!Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            if (!Cx\Lib\UpdateUtil::create_table($table_name, $table_structure, $table_index)) {
                 throw new Update_DatabaseException(
                    "Failed to create article group table");
             }
         }
-        if (UpdateUtil::column_exist($table_name, 'name')) {
+        if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
             Text::deleteByKey('shop', self::TEXT_NAME_GROUP_ARTICLE);
             $query = "
                 SELECT `id`, `name`
                   FROM `$table_name`";
-            $objResult = UpdateUtil::sql($query);
+            $objResult = Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
                 throw new Update_DatabaseException(
                    "Failed to query article group names", $query);
@@ -831,7 +831,7 @@ class Discount
                 }
                 $objResult->MoveNext();
             }
-            UpdateUtil::table($table_name, $table_structure, $table_index);
+            Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
         }
 
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_customer_group';
@@ -839,18 +839,18 @@ class Discount
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
         );
         $table_index = array();
-        if (!UpdateUtil::table_exist($table_name)) {
-            if (!UpdateUtil::create_table($table_name, $table_structure, $table_index)) {
+        if (!Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            if (!Cx\Lib\UpdateUtil::create_table($table_name, $table_structure, $table_index)) {
                 throw new Update_DatabaseException(
                    "Failed to create customer group table");
             }
         }
-        if (UpdateUtil::column_exist($table_name, 'name')) {
+        if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
             Text::deleteByKey('shop', self::TEXT_NAME_GROUP_CUSTOMER);
             $query = "
                 SELECT `id`, `name`
                   FROM `$table_name`";
-            $objResult = UpdateUtil::sql($query);
+            $objResult = Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
                 throw new Update_DatabaseException(
                    "Failed to query customer group names", $query);
@@ -865,7 +865,7 @@ class Discount
                 }
                 $objResult->MoveNext();
             }
-            UpdateUtil::table($table_name, $table_structure, $table_index);
+            Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
         }
 
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_discount_group';
@@ -875,8 +875,8 @@ class Discount
             'rate' => array('type' => 'decimal(9,2)', 'notnull' => true, 'default' => '0.00'),
         );
         $table_index = array();
-        if (!UpdateUtil::table_exist($table_name)) {
-            if (!UpdateUtil::create_table($table_name, $table_structure, $table_index)) {
+        if (!Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            if (!Cx\Lib\UpdateUtil::create_table($table_name, $table_structure, $table_index)) {
                 throw new Update_DatabaseException(
                    "Failed to create customer group table");
             }
@@ -887,19 +887,19 @@ class Discount
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
         );
         $table_index = array();
-        if (!UpdateUtil::table_exist($table_name)) {
-            if (!UpdateUtil::create_table($table_name, $table_structure, $table_index)) {
+        if (!Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            if (!Cx\Lib\UpdateUtil::create_table($table_name, $table_structure, $table_index)) {
                 throw new Update_DatabaseException(
                    "Failed to create count group table");
             }
         }
-        if (UpdateUtil::column_exist($table_name, 'name')) {
+        if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
             Text::deleteByKey('shop', self::TEXT_NAME_GROUP_COUNT);
             Text::deleteByKey('shop', self::TEXT_UNIT_GROUP_COUNT);
             $query = "
                 SELECT `id`, `name`, `unit`
                   FROM `$table_name`";
-            $objResult = UpdateUtil::sql($query);
+            $objResult = Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
                 throw new Update_DatabaseException(
                    "Failed to query count group names", $query);
@@ -920,7 +920,7 @@ class Discount
                 }
                 $objResult->MoveNext();
             }
-            UpdateUtil::table($table_name, $table_structure, $table_index);
+            Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
         }
 
         // Always

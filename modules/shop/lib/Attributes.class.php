@@ -98,7 +98,7 @@ class Attributes
         while (!$objResult->EOF) {
             $id = $objResult->fields['id'];
             self::$arrAttributes[$id] = array(
-                'id'   => $id,
+                'id' => $id,
                 'name' => $objResult->fields['name'],
                 'type' => $objResult->fields['type'],
             );
@@ -297,7 +297,7 @@ class Attributes
      * The array has the form
      *  array(
      *    Attribute ID => array(
-     *      'id'   => Attribute ID,
+     *      'id' => Attribute ID,
      *      'name' => Attribute name (according to FRONTEND_LANG_ID),
      *      'type' => Attribute type,
      *    ),
@@ -334,7 +334,7 @@ class Attributes
                     Attribute::TEXT_ATTRIBUTE_NAME)->content();
             }
             self::$arrAttributes[$id] = array(
-                'id'   => $id,
+                'id' => $id,
                 'name' => $strName,
                 'type' => $objResult->fields['type'],
             );
@@ -421,10 +421,10 @@ class Attributes
             if (!isset(self::$arrOptions[$attribute_id]))
                 self::$arrOptions[$attribute_id] = array();
             self::$arrOptions[$attribute_id][$option_id] = array(
-                'id'            => $option_id,
-                'attribute_id'  => $attribute_id,
-                'value'         => $strValue,
-                'price'         => $objResult->fields['price'],
+                'id' => $option_id,
+                'attribute_id' => $attribute_id,
+                'value' => $strValue,
+                'price' => $objResult->fields['price'],
             );
             $objResult->MoveNext();
         }

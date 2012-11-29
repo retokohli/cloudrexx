@@ -403,16 +403,15 @@ class Zones
      */
     static function errorHandler()
     {
-//DBG::activate(DBG_DB_FIREPHP);
-        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
+// Zones
         // Fix the Zone-Payment relation table
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_payment';
         $table_structure = array(
             'zone_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'primary' => true, 'renamefrom' => 'zones_id'),
             'payment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'primary' => true),
         );
-        $table_index =  array();
-        UpdateUtil::table($table_name, $table_structure, $table_index);
+        $table_index = array();
+        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         // Fix the Text table
         Text::errorHandler();
@@ -423,14 +422,14 @@ class Zones
             'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1', 'renamefrom' => 'activation_status'),
         );
         $table_index =  array();
-        if (UpdateUtil::table_exist($table_name)) {
-            if (UpdateUtil::column_exist($table_name, 'zones_name')) {
+        if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            if (Cx\Lib\UpdateUtil::column_exist($table_name, 'zones_name')) {
                 // Migrate all Zone names to the Text table first
                 Text::deleteByKey('shop', self::TEXT_NAME);
                 $query = "
                     SELECT `zones_id`, `zones_name`
                       FROM `$table_name";
-                $objResult = UpdateUtil::sql($query);
+                $objResult = Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
                     throw new Update_DatabaseException(
                         "Failed to query Zone names", $query);
@@ -447,22 +446,22 @@ class Zones
                 }
             }
         }
-        UpdateUtil::table($table_name, $table_structure, $table_index);
+        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         $table_name_old = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_shipment';
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_shipper';
-        if (UpdateUtil::table_exist($table_name_old)) {
-            if (UpdateUtil::table_exist($table_name)) {
+        if (Cx\Lib\UpdateUtil::table_exist($table_name_old)) {
+            if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
                 throw new UpdateException("Destination table $table_name exists, cannot rename old table $table_name_old");
             }
-            UpdateUtil::table_rename($table_name_old, $table_name);
+            Cx\Lib\UpdateUtil::table_rename($table_name_old, $table_name);
         }
         $table_structure = array(
             'shipper_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'renamefrom' => 'shipment_id'),
             'zone_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'renamefrom' => 'zones_id'),
         );
         $table_index = array();
-        UpdateUtil::table($table_name, $table_structure, $table_index);
+        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_countries';
         $table_structure = array(
@@ -470,7 +469,7 @@ class Zones
             'zone_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'renamefrom' => 'zones_id'),
         );
         $table_index = array();
-        UpdateUtil::table($table_name, $table_structure, $table_index);
+        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         // Always
         return false;

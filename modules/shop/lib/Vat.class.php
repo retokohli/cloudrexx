@@ -157,8 +157,8 @@ class Vat
                 if ($objText) $strClass = $objText->content();
             }
             self::$arrVat[$id] = array(
-                'id'    => $id,
-                'rate'  => $objResult->fields['rate'],
+                'id' => $id,
+                'rate' => $objResult->fields['rate'],
                 'class' => $strClass,
             );
             $objResult->MoveNext();
@@ -207,9 +207,9 @@ class Vat
      *
      * The array returned contains the following elements:
      *  array(
-     *    'id'    => VAT ID,
+     *    'id' => VAT ID,
      *    'class' => VAT class name
-     *    'rate'  => VAT rate in percent
+     *    'rate' => VAT rate in percent
      *  )
      * @param   integer   $vatId        The VAT ID
      * @return  array                   The VAT data array on success,
@@ -716,22 +716,21 @@ class Vat
      */
     static function errorHandler()
     {
-//DBG::activate(DBG_DB_FIREPHP);
-        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
+// Vat
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_vat';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
             'rate' => array('type' => 'DECIMAL(5,2)', 'unsigned' => true, 'notnull' => true, 'default' => '0.00', 'renamefrom' => 'percent'),
         );
         $table_index =  array();
-        if (UpdateUtil::table_exist($table_name, 'class')) {
-            if (UpdateUtil::column_exist($table_name, 'class')) {
+        if (Cx\Lib\UpdateUtil::table_exist($table_name, 'class')) {
+            if (Cx\Lib\UpdateUtil::column_exist($table_name, 'class')) {
                 // Migrate all Vat classes to the Text table first
                 Text::deleteByKey('shop', self::TEXT_CLASS);
                 $query = "
                     SELECT `id`, `class`
                       FROM `$table_name`";
-                $objResult = UpdateUtil::sql($query);
+                $objResult = Cx\Lib\UpdateUtil::sql($query);
                 while (!$objResult->EOF) {
                     $id = $objResult->fields['id'];
                     $class = $objResult->fields['class'];
@@ -744,7 +743,7 @@ class Vat
                 }
             }
         }
-        UpdateUtil::table($table_name, $table_structure, $table_index);
+        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         // Always
         return false;

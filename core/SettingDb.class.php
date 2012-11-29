@@ -1,7 +1,5 @@
 <?php
 
-use Cx\Lib\UpdateUtil as UpdateUtil;
-
 /**
  * Manages settings stored in the database
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -532,7 +530,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
     static function show(
         &$objTemplateLocal, $uriBase, $section='', $tab_name='', $prefix='TXT_'
     ) {
-        global $_CORELANG, $_ARRAYLANG;
+        global $_CORELANG;
 
 //$objTemplate->setCurrentBlock();
 //echo(nl2br(htmlentities(var_export($objTemplate->getPlaceholderList()))));
@@ -808,11 +806,6 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
     static function show_external(
         &$objTemplateLocal, $tab_name, $content
     ) {
-        global $_CORELANG, $_ARRAYLANG;
-
-//$objTemplate->setCurrentBlock();
-//echo(nl2br(htmlentities(var_export($objTemplate->getPlaceholderList()))));
-
         if (   empty($objTemplateLocal)
             || !$objTemplateLocal->blockExists('core_settingdb_row')) {
             $objTemplateLocal = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
@@ -1091,7 +1084,7 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
                 'fields' => array('section' => 32, 'name' => 32, 'group' => 32),
             ),
         );
-        UpdateUtil::table($table_name, $table_structure, $table_index);
+        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 //echo("SettingDb::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
 
         // Use SettingDb::add(); in your module code to add settings; example:

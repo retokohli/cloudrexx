@@ -312,18 +312,18 @@ class Attribute
             // These types can have exactly one value
             $this->arrValues = array(
                 array(
-                    'value'   => $value,
-                    'price'   => $price,
-                    'order'   => $order,
+                    'value' => $value,
+                    'price' => $price,
+                    'order' => $order,
                 )
             );
             return true;
         }
         // Any other types can have an arbitrary number of values
         $this->arrValues[] = array(
-            'value'   => $value,
-            'price'   => $price,
-            'order'   => $order,
+            'value' => $value,
+            'price' => $price,
+            'order' => $order,
         );
         return true;
     }
@@ -832,23 +832,23 @@ class Attribute
      */
     static function errorHandler()
     {
-        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
-        $table_name_new = DBPREFIX.'module_shop'.MODULE_INDEX.'_attribute';
-        if (!UpdateUtil::table_exist($table_name_new)) {
+// Attribute
+         $table_name_new = DBPREFIX.'module_shop'.MODULE_INDEX.'_attribute';
+        if (!Cx\Lib\UpdateUtil::table_exist($table_name_new)) {
             $table_name_old = DBPREFIX.'module_shop'.MODULE_INDEX.'_products_attributes_name';
             $table_structure = array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
                 'type' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1', 'renamefrom' => 'display_type'),
             );
             $table_index =  array();
-            if (UpdateUtil::table_exist($table_name_old)) {
-                if (UpdateUtil::column_exist($table_name_old, 'name')) {
+            if (Cx\Lib\UpdateUtil::table_exist($table_name_old)) {
+                if (Cx\Lib\UpdateUtil::column_exist($table_name_old, 'name')) {
                     // Migrate all Product strings to the Text table first
                     Text::deleteByKey('shop', self::TEXT_ATTRIBUTE_NAME);
                     $query = "
                         SELECT `id`, `name`
                           FROM `$table_name_old`";
-                    $objResult = UpdateUtil::sql($query);
+                    $objResult = Cx\Lib\UpdateUtil::sql($query);
                     if (!$objResult) {
                         throw new Update_DatabaseException(
                            "Failed to to query Attribute names", $query);
@@ -866,15 +866,15 @@ class Attribute
                 }
             }
 //DBG::activate(DBG_ADODB);
-            UpdateUtil::table($table_name_old, $table_structure, $table_index);
-            if (!UpdateUtil::table_rename($table_name_old, $table_name_new)) {
+            Cx\Lib\UpdateUtil::table($table_name_old, $table_structure, $table_index);
+            if (!Cx\Lib\UpdateUtil::table_rename($table_name_old, $table_name_new)) {
                 throw new Update_DatabaseException(
                    "Failed to rename Attribute table");
             }
         }
 
         $table_name_new = DBPREFIX.'module_shop'.MODULE_INDEX.'_option';
-        if (!UpdateUtil::table_exist($table_name_new)) {
+        if (!Cx\Lib\UpdateUtil::table_exist($table_name_new)) {
             $table_name_old = DBPREFIX.'module_shop'.MODULE_INDEX.'_products_attributes_value';
             $table_structure = array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
@@ -882,14 +882,14 @@ class Attribute
                 'price' => array('type' => 'DECIMAL(9,2)', 'default' => '0.00'),
             );
             $table_index =  array();
-            if (UpdateUtil::table_exist($table_name_old)) {
-                if (UpdateUtil::column_exist($table_name_old, 'value')) {
+            if (Cx\Lib\UpdateUtil::table_exist($table_name_old)) {
+                if (Cx\Lib\UpdateUtil::column_exist($table_name_old, 'value')) {
                     // Migrate all Product strings to the Text table first
                     Text::deleteByKey('shop', self::TEXT_OPTION_NAME);
                     $query = "
                         SELECT `id`, `value`
                           FROM `$table_name_old`";
-                    $objResult = UpdateUtil::sql($query);
+                    $objResult = Cx\Lib\UpdateUtil::sql($query);
                     if (!$objResult) {
                         throw new Update_DatabaseException(
                            "Failed to to query option names", $query);
@@ -906,15 +906,15 @@ class Attribute
                     }
                 }
             }
-            UpdateUtil::table($table_name_old, $table_structure, $table_index);
-            if (!UpdateUtil::table_rename($table_name_old, $table_name_new)) {
+            Cx\Lib\UpdateUtil::table($table_name_old, $table_structure, $table_index);
+            if (!Cx\Lib\UpdateUtil::table_rename($table_name_old, $table_name_new)) {
                 throw new Update_DatabaseException(
                    "Failed to rename Option table");
             }
         }
 
         $table_name_new = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_product_attribute';
-        if (!UpdateUtil::table_exist($table_name_new)) {
+        if (!Cx\Lib\UpdateUtil::table_exist($table_name_new)) {
             $table_name_old = DBPREFIX.'module_shop'.MODULE_INDEX.'_products_attributes';
             $table_structure = array(
                 'product_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'primary' => true),
@@ -922,8 +922,8 @@ class Attribute
                 'ord' => array('type' => 'INT(10)', 'default' => '0', 'renamefrom' => 'sort_id'),
             );
             $table_index =  array();
-            UpdateUtil::table($table_name_old, $table_structure, $table_index);
-            if (!UpdateUtil::table_rename($table_name_old, $table_name_new)) {
+            Cx\Lib\UpdateUtil::table($table_name_old, $table_structure, $table_index);
+            if (!Cx\Lib\UpdateUtil::table_rename($table_name_old, $table_name_new)) {
                 throw new Update_DatabaseException(
                    "Failed to rename Product-Attribute relation table $table_name_old to $table_name_new");
             }

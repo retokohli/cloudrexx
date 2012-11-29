@@ -1,7 +1,5 @@
 <?php
 
-use Cx\Lib\UpdateUtil as UpdateUtil;
-
 /**
  * Core Mail and Template Management
  * @version     3.0.0
@@ -1396,8 +1394,6 @@ Use plain text areas instead.  See below.
      */
     static function errorHandler()
     {
-        global $objDatabase;
-
         Text::errorHandler();
 //DBG::activate(DBG_DB_FIREPHP);
         $table_name = DBPREFIX."core_mail_template";
@@ -1413,18 +1409,11 @@ Use plain text areas instead.  See below.
 // by UpdateUtil
 //            'primary' => array('key(32)', 'section(32)'),
         );
-        UpdateUtil::table($table_name, $table_structure, $table_index);
-        UpdateUtil::sql("
+        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        Cx\Lib\UpdateUtil::sql("
             ALTER TABLE `contrexx_2_3`.`contrexx_core_mail_template`
               ADD PRIMARY KEY ( `key` ( 32 ) , `section` ( 32 ) )");
-DBG::log("Mailtemplate::errorHandler(): Migrated table core_mail_template");
-
-        // Import Mailtemplates
-        // - from the Shop:
-        ShopMail::errorHandler();
-DBG::log("Mailtemplate::errorHandler(): Migrated Shop Mailtemplates!");
-
-        // More to come...
+//DBG::log("Mailtemplate::errorHandler(): Migrated table core_mail_template");
 
         // Always!
         return false;

@@ -527,24 +527,24 @@ class Customer extends User
             $this->firstname(), $this->lastname(), $this->company(), $title);
         $arrSubstitution = array(
             'CUSTOMER_SALUTATION' => $salutation,
-            'CUSTOMER_ID'         => $this->id(),
-            'CUSTOMER_EMAIL'      => $this->email(),
-            'CUSTOMER_COMPANY'    => $this->company(),
-            'CUSTOMER_FIRSTNAME'  => $this->firstname(),
-            'CUSTOMER_LASTNAME'   => $this->lastname(),
-            'CUSTOMER_ADDRESS'    => $this->address(),
-            'CUSTOMER_ZIP'        => $this->zip(),
-            'CUSTOMER_CITY'       => $this->city(),
-            'CUSTOMER_COUNTRY'    => Country::getNameById($this->country_id()),
-            'CUSTOMER_PHONE'      => $this->phone(),
-            'CUSTOMER_FAX'        => $this->fax(),
-            'CUSTOMER_USERNAME'   => $this->username(),
+            'CUSTOMER_ID' => $this->id(),
+            'CUSTOMER_EMAIL' => $this->email(),
+            'CUSTOMER_COMPANY' => $this->company(),
+            'CUSTOMER_FIRSTNAME' => $this->firstname(),
+            'CUSTOMER_LASTNAME' => $this->lastname(),
+            'CUSTOMER_ADDRESS' => $this->address(),
+            'CUSTOMER_ZIP' => $this->zip(),
+            'CUSTOMER_CITY' => $this->city(),
+            'CUSTOMER_COUNTRY' => Country::getNameById($this->country_id()),
+            'CUSTOMER_PHONE' => $this->phone(),
+            'CUSTOMER_FAX' => $this->fax(),
+            'CUSTOMER_USERNAME' => $this->username(),
 // There are not used in any MailTemplate so far:
 //            'CUSTOMER_COUNTRY_ID' => $this->country_id(),
-//            'CUSTOMER_NOTE'       => $this->getProfileAttribute($index_notes),
-//            'CUSTOMER_TYPE'       => $this->getProfileAttribute($index_type),
-//            'CUSTOMER_RESELLER'   => $this->getProfileAttribute($index_reseller),
-//            'CUSTOMER_GROUP_ID'   => current($this->getAssociatedGroupIds()),
+//            'CUSTOMER_NOTE' => $this->getProfileAttribute($index_notes),
+//            'CUSTOMER_TYPE' => $this->getProfileAttribute($index_type),
+//            'CUSTOMER_RESELLER' => $this->getProfileAttribute($index_reseller),
+//            'CUSTOMER_GROUP_ID' => current($this->getAssociatedGroupIds()),
         );
 //DBG::log("Login: ".$this->username()."/".$_SESSION['shop']['password']);
         if (isset($_SESSION['shop']['password'])) {
@@ -639,13 +639,13 @@ class Customer extends User
      */
     static function errorHandler()
     {
+// Customer
         global $objFWUser;
 
-        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
         $table_name_old = DBPREFIX."module_shop".MODULE_INDEX."_customers";
         // If the old Customer table is missing, the migration has completed
         // successfully already
-        if (!UpdateUtil::table_exist($table_name_old)) {
+        if (!Cx\Lib\UpdateUtil::table_exist($table_name_old)) {
             return false;
         }
 
@@ -653,7 +653,7 @@ class Customer extends User
         // are ready first!
 //DBG::log("Customer::errorHandler(): Adding settings");
         ShopSettings::errorHandler();
-        Country::errorHandler();
+//        Country::errorHandler(); // Called by Order::errorHandler();
         Order::errorHandler();
         Discount::errorHandler();
 
@@ -721,7 +721,7 @@ class Customer extends User
         $query = "
             ALTER TABLE `".DBPREFIX."module_shop".MODULE_INDEX."_orders`
               ADD `migrated` TINYINT(1) unsigned NOT NULL default 0";
-        UpdateUtil::sql($query);
+        Cx\Lib\UpdateUtil::sql($query);
 
         $arrResellerId = array();
         $arrCustomerId = array();
@@ -741,7 +741,7 @@ class Customer extends User
                    `customer`.`group_id`
               FROM `$table_name_old` AS `customer`
              ORDER BY `customer`.`customerid` ASC";
-        $objResult = UpdateUtil::sql($query);
+        $objResult = Cx\Lib\UpdateUtil::sql($query);
         while (!$objResult->EOF) {
             $old_customer_id = $objResult->fields['customerid'];
             if (empty($objResult->fields['email'])) {
@@ -819,7 +819,7 @@ class Customer extends User
                        `migrated`=1
                  WHERE `customer_id`=$old_customer_id
                    AND `migrated`=0";
-            UpdateUtil::sql($query);
+            Cx\Lib\UpdateUtil::sql($query);
             $objResult->MoveNext();
         }
 
@@ -830,7 +830,7 @@ class Customer extends User
         $query = "
             ALTER TABLE `".DBPREFIX."module_shop".MODULE_INDEX."_orders`
              DROP `migrated`";
-        UpdateUtil::sql($query);
+        Cx\Lib\UpdateUtil::sql($query);
 
         // Create missing UserGroups for customers and resellers
         $objGroup = null;
@@ -898,7 +898,7 @@ class Customer extends User
                "Failed to store UserGroup ID for resellers");
         }
 
-        UpdateUtil::drop_table($table_name_old);
+        Cx\Lib\UpdateUtil::drop_table($table_name_old);
 
 //DBG::log("Updated Customer table and related stuff");
         // Always

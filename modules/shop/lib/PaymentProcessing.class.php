@@ -97,13 +97,13 @@ class PaymentProcessing
         $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
             self::$arrPaymentProcessor[$objResult->fields['id']] = array(
-                'id'          => $objResult->fields['id'],
-                'type'        => $objResult->fields['type'],
-                'name'        => $objResult->fields['name'],
+                'id' => $objResult->fields['id'],
+                'type' => $objResult->fields['type'],
+                'name' => $objResult->fields['name'],
                 'description' => $objResult->fields['description'],
                 'company_url' => $objResult->fields['company_url'],
-                'status'      => $objResult->fields['status'],
-                'picture'     => $objResult->fields['picture'],
+                'status' => $objResult->fields['status'],
+                'picture' => $objResult->fields['picture'],
             );
             $objResult->MoveNext();
         }
@@ -338,28 +338,28 @@ DBG::log($error);
 
         $serverBase = $_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET.'/';
         $arrShopOrder = array(
-            'AMOUNT'      => str_replace('.', '', $_SESSION['shop']['grand_total_price']),
-            'CURRENCY'    => Currency::getActiveCurrencyCode(),
-            'ORDERID'     => $_SESSION['shop']['order_id'],
-            'ACCOUNTID'   => SettingDb::getValue('saferpay_id'),
+            'AMOUNT' => str_replace('.', '', $_SESSION['shop']['grand_total_price']),
+            'CURRENCY' => Currency::getActiveCurrencyCode(),
+            'ORDERID' => $_SESSION['shop']['order_id'],
+            'ACCOUNTID' => SettingDb::getValue('saferpay_id'),
             'SUCCESSLINK' =>
                 'http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.
                 '&cmd=success&result=1&handler=saferpay',
-            'FAILLINK'    =>
+            'FAILLINK' =>
                 'http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.
                 '&cmd=success&result=0&handler=saferpay',
-            'BACKLINK'    =>
+            'BACKLINK' =>
                 'http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.
                 '&cmd=success&result=2&handler=saferpay',
             'DESCRIPTION' =>
                 '"'.$_ARRAYLANG['TXT_ORDER_NR'].
                 ' '.$_SESSION['shop']['order_id'].'"',
-            'LANGID'      => FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
-            'NOTIFYURL'   =>
+            'LANGID' => FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
+            'NOTIFYURL' =>
                 'http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.
                 '&cmd=success&result=-1&handler=saferpay',
             'ALLOWCOLLECT' => 'no',
-            'DELIVERY'     => 'no',
+            'DELIVERY' => 'no',
         );
         $payInitUrl = Saferpay::payInit($arrShopOrder,
             SettingDb::getValue('saferpay_use_test_account'));
@@ -422,9 +422,9 @@ DBG::log($error);
 
         $arrShopOrder = array(
 // 20111227 - Note that all parameter names should now be uppercase only
-            'ORDERID'   => $_SESSION['shop']['order_id'],
-            'AMOUNT'    => intval($_SESSION['shop']['grand_total_price']*100),
-            'CURRENCY'  => Currency::getActiveCurrencyCode(),
+            'ORDERID' => $_SESSION['shop']['order_id'],
+            'AMOUNT' => intval($_SESSION['shop']['grand_total_price']*100),
+            'CURRENCY' => Currency::getActiveCurrencyCode(),
             'PARAMPLUS' => 'section=shop'.MODULE_INDEX.'&cmd=success&handler=yellowpay',
         );
         $return = Yellowpay::getForm('shop'.MODULE_INDEX, $arrShopOrder, $_ARRAYLANG['TXT_ORDER_NOW']);
@@ -661,9 +661,9 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
      */
     static function errorHandler()
     {
-        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
+// PaymentProcessing
         $table_name_new = DBPREFIX.'module_shop'.MODULE_INDEX.'_processors';
-        if (!UpdateUtil::table_exist($table_name_new)) {
+        if (!Cx\Lib\UpdateUtil::table_exist($table_name_new)) {
             $table_structure = array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
                 'type' => array('type' => 'ENUM("internal", "external")', 'default' => 'internal'),
@@ -673,7 +673,7 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
                 'status' => array('type' => 'TINYINT(10)', 'unsigned' => true, 'default' => 1),
                 'picture' => array('type' => 'VARCHAR(255)', 'default' => ''),
             );
-            UpdateUtil::table($table_name_new, $table_structure);
+            Cx\Lib\UpdateUtil::table($table_name_new, $table_structure);
         }
         $arrPsp = array(
             array(01, 'external', 'Saferpay',
@@ -720,7 +720,7 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
                 ?, ?, ?, ?, ?, ?, ?
             )";
         foreach ($arrPsp as $psp) {
-            UpdateUtil::sql($query_template, $psp);
+            Cx\Lib\UpdateUtil::sql($query_template, $psp);
         }
 
         // Always
