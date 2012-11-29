@@ -52,15 +52,6 @@ $_FTPCONFIG['password'] = '%FTP_PASSWORD%'; // Ftp login password
 $_FTPCONFIG['path'] = '%FTP_PATH%'; // Ftp path to cms (must not include ascms_root_offset)
 
 /**
-* -------------------------------------------------------------------------
-* Optional customizing exceptions
-* Shopnavbar: If set to TRUE the shopnavbar will appear on each page
-* -------------------------------------------------------------------------
-*/
-$_CONFIGURATION['custom']['shopnavbar'] = false; // true|false
-$_CONFIGURATION['custom']['shopJsCart'] = false; // true|false
-
-/**
 * Set character encoding
 */
 $_CONFIG['coreCharacterEncoding'] = '%CHARSET%'; // example 'UTF-8'
