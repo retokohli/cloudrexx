@@ -459,7 +459,6 @@ class MediaManager extends MediaLibrary
         $comboUp->setData($data);
         //set instance name to combo_uploader so we are able to catch the instance with js
         $comboUp->setJsInstanceName('exposed_combo_uploader');
-        
         $this->_objTpl->setVariable(array(
               'COMBO_UPLOADER_CODE'               => $comboUp->getXHtml(true)
         ));
@@ -601,15 +600,13 @@ class MediaManager extends MediaLibrary
 
         // empty dir or php safe mode restriction
         if ($i == 0 || !@opendir($this->path)) {
+            $tmpMessage = $_ARRAYLANG['TXT_MEDIA_DIR_EMPTY'];
             if (!@opendir($this->path)) {
                 $tmpMessage = 'PHP Safe Mode Restriction!';
-            } else {
-                $tmpMessage = $_ARRAYLANG['TXT_MEDIA_DIR_EMPTY'];
             }
-
             $this->_objTpl->setVariable(array(
                 'TXT_MEDIA_DIR_EMPTY'   => $tmpMessage,
-                'MEDIA_SELECT_STATUS'   => ' disabled'
+                'MEDIA_SELECT_STATUS'   => ' disabled',
             ));
             $this->_objTpl->parse('mediaEmptyDirectory');
         } else {
@@ -940,7 +937,6 @@ class MediaManager extends MediaLibrary
 
             $mediaAccessSetting                 = $this->_arrSettings['media' . $k . '_frontend_changable'];
             $mediaManageSetting                 = $this->_arrSettings['media' . $k . '_frontend_managable'];
-            
             if (!is_numeric($mediaAccessSetting))
             {
                 // Get all groups
@@ -978,7 +974,6 @@ class MediaManager extends MediaLibrary
                 );
                 $arrAssociatedManageGroups = $objGroup->getLoadedGroupIds();
             }
-            
             $objGroup = $objFWUser->objGroup->getGroups();
             while (!$objGroup->EOF) {
                 $option = '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).' ['.$objGroup->getType().']</option>';
@@ -1024,7 +1019,6 @@ class MediaManager extends MediaLibrary
         global $objDatabase, $_ARRAYLANG;
 
         $this->_arrSettings = $this->createSettingsArray();
-        
         for ($i = 0; $i <=4; $i++)
         {
             $oldMediaSetting = $this->_arrSettings['media' . $i . '_frontend_changable'];
@@ -1114,5 +1108,3 @@ class MediaManager extends MediaLibrary
         $this->_strOkMessage = $_ARRAYLANG['TXT_MEDIA_SETTINGS_SAVE_SUCCESSFULL'];
     }
 }
-
-?>
