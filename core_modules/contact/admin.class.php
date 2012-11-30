@@ -1696,17 +1696,16 @@ class ContactManager extends ContactLib
         $sourcecode = array();
         $this->initContactForms();
 
-        $sourcecode[] = "{CONTACT_FEEDBACK_TEXT}";
-        $sourcecode[] = "<!-- BEGIN formText -->". ($preview ? $this->arrForms[$id]['lang'][$lang]['text'] : "{".$id."_FORM_TEXT}") ."<!-- END formText -->";
-        $sourcecode[] = '<div id="contactFormError">';
-        $sourcecode[] = $preview ? $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'] : '{TXT_NEW_ENTRY_ERORR}';
-        $sourcecode[] = "</div>";
-        $sourcecode[] = "<!-- BEGIN contact_form -->";
-        $sourcecode[] = '<form action="'.($preview ? '../' : '')."index.php?section=contact&amp;cmd=".$id.'" ';
-        $sourcecode[] = 'method="post" enctype="multipart/form-data" onsubmit="return checkAllFields();" id="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" class="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'">';
-        $sourcecode[] = '<fieldset id="contactFrame">';
-        $sourcecode[] = "<legend>". ($preview ? $this->arrForms[$id]['lang'][$lang]['name'] : "{".$id."_FORM_NAME}")."</legend>";
-       
+        $sourcecode[] = '
+            <div id="contactFeedback">{CONTACT_FEEDBACK_TEXT}</div>
+            <div id="contactDescription"><!-- BEGIN formText -->'.($preview ? $this->arrForms[$id]['lang'][$lang]['text'] : '{'.$id.'_FORM_TEXT}').'<!-- END formText --></div>
+            <div id="contactFormError">'.($preview ? $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'] : '{TXT_NEW_ENTRY_ERORR}').'</div>
+            <!-- BEGIN contact_form -->
+            <form id="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" class="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" action="'.($preview ? '../' : '').'index.php?section=contact&amp;cmd='.$id.'" method="post" enctype="multipart/form-data" onsubmit="return checkAllFields();">
+                <fieldset id="contactFrame">
+                <legend>'.($preview ? $this->arrForms[$id]['lang'][$lang]['name'] : '{'.$id.'_FORM_NAME}').'</legend>
+        ';
+
         foreach ($arrFields as $fieldId => $arrField) {
             if ($arrField['is_required']) {
                 $required = '<strong class="is_required">*</strong>';
