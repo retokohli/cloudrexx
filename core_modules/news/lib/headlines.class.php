@@ -59,7 +59,6 @@ class newsHeadlines extends newsLibrary
         $catId= intval($catId);
 
         $this->_objTemplate->setTemplate($this->_pageContent,true,true);
-        $this->_objTemplate->setCurrentBlock('headlines_row');
 
         $newsLimit = intval($this->arrSettings['news_headlines_limit']);
         if ($newsLimit>50) { //limit to a maximum of 50 news
@@ -79,6 +78,7 @@ class newsHeadlines extends newsLibrary
                        tblN.publisher_id,
                        tblN.author,
                        tblN.author_id,
+                       tblL.text NOT REGEXP '^(<br type=\"_moz\" />)?\$' AS newscontent,
                        tblL.title AS title, 
                        tblL.teaser_text
                   FROM ".DBPREFIX."module_news AS tblN
@@ -105,9 +105,16 @@ class newsHeadlines extends newsLibrary
                 $newsid    = $objResult->fields['id'];
                 $newstitle = $objResult->fields['title'];
                 $newsUrl    = empty($objResult->fields['redirect'])
-                                ? \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', FRONTEND_LANG_ID, array('newsid' => $newsid))
+                                ? (empty($objResult->fields['newscontent'])
+                                    ? ''
+                                    : \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', FRONTEND_LANG_ID, array('newsid' => $newsid)))
                                 : $objResult->fields['redirect'];
                 $htmlLink   = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle), 'headlineLink');
+                $htmlLinkTitle  = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle));
+                // in case that the message is a stub, we shall just display the news title instead of a html-a-tag with no href target
+                if (empty($htmlLinkTitle)) {
+                    $htmlLinkTitle = contrexx_raw2xhtml($newstitle);
+                }
 
                 list($image, $htmlLinkImage, $imageSource) = self::parseImageThumbnail($objResult->fields['teaser_image_path'],
                                                                                        $objResult->fields['teaser_image_thumbnail_path'],
@@ -124,6 +131,7 @@ class newsHeadlines extends newsLibrary
                     'NEWS_LONG_DATE'    => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
                     'NEWS_TITLE'        => contrexx_raw2xhtml($newstitle),
                     'NEWS_TEASER'       => nl2br($objResult->fields['teaser_text']),
+                    'NEWS_LINK_TITLE'   => $htmlLinkTitle,
                     'NEWS_LINK'         => $htmlLink,
                     'NEWS_LINK_URL'     => contrexx_raw2xhtml($newsUrl),
                     'NEWS_AUTHOR'       => contrexx_raw2xhtml($author),
@@ -133,7 +141,7 @@ class newsHeadlines extends newsLibrary
                     'HEADLINE_ID'       => $newsid,
                     'HEADLINE_DATE'     => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['date']),
                     'HEADLINE_TEXT'     => nl2br($objResult->fields['teaser_text']),
-                    'HEADLINE_LINK'     => $htmlLink,
+                    'HEADLINE_LINK'     => $htmlLinkTitle,
                     'HEADLINE_AUTHOR'   => contrexx_raw2xhtml($author),
                 ));
 
@@ -158,7 +166,7 @@ class newsHeadlines extends newsLibrary
                     }
                 }
 
-                $this->_objTemplate->parseCurrentBlock();
+                $this->_objTemplate->parse('headlines_row');
                 $i++;
                 $objResult->MoveNext();
             }
