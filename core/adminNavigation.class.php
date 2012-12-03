@@ -167,7 +167,7 @@ class adminMenu
             $subentryActive = false;
             $nonUpgradeEntry = false;
             foreach ($arrMatchingItems as $link_data) {
-                if ($group_id != 2 ||  $this->moduleExists($link_data[4])) {
+                if ($this->moduleExists($link_data[4])) {
 
                     // active exceptions for media and content module
                     // ask: thomas.daeppen@comvation.com
