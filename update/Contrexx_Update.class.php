@@ -395,10 +395,7 @@ class Contrexx_Update
                     $arrUpdate = false;
                     if (@include_once(UPDATE_UPDATES.'/'.$file.'/config.inc.php')) {
                         if (is_array($arrUpdate)) {
-                            if ($_CONFIG['coreCmsEdition'] != $arrUpdate['cmsEdition']) {
-                                $arrVersions['incompatible'][$file] = $arrUpdate;
-                                $arrVersions['incompatible'][$file]['reason'] = $_CORELANG['TXT_UPDATE_INCOMPATIBLE_EDITION'];
-                            } elseif (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], $arrUpdate['cmsVersion'], $_CONFIG['coreCmsStatus'], $arrUpdate['cmsStatus'])) {
+                            if (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], $arrUpdate['cmsVersion'], $_CONFIG['coreCmsStatus'], $arrUpdate['cmsStatus'])) {
                                 $arrVersions['incompatible'][$file] = $arrUpdate;
                                 $arrVersions['incompatible'][$file]['reason'] = $_CORELANG['TXT_UPDATE_INSTALLED_VERSION_IS_NEWER'];
                             } elseif ($this->_isNewerVersion($_CONFIG['coreCmsVersion'], $arrUpdate['cmsFromVersion'])) {
