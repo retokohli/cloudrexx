@@ -816,9 +816,9 @@ class CommonFunctions
             if (empty($statusMessage)) {
                 $statusMessage = $_ARRLANG['TXT_SET_WRITE_PERMISSION_TO_FILES']."<br />";
             }
-            $statusMessage .= $path.$checkFile."<br />";
+            $statusMessage .= $path."<br />";
         } else {
-            $statusMessage .= $_ARRLANG['TXT_COULD_NOT_CHANGE_PERMISSIONS'].' '.$file."<br />";
+            $statusMessage .= $_ARRLANG['TXT_COULD_NOT_CHANGE_PERMISSIONS'].' '.$path."<br />";
         }
         
         return $statusMessage;
