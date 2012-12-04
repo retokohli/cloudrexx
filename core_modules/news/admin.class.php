@@ -1405,12 +1405,12 @@ class newsManager extends newsLibrary {
             $newsPublisherId = $objResult->fields['publisher_id'];
 
             if ($newsPublisherId != 0 && ($objUser = $objFWUser->objUser->getUser($newsPublisherId))) {
-                $newsPublisherName = $objUser->getUsername();                
+                $newsPublisherName = FWUser::getParsedUserTitle($objUser);                
             } else {
                 $newsPublisherId = 0;
             }
             if ($newsAuthorId != 0 && ($objUser = $objFWUser->objUser->getUser($newsAuthorId))) {
-                $newsAuthorName = $objUser->getUsername();
+                $newsAuthorName = FWUser::getParsedUserTitle($objUser);
             } else {
                 $newsAuthorId = 0;
             }
