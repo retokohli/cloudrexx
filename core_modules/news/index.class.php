@@ -208,7 +208,9 @@ class news extends newsLibrary {
         $objSubResult = $objDatabase->Execute('SELECT count(`id`) AS `countComments` FROM `'.DBPREFIX.'module_news_comments` WHERE `newsid` = '.$newsid);
 
         $this->_objTpl->setVariable(array(
-           'NEWS_DATE'           => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
+           'NEWS_LONG_DATE'      => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
+           'NEWS_DATE'           => date(ASCMS_DATE_FORMAT_DATE,$objResult->fields['date']),
+           'NEWS_TIME'           => date(ASCMS_DATE_FORMAT_TIME,$objResult->fields['date']),
            'NEWS_TITLE'          => $newstitle,
            'NEWS_TEASER_TEXT'    => $newsTeaser,
            'NEWS_LASTUPDATE'     => $newsLastUpdate,
@@ -380,8 +382,10 @@ class news extends newsLibrary {
             $this->_objTpl->setVariable(array(
                'NEWS_COMMENTS_CSS'          => 'row'.($i % 2 + 1),
                'NEWS_COMMENTS_TITLE'        => contrexx_raw2xhtml($objResult->fields['title']),
-               'NEWS_COMMENTS_MESSAGE'         => nl2br(contrexx_raw2xhtml($objResult->fields['text'])),
-               'NEWS_COMMENTS_DATE'         => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
+               'NEWS_COMMENTS_MESSAGE'      => nl2br(contrexx_raw2xhtml($objResult->fields['text'])),
+               'NEWS_COMMENTS_LONG_DATE'    => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
+               'NEWS_COMMENTS_DATE'         => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['date']),
+               'NEWS_COMMENTS_TIME'         => date(ASCMS_DATE_FORMAT_TIME, $objResult->fields['date']),
             ));
 
             $this->_objTpl->parse('news_comment');
@@ -611,6 +615,7 @@ class news extends newsLibrary {
                'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_TITLE'         => contrexx_raw2xhtml($newstitle),
                'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
                'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_DATE'          => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['newsdate']),
+               'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_TIME'          => date(ASCMS_DATE_FORMAT_TIME, $objResult->fields['newsdate']),
                'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_LINK_TITLE'    => $htmlLinkTitle,
                'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_LINK'          => $htmlLink,
                'NEWS_'.$placeholderPrefix.'_RELATED_MESSAGE_LINK_URL'      => contrexx_raw2xhtml($newsUrl),
@@ -950,6 +955,7 @@ class news extends newsLibrary {
                    'NEWS_TITLE'          => contrexx_raw2xhtml($newstitle),
                    'NEWS_LONG_DATE'      => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
                    'NEWS_DATE'           => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['newsdate']),
+                   'NEWS_TIME'           => date(ASCMS_DATE_FORMAT_TIME, $objResult->fields['newsdate']),
                    'NEWS_LINK_TITLE'     => $htmlLinkTitle,
                    'NEWS_LINK'           => $htmlLink,
                    'NEWS_LINK_URL'       => contrexx_raw2xhtml($newsUrl),
@@ -1171,6 +1177,7 @@ class news extends newsLibrary {
                    'NEWS_TITLE'         => contrexx_raw2xhtml($newstitle),
                    'NEWS_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
                    'NEWS_DATE'          => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['newsdate']),
+                   'NEWS_TIME'          => date(ASCMS_DATE_FORMAT_TIME, $objResult->fields['newsdate']),
                    'NEWS_LINK_TITLE'    => $htmlLinkTitle,
                    'NEWS_LINK'          => $htmlLink,
                    'NEWS_LINK_URL'      => contrexx_raw2xhtml($newsUrl),

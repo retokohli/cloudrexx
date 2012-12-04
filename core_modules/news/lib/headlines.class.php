@@ -127,8 +127,9 @@ class newsHeadlines extends newsLibrary
                 $this->_objTemplate->setVariable(array(
                     'NEWS_ID'           => $newsid,
                     'NEWS_CSS'          => 'row'.($i % 2 + 1),
-                    'NEWS_DATE'         => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['date']),
                     'NEWS_LONG_DATE'    => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
+                    'NEWS_DATE'         => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['date']),
+                    'NEWS_TIME'         => date(ASCMS_DATE_FORMAT_TIME, $objResult->fields['date']),
                     'NEWS_TITLE'        => contrexx_raw2xhtml($newstitle),
                     'NEWS_TEASER'       => nl2br($objResult->fields['teaser_text']),
                     'NEWS_LINK_TITLE'   => $htmlLinkTitle,
