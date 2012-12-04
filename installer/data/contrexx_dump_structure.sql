@@ -869,6 +869,7 @@ CREATE TABLE `contrexx_module_contact_form` (
   `use_captcha` tinyint(1) unsigned NOT NULL default '1',
   `use_custom_style` tinyint(1) unsigned NOT NULL default '0',
   `send_copy` tinyint(1) NOT NULL default '0',
+  `use_email_of_sender` tinyint(1) NOT NULL default '0',
   `html_mail` tinyint(1) unsigned NOT NULL default '1',
   `send_attachment` tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
