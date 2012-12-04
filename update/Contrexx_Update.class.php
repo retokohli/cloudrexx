@@ -29,7 +29,7 @@ class Contrexx_Update
 
         @header('content-type: text/html; charset='.(UPDATE_UTF8 ? 'utf-8' : 'iso-8859-1'));
         $this->_loadLanguage();
-        $this->objTemplate = new \Cx\Core\Html\Sigma(UPDATE_TPL);
+        $this->objTemplate = new HTML_Template_Sigma(UPDATE_TPL);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->loadTemplateFile('index.html');
         $this->objTemplate->setGlobalVariable(array(
@@ -49,7 +49,7 @@ class Contrexx_Update
         if (!empty($_GET['ajax'])) {
             $this->ajax = true;
             if (!@include_once(UPDATE_LIB.'/PEAR/Services/JSON.php')) {
-                die('unable to load the PEAR JSON library: '.UPDATE_LIB.'/PEAR/Services/JSON.php');
+                die('Unable to load the PEAR JSON library: '.UPDATE_LIB.'/PEAR/Services/JSON.php');
             }
             $this->objJson = new Services_JSON(SERVICES_JSON_LOOSE_TYPE);
             $this->parseJsonRequest();
