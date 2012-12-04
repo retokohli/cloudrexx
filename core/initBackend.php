@@ -216,7 +216,7 @@ if ($isRegularPageRequest) {
     $objTemplate->addBlockfile('CONTENT_FILE', 'index_content', 'index_content.html');
 
     JS::activate('backend');
-    JS::activate('jquery-tools');
+    JS::activate('cx');
     JS::activate('chosen');
 
     $objUser = FWUser::getFWUserObject()->objUser;

@@ -116,22 +116,10 @@ jQuery(document).ready(function(){
             'jsfiles' => array(
                 'lib/javascript/jquery/tools/jquery.tools.min.js',
             ),
-            'dependencies' => array('jquery'),
-            'specialcode' => '
-                jQuery(document).ready(function() {
-                    jQuery(\'.tooltip-trigger\').tooltip({relative: true, position: \'center right\', offset: [0, 10]});
-                    jQuery(\'.tooltip-trigger .no-relative\').tooltip({relative: false, position: \'center right\', offset: [0, 10]});
-                    jQuery.extend({
-                        addTooltip: function(element) {
-                            if (jQuery(element).hasClass(\'no-relative\')) {
-                                jQuery(element).tooltip({relative: false, position: \'center right\', offset: [0, 10]});
-                            } else {
-                                jQuery(element).tooltip({relative: true, position: \'center right\', offset: [0, 10]});
-                            }
-                        }
-                    });
-                });
-            ',
+            'dependencies' => array(
+                'jquery',
+                'cx',
+            ),
         ),
         'jquery-imgareaselect' => array(
             'jsfiles'          => array(

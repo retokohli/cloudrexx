@@ -308,6 +308,8 @@
         $J(copy).find('input').not("[type=checkbox]").val('');
         $J(copy).find('input[type=hidden]').val('new');
         $J(copy).find('input[type=checkbox]').attr("checked", false);
+
+        cx.ui.tooltip(copy.find('.tooltip-trigger'));
     }
 
     /**
@@ -446,7 +448,7 @@
 
         if (elField.find('.tooltip-trigger').length > 0) {
             elField.find('.tooltip-trigger').each(function() {
-                jQuery.addTooltip(this);
+                cx.ui.tooltip(this);
             });
         }
     }
