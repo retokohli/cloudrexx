@@ -1256,6 +1256,15 @@ table.adminlist td.nowrap {
     padding: 4px 0 0 30px;
 }
 
+.live-search-user-clear {
+    float: left;
+    padding: 4px 0 0 5px;
+}
+
+.live-search-user-add {
+    padding-left: 0;
+}
+
 .live-search-user-input {
     width: 455px;
     height: 15px;
