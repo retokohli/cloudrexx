@@ -49,6 +49,17 @@ class FileSystemFile implements FileInterface
         }
     }
     
+    public function getFileOwner()
+    {
+        // get the user-ID of the user who owns the loaded file
+        $fileOwnerId = fileowner($this->filePath);
+        if (!$fileOwnerId) {
+            throw new FileSystemFileException('Unable to fetch file owner of '.$this->filePath);
+        }
+        
+        return $fileOwnerId;
+    }
+
     public function isWritable() {
         return is_writable($this->filePath);
     }
@@ -94,7 +105,7 @@ class FileSystemFile implements FileInterface
         // fetch current permissions on loaded file
         $filePerms = fileperms($this->filePath);
         if ($filePerms === false) {
-            throw new FileSystemFileException('Unable to fetch file permissions on file '.$this->filePath.'!');
+            throw new FileSystemFileException('Unable to fetch file permissions of file '.$this->filePath.'!');
         }
 
         // Strip BITs that are not related to the file permissions.
@@ -118,7 +129,7 @@ class FileSystemFile implements FileInterface
                 // therefore, we shall try to make it writable
                 \Cx\Lib\FileSystem\FileSystem::makeWritable($parentDirectory);
             } else {
-                \DBG::msg('Parent directory '.$parentDirectory.' lies outside of Contrexx installation and can therefore not be made writable!');
+                throw new FileSystemFileException('Parent directory '.$parentDirectory.' lies outside of Contrexx installation and can therefore not be made writable!');
             }
         }
 
