@@ -12,8 +12,8 @@ $arrUpdate = array(
     'cmsCodeName'      => 'Nikola Tesla',
     'cmsReleaseDate'   => '12.11.2012',
     'cmsFromVersion'   => '1.2.0',
-    'cmsRequiredPHP'   => '5.3.0',
-    'cmsRequiredMySQL' => '5.0.0',
+    'cmsRequiredPHP'   => '5.3',
+    'cmsRequiredMySQL' => '5.0',
     'lang'             => array('de'),
     'script'           => 'update.php'
 );
