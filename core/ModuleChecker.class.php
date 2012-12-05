@@ -70,11 +70,11 @@ namespace Cx\Core
                 $arrUsedModules[] = $page->getModule();
             }
 
+            $this->arrUsedModules = array_unique($arrUsedModules);
+
             // add static modules
             array_push($this->arrUsedModules, 'block');
             array_push($this->arrUsedModules, 'upload');
-
-            $this->arrUsedModules = array_unique($arrUsedModules);
 
             // check the module database tables for required modules
             $objResult = $this->db->Execute('SELECT name,is_core,is_required FROM `'.DBPREFIX.'modules`');
