@@ -45,7 +45,6 @@ class Contrexx_Update
 
         DBG::set_adodb_debug_mode();
 
-        $this->_loadLanguage();
         if (!empty($_GET['ajax'])) {
             $this->ajax = true;
             if (!@include_once(UPDATE_LIB.'/PEAR/Services/JSON.php')) {
@@ -302,9 +301,9 @@ class Contrexx_Update
         global $_CORELANG, $arrVersions;
 
         $this->objTemplate->addBlockfile('CONTENT', 'process', 'process.html');
+        
         if (($return = $this->_loadUpdateLanguage()) !== true) {
             $this->objTemplate->setVariable('UPDATE_ERROR_MSG', $return);
-
             $this->objTemplate->parse('updateProcessError');
         } elseif (($arrVersions = $this->getAvailabeVersions()) === false || !@include_once(UPDATE_UPDATES.'/'.$_SESSION['contrexx_update']['version'].'/'.$arrVersions['compatible'][$_SESSION['contrexx_update']['version']]['script'])) {
             $this->objTemplate->setVariable('UPDATE_ERROR_MSG', $_CORELANG['TXT_UPDATE_UNABLE_TO_START']);
@@ -618,10 +617,8 @@ class Contrexx_Update
         global $_CORELANG;
 
         $lang = &$this->_selectBestLanguage();
-        if (isset($_REQUEST["lang"])) {
-            if ($_REQUEST["lang"]!="") {
-                $lang = $_REQUEST["lang"];
-            }
+        if (!empty($_REQUEST['lang'])) {
+            $lang = $_REQUEST['lang'];
         }
         if (@file_exists(UPDATE_LANG.'/'.$lang.'.lang.php')) {
             require_once(UPDATE_LANG.'/'.$lang.'.lang.php');
