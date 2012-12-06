@@ -61,15 +61,20 @@ class FTPFile implements FileInterface
         $this->file = $pathInfo['basename'];
         $path = $pathInfo['dirname'];
 
-        if (strpos($path, ASCMS_PATH) === 0) {
+        if ($file == ASCMS_PATH) {
+            $this->filePath = $this->ftpConfig['path'];
+            $this->file = '';
+        } elseif (strpos($path, ASCMS_PATH) === 0) {
             $this->filePath = $this->ftpConfig['path'].substr($path, strlen(ASCMS_PATH));
-        } elseif (strpos($path, ASCMS_PATH_OFFSET) === 0) {
+        } elseif (ASCMS_PATH_OFFSET && strpos($path, ASCMS_PATH_OFFSET) === 0) {
             $this->filePath = $this->ftpConfig['path'].$path;
         } elseif (strpos($path, '/') === 0) {
             $this->filePath = $this->ftpConfig['path'].ASCMS_PATH_OFFSET.$path;
         } else {
             $this->filePath = $this->ftpConfig['path'].ASCMS_PATH_OFFSET.'/'.$path;
         }
+
+        $this->filePath = preg_replace('#^/+#', '', $this->filePath);
     }
 
     /**
@@ -86,7 +91,27 @@ class FTPFile implements FileInterface
 
     public function touch()
     {
+        // abort if file already exists
+        if (file_exists($this->passedFilePath)) {
+            return true;
+        }
+
         $this->write('');
+    }
+    
+    public function copy($dst)
+    {
+        $this->initConnection();
+        
+        try {
+            $src = fopen($this->passedFilePath, 'r');
+            if (!ftp_fput($this->connection, $dst, $src, FTP_BINARY)) {
+                throw new FTPFileException($e->getMessage());
+            }
+        } catch (FTPFileException $e) {
+            throw new FTPFileException($e->getMessage());
+        }
+        
     }
 
     public function makeWritable()
@@ -97,11 +122,14 @@ class FTPFile implements FileInterface
         try {
             $objFile = new \Cx\Lib\FileSystem\FileSystemFile($this->passedFilePath);
             $filePerms = $objFile->getFilePermissions();
+            \DBG::msg('FTPFile: Fetched file permissions of '.$this->passedFilePath.': '.substr(sprintf('%o', $filePerms), -4));
         } catch (FileSystemFileException $e) {
             throw new FTPFileException($e->getMessage());
         }
 
-        if (is_writable($this->passedFilePath)) {
+        // abort process in case the file is already writable
+        // test: check write access for file owner
+        if ($filePerms & \Cx\Lib\FileSystem\FileSystem::CHMOD_USER_WRITE) {
             return true;
         }
 
@@ -121,10 +149,10 @@ class FTPFile implements FileInterface
         $filePerms |= \Cx\Lib\FileSystem\FileSystem::CHMOD_USER_WRITE;
 
         // log file permissions into the humand readable chmod() format
-        \DBG::msg('CHMOD: '.substr(sprintf('%o', $filePerms), -4));
+        \DBG::msg('FTPFile: CHMOD: '.substr(sprintf('%o', $filePerms), -4));
 
         if (!ftp_chmod($this->connection, $filePerms, $this->filePath.'/'.$this->file)) {
-            throw new FTPFileException('Unable to set write access to file '.$this->filePath.'/'.$this->file.'!');
+            throw new FTPFileException('FTPFile: Unable to set write access to file '.$this->filePath.'/'.$this->file.'!');
         }
     }
 
