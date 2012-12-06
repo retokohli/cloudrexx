@@ -1,39 +1,41 @@
-<!-- start overview.html -->
-<div class="title">{TXT_UPDATE_VERSION_SELECTION}</div>
-<!-- BEGIN updateVersions -->
-<input type="hidden" name="updateVersions" value="1" />
-{TXT_UPDATE_SELECT_VERSION_MSG}
-<div style="border:1px solid #ECF2FA; background-color:#ECF2FA; margin-top:30px;">{TXT_UPDATE_AVAILABLE_VERSIONS}</div>
-<div style="padding:10px; border:1px solid #ECF2FA;">
-	<!-- BEGIN updateNoVersionSelected -->
-		<div style="height:20px; clear:both; width:100%; margin:0px 0px 10px 0px;" class="status_message">
-			<div class="success">
-			{UPDATE_ERROR_MSG}
-			</div>
-		</div>
-	<!-- END updateNoVersionSelected -->
-	<!-- BEGIN updateVersionList -->
-	<input type="radio" name="updateVersion" value="{UPDATE_VERSION_PATH}" id="updateVersion{UPDATE_VERSION_PATH}" {UPDATE_VERSION_CHECKED} /> <label for="updateVersion{UPDATE_VERSION_PATH}">{UPDATE_VERSION_NAME} {UPDATE_VERSION_EDITION} {UPDATE_VERSION}</label><br />
-	<!-- END updateVersionList -->
+<div id="content-overview">
+    <h1 class="first">{TXT_UPDATE_VERSION_SELECTION}</h1>
+
+    <!-- BEGIN updateNoVersions --><div class="message-warning">{TXT_UPDATE_NO_VERSION_TO_UPGRADE_TO}</div><!-- END updateNoVersions -->
+
+    <!-- BEGIN updateVersions -->
+    <div id="versions-compatible">
+        <input type="hidden" name="updateVersions" value="1" />
+        <span>{TXT_UPDATE_SELECT_VERSION_MSG}</span>
+        <!-- BEGIN updateNoVersionSelected --><div class="message-alert">{UPDATE_ERROR_MSG}</div><!-- END updateNoVersionSelected -->
+        <table class="adminlist">
+            <tr>
+                <th>{TXT_UPDATE_AVAILABLE_VERSIONS}</th>
+            </tr>
+            <tr>
+                <td>
+                    <!-- BEGIN updateVersionList --><input type="radio" name="updateVersion" value="{UPDATE_VERSION_PATH}" id="updateVersion{UPDATE_VERSION_PATH}" {UPDATE_VERSION_CHECKED} /> <label for="updateVersion{UPDATE_VERSION_PATH}">{UPDATE_VERSION_NAME} {UPDATE_VERSION_EDITION} {UPDATE_VERSION}</label><br /><!-- END updateVersionList -->
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!-- END updateVersions -->
+    
+    <!-- BEGIN updateIncompatibleVersions -->
+    <div id="versions-incompatible">
+        <span>{TXT_UPDATE_INCOMPATIBLE_VERSIONS_MSG}</span>
+        <table class="adminlist">
+            <tr>
+                <th>{TXT_UPDATE_INCOMPATIBLE_VERSIONS}</th>
+            </tr>
+            <tr>
+                <td>
+                    <ul>
+                        <!-- BEGIN updateIncompatibleVersionList --><li>{UPDATE_VERSION_NAME} {UPDATE_VERSION_EDITION} {UPDATE_VERSION}<br /><em>{UPDATE_VERSION_INCOMPATIBLE_REASON}</em></li><!-- END updateIncompatibleVersionList -->
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!-- END updateIncompatibleVersions -->
 </div>
-<!-- END updateVersions -->
-<!-- BEGIN updateIncompatibleVersions -->
-<div style="border:1px solid #ECF2FA; background-color:#ECF2FA; margin-top:30px;">{TXT_UPDATE_INCOMPATIBLE_VERSIONS}</div>
-<div style="padding:10px; border:1px solid #ECF2FA;">
-{TXT_UPDATE_INCOMPATIBLE_VERSIONS_MSG}
-    <ul>
-	<!-- BEGIN updateIncompatibleVersionList -->
-	    <li>
-			<p>
-            	{UPDATE_VERSION_NAME} {UPDATE_VERSION_EDITION} {UPDATE_VERSION}<br />
-            	<em>{UPDATE_VERSION_INCOMPATIBLE_REASON}</em>
-			</p>
-        </li>
-	<!-- END updateIncompatibleVersionList -->
-    </ul>
-</div>
-<!-- END updateIncompatibleVersions -->
-<!-- BEGIN updateNoVersions -->
-{TXT_UPDATE_NO_VERSION_TO_UPGRADE_TO}
-<!-- END updateNoVersions -->
-<!-- end overview.html -->
