@@ -91,6 +91,11 @@ class FTPFile implements FileInterface
 
     public function touch()
     {
+        // abort if file already exists
+        if (file_exists($this->passedFilePath)) {
+            return true;
+        }
+
         $this->write('');
     }
 

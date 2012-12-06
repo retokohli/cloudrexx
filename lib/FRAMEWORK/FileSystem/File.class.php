@@ -5,8 +5,9 @@ class FileException extends \Exception {};
 
 class File implements FileInterface
 {
-    const PHP_ACCESS  = 0;
-    const FTP_ACCESS = 1;
+    const UNKNOWN_ACCESS  = 0;
+    const PHP_ACCESS      = 1;
+    const FTP_ACCESS      = 2;
 
     private $file = null;
     private $accessMode = null;
@@ -54,6 +55,7 @@ class File implements FileInterface
 
         // the file to work on is neither owned by the PHP user nor the FTP user
         \DBG::msg('File: CAUTION: '.$this->file.' is owned by an unknown user!');
+        $this->accessMode = self::UNKNOWN_ACCESS;
         return false;
     }
 
@@ -67,10 +69,18 @@ class File implements FileInterface
         return $data;
     }
     
+    /**
+     * Write data specified by $data to file
+     * @param   string
+     * @throws  FileSystemException if writing to file fails
+     * @return  TRUE on sucess
+     */
     public function write($data)
     {
         // use PHP
-        if ($this->accessMode == self::PHP_ACCESS) {
+        if (   $this->accessMode == self::PHP_ACCESS
+            || $this->accessMode == self::UNKNOWN_ACCESS
+        ) {
             try {
                 // try regular file access first
                 $fsFile = new FileSystemFile($this->file);
@@ -82,7 +92,9 @@ class File implements FileInterface
         }
 
         // use FTP
-        if ($this->accessMode == self::FTP_ACCESS) {
+        if (   $this->accessMode == self::FTP_ACCESS
+            || $this->accessMode == self::UNKNOWN_ACCESS
+        ) {
             try {
                 $ftpFile = new FTPFile($this->file);
                 $ftpFile->write($data);
@@ -95,10 +107,18 @@ class File implements FileInterface
         throw new FileSystemException('File: Unable to write data to file '.$this->file.'!');
     }
 
+    /**
+     * Creates files if it doesn't exists yet
+     *
+     * @throws FileSystemException if file does not exist and creating fails
+     * @return TRUE on success
+     */
     public function touch()
     {
         // use PHP
-        if ($this->accessMode == self::PHP_ACCESS) {
+        if (   $this->accessMode == self::PHP_ACCESS
+            || $this->accessMode == self::UNKNOWN_ACCESS
+        ) {
             try {
                 // try regular file access first
                 $fsFile = new FileSystemFile($this->file);
@@ -110,7 +130,9 @@ class File implements FileInterface
         }
 
         // use FTP
-        if ($this->accessMode == self::FTP_ACCESS) {
+        if (   $this->accessMode == self::FTP_ACCESS
+            || $this->accessMode == self::UNKNOWN_ACCESS
+        ) {
             try {
                 $ftpFile = new FTPFile($this->file);
                 $ftpFile->touch();
@@ -123,10 +145,18 @@ class File implements FileInterface
         throw new FileSystemException('File: Unable to touch file '.$this->file.'!');
     }
 
+    /**
+     * Sets write access to file's owner
+     *
+     * @throws FileSystemException if setting write access fails
+     * @return  TRUE if file is already writable or setting write access was successful
+     */
     public function makeWritable()
     {
         // use PHP
-        if ($this->accessMode == self::PHP_ACCESS) {
+        if (   $this->accessMode == self::PHP_ACCESS
+            || $this->accessMode == self::UNKNOWN_ACCESS
+        ) {
             try {
                 $fsFile = new FileSystemFile($this->file);
                 $fsFile->makeWritable();
@@ -137,7 +167,9 @@ class File implements FileInterface
         }
 
         // use FTP
-        if ($this->accessMode == self::FTP_ACCESS) {
+        if (   $this->accessMode == self::FTP_ACCESS
+            || $this->accessMode == self::UNKNOWN_ACCESS
+        ) {
             try {
                 $ftpFile = new FTPFile($this->file);
                 $ftpFile->makeWritable();
@@ -150,10 +182,18 @@ class File implements FileInterface
         throw new FileSystemException('File: Unable to set write access to file '.$this->file.'!');
     }
 
+    /**
+     * Removes file
+     *
+     * @throws FileSystemException if removing of file fails
+     * @return TRUE if file has successfully been removed
+     */
     public function delete()
     {
         // use PHP
-        if ($this->accessMode == self::PHP_ACCESS) {
+        if (   $this->accessMode == self::PHP_ACCESS
+            || $this->accessMode == self::UNKNOWN_ACCESS
+        ) {
             try {
                 $fsFile = new FileSystemFile($this->file);
                 $fsFile->delete();
@@ -163,7 +203,9 @@ class File implements FileInterface
         }
 
         // use FTP
-        if ($this->accessMode == self::FTP_ACCESS) {
+        if (   $this->accessMode == self::FTP_ACCESS
+            || $this->accessMode == self::UNKNOWN_ACCESS
+        ) {
             try {
                 $ftpFile = new FTPFile($this->file);
                 $ftpFile->delete();
@@ -176,5 +218,8 @@ class File implements FileInterface
         if (file_exists($this->file)) {
             throw new FileSystemException('File: Unable to delete file '.$this->file.'!');
         }
+
+        return true;
     }
 }
+
