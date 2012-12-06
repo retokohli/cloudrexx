@@ -1,7 +1,17 @@
 <?php
+require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FileInterface.interface.php';
+require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/File.class.php';
+require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FileSystem.class.php';
+require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FileSystemFile.class.php';
+require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FTPFile.class.php';
+
 function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = true, $updateModules = true)
 {
 	global $_ARRAYLANG, $_CORELANG, $objDatabase, $objUpdate;
+
+    // Copy cx files to the root directory
+    copyCxFilesToRoot(dirname(__FILE__) . '/cx_files', ASCMS_PATH.ASCMS_PATH_OFFSET);
+    die('END copyCxFilesToRoot');
 
 	$arrDirs = array('core_module', 'module');
 	$updateStatus = true;
@@ -247,4 +257,33 @@ function _updateModuleRepository()
 
 	return true;
 }
-?>
+
+function copyCxFilesToRoot($src, $dst)
+{
+    $src = str_replace('\\', '/', $src);
+    $dir = opendir($src);
+    
+    while ($file = readdir($dir)) {
+        if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+            // TODO: Save position
+            return false;
+        }
+        
+        if (($file != '.') && ($file != '..')) {
+            $srcPath = $src . '/' . $file;
+            $dstPath = $dst . '/' . $file;
+            
+            if (is_dir($srcPath)) { 
+                copyCxFilesToRoot($srcPath, $dstPath); 
+            } else {
+                try {
+                    $objFile = new \Cx\Lib\FileSystem\File($srcPath);
+                    $objFile->copy($dstPath, true);
+                } catch (\Exception $e) {
+                    \DBG::msg('Copy cx files to root: ' . $e->getMessage());
+                }
+            } 
+        }
+    } 
+    closedir($dir);
+}
