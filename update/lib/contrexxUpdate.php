@@ -29,8 +29,7 @@ function doUpdate(goBack)
     }
     formData = getFormData(goBack);
     if (document.getElementById('processUpdate') != null) {
-      setContent('<div style="margin-left:150px; margin-top:150px;">Bitte haben Sie einen Moment Geduld.<br /><?php $txt = 'Das Update wird durchgeführt...';print UPDATE_UTF8 ?  utf8_encode($txt) : $txt;?><br /><br /><img src="template/contrexx/images/loadingAnimation.gif" width="208" height="13" alt="" /></div>');
-      setHeader('');
+      setContent('<div style="margin-left: 155px; margin-top: 180px;">Bitte haben Sie einen Moment Geduld.<br /><?php $txt = 'Das Update wird durchgeführt...';print UPDATE_UTF8 ?  utf8_encode($txt) : $txt;?><br /><br /><img src="template/contrexx/images/content/loading_animation.gif" width="208" height="13" alt="" /></div>');
       setNavigation('');
     } else {
       setContent('Bitte warten. Die Seite wird geladen...');
@@ -47,7 +46,7 @@ function getFormData(goBack)
 {
   oFormData = new Object;
 
-  oElements = document.getElementById('updateForm').getElementsByTagName('input');
+  oElements = document.getElementById('wrapper').getElementsByTagName('input');
   if (oElements.length > 0) {
     for (i = 0;i < oElements.length; i++) {
       if (document.getElementsByName(oElements[i].name).length > 1) {
@@ -70,7 +69,7 @@ function getFormData(goBack)
     }
   }
 
-  oElements = document.getElementById('updateForm').getElementsByTagName('select');
+  oElements = document.getElementById('wrapper').getElementsByTagName('select');
   if (oElements.length > 0) {
     for (i = 0;i < oElements.length; i++) {
       if (oElements[i].name.search('\[[0-9]+\]$') >= 0) {
@@ -97,12 +96,11 @@ function parseResponse()
     if (response.length > 0) {
       try {
         eval('oResponse='+response);
-        setHeader(oResponse.header);
         setContent(oResponse.content);
         setNavigation(oResponse.navigation);
       } catch(e) {}
     } else {
-      setContent('<?php $txt = 'Das Update-Script gibt keine Antwort zurück!';print UPDATE_UTF8 ?  utf8_encode($txt) : $txt;?>');
+      setContent('<?php $txt = '<div class="message-alert">Das Update-Script gibt keine Antwort zurück!</div>';print UPDATE_UTF8 ?  utf8_encode($txt) : $txt;?>');
       setNavigation('<input type="submit" value="<?php $txt = 'Erneut versuchen...';print UPDATE_UTF8 ? utf8_encode($txt) : $txt;?>" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />');
     }
     request_active = false;
@@ -111,19 +109,14 @@ function parseResponse()
   }
 }
 
-function setHeader(sHeader)
-{
-  setHtml(sHeader, 'header');
-}
-
 function setContent(sContent)
 {
-  setHtml(sContent, 'content');
+  setHtml(sContent, 'wrapper-content');
 }
 
 function setNavigation(sNavigation)
 {
-  setHtml(sNavigation, 'navigation');
+  setHtml(sNavigation, 'wrapper-bottom-right');
 }
 
 function setHtml(sText, sElement)

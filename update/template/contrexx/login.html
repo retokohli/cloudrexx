@@ -1,35 +1,18 @@
-<!-- start login.html -->
-<img style="display:block; margin-bottom:20px;" src="{UPDATE_TPL_PATH}/images/clouds.jpg" border="0"  height="100" alt="" />
-<div>{TXT_UPDATE_INTRO_MSG}</div>
-<div class="loginForm">
-	<!-- BEGIN updateAuthFailedBox -->
-	<div class="status_message">
-		<div class="failed">
-		{UPDATE_ERROR_MSG}
-		</div>
-	</div>
-	<!-- END updateAuthFailedBox -->
-	<div class="inputBox">
-		<div class="inputLbl">
-			{TXT_UPDATE_USERNAME}
-		</div>
-		<div class="inputField">
-			<input type="text" name="updateUser" />
-		</div>
-	</div>
-	<div class="inputBox">
-		<div class="inputLbl">
-			{TXT_UPDATE_PASSWORD}
-		</div>
-		<div class="inputField">
-			<input type="password" name="updatePass" />
-		</div>
-	</div>
-	<div style="height:20px; clear:both; width:250px;">
-		<div style="float:left; width:100px;"></div>
-		<div style="float:right; width:150px; text-align:right;">
-			<input type="submit" name="updateNext" value="{TXT_UPDATE_LOGIN}" />
-		</div>
-	</div>
+<div id="content-login">
+    <img src="{UPDATE_TPL_PATH}/images/content/clouds.jpg" border="0"  height="103" width="520" alt="" />
+    {TXT_UPDATE_INTRO_MSG}<br /><br />
+    <div id="login">
+        <!-- BEGIN updateAuthFailedBox --><div class="message-alert">{UPDATE_ERROR_MSG}</div><!-- END updateAuthFailedBox -->
+        <div class="line">
+            <label for="updateUser">{TXT_UPDATE_USERNAME}</label>
+            <input id="updateUser" name="updateUser" type="text" />
+        </div>
+        <div class="line">
+            <label for="updatePass">{TXT_UPDATE_PASSWORD}</label>
+            <input id="updatePass" name="updatePass" type="password" />
+        </div>
+        <div class="line">
+            <input name="updateNext" value="{TXT_UPDATE_LOGIN}" type="submit" />
+        </div>
+    </div>
 </div>
-<!-- end login.html -->

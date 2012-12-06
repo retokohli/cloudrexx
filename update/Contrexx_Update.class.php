@@ -78,7 +78,7 @@ class Contrexx_Update
             $this->showStep();
         }
 
-        $this->setHeader();
+        $this->setPlaceholders();
 
         if ($this->ajax) {
             if (!UPDATE_UTF8) {
@@ -173,24 +173,12 @@ class Contrexx_Update
         }
     }
 
-    function setHeader()
+    function setPlaceholders()
     {
         global $_CORELANG;
 
-        $this->objTemplate->addBlockfile('HEADER', 'header', 'header.html');
+        $this->objTemplate->setVariable('LOGOUT_BUTTON', ($this->auth() ? '<input name="logout" value="'.$_CORELANG['TXT_UPDATE_LOGOUT'].'" type="button" onclick="window.location.href=\'index.php?cmd=logout\'" />' : ''));
         //$this->objTemplate->setVariable('UPDATE_LANG_MENU', $this->getLangMenu());
-
-        if ($this->auth()) {
-            $this->objTemplate->setVariable('TXT_UPDATE_LOGOUT', $_CORELANG['TXT_UPDATE_LOGOUT']);
-            $this->objTemplate->parse('updateLogout');
-        } else {
-            $this->objTemplate->hideBlock('updateLogout');
-        }
-
-        $this->objTemplate->parse('header');
-        if ($this->ajax) {
-            $this->header = $this->objTemplate->get('header');
-        }
     }
 
     function setNavigation($content)

@@ -1,41 +1,32 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>{TXT_UPDATE_CONTREXX_UPDATE_SYSTEM}</title>
-<link type="text/css" href="{UPDATE_TPL_PATH}/css/base.css" rel="stylesheet" />
-<script type="text/javascript" src="lib/contrexxUpdate.php"></script>
-<script type="text/javascript" src="lib/html2dom.js"></script>
-</head>
-<body>
-<div id="head">
-	<div style="float:left;"><img name="Home" src="{UPDATE_TPL_PATH}/images/contrexx_logo.jpg" width="232" height="55" border="0" alt="" /></div>
-	<div style="float:right;"><img src="{UPDATE_TPL_PATH}/images/contrexx_header2.jpg" height="55" border="0" alt="" /></div>
-	<div style="float:right;"><img src="{UPDATE_TPL_PATH}/images/contrexx_header.jpg"  height="55" border="0" alt="" /></div>
-	<div style="clear:both; border-bottom-width: 1px; border-bottom-color:#0A50A1; border-bottom-style:solid"></div>
-</div>
-<div id="body">
-	<div class="installer">
-		<div class="header" id="header">
-			{HEADER}
-		</div>
-		<form action="index.php" id="updateForm" method="post" onsubmit="return doUpdate()">
-			<div class="content" id="content">
-				{CONTENT}
-			</div>
-			<div class="navigation" id="navigation">
-				{NAVIGATION}
-			</div>
-		</form>
-	</div>
-</div>
-<div id="footer">
-<div style="clear:both; border-bottom-width: 1px; border-bottom-color:#0A50A1; border-bottom-style:solid"></div>
-<div style="float:right;"><img src="{UPDATE_TPL_PATH}/images/contrexx_footer2.jpg" border="0" alt="" /></div>
-<div style="float:right;"><img src="{UPDATE_TPL_PATH}/images/contrexx_footer.jpg" border="0" alt="" /></div>
-<div style="clear:both;" class="copyright"><br />
-&copy; COMVATION Internet Solutions, Switzerland
-</div>
-</div>
-</body>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>{TXT_UPDATE_CONTREXX_UPDATE_SYSTEM}</title>
+
+        <meta name="robots" content="noindex" />
+        <meta name="robots" content="nofollow" />
+        <meta name="robots" content="noarchive" />
+        <meta http-equiv="pragma" content="no-cache" />
+        <meta http-equiv="cache-control" content="no-cache" />
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+        <link type="text/css" href="template/contrexx/css/base.css" rel="stylesheet" />
+        <link type="text/css" href="template/contrexx/css/content.css" rel="stylesheet" />
+
+        <script type="text/javascript" src="lib/contrexxUpdate.php"></script>
+        <script type="text/javascript" src="lib/html2dom.js"></script>
+    </head>
+    <body>
+        <div id="header">
+            <a class="logo" href="index.php"></a>
+        </div>
+        <div id="container">
+            <form id="wrapper" action="index.php" method="post" onsubmit="return doUpdate()">
+                <div id="wrapper-content">{CONTENT}</div>
+                <div id="wrapper-bottom-left">{LOGOUT_BUTTON}</div>
+                <div id="wrapper-bottom-right">{NAVIGATION}</div>
+            </form>
+        </div>
+        <div id="footer"><a href="http://www.contrexx.com" target="_blank">&copy; COMVATION AG, Switzerland</a></div>
+    </body>
 </html>
