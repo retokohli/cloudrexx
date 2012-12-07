@@ -4,9 +4,9 @@
     <span>{UPDATE_PROCESS_SCREEN}</span>
     <table class="adminlist">
         <tr>
-            <th><input type="checkbox" id="update_advanced" onclick="document.getElementById('updateAdvancedBox').style.display = (this.checked == true ? 'table' : 'none')" /> <label for="update_advanced">{TXT_UPDATE_ADVANCED_CONFIGURATION}</label></th>
+            <th><input type="checkbox" id="update_advanced" onclick="document.getElementById('update_advanced_options').style.display = (this.checked == true ? 'table' : 'none')" /> <label for="update_advanced">{TXT_UPDATE_ADVANCED_CONFIGURATION}</label></th>
         </tr>
-        <tr id="updateAdvancedBox" style="display: none;">
+        <tr id="update_advanced_options" style="display: none;">
             <td>
                 <input type="checkbox" name="update_module_repository" id="update_module_repository" value="1" checked="checked" /> <label for="update_module_repository">{TXT_UPDATE_RENEW_MODULE_REPOSITORY}</label><br />
                 <input type="checkbox" name="update_backend_areas" id="update_backend_areas" value="1" checked="checked" /> <label for="update_backend_areas">{TXT_UPDATE_RENEW_BACKEND_AREAS}</label><br />
