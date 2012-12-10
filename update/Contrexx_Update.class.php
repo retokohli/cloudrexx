@@ -245,11 +245,16 @@ class Contrexx_Update
             ));
 
             foreach ($arrVersions['incompatible'] as $versionPath => $arrVersion) {
+                $reasons = '';
+                foreach ($arrVersion['reasons'] as $reason) {
+                    $reasons .= '<li>' . $reason . '</li>';
+                }
+                
                 $this->objTemplate->setVariable(array(
-                    'UPDATE_VERSION'                     => str_replace(' Service Pack 0', '', preg_replace('#^(\d+\.\d+)\.(\d+)$#', '$1 Service Pack $2', $arrVersion['cmsVersion'])),
-                    'UPDATE_VERSION_NAME'                => $arrVersion['cmsName'],
-                    'UPDATE_VERSION_EDITION'             => $arrVersion['cmsEdition'],
-                    'UPDATE_VERSION_INCOMPATIBLE_REASON' => $arrVersion['reason']
+                    'UPDATE_VERSION'                      => str_replace(' Service Pack 0', '', preg_replace('#^(\d+\.\d+)\.(\d+)$#', '$1 Service Pack $2', $arrVersion['cmsVersion'])),
+                    'UPDATE_VERSION_NAME'                 => $arrVersion['cmsName'],
+                    'UPDATE_VERSION_EDITION'              => $arrVersion['cmsEdition'],
+                    'UPDATE_VERSION_INCOMPATIBLE_REASONS' => $reasons
                 ));
                 $this->objTemplate->parse('updateIncompatibleVersionList');
             }
@@ -383,18 +388,45 @@ class Contrexx_Update
                     $arrUpdate = false;
                     if (@include_once(UPDATE_UPDATES.'/'.$file.'/config.inc.php')) {
                         if (is_array($arrUpdate)) {
+                            $incompatible = false;
+                            $arrReasons   = array();
+                            
                             if (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], $arrUpdate['cmsVersion'], $_CONFIG['coreCmsStatus'], $arrUpdate['cmsStatus'])) {
+                                $incompatible = true;
+                                $arrReasons[] = $_CORELANG['TXT_UPDATE_INSTALLED_VERSION_IS_NEWER'];
+                            }
+                            if ($this->_isNewerVersion($_CONFIG['coreCmsVersion'], $arrUpdate['cmsFromVersion'])) {
+                                $incompatible = true;
+                                $arrReasons[] = sprintf($_CORELANG['TXT_UPDATE_INSTALLED_VERSION_IS_TOO_OLD'], $arrUpdate['cmsFromVersion']);
+                            }
+                            if (!$this->checkPHPVersion($arrUpdate['cmsRequiredPHP'])) {
+                                $incompatible = true;
+                                $arrReasons[] = sprintf($_CORELANG['TXT_UPDATE_PHP_VERSION_TOO_OLD'], $arrUpdate['cmsRequiredPHP'], phpversion());
+                            }
+                            if (!$this->checkMySQLVersion($arrUpdate['cmsRequiredMySQL'])) {
+                                $incompatible = true;
+                                $arrReasons[] = sprintf($_CORELANG['TXT_UPDATE_MYSQL_VERSION_TOO_OLD'], $arrUpdate['cmsRequiredMySQL'], $this->getMySQLServerVersion());
+                            }
+                            if (!$this->checkGDVersion($arrUpdate['cmsRequiredGD'])) {
+                                $incompatible = true;
+                                $reason = sprintf($_CORELANG['TXT_UPDATE_REQUIRED_GD_VERSION'], $arrUpdate['cmsRequiredGD']);
+                                if ($gdVersion = $this->getGDVersion()) {
+                                    $reason .= sprintf($_CORELANG['TXT_UPDATE_INSTALLED_GD_VERSION'], $gdVersion);
+                                }
+                                $arrReasons[] = $reason;
+                            }
+                            if (!$this->checkFTPSupport()) {
+                                $incompatible = true;
+                                $arrReasons[] = $_CORELANG['TXT_UPDATE_FTP_SUPPORT_REQUIRED'];
+                            }
+                            if ($this->getWebserverSoftware() == 'iis' && !isset($_SERVER['IIS_UrlRewriteModule'])) {
+                                $incompatible = true;
+                                $arrReasons[] = $_CORELANG['TXT_UPDATE_IIS_URL_REWRITE_MODULE_REQUIRED'];
+                            }
+                            
+                            if ($incompatible) {
                                 $arrVersions['incompatible'][$file] = $arrUpdate;
-                                $arrVersions['incompatible'][$file]['reason'] = $_CORELANG['TXT_UPDATE_INSTALLED_VERSION_IS_NEWER'];
-                            } elseif ($this->_isNewerVersion($_CONFIG['coreCmsVersion'], $arrUpdate['cmsFromVersion'])) {
-                                $arrVersions['incompatible'][$file] = $arrUpdate;
-                                $arrVersions['incompatible'][$file]['reason'] = sprintf($_CORELANG['TXT_UPDATE_INSTALLED_VERSION_IS_TOO_OLD'], $arrUpdate['cmsFromVersion']);
-                            } elseif (!$this->checkPHPVersion($arrUpdate['cmsRequiredPHP'])) {
-                                $arrVersions['incompatible'][$file] = $arrUpdate;
-                                $arrVersions['incompatible'][$file]['reason'] = sprintf($_CORELANG['TXT_UPDATE_PHP_VERSION_TOO_OLD'], $arrUpdate['cmsRequiredPHP'], phpversion());
-                            } elseif (!$this->checkMySQLVersion($arrUpdate['cmsRequiredMySQL'])) {
-                                $arrVersions['incompatible'][$file] = $arrUpdate;
-                                $arrVersions['incompatible'][$file]['reason'] = sprintf($_CORELANG['TXT_UPDATE_MYSQL_VERSION_TOO_OLD'], $arrUpdate['cmsRequiredMySQL'], $this->getMySQLServerVersion());
+                                $arrVersions['incompatible'][$file]['reasons'] = $arrReasons;
                             } else {
                                 $arrVersions['compatible'][$file] = $arrUpdate;
                             }
@@ -407,7 +439,54 @@ class Contrexx_Update
         }
         return $arrVersions;
     }
-
+    
+    public function getGDVersion()
+    {
+        if (!extension_loaded('gd'))     return false;
+        if (!function_exists('gd_info')) return false;
+        
+        $gdInfo = gd_info();
+        preg_match('/[\d\.]+/', $gdInfo['GD Version'], $gdVersion);
+        
+        if (!empty($gdVersion[0])) {
+            return $gdVersion[0];
+        } else {
+            return false;
+        }
+    }
+    
+    public function checkGDVersion($requiredGDVersion)
+    {
+        if ($gdVersion = $this->getGDVersion()) {
+            if ($gdVersion >= $requiredGDVersion) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    public function isWindows()
+    {
+        return substr(PHP_OS, 0, 3) == 'WIN';
+    }
+    
+    public function checkFTPSupport()
+    {
+        if (!$this->isWindows() && ini_get('safe_mode')) {
+            if (!extension_loaded('ftp')) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    public function getWebserverSoftware()
+    {
+        return !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : stristr($_SERVER['SERVER_SOFTWARE'], 'iis' ? 'iis' : '');
+    }
+    
     /**
      * Check for newer version
      *
