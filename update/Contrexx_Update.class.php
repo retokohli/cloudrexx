@@ -34,7 +34,8 @@ class Contrexx_Update
         $this->objTemplate->loadTemplateFile('index.html');
         $this->objTemplate->setGlobalVariable(array(
             'TXT_UPDATE_CONTREXX_UPDATE_SYSTEM' => $_CORELANG['TXT_UPDATE_CONTREXX_UPDATE_SYSTEM'],
-            'UPDATE_TPL_PATH'                   => UPDATE_TPL
+            'UPDATE_TPL_PATH'                   => UPDATE_TPL,
+            'CHARSET'                           => UPDATE_UTF8 ? 'utf-8' : 'iso-8859-1',
         ));
 
         $errorMsg = '';

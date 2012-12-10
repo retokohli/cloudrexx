@@ -119,10 +119,10 @@ class cmsSession
         if (isset($_POST['remember_me'])) {
             $this->rememberMe = true;
             if ($this->sessionExists($sessionId)) {//remember me status for new sessions will be stored in cmsSessionRead() (when creating the appropriate db entry)
-                $objResult = $this->_objDb->Execute('UPDATE `'.DBPREFIX.'sessions` SET `remember_me` = 1 WHERE `sessionid` = "'.contrexx_input2db($sessionId).'"');
+                $objResult = $this->_objDb->Execute('UPDATE `'.DBPREFIX.'sessions` SET `remember_me` = 1 WHERE `sessionid` = "'.addslashes(contrexx_stripslashes($sessionId)).'"');
             }
         } else {
-            $objResult = $this->_objDb->Execute('SELECT `remember_me` FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.contrexx_input2db($sessionId).'"');
+            $objResult = $this->_objDb->Execute('SELECT `remember_me` FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.addslashes(contrexx_stripslashes($sessionId)).'"');
             if ($objResult && ($objResult->RecordCount() > 0)) {
                 if ($objResult->fields['remember_me'] == 1) {
                     $this->rememberMe = true;
@@ -140,7 +140,7 @@ class cmsSession
      */
     private function sessionExists($sessionId)
     {
-        $objResult = $this->_objDb->Execute('SELECT 1 FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.contrexx_input2db($sessionId).'"');
+        $objResult = $this->_objDb->Execute('SELECT 1 FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.addslashes(contrexx_stripslashes($sessionId)).'"');
         if ($objResult && ($objResult->RecordCount() > 0)) {
             return true;
         } else {
