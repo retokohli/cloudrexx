@@ -14,7 +14,6 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
         return false;
     }
     unset($_SESSION['copiedCxFilesIndex']);
-    die('end');
 
 	$arrDirs = array('core_module', 'module');
 	$updateStatus = true;
