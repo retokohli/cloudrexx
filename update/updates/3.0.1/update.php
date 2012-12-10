@@ -10,8 +10,11 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
 	global $_ARRAYLANG, $_CORELANG, $objDatabase, $objUpdate;
 
     // Copy cx files to the root directory
-    copyCxFilesToRoot(dirname(__FILE__) . '/cx_files', ASCMS_PATH.ASCMS_PATH_OFFSET);
-    die('END copyCxFilesToRoot');
+    if (!copyCxFilesToRoot(dirname(__FILE__) . '/cx_files', ASCMS_PATH . ASCMS_PATH_OFFSET)) {
+        return false;
+    }
+    unset($_SESSION['copiedCxFilesIndex']);
+    die('end');
 
 	$arrDirs = array('core_module', 'module');
 	$updateStatus = true;
@@ -260,30 +263,51 @@ function _updateModuleRepository()
 
 function copyCxFilesToRoot($src, $dst)
 {
+    static $copiedCxFilesIndex = 0;
+    
     $src = str_replace('\\', '/', $src);
+    $dst = str_replace('\\', '/', $dst);
     $dir = opendir($src);
     
+    $arrCurrentFolderStructure = array();
     while ($file = readdir($dir)) {
+        if (!in_array($file, array('.', '..'))) {
+            $arrCurrentFolderStructure[] = $file;
+        }
+    }
+    sort($arrCurrentFolderStructure);
+    
+    foreach ($arrCurrentFolderStructure as $file) {
         if (!checkMemoryLimit() || !checkTimeoutLimit()) {
-            // TODO: Save position
+            $_SESSION['copiedCxFilesIndex'] = $copiedCxFilesIndex;
             return false;
         }
         
-        if (($file != '.') && ($file != '..')) {
-            $srcPath = $src . '/' . $file;
-            $dstPath = $dst . '/' . $file;
+        $srcPath = $src . '/' . $file;
+        $dstPath = $dst . '/' . $file;
+        
+        if (is_dir($srcPath)) {
+            if (!copyCxFilesToRoot($srcPath, $dstPath)) {
+                return false;
+            }
+        } else {
+            $copiedCxFilesIndex ++;
             
-            if (is_dir($srcPath)) { 
-                copyCxFilesToRoot($srcPath, $dstPath); 
-            } else {
-                try {
-                    $objFile = new \Cx\Lib\FileSystem\File($srcPath);
-                    $objFile->copy($dstPath, true);
-                } catch (\Exception $e) {
-                    \DBG::msg('Copy cx files to root: ' . $e->getMessage());
-                }
-            } 
+            if (isset($_SESSION['copiedCxFilesIndex']) && $copiedCxFilesIndex <= $_SESSION['copiedCxFilesIndex']) {
+                continue;
+            }
+            
+            try {
+                $objFile = new \Cx\Lib\FileSystem\File($srcPath);
+                $objFile->copy($dstPath, true);
+            } catch (\Exception $e) {
+                $_SESSION['copiedCxFilesIndex'] = $copiedCxFilesIndex;
+                \DBG::msg('Copy cx files to root: ' . $e->getMessage());
+                return false;
+            }
         }
-    } 
+    }
+    
     closedir($dir);
+    return true;
 }

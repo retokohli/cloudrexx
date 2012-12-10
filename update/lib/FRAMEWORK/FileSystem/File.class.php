@@ -151,11 +151,13 @@ class File implements FileInterface
             return true;
         }
         
-        $relPath    = str_replace(ASCMS_PATH.ASCMS_PATH_OFFSET . '/', '', $dst);
-        $arrRelPath = explode('/', $relPath);
-        $arrFolders = array_slice($arrRelPath, 0, -1);
-        $path = ASCMS_PATH.ASCMS_PATH_OFFSET;
+        $path       = ASCMS_PATH.ASCMS_PATH_OFFSET;
+        $relPath    = str_replace($path, '', $dst);
+        $pathInfo   = pathinfo($relPath);
+        $arrFolders = explode('/', $pathInfo['dirname']);
+        
         foreach ($arrFolders as $folder) {
+            if (empty($folder)) continue;
             $path .= '/' . $folder;
             if (!is_dir($path)) {
                 \Cx\Lib\FileSystem\FileSystem::make_folder($path);

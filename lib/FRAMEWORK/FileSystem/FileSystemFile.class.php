@@ -59,7 +59,7 @@ class FileSystemFile implements FileInterface
         
         return $fileOwnerId;
     }
-
+    
     public function isWritable() {
         return is_writable($this->filePath);
     }
@@ -98,6 +98,14 @@ class FileSystemFile implements FileInterface
         if (!touch($this->filePath)) {
             throw new FileSystemFileException('Unable to touch file in file system!');
         }
+    }
+    
+    public function copy($dst)
+    {
+        if (!copy($this->filePath, $dst)) {
+            throw new FileSystemFileException('Unable to copy ' . $this->filePath . ' to ' . $dst . '!');
+        }
+        \Cx\Lib\FileSystem\FileSystem::makeWritable($dst);
     }
 
     public function getFilePermissions()
