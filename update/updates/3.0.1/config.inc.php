@@ -14,6 +14,7 @@ $arrUpdate = array(
     'cmsFromVersion'   => '1.2.0',
     'cmsRequiredPHP'   => '5.3',
     'cmsRequiredMySQL' => '5.0',
+    'cmsRequiredGD'    => '1.6',
     'lang'             => array('de'),
     'script'           => 'update.php'
 );
