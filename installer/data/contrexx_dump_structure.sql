@@ -3993,6 +3993,7 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_sessions` (
   `sessionid` varchar(255) NOT NULL default '',
+  `remember_me` int(1) NOT NULL default '0',
   `startdate` varchar(14) NOT NULL default '',
   `lastupdated` varchar(14) NOT NULL default '',
   `status` varchar(20) NOT NULL default '',
