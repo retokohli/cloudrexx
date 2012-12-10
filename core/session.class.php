@@ -4,7 +4,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Leandro Nery <nery@astalavista.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
- * @version	   $Id:    Exp $
+ * @version     $Id:    Exp $
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -16,7 +16,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Leandro Nery <nery@astalavista.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
- * @version	   $Id:    Exp $
+ * @version     $Id:    Exp $
  * @package     contrexx
  * @subpackage  core
  */
@@ -27,18 +27,25 @@ class cmsSession
     private $sessionPath;
     private $sessionPathPrefix = 'session_';
     var $userId;
-    var $lifetime;
     var $_objDb;
-    var $compatibelitiyMode;
-    private $defaultSessionLifeTime = 3600;//1 hour
+    private $compatibilityMode;
+    private $lifetime;
+    private $defaultLifetime;
+    private $defaultLifetimeRememberMe;
+    private $rememberMe = false;
 
     function __construct($status='')
     {
         global $_CONFIG;
 
-        if (ini_get("session.auto_start")) {
+        if (ini_get('session.auto_start')) {
             session_destroy();
         }
+
+        $this->status = $status;
+        $this->initDatabase();
+        $this->initRememberMe();
+        $this->initSessionLifetime();
 
         if (session_set_save_handler(
             array(& $this, 'cmsSessionOpen'),
@@ -48,29 +55,7 @@ class cmsSession
             array(& $this, 'cmsSessionDestroy'),
             array(& $this, 'cmsSessionGc')))
         {
-            $this->status=$status;
-            $errorMsg = '';
-            $this->_objDb = getDatabaseObject($errorMsg, true);
-            
-            $this->setAdodbDebugMode();
-            $this->compatibelitiyMode = ($arrColumns = $this->_objDb->MetaColumnNames(DBPREFIX.'sessions')) && in_array('username', $arrColumns);
-
             session_start();
-            if (isset($_POST['remember_me'])) {
-                $_SESSION['auth']['loginRememberMe'] = 1;
-            }
-            if (isset($_SESSION['auth']['loginRememberMe']) && !empty($_CONFIG['sessionLifeTimeRememberMe'])) {
-                $this->lifetime=$_CONFIG['sessionLifeTimeRememberMe'];
-            } else {
-                if (intval($_CONFIG['sessionLifeTime'])==0 || empty($_CONFIG['sessionLifeTime'])){
-                    $this->lifetime=$this->defaultSessionLifeTime;
-                } else {
-                    $this->lifetime=intval($_CONFIG['sessionLifeTime']);
-                }
-            }
-
-// TODO: there should be an option to limit the session to the browser's session
-            @ini_set('session.gc_maxlifetime', $this->lifetime);
 
             //earliest possible point to set debugging according to session.
             $this->restoreDebuggingParams();
@@ -81,25 +66,108 @@ class cmsSession
         }
     }
 
-    function setAdodbDebugMode()
+    /**
+     * Initializes the database.
+     *
+     * @access  private
+     */
+    private function initDatabase()
+    {
+        $errorMsg = '';
+        $this->_objDb = getDatabaseObject($errorMsg, true);
+        
+        $this->setAdodbDebugMode();
+        $this->compatibilityMode = ($arrColumns = $this->_objDb->MetaColumnNames(DBPREFIX.'sessions')) && in_array('username', $arrColumns);
+    }
+
+    /**
+     * Sets the database debug mode.
+     *
+     * @access  private
+     */
+    private function setAdodbDebugMode()
     {
         if (DBG::getMode() & DBG_ADODB_TRACE) {
-            $this->_objDb->debug=99;
+            $this->_objDb->debug = 99;
         } elseif (DBG::getMode() & DBG_ADODB || DBG::getMode() & DBG_ADODB_ERROR) {
-            $this->_objDb->debug=1;
+            $this->_objDb->debug = 1;
         } else {
-            $this->_objDb->debug=0;
+            $this->_objDb->debug = 0;
         }
     }
 
     /**
      * Expands debugging behaviour with behaviour stored in session if specified and active.
+     *
+     * @access  private
      */
-    function restoreDebuggingParams()
+    private function restoreDebuggingParams()
     {
         if (isset($_SESSION['debugging']) && $_SESSION['debugging']) {
             DBG::activate(DBG::getMode() | $_SESSION['debugging_flags']);
         }
+    }
+
+    /**
+     * Initializes the status of remember me.
+     *
+     * @access  private
+     */
+    private function initRememberMe()
+    {
+        $sessionId = !empty($_COOKIE[session_name()]) ? $_COOKIE[session_name()] : null;
+        if (isset($_POST['remember_me'])) {
+            $this->rememberMe = true;
+            if ($this->sessionExists($sessionId)) {//remember me status for new sessions will be stored in cmsSessionRead() (when creating the appropriate db entry)
+                $objResult = $this->_objDb->Execute('UPDATE `'.DBPREFIX.'sessions` SET `remember_me` = 1 WHERE `sessionid` = "'.contrexx_input2db($sessionId).'"');
+            }
+        } else {
+            $objResult = $this->_objDb->Execute('SELECT `remember_me` FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.contrexx_input2db($sessionId).'"');
+            if ($objResult && ($objResult->RecordCount() > 0)) {
+                if ($objResult->fields['remember_me'] == 1) {
+                    $this->rememberMe = true;
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks if the passed session exists.
+     *
+     * @access  private
+     * @param   string      $session
+     * @return  boolean
+     */
+    private function sessionExists($sessionId)
+    {
+        $objResult = $this->_objDb->Execute('SELECT 1 FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.contrexx_input2db($sessionId).'"');
+        if ($objResult && ($objResult->RecordCount() > 0)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Sets the default session lifetimes
+     * and lifetime of the current session.
+     *
+     * @access  private
+     */
+    private function initSessionLifetime()
+    {
+        global $_CONFIG;
+
+        $this->defaultLifetime = !empty($_CONFIG['sessionLifeTime']) ? intval($_CONFIG['sessionLifeTime']) : 3600;
+        $this->defaultLifetimeRememberMe = !empty($_CONFIG['sessionLifeTimeRememberMe']) ? intval($_CONFIG['sessionLifeTimeRememberMe']) : 1209600;
+
+        if ($this->rememberMe) {
+            $this->lifetime = $this->defaultLifetimeRememberMe;
+        } else {
+            $this->lifetime = $this->defaultLifetime;
+        }
+
+        @ini_set('session.gc_maxlifetime', $this->lifetime);
     }
 
     /**
@@ -112,13 +180,13 @@ class cmsSession
         $ses = session_name();
         if (isset($_COOKIE[$ses])) {
             $expirationTime = ($this->lifetime > 0 ? $this->lifetime + time() : 0);
-            setcookie($ses, $_COOKIE[$ses], $expirationTime, "/");
+            setcookie($ses, $_COOKIE[$ses], $expirationTime, '/');
         }
     }
 
     function cmsSessionOpen($aSavaPath, $aSessionName)
     {
-        $this->cmsSessionGc($this->lifetime);
+        $this->cmsSessionGc();
         return true;
     }
 
@@ -129,28 +197,21 @@ class cmsSession
 
     function cmsSessionRead( $aKey )
     {
-        $this->sessionid=$aKey;
+        $this->sessionid = $aKey;
         $this->sessionPath = ASCMS_TEMP_WEB_PATH.'/'.$this->sessionPathPrefix.$this->sessionid;
-        $query = "SELECT datavalue, user_id, status FROM ".DBPREFIX."sessions WHERE sessionid='".$aKey."'";
-        if ($this->compatibelitiyMode) {
-            $query = "SELECT datavalue, username as user_id, status FROM ".DBPREFIX."sessions WHERE sessionid='".$aKey."'";
-        }
-        $objResult = $this->_objDb->Execute($query);
 
+        $objResult = $this->_objDb->Execute('SELECT `datavalue`, `'.($this->compatibilityMode ? 'username' : 'user_id').'`, `status` FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.$aKey.'"');
         if ($objResult !== false) {
             if ($objResult->RecordCount() == 1) {
-                $this->userId=$objResult->fields['user_id'];
-                $this->status=$objResult->fields['status'];
+                $this->userId = $objResult->fields['user_id'];
+                $this->status = $objResult->fields['status'];
                 return $objResult->fields['datavalue'];
             } else {
-                $query = "INSERT INTO ".DBPREFIX."sessions (sessionid, startdate, lastupdated, status, user_id, datavalue)
-                          VALUES ('".$aKey."', '".time()."', '".time()."', '".($this->status)."', '".intval($this->userId)."', '')";
-                if ($this->compatibelitiyMode) {
-                    $query = "INSERT INTO ".DBPREFIX."sessions (sessionid, startdate, lastupdated, status, username, datavalue)
-                              VALUES ('".$aKey."', '".time()."', '".time()."', '".($this->status)."', '".intval($this->userId)."', '')";
-                }
-                $this->_objDb->Execute($query);
-                return "";
+                $this->_objDb->Execute('
+                    INSERT INTO `'.DBPREFIX.'sessions` (`sessionid`, `remember_me`, `startdate`, `lastupdated`, `status`, `'.($this->compatibilityMode ? 'username' : 'user_id').'`)
+                    VALUES ("'.$aKey.'", '.($this->rememberMe ? 1 : 0).', "'.time().'", "'.time().'", "'.($this->status).'", "'.intval($this->userId).'")
+                ');
+                return '';
            }
         }
     }
@@ -190,19 +251,18 @@ class cmsSession
         return true;
     }
 
-    function cmsSessionGc( $aMaxLifeTime )
+    function cmsSessionGc()
     {
-        if (empty($aMaxLifeTime)) return true;
-        $query = "DELETE FROM ".DBPREFIX."sessions WHERE lastupdated < ".(time() - $aMaxLifeTime);
-        $this->_objDb->Execute($query);
+        $this->_objDb->Execute('DELETE FROM `'.DBPREFIX.'sessions` WHERE ((`remember_me` = 0) AND (`lastupdated` < '.(time()-$this->defaultLifetime).'))');
+        $this->_objDb->Execute('DELETE FROM `'.DBPREFIX.'sessions` WHERE ((`remember_me` = 1) AND (`lastupdated` < '.(time()-$this->defaultLifetimeRememberMe).'))');
         return true;
     }
 
     function cmsSessionUserUpdate($userId=0)
     {
-        $this->userId=$userId;
+        $this->userId = $userId;
         $query = "UPDATE ".DBPREFIX."sessions SET user_id ='".$userId."' WHERE sessionid = '".$this->sessionid."'";
-        if ($this->compatibelitiyMode) {
+        if ($this->compatibilityMode) {
            $query = "UPDATE ".DBPREFIX."sessions SET username ='".$userId."' WHERE sessionid = '".$this->sessionid."'";
         }
         $this->_objDb->Execute($query);
