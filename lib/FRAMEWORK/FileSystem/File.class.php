@@ -14,7 +14,7 @@ class File implements FileInterface
     
     public function __construct($file)
     {
-        $this->file = $file;     
+        $this->file = $file;
         $this->setAccessMode();
     }
 
@@ -143,6 +143,55 @@ class File implements FileInterface
         }
 
         throw new FileSystemException('File: Unable to touch file '.$this->file.'!');
+    }
+    
+    public function copy($dst, $force = false)
+    {
+        if (!$force && file_exists($dst)) {
+            return true;
+        }
+        
+        $path       = ASCMS_PATH.ASCMS_PATH_OFFSET;
+        $relPath    = str_replace($path, '', $dst);
+        $pathInfo   = pathinfo($relPath);
+        $arrFolders = explode('/', $pathInfo['dirname']);
+        
+        foreach ($arrFolders as $folder) {
+            if (empty($folder)) continue;
+            $path .= '/' . $folder;
+            if (!is_dir($path)) {
+                \Cx\Lib\FileSystem\FileSystem::make_folder($path);
+            }
+        }
+        
+        // use PHP
+        if (   $this->accessMode == self::PHP_ACCESS
+            || $this->accessMode == self::UNKNOWN_ACCESS
+        ) {
+            try {
+                // try regular file access first
+                $fsFile = new FileSystemFile($this->file);
+                $fsFile->copy($dst);
+                return true;
+            } catch (FileSystemFileException $e) {
+                \DBG::msg('FileSystemFile: '.$e->getMessage());
+            }
+        }
+
+        // use FTP
+        if (   $this->accessMode == self::FTP_ACCESS
+            || $this->accessMode == self::UNKNOWN_ACCESS
+        ) {
+            try {
+                $ftpFile = new FTPFile($this->file);
+                $ftpFile->copy($dst);
+                return true;
+            } catch (FTPFileException $e) {
+                \DBG::msg('FTPFile: '.$e->getMessage());
+            }
+        }
+
+        throw new FileSystemException('File: Unable to copy file '.$this->file.'!');
     }
 
     /**

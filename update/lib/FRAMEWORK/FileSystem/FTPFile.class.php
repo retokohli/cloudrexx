@@ -62,19 +62,27 @@ class FTPFile implements FileInterface
         $path = $pathInfo['dirname'];
 
         if ($file == ASCMS_PATH) {
-            $this->filePath = $this->ftpConfig['path'];
             $this->file = '';
-        } elseif (strpos($path, ASCMS_PATH) === 0) {
-            $this->filePath = $this->ftpConfig['path'].substr($path, strlen(ASCMS_PATH));
-        } elseif (ASCMS_PATH_OFFSET && strpos($path, ASCMS_PATH_OFFSET) === 0) {
-            $this->filePath = $this->ftpConfig['path'].$path;
-        } elseif (strpos($path, '/') === 0) {
-            $this->filePath = $this->ftpConfig['path'].ASCMS_PATH_OFFSET.$path;
-        } else {
-            $this->filePath = $this->ftpConfig['path'].ASCMS_PATH_OFFSET.'/'.$path;
         }
 
-        $this->filePath = preg_replace('#^/+#', '', $this->filePath);
+        $this->filePath = $this->getValidFilePath($file, $path);
+    }
+
+    private function getValidFilePath($file, $path)
+    {
+        if ($file == ASCMS_PATH) {
+            $filePath = $this->ftpConfig['path'];
+        } elseif (strpos($path, ASCMS_PATH) === 0) {
+            $filePath = $this->ftpConfig['path'].substr($path, strlen(ASCMS_PATH));
+        } elseif (ASCMS_PATH_OFFSET && strpos($path, ASCMS_PATH_OFFSET) === 0) {
+            $filePath = $this->ftpConfig['path'].$path;
+        } elseif (strpos($path, '/') === 0) {
+            $filePath = $this->ftpConfig['path'].ASCMS_PATH_OFFSET.$path;
+        } else {
+            $filePath = $this->ftpConfig['path'].ASCMS_PATH_OFFSET.'/'.$path;
+        }
+
+        return preg_replace('#^/+#', '', $filePath);
     }
 
     /**
@@ -105,8 +113,17 @@ class FTPFile implements FileInterface
         
         try {
             $src = fopen($this->passedFilePath, 'r');
+            
+            $pathInfo = pathinfo($dst);
+            $path     = $pathInfo['dirname'];
+            $file     = $pathInfo['basename'];
+            $filePath = $this->getValidFilePath($file, $path);
+            $dst      = $filePath . '/' . $file;
+            
+            ftp_set_option($this->connection, FTP_TIMEOUT_SEC, 600);
+            
             if (!ftp_fput($this->connection, $dst, $src, FTP_BINARY)) {
-                throw new FTPFileException($e->getMessage());
+                throw new FTPFileException('FTP upload from ' . $this->passedFilePath . ' to ' . $dst . ' failed.');
             }
         } catch (FTPFileException $e) {
             throw new FTPFileException($e->getMessage());

@@ -18,4 +18,5 @@ namespace Cx\Lib\FileSystem;
 interface FileInterface {
     public function write($data);
     public function touch();
+    public function copy($dst, $force);
 }
