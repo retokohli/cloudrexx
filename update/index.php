@@ -26,6 +26,7 @@ require_once(ASCMS_DOCUMENT_ROOT . '/config/version.php');
 require_once(ASCMS_LIBRARY_PATH . '/PEAR/HTML/Template/Sigma/Sigma.php');
 require_once(ASCMS_LIBRARY_PATH . '/adodb/adodb.inc.php');
 require_once(ASCMS_CORE_PATH . '/database.php');
+require_once(ASCMS_CORE_PATH . '/validator.inc.php');
 require_once(ASCMS_CORE_PATH . '/session.class.php');
 require_once(ASCMS_CORE_PATH . '/Init.class.php');
 
