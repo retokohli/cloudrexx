@@ -26,7 +26,7 @@ function _blogUpdate() {
 	}
 
     try{
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_blog_categories',
             array(
                 'category_id'    => array('type' => 'INT(4)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
@@ -36,7 +36,7 @@ function _blogUpdate() {
             )
         );
 
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_blog_comments',
             array(
                 'comment_id'     => array('type' => 'INT(7)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -57,7 +57,7 @@ function _blogUpdate() {
             )
         );
 
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_blog_message_to_category',
             array(
                 'message_id'     => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
@@ -69,7 +69,7 @@ function _blogUpdate() {
             )
         );
 
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_blog_messages',
             array(
                 'message_id'     => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -80,7 +80,7 @@ function _blogUpdate() {
             )
         );
 
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_blog_networks_lang',
             array(
                 'network_id'     => array('type' => 'INT(8)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
@@ -88,7 +88,7 @@ function _blogUpdate() {
             )
         );
 
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_blog_votes',
             array(
                 'vote_id'        => array('type' => 'INT(8)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -104,28 +104,28 @@ function _blogUpdate() {
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     try { //update to 2.2.3 in this block
         if($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.2.3')) {
             //we've hidden the wysiwyg - let's default to textarea
-            UpdateUtil::sql('UPDATE '.DBPREFIX.'module_blog_settings SET value="textarea" WHERE name="blog_comments_editor"');
+            \Cx\Lib\UpdateUtil::sql('UPDATE '.DBPREFIX.'module_blog_settings SET value="textarea" WHERE name="blog_comments_editor"');
 
             //comments: convert escaped db entries to their unescaped equivalents
-            $rs = UpdateUtil::sql('SELECT comment_id, comment FROM  '.DBPREFIX.'module_blog_comments');
+            $rs = \Cx\Lib\UpdateUtil::sql('SELECT comment_id, comment FROM  '.DBPREFIX.'module_blog_comments');
             while(!$rs->EOF) {
                 $content = $rs->fields['comment'];
                 $id = $rs->fields['comment_id'];
                 $content = contrexx_raw2db(html_entity_decode($content, ENT_QUOTES, CONTREXX_CHARSET));
-                UpdateUtil::sql('UPDATE '.DBPREFIX.'module_blog_comments SET comment="'.$content.'" WHERE comment_id='.$id);
+                \Cx\Lib\UpdateUtil::sql('UPDATE '.DBPREFIX.'module_blog_comments SET comment="'.$content.'" WHERE comment_id='.$id);
                 $rs->MoveNext();
             }
         }
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
 	/************************************************

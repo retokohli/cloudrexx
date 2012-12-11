@@ -29,7 +29,7 @@ function _guestbookUpdate()
 
     // this addidional structure update/check is required due that the full version's structure isn't as it should be
     try {
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_guestbook',
             array(
                 'id'        => array('type' => 'INT(6)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
@@ -50,7 +50,7 @@ function _guestbookUpdate()
         );
     }
     catch (UpdateException $e) {
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     return true;

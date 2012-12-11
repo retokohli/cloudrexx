@@ -4,7 +4,7 @@ function _memberdirUpdate()
 	global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
     try{
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_memberdir_directories',
             array(
                 'dirid'          => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -22,7 +22,7 @@ function _memberdirUpdate()
                 'memberdir_dir'  => array('fields' => array('name','description'), 'type' => 'FULLTEXT')
             )
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_memberdir_name',
             array(
                 'field'      => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
@@ -32,7 +32,7 @@ function _memberdirUpdate()
                 'lang_id'    => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '1')
             )
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_memberdir_settings',
             array(
                 'setid'      => array('type' => 'INT(4)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -41,7 +41,7 @@ function _memberdirUpdate()
                 'lang_id'    => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '1')
             )
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_memberdir_values',
             array(
                 'id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -78,8 +78,8 @@ function _memberdirUpdate()
         );
 
         foreach ($arrSettings as $key => $arrSetting) {
-            if (!UpdateUtil::sql("SELECT 1 FROM `".DBPREFIX."module_memberdir_settings` WHERE `setname` = '".$key."'")->RecordCount()) {
-                UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_memberdir_settings`
+            if (!\Cx\Lib\UpdateUtil::sql("SELECT 1 FROM `".DBPREFIX."module_memberdir_settings` WHERE `setname` = '".$key."'")->RecordCount()) {
+                \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_memberdir_settings`
                     SET `setname`    = '".$key."',
                         `setvalue`   = '".$arrSetting[0]."',
                         `lang_id`    = '".$arrSetting[1]."'
@@ -90,7 +90,7 @@ function _memberdirUpdate()
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
 

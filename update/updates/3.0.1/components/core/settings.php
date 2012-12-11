@@ -229,11 +229,11 @@ function _updateSettings()
 
     try {
         //remove fileuploader setting
-        UpdateUtil::sql('DELETE FROM '.DBPREFIX.'settings WHERE setid=70 AND setname="fileUploaderStatus"');
+        \Cx\Lib\UpdateUtil::sql('DELETE FROM '.DBPREFIX.'settings WHERE setid=70 AND setname="fileUploaderStatus"');
     }
     catch (UpdateException $e) {
         DBG::trace();
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     foreach ($arrSettings as $setId => $arrSetting) {

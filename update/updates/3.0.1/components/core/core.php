@@ -50,7 +50,7 @@ function _coreUpdate()
     }
 
     try{
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'content_navigation',
             array(
                 'catid'                  => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -83,7 +83,7 @@ function _coreUpdate()
             )
         );
 
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'content_navigation_history',
             array(
                 'id'                     => array('type' => 'INT(7)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -115,7 +115,7 @@ function _coreUpdate()
             )
         );
 
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'log',
             array(
                 'id'                       => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -134,7 +134,7 @@ function _coreUpdate()
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
 
@@ -145,7 +145,7 @@ function _coreUpdate()
      *                                            *
      *********************************************/
     try{
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'backend_areas',
             array(
                 'area_id'            => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -168,7 +168,7 @@ function _coreUpdate()
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
 
@@ -1437,7 +1437,7 @@ function _coreUpdate()
      * NECCESSARY EVIL.
      **********************************************************/
     try {
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'skins',
             array(
                 'id'         => array('type' => 'INT(2) UNSIGNED',  'notnull' => true, 'primary' => true, 'auto_increment' => true),
@@ -1452,7 +1452,7 @@ function _coreUpdate()
         );
     }
     catch (UpdateException $e) {
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     return true;

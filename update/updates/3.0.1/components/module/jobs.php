@@ -3,7 +3,7 @@ function _jobsUpdate() {
     global $objDatabase;
 
     try {
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_jobs',
             array(
                 'id'         => array('type' => 'INT(6)',       'notnull' => true,  'primary' => true, 'auto_increment' => true, 'unsigned' => true),
@@ -26,7 +26,7 @@ function _jobsUpdate() {
                 'newsindex'  => array('fields' => array('title', 'text'), 'type' => 'fulltext')
             )
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_jobs_categories',
             array(
                 'catid'      => array('type' => 'INT(2)',           'primary' => true, 'auto_increment' => true, 'unsigned' => true),
@@ -35,21 +35,21 @@ function _jobsUpdate() {
                 'sort_style' => array('type' => "ENUM('alpha', 'date', 'date_alpha')", 'default'        => 'alpha')
             )
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_jobs_location',
             array(
                 'id'   => array('type' => 'INT(10)',      'primary' => true, 'auto_increment' => true, 'unsigned' => true),
                 'name' => array('type' => 'VARCHAR(100)', 'default' => '')
             )
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_jobs_rel_loc_jobs',
             array(
                 'job'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
                 'location'   => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true)
             )
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_jobs_settings',
             array(
                 'id'    => array('type' => 'INT(10)',      'primary' => true, 'auto_increment' => true, 'unsigned' => true),
@@ -61,7 +61,7 @@ function _jobsUpdate() {
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
 

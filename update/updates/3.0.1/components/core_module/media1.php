@@ -20,7 +20,7 @@ function _media1Update()
         }*/
 
     try {
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_media_settings',
             array(
                   'name'       => array('type' => 'VARCHAR(50)'),
@@ -43,15 +43,15 @@ function _media1Update()
                            );
 
         for($i = 0; $i < count($arrValues); $i++) {
-            $rs = UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_media_settings WHERE name="'.$arrValues[$i][0].'";');
+            $rs = \Cx\Lib\UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_media_settings WHERE name="'.$arrValues[$i][0].'";');
             if($rs->EOF) {
-                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_media_settings VALUES ("'.$arrValues[$i][0].'","'.$arrValues[$i][1].'")');
+                \Cx\Lib\UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_media_settings VALUES ("'.$arrValues[$i][0].'","'.$arrValues[$i][1].'")');
             }
         }
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
       
     return true;

@@ -4,7 +4,7 @@ function _newsletterUpdate()
 {
     global $objDatabase;
     try{
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_newsletter_category',
             array(
                 'id'                     => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -17,7 +17,7 @@ function _newsletterUpdate()
             )
         );
 
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_newsletter_confirm_mail',
             array(
                 'id'             => array('type' => 'INT(1)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -27,7 +27,7 @@ function _newsletterUpdate()
             )
         );
 
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_newsletter',
             array(
                 'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -51,7 +51,7 @@ function _newsletterUpdate()
             )
         );
 
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_newsletter_user',
             array(
                 'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -79,7 +79,7 @@ function _newsletterUpdate()
         );
     }
     catch (UpdateException $e) {
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
     DBG::msg("Done checking tables.. going to check settings");
     
@@ -87,7 +87,7 @@ function _newsletterUpdate()
     $unsubscribeVal=1;
     try {
         DBG::msg("Retrieving old unsubscribe value if set.");
-        $res = UpdateUtil::sql("SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notifyOnUnsubscribe'");
+        $res = \Cx\Lib\UpdateUtil::sql("SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notifyOnUnsubscribe'");
         
     if(!$res->EOF){
         $unsubscribeVal = $res->fields['setvalue'];
@@ -95,14 +95,14 @@ function _newsletterUpdate()
     else //maybe update ran already => preserve new value
     {
         DBG::msg("Not found. Retrieving new unsubscribe value if set.");
-        $res = UpdateUtil::sql("SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notificatonUnsubscribe'");
+        $res = \Cx\Lib\UpdateUtil::sql("SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notificatonUnsubscribe'");
         if(!$res->EOF)
         $unsubscribeVal = $res->fields['setvalue'];
     }
 
     }
     catch (UpdateException $e) {
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
         
     $settings = array(
@@ -121,7 +121,7 @@ function _newsletterUpdate()
 
     try {
         DBG::msg("Reading current settings");
-        $res = UpdateUtil::sql("SELECT * FROM ".DBPREFIX."module_newsletter_settings");
+        $res = \Cx\Lib\UpdateUtil::sql("SELECT * FROM ".DBPREFIX."module_newsletter_settings");
         while (!$res->EOF) {
             $field = $res->fields['setname'];
             DBG::msg("...merging $field with default settings");
@@ -136,9 +136,9 @@ function _newsletterUpdate()
             $value = addslashes($entry['setvalue']);
             $status= intval    ($entry['status']);
             DBG::msg("...deleting field $field");
-            UpdateUtil::sql("DELETE FROM ".DBPREFIX."module_newsletter_settings WHERE setid = '$setid' OR setname = '$field'");
+            \Cx\Lib\UpdateUtil::sql("DELETE FROM ".DBPREFIX."module_newsletter_settings WHERE setid = '$setid' OR setname = '$field'");
             DBG::msg("...rewriting field $field");
-            UpdateUtil::sql("
+            \Cx\Lib\UpdateUtil::sql("
                 INSERT INTO ".DBPREFIX."module_newsletter_settings
                     (setid, setname, setvalue, status)
                 VALUES (
@@ -147,37 +147,37 @@ function _newsletterUpdate()
             ");
         }
 	DBG::msg("Deleting old unsubscribe key if set");
-        UpdateUtil::sql("DELETE FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notifyOnUnsubscribe'");
+        \Cx\Lib\UpdateUtil::sql("DELETE FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notifyOnUnsubscribe'");
         DBG::msg("Done with newsletter update");
     }
     catch (UpdateException $e) {
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     try {
         DBG::msg("Setting recipient count");
-        $objResult = UpdateUtil::sql("SELECT `newsletter`, COUNT(1) AS recipient_count FROM `".DBPREFIX."module_newsletter_tmp_sending` GROUP BY `newsletter`");
+        $objResult = \Cx\Lib\UpdateUtil::sql("SELECT `newsletter`, COUNT(1) AS recipient_count FROM `".DBPREFIX."module_newsletter_tmp_sending` GROUP BY `newsletter`");
         if ($objResult->RecordCount()) {
             while(!$objResult->EOF) {
-                UpdateUtil::sql("UPDATE `".DBPREFIX."module_newsletter` SET `recipient_count` = ".$objResult->fields['recipient_count']." WHERE `id`=".$objResult->fields['newsletter']);
+                \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_newsletter` SET `recipient_count` = ".$objResult->fields['recipient_count']." WHERE `id`=".$objResult->fields['newsletter']);
                 $objResult->MoveNext();
             }
         }
     }
     catch (UpdateException $e) {
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     // Add notification recipients to confirm_mail table
     try {
-        $objResult = UpdateUtil::sql("SELECT id FROM `".DBPREFIX."module_newsletter_confirm_mail` WHERE id='3'");
+        $objResult = \Cx\Lib\UpdateUtil::sql("SELECT id FROM `".DBPREFIX."module_newsletter_confirm_mail` WHERE id='3'");
         if ($objResult->RecordCount() == 0) {
             DBG::msg("inserting standard confirm mails");
-            UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_newsletter_confirm_mail` (`id` ,`title` ,`content` ,`recipients`) VALUES ('3', '[[url]] - Neue Newsletter Empfänger [[action]]', 'Hallo Admin Eine neue Empfänger [[action]] in ihrem Newsletter System. Automatisch generierte Nachricht [[date]]', '');");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_newsletter_confirm_mail` (`id` ,`title` ,`content` ,`recipients`) VALUES ('3', '[[url]] - Neue Newsletter Empfänger [[action]]', 'Hallo Admin Eine neue Empfänger [[action]] in ihrem Newsletter System. Automatisch generierte Nachricht [[date]]', '');");
         }
     }
     catch (UpdateException $e) {
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     return true;

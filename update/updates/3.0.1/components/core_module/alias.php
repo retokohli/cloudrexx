@@ -3,7 +3,7 @@ function _aliasUpdate() {
     global $objUpdate, $_CONFIG;
 
     try {
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_alias_source',
             array(
                 'id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -18,7 +18,7 @@ function _aliasUpdate() {
             )
         );
 
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_alias_target',
             array(
                 'id'     => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -32,7 +32,7 @@ function _aliasUpdate() {
 
         // Since version 2.2, aliases are unique within a language. Therefore every alias must be associated to its content page's language.
         if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.2.0')) {
-            UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_alias_source` AS tblAS
+            \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_alias_source` AS tblAS
                          INNER JOIN `'.DBPREFIX.'module_alias_target` AS tblAT ON tblAT.`id` = tblAS.`target_id`
                          INNER JOIN `'.DBPREFIX.'content_navigation`  AS tblN  ON tblN.`catid` = tblAT.`url`
                                 SET tblAS.`lang_id` = tblN.`lang`
@@ -40,7 +40,7 @@ function _aliasUpdate() {
         }
     }
     catch (UpdateException $e) {
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 	return true;
 }

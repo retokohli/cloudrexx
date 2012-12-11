@@ -5,7 +5,7 @@ function _livecamUpdate()
     global $objDatabase, $objUpdate, $_CONFIG;
 
     try{
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_livecam',
             array(
                 'id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'primary' => true),
@@ -20,7 +20,7 @@ function _livecamUpdate()
             )
         );
 
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_livecam_settings',
             array(
                 'setid'      => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -30,7 +30,7 @@ function _livecamUpdate()
         );
     }
     catch (UpdateException $e) {
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     $query = "SELECT 1 FROM `".DBPREFIX."module_livecam_settings` WHERE `setname` = 'amount_of_cams'";
@@ -120,7 +120,7 @@ function _livecamUpdate()
 	************************************************/
     // livecam module ID is 30
     // both spaces in the search and replace pattern are required in that case
-    UpdateUtil::migrateContentPage(30, NULL, ' {LIVECAM_IMAGE_SHADOWBOX}', ' rel="{LIVECAM_IMAGE_SHADOWBOX}"', '2.1.3');
+    \Cx\Lib\UpdateUtil::migrateContentPage(30, NULL, ' {LIVECAM_IMAGE_SHADOWBOX}', ' rel="{LIVECAM_IMAGE_SHADOWBOX}"', '2.1.3');
 
 
 

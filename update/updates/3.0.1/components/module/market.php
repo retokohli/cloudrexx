@@ -59,9 +59,9 @@ function _marketUpdate()
 
     try{
         // delete obsolete table  contrexx_module_market_access
-        UpdateUtil::drop_table(DBPREFIX.'module_market_access');
+        \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_market_access');
 
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_market_spez_fields',
             array(
                 'id'         => array('type' => 'INT(5)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -76,7 +76,7 @@ function _marketUpdate()
     catch (UpdateException $e) {
         // we COULD do something else here..
         DBG::trace();
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     return true;

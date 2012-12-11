@@ -5,7 +5,7 @@ function _knowledgeUpdate()
     global $objDatabase;
 
     try{
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_knowledge_article_content',
             array(
                 'id'       => array('type' => 'INT(10)',  'notnull' => true, 'primary' => true, 'auto_increment' => true, 'unsigned' => true),
@@ -19,7 +19,7 @@ function _knowledgeUpdate()
                 'module_knowledge_article_content_article' => array( 'fields'=>array('article')),
             )
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_knowledge_articles',
             array(
                 'id'           => array('type' => 'INT(10)',    'notnull' => true, 'primary' => true, 'auto_increment' => true, 'unsigned' => true),
@@ -33,7 +33,7 @@ function _knowledgeUpdate()
                 'date_updated' => array('type' => 'INT(14)',    'notnull' => true, 'default' => 0),
             )
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_knowledge_categories',
             array(
                 'id'           => array('type' => 'INT(10)',    'notnull' => true, 'primary' => true, 'auto_increment' => true, 'unsigned' => true),
@@ -46,7 +46,7 @@ function _knowledgeUpdate()
                 'module_knowledge_categories_parent' => array( 'fields'=>array('parent'))
             )
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_knowledge_categories_content',
             array(
                 'id'           => array('type' => 'INT(10)',    'notnull' => true, 'primary' => true, 'auto_increment' => true, 'unsigned' => true),
@@ -55,7 +55,7 @@ function _knowledgeUpdate()
                 'lang'         => array('type' => 'INT(11)',    'notnull' => true, 'default' => 1),
             )
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_knowledge_settings',
             array(
                 'id'    => array('type' => 'INT(10)',          'notnull' => true, 'primary' => true, 'auto_increment' => true, 'unsigned' => true),
@@ -66,7 +66,7 @@ function _knowledgeUpdate()
                 'module_knowledge_settings_name'   => array( 'fields'=>array('name'))
             )
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_knowledge_tags',
             array(
                 'id'    => array('type' => 'INT(10)',          'notnull' => true, 'primary' => true, 'auto_increment' => true, 'unsigned' => true),
@@ -77,7 +77,7 @@ function _knowledgeUpdate()
                 'module_knowledge_tags_name'   => array( 'fields'=>array('name'))
             )
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_knowledge_tags_articles',
             array(
                 'id'      => array('type' => 'INT(10)',  'notnull' => true, 'primary' => true, 'auto_increment' => true, 'unsigned' => true),
@@ -93,7 +93,7 @@ function _knowledgeUpdate()
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
 

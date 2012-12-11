@@ -366,9 +366,9 @@ function _newsUpdate() {
 
     try{
         // delete obsolete table  contrexx_module_news_access
-        UpdateUtil::drop_table(DBPREFIX.'module_news_access');
+        \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_news_access');
         # fix some ugly NOT NULL without defaults
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_news',
             array(
                 'id'                         => array('type'=>'INT(6) UNSIGNED','notnull'=>true,  'primary'     =>true,   'auto_increment' => true),
@@ -405,13 +405,13 @@ function _newsUpdate() {
     catch (UpdateException $e) {
         // we COULD do something else here..
         DBG::trace();
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     //encoding was a little messy in 2.1.4. convert titles and teasers to their raw representation
     if($_CONFIG['coreCmsVersion'] == "2.1.4") {
         try{
-            $res = UpdateUtil::sql('SELECT `id`, `title`, `teaser_text` FROM `'.DBPREFIX.'module_news` WHERE `changelog` > '.mktime(0,0,0,12,15,2010));
+            $res = \Cx\Lib\UpdateUtil::sql('SELECT `id`, `title`, `teaser_text` FROM `'.DBPREFIX.'module_news` WHERE `changelog` > '.mktime(0,0,0,12,15,2010));
             while($res->MoveNext()) {
                 $title = $res->fields['title'];
                 $teaserText = $res->fields['teaser_text'];
@@ -422,7 +422,7 @@ function _newsUpdate() {
                 //teaserText is html entity style, but no contrexx was specified on encoding
                 $teaserText = html_entity_decode($teaserText);
 
-                UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_news` SET `title`="'.addslashes($title).'", `teaser_text`="'.addslashes($teaserText).'" where `id`='.$id);
+                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_news` SET `title`="'.addslashes($title).'", `teaser_text`="'.addslashes($teaserText).'" where `id`='.$id);
             }
 
             $hfr = new HackyFeedRepublisher();
@@ -430,7 +430,7 @@ function _newsUpdate() {
         }
         catch (UpdateException $e) {
             DBG::trace();
-            return UpdateUtil::DefaultActionHandler($e);
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
     }
 

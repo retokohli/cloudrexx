@@ -4,7 +4,7 @@ function _galleryUpdate()
 	global $objDatabase, $_ARRAYLANG;
 
     try{
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_gallery_categories',
             array(
                 'id'                     => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -19,7 +19,7 @@ function _galleryUpdate()
                 'frontend_access_id'     => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0')
             )
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
 
             DBPREFIX.'module_gallery_pictures',
             array(
@@ -45,7 +45,7 @@ function _galleryUpdate()
         );
     }
     catch (UpdateException $e) {
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
 	$arrSettings = array(
