@@ -4,7 +4,7 @@ function _calendarUpdate()
 	global $objDatabase;
 
     try{
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_calendar',
             array(
                 'id'                                 => array('type' => 'INT(11)', 'notnull' => true, 'primary' => true, 'auto_increment' => true),
@@ -62,7 +62,7 @@ function _calendarUpdate()
     catch (UpdateException $e) {
         // we COULD do something else here..
         DBG::trace();
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
 
@@ -174,9 +174,9 @@ function _calendarUpdate()
 
     try{
         // delete obsolete table  contrexx_module_calendar_access
-        UpdateUtil::drop_table(DBPREFIX.'module_calendar_access');
+        \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_calendar_access');
 
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_calendar_form_data',
             array(
                 'reg_id'     => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0'),
@@ -185,7 +185,7 @@ function _calendarUpdate()
             )
         );
 
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_calendar_form_fields',
             array(
                 'id'         => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -198,7 +198,7 @@ function _calendarUpdate()
             )
         );
 
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_calendar_registrations',
             array(
                 'id'             => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -214,7 +214,7 @@ function _calendarUpdate()
     catch (UpdateException $e) {
         // we COULD do something else here..
         DBG::trace();
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     return true;

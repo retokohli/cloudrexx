@@ -5,7 +5,7 @@ function _u2uUpdate()
     global $objDatabase;
 
     try{
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_u2u_address_list',
             array(
                 'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -15,7 +15,7 @@ function _u2uUpdate()
             array(),
             'InnoDB'
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_u2u_message_log',
             array(
                 'message_id'       => array('type' => 'INT(11) UNSIGNED','notnull' => true, 'primary' => true, 'auto_increment' => true),
@@ -25,7 +25,7 @@ function _u2uUpdate()
             array(),
             'InnoDB'
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_u2u_sent_messages',
             array(
                 'id'                     => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -39,7 +39,7 @@ function _u2uUpdate()
             'InnoDB'
 
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_u2u_settings',
             array(
                 'id'     => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -49,7 +49,7 @@ function _u2uUpdate()
             array(),
             'InnoDB'
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_u2u_settings',
             array(
                 'id'                  => array('type' => 'INT(11) UNSIGNED','notnull' => true, 'primary' => true, 'auto_increment' => true),
@@ -59,7 +59,7 @@ function _u2uUpdate()
             array(),
             'InnoDB'
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_u2u_user_log',
             array(
                 'id'                 => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -75,7 +75,7 @@ function _u2uUpdate()
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
 

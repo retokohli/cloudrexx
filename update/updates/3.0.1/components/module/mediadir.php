@@ -5,7 +5,7 @@ function _mediadirUpdate()
 
     //create / update tables
     try {
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_mediadir_categories',
             array(
                   'id'                     => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -18,7 +18,7 @@ function _mediadirUpdate()
             )
        );
 
-       UpdateUtil::table(
+       \Cx\Lib\UpdateUtil::table(
            DBPREFIX.'module_mediadir_categories_names',
            array(
                  'lang_id'                    => array('type' => 'INT(1)'),
@@ -32,7 +32,7 @@ function _mediadirUpdate()
            )
        );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_comments',
           array(
               'id'                 => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -48,7 +48,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_entries',
           array(
               'id'                         => array('type' => 'INT(10)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -79,7 +79,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_form_names',
           array(
               'lang_id'                => array('type' => 'INT(1)'),
@@ -89,7 +89,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_forms',
           array(
               'id'                         => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -103,7 +103,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_inputfield_names',
           array(
               'lang_id'                => array('type' => 'INT(10)'),
@@ -119,7 +119,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_inputfield_types',
           array(
               'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -135,7 +135,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_inputfield_verifications',
           array(
               'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -147,7 +147,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_inputfields',
           array(
               'id'                 => array('type' => 'INT(10)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -161,7 +161,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_level_names',
           array(
               'lang_id'                => array('type' => 'INT(1)'),
@@ -175,7 +175,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_levels',
           array(
               'id'                 => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -189,7 +189,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_mail_actions',
           array(
               'id'                     => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -199,7 +199,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_mails',
           array(
               'id'             => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -213,7 +213,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_masks',
           array(
               'id'         => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -224,7 +224,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_order_rel_forms_selectors',
           array(
               'selector_id'        => array('type' => 'INT(7)'),
@@ -234,7 +234,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_rel_entry_categories',
           array(
               'entry_id'       => array('type' => 'INT(10)'),
@@ -246,7 +246,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_rel_entry_inputfields',
           array(
               'entry_id'       => array('type' => 'INT(7)'),
@@ -261,7 +261,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_rel_entry_levels',
           array(
               'entry_id'       => array('type' => 'INT(10)'),
@@ -273,7 +273,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_settings',
           array(
                 'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -285,7 +285,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_settings_num_categories',
           array(
               'group_id'           => array('type' => 'INT(1)'),
@@ -293,7 +293,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_settings_num_entries',
           array(
                 'group_id'       => array('type' => 'INT(1)'),
@@ -301,7 +301,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_settings_num_levels',
           array(
               'group_id'       => array('type' => 'INT(1)'),
@@ -309,7 +309,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_settings_perm_group_forms',
           array(
               'group_id'           => array('type' => 'INT(7)'),
@@ -318,7 +318,7 @@ function _mediadirUpdate()
           )
       );
 
-      UpdateUtil::table(
+      \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_votes',
           array(
               'id'             => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -332,7 +332,7 @@ function _mediadirUpdate()
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     //insert default settings
@@ -340,64 +340,64 @@ function _mediadirUpdate()
         //mediadir_settings
         $arrValues = array(array(1,'settingsShowCategoryDescription','1'),array(2,'settingsShowCategoryImage','1'),array(3,'settingsCategoryOrder','1'),array(4,'settingsShowLevels','1'),array(5,'settingsShowLevelDescription','0'),array(6,'settingsShowLevelImage','0'),array(7,'settingsLevelOrder','1'),array(8,'settingsConfirmNewEntries','1'),array(9,'categorySelectorOrder','9'),array(10,'levelSelectorOrder','10'),array(11,'settingsConfirmUpdatedEntries','0'),array(12,'settingsCountEntries','0'),array(13,'settingsThumbSize','120'),array(14,'settingsNumGalleryPics','10'),array(15,'settingsEncryptFilenames','1'),array(16,'settingsAllowAddEntries','1'),array(17,'settingsAllowDelEntries','1'),array(18,'settingsAllowEditEntries','1'),array(19,'settingsAddEntriesOnlyCommunity','1'),array(20,'settingsLatestNumXML','10'),array(21,'settingsLatestNumOverview','5'),array(22,'settingsLatestNumBackend','5'),array(23,'settingsLatestNumFrontend','10'),array(24,'settingsPopularNumFrontend','10'),array(25,'settingsPopularNumRestore','30'),array(26,'settingsLatestNumHeadlines','6'),array(27,'settingsGoogleMapStartposition','46.749647513758326,7.6300048828125,8'),array(28,'settingsAllowVotes','1'),array(29,'settingsVoteOnlyCommunity','0'),array(30,'settingsAllowComments','1'),array(31,'settingsCommentOnlyCommunity','0'),array(32,'settingsGoogleMapAllowKml','0'),array(33,'settingsShowEntriesInAllLang','1'),array(34,'settingsPagingNumEntries','10'),array(35,'settingsGoogleMapType','0'),array(36,'settingsClassificationPoints','5'),array(37,'settingsClassificationSearch','1'),array(38,'settingsEntryDisplaydurationType','1'),array(39,'settingsEntryDisplaydurationValue','0'),array(40,'settingsEntryDisplaydurationValueType','1'),array(41,'settingsEntryDisplaydurationNotification','0'),array(42,'categorySelectorExpSearch','9'),array(43,'levelSelectorExpSearch','10'),array(44,'settingsTranslationStatus','0'),array(45,'settingsReadyToConfirm','0'),array(46,'settingsImageFilesize','300'),array(47,'settingsActiveLanguages','1,2,3'),array(48,'settingsFrontendUseMultilang','0'),array(49,'settingsIndividualEntryOrder','0'));
         foreach($arrValues as $arrValue) {
-            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_settings WHERE name="'.$arrValue[1].'"')->EOF) {
-                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_settings VALUES('.$arrValue[0].',"'.$arrValue[1].'","'.$arrValue[2].'")');
+            if(\Cx\Lib\UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_settings WHERE name="'.$arrValue[1].'"')->EOF) {
+                \Cx\Lib\UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_settings VALUES('.$arrValue[0].',"'.$arrValue[1].'","'.$arrValue[2].'")');
             }
         }
 
         //mediadir_settings_num_categories
         $arrValues = array(array(3,'n'),array(4,'n'),array(5,'n'));
         foreach($arrValues as $arrValue) {
-            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_settings_num_categories WHERE group_id='.$arrValue[0])->EOF) {
-                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_settings_num_categories VALUES('.$arrValue[0].',"'.$arrValue[1].'")');
+            if(\Cx\Lib\UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_settings_num_categories WHERE group_id='.$arrValue[0])->EOF) {
+                \Cx\Lib\UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_settings_num_categories VALUES('.$arrValue[0].',"'.$arrValue[1].'")');
             }
         }
 
         //mediadir_settings_num_entries
         $arrValues = array(array(3,'n'),array(4,'n'),array(5,'n'));
         foreach($arrValues as $arrValue) {
-            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_settings_num_entries WHERE group_id='.$arrValue[0])->EOF) {
-                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_settings_num_entries VALUES('.$arrValue[0].',"'.$arrValue[1].'")');
+            if(\Cx\Lib\UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_settings_num_entries WHERE group_id='.$arrValue[0])->EOF) {
+                \Cx\Lib\UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_settings_num_entries VALUES('.$arrValue[0].',"'.$arrValue[1].'")');
             }
         }
 
         //mediadir_settings_num_levels
         $arrValues = array(array(3,'n'),array(4,'n'),array(5,'n'));
         foreach($arrValues as $arrValue) {
-            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_settings_num_levels WHERE group_id='.$arrValue[0])->EOF) {
-                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_settings_num_levels VALUES('.$arrValue[0].',"'.$arrValue[1].'")');
+            if(\Cx\Lib\UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_settings_num_levels WHERE group_id='.$arrValue[0])->EOF) {
+                \Cx\Lib\UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_settings_num_levels VALUES('.$arrValue[0].',"'.$arrValue[1].'")');
             }
         }
 
         //mediadir_inputfield_verifications
         $arrValues = array(array(1,'normal','.*'),array(2,'e-mail','^[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè0-9!\#\$\%\&\'\*\+\/\=\?\^_\`\{\|\}\~-]+(?:\.[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè0-9!\#\$\%\&\'\*\+\/\=\?\^_\`\{\|\}\~-]+)*@(?:[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè0-9](?:[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè0-9-]*[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$'),array(3,'url','^(?:(?:ht|f)tps?\:\/\/)?((([\wÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè\d-]{1,}\.)+[a-z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?:(\.?\d)\.)) {4}))(?:[\w\d]+)?(\/[\w\d\-\.\?\,\'\/\\\+\&\%\$\#\=\~]*)?$'),array(4,'letters','^[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè\ ]*[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè]+[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè\ ]*$'),array(5,'numbers','^[0-9]*$'));
         foreach($arrValues as $arrValue) {
-            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_inputfield_verifications WHERE name="'.$arrValue[1].'"')->EOF) {
-                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_inputfield_verifications VALUES('.$arrValue[0].',"'.$arrValue[1].'","'.$arrValue[2].'")');
+            if(\Cx\Lib\UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_inputfield_verifications WHERE name="'.$arrValue[1].'"')->EOF) {
+                \Cx\Lib\UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_inputfield_verifications VALUES('.$arrValue[0].',"'.$arrValue[1].'","'.$arrValue[2].'")');
             } else {
-                UpdateUtil::sql('UPDATE '.DBPREFIX.'module_mediadir_inputfield_verifications SET `regex`="'.$arrValue[2].'" WHERE `name`="'.$arrValue[1].'"');
+                \Cx\Lib\UpdateUtil::sql('UPDATE '.DBPREFIX.'module_mediadir_inputfield_verifications SET `regex`="'.$arrValue[2].'" WHERE `name`="'.$arrValue[1].'"');
             }
         }
 
         //mediadir_inputfield_types
         $arrValues = array(array(1,'text',1,1,1,0,''),array(2,'textarea',1,1,1,0,''),array(3,'dropdown',1,0,1,0,''),array(4,'radio',1,0,1,0,''),array(5,'checkbox',1,0,0,0,''),array(7,'file',1,0,0,0,''),array(8,'image',1,0,0,0,''),array(9,'gallery',0,0,0,0,'not yet developed'),array(10,'podcast',0,0,0,0,'not yet developed'),array(11,'classification',1,0,1,0,''),array(12,'link',1,0,0,0,''),array(13,'link_group',1,0,0,0,''),array(14,'rss',0,0,0,0,'not yet developed'),array(15,'google_map',1,0,0,0,''),array(16,'add_step',0,0,0,0,''),array(17,'field_group',0,0,0,0,'not yet developed'),array(18,'label',0,0,0,0,'not yet developed'),array(19,'wysiwyg',0,1,0,0,'developed for OSEC (unstable)'),array(20,'mail',1,0,0,0,''),array(21,'google_weather',1,0,0,0,''),array(22,'relation',0,0,0,0,'developed for OSEC (unstable)'),array(23,'relation_group',0,0,0,0,'developed for OSEC (unstable)'),array(24,'accounts',0,0,0,0,'developed for OSEC (unstable)'),array(25,'country',1,0,0,0,''),array(26,'product_attributes',0,0,1,0,''),array(27,'downloads',0,1,0,1,'developed for CADexchange.ch (unstable)'),array(28,'responsibles',0,1,0,1,'developed for CADexchange.ch (unstable)'),array(29,'references',0,1,0,1,'developed for CADexchange.ch (unstable)'),array(30,'title',0,0,0,0,'developed for CADexchange.ch (unstable)'));
         foreach($arrValues as $arrValue) {
-            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_inputfield_types WHERE name="'.$arrValue[1].'"')->EOF) {
-                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_inputfield_types VALUES('.$arrValue[0].',"'.$arrValue[1].'",'.$arrValue[2].','.$arrValue[3].','.$arrValue[4].','.$arrValue[5].',"'.$arrValue[6].'")');
+            if(\Cx\Lib\UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_inputfield_types WHERE name="'.$arrValue[1].'"')->EOF) {
+                \Cx\Lib\UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_inputfield_types VALUES('.$arrValue[0].',"'.$arrValue[1].'",'.$arrValue[2].','.$arrValue[3].','.$arrValue[4].','.$arrValue[5].',"'.$arrValue[6].'")');
             }
         }
 
         //mediadir_mail_actions
         $arrValues = array(array(1,'newEntry','admin',0),array(2,'entryAdded','author',1),array(3,'entryConfirmed','author',1),array(4,'entryVoted','author',1),array(5,'entryDeleted','author',1),array(6,'entryEdited','author',1),array(8,'newComment','author',1),array(9,'notificationDisplayduration','admin',0));
         foreach($arrValues as $arrValue) {
-            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_mail_actions WHERE name="'.$arrValue[1].'"')->EOF) {
-                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_mail_actions VALUES('.$arrValue[0].',"'.$arrValue[1].'","'.$arrValue[2].'",'.$arrValue[3].')');
+            if(\Cx\Lib\UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_mail_actions WHERE name="'.$arrValue[1].'"')->EOF) {
+                \Cx\Lib\UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_mail_actions VALUES('.$arrValue[0].',"'.$arrValue[1].'","'.$arrValue[2].'",'.$arrValue[3].')');
             }
         }
 
         //only insert mails if the table is empty
-        if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_mails')->EOF) {
-            UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_mails` (`id`, `title`, `content`, `recipients`, `lang_id`, `action_id`, `is_default`, `active`) VALUES 
+        if(\Cx\Lib\UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_mails')->EOF) {
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_mails` (`id`, `title`, `content`, `recipients`, `lang_id`, `action_id`, `is_default`, `active`) VALUES 
 ('23', '[[URL]] - Eintrag erfolgreich bearbeitet', 'Hallo [[FIRSTNAME]] [[LASTNAME]] ([[USERNAME]])
 
 Ihr Eintrag mit dem Titel \"[[TITLE]]\" auf [[URL]] wurde erfolgreich bearbeitet. 
@@ -488,7 +488,7 @@ Diese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] ge
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.2.0')) {
@@ -515,7 +515,7 @@ Diese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] ge
 
 function tryButDontWorry($sql) {
     try {
-        UpdateUtil::sql($sql);
+        \Cx\Lib\UpdateUtil::sql($sql);
     }
     catch (UpdateException $e) {
         //nothing.

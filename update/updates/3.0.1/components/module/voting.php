@@ -3,7 +3,7 @@
 function _votingUpdate()
 {
     try{
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'voting_system',
             array(
                 'id'               => array('type' =>    'INT',                 'notnull' => true, 'primary'     => true,   'auto_increment' => true),
@@ -24,7 +24,7 @@ function _votingUpdate()
                 'additional_comment'  => array('type' => 'TINYINT(1)',          'notnull' => true, 'default'     => 0),
             )
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'voting_additionaldata',
             array(
                 'id'                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -44,7 +44,7 @@ function _votingUpdate()
                 'voting_system_id'   => array('fields' => array('voting_system_id'))
             )
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'voting_email',
             array(
                 'id'     => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -55,7 +55,7 @@ function _votingUpdate()
                 'email'  => array('fields' => array('email'), 'type' => 'UNIQUE')
             )
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'voting_rel_email_system',
             array(
                 'email_id'   => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
@@ -70,7 +70,7 @@ function _votingUpdate()
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     return true;

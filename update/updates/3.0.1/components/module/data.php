@@ -71,7 +71,7 @@ function _dataUpdate()
 
 
     try{
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_data_placeholders',
             array(
                 'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -86,7 +86,7 @@ function _dataUpdate()
         );
     }
     catch (UpdateException $e) {
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
 
@@ -204,7 +204,7 @@ INSERT INTO `".DBPREFIX."module_data_settings` (`name`, `value`) VALUES
 	* ADDED:		Contrexx v2.1.0					         *
 	*********************************************************/
     try {
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_data_messages_lang',
             array(
                 'message_id'               => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
@@ -229,7 +229,7 @@ INSERT INTO `".DBPREFIX."module_data_settings` (`name`, `value`) VALUES
         );
     }
     catch (UpdateException $e) {
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
 

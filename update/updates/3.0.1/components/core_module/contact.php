@@ -3,7 +3,7 @@
 function _contactUpdate()
 {
     try{
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_contact_recipient',
             array(
                 'id'     => array('type' => 'INT',          'notnull' => true, 'primary'     => true,      'auto_increment' => true),
@@ -15,7 +15,7 @@ function _contactUpdate()
         );
 
 
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_contact_form_field',
             array(
                 'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -31,7 +31,7 @@ function _contactUpdate()
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     return true;

@@ -336,7 +336,7 @@ function _shopUpdate()
 
 
     // Update Attribute price to signed.
-    if (UpdateUtil::column_exist(DBPREFIX.'module_shop_products_attributes_value', 'price_prefix')) {
+    if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'module_shop_products_attributes_value', 'price_prefix')) {
         $query = "
             UPDATE `".DBPREFIX."module_shop_products_attributes_value`
                SET `price`=-`price`
@@ -347,7 +347,7 @@ function _shopUpdate()
             return _databaseError($query, $objDatabase->ErrorMsg());
     }
 
-    if (UpdateUtil::column_exist(DBPREFIX.'module_shop_order_items_attributes', 'price_prefix')) {
+    if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'module_shop_order_items_attributes', 'price_prefix')) {
         $query = "
             UPDATE `".DBPREFIX."module_shop_order_items_attributes`
                SET `product_option_values_price`=-`product_option_values_price`
@@ -378,7 +378,7 @@ function _shopUpdate()
 
 
     try {
-        UpdateUtil::table(/*{{{module_shop_article_group*/
+        \Cx\Lib\UpdateUtil::table(/*{{{module_shop_article_group*/
             DBPREFIX . 'module_shop_article_group',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true),
@@ -387,7 +387,7 @@ function _shopUpdate()
         );/*}}}*/
 
 
-		UpdateUtil::table(/*{{{module_shop_customer_group*/
+		\Cx\Lib\UpdateUtil::table(/*{{{module_shop_customer_group*/
             DBPREFIX . 'module_shop_customer_group',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true),
@@ -396,7 +396,7 @@ function _shopUpdate()
         );/*}}}*/
 
 
-        UpdateUtil::table(/*{{{module_shop_discountgroup_count_name*/
+        \Cx\Lib\UpdateUtil::table(/*{{{module_shop_discountgroup_count_name*/
             DBPREFIX . 'module_shop_discountgroup_count_name',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true),
@@ -406,7 +406,7 @@ function _shopUpdate()
         );/*}}}*/
 
 
-        UpdateUtil::table(/*{{{module_shop_discountgroup_count_rate*/
+        \Cx\Lib\UpdateUtil::table(/*{{{module_shop_discountgroup_count_rate*/
             DBPREFIX . 'module_shop_discountgroup_count_rate',
             array(
                 'group_id' => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'default' => 0),
@@ -416,7 +416,7 @@ function _shopUpdate()
         );/*}}}*/
 
 
-        UpdateUtil::table(/*{{{module_shop_rel_discount_group*/
+        \Cx\Lib\UpdateUtil::table(/*{{{module_shop_rel_discount_group*/
             DBPREFIX . 'module_shop_rel_discount_group',
             array(
                 'customer_group_id' => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'default' => '0'),
@@ -426,7 +426,7 @@ function _shopUpdate()
         );/*}}}*/
 
 
-        UpdateUtil::table(/*{{{module_shop_lsv*/
+        \Cx\Lib\UpdateUtil::table(/*{{{module_shop_lsv*/
             DBPREFIX.'module_shop_lsv',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true, 'renamefrom' => 'order_id'),
@@ -442,7 +442,7 @@ function _shopUpdate()
 
 
         // Shipment cost table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_shipment_cost',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -455,7 +455,7 @@ function _shopUpdate()
 
 
         // Shipper table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_shipper',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -466,7 +466,7 @@ function _shopUpdate()
 
 
         // Countries table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_countries',
             array(
                 'countries_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true),
@@ -482,7 +482,7 @@ function _shopUpdate()
 
 
         // Categories table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_categories',
             array(
                 'catid' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true),
@@ -500,7 +500,7 @@ function _shopUpdate()
 
 
         // Settings table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_config',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true),
@@ -518,7 +518,7 @@ function _shopUpdate()
             return _databaseError($query, $objDatabase->ErrorMsg());
         }
         // Currencies table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_currencies',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -534,7 +534,7 @@ function _shopUpdate()
 
 
         // Customers table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_customers',
             array(
                 'customerid' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -564,7 +564,7 @@ function _shopUpdate()
         );
 
 
-        UpdateUtil::table(/*{{{module_shop_importimg*/
+        \Cx\Lib\UpdateUtil::table(/*{{{module_shop_importimg*/
             DBPREFIX . 'module_shop_importimg',
             array(
                 'img_id' => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'auto_increment' => true),
@@ -577,7 +577,7 @@ function _shopUpdate()
 
 
         // Mail table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_mail',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -588,7 +588,7 @@ function _shopUpdate()
 
 
         // Mail Content table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_mail_content',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -603,7 +603,7 @@ function _shopUpdate()
 
 
         // Manufacturer table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_manufacturer',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -614,7 +614,7 @@ function _shopUpdate()
 
 
         // Order items table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_order_items',
             array(
                 'order_items_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -630,7 +630,7 @@ function _shopUpdate()
 
 
         // Order items attributes table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_order_items_attributes',
             array(
                 'orders_items_attributes_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -645,7 +645,7 @@ function _shopUpdate()
 
 
         // Order table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_orders',
             array(
                 'orderid'   => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -684,7 +684,7 @@ function _shopUpdate()
 
 
         // Payment table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_payment',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -699,7 +699,7 @@ function _shopUpdate()
 
 
         // Payment processors table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_payment_processors',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -715,7 +715,7 @@ function _shopUpdate()
 
 
         // Pricelists table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_pricelists',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -740,7 +740,7 @@ function _shopUpdate()
             return _databaseError($query, $objDatabase->ErrorMsg());
         }
         // Products table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_products',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -789,7 +789,7 @@ function _shopUpdate()
 
 
         // Products attributes table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_products_attributes',
             array(
                 'attribute_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -802,7 +802,7 @@ function _shopUpdate()
 
 
         // Products attributes name table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_products_attributes_name',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -813,7 +813,7 @@ function _shopUpdate()
 
 
         // Products attributes value table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_products_attributes_value',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -825,7 +825,7 @@ function _shopUpdate()
 
 
         // Products downloads table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_products_downloads',
             array(
                 'products_downloads_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
@@ -838,7 +838,7 @@ function _shopUpdate()
 
 
         // Rel countries table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_rel_countries',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -849,7 +849,7 @@ function _shopUpdate()
 
 
         // Rel payment table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_rel_payment',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -860,7 +860,7 @@ function _shopUpdate()
 
 
         // Rel shipment table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_rel_shipment',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -871,7 +871,7 @@ function _shopUpdate()
 
 
         // Vat table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_vat',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -882,7 +882,7 @@ function _shopUpdate()
 
 
         // Zones table fields
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_zones',
             array(
                 'zones_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -980,7 +980,7 @@ function _shopUpdate()
         Vat::errorHandler();
     }
     catch (UpdateException $e) {
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     return true;

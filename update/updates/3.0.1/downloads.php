@@ -4,13 +4,13 @@ function _downloadsUpdate()
 	global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
     try{
-        UpdateUtil::sql(
+        \Cx\Lib\UpdateUtil::sql(
             "UPDATE ".DBPREFIX."module_downloads_download_locale l SET
               l.source = (SELECT source FROM ".DBPREFIX."module_downloads_download d WHERE d.id = l.download_id),
               l.source_name = (SELECT source_name FROM ".DBPREFIX."module_downloads_download d WHERE d.id = l.download_id);"
         );
 
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_downloads_download',
             array(
                 'id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true),
@@ -41,7 +41,7 @@ function _downloadsUpdate()
             )
         );
 
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_downloads_download_locale',
             array(
                 'lang_id'        => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
@@ -59,7 +59,7 @@ function _downloadsUpdate()
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     return true;

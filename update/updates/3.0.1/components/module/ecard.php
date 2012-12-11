@@ -4,7 +4,7 @@ function _ecardUpdate()
 {
     global $objDatabase, $_ARRAYLANG, $_CORELANG;
     try{
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_ecard_ecards',
             array(
                 'code'          => array('type' => 'VARCHAR(35)',  'notnull' => true, 'default'=>'', 'primary'=> true),
@@ -18,7 +18,7 @@ function _ecardUpdate()
                 'message'       => array('type' => 'TEXT',         'notnull' => true),
             )
         );
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_ecard_settings',
             array(
                 'setting_name'  => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default'=>'', 'primary'=> true),
@@ -27,7 +27,7 @@ function _ecardUpdate()
         );
     }
     catch (UpdateException $e) {
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     # INSERT IGNORE doesn't do anything if it would result in a duplicate key.

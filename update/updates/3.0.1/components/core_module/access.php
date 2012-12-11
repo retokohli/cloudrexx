@@ -16,7 +16,7 @@ function _accessUpdate()
      *
      ***************************/
     try{
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'access_user_mail',
             array(
                 'type'           => array('type' => 'ENUM(\'reg_confirm\',\'reset_pw\',\'user_activated\',\'user_deactivated\',\'new_user\')', 'notnull' => true, 'default' => 'reg_confirm'),
@@ -37,7 +37,7 @@ function _accessUpdate()
     catch (UpdateException $e) {
         // we COULD do something else here..
         DBG::trace();
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     $arrMails = array(
@@ -195,15 +195,15 @@ function _accessUpdate()
 
     try{
         // delete obsolete table community_config
-        UpdateUtil::drop_table(DBPREFIX.'community_config');
+        \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'community_config');
 
         // delete obsolete table community_config
-        UpdateUtil::drop_table(DBPREFIX.'user_validity');
+        \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'user_validity');
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
         DBG::trace();
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
 
@@ -213,7 +213,7 @@ function _accessUpdate()
      *
      *******************/
     try {
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'access_user_profile',
             array(
                 'user_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'primary' => true, 'default' => '0'),
@@ -244,7 +244,7 @@ function _accessUpdate()
         );
     }
     catch (UpdateException $e) {
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
 
@@ -314,7 +314,7 @@ function _accessUpdate()
      *
      ********************/
     try {
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'access_user_validity',
             array(
                 'validity'   => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true)
@@ -324,7 +324,7 @@ function _accessUpdate()
         );
     }
     catch (UpdateException $e) {
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     $query = "SELECT 1 FROM `".DBPREFIX."access_user_validity`";
@@ -776,7 +776,7 @@ function _accessUpdate()
     // 10 lines for each new field in the future, why not just extend this block
     try{
         DBG::trace();
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'access_users',
             array(
                 'id'               => array('type' => 'INT(5)',            'unsigned' => true, 'primary'     => true,    'auto_increment' => true),
@@ -806,7 +806,7 @@ function _accessUpdate()
     catch (UpdateException $e) {
         // we COULD do something else here..
         DBG::trace();
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
 	/************************************************

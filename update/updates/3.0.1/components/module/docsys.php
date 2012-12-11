@@ -5,7 +5,7 @@ function _docsysUpdate()
     global $objDatabase, $_ARRAYLANG;
 
     try{
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_docsys_entry_category',
             array(
                 'entry'      => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
@@ -13,7 +13,7 @@ function _docsysUpdate()
             )
         );
 
-        if (UpdateUtil::column_exist(DBPREFIX . 'module_docsys', 'catid')) {
+        if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX . 'module_docsys', 'catid')) {
             $query = "SELECT `id`, `catid` FROM `".DBPREFIX."module_docsys`";
             $objResult = $objDatabase->Execute($query);
             if ($objResult !== false) {
@@ -168,7 +168,7 @@ function _docsysUpdate()
         }
 
 
-        UpdateUtil::table(
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_docsys',
             array(
                 'id'        => array('type' => 'INT(6)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
@@ -192,7 +192,7 @@ function _docsysUpdate()
         );
     }
     catch (UpdateException $e) {
-        return UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     return true;
