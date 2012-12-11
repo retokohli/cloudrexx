@@ -827,7 +827,7 @@ CREATE TABLE `contrexx_module_checkout_settings_mails` (
   `title` text NOT NULL,
   `content` text NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB;
+) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -836,7 +836,7 @@ CREATE TABLE `contrexx_module_checkout_settings_yellowpay` (
   `name` text NOT NULL,
   `value` text NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB;
+) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
