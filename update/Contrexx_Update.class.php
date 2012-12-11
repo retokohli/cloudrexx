@@ -388,8 +388,9 @@ class Contrexx_Update
                     $arrUpdate = false;
                     if (@include_once(UPDATE_UPDATES.'/'.$file.'/config.inc.php')) {
                         if (is_array($arrUpdate)) {
-                            $incompatible = false;
-                            $arrReasons   = array();
+                            $incompatible     = false;
+                            $arrReasons       = array();
+                            $requiredVersions = '';
                             
                             if (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], $arrUpdate['cmsVersion'], $_CONFIG['coreCmsStatus'], $arrUpdate['cmsStatus'])) {
                                 $incompatible = true;
@@ -401,25 +402,34 @@ class Contrexx_Update
                             }
                             if (!$this->checkPHPVersion($arrUpdate['cmsRequiredPHP'])) {
                                 $incompatible = true;
-                                $arrReasons[] = sprintf($_CORELANG['TXT_UPDATE_PHP_VERSION_TOO_OLD'], $arrUpdate['cmsRequiredPHP'], phpversion());
+                                $requiredVersions .= '<li>PHP ' . $arrUpdate['cmsRequiredPHP'] . '</li>';
                             }
                             if (!$this->checkMySQLVersion($arrUpdate['cmsRequiredMySQL'])) {
                                 $incompatible = true;
-                                $arrReasons[] = sprintf($_CORELANG['TXT_UPDATE_MYSQL_VERSION_TOO_OLD'], $arrUpdate['cmsRequiredMySQL'], $this->getMySQLServerVersion());
+                                $requiredVersions .= '<li>MySQL ' . $arrUpdate['cmsRequiredMySQL'] . '</li>';
                             }
                             if (!$this->checkGDVersion($arrUpdate['cmsRequiredGD'])) {
                                 $incompatible = true;
-                                $reason = sprintf($_CORELANG['TXT_UPDATE_REQUIRED_GD_VERSION'], $arrUpdate['cmsRequiredGD']);
                                 if ($gdVersion = $this->getGDVersion()) {
-                                    $reason .= sprintf($_CORELANG['TXT_UPDATE_INSTALLED_GD_VERSION'], $gdVersion);
+                                    $requiredVersions .= '<li>GD ' . $gdVersion . '</li>';
                                 }
-                                $arrReasons[] = $reason;
+                            }
+                            if (!empty($requiredVersions)) {
+                                $arrReasons[] = $_CORELANG['TXT_UPDATE_REQUIRES_AT_LEAST'] .
+                                                '<ul>' .
+                                                    $requiredVersions . 
+                                                '</ul>';
                             }
                             if (!$this->checkFTPSupport()) {
                                 $incompatible = true;
                                 $arrReasons[] = $_CORELANG['TXT_UPDATE_FTP_SUPPORT_REQUIRED'];
                             }
-                            if ($this->getWebserverSoftware() == 'iis' && !isset($_SERVER['IIS_UrlRewriteModule'])) {
+                            
+                            if ($this->getWebserverSoftware() == 'apache' && !$this->checkModRewrite()) {
+                                $incompatible = true;
+                                $arrReasons[] = $_CORELANG['TXT_UPDATE_MOD_REWRITE_REQUIRED'];
+                            }
+                            if ($this->getWebserverSoftware() == 'iis' && !$this->checkIISUrlRewriteModule()) {
                                 $incompatible = true;
                                 $arrReasons[] = $_CORELANG['TXT_UPDATE_IIS_URL_REWRITE_MODULE_REQUIRED'];
                             }
@@ -484,7 +494,49 @@ class Contrexx_Update
     
     public function getWebserverSoftware()
     {
-        return !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : stristr($_SERVER['SERVER_SOFTWARE'], 'iis' ? 'iis' : '');
+        $serverSoftware = strtolower($_SERVER['SERVER_SOFTWARE']);
+        
+        if (!empty($serverSoftware)) {
+            $isApache = strpos($serverSoftware, 'apache') !== false;
+            $isIIS    = strpos($serverSoftware, 'iis');
+            
+            if ($isApache) {
+                $serverSoftware = 'apache';
+            } else if ($isIIS) {
+                $serverSoftware = 'iis';
+            } else {
+                $serverSoftware = false;
+            }
+        } else {
+            $serverSoftware = false;
+        }
+        
+        return $serverSoftware;
+    }
+    
+    public function checkModRewrite()
+    {
+        if (!function_exists('apache_get_modules')) {
+            $apacheModules = apache_get_modules();
+            $modRewrite    = in_array('mod_rewrite', $apacheModules);
+        } else {
+            include(UPDATE_LIB . '/PEAR/HTTP/Request2.php');
+            $request     = new HTTP_Request2('http://' . $_SERVER['HTTP_HOST'] . substr($_SERVER['SCRIPT_NAME'], 0, -9) . 'rewrite_test/');
+            $objResponse = $request->send();
+            $arrHeaders  = $objResponse->getHeader();
+            if (!empty($arrHeaders['location']) && strpos($arrHeaders['location'], 'somerandomredirect') !== false) {
+                $modRewrite = true;
+            } else {
+                $modRewrite = false;
+            }
+        }
+        
+        return $modRewrite;
+    }
+    
+    public function checkIISUrlRewriteModule()
+    {
+        return isset($_SERVER['IIS_UrlRewriteModule']);
     }
     
     /**
