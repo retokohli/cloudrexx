@@ -85,7 +85,7 @@ class Contrexx_Update
             if (!UPDATE_UTF8) {
                 $this->content = utf8_encode($this->content);
             }
-            die($this->objJson->encode(array('content' => $this->content, 'header' => $this->header, 'navigation' => $this->navigation)));
+            die($this->objJson->encode(array('content' => $this->content, 'navigation' => $this->navigation)));
         }
         return $this->objTemplate->get();
     }
