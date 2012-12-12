@@ -225,21 +225,18 @@ table.adminlist td {
     padding: 8px;
     color: #b94a48;
 }
-
 .message-warning {
     margin: 10px 0 10px 0;
     background: #fEf0d0;
     padding: 8px;
     color: #DA7A0A;
 }
-
 .message-success {
     margin: 10px 0 10px 0;
     background: #dff0d8;
     padding: 8px;
     color: #39950c;
 }
-
 .message-info {
     margin: 10px 0 10px 0;
     background: #d9edf7;
@@ -251,15 +248,29 @@ table.adminlist td {
     color: #008000;
     font-weight: bold;
 }
-
 .failed {
     color: #ff0000;
     font-weight: bold;
 }
-
 .warning {
     color: #E59400;
     font-weight: bold;
+}
+
+/* icons */
+.icon-info {
+    float: none;
+    display: inline-block;
+    width: 13px;
+    height: 12px;
+    background: url(../images/icons/info.png) no-repeat left center;
+}
+.icon-warning {
+    float: none;
+    display: inline-block;
+    width: 13px;
+    height: 12px;
+    background: url(../images/icons/warning.png) no-repeat left center;
 }
 
 /* jquery tools tooltip */

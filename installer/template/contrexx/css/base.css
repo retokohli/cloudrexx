@@ -283,12 +283,10 @@ table.adminlist td {
     color: #008000;
     font-weight: bold;
 }
-
 .failed {
     color: #ff0000;
     font-weight: bold;
 }
-
 .warning {
     color: #E59400;
     font-weight: bold;
@@ -301,6 +299,13 @@ table.adminlist td {
     width: 13px;
     height: 12px;
     background: url(../images/icons/info.png) no-repeat left center;
+}
+.icon-warning {
+    float: none;
+    display: inline-block;
+    width: 13px;
+    height: 12px;
+    background: url(../images/icons/warning.png) no-repeat left center;
 }
 
 /* jquery tooltip */
