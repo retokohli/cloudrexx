@@ -15,6 +15,15 @@
 
         <script type="text/javascript" src="lib/contrexxUpdate.php"></script>
         <script type="text/javascript" src="lib/html2dom.js"></script>
+        <script type="text/javascript" src="{UPDATE_TPL_PATH}/javascript/jquery.tools.min.js"></script>
+        <script type="text/javascript">
+        /* <![CDATA[ */
+        jQuery(document).ready(function() {
+            jQuery('.tooltip-trigger').tooltip({relative: true, position: 'center right', offset: [0, 10], predelay: 250});
+        });
+        /* ]]> */
+        </script>
+
     </head>
     <body>
         <div id="header">
