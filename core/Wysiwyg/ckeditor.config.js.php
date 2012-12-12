@@ -37,15 +37,15 @@ $langId = !empty($_GET['langId']) ? $_GET['langId'] : null;
 $absoluteURIs = !empty($_GET['absoluteURIs']) ? $_GET['absoluteURIs'] : null;
 
 //'&' must not be htmlentities, used in javascript
-$defaultBrowser   = ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
+$defaultBrowser   = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
                    .'?cmd=fileBrowser&standalone=true&langId='.$langId
                    .'&absoluteURIs='.$absoluteURIs.$CSRF;
-$linkBrowser      = ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
+$linkBrowser      = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
                    .'?cmd=fileBrowser&standalone=true&langId='.$langId
                    .'&absoluteURIs='.$absoluteURIs.'&type=webpages'.$CSRF;
-$defaultUploader  = ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX.'?cmd=fileBrowser'
+$defaultUploader  = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX.'?cmd=fileBrowser'
                    .'&act=FCKEditorUpload&standalone=true'.$CSRF;
-$linkUploader     = ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX.'?cmd=fileBrowser'
+$linkUploader     = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX.'?cmd=fileBrowser'
                    .'&act=FCKEditorUpload&standalone=true&type=webpages'.$CSRF;
 
 ?>
@@ -61,12 +61,12 @@ CKEDITOR.editorConfig = function( config )
     config.shiftEnterMode = CKEDITOR.ENTER_P;
     config.startupOutlineBlocks = true;
 
-    config.filebrowserBrowseUrl      = CKEDITOR.getUrl('../..<?php echo $linkBrowser;?>');
-    config.filebrowserImageBrowseUrl = CKEDITOR.getUrl('../..<?php echo $defaultBrowser?>');
-    config.filebrowserFlashBrowseUrl = CKEDITOR.getUrl('../..<?php echo $defaultBrowser?>');
-    config.filebrowserUploadUrl      = CKEDITOR.getUrl('../..<?php echo $linkUploader;?>')
-    config.filebrowserImageUploadUrl = CKEDITOR.getUrl('../..<?php echo $defaultUploader;?>');
-    config.filebrowserFlashUploadUrl = CKEDITOR.getUrl('../..<?php echo $defaultUploader;?>');
+    config.filebrowserBrowseUrl      = CKEDITOR.getUrl('<?php echo $linkBrowser;?>');
+    config.filebrowserImageBrowseUrl = CKEDITOR.getUrl('<?php echo $defaultBrowser?>');
+    config.filebrowserFlashBrowseUrl = CKEDITOR.getUrl('<?php echo $defaultBrowser?>');
+    config.filebrowserUploadUrl      = CKEDITOR.getUrl('<?php echo $linkUploader;?>')
+    config.filebrowserImageUploadUrl = CKEDITOR.getUrl('<?php echo $defaultUploader;?>');
+    config.filebrowserFlashUploadUrl = CKEDITOR.getUrl('<?php echo $defaultUploader;?>');
 
     config.toolbar_Default = [
         ['Source','-','NewPage','Preview','-','Templates'],
