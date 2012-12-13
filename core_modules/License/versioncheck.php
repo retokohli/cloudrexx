@@ -56,6 +56,7 @@ $_CORELANG = $objInit->loadLanguageData('core');
 // Init user
 if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new \cmsSession();
 $objUser = \FWUser::getFWUserObject()->objUser;
+$objUser->login();
 
 // update license, return "false" if no connection to license server could be established
 $license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
