@@ -101,7 +101,7 @@ class LicenseCommunicator {
                     \DBG::dump($objResponse->getBody());
                     $response = json_decode($objResponse->getBody());
                 }
-            } catch (HTTP_Request2_Exception $objException) {
+            } catch (\HTTP_Request2_Exception $objException) {
                 $license->setState(License::LICENSE_ERROR);
                 $license->setGrayzoneMessages(array(\FWLanguage::getLanguageCodeById(LANG_ID) => new Message(\FWLanguage::getLanguageCodeById(LANG_ID), $_CORELANG['TXT_LICENSE_COMMUNICATION_ERROR'])));
                 $license->check();
