@@ -23,6 +23,7 @@ class LicenseCommunicator {
         $this->lastUpdate = $_CONFIG['licenseSuccessfulUpdate'];
         $this->installationId = $_CONFIG['installationId'];
         $this->licenseKey = $_CONFIG['licenseKey'];
+        $this->licenseState = $_CONFIG['licenseState'];
         $this->coreCmsEdition = $_CONFIG['coreCmsEdition'];
         $this->coreCmsVersion = $_CONFIG['coreCmsVersion'];
         $this->coreCmsStatus = $_CONFIG['coreCmsStatus'];
@@ -47,6 +48,9 @@ class LicenseCommunicator {
      * @return boolean True if license is outdated, false otherwise
      */
     public function isTimeToUpdate() {
+        if ($this->licenseState == License::LICENSE_ERROR) {
+            return true;
+        }
         $offset = $this->requestInterval *60*60;
         // if offset date lies in future, we do not update yet
         return ($this->lastUpdate + $offset <= time());
@@ -281,11 +285,20 @@ class LicenseCommunicator {
                     var licenseMessage      = jQuery("#license_message");
                     var cloneLicenseMessage = jQuery("#license_message").clone();
                     
-                    var revertMessage = function(setClass) {
+                    var revertMessage = function(setClass, setHref, setTarget, setText) {
                         setTimeout(function() {
                             newLicenseMessage = cloneLicenseMessage.clone();
                             if (setClass) {
                                 newLicenseMessage.attr("class", "upgrade " + setClass);
+                            }
+                            if (setHref) {
+                                licenseMessage.children("a:first").attr("href", setHref);
+                            }
+                            if (setTarget) {
+                                licenseMessage.children("a:first").attr("target", setTarget);
+                            }
+                            if (setText) {
+                                licenseMessage.children("a:first").html(setText);
                             }
                             licenseMessage.replaceWith(newLicenseMessage);
                             licenseMessage = newLicenseMessage;
@@ -298,7 +311,7 @@ class LicenseCommunicator {
                         if (data == "false" && allowUserAgent) {
                             jQuery.getScript("http://updatesrv1.contrexx.com/?' . implode('&', $userAgentRequestArguments) . '", function() {
                                 jQuery.post(
-                                    "../core_modules/License/versioncheck.php",
+                                    "../core_modules/License/versioncheck.php?force=true",
                                     {"response": JSON.stringify(licenseUpdateUserAgentRequestResponse)}
                                 ).success(function(data) {
                                     versionCheckResponseHandler(data, false)
@@ -315,10 +328,7 @@ class LicenseCommunicator {
                             return;
                         }
                         
-                        revertMessage(data[\'class\']);
-                        licenseMessage.children("a:first").attr("href", data.link);
-                        licenseMessage.children("a:first").attr("target", data.target);
-                        licenseMessage.children("a:first").html(data.text);
+                        revertMessage(data[\'class\'], data.link, data.target, data.text);
                     }
                     
                     var performRequest = function() {
