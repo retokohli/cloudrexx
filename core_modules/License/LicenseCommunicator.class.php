@@ -13,6 +13,7 @@ class LicenseCommunicator {
     private static $instance = null;
     private $requestInterval = 1;
     private $lastUpdate;
+    private static $javascriptRegistered = false;
     
     public function __construct(&$_CONFIG) {
         if (self::$instance) {
@@ -20,6 +21,13 @@ class LicenseCommunicator {
         }
         $this->requestInterval = $_CONFIG['licenseUpdateInterval'];
         $this->lastUpdate = $_CONFIG['licenseSuccessfulUpdate'];
+        $this->installationId = $_CONFIG['installationId'];
+        $this->licenseKey = $_CONFIG['licenseKey'];
+        $this->coreCmsEdition = $_CONFIG['coreCmsEdition'];
+        $this->coreCmsVersion = $_CONFIG['coreCmsVersion'];
+        $this->coreCmsStatus = $_CONFIG['coreCmsStatus'];
+        $this->domainUrl = $_CONFIG['domainUrl'];
+        
         self::$instance = $this;
     }
     
@@ -54,7 +62,7 @@ class LicenseCommunicator {
      * @param string $response (optional) Server response as JSON. If this is set, no HTTP request is perfomed
      * @return null 
      */
-    public function update($license, $_CONFIG, $forceUpdate = false, $forceTemplate = false, $_CORELANG = array(), $response = '') {
+    public function update(&$license, $_CONFIG, $forceUpdate = false, $forceTemplate = false, $_CORELANG = array(), $response = '') {
         if (!$forceUpdate && !$this->isTimeToUpdate($_CONFIG)) {
             return;
         }
@@ -70,7 +78,7 @@ class LicenseCommunicator {
                 $version *= 100;
                 $version += $part;
             }
-
+            
             $srvUri = 'updatesrv1.contrexx.com';
             $srvPath = '/';
 
@@ -78,9 +86,9 @@ class LicenseCommunicator {
                 'installationId' => $license->getInstallationId(),
                 'licenseKey' => $license->getLicenseKey(),
                 'edition' => $license->getEditionName(),
-                'version' => $_CONFIG['coreCmsVersion'],
-                'versionstate' => $_CONFIG['coreCmsStatus'],
-                'domainName' => $_CONFIG['domainUrl'],
+                'version' => $this->coreCmsVersion,
+                'versionstate' => $this->coreCmsStatus,
+                'domainName' => $this->domainUrl,
                 'sendTemplate' => $forceTemplate,
             );
             $a = $_SERVER['REMOTE_ADDR'];
@@ -225,7 +233,7 @@ class LicenseCommunicator {
             $response->license->isUpgradable == 'true',
             $dashboardMessages
         );
-
+        
         $license->check();
 
         return;
@@ -235,9 +243,10 @@ class LicenseCommunicator {
      * Registers the javascript code to update a license
      * @param array $_CORELANG Core language array
      * @param array $_CONFIG The configuration array
+     * @param boolean $autoexec (optional) Wheter to perform update check automaticly or on form submit
      */
-    public function addJsUpdateCode(&$_CORELANG) {
-        $v = preg_split('#\.#', $_CONFIG['coreCmsVersion']);
+    public function addJsUpdateCode(&$_CORELANG, $license, $autoexec = true) {
+        $v = preg_split('#\.#', $this->coreCmsVersion);
         $version = current($v);
         unset($v[key($v)]);
         foreach ($v as $part) {
@@ -247,31 +256,40 @@ class LicenseCommunicator {
         
         $userAgentRequestArguments = array(
             'data=' . urlencode(json_encode(array(
-                'installationId' => $_CONFIG['installationId'],
-                'licenseKey' => $_CONFIG['licenseKey'],
-                'edition' => $_CONFIG['coreCmsEdition'],
-                'version' => $_CONFIG['coreCmsVersion'],
-                'versionstate' => $_CONFIG['coreCmsStatus'],
+                'installationId' => $license->getInstallationId(),
+                'licenseKey' => $license->getLicenseKey(),
+                'edition' => $license->getEditionName(),
+                'version' => $this->coreCmsVersion,
+                'versionstate' => $this->coreCmsStatus,
+                'domainName' => $this->domainUrl,
                 'remoteAddr' => $_SERVER['REMOTE_ADDR'],
-                'domainName' => $_CONFIG['domainUrl'],
                 'sendTemplate' => false,
             ))),
             'v=' . $version,
             'userAgentRequest=true',
         );
         
-        if ($this->isTimeToUpdate()) {
+        if (!$autoexec || $this->isTimeToUpdate()) {
+            if (self::$javascriptRegistered) {
+                return;
+            }
+            self::$javascriptRegistered = true;
+            
             \JS::activate('jquery');
             $jsCode = '
                 jQuery(document).ready(function() {
                     var licenseMessage      = jQuery("#license_message");
                     var cloneLicenseMessage = jQuery("#license_message").clone();
                     
-                    licenseMessage.attr("class", "infobox");
-                    licenseMessage.text("' . $_CORELANG['TXT_LICENSE_UPDATING'] . '");
-                    
-                    var revertMessage = function() {
-                        licenseMessage.replaceWith(cloneLicenseMessage);
+                    var revertMessage = function(setClass) {
+                        setTimeout(function() {
+                            newLicenseMessage = cloneLicenseMessage.clone();
+                            if (setClass) {
+                                newLicenseMessage.attr("class", "upgrade " + setClass);
+                            }
+                            licenseMessage.replaceWith(newLicenseMessage);
+                            licenseMessage = newLicenseMessage;
+                        }, 1000);
                     }
                     
                     var versionCheckResponseHandler = function(data, allowUserAgent) {';
@@ -293,24 +311,32 @@ class LicenseCommunicator {
             }
             $jsCode .= '
                         var data = jQuery.parseJSON(data);
-                        revertMessage();
                         if (data == null) {
+                            revertMessage();
                             return;
                         }
                         
-                        licenseMessage.attr("class", "upgrade " + data[\'class\']);
+                        revertMessage(data[\'class\']);
                         licenseMessage.children("a:first").attr("href", data.link);
                         licenseMessage.children("a:first").attr("target", data.target);
                         licenseMessage.children("a:first").html(data.text);
                     }
                     
-                    jQuery.get(
-                        "../core_modules/License/versioncheck.php"
-                    ).success(function(data) {
-                        versionCheckResponseHandler(data, true);
-                    }).error(function(data) {
-                        revertMessage();
-                    });
+                    var performRequest = function() {
+                        licenseMessage.attr("class", "infobox");
+                        licenseMessage.text("' . $_CORELANG['TXT_LICENSE_UPDATING'] . '");
+
+                        jQuery.get(
+                            "../core_modules/License/versioncheck.php"
+                        ).success(function(data) {
+                            versionCheckResponseHandler(data, true);
+                        }).error(function(data) {
+                            revertMessage();
+                        });
+                        return false;
+                    }' . ($autoexec ? '()' : '') . ';
+                    
+                    jQuery("input[type=submit]").click(performRequest);
                 });
             ';
             \JS::registerCode($jsCode);
