@@ -257,6 +257,16 @@ table.adminlist td {
     font-weight: bold;
 }
 
+.list,
+.list ul {
+    padding: 0 0 10px 20px;
+    margin: 0;
+}
+
+.list ul {
+    padding-bottom: 0;
+}
+
 /* icons */
 .icon-info {
     float: none;
