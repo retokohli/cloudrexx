@@ -336,7 +336,7 @@ class LicenseCommunicator {
                         return false;
                     }' . ($autoexec ? '()' : '') . ';
                     
-                    jQuery("input[type=submit]").click(performRequest);
+                    ' . ($autoexec ? '' : 'jQuery("input[type=submit]").click(performRequest)') . ';
                 });
             ';
             \JS::registerCode($jsCode);
