@@ -236,7 +236,7 @@ class LicenseCommunicator {
      * @param array $_CORELANG Core language array
      * @param array $_CONFIG The configuration array
      */
-    public function addJsUpdateCode(&$_CORELANG, &$_CONFIG) {
+    public function addJsUpdateCode(&$_CORELANG) {
         $v = preg_split('#\.#', $_CONFIG['coreCmsVersion']);
         $version = current($v);
         unset($v[key($v)]);
@@ -260,7 +260,7 @@ class LicenseCommunicator {
             'userAgentRequest=true',
         );
         
-        if ($this->isTimeToUpdate($this->config)) {
+        if ($this->isTimeToUpdate()) {
             \JS::activate('jquery');
             $jsCode = '
                 jQuery(document).ready(function() {
