@@ -1902,7 +1902,7 @@ class Installer
             require_once($documentRoot.'/lib/FRAMEWORK/User/User.class.php');
             require_once($documentRoot.'/lib/FRAMEWORK/FWUser.class.php');
             require_once($documentRoot.'/lib/PEAR/HTTP/Request2.php');
-            require_once($documentRoot.'/lib/DBG.php');
+            require_once($documentRoot.'/lib/FRAMEWORK/DBG/DBG.php');
             require_once($documentRoot.'/core/Init.class.php');
             require_once($documentRoot.'/core/settings.class.php');
             require_once($documentRoot.'/core/session.class.php');

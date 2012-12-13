@@ -1,6 +1,6 @@
 <?php
 /**
- * Debug level, see lib/DBG.php
+ * Debug level, see lib/FRAMEWORK/DBG/DBG.php
  *   DBG_PHP             - show PHP errors/warnings/notices
  *   DBG_ADODB           - show ADODB queries
  *   DBG_ADODB_TRACE     - show ADODB queries with backtrace
@@ -19,7 +19,7 @@ if ($php < '5.3') {
     die('Das Contrexx CMS ben&ouml;tigt mindestens PHP in der Version 5.3.<br />Auf Ihrem System l&auml;uft PHP '.$php);
 }
 
-require_once dirname(__FILE__).'/lib/DBG.php';
+require_once dirname(__FILE__).'/lib/FRAMEWORK/DBG/DBG.php';
 //\DBG::activate(DBG_PHP);
 
 $_CONFIGURATION = $_CONFIG = null;

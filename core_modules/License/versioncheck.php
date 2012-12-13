@@ -11,7 +11,7 @@ if (!isset($documentRoot)) {
 }
 
 // load requirements
-require_once($documentRoot.'/lib/DBG.php');
+require_once($documentRoot.'/lib/FRAMEWORK/DBG/DBG.php');
 require_once($documentRoot.'/config/settings.php');              // needed for configuration.php
 require_once($documentRoot.'/config/configuration.php');         // needed for API
 
