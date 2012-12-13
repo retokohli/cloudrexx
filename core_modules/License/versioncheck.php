@@ -70,6 +70,10 @@ try {
         (isset($_POST['response']) && $objUser->getAdminStatus() ? $_POST['response'] : '')
     );
 } catch (\Exception $e) {
+    $license->check();
+    if (!isset($_GET['nosave']) || $_GET['nosave'] != 'true') {
+        $license->save(new \settingsManager(), $objDatabase);
+    }
     echo "false";
     return;
 }
