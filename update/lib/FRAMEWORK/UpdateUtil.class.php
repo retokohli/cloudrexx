@@ -464,7 +464,7 @@ class UpdateUtil
         $descr  = $spec['type'];
         $descr .= $binary ? " BINARY" : '';
         $descr .= $unsigned ? " unsigned"      : '';
-        $descr .= $notnull ? " NOT NULL"       : '';
+        $descr .= $notnull ? " NOT NULL"       : ' NULL';
         $descr .= $autoinc ? " auto_increment" : '';
         $descr .= $default_st;
         $descr .= $on_update ? " ON UPDATE ".$on_update : '';
