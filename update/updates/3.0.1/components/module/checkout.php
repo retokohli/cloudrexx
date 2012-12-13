@@ -21,8 +21,8 @@ function _checkoutUpdate()
             DBPREFIX.'module_checkout_settings_mails',
             array(
                 'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'title'      => array('type' => 'text', 'notnull' => true, 'after' => 'id'),
-                'content'    => array('type' => 'text', 'notnull' => true, 'after' => 'title')
+                'title'      => array('type' => 'TEXT', 'notnull' => true, 'after' => 'id'),
+                'content'    => array('type' => 'TEXT', 'notnull' => true, 'after' => 'title')
             )
         );
         \Cx\Lib\UpdateUtil::sql('
@@ -36,8 +36,8 @@ function _checkoutUpdate()
             DBPREFIX.'module_checkout_settings_yellowpay',
             array(
                 'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'name'       => array('type' => 'text', 'notnull' => true, 'after' => 'id'),
-                'value'      => array('type' => 'text', 'notnull' => true, 'after' => 'name')
+                'name'       => array('type' => 'TEXT', 'notnull' => true, 'after' => 'id'),
+                'value'      => array('type' => 'TEXT', 'notnull' => true, 'after' => 'name')
             )
         );
         \Cx\Lib\UpdateUtil::sql('
