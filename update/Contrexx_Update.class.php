@@ -9,9 +9,7 @@ class Contrexx_Update
     private $isAuth = false;
     private $lang;
     private $ajax = false;
-    private $content = '';
-    private $header = '';
-    private $navigation = '';
+    private $html = array();
 
     /**
      * Available languages
@@ -66,7 +64,7 @@ class Contrexx_Update
 
     function getPage()
     {
-        if (isset($_POST['logout'])) {
+        if (!empty($_GET['cmd']) && ($_GET['cmd'] == 'logout')) {
             $this->logout();
         }
 
@@ -79,9 +77,9 @@ class Contrexx_Update
 
         if ($this->ajax) {
             if (!UPDATE_UTF8) {
-                $this->content = utf8_encode($this->content);
+                $this->html['content'] = utf8_encode($this->html['content']);
             }
-            die($this->objJson->encode(array('content' => $this->content, 'navigation' => $this->navigation)));
+            die($this->objJson->encode(array('content' => $this->html['content'], 'logout' => $this->html['logout'], 'navigation' => $this->html['navigation'])));
         }
         return $this->objTemplate->get();
     }
@@ -192,16 +190,21 @@ class Contrexx_Update
     {
         global $_CORELANG;
 
-        $this->objTemplate->setVariable('LOGOUT_BUTTON', ($this->auth() ? '<input name="logout" value="'.$_CORELANG['TXT_UPDATE_LOGOUT'].'" type="button" onclick="window.location.href=\'index.php?cmd=logout\'" />' : ''));
-        //$this->objTemplate->setVariable('UPDATE_LANG_MENU', $this->getLangMenu());
+        $logout = $this->auth() ? '<input name="logout" value="'.$_CORELANG['TXT_UPDATE_LOGOUT'].'" type="button" onclick="window.location.href=\'index.php?cmd=logout\'" />' : '';
+
+        if ($this->ajax) {
+            $this->html['logout'] = $logout;
+        } else {
+            $this->objTemplate->setVariable('LOGOUT_BUTTON', $logout);
+        }
     }
 
-    function setNavigation($content)
+    function setNavigation($navigation)
     {
         if ($this->ajax) {
-            $this->navigation = $content;
+            $this->html['navigation'] = $navigation;
         } else {
-            $this->objTemplate->setVariable('NAVIGATION', $content);
+            $this->objTemplate->setVariable('NAVIGATION', $navigation);
         }
     }
 
@@ -263,7 +266,7 @@ class Contrexx_Update
             
             $this->objTemplate->parse('overview');
             if ($this->ajax) {
-                $this->content = $this->objTemplate->get('overview');
+                $this->html['content'] = $this->objTemplate->get('overview');
             }
             $this->setNavigation('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="updateNext" />');
         }
@@ -332,7 +335,7 @@ class Contrexx_Update
         
         $this->objTemplate->parse('requirements');
         if ($this->ajax) {
-            $this->content = $this->objTemplate->get('requirements');
+            $this->html['content'] = $this->objTemplate->get('requirements');
         }
         $this->setNavigation('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_RECHECK'].'" name="updateNext" />');
     }
@@ -352,7 +355,7 @@ class Contrexx_Update
         ));
         $this->objTemplate->parse('start');
         if ($this->ajax) {
-            $this->content = $this->objTemplate->get('start');
+            $this->html['content'] = $this->objTemplate->get('start');
         }
         $this->setNavigation('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_BACK'].'" name="updateBack" onclick="try{doUpdate(true)} catch(e){return true;}" /> <input type="submit" value="'.$_CORELANG['TXT_UPDATE_START_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />');
     }
@@ -402,7 +405,7 @@ class Contrexx_Update
         }
         $this->objTemplate->parse('process');
         if ($this->ajax) {
-            $this->content = $this->objTemplate->get('process');
+            $this->html['content'] = $this->objTemplate->get('process');
         }
     }
 
@@ -697,6 +700,7 @@ class Contrexx_Update
         $_SESSION = array();
         $_SESSION['contrexx_update']['lang'] = $this->lang;
         $this->isAuth = false;
+        header('location: index.php');
     }
 
     function login()
@@ -731,7 +735,7 @@ class Contrexx_Update
         ));
         $this->objTemplate->parse('login');
         if ($this->ajax) {
-            $this->content = $this->objTemplate->get('login');
+            $this->html['content'] = $this->objTemplate->get('login');
         }
         return false;
     }

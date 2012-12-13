@@ -97,6 +97,7 @@ function parseResponse()
       try {
         eval('oResponse='+response);
         setContent(oResponse.content);
+        setLogout(oResponse.logout);
         setNavigation(oResponse.navigation);
       } catch(e) {}
     } else {
@@ -109,31 +110,36 @@ function parseResponse()
   }
 }
 
-function setContent(sContent)
+function setContent(content)
 {
-  setHtml(sContent, 'wrapper-content');
+  setHtml(content, 'wrapper-content');
 }
 
-function setNavigation(sNavigation)
+function setLogout(logout)
 {
-  setHtml(sNavigation, 'wrapper-bottom-right');
+  setHtml(logout, 'wrapper-bottom-left');
 }
 
-function setHtml(sText, sElement)
+function setNavigation(navigation)
 {
-  if (sText.length > 0) {
+  setHtml(navigation, 'wrapper-bottom-right');
+}
+
+function setHtml(text, element)
+{
+  if (text.length > 0) {
     try {
-      if (html2dom.getDOM(sText, sElement) !== false) {
-        document.getElementById(sElement).innerHTML = '';
+      if (html2dom.getDOM(text, element) !== false) {
+        document.getElementById(element).innerHTML = '';
         eval(html2dom.result);
       } else {
         throw 'error';
       }
     } catch(e) {
-      document.getElementById(sElement).innerHTML = 'HTML-Code konnte nicht Interpretiert werden:<br /><br />';
-      document.getElementById(sElement).innerHTML += sText;
+      document.getElementById(element).innerHTML = 'HTML-Code konnte nicht Interpretiert werden:<br /><br />';
+      document.getElementById(element).innerHTML += text;
     }
   } else {
-    document.getElementById(sElement).innerHTML = '';
+    document.getElementById(element).innerHTML = '';
   }
 }
