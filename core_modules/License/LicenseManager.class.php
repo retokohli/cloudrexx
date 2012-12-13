@@ -45,7 +45,7 @@ class LicenseManager {
     
     public function getPage($post) {
         $lc = LicenseCommunicator::getInstance($this->config);
-        $lc->addJsUpdateCode($this->lang, $this->license, false);
+        $lc->addJsUpdateCode($this->lang, $this->license, true, false);
         if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
             if (isset($post['save']) && isset($post['licenseKey'])) {
                 $license = License::getCached($this->config, $this->db);

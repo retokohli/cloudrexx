@@ -63,7 +63,7 @@ class LicenseCommunicator {
      * @return null 
      */
     public function update(&$license, $_CONFIG, $forceUpdate = false, $forceTemplate = false, $_CORELANG = array(), $response = '') {
-        if (!$forceUpdate && !$this->isTimeToUpdate($_CONFIG)) {
+        if (!$forceUpdate && !$this->isTimeToUpdate($_CONFIG) && empty($response)) {
             return;
         }
         if ($response) {
@@ -113,7 +113,7 @@ class LicenseCommunicator {
                 $license->setState(License::LICENSE_ERROR);
                 $license->setGrayzoneMessages(array(\FWLanguage::getLanguageCodeById(LANG_ID) => new Message(\FWLanguage::getLanguageCodeById(LANG_ID), $_CORELANG['TXT_LICENSE_COMMUNICATION_ERROR'])));
                 $license->check();
-                return;
+                throw $objException;
             }
         }
         
@@ -245,7 +245,7 @@ class LicenseCommunicator {
      * @param array $_CONFIG The configuration array
      * @param boolean $autoexec (optional) Wheter to perform update check automaticly or on form submit
      */
-    public function addJsUpdateCode(&$_CORELANG, $license, $autoexec = true) {
+    public function addJsUpdateCode(&$_CORELANG, $license, $intern = false, $autoexec = true) {
         $v = preg_split('#\.#', $this->coreCmsVersion);
         $version = current($v);
         unset($v[key($v)]);
@@ -297,7 +297,6 @@ class LicenseCommunicator {
                 $jsCode .= '
                         if (data == "false" && allowUserAgent) {
                             jQuery.getScript("http://updatesrv1.contrexx.com/?' . implode('&', $userAgentRequestArguments) . '", function() {
-                                console.log(JSON.stringify(licenseUpdateUserAgentRequestResponse));
                                 jQuery.post(
                                     "../core_modules/License/versioncheck.php",
                                     {"response": JSON.stringify(licenseUpdateUserAgentRequestResponse)}
@@ -327,7 +326,7 @@ class LicenseCommunicator {
                         licenseMessage.text("' . $_CORELANG['TXT_LICENSE_UPDATING'] . '");
 
                         jQuery.get(
-                            "../core_modules/License/versioncheck.php"
+                            "../core_modules/License/versioncheck.php?force=true"
                         ).success(function(data) {
                             versionCheckResponseHandler(data, true);
                         }).error(function(data) {
@@ -336,7 +335,7 @@ class LicenseCommunicator {
                         return false;
                     }' . ($autoexec ? '()' : '') . ';
                     
-                    ' . ($autoexec ? '' : 'jQuery("input[type=submit]").click(performRequest)') . ';
+                    ' . ($intern ? 'jQuery("input[name=update]").click(performRequest);' : '') . '
                 });
             ';
             \JS::registerCode($jsCode);
