@@ -423,6 +423,8 @@ class License {
                 '.DBPREFIX.'modules
             SET
                 `is_active` = \'0\'
+            WHERE
+                `distributor` = \'Comvation AG\'
         ';
         $objDb->Execute($query);
         $query = '

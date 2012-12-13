@@ -1,15 +1,13 @@
 <?php
-
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * This file contains the LicenseCommunicator, used to
+ * update a license
  */
 namespace Cx\Core_Modules\License;
 
 /**
- * Description of LicenseCommunicator
- *
- * @author ritt0r
+ * Communicates with "the internet" to update a license
+ * @author Michael Ritter <michael.ritter@comvation.com>
  */
 class LicenseCommunicator {
     private static $instance = null;
@@ -26,7 +24,7 @@ class LicenseCommunicator {
     }
     
     /**
-     *
+     * Singleton accessor
      * @return \Cx\Core_Modules\License\LicenseCommunicator 
      */
     public static function getInstance(&$_CONFIG) {
@@ -48,69 +46,67 @@ class LicenseCommunicator {
     
     /**
      * Updates the license
-     * @param \Cx\Core_Modules\License\License $license License to update
-     * @param array $_CONFIG Config options
-     * @param boolean $forceTemplate (optional) Wheter to force template delivery or not, defaults to false
-     * @return void 
+     * @param \Cx\Core_Modules\License\License $license The license to update
+     * @param array $_CONFIG The configuration array
+     * @param boolean $forceUpdate (optional) If set to true, update is performed even if time to update is not reached yet
+     * @param boolean $forceTemplate (optional) If set to true, the server is requested to send the template
+     * @param array $_CORELANG (optional) Core language array
+     * @param string $response (optional) Server response as JSON. If this is set, no HTTP request is perfomed
+     * @return null 
      */
-    public function update(&$license, $_CONFIG, $forceUpdate = false, $forceTemplate = false, $_CORELANG = array()) {
+    public function update($license, $_CONFIG, $forceUpdate = false, $forceTemplate = false, $_CORELANG = array(), $response = '') {
         if (!$forceUpdate && !$this->isTimeToUpdate($_CONFIG)) {
             return;
         }
-        $v = preg_split('#\.#', $_CONFIG['coreCmsVersion']);
-        $e = $_CONFIG['coreCmsEdition'];
-        
-        $version = current($v);
-        unset($v[key($v)]);
-        foreach ($v as $part) {
-            $version *= 100;
-            $version += $part;
-        }
-        
-        $srvUri = 'updatesrv1.contrexx.com';
-        $srvPath = '/';
-        // for debugging only:
-        /*$version = 30000;
-        $link = @fsockopen($srvUri,80);
-        if (!isset($link) || !$link) {
-            $license->setState(License::LICENSE_ERROR);
-            $license->setGrayzoneMessages(array(\FWLanguage::getLanguageCodeById(LANG_ID) => new Message(\FWLanguage::getLanguageCodeById(LANG_ID), $_CORELANG['TXT_LICENSE_COMMUNICATION_ERROR'])));
-            $license->check();
-            return;
-        }*/
-        
-        $data = array(
-            'installationId' => $license->getInstallationId(),
-            'licenseKey' => $license->getLicenseKey(),
-            'edition' => $license->getEditionName(),
-            'version' => $_CONFIG['coreCmsVersion'],
-            'versionstate' => $_CONFIG['coreCmsStatus'],
-            'domainName' => $_CONFIG['domainUrl'],
-            'sendTemplate' => $forceTemplate,
-        );
-        $a = $_SERVER['REMOTE_ADDR'];
-        
-        $request = new \HTTP_Request2('http://' . $srvUri . $srvPath . '?v=' . $version, \HTTP_Request2::METHOD_POST);
-        $request->setHeader('X-Edition', $e);
-        $request->setHeader('X-Remote-Addr', $a);
-        $jd = new \Cx\Core\Json\JsonData();
-        $request->addPostParameter('data', $jd->json($data));
-        try {
-            $objResponse = $request->send();
-            if ($objResponse->getStatus() !== 200) {
+        if ($response) {
+            $response = json_decode($response);
+        } else {
+            $v = preg_split('#\.#', $_CONFIG['coreCmsVersion']);
+            $e = $_CONFIG['coreCmsEdition'];
+
+            $version = current($v);
+            unset($v[key($v)]);
+            foreach ($v as $part) {
+                $version *= 100;
+                $version += $part;
+            }
+
+            $srvUri = 'updatesrv1.contrexx.com';
+            $srvPath = '/';
+
+            $data = array(
+                'installationId' => $license->getInstallationId(),
+                'licenseKey' => $license->getLicenseKey(),
+                'edition' => $license->getEditionName(),
+                'version' => $_CONFIG['coreCmsVersion'],
+                'versionstate' => $_CONFIG['coreCmsStatus'],
+                'domainName' => $_CONFIG['domainUrl'],
+                'sendTemplate' => $forceTemplate,
+            );
+            $a = $_SERVER['REMOTE_ADDR'];
+
+            $request = new \HTTP_Request2('http://' . $srvUri . $srvPath . '?v=' . $version, \HTTP_Request2::METHOD_POST);
+            $request->setHeader('X-Edition', $e);
+            $request->setHeader('X-Remote-Addr', $a);
+            $jd = new \Cx\Core\Json\JsonData();
+            $request->addPostParameter('data', $jd->json($data));
+            try {
+                $objResponse = $request->send();
+                if ($objResponse->getStatus() !== 200) {
+                    $license->setState(License::LICENSE_ERROR);
+                    $license->setGrayzoneMessages(array(\FWLanguage::getLanguageCodeById(LANG_ID) => new Message(\FWLanguage::getLanguageCodeById(LANG_ID), $_CORELANG['TXT_LICENSE_COMMUNICATION_ERROR'])));
+                    $license->check();
+                    return;
+                } else {
+                    \DBG::dump($objResponse->getBody());
+                    $response = json_decode($objResponse->getBody());
+                }
+            } catch (HTTP_Request2_Exception $objException) {
                 $license->setState(License::LICENSE_ERROR);
                 $license->setGrayzoneMessages(array(\FWLanguage::getLanguageCodeById(LANG_ID) => new Message(\FWLanguage::getLanguageCodeById(LANG_ID), $_CORELANG['TXT_LICENSE_COMMUNICATION_ERROR'])));
                 $license->check();
                 return;
-            } else {
-                //echo $objResponse->getBody();
-                $response = json_decode($objResponse->getBody());
             }
-        } catch (HTTP_Request2_Exception $objException) {
-            $license->setState(License::LICENSE_ERROR);
-            $license->setGrayzoneMessages(array(\FWLanguage::getLanguageCodeById(LANG_ID) => new Message(\FWLanguage::getLanguageCodeById(LANG_ID), $_CORELANG['TXT_LICENSE_COMMUNICATION_ERROR'])));
-            $license->check();
-            return;
         }
         
         $upgradeUrl = $response->license->upgradeUrl;
@@ -235,11 +231,38 @@ class LicenseCommunicator {
         return;
     }
     
-    public function addJsUpdateCode(&$_CORELANG) {
-        $lc = LicenseCommunicator::getInstance($this->config);
-        if ($lc->isTimeToUpdate($this->config)) {
+    /**
+     * Registers the javascript code to update a license
+     * @param array $_CORELANG Core language array
+     * @param array $_CONFIG The configuration array
+     */
+    public function addJsUpdateCode(&$_CORELANG, &$_CONFIG) {
+        $v = preg_split('#\.#', $_CONFIG['coreCmsVersion']);
+        $version = current($v);
+        unset($v[key($v)]);
+        foreach ($v as $part) {
+            $version *= 100;
+            $version += $part;
+        }
+        
+        $userAgentRequestArguments = array(
+            'data=' . urlencode(json_encode(array(
+                'installationId' => $_CONFIG['installationId'],
+                'licenseKey' => $_CONFIG['licenseKey'],
+                'edition' => $_CONFIG['coreCmsEdition'],
+                'version' => $_CONFIG['coreCmsVersion'],
+                'versionstate' => $_CONFIG['coreCmsStatus'],
+                'remoteAddr' => $_SERVER['REMOTE_ADDR'],
+                'domainName' => $_CONFIG['domainUrl'],
+                'sendTemplate' => false,
+            ))),
+            'v=' . $version,
+            'userAgentRequest=true',
+        );
+        
+        if ($this->isTimeToUpdate($this->config)) {
             \JS::activate('jquery');
-            \JS::registerCode('
+            $jsCode = '
                 jQuery(document).ready(function() {
                     var licenseMessage      = jQuery("#license_message");
                     var cloneLicenseMessage = jQuery("#license_message").clone();
@@ -251,9 +274,24 @@ class LicenseCommunicator {
                         licenseMessage.replaceWith(cloneLicenseMessage);
                     }
                     
-                    jQuery.get(
-                        "../core_modules/License/versioncheck.php"
-                    ).success(function(data) {
+                    var versionCheckResponseHandler = function(data, allowUserAgent) {';
+            if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
+                $jsCode .= '
+                        if (data == "false" && allowUserAgent) {
+                            jQuery.getScript("http://updatesrv1.contrexx.com/?' . implode('&', $userAgentRequestArguments) . '", function() {
+                                console.log(JSON.stringify(licenseUpdateUserAgentRequestResponse));
+                                jQuery.post(
+                                    "../core_modules/License/versioncheck.php",
+                                    {"response": JSON.stringify(licenseUpdateUserAgentRequestResponse)}
+                                ).success(function(data) {
+                                    versionCheckResponseHandler(data, false)
+                                }).error(function(data) {
+                                    revertMessage();
+                                });
+                            });
+                        }';
+            }
+            $jsCode .= '
                         var data = jQuery.parseJSON(data);
                         revertMessage();
                         if (data == null) {
@@ -264,11 +302,18 @@ class LicenseCommunicator {
                         licenseMessage.children("a:first").attr("href", data.link);
                         licenseMessage.children("a:first").attr("target", data.target);
                         licenseMessage.children("a:first").html(data.text);
+                    }
+                    
+                    jQuery.get(
+                        "../core_modules/License/versioncheck.php"
+                    ).success(function(data) {
+                        versionCheckResponseHandler(data, true);
                     }).error(function(data) {
                         revertMessage();
                     });
                 });
-            ');
+            ';
+            \JS::registerCode($jsCode);
         }
     }
 }

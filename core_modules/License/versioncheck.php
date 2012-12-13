@@ -53,18 +53,31 @@ define('LANG_ID', $_LANGID);
 // load interface texts, might be used by the license system in case of communication errors
 $_CORELANG = $objInit->loadLanguageData('core');
 
-// update license
+// Init user
+if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new \cmsSession();
+$objUser = \FWUser::getFWUserObject()->objUser;
+
+// update license, return "false" if no connection to license server could be established
 $license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
 $licenseCommunicator = \Cx\Core_Modules\License\LicenseCommunicator::getInstance($_CONFIG);
-$licenseCommunicator->update($license, $_CONFIG, (isset($_GET['force']) && $_GET['force'] == 'true'), false, $_CORELANG);
+try {
+    $licenseCommunicator->update(
+        $license,
+        $_CONFIG,
+        (isset($_GET['force']) && $_GET['force'] == 'true'),
+        false,
+        $_CORELANG,
+        (isset($_POST['response']) && $objUser->getAdminStatus() ? $_POST['response'] : '')
+    );
+} catch (\Exception $e) {
+    echo "false";
+    return;
+}
 $license->check();
 if (!isset($_GET['nosave']) || $_GET['nosave'] != 'true') {
     $license->save(new \settingsManager(), $objDatabase);
 }
 
-if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new \cmsSession();
-
-$objUser = \FWUser::getFWUserObject()->objUser;
 if (!$objUser->login(true)) {
     // do not use die() here, or installer will not show success page
     return;
@@ -83,4 +96,3 @@ echo json_encode(array(
     'text' => contrexx_raw2xhtml($message->getText()),
     'class' => contrexx_raw2xhtml($message->getType()),
 ));
-
