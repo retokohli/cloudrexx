@@ -57,10 +57,11 @@ class Version {
     }
 
     /**
-    * Converts an integer version number to a string version number
-    * @param int $vInt Integer version number
-    * @return string String version number
-    */
+     * Converts an integer version number to a string version number
+     * @todo Update to current version, found in wiki
+     * @param int $vInt Integer version number
+     * @return string String version number
+     */
     public function intNumberToString($vInt) {
         return  intval(intval($vInt/10000)%100).'.'.
                 intval(intval($vInt/  100)%100).'.'.
@@ -68,12 +69,19 @@ class Version {
     }
 
     /**
-    * Converts a string version number to an integer version number
-    * @param string $vString String version number
-    * @return int Integer version number
-    */
+     * Converts a string version number to an integer version number
+     * @todo Update to current version, found in wiki
+     * @param string $vString String version number
+     * @return int Integer version number
+     */
     public function stringNumberToInt($vString) {
         $parts = explode('.', $vString);
+        if (!isset($parts[1])) {
+            $parts[1] = 0;
+        }
+        if (!isset($parts[2])) {
+            $parts[2] = 0;
+        }
         return $parts[0]  * 10000 + $parts[1]  * 100 + $parts[2];
     }
 }
