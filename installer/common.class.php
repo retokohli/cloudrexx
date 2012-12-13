@@ -3,7 +3,7 @@
 /**
  * @ignore
  */
-require_once(ASCMS_LIBRARY_PATH.'/DBG.php');
+require_once(ASCMS_FRAMEWORK_PATH.'/DBG/DBG.php');
 require_once(ASCMS_FRAMEWORK_PATH.'/FileSystem/FileInterface.interface.php');
 require_once(ASCMS_FRAMEWORK_PATH.'/FileSystem/FileSystemFile.class.php');
 require_once(ASCMS_FRAMEWORK_PATH.'/FileSystem/FTPFile.class.php');

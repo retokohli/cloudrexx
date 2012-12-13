@@ -14,7 +14,7 @@ delete tc, tcn, tl from contrexx_content_navigation_history as tcn inner join co
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-require_once '../../../lib/DBG.php';
+require_once '../../../lib/FRAMEWORK/DBG/DBG.php';
 require_once '../../../config/configuration.php';
 require_once '../../../core/API.php';
 require_once '../../../config/doctrine.php';

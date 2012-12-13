@@ -12,7 +12,7 @@
  */
 
 $documentRoot = dirname(__FILE__);
-require_once($documentRoot.'/lib/DBG.php');
+require_once($documentRoot.'/lib/FRAMEWORK/DBG/DBG.php');
 DBG::deactivate();
 require_once($documentRoot.'/config/settings.php');                      // needed for doctrine.php
 require_once($documentRoot.'/config/configuration.php');                 // needed for doctrine.php

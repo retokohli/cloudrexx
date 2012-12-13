@@ -10,7 +10,7 @@
 require_once(dirname(__FILE__).'/../../config/settings.php');
 require_once(dirname(__FILE__).'/../../config/configuration.php');
 
-include_once(ASCMS_LIBRARY_PATH.'/DBG.php');
+include_once(ASCMS_FRAMEWORK_PATH.'/DBG/DBG.php');
 //\DBG::activate(DBG_PHP);
 
 require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');

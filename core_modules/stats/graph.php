@@ -407,7 +407,7 @@ if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
 $cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $customizing);
 \Env::set('ClassLoader', $cl);
 
-require_once(ASCMS_LIBRARY_PATH.'/DBG.php');
+require_once(ASCMS_FRAMEWORK_PATH.'/DBG/DBG.php');
 require_once(ASCMS_LIBRARY_PATH.'/ykcee/ykcee.php');
 
 $adminPage = true;

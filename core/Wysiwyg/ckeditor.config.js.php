@@ -17,7 +17,7 @@ $cl->loadFile(ASCMS_CORE_PATH.'/Env.class.php');
 \Env::set('ClassLoader', $cl);
 \Env::set('ftpConfig', $_FTPCONFIG);
 
-require_once(ASCMS_LIBRARY_PATH.'/DBG.php');
+require_once(ASCMS_FRAMEWORK_PATH.'/DBG/DBG.php');
 require_once(ASCMS_CORE_PATH.'/settings.class.php');
 $cl->loadFile(ASCMS_CORE_PATH.'/API.php');
 require_once(ASCMS_CORE_PATH.'/validator.inc.php');
