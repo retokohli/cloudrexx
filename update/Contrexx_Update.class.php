@@ -21,7 +21,7 @@ class Contrexx_Update
         //'en' => 'English',
     );
 
-    function __construct()
+    public function __construct()
     {
         global $_CORELANG, $objDatabase;
 
@@ -53,28 +53,20 @@ class Contrexx_Update
             $this->parseJsonRequest();
         }
     }
-
-    function parseJsonRequest()
-    {
-        $_POST = $this->objJson->decode($this->stripslashes($_GET['ajax']));
-        if (!UPDATE_UTF8) {
-            $_POST = array_map('utf8_decode', $_POST);
-        }
-    }
-
-    function getPage()
+    
+    public function getPage()
     {
         if (!empty($_GET['cmd']) && ($_GET['cmd'] == 'logout')) {
             $this->logout();
         }
-
+        
         if ($this->auth() || $this->login()) {
             $this->setStep();
             $this->showStep();
         }
-
+        
         $this->setPlaceholders();
-
+        
         if ($this->ajax) {
             if (!UPDATE_UTF8) {
                 $this->html['content'] = utf8_encode($this->html['content']);
@@ -83,31 +75,32 @@ class Contrexx_Update
         }
         return $this->objTemplate->get();
     }
-
-    function setStep()
+    
+    private function parseJsonRequest()
+    {
+        $_POST = $this->objJson->decode($this->stripslashes($_GET['ajax']));
+        if (!UPDATE_UTF8) {
+            $_POST = array_map('utf8_decode', $_POST);
+        }
+    }
+    
+    private function setStep()
     {
         if (empty($_SESSION['contrexx_update']['step'])) {
             $_SESSION['contrexx_update']['step'] = 0;
         }
         
-        if (isset($_POST['updateNext']) || (isset($_POST['updateBack']) && $this->setPreviousStep())) {
-            switch ($_SESSION['contrexx_update']['step']) {
-                case 1:
-                    $this->checkRequirementsPage();
-                    break;
-                case 2:
-                    $this->checkStart();
-                    break;
-                default:
-                    $this->checkOverview();
-                    break;
+        if (isset($_POST['updateBack'])) {
+            if ($_SESSION['contrexx_update']['step'] == 2) {
+                $this->setPreviousStep();
             }
+            $this->setPreviousStep();
         } else if ($_SESSION['contrexx_update']['step'] == 3) {
             $this->setPreviousStep();
         }
     }
 
-    function showStep()
+    private function showStep()
     {
         switch ($_SESSION['contrexx_update']['step']) {
             case 1:
@@ -120,73 +113,22 @@ class Contrexx_Update
                 $this->processUpdate();
                 break;
             default:
-                $this->versionOverview();
-        }
-    }
-
-    function setNextStep()
-    {
-        ++$_SESSION['contrexx_update']['step'];
-    }
-
-    function setPreviousStep()
-    {
-        --$_SESSION['contrexx_update']['step'];
-    }
-
-    function checkOverview()
-    {
-        if (!empty($_POST['updateVersion'])) {
-            if (is_array($_POST['updateVersion'])) {
-                $_POST['updateVersion'] = reset($_POST['updateVersion']);
-            }
-            $arrVersions = $this->getAvailabeVersions();
-            if (in_array($this->stripslashes($_POST['updateVersion']), array_keys($arrVersions))) {
-                $_SESSION['contrexx_update']['version'] = $this->stripslashes($_POST['updateVersion']);
-                $this->setNextStep();
-            }
+                $this->getOverview();
+                break;
         }
     }
     
-    private function checkRequirementsPage()
+    private function setNextStep()
     {
-        if (!empty($_SESSION['contrexx_update']['version'])) {
-            $arrVersions = $this->getAvailabeVersions();
-            $version     = $_SESSION['contrexx_update']['version'];
-            $arrUpdate   = $arrVersions[$version];
-            if ($this->checkRequirements($arrUpdate) === true) {
-                $this->setNextStep();
-            }
-        } else {
-            $this->setPreviousStep();
-        }
+        ++$_SESSION['contrexx_update']['step'];
     }
-
-    function checkStart()
+    
+    private function setPreviousStep()
     {
-        if (isset($_POST['updateNext']) && isset($_POST['processUpdate'])) {
-            if (!empty($_POST['update_module_repository']) && $_POST['update_module_repository'] == '1') {
-                $_SESSION['contrexx_update']['updateRepository'] = true;
-            } else {
-                $_SESSION['contrexx_update']['updateRepository'] = false;
-            }
-            if (!empty($_POST['update_backend_areas']) && $_POST['update_backend_areas'] == '1') {
-                $_SESSION['contrexx_update']['updateBackendAreas'] = true;
-            } else {
-                $_SESSION['contrexx_update']['updateBackendAreas'] = false;
-            }
-            if (!empty($_POST['update_module_table']) && $_POST['update_module_table'] == '1') {
-                $_SESSION['contrexx_update']['updateModules'] = true;
-            } else {
-                $_SESSION['contrexx_update']['updateModules'] = false;
-            }
-            $this->setNextStep();
-        } else {
-            $this->setPreviousStep();
-        }
+        --$_SESSION['contrexx_update']['step'];
     }
-
-    function setPlaceholders()
+    
+    private function setPlaceholders()
     {
         global $_CORELANG;
 
@@ -198,8 +140,8 @@ class Contrexx_Update
             $this->objTemplate->setVariable('LOGOUT_BUTTON', $logout);
         }
     }
-
-    function setNavigation($navigation)
+    
+    private function setNavigation($navigation)
     {
         if ($this->ajax) {
             $this->html['navigation'] = $navigation;
@@ -207,8 +149,8 @@ class Contrexx_Update
             $this->objTemplate->setVariable('NAVIGATION', $navigation);
         }
     }
-
-    function getLangMenu()
+    
+    private function getLangMenu()
     {
         $menu = '<select class="lang" name="lang" onchange="window.location.href=\'?lang=\'+this.value">';
         foreach ($this->_arrAvailableLanguages as $lang => $desc) {
@@ -217,76 +159,110 @@ class Contrexx_Update
         $menu .= '</select>';
         return $menu;
     }
-
-    function versionOverview()
+    
+    private function getOverview()
     {
-        global $_CORELANG;
-        
         $arrVersions = $this->getAvailabeVersions();
         
         if (count($arrVersions) === 1) {
             $updateVersion = key($arrVersions);
             $_POST['updateVersion'] = $updateVersion;
-            $this->checkOverview();
-            $this->setStep();
-            $this->showStep();
-        } else {
-            $this->objTemplate->addBlockfile('CONTENT', 'overview', 'overview.html');
-            $this->objTemplate->setVariable('TXT_UPDATE_VERSION_SELECTION', $_CORELANG['TXT_UPDATE_VERSION_SELECTION']);
+        }
+        
+        if (!empty($_POST['updateVersion'])) {
+            if (is_array($_POST['updateVersion'])) {
+                $_POST['updateVersion'] = reset($_POST['updateVersion']);
+            }
             
-            if (count($arrVersions) > 1) {
-                $this->objTemplate->setVariable(array(
-                    'TXT_UPDATE_SELECT_VERSION_MSG' => $_CORELANG['TXT_UPDATE_SELECT_VERSION_MSG'],
-                    'TXT_UPDATE_AVAILABLE_VERSIONS' => $_CORELANG['TXT_UPDATE_AVAILABLE_VERSIONS'],
-                ));
-                foreach ($arrVersions as $versionPath => $arrVersion) {
-                    $this->objTemplate->setVariable(array(
-                        'UPDATE_VERSION'         => str_replace(' Service Pack 0', '', preg_replace('#^(\d+\.\d+)\.(\d+)$#', '$1 Service Pack $2', $arrVersion['cmsVersion'])),
-                        'UPDATE_VERSION_PATH'    => $versionPath,
-                        'UPDATE_VERSION_NAME'    => $arrVersion['cmsName'],
-                        'UPDATE_VERSION_EDITION' => $arrVersion['cmsEdition'],
-                        'UPDATE_VERSION_CHECKED' => !empty($_SESSION['contrexx_update']['version']) && $_SESSION['contrexx_update']['version'] == $versionPath ? 'checked="checked"' : '',
-                    ));
-                    $this->objTemplate->parse('updateVersionList');
-                }
-    
-                if (isset($_POST['updateVersions'])) {
-                    $this->objTemplate->setVariable('UPDATE_ERROR_MSG', $_CORELANG['TXT_UPDATE_MUST_SELECT_UPDATE']);
-                    $this->objTemplate->parse('updateNoVersionSelected');
-                } else {
-                    $this->objTemplate->hideBlock('updateNoVersionSelected');
-                }
-                $this->objTemplate->parse('updateVersions');
-                $this->objTemplate->hideBlock('updateNoVersions');
+            if (in_array($this->stripslashes($_POST['updateVersion']), array_keys($arrVersions))) {
+                $_SESSION['contrexx_update']['version'] = $this->stripslashes($_POST['updateVersion']);
+                $this->setNextStep();
+                $this->showStep();
             } else {
-                $this->objTemplate->setVariable('TXT_UPDATE_NO_VERSION_TO_UPGRADE_TO', $_CORELANG['TXT_UPDATE_NO_VERSION_TO_UPGRADE_TO']);
-                $this->objTemplate->parse('updateNoVersions');
-                $this->objTemplate->hideBlock('updateVersions');
+                $this->getOverviewPage($arrVersions);
             }
-            
-            $this->objTemplate->parse('overview');
-            if ($this->ajax) {
-                $this->html['content'] = $this->objTemplate->get('overview');
-            }
-            $this->setNavigation('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="updateNext" />');
+        } else {
+            $this->getOverviewPage($arrVersions);
         }
     }
-
-    private function showRequirements()
+    
+    private function getOverviewPage($arrVersions)
     {
         global $_CORELANG;
         
-        $this->objTemplate->addBlockfile('CONTENT', 'requirements', 'requirements.html');
+        $this->objTemplate->addBlockfile('CONTENT', 'overview', 'overview.html');
+        $this->objTemplate->setVariable('TXT_UPDATE_VERSION_SELECTION', $_CORELANG['TXT_UPDATE_VERSION_SELECTION']);
         
+        if (count($arrVersions) !== 0) {
+            $this->objTemplate->setVariable(array(
+                'TXT_UPDATE_SELECT_VERSION_MSG' => $_CORELANG['TXT_UPDATE_SELECT_VERSION_MSG'],
+                'TXT_UPDATE_AVAILABLE_VERSIONS' => $_CORELANG['TXT_UPDATE_AVAILABLE_VERSIONS'],
+            ));
+            foreach ($arrVersions as $versionPath => $arrVersion) {
+                $this->objTemplate->setVariable(array(
+                    'UPDATE_VERSION'         => str_replace(' Service Pack 0', '', preg_replace('#^(\d+\.\d+)\.(\d+)$#', '$1 Service Pack $2', $arrVersion['cmsVersion'])),
+                    'UPDATE_VERSION_PATH'    => $versionPath,
+                    'UPDATE_VERSION_NAME'    => $arrVersion['cmsName'],
+                    'UPDATE_VERSION_EDITION' => $arrVersion['cmsEdition'],
+                    'UPDATE_VERSION_CHECKED' => !empty($_SESSION['contrexx_update']['version']) && $_SESSION['contrexx_update']['version'] == $versionPath ? 'checked="checked"' : '',
+                ));
+                $this->objTemplate->parse('updateVersionList');
+            }
+
+            if (isset($_POST['updateVersions'])) {
+                $this->objTemplate->setVariable('UPDATE_ERROR_MSG', $_CORELANG['TXT_UPDATE_MUST_SELECT_UPDATE']);
+                $this->objTemplate->parse('updateNoVersionSelected');
+            } else {
+                $this->objTemplate->hideBlock('updateNoVersionSelected');
+            }
+            
+            $this->objTemplate->parse('updateVersions');
+            $this->objTemplate->hideBlock('updateNoVersions');
+        } else {
+            $this->objTemplate->setVariable('TXT_UPDATE_NO_VERSION_TO_UPGRADE_TO', $_CORELANG['TXT_UPDATE_NO_VERSION_TO_UPGRADE_TO']);
+            $this->objTemplate->parse('updateNoVersions');
+            $this->objTemplate->hideBlock('updateVersions');
+            
+            $this->objTemplate->parse('overview');
+            
+            if ($this->ajax) {
+                $this->html['content'] = $this->objTemplate->get('overview');
+            }
+            
+            $this->setNavigation('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="updateNext" />');
+        }
+        
+        $this->objTemplate->parse('overview');
+        if ($this->ajax) {
+            $this->content = $this->objTemplate->get('overview');
+        }
+        $this->setNavigation('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="updateNext" />');
+    }
+    
+    private function showRequirements()
+    {
         if (!empty($_SESSION['contrexx_update']['version'])) {
             $arrVersions     = $this->getAvailabeVersions();
             $version         = $_SESSION['contrexx_update']['version'];
             $arrUpdate       = $arrVersions[$version];
             $arrRequirements = $this->checkRequirements($arrUpdate);
+            if ($arrRequirements === true) {
+                $this->setNextStep();
+                $this->showStep();
+            } else {
+                $this->showRequirementsPage($arrRequirements);
+            }
         } else {
             $this->setPreviousStep();
             $this->showStep();
         }
+    }
+    
+    private function showRequirementsPage($arrRequirements)
+    {
+        global $_CORELANG;
+        
+        $this->objTemplate->addBlockfile('CONTENT', 'requirements', 'requirements.html');
         
         if (!empty($arrRequirements['serverNotices'])) {
             $serverNotices = '';
@@ -340,27 +316,64 @@ class Contrexx_Update
         $this->setNavigation('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_RECHECK'].'" name="updateNext" />');
     }
 
-    function showUpdate()
+    private function showUpdate()
+    {
+        if (isset($_POST['updateNext']) && isset($_POST['processUpdate'])) {
+            if (!empty($_POST['update_module_repository']) && $_POST['update_module_repository'] == '1') {
+                $_SESSION['contrexx_update']['updateRepository'] = true;
+            } else {
+                $_SESSION['contrexx_update']['updateRepository'] = false;
+            }
+            
+            if (!empty($_POST['update_backend_areas']) && $_POST['update_backend_areas'] == '1') {
+                $_SESSION['contrexx_update']['updateBackendAreas'] = true;
+            } else {
+                $_SESSION['contrexx_update']['updateBackendAreas'] = false;
+            }
+            
+            if (!empty($_POST['update_module_table']) && $_POST['update_module_table'] == '1') {
+                $_SESSION['contrexx_update']['updateModules'] = true;
+            } else {
+                $_SESSION['contrexx_update']['updateModules'] = false;
+            }
+            
+            $this->setNextStep();
+            $this->showStep();
+        } else {
+            $this->showUpdatePage();
+        }
+    }
+    
+    private function showUpdatePage()
     {
         global $_CORELANG;
 
         $this->objTemplate->addBlockfile('CONTENT', 'start', 'start.html');
+        
         $this->objTemplate->setVariable(array(
-            'UPDATE_PROCESS_SCREEN'                 => $_CORELANG['TXT_UPDATE_IS_READY'],
-            'TXT_UPDATE_ADVANCED_CONFIGURATION'        => $_CORELANG['TXT_UPDATE_ADVANCED_CONFIGURATION'],
-            'TXT_UPDATE_RENEW_MODULE_REPOSITORY'    => $_CORELANG['TXT_UPDATE_RENEW_MODULE_REPOSITORY'],
-            'TXT_UPDATE_RENEW_BACKEND_AREAS'        => $_CORELANG['TXT_UPDATE_RENEW_BACKEND_AREAS'],
-            'TXT_UPDATE_RENEW_MODULE_TABLE'            => $_CORELANG['TXT_UPDATE_RENEW_MODULE_TABLE'],
-            'TXT_UPDATE_UPDATE_IS_READY'            => $_CORELANG['TXT_UPDATE_UPDATE_IS_READY']
+            'UPDATE_PROCESS_SCREEN'              => $_CORELANG['TXT_UPDATE_IS_READY'],
+            'TXT_UPDATE_ADVANCED_CONFIGURATION'  => $_CORELANG['TXT_UPDATE_ADVANCED_CONFIGURATION'],
+            'TXT_UPDATE_RENEW_MODULE_REPOSITORY' => $_CORELANG['TXT_UPDATE_RENEW_MODULE_REPOSITORY'],
+            'TXT_UPDATE_RENEW_BACKEND_AREAS'     => $_CORELANG['TXT_UPDATE_RENEW_BACKEND_AREAS'],
+            'TXT_UPDATE_RENEW_MODULE_TABLE'      => $_CORELANG['TXT_UPDATE_RENEW_MODULE_TABLE'],
+            'TXT_UPDATE_UPDATE_IS_READY'         => $_CORELANG['TXT_UPDATE_UPDATE_IS_READY']
         ));
         $this->objTemplate->parse('start');
+        
         if ($this->ajax) {
             $this->html['content'] = $this->objTemplate->get('start');
         }
-        $this->setNavigation('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_BACK'].'" name="updateBack" onclick="try{doUpdate(true)} catch(e){return true;}" /> <input type="submit" value="'.$_CORELANG['TXT_UPDATE_START_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />');
+        
+        $arrVersions = $this->getAvailabeVersions();
+        $updateBack  = '';
+        if (count($arrVersions) === 1) {
+            $updateBack = '<input type="submit" value="'.$_CORELANG['TXT_UPDATE_BACK'].'" name="updateBack" onclick="try{doUpdate(true)} catch(e){return true;}" /> ';
+        }
+        
+        $this->setNavigation($updateBack . '<input type="submit" value="'.$_CORELANG['TXT_UPDATE_START_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />');
     }
-
-    function processUpdate()
+    
+    private function processUpdate()
     {
         global $_CORELANG;
 
