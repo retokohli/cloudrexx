@@ -306,7 +306,7 @@ if ($loggedIn) {
         $license->save(new \settingsManager(), $objDatabase);
     }
     $lc = \Cx\Core_Modules\License\LicenseCommunicator::getInstance($_CONFIG);
-    $lc->addJsUpdateCode($_CORELANG, $license);
+    $lc->addJsUpdateCode($_CORELANG, $license, $plainCmd == 'license');
 }
 
 $subMenuTitle = NULL;
