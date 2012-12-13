@@ -662,6 +662,7 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
      * Activates the user live search.
      * @param   array   $arrOptions
      * @return  void
+     * @link    http://contrexx.com/wiki/index.php/User_Live_Search
      */
     public static function getUserLiveSearch($arrOptions = array())
     {
