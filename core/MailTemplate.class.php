@@ -426,6 +426,7 @@ die("MailTemplate::init(): Empty section!");
      *
      * The array argument is searched for the following indices:
      *  key           The key of any mail template to be used
+     *  section       The module to initialize for (mandatory when key is set)
      *  sender        The sender name
      *  from          The sender e-mail address
      *  to            The recipient e-mail address(es), comma separated
@@ -443,6 +444,8 @@ die("MailTemplate::init(): Empty section!");
      *                If this is used, HTML mode is switched on automatically.
      *  search        The array of patterns to be replaced by...
      *  replace       The array of replacements for the patterns
+     *  substitution  A more complex structure for replacing placeholders
+     *                and/or complete blocks, conditionally or repeatedly.
      * If the key index is present, the corresponding mail template is loaded
      * first.  Other indices present (sender, from, to, subject, message, etc.)
      * will override the template fields.
