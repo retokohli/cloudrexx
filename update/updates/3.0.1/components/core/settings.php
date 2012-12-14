@@ -1,219 +1,220 @@
 <?php
 function _updateSettings()
 {
-    global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG, $arrSettings, $arrSettingsByName;
+    global $objUpdate, $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG, $arrSettings, $arrSettingsByName;
 
     $setVars = false;
 
     $arrSettings = array(
-		3	=> array(
-			'setname'	=> 'dnsServer',
-			'setvalue'	=> 'ns1.hostrexx.com',
-			'setmodule'	=> 1
-		),
-		4	=> array(
-			'setname'	=> 'bannerStatus',
-			'setvalue'	=> '0',
-			'setmodule'	=> 28
-		),
-		5	=> array(
-			'setname'	=> 'spamKeywords',
-			'setvalue'	=> 'sex, viagra',
-			'setmodule'	=> 1
-		),
-		11	=> array(
-			'setname'	=> 'coreAdminName',
-			'setvalue'	=> 'Webmaster',
-			'setmodule'	=> 1
-		),
-		18	=> array(
-			'setname'	=> 'corePagingLimit',
-			'setvalue'	=> '30',
-			'setmodule'	=> 1
-		),
-		19	=> array(
-			'setname'	=> 'searchDescriptionLength',
-			'setvalue'	=> '150',
-			'setmodule'	=> 5
-		),
-		23	=> array(
-			'setname'	=> 'coreIdsStatus',
-			'setvalue'	=> 'off',
-			'setmodule'	=> 1
-		),
-		24	=> array(
-			'setname'	=> 'coreAdminEmail',
-			'setvalue'	=> 'support@contrexx.com',
-			'setmodule'	=> 1
-		),
-		29	=> array(
-			'setname'	=> 'contactFormEmail',
-			'setvalue'	=> 'support@contrexx.com',
-			'setmodule'	=> 6
-		),
-		34	=> array(
-			'setname'	=> 'sessionLifeTime',
-			'setvalue'	=> '3600',
-			'setmodule'	=> 1
-		),
-		35	=> array(
-			'setname'	=> 'lastAccessId',
-			'setvalue'	=> '1',
-			'setmodule'	=> 1
-		),
-		37	=> array(
-			'setname'	=> 'newsTeasersStatus',
-			'setvalue'	=> '0',
-			'setmodule'	=> 8
-		),
-		39	=> array(
-			'setname'	=> 'feedNewsMLStatus',
-			'setvalue'	=> '0',
-			'setmodule'	=> 22
-		),
-		40	=> array(
-			'setname'	=> 'calendarheadlines',
-			'setvalue'	=> '1',
-			'setmodule'	=> 21
-		),
-		41	=> array(
-			'setname'	=> 'calendarheadlinescount',
-			'setvalue'	=> '5',
-			'setmodule'	=> 21
-		),
-		42	=> array(
-			'setname'	=> 'blockStatus',
-			'setvalue'	=> '1',
-			'setmodule'	=> 7
-		),
-		44	=> array(
-			'setname'	=> 'calendarheadlinescat',
-			'setvalue'	=> '0',
-			'setmodule'	=> 21
-		),
-		45	=> array(
-			'setname'	=> 'calendardefaultcount',
-			'setvalue'	=> '16',
-			'setmodule'	=> 21
-		),
-		48	=> array(
-			'setname'	=> 'blockRandom',
-			'setvalue'	=> '1',
-			'setmodule'	=> 7
-		),
-		49	=> array(
-			'setname'	=> 'directoryHomeContent',
-			'setvalue'	=> '0',
-			'setmodule'	=> 12
-		),
-		50	=> array(
-			'setname'	=> 'cacheEnabled',
-			'setvalue'	=> 'off',
-			'setmodule'	=> 1
-		),
-		51	=> array(
-			'setname'	=> 'coreGlobalPageTitle',
-			'setvalue'	=> 'Contrexx Example Page',
-			'setmodule'	=> 1
-		),
-		52	=> array(
-			'setname'	=> 'cacheExpiration',
-			'setvalue'	=> '86400',
-			'setmodule'	=> 1
-		),
-		53	=> array(
-			'setname'	=> 'domainUrl',
-			'setvalue'	=> 'localhost',
-			'setmodule'	=> 1
-		),
-		54	=> array(
-			'setname'	=> 'xmlSitemapStatus',
-			'setvalue'	=> 'on',
-			'setmodule'	=> 1
-		),
-		55	=> array(
-			'setname'	=> 'systemStatus',
-			'setvalue'	=> 'on',
-			'setmodule'	=> 1
-		),
-		56	=> array(
-			'setname'	=> 'searchVisibleContentOnly',
-			'setvalue'	=> 'on',
-			'setmodule'	=> 1
-		),
-		60	=> array(
-			'setname'	=> 'forumHomeContent',
-			'setvalue'	=> '1',
-			'setmodule'	=> 20
-		),
-		61	=> array(
-			'setname'	=> 'aliasStatus',
-			'setvalue'	=> '',
-			'setmodule'	=> 41
-		),
-		62	=> array(
-			'setname'	=> 'coreSmtpServer',
-			'setvalue'	=> '0',
-			'setmodule'	=> 1
-		),
-		63	=> array(
-			'setname'	=> 'languageDetection',
-			'setvalue'	=> 'on',
-			'setmodule'	=> 1
-		),
-		64	=> array(
-			'setname'	=> 'podcastHomeContent',
-			'setvalue'	=> '0',
-			'setmodule'	=> 35
-		),
-		65	=> array(
-			'setname'	=> 'googleMapsAPIKey',
-			'setvalue'	=> '',
-			'setmodule'	=> 1
-		),
-		66	=> array(
-			'setname'	=> 'forumTagContent',
-			'setvalue'	=> '0',
-			'setmodule'	=> 20
-		),
-		68	=> array(
-			'setname'	=> 'dataUseModule',
-			'setvalue'	=> '1',
-			'setmodule'	=> 48
-		),
-		69	=> array(
-			'setname'	=> 'frontendEditingStatus',
-			'setvalue'	=> 'off',
-			'setmodule'	=> 1
-		),
-		71	=> array(
-			'setname'	=> 'coreListProtectedPages',
-			'setvalue'	=> 'on',
-			'setmodule'	=> 1
-		),
-		72	=> array(
-			'setname'	=> 'useKnowledgePlaceholders',
-			'setvalue'	=> '1',
-			'setmodule'	=> 56
-		),
-		73	=> array(
-			'setname'	=> 'advancedUploadFrontend',
-			'setvalue'	=> 'off',
-			'setmodule'	=> 52
-		),
-		74	=> array(
-			'setname'	=> 'advancedUploadBackend',
-			'setvalue'	=> 'on',
-			'setmodule'	=> 52
-		)
-	);
+        3	=> array(
+            'setname'	=> 'dnsServer',
+            'setvalue'	=> 'ns1.hostrexx.com',
+            'setmodule'	=> 1
+        ),
+        4	=> array(
+            'setname'	=> 'bannerStatus',
+            'setvalue'	=> '0',
+            'setmodule'	=> 28
+        ),
+        5	=> array(
+            'setname'	=> 'spamKeywords',
+            'setvalue'	=> 'sex, viagra',
+            'setmodule'	=> 1
+        ),
+        11	=> array(
+            'setname'	=> 'coreAdminName',
+            'setvalue'	=> 'Webmaster',
+            'setmodule'	=> 1
+        ),
+        18	=> array(
+            'setname'	=> 'corePagingLimit',
+            'setvalue'	=> '30',
+            'setmodule'	=> 1
+        ),
+        19	=> array(
+            'setname'	=> 'searchDescriptionLength',
+            'setvalue'	=> '150',
+            'setmodule'	=> 5
+        ),
+        23	=> array(
+            'setname'	=> 'coreIdsStatus',
+            'setvalue'	=> 'off',
+            'setmodule'	=> 1
+        ),
+        24	=> array(
+            'setname'	=> 'coreAdminEmail',
+            'setvalue'	=> 'support@contrexx.com',
+            'setmodule'	=> 1
+        ),
+        29	=> array(
+            'setname'	=> 'contactFormEmail',
+            'setvalue'	=> 'support@contrexx.com',
+            'setmodule'	=> 6
+        ),
+        34	=> array(
+            'setname'	=> 'sessionLifeTime',
+            'setvalue'	=> '3600',
+            'setmodule'	=> 1
+        ),
+        35	=> array(
+            'setname'	=> 'lastAccessId',
+            'setvalue'	=> '1',
+            'setmodule'	=> 1
+        ),
+        37	=> array(
+            'setname'	=> 'newsTeasersStatus',
+            'setvalue'	=> '0',
+            'setmodule'	=> 8
+        ),
+        39	=> array(
+            'setname'	=> 'feedNewsMLStatus',
+            'setvalue'	=> '0',
+            'setmodule'	=> 22
+        ),
+        40	=> array(
+            'setname'	=> 'calendarheadlines',
+            'setvalue'	=> '1',
+            'setmodule'	=> 21
+        ),
+        41	=> array(
+            'setname'	=> 'calendarheadlinescount',
+            'setvalue'	=> '5',
+            'setmodule'	=> 21
+        ),
+        42	=> array(
+            'setname'	=> 'blockStatus',
+            'setvalue'	=> '1',
+            'setmodule'	=> 7
+        ),
+        44	=> array(
+            'setname'	=> 'calendarheadlinescat',
+            'setvalue'	=> '0',
+            'setmodule'	=> 21
+        ),
+        45	=> array(
+            'setname'	=> 'calendardefaultcount',
+            'setvalue'	=> '16',
+            'setmodule'	=> 21
+        ),
+        48	=> array(
+            'setname'	=> 'blockRandom',
+            'setvalue'	=> '1',
+            'setmodule'	=> 7
+        ),
+        49	=> array(
+            'setname'	=> 'directoryHomeContent',
+            'setvalue'	=> '0',
+            'setmodule'	=> 12
+        ),
+        50	=> array(
+            'setname'	=> 'cacheEnabled',
+            'setvalue'	=> 'off',
+            'setmodule'	=> 1
+        ),
+        51	=> array(
+            'setname'	=> 'coreGlobalPageTitle',
+            'setvalue'	=> 'Contrexx Example Page',
+            'setmodule'	=> 1
+        ),
+        52	=> array(
+            'setname'	=> 'cacheExpiration',
+            'setvalue'	=> '86400',
+            'setmodule'	=> 1
+        ),
+        53	=> array(
+            'setname'	=> 'domainUrl',
+            'setvalue'	=> 'localhost',
+            'setmodule'	=> 1
+        ),
+        54	=> array(
+            'setname'	=> 'xmlSitemapStatus',
+            'setvalue'	=> 'on',
+            'setmodule'	=> 1
+        ),
+        55	=> array(
+            'setname'	=> 'systemStatus',
+            'setvalue'	=> 'on',
+            'setmodule'	=> 1
+        ),
+        56	=> array(
+            'setname'	=> 'searchVisibleContentOnly',
+            'setvalue'	=> 'on',
+            'setmodule'	=> 1
+        ),
+        60	=> array(
+            'setname'	=> 'forumHomeContent',
+            'setvalue'	=> '1',
+            'setmodule'	=> 20
+        ),
+        61	=> array(
+            'setname'	=> 'aliasStatus',
+            'setvalue'	=> '',
+            'setmodule'	=> 41
+        ),
+        62	=> array(
+            'setname'	=> 'coreSmtpServer',
+            'setvalue'	=> '0',
+            'setmodule'	=> 1
+        ),
+        63	=> array(
+            'setname'	=> 'languageDetection',
+            'setvalue'	=> 'on',
+            'setmodule'	=> 1
+        ),
+        64	=> array(
+            'setname'	=> 'podcastHomeContent',
+            'setvalue'	=> '0',
+            'setmodule'	=> 35
+        ),
+        65	=> array(
+            'setname'	=> 'googleMapsAPIKey',
+            'setvalue'	=> '',
+            'setmodule'	=> 1
+        ),
+        66	=> array(
+            'setname'	=> 'forumTagContent',
+            'setvalue'	=> '0',
+            'setmodule'	=> 20
+        ),
+        68	=> array(
+            'setname'	=> 'dataUseModule',
+            'setvalue'	=> '1',
+            'setmodule'	=> 48
+        ),
+        69	=> array(
+            'setname'	=> 'frontendEditingStatus',
+            'setvalue'	=> 'off',
+            'setmodule'	=> 1
+        ),
+        71	=> array(
+            'setname'	=> 'coreListProtectedPages',
+            'setvalue'	=> 'on',
+            'setmodule'	=> 1
+        ),
+        72	=> array(
+            'setname'	=> 'useKnowledgePlaceholders',
+            'setvalue'	=> '1',
+            'setmodule'	=> 56
+        ),
+        73	=> array(
+            'setname'	=> 'advancedUploadFrontend',
+            'setvalue'	=> 'off',
+            'setmodule'	=> 52
+        ),
+        74	=> array(
+            'setname'	=> 'advancedUploadBackend',
+            'setvalue'	=> 'on',
+            'setmodule'	=> 52
+        )
+    );
 
     $arrSettingsByName = array();
     foreach ($arrSettings as $setid => $data) {
         $arrSettingsByName[$data['setname']] = $setid;
     }
 
-	// change googleSitemapStatus to xmlSitemapStatus
+
+    // change googleSitemapStatus to xmlSitemapStatus
     $query = "SELECT 1 FROM `".DBPREFIX."settings` WHERE `setname`='googleSitemapStatus'";
     $objResult = $objDatabase->SelectLimit($query, 1);
     if ($objResult) {
@@ -245,6 +246,43 @@ function _updateSettings()
     $query = "UPDATE `".DBPREFIX."settings` SET `setmodule`=1 WHERE `setmodule`=0";
     if ($objDatabase->Execute($query) === false) {
         return _databaseError($query, $objDatabase->ErrorMsg());
+    }
+
+
+    //timezone (Contrexx 3.0.1)
+    $arrTimezoneIdentifiers = timezone_identifiers_list();
+    if (isset($_POST['timezone']) && array_key_exists($_POST['timezone'], $arrTimezoneIdentifiers)) {
+        $_SESSION['contrexx_update']['update']['timezone'] = $_POST['timezone'];
+    }
+    if (isset($_SESSION['contrexx_update']['update']['timezone']) && array_key_exists($_SESSION['contrexx_update']['update']['timezone'], $arrTimezoneIdentifiers)) {
+        try {
+            \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = "'.$arrTimezoneIdentifiers[$_SESSION['contrexx_update']['update']['timezone']].'" WHERE `setname` = "timezone"');
+        } catch (UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    } else {
+        if (($defaultTimezoneId = array_search(@date_default_timezone_get(), $arrTimezoneIdentifiers)) && !empty($defaultTimezoneId)) {
+            $selected = $defaultTimezoneId;
+        } else {
+            $selected = -1;
+        }
+
+        $options = '<option value="-1"'.($selected == -1 ? ' selected="selected"' : '').'>'.$_CORELANG['TXT_PLEASE_SELECT'].'</option>';
+        foreach ($arrTimezoneIdentifiers as $id => $name) {
+            $dateTimeZone = new DateTimeZone($name);
+            $dateTime = new DateTime('now', $dateTimeZone);
+            $timeOffset = $dateTimeZone->getOffset($dateTime);
+            $sign = $timeOffset < 0 ? '-' : '+';
+            $gmt = 'GMT '.$sign.gmdate('g:i', $timeOffset);
+            $options .= '<option value="'.$id.'"'.($selected == $id ? ' selected="selected"' : '').'>'.$name.' ('.$gmt.')'.'</option>';
+        }
+
+        $objUpdate->arrStatusMsg['title'] = $_CORELANG['TXT_TIMEZONE'];
+        $objUpdate->arrStatusMsg['msg'] = array('
+            '.$_CORELANG['TXT_TIMEZONE_INTRODUCTION'].' <select name="timezone">'.$options.'</select>
+        ');
+        $objUpdate->arrStatusMsg['button'] = '<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />';
+        return false;
     }
 
 

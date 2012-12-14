@@ -92,8 +92,6 @@ class Contrexx_Update
         
         if (isset($_POST['updateBack'])) {
             $this->setPreviousStep();
-        } else if ($_SESSION['contrexx_update']['step'] == 3) {
-            $this->setPreviousStep();
         }
     }
 
@@ -882,6 +880,17 @@ class Contrexx_Update
             }
             unset($objDb);
             return false;
+        }
+
+        if (array_search(UPDATE_TIMEZONE, timezone_identifiers_list()) && !$objDb->Execute('SET TIME_ZONE="'.UPDATE_TIMEZONE.'"')) {
+            //calculate and set the timezone offset if the mysql timezone tables aren't loaded
+            $objDateTimeZone = new DateTimeZone(UPDATE_TIMEZONE);
+            $objDateTime = new DateTime('now', $objDateTimeZone);
+            $offset = $objDateTimeZone->getOffset($objDateTime);
+            $offsetHours = round(abs($offset)/3600); 
+            $offsetMinutes = round((abs($offset)-$offsetHours*3600) / 60); 
+            $offsetString = ($offset > 0 ? '+' : '-').($offsetHours < 10 ? '0' : '').$offsetHours.':'.($offsetMinutes < 10 ? '0' : '').$offsetMinutes;
+            $objDb->Execute('SET TIME_ZONE="'.$offsetString.'"');
         }
 
         if (empty($_DBCONFIG['charset']) || $objDb->Execute('SET CHARACTER SET '.$_DBCONFIG['charset']) && $objDb) {

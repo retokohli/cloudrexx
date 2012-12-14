@@ -14,7 +14,8 @@
 require_once dirname(__FILE__).'/lib/DBG.php';
 \DBG::deactivate();
 
-define('UPDATE_PATH', dirname(__FILE__));
+// Update configuration
+require_once(dirname(__FILE__).'/config/configuration.php');
 
 // Config files
 require_once(dirname(UPDATE_PATH) . '/config/settings.php');
@@ -33,7 +34,6 @@ require_once(ASCMS_CORE_PATH . '/Init.class.php');
 // Update files
 require_once(UPDATE_PATH . '/Contrexx_Update.class.php');
 require_once(UPDATE_PATH . '/lib/FRAMEWORK/UpdateUtil.class.php');
-require_once(UPDATE_PATH . '/config/configuration.php');
 
 require_once(UPDATE_PATH . '/lib/Env.class.php');
 \Env::set('ftpConfig', $_FTPCONFIG);

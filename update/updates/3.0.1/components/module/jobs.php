@@ -99,7 +99,17 @@ function _jobsUpdate() {
     }
 
 
-	// Everything went fine. Return without any errors.
+    //Contrexx 3.0.1 (timezone)
+    try {
+        \Cx\Lib\UpdateUtil::sql('
+            ALTER TABLE `'.DBPREFIX.'module_jobs`
+            CHANGE `startdate` `startdate` TIMESTAMP NOT NULL DEFAULT "0000-00-00 00:00:00",
+            CHANGE `enddate` `enddate` TIMESTAMP NOT NULL DEFAULT "0000-00-00 00:00:00"
+        ');
+    } catch (UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
+
     return true;
 }
-
