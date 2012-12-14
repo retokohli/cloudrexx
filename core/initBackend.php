@@ -23,6 +23,12 @@ if (extension_loaded('apc')) {
     }
 }
 
+// Disable eAccelerator if active
+if (extension_loaded('eaccelerator')) {
+    ini_set('eaccelerator.enable', 0);
+    ini_set('eaccelerator.optimizer', 0);
+}
+
 // Try to set required memory_limit if not enough
 preg_match('/^\d+/', ini_get('memory_limit'), $memoryLimit);
 if ($apcEnabled) {
