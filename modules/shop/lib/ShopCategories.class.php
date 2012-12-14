@@ -770,6 +770,7 @@ class ShopCategories
     {
         global $objDatabase;
 
+        $parent_id = max(0, intval($parent_id));
         $objResult = $objDatabase->Execute("
            SELECT `id`
              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_categories`
@@ -777,6 +778,7 @@ class ShopCategories
             ($active ? ' AND `active`=1' : '')."
             ORDER BY `ord` ASC",
             array($parent_id));
+        // Query flags: OR flags LIKE '%parent:$parent_id%'
         if (!$objResult) return ShopCategory::errorHandler();
         $arrChildShopCategoryId = array();
         while (!$objResult->EOF) {
