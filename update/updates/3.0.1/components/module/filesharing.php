@@ -2,8 +2,6 @@
 
 function _filesharingUpdate()
 {
-    global $objDatabase;
-
     try {
 
         //Contrexx 3.0.1 (initial creation)

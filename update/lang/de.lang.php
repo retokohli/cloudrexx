@@ -76,4 +76,7 @@ $_CORELANG = array(
     'TXT_UPDATE_VERSION_GD'                      => 'GD >= %s',
     'TXT_UPDATE_YES'                             => 'Ja',
     'TXT_UPDATE_NO'                              => 'Nein',
+    'TXT_TIMEZONE'                               => 'Zeitzone',
+    'TXT_TIMEZONE_INTRODUCTION'                  => 'Bitte wählen Sie Ihre Zeitzone aus:',
+    'TXT_PLEASE_SELECT'                          => '--- Bitte wählen ---',
 );

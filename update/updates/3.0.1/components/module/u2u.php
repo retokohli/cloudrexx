@@ -79,8 +79,6 @@ function _u2uUpdate()
     }
 
 
-
-
 	/************************************************
 	* EXTENSION:	Initial adding of the           *
     *               settings values                 *
@@ -109,6 +107,15 @@ function _u2uUpdate()
             return _databaseError($query, $objDatabase->ErrorMsg());
         }
     }
+
+
+    //Contrexx 3.0.1 (timezone)
+    try {
+        \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_u2u_sent_messages` CHANGE `date_time` `date_time` TIMESTAMP NOT NULL DEFAULT "0000-00-00 00:00:00"');
+    } catch (UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
 
     return true;
 }
