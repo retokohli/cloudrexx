@@ -267,6 +267,12 @@ table.adminlist td {
     padding-bottom: 0;
 }
 
+.td-status {
+    float: left;
+    width: 50px;
+    padding-right: 10px !important;
+}
+
 /* icons */
 .icon-info {
     float: none;

@@ -91,9 +91,6 @@ class Contrexx_Update
         }
         
         if (isset($_POST['updateBack'])) {
-            if ($_SESSION['contrexx_update']['step'] == 2) {
-                $this->setPreviousStep();
-            }
             $this->setPreviousStep();
         } else if ($_SESSION['contrexx_update']['step'] == 3) {
             $this->setPreviousStep();
@@ -222,14 +219,6 @@ class Contrexx_Update
             $this->objTemplate->setVariable('TXT_UPDATE_NO_VERSION_TO_UPGRADE_TO', $_CORELANG['TXT_UPDATE_NO_VERSION_TO_UPGRADE_TO']);
             $this->objTemplate->parse('updateNoVersions');
             $this->objTemplate->hideBlock('updateVersions');
-            
-            $this->objTemplate->parse('overview');
-            
-            if ($this->ajax) {
-                $this->html['content'] = $this->objTemplate->get('overview');
-            }
-            
-            $this->setNavigation('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="updateNext" />');
         }
         
         $this->objTemplate->parse('overview');
@@ -245,8 +234,9 @@ class Contrexx_Update
             $arrVersions     = $this->getAvailabeVersions();
             $version         = $_SESSION['contrexx_update']['version'];
             $arrUpdate       = $arrVersions[$version];
-            $arrRequirements = $this->checkRequirements($arrUpdate);
-            if ($arrRequirements === true) {
+            $arrRequirements = $this->getRequirements($arrUpdate);
+            
+            if (isset($_POST['skipRequirements']) && !$arrRequirements['incompatible']) {
                 $this->setNextStep();
                 $this->showStep();
             } else {
@@ -263,57 +253,60 @@ class Contrexx_Update
         global $_CORELANG;
         
         $this->objTemplate->addBlockfile('CONTENT', 'requirements', 'requirements.html');
+        $this->objTemplate->setVariable(array(
+            'TXT_UPDATE_SYSTEM_REQUIREMENTS' => $_CORELANG['TXT_UPDATE_SYSTEM_REQUIREMENTS'],
+            'TXT_UPDATE_VERSIONS'            => $_CORELANG['TXT_UPDATE_VERSIONS'],
+            'TXT_UPDATE_PHP_EXTENSIONS'      => $_CORELANG['TXT_UPDATE_PHP_EXTENSIONS'],
+            'TXT_UPDATE_PHP_CONFIGURATIONS'  => $_CORELANG['TXT_UPDATE_PHP_CONFIGURATIONS'],
+        ));
         
-        if (!empty($arrRequirements['serverNotices'])) {
+        if (!empty($arrRequirements['versions'])) {
             $serverNotices = '';
-            foreach ($arrRequirements['serverNotices'] as $serverNotice) {
-                $serverNotices .= '<li>' . $serverNotice . '</li>';
+            foreach ($arrRequirements['versions'] as $arrVersion) {
+                $this->objTemplate->setVariable(array(
+                    'UPDATE_VERSION_CLASS' => $arrVersion['class'],
+                    'UPDATE_VERSION_NAME'  => $arrVersion['name'],
+                    'UPDATE_VERSION_VALUE' => $arrVersion['value'],
+                ));
+                $this->objTemplate->parse('version');
             }
-            $this->objTemplate->setVariable(array(
-                'TXT_UPDATE_NOTICES' => $_CORELANG['TXT_UPDATE_NOTICES'],
-                'UPDATE_NOTICES'     => $serverNotices,
-            ));
-            $this->objTemplate->parse('serverNotices');
         } else {
-            $this->objTemplate->hideBlock('serverNotices');
+            $this->objTemplate->hideBlock('versions');
         }
         
-        if (isset($arrRequirements['versionRequirements']) && count($arrRequirements['versionRequirements'])) {
-            $versionRequirements = '';
-            foreach ($arrRequirements['versionRequirements'] as $versionRequirement) {
-                $versionRequirements .= '<li>' . $versionRequirement . '</li>';
+        if (isset($arrRequirements['phpExtensions']) && count($arrRequirements['phpExtensions'])) {
+            $phpExtensions = '';
+            foreach ($arrRequirements['phpExtensions'] as $arrPhpExtension) {
+                $this->objTemplate->setVariable(array(
+                    'UPDATE_PHP_EXTENSION_CLASS' => $arrPhpExtension['class'],
+                    'UPDATE_PHP_EXTENSION_NAME'  => $arrPhpExtension['name'],
+                    'UPDATE_PHP_EXTENSION_VALUE' => $arrPhpExtension['value'],
+                ));
+                $this->objTemplate->parse('phpExtension');
             }
-            
-            $this->objTemplate->setVariable(array(
-                'TXT_UPDATE_VERSION_REQUIREMENTS_NOT_PASSED' => $_CORELANG['TXT_UPDATE_VERSION_REQUIREMENTS_NOT_PASSED'],
-                'TXT_UPDATE_VERSION_REQUIREMENTS'            => $_CORELANG['TXT_UPDATE_VERSION_REQUIREMENTS'],
-                'UPDATE_VERSION_REQUIREMENTS'                => $versionRequirements,
-            ));
-            $this->objTemplate->parse('versionRequirements');
         } else {
-            $this->objTemplate->hideBlock('versionRequirements');
+            $this->objTemplate->hideBlock('phpExtension');
         }
         
-        if (!empty($arrRequirements['serverRequirements'])) {
+        if (!empty($arrRequirements['phpConfigurations'])) {
             $serverRequirements = '';
-            foreach ($arrRequirements['serverRequirements'] as $serverRequirement) {
-                $serverRequirements .= '<li>' . $serverRequirement . '</li>';
+            foreach ($arrRequirements['phpConfigurations'] as $arrPhpConfiguration) {
+                $this->objTemplate->setVariable(array(
+                    'UPDATE_PHP_CONFIGURATION_CLASS' => $arrPhpConfiguration['class'],
+                    'UPDATE_PHP_CONFIGURATION_NAME'  => $arrPhpConfiguration['name'],
+                    'UPDATE_PHP_CONFIGURATION_VALUE' => $arrPhpConfiguration['value'],
+                ));
+                $this->objTemplate->parse('phpConfiguration');
             }
-            $this->objTemplate->setVariable(array(
-                'TXT_UPDATE_SERVER_REQUIREMENTS_NOT_PASSED' => $_CORELANG['TXT_UPDATE_SERVER_REQUIREMENTS_NOT_PASSED'],
-                'TXT_UPDATE_SERVER_REQUIREMENTS'            => $_CORELANG['TXT_UPDATE_SERVER_REQUIREMENTS'],
-                'UPDATE_SERVER_REQUIREMENTS'                => $serverRequirements,
-            ));
-            $this->objTemplate->parse('serverRequirements');
         } else {
-            $this->objTemplate->hideBlock('serverRequirements');
+            $this->objTemplate->hideBlock('phpConfigurations');
         }
         
         $this->objTemplate->parse('requirements');
         if ($this->ajax) {
             $this->html['content'] = $this->objTemplate->get('requirements');
         }
-        $this->setNavigation('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_RECHECK'].'" name="updateNext" />');
+        $this->setNavigation('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="skipRequirements" />');
     }
 
     private function showUpdate()
@@ -488,54 +481,96 @@ class Contrexx_Update
         return $arrVersions;
     }
     
-    private function checkRequirements($arrUpdate)
+    private function getRequirements($arrUpdate)
     {
         global $_CONFIG, $_CORELANG;
         
-        $incompatible           = false;
-        $arrServerNotices       = array();
-        $arrServerRequirements  = array();
-        $arrVersionRequirements = array();
-        
-        if (!$this->checkAPC()) {
-            $arrServerNotices[] = $_CORELANG['TXT_UPDATE_APC_NOTICE'] . ' <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">' . $_CORELANG['TXT_UPDATE_APC_TOOLTIP'] . '</span>';
-        }
-        
-        if (!$this->checkFTPSupport()) {
-            $incompatible = true;
-            $arrServerRequirements[] = $_CORELANG['TXT_UPDATE_FTP_SUPPORT_REQUIRED'] . ' <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">' . $_CORELANG['TXT_UPDATE_FTP_SUPPORT_TOOLTIP'] . '</span>';
-        }
-        if ($this->getWebserverSoftware() == 'apache' && !$this->checkModRewrite()) {
-            $incompatible = true;
-            $arrServerRequirements[] = $_CORELANG['TXT_UPDATE_MOD_REWRITE_REQUIRED'];
-        }
-        if ($this->getWebserverSoftware() == 'iis' && !$this->checkIISUrlRewriteModule()) {
-            $incompatible = true;
-            $arrServerRequirements[] = $_CORELANG['TXT_UPDATE_IIS_URL_REWRITE_MODULE_REQUIRED'];
-        }
+        $failed               = false;
+        $arrVersions          = array();
+        $arrPhpExtensions     = array();
+        $arrPhpConfigurations = array();
         
         if (!$this->checkPHPVersion($arrUpdate['cmsRequiredPHP'])) {
-            $incompatible = true;
-            $arrVersionRequirements[] = 'PHP ' . $arrUpdate['cmsRequiredPHP'];
-        }
-        if (!$this->checkMySQLVersion($arrUpdate['cmsRequiredMySQL'])) {
-            $incompatible = true;
-            $arrVersionRequirements[] = 'MySQL ' . $arrUpdate['cmsRequiredMySQL'];
-        }
-        if (!$this->checkGDVersion($arrUpdate['cmsRequiredGD'])) {
-            $incompatible = true;
-            $arrVersionRequirements[] = 'GD ' . $arrUpdate['cmsRequiredGD'];
-        }
-        
-        if ($incompatible) {
-            return array(
-                'serverRequirements'  => $arrServerRequirements,
-                'serverNotices'       => $arrServerNotices,
-                'versionRequirements' => $arrVersionRequirements,
-            );
+            $failed = true;
+            $arrVersions['php']['class'] = 'failed';
         } else {
-            return true;
+            $arrVersions['php']['class'] = 'successful';
         }
+        $arrVersions['php']['name']  = sprintf($_CORELANG['TXT_UPDATE_VERSION_PHP'], $arrUpdate['cmsRequiredPHP']);
+        $arrVersions['php']['value'] = phpversion();
+        
+        if (!$this->checkMySQLVersion($arrUpdate['cmsRequiredMySQL'])) {
+            $failed = true;
+            $arrVersions['mysql']['class'] = "failed";
+        } else {
+            $arrVersions['mysql']['class'] = 'successful';
+        }
+        $arrVersions['mysql']['name']  = sprintf($_CORELANG['TXT_UPDATE_VERSION_MYSQL'], $arrUpdate['cmsRequiredMySQL']);
+        $arrVersions['mysql']['value'] = $this->getMySQLServerVersion();
+        
+        if (!$this->checkGDVersion($arrUpdate['cmsRequiredGD'])) {
+            $failed = true;
+            $arrVersions['gd']['class'] = 'failed';
+        } else {
+            $arrVersions['gd']['class'] = 'successful';
+        }
+        $arrVersions['gd']['name']  = sprintf($_CORELANG['TXT_UPDATE_VERSION_GD'], $arrUpdate['cmsRequiredGD']);
+        $arrVersions['gd']['value'] = $this->getGDVersion();
+        
+        if (!$this->checkFTPSupport()) {
+            $failed = true;
+            $arrPhpExtensions['ftp']['class'] = 'failed';
+            $arrPhpExtensions['ftp']['value'] = $_CORELANG['TXT_UPDATE_NO'];
+        } else {
+            $arrPhpExtensions['ftp']['class'] = 'successful';
+            $arrPhpExtensions['ftp']['value'] = $_CORELANG['TXT_UPDATE_YES'];
+        }
+        $arrPhpExtensions['ftp']['name']  = $_CORELANG['TXT_UPDATE_FTP_SUPPORT'] . ' <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">' . $_CORELANG['TXT_UPDATE_FTP_SUPPORT_TOOLTIP'] . '</span>';
+        
+        if ($this->getWebserverSoftware() == 'apache' && !$this->checkModRewrite()) {
+            $failed = true;
+            $arrPhpExtensions['modRewrite']['class'] = 'failed';
+            $arrPhpExtensions['modRewrite']['value'] = $_CORELANG['TXT_UPDATE_NO'];
+        } else {
+            $arrPhpExtensions['modRewrite']['class'] = 'successful';
+            $arrPhpExtensions['modRewrite']['value'] = $_CORELANG['TXT_UPDATE_YES'];
+        }
+        $arrPhpExtensions['modRewrite']['name'] = $_CORELANG['TXT_UPDATE_MOD_REWRITE'];
+        
+        if ($this->getWebserverSoftware() == 'iis' && !$this->checkIISUrlRewriteModule()) {
+            $failed = true;
+            $arrPhpExtensions['iisUrlRewriteModule']['class'] = 'failed';
+            $arrPhpExtensions['iisUrlRewriteModule']['value'] = $_CORELANG['TXT_UPDATE_NO'];
+        } else {
+            $arrPhpExtensions['iisUrlRewriteModule']['class'] = 'successful';
+            $arrPhpExtensions['iisUrlRewriteModule']['value'] = $_CORELANG['TXT_UPDATE_YES'];
+        }
+        $arrPhpExtensions['iisUrlRewriteModule']['name'] = $_CORELANG['TXT_UPDATE_IIS_URL_REWRITE_MODULE'];
+        
+        if (!$this->checkAPC()) {
+            $arrPhpExtensions['apc']['class'] = 'warning';
+            $arrPhpExtensions['apc']['value'] = $_CORELANG['TXT_UPDATE_NO'];
+        } else {
+            $arrPhpExtensions['apc']['class'] = 'successful';
+            $arrPhpExtensions['apc']['value'] = $_CORELANG['TXT_UPDATE_YES'];
+        }
+        $arrPhpExtensions['apc']['name'] = $_CORELANG['TXT_UPDATE_APC'] . ' <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">' . $_CORELANG['TXT_UPDATE_APC_TOOLTIP'] . '</span>';
+        
+        if (!$this->checkMemoryLimit()) {
+            $failed = true;
+            $arrPhpConfigurations['memoryLimit']['class'] = 'failed';
+        } else {
+            $arrPhpConfigurations['memoryLimit']['class'] = 'successful';
+        }
+        $arrPhpConfigurations['memoryLimit']['name'] = 'memory_limit (>= ' . $this->getRequiredMemoryLimit() . 'M)';
+        $arrPhpConfigurations['memoryLimit']['value'] = $this->getMemoryLimit('string');
+        
+        return array(
+            'incompatible'      => $failed,
+            'versions'          => $arrVersions,
+            'phpExtensions'     => $arrPhpExtensions,
+            'phpConfigurations' => $arrPhpConfigurations,
+        );
     }
     
     private function getGDVersion()
@@ -643,6 +678,52 @@ class Contrexx_Update
         }
         
         return $apcEnabled;
+    }
+    
+    private function checkMemoryLimit()
+    {
+        if ($this->getMemoryLimit() < $this->getRequiredMemoryLimit()) {
+            $this->setMinimalMemoryLimit();
+            if ($this->getMemoryLimit() < $this->getRequiredMemoryLimit()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private function getMemoryLimit($type = '')
+    {
+        $memoryLimit = ini_get('memory_limit');
+        if ($type != 'string') {
+            preg_match('/^\d+/', $memoryLimit, $memoryLimitInt);
+            $memoryLimit = $memoryLimitInt[0];
+        }
+        return $memoryLimit;
+    }
+    
+    private function getRequiredMemoryLimit()
+    {
+        if ($this->checkAPC()) {
+            $requiredMemoryLimit = 32;
+        } else {
+            $requiredMemoryLimit = 48;
+        }
+        return $requiredMemoryLimit;
+    }
+    
+    private function setMinimalMemoryLimit()
+    {
+        $memoryLimit = $this->getMemoryLimit();
+        
+        if ($this->checkAPC()) {
+            if ($memoryLimit < 32) {
+                ini_set('memory_limit', '32M');
+            }
+        } else {
+            if ($memoryLimit < 48) {
+                ini_set('memory_limit', '48M');
+            }
+        }
     }
     
     /**
