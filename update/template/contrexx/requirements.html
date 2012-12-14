@@ -1,54 +1,51 @@
 <div id="content-overview">
-    <!-- BEGIN versionRequirements -->
-    <div id="version-requirements">
-        <table class="adminlist">
-            <tr>
-                <th>{TXT_UPDATE_VERSION_REQUIREMENTS_NOT_PASSED}</th>
-            </tr>
-            <tr>
-                <td>
-                    <ul class="list">
-                        <li>{TXT_UPDATE_VERSION_REQUIREMENTS}</li>
-                        <ul>
-                            {UPDATE_VERSION_REQUIREMENTS}
-                        </ul>
-                    </ul>
-                </td>
-            </tr>
-        </table>
-    </div>
-    <!-- END versionRequirements -->
+    <h1 class="first">{TXT_UPDATE_SYSTEM_REQUIREMENTS}</h1>
     
-    <!-- BEGIN serverRequirements -->
-    <div id="server-requirements">
+    <!-- BEGIN versions -->
+    <div id="versions">
         <table class="adminlist">
             <tr>
-                <th>{TXT_UPDATE_SERVER_REQUIREMENTS_NOT_PASSED}</th>
+                <th colspan="2">{TXT_UPDATE_VERSIONS}</th>
             </tr>
+            <!-- BEGIN version -->
             <tr>
-                <td>
-                    <ul class="list">
-                        <li>{TXT_UPDATE_SERVER_REQUIREMENTS}</li>
-                        <ul>
-                            {UPDATE_SERVER_REQUIREMENTS}
-                        </ul>
-                    </ul>
-                </td>
+                <td>{UPDATE_VERSION_NAME}</td>
+                <td class="{UPDATE_VERSION_CLASS} td-status">{UPDATE_VERSION_VALUE}</td>
             </tr>
+            <!-- END version -->
         </table>
     </div>
-    <!-- END serverRequirements -->
+    <!-- END versions -->
     
-    <!-- BEGIN serverNotices -->
-    <div id="server-notices">
+    <!-- BEGIN phpExtensions -->
+    <div id="php-extensions">
         <table class="adminlist">
             <tr>
-                <th>{TXT_UPDATE_NOTICES}</th>
+                <th colspan="2">{TXT_UPDATE_PHP_EXTENSIONS}</th>
             </tr>
+            <!-- BEGIN phpExtension -->
             <tr>
-                <td><ul class="list">{UPDATE_NOTICES}</ul></td>
+                <td>{UPDATE_PHP_EXTENSION_NAME}</td>
+                <td class="{UPDATE_PHP_EXTENSION_CLASS} td-status">{UPDATE_PHP_EXTENSION_VALUE}</td>
             </tr>
+            <!-- END phpExtension -->
         </table>
     </div>
-    <!-- END serverNotices -->
+    <!-- END phpExtensions -->
+    
+    <!-- BEGIN phpConfigurations -->
+    <div id="php-configuration">
+        <table class="adminlist">
+            <tr>
+                <th colspan="2">{TXT_UPDATE_PHP_CONFIGURATIONS}</th>
+            </tr>
+            <!-- BEGIN phpConfiguration -->
+            <tr>
+                <td>{UPDATE_PHP_CONFIGURATION_NAME}</td>
+                <td class="{UPDATE_PHP_CONFIGURATION_CLASS} td-status">{UPDATE_PHP_CONFIGURATION_VALUE}</td>
+            </tr>
+            <!-- END phpConfiguration -->
+        </table>
+    </div>
+    <!-- END phpConfigurations -->
 </div>
