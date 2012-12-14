@@ -363,7 +363,8 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
         return array(
             'SHOP_COMPANY' => SettingDb::getValue('company'),
             'SHOP_HOMEPAGE' => Cx\Core\Routing\Url::fromModuleAndCmd(
-                'shop', '', FRONTEND_LANG_ID),
+                'shop', '', FRONTEND_LANG_ID)->toString(),
         );
     }
+
 }

@@ -1266,7 +1266,6 @@ class Product
      *                                      Defaults to false.
      * @return  double                      The price converted to the active
      *                                      currency
-     * @global  array     $_ARRAYLANG       Language array
      * @author    Reto Kohli <reto.kohli@comvation.com>
      */
     function get_custom_price($objCustomer=null, $price_options=0, $count=1,

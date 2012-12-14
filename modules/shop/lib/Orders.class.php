@@ -402,10 +402,14 @@ if (!$limit) {
                     ? $company
                     : $objOrder->billing_lastname().' '.
                       $objOrder->billing_firstname());
-                // Determine end date
-            // PHP5! $tipNote = (strlen($objResult['note'])>0) ? php_strip_whitespace($objResult['note']) : '';
             $tipNote = $objOrder->note();
-            $tipLink = !empty($tipNote) ? '<span class="tooltip-trigger icon-comment"></span><span class="tooltip-message">'.preg_replace('/[\n\r]+/', '<br />', nl2br(contrexx_raw2xhtml($tipNote))).'</span>': '';
+            $tipLink = (empty($tipNote) 
+                ? ''
+                : '<span class="tooltip-trigger icon-comment"></span>'.
+                  '<span class="tooltip-message">'.
+                  preg_replace('/[\n\r]+/', '<br />', 
+                      nl2br(contrexx_raw2xhtml($tipNote))).
+                  '</span>');
             $order_id = $order_id;
             $status = $objOrder->status();
             $objTemplate->setVariable(array(
@@ -925,7 +929,6 @@ if (!$limit) {
             return Order::STATUS_CANCELLED;
         }
         $status = $objResult->fields['status'];
-
         // Never change a non-pending status!
         // Whether a payment was successful or not, the status must be
         // left alone.
@@ -937,7 +940,6 @@ if (!$limit) {
             // Leave it as it is.
             return $status;
         }
-
         // Determine and verify the payment handler
         $payment_id = $objResult->fields['payment_id'];
 //if (!$payment_id) DBG::log("update_status($order_id, $newOrderStatus): Failed to find Payment ID for Order ID $order_id");
@@ -950,7 +952,6 @@ if (!$limit) {
 //DBG::log("update_status($order_id, $newOrderStatus): Mismatching Handlers: Order $processorName, Request ".$_GET['handler']);
             return Order::STATUS_CANCELLED;
         }
-
         // Only if the optional new order status argument is zero,
         // determine the new status automatically.
         if ($newOrderStatus == Order::STATUS_PENDING) {
@@ -1180,21 +1181,6 @@ if (!$limit) {
                 )),
             );
         }
-        $coupon_code = '';
-        $objCoupon = null;
-        // Pick the Coupon, if any
-        $objCoupon = Coupon::getByOrderId($order_id);
-        if ($objCoupon) {
-            $coupon_code = $objCoupon->code();
-            $arrSubstitution['DISCOUNT_COUPON'][] = array(
-                'DISCOUNT_COUPON_CODE' => sprintf('%-40s',
-                    $coupon_code),
-                // Note that the price is stored with a negative sign already
-                'DISCOUNT_COUPON_AMOUNT' => sprintf('% 9.2f',
-                    $objCoupon->discount_amount()),
-            );
-        }
-
         // Pick the order items from the database
         $query = "
             SELECT `id`, `product_id`, `product_name`, `price`, `quantity`
@@ -1204,69 +1190,74 @@ if (!$limit) {
         if (!$objResultItem || $objResultItem->EOF) {
             Message::warning($_ARRAYLANG['TXT_SHOP_ORDER_WARNING_NO_ITEM']);
         }
-        // Deduct Order discounts for Coupons from each Product price
-        $objCoupon = Coupon::available(
-            $coupon_code, $arrSubstitution['ORDER_SUM'], $customer_id,
-            0, $payment_id);
+        // Deduct Coupon discounts, either from each Product price, or
+        // from the items total.  Mind that the Coupon has already been
+        // stored with the Order, but not redeemed yet.  This is done
+        // in this method, but only if $create_accounts is true.
+        $coupon_code = NULL;
 //        $discount_amount = 0;
-        $discount_rate   = 0;
-        if ($objCoupon) {
-            $coupon_code = $objCoupon->code();
-            if ($objCoupon->discount_rate())
-                $discount_rate = $objCoupon->discount_rate();
+        $discount_rate = 0;
+        $objCouponOrder = Coupon::getByOrderId($order_id);
+        if ($objCouponOrder) {
+            $coupon_code = $objCouponOrder->code();
+            $objCouponOrder = Coupon::available(
+                $objCouponOrder->code(), $arrSubstitution['ORDER_SUM'],
+                $customer_id, 0, $payment_id);
+//DBG::log("Orders::getSubstitutionArray(): Found global Coupon: ".var_export($objCouponOrder, true));
+            if ($objCouponOrder) {
+                // Valid global Coupon
+                if ($objCouponOrder->discount_rate())
+                    $discount_rate = $objCouponOrder->discount_rate();
 //            if ($objCoupon->discount_amount())
 //                $discount_amount = $objCoupon->discount_amount();
-//DBG::log("Orders::getSubstitutionArray(): Found Coupon; rate $discount_rate, amount $discount_amount");
+//DBG::log("Orders::getSubstitutionArray(): Coupon rate $discount_rate, amount $discount_amount");
+            }
         }
-
         $orderItemCount = 0;
-        $priceTotalItems = 0;
+        $total_item_price = 0;
+        $total_discount = 0;
         while (!$objResultItem->EOF) {
             $orderItemId = $objResultItem->fields['id'];
             $product_id = $objResultItem->fields['product_id'];
-//DBG::log("Item: Product ID $product_id");
+//DBG::log("getSubstitutionArray(): Item: Product ID $product_id");
             $product_name = substr($objResultItem->fields['product_name'], 0, 40);
             $item_price = $objResultItem->fields['price'];
 
-// yantramatte
-            // Deduct Product discounts for Coupons from this Product price,
-            // if applicable and no global Coupon is already in use
-            if (!$coupon_code) {
+            if ($objCouponOrder) {
                 $objCoupon = Coupon::available(
-                    $coupon_code, $arrSubstitution['ORDER_SUM'], $customer_id,
-                    $product_id, $payment_id);
+                    $objCouponOrder->code(), $arrSubstitution['ORDER_SUM'],
+                    $customer_id, $product_id, $payment_id);
                 if ($objCoupon) {
-                    $coupon_code = $objCoupon->code();
-                    if ($objCoupon->discount_rate())
-                        $item_price -= $item_price * ($objCoupon->discount_rate() / 100);
-//                    if ($objCoupon->discount_amount())
-//                        $discount_amount = $objCoupon->discount_amount();
+                    // Deduct the discount for this *product* Coupon from
+                    // this Product price
+                    if ($objCoupon->discount_rate()) {
+                        $total_discount =
+                            $objCoupon->getDiscountAmount($item_price);
+                    }
 //DBG::log("Orders::getSubstitutionArray(): Found Coupon; rate $discount_rate, amount $discount_amount");
+                } else {
+                    // Deduct global discount, by rate in percent *only*
+                    if ($discount_rate) {
+                        $total_discount =
+                            $objCouponOrder->getDiscountAmount($item_price);
+//DBG::log("Orders::getSubstitutionArray(): Discount rate $discount_rate%: $total_discount");
+                    }
                 }
             }
-// yantramatte
-            // Deduct global discount, by rate in percent *only*
-            if ($discount_rate) {
-                $item_price -= $item_price * ($discount_rate / 100);
-//DBG::log("Orders::getSubstitutionArray(): Deducted $discount_rate%: $item_price");
-            }
             $item_price = Currency::getCurrencyPrice($item_price);
-
             $quantity = $objResultItem->fields['quantity'];
-// Add individual VAT rates for Products
+// TODO: Add individual VAT rates for Products
 //            $orderItemVatPercent = $objResultItem->fields['vat_percent'];
-
             $objProduct = Product::getById($product_id);
             if (!$objProduct) {
                 $objResultItem->MoveNext();
-die("Product ID $product_id not found");
+//die("Product ID $product_id not found");
                 continue;
             }
             // Decrease the Product stock count,
             // applies to "real", shipped goods only
             $objProduct->decreaseStock($quantity);
             $product_code = $objProduct->code();
-
             // Pick the order items attributes from the database
             $query = "
                 SELECT `attribute_name`, `option_name`, `price`
@@ -1306,7 +1297,6 @@ die("Product ID $product_id not found");
                 }
 //                $str_options .= ']';
             }
-
             // Product details
             $arrProduct = array(
                 'PRODUCT_ID' => $product_id,
@@ -1317,9 +1307,9 @@ die("Product ID $product_id not found");
                 'PRODUCT_ITEM_PRICE' => sprintf('% 9.2f', $item_price),
                 'PRODUCT_TOTAL_PRICE' => sprintf('% 9.2f', $item_price*$quantity),
             );
+//DBG::log("getSubstitutionArray($order_id, $create_accounts): Adding article: ".var_export($arrProduct, true));
             $orderItemCount += $quantity;
-            $priceTotalItems += $item_price*$quantity;
-
+            $total_item_price += $item_price*$quantity;
             if ($create_accounts) {
                 // Add an account for every single instance of every Product
                 for ($instance = 1; $instance <= $quantity; ++$instance) {
@@ -1382,25 +1372,23 @@ die("Product ID $product_id not found");
                     if ($objProduct->distribution() == 'coupon') {
                         if (empty($arrProduct['COUPON_DATA']))
                             $arrProduct['COUPON_DATA'] = array();
-//DBG::log("Getting code");
+//DBG::log("getSubstitutionArray(): Getting code");
                         $code = Coupon::getNewCode();
-//DBG::log("Got code: $code, calling Coupon::addCode($code, 0, 0, 0, $item_price)");
+//DBG::log("getSubstitutionArray(): Got code: $code, calling Coupon::addCode($code, 0, 0, 0, $item_price)");
                         Coupon::addCode($code, 0, 0, 0, $item_price, 0, 0, 1e10);
                         $arrProduct['COUPON_DATA'][] = array(
                             'COUPON_CODE' => $code
                         );
                     }
                 }
-                // "Use" the Coupon, if possible for the Product
-                // Product Coupon
-                if ($coupon_code) {
-                    $objCoupon = Coupon::available($coupon_code,
+                // Redeem the *product* Coupon, if possible for the Product
+                if ($objCouponOrder) {
+                    $objCoupon = Coupon::available($objCouponOrder->code(),
                         $item_price*$quantity, $customer_id, $product_id,
                         $payment_id);
                     if ($objCoupon) {
                         $objCoupon->redeem($order_id, $customer_id,
                             $item_price*$quantity);
-                        $coupon_code = null;
                     }
                 }
             }
@@ -1410,27 +1398,40 @@ die("Product ID $product_id not found");
             $objResultItem->MoveNext();
         }
         $arrSubstitution['ORDER_ITEM_SUM'] =
-            sprintf('% 9.2f', $priceTotalItems);
+            sprintf('% 9.2f', $total_item_price);
         $arrSubstitution['ORDER_ITEM_COUNT'] = sprintf('% 4u', $orderItemCount);
-
-        // "Use" the Coupon, if possible for the Order
-        // Global Coupon
-        if ($coupon_code) {
-            $objCoupon = Coupon::available($coupon_code, $priceTotalItems,
-                $customer_id, null, $payment_id);
+        // Redeem the *global* Coupon, if possible for the Order
+        if ($objCouponOrder && $create_accounts) {
+            $objCoupon = Coupon::available($objCouponOrder->code(),
+                $total_item_price, $customer_id, null, $payment_id);
             if ($objCoupon) {
-                $objCoupon->redeem($order_id, self::$objCustomer->id(),
-                    $priceTotalItems);
+                $objCoupon->redeem($order_id, $customer_id,
+                    $total_item_price);
             }
+        }
+        // Fill in the Coupon block with proper discount and amount
+        if ($objCouponOrder) {
+//DBG::log("getSubstitutionArray(): Got Order Coupon ".$objCouponOrder->code());
+            $arrSubstitution['DISCOUNT_COUPON'][] = array(
+                'DISCOUNT_COUPON_CODE' => sprintf('%-40s',
+                    $objCouponOrder->code()),
+                'DISCOUNT_COUPON_AMOUNT' => sprintf('% 9.2f',
+                    -$objCoupon->getDiscountAmount($total_item_price)),
+            );
+        } else {
+//DBG::log("getSubstitutionArray(): No Coupon for Order ID $order_id");
         }
         Products::deactivate_soldout();
         if (Vat::isEnabled()) {
-            $arrSubstitution['TAX_TEXT'] =
-                sprintf('%-40s',
+// TODO: Update mail template!
+            $arrSubstitution['VAT'] = array(0 => array(
+                'VAT_TEXT' => sprintf('%-40s',
                     (Vat::isIncluded()
                         ? $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_INCL']
                         : $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_EXCL']
-                    ));
+                    )),
+                'VAT_PRICE' => $objOrder->vat_amount(),
+            ));
         }
         return $arrSubstitution;
     }
