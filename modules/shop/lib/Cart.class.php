@@ -580,13 +580,6 @@ class Cart
             Currency::formatPrice($total_price);
         $_SESSION['shop']['cart']['total_vat_amount'] =
             Currency::formatPrice($total_vat_amount);
-        // Round prices to 5 cents if the currency is CHF (*MUST* for Saferpay)
-        if (Currency::getActiveCurrencyCode() == 'CHF') {
-            $_SESSION['shop']['cart']['total_price'] =
-                Currency::formatPrice(round(20*$total_price)/20);
-            $_SESSION['shop']['cart']['total_vat_amount'] =
-                Currency::formatPrice(round(20*$total_vat_amount)/20);
-        }
         $_SESSION['shop']['cart']['total_items'] = $items;
         $_SESSION['shop']['cart']['total_weight'] = $total_weight; // In grams!
 //DBG::log("Cart::update(): Updated Cart (session): ".var_export($_SESSION['shop']['cart'], true));
@@ -870,7 +863,7 @@ die("Cart::view(): ERROR: No template");
             if (Vat::isIncluded()) {
                 $objTemplate->setVariable(array(
                     'SHOP_GRAND_TOTAL_EXCL_TAX' =>
-                        Currency::formatPrice($_SESSION['shop']['grand_total_price'] - $_SESSION['shop']['vat_price']).'&nbsp;'.
+                        Currency::formatPrice(self::get_price() - self::get_vat_amount()).'&nbsp;'.
                         Currency::getActiveCurrencySymbol(),
                 ));
             }
