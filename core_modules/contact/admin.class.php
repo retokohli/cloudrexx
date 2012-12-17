@@ -99,6 +99,7 @@ class ContactManager extends ContactLib
 
         $objUserAttribute = \FWUser::getFWUserObject()->objUser->objAttribute;
         $this->_arrUserAccountData = array(
+            'access_email'         => $_ARRAYLANG['TXT_CONTACT_EMAIL'],
             'access_gender'        => contrexx_raw2xhtml($objUserAttribute->getById('gender')->getName()),
             'access_title'         => contrexx_raw2xhtml($objUserAttribute->getById('title')->getName()),
             'access_firstname'     => contrexx_raw2xhtml($objUserAttribute->getById('firstname')->getName()),
