@@ -32,13 +32,13 @@ $cl->loadFile(ASCMS_CORE_PATH.'/Env.class.php');
 \Env::set('ClassLoader', $cl);
 \Env::set('ftpConfig', $_FTPCONFIG);
 
-require_once(ASCMS_FRAMEWORK_PATH.'/DBG/DBG.php');
-require_once(ASCMS_CORE_PATH.'/settings.class.php');
-require_once(ASCMS_CORE_PATH.'/API.php');
+$cl->loadFile(ASCMS_FRAMEWORK_PATH.'/DBG/DBG.php');
+$cl->loadFile(ASCMS_CORE_PATH.'/settings.class.php');
+$cl->loadFile(ASCMS_CORE_PATH.'/API.php');
 
-#require_once '../../../config/configuration.php';
-require_once ASCMS_DOCUMENT_ROOT.'/config/doctrine.php';
-require_once ASCMS_CORE_PATH.'/Tree.class.php';
+#$cl->loadFile('../../../config/configuration.php');
+$cl->loadFile(ASCMS_DOCUMENT_ROOT.'/config/doctrine.php');
+$cl->loadFile(ASCMS_CORE_PATH.'/Tree.class.php');
 //DBG::activate(DBG_ADODB_ERROR | DBG_PHP | DBG_LOG_FILE);
 
 $m = new Contrexx_Content_migration;
