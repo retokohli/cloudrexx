@@ -14,15 +14,35 @@ delete tc, tcn, tl from contrexx_content_navigation_history as tcn inner join co
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-require_once '../../../lib/FRAMEWORK/DBG/DBG.php';
-require_once '../../../config/configuration.php';
-require_once '../../../core/API.php';
-require_once '../../../config/doctrine.php';
+require_once(dirname(__FILE__).'/../../../config/settings.php');
+require_once(dirname(__FILE__).'/../../../config/configuration.php');
+require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');
+
+$customizing = null;
+if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
+// TODO: webinstaller check: has ASCMS_CUSTOMIZING_PATH already been defined in the installation process?
+    $customizing = ASCMS_CUSTOMIZING_PATH;
+}
+
+$cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $customizing);
+/**
+ * Environment repository
+ */
+$cl->loadFile(ASCMS_CORE_PATH.'/Env.class.php');
+\Env::set('ClassLoader', $cl);
+\Env::set('ftpConfig', $_FTPCONFIG);
+
+require_once(ASCMS_FRAMEWORK_PATH.'/DBG/DBG.php');
+require_once(ASCMS_CORE_PATH.'/settings.class.php');
+require_once(ASCMS_CORE_PATH.'/API.php');
+
+#require_once '../../../config/configuration.php';
+require_once ASCMS_DOCUMENT_ROOT.'/config/doctrine.php';
 require_once ASCMS_CORE_PATH.'/Tree.class.php';
-DBG::activate(DBG_ADODB_ERROR | DBG_PHP | DBG_LOG_FILE);
+//DBG::activate(DBG_ADODB_ERROR | DBG_PHP | DBG_LOG_FILE);
 
 $m = new Contrexx_Content_migration;
-$m->migrate();
+//$m->migrate();
 $m->pageGrouping();
 print 'DONE';
 
@@ -114,9 +134,9 @@ class Contrexx_Content_migration
             return;
         }
 
-        $objDatabase->Execute('TRUNCATE TABLE `contrexx_pages`');
-        $objDatabase->Execute('TRUNCATE TABLE `contrexx_nodes`');
-        $objDatabase->Execute('TRUNCATE TABLE `contrexx_ext_log_entries`');
+        $objDatabase->Execute('TRUNCATE TABLE `'.DBPREFIX.'content_pages`');
+        $objDatabase->Execute('TRUNCATE TABLE `'.DBPREFIX.'content_nodes`');
+        $objDatabase->Execute('TRUNCATE TABLE `'.DBPREFIX.'log_entry`');
 
         $this->nodeArr = array ();
 
@@ -743,4 +763,4 @@ CSS;
     }
 
 }
-?>
+
