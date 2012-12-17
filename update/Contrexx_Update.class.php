@@ -90,7 +90,7 @@ class Contrexx_Update
             $_SESSION['contrexx_update']['step'] = 0;
         }
         
-        if (isset($_POST['updateBack'])) {
+        if (isset($_POST['updateBack']) && !isset($_POST['updateNext'])) {
             $this->setPreviousStep();
         }
     }
@@ -158,6 +158,7 @@ class Contrexx_Update
     private function getOverview()
     {
         $arrVersions = $this->getAvailabeVersions();
+        $_SESSION['contrexx_update']['countAvailableVersions'] = count($arrVersions);
         
         if (count($arrVersions) === 1) {
             $updateVersion = key($arrVersions);
@@ -165,10 +166,6 @@ class Contrexx_Update
         }
         
         if (!empty($_POST['updateVersion'])) {
-            if (is_array($_POST['updateVersion'])) {
-                $_POST['updateVersion'] = reset($_POST['updateVersion']);
-            }
-            
             if (in_array($this->stripslashes($_POST['updateVersion']), array_keys($arrVersions))) {
                 $_SESSION['contrexx_update']['version'] = $this->stripslashes($_POST['updateVersion']);
                 $this->setNextStep();
@@ -221,7 +218,7 @@ class Contrexx_Update
         
         $this->objTemplate->parse('overview');
         if ($this->ajax) {
-            $this->content = $this->objTemplate->get('overview');
+            $this->html['content'] = $this->objTemplate->get('overview');
         }
         $this->setNavigation('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="updateNext" />');
     }
@@ -304,7 +301,13 @@ class Contrexx_Update
         if ($this->ajax) {
             $this->html['content'] = $this->objTemplate->get('requirements');
         }
-        $this->setNavigation('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="skipRequirements" />');
+        
+        $updateBack = '';
+        if (isset($_SESSION['contrexx_update']['countAvailableVersions']) && $_SESSION['contrexx_update']['countAvailableVersions'] > 1) {
+            $updateBack = '<input type="submit" value="'.$_CORELANG['TXT_UPDATE_BACK'].'" name="updateBack" onclick="try{doUpdate(true)} catch(e){return true;}" /> ';
+        }
+        
+        $this->setNavigation($updateBack . '<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="skipRequirements" />');
     }
 
     private function showUpdate()
@@ -355,13 +358,7 @@ class Contrexx_Update
             $this->html['content'] = $this->objTemplate->get('start');
         }
         
-        $arrVersions = $this->getAvailabeVersions();
-        $updateBack  = '';
-        if (count($arrVersions) === 1) {
-            $updateBack = '<input type="submit" value="'.$_CORELANG['TXT_UPDATE_BACK'].'" name="updateBack" onclick="try{doUpdate(true)} catch(e){return true;}" /> ';
-        }
-        
-        $this->setNavigation($updateBack . '<input type="submit" value="'.$_CORELANG['TXT_UPDATE_START_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />');
+        $this->setNavigation('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_BACK'].'" name="updateBack" onclick="try{doUpdate(true)} catch(e){return true;}" /> <input type="submit" value="'.$_CORELANG['TXT_UPDATE_START_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />');
     }
     
     private function processUpdate()
