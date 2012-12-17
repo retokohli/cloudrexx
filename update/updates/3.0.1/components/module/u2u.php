@@ -79,11 +79,10 @@ function _u2uUpdate()
     }
 
 
-	/************************************************
-	* EXTENSION:	Initial adding of the           *
-    *               settings values                 *
-	* ADDED:		Contrexx v2.1.2					*
-	************************************************/
+    /******************************************************
+    * EXTENSION:    Initial adding of the settings values *
+    * ADDED:        Contrexx v2.1.2                       *
+    *******************************************************/
     $arrSettings = array(
         'max_posting_size'           => '2000',
         'max_posting_chars'          => '2000',
@@ -109,7 +108,10 @@ function _u2uUpdate()
     }
 
 
-    //Contrexx 3.0.1 (timezone)
+    /********************************
+     * EXTENSION:   Timezone        *
+     * ADDED:       Contrexx v3.0.0 *
+     ********************************/
     try {
         \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_u2u_sent_messages` CHANGE `date_time` `date_time` TIMESTAMP NOT NULL DEFAULT "0000-00-00 00:00:00"');
     } catch (UpdateException $e) {

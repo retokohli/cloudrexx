@@ -1,13 +1,13 @@
 <?php
 function _downloadsUpdate()
 {
-	global $objDatabase, $_ARRAYLANG, $_CORELANG;
+    global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
-	/************************************************
-	* EXTENSION:	Initial creation of the         *
+    /************************************************
+    * EXTENSION:    Initial creation of the         *
     *               database tables                 *
-	* ADDED:		Contrexx v2.1.0					*
-	************************************************/
+    * ADDED:        Contrexx v2.1.0                 *
+    ************************************************/
     $arrTables  = $objDatabase->MetaTables('TABLES');
     if (!sizeof($arrTables)) {
         setUpdateMsg($_ARRAYLANG['TXT_UNABLE_DETERMINE_DATABASE_STRUCTURE']);
@@ -128,11 +128,12 @@ function _downloadsUpdate()
 
 
 
-	/************************************************
-	* EXTENSION:	Initial adding of the           *
+
+    /************************************************
+    * EXTENSION:    Initial adding of the           *
     *               settings values                 *
-	* ADDED:		Contrexx v2.1.0					*
-	************************************************/
+    * ADDED:        Contrexx v2.1.0                 *
+    ************************************************/
     $arrSettings = array(
         'overview_cols_count'           => '2',
         'overview_max_subcats'          => '5',
@@ -169,38 +170,37 @@ function _downloadsUpdate()
 
 
 
-
-	/************************************************
-	* BUGFIX:	Set write access to the upload dir  *
-	************************************************/
-	require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
-	$objFile = new File();
-	if (is_writeable(ASCMS_DOWNLOADS_IMAGES_PATH) || $objFile->setChmod(ASCMS_DOWNLOADS_IMAGES_PATH, ASCMS_DOWNLOADS_IMAGES_WEB_PATH, '')) {
-    	if ($mediaDir = @opendir(ASCMS_DOWNLOADS_IMAGES_PATH)) {
-    		while($file = readdir($mediaDir)) {
-    			if ($file != '.' && $file != '..') {
-    				if (!is_writeable(ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$file) && !$objFile->setChmod(ASCMS_DOWNLOADS_IMAGES_PATH.'/', ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/', $file)) {
-    					setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_FILE'], ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$file, $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
-    					return false;
-    				}
-    			}
-			}
-    	} else {
-    		setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_DIR_AND_CONTENT'], ASCMS_DOWNLOADS_IMAGES_PATH.'/', $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
-    		return false;
-		}
+    /************************************************
+    * BUGFIX:   Set write access to the upload dir  *
+    ************************************************/
+    require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
+    $objFile = new File();
+    if (is_writeable(ASCMS_DOWNLOADS_IMAGES_PATH) || $objFile->setChmod(ASCMS_DOWNLOADS_IMAGES_PATH, ASCMS_DOWNLOADS_IMAGES_WEB_PATH, '')) {
+        if ($mediaDir = @opendir(ASCMS_DOWNLOADS_IMAGES_PATH)) {
+            while($file = readdir($mediaDir)) {
+                if ($file != '.' && $file != '..') {
+                    if (!is_writeable(ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$file) && !$objFile->setChmod(ASCMS_DOWNLOADS_IMAGES_PATH.'/', ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/', $file)) {
+                        setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_FILE'], ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$file, $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
+                        return false;
+                    }
+                }
+            }
+        } else {
+            setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_DIR_AND_CONTENT'], ASCMS_DOWNLOADS_IMAGES_PATH.'/', $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
+            return false;
+        }
     } else {
-    	setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_DIR_AND_CONTENT'], ASCMS_DOWNLOADS_IMAGES_PATH.'/', $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
-    	return false;
+        setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_DIR_AND_CONTENT'], ASCMS_DOWNLOADS_IMAGES_PATH.'/', $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
+        return false;
     }
 
 
 
 
-	/************************************************
-	* EXTENSION:	Groups                          *
-	* ADDED:		Contrexx v2.1.2					*
-	************************************************/
+    /************************************************
+    * EXTENSION:    Groups                          *
+    * ADDED:        Contrexx v2.1.2                 *
+    ************************************************/
     try{
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_downloads_group',
@@ -237,6 +237,40 @@ function _downloadsUpdate()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+
+
+
+    /*******************************************************
+    * EXTENSION:    Localisation of download source fields *
+    * ADDED:        Contrexx v3.0.0                        *
+    ********************************************************/
+    try {
+        $arrColumns = $objDatabase->MetaColumns(DBPREFIX.'module_downloads_download_locale');
+        if ($arrColumns === false) {
+            setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_downloads_download_locale'));
+            return false;
+        }
+
+        if (!isset($arrColumns['SOURCE']) && !isset($arrColumns['SOURCE_NAME'])) {
+            \Cx\Lib\UpdateUtil::sql('
+                ALTER TABLE `'.DBPREFIX.'module_downloads_download_locale`
+                ADD `source` VARCHAR(255) NULL DEFAULT NULL AFTER `name`,
+                ADD `source_name` VARCHAR(255) NULL DEFAULT NULL AFTER `source`,
+                ADD `metakeys` TEXT NOT NULL AFTER `description`
+            ');
+            \Cx\Lib\UpdateUtil::sql('
+                UPDATE `'.DBPREFIX.'module_downloads_download` AS download INNER JOIN `'.DBPREFIX.'module_downloads_download_locale` AS download_locale ON download.id = download_locale.download_id
+                SET download_locale.source = download.source, download_locale.source_name = download.source_name
+            ');
+            \Cx\Lib\UpdateUtil::sql('
+                ALTER TABLE `'.DBPREFIX.'module_downloads_download`
+                DROP COLUMN `source`,
+                DROP COLUMN `source_name`
+            ');
+        }
+    } catch (UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
     return true;
 }
-?>

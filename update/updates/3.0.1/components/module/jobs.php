@@ -99,7 +99,10 @@ function _jobsUpdate() {
     }
 
 
-    //Contrexx 3.0.1 (timezone)
+    /********************************
+     * EXTENSION:   Timezone        *
+     * ADDED:       Contrexx v3.0.0 *
+     ********************************/
     try {
         \Cx\Lib\UpdateUtil::sql('
             ALTER TABLE `'.DBPREFIX.'module_jobs`
