@@ -4,7 +4,10 @@ function _checkoutUpdate()
 {
     try {
 
-        //Contrexx 3.0.1 (initial creation)
+        /*********************************
+         * EXTENSION:   Initial creation *
+         * ADDED:       Contrexx v3.0.0  *
+         *********************************/
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_checkout_settings_general',
             array(

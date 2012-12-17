@@ -141,7 +141,7 @@ function _coreUpdate()
     /**********************************************
      *                                            *
      * MIGRATE BACKEND_AREAS TO NEW ACCESS SYSTEM *
-	 * BUGFIX:	Add UNIQUE key on access_id       *
+     * BUGFIX: Add UNIQUE key on access_id       *
      *                                            *
      *********************************************/
     try{
@@ -1455,6 +1455,31 @@ function _coreUpdate()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+
+    /**********************************************************
+    * EXTENSION:    Fallback language and app device template *
+    * ADDED:        Contrexx v3.0.0                           *
+    ***********************************************************/
+    try {
+        $arrColumns = $objDatabase->MetaColumnNames(DBPREFIX.'languages');
+        if ($arrColumns === false) {
+            setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'languages'));
+            return false;
+        }
+
+        if (!isset($arrColumns['FALLBACK']) && !isset($arrColumns['APP_THEMES_ID'])) {
+            \Cx\Lib\UpdateUtil::sql('
+                ALTER TABLE `'.DBPREFIX.'languages`
+                ADD `fallback` INT(2) UNSIGNED DEFAULT 0 AFTER `mobile_themes_id`,
+                ADD `app_themes_id` INT(2) NOT NULL AFTER `fallback`
+            ');
+            \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'languages` SET `app_themes_id` = `themesid`');
+        }
+    } catch (UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
+
     return true;
 }
 
@@ -1598,4 +1623,3 @@ CONFIG_TPL
     }
 }
 
-?>
