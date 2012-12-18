@@ -315,6 +315,13 @@ class Url {
         foreach($get as $k => $v) {
             if($k == '__cap') //skip captured request from mod_rewrite
                 continue;
+
+            // workaround for legacy ?page=123 requests by routing to an alias like /legacy_page_123
+            if($k == 'page' && preg_match('/^\d+$/', $v)) {
+                $request = 'legacy_page_'.$v;
+                continue;
+            }
+
             $joiner='&';
             if ($getParams == '') {
                 $joiner='?';
