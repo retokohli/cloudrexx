@@ -34,16 +34,12 @@ class Contrexx_Update
             'TXT_UPDATE_CONTREXX_UPDATE_SYSTEM' => $_CORELANG['TXT_UPDATE_CONTREXX_UPDATE_SYSTEM'],
             'UPDATE_TPL_PATH'                   => UPDATE_TPL,
             'CHARSET'                           => UPDATE_UTF8 ? 'utf-8' : 'iso-8859-1',
+            'JAVASCRIPT'                        => 'javascript_inserting_here',
         ));
-
-        $errorMsg = '';
-        $objDatabase = $this->getDatabaseObject($errorMsg);
-        \Env::set('db', $objDatabase);
-        if (!$objDatabase) {
-            die($errorMsg);
-        }
-
-        DBG::set_adodb_debug_mode();
+        
+        $this->objDatabase = \Env::get('db');
+        
+        \DBG::set_adodb_debug_mode();
 
         if (!empty($_GET['ajax'])) {
             $this->ajax = true;
@@ -413,10 +409,8 @@ class Contrexx_Update
 
     function getMySQLServerVersion()
     {
-        global $objDatabase;
-
         $version = array();
-        $objVersion = $objDatabase->SelectLimit('SELECT VERSION() AS mysqlversion', 1);
+        $objVersion = $this->objDatabase->SelectLimit('SELECT VERSION() AS mysqlversion', 1);
         if ($objVersion !== false && $objVersion->RecordCount() == 1 && preg_match('#^([0-9.]+)#', $objVersion->fields['mysqlversion'], $version)) {
             return $version[1];
         }
@@ -832,8 +826,6 @@ class Contrexx_Update
 
     function auth($user='', $pass='')
     {
-        global $objDatabase;
-
         if ($this->isAuth) {
             return true;
         }
@@ -847,64 +839,14 @@ class Contrexx_Update
             }
         }
 
-        $objAuth = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."access_users` WHERE `username` = '".$user."' AND `password` = '".$pass."' AND `is_admin` = 1 AND `active` = 1", 1);
+        $objAuth = $this->objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."access_users` WHERE `username` = '".$user."' AND `password` = '".$pass."' AND `is_admin` = 1 AND `active` = 1", 1);
         if ($objAuth !== false && $objAuth->RecordCount() == 1) {
             $this->isAuth = true;
             return true;
         }
         return false;
     }
-
-    function getDatabaseObject(&$errorMsg, $newInstance = false)
-    {
-        global $_ARRLANG, $_DBCONFIG, $ADODB_FETCH_MODE;
-        static $objDatabase;
-
-        if (is_object($objDatabase) && !$newInstance) {
-            return $objDatabase;
-        }
-        // open db connection
-        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-
-        $objDb = ADONewConnection($_DBCONFIG['dbType']);
-        @$objDb->Connect($_DBCONFIG['host'], $_DBCONFIG['user'], $_DBCONFIG['password'], $_DBCONFIG['database']);
-
-        $errorNo = $objDb->ErrorNo();
-        if ($errorNo != 0) {
-            if ($errorNo == 1049) {
-                $errorMsg .= str_replace("[DATABASE]", $_DBCONFIG['database'], $_ARRLANG['TXT_DATABASE_DOES_NOT_EXISTS']."<br />");
-            } else {
-                $errorMsg .=  $objDb->ErrorMsg()."<br />";
-            }
-            unset($objDb);
-            return false;
-        }
-
-        if (array_search(UPDATE_TIMEZONE, timezone_identifiers_list()) && !$objDb->Execute('SET TIME_ZONE="'.UPDATE_TIMEZONE.'"')) {
-            //calculate and set the timezone offset if the mysql timezone tables aren't loaded
-            $objDateTimeZone = new DateTimeZone(UPDATE_TIMEZONE);
-            $objDateTime = new DateTime('now', $objDateTimeZone);
-            $offset = $objDateTimeZone->getOffset($objDateTime);
-            $offsetHours = round(abs($offset)/3600); 
-            $offsetMinutes = round((abs($offset)-$offsetHours*3600) / 60); 
-            $offsetString = ($offset > 0 ? '+' : '-').($offsetHours < 10 ? '0' : '').$offsetHours.':'.($offsetMinutes < 10 ? '0' : '').$offsetMinutes;
-            $objDb->Execute('SET TIME_ZONE="'.$offsetString.'"');
-        }
-
-        if (empty($_DBCONFIG['charset']) || $objDb->Execute('SET CHARACTER SET '.$_DBCONFIG['charset']) && $objDb) {
-            if ($newInstance) {
-                return $objDb;
-            } else {
-                $objDatabase = $objDb;
-                return $objDb;
-            }
-        } else {
-            $errorMsg .= $_ARRLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER']."<i>&nbsp;(".$objDb->ErrorMsg().")</i><br />";
-            unset($objDb);
-        }
-        return false;
-    }
-
+    
     function addslashes($string)
     {
       // if magic quotes is on the string is already quoted,

@@ -11,7 +11,7 @@
  */
 
 // Debugging
-require_once dirname(__FILE__).'/lib/DBG.php';
+require_once dirname(__FILE__).'/core/DBG.php';
 \DBG::deactivate();
 
 // Try to enable APC
@@ -61,22 +61,49 @@ if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
     die('System halted: Unable to load basic configuration!');
 }
 
-// Library and core files
-require_once(ASCMS_LIBRARY_PATH . '/PEAR/HTML/Template/Sigma/Sigma.php');
-require_once(ASCMS_LIBRARY_PATH . '/adodb/adodb.inc.php');
-require_once(ASCMS_CORE_PATH . '/database.php');
-require_once(ASCMS_CORE_PATH . '/validator.inc.php');
-require_once(ASCMS_CORE_PATH . '/session.class.php');
-require_once(ASCMS_CORE_PATH . '/Init.class.php');
+require_once(UPDATE_PATH . '/core/Env.class.php');
 
-// Update files
-require_once(UPDATE_PATH . '/Contrexx_Update.class.php');
-require_once(UPDATE_PATH . '/lib/FRAMEWORK/UpdateUtil.class.php');
-
-require_once(UPDATE_PATH . '/lib/Env.class.php');
 \Env::set('config', $_CONFIG);
 \Env::set('dbconfig', $_DBCONFIG);
 \Env::set('ftpConfig', $_FTPCONFIG);
+
+/**
+ * This needs to be initialized before loading config/doctrine.php
+ * Because we overwrite the Gedmo model (so we need to load our model
+ * before doctrine loads the Gedmo one)
+ */
+require_once(UPDATE_PATH . '/core/ClassLoader/ClassLoader.class.php');
+$cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true);
+\Env::set('ClassLoader', $cl);
+
+// Library and core files
+$cl->loadFile(ASCMS_LIBRARY_PATH . '/PEAR/HTML/Template/Sigma/Sigma.php');
+$cl->loadFile(ASCMS_LIBRARY_PATH . '/adodb/adodb.inc.php');
+$cl->loadFile(ASCMS_CORE_PATH . '/database.php');
+$cl->loadFile(ASCMS_CORE_PATH . '/validator.inc.php');
+$cl->loadFile(ASCMS_CORE_PATH . '/session.class.php');
+$cl->loadFile(ASCMS_CORE_PATH . '/Init.class.php');
+
+$objDatabase = getDatabaseObject($errorMsg);
+if (!$objDatabase) {
+    die($errorMsg);
+}
+\Env::set('db', $objDatabase);
+
+// Initialize base system
+$objInit = new \InitCMS('update', \Env::em());
+\Env::set('init', $objInit);
+
+// Update files
+$cl->loadFile(UPDATE_PATH . '/Contrexx_Update.class.php');
+$cl->loadFile(UPDATE_PATH . '/lib/FRAMEWORK/UpdateUtil.class.php');
+$cl->loadFile(UPDATE_PATH . '/lib/FRAMEWORK/cxjs/ContrexxJavascript.class.php');
+$cl->loadFile(UPDATE_PATH . '/lib/FRAMEWORK/Javascript.class.php');
+
+\JS::activate('cx');
+\JS::activate('jquery-tools');
+\JS::registerJS('lib/contrexxUpdate.php');
+\JS::registerJS('lib/javascript/html2dom.js');
 
 // Global doctrine loggable listener
 $loggableListener = null;
@@ -90,4 +117,8 @@ $sessionObj->cmsSessionStatusUpdate('backend');
 
 // Start update
 $objUpdate = new Contrexx_Update();
-die($objUpdate->getPage());
+$output = $objUpdate->getPage();
+\JS::findJavascripts($output);
+$output = str_replace('javascript_inserting_here', \JS::getCode(), $output);
+
+die($output);

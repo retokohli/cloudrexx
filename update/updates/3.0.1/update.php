@@ -20,20 +20,6 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     }
     unset($_SESSION['copiedCxFilesIndex']);
     
-    /**
-     * This needs to be initialized before loading config/doctrine.php
-     * Because we overwrite the Gedmo model (so we need to load our model
-     * before doctrine loads the Gedmo one)
-     */
-    $customizing = null;
-    if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
-        $customizing = ASCMS_CUSTOMIZING_PATH;
-    }
-    require_once(ASCMS_CORE_PATH . '/ClassLoader/ClassLoader.class.php');
-    $cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true);
-    
-    \Env::set('ClassLoader', $cl);
-    
     // Doctrine configuration
     $incDoctrineStatus = require_once(UPDATE_PATH . '/config/doctrine.php');
     
@@ -44,6 +30,18 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     );
     $loggableListener = \Env::get('loggableListener');
     $loggableListener->setUsername(json_encode($userData));
+    
+    \Env::get('ClassLoader')->loadFile(dirname(__FILE__) . '/ContentMigration.class.php');
+    $contentMigration = new \Cx\Update\ContentMigration();
+    //$contentMigration->migrate();
+    $pageGrouping = $contentMigration->pageGrouping();
+    if ($pageGrouping) {
+        $objUpdate->arrStatusMsg['title']  = 'Inhaltsseiten gruppieren';
+        $objUpdate->arrStatusMsg['msg']    = array($pageGrouping);
+        $objUpdate->arrStatusMsg['button'] = '<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="updateNext" />';
+        
+        return false;
+    }
     
 	$arrDirs = array('core_module', 'module');
 	$updateStatus = true;

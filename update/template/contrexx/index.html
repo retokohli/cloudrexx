@@ -12,15 +12,14 @@
 
         <link type="text/css" href="{UPDATE_TPL_PATH}/css/base.css" rel="stylesheet" />
         <link type="text/css" href="{UPDATE_TPL_PATH}/css/content.css" rel="stylesheet" />
-
-        <script type="text/javascript" src="lib/contrexxUpdate.php"></script>
-        <script type="text/javascript" src="lib/html2dom.js"></script>
-        <script type="text/javascript" src="{UPDATE_TPL_PATH}/javascript/jquery.tools.min.js"></script>
+        
+        {JAVASCRIPT}
+        
         <script type="text/javascript">
         /* <![CDATA[ */
-        jQuery(document).ready(function() {
-            jQuery('.tooltip-trigger').tooltip({relative: true, position: 'center right', offset: [0, 10], predelay: 250});
-        });
+            jQuery(document).ready(function() {
+                jQuery('.tooltip-trigger').tooltip({relative: true, position: 'center right', offset: [0, 10], predelay: 250});
+            });
         /* ]]> */
         </script>
 
