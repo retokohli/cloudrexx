@@ -533,7 +533,6 @@ class UpdateUtil
             foreach ($allPages as $lang => $pages) {
                 foreach ($pages as $page) {
                     if ($page) {
-                        echo($page->getTitle().'('.$page->getModule().'-'.$page->getCmd().')<br />');
                         $page->setContent(str_replace($search, $replace, $page->getContent()));
                         $em->persist($page);
                     }
