@@ -38,6 +38,7 @@ class Contrexx_Update
 
         $errorMsg = '';
         $objDatabase = $this->getDatabaseObject($errorMsg);
+        \Env::set('db', $objDatabase);
         if (!$objDatabase) {
             die($errorMsg);
         }

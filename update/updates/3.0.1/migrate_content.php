@@ -176,14 +176,19 @@ class Contrexx_Content_migration
         // 1ST: MIGRATE PAGES FROM HISTORY
         DBG::msg(str_repeat('#', 80));
         DBG::msg("MIGRATE HISTORY");
-        $objResult = $objDatabase->Execute('SELECT cn.*,
-               nav.*,
-               cnlog.*
-               FROM `'.DBPREFIX.'content_history` AS cn
-               INNER JOIN `'.DBPREFIX.'content_navigation_history` AS nav
-               ON cn.id=nav.id
-               INNER JOIN `'.DBPREFIX.'content_logfile` AS cnlog
-               ON cn.id = cnlog.history_id ORDER BY cnlog.id ASC');
+        $objResult = $objDatabase->Execute('
+            SELECT
+                cn.page_id, cn.content, cn.title, cn.metatitle, cn.metadesc, cn.metakeys, cn.metarobots, cn.css_name, cn.redirect, cn.expertmode,
+                nav.catid, nav.parcat, nav.catname, nav.target, nav.displayorder, nav.displaystatus, nav.activestatus,
+                nav.cachingstatus, nav.username, nav.changelog, nav.cmd, nav.lang, nav.module, nav.startdate, nav.enddate, nav.protected,
+                nav.frontend_access_id, nav.backend_access_id, nav.themes_id, nav.css_name AS css_nav_name, nav.custom_content,
+                cnlog.action, cnlog.history_id, cnlog.is_validated
+            FROM       `' . DBPREFIX . 'content_history` AS cn
+            INNER JOIN `' . DBPREFIX . 'content_navigation_history` AS nav
+            ON         cn.id = nav.id
+            INNER JOIN `' . DBPREFIX . 'content_logfile` AS cnlog
+            ON         cn.id = cnlog.history_id ORDER BY cnlog.id ASC
+        ');
 
         $p = array();
        
@@ -250,13 +255,17 @@ class Contrexx_Content_migration
         DBG::msg(str_repeat('#', 80));
         DBG::msg('MIGRATE CURRENT STRUCTURE');
 
-        $objRecords = $objDatabase->Execute('SELECT * 
-                                             FROM `'.DBPREFIX.'content` AS cn
-                                             INNER JOIN `'.DBPREFIX.'content_navigation` AS nav
-                                             ON cn.id = nav.catid
-                                             WHERE cn.id
-                                             ORDER BY nav.parcat ASC, nav.displayorder DESC'
-                                            );
+        $objRecords = $objDatabase->Execute('
+            SELECT cn.id, cn.content, cn.title, cn.metatitle, cn.metadesc, cn.metakeys, cn.metarobots, cn.css_name, cn.redirect, cn.expertmode,
+                   nav.catid, nav.parcat, nav.catname, nav.target, nav.displayorder, nav.displaystatus, nav.activestatus,
+                   nav.cachingstatus, nav.username, nav.changelog, nav.cmd, nav.lang, nav.module, nav.startdate, nav.enddate, nav.protected,
+                   nav.frontend_access_id, nav.backend_access_id, nav.themes_id, nav.css_name AS css_nav_name, nav.custom_content
+            FROM       `'.DBPREFIX.'content` AS cn
+            INNER JOIN `'.DBPREFIX.'content_navigation` AS nav
+            ON         cn.id = nav.catid
+            WHERE      cn.id
+            ORDER BY   nav.parcat ASC, nav.displayorder DESC
+        ');
         
         if (!$objRecords) {
             return;
@@ -300,6 +309,7 @@ class Contrexx_Content_migration
             $page = $p[$catid];
 
             $this->_setPageRecords($objRecords, $this->nodeArr[$catid], $page);
+            $page->setAlias('legacy_page_' . $catid);
 
             self::$em->persist($page);
             self::$em->flush();
@@ -313,13 +323,11 @@ class Contrexx_Content_migration
     
     function _setPageRecords($objResult, $node, $page)
     {
-        // Convert the changelog value from Unix time stamp to date for UpdatedAt function
-        $updatedDate = Date('Y-m-d H:i:s',$objResult->fields['changelog']);
-        
-        $page->setNode($node); 
+        $page->setNode($node);
+        $page->setNodeIdShadowed($node->getId());
         $page->setLang($objResult->fields['lang']);
         $page->setCaching($objResult->fields['cachingstatus']);
-        $page->setUpdatedAt(new DateTime($updatedDate));
+        $page->setUpdatedAt($objResult->fields['changelog']);
         $page->setTitle($objResult->fields['catname']);
         $page->setContentTitle($objResult->fields['title']);
         $page->setSlug($objResult->fields['catname']);
@@ -330,48 +338,56 @@ class Contrexx_Content_migration
         $page->setMetadesc($objResult->fields['metadesc']);
         $page->setMetakeys($objResult->fields['metakeys']);
         $page->setMetarobots($objResult->fields['metarobots']);
-        $page->setStart($objResult->fields['startdate']);
-        $page->setEnd($objResult->fields['enddate']);
-        //$page->setStart(new DateTime($objResult->fields['startdate']));
-        //$page->setEnd(new DateTime($objResult->fields['enddate']));
-        $page->setStart(new DateTime());
-        $page->setEnd(new DateTime());
-        $page->setUsername($objResult->fields['username']);
         $page->setDisplay($objResult->fields['displaystatus'] === 'on' ? 1 : 0);
         $page->setActive($objResult->fields['activestatus']);
         $page->setSourceMode($objResult->fields['expertmode'] == 'y');
-
-//TODO: migrate targets
+        $page->setUpdatedBy($objResult->fields['username']);
+        $page->setCssNavName($objResult->fields['css_nav_name']);
+        $page->setSkin($objResult->fields['themes_id']);
+        $page->setProtection($objResult->fields['protected']);
+        $page->setFrontendAccessId($objResult->fields['frontend_access_id']);
+        $page->setBackendAccessId($objResult->fields['backend_access_id']);
         $page->setTarget($objResult->fields['redirect']);
+        
+        $dateTimeStart = new DateTime($objResult->fields['startdate']);
+        $start = $dateTimeStart->getTimestamp();
+        if ($start) {
+            $page->setStart($start);
+        }
+        $dateTimeEnd = new DateTime($objResult->fields['enddate']);
+        $end = $dateTimeEnd->getTimestamp();
+        if ($end) {
+            $page->setEnd($end);
+        }
 
         $linkTarget = $objResult->fields['target'];
-        if(!$linkTarget)
+        if(!$linkTarget) {
             $linkTarget = null;
-        
+        }
         $page->setLinkTarget($linkTarget);
-        if($objResult->fields['module'] && isset($this->moduleNames[$objResult->fields['module']]))
+        
+        if($objResult->fields['module'] && isset($this->moduleNames[$objResult->fields['module']])) {
             $page->setModule($this->moduleNames[$objResult->fields['module']]);
-        //if($objResult->fields['cmd'])
+        }
         $page->setCmd($objResult->fields['cmd']);
 
         //set the type the way the type is supposed to be set. 
-        if($page->getModule())
+        if($page->getModule()) {
             $page->setType(\Cx\Model\ContentManager\Page::TYPE_APPLICATION);
-//TODO: migrate targets
-        if($page->getTarget())
+        }
+        
+        if($page->getTarget()) {
             $page->setType(\Cx\Model\ContentManager\Page::TYPE_REDIRECT);
+        }
     }
     
     function pageGrouping()
     {
         // fetch all pages
-
         if (!isset($_POST['doGroup'])) {
             return $this->parseTree();
         }
-
-
-
+        
         DBG::msg(str_repeat('#', 80));
         DBG::msg('START GROUPING...');
 

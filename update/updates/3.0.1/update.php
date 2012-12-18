@@ -7,14 +7,44 @@ require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FTPFile.class.php';
 
 function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = true, $updateModules = true)
 {
-	global $_ARRAYLANG, $_CORELANG, $objDatabase, $objUpdate;
-
+	global $_ARRAYLANG, $_CORELANG, $_CONFIG, $objDatabase, $objUpdate;
+    
+    $_SESSION['copyFilesFinished'] = !empty($_SESSION['copyFilesFinished']) ? $_SESSION['copyFilesFinished'] : false;
+    
     // Copy cx files to the root directory
-    if (!copyCxFilesToRoot(dirname(__FILE__) . '/cx_files', ASCMS_PATH . ASCMS_PATH_OFFSET)) {
-        return false;
+    if (!$_SESSION['copyFilesFinished']) {
+        if (!copyCxFilesToRoot(dirname(__FILE__) . '/cx_files', ASCMS_PATH . ASCMS_PATH_OFFSET)) {
+            return false;
+        }
+        $_SESSION['copyFilesFinished'] = true;
     }
     unset($_SESSION['copiedCxFilesIndex']);
-
+    
+    /**
+     * This needs to be initialized before loading config/doctrine.php
+     * Because we overwrite the Gedmo model (so we need to load our model
+     * before doctrine loads the Gedmo one)
+     */
+    $customizing = null;
+    if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
+        $customizing = ASCMS_CUSTOMIZING_PATH;
+    }
+    require_once(ASCMS_CORE_PATH . '/ClassLoader/ClassLoader.class.php');
+    $cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true);
+    
+    \Env::set('ClassLoader', $cl);
+    
+    // Doctrine configuration
+    $incDoctrineStatus = require_once(UPDATE_PATH . '/config/doctrine.php');
+    
+    $objFWUser = \FWUser::getFWUserObject();
+    $userData = array(
+        'id'   => $objFWUser->objUser->getId(),
+        'name' => $objFWUser->objUser->getUsername(),
+    );
+    $loggableListener = \Env::get('loggableListener');
+    $loggableListener->setUsername(json_encode($userData));
+    
 	$arrDirs = array('core_module', 'module');
 	$updateStatus = true;
 
