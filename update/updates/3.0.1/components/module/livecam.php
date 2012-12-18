@@ -4,7 +4,7 @@ function _livecamUpdate()
 {
     global $objDatabase, $objUpdate, $_CONFIG;
 
-    try{
+    try {
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_livecam',
             array(
@@ -28,8 +28,7 @@ function _livecamUpdate()
                 'setvalue'   => array('type' => 'TEXT')
             )
         );
-    }
-    catch (UpdateException $e) {
+    } catch (UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
@@ -43,20 +42,17 @@ function _livecamUpdate()
             }
         }
     } else {
-		return _databaseError($query, $objDatabase->ErrorMsg());
-	}
+        return _databaseError($query, $objDatabase->ErrorMsg());
+    }
 
 
 
 
-
-
-
-	/************************************************
-	* BUGFIX:	Migrate settings                    *
+    /************************************************
+    * BUGFIX:   Migrate settings                    *
     * ADDED:    2.1.2                               *
-	************************************************/
-	if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.0.0')) {
+    ************************************************/
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.0.0')) {
         $arrFormerSettings = array(
             'currentImageUrl'   => '',
             'archivePath'       => '',
@@ -96,35 +92,23 @@ function _livecamUpdate()
         }
     }
 
-
-
-
-
-
-
-	$defaultFrom = mktime(0, 0);
-	$defaultTill = mktime(23, 59);
+    $defaultFrom = mktime(0, 0);
+    $defaultTill = mktime(23, 59);
     //set new default settings
-	$query = "UPDATE `".DBPREFIX."module_livecam` SET `showFrom`=$defaultFrom, `showTill`=$defaultTill WHERE `showFrom` = '0'";
-	if ($objDatabase->Execute($query) === false) {
-		return _databaseError($query, $objDatabase->ErrorMsg());
-	}
+    $query = "UPDATE `".DBPREFIX."module_livecam` SET `showFrom`=$defaultFrom, `showTill`=$defaultTill WHERE `showFrom` = '0'";
+    if ($objDatabase->Execute($query) === false) {
+        return _databaseError($query, $objDatabase->ErrorMsg());
+    }
 
 
 
 
-
-	/************************************************
-	* BUGFIX:	Update content page                 *
+    /************************************************
+    * BUGFIX:   Update content page                 *
     * ADDED:    2.1.3                               *
-	************************************************/
-    // livecam module ID is 30
+    ************************************************/
     // both spaces in the search and replace pattern are required in that case
-    \Cx\Lib\UpdateUtil::migrateContentPage(30, NULL, ' {LIVECAM_IMAGE_SHADOWBOX}', ' rel="{LIVECAM_IMAGE_SHADOWBOX}"', '2.1.3');
-
-
-
+    \Cx\Lib\UpdateUtil::migrateContentPage('livecam', null, ' {LIVECAM_IMAGE_SHADOWBOX}', ' rel="{LIVECAM_IMAGE_SHADOWBOX}"', '2.1.3');
 
     return true;
 }
-?>
