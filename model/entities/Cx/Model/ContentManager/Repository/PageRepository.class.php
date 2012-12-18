@@ -178,6 +178,31 @@ class PageRepository extends EntityRepository {
     }
 
     /**
+     * Returns all pages sorted by their language id for the specified module and cmd.
+     *
+     * @param   string  $module
+     * @param   string  $cmd    Optional:
+     *                          - If cmd is a string all pages with the given module and cmd are returned.
+     *                          - If cmd is an empty string all pages of the given module having an empty cmd are returned.
+     *                          - If cmd is null all pages of the given module are returned (regardless of their cmd).
+     * @return  array ( langId => array( Pages ) )
+     */
+    public function getAllFromModuleCmdByLang($module, $cmd = null) {
+        $criteria = array('module' => $module);
+        if (!is_null($cmd)) {
+            $criteria['cmd'] = $cmd;
+        }
+        $pages = $this->findBy($criteria);
+
+        $return = array();
+        foreach($pages as $page) {
+            $return[$page->getLang()][] = $page;
+        }
+        return $return;
+    }
+
+
+    /**
      * Adds a virtual page to the page repository.
      * @todo Remembering virtual pages is no longer necessary, rewrite method to create new virtual pages
      * @param  \Cx\Model\ContentManager\Page  $virtualPage
