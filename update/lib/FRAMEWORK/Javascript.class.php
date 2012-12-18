@@ -447,7 +447,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             return true;
         }
         if (!preg_match('#^https?://#', $file)) {
-            if (!file_exists(\Env::get('ClassLoader')->getFilePath(UPDATE_PATH . '/' . $file))) {
+            if (!file_exists(UPDATE_PATH . '/' . $file)) {
                 self::$error .= "The file ".$file." doesn't exist\n";
                 return false;
             }
@@ -469,7 +469,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      */
     public static function registerCSS($file)
     {
-        if (!file_exists(\Env::get('ClassLoader')->getFilePath(UPDATE_PATH . '/' . $file))) {
+        if (!file_exists(UPDATE_PATH . '/' . $file)) {
             self::$error = "The file ".$file." doesn't exist\n";
             return false;
         }

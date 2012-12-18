@@ -499,7 +499,7 @@ class ContentMigration
             foreach ($objContentTree->getTree() as $arrPage) {
                 $pageId = $nodes[$arrPage['node_id']][$arrPage['lang']];
                 $grouped = $this->isGrouppedPage($arrSimilarPages, $pageId) ? ' grouped' : '';
-                $options .= sprintf($htmlOption, $arrPage['node_id'], $pageId, $arrPage['lang'], contrexx_raw2xhtml($arrPage['catname']), 'level'.$arrPage['level'].$grouped, $lang);
+                $options .= sprintf($htmlOption, $arrPage['node_id'], $pageId, $arrPage['lang'], contrexx_raw2xml($arrPage['catname']), 'level'.$arrPage['level'].$grouped, $lang);
             }
             
             $menu = sprintf($htmlMenu, $lang, $options);

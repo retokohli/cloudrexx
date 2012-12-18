@@ -2,7 +2,7 @@
 
 use \Cx\Update\UpdatePageEventListener as PageEventListener;
 
-$cl->loadFile(UPDATE_PATH . '/core/UpdatePageEventListener.class.php');
+\Env::get('ClassLoader')->loadFile(UPDATE_PATH . '/core/UpdatePageEventListener.class.php');
 
 $_DBCONFIG   = \Env::get('dbconfig');
 $doctrineDir = ASCMS_LIBRARY_PATH . '/doctrine/';
