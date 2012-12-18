@@ -29,7 +29,7 @@ function doUpdate(goBack)
     }
     formData = getFormData(goBack);
     if (document.getElementById('processUpdate') != null) {
-      setContent('<div style="margin-left: 155px; margin-top: 180px;">Bitte haben Sie einen Moment Geduld.<br /><?php $txt = 'Das Update wird durchgef�hrt...';print UPDATE_UTF8 ?  utf8_encode($txt) : $txt;?><br /><br /><img src="template/contrexx/images/content/loading_animation.gif" width="208" height="13" alt="" /></div>');
+      setContent('<div style="margin-left: 155px; margin-top: 180px;">Bitte haben Sie einen Moment Geduld.<br /><?php $txt = 'Das Update wird durchgeführt...';print UPDATE_UTF8 ? $txt : utf8_decode($txt);?><br /><br /><img src="template/contrexx/images/content/loading_animation.gif" width="208" height="13" alt="" /></div>');
       setNavigation('');
     } else {
       setContent('Bitte warten. Die Seite wird geladen...');
@@ -101,7 +101,7 @@ function parseResponse()
         setNavigation(oResponse.navigation);
       } catch(e) {}
     } else {
-      setContent('<?php $txt = '<div class="message-alert">Das Update-Script gibt keine Antwort zur�ck!</div>';print UPDATE_UTF8 ?  utf8_encode($txt) : $txt;?>');
+      setContent('<?php $txt = '<div class="message-alert">Das Update-Script gibt keine Antwort zurück!</div>';print UPDATE_UTF8 ?  utf8_encode($txt) : $txt;?>');
       setNavigation('<input type="submit" value="<?php $txt = 'Erneut versuchen...';print UPDATE_UTF8 ? utf8_encode($txt) : $txt;?>" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />');
     }
     request_active = false;

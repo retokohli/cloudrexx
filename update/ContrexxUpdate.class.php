@@ -1,5 +1,5 @@
 <?php
-class Contrexx_Update
+class ContrexxUpdate
 {
     public $arrStatusMsg = array('title' => '', 'button' => '', 'msg' => array(), 'error' => array());
 
@@ -37,9 +37,9 @@ class Contrexx_Update
             'JAVASCRIPT'                        => 'javascript_inserting_here',
         ));
         
-        $this->objDatabase = \Env::get('db');
+        $this->objDatabase = Env::get('db');
         
-        \DBG::set_adodb_debug_mode();
+        DBG::set_adodb_debug_mode();
 
         if (!empty($_GET['ajax'])) {
             $this->ajax = true;

@@ -515,7 +515,7 @@ class UpdateUtil
      * the installed Contrexx version is older than the one specified by
      * $changeVersion.
      *
-     * @global  Contrexx_Update     $objUpdate
+     * @global  ContrexxUpdate     $objUpdate
      * @global  Array               $_CONFIG
      * @param   integer             $module           Module
      * @param   string              $cmd              CMD
