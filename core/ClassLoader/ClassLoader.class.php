@@ -111,6 +111,7 @@ class ClassLoader {
     }
     
     public function getFilePath($file) {
+        $file = preg_replace('#\\\\#', '/', $file);
         $file = preg_replace('#'.ASCMS_PATH.ASCMS_PATH_OFFSET.'#', '', $file);
         
         // load class from customizing folder
