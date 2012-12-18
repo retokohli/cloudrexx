@@ -29,7 +29,7 @@ function doUpdate(goBack)
     }
     formData = getFormData(goBack);
     if (document.getElementById('processUpdate') != null) {
-      setContent('<div style="margin-left: 155px; margin-top: 180px;">Bitte haben Sie einen Moment Geduld.<br /><?php $txt = 'Das Update wird durchgeführt...';print UPDATE_UTF8 ?  utf8_encode($txt) : $txt;?><br /><br /><img src="template/contrexx/images/content/loading_animation.gif" width="208" height="13" alt="" /></div>');
+      setContent('<div style="margin-left: 155px; margin-top: 180px;">Bitte haben Sie einen Moment Geduld.<br /><?php $txt = 'Das Update wird durchgefï¿½hrt...';print UPDATE_UTF8 ?  utf8_encode($txt) : $txt;?><br /><br /><img src="template/contrexx/images/content/loading_animation.gif" width="208" height="13" alt="" /></div>');
       setNavigation('');
     } else {
       setContent('Bitte warten. Die Seite wird geladen...');
@@ -101,7 +101,7 @@ function parseResponse()
         setNavigation(oResponse.navigation);
       } catch(e) {}
     } else {
-      setContent('<?php $txt = '<div class="message-alert">Das Update-Script gibt keine Antwort zurück!</div>';print UPDATE_UTF8 ?  utf8_encode($txt) : $txt;?>');
+      setContent('<?php $txt = '<div class="message-alert">Das Update-Script gibt keine Antwort zurï¿½ck!</div>';print UPDATE_UTF8 ?  utf8_encode($txt) : $txt;?>');
       setNavigation('<input type="submit" value="<?php $txt = 'Erneut versuchen...';print UPDATE_UTF8 ? utf8_encode($txt) : $txt;?>" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />');
     }
     request_active = false;
@@ -142,4 +142,105 @@ function setHtml(text, element)
   } else {
     document.getElementById(element).innerHTML = '';
   }
+}
+
+var langs          = cx.variables.get('langs', 'update/contentMigration');
+var similarPages   = cx.variables.get('arrSimilarPagesJs', 'update/contentMigration');
+var defaultLang    = cx.variables.get('defaultLang', 'update/contentMigration');
+var nodePageRegexp = /(\d+)_(\d+)/;
+var removePages    = new Array();
+
+function handleEvent(event,select,lang) {
+    // 46 = DELETE key
+    if (event.keyCode == 46) {
+        page = jQuery(select).find(':selected');
+        removePages.push(nodePageRegexp.exec(page.val())[2]);
+        page.addClass('removed');
+        move2NextUngroupedPage(page,lang);
+    }
+}
+
+function choose(select,selectLang) {
+    var selectedPageId = nodePageRegexp.exec(jQuery(select).find(':selected').val())[2];
+
+    associatedNode = null;
+    for (node in similarPages) {
+        for (page in similarPages[node]) {
+            if (similarPages[node][page] == selectedPageId) {
+                associatedNode = node;
+                break;
+            }
+        }
+    }
+
+    if (associatedNode == null) {
+        console.log('nope..');
+        return;
+    }
+
+    for (page in similarPages[associatedNode]) {
+        for (lIdx in langs) {
+            lang = langs[lIdx];
+            if (lang != selectLang) {
+                jQuery(jQuery('#page_tree_'+lang).find('[value$=_'+similarPages[associatedNode][page]+']')).attr('selected', true);
+            }
+        }
+    }
+}
+
+function selectPage(option,lang) {
+    jQuery('#page_group_'+lang).val(jQuery(option).val());
+}
+
+function groupPages() {
+    nodeId = null;
+    pages = new Array();
+    options = new Array();
+
+    for (lIdx in langs) {
+        lang = langs[lIdx];
+        pageInfo = jQuery('#page_group_'+lang).val();
+        if (!pageInfo) {
+            continue;
+        }
+
+        pageId = parseInt(nodePageRegexp.exec(pageInfo)[2],10);
+        pages.push(pageId);
+
+        selected = jQuery(jQuery('#page_tree_'+lang).find(':selected'));
+        options[lang] = selected;
+
+        if (lang == defaultLang) {
+            nodeId = nodePageRegexp.exec(pageInfo)[1]
+        }
+
+    }
+
+    if (nodeId) {
+        similarPages[nodeId] = pages;
+
+        for (lang in options) {
+            if (lang) {
+                options[lang].addClass('grouped');
+                move2NextUngroupedPage(options[lang],lang);
+            }
+        }
+    }
+}
+
+function move2NextUngroupedPage(page,lang) {
+    while (page = page.next()) {
+        if (page.hasClass('grouped')) {
+            continue;
+        }
+
+        page.attr('selected', true);
+        break;
+    }
+    selectPage(page,lang);
+}
+
+function executeGrouping() {
+    jQuery('#similarPages').val(JSON.stringify(similarPages));
+    jQuery('#removePages').val(JSON.stringify(removePages));
 }
