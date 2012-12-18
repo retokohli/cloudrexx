@@ -25,4 +25,6 @@ class UpdatePageEventListener extends \Cx\Model\Events\PageEventListener {
             }
         }
     }
+    
+    public function postPersist($eventArgs) {}
 }
