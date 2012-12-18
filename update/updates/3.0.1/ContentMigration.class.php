@@ -1,55 +1,19 @@
 <?php
-use Doctrine\Common\Util\Debug as DoctrineDebug;
+namespace Cx\Update;
+
 set_time_limit(0);
 
 // TODO: clean DB
-/*
-delete tc, tcn from contrexx_content_navigation as tcn inner join contrexx_content as tc on tc.id=tcn.catid where tcn.lang not in (LANG_IDS_TO_KEEP);
+//delete tc, tcn from contrexx_content_navigation as tcn inner join contrexx_content as tc on tc.id=tcn.catid where tcn.lang not in (LANG_IDS_TO_KEEP);
+//delete tc, tcn, tl from contrexx_content_navigation_history as tcn inner join contrexx_content_history as tc on tc.id=tcn.id inner join contrexx_content_logfile as tl on tl.history_id = tcn.id where tcn.lang not in (LANG_IDS_TO_KEEP);
 
-delete tc, tcn, tl from contrexx_content_navigation_history as tcn inner join contrexx_content_history as tc on tc.id=tcn.id inner join contrexx_content_logfile as tl on tl.history_id = tcn.id where tcn.lang not in (LANG_IDS_TO_KEEP);
-*/
+//$cl->loadFile(ASCMS_CORE_PATH . '/settings.class.php');
+//$cl->loadFile(ASCMS_CORE_PATH . '/Tree.class.php');
 
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-require_once(dirname(__FILE__).'/../../../config/settings.php');
-require_once(dirname(__FILE__).'/../../../config/configuration.php');
-require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');
-
-$customizing = null;
-if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
-// TODO: webinstaller check: has ASCMS_CUSTOMIZING_PATH already been defined in the installation process?
-    $customizing = ASCMS_CUSTOMIZING_PATH;
-}
-
-$cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $customizing);
-/**
- * Environment repository
- */
-$cl->loadFile(ASCMS_CORE_PATH.'/Env.class.php');
-\Env::set('ClassLoader', $cl);
-\Env::set('ftpConfig', $_FTPCONFIG);
-
-$cl->loadFile(ASCMS_FRAMEWORK_PATH.'/DBG/DBG.php');
-$cl->loadFile(ASCMS_CORE_PATH.'/settings.class.php');
-$cl->loadFile(ASCMS_CORE_PATH.'/API.php');
-
-#$cl->loadFile('../../../config/configuration.php');
-$cl->loadFile(ASCMS_DOCUMENT_ROOT.'/config/doctrine.php');
-$cl->loadFile(ASCMS_CORE_PATH.'/Tree.class.php');
-//DBG::activate(DBG_ADODB_ERROR | DBG_PHP | DBG_LOG_FILE);
-
-$m = new Contrexx_Content_migration;
-//$m->migrate();
-$m->pageGrouping();
-print 'DONE';
-
-class Contrexx_Content_migration
+class ContentMigration
 {
-
     protected static $em;
+    protected $db;
     protected $nodeArr = array();
     private $moduleNames = array();
     private $availableFrontendLanguages = array();
@@ -59,33 +23,26 @@ class Contrexx_Content_migration
     
     public function __construct()
     {
-        global $objDatabase;
-        
-        $objDatabase = getDatabaseObject($errorMsg);
-        if (!$objDatabase) {
-            die($errorMsg);
-        }
+        $this->db = \Env::get('db');
 
-        if (DBG::getMode() & DBG_ADODB_TRACE) {
-            DBG::enable_adodb_debug(true);
-        } elseif (DBG::getMode() & DBG_ADODB || DBG::getMode() & DBG_ADODB_ERROR) {
-            DBG::enable_adodb_debug();
+        if (\DBG::getMode() & DBG_ADODB_TRACE) {
+            \DBG::enable_adodb_debug(true);
+        } elseif (\DBG::getMode() & DBG_ADODB || \DBG::getMode() & DBG_ADODB_ERROR) {
+            \DBG::enable_adodb_debug();
         } else {
-            DBG::disable_adodb_debug();
+            \DBG::disable_adodb_debug();
         }
 
-        self::$em = Env::em();
+        self::$em = \Env::em();
 
         $this->initModuleNames();
     }
 
     private function initModuleNames()
     {
-        global $objDatabase;
-
         $this->moduleNames = array();
 
-        $objModules = $objDatabase->Execute('SELECT `id`, `name`
+        $objModules = $this->db->Execute('SELECT `id`, `name`
                                              FROM `'.DBPREFIX.'modules`');
         while (!$objModules->EOF) {
             $this->moduleNames[$objModules->fields['id']] = $objModules->fields['name'];
@@ -94,11 +51,11 @@ class Contrexx_Content_migration
     }
 
     protected function createNodesFromResults($resultSet, &$visiblePageIDs) {
-        DBG::msg("PRE-LOAD NODES");
+        \DBG::msg("PRE-LOAD NODES");
         while (!$resultSet->EOF) {
             //skip ghosts
             if (!in_array($resultSet->fields['catid'], $visiblePageIDs)) {
-                DBG::msg("Page with ID {$resultSet->fields['catid']} is a ghost! Won't migrate...");
+                \DBG::msg("Page with ID {$resultSet->fields['catid']} is a ghost! Won't migrate...");
                 $resultSet->MoveNext();
                 continue;
             }
@@ -107,7 +64,7 @@ class Contrexx_Content_migration
 
             //skip existing nodes
             if(isset($this->nodeArr[$catId])) {
-                DBG::msg("A node for page ID {$resultSet->fields['catid']} is already present! Skip...");
+                \DBG::msg("A node for page ID {$resultSet->fields['catid']} is already present! Skip...");
 
                 $resultSet->MoveNext();
                 continue;
@@ -117,9 +74,9 @@ class Contrexx_Content_migration
             
             self::$em->persist($this->nodeArr[$catId]);
 
-            if (DBG::getMode()) {
+            if (\DBG::getMode()) {
                 self::$em->flush();
-                DBG::msg("Create new Node (ID:{$this->nodeArr[$catId]->getId()}) for page ID {$resultSet->fields['catid']}");
+                \DBG::msg("Create new Node (ID:{$this->nodeArr[$catId]->getId()}) for page ID {$resultSet->fields['catid']}");
             }
             
             $resultSet->MoveNext();
@@ -128,15 +85,13 @@ class Contrexx_Content_migration
    
     public function migrate()
     {
-        global $objDatabase;
-
         if (isset($_POST['doGroup'])) {
             return;
         }
 
-        $objDatabase->Execute('TRUNCATE TABLE `'.DBPREFIX.'content_pages`');
-        $objDatabase->Execute('TRUNCATE TABLE `'.DBPREFIX.'content_nodes`');
-        $objDatabase->Execute('TRUNCATE TABLE `'.DBPREFIX.'log_entry`');
+        $this->db->Execute('TRUNCATE TABLE `'.DBPREFIX.'content_pages`');
+        $this->db->Execute('TRUNCATE TABLE `'.DBPREFIX.'content_nodes`');
+        $this->db->Execute('TRUNCATE TABLE `'.DBPREFIX.'log_entry`');
 
         $this->nodeArr = array ();
 
@@ -152,7 +107,7 @@ class Contrexx_Content_migration
 
         // Fetch a list of all pages that have ever existed or still do.
         // (sql-note: join content tables to prevent to migrate body-less pages)
-        $objNodeResult = $objDatabase->Execute('SELECT `catid`, `lang`
+        $objNodeResult = $this->db->Execute('SELECT `catid`, `lang`
                                                   FROM `'.DBPREFIX.'content_navigation_history` AS tnh
                                                 INNER JOIN `'.DBPREFIX.'content_history` AS tch
                                                     ON tch.`id` = tnh.`id`
@@ -174,9 +129,9 @@ class Contrexx_Content_migration
 
 
         // 1ST: MIGRATE PAGES FROM HISTORY
-        DBG::msg(str_repeat('#', 80));
-        DBG::msg("MIGRATE HISTORY");
-        $objResult = $objDatabase->Execute('
+        \DBG::msg(str_repeat('#', 80));
+        \DBG::msg("MIGRATE HISTORY");
+        $objResult = $this->db->Execute('
             SELECT
                 cn.page_id, cn.content, cn.title, cn.metatitle, cn.metadesc, cn.metakeys, cn.metarobots, cn.css_name, cn.redirect, cn.expertmode,
                 nav.catid, nav.parcat, nav.catname, nav.target, nav.displayorder, nav.displaystatus, nav.activestatus,
@@ -243,7 +198,7 @@ class Contrexx_Content_migration
 
             self::$em->flush();
 
-            DBG::msg("History ({$objResult->fields['action']}) [Page ID:{$objResult->fields['catid']} - {$objResult->fields['catname']} (m: {$this->moduleNames[$objResult->fields['module']]}, c: {$objResult->fields['cmd']})] Migrated to Page ID:{$page->getId()} on Node ID:{$page->getNode()->getId()}");
+            \DBG::msg("History ({$objResult->fields['action']}) [Page ID:{$objResult->fields['catid']} - {$objResult->fields['catname']} (m: {$this->moduleNames[$objResult->fields['module']]}, c: {$objResult->fields['cmd']})] Migrated to Page ID:{$page->getId()} on Node ID:{$page->getNode()->getId()}");
 
             $objResult->MoveNext();
         }
@@ -252,10 +207,10 @@ class Contrexx_Content_migration
 
 
         // 2ND: MIGRATE CURRENT CONTENT 
-        DBG::msg(str_repeat('#', 80));
-        DBG::msg('MIGRATE CURRENT STRUCTURE');
+        \DBG::msg(str_repeat('#', 80));
+        \DBG::msg('MIGRATE CURRENT STRUCTURE');
 
-        $objRecords = $objDatabase->Execute('
+        $objRecords = $this->db->Execute('
             SELECT cn.id, cn.content, cn.title, cn.metatitle, cn.metadesc, cn.metakeys, cn.metarobots, cn.css_name, cn.redirect, cn.expertmode,
                    nav.catid, nav.parcat, nav.catname, nav.target, nav.displayorder, nav.displaystatus, nav.activestatus,
                    nav.cachingstatus, nav.username, nav.changelog, nav.cmd, nav.lang, nav.module, nav.startdate, nav.enddate, nav.protected,
@@ -314,7 +269,7 @@ class Contrexx_Content_migration
             self::$em->persist($page);
             self::$em->flush();
 
-            DBG::msg("$debugMsg - attached as PAGE:{$page->getId()} in LANG:{$page->getLang()} to NODE:{$this->nodeArr[$catid]->getId()}");
+            \DBG::msg("$debugMsg - attached as PAGE:{$page->getId()} in LANG:{$page->getLang()} to NODE:{$this->nodeArr[$catid]->getId()}");
             
             $objRecords->MoveNext();
         }
@@ -381,15 +336,15 @@ class Contrexx_Content_migration
         }
     }
     
-    function pageGrouping()
+    public function pageGrouping()
     {
         // fetch all pages
         if (!isset($_POST['doGroup'])) {
-            return $this->parseTree();
+            return $this->getTreeCode();
         }
         
-        DBG::msg(str_repeat('#', 80));
-        DBG::msg('START GROUPING...');
+        \DBG::msg(str_repeat('#', 80));
+        \DBG::msg('START GROUPING...');
 
         $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
         $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
@@ -416,7 +371,7 @@ class Contrexx_Content_migration
                     $nodeToRemove[] = $page->getNode()->getId();
                     $node = $nodeRepo->find($nodeId);
                     $page->setNode($node);
-                    DBG::msg("Page {$page->getId()} (t: {$page->getType()}, m:{$page->getModule()}, c: {$page->getCmd()}) of node {$formerNodeId} and lang {$page->getLang()} attached to node {$nodeId}");
+                    \DBG::msg("Page {$page->getId()} (t: {$page->getType()}, m:{$page->getModule()}, c: {$page->getCmd()}) of node {$formerNodeId} and lang {$page->getLang()} attached to node {$nodeId}");
                     self::$em->persist($node);
                 }
             }
@@ -426,9 +381,9 @@ class Contrexx_Content_migration
 
         // prevent the system from trying to remove the same node more than once
         $pageToRemove = array_unique($pageToRemove);
-DBG::dump($pageToRemove);
+\DBG::dump($pageToRemove);
         foreach ($pageToRemove as $pageId) {
-            DBG::msg("Removing page $pageId");
+            \DBG::msg("Removing page $pageId");
             $page = self::$em->getRepository('Cx\Model\ContentManager\Page')->find($pageId);
             self::$em->remove($page);
         }
@@ -437,9 +392,9 @@ DBG::dump($pageToRemove);
         self::$em->clear();
 
         $nodeToRemove = array_unique($nodeToRemove);
-DBG::dump($nodeToRemove);
+\DBG::dump($nodeToRemove);
         foreach ($nodeToRemove as $nodeId) {
-            DBG::msg("Removing node $nodeId");
+            \DBG::msg("Removing node $nodeId");
             $node = self::$em->getRepository('Cx\Model\ContentManager\Node')->find($nodeId);
             self::$em->getRepository('Cx\Model\ContentManager\Node')->removeFromTree($node);
 
@@ -505,11 +460,12 @@ DBG::dump($nodeToRemove);
         return $return;
     }
     
-    function parseTree()
+    private function getTreeCode()
     {
         $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');                
         $pages = $pageRepo->findAll();
         $nodes = array();
+        
         foreach ($pages as $page) {
             if (!$page->getLang()) {
                 continue;
@@ -521,174 +477,47 @@ DBG::dump($nodeToRemove);
 
             $nodes[$page->getNode()->getId()][$page->getLang()] = $page->getId();
         }
+        
+        $objCx = \ContrexxJavascript::getInstance();
+        
         $langs = json_encode($this->availableFrontendLanguages);
+        $objCx->setVariable('langs', $langs, 'update/contentMigration');
 
         $arrSimilarPages = $this->findSimilarPages();
-        $arrSimilarPagesJS = json_encode($arrSimilarPages);
-
-
+        $arrSimilarPagesJs = json_encode($arrSimilarPages);
+        $objCx->setVariable('arrSimilarPagesJs', $arrSimilarPagesJS, 'update/contentMigration');
+        $objCx->setVariable('defaultLang', '{' . $this->defaultLang . '}', 'update/contentMigration');
+        
+        $html  = '';
         $htmlOption = '<option value="%1$s_%2$s" class="%5$s" onclick="javascript:selectPage(this,%6$s)">%4$s</option>';
         $htmlMenu = '<div style="float:left;"><select id="page_tree_%1$s" size="30" onclick="javascript:choose(this,%1$s)" onkeypress="javascript:handleEvent(event,this,%1$s)" style="height:700px;">%2$s</select><br /><input type="text" id="page_group_%1$s" /></div>';
-
-        $js = <<<JS_
-<script type="text/javascript" src="../../../lib/javascript/jquery/jquery-1.6.1.min.js" ></script>
-<script type="text/javascript">
-var langs = $langs;
-var similarPages = $arrSimilarPagesJS;
-var defaultLang = {$this->defaultLang};
-var nodePageRegexp = /(\d+)_(\d+)/;
-var removePages = new Array();
-
-function handleEvent(event,select,lang)
-{
-    // 46 = DELETE key
-    if (event.keyCode == 46) {
-        page = jQuery(select).find(':selected');
-        removePages.push(nodePageRegexp.exec(page.val())[2]);
-        page.addClass('removed');
-        move2NextUngroupedPage(page,lang);
-    }
-}
-
-function choose(select,selectLang)
-{
-    var selectedPageId = nodePageRegexp.exec(jQuery(select).find(':selected').val())[2];
-
-    associatedNode = null;
-    for (node in similarPages) {
-        for (page in similarPages[node]) {
-            if (similarPages[node][page] == selectedPageId) {
-                associatedNode = node;
-                break;
-            }
-        }
-    }
-
-    if (associatedNode == null) {
-        console.log('nope..');
-        return;
-    }
-
-    for (page in similarPages[associatedNode]) {
-        for (lIdx in langs) {
-            lang = langs[lIdx];
-            if (lang != selectLang) {
-                jQuery(jQuery('#page_tree_'+lang).find('[value$=_'+similarPages[associatedNode][page]+']')).attr('selected', true);
-            }
-        }
-    }
-}
-
-function selectPage(option,lang) {
-    jQuery('#page_group_'+lang).val(jQuery(option).val());
-}
-
-function groupPages()
-{
-    nodeId = null;
-    pages = new Array();
-    options = new Array();
-
-    for (lIdx in langs) {
-        lang = langs[lIdx];
-        pageInfo = jQuery('#page_group_'+lang).val();
-        if (!pageInfo) {
-            continue;
-        }
-
-        pageId = parseInt(nodePageRegexp.exec(pageInfo)[2],10);
-        pages.push(pageId);
-
-        selected = jQuery(jQuery('#page_tree_'+lang).find(':selected'));
-        options[lang] = selected;
-
-        if (lang == defaultLang) {
-            nodeId = nodePageRegexp.exec(pageInfo)[1]
-        }
-
-    }
-
-    if (nodeId) {
-        similarPages[nodeId] = pages;
-
-        for (lang in options) {
-            if (lang) {
-                options[lang].addClass('grouped');
-                move2NextUngroupedPage(options[lang],lang);
-            }
-        }
-    }
-}
-
-function move2NextUngroupedPage(page,lang)
-{
-    while (page = page.next()) {
-        if (page.hasClass('grouped')) {
-            continue;
-        }
-
-        page.attr('selected', true);
-        break;
-    }
-    selectPage(page,lang);
-}
-function executeGrouping()
-{
-    jQuery('#similarPages').val(JSON.stringify(similarPages));
-    jQuery('#removePages').val(JSON.stringify(removePages));
-}
-</script>
-JS_;
-
-        echo $js;
-
-        $css = <<<CSS
-<style type="text/css">
-.level1 {
-    text-indent: 15px;
-}
-.level2 {
-    text-indent: 30px;
-}
-.level3 {
-    text-indent: 45px;
-}
-.grouped {
-    background-color: #0f0;
-}
-.removed {
-    background-color: #f00;
-}
-
-</style>
-CSS;
-
-        echo $css;
-
+        
         foreach ($this->availableFrontendLanguages as $lang) {
-            $objContentTree = new ContentTree($lang);
+            $objContentTree = new \ContentTree($lang);
             $options = '';
+            
             foreach ($objContentTree->getTree() as $arrPage) {
-//print_r($arrPage);
                 $pageId = $nodes[$arrPage['node_id']][$arrPage['lang']];
                 $grouped = $this->isGrouppedPage($arrSimilarPages, $pageId) ? ' grouped' : '';
                 $options .= sprintf($htmlOption, $arrPage['node_id'], $pageId, $arrPage['lang'], contrexx_raw2xhtml($arrPage['catname']), 'level'.$arrPage['level'].$grouped, $lang);
             }
+            
             $menu = sprintf($htmlMenu, $lang, $options);
-
-        print $menu;
+            $html .= $menu;
         }
 
 
-        print '<div style="clear:left;">';
-        print '<input type="button" value="group" onclick="javascript:groupPages()" />';
-        print 'Press DEL to remove a page';
-        print '<form action="'.$_SERVER['PHP_SELF'].'" method="POST">';
-        print '<input type="hidden" name="similarPages" id="similarPages" value="" />';
-        print '<input type="hidden" name="removePages" id="removePages" value="" />';
-        print '<input type="submit" name="doGroup" value="do group..." onclick="javascript:executeGrouping();return true;" />';
-        print '</form>';
-        print '</div>';
+        $html .= '<div style="clear:left;">';
+        $html .= '<input type="button" value="group" onclick="javascript:groupPages()" />';
+        $html .= 'Press DEL to remove a page';
+        $html .= '<form action="'.$_SERVER['PHP_SELF'].'" method="POST">';
+        $html .= '<input type="hidden" name="similarPages" id="similarPages" value="" />';
+        $html .= '<input type="hidden" name="removePages" id="removePages" value="" />';
+        $html .= '<input type="submit" name="doGroup" value="do group..." onclick="javascript:executeGrouping();return true;" />';
+        $html .= '</form>';
+        $html .= '</div>';
+        
+        return $html;
     }
 
     private function isGrouppedPage($arrSimilarPages, $pageId)
@@ -712,10 +541,8 @@ CSS;
       the ids of all 'non-lost' pages are then returned.
      */
     function getVisiblePageIDs() {
-        global $objDatabase;
-
         $query = "SELECT lang FROM ".DBPREFIX."content_navigation GROUP BY lang";
-        $result = $objDatabase->Execute($query);
+        $result = $this->db->Execute($query);
 
 
         $pageIds = array();
@@ -733,7 +560,6 @@ CSS;
 
     function getVisiblePageIDsForLang($lang)
     {
-        global $objDatabase;
         $query = "SELECT
                          n.lang,
                          n.catid AS catid,
@@ -743,7 +569,7 @@ CSS;
                    WHERE n.lang = $lang 
                 ORDER BY n.parcat ASC, n.displayorder ASC";
 
-        $objResult = $objDatabase->Execute($query);
+        $objResult = $this->db->Execute($query);
         if ($objResult === false) {
             //problem.
         }
@@ -779,4 +605,3 @@ CSS;
     }
 
 }
-

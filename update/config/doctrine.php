@@ -2,14 +2,14 @@
 
 use \Cx\Update\UpdatePageEventListener as PageEventListener;
 
-require_once(UPDATE_PATH.'/lib/UpdatePageEventListener.class.php');
+$cl->loadFile(UPDATE_PATH . '/core/UpdatePageEventListener.class.php');
 
 $_DBCONFIG   = \Env::get('dbconfig');
-$doctrineDir = ASCMS_LIBRARY_PATH.'/doctrine/';
+$doctrineDir = ASCMS_LIBRARY_PATH . '/doctrine/';
 
 //require_once $doctrineDir.'vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
 //use \Doctrine\Common\ClassLoader as ClassLoader;
-require_once ASCMS_CORE_PATH.'/ClassLoader.class.php';
+require_once(ASCMS_CORE_PATH.'/ClassLoader.class.php');
 use \Cx\ClassLoader as ClassLoader;
 
 $classLoader = new ClassLoader('Doctrine\ORM', realpath($doctrineDir));
