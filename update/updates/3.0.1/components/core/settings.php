@@ -277,11 +277,9 @@ function _updateSettings()
             $options .= '<option value="'.$id.'"'.($selected == $id ? ' selected="selected"' : '').'>'.$name.' ('.$gmt.')'.'</option>';
         }
 
-        $objUpdate->arrStatusMsg['title'] = $_CORELANG['TXT_TIMEZONE'];
-        $objUpdate->arrStatusMsg['msg'] = array('
-            '.$_CORELANG['TXT_TIMEZONE_INTRODUCTION'].' <select name="timezone">'.$options.'</select>
-        ');
-        $objUpdate->arrStatusMsg['button'] = '<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />';
+        setUpdateMsg($_CORELANG['TXT_TIMEZONE'], 'title');
+        setUpdateMsg($_CORELANG['TXT_TIMEZONE_INTRODUCTION'].' <select name="timezone">'.$options.'</select>', 'msg');
+        setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
         return false;
     }
 

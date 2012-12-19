@@ -1456,6 +1456,8 @@ function _coreUpdate()
     }
 
 
+
+
     /**********************************************************
     * EXTENSION:    Fallback language and app device template *
     * ADDED:        Contrexx v3.0.0                           *
@@ -1477,6 +1479,67 @@ function _coreUpdate()
         }
     } catch (UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
+
+
+
+    /***********************************************************
+    * EXTENSION:    css class instead of id for auto generated *
+    *               submenu in nested navigation               *
+    * ADDED:        Contrexx v3.0.0                            *
+    ************************************************************/
+    function changeNestedNavigationCss($directory)
+    {
+        if ($handle = opendir($directory)) {
+            while (($file = readdir($handle)) !== false) {
+                if (!in_array($file, array('.', '..', '.svn'))) {
+                    $file = $directory.'/'.$file;
+                    if (is_dir($file)) {
+                        changeNestedNavigationCss($file);
+                    } else {
+                        if (substr($file, -4) == '.css') {
+                            try {
+                                $objFile = new \Cx\Lib\FileSystem\File($file);
+                                if (($data = $objFile->getData()) && !empty($data)) {
+                                    $objFile->write(preg_replace('/#menu_level_(\d+)(?!([\w-_]+))/', '.menu_level_\\1', $data));
+                                }
+                            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                                \DBG::msg($e->getMessage());
+                            }
+                        }
+                    }
+                }
+            }
+            closedir($handle);
+        }
+    }
+    
+    $path = ASCMS_DOCUMENT_ROOT.'/themes';
+    foreach (scandir($path) as $theme) {
+        if (!in_array($theme, array('.', '..'))) {
+            $theme = $path.'/'.$theme;
+            $changeNestedNavigationCss = false;
+            $navigationFiles = array('navbar.html', 'navbar2.html', 'navbar3.html', 'subnavbar.html', 'subnavbar2.html', 'subnavbar3.html');
+            foreach ($navigationFiles as $file) {
+                $file = $theme.'/'.$file;
+                if (file_exists($file)) {
+                    try {
+                        $objFile = new \Cx\Lib\FileSystem\File($file);
+                        if (($data = $objFile->getData()) && !empty($data)) {
+                            if (strpos($data, 'nested_navigation') !== false) {
+                                $changeNestedNavigationCss = true;
+                            }
+                        }
+                    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                        \DBG::msg($e->getMessage());
+                    }
+                }
+            }
+            if ($changeNestedNavigationCss) {
+                changeNestedNavigationCss($theme);
+            }
+        }
     }
 
 
