@@ -13,18 +13,16 @@ set_time_limit(0);
 class ContentMigration
 {
     protected static $em;
+    protected static $defaultLang;
     protected $db;
     protected $nodeArr = array();
-    private $moduleNames = array();
-    private $availableFrontendLanguages = array();
-// TODO: fetch defaultLang from contrexx_languages;
-    private $defaultLang = 1;
-    
+    protected $moduleNames = array();
+    protected $availableFrontendLanguages = array();
     
     public function __construct()
     {
         $this->db = \Env::get('db');
-
+        
         if (\DBG::getMode() & DBG_ADODB_TRACE) {
             \DBG::enable_adodb_debug(true);
         } elseif (\DBG::getMode() & DBG_ADODB || \DBG::getMode() & DBG_ADODB_ERROR) {
@@ -32,9 +30,10 @@ class ContentMigration
         } else {
             \DBG::disable_adodb_debug();
         }
-
+        
         self::$em = \Env::em();
-
+        self::$defaultLang = \FWLanguage::getDefaultLangId();
+        
         $this->initModuleNames();
     }
 
@@ -412,7 +411,7 @@ class ContentMigration
 
         // create base groups for defaultLang
         foreach ($pages as $page) {
-            if ($page->getLang() != $this->defaultLang) {
+            if ($page->getLang() != self::$defaultLang) {
                 continue;
             }
 
@@ -432,7 +431,7 @@ class ContentMigration
 
         // group pages of non-default languages 
         foreach ($pages as $page) {
-            if ($page->getLang() == $this->defaultLang) {
+            if ($page->getLang() == self::$defaultLang) {
                 continue;
             }
 
@@ -470,7 +469,7 @@ class ContentMigration
             if (!$page->getLang()) {
                 continue;
             }
-
+            
             if (!in_array($page->getLang(), $this->availableFrontendLanguages)) {
                 $this->availableFrontendLanguages[] = $page->getLang();
             }
@@ -482,13 +481,13 @@ class ContentMigration
         
         $langs = json_encode($this->availableFrontendLanguages);
         $objCx->setVariable('langs', $langs, 'update/contentMigration');
-
+        
         $arrSimilarPages = $this->findSimilarPages();
         $arrSimilarPagesJs = json_encode($arrSimilarPages);
         $objCx->setVariable('arrSimilarPagesJs', $arrSimilarPagesJS, 'update/contentMigration');
-        $objCx->setVariable('defaultLang', '{' . $this->defaultLang . '}', 'update/contentMigration');
+        $objCx->setVariable('defaultLang', '{' . self::$defaultLang . '}', 'update/contentMigration');
         
-        $html  = '';
+        $html = '';
         $htmlOption = '<option value="%1$s_%2$s" class="%5$s" onclick="javascript:selectPage(this,%6$s)">%4$s</option>';
         $htmlMenu = '<div style="float:left;"><select id="page_tree_%1$s" size="30" onclick="javascript:choose(this,%1$s)" onkeypress="javascript:handleEvent(event,this,%1$s)" style="height:700px;">%2$s</select><br /><input type="text" id="page_group_%1$s" /></div>';
         

@@ -42,13 +42,22 @@ class FWLanguage
     static function init()
     {
         global $_CONFIG, $objDatabase;
-
+        
+        $incDoctrineStatus = Env::get('incDoctrineStatus');
+        $fallback = $incDoctrineStatus ? ', fallback' : '';
+        
         $objResult = $objDatabase->Execute("
             SELECT id, lang, name, charset, themesid,
-                   frontend, backend, is_default
+                   frontend, backend, is_default" . $fallback . "
               FROM ".DBPREFIX."languages
              ORDER BY id ASC");
         if ($objResult) {
+            $full = false;
+            if ($incDoctrineStatus) {
+                $license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
+                $license->check();
+                $full = $license->isInLegalComponents('fulllanguage');
+            }
             while (!$objResult->EOF) {
                 self::$arrLanguages[$objResult->fields['id']] = array(
                     'id'         => $objResult->fields['id'],
@@ -59,8 +68,9 @@ class FWLanguage
                     'frontend'   => $objResult->fields['frontend'],
                     'backend'    => $objResult->fields['backend'],
                     'is_default' => $objResult->fields['is_default'],
+                    'fallback'   => $objResult->fields['fallback'],
                 );
-                if ($objResult->fields['is_default'] != 'true') {
+                if (!$full && $objResult->fields['is_default'] != 'true') {
                     self::$arrLanguages[$objResult->fields['id']]['frontend'] = 0;
                     self::$arrLanguages[$objResult->fields['id']]['backend'] = 0;
                 }
@@ -351,5 +361,57 @@ class FWLanguage
             if ($arrLanguage['lang'] == $code) return $id;
         }
         return false;
+    }
+
+
+    /**
+     * Return the fallback language ID for the given ID
+     *
+     * Returns false on failure, or if the ID is invalid
+     * @param   integer $langId         The language ID
+     * @return  integer   $langId         The language ID, or false
+     * @static
+     */
+    static function getFallbackLanguageIdById($langId)
+    {
+        if (empty(self::$arrLanguages)) self::init();
+        if ($langId == self::getDefaultLangId()) return false;
+        $fallback_lang = self::getLanguageParameter($langId, 'fallback');
+        if ($fallback_lang == 0) $fallback_lang = intval(self::getDefaultLangId());;
+        if ($langId == $fallback_lang) return false;
+        return $fallback_lang;
+    }
+
+    /**
+     * Builds an array mapping language ids to fallback language ids.
+     *
+     * @return array ( language id => fallback language id )
+     */
+    static function getFallbackLanguageArray() {
+        global $objDatabase;
+        $ret = array();
+
+        $defaultLangId = intval(self::getDefaultLangId());
+
+        $query = "SELECT id, fallback FROM ".DBPREFIX."languages where fallback IS NOT NULL";
+        $rs = $objDatabase->Execute($query);
+
+        while(!$rs->EOF) {
+            $langId = intval($rs->fields['id']);
+            $fallbackLangId = intval($rs->fields['fallback']);
+            
+            //explicitly overwrite null (default) with the default language id
+            if($fallbackLangId === 0) {
+                $fallbackLangId = $defaultLangId;
+            }
+
+            if ($langId == $fallbackLangId || $langId == self::getDefaultLangId()) {
+                $fallbackLangId = false;
+            }
+            $ret[$langId] = $fallbackLangId;
+            $rs->MoveNext();
+        }
+        
+        return $ret;
     }
 }

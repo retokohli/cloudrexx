@@ -10,7 +10,7 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     global $_ARRAYLANG, $_CORELANG, $_CONFIG, $objDatabase, $objUpdate;
 
     $_SESSION['copyFilesFinished'] = !empty($_SESSION['copyFilesFinished']) ? $_SESSION['copyFilesFinished'] : false;
-
+    
     // Copy cx files to the root directory
     if (!$_SESSION['copyFilesFinished']) {
         if (!copyCxFilesToRoot(dirname(__FILE__) . '/cx_files', ASCMS_PATH . ASCMS_PATH_OFFSET)) {
@@ -19,7 +19,7 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
         $_SESSION['copyFilesFinished'] = true;
     }
     unset($_SESSION['copiedCxFilesIndex']);
-
+    
     /**
      * This needs to be initialized before loading config/doctrine.php
      * Because we overwrite the Gedmo model (so we need to load our model
@@ -28,22 +28,27 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     require_once(UPDATE_PATH . '/core/ClassLoader/ClassLoader.class.php');
     $cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true);
     Env::set('ClassLoader', $cl);
-
+    
     // Doctrine configuration
     $incDoctrineStatus = require_once(UPDATE_PATH . '/config/doctrine.php');
-
+    Env::set('incDoctrineStatus', $incDoctrineStatus);
+    
     $objFWUser = FWUser::getFWUserObject();
     $userData = array(
-        'id' => $objFWUser->objUser->getId(),
+        'id'   => $objFWUser->objUser->getId(),
         'name' => $objFWUser->objUser->getUsername(),
     );
     $loggableListener = \Env::get('loggableListener');
     $loggableListener->setUsername(json_encode($userData));
-
+    
+    // Reinitialize FWLanguage. Now with fallback (doctrine).
+    FWLanguage::init();
+    
     Env::get('ClassLoader')->loadFile(dirname(__FILE__) . '/ContentMigration.class.php');
     $contentMigration = new \Cx\Update\ContentMigration();
     //$contentMigration->migrate();
     $pageGrouping = $contentMigration->pageGrouping();
+    
     if ($pageGrouping) {
         setUpdateMsg('Inhaltsseiten gruppieren', 'title');
         setUpdateMsg($pageGrouping, 'msg');
@@ -51,7 +56,7 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
 
         return false;
     }
-
+    
     $arrDirs = array('core_module', 'module');
     $updateStatus = true;
 
