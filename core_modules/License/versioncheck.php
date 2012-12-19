@@ -5,13 +5,21 @@ echo '<pre>';//*/
 
 global $_CONFIG, $_FTPCONFIG, $_DBCONFIG, $sessionObj, $objInit, $objDatabase, $documentRoot;
 
+function loadFile($file, $class) {
+    if (!class_exists($class)) {
+        return $cl->loadFile($file);
+    }
+}
+
 // when included in installer, this is set
 if (!isset($documentRoot)) {
     $documentRoot = dirname(dirname(dirname(__FILE__)));
 }
 
 // load requirements
-require_once($documentRoot.'/lib/FRAMEWORK/DBG/DBG.php');
+if (!class_exists("DBG")) {
+    require_once($documentRoot.'/lib/FRAMEWORK/DBG/DBG.php');
+}
 require_once($documentRoot.'/config/settings.php');              // needed for configuration.php
 require_once($documentRoot.'/config/configuration.php');         // needed for API
 
@@ -24,24 +32,24 @@ if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
 require_once($documentRoot.'/core/ClassLoader/ClassLoader.class.php');
 $cl = new \Cx\Core\ClassLoader\ClassLoader($documentRoot, false, $customizing);
 
-$cl->loadFile($documentRoot.'/core/Env.class.php');               // needed for FileSystem
+loadFile($documentRoot.'/core/Env.class.php', 'Env');               // needed for FileSystem
 Env::set('ClassLoader', $cl);
 Env::set('config', $_CONFIG);
 Env::set('ftpConfig', $_FTPCONFIG);
 
-$cl->loadFile($documentRoot.'/core/API.php');                             // needed for getDatabaseObject()
-$cl->loadFile($documentRoot.'/lib/FRAMEWORK/User/User_Setting_Mail.class.php');
-$cl->loadFile($documentRoot.'/lib/FRAMEWORK/User/User_Setting.class.php');
-$cl->loadFile($documentRoot.'/lib/FRAMEWORK/User/User_Profile_Attribute.class.php');
-$cl->loadFile($documentRoot.'/lib/FRAMEWORK/User/User_Profile.class.php');
-$cl->loadFile($documentRoot.'/lib/FRAMEWORK/User/UserGroup.class.php');
-$cl->loadFile($documentRoot.'/lib/FRAMEWORK/User/User.class.php');
-$cl->loadFile($documentRoot.'/lib/FRAMEWORK/Language.class.php');
-$cl->loadFile($documentRoot.'/lib/FRAMEWORK/FWUser.class.php');
-$cl->loadFile($documentRoot.'/lib/PEAR/HTTP/Request2.php');
-$cl->loadFile($documentRoot.'/core/Init.class.php');
-$cl->loadFile($documentRoot.'/core/settings.class.php');
-$cl->loadFile($documentRoot.'/core/session.class.php');
+loadFile($documentRoot.'/core/API.php',                                         'HTML_Template_Sigma'); // needed for getDatabaseObject()
+loadFile($documentRoot.'/lib/FRAMEWORK/User/User_Setting_Mail.class.php',       'User_Setting_Mail');
+loadFile($documentRoot.'/lib/FRAMEWORK/User/User_Setting.class.php',            'User_Setting');
+loadFile($documentRoot.'/lib/FRAMEWORK/User/User_Profile_Attribute.class.php',  'User_Profile_Attribute');
+loadFile($documentRoot.'/lib/FRAMEWORK/User/User_Profile.class.php',            'User_Profile');
+loadFile($documentRoot.'/lib/FRAMEWORK/User/UserGroup.class.php',               'UserGroup');
+loadFile($documentRoot.'/lib/FRAMEWORK/User/User.class.php',                    'User');
+loadFile($documentRoot.'/lib/FRAMEWORK/Language.class.php',                     'FWLanguage');
+loadFile($documentRoot.'/lib/FRAMEWORK/FWUser.class.php',                       'FWUser');
+loadFile($documentRoot.'/lib/PEAR/HTTP/Request2.php',                           'HTTP_Request2');
+loadFile($documentRoot.'/core/Init.class.php',                                  'InitCMS');
+loadFile($documentRoot.'/core/settings.class.php',                              'settingsManager');
+loadFile($documentRoot.'/core/session.class.php',                               'cmsSession');
 
 $objDatabase = getDatabaseObject($strErrMessage, true);
 $objInit = new InitCMS('backend', null);
@@ -89,7 +97,7 @@ if (!$objUser->login(true)) {
 }
 
 if (isset($_GET['silent']) && $_GET['silent'] == 'true') {
-    return;
+    return true;
 }
 
 // show info

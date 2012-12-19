@@ -78,8 +78,11 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     } elseif (!@include_once(dirname(__FILE__) . '/components/core/version.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/version.php'));
         return false;
+    } elseif (!@include_once(dirname(__FILE__) . '/components/core/license.class.php')) {
+        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/license.class.php'));
+        return false;
     }
-
+    
     if (!isset($_SESSION['contrexx_update']['update']['done'])) {
         $_SESSION['contrexx_update']['update']['done'] = array();
     }
@@ -221,6 +224,19 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
             } else {
                 $_SESSION['contrexx_update']['update']['done'][] = 'coreModuleRepository';
             }
+        }
+    }
+    
+    if (!in_array('coreLicense', $_SESSION['contrexx_update']['update']['done'])) {
+        $lupd = new \Cx\Update\Cx3_0_1\Core\License();
+        $result = $lupd->update();
+        if ($result === false) {
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_LICENSE_DATA']), 'title');
+            }
+            return false;
+        } else {
+            $_SESSION['contrexx_update']['update']['done'][] = 'coreLicense';
         }
     }
 
