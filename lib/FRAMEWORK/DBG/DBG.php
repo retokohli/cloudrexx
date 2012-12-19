@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Debugging
  * @version     3.0.0
@@ -11,23 +10,34 @@
  */
 
 // Basic flags
-define('DBG_NONE',        0);
-define('DBG_PHP',         1<<0);
-define('DBG_ADODB',       1<<1);
-define('DBG_ADODB_TRACE', 1<<2);
-define('DBG_ADODB_ERROR', 1<<3);
-define('DBG_LOG_FILE',    1<<4);
-define('DBG_LOG_FIREPHP', 1<<5);
+define('DBG_NONE',              0);
+define('DBG_PHP',               1<<0);
+define('DBG_ADODB',             1<<1);
+define('DBG_ADODB_TRACE',       1<<2);
+define('DBG_ADODB_CHANGE',      1<<3);
+define('DBG_ADODB_ERROR',       1<<4);
+define('DBG_DOCTRINE',          1<<5);
+define('DBG_DOCTRINE_TRACE',    1<<6);
+define('DBG_DOCTRINE_CHANGE',   1<<7);
+define('DBG_DOCTRINE_ERROR',    1<<8);
+define('DBG_DB',                DBG_ADODB | DBG_DOCTRINE);
+define('DBG_DB_TRACE',          DBG_ADODB_TRACE | DBG_DOCTRINE_TRACE);
+define('DBG_DB_CHANGE',         DBG_ADODB_CHANGE | DBG_DOCTRINE_CHANGE);
+define('DBG_DB_ERROR',          DBG_ADODB_ERROR | DBG_DOCTRINE_ERROR);
+define('DBG_LOG_FILE',          1<<9);
+define('DBG_LOG_FIREPHP',       1<<10);
+define('DBG_LOG',               1<<11);
 // Full debugging (quite pointless really)
 define('DBG_ALL',
       DBG_PHP
-    | DBG_ADODB | DBG_ADODB_TRACE | DBG_ADODB_ERROR
-    | DBG_LOG_FILE | DBG_LOG_FIREPHP);
+    | DBG_DB | DBG_DB_TRACE | DBG_DB_ERROR | DBG_DB_CHANGE
+    | DBG_LOG_FILE | DBG_LOG_FIREPHP
+    | DBG_LOG);
 // Common debugging modes (add more as required)
 define('DBG_ERROR_FIREPHP',
-      DBG_PHP | DBG_ADODB_ERROR | DBG_LOG_FIREPHP);
+      DBG_PHP | DBG_DB_ERROR | DBG_LOG_FIREPHP);
 define('DBG_DB_FIREPHP',
-      DBG_PHP | DBG_ADODB | DBG_LOG_FIREPHP);
+      DBG_PHP | DBG_DB | DBG_LOG_FIREPHP);
 
 DBG::deactivate();
 
@@ -76,7 +86,7 @@ class DBG
     public static function activate($mode = null)
     {
         if (!self::$fileskiplength) {
-            self::$fileskiplength = strlen(dirname(dirname(__FILE__))) +1;
+            self::$fileskiplength = strlen(dirname(dirname(dirname(dirname(__FILE__))))) + 1;
         }
         if ($mode === DBG_NONE) {
             self::$mode = DBG_NONE;
@@ -86,7 +96,6 @@ class DBG
             self::$mode = self::$mode | $mode;
         }
         self::__internal__setup();
-        self::enable_all();
     }
 
 
@@ -101,7 +110,6 @@ class DBG
     {
         if (empty($mode)) {
             self::$mode = DBG_NONE;
-            self::disable_all();
         } else {
             self::$mode = self::$mode  & ~$mode;
         }
@@ -129,16 +137,28 @@ class DBG
             self::disable_firephp();
         }
         // log mysql queries
-        if ((self::$mode & DBG_ADODB) || (self::$mode & DBG_ADODB_TRACE) || (self::$mode & DBG_ADODB_ERROR)) {
+        if ((self::$mode & DBG_ADODB) || (self::$mode & DBG_ADODB_TRACE) || (self::$mode & DBG_ADODB_CHANGE) || (self::$mode & DBG_ADODB_ERROR)) {
             self::enable_adodb();
         } else {
             self::disable_adodb_debug();
+        }
+        // log doctrine sql queries
+        if (self::$mode & DBG_DOCTRINE || (self::$mode & DBG_DOCTRINE_TRACE) || (self::$mode & DBG_DOCTRINE_CHANGE) || (self::$mode & DBG_DOCTRINE_ERROR)) {
+            // No need to do anything here. \Cx\Lib\DBG\DoctrineSQLLogger handles this using \DBG::getMode()
+        } else {
+            // No need to do anything here. \Cx\Lib\DBG\DoctrineSQLLogger handles this using \DBG::getMode()
         }
         // log php warnings/erros/notices...
         if (self::$mode & DBG_PHP) {
             self::enable_error_reporting();
         } else {
             self::disable_error_reporting();
+        }
+        // output log messages
+        if (self::$mode & DBG_LOG) {
+            self::enable_all();
+        } else {
+            self::disable_all();
         }
     }
 
@@ -163,11 +183,12 @@ class DBG
         if (self::$log_file) return;
         // disable firephp first
         self::disable_firephp();
-        self::$log_file = true;
 // DO NOT OVERRIDE DEFAULT BEHAVIOR FROM INSIDE THE CLASS!
 // Call a method to do this from the outside.
 //        self::setup('dbg.log', 'w');
-        self::setup('dbg.log');
+        if (self::setup('dbg.log')) {
+            self::$log_file = true;
+        }
     }
 
 
@@ -201,7 +222,9 @@ class DBG
         self::disable_file();
         ob_start();
         if (!isset(self::$firephp)) {
-            require_once 'firephp/FirePHP.class.php';
+            if (!include_once(dirname(dirname(dirname(__FILE__))).'/firephp/FirePHP.class.php')) {
+                return;
+            }
             self::$firephp = FirePHP::getInstance(true);
         }
         self::$firephp->registerErrorHandler(false);
@@ -281,7 +304,11 @@ class DBG
             $suffix = '.'.++$nr;
         }*/
         self::$dbg_fh = fopen($file.$suffix, $mode);
-        return true;
+        if (self::$dbg_fh) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 
@@ -311,7 +338,7 @@ class DBG
             if (!defined('ADODB_OUTP')) define('ADODB_OUTP', 'DBG_log_adodb');
             self::$log_adodb = true;
         }
-        self::enable_adodb_debug(self::$mode & DBG_ADODB_TRACE);
+        self::enable_adodb_debug();
     }
 
 
@@ -320,11 +347,8 @@ class DBG
         global $objDatabase;
 
         if (!isset($objDatabase)) return;
-        if ($flagTrace) {
-            $objDatabase->debug = 99;
-        } else {
-            $objDatabase->debug = 1;
-        }
+
+        $objDatabase->debug = 1;
     }
 
 
@@ -336,7 +360,6 @@ class DBG
         $objDatabase->debug = 0;
         self::$log_adodb = false;
     }
-
 
     static function disable_trace()
     {
@@ -480,6 +503,8 @@ class DBG
         $out = str_replace("\n", "\n        ", $out);
         if (!self::$log_file) {
             // we're logging directly to the browser
+            // can't use contrexx_raw2xhtml() here, because it might not 
+            // have been loaded till now
             self::_log('DUMP:   <p><pre>'.htmlentities($out, ENT_QUOTES, CONTREXX_CHARSET).'</pre></p>');
         } else {
             self::_log('DUMP:   '.$out);
@@ -491,6 +516,10 @@ class DBG
     {
         if (!self::$log_file && !self::$log_firephp) echo '<pre>';
         $callers = debug_backtrace();
+
+        // remove call to this method (DBG::stack())
+        array_shift($callers);
+
         self::_log("TRACE:  === STACKTRACE BEGIN ===");
         $err = error_reporting(E_ALL ^ E_NOTICE);
         foreach ($callers as $c) {
@@ -508,7 +537,9 @@ class DBG
 
     static function msg($message)
     {
-        self::_log('LOGMSG: '.$message);
+        if (!self::$enable_msg) return;
+
+        self::_log('MSG: '.$message);
     }
 
 
@@ -575,10 +606,10 @@ class DBG
                     break;
             }
             if (self::$log_file) {
-                self::_log("(php): $type$suppressed: $errstr in $errfile on line $errline");
+                self::_log("PHP: $type$suppressed: $errstr in $errfile on line $errline");
             }
             if (!self::$log_file) {
-                self::_log("<p><strong>$type</strong>$suppressed: $errstr in <strong>$errfile</strong> on line <strong>$errline</strong></p>");
+                self::_log("PHP: <strong>$type</strong>$suppressed: $errstr in <strong>$errfile</strong> on line <strong>$errline</strong>");
             }
         }
     }
@@ -586,24 +617,24 @@ class DBG
 
     static function log($text, $firephp_action='log', $additional_args=null)
     {
-        self::_log($text, $firephp_action, $additional_args);
+        if (!self::$enable_msg) return;
+
+        self::_log('LOG: '.$text, $firephp_action, $additional_args);
     }
 
 
     private static function _log($text, $firephp_action='log', $additional_args=null)
     {
-        if (!self::$enable_msg) return;
-
         if (self::$log_firephp
             && method_exists(self::$firephp, $firephp_action)) {
             self::$firephp->$firephp_action($additional_args, $text);
-        } elseif (self::$dbg_fh) {
+        } elseif (self::$log_file) {
             fputs(self::$dbg_fh,
 // TODO: Add some flag to enable/disable timestamps
                 date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME).' '.
                 $text."\n");
         } else {
-            echo $text;
+            echo $text.'<br />';
             // force log message output
             ob_flush();
         }
@@ -621,25 +652,62 @@ class DBG
         return self::$sql_query_cache;
     }
 
-}
+    public static function logSQL($sql, $forceOutput = false)
+    {
+        $error = preg_match('#^[0-9]+:#', $sql);
 
+        if ($error) {
+            if (self::$mode & DBG_DB_ERROR || self::$mode & DBG_DB) {
+                self::logSQL(self::getSQLQueryCache(), true);
+            }
+            $status = 'error';
+        } else {
+            $status = preg_match('#^(UPDATE|DELETE|INSERT)#', $sql) ? 'info' : 'log';
+        }
+
+        self::setSQLQueryCache($sql);
+
+        if (!$forceOutput) {
+            switch ($status) {
+                case 'info':
+                    if (   !(self::$mode & DBG_DB_CHANGE)
+                        && !(self::$mode & DBG_DB)
+                    ) {
+                        return;
+                    }
+                    break;
+                case 'error':
+                    if (   !(self::$mode & DBG_DB_ERROR)
+                        && !(self::$mode & DBG_DB)
+                    ) {
+                        return;
+                    }
+                    break;
+                default:
+                    if (!(self::$mode & DBG_DB)) {
+                        return;
+                    }
+                    break;
+            }
+        }
+        if (!self::$log_file && !self::$log_firephp) {
+            // can't use contrexx_raw2xhtml() here, because it might not 
+            // have been loaded till now
+            $sql = htmlentities($sql, ENT_QUOTES, CONTREXX_CHARSET);
+        }
+
+        self::_log('SQL: '.$sql, $status);
+
+        if (!$forceOutput && self::$mode & DBG_DB_TRACE) {
+            self::stack();
+        }
+    }
+}
 
 function DBG_log_adodb($msg)
 {
-    $error = preg_match('#^[0-9]+:#', $msg);
-    if ($error || !(DBG::getMode() & DBG_ADODB_ERROR) || DBG::getMode() & DBG_ADODB) {
-        if ($error) {
-            DBG::log(
-                DBG::getMode() & DBG_LOG_FILE || DBG::getMode() & DBG_LOG_FIREPHP
-                    ? html_entity_decode(strip_tags(DBG::getSQLQueryCache()), ENT_QUOTES, CONTREXX_CHARSET) : DBG::getSQLQueryCache(), 'error');
-        }
-        DBG::log(
-            DBG::getMode() & DBG_LOG_FILE || DBG::getMode() & DBG_LOG_FIREPHP
-                ? html_entity_decode(strip_tags($msg), ENT_QUOTES, CONTREXX_CHARSET)
-                : $msg, $error
-                    ? 'info'
-                    : (preg_match('#\(mysql\):\s*(UPDATE|DELETE|INSERT)#', $msg)
-                        ? 'info' : 'log'));
-    }
-    DBG::setSQLQueryCache($msg);
+    $msg = trim(html_entity_decode(strip_tags($msg), ENT_QUOTES, CONTREXX_CHARSET));
+    $sql = preg_replace('#^\(mysql\):\s*#', '', $msg);
+    DBG::logSQL($sql);
 }
+

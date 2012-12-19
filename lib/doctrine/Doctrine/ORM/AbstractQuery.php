@@ -363,7 +363,15 @@ abstract class AbstractQuery
      */
     public function getResult($hydrationMode = self::HYDRATE_OBJECT)
     {
-        return $this->execute(array(), $hydrationMode);
+        // START: Contrexx customizing for DBG
+        try {
+            return $this->execute(array(), $hydrationMode);
+        } catch (QueryException $e) {
+            \DBG::logSQL($this->getDQL());
+            \DBG::logSQL('0: '.$e->getMessage());
+            return null;
+        }
+        // END: Contrexx customizing for DBG
     }
 
     /**

@@ -189,12 +189,14 @@ class settingsManager
             'TXT_TITLE_SET6'                            => $_CORELANG['TXT_OTHER_CONFIG_OPTIONS'],
             'TXT_DEBUGGING_STATUS'                      => $_CORELANG['TXT_DEBUGGING_STATUS'],
             'TXT_DEBUGGING_FLAGS'                       => $_CORELANG['TXT_DEBUGGING_FLAGS'],
-            'TXT_DEBUGGING_FLAG_PHP'                    => $_CORELANG['TXT_DEBUGGING_FLAG_PHP'],
-            'TXT_DEBUGGING_FLAG_ADODB'                  => $_CORELANG['TXT_DEBUGGING_FLAG_ADODB'],
-            'TXT_DEBUGGING_FLAG_ADODB_TRACE'            => $_CORELANG['TXT_DEBUGGING_FLAG_ADODB_TRACE'],
-            'TXT_DEBUGGING_FLAG_ADODB_ERROR'            => $_CORELANG['TXT_DEBUGGING_FLAG_ADODB_ERROR'],
-            'TXT_DEBUGGING_FLAG_LOG_FILE'               => $_CORELANG['TXT_DEBUGGING_FLAG_LOG_FILE'],
-            'TXT_DEBUGGING_FLAG_LOG_FIREPHP'            => $_CORELANG['TXT_DEBUGGING_FLAG_LOG_FIREPHP'],
+            'TXT_SETTINGS_DEBUGGING_FLAG_LOG'           => $_CORELANG['TXT_SETTINGS_DEBUGGING_FLAG_LOG'],
+            'TXT_SETTINGS_DEBUGGING_FLAG_PHP'           => $_CORELANG['TXT_SETTINGS_DEBUGGING_FLAG_PHP'],
+            'TXT_SETTINGS_DEBUGGING_FLAG_DB'            => $_CORELANG['TXT_SETTINGS_DEBUGGING_FLAG_DB'],
+            'TXT_SETTINGS_DEBUGGING_FLAG_DB_TRACE'      => $_CORELANG['TXT_SETTINGS_DEBUGGING_FLAG_DB_TRACE'],
+            'TXT_SETTINGS_DEBUGGING_FLAG_DB_CHANGE'     => $_CORELANG['TXT_SETTINGS_DEBUGGING_FLAG_DB_CHANGE'],
+            'TXT_SETTINGS_DEBUGGING_FLAG_DB_ERROR'      => $_CORELANG['TXT_SETTINGS_DEBUGGING_FLAG_DB_ERROR'],
+            'TXT_SETTINGS_DEBUGGING_FLAG_LOG_FILE'      => $_CORELANG['TXT_SETTINGS_DEBUGGING_FLAG_LOG_FILE'],
+            'TXT_SETTINGS_DEBUGGING_FLAG_LOG_FIREPHP'   => $_CORELANG['TXT_SETTINGS_DEBUGGING_FLAG_LOG_FIREPHP'],
             'TXT_DEBUGGING_EXPLANATION'                 => $_CORELANG['TXT_DEBUGGING_EXPLANATION'],
             'TXT_SAVE_CHANGES'                          => $_CORELANG['TXT_SAVE'],
             'TXT_SYSTEM_STATUS'                         => $_CORELANG['TXT_SETTINGS_SYSTEMSTATUS'],
@@ -349,10 +351,12 @@ class settingsManager
             'DEBUGGING_HIDE_FLAGS' => $this->stringIfTrue(!$status,'style="display:none;"'),
             'SETTINGS_DEBUGGING_ON' => $this->stringIfTrue($status,'checked="checked"'),
             'SETTINGS_DEBUGGING_OFF' => $this->stringIfTrue(!$status,'checked="checked"'),
+            'SETTINGS_DEBUGGING_FLAG_LOG' => $this->stringIfTrue($flags['log'] || !$status,'checked="checked"'),
             'SETTINGS_DEBUGGING_FLAG_PHP' => $this->stringIfTrue($flags['php'] || !$status,'checked="checked"'),
-            'SETTINGS_DEBUGGING_FLAG_ADODB' => $this->stringIfTrue($flags['adodb'],'checked="checked"'),
-            'SETTINGS_DEBUGGING_FLAG_ADODB_TRACE' => $this->stringIfTrue($flags['adodb_trace'] || !$status,'checked="checked"'),
-            'SETTINGS_DEBUGGING_FLAG_ADODB_ERROR' => $this->stringIfTrue($flags['adodb_error'] || !$status,'checked="checked"'),
+            'SETTINGS_DEBUGGING_FLAG_DB' => $this->stringIfTrue($flags['db'],'checked="checked"'),
+            'SETTINGS_DEBUGGING_FLAG_DB_TRACE' => $this->stringIfTrue($flags['db_trace'] || !$status,'checked="checked"'),
+            'SETTINGS_DEBUGGING_FLAG_DB_CHANGE' => $this->stringIfTrue($flags['db_change'] || !$status,'checked="checked"'),
+            'SETTINGS_DEBUGGING_FLAG_DB_ERROR' => $this->stringIfTrue($flags['db_error'] || !$status,'checked="checked"'),
             'SETTINGS_DEBUGGING_FLAG_LOG_FIREPHP' => $this->stringIfTrue($flags['log_firephp'],'checked="checked"'),
             'SETTINGS_DEBUGGING_FLAG_LOG_FILE' => $this->stringIfTrue($flags['log_file'],'checked="checked"')
         ));
@@ -428,19 +432,23 @@ class settingsManager
 
     /**
      * Calculates a flag value as passed to DBG::activate() from an array.
-     * @param array flags array('php' => bool, 'adodb' => bool, 'adodb_error' => bool, 'log_firephp' => bool
+     * @param array flags array('php' => bool, 'db' => bool, 'db_error' => bool, 'log_firephp' => bool
      * @return int an int with the flags set.
      */
     protected function debuggingFlagsFromFlagArray($flags) {
         $ret = 0;
+        if(isset($flags['log']) && $flags['log'])
+            $ret |= DBG_LOG;
         if(isset($flags['php']) && $flags['php'])
             $ret |= DBG_PHP;
-        if(isset($flags['adodb']) && $flags['adodb'])
-            $ret |= DBG_ADODB;
-        if(isset($flags['adodb_error']) && $flags['adodb_error'])
-            $ret |= DBG_ADODB_ERROR;
-        if(isset($flags['adodb_trace']) && $flags['adodb_trace'])
-            $ret |= DBG_ADODB_TRACE;
+        if(isset($flags['db']) && $flags['db'])
+            $ret |= DBG_DB;
+        if(isset($flags['db_change']) && $flags['db_change'])
+            $ret |= DBG_DB_CHANGE;
+        if(isset($flags['db_error']) && $flags['db_error'])
+            $ret |= DBG_DB_ERROR;
+        if(isset($flags['db_trace']) && $flags['db_trace'])
+            $ret |= DBG_DB_TRACE;
         if(isset($flags['log_file']) && $flags['log_file'])
             $ret |= DBG_LOG_FILE;
         if(isset($flags['log_firephp']) && $flags['log_firephp'])
@@ -452,14 +460,16 @@ class settingsManager
     /**
      * Analyzes an int as passed to DBG::activate() and yields an array containing information about the flags.
      * @param int $flags
-     * @return array('php' => bool, 'adodb' => bool, 'adodb_error' => bool, 'log_firephp' => bool
+     * @return array('php' => bool, 'db' => bool, 'db_error' => bool, 'log_firephp' => bool
      */
     protected function debuggingFlagArrayFromFlags($flags) {
         return array(
+            'log' => (bool)($flags & DBG_LOG),
             'php' => (bool)($flags & DBG_PHP),
-            'adodb' => (bool)($flags & DBG_ADODB),
-            'adodb_error' => (bool)($flags & DBG_ADODB_ERROR),
-            'adodb_trace' => (bool)($flags & DBG_ADODB_TRACE),
+            'db' => (bool)($flags & DBG_DB),
+            'db_change' => (bool)($flags & DBG_DB_CHANGE),
+            'db_error' => (bool)($flags & DBG_DB_ERROR),
+            'db_trace' => (bool)($flags & DBG_DB_TRACE),
             'log_firephp' => (bool)($flags & DBG_LOG_FIREPHP),
             'log_file' => (bool)($flags & DBG_LOG_FILE)
         );
@@ -470,17 +480,23 @@ class settingsManager
 
         $flags = array();
         
+        if(isset($settings['flag_log'])) {
+            $flags['log'] = $settings['flag_log'];
+        }
         if(isset($settings['flag_php'])) {
             $flags['php'] = $settings['flag_php'];
         }
-        if(isset($settings['flag_adodb'])) {
-            $flags['adodb'] = $settings['flag_adodb'];
+        if(isset($settings['flag_db'])) {
+            $flags['db'] = $settings['flag_db'];
         }
-        if(isset($settings['flag_adodb_error'])) {
-            $flags['adodb_error'] = $settings['flag_adodb_error'];
+        if(isset($settings['flag_db_change'])) {
+            $flags['db_change'] = $settings['flag_db_change'];
         }
-        if(isset($settings['flag_adodb_trace'])) {
-            $flags['adodb_trace'] = $settings['flag_adodb_trace'];
+        if(isset($settings['flag_db_error'])) {
+            $flags['db_error'] = $settings['flag_db_error'];
+        }
+        if(isset($settings['flag_db_trace'])) {
+            $flags['db_trace'] = $settings['flag_db_trace'];
         }
         if(isset($settings['flag_log_firephp'])) {
             $flags['log_firephp'] = $settings['flag_log_firephp'];
