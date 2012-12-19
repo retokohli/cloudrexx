@@ -269,8 +269,9 @@ table.adminlist td {
 
 .td-status {
     float: left;
-    width: 50px;
+    width: 200px;
     padding-right: 10px !important;
+    text-align: right;
 }
 
 /* icons */
