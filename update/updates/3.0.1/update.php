@@ -25,7 +25,7 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
      * Because we overwrite the Gedmo model (so we need to load our model
      * before doctrine loads the Gedmo one)
      */
-    require_once(UPDATE_PATH . '/core/ClassLoader/ClassLoader.class.php');
+    require_once(ASCMS_CORE_PATH . '/ClassLoader/ClassLoader.class.php');
     $cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true);
     Env::set('ClassLoader', $cl);
     
