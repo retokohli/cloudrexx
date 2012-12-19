@@ -87,7 +87,7 @@ Env::set('db', $objDatabase);
 
 // Start session
 $sessionObj = new cmsSession();
-$sessionObj->cmsSessionStatusUpdate('update');
+$sessionObj->cmsSessionStatusUpdate('backend');
 
 // Initialize base system
 $objInit = new \InitCMS('update', \Env::em());
