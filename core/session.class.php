@@ -28,7 +28,6 @@ class cmsSession
     private $sessionPathPrefix = 'session_';
     var $userId;
     var $_objDb;
-    private $compatibilityMode;
     private $lifetime;
     private $defaultLifetime;
     private $defaultLifetimeRememberMe;
@@ -77,7 +76,6 @@ class cmsSession
         $this->_objDb = getDatabaseObject($errorMsg, true);
         
         $this->setAdodbDebugMode();
-        $this->compatibilityMode = ($arrColumns = $this->_objDb->MetaColumnNames(DBPREFIX.'sessions')) && in_array('username', $arrColumns);
     }
 
     /**
@@ -119,10 +117,10 @@ class cmsSession
         if (isset($_POST['remember_me'])) {
             $this->rememberMe = true;
             if ($this->sessionExists($sessionId)) {//remember me status for new sessions will be stored in cmsSessionRead() (when creating the appropriate db entry)
-                $objResult = $this->_objDb->Execute('UPDATE `'.DBPREFIX.'sessions` SET `remember_me` = 1 WHERE `sessionid` = "'.addslashes(contrexx_stripslashes($sessionId)).'"');
+                $objResult = $this->_objDb->Execute('UPDATE `'.DBPREFIX.'sessions` SET `remember_me` = 1 WHERE `sessionid` = "'.contrexx_input2db($sessionId).'"');
             }
         } else {
-            $objResult = $this->_objDb->Execute('SELECT `remember_me` FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.addslashes(contrexx_stripslashes($sessionId)).'"');
+            $objResult = $this->_objDb->Execute('SELECT `remember_me` FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.contrexx_input2db($sessionId).'"');
             if ($objResult && ($objResult->RecordCount() > 0)) {
                 if ($objResult->fields['remember_me'] == 1) {
                     $this->rememberMe = true;
@@ -140,7 +138,7 @@ class cmsSession
      */
     private function sessionExists($sessionId)
     {
-        $objResult = $this->_objDb->Execute('SELECT 1 FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.addslashes(contrexx_stripslashes($sessionId)).'"');
+        $objResult = $this->_objDb->Execute('SELECT 1 FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.contrexx_input2db($sessionId).'"');
         if ($objResult && ($objResult->RecordCount() > 0)) {
             return true;
         } else {
@@ -200,7 +198,7 @@ class cmsSession
         $this->sessionid = $aKey;
         $this->sessionPath = ASCMS_TEMP_WEB_PATH.'/'.$this->sessionPathPrefix.$this->sessionid;
 
-        $objResult = $this->_objDb->Execute('SELECT `datavalue`, `'.($this->compatibilityMode ? 'username' : 'user_id').'`, `status` FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.$aKey.'"');
+        $objResult = $this->_objDb->Execute('SELECT `datavalue`, `user_id`, `status` FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.$aKey.'"');
         if ($objResult !== false) {
             if ($objResult->RecordCount() == 1) {
                 $this->userId = $objResult->fields['user_id'];
@@ -208,8 +206,8 @@ class cmsSession
                 return $objResult->fields['datavalue'];
             } else {
                 $this->_objDb->Execute('
-                    INSERT INTO `'.DBPREFIX.'sessions` (`sessionid`, `remember_me`, `startdate`, `lastupdated`, `status`, `'.($this->compatibilityMode ? 'username' : 'user_id').'`)
-                    VALUES ("'.$aKey.'", '.($this->rememberMe ? 1 : 0).', "'.time().'", "'.time().'", "'.($this->status).'", "'.intval($this->userId).'")
+                    INSERT INTO `'.DBPREFIX.'sessions` (`sessionid`, `remember_me`, `startdate`, `lastupdated`, `status`, `user_id`)
+                    VALUES ("'.$aKey.'", '.($this->rememberMe ? 1 : 0).', "'.time().'", "'.time().'", "'.$this->status.'", '.intval($this->userId).')
                 ');
                 return '';
            }
@@ -261,11 +259,7 @@ class cmsSession
     function cmsSessionUserUpdate($userId=0)
     {
         $this->userId = $userId;
-        $query = "UPDATE ".DBPREFIX."sessions SET user_id ='".$userId."' WHERE sessionid = '".$this->sessionid."'";
-        if ($this->compatibilityMode) {
-           $query = "UPDATE ".DBPREFIX."sessions SET username ='".$userId."' WHERE sessionid = '".$this->sessionid."'";
-        }
-        $this->_objDb->Execute($query);
+        $this->_objDb->Execute('UPDATE `'.DBPREFIX.'sessions` SET `user_id` = '.$userId.' WHERE `sessionid` = "'.$this->sessionid.'"');
         return true;
     }
 
