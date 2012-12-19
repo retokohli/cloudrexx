@@ -31,8 +31,6 @@ class cmsSession
     private $compatibilityMode;
     private $lifetime;
     private $defaultLifetime;
-    private $defaultLifetimeRememberMe;
-    private $rememberMe = false;
 
     function __construct($status='')
     {
@@ -44,7 +42,6 @@ class cmsSession
 
         $this->status = $status;
         $this->initDatabase();
-        $this->initRememberMe();
         $this->initSessionLifetime();
 
         if (session_set_save_handler(
@@ -109,29 +106,6 @@ class cmsSession
     }
 
     /**
-     * Initializes the status of remember me.
-     *
-     * @access  private
-     */
-    private function initRememberMe()
-    {
-        $sessionId = !empty($_COOKIE[session_name()]) ? $_COOKIE[session_name()] : null;
-        if (isset($_POST['remember_me'])) {
-            $this->rememberMe = true;
-            if ($this->sessionExists($sessionId)) {//remember me status for new sessions will be stored in cmsSessionRead() (when creating the appropriate db entry)
-                $objResult = $this->_objDb->Execute('UPDATE `'.DBPREFIX.'sessions` SET `remember_me` = 1 WHERE `sessionid` = "'.addslashes(contrexx_stripslashes($sessionId)).'"');
-            }
-        } else {
-            $objResult = $this->_objDb->Execute('SELECT `remember_me` FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.addslashes(contrexx_stripslashes($sessionId)).'"');
-            if ($objResult && ($objResult->RecordCount() > 0)) {
-                if ($objResult->fields['remember_me'] == 1) {
-                    $this->rememberMe = true;
-                }
-            }
-        }
-    }
-
-    /**
      * Checks if the passed session exists.
      *
      * @access  private
@@ -140,7 +114,7 @@ class cmsSession
      */
     private function sessionExists($sessionId)
     {
-        $objResult = $this->_objDb->Execute('SELECT 1 FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.addslashes(contrexx_stripslashes($sessionId)).'"');
+        $objResult = $this->_objDb->Execute('SELECT 1 FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.contrexx_input2db($sessionId).'"');
         if ($objResult && ($objResult->RecordCount() > 0)) {
             return true;
         } else {
@@ -159,14 +133,7 @@ class cmsSession
         global $_CONFIG;
 
         $this->defaultLifetime = !empty($_CONFIG['sessionLifeTime']) ? intval($_CONFIG['sessionLifeTime']) : 3600;
-        $this->defaultLifetimeRememberMe = !empty($_CONFIG['sessionLifeTimeRememberMe']) ? intval($_CONFIG['sessionLifeTimeRememberMe']) : 1209600;
-
-        if ($this->rememberMe) {
-            $this->lifetime = $this->defaultLifetimeRememberMe;
-        } else {
-            $this->lifetime = $this->defaultLifetime;
-        }
-
+        $this->lifetime = $this->defaultLifetime;
         @ini_set('session.gc_maxlifetime', $this->lifetime);
     }
 
@@ -208,8 +175,8 @@ class cmsSession
                 return $objResult->fields['datavalue'];
             } else {
                 $this->_objDb->Execute('
-                    INSERT INTO `'.DBPREFIX.'sessions` (`sessionid`, `remember_me`, `startdate`, `lastupdated`, `status`, `'.($this->compatibilityMode ? 'username' : 'user_id').'`)
-                    VALUES ("'.$aKey.'", '.($this->rememberMe ? 1 : 0).', "'.time().'", "'.time().'", "'.($this->status).'", "'.intval($this->userId).'")
+                    INSERT INTO `'.DBPREFIX.'sessions` (`sessionid`, `startdate`, `lastupdated`, `status`, `'.($this->compatibilityMode ? 'username' : 'user_id').'`)
+                    VALUES ("'.$aKey.'", "'.time().'", "'.time().'", "'.($this->status).'", "'.intval($this->userId).'")
                 ');
                 return '';
            }
@@ -253,8 +220,7 @@ class cmsSession
 
     function cmsSessionGc()
     {
-        $this->_objDb->Execute('DELETE FROM `'.DBPREFIX.'sessions` WHERE ((`remember_me` = 0) AND (`lastupdated` < '.(time()-$this->defaultLifetime).'))');
-        $this->_objDb->Execute('DELETE FROM `'.DBPREFIX.'sessions` WHERE ((`remember_me` = 1) AND (`lastupdated` < '.(time()-$this->defaultLifetimeRememberMe).'))');
+        $this->_objDb->Execute('DELETE FROM `'.DBPREFIX.'sessions` WHERE `lastupdated` < '.(time()-$this->defaultLifetime));
         return true;
     }
 

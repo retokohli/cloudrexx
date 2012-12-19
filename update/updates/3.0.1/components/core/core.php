@@ -1543,6 +1543,29 @@ function _coreUpdate()
     }
 
 
+
+
+    /**********************************************************
+    * EXTENSION:    Session garbage collector considers now   *
+    *               the individual lifetime of each session   *
+    *               (needed since remember me is implemented) *
+    * ADDED:        Contrexx v3.0.1                           *
+    ***********************************************************/
+    try {
+        $arrColumns = $objDatabase->MetaColumnNames(DBPREFIX.'sessions');
+        if ($arrColumns === false) {
+            setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'languages'));
+            return false;
+        }
+
+        if (!isset($arrColumns['REMEMBER_ME'])) {
+            \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'sessions` ADD `remember_me` INT(1) NOT NULL DEFAULT 0 AFTER `sessionid`');
+        }
+    } catch (UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
+
     return true;
 }
 
