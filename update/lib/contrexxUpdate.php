@@ -99,6 +99,7 @@ function parseResponse()
         setContent(oResponse.content);
         setLogout(oResponse.logout);
         setNavigation(oResponse.navigation);
+        cx.ui.tooltip();
       } catch(e) {}
     } else {
       setContent('<?php $txt = '<div class="message-alert">Das Update-Script gibt keine Antwort zurück!</div>';print UPDATE_UTF8 ?  utf8_encode($txt) : $txt;?>');

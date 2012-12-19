@@ -517,25 +517,29 @@ class ContrexxUpdate
         }
         $arrPhpExtensions['ftp']['name']  = $_CORELANG['TXT_UPDATE_FTP_SUPPORT'] . ' <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">' . $_CORELANG['TXT_UPDATE_FTP_SUPPORT_TOOLTIP'] . '</span>';
         
-        if ($this->getWebserverSoftware() == 'apache' && !$this->checkModRewrite()) {
-            $failed = true;
-            $arrPhpExtensions['modRewrite']['class'] = 'failed';
-            $arrPhpExtensions['modRewrite']['value'] = $_CORELANG['TXT_UPDATE_NO'];
-        } else {
-            $arrPhpExtensions['modRewrite']['class'] = 'successful';
-            $arrPhpExtensions['modRewrite']['value'] = $_CORELANG['TXT_UPDATE_YES'];
+        if ($this->getWebserverSoftware() == 'apache') {
+            if (!$this->checkModRewrite()) {
+                $failed = true;
+                $arrPhpExtensions['modRewrite']['class'] = 'failed';
+                $arrPhpExtensions['modRewrite']['value'] = $_CORELANG['TXT_UPDATE_NO'];
+            } else {
+                $arrPhpExtensions['modRewrite']['class'] = 'successful';
+                $arrPhpExtensions['modRewrite']['value'] = $_CORELANG['TXT_UPDATE_YES'];
+            }
+            $arrPhpExtensions['modRewrite']['name'] = $_CORELANG['TXT_UPDATE_MOD_REWRITE'];
         }
-        $arrPhpExtensions['modRewrite']['name'] = $_CORELANG['TXT_UPDATE_MOD_REWRITE'];
         
-        if ($this->getWebserverSoftware() == 'iis' && !$this->checkIISUrlRewriteModule()) {
-            $failed = true;
-            $arrPhpExtensions['iisUrlRewriteModule']['class'] = 'failed';
-            $arrPhpExtensions['iisUrlRewriteModule']['value'] = $_CORELANG['TXT_UPDATE_NO'];
-        } else {
-            $arrPhpExtensions['iisUrlRewriteModule']['class'] = 'successful';
-            $arrPhpExtensions['iisUrlRewriteModule']['value'] = $_CORELANG['TXT_UPDATE_YES'];
+        if ($this->getWebserverSoftware() == 'iis') {
+            if (!$this->checkIISUrlRewriteModule()) {
+                $failed = true;
+                $arrPhpExtensions['iisUrlRewriteModule']['class'] = 'failed';
+                $arrPhpExtensions['iisUrlRewriteModule']['value'] = $_CORELANG['TXT_UPDATE_NO'];
+            } else {
+                $arrPhpExtensions['iisUrlRewriteModule']['class'] = 'successful';
+                $arrPhpExtensions['iisUrlRewriteModule']['value'] = $_CORELANG['TXT_UPDATE_YES'];
+            }
+            $arrPhpExtensions['iisUrlRewriteModule']['name'] = $_CORELANG['TXT_UPDATE_IIS_URL_REWRITE_MODULE'];
         }
-        $arrPhpExtensions['iisUrlRewriteModule']['name'] = $_CORELANG['TXT_UPDATE_IIS_URL_REWRITE_MODULE'];
         
         if (!$this->checkAPC()) {
             $arrPhpExtensions['apc']['class'] = 'warning';
