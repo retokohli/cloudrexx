@@ -24,6 +24,16 @@ class PageRepository extends EntityRepository {
         parent::__construct($em, $class);
         $this->em = $em;
     }
+    
+    /**
+     * Finds all entities in the repository.
+     *
+     * @return array The entities.
+     */
+    public function findAll()
+    {
+        return $this->findBy(array(), true);
+    }
 
     /**
      * Finds entities by a set of criteria.
