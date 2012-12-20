@@ -907,7 +907,7 @@ class Currency
      * Also migrates old Currency names to the Text class,
      * and inserts default Currencyes if necessary
      * @return  boolean     false       Always!
-     * @throws  Update_DatabaseException
+     * @throws  Cx\Lib\Update_DatabaseException
      */
     static function errorHandler()
     {
@@ -916,7 +916,7 @@ class Currency
 // Currency
         Text::errorHandler();
 
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_currencies';
+        $table_name = DBPREFIX.'module_shop_currencies';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
             'code' => array('type' => 'CHAR(3)', 'notnull' => true, 'default' => ''),
@@ -929,6 +929,7 @@ class Currency
         );
         $table_index = array();
 
+        $default_lang_id = FWLanguage::getDefaultLangId();
         if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
             if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
                 // Migrate all Currency names to the Text table first
@@ -938,15 +939,15 @@ class Currency
                       FROM `$table_name`";
                 $objResult = Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
-                    throw new Update_DatabaseException(
+                    throw new Cx\Lib\Update_DatabaseException(
                        "Failed to query Currency names", $query);
                 }
                 while (!$objResult->EOF) {
                     $id = $objResult->fields['id'];
                     $name = $objResult->fields['name'];
-                    if (!Text::replace($id, FRONTEND_LANG_ID,
+                    if (!Text::replace($id, $default_lang_id,
                         'shop', self::TEXT_NAME, $name)) {
-                        throw new Update_DatabaseException(
+                        throw new Cx\Lib\Update_DatabaseException(
                            "Failed to migrate Currency name '$name'");
                     }
                     $objResult->MoveNext();
@@ -966,9 +967,9 @@ class Currency
             'Euro' => array('EUR', html_entity_decode("&euro;"), 1.180000, '0.01', 2, 1, 0),
             'United States Dollars' => array('USD', '$', 0.880000, '0.01', 3, 1, 0),
         );
-        // There is no previous version, so don't use DbTools::table()
-        if (!Cx\Lib\UpdateUtil::create_table($table_name, $table_structure)) {
-            throw new Update_DatabaseException(
+        // There is no previous version of this table!
+        if (!Cx\Lib\UpdateUtil::table($table_name, $table_structure)) {
+            throw new Cx\Lib\Update_DatabaseException(
                 "Failed to create Currency table");
         }
         // And there aren't even records to migrate, so
@@ -982,13 +983,13 @@ class Currency
                 )";
             $objResult = Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
-                throw new Update_DatabaseException(
+                throw new Cx\Lib\Update_DatabaseException(
                     "Failed to insert default Currencies");
             }
             $id = $objDatabase->Insert_ID();
             if (!Text::replace($id, FRONTEND_LANG_ID, 'shop',
                 self::TEXT_NAME, $name)) {
-                throw new Update_DatabaseException(
+                throw new Cx\Lib\Update_DatabaseException(
                     "Failed to add Text for default Currency name '$name'");
             }
         }

@@ -326,21 +326,21 @@ DBG::log("Coupon::get($code): ERROR: Query failed");
             return false;
         }
         if (!$objCoupon) return null;
-        if ($objCoupon->minimum_amount() > $order_amount) {
+        if ($objCoupon->minimum_amount() > floatval($order_amount)) {
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Order amount too low");
             return null;
         }
         if ($objCoupon->customer_id()
-         && $objCoupon->customer_id() != $customer_id) {
+         && $objCoupon->customer_id() != intval($customer_id)) {
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Wrong Customer ID");
             return null;
         }
-        if ($objCoupon->product_id() != $product_id) {
-//DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Wrong Product ID");
+        if ($objCoupon->product_id() != intval($product_id)) {
+//DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Wrong Product ID, need ".$objCoupon->product_id());
             return null;
         }
         if ($objCoupon->payment_id()
-         && $objCoupon->payment_id() != $payment_id) {
+         && $objCoupon->payment_id() != intval($payment_id)) {
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Wrong Payment ID");
             return null;
         }
@@ -1285,9 +1285,9 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
     /**
      * Tries to fix any database related problems
      * @return  boolean     false     Always!
-     * @throws  Update_DatabaseException
+     * @throws  Cx\Lib\Update_DatabaseException
      */
-    private static function errorHandler()
+    static function errorHandler()
     {
 //die("Coupon::errorHandler(): Disabled");
 // Coupon

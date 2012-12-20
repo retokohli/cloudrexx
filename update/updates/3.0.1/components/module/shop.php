@@ -4,429 +4,354 @@ function _shopUpdate()
 {
     global $objDatabase, $_ARRAYLANG;
 
-    // Shop settings
-    // Shop thumbnail default settings: shop_thumbnail_max_width
-    $query = "
-        SELECT 1 FROM ".DBPREFIX."module_shop_config
-        WHERE name='shop_thumbnail_max_width'";
-    $objResult = $objDatabase->Execute($query);
-    if ($objResult) {
-        if ($objResult->RecordCount() == 0) {
-            $query = "
-                INSERT INTO ".DBPREFIX."module_shop_config (
-                    name, value
-                ) VALUES (
-                    'shop_thumbnail_max_width', '120'
-                )";
-            $objResult = $objDatabase->Execute($query);
-            if ($objResult) {
-            } else {
-                return _databaseError($query, $objDatabase->ErrorMsg());
-            }
-        }
-    } else {
-        return _databaseError($query, $objDatabase->ErrorMsg());
-    }
-
-    // Shop thumbnail default settings: shop_thumbnail_max_height
-    $query = "
-        SELECT 1 FROM ".DBPREFIX."module_shop_config
-        WHERE name='shop_thumbnail_max_height'";
-    $objResult = $objDatabase->Execute($query);
-    if ($objResult) {
-        if ($objResult->RecordCount() == 0) {
-            $query = "
-                INSERT INTO ".DBPREFIX."module_shop_config (
-                    name, value
-                ) VALUES (
-                    'shop_thumbnail_max_height', '90'
-                )";
-            $objResult = $objDatabase->Execute($query);
-            if ($objResult) {
-            } else {
-                return _databaseError($query, $objDatabase->ErrorMsg());
-            }
-        }
-    } else {
-        return _databaseError($query, $objDatabase->ErrorMsg());
-    }
-
-    // Shop thumbnail default settings: shop_thumbnail_quality
-    $query = "
-        SELECT 1 FROM ".DBPREFIX."module_shop_config
-        WHERE name='shop_thumbnail_quality'";
-    $objResult = $objDatabase->Execute($query);
-    if ($objResult) {
-        if ($objResult->RecordCount() == 0) {
-            $query = "
-                INSERT INTO ".DBPREFIX."module_shop_config (
-                    name, value
-                ) VALUES (
-                    'shop_thumbnail_quality', '80'
-                )";
-            $objResult = $objDatabase->Execute($query);
-            if ($objResult) {
-            } else {
-                return _databaseError($query, $objDatabase->ErrorMsg());
-            }
-        }
-    } else {
-        return _databaseError($query, $objDatabase->ErrorMsg());
-    }
-
-
-    // Add Yellowpay payment methods default settings:
-    // Accepted payment methods
-    $query = "
-        SELECT 1 FROM ".DBPREFIX."module_shop_config
-        WHERE name='yellowpay_accepted_payment_methods'";
-    $objResult = $objDatabase->Execute($query);
-    if ($objResult) {
-        if ($objResult->RecordCount() == 0) {
-            $query = "
-                INSERT INTO ".DBPREFIX."module_shop_config (
-                    `id`, `name`, `value`, `status`
-                ) VALUES (
-                    NULL, 'yellowpay_accepted_payment_methods', '', '1'
-                )";
-            $objResult = $objDatabase->Execute($query);
-            if ($objResult) {
-            } else {
-                return _databaseError($query, $objDatabase->ErrorMsg());
-            }
-        }
-    } else {
-        return _databaseError($query, $objDatabase->ErrorMsg());
-    }
-
-    // Change old yellowpay_delivery_payment_type setting
-    // to new yellowpay_authorization_type
-    $query = "
-        SELECT 1 FROM ".DBPREFIX."module_shop_config
-        WHERE `name`='yellowpay_delivery_payment_type'";
-    $objResult = $objDatabase->Execute($query);
-    if ($objResult) {
-        if ($objResult->RecordCount() == 1) {
-            $query = "
-                UPDATE ".DBPREFIX."module_shop_config
-                   SET `name`='yellowpay_authorization_type'
-                 WHERE `name`='yellowpay_delivery_payment_type'";
-            $objResult = $objDatabase->Execute($query);
-            if ($objResult) {
-            } else {
-                return _databaseError($query, $objDatabase->ErrorMsg());
-            }
-        }
-    } else {
-        return _databaseError($query, $objDatabase->ErrorMsg());
-    }
-
-    // Add yellowpay test server flag setting
-    $query = "
-        SELECT 1 FROM ".DBPREFIX."module_shop_config
-        WHERE `name`='yellowpay_use_testserver'";
-    $objResult = $objDatabase->Execute($query);
-    if ($objResult) {
-        if ($objResult->RecordCount() == 0) {
-            $query = "
-                INSERT INTO ".DBPREFIX."module_shop_config (
-                    `id`, `name`, `value`, `status`
-                ) VALUES (
-                    NULL, 'yellowpay_use_testserver', '1', '1'
-                )";
-            $objResult = $objDatabase->Execute($query);
-            if ($objResult) {
-            } else {
-                return _databaseError($query, $objDatabase->ErrorMsg());
-            }
-        }
-    } else {
-        return _databaseError($query, $objDatabase->ErrorMsg());
-    }
-
-    // Add weight enable flag setting
-    $query = "
-        SELECT 1 FROM ".DBPREFIX."module_shop_config
-        WHERE `name`='shop_weight_enable'";
-    $objResult = $objDatabase->Execute($query);
-    if ($objResult) {
-        if ($objResult->RecordCount() == 0) {
-            $query = "
-                INSERT INTO `".DBPREFIX."module_shop_config` (
-                    `id`, `name`, `value`, `status`
-                ) VALUES (
-                    NULL, 'shop_weight_enable', '1', '1'
-                )";
-            $objResult = $objDatabase->Execute($query);
-            if ($objResult) {
-            } else {
-                return _databaseError($query, $objDatabase->ErrorMsg());
-            }
-        }
-    } else {
-        return _databaseError($query, $objDatabase->ErrorMsg());
-    }
-
-
-    // Add shop_show_products_default:
-    // Which products are shown on the first shop page?
-    $query = "
-        SELECT 1 FROM ".DBPREFIX."module_shop_config
-        WHERE `name`='shop_show_products_default'";
-    $objResult = $objDatabase->Execute($query);
-    if (!$objResult) return _databaseError($query, $objDatabase->ErrorMsg());
-    if ($objResult->RecordCount() == 0) {
-        $query = "
-            INSERT INTO `".DBPREFIX."module_shop_config` (
-                `name`, `value`
-            ) VALUES (
-                'shop_show_products_default', '1'
-            )";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult)
-            return _databaseError($query, $objDatabase->ErrorMsg());
-    }
-
-
-    // Update VAT settings
-    $query = "
-        SELECT `value` FROM ".DBPREFIX."module_shop_config
-        WHERE `name`='tax_enabled'";
-    $objResult = $objDatabase->Execute($query);
-    if (!$objResult) return _databaseError($query, $objDatabase->ErrorMsg());
-    if ($objResult->RecordCount()) {
-   	    $flagVatEnabled = $objResult->fields['value'];
-	    $arrVatEnabled = array(
-	        'vat_enabled_foreign_customer',
-	        'vat_enabled_foreign_reseller',
-	        'vat_enabled_home_customer',
-	        'vat_enabled_home_reseller',
-	    );
-	    foreach ($arrVatEnabled as $strSetting) {
-	        $query = "
-	            SELECT 1 FROM ".DBPREFIX."module_shop_config
-	            WHERE `name`='$strSetting'";
-	        $objResult = $objDatabase->Execute($query);
-	        if (!$objResult) return _databaseError($query, $objDatabase->ErrorMsg());
-	        if ($objResult->RecordCount() == 0) {
-	            $query = "
-	                INSERT INTO `".DBPREFIX."module_shop_config` (
-	                    `name`, `value`
-	                ) VALUES (
-	                    '$strSetting', '$flagVatEnabled'
-	                )";
-	            $objResult = $objDatabase->Execute($query);
-	            if (!$objResult)
-	                return _databaseError($query, $objDatabase->ErrorMsg());
-	        }
-	    }
-    }
-
-    $query = "
-        SELECT `value` FROM ".DBPREFIX."module_shop_config
-        WHERE `name`='tax_included'";
-    $objResult = $objDatabase->Execute($query);
-    if (!$objResult) return _databaseError($query, $objDatabase->ErrorMsg());
-    if ($objResult->RecordCount()) {
-        $flagVatIncluded = $objResult->fields['value'];
-	    $arrVatIncluded = array(
-	        'vat_included_foreign_customer',
-	        'vat_included_foreign_reseller',
-	        'vat_included_home_customer',
-	        'vat_included_home_reseller',
-	    );
-	    foreach ($arrVatIncluded as $strSetting) {
-	        $query = "
-	            SELECT 1 FROM ".DBPREFIX."module_shop_config
-	            WHERE `name`='$strSetting'";
-	        $objResult = $objDatabase->Execute($query);
-	        if (!$objResult) return _databaseError($query, $objDatabase->ErrorMsg());
-	        if ($objResult->RecordCount() == 0) {
-	            $query = "
-	                INSERT INTO `".DBPREFIX."module_shop_config` (
-	                    `name`, `value`
-	                ) VALUES (
-	                    '$strSetting', '$flagVatIncluded'
-	                )";
-	            $objResult = $objDatabase->Execute($query);
-	            if (!$objResult)
-	                return _databaseError($query, $objDatabase->ErrorMsg());
-	        }
-	    }
-    }
-
-    $query = "
-        DELETE FROM ".DBPREFIX."module_shop_config
-        WHERE `name`='tax_enabled' OR `name`='tax_included'";
-    $objResult = $objDatabase->Execute($query);
-    if (!$objResult) return _databaseError($query, $objDatabase->ErrorMsg());
-
-
-
-    // Payment Service Provider table
-
-    // Update yellowpay PSP name and description
-    $query = "
-        UPDATE `".DBPREFIX."module_shop_payment_processors`
-        SET `name`='yellowpay',
-            `description`='PostFinance Payment Service Providing. Inkasso im Onlineshop.'
-        WHERE `".DBPREFIX."module_shop_payment_processors`.`id`=3";
-    $objResult = $objDatabase->Execute($query);
-    if (!$objResult) {
-        return _databaseError($query, $objDatabase->ErrorMsg());
-    }
-
-
-    // Mail tables
-
-    // Add e-mail template for order confirmation with user account data
-    // OBSOLETE
-    // The template is no longer used starting from Contrexx 3.0.0
-/*    $query = "
-        SELECT 1
-          FROM ".DBPREFIX."module_shop_mail
-         WHERE id=4
-           AND protected=1";
-    $objResult = $objDatabase->Execute($query);
-    if ($objResult) {
-        if ($objResult->RecordCount() == 0) {
-            $query = "
-                INSERT INTO `".DBPREFIX."module_shop_mail` (
-                    `id`, `tplname`, `protected`
-                ) VALUES (
-                    '4', 'Bestellungsbestätigung mit Zugangsdaten', '1'
-                )";
-            $objResult = $objDatabase->Execute($query);
-            if ($objResult) {
-            } else {
-                return _databaseError($query, $objDatabase->ErrorMsg());
-            }
-        }
-    } else {
-        return _databaseError($query, $objDatabase->ErrorMsg());
-    }
-
-    $query = "
-        SELECT 1
-          FROM ".DBPREFIX."module_shop_mail_content
-         WHERE id=4
-           AND tpl_id=4
-           AND lang_id=1";
-    $objResult = $objDatabase->Execute($query);
-    if ($objResult) {
-        if ($objResult->RecordCount() == 0) {
-            $query = "
-                INSERT INTO `".DBPREFIX."module_shop_mail_content` (
-                    `id`, `tpl_id`, `lang_id`, `from_mail`, `xsender`, `subject`, `message`
-                ) VALUES (
-                    '4', '4', '1', 'nospam@contrexx.com', 'Contrexx Demo Online Shop',
-                    'Contrexx Auftragsbestätigung und Zugangsdaten vom <DATE>',
-                    'Sehr geehrte Kundin, sehr geehrter Kunde\r\n\r\nHerzlichen Dank für Ihre Bestellung im Contrexx Demo Online Store.\r\n\r\nIhre Auftrags-Nr. lautet: <ORDER_ID>\r\nIhre Kunden-Nr. lautet: <CUSTOMER_ID>\r\nBestellungszeit: <ORDER_TIME>\r\n\r\n<ORDER_DATA>\r\n<LOGIN_DATA>\r\n\r\nIhre Kundenadresse:\r\n<CUSTOMER_COMPANY>\r\n<CUSTOMER_PREFIX> <CUSTOMER_FIRSTNAME> <CUSTOMER_LASTNAME>\r\n<CUSTOMER_ADDRESS>\r\n<CUSTOMER_ZIP> <CUSTOMER_CITY>\r\n<CUSTOMER_COUNTRY>\r\n\r\nLieferadresse:\r\n<SHIPPING_COMPANY>\r\n<SHIPPING_PREFIX> <SHIPPING_FIRSTNAME> <SHIPPING_LASTNAME>\r\n<SHIPPING_ADDRESS>\r\n<SHIPPING_ZIP> <SHIPPING_CITY>\r\n<SHIPPING_COUNTRY>\r\n\r\nIhr Link zum Online Store: http://demo.astalavistacms.com/\r\n\r\nIhre Zugangsdaten zum Shop:\r\nBenutzername: <USERNAME>\r\nPasswort: <PASSWORD>\r\n\r\nWir freuen uns auf Ihren nächsten Besuch im Online Store und\r\nwünschen Ihnen noch einen schönen Tag.\r\n\r\nP.S. Diese Auftragsbestätigung wurde gesendet an: <CUSTOMER_EMAIL>\r\n\r\nMit freundlichen Grüssen\r\nIhr Contrexx Team'
-                );
-            ";
-            $objResult = $objDatabase->Execute($query);
-            if ($objResult) {
-            } else {
-                return _databaseError($query, $objDatabase->ErrorMsg());
-            }
-        }
-    } else {
-        return _databaseError($query, $objDatabase->ErrorMsg());
-    }*/
-
-
-    // Update Attribute price to signed.
-    if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'module_shop_products_attributes_value', 'price_prefix')) {
-        $query = "
-            UPDATE `".DBPREFIX."module_shop_products_attributes_value`
-               SET `price`=-`price`
-            WHERE `price`>0
-              AND `price_prefix`='-'";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult)
-            return _databaseError($query, $objDatabase->ErrorMsg());
-    }
-
-    if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'module_shop_order_items_attributes', 'price_prefix')) {
-        $query = "
-            UPDATE `".DBPREFIX."module_shop_order_items_attributes`
-               SET `product_option_values_price`=-`product_option_values_price`
-            WHERE `product_option_values_price`>0
-              AND `price_prefix`='-'";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult)
-            return _databaseError($query, $objDatabase->ErrorMsg());
-    }
-
-/*    // Leave those for now; update is easier like that:
-    // - Delete price prefix from attributes (updated above)
-    // - Drop some other obsolete fields
-    $arrQuery = array(
-            'price_prefix' => 'module_shop_order_items_attributes',
-            'property1' => 'module_shop_products',
-            'property2' => 'module_shop_products',
-            'thumbnail_percent' => 'module_shop_products',
-            'thumbnail_quality' => 'module_shop_products',
-    );
-    foreach ($arrQuery as $field => $table) {
-        $objResult = $objDatabase->Execute("
-            ALTER TABLE `".DBPREFIX."$table` (
-            DROP `$field`");
-        if (!$objResult)
-            return _databaseError($query, $objDatabase->ErrorMsg());
-    }*/
-
-
     try {
-        \Cx\Lib\UpdateUtil::table(/*{{{module_shop_article_group*/
+        $table_name = DBPREFIX.'module_shop_config';
+        // Mind that this table does no longer exist from version 3
+        if (\Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            // Shop settings
+            // Shop thumbnail default settings: shop_thumbnail_max_width
+            $query = "
+                SELECT 1 FROM `$table_name`
+                WHERE name='shop_thumbnail_max_width'";
+            $objResult = $objDatabase->Execute($query);
+            if ($objResult) {
+                if ($objResult->RecordCount() == 0) {
+                    $query = "
+                        INSERT INTO `$table_name` (
+                            name, value
+                        ) VALUES (
+                            'shop_thumbnail_max_width', '120'
+                        )";
+                    $objResult = $objDatabase->Execute($query);
+                    if ($objResult) {
+                    } else {
+                        return _databaseError($query, $objDatabase->ErrorMsg());
+                    }
+                }
+            } else {
+                return _databaseError($query, $objDatabase->ErrorMsg());
+            }
+
+            // Shop thumbnail default settings: shop_thumbnail_max_height
+            $query = "
+                SELECT 1 FROM `$table_name`
+                WHERE name='shop_thumbnail_max_height'";
+            $objResult = $objDatabase->Execute($query);
+            if ($objResult) {
+                if ($objResult->RecordCount() == 0) {
+                    $query = "
+                        INSERT INTO `$table_name` (
+                            name, value
+                        ) VALUES (
+                            'shop_thumbnail_max_height', '90'
+                        )";
+                    $objResult = $objDatabase->Execute($query);
+                    if ($objResult) {
+                    } else {
+                        return _databaseError($query, $objDatabase->ErrorMsg());
+                    }
+                }
+            } else {
+                return _databaseError($query, $objDatabase->ErrorMsg());
+            }
+
+            // Shop thumbnail default settings: shop_thumbnail_quality
+            $query = "
+                SELECT 1 FROM `$table_name`
+                WHERE name='shop_thumbnail_quality'";
+            $objResult = $objDatabase->Execute($query);
+            if ($objResult) {
+                if ($objResult->RecordCount() == 0) {
+                    $query = "
+                        INSERT INTO `$table_name` (
+                            name, value
+                        ) VALUES (
+                            'shop_thumbnail_quality', '80'
+                        )";
+                    $objResult = $objDatabase->Execute($query);
+                    if ($objResult) {
+                    } else {
+                        return _databaseError($query, $objDatabase->ErrorMsg());
+                    }
+                }
+            } else {
+                return _databaseError($query, $objDatabase->ErrorMsg());
+            }
+
+
+            // Add Yellowpay payment methods default settings:
+            // Accepted payment methods
+            $query = "
+                SELECT 1 FROM `$table_name`
+                WHERE name='yellowpay_accepted_payment_methods'";
+            $objResult = $objDatabase->Execute($query);
+            if ($objResult) {
+                if ($objResult->RecordCount() == 0) {
+                    $query = "
+                        INSERT INTO `$table_name` (
+                            `id`, `name`, `value`, `status`
+                        ) VALUES (
+                            NULL, 'yellowpay_accepted_payment_methods', '', '1'
+                        )";
+                    $objResult = $objDatabase->Execute($query);
+                    if ($objResult) {
+                    } else {
+                        return _databaseError($query, $objDatabase->ErrorMsg());
+                    }
+                }
+            } else {
+                return _databaseError($query, $objDatabase->ErrorMsg());
+            }
+
+            // Change old yellowpay_delivery_payment_type setting
+            // to new yellowpay_authorization_type
+            $query = "
+                SELECT 1 FROM `$table_name`
+                WHERE `name`='yellowpay_delivery_payment_type'";
+            $objResult = $objDatabase->Execute($query);
+            if ($objResult) {
+                if ($objResult->RecordCount() == 1) {
+                    $query = "
+                        UPDATE `$table_name`
+                           SET `name`='yellowpay_authorization_type'
+                         WHERE `name`='yellowpay_delivery_payment_type'";
+                    $objResult = $objDatabase->Execute($query);
+                    if ($objResult) {
+                    } else {
+                        return _databaseError($query, $objDatabase->ErrorMsg());
+                    }
+                }
+            } else {
+                return _databaseError($query, $objDatabase->ErrorMsg());
+            }
+
+            // Add yellowpay test server flag setting
+            $query = "
+                SELECT 1 FROM `$table_name`
+                WHERE `name`='yellowpay_use_testserver'";
+            $objResult = $objDatabase->Execute($query);
+            if ($objResult) {
+                if ($objResult->RecordCount() == 0) {
+                    $query = "
+                        INSERT INTO `$table_name` (
+                            `id`, `name`, `value`, `status`
+                        ) VALUES (
+                            NULL, 'yellowpay_use_testserver', '1', '1'
+                        )";
+                    $objResult = $objDatabase->Execute($query);
+                    if ($objResult) {
+                    } else {
+                        return _databaseError($query, $objDatabase->ErrorMsg());
+                    }
+                }
+            } else {
+                return _databaseError($query, $objDatabase->ErrorMsg());
+            }
+
+            // Add weight enable flag setting
+            $query = "
+                SELECT 1 FROM `$table_name`
+                WHERE `name`='shop_weight_enable'";
+            $objResult = $objDatabase->Execute($query);
+            if ($objResult) {
+                if ($objResult->RecordCount() == 0) {
+                    $query = "
+                        INSERT INTO `$table_name` (
+                            `id`, `name`, `value`, `status`
+                        ) VALUES (
+                            NULL, 'shop_weight_enable', '1', '1'
+                        )";
+                    $objResult = $objDatabase->Execute($query);
+                    if ($objResult) {
+                    } else {
+                        return _databaseError($query, $objDatabase->ErrorMsg());
+                    }
+                }
+            } else {
+                return _databaseError($query, $objDatabase->ErrorMsg());
+            }
+
+
+            // Add shop_show_products_default:
+            // Which products are shown on the first shop page?
+            $query = "
+                SELECT 1 FROM `$table_name`
+                WHERE `name`='shop_show_products_default'";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) return _databaseError($query, $objDatabase->ErrorMsg());
+            if ($objResult->RecordCount() == 0) {
+                $query = "
+                    INSERT INTO `$table_name` (
+                        `name`, `value`
+                    ) VALUES (
+                        'shop_show_products_default', '1'
+                    )";
+                $objResult = $objDatabase->Execute($query);
+                if (!$objResult)
+                    return _databaseError($query, $objDatabase->ErrorMsg());
+            }
+
+
+            // Update VAT settings
+            $query = "
+                SELECT `value` FROM `$table_name`
+                WHERE `name`='tax_enabled'";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) return _databaseError($query, $objDatabase->ErrorMsg());
+            if ($objResult->RecordCount()) {
+                $flagVatEnabled = $objResult->fields['value'];
+                $arrVatEnabled = array(
+                    'vat_enabled_foreign_customer',
+                    'vat_enabled_foreign_reseller',
+                    'vat_enabled_home_customer',
+                    'vat_enabled_home_reseller',
+                );
+                foreach ($arrVatEnabled as $strSetting) {
+                    $query = "
+                        SELECT 1 FROM `$table_name`
+                        WHERE `name`='$strSetting'";
+                    $objResult = $objDatabase->Execute($query);
+                    if (!$objResult) return _databaseError($query, $objDatabase->ErrorMsg());
+                    if ($objResult->RecordCount() == 0) {
+                        $query = "
+                            INSERT INTO `$table_name` (
+                                `name`, `value`
+                            ) VALUES (
+                                '$strSetting', '$flagVatEnabled'
+                            )";
+                        $objResult = $objDatabase->Execute($query);
+                        if (!$objResult)
+                            return _databaseError($query, $objDatabase->ErrorMsg());
+                    }
+                }
+            }
+
+            $query = "
+                SELECT `value` FROM `$table_name`
+                WHERE `name`='tax_included'";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) return _databaseError($query, $objDatabase->ErrorMsg());
+            if ($objResult->RecordCount()) {
+                $flagVatIncluded = $objResult->fields['value'];
+                $arrVatIncluded = array(
+                    'vat_included_foreign_customer',
+                    'vat_included_foreign_reseller',
+                    'vat_included_home_customer',
+                    'vat_included_home_reseller',
+                );
+                foreach ($arrVatIncluded as $strSetting) {
+                    $query = "
+                        SELECT 1 FROM `$table_name`
+                        WHERE `name`='$strSetting'";
+                    $objResult = $objDatabase->Execute($query);
+                    if (!$objResult) return _databaseError($query, $objDatabase->ErrorMsg());
+                    if ($objResult->RecordCount() == 0) {
+                        $query = "
+                            INSERT INTO `$table_name` (
+                                `name`, `value`
+                            ) VALUES (
+                                '$strSetting', '$flagVatIncluded'
+                            )";
+                        $objResult = $objDatabase->Execute($query);
+                        if (!$objResult)
+                            return _databaseError($query, $objDatabase->ErrorMsg());
+                    }
+                }
+            }
+
+            $query = "
+                DELETE FROM `$table_name`
+                WHERE `name`='tax_enabled' OR `name`='tax_included'";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+
+        // Payment Service Provider table
+
+        // Update yellowpay PSP name and description
+        $query = "
+            UPDATE `".DBPREFIX."module_shop_payment_processors`
+            SET `name`='yellowpay',
+                `description`='PostFinance Payment Service Providing. Inkasso im Onlineshop.'
+            WHERE `".DBPREFIX."module_shop_payment_processors`.`id`=3";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+
+        // Update Attribute price to signed.
+        $table_name = DBPREFIX.'module_shop_products_attributes_value';
+        if (   \Cx\Lib\UpdateUtil::table_exist($table_name)
+            && \Cx\Lib\UpdateUtil::column_exist($table_name, 'price_prefix')) {
+            $query = "
+                UPDATE `$table_name`
+                   SET `price`=-`price`
+                   SET `price_prefix`='+'
+                WHERE `price`>0
+                  AND `price_prefix`='-'";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult)
+                return _databaseError($query, $objDatabase->ErrorMsg());
+            $query = "
+                UPDATE `".DBPREFIX."module_shop_order_items_attributes`
+                   SET `product_option_values_price`=-`product_option_values_price`
+                WHERE `product_option_values_price`>0
+                  AND `price_prefix`='-'";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult)
+                return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+
+
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_shop_article_group',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true),
                 'name' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'renamefrom' => 'name'),
             )
-        );/*}}}*/
+        );
 
-
-		\Cx\Lib\UpdateUtil::table(/*{{{module_shop_customer_group*/
+		\Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_shop_customer_group',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true),
                 'name' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
             )
-        );/*}}}*/
+        );
 
 
-        \Cx\Lib\UpdateUtil::table(/*{{{module_shop_discountgroup_count_name*/
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_shop_discountgroup_count_name',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true),
                 'name' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
                 'unit' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
             )
-        );/*}}}*/
+        );
 
 
-        \Cx\Lib\UpdateUtil::table(/*{{{module_shop_discountgroup_count_rate*/
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_shop_discountgroup_count_rate',
             array(
                 'group_id' => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'default' => 0),
                 'count' => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'default' => '1'),
                 'rate' => array('type' => 'DECIMAL(5,2)', 'unsigned' => true, 'notnull' => true, 'default' => '0.0'),
             )
-        );/*}}}*/
+        );
 
 
-        \Cx\Lib\UpdateUtil::table(/*{{{module_shop_rel_discount_group*/
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_shop_rel_discount_group',
             array(
                 'customer_group_id' => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'default' => '0'),
                 'article_group_id' => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'default' => '0'),
                 'rate' => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.0'),
             )
-        );/*}}}*/
+        );
 
+// ok   die("HERE");
 
-        \Cx\Lib\UpdateUtil::table(/*{{{module_shop_lsv*/
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_shop_lsv',
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true, 'renamefrom' => 'order_id'),
@@ -438,7 +363,7 @@ function _shopUpdate()
             array(
                 'order_id' => array('fields' => array('order_id'), 'type' => 'UNIQUE'),
             )
-        );/*}}}*/
+        );
 
 
         // Shipment cost table fields
@@ -476,27 +401,31 @@ function _shopUpdate()
                 'activation_status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
             ),
             array(
-                'INDEX_COUNTRIES_NAME' => array('fields' => array('countries_name')),
+                'countries_name' => array('fields' => array('countries_name')),
             )
         );
-
 
         // Categories table fields
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'module_shop_categories',
-            array(
-                'catid' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true),
-                'parentid' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'catname' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'catsorting' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '100'),
-                'catstatus' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
-                'picture' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'flags' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-            ),
-            array(
-                'flags' => array('fields' => array('flags'), 'type' => 'FULLTEXT'),
-            )
-        );
+        $table_name = DBPREFIX.'module_shop_categories';
+        if (   \Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            if (\Cx\Lib\UpdateUtil::column_exist($table_name, 'catid')) {
+                \Cx\Lib\UpdateUtil::table(
+                    $table_name,
+                    array(
+                        'catid' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true),
+                        'parentid' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                        'catname' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                        'catsorting' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '100'),
+                        'catstatus' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                        'picture' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                        'flags' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                    ),
+                    array(
+                        'flags' => array('fields' => array('flags'), 'type' => 'FULLTEXT'),
+                    )
+                );
+            }
+        }
 
 
         // Settings table fields
@@ -511,11 +440,16 @@ function _shopUpdate()
         );
 
 
-        $query = "
-            UPDATE ".DBPREFIX."module_shop_currencies
-            SET sort_order = 0 WHERE sort_order IS NULL";
-        if ($objDatabase->Execute($query) == false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
+        $table_name = DBPREFIX.'module_shop_currencies';
+        if (   \Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            if (\Cx\Lib\UpdateUtil::column_exist($table_name, 'sort_order')) {
+                $query = "
+                    UPDATE `$table_name`
+                    SET sort_order = 0 WHERE sort_order IS NULL";
+                if ($objDatabase->Execute($query) == false) {
+                    return _databaseError($query, $objDatabase->ErrorMsg());
+                }
+            }
         }
         // Currencies table fields
         \Cx\Lib\UpdateUtil::table(
@@ -564,7 +498,7 @@ function _shopUpdate()
         );
 
 
-        \Cx\Lib\UpdateUtil::table(/*{{{module_shop_importimg*/
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_shop_importimg',
             array(
                 'img_id' => array('type' => 'INT(10) UNSIGNED', 'notnull' => true, 'primary' => true, 'auto_increment' => true),
@@ -573,7 +507,7 @@ function _shopUpdate()
                 'img_fields_file' => array('type' => 'TEXT',  'notnull' => true, 'default' => ''),
                 'img_fields_db' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
             )
-        );/*}}}*/
+        );
 
 
         // Mail table fields
@@ -614,19 +548,23 @@ function _shopUpdate()
 
 
         // Order items table fields
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'module_shop_order_items',
-            array(
-                'order_items_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'orderid' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'productid' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
-                'product_name' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
-                'price' => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
-                'quantity' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
-                'vat_percent' => array('type' => 'DECIMAL(5,2)', 'unsigned' => true, 'notnull' => false),
-                'weight' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
-            )
-        );
+        $table_name = DBPREFIX.'module_shop_order_items';
+        if (   \Cx\Lib\UpdateUtil::table_exist($table_name)
+            && \Cx\Lib\UpdateUtil::column_exist($table_name, 'order_items_id')) {
+            \Cx\Lib\UpdateUtil::table(
+                $table_name,
+                array(
+                    'order_items_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'orderid' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                    'productid' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                    'product_name' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                    'price' => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
+                    'quantity' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                    'vat_percent' => array('type' => 'DECIMAL(5,2)', 'unsigned' => true, 'notnull' => false),
+                    'weight' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
+                )
+            );
+        }
 
 
         // Order items attributes table fields
@@ -645,42 +583,46 @@ function _shopUpdate()
 
 
         // Order table fields
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'module_shop_orders',
-            array(
-                'orderid'   => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'customerid' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'selected_currency_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'order_sum' => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
-                'currency_order_sum' => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
-                'order_date' => array('type' => 'DATETIME', 'notnull' => true, 'default' => '0000-00-00 00:00:00'),
-                'order_status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'ship_prefix' => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
-                'ship_company' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
-                'ship_firstname' => array('type' => 'VARCHAR(40)', 'notnull' => true, 'default' => ''),
-                'ship_lastname' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
-                'ship_address' => array('type' => 'VARCHAR(40)', 'notnull' => true, 'default' => ''),
-                'ship_city' => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
-                'ship_zip'  => array('type' => 'VARCHAR(10)', 'notnull' => false),
-                'ship_country_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
-                'ship_phone' => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
-                'tax_price' => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
-                'currency_ship_price' => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
-                'shipping_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
-                'payment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
-                'currency_payment_price' => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
-                'customer_ip' => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
-                'customer_host' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
-                'customer_lang' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'customer_browser' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
-                'customer_note' => array('type' => 'TEXT'),
-                'last_modified' => array('type' => 'DATETIME', 'notnull' => true, 'default' => '0000-00-00 00:00:00'),
-                'modified_by' => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
-            ),
-            array(
-                'order_status' => array('fields' => array('order_status')),
-            )
-        );
+        $table_name = DBPREFIX.'module_shop_orders';
+        if (   \Cx\Lib\UpdateUtil::table_exist($table_name)
+            && \Cx\Lib\UpdateUtil::column_exist($table_name, 'orderid')) {
+            \Cx\Lib\UpdateUtil::table(
+                $table_name,
+                array(
+                    'orderid'   => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'customerid' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                    'selected_currency_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                    'order_sum' => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
+                    'currency_order_sum' => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
+                    'order_date' => array('type' => 'DATETIME', 'notnull' => true, 'default' => '0000-00-00 00:00:00'),
+                    'order_status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                    'ship_prefix' => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
+                    'ship_company' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                    'ship_firstname' => array('type' => 'VARCHAR(40)', 'notnull' => true, 'default' => ''),
+                    'ship_lastname' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                    'ship_address' => array('type' => 'VARCHAR(40)', 'notnull' => true, 'default' => ''),
+                    'ship_city' => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
+                    'ship_zip'  => array('type' => 'VARCHAR(10)', 'notnull' => false),
+                    'ship_country_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
+                    'ship_phone' => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
+                    'tax_price' => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
+                    'currency_ship_price' => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
+                    'shipping_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
+                    'payment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false),
+                    'currency_payment_price' => array('type' => 'DECIMAL(9,2)', 'notnull' => true, 'default' => '0.00'),
+                    'customer_ip' => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
+                    'customer_host' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                    'customer_lang' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                    'customer_browser' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                    'customer_note' => array('type' => 'TEXT'),
+                    'last_modified' => array('type' => 'DATETIME', 'notnull' => true, 'default' => '0000-00-00 00:00:00'),
+                    'modified_by' => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
+                ),
+                array(
+                    'order_status' => array('fields' => array('order_status')),
+                )
+            );
+        }
 
 
         // Payment table fields
@@ -733,15 +675,19 @@ function _shopUpdate()
         );
 
 
-        $query = "
-            UPDATE ".DBPREFIX."module_shop_products
-            SET description = '' WHERE description IS NULL";
-        if ($objDatabase->Execute($query) == false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
+        $table_name = DBPREFIX.'module_shop_products';
+        if (   \Cx\Lib\UpdateUtil::table_exist($table_name)
+            && \Cx\Lib\UpdateUtil::column_exist($table_name, 'description')) {
+            $query = "
+                UPDATE `$table_name`
+                SET `description`= '' WHERE `description` IS NULL";
+            if ($objDatabase->Execute($query) == false) {
+                return _databaseError($query, $objDatabase->ErrorMsg());
+            }
         }
         // Products table fields
         \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'module_shop_products',
+            $table_name,
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'product_id' => array('type' => 'VARCHAR(100)'),
@@ -838,36 +784,48 @@ function _shopUpdate()
 
 
         // Rel countries table fields
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'module_shop_rel_countries',
-            array(
-                'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'zones_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'countries_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-            )
-        );
+        $table_name = DBPREFIX.'module_shop_rel_countries';
+        if (   \Cx\Lib\UpdateUtil::table_exist($table_name)
+            && \Cx\Lib\UpdateUtil::column_exist($table_name, 'id')) {
+            \Cx\Lib\UpdateUtil::table(
+                $table_name,
+                array(
+                    'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'zones_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                    'countries_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                )
+            );
+        }
 
 
         // Rel payment table fields
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'module_shop_rel_payment',
-            array(
-                'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'zones_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'payment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-            )
-        );
+        $table_name = DBPREFIX.'module_shop_rel_payment';
+        if (   \Cx\Lib\UpdateUtil::table_exist($table_name)
+            && \Cx\Lib\UpdateUtil::column_exist($table_name, 'id')) {
+            \Cx\Lib\UpdateUtil::table(
+                $table_name,
+                array(
+                    'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'zones_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                    'payment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                )
+            );
+        }
 
 
         // Rel shipment table fields
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'module_shop_rel_shipment',
-            array(
-                'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'zones_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'shipment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-            )
-        );
+        // Note: This is renamed to module_shop_rel_shipper from version 3.0
+        $table_name = DBPREFIX.'module_shop_rel_shipment';
+        if (\Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            \Cx\Lib\UpdateUtil::table(
+                $table_name,
+                array(
+                    'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'zones_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                    'shipment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                )
+            );
+        }
 
 
         // Vat table fields
@@ -882,19 +840,22 @@ function _shopUpdate()
 
 
         // Zones table fields
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'module_shop_zones',
-            array(
-                'zones_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'zones_name' => array('type' => 'VARCHAR(64)', 'notnull' => true, 'default' => ''),
-                'activation_status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
-            )
-        );
+        $table_name = DBPREFIX.'module_shop_zones';
+        if (   \Cx\Lib\UpdateUtil::table_exist($table_name)
+            && \Cx\Lib\UpdateUtil::column_exist($table_name, 'zones_id')) {
+            \Cx\Lib\UpdateUtil::table(
+                $table_name,
+                array(
+                    'zones_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'zones_name' => array('type' => 'VARCHAR(64)', 'notnull' => true, 'default' => ''),
+                    'activation_status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                )
+            );
+        }
 
 
         // Contrexx 3.0.0 updates from here.
         // NOTE: All of these methods return false on success
-// TODO: TEST!
 
         Attribute::errorHandler();
 
@@ -978,6 +939,13 @@ function _shopUpdate()
 
 
         Vat::errorHandler();
+
+
+
+        // Finally, see what page templates need to be updated
+
+
+
     }
     catch (UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);

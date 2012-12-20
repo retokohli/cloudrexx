@@ -662,7 +662,7 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
     static function errorHandler()
     {
 // PaymentProcessing
-        $table_name_new = DBPREFIX.'module_shop'.MODULE_INDEX.'_processors';
+        $table_name_new = DBPREFIX.'module_shop_processors';
         if (!Cx\Lib\UpdateUtil::table_exist($table_name_new)) {
             $table_structure = array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),

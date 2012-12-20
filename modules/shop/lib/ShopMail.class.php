@@ -330,12 +330,13 @@ die("ShopMail::storeTemplate(): Obsolete method called!");
     /**
      * Migrates existing old Shop mailtemplates to the new MailTemplate class
      * @return  boolean         False.  Always.
+     * @throws  Cx\Lib\Update_DatabaseException
      */
     static function errorHandler()
     {
 // Mail
         MailTemplate::errorHandler();
-        
+
         if (Cx\Lib\UpdateUtil::table_empty(DBPREFIX.'core_mail_template')) {
             // Make sure there are no bodies lying around
             Text::deleteByKey('shop', MailTemplate::TEXT_NAME);
@@ -380,7 +381,7 @@ die("ShopMail::storeTemplate(): Obsolete method called!");
         );
         $arrLanguageId = FWLanguage::getIdArray();
         if (empty($arrLanguageId)) {
-            throw new Update_DatabaseException(
+            throw new Cx\Lib\Update_DatabaseException(
                "Failed to get frontend language IDs");
         }
         foreach ($arrLanguageId as $lang_id) {
@@ -427,7 +428,7 @@ die("ShopMail::storeTemplate(): Obsolete method called!");
 //                    '/(?:\r|\n|\r\n)/', "<br />\n", $arrTemplate['message']);
                 $arrTemplate['lang_id'] = $lang_id;
                 if (!MailTemplate::store('shop', $arrTemplate)) {
-                    throw new Update_DatabaseException(
+                    throw new Cx\Lib\Update_DatabaseException(
                        "Failed to store Mailtemplate");
                 }
             }

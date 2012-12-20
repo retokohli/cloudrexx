@@ -542,6 +542,7 @@ class Payment
      * Includes updating the payments table (I guess from version 1.2.0(?),
      * note that this is unconfirmed) to the current structure
      * @return  boolean               False.  Always.
+     * @throws  Cx\Lib\Update_DatabaseException
      */
     static function errorHandler()
     {
@@ -551,7 +552,7 @@ class Payment
         Zones::errorHandler();
         Yellowpay::errorHandler();
 
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_payment';
+        $table_name = DBPREFIX.'module_shop_payment';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
             'processor_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0'),
@@ -561,6 +562,7 @@ class Payment
             'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1', 'renamefrom' => 'status'),
         );
         $table_index = array();
+        $default_lang_id = FWLanguage::getDefaultLangId();
         if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
             if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
                 // Migrate all Payment names to the Text table first
@@ -570,15 +572,15 @@ class Payment
                       FROM `$table_name";
                 $objResult = Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
-                    throw new Update_DatabaseException(
+                    throw new Cx\Lib\Update_DatabaseException(
                         "Failed to query Payment names", $query);
                 }
                 while (!$objResult->EOF) {
                     $id = $objResult->fields['id'];
                     $name = $objResult->fields['name'];
-                    if (!Text::replace($id, FRONTEND_LANG_ID,
+                    if (!Text::replace($id, $default_lang_id,
                         'shop', self::TEXT_NAME, $name)) {
-                        throw new Update_DatabaseException(
+                        throw new Cx\Lib\Update_DatabaseException(
                             "Failed to migrate Payment name '$name'");
                     }
                     $objResult->MoveNext();
@@ -587,7 +589,7 @@ class Payment
         }
         Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_payment';
+        $table_name = DBPREFIX.'module_shop_rel_payment';
         $table_structure = array(
             'payment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'primary' => true),
             'zone_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'primary' => true, 'renamefrom' => 'zones_id'),

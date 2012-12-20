@@ -197,6 +197,7 @@ class Manufacturer
      * @param   integer   $id       The Manufacturer ID
      * @return  boolean             True on success, false otherwise
      * @static
+     * @throws  Cx\Lib\Update_DatabaseException
      */
     static function update($name, $url, $id)
     {
@@ -403,6 +404,7 @@ class Manufacturer
      *
      * Also migrates the old Manufacturers to the new structure
      * @return  boolean             False.  Always.
+     * @throws  Cx\Lib\Update_DatabaseException
      */
     static function errorHandler()
     {
@@ -410,11 +412,12 @@ class Manufacturer
         // Fix the Text table first
         Text::errorHandler();
 
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_manufacturer';
+        $table_name = DBPREFIX.'module_shop_manufacturer';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
         );
         $table_index =  array();
+        $default_lang_id = FWLanguage::getDefaultLangId();
         if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
             if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
                 // Get rid of bodies
@@ -423,20 +426,20 @@ class Manufacturer
                 // Migrate all Manufacturer text fields to the Text table
                 $query = "
                     SELECT `id`, `name`, `url`
-                      FROM `".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer`";
+                      FROM `".DBPREFIX."module_shop_manufacturer`";
                 $objResult = Cx\Lib\UpdateUtil::sql($query);
                 while (!$objResult->EOF) {
                     $id = $objResult->fields['id'];
                     $name = $objResult->fields['name'];
                     $uri = $objResult->fields['url'];
-                    if (!Text::replace($id, FRONTEND_LANG_ID, 'shop',
+                    if (!Text::replace($id, $default_lang_id, 'shop',
                         self::TEXT_NAME, $name)) {
-                        throw new Update_DatabaseException(
+                        throw new Cx\Lib\Update_DatabaseException(
                            "Failed to migrate Manufacturer name '$name'");
                     }
-                    if (!Text::replace($id, FRONTEND_LANG_ID, 'shop',
+                    if (!Text::replace($id, $default_lang_id, 'shop',
                         self::TEXT_URI, $uri)) {
-                        throw new Update_DatabaseException(
+                        throw new Cx\Lib\Update_DatabaseException(
                            "Failed to migrate Manufacturer URI '$uri'");
                     }
                     $objResult->MoveNext();

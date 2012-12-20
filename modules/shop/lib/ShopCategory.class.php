@@ -853,6 +853,8 @@ class ShopCategory
 
     /**
      * Handles any kind of database error
+     * @throws  Cx\Lib\Update_DatabaseException
+     * @return  boolean                 False.  Always.
      */
     static function errorHandler()
     {
@@ -861,7 +863,7 @@ class ShopCategory
         Text::errorHandler();
         ShopSettings::errorHandler();
 
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_categories';
+        $table_name = DBPREFIX.'module_shop_categories';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true, 'renamefrom' => 'catid'),
             'parent_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'parentid'),
@@ -883,7 +885,7 @@ class ShopCategory
                       FROM `$table_name`";
                 $objResult = Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
-                    throw new Update_DatabaseException(
+                    throw new Cx\Lib\Update_DatabaseException(
                         "Failed to query ShopCategory names");
                 }
                 while (!$objResult->EOF) {
@@ -891,7 +893,7 @@ class ShopCategory
                     $name = $objResult->fields['catname'];
                     if (!Text::replace($id, FRONTEND_LANG_ID, 'shop',
                         self::TEXT_NAME, $name)) {
-                        throw new Update_DatabaseException(
+                        throw new Cx\Lib\Update_DatabaseException(
                             "Failed to migrate ShopCategory name '$name'");
                     }
                     $objResult->MoveNext();
