@@ -2,7 +2,7 @@
 
 function _coreUpdate()
 {
-    global $objDatabase, $_CORELANG;
+    global $objUpdate, $objDatabase, $_CORELANG, $_CONFIG;
 
     $query = "SELECT `id` FROM `".DBPREFIX."languages` WHERE `charset` != 'UTF-8'";
     $objResult = $objDatabase->Execute($query);
@@ -18,21 +18,23 @@ function _coreUpdate()
         return _databaseError($query, $objDatabase->ErrorMsg());
     }
 
-    $query = "SELECT `catid` FROM `".DBPREFIX."content_navigation`";
-    $objContentNavigation = $objDatabase->Execute($query);
-    if ($objContentNavigation !== false) {
-        $arrContentSiteIds = array();
-        while (!$objContentNavigation->EOF) {
-            array_push($arrContentSiteIds, $objContentNavigation->fields['catid']);
-            $objContentNavigation->MoveNext();
-        }
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        $query = "SELECT `catid` FROM `".DBPREFIX."content_navigation`";
+        $objContentNavigation = $objDatabase->Execute($query);
+        if ($objContentNavigation !== false) {
+            $arrContentSiteIds = array();
+            while (!$objContentNavigation->EOF) {
+                array_push($arrContentSiteIds, $objContentNavigation->fields['catid']);
+                $objContentNavigation->MoveNext();
+            }
 
-        $query = "DELETE FROM `".DBPREFIX."content` WHERE `id` != ".implode(' AND `id` != ', $arrContentSiteIds);
-        if ($objDatabase->Execute($query) === false) {
+            $query = "DELETE FROM `".DBPREFIX."content` WHERE `id` != ".implode(' AND `id` != ', $arrContentSiteIds);
+            if ($objDatabase->Execute($query) === false) {
+                return _databaseError($query, $objDatabase->ErrorMsg());
+            }
+        } else {
             return _databaseError($query, $objDatabase->ErrorMsg());
         }
-    } else {
-        return _databaseError($query, $objDatabase->ErrorMsg());
     }
 
     $query = "SELECT `group_id` FROM `".DBPREFIX."access_group_static_ids` WHERE `access_id` = '5' GROUP BY `group_id`";
@@ -1554,7 +1556,7 @@ function _coreUpdate()
     try {
         $arrColumns = $objDatabase->MetaColumnNames(DBPREFIX.'sessions');
         if ($arrColumns === false) {
-            setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'languages'));
+            setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'sessions'));
             return false;
         }
 

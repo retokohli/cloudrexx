@@ -163,122 +163,122 @@ class HackyFeedRepublisher {
 //END OF NEWS CONVERTING STUFF
 
 function _newsUpdate() {
-	global $objDatabase, $_CONFIG, $objUpdate, $_ARRAYLANG;
+    global $objDatabase, $_CONFIG, $objUpdate, $_ARRAYLANG;
 
 
-	/************************************************
-	* EXTENSION:	Placeholder NEWS_LINK replaced	*
-	*				by NEWS_LINK_TITLE				*
-	* ADDED:		Contrexx v2.1.0					*
-	************************************************/
-	if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.1.0')) {
-		$query = "
-    		SELECT
-	    		c.`id`,
-	    		c.`content`,
-	    		c.`title`,
-	    		c.`metatitle`,
-	    		c.`metadesc`,
-	    		c.`metakeys`,
-	    		c.`metarobots`,
-	    		c.`css_name`,
-	    		c.`redirect`,
-	    		c.`expertmode`,
-	    		n.`catid`,
+    /************************************************
+    * EXTENSION:	Placeholder NEWS_LINK replaced	*
+    *				by NEWS_LINK_TITLE				*
+    * ADDED:		Contrexx v2.1.0					*
+    ************************************************/
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.1.0')) {
+        $query = "
+            SELECT
+                c.`id`,
+                c.`content`,
+                c.`title`,
+                c.`metatitle`,
+                c.`metadesc`,
+                c.`metakeys`,
+                c.`metarobots`,
+                c.`css_name`,
+                c.`redirect`,
+                c.`expertmode`,
+                n.`catid`,
                 n.`is_validated`,
-	    		n.`parcat`,
-	    		n.`catname`,
-	    		n.`target`,
-	    		n.`displayorder`,
-	    		n.`displaystatus`,
+                n.`parcat`,
+                n.`catname`,
+                n.`target`,
+                n.`displayorder`,
+                n.`displaystatus`,
                 n.`activestatus`,
-	    		n.`cachingstatus`,
+                n.`cachingstatus`,
                 n.`username`,
-	    		n.`cmd`,
-	    		n.`lang`,
-	    		n.`startdate`,
-	    		n.`enddate`,
-	    		n.`protected`,
-	    		n.`frontend_access_id`,
-	    		n.`backend_access_id`,
-	    		n.`themes_id`,
+                n.`cmd`,
+                n.`lang`,
+                n.`startdate`,
+                n.`enddate`,
+                n.`protected`,
+                n.`frontend_access_id`,
+                n.`backend_access_id`,
+                n.`themes_id`,
                 n.`css_name`
-    		FROM `".DBPREFIX."content` AS c
-    		INNER JOIN `".DBPREFIX."content_navigation` AS n ON n.`catid` = c.`id`
-    		WHERE n.`module` = 8 AND c.`content` LIKE '%\{NEWS_LINK\}%' AND n.`username` != 'contrexx_update_2_1_0'";
-    	$objContent = $objDatabase->Execute($query);
-    	if ($objContent !== false) {
-    		$arrFailedPages = array();
-    		while (!$objContent->EOF) {
-    			$newContent = str_replace(
-    				'{NEWS_LINK}',
-    				'{NEWS_LINK_TITLE}',
-    				$objContent->fields['content']
-    			);
-    			$query = "UPDATE `".DBPREFIX."content` AS c INNER JOIN `".DBPREFIX."content_navigation` AS n on n.`catid` = c.`id` SET `content` = '".addslashes($newContent)."', `username` = 'contrexx_update_2_1_0' WHERE c.`id` = ".$objContent->fields['id'];
-    			if ($objDatabase->Execute($query) === false) {
-					$link = CONTREXX_SCRIPT_PATH."?section=news".(empty($objContent->fields['cmd']) ? '' : "&amp;cmd=".$objContent->fields['cmd'])."&amp;langId=".$objContent->fields['lang'];
-    				$arrFailedPages[$objContent->fields['id']] = array('title' => $objContent->fields['catname'], 'link' => $link);
-    			} else {
-	    			$objDatabase->Execute("UPDATE `".DBPREFIX."content_navigation_history` SET `is_active` = '0' WHERE `catid` = ".$objContent->fields['id']);
-	    			$objDatabase->Execute("
-	    				INSERT INTO `".DBPREFIX."content_navigation_history`
-						SET
-							`is_active` = '1',
-							`catid` = ".$objContent->fields['id'].",
-							`parcat` = ".$objContent->fields['parcat'].",
-							`catname` = '".addslashes($objContent->fields['catname'])."',
-							`target` = '".$objContent->fields['target']."',
-							`displayorder` = ".$objContent->fields['displayorder'].",
-							`displaystatus` = '".$objContent->fields['displaystatus']."',
-							`activestatus` = '".$objContent->fields['activestatus']."',
-							`cachingstatus` = '".$objContent->fields['cachingstatus']."',
-							`username` = 'contrexx_update_2_1_0',
-							`changelog` = ".time().",
-							`cmd` = '".$objContent->fields['cmd']."',
-							`lang` = ".$objContent->fields['lang'].",
-							`module` = 8,
-							`startdate` = '".$objContent->fields['startdate']."',
-							`enddate` = '".$objContent->fields['enddate']."',
-							`protected` = ".$objContent->fields['protected'].",
-							`frontend_access_id` = ".$objContent->fields['frontend_access_id'].",
-							`backend_access_id` = ".$objContent->fields['backend_access_id'].",
-							`themes_id` = ".$objContent->fields['themes_id'].",
+            FROM `".DBPREFIX."content` AS c
+            INNER JOIN `".DBPREFIX."content_navigation` AS n ON n.`catid` = c.`id`
+            WHERE n.`module` = 8 AND c.`content` LIKE '%\{NEWS_LINK\}%' AND n.`username` != 'contrexx_update_2_1_0'";
+        $objContent = $objDatabase->Execute($query);
+        if ($objContent !== false) {
+            $arrFailedPages = array();
+            while (!$objContent->EOF) {
+                $newContent = str_replace(
+                    '{NEWS_LINK}',
+                    '{NEWS_LINK_TITLE}',
+                    $objContent->fields['content']
+                );
+                $query = "UPDATE `".DBPREFIX."content` AS c INNER JOIN `".DBPREFIX."content_navigation` AS n on n.`catid` = c.`id` SET `content` = '".addslashes($newContent)."', `username` = 'contrexx_update_2_1_0' WHERE c.`id` = ".$objContent->fields['id'];
+                if ($objDatabase->Execute($query) === false) {
+                    $link = CONTREXX_SCRIPT_PATH."?section=news".(empty($objContent->fields['cmd']) ? '' : "&amp;cmd=".$objContent->fields['cmd'])."&amp;langId=".$objContent->fields['lang'];
+                    $arrFailedPages[$objContent->fields['id']] = array('title' => $objContent->fields['catname'], 'link' => $link);
+                } else {
+                    $objDatabase->Execute("UPDATE `".DBPREFIX."content_navigation_history` SET `is_active` = '0' WHERE `catid` = ".$objContent->fields['id']);
+                    $objDatabase->Execute("
+                        INSERT INTO `".DBPREFIX."content_navigation_history`
+                        SET
+                            `is_active` = '1',
+                            `catid` = ".$objContent->fields['id'].",
+                            `parcat` = ".$objContent->fields['parcat'].",
+                            `catname` = '".addslashes($objContent->fields['catname'])."',
+                            `target` = '".$objContent->fields['target']."',
+                            `displayorder` = ".$objContent->fields['displayorder'].",
+                            `displaystatus` = '".$objContent->fields['displaystatus']."',
+                            `activestatus` = '".$objContent->fields['activestatus']."',
+                            `cachingstatus` = '".$objContent->fields['cachingstatus']."',
+                            `username` = 'contrexx_update_2_1_0',
+                            `changelog` = ".time().",
+                            `cmd` = '".$objContent->fields['cmd']."',
+                            `lang` = ".$objContent->fields['lang'].",
+                            `module` = 8,
+                            `startdate` = '".$objContent->fields['startdate']."',
+                            `enddate` = '".$objContent->fields['enddate']."',
+                            `protected` = ".$objContent->fields['protected'].",
+                            `frontend_access_id` = ".$objContent->fields['frontend_access_id'].",
+                            `backend_access_id` = ".$objContent->fields['backend_access_id'].",
+                            `themes_id` = ".$objContent->fields['themes_id'].",
                             `css_name` = '".$objContent->fields['css_name']."'"
-					);
+                    );
 
-					$historyId = $objDatabase->Insert_ID();
+                    $historyId = $objDatabase->Insert_ID();
 
-					$objDatabase->Execute("
-						INSERT INTO `".DBPREFIX."content_history`
-						SET
-							`id` = ".$historyId.",
-							`page_id` = ".$objContent->fields['id'].",
-							`content` = '".addslashes($newContent)."',
-							`title` = '".addslashes($objContent->fields['title'])."',
-							`metatitle` = '".addslashes($objContent->fields['metatitle'])."',
-							`metadesc` = '".addslashes($objContent->fields['metadesc'])."',
-							`metakeys` = '".addslashes($objContent->fields['metakeys'])."',
-							`metarobots` = '".addslashes($objContent->fields['metarobots'])."',
-							`css_name` = '".addslashes($objContent->fields['css_name'])."',
-							`redirect` = '".addslashes($objContent->fields['redirect'])."',
-							`expertmode` = '".$objContent->fields['expertmode']."'
-					");
+                    $objDatabase->Execute("
+                        INSERT INTO `".DBPREFIX."content_history`
+                        SET
+                            `id` = ".$historyId.",
+                            `page_id` = ".$objContent->fields['id'].",
+                            `content` = '".addslashes($newContent)."',
+                            `title` = '".addslashes($objContent->fields['title'])."',
+                            `metatitle` = '".addslashes($objContent->fields['metatitle'])."',
+                            `metadesc` = '".addslashes($objContent->fields['metadesc'])."',
+                            `metakeys` = '".addslashes($objContent->fields['metakeys'])."',
+                            `metarobots` = '".addslashes($objContent->fields['metarobots'])."',
+                            `css_name` = '".addslashes($objContent->fields['css_name'])."',
+                            `redirect` = '".addslashes($objContent->fields['redirect'])."',
+                            `expertmode` = '".$objContent->fields['expertmode']."'
+                    ");
 
-					$objDatabase->Execute("
-						INSERT INTO	`".DBPREFIX."content_logfile`
-						SET
-							`action` = 'update',
-							`history_id` = ".$historyId.",
-							`is_validated` = '1'
-					");
-    			}
+                    $objDatabase->Execute("
+                        INSERT INTO	`".DBPREFIX."content_logfile`
+                        SET
+                            `action` = 'update',
+                            `history_id` = ".$historyId.",
+                            `is_validated` = '1'
+                    ");
+                }
 
-    			$objContent->MoveNext();
-    		}
+                $objContent->MoveNext();
+            }
 
-    		if (count($arrFailedPages)) {
-    			setUpdateMsg($_ARRAYLANG['TXT_UNABLE_APPLY_NEW_NEWS_LAYOUT'], 'msg');
+            if (count($arrFailedPages)) {
+                setUpdateMsg($_ARRAYLANG['TXT_UNABLE_APPLY_NEW_NEWS_LAYOUT'], 'msg');
 
                 $pages = '<ul>';
                 foreach ($arrFailedPages as $arrPage) {
@@ -286,19 +286,19 @@ function _newsUpdate() {
                 }
                 $pages .= '</ul>';
                 setUpdateMsg($pages, 'msg');
-    		}
-    	} else {
-    		return _databaseError($query, $objDatabase->ErrorMsg());
-    	}
-	}
+            }
+        } else {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+    }
 
 
 
-	/************************************************
-	* EXTENSION:	Front- and backend permissions  *
-	* ADDED:		Contrexx v2.1.0					*
-	************************************************/
-	$query = "SELECT 1 FROM `".DBPREFIX."module_news_settings` WHERE `name` = 'news_message_protection'";
+    /************************************************
+    * EXTENSION:	Front- and backend permissions  *
+    * ADDED:		Contrexx v2.1.0					*
+    ************************************************/
+    $query = "SELECT 1 FROM `".DBPREFIX."module_news_settings` WHERE `name` = 'news_message_protection'";
     $objResult = $objDatabase->SelectLimit($query, 1);
     if ($objResult) {
         if ($objResult->RecordCount() == 0) {
@@ -345,10 +345,10 @@ function _newsUpdate() {
 
 
 
-	/************************************************
-	* EXTENSION:	Thunbmail Image                 *
-	* ADDED:		Contrexx v2.1.0					*
-	************************************************/
+    /************************************************
+    * EXTENSION:	Thunbmail Image                 *
+    * ADDED:		Contrexx v2.1.0					*
+    ************************************************/
     $arrColumns = $objDatabase->MetaColumnNames(DBPREFIX.'module_news');
     if ($arrColumns === false) {
         setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_news'));
@@ -434,6 +434,220 @@ function _newsUpdate() {
         }
     }
 
-	return true;
+
+    /****************************
+    * ADDED:    Contrexx v3.0.0 *
+    *****************************/
+    try {
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_news_locale',
+            array(
+                'news_id'        => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+                'lang_id'        => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'after' => 'news_id'),
+                'is_active'      => array('type' => 'INT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'lang_id'),
+                'title'          => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'is_active'),
+                'text'           => array('type' => 'mediumtext', 'notnull' => true, 'after' => 'title'),
+                'teaser_text'    => array('type' => 'text', 'notnull' => true, 'after' => 'text')
+            ),
+            array(
+                'newsindex'      => array('fields' => array('text', 'title', 'teaser_text'), 'type' => 'FULLTEXT')
+            )
+        );
+
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_news_categories_locale',
+            array(
+                'category_id'    => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+                'lang_id'        => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'after' => 'category_id'),
+                'name'           => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'lang_id')
+            ),
+            array(
+                'name'           => array('fields' => array('name'), 'type' => 'FULLTEXT')
+            )
+        );
+
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_news_types',
+            array(
+                'typeid'     => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true)
+            )
+        );
+
+
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_news_types_locale',
+            array(
+                'lang_id'    => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+                'type_id'    => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'after' => 'lang_id'),
+                'name'       => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'type_id')
+            ),
+            array(
+                'name'       => array('fields' => array('name'), 'type' => 'FULLTEXT')
+            )
+        );
+
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_news_settings_locale',
+            array(
+                'name'       => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '', 'primary' => true),
+                'lang_id'    => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'after' => 'name'),
+                'value'      => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'lang_id')
+            ),
+            array(
+                'name'       => array('fields' => array('name'), 'type' => 'FULLTEXT')
+            )
+        );
+
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_news_comments',
+            array(
+                'id'             => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true),
+                'title'          => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'id'),
+                'text'           => array('type' => 'mediumtext', 'notnull' => true, 'after' => 'title'),
+                'newsid'         => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'text'),
+                'date'           => array('type' => 'INT(14)', 'notnull' => false, 'default' => NULL,'after' => 'newsid'),
+                'poster_name'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'date'),
+                'userid'         => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'poster_name'),
+                'ip_address'     => array('type' => 'VARCHAR(15)', 'notnull' => true, 'default' => '0.0.0.0', 'after' => 'userid'),
+                'is_active'      => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '1', 'after' => 'ip_address')
+            )
+        );
+
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_news_stats_view',
+            array(
+                'user_sid'       => array('type' => 'CHAR(32)', 'notnull' => true),
+                'news_id'        => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'after' => 'user_sid'),
+                'time'           => array('type' => 'timestamp', 'notnull' => true, 'default_expr' => 'CURRENT_TIMESTAMP', 'on_update' => 'CURRENT_TIMESTAMP', 'after' => 'news_id')
+            ),
+            array(
+                'idx_user_sid'   => array('fields' => array('user_sid')),
+                'idx_news_id'    => array('fields' => array('news_id'))
+            )
+        );
+
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_news',
+            array(
+                'id'                             => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true),
+                'date'                           => array('type' => 'INT(14)', 'notnull' => false, 'default' => NULL, 'after' => 'id'),
+                'title'                          => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'date'),
+                'text'                           => array('type' => 'mediumtext', 'notnull' => true, 'after' => 'title'),
+                'redirect'                       => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'text'),
+                'source'                         => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'redirect'),
+                'url1'                           => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'source'),
+                'url2'                           => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'url1'),
+                'catid'                          => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'url2'),
+                'lang'                           => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'catid'),
+                'typeid'                         => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'lang'),
+                'publisher'                      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'typeid'),
+                'publisher_id'                   => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'publisher'),
+                'author'                         => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'publisher_id'),
+                'author_id'                      => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'author'),
+                'userid'                         => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'author_id'),
+                'startdate'                      => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'userid'),
+                'enddate'                        => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate'),
+                'status'                         => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '1', 'after' => 'enddate'),
+                'validated'                      => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0', 'after' => 'status'),
+                'frontend_access_id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'validated'),
+                'backend_access_id'              => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'frontend_access_id'),
+                'teaser_only'                    => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0', 'after' => 'backend_access_id'),
+                'teaser_frames'                  => array('type' => 'text', 'notnull' => true, 'after' => 'teaser_only'),
+                'teaser_text'                    => array('type' => 'text', 'notnull' => true, 'after' => 'teaser_frames'),
+                'teaser_show_link'               => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'teaser_text'),
+                'teaser_image_path'              => array('type' => 'text', 'notnull' => true, 'after' => 'teaser_show_link'),
+                'teaser_image_thumbnail_path'    => array('type' => 'text', 'notnull' => true, 'after' => 'teaser_image_path'),
+                'changelog'                      => array('type' => 'INT(14)', 'notnull' => true, 'default' => '0', 'after' => 'teaser_image_thumbnail_path'),
+                'allow_comments'                 => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'changelog')
+            ),
+            array(
+                'newsindex'                      => array('fields' => array('text','title','teaser_text'), 'type' => 'FULLTEXT')
+            )
+        );
+
+
+        $arrColumnsNews = $objDatabase->MetaColumnNames(DBPREFIX.'module_news');
+        if ($arrColumnsNews === false) {
+            setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_news'));
+            return false;
+        }
+        if (isset($arrColumnsNews['TITLE']) && isset($arrColumnsNews['TEXT']) && isset($arrColumnsNews['TEASER_TEXT']) && isset($arrColumnsNews['LANG'])) {
+            \Cx\Lib\UpdateUtil::sql('
+                INSERT INTO `'.DBPREFIX.'module_news_locale` (`news_id`, `lang_id`, `title`, `text`, `teaser_text`)
+                SELECT `id`, `lang`, `title`, `text`, `teaser_text` FROM `'.DBPREFIX.'module_news`
+                ON DUPLICATE KEY UPDATE `news_id` = `news_id`
+            ');
+        }
+        if (isset($arrColumnsNews['TITLE'])) {
+            \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_news` DROP `title`');
+        }
+        if (isset($arrColumnsNews['TEXT'])) {
+            \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_news` DROP `text`');
+        }
+        if (isset($arrColumnsNews['TEASER_TEXT'])) {
+            \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_news` DROP `teaser_text`');
+        }
+        if (isset($arrColumnsNews['LANG'])) {
+            \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_news` DROP `lang`');
+        }
+
+        $arrColumnsNewsCategories = $objDatabase->MetaColumnNames(DBPREFIX.'module_news_categories');
+        if ($arrColumnsNewsCategories === false) {
+            setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_news_categories'));
+            return false;
+        }
+        if (isset($arrColumnsNewsCategories['NAME'])) {
+            \Cx\Lib\UpdateUtil::sql('
+                INSERT INTO '.DBPREFIX.'module_news_categories_locale (`category_id`, `lang_id`, `name`)
+                SELECT c.catid, l.id, c.name
+                FROM '.DBPREFIX.'module_news_categories AS c, '.DBPREFIX.'languages AS l
+                ORDER BY c.catid, l.id
+                ON DUPLICATE KEY UPDATE `category_id` = `category_id`
+            ');
+            \Cx\Lib\UpdateUtil::sql('
+                INSERT INTO '.DBPREFIX.'module_news_categories_locale (`category_id`, `lang_id`, `name`)
+                SELECT c.catid, l.id, c.name
+                FROM '.DBPREFIX.'module_news_categories AS c, '.DBPREFIX.'languages AS l
+                ORDER BY c.catid, l.id
+                ON DUPLICATE KEY UPDATE `category_id` = `category_id`
+            ');
+            \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_news_categories` DROP `name`');
+        }
+        if (isset($arrColumnsNewsCategories['LANG'])) {
+            \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_news_categories` DROP `lang`');
+        }
+
+        \Cx\Lib\UpdateUtil::sql('
+            INSERT INTO `'.DBPREFIX.'module_news_settings_locale` (`name`, `lang_id`, `value`)
+            SELECT n.`name`, l.`id`, n.`value`
+            FROM `'.DBPREFIX.'module_news_settings` AS n, `'.DBPREFIX.'languages` AS l
+            WHERE n.`name` IN ("news_feed_description", "news_feed_title")
+            ORDER BY n.`name`, l.`id`
+            ON DUPLICATE KEY UPDATE `'.DBPREFIX.'module_news_settings_locale`.`name` = `'.DBPREFIX.'module_news_settings_locale`.`name`
+        ');
+
+        \Cx\Lib\UpdateUtil::sql('DELETE FROM `'.DBPREFIX.'module_news_settings` WHERE `name` IN ("news_feed_title", "news_feed_description")');
+
+        \Cx\Lib\UpdateUtil::sql('
+            INSERT INTO `'.DBPREFIX.'module_news_settings` (`name`, `value`)
+            VALUES  ("news_comments_activated", "0"),
+                    ("news_comments_anonymous", "0"),
+                    ("news_comments_autoactivate", "0"),
+                    ("news_comments_notification", "1"),
+                    ("news_comments_timeout", "30"),
+                    ("news_default_teasers", ""),
+                    ("news_use_types","0"),
+                    ("news_use_top","0"),
+                    ("news_top_days","10"),
+                    ("news_top_limit","10"),
+                    ("news_assigned_author_groups", "0"),
+                    ("news_assigned_publisher_groups", "0")
+            ON DUPLICATE KEY UPDATE `name` = `name`
+        ');
+
+    } catch (UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
+    return true;
 }
-?>
