@@ -80,4 +80,7 @@ $_CORELANG = array(
     'TXT_TIMEZONE'                               => 'Zeitzone',
     'TXT_TIMEZONE_INTRODUCTION'                  => 'Bitte wählen Sie Ihre Zeitzone aus:',
     'TXT_PLEASE_SELECT'                          => '--- Bitte wählen ---',
+    'TXT_CONFLICTED_MODULES_TITLE'               => 'Konflikt beim Installieren von neuen Modulen',
+    'TXT_CONFLICTED_MODULES_DESCRIPTION'         => 'Folgende neue Module können nicht installiert werden, da die entsprechenden Datenbank-Tabellen bereits existieren:',
+    'TXT_UPDATE_ERROR'                           => 'Update Fehler',
 );
