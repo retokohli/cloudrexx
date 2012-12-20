@@ -1673,42 +1673,15 @@ CONFIG_TPL
 ;
 
     // write settings
-    if (!@include_once(ASCMS_FRAMEWORK_PATH.'/File.class.php')) {
-        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_API_LOAD_FAILED'], ASCMS_FRAMEWORK_PATH.'/File.class.php'));
-        return false;
-    }
-
-    $objFile = new File();
-    $status = true;
-
-    if (!is_writable(ASCMS_DOCUMENT_ROOT.'/config/')) {
-        $objFile->setChmod(ASCMS_DOCUMENT_ROOT.'/config', ASCMS_PATH_OFFSET.'/config', '/');
-    }
-    if (!is_writable(ASCMS_DOCUMENT_ROOT.'/config/configuration.php')) {
-        $objFile->setChmod(ASCMS_DOCUMENT_ROOT.'/config', ASCMS_PATH_OFFSET.'/config', '/configuration.php');
-    }
-    if (is_writable(ASCMS_DOCUMENT_ROOT.'/config/configuration.php')) {
-        $handleFile = @fopen(ASCMS_DOCUMENT_ROOT.'/config/configuration.php','w+');
-        if (!$handleFile) {
+    try {
+            $objFile = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT.'/config/configuration.php');
+            $objFile->makeWritable();
+            $objFile->write($configurationTpl);
+    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::msg($e->getMessage());
             setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_WRITE_SETTINGS_FILE'], ASCMS_DOCUMENT_ROOT.'/config/configuration.php'));
             setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_FILE'], ASCMS_DOCUMENT_ROOT.'/config/configuration.php', $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
             return false;
-        }
-
-        @flock($handleFile, LOCK_EX); //set semaphore
-        if (!@fwrite($handleFile,$configurationTpl)) {
-            setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_WRITE_SETTINGS_FILE'], ASCMS_DOCUMENT_ROOT.'/config/configuration.php'));
-            setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_FILE'], ASCMS_DOCUMENT_ROOT.'/config/configuration.php', $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
-            $status = false;
-        }
-        @flock($handleFile, LOCK_UN);
-        @fclose($handleFile);
-
-        return $status;
-    } else {
-        setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_WRITE_SETTINGS_FILE'], ASCMS_DOCUMENT_ROOT.'/config/configuration.php'));
-        setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_FILE'], ASCMS_DOCUMENT_ROOT.'/config/configuration.php', $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
-        return false;
     }
 }
 
