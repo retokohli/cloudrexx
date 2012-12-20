@@ -82,6 +82,21 @@ class UpdateUtil
     }
 
 
+    public static function check_column_type($name, $col, $type)
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        $col_info = $objDatabase->MetaColumns($name);
+        if ($col_info === false) {
+            throw new UpdateException(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
+        }
+        if (!isset($col_info[strtoupper($col)])) {
+            throw new UpdateException(sprintf('Column %s does not exist!', $name.'.'.$col));
+        }
+        return $col_info[strtoupper($col)]->type == $type;
+    }
+
+
     public static function table_exist($name)
     {
         global $objDatabase, $_ARRAYLANG;
