@@ -305,16 +305,26 @@ if ($section == 'jsondata') {
     echo $json->jsondata($adapter, $method, $arguments);
     die();
 }
-if ($section == "newsletter" && Newsletter::isTrackLink()) {//handle link tracker from newsletter, since user should be redirected to the link url
-    /*
-     * Newsletter Module
-     *
-     * Generates no output, requests are answered by a redirect to foreign site
-     *
-     */
-    $newsletter = new Newsletter();
-    $newsletter->trackLink();
-    //execution should never reach this point
+if ($section == "newsletter") {
+    if (Newsletter::isTrackLink()) {
+        //handle link tracker from newsletter, since user should be redirected to the link url
+        /*
+         * Newsletter Module
+         *
+         * Generates no output, requests are answered by a redirect to foreign site
+         *
+         */
+        Newsletter::trackLink();
+        //execution should never reach this point, but let's be safe and call exit anyway
+        exit;
+    } elseif ($command == 'displayInBrowser') {
+        Newsletter::displayInBrowser();
+        //execution should never reach this point, but let's be safe and call exit anyway
+        exit;
+    }
+
+    // regular newsletter request (like subscribing, profile management, etc).
+    // must not abort by an exit call here!
 }
 
 
@@ -482,6 +492,11 @@ if ($isRegularPageRequest) {
     $page_template  = $themesPages['content'];
     $page_modified  = $page->getUpdatedAt()->getTimestamp();
 
+    // Authentification for protected pages
+    // This is only done for regular page requests ($isRegularPageRequest == TRUE)
+    //
+    $resolver->checkPageFrontendProtection($page, $history);
+
 //TODO: history
 }
 
@@ -489,13 +504,7 @@ if ($isRegularPageRequest) {
 // Backwards compatibility for code pre Contrexx 3.0 (update)
 $_GET['cmd']     = $_POST['cmd']     = $_REQUEST['cmd']     = $command;
 $_GET['section'] = $_POST['section'] = $_REQUEST['section'] = $section;
-
-
 $plainSection = setModuleIndexAndReturnPlainSection($section);
-
-// Authentification for protected pages
-$resolver->checkPageFrontendProtection($page, $history);
-
 
 // Load interface language data
 /**
@@ -505,17 +514,11 @@ $resolver->checkPageFrontendProtection($page, $history);
 $_ARRAYLANG = $objInit->loadLanguageData($plainSection);
 
 
+// Handle requests that have been requested using the url-modificator 'standalone'
 if (!$isRegularPageRequest) {
     // ATTENTION: These requests are not protected by the content manager
     //            and must therefore be authorized by the calling component itself!
     switch ($plainSection) {
-        case 'newsletter':
-            /** @ignore */
-            if (!$cl->loadFile(ASCMS_MODULE_PATH.'/newsletter/index.class.php'))
-                die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-            $newsletter = new newsletter();
-            $newsletter->getPage();
-            break;
         case 'immo':
             /** @ignore */
             if (!$cl->loadFile(ASCMS_MODULE_PATH.'/immo/index.class.php'))

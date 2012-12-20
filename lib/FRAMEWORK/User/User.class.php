@@ -1521,13 +1521,14 @@ class User extends User_Profile
                 $categories[$key] = intval($categories[$key]);
                 $query = sprintf('
                     INSERT IGNORE INTO `%smodule_newsletter_access_user` (
-                        `accessUserId`, `newsletterCategoryID`
+                        `accessUserId`, `newsletterCategoryID`, `code`
                     ) VALUES (
-                        %s, %s
+                        %s, %s, \'%s\'
                     )',
                     DBPREFIX,
                     $this->id,
-                    $categories[$key]
+                    $categories[$key],
+                    \NewsletterLib::_emailCode()
                 );
                 $objDatabase->execute($query);
             }

@@ -426,7 +426,7 @@ class newsletter extends NewsletterLib
         global $objDatabase, $_ARRAYLANG;
         $listId = isset($_GET['id']) ? intval($_GET['id']) : 0;
         if ($listId > 0) {
-            if (($arrList = &$this->_getList($listId)) !== false) {
+            if (($arrList = $this->_getList($listId)) !== false) {
                 $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_rel_cat_news WHERE category=".$listId);
                 $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE category=".$listId);
 
@@ -462,7 +462,7 @@ class newsletter extends NewsletterLib
 
         $listId = isset($_GET['id']) ? intval($_GET['id']) : 0;
         if ($listId > 0) {
-            if (($arrList = &$this->_getList($listId)) !== false) {
+            if (($arrList = $this->_getList($listId)) !== false) {
                 $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_category SET `status`=".($arrList['status'] == 1 ? "0" : "1")." WHERE id=".$listId);
             }
         }
@@ -501,7 +501,7 @@ class newsletter extends NewsletterLib
             } else {
                 self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_DEFINE_LIST_NAME_MSG'];
             }
-        } elseif ($listId > 0 && ($arrList = &$this->_getList($listId)) !== false) {
+        } elseif ($listId > 0 && ($arrList = $this->_getList($listId)) !== false) {
             $listName = $arrList['name'];
             $listStatus = $arrList['status'];
         } else {
@@ -894,7 +894,7 @@ class newsletter extends NewsletterLib
         $this->_objTpl->setVariable(array(
             'NEWSLETTER_MAIL_ID' => ($copy ? 0 : $mailId),
             'NEWSLETTER_MAIL_SUBJECT' => htmlentities($mailSubject, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_MAIL_HTML_CONTENT' => new \Cx\Core\Wysiwyg\Wysiwyg('newsletter_mail_html_content', $mailHtmlContent, null, null, true),
+            'NEWSLETTER_MAIL_HTML_CONTENT' => new \Cx\Core\Wysiwyg\Wysiwyg('newsletter_mail_html_content', contrexx_raw2xhtml($mailHtmlContent), null, null, true),
             'NEWSLETTER_MAIL_PRIORITY_MENU' => $this->_getMailPriorityMenu($mailPriority, 'name="newsletter_mail_priority" style="width:300px;"'),
             'NEWSLETTER_MAIL_TEMPLATE_MENU' => $this->_getTemplateMenu($mailTemplate, 'name="newsletter_mail_template" style="width:300px;" onchange="document.getElementById(\'newsletter_mail_form\').action=\'index.php?cmd=newsletter&amp;act='.$act.'&amp;id='.$mailId.'&amp;setFormat=1\';document.getElementById(\'newsletter_mail_form\').submit()"'),
             'NEWSLETTER_MAIL_SENDER_MAIL' => htmlentities($mailSenderMail, ENT_QUOTES, CONTREXX_CHARSET),
@@ -985,6 +985,7 @@ class newsletter extends NewsletterLib
             'TXT_NEWSLETTER_GENERAL' => $_ARRAYLANG['TXT_NEWSLETTER_GENERAL'],
             'TXT_NEWSLETTER_MODIFY_PROFILE' => $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_PROFILE'],
             'TXT_NEWSLETTER_UNSUBSCRIBE' => $_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE'],
+            'TXT_NEWSLETTER_PLACEHOLDER_NOT_ON_BROWSER_VIEW' => $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDER_NOT_ON_BROWSER_VIEW'],
             'TXT_NEWSLETTER_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_DATE'],
             'TXT_NEWSLETTER_DISPLAY_IN_BROWSER_LINK' => $_ARRAYLANG['TXT_NEWSLETTER_DISPLAY_IN_BROWSER_LINK'],
             'TXT_NEWSLETTER_SAVE' => $_ARRAYLANG['TXT_NEWSLETTER_SAVE'],
@@ -1192,7 +1193,7 @@ class newsletter extends NewsletterLib
             $mailCount = 0;
         }
 
-        $arrTemplates = &$this->_getTemplates();
+        $arrTemplates = $this->_getTemplates();
         // feedback counting
         $arrFeedback = array();
         $objFeedback = $objDatabase->SelectLimit("SELECT
@@ -2092,6 +2093,7 @@ class newsletter extends NewsletterLib
             'TXT_NEWSLETTER_CONTENT' => $_ARRAYLANG['TXT_NEWSLETTER_CONTENT'],
             'TXT_NEWSLETTER_PROFILE_SETUP' => $_ARRAYLANG['TXT_NEWSLETTER_PROFILE_SETUP'],
             'TXT_NEWSLETTER_UNSUBSCRIBE' => $_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE'],
+            'TXT_NEWSLETTER_PLACEHOLDER_NOT_ON_BROWSER_VIEW' => $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDER_NOT_ON_BROWSER_VIEW'],
             'TXT_NEWSLETTER_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_DATE'],
             'TXT_NEWSLETTER_DISPLAY_IN_BROWSER_LINK' => $_ARRAYLANG['TXT_NEWSLETTER_DISPLAY_IN_BROWSER_LINK'],
 			'TXT_NEWSLETTER_NEWS_IMPORT' => $_ARRAYLANG['TXT_NEWSLETTER_NEWS_IMPORT'],
@@ -2120,7 +2122,7 @@ class newsletter extends NewsletterLib
             'NEWSLETTER_TEMPLATE_NAME' => htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_TEMPLATE_DESCRIPTION' => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
 			'NEWSLETTER_TEMPLATE_TYPE' => $type,
-            'NEWSLETTER_TEMPLATE_HTML' => new \Cx\Core\Wysiwyg\Wysiwyg('template_edit_html', $html, 'fullpage', null, true),
+            'NEWSLETTER_TEMPLATE_HTML' => new \Cx\Core\Wysiwyg\Wysiwyg('template_edit_html', contrexx_raw2xhtml($html), 'fullpage', null, true),
             'NEWSLETTER_TEMPLATE_TITLE_TEXT' => $id > 0 ? $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_TEMPLATE'] : $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATE_ADD'],
 			'NEWSLETTER_TEMPLATE_TYPE_MENU' => $typeOps,
 			'NEWSLETTER_TEMPLATE_NEWS_IMPORT_DIRECTORY_DISPLAY' => $newsImportDirectoryDisplay,
@@ -2397,7 +2399,7 @@ class newsletter extends NewsletterLib
             $this->_objTpl->hideBlock("bulkSend");
         }
 
-        $arrSettings = &$this->_getSettings();
+        $arrSettings = $this->_getSettings();
         $testmail = $arrSettings['test_mail']['setvalue'];
 
         $this->_objTpl->setVariable(array(
@@ -2542,6 +2544,7 @@ class newsletter extends NewsletterLib
                 LEFT JOIN `%1$smodule_newsletter_rel_cat_news` AS `nrn`
                   ON `nrn`.`category`=`rc`.`category`
                WHERE `nrn`.`newsletter`=%2$s
+                 AND `nu`.`status` = 1
             UNION DISTINCT
               SELECT `email`
                 FROM `%1$saccess_users` AS `au`
@@ -2550,6 +2553,7 @@ class newsletter extends NewsletterLib
                 LEFT JOIN `%1$smodule_newsletter_rel_usergroup_newsletter` AS `arn`
                   ON `arn`.`userGroup`=`rg`.`group_id`
                WHERE `arn`.`newsletter`=%2$s
+                 AND `au`.`active` = 1
             UNION DISTINCT
               SELECT `email`
                 FROM `%1$saccess_users` AS `cu`
@@ -2558,6 +2562,7 @@ class newsletter extends NewsletterLib
                 LEFT JOIN `%1$smodule_newsletter_rel_cat_news` AS `crn`
                   ON `cnu`.`newsletterCategoryID`=`crn`.`category`
                 WHERE `crn`.`newsletter`=%2$s
+                  AND `cu`.`active` = 1
             ) AS `subquery`',
             DBPREFIX, $mailId
         );
@@ -2667,52 +2672,28 @@ class newsletter extends NewsletterLib
         global $objDatabase;
 
         $query = "
-            SELECT
-                    (
-                        CASE WHEN
-                            `s`.`type` = 'newsletter'
-                        THEN
-                            `nu`.`id`
-                        ELSE
-                            `au`.`id`
-                        END
-                    )                                           AS `id`,
+            SELECT (CASE WHEN `s`.`type` = 'newsletter'
+                         THEN `nu`.`id`
+                         ELSE `au`.`id`
+                                        END) AS `id`,
                     `s`.email,
                     `s`.type,
                     `s`.`code`
 
-            FROM
-                    `".DBPREFIX."module_newsletter_tmp_sending` AS `s`
+              FROM `".DBPREFIX."module_newsletter_tmp_sending` AS `s`
 
-            LEFT JOIN
-                    `".DBPREFIX."module_newsletter_user`        AS `nu`
-                ON
-                    `nu`.`email` = `s`.`email`
-                AND
-                    `s`.`type` = 'newsletter'
+         LEFT JOIN `".DBPREFIX."module_newsletter_user` AS `nu`
+                ON `nu`.`email` = `s`.`email`
+               AND `s`.`type` = 'newsletter'
 
 
-            LEFT JOIN
-                    `".DBPREFIX."access_users`                  AS `au`
-                ON
-                    `au`.`email` = `s`.`email`
-                AND
-                    `s`.`type` = 'access'
+         LEFT JOIN `".DBPREFIX."access_users` AS `au`
+                ON `au`.`email` = `s`.`email`
+               AND `s`.`type` = 'access'
 
-            WHERE
-                    `s`.`newsletter` = ".intval($id)."
-
-            AND
-                    `s`.`sendt` = 0
-
-            AND
-                (
-                    `au`.`email` IS NOT NULL
-                OR
-                    `nu`.`email` IS NOT NULL
-                )
-        ";
-
+             WHERE `s`.`newsletter` = ".intval($id)."
+               AND `s`.`sendt` = 0
+               AND (`au`.`email` IS NOT NULL OR `nu`.`email` IS NOT NULL)";
 
         $res = $objDatabase->SelectLimit($query, $amount, 0);
         return new DBIterator($res);
@@ -2840,6 +2821,8 @@ class newsletter extends NewsletterLib
         global $objDatabase;
 
         $mailID = intval($mailID);
+// TODO: might we set TYPE for core access_users (case 2) to something like 'core' which would define that there won't be any profile and unsubscribe link??
+// TODO: might we switch the case2 and case3 of the UNION SELECT so that access_users with a real subscribtion get preferred bevor those without a subscribtion
         $query = sprintf('
             SELECT `email`, "newsletter" AS `type`
               FROM `%1$smodule_newsletter_user` AS `nu`
@@ -3166,7 +3149,7 @@ class newsletter extends NewsletterLib
         $NewsletterBody = '';
         $codeResult     = $objDatabase->Execute('SELECT `code` FROM `'.DBPREFIX.'module_newsletter_tmp_sending` WHERE `newsletter` = '.$NewsletterID.' AND `email` = "'.$userData['email'].'"');
         $code           = $codeResult->fields['code'];
-        // TODO: replace with new methode $this->GetBrowserViewURL()
+// TODO: replace with new methode $this->GetBrowserViewURL()
         $browserViewUrl = ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID).'/index.php?section=newsletter&cmd=displayInBrowser&standalone=true&code='.$code.'&email='.$userData['email'].'&id='.$NewsletterID;
 
         if ($format == 'text') {
@@ -3196,10 +3179,6 @@ class newsletter extends NewsletterLib
         // lets prepare all links for tracker before we replace placeholders
 // TODO: migrate tracker to new URL-format
         $content_text = $this->_prepareNewsletterLinksForSend($NewsletterID, $content_text, $userData['id'], ($userData['type'] == 'access'));
-
-// TODO: Both $arrRecipientTitles and $title are never used
-//        $arrRecipientTitles = &$this->_getRecipientTitles();
-//        $title = isset($arrRecipientTitles[$userData['title']]) ? $arrRecipientTitles[$userData['title']] : '';
 
         $search = array(
             '[[email]]',
@@ -3250,22 +3229,17 @@ class newsletter extends NewsletterLib
         $content_text       = str_replace($search, $replace, $content_text);
         $TemplateSource     = str_replace($search, $replace, $TemplateSource);
 
-        // Replace the links in the content
         $search         = array('[[profile_setup]]', '[[unsubscribe]]', '[[date]]');
         $replace        = array(
             $this->GetProfileURL($userData['code'], $TargetEmail, $userData['type']),
             $this->GetUnsubscribeURL($userData['code'], $TargetEmail, $userData['type']),
             date(ASCMS_DATE_FORMAT_DATE)
         );
+
+        // Replace the links in the content
         $content_text = str_replace($search, $replace, $content_text);
 
         // replace the links in the template
-        $search         = array('[[profile_setup]]', '[[unsubscribe]]', '[[date]]');
-        $replace        = array(
-            $this->GetProfileURL($userData['code'], $TargetEmail, $userData['type']),
-            $this->GetUnsubscribeURL($userData['code'], $TargetEmail, $userData['type']),
-            date(ASCMS_DATE_FORMAT_DATE)
-        );
         $TemplateSource = str_replace($search, $replace, $TemplateSource);
 
         // i believe this replaces image paths...
@@ -3297,6 +3271,7 @@ class newsletter extends NewsletterLib
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       int $id
      * @param       string $type
+     * @param       int ID of newsletter e-mail
      * @return      adodb result object
      */
     private function getNewsletterUserData($id, $type)
@@ -3334,6 +3309,15 @@ class newsletter extends NewsletterLib
             $objUser = FWUser::getFWUserObject()->objUser->getUser($id);
 
             if ($objUser) {
+                $query = "
+                    SELECT code
+                      FROM ".DBPREFIX."module_newsletter_access_user
+                     WHERE accessUserID = $id";
+                $result = $objDatabase->SelectLimit($query, 1);
+                if ($result && !$result->EOF) {
+                    $arrUserData['code'] = $result->fields['code'];
+                }
+
                 switch ($objUser->getProfileAttribute('gender')) {
                     case 'gender_male':
                         $arrUserData['sex'] = 'm';
@@ -3343,20 +3327,21 @@ class newsletter extends NewsletterLib
                         break;
                 }
 
-                $arrUserData['email']       = $objUser->getEmail();
+                $arrUserData['email']           = $objUser->getEmail();
                 $arrUserData['website']         = $objUser->getProfileAttribute('website');
-                $arrUserData['salutation']       = $objUser->objAttribute->getById('title_'.$objUser->getProfileAttribute('title'))->getName();
-                $arrUserData['lastname']    = $objUser->getProfileAttribute('lastname');
-                $arrUserData['firstname']   = $objUser->getProfileAttribute('firstname');
-                $arrUserData['address']      = $objUser->getProfileAttribute('address');
-                $arrUserData['zip']         = $objUser->getProfileAttribute('zip');
-                $arrUserData['city']        = $objUser->getProfileAttribute('city');
-                $arrUserData['country_id']  = $objUser->getProfileAttribute('country');
-                $arrUserData['phone_office']= $objUser->getProfileAttribute('phone_office')/*.'/'.
-                                   $objUser->getProfileAttribute('phone_private').'/'.
-                                   $objUser->getProfileAttribute('phone_mobile').'/'.
-                                   $objUser->getProfileAttribute('phone_fax')*/;
-                $arrUserData['birthday']    = $objUser->getProfileAttribute('birthday');
+                $arrUserData['salutation']      = $objUser->objAttribute->getById('title_'.$objUser->getProfileAttribute('title'))->getName();
+                $arrUserData['lastname']        = $objUser->getProfileAttribute('lastname');
+                $arrUserData['firstname']       = $objUser->getProfileAttribute('firstname');
+                $arrUserData['company']         = $objUser->getProfileAttribute('company');
+                $arrUserData['address']         = $objUser->getProfileAttribute('address');
+                $arrUserData['zip']             = $objUser->getProfileAttribute('zip');
+                $arrUserData['city']            = $objUser->getProfileAttribute('city');
+                $arrUserData['country_id']      = $objUser->getProfileAttribute('country');
+                $arrUserData['phone_office']    = $objUser->getProfileAttribute('phone_office');
+                $arrUserData['phone_private']   = $objUser->getProfileAttribute('phone_private');
+                $arrUserData['phone_mobile']    = $objUser->getProfileAttribute('phone_mobile');
+                $arrUserData['fax']             = $objUser->getProfileAttribute('phone_fax');
+                $arrUserData['birthday']        = $objUser->getProfileAttribute('birthday');
             }
         } else {
             $query = "
@@ -3370,6 +3355,7 @@ class newsletter extends NewsletterLib
                  WHERE id=$id";
             $result = $objDatabase->Execute($query);
             if ($result && !$result->EOF) {
+// TODO: use FWUSER
                 $arrRecipientTitles = $this->_getRecipientTitles();
                 $arrUserData['code']            = $result->fields['code'];
                 $arrUserData['sex']             = $result->fields['sex'];
@@ -3407,7 +3393,8 @@ class newsletter extends NewsletterLib
 
         $profileURI = '?section=newsletter&cmd=unsubscribe&code='.$code.'&mail='.urlencode($email);
         if ($type == 'access') {
-            $profileURI  = '?section=access&cmd=settings_newsletter';
+            $profileURI = '?section=newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email);
+            //$profileURI  = '?section=access&cmd=settings_newsletter';
         }
         $uri =
             ASCMS_PROTOCOL.'://'.
@@ -3430,10 +3417,10 @@ class newsletter extends NewsletterLib
         global $_ARRAYLANG, $_CONFIG;
 
         $profileURI = '?section=newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email);
-        if ($type == 'access') {
+        /*if ($type == 'access') {
 // TODO: the acces profile URI is dynamic. Therefore we shall check for a CMD like 'settings_newsletter'. In case that there is no such CMD, we shall fetch the first CMD that starts with 'settings'.
             $profileURI = '?section=access&cmd=settings_accountdata';
-        }
+        }*/
         $uri =
             ASCMS_PROTOCOL.'://'.
             $_CONFIG['domainUrl'].
@@ -3739,7 +3726,8 @@ class newsletter extends NewsletterLib
 
         $separator = ';';
         $listId = isset($_REQUEST['listId']) ? intval($_REQUEST['listId']) : 0;
-        $arrRecipientTitles = &$this->_getRecipientTitles();
+// TODO: use FWUSER
+        $arrRecipientTitles = $this->_getRecipientTitles();
         if ($listId > 0) {
             $list = $this->_getList($listId);
             $listname = $list['name'];
@@ -3841,7 +3829,7 @@ $WhereStatement = '';
 
         $keyword = !empty($_REQUEST['keyword']) ? contrexx_raw2db(trim($_REQUEST['keyword'])) : '';
         $searchfield  = !empty($_REQUEST['filter_attribute']) && in_array($_REQUEST['filter_attribute'], $fieldValues) ? $_REQUEST['filter_attribute'] : '';
-        $searchstatus = !empty($_REQUEST['filter_status']) ? intval($_REQUEST['filter_status']) : null;
+        $searchstatus = isset($_REQUEST['filter_status']) ? ($_REQUEST['filter_status'] == '1' ? '1' : ($_REQUEST['filter_status'] == '0' ? '0' : null)) : null;
 
         // don't ignore search stuff
         $search_where = '';
@@ -3862,12 +3850,12 @@ $WhereStatement = '';
             }
         }
 
-        if ($searchstatus !== null) {
+        /*if ($searchstatus !== null) {
             $search_where .= " AND `status` = $searchstatus ";
-        }
+        }*/
 
         list ($users, $output['recipient_count']) = $this->returnNewsletterUser(
-            $search_where, "ORDER BY `$field` $order", $listId, $limit, $pos);
+            $search_where, "ORDER BY `$field` $order", $listId, $searchstatus, $limit, $pos);
 
         $linkCount            = array();
         $feedbackCount        = array();
@@ -4067,6 +4055,7 @@ $WhereStatement = '';
                         $EmailCount++;
                         $arrRecipientLists = $arrLists;
                         
+// TODO: use FWUSER
                         if (in_array($arrRecipient['salutation'], $this->_getRecipientTitles())) {
                             $arrRecipientTitles = array_flip($this->_getRecipientTitles());
                             $recipientSalutationId = $arrRecipientTitles[$arrRecipient['salutation']];
@@ -4553,6 +4542,7 @@ $WhereStatement = '';
             $recipientSex = in_array($_POST['newsletter_recipient_sex'], array('f', 'm')) ? $_POST['newsletter_recipient_sex'] : '';
         }
         if (isset($_POST['newsletter_recipient_salutation'])) {
+// TODO: use FWUSER
             $arrRecipientSalutation = $this->_getRecipientTitles();
             $recipientSalutation = in_array($_POST['newsletter_recipient_salutation'], array_keys($arrRecipientSalutation)) ? intval($_POST['newsletter_recipient_salutation']) : 0;
         }
@@ -5069,7 +5059,7 @@ $WhereStatement = '';
      *              to be selected (0 for all users)
      * @return      array(array, int)
      */
-    private function returnNewsletterUser($where, $order = '', $newsletterListId=0, $limit = null, $pagingPos = 0)
+    private function returnNewsletterUser($where, $order = '', $newsletterListId=0, $status = null, $limit = null, $pagingPos = 0)
     {
         global $objDatabase;
 
@@ -5167,6 +5157,7 @@ $WhereStatement = '';
                 WHERE 1
                 %4$s
                 %5$s
+                %10$s
             )
             UNION DISTINCT
             (
@@ -5178,6 +5169,7 @@ $WhereStatement = '';
                 WHERE 1
                 %7$s
                 %5$s
+                %11$s
             )
             %8$s
             %9$s',
@@ -5210,7 +5202,13 @@ $WhereStatement = '';
             $order,
         
             // %9$s
-            ($limit ? sprintf('LIMIT %s, %s', $pagingPos, $limit) : '')
+            ($limit ? sprintf('LIMIT %s, %s', $pagingPos, $limit) : ''),
+
+            // %10$s
+            ($status === null ? '' : 'AND `nu`.`status` = '.$status),
+
+            // %11$s
+            ($status === null ? '' : 'AND `cu`.`active` = '.$status)
         );
 
         $data = $objDatabase->Execute($query);
@@ -5667,8 +5665,6 @@ function MultiAction() {
         } else {
             $linkCount = 0;
         }
-
-        $arrTemplates = &$this->_getTemplates();
 
         $objResult = $objDatabase->SelectLimit("SELECT
             tblLink.id,
