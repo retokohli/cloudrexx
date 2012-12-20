@@ -45,16 +45,46 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     FWLanguage::init();
     
     Env::get('ClassLoader')->loadFile(dirname(__FILE__) . '/ContentMigration.class.php');
-    $contentMigration = new \Cx\Update\ContentMigration();
-    //$contentMigration->migrate();
-    $pageGrouping = $contentMigration->pageGrouping();
+    $contentMigration = new \Cx\Update\Cx_3_0_1\ContentMigration();
     
-    if ($pageGrouping) {
-        setUpdateMsg('Inhaltsseiten gruppieren', 'title');
-        setUpdateMsg($pageGrouping, 'msg');
-        setUpdateMsg('<input type="submit" value="' . $_CORELANG['TXT_UPDATE_NEXT'] . '" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
-
-        return false;
+    // Migrate content
+    if (empty($_SESSION['contrexx_update']['content_migrated']) && $contentMigration->migrate()) {
+        $_SESSION['contrexx_update']['content_migrated'] = true;
+        if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+            return false;
+        }
+    }
+    
+    // Migrate aliases
+    if (empty($_SESSION['contrexx_update']['aliases_migrated']) && $contentMigration->migrateAliases()) {
+        $_SESSION['contrexx_update']['aliases_migrated'] = true;
+        if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+            return false;
+        }
+    }
+    
+    // Group pages if more than one language
+    if (empty($_SESSION['contrexx_update']['pages_grouped'])) {
+        $pageGrouping = $contentMigration->pageGrouping();
+        
+        if ($pageGrouping === true) {
+            $_SESSION['contrexx_update']['pages_grouped'] = true;
+            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                return false;
+            }
+        } else if (!empty($pageGrouping)) {
+            $arrDialogData = array(
+                'langs'        => $contentMigration->langs,
+                'similarPages' => $contentMigration->similarPages,
+                'defaultLang'  => $contentMigration::$defaultLang,
+            );
+            
+            setUpdateMsg('Inhaltsseiten gruppieren', 'title');
+            setUpdateMsg($pageGrouping, 'msg');
+            setUpdateMsg('<input type="submit" value="' . $_CORELANG['TXT_UPDATE_NEXT'] . '" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
+            setUpdateMsg($arrDialogData, 'dialog');
+            return false;
+        }
     }
     
     $arrDirs = array('core_module', 'module');
@@ -228,7 +258,7 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     }
     
     if (!in_array('coreLicense', $_SESSION['contrexx_update']['update']['done'])) {
-        $lupd = new \Cx\Update\Cx3_0_1\Core\License();
+        $lupd = new \Cx\Update\Cx_3_0_1\Core\License();
         $result = $lupd->update();
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
