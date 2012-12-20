@@ -470,7 +470,7 @@ class ContrexxUpdate
             }
             
             while ($file = readdir($dh)) {
-                if (!in_array($file, array('.', '..'))) {
+                if (preg_match('/^\d(\.\d)+$/', $file)) {
                     $arrUpdate = false;
                     
                     if (@include_once(UPDATE_UPDATES . '/' . $file . '/config.inc.php')) {
@@ -895,7 +895,7 @@ class ContrexxUpdate
     {
         global $_CORELANG;
 
-        $lang = &$this->_selectBestLanguage();
+        $lang = $this->_selectBestLanguage();
         if (!empty($_REQUEST['lang'])) {
             $lang = $_REQUEST['lang'];
         }
@@ -934,7 +934,7 @@ class ContrexxUpdate
      */
     function _selectBestLanguage()
     {
-        $arrAcceptedLanguages = &$this->_getClientAcceptedLanguages();
+        $arrAcceptedLanguages = $this->_getClientAcceptedLanguages();
 
         if (!empty($_SESSION['contrexx_update']['lang']) && in_array($_SESSION['contrexx_update']['lang'], array_keys($this->_arrAvailableLanguages))) {
             return $_SESSION['contrexx_update']['lang'];
@@ -993,6 +993,7 @@ function setUpdateMsg($msg, $type='error')
     }
     switch ($type) {
         case 'msg':
+        case 'error':
             $objUpdate->arrStatusMsg[$type][] = $msg;
             break;
         default:
