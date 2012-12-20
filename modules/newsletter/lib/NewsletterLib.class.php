@@ -471,6 +471,7 @@ class NewsletterLib
     }
 
 
+// TODO: Merge with user_profile_attribute_title
     function _getRecipientTitleMenu($selected = 0, $attrs)
     {
         global $_ARRAYLANG;
@@ -490,6 +491,7 @@ class NewsletterLib
     }
 
 
+// TODO: Merge with user_profile_attribute_title
     function _getRecipientTitles()
     {
         global $objDatabase;
@@ -502,6 +504,7 @@ class NewsletterLib
     }
 
 
+// TODO: Merge with user_profile_attribute_title
     function _addRecipientTitle($title)
     {
         global $objDatabase;
@@ -515,6 +518,7 @@ class NewsletterLib
     }
 
 
+// TODO: Merge with user_profile_attribute_title
     function _initRecipientTitles()
     {
         global $objDatabase;

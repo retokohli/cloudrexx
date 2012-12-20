@@ -1928,7 +1928,7 @@ JSaccessValidatePrimaryGroupAssociation
      */
     protected function parseNewsletterLists($objUser)
     {
-        global $_CONFIG, $objDatabase;
+        global $_CONFIG, $objDatabase, $objInit;
 
         if (!$this->_objTpl->blockExists('access_newsletter')) return;
 
@@ -1943,6 +1943,10 @@ JSaccessValidatePrimaryGroupAssociation
 
             $row = 0;
             foreach ($arrNewsletterLists as $listId => $arrList) {
+                if ($objInit->mode != 'backend' && !$arrList['status'] && !in_array($listId, $arrSubscribedNewsletterListIDs)) {
+                    continue;
+                }
+
                 $this->_objTpl->setVariable(array(
                     $this->modulePrefix.'NEWSLETTER_ID'        => $listId,
                     $this->modulePrefix.'NEWSLETTER_NAME'      => contrexx_raw2xhtml($arrList['name']),
