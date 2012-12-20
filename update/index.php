@@ -51,7 +51,8 @@ require_once(dirname(__FILE__).'/config/configuration.php');
 // Config files
 $incSettingsStatus = require_once(dirname(UPDATE_PATH) . '/config/settings.php');
 require_once(dirname(UPDATE_PATH) . '/config/configuration.php');
-require_once(ASCMS_DOCUMENT_ROOT . '/config/version.php');
+// Contrexx 3.0.0+ do not have a version.php. The information is included in settings.php
+$incVersionStatus = @include_once(ASCMS_DOCUMENT_ROOT . '/config/version.php');
 
 // Check if the system is installed
 if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
