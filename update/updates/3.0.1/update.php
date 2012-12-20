@@ -163,31 +163,67 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
         }
     }
 
+
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        $missedModules = getMissedModules();
+        $conflictedModules = getConflictedModules($missedModules);
+        if (!empty($conflictedModules)) {
+            $conflictedModulesList = '';
+            foreach ($conflictedModules as $moduleName => $moduleTables) {
+                $conflictedModulesList = '<li><strong>'.$moduleName.':</strong> '.implode(', ', $moduleTables).'</li>';
+            }
+            setUpdateMsg($_CORELANG['TXT_CONFLICTED_MODULES_TITLE'], 'title');
+            setUpdateMsg($_CORELANG['TXT_CONFLICTED_MODULES_DESCRIPTION'].'<ul>'.$conflictedModulesList.'</ul>', 'msg');
+            setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_TRY_AGAIN'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
+            return false;
+        }
+    }
     foreach ($arrDirs as $dir) {
-        $dh = opendir(dirname(__FILE__) . '/components/' . $dir);
+        $dh = opendir(dirname(__FILE__).'/components/'.$dir);
         if ($dh) {
             while (($file = readdir($dh)) !== false) {
                 if (!in_array($file, $_SESSION['contrexx_update']['update']['done'])) {
-                    if (substr($file, -4) == '.php') {
+                    $fileInfo = pathinfo(dirname(__FILE__).'/components/'.$dir.'/'.$file);
+
+                    if ($fileInfo['extension'] == 'php') {
                         DBG::msg("--------- updating $file ------");
-                        if (!@include_once(dirname(__FILE__) . '/components/' . $dir . '/' . $file)) {
-                            setUpdateMsg('Update Fehler', 'title');
-                            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/' . $dir . '/' . $file));
+
+                        if (!@include_once(dirname(__FILE__).'/components/'.$dir.'/'.$file)) {
+                            setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
+                            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__).'/components/'.$dir.'/'.$file));
                             return false;
                         }
-                        $function = '_' . substr($file, 0, -4) . 'Update';
-                        if (function_exists($function)) {
-                            $result = $function();
-                            if ($result === false) {
-                                if (empty($objUpdate->arrStatusMsg['title'])) {
-                                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $file), 'title');
+
+                        if (!in_array($fileInfo['filename'], $missedModules)) {
+                            $function = '_'.$fileInfo['filename'].'Update';
+                            if (function_exists($function)) {
+                                $result = $function();
+                                if ($result === false) {
+                                    if (empty($objUpdate->arrStatusMsg['title'])) {
+                                        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $file), 'title');
+                                    }
+                                    return false;
                                 }
+                            } else {
+                                setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
+                                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UPDATE_COMPONENT_CORRUPT'], '.'.$fileInfo['filename'], $file));
                                 return false;
                             }
                         } else {
-                            setUpdateMsg('Update Fehler', 'title');
-                            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UPDATE_COMPONENT_CORRUPT'], substr($file, 0, -4), $file));
-                            return false;
+                            $function = '_'.$fileInfo['filename'].'Install';
+                            if (function_exists($function)) {
+                                $result = $function();
+                                if ($result === false) {
+                                    if (empty($objUpdate->arrStatusMsg['title'])) {
+                                        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $file), 'title');
+                                    }
+                                    return false;
+                                }
+                            } else {
+                                setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
+                                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UPDATE_COMPONENT_CORRUPT'], '.'.$fileInfo['filename'], $file));
+                                return false;
+                            }
                         }
                     }
 
@@ -195,8 +231,8 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
                 }
             }
         } else {
-            setUpdateMsg('Update Fehler', 'title');
-            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_DIR_COMPONENTS'], dirname(__FILE__) . '/components/' . $dir));
+            setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
+            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_DIR_COMPONENTS'], dirname(__FILE__).'/components/'.$dir));
             return false;
         }
 
@@ -286,6 +322,205 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
 function _response() {
     global $_ARRAYLANG;
     setUpdateMsg($_ARRAYLANG['TXT_README_MSG'], 'msg');
+}
+
+function getMissedModules() {
+    $installedModules = array();
+    $result = \Cx\Lib\UpdateUtil::sql('SELECT `name`, `description_variable` FROM `'.DBPREFIX.'modules` WHERE `status` = "y" ORDER BY `name` ASC');
+    if ($result && ($result > 0)) {
+        while (!$result->EOF) {
+            $installedModules[] = $result->fields['name'];
+            $result->MoveNext();
+        }
+    }
+
+    $missedModules = array();
+    $potentialMissedModules = array('blog', 'calendar', 'directory', 'docsys', 'egov', 'feed', 'forum', 'gallery', 'guestbook', 'livecam', 'market', 'memberdir', 'newsletter', 'podcast', 'shop', 'voting');
+    foreach ($potentialMissedModules as $module) {
+        if (!in_array($module, $installedModules)) {
+            $missedModules[] = $module;
+        }
+    }
+
+    return $missedModules;
+}
+
+
+function getConflictedModules($missedModules) {
+    $potentialMissedTables = array(
+        'blog' => array(
+            DBPREFIX.'module_blog_comments',
+            DBPREFIX.'module_blog_categories',
+            DBPREFIX.'module_blog_messages',
+            DBPREFIX.'module_blog_messages_lang',
+            DBPREFIX.'module_blog_message_to_category',
+            DBPREFIX.'module_blog_networks',
+            DBPREFIX.'module_blog_networks_lang',
+            DBPREFIX.'module_blog_settings',
+            DBPREFIX.'module_blog_votes',
+        ),
+        'calendar' => array(
+            DBPREFIX.'module_calendar',
+            DBPREFIX.'module_calendar_categories',
+            DBPREFIX.'module_calendar_form_data',
+            DBPREFIX.'module_calendar_form_fields',
+            DBPREFIX.'module_calendar_registrations',
+            DBPREFIX.'module_calendar_settings',
+            DBPREFIX.'module_calendar_style',
+        ),
+        'directory' => array(
+            DBPREFIX.'module_directory_categories',
+            DBPREFIX.'module_directory_dir',
+            DBPREFIX.'module_directory_inputfields',
+            DBPREFIX.'module_directory_levels',
+            DBPREFIX.'module_directory_mail',
+            DBPREFIX.'module_directory_rel_dir_cat',
+            DBPREFIX.'module_directory_rel_dir_level',
+            DBPREFIX.'module_directory_settings',
+            DBPREFIX.'module_directory_settings_google',
+            DBPREFIX.'module_directory_vote',
+        ),
+        'docsys' => array(
+            DBPREFIX.'module_docsys',
+            DBPREFIX.'module_docsys_categories',
+            DBPREFIX.'module_docsys_entry_category',
+        ),
+        'egov' => array(
+            DBPREFIX.'module_egov_configuration',
+            DBPREFIX.'module_egov_orders',
+            DBPREFIX.'module_egov_products',
+            DBPREFIX.'module_egov_product_calendar',
+            DBPREFIX.'module_egov_product_fields',
+            DBPREFIX.'module_egov_settings',
+        ),
+        'feed' => array(
+            DBPREFIX.'module_feed_category',
+            DBPREFIX.'module_feed_news',
+            DBPREFIX.'module_feed_newsml_association',
+            DBPREFIX.'module_feed_newsml_categories',
+            DBPREFIX.'module_feed_newsml_documents',
+            DBPREFIX.'module_feed_newsml_providers',
+        ),
+        'forum' => array(
+            DBPREFIX.'module_forum_access',
+            DBPREFIX.'module_forum_categories',
+            DBPREFIX.'module_forum_categories_lang',
+            DBPREFIX.'module_forum_notification',
+            DBPREFIX.'module_forum_postings',
+            DBPREFIX.'module_forum_rating',
+            DBPREFIX.'module_forum_settings',
+            DBPREFIX.'module_forum_statistics',
+        ),
+        'gallery' => array(
+            DBPREFIX.'module_gallery_categories',
+            DBPREFIX.'module_gallery_comments',
+            DBPREFIX.'module_gallery_language',
+            DBPREFIX.'module_gallery_language_pics',
+            DBPREFIX.'module_gallery_pictures',
+            DBPREFIX.'module_gallery_settings',
+            DBPREFIX.'module_gallery_votes',
+        ),
+        'guestbook' => array(
+            DBPREFIX.'module_guestbook',
+            DBPREFIX.'module_guestbook_settings',
+        ),
+        'livecam' => array(
+            DBPREFIX.'module_livecam',
+            DBPREFIX.'module_livecam_settings',
+        ),
+        'market' => array(
+            DBPREFIX.'module_market',
+            DBPREFIX.'module_market_categories',
+            DBPREFIX.'module_market_mail',
+            DBPREFIX.'module_market_paypal',
+            DBPREFIX.'module_market_settings',
+            DBPREFIX.'module_market_spez_fields'
+        ),
+        'memberdir' => array(
+            DBPREFIX.'module_memberdir_directories',
+            DBPREFIX.'module_memberdir_name',
+            DBPREFIX.'module_memberdir_settings',
+            DBPREFIX.'module_memberdir_values'
+        ),
+        'newsletter' => array(
+            DBPREFIX.'module_newsletter',
+            DBPREFIX.'module_newsletter_access_user',
+            DBPREFIX.'module_newsletter_attachment',
+            DBPREFIX.'module_newsletter_category',
+            DBPREFIX.'module_newsletter_confirm_mail',
+            DBPREFIX.'module_newsletter_email_link',
+            DBPREFIX.'module_newsletter_email_link_feedback',
+            DBPREFIX.'module_newsletter_rel_cat_news',
+            DBPREFIX.'module_newsletter_rel_usergroup_newsletter',
+            DBPREFIX.'module_newsletter_rel_user_cat',
+            DBPREFIX.'module_newsletter_settings',
+            DBPREFIX.'module_newsletter_template',
+            DBPREFIX.'module_newsletter_tmp_sending',
+            DBPREFIX.'module_newsletter_user',
+            DBPREFIX.'module_newsletter_user_title',
+        ),
+        'podcast' => array(
+            DBPREFIX.'module_podcast_category',
+            DBPREFIX.'module_podcast_medium',
+            DBPREFIX.'module_podcast_rel_category_lang',
+            DBPREFIX.'module_podcast_rel_medium_category',
+            DBPREFIX.'module_podcast_settings',
+            DBPREFIX.'module_podcast_template',
+        ),
+        'shop' => array(
+            DBPREFIX.'module_shop_article_group',
+            DBPREFIX.'module_shop_attribute',
+            DBPREFIX.'module_shop_categories',
+            DBPREFIX.'module_shop_countries',
+            DBPREFIX.'module_shop_currencies',
+            DBPREFIX.'module_shop_customer_group',
+            DBPREFIX.'module_shop_discountgroup_count_name',
+            DBPREFIX.'module_shop_discountgroup_count_rate',
+            DBPREFIX.'module_shop_discount_coupon',
+            DBPREFIX.'module_shop_importimg',
+            DBPREFIX.'module_shop_lsv',
+            DBPREFIX.'module_shop_mail',
+            DBPREFIX.'module_shop_mail_content',
+            DBPREFIX.'module_shop_manufacturer',
+            DBPREFIX.'module_shop_option',
+            DBPREFIX.'module_shop_orders',
+            DBPREFIX.'module_shop_order_attributes',
+            DBPREFIX.'module_shop_order_items',
+            DBPREFIX.'module_shop_payment',
+            DBPREFIX.'module_shop_payment_processors',
+            DBPREFIX.'module_shop_pricelists',
+            DBPREFIX.'module_shop_products',
+            DBPREFIX.'module_shop_products_downloads',
+            DBPREFIX.'module_shop_rel_countries',
+            DBPREFIX.'module_shop_rel_customer_coupon',
+            DBPREFIX.'module_shop_rel_discount_group',
+            DBPREFIX.'module_shop_rel_payment',
+            DBPREFIX.'module_shop_rel_product_attribute',
+            DBPREFIX.'module_shop_rel_shipper',
+            DBPREFIX.'module_shop_shipment_cost',
+            DBPREFIX.'module_shop_shipper',
+            DBPREFIX.'module_shop_vat',
+            DBPREFIX.'module_shop_zones',
+        ),
+        'voting' => array(
+            DBPREFIX.'voting_additionaldata',
+            DBPREFIX.'voting_email',
+            DBPREFIX.'voting_rel_email_system',
+            DBPREFIX.'voting_results',
+            DBPREFIX.'voting_system',
+        ),
+    );
+
+    $conflictedModules = array();
+    foreach ($missedModules as $module) {
+        foreach ($potentialMissedTables[$module] as $table) {
+            if (\Cx\Lib\UpdateUtil::table_exist($table)) {
+                $conflictedModules[$module][] = $table;
+            }
+        }
+    }
+
+    return $conflictedModules;
 }
 
 function _updateModuleRepository() {
