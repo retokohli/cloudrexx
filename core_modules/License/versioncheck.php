@@ -5,7 +5,7 @@ echo '<pre>';//*/
 
 global $_CONFIG, $_FTPCONFIG, $_DBCONFIG, $sessionObj, $objInit, $objDatabase, $documentRoot;
 
-function loadFile($file, $class) {
+function loadFile($cl, $file, $class) {
     if (!class_exists($class)) {
         return $cl->loadFile($file);
     }
@@ -32,24 +32,24 @@ if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
 require_once($documentRoot.'/core/ClassLoader/ClassLoader.class.php');
 $cl = new \Cx\Core\ClassLoader\ClassLoader($documentRoot, false, $customizing);
 
-loadFile($documentRoot.'/core/Env.class.php', 'Env');               // needed for FileSystem
+loadFile($cl, $documentRoot.'/core/Env.class.php', 'Env');               // needed for FileSystem
 Env::set('ClassLoader', $cl);
 Env::set('config', $_CONFIG);
 Env::set('ftpConfig', $_FTPCONFIG);
 
-loadFile($documentRoot.'/core/API.php',                                         'HTML_Template_Sigma'); // needed for getDatabaseObject()
-loadFile($documentRoot.'/lib/FRAMEWORK/User/User_Setting_Mail.class.php',       'User_Setting_Mail');
-loadFile($documentRoot.'/lib/FRAMEWORK/User/User_Setting.class.php',            'User_Setting');
-loadFile($documentRoot.'/lib/FRAMEWORK/User/User_Profile_Attribute.class.php',  'User_Profile_Attribute');
-loadFile($documentRoot.'/lib/FRAMEWORK/User/User_Profile.class.php',            'User_Profile');
-loadFile($documentRoot.'/lib/FRAMEWORK/User/UserGroup.class.php',               'UserGroup');
-loadFile($documentRoot.'/lib/FRAMEWORK/User/User.class.php',                    'User');
-loadFile($documentRoot.'/lib/FRAMEWORK/Language.class.php',                     'FWLanguage');
-loadFile($documentRoot.'/lib/FRAMEWORK/FWUser.class.php',                       'FWUser');
-loadFile($documentRoot.'/lib/PEAR/HTTP/Request2.php',                           'HTTP_Request2');
-loadFile($documentRoot.'/core/Init.class.php',                                  'InitCMS');
-loadFile($documentRoot.'/core/settings.class.php',                              'settingsManager');
-loadFile($documentRoot.'/core/session.class.php',                               'cmsSession');
+loadFile($cl, $documentRoot.'/core/API.php',                                         'HTML_Template_Sigma'); // needed for getDatabaseObject()
+loadFile($cl, $documentRoot.'/lib/FRAMEWORK/User/User_Setting_Mail.class.php',       'User_Setting_Mail');
+loadFile($cl, $documentRoot.'/lib/FRAMEWORK/User/User_Setting.class.php',            'User_Setting');
+loadFile($cl, $documentRoot.'/lib/FRAMEWORK/User/User_Profile_Attribute.class.php',  'User_Profile_Attribute');
+loadFile($cl, $documentRoot.'/lib/FRAMEWORK/User/User_Profile.class.php',            'User_Profile');
+loadFile($cl, $documentRoot.'/lib/FRAMEWORK/User/UserGroup.class.php',               'UserGroup');
+loadFile($cl, $documentRoot.'/lib/FRAMEWORK/User/User.class.php',                    'User');
+loadFile($cl, $documentRoot.'/lib/FRAMEWORK/Language.class.php',                     'FWLanguage');
+loadFile($cl, $documentRoot.'/lib/FRAMEWORK/FWUser.class.php',                       'FWUser');
+loadFile($cl, $documentRoot.'/lib/PEAR/HTTP/Request2.php',                           'HTTP_Request2');
+loadFile($cl, $documentRoot.'/core/Init.class.php',                                  'InitCMS');
+loadFile($cl, $documentRoot.'/core/settings.class.php',                              'settingsManager');
+loadFile($cl, $documentRoot.'/core/session.class.php',                               'cmsSession');
 
 $objDatabase = getDatabaseObject($strErrMessage, true);
 $objInit = new InitCMS('backend', null);
@@ -83,7 +83,9 @@ try {
     if (!isset($_GET['nosave']) || $_GET['nosave'] != 'true') {
         $license->save(new \settingsManager(), $objDatabase);
     }
-    echo "false";
+    if (!isset($_GET['silent']) || $_GET['silent'] != 'true') {
+        echo "false";
+    }
     return;
 }
 $license->check();
