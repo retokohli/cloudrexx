@@ -8,9 +8,9 @@ function _newsletterUpdate()
             DBPREFIX.'module_newsletter_category',
             array(
                 'id'                     => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'status'                 => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0'),
-                'name'                   => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'notification_email'     => array('type' => 'VARCHAR(250)', 'default' => '')
+                'status'                 => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
+                'name'                   => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'status'),
+                'notification_email'     => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'name')
             ),
             array(
                 'name'                   => array('fields' => array('name'))
@@ -21,84 +21,58 @@ function _newsletterUpdate()
             DBPREFIX.'module_newsletter_confirm_mail',
             array(
                 'id'             => array('type' => 'INT(1)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'title'          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'content'        => array('type' => 'LONGTEXT'),
-                'recipients'     => array('type' => 'MEDIUMTEXT')
+                'title'          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'id'),
+                'content'        => array('type' => 'longtext', 'after' => 'title'),
+                'recipients'     => array('type' => 'text', 'after' => 'content')
             )
         );
 
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_newsletter',
             array(
-                'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'subject'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'template'       => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0'),
-                'content'        => array('type' => 'TEXT'),
-                'content_text'   => array('type' => 'TEXT'),
-                'attachment'     => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0'),
-                'format'         => array('type' => 'ENUM(\'text\',\'html\',\'html/text\')', 'notnull' => true, 'default' => 'text', 'after' => 'attachment'),
-                'priority'       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0'),
-                'sender_email'   => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'sender_name'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'return_path'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'smtp_server'    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'status'         => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0'),
-                'count'          => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0'),
-                'recipient_count'=> array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'count'),
-                'date_create'    => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'date_sent'      => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'tmp_copy'       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0')
-            )
-        );
-
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'module_newsletter_user',
-            array(
-                'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'code'       => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'email'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'uri'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'email'),
-                'sex'        => array('type' => 'ENUM(\'m\',\'f\')', 'notnull' => false),
-                'title'      => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'lastname'   => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'firstname'  => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'company'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'street'     => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'zip'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'city'       => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'country'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'phone'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'birthday'   => array('type' => 'VARCHAR(10)', 'notnull' => true, 'default' => '00-00-0000'),
-                'status'     => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0'),
-                'emaildate'  => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0')
-            ),
-            array(
-                'email'      => array('fields' => array('email'), 'type' => 'UNIQUE'),
-                'status'     => array('fields' => array('status'))
+                'id'                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'subject'            => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'id'),
+                'template'           => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'subject'),
+                'content'            => array('type' => 'text', 'after' => 'template'),
+                'attachment'         => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0', 'after' => 'content'),
+                'priority'           => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'attachment'),
+                'sender_email'       => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'priority'),
+                'sender_name'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'sender_email'),
+                'return_path'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'sender_name'),
+                'smtp_server'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'return_path'),
+                'status'             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'smtp_server'),
+                'count'              => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'status'),
+                'recipient_count'    => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'count'),
+                'date_create'        => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'recipient_count'),
+                'date_sent'          => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'date_create'),
+                'tmp_copy'           => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'date_sent')
             )
         );
     }
     catch (UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
+
+
     DBG::msg("Done checking tables.. going to check settings");
     
+
     //the two values notifyOnUnsubscribe and notificationUnsubscribe have been merged into the latter.
     $unsubscribeVal=1;
     try {
         DBG::msg("Retrieving old unsubscribe value if set.");
         $res = \Cx\Lib\UpdateUtil::sql("SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notifyOnUnsubscribe'");
         
-    if(!$res->EOF){
-        $unsubscribeVal = $res->fields['setvalue'];
-    }
-    else //maybe update ran already => preserve new value
-    {
-        DBG::msg("Not found. Retrieving new unsubscribe value if set.");
-        $res = \Cx\Lib\UpdateUtil::sql("SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notificatonUnsubscribe'");
-        if(!$res->EOF)
-        $unsubscribeVal = $res->fields['setvalue'];
-    }
+        if(!$res->EOF){
+            $unsubscribeVal = $res->fields['setvalue'];
+        }
+        else //maybe update ran already => preserve new value
+        {
+            DBG::msg("Not found. Retrieving new unsubscribe value if set.");
+            $res = \Cx\Lib\UpdateUtil::sql("SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notificatonUnsubscribe'");
+            if(!$res->EOF)
+            $unsubscribeVal = $res->fields['setvalue'];
+        }
 
     }
     catch (UpdateException $e) {
@@ -146,7 +120,7 @@ function _newsletterUpdate()
                 );
             ");
         }
-	DBG::msg("Deleting old unsubscribe key if set");
+        DBG::msg("Deleting old unsubscribe key if set");
         \Cx\Lib\UpdateUtil::sql("DELETE FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notifyOnUnsubscribe'");
         DBG::msg("Done with newsletter update");
     }
@@ -168,6 +142,9 @@ function _newsletterUpdate()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+
+
+
     // Add notification recipients to confirm_mail table
     try {
         $objResult = \Cx\Lib\UpdateUtil::sql("SELECT id FROM `".DBPREFIX."module_newsletter_confirm_mail` WHERE id='3'");
@@ -180,7 +157,194 @@ function _newsletterUpdate()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+
+
+
+    try {
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_newsletter_access_user',
+            array(
+                'accessUserID'               => array('type' => 'INT(5)', 'unsigned' => true),
+                'newsletterCategoryID'       => array('type' => 'INT(11)', 'after' => 'accessUserID'),
+                'code'                       => array('type' => 'VARCHAR(255)', 'after' => 'newsletterCategoryID', 'notnull' => true, 'default' => '')
+            ),
+            array(
+                'rel'                        => array('fields' => array('accessUserID','newsletterCategoryID'), 'type' => 'UNIQUE'),
+                'accessUserID'               => array('fields' => array('accessUserID'))
+            )
+        );
+
+        // set random newsletter code for access recipients
+        \Cx\Lib\UpdateUtil::sql('UPDATE '.DBPREFIX.'module_newsletter_access_user SET `code` = SUBSTR(MD5(RAND()),1,12) WHERE `code` = \'\'');
+
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_newsletter_rel_usergroup_newsletter',
+            array(
+                'userGroup'      => array('type' => 'INT(10)', 'unsigned' => true),
+                'newsletter'     => array('type' => 'INT(10)', 'unsigned' => true, 'after' => 'userGroup')
+            ),
+            array(
+                'uniq'           => array('fields' => array('userGroup','newsletter'), 'type' => 'UNIQUE')
+            )
+        );
+
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_newsletter_settings',
+            array(
+                'setid'          => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'setname'        => array('type' => 'VARCHAR(250)', 'after' => 'setid', 'notnull' => true, 'default' => ''),
+                'setvalue'       => array('type' => 'text', 'after' => 'setname'),
+                'status'         => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'setvalue')
+            ),
+            array(
+                'setname'        => array('fields' => array('setname'), 'type' => 'UNIQUE')
+            )
+        );
+
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_newsletter_tmp_sending',
+            array(
+                'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'newsletter'     => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
+                'email'          => array('type' => 'VARCHAR(255)', 'after' => 'newsletter', 'notnull' => true, 'default' => ''),
+                'sendt'          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'email'),
+                'type'           => array('type' => 'ENUM(\'access\',\'newsletter\')', 'notnull' => true, 'default' => 'newsletter', 'after' => 'sendt'),
+                'code'           => array('type' => 'VARCHAR(10)', 'after' => 'type')
+            ),
+            array(
+                'unique_email'   => array('fields' => array('newsletter','email'), 'type' => 'UNIQUE'),
+                'email'          => array('fields' => array('email'))
+            )
+        );
+
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_newsletter_email_link',
+            array(
+                'id'             => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'email_id'       => array('type' => 'INT(11)', 'unsigned' => true, 'after' => 'id'),
+                'title'          => array('type' => 'VARCHAR(255)', 'after' => 'email_id'),
+                'url'            => array('type' => 'VARCHAR(255)', 'after' => 'title')
+            ),
+            array(
+                'email_id'       => array('fields' => array('email_id'))
+            )
+        );
+
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_newsletter_email_link_feedback',
+            array(
+                'id'                 => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'link_id'            => array('type' => 'INT(11)', 'unsigned' => true, 'after' => 'id'),
+                'email_id'           => array('type' => 'INT(11)', 'unsigned' => true, 'after' => 'link_id'),
+                'recipient_id'       => array('type' => 'INT(11)', 'unsigned' => true, 'after' => 'email_id'),
+                'recipient_type'     => array('type' => 'ENUM(\'access\',\'newsletter\')', 'after' => 'recipient_id')
+            ),
+            array(
+                'link_id'            => array('fields' => array('link_id','email_id','recipient_id','recipient_type'), 'type' => 'UNIQUE'),
+                'email_id'           => array('fields' => array('email_id'))
+            )
+        );
+
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_newsletter_template',
+            array(
+                'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'name'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'id'),
+                'description'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'name'),
+                'html'           => array('type' => 'text', 'after' => 'description'),
+                'required'       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'html'),
+                'type'           => array('type' => 'ENUM(\'e-mail\',\'news\')', 'notnull' => true, 'default' => 'e-mail', 'after' => 'required')
+            )
+        );
+
+        // migrate country field
+        newsletter_migrate_country_field();
+
+        // fix missing columns & rename old columns if required
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_newsletter_user',
+            array(
+                'id'                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'code'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'id'),
+                'email'              => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'code'),
+                'uri'                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'email'),
+                'sex'                => array('type' => 'ENUM(\'m\',\'f\')', 'notnull' => false, 'after' => 'uri'),
+                'salutation'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'sex'),
+                'title'              => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'salutation'),
+                'lastname'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'title'),
+                'firstname'          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'lastname'),
+                'position'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'firstname'),
+                'company'            => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'position'),
+                'industry_sector'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'company'),
+                'address'            => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'industry_sector', 'renamefrom' => 'street'),
+                'zip'                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'address'),
+                'city'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'zip'),
+                'country_id'         => array('type' => 'SMALLINT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'city'),
+                'phone_office'       => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'country_id', 'renamefrom' => 'phone'),
+                'phone_private'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'phone_office'),
+                'phone_mobile'       => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'phone_private'),
+                'fax'                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'phone_mobile'),
+                'notes'              => array('type' => 'text', 'after' => 'fax'),
+                'birthday'           => array('type' => 'VARCHAR(10)', 'notnull' => true, 'default' => '00-00-0000', 'after' => 'notes'),
+                'status'             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'birthday'),
+                'emaildate'          => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'status'),
+                'language'           => array('type' => 'INT(3)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'emaildate')
+            ),
+            array(
+                'email'              => array('fields' => array('email'), 'type' => 'UNIQUE'),
+                'status'             => array('fields' => array('status'))
+            )
+        );
+    }
+    catch (UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
     return true;
+}
+
+/**
+ * Note: the body of this function is by intention not enclosed in a try/catch block. We wan't the calling sections to catch and handle exceptions themself.
+ */
+function newsletter_migrate_country_field()
+{
+    ///////////////////////////
+    // MIGRATE COUNTRY FIELD //
+    ///////////////////////////
+    // 1. backup country column to country_old
+    if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'module_newsletter_user', 'country')) {
+        \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_newsletter_user` CHANGE `country` `country_old` VARCHAR(255) NOT NULL DEFAULT \'\'');
+    }
+    // 2. add new column country_id (format int)
+    if (!\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'module_newsletter_user', 'country_id')) {
+        \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_newsletter_user` ADD `country_id` SMALLINT( 5 ) UNSIGNED NOT NULL DEFAULT \'0\' AFTER `country_old`');
+    }
+
+    // 3. migrate to new country format (using IDs)
+    if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'module_newsletter_user', 'country_old')) {
+        $objResult = \Cx\Lib\UpdateUtil::sql('SELECT `id`, `country_old` FROM `'.DBPREFIX.'module_newsletter_user` WHERE `country_id` = 0');
+        if ($objResult->RecordCount()) {
+            while (!$objResult->EOF) {
+                // try setting country_id based on a guess from country_old
+// TODO: ask reto about Country::lookupCountry()
+                // $countryId = Country::lookupCountry($objResult->fields['country_old']);
+                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'mdoule_newsletter_user` SET `country_id` = \''.contrexx_raw2db($countryId).'\' WHERE `id` = '.$objResult->fields['id']);
+                checkTimeoutLimit();
+                $objResult->MoveNext();
+            }
+        }
+
+        // backup literal country name in field notes
+        if (!\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'module_newsletter_user', 'notes')) {
+            \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_newsletter_user` ADD `notes` text NOT NULL');
+        }
+        \Cx\Lib\UpdateUtil::sql('UPDATE TABLE `'.DBPREFIX.'module_newsletter_user` SET `notes` = `country_old`');
+        // drop obsolete column country_old'
+        \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_newsletter_user` DROP `country_old`');
+    }
+    ////////////////////////////////
+    // END: MIGRATE COUNTRY FIELD //
+    ////////////////////////////////
 }
 
 ?>
