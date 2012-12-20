@@ -23,8 +23,8 @@ Zwischensumme:    [ORDER_ITEM_COUNT] Artikel                             [ORDER_
 Gutschein Code: [DISCOUNT_COUPON_CODE]   [DISCOUNT_COUPON_AMOUNT] [CURRENCY][DISCOUNT_COUPON]]
 ------------------------------------------------------------------------[[SHIPMENT]
 Versandart:     [SHIPMENT_NAME]   [SHIPMENT_PRICE] [CURRENCY][SHIPMENT]][[PAYMENT]
-Bezahlung:      [PAYMENT_NAME]   [PAYMENT_PRICE] [CURRENCY][PAYMENT]][[TAX]
-[TAX_TEXT]                   [TAX_PRICE] [CURRENCY][TAX]]
+Bezahlung:      [PAYMENT_NAME]   [PAYMENT_PRICE] [CURRENCY][PAYMENT]][[VAT]
+[VAT_TEXT]                   [VAT_PRICE] [CURRENCY][VAT]]
 ------------------------------------------------------------------------
 Gesamtsumme                                                [ORDER_SUM] [CURRENCY]
 ------------------------------------------------------------------------

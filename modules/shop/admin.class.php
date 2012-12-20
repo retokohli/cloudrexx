@@ -227,6 +227,7 @@ class Shopmanager extends ShopLibrary
         }
         if (!empty($_POST['name'])) $name = contrexx_input2raw($_POST['name']);
         if (!empty($_POST['url'])) $url = contrexx_input2raw($_REQUEST['url']);
+// TODO: Paging
         self::$objTemplate->setVariable(array(
             'SHOP_EDIT_MANUFACTURER' => ($manufacturer_id
                 ? $_ARRAYLANG['TXT_SHOP_MANUFACTURER_EDIT']
@@ -1384,7 +1385,7 @@ class Shopmanager extends ShopLibrary
 $template = MailTemplate::get('shop', 'order_confirmation');
 //die(var_export($template, true));
 if (!$template) {
-    require_once ASCMS_MODULE_PATH.'/shop/lib/Mail.class.php';
+    require_once ASCMS_MODULE_PATH.'/shop/lib/ShopMail.class.php';
     ShopMail::errorHandler();
 }
 

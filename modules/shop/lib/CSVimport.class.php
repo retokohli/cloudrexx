@@ -91,7 +91,7 @@ class CSVimport
                 'name' => $objResult->fields['img_name'],
                 'cat' => $objResult->fields['img_cats'],
                 'fields_file' => $objResult->fields['img_fields_file'],
-                'fields_db' => $objResult->fields['img_fields_db']
+                'fields_db' => $objResult->fields['img_fields_db'],
             );
             $objResult->MoveNext();
         }
