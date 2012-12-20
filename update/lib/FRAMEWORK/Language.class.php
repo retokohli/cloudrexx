@@ -59,6 +59,7 @@ class FWLanguage
                 $full = $license->isInLegalComponents('fulllanguage');
             }
             while (!$objResult->EOF) {
+                $fallbackValue = $fallback ? $objResult->fields['fallback'] : '';
                 self::$arrLanguages[$objResult->fields['id']] = array(
                     'id'         => $objResult->fields['id'],
                     'lang'       => $objResult->fields['lang'],
@@ -68,7 +69,7 @@ class FWLanguage
                     'frontend'   => $objResult->fields['frontend'],
                     'backend'    => $objResult->fields['backend'],
                     'is_default' => $objResult->fields['is_default'],
-                    'fallback'   => $objResult->fields['fallback'],
+                    'fallback'   => $fallbackValue,
                 );
                 if (!$full && $objResult->fields['is_default'] != 'true') {
                     self::$arrLanguages[$objResult->fields['id']]['frontend'] = 0;
