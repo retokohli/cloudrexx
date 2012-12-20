@@ -3016,6 +3016,7 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_newsletter_access_user` (
   `accessUserID` int(5) unsigned NOT NULL,
   `newsletterCategoryID` int(11) NOT NULL,
+  `code` varchar(255) NOT NULL default '',
   UNIQUE KEY `rel` (`accessUserID`,`newsletterCategoryID`),
   KEY `accessUserID` (`accessUserID`)
 ) ENGINE=MyISAM;
