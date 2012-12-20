@@ -274,6 +274,50 @@ table.adminlist td {
     text-align: right;
 }
 
+.content-migration-dialog {
+    top: 52px !important;
+}
+
+.content-migration-dialog .ui-dialog-titlebar-close {
+    display: none;
+}
+
+.content-migration-info,
+.content-migration-buttons,
+.content-migration-legend {
+    float: left;
+    width: 100%;
+}
+
+.content-migration-info {
+    padding: 5px 0 5px 0;
+}
+
+.content-migration-h3 {
+    padding: 5px 0 10px 0;
+    margin: 0;
+}
+
+.content-migration-select-wrapper {
+    float: left;
+    padding: 0 30px 15px 0;
+}
+
+.content-migration-select-wrapper select {
+    float: left;
+    height: 600px;
+    margin: 0 0 10px 0;
+}
+
+.content-migration-legend {
+    padding: 15px 0 0 0;
+}
+
+.hide,
+.inactive-language {
+    display: none;
+}
+
 /* icons */
 .icon-info {
     float: none;

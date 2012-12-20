@@ -28,13 +28,13 @@ function doUpdate(goBack)
       request_active = true;
     }
     formData = getFormData(goBack);
-    if (document.getElementById('processUpdate') != null) {
-      setContent('<div style="margin-left: 155px; margin-top: 180px;">Bitte haben Sie einen Moment Geduld.<br /><?php $txt = 'Das Update wird durchgeführt...';print UPDATE_UTF8 ? $txt : utf8_decode($txt);?><br /><br /><img src="template/contrexx/images/content/loading_animation.gif" width="208" height="13" alt="" /></div>');
+    if ($J("#processUpdate").length || $J("#doGroup").length) {
+      setContent('<div style="margin: 180px 0 0 155px;">Bitte haben Sie einen Moment Geduld.<br /><?php $txt = 'Das Update wird durchgeführt...';print UPDATE_UTF8 ? $txt : utf8_decode($txt);?><br /><br /><img src="template/contrexx/images/content/loading_animation.gif" width="208" height="13" alt="" /></div>');
       setNavigation('');
     } else {
       setContent('Bitte warten. Die Seite wird geladen...');
     }
-    objHttp.open('get', '?ajax='+encodeURIComponent(formData.substring(1, formData.length-1)), true);
+    objHttp.open('get', '?ajax='+encodeURIComponent(formData), true);
     objHttp.onreadystatechange = parseResponse;
     objHttp.send(null);
     return false;
@@ -82,11 +82,20 @@ function getFormData(goBack)
       }
     }
   }
+  
   aFormData = new Array();
   for (i in oFormData) {
     aFormData.push(i+':'+((typeof(oFormData[i]) == 'object') ? '["'+oFormData[i].join('","')+'"]' : '"'+oFormData[i]+'"'));
   }
-  return '({'+aFormData.join(',')+'})';
+  
+  var doGroup      = $J("#doGroup").length              ? ",doGroup:"      + $J("#doGroup").val()              : "";
+  var similarPages = $J("#similarPages").length         ? ",similarPages:" + $J("#similarPages").val()         : "";
+  var removePages  = $J("#removePages").length          ? ",removePages:"  + $J("#removePages").val()          : "";
+  var delInAcLangs = $J("#delInAcLangs:checked").length ? ",delInAcLangs:" + $J("#delInAcLangs:checked").val() : "";
+  
+  var parameters = doGroup + similarPages + removePages + delInAcLangs;
+  
+  return '{' + aFormData.join(',') + parameters + '}';
 }
 
 function parseResponse()
@@ -96,13 +105,41 @@ function parseResponse()
     if (response.length > 0) {
       try {
         eval('oResponse='+response);
-        setContent(oResponse.content);
-        setLogout(oResponse.logout);
-        setNavigation(oResponse.navigation);
+        if (oResponse.dialog) {
+            langs        = oResponse.dialog.langs;
+            similarPages = oResponse.dialog.similarPages;
+            defaultLang  = oResponse.dialog.defaultLang;
+            
+            setContent('<div style="margin: 180px 0 0 155px;">Bitte haben Sie einen Moment Geduld.<br /><?php $txt = 'Das Update wird durchgeführt...';print UPDATE_UTF8 ? $txt : utf8_decode($txt);?><br /><br /><img src="template/contrexx/images/content/loading_animation.gif" width="208" height="13" alt="" /></div>');
+            setNavigation('');
+            
+            cx.ui.dialog({
+                width:         1020,
+                height:        880,
+                modal:         true,
+                closeOnEscape: false,
+                dialogClass:   "content-migration-dialog",
+                title:         "Inhaltsseiten gruppieren",
+                content:       oResponse.content,
+                
+                close: function() {
+                    executeGrouping();
+                },
+                buttons: {
+                    "Abschliessen": function() {
+                        $J(this).dialog("close");
+                    }
+                }
+            });
+        } else {
+            setContent(oResponse.content);
+            setNavigation(oResponse.navigation);
+            setLogout(oResponse.logout);
+        }
         cx.ui.tooltip();
       } catch(e) {}
     } else {
-      setContent('<?php $txt = '<div class="message-alert">Das Update-Script gibt keine Antwort zurück!</div>';print UPDATE_UTF8 ?  utf8_encode($txt) : $txt;?>');
+      setContent('<?php $txt = '<div class="message-alert">Das Update-Script gibt keine Antwort zurück!</div>';print UPDATE_UTF8 ? $txt : utf8_encode($txt); ?>');
       setNavigation('<input type="submit" value="<?php $txt = 'Erneut versuchen...';print UPDATE_UTF8 ? utf8_encode($txt) : $txt;?>" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />');
     }
     request_active = false;
@@ -145,19 +182,47 @@ function setHtml(text, element)
   }
 }
 
-var langs          = cx.variables.get('langs', 'update/contentMigration');
-var similarPages   = cx.variables.get('arrSimilarPagesJs', 'update/contentMigration');
+var langs          = $J.parseJSON(cx.variables.get('langs', 'update/contentMigration'));
+var similarPages   = $J.parseJSON(cx.variables.get('similarPages', 'update/contentMigration'));
 var defaultLang    = cx.variables.get('defaultLang', 'update/contentMigration');
 var nodePageRegexp = /(\d+)_(\d+)/;
 var removePages    = new Array();
 
-function handleEvent(event,select,lang) {
-    // 46 = DELETE key
-    if (event.keyCode == 46) {
-        page = jQuery(select).find(':selected');
-        removePages.push(nodePageRegexp.exec(page.val())[2]);
+$J(document).ready(function() {
+    $J("body").delegate("select[id*=page_tree_]", "click", function() {
+        $J('select[id*=page_tree_]').removeClass("focus");
+        $J(this).addClass("focus");
+    });
+});
+
+function delInAcLangs() {
+    $J(".content-migration-select-wrapper.inactive-language").toggle();
+};
+
+function delPage() {
+    page = $J("select[id*=page_tree_].focus option:selected");
+    if (page.length) {
+        lang = page.parent().attr("id").match(/\d/)[0];
         page.addClass('removed');
-        move2NextUngroupedPage(page,lang);
+        removePages.push(nodePageRegexp.exec(page.val())[2]);
+        move2NextUngroupedPage(page, lang);
+    }
+}
+
+function undelPage() {
+    page = $J("select[id*=page_tree_].focus option.removed:selected");
+    if (page.length) {
+        lang = page.parent().attr("id").match(/\d/)[0];
+        page.removeClass('removed');
+        var pageId = nodePageRegexp.exec(page.val())[2];
+        var tmpRemovePages = removePages;
+        removePages = new Array();
+        for (idx in tmpRemovePages) {
+            if (tmpRemovePages[idx] != pageId) {
+                removePages.push(tmpRemovePages[idx]);
+            }
+        }
+        move2NextUngroupedPage(page, lang);
     }
 }
 
@@ -175,7 +240,6 @@ function choose(select,selectLang) {
     }
 
     if (associatedNode == null) {
-        console.log('nope..');
         return;
     }
 
@@ -200,6 +264,7 @@ function groupPages() {
 
     for (lIdx in langs) {
         lang = langs[lIdx];
+        
         pageInfo = jQuery('#page_group_'+lang).val();
         if (!pageInfo) {
             continue;
@@ -229,6 +294,40 @@ function groupPages() {
     }
 }
 
+function ungroupPages() {
+    nodeId = null;
+    pages = new Array();
+    options = new Array();
+
+    for (lIdx in langs) {
+        lang = langs[lIdx];
+        
+        pageInfo = jQuery('#page_group_'+lang).val();
+        if (!pageInfo) {
+            continue;
+        }
+
+        selected = jQuery(jQuery('#page_tree_'+lang).find(':selected'));
+        options[lang] = selected;
+
+        if (lang == defaultLang) {
+            nodeId = nodePageRegexp.exec(pageInfo)[1]
+        }
+
+    }
+
+    if (nodeId) {
+        delete similarPages[nodeId];
+
+        for (lang in options) {
+            if (lang) {
+                options[lang].removeClass('grouped');
+                move2NextUngroupedPage(options[lang],lang);
+            }
+        }
+    }
+}
+
 function move2NextUngroupedPage(page,lang) {
     while (page = page.next()) {
         if (page.hasClass('grouped')) {
@@ -242,6 +341,8 @@ function move2NextUngroupedPage(page,lang) {
 }
 
 function executeGrouping() {
-    jQuery('#similarPages').val(JSON.stringify(similarPages));
-    jQuery('#removePages').val(JSON.stringify(removePages));
+    $J('#doGroup').val(1);
+    $J('#similarPages').val(JSON.stringify(similarPages));
+    $J('#removePages').val(JSON.stringify(removePages));
+    doUpdate();
 }

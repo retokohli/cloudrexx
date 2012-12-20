@@ -65,10 +65,14 @@ class ContrexxUpdate
         $this->setPlaceholders();
         
         if ($this->ajax) {
-            if (!UPDATE_UTF8) {
-                $this->html['content'] = utf8_encode($this->html['content']);
-            }
-            die($this->objJson->encode(array('content' => $this->html['content'], 'logout' => $this->html['logout'], 'navigation' => $this->html['navigation'])));
+            die($this->objJson->encode(
+                array(
+                    'content'    => $this->html['content'],
+                    'logout'     => $this->html['logout'],
+                    'navigation' => $this->html['navigation'],
+                    'dialog'     => $this->html['dialog'],
+                )
+            ));
         }
         return $this->objTemplate->get();
     }
@@ -123,11 +127,13 @@ class ContrexxUpdate
     private function setPlaceholders()
     {
         global $_CORELANG;
-
+        
         $logout = $this->auth() ? '<input name="logout" value="'.$_CORELANG['TXT_UPDATE_LOGOUT'].'" type="button" onclick="window.location.href=\'index.php?cmd=logout\'" />' : '';
-
+        
         if ($this->ajax) {
-            $this->html['logout'] = $logout;
+            $this->html['content'] = !UPDATE_UTF8 ? utf8_encode($this->html['content']) : $this->html['content'];
+            $this->html['logout']  = $logout;
+            $this->html['dialog']  = !empty($this->html['dialog']) ? $this->html['dialog'] : '';
         } else {
             $this->objTemplate->setVariable('LOGOUT_BUTTON', $logout);
         }
@@ -383,18 +389,32 @@ class ContrexxUpdate
                 if (empty($this->arrStatusMsg['button'])) {
                     $this->arrStatusMsg['button'] = '<input type="submit" value="'.$_CORELANG['TXT_UPDATE_TRY_AGAIN'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />';
                 }
-                $this->objTemplate->setVariable(array(
-                    'UPDATE_PROCESS_TITLE'    => $_CORELANG['TXT_UPDATE_UPDATE_PROCESS'],
-                    'UPDATE_STATUS_TITLE'    => $this->arrStatusMsg['title'],
-                    'UPDATE_STATUS'            => str_replace('[[SQL_INFO_TITLE]]', $this->arrStatusMsg['title'], implode('<br />', $this->arrStatusMsg['msg']))
-                ));
-                $this->setNavigation($this->arrStatusMsg['button']);
+                if (!empty($this->arrStatusMsg['dialog'])) {
+                    $this->objTemplate->hideBlock('processStatus');
+                    $dialogContent = implode('<br />', $this->arrStatusMsg['msg']);
+                    $this->objTemplate->setVariable('PROCESS_DIALOG_CONTENT', $dialogContent);
+                    if ($this->ajax) {
+                        $this->html['dialog'] = $this->arrStatusMsg['dialog'];
+                        $this->objTemplate->parse('ajaxDialogContent');
+                    } else {
+                        $this->objTemplate->parse('dialogContent');
+                    }
+                } else {
+                    $this->objTemplate->hideBlock('dialogContent');
+                    $this->objTemplate->hideBlock('ajaxDialogContent');
+                    $this->objTemplate->setVariable(array(
+                        'UPDATE_PROCESS_TITLE' => $_CORELANG['TXT_UPDATE_UPDATE_PROCESS'],
+                        'UPDATE_STATUS_TITLE'  => $this->arrStatusMsg['title'],
+                        'UPDATE_STATUS'        => str_replace('[[SQL_INFO_TITLE]]', $this->arrStatusMsg['title'], implode('<br />', $this->arrStatusMsg['msg'])),
+                    ));
+                    $this->setNavigation($this->arrStatusMsg['button']);
+                }
             } else {
                 $this->objTemplate->hideBlock('updateProcessError');
                 $this->objTemplate->setVariable(array(
-                    'UPDATE_PROCESS_TITLE'    => $_CORELANG['TXT_UPDATE_UPDATE_FINISHED'],
-                    'UPDATE_STATUS_TITLE'    => '<strong>'.$_CORELANG['TXT_UPDATE_UPDATE_FINISHED_SUCCESSFULL'].'</strong>',
-                    'UPDATE_STATUS'            => implode('<br />', $this->arrStatusMsg['msg'])
+                    'UPDATE_PROCESS_TITLE' => $_CORELANG['TXT_UPDATE_UPDATE_FINISHED'],
+                    'UPDATE_STATUS_TITLE'  => '<strong>'.$_CORELANG['TXT_UPDATE_UPDATE_FINISHED_SUCCESSFULL'].'</strong>',
+                    'UPDATE_STATUS'        => implode('<br />', $this->arrStatusMsg['msg'])
                 ));
                 $this->setNavigation('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="update" />');
                 $_SESSION['contrexx_update']['step'] = 0;
@@ -968,16 +988,15 @@ function setUpdateMsg($msg, $type='error')
 {
     global $objUpdate;
 
-    if (!in_array($type, array('title', 'msg', 'error', 'button'))){
+    if (!in_array($type, array('title', 'msg', 'error', 'button', 'dialog'))){
         $type = 'error';
     }
     switch ($type) {
-        case 'title':
-        case 'button':
-            $objUpdate->arrStatusMsg[$type] = $msg;
+        case 'msg':
+            $objUpdate->arrStatusMsg[$type][] = $msg;
             break;
         default:
-            $objUpdate->arrStatusMsg[$type][] = $msg;
+            $objUpdate->arrStatusMsg[$type] = $msg;
     }
 }
 

@@ -57,8 +57,9 @@
     text-indent: 45px;
 }
 .grouped {
-    background-color: #0f0;
+    background: #48F248;
 }
 .removed {
-    background-color: #f00;
+    color: #FFFFFF;
+    background: #FF5252;
 }

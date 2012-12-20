@@ -1,6 +1,6 @@
 <?php
 
-namespace Cx\Update\Cx3_0_1\Core;
+namespace Cx\Update\Cx_3_0_1\Core;
 
 class License {
     

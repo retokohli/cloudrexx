@@ -1,4 +1,5 @@
 <div id="content-process">
+    <!-- BEGIN processStatus -->
     <h1 class="first">{UPDATE_PROCESS_TITLE}</h1>
 
     <table class="adminlist">
@@ -7,9 +8,45 @@
         </tr>
         <tr>
             <td>
-                <!-- BEGIN updateProcessError --><div class="message-alert">{UPDATE_ERROR_MSG}</div><!-- END updateProcessError -->
+                <!-- BEGIN updateProcessError -->
+                <div class="message-alert">{UPDATE_ERROR_MSG}</div>
+                <!-- END updateProcessError -->
                 {UPDATE_STATUS}
             </td>
         </tr>
     </table>
+    <!-- END processStatus -->
+    
+    <!-- BEGIN dialogContent -->
+    <script type="text/javascript">
+        cx.ready(function() {
+            cx.ui.dialog({
+                width:         1020,
+                height:        880,
+                modal:         true,
+                closeOnEscape: false,
+                dialogClass:   "content-migration-dialog",
+                title:         "Inhaltsseiten gruppieren",
+                content:       '{PROCESS_DIALOG_CONTENT}',
+                
+                close: function() {
+                    executeGrouping();
+                    $J(this).dialog("close");
+                },
+                buttons: {
+                    "Abschliessen": function() {
+                        executeGrouping();
+                        $J(this).dialog("close");
+                    }
+                }
+            });
+        });
+    </script>
+    
+    <div style="margin: 180px 0 0 155px;">Bitte haben Sie einen Moment Geduld.<br />Das Update wird durchgeführt...<br /><br /><img src="template/contrexx/images/content/loading_animation.gif" width="208" height="13" alt="" /></div>
+    <!-- END dialogContent -->
+    
+    <!-- BEGIN ajaxDialogContent -->
+    {PROCESS_DIALOG_CONTENT}
+    <!-- END ajaxDialogContent -->
 </div>
