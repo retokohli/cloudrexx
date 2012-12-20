@@ -18,6 +18,20 @@ function _coreUpdate()
         return _databaseError($query, $objDatabase->ErrorMsg());
     }
 
+    $query = "SELECT `group_id` FROM `".DBPREFIX."access_group_static_ids` WHERE `access_id` = '5' GROUP BY `group_id`";
+    $objGroup = $objDatabase->Execute($query);
+    if ($objGroup !== false) {
+        while (!$objGroup->EOF) {
+            $query = "INSERT INTO `".DBPREFIX."access_group_static_ids` (`access_id`, `group_id`) VALUES ('127', '".$objGroup->fields['group_id']."')";
+            if ($objDatabase->Execute($query) === false) {
+                return _databaseError($query, $objDatabase->ErrorMsg());
+            }
+            $objGroup->MoveNext();
+        }
+    } else {
+        return _databaseError($query, $objDatabase->ErrorMsg());
+    }
+
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         $query = "SELECT `catid` FROM `".DBPREFIX."content_navigation`";
         $objContentNavigation = $objDatabase->Execute($query);
@@ -35,88 +49,78 @@ function _coreUpdate()
         } else {
             return _databaseError($query, $objDatabase->ErrorMsg());
         }
-    }
 
-    $query = "SELECT `group_id` FROM `".DBPREFIX."access_group_static_ids` WHERE `access_id` = '5' GROUP BY `group_id`";
-    $objGroup = $objDatabase->Execute($query);
-    if ($objGroup !== false) {
-        while (!$objGroup->EOF) {
-            $query = "INSERT INTO `".DBPREFIX."access_group_static_ids` (`access_id`, `group_id`) VALUES ('127', '".$objGroup->fields['group_id']."')";
-            if ($objDatabase->Execute($query) === false) {
-                return _databaseError($query, $objDatabase->ErrorMsg());
-            }
-            $objGroup->MoveNext();
+        try {
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'content_navigation',
+                array(
+                    'catid'                  => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'is_validated'           => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '1'),
+                    'parcat'                 => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                    'catname'                => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                    'target'                 => array('type' => 'VARCHAR(10)', 'notnull' => true, 'default' => ''),
+                    'displayorder'           => array('type' => 'SMALLINT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '1000'),
+                    'displaystatus'          => array('type' => 'SET(\'on\',\'off\')', 'notnull' => true, 'default' => 'on'),
+                    'activestatus'           => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '1'),
+                    'cachingstatus'          => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '1'),
+                    'username'               => array('type' => 'VARCHAR(40)', 'notnull' => true, 'default' => ''),
+                    'changelog'              => array('type' => 'INT(14)', 'notnull' => false),
+                    'cmd'                    => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
+                    'lang'                   => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                    'module'                 => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                    'startdate'              => array('type' => 'DATE', 'notnull' => true, 'default' => '0000-00-00'),
+                    'enddate'                => array('type' => 'DATE', 'notnull' => true, 'default' => '0000-00-00'),
+                    'protected'              => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0'),
+                    'frontend_access_id'     => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                    'backend_access_id'      => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                    'themes_id'              => array('type' => 'INT(4)', 'notnull' => true, 'default' => '0'),
+                    'css_name'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                    'custom_content'         => array('type' => 'VARCHAR(64)', 'after' => 'css_name', 'default' => '')
+                ),
+                array(
+                    'parcat'                 => array('fields' => array('parcat')),
+                    'module'                 => array('fields' => array('module')),
+                    'catname'                => array('fields' => array('catname'))
+                )
+            );
+
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'content_navigation_history',
+                array(
+                    'id'                     => array('type' => 'INT(7)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'is_active'              => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '0'),
+                    'catid'                  => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                    'parcat'                 => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                    'catname'                => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                    'target'                 => array('type' => 'VARCHAR(10)', 'notnull' => true, 'default' => ''),
+                    'displayorder'           => array('type' => 'SMALLINT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '1000'),
+                    'displaystatus'          => array('type' => 'SET(\'ON\',\'OFF\')', 'notnull' => true, 'default' => 'on'),
+                    'activestatus'           => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '1'),
+                    'cachingstatus'          => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '1'),
+                    'username'               => array('type' => 'VARCHAR(40)', 'notnull' => true, 'default' => ''),
+                    'changelog'              => array('type' => 'INT(14)', 'notnull' => false),
+                    'cmd'                    => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
+                    'lang'                   => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                    'module'                 => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                    'startdate'              => array('type' => 'DATE', 'notnull' => true, 'default' => '0000-00-00'),
+                    'enddate'                => array('type' => 'DATE', 'notnull' => true, 'default' => '0000-00-00'),
+                    'protected'              => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0'),
+                    'frontend_access_id'     => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                    'backend_access_id'      => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                    'themes_id'              => array('type' => 'INT(4)', 'notnull' => true, 'default' => '0'),
+                    'css_name'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                    'custom_content'         => array('type' => 'VARCHAR(64)', 'after' => 'css_name', 'default' => '')
+                ),
+                array(
+                    'catid'                  => array('fields' => array('catid'))
+                )
+            );
+        } catch (UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
-    } else {
-        return _databaseError($query, $objDatabase->ErrorMsg());
     }
 
-    try{
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'content_navigation',
-            array(
-                'catid'                  => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'is_validated'           => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '1'),
-                'parcat'                 => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'catname'                => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
-                'target'                 => array('type' => 'VARCHAR(10)', 'notnull' => true, 'default' => ''),
-                'displayorder'           => array('type' => 'SMALLINT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '1000'),
-                'displaystatus'          => array('type' => 'SET(\'on\',\'off\')', 'notnull' => true, 'default' => 'on'),
-                'activestatus'           => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '1'),
-                'cachingstatus'          => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '1'),
-                'username'               => array('type' => 'VARCHAR(40)', 'notnull' => true, 'default' => ''),
-                'changelog'              => array('type' => 'INT(14)', 'notnull' => false),
-                'cmd'                    => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
-                'lang'                   => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
-                'module'                 => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'startdate'              => array('type' => 'DATE', 'notnull' => true, 'default' => '0000-00-00'),
-                'enddate'                => array('type' => 'DATE', 'notnull' => true, 'default' => '0000-00-00'),
-                'protected'              => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0'),
-                'frontend_access_id'     => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'backend_access_id'      => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'themes_id'              => array('type' => 'INT(4)', 'notnull' => true, 'default' => '0'),
-                'css_name'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'custom_content'         => array('type' => 'VARCHAR(64)', 'after' => 'css_name', 'default' => '')
-            ),
-            array(
-                'parcat'                 => array('fields' => array('parcat')),
-                'module'                 => array('fields' => array('module')),
-                'catname'                => array('fields' => array('catname'))
-            )
-        );
-
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'content_navigation_history',
-            array(
-                'id'                     => array('type' => 'INT(7)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'is_active'              => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '0'),
-                'catid'                  => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'parcat'                 => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'catname'                => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
-                'target'                 => array('type' => 'VARCHAR(10)', 'notnull' => true, 'default' => ''),
-                'displayorder'           => array('type' => 'SMALLINT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '1000'),
-                'displaystatus'          => array('type' => 'SET(\'ON\',\'OFF\')', 'notnull' => true, 'default' => 'on'),
-                'activestatus'           => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '1'),
-                'cachingstatus'          => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '1'),
-                'username'               => array('type' => 'VARCHAR(40)', 'notnull' => true, 'default' => ''),
-                'changelog'              => array('type' => 'INT(14)', 'notnull' => false),
-                'cmd'                    => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
-                'lang'                   => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
-                'module'                 => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'startdate'              => array('type' => 'DATE', 'notnull' => true, 'default' => '0000-00-00'),
-                'enddate'                => array('type' => 'DATE', 'notnull' => true, 'default' => '0000-00-00'),
-                'protected'              => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0'),
-                'frontend_access_id'     => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'backend_access_id'      => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'themes_id'              => array('type' => 'INT(4)', 'notnull' => true, 'default' => '0'),
-                'css_name'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'custom_content'         => array('type' => 'VARCHAR(64)', 'after' => 'css_name', 'default' => '')
-            ),
-            array(
-                'catid'                  => array('fields' => array('catid'))
-            )
-        );
-
+    try {
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'log',
             array(
@@ -133,12 +137,9 @@ function _coreUpdate()
                 'referer'                  => array('type' => 'VARCHAR(250)')
             )
         );
-    }
-    catch (UpdateException $e) {
-        // we COULD do something else here..
+    } catch (UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
-
 
     /**********************************************
      *                                            *
