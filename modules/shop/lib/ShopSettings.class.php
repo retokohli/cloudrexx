@@ -523,27 +523,26 @@ class ShopSettings
     /**
      * Fixes database errors.
      *
-     * Also migrates settings from the old Shop settings table to
-     * SettingDb.
-     * @return  boolean       false       Always!
-     * @throws  Update_DatabaseException
+     * Also migrates settings from the old Shop settings table to SettingDb.
+     * @return  boolean                 False.  Always.
+     * @throws  Cx\Lib\Update_DatabaseException
      */
     static function errorHandler()
     {
 // ShopSettings
         SettingDb::errorHandler();
         SettingDb::init('shop', 'config');
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_config';
+        $table_name = DBPREFIX.'module_shop_config';
         $i = 0;
         if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
             // Migrate all entries using the SettingDb class
             $query = "
                 SELECT `name`, `value`, `status`
-                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
+                  FROM ".DBPREFIX."module_shop_config
                  ORDER BY `id` ASC";
             $objResult = Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
-                throw new Update_DatabaseException(
+                throw new Cx\Lib\Update_DatabaseException(
                    'Failed to query old Shop settings', $query);
             }
             while (!$objResult->EOF) {
@@ -640,14 +639,16 @@ class ShopSettings
                     break;
                 }
                 if ($name) {
-                    if (!SettingDb::add($name, $value, ++$i)) {
-                        throw new Update_DatabaseException(
+                    if (   SettingDb::getValue($name) === NULL
+                        && !SettingDb::add($name, $value, ++$i)) {
+                        throw new Cx\Lib\Update_DatabaseException(
                            "Failed to add SettingDb entry for '$name'");
                     }
                 }
                 if ($name_status) {
-                    if (!SettingDb::add($name_status, $status, ++$i)) {
-                        throw new Update_DatabaseException(
+                    if (   SettingDb::getValue($name_status) === NULL
+                        && !SettingDb::add($name_status, $status, ++$i)) {
+                        throw new Cx\Lib\Update_DatabaseException(
                            "Failed to add SettingDb entry for status '$name_status'");
                     }
                 }

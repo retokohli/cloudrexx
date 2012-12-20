@@ -2046,7 +2046,7 @@ class Order
         ShopSettings::errorHandler();
         Country::errorHandler();
 
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_order_items';
+        $table_name = DBPREFIX.'module_shop_order_items';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true, 'renamefrom' => 'order_items_id'),
             'order_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'orderid'),
@@ -2061,9 +2061,9 @@ class Order
             'order' => array('fields' => array('order_id')));
         Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_order_attributes';
+        $table_name = DBPREFIX.'module_shop_order_attributes';
         if (!Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            $table_name_old = DBPREFIX.'module_shop'.MODULE_INDEX.'_order_items_attributes';
+            $table_name_old = DBPREFIX.'module_shop_order_items_attributes';
             $table_structure = array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true, 'renamefrom' => 'orders_items_attributes_id'),
                 'item_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'order_items_id'),
@@ -2078,7 +2078,7 @@ class Order
         }
 
         // LSV
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_lsv';
+        $table_name = DBPREFIX.'module_shop_lsv';
         $table_structure = array(
             'order_id' => array('type' => 'INT(10)', 'unsigned' => true, 'primary' => true, 'renamefrom' => 'id'),
             'holder' => array('type' => 'tinytext', 'default' => ''),
@@ -2088,7 +2088,7 @@ class Order
         $table_index = array();
         Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_orders';
+        $table_name = DBPREFIX.'module_shop_orders';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true, 'renamefrom' => 'orderid'),
             'customer_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'customerid'),
@@ -2140,7 +2140,7 @@ class Order
 // any Customer is modified.  Thus, we can safely depend on the old
 // Customer table in one way -- if it doesn't exist, all Orders and Customers
 // have been successfully migrated already.
-        $table_name_customer = DBPREFIX."module_shop".MODULE_INDEX."_customers";
+        $table_name_customer = DBPREFIX."module_shop_customers";
         if (Cx\Lib\UpdateUtil::table_exist($table_name_customer)) {
 // On the other hand, there may have been an error somewhere in between
 // altering the Orders table and moving Customers to the Users table.

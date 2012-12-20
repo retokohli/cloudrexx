@@ -635,14 +635,12 @@ class Customer extends User
      * Also migrates old Shop Customers to the User accounts and adds
      * all new settings
      * @return  boolean     false     Always!
-     * @throws  Update_DatabaseException
+     * @throws  Cx\Lib\Update_DatabaseException
      */
     static function errorHandler()
     {
 // Customer
-        global $objFWUser;
-
-        $table_name_old = DBPREFIX."module_shop".MODULE_INDEX."_customers";
+        $table_name_old = DBPREFIX."module_shop_customers";
         // If the old Customer table is missing, the migration has completed
         // successfully already
         if (!Cx\Lib\UpdateUtil::table_exist($table_name_old)) {
@@ -659,7 +657,6 @@ class Customer extends User
 
         SettingDb::init('shop', 'config');
         $objUser = FWUser::getFWUserObject()->objUser;
-
         // Create new User_Profile_Attributes
         $index_notes = SettingDb::getValue('user_profile_attribute_notes');
         if (!$index_notes) {
@@ -679,13 +676,13 @@ class Customer extends User
             $objProfileAttribute->setProtection(array(1));
 //DBG::log("Customer::errorHandler(): Made notes attribute: ".var_export($objProfileAttribute, true));
             if (!$objProfileAttribute->store()) {
-                throw new Update_DatabaseException(
+                throw new Cx\Lib\Update_DatabaseException(
                    "Failed to create User_Profile_Attribute 'notes'");
             }
 //DBG::log("Customer::errorHandler(): Stored notes attribute, ID ".$objProfileAttribute->getId());
             if (!(SettingDb::set('user_profile_attribute_notes', $objProfileAttribute->getId())
                && SettingDb::update('user_profile_attribute_notes'))) {
-                throw new Update_DatabaseException(
+                throw new Cx\Lib\Update_DatabaseException(
                    "Failed to update User_Profile_Attribute 'notes' setting");
             }
 //DBG::log("Customer::errorHandler(): Stored notes attribute ID setting");
@@ -706,12 +703,12 @@ class Customer extends User
             $objProfileAttribute->setParent(0);
             $objProfileAttribute->setProtection(array(1));
             if (!$objProfileAttribute->store()) {
-                throw new Update_DatabaseException(
+                throw new Cx\Lib\Update_DatabaseException(
                    "Failed to create User_Profile_Attribute 'notes'");
             }
             if (!(SettingDb::set('user_profile_attribute_customer_group_id', $objProfileAttribute->getId())
                && SettingDb::update('user_profile_attribute_customer_group_id'))) {
-                throw new Update_DatabaseException(
+                throw new Cx\Lib\Update_DatabaseException(
                    "Failed to update User_Profile_Attribute 'customer_group_id' setting");
             }
         }
@@ -719,12 +716,13 @@ class Customer extends User
         // For the migration, a temporary flag is needed in the orders table
         // in order to prevent mixing up old and new customer_id values.
         $query = "
-            ALTER TABLE `".DBPREFIX."module_shop".MODULE_INDEX."_orders`
+            ALTER TABLE `".DBPREFIX."module_shop_orders`
               ADD `migrated` TINYINT(1) unsigned NOT NULL default 0";
         Cx\Lib\UpdateUtil::sql($query);
 
         $arrResellerId = array();
         $arrCustomerId = array();
+        $default_lang_id = FWLanguage::getDefaultLangId();
         $query = "
             SELECT `customer`.`customerid`,
                    `customer`.`prefix`, `customer`.`firstname`,
@@ -748,7 +746,8 @@ class Customer extends User
                 $objResult->fields['email'] = $objResult->fields['username'];
             }
             $email = $objResult->fields['email'];
-            $objUser = $objFWUser->objUser->getUsers(array('email' => array(0 => $email)));
+            $objUser = FWUser::getFWUserObject()->objUser->getUsers(
+                array('email' => array(0 => $email)));
             $objCustomer = null;
             if ($objUser) {
                 $objCustomer = self::getById($objUser->getId());
@@ -756,7 +755,7 @@ class Customer extends User
             if (!$objCustomer) {
                 $lang_id = Order::getLanguageIdByCustomerId($old_customer_id);
                 $lang_id = FWLanguage::getLangIdByIso639_1($lang_id);
-                if (!$lang_id) $lang_id = FRONTEND_LANG_ID;
+                if (!$lang_id) $lang_id = $default_lang_id;
                 $objCustomer = new Customer();
                 if (preg_match('/^(?:frau|mad|mme|signora|miss)/i',
                     $objResult->fields['prefix'])) {
@@ -796,7 +795,7 @@ class Customer extends User
             }
             if (!$objCustomer->store()) {
 //DBG::log(var_export($objCustomer, true));
-                throw new Update_DatabaseException(
+                throw new Cx\Lib\Update_DatabaseException(
                    "Failed to migrate existing Customer ID ".
                    $old_customer_id.
                    " to Users (Messages: ".
@@ -828,7 +827,7 @@ class Customer extends User
         // querying them with "[...] WHERE `migrated`=0", which *MUST* result
         // in an empty recordset.  This is left as an exercise for the reader.)
         $query = "
-            ALTER TABLE `".DBPREFIX."module_shop".MODULE_INDEX."_orders`
+            ALTER TABLE `".DBPREFIX."module_shop_orders`
              DROP `migrated`";
         Cx\Lib\UpdateUtil::sql($query);
 
@@ -836,10 +835,11 @@ class Customer extends User
         $objGroup = null;
         $group_id_customer = SettingDb::getValue('usergroup_id_customer');
         if ($group_id_customer) {
-            $objGroup = $objFWUser->objGroup->getGroup($group_id_customer);
+            $objGroup = FWUser::getFWUserObject()->objGroup->getGroup(
+                $group_id_customer);
         }
         if (!$objGroup || $objGroup->EOF) {
-            $objGroup = $objFWUser->objGroup->getGroups(
+            $objGroup = FWUser::getFWUserObject()->objGroup->getGroups(
                 array('group_name' => 'Shop Endkunden'));
         }
         if (!$objGroup || $objGroup->EOF) {
@@ -851,28 +851,28 @@ class Customer extends User
         }
 //DBG::log("Group: ".var_export($objGroup, true));
         if (!$objGroup) {
-            throw new Update_DatabaseException(
+            throw new Cx\Lib\Update_DatabaseException(
                "Failed to create UserGroup for customers");
         }
         $objGroup->setUsers(array_keys($arrCustomerId));
 //DBG::log("Customer::errorHandler(): Made customer usergroup: ".var_export($objGroup, true));
         if (!$objGroup->store() || !$objGroup->getId()) {
-            throw new Update_DatabaseException(
+            throw new Cx\Lib\Update_DatabaseException(
                 "Failed to store UserGroup for customers");
         }
 //DBG::log("Customer::errorHandler(): Stored customer usergroup, ID ".$objGroup->getId());
         SettingDb::set('usergroup_id_customer', $objGroup->getId());
         if (!SettingDb::update('usergroup_id_customer')) {
-            throw new Update_DatabaseException(
+            throw new Cx\Lib\Update_DatabaseException(
                "Failed to store UserGroup ID for customers");
         }
         $objGroup = null;
         $group_id_reseller = SettingDb::getValue('usergroup_id_reseller');
         if ($group_id_reseller) {
-            $objGroup = $objFWUser->objGroup->getGroup($group_id_reseller);
+            $objGroup = FWUser::getFWUserObject()->objGroup->getGroup($group_id_reseller);
         }
         if (!$objGroup || $objGroup->EOF) {
-            $objGroup = $objFWUser->objGroup->getGroups(
+            $objGroup = FWUser::getFWUserObject()->objGroup->getGroups(
                 array('group_name' => 'Shop Wiederverkäufer'));
         }
         if (!$objGroup || $objGroup->EOF) {
@@ -883,18 +883,18 @@ class Customer extends User
             $objGroup->setType('frontend');
         }
         if (!$objGroup) {
-            throw new Update_DatabaseException(
+            throw new Cx\Lib\Update_DatabaseException(
                "Failed to create UserGroup for resellers");
         }
         $objGroup->setUsers(array_keys($arrResellerId));
 //DBG::log("Customer::errorHandler(): Made reseller usergroup: ".var_export($objGroup, true));
         if (!$objGroup->store() || !$objGroup->getId()) {
-            throw new Update_DatabaseException(
+            throw new Cx\Lib\Update_DatabaseException(
                 "Failed to store UserGroup for resellers");
         }
         SettingDb::set('usergroup_id_reseller', $objGroup->getId());
         if (!SettingDb::update('usergroup_id_reseller')) {
-            throw new Update_DatabaseException(
+            throw new Cx\Lib\Update_DatabaseException(
                "Failed to store UserGroup ID for resellers");
         }
 

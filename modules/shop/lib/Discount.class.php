@@ -795,22 +795,24 @@ class Discount
     /**
      * Tries to fix any database problems
      * @return  boolean           False.  Always.
+     * @throws  Cx\Lib\Update_DatabaseException
      */
     static function errorHandler()
     {
 //die("Discount::errorHandler(): Disabled!<br />");
 // Discount
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_article_group';
+        $table_name = DBPREFIX.'module_shop_article_group';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
         );
         $table_index = array();
         if (!Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            if (!Cx\Lib\UpdateUtil::create_table($table_name, $table_structure, $table_index)) {
-                throw new Update_DatabaseException(
+            if (!Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index)) {
+                throw new Cx\Lib\Update_DatabaseException(
                    "Failed to create article group table");
             }
         }
+        $default_lang_id = FWLanguage::getDefaultLangId();
         if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
             Text::deleteByKey('shop', self::TEXT_NAME_GROUP_ARTICLE);
             $query = "
@@ -818,15 +820,15 @@ class Discount
                   FROM `$table_name`";
             $objResult = Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
-                throw new Update_DatabaseException(
+                throw new Cx\Lib\Update_DatabaseException(
                    "Failed to query article group names", $query);
             }
             while (!$objResult->EOF) {
                 $group_id = $objResult->fields['id'];
                 $name = $objResult->fields['name'];
-                if (!Text::replace($group_id, FRONTEND_LANG_ID, 'shop',
+                if (!Text::replace($group_id, $default_lang_id, 'shop',
                     self::TEXT_NAME_GROUP_ARTICLE, $name)) {
-                    throw new Update_DatabaseException(
+                    throw new Cx\Lib\Update_DatabaseException(
                        "Failed to migrate article group names");
                 }
                 $objResult->MoveNext();
@@ -834,14 +836,14 @@ class Discount
             Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
         }
 
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_customer_group';
+        $table_name = DBPREFIX.'module_shop_customer_group';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
         );
         $table_index = array();
         if (!Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            if (!Cx\Lib\UpdateUtil::create_table($table_name, $table_structure, $table_index)) {
-                throw new Update_DatabaseException(
+            if (!Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index)) {
+                throw new Cx\Lib\Update_DatabaseException(
                    "Failed to create customer group table");
             }
         }
@@ -852,15 +854,15 @@ class Discount
                   FROM `$table_name`";
             $objResult = Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
-                throw new Update_DatabaseException(
+                throw new Cx\Lib\Update_DatabaseException(
                    "Failed to query customer group names", $query);
             }
             while (!$objResult->EOF) {
                 $group_id = $objResult->fields['id'];
                 $name = $objResult->fields['name'];
-                if (!Text::replace($group_id, FRONTEND_LANG_ID, 'shop',
+                if (!Text::replace($group_id, $default_lang_id, 'shop',
                     self::TEXT_NAME_GROUP_CUSTOMER, $name)) {
-                throw new Update_DatabaseException(
+                throw new Cx\Lib\Update_DatabaseException(
                    "Failed to migrate customer group names");
                 }
                 $objResult->MoveNext();
@@ -868,7 +870,7 @@ class Discount
             Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
         }
 
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_discount_group';
+        $table_name = DBPREFIX.'module_shop_rel_discount_group';
         $table_structure = array(
             'customer_group_id' => array('type' => 'int(10)', 'unsigned' => true, 'notnull' => true, 'default' => 0, 'primary' => true),
             'article_group_id' => array('type' => 'int(10)', 'unsigned' => true, 'notnull' => true, 'default' => 0, 'primary' => true),
@@ -876,20 +878,20 @@ class Discount
         );
         $table_index = array();
         if (!Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            if (!Cx\Lib\UpdateUtil::create_table($table_name, $table_structure, $table_index)) {
-                throw new Update_DatabaseException(
+            if (!Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index)) {
+                throw new Cx\Lib\Update_DatabaseException(
                    "Failed to create customer group table");
             }
         }
 
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_discountgroup_count_name';
+        $table_name = DBPREFIX.'module_shop_discountgroup_count_name';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
         );
         $table_index = array();
         if (!Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            if (!Cx\Lib\UpdateUtil::create_table($table_name, $table_structure, $table_index)) {
-                throw new Update_DatabaseException(
+            if (!Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index)) {
+                throw new Cx\Lib\Update_DatabaseException(
                    "Failed to create count group table");
             }
         }
@@ -901,21 +903,21 @@ class Discount
                   FROM `$table_name`";
             $objResult = Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
-                throw new Update_DatabaseException(
+                throw new Cx\Lib\Update_DatabaseException(
                    "Failed to query count group names", $query);
             }
             while (!$objResult->EOF) {
                 $group_id = $objResult->fields['id'];
                 $name = $objResult->fields['name'];
                 $unit = $objResult->fields['unit'];
-                if (!Text::replace($group_id, FRONTEND_LANG_ID, 'shop',
+                if (!Text::replace($group_id, $default_lang_id, 'shop',
                     self::TEXT_NAME_GROUP_COUNT, $name)) {
-                    throw new Update_DatabaseException(
+                    throw new Cx\Lib\Update_DatabaseException(
                        "Failed to migrate count group names");
                 }
-                if (!Text::replace($group_id, FRONTEND_LANG_ID, 'shop',
+                if (!Text::replace($group_id, $default_lang_id, 'shop',
                     self::TEXT_UNIT_GROUP_COUNT, $unit)) {
-                    throw new Update_DatabaseException(
+                    throw new Cx\Lib\Update_DatabaseException(
                        "Failed to migrate count group units");
                 }
                 $objResult->MoveNext();

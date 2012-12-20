@@ -1309,6 +1309,14 @@ class Product
     }
 
 
+    /**
+     * Handles database errors
+     *
+     * Also migrates text fields to the new structure
+     * @return  boolean         False.  Always.
+     * @static
+     * @throws  Cx\Lib\Update_DatabaseException
+     */
     static function errorHandler()
     {
 // Product
@@ -1317,7 +1325,7 @@ class Product
 //        Discount::errorHandler(); // Called by Customer::errorHandler();
         Manufacturer::errorHandler();
 
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_products';
+        $table_name = DBPREFIX.'module_shop_products';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
             'normalprice' => array('type' => 'DECIMAL(9,2)', 'default' => '0.00'),
@@ -1352,6 +1360,7 @@ class Product
             'article_id' => array('fields' => array('article_id')),
             'flags' => array('fields' => array('flags'), 'type' => 'FULLTEXT', ),
         );
+        $default_lang_id = FWLanguage::getDefaultLangId();
         if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
             if (Cx\Lib\UpdateUtil::column_exist($table_name, 'title')) {
                 // Migrate all Product strings to the Text table first
@@ -1367,45 +1376,45 @@ class Product
                       FROM `$table_name`";
                 $objResult = Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
-                    throw new Update_DatabaseException(
+                    throw new Cx\Lib\Update_DatabaseException(
                         "Failed to query Product strings", $query);
                 }
                 while (!$objResult->EOF) {
                     $id = $objResult->fields['id'];
                     $name = $objResult->fields['title'];
-                    if (!Text::replace($id, FRONTEND_LANG_ID, 'shop',
+                    if (!Text::replace($id, $default_lang_id, 'shop',
                         self::TEXT_NAME, $name)) {
-                        throw new Update_DatabaseException(
+                        throw new Cx\Lib\Update_DatabaseException(
                             "Failed to migrate Product name '$name'");
                     }
                     $short = $objResult->fields['shortdesc'];
-                    if (!Text::replace($id, FRONTEND_LANG_ID, 'shop',
+                    if (!Text::replace($id, $default_lang_id, 'shop',
                         self::TEXT_SHORT, $short)) {
-                        throw new Update_DatabaseException(
+                        throw new Cx\Lib\Update_DatabaseException(
                             "Failed to migrate Product short '$short'");
                     }
                     $long = $objResult->fields['description'];
-                    if (!Text::replace($id, FRONTEND_LANG_ID, 'shop',
+                    if (!Text::replace($id, $default_lang_id, 'shop',
                         self::TEXT_LONG, $long)) {
-                        throw new Update_DatabaseException(
+                        throw new Cx\Lib\Update_DatabaseException(
                             "Failed to migrate Product long '$long'");
                     }
                     $code = $objResult->fields['product_id'];
-                    if (!Text::replace($id, FRONTEND_LANG_ID, 'shop',
+                    if (!Text::replace($id, $default_lang_id, 'shop',
                         self::TEXT_CODE, $code)) {
-                        throw new Update_DatabaseException(
+                        throw new Cx\Lib\Update_DatabaseException(
                             "Failed to migrate Product code '$code'");
                     }
                     $uri = $objResult->fields['external_link'];
-                    if (!Text::replace($id, FRONTEND_LANG_ID, 'shop',
+                    if (!Text::replace($id, $default_lang_id, 'shop',
                         self::TEXT_URI, $uri)) {
-                        throw new Update_DatabaseException(
+                        throw new Cx\Lib\Update_DatabaseException(
                             "Failed to migrate Product uri '$uri'");
                     }
                     $keys = $objResult->fields['keywords'];
-                    if (!Text::replace($id, FRONTEND_LANG_ID, 'shop',
+                    if (!Text::replace($id, $default_lang_id, 'shop',
                         self::TEXT_KEYS, $keys)) {
-                        throw new Update_DatabaseException(
+                        throw new Cx\Lib\Update_DatabaseException(
                             "Failed to migrate Product keys '$keys'");
                     }
                     $objResult->MoveNext();

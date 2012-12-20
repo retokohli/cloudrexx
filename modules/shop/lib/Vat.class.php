@@ -713,16 +713,18 @@ class Vat
      * nor the new table exists to begin with, the new structure will be
      * created with no records.
      * @return  boolean               False.  Always.
+     * @throws  Cx\Lib\Update_DatabaseException
      */
     static function errorHandler()
     {
 // Vat
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_vat';
+        $table_name = DBPREFIX.'module_shop_vat';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
             'rate' => array('type' => 'DECIMAL(5,2)', 'unsigned' => true, 'notnull' => true, 'default' => '0.00', 'renamefrom' => 'percent'),
         );
         $table_index =  array();
+        $default_lang_id = FWLanguage::getDefaultLangId();
         if (Cx\Lib\UpdateUtil::table_exist($table_name, 'class')) {
             if (Cx\Lib\UpdateUtil::column_exist($table_name, 'class')) {
                 // Migrate all Vat classes to the Text table first
@@ -734,9 +736,9 @@ class Vat
                 while (!$objResult->EOF) {
                     $id = $objResult->fields['id'];
                     $class = $objResult->fields['class'];
-                    if (!Text::replace($id, FRONTEND_LANG_ID, 'shop',
+                    if (!Text::replace($id, $default_lang_id, 'shop',
                         self::TEXT_CLASS, $class)) {
-                        throw new Update_DatabaseException(
+                        throw new Cx\Lib\Update_DatabaseException(
                             "Failed to migrate VAT class '$class'");
                     }
                     $objResult->MoveNext();

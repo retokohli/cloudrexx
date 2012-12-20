@@ -400,12 +400,13 @@ class Zones
      *
      * Also migrates text fields to the new structure
      * @return  boolean           False.  Always.
+     * @throws  Cx\Lib\Update_DatabaseException
      */
     static function errorHandler()
     {
 // Zones
         // Fix the Zone-Payment relation table
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_payment';
+        $table_name = DBPREFIX.'module_shop_rel_payment';
         $table_structure = array(
             'zone_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'primary' => true, 'renamefrom' => 'zones_id'),
             'payment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'primary' => true),
@@ -416,7 +417,7 @@ class Zones
         // Fix the Text table
         Text::errorHandler();
 
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_zones';
+        $table_name = DBPREFIX.'module_shop_zones';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true, 'renamefrom' => 'zones_id'),
             'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1', 'renamefrom' => 'activation_status'),
@@ -431,7 +432,7 @@ class Zones
                       FROM `$table_name";
                 $objResult = Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
-                    throw new Update_DatabaseException(
+                    throw new Cx\Lib\Update_DatabaseException(
                         "Failed to query Zone names", $query);
                 }
                 while (!$objResult->EOF) {
@@ -439,7 +440,7 @@ class Zones
                     $name = $objResult->fields['zones_name'];
                     if (!Text::replace($id, FRONTEND_LANG_ID, 'shop',
                         self::TEXT_NAME, $name)) {
-                        throw new Update_DatabaseException(
+                        throw new Cx\Lib\Update_DatabaseException(
                             "Failed to migrate Zone name '$name'");
                     }
                     $objResult->MoveNext();
@@ -448,22 +449,20 @@ class Zones
         }
         Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
-        $table_name_old = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_shipment';
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_shipper';
-        if (Cx\Lib\UpdateUtil::table_exist($table_name_old)) {
-            if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
-                throw new UpdateException("Destination table $table_name exists, cannot rename old table $table_name_old");
-            }
-            Cx\Lib\UpdateUtil::table_rename($table_name_old, $table_name);
+        $table_name_old = DBPREFIX.'module_shop_rel_shipment';
+        $table_name_new = DBPREFIX.'module_shop_rel_shipper';
+        if (   !Cx\Lib\UpdateUtil::table_exist($table_name_new)
+            && Cx\Lib\UpdateUtil::table_exist($table_name_old)) {
+            Cx\Lib\UpdateUtil::table_rename($table_name_old, $table_name_new);
         }
         $table_structure = array(
             'shipper_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'renamefrom' => 'shipment_id'),
             'zone_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'renamefrom' => 'zones_id'),
         );
         $table_index = array();
-        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        Cx\Lib\UpdateUtil::table($table_name_new, $table_structure, $table_index);
 
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_countries';
+        $table_name = DBPREFIX.'module_shop_rel_countries';
         $table_structure = array(
             'country_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'renamefrom' => 'countries_id'),
             'zone_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'renamefrom' => 'zones_id'),

@@ -845,6 +845,7 @@ class Shipment
      * Also migrates old names to the new structure
      * @return  boolean         False.  Always.
      * @static
+     * @throws  Cx\Lib\Update_DatabaseException
      */
     static function errorHandler()
     {
@@ -871,6 +872,7 @@ class Shipment
             'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'renamefrom' => 'status'),
         );
         $table_index = array();
+        $default_lang_id = FWLanguage::getDefaultLangId();
         if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
             if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
                 Text::deleteByKey('shop', self::TEXT_NAME);
@@ -879,15 +881,15 @@ class Shipment
                       FROM `$table_name`";
                 $objResult = Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
-                    throw new Update_DatabaseException(
+                    throw new Cx\Lib\Update_DatabaseException(
                         "Failed to query names", $query);
                 }
                 while (!$objResult->EOF) {
                     $id = $objResult->fields['id'];
                     $name = $objResult->fields['name'];
-                    if (!Text::replace($id, FRONTEND_LANG_ID, 'shop',
+                    if (!Text::replace($id, $default_lang_id, 'shop',
                         self::TEXT_NAME, $name)) {
-                    throw new Update_DatabaseException(
+                    throw new Cx\Lib\Update_DatabaseException(
                         "Failed to migrate name '$name'");
                     }
                     $objResult->MoveNext();
