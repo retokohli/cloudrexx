@@ -527,9 +527,9 @@ class Cart
 //DBG::log("Cart::update(): Loop 2: Product: ".var_export($product, true));
                     $discount_amount = $objCoupon->getDiscountAmount(
                         $product['price']);
-                    if ($objCoupon->discount_amount()
-                     &&   ($total_discount_amount + $discount_amount)
-                        > $objCoupon->discount_amount()) {
+                    if (   $objCoupon->discount_amount()
+                        && ($total_discount_amount + $discount_amount)
+                            > $objCoupon->discount_amount()) {
 //DBG::log("Cart::update(): COUPON prelimit: PRODUCT: price ".$product['price'].", coupon discount amount ".$objCoupon->discount_amount().", discount_amount $discount_amount, total discount amount $total_discount_amount");
                         $discount_amount =
                             $objCoupon->discount_amount()
@@ -722,7 +722,7 @@ class Cart
     static function destroy()
     {
         $_SESSION['shop']['cart'] = null;
-        self::update();
+        self::update(null);
     }
 
 

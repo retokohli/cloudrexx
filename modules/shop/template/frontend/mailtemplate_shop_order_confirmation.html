@@ -49,21 +49,21 @@ Bestellungszeit: [ORDER_DATE] [ORDER_TIME]<br />
       <td colspan="3">Gutscheincode</td>
       <td colspan="2">[DISCOUNT_COUPON_CODE]</td>
       <td><div style="text-align: right;">[DISCOUNT_COUPON_AMOUNT] [CURRENCY]</div></td>
-    </tr><!--[DISCOUNT_COUPON]]-->
+    </tr><!--[DISCOUNT_COUPON]][[SHIPMENT]-->
     <tr style="border-top: 2px none;">
       <td colspan="3">Versandart</td>
       <td colspan="2">[SHIPMENT_NAME]</td>
       <td><div style="text-align: right;">[SHIPMENT_PRICE] [CURRENCY]</div></td>
-    </tr>
+    </tr><!--[SHIPMENT]][[PAYMENT]-->
     <tr style="border-top: 2px none;">
       <td colspan="3">Bezahlung</td>
       <td colspan="2">[PAYMENT_NAME]</td>
       <td><div style="text-align: right;">[PAYMENT_PRICE] [CURRENCY]</div></td>
-    </tr>
+    </tr><!--[PAYMENT]][[VAT]-->
     <tr style="border-top: 2px none;">
-      <td colspan="5">[TAX_TEXT]</td>
-      <td><div style="text-align: right;">[TAX_PRICE] [CURRENCY]</div></td>
-    </tr>
+      <td colspan="5">[VAT_TEXT]</td>
+      <td><div style="text-align: right;">[VAT_PRICE] [CURRENCY]</div></td>
+    </tr><!--[VAT]]-->
     <tr style="border-top: 4px none;">
       <td colspan="5">Gesamtsumme</td>
       <td><div style="text-align: right;">[ORDER_SUM] [CURRENCY]</div></td>

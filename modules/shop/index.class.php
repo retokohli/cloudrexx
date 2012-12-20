@@ -586,6 +586,10 @@ die("Failed to update the Cart!");
      */
     static function destroyCart($full=null)
     {
+        // Necessary, otherwise no successive orders are possible
+        $_SESSION['shop']['order_id'] = $_SESSION['shop']['order_id_checkin'] =
+            NULL;
+// TODO: TEST ONLY, to not clear the cart: return;
         Cart::destroy();
         // In case you want to flush everything, including the Customer:
         if ($full) {
@@ -1794,9 +1798,7 @@ die("Failed to update the Cart!");
 
         JS::activate('shadowbox');
         JS::activate('jquery');
-
         ContrexxJavascript::getInstance()->setVariable("url", (String)\Cx\Core\Routing\URL::fromModuleAndCMd('shop'.MODULE_INDEX, 'cart', FRONTEND_LANG_ID, array('remoteJs' => 'addProduct')), 'shop/cart');
-
         JS::registerCode("
 // Obsolete
 function viewPicture(picture,features)
@@ -1815,7 +1817,7 @@ function deleteProduct(product_index)
 
 function toggleOptions(productId, event)
 {
-  \$J(event).toggleClass('active');
+  jQuery(event).toggleClass('active');
   if (document.getElementById('product_options_layer'+productId)) {
     if (document.getElementById('product_options_layer'+productId).style.display == 'none') {
       document.getElementById('product_options_layer'+productId).style.display = 'block';
@@ -2005,10 +2007,10 @@ function addProductToCart(objForm)
 }
 
 function showUpdateMessage() {
-    \$J('body').append('<div id=\"shop-product-added-info-wrapper\" style=\"display: none;\"><div id=\"shop-product-added-info-box\">".$_ARRAYLANG['TXT_SHOP_PRODUCT_ADDED_TO_CART']."</div></div>');
-    \$J('#shop-product-added-info-wrapper').fadeIn(200).delay(1000).fadeOut(200, function () {
-        \$J(this).remove();
-    });
+  jQuery('body').append('<div id=\"shop-product-added-info-wrapper\" style=\"display: none;\"><div id=\"shop-product-added-info-box\">".$_ARRAYLANG['TXT_SHOP_PRODUCT_ADDED_TO_CART']."</div></div>');
+  jQuery('#shop-product-added-info-wrapper').fadeIn(200).delay(1000).fadeOut(200, function () {
+    jQuery(this).remove();
+  });
 }
 
 function shopUpdateCart(data, textStatus, jqXHR)
@@ -2191,25 +2193,6 @@ function centerY(height)
         }
 //DBG::log("Shop::_authenticate(): Failed!");
         return false;
-/* OLD
-        if (   isset($_SESSION['shop']['username'])
-            && isset($_SESSION['shop']['password'])) {
-            $username = $_SESSION['shop']['username'];
-            $password = md5($_SESSION['shop']['password']);
-//DBG::log("Shop::_authenticate(): Trying to authenticate $username/{$_SESSION['shop']['password']} ($password)");
-            $objCustomer = new Customer();
-            if ($objCustomer->auth($username, $password)) {
-//DBG::log("Shop::_authenticate(): This ID: ".$objCustomer->getId()
-//." -> ".var_export($objCustomer, true)
-//.", Usergroups: ".var_export($objCustomer->getAssociatedGroupIds(), true));
-                $_SESSION['shop']['email'] = $objCustomer->email();
-                self::$objCustomer = &$objCustomer;
-                return true;
-            }
-//DBG::log("Shop::_authenticate(): Failed to authenticate $username/{$_SESSION['shop']['password']} ($password)");
-        }
-        return false;
-*/
     }
 
 
@@ -2288,61 +2271,6 @@ function centerY(height)
                 break;
         }
         return true;
-/* OLD
-        // Fails and returns when not logged in, redirects otherwise.
-        // The default target for the redirect is the account page.
-        // Other targets need to be specified in the redirect parameter.
-        $redirect = self::processRedirect();
-        $loginUsername = '';
-        if (!(empty($_POST['username']) || empty($_POST['password']))) {
-            // check authentification
-            $_SESSION['shop']['username'] = contrexx_input2raw($_POST['username']);
-            $_SESSION['shop']['password'] = contrexx_input2raw($_POST['password']);
-            $loginUsername = $_SESSION['shop']['username'];
-            if (self::_authenticate()) {
-                self::$objCustomer = &$objUser;
-                // Initialize the Customer data in the session, so that the account
-                // page may be skipped
-                $_SESSION['shop']['company'] = self::$objCustomer->company();
-                $_SESSION['shop']['gender'] = self::$objCustomer->gender();
-                $_SESSION['shop']['lastname'] = self::$objCustomer->lastname();
-                $_SESSION['shop']['firstname'] = self::$objCustomer->firstname();
-                $_SESSION['shop']['address'] = self::$objCustomer->address();
-                $_SESSION['shop']['zip'] = self::$objCustomer->zip();
-                $_SESSION['shop']['city'] = self::$objCustomer->city();
-                $_SESSION['shop']['countryId'] = self::$objCustomer->country_id();
-                $_SESSION['shop']['email'] = self::$objCustomer->email();
-                $_SESSION['shop']['phone'] = self::$objCustomer->phone();
-                $_SESSION['shop']['fax'] = self::$objCustomer->fax();
-                // Optionally also initialize the shipment address
-//                $_SESSION['shop']['company2'] = self::$objCustomer->company();
-//                $_SESSION['shop']['gender2'] = self::$objCustomer->gender();
-//                $_SESSION['shop']['lastname2'] = self::$objCustomer->lastname();
-//                $_SESSION['shop']['firstname2'] = self::$objCustomer->firstname();
-//                $_SESSION['shop']['address2'] = self::$objCustomer->address();
-//                $_SESSION['shop']['zip2'] = self::$objCustomer->zip();
-//                $_SESSION['shop']['city2'] = self::$objCustomer->city();
-//                $_SESSION['shop']['countryId2'] = self::$objCustomer->country_id();
-//                $_SESSION['shop']['phone2'] = self::$objCustomer->phone();
-//                $_SESSION['shop']['equal_address'] = true;
-                // The user has just been logged in.
-                // Refresh the cart, considering possible discounts
-                Cart::update(self::$objCustomer);
-                // Reenter login() in order to be redirected to the next page
-                self::login();
-            } else {
-                Message::error($_ARRAYLANG['TXT_SHOP_UNKNOWN_CUSTOMER_ACCOUNT']);
-            }
-        }
-        self::$objTemplate->setVariable(array(
-            'SHOP_LOGIN_EMAIL' => $loginUsername,
-            'SHOP_LOGIN_ACTION' =>
-                'index.php?section=shop&amp;cmd=login'.
-                (!empty($redirect) ? "&amp;redirect=$redirect" : ''),
-// TODO:  Replace by the global message placeholder
-//            'SHOP_LOGIN_STATUS' => Message::get(),
-        ));
-*/
     }
 
 
@@ -3257,23 +3185,18 @@ die("Shop::processRedirect(): This method is obsolete!");
             'SHOP_EMAIL' => stripslashes($_SESSION['shop']['email']),
             'SHOP_PHONE' => stripslashes($_SESSION['shop']['phone']),
             'SHOP_FAX' => stripslashes($_SESSION['shop']['fax']),
-            'SHOP_COMPANY2' => stripslashes($_SESSION['shop']['company2']),
-            'SHOP_TITLE2' => stripslashes($_SESSION['shop']['gender2']),
-            'SHOP_LASTNAME2' => stripslashes($_SESSION['shop']['lastname2']),
-            'SHOP_FIRSTNAME2' => stripslashes($_SESSION['shop']['firstname2']),
-            'SHOP_ADDRESS2' => stripslashes($_SESSION['shop']['address2']),
-            'SHOP_ZIP2' => stripslashes($_SESSION['shop']['zip2']),
-            'SHOP_CITY2' => stripslashes($_SESSION['shop']['city2']),
-            'SHOP_COUNTRY2' => Country::getNameById($_SESSION['shop']['countryId2']),
-            'SHOP_PHONE2' => stripslashes($_SESSION['shop']['phone2']),
         ));
-        $total_discount_amount = Cart::get_discount_amount();
-        if ($total_discount_amount) {
+        if (!empty($_SESSION['shop']['lastname2'])) {
             self::$objTemplate->setVariable(array(
-                'SHOP_DISCOUNT_COUPON_TOTAL' =>
-                    $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_AMOUNT_TOTAL'],
-                'SHOP_DISCOUNT_COUPON_TOTAL_AMOUNT' => Currency::formatPrice(
-                    -$total_discount_amount),
+                'SHOP_COMPANY2' => stripslashes($_SESSION['shop']['company2']),
+                'SHOP_TITLE2' => stripslashes($_SESSION['shop']['gender2']),
+                'SHOP_LASTNAME2' => stripslashes($_SESSION['shop']['lastname2']),
+                'SHOP_FIRSTNAME2' => stripslashes($_SESSION['shop']['firstname2']),
+                'SHOP_ADDRESS2' => stripslashes($_SESSION['shop']['address2']),
+                'SHOP_ZIP2' => stripslashes($_SESSION['shop']['zip2']),
+                'SHOP_CITY2' => stripslashes($_SESSION['shop']['city2']),
+                'SHOP_COUNTRY2' => Country::getNameById($_SESSION['shop']['countryId2']),
+                'SHOP_PHONE2' => stripslashes($_SESSION['shop']['phone2']),
             ));
         }
         if (!empty($_SESSION['shop']['note'])) {
@@ -3310,8 +3233,9 @@ die("Shop::processRedirect(): This method is obsolete!");
             if (self::$objTemplate->blockExists('shipping_address'))
                 self::$objTemplate->hideBlock('shipping_address');
         } else {
+// TODO: Redirect back to payment?
 if (empty($_SESSION['shop']['shipperId'])) {
-die("Trouble! No Shipper ID defined");
+    die("Trouble! No Shipper ID defined");
 }
             self::$objTemplate->setVariable(array(
                 'SHOP_SHIPMENT_PRICE' => $_SESSION['shop']['shipment_price'],
@@ -3494,7 +3418,7 @@ die("Trouble! No Shipper ID defined");
         $objOrder->note($_SESSION['shop']['note']);
         if (!$objOrder->insert()) {
             // $order_id is unset!
-            return Message::error($_ARRAYLANG['TXT_ERROR_STORING_CUSTOMER_DATA']);
+            return Message::error($_ARRAYLANG['TXT_SHOP_ORDER_ERROR_STORING']);
         }
         $order_id = $objOrder->id();
         $_SESSION['shop']['order_id'] = $order_id;
@@ -3548,7 +3472,7 @@ die("Trouble! No Shipper ID defined");
                 return false;
             }
             // Store the Product Coupon, if applicable.
-            // Note that it is not redeemed yet!
+            // Note that it is not redeemed yet (uses=0)!
             if ($coupon_code) {
                 $objCoupon = Coupon::available($coupon_code, $item_total,
                     self::$objCustomer->id(), $product_id, $payment_id);
@@ -3564,12 +3488,13 @@ DBG::log("Shop::process(): ERROR: Failed to store Coupon for Product ID $product
             }
         } // foreach product in cart
         // Store the Global Coupon, if applicable.
-        // Note that it is not redeemed yet!
+        // Note that it is not redeemed yet (uses=0)!
+//DBG::log("Shop::process(): Looking for global Coupon $coupon_code");
         if ($coupon_code) {
             $objCoupon = Coupon::available($coupon_code, $items_total,
                 self::$objCustomer->id(), null, $payment_id);
-//DBG::log("Shop::process(): Got global Coupon: ".var_export($objCoupon, true));
             if ($objCoupon) {
+//DBG::log("Shop::process(): Got global Coupon: ".var_export($objCoupon, true));
                 if (!$objCoupon->redeem($order_id, self::$objCustomer->id(),
                     $items_total, 0))
 DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
@@ -3759,10 +3684,6 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
         self::$objTemplate->setGlobalVariable($_ARRAYLANG);
         // Comment this for testing, so you can reuse the same account and cart
         self::destroyCart();
-        // Clear the Order ID instead, so you can do it again
-        unset($_SESSION['shop']['order_id']);
-        // Clear backup ID, avoid success() from being run again
-        unset($_SESSION['shop']['order_id_checkin']);
     }
 
 
@@ -3952,8 +3873,6 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
      */
     static function showShipmentTerms()
     {
-        global $_ARRAYLANG;
-
         if (self::$objTemplate->blockExists('shopShipper')) {
 // TODO: Should be set by the calling view, if any
             self::$objTemplate->setGlobalVariable($_ARRAYLANG + array(
@@ -3973,7 +3892,6 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
                     ));
                     self::$objTemplate->parse('shopShipment');
                 }
-//                self::$objTemplate->setCurrentBlock('shopShipper');
                 self::$objTemplate->setVariable(array(
                     'SHOP_SHIPPER' => $strShipperName,
                     'SHOP_COUNTRIES' => $strCountries,
