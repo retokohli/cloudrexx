@@ -107,10 +107,7 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     } elseif (!@include_once(dirname(__FILE__) . '/components/core/settings.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/settings.php'));
         return false;
-    } elseif (!@include_once(dirname(__FILE__) . '/components/core/version.php')) {
-        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/version.php'));
-        return false;
-    } elseif (!@include_once(dirname(__FILE__) . '/components/core/license.class.php')) {
+    } elseif (!@include_once(dirname(__FILE__) . '/components/core/License.class.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/license.class.php'));
         return false;
     }
@@ -306,14 +303,6 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
         } else {
             $_SESSION['contrexx_update']['update']['done'][] = 'coreLicense';
         }
-    }
-
-    $result = _createVersionFile();
-    if ($result === false) {
-        if (empty($objUpdate->arrStatusMsg['title'])) {
-            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_VERSION_INFO']), 'title');
-        }
-        return false;
     }
     
     _response();
