@@ -44,46 +44,48 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     // Reinitialize FWLanguage. Now with fallback (doctrine).
     FWLanguage::init();
     
-    Env::get('ClassLoader')->loadFile(dirname(__FILE__) . '/ContentMigration.class.php');
-    $contentMigration = new \Cx\Update\Cx_3_0_1\ContentMigration();
-    
-    // Migrate content
-    if (empty($_SESSION['contrexx_update']['content_migrated']) && $contentMigration->migrate()) {
-        $_SESSION['contrexx_update']['content_migrated'] = true;
-        if (!checkMemoryLimit() || !checkTimeoutLimit()) {
-            return false;
-        }
-    }
-    
-    // Migrate aliases
-    if (empty($_SESSION['contrexx_update']['aliases_migrated']) && $contentMigration->migrateAliases()) {
-        $_SESSION['contrexx_update']['aliases_migrated'] = true;
-        if (!checkMemoryLimit() || !checkTimeoutLimit()) {
-            return false;
-        }
-    }
-    
-    // Group pages if more than one language
-    if (empty($_SESSION['contrexx_update']['pages_grouped'])) {
-        $pageGrouping = $contentMigration->pageGrouping();
+    if ($_CONFIG['coreCmsVersion'] < 3) {
+        Env::get('ClassLoader')->loadFile(dirname(__FILE__) . '/ContentMigration.class.php');
+        $contentMigration = new \Cx\Update\Cx_3_0_1\ContentMigration();
         
-        if ($pageGrouping === true) {
-            $_SESSION['contrexx_update']['pages_grouped'] = true;
+        // Migrate content
+        if (empty($_SESSION['contrexx_update']['content_migrated']) && $contentMigration->migrate()) {
+            $_SESSION['contrexx_update']['content_migrated'] = true;
             if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                 return false;
             }
-        } else if (!empty($pageGrouping)) {
-            $arrDialogData = array(
-                'langs'        => $contentMigration->langs,
-                'similarPages' => $contentMigration->similarPages,
-                'defaultLang'  => $contentMigration::$defaultLang,
-            );
+        }
+        
+        // Migrate aliases
+        if (empty($_SESSION['contrexx_update']['aliases_migrated']) && $contentMigration->migrateAliases()) {
+            $_SESSION['contrexx_update']['aliases_migrated'] = true;
+            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                return false;
+            }
+        }
+        
+        // Group pages if more than one language
+        if (empty($_SESSION['contrexx_update']['pages_grouped'])) {
+            $pageGrouping = $contentMigration->pageGrouping();
             
-            setUpdateMsg('Inhaltsseiten gruppieren', 'title');
-            setUpdateMsg($pageGrouping, 'msg');
-            setUpdateMsg('<input type="submit" value="' . $_CORELANG['TXT_UPDATE_NEXT'] . '" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
-            setUpdateMsg($arrDialogData, 'dialog');
-            return false;
+            if ($pageGrouping === true) {
+                $_SESSION['contrexx_update']['pages_grouped'] = true;
+                if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                    return false;
+                }
+            } else if (!empty($pageGrouping)) {
+                $arrDialogData = array(
+                    'langs'        => $contentMigration->langs,
+                    'similarPages' => $contentMigration->similarPages,
+                    'defaultLang'  => $contentMigration::$defaultLang,
+                );
+                
+                setUpdateMsg('Inhaltsseiten gruppieren', 'title');
+                setUpdateMsg($pageGrouping, 'msg');
+                setUpdateMsg('<input type="submit" value="' . $_CORELANG['TXT_UPDATE_NEXT'] . '" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
+                setUpdateMsg($arrDialogData, 'dialog');
+                return false;
+            }
         }
     }
     
