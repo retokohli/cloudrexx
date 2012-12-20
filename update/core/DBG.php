@@ -201,7 +201,7 @@ class DBG
         self::disable_file();
         ob_start();
         if (!isset(self::$firephp)) {
-            require_once 'firephp/FirePHP.class.php';
+            require_once dirname(dirname(dirname(__FILE__))).'/lib/firephp/FirePHP.class.php';
             self::$firephp = FirePHP::getInstance(true);
         }
         self::$firephp->registerErrorHandler(false);
