@@ -1614,6 +1614,7 @@ define('CONTEXX_INSTALLED', true);
 \$_DBCONFIG['password'] = '{$_DBCONFIG['password']}'; // Database password
 \$_DBCONFIG['dbType'] = '{$_DBCONFIG['dbType']}';    // Database type (e.g. mysql,postgres ..)
 \$_DBCONFIG['charset'] = '{$dbCharset}'; // Charset (default, latin1, utf8, ..)
+\$_DBCONFIG['timezone'] = '{$_CONFIG['timezone']}'; // Timezone
 
 /**
 * -------------------------------------------------------------------------
@@ -1660,6 +1661,11 @@ define('CONTEXX_INSTALLED', true);
 * Set url rewriter tags
 */
 @ini_set('url_rewriter.tags', 'a=href,area=href,frame=src,iframe=src,input=src,form=,fieldset=');
+
+/**
+* Set timezone
+*/
+@ini_set('date.timezone', '{$_CONFIG['timezone']}');
 
 /**
 * -------------------------------------------------------------------------
