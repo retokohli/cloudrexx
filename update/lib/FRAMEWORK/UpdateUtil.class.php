@@ -557,6 +557,62 @@ class UpdateUtil
         }
     }
 
+    /**
+     * Replace certain data of a content page using regexp
+     *
+     * This method will do a preg_replace() on pages (filtered by $criteria) data specified by $subject using $pattern as PATTERN and $replacement as REPLACEMENT.
+     * Subject is either a string or an array referencing attributes of a page.
+     * The behaviour of $pattern and $replacement is exactly the same as implemented by preg_replace().
+     * $changeVersion specifies the Contrexx version in which the replacement
+     * should take place. Latter means that the replace will only be done if
+     * the installed Contrexx version is older than the one specified by
+     * $changeVersion.
+     *
+     * @global  ContrexxUpdate     $objUpdate
+     * @global  Array               $_CONFIG
+     * @param   Array               $criteria         Argument list to filter page objects. Will be passed to Cx\Model\ContentManager\Repository\PageRepository->findBy()
+     * @param   mixed               $pattern          The pattern to search for. It can be either a string or an array with strings.
+     * @param   mixed               $replacement      The string or an array with strings (pattern) to replace
+     * @param   mixed               $subject          A string or array containing the name of an attribute of the page object
+     * @param   string              $changeVersion    Contrexx version of the content page
+     */
+    public static function migrateContentPageUsingRegex($criteria, $pattern, $replacement, $subject, $changeVersion)
+    {
+        global $objUpdate, $_CONFIG;
+
+        if (!is_array($subject)) {
+            $subject = array($subject);
+        }
+
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $changeVersion)) {
+            $em = \Env::em();
+            $pages = $em->getRepository('Cx\Model\ContentManager\Page')->findBy($criteria, true);
+            foreach ($pages as $page) {
+                if ($page) {
+                    foreach ($subject as $pageAttribute) {
+                        try {
+                            // fetch attribute value
+                            $pageAttributeValue = call_user_func(array($page, "get".ucfirst($pageAttribute)));
+
+                            // apply replace on attribute
+                            $pageAttributeValue = preg_replace($pattern, $replacement, $pageAttributeValue);
+
+                            if ($pageAttributeValue !== null) {
+                                call_user_func(array($page, "set".ucfirst($pageAttribute)), $pageAttributeValue);
+                                $em->persist($page);
+                            }
+                        }
+                        catch (Exception $e) {
+                            \DBG::log("Migrating page failed: ".$e->getMessage());
+                            throw new UpdateException('Bei der Migration einer Inhaltsseite trat ein Fehler auf! '.$e->getMessage());
+                        }
+                    }
+                }
+            }
+            $em->flush();
+        }
+    }
+
     public static function DefaultActionHandler($e)
     {
         if ($e instanceof Update_DatabaseException) {

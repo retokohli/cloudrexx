@@ -11,7 +11,7 @@
  */
 
 // Debugging
-require_once dirname(__FILE__).'/core/DBG.php';
+require_once dirname(__FILE__).'/lib/FRAMEWORK/DBG/DBG.php';
 \DBG::deactivate();
 
 // Try to enable APC
@@ -49,7 +49,7 @@ if ($apcEnabled) {
 require_once(dirname(__FILE__).'/config/configuration.php');
 
 // Config files
-$incSettingsStatus = require_once(dirname(UPDATE_PATH) . '/config/settings.php');
+$incSettingsStatus = include_once(dirname(UPDATE_PATH) . '/config/settings.php');
 require_once(dirname(UPDATE_PATH) . '/config/configuration.php');
 // Contrexx 3.0.0+ do not have a version.php. The information is included in settings.php
 if (file_exists(ASCMS_DOCUMENT_ROOT . '/config/version.php')) {
