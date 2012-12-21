@@ -76,9 +76,9 @@ class ContentMigration
         }
         
         if (empty($_SESSION['contrexx_update']['tables_created'])) {
-            $this->db->Execute('DROP TABLE `' . DBPREFIX . 'content_page`');
-            $this->db->Execute('DROP TABLE `' . DBPREFIX . 'content_node`');
-            $this->db->Execute('DROP TABLE `' . DBPREFIX . 'log_entry`');
+            $this->db->Execute('DROP TABLE IF EXISTS `' . DBPREFIX . 'content_page`');
+            $this->db->Execute('DROP TABLE IF EXISTS `' . DBPREFIX . 'content_node`');
+            $this->db->Execute('DROP TABLE IF EXISTS `' . DBPREFIX . 'log_entry`');
             
             $this->db->Execute('
                 CREATE TABLE `' . DBPREFIX . 'content_node` (
@@ -268,13 +268,13 @@ class ContentMigration
                     switch ($objResult->fields['action']) {
                         case 'new':
                         case 'update':
-                            if (!isset($p[$objResult->fields['page_id']])) {
-                                $p[$objResult->fields['page_id']] = new \Cx\Model\ContentManager\Page();
+                            if (!isset($p[$catId])) {
+                                $p[$catId] = new \Cx\Model\ContentManager\Page();
                             }
-                            $page = $p[$objResult->fields['page_id']];
+                            $page = $p[$catId];
                             break;
                         case 'delete':
-                            self::$em->remove($p[$objResult->fields['page_id']]);
+                            self::$em->remove($p[$catId]);
                             $deleted = true;
                             break;
                     }                      
@@ -358,24 +358,6 @@ class ContentMigration
             }
         }
         
-        $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
-        //$nodeRepo->recover();
-        
-        // Drop old tables
-        /*if (empty($_SESSION['contrexx_udpate']['old_tables_dropped'])) {
-            $oldTablesDropped = $this->db->Execute('
-                DROP TABLE `' . DBPREFIX . 'content`;
-                DROP TABLE `' . DBPREFIX . 'content_history`;
-                DROP TABLE `' . DBPREFIX . 'content_logfile`;
-                DROP TABLE `' . DBPREFIX . 'content_navigation`;
-                DROP TABLE `' . DBPREFIX . 'content_navigation_history`;
-            ');
-            
-            if ($oldTablesDropped) {
-                $_SESSION['contrexx_udpate']['old_tables_dropped'] = true;
-            }
-        }*/
-        
         return true;
     }
     
@@ -439,7 +421,6 @@ class ContentMigration
     
     public function migrateAliases()
     {
-        // Migrate aliases
         $query = '
             SELECT `s`.`url` AS `slug`, `t`.`type`, `t`.`url` AS `target`
             FROM       `' . DBPREFIX . 'module_alias_source` AS `s`
@@ -484,6 +465,85 @@ class ContentMigration
         return true;
     }
     
+    public function migrateBlocks()
+    {
+        $this->db->Execute('
+            CREATE TABLE `contrexx_module_block_categories` (
+             `id` int(10) unsigned NOT NULL auto_increment,
+             `parent` int(10) NOT NULL default '0',
+             `name` varchar(255) NOT NULL default '',
+             `order` int(10) NOT NULL default '0',
+             `status` tinyint(1) NOT NULL default '1',
+              PRIMARY KEY (`id`)
+            ) ENGINE=MyISAM
+        ');
+        $this->db->Execute('
+            CREATE TABLE `contrexx_module_block_rel_lang_content` (
+             `block_id` int(10) unsigned NOT NULL default '0',
+             `lang_id` int(10) unsigned NOT NULL default '0',
+             `name` varchar(255) NOT NULL default '',
+             `content` mediumtext NOT NULL default '',
+             `active` int(1) NOT NULL default '0'
+            ) ENGINE=MyISAM
+        ');
+        $this->db->Execute('
+            INSERT INTO contrexx_module_block_rel_lang_content (`block_id`, `lang_id`, `name`, `content`, `active`) 
+            SELECT DISTINCT tblBlock.`id`, CL.`id`, tblBlock.`name`, tblBlock.`content`, 0
+              FROM `contrexx_languages` AS CL,
+                   `contrexx_module_block_blocks` AS tblBlock
+             WHERE CL.`frontend` = '1'
+             ORDER BY tblBlock.`id`
+        ');
+        $this->db->Execute('
+            UPDATE `contrexx_module_block_rel_lang_content` AS tblContent
+                INNER JOIN `contrexx_module_block_rel_lang` AS tblLang
+                        ON tblLang.`block_id` = tblContent.`block_id`
+                        AND tblLang.`lang_id` = tblContent.`lang_id`
+                SET `active` = 1
+        ');
+        $this->db->Execute('
+            UPDATE `contrexx_module_block_blocks` AS tblBlock 
+                SET tblBlock.`active` = 0
+                WHERE tblBlock.`id` NOT IN (
+                    SELECT `block_id` FROM `contrexx_module_block_rel_lang_content` WHERE `active` = 1
+                )
+        ');
+        $this->db->Execute('
+            UPDATE `contrexx_module_block_rel_lang_content` AS tblContent
+                SET tblContent.`active` = 1
+                WHERE tblContent.`block_id` NOT IN (
+                    SELECT c2.`block_id` FROM `contrexx_module_block_rel_lang_content` AS c2 WHERE c2.`active` = 1
+                )
+                AND tblContent.`lang_id` = (
+                    SELECT CL.`id` FROM `contrexx_languages` AS CL WHERE CL.`frontend` AND CL.`is_default` = \'true\'
+                )
+        ');
+        
+        //foreach () {
+            $this->db->Execute('
+                UPDATE `contrexx_module_block_blocks` AS tblBlock
+                    INNER JOIN `contrexx_module_block_rel_lang` AS tblLang
+                            ON tblLang.`block_id` = tblBlock.`id`
+                    SET tblBlock.`global` = If(tblLang.`all_pages` = 0,2,1)
+                    WHERE tblLang.`lang_id` = 1
+            ');
+        //}
+        
+        $this->db->Execute('
+            ALTER TABLE `contrexx_module_block_blocks`
+             DROP `content`,
+             ADD `start` int(10) NOT NULL default \'0\' AFTER `id`,
+             ADD `end` int(10) NOT NULL default \'0\' AFTER `start`,
+             ADD `random_4` int(1) NOT NULL default \'0\' AFTER `random_3`,
+             ADD  `cat` int(10) NOT NULL default \'0\' AFTER `order`
+        ');
+        $this->db->Execute('ALTER TABLE `contrexx_module_block_rel_pages` DROP `lang_id`');
+        $this->db->Execute('ALTER TABLE `contrexx_module_block_rel_lang_content` DROP `name`');
+        $this->db->Exetute('DROP TABLE `contrexx_module_block_rel_lang`');
+        
+        return true;
+    }
+    
     public function pageGrouping()
     {
         // Fetch all pages
@@ -501,13 +561,19 @@ class ContentMigration
         $arrSimilarPages = $_POST['similarPages'];
         $arrRemovePages  = $_POST['removePages'];
         $delInAcLangs    = $_POST['delInAcLangs'];
-        $i = 0;
+        
         if ($delInAcLangs) {
             $arrLanguages = \FWLanguage::getLanguageArray();
+            
             foreach ($arrLanguages as $arrLanguage) {
                 if (empty($arrLanguage['frontend'])) {
                     $pagesOfInAcLang = $pageRepo->findBy(array('lang' => $arrLanguage['id']), true);
                     foreach ($pagesOfInAcLang as $page) {
+                        $aliases = $page->getAliases();
+                        foreach ($aliases as $alias) {
+                            self::$em->remove($alias);
+                        }
+                        
                         $node = $page->getNode();
                         $countPagesOfThisNode = count($node->getPages(true));
                         
@@ -518,6 +584,8 @@ class ContentMigration
                         }
                     }
                 }
+                
+                self::$em->flush();
             }
         }
         
@@ -537,7 +605,15 @@ class ContentMigration
                     $formerNodeId = $page->getNode()->getId();
                     $nodeToRemove[] = $page->getNode()->getId();
                     $node = $nodeRepo->find($nodeId);
+                    
+                    $aliases = $page->getAliases();
+                    foreach ($aliases as $alias) {
+                        $alias->setTarget('[[NODE_' . $node->getId() . '_' . $page->getLang() . ']]');
+                        self::$em->persist($alias);
+                    }
+                    
                     $page->setNode($node);
+                    
                     self::$em->persist($node);
                 }
             }
@@ -545,24 +621,39 @@ class ContentMigration
 
         self::$em->flush();
 
-        // prevent the system from trying to remove the same node more than once
+        // Prevent the system from trying to remove the same node more than once
         $pageToRemove = array_unique($pageToRemove);
         foreach ($pageToRemove as $pageId) {
             $page = self::$em->getRepository('Cx\Model\ContentManager\Page')->find($pageId);
+            $aliases = $page->getAliases();
+            foreach ($aliases as $alias) {
+                self::$em->remove($alias);
+            }
             self::$em->remove($page);
         }
-// TODO: is this required? 
+        
         self::$em->flush();
         self::$em->clear();
 
         $nodeToRemove = array_unique($nodeToRemove);
+        $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
+        
         foreach ($nodeToRemove as $nodeId) {
-            $node = self::$em->getRepository('Cx\Model\ContentManager\Node')->find($nodeId);
-            self::$em->getRepository('Cx\Model\ContentManager\Node')->removeFromTree($node);
+            $node = $nodeRepo->find($nodeId);
+            $nodeRepo->removeFromTree($node);
 
-            // reset node cache - this is required for the tree to reload its new structure after a node had been removed
+            // Reset node cache - this is required for the tree to reload its new structure after a node had been removed
             self::$em->clear();
         }
+        
+        // Drop old tables
+        $this->db->Execute('DROP TABLE IF EXISTS `' . DBPREFIX . 'content`');
+        $this->db->Execute('DROP TABLE IF EXISTS `' . DBPREFIX . 'content_history`');
+        $this->db->Execute('DROP TABLE IF EXISTS `' . DBPREFIX . 'content_logfile`');
+        $this->db->Execute('DROP TABLE IF EXISTS `' . DBPREFIX . 'content_navigation`');
+        $this->db->Execute('DROP TABLE IF EXISTS `' . DBPREFIX . 'content_navigation_history`');
+        $this->db->Execute('DROP TABLE IF EXISTS `' . DBPREFIX . 'module_alias_source`');
+        $this->db->Execute('DROP TABLE IF EXISTS `' . DBPREFIX . 'module_alias_target`');
         
         return true;
     }
@@ -686,7 +777,7 @@ class ContentMigration
                 $grouped = $this->isGrouppedPage($arrSimilarPages, $pageId) ? ' grouped' : '';
                 
                 $spaces = '';
-                for ($i = 1; $i < $arrPage['level']; $i++) {
+                for ($i = 0; $i < $arrPage['level']; $i++) {
                     $spaces .= '&nbsp;&nbsp;';
                 }
                 
