@@ -459,22 +459,26 @@ function _updateModules()
 		return _databaseError($query, $objDatabase->ErrorMsg());
 	}
         
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'modules',
-            array(
-                'id'                         => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => false),
-                'name'                       => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'id'),
-                'distributor'                => array('type' => 'CHAR(50)', 'after' => 'name'),
-                'description_variable'       => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '', 'after' => 'distributor'),
-                'status'                     => array('type' => 'SET(\'y\',\'n\')', 'notnull' => true, 'default' => 'n', 'after' => 'description_variable'),
-                'is_required'                => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'status'),
-                'is_core'                    => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0', 'after' => 'is_required'),
-                'is_active'                  => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'is_core')
-            ),
-            array(
-                'id'                         => array('fields' => array('id'), 'type' => 'UNIQUE')
-            )
-        );
+        try {
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'modules',
+                array(
+                    'id'                         => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => false),
+                    'name'                       => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'id'),
+                    'distributor'                => array('type' => 'CHAR(50)', 'after' => 'name'),
+                    'description_variable'       => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '', 'after' => 'distributor'),
+                    'status'                     => array('type' => 'SET(\'y\',\'n\')', 'notnull' => true, 'default' => 'n', 'after' => 'description_variable'),
+                    'is_required'                => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'status'),
+                    'is_core'                    => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0', 'after' => 'is_required'),
+                    'is_active'                  => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'is_core')
+                ),
+                array(
+                    'id'                         => array('fields' => array('id'), 'type' => 'UNIQUE')
+                )
+            );
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
 
 	// add modules
 	foreach ($arrModules as $arrModule) {
