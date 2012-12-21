@@ -589,6 +589,7 @@ class UpdateUtil
             $pages = $em->getRepository('Cx\Model\ContentManager\Page')->findBy($criteria, true);
             foreach ($pages as $page) {
                 if ($page) {
+                    checkMemoryLimit();
                     foreach ($subject as $pageAttribute) {
                         try {
                             // fetch attribute value
@@ -602,7 +603,7 @@ class UpdateUtil
                                 $em->persist($page);
                             }
                         }
-                        catch (Exception $e) {
+                        catch (\Exception $e) {
                             \DBG::log("Migrating page failed: ".$e->getMessage());
                             throw new UpdateException('Bei der Migration einer Inhaltsseite trat ein Fehler auf! '.$e->getMessage());
                         }

@@ -338,7 +338,7 @@ function newsletter_migrate_country_field()
         if (!\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'module_newsletter_user', 'notes')) {
             \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_newsletter_user` ADD `notes` text NOT NULL');
         }
-        \Cx\Lib\UpdateUtil::sql('UPDATE TABLE `'.DBPREFIX.'module_newsletter_user` SET `notes` = `country_old`');
+        \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_newsletter_user` SET `notes` = `country_old`');
         // drop obsolete column country_old'
         \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_newsletter_user` DROP `country_old`');
     }
