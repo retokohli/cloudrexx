@@ -280,7 +280,7 @@ abstract class Uploader
         else
             $response = new UploadResponse();
        
-        $ret = call_user_func(array($this->callbackData[1],$this->callbackData[2]),$tempPath,$tempWebPath,$this->getData(), $this->uploadId, $fileInfos, &$response);
+        $ret = call_user_func(array($this->callbackData[1],$this->callbackData[2]),$tempPath,$tempWebPath,$this->getData(), $this->uploadId, $fileInfos, $response);
       
         //clean up session: we do no longer need the array with the original file names
         unset($_SESSION[$sessionKey]);
