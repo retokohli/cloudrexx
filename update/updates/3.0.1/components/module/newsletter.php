@@ -380,6 +380,17 @@ function _newsletterUpdate()
  */
 function newsletter_migrate_country_field()
 {
+/*
+TEST
+                $countryId = 0;
+$text = 'Switzerland';
+                $objText= \Cx\Lib\UpdateUtil::sql("SELECT `id` FROM `".DBPREFIX."core_text` WHERE `section` = 'core' AND `key` = 'core_country_name' AND `text` = '".contrexx_raw2db($text)."'");
+                if (!$objResult->EOF) {
+                    $countryId = $objText->fields['id'];
+                }
+\DBG::dump($countryId);
+return;
+*/
     ///////////////////////////
     // MIGRATE COUNTRY FIELD //
     ///////////////////////////
@@ -398,8 +409,11 @@ function newsletter_migrate_country_field()
         if ($objResult->RecordCount()) {
             while (!$objResult->EOF) {
                 // try setting country_id based on a guess from country_old
-// TODO: ask reto about Country::lookupCountry()
-                // $countryId = Country::lookupCountry($objResult->fields['country_old']);
+                $countryId = 0;
+                $objText= \Cx\Lib\UpdateUtil::sql("SELECT `id` FROM `".DBPREFIX."core_text` WHERE `section` = 'core' AND `key` = 'core_country_name' AND `text` = '".contrexx_raw2db($objResult->fields['country_old'])."'");
+                if (!$objResult->EOF) {
+                    $countryId = $objText->fields['id'];
+                }
                 \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_newsletter_user` SET `country_id` = \''.contrexx_raw2db($countryId).'\' WHERE `id` = '.$objResult->fields['id']);
                 checkTimeoutLimit();
                 $objResult->MoveNext();
