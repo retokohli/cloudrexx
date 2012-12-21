@@ -163,6 +163,7 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     }
 
 
+    $missedModules = array();
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         $missedModules = getMissedModules();
         $conflictedModules = getConflictedModules($missedModules);
