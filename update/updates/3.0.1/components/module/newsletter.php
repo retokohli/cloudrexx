@@ -328,7 +328,7 @@ function newsletter_migrate_country_field()
                 // try setting country_id based on a guess from country_old
 // TODO: ask reto about Country::lookupCountry()
                 // $countryId = Country::lookupCountry($objResult->fields['country_old']);
-                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'mdoule_newsletter_user` SET `country_id` = \''.contrexx_raw2db($countryId).'\' WHERE `id` = '.$objResult->fields['id']);
+                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_newsletter_user` SET `country_id` = \''.contrexx_raw2db($countryId).'\' WHERE `id` = '.$objResult->fields['id']);
                 checkTimeoutLimit();
                 $objResult->MoveNext();
             }

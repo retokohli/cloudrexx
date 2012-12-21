@@ -144,7 +144,7 @@ function _coreUpdate()
     /**********************************************
      *                                            *
      * MIGRATE BACKEND_AREAS TO NEW ACCESS SYSTEM *
-     * BUGFIX: Add UNIQUE key on access_id       *
+     * BUGFIX: Add UNIQUE key on access_id        *
      *                                            *
      *********************************************/
     try{
