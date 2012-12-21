@@ -1,7 +1,7 @@
 <?php
 function _statsUpdate()
 {
-	global $objDatabase, $_ARRAYLANG;
+	global $objDatabase, $objUpdate, $_CONFIG, $_ARRAYLANG;
 
 	// remove redundancies
 	if (!isset($_SESSION['contrexx_update']['update']['update_stats'])) {
@@ -191,40 +191,48 @@ function _statsUpdate()
 		return false;
 	}
 
-    try {
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'stats_search',
-            array(
-                'id'         => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'name'       => array('type' => 'VARCHAR(100)', 'binary' => true, 'default' => ''),
-                'count'      => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'sid'        => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => ''),
-                'external'   => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0')
-            ),
-            array(
-                'unique'     => array('fields' => array('name','external'), 'type' => 'UNIQUE')
-            )
-        );
+    // only execute this part for versions < 2.1.5
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.1.5')) {
+        try {
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'stats_search',
+                array(
+                    'id'         => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'name'       => array('type' => 'VARCHAR(100)', 'binary' => true, 'default' => ''),
+                    'count'      => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                    'sid'        => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => ''),
+                    'external'   => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0')
+                ),
+                array(
+                    'unique'     => array('fields' => array('name','external'), 'type' => 'UNIQUE')
+                )
+            );
 
-        //2.1.5: new field contrexx_stats_requests.pageTitle needs to be added and filled
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'stats_requests',
-            array(
-                  'id'             => array('type' => 'INT(9)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                  'timestamp'      => array('type' => 'INT(11)', 'default' => '0', 'notnull' => false, 'after' => 'id'),
-                  'pageId'         => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'timestamp'),
-                  'page'           => array('type' => 'VARCHAR(255)', 'after' => 'pageId', 'default' => '', 'binary' => true),
-                  'visits'         => array('type' => 'INT(9)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'page'),
-                  'sid'            => array('type' => 'VARCHAR(32)', 'after' => 'visits', 'default' => ''),
-                  'pageTitle'      => array('type' => 'VARCHAR(250)', 'after' => 'sid') //this field is added
-                  ),
-            array(
-                  'unique'         => array('fields' => array('page'), 'type' => 'UNIQUE')
-                  )
-        );
-        //fill pageTitle with current titles
-        \Cx\Lib\UpdateUtil::sql('UPDATE '.DBPREFIX.'stats_requests SET pageTitle = ( SELECT title FROM '.DBPREFIX.'content WHERE id=pageId ) WHERE EXISTS ( SELECT title FROM '.DBPREFIX.'content WHERE id=pageId )');
+            //2.1.5: new field contrexx_stats_requests.pageTitle needs to be added and filled
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'stats_requests',
+                array(
+                      'id'             => array('type' => 'INT(9)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                      'timestamp'      => array('type' => 'INT(11)', 'default' => '0', 'notnull' => false, 'after' => 'id'),
+                      'pageId'         => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'timestamp'),
+                      'page'           => array('type' => 'VARCHAR(255)', 'after' => 'pageId', 'default' => '', 'binary' => true),
+                      'visits'         => array('type' => 'INT(9)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'page'),
+                      'sid'            => array('type' => 'VARCHAR(32)', 'after' => 'visits', 'default' => ''),
+                      'pageTitle'      => array('type' => 'VARCHAR(250)', 'after' => 'sid') //this field is added
+                      ),
+                array(
+                      'unique'         => array('fields' => array('page'), 'type' => 'UNIQUE')
+                      )
+            );
+            //fill pageTitle with current titles
+            \Cx\Lib\UpdateUtil::sql('UPDATE '.DBPREFIX.'stats_requests SET pageTitle = ( SELECT title FROM '.DBPREFIX.'content WHERE id=pageId ) WHERE EXISTS ( SELECT title FROM '.DBPREFIX.'content WHERE id=pageId )');
+        }
+        catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    }
 		
+    try {
 		//2.2.0: new config option 'exclude_identifying_info'
 		\Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO '.DBPREFIX.'stats_config (id, name, value, status) VALUES (20, "exclude_identifying_info", 1, 0)');
 
