@@ -8,7 +8,6 @@ class ContentMigration
     public $langs;
     public $similarPages;
     public static $defaultLang;
-    protected $db;
     protected $nodeArr = array();
     protected $moduleNames = array();
     protected $availableFrontendLanguages = array();
@@ -16,8 +15,6 @@ class ContentMigration
     
     public function __construct()
     {
-        $this->db = \Env::get('db');
-        
         if (\DBG::getMode() & DBG_ADODB_TRACE) {
             \DBG::enable_adodb_debug(true);
         } elseif (\DBG::getMode() & DBG_ADODB || \DBG::getMode() & DBG_ADODB_ERROR) {
@@ -35,8 +32,13 @@ class ContentMigration
     private function initModuleNames()
     {
         $this->moduleNames = array();
-
-        $objModules = $this->db->Execute('SELECT `id`, `name` FROM `'.DBPREFIX.'modules`');
+        
+        try {
+            $objModules = \Cx\Lib\UpdateUtil::sql('SELECT `id`, `name` FROM `'.DBPREFIX.'modules`');
+        } catch (\Cx\Lib\UpdateException $e) {
+            \DBG::msg(\Cx\Lib\UpdateUtil::DefaultActionHandler($e));
+        }
+        
         while (!$objModules->EOF) {
             $this->moduleNames[$objModules->fields['id']] = $objModules->fields['name'];
             $objModules->MoveNext();
@@ -54,7 +56,7 @@ class ContentMigration
                 $objResult->MoveNext();
                 continue;
             }
-
+            
             //skip existing nodes
             if(isset($this->nodeArr[$catId])) {
                 $arrSortedNodes[] = $this->nodeArr[$catId];
@@ -76,88 +78,114 @@ class ContentMigration
         }
         
         if (empty($_SESSION['contrexx_update']['tables_created'])) {
-            $this->db->Execute('DROP TABLE IF EXISTS `' . DBPREFIX . 'content_page`');
-            $this->db->Execute('DROP TABLE IF EXISTS `' . DBPREFIX . 'content_node`');
-            $this->db->Execute('DROP TABLE IF EXISTS `' . DBPREFIX . 'log_entry`');
-            
-            $this->db->Execute('
-                CREATE TABLE `' . DBPREFIX . 'content_node` (
-                  `id` int(11) NOT NULL AUTO_INCREMENT,
-                  `parent_id` int(11) DEFAULT NULL,
-                  `lft` int(11) NOT NULL,
-                  `rgt` int(11) NOT NULL,
-                  `lvl` int(11) NOT NULL,
-                  PRIMARY KEY (`id`),
-                  KEY `IDX_E5A18FDD727ACA70` (`parent_id`)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
-            ');
-            $this->db->Execute('
-                CREATE TABLE `' . DBPREFIX . 'content_page` (
-                  `id` int(11) NOT NULL AUTO_INCREMENT,
-                  `node_id` int(11) DEFAULT NULL,
-                  `nodeIdShadowed` int(11) DEFAULT NULL,
-                  `lang` int(11) NOT NULL,
-                  `type` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
-                  `caching` tinyint(1) NOT NULL,
-                  `updatedAt` timestamp NULL DEFAULT NULL,
-                  `updatedBy` char(40) COLLATE utf8_unicode_ci NOT NULL,
-                  `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-                  `linkTarget` varchar(16) COLLATE utf8_unicode_ci DEFAULT NULL,
-                  `contentTitle` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-                  `slug` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-                  `content` longtext COLLATE utf8_unicode_ci NOT NULL,
-                  `sourceMode` tinyint(1) NOT NULL DEFAULT \'0\',
-                  `customContent` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
-                  `cssName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-                  `cssNavName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-                  `skin` int(11) DEFAULT NULL,
-                  `metatitle` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-                  `metadesc` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-                  `metakeys` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-                  `metarobots` varchar(7) COLLATE utf8_unicode_ci DEFAULT NULL,
-                  `start` timestamp NULL DEFAULT NULL,
-                  `end` timestamp NULL DEFAULT NULL,
-                  `editingStatus` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
-                  `protection` int(11) NOT NULL,
-                  `frontendAccessId` int(11) NOT NULL,
-                  `backendAccessId` int(11) NOT NULL,
-                  `display` tinyint(1) NOT NULL,
-                  `active` tinyint(1) NOT NULL,
-                  `target` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-                  `module` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-                  `cmd` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT \'\',
-                  PRIMARY KEY (`id`),
-                  UNIQUE KEY `node_id` (`node_id`,`lang`),
-                  KEY `IDX_D8E86F54460D9FD7` (`node_id`)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
-            ');
-            $this->db->Execute('
-                CREATE TABLE `' . DBPREFIX . 'log_entry` (
-                  `id` int(11) NOT NULL AUTO_INCREMENT,
-                  `action` varchar(8) COLLATE utf8_unicode_ci NOT NULL,
-                  `logged_at` timestamp NULL DEFAULT NULL,
-                  `version` int(11) NOT NULL,
-                  `object_id` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
-                  `object_class` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-                  `data` longtext COLLATE utf8_unicode_ci,
-                  `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-                  PRIMARY KEY (`id`),
-                  UNIQUE KEY `log_class_unique_version_idx` (`version`,`object_id`,`object_class`),
-                  KEY `log_class_lookup_idx` (`object_class`),
-                  KEY `log_date_lookup_idx` (`logged_at`),
-                  KEY `log_user_lookup_idx` (`username`)
-                ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
-            ');
-            
-            $this->db->Execute('
-                ALTER TABLE `' . DBPREFIX . 'content_node`
-                ADD CONSTRAINT FOREIGN KEY (`parent_id`) REFERENCES `' . DBPREFIX . 'content_node` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-            ');
-            
-            $this->db->Execute('
-                ALTER TABLE `' . DBPREFIX . 'content_page`
-                ADD CONSTRAINT FOREIGN KEY (`node_id`) REFERENCES `' . DBPREFIX . 'content_node` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-            ');
+            try {
+                \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'content_page');
+                \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'content_node');
+                \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'log_entry');
+                
+                \Cx\Lib\UpdateUtil::table(
+                    DBPREFIX . 'content_node',
+                    array(
+                        'id'                                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                        'parent_id'                          => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'id'),
+                        'lft'                                => array('type' => 'INT(11)', 'after' => 'parent_id'),
+                        'rgt'                                => array('type' => 'INT(11)', 'after' => 'lft'),
+                        'lvl'                                => array('type' => 'INT(11)', 'after' => 'rgt')
+                    ),
+                    array(
+                        'IDX_E5A18FDD727ACA70'               => array('fields' => array('parent_id'))
+                    ),
+                    'InnoDB'
+                );
+                
+                \Cx\Lib\UpdateUtil::table(
+                    DBPREFIX . 'content_page',
+                    array(
+                        'id'                                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                        'node_id'                            => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'id'),
+                        'nodeIdShadowed'                     => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'node_id'),
+                        'lang'                               => array('type' => 'INT(11)', 'after' => 'nodeIdShadowed'),
+                        'type'                               => array('type' => 'VARCHAR(16)', 'after' => 'lang'),
+                        'caching'                            => array('type' => 'TINYINT(1)', 'after' => 'type'),
+                        'updatedAt'                          => array('type' => 'timestamp', 'after' => 'caching'),
+                        'updatedBy'                          => array('type' => 'CHAR(40)', 'after' => 'updatedAt'),
+                        'title'                              => array('type' => 'VARCHAR(255)', 'after' => 'updatedBy'),
+                        'linkTarget'                         => array('type' => 'VARCHAR(16)', 'notnull' => false, 'after' => 'title'),
+                        'contentTitle'                       => array('type' => 'VARCHAR(255)', 'after' => 'linkTarget'),
+                        'slug'                               => array('type' => 'VARCHAR(255)', 'after' => 'contentTitle'),
+                        'content'                            => array('type' => 'longtext', 'after' => 'slug'),
+                        'sourceMode'                         => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'content'),
+                        'customContent'                      => array('type' => 'VARCHAR(64)', 'notnull' => false, 'after' => 'sourceMode'),
+                        'cssName'                            => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'customContent'),
+                        'cssNavName'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'cssName'),
+                        'skin'                               => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'cssNavName'),
+                        'metatitle'                          => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'skin'),
+                        'metadesc'                           => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'metatitle'),
+                        'metakeys'                           => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'metadesc'),
+                        'metarobots'                         => array('type' => 'VARCHAR(7)', 'notnull' => false, 'after' => 'metakeys'),
+                        'start'                              => array('type' => 'timestamp', 'after' => 'metarobots'),
+                        'end'                                => array('type' => 'timestamp', 'after' => 'start'),
+                        'editingStatus'                      => array('type' => 'VARCHAR(16)', 'after' => 'end'),
+                        'protection'                         => array('type' => 'INT(11)', 'after' => 'editingStatus'),
+                        'frontendAccessId'                   => array('type' => 'INT(11)', 'after' => 'protection'),
+                        'backendAccessId'                    => array('type' => 'INT(11)', 'after' => 'frontendAccessId'),
+                        'display'                            => array('type' => 'TINYINT(1)', 'after' => 'backendAccessId'),
+                        'active'                             => array('type' => 'TINYINT(1)', 'after' => 'display'),
+                        'target'                             => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'active'),
+                        'module'                             => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'target'),
+                        'cmd'                                => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '', 'after' => 'module')
+                    ),
+                    array(
+                        'node_id'                            => array('fields' => array('node_id','lang'), 'type' => 'UNIQUE'),
+                        'IDX_D8E86F54460D9FD7'               => array('fields' => array('node_id'))
+                    ),
+                    'InnoDB'
+                );
+                
+                \Cx\Lib\UpdateUtil::table(
+                    DBPREFIX . 'log_entry',
+                    array(
+                        'id'                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                        'action'             => array('type' => 'VARCHAR(8)', 'after' => 'id'),
+                        'logged_at'          => array('type' => 'timestamp', 'after' => 'action'),
+                        'version'            => array('type' => 'INT(11)', 'after' => 'logged_at'),
+                        'object_id'          => array('type' => 'VARCHAR(32)', 'notnull' => false, 'after' => 'version'),
+                        'object_class'       => array('type' => 'VARCHAR(255)', 'after' => 'object_id'),
+                        'data'               => array('type' => 'longtext', 'after' => 'object_class'),
+                        'username'           => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'data')
+                    ),
+                    array(
+                        'log_class_unique_version_idx' => array('fields' => array('version','object_id','object_class'), 'type' => 'UNIQUE'),
+                        'log_class_lookup_idx' => array('fields' => array('object_class')),
+                        'log_date_lookup_idx' => array('fields' => array('logged_at')),
+                        'log_user_lookup_idx' => array('fields' => array('username'))
+                    ),
+                    'InnoDB'
+                );
+                
+                $objResult = \Cx\Lib\UpdateUtil::sql('SHOW CREATE TABLE `' . DBPREFIX . 'content_page`');
+                if (!empty($objResult->fields['Create Table'])) {
+                    $constraintExists = strpos(strtolower($objResult->fields['Create Table']), 'constraint') !== false;
+                } else {
+                    $constraintExists = false;
+                }
+                if (!$constraintExists) {
+                    \Cx\Lib\UpdateUtil::sql('ALTER TABLE `' . DBPREFIX . 'content_node` ADD CONSTRAINT FOREIGN KEY (`parent_id`) REFERENCES `' . DBPREFIX . 'content_node` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION');
+                }
+                
+                $objResult = \Cx\Lib\UpdateUtil::sql('SHOW CREATE TABLE `' . DBPREFIX . 'content_node`');
+                if (!empty($objResult->fields['Create Table'])) {
+                    $constraintExists = strpos(strtolower($objResult->fields['Create Table']), 'constraint') !== false;
+                } else {
+                    $constraintExists = false;
+                }
+                if (!$constraintExists) {
+                    \Cx\Lib\UpdateUtil::sql('ALTER TABLE `' . DBPREFIX . 'content_page` ADD CONSTRAINT FOREIGN KEY (`node_id`) REFERENCES `' . DBPREFIX . 'content_node` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION');
+                }
+            } catch (\Cx\Lib\UpdateException $e) {
+                \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+                return false;
+            }
             
             $_SESSION['contrexx_update']['tables_created'] = true;
             if (!checkMemoryLimit() || !checkTimeoutLimit()) {
@@ -169,20 +197,30 @@ class ContentMigration
         
         $this->nodeArr = array ();
         
-        // this will be the root of the site-tree
-        $root = new \Cx\Model\ContentManager\Node();
-        self::$em->persist($root);
+        if (empty($_SESSION['contrexx_update']['root_node_saved'])) {
+            // this will be the root of the site-tree
+            $root = new \Cx\Model\ContentManager\Node();
+            self::$em->persist($root);
+            self::$em->flush();
+            $_SESSION['contrexx_update']['root_node_saved'] = true;
+        } else {
+            $nodes = self::$em->getRepository('Cx\Model\ContentManager\Node')->findAll();
+            $root  = $nodes[0];
+        }
         
         // Due to a bug in the old content manager, there happened to exist ghost-pages
         // that were never visible, neither in the frontend, nor in the backend.
         // Therefore, we'll need a list of these ghost-pages so that we won't migrate them.
         // (because those ghost-pages would probably break the new site-tree)
         $visiblePageIDs = $this->getVisiblePageIDs();
+        if ($visiblePageIDs === false) {
+            return false;
+        }
         
-        if (empty($_SESSION['contrexx_update']['nodes_added'])) {
-            // Fetch a list of all pages that have ever existed or still do.
-            // (sql-note: join content tables to prevent to migrate body-less pages)
-            $objNodeResult = $this->db->Execute('
+        // Fetch a list of all pages that have ever existed or still do.
+        // (sql-note: join content tables to prevent to migrate body-less pages)
+        try {
+            $objNodeResult = \Cx\Lib\UpdateUtil::sql('
                     SELECT `catid`, `parcat`, `lang`, `displayorder`
                       FROM `'.DBPREFIX.'content_navigation_history` AS tnh
                 INNER JOIN `'.DBPREFIX.'content_history` AS tch
@@ -194,10 +232,16 @@ class ContentMigration
                         ON tc.`id` = tn.`catid`
                   ORDER BY `parcat`, `displayorder`, `lang` ASC
             ');
-            
-            // Create a node for each page that ever existed or still does
-            // and put them in the array $this->nodeArr
-            $arrSortedNodes = $this->getSortedNodes($objNodeResult, $visiblePageIDs);
+        } catch (\Cx\Lib\UpdateException $e) {
+            \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+            return false;
+        }
+        
+        // Create a node for each page that ever existed or still does
+        // and put them in the array $this->nodeArr
+        $arrSortedNodes = $this->getSortedNodes($objNodeResult, $visiblePageIDs);
+        
+        if (empty($_SESSION['contrexx_update']['nodes_added'])) {
             foreach ($arrSortedNodes as $node) {
                 self::$em->persist($node);
             }
@@ -214,20 +258,25 @@ class ContentMigration
         
         if (empty($_SESSION['contrexx_update']['history_pages_added'])) {
             // 1ST: MIGRATE PAGES FROM HISTORY
-            $objResult = $this->db->Execute('
-                SELECT
-                    cn.page_id, cn.content, cn.title, cn.metatitle, cn.metadesc, cn.metakeys, cn.metarobots, cn.css_name, cn.redirect, cn.expertmode,
-                    nav.catid, nav.parcat, nav.catname, nav.target, nav.displayorder, nav.displaystatus, nav.activestatus,
-                    nav.cachingstatus, nav.username, nav.changelog, nav.cmd, nav.lang, nav.module, nav.startdate, nav.enddate, nav.protected,
-                    nav.frontend_access_id, nav.backend_access_id, nav.themes_id, nav.css_name AS css_nav_name, nav.custom_content,
-                    cnlog.action, cnlog.history_id, cnlog.is_validated
-                FROM       `' . DBPREFIX . 'content_history` AS cn
-                INNER JOIN `' . DBPREFIX . 'content_navigation_history` AS nav
-                ON         cn.id = nav.id
-                INNER JOIN `' . DBPREFIX . 'content_logfile` AS cnlog
-                ON         cn.id = cnlog.history_id ORDER BY cnlog.id ASC
-            ');
-           
+            try {
+                $objResult = \Cx\Lib\UpdateUtil::sql('
+                    SELECT
+                        cn.page_id, cn.content, cn.title, cn.metatitle, cn.metadesc, cn.metakeys, cn.metarobots, cn.css_name, cn.redirect, cn.expertmode,
+                        nav.catid, nav.parcat, nav.catname, nav.target, nav.displayorder, nav.displaystatus, nav.activestatus,
+                        nav.cachingstatus, nav.username, nav.changelog, nav.cmd, nav.lang, nav.module, nav.startdate, nav.enddate, nav.protected,
+                        nav.frontend_access_id, nav.backend_access_id, nav.themes_id, nav.css_name AS css_nav_name, nav.custom_content,
+                        cnlog.action, cnlog.history_id, cnlog.is_validated
+                    FROM       `' . DBPREFIX . 'content_history` AS cn
+                    INNER JOIN `' . DBPREFIX . 'content_navigation_history` AS nav
+                    ON         cn.id = nav.id
+                    INNER JOIN `' . DBPREFIX . 'content_logfile` AS cnlog
+                    ON         cn.id = cnlog.history_id ORDER BY cnlog.id ASC
+                ');
+            } catch (\Cx\Lib\UpdateException $e) {
+                \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+                return false;
+            }
+            
             // Migrate history
             if ($objResult !== false) {
                 while (!$objResult->EOF) {
@@ -294,17 +343,22 @@ class ContentMigration
         
         if (empty($_SESSION['contrexx_update']['pages_added'])) {
             // 2ND: MIGRATE CURRENT CONTENT
-            $objRecords = $this->db->Execute('
-                SELECT cn.id, cn.content, cn.title, cn.metatitle, cn.metadesc, cn.metakeys, cn.metarobots, cn.css_name, cn.redirect, cn.expertmode,
-                       nav.catid, nav.parcat, nav.catname, nav.target, nav.displayorder, nav.displaystatus, nav.activestatus,
-                       nav.cachingstatus, nav.username, nav.changelog, nav.cmd, nav.lang, nav.module, nav.startdate, nav.enddate, nav.protected,
-                       nav.frontend_access_id, nav.backend_access_id, nav.themes_id, nav.css_name AS css_nav_name, nav.custom_content
-                FROM       `'.DBPREFIX.'content` AS cn
-                INNER JOIN `'.DBPREFIX.'content_navigation` AS nav
-                ON         cn.id = nav.catid
-                WHERE      cn.id
-                ORDER BY   nav.parcat ASC, nav.displayorder DESC
-            ');
+            try {
+                $objRecords = \Cx\Lib\UpdateUtil::sql('
+                    SELECT cn.id, cn.content, cn.title, cn.metatitle, cn.metadesc, cn.metakeys, cn.metarobots, cn.css_name, cn.redirect, cn.expertmode,
+                           nav.catid, nav.parcat, nav.catname, nav.target, nav.displayorder, nav.displaystatus, nav.activestatus,
+                           nav.cachingstatus, nav.username, nav.changelog, nav.cmd, nav.lang, nav.module, nav.startdate, nav.enddate, nav.protected,
+                           nav.frontend_access_id, nav.backend_access_id, nav.themes_id, nav.css_name AS css_nav_name, nav.custom_content
+                    FROM       `' . DBPREFIX . 'content` AS cn
+                    INNER JOIN `' . DBPREFIX . 'content_navigation` AS nav
+                    ON         cn.id = nav.catid
+                    WHERE      cn.id
+                    ORDER BY   nav.parcat ASC, nav.displayorder DESC
+                ');
+            } catch (\Cx\Lib\UpdateException $e) {
+                \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+                return false;
+            }
             
             if ($objRecords !== false) {
                 while (!$objRecords->EOF) {
@@ -312,42 +366,40 @@ class ContentMigration
                         return false;
                     }
                     
-                    $catid = $objRecords->fields['catid'];
+                    $catId = $objRecords->fields['catid'];
                     
                     // Skip ghosts
-                    if(!in_array($catid, $visiblePageIDs)) {
+                    if(!in_array($catId, $visiblePageIDs)) {
                         $objRecords->MoveNext();
                         continue;
                     }
         
-                    $debugMsg = "Migrate page ID $catid - {$objRecords->fields['catname']} (m: {$this->moduleNames[$objRecords->fields['module']]}, c: {$objRecords->fields['cmd']})";
-        
-                    if (!isset($this->nodeArr[$catid])) {
-                        setUpdateMsg('Trying to migrate non-existing node: id ' . $catid);
+                    if (!isset($this->nodeArr[$catId])) {
+                        setUpdateMsg('Trying to migrate non-existing node: id ' . $catId);
                         return false;
                     }
         
-                    $node = $this->nodeArr[$catid];
+                    $node = $this->nodeArr[$catId];
         
                     if ($objRecords->fields['parcat'] == 0) {
                         // Page was located on the first level in the site-tree.
                         // Therefore, directly attach it to the ROOT-node
                         //$node->setParent($root);
-                        $this->nodeArr[$catid]->setParent($root);
+                        $this->nodeArr[$catId]->setParent($root);
                     } else {
                         // Attach page to associated parent node
                         //$node->setParent($this->nodeArr[$objRecords->fields['parcat']]);
-                        $this->nodeArr[$catid]->setParent($this->nodeArr[$objRecords->fields['parcat']]);
+                        $this->nodeArr[$catId]->setParent($this->nodeArr[$objRecords->fields['parcat']]);
                     }
         
                     // set page data
-                    if (!isset($p[$catid])) {
-                        $p[$catid] = new \Cx\Model\ContentManager\Page();
+                    if (!isset($p[$catId])) {
+                        $p[$catId] = new \Cx\Model\ContentManager\Page();
                     }
-                    $page = $p[$catid];
+                    $page = $p[$catId];
         
-                    $this->_setPageRecords($objRecords, $this->nodeArr[$catid], $page);
-                    $page->setAlias(array('legacy_page_' . $catid));
+                    $this->_setPageRecords($objRecords, $this->nodeArr[$catId], $page);
+                    $page->setAlias(array('legacy_page_' . $catId));
                     
                     self::$em->persist($page);
                     $objRecords->MoveNext();
@@ -421,13 +473,17 @@ class ContentMigration
     
     public function migrateAliases()
     {
-        $query = '
-            SELECT `s`.`url` AS `slug`, `t`.`type`, `t`.`url` AS `target`
-            FROM       `' . DBPREFIX . 'module_alias_source` AS `s`
-            INNER JOIN `' . DBPREFIX . 'module_alias_target` AS `t`
-            ON `s`.`target_id` = `t`.`id`
-        ';
-        $objResult = $this->db->Execute($query);
+        try {
+            $objResult = \Cx\Lib\UpdateUtil::sql('
+                SELECT `s`.`url` AS `slug`, `t`.`type`, `t`.`url` AS `target`
+                FROM       `' . DBPREFIX . 'module_alias_source` AS `s`
+                INNER JOIN `' . DBPREFIX . 'module_alias_target` AS `t`
+                ON `s`.`target_id` = `t`.`id`
+            ');
+        } catch (\Cx\Lib\UpdateException $e) {
+            \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+            return false;
+        }
         
         $arrAliases = array();
         if ($objResult !== false) {
@@ -467,79 +523,106 @@ class ContentMigration
     
     public function migrateBlocks()
     {
-        $this->db->Execute('
-            CREATE TABLE `contrexx_module_block_categories` (
-             `id` int(10) unsigned NOT NULL auto_increment,
-             `parent` int(10) NOT NULL default \'0\',
-             `name` varchar(255) NOT NULL default \'\',
-             `order` int(10) NOT NULL default \'0\',
-             `status` tinyint(1) NOT NULL default \'1\',
-              PRIMARY KEY (`id`)
-            ) ENGINE=MyISAM
-        ');
-        $this->db->Execute('
-            CREATE TABLE `contrexx_module_block_rel_lang_content` (
-             `block_id` int(10) unsigned NOT NULL default \'0\',
-             `lang_id` int(10) unsigned NOT NULL default \'0\',
-             `name` varchar(255) NOT NULL default \'\',
-             `content` mediumtext NOT NULL default \'\',
-             `active` int(1) NOT NULL default \'0\'
-            ) ENGINE=MyISAM
-        ');
-        $this->db->Execute('
-            INSERT INTO contrexx_module_block_rel_lang_content (`block_id`, `lang_id`, `name`, `content`, `active`) 
-            SELECT DISTINCT tblBlock.`id`, CL.`id`, tblBlock.`name`, tblBlock.`content`, 0
-              FROM `contrexx_languages` AS CL,
-                   `contrexx_module_block_blocks` AS tblBlock
-             WHERE CL.`frontend` = \'1\'
-             ORDER BY tblBlock.`id`
-        ');
-        $this->db->Execute('
-            UPDATE `contrexx_module_block_rel_lang_content` AS tblContent
-                INNER JOIN `contrexx_module_block_rel_lang` AS tblLang
-                        ON tblLang.`block_id` = tblContent.`block_id`
-                        AND tblLang.`lang_id` = tblContent.`lang_id`
+        global $_ARRAYLANG;
+        
+        try {
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX . 'module_block_categories',
+                array(
+                    'id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'parent'     => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
+                    'name'       => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'parent'),
+                    'order'      => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'name'),
+                    'status'     => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'order')
+                )
+            );
+            
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX . 'module_block_rel_lang_content',
+                array(
+                    'block_id'       => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                    'lang_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'block_id'),
+                    'content'        => array('type' => 'mediumtext', 'after' => 'lang_id'),
+                    'active'         => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'content')
+                )
+            );
+            
+            \Cx\Lib\UpdateUtil::sql('
+                INSERT INTO `' . DBPREFIX . 'module_block_rel_lang_content` (`block_id`, `lang_id`, `name`, `content`, `active`) 
+                SELECT DISTINCT tblBlock.`id`, CL.`id`, tblBlock.`name`, tblBlock.`content`, 0
+                FROM `' . DBPREFIX . 'languages` AS CL, `' . DBPREFIX . 'module_block_blocks` AS tblBlock
+                WHERE CL.`frontend` = \'1\'
+                ORDER BY tblBlock.`id`
+                ON DUPLICATE KEY UPDATE `id` = `id`
+            ');
+            
+            \Cx\Lib\UpdateUtil::sql('
+                UPDATE `' . DBPREFIX . 'module_block_rel_lang_content` AS tblContent
+                INNER JOIN `' . DBPREFIX . 'module_block_rel_lang` AS tblLang
+                ON tblLang.`block_id` = tblContent.`block_id`
+                AND tblLang.`lang_id` = tblContent.`lang_id`
                 SET `active` = 1
-        ');
-        $this->db->Execute('
-            UPDATE `contrexx_module_block_blocks` AS tblBlock 
+            ');
+            
+            \Cx\Lib\UpdateUtil::sql('
+                UPDATE `' . DBPREFIX . 'module_block_blocks` AS tblBlock 
                 SET tblBlock.`active` = 0
                 WHERE tblBlock.`id` NOT IN (
-                    SELECT `block_id` FROM `contrexx_module_block_rel_lang_content` WHERE `active` = 1
+                    SELECT `block_id` FROM `' . DBPREFIX . 'module_block_rel_lang_content` WHERE `active` = 1
                 )
-        ');
-        $this->db->Execute('
-            UPDATE `contrexx_module_block_rel_lang_content` AS tblContent
+            ');
+            
+            \Cx\Lib\UpdateUtil::sql('
+                UPDATE `' . DBPREFIX . 'module_block_rel_lang_content` AS tblContent
                 SET tblContent.`active` = 1
                 WHERE tblContent.`block_id` NOT IN (
-                    SELECT c2.`block_id` FROM `contrexx_module_block_rel_lang_content` AS c2 WHERE c2.`active` = 1
+                    SELECT c2.`block_id` FROM `' . DBPREFIX . 'module_block_rel_lang_content` AS c2 WHERE c2.`active` = 1
                 )
                 AND tblContent.`lang_id` = (
-                    SELECT CL.`id` FROM `contrexx_languages` AS CL WHERE CL.`frontend` AND CL.`is_default` = \'true\'
+                    SELECT CL.`id` FROM `' . DBPREFIX . 'languages` AS CL WHERE CL.`frontend` AND CL.`is_default` = \'true\'
                 )
-        ');
-        
-        //foreach () {
-            $this->db->Execute('
-                UPDATE `contrexx_module_block_blocks` AS tblBlock
-                    INNER JOIN `contrexx_module_block_rel_lang` AS tblLang
-                            ON tblLang.`block_id` = tblBlock.`id`
-                    SET tblBlock.`global` = If(tblLang.`all_pages` = 0,2,1)
-                    WHERE tblLang.`lang_id` = 1
             ');
-        //}
-        
-        $this->db->Execute('
-            ALTER TABLE `contrexx_module_block_blocks`
-             DROP `content`,
-             ADD `start` int(10) NOT NULL default \'0\' AFTER `id`,
-             ADD `end` int(10) NOT NULL default \'0\' AFTER `start`,
-             ADD `random_4` int(1) NOT NULL default \'0\' AFTER `random_3`,
-             ADD  `cat` int(10) NOT NULL default \'0\' AFTER `order`
-        ');
-        $this->db->Execute('ALTER TABLE `contrexx_module_block_rel_pages` DROP `lang_id`');
-        $this->db->Execute('ALTER TABLE `contrexx_module_block_rel_lang_content` DROP `name`');
-        $this->db->Exetute('DROP TABLE `contrexx_module_block_rel_lang`');
+            
+            $arrLangIds = array_keys(\FWLanguage::getLanguageArray());
+            foreach ($arrLangIds as $langId) {
+                \Cx\Lib\UpdateUtil::sql('
+                    UPDATE `' . DBPREFIX . 'module_block_blocks` AS tblBlock
+                    INNER JOIN `' . DBPREFIX . 'module_block_rel_lang` AS tblLang
+                    ON tblLang.`block_id` = tblBlock.`id`
+                    SET tblBlock.`global` = If(tblLang.`all_pages` = 0,2,1)
+                    WHERE tblLang.`lang_id` = ' . $langId . '
+                ');
+            }
+            
+            if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX . 'module_block_blocks`', 'content')) {
+                \Cx\Lib\UpdateUtil::sql('ALTER TABLE `' . DBPREFIX . 'module_block_blocks` DROP `content`');
+            }
+            if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX . 'module_block_blocks`', 'start')) {
+                \Cx\Lib\UpdateUtil::sql('ALTER TABLE `' . DBPREFIX . 'module_block_blocks` ADD `start` int(10) NOT NULL default \'0\' AFTER `id`');
+            }
+            if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX . 'module_block_blocks`', 'end')) {
+                \Cx\Lib\UpdateUtil::sql('ALTER TABLE `' . DBPREFIX . 'module_block_blocks` ADD `end` int(10) NOT NULL default \'0\' AFTER `start`');
+            }
+            if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX . 'module_block_blocks`', 'random_4')) {
+                \Cx\Lib\UpdateUtil::sql('ALTER TABLE `' . DBPREFIX . 'module_block_blocks` ADD `random_4` int(1) NOT NULL default \'0\' AFTER `random_3`');
+            }
+            if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX . 'module_block_blocks`', 'cat')) {
+                \Cx\Lib\UpdateUtil::sql('ALTER TABLE `' . DBPREFIX . 'module_block_blocks` ADD `cat` int(10) NOT NULL default \'0\' AFTER `order`');
+            }
+            
+            if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX . 'module_block_rel_pages`', 'lang_id')) {
+                \Cx\Lib\UpdateUtil::sql('ALTER TABLE `' . DBPREFIX . 'module_block_rel_pages` DROP `lang_id`');
+            }
+            
+            if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX . 'module_block_rel_lang_content`', 'name')) {
+                \Cx\Lib\UpdateUtil::sql('ALTER TABLE `' . DBPREFIX . 'module_block_rel_lang_content` DROP `name`');
+            }
+            
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'module_block_rel_lang`');
+        } catch (\Cx\Lib\UpdateException $e) {
+            \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+            return false;
+        }
         
         return true;
     }
@@ -647,13 +730,18 @@ class ContentMigration
         }
         
         // Drop old tables
-        $this->db->Execute('DROP TABLE IF EXISTS `' . DBPREFIX . 'content`');
-        $this->db->Execute('DROP TABLE IF EXISTS `' . DBPREFIX . 'content_history`');
-        $this->db->Execute('DROP TABLE IF EXISTS `' . DBPREFIX . 'content_logfile`');
-        $this->db->Execute('DROP TABLE IF EXISTS `' . DBPREFIX . 'content_navigation`');
-        $this->db->Execute('DROP TABLE IF EXISTS `' . DBPREFIX . 'content_navigation_history`');
-        $this->db->Execute('DROP TABLE IF EXISTS `' . DBPREFIX . 'module_alias_source`');
-        $this->db->Execute('DROP TABLE IF EXISTS `' . DBPREFIX . 'module_alias_target`');
+        try {
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'content');
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'content_history');
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'content_logfile');
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'content_navigation');
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'content_navigation_history');
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'module_alias_source');
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'module_alias_target');
+        } catch (\Cx\Lib\UpdateException $e) {
+            \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+            return false;
+        }
         
         return true;
     }
@@ -823,13 +911,20 @@ class ContentMigration
       the ids of all 'non-lost' pages are then returned.
      */
     function getVisiblePageIDs() {
-        $query = "SELECT lang FROM ".DBPREFIX."content_navigation GROUP BY lang";
-        $result = $this->db->Execute($query);
-
-
+        try {
+            $result = \Cx\Lib\UpdateUtil::sql('SELECT lang FROM ' . DBPREFIX . 'content_navigation GROUP BY lang');
+        } catch (\Cx\Lib\UpdateException $e) {
+            \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+            return false;
+        }
+        
         $pageIds = array();
         while(!$result->EOF) {
-            $pageIds = array_merge($pageIds, $this->getVisiblePageIDsForLang($result->fields['lang']));
+            $visiblePageIDsForLang = $this->getVisiblePageIDsForLang($result->fields['lang']);
+            if ($visiblePageIDsForLang === false) {
+                return false;
+            }
+            $pageIds = array_merge($pageIds, $visiblePageIDsForLang);
             $result->MoveNext();
         }
 
@@ -842,20 +937,21 @@ class ContentMigration
 
     function getVisiblePageIDsForLang($lang)
     {
-        $query = "SELECT
-                         n.lang,
+        try {
+            $objResult = \Cx\Lib\UpdateUtil::sql('
+                SELECT   n.lang,
                          n.catid AS catid,
                          n.displayorder AS displayorder,
                          n.parcat AS parcat
-                    FROM ".DBPREFIX."content_navigation AS n
-                   WHERE n.lang = $lang 
-                ORDER BY n.parcat ASC, n.displayorder ASC";
-
-        $objResult = $this->db->Execute($query);
-        if ($objResult === false) {
-            //problem.
+                    FROM ' . DBPREFIX . 'content_navigation AS n
+                   WHERE n.lang = ' . $lang . '
+                ORDER BY n.parcat ASC, n.displayorder ASC
+            ');
+        } catch (\Cx\Lib\UpdateException $e) {
+            \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+            return false;
         }
-
+        
         $this->navtable = array();
         $this->treeArray = array();
 
@@ -867,7 +963,7 @@ class ContentMigration
             $this->navtable[$parcat][$catid]='title';
             $objResult->MoveNext();
         }
-
+        
         return $this->doAdminTreeArray();
     }
 

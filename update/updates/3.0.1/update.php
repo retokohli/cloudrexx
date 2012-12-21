@@ -43,26 +43,28 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     
     // Reinitialize FWLanguage. Now with fallback (doctrine).
     FWLanguage::init();
-    
-    if ($_CONFIG['coreCmsVersion'] < '3') {
+    //DBG::activate(DBG_PHP);
+    if ($_CONFIG['coreCmsVersion'] > '3') {
         Env::get('ClassLoader')->loadFile(dirname(__FILE__) . '/ContentMigration.class.php');
         $contentMigration = new \Cx\Update\Cx_3_0_1\ContentMigration();
         
         // Migrate content
-        if (empty($_SESSION['contrexx_update']['content_migrated']) && $contentMigration->migrate()) {
+        if (empty($_SESSION['contrexx_update']['content_migrated']) && $status = $contentMigration->migrate()) {
             $_SESSION['contrexx_update']['content_migrated'] = true;
             if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                 return false;
             }
         }
+        if ($status === false) return false;
         
         // Migrate aliases
-        if (empty($_SESSION['contrexx_update']['aliases_migrated']) && $contentMigration->migrateAliases()) {
+        if (empty($_SESSION['contrexx_update']['aliases_migrated']) && $status = $contentMigration->migrateAliases()) {
             $_SESSION['contrexx_update']['aliases_migrated'] = true;
             if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                 return false;
             }
         }
+        if ($status === false) return false;
         
         // Group pages if more than one language
         if (empty($_SESSION['contrexx_update']['pages_grouped'])) {
@@ -73,6 +75,8 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                     return false;
                 }
+            } else if ($status === false) {
+                return false;
             } else if (!empty($pageGrouping)) {
                 $arrDialogData = array(
                     'langs'        => $contentMigration->langs,
@@ -87,8 +91,16 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
                 return false;
             }
         }
+        
+        // Migrate blocks
+        /*if (empty($_SESSION['contrexx_update']['blocks_migrated']) && $contentMigration->migrateBlocks()) {
+            $_SESSION['contrexx_update']['blocks_migrated'] = true;
+            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                return false;
+            }
+        }*/
     }
-    
+    die('haha');
     $arrDirs = array('core_module', 'module');
     $updateStatus = true;
 
