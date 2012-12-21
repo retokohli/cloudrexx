@@ -13,8 +13,8 @@ function _updateBackendAreas()
 			'is_active'			=> 1,
 			'uri'				=> '',
 			'target'			=> '_self',
-			'module_id'			=> 1,
-			'order_id'			=> 0,
+			'module_id'			=> 0,
+			'order_id'			=> 2,
 			'access_id'			=> 1
 		),
 		array(
@@ -26,8 +26,8 @@ function _updateBackendAreas()
 			'is_active'			=> 1,
 			'uri'				=> '',
 			'target'			=> '_self',
-			'module_id'			=> 1,
-			'order_id'			=> 2,
+			'module_id'			=> 0,
+			'order_id'			=> 6,
 			'access_id'			=> 2
 		),
 		array(
@@ -39,35 +39,152 @@ function _updateBackendAreas()
 			'is_active'			=> 1,
 			'uri'				=> '',
 			'target'			=> '_self',
-			'module_id'			=> 1,
-			'order_id'			=> 3,
+			'module_id'			=> 0,
+			'order_id'			=> 8,
 			'access_id'			=> 3
 		),
 		array(
-			'area_id'			=> 4,
+			'area_id'			=> 8,
 			'parent_area_id'	=> 0,
 			'type'				=> 'group',
 			'scope'				=> 'backend',
-			'area_name'			=> 'TXT_SYSTEM_INFO',
+			'area_name'			=> 'TXT_CORE_ECOMMERCE',
 			'is_active'			=> 1,
 			'uri'				=> '',
-			'target'			=> '_new',
-			'module_id'			=> 1,
+			'target'			=> '_self',
+			'module_id'			=> 0,
 			'order_id'			=> 4,
 			'access_id'			=> 4
 		),
 		array(
-			'area_id'			=> 55,
+			'area_id'			=> 15,
 			'parent_area_id'	=> 0,
 			'type'				=> 'group',
 			'scope'				=> 'backend',
-			'area_name'			=> 'TXT_HELP_SUPPORT',
+			'area_name'			=> 'TXT_CORE_MEDIA',
+			'is_active'			=> 1,
+			'uri'				=> '',
+			'target'			=> '_self',
+			'module_id'			=> 0,
+			'order_id'			=> 3,
+			'access_id'			=> 162
+		),
+		array(
+			'area_id'			=> 28,
+			'parent_area_id'	=> 0,
+			'type'				=> 'group',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_CORE_STATS',
+			'is_active'			=> 1,
+			'uri'				=> '',
+			'target'			=> '_self',
+			'module_id'			=> 0,
+			'order_id'			=> 7,
+			'access_id'			=> 163
+		),
+		array(
+			'area_id'			=> 29,
+			'parent_area_id'	=> 0,
+			'type'				=> 'group',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_CORE_EMAIL_MARKETING',
+			'is_active'			=> 1,
+			'uri'				=> '',
+			'target'			=> '_self',
+			'module_id'			=> 0,
+			'order_id'			=> 5,
+			'access_id'			=> 152
+		),
+		array(
+			'area_id'			=> 188,
+			'parent_area_id'	=> 0,
+			'type'				=> 'function',
+			'scope'				=> 'backend',
+			'area_name'			=> 'Nettools',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=nettools',
+			'target'			=> '_self',
+			'module_id'			=> 32,
+			'order_id'			=> 0,
+			'access_id'			=> 0
+		),
+		array(
+			'area_id'			=> 177,
+			'parent_area_id'	=> 0,
+			'type'				=> 'function',
+			'scope'				=> 'global',
+			'area_name'			=> 'Json Adapter',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=jsondata',
+			'target'			=> '_self',
+			'module_id'			=> 63,
+			'order_id'			=> 0,
+			'access_id'			=> 0
+		),
+		array(
+			'area_id'			=> 178,
+			'parent_area_id'	=> 0,
+			'type'				=> 'function',
+			'scope'				=> 'global',
+			'area_name'			=> 'File Browser',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=fileBrowser',
+			'target'			=> '_self',
+			'module_id'			=> 26,
+			'order_id'			=> 0,
+			'access_id'			=> 0
+		),
+		array(
+			'area_id'			=> 180,
+			'parent_area_id'	=> 0,
+			'type'				=> 'function',
+			'scope'				=> 'global',
+			'area_name'			=> 'TXT_SEARCH',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=search',
+			'target'			=> '_self',
+			'module_id'			=> 5,
+			'order_id'			=> 0,
+			'access_id'			=> 0
+		),
+		array(
+			'area_id'			=> 181,
+			'parent_area_id'	=> 0,
+			'type'				=> 'function',
+			'scope'				=> 'global',
+			'area_name'			=> 'TXT_UPLOAD',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=upload',
+			'target'			=> '_self',
+			'module_id'			=> 52,
+			'order_id'			=> 0,
+			'access_id'			=> 0
+		),
+		array(
+			'area_id'			=> 183,
+			'parent_area_id'	=> 0,
+			'type'				=> 'function',
+			'scope'				=> 'global',
+			'area_name'			=> 'TXT_LOGOUT',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=logout',
+			'target'			=> '_self',
+			'module_id'			=> 67,
+			'order_id'			=> 0,
+			'access_id'			=> 0
+		),
+		array(
+			'area_id'			=> 184,
+			'parent_area_id'	=> 0,
+			'type'				=> 'group',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_HOME',
 			'is_active'			=> 1,
 			'uri'				=> '',
 			'target'			=> '_self',
 			'module_id'			=> 1,
-			'order_id'			=> 5,
-			'access_id'			=> 55
+			'order_id'			=> 1,
+			'access_id'			=> 0
 		),
 		array(
 			'area_id'			=> 5,
@@ -96,32 +213,6 @@ function _updateBackendAreas()
 			'access_id'			=> 6
 		),
 		array(
-			'area_id'			=> 7,
-			'parent_area_id'	=> 1,
-			'type'				=> 'navigation',
-			'scope'				=> 'backend',
-			'area_name'			=> 'TXT_MEDIA_MANAGER',
-			'is_active'			=> 1,
-			'uri'				=> 'index.php?cmd=media&amp;archive=archive1',
-			'target'			=> '_self',
-			'module_id'			=> 1,
-			'order_id'			=> 4,
-			'access_id'			=> 7
-		),
-		array(
-			'area_id'			=> 8,
-			'parent_area_id'	=> 1,
-			'type'				=> 'navigation',
-			'scope'				=> 'backend',
-			'area_name'			=> 'TXT_SITE_PREVIEW',
-			'is_active'			=> 1,
-			'uri'				=> '../index.php?caching=0',
-			'target'			=> '_blank',
-			'module_id'			=> 1,
-			'order_id'			=> 10,
-			'access_id'			=> 8
-		),
-		array(
 			'area_id'			=> 10,
 			'parent_area_id'	=> 1,
 			'type'				=> 'navigation',
@@ -131,21 +222,8 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=news',
 			'target'			=> '_self',
 			'module_id'			=> 8,
-			'order_id'			=> 6,
+			'order_id'			=> 4,
 			'access_id'			=> 10
-		),
-		array(
-			'area_id'			=> 32,
-			'parent_area_id'	=> 1,
-			'type'				=> 'navigation',
-			'scope'				=> 'backend',
-			'area_name'			=> 'TXT_IMAGE_ADMINISTRATION',
-			'is_active'			=> 1,
-			'uri'				=> 'index.php?cmd=media&amp;archive=content',
-			'target'			=> '_self',
-			'module_id'			=> 1,
-			'order_id'			=> 5,
-			'access_id'			=> 32
 		),
 		array(
 			'area_id'			=> 75,
@@ -170,7 +248,7 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=block',
 			'target'			=> '_self',
 			'module_id'			=> 7,
-			'order_id'			=> 9,
+			'order_id'			=> 7,
 			'access_id'			=> 76
 		),
 		array(
@@ -182,8 +260,8 @@ function _updateBackendAreas()
 			'is_active'			=> 1,
 			'uri'				=> 'index.php?cmd=contact',
 			'target'			=> '_self',
-			'module_id'			=> 0,
-			'order_id'			=> 7,
+			'module_id'			=> 6,
+			'order_id'			=> 5,
 			'access_id'			=> 84
 		),
 		array(
@@ -226,19 +304,6 @@ function _updateBackendAreas()
 			'access_id'			=> 12
 		),
 		array(
-			'area_id'			=> 13,
-			'parent_area_id'	=> 2,
-			'type'				=> 'navigation',
-			'scope'				=> 'backend',
-			'area_name'			=> 'TXT_SHOP',
-			'is_active'			=> 1,
-			'uri'				=> 'index.php?cmd=shop',
-			'target'			=> '_self',
-			'module_id'			=> 16,
-			'order_id'			=> 0,
-			'access_id'			=> 13
-		),
-		array(
 			'area_id'			=> 14,
 			'parent_area_id'	=> 2,
 			'type'				=> 'navigation',
@@ -265,19 +330,6 @@ function _updateBackendAreas()
 			'access_id'			=> 16
 		),
 		array(
-			'area_id'			=> 25,
-			'parent_area_id'	=> 2,
-			'type'				=> 'navigation',
-			'scope'				=> 'backend',
-			'area_name'			=> 'TXT_NEWSLETTER',
-			'is_active'			=> 1,
-			'uri'				=> 'index.php?cmd=newsletter',
-			'target'			=> '_self',
-			'module_id'			=> 4,
-			'order_id'			=> 0,
-			'access_id'			=> 25
-		),
-		array(
 			'area_id'			=> 27,
 			'parent_area_id'	=> 2,
 			'type'				=> 'navigation',
@@ -300,7 +352,7 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=directory',
 			'target'			=> '_self',
 			'module_id'			=> 12,
-			'order_id'			=> 9,
+			'order_id'			=> 0,
 			'access_id'			=> 59
 		),
 		array(
@@ -313,7 +365,7 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=recommend',
 			'target'			=> '_self',
 			'module_id'			=> 27,
-			'order_id'			=> 10,
+			'order_id'			=> 0,
 			'access_id'			=> 64
 		),
 		array(
@@ -326,7 +378,7 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=livecam',
 			'target'			=> '_self',
 			'module_id'			=> 30,
-			'order_id'			=> 15,
+			'order_id'			=> 0,
 			'access_id'			=> 82
 		),
 		array(
@@ -339,7 +391,7 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=memberdir',
 			'target'			=> '_self',
 			'module_id'			=> 31,
-			'order_id'			=> 13,
+			'order_id'			=> 0,
 			'access_id'			=> 83
 		),
 		array(
@@ -352,7 +404,7 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=podcast',
 			'target'			=> '_self',
 			'module_id'			=> 35,
-			'order_id'			=> 17,
+			'order_id'			=> 0,
 			'access_id'			=> 87
 		),
 		array(
@@ -365,7 +417,7 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=market',
 			'target'			=> '_self',
 			'module_id'			=> 33,
-			'order_id'			=> 14,
+			'order_id'			=> 0,
 			'access_id'			=> 98
 		),
 		array(
@@ -378,7 +430,7 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=forum',
 			'target'			=> '_self',
 			'module_id'			=> 20,
-			'order_id'			=> 19,
+			'order_id'			=> 0,
 			'access_id'			=> 106
 		),
 		array(
@@ -391,7 +443,7 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=egov',
 			'target'			=> '_self',
 			'module_id'			=> 38,
-			'order_id'			=> 20,
+			'order_id'			=> 0,
 			'access_id'			=> 109
 		),
 		array(
@@ -404,7 +456,7 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=blog',
 			'target'			=> '_self',
 			'module_id'			=> 47,
-			'order_id'			=> 1,
+			'order_id'			=> 0,
 			'access_id'			=> 119
 		),
 		array(
@@ -417,7 +469,7 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=data',
 			'target'			=> '_self',
 			'module_id'			=> 48,
-			'order_id'			=> 5,
+			'order_id'			=> 0,
 			'access_id'			=> 146
 		),
 		array(
@@ -434,19 +486,6 @@ function _updateBackendAreas()
 			'access_id'			=> 151
 		),
 		array(
-			'area_id'			=> 132,
-			'parent_area_id'	=> 2,
-			'type'				=> 'navigation',
-			'scope'				=> 'backend',
-			'area_name'			=> 'TXT_DOWNLOADS',
-			'is_active'			=> 1,
-			'uri'				=> 'index.php?cmd=downloads',
-			'target'			=> '_self',
-			'module_id'			=> 53,
-			'order_id'			=> 11,
-			'access_id'			=> 141
-		),
-		array(
 			'area_id'			=> 134,
 			'parent_area_id'	=> 2,
 			'type'				=> 'navigation',
@@ -456,7 +495,7 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=u2u',
 			'target'			=> '_self',
 			'module_id'			=> 54,
-			'order_id'			=> 1,
+			'order_id'			=> 0,
 			'access_id'			=> 149
 		),
 		array(
@@ -469,7 +508,7 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=knowledge',
 			'target'			=> '_self',
 			'module_id'			=> 56,
-			'order_id'			=> 1,
+			'order_id'			=> 0,
 			'access_id'			=> 129
 		),
 		array(
@@ -482,7 +521,7 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=jobs',
 			'target'			=> '_self',
 			'module_id'			=> 57,
-			'order_id'			=> 1,
+			'order_id'			=> 0,
 			'access_id'			=> 148
 		),
 		array(
@@ -499,6 +538,19 @@ function _updateBackendAreas()
 			'access_id'			=> 153
 		),
 		array(
+			'area_id'			=> 163,
+			'parent_area_id'	=> 3,
+			'type'				=> 'navigation',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_SYSTEM_LOGS',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=log',
+			'target'			=> '_self',
+			'module_id'			=> 1,
+			'order_id'			=> 10,
+			'access_id'			=> 55
+		),
+		array(
 			'area_id'			=> 17,
 			'parent_area_id'	=> 3,
 			'type'				=> 'navigation',
@@ -508,7 +560,7 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=settings',
 			'target'			=> '_self',
 			'module_id'			=> 1,
-			'order_id'			=> 999,
+			'order_id'			=> 1,
 			'access_id'			=> 17
 		),
 		array(
@@ -521,21 +573,8 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=access',
 			'target'			=> '_self',
 			'module_id'			=> 1,
-			'order_id'			=> 1,
+			'order_id'			=> 3,
 			'access_id'			=> 18
-		),
-		array(
-			'area_id'			=> 19,
-			'parent_area_id'	=> 3,
-			'type'				=> 'navigation',
-			'scope'				=> 'backend',
-			'area_name'			=> 'TXT_STATS',
-			'is_active'			=> 1,
-			'uri'				=> 'index.php?cmd=stats',
-			'target'			=> '_self',
-			'module_id'			=> 1,
-			'order_id'			=> 6,
-			'access_id'			=> 19
 		),
 		array(
 			'area_id'			=> 20,
@@ -547,7 +586,7 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=dbm',
 			'target'			=> '_self',
 			'module_id'			=> 1,
-			'order_id'			=> 2,
+			'order_id'			=> 8,
 			'access_id'			=> 20
 		),
 		array(
@@ -560,7 +599,7 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=skins',
 			'target'			=> '_self',
 			'module_id'			=> 1,
-			'order_id'			=> 3,
+			'order_id'			=> 4,
 			'access_id'			=> 21
 		),
 		array(
@@ -572,8 +611,8 @@ function _updateBackendAreas()
 			'is_active'			=> 1,
 			'uri'				=> 'index.php?cmd=language',
 			'target'			=> '_self',
-			'module_id'			=> 1,
-			'order_id'			=> 4,
+			'module_id'			=> 64,
+			'order_id'			=> 5,
 			'access_id'			=> 22
 		),
 		array(
@@ -586,8 +625,21 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=modulemanager',
 			'target'			=> '_self',
 			'module_id'			=> 1,
-			'order_id'			=> 5,
+			'order_id'			=> 6,
 			'access_id'			=> 23
+		),
+		array(
+			'area_id'			=> 24,
+			'parent_area_id'	=> 3,
+			'type'				=> 'navigation',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_SERVER_INFO',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=server',
+			'target'			=> '_self',
+			'module_id'			=> 1,
+			'order_id'			=> 9,
+			'access_id'			=> 24
 		),
 		array(
 			'area_id'			=> 110,
@@ -599,38 +651,25 @@ function _updateBackendAreas()
 			'uri'				=> 'index.php?cmd=alias',
 			'target'			=> '_self',
 			'module_id'			=> 41,
-			'order_id'			=> 8,
+			'order_id'			=> 7,
 			'access_id'			=> 115
 		),
 		array(
-			'area_id'			=> 24,
-			'parent_area_id'	=> 4,
+			'area_id'			=> 182,
+			'parent_area_id'                => 3,
 			'type'				=> 'navigation',
 			'scope'				=> 'backend',
-			'area_name'			=> 'TXT_SERVER_INFO',
+			'area_name'			=> 'TXT_LICENSE',
 			'is_active'			=> 1,
-			'uri'				=> 'index.php?cmd=server',
+			'uri'				=> 'index.php?cmd=license',
 			'target'			=> '_self',
-			'module_id'			=> 1,
-			'order_id'			=> 1,
-			'access_id'			=> 24
-		),
-		array(
-			'area_id'			=> 54,
-			'parent_area_id'	=> 4,
-			'type'				=> 'navigation',
-			'scope'				=> 'backend',
-			'area_name'			=> 'TXT_NETWORK_TOOLS',
-			'is_active'			=> 1,
-			'uri'				=> 'index.php?cmd=nettools',
-			'target'			=> '_self',
-			'module_id'			=> 0,
+			'module_id'			=> 66,
 			'order_id'			=> 2,
-			'access_id'			=> 54
+			'access_id'			=> 0
 		),
 		array(
 			'area_id'			=> 127,
-			'parent_area_id'	=> 5,
+			'parent_area_id'                => 5,
 			'type'				=> 'function',
 			'scope'				=> 'backend',
 			'area_name'			=> 'TXT_NEW_PAGE_ON_FIRST_LEVEL',
@@ -643,7 +682,7 @@ function _updateBackendAreas()
 		),
 		array(
 			'area_id'			=> 26,
-			'parent_area_id'	=> 6,
+			'parent_area_id'                => 6,
 			'type'				=> 'function',
 			'scope'				=> 'backend',
 			'area_name'			=> 'TXT_DELETE_PAGES',
@@ -681,19 +720,6 @@ function _updateBackendAreas()
 			'access_id'			=> 36
 		),
 		array(
-			'area_id'			=> 37,
-			'parent_area_id'	=> 6,
-			'type'				=> 'function',
-			'scope'				=> 'backend',
-			'area_name'			=> 'TXT_ADD_REPOSITORY',
-			'is_active'			=> 1,
-			'uri'				=> '',
-			'target'			=> '_self',
-			'module_id'			=> 0,
-			'order_id'			=> 0,
-			'access_id'			=> 37
-		),
-		array(
 			'area_id'			=> 53,
 			'parent_area_id'	=> 6,
 			'type'				=> 'function',
@@ -707,30 +733,17 @@ function _updateBackendAreas()
 			'access_id'			=> 53
 		),
 		array(
-			'area_id'			=> 79,
+			'area_id'			=> 161,
 			'parent_area_id'	=> 6,
 			'type'				=> 'function',
-			'scope'				=> 'backend',
-			'area_name'			=> 'TXT_ACTIVATE_HISTORY',
+			'scope'				=> 'global',
+			'area_name'			=> 'TXT_MOVE_NODE',
 			'is_active'			=> 1,
-			'uri'				=> '',
+			'uri'				=> 'index.php?cmd=content',
 			'target'			=> '_self',
-			'module_id'			=> 0,
-			'order_id'			=> 6,
-			'access_id'			=> 79
-		),
-		array(
-			'area_id'			=> 80,
-			'parent_area_id'	=> 6,
-			'type'				=> 'function',
-			'scope'				=> 'backend',
-			'area_name'			=> 'TXT_HISTORY_DELETE_ENTRY',
-			'is_active'			=> 1,
-			'uri'				=> '',
-			'target'			=> '_self',
-			'module_id'			=> 0,
-			'order_id'			=> 7,
-			'access_id'			=> 80
+			'module_id'			=> 1,
+			'order_id'			=> 8,
+			'access_id'			=> 160
 		),
 		array(
 			'area_id'			=> 38,
@@ -757,6 +770,32 @@ function _updateBackendAreas()
 			'module_id'			=> 0,
 			'order_id'			=> 0,
 			'access_id'			=> 39
+		),
+		array(
+			'area_id'			=> 13,
+			'parent_area_id'	=> 8,
+			'type'				=> 'navigation',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_SHOP',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=shop',
+			'target'			=> '_self',
+			'module_id'			=> 16,
+			'order_id'			=> 1,
+			'access_id'			=> 13
+		),
+		array(
+			'area_id'			=> 162,
+			'parent_area_id'	=> 8,
+			'type'				=> 'navigation',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_CHECKOUT_MODULE',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=checkout',
+			'target'			=> '_self',
+			'module_id'			=> 62,
+			'order_id'			=> 2,
+			'access_id'			=> 161
 		),
 		array(
 			'area_id'			=> 152,
@@ -848,6 +887,58 @@ function _updateBackendAreas()
 			'module_id'			=> 3,
 			'order_id'			=> 6,
 			'access_id'			=> 70
+		),
+		array(
+			'area_id'			=> 7,
+			'parent_area_id'	=> 15,
+			'type'				=> 'navigation',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_MEDIA_MANAGER',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=media&amp;archive=archive1',
+			'target'			=> '_self',
+			'module_id'			=> 1,
+			'order_id'			=> 2,
+			'access_id'			=> 7
+		),
+		array(
+			'area_id'			=> 32,
+			'parent_area_id'	=> 15,
+			'type'				=> 'navigation',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_IMAGE_ADMINISTRATION',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=media&amp;archive=content',
+			'target'			=> '_self',
+			'module_id'			=> 1,
+			'order_id'			=> 1,
+			'access_id'			=> 32
+		),
+		array(
+			'area_id'			=> 132,
+			'parent_area_id'	=> 15,
+			'type'				=> 'navigation',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_DOWNLOADS',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=downloads',
+			'target'			=> '_self',
+			'module_id'			=> 53,
+			'order_id'			=> 4,
+			'access_id'			=> 141
+		),
+		array(
+			'area_id'			=> 187,
+			'parent_area_id'	=> 15,
+			'type'				=> 'navigation',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_FILESHARING_MODULE',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=media&amp;archive=filesharing',
+			'target'			=> '_self',
+			'module_id'			=> 68,
+			'order_id'			=> 3,
+			'access_id'			=> 7
 		),
 		array(
 			'area_id'			=> 144,
@@ -1006,30 +1097,147 @@ function _updateBackendAreas()
 			'access_id'			=> 52
 		),
 		array(
-			'area_id'			=> 56,
-			'parent_area_id'	=> 55,
+			'area_id'			=> 166,
+			'parent_area_id'	=> 28,
 			'type'				=> 'navigation',
 			'scope'				=> 'backend',
-			'area_name'			=> 'TXT_SUPPORT_FORUM',
+			'area_name'			=> 'TXT_CORE_VISITOR_DETAILS',
 			'is_active'			=> 1,
-			'uri'				=> 'http://www.contrexx.com/forum/',
-			'target'			=> '_blank',
+			'uri'				=> 'index.php?cmd=stats&amp;stat=visitors',
+			'target'			=> '_self',
 			'module_id'			=> 1,
 			'order_id'			=> 1,
-			'access_id'			=> 56
+			'access_id'			=> 166
 		),
 		array(
-			'area_id'			=> 99,
-			'parent_area_id'	=> 55,
+			'area_id'			=> 164,
+			'parent_area_id'	=> 28,
 			'type'				=> 'navigation',
 			'scope'				=> 'backend',
-			'area_name'			=> 'TXT_SUPPORT_WIKI',
+			'area_name'			=> 'TXT_CORE_VISITORS_AND_PAGE_VIEWS',
 			'is_active'			=> 1,
-			'uri'				=> 'http://www.contrexx.com/wiki/',
-			'target'			=> '_blank',
+			'uri'				=> 'index.php?cmd=stats&amp;stat=requests',
+			'target'			=> '_self',
 			'module_id'			=> 1,
 			'order_id'			=> 2,
-			'access_id'			=> 110
+			'access_id'			=> 164
+		),
+		array(
+			'area_id'			=> 167,
+			'parent_area_id'	=> 28,
+			'type'				=> 'navigation',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_CORE_REFERER',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=stats&amp;stat=referer',
+			'target'			=> '_self',
+			'module_id'			=> 1,
+			'order_id'			=> 3,
+			'access_id'			=> 167
+		),
+		array(
+			'area_id'			=> 168,
+			'parent_area_id'	=> 28,
+			'type'				=> 'navigation',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_CORE_SEARCH_ENGINES',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=stats&amp;stat=spiders',
+			'target'			=> '_self',
+			'module_id'			=> 1,
+			'order_id'			=> 4,
+			'access_id'			=> 168
+		),
+		array(
+			'area_id'			=> 169,
+			'parent_area_id'	=> 28,
+			'type'				=> 'navigation',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_CORE_SEARCH_TERMS',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=stats&amp;stat=search',
+			'target'			=> '_self',
+			'module_id'			=> 1,
+			'order_id'			=> 5,
+			'access_id'			=> 169
+		),
+		array(
+			'area_id'			=> 170,
+			'parent_area_id'	=> 28,
+			'type'				=> 'navigation',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_SETTINGS',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=stats&amp;stat=settings',
+			'target'			=> '_self',
+			'module_id'			=> 1,
+			'order_id'			=> 6,
+			'access_id'			=> 170
+		),
+		array(
+			'area_id'			=> 172,
+			'parent_area_id'	=> 29,
+			'type'				=> 'navigation',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_CORE_LISTS',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=newsletter&amp;act=lists',
+			'target'			=> '_self',
+			'module_id'			=> 4,
+			'order_id'			=> 2,
+			'access_id'			=> 172
+		),
+		array(
+			'area_id'			=> 171,
+			'parent_area_id'	=> 29,
+			'type'				=> 'navigation',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_CORE_EMAIL_CAMPAIGNS',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=newsletter&amp;act=mails',
+			'target'			=> '_self',
+			'module_id'			=> 4,
+			'order_id'			=> 1,
+			'access_id'			=> 171
+		),
+		array(
+			'area_id'			=> 174,
+			'parent_area_id'	=> 29,
+			'type'				=> 'navigation',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_CORE_RECIPIENTS',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=newsletter&amp;act=users',
+			'target'			=> '_self',
+			'module_id'			=> 4,
+			'order_id'			=> 4,
+			'access_id'			=> 174
+		),
+		array(
+			'area_id'			=> 175,
+			'parent_area_id'	=> 29,
+			'type'				=> 'navigation',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_CORE_NEWS',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=newsletter&amp;act=news',
+			'target'			=> '_self',
+			'module_id'			=> 4,
+			'order_id'			=> 5,
+			'access_id'			=> 175
+		),
+		array(
+			'area_id'			=> 176,
+			'parent_area_id'	=> 29,
+			'type'				=> 'navigation',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_SETTINGS',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php?cmd=newsletter&amp;act=dispatch',
+			'target'			=> '_self',
+			'module_id'			=> 4,
+			'order_id'			=> 6,
+			'access_id'			=> 176
 		),
 		array(
 			'area_id'			=> 145,
@@ -1108,19 +1316,6 @@ function _updateBackendAreas()
 			'module_id'			=> 0,
 			'order_id'			=> 1,
 			'access_id'			=> 78
-		),
-		array(
-			'area_id'			=> 126,
-			'parent_area_id'	=> 75,
-			'type'				=> 'function',
-			'scope'				=> 'backend',
-			'area_name'			=> 'TXT_WORKFLOW_CLEAN_TITLE',
-			'is_active'			=> 1,
-			'uri'				=> 'index.php?cmd=blog&act=networks',
-			'target'			=> '_self',
-			'module_id'			=> 0,
-			'order_id'			=> 7,
-			'access_id'			=> 126
 		),
 		array(
 			'area_id'			=> 91,
@@ -1446,6 +1641,32 @@ function _updateBackendAreas()
 			'module_id'			=> 60,
 			'order_id'			=> 0,
 			'access_id'			=> 159
+		),
+		array(
+			'area_id'			=> 185,
+			'parent_area_id'	=> 184,
+			'type'				=> 'navigation',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_DASHBOARD',
+			'is_active'			=> 1,
+			'uri'				=> 'index.php',
+			'target'			=> '_self',
+			'module_id'			=> 1,
+			'order_id'			=> 1,
+			'access_id'			=> 0
+		),
+		array(
+			'area_id'			=> 186,
+			'parent_area_id'	=> 184,
+			'type'				=> 'navigation',
+			'scope'				=> 'backend',
+			'area_name'			=> 'TXT_FRONTEND',
+			'is_active'			=> 1,
+			'uri'				=> '../index.php',
+			'target'			=> '_blank',
+			'module_id'			=> 1,
+			'order_id'			=> 2,
+			'access_id'			=> 0
 		)
 	);
 

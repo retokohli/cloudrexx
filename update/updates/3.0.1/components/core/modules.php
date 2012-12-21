@@ -395,6 +395,62 @@ function _updateModules()
 			'status'				=> 'n',
 			'is_required'			=> 1,
 			'is_core'				=> 1
+		),
+		array(
+			'id'					=> 62,
+			'name'					=> 'checkout',
+			'description_variable'	=> 'TXT_CHECKOUT_MODULE_DESCRIPTION',
+			'status'				=> 'y',
+			'is_required'			=> 0,
+			'is_core'				=> 0
+		),
+		array(
+			'id'					=> 63,
+			'name'					=> 'jsondata',
+			'description_variable'	=> 'Json Adapter',
+			'status'				=> 'n',
+			'is_required'			=> 1,
+			'is_core'				=> 1
+		),
+		array(
+			'id'					=> 64,
+			'name'					=> 'language',
+			'description_variable'	=> 'TXT_LANGUAGE_SETTINGS',
+			'status'				=> 'n',
+			'is_required'			=> 1,
+			'is_core'				=> 1
+		),
+		array(
+			'id'					=> 65,
+			'name'					=> 'fulllanguage',
+			'description_variable'	=> 'TXT_LANGUAGE_SETTINGS',
+			'status'				=> 'n',
+			'is_required'			=> 1,
+			'is_core'				=> 1
+		),
+		array(
+			'id'					=> 66,
+			'name'					=> 'license',
+			'description_variable'	=> 'TXT_LICENSE',
+			'status'				=> 'n',
+			'is_required'			=> 1,
+			'is_core'				=> 1
+		),
+		array(
+			'id'					=> 67,
+			'name'					=> 'logout',
+			'description_variable'	=> 'TXT_LOGIN_MODULE_DESCRIPTION',
+			'status'				=> 'n',
+			'is_required'			=> 1,
+			'is_core'				=> 1
+		),
+		array(
+			'id'					=> 68,
+			'name'					=> 'filesharing',
+			'description_variable'	=> 'TXT_FILESHARING_MODULE_DESCRIPTION',
+			'status'				=> 'n',
+			'is_required'			=> 0,
+			'is_core'				=> 0
 		)
 	);
 
