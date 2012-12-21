@@ -389,7 +389,7 @@ class ContrexxUpdate
                 if (empty($this->arrStatusMsg['button'])) {
                     $this->arrStatusMsg['button'] = '<input type="submit" value="'.$_CORELANG['TXT_UPDATE_TRY_AGAIN'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />';
                 }
-                if (!empty($this->arrStatusMsg['dialog'])) {
+                if (!empty($this->arrStatusMsg['dialog']) && empty($this->arrStatusMsg['error'])) {
                     $this->objTemplate->hideBlock('processStatus');
                     $dialogContent = implode('<br />', $this->arrStatusMsg['msg']);
                     $this->objTemplate->setVariable('PROCESS_DIALOG_CONTENT', $dialogContent);
