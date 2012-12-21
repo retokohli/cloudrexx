@@ -649,8 +649,7 @@ function _newsUpdate() {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
-    \Cx\Lib\UpdateUtil::migrateContentPage('news', 'details', '{NEWS_DATE}', '{NEWS_LONG_DATE}', '3.0.1');
-    \Cx\Lib\UpdateUtil::migrateContentPage('news', 'details', '{NEWS_COMMENTS_DATE}', '{NEWS_COMMENTS_LONG_DATE}', '3.0.1');
+    \Cx\Lib\UpdateUtil::migrateContentPage('news', 'details', array('{NEWS_DATE}','{NEWS_COMMENTS_DATE}'), array('{NEWS_LONG_DATE}', '{NEWS_COMMENTS_LONG_DATE}'), '3.0.1');
 
     return true;
 }

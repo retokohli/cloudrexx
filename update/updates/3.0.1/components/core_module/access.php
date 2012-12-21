@@ -36,7 +36,6 @@ function _accessUpdate()
     }
     catch (\Cx\Lib\UpdateException $e) {
         // we COULD do something else here..
-        DBG::trace();
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
@@ -202,7 +201,6 @@ function _accessUpdate()
     }
     catch (\Cx\Lib\UpdateException $e) {
         // we COULD do something else here..
-        DBG::trace();
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
@@ -539,9 +537,12 @@ function _accessUpdate()
             return _databaseError($query, $objDatabase->ErrorMsg());
         }
     } else {
-        $query = "UPDATE `".DBPREFIX."access_users` SET `expiration` = `validity`*60*60*24+`regdate` WHERE `expiration` = 0 AND `validity` > 0";
-        if ($objDatabase->Execute($query) === false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
+        try {
+            \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."access_users` SET `expiration` = `validity`*60*60*24+`regdate` WHERE `expiration` = 0 AND `validity` > 0");
+        }
+        catch (\Cx\Lib\UpdateException $e) {
+            // we COULD do something else here..
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
     }
 
@@ -553,63 +554,21 @@ function _accessUpdate()
      *
      **********************************/
     // only execute this part for versions < 2.0.0
-    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.0.0')) {
-        foreach (
-            array(
-                DBPREFIX.'content',
-                DBPREFIX.'content_history'
-            ) as $dbTable
-        ) {
-            $query = "
-                UPDATE    `".$dbTable."`
-                    SET    `content` = REPLACE(
-                                        REPLACE(
-                                            REPLACE(
-                                                REPLACE(
-                                                        REPLACE(
-                                                        `content`,
-                                                        'section=community&cmd=profile',
-                                                        'section=access&cmd=settings'
-                                                    ),
-                                                    'section=community&amp;cmd=profile',
-                                                    'section=access&amp;cmd=settings'
-                                                ),
-                                                'section=community&cmd=register',
-                                                'section=access&cmd=signup'
-                                            ),
-                                            'section=community&amp;cmd=register',
-                                            'section=access&amp;cmd=signup'
-                                        ),
-                                        'section=community',
-                                        'section=access'
-                                    ),
-                        `redirect` = REPLACE(
-                                        REPLACE(
-                                            REPLACE(
-                                                REPLACE(
-                                                        REPLACE(
-                                                        `redirect`,
-                                                        'section=community&cmd=profile',
-                                                        'section=access&cmd=settings'
-                                                    ),
-                                                    'section=community&amp;cmd=profile',
-                                                    'section=access&amp;cmd=settings'
-                                                ),
-                                                'section=community&cmd=register',
-                                                'section=access&cmd=signup'
-                                            ),
-                                            'section=community&amp;cmd=register',
-                                            'section=access&amp;cmd=signup'
-                                        ),
-                                        'section=community',
-                                        'section=access'
-                                    )
-                WHERE    `content` LIKE '%section=community%' OR `redirect` LIKE '%section=community%'
-                ";
-            if ($objDatabase->Execute($query) === false) {
-                return _databaseError($query, $objDatabase->ErrorMsg());
-            }
-        }
+    $pattern = array(
+        '/section=community&(&amp;|)?cmd=profile/',
+        '/section=community&(&amp;|)?cmd=register/',
+        '/section=community/',
+    );
+    $replacement = array(
+        'section=access&$1cmd=settings',
+        'section=access&$1cmd=signup',
+        'section=access',
+    );
+    try {
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array(), $pattern, $replacement, array('content', 'target'), '4.0.0');
+    }
+    catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
 
@@ -778,37 +737,37 @@ function _accessUpdate()
     // Currently, this is only here to create the u2u_active field.. but instead of adding
     // 10 lines for each new field in the future, why not just extend this block
     try{
-        DBG::trace();
         \Cx\Lib\UpdateUtil::table(
-            DBPREFIX . 'access_users',
+            DBPREFIX.'access_users',
             array(
-                'id'               => array('type' => 'INT(5)',            'unsigned' => true, 'primary'     => true,    'auto_increment' => true),
-                'is_admin'         => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default'        => 0),
-                'username'         => array('type' => 'VARCHAR(40)', 'notnull' => false, 'default_expr' => 'NULL'     ),
-                'password'         => array('type' => 'VARCHAR(32)', 'notnull' => false, 'default_expr' => 'NULL'     ),
-                'regdate'          => array('type' => 'INT(14)', 'unsigned' => true, 'default' => 0         ),
-                'expiration'       => array('type' => 'INT(14)', 'unsigned' => true,                         'default'        => 0),
-                'validity'         => array('type' => 'INT(10)', 'unsigned' => true,                         'default'        => 0),
-                'last_auth'        => array('type' => 'INT(14)', 'unsigned' => true,                         'default'        => 0),
-                'last_activity'    => array('type' => 'INT(14)', 'unsigned' => true,                         'default'        => 0),
-                'email'            => array('type' => 'VARCHAR(255)', 'notnull' => false, 'default_expr' => 'NULL'    ),
-                'email_access'     => array('type' => "ENUM('everyone','members_only','nobody')", 'default'        => 'nobody'),
-                'frontend_lang_id' => array('type' => 'INT(2)', 'unsigned' => true,                          'default'        => 0),
-                'backend_lang_id'  => array('type' => 'INT(2)', 'unsigned' => true,                          'default'        => 0),
-                'active'           => array('type' => 'TINYINT(1)', 'default'        => 0),
-                'profile_access'   => array('type' => "ENUM('everyone','members_only','nobody')", 'default'        => 'members_only'),
-                'restore_key'      => array('type' => 'VARCHAR(32)'     ),
-                'restore_key_time' => array('type' => 'INT(14)', 'unsigned' => true, 'default' => 0         ),
-                'u2u_active'       => array('type' => "ENUM('0','1')",                            'default'        => '1'),
+                'id'                     => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'is_admin'               => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'id'),
+                'username'               => array('type' => 'VARCHAR(40)', 'notnull' => false, 'after' => 'is_admin'),
+                'password'               => array('type' => 'VARCHAR(32)', 'notnull' => false, 'after' => 'username'),
+                'regdate'                => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'password'),
+                'expiration'             => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'regdate'),
+                'validity'               => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'expiration'),
+                'last_auth'              => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'validity'),
+                'last_auth_status'       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '1', 'after' => 'last_auth'),
+                'last_activity'          => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'last_auth_status'),
+                'email'                  => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'last_activity'),
+                'email_access'           => array('type' => 'ENUM(\'everyone\',\'members_only\',\'nobody\')', 'notnull' => true, 'default' => 'nobody', 'after' => 'email'),
+                'frontend_lang_id'       => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'email_access'),
+                'backend_lang_id'        => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'frontend_lang_id'),
+                'active'                 => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'backend_lang_id'),
+                'primary_group'          => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'active'),
+                'profile_access'         => array('type' => 'ENUM(\'everyone\',\'members_only\',\'nobody\')', 'notnull' => true, 'default' => 'members_only', 'after' => 'primary_group'),
+                'restore_key'            => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => '', 'after' => 'profile_access'),
+                'restore_key_time'       => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'restore_key'),
+                'u2u_active'             => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '1', 'after' => 'restore_key_time')
             ),
-            array( # indexes
-                'username' => array( 'fields'=>array('username'))
+            array(
+                'username'               => array('fields' => array('username'))
             )
         );
     }
     catch (\Cx\Lib\UpdateException $e) {
         // we COULD do something else here..
-        DBG::trace();
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
@@ -858,7 +817,6 @@ function _accessUpdate()
     	setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_DIR_AND_CONTENT'], ASCMS_ACCESS_PHOTO_IMG_PATH.'/', $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
     	return false;
     }*/
-
 
     return true;
 }
