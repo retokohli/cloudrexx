@@ -44,7 +44,7 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     // Reinitialize FWLanguage. Now with fallback (doctrine).
     FWLanguage::init();
     
-    if ($_CONFIG['coreCmsVersion'] > '3') {
+    if ($_CONFIG['coreCmsVersion'] < '3') {
         Env::get('ClassLoader')->loadFile(dirname(__FILE__) . '/ContentMigration.class.php');
         $contentMigration = new \Cx\Update\Cx_3_0_1\ContentMigration();
         
@@ -88,10 +88,10 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
             }
         }
     }
-    die('judihui geisschäs');
+    
     $arrDirs = array('core_module', 'module');
     $updateStatus = true;
-
+    
     if (!@include_once(dirname(__FILE__) . '/components/core/core.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/core.php'));
         return false;
