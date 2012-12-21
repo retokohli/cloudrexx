@@ -614,7 +614,7 @@ function copyCxFilesToRoot($src, $dst) {
             } catch (\Exception $e) {
                 $copiedCxFilesIndex--;
                 $_SESSION['copiedCxFilesIndex'] = $copiedCxFilesIndex;
-                \DBG::msg('Copy cx files to root: ' . $e->getMessage());
+                setUpdateMsg('Folgende Datei konnte nicht kopiert werden:<br />' . ASCMS_PATH_OFFSET . '/' . $file);
                 return false;
             }
         }
