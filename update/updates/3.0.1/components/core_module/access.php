@@ -2,7 +2,7 @@
 
 function _accessUpdate()
 {
-    global $objDatabase, $_CONFIG, $_ARRAYLANG, $_CORELANG;
+    global $objDatabase, $objUpdate, $_CONFIG, $_ARRAYLANG, $_CORELANG;
 
     $arrTables = $objDatabase->MetaTables('TABLES');
     if (!$arrTables) {
@@ -552,60 +552,63 @@ function _accessUpdate()
      * MIGRATE COMMUNITY CONTENT PAGES
      *
      **********************************/
-    foreach (
-        array(
-            DBPREFIX.'content',
-            DBPREFIX.'content_history'
-        ) as $dbTable
-    ) {
-        $query = "
-            UPDATE    `".$dbTable."`
-                SET    `content` = REPLACE(
-                                    REPLACE(
+    // only execute this part for versions < 2.0.0
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.0.0')) {
+        foreach (
+            array(
+                DBPREFIX.'content',
+                DBPREFIX.'content_history'
+            ) as $dbTable
+        ) {
+            $query = "
+                UPDATE    `".$dbTable."`
+                    SET    `content` = REPLACE(
                                         REPLACE(
                                             REPLACE(
-                                                    REPLACE(
-                                                    `content`,
-                                                    'section=community&cmd=profile',
-                                                    'section=access&cmd=settings'
+                                                REPLACE(
+                                                        REPLACE(
+                                                        `content`,
+                                                        'section=community&cmd=profile',
+                                                        'section=access&cmd=settings'
+                                                    ),
+                                                    'section=community&amp;cmd=profile',
+                                                    'section=access&amp;cmd=settings'
                                                 ),
-                                                'section=community&amp;cmd=profile',
-                                                'section=access&amp;cmd=settings'
+                                                'section=community&cmd=register',
+                                                'section=access&cmd=signup'
                                             ),
-                                            'section=community&cmd=register',
-                                            'section=access&cmd=signup'
+                                            'section=community&amp;cmd=register',
+                                            'section=access&amp;cmd=signup'
                                         ),
-                                        'section=community&amp;cmd=register',
-                                        'section=access&amp;cmd=signup'
+                                        'section=community',
+                                        'section=access'
                                     ),
-                                    'section=community',
-                                    'section=access'
-                                ),
-                    `redirect` = REPLACE(
-                                    REPLACE(
+                        `redirect` = REPLACE(
                                         REPLACE(
                                             REPLACE(
-                                                    REPLACE(
-                                                    `redirect`,
-                                                    'section=community&cmd=profile',
-                                                    'section=access&cmd=settings'
+                                                REPLACE(
+                                                        REPLACE(
+                                                        `redirect`,
+                                                        'section=community&cmd=profile',
+                                                        'section=access&cmd=settings'
+                                                    ),
+                                                    'section=community&amp;cmd=profile',
+                                                    'section=access&amp;cmd=settings'
                                                 ),
-                                                'section=community&amp;cmd=profile',
-                                                'section=access&amp;cmd=settings'
+                                                'section=community&cmd=register',
+                                                'section=access&cmd=signup'
                                             ),
-                                            'section=community&cmd=register',
-                                            'section=access&cmd=signup'
+                                            'section=community&amp;cmd=register',
+                                            'section=access&amp;cmd=signup'
                                         ),
-                                        'section=community&amp;cmd=register',
-                                        'section=access&amp;cmd=signup'
-                                    ),
-                                    'section=community',
-                                    'section=access'
-                                )
-            WHERE    `content` LIKE '%section=community%' OR `redirect` LIKE '%section=community%'
-            ";
-        if ($objDatabase->Execute($query) === false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
+                                        'section=community',
+                                        'section=access'
+                                    )
+                WHERE    `content` LIKE '%section=community%' OR `redirect` LIKE '%section=community%'
+                ";
+            if ($objDatabase->Execute($query) === false) {
+                return _databaseError($query, $objDatabase->ErrorMsg());
+            }
         }
     }
 
