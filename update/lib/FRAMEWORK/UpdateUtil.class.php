@@ -614,6 +614,48 @@ class UpdateUtil
         }
     }
 
+    /**
+     * Replace content using preg_replace_callback()
+     * @todo    Add proper docblock
+     */
+    public static function migrateContentPageUsingRegexCallback($criteria, $pattern, $callback, $subject, $changeVersion)
+    {
+        global $objUpdate, $_CONFIG;
+
+        if (!is_array($subject)) {
+            $subject = array($subject);
+        }
+
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $changeVersion)) {
+            $em = \Env::em();
+            $pages = $em->getRepository('Cx\Model\ContentManager\Page')->findBy($criteria, true);
+            foreach ($pages as $page) {
+                if ($page) {
+                    checkMemoryLimit();
+                    foreach ($subject as $pageAttribute) {
+                        try {
+                            // fetch attribute value
+                            $pageAttributeValue = call_user_func(array($page, "get".ucfirst($pageAttribute)));
+
+                            // apply replace on attribute
+                            $pageAttributeValue = preg_replace_callback($pattern, $callback, $pageAttributeValue);
+
+                            if ($pageAttributeValue !== null) {
+                                call_user_func(array($page, "set".ucfirst($pageAttribute)), $pageAttributeValue);
+                                $em->persist($page);
+                            }
+                        }
+                        catch (\Exception $e) {
+                            \DBG::log("Migrating page failed: ".$e->getMessage());
+                            throw new UpdateException('Bei der Migration einer Inhaltsseite trat ein Fehler auf! '.$e->getMessage());
+                        }
+                    }
+                }
+            }
+            $em->flush();
+        }
+    }
+
     public static function DefaultActionHandler($e)
     {
         if ($e instanceof Update_DatabaseException) {
