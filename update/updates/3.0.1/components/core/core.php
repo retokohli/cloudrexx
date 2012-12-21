@@ -1504,7 +1504,7 @@ function _coreUpdate()
                             try {
                                 $objFile = new \Cx\Lib\FileSystem\File($file);
                                 if (($data = $objFile->getData()) && !empty($data)) {
-                                    $objFile->write(preg_replace('/#menu_level_(\d+)(?!([\w-_]+))/', '.menu_level_\\1', $data));
+                                    $objFile->write(preg_replace('/#menu_level_(\d+)(?!([\w-_]+))/i', '.menu_level_\\1', $data));
                                 }
                             } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                                 \DBG::msg($e->getMessage());

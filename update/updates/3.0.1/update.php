@@ -100,7 +100,7 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
             }
         }*/
     }
-    
+
     $arrDirs = array('core_module', 'module');
     $updateStatus = true;
 
@@ -339,7 +339,7 @@ function getMissedModules() {
     }
 
     $missedModules = array();
-    $potentialMissedModules = array('blog', 'calendar', 'directory', 'docsys', 'egov', 'feed', 'forum', 'gallery', 'guestbook', 'livecam', 'market', 'memberdir', 'newsletter', 'podcast', 'shop', 'voting');
+    $potentialMissedModules = array('blog', 'calendar', 'directory', 'docsys', 'egov', 'feed', 'forum', 'gallery', 'guestbook', 'livecam', 'market', 'memberdir', 'newsletter', 'podcast', 'shop', 'voting', 'downloads', 'ecard', 'jobs', 'knowledge', 'mediadir');
     foreach ($potentialMissedModules as $module) {
         if (!in_array($module, $installedModules)) {
             $missedModules[] = $module;
@@ -472,6 +472,10 @@ function getConflictedModules($missedModules) {
             DBPREFIX.'module_podcast_template',
         ),
         'shop' => array(
+            DBPREFIX.'core_text',
+            DBPREFIX.'core_setting',
+            DBPREFIX.'core_mail_template',
+            DBPREFIX.'core_country',
             DBPREFIX.'module_shop_article_group',
             DBPREFIX.'module_shop_attribute',
             DBPREFIX.'module_shop_categories',
@@ -513,13 +517,76 @@ function getConflictedModules($missedModules) {
             DBPREFIX.'voting_results',
             DBPREFIX.'voting_system',
         ),
+        'downloads' => array(
+            DBPREFIX.'module_downloads_category',
+            DBPREFIX.'module_downloads_category_locale',
+            DBPREFIX.'module_downloads_download',
+            DBPREFIX.'module_downloads_download_locale',
+            DBPREFIX.'module_downloads_group',
+            DBPREFIX.'module_downloads_group_locale',
+            DBPREFIX.'module_downloads_rel_download_category',
+            DBPREFIX.'module_downloads_rel_download_download',
+            DBPREFIX.'module_downloads_rel_group_category',
+            DBPREFIX.'module_downloads_settings',
+        ),
+        'ecard' => array(
+            DBPREFIX.'module_ecard_ecards',
+            DBPREFIX.'module_ecard_settings',
+        ),
+        'jobs' => array(
+            DBPREFIX.'module_jobs',
+            DBPREFIX.'module_jobs_categories',
+            DBPREFIX.'module_jobs_location',
+            DBPREFIX.'module_jobs_rel_loc_jobs',
+            DBPREFIX.'module_jobs_settings',
+        ),
+        'knowledge' => array(
+            DBPREFIX.'module_knowledge_articles',
+            DBPREFIX.'module_knowledge_article_content',
+            DBPREFIX.'module_knowledge_categories',
+            DBPREFIX.'module_knowledge_categories_content',
+            DBPREFIX.'module_knowledge_settings',
+            DBPREFIX.'module_knowledge_tags',
+            DBPREFIX.'module_knowledge_tags_articles',
+        ),
+        'mediadir' => array(
+            DBPREFIX.'module_mediadir_categories',
+            DBPREFIX.'module_mediadir_categories_names',
+            DBPREFIX.'module_mediadir_comments',
+            DBPREFIX.'module_mediadir_entries',
+            DBPREFIX.'module_mediadir_forms',
+            DBPREFIX.'module_mediadir_form_names',
+            DBPREFIX.'module_mediadir_inputfields',
+            DBPREFIX.'module_mediadir_inputfield_names',
+            DBPREFIX.'module_mediadir_inputfield_types',
+            DBPREFIX.'module_mediadir_inputfield_verifications',
+            DBPREFIX.'module_mediadir_levels',
+            DBPREFIX.'module_mediadir_level_names',
+            DBPREFIX.'module_mediadir_mails',
+            DBPREFIX.'module_mediadir_mail_actions',
+            DBPREFIX.'module_mediadir_masks',
+            DBPREFIX.'module_mediadir_order_rel_forms_selectors',
+            DBPREFIX.'module_mediadir_rel_entry_categories',
+            DBPREFIX.'module_mediadir_rel_entry_inputfields',
+            DBPREFIX.'module_mediadir_rel_entry_inputfields_clean1',
+            DBPREFIX.'module_mediadir_rel_entry_levels',
+            DBPREFIX.'module_mediadir_settings',
+            DBPREFIX.'module_mediadir_settings_num_categories',
+            DBPREFIX.'module_mediadir_settings_num_entries',
+            DBPREFIX.'module_mediadir_settings_num_levels',
+            DBPREFIX.'module_mediadir_settings_perm_group_forms',
+            DBPREFIX.'module_mediadir_votes'
+        ),
     );
 
     $conflictedModules = array();
     foreach ($missedModules as $module) {
         foreach ($potentialMissedTables[$module] as $table) {
             if (\Cx\Lib\UpdateUtil::table_exist($table)) {
-                $conflictedModules[$module][] = $table;
+                $result = \Cx\Lib\UpdateUtil::sql('SHOW TABLE STATUS WHERE `Name` = "'.$table.'"');
+                if ($result && ($result->RecordCount() > 0) && (strpos($result->fields['Comment'], 'cx3upgrade') === false)) {
+                    $conflictedModules[$module][] = $table;
+                }
             }
         }
     }

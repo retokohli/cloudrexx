@@ -45,14 +45,14 @@ class UpdateUtil
      *                                     # are duplicates (which will be dropped). use with care.
      *        )
      */
-    public static function table($name, $struc, $idx = array(), $engine = 'MyISAM')
+    public static function table($name, $struc, $idx = array(), $engine = 'MyISAM', $comment)
     {
         if (self::table_exist($name)) {
             self::check_columns($name, $struc);
             self::check_indexes($name, $idx, $struc);
             self::check_dbtype($name, $engine);
         } else {
-            self::create_table($name, $struc, $idx, $engine);
+            self::create_table($name, $struc, $idx, $engine, $comment);
         }
     }
 
@@ -124,7 +124,7 @@ class UpdateUtil
     }
 
 
-    private static function create_table($name, $struc, $idx, $engine)
+    private static function create_table($name, $struc, $idx, $engine, $comment)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -135,11 +135,12 @@ class UpdateUtil
         }
         $colspec    = join(",\n", $cols);
         $primaries  = join(",\n", self::_getprimaries($struc));
+        $comment    = !empty($comment) ? 'COMMENT="'.$comment.'"' : '';
 
         $table_stmt = "CREATE TABLE `$name`(
             $colspec".(!empty($primaries) ? ",
             PRIMARY KEY ($primaries)" : '')."
-        ) ENGINE=$engine";
+        ) ENGINE=$engine $comment";
 
         self::sql($table_stmt);
         // index statements. as we just created the table
