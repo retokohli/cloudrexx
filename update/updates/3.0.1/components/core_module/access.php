@@ -105,26 +105,22 @@ function _accessUpdate()
      * ADD SETTINGS
      *
      ***************/
-    if (!in_array(DBPREFIX."access_settings", $arrTables)) {
-        $query = "
-            CREATE TABLE `".DBPREFIX."access_settings` (
-                `key` VARCHAR( 32 ) NOT NULL DEFAULT '',
-                `value` VARCHAR( 255 ) NOT NULL DEFAULT '',
-                `status` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0',
-                UNIQUE (
-                    `key`
-                )
-            ) TYPE = InnoDB
-        ";
-        if ($objDatabase->Execute($query) === false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    }
+    try {
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'access_settings',
+            array(
+                'key'        => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => ''),
+                'value'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'key'),
+                'status'     => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'value')
+            ),
+            array(
+                'key'        => array('fields' => array('key'), 'type' => 'UNIQUE')
+            ),
+            'InnoDB'
+        );
 
-    if (in_array(DBPREFIX."communit_config", $arrTables)) {
-        $query = 'SELECT `name`, `value`, `status` FROM `'.DBPREFIX.'community_config`';
-        $objResult = $objDatabase->Execute($query);
-        if ($objResult) {
+        if (in_array(DBPREFIX."communit_config", $arrTables)) {
+            $objResult = \Cx\Lib\UpdateUtil::sql('SELECT `name`, `value`, `status` FROM `'.DBPREFIX.'community_config`');
             while (!$objResult->EOF) {
                 $arrCommunityConfig[$objResult->fields['name']] = array(
                     'value'        => $objResult->fields['value'],
@@ -132,71 +128,57 @@ function _accessUpdate()
                 );
                 $objResult->MoveNext();
             }
-        } else {
-            return _databaseError($query, $objDatabase->ErrorMsg());
         }
-    }
 
-    $arrSettings = array(
-        'user_activation'                 =>array('value'=> '',               'status'    => isset($arrCommunityConfig['user_activation']['status']) ? $arrCommunityConfig['user_activation']['status'] : 0),
-        'user_activation_timeout'         =>array('value'=> isset($arrCommunityConfig['user_activation_timeout']['value']) ? $arrCommunityConfig['user_activation_timeout']['value'] : 0, 'status'    => isset($arrCommunityConfig['user_activation_timeout']['status']) ? $arrCommunityConfig['user_activation_timeout']['status'] : 0),
-        'assigne_to_groups'               =>array('value'=> isset($arrCommunityConfig['community_groups']['value']) ? $arrCommunityConfig['community_groups']['value'] : '', 'status'    => 1),
-        'max_profile_pic_width'           =>array('value'=>'160',            'status'  => 1),
-        'max_profile_pic_height'          =>array('value'=>'160',            'status'  => 1),
-        'profile_thumbnail_pic_width'     =>array('value'=>'50',             'status'  => 1),
-        'profile_thumbnail_pic_height'    =>array('value'=>'50',             'status'  => 1),
-        'max_profile_pic_size'            =>array('value'=>'30000',          'status'  => 1),
-        'max_pic_width'                   =>array('value'=>'600',            'status'  => 1),
-        'max_pic_height'                  =>array('value'=>'600',            'status'  => 1),
-        'max_thumbnail_pic_width'         =>array('value'=>'130',            'status'  => 1),
-        'max_thumbnail_pic_height'        =>array('value'=>'130',            'status'  => 1),
-        'max_pic_size'                    =>array('value'=>'200000',         'status'  => 1),
-        'notification_address'            =>array('value'=>addslashes($_CONFIG['coreAdminEmail']), 'status'=>1),
-        'user_config_email_access'        =>array('value'=> '',              'status'    => 1),
-        'user_config_profile_access'      =>array('value'=> '',              'status'    => 1),
-        'default_email_access'            =>array('value'=> 'members_only',  'status'    => 1),
-        'default_profile_access'          =>array('value'=> 'members_only',  'status'    => 1),
-        'user_delete_account'             =>array('value'=> '',              'status'    => 1),
-        'block_currently_online_users'    =>array('value'=> '10',            'status'    => 0),
-        'block_currently_online_users_pic'=>array('value'=> '',              'status'    => 0),
-        'block_last_active_users'         =>array('value'=> '10',            'status'    => 0),
-        'block_last_active_users_pic'     =>array('value'=> '',              'status'    => 0),
-        'block_latest_reg_users'          =>array('value'=> '10',            'status'    => 0),
-        'block_latest_reg_users_pic'      =>array('value'=> '',              'status'    => 0),
-        'block_birthday_users'            =>array('value'=> '10',            'status'    => 0),
-        'block_birthday_users_pic'        =>array('value'=> '',              'status'    => 0),
-        'session_user_interval'           =>array('value'=> '0',             'status'    => 1)
-    );
+        $arrSettings = array(
+            'user_activation'                 =>array('value'=> '',               'status'    => isset($arrCommunityConfig['user_activation']['status']) ? $arrCommunityConfig['user_activation']['status'] : 0),
+            'user_activation_timeout'         =>array('value'=> isset($arrCommunityConfig['user_activation_timeout']['value']) ? $arrCommunityConfig['user_activation_timeout']['value'] : 0, 'status'    => isset($arrCommunityConfig['user_activation_timeout']['status']) ? $arrCommunityConfig['user_activation_timeout']['status'] : 0),
+            'assigne_to_groups'               =>array('value'=> isset($arrCommunityConfig['community_groups']['value']) ? $arrCommunityConfig['community_groups']['value'] : '', 'status'    => 1),
+            'max_profile_pic_width'           =>array('value'=>'160',            'status'  => 1),
+            'max_profile_pic_height'          =>array('value'=>'160',            'status'  => 1),
+            'profile_thumbnail_pic_width'     =>array('value'=>'50',             'status'  => 1),
+            'profile_thumbnail_pic_height'    =>array('value'=>'50',             'status'  => 1),
+            'max_profile_pic_size'            =>array('value'=>'30000',          'status'  => 1),
+            'max_pic_width'                   =>array('value'=>'600',            'status'  => 1),
+            'max_pic_height'                  =>array('value'=>'600',            'status'  => 1),
+            'max_thumbnail_pic_width'         =>array('value'=>'130',            'status'  => 1),
+            'max_thumbnail_pic_height'        =>array('value'=>'130',            'status'  => 1),
+            'max_pic_size'                    =>array('value'=>'200000',         'status'  => 1),
+            'notification_address'            =>array('value'=>addslashes($_CONFIG['coreAdminEmail']), 'status'=>1),
+            'user_config_email_access'        =>array('value'=> '',              'status'    => 1),
+            'user_config_profile_access'      =>array('value'=> '',              'status'    => 1),
+            'default_email_access'            =>array('value'=> 'members_only',  'status'    => 1),
+            'default_profile_access'          =>array('value'=> 'members_only',  'status'    => 1),
+            'user_delete_account'             =>array('value'=> '',              'status'    => 1),
+            'block_currently_online_users'    =>array('value'=> '10',            'status'    => 0),
+            'block_currently_online_users_pic'=>array('value'=> '',              'status'    => 0),
+            'block_last_active_users'         =>array('value'=> '10',            'status'    => 0),
+            'block_last_active_users_pic'     =>array('value'=> '',              'status'    => 0),
+            'block_latest_reg_users'          =>array('value'=> '10',            'status'    => 0),
+            'block_latest_reg_users_pic'      =>array('value'=> '',              'status'    => 0),
+            'block_birthday_users'            =>array('value'=> '10',            'status'    => 0),
+            'block_birthday_users_pic'        =>array('value'=> '',              'status'    => 0),
+            'session_user_interval'           =>array('value'=> '0',             'status'    => 1),
+            'user_accept_tos_on_signup'       =>array('value'=> '',              'status'    => 0),
+            'user_captcha'                    =>array('value'=> '',              'status'    => 0),
+            'profile_thumbnail_method'        =>array('value'=> 'crop',          'status'    => 1),
+            'profile_thumbnail_scale_color'   =>array('value'=> '#FFFFFF',       'status'    => 1),
+        );
 
-    foreach ($arrSettings as $key => $arrSetting) {
-        $query = "SELECT 1 FROM `".DBPREFIX."access_settings` WHERE `key` = '".$key."'";
-        $objResult = $objDatabase->SelectLimit($query, 1);
-        if ($objResult !== false) {
-            if ($objResult->RecordCount() == 0) {
-                $query = "INSERT INTO `".DBPREFIX."access_settings` (
-                    `key`,
-                    `value`,
-                    `status`
-                ) VALUES (
-                    '".$key."',
-                    '".$arrSetting['value']."',
-                    '".$arrSetting['status']."'
-                )";
-                if ($objDatabase->Execute($query) === false) {
-                    return _databaseError($query, $objDatabase->ErrorMsg());
-                }
+        foreach ($arrSettings as $key => $arrSetting) {
+            if (!\Cx\Lib\UpdateUtil::sql("SELECT 1 FROM `".DBPREFIX."access_settings` WHERE `key` = '".$key."'")->RecordCount()) {
+                \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings`
+                    SET `key`       = '".$key."',
+                        `value`     = '".$arrSetting['value']."',
+                        `status`    = '".$arrSetting['status']."'
+                ");
             }
-        } else {
-            return _databaseError($query, $objDatabase->ErrorMsg());
         }
-    }
 
-
-    try{
         // delete obsolete table community_config
         \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'community_config');
 
-        // delete obsolete table community_config
+        // delete obsolete table user_validity 
         \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'user_validity');
     }
     catch (\Cx\Lib\UpdateException $e) {
@@ -214,29 +196,29 @@ function _accessUpdate()
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'access_user_profile',
             array(
-                'user_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'primary' => true, 'default' => '0'),
-                'gender'         => array('type' => 'ENUM(\'gender_undefined\', \'gender_female\', \'gender_male\')', 'notnull' => true, 'default' => 'gender_undefined'),
-                'title'          => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'firstname'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'lastname'       => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'company'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'address'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'city'           => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
-                'zip'            => array('type' => 'VARCHAR(10)', 'notnull' => true, 'default' => ''),
-                'country'        => array('type' => 'SMALLINT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'phone_office'   => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
-                'phone_private'  => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
-                'phone_mobile'   => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
-                'phone_fax'      => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
-                'birthday'       => array('type' => 'VARCHAR(11)', 'notnull' => false),
-                'website'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'profession'     => array('type' => 'VARCHAR(150)', 'notnull' => true, 'default' => ''),
-                'interests'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'signature'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'picture'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '')
+                'user_id'            => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+                'gender'             => array('type' => 'ENUM(\'gender_undefined\',\'gender_female\',\'gender_male\')', 'notnull' => true, 'default' => 'gender_undefined', 'after' => 'user_id'),
+                'title'              => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'gender'),
+                'firstname'          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'title'),
+                'lastname'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'firstname'),
+                'company'            => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'lastname'),
+                'address'            => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'company'),
+                'city'               => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '', 'after' => 'address'),
+                'zip'                => array('type' => 'VARCHAR(10)', 'notnull' => true, 'default' => '', 'after' => 'city'),
+                'country'            => array('type' => 'SMALLINT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'zip'),
+                'phone_office'       => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'country'),
+                'phone_private'      => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'phone_office'),
+                'phone_mobile'       => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'phone_private'),
+                'phone_fax'          => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'phone_mobile'),
+                'birthday'           => array('type' => 'VARCHAR(11)', 'notnull' => false, 'after' => 'phone_fax'),
+                'website'            => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'birthday'),
+                'profession'         => array('type' => 'VARCHAR(150)', 'notnull' => true, 'default' => '', 'after' => 'website'),
+                'interests'          => array('type' => 'text', 'after' => 'profession'),
+                'signature'          => array('type' => 'text', 'after' => 'interests'),
+                'picture'            => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'signature')
             ),
             array(
-                'profile'        => array('fields' => array('firstname' => 100, 'lastname' => 100, 'company' => 50))
+                'profile'            => array('fields' => array('firstname'(100))
             ),
             'InnoDB'
         );
@@ -565,7 +547,7 @@ function _accessUpdate()
         'section=access',
     );
     try {
-        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array(), $pattern, $replacement, array('content', 'target'), '4.0.0');
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array(), $pattern, $replacement, array('content', 'target'), '2.0.0');
     }
     catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
@@ -763,6 +745,18 @@ function _accessUpdate()
             ),
             array(
                 'username'               => array('fields' => array('username'))
+            )
+        );
+
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'access_user_groups',
+            array(
+                'group_id'               => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'group_name'             => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'group_id'),
+                'group_description'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'group_name'),
+                'is_active'              => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '1', 'after' => 'group_description'),
+                'type'                   => array('type' => 'ENUM(\'frontend\',\'backend\')', 'notnull' => true, 'default' => 'frontend', 'after' => 'is_active'),
+                'homepage'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'type')
             )
         );
     }
