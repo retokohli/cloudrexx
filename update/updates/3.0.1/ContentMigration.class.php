@@ -470,20 +470,20 @@ class ContentMigration
         $this->db->Execute('
             CREATE TABLE `contrexx_module_block_categories` (
              `id` int(10) unsigned NOT NULL auto_increment,
-             `parent` int(10) NOT NULL default '0',
-             `name` varchar(255) NOT NULL default '',
-             `order` int(10) NOT NULL default '0',
-             `status` tinyint(1) NOT NULL default '1',
+             `parent` int(10) NOT NULL default \'0\',
+             `name` varchar(255) NOT NULL default \'\',
+             `order` int(10) NOT NULL default \'0\',
+             `status` tinyint(1) NOT NULL default \'1\',
               PRIMARY KEY (`id`)
             ) ENGINE=MyISAM
         ');
         $this->db->Execute('
             CREATE TABLE `contrexx_module_block_rel_lang_content` (
-             `block_id` int(10) unsigned NOT NULL default '0',
-             `lang_id` int(10) unsigned NOT NULL default '0',
-             `name` varchar(255) NOT NULL default '',
-             `content` mediumtext NOT NULL default '',
-             `active` int(1) NOT NULL default '0'
+             `block_id` int(10) unsigned NOT NULL default \'0\',
+             `lang_id` int(10) unsigned NOT NULL default \'0\',
+             `name` varchar(255) NOT NULL default \'\',
+             `content` mediumtext NOT NULL default \'\',
+             `active` int(1) NOT NULL default \'0\'
             ) ENGINE=MyISAM
         ');
         $this->db->Execute('
@@ -491,7 +491,7 @@ class ContentMigration
             SELECT DISTINCT tblBlock.`id`, CL.`id`, tblBlock.`name`, tblBlock.`content`, 0
               FROM `contrexx_languages` AS CL,
                    `contrexx_module_block_blocks` AS tblBlock
-             WHERE CL.`frontend` = '1'
+             WHERE CL.`frontend` = \'1\'
              ORDER BY tblBlock.`id`
         ');
         $this->db->Execute('
