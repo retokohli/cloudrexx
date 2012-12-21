@@ -9,7 +9,7 @@ class ContrexxUpdate
     private $isAuth = false;
     private $lang;
     private $ajax = false;
-    private $html = array();
+    private $html = array('content' => '', 'logout' => '', 'navigation' => '', 'dialog' => '');
 
     /**
      * Available languages
