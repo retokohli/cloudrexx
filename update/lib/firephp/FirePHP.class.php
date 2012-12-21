@@ -1252,6 +1252,25 @@ class FirePHP {
      */
     protected function encodeObject($Object, $ObjectDepth = 1, $ArrayDepth = 1, $MaxDepth = 1)
     {
+        // START: Contrexx customizing
+        // do no dump large objects or objects containing sensitive data
+        if (is_object($Object)) {
+            $class = get_class($Object);
+            switch ($class) {
+                case 'ADODB_mysql':
+                case 'Doctrine\ORM\EntityManager':
+                    $return['__className'] = $class;
+                    $return['__structire__'] = 'FirePHP: Stopped listing more information about this object due to security restrictions!';
+                    return $return;
+                    break;
+
+                default:
+                    // dump all other classes
+                    break;
+            }
+        }
+        // END: Contrexx customizing
+
         if ($MaxDepth > $this->options['maxDepth']) {
             return '** Max Depth ('.$this->options['maxDepth'].') **';
         }

@@ -662,7 +662,7 @@ class DBG
             }
             $status = 'error';
         } else {
-            $status = preg_match('#^(UPDATE|DELETE|INSERT)#', $sql) ? 'info' : 'log';
+            $status = preg_match('#^(UPDATE|DELETE|INSERT|ALTER)#', $sql) ? 'info' : 'log';
         }
 
         self::setSQLQueryCache($sql);
