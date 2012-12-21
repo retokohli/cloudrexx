@@ -295,6 +295,78 @@ function _newsletterUpdate()
                 'status'             => array('fields' => array('status'))
             )
         );
+
+
+        // replace several placeholders that have changed
+        $search = array(
+            '/TXT_NEWSLETTER_URI/',
+            '/NEWSLETTER_URI/',
+            '/TXT_NEWSLETTER_STREET/',
+            '/NEWSLETTER_STREET/',
+        );
+        $replace = array(
+            'TXT_NEWSLETTER_WEBSITE',
+            'NEWSLETTER_WEBSITE',
+            'TXT_NEWSLETTER_ADDRESS',
+            'NEWSLETTER_ADDRESS',
+        );
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array('module' => 'newsletter'), $search, $replace, array('content'), '3.0.1');
+
+
+        // sorry, brainfuck coming up...
+        // this adds the missing template block newsletter_list as well as the placeholder [[NEWSLETTER_LIST_SELECTED]]
+        $search = array(
+            '/(<!--\s+BEGIN\s+newsletter_lists\s+-->)(.*)(<!--\s+END\s+newsletter_lists\s+-->)/ms',
+        );
+        $callback = function($matches) {
+            if (preg_match('/^(.*)(<[^>]+[\'"]list\[\{NEWSLETTER_LIST_ID\}\][\'"])([^>]*>)(.*)$/ms', $matches[2], $listMatches)) {
+                if (strpos($listMatches[2].$listMatches[3], '{NEWSLETTER_LIST_SELECTED}') === false) {
+                    $matches[2] = $listMatches[1].$listMatches[2].' {NEWSLETTER_LIST_SELECTED} '.$listMatches[3].$listMatches[4];
+                } else {
+                    $matches[2] = $listMatches[1].$listMatches[2].$listMatches[3].$listMatches[4];
+                }
+            }
+
+            if (!preg_match('/<!--\s+BEGIN\s+newsletter_list\s+-->.*<!--\s+END\s+newsletter_list\s+-->/ms', $matches[2])) {
+                return $matches[1].'<!-- BEGIN newsletter_list -->'.$matches[2].'<!-- END newsletter_list -->'.$matches[3];
+            } else {
+                return $matches[1].$matches[2].$matches[3];
+            };
+        };
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'newsletter'), $search, $callback, array('content'), '3.0.1');
+
+
+        // this adds the missing placeholders [[SELECTED_DAY]], [[SELECTED_MONTH]], [[SELECTED_YEAR]]
+        $search = array(
+            '/(<option[^>]+\{USERS_BIRTHDAY_(DAY|MONTH|YEAR)\}[\'"])([^>]*>)/ms',
+        );
+        $callback = function($matches) {
+            if (strpos($matches[1].$matches[3], '{SELECTED_'.$matches[2].'}') === false) {
+                return $matches[1].' {SELECTED_'.$matches[2].'} '.$matches[3];
+            } else {
+                return $matches[1].$matches[3];
+            }
+        };
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'newsletter'), $search, $callback, array('content'), '3.0.1');
+
+
+        // replace [[TXT_NEWSLETTER_TITLE]] to [[TXT_NEWSLETTER_SALUTATION]]
+        // replace [[NEWSLETTER_TITLE]] to [[NEWSLETTER_SALUTATION]]
+        $search = array(
+            '/.*\{NEWSLETTER_TITLE\}.*/ms',
+        );
+        $callback = function($matches) {
+            if (   !preg_match('/<!--\s+BEGIN\s+recipient_title\s+-->.*\{NEWSLETTER_TITLE\}.*<!--\s+END\s+recipient_title\s+-->/ms', $matches[0])
+                && !preg_match('/<!--\s+BEGIN\s+recipient_salutation\s+-->/ms', $matches[0])
+                && !preg_match('/\{NEWSLETTER_SALUTATION\}/ms', $matches[0])
+            ) {
+                return str_replace(array('TXT_NEWSLETTER_TITLE', '{NEWSLETTER_TITLE}'), array('TXT_NEWSLETTER_SALUTATION', '{NEWSLETTER_SALUTATION}'), $matches[0]);
+            } else {
+                return $matches[0];
+            }
+        };
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'newsletter'), $search, $callback, array('content'), '3.0.1');
+
     }
     catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
