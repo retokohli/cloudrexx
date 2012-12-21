@@ -91,7 +91,7 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     
     $arrDirs = array('core_module', 'module');
     $updateStatus = true;
-    
+
     if (!@include_once(dirname(__FILE__) . '/components/core/core.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/core.php'));
         return false;
@@ -612,6 +612,7 @@ function copyCxFilesToRoot($src, $dst) {
                 $objFile = new \Cx\Lib\FileSystem\File($srcPath);
                 $objFile->copy($dstPath, true);
             } catch (\Exception $e) {
+                $copiedCxFilesIndex--;
                 $_SESSION['copiedCxFilesIndex'] = $copiedCxFilesIndex;
                 \DBG::msg('Copy cx files to root: ' . $e->getMessage());
                 return false;
