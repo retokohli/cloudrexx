@@ -947,7 +947,7 @@ function _shopUpdate()
 
 
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 

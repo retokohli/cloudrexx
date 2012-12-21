@@ -49,7 +49,7 @@ function _newsletterUpdate()
             )
         );
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
@@ -75,7 +75,7 @@ function _newsletterUpdate()
         }
 
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
         
@@ -124,7 +124,7 @@ function _newsletterUpdate()
         \Cx\Lib\UpdateUtil::sql("DELETE FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notifyOnUnsubscribe'");
         DBG::msg("Done with newsletter update");
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
@@ -138,7 +138,7 @@ function _newsletterUpdate()
             }
         }
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
@@ -153,7 +153,7 @@ function _newsletterUpdate()
             \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_newsletter_confirm_mail` (`id` ,`title` ,`content` ,`recipients`) VALUES ('3', '[[url]] - Neue Newsletter Empfänger [[action]]', 'Hallo Admin Eine neue Empfänger [[action]] in ihrem Newsletter System. Automatisch generierte Nachricht [[date]]', '');");
         }
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
@@ -296,7 +296,7 @@ function _newsletterUpdate()
             )
         );
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 

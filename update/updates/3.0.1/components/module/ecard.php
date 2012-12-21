@@ -26,7 +26,7 @@ function _ecardUpdate()
             )
         );
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 

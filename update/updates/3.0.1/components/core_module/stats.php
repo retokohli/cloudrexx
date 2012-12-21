@@ -229,7 +229,7 @@ function _statsUpdate()
 		\Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO '.DBPREFIX.'stats_config (id, name, value, status) VALUES (20, "exclude_identifying_info", 1, 0)');
 
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 

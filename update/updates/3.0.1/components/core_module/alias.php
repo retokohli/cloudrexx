@@ -39,7 +39,7 @@ function _aliasUpdate() {
                               WHERE tblAT.`type` = \'local\'');
         }
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 	return true;

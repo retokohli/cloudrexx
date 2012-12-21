@@ -73,7 +73,7 @@ function _marketUpdate()
             )
         );
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         // we COULD do something else here..
         DBG::trace();
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);

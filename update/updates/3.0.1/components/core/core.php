@@ -115,7 +115,7 @@ function _coreUpdate()
                     'catid'                  => array('fields' => array('catid'))
                 )
             );
-        } catch (UpdateException $e) {
+        } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
     }
@@ -137,7 +137,7 @@ function _coreUpdate()
                 'referer'                  => array('type' => 'VARCHAR(250)')
             )
         );
-    } catch (UpdateException $e) {
+    } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
@@ -169,7 +169,7 @@ function _coreUpdate()
             )
         );
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         // we COULD do something else here..
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
@@ -1454,7 +1454,7 @@ function _coreUpdate()
             )
         );
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
@@ -1480,7 +1480,7 @@ function _coreUpdate()
             ');
             \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'languages` SET `app_themes_id` = `themesid`');
         }
-    } catch (UpdateException $e) {
+    } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
@@ -1564,7 +1564,7 @@ function _coreUpdate()
         if (!isset($arrColumns['REMEMBER_ME'])) {
             \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'sessions` ADD `remember_me` INT(1) NOT NULL DEFAULT 0 AFTER `sessionid`');
         }
-    } catch (UpdateException $e) {
+    } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 

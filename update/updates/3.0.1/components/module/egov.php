@@ -197,7 +197,7 @@ function _egovUpdate()
      ********************************/
     try {
         \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_egov_orders` CHANGE `order_date` `order_date` TIMESTAMP NOT NULL DEFAULT "0000-00-00 00:00:00"');
-    } catch (UpdateException $e) {
+    } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 

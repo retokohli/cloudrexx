@@ -330,7 +330,7 @@ function _mediadirUpdate()
           )
       );
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         // we COULD do something else here..
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
@@ -486,7 +486,7 @@ Ihr [[URL]]-Team
 Diese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] generiert.', '', '1', '9', '1', '0');");
         }
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         // we COULD do something else here..
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
@@ -517,7 +517,7 @@ function tryButDontWorry($sql) {
     try {
         \Cx\Lib\UpdateUtil::sql($sql);
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         //nothing.
     }
 }

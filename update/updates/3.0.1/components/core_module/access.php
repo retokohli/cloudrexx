@@ -34,7 +34,7 @@ function _accessUpdate()
             'InnoDB'
         );
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         // we COULD do something else here..
         DBG::trace();
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
@@ -200,7 +200,7 @@ function _accessUpdate()
         // delete obsolete table community_config
         \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'user_validity');
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         // we COULD do something else here..
         DBG::trace();
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
@@ -243,7 +243,7 @@ function _accessUpdate()
             'InnoDB'
         );
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
@@ -323,7 +323,7 @@ function _accessUpdate()
             'InnoDB'
         );
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
@@ -806,7 +806,7 @@ function _accessUpdate()
             )
         );
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         // we COULD do something else here..
         DBG::trace();
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);

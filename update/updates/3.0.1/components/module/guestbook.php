@@ -49,7 +49,7 @@ function _guestbookUpdate()
             )
         );
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
@@ -60,7 +60,7 @@ function _guestbookUpdate()
      ********************************/
     try {
         \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_guestbook` CHANGE `datetime` `datetime` TIMESTAMP NOT NULL DEFAULT "0000-00-00 00:00:00"');
-    } catch (UpdateException $e) {
+    } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 

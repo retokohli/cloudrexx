@@ -9,7 +9,7 @@ function _logUpdate()
      ********************************/
     try {
         \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'log` CHANGE `datetime` `datetime` TIMESTAMP NULL DEFAULT "0000-00-00 00:00:00"');
-    } catch (UpdateException $e) {
+    } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
