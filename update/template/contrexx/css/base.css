@@ -305,6 +305,7 @@ table.adminlist td {
 
 .content-migration-select-wrapper select {
     float: left;
+    width: 300px;
     height: 600px;
     margin: 0 0 10px 0;
 }

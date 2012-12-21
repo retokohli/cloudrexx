@@ -43,7 +43,7 @@ class ContentMigration
         }
     }
 
-    protected function getSortedNodes($objResult, &$visiblePageIDs) {
+    protected function getSortedNodes($objResult, $visiblePageIDs) {
         $arrSortedNodes = array();
         
         while (!$objResult->EOF) {
@@ -75,98 +75,98 @@ class ContentMigration
             return false;
         }
         
-        $this->db->Execute('
-            CREATE TABLE IF NOT EXISTS `contrexx_content_node` (
-              `id` int(11) NOT NULL AUTO_INCREMENT,
-              `parent_id` int(11) DEFAULT NULL,
-              `lft` int(11) NOT NULL,
-              `rgt` int(11) NOT NULL,
-              `lvl` int(11) NOT NULL,
-              PRIMARY KEY (`id`),
-              KEY `IDX_E5A18FDD727ACA70` (`parent_id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
-        ');
-        $this->db->Execute('
-            CREATE TABLE IF NOT EXISTS `contrexx_content_page` (
-              `id` int(11) NOT NULL AUTO_INCREMENT,
-              `node_id` int(11) DEFAULT NULL,
-              `nodeIdShadowed` int(11) DEFAULT NULL,
-              `lang` int(11) NOT NULL,
-              `type` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
-              `caching` tinyint(1) NOT NULL,
-              `updatedAt` timestamp NULL DEFAULT NULL,
-              `updatedBy` char(40) COLLATE utf8_unicode_ci NOT NULL,
-              `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-              `linkTarget` varchar(16) COLLATE utf8_unicode_ci DEFAULT NULL,
-              `contentTitle` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-              `slug` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-              `content` longtext COLLATE utf8_unicode_ci NOT NULL,
-              `sourceMode` tinyint(1) NOT NULL DEFAULT \'0\',
-              `customContent` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
-              `cssName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-              `cssNavName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-              `skin` int(11) DEFAULT NULL,
-              `metatitle` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-              `metadesc` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-              `metakeys` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-              `metarobots` varchar(7) COLLATE utf8_unicode_ci DEFAULT NULL,
-              `start` timestamp NULL DEFAULT NULL,
-              `end` timestamp NULL DEFAULT NULL,
-              `editingStatus` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
-              `protection` int(11) NOT NULL,
-              `frontendAccessId` int(11) NOT NULL,
-              `backendAccessId` int(11) NOT NULL,
-              `display` tinyint(1) NOT NULL,
-              `active` tinyint(1) NOT NULL,
-              `target` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-              `module` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-              `cmd` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT \'\',
-              PRIMARY KEY (`id`),
-              UNIQUE KEY `node_id` (`node_id`,`lang`),
-              KEY `IDX_D8E86F54460D9FD7` (`node_id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
-        ');
-        $this->db->Execute('
-            CREATE TABLE IF NOT EXISTS `contrexx_log_entry` (
-              `id` int(11) NOT NULL AUTO_INCREMENT,
-              `action` varchar(8) COLLATE utf8_unicode_ci NOT NULL,
-              `logged_at` timestamp NULL DEFAULT NULL,
-              `version` int(11) NOT NULL,
-              `object_id` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
-              `object_class` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-              `data` longtext COLLATE utf8_unicode_ci,
-              `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-              PRIMARY KEY (`id`),
-              UNIQUE KEY `log_class_unique_version_idx` (`version`,`object_id`,`object_class`),
-              KEY `log_class_lookup_idx` (`object_class`),
-              KEY `log_date_lookup_idx` (`logged_at`),
-              KEY `log_user_lookup_idx` (`username`)
-            ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
-        ');
-        
-        if (empty($_SESSION['contrexx_update']['contraints_added'])) {
-            $nodeConstraintAdded = $this->db->Execute('
-                ALTER TABLE `contrexx_content_node`
-                ADD CONSTRAINT FOREIGN KEY (`parent_id`) REFERENCES `contrexx_content_node` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+        if (empty($_SESSION['contrexx_update']['tables_created'])) {
+            $this->db->Execute('DROP TABLE `' . DBPREFIX . 'content_page`');
+            $this->db->Execute('DROP TABLE `' . DBPREFIX . 'content_node`');
+            $this->db->Execute('DROP TABLE `' . DBPREFIX . 'log_entry`');
+            
+            $this->db->Execute('
+                CREATE TABLE `' . DBPREFIX . 'content_node` (
+                  `id` int(11) NOT NULL AUTO_INCREMENT,
+                  `parent_id` int(11) DEFAULT NULL,
+                  `lft` int(11) NOT NULL,
+                  `rgt` int(11) NOT NULL,
+                  `lvl` int(11) NOT NULL,
+                  PRIMARY KEY (`id`),
+                  KEY `IDX_E5A18FDD727ACA70` (`parent_id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
+            ');
+            $this->db->Execute('
+                CREATE TABLE `' . DBPREFIX . 'content_page` (
+                  `id` int(11) NOT NULL AUTO_INCREMENT,
+                  `node_id` int(11) DEFAULT NULL,
+                  `nodeIdShadowed` int(11) DEFAULT NULL,
+                  `lang` int(11) NOT NULL,
+                  `type` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
+                  `caching` tinyint(1) NOT NULL,
+                  `updatedAt` timestamp NULL DEFAULT NULL,
+                  `updatedBy` char(40) COLLATE utf8_unicode_ci NOT NULL,
+                  `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+                  `linkTarget` varchar(16) COLLATE utf8_unicode_ci DEFAULT NULL,
+                  `contentTitle` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+                  `slug` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+                  `content` longtext COLLATE utf8_unicode_ci NOT NULL,
+                  `sourceMode` tinyint(1) NOT NULL DEFAULT \'0\',
+                  `customContent` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+                  `cssName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                  `cssNavName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                  `skin` int(11) DEFAULT NULL,
+                  `metatitle` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                  `metadesc` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                  `metakeys` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                  `metarobots` varchar(7) COLLATE utf8_unicode_ci DEFAULT NULL,
+                  `start` timestamp NULL DEFAULT NULL,
+                  `end` timestamp NULL DEFAULT NULL,
+                  `editingStatus` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
+                  `protection` int(11) NOT NULL,
+                  `frontendAccessId` int(11) NOT NULL,
+                  `backendAccessId` int(11) NOT NULL,
+                  `display` tinyint(1) NOT NULL,
+                  `active` tinyint(1) NOT NULL,
+                  `target` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                  `module` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                  `cmd` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT \'\',
+                  PRIMARY KEY (`id`),
+                  UNIQUE KEY `node_id` (`node_id`,`lang`),
+                  KEY `IDX_D8E86F54460D9FD7` (`node_id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
+            ');
+            $this->db->Execute('
+                CREATE TABLE `' . DBPREFIX . 'log_entry` (
+                  `id` int(11) NOT NULL AUTO_INCREMENT,
+                  `action` varchar(8) COLLATE utf8_unicode_ci NOT NULL,
+                  `logged_at` timestamp NULL DEFAULT NULL,
+                  `version` int(11) NOT NULL,
+                  `object_id` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
+                  `object_class` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+                  `data` longtext COLLATE utf8_unicode_ci,
+                  `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                  PRIMARY KEY (`id`),
+                  UNIQUE KEY `log_class_unique_version_idx` (`version`,`object_id`,`object_class`),
+                  KEY `log_class_lookup_idx` (`object_class`),
+                  KEY `log_date_lookup_idx` (`logged_at`),
+                  KEY `log_user_lookup_idx` (`username`)
+                ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
             ');
             
-            $pageConstraintAdded = $this->db->Execute('
-                ALTER TABLE `contrexx_content_page`
-                ADD CONSTRAINT FOREIGN KEY (`node_id`) REFERENCES `contrexx_content_node` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+            $this->db->Execute('
+                ALTER TABLE `' . DBPREFIX . 'content_node`
+                ADD CONSTRAINT FOREIGN KEY (`parent_id`) REFERENCES `' . DBPREFIX . 'content_node` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
             ');
             
-            if ($nodeConstraintAdded && $pageConstraintAdded) {
-                $_SESSION['contrexx_update']['contraints_added'] = true;
-                if (!checkMemoryLimit() || !checkTimeoutLimit()) {
-                    return false;
-                }
+            $this->db->Execute('
+                ALTER TABLE `' . DBPREFIX . 'content_page`
+                ADD CONSTRAINT FOREIGN KEY (`node_id`) REFERENCES `' . DBPREFIX . 'content_node` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+            ');
+            
+            $_SESSION['contrexx_update']['tables_created'] = true;
+            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                return false;
             }
         }
         
-        $this->db->Execute('TRUNCATE TABLE `'.DBPREFIX.'content_pages`');
-        $this->db->Execute('TRUNCATE TABLE `'.DBPREFIX.'content_nodes`');
-        $this->db->Execute('TRUNCATE TABLE `'.DBPREFIX.'log_entry`');
-
+        self::$em->clear();
+        
         $this->nodeArr = array ();
         
         // this will be the root of the site-tree
@@ -192,8 +192,8 @@ class ContentMigration
                       FROM `'.DBPREFIX.'content_navigation` AS tn
                 INNER JOIN `'.DBPREFIX.'content` AS tc
                         ON tc.`id` = tn.`catid`
-                  ORDER BY `parcat`, `displayorder`, `lang` ASC'
-            );
+                  ORDER BY `parcat`, `displayorder`, `lang` ASC
+            ');
             
             // Create a node for each page that ever existed or still does
             // and put them in the array $this->nodeArr
@@ -235,8 +235,10 @@ class ContentMigration
                         return false;
                     }
                     
-                    //skip ghosts
-                    if (!in_array($objResult->fields['catid'], $visiblePageIDs)) {
+                    $catId = $objResult->fields['catid'];
+                    
+                    // Skip ghosts
+                    if (!in_array($catId, $visiblePageIDs)) {
                         $objResult->MoveNext();
                         continue;
                     }
@@ -246,7 +248,7 @@ class ContentMigration
                     if ($objResult->fields['parcat'] == 0) {
                         // Page was located on the first level in the site-tree.
                         // Therefore, directly attach it to the ROOT-node
-                        $this->nodeArr[$objResult->fields['catid']]->setParent($root);
+                        $this->nodeArr[$catId]->setParent($root);
                     } else {
                         if (!isset($this->nodeArr[$objResult->fields['parcat']])) {
                             // Parent node of page can't be found.
@@ -256,7 +258,7 @@ class ContentMigration
                         }
         
                         // Attach page to associated parent node
-                        $this->nodeArr[$objResult->fields['catid']]->setParent($this->nodeArr[$objResult->fields['parcat']]);
+                        $this->nodeArr[$catId]->setParent($this->nodeArr[$objResult->fields['parcat']]);
                     }
         
                     $deleted = false;
@@ -276,9 +278,9 @@ class ContentMigration
                             $deleted = true;
                             break;
                     }                      
-        
+                    
                     if(!$deleted) {
-                        $this->_setPageRecords($objResult, $this->nodeArr[$objResult->fields['catid']], $page);
+                        $this->_setPageRecords($objResult, $this->nodeArr[$catId], $page);
                         self::$em->persist($page);
                     }
                     
@@ -311,7 +313,8 @@ class ContentMigration
                     }
                     
                     $catid = $objRecords->fields['catid'];
-                    //skip ghosts
+                    
+                    // Skip ghosts
                     if(!in_array($catid, $visiblePageIDs)) {
                         $objRecords->MoveNext();
                         continue;
@@ -361,11 +364,11 @@ class ContentMigration
         // Drop old tables
         /*if (empty($_SESSION['contrexx_udpate']['old_tables_dropped'])) {
             $oldTablesDropped = $this->db->Execute('
-                DROP TABLE `contrexx_content`;
-                DROP TABLE `contrexx_content_history`;
-                DROP TABLE `contrexx_content_logfile`;
-                DROP TABLE `contrexx_content_navigation`;
-                DROP TABLE `contrexx_content_navigation_history`;
+                DROP TABLE `' . DBPREFIX . 'content`;
+                DROP TABLE `' . DBPREFIX . 'content_history`;
+                DROP TABLE `' . DBPREFIX . 'content_logfile`;
+                DROP TABLE `' . DBPREFIX . 'content_navigation`;
+                DROP TABLE `' . DBPREFIX . 'content_navigation_history`;
             ');
             
             if ($oldTablesDropped) {
@@ -407,12 +410,13 @@ class ContentMigration
         $updatedAt->setTimestamp($objResult->fields['changelog']);
         $page->setUpdatedAt($updatedAt);
         
-        $start = new \DateTime($objResult->fields['startdate']);
-        if ($start) {
+        if ($objResult->fields['startdate'] != '0000-00-00') {
+            $start = new \DateTime($objResult->fields['startdate']);
             $page->setStart($start);
         }
-        $end = new \DateTime($objResult->fields['enddate']);
-        if ($end) {
+        
+        if ($objResult->fields['enddate'] != '0000-00-00') {
+            $end = new \DateTime($objResult->fields['enddate']);
             $page->setEnd($end);
         }
 
@@ -482,13 +486,10 @@ class ContentMigration
     
     public function pageGrouping()
     {
-        // fetch all pages
+        // Fetch all pages
         if (!isset($_POST['doGroup']) || (isset($_POST['doGroup']) && !$_POST['doGroup'])) {
             return $this->getTreeCode();
         }
-        
-        \DBG::msg(str_repeat('#', 80));
-        \DBG::msg('START GROUPING...');
 
         $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
         $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
@@ -671,7 +672,10 @@ class ContentMigration
         $htmlOption = '<option value="%1$s_%2$s" class="%5$s" onclick="javascript:selectPage(this,%6$s)">%4$s</option>';
         
         foreach ($this->availableFrontendLanguages as $lang) {
-            $objContentTree = new \ContentTree($lang);
+            $cl = \Env::get('ClassLoader');
+            $cl->loadFile(ASCMS_CORE_PATH . '/Tree.class.php');
+            $cl->loadFile(UPDATE_CORE . '/UpdateTree.class.php');
+            $objContentTree = new \UpdateContentTree($lang);
             $langName = \FWLanguage::getLanguageParameter($lang, 'name');
             $arrActiveLanguages = \FWLanguage::getIdArray();
             $classInactiveLanguage = !in_array($lang, $arrActiveLanguages) ? 'inactive-language' : '';
@@ -680,7 +684,13 @@ class ContentMigration
             foreach ($objContentTree->getTree() as $arrPage) {
                 $pageId = $nodes[$arrPage['node_id']][$arrPage['lang']];
                 $grouped = $this->isGrouppedPage($arrSimilarPages, $pageId) ? ' grouped' : '';
-                $options .= sprintf($htmlOption, $arrPage['node_id'], $pageId, $arrPage['lang'], contrexx_raw2xml($arrPage['catname']), 'level'.$arrPage['level'].$grouped, $lang);
+                
+                $spaces = '';
+                for ($i = 1; $i < $arrPage['level']; $i++) {
+                    $spaces .= '&nbsp;&nbsp;';
+                }
+                
+                $options .= sprintf($htmlOption, $arrPage['node_id'], $pageId, $arrPage['lang'], $spaces.$arrPage['catname'], 'level'.$arrPage['level'].$grouped, $lang);
             }
             
             $menu = sprintf($htmlMenu, $lang, $options, $langName, $classInactiveLanguage);
