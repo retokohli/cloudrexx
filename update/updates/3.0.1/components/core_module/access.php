@@ -218,7 +218,7 @@ function _accessUpdate()
                 'picture'            => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'signature')
             ),
             array(
-                'profile'            => array('fields' => array('firstname'(100))
+                'profile'        => array('fields' => array('firstname' => 100, 'lastname' => 100, 'company' => 50))
             ),
             'InnoDB'
         );
