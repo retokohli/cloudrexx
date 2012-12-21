@@ -516,12 +516,42 @@ function getConflictedModules($missedModules) {
 }
 
 function _updateModuleRepository() {
-    global $_CORELANG, $objUpdate;
+    global $_CORELANG, $objUpdate, $objDatabase;
 
     $count = 0;
 
     $dh = opendir(dirname(__FILE__) . '/components/core');
     if ($dh) {
+
+	$query = "TRUNCATE TABLE ".DBPREFIX."module_repository";
+	if ($objDatabase->Execute($query) === false) {
+		return _databaseError($query, $objDatabase->ErrorMsg());
+	}
+        
+        try {
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'module_repository',
+                array(
+                    'id'                 => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true),
+                    'moduleid'           => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'id'),
+                    'content'            => array('type' => 'mediumtext', 'after' => 'moduleid'),
+                    'title'              => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'content'),
+                    'cmd'                => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'title'),
+                    'expertmode'         => array('type' => 'SET(\'y\',\'n\')', 'notnull' => true, 'default' => 'n', 'after' => 'cmd'),
+                    'parid'              => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'expertmode'),
+                    'displaystatus'      => array('type' => 'SET(\'on\',\'off\')', 'notnull' => true, 'default' => 'on', 'after' => 'parid'),
+                    'username'           => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'displaystatus'),
+                    'displayorder'       => array('type' => 'SMALLINT(6)', 'notnull' => true, 'default' => '100', 'after' => 'username')
+                ),
+                array(
+                    'contentid'          => array('fields' => array('id'), 'type' => 'UNIQUE'),
+                    'fulltextindex'      => array('fields' => array('title','content'), 'type' => 'FULLTEXT')
+                )
+            );
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+        
         while (($file = readdir($dh)) !== false) {
             if (preg_match('#^repository_([0-9]+)\.php$#', $file, $arrFunction)) {
                 if (!in_array($file, $_SESSION['contrexx_update']['update']['done'])) {
