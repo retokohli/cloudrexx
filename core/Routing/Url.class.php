@@ -97,7 +97,7 @@ class Url {
         if($matchCount == 0) {
             throw new UrlException('Malformed URL: ' . $url);
         }
-        
+
         $this->domain = $matches[1];
         if(count($matches) > 2) {
             $this->setPath($matches[2]);
@@ -122,7 +122,7 @@ class Url {
         }
         $matches = array();
         $matchCount = preg_match('/([^\?]+)(.*)/', $this->path, $matches);
-        
+
         $parts = explode('?', $this->path);
         if($matchCount == 0) {//seemingly, no parameters are set.
             $this->suggestedTargetPath = $this->path;
@@ -160,6 +160,7 @@ class Url {
         }
 
         //keep parameters to append them after setting the new path (since parameters are stored in path)
+        $params = '';
         if (strpos($this->path, '?') !== false) {
             $params = explode('?', $this->path);
             $params = $params[1];
@@ -187,16 +188,16 @@ class Url {
                 $this->setParam($key, $value);
             }
         } else {
+            $strParameters = $params;
             if (strpos($params, '?') !== false) {
-                $strParemters = explode('?', $params);
-                $strParemters = $strParemters[1];
-            } else {
-                $strParemters = $params;
+                $strParameters = explode('?', $params);
+                $strParameters = $strParameters[1];
             }
-            $arrParemters = explode('&', $strParemters);
-            foreach ($arrParemters as $strParam) {
+            $arrParameters = explode('&', $strParameters);
+            foreach ($arrParameters as $strParam) {
                 $arrParam = explode('=', $strParam);
-                $this->setParam($arrParam[0], $arrParam[1]);
+                $this->setParam($arrParam[0],
+                    (isset ($arrParam[1]) ? $arrParam[1] : ''));
             }
         }
     }
@@ -364,7 +365,7 @@ class Url {
             return static::fromDocumentRoot(null, $lang, $protocol);
         }
 
-        // Throw an exception if we still were unable to locate 
+        // Throw an exception if we still were unable to locate
         // any usfull page till now
         if (!$page) {
             throw new UrlException("Unable to find a page with MODULE:$module and CMD:$cmd in language:$lang!");
@@ -403,7 +404,7 @@ class Url {
 
         return new Url($protocol.'://'.$host.$offset.'/'.$langDir.'/'.$parameters);
     }
-    
+
     /**
      * Returns an Url object for node and language
      * @param int $nodeId Node id
@@ -423,7 +424,7 @@ class Url {
         ));
         return static::fromPage($page, $parameters, $protocol);
     }
-    
+
     /**
      * Returns an Url object for node and language
      * @param \Cx\Model\ContentManager\Node $node Node to get the Url of
@@ -502,10 +503,11 @@ class Url {
 
     public function setLangDir($langDir, $page = null) {
         $this->langDir = $langDir;
- 
+
         if ($page) {
             $langId = \FWLanguage::getLanguageIdByCode($langDir);
-            if ($page = $page->getNode()->getPage($langId)) {
+            $page = $page->getNode()->getPage($langId);
+            if ($page) {
                 $this->setPath(substr($page->getPath(), 1));
             }
         }
