@@ -73,7 +73,7 @@ function _u2uUpdate()
 
         );
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         // we COULD do something else here..
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
@@ -114,7 +114,7 @@ function _u2uUpdate()
      ********************************/
     try {
         \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_u2u_sent_messages` CHANGE `date_time` `date_time` TIMESTAMP NOT NULL DEFAULT "0000-00-00 00:00:00"');
-    } catch (UpdateException $e) {
+    } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 

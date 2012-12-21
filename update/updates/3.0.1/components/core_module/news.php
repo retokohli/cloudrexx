@@ -402,7 +402,7 @@ function _newsUpdate() {
         );
 
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         // we COULD do something else here..
         DBG::trace();
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
@@ -428,7 +428,7 @@ function _newsUpdate() {
             $hfr = new HackyFeedRepublisher();
             $hfr->runRepublishing();
         }
-        catch (UpdateException $e) {
+        catch (\Cx\Lib\UpdateException $e) {
             DBG::trace();
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
@@ -645,7 +645,7 @@ function _newsUpdate() {
             ON DUPLICATE KEY UPDATE `name` = `name`
         ');
 
-    } catch (UpdateException $e) {
+    } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 

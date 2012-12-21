@@ -44,7 +44,7 @@ function _galleryUpdate()
             )
         );
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 

@@ -85,7 +85,7 @@ function _dataUpdate()
             )
         );
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
@@ -228,7 +228,7 @@ INSERT INTO `".DBPREFIX."module_data_settings` (`name`, `value`) VALUES
             'InnoDB'
         );
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 

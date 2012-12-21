@@ -28,7 +28,7 @@ function _livecamUpdate()
                 'setvalue'   => array('type' => 'TEXT')
             )
         );
-    } catch (UpdateException $e) {
+    } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 

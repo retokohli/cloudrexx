@@ -194,7 +194,7 @@ function _directoryUpdate() {
     //delete obsolete table  contrexx_module_directory_access
     try {
         \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_directory_access');
-    } catch (UpdateException $e) {
+    } catch (\Cx\Lib\UpdateException $e) {
         DBG::trace();
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
@@ -208,7 +208,7 @@ function _directoryUpdate() {
         if ($objResult && ($objResult->RecordCount() == 0)) {
             \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_directory_categories` ADD FULLTEXT KEY `directoryindex` (`name`, `description`)');
         }
-    } catch (UpdateException $e) {
+    } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 

@@ -59,7 +59,7 @@ function _jobsUpdate() {
         );
 
     }
-    catch (UpdateException $e) {
+    catch (\Cx\Lib\UpdateException $e) {
         // we COULD do something else here..
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
@@ -109,7 +109,7 @@ function _jobsUpdate() {
             CHANGE `startdate` `startdate` TIMESTAMP NOT NULL DEFAULT "0000-00-00 00:00:00",
             CHANGE `enddate` `enddate` TIMESTAMP NOT NULL DEFAULT "0000-00-00 00:00:00"
         ');
-    } catch (UpdateException $e) {
+    } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 

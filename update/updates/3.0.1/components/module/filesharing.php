@@ -38,7 +38,7 @@ function _filesharingUpdate()
             ON DUPLICATE KEY UPDATE `id` = `id`
         ');
 
-    } catch (UpdateException $e) {
+    } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 }
