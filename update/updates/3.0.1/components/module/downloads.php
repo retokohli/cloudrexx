@@ -174,12 +174,11 @@ function _downloadsUpdate()
     * BUGFIX:   Set write access to the upload dir  *
     ************************************************/
     require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
-    $objFile = new File();
-    if (is_writeable(ASCMS_DOWNLOADS_IMAGES_PATH) || $objFile->setChmod(ASCMS_DOWNLOADS_IMAGES_PATH, ASCMS_DOWNLOADS_IMAGES_WEB_PATH, '')) {
+    if (\Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_DOWNLOADS_IMAGES_PATH)) {
         if ($mediaDir = @opendir(ASCMS_DOWNLOADS_IMAGES_PATH)) {
             while($file = readdir($mediaDir)) {
                 if ($file != '.' && $file != '..') {
-                    if (!is_writeable(ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$file) && !$objFile->setChmod(ASCMS_DOWNLOADS_IMAGES_PATH.'/', ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/', $file)) {
+                    if (!\Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$file)) {
                         setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_FILE'], ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$file, $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
                         return false;
                     }

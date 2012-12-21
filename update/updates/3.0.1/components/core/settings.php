@@ -286,14 +286,11 @@ function _updateSettings()
 
     // write settings
     require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
-    $objFile = new File();
 
     $strFooter = '';
     $arrModules = '';
 
-    if (!is_writable(ASCMS_DOCUMENT_ROOT.'/config/')) {
-        $objFile->setChmod(ASCMS_DOCUMENT_ROOT.'/config', ASCMS_PATH_OFFSET.'/config', '/');
-    }
+    \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_DOCUMENT_ROOT.'/config/');
 
     if (!file_exists(ASCMS_DOCUMENT_ROOT.'/config/settings.php')) {
         if (!touch(ASCMS_DOCUMENT_ROOT.'/config/settings.php')) {
@@ -303,13 +300,11 @@ function _updateSettings()
         }
     }
 
-    if (!is_writable(ASCMS_DOCUMENT_ROOT.'/config/settings.php')) {
-        $objFile->setChmod(ASCMS_DOCUMENT_ROOT.'/config', ASCMS_PATH_OFFSET.'/config', '/settings.php');
-    }
+    \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_DOCUMENT_ROOT.'/config/settings.php');
 
     if (is_writable(ASCMS_DOCUMENT_ROOT.'/config/settings.php')) {
-        $handleFile = fopen(ASCMS_DOCUMENT_ROOT.'/config/settings.php','w+');
-        if ($handleFile) {
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT.'/config/settings.php');
             //Header & Footer
             $strHeader    = "<?php\n";
             $strHeader .= "/**\n";
@@ -346,30 +341,27 @@ function _updateSettings()
             }
             $intMaxLen += strlen('$_CONFIG[\'\']') + 1; //needed for formatted output
 
-            //Write values
-            flock($handleFile, LOCK_EX); //set semaphore
-            @fwrite($handleFile,$strHeader);
+            $fileContent = $strHeader;
 
             foreach ($arrValues as $intModule => $arrInner) {
-                @fwrite($handleFile,"/**\n");
-                @fwrite($handleFile,"* -------------------------------------------------------------------------\n");
-                @fwrite($handleFile,"* ".ucfirst($arrModules[$intModule])."\n");
-                @fwrite($handleFile,"* -------------------------------------------------------------------------\n");
-                @fwrite($handleFile,"*/\n");
+                $fileContent .= "/**\n";
+                $fileContent .= "* -------------------------------------------------------------------------\n";
+                $fileContent .= "* ".ucfirst($arrModules[$intModule])."\n";
+                $fileContent .= "* -------------------------------------------------------------------------\n";
+                $fileContent .= "*/\n";
 
                 foreach($arrInner as $strName => $strValue) {
-                    @fwrite($handleFile,sprintf("%-".$intMaxLen."s",'$_CONFIG[\''.$strName.'\']'));
-                    @fwrite($handleFile,"= ");
-                    @fwrite($handleFile,(is_numeric($strValue) ? $strValue : '"'.$strValue.'"').";\n");
+                    $fileContent .= sprintf("%-".$intMaxLen."s",'$_CONFIG[\''.$strName.'\']');
+                    $fileContent .= "= ";
+                    $fileContent .= (is_numeric($strValue) ? $strValue : '"'.$strValue.'"').";\n";
                 }
-                @fwrite($handleFile,"\n");
+                $fileContent .= "\n";
             }
 
-            @fwrite($handleFile,$strFooter);
-            flock($handleFile, LOCK_UN);
+            $fileContent .= $strFooter;
 
-            fclose($handleFile);
-        }
+            $objFile->write($fileContent);
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {}
     } else {
         setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_WRITE_SETTINGS_FILE'], ASCMS_DOCUMENT_ROOT.'/config/settings.php'));
         setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_FILE'], ASCMS_DOCUMENT_ROOT.'/config/settings.php', $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
