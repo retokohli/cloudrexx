@@ -43,7 +43,7 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     
     // Reinitialize FWLanguage. Now with fallback (doctrine).
     FWLanguage::init();
-    //DBG::activate(DBG_PHP);
+    
     if ($_CONFIG['coreCmsVersion'] > '3') {
         Env::get('ClassLoader')->loadFile(dirname(__FILE__) . '/ContentMigration.class.php');
         $contentMigration = new \Cx\Update\Cx_3_0_1\ContentMigration();
@@ -100,7 +100,7 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
             }
         }*/
     }
-    die('haha');
+    
     $arrDirs = array('core_module', 'module');
     $updateStatus = true;
 
