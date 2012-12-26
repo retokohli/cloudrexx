@@ -103,9 +103,15 @@ class ContrexxUpdate
                 $this->showRequirements();
                 break;
             case 2:
-                $this->showUpdate();
+                $this->showLicense();
                 break;
             case 3:
+                $this->showInfoAboutLicense();
+                break;
+            case 4:
+                $this->showUpdate();
+                break;
+            case 5:
                 $this->processUpdate();
                 break;
             default:
@@ -311,6 +317,110 @@ class ContrexxUpdate
         }
         
         $this->setNavigation($updateBack . '<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="skipRequirements" />');
+    }
+
+    private function showLicense()
+    {
+        if (!empty($_SESSION['contrexx_update']['version'])) {
+            $arrVersions     = $this->getAvailabeVersions();
+            $version         = $_SESSION['contrexx_update']['version'];
+            $arrUpdate       = $arrVersions[$version];
+            
+            if (isset($_POST['updateNext'])) {
+                if (empty($_POST['update_license'])) {
+                    $_SESSION['contrexx_update']['license_agreement'] = false;
+                } else {
+                    $_SESSION['contrexx_update']['license_agreement'] = true;
+                }
+            }
+
+            if (isset($_POST['updateNext']) && (!empty($_POST['update_license']))) {
+                $_SESSION['contrexx_update']['license_agreement'] = true;
+                
+                $this->setNextStep();
+                $this->showStep();
+            } else {
+                $this->showLicensePage($arrUpdate);
+            }
+        } else {
+            $this->setPreviousStep();
+            $this->showStep();
+        }
+    }
+
+    private function showLicensePage($arrUpdate)
+    {
+        global $_CORELANG;
+        
+        $this->objTemplate->addBlockfile('CONTENT', 'license', 'license.html');
+
+        $licenseFile = UPDATE_UPDATES.'/'.$arrUpdate['cmsVersion'].'/data/contrexx_lizenz_de.txt';
+        $license = @file_get_contents($licenseFile);
+        $licenseTxt = nl2br(preg_replace('/^([0-9]\.[0-9]?\s[^\n]+)\n$/im', '<strong>\1</strong>', $license));
+
+        $this->objTemplate->setVariable(array(
+            'TXT_UPDATE_LICENSE_CONDITIONS' => $_CORELANG['TXT_UPDATE_LICENSE_CONDITIONS'],
+            'TXT_UPDATE_ACCEPT_LICENSE'     => $_CORELANG['TXT_UPDATE_ACCEPT_LICENSE'],
+            'UPDATE_LICENSE_LICENSE_TXT'    => $licenseTxt,
+            'UPDATE_LICENSE_CHECKED'        => !empty($_SESSION['contrexx_update']['license_agreement']) ? 'checked="checked"' : '',
+        ));
+        
+        
+        $this->objTemplate->parse('license');
+        if ($this->ajax) {
+            $this->html['content'] = $this->objTemplate->get('license');
+        }
+        
+        $this->setNavigation('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_BACK'].'" name="updateBack" onclick="try{doUpdate(true)} catch(e){return true;}" /> <input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="updateNext" />');
+    }
+
+    private function showInfoAboutLicense()
+    {
+        if (isset($_POST['updateNext'])) {
+            if (empty($_POST['update_license_info'])) {
+                $_SESSION['contrexx_update']['license_info'] = false;
+            } else {
+                $_SESSION['contrexx_update']['license_info'] = true;
+            }
+        }
+
+        if (isset($_POST['updateNext']) && (!empty($_POST['update_license_info']))) {
+            $_SESSION['contrexx_update']['license_info'] = true;
+            
+            $this->setNextStep();
+            $this->showStep();
+        } else {
+            $this->showInfoAboutLicensePage();
+        }
+    }
+
+    private function showInfoAboutLicensePage()
+    {
+        global $_CORELANG, $_CONFIG;
+        
+        $this->objTemplate->addBlockfile('CONTENT', 'license_info', 'license_info.html');
+
+        $this->objTemplate->setVariable(array(
+            'TXT_UPDATE_LICENSE_MODEL'      => $_CORELANG['TXT_UPDATE_LICENSE_MODEL'],
+            'UPDATE_LICENSE_INFO_TXT'       => $licenseTxt,
+            'UPDATE_LICENSE_INFO_CHECKED'   => !empty($_SESSION['contrexx_update']['license_info']) ? 'checked="checked"' : '',
+            'TXT_UPDATE_ACCEPT_LICENSE_CHANGE'  => $_CORELANG['TXT_UPDATE_ACCEPT_LICENSE_CHANGE'],
+            'UPDATE_EDITION'                    => $_CONFIG['coreCmsEdition'],
+            'UPDATE_VERSION'                    => str_replace(' Service Pack 0', '', preg_replace('#^(\d+\.\d+)\.(\d+)$#', '$1 Service Pack $2', $_CONFIG['coreCmsVersion'])),
+        ));
+
+        if ($_CONFIG['coreCmsEdition'] == 'OpenSource') {
+            $this->objTemplate->touchBlock('update_license_info_free');
+        } else {
+            $this->objTemplate->hideBlock('update_license_info_free');
+        }
+        
+        $this->objTemplate->parse('license_info');
+        if ($this->ajax) {
+            $this->html['content'] = $this->objTemplate->get('license_info');
+        }
+        
+        $this->setNavigation('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_BACK'].'" name="updateBack" onclick="try{doUpdate(true)} catch(e){return true;}" /> <input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="updateNext" />');
     }
 
     private function showUpdate()
