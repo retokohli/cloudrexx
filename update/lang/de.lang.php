@@ -83,4 +83,8 @@ $_CORELANG = array(
     'TXT_CONFLICTED_MODULES_TITLE'               => 'Konflikt beim Installieren von neuen Modulen',
     'TXT_CONFLICTED_MODULES_DESCRIPTION'         => 'Folgende neue Module können nicht installiert werden, da die entsprechenden Datenbank-Tabellen bereits existieren:',
     'TXT_UPDATE_ERROR'                           => 'Update Fehler',
+    'TXT_UPDATE_LICENSE_CONDITIONS'              => 'Lizenzbedingungen',
+    'TXT_UPDATE_ACCEPT_LICENSE'                  => 'Ich akzeptiere die Contrexx Lizenz',
+    'TXT_UPDATE_LICENSE_MODEL'                   => 'Neues Lizenzmodell',
+    'TXT_UPDATE_ACCEPT_LICENSE_CHANGE'           => 'Ich habe die vorliegenden Informationen verstanden und bin damit einverstanden.',
 );
