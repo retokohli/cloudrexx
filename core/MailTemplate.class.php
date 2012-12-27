@@ -1414,7 +1414,7 @@ Use plain text areas instead.  See below.
         );
         Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
         Cx\Lib\UpdateUtil::sql("
-            ALTER TABLE `contrexx_2_3`.`contrexx_core_mail_template`
+            ALTER TABLE `$table_name`
               ADD PRIMARY KEY ( `key` ( 32 ) , `section` ( 32 ) )");
 //DBG::log("Mailtemplate::errorHandler(): Migrated table core_mail_template");
 
