@@ -421,7 +421,10 @@ DBG::log("SettingDb::add(): ERROR: Empty group!");
         // Such an entry exists already, fail.
         // Note that getValue() returns null if the entry is not present
         $old_value = self::getValue($name);
-        if (isset($old_value)) return false;
+        if (isset($old_value)) {
+//DBG::log("SettingDb::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
+            return false;
+        }
 
         // Not present, insert it
         $query = "

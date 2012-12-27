@@ -915,12 +915,7 @@ class Country
             'ord' => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'renamefrom' => 'sort_order'),
             'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'renamefrom' => 'is_active'),
         );
-//        if (!
         Cx\Lib\UpdateUtil::table($table_name, $table_structure);
-//        ) {
-//            throw new Update_DatabaseException(
-//               "Failed to to create Country table");
-//        }
         if (Cx\Lib\UpdateUtil::table_empty($table_name)) {
             Text::deleteByKey('core', self::TEXT_NAME);
             // Copy the Countries from the Shop module if possible
@@ -950,7 +945,7 @@ class Country
                     }
                     $objResult->MoveNext();
                 }
-                Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'modules_shop_countries');
+                Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_shop_countries');
             }
         }
 
@@ -960,7 +955,8 @@ class Country
 // other tables otherwise.
         if (Cx\Lib\UpdateUtil::table_empty($table_name)) {
             // Add new Country records if available
-            if (@include_once(ASCMS_CORE_PATH.'/countries_iso_3166-2.php')) {
+            if (   file_exists(ASCMS_CORE_PATH.'/countries_iso_3166-2.php')
+                && include_once(ASCMS_CORE_PATH.'/countries_iso_3166-2.php')) {
 //DBG::log("Country::errorHandler(): Included ISO file");
                 $arrCountries = null;
                 $ord = 0;
@@ -976,7 +972,7 @@ class Country
                         $alpha2, $alpha3, 2, $name, ++$ord, true, $country_id)
                     ) {
                         throw new Update_DatabaseException(
-                           "Failed to to add Country '$name'", $query);
+                           "Failed to to add Country '$name' from ISO file");
                     }
 //DBG::log("Country::errorHandler(): Added Country ID $country_id: '$name'");
                 }
@@ -988,7 +984,8 @@ class Country
         // if present
         $arrCountries = array();
         // $arrCountries is redefined in the file
-        if (@include_once ASCMS_CORE_PATH.'/countries_languages.php') {
+        if (   file_exists(ASCMS_CORE_PATH.'/countries_languages.php')
+            && include_once ASCMS_CORE_PATH.'/countries_languages.php') {
             foreach ($arrCountries as $alpha2 => $arrLanguage) {
 //DBG::log("errorHandler: Looking for Alpha-2 $alpha2");
                 $country_id = self::getIdByAlpha2($alpha2);
@@ -1000,7 +997,7 @@ class Country
                     if (!Text::replace($country_id, $lang_id, 'core',
                         self::TEXT_NAME, $name)) {
                         throw new Update_DatabaseException(
-                           "Failed to to update Country '$name'");
+                           "Failed to to update Country '$name' from languages file");
                     }
 //DBG::log("Country::errorHandler(): Added Country ID $country_id: language ID $lang_id");
                 }
