@@ -122,7 +122,7 @@ class Currency
                     ? $active_currency_id : self::$defaultCurrencyId
                 );
         }
-        if (!isset($_SESSION['shop']['currencyId'])) {
+        if (empty($_SESSION['shop']['currencyId'])) {
             $_SESSION['shop']['currencyId'] = self::$defaultCurrencyId;
         }
         self::$activeCurrencyId = intval($_SESSION['shop']['currencyId']);
@@ -362,6 +362,7 @@ class Currency
     {
         $decimals = 2;
         if (empty ($increment)) {
+            if (!is_array(self::$arrCurrency)) self::init();
             $increment =
                 self::$arrCurrency[self::$activeCurrencyId]['increment'];
         }
@@ -922,7 +923,8 @@ class Currency
             'code' => array('type' => 'CHAR(3)', 'notnull' => true, 'default' => ''),
             'symbol' => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
             'rate' => array('type' => 'DECIMAL(10,4)', 'unsigned' => true, 'notnull' => true, 'default' => '1.0000'),
-            'increment' => array('type' => 'DECIMAL(6,5)', 'unsigned' => true, 'notnull' => false, 'default' => null),
+// TODO: Changed default increment to '0.01'.  Apply to installation database!
+            'increment' => array('type' => 'DECIMAL(6,5)', 'unsigned' => true, 'notnull' => true, 'default' => '0.01'),
             'ord' => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'renamefrom' => 'sort_order'),
             'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'renamefrom' => 'status'),
             'default' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'renamefrom' => 'is_default'),
