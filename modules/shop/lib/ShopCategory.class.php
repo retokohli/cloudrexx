@@ -863,6 +863,7 @@ class ShopCategory
         Text::errorHandler();
         ShopSettings::errorHandler();
 
+        $default_lang_id = FWLanguage::getDefaultLangId();
         $table_name = DBPREFIX.'module_shop_categories';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true, 'renamefrom' => 'catid'),
@@ -891,7 +892,7 @@ class ShopCategory
                 while (!$objResult->EOF) {
                     $id = $objResult->fields['catid'];
                     $name = $objResult->fields['catname'];
-                    if (!Text::replace($id, FRONTEND_LANG_ID, 'shop',
+                    if (!Text::replace($id, $default_lang_id, 'shop',
                         self::TEXT_NAME, $name)) {
                         throw new Cx\Lib\Update_DatabaseException(
                             "Failed to migrate ShopCategory name '$name'");

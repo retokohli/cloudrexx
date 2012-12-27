@@ -831,8 +831,9 @@ die("Cart::view(): ERROR: No template");
                     (isset ($_SESSION['shop']['coupon_code'])
                         ? $_SESSION['shop']['coupon_code'] : ''),
             ));
-            $objTemplate->touchBlock('shopCoupon');
-            $objTemplate->parse('shopCoupon');
+            if ($objTemplate->blockExists('shopCoupon')) {
+                $objTemplate->parse('shopCoupon');
+            }
             if (self::get_discount_amount()) {
                 $total_discount_amount = self::get_discount_amount();
 //DBG::log("Shop::view_cart(): Total: Amount $total_discount_amount");

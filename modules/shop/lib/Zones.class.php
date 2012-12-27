@@ -423,6 +423,7 @@ class Zones
             'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1', 'renamefrom' => 'activation_status'),
         );
         $table_index =  array();
+        $default_lang_id = FWLanguage::getDefaultLangId();
         if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
             if (Cx\Lib\UpdateUtil::column_exist($table_name, 'zones_name')) {
                 // Migrate all Zone names to the Text table first
@@ -438,7 +439,7 @@ class Zones
                 while (!$objResult->EOF) {
                     $id = $objResult->fields['zones_id'];
                     $name = $objResult->fields['zones_name'];
-                    if (!Text::replace($id, FRONTEND_LANG_ID, 'shop',
+                    if (!Text::replace($id, $default_lang_id, 'shop',
                         self::TEXT_NAME, $name)) {
                         throw new Cx\Lib\Update_DatabaseException(
                             "Failed to migrate Zone name '$name'");

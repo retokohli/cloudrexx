@@ -833,9 +833,12 @@ class Attribute
     static function errorHandler()
     {
 // Attribute
-         $table_name_new = DBPREFIX.'module_shop_attribute';
-        if (!Cx\Lib\UpdateUtil::table_exist($table_name_new)) {
-            $table_name_old = DBPREFIX.'module_shop_products_attributes_name';
+        $default_lang_id = FWLanguage::getDefaultLangId();
+        $table_name_old = DBPREFIX.'module_shop_products_attributes_name';
+        $table_name_new = DBPREFIX.'module_shop_attribute';
+        if (Cx\Lib\UpdateUtil::table_exist($table_name_new)) {
+            Cx\Lib\UpdateUtil::drop_table($table_name_old);
+        } else {
             $table_structure = array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
                 'type' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1', 'renamefrom' => 'display_type'),
@@ -856,7 +859,7 @@ class Attribute
                     while (!$objResult->EOF) {
                         $id = $objResult->fields['id'];
                         $name = $objResult->fields['name'];
-                        if (!Text::replace($id, FRONTEND_LANG_ID, 'shop',
+                        if (!Text::replace($id, $default_lang_id, 'shop',
                             self::TEXT_ATTRIBUTE_NAME, $name)) {
                             throw new Cx\Lib\Update_DatabaseException(
                                "Failed to migrate Attribute name '$name'");
@@ -873,9 +876,11 @@ class Attribute
             }
         }
 
+        $table_name_old = DBPREFIX.'module_shop_products_attributes_value';
         $table_name_new = DBPREFIX.'module_shop_option';
-        if (!Cx\Lib\UpdateUtil::table_exist($table_name_new)) {
-            $table_name_old = DBPREFIX.'module_shop_products_attributes_value';
+        if (Cx\Lib\UpdateUtil::table_exist($table_name_new)) {
+            Cx\Lib\UpdateUtil::drop_table($table_name_old);
+        } else {
             $table_structure = array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
                 'attribute_id' => array('type' => 'INT(10)', 'unsigned' => true, 'renamefrom' => 'name_id'),
@@ -897,7 +902,7 @@ class Attribute
                     while (!$objResult->EOF) {
                         $id = $objResult->fields['id'];
                         $name = $objResult->fields['value'];
-                        if (!Text::replace($id, FRONTEND_LANG_ID,
+                        if (!Text::replace($id, $default_lang_id,
                             'shop', self::TEXT_OPTION_NAME, $name)) {
                             throw new Cx\Lib\Update_DatabaseException(
                                "Failed to to migrate option Text '$name'");
@@ -913,9 +918,11 @@ class Attribute
             }
         }
 
+        $table_name_old = DBPREFIX.'module_shop_products_attributes';
         $table_name_new = DBPREFIX.'module_shop_rel_product_attribute';
-        if (!Cx\Lib\UpdateUtil::table_exist($table_name_new)) {
-            $table_name_old = DBPREFIX.'module_shop_products_attributes';
+        if (Cx\Lib\UpdateUtil::table_exist($table_name_new)) {
+            Cx\Lib\UpdateUtil::drop_table($table_name_old);
+        } else {
             $table_structure = array(
                 'product_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'primary' => true),
                 'option_id' => array('type' => 'INT(10)', 'unsigned' => true, 'primary' => true, 'renamefrom' => 'attributes_value_id'),
