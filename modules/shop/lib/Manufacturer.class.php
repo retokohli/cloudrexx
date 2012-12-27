@@ -413,40 +413,51 @@ class Manufacturer
         Text::errorHandler();
 
         $table_name = DBPREFIX.'module_shop_manufacturer';
+        // Note:  As this table uses a single column, the primary key will
+        // have to be added separately below.  Otherwise, UpdateUtil::table()
+        // will drop the id column first, then try to drop all the others,
+        // which obviously won't work.
+        // In that context, the "AUTO_INCREMENT" has to be dropped as well,
+        // for that only applies to a primary key column.
         $table_structure = array(
-            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
+            'id' => array('type' => 'INT(10)', 'unsigned' => true),
         );
-        $table_index =  array();
+        $table_index = array();
         $default_lang_id = FWLanguage::getDefaultLangId();
-        if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
-                // Get rid of bodies
-                Text::deleteByKey('shop', self::TEXT_NAME);
-                Text::deleteByKey('shop', self::TEXT_URI);
-                // Migrate all Manufacturer text fields to the Text table
-                $query = "
-                    SELECT `id`, `name`, `url`
-                      FROM `".DBPREFIX."module_shop_manufacturer`";
-                $objResult = Cx\Lib\UpdateUtil::sql($query);
-                while (!$objResult->EOF) {
-                    $id = $objResult->fields['id'];
-                    $name = $objResult->fields['name'];
-                    $uri = $objResult->fields['url'];
-                    if (!Text::replace($id, $default_lang_id, 'shop',
-                        self::TEXT_NAME, $name)) {
-                        throw new Cx\Lib\Update_DatabaseException(
-                           "Failed to migrate Manufacturer name '$name'");
-                    }
-                    if (!Text::replace($id, $default_lang_id, 'shop',
-                        self::TEXT_URI, $uri)) {
-                        throw new Cx\Lib\Update_DatabaseException(
-                           "Failed to migrate Manufacturer URI '$uri'");
-                    }
-                    $objResult->MoveNext();
+        if (   Cx\Lib\UpdateUtil::table_exist($table_name)
+            && Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
+            // Get rid of bodies
+            Text::deleteByKey('shop', self::TEXT_NAME);
+            Text::deleteByKey('shop', self::TEXT_URI);
+            // Migrate all Manufacturer text fields to the Text table
+            $query = "
+                SELECT `id`, `name`, `url`
+                  FROM `".DBPREFIX."module_shop_manufacturer`";
+            $objResult = Cx\Lib\UpdateUtil::sql($query);
+            while (!$objResult->EOF) {
+                $id = $objResult->fields['id'];
+                $name = $objResult->fields['name'];
+                $uri = $objResult->fields['url'];
+                if (!Text::replace($id, $default_lang_id, 'shop',
+                    self::TEXT_NAME, $name)) {
+                    throw new Cx\Lib\Update_DatabaseException(
+                       "Failed to migrate Manufacturer name '$name'");
                 }
+                if (!Text::replace($id, $default_lang_id, 'shop',
+                    self::TEXT_URI, $uri)) {
+                    throw new Cx\Lib\Update_DatabaseException(
+                       "Failed to migrate Manufacturer URI '$uri'");
+                }
+                $objResult->MoveNext();
             }
         }
         Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        Cx\Lib\UpdateUtil::sql("
+            ALTER TABLE `$table_name`
+              ADD PRIMARY KEY (`id`)");
+        Cx\Lib\UpdateUtil::sql("
+            ALTER TABLE `$table_name`
+           CHANGE `id` `id` int(10) unsigned NOT NULL AUTO_INCREMENT");
 
         // Always
         return false;

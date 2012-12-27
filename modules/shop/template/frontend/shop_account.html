@@ -112,8 +112,7 @@
 <script type="text/javascript">//<![CDATA[
 function copy_address() {
   with (document.account) {
-    var disp = "block";
-    if (equal_address && equal_address.checked) {
+    if (jQuery("#equal_address:checked").length) {
       gender2.value = gender.value;
       company2.value = company.value;
       lastname2.value = lastname.value;
@@ -123,9 +122,10 @@ function copy_address() {
       city2.value = city.value;
       phone2.value = phone.value;
       countryId2.value = countryId.value;
-      disp = "none";
-/* Optionally clear the shipment address
+      jQuery("#shipping_address").hide();
     } else {
+      jQuery("#shipping_address").show();
+/* Optionally clear the shipment address
       gender2.value = "";
       company2.value = "";
       lastname2.value = "";
@@ -133,28 +133,25 @@ function copy_address() {
       address2.value = "";
       zip2.value = "";
       city2.value = "";
-      phone2.value = "";
-*/
-    }
-    if (document.getElementById('shipping_address')) {
-      document.getElementById('shipping_address').style.display = disp;
+      phone2.value = "";*/
     }
   }
 }
+jQuery(function () {
+  jQuery(".customer_address").delegate("input", "blur", function() {
+    if (jQuery("#equal_address:checked").length) {
+      copy_address();
+    }
+  });
+});
 // Redisplay the shipping address after the reset button has been clicked
 function shopReset()
 {
   if (!confirm("[[TXT_SHOP_FORM_RESET_CONFIRM]]")) {
-  return false;
+    return false;
   }
-  document.getElementById('shipping_address').style.display = "block";
+  jQuery("#shipping_address").show();
   return true;
-}
-for (var element in document.getElementsByTagName("input")) {
-  element.onchange = function() { copy_address(); };
-}
-for (var element in document.getElementsByTagName("select")) {
-  element.onchange = function() { copy_address(); };
 }
 copy_address();
 //]]></script>
