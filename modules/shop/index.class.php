@@ -2317,6 +2317,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (isset($_POST['lastname'])) {
             if (self::verify_account()) self::_gotoPaymentPage();
         }
+        JS::activate('jquery');
         self::$objTemplate->setGlobalVariable($_ARRAYLANG);
         // Use the details stored in the database as default.
         // Once the (changed) values are posted back, they are stored
