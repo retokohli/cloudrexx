@@ -402,7 +402,6 @@ class ContrexxUpdate
 
         $this->objTemplate->setVariable(array(
             'TXT_UPDATE_LICENSE_MODEL'      => $_CORELANG['TXT_UPDATE_LICENSE_MODEL'],
-            'UPDATE_LICENSE_INFO_TXT'       => $licenseTxt,
             'UPDATE_LICENSE_INFO_CHECKED'   => !empty($_SESSION['contrexx_update']['license_info']) ? 'checked="checked"' : '',
             'TXT_UPDATE_ACCEPT_LICENSE_CHANGE'  => $_CORELANG['TXT_UPDATE_ACCEPT_LICENSE_CHANGE'],
             'UPDATE_EDITION'                    => $_CONFIG['coreCmsEdition'],
