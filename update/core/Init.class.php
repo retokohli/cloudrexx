@@ -656,7 +656,13 @@ class InitCMS
     protected function getLangFilePath($module, $langId) {
         global $_CONFIG;
         // check whether the language file exists
-        $path = $this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$this->mode.'.php';
+        $mode = $this->mode == 'backend' ? 'backend' : 'frontend';
+
+        if (!isset($this->arrLang[$langId])) {
+            $langId = $mode == 'backend' ? $this->getBackendDefaultLangId() : $this->getFrontendDefaultLangId();
+        }
+
+        $path = $this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$mode.'.php';
         
         $customizingPath = preg_replace('#'.ASCMS_PATH.ASCMS_PATH_OFFSET.'#', ASCMS_CUSTOMIZING_PATH, $path);
         if ($_CONFIG['useCustomizings'] == 'on' && file_exists($customizingPath)) {
@@ -665,8 +671,8 @@ class InitCMS
         
         if (!file_exists($path)) {
             $path = '';
-            $langId = $this->mode == 'backend' ? $this->getBackendDefaultLangId() : $this->getFrontendDefaultLangId();
-            $path = $this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$this->mode.'.php';
+            $langId = $mode == 'backend' ? $this->getBackendDefaultLangId() : $this->getFrontendDefaultLangId();
+            $path = $this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$mode.'.php';
 
             $customizingPath = preg_replace('#'.ASCMS_PATH.ASCMS_PATH_OFFSET.'#', ASCMS_CUSTOMIZING_PATH, $path);
             if ($_CONFIG['useCustomizings'] == 'on' && file_exists($customizingPath)) {
