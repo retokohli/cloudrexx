@@ -118,7 +118,6 @@ function _jobsUpdate() {
     return true;
 }
 
-^
 
 function _jobsInstall()
 {
