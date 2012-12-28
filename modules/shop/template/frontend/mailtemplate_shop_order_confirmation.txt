@@ -29,6 +29,10 @@ Bezahlung:      [PAYMENT_NAME]   [PAYMENT_PRICE] [CURRENCY][PAYMENT]][[VAT]
 Gesamtsumme                                                [ORDER_SUM] [CURRENCY]
 ------------------------------------------------------------------------
 
+Bemerkungen:
+[REMARKS]
+
+
 Ihre Kundenadresse:
 [CUSTOMER_COMPANY]
 [CUSTOMER_FIRSTNAME] [CUSTOMER_LASTNAME]
