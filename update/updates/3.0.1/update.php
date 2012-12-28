@@ -104,22 +104,22 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     $arrDirs = array('core_module', 'module');
     $updateStatus = true;
 
-    if (!@include_once(dirname(__FILE__) . '/components/core/core.php')) {
+    if (!include_once(dirname(__FILE__) . '/components/core/core.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/core.php'));
         return false;
-    } elseif (UPDATE_UTF8 && !@include_once(dirname(__FILE__) . '/components/core/utf8.php')) {
+    } elseif (UPDATE_UTF8 && !include_once(dirname(__FILE__) . '/components/core/utf8.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/utf8.php'));
         return false;
-    } elseif (!@include_once(dirname(__FILE__) . '/components/core/backendAreas.php')) {
+    } elseif (!include_once(dirname(__FILE__) . '/components/core/backendAreas.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/backendAreas.php'));
         return false;
-    } elseif (!@include_once(dirname(__FILE__) . '/components/core/modules.php')) {
+    } elseif (!include_once(dirname(__FILE__) . '/components/core/modules.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/modules.php'));
         return false;
-    } elseif (!@include_once(dirname(__FILE__) . '/components/core/settings.php')) {
+    } elseif (!include_once(dirname(__FILE__) . '/components/core/settings.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/settings.php'));
         return false;
-    } elseif (!@include_once(dirname(__FILE__) . '/components/core/License.class.php')) {
+    } elseif (!include_once(dirname(__FILE__) . '/components/core/License.class.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/license.class.php'));
         return false;
     }
@@ -200,7 +200,7 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
                     if ($fileInfo['extension'] == 'php') {
                         DBG::msg("--------- updating $file ------");
 
-                        if (!@include_once(dirname(__FILE__).'/components/'.$dir.'/'.$file)) {
+                        if (!include_once(dirname(__FILE__).'/components/'.$dir.'/'.$file)) {
                             setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
                             setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__).'/components/'.$dir.'/'.$file));
                             return false;
@@ -642,7 +642,7 @@ function _updateModuleRepository() {
                         $count++;
                     }
 
-                    if (!@include_once(dirname(__FILE__) . '/components/core/' . $file)) {
+                    if (!include_once(dirname(__FILE__) . '/components/core/' . $file)) {
                         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/' . $file));
                         return false;
                     }
