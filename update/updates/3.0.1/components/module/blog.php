@@ -1,7 +1,7 @@
 <?php
 
 function _blogUpdate() {
-    global $objDatabase, $_ARRAYLANG, $_CORELANG, $objUpdate;
+    global $objDatabase, $_ARRAYLANG, $_CORELANG, $objUpdate, $_CONFIG;
 
     /*
      * Check for missing setting "blog_comments_editor" in database. In the update-package for 1.2 this value somehow
