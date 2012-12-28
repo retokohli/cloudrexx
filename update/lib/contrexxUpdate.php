@@ -1,17 +1,7 @@
 <?php define('UPDATE_PATH', dirname(__FILE__));@include_once(UPDATE_PATH.'/../config/configuration.php');@header('content-type: text/html; charset='.(UPDATE_UTF8 ? 'utf-8' : 'iso-8859-1'));?>
-function getXMLHttpRequestObj()
-{
-  var objXHR;
-  if (window.XMLHttpRequest) {
-    objXHR = new XMLHttpRequest();
-  } else if (window.ActiveXObject) {
-    objXHR = new ActiveXObject('Microsoft.XMLHTTP');
-  }
-  return objXHR;
-}
 
-objHttp = getXMLHttpRequestObj();
 var request_active = false;
+var getDebugInfo = false;
 
 if (typeof(DOMParser) == 'undefined') {
   useAjax = false;
@@ -21,25 +11,45 @@ if (typeof(DOMParser) == 'undefined') {
 
 function doUpdate(goBack)
 {
-  if (useAjax) {
-    if (request_active) {
-      return false;
-    } else {
-      request_active = true;
+    getDebugInfo = false;
+
+    if (useAjax) {
+        if (request_active) {
+            return false;
+        } else {
+            request_active = true;
+        }
+
+        formData = getFormData(goBack);
+
+        if (formData.indexOf('debug_update')) {
+            getDebugInfo = true;
+        }
+
+        if ($J("#processUpdate").length || $J("#doGroup").length) {
+            if (!getDebugInfo) {
+                setContent('<div style="margin: 180px 0 0 155px;">Bitte haben Sie einen Moment Geduld.<br /><?php $txt = 'Das Update wird durchgeführt...';print UPDATE_UTF8 ? $txt : utf8_decode($txt);?><br /><br /><img src="template/contrexx/images/content/loading_animation.gif" width="208" height="13" alt="" /></div>');
+                setNavigation('');
+            }
+        } else {
+            setContent('Bitte warten. Die Seite wird geladen...');
+        }
+
+        jQuery.ajax({
+            url: 'index.php',
+            data: {'ajax': formData},
+            success: parseResponse,
+            error: cxUpdateErrorHandler,
+        });
+        return false;
     }
-    formData = getFormData(goBack);
-    if ($J("#processUpdate").length || $J("#doGroup").length) {
-      setContent('<div style="margin: 180px 0 0 155px;">Bitte haben Sie einen Moment Geduld.<br /><?php $txt = 'Das Update wird durchgeführt...';print UPDATE_UTF8 ? $txt : utf8_decode($txt);?><br /><br /><img src="template/contrexx/images/content/loading_animation.gif" width="208" height="13" alt="" /></div>');
-      setNavigation('');
-    } else {
-      setContent('Bitte warten. Die Seite wird geladen...');
-    }
-    objHttp.open('get', '?ajax='+encodeURIComponent(formData), true);
-    objHttp.onreadystatechange = parseResponse;
-    objHttp.send(null);
-    return false;
-  }
-  return true;
+    return true;
+}
+
+function cxUpdateErrorHandler(jqXHR, status)
+{
+    showErrorScreen();
+    request_active = false;
 }
 
 function getFormData(goBack)
@@ -98,10 +108,8 @@ function getFormData(goBack)
   return '{' + aFormData.join(',') + parameters + '}';
 }
 
-function parseResponse()
+function parseResponse(response)
 {
-  if (objHttp.readyState == 4 && objHttp.status == 200) {
-    response = objHttp.responseText;
     if (response.length > 0) {
       try {
         eval('oResponse='+response);
@@ -137,15 +145,25 @@ function parseResponse()
             setLogout(oResponse.logout);
         }
         cx.ui.tooltip();
-      } catch(e) {}
+      } catch(e) {
+        if (getDebugInfo) {
+            jQuery('#debug_message').text(response).html();
+            jQuery('#debug_message').show();
+        } else {
+            showErrorScreen();
+        }
+      }
     } else {
-      setContent('<?php $txt = '<div class="message-alert">Das Update-Script gibt keine Antwort zurück!</div>';print UPDATE_UTF8 ? $txt : utf8_encode($txt); ?>');
-      setNavigation('<input type="submit" value="<?php $txt = 'Erneut versuchen...';print UPDATE_UTF8 ? utf8_encode($txt) : $txt;?>" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />');
+        showErrorScreen();
     }
     request_active = false;
-  } else if (objHttp.readyState == 3) {
-    return false;
-  }
+}
+
+function showErrorScreen()
+{
+    setContent('<?php $txt = '<div id="content-overview"><h1 class="first">Fehler beim Update...</h1><div class="message-alert">Das Update-Script gibt keine Antwort zurück!</div><div class="message-warning" id="debug_message"></div><input type="submit" value="Fehler anzeigen..." name="debug_update" /></div>';print UPDATE_UTF8 ? $txt : utf8_encode($txt); ?>');
+    //setContent('<?php $txt = '<div class="message-alert">Das Update-Script gibt keine Antwort zurück!</div>';print UPDATE_UTF8 ? $txt : utf8_encode($txt); ?>');
+    setNavigation('<input type="submit" value="<?php $txt = 'Erneut versuchen...';print UPDATE_UTF8 ? utf8_encode($txt) : $txt;?>" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />');
 }
 
 function setContent(content)

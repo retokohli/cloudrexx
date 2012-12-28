@@ -56,6 +56,10 @@ class ContrexxUpdate
         if (!empty($_GET['cmd']) && ($_GET['cmd'] == 'logout')) {
             $this->logout();
         }
+
+        if (isset($_POST['debug_update'])) {
+            \DBG::activate(DBG_PHP | DBG_DB_ERROR | DBG_LOG); 
+        }
         
         if ($this->auth() || $this->login()) {
             $this->setStep();
@@ -76,7 +80,7 @@ class ContrexxUpdate
         }
         return $this->objTemplate->get();
     }
-    
+
     private function parseJsonRequest()
     {
         $_POST = $this->objJson->decode($this->stripslashes($_GET['ajax']));

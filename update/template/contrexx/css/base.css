@@ -257,6 +257,10 @@ table.adminlist td {
     font-weight: bold;
 }
 
+#debug_message {
+    display: none;
+}
+
 .list,
 .list ul {
     padding: 0 0 10px 20px;
