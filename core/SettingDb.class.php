@@ -252,7 +252,7 @@ DBG::log("SettingDb::getValue($name): ERROR: no settings loaded");
         if (isset(self::$arrSettings[$name]['value'])) {
             return self::$arrSettings[$name]['value'];
         };
-DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current group ".var_export(self::$group, true).")");
+//DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current group ".var_export(self::$group, true).")");
         return null;
     }
 
