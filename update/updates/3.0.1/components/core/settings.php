@@ -344,7 +344,11 @@ function _updateSettings()
             foreach ($arrValues as $intModule => $arrInner) {
                 $fileContent .= "/**\n";
                 $fileContent .= "* -------------------------------------------------------------------------\n";
-                $fileContent .= "* ".ucfirst($arrModules[$intModule])."\n";
+                if (isset($arrModules[$intModule])) {
+                    $fileContent .= "* ".ucfirst($arrModules[$intModule])."\n";
+                } else {
+                    $fileContent .= "* ".$intModule."\n";
+                }
                 $fileContent .= "* -------------------------------------------------------------------------\n";
                 $fileContent .= "*/\n";
 
