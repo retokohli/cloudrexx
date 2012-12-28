@@ -16,7 +16,7 @@ $_CORELANG = array(
     'TXT_UPDATE_DB_ERROR_HELP_MSG'               => 'Versuchen Sie das Update erneut auszuführen.<br /><br />Sollte derselbe Fehler wieder erscheinen, suchen Sie im <a href="%s" title="Contrexx OpenSource Forum" target="_blank">Contrexx OpenSource Forum</a> nach weiteren Hilfestellungen zu diesem Fehler.<br />Falls diesbezüglich nichts bekannt ist, melden Sie dort den Fehler mit den folgenden Angaben:<br /><br /><strong>Installierte Version:</strong> %s<br /><strong>Update Version: </strong>%s<br /><strong>Info:</strong> [[SQL_INFO_TITLE]]<br /><strong>Fehlermeldung:</strong><br />%s',
     'TXT_UPDATE_IS_READY'                        => 'Das ausgewählte Update ist nun vorbereitet und kann installiert werden.<br />Betätigen Sie nun die Schaltfläche "Update starten...", um das Update durchzuführen.',
     'TXT_UPDATE_START_UPDATE'                    => 'Update starten',
-    'TXT_UPDATE_BACK'                            => 'Zuruck',
+    'TXT_UPDATE_BACK'                            => 'Zurück',
     'TXT_UPDATE_MUST_SELECT_UPDATE'              => 'Sie müssen ein Update-Paket auswählen.',
     'TXT_UPDATE_UNABLE_TO_START'                 => 'Der Updatevorgang konnte nicht gestartet werden.',
     'TXT_UPDATE_TRY_AGAIN'                       => 'Nochmals versuchen...',
