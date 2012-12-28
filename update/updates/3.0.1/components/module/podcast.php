@@ -3,26 +3,27 @@
 function _podcastUpdate() {
     global $objDatabase, $_ARRAYLANG;
 
-    require_once ASCMS_FRAMEWORK_PATH . '/File.class.php';
-
     //move podcast images directory
     $path = ASCMS_DOCUMENT_ROOT . '/images';
     $oldImagesPath = '/content/podcast';
     $newImagesPath = '/podcast';
 
-    \Cx\Lib\FileSystem\FileSystem::makeWritable($path . '/content/podcast');
-    if (file_exists($path . $oldImagesPath)) {
-        if (!\Cx\Lib\FileSystem\FileSystem::copy_folder($path . $oldImagesPath, $path . $newImagesPath)) {
-            setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'], $path . $oldImagesPath, $path . $newImagesPath));
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '1.2.1')) {
+        if (file_exists($path . $oldImagesPath)) {
+            \Cx\Lib\FileSystem\FileSystem::makeWritable($path . $oldImagesPath);
+            if (!\Cx\Lib\FileSystem\FileSystem::copy_folder($path . $oldImagesPath, $path . $newImagesPath)) {
+                setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'], $path . $oldImagesPath, $path . $newImagesPath));
+                return false;
+            }
         }
-    }
-    \Cx\Lib\FileSystem\FileSystem::makeWritable($path . '/podcast');
-    \Cx\Lib\FileSystem\FileSystem::makeWritable($path . '/podcast/youtube_thumbnails');
+        \Cx\Lib\FileSystem\FileSystem::makeWritable($path . $newImagesPath);
+        \Cx\Lib\FileSystem\FileSystem::makeWritable($path . $newImagesPath . '/youtube_thumbnails');
 
-    //change thumbnail paths
-    $query = "UPDATE `" . DBPREFIX . "module_podcast_medium` SET `thumbnail` = REPLACE(`thumbnail`, '/images/content/podcast/', '/images/podcast/')";
-    if ($objDatabase->Execute($query) === false) {
-        return _databaseError($query, $objDatabase->ErrorMsg());
+        //change thumbnail paths
+        $query = "UPDATE `" . DBPREFIX . "module_podcast_medium` SET `thumbnail` = REPLACE(`thumbnail`, '/images/content/podcast/', '/images/podcast/')";
+        if ($objDatabase->Execute($query) === false) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
     }
 
     //set new default settings
