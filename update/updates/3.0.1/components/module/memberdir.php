@@ -87,7 +87,6 @@ function _memberdirUpdate() {
     }
 
 
-    require_once ASCMS_FRAMEWORK_PATH . '/File.class.php';
     if (!\Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_MEDIA_PATH . '/memberdir')) {
         setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_DIR_AND_CONTENT'], ASCMS_MEDIA_PATH . '/memberdir/', $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
         return false;
