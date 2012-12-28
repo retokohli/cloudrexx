@@ -656,7 +656,7 @@ class InitCMS
     protected function getLangFilePath($module, $langId) {
         global $_CONFIG;
         // check whether the language file exists
-        $mode = $this->mode == 'backend' ? 'backend' : 'frontend';
+        $mode = in_array($this->mode, array('backend', 'update')) ? 'backend' : 'frontend';
 
         if (!isset($this->arrLang[$langId])) {
             $langId = $mode == 'backend' ? $this->getBackendDefaultLangId() : $this->getFrontendDefaultLangId();
