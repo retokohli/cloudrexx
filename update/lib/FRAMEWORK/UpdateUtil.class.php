@@ -45,7 +45,7 @@ class UpdateUtil
      *                                     # are duplicates (which will be dropped). use with care.
      *        )
      */
-    public static function table($name, $struc, $idx = array(), $engine = 'MyISAM', $comment)
+    public static function table($name, $struc, $idx = array(), $engine = 'MyISAM', $comment = null)
     {
         if (self::table_exist($name)) {
             self::check_columns($name, $struc);
