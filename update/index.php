@@ -107,6 +107,9 @@ require_once(UPDATE_LIB . '/FRAMEWORK/UpdateUtil.class.php');
 
 // Start update
 $objUpdate = new ContrexxUpdate();
+// $_CORELANG has been initialized by the constructor of ContrexxUpdate()
+// add language variables of core (will be used by FWUser)
+$_CORELANG = array_merge($objInit->loadLanguageData('core'), $_CORELANG);
 $output = $objUpdate->getPage();
 JS::findJavascripts($output);
 $output = str_replace('javascript_inserting_here', \JS::getCode(), $output);
