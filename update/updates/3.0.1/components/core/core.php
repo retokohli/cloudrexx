@@ -1573,7 +1573,7 @@ function _coreUpdate()
 
 function _writeNewConfigurationFile($setDbCharset = false)
 {
-    global $_CORELANG, $_ARRAYLANG, $_DBCONFIG, $_PATHCONFIG, $_FTPCONFIG, $_CONFIGURATION;
+    global $_CORELANG, $_ARRAYLANG, $_DBCONFIG, $_PATHCONFIG, $_FTPCONFIG, $_CONFIGURATION, $_CONFIG;
 
     $ftpStatus = $_FTPCONFIG['is_activated'] ? 'true' : 'false';
     $ftpUsePassive = $_FTPCONFIG['use_passive'] ? 'true' : 'false';
