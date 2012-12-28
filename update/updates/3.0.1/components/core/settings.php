@@ -285,8 +285,6 @@ function _updateSettings()
 
 
     // write settings
-    require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
-
     $strFooter = '';
     $arrModules = '';
 

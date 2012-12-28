@@ -174,7 +174,6 @@ function _downloadsUpdate()
     /************************************************
     * BUGFIX:   Set write access to the upload dir  *
     ************************************************/
-    require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
     if (\Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_DOWNLOADS_IMAGES_PATH)) {
         if ($mediaDir = @opendir(ASCMS_DOWNLOADS_IMAGES_PATH)) {
             while($file = readdir($mediaDir)) {

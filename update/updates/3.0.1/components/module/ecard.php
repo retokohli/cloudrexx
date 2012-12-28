@@ -69,7 +69,6 @@ function _ecardUpdate() {
         array(ASCMS_ECARD_THUMBNAIL_PATH, ASCMS_ECARD_THUMBNAIL_WEB_PATH)
     );
 
-    require_once ASCMS_FRAMEWORK_PATH . '/File.class.php';
 
     foreach ($arrImagePaths as $arrImagePath) {
         if (\Cx\Lib\FileSystem\FileSystem::makeWritable($arrImagePath[0])) {
