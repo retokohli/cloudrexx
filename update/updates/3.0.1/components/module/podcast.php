@@ -1,7 +1,7 @@
 <?php
 
 function _podcastUpdate() {
-    global $objDatabase, $_ARRAYLANG;
+    global $objDatabase, $_ARRAYLANG, $objUpdate, $_CONFIG;
 
     //move podcast images directory
     $path = ASCMS_DOCUMENT_ROOT . '/images';
