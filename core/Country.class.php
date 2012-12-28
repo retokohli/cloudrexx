@@ -205,7 +205,10 @@ class Country
     {
         global $objDatabase;
 
-        if (empty($lang_id)) $lang_id = FRONTEND_LANG_ID;
+        if (empty($lang_id)) {
+//die("Country::getById(): ERROR: Empty language ID");
+            $lang_id = FRONTEND_LANG_ID;
+        }
         $arrSqlName = Text::getSqlSnippets('`country`.`id`', $lang_id,
             'core', array('name' => self::TEXT_NAME));
         $query = "
@@ -217,7 +220,11 @@ class Country
                    $arrSqlName['join']."
              WHERE `country`.`id`=$country_id";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return self::errorHandler();
+        if (!$objResult) {
+// Disabled, as this method is called by errorHandler() as well!
+//            return self::errorHandler();
+            return false;
+        }
         if ($objResult->EOF) return false;
         $strName = $objResult->fields['name'];
         if ($strName === null) {
@@ -452,7 +459,7 @@ class Country
         $ord=null, $active=null, $country_id=null
     ) {
         $arrCountry = false;
-        if ($country_id) $arrCountry = self::getById($country_id);
+        if ($country_id) $arrCountry = self::getById($country_id, $lang_id);
         if ($arrCountry) {
 //DBG::log("Country::store($alpha2, $alpha3, $lang_id, $country_name, $ord, $active, $country_id): Updating Country ID $country_id, $country_name");
             if (!self::update($country_id, $ord, $active, $alpha2, $alpha3))
@@ -930,6 +937,7 @@ class Country
                     throw new Update_DatabaseException(
                        "Failed to to query Country names", $query);
                 }
+                $default_lang_id = FWLanguage::getDefaultLangId();
                 while (!$objResult->EOF) {
                     $id = $objResult->fields['countries_id'];
                     $name = $objResult->fields['countries_name'];
@@ -937,7 +945,7 @@ class Country
                     $alpha3 = $objResult->fields['countries_iso_code_3'];
                     $active = $objResult->fields['activation_status'];
                     $ord = 0;
-                    if (!self::store($alpha2, $alpha3, FRONTEND_LANG_ID,
+                    if (!self::store($alpha2, $alpha3, $default_lang_id,
                         $name, $ord, $active, $id)
                     ) {
                         throw new Update_DatabaseException(
