@@ -196,7 +196,7 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
 
         if (!is_object($template)) {
             // content provided instead of \Cx\Core\Html\Sigma object
-            $template = preg_replace_callback('/<!--\s+BEGIN\s+(access_logged_in[0-9]*)\s+-->.*<!--\s+END\s+\1\s+-->/sm', array('self', 'loadTemplate'), $template);
+            $template = preg_replace_callback('/<!--\s+BEGIN\s+(access_logged_(?:in|out)[0-9]*)\s+-->.*<!--\s+END\s+\1\s+-->/sm', array('self', 'loadTemplate'), $template);
             return;
         } else {
             $objTemplate = $template;
@@ -208,7 +208,7 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
                 $objFWUser = FWUser::getFWUserObject();
                 if ($objFWUser->objUser->login()) {
                     $objFWUser->setLoggedInInfos($objTemplate, $accessLoggedInTplBlock);
-                    $objTemplate->parse($accessLoggedInTplBlock);
+                    $objTemplate->touchBlock($accessLoggedInTplBlock);
                 } else {
                     $objTemplate->hideBlock($accessLoggedInTplBlock);
                 }
