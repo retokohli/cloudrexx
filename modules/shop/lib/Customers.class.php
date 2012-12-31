@@ -202,6 +202,7 @@ DBG::log("Customers::getCount(): ERROR: Failed to get Usergroup for ID $usergrou
      *  - %1$s : First name
      *  - %2$s : Last name
      *  - %3$u : ID
+     *  - %4$s : Username
      * Defaults to '%2$s %1$s (%3$u)'
      * @param   integer   $customer_id    The Customer ID
      * @param   string    $format         The optional format string
@@ -210,12 +211,16 @@ DBG::log("Customers::getCount(): ERROR: Failed to get Usergroup for ID $usergrou
     static function getNameById($customer_id, $format=null)
     {
         $objCustomer = Customer::getById($customer_id);
-        if (!$objCustomer) return false;
+        if (!$objCustomer) {
+//DBG::log("Customer::getNameById($customer_id, $format): No Customer for that ID");
+            return false;
+        }
         if (!isset($format)) $format = '%2$s %1$s (%3$u)';
         return sprintf($format,
             $objCustomer->firstname(),
             $objCustomer->lastname(),
-            $objCustomer->id()
+            $objCustomer->id(),
+            $objCustomer->username()
         );
     }
 
