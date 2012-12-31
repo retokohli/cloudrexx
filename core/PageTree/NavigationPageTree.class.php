@@ -61,11 +61,12 @@ class NavigationPageTree extends SigmaPageTree {
 //      are rendered.
             $style = $current ? self::styleNameActive : self::styleNameNormal;
 //TODO: navigation_id
+            $linkTarget = $page->getLinkTarget();
             $this->template->setCurrentBlock($blockName);
             $this->template->setVariable(array(
                 'URL' => ASCMS_PATH_OFFSET.$this->virtualLanguageDirectory.$path,
                 'NAME' => $title,
-                'TARGET' => $page->getLinkTarget(),
+                'TARGET' => empty($linkTarget) ? '_self' : $linkTarget,
                 'LEVEL_INFO' => $hasChilds ? '' : 'down',
                 'STYLE' => $style,
                 'CSS_NAME' => $page->getCssNavName()

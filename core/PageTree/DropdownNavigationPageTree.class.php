@@ -80,7 +80,8 @@ class DropdownNavigationPageTree extends SigmaPageTree {
         // parse navigation entry
         $output = str_replace('{NAME}', contrexx_raw2xhtml($title), $output);
         $output = str_replace('{URL}', ASCMS_PATH_OFFSET.$this->virtualLanguageDirectory./*contrexx_raw2encodedUrl(*/$path/*)*/, $output);
-        $output = str_replace('{TARGET}', $page->getLinkTarget(), $output);
+        $linkTarget = $page->getLinkTarget();
+        $output = str_replace('{TARGET}', empty($linkTarget) ? '_self' : $linkTarget, $output);
         $output = str_replace('{CSS_NAME}', $page->getCssNavName(), $output);
         $output = str_replace('{NAVIGATION_ID}', $this->navigationIds[$level], $output);
         $output = str_replace('{STYLE}', $style, $output);
