@@ -133,7 +133,7 @@ class news extends newsLibrary {
                                                         news.typeid             AS typeid,
                                                         news.catid              AS catid,
                                                         news.allow_comments     AS commentactive,
-                                                        locale.text             AS text,
+                                                        locale.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS text,
                                                         locale.title            AS title,
                                                         locale.teaser_text,
                                                         cat.name                AS catname
@@ -264,15 +264,32 @@ class news extends newsLibrary {
             $newsTeaser = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $newsTeaser);
             LinkGenerator::parseTemplate($text);
             $this->_objTpl->setVariable('NEWS_TEXT', $text);
-            $this->_objTpl->parse('news_text');
-            $this->_objTpl->hideBlock('news_redirect');
+            if ($this->_objTpl->blockExists('news_text')) {
+                $this->_objTpl->parse('news_text');
+            }
+            if ($this->_objTpl->blockExists('news_redirect')) {
+                $this->_objTpl->hideBlock('news_redirect');
+            }
         } else {
+            if (\FWValidator::isUri($redirect)) {
+                $redirectName = preg_replace('#^https?://#', '', $redirect);
+            //} elseif (FWValidator::isEmail($redirect)) {
+                //$redirectName
+            } else {
+                $redirectName = basename($redirect);
+            }
+
             $this->_objTpl->setVariable(array(
                 'TXT_NEWS_REDIRECT_INSTRUCTION' => $_ARRAYLANG['TXT_NEWS_REDIRECT_INSTRUCTION'],
                 'NEWS_REDIRECT_URL'             => $redirect,
+                'NEWS_REDIRECT_NAME'            => $redirectName,
             ));
-            $this->_objTpl->parse('news_redirect');
-            $this->_objTpl->hideBlock('news_text');
+            if ($this->_objTpl->blockExists('news_redirect')) {
+                $this->_objTpl->parse('news_redirect');
+            }
+            if ($this->_objTpl->blockExists('news_text')) {
+                $this->_objTpl->hideBlock('news_text');
+            }
         }
 
         $this->countNewsMessageView($newsid);
