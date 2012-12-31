@@ -12,7 +12,7 @@
 /**
  * @ignore
  */
-require_once ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php';
+require_once UPDATE_LIB.'/adodb/adodb.inc.php';
 
 /**
  * Returns the database object.

@@ -78,7 +78,7 @@ class InitCMS
         $this->mode=$mode;
 
         $objResult = $objDatabase->Execute("
-            SELECT id, themesid, print_themes_id, pdf_themes_id, mobile_themes_id, app_themes_id,
+            SELECT id, themesid, print_themes_id, pdf_themes_id,
                    lang, name, charset, backend, frontend, is_default
               FROM ".DBPREFIX."languages
         ");
@@ -89,8 +89,8 @@ class InitCMS
                     'themesid'         => $objResult->fields['themesid'],
                     'print_themes_id'  => $objResult->fields['print_themes_id'],
                     'pdf_themes_id'    => $objResult->fields['pdf_themes_id'],
-                    'mobile_themes_id' => $objResult->fields['mobile_themes_id'],
-                    'app_themes_id'    => $objResult->fields['app_themes_id'],
+                    'mobile_themes_id' => 0,//$objResult->fields['mobile_themes_id'],
+                    'app_themes_id'    => 0,//$objResult->fields['app_themes_id'],
                     'lang'             => $objResult->fields['lang'],
                     'name'             => $objResult->fields['name'],
                     'charset'          => $objResult->fields['charset'],

@@ -51,6 +51,14 @@ require_once(dirname(__FILE__).'/config/configuration.php');
 // Config files
 $incSettingsStatus = include_once(dirname(UPDATE_PATH) . '/config/settings.php');
 require_once(dirname(UPDATE_PATH) . '/config/configuration.php');
+
+if (!isset($_CONFIG['useCustomizings'])) {
+    $_CONFIG['useCustomizings'] = 'off';
+}
+if (!defined('ASCMS_CUSTOMIZING_PATH')) {
+    define('ASCMS_CUSTOMIZING_PATH', '');
+}
+
 // Contrexx 3.0.0+ do not have a version.php. The information is included in settings.php
 if (file_exists(ASCMS_DOCUMENT_ROOT . '/config/version.php')) {
     require_once(ASCMS_DOCUMENT_ROOT . '/config/version.php');
