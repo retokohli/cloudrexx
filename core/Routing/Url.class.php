@@ -226,8 +226,9 @@ class Url {
         $params = NULL;
         if (count($path) > 1) {
             $params = explode('&', $path[1]);
-            foreach ($params as $key=>$param) {
+            foreach ($params as $key => $param) {
                 $param = explode('=', $param);
+                if (empty($param[0])) continue;
                 // hide CSRF-Protection
                 if ($param[0] == 'csrf') {
                     unset($params[$key]);
@@ -525,6 +526,20 @@ class Url {
             ASCMS_PATH_OFFSET.'/'.
             $this->getLangDir().'/'.
             $this->path; // contains path (except for PATH_OFFSET and virtual language dir) and params
+    }
+
+
+    /**
+     * Returns the given string with any ampersands ("&") replaced by "&amp;"
+     *
+     * Any "&amp;"s already present in the string won't be changed;
+     * no double encoding takes place.
+     * @param   string  $url    The URL to be encoded
+     * @return  string          The URL with ampersands encoded
+     */
+    static function encode_amp($url)
+    {
+        return preg_replace('/&(?!=amp;)/', '&amp;', $url);
     }
 
 }
