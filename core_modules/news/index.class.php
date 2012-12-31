@@ -133,7 +133,7 @@ class news extends newsLibrary {
                                                         news.typeid             AS typeid,
                                                         news.catid              AS catid,
                                                         news.allow_comments     AS commentactive,
-                                                        locale.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS text,
+                                                        locale.text,
                                                         locale.title            AS title,
                                                         locale.teaser_text,
                                                         cat.name                AS catname
