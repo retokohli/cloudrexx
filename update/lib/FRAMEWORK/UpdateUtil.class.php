@@ -45,7 +45,8 @@ class UpdateUtil
      *                                     # are duplicates (which will be dropped). use with care.
      *        )
      */
-    public static function table($name, $struc, $idx = array(), $engine = 'MyISAM', $comment = null)
+    public static function table($name, $struc, $idx=array(), $engine='MyISAM',
+        $comment='')
     {
         if (self::table_exist($name)) {
             self::check_columns($name, $struc);
@@ -76,7 +77,9 @@ class UpdateUtil
 
         $col_info = $objDatabase->MetaColumns($name);
         if ($col_info === false) {
-            throw new UpdateException(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
+            throw new UpdateException(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'],
+                $name));
         }
         return isset($col_info[strtoupper($col)]);
     }
@@ -103,7 +106,9 @@ class UpdateUtil
 
         $tableinfo = $objDatabase->MetaTables();
         if ($tableinfo === false) {
-            throw new UpdateException(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
+            throw new UpdateException(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'],
+                $name));
         }
         return in_array($name, $tableinfo);
     }
@@ -124,10 +129,9 @@ class UpdateUtil
     }
 
 
-    private static function create_table($name, $struc, $idx, $engine, $comment)
+    private static function create_table($name, $struc, $idx, $engine,
+        $comment='')
     {
-        global $objDatabase, $_ARRAYLANG;
-
         // create table statement
         $cols = array();
         foreach ($struc as $col => $spec) {
@@ -135,12 +139,11 @@ class UpdateUtil
         }
         $colspec    = join(",\n", $cols);
         $primaries  = join(",\n", self::_getprimaries($struc));
-        $comment    = !empty($comment) ? 'COMMENT="'.$comment.'"' : '';
-
+        $comment    = !empty($comment) ? ' COMMENT="'.$comment.'"' : '';
         $table_stmt = "CREATE TABLE `$name`(
             $colspec".(!empty($primaries) ? ",
             PRIMARY KEY ($primaries)" : '')."
-        ) ENGINE=$engine $comment";
+        ) ENGINE=$engine$comment";
 
         self::sql($table_stmt);
         // index statements. as we just created the table
@@ -267,8 +270,6 @@ class UpdateUtil
 
     private static function _drop_unspecified_columns($name, $struc, $col_info)
     {
-        global $objDatabase;
-
         foreach (array_keys($col_info) as $col) {
             // we have to do a stupid loop here as we don't know
             // the exact case of the name in $spec ;(
@@ -294,8 +295,6 @@ class UpdateUtil
      */
     private static function _check_column($name, $col_info, $col, $spec)
     {
-        global $objDatabase;
-
         if (!isset($col_info[strtoupper($col)])) {
             $colspec = self::_colspec($spec);
             $query = '';
@@ -440,7 +439,7 @@ class UpdateUtil
             $descr = "ALTER IGNORE TABLE `$table` ADD $type KEY `$name` ($fields)";
         } else {
 // TODO "INDEX" instead of "KEY" produces an error for type "PRIMARY"? -- RK
-  //          $descr  = "ALTER TABLE `$table` ADD $type INDEX `$name` ($fields)";
+//            $descr  = "ALTER TABLE `$table` ADD $type INDEX `$name` ($fields)";
             $descr  = "ALTER TABLE `$table` ADD $type KEY `$name` ($fields)";
         }
         return $descr;

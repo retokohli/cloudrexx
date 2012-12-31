@@ -3,7 +3,8 @@ function _updateSettings()
 {
     global $objUpdate, $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG, $arrSettings, $arrSettingsByName;
 
-    $setVars = false;
+// TODO: Unused
+//    $setVars = false;
 
     $arrSettings = array(
         3	=> array(
@@ -261,10 +262,9 @@ function _updateSettings()
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
     } else {
+        $selected = -1;
         if (($defaultTimezoneId = array_search(@date_default_timezone_get(), $arrTimezoneIdentifiers)) && !empty($defaultTimezoneId)) {
             $selected = $defaultTimezoneId;
-        } else {
-            $selected = -1;
         }
 
         $options = '<option value="-1"'.($selected == -1 ? ' selected="selected"' : '').'>'.$_CORELANG['TXT_PLEASE_SELECT'].'</option>';
@@ -330,12 +330,11 @@ function _updateSettings()
                                                             setname ASC
                                             ');
             $intMaxLen = 0;
-            if ($objResult->RecordCount() > 0) {
-                while (!$objResult->EOF) {
-                    $intMaxLen = (strlen($objResult->fields['setname']) > $intMaxLen) ? strlen($objResult->fields['setname']) : $intMaxLen;
-                    $arrValues[$objResult->fields['setmodule']][$objResult->fields['setname']] = $objResult->fields['setvalue'];
-                    $objResult->MoveNext();
-                }
+            $arrValues = array();
+            while ($objResult && !$objResult->EOF) {
+                $intMaxLen = (strlen($objResult->fields['setname']) > $intMaxLen) ? strlen($objResult->fields['setname']) : $intMaxLen;
+                $arrValues[$objResult->fields['setmodule']][$objResult->fields['setname']] = $objResult->fields['setvalue'];
+                $objResult->MoveNext();
             }
             $intMaxLen += strlen('$_CONFIG[\'\']') + 1; //needed for formatted output
 
@@ -491,4 +490,3 @@ function _updateSettingsTable($setId, $arrSetting)
         return _databaseError($query, $objDatabase->ErrorMsg());
     }
 }
-?>
