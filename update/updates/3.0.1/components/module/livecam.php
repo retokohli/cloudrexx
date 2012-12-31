@@ -108,7 +108,11 @@ function _livecamUpdate()
     * ADDED:    2.1.3                               *
     ************************************************/
     // both spaces in the search and replace pattern are required in that case
-    \Cx\Lib\UpdateUtil::migrateContentPage('livecam', null, ' {LIVECAM_IMAGE_SHADOWBOX}', ' rel="{LIVECAM_IMAGE_SHADOWBOX}"', '2.1.3');
+    try {
+        \Cx\Lib\UpdateUtil::migrateContentPage('livecam', null, ' {LIVECAM_IMAGE_SHADOWBOX}', ' rel="{LIVECAM_IMAGE_SHADOWBOX}"', '2.1.3');
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
 
     return true;
 }
