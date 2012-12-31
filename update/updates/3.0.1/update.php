@@ -265,6 +265,10 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
             }
             return false;
         } else {
+            $result = _writeNewConfigurationFile();
+            if ($result === false) {
+                return false;
+            }
             $_SESSION['contrexx_update']['update']['done'][] = 'coreSettings';
         }
     }
