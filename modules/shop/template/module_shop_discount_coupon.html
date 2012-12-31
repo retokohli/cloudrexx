@@ -92,7 +92,7 @@
 <div id="edit" class="couponTab" style="display:{SHOP_DISCOUNT_COUPON_EDIT_DISPLAY}">
   <form name="couponForm" method="post"
       action="index.php?{CSFR_PARAM}&amp;cmd=shop&amp;act=settings&amp;tpl=coupon">
-
+    <input type="hidden" name="edit" value="{SHOP_DISCOUNT_COUPON_INDEX}" />
 <!-- BEGIN shopDiscountCouponEdit -->
     <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
@@ -146,9 +146,10 @@
           {SHOP_DISCOUNT_COUPON_PER_CUSTOMER}
           <div id="customer_widget"
                style="display: {SHOP_DISCOUNT_COUPON_CUSTOMER_WIDGET_DISPLAY}">
-            <!--<input class="live-search-user-name" name="..." value="..." />-->
-            <input class="live-search-user-id" name="customer_id"
-                   value="" />
+            <input class="live-search-user-id" name="customer_id" id="customer_id"
+                   value="{SHOP_DISCOUNT_COUPON_CUSTOMER_ID}" />
+            <input class="live-search-user-name" name="customer_name" id="customer_name"
+                   value="{SHOP_DISCOUNT_COUPON_CUSTOMER_NAME}" />
           </div>
         </td>
       </tr>
@@ -230,6 +231,12 @@ jQuery(function($) {
   };
   change_type("{SHOP_DISCOUNT_COUPON_TYPE_SELECTED}");
 });
+function delete_coupon(index) {
+  if (confirm("{TXT_SHOP_DISCOUNT_COUPON_DELETE_CONFIRM}\n\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
+    window.location.replace(
+      "index.php?{CSRF_PARAM}&cmd=shop&act=settings&tpl=coupon&delete="+index);
+  }
+}
 // ]]>
 </script>
 <!-- END module_shop_discount_coupon.html -->

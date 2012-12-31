@@ -27,6 +27,8 @@
  */
 class Coupon
 {
+    const USES_UNLIMITED = 1e10;
+
     /**
      * The Coupon code
      * @var   string
@@ -241,6 +243,19 @@ class Coupon
     function used()
     {
         return $this->used;
+    }
+
+
+    /**
+     * Returns the index for this Coupon
+     *
+     * Returns NULL iff the code is empty
+     * @return  string              The Coupon index
+     */
+    function getIndex()
+    {
+        if (empty($this->code)) return NULL;
+        return $this->code().'-'.$this->customer_id();
     }
 
 
@@ -570,20 +585,21 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
     /**
      * Deletes the Coupon with the given code from the database
      *
+     * When set, limits deleting to the given Customer ID.
      * On failure, adds an error message and returns false.
-     * @param   string    $code   The Coupon code
-     * @return  boolean           True on success, false otherwise
+     * @param   string  $code   The Coupon code
+     * @param   integer $code   The optional Customer ID
+     * @return  boolean         True on success, false otherwise
      */
-    private static function delete($code)
+    private static function delete($code, $customer_id=NULL)
     {
         global $objDatabase, $_ARRAYLANG;
 
-        if (empty($code)) return false;
-
-//DBG::activate(DBG_ADODB);
         $query = "
             DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_customer_coupon`
-             WHERE `code`='".addslashes($code)."'";
+             WHERE `code`='".addslashes($code)."'".
+            (isset($customer_id)
+                 ? " AND customer_id=".intval($customer_id) : '');
         if (!$objDatabase->Execute($query)) {
             return Message::error(sprintf(
                 $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_ERROR_DELETING_RELATIONS'],
@@ -591,13 +607,14 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
         }
         $query = "
             DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_discount_coupon`
-             WHERE `code`='".addslashes($code)."'";
+             WHERE `code`='".addslashes($code)."'".
+            (isset($customer_id)
+                 ? " AND customer_id=".intval($customer_id) : '');
         if (!$objDatabase->Execute($query)) {
             return Message::error(sprintf(
                 $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_ERROR_DELETING'],
                 $code));
         }
-//DBG::deactivate(DBG_ADODB);
         return Message::ok(sprintf(
             $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_DELETED_SUCCESSFULLY'],
             $code));
@@ -693,7 +710,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
      * @return  boolean             True if the record exists or on failure,
      *                              false otherwise
      */
-    static function recordExists($code)
+    static function codeExists($code)
     {
         global $objDatabase;
 
@@ -705,6 +722,41 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
         // Failure or none found
         if (!$objResult) {
             // Failure!  Assume that the code exists.
+            return true;
+        }
+        if ($objResult->EOF) {
+            return false;
+        }
+        return true;
+    }
+
+
+    /**
+     * Returns true if the Coupon with the given index does not exist in
+     * the database
+     *
+     * Upon failure, true is returned in order to prevent overwriting the
+     * potentially existing record.
+     * @param   string    $index    The Coupon index
+     * @return  boolean             True if the record exists or on failure,
+     *                              false otherwise
+     */
+    static function recordExists($index)
+    {
+        global $objDatabase;
+
+        if (empty($index)) return false;
+        list($code, $customer_id) = explode('-', $index);
+        if (empty($code)) return false;
+        $query = "
+            SELECT 1
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_discount_coupon`
+             WHERE `code`='".addslashes($code)."'
+               AND `customer_id`=".intval($customer_id);
+        $objResult = $objDatabase->Execute($query);
+        // Failure or none found
+        if (!$objResult) {
+            // Failure!  Assume that the Coupon exists.
             return true;
         }
         if ($objResult->EOF) {
@@ -760,6 +812,8 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
      *                                      per customer basis.
      *                                      Defaults to true
      * @param   integer   $customer_id      The optional customer ID
+     * @param   integer   $productr_id      The optional product ID
+     * @param   string    $index            The optional Coupon index
      * @return  boolean                     True on success, false otherwise
      * @static
      */
@@ -768,7 +822,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
         $discount_rate=0, $discount_amount=0,
         $start_time=0, $end_time=0,
         $uses=0, $global=true,
-        $customer_id=0, $product_id=0
+        $customer_id=0, $product_id=0, $index=NULL
     ) {
         global $objDatabase, $_ARRAYLANG;
 
@@ -780,7 +834,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
         }
 
         $update = false;
-        if (self::recordExists($code)) {
+        if (self::recordExists($index)) {
             $update = true;
 // Alternatively,
 //            return Message::error(sprintf(
@@ -813,26 +867,58 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
         }
         $customer_id = max(0, intval($customer_id));
         if ($global) $customer_id = 0;
-        $query = "
-            REPLACE INTO `".DBPREFIX."module_shop".MODULE_INDEX."_discount_coupon` (
-              `code`, `payment_id`,
-              `minimum_amount`, `discount_rate`, `discount_amount`,
-              `start_time`, `end_time`, `uses`, `global`,
-              `customer_id`, `product_id`
-            ) VALUES (
-              ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-            )";
-        if ($objDatabase->Execute($query, array(
-            $code, $payment_id, $minimum_amount,
-            $discount_rate, $discount_amount,
-            $start_time, $end_time, $uses, ($global ? 1 : 0),
-            $customer_id, $product_id)
-        )) {
-            return Message::ok(sprintf(
-                ($update
-                  ? $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_UPDATED_SUCCESSFULLY']
-                  : $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_ADDED_SUCCESSFULLY']),
-                $code));
+        $query = '';
+        if (empty($index)) {
+            $index = "$code-$customer_id";
+        }
+        if (self::recordExists($index)) {
+            // Update
+            list($code_prev, $customer_id_prev) = explode('-', $index);
+            $query = "
+                UPDATE `".DBPREFIX."module_shop".MODULE_INDEX."_discount_coupon`
+                   SET `code`=?,
+                       `payment_id`=?,
+                       `minimum_amount`=?,
+                       `discount_rate`=?,
+                       `discount_amount`=?,
+                       `start_time`=?,
+                       `end_time`=?,
+                       `uses`=?,
+                       `global`=?,
+                       `customer_id`=?,
+                       `product_id`=?
+                 WHERE `code`=?
+                   AND `customer_id`=?";
+            if ($objDatabase->Execute($query, array(
+                $code, $payment_id, $minimum_amount,
+                $discount_rate, $discount_amount,
+                $start_time, $end_time, $uses, ($global ? 1 : 0),
+                $customer_id, $product_id,
+                $code_prev, $customer_id_prev))) {
+                return Message::ok(sprintf(
+                    $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_UPDATED_SUCCESSFULLY'],
+                    $code));
+            }
+        } else {
+            // Insert
+            $query = "
+                REPLACE INTO `".DBPREFIX."module_shop".MODULE_INDEX."_discount_coupon` (
+                  `code`, `payment_id`,
+                  `minimum_amount`, `discount_rate`, `discount_amount`,
+                  `start_time`, `end_time`, `uses`, `global`,
+                  `customer_id`, `product_id`
+                ) VALUES (
+                  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                )";
+            if ($objDatabase->Execute($query, array(
+                $code, $payment_id, $minimum_amount,
+                $discount_rate, $discount_amount,
+                $start_time, $end_time, $uses, ($global ? 1 : 0),
+                $customer_id, $product_id))) {
+                return Message::ok(sprintf(
+                    $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_ADDED_SUCCESSFULLY'],
+                    $code));
+            }
         }
         Message::error(
             $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_ERROR_ADDING_QUERY_FAILED']);
@@ -852,7 +938,9 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
 
         $result = true;
         if (isset($_GET['delete'])) {
-            $result &= self::delete(contrexx_input2raw($_GET['delete']));
+            list($code, $customer_id) = explode('-', $_GET['delete']);
+            $result &= self::delete(
+                contrexx_input2raw($code), intval($customer_id));
         }
         $edit = isset($_REQUEST['edit'])
             ? contrexx_input2raw($_REQUEST['edit']) : null;
@@ -886,7 +974,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                 ? 0 : floatval($_POST['minimum_amount']));
         $uses = empty($_POST['unlimited'])
             ? (empty($_POST['uses']) ? 1 : intval($_POST['uses']))
-            : 1e10;
+            : self::USES_UNLIMITED;
         $customer_id = empty($_POST['customer_id'])
             ? 0 : intval($_POST['customer_id']);
         $product_id = empty($_POST['product_id'])
@@ -897,16 +985,16 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             $result &= self::storeCode(
                 $code, $payment_id, $minimum_amount,
                 $discount_rate, $discount_amount, $start_time, $end_time,
-                $uses, $global, $customer_id, $product_id);
+                $uses, $global, $customer_id, $product_id, $edit);
             if ($result) {
-                $code = null;
+                $code = $edit = null;
             } else {
-                $edit = "$code-$customer_id";
+                if (empty($edit)) $edit = "$code-$customer_id";
             }
         }
         // Reset the end time if it's in the past
         if ($end_time < time()) $end_time = 0;
-        $uri = Html::getRelativeUri_entities();
+        $uri = Html::getRelativeUri();
         Html::stripUriParam($uri, 'view');
         Html::stripUriParam($uri, 'edit');
         Html::stripUriParam($uri, 'order_coupon');
@@ -1000,10 +1088,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                 'SHOP_ROWCLASS' => 'row'.(++$row % 2 + 1),
                 'SHOP_DISCOUNT_COUPON_CODE' => $objCoupon->code(),
                 'SHOP_DISCOUNT_COUPON_URI_ICON' =>
-// TODO: Use Resolver methods to form the URI
-//                    Dispatcher::get_absolute_url(
                     '<div class="icon_url"'.
-//                    ' onclick="click_link(\'#'.$coupon_uri_id.'\');"'.
                     '>&nbsp;</div>',
                 'SHOP_DISCOUNT_COUPON_URI_INPUT' =>
                     '<div class="layer_url" id="'.$coupon_uri_id.'">'.
@@ -1054,11 +1139,14 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                       : '&nbsp;'),
                 'SHOP_DISCOUNT_COUPON_CUSTOMER' =>
                     ($objCoupon->customer_id()
-                      ? Customers::getNameById($objCoupon->customer_id())
+                      ? Customers::getNameById(
+                          $objCoupon->customer_id(), '%4$s (%3$u)')
                       : $_ARRAYLANG['TXT_SHOP_CUSTOMER_ANY']),
                 'SHOP_DISCOUNT_COUPON_PRODUCT' =>
                     ($objCoupon->product_id()
-                      ? $arrProductName[$objCoupon->product_id()]
+                      ? (isset($arrProductName[$objCoupon->product_id()])
+                            ? $arrProductName[$objCoupon->product_id()]
+                            : $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_PRODUCT_INVALID'])
                       : $_ARRAYLANG['TXT_SHOP_PRODUCT_ANY']),
                 'SHOP_DISCOUNT_COUPON_PAYMENT' =>
                     ($objCoupon->payment_id()
@@ -1074,15 +1162,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                             '?cmd=shop&amp;act=settings&amp;tpl=coupon&amp;edit='.
                             urlencode($index),
                         'delete' =>
-                            ADMIN_SCRIPT_PATH.
-                            '?cmd=shop&amp;act=settings&amp;tpl=coupon&amp;delete='.
-                            urlencode($index),
-                    ),
-                    array(
-                        'delete' =>
-                            $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_DELETE_CONFIRM'].
-                            '\\n\\n'.
-                            $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
+                            "javascript:delete_coupon('".urlencode($index)."');",
                     )),
             ));
             $objTemplate->parse('shopDiscountCouponView');
@@ -1105,9 +1185,16 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
         $attribute_product = 'style="width: 230px;"';
         $attribute_payment = 'style="width: 230px;"';
         $type = ($objCouponEdit->discount_rate() > 0 ? 'rate' : 'amount');
+        $customer_name = '';
+        if ($objCouponEdit->customer_id()) {
+            $customer_name = Customers::getNameById(
+                $objCouponEdit->customer_id(), '%4$s (%3$u)');
+//DBG::log("Customer ID ".$objCouponEdit->customer_id().": name $customer_name");
+        }
         $objTemplate->setVariable(array(
             // Add new coupon code
             'SHOP_ROWCLASS' => 'row'.(++$row % 2 + 1),
+            'SHOP_DISCOUNT_COUPON_INDEX' => $objCouponEdit->getIndex(),
             'SHOP_DISCOUNT_COUPON_CODE' =>
                 Html::getInputText('code', $objCouponEdit->code(),
                     '', $attribute_code),
@@ -1174,6 +1261,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                 Html::getLabel('customer',
                     $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_PER_CUSTOMER']),
             'SHOP_DISCOUNT_COUPON_CUSTOMER_ID' => $objCouponEdit->customer_id(),
+            'SHOP_DISCOUNT_COUPON_CUSTOMER_NAME' => $customer_name,
             'SHOP_DISCOUNT_COUPON_PRODUCT' =>
                 Html::getSelect(
                     'product_id',
@@ -1194,7 +1282,6 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
         // Depends on, and thus implies loading jQuery as well!
         FWUser::getUserLiveSearch(array(
             'minLength' => 3,
-// TODO: The options 'canCancel' and 'canClear' are not yet implemented!
             'canCancel' => true,
             'canClear' => true));
         return $result;
@@ -1276,7 +1363,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
         $code = null;
         while (true) {
             $code = User::make_password(8, false);
-            if (!self::recordExists($code)) break;
+            if (!self::codeExists($code)) break;
         }
         return $code;
     }
