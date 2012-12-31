@@ -536,7 +536,28 @@ function _newsUpdate() {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
-    \Cx\Lib\UpdateUtil::migrateContentPage('news', 'details', array('{NEWS_DATE}','{NEWS_COMMENTS_DATE}'), array('{NEWS_LONG_DATE}', '{NEWS_COMMENTS_LONG_DATE}'), '3.0.1');
+    try {
+        \Cx\Lib\UpdateUtil::migrateContentPage('news', 'details', array('{NEWS_DATE}','{NEWS_COMMENTS_DATE}'), array('{NEWS_LONG_DATE}', '{NEWS_COMMENTS_LONG_DATE}'), '3.0.1');
+
+        // this adds the block news_redirect
+        $search = array(
+            '/.*\{NEWS_TEXT\}.*/ms',
+        );
+        $callback = function($matches) {
+            if (   !preg_match('/<!--\s+BEGIN\s+news_redirect\s+-->/ms', $matches[0])) {
+                $newsContent = <<<NEWS
+<!-- BEGIN news_text -->{NEWS_TEXT}<!-- END news_text -->
+    <!-- BEGIN news_redirect -->{TXT_NEWS_REDIRECT_INSTRUCTION} <a href="{NEWS_REDIRECT_URL}" target="_blank">{NEWS_REDIRECT_URL}</a><!-- END news_redirect -->
+NEWS;
+                return str_replace('{NEWS_TEXT}', $newsContent, $matches[0]);
+            } else {
+                return $matches[0];
+            }
+        };
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'news', 'cmd' => 'details'), $search, $callback, array('content'), '3.0.1');
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
 
     return true;
 }
