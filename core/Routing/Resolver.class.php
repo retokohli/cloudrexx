@@ -43,38 +43,38 @@ class Resolver {
      * @var array ($languageId => $fallbackLanguageId)
      */
     protected $fallbackLanguages = null;
-    
+
     /**
      * Contains the resolved module name (if any, empty string if none)
      * @var String
      */
     protected $section = '';
-    
+
     /**
      * Contains the resolved module command (if any, empty string if none)
      * @var String
      */
     protected $command = '';
-    
+
     /**
      * Remembers if it's a page preview.
      * @var boolean
      */
     protected $pagePreview = 0;
-    
+
     /**
      * Contains the history id to revert the page to an older version.
      * @var int
      */
     protected $historyId = 0;
-    
+
     /**
      * Contains the page array from the session.
      * @var array
      */
     protected $sessionPage = array();
     protected $path;
-    
+
     /**
      * @param Url $url the url to resolve
      * @param integer $lang the language Id
@@ -82,14 +82,14 @@ class Resolver {
      * @param string $pathOffset ASCMS_PATH_OFFSET
      * @param array $fallbackLanguages (languageId => fallbackLanguageId)
      * @param boolean $forceInternalRedirection does not redirect by 302 for internal redirections if set to true.
-     *                this is used mainly for testing currently. 
+     *                this is used mainly for testing currently.
      *                IMPORTANT: Do insert new parameters before this one if you need to and correct the tests.
      */
     public function __construct($url, $lang, $entityManager, $pathOffset, $fallbackLanguages, $forceInternalRedirection=false) {
         $this->init($url, $lang, $entityManager, $pathOffset, $fallbackLanguages, $forceInternalRedirection);
     }
-    
-    
+
+
     /**
      * @param Url $url the url to resolve
      * @param integer $lang the language Id
@@ -97,7 +97,7 @@ class Resolver {
      * @param string $pathOffset ASCMS_PATH_OFFSET
      * @param array $fallbackLanguages (languageId => fallbackLanguageId)
      * @param boolean $forceInternalRedirection does not redirect by 302 for internal redirections if set to true.
-     *                this is used mainly for testing currently. 
+     *                this is used mainly for testing currently.
      *                IMPORTANT: Do insert new parameters before this one if you need to and correct the tests.
      */
     public function init($url, $lang, $entityManager, $pathOffset, $fallbackLanguages, $forceInternalRedirection=false) {
@@ -114,7 +114,7 @@ class Resolver {
         $this->historyId = !empty($_GET['history']) ? $_GET['history'] : 0;
         $this->sessionPage = !empty($_SESSION['page']) ? $_SESSION['page'] : array();
     }
-    
+
     /**
      * Checks for alias request
      * @return Page or null
@@ -126,7 +126,7 @@ class Resolver {
 
         //(I) see what the model has for us, aliases only.
         $result = $this->pageRepo->getPagesAtPath($path, null, null, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_ALIAS_ONLY);
-        
+
         //(II) sort out errors
         if(!$result) {
             // no alias
@@ -146,7 +146,7 @@ class Resolver {
         }
 
         $this->page = $page;
-        
+
         return $this->page;
     }
 
@@ -163,16 +163,16 @@ class Resolver {
         if (!$internal && isset($_REQUEST['section'])) {
             throw new ResolverException('Legacy request');
         }
-        
+
         $path = $this->url->getSuggestedTargetPath();
-        
+
         if (!$this->page || $internal) {
             if ($this->pagePreview) {
                 if (!empty($this->sessionPage)) {
                     $this->getPreviewPage();
                 }
             }
-            
+
             //(I) see what the model has for us
             $result = $this->pageRepo->getPagesAtPath($this->url->getLangDir().'/'.$path, null, $this->lang, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
             if ($this->pagePreview) {
@@ -187,7 +187,7 @@ class Resolver {
                     }
                 }
             }
-            
+
             //(II) sort out errors
             if(!$result) {
                 throw new ResolverException('Unable to locate page (tried path ' . $path .').');
@@ -196,11 +196,11 @@ class Resolver {
             if(!$result['page']) {
                 throw new ResolverException('Unable to locate page for this language. (tried path ' . $path .').');
             }
-            
+
             if (!$result['page']->isActive()) {
                 throw new ResolverException('Page found, but it is not active.');
             }
-            
+
             // if user has no rights to see this page, we redirect to login
             $this->checkPageFrontendProtection($result['page']);
 
@@ -208,7 +208,7 @@ class Resolver {
             if (!empty($this->historyId) && \Permission::checkAccess(6, 'static', true)) {
                 $this->logRepo->revert($result['page'], $this->historyId);
             }
-            
+
             //(III) extend our url object with matched path / params
             $this->url->setTargetPath($result['matchedPath'].$result['unmatchedPath']);
             $this->url->setParams($this->url->getSuggestedParams());
@@ -223,10 +223,10 @@ class Resolver {
         $target = $this->page->getTarget();
         $isRedirection = $this->page->getType() == \Cx\Model\ContentManager\Page::TYPE_REDIRECT;
         $isAlias = $this->page->getType() == \Cx\Model\ContentManager\Page::TYPE_ALIAS;
-        
+
         //handles alias redirections internal / disables external redirection
         $this->forceInternalRedirection = $this->forceInternalRedirection || $isAlias;
-        
+
         if($target && ($isRedirection || $isAlias)) {
             // Check if page is a internal redirection and if so handle it
             if($this->page->isTargetInternal()) {
@@ -236,7 +236,7 @@ class Resolver {
                 $module = $this->page->getTargetModule();
                 $cmd = $this->page->getTargetCmd();
                 $qs = $this->page->getTargetQueryString();
-                
+
                 $langId = $lId ? $lId : $this->lang;
 
                 // try to find the redirection target page
@@ -257,7 +257,7 @@ class Resolver {
                     // in case we were unable to find the requested page, this could mean that we are
                     // trying to retrieve a module page that uses a string with an ID (STRING_ID) as CMD.
                     // therefore, lets try to find the module by using the string in $cmd and INT in $langId as CMD.
-                    // in case $langId is really the requested CMD then we will have to set the 
+                    // in case $langId is really the requested CMD then we will have to set the
                     // resolved language back to our original language $this->lang.
                     if (!$targetPage) {
                         $targetPage = $this->pageRepo->findoneBymoduleCmdLang($module, $cmd.'_'.$langId, $this->lang);
@@ -266,7 +266,7 @@ class Resolver {
 
                     // try to retrieve a module page that uses only an ID as CMD.
                     // lets try to find the module by using the INT in $langId as CMD.
-                    // in case $langId is really the requested CMD then we will have to set the 
+                    // in case $langId is really the requested CMD then we will have to set the
                     // resolved language back to our original language $this->lang.
                     if (!$targetPage) {
                         $targetPage = $this->pageRepo->findOneByModuleCmdLang($module, $langId, $this->lang);
@@ -308,17 +308,17 @@ class Resolver {
                 exit;
             }
         }
-        
+
         //if we followed one or more redirections, the user shall be redirected by 302.
         if ($this->isRedirection && !$this->forceInternalRedirection) {
             $params = $this->url->getSuggestedParams();
             header('Location: '.$this->page->getURL($this->pathOffset, $params));
             exit;
         }
-        
+
         // in case the requested page is of type fallback, we will now handle/load this page
         $this->handleFallbackContent($this->page, !$internal);
-        
+
         // set legacy <section> and <cmd> in case the requested page is an application
         if ($this->page->getType() == \Cx\Model\ContentManager\Page::TYPE_APPLICATION
                 || $this->page->getType() == \Cx\Model\ContentManager\Page::TYPE_FALLBACK) {
@@ -365,14 +365,14 @@ class Resolver {
 
             $pageRepo = \Env::em()->getRepository('Cx\Model\ContentManager\Page');
             $this->page = $pageRepo->findOneByModuleCmdLang($section, $command, FRONTEND_LANG_ID);
-            
+
             //fallback content
             if (!$this->page) {
                 return;
             }
 
             $this->checkPageFrontendProtection($this->page);
-            
+
             $this->handleFallbackContent($this->page);
         }
 
@@ -385,7 +385,7 @@ class Resolver {
      */
     private function getPreviewPage() {
         $data = $this->sessionPage;
-        
+
         $page = $this->pageRepo->findOneById($data['pageId']);
         if (!$page) {
             $page = new \Cx\Model\ContentManager\Page();
@@ -395,10 +395,10 @@ class Resolver {
             $this->nodeRepo->getRoot()->addChildren($node);
             $node->addPage($page);
             $page->setNode($node);
-            
+
             $this->pageRepo->addVirtualPage($page);
         }
-        
+
         unset($data['pageId']);
         $page->setLang(\FWLanguage::getLanguageIdByCode($data['lang']));
         unset($data['lang']);
@@ -407,7 +407,7 @@ class Resolver {
         $page->setActive(true);
         $page->setVirtual(true);
         $page->validate();
-        
+
         return $page;
     }
 
@@ -426,7 +426,7 @@ class Resolver {
             if ($requestedPage && !$page->isActive()) {
                 return;
             }
-            
+
             // if this page is protected, we do not follow fallback
             $this->checkPageFrontendProtection($page);
 
@@ -439,14 +439,14 @@ class Resolver {
             $this->lang = $fallbackPage->getLang();
             $this->url->setLangDir(\FWLanguage::getLanguageCodeById($this->lang));
             $this->url->setSuggestedTargetPath(substr($fallbackPage->getPath(), 1));
-            
+
             // now lets resolve the page that is referenced by our fallback page
             $this->resolve(true);
             $page->getFallbackContentFrom($this->page);
             $this->page = $page;
         }
     }
-    
+
     public function getFallbackPage($page) {
         $fallbackPage = null;
         if (isset($this->fallbackLanguages[$page->getLang()])) {
@@ -458,7 +458,7 @@ class Resolver {
         }
         return $fallbackPage;
     }
-    
+
     /**
      * Checks if this page can be displayed in frontend, redirects to login of not
      * @param \Cx\Model\ContentManager\Page $page Page to check
@@ -466,13 +466,13 @@ class Resolver {
      */
     public function checkPageFrontendProtection($page, $history = 0) {
         global $sessionObj;
-        
+
         $page_protected = $page->isFrontendProtected();
         $pageAccessId = $page->getFrontendAccessId();
         if ($history) {
             $pageAccessId = $page->getBackendAccessId();
         }
-        
+
         // login pages are unprotected by design
         $checkLogin = array($page);
         while (count($checkLogin)) {
@@ -486,7 +486,7 @@ class Resolver {
                 return;
             }
         }
-        
+
         // Authentification for protected pages
         if (   (   $page_protected
                 || $history
@@ -526,11 +526,11 @@ class Resolver {
     public function getPage() {
         return $this->page;
     }
-    
+
     public function getURL() {
         return $this->url;
     }
-    
+
     /**
      * Returns the resolved module name (if any, empty string if none)
      * @return String Module name
@@ -538,7 +538,7 @@ class Resolver {
     public function getSection() {
         return $this->section;
     }
-    
+
     /**
      * Returns the resolved module command (if any, empty string if none)
      * @return String Module command
@@ -546,12 +546,12 @@ class Resolver {
     public function getCmd() {
         return $this->command;
     }
-    
+
     /**
      * Sets the value of the resolved module name and command
      * This should not be called from any (core_)module!
      * For legacy requests only!
-     * 
+     *
      * @param String $section Module name
      * @param String $cmd Module command
      * @todo Remove this method as soon as legacy request are no longer possible
