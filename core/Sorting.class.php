@@ -45,6 +45,8 @@ class Sorting
      *
      * The sorting parameters will be appended to this string and used
      * to build the header array.
+     * Note that, as this is only used in links, the URI is stored with any
+     * "&"s replaced by "&amp;" already!  See {@see setUri()}.
      * @var string
      */
     private $baseUri = null;
@@ -196,7 +198,7 @@ DBG::log("Sorting::getUri_entities($field): ERROR: unknown field name");
     {
         // Remove the order parameter name argument from the base URI
         Html::stripUriParam($uri, $this->orderUriParameter);
-        $this->baseUri = $uri;
+        $this->baseUri = Cx\Core\Routing\Url::encode_amp($uri);
     }
 
 

@@ -61,7 +61,7 @@ class Paging
         if ($numof_rows <= $results_per_page && !$showeverytime) return '';
         if (empty($parameter_name)) $parameter_name = self::getParametername();
         if (!isset($position)) $position = self::getPosition($parameter_name);
-        
+
         // Fix illegal values:
         // The position must be in the range [0 .. numof_rows - 1].
         // If it's outside this range, reset it
@@ -85,8 +85,10 @@ class Paging
 
         // Set up the base navigation entries
         $array_paging = array(
-            'first' => '<a class="pagingFirst" href="'.$firstUrl.'">',
-            'last'  => '<a class="pagingLast" href="'.$lastUrl.'">',
+            'first' => '<a class="pagingFirst" href="'.
+                Cx\Core\Routing\Url::encode_amp($firstUrl).'">',
+            'last'  => '<a class="pagingLast" href="'.
+                Cx\Core\Routing\Url::encode_amp($lastUrl).'">',
             'total' => $numof_rows,
             'lower' => ($numof_rows ? $position + 1 : 0),
             'upper' => $numof_rows,
@@ -100,7 +102,7 @@ class Paging
             $previousUrl->setParams($uri_parameter);
             $previousUrl->setParam($parameter_name, ($position - $results_per_page));
             $array_paging['previous_link'] =
-                '<a href="'.$previousUrl.'">';
+                '<a href="'.Cx\Core\Routing\Url::encode_amp($previousUrl).'">';
         }
         if (($numof_rows - $position) > $results_per_page) {
             $int_new_position = $position + $results_per_page;
@@ -108,7 +110,7 @@ class Paging
             $nextUrl->setParams($uri_parameter);
             $nextUrl->setParam($parameter_name, $int_new_position);
             $array_paging['next_link'] =
-                '<a href="'.$nextUrl.'">';
+                '<a href="'.Cx\Core\Routing\Url::encode_amp($nextUrl).'">';
         }
         // Add single pages, indexed by page numbers [1 .. numof_pages]
         for ($i = 1; $i <= $numof_pages; ++$i) {
@@ -120,7 +122,8 @@ class Paging
                 $pageUrl->setParams($uri_parameter);
                 $pageUrl->setParam($parameter_name, (($i-1) * $results_per_page));
                 $array_paging[$i] =
-                    '<a class="pagingPage'.$i.'" href="'.$pageUrl.'">'.$i.'</a>';
+                    '<a class="pagingPage'.$i.'" href="'.
+                    Cx\Core\Routing\Url::encode_amp($pageUrl).'">'.$i.'</a>';
             }
         }
         $paging =
