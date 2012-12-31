@@ -220,7 +220,7 @@ jQuery(function() {
     {
         $re = '';
         $chars = preg_split('//', $format, null, PREG_SPLIT_NO_EMPTY);
-DBG::log("Chars: ".var_export($chars, true));
+//DBG::log("Chars: ".var_export($chars, true));
         foreach ($chars as $char) {
             switch ($char) {
                 //d 	Day of the month, 2 digits with leading zeros 	01 to 31
@@ -331,7 +331,7 @@ DBG::log("Chars: ".var_export($chars, true));
 //U 	Seconds since the Unix Epoch (January 1 1970 00:00:00 GMT) 	See also time()
             }
         }
-DBG::log("Made date RE for format /$format/: /$re/");
+//DBG::log("Made date RE for format /$format/: /$re/");
         return $re;
     }
 
