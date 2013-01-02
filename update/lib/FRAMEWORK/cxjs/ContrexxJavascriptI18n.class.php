@@ -1,7 +1,7 @@
 <?php
 class ContrexxJavascriptI18nException extends ContrexxJavascriptException {}
 
-require_once UPDATE_PATH . '/lib/FRAMEWORK/cxjs/ContrexxJavascriptI18nProvider.interface.php';
+require_once UPDATE_LIB . '/FRAMEWORK/cxjs/ContrexxJavascriptI18nProvider.interface.php';
 /**
  * This handles i18n for Javascript.
  * @author Severin Räz
@@ -24,7 +24,7 @@ class ContrexxJavascriptI18n {
      */
     public function variablesTo($target) {
         $vars = array();
-        $providers = scandir(ASCMS_FRAMEWORK_PATH.'/cxjs/i18n');
+        $providers = scandir(UPDATE_LIB.'/FRAMEWORK/cxjs/i18n');
         foreach($providers as $provider) {
             if($provider[0] == '.') //do not open ., .., and linux hidden directories (.*)
                 continue;
