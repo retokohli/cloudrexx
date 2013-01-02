@@ -36,8 +36,8 @@ class ContrexxJavascript {
 
         $this->setVariable(
             array(
-                'path'      => ASCMS_PATH_OFFSET.'/'.$langCode.'/',
-                'basePath'  => ASCMS_PATH_OFFSET.'/',
+                'path'      => ASCMS_PATH_OFFSET.'/update/'.$langCode.'/',
+                'basePath'  => ASCMS_PATH_OFFSET.'/update/',
                 'cadminPath'=> ASCMS_BACKEND_PATH.'/',
                 'mode'      => $objInit->mode,
                 'language'  => $langCode,
