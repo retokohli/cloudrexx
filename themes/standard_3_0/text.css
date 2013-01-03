@@ -214,6 +214,38 @@ input[type=reset] {
     -o-transition: all ease .2s;
 }
 
+.loginbutton {
+    border-radius: 5px;
+    display: block;
+    padding: 5px 5px 5px 30px;
+    box-shadow: 1px 1px 2px #C5C5C5;
+    -moz-box-shadow: 1px 1px 2px #C5C5C5;
+    -webkit-box-shadow: 1px 1px 2px #C5C5C5;
+    -o-box-shadow: 1px 1px 2px #C5C5C5;
+    width: 60px;
+    margin-right: 20px;
+    color: #fff;
+    float: left;
+    font-size: 12px;
+}
+
+.loginbutton:hover {
+    color: #fff;
+}
+
+.loginbutton.facebook {
+    background: url("images/facebook-icon-small.png") no-repeat scroll 6px 8px #466da3;
+}
+
+.loginbutton.google {
+    background: url("images/google-icon-small.png") no-repeat scroll 6px 9px #ca4b32;
+}
+
+.loginbutton.twitter {
+    background: url("images/twitter-icon-small.png") no-repeat scroll 6px 10px #489ecc;
+    margin-right: 0;
+}
+
 button[disabled=disabled],
 input[disabled=disabled] {
     opacity: 0.6;

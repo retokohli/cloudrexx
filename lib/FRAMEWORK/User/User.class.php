@@ -147,6 +147,13 @@ class User extends User_Profile
     private $restore_key_time;
 
     /**
+     * The networks the user is connected with
+     * @var object
+     * @access private
+     */
+    private $networks;
+
+    /**
      * The last time the user had logged in (timestamp)
      * @var integer
      * @access private
@@ -299,11 +306,23 @@ class User extends User_Profile
     {
         global $objDatabase;
 
+        $loginByEmail = false;
+
+        if (FWValidator::isEmail($username)) {
+            $loginByEmail = true;
+        }
+
+        if ($loginByEmail) {
+            $loginCheck = "`email` = '".addslashes($username)."'";
+        } else {
+            $loginCheck = "`username` = '".addslashes($username)."'";
+        }
+
         $loginStatusCondition = $captchaCheckResult == false ? 'AND `last_auth_status`=1' : '';
         $objResult = $objDatabase->SelectLimit("
             SELECT `id`
               FROM `".DBPREFIX."access_users`
-             WHERE `username`='".addslashes($username)."'
+            WHERE ".$loginCheck."
                AND `password`='".addslashes($password)."'
                AND `active`=1
              ".$loginStatusCondition."
@@ -389,6 +408,7 @@ class User extends User_Profile
         $this->arrNewsletterListIDs = null;
         $this->EOF = true;
         $this->loggedIn = false;
+        $this->networks = null;
     }
 
 
@@ -412,11 +432,12 @@ class User extends User_Profile
         if ($deleteOwnAccount || $this->id != $objFWUser->objUser->getId()) {
             if (!$this->isLastAdmin()) {
                 if ($objDatabase->Execute(
-                'DELETE tblU, tblP, tblG, tblA
+                'DELETE tblU, tblP, tblG, tblA, tblN
                 FROM `'.DBPREFIX.'access_users` AS tblU
                 INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id` = tblU.`id`
                 LEFT JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id` = tblU.`id`
                 LEFT JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id` = tblU.`id`
+                LEFT JOIN `'.DBPREFIX.'access_user_network` AS tblN ON tblN.`user_id` = tblU.`id`
                 WHERE tblU.`id` = '.$this->id) !== false
             ) {
                     return true;
@@ -762,6 +783,10 @@ class User extends User_Profile
 
     public function getUsername()
     {
+        $arrSettings = User_Setting::getSettings();
+        if (!$arrSettings['use_usernames']['status'] || empty($this->username)) {
+            return $this->email;
+        }
         return $this->username;
     }
 
@@ -835,6 +860,7 @@ class User extends User_Profile
             $this->password = '';
             $this->arrGroups = null;
             $this->arrNewsletterListIDs = null;
+            $this->networks = $this->arrCachedUsers[$id]['networks'];
             $this->EOF = false;
             $this->loggedIn = false;
             return true;
@@ -938,7 +964,7 @@ class User extends User_Profile
                 }
                 $objUser->MoveNext();
             }
-
+            $this->arrCachedUsers[$objUser->fields['id']]['networks'] = new User_Networks($objUser->id);
             isset($arrSelectCustomExpressions) ? $this->loadCustomAttributeProfileData($arrSelectCustomExpressions) : false;
             $this->first();
             return true;
@@ -1462,6 +1488,49 @@ class User extends User_Profile
         return true;
     }
 
+    /**
+     * Add or update a network connection of the user
+     *
+     * @param string $oauth_provider the name of the provider
+     * @param string $oauth_id the user id on the side of the provider
+     */
+    public function setNetwork($oauth_provider, $oauth_id) {
+        $this->networks->setNetwork($oauth_provider, $oauth_id);
+    }
+
+    /**
+     * Check whether it exists a user with the data
+     *
+     * @param string $oauth_provider the name of the provider
+     * @param string $oauth_id the user id on the side of the provider
+     * @return object the user object
+     */
+    public function getByNetwork($oauth_provider, $oauth_id) {
+        global $objDatabase;
+        $query = "SELECT tblU.`id` FROM `" . DBPREFIX . "access_users` AS tblU
+                    INNER JOIN `" . DBPREFIX . "access_user_networks` AS tblN ON tblU.`id` = tblN.`user_id`
+                  WHERE tblN.`oauth_provider` = ? AND tblN.`oauth_id` = ?";
+        $objResult = $objDatabase->SelectLimit($query, 1, -1, array($oauth_provider, $oauth_id));
+        if ($objResult !== false) {
+            return $this->getUser($objResult->fields['id']);
+        }
+        return null;
+    }
+
+    /**
+     * @return object
+     */
+    public function getNetworks() {
+        return $this->networks;
+    }
+
+    /**
+     * Load the network data
+     */
+    public function loadNetworks() {
+        $this->networks = new User_Networks($this->id);
+    }
+
 
     /**
      * Store group associations
@@ -1588,6 +1657,13 @@ class User extends User_Profile
     public function validateUsername()
     {
         global $_CORELANG;
+
+        // In case the usage of usernames has been deactivated,
+        // we won't need to validate the username.
+        $arrSettings = User_Setting::getSettings();
+        if (!$arrSettings['use_usernames']['status']) {
+            return true;
+        }
 
         if (self::isValidUsername($this->username)) {
             if (self::isUniqueUsername($this->username, $this->id)) {
