@@ -557,7 +557,8 @@ CREATE TABLE `contrexx_module_block_rel_lang_content` (
   `block_id` int(10) unsigned NOT NULL default '0',
   `lang_id` int(10) unsigned NOT NULL default '0',
   `content` mediumtext NOT NULL,
-  `active` int(1) NOT NULL default '0'
+  `active` int(1) NOT NULL default '0',
+  UNIQUE KEY `id_lang` (`block_id`,`lang_id`)
 ) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
