@@ -3,6 +3,26 @@ function _updateModules()
 {
 	global $objDatabase;
 
+    $arrModules = getModules();
+
+    try {
+        \Cx\Lib\UpdateUtil::sql('TRUNCATE TABLE `'.DBPREFIX.'modules`');
+
+        // NOTE: scheme migration is done in core/core.php
+
+        // add modules
+        foreach ($arrModules as $arrModule) {
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `distributor` ) VALUES ( ".$arrModule['id']." , '".$arrModule['name']."', '".$arrModule['description_variable']."', '".$arrModule['status']."', '".$arrModule['is_required']."', '".$arrModule['is_core']."', 'Comvation AG') ON DUPLICATE KEY UPDATE `id` = `id`");
+        }
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
+    return true;
+}
+
+function getModules()
+{
 	$arrModules = array(
 		array(
 			'id'					=> 0,
@@ -454,48 +474,20 @@ function _updateModules()
 		)
 	);
 
-	$query = "TRUNCATE TABLE ".DBPREFIX."modules";
-	if ($objDatabase->Execute($query) === false) {
-		return _databaseError($query, $objDatabase->ErrorMsg());
-	}
-        
-        try {
-            \Cx\Lib\UpdateUtil::table(
-                DBPREFIX.'modules',
-                array(
-                    'id'                         => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => false),
-                    'name'                       => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'id'),
-                    'distributor'                => array('type' => 'CHAR(50)', 'after' => 'name'),
-                    'description_variable'       => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '', 'after' => 'distributor'),
-                    'status'                     => array('type' => 'SET(\'y\',\'n\')', 'notnull' => true, 'default' => 'n', 'after' => 'description_variable'),
-                    'is_required'                => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'status'),
-                    'is_core'                    => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0', 'after' => 'is_required'),
-                    'is_active'                  => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'is_core')
-                ),
-                array(
-                    'id'                         => array('fields' => array('id'), 'type' => 'UNIQUE')
-                )
-            );
-        } catch (\Cx\Lib\UpdateException $e) {
-            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    return $arrModules;
+}
+
+function getModuleInfo($name)
+{
+    $arrModules = getModules();
+
+    foreach ($arrModules as $arrModule) {
+        if ($arrModule['name'] == $name) {
+            return $arrModule;
         }
-
-	// add modules
-	foreach ($arrModules as $arrModule) {
-		$query = "INSERT INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `distributor` ) VALUES ( ".$arrModule['id']." , '".$arrModule['name']."', '".$arrModule['description_variable']."', '".$arrModule['status']."', '".$arrModule['is_required']."', '".$arrModule['is_core']."', 'Comvation AG')";
-		if ($objDatabase->Execute($query) === false) {
-			return _databaseError($query, $objDatabase->ErrorMsg());
-		}
-	}
-
-    $query = "
-    ALTER TABLE ".DBPREFIX."modules
-    CHANGE COLUMN id id integer(2) UNSIGNED default NULL;
-    ";
-    if (!$objDatabase->Execute($query)) {
-    	return _databaseError($query, $objDatabase->ErrorMsg());
     }
 
-    return true;
+    return false;
 }
+
 ?>

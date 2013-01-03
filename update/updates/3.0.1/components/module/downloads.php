@@ -493,7 +493,7 @@ function _downloadsInstall()
                 'category_id'    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'after' => 'download_id'),
                 'order'          => array('type' => 'INT(3)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'category_id')
             ),
-            null,
+            array(),
             'MyISAM',
             'cx3upgrade'
         );
@@ -513,7 +513,7 @@ function _downloadsInstall()
                 'id1'    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
                 'id2'    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'after' => 'id1')
             ),
-            null,
+            array(),
             'MyISAM',
             'cx3upgrade'
         );
@@ -524,7 +524,7 @@ function _downloadsInstall()
                 'group_id'       => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
                 'category_id'    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'after' => 'group_id')
             ),
-            null,
+            array(),
             'MyISAM',
             'cx3upgrade'
         );
@@ -536,7 +536,7 @@ function _downloadsInstall()
                 'name'       => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => '', 'after' => 'id'),
                 'value'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'name')
             ),
-            null,
+            array(),
             'MyISAM',
             'cx3upgrade'
         );

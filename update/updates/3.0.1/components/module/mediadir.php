@@ -545,7 +545,7 @@ function _mediadirInstall()
                 'picture'                => array('type' => 'mediumtext', 'after' => 'show_entries'),
                 'active'                 => array('type' => 'INT(1)', 'after' => 'picture')
             ),
-            null,
+            array(),
             'MyISAM',
             'cx3upgrade'
         );
@@ -604,7 +604,7 @@ function _mediadirInstall()
                 'notification'       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'url'),
                 'comment'            => array('type' => 'mediumtext', 'after' => 'notification')
             ),
-            null,
+            array(),
             'MyISAM',
             'cx3upgrade'
         );
@@ -666,7 +666,7 @@ function _mediadirInstall()
                 'form_name'              => array('type' => 'VARCHAR(255)', 'after' => 'form_id'),
                 'form_description'       => array('type' => 'mediumtext', 'notnull' => true, 'after' => 'form_name')
             ),
-            null,
+            array(),
             'MyISAM',
             'cx3upgrade'
         );
@@ -693,7 +693,7 @@ function _mediadirInstall()
                 'use_ready_to_confirm'       => array('type' => 'INT(1)', 'after' => 'use_category'),
                 'cmd'                        => array('type' => 'VARCHAR(50)', 'after' => 'use_ready_to_confirm')
             ),
-            null,
+            array(),
             'MyISAM',
             'cx3upgrade'
         );
@@ -832,15 +832,15 @@ function _mediadirInstall()
             'MyISAM',
             'cx3upgrade'
         );
-        \Cx\Lib\UpdateUtil::sql("
-            INSERT INTO `".DBPREFIX."module_mediadir_inputfield_verifications` (`id`, `name`, `regex`)
-            VALUES  (1, 'normal', '.*'),
-                    (2, 'e-mail', '^[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè0-9!\\#\\$\\%\\&\\''\\*\\+\\/\\=\\?\\^_\\`\\{\\|\\}\\~-]+(?:\\.[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè0-9!\\#\\$\\%\\&\\''\\*\\+\\/\\=\\?\\^_\\`\\{\\|\\}\\~-]+)*@(?:[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè0-9](?:[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè0-9-]*[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè0-9])'),
-                    (3, 'url', '^(?:(?:ht|f)tps?\\:\\/\\/)?((([\\wÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè\\d-]{1,}\\.)+[a-z]{2,})|((?:(?:25[0-5]|2[0-4]\\d|[01]\\d\\d|\\d?\\d)(?:(\\.?\\d)\\.)) {4}))(?:[\\w\\d]+)?(\\/[\\w\\d\\-\\.\\?\\,\\''\\/\\\\\\+\\&\\%\\$\\#\\=\\~]*)?$'),
-                    (4, 'letters', '^[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè\\ ]*[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè]+[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè\\ ]*$'),
-                    (5, 'numbers', '^[0-9]*$')
+        \Cx\Lib\UpdateUtil::sql('
+            INSERT INTO `'.DBPREFIX.'module_mediadir_inputfield_verifications` (`id`, `name`, `regex`)
+            VALUES  (1, \'normal\', \'.*\'),
+                    (2, \'e-mail\', \'^[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè0-9!\\\\#\\\\$\\\\%\\\\&\\\\\\\'\\\\*\\\\+\\\\/\\\\=\\\\?\\\\^_\\\\`\\\\{\\\\|\\\\}\\\\~-]+(?:\\\\.[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè0-9!\\\\#\\\\$\\\\%\\\\&\\\\\\\'\\\\*\\\\+\\\\/\\\\=\\\\?\\\\^_\\\\`\\\\{\\\\|\\\\}\\\\~-]+)*@(?:[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè0-9](?:[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè0-9-]*[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè0-9])\'),
+                    (3, \'url\', \'^(?:(?:ht|f)tps?\\\\:\\\\/\\\\/)?((([\\\\wÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè\\\\d-]{1,}\\\\.)+[a-z]{2,})|((?:(?:25[0-5]|2[0-4]\\\\d|[01]\\\\d\\\\d|\\\\d?\\\\d)(?:(\\\\.?\\\\d)\\\\.)) {4}))(?:[\\\\w\\\\d]+)?(\\\\/[\\\\w\\\\d\\\\-\\\\.\\\\?\\\\,\\\\\\\'\\\\/\\\\\\\\\\\\+\\\\&\\\\%\\\\$\\\\#\\\\=\\\\~]*)?$\'),
+                    (4, \'letters\', \'^[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè\\\\ ]*[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè]+[A-Za-zÄÀÁÂÖÔÜÛÑÉÈäàáâöôüûñéè\\\\ ]*$\'),
+                    (5, \'numbers\', \'^[0-9]*$\')
             ON DUPLICATE KEY UPDATE `id` = `id`
-        ");
+        ');
 
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_mediadir_inputfields',
@@ -854,7 +854,7 @@ function _mediadirInstall()
                 'order'              => array('type' => 'INT(10)', 'after' => 'required'),
                 'show_in'            => array('type' => 'INT(10)', 'after' => 'order')
             ),
-            null,
+            array(),
             'MyISAM',
             'cx3upgrade'
         );
@@ -900,7 +900,7 @@ function _mediadirInstall()
                     (2, 31, 'Referenzen', 'Die Referenzen von MaxMuster AG'),
                     (2, 30, 'Team', 'Die Mitarbeiter von MaxMusterAG'),
                     (1, 31, 'Referenzen', 'Die Referenzen von MaxMuster AG')
-            ON DUPLICATE KEY UPDATE `id` = `id`
+            ON DUPLICATE KEY UPDATE `lang_id` = `lang_id`
         ");
 
         \Cx\Lib\UpdateUtil::table(
@@ -968,7 +968,7 @@ function _mediadirInstall()
             'cx3upgrade'
         );
         \Cx\Lib\UpdateUtil::sql("
-            INSERT INTO `\".DBPREFIX.\"module_mediadir_mails` (`id`, `title`, `content`, `recipients`, `lang_id`, `action_id`, `is_default`, `active`)
+            INSERT INTO `".DBPREFIX."module_mediadir_mails` (`id`, `title`, `content`, `recipients`, `lang_id`, `action_id`, `is_default`, `active`)
             VALUES  (19, '[[URL]] - Eintrag erfolgreich eingetragen', 'Hallo [[FIRSTNAME]] [[LASTNAME]] ([[USERNAME]])\r\n\r\nIhr Eintrag mit dem Titel \"[[TITLE]]\" wurde auf [[URL]] erfolgreich eingetragen. \r\n\r\n\r\nFreundliche Grüsse\r\nIhr [[URL]]-Team\r\n\r\n-- \r\nDiese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] generiert.', '', 1, 2, 1, 0),
                     (20, '[[URL]] - Ihr Eintrag wurde aufgeschaltet', 'Guten Tag,\r\n\r\nIhr Eintrag \"[[TITLE]]\" wurde geprüft und ist ab sofort einsehbar.\r\n\r\nBenutzen Sie folgenden Link um direkt zu ihrem Eintrag zu gelangen:\r\n[[LINK]]\r\n\r\n\r\nFreundliche Grüsse\r\nIhr [[URL]]-Team\r\n\r\n\r\n-- \r\nDiese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] generiert.', '', 1, 3, 1, 0),
                     (21, '[[URL]] - Eintrag wurde bewertet', 'Hallo [[FIRSTNAME]] [[LASTNAME]] ([[USERNAME]])\r\n\r\nZu Ihrem Eintrag mit dem Titel \"[[TITLE]]\" auf [[URL]] wurde eine Bewertung abgegeben. \r\n\r\nBenutzen Sie folgenden Link um direkt zu Ihrem Eintrag zu gelangen:\r\n[[LINK]]\r\n\r\nFreundliche Grüsse\r\nIhr [[URL]]-Team\r\n\r\n-- \r\nDiese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] generiert.', '', 1, 4, 1, 0),

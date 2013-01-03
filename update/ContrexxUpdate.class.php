@@ -10,6 +10,7 @@ class ContrexxUpdate
     private $lang;
     private $ajax = false;
     private $html = array('content' => '', 'logout' => '', 'navigation' => '', 'dialog' => '');
+    private $_defaultLanguage = 'de';
 
     /**
      * Available languages
@@ -930,10 +931,11 @@ class ContrexxUpdate
 
         $authFailed = false;
         if (isset($_POST['updateNext'])) {
-            if (!empty($_POST['updateUser']) && !empty($_POST['updatePass']) && $this->auth($username = $this->addslashes($_POST['updateUser']), $password = md5($this->stripslashes($_POST['updatePass'])))) {
+            if (!empty($_POST['updateUser']) && !empty($_POST['updatePass']) && ($userId = $this->auth($username = $this->addslashes($_POST['updateUser']), $password = md5($this->stripslashes($_POST['updatePass']))))) {
                 $_SESSION['contrexx_update']['step'] = 0;
                 $_SESSION['contrexx_update']['username'] = $username;
                 $_SESSION['contrexx_update']['password'] = $password;
+                $_SESSION['contrexx_update']['user_id']  = $userId;
                 return true;
             }
             $authFailed = true;
@@ -976,10 +978,10 @@ class ContrexxUpdate
             }
         }
 
-        $objAuth = $this->objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."access_users` WHERE `username` = '".$user."' AND `password` = '".$pass."' AND `is_admin` = 1 AND `active` = 1", 1);
+        $objAuth = $this->objDatabase->SelectLimit("SELECT `id` FROM `".DBPREFIX."access_users` WHERE `username` = '".$user."' AND `password` = '".$pass."' AND `is_admin` = 1 AND `active` = 1", 1);
         if ($objAuth !== false && $objAuth->RecordCount() == 1) {
             $this->isAuth = true;
-            return true;
+            return $objAuth->fields['id'];
         }
         return false;
     }

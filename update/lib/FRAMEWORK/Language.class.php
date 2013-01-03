@@ -44,22 +44,16 @@ class FWLanguage
         global $_CONFIG, $objDatabase;
         
         $incDoctrineStatus = Env::get('incDoctrineStatus');
-        $fallback = $incDoctrineStatus ? ', fallback' : '';
         
         $objResult = $objDatabase->Execute("
             SELECT id, lang, name, charset, themesid,
-                   frontend, backend, is_default" . $fallback . "
+                   frontend, backend, is_default
               FROM ".DBPREFIX."languages
              ORDER BY id ASC");
         if ($objResult) {
-            $full = false;
-            if ($incDoctrineStatus) {
-                $license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
-                $license->check();
-                $full = $license->isInLegalComponents('fulllanguage');
-            }
+            // setting full to true for update
+            $full = true;
             while (!$objResult->EOF) {
-                $fallbackValue = $fallback ? $objResult->fields['fallback'] : '';
                 self::$arrLanguages[$objResult->fields['id']] = array(
                     'id'         => $objResult->fields['id'],
                     'lang'       => $objResult->fields['lang'],
@@ -69,7 +63,7 @@ class FWLanguage
                     'frontend'   => $objResult->fields['frontend'],
                     'backend'    => $objResult->fields['backend'],
                     'is_default' => $objResult->fields['is_default'],
-                    'fallback'   => $fallbackValue,
+                    'fallback'   => '',
                 );
                 if (!$full && $objResult->fields['is_default'] != 'true') {
                     self::$arrLanguages[$objResult->fields['id']]['frontend'] = 0;

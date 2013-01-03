@@ -234,18 +234,21 @@ function _accessUpdate()
      * MIGRATE GROUP RELATIONS
      *
      **************************/
-    if (!in_array(DBPREFIX."access_rel_user_group", $arrTables)) {
-        $query = "
-            CREATE TABLE `".DBPREFIX."access_rel_user_group` (
-                `user_id` int(10) unsigned NOT NULL DEFAULT '0',
-                `group_id` int(10) unsigned NOT NULL DEFAULT '0',
-                PRIMARY KEY  (`user_id`,`group_id`)
-            ) TYPE=InnoDB
-        ";
-        if ($objDatabase->Execute($query) === false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
+    try {
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'access_rel_user_group',
+            array(
+                'user_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+                'group_id'       => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'after' => 'user_id')
+            ),
+            array(),
+            'InnoDB'
+        );
     }
+    catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
 
     $arrColumns = $objDatabase->MetaColumnNames(DBPREFIX.'access_users');
     if ($arrColumns === false) {
@@ -560,98 +563,79 @@ function _accessUpdate()
      * CREATE PROFILE ATTRIBUTE TABLES
      *
      **********************************/
-    if (!in_array(DBPREFIX."access_user_attribute", $arrTables)) {
-        $query = "
-            CREATE TABLE `".DBPREFIX."access_user_attribute` (
-                `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-                `parent_id` INT UNSIGNED NOT NULL DEFAULT '0',
-                `type` ENUM( 'text', 'textarea', 'mail', 'uri', 'date', 'image', 'menu', 'menu_option','group', 'frame', 'history' ) NOT NULL DEFAULT 'text',
-                `mandatory` ENUM( '0', '1' ) NOT NULL DEFAULT '0',
-                `sort_type` ENUM( 'asc', 'desc', 'custom' ) NOT NULL DEFAULT 'asc',
-                `order_id` INT UNSIGNED NOT NULL DEFAULT '0',
-                `access_special` ENUM( '', 'menu_select_higher', 'menu_select_lower' ) NOT NULL DEFAULT '',
-                `access_id` INT UNSIGNED NOT NULL DEFAULT '0'
-            ) TYPE = InnoDB
-        ";
-        if ($objDatabase->Execute($query) === false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    }
+    try {
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'access_user_attribute',
+            array(
+                'id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'parent_id'          => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'id'),
+                'type'               => array('type' => 'ENUM(\'text\',\'textarea\',\'mail\',\'uri\',\'date\',\'image\',\'checkbox\',\'menu\',\'menu_option\',\'group\',\'frame\',\'history\')', 'notnull' => true, 'default' => 'text', 'after' => 'parent_id'),
+                'mandatory'          => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0', 'after' => 'type'),
+                'sort_type'          => array('type' => 'ENUM(\'asc\',\'desc\',\'custom\')', 'notnull' => true, 'default' => 'asc', 'after' => 'mandatory'),
+                'order_id'           => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'sort_type'),
+                'access_special'     => array('type' => 'ENUM(\'\',\'menu_select_higher\',\'menu_select_lower\')', 'notnull' => true, 'default' => '', 'after' => 'order_id'),
+                'access_id'          => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'access_special')
+            ),
+            array(),
+            'InnoDB'
+        );
 
-    if (!in_array(DBPREFIX."access_user_attribute_name", $arrTables)) {
-        $query = "
-            CREATE TABLE `".DBPREFIX."access_user_attribute_name` (
-                `attribute_id` int(10) unsigned NOT NULL DEFAULT '0',
-                `lang_id` int(10) unsigned NOT NULL DEFAULT '0',
-                `name` varchar(255) NOT NULL DEFAULT '',
-                PRIMARY KEY  (`attribute_id`,`lang_id`)
-            ) TYPE=InnoDB
-        ";
-        if ($objDatabase->Execute($query) === false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    }
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'access_user_attribute_name',
+            array(
+                'attribute_id'       => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+                'lang_id'            => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'after' => 'attribute_id'),
+                'name'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'lang_id')
+            ), array(),
+            'InnoDB'
+        );
 
-    if (!in_array(DBPREFIX."access_user_attribute_value", $arrTables)) {
-        $query = "
-            CREATE TABLE `".DBPREFIX."access_user_attribute_value` (
-                `attribute_id` INT UNSIGNED NOT NULL DEFAULT '0',
-                `user_id` INT UNSIGNED NOT NULL DEFAULT '0',
-                `history_id` INT UNSIGNED NOT NULL DEFAULT '0',
-                `value` TEXT NOT NULL,
-                PRIMARY KEY ( `attribute_id` , `user_id` , `history_id` ),
-                FULLTEXT KEY `value` (`value`)
-            ) TYPE = MYISAM
-        ";
-        if ($objDatabase->Execute($query) === false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    }
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'access_user_attribute_value',
+            array(
+                'attribute_id'       => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+                'user_id'            => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'after' => 'attribute_id'),
+                'history_id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'after' => 'user_id'),
+                'value'              => array('type' => 'text', 'after' => 'history_id')
+            ),
+            array(
+                'value'              => array('fields' => array('value'), 'type' => 'FULLTEXT')
+            )
+        );
 
-    if (!in_array(DBPREFIX."access_user_core_attribute", $arrTables)) {
-        $query = "
-            CREATE TABLE `".DBPREFIX."access_user_core_attribute` (
-                `id` VARCHAR( 25 ) NOT NULL ,
-                `mandatory` ENUM( '0', '1' ) NOT NULL DEFAULT '0',
-                `sort_type` ENUM( 'asc', 'desc', 'custom' ) NOT NULL DEFAULT 'asc',
-                `order_id` INT UNSIGNED NOT NULL DEFAULT '0',
-                `access_special` ENUM( '', 'menu_select_higher', 'menu_select_lower' ) NOT NULL DEFAULT '',
-                `access_id` INT UNSIGNED NOT NULL DEFAULT '0',
-                PRIMARY KEY ( `id` )
-            ) ENGINE = InnoDB
-        ";
-        if ($objDatabase->Execute($query) === false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    }
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'access_user_core_attribute',
+            array(
+                'id'                 => array('type' => 'VARCHAR(25)', 'primary' => true),
+                'mandatory'          => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0', 'after' => 'id'),
+                'sort_type'          => array('type' => 'ENUM(\'asc\',\'desc\',\'custom\')', 'notnull' => true, 'default' => 'asc', 'after' => 'mandatory'),
+                'order_id'           => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'sort_type'),
+                'access_special'     => array('type' => 'ENUM(\'\',\'menu_select_higher\',\'menu_select_lower\')', 'notnull' => true, 'default' => '', 'after' => 'order_id'),
+                'access_id'          => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'access_special')
+            ),
+            array(),
+            'InnoDB'
+        );
 
 
 
-    /************************
-     *
-     * ADD USER TITLE TABLE
-     *
-     ***********************/
-    if (!in_array(DBPREFIX."access_user_title", $arrTables)) {
-        $query = "
-            CREATE TABLE `".DBPREFIX."access_user_title` (
-                `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-                `title` varchar(255) NOT NULL DEFAULT '',
-                `order_id` int(10) UNSIGNED NOT NULL DEFAULT '0',
-                PRIMARY KEY  (`id`),
-                UNIQUE KEY `title` (`title`)
-            ) ENGINE=InnoDB
-        ";
-        if ($objDatabase->Execute($query) === false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    }
+        /************************
+         *
+         * ADD USER TITLE TABLE
+         *
+         ***********************/
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'access_user_title',
+            array(
+                'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'title'          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'id'),
+                'order_id'       => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'title')
+            ),
+            array(
+                'title'          => array('fields' => array('title'), 'type' => 'UNIQUE')
+            )
+        );
 
-    $query = 'SELECT 1 FROM `'.DBPREFIX.'access_user_title`';
-    $objTitle = $objDatabase->SelectLimit($query, 1);
-    if ($objTitle === false) {
-        return _databaseError($query, $objDatabase->ErrorMsg());
-    } elseif ($objTitle->RecordCount() == 0) {
         $arrDefaultTitle = array(
             'Sehr geehrte Frau',
             'Sehr geehrter Herr',
@@ -662,11 +646,10 @@ function _accessUpdate()
         );
 
         foreach ($arrDefaultTitle as $title) {
-            $query = "INSERT INTO `".DBPREFIX."access_user_title` SET `title` = '".$title."'";
-            if ($objDatabase->Execute($query) === false) {
-                return _databaseError($query, $objDatabase->ErrorMsg());
-            }
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_user_title` SET `title` = '".$title."' ON DUPLICATE KEY UPDATE `id` = `id`");
         }
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
 
