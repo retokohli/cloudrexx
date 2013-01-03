@@ -22,7 +22,7 @@ function doUpdate(goBack)
 
         formData = getFormData(goBack);
 
-        if (formData.indexOf('debug_update')) {
+        if (formData.indexOf('debug_update') > -1) {
             getDebugInfo = true;
         }
 

@@ -9,7 +9,9 @@ function _podcastUpdate() {
     $newImagesPath = '/podcast';
 
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '1.2.1')) {
-        if (file_exists($path . $oldImagesPath)) {
+        if (   !file_exists($path . $newImagesPath)
+            && file_exists($path . $oldImagesPath)
+        ) {
             \Cx\Lib\FileSystem\FileSystem::makeWritable($path . $oldImagesPath);
             if (!\Cx\Lib\FileSystem\FileSystem::copy_folder($path . $oldImagesPath, $path . $newImagesPath)) {
                 setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'], $path . $oldImagesPath, $path . $newImagesPath));

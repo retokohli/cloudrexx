@@ -415,7 +415,9 @@ return;
                     $countryId = $objText->fields['id'];
                 }
                 \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_newsletter_user` SET `country_id` = \''.contrexx_raw2db($countryId).'\' WHERE `id` = '.$objResult->fields['id']);
-                checkTimeoutLimit();
+                if (!checkTimeoutLimit()) {
+                    throw new \Cx\Lib\UpdateException();
+                }
                 $objResult->MoveNext();
             }
         }

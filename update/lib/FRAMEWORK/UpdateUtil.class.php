@@ -405,10 +405,12 @@ class UpdateUtil
         }
 
         // create new keys
-        foreach ($idx as $keyname => $spec) {
-            if (!array_key_exists('exists', $spec)) {
-                $new_st = self::_keyspec($name, $keyname, $spec);
-                self::sql($new_st);
+        if (is_array($idx)) {
+            foreach ($idx as $keyname => $spec) {
+                if (!array_key_exists('exists', $spec)) {
+                    $new_st = self::_keyspec($name, $keyname, $spec);
+                    self::sql($new_st);
+                }
             }
         }
         // okay, that's it, have a nice day!
@@ -589,7 +591,9 @@ class UpdateUtil
             $pages = $em->getRepository('Cx\Model\ContentManager\Page')->findBy($criteria, true);
             foreach ($pages as $page) {
                 if ($page) {
-                    checkMemoryLimit();
+                    if (!checkMemoryLimit()) {
+                        throw new UpdateException();
+                    }
                     foreach ($subject as $pageAttribute) {
                         try {
                             // fetch attribute value
@@ -631,7 +635,9 @@ class UpdateUtil
             $pages = $em->getRepository('Cx\Model\ContentManager\Page')->findBy($criteria, true);
             foreach ($pages as $page) {
                 if ($page) {
-                    checkMemoryLimit();
+                    if (!checkMemoryLimit()) {
+                        throw new UpdateException();
+                    }
                     foreach ($subject as $pageAttribute) {
                         try {
                             // fetch attribute value

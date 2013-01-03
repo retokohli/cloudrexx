@@ -9,16 +9,16 @@ require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FTPFile.class.php';
 function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = true, $updateModules = true) {
     global $_ARRAYLANG, $_CORELANG, $_CONFIG, $objDatabase, $objUpdate;
 
-    $_SESSION['copyFilesFinished'] = !empty($_SESSION['copyFilesFinished']) ? $_SESSION['copyFilesFinished'] : false;
+    $_SESSION['contrexx_update']['copyFilesFinished'] = !empty($_SESSION['contrexx_update']['copyFilesFinished']) ? $_SESSION['contrexx_update']['copyFilesFinished'] : false;
     
     // Copy cx files to the root directory
-    if (!$_SESSION['copyFilesFinished']) {
+    if (!$_SESSION['contrexx_update']['copyFilesFinished']) {
         if (!copyCxFilesToRoot(dirname(__FILE__) . '/cx_files', ASCMS_PATH . ASCMS_PATH_OFFSET)) {
             return false;
         }
-        $_SESSION['copyFilesFinished'] = true;
+        $_SESSION['contrexx_update']['copyFilesFinished'] = true;
     }
-    unset($_SESSION['copiedCxFilesIndex']);
+    unset($_SESSION['contrexx_update']['copiedCxFilesIndex']);
     
     /**
      * This needs to be initialized before loading config/doctrine.php
@@ -33,10 +33,9 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     $incDoctrineStatus = require_once(UPDATE_PATH . '/config/doctrine.php');
     Env::set('incDoctrineStatus', $incDoctrineStatus);
     
-    $objFWUser = FWUser::getFWUserObject();
     $userData = array(
-        'id'   => $objFWUser->objUser->getId(),
-        'name' => $objFWUser->objUser->getUsername(),
+        'id'   => $_SESSION['contrexx_update']['user_id'],
+        'name' => $_SESSION['contrexx_update']['username'],
     );
     $loggableListener = \Env::get('loggableListener');
     $loggableListener->setUsername(json_encode($userData));
@@ -99,9 +98,13 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
         }
         
         // Migrate blocks
-        if (empty($_SESSION['contrexx_update']['blocks_migrated']) && $contentMigration->migrateBlocks()) {
-            $_SESSION['contrexx_update']['blocks_migrated'] = true;
-            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+        if (empty($_SESSION['contrexx_update']['blocks_migrated'])) {
+            if ($contentMigration->migrateBlocks()) {
+                $_SESSION['contrexx_update']['blocks_migrated'] = true;
+                if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                    return false;
+                }
+            } else {
                 return false;
             }
         }
@@ -124,9 +127,6 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
         return false;
     } elseif (!include_once(dirname(__FILE__) . '/components/core/settings.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/settings.php'));
-        return false;
-    } elseif (!include_once(dirname(__FILE__) . '/components/core/License.class.php')) {
-        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/license.class.php'));
         return false;
     }
     
@@ -236,6 +236,18 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
                                         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $file), 'title');
                                     }
                                     return false;
+                                } else {
+                                    // fetch module info from components/core/module.php
+                                    $arrModule = getModuleInfo($fileInfo['filename']);
+                                    if ($arrModule) {
+                                        try {
+                                            \Cx\Lib\UpdateUtil::sql("INSERT INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `distributor` ) VALUES ( ".$arrModule['id']." , '".$arrModule['name']."', '".$arrModule['description_variable']."', '".$arrModule['status']."', '".$arrModule['is_required']."', '".$arrModule['is_core']."', 'Comvation AG') ON DUPLICATE KEY UPDATE `id` = `id`");
+                                        } catch (\Cx\Lib\UpdateException $e) {
+                                            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+                                        }
+                                    } else {
+                                        DBG::msg('unable to register module '.$fileInfo['filename']);
+                                    }
                                 }
                             } else {
                                 setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
@@ -341,7 +353,7 @@ function _response() {
 function getMissedModules() {
     $installedModules = array();
     $result = \Cx\Lib\UpdateUtil::sql('SELECT `name`, `description_variable` FROM `'.DBPREFIX.'modules` WHERE `status` = "y" ORDER BY `name` ASC');
-    if ($result && ($result > 0)) {
+    if ($result) {
         while (!$result->EOF) {
             $installedModules[] = $result->fields['name'];
             $result->MoveNext();
@@ -692,8 +704,13 @@ function _updateModuleRepository() {
     return true;
 }
 
-function copyCxFilesToRoot($src, $dst) {
+function copyCxFilesToRoot($src, $dst)
+{
+    global $_CORELANG;
+
     static $copiedCxFilesIndex = 0;
+
+    $approxFileCount2copy = 3809;
 
     $src = str_replace('\\', '/', $src);
     $dst = str_replace('\\', '/', $dst);
@@ -707,9 +724,14 @@ function copyCxFilesToRoot($src, $dst) {
     }
     sort($arrCurrentFolderStructure);
 
+    if (!isset($_SESSION['contrexx_update']['copiedCxFilesTotal'])) {
+        $_SESSION['contrexx_update']['copiedCxFilesTotal'] = 0;
+    }
+
     foreach ($arrCurrentFolderStructure as $file) {
         if (!checkMemoryLimit() || !checkTimeoutLimit()) {
-            $_SESSION['copiedCxFilesIndex'] = $copiedCxFilesIndex;
+            $_SESSION['contrexx_update']['copiedCxFilesIndex'] = $copiedCxFilesIndex;
+            setUpdateMsg('Vorgang wurde beim Installieren der neuen Dateien unterbrochen.<br />Fortschritt: '. floor(80/$approxFileCount2copy*$_SESSION['contrexx_update']['copiedCxFilesTotal']) .'%<br /><br />', 'msg');
             return false;
         }
 
@@ -723,16 +745,19 @@ function copyCxFilesToRoot($src, $dst) {
         } else {
             $copiedCxFilesIndex++;
 
-            if (isset($_SESSION['copiedCxFilesIndex']) && $copiedCxFilesIndex <= $_SESSION['copiedCxFilesIndex']) {
+            if (isset($_SESSION['contrexx_update']['copiedCxFilesIndex']) && $copiedCxFilesIndex <= $_SESSION['contrexx_update']['copiedCxFilesIndex']) {
                 continue;
             }
+
+            $_SESSION['contrexx_update']['copiedCxFilesTotal']++;
 
             try {
                 $objFile = new \Cx\Lib\FileSystem\File($srcPath);
                 $objFile->copy($dstPath, true);
             } catch (\Exception $e) {
                 $copiedCxFilesIndex--;
-                $_SESSION['copiedCxFilesIndex'] = $copiedCxFilesIndex;
+                $_SESSION['contrexx_update']['copiedCxFilesIndex'] = $copiedCxFilesIndex;
+                $_SESSION['contrexx_update']['copiedCxFilesTotal']--;
                 setUpdateMsg('Folgende Datei konnte nicht kopiert werden:<br />' . ASCMS_PATH_OFFSET . '/' . $file);
                 return false;
             }
@@ -741,4 +766,30 @@ function copyCxFilesToRoot($src, $dst) {
 
     closedir($dir);
     return true;
+}
+
+
+class License {
+    
+    public function __construct() {
+        
+    }
+    
+    public function update() {
+        global $documentRoot, $sessionObj;
+        
+        if (!@include_once(ASCMS_DOCUMENT_ROOT.'/lib/PEAR/HTTP/Request2.php')) {
+            return false;
+        }
+
+        $_GET['force'] = 'true';
+        $_GET['silent'] = 'true';
+        $documentRoot = ASCMS_DOCUMENT_ROOT;
+        
+        $userId = 1;
+        $sessionObj->cmsSessionUserUpdate($userId);
+        
+        $return = @include_once(ASCMS_DOCUMENT_ROOT.'/core_modules/License/versioncheck.php');
+        return ($return === true);
+    }
 }

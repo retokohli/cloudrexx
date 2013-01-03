@@ -123,10 +123,6 @@ function _ecardInstall()
             'MyISAM',
             'cx3upgrade'
         );
-        \Cx\Lib\UpdateUtil::sql("
-
-        ");
-
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_ecard_settings',
             array(
