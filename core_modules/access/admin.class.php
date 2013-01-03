@@ -1318,6 +1318,11 @@ class AccessManager extends AccessLib
             $this->_objTpl->hideBlock('access_user_privacy');
         }
 
+        $arrSettings = User_Setting::getSettings();
+        if (!$arrSettings['use_usernames']['status']) {
+            $this->_objTpl->hideBlock('access_user_username_block');
+        }
+
         $this->parseNewsletterLists($objUser);
 
         $this->_objTpl->setVariable(array(
@@ -1897,7 +1902,15 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_CROP_THUMBNAIL_TXT'                     => $_ARRAYLANG['TXT_ACCESS_CROP_THUMBNAIL_TXT'],
             'TXT_ACCESS_SCALE_THUMBNAIL_TXT'                    => $_ARRAYLANG['TXT_ACCESS_SCALE_THUMBNAIL_TXT'],
             'TXT_ACCESS_BACKGROUND_COLOR'                       => $_ARRAYLANG['TXT_ACCESS_BACKGROUND_COLOR'],
-            'TXT_ACCESS_THUMBNAIL_GENERATION'                   => $_ARRAYLANG['TXT_ACCESS_THUMBNAIL_GENERATION']
+            'TXT_ACCESS_THUMBNAIL_GENERATION'                   => $_ARRAYLANG['TXT_ACCESS_THUMBNAIL_GENERATION'],
+            'TXT_ACCESS_USE_USERNAMES'                          => $_ARRAYLANG['TXT_ACCESS_USE_USERNAMES'],
+            'TXT_ACCESS_USE_USERNAMES_TOOLTIP'                  => $_ARRAYLANG['TXT_ACCESS_USE_USERNAMES_TOOLTIP'],
+            'TXT_ACCESS_SOCIALLOGIN_INFORMATION_TITLE'          => $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_INFORMATION_TITLE'],
+            'TXT_ACCESS_DESCRIPTION'                            => $_ARRAYLANG['TXT_ACCESS_DESCRIPTION'],
+            'TXT_ACCESS_SOCIALLOGIN_DESCRIPTION'                => $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_DESCRIPTION'],
+            'TXT_ACCESS_SOCIALLOGIN'                            => $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN'],
+            'TXT_ACCESS_ENABLE_SOCIALLOGIN'                     => $_ARRAYLANG['TXT_ACCESS_ENABLE_SOCIALLOGIN'],
+            'TXT_ACCESS_SOCIALLOGIN_PROVIDERS'                  => $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_PROVIDERS'],
         ));
 
         if (isset($_POST['access_save_settings'])) {
@@ -1909,6 +1922,13 @@ class AccessManager extends AccessLib
             $arrSettings['user_delete_account']['status'] = !empty($_POST['access_permissions_delete_account']) ? intval($_POST['access_permissions_delete_account']) : 0;
             $arrSettings['user_config_profile_access']['status'] = !empty($_POST['access_permissions_profile_access']) ? intval($_POST['access_permissions_profile_access']) : 0;
             $arrSettings['user_config_email_access']['status'] = !empty($_POST['access_permissions_email_access']) ? intval($_POST['access_permissions_email_access']) : 0;
+            $arrSettings['sociallogin']['status'] = !empty($_POST['access_sociallogin_activate']) ? intval($_POST['access_sociallogin_activate']) : 0;
+
+            if ($arrSettings['sociallogin']['status'] && $arrSettings['use_usernames']['status']) {
+                self::$arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ACCESS_USE_USERNAMES_DISABLED_AUTOMATIC'];
+            }
+
+            $arrSettings['use_usernames']['status'] = !empty($_POST['access_permissions_use_usernames']) && !$arrSettings['sociallogin']['status'] ? intval($_POST['access_permissions_use_usernames']) : 0;
             $arrSettings['default_profile_access']['value'] = isset($_POST['access_user_profile_access']) && in_array($_POST['access_user_profile_access'], array('everyone', 'members_only', 'nobody')) ? $_POST['access_user_profile_access'] : 'members_only';
             $arrSettings['default_email_access']['value'] = isset($_POST['access_user_email_access']) && in_array($_POST['access_user_email_access'], array('everyone', 'members_only', 'nobody')) ? $_POST['access_user_email_access'] : 'members_only';
 
@@ -2002,7 +2022,7 @@ class AccessManager extends AccessLib
 				}
 			}
 
-
+            \Cx\Lib\SocialLogin::updateProviders($_POST["sociallogin_providers"]);
 
             if ($status) {
                 if (User_Setting::setSettings($arrSettings)) {
@@ -2024,6 +2044,27 @@ class AccessManager extends AccessLib
                     self::$arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_TRY_TO_REPEAT_OPERATION'];
                 }
             }
+        }
+
+        $socialloginProviders = \Cx\Lib\SocialLogin::getProviders();
+        $socialloginProviderRow = 0;
+        foreach ($socialloginProviders as $socialloginProviderName => $socialloginProviderData) {
+            $paramId = 0;
+            foreach (call_user_func(\Cx\Lib\SocialLogin::getClassByProvider($socialloginProviderName) . '::configParams') as $configParam) {
+                $this->_objTpl->setVariable(array(
+                    'TXT_ACCESS_SOCIALLOGIN_PROVIDER_PARAM_TITLE' => $_ARRAYLANG[$configParam],
+                    'ACCESS_SOCIALLOGIN_PROVIDER_PARAM_VALUE'     => contrexx_raw2xhtml(!empty($socialloginProviderData[$paramId]) ? $socialloginProviderData[$paramId] : ''),
+                ));
+                $this->_objTpl->parse('access_sociallogin_provider_params');
+                $paramId++;
+            }
+
+            $this->_objTpl->setVariable(array(
+                'ACCESS_SOCIALLOGIN_PROVIDER_ROW'   => ($socialloginProviderRow % 2 == 0 ? 1 : 2),
+                'ACCESS_SOCIALLOGIN_PROVIDER_NAME'  => contrexx_raw2xhtml($socialloginProviderName),
+            ));
+            $this->_objTpl->parse('access_sociallogin_provider');
+            $socialloginProviderRow++;
         }
 
         $this->parseAccountAttribute(null, 'profile_access', true, $arrSettings['default_profile_access']['value']);
@@ -2066,7 +2107,12 @@ class AccessManager extends AccessLib
             'ACCESS_PROFILE_THUMBNAIL_CROP'                         => $arrSettings['profile_thumbnail_method']['value'] == 'crop' ? 'selected="selected"' : '',
             'ACCESS_PROFILE_THUMBNAIL_SCALE'                        => $arrSettings['profile_thumbnail_method']['value'] == 'scale' ? 'selected="selected"' : '',
             'ACCESS_PROFILE_THUMBNAIL_SCALE_BOX'                    => $arrSettings['profile_thumbnail_method']['value'] == 'scale' ? 'inline' : 'none',
-            'ACCESS_PROFILE_THUMBNAIL_SCALE_COLOR'                  => $arrSettings['profile_thumbnail_scale_color']['value']
+            'ACCESS_PROFILE_THUMBNAIL_SCALE_COLOR'                  => $arrSettings['profile_thumbnail_scale_color']['value'],
+            'ACCESS_USE_USERNAMES'                                  => $arrSettings['use_usernames']['status'] ? 'checked="checked"' : '',
+            'ACCESS_DONT_USE_USERNAMES'                             => $arrSettings['use_usernames']['status'] ? '' : 'checked="checked"',
+            'ACCESS_USE_USERNAMES_DISABLED'                         => $arrSettings['sociallogin']['status'] ? 'disabled="disabled"' : '',
+            'ACCESS_SOCIALLOGIN_ENABLED'                            => $arrSettings['sociallogin']['status'] ? 'checked="checked"' : '',
+            'ACCESS_SOCIALLOGIN_NOT_ENABLED'                        => $arrSettings['sociallogin']['status'] ? '' : 'checked="checked"',
         ));
         $this->_objTpl->parse('module_access_config_general');
     }
