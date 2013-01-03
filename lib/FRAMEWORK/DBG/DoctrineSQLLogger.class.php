@@ -39,9 +39,7 @@ class DoctrineSQLLogger implements \Doctrine\DBAL\Logging\SQLLogger
                 // serialize arrays
                 if (is_array($param)) {
                     $param = serialize($param);
-                } elseif (   !is_int($param)
-                          && !is_string($param)
-                ) {
+                } elseif (is_object($param)) {
                     // serialize objects
                     switch (get_class($param)) {
                         case 'DateTime':
