@@ -801,16 +801,16 @@ class Discount
     {
 //die("Discount::errorHandler(): Disabled!<br />");
 // Discount
+        Text::errorHandler();
+
         $table_name = DBPREFIX.'module_shop_article_group';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
         );
         $table_index = array();
+//\DBG::activate(DBG_DB);
         if (!Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            if (!Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index)) {
-                throw new Cx\Lib\Update_DatabaseException(
-                   "Failed to create article group table");
-            }
+            Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
         }
         $default_lang_id = FWLanguage::getDefaultLangId();
         if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
@@ -842,10 +842,7 @@ class Discount
         );
         $table_index = array();
         if (!Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            if (!Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index)) {
-                throw new Cx\Lib\Update_DatabaseException(
-                   "Failed to create customer group table");
-            }
+            Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
         }
         if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
             Text::deleteByKey('shop', self::TEXT_NAME_GROUP_CUSTOMER);
@@ -878,10 +875,7 @@ class Discount
         );
         $table_index = array();
         if (!Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            if (!Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index)) {
-                throw new Cx\Lib\Update_DatabaseException(
-                   "Failed to create customer group table");
-            }
+            Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
         }
 
         $table_name = DBPREFIX.'module_shop_discountgroup_count_name';
@@ -890,10 +884,7 @@ class Discount
         );
         $table_index = array();
         if (!Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            if (!Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index)) {
-                throw new Cx\Lib\Update_DatabaseException(
-                   "Failed to create count group table");
-            }
+            Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
         }
         if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
             Text::deleteByKey('shop', self::TEXT_NAME_GROUP_COUNT);
