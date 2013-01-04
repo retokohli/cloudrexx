@@ -44,11 +44,13 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     FWLanguage::init();
     
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        DBG::msg('Installed version: '.$_CONFIG['coreCmsVersion']);
         Env::get('ClassLoader')->loadFile(dirname(__FILE__) . '/ContentMigration.class.php');
         $contentMigration = new \Cx\Update\Cx_3_0_1\ContentMigration();
         
         // Migrate content
         if (empty($_SESSION['contrexx_update']['content_migrated'])) {
+            DBG::msg('Migrate content');
             if ($status = $contentMigration->migrate()) {
                 $_SESSION['contrexx_update']['content_migrated'] = true;
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
@@ -61,6 +63,7 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
         
         // Migrate aliases
         if (empty($_SESSION['contrexx_update']['aliases_migrated'])) {
+            DBG::msg('Migrate aliases');
             if ($status = $contentMigration->migrateAliases()) {
                 $_SESSION['contrexx_update']['aliases_migrated'] = true;
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
@@ -73,6 +76,7 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
         
         // Group pages if more than one language
         if (empty($_SESSION['contrexx_update']['pages_grouped'])) {
+            DBG::msg('Group pages');
             $pageGrouping = $contentMigration->pageGrouping();
             
             if ($pageGrouping === true) {
@@ -99,6 +103,7 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
         
         // Migrate blocks
         if (empty($_SESSION['contrexx_update']['blocks_migrated'])) {
+            DBG::msg('Migrate blocks');
             if ($contentMigration->migrateBlocks()) {
                 $_SESSION['contrexx_update']['blocks_migrated'] = true;
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
@@ -327,8 +332,12 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
         }
     }
     
+// TODO: update version in settings
+    $arrUpdate = $objUpdate->getLoadedVersionInfo();
+    $_CONFIG['coreCmsVersion'] = $arrUpdate['cmsVersion'];
+
     if (!in_array('coreLicense', $_SESSION['contrexx_update']['update']['done'])) {
-        $lupd = new \Cx\Update\Cx_3_0_1\Core\License();
+        $lupd = new License();
         $result = $lupd->update();
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -739,6 +748,7 @@ function copyCxFilesToRoot($src, $dst)
         $dstPath = $dst . '/' . $file;
 
         if (is_dir($srcPath)) {
+            \Cx\Lib\FileSystem\FileSystem::make_folder($dstPath);
             if (!copyCxFilesToRoot($srcPath, $dstPath)) {
                 return false;
             }

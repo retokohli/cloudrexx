@@ -149,6 +149,7 @@ function parseResponse(response)
         if (getDebugInfo) {
             jQuery('#debug_message').text(response).html();
             jQuery('#debug_message').show();
+            jQuery('#debug_update').remove();
         } else {
             showErrorScreen();
         }
@@ -161,7 +162,7 @@ function parseResponse(response)
 
 function showErrorScreen()
 {
-    setContent('<?php $txt = '<div id="content-overview"><h1 class="first">Fehler beim Update...</h1><div class="message-alert">Das Update-Script gibt keine Antwort zurück!</div><div class="message-warning" id="debug_message"></div><input type="submit" value="Fehler anzeigen..." name="debug_update" /></div>';print UPDATE_UTF8 ? $txt : utf8_encode($txt); ?>');
+    setContent('<?php $txt = '<div id="content-overview"><h1 class="first">Fehler beim Update...</h1><div class="message-alert">Das Update-Script gibt keine Antwort zurück!</div><div class="message-warning" id="debug_message"></div><input type="submit" value="Fehler anzeigen..." name="debug_update" id="debug_update" /></div>';print UPDATE_UTF8 ? $txt : utf8_encode($txt); ?>');
     //setContent('<?php $txt = '<div class="message-alert">Das Update-Script gibt keine Antwort zurück!</div>';print UPDATE_UTF8 ? $txt : utf8_encode($txt); ?>');
     setNavigation('<input type="submit" value="<?php $txt = 'Erneut versuchen...';print UPDATE_UTF8 ? utf8_encode($txt) : $txt;?>" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />');
 }

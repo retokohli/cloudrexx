@@ -68,7 +68,8 @@ class ContentMigration
             $objResult->MoveNext();
         }
         
-        return array_reverse($arrSortedNodes);
+        //return array_reverse($arrSortedNodes);
+        return $arrSortedNodes;
     }
    
     public function migrate()
@@ -107,7 +108,7 @@ class ContentMigration
                         'lang'                               => array('type' => 'INT(11)', 'after' => 'nodeIdShadowed'),
                         'type'                               => array('type' => 'VARCHAR(16)', 'after' => 'lang'),
                         'caching'                            => array('type' => 'TINYINT(1)', 'after' => 'type'),
-                        'updatedAt'                          => array('type' => 'timestamp', 'after' => 'caching'),
+                        'updatedAt'                          => array('type' => 'timestamp', 'after' => 'caching', 'notnull' => false),
                         'updatedBy'                          => array('type' => 'CHAR(40)', 'after' => 'updatedAt'),
                         'title'                              => array('type' => 'VARCHAR(255)', 'after' => 'updatedBy'),
                         'linkTarget'                         => array('type' => 'VARCHAR(16)', 'notnull' => false, 'after' => 'title'),
@@ -123,8 +124,8 @@ class ContentMigration
                         'metadesc'                           => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'metatitle'),
                         'metakeys'                           => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'metadesc'),
                         'metarobots'                         => array('type' => 'VARCHAR(7)', 'notnull' => false, 'after' => 'metakeys'),
-                        'start'                              => array('type' => 'timestamp', 'after' => 'metarobots'),
-                        'end'                                => array('type' => 'timestamp', 'after' => 'start'),
+                        'start'                              => array('type' => 'timestamp', 'after' => 'metarobots', 'notnull' => false),
+                        'end'                                => array('type' => 'timestamp', 'after' => 'start', 'notnull' => false),
                         'editingStatus'                      => array('type' => 'VARCHAR(16)', 'after' => 'end'),
                         'protection'                         => array('type' => 'INT(11)', 'after' => 'editingStatus'),
                         'frontendAccessId'                   => array('type' => 'INT(11)', 'after' => 'protection'),
@@ -147,11 +148,11 @@ class ContentMigration
                     array(
                         'id'                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                         'action'             => array('type' => 'VARCHAR(8)', 'after' => 'id'),
-                        'logged_at'          => array('type' => 'timestamp', 'after' => 'action'),
+                        'logged_at'          => array('type' => 'timestamp', 'after' => 'action', 'notnull' => false),
                         'version'            => array('type' => 'INT(11)', 'after' => 'logged_at'),
                         'object_id'          => array('type' => 'VARCHAR(32)', 'notnull' => false, 'after' => 'version'),
                         'object_class'       => array('type' => 'VARCHAR(255)', 'after' => 'object_id'),
-                        'data'               => array('type' => 'longtext', 'after' => 'object_class'),
+                        'data'               => array('type' => 'longtext', 'after' => 'object_class', 'notnull' => false),
                         'username'           => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'data')
                     ),
                     array(
@@ -193,6 +194,8 @@ class ContentMigration
             }
         }
         
+        $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
+
         $this->nodeArr = array();
         
         if (empty($_SESSION['contrexx_update']['root_node_added'])) {
@@ -307,7 +310,8 @@ class ContentMigration
                     foreach ($_SESSION['contrexx_update']['pages'] as $catId => $pageId) {
                         $page = self::$em->getRepository('Cx\Model\ContentManager\Page')->find($pageId);
                         if ($page) {
-                            self::$em->remove($page);
+// TODO: why removing $page here??
+                            //self::$em->remove($page);
                         }
                     }
                     self::$em->flush();
@@ -404,7 +408,7 @@ class ContentMigration
                     INNER JOIN `' . DBPREFIX . 'content_navigation` AS nav
                     ON         cn.id = nav.catid
                     WHERE      cn.id
-                    ORDER BY   nav.parcat ASC, nav.displayorder DESC
+                    ORDER BY   nav.parcat ASC, nav.displayorder ASC
                 ');
             } catch (\Cx\Lib\UpdateException $e) {
                 \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
@@ -442,6 +446,9 @@ class ContentMigration
                         //$node->setParent($this->nodeArr[$objRecords->fields['parcat']]);
                         $this->nodeArr[$catId]->setParent($this->nodeArr[$objRecords->fields['parcat']]);
                     }
+
+                    $nodeRepo->moveDown($this->nodeArr[$catId], true);
+                    self::$em->persist($this->nodeArr[$catId]);
         
                     // set page data
                     if (!isset($p[$catId])) {

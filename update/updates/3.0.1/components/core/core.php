@@ -32,7 +32,7 @@ function _coreUpdate()
         return _databaseError($query, $objDatabase->ErrorMsg());
     }
 
-    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+    /*if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         $query = "SELECT `catid` FROM `".DBPREFIX."content_navigation`";
         $objContentNavigation = $objDatabase->Execute($query);
         if ($objContentNavigation !== false) {
@@ -118,7 +118,7 @@ function _coreUpdate()
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
-    }
+    }*/
 
 
 
