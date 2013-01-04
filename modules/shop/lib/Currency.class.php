@@ -970,10 +970,7 @@ class Currency
             'United States Dollars' => array('USD', '$', 0.880000, '0.01', 3, 1, 0),
         );
         // There is no previous version of this table!
-        if (!Cx\Lib\UpdateUtil::table($table_name, $table_structure)) {
-            throw new Cx\Lib\Update_DatabaseException(
-                "Failed to create Currency table");
-        }
+        Cx\Lib\UpdateUtil::table($table_name, $table_structure);
         // And there aren't even records to migrate, so
         foreach ($arrCurrencies as $name => $arrCurrency) {
             $query = "
