@@ -239,10 +239,8 @@ class ContrexxUpdate
     
     private function showRequirements()
     {
-        if (!empty($_SESSION['contrexx_update']['version'])) {
-            $arrVersions     = $this->getAvailabeVersions();
-            $version         = $_SESSION['contrexx_update']['version'];
-            $arrUpdate       = $arrVersions[$version];
+        $arrUpdate = $this->getLoadedVersionInfo();
+        if ($arrUpdate) {
             $arrRequirements = $this->getRequirements($arrUpdate);
             
             if (isset($_POST['skipRequirements']) && !$arrRequirements['incompatible']) {
@@ -326,10 +324,8 @@ class ContrexxUpdate
 
     private function showLicense()
     {
-        if (!empty($_SESSION['contrexx_update']['version'])) {
-            $arrVersions     = $this->getAvailabeVersions();
-            $version         = $_SESSION['contrexx_update']['version'];
-            $arrUpdate       = $arrVersions[$version];
+        $arrUpdate = $this->getLoadedVersionInfo();
+        if ($arrUpdate) {
             
             if (isset($_POST['updateNext'])) {
                 if (empty($_POST['update_license'])) {
@@ -573,7 +569,18 @@ class ContrexxUpdate
         }
     }
 
-    function getAvailabeVersions()
+    public function getLoadedVersionInfo()
+    {
+        if (!empty($_SESSION['contrexx_update']['version'])) {
+            $arrVersions     = $this->getAvailabeVersions();
+            $version         = $_SESSION['contrexx_update']['version'];
+            return $arrVersions[$version];
+        }
+
+        return false;
+    }
+
+    public function getAvailabeVersions()
     {
         global $_CONFIG;
         static $arrVersions = array();
@@ -1139,6 +1146,8 @@ function checkMemoryLimit()
     if ($potentialRequiredMemory > $memoryLimit) {
         // try to set a higher memory_limit
         if (!@ini_set('memory_limit', $potentialRequiredMemory)) {
+            DBG::stack();
+
             setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED'], 'title');
             setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED_RAM_MSG'].'<br /><br />', 'msg');
             setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
@@ -1155,6 +1164,9 @@ function checkTimeoutLimit()
     if (UPDATE_TIMEOUT_TIME > time()) {
         return true;
     }
+
+    DBG::stack();
+
     setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED'], 'title');
     setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED_TIME_MSG'].'<br /><br />', 'msg');
     setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
