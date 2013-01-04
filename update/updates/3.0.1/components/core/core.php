@@ -1528,7 +1528,7 @@ function _coreUpdate()
             closedir($handle);
         }
     }
-    
+
     $path = ASCMS_DOCUMENT_ROOT.'/themes';
     foreach (scandir($path) as $theme) {
         if (!in_array($theme, array('.', '..'))) {
@@ -1590,6 +1590,16 @@ function _coreUpdate()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+    try {
+        Text::errorHandler();
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+    try {
+        SettingDb::errorHandler();
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
 
     return true;
 }
