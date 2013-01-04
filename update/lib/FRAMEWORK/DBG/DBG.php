@@ -321,12 +321,12 @@ class DBG
 
     static function set_adodb_debug_mode()
     {
-        if (DBG::getMode() & DBG_ADODB_TRACE) {
-            DBG::enable_adodb_debug(true);
-        } elseif (DBG::getMode() & DBG_ADODB || DBG::getMode() & DBG_ADODB_ERROR) {
-            DBG::enable_adodb_debug();
+        if (self::getMode() & DBG_ADODB_TRACE) {
+            self::enable_adodb_debug(true);
+        } elseif (self::getMode() & DBG_ADODB || self::getMode() & DBG_ADODB_ERROR) {
+            self::enable_adodb_debug();
         } else {
-            DBG::disable_adodb_debug();
+            self::disable_adodb_debug();
         }
     }
 
@@ -503,7 +503,7 @@ class DBG
         $out = str_replace("\n", "\n        ", $out);
         if (!self::$log_file) {
             // we're logging directly to the browser
-            // can't use contrexx_raw2xhtml() here, because it might not 
+            // can't use contrexx_raw2xhtml() here, because it might not
             // have been loaded till now
             self::_log('DUMP:   <p><pre>'.htmlentities($out, ENT_QUOTES, CONTREXX_CHARSET).'</pre></p>');
         } else {
@@ -523,8 +523,8 @@ class DBG
         self::_log("TRACE:  === STACKTRACE BEGIN ===");
         $err = error_reporting(E_ALL ^ E_NOTICE);
         foreach ($callers as $c) {
-            $file  = self::_cleanfile($c['file']);
-            $line  = $c['line'];
+            $file  = (isset($c['file']) ? self::_cleanfile($c['file']) : 'n/a');
+            $line  = (isset ($c['line']) ? $c['line'] : 'n/a');
             $class = isset($c['class']) ? $c['class'] : null;
             $func  = $c['function'];
             self::_log("        $file : $line (".(empty($class) ? $func : "$class::$func").")");
@@ -691,7 +691,7 @@ class DBG
             }
         }
         if (!self::$log_file && !self::$log_firephp) {
-            // can't use contrexx_raw2xhtml() here, because it might not 
+            // can't use contrexx_raw2xhtml() here, because it might not
             // have been loaded till now
             $sql = htmlentities($sql, ENT_QUOTES, CONTREXX_CHARSET);
         }
