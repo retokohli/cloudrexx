@@ -178,7 +178,7 @@ function _accessUpdate()
         // delete obsolete table community_config
         \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'community_config');
 
-        // delete obsolete table user_validity 
+        // delete obsolete table user_validity
         \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'user_validity');
     }
     catch (\Cx\Lib\UpdateException $e) {
@@ -774,7 +774,7 @@ function _accessUpdate()
      *
      **************************************/
     try {
-        \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` SET (`key`, `value`, `status`) VALUES ('use_usernames', '1', '1')");
+        \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('use_usernames', '1', '1')");
         \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin', '', '1')");
         \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('access', 'providers', 'sociallogin', 'text', 'google,facebook,twitter', NULL, '0')");
     } catch (\Cx\Lib\UpdateException $e) {
