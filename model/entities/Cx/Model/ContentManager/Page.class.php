@@ -257,6 +257,8 @@ class Page extends \Cx\Model\Base\EntityBase
         //default values
         $this->type = 'content';
         $this->content = '';
+        $this->metadesc = '';
+        $this->metakeys = '';
         $this->editingStatus = '';
         $this->active = false;
         $this->display = true;
@@ -278,8 +280,6 @@ class Page extends \Cx\Model\Base\EntityBase
             'customContent' => new \CxValidateString(array('maxlength' => 64)),
             'cssName' => new \CxValidateString(array('maxlength' => 255)),
             'metatitle' => new \CxValidateString(array('maxlength' => 255)),
-            'metadesc' => new \CxValidateString(array('maxlength' => 255)),
-            'metakeys' => new \CxValidateString(array('maxlength' => 255)),
             'metarobots' => new \CxValidateString(array('maxlength' => 255)),
             //'start' => maybe date? format?
             //'end' => maybe date? format?
