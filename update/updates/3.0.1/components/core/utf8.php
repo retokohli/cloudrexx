@@ -59,8 +59,6 @@ function _utf8Update()
 			DBPREFIX.'access_user_profile',
 			DBPREFIX.'access_user_title',
 			DBPREFIX.'access_user_validity',
-			DBPREFIX.'module_alias_source',
-			DBPREFIX.'module_alias_target',
 			DBPREFIX.'module_block_blocks',
 			DBPREFIX.'module_block_rel_lang',
 			DBPREFIX.'module_block_rel_pages',
