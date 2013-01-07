@@ -310,11 +310,9 @@ class ContentMigration
                     foreach ($_SESSION['contrexx_update']['pages'] as $catId => $pageId) {
                         $page = self::$em->getRepository('Cx\Model\ContentManager\Page')->find($pageId);
                         if ($page) {
-// TODO: why removing $page here??
-                            //self::$em->remove($page);
+                            $p[$catId] = $page;
                         }
                     }
-                    self::$em->flush();
                 }
                 
                 while (!$objResult->EOF) {
@@ -561,12 +559,12 @@ class ContentMigration
                     $aliasPage = $pageRepo->findOneBy(array(
                         'type' => 'alias',
                         'slug' => 'legacy_page_' . $target,
-                    ));
+                    ), true);
                     
                     if ($aliasPage) {
                         $targetPage = $pageRepo->getTargetPage($aliasPage);
                         if ($targetPage) {
-                            $objAliasLib = \aliasLib($targetPage->getLang());
+                            $objAliasLib = new \aliasLib($targetPage->getLang());
                             $objAliasLib->_saveAlias($slug, $aliasPage->getTarget(), true);
                         }
                     }
