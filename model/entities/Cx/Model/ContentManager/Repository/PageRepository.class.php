@@ -786,12 +786,11 @@ class PageRepository extends EntityRepository {
                      $qb->expr()->orX(
                         'p.module = \'\'',
                         'p.module IS NULL',
-                        'p.module IN (:modules)'
+                        $qb->expr()->in('p.module', $license->getLegalFrontendComponentsList())
                      )
                  )
            )
-           ->setParameter('searchString', '%'.$string.'%')
-           ->setParameter('modules', $license->getLegalFrontendComponentsList());
+           ->setParameter('searchString', '%'.$string.'%');
         $pages   = $qb->getQuery()->getResult();
         $config  = \Env::get('config');
         $results = array();
