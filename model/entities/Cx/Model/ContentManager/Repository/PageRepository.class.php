@@ -746,7 +746,13 @@ class PageRepository extends EntityRepository {
         if (!$page) {
             $page = $this->findOneByModuleCmdLang($module, $langId, FRONTEND_LANG_ID);
         }
-
+        if (!$page) {
+            $page = $this->findOneBy(array(
+                'nodeIdShadowed' => $nodeId,
+                'lang'           => $langId,
+            ));
+        }
+        
         return $page;
     }
 

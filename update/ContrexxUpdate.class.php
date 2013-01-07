@@ -1155,8 +1155,6 @@ function checkMemoryLimit()
     if ($potentialRequiredMemory > $memoryLimit) {
         // try to set a higher memory_limit
         if (!@ini_set('memory_limit', $potentialRequiredMemory)) {
-            DBG::stack();
-
             setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED'], 'title');
             setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED_RAM_MSG'].'<br /><br />', 'msg');
             setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
@@ -1173,8 +1171,6 @@ function checkTimeoutLimit()
     if (UPDATE_TIMEOUT_TIME > time()) {
         return true;
     }
-
-    DBG::stack();
 
     setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED'], 'title');
     setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED_TIME_MSG'].'<br /><br />', 'msg');
