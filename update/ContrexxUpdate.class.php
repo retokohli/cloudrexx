@@ -659,15 +659,21 @@ class ContrexxUpdate
         $arrPhpExtensions['ftp']['name']  = $_CORELANG['TXT_UPDATE_FTP_SUPPORT'] . ' <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">' . $_CORELANG['TXT_UPDATE_FTP_SUPPORT_TOOLTIP'] . '</span>';
         
         if ($this->getWebserverSoftware() == 'apache') {
-            if (!$this->checkModRewrite()) {
+            $modRewriteResult = $this->checkModRewrite();
+            if ($modRewriteResult === true) {
+                $arrPhpExtensions['modRewrite']['class'] = 'successful';
+                $arrPhpExtensions['modRewrite']['value'] = $_CORELANG['TXT_UPDATE_YES'];
+                $arrPhpExtensions['modRewrite']['name']  = $_CORELANG['TXT_UPDATE_MOD_REWRITE'];
+            } else if ($modRewriteResult === 'warning') {
+                $arrPhpExtensions['modRewrite']['class'] = 'warning';
+                $arrPhpExtensions['modRewrite']['value'] = $_CORELANG['TXT_UPDATE_CHECK_FAILED'];
+                $arrPhpExtensions['modRewrite']['name']  = $_CORELANG['TXT_UPDATE_MOD_REWRITE'] . ' <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">' . $_CORELANG['TXT_UPDATE_MOD_REWRITE_TOOLTIP'] . '</span>';
+            } else {
                 $failed = true;
                 $arrPhpExtensions['modRewrite']['class'] = 'failed';
                 $arrPhpExtensions['modRewrite']['value'] = $_CORELANG['TXT_UPDATE_NO'];
-            } else {
-                $arrPhpExtensions['modRewrite']['class'] = 'successful';
-                $arrPhpExtensions['modRewrite']['value'] = $_CORELANG['TXT_UPDATE_YES'];
+                $arrPhpExtensions['modRewrite']['name']  = $_CORELANG['TXT_UPDATE_MOD_REWRITE'];
             }
-            $arrPhpExtensions['modRewrite']['name'] = $_CORELANG['TXT_UPDATE_MOD_REWRITE'];
         }
         
         if ($this->getWebserverSoftware() == 'iis') {
@@ -782,7 +788,10 @@ class ContrexxUpdate
             $request     = new HTTP_Request2('http://' . $_SERVER['HTTP_HOST'] . substr($_SERVER['SCRIPT_NAME'], 0, -9) . 'rewrite_test/');
             $objResponse = $request->send();
             $arrHeaders  = $objResponse->getHeader();
-            if (!empty($arrHeaders['location']) && strpos($arrHeaders['location'], 'somerandomredirect') !== false) {
+            
+            if (empty($arrHeaders['location'])) {
+                $modRewrite = 'warning';
+            } else if (strpos($arrHeaders['location'], 'weiterleitungen_funktionieren') !== false) {
                 $modRewrite = true;
             } else {
                 $modRewrite = false;
