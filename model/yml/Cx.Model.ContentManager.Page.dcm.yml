@@ -114,16 +114,12 @@ Cx\Model\ContentManager\Page:
         - versioned
 
     metadesc:
-      nullable: true
-      type: string
-      length: 255
+      type: text
       gedmo:
         - versioned
 
     metakeys:
-      nullable: true
-      type: string
-      length: 255
+      type: text
       gedmo:
         - versioned
 
