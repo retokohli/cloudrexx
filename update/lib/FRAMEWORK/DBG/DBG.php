@@ -91,9 +91,9 @@ class DBG
         if ($mode === DBG_NONE) {
             self::$mode = DBG_NONE;
         } elseif ($mode === null) {
-            self::$mode = DBG_ALL & ~DBG_LOG_FILE & ~DBG_LOG_FIREPHP;
+            self::$mode = (DBG_ALL & ~DBG_LOG_FILE & ~DBG_LOG_FIREPHP) | DBG_LOG;
         } else {
-            self::$mode = self::$mode | $mode;
+            self::$mode = self::$mode | $mode | DBG_LOG;
         }
         self::__internal__setup();
     }
@@ -489,17 +489,17 @@ class DBG
     {
         if (!self::$enable_dump) return;
 
-        if ($val instanceof \Cx\Model\Base\EntityBase) {
-            $val = \Doctrine\Common\Util\Debug::export($val, 2);
-        }
+        self::_escapeDoctrineDump($val);
 
         if (self::$log_firephp) {
             self::$firephp->log($val);
             return;
         }
-        ob_start();
-        print_r($val);
-        $out = ob_get_clean();
+        if ($val === null) {
+            $out = 'NULL';
+        } else {
+            $out = var_export($val, true);
+        }
         $out = str_replace("\n", "\n        ", $out);
         if (!self::$log_file) {
             // we're logging directly to the browser
@@ -510,7 +510,17 @@ class DBG
             self::_log('DUMP:   '.$out);
         }
     }
-
+    
+    private static function _escapeDoctrineDump(&$val)
+    {
+        if ($val instanceof \Cx\Model\Base\EntityBase) {
+            $val = \Doctrine\Common\Util\Debug::export($val, 2);
+        } else if (is_array($val)) {
+            foreach ($val as &$entry) {
+                $entry = self::_escapeDoctrineDump($entry);
+            }
+        }
+    }
 
     static function stack()
     {

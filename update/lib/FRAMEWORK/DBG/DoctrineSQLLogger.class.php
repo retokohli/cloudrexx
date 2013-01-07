@@ -23,18 +23,23 @@ namespace Cx\Lib\DBG;
  */
 class DoctrineSQLLogger implements \Doctrine\DBAL\Logging\SQLLogger
 {
+    private $query = null;
+    private $startTime = null;
+    
     /**
      * {@inheritdoc}
      */
     public function startQuery($sql, array $params = null, array $types = null)
     {
-        if (!\DBG::getMode() & DBG_DOCTRINE) {
+        $this->query = null;
+        if (!(\DBG::getMode() & DBG_DOCTRINE)) {
             return;
         }
 
         // prepare SQL statement
         if ($params) {
             $sql = str_replace('?', "'%s'", $sql);
+            $this->query = vsprintf($sql, $params);
             foreach ($params as &$param) {
                 // serialize arrays
                 if (is_array($param)) {
@@ -56,6 +61,7 @@ class DoctrineSQLLogger implements \Doctrine\DBAL\Logging\SQLLogger
     	}
 
         \DBG::logSQL($sql);
+        $this->startTime = microtime(true);
     }
 
     /**
@@ -63,7 +69,25 @@ class DoctrineSQLLogger implements \Doctrine\DBAL\Logging\SQLLogger
      */
     public function stopQuery()
     {
-
+        global $objDatabase;
+        
+        if (!(\DBG::getMode() & DBG_DOCTRINE)) {
+            return;
+        }
+        
+        if (!$objDatabase || !$this->query) {
+            return;
+        }
+        
+        $timeDiff = microtime(true) - $this->startTime;
+        $this->startTime = null;
+        
+        $result = $objDatabase->execute($this->query);
+        $this->query = null;
+        if (!$result) {
+            \DBG::log('<p>The query above failes (took ' . $timeDiff .  ' seconds)!</p>');
+        } else {
+            \DBG::log('<p>The query above returns ' . $result->RecordCount() . ' rows when executed in SQL directly (took ' . $timeDiff .  ' seconds).</p>');
+        }
     }
 }
-
