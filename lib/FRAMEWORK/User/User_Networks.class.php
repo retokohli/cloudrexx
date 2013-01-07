@@ -1,5 +1,7 @@
 <?php
 
+namespace Cx\Lib\User;
+
 /**
  * User Networks
  *

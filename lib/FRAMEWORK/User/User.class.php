@@ -964,7 +964,7 @@ class User extends User_Profile
                 }
                 $objUser->MoveNext();
             }
-            $this->arrCachedUsers[$objUser->fields['id']]['networks'] = new User_Networks($objUser->id);
+            $this->arrCachedUsers[$objUser->fields['id']]['networks'] = new \Cx\Lib\User\User_Networks($objUser->id);
             isset($arrSelectCustomExpressions) ? $this->loadCustomAttributeProfileData($arrSelectCustomExpressions) : false;
             $this->first();
             return true;
@@ -1528,7 +1528,7 @@ class User extends User_Profile
      * Load the network data
      */
     public function loadNetworks() {
-        $this->networks = new User_Networks($this->id);
+        $this->networks = new \Cx\Lib\User\User_Networks($this->id);
     }
 
 
