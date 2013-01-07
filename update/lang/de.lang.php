@@ -87,4 +87,6 @@ $_CORELANG = array(
     'TXT_UPDATE_ACCEPT_LICENSE'                  => 'Ich akzeptiere die Contrexx Lizenz',
     'TXT_UPDATE_LICENSE_MODEL'                   => 'Neues Lizenzmodell',
     'TXT_UPDATE_ACCEPT_LICENSE_CHANGE'           => 'Ich habe die vorliegenden Informationen verstanden und bin damit einverstanden.',
+    'TXT_UPDATE_CHECK_FAILED'                    => 'Überprüfung fehlgeschlagen',
+    'TXT_UPDATE_MOD_REWRITE_TOOLTIP'             => 'Die Überprüfung, ob dieses Modul installiert ist, konnte nicht durchgeführt werden. Dies kann jedoch manuell vorgenommen werden.<br />Dazu muss folgender Link geöffnet werden:<br /><a href="http://' . $_SERVER['HTTP_HOST'] . substr($_SERVER['SCRIPT_NAME'], 0, -9) . 'rewrite_test/" target="_blank">http://' . $_SERVER['HTTP_HOST'] . substr($_SERVER['SCRIPT_NAME'], 0, -9) . 'rewrite_test/</a><br />Wenn nach dem Öffnen des Links in der Adresszeile der Text "weiterleitungen_funktionieren" vorkommt, hat die Weiterleitung funktioniert und somit ist dieses Modul auf dem Server installiert. Falls nicht, muss veranlasst werden, dass der Serveradministrator dieses Modul auf dem Server installiert, da es für den Betrieb von Contrexx 3 notwendig ist. Das Update kann aber vorerst eingespielt werden.',
 );
