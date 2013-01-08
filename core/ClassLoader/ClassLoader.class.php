@@ -112,7 +112,8 @@ class ClassLoader {
     
     public function getFilePath($file) {
         $file = preg_replace('#\\\\#', '/', $file);
-        $file = preg_replace('#'.ASCMS_PATH.ASCMS_PATH_OFFSET.'#', '', $file);
+        $regex = preg_replace('#([\(\)])#', '\\\\$1', ASCMS_PATH.ASCMS_PATH_OFFSET);
+        $file = preg_replace('#'.$regex.'#', '', $file);
         
         // load class from customizing folder
         if ($this->customizingPath && file_exists($this->customizingPath.$file)) {
