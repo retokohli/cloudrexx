@@ -15,6 +15,7 @@ class License {
     const LICENSE_NOK = 'NOK';
     const LICENSE_DEMO = 'DEMO';
     const LICENSE_ERROR = 'ERROR';
+    const INFINITE_VALIDITY = 0;
     private static $staticModules = array(
         'license',
         'logout',
@@ -336,7 +337,7 @@ class License {
         // - no license-Key available
         // - license has expired
         // - license is invalid
-        if ($validTo + 60*60*24 < time() || $this->state == self::LICENSE_NOK) {
+        if ($validTo + 60*60*24 < time() || $validTo === self::INFINITE_VALIDITY || $this->state == self::LICENSE_NOK) {
             $this->state = self::LICENSE_NOK;
             $this->legalFrontendComponents = $this->legalComponents;
             $this->legalComponents = self::$staticModules;

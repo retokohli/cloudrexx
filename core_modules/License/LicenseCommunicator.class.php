@@ -329,6 +329,7 @@ class LicenseCommunicator {
                         }
                         
                         revertMessage(data[\'class\'], data.link, data.target, data.text);
+                        document.location.reload(true);
                     }
                     
                     var performRequest = function() {
