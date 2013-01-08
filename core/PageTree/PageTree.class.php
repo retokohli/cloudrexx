@@ -19,6 +19,7 @@ abstract class PageTree {
     protected $currentPageOnRootNode = false;
     protected $currentPagePath = null;
     protected $pageRepo = null;
+    protected $skipInvisible = true;
     
     /**
      * @param $entityManager the doctrine em
@@ -28,13 +29,14 @@ abstract class PageTree {
      * @param int $lang the language
      * @param \Cx\Model\ContentManager\Page $currentPage if set, renderElement() will receive a correctly set $current flag.
      */
-    public function __construct($entityManager, $license, $maxDepth = 0, $rootNode = null, $lang = null, $currentPage = null) {
+    public function __construct($entityManager, $license, $maxDepth = 0, $rootNode = null, $lang = null, $currentPage = null, $skipInvisible = true) {
         $this->lang = $lang;
         $this->depth = $maxDepth;
         $this->em = $entityManager;
         $this->license = $license;
         $this->rootNode = $rootNode;
         $this->currentPage = $currentPage;
+        $this->skipInvisible = $skipInvisible;
         $pageI = $currentPage;
         while ($pageI) {
             $this->pageIdsAtCurrentPath[] = $pageI->getId();
@@ -105,13 +107,17 @@ $this->bytes = memory_get_peak_usage();
             $page = $node->getPage($this->lang);
             
             $hasChilds = false;
-            if (!$page || $page->isVisible()) {
-                foreach ($children as $child) {
-                    if ($child->getPage($this->lang) && $child->getPage($this->lang)->isVisible()) {
-                        $hasChilds = true;
-                        break;
+            if ($this->skipInvisible) {
+                if (!$page || $page->isVisible()) {
+                    foreach ($children as $child) {
+                        if ($child->getPage($this->lang) && $child->getPage($this->lang)->isVisible()) {
+                            $hasChilds = true;
+                            break;
+                        }
                     }
                 }
+            } else {
+                $hasChilds = count($children);
             }
             if ($hasChilds && !$dontDescend) {
                 // add preRenderLevel to stack

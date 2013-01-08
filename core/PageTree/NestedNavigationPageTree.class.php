@@ -33,7 +33,7 @@ class NestedNavigationPageTree extends SigmaPageTree {
     protected $branchNodeIds = array(); //holds all ids of the $currentPage's Node and it's parents
 
     public function __construct($entityManager, $license, $maxDepth = 0, $activeNode = null, $lang = null, $currentPage = null) { 
-        parent::__construct($entityManager, $license, $maxDepth, $activeNode, $lang, $currentPage);
+        parent::__construct($entityManager, $license, $maxDepth, $activeNode, $lang, $currentPage, false);
 
         //go up the branch and collect all node ids. used later in renderElement().
         $node = $currentPage->getNode();        
