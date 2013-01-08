@@ -131,8 +131,8 @@ CREATE TABLE `contrexx_access_user_profile` (
   `birthday` varchar(11) default NULL,
   `website` varchar(255) NOT NULL default '',
   `profession` varchar(150) NOT NULL default '',
-  `interests` text,
-  `signature` text,
+  `interests` text NOT NULL,
+  `signature` text NOT NULL,
   `picture` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`user_id`),
   KEY `profile` (`firstname`(100),`lastname`(100),`company`(50))
@@ -3545,27 +3545,15 @@ CREATE TABLE `contrexx_module_shop_categories` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_shop_countries` (
-  `countries_id` int(10) unsigned NOT NULL auto_increment,
-  `countries_name` varchar(64) NOT NULL default '',
-  `countries_iso_code_2` char(2) NOT NULL default '',
-  `countries_iso_code_3` char(3) NOT NULL default '',
-  `activation_status` tinyint(1) unsigned NOT NULL default '1',
-  PRIMARY KEY  (`countries_id`),
-  KEY `INDEX_COUNTRIES_NAME` (`countries_name`)
-) ENGINE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_shop_currencies` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `code` char(3) NOT NULL default '',
   `symbol` varchar(20) NOT NULL default '',
-  `rate` decimal(10,6) unsigned NOT NULL default '1.000000',
+  `rate` decimal(10,4) unsigned NOT NULL default '1.0000',
   `ord` int(5) unsigned NOT NULL default '0',
   `active` tinyint(1) unsigned NOT NULL default '1',
   `default` tinyint(1) unsigned NOT NULL default '0',
-  `increment` decimal(3,2) unsigned default NULL,
+  `increment` decimal(6,5) unsigned NOT NULL default '0.01000',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
@@ -3629,28 +3617,6 @@ CREATE TABLE `contrexx_module_shop_lsv` (
   `blz` tinytext NOT NULL,
   PRIMARY KEY  (`order_id`)
 ) ENGINE=MyISAM;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_shop_mail` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `tplname` varchar(60) NOT NULL default '',
-  `protected` tinyint(1) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_shop_mail_content` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `tpl_id` int(10) unsigned NOT NULL default '0',
-  `lang_id` int(10) unsigned NOT NULL default '0',
-  `from_mail` varchar(255) NOT NULL default '',
-  `xsender` varchar(255) NOT NULL default '',
-  `subject` varchar(255) NOT NULL default '',
-  `message` text NOT NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -3814,17 +3780,6 @@ CREATE TABLE `contrexx_module_shop_products` (
   KEY `article_id` (`article_id`),
   FULLTEXT KEY `flags` (`flags`)
 ) ENGINE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_shop_products_downloads` (
-  `products_downloads_id` int(10) unsigned NOT NULL default '0',
-  `products_downloads_name` varchar(255) NOT NULL default '',
-  `products_downloads_filename` varchar(255) NOT NULL default '',
-  `products_downloads_maxdays` int(10) unsigned default '0',
-  `products_downloads_maxcount` int(10) unsigned default '0',
-  PRIMARY KEY  (`products_downloads_id`)
-) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
