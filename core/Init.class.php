@@ -696,15 +696,9 @@ class InitCMS
     protected function loadLangFile($path)
     {
         global $_ARRAYLANG;
-        //require_once($path);
-        require($path);
-        // remove escape characters
-// Pointless IMHO.  If your language entry
-//    $_ARRAYLANG['demo'] = "\"quoted\"";
-// does not look like '"quoted"' after it has been included, fix it!  :)
-//        foreach (array_keys($_ARRAYLANG) as $langTxtId) {
-//            $_ARRAYLANG[$langTxtId] = preg_replace('/\\\\"/', '"', $_ARRAYLANG[$langTxtId]);
-//        }
+        
+        require(\Env::get('ClassLoader')->getFilePath($path));
+        
         return $_ARRAYLANG;
     }
 

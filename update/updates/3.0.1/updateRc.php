@@ -27,7 +27,8 @@ if ($objResultRc1->fields['target'] != '_blank') {
 } elseif ($_CONFIG['coreCmsVersion'] == '3.0.0.1') {
     $version = 'hotfix';
 } else {
-    die('You have already installed the current stable...');
+    // nothing to do
+    return true;
 }
 
 
@@ -193,7 +194,7 @@ foreach ($updates as $update) {
     }
 }
 
-if ($version != 'stable') {
+if ($version != 'stable' && $version != 'hotfix') {
     // reimport module repository
     $sqlQuery = '';
     $fp = @fopen($documentRoot.'/installer/data/contrexx_dump_data.sql', 'r');
