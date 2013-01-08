@@ -233,7 +233,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'lib/javascript/cx/contrexxJs-tools.js',
                 'lib/javascript/jquery/jquery.includeMany-1.2.2.js' //to dynamically include javascript files
             ),
-            'dependencies' => array('jquery', 'md5')
+            'dependencies' => array('jquery', 'md5'),
             //we insert the specialCode for the Contrexx-API later in getCode()
         ),
         'jstree' => array(
