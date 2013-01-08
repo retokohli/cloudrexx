@@ -662,19 +662,21 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
     static function errorHandler()
     {
 // PaymentProcessing
-        $table_name_new = DBPREFIX.'module_shop_processors';
-        if (!Cx\Lib\UpdateUtil::table_exist($table_name_new)) {
-            $table_structure = array(
-                'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
-                'type' => array('type' => 'ENUM("internal", "external")', 'default' => 'internal'),
-                'name' => array('type' => 'VARCHAR(255)', 'default' => ''),
-                'description' => array('type' => 'TEXT', 'default' => ''),
-                'company_url' => array('type' => 'VARCHAR(255)', 'default' => ''),
-                'status' => array('type' => 'TINYINT(10)', 'unsigned' => true, 'default' => 1),
-                'picture' => array('type' => 'VARCHAR(255)', 'default' => ''),
-            );
-            Cx\Lib\UpdateUtil::table($table_name_new, $table_structure);
+        $table_name_old = DBPREFIX.'module_shop_processors';
+        $table_name_new = DBPREFIX.'module_shop_payment_processors';
+        if (Cx\Lib\UpdateUtil::table_exist($table_name_old)) {
+            Cx\Lib\UpdateUtil::table_rename($table_name_old, $table_name_new);
         }
+        $table_structure = array(
+            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
+            'type' => array('type' => 'ENUM("internal", "external")', 'default' => 'internal'),
+            'name' => array('type' => 'VARCHAR(255)', 'default' => ''),
+            'description' => array('type' => 'TEXT', 'default' => ''),
+            'company_url' => array('type' => 'VARCHAR(255)', 'default' => ''),
+            'status' => array('type' => 'TINYINT(10)', 'unsigned' => true, 'default' => 1),
+            'picture' => array('type' => 'VARCHAR(255)', 'default' => ''),
+        );
+        Cx\Lib\UpdateUtil::table($table_name_new, $table_structure);
         $arrPsp = array(
             array(01, 'external', 'Saferpay',
                 'Saferpay is a comprehensive Internet payment platform, specially developed for commercial applications. It provides a guarantee of secure payment processes over the Internet for merchants as well as for cardholders. Merchants benefit from the easy integration of the payment method into their e-commerce platform, and from the modularity with which they can take account of current and future requirements. Cardholders benefit from the security of buying from any shop that uses Saferpay.',
@@ -705,7 +707,7 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
                 'LSV with internal form',
                 '', 1, ''),
             array(10, 'external', 'Datatrans',
-                'Die professionelle und komplette Payment-LÃ¶sung - all inclusive. Ein einziges Interface fÃ¼r sÃ¤mtliche Zahlungsmethoden (Kreditkarten, Postcard, Kundenkarten). Mit variablem Angebot fÃ¼r unterschiedliche KundenbedÃ¼rfnisse.',
+                'Die professionelle und komplette Payment-Lösung',
                 'http://datatrans.biz/', 1, 'logo_datatrans.gif'),
             array(11, 'external', 'mobilesolutions',
                 'PostFinance Mobile',
