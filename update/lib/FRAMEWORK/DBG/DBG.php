@@ -646,7 +646,9 @@ class DBG
         } else {
             echo $text.'<br />';
             // force log message output
-            ob_flush();
+            if (ob_get_level()) {
+                ob_flush();
+            }
         }
     }
 
