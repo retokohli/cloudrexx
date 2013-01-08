@@ -58,12 +58,10 @@ class ContentMigration
             }
             
             // Skip existing nodes
-            if(isset($this->nodeArr[$catId])) {
-                $arrSortedNodes[] = $this->nodeArr[$catId];
-            } else {
+            if(!isset($this->nodeArr[$catId])) {
                 $this->nodeArr[$catId] = new \Cx\Model\ContentManager\Node();
-                $arrSortedNodes[] = $this->nodeArr[$catId];
             }
+            $arrSortedNodes[] = $this->nodeArr[$catId];
 
             $objResult->MoveNext();
         }
@@ -121,8 +119,8 @@ class ContentMigration
                         'cssNavName'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'cssName'),
                         'skin'                               => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'cssNavName'),
                         'metatitle'                          => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'skin'),
-                        'metadesc'                           => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'metatitle'),
-                        'metakeys'                           => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'metadesc'),
+                        'metadesc'                           => array('type' => 'text', 'after' => 'metatitle'),
+                        'metakeys'                           => array('type' => 'text', 'after' => 'metadesc'),
                         'metarobots'                         => array('type' => 'VARCHAR(7)', 'notnull' => false, 'after' => 'metakeys'),
                         'start'                              => array('type' => 'timestamp', 'after' => 'metarobots', 'notnull' => false),
                         'end'                                => array('type' => 'timestamp', 'after' => 'start', 'notnull' => false),
@@ -194,6 +192,7 @@ class ContentMigration
             }
         }
         
+        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
         $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
 
         $this->nodeArr = array();
@@ -205,7 +204,7 @@ class ContentMigration
             self::$em->flush();
             $_SESSION['contrexx_update']['root_node_added'] = true;
         } else {
-            $nodes = self::$em->getRepository('Cx\Model\ContentManager\Node')->findAll();
+            $nodes = $nodeRepo->findAll();
             $root  = $nodes[0];
         }
         
@@ -245,7 +244,7 @@ class ContentMigration
             
             if (!empty($_SESSION['contrexx_update']['nodes'])) {
                 foreach ($_SESSION['contrexx_update']['nodes'] as $catId => $nodeId) {
-                    $node = self::$em->getRepository('Cx\Model\ContentManager\Node')->find($nodeId);
+                    $node = $nodeRepo->find($nodeId);
                     if ($node) {
                         self::$em->remove($node);
                     }
@@ -270,7 +269,7 @@ class ContentMigration
         } else {
             if (!empty($_SESSION['contrexx_update']['nodes'])) {
                 foreach ($_SESSION['contrexx_update']['nodes'] as $catId => $nodeId) {
-                    $node = self::$em->getRepository('Cx\Model\ContentManager\Node')->find($nodeId);
+                    $node = $nodeRepo->find($nodeId);
                     $this->nodeArr[$catId] = $node;
                 }
             }
@@ -285,6 +284,12 @@ class ContentMigration
                 if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'content_navigation_history', 'custom_content')) {
                     $hasCustomContent = true;
                 }
+                
+                if (!empty($_SESSION['contrexx_update']['history_pages_index'])) {
+                    $limit = 'LIMIT ' . $_SESSION['contrexx_update']['history_pages_index'] . ', 18446744073709551615';
+                } else {
+                    $limit = '';
+                }
 
                 $objResult = \Cx\Lib\UpdateUtil::sql('
                     SELECT
@@ -298,6 +303,7 @@ class ContentMigration
                     ON         cn.id = nav.id
                     INNER JOIN `' . DBPREFIX . 'content_logfile` AS cnlog
                     ON         cn.id = cnlog.history_id ORDER BY cnlog.id ASC
+                    ' . $limit . '
                 ');
             } catch (\Cx\Lib\UpdateException $e) {
                 \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
@@ -306,17 +312,11 @@ class ContentMigration
             
             // Migrate history
             if ($objResult !== false) {
-                if (!empty($_SESSION['contrexx_update']['pages'])) {
-                    foreach ($_SESSION['contrexx_update']['pages'] as $catId => $pageId) {
-                        $page = self::$em->getRepository('Cx\Model\ContentManager\Page')->find($pageId);
-                        if ($page) {
-                            $p[$catId] = $page;
-                        }
-                    }
-                }
+                $historyPagesIndex = !empty($_SESSION['contrexx_update']['history_pages_index']) ? $_SESSION['contrexx_update']['history_pages_index'] : 0;
                 
                 while (!$objResult->EOF) {
                     if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                        $_SESSION['contrexx_update']['history_pages_index'] = $historyPagesIndex;
                         return false;
                     }
                     
@@ -327,65 +327,52 @@ class ContentMigration
                         $objResult->MoveNext();
                         continue;
                     }
-        
-                    // TODO: create a LOST&FOUND node in case a certain parent node doesn't exist
+                    
                     // SET PARENT NODE
-                    if ($objResult->fields['parcat'] == 0) {
+                    if ($objResult->fields['parcat'] == 0 || !isset($this->nodeArr[$objResult->fields['parcat']])) {
                         // Page was located on the first level in the site-tree.
                         // Therefore, directly attach it to the ROOT-node
                         $this->nodeArr[$catId]->setParent($root);
                     } else {
-                        if (!isset($this->nodeArr[$objResult->fields['parcat']])) {
-                            // Parent node of page can't be found.
-                            // Attach node to LOST&FOUND node
-                            setUpdateMsg('Parent missing: id ' . $objResult->fields['parcat']);
-                            return false;
-                        }
-        
                         // Attach page to associated parent node
                         $this->nodeArr[$catId]->setParent($this->nodeArr[$objResult->fields['parcat']]);
                     }
-        
-                    $deleted = false;
+                    
                     $page = null;
-        
+                    if (!empty($_SESSION['contrexx_update']['pages'][$catId])) {
+                        $pageId = $_SESSION['contrexx_update']['pages'][$catId];
+                        $page   = $pageRepo->find($pageId);
+                    }
+                    
                     // CREATE PAGE
                     switch ($objResult->fields['action']) {
                         case 'new':
                         case 'update':
-                            if (!isset($p[$catId])) {
-                                $p[$catId] = new \Cx\Model\ContentManager\Page();
+                            if (empty($page)) {
+                                $page = new \Cx\Model\ContentManager\Page();
                             }
-                            $page = $p[$catId];
+                            
+                            $this->_setPageRecords($objResult, $this->nodeArr[$catId], $page);
+                            self::$em->persist($page);
+                            self::$em->flush();
+                            $_SESSION['contrexx_update']['pages'][$catId] = $page->getId();
                             break;
                         case 'delete':
-                            self::$em->remove($p[$catId]);
-                            self::$em->flush();
-                            if (isset($_SESSION['contrexx_update']['pages'][$catId])) {
-                                unset($_SESSION['contrexx_update']['pages'][$catId]);
+                            if (!empty($page)) {
+                                self::$em->remove($page);
+                                self::$em->flush();
+                                if (isset($_SESSION['contrexx_update']['pages'][$catId])) {
+                                    unset($_SESSION['contrexx_update']['pages'][$catId]);
+                                }
                             }
-                            $deleted = true;
                             break;
-                    }                      
-                    
-                    if(!$deleted) {
-                        $this->_setPageRecords($objResult, $this->nodeArr[$catId], $page);
-                        self::$em->persist($page);
-                        self::$em->flush();
-                        $_SESSION['contrexx_update']['pages'][$catId] = $page->getId();
                     }
                     
+                    $historyPagesIndex ++;
                     $objResult->MoveNext();
                 }
                 
                 $_SESSION['contrexx_update']['history_pages_added'] = true;
-            }
-        } else {
-            if (!empty($_SESSION['contrexx_update']['pages'])) {
-                foreach ($_SESSION['contrexx_update']['pages'] as $catId => $pageId) {
-                    $page = self::$em->getRepository('Cx\Model\ContentManager\Page')->find($pageId);
-                    $p[$catId] = $page;
-                }
             }
         }
         
@@ -395,6 +382,12 @@ class ContentMigration
                 $hasCustomContent = false;
                 if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'content_navigation', 'custom_content')) {
                     $hasCustomContent = true;
+                }
+                
+                if (!empty($_SESSION['contrexx_update']['pages_index'])) {
+                    $limit = 'LIMIT ' . $_SESSION['contrexx_update']['pages_index'] . ', 18446744073709551615';
+                } else {
+                    $limit = '';
                 }
 
                 $objRecords = \Cx\Lib\UpdateUtil::sql('
@@ -407,6 +400,7 @@ class ContentMigration
                     ON         cn.id = nav.catid
                     WHERE      cn.id
                     ORDER BY   nav.parcat ASC, nav.displayorder ASC
+                    ' . $limit . '
                 ');
             } catch (\Cx\Lib\UpdateException $e) {
                 \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
@@ -414,8 +408,11 @@ class ContentMigration
             }
             
             if ($objRecords !== false) {
+                $pagesIndex = !empty($_SESSION['contrexx_update']['pages_index']) ? $_SESSION['contrexx_update']['pages_index'] : 0;
+                
                 while (!$objRecords->EOF) {
                     if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                        $_SESSION['contrexx_update']['pages_index'] = $pagesIndex;
                         return false;
                     }
                     
@@ -434,7 +431,7 @@ class ContentMigration
         
                     $node = $this->nodeArr[$catId];
         
-                    if ($objRecords->fields['parcat'] == 0) {
+                    if ($objRecords->fields['parcat'] == 0 || !isset($this->nodeArr[$objRecords->fields['parcat']])) {
                         // Page was located on the first level in the site-tree.
                         // Therefore, directly attach it to the ROOT-node
                         //$node->setParent($root);
@@ -447,21 +444,25 @@ class ContentMigration
 
                     $nodeRepo->moveDown($this->nodeArr[$catId], true);
                     self::$em->persist($this->nodeArr[$catId]);
-        
-                    // set page data
-                    if (!isset($p[$catId])) {
-                        $p[$catId] = new \Cx\Model\ContentManager\Page();
+                    
+                    if (!empty($_SESSION['contrexx_update']['pages'][$catId])) {
+                        $pageId = $_SESSION['contrexx_update']['pages'][$catId];
+                        $page   = $pageRepo->find($pageId);
+                    } else {
+                        $page = new \Cx\Model\ContentManager\Page();
                     }
-                    $page = $p[$catId];
         
                     $this->_setPageRecords($objRecords, $this->nodeArr[$catId], $page);
                     $page->setAlias(array('legacy_page_' . $catId));
                     
                     self::$em->persist($page);
+                    self::$em->flush();
+                    $_SESSION['contrexx_update']['pages'][$catId] = $page->getId();
+                    
+                    $pagesIndex ++;
                     $objRecords->MoveNext();
                 }
                 
-                self::$em->flush();
                 $_SESSION['contrexx_update']['pages_added'] = true;
             }
         }
@@ -726,6 +727,7 @@ class ContentMigration
 
         $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
         $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
+        
         $pages = $pageRepo->findAll();
         $group = array();
         $nodeToRemove = array();
@@ -797,7 +799,7 @@ class ContentMigration
         // Prevent the system from trying to remove the same node more than once
         $pageToRemove = array_unique($pageToRemove);
         foreach ($pageToRemove as $pageId) {
-            $page = self::$em->getRepository('Cx\Model\ContentManager\Page')->find($pageId);
+            $page = $pageRepo->find($pageId);
             $aliases = $page->getAliases();
             foreach ($aliases as $alias) {
                 self::$em->remove($alias);
@@ -809,7 +811,6 @@ class ContentMigration
         self::$em->clear();
 
         $nodeToRemove = array_unique($nodeToRemove);
-        $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
         
         foreach ($nodeToRemove as $nodeId) {
             $node = $nodeRepo->find($nodeId);
@@ -819,6 +820,11 @@ class ContentMigration
             self::$em->clear();
         }
         
+        return true;
+    }
+
+    public function dropOldTables()
+    {
         // Drop old tables
         try {
             \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'content');

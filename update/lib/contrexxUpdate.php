@@ -9,9 +9,10 @@ if (typeof(DOMParser) == 'undefined') {
   useAjax = true;
 }
 
-function doUpdate(goBack)
+function doUpdate(goBack, viaPost)
 {
     getDebugInfo = false;
+    type = viaPost ? 'POST' : 'GET';
 
     if (useAjax) {
         if (request_active) {
@@ -21,6 +22,11 @@ function doUpdate(goBack)
         }
 
         formData = getFormData(goBack);
+        
+        if (viaPost) {
+            $J(".content-migration-dialog").remove();
+            $J(".content-migration-info").parent().remove();
+        }
 
         if (formData.indexOf('debug_update') > -1) {
             getDebugInfo = true;
@@ -37,6 +43,7 @@ function doUpdate(goBack)
 
         jQuery.ajax({
             url: 'index.php',
+            type: type,
             data: {'ajax': formData},
             success: parseResponse,
             error: cxUpdateErrorHandler,
@@ -363,5 +370,5 @@ function executeGrouping() {
     $J('#doGroup').val(1);
     $J('#similarPages').val(JSON.stringify(similarPages));
     $J('#removePages').val(JSON.stringify(removePages));
-    doUpdate();
+    doUpdate(false, true);
 }

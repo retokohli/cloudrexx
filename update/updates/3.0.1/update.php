@@ -100,6 +100,16 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
                 return false;
             }
         }
+
+        // Drop old tables
+        if (empty($_SESSION['contrexx_update']['old_tables_dropped'])) {
+            if ($contentMigration->dropOldTables()) {
+                $_SESSION['contrexx_update']['old_tables_dropped'] = true;
+                if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                    return false;
+                }
+            }
+        }
         
         // Migrate blocks
         if (empty($_SESSION['contrexx_update']['blocks_migrated'])) {
