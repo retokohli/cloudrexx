@@ -285,10 +285,11 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_mail_template` (
   `key` tinytext NOT NULL,
-  `section` tinytext,
+  `section` tinytext NOT NULL,
   `text_id` int(10) unsigned NOT NULL,
   `html` tinyint(1) unsigned NOT NULL default '0',
-  `protected` tinyint(1) unsigned NOT NULL default '0'
+  `protected` tinyint(1) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`key`(32),`section`(32))
 ) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -345,7 +346,7 @@ CREATE TABLE `contrexx_languages` (
   `backend` tinyint(1) unsigned NOT NULL default '0',
   `is_default` set('true','false') NOT NULL default 'false',
   `mobile_themes_id` int(2) unsigned NOT NULL default '0',
-  `fallback` int(2) unsigned default '0',
+  `fallback` int(2) unsigned NOT NULL default '0',
   `app_themes_id` int(2) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `lang` (`lang`),
@@ -398,29 +399,6 @@ CREATE TABLE `contrexx_log_entry` (
   KEY `log_date_lookup_idx` (`logged_at`),
   KEY `log_user_lookup_idx` (`username`)
 ) ENGINE=InnoDB;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_alias_source` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `target_id` int(10) unsigned NOT NULL default '0',
-  `lang_id` int(10) unsigned NOT NULL default '1',
-  `url` varchar(255) NOT NULL,
-  `isdefault` tinyint(1) NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  KEY `isdefault` (`isdefault`),
-  KEY `url_lang_id` (`lang_id`,`url`)
-) ENGINE=MyISAM;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_alias_target` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `type` enum('url','local') NOT NULL default 'url',
-  `url` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `url` (`url`)
-) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
