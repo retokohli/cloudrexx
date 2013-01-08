@@ -328,6 +328,8 @@ function _updateSettings()
                                                 FROM        '.DBPREFIX.'settings
                                                 ORDER BY    setmodule ASC,
                                                             setname ASC
+                                                WHERE
+                                                            setid != 97
                                             ');
             $intMaxLen = 0;
             $arrValues = array();
