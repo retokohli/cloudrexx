@@ -42,7 +42,7 @@ class ContrexxUpdate
         
         DBG::set_adodb_debug_mode();
 
-        if (!empty($_GET['ajax'])) {
+        if (!empty($_REQUEST['ajax'])) {
             $this->ajax = true;
             if (!@include_once(UPDATE_LIB.'/PEAR/Services/JSON.php')) {
                 die('Unable to load the PEAR JSON library: '.UPDATE_LIB.'/PEAR/Services/JSON.php');
@@ -54,7 +54,7 @@ class ContrexxUpdate
     
     public function getPage()
     {
-        if (!empty($_GET['cmd']) && ($_GET['cmd'] == 'logout')) {
+        if (!empty($_REQUEST['cmd']) && ($_REQUEST['cmd'] == 'logout')) {
             $this->logout();
         }
 
@@ -84,7 +84,7 @@ class ContrexxUpdate
 
     private function parseJsonRequest()
     {
-        $_POST = $this->objJson->decode($this->stripslashes($_GET['ajax']));
+        $_POST = $this->objJson->decode($this->stripslashes($_REQUEST['ajax']));
         if (!UPDATE_UTF8) {
             $_POST = array_map('utf8_decode', $_POST);
         }
