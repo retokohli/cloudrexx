@@ -818,7 +818,7 @@ class PageRepository extends EntityRepository {
             $results[] = array(
                 'Score' => 100,
                 'Title' => $page->getTitle(),
-                'Content' => substr($page->getTitle(),0, $config['searchDescriptionLength']),
+                'Content' => substr(contrexx_strip_tags($page->getContent()),0, $config['searchDescriptionLength']),
                 'Link' => $this->getPath($page)
             );
         }
