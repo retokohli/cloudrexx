@@ -22,11 +22,6 @@ function doUpdate(goBack, viaPost)
         }
 
         formData = getFormData(goBack);
-        
-        if (viaPost) {
-            $J(".content-migration-dialog").remove();
-            $J(".content-migration-info").parent().remove();
-        }
 
         if (formData.indexOf('debug_update') > -1) {
             getDebugInfo = true;
@@ -39,6 +34,11 @@ function doUpdate(goBack, viaPost)
             }
         } else {
             setContent('Bitte warten. Die Seite wird geladen...');
+        }
+
+        if (viaPost) {
+            $J(".content-migration-dialog").remove();
+            $J(".content-migration-info").parent().remove();
         }
 
         jQuery.ajax({
@@ -130,7 +130,7 @@ function parseResponse(response)
             
             cx.ui.dialog({
                 width:         1020,
-                height:        880,
+                height:        900,
                 modal:         true,
                 closeOnEscape: false,
                 dialogClass:   "content-migration-dialog",

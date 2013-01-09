@@ -302,12 +302,25 @@ table.adminlist td {
     margin: 0;
 }
 
-.content-migration-select-wrapper {
+.content-migration-select-scroll {
     float: left;
-    padding: 0 30px 15px 0;
+    width: 990px;
+    height: 660px;
+    margin: 0 0 10px 0;
+    overflow-x: auto;
 }
 
-.content-migration-select-wrapper select {
+.content-migration-select-wrapper {
+    float: left;
+    white-space: nowrap;
+}
+
+.content-migration-select {
+    float: left;
+    padding: 0 30px 0 0;
+}
+
+.content-migration-select select {
     float: left;
     width: 300px;
     height: 600px;
