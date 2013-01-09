@@ -135,28 +135,26 @@ $J(document).ready(function() {
 			</tr>
 		</thead>
 		<tbody style="vertical-align:top; white-space:nowrap;">
-            <!-- BEGIN access_user_username_block -->
-            <tr class="row1">
-                <td width="15%">{TXT_ACCESS_USERNAME}</td>
-                <td width="85%">{ACCESS_USER_USERNAME}</td>
-            </tr>
-            <!-- END access_user_username_block -->
-            <tr class="row2">
-                <td>{TXT_ACCESS_EMAIL}</td>
-                <td>{ACCESS_USER_EMAIL}</td>
-            </tr>
 			<tr class="row1">
-				<td width="15%">{TXT_ACCESS_PASSWORD}</td>
-				<td width="85%">
+				<td width="15%">{TXT_ACCESS_USERNAME}</td>
+				<td width="85%">{ACCESS_USER_USERNAME}</td>
+			</tr>
+			<tr class="row2">
+				<td>{TXT_ACCESS_PASSWORD}</td>
+				<td>
 				    {ACCESS_USER_PASSWORD}&nbsp;
 				    <font color="red">*</font>&nbsp;
                         <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_ACCESS_PASSWORD_INFO}</span>&nbsp;&nbsp;
 				    <span id="password-complexity"></span>
 				</td>
 			</tr>
-			<tr class="row2">
+			<tr class="row1">
 				<td>{TXT_ACCESS_CONFIRM_PASSWORD}</td>
 				<td>{ACCESS_USER_PASSWORD_CONFIRMED}</td>
+			</tr>
+			<tr class="row2">
+				<td>{TXT_ACCESS_EMAIL}</td>
+				<td>{ACCESS_USER_EMAIL}</td>
 			</tr>
 			<tr class="row1">
 				<td>{TXT_ACCESS_LANGUAGE}</td>

@@ -86,7 +86,19 @@ class FWUser extends User_Setting
                 if ($this->isBackendMode()) {
                     $this->log();
                 }
-                $this->loginUser($this->objUser);
+                $sessionObj->cmsSessionUserUpdate($this->objUser->getId());
+                $this->objUser->registerSuccessfulLogin();
+                unset($_SESSION['auth']['loginLastAuthFailed']);
+                // Store frontend lang_id in cookie
+                if (empty($_COOKIE['langId'])) {
+// TODO: Seems that this method returns zero at first when the Users' language is set to "default"!
+                    $langId = $this->objUser->getFrontendLanguage();
+// Temporary fix:
+if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
+                    if ($objInit->arrLang[$langId]['frontend']) {
+                        setcookie("langId", $langId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
+                    }
+                }
                 return true;
             }
             $_SESSION['auth']['loginLastAuthFailed'] = 1;
@@ -98,27 +110,6 @@ class FWUser extends User_Setting
         return false;
     }
 
-    /**
-     * Log in the current user with the object given
-     * @param mixed $objUser the user to be logged in
-     */
-    function loginUser($objUser) {
-        global $sessionObj, $objInit;
-
-        $sessionObj->cmsSessionUserUpdate($objUser->getId());
-        $objUser->registerSuccessfulLogin();
-        unset($_SESSION['auth']['loginLastAuthFailed']);
-        // Store frontend lang_id in cookie
-        if (empty($_COOKIE['langId'])) {
-            // TODO: Seems that this method returns zero at first when the Users' language is set to "default"!
-            $langId = $this->objUser->getFrontendLanguage();
-            // Temporary fix:
-            if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
-            if ($objInit->arrLang[$langId]['frontend']) {
-                setcookie("langId", $langId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
-            }
-        }
-    }
 
     /**
      * Logs the User off and destroys the session.
