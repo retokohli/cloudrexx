@@ -4,7 +4,6 @@
 	<li><a id="generalTab_block_functions" href="javascript:void(0);" onclick="selectTab('block_functions')" title="{TXT_ACCESS_FRONTEND_BLOCK_FUNCTIONS}">{TXT_ACCESS_FRONTEND_BLOCK_FUNCTIONS}</a></li>
 	<li><a id="generalTab_pictures" href="javascript:void(0);" onclick="selectTab('pictures')" title="{TXT_ACCESS_PICTURES}">{TXT_ACCESS_PICTURES}</a></li>
     <li><a id="generalTab_session" href="javascript:void(0);" onclick="selectTab('session')" title="{TXT_ACCESS_SESSION_TITLE}">{TXT_ACCESS_SESSION_TITLE}</a></li>
-    <li><a id="generalTab_sociallogin" href="javascript:void(0);" onclick="selectTab('sociallogin')" title="{TXT_ACCESS_SOCIALLOGIN}">{TXT_ACCESS_SOCIALLOGIN}</a></li>
 </ul>
 <form action="index.php?cmd=access&amp;act=config" method="post">
 	<!-- start permissions div -->
@@ -68,14 +67,6 @@
 						<input type="radio" name="access_permissions_delete_account" id="access_permissions_delete_account_no" value="0" {ACCESS_DONT_ALLOW_USERS_DELETE_ACCOUNT} /> <label for="access_permissions_delete_account_no">{TXT_ACCESS_NO}</label>
 					</td>
 				</tr>
-                <tr class="row1">
-                    <td width="15%">{TXT_ACCESS_USE_USERNAMES}</td>
-                    <td width="85%">
-                        <input type="radio" name="access_permissions_use_usernames" id="access_permissions_use_usernames_yes" value="1" {ACCESS_USE_USERNAMES} {ACCESS_USE_USERNAMES_DISABLED} /> <label for="access_permissions_use_usernames_yes">{TXT_ACCESS_YES}</label>
-                        <input type="radio" name="access_permissions_use_usernames" id="access_permissions_use_usernames_no" value="0" {ACCESS_DONT_USE_USERNAMES} {ACCESS_USE_USERNAMES_DISABLED} /> <label for="access_permissions_use_usernames_no">{TXT_ACCESS_NO}</label>
-                        <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_ACCESS_USE_USERNAMES_TOOLTIP}</span>
-                    </td>
-                </tr>
 			</tbody>
 		</table>
 	</div>
@@ -247,51 +238,6 @@
     </div>
 
 	<!-- end session div-->
-
-    <!-- start sociallogin div -->
-    <div id="sociallogin" class="generalTab" style="display:none;">
-        <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="social login config">
-            <thead>
-            <tr>
-                <th colspan="2">{TXT_ACCESS_SOCIALLOGIN}</th>
-            </tr>
-            </thead>
-            <tbody style="vertical-align:top;">
-            <tr class="row3">
-                <td colspan="2"><strong>{TXT_ACCESS_SOCIALLOGIN_INFORMATION_TITLE}</strong></td>
-            </tr>
-            <tr class="row2">
-                <td>{TXT_ACCESS_DESCRIPTION}</td>
-                <td>{TXT_ACCESS_SOCIALLOGIN_DESCRIPTION}</td>
-            </tr>
-            <tr class="row3">
-                <td colspan="2"><strong>{TXT_ACCESS_GENERAL}</strong></td>
-            </tr>
-            <tr class="row2">
-                <td width="15%">{TXT_ACCESS_ENABLE_SOCIALLOGIN}</td>
-                <td width="85%">
-                    <input type="radio" name="access_sociallogin_activate" id="access_sociallogin_activate_yes" value="1" {ACCESS_SOCIALLOGIN_ENABLED} /> <label for="access_sociallogin_activate_yes">{TXT_ACCESS_YES}</label>
-                    <input type="radio" name="access_sociallogin_activate" id="access_sociallogin_activate_no" value="0" {ACCESS_SOCIALLOGIN_NOT_ENABLED} /> <label for="access_sociallogin_activate_no">{TXT_ACCESS_NO}</label>
-                </td>
-            </tr>
-            <tr class="row3">
-                <td colspan="2"><strong>{TXT_ACCESS_SOCIALLOGIN_PROVIDERS}</strong></td>
-            </tr>
-            <!-- BEGIN access_sociallogin_provider -->
-            <tr class="row{ACCESS_SOCIALLOGIN_PROVIDER_ROW}">
-                <td colspan="2"><strong>{ACCESS_SOCIALLOGIN_PROVIDER_NAME}</strong></td>
-            </tr>
-            <!-- BEGIN access_sociallogin_provider_params -->
-            <tr class="row{ACCESS_SOCIALLOGIN_PROVIDER_ROW}">
-                <td>{TXT_ACCESS_SOCIALLOGIN_PROVIDER_PARAM_TITLE}</td>
-                <td><input type="text" name="sociallogin_providers[{ACCESS_SOCIALLOGIN_PROVIDER_NAME}][]" value="{ACCESS_SOCIALLOGIN_PROVIDER_PARAM_VALUE}" style="width:300px;" /></td>
-            </tr>
-            <!-- END access_sociallogin_provider_params -->
-            <!-- END access_sociallogin_provider -->
-            </tbody>
-        </table>
-    </div>
-    <!-- end sociallogin div -->
 
 	<br />
 	<input type="submit" name="access_save_settings" value="{TXT_ACCESS_SAVE}" />

@@ -206,16 +206,16 @@ class Login
     }
 
     /**
-     * Checks if the user has been successfully authenticated
-     *
-     * If a user has been successfully authenticated then he will be
-     * redirected to the requested page, otherwise the login page will be displayed
-     *
-     * @access private
-     * @global array
-     * @see cmsSession::cmsSessionStatusUpdate(), contrexx_strip_tags, \Cx\Core\Html\Sigma::get()
-     * @return string \Cx\Core\Html\Sigma::get()
-     */
+    * Checks if the user has been successfully authenticated
+    *
+    * If a user has been successfully authenticated then he will be
+    * redirected to the requested page, otherwise the login page will be displayed
+    *
+    * @access private
+    * @global array
+    * @see cmsSession::cmsSessionStatusUpdate(), contrexx_strip_tags, \Cx\Core\Html\Sigma::get()
+    * @return string \Cx\Core\Html\Sigma::get()
+    */
     function _login()
     {
         global $_CORELANG;
@@ -228,36 +228,10 @@ class Login
             $redirect = "";
         }
 
-        // the social network login possibility if activated
-        $arrSettings = User_Setting::getSettings();
-        if ($arrSettings['sociallogin']['status']) {
-            if (!empty($_GET['redirect'])) {
-                $_SESSION['redirect'] = $redirect;
-            }
-            $redirect = $_SESSION['redirect'];
-            $socialloginProviders = \Cx\Lib\SocialLogin::getProviders();
-            foreach ($socialloginProviders as $provider => $providerData) {
-                $this->_objTpl->setVariable('SOCIALLOGIN_' . strtoupper($provider), contrexx_raw2xhtml(\Cx\Lib\SocialLogin::getLoginUrl($provider, $redirect)));
-            }
-
-            if (!empty($_GET['provider'])) {
-                $providerLogin = $this->loginWithProvider($_GET['provider']);
-                if ($providerLogin) {
-                    return $providerLogin;
-                }
-            }
-        } else {
-            if ($this->_objTpl->blockExists('login_social_networks')) {
-                $this->_objTpl->hideBlock('login_social_networks');
-            }
-        }
-        // end social network login possibility
-
         if ((!isset($_REQUEST['relogin']) || $_REQUEST['relogin'] != 'true') && $objFWUser->objUser->login() || $objFWUser->checkAuth()) {
-            if (isset($_SESSION['redirect'])) {
-                unset($_SESSION['redirect']);
-            }
-            CSRF::header('Location: '.(empty($redirect) ? (($objGroup = $objFWUser->objGroup->getGroup($objFWUser->objUser->getPrimaryGroupId())) && $objGroup->getHomepage() ? $objGroup->getHomepage() : CONTREXX_SCRIPT_PATH) : base64_decode($redirect)));
+            $groupRedirect = ($objGroup = $objFWUser->objGroup->getGroup($objFWUser->objUser->getPrimaryGroupId())) && $objGroup->getHomepage() ? preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $objGroup->getHomepage()) : CONTREXX_SCRIPT_PATH;
+            LinkGenerator::parseTemplate($groupRedirect);
+            CSRF::header('Location: '.(empty($redirect) ? $groupRedirect : base64_decode($redirect)));
             exit;
         } else {
             if (isset($_POST['login'])) {
@@ -275,37 +249,13 @@ class Login
         }
 
         $this->_objTpl->setVariable(array(
-            'TXT_USER_NAME'		    => $_CORELANG['TXT_USER_NAME'],
-            'TXT_PASSWORD'			=> $_CORELANG['TXT_PASSWORD'],
-            'TXT_LOGIN'				=> $_CORELANG['TXT_LOGIN'],
-            'TXT_PASSWORD_LOST'		=> $_CORELANG['TXT_PASSWORD_LOST'],
-            'LOGIN_REDIRECT'		=> $redirect,
-            'LOGIN_STATUS_MESSAGE'  => $this->_statusMessage
+            'TXT_USER_NAME'			    => $_CORELANG['TXT_USER_NAME'],
+              'TXT_PASSWORD'			=> $_CORELANG['TXT_PASSWORD'],
+               'TXT_LOGIN'				=> $_CORELANG['TXT_LOGIN'],
+               'TXT_PASSWORD_LOST'		=> $_CORELANG['TXT_PASSWORD_LOST'],
+               'LOGIN_REDIRECT'		    => $redirect,
+               'LOGIN_STATUS_MESSAGE'   => $this->_statusMessage
         ));
-
-        return $this->_objTpl->get();
-    }
-
-    /**
-     * Login with an oauth authentication method.
-     *
-     * @param string $provider The chosen oauth provider
-     * @return string|string \Cx\Core\Html\Sigma
-     * @access private
-     */
-    private function loginWithProvider($provider) {
-        global $objInit, $_ARRAYLANG;
-
-        $SocialLogin = new \Cx\Lib\SocialLogin();
-        try {
-            $login = $SocialLogin->loginWithProvider($provider);
-        } catch (\Cx\Lib\OAuth\OAuth_Exception $e) {
-            $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('access'));
-            $this->_statusMessage = $_ARRAYLANG['TXT_ACCESS_EMAIL_ALREADY_USED_SOCIALLOGIN'];
-        }
-        if (is_null($login)) {
-            return null;
-        }
 
         return $this->_objTpl->get();
     }

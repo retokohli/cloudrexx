@@ -24,7 +24,6 @@ $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = "Database query error!";
 $_ARRAYLANG['TXT_CONFIRM_REGISTRATION'] = "You need to confirm your registration at %HOST%";
 $_ARRAYLANG['TXT_CONFIRM_REGISTRATION_MAIL'] = "Hello %USERNAME%\n\nThank you for registering at %HOST%. Your account has been created and must be activated before you can use it.\nTo activate the account you have to click on the following link or copy-paste it in your browser :\n\n%ACTIVATION_LINK%\n\nAfter activation you may login to %HOST_LINK% using the following username and password:\n\nUsername - %USERNAME%\nPasswort - %PASSWORD%";
 $_ARRAYLANG['TXT_EMAIL_ALREADY_USED'] = "This e-mail address is already used by another user!";
-$_ARRAYLANG['TXT_ACCESS_EMAIL_ALREADY_USED_SOCIALLOGIN'] = "This e-mail address is already used by other user! If you want to connect to an other network you have to log in and add the new network on „Edit profile“-Page.";
 $_ARRAYLANG['TXT_USERNAME_ALREADY_USED'] = "This username is already used!";
 $_ARRAYLANG['TXT_ACCOUNT_SUCCESSFULLY_ACTIVATED'] = "Congratulation! Your user account has been successfully activated.";
 $_ARRAYLANG['TXT_INVALID_USERNAME_OR_ACTIVATION_KEY'] = "You have specified a wrong username or activation key!<br />Please contact the administrator %EMAIL% for further information.";
@@ -85,4 +84,3 @@ $_ARRAYLANG['TXT_ACCESS_NEWSLETTERS_SUBSCRIBE_COLON'] = "Folgende Newsletter abo
 
 $_ARRAYLANG['TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS'] = "Das Passwort muss mindestens 6 Zeichen lang sein.";
 $_ARRAYLANG['TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS_WITH_COMPLEXITY'] = "Das Passwort muss mindestens 6 Zeichen lang sein und mindestens einen Gross-, einen Kleinbuchstaben und eine Zahl enthalten.";
-$_ARRAYLANG['TXT_ACCESS_DISCONNECT'] = "Disconnect";

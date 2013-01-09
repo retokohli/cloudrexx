@@ -281,14 +281,4 @@ $_ARRAYLANG['TXT_ACCESS_PASSWORD_WEAK'] = "Weak";
 $_ARRAYLANG['TXT_ACCESS_PASSWORD_GOOD'] = "Good";
 $_ARRAYLANG['TXT_ACCESS_PASSWORD_STRONG'] = "Strong";
 $_ARRAYLANG['TXT_ACCESS_PASSWORD_INVALID'] = "Invalid";
-$_ARRAYLANG['TXT_ACCESS_USE_USERNAMES'] = "Use usernames";
-$_ARRAYLANG['TXT_ACCESS_USE_USERNAMES_TOOLTIP'] = "As soon as social login is activated this option cannot be turned on.<br /><br />Instead of the usernames are the email adresses used to log in.";
-$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_INFORMATION_TITLE'] = "Informations";
-$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_DESCRIPTION'] = "Activate this function to give an option for your users to log in with a social network.<br />As soon as you activate this function the usernames in contrexx will be disabled. Instead the usernames there will be used the email address of each user.";
-$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN'] = "Login with social networks";
-$_ARRAYLANG['TXT_ACCESS_ENABLE_SOCIALLOGIN'] = "Enable social media login";
-$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_PROVIDER_APP_ID'] = "App ID";
-$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_PROVIDER_SECRET'] = "App secret";
-$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_PROVIDER_API_KEY'] = "API Key";
-$_ARRAYLANG['TXT_ACCESS_USE_USERNAMES_DISABLED_AUTOMATIC'] = "Usernames are automatically deactivated because you activated the social login functionality.";
 ?>

@@ -281,15 +281,4 @@ $_ARRAYLANG['TXT_ACCESS_PASSWORD_WEAK'] = "Schwach";
 $_ARRAYLANG['TXT_ACCESS_PASSWORD_GOOD'] = "Gut";
 $_ARRAYLANG['TXT_ACCESS_PASSWORD_STRONG'] = "Stark";
 $_ARRAYLANG['TXT_ACCESS_PASSWORD_INVALID'] = "Ungültig";
-$_ARRAYLANG['TXT_ACCESS_USE_USERNAMES'] = "Benutzernamen verwenden";
-$_ARRAYLANG['TXT_ACCESS_USE_USERNAMES_TOOLTIP'] = "Sofern Login mit Sozialen Netzwerken aktiviert ist, können keine Benutzernamen mehr verwendet werden.<br /><br />Anstelle der Benutzernamen wird die E-Mail Adresse verwendet.";
-$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_INFORMATION_TITLE'] = "Informationen";
-$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_DESCRIPTION'] = "Aktivieren Sie diese Funktion um Ihren Benutzern die Möglichkeit zu geben sich mit Hilfe eines sozialen Netzwerks in Contrexx anzumelden.<br />Sobald diese Funktion aktiviert ist, können keine Benutzernamen mehr im System verwendet werden. An Stelle der Benutzernamen werden die E-Mail Adressen verwendet.";
-$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN'] = "Login mit Sozialen Netzwerken";
-$_ARRAYLANG['TXT_ACCESS_ENABLE_SOCIALLOGIN'] = "Login sozialer Netzwerke aktivieren";
-$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_PROVIDERS'] = "OAuth Anbieter";
-$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_PROVIDER_APP_ID'] = "Anwendungs-ID";
-$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_PROVIDER_SECRET'] = "Anwendungs-Schlüssel";
-$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_PROVIDER_API_KEY'] = "API Schlüssel";
-$_ARRAYLANG['TXT_ACCESS_USE_USERNAMES_DISABLED_AUTOMATIC'] = "Die Verwendung von Benutzernamen wurde automatisch deaktiviert, da das Login mit sozialen Netzwerken aktiviert wurde.";
 ?>
