@@ -15,7 +15,7 @@ class UpdatePageEventListener extends \Cx\Model\Events\PageEventListener {
             $updatedBy = $entity->getUpdatedBy();
             if (empty($updatedBy)) {
                 $entity->setUpdatedBy(
-                    \FWUser::getFWUserObject()->objUser->getUsername()
+                    $_SESSION['contrexx_update']['username']
                 );
                 
                 $uow->recomputeSingleEntityChangeSet(

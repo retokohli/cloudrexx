@@ -60,7 +60,7 @@ if (!defined('ASCMS_CUSTOMIZING_PATH')) {
 }
 
 // Contrexx 3.0.0+ do not have a version.php. The information is included in settings.php
-if (file_exists(ASCMS_DOCUMENT_ROOT . '/config/version.php')) {
+if (!isset($_CONFIG['coreCmsVersion']) && file_exists(ASCMS_DOCUMENT_ROOT . '/config/version.php')) {
     require_once(ASCMS_DOCUMENT_ROOT . '/config/version.php');
 }
 

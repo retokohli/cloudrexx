@@ -17,6 +17,14 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
             return false;
         }
         $_SESSION['contrexx_update']['copyFilesFinished'] = true;
+
+        // we need to stop the script here to force a reinitialization of the update system
+        // this is required so that the new constants from config/set_constants.php are loaded
+        setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED'], 'title');
+        setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED_TIME_MSG'].'<br />', 'msg');
+        setUpdateMsg('Installation der neuen Dateien abgeschlossen.<br /><br />', 'msg');
+        setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
+        return false;
     }
     unset($_SESSION['contrexx_update']['copiedCxFilesIndex']);
     
