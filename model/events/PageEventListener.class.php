@@ -20,7 +20,6 @@ class PageEventListener {
         $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
         
         foreach ($uow->getScheduledEntityUpdates() AS $entity) {
-            //$entity->setUpdatedBy(\FWUser::getFWUserObject()->objUser->getUsername());
             $this->checkValidPersistingOperation($pageRepo, $entity);
         }
     }
@@ -51,6 +50,34 @@ class PageEventListener {
         
         if ($_CONFIG['xmlSitemapStatus'] == 'on') {
             \Cx\Core\PageTree\XmlSitemapPageTree::write();
+        }
+    }
+
+    public function preRemove($eventArgs) {
+        $em      = $eventArgs->getEntityManager();
+        $uow     = $em->getUnitOfWork();
+        $entity  = $eventArgs->getEntity();
+        $aliases = array();
+        
+        if ($entity instanceof \Cx\Model\ContentManager\Node) {
+            $pages = $entity->getPages(true);
+            
+            foreach ($pages as $page) {
+                $aliases = array_merge($aliases, $page->getAliases());
+            }
+        } else if ($entity instanceof \Cx\Model\ContentManager\Page) {
+            $aliases = $entity->getAliases();
+        }
+        
+        if (!empty($aliases)) {
+            foreach ($aliases as $alias) {
+                $node = $alias->getNode();
+                $em->remove($node);
+                $uow->computeChangeSet(
+                    $em->getClassMetadata('Cx\Model\ContentManager\Node'),
+                    $node
+                );
+            }
         }
     }
 
