@@ -633,7 +633,8 @@ function _accessUpdate()
             ),
             array(
                 'title'          => array('fields' => array('title'), 'type' => 'UNIQUE')
-            )
+            ),
+            'InnoDB'
         );
 
         $arrDefaultTitle = array(
@@ -747,6 +748,39 @@ function _accessUpdate()
         // we COULD do something else here..
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
+
+    /***************************************
+     *
+     * ADD NETWORK TABLE FOR SOCIAL LOGIN
+     *
+     **************************************/
+    /*try {
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'access_user_network',
+            array(
+                'id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'oauth_provider'     => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'id'),
+                'oauth_id'           => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'oauth_provider'),
+                'user_id'            => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'oauth_id')
+            )
+        );
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }*/
+
+
+    /***************************************
+     *
+     * ADD NEW VALUES FOR SOCIAL LOGIN
+     *
+     **************************************/
+    /*try {
+        \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('use_usernames', '1', '1')");
+        \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin', '', '1')");
+        \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('access', 'providers', 'sociallogin', 'text', 'google,facebook,twitter', NULL, '0')");
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }*/
 
 	/************************************************
 	* BUGFIX:	Set write access to the upload dir  *

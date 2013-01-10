@@ -378,6 +378,22 @@ function _updateSettings()
     if (!$objDatabase->Execute($query)) {
         return _databaseError($query, $objDatabase->ErrorMsg());
     }
+
+
+    try {
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'settings_image',
+            array(
+                'id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'name'       => array('type' => 'VARCHAR(50)', 'after' => 'id'),
+                'value'      => array('type' => 'text', 'after' => 'name')
+            )
+        );
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
+
     return true;
 }
 
