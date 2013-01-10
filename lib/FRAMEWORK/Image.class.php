@@ -529,7 +529,7 @@ class ImageManager
         $this->newImage        = '';
         $this->newImageWidth   = '';
         $this->newImageHeight  = '';
-        $this->newImageQuality = '';
+        $this->newImageQuality = 100;
         $this->newImageType    = '';
         $this->newImageFile    = '';
 		$this->newImagePosX    = '';
