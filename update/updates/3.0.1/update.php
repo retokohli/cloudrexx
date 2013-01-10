@@ -414,7 +414,9 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
 
 function _response() {
     global $_ARRAYLANG;
+    setUpdateMsg($_ARRAYLANG['TXT_FINISH_MSG'], 'msg');
     setUpdateMsg($_ARRAYLANG['TXT_README_MSG'], 'msg');
+    setUpdateMsg(sprintf($_ARRAYLANG['TXT_FINISH_LINKS'], ASCMS_PATH_OFFSET, ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH), 'msg');
 }
 
 function getMissedModules() {
