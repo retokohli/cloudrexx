@@ -2126,8 +2126,8 @@ class Order
             'host' => array('type' => 'VARCHAR(100)', 'default' => '', 'renamefrom' => 'customer_host'),
             'browser' => array('type' => 'VARCHAR(255)', 'default' => '', 'renamefrom' => 'customer_browser'),
             'note' => array('type' => 'TEXT', 'default' => '', 'renamefrom' => 'customer_note'),
-            'date_time' => array('type' => 'DATETIME', 'default' => '0000-00-00 00:00:00', 'renamefrom' => 'order_date'),
-            'modified_on' => array('type' => 'DATETIME', 'default' => null, 'notnull' => false, 'renamefrom' => 'last_modified'),
+            'date_time' => array('type' => 'TIMESTAMP', 'default' => '0000-00-00 00:00:00', 'renamefrom' => 'order_date'),
+            'modified_on' => array('type' => 'TIMESTAMP', 'default' => null, 'notnull' => false, 'renamefrom' => 'last_modified'),
             'modified_by' => array('type' => 'VARCHAR(50)', 'notnull' => false, 'default' => null),
         );
         $table_index = array(
