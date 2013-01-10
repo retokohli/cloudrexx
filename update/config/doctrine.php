@@ -2,7 +2,7 @@
 
 use \Cx\Update\UpdatePageEventListener as PageEventListener;
 
-\Env::get('ClassLoader')->loadFile(UPDATE_PATH . '/core/UpdatePageEventListener.class.php');
+require_once(UPDATE_PATH . '/core/UpdatePageEventListener.class.php');
 
 $_DBCONFIG   = \Env::get('dbconfig');
 $doctrineDir = ASCMS_LIBRARY_PATH . '/doctrine/';
@@ -33,6 +33,8 @@ $classLoader->register();
 
 $classLoader = new ClassLoader('Gedmo', $doctrineDir);
 $classLoader->register();
+
+require_once(UPDATE_PATH . '/lib/FRAMEWORK/DBG/DoctrineSQLLogger.class.php');
 
 $config = new \Doctrine\ORM\Configuration();
 

@@ -13,8 +13,8 @@
 
 $documentRoot = ASCMS_PATH . ASCMS_PATH_OFFSET;
 
-$objResultRc1 = $objDatabase->Execute('SELECT `target` FROM `'.DBPREFIX.'backend_areas` WHERE `area_id` = 186');
-$objResultRc2 = $objDatabase->Execute('SELECT `order_id` FROM `'.DBPREFIX.'backend_areas` WHERE `area_id` = 2');
+$objResultRc1 = \Cx\Lib\UpdateUtil::sql('SELECT `target` FROM `'.DBPREFIX.'backend_areas` WHERE `area_id` = 186');
+$objResultRc2 = \Cx\Lib\UpdateUtil::sql('SELECT `order_id` FROM `'.DBPREFIX.'backend_areas` WHERE `area_id` = 2');
 if (!$objResultRc1 || !$objResultRc2) {
     die('ERROR: Could not execute query.');
 }
@@ -32,7 +32,7 @@ if ($objResultRc1->fields['target'] != '_blank') {
 }
 
 
-$objResult = $objDatabase->Execute('SELECT 1 FROM `'.DBPREFIX.'module_filesharing_mail_template` WHERE (`id` = 1 OR `id` = 2)');
+$objResult = \Cx\Lib\UpdateUtil::sql('SELECT 1 FROM `'.DBPREFIX.'module_filesharing_mail_template` WHERE (`id` = 1 OR `id` = 2)');
 if (!$objResult) {
     die('ERROR: Could not execute query.');
 }
@@ -48,11 +48,41 @@ if ($objResult->RecordCount() == 0) {
 }
 
 $updatesRc1ToRc2 = array(
-    '
-        ALTER TABLE `'.DBPREFIX.'access_user_profile`
-        CHANGE `interests` `interests` TEXT,
-        CHANGE `signature` `signature` TEXT
-    ',
+    /*
+    array(
+        'table' => ,
+        'structure' => ,
+        'keys' => ,
+    ),
+     */
+    array(
+        'table' => DBPREFIX.'access_user_profile',
+        'structure' => array(
+            'user_id'            => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+            'gender'             => array('type' => 'ENUM(\'gender_undefined\',\'gender_female\',\'gender_male\')', 'notnull' => true, 'default' => 'gender_undefined', 'after' => 'user_id'),
+            'title'              => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'gender'),
+            'firstname'          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'title'),
+            'lastname'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'firstname'),
+            'company'            => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'lastname'),
+            'address'            => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'company'),
+            'city'               => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '', 'after' => 'address'),
+            'zip'                => array('type' => 'VARCHAR(10)', 'notnull' => true, 'default' => '', 'after' => 'city'),
+            'country'            => array('type' => 'SMALLINT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'zip'),
+            'phone_office'       => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'country'),
+            'phone_private'      => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'phone_office'),
+            'phone_mobile'       => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'phone_private'),
+            'phone_fax'          => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'phone_mobile'),
+            'birthday'           => array('type' => 'VARCHAR(11)', 'notnull' => false, 'after' => 'phone_fax'),
+            'website'            => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'birthday'),
+            'profession'         => array('type' => 'VARCHAR(150)', 'notnull' => true, 'default' => '', 'after' => 'website'),
+            'interests'          => array('type' => 'text', 'after' => 'profession'),
+            'signature'          => array('type' => 'text', 'after' => 'interests'),
+            'picture'            => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'signature'),
+        ),
+        'keys' => array(
+            'profile'        => array('fields' => array('firstname' => 100, 'lastname' => 100, 'company' => 50))
+        ),
+    ),
     '
         UPDATE `'.DBPREFIX.'access_user_profile`
         SET  `interests` = NULL , `signature` = NULL
@@ -62,29 +92,42 @@ $updatesRc1ToRc2 = array(
         INSERT INTO `'.DBPREFIX.'settings` (`setid`, `setname`, `setvalue`, `setmodule`)
         VALUES (103, "availableComponents", "", 66)
     ',
-    '
-        ALTER TABLE `'.DBPREFIX.'modules`
-        ADD `distributor` CHAR( 50 ) NOT NULL
-        AFTER `name`
-    ',
+    array(
+        'table' => DBPREFIX.'modules',
+        'structure' => array(
+            'id'                         => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => false),
+            'name'                       => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'id'),
+            'distributor'                => array('type' => 'CHAR(50)', 'after' => 'name'),
+            'description_variable'       => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '', 'after' => 'distributor'),
+            'status'                     => array('type' => 'SET(\'y\',\'n\')', 'notnull' => true, 'default' => 'n', 'after' => 'description_variable'),
+            'is_required'                => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'status'),
+            'is_core'                    => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0', 'after' => 'is_required'),
+            'is_active'                  => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'is_core'),
+        ),
+        'keys' => array(
+            'id'                         => array('fields' => array('id'), 'type' => 'UNIQUE'),
+        ),
+    ),
     '
         UPDATE `'.DBPREFIX.'modules`
         SET `distributor` = "Comvation AG"
     ',
+    array(
+        'table' => DBPREFIX.'module_mediadir_rel_entry_inputfields_clean1',
+        'structure' => array(
+            'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'entry_id'       => array('type' => 'INT(7)', 'after' => 'id'),
+            'lang_id'        => array('type' => 'INT(7)', 'after' => 'entry_id'),
+            'form_id'        => array('type' => 'INT(7)', 'after' => 'lang_id'),
+            'field_id'       => array('type' => 'INT(7)', 'after' => 'form_id'),
+            'value'          => array('type' => 'longtext', 'after' => 'field_id'),
+        ),
+        'keys' => array(
+            'value'          => array('fields' => array('value'), 'type' => 'FULLTEXT'),
+        ),
+    ),
     '
-        CREATE TABLE IF NOT EXISTS `'.DBPREFIX.'module_mediadir_rel_entry_inputfields_clean` (
-          `id` int(11) NOT NULL auto_increment,
-          `entry_id` int(7) NOT NULL,
-          `lang_id` int(7) NOT NULL,
-          `form_id` int(7) NOT NULL,
-          `field_id` int(7) NOT NULL,
-          `value` longtext collate utf8_unicode_ci NOT NULL,
-          PRIMARY KEY  (`id`),
-          FULLTEXT KEY `value` (`value`)
-        ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
-    ',
-    '
-        INSERT INTO `'.DBPREFIX.'module_mediadir_rel_entry_inputfields_clean`
+        INSERT INTO `'.DBPREFIX.'module_mediadir_rel_entry_inputfields_clean1`
         SELECT NULL, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`
         FROM `'.DBPREFIX.'module_mediadir_rel_entry_inputfields`
         GROUP BY `entry_id`, `form_id`, `field_id`, `lang_id`, `value`
@@ -92,23 +135,48 @@ $updatesRc1ToRc2 = array(
     '
         TRUNCATE `'.DBPREFIX.'module_mediadir_rel_entry_inputfields`
     ',
-    '
-        ALTER TABLE `'.DBPREFIX.'module_mediadir_rel_entry_inputfields`
-        ADD UNIQUE (`entry_id`, `lang_id`, `form_id`, `field_id`)
-    ',
+    array(
+        'table' => DBPREFIX.'module_mediadir_rel_entry_inputfields',
+        'structure' => array(
+            'entry_id'       => array('type' => 'INT(7)'),
+            'lang_id'        => array('type' => 'INT(7)', 'after' => 'entry_id'),
+            'form_id'        => array('type' => 'INT(7)', 'after' => 'lang_id'),
+            'field_id'       => array('type' => 'INT(7)', 'after' => 'form_id'),
+            'value'          => array('type' => 'longtext', 'after' => 'field_id'),
+        ),
+        'keys' => array(
+            'entry_id'       => array('fields' => array('entry_id','lang_id','form_id','field_id'), 'type' => 'UNIQUE'),
+            'value'          => array('fields' => array('value'), 'type' => 'FULLTEXT'),
+        ),
+    ),
     '
         INSERT IGNORE INTO `'.DBPREFIX.'module_mediadir_rel_entry_inputfields`
         SELECT `entry_id`, `lang_id`, `form_id`, `field_id`, `value`
-        FROM `'.DBPREFIX.'module_mediadir_rel_entry_inputfields_clean`
+        FROM `'.DBPREFIX.'module_mediadir_rel_entry_inputfields_clean1`
         ORDER BY `id` DESC
     ',
     '
-        DROP TABLE `'.DBPREFIX.'module_mediadir_rel_entry_inputfields_clean`
+        DROP TABLE `'.DBPREFIX.'module_mediadir_rel_entry_inputfields_clean1`
     ',
-    '
-        ALTER TABLE `'.DBPREFIX.'module_repository`
-        DROP COLUMN `lang`
-    ',
+    array(
+        'table' => DBPREFIX.'module_repository',
+        'structure' => array(
+            'id'                 => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true),
+            'moduleid'           => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'id'),
+            'content'            => array('type' => 'mediumtext', 'after' => 'moduleid'),
+            'title'              => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'content'),
+            'cmd'                => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'title'),
+            'expertmode'         => array('type' => 'SET(\'y\',\'n\')', 'notnull' => true, 'default' => 'n', 'after' => 'cmd'),
+            'parid'              => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'expertmode'),
+            'displaystatus'      => array('type' => 'SET(\'on\',\'off\')', 'notnull' => true, 'default' => 'on', 'after' => 'parid'),
+            'username'           => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'displaystatus'),
+            'displayorder'       => array('type' => 'SMALLINT(6)', 'notnull' => true, 'default' => '100', 'after' => 'username')
+        ),
+        'keys' => array(
+            'contentid'          => array('fields' => array('id'), 'type' => 'UNIQUE'),
+            'fulltextindex'      => array('fields' => array('title','content'), 'type' => 'FULLTEXT')
+        ),
+    ),
     '
         TRUNCATE TABLE `'.DBPREFIX.'module_repository`
     ',
@@ -166,10 +234,47 @@ $updatesStableToHotfix = array(
     'UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'3.0.0.1\' WHERE `setname` = \'coreCmsVersion\'',
     'UPDATE `'.DBPREFIX.'content_page` SET `customContent` = \'\' WHERE `customContent` = \'(Default)\'',
 );
-$updateHotfixToSp = array(
-    'ALTER TABLE `contrexx_module_block_rel_lang_content` ADD UNIQUE `id_lang` ( `block_id` , `lang_id` )',
-    'ALTER TABLE contrexx_module_contact_form ADD   `use_email_of_sender` tinyint(1) NOT NULL DEFAULT \'0\' AFTER `send_copy`',
-    'ALTER TABLE contrexx_module_newsletter_access_user ADD `code` varchar(255) NOT NULL DEFAULT \'\' AFTER newsletterCategoryID',
+$updatesHotfixToSp = array(
+    array(
+        'table' => DBPREFIX.'module_block_rel_lang_content',
+        'structure' => array(
+            'block_id'       => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+            'lang_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'block_id'),
+            'content'        => array('type' => 'mediumtext', 'after' => 'lang_id'),
+            'active'         => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'content'),
+        ),
+        'keys' => array(
+            'id_lang'        => array('fields' => array('block_id','lang_id'), 'type' => 'UNIQUE'),
+        ),
+    ),
+    array(
+        'table' => DBPREFIX.'module_contact_form',
+        'structure' => array(
+            'id'                     => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'mails'                  => array('type' => 'text', 'after' => 'id'),
+            'showForm'               => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'mails'),
+            'use_captcha'            => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'showForm'),
+            'use_custom_style'       => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'use_captcha'),
+            'send_copy'              => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'use_custom_style'),
+            'use_email_of_sender'    => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'send_copy'),
+            'html_mail'              => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'use_email_of_sender'),
+            'send_attachment'        => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'html_mail'),
+        ),
+        'keys' => array(
+        ),
+    ),
+    array(
+        'table' => DBPREFIX.'module_newsletter_access_user',
+        'structure' => array(
+            'accessUserID'               => array('type' => 'INT(5)', 'unsigned' => true),
+            'newsletterCategoryID'       => array('type' => 'INT(11)', 'after' => 'accessUserID'),
+            'code'                       => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'newsletterCategoryID'),
+        ),
+        'keys' => array(
+            'rel'                        => array('fields' => array('accessUserID','newsletterCategoryID'), 'type' => 'UNIQUE'),
+            'accessUserID'               => array('fields' => array('accessUserID')),
+        ),
+    ),
     'UPDATE contrexx_module_newsletter_access_user SET `code` = SUBSTR(MD5(RAND()),1,12) WHERE `code` = \'\'',
 );
 $updatesRc1ToSp = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp);
@@ -187,10 +292,22 @@ if ($version == 'rc1') {
     $updates = $updatesHotfixToSp;
 }
 foreach ($updates as $update) {
-    $result = $objDatabase->Execute($update);
-    if (!$result) {
-        setUpdateMsg('Update failed: ' . $update);
-        return false;
+    if (is_array($update)) {
+        try {
+            \Cx\Lib\UpdateUtil::table(
+                $update['table'],
+                $update['structure'],
+                $update['keys']
+            );
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    } else {
+        $result = \Cx\Lib\UpdateUtil::sql($update);
+        if (!$result) {
+            setUpdateMsg('Update failed: ' . contrexx_raw2xhtml($update));
+            return false;
+        }
     }
 }
 
@@ -210,9 +327,9 @@ if ($version != 'stable' && $version != 'hotfix') {
                         continue;
                     }
                     $sqlQuery = preg_replace('#`contrexx_module_repository`#', '`'.DBPREFIX.'module_repository`', $sqlQuery);
-                    $result = $objDatabase->Execute($sqlQuery);
+                    $result = \Cx\Lib\UpdateUtil::sql($sqlQuery);
                     if ($result === false) {
-                        setUpdateMsg('Update failed: ' . $sqlQuery);
+                        setUpdateMsg('Update failed: ' . contrexx_raw2xhtml($sqlQuery));
                         return false;
                     }
                     $sqlQuery = '';
