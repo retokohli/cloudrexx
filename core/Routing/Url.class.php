@@ -539,7 +539,7 @@ class Url {
      */
     static function encode_amp($url)
     {
-        return preg_replace('/&(?!=amp;)/', '&amp;', $url);
+        return preg_replace('/&(?!amp;)/', '&amp;', $url);
     }
 
 }
