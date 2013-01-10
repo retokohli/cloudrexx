@@ -46,9 +46,9 @@ class aliasLib
     }
 
     
-    function _getAliases($limit = null)
+    function _getAliases($limit = null, $all = false)
     {
-        $pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+        $pos = !$all && isset($_GET['pos']) ? intval($_GET['pos']) : 0;
 
         $aliases = $this->pageRepository->findBy(array(
             'type' => \Cx\Model\ContentManager\Page::TYPE_ALIAS,
@@ -73,7 +73,7 @@ class aliasLib
 
     function _getAliasesCount()
     {
-        return count($this->_getAliases());
+        return count($this->_getAliases(null, true));
     }
     
 

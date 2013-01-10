@@ -169,9 +169,11 @@ class AliasAdmin extends aliasLib
                     if ($this->_isLocalAliasTarget($page)) {
                         // alias points to a local webpage
                         $targetPage = $this->_fetchTarget($page);
-                        $target = $targetPage->getTitle();
-                        $targetURL = $this->_getURL($targetPage);
-                        $target_title = $target . " (" . $targetURL . ")";
+                        if ($targetPage) {
+                            $target = $targetPage->getTitle();
+                            $targetURL = $this->_getURL($targetPage);
+                            $target_title = $target . " (" . $targetURL . ")";
+                        }
                     } else {
                         $target = $page->getTarget();
                         $targetURL = $target;
@@ -192,7 +194,7 @@ class AliasAdmin extends aliasLib
             $this->_objTpl->hideBlock('alias_no_data');
 
             if ($this->_getAliasesCount() > count($arrAliases)) {
-                $this->_objTpl->setVariable('ALIAS_PAGING', '<br />'.getPaging($this->_getAliasesCount(), !empty($_GET['pos']) ? intval($_GET['pos']) : 0, '&amp;cmd=alias', $_ARRAYLANG['TXT_ALIAS_ALIASES']));
+                $this->_objTpl->setVariable('ALIAS_PAGING', '<br />'.getPaging($this->_getAliasesCount(), !empty($_GET['pos']) ? intval($_GET['pos']) : 0, '?cmd=alias', $_ARRAYLANG['TXT_ALIAS_ALIASES']));
             }
         } else {
             $this->_objTpl->setVariable('TXT_ALIAS_NO_ALIASES_MSG', $_ARRAYLANG['TXT_ALIAS_NO_ALIASES_MSG']);
