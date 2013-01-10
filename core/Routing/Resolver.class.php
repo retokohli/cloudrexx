@@ -144,6 +144,11 @@ class Resolver {
         if (!$page->isActive()) {
             throw new ResolverException('Alias found, but it is not active.');
         }
+        
+        $langDir = $this->url->getLangDir();
+        if (!empty($langDir) && $this->pageRepo->getPagesAtPath($langDir.'/'.$path, null, FRONTEND_LANG_ID, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY)) {
+            return null;
+        }
 
         $this->page = $page;
 
