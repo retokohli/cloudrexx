@@ -75,13 +75,14 @@ $updatesRc1ToRc2 = array(
             'birthday'           => array('type' => 'VARCHAR(11)', 'notnull' => false, 'after' => 'phone_fax'),
             'website'            => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'birthday'),
             'profession'         => array('type' => 'VARCHAR(150)', 'notnull' => true, 'default' => '', 'after' => 'website'),
-            'interests'          => array('type' => 'text', 'after' => 'profession'),
-            'signature'          => array('type' => 'text', 'after' => 'interests'),
+            'interests'          => array('type' => 'text', 'notnull' => true, 'after' => 'profession'),
+            'signature'          => array('type' => 'text', 'notnull' => true, 'after' => 'interests'),
             'picture'            => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'signature'),
         ),
         'keys' => array(
             'profile'        => array('fields' => array('firstname' => 100, 'lastname' => 100, 'company' => 50))
         ),
+        'engine' => 'InnoDB',
     ),
     '
         UPDATE `'.DBPREFIX.'access_user_profile`
@@ -156,7 +157,7 @@ $updatesRc1ToRc2 = array(
         ORDER BY `id` DESC
     ',
     '
-        DROP TABLE `'.DBPREFIX.'module_mediadir_rel_entry_inputfields_clean1`
+        DROP TABLE IF EXISTS `'.DBPREFIX.'module_mediadir_rel_entry_inputfields_clean1`
     ',
     array(
         'table' => DBPREFIX.'module_repository',
@@ -276,6 +277,145 @@ $updatesHotfixToSp = array(
         ),
     ),
     'UPDATE contrexx_module_newsletter_access_user SET `code` = SUBSTR(MD5(RAND()),1,12) WHERE `code` = \'\'',
+    array(
+        'table' => DBPREFIX.'content_page',
+        'structure' => array(
+            'id'                                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'node_id'                            => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'id'),
+            'nodeIdShadowed'                     => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'node_id'),
+            'lang'                               => array('type' => 'INT(11)', 'after' => 'nodeIdShadowed'),
+            'type'                               => array('type' => 'VARCHAR(16)', 'after' => 'lang'),
+            'caching'                            => array('type' => 'TINYINT(1)', 'after' => 'type'),
+            'updatedAt'                          => array('type' => 'timestamp', 'default' => null, 'notnull' => false, 'after' => 'caching'),
+            'updatedBy'                          => array('type' => 'CHAR(40)', 'after' => 'updatedAt'),
+            'title'                              => array('type' => 'VARCHAR(255)', 'after' => 'updatedBy'),
+            'linkTarget'                         => array('type' => 'VARCHAR(16)', 'notnull' => false, 'after' => 'title'),
+            'contentTitle'                       => array('type' => 'VARCHAR(255)', 'after' => 'linkTarget'),
+            'slug'                               => array('type' => 'VARCHAR(255)', 'after' => 'contentTitle'),
+            'content'                            => array('type' => 'longtext', 'after' => 'slug'),
+            'sourceMode'                         => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'content'),
+            'customContent'                      => array('type' => 'VARCHAR(64)', 'notnull' => false, 'after' => 'sourceMode'),
+            'cssName'                            => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'customContent'),
+            'cssNavName'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'cssName'),
+            'skin'                               => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'cssNavName'),
+            'metatitle'                          => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'skin'),
+            'metadesc'                           => array('type' => 'text', 'after' => 'metatitle'),
+            'metakeys'                           => array('type' => 'text', 'after' => 'metadesc'),
+            'metarobots'                         => array('type' => 'VARCHAR(7)', 'notnull' => false, 'after' => 'metakeys'),
+            'start'                              => array('type' => 'timestamp', 'notnull' => false, 'default' => null, 'after' => 'metarobots'),
+            'end'                                => array('type' => 'timestamp', 'notnull' => false, 'default' => null, 'after' => 'start'),
+            'editingStatus'                      => array('type' => 'VARCHAR(16)', 'after' => 'end'),
+            'protection'                         => array('type' => 'INT(11)', 'after' => 'editingStatus'),
+            'frontendAccessId'                   => array('type' => 'INT(11)', 'after' => 'protection'),
+            'backendAccessId'                    => array('type' => 'INT(11)', 'after' => 'frontendAccessId'),
+            'display'                            => array('type' => 'TINYINT(1)', 'after' => 'backendAccessId'),
+            'active'                             => array('type' => 'TINYINT(1)', 'after' => 'display'),
+            'target'                             => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'active'),
+            'module'                             => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'target'),
+            'cmd'                                => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '', 'after' => 'module'),
+        ),
+        'keys' => array(
+            'node_id'                            => array('fields' => array('node_id','lang'), 'type' => 'UNIQUE'),
+            'IDX_D8E86F54460D9FD7'               => array('fields' => array('node_id')),
+        ),
+        'engine' => 'InnoDB',
+    ),
+    array(
+        'table' => DBPREFIX.'core_mail_template',
+        'structure' => array(
+            'key'            => array('type' => 'tinytext'),
+            'section'        => array('type' => 'tinytext', 'notnull' => true, 'after' => 'key'),
+            'text_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'after' => 'section'),
+            'html'           => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'text_id'),
+            'protected'      => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'html'),
+        ),
+        'keys' => array(),
+    ),
+    '
+        ALTER TABLE `' . DBPREFIX.'core_mail_template` ADD PRIMARY KEY (`key` (32), `section` (32))
+    ',
+    array(
+        'table' => DBPREFIX.'languages',
+        'structure' => array(
+            'id'                     => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'lang'                   => array('type' => 'VARCHAR(5)', 'notnull' => true, 'default' => '', 'after' => 'id'),
+            'name'                   => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'lang'),
+            'charset'                => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => 'iso-8859-1', 'after' => 'name'),
+            'themesid'               => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'charset'),
+            'print_themes_id'        => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'themesid'),
+            'pdf_themes_id'          => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'print_themes_id'),
+            'frontend'               => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'pdf_themes_id'),
+            'backend'                => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'frontend'),
+            'is_default'             => array('type' => 'SET(\'true\',\'false\')', 'notnull' => true, 'default' => 'false', 'after' => 'backend'),
+            'mobile_themes_id'       => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'is_default'),
+            'fallback'               => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'mobile_themes_id'),
+            'app_themes_id'          => array('type' => 'INT(2)', 'after' => 'fallback'),
+        ),
+        'keys' => array(
+            'lang'                   => array('fields' => array('lang'), 'type' => 'UNIQUE'),
+            'defaultstatus'          => array('fields' => array('is_default')),
+        ),
+    ),
+    '
+        DROP TABLE IF EXISTS `'.DBPREFIX.'module_alias_source`
+    ',
+    '
+        DROP TABLE IF EXISTS `'.DBPREFIX.'module_alias_target`
+    ',
+    array(
+        'table' => DBPREFIX.'sessions',
+        'structure' => array(
+            'sessionid'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'primary' => true),
+            'remember_me'    => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'sessionid'),
+            'startdate'      => array('type' => 'VARCHAR(14)', 'notnull' => true, 'default' => '', 'after' => 'remember_me'),
+            'lastupdated'    => array('type' => 'VARCHAR(14)', 'notnull' => true, 'default' => '', 'after' => 'startdate'),
+            'status'         => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'lastupdated'),
+            'user_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'status'),
+            'datavalue'      => array('type' => 'text', 'notnull' => false, 'after' => 'user_id'),
+        ),
+        'keys' => array(
+            'LastUpdated'    => array('fields' => array('lastupdated')),
+        ),
+    ),
+    '
+        DROP TABLE IF EXISTS `'.DBPREFIX.'module_shop_countries`
+    ',
+    array(
+        'table' => DBPREFIX.'module_shop_currencies',
+        'structure' => array(
+            'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'code'           => array('type' => 'CHAR(3)', 'notnull' => true, 'default' => '', 'after' => 'id'),
+            'symbol'         => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'code'),
+            'rate'           => array('type' => 'DECIMAL(10,4)', 'unsigned' => true, 'notnull' => true, 'default' => '1.0000', 'after' => 'symbol'),
+            'ord'            => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'rate'),
+            'active'         => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'ord'),
+            'default'        => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'active'),
+            'increment'      => array('type' => 'DECIMAL(6,5)', 'unsigned' => true, 'notnull' => true, 'default' => '0.01000', 'after' => 'default'),
+        ),
+        'keys' => array(),
+    ),
+    '
+        DROP TABLE IF EXISTS `'.DBPREFIX.'module_shop_mail`
+    ',
+    '
+        DROP TABLE IF EXISTS `'.DBPREFIX.'module_shop_mail_content`
+    ',
+    array(
+        'table' => DBPREFIX.'module_shop_payment_processors',
+        'structure' => array(
+            'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'type'           => array('type' => 'ENUM(\'internal\',\'external\')', 'notnull' => true, 'default' => 'internal', 'after' => 'id'),
+            'name'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'type'),
+            'description'    => array('type' => 'text', 'after' => 'name'),
+            'company_url'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'description'),
+            'status'         => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'company_url'),
+            'picture'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'status'),
+        ),
+        'keys' => array(),
+    ),
+    '
+        DROP TABLE IF EXISTS `'.DBPREFIX.'module_shop_products_downloads`
+    ',
 );
 $updatesRc1ToSp = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp);
 $updatesRc2ToSp = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp);
@@ -297,7 +437,8 @@ foreach ($updates as $update) {
             \Cx\Lib\UpdateUtil::table(
                 $update['table'],
                 $update['structure'],
-                $update['keys']
+                $update['keys'],
+                isset($update['engine']) ? $update['engine'] : 'MyISAM'
             );
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
