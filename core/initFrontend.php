@@ -175,9 +175,7 @@ $request = !empty($_GET['__cap']) ? $_GET['__cap'] : '';
 $url = \Cx\Core\Routing\Url::fromCapturedRequest($request, ASCMS_PATH_OFFSET, $_GET);
 $resolver = new \Cx\Core\Routing\Resolver($url, null, Env::em(), null, null);
 \Env::set('Resolver', $resolver);
-if ($url->getLangDir() == '') {
-    $aliaspage = $resolver->resolveAlias();
-}
+$aliaspage = $resolver->resolveAlias();
 
 $_LANGID = '';
 $redirectToCorrectLanguageDir = function() use ($url, &$_LANGID, $_CONFIG) {
