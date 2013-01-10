@@ -11,6 +11,29 @@
  */
 
 $arrOperatingSystems = array(
+    // mobile operating systems
+    array(
+        'regExp' => '=Android=i',
+        'name' => 'Android'
+    ),
+    array(
+        'regExp' => '=windows\sphone=i',
+        'name' => 'Windows Phone'
+    ),
+    array(
+        'regExp' => '=BlackBerry=',
+        'name' => 'BlackBerry'
+    ),
+    array(
+        'regExp' => '=symbian=i',
+        'name' => 'Symbian'
+    ),
+    array(
+        'regExp' => '=i(Phone|Pad|Pod)=i',
+        'name' => 'iOS'
+    ),
+
+    // desktop operating systems
     array(
         'regExp' => '=Windows NT 5\.0|Windows 2000=',
         'name' => 'Windows 2000'
@@ -67,10 +90,12 @@ $arrOperatingSystems = array(
         'regExp' => '=Windows NT 6\.1=', # o'rly? not 7? 't least the RC shows 6.1
         'name' => 'Windows 7'
     ),
+    // attention: iPhone/iPad/iPod can be missinterpreted as OS/2
+    //            therefore, OS/2 must be the last option in this list
     array(
         'regExp' => '=OS/2=',
         'name' => 'OS/2'
-    )
+    ),
 );
 
 ?>
