@@ -556,7 +556,7 @@ class ContentMigration
                 
                 if ($type === 'local') {
                     $aliasPage = $pageRepo->findOneBy(array(
-                        'type' => 'alias',
+                        'type' => \Cx\Model\ContentManager\Page::TYPE_ALIAS,
                         'slug' => 'legacy_page_' . $target,
                     ), true);
                     
@@ -737,44 +737,42 @@ class ContentMigration
                     );
                     
                     $objResult = \Cx\Lib\UpdateUtil::sql('
-                        SELECT `page_id`
+                        SELECT `block_id`, `page_id`
                         FROM `' . DBPREFIX . 'module_block_rel_pages`
                     ');
                     
                     if ($objResult->RecordCount()) {
-                        $pagesToRemove = array();
+                        $entriesToKeep = array();
                         while (!$objResult->EOF) {
+                            $blockId   = $objResult->fields['block_id'];
                             $oldPageId = $objResult->fields['page_id'];
+                            
                             $pageRepo  = self::$em->getRepository('Cx\Model\ContentManager\Page');
                             $aliasPage = $pageRepo->findOneBy(array(
-                                'type' => 'alias',
+                                'type' => \Cx\Model\ContentManager\Page::TYPE_ALIAS,
                                 'slug' => 'legacy_page_' . $oldPageId,
                             ), true);
                             
                             if ($aliasPage) {
                                 $page = $pageRepo->getTargetPage($aliasPage);
                                 if ($page) {
-                                    $pageId = $page->getId();
-                                    \Cx\Lib\UpdateUtil::sql('
-                                        UPDATE `' . DBPREFIX . 'module_block_rel_pages`
-                                        SET `page_id` = ' . $pageId . '
-                                        WHERE `page_id` = ' . $oldPageId . '
-                                    ');
-                                } else {
-                                    $pagesToRemove[] = $oldPageId;
+                                    // Keep entry with the correct page id
+                                    $entriesToKeep[] = array(
+                                        'blockId' => $blockId,
+                                        'pageId'  => $page->getId(),
+                                    );
                                 }
-                            } else {
-                                $pagesToRemove[] = $oldPageId;
                             }
                             
                             $objResult->MoveNext();
                         }
                         
-                        $pagesToRemove = array_unique($pagesToRemove);
-                        foreach ($pagesToRemove as $pageId) {
+                        \Cx\Lib\UpdateUtil::sql('TRUNCATE `' . DBPREFIX . 'module_block_rel_pages`');
+                        
+                        foreach ($entriesToKeep as $arrEntry) {
                             \Cx\Lib\UpdateUtil::sql('
-                                DELETE FROM `' . DBPREFIX . 'module_block_rel_pages`
-                                WHERE `page_id` = ' . $pageId . '
+                                INSERT INTO `' . DBPREFIX . 'module_block_rel_pages` (`block_id`, `page_id`)
+                                VALUES (' . $arrEntry['blockId'] . ', ' . $arrEntry['pageId'] . ')
                             ');
                         }
                     }
