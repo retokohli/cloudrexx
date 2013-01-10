@@ -629,7 +629,12 @@ class ContentMigration
                     # fetch active blocks
                     $arrActiveBlockIds = array();
                     $activeBlockList = '';
-                    $objResult = \Cx\Lib\UpdateUtil::sql('SELECT `block_id` FROM `' . DBPREFIX . 'module_block_rel_lang_content` WHERE `active` = 1');
+                    $objResult = \Cx\Lib\UpdateUtil::sql('
+                        SELECT `block_id`
+                        FROM `' . DBPREFIX . 'module_block_rel_lang_content`
+                        WHERE `active` = 1
+                    ');
+                    
                     if ($objResult && !$objResult->EOF) {
                         while (!$objResult->EOF) {
                             $arrActiveBlockIds[] = $objResult->fields['block_id'];
@@ -648,18 +653,37 @@ class ContentMigration
                     
                     // Set the correct value for field global
                     $activeLangIds = implode(',', \FWLanguage::getIdArray());
-                    $objResult     = \Cx\Lib\UpdateUtil::sql('SELECT `block_id`, `all_pages` FROM `' . DBPREFIX . 'module_block_rel_lang` WHERE lang_id IN (' . $activeLangIds . ')');
+                    $objResult     = \Cx\Lib\UpdateUtil::sql('
+                        SELECT `block_id`, `lang_id`, `all_pages`
+                        FROM `' . DBPREFIX . 'module_block_rel_lang`
+                        WHERE lang_id IN (' . $activeLangIds . ')
+                    ');
                     
                     if ($objResult->RecordCount()) {
                         $arrGlobalDefinitions = array();
                         while (!$objResult->EOF) {
-                            $arrGlobalDefinitions[$objResult->fields['block_id']][] = $objResult->fields['all_pages'];
+                            $arrGlobalDefinitions[$objResult->fields['block_id']][$objResult->fields['lang_id']] = $objResult->fields['all_pages'];
                             $objResult->MoveNext();
                         }
                         
                         $arrGlobals = array();
                         foreach ($arrGlobalDefinitions as $blockId => $arrValues) {
-                            $global = in_array(0, $arrValues) ? 2 : 1;
+                            // If all languages of the block are global, set $global to 1 
+                            if (!in_array(0, $arrValues)) {
+                                // Language id's of blocks where field 'all_pages' (global) is set to 1
+                                $globalLangIds = array_keys($arrValues);
+                                sort($globalLangIds);
+                                // Active language id's
+                                $activeLangIds = \FWLanguage::getIdArray();
+                                sort($activeLangIds);
+                                
+                                if ($globalLangIds == $activeLangIds) {
+                                    $global = 1;
+                                }
+                            } else { // Otherwise set $global to 2
+                                $global = 2;
+                            }
+                            
                             \Cx\Lib\UpdateUtil::sql('
                                 UPDATE `' . DBPREFIX . 'module_block_blocks`
                                 SET `global` = ' . $global . '
@@ -668,7 +692,7 @@ class ContentMigration
                         }
                     }
                 }
-    
+                
                 // 1. drop old locale column `content`
                 // 2. add several new columns
                 \Cx\Lib\UpdateUtil::table(
@@ -699,7 +723,10 @@ class ContentMigration
             if (empty($_SESSION['contrexx_update']['blocks_part_2_migrated'])) {
                 $activeLangIds = implode(',', \FWLanguage::getIdArray());
                 if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX . 'module_block_rel_pages', 'lang_id')) {
-                    \Cx\Lib\UpdateUtil::sql('DELETE FROM `' . DBPREFIX . 'module_block_rel_pages` WHERE `lang_id` NOT IN (' . $activeLangIds . ')');
+                    \Cx\Lib\UpdateUtil::sql('
+                        DELETE FROM `' . DBPREFIX . 'module_block_rel_pages`
+                        WHERE `lang_id` NOT IN (' . $activeLangIds . ')
+                    ');
                     
                     \Cx\Lib\UpdateUtil::table(
                         DBPREFIX.'module_block_rel_pages',
@@ -709,7 +736,11 @@ class ContentMigration
                         )
                     );
                     
-                    $objResult = \Cx\Lib\UpdateUtil::sql('SELECT `page_id` FROM `' . DBPREFIX . 'module_block_rel_pages`');
+                    $objResult = \Cx\Lib\UpdateUtil::sql('
+                        SELECT `page_id`
+                        FROM `' . DBPREFIX . 'module_block_rel_pages`
+                    ');
+                    
                     if ($objResult->RecordCount()) {
                         $pagesToRemove = array();
                         while (!$objResult->EOF) {
@@ -724,7 +755,11 @@ class ContentMigration
                                 $page = $pageRepo->getTargetPage($aliasPage);
                                 if ($page) {
                                     $pageId = $page->getId();
-                                    \Cx\Lib\UpdateUtil::sql('UPDATE `' . DBPREFIX . 'module_block_rel_pages` SET `page_id` = ' . $pageId . ' WHERE `page_id` = ' . $oldPageId);
+                                    \Cx\Lib\UpdateUtil::sql('
+                                        UPDATE `' . DBPREFIX . 'module_block_rel_pages`
+                                        SET `page_id` = ' . $pageId . '
+                                        WHERE `page_id` = ' . $oldPageId . '
+                                    ');
                                 } else {
                                     $pagesToRemove[] = $oldPageId;
                                 }
@@ -737,7 +772,10 @@ class ContentMigration
                         
                         $pagesToRemove = array_unique($pagesToRemove);
                         foreach ($pagesToRemove as $pageId) {
-                            \Cx\Lib\UpdateUtil::sql('DELETE FROM `' . DBPREFIX . 'module_block_rel_pages` WHERE `page_id` = ' . $pageId);
+                            \Cx\Lib\UpdateUtil::sql('
+                                DELETE FROM `' . DBPREFIX . 'module_block_rel_pages`
+                                WHERE `page_id` = ' . $pageId . '
+                            ');
                         }
                     }
                 }
@@ -747,7 +785,13 @@ class ContentMigration
             
             if (empty($_SESSION['contrexx_udpate']['blocks_part_3_migrated'])) {
                 $activeLangIds = implode(',', \FWLanguage::getIdArray());
-                $objResult = \Cx\Lib\UpdateUtil::sql('SELECT `block_id`, `lang_id` FROM `' . DBPREFIX . 'module_block_rel_lang` WHERE `all_pages` = 1 AND `lang_id` IN (' . $activeLangIds . ')');
+                $objResult = \Cx\Lib\UpdateUtil::sql('
+                    SELECT `block_id`, `lang_id`
+                    FROM `' . DBPREFIX . 'module_block_rel_lang`
+                    WHERE `all_pages` = 1
+                    AND `lang_id` IN (' . $activeLangIds . ')
+                ');
+                
                 if ($objResult->RecordCount()) {
                     $langIds = array();
                     $pageIds = array();
@@ -770,7 +814,10 @@ class ContentMigration
                     
                     foreach ($langIds as $blockId => $langId) {
                         foreach ($pageIds[$langId] as $pageId) {
-                            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `' . DBPREFIX . 'module_block_rel_pages` (`block_id`, `page_id`) VALUES (' . $blockId . ', ' . $pageId . ')');
+                            \Cx\Lib\UpdateUtil::sql('
+                                INSERT IGNORE INTO `' . DBPREFIX . 'module_block_rel_pages` (`block_id`, `page_id`)
+                                VALUES (' . $blockId . ', ' . $pageId . ')
+                            ');
                         }
                     }
                 }
