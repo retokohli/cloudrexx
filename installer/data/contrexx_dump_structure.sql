@@ -103,16 +103,6 @@ CREATE TABLE `contrexx_access_user_mail` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-CREATE TABLE `contrexx_access_user_network` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `oauth_provider` varchar(100) NOT NULL default '',
-  `oauth_id` varchar(100) NOT NULL default '',
-  `user_id` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
 CREATE TABLE `contrexx_access_user_profile` (
   `user_id` int(5) unsigned NOT NULL default '0',
   `gender` enum('gender_undefined','gender_female','gender_male') NOT NULL default 'gender_undefined',
