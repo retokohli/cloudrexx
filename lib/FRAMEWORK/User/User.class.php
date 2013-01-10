@@ -349,9 +349,9 @@ class User extends User_Profile
              WHERE `id` = '.$this->id.'
                AND `password` = "'.md5($password).'"
         ';
-        (bool) $objResult = $objDatabase->SelectLimit($query, 1);
+        $objResult = $objDatabase->Execute($query);
         
-        return $objResult;
+        return $objResult->RecordCount() ? true : false;
     }
 
 
