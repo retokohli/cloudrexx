@@ -239,12 +239,17 @@ class ContrexxUpdate
     
     private function showRequirements()
     {
+        global $_CONFIG;
+        
         $arrUpdate = $this->getLoadedVersionInfo();
         if ($arrUpdate) {
             $arrRequirements = $this->getRequirements($arrUpdate);
             
             if (isset($_POST['skipRequirements']) && !$arrRequirements['incompatible']) {
                 $this->setNextStep();
+                $this->showStep();
+            } else if (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.1')) {
+                $_SESSION['contrexx_update']['step'] = 5;
                 $this->showStep();
             } else {
                 $this->showRequirementsPage($arrRequirements);
@@ -476,7 +481,7 @@ class ContrexxUpdate
     
     private function processUpdate()
     {
-        global $_CORELANG;
+        global $_CORELANG, $_CONFIG, $_ARRAYLANG;
 
         $this->objTemplate->addBlockfile('CONTENT', 'process', 'process.html');
         
@@ -487,7 +492,12 @@ class ContrexxUpdate
             $this->objTemplate->setVariable('UPDATE_ERROR_MSG', $_CORELANG['TXT_UPDATE_UNABLE_TO_START']);
             $this->objTemplate->parse('updateProcessError');
         } else {
-            $result = executeContrexxUpdate($_SESSION['contrexx_update']['updateRepository'], $_SESSION['contrexx_update']['updateBackendAreas'], $_SESSION['contrexx_update']['updateModules']);
+            if (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.1')) {
+                $result = true;
+                _response();
+            } else {
+                $result = executeContrexxUpdate($_SESSION['contrexx_update']['updateRepository'], $_SESSION['contrexx_update']['updateBackendAreas'], $_SESSION['contrexx_update']['updateModules']);
+            }
             if ($result !== true) {
                 if (!empty($this->arrStatusMsg['error'])) {
                     $this->objTemplate->setVariable('UPDATE_ERROR_MSG', implode('<br />', $this->arrStatusMsg['error']));
@@ -526,7 +536,7 @@ class ContrexxUpdate
                     'UPDATE_STATUS_TITLE'  => '<strong>'.$_CORELANG['TXT_UPDATE_UPDATE_FINISHED_SUCCESSFULL'].'</strong>',
                     'UPDATE_STATUS'        => implode('<br />', $this->arrStatusMsg['msg'])
                 ));
-                $this->setNavigation('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="update" />');
+                $this->setNavigation('');//<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="update" />');
                 $_SESSION['contrexx_update']['step'] = 0;
                 $_SESSION['contrexx_update']['update'] = array();
             }
@@ -874,6 +884,7 @@ class ContrexxUpdate
      * Check for newer version
      *
      * Returns TRUE if $newVersion has a higher version number than $installedVersion.
+     * ($newVersion > $installedVersion)
 	 *
 	 * @param string $installedVersion
 	 * @param string $newVersion
