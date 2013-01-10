@@ -117,7 +117,14 @@ class CommonFunctions
         if (isset($_SESSION['installer']['langId'])) {
             $language = $arrLanguages[$_SESSION['installer']['langId']]['lang'];
         } elseif (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !empty($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-            $language = substr(strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']),0,2);
+            $browserLanguage = substr(strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']),0,2);
+
+            foreach ($arrLanguages as $arrLang) {
+                if ($browserLanguage == $arrLang['lang']) {
+                    $language;
+                    break;
+                }
+            }
         }
 
         if ($this->_checkLanguageExistence($language)) {
