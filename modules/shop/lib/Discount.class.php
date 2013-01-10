@@ -918,9 +918,9 @@ class Discount
 
         $table_name = DBPREFIX.'module_shop_discountgroup_count_rate';
         $table_structure = array(
-            'group_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-            'count' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true),
-            'rate' => array('type' => 'DECIMAL(5,2)', 'notnull' => true),
+            'group_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => 0, 'primary' => true),
+            'count' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => 1, 'primary' => true),
+            'rate' => array('type' => 'DECIMAL(5,2)', 'unsigned' => true, 'notnull' => true, 'default' => '0.00'),
         );
         $table_index = array();
         Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);

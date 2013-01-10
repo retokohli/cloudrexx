@@ -268,19 +268,6 @@ function _shopUpdate()
             if (!$objResult) return _databaseError($query, $objDatabase->ErrorMsg());
         }
 
-        // Payment Service Provider table
-
-        // Update yellowpay PSP name and description
-        $query = "
-            UPDATE `".DBPREFIX."module_shop_payment_processors`
-            SET `name`='yellowpay',
-                `description`='PostFinance Payment Service Providing'
-            WHERE `".DBPREFIX."module_shop_payment_processors`.`id`=3";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-
         // Update Attribute price to signed.
         // price_prefix is removed for version 3.  See Attribute::errorHandler()
         $table_name = DBPREFIX.'module_shop_products_attributes_value';

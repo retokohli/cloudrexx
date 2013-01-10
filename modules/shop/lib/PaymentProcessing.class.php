@@ -673,7 +673,7 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
             'name' => array('type' => 'VARCHAR(255)', 'default' => ''),
             'description' => array('type' => 'TEXT', 'default' => ''),
             'company_url' => array('type' => 'VARCHAR(255)', 'default' => ''),
-            'status' => array('type' => 'TINYINT(10)', 'unsigned' => true, 'default' => 1),
+            'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => 1),
             'picture' => array('type' => 'VARCHAR(255)', 'default' => ''),
         );
         Cx\Lib\UpdateUtil::table($table_name_new, $table_structure);
@@ -714,7 +714,7 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
                 'https://postfinance.mobilesolutions.ch/', 1, 'logo_postfinance_mobile.gif'),
         );
         $query_template = "
-            REPLACE INTO `".DBPREFIX."module_shop_payment_processors` (
+            REPLACE INTO `$table_name_new` (
                 `id`, `type`, `name`,
                 `description`,
                 `company_url`, `status`, `picture`
@@ -723,6 +723,9 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
             )";
         foreach ($arrPsp as $psp) {
             Cx\Lib\UpdateUtil::sql($query_template, $psp);
+        }
+        if (Cx\Lib\UpdateUtil::table_exist($table_name_old)) {
+            Cx\Lib\UpdateUtil::drop_table($table_name_old);
         }
 
         // Always
