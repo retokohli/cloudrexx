@@ -3713,12 +3713,11 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_shop_payment_processors` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `type` enum('internal','external') NOT NULL default 'internal',
-  `name` varchar(100) NOT NULL default '',
+  `name` varchar(255) NOT NULL default '',
   `description` text NOT NULL,
   `company_url` varchar(255) NOT NULL default '',
-  `status` tinyint(1) unsigned default '1',
-  `picture` varchar(100) NOT NULL default '',
-  `text` text NOT NULL,
+  `status` tinyint(1) unsigned NOT NULL default '1',
+  `picture` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
