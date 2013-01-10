@@ -1191,4 +1191,29 @@ class ContentMigration
         return array_keys($this->treeArray);
     }
 
+    public function migrateStatistics()
+    {
+        global $objUpdate, $_CONFIG;
+
+        // only execute this part for versions < 2.1.5
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.1.5')) {
+            if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'content')) {
+                return true;
+            }
+
+            try {
+                //2.1.5: new field contrexx_stats_requests.pageTitle needs to be added and filled
+                if (!\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'stats_requests', 'pageTitle')) {
+                    \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'stats_requests` ADD `pageTitle` varchar(250) NOT NULL AFTER `sid`');
+                }
+                //fill pageTitle with current titles
+                \Cx\Lib\UpdateUtil::sql('UPDATE '.DBPREFIX.'stats_requests SET pageTitle = ( SELECT title FROM '.DBPREFIX.'content WHERE id=pageId ) WHERE EXISTS ( SELECT title FROM '.DBPREFIX.'content WHERE id=pageId ) AND pageTitle = \'\'');
+            }
+            catch (\Cx\Lib\UpdateException $e) {
+                return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+            }
+        }
+
+        return true;
+    }
 }
