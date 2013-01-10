@@ -303,11 +303,12 @@ class adminMenu
                     }
                     $upgrade = '';
                     if (!$link_data[5]) {
+                        $cssClass .= ' nav_upgrade';
                         $upgrade = '<span class="upgrade"></span>';
                     } else {
                         $nonUpgradeEntry = true;
                     }
-                    $navigation .= "<li class='$cssClass'>" . $upgrade . "
+                    $navigation .= "<li class='" . trim($cssClass) . "'>" . $upgrade . "
                         <a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>
                             ".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."
                         </a>
@@ -323,7 +324,7 @@ class adminMenu
                     'NAVIGATION_GROUP_UPGRADE' => (!$nonUpgradeEntry ? '<span class="upgrade"></span>' : ''),
                     'NAVIGATION_ID'         => $group_id,
                     'NAVIGATION_MENU'       => $navigation,
-                    'NAVIGATION_CLASS'      => $subentryActive ? 'active' : 'inactive',
+                    'NAVIGATION_CLASS'      => ($subentryActive ? 'active' : 'inactive') . (!$nonUpgradeEntry ? ' nav_upgrade' : ''),
                 ));
                 $objTemplate->parse('navigationRow');
             }
