@@ -813,11 +813,6 @@ class ContentMigration
                 if (empty($arrLanguage['frontend'])) {
                     $pagesOfInAcLang = $pageRepo->findBy(array('lang' => $arrLanguage['id']), true);
                     foreach ($pagesOfInAcLang as $page) {
-                        $aliases = $page->getAliases();
-                        foreach ($aliases as $alias) {
-                            self::$em->remove($alias);
-                        }
-                        
                         $node = $page->getNode();
                         $countPagesOfThisNode = count($node->getPages(true));
                         
@@ -870,10 +865,6 @@ class ContentMigration
         $pageToRemove = array_unique($pageToRemove);
         foreach ($pageToRemove as $pageId) {
             $page = $pageRepo->find($pageId);
-            $aliases = $page->getAliases();
-            foreach ($aliases as $alias) {
-                self::$em->remove($alias);
-            }
             self::$em->remove($page);
         }
         
