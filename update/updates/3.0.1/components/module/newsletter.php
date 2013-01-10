@@ -424,7 +424,13 @@ return;
 
         // backup literal country name in field notes
         if (!\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'module_newsletter_user', 'notes')) {
-            \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_newsletter_user` ADD `notes` text NOT NULL');
+            if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'module_newsletter_user', 'fax')) {
+                $column = 'fax';
+            } else {
+                // versions pre 3.0.0 didn't have the column 'fax' yet
+                $column = 'phone';
+            }
+            \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_newsletter_user` ADD `notes` text NOT NULL AFTER `'.$column.'`');
         }
         \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_newsletter_user` SET `notes` = `country_old`');
         // drop obsolete column country_old'

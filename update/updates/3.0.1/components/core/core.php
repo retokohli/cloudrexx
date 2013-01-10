@@ -220,7 +220,8 @@ function _coreUpdate()
             array(
                 'unique'         => array('fields' => array('iso_code_2'), 'type' => 'UNIQUE'),
                 'INDEX_COUNTRIES_NAME' => array('fields' => array('name'))
-            )
+            ),
+            'InnoDB'
         );
 
         $arrCountries = array(
