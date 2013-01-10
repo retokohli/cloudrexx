@@ -727,7 +727,6 @@ class ContentMigration
                                     $pageId = $page->getId();
                                     \Cx\Lib\UpdateUtil::sql('UPDATE `' . DBPREFIX . 'module_block_rel_pages` SET `page_id` = ' . $pageId . ' WHERE `page_id` = ' . $oldPageId);
                                 } else {
-                                    var_dump($aliasPage);
                                     $pagesToRemove[] = $oldPageId;
                                 }
                             } else {
