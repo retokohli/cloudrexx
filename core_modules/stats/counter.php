@@ -499,8 +499,11 @@ class counter
     }
 
     function _checkMobilePhone() {
+        // list in mobile-useragents.inc is outdated -> mobile operating systems are now listed in operatingsystems.inc
+        return false;
+
         // check for mobilephone
-        $fp = fopen('lib/mobile-useragents.inc',"r");
+        /*$fp = fopen('lib/mobile-useragents.inc',"r");
         while (true) {
         	$line = fgets($fp);
         	if ($line === false) break;
@@ -510,7 +513,7 @@ class counter
                 break;
             }
         }
-        fclose($fp);
+        fclose($fp);*/
     }
 
     /**
