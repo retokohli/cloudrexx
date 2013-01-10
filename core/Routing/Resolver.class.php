@@ -289,8 +289,9 @@ class Resolver {
                 }
 
                 //check whether we have a page now.
-                if(!$targetPage) {
-                    throw new ResolverException('Found invalid redirection target on page "'.$this->page->getTitle().'" with id "'.$this->page->getId().'": tried to find target page with node '.$nId.' and language '.$langId.', which does not exist.');
+                if (!$targetPage) {
+                    $this->page = null;
+                    return;
                 }
 
                 // the redirection page is located within a different language.
