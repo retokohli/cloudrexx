@@ -748,14 +748,16 @@ class ContentMigration
             
             if (empty($_SESSION['contrexx_udpate']['blocks_part_3_migrated'])) {
                 $activeLangIds = implode(',', \FWLanguage::getIdArray());
-                $objResult = \Cx\Lib\UpdateUtil::sql('SELECT `block_id`, `lang_id` FROM `' . DBPREFIX . 'module_block_rel_lang` WHERE `all_pages` = 0 AND `lang_id` IN (' . $activeLangIds . ')');
+                $objResult = \Cx\Lib\UpdateUtil::sql('SELECT `block_id`, `lang_id` FROM `' . DBPREFIX . 'module_block_rel_lang` WHERE `all_pages` = 1 AND `lang_id` IN (' . $activeLangIds . ')');
                 if ($objResult->RecordCount()) {
                     $langIds = array();
                     $pageIds = array();
+                    
                     while (!$objResult->EOF) {
                         $langIds[$objResult->fields['block_id']] = $objResult->fields['lang_id'];
                         $objResult->MoveNext();
                     }
+                    
                     $uniqueLangIds = array_unique($langIds);
                     foreach ($uniqueLangIds as $langId) {
                         $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
@@ -766,6 +768,7 @@ class ContentMigration
                             $pageIds[$langId][] = $page->getId();
                         }
                     }
+                    
                     foreach ($langIds as $blockId => $langId) {
                         foreach ($pageIds[$langId] as $pageId) {
                             \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `' . DBPREFIX . 'module_block_rel_pages` (`block_id`, `page_id`) VALUES (' . $blockId . ', ' . $pageId . ')');
