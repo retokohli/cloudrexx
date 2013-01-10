@@ -1502,7 +1502,7 @@ function _shopInstall()
             'cx3upgrade'
         );
         \Cx\Lib\UpdateUtil::sql("
-            INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`)
+            INSERT INTO `".DBPREFIX."core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`)
             VALUES  ('core', 'numof_countries_per_page_backend', 'country', 'text', '30', '', 101),
                     ('shop', 'address', 'config', 'text', 'MaxMuster AG\r\nFirmenstrasse 1\r\n4321 Irgendwo', '', 20),
                     ('shop', 'company', 'config', 'text', 'MaxMuster AG', '', 19),
