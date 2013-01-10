@@ -276,7 +276,7 @@ $updatesHotfixToSp = array(
             'accessUserID'               => array('fields' => array('accessUserID')),
         ),
     ),
-    'UPDATE contrexx_module_newsletter_access_user SET `code` = SUBSTR(MD5(RAND()),1,12) WHERE `code` = \'\'',
+    'UPDATE '.DBPREFIX.'module_newsletter_access_user SET `code` = SUBSTR(MD5(RAND()),1,12) WHERE `code` = \'\'',
     array(
         'table' => DBPREFIX.'content_page',
         'structure' => array(
@@ -501,3 +501,4 @@ if ($version == 'rc1') {
 $objSettings = new \settingsManager();
 $objSettings->writeSettingsFile();
 require($documentRoot.'/config/settings.php');
+return true;

@@ -161,14 +161,15 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
         if (!in_array('coreLicense', $_SESSION['contrexx_update']['update']['done'])) {
             $lupd = new License();
             $result = $lupd->update();
-            if ($result === false) {
+            // ignore error to allow offline installations
+            /*if ($result === false) {
                 if (empty($objUpdate->arrStatusMsg['title'])) {
                     setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_LICENSE_DATA']), 'title');
                 }
                 return false;
-            } else {
+            } else {*/
                 $_SESSION['contrexx_update']['update']['done'][] = 'coreLicense';
-            }
+            //}
         }
         
         _response();
@@ -395,14 +396,15 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     if (!in_array('coreLicense', $_SESSION['contrexx_update']['update']['done'])) {
         $lupd = new License();
         $result = $lupd->update();
-        if ($result === false) {
+        // ignore error to allow offline installations
+        /*if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
                 setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_LICENSE_DATA']), 'title');
             }
             return false;
-        } else {
+        } else {*/
             $_SESSION['contrexx_update']['update']['done'][] = 'coreLicense';
-        }
+        //}
     }
     
     _response();
@@ -862,6 +864,13 @@ class License {
         $_CONFIG['licenseState'] = '';
         
         $return = @include_once(ASCMS_DOCUMENT_ROOT.'/core_modules/License/versioncheck.php');
+        
+        // we force a version number update. if the license update failed
+        // version number will not be upgraded yet:
+        \Cx\Lib\UpdateUtil::sql('UPDATE `rc1`.`contrexx_settings` SET `setvalue` = \'3.0.1\' WHERE `contrexx_settings`.`setid` = 97');
+        $settingsManager = new \settingsManager();
+        $settingsManager->writeSettingsFile();
+        
         return ($return === true);
     }
 }
