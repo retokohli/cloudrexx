@@ -52,6 +52,19 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
         Env::get('ClassLoader')->loadFile(dirname(__FILE__) . '/ContentMigration.class.php');
         $contentMigration = new \Cx\Update\Cx_3_0_1\ContentMigration();
         
+        // Migrate statistics - this must be done before migrating to the new content architecture
+        if (empty($_SESSION['contrexx_update']['content_stats'])) {
+            DBG::msg('Migrate stats');
+            if ($status = $contentMigration->migrateStatistics()) {
+                $_SESSION['contrexx_update']['content_stats'] = true;
+                if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        
         // Migrate content
         if (empty($_SESSION['contrexx_update']['content_migrated'])) {
             DBG::msg('Migrate content');

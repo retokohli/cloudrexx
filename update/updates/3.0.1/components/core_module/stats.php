@@ -208,7 +208,6 @@ function _statsUpdate()
                 )
             );
 
-            //2.1.5: new field contrexx_stats_requests.pageTitle needs to be added and filled
             \Cx\Lib\UpdateUtil::table(
                 DBPREFIX.'stats_requests',
                 array(
@@ -224,8 +223,6 @@ function _statsUpdate()
                       'unique'         => array('fields' => array('page'), 'type' => 'UNIQUE')
                       )
             );
-            //fill pageTitle with current titles
-            \Cx\Lib\UpdateUtil::sql('UPDATE '.DBPREFIX.'stats_requests SET pageTitle = ( SELECT title FROM '.DBPREFIX.'content WHERE id=pageId ) WHERE EXISTS ( SELECT title FROM '.DBPREFIX.'content WHERE id=pageId )');
         }
         catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
