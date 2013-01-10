@@ -43,6 +43,10 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     // Reinitialize FWLanguage. Now with fallback (doctrine).
     FWLanguage::init();
     
+    if (!isset($_SESSION['contrexx_update']['update']['done'])) {
+        $_SESSION['contrexx_update']['update']['done'] = array();
+    }
+    
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         DBG::msg('Installed version: '.$_CONFIG['coreCmsVersion']);
         Env::get('ClassLoader')->loadFile(dirname(__FILE__) . '/ContentMigration.class.php');
@@ -169,10 +173,6 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     } elseif (!include_once(dirname(__FILE__) . '/components/core/settings.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/settings.php'));
         return false;
-    }
-    
-    if (!isset($_SESSION['contrexx_update']['update']['done'])) {
-        $_SESSION['contrexx_update']['update']['done'] = array();
     }
 
     if (!in_array('configSettings', $_SESSION['contrexx_update']['update']['done'])) {
@@ -821,7 +821,7 @@ class License {
     }
     
     public function update() {
-        global $documentRoot, $sessionObj;
+        global $documentRoot, $sessionObj, $_CONFIG;
         
         if (!@include_once(ASCMS_DOCUMENT_ROOT.'/lib/PEAR/HTTP/Request2.php')) {
             return false;
@@ -833,6 +833,12 @@ class License {
         
         $userId = 1;
         $sessionObj->cmsSessionUserUpdate($userId);
+        
+        $_CONFIG['licenseUpdateInterval'] = 0;
+        $_CONFIG['licenseSuccessfulUpdate'] = 0;
+        $_CONFIG['installationId'] = '';
+        $_CONFIG['licenseKey'] = '';
+        $_CONFIG['licenseState'] = '';
         
         $return = @include_once(ASCMS_DOCUMENT_ROOT.'/core_modules/License/versioncheck.php');
         return ($return === true);
