@@ -222,7 +222,7 @@ $J(document).ready(function() {
 });
 
 function delInAcLangs() {
-    $J(".content-migration-select-wrapper.inactive-language").toggle();
+    $J(".content-migration-select.inactive-language").toggle();
 };
 
 function delPage() {
