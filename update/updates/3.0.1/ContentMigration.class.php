@@ -204,8 +204,7 @@ class ContentMigration
             self::$em->flush();
             $_SESSION['contrexx_update']['root_node_added'] = true;
         } else {
-            $nodes = $nodeRepo->findAll();
-            $root  = $nodes[0];
+            $root = $nodeRepo->getRoot();
         }
         
         // Due to a bug in the old content manager, there happened to exist ghost-pages
