@@ -39,7 +39,7 @@ class DoctrineSQLLogger implements \Doctrine\DBAL\Logging\SQLLogger
         // prepare SQL statement
         if ($params) {
             $sql = str_replace('?', "'%s'", $sql);
-            $this->query = vsprintf($sql, $params);
+            //$this->query = vsprintf($sql, $params);
             foreach ($params as &$param) {
                 // serialize arrays
                 if (is_array($param)) {
@@ -69,7 +69,7 @@ class DoctrineSQLLogger implements \Doctrine\DBAL\Logging\SQLLogger
      */
     public function stopQuery()
     {
-        global $objDatabase;
+        /*global $objDatabase;
         
         if (!(\DBG::getMode() & DBG_DOCTRINE)) {
             return;
@@ -88,6 +88,6 @@ class DoctrineSQLLogger implements \Doctrine\DBAL\Logging\SQLLogger
             \DBG::log('<p>The query above failes (took ' . $timeDiff .  ' seconds)!</p>');
         } else {
             \DBG::log('<p>The query above returns ' . $result->RecordCount() . ' rows when executed in SQL directly (took ' . $timeDiff .  ' seconds).</p>');
-        }
+        }*/
     }
 }
