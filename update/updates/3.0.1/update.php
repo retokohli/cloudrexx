@@ -6,7 +6,7 @@ require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FileSystem.class.php';
 require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FileSystemFile.class.php';
 require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FTPFile.class.php';
 
-function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = true, $updateModules = true) {
+function executeContrexxUpdate() {
     global $_ARRAYLANG, $_CORELANG, $_CONFIG, $objDatabase, $objUpdate;
 
     $_SESSION['contrexx_update']['copyFilesFinished'] = !empty($_SESSION['contrexx_update']['copyFilesFinished']) ? $_SESSION['contrexx_update']['copyFilesFinished'] : false;
@@ -349,44 +349,38 @@ function executeContrexxUpdate($updateRepository = true, $updateBackendAreas = t
     }
 
     if (!in_array('coreModules', $_SESSION['contrexx_update']['update']['done'])) {
-        if ($updateModules) {
-            $result = _updateModules();
-            if ($result === false) {
-                if (empty($objUpdate->arrStatusMsg['title'])) {
-                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULES']), 'title');
-                }
-                return false;
-            } else {
-                $_SESSION['contrexx_update']['update']['done'][] = 'coreModules';
+        $result = _updateModules();
+        if ($result === false) {
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULES']), 'title');
             }
+            return false;
+        } else {
+            $_SESSION['contrexx_update']['update']['done'][] = 'coreModules';
         }
     }
 
     if (!in_array('coreBackendAreas', $_SESSION['contrexx_update']['update']['done'])) {
-        if ($updateBackendAreas) {
-            $result = _updateBackendAreas();
-            if ($result === false) {
-                if (empty($objUpdate->arrStatusMsg['title'])) {
-                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_SECURITY_SYSTEM']), 'title');
-                }
-                return false;
-            } else {
-                $_SESSION['contrexx_update']['update']['done'][] = 'coreBackendAreas';
+        $result = _updateBackendAreas();
+        if ($result === false) {
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_SECURITY_SYSTEM']), 'title');
             }
+            return false;
+        } else {
+            $_SESSION['contrexx_update']['update']['done'][] = 'coreBackendAreas';
         }
     }
 
     if (!in_array('coreModuleRepository', $_SESSION['contrexx_update']['update']['done'])) {
-        if ($updateRepository) {
-            $result = _updateModuleRepository();
-            if ($result === false) {
-                if (empty($objUpdate->arrStatusMsg['title'])) {
-                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_REPOSITORY']), 'title');
-                }
-                return false;
-            } else {
-                $_SESSION['contrexx_update']['update']['done'][] = 'coreModuleRepository';
+        $result = _updateModuleRepository();
+        if ($result === false) {
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_REPOSITORY']), 'title');
             }
+            return false;
+        } else {
+            $_SESSION['contrexx_update']['update']['done'][] = 'coreModuleRepository';
         }
     }
     
@@ -563,8 +557,6 @@ function getConflictedModules($missedModules) {
             DBPREFIX.'module_podcast_template',
         ),
         'shop' => array(
-            DBPREFIX.'core_text',
-            DBPREFIX.'core_setting',
             DBPREFIX.'core_mail_template',
             DBPREFIX.'core_country',
             DBPREFIX.'module_shop_article_group',

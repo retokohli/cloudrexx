@@ -431,24 +431,6 @@ class ContrexxUpdate
     private function showUpdate()
     {
         if (isset($_POST['updateNext']) && isset($_POST['processUpdate'])) {
-            if (!empty($_POST['update_module_repository']) && $_POST['update_module_repository'] == '1') {
-                $_SESSION['contrexx_update']['updateRepository'] = true;
-            } else {
-                $_SESSION['contrexx_update']['updateRepository'] = false;
-            }
-            
-            if (!empty($_POST['update_backend_areas']) && $_POST['update_backend_areas'] == '1') {
-                $_SESSION['contrexx_update']['updateBackendAreas'] = true;
-            } else {
-                $_SESSION['contrexx_update']['updateBackendAreas'] = false;
-            }
-            
-            if (!empty($_POST['update_module_table']) && $_POST['update_module_table'] == '1') {
-                $_SESSION['contrexx_update']['updateModules'] = true;
-            } else {
-                $_SESSION['contrexx_update']['updateModules'] = false;
-            }
-            
             $this->setNextStep();
             $this->showStep();
         } else {
@@ -462,13 +444,12 @@ class ContrexxUpdate
 
         $this->objTemplate->addBlockfile('CONTENT', 'start', 'start.html');
         
+        $arrVersion    = $this->getLoadedVersionInfo();
+        $updateVersion = $version = str_replace(' Service Pack 0', '', preg_replace('#^(\d+\.\d+)\.(\d+)$#', '$1 Service Pack $2', $arrVersion['cmsVersion']));
+        
         $this->objTemplate->setVariable(array(
-            'UPDATE_PROCESS_SCREEN'              => $_CORELANG['TXT_UPDATE_IS_READY'],
-            'TXT_UPDATE_ADVANCED_CONFIGURATION'  => $_CORELANG['TXT_UPDATE_ADVANCED_CONFIGURATION'],
-            'TXT_UPDATE_RENEW_MODULE_REPOSITORY' => $_CORELANG['TXT_UPDATE_RENEW_MODULE_REPOSITORY'],
-            'TXT_UPDATE_RENEW_BACKEND_AREAS'     => $_CORELANG['TXT_UPDATE_RENEW_BACKEND_AREAS'],
-            'TXT_UPDATE_RENEW_MODULE_TABLE'      => $_CORELANG['TXT_UPDATE_RENEW_MODULE_TABLE'],
-            'TXT_UPDATE_UPDATE_IS_READY'         => $_CORELANG['TXT_UPDATE_UPDATE_IS_READY']
+            'TXT_UPDATE_UPDATE_IS_READY' => $_CORELANG['TXT_UPDATE_UPDATE_IS_READY'],
+            'UPDATE_VERSION'             => $updateVersion,
         ));
         $this->objTemplate->parse('start');
         
@@ -496,7 +477,7 @@ class ContrexxUpdate
                 $result = true;
                 _response();
             } else {
-                $result = executeContrexxUpdate($_SESSION['contrexx_update']['updateRepository'], $_SESSION['contrexx_update']['updateBackendAreas'], $_SESSION['contrexx_update']['updateModules']);
+                $result = executeContrexxUpdate();
             }
             if ($result !== true) {
                 if (!empty($this->arrStatusMsg['error'])) {
@@ -582,8 +563,8 @@ class ContrexxUpdate
     public function getLoadedVersionInfo()
     {
         if (!empty($_SESSION['contrexx_update']['version'])) {
-            $arrVersions     = $this->getAvailabeVersions();
-            $version         = $_SESSION['contrexx_update']['version'];
+            $arrVersions = $this->getAvailabeVersions();
+            $version     = $_SESSION['contrexx_update']['version'];
             return $arrVersions[$version];
         }
 
