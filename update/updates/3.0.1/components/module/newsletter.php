@@ -677,6 +677,7 @@ function _newsletterInstall()
                 'required'       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'html'),
                 'type'           => array('type' => 'ENUM(\'e-mail\',\'news\')', 'notnull' => true, 'default' => 'e-mail', 'after' => 'required')
             ),
+            null,
             'MyISAM',
             'cx3upgrade'
         );
