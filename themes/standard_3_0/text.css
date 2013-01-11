@@ -242,6 +242,7 @@ legend {
 }
 
 fieldset {
+    clear: left;
     padding: 10px;
     margin: 0 0 20px 0;
     border: 1px solid #DDDDDD;
