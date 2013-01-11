@@ -32,7 +32,10 @@ class DoctrineSQLLogger implements \Doctrine\DBAL\Logging\SQLLogger
     public function startQuery($sql, array $params = null, array $types = null)
     {
         $this->query = null;
-        if (!(\DBG::getMode() & DBG_DOCTRINE)) {
+        if (   !(\DBG::getMode() & DBG_DOCTRINE)
+            && !(\DBG::getMode() & DBG_DOCTRINE_CHANGE)
+            && !(\DBG::getMode() & DBG_DOCTRINE_ERROR)
+        ) {
             return;
         }
 
@@ -71,7 +74,10 @@ class DoctrineSQLLogger implements \Doctrine\DBAL\Logging\SQLLogger
     {
         /*global $objDatabase;
         
-        if (!(\DBG::getMode() & DBG_DOCTRINE)) {
+        if (   !(\DBG::getMode() & DBG_DOCTRINE)
+            && !(\DBG::getMode() & DBG_DOCTRINE_CHANGE)
+            && !(\DBG::getMode() & DBG_DOCTRINE_ERROR)
+        ) {
             return;
         }
         
