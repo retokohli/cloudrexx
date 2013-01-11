@@ -1611,11 +1611,8 @@ function _writeNewConfigurationFile($setDbCharset = false)
 
     $ftpStatus = $_FTPCONFIG['is_activated'] ? 'true' : 'false';
     $ftpUsePassive = $_FTPCONFIG['use_passive'] ? 'true' : 'false';
-    $shopJsCart = !empty($_CONFIGURATION['custom']['shopJsCart']) && $_CONFIGURATION['custom']['shopJsCart'] ? 'true' : 'false';
-    $shopnavbar = !empty($_CONFIGURATION['custom']['shopnavbar']) && $_CONFIGURATION['custom']['shopnavbar'] ? 'true' : 'false';
     $dbCharset = ($setDbCharset && UPDATE_UTF8) ? 'utf8' : (!empty($_DBCONFIG['charset']) ? $_DBCONFIG['charset'] : '');
     $charset = UPDATE_UTF8 ? 'UTF-8' : 'ISO-8859-1';
-    $timezone = isset($_CONFIG['timezone']) ? $_CONFIG['timezone'] : '';
 
     $_FTPCONFIG['port'] = intval($_FTPCONFIG['port']);
 
@@ -1649,7 +1646,7 @@ define('CONTEXX_INSTALLED', true);
 \$_DBCONFIG['password'] = '{$_DBCONFIG['password']}'; // Database password
 \$_DBCONFIG['dbType'] = '{$_DBCONFIG['dbType']}';    // Database type (e.g. mysql,postgres ..)
 \$_DBCONFIG['charset'] = '{$dbCharset}'; // Charset (default, latin1, utf8, ..)
-\$_DBCONFIG['timezone'] = '{$timezone}'; // Timezone
+\$_DBCONFIG['timezone'] = \$_CONFIG['timezone']; // Timezone
 
 /**
 * -------------------------------------------------------------------------
@@ -1670,37 +1667,25 @@ define('CONTEXX_INSTALLED', true);
 \$_FTPCONFIG['port'] = {$_FTPCONFIG['port']}; // Ftp remote port
 \$_FTPCONFIG['username'] = '{$_FTPCONFIG['username']}'; // Ftp login username
 \$_FTPCONFIG['password']    = '{$_FTPCONFIG['password']}'; // Ftp login password
-\$_FTPCONFIG['path']    = '{$_FTPCONFIG['path']}'; // Ftp path to cms
+\$_FTPCONFIG['path']    = '{$_FTPCONFIG['path']}'; // Ftp path to cms (must not include ascms_root_offset)
 
 /**
 * -------------------------------------------------------------------------
-* Optional customizing exceptions
-* Shopnavbar : If set to TRUE the shopnavbar will appears on each page
+* Base setup (altering might break the system!)
 * -------------------------------------------------------------------------
 */
-\$_CONFIGURATION['custom']['shopnavbar'] = {$shopnavbar}; // true|false
-\$_CONFIGURATION['custom']['shopJsCart'] = {$shopJsCart}; // true|false
-
-/**
-* Set character encoding
-*/
+// Set character encoding
 \$_CONFIG['coreCharacterEncoding'] = '{$charset}'; // example 'UTF-8'
-@header('content-type: text/html; charset='.\$_CONFIG['coreCharacterEncoding']);
+@ini_set('default_charset', \$_CONFIG['coreCharacterEncoding']);
 
-/**
-* Set output url seperator
-*/
+// Set output url seperator
 @ini_set('arg_separator.output', '&amp;');
 
-/**
-* Set url rewriter tags
-*/
+// Set url rewriter tags
 @ini_set('url_rewriter.tags', 'a=href,area=href,frame=src,iframe=src,input=src,form=,fieldset=');
 
-/**
-* Set timezone
-*/
-@ini_set('date.timezone', '{$timezone}');
+// Set timezone
+@ini_set('date.timezone', \$_CONFIG['timezone']);
 
 /**
 * -------------------------------------------------------------------------
@@ -1708,7 +1693,7 @@ define('CONTEXX_INSTALLED', true);
 * -------------------------------------------------------------------------
 */
 require_once dirname(__FILE__).'/set_constants.php';
-?>
+
 CONFIG_TPL
 ;
 
