@@ -1072,21 +1072,16 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
     {
         $table_name = DBPREFIX.'core_setting';
         $table_structure = array(
-            'section' => array('type' => 'TINYTEXT', 'default' => ''),
-            'name' => array('type' => 'TINYTEXT', 'default' => ''),
-            'group' => array('type' => 'TINYTEXT', 'default' => ''),
+            'section' => array('type' => 'VARCHAR(32)', 'default' => '', 'primary' => true),
+            'name' => array('type' => 'VARCHAR(255)', 'default' => '', 'primary' => true),
+            'group' => array('type' => 'VARCHAR(32)', 'default' => '', 'primary' => true),
             'type' => array('type' => 'VARCHAR(32)', 'default' => 'text'),
             'value' => array('type' => 'TEXT', 'default' => ''),
             'values' => array('type' => 'TEXT', 'notnull' => false, 'default' => null),
             'ord' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0'),
         );
 // TODO: The index array structure is wrong here!
-        $table_index =  array(
-            'id' => array(
-                'type' => 'primary',
-                'fields' => array('section' => 32, 'name' => 32, 'group' => 32),
-            ),
-        );
+        $table_index =  array();
         Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 //echo("SettingDb::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
 

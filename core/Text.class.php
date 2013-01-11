@@ -901,10 +901,10 @@ die("Obsolete method Text::getIdArrayBySearch() called");
                 CREATE TABLE `".DBPREFIX."core_text` (
                   `id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
                   `lang_id` INT(10) UNSIGNED NOT NULL DEFAULT 1,
-                  `section` TINYTEXT NULL DEFAULT NULL,
-                  `key` TINYTEXT NOT NULL,
+                  `section` VARCHAR(32) NULL DEFAULT NULL,
+                  `key` VARCHAR(255) NOT NULL,
                   `text` TEXT NOT NULL,
-                  PRIMARY KEY `id` (`id`, `lang_id`, `section`(32), `key`(32)),
+                  PRIMARY KEY `id` (`id`, `lang_id`, `section`, `key`),
                   FULLTEXT `text` (`text`)
                 ) ENGINE=MyISAM";
             $objResult = Cx\Lib\UpdateUtil::sql($query);
