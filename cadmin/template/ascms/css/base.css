@@ -438,6 +438,10 @@ textarea.cke_source {
     background: url(../images/navigation_level_1_list_style.png) no-repeat center center;
 }
 
+.navigation_level_1 li.nav_upgrade .icon_1 {
+    background: url(../images/navigation_level_1_list_style_inactive.png) no-repeat center center;
+}
+
 .navigation_level_1 li:hover .icon_1,
 .navigation_level_1 li:focus .icon_1,
 .navigation_level_1 li:active .icon_1,
@@ -456,6 +460,10 @@ textarea.cke_source {
     background: url(../images/navigation_level_1_home.png) no-repeat center 7px;
 }
 
+#navigation_level_1_184 li.nav_upgrade .icon_2 {
+    background: url(../images/navigation_level_1_home_inactive.png) no-repeat center 7px;
+}
+
 #navigation_level_1_184 li:hover .icon_2, #navigation_level_1_184 li:focus .icon_2,
 #navigation_level_1_184 li:active .icon_2, #navigation_level_1_184 li.active .icon_2 {
     background: url(../images/navigation_level_1_home_hover.png) no-repeat center 7px;
@@ -463,6 +471,10 @@ textarea.cke_source {
 
 #navigation_level_1_1 li .icon_2 {
     background: url(../images/navigation_level_1_1.png) no-repeat center 7px;
+}
+
+#navigation_level_1_1 li.nav_upgrade .icon_2 {
+    background: url(../images/navigation_level_1_1_inactive.png) no-repeat center 7px;
 }
 
 #navigation_level_1_1 li:hover .icon_2, #navigation_level_1_1 li:focus .icon_2,
@@ -474,6 +486,10 @@ textarea.cke_source {
     background: url(../images/navigation_level_1_2.png) no-repeat center 6px;
 }
 
+#navigation_level_1_2 li.nav_upgrade .icon_2 {
+    background: url(../images/navigation_level_1_2_inactive.png) no-repeat center 6px;
+}
+
 #navigation_level_1_2 li:hover .icon_2, #navigation_level_1_2 li:focus .icon_2,
 #navigation_level_1_2 li:active .icon_2, #navigation_level_1_2 li.active .icon_2 {
     background: url(../images/navigation_level_1_2_hover.png) no-repeat center 6px;
@@ -481,6 +497,10 @@ textarea.cke_source {
 
 #navigation_level_1_3 li .icon_2 {
     background: url(../images/navigation_level_1_3.png) no-repeat center 7px;
+}
+
+#navigation_level_1_3 li.nav_upgrade .icon_2 {
+    background: url(../images/navigation_level_1_3_inactive.png) no-repeat center 7px;
 }
 
 #navigation_level_1_3 li:hover .icon_2, #navigation_level_1_3 li:focus .icon_2,
@@ -492,6 +512,10 @@ textarea.cke_source {
     background: url(../images/navigation_level_1_8.png) no-repeat center 6px;
 }
 
+#navigation_level_1_8 li.nav_upgrade .icon_2 {
+    background: url(../images/navigation_level_1_8_inactive.png) no-repeat center 6px;
+}
+
 #navigation_level_1_8 li:hover .icon_2, #navigation_level_1_8 li:focus .icon_2,
 #navigation_level_1_8 li:active .icon_2, #navigation_level_1_8 li.active .icon_2 {
     background: url(../images/navigation_level_1_8_hover.png) no-repeat center 6px;
@@ -499,6 +523,10 @@ textarea.cke_source {
 
 #navigation_level_1_15 li .icon_2 {
     background: url(../images/navigation_level_1_15.png) no-repeat center 7px;
+}
+
+#navigation_level_1_15 li.nav_upgrade .icon_2 {
+    background: url(../images/navigation_level_1_15_inactive.png) no-repeat center 7px;
 }
 
 #navigation_level_1_15 li:hover .icon_2, #navigation_level_1_15 li:focus .icon_2,
@@ -510,6 +538,10 @@ textarea.cke_source {
     background: url(../images/navigation_level_1_28.png) no-repeat center 7px;
 }
 
+#navigation_level_1_28 li.nav_upgrade .icon_2 {
+    background: url(../images/navigation_level_1_28_inactive.png) no-repeat center 7px;
+}
+
 #navigation_level_1_28 li:hover .icon_2, #navigation_level_1_28 li:focus .icon_2,
 #navigation_level_1_28 li:active .icon_2, #navigation_level_1_28 li.active .icon_2 {
     background: url(../images/navigation_level_1_28_hover.png) no-repeat center 7px;
@@ -517,6 +549,10 @@ textarea.cke_source {
 
 #navigation_level_1_29 li .icon_2 {
     background: url(../images/navigation_level_1_29.png) no-repeat center 7px;
+}
+
+#navigation_level_1_29 li.nav_upgrade .icon_2 {
+    background: url(../images/navigation_level_1_29_inactive.png) no-repeat center 7px;
 }
 
 #navigation_level_1_29 li:hover .icon_2, #navigation_level_1_29 li:focus .icon_2,
@@ -543,6 +579,7 @@ textarea.cke_source {
 }
 
 .navigation_level_1 li .upgrade {
+    display: none;
     position: absolute;
     top: 9px;
     right: 6px;
@@ -575,6 +612,10 @@ textarea.cke_source {
     outline: 0;
 }
 
+.navigation_level_2 li.nav_upgrade a {
+    background: url(../images/navigation_level_2_list_style_inactive.png) no-repeat 26px 8px;
+}
+
 .navigation_level_2 li:hover a,
 .navigation_level_2 li:focus a,
 .navigation_level_2 li:active a,
@@ -590,6 +631,7 @@ textarea.cke_source {
 }
 
 .navigation_level_2 li .upgrade {
+    display: none;
     position: absolute;
     top: 5px;
     right: 6px;
@@ -597,6 +639,11 @@ textarea.cke_source {
     width: 12px;
     height: 12px;
     background: url(../images/navigation_upgrade.png) no-repeat;
+}
+
+li.nav_upgrade > .name,
+li.nav_upgrade > a {
+    color: #AAAAAA;
 }
 
 #search {
