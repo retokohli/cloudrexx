@@ -549,7 +549,11 @@ class JsonPage implements JsonAdapter {
                 $data['post']['pageId'] = 0;
             }
             $result = $this->set($data);
-            if (($result['node'] == $post['currentNodeId']) && ($result['lang'] == $post['lang'])) {
+            if (   isset($post['currentNodeId'])
+                && isset($post['lang'])
+                && $result['node'] == $post['currentNodeId']
+                && $result['lang'] == $post['lang']
+            ) {
                 $return['id'] = $result['id'];
             }
             $this->multipleSetState['offset']++;
