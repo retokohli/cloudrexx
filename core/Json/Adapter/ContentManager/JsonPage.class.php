@@ -293,31 +293,39 @@ class JsonPage implements JsonAdapter {
         $page->setUpdatedAtToNow();
         $page->validate();
         
-        if (empty($action) && \Permission::checkAccess(36, 'static', true)) {
-            if ($page->isFrontendProtected()) {
-                // remove all
-                \Permission::removeAccess($page->getFrontendAccessId(), 'dynamic');
-                if (isset($dataPost['frontendGroups'])) {
-                    // set new
-                    $pg->setAssignedGroupIds($page, $dataPost['frontendGroups'], true);
+        // Permissions are only updated in the editing mode.
+        if (!empty($pageArray)) {
+            if ($action == 'publish') {
+                if (\Permission::checkAccess(36, 'static', true)) {
+                    if ($page->isFrontendProtected()) {
+                        // remove all
+                        \Permission::removeAccess($page->getFrontendAccessId(), 'dynamic');
+                        if (isset($dataPost['frontendGroups'])) {
+                            // set new
+                            $pg->setAssignedGroupIds($page, $dataPost['frontendGroups'], true);
+                        }
+                    }
+                    if ($page->isBackendProtected()) {
+                        // remove all
+                        \Permission::removeAccess($page->getBackendAccessId(), 'dynamic');
+                        if (isset($dataPost['backendGroups'])) {
+                            // set new
+                            $pg->setAssignedGroupIds($page, $dataPost['backendGroups'], false);
+                        }
+                    }
+                } else  {
+                    $this->messages[] = $_CORELANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'];
                 }
             }
-            if ($page->isBackendProtected()) {
-                // remove all
-                \Permission::removeAccess($page->getBackendAccessId(), 'dynamic');
-                if (isset($dataPost['backendGroups'])) {
-                    // set new
-                    $pg->setAssignedGroupIds($page, $dataPost['backendGroups'], false);
-                }
-            }
-        } else if (empty($action)) {
-            $this->messages[] = $_CORELANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'];
         }
         
-        if (!isset($dataPost['pageBlocks'])) {
-            $dataPost['pageBlocks'] = array();
+        // Block associations are only updated in the editing mode.
+        if (!empty($pageArray)) {
+            if (!isset($dataPost['pageBlocks'])) {
+                $dataPost['pageBlocks'] = array();
+            }
+            $page->setRelatedBlocks($dataPost['pageBlocks']);
         }
-        $page->setRelatedBlocks($dataPost['pageBlocks']);
         
         if (($action == 'publish') && \Permission::checkAccess(78, 'static', true)) {
             // User w/permission clicked save&publish. we should either publish the page or submit the draft for approval.
