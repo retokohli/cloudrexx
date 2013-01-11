@@ -813,7 +813,7 @@ class AccessManager extends AccessLib
                     'ACCESS_PAGE_SELECTION_DISPLAY'  => $protected ? '' : 'none',
                     'ACCESS_PAGE_PUBLISHING'    => $published ? 'published' : 'unpublished',
                     'ACCESS_PAGE_PROTECTED'     => $protected ? 'locked' : '',
-                    'ACCESS_PAGE_PROTECT_BACKEND'=> (int) $userGroupType == 'backend',
+                    'ACCESS_PAGE_PROTECT_BACKEND'=> $userGroupType == 'backend' ? 1 : 0,
                     'ACCESS_WEBPAGE_TEXT_INDENT'=> $level * 20,
                     'ACCESS_WEBPAGE_NAME'       => contrexx_raw2xhtml($pageData['title']).' ['.$pageData['language'].']',
                     'ACCESS_PAGE_CHECKED'       => $protected && in_array($pageData['attr'][$userGroupType.'_access_id'], $arrDynamicPermissionIdsOfGroup) ? 'checked="checked"' : '',
