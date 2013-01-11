@@ -1489,9 +1489,9 @@ function _shopInstall()
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'core_setting',
             array(
-                'section' => array('type' => 'tinytext', 'primary' => true),
-                'name' => array('type' => 'tinytext', 'after' => 'section', 'primary' => true),
-                'group' => array('type' => 'tinytext', 'after' => 'name', 'primary' => true),
+                'section' => array('type' => 'VARCHAR(32)', 'default' => '', 'primary' => true),
+                'name' => array('type' => 'VARCHAR(255)', 'default' => '', 'primary' => true),
+                'group' => array('type' => 'VARCHAR(32)', 'default' => '', 'primary' => true),
                 'type' => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => 'text', 'after' => 'group'),
                 'value' => array('type' => 'text', 'after' => 'type'),
                 'values' => array('type' => 'text', 'after' => 'value'),
@@ -1581,8 +1581,8 @@ function _shopInstall()
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
                 'lang_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'primary' => true, 'after' => 'id'),
-                'section' => array('type' => 'tinytext', 'primary' => true, 'after' => 'lang_id'),
-                'key' => array('type' => 'tinytext', 'primary' => true, 'after' => 'section'),
+                'section' => array('type' => 'VARCHAR(32)', 'primary' => true, 'after' => 'lang_id'),
+                'key' => array('type' => 'VARCHAR(255)', 'primary' => true, 'after' => 'section'),
                 'text' => array('type' => 'text', 'after' => 'key'),
             ),
             array(
