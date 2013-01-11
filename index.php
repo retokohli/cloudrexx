@@ -1,5 +1,25 @@
 <?php
 /**
+ * This is just a wrapper to load the contrexx class
+ * It is used in order to display a proper error message on hostings without
+ * PHP 5.3 or newer.
+ * 
+ * DO NOT USE NAMESPACES WITHIN THIS FILE or else the error message won't be
+ * displayed on these hostings.
+ * 
+ * Checks PHP version, loads debugger and initial config, checks if installed
+ * and loads the Contrexx class (from customizing if configured to do so)
+ * @version 3.1.0
+ * @author Michael Ritter <michael.ritter@comvation.com>
+ */
+
+// Check php version (5.3 or newer is required)
+$php = phpversion();
+if (version_compare($php, '5.3.0') < 0) {
+    die('Das Contrexx CMS ben&ouml;tigt mindestens PHP in der Version 5.3.<br />Auf Ihrem System l&auml;uft PHP '.$php);
+}
+
+/**
  * Debug level, see lib/FRAMEWORK/DBG/DBG.php
  *   DBG_PHP             - show PHP errors/warnings/notices
  *   DBG_ADODB           - show ADODB queries
@@ -13,16 +33,12 @@
  * Calling these methods without specifying a debug level
  * will either activate or deactivate all levels.
  */
-
-$php = phpversion();
-if ($php < '5.3') {
-    die('Das Contrexx CMS ben&ouml;tigt mindestens PHP in der Version 5.3.<br />Auf Ihrem System l&auml;uft PHP '.$php);
-}
-
 require_once dirname(__FILE__).'/lib/FRAMEWORK/DBG/DBG.php';
 //\DBG::activate(DBG_PHP);
 
-$_CONFIGURATION = $_CONFIG = null;
+// Initialize global vars, in order to disable notices
+// @todo: Don't use the global scope anymore
+$_DBCONFIG = $_CONFIGURATION = $_CONFIG = null;
 
 /**
  * User configuration settings
