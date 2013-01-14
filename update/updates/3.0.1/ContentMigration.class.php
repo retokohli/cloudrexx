@@ -480,7 +480,8 @@ class ContentMigration
         $page->setLang($objResult->fields['lang']);
         $page->setCaching($objResult->fields['cachingstatus']);
         $page->setTitle($objResult->fields['catname']);
-        $page->setContentTitle($objResult->fields['title']);
+        $contentTitle = !empty($objResult->fields['title']) ? $objResult->fields['title'] : $objResult->fields['catname'];
+        $page->setContentTitle($contentTitle);
         $page->setSlug($objResult->fields['catname']);
         $page->setContent($objResult->fields['content']);            
         $customContent = isset($objResult->fields['custom_content']) ? $objResult->fields['custom_content'] : '';
