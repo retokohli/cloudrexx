@@ -58,7 +58,7 @@ class ContrexxUpdate
             $this->logout();
         }
 
-        if (isset($_POST['debug_update'])) {
+        if (isset($_GET['debug_update'])) {
             \DBG::activate(DBG_PHP | DBG_DB_ERROR | DBG_LOG); 
         }
         

@@ -9,9 +9,14 @@ if (typeof(DOMParser) == 'undefined') {
   useAjax = true;
 }
 
-function doUpdate(goBack, viaPost)
+function debugUpdate()
 {
-    getDebugInfo = false;
+    doUpdate(false, false, true)
+}
+
+function doUpdate(goBack, viaPost, debug)
+{
+    getDebugInfo = debug;
     type = viaPost ? 'POST' : 'GET';
 
     if (useAjax) {
@@ -22,10 +27,6 @@ function doUpdate(goBack, viaPost)
         }
 
         formData = getFormData(goBack);
-
-        if (formData.indexOf('debug_update') > -1) {
-            getDebugInfo = true;
-        }
 
         if ($J("#processUpdate").length || $J("#doGroup").length) {
             if (!getDebugInfo) {
@@ -41,10 +42,11 @@ function doUpdate(goBack, viaPost)
             $J(".content-migration-info").parent().remove();
         }
 
+        $J("#wrapper-bottom-left").empty();
         jQuery.ajax({
             url: 'index.php',
             type: type,
-            data: {'ajax': formData},
+            data: {'ajax': formData, 'debug_update': getDebugInfo},
             success: parseResponse,
             error: cxUpdateErrorHandler,
         });
@@ -169,7 +171,7 @@ function parseResponse(response)
 
 function showErrorScreen()
 {
-    setContent('<?php $txt = '<div id="content-overview"><h1 class="first">Fehler beim Update...</h1><div class="message-alert">Das Update-Script gibt keine Antwort zurück!</div><div class="message-warning" id="debug_message"></div><input type="submit" value="Fehler anzeigen..." name="debug_update" id="debug_update" /></div>';print UPDATE_UTF8 ? $txt : utf8_encode($txt); ?>');
+    setContent('<?php $txt = '<div id="content-overview"><h1 class="first">Fehler beim Update...</h1><div class="message-alert">Das Update-Script gibt keine Antwort zurück!</div><div class="message-warning" id="debug_message"></div><input type="button" value="Fehler anzeigen..." id="debug_update" onclick="debugUpdate()" /></div>';print UPDATE_UTF8 ? $txt : utf8_encode($txt); ?>');
     //setContent('<?php $txt = '<div class="message-alert">Das Update-Script gibt keine Antwort zurück!</div>';print UPDATE_UTF8 ? $txt : utf8_encode($txt); ?>');
     setNavigation('<input type="submit" value="<?php $txt = 'Erneut versuchen...';print UPDATE_UTF8 ? utf8_encode($txt) : $txt;?>" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />');
 }

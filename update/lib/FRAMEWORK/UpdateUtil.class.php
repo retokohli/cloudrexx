@@ -138,11 +138,11 @@ class UpdateUtil
             $cols[] = "`$col` ". self::_colspec($spec, true);
         }
         $colspec    = join(",\n", $cols);
-        $primaries  = join(",\n", self::_getprimaries($struc));
+        $primaries  = join("`,\n`", self::_getprimaries($struc));
         $comment    = !empty($comment) ? ' COMMENT="'.$comment.'"' : '';
         $table_stmt = "CREATE TABLE `$name`(
             $colspec".(!empty($primaries) ? ",
-            PRIMARY KEY ($primaries)" : '')."
+            PRIMARY KEY (`$primaries`)" : '')."
         ) ENGINE=$engine$comment";
 
         self::sql($table_stmt);
