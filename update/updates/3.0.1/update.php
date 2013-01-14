@@ -8,7 +8,7 @@ require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FTPFile.class.php';
 
 function executeContrexxUpdate() {
     global $_ARRAYLANG, $_CORELANG, $_CONFIG, $objDatabase, $objUpdate;
-
+    
     $_SESSION['contrexx_update']['copyFilesFinished'] = !empty($_SESSION['contrexx_update']['copyFilesFinished']) ? $_SESSION['contrexx_update']['copyFilesFinished'] : false;
     
     // Copy cx files to the root directory
@@ -170,6 +170,14 @@ function executeContrexxUpdate() {
             } else {*/
                 $_SESSION['contrexx_update']['update']['done'][] = 'coreLicense';
             //}
+        }
+        
+        if (!createHtAccess()) {
+            $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
+            $file = $webServerSoftware == 'iis' ? 'web.config' : '.htaccess';
+            
+            setUpdateMsg('Die Datei \'' . $file . '\' konnte nicht erstellt/aktualisiert werden.');
+            return false;
         }
         
         _response();
@@ -399,6 +407,14 @@ function executeContrexxUpdate() {
         } else {*/
             $_SESSION['contrexx_update']['update']['done'][] = 'coreLicense';
         //}
+    }
+    
+    if (!createHtAccess()) {
+        $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
+        $file = $webServerSoftware == 'iis' ? 'web.config' : '.htaccess';
+        
+        setUpdateMsg('Die Datei \'' . $file . '\' konnte nicht erstellt/aktualisiert werden.');
+        return false;
     }
     
     _response();
@@ -830,6 +846,43 @@ function copyCxFilesToRoot($src, $dst)
     return true;
 }
 
+function createHtAccess()
+{
+    if (empty($_SESSION['contrexx_update']['htaccess_file_created'])) {
+        $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
+        $cl = Env::get('ClassLoader');
+        
+        if ($webServerSoftware == 'iis') {
+            $cl->loadFile(UPDATE_LIB . '/PEAR/File/HtAccess.php');
+            $objHtAccess = new File_HtAccess(ASCMS_DOCUMENT_ROOT . '/web.config');
+            $objHtAccess->setAdditional(explode("\n", @file_get_contents(dirname(__FILE__) . '/data/iis_htaccess.tpl')));
+            $result = $objHtAccess->save();
+            if ($result !== true) {
+                return false;
+            }
+        } else {
+            $cl->loadFile(UPDATE_LIB . '/FRAMEWORK/FWHtAccess.class.php');
+            $objFWHtAccess = new FWHtAccess(ASCMS_DOCUMENT_ROOT, ASCMS_PATH_OFFSET);
+            $result = $objFWHtAccess->loadHtAccessFile('/.htaccess');
+            if ($result !== true) {
+                return false;
+            }
+            $htaccessContent = @file_get_contents(dirname(__FILE__) . '/data/apache_htaccess.tpl');
+            $pathOffset = ASCMS_PATH_OFFSET;
+            if (empty($pathOffset)) $pathOffset = '/';
+            $htaccessContent= str_replace('%PATH_ROOT_OFFSET%', $pathOffset, $htaccessContent);
+            $objFWHtAccess->setSection('core_routing', explode("\n", $htaccessContent));
+            $result = $objFWHtAccess->write();
+            if ($result !== true) {
+                return false;
+            }
+        }
+        
+        $_SESSION['contrexx_update']['htaccess_file_created'] = true;
+    }
+
+    return true;
+}
 
 class License {
     
