@@ -837,6 +837,7 @@ class ContentMigration
     {
         // Fetch all pages
         if (!isset($_POST['doGroup']) || (isset($_POST['doGroup']) && !$_POST['doGroup'])) {
+            self::$em->clear();
             return $this->getTreeCode();
         }
 
