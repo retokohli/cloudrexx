@@ -170,7 +170,7 @@ class ShopMail
                 foreach ($arrTemplates as $id => $arrTemplate) {
 // TODO: utf8_encode() may not be necessary in all cases.
 // It worked without it for me earlier, but was necessary for verkehrstheorie.ch
-                    $arrTemplate = array_map("utf8_encode", $arrTemplate);
+//                    $arrTemplate = array_map("utf8_encode", $arrTemplate);
                     if (   !empty($arrTemplate['from'])
                         && empty($arrFrom[$id])) {
                         $arrFrom[$id] = $arrTemplate['from'];
