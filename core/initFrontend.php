@@ -122,7 +122,7 @@ if ($incDoctrineStatus === false) {
 
 // Check if system is running
 if ($_CONFIG['systemStatus'] != 'on') {
-    header('Location: offline.html');
+    print file_get_contents(ASCMS_DOCUMENT_ROOT.'/offline.html');
     die(1);
 }
 Env::set('config', $_CONFIG);
