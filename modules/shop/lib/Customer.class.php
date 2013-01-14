@@ -715,13 +715,81 @@ class Customer extends User
 
         // For the migration, a temporary flag is needed in the orders table
         // in order to prevent mixing up old and new customer_id values.
-        $query = "
-            ALTER TABLE `".DBPREFIX."module_shop_orders`
-              ADD `migrated` TINYINT(1) unsigned NOT NULL default 0";
-        Cx\Lib\UpdateUtil::sql($query);
+        $table_order_name = DBPREFIX."module_shop_orders";
+        if (!Cx\Lib\UpdateUtil::column_exist($table_order_name, 'migrated')) {
+            $query = "
+                ALTER TABLE `$table_order_name`
+                  ADD `migrated` TINYINT(1) unsigned NOT NULL default 0";
+            Cx\Lib\UpdateUtil::sql($query);
+        }
 
-        $arrResellerId = array();
-        $arrCustomerId = array();
+        // Create missing UserGroups for customers and resellers
+        $objGroup = null;
+        $group_id_customer = SettingDb::getValue('usergroup_id_customer');
+        if ($group_id_customer) {
+            $objGroup = FWUser::getFWUserObject()->objGroup->getGroup(
+                $group_id_customer);
+        }
+        if (!$objGroup || $objGroup->EOF) {
+            $objGroup = FWUser::getFWUserObject()->objGroup->getGroups(
+                array('group_name' => 'Shop Endkunden'));
+        }
+        if (!$objGroup || $objGroup->EOF) {
+            $objGroup = new UserGroup();
+            $objGroup->setActiveStatus(true);
+            $objGroup->setDescription('Online Shop Endkunden');
+            $objGroup->setName('Shop Endkunden');
+            $objGroup->setType('frontend');
+        }
+//DBG::log("Group: ".var_export($objGroup, true));
+        if (!$objGroup) {
+            throw new Cx\Lib\Update_DatabaseException(
+               "Failed to create UserGroup for customers");
+        }
+//DBG::log("Customer::errorHandler(): Made customer usergroup: ".var_export($objGroup, true));
+        if (!$objGroup->store() || !$objGroup->getId()) {
+            throw new Cx\Lib\Update_DatabaseException(
+                "Failed to store UserGroup for customers");
+        }
+//DBG::log("Customer::errorHandler(): Stored customer usergroup, ID ".$objGroup->getId());
+        SettingDb::set('usergroup_id_customer', $objGroup->getId());
+        if (!SettingDb::update('usergroup_id_customer')) {
+            throw new Cx\Lib\Update_DatabaseException(
+               "Failed to store UserGroup ID for customers");
+        }
+        $group_id_customer = $objGroup->getId();
+        $objGroup = null;
+        $group_id_reseller = SettingDb::getValue('usergroup_id_reseller');
+        if ($group_id_reseller) {
+            $objGroup = FWUser::getFWUserObject()->objGroup->getGroup($group_id_reseller);
+        }
+        if (!$objGroup || $objGroup->EOF) {
+            $objGroup = FWUser::getFWUserObject()->objGroup->getGroups(
+                array('group_name' => 'Shop Wiederverkäufer'));
+        }
+        if (!$objGroup || $objGroup->EOF) {
+            $objGroup = new UserGroup();
+            $objGroup->setActiveStatus(true);
+            $objGroup->setDescription('Online Shop Wiederverkäufer');
+            $objGroup->setName('Shop Wiederverkäufer');
+            $objGroup->setType('frontend');
+        }
+        if (!$objGroup) {
+            throw new Cx\Lib\Update_DatabaseException(
+               "Failed to create UserGroup for resellers");
+        }
+//DBG::log("Customer::errorHandler(): Made reseller usergroup: ".var_export($objGroup, true));
+        if (!$objGroup->store() || !$objGroup->getId()) {
+            throw new Cx\Lib\Update_DatabaseException(
+                "Failed to store UserGroup for resellers");
+        }
+        SettingDb::set('usergroup_id_reseller', $objGroup->getId());
+        if (!SettingDb::update('usergroup_id_reseller')) {
+            throw new Cx\Lib\Update_DatabaseException(
+               "Failed to store UserGroup ID for resellers");
+        }
+        $group_id_reseller = $objGroup->getId();
+
         $default_lang_id = FWLanguage::getDefaultLangId();
         $query = "
             SELECT `customer`.`customerid`,
@@ -793,6 +861,17 @@ class Customer extends User
                 $objCustomer->password = $objResult->fields['password'];
                 $objCustomer->setFrontendLanguage($lang_id);
             }
+            if ($objResult->fields['is_reseller']) {
+                $objCustomer->setGroups(
+                    $objCustomer->getAssociatedGroupIds()
+                    + array($group_id_reseller));
+//DBG::log("Customer::errorHandler(): Added reseller: ".$objCustomer->id());
+            } else {
+                $objCustomer->setGroups(
+                    $objCustomer->getAssociatedGroupIds()
+                    + array($group_id_customer));
+//DBG::log("Customer::errorHandler(): Added customer: ".$objCustomer->id());
+            }
             if (!$objCustomer->store()) {
 //DBG::log(var_export($objCustomer, true));
                 throw new Cx\Lib\Update_DatabaseException(
@@ -801,25 +880,26 @@ class Customer extends User
                    " to Users (Messages: ".
                    join(', ', $objCustomer->error_msg).")");
             }
-            if ($objResult->fields['is_reseller']) {
-                $arrResellerId[$objCustomer->id()] = true;
-//DBG::log("Customer::errorHandler(): Added reseller: ".$objCustomer->id());
-            } else {
-                $arrCustomerId[$objCustomer->id()] = true;
-//DBG::log("Customer::errorHandler(): Added customer: ".$objCustomer->id());
-            }
             // Update the Orders table with the new Customer ID.
             // Note that we use the ambiguous old customer ID that may
             // coincide with a new User ID, so to prevent inconsistencies,
             // migrated Orders are marked as such.
             $query = "
-                UPDATE `".DBPREFIX."module_shop_orders`
+                UPDATE `$table_order_name`
                    SET `customer_id`=".$objCustomer->id().",
                        `migrated`=1
                  WHERE `customer_id`=$old_customer_id
                    AND `migrated`=0";
             Cx\Lib\UpdateUtil::sql($query);
+            // Drop migrated
+            $query = "
+                DELETE FROM `$table_name_old`
+                 WHERE `customerid`=$old_customer_id";
+            Cx\Lib\UpdateUtil::sql($query);
             $objResult->MoveNext();
+            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                return false;
+            }
         }
 
         // Remove the flag, it's no longer needed.
@@ -827,76 +907,9 @@ class Customer extends User
         // querying them with "[...] WHERE `migrated`=0", which *MUST* result
         // in an empty recordset.  This is left as an exercise for the reader.)
         $query = "
-            ALTER TABLE `".DBPREFIX."module_shop_orders`
+            ALTER TABLE `$table_order_name`
              DROP `migrated`";
         Cx\Lib\UpdateUtil::sql($query);
-
-        // Create missing UserGroups for customers and resellers
-        $objGroup = null;
-        $group_id_customer = SettingDb::getValue('usergroup_id_customer');
-        if ($group_id_customer) {
-            $objGroup = FWUser::getFWUserObject()->objGroup->getGroup(
-                $group_id_customer);
-        }
-        if (!$objGroup || $objGroup->EOF) {
-            $objGroup = FWUser::getFWUserObject()->objGroup->getGroups(
-                array('group_name' => 'Shop Endkunden'));
-        }
-        if (!$objGroup || $objGroup->EOF) {
-            $objGroup = new UserGroup();
-            $objGroup->setActiveStatus(true);
-            $objGroup->setDescription('Online Shop Endkunden');
-            $objGroup->setName('Shop Endkunden');
-            $objGroup->setType('frontend');
-        }
-//DBG::log("Group: ".var_export($objGroup, true));
-        if (!$objGroup) {
-            throw new Cx\Lib\Update_DatabaseException(
-               "Failed to create UserGroup for customers");
-        }
-        $objGroup->setUsers(array_keys($arrCustomerId));
-//DBG::log("Customer::errorHandler(): Made customer usergroup: ".var_export($objGroup, true));
-        if (!$objGroup->store() || !$objGroup->getId()) {
-            throw new Cx\Lib\Update_DatabaseException(
-                "Failed to store UserGroup for customers");
-        }
-//DBG::log("Customer::errorHandler(): Stored customer usergroup, ID ".$objGroup->getId());
-        SettingDb::set('usergroup_id_customer', $objGroup->getId());
-        if (!SettingDb::update('usergroup_id_customer')) {
-            throw new Cx\Lib\Update_DatabaseException(
-               "Failed to store UserGroup ID for customers");
-        }
-        $objGroup = null;
-        $group_id_reseller = SettingDb::getValue('usergroup_id_reseller');
-        if ($group_id_reseller) {
-            $objGroup = FWUser::getFWUserObject()->objGroup->getGroup($group_id_reseller);
-        }
-        if (!$objGroup || $objGroup->EOF) {
-            $objGroup = FWUser::getFWUserObject()->objGroup->getGroups(
-                array('group_name' => 'Shop Wiederverkäufer'));
-        }
-        if (!$objGroup || $objGroup->EOF) {
-            $objGroup = new UserGroup();
-            $objGroup->setActiveStatus(true);
-            $objGroup->setDescription('Online Shop Wiederverkäufer');
-            $objGroup->setName('Shop Wiederverkäufer');
-            $objGroup->setType('frontend');
-        }
-        if (!$objGroup) {
-            throw new Cx\Lib\Update_DatabaseException(
-               "Failed to create UserGroup for resellers");
-        }
-        $objGroup->setUsers(array_keys($arrResellerId));
-//DBG::log("Customer::errorHandler(): Made reseller usergroup: ".var_export($objGroup, true));
-        if (!$objGroup->store() || !$objGroup->getId()) {
-            throw new Cx\Lib\Update_DatabaseException(
-                "Failed to store UserGroup for resellers");
-        }
-        SettingDb::set('usergroup_id_reseller', $objGroup->getId());
-        if (!SettingDb::update('usergroup_id_reseller')) {
-            throw new Cx\Lib\Update_DatabaseException(
-               "Failed to store UserGroup ID for resellers");
-        }
 
         Cx\Lib\UpdateUtil::drop_table($table_name_old);
 
