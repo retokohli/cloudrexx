@@ -267,6 +267,7 @@ class ContentMigration
             }
         } else {
             if (!empty($_SESSION['contrexx_update']['nodes'])) {
+                \DBG::msg('Load nodes..');
                 foreach ($_SESSION['contrexx_update']['nodes'] as $catId => $nodeId) {
                     $node = $nodeRepo->find($nodeId);
                     $this->nodeArr[$catId] = $node;
@@ -428,7 +429,7 @@ class ContentMigration
                         return false;
                     }
         
-                    $node = $this->nodeArr[$catId];
+                    //$node = $this->nodeArr[$catId];
         
                     if ($objRecords->fields['parcat'] == 0 || !isset($this->nodeArr[$objRecords->fields['parcat']])) {
                         // Page was located on the first level in the site-tree.
@@ -441,6 +442,9 @@ class ContentMigration
                         $this->nodeArr[$catId]->setParent($this->nodeArr[$objRecords->fields['parcat']]);
                     }
 
+                    \DBG::msg('Migrate page '.$objRecords->fields['catname'].' (catid: '.$catId.' | lang: '.$objRecords->fields['lang'].')');
+                    self::$em->persist($this->nodeArr[$catId]);
+                    self::$em->flush();
                     $nodeRepo->moveDown($this->nodeArr[$catId], true);
                     self::$em->persist($this->nodeArr[$catId]);
                     
