@@ -310,8 +310,13 @@ class Resolver {
                 $this->isRedirection = true;
                 $this->resolve(true);
             } else { //external target - redirect via HTTP 302
-                header('Location: '.$target);
-                exit;
+                if (\FWValidator::isUri($target)) {
+                    header('Location: '.$target);
+                    exit;
+                } else {
+                    header('Location: '.ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageCodeById($this->lang).'/'.$target);
+                    exit;
+                }
             }
         }
 
