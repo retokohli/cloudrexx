@@ -132,7 +132,7 @@ function parseResponse(response)
             
             cx.ui.dialog({
                 width:         1020,
-                height:        900,
+                height:        800,
                 modal:         true,
                 closeOnEscape: false,
                 dialogClass:   "content-migration-dialog",
