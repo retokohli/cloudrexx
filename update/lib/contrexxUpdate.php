@@ -14,7 +14,7 @@ function debugUpdate()
     doUpdate(false, false, true)
 }
 
-function doUpdate(goBack, viaPost, debug)
+function doUpdate(goBack, viaPost, debug, timeout)
 {
     getDebugInfo = debug;
     type = viaPost ? 'POST' : 'GET';
@@ -28,7 +28,7 @@ function doUpdate(goBack, viaPost, debug)
 
         formData = getFormData(goBack);
 
-        if ($J("#processUpdate").length || $J("#doGroup").length) {
+        if ($J("#processUpdate").length || $J("#doGroup").length || timeout) {
             if (!getDebugInfo) {
                 setContent('<div style="margin: 180px 0 0 155px;">Bitte haben Sie einen Moment Geduld.<br /><?php $txt = 'Das Update wird durchgeführt...';print UPDATE_UTF8 ? $txt : utf8_decode($txt);?><br /><br /><img src="template/contrexx/images/content/loading_animation.gif" width="208" height="13" alt="" /></div>');
                 setNavigation('');
@@ -148,6 +148,9 @@ function parseResponse(response)
                     }
                 }
             });
+        } else if (oResponse.timeout) {
+            request_active = false;
+            doUpdate(false, false, false, true);
         } else {
             setContent(oResponse.content);
             setNavigation(oResponse.navigation);

@@ -58,7 +58,7 @@ class ContrexxUpdate
             $this->logout();
         }
 
-        if (isset($_GET['debug_update'])) {
+        if (isset($_GET['debug_update']) && $_GET['debug_update'] === 'true') {
             \DBG::activate(DBG_PHP | DBG_DB_ERROR | DBG_LOG); 
         }
         
@@ -76,6 +76,7 @@ class ContrexxUpdate
                     'logout'     => $this->html['logout'],
                     'navigation' => $this->html['navigation'],
                     'dialog'     => $this->html['dialog'],
+                    'timeout'    => $this->html['timeout'],
                 )
             ));
         }
@@ -144,7 +145,8 @@ class ContrexxUpdate
         if ($this->ajax) {
             $this->html['content'] = !UPDATE_UTF8 ? utf8_encode($this->html['content']) : $this->html['content'];
             $this->html['logout']  = $logout;
-            $this->html['dialog']  = !empty($this->html['dialog']) ? $this->html['dialog'] : '';
+            $this->html['dialog']  = !empty($this->html['dialog'])  ? $this->html['dialog']  : '';
+            $this->html['timeout'] = !empty($this->html['timeout']) ? $this->html['timeout'] : '';
         } else {
             $this->objTemplate->setVariable('LOGOUT_BUTTON', $logout);
         }
@@ -500,6 +502,8 @@ class ContrexxUpdate
                     } else {
                         $this->objTemplate->parse('dialogContent');
                     }
+                } else if (!empty($this->arrStatusMsg['timeout']) && empty($this->arrStatusMsg['error'])) {
+                    $this->html['timeout'] = $this->arrStatusMsg['timeout'];
                 } else {
                     $this->objTemplate->hideBlock('dialogContent');
                     $this->objTemplate->hideBlock('ajaxDialogContent');
@@ -1111,7 +1115,7 @@ function setUpdateMsg($msg, $type='error')
 {
     global $objUpdate;
 
-    if (!in_array($type, array('title', 'msg', 'error', 'button', 'dialog'))){
+    if (!in_array($type, array('title', 'msg', 'error', 'button', 'dialog', 'timeout'))){
         $type = 'error';
     }
     switch ($type) {
