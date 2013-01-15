@@ -189,7 +189,7 @@ class Shopmanager extends ShopLibrary
         self::$objTemplate->loadTemplateFile('module_shop_manufacturer.html');
         self::$objTemplate->setGlobalVariable($_ARRAYLANG);
 
-        $uri = Html::getRelativeUri_entities();
+        $uri = Html::getRelativeUri();
         Html::stripUriParam($uri, 'delete');
         $arrSorting = array(
           'id' => $_ARRAYLANG['TXT_SHOP_MANUFACTURER_ID'],
@@ -2522,7 +2522,7 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
     $group_id_customer = SettingDb::getValue('usergroup_id_customer');
     $group_id_reseller = SettingDb::getValue('usergroup_id_reseller');
 }
-        $uri = Html::getRelativeUri_entities();
+        $uri = Html::getRelativeUri();
 // TODO: Strip what URI parameters?
         Html::stripUriParam($uri, 'active');
         Html::stripUriParam($uri, 'customer_type');
@@ -3049,7 +3049,7 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
         $searchTerm = (empty($_REQUEST['searchterm'])
             ? null : trim(contrexx_input2raw($_REQUEST['searchterm'])));
 
-        $url = Html::getRelativeUri_entities();
+        $url = Html::getRelativeUri();
 // TODO: Strip URL parameters: Which?
 //        Html::stripUriParam($url, '');
         $arrSorting = array(
