@@ -1794,7 +1794,7 @@ CREATE TABLE `contrexx_module_gallery_comments` (
   `www` varchar(250) NOT NULL default '',
   `comment` text NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM ;
+) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -1838,7 +1838,7 @@ CREATE TABLE `contrexx_module_gallery_pictures` (
   `quality` tinyint(3) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   FULLTEXT KEY `galleryPicturesIndex` (`path`)
-) ENGINE=MyISAM;
+) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -1859,7 +1859,7 @@ CREATE TABLE `contrexx_module_gallery_votes` (
   `md5` varchar(32) NOT NULL default '',
   `mark` int(2) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM ;
+) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
