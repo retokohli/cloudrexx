@@ -260,14 +260,14 @@ class settingsManager
         // as every setting entry is already passed through htmlspecialchars() when
         // saved. See function updateSettings() below
         $objTemplate->setVariable(array(
-            'SETTINGS_CONTACT_EMAIL'                        => $arrSettings['contactFormEmail'],
-            'SETTINGS_CONTACT_COMPANY'                      => $arrSettings['contactCompany'],
-            'SETTINGS_CONTACT_ADDRESS'                      => $arrSettings['contactAddress'],
-            'SETTINGS_CONTACT_ZIP'                          => $arrSettings['contactZip'],
-            'SETTINGS_CONTACT_PLACE'                        => $arrSettings['contactPlace'],
-            'SETTINGS_CONTACT_COUNTRY'                      => $arrSettings['contactCountry'],
-            'SETTINGS_CONTACT_PHONE'                        => $arrSettings['contactPhone'],
-            'SETTINGS_CONTACT_FAX'                          => $arrSettings['contactFax'],
+            'SETTINGS_CONTACT_EMAIL'                        => contrexx_raw2xhtml($arrSettings['contactFormEmail']),
+            'SETTINGS_CONTACT_COMPANY'                      => contrexx_raw2xhtml($arrSettings['contactCompany']),
+            'SETTINGS_CONTACT_ADDRESS'                      => contrexx_raw2xhtml($arrSettings['contactAddress']),
+            'SETTINGS_CONTACT_ZIP'                          => contrexx_raw2xhtml($arrSettings['contactZip']),
+            'SETTINGS_CONTACT_PLACE'                        => contrexx_raw2xhtml($arrSettings['contactPlace']),
+            'SETTINGS_CONTACT_COUNTRY'                      => contrexx_raw2xhtml($arrSettings['contactCountry']),
+            'SETTINGS_CONTACT_PHONE'                        => contrexx_raw2xhtml($arrSettings['contactPhone']),
+            'SETTINGS_CONTACT_FAX'                          => contrexx_raw2xhtml($arrSettings['contactFax']),
             'SETTINGS_ADMIN_EMAIL'                          => $arrSettings['coreAdminEmail'],
             'SETTINGS_ADMIN_NAME'                           => $arrSettings['coreAdminName'],
             'SETTINGS_GLOBAL_TITLE'                         => $arrSettings['coreGlobalPageTitle'],
@@ -418,9 +418,9 @@ class settingsManager
                     $value = ($value == 'on') ? 'on' : 'off';
                     break;
             }
-            
+
             $objDatabase->Execute(' UPDATE `'.DBPREFIX.'settings`
-                                    SET `setvalue` = "'.contrexx_addslashes(htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET)).'"
+                                    SET `setvalue` = "'.contrexx_input2db($value).'"
                                     WHERE `setid` = '.intval($id));
         }
 
