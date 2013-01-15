@@ -90,6 +90,33 @@ function _galleryUpdate()
         }
     }
 
+    /**************************************************************************
+     * EXTENSION:   cleanup: delete translations, comments and                *
+     *              votes of inexisting pictures                              *
+     * ADDED:       Contrexx v3.0.1                                           *
+     **************************************************************************/
+    try {
+        \Cx\Lib\UpdateUtil::sql('
+            DELETE `language_pics`
+            FROM `'.DBPREFIX.'module_gallery_language_pics` as `language_pics` LEFT JOIN `'.DBPREFIX.'module_gallery_pictures` as `pictures` ON `pictures`.`id` = `language_pics`.`picture_id`
+            WHERE `pictures`.`id` IS NULL
+        ');
+
+        \Cx\Lib\UpdateUtil::sql('
+            DELETE `comments`
+            FROM `'.DBPREFIX.'module_gallery_comments` as `comments` LEFT JOIN `'.DBPREFIX.'module_gallery_pictures` as `pictures` ON `pictures`.`id` = `comments`.`picid`
+            WHERE `pictures`.`id` IS NULL
+        ');
+
+        \Cx\Lib\UpdateUtil::sql('
+            DELETE `votes`
+            FROM `'.DBPREFIX.'module_gallery_votes` as `votes` LEFT JOIN `'.DBPREFIX.'module_gallery_pictures` as `pictures` ON `pictures`.`id` = `votes`.`picid`
+            WHERE `pictures`.`id` IS NULL
+        ');
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
     return true;
 }
 
