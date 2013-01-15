@@ -64,6 +64,11 @@ class PageEventListener {
             
             foreach ($pages as $page) {
                 $aliases = array_merge($aliases, $page->getAliases());
+                $em->remove($page);
+                $uow->computeChangeSet(
+                    $em->getClassMetadata('Cx\Model\ContentManager\Page'),
+                    $page
+                );
             }
         } else if ($entity instanceof \Cx\Model\ContentManager\Page) {
             $aliases = $entity->getAliases();

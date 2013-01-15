@@ -10,7 +10,7 @@ use Doctrine\ORM\EntityRepository,
 
 class LogEntryRepositoryException extends \Exception {};
 
-class CxLogEntryRepository extends \Gedmo\Loggable\Entity\Repository\LogEntryRepository
+class CxLogEntryRepository extends LogEntryRepository
 {
     // Doctrine entity manager
     protected $em = null;
