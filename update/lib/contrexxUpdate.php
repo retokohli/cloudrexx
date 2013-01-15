@@ -225,6 +225,12 @@ $J(document).ready(function() {
 
 function delInAcLangs() {
     $J(".content-migration-select.inactive-language").toggle();
+    if ($J(".content-migration-select.inactive-language:visible").length) {
+        var selectWrapperWidth = $J('.content-migration-select').length * 320;
+    } else {
+        var selectWrapperWidth = $J('.content-migration-select:not(.inactive-language)').length * 320;
+    }
+    $J('.content-migration-select-wrapper').css('width', selectWrapperWidth + 'px');
 };
 
 function delPage() {

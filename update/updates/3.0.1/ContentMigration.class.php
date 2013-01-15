@@ -673,6 +673,8 @@ class ContentMigration
                         
                         $arrGlobals = array();
                         foreach ($arrGlobalDefinitions as $blockId => $arrValues) {
+                            // Set $global by default to 2
+                            $global = 2;
                             // If all languages of the block are global, set $global to 1 
                             if (!in_array(0, $arrValues)) {
                                 // Language id's of blocks where field 'all_pages' (global) is set to 1
@@ -685,8 +687,6 @@ class ContentMigration
                                 if ($globalLangIds == $activeLangIds) {
                                     $global = 1;
                                 }
-                            } else { // Otherwise set $global to 2
-                                $global = 2;
                             }
                             
                             \Cx\Lib\UpdateUtil::sql('
@@ -1060,6 +1060,7 @@ class ContentMigration
         $htmlOption = '<option value="%1$s_%2$s" class="%5$s" onclick="javascript:selectPage(this,%6$s)">%4$s</option>';
         
         $menu = '';
+        $countLanguages = 0;
         
         foreach ($this->availableFrontendLanguages as $lang) {
             $cl = \Env::get('ClassLoader');
@@ -1068,8 +1069,14 @@ class ContentMigration
             $objContentTree = new \UpdateContentTree($lang);
             $langName = \FWLanguage::getLanguageParameter($lang, 'name');
             $arrActiveLanguages = \FWLanguage::getIdArray();
-            $classInactiveLanguage = !in_array($lang, $arrActiveLanguages) ? 'inactive-language' : '';
             $options = '';
+            
+            if (!in_array($lang, $arrActiveLanguages)) {
+                $classInactiveLanguage = 'inactive-language';
+            } else {
+                $classInactiveLanguage = '';
+                $countLanguages++;
+            }
             
             foreach ($objContentTree->getTree() as $arrPage) {
                 $pageId = $nodes[$arrPage['node_id']][$arrPage['lang']];
@@ -1087,7 +1094,7 @@ class ContentMigration
         }
         
         $html .= '<div class="content-migration-select-scroll">';
-        $html .=     '<div class="content-migration-select-wrapper">';
+        $html .=     '<div class="content-migration-select-wrapper" style="width: ' . ($countLanguages * 320) . 'px;">';
         $html .=         $menu;
         $html .=     '</div>';
         $html .= '</div>';
