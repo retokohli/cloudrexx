@@ -45,6 +45,9 @@ if ($apcEnabled) {
     }
 }
 
+// Set frontend language id to German
+define('FRONTEND_LANG_ID', 1);
+
 // Update configuration
 require_once(dirname(__FILE__).'/config/configuration.php');
 
