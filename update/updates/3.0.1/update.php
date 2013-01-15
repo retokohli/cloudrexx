@@ -76,11 +76,15 @@ function executeContrexxUpdate() {
         // Migrate content
         if (empty($_SESSION['contrexx_update']['content_migrated'])) {
             DBG::msg('Migrate content');
-            if ($status = $contentMigration->migrate()) {
+            $status = $contentMigration->migrate();
+            if ($status === true) {
                 $_SESSION['contrexx_update']['content_migrated'] = true;
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                     return false;
                 }
+            } else if ($status === 'timeout') {
+                setUpdateMsg(1, 'timeout');
+                return false;
             } else {
                 return false;
             }

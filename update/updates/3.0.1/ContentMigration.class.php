@@ -188,7 +188,7 @@ class ContentMigration
             
             $_SESSION['contrexx_update']['tables_created'] = true;
             if (!checkMemoryLimit() || !checkTimeoutLimit()) {
-                return false;
+                return 'timeout';
             }
         }
         
@@ -263,7 +263,7 @@ class ContentMigration
             
             $_SESSION['contrexx_update']['nodes_added'] = true;
             if (!checkMemoryLimit() || !checkTimeoutLimit()) {
-                return false;
+                return 'timeout';
             }
         } else {
             if (!empty($_SESSION['contrexx_update']['nodes'])) {
@@ -317,7 +317,7 @@ class ContentMigration
                 while (!$objResult->EOF) {
                     if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                         $_SESSION['contrexx_update']['history_pages_index'] = $historyPagesIndex;
-                        return false;
+                        return 'timeout';
                     }
                     
                     $catId = $objResult->fields['catid'];
@@ -413,7 +413,7 @@ class ContentMigration
                 while (!$objRecords->EOF) {
                     if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                         $_SESSION['contrexx_update']['pages_index'] = $pagesIndex;
-                        return false;
+                        return 'timeout';
                     }
                     
                     $catId = $objRecords->fields['catid'];
