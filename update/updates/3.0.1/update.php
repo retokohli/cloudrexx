@@ -183,8 +183,6 @@ function executeContrexxUpdate() {
             setUpdateMsg('Die Datei \'' . $file . '\' konnte nicht erstellt/aktualisiert werden.');
             return false;
         }
-        
-        _response();
 
         return true;
     }
@@ -420,17 +418,8 @@ function executeContrexxUpdate() {
         setUpdateMsg('Die Datei \'' . $file . '\' konnte nicht erstellt/aktualisiert werden.');
         return false;
     }
-    
-    _response();
 
     return true;
-}
-
-function _response() {
-    global $_ARRAYLANG;
-    setUpdateMsg($_ARRAYLANG['TXT_FINISH_MSG'], 'msg');
-    setUpdateMsg($_ARRAYLANG['TXT_README_MSG'], 'msg');
-    setUpdateMsg(sprintf($_ARRAYLANG['TXT_FINISH_LINKS'], ASCMS_PATH_OFFSET, ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH), 'msg');
 }
 
 function getMissedModules() {
@@ -705,10 +694,10 @@ function _updateModuleRepository() {
     $dh = opendir(dirname(__FILE__) . '/components/core');
     if ($dh) {
 
-	$query = "TRUNCATE TABLE ".DBPREFIX."module_repository";
-	if ($objDatabase->Execute($query) === false) {
-		return _databaseError($query, $objDatabase->ErrorMsg());
-	}
+    $query = "TRUNCATE TABLE ".DBPREFIX."module_repository";
+    if ($objDatabase->Execute($query) === false) {
+        return _databaseError($query, $objDatabase->ErrorMsg());
+    }
         
         try {
             \Cx\Lib\UpdateUtil::table(
