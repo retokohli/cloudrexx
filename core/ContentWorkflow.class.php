@@ -305,9 +305,12 @@ class ContentWorkflow extends Module {
                         $slug     .= $page->getSlug().'<br />';
                     }
                     
+                    $data = array_shift($dataByLang);
+                    $linkPageId = $data['page']->getId();
+                    
                     $this->tpl->setVariable(array(
                         'HISTORY_ROW'                   => $intRowCount % 2 == 0 ? 'row1' : 'row2',
-                        'HISTORY_IMGDETAILS'            => '<a href="javascript:restoreDeleted(\''.$pageId.'\');"><img src="images/icons/import.gif" alt="'.$_CORELANG['TXT_DELETED_RESTORE'].'" title="'.$_CORELANG['TXT_DELETED_RESTORE'].'" border="0" align="middle" /></a>',
+                        'HISTORY_IMGDETAILS'            => '<a href="javascript:restoreDeleted(\''.$linkPageId.'\');"><img src="images/icons/import.gif" alt="'.$_CORELANG['TXT_DELETED_RESTORE'].'" title="'.$_CORELANG['TXT_DELETED_RESTORE'].'" border="0" align="middle" /></a>',
                         'HISTORY_RID'                   => $intRowCount,
                         'HISTORY_DATE'                  => $updated,
                         'HISTORY_LANGUAGE'              => $lang,
@@ -350,79 +353,75 @@ class ContentWorkflow extends Module {
     protected function restoreHistory() {
         \Permission::checkAccess(77, 'static');
         
+        // Create node
         $node = new \Cx\Model\ContentManager\Node();
         $node->setParent($this->nodeRepo->getRoot());
         $this->em->persist($node);
+        $this->em->flush();
         
-        $currentPage = new \Cx\Model\ContentManager\Page();
-        $currentPage->setId($this->pageId);
-        $logs = $this->logRepo->getLogEntries($currentPage);
-        $this->logRepo->revert($currentPage, $logs[1]->getVersion());
+        $arrData = $this->revertPage($this->pageId);
+        $currentPage    = $arrData['page'];
+        $logs           = $arrData['logs'];
         $nodeIdShadowed = $currentPage->getNodeIdShadowed();
-        $currentPage->setNode($node);
-        $this->em->persist($currentPage);
-        $this->em->flush();
         
-        // Delete 'remove' log
-        $this->em->remove($logs[0]);
-        $this->em->flush();
-        unset($logs[0]);
-        
-        foreach ($logs as $log) {
-            $log->setObjectId($currentPage->getId());
-            $this->em->persist($log);
-            $this->em->flush();
-        }
-        
-        // Delete old log entries
-        $logs = $this->logRepo->findByObjectId($this->pageId);
-        foreach ($logs as $log) {
-            $this->em->remove($log);
-            $this->em->flush();
-        }
-        
-        $currentPage->setNodeIdShadowed($node->getId());
-        $this->em->persist($currentPage);
-        $this->em->flush();
+        $this->restorePage($node, $currentPage, $logs);
         
         $logsRemove = $this->logRepo->getLogsByAction('remove');
         foreach ($logsRemove as $logRemove) {
-            $page = new \Cx\Model\ContentManager\Page();
-            $page->setId($logRemove->getObjectId());
-            $logs = $this->logRepo->getLogEntries($page);
-            $this->logRepo->revert($page, $logRemove->getVersion() - 1);
+            $arrData = $this->revertPage($logRemove->getObjectId());
+            $page    = $arrData['page'];
+            $logs    = $arrData['logs'];
             if ($page->getNodeIdShadowed() == $nodeIdShadowed) {
-                $page->setNode($node);
-                $this->em->persist($page);
-                $this->em->flush();
-                
-                // Delete 'remove' log
-                $this->em->remove($logs[0]);
-                $this->em->flush();
-                unset($logs[0]);
-                
-                foreach ($logs as $log) {
-                    $log->setObjectId($page->getId());
-                    $this->em->persist($log);
-                    $this->em->flush();
-                }
-                
-                // Delete old log entries
-                $logs = $this->logRepo->findByObjectId($logRemove->getObjectId());
-                foreach ($logs as $log) {
-                    $this->em->remove($log);
-                    $this->em->flush();
-                }
-                
-                $page->setNodeIdShadowed($node->getId());
-                $this->em->persist($page);
-                $this->em->flush();
+                $this->restorePage($node, $page, $logs);
             }
         }
         
         $this->redirectPage($currentPage->getId());
     }
-
+    
+    private function revertPage($pageId) {
+        $page = new \Cx\Model\ContentManager\Page();
+        $page->setId($pageId);
+        $logs = $this->logRepo->getLogEntries($page);
+        $this->logRepo->revert($page, $logs[1]->getVersion());
+        $page->setId(0);
+        
+        return array(
+            'page' => $page,
+            'logs' => $logs,
+        );
+    }
+    
+    private function restorePage($node, $page, $logs) {
+        // Save the restored page
+        $page->setNode($node);
+        $page->setNodeIdShadowed($node->getId());
+        $this->em->persist($page);
+        $this->em->flush();
+        $pageId = $page->getId();
+        
+        // Remove the new 'create' log
+        $newLogs = $this->logRepo->findByObjectId($pageId);
+        foreach ($newLogs as $newLog) {
+            $this->em->remove($newLog);
+        }
+        $this->em->flush();
+        
+        // Delete the 'remove' log
+        $this->em->remove($logs[0]);
+        unset($logs[0]);
+        
+        // Set the new object id in the old logs
+        foreach ($logs as $log) {
+            $log->setObjectId($pageId);
+            $logData = $log->getData();
+            $logData['nodeIdShadowed'] = $node->getId();
+            $log->setData($logData);
+            $this->em->persist($log);
+        }
+        $this->em->flush();
+    }
+    
     /**
      * Redirect to content manager (open site)
      *
