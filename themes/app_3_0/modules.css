@@ -459,13 +459,12 @@ div.row2 {
 #access div.letter_index,
 #access div.search,
 #access div.functions {
+    float: left;
     width: 100%;
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 15px 0px;
-    float:left;
-    height:auto !important;
+    padding: 0 0 15px 0;
 }
 #access div.message_error {
+    padding: 5px 0 10px 0;
     color: #ff0000;
 }
 #access div.message_ok {
@@ -1127,9 +1126,8 @@ div.row2 {
 }
 #shop .customer_old {
     float: left;
-    width: 48%;
-    padding: 0 2% 0 0;
-    margin: 0 2% 0 0;
+    width: 445px;
+    margin: 0 20px 0 0;
     border-right: 1px solid #DDDDDD;
 }
 #shop .customer_old p {
@@ -1145,8 +1143,7 @@ div.row2 {
     width: 248px;
 }
 #shop .customer_new {
-    float: left;
-    width: 47%;
+    display: block;
 }
 #shop .customer_old h2,
 #shop .customer_new h2 {
@@ -2618,4 +2615,11 @@ dl.data_module img {
 
 #checkout form #buttons input {
     width: auto;
+}
+
+/***************************/
+/* HIDE UPLOADER EMBED TAG */
+/***************************/
+#deployJavaPlugin {
+    display: none;
 }
