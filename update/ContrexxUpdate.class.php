@@ -515,13 +515,15 @@ class ContrexxUpdate
                     $this->setNavigation($this->arrStatusMsg['button']);
                 }
             } else {
-                $this->objTemplate->hideBlock('updateProcessError');
+                $this->objTemplate->hideBlock('dialogContent');
+                $this->objTemplate->hideBlock('ajaxDialogContent');
+                $this->objTemplate->hideBlock('processStatus');
                 $this->objTemplate->setVariable(array(
-                    'UPDATE_PROCESS_TITLE' => $_CORELANG['TXT_UPDATE_UPDATE_FINISHED'],
-                    'UPDATE_STATUS_TITLE'  => '<strong>'.$_CORELANG['TXT_UPDATE_UPDATE_FINISHED_SUCCESSFULL'].'</strong>',
-                    'UPDATE_STATUS'        => implode('<br />', $this->arrStatusMsg['msg'])
+                    'TXT_UPDATE_UPDATE_FINISHED'    => $_CORELANG['TXT_UPDATE_UPDATE_FINISHED'],
+                    'URL_FRONTEND'                  => ASCMS_PATH_OFFSET,
+                    'URL_BACKEND'                   => ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH,
                 ));
-                $this->setNavigation('');//<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="update" />');
+                $this->objTemplate->parse('finish');
                 $_SESSION['contrexx_update']['step'] = 0;
                 $_SESSION['contrexx_update']['update'] = array();
             }

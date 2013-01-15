@@ -105,22 +105,38 @@ body {
 
 
 /* text */
-h1 {
-    padding: 15px 0 10px 0;
+h1, h2, h3, h4, h5, h6 {
     margin: 0;
-    font-size: 24px;
     font-weight: normal;
+}
+
+h1 {
+    padding: 15px 0 8px 0;
+    font-size: 24px;
+}
+
+h2 {
+    padding: 14px 0 6px 0;
+    font-size: 18px;
+}
+
+h3, h4, h5, h6 {
+    padding: 13px 0 4px 0;
+    font-size: 13px;
+    font-weight: bold;
 }
 
 h1.first {
     padding: 0 0 15px 0;
 }
 
-h2 {
-    padding: 0 0 10px 0;
-    margin: 0;
-    font-size: 18px;
-    font-weight: normal;
+
+h1.no-space-top, h2.no-space-top, h3.no-space-top, h4.no-space-top, h5.no-space-top, h6.no-space-top {
+    padding-top: 0;
+}
+
+h1.no-space-bottom, h2.no-space-bottom, h3.no-space-bottom, h4.no-space-bottom, h5.no-space-bottom, h6.no-space-bottom {
+    padding-bottom: 0;
 }
 
 ul {
