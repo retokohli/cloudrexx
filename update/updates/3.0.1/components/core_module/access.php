@@ -749,6 +749,43 @@ function _accessUpdate()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+
+
+    // only update if installed version is at least a version 2.0.0
+    // older versions < 2.0 have a complete other structure of the content page and must therefore completely be reinstalled
+    if (!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.0.0')) {
+        try {
+            // migrate content page to version 3.0.1
+            $search = array(
+            '/(.*)/ms',
+            );
+            $callback = function($matches) {
+                $content = $matches[1];
+                if (empty($content)) {
+                    return $content;
+                }
+
+                // add missing access_captcha template block
+                if (!preg_match('/<!--\s+BEGIN\s+access_captcha\s+-->.*<!--\s+END\s+access_captcha\s+-->/ms', $content)) {
+                    $content = preg_replace('/(<\/fieldset>|)(\s*)(<p[^>]*>|)(\{ACCESS_SIGNUP_BUTTON\})(<\/p>|)/ms', '$2<!-- BEGIN access_captcha -->$2$3<label>{TXT_ACCESS_CAPTCHA}</label>{ACCESS_CAPTCHA_CODE}$5$2<!-- END access_captcha -->$2$1$2$3$4$5', $content);
+                }
+
+                // add missing access_newsletter template block
+                if (!preg_match('/<!--\s+BEGIN\s+access_newsletter\s+-->.*<!--\s+END\s+access_newsletter\s+-->/ms', $content)) {
+                    $content = preg_replace('/(\s*)(<p[^>]*>|)(\{ACCESS_SIGNUP_BUTTON\})(<\/p>|)/ms', '$1<!-- BEGIN access_newsletter -->$1<fieldset><legend>Newsletter abonnieren</legend>$1    <!-- BEGIN access_newsletter_list -->$1    <p>$1        <label for="access_user_newsletters-{ACCESS_NEWSLETTER_ID}">&nbsp;{ACCESS_NEWSLETTER_NAME}</label>$1        <input type="checkbox" name="access_user_newsletters[]" id="access_user_newsletters-{ACCESS_NEWSLETTER_ID}" value="{ACCESS_NEWSLETTER_ID}"{ACCESS_NEWSLETTER_SELECTED} />$1    </p>$1    <!-- END access_newsletter_list -->$1</fieldset>$1<!-- END access_newsletter -->$1$2$3$4', $content);
+                }
+
+                return $content;
+            };
+
+            \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'access', 'cmd' => 'signup'), $search, $callback, array('content'), '3.0.1');
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    }
+
+
+
     /***************************************
      *
      * ADD NETWORK TABLE FOR SOCIAL LOGIN
