@@ -235,8 +235,12 @@ class docSys extends docSysLibrary
 
                 $this->_objTpl->parse("row");
             }
-            $this->_objTpl->parse("table");
-            $this->_objTpl->hideBlock("nothing_found");
+            if ($this->_objTpl->blockExists('table')) {
+                $this->_objTpl->parse("table");
+            }
+            if ($this->_objTpl->blockExists('nothing_found')) {
+                $this->_objTpl->hideBlock("nothing_found");
+            }
         } else {
             /*
             $this->_objTpl->setVariable(array(
@@ -251,11 +255,15 @@ class docSys extends docSysLibrary
             $this->_objTpl->setVariable(array(
                 "TXT_NO_DOCUMENTS_FOUND" => $_ARRAYLANG['TXT_NO_DOCUMENTS_FOUND'],
             ));
-            $this->_objTpl->parse("nothing_found");
-            $this->_objTpl->hideBlock("table");
+            if ($this->_objTpl->blockExists('nothing_found')) {
+                $this->_objTpl->parse("nothing_found");
+            }
+            if ($this->_objTpl->blockExists('table')) {
+                $this->_objTpl->hideBlock("table");
+            }
         }
 
         return $this->_objTpl->get();
     }
 }
-?>
+
