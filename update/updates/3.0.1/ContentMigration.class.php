@@ -846,10 +846,10 @@ class ContentMigration
     public function pageGrouping()
     {
         // Fetch all pages
-        if (!isset($_POST['doGroup']) || (isset($_POST['doGroup']) && !$_POST['doGroup'])) {
+        /*if (!isset($_POST['doGroup']) || (isset($_POST['doGroup']) && !$_POST['doGroup'])) {
             self::$em->clear();
             return $this->getTreeCode();
-        }
+        }*/
 
         $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
         $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
@@ -859,16 +859,18 @@ class ContentMigration
         $nodeToRemove = array();
         $pageToRemove = array();
 
-        $arrSimilarPages = $_POST['similarPages'];
+        /*$arrSimilarPages = $_POST['similarPages'];
         $arrRemovePages  = $_POST['removePages'];
-        $delInAcLangs    = $_POST['delInAcLangs'];
+        $delInAcLangs    = $_POST['delInAcLangs'];*/
         
-        if ($delInAcLangs) {
+        //if ($delInAcLangs) {
             $arrLanguages = \FWLanguage::getLanguageArray();
             
             foreach ($arrLanguages as $arrLanguage) {
                 if (empty($arrLanguage['frontend'])) {
-                    $pagesOfInAcLang = $pageRepo->findBy(array('lang' => $arrLanguage['id']), true);
+                    $pagesOfInAcLang = $pageRepo->findBy(array(
+                        'lang' => $arrLanguage['id'],
+                    ), true);
                     foreach ($pagesOfInAcLang as $page) {
                         $node = $page->getNode();
                         $countPagesOfThisNode = count($node->getPages(true));
@@ -882,8 +884,10 @@ class ContentMigration
                 }
                 
                 self::$em->flush();
+                
+                return true;
             }
-        }
+        //}
         
         foreach ($arrRemovePages as $pageId) {
             $page = $pageRepo->find($pageId);

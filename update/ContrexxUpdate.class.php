@@ -243,22 +243,31 @@ class ContrexxUpdate
     {
         global $_CONFIG;
         
-        $arrUpdate = $this->getLoadedVersionInfo();
-        if ($arrUpdate) {
-            $arrRequirements = $this->getRequirements($arrUpdate);
-            
-            if (isset($_POST['skipRequirements']) && !$arrRequirements['incompatible']) {
-                $this->setNextStep();
-                $this->showStep();
-            } else if (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.1')) {
-                $_SESSION['contrexx_update']['step'] = 5;
-                $this->showStep();
-            } else {
-                $this->showRequirementsPage($arrRequirements);
+        $arrLangIds = FWLanguage::getIdArray();
+        if (count($arrLangIds) > 1) {
+            $this->objTemplate->addBlockfile('CONTENT', 'too_many_languages', 'too_many_languages.html');
+            $this->objTemplate->touchBlock('too_many_languages');
+            if ($this->ajax) {
+                $this->html['content'] = $this->objTemplate->get('too_many_languages');
             }
         } else {
-            $this->setPreviousStep();
-            $this->showStep();
+            $arrUpdate = $this->getLoadedVersionInfo();
+            if ($arrUpdate) {
+                $arrRequirements = $this->getRequirements($arrUpdate);
+                
+                if (isset($_POST['skipRequirements']) && !$arrRequirements['incompatible']) {
+                    $this->setNextStep();
+                    $this->showStep();
+                } else if (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.1')) {
+                    $_SESSION['contrexx_update']['step'] = 5;
+                    $this->showStep();
+                } else {
+                    $this->showRequirementsPage($arrRequirements);
+                }
+            } else {
+                $this->setPreviousStep();
+                $this->showStep();
+            }
         }
     }
     
