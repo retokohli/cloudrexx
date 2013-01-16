@@ -516,8 +516,8 @@ class DBG
         if ($val instanceof \Cx\Model\Base\EntityBase) {
             $val = \Doctrine\Common\Util\Debug::export($val, 2);
         } else if (is_array($val)) {
-            foreach ($val as &$entry) {
-                $entry = self::_escapeDoctrineDump($entry);
+            foreach ($val as $entry) {
+                self::_escapeDoctrineDump($entry);
             }
         }
     }
