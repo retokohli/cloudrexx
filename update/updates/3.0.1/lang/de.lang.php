@@ -17,7 +17,7 @@ $_ARRAYLANG = array(
     'TXT_UNABLE_UPGRADE_ACCESS_SYSTEM'              => 'Konnte das Berechtigungssystem nicht aktualisieren!',
     'TXT_UNABLE_DETERMINE_AVAILABLE_GROUPS'         => 'Konnte die vorhandenen System Gruppen nicht ermitteln!',
     'TXT_CHECK_CONTENT_PAGE_FOR_BUGS'               => 'Bitte überprüfen Sie bei den folgenden Inhaltsseiten das Layout und dessen Funktion auf ihre Korrektheit!',
-    'TXT_FINISH_MSG'                                => 'Gratulation, Sie haben die Version 3.0 Service Pack 1 erfolgreich installiert!',
+    'TXT_FINISH_MSG'                                => 'Gratulation, Sie haben die Version 3.0 Service Pack 1 erfolgreich installiert.',
     'TXT_README_MSG'                                => 'WICHTIG: Es wird dringend empfohlen die README Datei durchzulesen, da noch manuelle Änderungen, wie z.B. an den Inhaltsseiten, durchgeführt werden müssen! Das neue modules.css, sowie weitere aktuelle Informationen zum Release finden Sie <a href="http://www.contrexx.com/wiki/de/index.php/Version_3.0.0">hier</a>',
     'TXT_FINISH_LINKS'                              => '<a href="%s">Frontend</a><br /><a href="%s">Backend</a>',
     'TXT_UPDATE_DIRECTORY'                          => 'Verzeichnis Update...',

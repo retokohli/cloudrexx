@@ -477,7 +477,6 @@ class ContrexxUpdate
         } else {
             if (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.1')) {
                 $result = true;
-                _response();
             } else {
                 $result = executeContrexxUpdate();
             }
