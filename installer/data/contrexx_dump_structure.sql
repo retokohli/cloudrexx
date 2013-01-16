@@ -292,19 +292,6 @@ CREATE TABLE `contrexx_core_setting` (
   `value` text NOT NULL,
   `values` text NOT NULL,
   `ord` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`section`,`name`(32),`group`)
-) ENGINE=MyISAM;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_core_setting_new` (
-  `section` varchar(32) NOT NULL default '',
-  `name` varchar(255) NOT NULL default '',
-  `group` varchar(32) NOT NULL default '',
-  `type` varchar(32) NOT NULL default 'text',
-  `value` text NOT NULL,
-  `values` text NOT NULL,
-  `ord` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`section`,`name`,`group`)
 ) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
@@ -313,10 +300,10 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_text` (
   `id` int(10) unsigned NOT NULL default '0',
   `lang_id` int(10) unsigned NOT NULL default '1',
-  `section` tinytext NOT NULL,
-  `key` tinytext NOT NULL,
+  `section` varchar(32) NOT NULL default '',
+  `key` varchar(255) NOT NULL,
   `text` text NOT NULL,
-  PRIMARY KEY  (`id`,`lang_id`,`section`(32),`key`(32)),
+  PRIMARY KEY  (`id`,`lang_id`,`section`,`key`(32)),
   FULLTEXT KEY `text` (`text`)
 ) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
