@@ -31,7 +31,11 @@ class File implements FileInterface
         }
 
         // get the user-ID of the user running the PHP-instance
-        $phpUserId = posix_getuid();
+        if (function_exists('posix_getuid')) {
+            $phpUserId = posix_getuid();
+        } else {
+            $phpUserId = null;
+        }
 
         // check if the file we're going to work with is owned by the PHP user
         if ($fileOwnerUserId == $phpUserId) {
@@ -43,8 +47,13 @@ class File implements FileInterface
         // fetch FTP user-ID 
         $ftpConfig = \Env::get('ftpConfig');
         $ftpUsername = $ftpConfig['username'];
-        $ftpUserInfo = posix_getpwnam($ftpUsername);
-        $ftpUserId = $ftpUserInfo['uid'];
+        if (function_exists('posix_getpwnam')) {
+            $ftpUserInfo = posix_getpwnam($ftpUsername);
+            $ftpUserId = $ftpUserInfo['uid'];
+        } else {
+            $ftpUserId = null;
+        }
+     
 
         // check if the file we're going to work with is owned by the FTP user
         if ($fileOwnerUserId == $ftpUserId) {
