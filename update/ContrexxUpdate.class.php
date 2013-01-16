@@ -247,6 +247,7 @@ class ContrexxUpdate
         if (count($arrLangIds) > 1) {
             $this->objTemplate->addBlockfile('CONTENT', 'too_many_languages', 'too_many_languages.html');
             $this->objTemplate->touchBlock('too_many_languages');
+            $this->objTemplate->parse('too_many_languages');
             if ($this->ajax) {
                 $this->html['content'] = $this->objTemplate->get('too_many_languages');
             }
