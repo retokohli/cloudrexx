@@ -495,6 +495,9 @@ class ContrexxUpdate
                 if (!empty($this->arrStatusMsg['dialog']) && empty($this->arrStatusMsg['error'])) {
                     $this->objTemplate->hideBlock('processStatus');
                     $dialogContent = implode('<br />', $this->arrStatusMsg['msg']);
+                    if (!$this->ajax) {
+                        $dialogContent = str_replace('\'', '\\\'', $dialogContent);
+                    }
                     $this->objTemplate->setVariable('PROCESS_DIALOG_CONTENT', $dialogContent);
                     if ($this->ajax) {
                         $this->html['dialog'] = $this->arrStatusMsg['dialog'];
