@@ -285,14 +285,27 @@ SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_setting` (
-  `section` tinytext NOT NULL,
-  `name` tinytext NOT NULL,
-  `group` tinytext NOT NULL,
+  `section` varchar(32) NOT NULL default '',
+  `name` varchar(255) NOT NULL default '',
+  `group` varchar(32) NOT NULL default '',
   `type` varchar(32) NOT NULL default 'text',
   `value` text NOT NULL,
-  `values` text,
+  `values` text NOT NULL,
   `ord` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`section`(32),`name`(32),`group`(32))
+  PRIMARY KEY  (`section`,`name`(32),`group`)
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_setting_new` (
+  `section` varchar(32) NOT NULL default '',
+  `name` varchar(255) NOT NULL default '',
+  `group` varchar(32) NOT NULL default '',
+  `type` varchar(32) NOT NULL default 'text',
+  `value` text NOT NULL,
+  `values` text NOT NULL,
+  `ord` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`section`,`name`,`group`)
 ) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
