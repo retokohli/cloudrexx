@@ -475,21 +475,26 @@ class ContentMigration
     
     function _setPageRecords($objResult, $node, $page)
     {
+        $title         = html_entity_decode($objResult->fields['catname'], ENT_QUOTES, CONTREXX_CHARSET);
+        $contentTitle  = !empty($objResult->fields['title']) ? html_entity_decode($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET) : $title;
+        $metaTitle     = html_entity_decode($objResult->fields['metatitle'], ENT_QUOTES, CONTREXX_CHARSET);
+        $metaDesc      = html_entity_decode($objResult->fields['metadesc'], ENT_QUOTES, CONTREXX_CHARSET);
+        $metaKeys      = html_entity_decode($objResult->fields['metakeys'], ENT_QUOTES, CONTREXX_CHARSET);
+        $customContent = isset($objResult->fields['custom_content']) ? $objResult->fields['custom_content'] : '';
+        
         $page->setNode($node);
         $page->setNodeIdShadowed($node->getId());
         $page->setLang($objResult->fields['lang']);
         $page->setCaching($objResult->fields['cachingstatus']);
-        $page->setTitle($objResult->fields['catname']);
-        $contentTitle = !empty($objResult->fields['title']) ? $objResult->fields['title'] : $objResult->fields['catname'];
+        $page->setTitle($title);
         $page->setContentTitle($contentTitle);
-        $page->setSlug($objResult->fields['catname']);
-        $page->setContent($objResult->fields['content']);            
-        $customContent = isset($objResult->fields['custom_content']) ? $objResult->fields['custom_content'] : '';
+        $page->setSlug($title);
+        $page->setMetatitle($metaTitle);
+        $page->setMetadesc($metaDesc);
+        $page->setMetakeys($metaKeys);
         $page->setCustomContent($customContent);
+        $page->setContent($objResult->fields['content']);
         $page->setCssName($objResult->fields['css_name']);
-        $page->setMetatitle($objResult->fields['metatitle']);
-        $page->setMetadesc($objResult->fields['metadesc']);
-        $page->setMetakeys($objResult->fields['metakeys']);
         $page->setMetarobots($objResult->fields['metarobots']);
         $page->setDisplay($objResult->fields['displaystatus'] === 'on' ? 1 : 0);
         $page->setActive($objResult->fields['activestatus']);
@@ -972,16 +977,22 @@ class ContentMigration
             if (!$page->getModule()) continue;
 
             // group module pages
-            if (!isset ($group[$page->getModule()][$page->getCmd()])) {
+            if (!isset($group[$page->getModule()][$page->getCmd()])) {
                 $nodeId = $page->getNode()->getId();
+                $groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()] = $nodeId;
                 $group[$page->getModule()][$page->getCmd()] = $nodeId;
             } else {
-                $nodeId = $group[$page->getModule()][$page->getCmd()];
+                if (!isset($groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()])) {
+                    $nodeId = $group[$page->getModule()][$page->getCmd()];
+                    $groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()] = $nodeId;
+                } else {
+                    $nodeId = $page->getNode()->getId();
+                }
             }
-
+            
             $similarPages[$nodeId][] = $page->getId();
         }
-
+        
         // group pages of non-default languages 
         foreach ($pages as $page) {
             if ($page->getLang() == self::$defaultLang) {
@@ -992,11 +1003,17 @@ class ContentMigration
             if (!$page->getModule()) continue;
 
             // group module pages
-            if (!isset ($group[$page->getModule()][$page->getCmd()])) {
+            if (!isset($group[$page->getModule()][$page->getCmd()])) {
                 $nodeId = $page->getNode()->getId();
+                $groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()] = $nodeId;
                 $group[$page->getModule()][$page->getCmd()] = $nodeId;
             } else {
-                $nodeId = $group[$page->getModule()][$page->getCmd()];
+                if (!isset($groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()])) {
+                    $nodeId = $group[$page->getModule()][$page->getCmd()];
+                    $groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()] = $nodeId;
+                } else {
+                    $nodeId = $page->getNode()->getId();
+                }
             }
 
             $similarPages[$nodeId][] = $page->getId();
