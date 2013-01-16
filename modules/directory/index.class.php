@@ -70,7 +70,7 @@ class rssDirectory extends directoryLibrary
     {
         $this->pageContent = $pageContent;
 
-        $this->_objTpl = new \Cx\Core\Html\Sigma('.');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_DOCUMENT_ROOT);
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
