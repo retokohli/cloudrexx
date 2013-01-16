@@ -169,24 +169,14 @@ function executeContrexxUpdate() {
             setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/updateRc.php'));
             return false;
         }
-        
+
         $arrUpdate = $objUpdate->getLoadedVersionInfo();
         $_CONFIG['coreCmsVersion'] = $arrUpdate['cmsVersion'];
 
-        if (!in_array('coreLicense', $_SESSION['contrexx_update']['update']['done'])) {
-            $lupd = new License();
-            $result = $lupd->update();
-            // ignore error to allow offline installations
-            /*if ($result === false) {
-                if (empty($objUpdate->arrStatusMsg['title'])) {
-                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_LICENSE_DATA']), 'title');
-                }
-                return false;
-            } else {*/
-                $_SESSION['contrexx_update']['update']['done'][] = 'coreLicense';
-            //}
-        }
-        
+        $_GET['force'] = 'true';
+        $_GET['silent'] = 'true';
+        require_once(ASCMS_DOCUMENT_ROOT.'/core_modules/License/versioncheck.php');
+
         if (!createHtAccess()) {
             $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
             $file = $webServerSoftware == 'iis' ? 'web.config' : '.htaccess';
