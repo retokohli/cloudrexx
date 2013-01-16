@@ -551,6 +551,7 @@ function _accessUpdate()
     );
     try {
         \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array(), $pattern, $replacement, array('content', 'target'), '2.0.0');
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array('module' => 'community'), array('/community/', '/profile/', '/register/'), array('access', 'settings', 'signup'), array('module', 'cmd'), '2.0.0');
     }
     catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
