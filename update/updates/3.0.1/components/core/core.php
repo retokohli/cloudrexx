@@ -1463,6 +1463,7 @@ function _coreUpdate()
         );
 
         \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'languages` SET `app_themes_id` = `themesid` WHERE `app_themes_id` = 0');
+        \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'languages` SET `mobile_themes_id` = `themesid` WHERE `mobile_themes_id` = 0');
     } catch (\Cx\Lib\UpdateException $e) {
         // we COULD do something else here..
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
@@ -1553,6 +1554,35 @@ function _coreUpdate()
             }
             if ($changeNestedNavigationCss) {
                 changeNestedNavigationCss($theme);
+            }
+        }
+    }
+
+
+
+    /*****************************************
+     * EXTENSION:   {JAVASCRIPT} placeholder *
+     * ADDED:       Contrexx v2.1.0     *
+     *****************************************/
+    $path = ASCMS_DOCUMENT_ROOT.'/themes';
+    foreach (scandir($path) as $theme) {
+        if (!in_array($theme, array('.', '..', '.svn'))) {
+            $theme = $path.'/'.$theme;
+            $file = $theme.'/index.html';
+            if (file_exists($file)) {
+                try {
+                    $objFile = new \Cx\Lib\FileSystem\File($file);
+                    if (($data = $objFile->getData()) && !empty($data)) {
+                        if (strpos($data, '{JAVASCRIPT}') === false) {
+                            $data = preg_replace('/(\s*)<\/head>/ms', "$1    {JAVASCRIPT}$1</head>", $data);
+                            if ($data) {
+                                $objFile->write($data);
+                            }
+                        }
+                    }
+                } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                    \DBG::msg($e->getMessage());
+                }
             }
         }
     }

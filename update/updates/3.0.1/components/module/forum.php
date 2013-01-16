@@ -96,6 +96,75 @@ function _forumUpdate()
     }
 
 
+    /**********************************
+     * EXTENSION:   Content Migration *
+     * ADDED:       Contrexx v3.0.0   *
+     **********************************/
+    try {
+        // migrate content page to version 3.0.1
+        $search = array(
+        '/(.*)/ms',
+        );
+        $callback = function($matches) {
+            $content = $matches[1];
+            if (empty($content)) {
+                return $content;
+            }
+
+            // replace message textarea with {FORUM_MESSAGE_INPUT}
+            $content = preg_replace('/<textarea[^>]+name\s*=\s*[\'"]message[\'"][^>]*>.*?\{FORUM_MESSAGE\}.*?<\/textarea>/ms', '{FORUM_MESSAGE_INPUT}', $content);
+
+            if (!preg_match('/<!--\s+BEGIN\s+captcha\s+-->.*<!--\s+END\s+captcha\s+-->/ms', $content)) {
+                // migration for versions < 2.0
+
+                // add missing template block captcha
+                $content = preg_replace('/(.*)(<tr[^>]*>.*?<td[^>]*>.*?\{FORUM_CAPTCHA_IMAGE_URL\}.*?<\/td>.*?<\/tr>)/ms', '$1<!-- BEGIN captcha -->$2<!-- END captcha -->', $content);
+            }
+                
+            // add missing placeholder {FORUM_JAVASCRIPT_SCROLLTO}
+            if (strpos($content, '{FORUM_JAVASCRIPT_SCROLLTO}') === false) {
+                $content = '{FORUM_JAVASCRIPT_SCROLLTO}'.$content;
+            }
+
+            // hide deprecated marckup buttons
+            $content = preg_replace('/(<!--\s+)?(<input[^>]+onclick\s*=\s*[\'"]\s*addText\([^>]+>)(?:\s+-->)?/ms', '<!-- $2 -->', $content);
+
+            // replace image with {FORUM_CAPTCHA_CODE}
+            $content = preg_replace('/(<!--\s+BEGIN\s+captcha\s+-->.*)<img[^>]+\{FORUM_CAPTCHA_IMAGE_URL\}[^>]+>(?:<br\s*\/?>)?(.*<!--\s+END\s+captcha\s+-->)/ms', '$1{FORUM_CAPTCHA_CODE}$2', $content);
+
+            // replace text "Captcha-Code" with {TXT_FORUM_CAPTCHA}
+            $content = preg_replace('/(<!--\s+BEGIN\s+captcha\s+-->.*)Captcha-Code:?(.*<!--\s+END\s+captcha\s+-->)/ms', '$1{TXT_FORUM_CAPTCHA}$2', $content);
+
+            // remove <input type="text" name="captcha" id="captcha" />
+            $content = preg_replace('/(<!--\s+BEGIN\s+captcha\s+-->.*)<input[^>]+name\s*=\s*[\'"]captcha[\'"][^>]*>(.*<!--\s+END\s+captcha\s+-->)/ms', '$1$2', $content);
+
+            // remove <input type="hidden" name="offset" value="[[FORUM_CAPTCHA_OFFSET]]" />
+            $content = preg_replace('/(<!--\s+BEGIN\s+captcha\s+-->.*)<input[^>]+name\s*=\s*[\'"]offset[\'"][^>]*>(.*<!--\s+END\s+captcha\s+-->)/ms', '$1$2', $content);
+
+            // add missing block threadActions
+            if (!preg_match('/<!--\s+BEGIN\s+threadActions\s+-->.*<!--\s+END\s+threadActions\s+-->/ms', $content)) {
+                $threadActionHtml = <<<FORUM
+<!-- BEGIN threadActions --><br />
+    <span style="color: rgb(255, 0, 0);">{TXT_THREAD_ACTION_ERROR}&nbsp;</span><br />
+    <span style="color: #006900;">{TXT_THREAD_ACTION_SUCCESS}&nbsp;</span> <!-- BEGIN moveForm -->
+    <form action="index.php?section=forum&amp;cmd=thread&amp;action=move&amp;id={FORUM_THREAD_ID}" method="POST" name="frmThreadMove">
+        <select name="moveToThread" size="32" style="width:225px;"> {FORUM_THREADS} </select><br />
+        <input type="submit" value="{TXT_FORUM_THREAD_ACTION_MOVE}" />&nbsp;</form>
+    <!-- END moveForm --><!-- END threadActions -->
+FORUM;
+
+                $content = preg_replace('/(<!--\s+END\s+addPost\s+-->)/ms', '$1'.$threadActionHtml, $content);
+            }
+
+            return $content;
+        };
+
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'forum'), $search, $callback, array('content'), '3.0.1');
+    }
+    catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
     return true;
 }
 
