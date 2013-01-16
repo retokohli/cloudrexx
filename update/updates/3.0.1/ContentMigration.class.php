@@ -969,25 +969,22 @@ class ContentMigration
 
         // create base groups for defaultLang
         foreach ($pages as $page) {
-            if ($page->getLang() != self::$defaultLang) {
-                continue;
-            }
-
+            if ($page->getLang() != self::$defaultLang) continue;
+            
             // don't group regular pages
             if (!$page->getModule()) continue;
-
+            
+            // don't group if this module page (module and cmd) in this language already exists
+            if (isset($group[$page->getModule()][$page->getCmd()]) && isset($groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()])) continue;
+            
             // group module pages
             if (!isset($group[$page->getModule()][$page->getCmd()])) {
                 $nodeId = $page->getNode()->getId();
                 $groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()] = $nodeId;
                 $group[$page->getModule()][$page->getCmd()] = $nodeId;
             } else {
-                if (!isset($groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()])) {
-                    $nodeId = $group[$page->getModule()][$page->getCmd()];
-                    $groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()] = $nodeId;
-                } else {
-                    $nodeId = $page->getNode()->getId();
-                }
+                $nodeId = $group[$page->getModule()][$page->getCmd()];
+                $groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()] = $nodeId;
             }
             
             $similarPages[$nodeId][] = $page->getId();
@@ -995,27 +992,24 @@ class ContentMigration
         
         // group pages of non-default languages 
         foreach ($pages as $page) {
-            if ($page->getLang() == self::$defaultLang) {
-                continue;
-            }
-
+            if ($page->getLang() == self::$defaultLang) continue;
+            
             // don't group regular pages
             if (!$page->getModule()) continue;
-
+            
+            // don't group if this module page (module and cmd) in this language already exists
+            if (isset($group[$page->getModule()][$page->getCmd()]) && isset($groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()])) continue;
+            
             // group module pages
             if (!isset($group[$page->getModule()][$page->getCmd()])) {
                 $nodeId = $page->getNode()->getId();
                 $groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()] = $nodeId;
                 $group[$page->getModule()][$page->getCmd()] = $nodeId;
             } else {
-                if (!isset($groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()])) {
-                    $nodeId = $group[$page->getModule()][$page->getCmd()];
-                    $groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()] = $nodeId;
-                } else {
-                    $nodeId = $page->getNode()->getId();
-                }
+                $nodeId = $group[$page->getModule()][$page->getCmd()];
+                $groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()] = $nodeId;
             }
-
+            
             $similarPages[$nodeId][] = $page->getId();
         }
 
