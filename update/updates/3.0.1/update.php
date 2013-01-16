@@ -63,7 +63,7 @@ function executeContrexxUpdate() {
         // Migrate statistics - this must be done before migrating to the new content architecture
         if (empty($_SESSION['contrexx_update']['content_stats'])) {
             DBG::msg('Migrate stats');
-            if ($status = $contentMigration->migrateStatistics()) {
+            if ($contentMigration->migrateStatistics()) {
                 $_SESSION['contrexx_update']['content_stats'] = true;
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                     return false;
@@ -93,7 +93,7 @@ function executeContrexxUpdate() {
         // Migrate aliases
         if (empty($_SESSION['contrexx_update']['aliases_migrated'])) {
             DBG::msg('Migrate aliases');
-            if ($status = $contentMigration->migrateAliases()) {
+            if ($contentMigration->migrateAliases()) {
                 $_SESSION['contrexx_update']['aliases_migrated'] = true;
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                     return false;
@@ -105,6 +105,17 @@ function executeContrexxUpdate() {
         
         // Group pages if more than one language
         if (empty($_SESSION['contrexx_update']['pages_grouped'])) {
+            DBG::msg('Group pages');
+            if ($contentMigration->pageGrouping()) {
+                $_SESSION['contrexx_update']['pages_grouped'] = true;
+                if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        /*if (empty($_SESSION['contrexx_update']['pages_grouped'])) {
             DBG::msg('Group pages');
             $pageGrouping = $contentMigration->pageGrouping();
             
@@ -128,7 +139,7 @@ function executeContrexxUpdate() {
                 setUpdateMsg($arrDialogData, 'dialog');
                 return false;
             }
-        }
+        }*/
 
         // Drop old tables
         if (empty($_SESSION['contrexx_update']['old_tables_dropped'])) {
