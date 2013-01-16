@@ -2109,6 +2109,7 @@ class ContactManager extends ContactLib
                             case 'radio':
                             case 'select':
                             case 'textarea':
+                            default:
                                 print isset($formEntriesValues['data'][$fieldId]) ? $this->_escapeCsvValue($formEntriesValues['data'][$fieldId]) : '';
                                 break;
                             }                             
