@@ -779,7 +779,7 @@ class ContrexxUpdate
     
     private function checkModRewrite()
     {
-        if (!function_exists('apache_get_modules')) {
+        if (function_exists('apache_get_modules')) {
             $apacheModules = apache_get_modules();
             $modRewrite    = in_array('mod_rewrite', $apacheModules);
         } else {
