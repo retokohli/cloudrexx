@@ -83,23 +83,23 @@ function _calendarUpdate() {
     if ($calendarStatus) {
         $arrContentSites = array();
 
-        $arrContentSites[0]['module_id'] = 21;
+        $arrContentSites[0]['module'] = 'calendar';
         $arrContentSites[0]['cmd'] = '';
-        $arrContentSites[1]['module_id'] = 21;
+        $arrContentSites[1]['module'] = 'calendar';
         $arrContentSites[1]['cmd'] = 'eventlist';
-        $arrContentSites[2]['module_id'] = 21;
+        $arrContentSites[2]['module'] = 'calendar';
         $arrContentSites[2]['cmd'] = 'boxes';
 
 
         //insert new link placeholder in content, if module is active
         foreach ($arrContentSites as $key => $siteArray) {
             
-            $module_id = $siteArray['module_id'];
+            $module = $siteArray['module'];
             $cmd = $siteArray['cmd'];
             
             try {
                 \Cx\Lib\UpdateUtil::migrateContentPage(
-                    $module_id,
+                    $module,
                     $cmd,
                     '<a href="index.php?section=calendar&amp;cmd=event&amp;id={CALENDAR_ID}">{CALENDAR_TITLE}</a>',
                     '{CALENDAR_DETAIL_LINK}',
@@ -113,14 +113,14 @@ function _calendarUpdate() {
         
         try {
             \Cx\Lib\UpdateUtil::migrateContentPage(
-                21,
+                'calendar',
                 'sign',
                 '<input type="hidden" name="id" value="{CALENDAR_NOTE_ID}" />',
                 '<input type="hidden" name="id" value="{CALENDAR_NOTE_ID}" /><input type="hidden" name="date" value="{CALENDAR_NOTE_DATE}" />',
                 '3.0.0'
             );
             \Cx\Lib\UpdateUtil::migrateContentPage(
-                21,
+                'calendar',
                 'sign',
                 '<a href="index.php?section=calendar&amp;id={CALENDAR_NOTE_ID}">{TXT_CALENDAR_BACK}</a>',
                 '{CALENDAR_LINK_BACK}',

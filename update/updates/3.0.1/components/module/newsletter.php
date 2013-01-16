@@ -296,6 +296,8 @@ function _newsletterUpdate()
             )
         );
 
+        // switch to source mode for all newsletter content pages
+        \Cx\Lib\UpdateUtil::setSourceModeOnContentPage(array('module' => 'newsletter'), '3.0.1');
 
         // replace several placeholders that have changed
         $search = array(

@@ -212,6 +212,42 @@ function _directoryUpdate() {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+
+
+    /**********************************
+     * EXTENSION:   Content Migration *
+     * ADDED:       Contrexx v3.0.0   *
+     **********************************/
+    try {
+        // migrate content page to version 3.0.1
+        $search = array(
+        '/(.*)/ms',
+        );
+        $callback = function($matches) {
+            $content = $matches[1];
+            if (empty($content)) {
+                return $content;
+            }
+
+            // add missing placeholder {DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK}
+            if (strpos($content, '{DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK}') === false) {
+                $content .= "\n{DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK}";
+            }
+
+            // move placeholder {DIRECTORY_JAVASCRIPT} to the end of the content page
+            $content = str_replace('{DIRECTORY_JAVASCRIPT}', '', $content);
+            $content .= "\n{DIRECTORY_JAVASCRIPT}";
+
+            return $content;
+        };
+
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'directory'), $search, $callback, array('content'), '3.0.1');
+    }
+    catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
+
     return true;
 }
 

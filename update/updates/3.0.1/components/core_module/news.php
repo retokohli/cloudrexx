@@ -173,7 +173,7 @@ function _newsUpdate() {
     ************************************************/
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.1.0')) {
         try {
-            \Cx\Lib\UpdateUtil::migrateContentPage(8, null, '{NEWS_LINK}', '{NEWS_LINK_TITLE}', '2.1.0');
+            \Cx\Lib\UpdateUtil::migrateContentPage('news', null, '{NEWS_LINK}', '{NEWS_LINK_TITLE}', '2.1.0');
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
@@ -558,6 +558,55 @@ NEWS;
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
+
+
+
+    try {
+        // migrate content page to version 3.0.1
+        $search = array(
+        '/(.*)/ms',
+        );
+        $callback = function($matches) {
+            $content = $matches[1];
+            if (empty($content)) {
+                return $content;
+            }
+
+            // migrate to ckeditor
+            $content = str_replace('FCKeditorAPI.GetInstance(\'newsText\').SetData(\'\')', 'CKEDITOR.instances[\'newsText\'].setData()', $content);
+
+            if (!preg_match('/<!--\s+BEGIN\s+news_submit_form_captcha\s+-->.*<!--\s+END\s+news_submit_form_captcha\s+-->/ms', $content)) {
+                // check if captcha code is already present
+                if (preg_match('/\{IMAGE_URL\}/ms', $content)) {
+                    // add missing template block news_submit_form_captcha
+                    $content = preg_replace('/(.*)(<p[^>]*>.*?<label[^>]*>.*?\{IMAGE_URL\}.*?<\/p>)/ms', '$1<!-- BEGIN news_submit_form_captcha -->$2<!-- END news_submit_form_captcha -->', $content);
+                } else {
+                    // add whole captcha code incl. template block
+                    $content = preg_replace('/(.*)(<tr[^>]*>.*?<td([^>]*)>.*?\{NEWS_TEXT\}.*?(\s*)<\/tr>)/ms', '$1$2$4<!-- BEGIN news_submit_form_captcha -->$4<tr>$4    <td$3>{NEWS_CAPTCHA_CODE}</td>$4</tr>$4<!-- END news_submit_form_captcha -->', $content);
+                }
+            }
+
+            // add text variable
+            $content = str_replace('Captcha', '{TXT_NEWS_CAPTCHA}', $content);
+
+            // replace image with {NEWS_CAPTCHA_CODE}
+            $content = preg_replace('/<img[^>]+\{IMAGE_URL\}[^>]+>(?:<br\s*\/?>)?/ms', '{NEWS_CAPTCHA_CODE}', $content);
+
+            // remove {TXT_CAPTCHA}
+            $content = str_replace('{TXT_CAPTCHA}', '', $content);
+
+            // remove <input type="text" name="captcha" id="captcha" />
+            $content = preg_replace('/<input[^>]+name\s*=\s*[\'"]captcha[\'"][^>]*>/ms', '', $content);
+
+            return $content;
+        };
+
+
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'news', 'cmd' => 'submit'), $search, $callback, array('content'), '3.0.1');
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
 
     return true;
 }

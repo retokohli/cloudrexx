@@ -65,6 +65,71 @@ function _guestbookUpdate()
     }
 
 
+    /********************************
+     * EXTENSION:   Captcha         *
+     * ADDED:       Contrexx v3.0.0 *
+     ********************************/
+    try {
+        // switch to source mode for guestbook content page
+        \Cx\Lib\UpdateUtil::setSourceModeOnContentPage(array('module' => 'guestbook', 'cmd' => 'post'), '3.0.1');
+
+        // migrate content page to version 3.0.1
+        $search = array(
+        '/(.*)/ms',
+        );
+        $callback = function($matches) {
+            $content = $matches[1];
+            if (empty($content)) {
+                return $content;
+            }
+
+            $content = str_replace(array('nickname', 'NICKNAME'), array('name', 'NAME'), $content);
+
+            if (!preg_match('/<!--\s+BEGIN\s+guestbookForm\s+-->.*<!--\s+END\s+guestbookForm\s+-->/ms', $content)) {
+                $content = '<!-- BEGIN guestbookForm -->'.$content.'<!-- END guestbookForm -->';
+            }
+            if (!preg_match('/<!--\s+BEGIN\s+guestbookStatus\s+-->.*<!--\s+END\s+guestbookStatus\s+-->/ms', $content)) {
+                $content .= <<<STATUS_HTML
+<!-- BEGIN guestbookStatus -->
+{GUESTBOOK_STATUS}<br /><br />
+<a href="index.php?section=guestbook">Zurück zum Gästebuch</a>
+<!-- END guestbookStatus -->
+STATUS_HTML;
+            }
+
+            if (!preg_match('/<!--\s+BEGIN\s+guestbook_captcha\s+-->.*<!--\s+END\s+guestbook_captcha\s+-->/ms', $content)) {
+                // migrate captcha stuff
+                $newCaptchaCode = <<<CAPTCHA_HTML
+<!-- BEGIN guestbook_captcha -->
+<p><label for="coreCaptchaCode">{TXT_GUESTBOOK_CAPTCHA}</label>{GUESTBOOK_CAPTCHA_CODE}</p>
+<!-- END guestbook_captcha -->
+CAPTCHA_HTML;
+                $content = preg_replace('/<[^>]+\{IMAGE_URL\}.*\{CAPTCHA_OFFSET\}[^>]+>/ms', $newCaptchaCode, $content);
+            }
+
+            // this adds the missing placeholders [[FEMALE_CHECKED]], [[MALE_CHECKED]]
+            $pattern = '/(<input[^>]+name=[\'"]malefemale[\'"])([^>]*>)/ms';
+            if (preg_match_all($pattern, $content, $match)) {
+                foreach ($match[0] as $idx => $input) {
+                    // check if "checked"-placeholder is missing inputfield
+                    if (!preg_match('/\{(FE)?MALE_CHECKED\}/ms', $input)) {
+                        if (preg_match('/value\s*=\s*[\'"]F[\'"]/', $input)) {
+                            $content = str_replace($input, $match[1][$idx].' {FEMALE_CHECKED} '.$match[2][$idx], $content);
+                        } elseif (preg_match('/value\s*=\s*[\'"]M[\'"]/', $input)) {
+                            $content = str_replace($input, $match[1][$idx].' {MALE_CHECKED} '.$match[2][$idx], $content);
+                        }
+                    }
+                }
+            }
+
+            return $content;
+        };
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'guestbook', 'cmd' => 'post'), $search, $callback, array('content'), '3.0.1');
+    }
+    catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
     return true;
 }
 
