@@ -664,39 +664,42 @@ class ForumLibrary
     {
         global $_ARRAYLANG;
 
-        switch($_FILES[$inputName]['error']) {
-            case UPLOAD_ERR_OK:
-                $pathinfo = pathinfo($_FILES[$inputName]['name']);
-                $arrExtensions = explode(',', $this->_arrSettings['allowed_extensions']);
-                if (!in_array($pathinfo['extension'], $arrExtensions)) {
-                    $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf($_ARRAYLANG['TXT_FORUM_EXTENSION_NOT_ALLOWED'], $pathinfo['extension'], str_replace(',', ', ', $this->_arrSettings['allowed_extensions'])));
+        if (isset($_FILES[$inputName])) {
+            switch($_FILES[$inputName]['error']) {
+                case UPLOAD_ERR_OK:
+                    $pathinfo = pathinfo($_FILES[$inputName]['name']);
+                    $arrExtensions = explode(',', $this->_arrSettings['allowed_extensions']);
+                    if (!in_array($pathinfo['extension'], $arrExtensions)) {
+                        $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf($_ARRAYLANG['TXT_FORUM_EXTENSION_NOT_ALLOWED'], $pathinfo['extension'], str_replace(',', ', ', $this->_arrSettings['allowed_extensions'])));
+                        return false;
+                    }
+                    $newPath = ASCMS_FORUM_UPLOAD_PATH.'/';
+                    $newName = $_FILES[$inputName]['name'];
+                    $i=1;
+                    while(file_exists($newPath.$newName)) {
+                        $newName = $pathinfo['filename'].'_'.$i++.'.'.$pathinfo['extension'];
+                    }
+                    if (!move_uploaded_file($_FILES[$inputName]['tmp_name'], $newPath.$newName)) {
+                        $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_UPLOAD_NOT_MOVABLE']);
+                        return false;
+                    }
+                    return array(
+                        'name'      => contrexx_addslashes($newName),
+                        'path'      => $newPath,
+                        'size'      => $_FILES[$inputName]['size'],
+                    );
+                case UPLOAD_ERR_INI_SIZE:
+                case UPLOAD_ERR_FORM_SIZE:
+                    $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_UPLOAD_TOO_BIG']);
                     return false;
-                }
-                $newPath = ASCMS_FORUM_UPLOAD_PATH.'/';
-                $newName = $_FILES[$inputName]['name'];
-                $i=1;
-                while(file_exists($newPath.$newName)) {
-                    $newName = $pathinfo['filename'].'_'.$i++.'.'.$pathinfo['extension'];
-                }
-                if (!move_uploaded_file($_FILES[$inputName]['tmp_name'], $newPath.$newName)) {
-                    $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_UPLOAD_NOT_MOVABLE']);
+                case UPLOAD_ERR_PARTIAL:
+                    $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_UPLOAD_PARTIAL']);
                     return false;
-                }
-                return array(
-                    'name'      => contrexx_addslashes($newName),
-                    'path'      => $newPath,
-                    'size'      => $_FILES[$inputName]['size'],
-                );
-            case UPLOAD_ERR_INI_SIZE:
-            case UPLOAD_ERR_FORM_SIZE:
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_UPLOAD_TOO_BIG']);
-                return false;
-            case UPLOAD_ERR_PARTIAL:
-                $this->_objTpl->setVariable('TXT_FORUM_ERROR', $_ARRAYLANG['TXT_FORUM_UPLOAD_PARTIAL']);
-                return false;
-            case UPLOAD_ERR_NO_FILE:
+                case UPLOAD_ERR_NO_FILE:
+            }
         }
-           // default:
+
+        // default:
         return array(
             'name'      => '',
             'path'      => '',
