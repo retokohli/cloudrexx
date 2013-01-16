@@ -2631,6 +2631,7 @@ function _shopInstall()
                 'company_url' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'description'),
                 'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1', 'after' => 'company_url'),
                 'picture' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'status'),
+                'text' => array('type' => 'text', 'after' => 'picture'),
             ),
             null,
             'MyISAM',
