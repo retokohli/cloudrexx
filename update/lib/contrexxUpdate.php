@@ -237,6 +237,7 @@ function delInAcLangs() {
 };
 
 function delPage() {
+    ungroupPages(true);
     page = $J("select[id*=page_tree_].focus option:selected");
     if (page.length) {
         lang = page.parent().attr("id").match(/\d/)[0];
@@ -331,7 +332,7 @@ function groupPages() {
     }
 }
 
-function ungroupPages() {
+function ungroupPages(dontMove) {
     nodeId = null;
     pages = new Array();
     options = new Array();
@@ -359,7 +360,9 @@ function ungroupPages() {
         for (lang in options) {
             if (lang) {
                 options[lang].removeClass('grouped');
-                move2NextUngroupedPage(options[lang],lang);
+                if (!dontMove) {
+                    move2NextUngroupedPage(options[lang],lang);
+                }
             }
         }
     }
