@@ -122,19 +122,19 @@ class CsvLib
                 }
 
                 if ($dataAvailable || $looplimit == 1) {
-                    //set field names if they are specified in the first row
-                    if ($firstline && $columnNamesInFirstRow) {
-                        foreach ($data as $index => $field) {
-                            if (empty($field)){
-                                $field = "emptyField_$index";
-                            }
-                            $retdata['fieldnames'][] = $field;
-                        }
-                        $firstline = false;
-                    }
                     //add fields to data if it's not the first row and it contains only titles
                     if (!$firstline || !$columnNamesInFirstRow || $firstRowIsAlsoData) {
                         $retdata['data'][] = $data;
+                    }
+                    //set field names if they are specified in the first row
+                    if ($firstline && $columnNamesInFirstRow) {
+                    	foreach ($data as $index => $field) {
+                    		if (empty($field)){
+                    			$field = "emptyField_$index";
+                    		}
+                    		$retdata['fieldnames'][] = $field;
+                    	}
+                    	$firstline = false;
                     }
                 }
                 $limit--;
