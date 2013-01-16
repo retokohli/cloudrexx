@@ -959,7 +959,9 @@ class Forum extends ForumLibrary {
             ));
             $this->_objTpl->touchBlock('createPost');
             $this->_objTpl->hideBlock('updatePost');
-            $this->_objTpl->hideBlock('attachment');
+            if($this->_objTpl->blockExists('attachment')){
+                $this->_objTpl->hideBlock('attachment');
+            }
             $this->_objTpl->hideBlock('postEdit');
             $this->_objTpl->hideBlock('postQuote');
             $this->_objTpl->touchBlock('previewNewPost');
