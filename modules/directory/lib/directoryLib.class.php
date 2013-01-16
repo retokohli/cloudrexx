@@ -1196,6 +1196,7 @@ class directoryLibrary
 
         if ($this->dirLog != "error") {
             //create xml
+            \Env::get('ClassLoader')->loadFile(ASCMS_MODULE_PATH.'/directory/lib/xmlfeed.class.php');
             $objRSS = new rssFeed(0);
             $objRSS->channelTitle = $this->rssLatestTitle;
             $objRSS->channelDescription = $this->rssLatestDescription;
