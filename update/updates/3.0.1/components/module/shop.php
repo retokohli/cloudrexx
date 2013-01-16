@@ -1477,6 +1477,10 @@ function _shopInstall()
             'MyISAM',
             'cx3upgrade'
         );
+        Cx\Lib\UpdateUtil::sql("
+            ALTER TABLE `".DBPREFIX."core_mail_template`
+            ADD PRIMARY KEY (`key` (32), `section` (32))
+        ");
         \Cx\Lib\UpdateUtil::sql("
             INSERT INTO `".DBPREFIX."core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`)
             VALUES  ('customer_login', 'shop', 1, 1, 1),
@@ -1493,8 +1497,8 @@ function _shopInstall()
                 'name' => array('type' => 'VARCHAR(255)', 'default' => '', 'primary' => true),
                 'group' => array('type' => 'VARCHAR(32)', 'default' => '', 'primary' => true),
                 'type' => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => 'text', 'after' => 'group'),
-                'value' => array('type' => 'text', 'after' => 'type'),
-                'values' => array('type' => 'text', 'after' => 'value'),
+                'value' => array('type' => 'text', 'notnull' => true, 'after' => 'type'),
+                'values' => array('type' => 'text', 'notnull' => true, 'after' => 'value'),
                 'ord' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'values'),
             ),
             null,
@@ -1581,8 +1585,8 @@ function _shopInstall()
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
                 'lang_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'primary' => true, 'after' => 'id'),
-                'section' => array('type' => 'VARCHAR(32)', 'primary' => true, 'after' => 'lang_id'),
-                'key' => array('type' => 'VARCHAR(255)', 'primary' => true, 'after' => 'section'),
+                'section' => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => '', 'primary' => true, 'after' => 'lang_id'),
+                'key' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'primary' => true, 'after' => 'section'),
                 'text' => array('type' => 'text', 'after' => 'key'),
             ),
             array(
@@ -2562,7 +2566,7 @@ function _shopInstall()
                 'lang_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'host'),
                 'browser' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'lang_id'),
                 'note' => array('type' => 'text', 'after' => 'browser'),
-                'modified_on' => array('type' => 'timestamp', 'after' => 'note'),
+                'modified_on' => array('type' => 'timestamp', 'notnull' => false, 'default' => NULL, 'after' => 'note'),
                 'modified_by' => array('type' => 'VARCHAR(50)', 'notnull' => false, 'after' => 'modified_on'),
                 'billing_gender' => array('type' => 'VARCHAR(50)', 'notnull' => false, 'after' => 'modified_by'),
                 'billing_company' => array('type' => 'VARCHAR(100)', 'notnull' => false, 'after' => 'billing_gender'),
@@ -2622,12 +2626,11 @@ function _shopInstall()
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'type' => array('type' => 'ENUM(\'internal\',\'external\')', 'notnull' => true, 'default' => 'internal', 'after' => 'id'),
-                'name' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'type'),
+                'name' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'type'),
                 'description' => array('type' => 'text', 'after' => 'name'),
                 'company_url' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'description'),
                 'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1', 'after' => 'company_url'),
-                'picture' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'status'),
-                'text' => array('type' => 'text', 'after' => 'picture'),
+                'picture' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'status'),
             ),
             null,
             'MyISAM',
