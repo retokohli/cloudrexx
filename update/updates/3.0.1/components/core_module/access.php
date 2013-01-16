@@ -540,8 +540,8 @@ function _accessUpdate()
      **********************************/
     // only execute this part for versions < 2.0.0
     $pattern = array(
-        '/section=community&(&amp;|)?cmd=profile/',
-        '/section=community&(&amp;|)?cmd=register/',
+        '/section=community&(amp;)?cmd=profile/',
+        '/section=community&(amp;)?cmd=register/',
         '/section=community/',
     );
     $replacement = array(
