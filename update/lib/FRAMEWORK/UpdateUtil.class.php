@@ -600,10 +600,12 @@ class UpdateUtil
                             $pageAttributeValue = call_user_func(array($page, "get".ucfirst($pageAttribute)));
 
                             // apply replace on attribute
-                            $pageAttributeValue = preg_replace($pattern, $replacement, $pageAttributeValue);
+                            $pageAttributeValueChanged = preg_replace($pattern, $replacement, $pageAttributeValue);
 
-                            if ($pageAttributeValue !== null) {
-                                call_user_func(array($page, "set".ucfirst($pageAttribute)), $pageAttributeValue);
+                            if (   $pageAttributeValueChanged !== null
+                                && $pageAttributeValueChanged != $pageAttributeValue
+                            ) {
+                                call_user_func(array($page, "set".ucfirst($pageAttribute)), $pageAttributeValueChanged);
                                 $em->persist($page);
                             }
                         }
@@ -644,10 +646,12 @@ class UpdateUtil
                             $pageAttributeValue = call_user_func(array($page, "get".ucfirst($pageAttribute)));
 
                             // apply replace on attribute
-                            $pageAttributeValue = preg_replace_callback($pattern, $callback, $pageAttributeValue);
+                            $pageAttributeValueChanged = preg_replace_callback($pattern, $callback, $pageAttributeValue);
 
-                            if ($pageAttributeValue !== null) {
-                                call_user_func(array($page, "set".ucfirst($pageAttribute)), $pageAttributeValue);
+                            if (   $pageAttributeValueChanged !== null
+                                && $pageAttributeValueChanged != $pageAttributeValue
+                            ) {
+                                call_user_func(array($page, "set".ucfirst($pageAttribute)), $pageAttributeValueChanged);
                                 $em->persist($page);
                             }
                         }
@@ -655,6 +659,33 @@ class UpdateUtil
                             \DBG::log("Migrating page failed: ".$e->getMessage());
                             throw new UpdateException('Bei der Migration einer Inhaltsseite trat ein Fehler auf! '.$e->getMessage());
                         }
+                    }
+                }
+            }
+            $em->flush();
+        }
+    }
+
+    public static function setSourceModeOnContentPage($criteria, $changeVersion)
+    {
+        global $objUpdate, $_CONFIG;
+
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $changeVersion)) {
+            $em = \Env::em();
+            $pages = $em->getRepository('Cx\Model\ContentManager\Page')->findBy($criteria, true);
+            foreach ($pages as $page) {
+                if ($page) {
+                    if (!checkMemoryLimit()) {
+                        throw new UpdateException();
+                    }
+                    try {
+                        // set source mode to content page
+                        $page->setSourceMode(true);
+                        $em->persist($page);
+                    }
+                    catch (\Exception $e) {
+                        \DBG::log("Setting source mode to page failed: ".$e->getMessage());
+                        throw new UpdateException('Bei der Migration einer Inhaltsseite trat ein Fehler auf! '.$e->getMessage());
                     }
                 }
             }
