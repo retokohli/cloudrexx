@@ -38,6 +38,42 @@ function _podcastUpdate() {
         return _databaseError($query, $objDatabase->ErrorMsg());
     }
 
+
+
+    // only update if installed version is at least a version 2.0.0
+    // older versions < 2.0 have a complete other structure of the content page and must therefore completely be reinstalled
+    if (!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.0.0')) {
+        try {
+            // migrate content page to version 3.0.1
+            $search = array(
+            '/(.*)/ms',
+            );
+            $callback = function($matches) {
+                $content = $matches[1];
+                if (empty($content)) {
+                    return $content;
+                }
+
+                // add missing placeholder {PODCAST_JAVASCRIPT}
+                if (strpos($content, '{PODCAST_JAVASCRIPT}') === false) {
+                    $content .= "\n{PODCAST_JAVASCRIPT}";
+                }
+
+                // add missing placeholder {PODCAST_PAGING}
+                if (strpos($content, '{PODCAST_PAGING}') === false) {
+                    $content = preg_replace('/(\s+)(<!--\s+END\s+podcast_media\s+-->)/ms', '$1$2$1<div class="noMedium">$1    {PODCAST_PAGING}$1</div>', $content);
+                }
+
+                return $content;
+            };
+
+            \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'podcast'), $search, $callback, array('content'), '3.0.1');
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    }
+
+
     return true;
 }
 

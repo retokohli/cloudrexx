@@ -118,6 +118,47 @@ function _blogUpdate() {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+
+    try {
+        // migrate content page to version 3.0.1
+        $search = array(
+        '/(.*)/ms',
+        );
+        $callback = function($matches) {
+            $content = $matches[1];
+            if (empty($content)) {
+                return $content;
+            }
+
+            // replace placeholder {TXT_COMMENT_ADD_SPAM} with {TXT_COMMENT_CAPTCHA}
+            $content = str_replace('{TXT_COMMENT_ADD_SPAM}', '{TXT_COMMENT_CAPTCHA}', $content);
+
+            // replace <img src="[[BLOG_DETAILS_COMMENT_ADD_SPAM_URL]]" alt="[[BLOG_DETAILS_COMMENT_ADD_SPAM_ALT]]" title="[[BLOG_DETAILS_COMMENT_ADD_SPAM_ALT]]" /> with {COMMENT_CAPTCHA_CODE}
+            $content = preg_replace('/<img[^>]+\{BLOG_DETAILS_COMMENT_ADD_SPAM_URL\}[^>]+>/ms', '{COMMENT_CAPTCHA_CODE}', $content);
+
+            // remove <input type="text" name="frmAddComment_Captcha" />
+            $content = preg_replace('/<input[^>]+name\s*=\s*[\'"]frmAddComment_Captcha[^>]+>/ms', '', $content);
+
+            // remove <input type="hidden" name="frmAddComment_Offset" value="[[BLOG_DETAILS_COMMENT_ADD_SPAM_OFFSET]]" />
+            $content = preg_replace('/<(div|p)[^>]*>\s*<input[^>]+name\s*=\s*[\'"]frmAddComment_Offset[^>]+>\s*<\/(div|p)>/ms', '', $content);
+
+            // add missing comment_captcha template block
+            if (!preg_match('/<!--\s+BEGIN\s+comment_captcha\s+-->.*<!--\s+END\s+comment_captcha\s+-->/ms', $content)) {
+                $content = preg_replace('/(.*)(<(div|p)[^{]*?>.*?\{TXT_COMMENT_CAPTCHA\}.*?\{COMMENT_CAPTCHA_CODE\}.*?<\/\3>)/ms', '$1<!-- BEGIN comment_captcha -->$2<!-- END comment_captcha -->', $content, -1, $count);
+                if (!$count) {
+                    $content = preg_replace('/(.*)(<(div|p)[^{]*?>.*?\{COMMENT_CAPTCHA_CODE\}.*?<\/\3>)/ms', '$1<!-- BEGIN comment_captcha -->$2<!-- END comment_captcha -->', $content, -1, $count);
+                }
+            }
+
+            return $content;
+        };
+
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'blog', 'cmd' => 'details'), $search, $callback, array('content'), '3.0.1');
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
+
     /**
      * Everything went fine. Return without any errors.
      */
