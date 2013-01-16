@@ -884,9 +884,9 @@ class ContentMigration
                 }
                 
                 self::$em->flush();
-                
-                return true;
             }
+            
+            return true;
         //}
         
         foreach ($arrRemovePages as $pageId) {
