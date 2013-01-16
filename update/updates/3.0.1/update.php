@@ -173,9 +173,12 @@ function executeContrexxUpdate() {
         $arrUpdate = $objUpdate->getLoadedVersionInfo();
         $_CONFIG['coreCmsVersion'] = $arrUpdate['cmsVersion'];
 
-        $_GET['force'] = 'true';
-        $_GET['silent'] = 'true';
-        require_once(ASCMS_DOCUMENT_ROOT.'/core_modules/License/versioncheck.php');
+        try {
+            $request = new \HTTP_Request2(ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/core_modules/License/versioncheck.php?force=true&silent=true', \HTTP_Request2::METHOD_POST);
+            $response = $request->send();
+        } catch (\HTTP_Request2_Exception $e) {
+            \DBG::log($e->getMessage());
+        }
 
         if (!createHtAccess()) {
             $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
