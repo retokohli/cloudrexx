@@ -470,6 +470,7 @@ function _downloadsInstall()
                 'type'           => array('type' => 'ENUM(\'file\',\'url\')', 'notnull' => true, 'default' => 'file', 'after' => 'is_active'),
                 'info_page'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'type')
             ),
+            null,
             'MyISAM',
             'cx3upgrade'
         );
