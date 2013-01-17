@@ -171,8 +171,6 @@ if (SettingDb::getValue('use_js_cart') === NULL) {
                 self::confirm();
                 break;
             case 'lsv':
-                self::viewpart_lsv();
-                break;
             case 'lsv_form':
                 self::view_lsv_form();
                 break;
@@ -2934,9 +2932,6 @@ die("Shop::processRedirect(): This method is obsolete!");
     {
         global $_ARRAYLANG;
 
-        $shopAddress = (SettingDb::getValue('shop_address')
-            ? SettingDb::getValue('shop_address') : '');
-        $shopAddress = preg_replace('/[\012\015]+/', ', ', $shopAddress);
         self::$objTemplate->setGlobalVariable($_ARRAYLANG);
         self::$objTemplate->setVariable(array(
             'SHOP_CUSTOMER_TITLE' => (isset($_SESSION['shop']['gender'])
@@ -2965,8 +2960,11 @@ die("Shop::processRedirect(): This method is obsolete!");
             'SHOP_CUSTOMER_ACCOUNT' => '', // not available
             'SHOP_DATE' => date(ASCMS_DATE_FORMAT_DATE),
             'SHOP_FAX' => contrexx_raw2xhtml(SettingDb::getValue('fax')),
-            'SHOP_COMPANY' => contrexx_raw2xhtml(SettingDb::getValue('shop_company')),
-            'SHOP_ADDRESS' => contrexx_raw2xhtml($shopAddress),
+            'SHOP_COMPANY' => contrexx_raw2xhtml(
+                SettingDb::getValue('company')),
+            'SHOP_ADDRESS' => contrexx_raw2xhtml(
+                preg_replace('/[\012\015]+/', ', ',
+                    SettingDb::getValue('address'))),
         ));
     }
 
@@ -3876,6 +3874,7 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
     {
         if (self::$objTemplate->blockExists('shopShipper')) {
 // TODO: Should be set by the calling view, if any
+            global $_ARRAYLANG;
             self::$objTemplate->setGlobalVariable($_ARRAYLANG + array(
                 'SHOP_CURRENCY_SYMBOL' => Currency::getActiveCurrencySymbol(),
                 'SHOP_CURRENCY_CODE' => Currency::getActiveCurrencyCode(),
