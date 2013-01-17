@@ -469,7 +469,9 @@ function _downloadsInstall()
                 'is_active'      => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'id'),
                 'type'           => array('type' => 'ENUM(\'file\',\'url\')', 'notnull' => true, 'default' => 'file', 'after' => 'is_active'),
                 'info_page'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'type')
-            )
+            ),
+            'MyISAM',
+            'cx3upgrade'
         );
 
         \Cx\Lib\UpdateUtil::table(
