@@ -241,10 +241,10 @@ class ContrexxUpdate
     
     private function showRequirements()
     {
-        global $_CONFIG;
+        global $_CONFIG, $objUpdate;
         
         $arrLangIds = FWLanguage::getIdArray();
-        if (count($arrLangIds) > 1) {
+        if (count($arrLangIds) > 1 && $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
             $this->objTemplate->addBlockfile('CONTENT', 'too_many_languages', 'too_many_languages.html');
             $this->objTemplate->touchBlock('too_many_languages');
             $this->objTemplate->parse('too_many_languages');
