@@ -196,6 +196,7 @@ class ContentMigration
         $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
 
         $this->nodeArr = array();
+        $activeLangIds = implode(',', \FWLanguage::getIdArray());
         
         if (empty($_SESSION['contrexx_update']['root_node_added'])) {
             // This will be the root of the site-tree
@@ -225,11 +226,13 @@ class ContentMigration
                           FROM `'.DBPREFIX.'content_navigation_history` AS tnh
                     INNER JOIN `'.DBPREFIX.'content_history` AS tch
                             ON tch.`id` = tnh.`id`
+                         WHERE tnh.`lang` IN (' . $activeLangIds . ')
                     UNION DISTINCT
                         SELECT `catid`, `parcat`, `lang`, `displayorder`
                           FROM `'.DBPREFIX.'content_navigation` AS tn
                     INNER JOIN `'.DBPREFIX.'content` AS tc
                             ON tc.`id` = tn.`catid`
+                         WHERE tn.`lang` IN (' . $activeLangIds . ')
                       ORDER BY `parcat`, `displayorder`, `lang` ASC
                 ');
             } catch (\Cx\Lib\UpdateException $e) {
@@ -302,7 +305,9 @@ class ContentMigration
                     INNER JOIN `' . DBPREFIX . 'content_navigation_history` AS nav
                     ON         cn.id = nav.id
                     INNER JOIN `' . DBPREFIX . 'content_logfile` AS cnlog
-                    ON         cn.id = cnlog.history_id ORDER BY cnlog.id ASC
+                    ON         cn.id = cnlog.history_id
+                    WHERE      nav.`lang` IN (' . $activeLangIds . ')
+                    ORDER BY cnlog.id ASC
                     ' . $limit . '
                 ');
             } catch (\Cx\Lib\UpdateException $e) {
@@ -399,6 +404,7 @@ class ContentMigration
                     INNER JOIN `' . DBPREFIX . 'content_navigation` AS nav
                     ON         cn.id = nav.catid
                     WHERE      cn.id
+                    AND        nav.`lang` IN (' . $activeLangIds . ')
                     ORDER BY   nav.parcat ASC, nav.displayorder ASC
                     ' . $limit . '
                 ');
@@ -846,11 +852,11 @@ class ContentMigration
     public function pageGrouping()
     {
         // Fetch all pages
-        /*if (!isset($_POST['doGroup']) || (isset($_POST['doGroup']) && !$_POST['doGroup'])) {
+        if (!isset($_POST['doGroup']) || (isset($_POST['doGroup']) && !$_POST['doGroup'])) {
             self::$em->clear();
             return $this->getTreeCode();
-        }*/
-
+        }
+        
         $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
         $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
         
@@ -858,12 +864,13 @@ class ContentMigration
         $group = array();
         $nodeToRemove = array();
         $pageToRemove = array();
-
-        /*$arrSimilarPages = $_POST['similarPages'];
-        $arrRemovePages  = $_POST['removePages'];
-        $delInAcLangs    = $_POST['delInAcLangs'];*/
         
-        //if ($delInAcLangs) {
+        $arrSimilarPages = $_POST['similarPages'];
+        $arrRemovePages  = $_POST['removePages'];
+        $delInAcLangs    = $_POST['delInAcLangs'];
+        
+        // Remove pages of inactive language
+        if ($delInAcLangs) {
             $arrLanguages = \FWLanguage::getLanguageArray();
             
             foreach ($arrLanguages as $arrLanguage) {
@@ -885,9 +892,7 @@ class ContentMigration
                 
                 self::$em->flush();
             }
-            
-            return true;
-        //}
+        }
         
         foreach ($arrRemovePages as $pageId) {
             $page = $pageRepo->find($pageId);
@@ -1149,7 +1154,8 @@ class ContentMigration
      */
     function getVisiblePageIDs() {
         try {
-            $result = \Cx\Lib\UpdateUtil::sql('SELECT lang FROM ' . DBPREFIX . 'content_navigation GROUP BY lang');
+            $activeLangIds = implode(',', \FWLanguage::getIdArray());
+            $result = \Cx\Lib\UpdateUtil::sql('SELECT lang FROM ' . DBPREFIX . 'content_navigation WHERE `lang` IN (' . $activeLangIds . ') GROUP BY lang');
         } catch (\Cx\Lib\UpdateException $e) {
             \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             return false;
