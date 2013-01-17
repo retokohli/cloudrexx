@@ -103,18 +103,6 @@ function executeContrexxUpdate() {
             }
         }
         
-        // Group pages if more than one language
-        if (empty($_SESSION['contrexx_update']['pages_grouped'])) {
-            DBG::msg('Group pages');
-            if ($contentMigration->pageGrouping()) {
-                $_SESSION['contrexx_update']['pages_grouped'] = true;
-                if (!checkMemoryLimit() || !checkTimeoutLimit()) {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        }
         /*if (empty($_SESSION['contrexx_update']['pages_grouped'])) {
             DBG::msg('Group pages');
             $pageGrouping = $contentMigration->pageGrouping();
