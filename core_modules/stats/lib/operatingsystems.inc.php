@@ -90,6 +90,10 @@ $arrOperatingSystems = array(
         'regExp' => '=Windows NT 6\.1=', # o'rly? not 7? 't least the RC shows 6.1
         'name' => 'Windows 7'
     ),
+    array(
+        'regExp' => '=Windows NT 6\.2=',
+        'name' => 'Windows 8'
+    ),
     // attention: iPhone/iPad/iPod can be missinterpreted as OS/2
     //            therefore, OS/2 must be the last option in this list
     array(
