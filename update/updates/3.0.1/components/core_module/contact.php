@@ -382,6 +382,12 @@ function _contactUpdate()
          * Alter table 'module_contact_form' by dropping name, subject, feedback and form text
          * Add new column 'html_mail'
          */
+        if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX . 'module_contact_form', 'html_mail')) {
+            $htmlMailIsNew = false;
+        } else {
+            $htmlMailIsNew = true;
+        }
+
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX . 'module_contact_form',
             array(
@@ -397,6 +403,9 @@ function _contactUpdate()
             )
         );
 
+        if ($htmlMailIsNew) {
+            \Cx\Lib\UpdateUtil::sql('UPDATE '.DBPREFIX.'module_contact_form SET html_mail = 0');
+        }
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
