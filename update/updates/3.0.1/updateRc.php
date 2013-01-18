@@ -232,7 +232,6 @@ $updatesRc2ToStable = array(
     ',
 );
 $updatesStableToHotfix = array(
-    'UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'3.0.0.1\' WHERE `setname` = \'coreCmsVersion\'',
     'UPDATE `'.DBPREFIX.'content_page` SET `customContent` = \'\' WHERE `customContent` = \'(Default)\'',
 );
 $updatesHotfixToSp = array(
@@ -416,6 +415,7 @@ $updatesHotfixToSp = array(
     '
         DROP TABLE IF EXISTS `'.DBPREFIX.'module_shop_products_downloads`
     ',
+    'UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'3.0.1\' WHERE `setname` = \'coreCmsVersion\'',
 );
 $updatesRc1ToSp = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp);
 $updatesRc2ToSp = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp);
