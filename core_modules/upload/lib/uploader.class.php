@@ -413,7 +413,7 @@ abstract class Uploader
         // we're using a-zA-Z0-9 instead of \w because of the umlauts.
         // linux excludes them from \w, windows includes them. we do not want different
         // behaviours on different operating systems.
-        $fileName = preg_replace('/[^a-zA-Z0-9\._]+/', '', $fileName);
+        $fileName = preg_replace('/[^a-zA-Z0-9\._-]+/', '', $fileName);
 
         //try to retrieve session file name for chunked uploads
         if ($chunk > 0) {
