@@ -453,6 +453,7 @@ foreach ($updates as $update) {
 }
 
 // reimport module repository
+\Cx\Lib\UpdateUtil::sql('TRUNCATE TABLE `'.DBPREFIX.'module_repository`');
 $sqlQuery = '';
 $fp = @fopen($documentRoot.'/installer/data/contrexx_dump_data.sql', 'r');
 if ($fp !== false) {
