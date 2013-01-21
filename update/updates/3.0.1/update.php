@@ -852,11 +852,11 @@ function createHtAccess()
             if ($result !== true) {
                 return false;
             }
-            $htaccessContent = @file_get_contents(dirname(__FILE__) . '/data/apache_htaccess.tpl');
+            $htAccessTemplate = getHtAccessTemplate();
             $pathOffset = ASCMS_PATH_OFFSET;
             if (empty($pathOffset)) $pathOffset = '/';
-            $htaccessContent= str_replace('%PATH_ROOT_OFFSET%', $pathOffset, $htaccessContent);
-            $objFWHtAccess->setSection('core_routing', explode("\n", $htaccessContent));
+            $htAccessTemplate = str_replace('%PATH_ROOT_OFFSET%', $pathOffset, $htAccessTemplate);
+            $objFWHtAccess->setSection('core_routing', explode("\n", $htAccessTemplate));
             $result = $objFWHtAccess->write();
             if ($result !== true) {
                 return false;
@@ -867,6 +867,28 @@ function createHtAccess()
     }
 
     return true;
+}
+
+function getHtAccessTemplate()
+{
+    $htAccessTemplate = @file_get_contents(dirname(__FILE__) . '/data/apache_htaccess.tpl');
+    $htAccessPath     = ASCMS_DOCUMENT_ROOT . '/.htaccess';
+    
+    if (file_exists($htAccessPath)) {
+        $htAccess = @file_get_contents($htAccessPath);
+        if (preg_match('/^(\s*)#?RewriteRule\s+\^\(\\\\w\\\\w\\\\\/\)\?\([^\)]*\)\\\\\\/\$\s+\$2\s+\[[^\]]+\]$/m', $htAccess, $matches)) {
+            $search  = '#RewriteRule  ^(\w\w\/)?(_meta|admin|cache|cadmin|changelog|config|core|core_modules|customizing|feed|images|installer|lang|lib|media|model|modules|testing|themes|tmp|update|webcam|favicon.ico)\/$ $2 [L,QSA]';
+            $replace = str_replace($matches[1], '', $matches[0]);
+            $htAccessTemplate = str_replace($search, $replace, $htAccessTemplate);
+        }
+        if (preg_match('/^(\s*)RewriteRule\s+\^\(\\\\w\\\\w\\\\\/\)\?\([^\)]*\)\(\\\\\/\|\$\)\(\.\*\)\s+\$2\$3\$4\s+\[[^\]]+\]$/m', $htAccess, $matches)) {
+            $search  = 'RewriteRule  ^(\w\w\/)?(_meta|admin|cache|cadmin|changelog|config|core|core_modules|customizing|feed|images|installer|lang|lib|media|model|modules|testing|themes|tmp|update|webcam|favicon.ico)(\/|$)(.*) $2$3$4 [L,QSA]';
+            $replace = str_replace($matches[1], '', $matches[0]);
+            $htAccessTemplate = str_replace($search, $replace, $htAccessTemplate);
+        }
+    }
+    
+    return $htAccessTemplate;
 }
 
 class License {
