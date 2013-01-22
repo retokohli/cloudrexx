@@ -12,7 +12,7 @@
 
 // Debugging
 require_once dirname(__FILE__).'/lib/FRAMEWORK/DBG/DBG.php';
-\DBG::deactivate();
+DBG::deactivate();
 
 // Try to enable APC
 $apcEnabled = false;
@@ -104,7 +104,7 @@ $sessionObj = new cmsSession();
 $sessionObj->cmsSessionStatusUpdate('backend');
 
 // Initialize base system
-$objInit = new \InitCMS('update', \Env::em());
+$objInit = new InitCMS('update', Env::em());
 Env::set('init', $objInit);
 
 JS::activate('cx');
@@ -123,6 +123,6 @@ $objUpdate = new ContrexxUpdate();
 $_CORELANG = array_merge($objInit->loadLanguageData('core'), $_CORELANG);
 $output = $objUpdate->getPage();
 JS::findJavascripts($output);
-$output = str_replace('javascript_inserting_here', \JS::getCode(), $output);
+$output = str_replace('javascript_inserting_here', JS::getCode(), $output);
 
 die($output);
