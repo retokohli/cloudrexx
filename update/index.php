@@ -10,6 +10,11 @@
  * @subpackage  update
  */
 
+$php = phpversion();
+if ($php < '5.3') {
+    die('Das Contrexx CMS ben&ouml;tigt mindestens PHP in der Version 5.3.<br />Auf Ihrem System l&auml;uft PHP '.$php);
+}
+
 // Debugging
 require_once dirname(__FILE__).'/lib/FRAMEWORK/DBG/DBG.php';
 DBG::deactivate();
