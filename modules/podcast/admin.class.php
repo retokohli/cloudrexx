@@ -318,7 +318,7 @@ class podcastManager extends podcastLib
                     $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_PODCAST_DELETE_MEDIUM_SUCCESSFULL_MSG'], $arrMedium['title']);
                 }
 
-                $objCache = new Cache();
+                $objCache = new CacheManager();
                 $objCache->deleteAllFiles();
                 $this->_createRSS();
             } else {
@@ -429,7 +429,7 @@ class podcastManager extends podcastLib
                 if ($categoryId > 0) {
                     if ($this->_updateCategory($categoryId, $categoryTitle, $categoryDescription, $categoryAssociatedLangIds, $categoryStatus)) {
                         $this->_strOkMessage = $_ARRAYLANG['TXT_PODCAST_CATEGORY_UPDATED_SUCCESSFULL'];
-                        $objCache = new Cache();
+                        $objCache = new CacheManager();
                         $objCache->deleteAllFiles();
                         $this->_createRSS();
                         return $this->_categories();
@@ -439,7 +439,7 @@ class podcastManager extends podcastLib
                 } else {
                     if ($this->_addCategory($categoryTitle, $categoryDescription, $categoryAssociatedLangIds, $categoryStatus)) {
                         $this->_strOkMessage = $_ARRAYLANG['TXT_PODCAST_CATEGORY_CREATED_SUCCESSFULL'];
-                        $objCache = new Cache();
+                        $objCache = new CacheManager();
                         $objCache->deleteAllFiles();
                         $this->_createRSS();
                         return $this->_categories();
@@ -503,7 +503,7 @@ class podcastManager extends podcastLib
             if ($this->_getMediaCount($categoryId) == 0) {
                 if ($this->_deleteCategory($categoryId)) {
                     $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_PODCAST_DELETE_CATEGORY_SUCCESSFULL_MSG'], $arrCategory['title']);
-                    $objCache = new Cache();
+                    $objCache = new CacheManager();
                     $objCache->deleteAllFiles();
                     $this->_createRSS();
                 } else {
@@ -609,7 +609,7 @@ class podcastManager extends podcastLib
                 if ($templateId > 0 ) {
                     if ($this->_updateTemplate($templateId, $description, $template, $extensions)) {
                         $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_PODCAST_TEMPLATE_UPDATED_SUCCESSFULL'], $description);
-                        $objCache = new Cache();
+                        $objCache = new CacheManager();
                         $objCache->deleteAllFiles();
                         $this->_createRSS();
                         return $this->_templates();
@@ -619,7 +619,7 @@ class podcastManager extends podcastLib
                 } else {
                     if ($this->_addTemplate($description, $template, $extensions)) {
                         $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_PODCAST_TEMPLATE_ADDED_SUCCESSFULL'], $description);
-                        $objCache = new Cache();
+                        $objCache = new CacheManager();
                         $objCache->deleteAllFiles();
                         $this->_createRSS();
                         return $this->_templates();
@@ -664,7 +664,7 @@ class podcastManager extends podcastLib
             if (!$this->_isTemplateInUse($templateId)) {
                 if ($this ->_deleteTemplate($templateId)) {
                     $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_PODCAST_TEMPLATE_DELETED_SUCCESSFULL'], $arrTemplate['description']);
-                    $objCache = new Cache();
+                    $objCache = new CacheManager();
                     $objCache->deleteAllFiles();
                     $this->_createRSS();
                 } else {
