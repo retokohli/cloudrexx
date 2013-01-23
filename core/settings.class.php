@@ -106,7 +106,7 @@ class settingsManager
 
             case 'cache_update':
                 $boolShowStatus = false;
-                $objCache = new Cache();
+                $objCache = new CacheManager();
                 $objCache->updateSettings();
                 $objCache->writeCacheablePagesFile();
                 $objCache->showSettings();
@@ -115,7 +115,7 @@ class settingsManager
 
             case 'cache_empty':
                 $boolShowStatus = false;
-                $objCache = new Cache();
+                $objCache = new CacheManager();
                 $objCache->deleteAllFiles();
                 $objCache->showSettings();
                 break;

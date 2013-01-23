@@ -17,7 +17,7 @@
  * @package     contrexx
  * @subpackage  core_module_cache
  */
-class Cache extends cacheLib {
+class CacheManager extends cacheLib {
 	var $objTpl;
 	var $strCacheablePagesFile = 'index.php';
 	var $arrSettings = array();
