@@ -559,23 +559,20 @@ class statsLibrary
                 $crit = array(
                     'id' => $objResult->fields['pageId'],
                 );
-                $page = current($this->pageRepository->findBy($crit));
-                if (!$page) {
-                    throw new \Cx\Model\ContentManager\Repository\PageRepositoryException(
-                            'Page not found (id "' . $this->pageId . '"'
+                $page = current(Env::em()->getRepository('\Cx\Model\ContentManager\Page')->findBy($crit));
+                if ($page) {
+                    $objResult->fields['title'] = $page->getTitle();
+                    $arrIndexedPage = array(
+                        'last_indexed'      => date('d-m-Y H:i:s', $objResult->fields['last_indexed']),
+                        'page'              => $objResult->fields['page'],
+                        'title'             => strlen($objResult->fields['title'])>0 ? $objResult->fields['title'] : "No title",
+                        'count'             => $objResult->fields['count'],
+                        'spider_useragent'  => $objResult->fields['spider_useragent'],
+                        'spider_ip'         => $objResult->fields['spider_ip'],
+                        'spider_host'       => $objResult->fields['spider_host']
                     );
+                    array_push($this->arrIndexedPages, $arrIndexedPage);
                 }
-                $objResult->fields['title'] = $page->getTitle();
-                $arrIndexedPage = array(
-                    'last_indexed'      => date('d-m-Y H:i:s', $objResult->fields['last_indexed']),
-                    'page'              => $objResult->fields['page'],
-                    'title'             => strlen($objResult->fields['title'])>0 ? $objResult->fields['title'] : "No title",
-                    'count'             => $objResult->fields['count'],
-                    'spider_useragent'  => $objResult->fields['spider_useragent'],
-                    'spider_ip'         => $objResult->fields['spider_ip'],
-                    'spider_host'       => $objResult->fields['spider_host']
-                );
-                array_push($this->arrIndexedPages, $arrIndexedPage);
                 $objResult->MoveNext();
             }
         }
