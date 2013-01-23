@@ -524,24 +524,26 @@ class DBG
 
     static function stack()
     {
-        if (!self::$log_file && !self::$log_firephp) echo '<pre>';
-        $callers = debug_backtrace();
+        if (self::$enable_trace) {
+            if (!self::$log_file && !self::$log_firephp) echo '<pre>';
+            $callers = debug_backtrace();
 
-        // remove call to this method (DBG::stack())
-        array_shift($callers);
+            // remove call to this method (DBG::stack())
+            array_shift($callers);
 
-        self::_log("TRACE:  === STACKTRACE BEGIN ===");
-        $err = error_reporting(E_ALL ^ E_NOTICE);
-        foreach ($callers as $c) {
-            $file  = (isset($c['file']) ? self::_cleanfile($c['file']) : 'n/a');
-            $line  = (isset ($c['line']) ? $c['line'] : 'n/a');
-            $class = isset($c['class']) ? $c['class'] : null;
-            $func  = $c['function'];
-            self::_log("        $file : $line (".(empty($class) ? $func : "$class::$func").")");
+            self::_log("TRACE:  === STACKTRACE BEGIN ===");
+            $err = error_reporting(E_ALL ^ E_NOTICE);
+            foreach ($callers as $c) {
+                $file  = (isset($c['file']) ? self::_cleanfile($c['file']) : 'n/a');
+                $line  = (isset ($c['line']) ? $c['line'] : 'n/a');
+                $class = isset($c['class']) ? $c['class'] : null;
+                $func  = $c['function'];
+                self::_log("        $file : $line (".(empty($class) ? $func : "$class::$func").")");
+            }
+            error_reporting($err);
+            self::_log("        === STACKTRACE END ====");
+            if (!self::$log_file && !self::$log_firephp) echo '</pre>';
         }
-        error_reporting($err);
-        self::_log("        === STACKTRACE END ====");
-        if (!self::$log_file && !self::$log_firephp) echo '</pre>';
     }
 
 
