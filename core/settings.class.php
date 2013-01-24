@@ -100,7 +100,7 @@ class settingsManager
 
             case 'cache':
                 $boolShowStatus = false;
-                $objCache = new Cache();
+                $objCache = new CacheManager();
                 $objCache->showSettings();
                 break;
 
