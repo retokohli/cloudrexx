@@ -1621,6 +1621,22 @@ function _coreUpdate()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+
+    /**********************************************************
+    * EXTENSION:    Delete old cache class which causes       *
+    *               classloader confliction.                  *
+    * ADDED:        Contrexx v3.0.1                           *
+    ***********************************************************/
+    $path = ASCMS_DOCUMENT_ROOT.'/lib/FRAMEWORK/Cache.class.php';
+    if (file_exists($path)) {
+        if (!\Cx\Lib\FileSystem\FileSystem::delete_file($path)) {
+            setUpdateMsg('Die Datei "/lib/FRAMEWORK/Cache.class.php" konnte nicht gelöscht werden. Bitte löschen Sie diese manuell.', 'error');
+            setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_TRY_AGAIN'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
+            return false;
+        }
+    }
+
+    
     try {
         Text::errorHandler();
     } catch (\Cx\Lib\UpdateException $e) {
