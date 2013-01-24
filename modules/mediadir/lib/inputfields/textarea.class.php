@@ -212,9 +212,8 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
             ");
         }
 
+        $strValue = strip_tags($objInputfieldValue->fields['value']);
         $strValueAllowTags = $objInputfieldValue->fields['value'];
-
-        $strValue = nl2br(contrexx_strip_tags($objInputfieldValue->fields['value']));
 
         if(!empty($strValue)) {
             if (strlen($strValue) > 200) {
@@ -222,9 +221,9 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
             } else {
                 $strShortValue = $strValue;
             }
-            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
-            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = contrexx_raw2xml($strValue);
-            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_SHORT'] = contrexx_raw2xml($strShortValue);
+            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = contrexx_raw2xml($arrInputfield['name'][0]);
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = nl2br(contrexx_raw2xml($strValue));
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_SHORT'] = nl2br(contrexx_raw2xml($strShortValue));
             $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_ALLOW_TAGS'] = $strValueAllowTags;
         } else {
             $arrContent = null;
