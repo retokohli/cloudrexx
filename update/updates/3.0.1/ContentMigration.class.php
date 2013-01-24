@@ -475,7 +475,50 @@ class ContentMigration
                 $_SESSION['contrexx_update']['pages_added'] = true;
             }
         }
-        
+
+        $arrActiveLangIds = \FWLanguage::getIdArray();
+        foreach ($arrActiveLangIds as $langId) {
+            $objResult = \Cx\Lib\UpdateUtil::sql('
+                SELECT `catid`
+                FROM `' . DBPREFIX . 'content_navigation`
+                WHERE `module` = 15
+                AND `cmd` = \'\'
+                AND `lang` = ' . $langId . '
+                ORDER BY `parcat` ASC
+                LIMIT 1
+            ');
+            $homeCatId = $objResult->fields['catid'];
+
+            $objResult = \Cx\Lib\UpdateUtil::sql('
+                SELECT `catid`
+                FROM `' . DBPREFIX . 'content_navigation`
+                WHERE `module` = 15
+                AND `cmd` = \'\'
+                AND `catid` <> ' . $homeCatId . '
+                AND `lang` = ' . $langId . '
+            ');
+            if ($objResult->RecordCount()) {
+                $i = 1;
+                while (!$objResult->EOF) {
+                    $catId = $objResult->fields['catid'];
+                    $aliasPage = $pageRepo->findOneBy(array(
+                        'type' => \Cx\Model\ContentManager\Page::TYPE_ALIAS,
+                        'slug' => 'legacy_page_' . $catId,
+                    ), true);
+                    if ($aliasPage) {
+                        $targetPage = $pageRepo->getTargetPage($aliasPage);
+                        if ($targetPage) {
+                            $targetPage->setCmd($i);
+                            self::$em->persist($targetPage);
+                        }
+                    }
+                    $objResult->MoveNext();
+                    $i++;
+                }
+                self::$em->flush();
+            }
+        }
+
         return true;
     }
     
