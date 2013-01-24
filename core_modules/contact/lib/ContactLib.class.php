@@ -1315,41 +1315,43 @@ function checkAllFields() {
     
     for (var field in fields) {
         var type = fields[field][3];
-        if ((type == 'text') || (type == 'password') || (type == 'textarea') || (type == 'date') || ((type.match(/access_/) != null) && (type != 'access_country'))) {
-            value = document.getElementsByName('contactFormField_' + field)[0].value;
-            if ((\$J.trim(value) == '') && isRequiredNorm(fields[field][1], value)) {
-                isOk = false;
-                \$J('#contactFormFieldId_'+field).css('border', '1px solid red');
-            } else if ((value != '') && !matchType(fields[field][2], value)) {
-                isOk = false;
-                \$J('#contactFormFieldId_'+field).css('border', '1px solid red');
-            } else {
-                \$J('#contactFormFieldId_'+field).attr('style', '');
-            }
-        } else if (type == 'checkbox') {
-            if (!isRequiredCheckbox(fields[field][1], field)) {
-                isOk = false;
-            }
-        } else if (type == 'checkboxGroup') {
-            if (!isRequiredCheckBoxGroup(fields[field][1], field)) {
-                isOk = false;
-            }
-        } else if (type == 'radio') {
-            if (!isRequiredRadio(fields[field][1], field)) {
-                isOk = false;
-            }
-        } else if (type == 'file') {
-            var required = fields[field][1];
-            var folderWidget = cx.instances.get('uploadWidget', 'folderWidget');
-            if(required && folderWidget.isEmpty()) {
-                isOk = false;
-                \$J([name=contactFormField_upload]).css('border', '1px solid red');
-            } else {
-                \$J([name=contactFormField_upload]).attr('style', '');
-            }
-        } else if (type == 'select' || type == 'country' || type == 'access_country') {
-            if (!isRequiredSelect(fields[field][1], field)) {
-                isOk = false;
+        if (type != null && type != undefined) {
+            if ((type == 'text') || (type == 'password') || (type == 'textarea') || (type == 'date') || ((type.match(/access_/) != null) && (type != 'access_country'))) {
+                value = document.getElementsByName('contactFormField_' + field)[0].value;
+                if ((\$J.trim(value) == '') && isRequiredNorm(fields[field][1], value)) {
+                    isOk = false;
+                    \$J('#contactFormFieldId_'+field).css('border', '1px solid red');
+                } else if ((value != '') && !matchType(fields[field][2], value)) {
+                    isOk = false;
+                    \$J('#contactFormFieldId_'+field).css('border', '1px solid red');
+                } else {
+                    \$J('#contactFormFieldId_'+field).attr('style', '');
+                }
+            } else if (type == 'checkbox') {
+                if (!isRequiredCheckbox(fields[field][1], field)) {
+                    isOk = false;
+                }
+            } else if (type == 'checkboxGroup') {
+                if (!isRequiredCheckBoxGroup(fields[field][1], field)) {
+                    isOk = false;
+                }
+            } else if (type == 'radio') {
+                if (!isRequiredRadio(fields[field][1], field)) {
+                    isOk = false;
+                }
+            } else if (type == 'file') {
+                var required = fields[field][1];
+                var folderWidget = cx.instances.get('uploadWidget', 'folderWidget');
+                if(required && folderWidget.isEmpty()) {
+                    isOk = false;
+                    \$J([name=contactFormField_upload]).css('border', '1px solid red');
+                } else {
+                    \$J([name=contactFormField_upload]).attr('style', '');
+                }
+            } else if (type == 'select' || type == 'country' || type == 'access_country') {
+                if (!isRequiredSelect(fields[field][1], field)) {
+                    isOk = false;
+                }
             }
         }
     }
