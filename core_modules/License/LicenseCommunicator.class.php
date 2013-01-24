@@ -284,6 +284,7 @@ class LicenseCommunicator {
                 jQuery(document).ready(function() {
                     var licenseMessage      = jQuery("#license_message");
                     var cloneLicenseMessage = jQuery("#license_message").clone();
+                    var reloadManager       = false;
                     
                     var revertMessage = function(setClass, setHref, setTarget, setText) {
                         setTimeout(function() {
@@ -318,6 +319,9 @@ class LicenseCommunicator {
                                 }).error(function(data) {
                                     revertMessage();
                                 });
+                                reloadManager = true;
+                            }).fail(function(){
+                                revertMessage();
                             });
                         }';
             }
@@ -329,7 +333,9 @@ class LicenseCommunicator {
                         }
                         
                         revertMessage(data[\'class\'], data.link, data.target, data.text);
-                        document.location.reload(true);
+                        if (reloadManager) {
+                            document.location.reload(true);
+                        }
                     }
                     
                     var performRequest = function() {
