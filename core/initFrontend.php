@@ -711,14 +711,33 @@ if (   MODULE_INDEX < 2
         || strpos($themesPages['index'], $eventsPlaceholder) !== false
         || strpos($themesPages['sidebar'], $eventsPlaceholder) !== false
         || strpos($page_template, $eventsPlaceholder) !== false)
-    && file_exists($modulespath)
+    && file_exists($modulespath)  
 ) {
+    $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('calendar'));
     $calHeadlinesObj = new calHeadlines($themesPages['calendar_headlines']);
     $calHeadlines = $calHeadlinesObj->getHeadlines();
     $page_content           = str_replace($eventsPlaceholder, $calHeadlines, $page_content);
     $themesPages['index']   = str_replace($eventsPlaceholder, $calHeadlines, $themesPages['index']);
     $themesPages['sidebar'] = str_replace($eventsPlaceholder, $calHeadlines, $themesPages['sidebar']);
     $page_template          = str_replace($eventsPlaceholder, $calHeadlines, $page_template);
+}
+
+// Get Calendar Box Three
+if ($cl->loadFile(ASCMS_MODULE_PATH.'/calendar/headlines.class.php')) {
+    $calHeadlinesObj2 = new calHeadlines($themesPages['calendar_headlines']);
+    $calHeadlineThreeBoxes = $calHeadlinesObj2->showThreeBoxes();
+    if (preg_match('/{CALENDAR}/', $page_content)) {
+        $page_content = str_replace('{CALENDAR}', $calHeadlineThreeBoxes, $page_content);
+    }
+    if (preg_match('/{CALENDAR}/', $page_template)) {
+        $page_template = str_replace('{CALENDAR}', $calHeadlineThreeBoxes, $page_template);
+    }
+    if (preg_match('/{CALENDAR}/', $themesPages['index'])) {
+        $themesPages['index'] = str_replace('{CALENDAR}', $calHeadlineThreeBoxes, $themesPages['index']);
+    }
+    if (preg_match('/{CALENDAR}/', $themesPages['sidebar'])) {
+        $themesPages['sidebar'] = str_replace('{CALENDAR}', $calHeadlineThreeBoxes, $themesPages['sidebar']);
+    }
 }
 
 
