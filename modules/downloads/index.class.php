@@ -364,20 +364,20 @@ class downloads extends DownloadsLibrary
         $h = opendir($tempPath);
         while (false !== ($file = readdir($h))) {
             //skip . and ..
-            if($file == '.' || $file == '..') { continue; }
+            if ($file == '.' || $file == '..') { continue; }
 
-			$cleanFile = self::cleanFileName($file);
-            if($cleanFile != $file) {
-                rename($tempPath.'/'.$file, $tempPath.'/'.$cleanFile);
-                $file = $cleanFile;
+			//delete potentially malicious files
+            if (!FWValidator::is_file_ending_harmless($file)) {
+                @unlink($tempPath.'/'.$file);
+                continue;
             }
 
 			$info = pathinfo($file);
 
-			//delete potentially malicious files
-            if(!FWValidator::is_file_ending_harmless($file)) {
-                @unlink($tempPath.'/'.$file);
-                continue;
+			$cleanFile = self::cleanFileName($file);
+            if ($cleanFile != $file) {
+                rename($tempPath.'/'.$file, $tempPath.'/'.$cleanFile);
+                $file = $cleanFile;
             }
 
             //check if file needs to be renamed
@@ -385,8 +385,8 @@ class downloads extends DownloadsLibrary
 			$suffix = '';
 
             if (file_exists($path.'/'.$file)) {
-				$suffix = '_'.time();
                 if (empty($_REQUEST['uploadForceOverwrite']) || !intval($_REQUEST['uploadForceOverwrite'] > 0)) {
+                    $suffix = '_'.time();
 					$newName = $info['filename'].$suffix.'.'.$info['extension'];
 					$arrFilesToRename[$file] = $newName;
 					array_push($arrFiles, $newName);
@@ -457,6 +457,8 @@ class downloads extends DownloadsLibrary
         foreach ($arrLanguageIds as $langId) {
             $arrNames[$langId] = $sourceName;
             $arrDescriptions[$langId] = '';
+            $arrSourcePaths[$langId] = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/'.$fileName.$suffix.'.'.$fileExtension;
+            $arrSourceNames[$langId] = $sourceName;
         }
 
         $fileMimeType = null;
@@ -473,7 +475,7 @@ class downloads extends DownloadsLibrary
         $objDownload->setNames($arrNames);
         $objDownload->setDescriptions($arrDescriptions);
         $objDownload->setType('file');
-        $objDownload->setSource(ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/'.$fileName.$suffix.'.'.$fileExtension, $sourceName);
+        $objDownload->setSources($arrSourcePaths, $arrSourceNames);
         $objDownload->setActiveStatus(true);
         $objDownload->setMimeType($fileMimeType);
         if ($objDownload->getMimeType() == 'image') {
