@@ -828,13 +828,21 @@ class stats extends statsLibrary
             'TXT_LAST_REQUEST'            => $_ARRAYLANG['TXT_LAST_REQUEST']
         ));
 
-        if (count($this->arrMostViewedPages)>0) {
+        if (count($this->arrMostViewedPages) > 0) {
             foreach ($this->arrMostViewedPages as $stats) {
+                $page = \Env::get('em')->getRepository('\Cx\Model\ContentManager\Page')->findOneBy(array('id' => $stats['id']));
+                if ($page) {
+                    $url = \Cx\Core\Routing\Url::fromPage($page);
+                    $title = '<a href="'.$url.'" target="_blank">'.$page->getTitle().'</a> (/'.$url->getLangDir().'/'.$url->getPath().')';
+                } else {
+                    $title = '<span>'.$stats['title'].'</span> ('.$stats['page'].')';
+                }
+
                 $this->_objTpl->setVariable(array(
-                    'STATS_REQUESTS_PAGE'    => '<a href="'.ASCMS_PATH_OFFSET.$stats['page'].'" target="_blank" alt="'.$stats['title'].'" title="'.$stats['title'].'">'.$stats['title'].'</a>&nbsp;('.$stats['page'].')',
-                    'STATS_REQUESTS_REQUESTS'    => $this->_makePercentBar(300,10,($stats['requests'] * 100) / $this->mostViewedPagesSum, 100 ,1,'').'&nbsp;'.round(($stats['requests'] * 100) / $this->mostViewedPagesSum,2).'%'.' ('.$stats['requests'].')',
-                    'STATS_REQUESTS_LAST_REQUEST'    => $stats['last_request'],
-                    'STATS_REQUESTS_ROW_CLASS'    => (($i % 2) == 0) ? "row2" : "row1"
+                    'STATS_REQUESTS_PAGE'           => $title,
+                    'STATS_REQUESTS_REQUESTS'       => $this->_makePercentBar(300,10,($stats['requests'] * 100) / $this->mostViewedPagesSum, 100 ,1,'').'&nbsp;'.round(($stats['requests'] * 100) / $this->mostViewedPagesSum,2).'%'.' ('.$stats['requests'].')',
+                    'STATS_REQUESTS_LAST_REQUEST'   => $stats['last_request'],
+                    'STATS_REQUESTS_ROW_CLASS'      => (($i % 2) == 0) ? 'row2' : 'row1',
                 ));
                 $this->_objTpl->parse('stats_requests_mvp');
                 $this->_objTpl->hideBlock('stats_requests_nodata');

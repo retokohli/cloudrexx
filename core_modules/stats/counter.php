@@ -640,48 +640,29 @@ class counter
     /**
     * Count request
     *
-    * Count the request if it is no a reload of the page
-    *
-    * @global    ADONewConnection
-    * @see    _makeStatistics()
+    * @global   ADONewConnection
+    * @see      _makeStatistics()
     */
     function _countRequest()
     {
         global $objDb;
 
-        $query = "UPDATE `".DBPREFIX."stats_requests` SET `visits` = `visits` + 1, `sid` = '".$this->md5Id."', `timestamp` = '".$this->currentTime."' WHERE `page` = '".substr($this->requestedUrl,0,255)."' AND (`sid` != '".$this->md5Id."' OR `timestamp` <= '".($this->currentTime - $this->arrConfig['reload_block_time']['value'])."')";
-        $objDb->Execute($query);
-        if ($objDb->Affected_Rows() == 0) {
-            // get page from repo
-            $crit = array(
-                'id' => $this->pageId,
-            );
-            $page = \Env::get('em')->getRepository('\Cx\Model\ContentManager\Page')->findOneBy($crit);
-            if (!$page) {
-                throw new \Cx\Model\ContentManager\Repository\PageRepositoryException(
-                        'Page not found (id "' . $this->pageId . '"'
-                );
+        $page = \Env::get('em')->getRepository('\Cx\Model\ContentManager\Page')->findOneBy(array('id' => $this->pageId));
+        $url = \Cx\Core\Routing\Url::fromPage($page);
+        if ($page) {
+            $objDb->Execute('
+                UPDATE `'.DBPREFIX.'stats_requests`
+                SET `visits` = `visits`+1, `page` = "'.substr('/'.$url->getLangDir().'/'.$url->getPath(), 0, 255).'", `pageTitle` = "'.$page->getTitle().'", `sid` = "'.$this->md5Id.'", `timestamp` = '.$this->currentTime.'
+                WHERE `pageId` = '.$this->pageId.' AND ((`sid` != "'.$this->md5Id.'") OR (`timestamp` <= '.($this->currentTime - $this->arrConfig['reload_block_time']['value']).'))
+            ');
+            if ($objDb->Affected_Rows() == 0) {
+                $objDb->Execute('
+                    INSERT INTO `'.DBPREFIX.'stats_requests` (`sid`, `pageId`, `page`, `timestamp`, `visits`, `pageTitle`)
+                    VALUES ("'.$this->md5Id.'", '.$this->pageId.', "'.substr('/'.$url->getLangDir().'/'.$url->getPath(), 0, 255).'", '.$this->currentTime.', 1, "'.$page->getTitle().'")
+                ');
             }
-            $query = "INSERT INTO `".DBPREFIX."stats_requests` (
-                                        `sid`,
-                                        `pageId`,
-                                        `page`,
-                                        `timestamp`,
-                                        `visits`,
-                                        `pageTitle`
-                                        ) VALUES (
-                                        '".$this->md5Id."',
-                                        '".$this->pageId."',
-                                        '".substr($this->requestedUrl,0,255)."',
-                                        '".$this->currentTime."',
-                                        '1',
-                                        '" . $page->getTitle() . "'
-                                        )";
-            $objDb->Execute($query);
-            $this->_makeStatistics(DBPREFIX.'stats_requests_summary');               
-        } else {
-            $this->_makeStatistics(DBPREFIX.'stats_requests_summary');
         }
+        $this->_makeStatistics(DBPREFIX.'stats_requests_summary');
     }
 
     /**
