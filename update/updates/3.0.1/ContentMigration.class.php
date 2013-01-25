@@ -72,16 +72,16 @@ class ContentMigration
    
     public function migrate()
     {
-        if (isset($_POST['doGroup']) && $_POST['doGroup']) {
-            return false;
-        }
-        
-        if (empty($_SESSION['contrexx_update']['tables_created'])) {
-            try {
+        try {
+            if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX . 'content')) {
+                return true;
+            }
+
+            if (empty($_SESSION['contrexx_update']['tables_created'])) {
                 \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'content_page');
                 \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'content_node');
                 \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'log_entry');
-                
+
                 \Cx\Lib\UpdateUtil::table(
                     DBPREFIX . 'content_node',
                     array(
@@ -96,7 +96,7 @@ class ContentMigration
                     ),
                     'InnoDB'
                 );
-                
+
                 \Cx\Lib\UpdateUtil::table(
                     DBPREFIX . 'content_page',
                     array(
@@ -140,7 +140,7 @@ class ContentMigration
                     ),
                     'InnoDB'
                 );
-                
+
                 \Cx\Lib\UpdateUtil::table(
                     DBPREFIX . 'log_entry',
                     array(
@@ -161,7 +161,7 @@ class ContentMigration
                     ),
                     'InnoDB'
                 );
-                
+
                 $objResult = \Cx\Lib\UpdateUtil::sql('SHOW CREATE TABLE `' . DBPREFIX . 'content_node`');
                 if (!empty($objResult->fields['Create Table'])) {
                     $constraintExists = strpos(strtolower($objResult->fields['Create Table']), 'constraint') !== false;
@@ -171,7 +171,7 @@ class ContentMigration
                 if (!$constraintExists) {
                     \Cx\Lib\UpdateUtil::sql('ALTER TABLE `' . DBPREFIX . 'content_node` ADD CONSTRAINT FOREIGN KEY (`parent_id`) REFERENCES `' . DBPREFIX . 'content_node` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION');
                 }
-                
+
                 $objResult = \Cx\Lib\UpdateUtil::sql('SHOW CREATE TABLE `' . DBPREFIX . 'content_page`');
                 if (!empty($objResult->fields['Create Table'])) {
                     $constraintExists = strpos(strtolower($objResult->fields['Create Table']), 'constraint') !== false;
@@ -181,15 +181,15 @@ class ContentMigration
                 if (!$constraintExists) {
                     \Cx\Lib\UpdateUtil::sql('ALTER TABLE `' . DBPREFIX . 'content_page` ADD CONSTRAINT FOREIGN KEY (`node_id`) REFERENCES `' . DBPREFIX . 'content_node` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION');
                 }
-            } catch (\Cx\Lib\UpdateException $e) {
-                \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-                return false;
+
+                $_SESSION['contrexx_update']['tables_created'] = true;
+                if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                    return 'timeout';
+                }
             }
-            
-            $_SESSION['contrexx_update']['tables_created'] = true;
-            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
-                return 'timeout';
-            }
+        } catch (\Cx\Lib\UpdateException $e) {
+            \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+            return false;
         }
         
         $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
@@ -590,6 +590,10 @@ class ContentMigration
     public function migrateAliases()
     {
         try {
+            if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX . 'module_alias_source')) {
+                return true;
+            }
+
             $objResult = \Cx\Lib\UpdateUtil::sql('
                 SELECT `s`.`url` AS `slug`, `t`.`type`, `t`.`url` AS `target`
                 FROM       `' . DBPREFIX . 'module_alias_source` AS `s`
@@ -641,6 +645,10 @@ class ContentMigration
         global $_ARRAYLANG;
         
         try {
+            if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX . 'module_block_rel_lang')) {
+                return true;
+            }
+
             if (empty($_SESSION['contrexx_update']['blocks_part_1_migrated'])) {
                 \Cx\Lib\UpdateUtil::table(
                     DBPREFIX . 'module_block_categories',
@@ -654,101 +662,99 @@ class ContentMigration
                 );
                 
                 // migrate content -> related multi language
-                if (\Cx\Lib\UpdateUtil::table_exist(DBPREFIX . 'module_block_rel_lang')) {
-                    \Cx\Lib\UpdateUtil::table(
-                        DBPREFIX . 'module_block_rel_lang_content',
-                        array(
-                            'block_id'       => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                            'lang_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'block_id'),
-                            'content'        => array('type' => 'mediumtext', 'after' => 'lang_id'),
-                            'active'         => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'content')
-                        ),
-                        array(
-                            'id_lang'        => array('fields' => array('block_id','lang_id'), 'type' => 'UNIQUE')
-                        )
-                    );
-                    
-                    \Cx\Lib\UpdateUtil::sql('
-                        INSERT IGNORE INTO `' . DBPREFIX . 'module_block_rel_lang_content` (`block_id`, `lang_id`, `content`, `active`) 
-                        SELECT DISTINCT tblBlock.`id`, CL.`id`, tblBlock.`content`, 1
-                        FROM `' . DBPREFIX . 'languages` AS CL, `' . DBPREFIX . 'module_block_blocks` AS tblBlock
-                        WHERE CL.`frontend` = \'1\'
-                        ORDER BY tblBlock.`id`
-                    ');
-                    
-                    # Deactivate all blocks of which none of their content is active
-                    \Cx\Lib\UpdateUtil::sql('
-                        UPDATE `' . DBPREFIX . 'module_block_blocks` AS tblBlock 
-                        SET tblBlock.`active` = 0
-                        WHERE tblBlock.`id` NOT IN (
-                            SELECT `block_id` FROM `' . DBPREFIX . 'module_block_rel_lang_content` WHERE `active` = 1
-                        )
-                    ');
-                    
-                    # fetch active blocks
-                    $arrActiveBlockIds = array();
-                    $activeBlockList = '';
-                    $objResult = \Cx\Lib\UpdateUtil::sql('
-                        SELECT `block_id`
-                        FROM `' . DBPREFIX . 'module_block_rel_lang_content`
-                        WHERE `active` = 1
-                    ');
-                    
-                    if ($objResult && !$objResult->EOF) {
-                        while (!$objResult->EOF) {
-                            $arrActiveBlockIds[] = $objResult->fields['block_id'];
-                            $objResult->MoveNext();
-                        }
-                        $activeBlockList = join(', ', $arrActiveBlockIds);
+                \Cx\Lib\UpdateUtil::table(
+                    DBPREFIX . 'module_block_rel_lang_content',
+                    array(
+                        'block_id'       => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                        'lang_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'block_id'),
+                        'content'        => array('type' => 'mediumtext', 'after' => 'lang_id'),
+                        'active'         => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'content')
+                    ),
+                    array(
+                        'id_lang'        => array('fields' => array('block_id','lang_id'), 'type' => 'UNIQUE')
+                    )
+                );
+
+                \Cx\Lib\UpdateUtil::sql('
+                    INSERT IGNORE INTO `' . DBPREFIX . 'module_block_rel_lang_content` (`block_id`, `lang_id`, `content`, `active`)
+                    SELECT DISTINCT tblBlock.`id`, CL.`id`, tblBlock.`content`, 1
+                    FROM `' . DBPREFIX . 'languages` AS CL, `' . DBPREFIX . 'module_block_blocks` AS tblBlock
+                    WHERE CL.`frontend` = \'1\'
+                    ORDER BY tblBlock.`id`
+                ');
+
+                # Deactivate all blocks of which none of their content is active
+                \Cx\Lib\UpdateUtil::sql('
+                    UPDATE `' . DBPREFIX . 'module_block_blocks` AS tblBlock
+                    SET tblBlock.`active` = 0
+                    WHERE tblBlock.`id` NOT IN (
+                        SELECT `block_id` FROM `' . DBPREFIX . 'module_block_rel_lang_content` WHERE `active` = 1
+                    )
+                ');
+
+                # fetch active blocks
+                $arrActiveBlockIds = array();
+                $activeBlockList = '';
+                $objResult = \Cx\Lib\UpdateUtil::sql('
+                    SELECT `block_id`
+                    FROM `' . DBPREFIX . 'module_block_rel_lang_content`
+                    WHERE `active` = 1
+                ');
+
+                if ($objResult && !$objResult->EOF) {
+                    while (!$objResult->EOF) {
+                        $arrActiveBlockIds[] = $objResult->fields['block_id'];
+                        $objResult->MoveNext();
                     }
-                    
-                    # Activate block's content of system's default language for all blocks that have no active content at all
-                    \Cx\Lib\UpdateUtil::sql('
-                        UPDATE `' . DBPREFIX . 'module_block_rel_lang_content` AS tblContent
-                        SET tblContent.`active` = 1
-                        WHERE tblContent.`lang_id` = ( SELECT CL.`id` FROM `' . DBPREFIX . 'languages` AS CL WHERE CL.`frontend` AND CL.`is_default` = \'true\' )
-                        '.($activeBlockList ? 'AND tblContent.`block_id` NOT IN ('.$activeBlockList.')' : '')
-                    );
-                    
-                    // Set the correct value for field global
-                    $activeLangIds = implode(',', \FWLanguage::getIdArray());
-                    $objResult     = \Cx\Lib\UpdateUtil::sql('
-                        SELECT `block_id`, `lang_id`, `all_pages`
-                        FROM `' . DBPREFIX . 'module_block_rel_lang`
-                        WHERE lang_id IN (' . $activeLangIds . ')
-                    ');
-                    
-                    if ($objResult->RecordCount()) {
-                        $arrGlobalDefinitions = array();
-                        while (!$objResult->EOF) {
-                            $arrGlobalDefinitions[$objResult->fields['block_id']][$objResult->fields['lang_id']] = $objResult->fields['all_pages'];
-                            $objResult->MoveNext();
-                        }
-                        
-                        $arrGlobals = array();
-                        foreach ($arrGlobalDefinitions as $blockId => $arrValues) {
-                            // Set $global by default to 2
-                            $global = 2;
-                            // If all languages of the block are global, set $global to 1 
-                            if (!in_array(0, $arrValues)) {
-                                // Language id's of blocks where field 'all_pages' (global) is set to 1
-                                $globalLangIds = array_keys($arrValues);
-                                sort($globalLangIds);
-                                // Active language id's
-                                $activeLangIds = \FWLanguage::getIdArray();
-                                sort($activeLangIds);
-                                
-                                if ($globalLangIds == $activeLangIds) {
-                                    $global = 1;
-                                }
+                    $activeBlockList = join(', ', $arrActiveBlockIds);
+                }
+
+                # Activate block's content of system's default language for all blocks that have no active content at all
+                \Cx\Lib\UpdateUtil::sql('
+                    UPDATE `' . DBPREFIX . 'module_block_rel_lang_content` AS tblContent
+                    SET tblContent.`active` = 1
+                    WHERE tblContent.`lang_id` = ( SELECT CL.`id` FROM `' . DBPREFIX . 'languages` AS CL WHERE CL.`frontend` AND CL.`is_default` = \'true\' )
+                    '.($activeBlockList ? 'AND tblContent.`block_id` NOT IN ('.$activeBlockList.')' : '')
+                );
+
+                // Set the correct value for field global
+                $activeLangIds = implode(',', \FWLanguage::getIdArray());
+                $objResult     = \Cx\Lib\UpdateUtil::sql('
+                    SELECT `block_id`, `lang_id`, `all_pages`
+                    FROM `' . DBPREFIX . 'module_block_rel_lang`
+                    WHERE lang_id IN (' . $activeLangIds . ')
+                ');
+
+                if ($objResult->RecordCount()) {
+                    $arrGlobalDefinitions = array();
+                    while (!$objResult->EOF) {
+                        $arrGlobalDefinitions[$objResult->fields['block_id']][$objResult->fields['lang_id']] = $objResult->fields['all_pages'];
+                        $objResult->MoveNext();
+                    }
+
+                    $arrGlobals = array();
+                    foreach ($arrGlobalDefinitions as $blockId => $arrValues) {
+                        // Set $global by default to 2
+                        $global = 2;
+                        // If all languages of the block are global, set $global to 1
+                        if (!in_array(0, $arrValues)) {
+                            // Language id's of blocks where field 'all_pages' (global) is set to 1
+                            $globalLangIds = array_keys($arrValues);
+                            sort($globalLangIds);
+                            // Active language id's
+                            $activeLangIds = \FWLanguage::getIdArray();
+                            sort($activeLangIds);
+
+                            if ($globalLangIds == $activeLangIds) {
+                                $global = 1;
                             }
-                            
-                            \Cx\Lib\UpdateUtil::sql('
-                                UPDATE `' . DBPREFIX . 'module_block_blocks`
-                                SET `global` = ' . $global . '
-                                WHERE `id` = ' . $blockId . '
-                            ');
                         }
+
+                        \Cx\Lib\UpdateUtil::sql('
+                            UPDATE `' . DBPREFIX . 'module_block_blocks`
+                            SET `global` = ' . $global . '
+                            WHERE `id` = ' . $blockId . '
+                        ');
                     }
                 }
                 
@@ -879,17 +885,13 @@ class ContentMigration
                     }
                 }
                 
-                // Drop obsolete table
-                \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'module_block_rel_lang');
-                
                 $_SESSION['contrexx_udpate']['blocks_part_3_migrated'] = true;
+                return true;
             }
         } catch (\Cx\Lib\UpdateException $e) {
             \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             return false;
         }
-        
-        return true;
     }
     
     public function pageGrouping()
@@ -1004,6 +1006,7 @@ class ContentMigration
             \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'content_navigation_history');
             \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'module_alias_source');
             \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'module_alias_target');
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'module_block_rel_lang');
         } catch (\Cx\Lib\UpdateException $e) {
             \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             return false;
