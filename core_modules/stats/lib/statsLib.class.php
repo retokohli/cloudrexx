@@ -512,16 +512,19 @@ class statsLibrary
     function _initMostViewedPages() {
         global $objDatabase;
 
-        $query = "SELECT `pageTitle`, `page`, `visits`, `timestamp`
-                    FROM `".DBPREFIX."stats_requests`
-                ORDER BY `visits` DESC, `timestamp` DESC
-                         ".$this->pagingLimit;
+        $query = "
+            SELECT `pageId`, `pageTitle`, `page`, SUM(`visits`) as `visits`, `timestamp`
+            FROM `".DBPREFIX."stats_requests`
+            GROUP BY `pageId`
+            ORDER BY `visits` DESC, `timestamp` DESC
+            ".$this->pagingLimit;
 
         if (($objResult = $objDatabase->Execute($query))) {
             while (!$objResult->EOF) {
                 $arrPage = array(
-                    'title' => $objResult->fields['pageTitle'],
+                    'id' => $objResult->fields['pageId'],
                     'page' => $objResult->fields['page'],
+                    'title' => $objResult->fields['pageTitle'],
                     'requests' => $objResult->fields['visits'],
                     'last_request' => date('d-m-Y H:i:s', $objResult->fields['timestamp'])
                 );
