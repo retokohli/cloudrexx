@@ -24,7 +24,7 @@
 class calHeadlines extends calendarLibrary
 {
     public $_pageContent;
-    public $_objTemplate;
+    public $_objTpl;
     public $objSeries;
     public $category;
 
@@ -34,8 +34,8 @@ class calHeadlines extends calendarLibrary
      */
     function __construct($pageContent) {
         $this->_pageContent = $pageContent;
-        $this->_objTemplate = new \Cx\Core\Html\Sigma('.');
-        CSRF::add_placeholder($this->_objTemplate);
+        $this->_objTpl = new \Cx\Core\Html\Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
     }
 
 
@@ -69,7 +69,9 @@ class calHeadlines extends calendarLibrary
         
         //generate list
         $this->_showList();
-        return $this->_objTemplate->get();
+        //$this->_showThreeBoxes();
+        //$this->_boxesEventList();
+        return $this->_objTpl->get();
     }
 
 
@@ -77,7 +79,7 @@ class calHeadlines extends calendarLibrary
     {
         global $_CONFIG;
 
-        $this->_objTemplate->setTemplate($this->_pageContent,true,true);
+        $this->_objTpl->setTemplate($this->_pageContent,true,true);
 
         if ($_CONFIG['calendarheadlines']) {
             if (!empty($this->eventList)) {
@@ -92,7 +94,7 @@ class calHeadlines extends calendarLibrary
                     $link = 'index.php?section=calendar&amp;cmd=event'.$category.'&amp;id='.intval($key);
 
                     $parts= explode("\n", wordwrap($array['comment'], 100, "\n"));
-                    $this->_objTemplate->setVariable(array(
+                    $this->_objTpl->setVariable(array(
                         'CALENDAR_EVENT_ENDTIME'       => date('H:i', $array['enddate']),
                         'CALENDAR_EVENT_ENDDATE'       => date(ASCMS_DATE_FORMAT_DATE, $array['enddate']),
                         'CALENDAR_EVENT_STARTTIME'     => date('H:i', $array['startdate']),
@@ -110,14 +112,90 @@ class calHeadlines extends calendarLibrary
                         'CALENDAR_EVENT_SHORT_COMMENT' => $parts[0].$points,
                         'CALENDAR_EVENT_ROW'           => (++$i % 2 ? 'row1' : 'row2'),
                     ));
-                    $this->_objTemplate->parse('calendar_headlines_row');
+                    $this->_objTpl->parse('calendar_headlines_row');
                 }
             }
         } else {
-            $this->_objTemplate->hideBlock('calendar_headlines_row');
+            $this->_objTpl->hideBlock('calendar_headlines_row');
         }
     }
+    
+    
+    function showThreeBoxes()
+    {
+        global $_ARRAYLANG, $_LANGID, $objDatabase;
 
+        $this->url = CONTREXX_DIRECTORY_INDEX."?section=calendar&cmd=boxes&act=list";
+	$this->monthnavurl = CONTREXX_DIRECTORY_INDEX."?section=calendar&cmd=boxes";
+
+	$this->_objTpl->setTemplate($this->_pageContent);
+
+        if (empty($_GET['catid'])) {
+            $catid = 0;
+        } else {
+            $catid = $_GET['catid'];
+        }
+
+	if (isset($_GET['yearID']) && isset($_GET['monthID']) &&  isset($_GET['dayID'])) {
+            $day 	= $_GET['dayID'];
+            $month 	= $_GET['monthID'];
+            $year 	= $_GET['yearID'];
+	} elseif (isset($_GET['yearID']) && isset($_GET['monthID']) && !isset($_GET['dayID'])) {
+            $day 	= 0;
+            $month 	= $_GET['monthID'];
+            $year 	= $_GET['yearID'];
+	} elseif (isset($_GET['yearID']) && !isset($_GET['monthID']) && !isset($_GET['dayID'])) {
+            $day 	= 0;
+            $month 	= 0;
+            $year 	= $_GET['yearID'];
+	} else {
+            $day 	= date("d");
+            $month 	= date("m");
+            $year 	= date("Y");
+	}
+
+	$calendarbox 	= $this->getBoxes(3, $year, $month, $day, $catid);
+        $requestUri = '';
+	$java_script  = "<script language=\"JavaScript\" type=\"text/javascript\">\n<!--\nfunction goTo()\n{\nwindow.location.href = \"". CSRF::enhanceURI(CONTREXX_DIRECTORY_INDEX."?section=calendar"). "&catid=".$catid."&month=\"+document.goToForm.goToMonth.value+\"&year=\"+document.goToForm.goToYear.value;\n}\n\n\n";
+	$java_script .= "function categories()\n{\nwindow.location.href = \"".CSRF::enhanceURI($requestUri)."&catid=\"+document.selectCategory.inputCategory.value;\n}\n// -->\n</script>";
+        
+	/*$this->_objTpl->setVariable(array(
+		"CALENDAR"              => $calendarbox,
+		"JAVA_SCRIPT"      	=> $java_script,
+		"TXT_CALENDAR_ALL_CAT"	=> $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'],
+		"CALENDAR_CATEGORIES"	=> $this->category_list($catid),
+		"CALENDAR_JAVASCRIPT"	=> $this->getJS()
+	));*/
+        
+        
+        return '<div id="calendar">
+                    <div id="calendar-boxes">'.$calendarbox.'</div>
+                </div>';
+    }
+    
+    
+    /**
+     * javascript block uesd for the tree bock
+     * 
+     * @return string        
+     */
+    function getJS()
+    {
+    return '<script type="text/javascript">
+            /* <![CDATA[ */
+		function changecat()
+		{
+                    var href = window.location.href;
+                    var catid = document.getElementById("selectcat").categories.value;
+                    href = href.replace(/&catid=[0-9]+/g, \'\');
+                    href = href.replace(/&act=search/g, \'\');
+                    href += "&catid=" + catid;
+                    href += "&'.CSRF::param().'";
+                    window.location.href = href;
+		}
+            /* ]]> */
+	</script>';
+    }
 }
 
 ?>

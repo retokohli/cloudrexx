@@ -119,7 +119,7 @@ class Calendar extends calendarLibrary
 		    	break;
 
 		    case 'boxes':
-		    	if ($_GET['act'] == "list") {
+		    	if (isset($_GET['act']) && $_GET['act'] == "list") {
 		    		return $this->_boxesEventList();
 		    	} else {
 		    		return $this->_showThreeBoxes();
@@ -275,7 +275,8 @@ JSCODE;
     function _showList()
     {
     	global $objDatabase, $_ARRAYLANG, $_LANGID;
-
+        
+        $i=0;
     	if (!empty($this->eventList)) {
 	    	foreach ($this->eventList as $key => $array) {
 
@@ -357,7 +358,7 @@ JSCODE;
 					'CALENDAR_END_SHOW'			 	=> date(ASCMS_DATE_FORMAT_DATE, $array['enddate']),
 					'CALENDAR_START_TIME'		 	=> date(ASCMS_DATE_FORMAT_TIME, $array['startdate']),
 					'CALENDAR_END_TIME'			 	=> date(ASCMS_DATE_FORMAT_TIME, $array['enddate']),
-					"CALENDAR_ROW"	 				=> $i % 2 == 0 ? "row1" : "row2",
+					"CALENDAR_ROW"	 				=> $i % 2 === 0 ? "row1" : "row2",
 					"CALENDAR_ID"	 				=> intval($key),
 					"CALENDAR_DETAIL_LINK"	 		=> $link,
                     "CALENDAR_CATEGORIE"            => $this->getCategoryNameFromCategoryId($array['catid']), # backwards comp.
@@ -437,21 +438,21 @@ JSCODE;
 
 		return $this->_objTpl->get();
 	}
-
+        
 	function _showThreeBoxes()
 	{
-		global $_ARRAYLANG, $_LANGID, $objDatabase;
+            global $_ARRAYLANG, $_LANGID, $objDatabase;
 
-		$this->url = CONTREXX_DIRECTORY_INDEX."?section=calendar&cmd=boxes&act=list";
+            $this->url = CONTREXX_DIRECTORY_INDEX."?section=calendar&cmd=boxes&act=list";
 	    $this->monthnavurl = CONTREXX_DIRECTORY_INDEX."?section=calendar&cmd=boxes";
 
 	    $this->_objTpl->setTemplate($this->pageContent);
 
 	    if (empty($_GET['catid'])) {
-            $catid = 0;
-        } else {
-            $catid = $_GET['catid'];
-        }
+                $catid = 0;
+            } else {
+                $catid = $_GET['catid'];
+            }
 
 	    if (isset($_GET['yearID']) && isset($_GET['monthID']) &&  isset($_GET['dayID'])) {
 	    	$day 	= $_GET['dayID'];
@@ -472,17 +473,17 @@ JSCODE;
 		}
 
 		$calendarbox 	= $this->getBoxes(3, $year, $month, $day, $catid);
-
-		$java_script  = "<script language=\"JavaScript\" type=\"text/javascript\">\n<!--\nfunction goTo()\n{\nwindow.location.href = \"". CSRF::enhanceURI(CONTREXX_DIRECTORY_INDEX."?section=calendar"). "&catid=".$_GET['catid']."&month=\"+document.goToForm.goToMonth.value+\"&year=\"+document.goToForm.goToYear.value;\n}\n\n\n";
+                $requestUri = '';
+		$java_script  = "<script language=\"JavaScript\" type=\"text/javascript\">\n<!--\nfunction goTo()\n{\nwindow.location.href = \"". CSRF::enhanceURI(CONTREXX_DIRECTORY_INDEX."?section=calendar"). "&catid=".$catid."&month=\"+document.goToForm.goToMonth.value+\"&year=\"+document.goToForm.goToYear.value;\n}\n\n\n";
 		$java_script .= "function categories()\n{\nwindow.location.href = \"".CSRF::enhanceURI($requestUri)."&catid=\"+document.selectCategory.inputCategory.value;\n}\n// -->\n</script>";
 
-
+                    
 		$this->_objTpl->setVariable(array(
 			"CALENDAR"				=> $calendarbox,
 			"JAVA_SCRIPT"      		=> $java_script,
 			"TXT_CALENDAR_ALL_CAT"	=> $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'],
-			"CALENDAR_CATEGORIES"	=> $this->category_list($_GET['catid']),
-			"CALENDAR_JAVASCRIPT"	=> $javascript.$this->getJS()
+			"CALENDAR_CATEGORIES"	=> $this->category_list($catid),
+			"CALENDAR_JAVASCRIPT"	=> $this->getJS()
 		));
 
 		return $this->_objTpl->get();
@@ -1298,7 +1299,7 @@ JSCODE;
 
             $this->_objTpl->setVariable(array(
     			'TXT_CALENDAR_SERIES_ACTIVATE' 			=> $_ARRAYLANG['TXT_CALENDAR_SERIES_ACTIVATE'],
-    			'TXT_CALENDAR_SERIES' 					=> $_ARRAYLANG['TXT_CALENDAR_SERIES'],
+    			'TXT_CALENDAR_SERIES' 				=> $_ARRAYLANG['TXT_CALENDAR_SERIES'],
     			'TXT_CALENDAR_SERIES_PATTERN_DAILY' 	=> $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_DAILY'],
     			'TXT_CALENDAR_SERIES_PATTERN_WEEKLY' 	=> $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_WEEKLY'],
     			'TXT_CALENDAR_SERIES_PATTERN_MONTHLY' 	=> $_ARRAYLANG['TXT_CALENDAR_SERIES_PATTERN_MONTHLY'],
