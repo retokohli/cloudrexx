@@ -90,19 +90,6 @@ function executeContrexxUpdate() {
             }
         }
         
-        // Migrate aliases
-        if (empty($_SESSION['contrexx_update']['aliases_migrated'])) {
-            DBG::msg('Migrate aliases');
-            if ($contentMigration->migrateAliases()) {
-                $_SESSION['contrexx_update']['aliases_migrated'] = true;
-                if (!checkMemoryLimit() || !checkTimeoutLimit()) {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        }
-        
         /*if (empty($_SESSION['contrexx_update']['pages_grouped'])) {
             DBG::msg('Group pages');
             $pageGrouping = $contentMigration->pageGrouping();
@@ -129,16 +116,19 @@ function executeContrexxUpdate() {
             }
         }*/
 
-        // Drop old tables
-        if (empty($_SESSION['contrexx_update']['old_tables_dropped'])) {
-            if ($contentMigration->dropOldTables()) {
-                $_SESSION['contrexx_update']['old_tables_dropped'] = true;
+        // Migrate aliases
+        if (empty($_SESSION['contrexx_update']['aliases_migrated'])) {
+            DBG::msg('Migrate aliases');
+            if ($contentMigration->migrateAliases()) {
+                $_SESSION['contrexx_update']['aliases_migrated'] = true;
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                     return false;
                 }
+            } else {
+                return false;
             }
         }
-        
+
         // Migrate blocks
         if (empty($_SESSION['contrexx_update']['blocks_migrated'])) {
             DBG::msg('Migrate blocks');
@@ -149,6 +139,16 @@ function executeContrexxUpdate() {
                 }
             } else {
                 return false;
+            }
+        }
+
+        // Drop old tables
+        if (empty($_SESSION['contrexx_update']['old_tables_dropped'])) {
+            if ($contentMigration->dropOldTables()) {
+                $_SESSION['contrexx_update']['old_tables_dropped'] = true;
+                if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                    return false;
+                }
             }
         }
     } else {
