@@ -4,8 +4,7 @@
  * versionFix.php
  *
  * This script sets the correct version for
- * Contrexx 3.0 SP 1 installations with incorrect version and
- * sets the empty module distributor values to 'Comvation AG'.
+ * Contrexx 3.0 SP 1 installations with incorrect version.
  */
 
 $documentRoot = dirname(__FILE__);
@@ -45,15 +44,14 @@ if (!empty($_CONFIG['coreCmsVersion']) && $_CONFIG['coreCmsVersion'] < '3.0.1' &
         $objSettings = new \settingsManager();
         $objSettings->writeSettingsFile();
 
-        echo 'Die Version wurde angepasst.<br />';
+        echo 'Die Version Ihrer Contrexx Installation wurde erfolgreich angepasst.';
     } else {
-        echo 'Die Version ist bereits angepasst.<br />';
+        echo 'Die Version Ihrer Contrexx Installation ist bereits angepasst.';
     }
 } else {
-    echo 'Die Version ist bereits angepasst.<br />';
+    echo 'Die Version Ihrer Contrexx Installation ist bereits angepasst.';
 }
 
-// Set emtpy module distributor values to 'Comvation AG'
 $objResult = $objDatabase->Execute('
     SELECT `id`
       FROM `' . DBPREFIX . 'modules`
@@ -68,8 +66,4 @@ if ($objResult->RecordCount()) {
         ');
         $objResult->MoveNext();
     }
-    echo 'Die Modultabelle wurde korrigiert.<br />';
-} else {
-    echo 'Die Modultabelle ist bereits korrigiert.<br />';
 }
-echo 'Skript erfolgreich ausgeführt.';
