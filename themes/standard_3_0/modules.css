@@ -440,6 +440,12 @@ div.row2 {
     float: left;
     width: 70%;
 }
+
+/* Calendard Headlines */
+.calendar-headlines .monthnavigation{
+    display: none;
+}
+
 /***************************************************/
 /* CSS DEFINITIONS FOR ACCESS MODULE               */
 /***************************************************/
