@@ -168,7 +168,7 @@ class calHeadlines extends calendarLibrary
 	));*/
         
         
-        return '<div id="calendar">
+        return '<div class="calendar-headlines">
                     <div id="calendar-boxes">'.$calendarbox.'</div>
                 </div>';
     }
