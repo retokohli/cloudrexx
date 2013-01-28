@@ -632,8 +632,10 @@ class counter
     function _countJavascript() {
         global $objDb;
 
-        $query = "UPDATE `".DBPREFIX."stats_javascript` SET `count` = `count` + 1 WHERE `support` = '".$this->javascriptEnabled."'";
-        $objDb->Execute($query);
+        $objDb->Execute('UPDATE `'.DBPREFIX.'stats_javascript` SET `count` = `count`+1 WHERE `support` = "'.$this->javascriptEnabled.'"');
+        if ($objDb->Affected_Rows() == 0) {
+            $objDb->Execute('INSERT INTO `'.DBPREFIX.'stats_javascript` (`support`, `count`) VALUES ("'.$this->javascriptEnabled.'", 1)');
+        }
     }
 
 
