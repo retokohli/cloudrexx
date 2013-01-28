@@ -1958,35 +1958,6 @@ div.row2 {
     color: #646464;
 }
 
-/***************************************************/
-/* CSS DEFINITIONS FOR DATA MODULE                 */
-/***************************************************/
-div.datalist_block dl dt {
-    margin: 0;
-    padding: 0px 0 0px 0;
-    font-weight: bold;
-    display: block;
-}
-div.datalist_block dl dd {
-    margin: 0px;
-    padding: 0px 0 0px 0;
-    border-top: 0px solid #cbb354;
-}
-div.datalist_block dl dt.cattitle {
-    font-weight: bold;
-    margin: 0px;
-    padding: 2px;
-    display: block;
-    background-color: #EEEEEE;
-    border: 0px #bcbcbc solid;
-    margin-top: 11px;
-}
-div.datalist_block dl dd.catcontent {
-    padding: 0px;
-    border: 0px #bcbcbc solid;
-    border-top: none;
-    padding-top:5px;
-}
 /************************************/
 /* CSS DEFINITIONS FOR DATA-MODULE  */
 /************************************/
