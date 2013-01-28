@@ -726,17 +726,17 @@ if (   MODULE_INDEX < 2
 if ($cl->loadFile(ASCMS_MODULE_PATH.'/calendar/headlines.class.php')) {
     $calHeadlinesObj2 = new calHeadlines($themesPages['calendar_headlines']);
     $calHeadlineThreeBoxes = $calHeadlinesObj2->showThreeBoxes();
-    if (preg_match('/{CALENDAR}/', $page_content)) {
-        $page_content = str_replace('{CALENDAR}', $calHeadlineThreeBoxes, $page_content);
+    if (preg_match('/{CALENDAR_HEADLINES}/', $page_content)) {
+        $page_content = str_replace('{CALENDAR_HEADLINES}', $calHeadlineThreeBoxes, $page_content);
     }
-    if (preg_match('/{CALENDAR}/', $page_template)) {
-        $page_template = str_replace('{CALENDAR}', $calHeadlineThreeBoxes, $page_template);
+    if (preg_match('/{CALENDAR_HEADLINES}/', $page_template)) {
+        $page_template = str_replace('{CALENDAR_HEADLINES}', $calHeadlineThreeBoxes, $page_template);
     }
-    if (preg_match('/{CALENDAR}/', $themesPages['index'])) {
-        $themesPages['index'] = str_replace('{CALENDAR}', $calHeadlineThreeBoxes, $themesPages['index']);
+    if (preg_match('/{CALENDAR_HEADLINES}/', $themesPages['index'])) {
+        $themesPages['index'] = str_replace('{CALENDAR_HEADLINES}', $calHeadlineThreeBoxes, $themesPages['index']);
     }
-    if (preg_match('/{CALENDAR}/', $themesPages['sidebar'])) {
-        $themesPages['sidebar'] = str_replace('{CALENDAR}', $calHeadlineThreeBoxes, $themesPages['sidebar']);
+    if (preg_match('/{CALENDAR_HEADLINES}/', $themesPages['sidebar'])) {
+        $themesPages['sidebar'] = str_replace('{CALENDAR_HEADLINES}', $calHeadlineThreeBoxes, $themesPages['sidebar']);
     }
 }
 
