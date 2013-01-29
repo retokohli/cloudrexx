@@ -178,65 +178,76 @@ class Url {
     }
 
     /**
+     * Set a single parameter.
+     *
+     * @access  public
+     * @param   mixed       $key
+     * @param   mixed       $value
+     */
+    public function setParam($key, $value) {
+        $this->setParams(array($key => $value));
+    }
+
+    /**
      * Set multiple parameters.
      *
+     * @access  public
      * @param   array or string     $params
      */
     public function setParams($params) {
-        if (is_array($params)) {
-            foreach ($params as $key => $value) {
-                $this->setParam($key, $value);
-            }
-        } else {
-            $strParameters = $params;
-            if (strpos($params, '?') !== false) {
-                $strParameters = explode('?', $params);
-                $strParameters = $strParameters[1];
-            }
-            $arrParameters = explode('&', $strParameters);
-            foreach ($arrParameters as $strParam) {
-                $arrParam = explode('=', $strParam);
-                $this->setParam($arrParam[0],
-                    (isset ($arrParam[1]) ? $arrParam[1] : ''));
+        if (!is_array($params)) {
+            $params = self::params2array($params);
+        }
+
+        $this->addParamsToPath($params);
+    }
+
+    /**
+     * Add new parameters to path:
+     * - Existing parameters (having not an array as value) will be overwritten by the value of the new parameter (having the same key).
+     * - Existing parameters (having an array as value) will be merged with the value of the new parameter.
+     * - New parameters will simply be added.
+     *
+     * @access  private
+     * @param   array       $paramsToAdd
+     */
+    private function addParamsToPath($paramsToAdd) {
+        $paramsFromPath = $this->splitParamsFromPath();
+
+        //split params with subarray from the others
+        $paramsFromPathSubarray = array();
+        foreach ($paramsFromPath as $key => $value) {
+            if (is_array($value)) {
+                $paramsFromPathSubarray[$key] = $value;
+                unset($paramsFromPath[$key]);
             }
         }
-    }
-
-    /**
-     * @author Michael Ritter <michael.ritter@comvation.com>
-     * @todo most of the work done in this method should be done somewhere else (constructor?)
-     * @param type $name
-     * @param type $value
-     */
-    public function setParam($name, $value) {
-        // quick and dirty fix, see @todo...
-        $params = $this->params2Array();
-        $params[$name] = $value;
-        $path = explode('?', $this->path);
-        $this->path = $path[0];
-        $this->path .= $this->array2Params($params);
-    }
-
-    /**
-     * @author Michael Ritter <michael.ritter@comvation.com>
-     * @return array
-     */
-    private function params2Array() {
-        $path = explode('?', $this->path);
-        $params = NULL;
-        if (count($path) > 1) {
-            $params = explode('&', $path[1]);
-            foreach ($params as $key => $param) {
-                $param = explode('=', $param);
-                if (empty($param[0])) continue;
-                // hide CSRF-Protection
-                if ($param[0] == 'csrf') {
-                    unset($params[$key]);
-                    continue;
-                }
-                $params[$param[0]] = $param[1];
-                unset($params[$key]);
+        $paramsToAddSubarray = array();
+        foreach ($paramsToAdd as $key => $value) {
+            if (is_array($value)) {
+                $paramsToAddSubarray[$key] = $value;
+                unset($paramsToAdd[$key]);
             }
+        }
+
+        //merge all params together
+        $params1 = $paramsToAdd + $paramsFromPath;//simple params are going to be overwritten if the appropriate param exists already
+        $params2 = array_merge_recursive($paramsFromPathSubarray, $paramsToAddSubarray);//params with subarray will be merged
+        $params = $params1 + $params2;//put the parts together
+
+        $this->writeParamsToPath($params);
+    }
+
+    /**
+     * Split parameters from path.
+     *
+     * @access  private
+     * @return  array       $params
+     */
+    private function splitParamsFromPath() {
+        $path = explode('?', $this->path);
+        if (isset($path[1])) {
+            $params = self::params2array($path[1]);
         } else {
             $params = array();
         }
@@ -244,33 +255,48 @@ class Url {
     }
 
     /**
-     * If a parameter is set to null, it will be removed
-     * Set it to '' if you want to add an empty parameter
-     * @author Michael Ritter <michael.ritter@comvation.com>
-     * @param string $params
-     * @return string
+     * Write parameters to path.
+     *
+     * @access  private
+     * @param   array       $params
      */
-    private function array2Params($params) {
-        $path = '';
-        if (count($params)) {
-            $realParams = array();
-            foreach ($params as $key=>$value) {
-                if ($value === null) {
-                    continue;
-                }
-                $realParams[$key] = $key . '=' . $value;
-            }
-            $path .= '?' . implode('&', $realParams);
+    private function writeParamsToPath($params) {
+        $path = explode('?', $this->path);
+        $path[1] = self::array2params($params);
+        $this->path = implode('?', $path);
+    }
+
+    /**
+     * Convert parameter string to array.
+     *
+     * @access  public
+     * @param   string      $params
+     * @return  array       $array
+     */
+    public static function params2array($params = '') {
+        parse_str(htmlspecialchars_decode(urldecode($params), ENT_QUOTES), $array);
+        if (isset($array['csrf'])) {
+            unset($array['csrf']);
         }
-        return $path;
+        return $array;
+    }
+
+    /**
+     * Convert array to parameter string.
+     *
+     * @access  public
+     * @param   array       $array
+     * @return  string
+     */
+    public static function array2params($array = array()) {
+        if (isset($array['csrf'])) {
+            unset($array['csrf']);
+        }
+        return htmlspecialchars_decode(urldecode(http_build_query($array)), ENT_QUOTES);
     }
 
     public function getTargetPath() {
         return $this->targetPath;
-    }
-
-    public function getParams() {
-        return $this->params;
     }
 
     /**
@@ -278,7 +304,7 @@ class Url {
      * @return array
      */
     public function getParamArray() {
-        return $this->params2Array();
+        return $this->splitParamsFromPath();
     }
 
     public function getSuggestedTargetPath() {
@@ -313,27 +339,27 @@ class Url {
         $host = $_CONFIG['domainUrl'];
         $protocol = ASCMS_PROTOCOL;
 
-        $getParams = '';
-        foreach($get as $k => $v) {
-            if($k == '__cap') //skip captured request from mod_rewrite
-                continue;
 
-            // workaround for legacy ?page=123 requests by routing to an alias like /legacy_page_123
-            if($k == 'page' && preg_match('/^\d+$/', $v)) {
-                $request = 'legacy_page_'.$v;
-                continue;
-            }
+        //skip captured request from mod_rewrite
+        unset($get['__cap']);
 
-            $joiner='&';
-            if ($getParams == '') {
-                $joiner='?';
-            }
-            $getParams .= $joiner.urlencode($k).'='.urlencode($v);
+        // workaround for legacy ?page=123 requests by routing to an alias like /legacy_page_123
+        if (isset($get['page']) && preg_match('/^\d+$/', $get['page'])) {
+            $request = 'legacy_page_'.$get['page'];
+            unset($get['page']);
         }
+
+        if (($params = self::array2params($get)) && (strlen($params) > 0)) {
+            $params = '?'.$params;
+        } else {
+            $params = '';
+        }
+        
         $request = preg_replace('/index.php/', '', $request);
 
-        return new Url($protocol.'://'.$host.'/'.$request.$getParams);
+        return new Url($protocol.'://'.$host.'/'.$request.$params);
     }
+
 
     /**
      * Returns an Url object for module, cmd and lang
