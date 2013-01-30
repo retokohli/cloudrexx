@@ -26,9 +26,6 @@ class HackyFeedRepublisher {
     {
         global  $_ARRAYLANG, $objInit, $objTemplate, $_CONFIG;
 
-        require_once(ASCMS_CORE_PATH.'/validator.inc.php');
-        require_once(ASCMS_FRAMEWORK_PATH.'/Language.class.php');
-
         //getSettings
         global $objDatabase;
         $query = "SELECT name, value FROM ".DBPREFIX."module_news_settings";
