@@ -186,7 +186,7 @@ class ShopMail
                     }
                     if (isset($arrKey[$id])) {
                         // System templates get their default key
-                        $arrTemplate['key'] = $arrKey[$id].'_backup_by_update)';
+                        $arrTemplate['key'] = $arrKey[$id].'_backup_by_update';
                         // Clear the protected flag, so the old templates
                         // may be removed at will
                         $arrTemplate['protected'] = false;
@@ -202,6 +202,12 @@ class ShopMail
                         // Remember used keys, and replace the former ID
                         $arrKey[$id] = $new_key;
                         $arrTemplate['key'] = $new_key;
+                    }
+                    // Some installations may contain corrupt templates
+                    // causing empty (0 or "") keys.  Those would make
+                    // MailTemplate::store() fail!
+                    if (empty($arrTemplate['key'])) {
+                        $arrTemplate['key'] = uniqid().'_backup_by_update)';
                     }
                     foreach ($arrTemplate as &$string) {
                         // Replace old <PLACEHOLDERS> with new [PLACEHOLDERS].
