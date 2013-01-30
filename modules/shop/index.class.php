@@ -123,6 +123,7 @@ if (SettingDb::getValue('use_js_cart') === NULL) {
     {
 //DBG::deactivate(DBG_LOG_FIREPHP);
 //DBG::activate(DBG_LOG_FILE);
+//DBG::activate(DBG_ERROR_FIREPHP|DBG_LOG);
         self::init();
         self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
         // PEAR Sigma template
@@ -2545,12 +2546,19 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (self::$objCustomer) return $status;
         if (   (   SettingDb::getValue('register') == ShopLibrary::REGISTER_MANDATORY
                 || (   SettingDb::getValue('register') == ShopLibrary::REGISTER_OPTIONAL
-                    && empty($_SESSION['shop']['dont_register'])))
-            && !User::isValidPassword(trim($_SESSION['shop']['password']))) {
-            $status = false;
-            global $objInit;
-            $objInit->loadLanguageData('access');
-            Message::error(AccessLib::getPasswordInfo());
+                    && empty($_SESSION['shop']['dont_register'])))) {
+            if (!User::isValidPassword(trim($_SESSION['shop']['password']))) {
+                $status = false;
+                global $objInit;
+                $objInit->loadLanguageData('access');
+                Message::error(AccessLib::getPasswordInfo());
+            }
+        } else {
+            // User is not trying to register, so she doesn't need a password.
+            // Mind that this is necessary in order to avoid passwords filled
+            // in automatically by the browser, which may be wrong, or
+            // invalid, or both.
+            $_SESSION['shop']['password'] = NULL;
         }
         if (!FWValidator::isEmail($_SESSION['shop']['email'])) {
             $status = false;
@@ -3268,7 +3276,7 @@ if (empty($_SESSION['shop']['shipperId'])) {
             return Message::error($_ARRAYLANG['TXT_ORDER_ALREADY_PLACED']);
         }
         // No more confirmation
-        self::$objTemplate->hideBlock("shopConfirm");
+        self::$objTemplate->hideBlock('shopConfirm');
         // Store the customer, register the order
         $customer_ip = $_SERVER['REMOTE_ADDR'];
         $customer_host = substr(@gethostbyaddr($_SERVER['REMOTE_ADDR']), 0, 100);
@@ -3297,15 +3305,21 @@ if (empty($_SESSION['shop']['shipperId'])) {
                 self::$objCustomer = new Customer();
                 // Currently, the e-mail address is set as the user name
                 $_SESSION['shop']['username'] = $_SESSION['shop']['email'];
-//DBG::log("New User username ".$_SESSION['shop']['username'].", email ".$_SESSION['shop']['email']);
+//DBG::log("Shop::process(): New User username ".$_SESSION['shop']['username'].", email ".$_SESSION['shop']['email']);
                 self::$objCustomer->username($_SESSION['shop']['username']);
                 self::$objCustomer->email($_SESSION['shop']['email']);
-// TODO: Maybe this is unset?
-                if (!self::$objCustomer->password($_SESSION['shop']['password'])) {
+                // Note that the passwort is unset when the Customer chooses
+                // to order without registration.  The generated one
+                // defaults to length 8, fulfilling the requirements for
+                // complex passwords.  And it's kept absolutely secret.
+                $password = (empty($_SESSION['shop']['password'])
+                    ? User::make_password()
+                    : $_SESSION['shop']['password']);
+//DBG::log("Password: $password (session: {$_SESSION['shop']['password']})");
+                if (!self::$objCustomer->password($password)) {
                     Message::error($_ARRAYLANG['TXT_INVALID_PASSWORD']);
-                    HTTP::redirect(CONTREXX_SCRIPT_PATH.
-// TODO: Use the alias, if any
-                        '?section=shop'.MODULE_INDEX.'&cmd=account');
+                    HTTP::redirect(Cx\Core\Routing\Url::fromModuleAndCmd(
+                        'shop', 'account'));
                 }
                 self::$objCustomer->active(empty($_SESSION['shop']['dont_register']));
                 $new_customer = true;
@@ -4051,8 +4065,10 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
             || empty($_SESSION['shop']['zip'])
             || empty($_SESSION['shop']['city'])
             || empty($_SESSION['shop']['phone'])
-            || (empty($_SESSION['shop']['email']) && !self::$objCustomer)
-            || (empty($_SESSION['shop']['password']) && !self::$objCustomer)
+// Must not check this here, would collide with Customers not willing
+// to register!
+//            || (empty($_SESSION['shop']['email']) && !self::$objCustomer)
+//            || (empty($_SESSION['shop']['password']) && !self::$objCustomer)
             || (Cart::needs_shipment()
             && (   empty($_SESSION['shop']['gender2'])
                 || empty($_SESSION['shop']['lastname2'])

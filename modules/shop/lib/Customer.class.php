@@ -816,6 +816,15 @@ class Customer extends User
             $email = $objResult->fields['email'];
             $objUser = FWUser::getFWUserObject()->objUser->getUsers(
                 array('email' => array(0 => $email)));
+
+// TODO: See whether a User with that username (but different e-mail address) exists!
+            $objUser_name = FWUser::getFWUserObject()->objUser->getUsers(
+                array('username' => array(
+                    0 => $objResult->fields['username'])));
+            if ($objUser && $objUser_name) {
+                $objUser = $objUser_name;
+            }
+
             $objCustomer = null;
             if ($objUser) {
                 $objCustomer = self::getById($objUser->getId());
