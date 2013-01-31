@@ -87,9 +87,10 @@ createModuleConversionTables();
 $objInit = new InitCMS('backend', Env::em());
 Env::set('init', $objInit);
 
-// this makes \Env::get('Resolver')->getUrl() return a sensful result
-$request = ASCMS_PATH_OFFSET.'/cadmin';
+// this makes \Env::get('Resolver')->getURL() return a sensful result
+$request = ASCMS_PATH_OFFSET.'/cadmin/';
 $url = \Cx\Core\Routing\Url::fromCapturedRequest($request, ASCMS_PATH_OFFSET, $_GET);
+$url->setMode(\Env::get('init')->mode);
 \Env::set('Resolver', new \Cx\Core\Routing\Resolver($url, null, Env::em(), null, null));
 
 $sessionObj = new cmsSession();

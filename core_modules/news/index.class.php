@@ -915,16 +915,16 @@ class news extends newsLibrary {
         /***start paging ****/
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();
-        if (isset($_REQUEST['category'])) {
+        if (!empty($_REQUEST['category'])) {
             $category = '&amp;category='.$selected_cat;
         }
 
         $type = '';
-        if (isset($_REQUEST['type'])) {
+        if (!empty($_REQUEST['type'])) {
             $type = '&amp;type='.$selected_type;
         }
 
-        if (isset($_REQUEST['cmd'])) {
+        if (!empty($_REQUEST['cmd'])) {
             if ($_REQUEST['cmd'] == $selected_cat) {
                 $category = '&amp;cmd='.$_REQUEST['cmd'];
             } else {
