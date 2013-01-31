@@ -36,6 +36,13 @@ class UrlException extends \Exception {};
  * @todo        Edit PHP DocBlocks!
  */
 class Url {
+
+    /**
+     * frontend or backend
+     * @var string  Mode needed for generating the url
+     */
+    protected $mode = 'frontend';
+
     /**
      * http or https
      * @todo Implement protocol support (at the moment only http is supported)
@@ -99,11 +106,23 @@ class Url {
         }
 
         $this->domain = $matches[1];
-        if(count($matches) > 2) {
+        if (isset($matches[2])) {
             $this->setPath($matches[2]);
         } else {
             $this->suggest();
         }
+    }
+
+    public function setMode($mode) {
+        if (($mode == 'frontend') || ($mode == 'backend')) {
+            $this->mode = $mode;
+        } else {
+            \DBG::msg('URL: Invalid url mode "'.$mode.'"');
+        }
+    }
+
+    public function getMode() {
+        return $this->mode;
     }
 
     /**
@@ -122,12 +141,13 @@ class Url {
         }
         $matches = array();
         $matchCount = preg_match('/([^\?]+)(.*)/', $this->path, $matches);
+        
 
-        $parts = explode('?', $this->path);
-        if($matchCount == 0) {//seemingly, no parameters are set.
+        if ($matchCount == 0) {//seemingly, no parameters are set.
             $this->suggestedTargetPath = $this->path;
             $this->suggestedParams = '';
         } else {
+            $parts = explode('?', $this->path);
             if ($parts[0] == '') { // we have no path or filename, just set parameters
                 $this->suggestedTargetPath = '';
                 $this->suggestedParams = $this->path;
@@ -185,7 +205,9 @@ class Url {
      * @param   mixed       $value
      */
     public function setParam($key, $value) {
-        $this->setParams(array($key => $value));
+        if (!empty($key)) {
+            $this->setParams(array($key => $value));
+        }
     }
 
     /**
@@ -199,7 +221,9 @@ class Url {
             $params = self::params2array($params);
         }
 
-        $this->addParamsToPath($params);
+        if (!empty($params)) {
+            $this->addParamsToPath($params);
+        }
     }
 
     /**
@@ -222,6 +246,7 @@ class Url {
                 unset($paramsFromPath[$key]);
             }
         }
+
         $paramsToAddSubarray = array();
         foreach ($paramsToAdd as $key => $value) {
             if (is_array($value)) {
@@ -245,9 +270,9 @@ class Url {
      * @return  array       $params
      */
     private function splitParamsFromPath() {
-        $path = explode('?', $this->path);
-        if (isset($path[1])) {
-            $params = self::params2array($path[1]);
+        list($path, $query) = explode('?', $this->path);
+        if (!empty($query)) {
+            $params = self::params2array($query);
         } else {
             $params = array();
         }
@@ -274,9 +299,15 @@ class Url {
      * @return  array       $array
      */
     public static function params2array($params = '') {
-        parse_str(htmlspecialchars_decode(urldecode($params), ENT_QUOTES), $array);
-        if (isset($array['csrf'])) {
-            unset($array['csrf']);
+        $array = array();
+        if (strpos($params, '?') !== false) {
+            list($path, $params) = explode('?', $params);
+        }
+        if (!empty($params)) {
+            parse_str(htmlspecialchars_decode(urldecode($params), ENT_QUOTES), $array);
+            if (isset($array['csrf'])) {
+                unset($array['csrf']);
+            }
         }
         return $array;
     }
@@ -354,7 +385,6 @@ class Url {
         } else {
             $params = '';
         }
-        
         $request = preg_replace('/index.php/', '', $request);
 
         return new Url($protocol.'://'.$host.'/'.$request.$params);
@@ -550,7 +580,7 @@ class Url {
     {
         return
             ASCMS_PATH_OFFSET.'/'.
-            $this->getLangDir().'/'.
+            ($this->getMode() != 'backend' ? $this->getLangDir().'/' : '').
             $this->path; // contains path (except for PATH_OFFSET and virtual language dir) and params
     }
 
