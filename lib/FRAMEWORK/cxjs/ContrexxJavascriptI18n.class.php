@@ -26,7 +26,7 @@ class ContrexxJavascriptI18n {
         $vars = array();
         $providers = scandir(ASCMS_FRAMEWORK_PATH.'/cxjs/i18n');
         foreach($providers as $provider) {
-            if($provider[0] == '.') //do not open ., .., and linux hidden directories (.*)
+            if(($provider[0] == '.') || !preg_match('/\.php/', $provider)) //do not open ., .., and linux hidden directories (.*)
                 continue;
             //name as used for the scope ('provider')
             $providerName = substr($provider,0,strpos($provider,'.'));
