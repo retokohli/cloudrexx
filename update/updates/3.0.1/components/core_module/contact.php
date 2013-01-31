@@ -210,7 +210,7 @@ function _contactUpdate()
 
                         $form_label_query = "SELECT `fieldID`
                                             FROM `".DBPREFIX."module_contact_form_field_lang`
-                                            WHERE `name` = '".$field_label."'";
+                                            WHERE `name` = '".contrexx_raw2db($field_label)."'";
                         $formLabelResult  = \Cx\Lib\UpdateUtil::sql($form_label_query);
                         $fieldId          = ($formLabelResult->fields['fieldID'] != null) ? $formLabelResult->fields['fieldID'] : 0;
 
