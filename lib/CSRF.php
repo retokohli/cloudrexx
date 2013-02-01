@@ -373,9 +373,23 @@ class CSRF {
 
     private static function __is_logged_in()
     {
+        global $objInit;
+
+        // we need $objInit to be able to determine if the user requested
+        // the backend or frontend
+        if (!isset($objInit)) {
+            return false;
+        }
+
+        if ($objInit->mode == 'backend') {
+            $backend = true;
+        } else {
+            $backend = false;
+        }
+
         if (class_exists('FWUser')) {
             $objFWUser = FWUser::getFWUserObject();
-            if ($objFWUser->objUser->login()) {
+            if ($objFWUser->objUser->login($backend)) {
                 return true;
             }
         }
