@@ -131,7 +131,7 @@ var deleteInputfield = function(formId, fieldId)
 
 var saveInputfield = function(success_function)
 {
-    jQuery.post('index.php?cmd={MODULE_NAME}&act=settings&tpl=modify_form&ajax=save', jQuery('settingsInputfieldsForm').serialize()).success(success_function).error(function(){ alert('Something went wrong...') });
+    jQuery.post('index.php?cmd={MODULE_NAME}&act=settings&tpl=modify_form&ajax=save', jQuery('#settingsInputfieldsForm').serialize()).success(success_function).error(function(){ alert('Something went wrong...') });
 }
 
 var refreshInputfields = function(formId)
