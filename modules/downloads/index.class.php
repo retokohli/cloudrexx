@@ -343,12 +343,12 @@ class downloads extends DownloadsLibrary
         $this->parseGlobalStuff($objCategory);
     }
 
-	public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos) {
-		global $objDatabase, $_ARRAYLANG, $_CONFIG;
+    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos) {
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         $originalNames = $fileInfos['originalFileNames'];
 
-		$path = $data['path'];
+        $path = $data['path'];
         $webPath = $data['webPath'];
         $objCategory = Category::getCategory($data['category_id']);
 
@@ -366,30 +366,30 @@ class downloads extends DownloadsLibrary
             //skip . and ..
             if ($file == '.' || $file == '..') { continue; }
 
-			//delete potentially malicious files
+            //delete potentially malicious files
             if (!FWValidator::is_file_ending_harmless($file)) {
                 @unlink($tempPath.'/'.$file);
                 continue;
             }
 
-			$info = pathinfo($file);
+            $info = pathinfo($file);
 
-			$cleanFile = self::cleanFileName($file);
+            $cleanFile = self::cleanFileName($file);
             if ($cleanFile != $file) {
                 rename($tempPath.'/'.$file, $tempPath.'/'.$cleanFile);
                 $file = $cleanFile;
             }
 
             //check if file needs to be renamed
-			$newName = '';
-			$suffix = '';
+            $newName = '';
+            $suffix = '';
 
             if (file_exists($path.'/'.$file)) {
                 if (empty($_REQUEST['uploadForceOverwrite']) || !intval($_REQUEST['uploadForceOverwrite'] > 0)) {
                     $suffix = '_'.time();
-					$newName = $info['filename'].$suffix.'.'.$info['extension'];
-					$arrFilesToRename[$file] = $newName;
-					array_push($arrFiles, $newName);
+                    $newName = $info['filename'].$suffix.'.'.$info['extension'];
+                    $arrFilesToRename[$file] = $newName;
+                    array_push($arrFiles, $newName);
                 }
             }
 
@@ -397,8 +397,8 @@ class downloads extends DownloadsLibrary
                 ImageManager::_createThumb($tempPath.'/', $tempWebPath.'/', $file);
             }
 
-			$objDownloads = new downloads('');
-			$objDownloads->addDownloadFromUpload($info['filename'], $info['extension'], $suffix, $objCategory, $objDownloads, $originalNames[$file]);
+            $objDownloads = new downloads('');
+            $objDownloads->addDownloadFromUpload($info['filename'], $info['extension'], $suffix, $objCategory, $objDownloads, $originalNames[$file]);
         }
 
         //rename files where needed
@@ -415,10 +415,10 @@ class downloads extends DownloadsLibrary
            we can now simply return the desired target path, as only valid
            files are present in $tempPath */
 
-		return array($path, $webPath);
+        return array($path, $webPath);
     }
 
-	protected static function cleanFileName($string) {
+    protected static function cleanFileName($string) {
         //contrexx file name policies
         $string = FWValidator::getCleanFileName($string);
 
@@ -592,7 +592,7 @@ class downloads extends DownloadsLibrary
         if ($this->objTemplate->blockExists('downloads_simple_file_upload')) {
             $objFWSystem = new FWSystem();
 
-			//Uploader button handling
+            //Uploader button handling
             JS::activate('cx');
             require_once ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php';
             //paths we want to remember for handling the uploaded files
@@ -606,11 +606,9 @@ class downloads extends DownloadsLibrary
             $comboUp->setData($data);
             //set instance name to combo_uploader so we are able to catch the instance with js
             $comboUp->setJsInstanceName('exposed_combo_uploader');
-// TODO: Not defined
-            $redirectUrl = '';
             $this->objTemplate->setVariable(array(
-                'COMBO_UPLOADER_CODE' 			=> $comboUp->getXHtml(true),
-                'DOWNLOADS_UPLOAD_REDIRECT_URL' => $redirectUrl,
+                'COMBO_UPLOADER_CODE'           => $comboUp->getXHtml(true),
+                'DOWNLOADS_UPLOAD_REDIRECT_URL' => \Env::get('Resolver')->getURL()->toString(),
                 'TXT_DOWNLOADS_BROWSE'          => $_ARRAYLANG['TXT_DOWNLOADS_BROWSE'],
                 'TXT_DOWNLOADS_UPLOAD_FILE'     => $_ARRAYLANG['TXT_DOWNLOADS_UPLOAD_FILE'],
                 'TXT_DOWNLOADS_MAX_FILE_SIZE'   => $_ARRAYLANG['TXT_DOWNLOADS_MAX_FILE_SIZE'],
