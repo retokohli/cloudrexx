@@ -131,7 +131,7 @@ function _mediadirUpdate()
               'comment'        => array('type' => 'VARCHAR(255)', 'after' => 'dynamic')
           ),
           array(
-                'name'           => array('fields' => array('name'), 'type' => 'UNIQUE'),              
+                'name'           => array('fields' => array('name'), 'type' => 'UNIQUE'),
           )
       );
 
@@ -246,20 +246,45 @@ function _mediadirUpdate()
           )
       );
 
-      \Cx\Lib\UpdateUtil::table(
-          DBPREFIX.'module_mediadir_rel_entry_inputfields',
-          array(
-              'entry_id'       => array('type' => 'INT(7)'),
-              'lang_id'        => array('type' => 'INT(7)', 'after' => 'entry_id'),
-              'form_id'        => array('type' => 'INT(7)', 'after' => 'lang_id'),
-              'field_id'       => array('type' => 'INT(7)', 'after' => 'form_id'),
-              'value'          => array('type' => 'longtext', 'after' => 'field_id')
-          ),
-          array(
-                'entry_id'       => array('fields' => array('entry_id','lang_id','form_id','field_id'), 'type' => 'UNIQUE'),
-                'value'          => array('fields' => array('value'), 'type' => 'FULLTEXT')
-          )
-      );
+      \Cx\Lib\UpdateUtil::sql('
+          CREATE TABLE IF NOT EXISTS `'.DBPREFIX.'module_mediadir_rel_entry_inputfields_clean` (
+              `id` int(11) NOT NULL auto_increment,
+              `entry_id` int(7) NOT NULL,
+              `lang_id` int(7) NOT NULL,
+              `form_id` int(7) NOT NULL,
+              `field_id` int(7) NOT NULL,
+              `value` longtext collate utf8_unicode_ci NOT NULL,
+              PRIMARY KEY  (`id`),
+              FULLTEXT KEY `value` (`value`)
+          ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
+      ');
+
+      \Cx\Lib\UpdateUtil::sql('
+          INSERT INTO `'.DBPREFIX.'module_mediadir_rel_entry_inputfields_clean`
+          SELECT NULL, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`
+          FROM `'.DBPREFIX.'module_mediadir_rel_entry_inputfields`
+          GROUP BY `entry_id`, `form_id`, `field_id`, `lang_id`, `value`
+      ');
+
+      \Cx\Lib\UpdateUtil::sql('
+          TRUNCATE `'.DBPREFIX.'module_mediadir_rel_entry_inputfields`
+      ');
+
+      \Cx\Lib\UpdateUtil::sql('
+          ALTER TABLE `'.DBPREFIX.'module_mediadir_rel_entry_inputfields`
+          ADD UNIQUE (`entry_id`, `lang_id`, `form_id`, `field_id`)
+      ');
+
+      \Cx\Lib\UpdateUtil::sql('
+          INSERT IGNORE INTO `'.DBPREFIX.'module_mediadir_rel_entry_inputfields`
+          SELECT `entry_id`, `lang_id`, `form_id`, `field_id`, `value`
+          FROM `'.DBPREFIX.'module_mediadir_rel_entry_inputfields_clean`
+          ORDER BY `id` DESC
+      ');
+
+      \Cx\Lib\UpdateUtil::sql('
+          DROP TABLE `'.DBPREFIX.'module_mediadir_rel_entry_inputfields_clean`
+      ');
 
       \Cx\Lib\UpdateUtil::table(
           DBPREFIX.'module_mediadir_rel_entry_levels',
@@ -397,7 +422,7 @@ function _mediadirUpdate()
 
         //only insert mails if the table is empty
         if(\Cx\Lib\UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_mails')->EOF) {
-            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_mails` (`id`, `title`, `content`, `recipients`, `lang_id`, `action_id`, `is_default`, `active`) VALUES 
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_mails` (`id`, `title`, `content`, `recipients`, `lang_id`, `action_id`, `is_default`, `active`) VALUES
 ('23', '[[URL]] - Eintrag erfolgreich bearbeitet', 'Hallo [[FIRSTNAME]] [[LASTNAME]] ([[USERNAME]])
 
 Ihr Eintrag mit dem Titel \"[[TITLE]]\" auf [[URL]] wurde erfolgreich bearbeitet. 
@@ -507,7 +532,7 @@ Diese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] ge
         tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_rel_entry_categories` VALUES (368,167),(368,164);");
         tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_rel_entry_inputfields` VALUES (368,1,18,138,'/mediadir_merge/images/downloads/no_picture.gif'),(368,1,18,137,'46.75759950155461,7.6165080070495605,16,'),(368,1,18,136,'info@comvation.com'),(368,1,18,135,'www.comvation.com'),(368,3,18,134,'Thun'),(368,2,18,134,'Thun'),(368,1,18,134,'Thun'),(368,3,18,133,'3600'),(368,2,18,133,'3600'),(368,1,18,133,'3600'),(368,2,18,132,'Milit'),(368,3,18,132,'Milit'),(368,1,18,132,'Militärstrasse 6'),(368,3,18,131,'Die Comvation AG, Hersteller des globalen Web Content Management System Contrexx'),(368,2,18,131,'Die Comvation AG, Hersteller des globalen Web Content Management System Contrexx'),(368,1,18,131,'Die Comvation AG, Hersteller des globalen Web Content Management System Contrexx'),(368,3,18,130,'Comvation AG'),(368,2,18,130,'Comvation AG'),(368,1,18,130,'Comvation AG');");
         tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_rel_entry_levels` VALUES (368,18);");
-        tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_settings_perm_group_forms` VALUES (5,18,1),(4,18,1),(3,18,1);");    
+        tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_settings_perm_group_forms` VALUES (5,18,1),(4,18,1),(3,18,1);");
     }
 
     return true;
