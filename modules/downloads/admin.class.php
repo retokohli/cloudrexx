@@ -1332,7 +1332,7 @@ class downloads extends DownloadsLibrary
                       ? array_map('intval', $_POST['downloads_download_access_associated_groups'])
                       : array()
             );
-            $objDownload->setCategories(!empty($_POST['downloads_download_associated_categories']) ? array_map('intval', $_POST['downloads_download_associated_categories']) : array());
+            $objDownload->setCategories(!empty($_POST['downloads_download_associated_categories']) ? array_map('intval', $_POST['downloads_download_associated_categories']) : array(0));
             $objDownload->setDownloads(!empty($_POST['downloads_download_associated_downloads']) ? array_map('intval', $_POST['downloads_download_associated_downloads']) : array());
 
             $objDownload->updateMTime();
