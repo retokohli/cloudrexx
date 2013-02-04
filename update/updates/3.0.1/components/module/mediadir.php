@@ -246,18 +246,20 @@ function _mediadirUpdate()
           )
       );
 
-      \Cx\Lib\UpdateUtil::sql('
-          CREATE TABLE IF NOT EXISTS `'.DBPREFIX.'module_mediadir_rel_entry_inputfields_clean` (
-              `id` int(11) NOT NULL auto_increment,
-              `entry_id` int(7) NOT NULL,
-              `lang_id` int(7) NOT NULL,
-              `form_id` int(7) NOT NULL,
-              `field_id` int(7) NOT NULL,
-              `value` longtext collate utf8_unicode_ci NOT NULL,
-              PRIMARY KEY  (`id`),
-              FULLTEXT KEY `value` (`value`)
-          ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
-      ');
+      \Cx\Lib\UpdateUtil::table(
+          DBPREFIX.'module_mediadir_rel_entry_inputfields_clean',
+          array(
+              'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+              'entry_id'       => array('type' => 'INT(7)', 'after' => 'id'),
+              'lang_id'        => array('type' => 'INT(7)', 'after' => 'entry_id'),
+              'form_id'        => array('type' => 'INT(7)', 'after' => 'lang_id'),
+              'field_id'       => array('type' => 'INT(7)', 'after' => 'form_id'),
+              'value'          => array('type' => 'longtext', 'after' => 'field_id')
+          ),
+          array(
+              'value'          => array('fields' => array('value'), 'type' => 'FULLTEXT')
+          )
+      );
 
       \Cx\Lib\UpdateUtil::sql('
           INSERT INTO `'.DBPREFIX.'module_mediadir_rel_entry_inputfields_clean`
@@ -354,9 +356,7 @@ function _mediadirUpdate()
               'vote'           => array('type' => 'INT(11)', 'after' => 'ip')
           )
       );
-    }
-    catch (\Cx\Lib\UpdateException $e) {
-        // we COULD do something else here..
+    } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
