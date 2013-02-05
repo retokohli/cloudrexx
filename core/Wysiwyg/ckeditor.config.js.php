@@ -48,6 +48,9 @@ $defaultUploader  = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTOR
 $linkUploader     = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX.'?cmd=fileBrowser'
                    .'&act=FCKEditorUpload&standalone=true&type=webpages'.$CSRF;
 
+$defaultTemplateFilePath = substr(\Env::get('ClassLoader')->getFilePath('/lib/ckeditor/plugins/templates/templates/default.js'), strlen(ASCMS_PATH));
+
+
 ?>
 CKEDITOR.editorConfig = function( config )
 {
@@ -61,12 +64,14 @@ CKEDITOR.editorConfig = function( config )
     config.shiftEnterMode = CKEDITOR.ENTER_P;
     config.startupOutlineBlocks = true;
 
-    config.filebrowserBrowseUrl      = CKEDITOR.getUrl('<?php echo $linkBrowser;?>');
-    config.filebrowserImageBrowseUrl = CKEDITOR.getUrl('<?php echo $defaultBrowser?>');
-    config.filebrowserFlashBrowseUrl = CKEDITOR.getUrl('<?php echo $defaultBrowser?>');
-    config.filebrowserUploadUrl      = CKEDITOR.getUrl('<?php echo $linkUploader;?>')
-    config.filebrowserImageUploadUrl = CKEDITOR.getUrl('<?php echo $defaultUploader;?>');
-    config.filebrowserFlashUploadUrl = CKEDITOR.getUrl('<?php echo $defaultUploader;?>');
+    config.filebrowserBrowseUrl      = CKEDITOR.getUrl('<?php echo $linkBrowser; ?>');
+    config.filebrowserImageBrowseUrl = CKEDITOR.getUrl('<?php echo $defaultBrowser; ?>');
+    config.filebrowserFlashBrowseUrl = CKEDITOR.getUrl('<?php echo $defaultBrowser; ?>');
+    config.filebrowserUploadUrl      = CKEDITOR.getUrl('<?php echo $linkUploader; ?>')
+    config.filebrowserImageUploadUrl = CKEDITOR.getUrl('<?php echo $defaultUploader; ?>');
+    config.filebrowserFlashUploadUrl = CKEDITOR.getUrl('<?php echo $defaultUploader; ?>');
+
+    config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
 
     config.toolbar_Default = [
         ['Source','-','NewPage','Preview','-','Templates'],
