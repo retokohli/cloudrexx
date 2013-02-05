@@ -1142,6 +1142,7 @@ $_ARRAYLANG['TXT_LICENSE_KEY'] = 'License key';
 $_ARRAYLANG['TXT_LICENSE_KEY_HELP'] = 'Enter here your license key to activate this Contrexx© installation.';
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Security code";
 $_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'] = "Enter the letters below.";
+$_ARRAYLANG['TXT_CORE_REMEMBER_ME'] = "Remember me";
 $_ARRAYLANG['TXT_CORE_CM_TYPE_REDIRECT_INFO_ACTION'] = 'Enter an external URL or select a page.';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_AVAILABLE_GROUPS'] = 'Available Groups';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_ASSIGNED_GROUPS'] = 'Assigned Groups';
@@ -1169,4 +1170,3 @@ $_ARRAYLANG['TXT_CORE_CM_PAGE_TYPE_FALLBACK'] = "fallback";
 $_ARRAYLANG['TXT_CORE_CM_PAGE_MOVE_INFO'] = "Move the page by use of drag and drop.";
 $_ARRAYLANG['TXT_CORE_CM_TRANSLATION_INFO'] = "Click here to edit the page in this language.";
 $_ARRAYLANG['TXT_CORE_CM_PREVIEW_INFO'] = "Click here to see a preview of this page in the frontend.";
-?>

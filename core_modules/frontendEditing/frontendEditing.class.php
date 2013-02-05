@@ -316,17 +316,18 @@ class frontendEditing extends frontendEditingLib {
             $statusMessage = '<div class="fe_LoginError">'.$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_FAILED'].'</div>';
         }
 
-        $this->objTemplate->setVariable(array(	'TXT_LOGIN_TITLE'				=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_TITLE'],
-                                                'TXT_LOGIN_USERNAME'			=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_USERNAME'],
-                                                'TXT_LOGIN_PASSWORD'			=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_PASSWORD'],
-                                                'TXT_LOGIN_CAPTCHA'				=>	$_CORELANG['TXT_CORE_CAPTCHA'],
-                                                'TXT_LOGIN_AREA'				=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_AREA'],
-                                                'TXT_LOGIN_AREA_FRONTEND'		=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_FRONTEND'],
-                                                'TXT_LOGIN_AREA_BACKEND'		=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_BACKEND'],
-                                                'TXT_LOGIN_SUBMIT'				=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_SUBMIT'],
-                                                'TXT_LOGIN_CANCEL'				=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_CANCEL'],
-                                                'TXT_LOGIN_PASSWORD_FORGOTTON'	=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_PASSWORD_FORGOTTON']
-                                    ));
+        $this->objTemplate->setVariable(array(  'TXT_LOGIN_TITLE'               => $_CORELANG['TXT_FRONTEND_EDITING_LOGIN_TITLE'],
+                                                'TXT_LOGIN_USERNAME'            => $_CORELANG['TXT_FRONTEND_EDITING_LOGIN_USERNAME'],
+                                                'TXT_LOGIN_PASSWORD'            => $_CORELANG['TXT_FRONTEND_EDITING_LOGIN_PASSWORD'],
+                                                'TXT_LOGIN_CAPTCHA'             => $_CORELANG['TXT_CORE_CAPTCHA'],
+                                                'TXT_LOGIN_REMEMBER_ME'         => $_CORELANG['TXT_CORE_REMEMBER_ME'],
+                                                'TXT_LOGIN_AREA'                => $_CORELANG['TXT_FRONTEND_EDITING_LOGIN_AREA'],
+                                                'TXT_LOGIN_AREA_FRONTEND'       => $_CORELANG['TXT_FRONTEND_EDITING_LOGIN_FRONTEND'],
+                                                'TXT_LOGIN_AREA_BACKEND'        => $_CORELANG['TXT_FRONTEND_EDITING_LOGIN_BACKEND'],
+                                                'TXT_LOGIN_SUBMIT'              => $_CORELANG['TXT_FRONTEND_EDITING_LOGIN_SUBMIT'],
+                                                'TXT_LOGIN_CANCEL'              => $_CORELANG['TXT_FRONTEND_EDITING_LOGIN_CANCEL'],
+                                                'TXT_LOGIN_PASSWORD_FORGOTTON'  => $_CORELANG['TXT_FRONTEND_EDITING_LOGIN_PASSWORD_FORGOTTON'],
+        ));
         $loginUsername = isset($_POST['USERNAME']) ? $_POST['USERNAME'] : '';
 
         $lostPWPath = '';

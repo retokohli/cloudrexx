@@ -262,3 +262,4 @@ $_ARRAYLANG['TXT_PARTNERS_MODULE_DESCRIPTION'] = "Verwaltung und Präsentation v
 $_ARRAYLANG['UPLOAD_FORM_ADD'] = "Weitere Dateien hinzuf&uuml;gen";
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Security code";
 $_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'] = "Enter the letters below.";
+$_ARRAYLANG['TXT_CORE_REMEMBER_ME'] = "Remember me";

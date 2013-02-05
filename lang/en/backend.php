@@ -1225,6 +1225,7 @@ $_ARRAYLANG['TXT_CALENDAR_SETTINGS'] = "Einstellungen";
 $_ARRAYLANG['TXT_CAPTCHA'] = "Sicherheitscode";
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Security code";
 $_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'] = "Enter the letters below.";
+$_ARRAYLANG['TXT_CORE_REMEMBER_ME'] = "Remember me";
 $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_BACKEND_PERMISSION'] = "Wollen Sie die Backend Berechtigunen wirklich für alle Seiten (%s) setzen?";
 $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_CACHINGSTATUS'] = "Wollen Sie den Cachingstatus wirklich für alle Seiten (%s) setzen?";
 $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_CSSNAME'] = "Wollen Sie den CSS Name %s wirklich für alle Seiten (%s) übernehmen?";
