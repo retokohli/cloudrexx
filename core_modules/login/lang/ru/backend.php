@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
@@ -28,5 +29,4 @@ $_ARRAYLANG['TXT_LOGIN_USERNAME'] = "Имя пользователя";
 $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD_MAIL_SENT'] = "E-mail с дальнейшими инструкциями был послан по следующему адресу %E-MAIL%.";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD_CHANGED_SUCCESSFULLY'] = "Изменение вашего пароля произошло успешно.";
 $_ARRAYLANG['TXT_LOGIN_LOGIN'] = "Войти";
-$_ARRAYLANG['TXT_LOGIN_REMEMBER_ME'] = "Remember me";
 $_ARRAYLANG['TXT_LOGIN_GO_TO_BACKEND'] = "Go to backend";

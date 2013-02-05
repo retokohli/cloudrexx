@@ -1447,6 +1447,7 @@ $_ARRAYLANG['UPLOAD_EXPOSED_DIALOG_TITLE'] = "Dateien hochladen";
 $_ARRAYLANG['UPLOAD_FORM_ADD'] = "Weitere Dateien hinzufügen";
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Security code";
 $_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'] = "Enter the letters below.";
+$_ARRAYLANG['TXT_CORE_REMEMBER_ME'] = "Remember me";
 
 $_ARRAYLANG['TXT_CORE_CM_TYPE_REDIRECT_INFO_ACTION'] = 'Enter an external URL or select a page.';
 $_ARRAYLANG['TXT_CORE_CM_USAGE_DENIED'] = "You don't have enough rights to use the content manager.";

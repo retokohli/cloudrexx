@@ -1,8 +1,11 @@
 <?php
+
 /**
-* Contrexx CMS
-* generated date Tue, 23 Jan 2007 14:44:20 +0100
-**/
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  core_module_login
+ */
 
 $_ARRAYLANG['TXT_DIR_F_LINK'] = "Link";
-?>

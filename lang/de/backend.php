@@ -1655,9 +1655,10 @@ $_ARRAYLANG['TXT_CORE_CM_PUBLISH_DENIED'] = 'Sie haben nicht genügend Rechte, u
 $_ARRAYLANG['TXT_CORE_CM_COPY_DENIED'] = 'Sie haben nicht genügend Rechte, um Seiten zu kopieren.';
 $_ARRAYLANG['TXT_CORE_CM_VALIDATION_FAIL'] = 'Bitte füllen Sie alle erforderlichen Felder aus';
 
-// core captcha
+// core login
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Sicherheitscode";
 $_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'] = "Geben Sie die Buchstaben aus dem unten angezeigten Bild ein.";
+$_ARRAYLANG['TXT_CORE_REMEMBER_ME'] = "Angemeldet bleiben";
 
 // upload
 $_ARRAYLANG['TXT_CORE_UPLOAD_MORE'] = "Weitere Dateien hochladen";

@@ -194,10 +194,16 @@ html, body {
 #fe_LoginBoxContent form .fe_LoginBoxLabel {
     float: left;
     clear: both;
-    width: 100%;
-    font-weight: bold;
+    width: auto;
     margin-bottom: 2px;
     text-align: left;
+    font-weight: bold;
+}
+
+#fe_LoginBoxContent form .fe_LoginBoxValue .fe_LoginBoxLabel {
+    clear: none;
+    margin: 0 0 0 5px;
+    line-height: 20px;
 }
 
 #fe_LoginBoxContent form .fe_LoginBoxValue {
@@ -228,16 +234,24 @@ html, body {
     padding: 2px 2px 2px 2px;
 }
 
-
+#fe_LoginBoxContent form input[type=checkbox],
+#fe_LoginBoxContent form input[type=radio] {
+    background: transparent;
+    border: 0;
+    padding: 0;
+}
 
 #fe_LoginBoxContent form input[name="fe_LoginType"] {
+    clear: both;
     border: 0;
     margin-right: 2px;
     background: transparent;
 }
 
-#fe_LoginBoxContent form label[for="fe_LoginTypeFrontend"] {
-    margin-right: 10px;
+#fe_LoginBoxContent form label[for=fe_LoginTypeFrontend],
+#fe_LoginBoxContent form label[for=fe_LoginTypeBackend] {
+    width: auto;
+    line-height: 20px;
 }
 
 #fe_LoginBoxContent form input:hover,

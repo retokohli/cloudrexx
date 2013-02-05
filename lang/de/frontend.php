@@ -277,9 +277,10 @@ $_ARRAYLANG['TXT_CORE_HTML_TOGGLE_CLOSE'] = "schliessen";
 $_ARRAYLANG['TXT_CORE_HTML_TOGGLE_OPEN'] = "öffnen";
 $_ARRAYLANG['TXT_CORE_HTML_VIEW'] = "Details";
 
-// core captcha
+// core login
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Sicherheitscode";
 $_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'] = "Geben Sie die Buchstaben aus dem unten angezeigten Bild ein.";
+$_ARRAYLANG['TXT_CORE_REMEMBER_ME'] = "Angemeldet bleiben";
 
 // upload
 $_ARRAYLANG['TXT_CORE_UPLOAD_MORE'] = "Weitere Dateien hochladen";

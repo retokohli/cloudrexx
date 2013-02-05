@@ -249,15 +249,15 @@ class Login
         }
 
         $this->_objTpl->setVariable(array(
-            'TXT_USER_NAME'			    => $_CORELANG['TXT_USER_NAME'],
-              'TXT_PASSWORD'			=> $_CORELANG['TXT_PASSWORD'],
-               'TXT_LOGIN'				=> $_CORELANG['TXT_LOGIN'],
-               'TXT_PASSWORD_LOST'		=> $_CORELANG['TXT_PASSWORD_LOST'],
-               'LOGIN_REDIRECT'		    => $redirect,
-               'LOGIN_STATUS_MESSAGE'   => $this->_statusMessage
+            'TXT_LOGIN'             => $_CORELANG['TXT_LOGIN'],
+            'TXT_USER_NAME'         => $_CORELANG['TXT_USER_NAME'],
+            'TXT_PASSWORD'          => $_CORELANG['TXT_PASSWORD'],
+            'TXT_LOGIN_REMEMBER_ME' => $_CORELANG['TXT_CORE_REMEMBER_ME'],
+            'TXT_PASSWORD_LOST'     => $_CORELANG['TXT_PASSWORD_LOST'],
+            'LOGIN_REDIRECT'        => $redirect,
+            'LOGIN_STATUS_MESSAGE'  => $this->_statusMessage,
         ));
 
         return $this->_objTpl->get();
     }
 }
-?>

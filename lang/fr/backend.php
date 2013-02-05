@@ -1478,6 +1478,7 @@ $_ARRAYLANG['TXT_CORE_CM_TRANSLATION_INFO'] = "Click here to edit the page in th
 $_ARRAYLANG['TXT_CORE_CM_PREVIEW_INFO'] = "Click here to see a preview of this page in the frontend.";
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Security code";
 $_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'] = "Enter the letters below.";
+$_ARRAYLANG['TXT_CORE_REMEMBER_ME'] = "Remember me";
 
 $_ARRAYLANG['TXT_CORE_CM_USAGE_DENIED'] = "You don't have enough rights to use the content manager.";
 $_ARRAYLANG['TXT_CORE_CM_CREATION_DENIED'] = "You don't have enough rights to create pages.";
