@@ -270,6 +270,10 @@ class AliasAdmin extends aliasLib
                 if (count($aliases) || count($newaliases)) {
                     $error = false;
 
+                    if ($newtype == 'local') {
+                        $newtarget = substr($newtarget, 0, -2) . '_' . FRONTEND_LANG_ID . ']]';
+                    }
+
                     foreach ($aliases as $id=>$slug) {
                         if (!$this->_saveAlias($slug, $newtarget, $newtype == 'local', $id)) {
                             $this->arrStatusMsg['error'][] = $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_UPDATE_FAILED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_ADD_FAILED'];
