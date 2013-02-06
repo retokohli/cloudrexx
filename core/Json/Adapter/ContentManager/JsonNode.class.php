@@ -187,7 +187,7 @@ class JsonNode implements JsonAdapter {
 
         $this->nodeRepo->moveUp($moved_node, true);
         if ($arguments['post']['position']) {
-            $this->nodeRepo->moveDown($moved_node, $arguments['post']['position']);
+            $this->nodeRepo->moveDown($moved_node, $arguments['post']['position'], true);
         }
 
         foreach ($moved_node->getPages() as $page) {
