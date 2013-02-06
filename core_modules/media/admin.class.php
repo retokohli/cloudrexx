@@ -771,7 +771,16 @@ class MediaManager extends MediaLibrary
 
         $this->_objTpl->loadTemplateFile('module_media_edit.html', true, true);
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIA_EDIT_FILE'];
-        
+
+        if (isset($_GET['saveError']) && $_GET['saveError'] === 'true') {
+            $this->_objTpl->setVariable(array(
+                'TXT_MEDIA_ERROR_OCCURED' => $_ARRAYLANG['TXT_MEDIA_ERROR_OCCURED'],
+                'TXT_MEDIA_ERROR_MESSAGE' => $_ARRAYLANG['TXT_MEDIA_CANNOT_SAVE_IMAGE']
+            ));
+            $this->_objTpl->parse('mediaErrorFile');
+            return;
+        }
+
         // Activate cx
         JS::activate('cx');
         
@@ -855,8 +864,8 @@ class MediaManager extends MediaLibrary
             $this->_objTpl->parse('mediaEditImage');
         } else { // File doesn't exist
             $this->_objTpl->setVariable(array(
-                'TXT_MEDIA_ERROR_OCCURED'    => $_ARRAYLANG['TXT_MEDIA_ERROR_OCCURED'],
-                'TXT_MEDIA_FILE_DONT_EXISTS' => $_ARRAYLANG['TXT_MEDIA_FILE_DONT_EXISTS']
+                'TXT_MEDIA_ERROR_OCCURED' => $_ARRAYLANG['TXT_MEDIA_ERROR_OCCURED'],
+                'TXT_MEDIA_ERROR_MESSAGE' => $_ARRAYLANG['TXT_MEDIA_FILE_DONT_EXISTS']
             ));
             $this->_objTpl->parse('mediaErrorFile');
         }
