@@ -42,7 +42,7 @@ $_ARRAYLANG['TXT_DESIGN_FILES_ADMINISTRATION'] = "Design Dateienverwaltung";
 $_ARRAYLANG['TXT_MEDIA_MAKE_SELECTION'] = "Bitte treffen Sie eine Auswahl!";
 $_ARRAYLANG['TXT_MEDIA_EDIT_FILE'] = "Media bearbeiten";
 $_ARRAYLANG['TXT_MEDIA_ERROR_OCCURED'] = "Ein Fehler ist aufgetreten!";
-$_ARRAYLANG['TXT_MEDIA_FILE_DONT_EXISTS'] = "Die gewünschte Datei existiert nicht!";
+$_ARRAYLANG['TXT_MEDIA_FILE_DONT_EXISTS'] = "Die gewünschte Datei existiert nicht.";
 $_ARRAYLANG['TXT_MEDIA_BACK'] = "zurück";
 $_ARRAYLANG['TXT_MEDIA_MSG_EDIT'] = "Media erfolgreich bearbeitet!";
 $_ARRAYLANG['TXT_MEDIA_MSG_ERROR_EDIT'] = "Fehler: Media konnte nicht beabeitet werden!";
@@ -106,6 +106,7 @@ $_ARRAYLANG['TXT_MEDIA_ROTATE_INFO'] = "Wählen Sie einen Richtung, in welche Si
 $_ARRAYLANG['TXT_MEDIA_SCALE_COMPRESS'] = "Skalieren / Komprimieren";
 $_ARRAYLANG['TXT_MEDIA_SCALE_INFO'] = "* Beim Wert 0 wird das Bild nicht skaliert.";
 $_ARRAYLANG['TXT_MEDIA_PREVIEW'] = "Vorschau";
+$_ARRAYLANG['TXT_MEDIA_CANNOT_SAVE_IMAGE'] = "Das Bild konnte nicht gespeichert werden.";
 $_ARRAYLANG['TXT_MAIL_SUBJECT'] = "E-Mail Betreff";
 $_ARRAYLANG['TXT_MAIL_CONTENT'] = "E-Mail Inhalt";
 ?>

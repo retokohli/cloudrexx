@@ -410,6 +410,9 @@
             },
             success: function (data) {
                 window.location.href = '{MEDIA_EDIT_REDIRECT}&editedImage=' + data + '&{CSRF}';
+            },
+            error: function () {
+                window.location.href = 'index.php?cmd=media&archive=content&act=edit&saveError=true&{CSRF}';
             }
         });
     }
@@ -422,7 +425,7 @@
         <th>{TXT_MEDIA_ERROR_OCCURED}</th>
     </tr>
     <tr class="row1">
-        <td>{TXT_MEDIA_FILE_DONT_EXISTS}</td>
+        <td>{TXT_MEDIA_ERROR_MESSAGE}</td>
     </tr>
 </table>
 <!-- END mediaErrorFile -->
