@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Frontend Edition
  *
@@ -147,14 +148,14 @@ class frontendEditing extends frontendEditingLib {
      * Catches the parameters in the $_REQUEST array and validates them.
      */
     private function getParameters() {
-        $this->strAction 			= isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
-        $this->strPagePath          = isset($_REQUEST['page']) ? $_REQUEST['page'] : '';
+        $this->strAction            = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
+        $this->strPagePath          = isset($_REQUEST['pageId']) ? $_REQUEST['pageId'] : '';
     }
 
     /**
      * Loads the values of the requested page from database.
      *
-     * @global 	ADONewConnection
+     * @global  ADONewConnection
      */
     private function loadValuesFromDatabase() {
         /*
@@ -238,8 +239,8 @@ class frontendEditing extends frontendEditingLib {
             if (!empty($_POST['fe_LoginUsername']) && !empty($_POST['fe_LoginPassword'])) {
 
                 //Assign variables for login
-                $_POST['USERNAME'] 	= $_POST['fe_LoginUsername'];
-                $_POST['PASSWORD'] 	= $_POST['fe_LoginPassword'];
+                $_POST['USERNAME']  = $_POST['fe_LoginUsername'];
+                $_POST['PASSWORD']  = $_POST['fe_LoginPassword'];
 
 
 
@@ -341,12 +342,12 @@ class frontendEditing extends frontendEditingLib {
             $lostPWPath = ASCMS_PATH_OFFSET.Env::get('virtualLanguageDirectory').$page->getPath();
         }
 
-        $this->objTemplate->setVariable(array(	'LOGIN_PAGE_ID'			=> $this->intPageId,
-                                                'LOGIN_PAGE_SECTION'	=> $this->strPageSection,
-                                                'LOGIN_PAGE_CMD'		=> $this->strPageCommand,
-                                                'LOGIN_CAPTCHA_CODE'	=> FWCaptcha::getInstance()->getCode(),
-                                                'LOGIN_USERNAME'		=> (get_magic_quotes_gpc() == 1 ? stripslashes($loginUsername) : $loginUsername),
-                                                'LOGIN_STATUS_MESSAGE'	=> $statusMessage,
+        $this->objTemplate->setVariable(array(  'LOGIN_PAGE_ID'         => $this->intPageId,
+                                                'LOGIN_PAGE_SECTION'    => $this->strPageSection,
+                                                'LOGIN_PAGE_CMD'        => $this->strPageCommand,
+                                                'LOGIN_CAPTCHA_CODE'    => FWCaptcha::getInstance()->getCode(),
+                                                'LOGIN_USERNAME'        => (get_magic_quotes_gpc() == 1 ? stripslashes($loginUsername) : $loginUsername),
+                                                'LOGIN_STATUS_MESSAGE'  => $statusMessage,
                                                 'LOGIN_LOSTPW_URL'      => $lostPWPath,
                                                 'JAVASCRIPT' => JS::getCode(),
                                         ));
@@ -384,16 +385,16 @@ class frontendEditing extends frontendEditingLib {
 
         $this->objTemplate->loadTemplateFile('toolbar.html',true,true);
 
-        $this->objTemplate->setVariable(array(	'TXT_TOOLBAR_USER'			=>	$_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_USER'],
-                                                'TXT_TOOLBAR_PREVIEW'		=>	$_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_PREVIEW'],
-                                                'TXT_TOOLBAR_EDIT'			=>	$_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_EDIT'],
-                                                'TXT_TOOLBAR_ADMIN'			=>	$_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_ADMIN'],
-                                                'TXT_TOOLBAR_CLOSE'			=>	$_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_CLOSE'],
-                                                'TXT_TOOLBAR_LOGOUT'		=>	$_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_LOGOUT']
+        $this->objTemplate->setVariable(array(  'TXT_TOOLBAR_USER'          => $_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_USER'],
+                                                'TXT_TOOLBAR_PREVIEW'       => $_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_PREVIEW'],
+                                                'TXT_TOOLBAR_EDIT'          => $_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_EDIT'],
+                                                'TXT_TOOLBAR_ADMIN'         => $_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_ADMIN'],
+                                                'TXT_TOOLBAR_CLOSE'         => $_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_CLOSE'],
+                                                'TXT_TOOLBAR_LOGOUT'        => $_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_LOGOUT']
                                         ));
 
-        $this->objTemplate->setVariable(array(	'TOOLBAR_PATH'				=>	ASCMS_PATH_OFFSET.frontendEditingLib::FRONTENDEDITING_PATH,
-                                                'TOOLBAR_USERNAME'			=>	$this->objUser->objUser->getUsername()
+        $this->objTemplate->setVariable(array(  'TOOLBAR_PATH'              => ASCMS_PATH_OFFSET.frontendEditingLib::FRONTENDEDITING_PATH,
+                                                'TOOLBAR_USERNAME'          => $this->objUser->objUser->getUsername()
                                         ));
 
         return 'editor'.$this->strSplitChar.$this->objTemplate->get();
@@ -418,14 +419,14 @@ class frontendEditing extends frontendEditingLib {
 
         $this->objTemplate->loadTemplateFile('selection.html',true,true);
 
-        $this->objTemplate->setVariable(array(	'TXT_SELECTION_TITLE'			=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'],
-                                                'TXT_SELECTION_TEXT'			=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TEXT'],
-                                                'TXT_SELECTION_MODE_PAGE'		=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_PAGE'],
-                                                'TXT_SELECTION_MODE_CONTENT'	=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_CONTENT']
+        $this->objTemplate->setVariable(array(  'TXT_SELECTION_TITLE'           => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'],
+                                                'TXT_SELECTION_TEXT'            => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TEXT'],
+                                                'TXT_SELECTION_MODE_PAGE'       => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_PAGE'],
+                                                'TXT_SELECTION_MODE_CONTENT'    => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_CONTENT']
                                 ));
 
-        $this->objTemplate->setVariable(array(	'SELECTION_IMAGE_PATH'	=>	ASCMS_PATH_OFFSET.frontendEditingLib::FRONTENDEDITING_PATH,
-                                                'SELECTION_ADMIN_PATH'	=>	ASCMS_ADMIN_WEB_PATH.'/?cmd='.$this->strPageSection.'&amp;'.CSRF::param()));
+        $this->objTemplate->setVariable(array(  'SELECTION_IMAGE_PATH'  => ASCMS_PATH_OFFSET.frontendEditingLib::FRONTENDEDITING_PATH,
+                                                'SELECTION_ADMIN_PATH'  => ASCMS_ADMIN_WEB_PATH.'/?cmd='.$this->strPageSection.'&amp;'.CSRF::param()));
 
         return 'selection'.$this->strSplitChar.$this->objTemplate->get();
     }
@@ -440,15 +441,15 @@ class frontendEditing extends frontendEditingLib {
 
         $this->objTemplate->loadTemplateFile('editor.html',true,true);
 
-        $this->objTemplate->setVariable(array(	'TXT_EDIT_TITLE'			=>	$_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_EDIT'],
-                                                'TXT_EDIT_PAGETITLE'		=>	$_CORELANG['TXT_FRONTEND_EDITING_EDIT_PAGETITLE'],
-                                                'TXT_EDIT_CONTENT'			=>	$_CORELANG['TXT_FRONTEND_EDITING_EDIT_CONTENT'],
-                                                'TXT_EDIT_PREVIEW'			=>	$_CORELANG['TXT_FRONTEND_EDITING_EDIT_PREVIEW'],
-                                                'TXT_EDIT_SUBMIT'			=>	$_CORELANG['TXT_FRONTEND_EDITING_EDIT_SUBMIT']
+        $this->objTemplate->setVariable(array(  'TXT_EDIT_TITLE'            => $_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_EDIT'],
+                                                'TXT_EDIT_PAGETITLE'        => $_CORELANG['TXT_FRONTEND_EDITING_EDIT_PAGETITLE'],
+                                                'TXT_EDIT_CONTENT'          => $_CORELANG['TXT_FRONTEND_EDITING_EDIT_CONTENT'],
+                                                'TXT_EDIT_PREVIEW'          => $_CORELANG['TXT_FRONTEND_EDITING_EDIT_PREVIEW'],
+                                                'TXT_EDIT_SUBMIT'           => $_CORELANG['TXT_FRONTEND_EDITING_EDIT_SUBMIT']
                                 ));
 
-        $this->objTemplate->setVariable(array(	'EDIT_TITLE'			=>	$this->strTitle,
-                                                'EDIT_WYSIWYG'			=>	$this->getWysiwyg()
+        $this->objTemplate->setVariable(array(  'EDIT_TITLE'            => $this->strTitle,
+                                                'EDIT_WYSIWYG'          => $this->getWysiwyg()
                                         ));
 
         return 'editor'.$this->strSplitChar.$this->objTemplate->get();
@@ -457,7 +458,7 @@ class frontendEditing extends frontendEditingLib {
     /**
      * Returns an instance of the wysiwyg-editor filled with content of the desired page.
      *
-     * @param	integer		$intPageId: the content of the page with this id will loaded into the editor
+     * @param   integer     $intPageId: the content of the page with this id will loaded into the editor
      */
     private function getWysiwyg() {
         $strContent = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $this->strContent);
@@ -467,7 +468,7 @@ class frontendEditing extends frontendEditingLib {
     /**
      * Updates the page with the values submitted in $_REQUEST and collected by <pre>getParameters()</pre>.
      *
-     * @global 	ADONewConnection
+     * @global  ADONewConnection
      */
     private function updatePage() {
         $this->page->setContentTitle(strip_tags($_POST['title']));
