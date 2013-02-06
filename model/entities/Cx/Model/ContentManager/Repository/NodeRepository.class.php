@@ -4,9 +4,9 @@ namespace Cx\Model\ContentManager\Repository;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Gedmo\Tree\Entity\Repository\NestedTreeRepository;
+use Gedmo\Tree\Entity\Repository\CxNestedTreeRepository;
 
-class NodeRepository extends NestedTreeRepository {
+class NodeRepository extends CxNestedTreeRepository {
     protected $em = null;
     const DataProperty = '__data';
 
