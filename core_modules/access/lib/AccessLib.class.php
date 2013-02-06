@@ -498,7 +498,7 @@ class AccessLib
             'username'    => array(
                 'name'    => $_CORELANG['TXT_ACCESS_USERNAME'],
                 'type'    => 'text',
-                'value'    => 'getUsername'
+                'value'    => 'getRealUsername'
             ),
             'password'    => array(
                 'name'    => $_CORELANG['TXT_ACCESS_PASSWORD'],

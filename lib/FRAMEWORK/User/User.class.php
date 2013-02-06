@@ -147,6 +147,13 @@ class User extends User_Profile
     private $restore_key_time;
 
     /**
+     * The networks the user is connected with
+     * @var object
+     * @access private
+     */
+    private $networks;
+
+    /**
      * The last time the user had logged in (timestamp)
      * @var integer
      * @access private
@@ -299,11 +306,22 @@ class User extends User_Profile
     {
         global $objDatabase;
 
+        $loginByEmail = false;
+
+        if (FWValidator::isEmail($username)) {
+            $loginByEmail = true;
+        }
+
+        if ($loginByEmail) {
+            $loginCheck = "`email` = '".addslashes($username)."'";
+        } else {
+            $loginCheck = "`username` = '".addslashes($username)."'";
+        }
         $loginStatusCondition = $captchaCheckResult == false ? 'AND `last_auth_status`=1' : '';
         $objResult = $objDatabase->SelectLimit("
             SELECT `id`
               FROM `".DBPREFIX."access_users`
-             WHERE `username`='".addslashes($username)."'
+            WHERE ".$loginCheck."
                AND `password`='".addslashes($password)."'
                AND `active`=1
              ".$loginStatusCondition."
@@ -389,6 +407,7 @@ class User extends User_Profile
         $this->arrNewsletterListIDs = null;
         $this->EOF = true;
         $this->loggedIn = false;
+        $this->networks = null;
     }
 
 
@@ -412,11 +431,12 @@ class User extends User_Profile
         if ($deleteOwnAccount || $this->id != $objFWUser->objUser->getId()) {
             if (!$this->isLastAdmin()) {
                 if ($objDatabase->Execute(
-                'DELETE tblU, tblP, tblG, tblA
+                'DELETE tblU, tblP, tblG, tblA, tblN
                 FROM `'.DBPREFIX.'access_users` AS tblU
                 INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id` = tblU.`id`
                 LEFT JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id` = tblU.`id`
                 LEFT JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id` = tblU.`id`
+                LEFT JOIN `'.DBPREFIX.'access_user_network` AS tblN ON tblN.`user_id` = tblU.`id`
                 WHERE tblU.`id` = '.$this->id) !== false
             ) {
                     return true;
@@ -762,6 +782,16 @@ class User extends User_Profile
 
     public function getUsername()
     {
+        $arrSettings = User_Setting::getSettings();
+        if (!$arrSettings['use_usernames']['status'] || empty($this->username)) {
+            return $this->getEmail();
+        }
+        return $this->username;
+    }
+
+
+    public function getRealUsername()
+    {
         return $this->username;
     }
 
@@ -835,6 +865,7 @@ class User extends User_Profile
             $this->password = '';
             $this->arrGroups = null;
             $this->arrNewsletterListIDs = null;
+            $this->networks = $this->arrCachedUsers[$id]['networks'];
             $this->EOF = false;
             $this->loggedIn = false;
             return true;
@@ -871,6 +902,9 @@ class User extends User_Profile
             $sqlCondition['group_tables'] = false;
             $limit = 1;
         }
+
+        // expiration check
+        $sqlCondition['conditions'][] = '(tblU.`expiration` > ' . time() . ' OR tblU.`expiration` = 0)';
 
         // set sort order
         if (isset($filter['group_id']) && $filter['group_id'] == 'groupless') {
@@ -939,6 +973,7 @@ class User extends User_Profile
                 $objUser->MoveNext();
             }
 
+            $this->arrCachedUsers[$objUser->fields['id']]['networks'] = new \Cx\Lib\User\User_Networks($objUser->id);
             isset($arrSelectCustomExpressions) ? $this->loadCustomAttributeProfileData($arrSelectCustomExpressions) : false;
             $this->first();
             return true;
@@ -1370,6 +1405,9 @@ class User extends User_Profile
         if (!$this->validateEmail()) {
             return false;
         }
+        if ($this->networks) {
+            $this->networks->save();
+        }
         if ($this->id) {
             if ($objDatabase->Execute("
                 UPDATE `".DBPREFIX."access_users`
@@ -1462,6 +1500,49 @@ class User extends User_Profile
         return true;
     }
 
+    /**
+     * Add or update a network connection of the user
+     *
+     * @param string $oauth_provider the name of the provider
+     * @param string $oauth_id the user id on the side of the provider
+     */
+    public function setNetwork($oauth_provider, $oauth_id) {
+        $this->networks->setNetwork($oauth_provider, $oauth_id);
+    }
+
+    /**
+     * Check whether it exists a user with the data
+     *
+     * @param string $oauth_provider the name of the provider
+     * @param string $oauth_id the user id on the side of the provider
+     * @return object the user object
+     */
+    public function getByNetwork($oauth_provider, $oauth_id) {
+        global $objDatabase;
+        self::removeOutdatedAccounts();
+        $query = "SELECT tblU.`id` FROM `" . DBPREFIX . "access_users` AS tblU
+                    INNER JOIN `" . DBPREFIX . "access_user_network` AS tblN ON tblU.`id` = tblN.`user_id`
+                  WHERE tblN.`oauth_provider` = ? AND tblN.`oauth_id` = ? AND tblU.`active` = 1";
+        $objResult = $objDatabase->SelectLimit($query, 1, -1, array($oauth_provider, $oauth_id));
+        if ($objResult !== false) {
+            return $this->getUser($objResult->fields['id']);
+        }
+        return null;
+    }
+
+    /**
+     * @return object
+     */
+    public function getNetworks() {
+        return $this->networks;
+    }
+
+    /**
+     * Load the network data
+     */
+    public function loadNetworks() {
+        $this->networks = new \Cx\Lib\User\User_Networks($this->id);
+    }
 
     /**
      * Store group associations
@@ -1567,15 +1648,26 @@ class User extends User_Profile
         }
         if ($userActivationTimeoutStatus) {
             $objDatabase->Execute('
-                DELETE tblU, tblP, tblG, tblA
+                DELETE tblU, tblP, tblG, tblA, tblN
                   FROM `'.DBPREFIX.'access_users` AS tblU
                  INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id`=tblU.`id`
                   LEFT JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id`=tblU.`id`
                   LEFT JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id`=tblU.`id`
+                  LEFT JOIN `'.DBPREFIX.'access_user_network` AS tblN ON tblN.`user_id`=tblU.`id`
                  WHERE tblU.`active`=0
-                   AND tblU.`restore_key`!=\'\'
-                   AND tblU.`restore_key_time`<'.time());
+                   AND ((tblU.`restore_key`!=\'\'
+                   AND tblU.`restore_key_time`<'.time().') OR
+                   tblU.`expiration`<'.time().')');
         }
+        $objDatabase->Execute('
+                DELETE tblU, tblP, tblG, tblA, tblN
+                  FROM `'.DBPREFIX.'access_users` AS tblU
+                 INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id`=tblU.`id`
+                  LEFT JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id`=tblU.`id`
+                  LEFT JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id`=tblU.`id`
+                  LEFT JOIN `'.DBPREFIX.'access_user_network` AS tblN ON tblN.`user_id`=tblU.`id`
+                 WHERE tblU.`active`=0
+                   AND tblU.`expiration`<'.time());
     }
 
 
@@ -1819,7 +1911,7 @@ class User extends User_Profile
     }
 
 
-    private function setExpirationDate($expiration)
+    public function setExpirationDate($expiration)
     {
         $this->expiration = $expiration;
     }
@@ -1862,7 +1954,7 @@ class User extends User_Profile
     {
         global $_CORELANG, $_CONFIG;
 
-        if (empty($password) && empty($confirmedPassword) && $this->id && !$reset) {
+        if ((empty($password) && empty($confirmedPassword) && $this->id && !$reset) || isset($_SESSION['user_id'])) {
             return true;
         }
         if (self::isValidPassword($password)) {
@@ -2098,7 +2190,7 @@ class User extends User_Profile
      */
     public static function isValidUsername($username)
     {
-        if (preg_match('/^[a-zA-Z0-9-_]+$/', $username)) {
+        if (preg_match('/^[a-zA-Z0-9-_]*$/', $username)) {
             return true;
         }
 // For version 2.3, inspired by migrating Shop Customers to Users:

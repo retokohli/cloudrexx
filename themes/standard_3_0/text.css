@@ -214,6 +214,33 @@ input[type=reset] {
     -o-transition: all ease .2s;
 }
 
+.loginbutton,
+.loginbutton:hover {
+    display: block;
+    float: left;
+    color: transparent;
+    height: 26px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    width: 189px;
+}
+
+.loginbutton:hover {
+    text-decoration: underline;
+}
+
+.loginbutton.facebook {
+    background: url("images/facebook_login.png") no-repeat;
+}
+
+.loginbutton.google {
+    background: url("images/google_login.png") no-repeat;;
+}
+
+.loginbutton.twitter {
+    background: url("images/twitter_login.png") no-repeat;
+}
+
 button[disabled=disabled],
 input[disabled=disabled] {
     opacity: 0.6;
