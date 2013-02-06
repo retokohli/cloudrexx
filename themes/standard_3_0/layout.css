@@ -673,6 +673,7 @@
 /* Shop End */
 
 #page {
+    position: relative;
     float: left;
     width: 886px;
     min-height: 400px;
@@ -801,4 +802,50 @@
 
 #back-top:hover {
     background-color: #0A85C8;
+}
+
+#login form {
+    width: 40%;
+}
+
+#login p label {
+    margin-left: -150px;
+    width: 150px;
+}
+
+#login p {
+    padding-left: 150px;
+}
+
+#login #sociallogin {
+    width: 268px;
+    position: absolute;
+    top: 71px;
+    right: 0;
+}
+
+span.connected,
+span.disconnected {
+    display: inline-block;
+    margin-top: 4px;
+    width: 13px;
+    height: 13px;
+}
+
+span.connected {
+    background: url("../../cadmin/images/icons/led_green.gif");
+}
+
+span.disconnected {
+    background: url("../../cadmin/images/icons/led_red.gif");
+}
+
+#login #sociallogin span {
+    position: absolute;
+    top: 0;
+    right: 313px;
+    float: left;
+    color: #151515;
+    font-family: Arial;
+    font-size: 28px;
 }

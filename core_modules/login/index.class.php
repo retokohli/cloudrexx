@@ -224,13 +224,26 @@ class Login
 
         if (isset($_REQUEST['redirect'])) {
             $redirect = contrexx_strip_tags($_REQUEST['redirect']);
+        } elseif (isset($_SESSION['redirect'])) {
+            $redirect = $_SESSION['redirect'];
         } else {
             $redirect = "";
         }
 
+        \Cx\Lib\SocialLogin::parseSociallogin($this->_objTpl);
+        $arrSettings = User_Setting::getSettings();
+        if ($arrSettings['sociallogin']['status'] && !empty($_GET['provider'])) {
+            $providerLogin = $this->loginWithProvider($_GET['provider']);
+            if ($providerLogin) {
+                return $providerLogin;
+            }
+        }
         if ((!isset($_REQUEST['relogin']) || $_REQUEST['relogin'] != 'true') && $objFWUser->objUser->login() || $objFWUser->checkAuth()) {
             $groupRedirect = ($objGroup = $objFWUser->objGroup->getGroup($objFWUser->objUser->getPrimaryGroupId())) && $objGroup->getHomepage() ? preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $objGroup->getHomepage()) : CONTREXX_SCRIPT_PATH;
             LinkGenerator::parseTemplate($groupRedirect);
+            if (isset($_SESSION['redirect'])) {
+                unset($_SESSION['redirect']);
+            }
             CSRF::header('Location: '.(empty($redirect) ? $groupRedirect : base64_decode($redirect)));
             exit;
         } else {
@@ -257,6 +270,29 @@ class Login
             'LOGIN_REDIRECT'        => $redirect,
             'LOGIN_STATUS_MESSAGE'  => $this->_statusMessage,
         ));
+        return $this->_objTpl->get();
+    }
+
+    /**
+     * Login with an oauth authentication method.
+     *
+     * @param string $provider The chosen oauth provider
+     * @return string|string \Cx\Core\Html\Sigma
+     * @access private
+     */
+    private function loginWithProvider($provider) {
+        global $objInit, $_ARRAYLANG;
+
+        $SocialLogin = new \Cx\Lib\SocialLogin();
+        try {
+            $login = $SocialLogin->loginWithProvider($provider);
+        } catch (\Cx\Lib\OAuth\OAuth_Exception $e) {
+            $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('access'));
+            $this->_statusMessage = $_ARRAYLANG['TXT_ACCESS_EMAIL_ALREADY_USED_SOCIALLOGIN'];
+        }
+        if (is_null($login)) {
+            return null;
+        }
 
         return $this->_objTpl->get();
     }

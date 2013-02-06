@@ -36,6 +36,7 @@ class Access extends AccessLib
         $cmd = isset($_REQUEST['cmd']) ? explode('_', $_REQUEST['cmd']) : array(0 => null);
         $groupId = isset($cmd[1]) ? intval($cmd[1]) : null;
 
+        \Cx\Lib\SocialLogin::parseSociallogin($this->_objTpl);
         CSRF::add_code();
         switch ($cmd[0]) {
             case 'signup':
@@ -210,6 +211,7 @@ class Access extends AccessLib
             exit;
         }
         $settingsDone = false;
+        $objFWUser->objUser->loadNetworks();
 
         if (isset($_POST['access_delete_account'])) {
             // delete account
@@ -297,6 +299,15 @@ class Access extends AccessLib
                 $msg = implode('<br />', $result);
             }
             $this->_objTpl->setVariable('ACCESS_SETTINGS_MESSAGE', $msg);
+        } elseif ($_GET['act'] == 'disconnect') {
+            $objFWUser->objUser->getNetworks()->deleteNetwork($_GET['provider']);
+            $currentUrl = clone \Env::get('Resolver')->getUrl();
+            $currentUrl->setParams(array(
+                'act' => null,
+                'provider' => null,
+            ));
+            header('Location: ' . $currentUrl->__toString());
+            exit;
         }
 
         $this->parseAccountAttributes($objFWUser->objUser, true);
@@ -323,8 +334,18 @@ class Access extends AccessLib
             'ACCESS_STORE_BUTTON'           => '<input type="submit" name="access_store" value="'.$_ARRAYLANG['TXT_ACCESS_SAVE'].'" />',
             'ACCESS_CHANGE_PASSWORD_BUTTON' => '<input type="submit" name="access_change_password" value="'.$_ARRAYLANG['TXT_ACCESS_CHANGE_PASSWORD'].'" />',
             'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode(),
+            'ACCESS_DISCONNECT_NETWORKS'    => '<input type="submit" name="access_disconnect_networks" value="'.$_ARRAYLANG['TXT_ACCESS_DISCONNECT'].'" />',
         ));
 
+        $arrSettings = User_Setting::getSettings();
+
+        if ($arrSettings['sociallogin']['status']) {
+            $this->parseNetworks($objFWUser->objUser);
+        }
+
+        if ($this->_objTpl->blockExists('access_user_networks')) {
+            $this->_objTpl->{$arrSettings['sociallogin']['status'] ? 'touchBlock' : 'hideBlock'}('access_user_networks');
+        }
         if ($this->_objTpl->blockExists('access_settings')) {
             $this->_objTpl->{$settingsDone ? 'hideBlock' : 'touchBlock'}('access_settings');
         }
@@ -333,6 +354,75 @@ class Access extends AccessLib
         }
     }
 
+    /**
+     * Parse the network settings page
+     *
+     * @param object the user object of the current logged in user
+     */
+    private function parseNetworks($objUser) {
+        global $_ARRAYLANG;
+
+        $availableProviders = \Cx\Lib\SocialLogin::getProviders();
+        foreach ($availableProviders as $index => $provider) {
+            if (!$provider->isActive()) {
+                unset($availableProviders[$index]);
+            }
+        }
+        $userNetworks = $objUser->getNetworks()->getNetworksAsArray();
+
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_ACCESS_SOCIALLOGIN_PROVIDER' => $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_PROVIDER'],
+            'TXT_ACCESS_SOCIALLOGIN_STATE'    => $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_STATE'],
+        ));
+
+        // get current url for redirect parameter
+        $currentUrl = clone \Env::get('Resolver')->getUrl();
+
+        if (!$this->_objTpl->blockExists('access_sociallogin_provider')) {
+            return null;
+        }
+
+        // parse the connect buttons
+        foreach ($availableProviders as $providerName => $providerSettings) {
+            if (empty($userNetworks[$providerName])) {
+                $state = $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_DISCONNECTED'];
+                $class = 'disconnected';
+                $uri = contrexx_raw2xhtml(
+                    \Cx\Lib\SocialLogin::getLoginUrl($providerName,
+                        base64_encode($currentUrl->__toString())
+                    )
+                );
+                $uriAction = $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_CONNECT'];
+            } else {
+                $state = $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_CONNECTED'];
+                $class = 'connected';
+                $disconnectUrl = clone \Env::get('Resolver')->getUrl();
+                $disconnectUrl->setParam('act', 'disconnect');
+                $disconnectUrl->setParam('provider', $providerName);
+                $uri = $disconnectUrl->__toString();
+                $uriAction = $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_DISCONNECT'];
+            }
+
+            $this->_objTpl->setVariable(array(
+                'ACCESS_SOCIALLOGIN_PROVIDER_NAME_UPPER' => contrexx_raw2xhtml(ucfirst($providerName)),
+                'ACCESS_SOCIALLOGIN_PROVIDER_STATE'      => $state,
+                'ACCESS_SOCIALLOGIN_PROVIDER_STATE_CLASS'=> $class,
+                'ACCESS_SOCIALLOGIN_PROVIDER_NAME'       => contrexx_raw2xhtml($providerName),
+                'ACCESS_SOCIALLOGIN_URL'                 => $uri,
+                'ACCESS_SOCIALLOGIN_URL_ACTION'          => $uriAction,
+            ));
+
+            if ($class == 'disconnected') {
+                $this->_objTpl->parse('access_sociallogin_provider_disconnected');
+                $this->_objTpl->hideBlock('access_sociallogin_provider_connected');
+            } else {
+                $this->_objTpl->parse('access_sociallogin_provider_connected');
+                $this->_objTpl->hideBlock('access_sociallogin_provider_disconnected');
+            }
+
+            $this->_objTpl->parse('access_sociallogin_provider');
+        }
+    }
 
     private function setLanguageCookie($currentLangId, $newLangId)
     {
@@ -378,8 +468,6 @@ class Access extends AccessLib
     {
         global $_ARRAYLANG, $_CORELANG;
 
-        $arrProfile = array();
-
         if (!empty($_GET['u']) && !empty($_GET['k'])) {
             $this->_objTpl->hideBlock('access_signup_store_success');
             $this->_objTpl->hideBlock('access_signup_store_error');
@@ -400,15 +488,32 @@ class Access extends AccessLib
             $this->_objTpl->hideBlock('access_signup_confirm_error');
         }
 
-        $objUser = new User();
         $arrSettings = User_Setting::getSettings();
+
+        if (!empty($_SESSION['user_id'])) {
+            $objUser = FWUser::getFWUserObject()->objUser->getUser($_SESSION['user_id']);
+            if ($objUser) {
+                $objUser->setExpirationDate(0);
+
+                $active = $arrSettings['sociallogin_active_automatically']['status'];
+                $objUser->setActiveStatus($active);
+                $this->_objTpl->hideBlock('access_logindata');
+            }
+        }
+
+        if (!$objUser) {
+            $objUser = new User();
+        }
 
         if (isset($_POST['access_signup'])) {
             $objUser->setUsername(isset($_POST['access_user_username']) ? trim(contrexx_stripslashes($_POST['access_user_username'])) : '');
             $objUser->setEmail(isset($_POST['access_user_email']) ? trim(contrexx_stripslashes($_POST['access_user_email'])) : '');
             $objUser->setFrontendLanguage(isset($_POST['access_user_frontend_language']) ? intval($_POST['access_user_frontend_language']) : 0);
 
-            $objUser->setGroups(explode(',', $arrSettings['assigne_to_groups']['value']));
+            $assignedGroups = $objUser->getAssociatedGroupIds();
+            if (empty($assignedGroups)) {
+                $objUser->setGroups(explode(',', $arrSettings['assigne_to_groups']['value']));
+            }
 
             $objUser->setSubscribedNewsletterListIDs(isset($_POST['access_user_newsletters']) && is_array($_POST['access_user_newsletters']) ? $_POST['access_user_newsletters'] : array());
 
@@ -444,6 +549,9 @@ class Access extends AccessLib
                 && $objUser->signUp()
             ) {
                 if ($this->handleSignUp($objUser)) {
+                    if (isset($_SESSION['user_id'])) {
+                        unset($_SESSION['user_id']);
+                    }
                     $this->_objTpl->setVariable('ACCESS_SIGNUP_MESSAGE', implode('<br />', $this->arrStatusMsg['ok']));
                     $this->_objTpl->parse('access_signup_store_success');
                     $this->_objTpl->touchBlock('access_signup_store_success');
@@ -496,6 +604,11 @@ class Access extends AccessLib
             'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode(),
             'ACCESS_SIGNUP_MESSAGE'         => implode("<br />\n", $this->arrStatusMsg['error'])
         ));
+        if (!$arrSettings['use_usernames']['status']) {
+            if ($this->_objTpl->blockExists('access_user_username')) {
+                $this->_objTpl->hideBlock('access_user_username');
+            }
+        }
 
         // set captcha
         if ($this->_objTpl->blockExists('access_captcha')) {

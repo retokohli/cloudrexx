@@ -1,11 +1,95 @@
 <!-- start module_access_config_general.html -->
+<script type="text/javascript">
+// <![CDATA[
+function accessAddGroupToList(from, dest)
+{
+    if ( from.selectedIndex < 0) {
+        if (from.options[0] != null) {
+            from.options[0].selected = true;
+        }
+        from.focus();
+        return false;
+    } else {
+        for (var i=0; i<from.length; i++) {
+            if (from.options[i].selected) {
+                dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
+            }
+        }
+        for (var i=from.length-1; i>=0; i--) {
+            if (from.options[i].selected) {
+                from.options[i] = null;
+            }
+        }
+    }
+}
+
+function accessRemoveGroupFromList(from,dest)
+{
+    if ( dest.selectedIndex < 0) {
+        if (dest.options[0] != null) {
+            dest.options[0].selected = true;
+        }
+        dest.focus();
+        return false;
+    } else {
+        for (var i=0; i<dest.options.length; i++) {
+            if (dest.options[i].selected) {
+                from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
+            }
+        }
+        for (var i=dest.options.length-1; i>=0; i--) {
+            if (dest.options[i].selected) {
+                dest.options[i] = null;
+            }
+        }
+    }
+}
+
+function accessSelectAllGroups(CONTROL)
+{
+    for(var i = 0;i < CONTROL.length;i++)
+    {
+        CONTROL.options[i].selected = true;
+    }
+}
+
+function accessDeselectAllGroups(CONTROL)
+{
+    for(var i = 0;i < CONTROL.length;i++)
+    {
+        CONTROL.options[i].selected = false;
+    }
+}
+
+function socialloginToggle(active) {
+    if (active) {
+        $J('.socialloginToggle').show();
+    } else {
+        $J('.socialloginToggle').hide();
+    }
+}
+
+cx.ready(function() {
+    $J('#access_sociallogin_activate_yes').change(function() {
+        socialloginToggle($J(this).attr('checked') == 'checked');
+    });
+    $J('#access_sociallogin_activate_no').change(function() {
+        socialloginToggle($J(this).attr('checked') != 'checked');
+    });
+    $J('.socialloginActivateProvider').change(function() {
+        $J(this).parents('tr').siblings().toggle();
+    });
+});
+// ]]>
+</script>
 <ul id="tabmenu">
 	<li><a id="generalTab_permissions" class="active" href="javascript:void(0);" onclick="selectTab('permissions')" title="{TXT_ACCESS_PERMISSIONS}">{TXT_ACCESS_PERMISSIONS}</a></li>
 	<li><a id="generalTab_block_functions" href="javascript:void(0);" onclick="selectTab('block_functions')" title="{TXT_ACCESS_FRONTEND_BLOCK_FUNCTIONS}">{TXT_ACCESS_FRONTEND_BLOCK_FUNCTIONS}</a></li>
 	<li><a id="generalTab_pictures" href="javascript:void(0);" onclick="selectTab('pictures')" title="{TXT_ACCESS_PICTURES}">{TXT_ACCESS_PICTURES}</a></li>
     <li><a id="generalTab_session" href="javascript:void(0);" onclick="selectTab('session')" title="{TXT_ACCESS_SESSION_TITLE}">{TXT_ACCESS_SESSION_TITLE}</a></li>
+    <li><a id="generalTab_sociallogin" href="javascript:void(0);" onclick="selectTab('sociallogin')" title="{TXT_ACCESS_SOCIALLOGIN}">{TXT_ACCESS_SOCIALLOGIN}</a></li>
 </ul>
-<form action="index.php?cmd=access&amp;act=config" method="post">
+<form action="index.php?cmd=access&amp;act=config" method="post" onsubmit="accessSelectAllGroups(document.getElementById('access_user_associated_groups'))">
 	<!-- start permissions div -->
 	<div id="permissions" class="generalTab" style="display:block">
 		<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="permission config">
@@ -67,6 +151,14 @@
 						<input type="radio" name="access_permissions_delete_account" id="access_permissions_delete_account_no" value="0" {ACCESS_DONT_ALLOW_USERS_DELETE_ACCOUNT} /> <label for="access_permissions_delete_account_no">{TXT_ACCESS_NO}</label>
 					</td>
 				</tr>
+                <tr class="row1">
+                    <td width="15%">{TXT_ACCESS_USE_USERNAMES}</td>
+                    <td width="85%">
+                        <input type="radio" name="access_permissions_use_usernames" id="access_permissions_use_usernames_yes" value="1" {ACCESS_USE_USERNAMES} /> <label for="access_permissions_use_usernames_yes">{TXT_ACCESS_YES}</label>
+                        <input type="radio" name="access_permissions_use_usernames" id="access_permissions_use_usernames_no" value="0" {ACCESS_DONT_USE_USERNAMES} /> <label for="access_permissions_use_usernames_no">{TXT_ACCESS_NO}</label>
+                        <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_ACCESS_USE_USERNAMES_TOOLTIP}</span>
+                    </td>
+                </tr>
 			</tbody>
 		</table>
 	</div>
@@ -238,6 +330,106 @@
     </div>
 
 	<!-- end session div-->
+    <!-- start sociallogin div -->
+    <div id="sociallogin" class="generalTab" style="display:none;">
+        <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="social login config">
+            <thead>
+            <tr>
+                <th colspan="2">{TXT_ACCESS_SOCIALLOGIN}</th>
+            </tr>
+            </thead>
+            <tbody style="vertical-align:top;">
+            <tr class="row3">
+                <td colspan="2"><strong>{TXT_ACCESS_SOCIALLOGIN_INFORMATION_TITLE}</strong></td>
+            </tr>
+            <tr class="row2">
+                <td>{TXT_ACCESS_DESCRIPTION}</td>
+                <td>{TXT_ACCESS_SOCIALLOGIN_DESCRIPTION}<br />{TXT_ACCESS_SOCIALLOGIN_MANUAL}</td>
+            </tr>
+            <tr class="row3">
+                <td colspan="2"><strong>{TXT_ACCESS_GENERAL}</strong></td>
+            </tr>
+            <tr class="row2">
+                <td width="15%">{TXT_ACCESS_ENABLE_SOCIALLOGIN}</td>
+                <td width="85%">
+                    <input type="radio" name="access_sociallogin_activate" id="access_sociallogin_activate_yes" value="1" {ACCESS_SOCIALLOGIN_ENABLED} /> <label for="access_sociallogin_activate_yes">{TXT_ACCESS_YES}</label>
+                    <input type="radio" name="access_sociallogin_activate" id="access_sociallogin_activate_no" value="0" {ACCESS_SOCIALLOGIN_NOT_ENABLED} /> <label for="access_sociallogin_activate_no">{TXT_ACCESS_NO}</label>
+                </td>
+            </tr>
+            <tr class="row1 socialloginToggle" style="display: {ACCESS_SOCIALLOGIN_TOGGLE}">
+                <td>{TXT_ACCESS_SOCIALLOGIN_SHOW_SIGN_UP}</td>
+                <td>
+                    <input type="radio" name="access_sociallogin_show_signup" id="access_sociallogin_show_signup_yes" value="1" {ACCESS_SOCIALLOGIN_SHOW_SIGNUP_ENABLED} /> <label for="access_sociallogin_show_signup_yes">{TXT_ACCESS_YES}</label>
+                    <input type="radio" name="access_sociallogin_show_signup" id="access_sociallogin_show_signup_no" value="0" {ACCESS_SOCIALLOGIN_SHOW_SIGNUP_NOT_ENABLED} /> <label for="access_sociallogin_show_signup_no">{TXT_ACCESS_NO}</label>
+                    <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_ACCESS_SOCIALLOGIN_SHOW_SIGN_UP_TOOLTIP}</span>
+                </td>
+            </tr>
+            <tr class="row3 socialloginToggle" style="display: {ACCESS_SOCIALLOGIN_TOGGLE}">
+                <td colspan="2"><strong>{TXT_ACCESS_SOCIALLOGIN_PROVIDERS}</strong></td>
+            </tr>
+            </tbody>
+        </table>
+        <!-- BEGIN access_sociallogin_provider -->
+        <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist socialloginToggle" style="display: {ACCESS_SOCIALLOGIN_TOGGLE}" summary="social login config">
+            <tr class="row{ACCESS_SOCIALLOGIN_PROVIDER_ROW}">
+                <td width="15%"><strong>{ACCESS_SOCIALLOGIN_PROVIDER_NAME_UPPER}</strong></td>
+                <td width="85%"><input type="checkbox" class="socialloginActivateProvider" name="sociallogin_providers[{ACCESS_SOCIALLOGIN_PROVIDER_NAME}][active]" value="1" {ACCESS_SOCIALLOGIN_PROVIDER_ENABLED_CHECKED} />
+                    <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_ACCESS_SOCIALLOGIN_MANUAL}</span></td>
+            </tr>
+            <!-- BEGIN access_sociallogin_provider_params -->
+            <tr class="row{ACCESS_SOCIALLOGIN_PROVIDER_ROW} provider{ACCESS_SOCIALLOGIN_PROVIDER_NAME_UPPER}Toggle" style="display: {ACCESS_SOCIALLOGIN_PROVIDER_TOGGLE}">
+                <td>{TXT_ACCESS_SOCIALLOGIN_PROVIDER_PARAM_TITLE}</td>
+                <td><input type="text" name="sociallogin_providers[{ACCESS_SOCIALLOGIN_PROVIDER_NAME}][settings][]" value="{ACCESS_SOCIALLOGIN_PROVIDER_PARAM_VALUE}" style="width:300px;" /></td>
+            </tr>
+            <!-- END access_sociallogin_provider_params -->
+            </tbody>
+        </table>
+        <!-- END access_sociallogin_provider -->
+        <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist socialloginToggle" summary="social login config" style="display: {ACCESS_SOCIALLOGIN_TOGGLE}">
+            <tbody>
+            <tr class="row3">
+                <td colspan="3"><strong>Gruppen</strong></td>
+            </tr>
+            <tr>
+                <td width="300">{TXT_ACCESS_AVAILABLE_GROUPS}<br />
+                    <select name="access_user_not_associated_groups[]" id="access_user_not_associated_groups" size="15" style="width:300px;" multiple="multiple">
+                        {ACCESS_USER_NOT_ASSOCIATED_GROUPS}
+                    </select>
+                    <br />
+                    <a href="javascript:void(0);" onclick="accessSelectAllGroups(document.getElementById('access_user_not_associated_groups'))" title="{TXT_ACCESS_CHECK_ALL}">{TXT_ACCESS_CHECK_ALL}</a>
+                    <br />
+                    <a href="javascript:void(0);" onclick="accessDeselectAllGroups(document.getElementById('access_user_not_associated_groups'))" title="{TXT_ACCESS_UNCHECK_ALL}">{TXT_ACCESS_UNCHECK_ALL}</a>
+                </td>
+                <td width="45" style="text-align:center;">
+                    <br />
+                    <input type="button" value="&gt;&gt;" name="adduser" onclick="accessAddGroupToList(document.getElementById('access_user_not_associated_groups'), document.getElementById('access_user_associated_groups'))" style="margin-bottom:2px;" />
+                    <br />
+                    <input type="button" value="&lt;&lt;" name="removeuser" onclick="accessRemoveGroupFromList(document.getElementById('access_user_not_associated_groups'), document.getElementById('access_user_associated_groups'))" />
+                </td>
+                <td width="100%">{TXT_ACCESS_ASSOCIATED_GROUPS}<br />
+                    <select name="access_user_associated_groups[]" id="access_user_associated_groups" size="15" style="width:300px;" multiple="multiple">
+                        {ACCESS_USER_ASSOCIATED_GROUPS}
+                    </select>
+                    <br />
+                    <a href="javascript:void(0);" onclick="accessSelectAllGroups(document.getElementById('access_user_associated_groups'))" title="{TXT_ACCESS_CHECK_ALL}">{TXT_ACCESS_CHECK_ALL}</a>
+                    <br />
+                    <a href="javascript:void(0);" onclick="accessDeselectAllGroups(document.getElementById('access_user_associated_groups'))" title="{TXT_ACCESS_UNCHECK_ALL}">{TXT_ACCESS_UNCHECK_ALL}</a>
+                </td>
+            </tr>
+            <tr class="row3">
+                <td colspan="3">{TXT_ACCESS_USER_ACCOUNT_ACTIVATION_METHOD_TEXT}</td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <input type="radio" name="sociallogin_active_automatically" value="1" {ACCESS_SOCIALLOGIN_ACTIVATED_AUTOMATICALLY_ENABLED} />{TXT_ACCESS_SOCIALLOGIN_ACTIVATED_AUTOMATICALLY}
+                    <br />
+                    <input type="radio" name="sociallogin_active_automatically" value="0" {ACCESS_SOCIALLOGIN_ACTIVATED_AUTOMATICALLY_NOT_ENABLED} />{TXT_ACCESS_SOCIALLOGIN_ACTIVATED_NOT_AUTOMATICALLY}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- end sociallogin div -->
 
 	<br />
 	<input type="submit" name="access_save_settings" value="{TXT_ACCESS_SAVE}" />

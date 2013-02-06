@@ -86,19 +86,7 @@ class FWUser extends User_Setting
                 if ($this->isBackendMode()) {
                     $this->log();
                 }
-                $sessionObj->cmsSessionUserUpdate($this->objUser->getId());
-                $this->objUser->registerSuccessfulLogin();
-                unset($_SESSION['auth']['loginLastAuthFailed']);
-                // Store frontend lang_id in cookie
-                if (empty($_COOKIE['langId'])) {
-// TODO: Seems that this method returns zero at first when the Users' language is set to "default"!
-                    $langId = $this->objUser->getFrontendLanguage();
-// Temporary fix:
-if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
-                    if ($objInit->arrLang[$langId]['frontend']) {
-                        setcookie("langId", $langId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
-                    }
-                }
+                $this->loginUser($this->objUser);
                 return true;
             }
             $_SESSION['auth']['loginLastAuthFailed'] = 1;
@@ -108,6 +96,28 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
             $sessionObj->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
         }
         return false;
+    }
+
+    /**
+     * Log in the current user with the object given
+     * @param mixed $objUser the user to be logged in
+     */
+    function loginUser($objUser) {
+        global $sessionObj, $objInit;
+
+        $sessionObj->cmsSessionUserUpdate($objUser->getId());
+        $objUser->registerSuccessfulLogin();
+        unset($_SESSION['auth']['loginLastAuthFailed']);
+        // Store frontend lang_id in cookie
+        if (empty($_COOKIE['langId'])) {
+            // TODO: Seems that this method returns zero at first when the Users' language is set to "default"!
+            $langId = $this->objUser->getFrontendLanguage();
+            // Temporary fix:
+            if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
+            if ($objInit->arrLang[$langId]['frontend']) {
+                setcookie("langId", $langId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
+            }
+        }
     }
 
 
@@ -243,11 +253,16 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
         $loggedInLabel = $_CORELANG['TXT_LOGGED_IN_AS'].' '.contrexx_raw2xhtml($objUser->getUsername());
 
         if (empty($blockName) || $blockName == 'access_logged_in') {
+            $username = $objUser->getUsername();
+            if (empty($username)) {
+                $username = $objUser->getEmail();
+            }
+
             // this is for backwards compatibility for version pre 3.0
             $objTemplate->setVariable(array(
                 'LOGGING_STATUS'        => $loggedInLabel,
                 'ACCESS_USER_ID'        => $objUser->getId(),
-                'ACCESS_USER_USERNAME'  => contrexx_raw2xhtml($objUser->getUsername()),
+                'ACCESS_USER_USERNAME'  => contrexx_raw2xhtml($username),
                 'ACCESS_USER_EMAIL'     => contrexx_raw2xhtml($objUser->getEmail()),
             ));
 
