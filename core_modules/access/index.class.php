@@ -36,7 +36,7 @@ class Access extends AccessLib
         $cmd = isset($_REQUEST['cmd']) ? explode('_', $_REQUEST['cmd']) : array(0 => null);
         $groupId = isset($cmd[1]) ? intval($cmd[1]) : null;
 
-        \Cx\Lib\SocialLogin::parseSociallogin($this->_objTpl);
+        \Cx\Lib\SocialLogin::parseSociallogin($this->_objTpl, 'access_');
         CSRF::add_code();
         switch ($cmd[0]) {
             case 'signup':
@@ -604,6 +604,7 @@ class Access extends AccessLib
             'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode(),
             'ACCESS_SIGNUP_MESSAGE'         => implode("<br />\n", $this->arrStatusMsg['error'])
         ));
+
         if (!$arrSettings['use_usernames']['status']) {
             if ($this->_objTpl->blockExists('access_user_username')) {
                 $this->_objTpl->hideBlock('access_user_username');

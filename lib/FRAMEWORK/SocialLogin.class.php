@@ -119,8 +119,9 @@ class SocialLogin
      *
      * @static
      * @param $objTpl template object to parse
+     * @param string $prefix the prefix for the template blocks and variables
      */
-    public static function parseSociallogin($objTpl)
+    public static function parseSociallogin($objTpl, $prefix = 'login_')
     {
         $arrSettings = \User_Setting::getSettings();
         if ($arrSettings['sociallogin']['status'] && !isset($_SESSION['user_id'])) {
@@ -130,20 +131,20 @@ class SocialLogin
             $redirect = $_SESSION['redirect'];
             $socialloginProviders = \Cx\Lib\SocialLogin::getProviders();
             foreach ($socialloginProviders as $provider => $providerData) {
-                if (!$objTpl->blockExists('login_social_networks_' . $provider)) {
+                if (!$objTpl->blockExists($prefix . 'social_networks_' . $provider)) {
                     continue;
                 }
 
-                $objTpl->setVariable('SOCIALLOGIN_' . strtoupper($provider), contrexx_raw2xhtml(\Cx\Lib\SocialLogin::getLoginUrl($provider, $redirect)));
+                $objTpl->setVariable(strtoupper($prefix) . 'SOCIALLOGIN_' . strtoupper($provider), contrexx_raw2xhtml(\Cx\Lib\SocialLogin::getLoginUrl($provider, $redirect)));
                 if ($providerData->isActive()) {
-                    $objTpl->touchBlock('login_social_networks_' . $provider);
+                    $objTpl->touchBlock($prefix . 'social_networks_' . $provider);
                 } else {
-                    $objTpl->hideBlock('login_social_networks_' . $provider);
+                    $objTpl->hideBlock($prefix . 'social_networks_' . $provider);
                 }
             }
         } else {
-            if ($objTpl->blockExists('login_social_networks')) {
-                $objTpl->hideBlock('login_social_networks');
+            if ($objTpl->blockExists($prefix . 'social_networks')) {
+                $objTpl->hideBlock($prefix . 'social_networks');
             }
         }
     }
