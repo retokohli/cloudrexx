@@ -324,11 +324,16 @@ html, body {
 }
 
 #fe_SelectionBoxContent {
+    float: left;
     height: 146px;
     padding: 10px;
     border: 1px solid #4978ae;
     background: #ffffff;
     font-size: 13px;
+}
+
+#fe_SelectionBoxContent p {
+    text-align: left;
 }
 
 #fe_SelectionBoxContent img {
@@ -355,12 +360,16 @@ html, body {
     z-index: 500;
 }
 
+#fe_Editor #fe_EditorBoxFrame {
+    text-align: center;
+}
+
 #fe_EditorBoxFrame {
     position: fixed;
     top: 50%;
     left: 50%;
     width: 800px;
-    height: 598px;
+    height: 562px;
     padding: 10px;
     margin: -310px 0 0 -411px;
     font-size: 13px;

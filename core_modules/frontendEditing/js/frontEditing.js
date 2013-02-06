@@ -45,9 +45,9 @@ function fe_loadToolbar(showEditorAfterLoading) {
             jQuery.ajax({
                 url: fe_fileForIndex,
                 async: false,
-                data: {	act: 'getToolbar', 
+                data: { act: 'getToolbar', 
                         section: fe_feSection,
-                        page: fe_pageId
+                        pageId: fe_pageId
                 },
                 success: function(transport){
                     fe_loadToolbarResponse(transport, showEditorAfterLoading);
@@ -106,7 +106,7 @@ function fe_doLogin() {
     jQuery(document).ready(function() {
         postdata = {
             section: fe_feSection,
-            page: fe_pageId,
+            pageId: fe_pageId,
             doLogin: 'true'
         };
 
@@ -155,7 +155,7 @@ function fe_showToolbar() {
         fe_toolbarIsLoaded = true;
     }
     
-    if (!fe_toolbarIsVisible && fe_userWantsToolbar) {	
+    if (!fe_toolbarIsVisible && fe_userWantsToolbar) {
         jQuery(fe_toolbarDivName).fadeIn();
         fe_toolbarIsVisible = true;
     }
@@ -180,9 +180,9 @@ function fe_setToolbarVisibility(newStatus) {
         jQuery.ajax({
             url: fe_fileForIndex,
             async: false,
-            data: {	act: 'setToolbarVisibility',
+            data: { act: 'setToolbarVisibility',
                     section: fe_feSection,
-                    page: fe_pageId,
+                    pageId: fe_pageId,
                     status: ((fe_userWantsToolbar == true) ? '1' : '0')
             },
             success: function(transport){},
@@ -202,14 +202,14 @@ function fe_doLogout() {
         jQuery.ajax({
             url: fe_fileForIndex,
             async: false,
-            data: {	section: 'logout', standalone: 'false' },
+            data: { section: 'logout', standalone: 'false' },
             success: function(transport){
-                fe_toolbarIsLoaded 	= false;
+                fe_toolbarIsLoaded  = false;
                 fe_toolbarIsVisible = false;
                 jQuery(fe_toolbarDivName).remove();
 
-                fe_editorIsLoaded	= false;
-                fe_editorIsVisible	= false;
+                fe_editorIsLoaded   = false;
+                fe_editorIsVisible  = false;
                 fe_loadDefault();
 
                 jQuery('#fe_edit_link').text(cx.variables.get('TXT_FRONTEND_EDITING_LOGIN', 'frontendEditing'));
@@ -236,9 +236,9 @@ function fe_loadEditor(showSelectionIfNeeded) {
             jQuery.ajax({
                 url: fe_fileForIndex,
                 async: false,
-                data: {	act: 'getEditor', 
+                data: { act: 'getEditor', 
                         section: fe_feSection,
-                        page: fe_pageId,
+                        pageId: fe_pageId,
                         selection: showSelectionIfNeeded
                 },
                 success: function(transport){
@@ -354,7 +354,7 @@ function fe_loadPreview(previewMode) {
         jQuery.ajax({
             type: 'POST',
             async: false,
-            data: {	frontEditing: '1',
+            data: { frontEditing: '1',
                     previewContent: editorContent
             },
             success: function(transport){
@@ -400,9 +400,9 @@ function fe_updatePage() {
             url: fe_fileForIndex,
             async: false,
             type: 'POST',
-            data: {	act: 'doUpdate', 
+            data: { act: 'doUpdate', 
                     section: fe_feSection,
-                    page: fe_pageId,
+                    pageId: fe_pageId,
                     title: jQuery(fe_editorFormTitleName).val(),
                     content: CKEDITOR.instances[fe_editorFormContentName].getData()
             },
