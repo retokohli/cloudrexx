@@ -2060,7 +2060,23 @@ class AccessManager extends AccessLib
             }
         }
 
-        $socialloginProviders = \Cx\Lib\SocialLogin::getProviders();
+        $curlAvailable = true;
+        try {
+            $socialloginProviders = \Cx\Lib\SocialLogin::getProviders();
+        } catch (\Exception $e) {
+            if (!function_exists('curl_init')) {
+                $this->_objTpl->setVariable('TXT_ACCESS_SOCIALLOGIN_WARNING', $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_NEED_CURL']);
+                $this->_objTpl->parse('sociallogin_need_curl');
+                $curlAvailable = false;
+            }
+        }
+
+        iF ($curlAvailable) {
+            $this->_objTpl->touchBlock('access_sociallogin_settings');
+        } else {
+            $this->_objTpl->hideBlock('access_sociallogin_settings');
+        }
+
         $socialloginProviderRow = 0;
         foreach ($socialloginProviders as $socialloginProviderName => $providerObject) {
             $settings = $providerObject->getApplicationData();

@@ -297,4 +297,5 @@ $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_SHOW_SIGN_UP'] = "Registrationsformular imme
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_SHOW_SIGN_UP_TOOLTIP'] = "Wenn diese Option nicht aktiviert ist, wird das Registrationsformular nur angezeigt, wenn ein Profilattribut erforderlich ist und nachträglich ausgefüllt werden muss.";
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_ACTIVATED_AUTOMATICALLY'] = "Benutzer sofort aktiv";
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_ACTIVATED_NOT_AUTOMATICALLY'] = "Benutzer muss zuerst aktiviert werden (Gemäss der Einstellung unter Community)";
+$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_NEED_CURL'] = "Das Login mit sozialen Netzwerken kann nicht aktiviert werden, da die PHP-Erweiterung cUrl nicht installiert ist.";
 ?>
