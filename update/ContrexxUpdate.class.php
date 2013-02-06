@@ -97,7 +97,7 @@ class ContrexxUpdate
             $_SESSION['contrexx_update']['step'] = 0;
         }
         
-        if (isset($_POST['updateBack']) && !isset($_POST['updateNext'])) {
+        if (isset($_POST['updateBack']) && !isset($_POST['updateNext']) && !isset($_POST['skipRequirements'])) {
             $this->setPreviousStep();
         }
     }
