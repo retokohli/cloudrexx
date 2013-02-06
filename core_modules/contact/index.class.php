@@ -1454,22 +1454,22 @@ class Contact extends ContactLib
             $feedback,
             $arrMatch)
         ) {
-            foreach ($arrFormData['fields'] as $field) {
-                if (in_array($field['name'], $arrMatch[1])) {
+            foreach ($arrFormData['fields'] as $id => $field) {
+                if (in_array($field['lang'][FRONTEND_LANG_ID]['name'], $arrMatch[1])) {
                     switch ($field['type']) {
-                    case 'checkbox':
-                        $value = isset($arrFormData['data'][$field['name']]) ? $_ARRAYLANG['TXT_CONTACT_YES'] : $_ARRAYLANG['TXT_CONTACT_NO'];
-                        break;
+                        case 'checkbox':
+                            $value = isset($arrFormData['data'][$id]) ? $_ARRAYLANG['TXT_CONTACT_YES'] : $_ARRAYLANG['TXT_CONTACT_NO'];
+                            break;
 
-                    case 'textarea':
-                        $value = isset($arrFormData['data'][$field['name']]) ? nl2br(contrexx_raw2xhtml($arrFormData['data'][$field['name']])) : '';
-                        break;
+                        case 'textarea':
+                            $value = isset($arrFormData['data'][$id]) ? nl2br(contrexx_raw2xhtml($arrFormData['data'][$id])) : '';
+                            break;
 
-                    default:
-                        $value = isset($arrFormData['data'][$field['name']]) ? contrexx_raw2xhtml($arrFormData['data'][$field['name']]) : '';
-                        break;
+                        default:
+                            $value = isset($arrFormData['data'][$id]) ? contrexx_raw2xhtml($arrFormData['data'][$id]) : '';
+                            break;
                     }
-                    $feedback = str_replace('[['.contrexx_raw2xhtml($field['name']).']]', $value, $feedback);
+                    $feedback = str_replace('[['.contrexx_raw2xhtml($field['lang'][FRONTEND_LANG_ID]['name']).']]', $value, $feedback);
                 }
             }
         }
