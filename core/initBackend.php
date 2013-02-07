@@ -1,13 +1,12 @@
 <?php
 
 /**
- * Modul Admin Index
+ * initBackend
  *
- * CMS Administration
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Engineering Team
+ * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  admin
+ * @subpackage  core_backend
  */
 
 // Try to enable APC

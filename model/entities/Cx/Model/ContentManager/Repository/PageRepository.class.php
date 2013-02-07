@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * PageRepository
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  model_contentmanager
+ */
+
 namespace Cx\Model\ContentManager\Repository;
 
 use Doctrine\Common\Util\Debug as DoctrineDebug;
@@ -8,9 +17,34 @@ use Doctrine\ORM\EntityRepository,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Query\Expr;
 
+/**
+ * PageRepositoryException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  model_contentmanager
+ */
 class PageRepositoryException extends \Exception {};
+
+/**
+ * TranslateException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  model_contentmanager
+ */
 class TranslateException extends \Exception {};
 
+/**
+ * PageRepository
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  model_contentmanager
+ */
 class PageRepository extends EntityRepository {
     const SEARCH_MODE_PAGES_ONLY = 1;
     const SEARCH_MODE_ALIAS_ONLY = 2;

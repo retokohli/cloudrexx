@@ -4,7 +4,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @package     contrexx
- * @subpackage  core_module_core
+ * @subpackage  lang
  */
 $_ARRAYLANG['TXT_CORE_SEARCH_USER_INFO'] = "Geben Sie mindestens %s Zeichen ein.";
 $_ARRAYLANG['TXT_CORE_SEARCH_USER'] = "Benutzer suchen";

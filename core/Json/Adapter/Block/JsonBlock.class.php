@@ -1,10 +1,11 @@
 <?php
+
 /**
  * JSON Adapter for Block module
  * @copyright   Comvation AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
- * @subpackage  core/json
+ * @subpackage  core_json
  */
 
 namespace Cx\Core\Json\Adapter\Block;
@@ -15,7 +16,7 @@ use \Cx\Core\Json\JsonAdapter;
  * @copyright   Comvation AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
- * @subpackage  core/json
+ * @subpackage  core_json
  */
 class JsonBlock implements JsonAdapter {
     /**

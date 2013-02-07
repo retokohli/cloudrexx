@@ -5,7 +5,7 @@
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
- * @subpackage  core/json
+ * @subpackage  core_json
  */
 
 namespace Cx\Core\Json\Adapter\ContentManager;
@@ -18,7 +18,7 @@ use \Cx\Core\ContentManager\ContentManagerException;
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
- * @subpackage  core/json
+ * @subpackage  core_json
  */
 class JsonNode implements JsonAdapter {
 

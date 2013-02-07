@@ -4,7 +4,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @package     contrexx
- * @subpackage  core_module_search
+ * @subpackage  coremodule_search
  */
 
 $_ARRAYLANG['TXT_SEARCH_NO_TERM'] = "Please enter a search term.";

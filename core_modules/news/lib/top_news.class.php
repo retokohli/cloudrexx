@@ -6,7 +6,7 @@
  * @author Comvation Development Team <info@comvation.com>
  * @version 1.0.0
  * @package     contrexx
- * @subpackage  core_module_news
+ * @subpackage  coremodule_news
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -20,7 +20,7 @@
  * @access public
  * @version 1.0.0
  * @package     contrexx
- * @subpackage  core_module_news
+ * @subpackage  coremodule_news
  */
 class newsTop extends newsLibrary
 {

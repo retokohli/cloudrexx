@@ -1,4 +1,14 @@
 <?php
+
+/**
+ * Wysiwyg
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_wysiwyg
+ */
+
 namespace Cx\Core\Wysiwyg;
 
 /**
@@ -9,7 +19,7 @@ namespace Cx\Core\Wysiwyg;
  * @author      Michael Räss <michael.raess@comvation.com>
  * @version     2.0.0
  * @package     contrexx
- * @subpackage  core
+ * @subpackage  core_wysiwyg
  */
 
 class Wysiwyg

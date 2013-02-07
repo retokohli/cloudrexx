@@ -7,7 +7,7 @@
  * @author Daeppen Thomas <thomas.daeppen@comvation.com>
  * @version 2.0
  * @package contrexx
- * @subpackage core_module_frontendEditing
+ * @subpackage coremodule_frontendediting
  */
 
 
@@ -18,7 +18,7 @@
  * @author Daeppen Thomas <thomas.daeppen@comvation.com>
  * @version 2.0
  * @package contrexx
- * @subpackage core_module_frontendEditing
+ * @subpackage coremodule_frontendediting
  */
 class frontendEditing extends frontendEditingLib {
     /**

@@ -6,7 +6,7 @@
  * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
  * @version     2.0.0
  * @package     contrexx
- * @subpackage  core_module_access
+ * @subpackage  coremodule_access
  */
 
 
@@ -16,7 +16,7 @@
  * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
  * @version     2.0.0
  * @package     contrexx
- * @subpackage  core_module_access
+ * @subpackage  coremodule_access
  * @uses        /lib/FRAMEWORK/Image.class.php
  */
 class AccessLib
