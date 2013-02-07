@@ -12,7 +12,7 @@ class ContactException extends Exception
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.1.0
  * @package     contrexx
- * @subpackage  coremodule_contact
+ * @subpackage  core_module_contact
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -28,7 +28,7 @@ class ContactException extends Exception
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.1.0
  * @package     contrexx
- * @subpackage  coremodule_contact
+ * @subpackage  core_module_contact
  */
 class Contact extends ContactLib
 {

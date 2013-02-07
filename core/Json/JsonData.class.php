@@ -5,7 +5,7 @@
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
- * @subpackage  core_json
+ * @subpackage  core/json
  */
 
 namespace Cx\Core\Json;
@@ -15,13 +15,11 @@ use \Cx\Core\Json\Adapter\JsonContentManager;
 
 /**
  * JSON Interface to Contrexx Doctrine Database
- *
- * @api
  * @copyright   Comvation AG
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
- * @subpackage  core_json
+ * @subpackage  core/json
  */
 class JsonData {
     
@@ -71,7 +69,6 @@ class JsonData {
     /**
      * Passes JSON data to the particular adapter and returns the result
      * Called from index.php when section is 'jsondata'
-     * 
      * @author Florian Schuetz <florian.schuetz@comvation.com>
      * @author Michael Ritter <michael.ritter@comvation.com>
      * @param String $adapter Adapter name

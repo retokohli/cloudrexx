@@ -1,24 +1,6 @@
 <?php
-
-/**
- * ClassLoader
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
- * @subpackage  core_classloader
- */
- 
 namespace Cx\Core\ClassLoader;
 
-/**
- * ClassLoader
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
- * @subpackage  core_classloader
- */
 class ClassLoader {
     private $basePath;
     private $customizingPath;

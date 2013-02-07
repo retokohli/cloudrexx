@@ -1,14 +1,5 @@
 <?php
 
-/**
- * Page
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
- * @subpackage  model_contentmanager
- */
-
 namespace Cx\Model\ContentManager;
 
 use Doctrine\ORM\EntityManager;
@@ -16,23 +7,10 @@ use Doctrine\ORM\EntityManager;
 define('FRONTEND_PROTECTION', 1 << 0);
 define('BACKEND_PROTECTION',  1 << 1);
 
-/**
- * PageException
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
- * @subpackage  model_contentmanager
- */
 class PageException extends \Exception {}
 
 /**
- * Page
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
- * @subpackage  model_contentmanager
+ * Cx\Model\ContentManager\Page
  */
 class Page extends \Cx\Model\Base\EntityBase
 {

@@ -4,7 +4,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @package     contrexx
- * @subpackage  coremodule_search
+ * @subpackage  core_module_search
  */
 $_ARRAYLANG['TXT_SEARCH_RESULTS'] = "Search results";
 $_ARRAYLANG['TXT_SEARCH_RESULTS_ORDER_BY_RELEVANCE'] = "Ihre Suche zu <strong>%s</strong>  ergab %d Treffer (sortiert nach Relevanz)";

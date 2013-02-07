@@ -2,13 +2,12 @@
 
 /**
  * An URL container
- *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @version     3.0.0
  * @package     contrexx
- * @subpackage  core_routing
+ * @subpackage  routing
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -16,26 +15,24 @@ namespace Cx\Core\Routing;
 
 /**
  * URL Exception
- *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @version     3.0.0
  * @package     contrexx
- * @subpackage  core_routing
+ * @subpackage  routing
  * @todo        Edit PHP DocBlocks!
  */
 class UrlException extends \Exception {};
 
 /**
  * An URL container
- *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @version     3.0.0
  * @package     contrexx
- * @subpackage  core_routing
+ * @subpackage  routing
  * @todo        Edit PHP DocBlocks!
  */
 class Url {

@@ -4,7 +4,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @package     contrexx
- * @subpackage  coremodule_news
+ * @subpackage  core_module_news
  */
 $_ARRAYLANG['TXT_DATE'] = "Date";
 $_ARRAYLANG['TXT_TITLE'] = "Titre";

@@ -1,38 +1,21 @@
 <?php
 
 /**
- * ContentManager
+ * Content Manager 2 (Doctrine-based version)
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
+ * @copyright   Comvation AG
+ * @author      Comvation Engineering Team
  * @package     contrexx
- * @subpackage  core_contentmanager
+ * @subpackage  admin
  */
-
 namespace Cx\Core\ContentManager;
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 use \Cx\Core\Json\Adapter\ContentManager\JsonPage;
 
-/**
- * ContentManager
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
- * @subpackage  core_contentmanager
- */
 class ContentManagerException extends \ModuleException {
     
 }
 
-/**
- * ContentManager
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
- * @subpackage  core_contentmanager
- */
 class ContentManager extends \Module {
 
     //doctrine entity manager

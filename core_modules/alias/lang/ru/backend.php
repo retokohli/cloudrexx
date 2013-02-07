@@ -4,7 +4,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @package     contrexx
- * @subpackage  coremodule_alias
+ * @subpackage  core_module_alias
  */
 $_ARRAYLANG['TXT_ALIAS_ALIASES'] = "Псевдонимы";
 $_ARRAYLANG['TXT_ALIAS_ALIAS'] = "Псевдоним";

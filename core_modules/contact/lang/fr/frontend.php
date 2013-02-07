@@ -4,7 +4,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @package     contrexx
- * @subpackage  coremodule_contact
+ * @subpackage  core_module_contact
  */
 $_ARRAYLANG['TXT_CONTACT_TRANSFERED_DATA_FROM'] = "Données transmises du formulaire de contact du site Web";
 $_ARRAYLANG['TXT_CONTACT_FORM'] = "Nouveau message du formulaire de contact sur";

@@ -5,7 +5,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @package     contrexx
- * @subpackage  coremodule_login
+ * @subpackage  core_module_login
  */
 
 $_ARRAYLANG['TXT_LOGIN_ENTER_A_USERNAME'] = "Bitte geben Sie einen Benutzernamen an";

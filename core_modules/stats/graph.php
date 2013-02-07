@@ -6,7 +6,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0
  * @package     contrexx
- * @subpackage  coremodule_stats
+ * @subpackage  core_module_stats
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -16,7 +16,7 @@
  * @author Comvation Development Team <info@comvation.com>
  * @version     1.0
  * @package     contrexx
- * @subpackage  coremodule_stats
+ * @subpackage  core_module_stats
  * @todo        Edit PHP DocBlocks!
  */
  

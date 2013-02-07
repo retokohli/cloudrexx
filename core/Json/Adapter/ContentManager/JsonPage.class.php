@@ -1,14 +1,12 @@
 <?php
-
 /**
  * JSON Adapter for Cx\Model\ContentManager\Page
  * @copyright   Comvation AG
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
- * @subpackage  core_json
+ * @subpackage  core/json
  */
-
 namespace Cx\Core\Json\Adapter\ContentManager;
 use \Cx\Core\Json\JsonAdapter;
 
@@ -18,8 +16,9 @@ use \Cx\Core\Json\JsonAdapter;
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
- * @subpackage  core_json
+ * @subpackage  core/json
  */
+
 class JsonPage implements JsonAdapter {
 
     private $em        = null;

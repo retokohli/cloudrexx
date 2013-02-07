@@ -1,14 +1,5 @@
 <?php
 
-/**
- * Sigma
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
- * @subpackage  core_html
- */
-
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -19,10 +10,7 @@ namespace Cx\Core\Html;
 /**
  * Description of Sigma
  *
- * @copyright   CONTREXX CMS - COMVATION AG
  * @author Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
- * @subpackage  core_html
  */
 class Sigma extends \HTML_Template_Sigma {
     

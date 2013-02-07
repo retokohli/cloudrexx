@@ -1,24 +1,14 @@
 <?php
-
+namespace Cx\Lib\FileSystem;
 /**
  * File System File
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
- * @subpackage  lib_filesystem
- */
-
-namespace Cx\Lib\FileSystem;
-
-/**
- * FileSystemFileException
- *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  lib_filesystem
  */
+
 class FileSystemFileException extends \Exception {};
 
 /**
@@ -26,7 +16,6 @@ class FileSystemFileException extends \Exception {};
  *
  * This class provides an object based interface to a file that resides 
  * on the local file system.
- *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     3.0.0

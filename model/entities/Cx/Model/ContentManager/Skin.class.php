@@ -1,23 +1,9 @@
 <?php
 
-/**
- * Skin
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
- * @subpackage  model_contentmanager
- */
-
 namespace Cx\Model\ContentManager;
 
 /**
- * Skin
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
- * @subpackage  model_contentmanager
+ * Cx\Model\ContentManager\Skin
  */
 class Skin
 {

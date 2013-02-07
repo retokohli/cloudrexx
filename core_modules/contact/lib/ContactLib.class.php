@@ -6,7 +6,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.0
  * @package     contrexx
- * @subpackage  coremodule_contact
+ * @subpackage  core_module_contact
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -22,7 +22,7 @@
  * @access      public
  * @version     1.0.0
  * @package     contrexx
- * @subpackage  coremodule_contact
+ * @subpackage  core_module_contact
  */
 class ContactLib
 {

@@ -7,7 +7,7 @@
  * @version     1.0.1
  *
  * @package     contrexx
- * @subpackage  coremodule_cache
+ * @subpackage  core_module_cache
  * @todo        Edit PHP DocBlocks!
  */
 $_EXCEPTIONS = array( 	// Filter specific Pages in alphabetical order

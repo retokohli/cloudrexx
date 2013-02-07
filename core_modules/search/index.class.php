@@ -7,7 +7,7 @@
  * @author Comvation Development Team <info@comvation.com>
  * @version 2.0.0
  * @package     contrexx
- * @subpackage  coremodule_search
+ * @subpackage  core_module_search
  * @todo        Edit PHP DocBlocks!
  */
 

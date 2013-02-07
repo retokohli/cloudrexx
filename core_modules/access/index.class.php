@@ -4,7 +4,7 @@
 * @copyright    CONTREXX CMS - COMVATION AG
 * @author       COMVATION Development Team <info@comvation.com>
 * @package      contrexx
-* @subpackage   coremodule_access
+* @subpackage   core_module_access
 * @version      1.0.0
 */
 
@@ -14,7 +14,7 @@
 * @copyright    CONTREXX CMS - COMVATION AG
 * @author       COMVATION Development Team <info@comvation.com>
 * @package      contrexx
-* @subpackage   coremodule_access
+* @subpackage   core_module_access
 * @version      1.0.0
 */
 class Access extends AccessLib

@@ -5,7 +5,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.0
  * @package     contrexx
- * @subpackage  coremodule_nettools
+ * @subpackage  core_module_nettools
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -16,7 +16,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.0
  * @package     contrexx
- * @subpackage  coremodule_nettools
+ * @subpackage  core_module_nettools
  */
 class netToolsManager extends NetToolsLib {
 
