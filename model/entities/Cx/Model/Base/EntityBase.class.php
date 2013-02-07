@@ -1,8 +1,23 @@
 <?php
+
+/**
+ * EntityBase
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  model_base
+ */
+
 namespace Cx\Model\Base;
 
 /**
  * Thrown by @link EntityBase::validate() if validation errors occur.
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  model_base
  */
 class ValidationException extends \Exception {
     protected $errors;

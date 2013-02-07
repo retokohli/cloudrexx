@@ -1,15 +1,39 @@
 <?php
+
 /**
  * This listener ensures slug consistency on Page objects.
  * On Flushing, all entities are scanned and changed where needed.
  * After persist, the XMLSitemap is rewritten
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  model_events
  */
+
 namespace Cx\Model\Events;
+
 use \Cx\Model\ContentManager\Page as Page;
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 
+/**
+ * PageEventListenerException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  model_events
+ */
 class PageEventListenerException extends \Exception {}
 
+/**
+ * PageEventListener
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  model_events
+ */
 class PageEventListener {
     
     public function onFlush($eventArgs) {

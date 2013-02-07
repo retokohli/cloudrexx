@@ -1,12 +1,24 @@
 <?php
-namespace Cx\Lib\FileSystem;
+
 /**
- * File System
+ * FileSystem
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_filesystem
+ */
+
+namespace Cx\Lib\FileSystem;
+
+/**
+ * FileSystemException
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     3.0.0
  * @package     contrexx
- * @subpackage  lib_framework_file
+ * @subpackage  lib_filesystem
  */
 
 class FileSystemException extends \Exception {};
@@ -14,13 +26,12 @@ class FileSystemException extends \Exception {};
 /**
  * File System
  * Collection of file system (direct or through FTP) manipulation tools
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Janik Tschanz <janik.tschanz@comvation.com>
- * @author      Reto Kohli <reto.kohli@comvation.com>
- *              (new static methods, error system)
- * @version     3.0.0
+ * @author      Reto Kohli <reto.kohli@comvation.com> (new static methods, error system)
  * @package     contrexx
- * @subpackage  lib_framework_file
+ * @subpackage  lib_filesystem
  */
 class FileSystem
 {

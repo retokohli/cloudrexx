@@ -1,16 +1,21 @@
 <?php
+
 /**
  * Contains the class for the tag cloud
  *
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @copyright Comvation AG <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_knowledge
  */
 
 /**
  * Provide all the necessary database operations for the tag cloud
  * 
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @copyright Comvation AG <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_knowledge
  */
 class TagCloud 
 {

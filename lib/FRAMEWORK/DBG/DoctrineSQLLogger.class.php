@@ -1,24 +1,28 @@
 <?php
+
 /**
  * Doctrine SQL Logger for DBG
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @version     3.0.1
  * @package     contrexx
- * @subpackage  lib_framework_dbg
+ * @subpackage  lib_dbg
  * @todo        Edit PHP DocBlocks!
  */
+
 namespace Cx\Lib\DBG;
 
 /**
  * Doctrine SQL Logger for DBG
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @version     3.0.1
  * @package     contrexx
- * @subpackage  lib_framework_dbg
+ * @subpackage  lib_dbg
  * @todo        Edit PHP DocBlocks!
  */
 class DoctrineSQLLogger implements \Doctrine\DBAL\Logging\SQLLogger

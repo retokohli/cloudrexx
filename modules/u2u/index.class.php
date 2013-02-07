@@ -1,16 +1,22 @@
 <?php
+
 /**
- * U2U index.class.php
+ * u2u
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Raveendran.L
- * @version     v 1.00
  * @package     contrexx
- * @subpackage  U2U_U2U
+ * @subpackage  module_u2u
  */
 
-
-
-
+/**
+ * u2u
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Raveendran.L
+ * @package     contrexx
+ * @subpackage  module_u2u
+ */
 class u2u extends u2uLibrary
 {
     /**

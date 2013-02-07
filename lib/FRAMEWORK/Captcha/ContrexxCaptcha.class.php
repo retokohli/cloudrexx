@@ -1,18 +1,30 @@
 <?php
+
+/**
+ * ContrexxCaptcha
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_captcha
+ */
+
 namespace Cx\Lib\Captcha;
+
 /**
  * @ignore
  */
 include_once ASCMS_FRAMEWORK_PATH.'/Captcha/Captcha.interface.php';
 
 /**
- * Captcha
+ * ContrexxCaptcha
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Kaelin <thomas.kaelin@astalvista.ch>
  * @access      public
  * @version     1.2.0
  * @package     contrexx
- * @subpackage  lib_spamprotection
+ * @subpackage  lib_captcha
  */
 class ContrexxCaptcha implements CaptchaInterface {
     private $boolFreetypeInstalled = false;

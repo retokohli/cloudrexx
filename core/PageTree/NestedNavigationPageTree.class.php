@@ -1,8 +1,19 @@
 <?php
 
+/**
+ * NestedNavigationPageTree
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_pagetree
+ */
+
 namespace Cx\Core\PageTree;
 
 /**
+ * NestedNavigationPageTree
+ *
  * Build nested navigation menu with unordered list
  * if [[nested_navigation]] is placed in navbar.
  * Formatting should be done with CSS.
@@ -17,6 +28,11 @@ namespace Cx\Core\PageTree;
  *    examples: [[levels_24]] means navigation levels 2 to 4;
  *              [[levels_3+]] means any navigation levels starting from 3;
  *              [[levels_1]] means navigation level 1 only;
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_pagetree
  */
 class NestedNavigationPageTree extends SigmaPageTree {
     const CssPrefix = "menu_level_";

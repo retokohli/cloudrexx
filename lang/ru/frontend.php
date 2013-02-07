@@ -4,7 +4,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @package     contrexx
- * @subpackage  core_module_core
+ * @subpackage  lang
  */
 $_ARRAYLANG['TXT_CORE_SUBMIT'] = "Submit";
 $_ARRAYLANG['TXT_CORE_RESET'] = "Reset";

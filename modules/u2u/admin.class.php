@@ -1,14 +1,22 @@
 <?php
+
 /**
- * U2U
+ * u2uAdmin
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Raveendran.L
- * @version     v 1.0
+ * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  module_U2U
+ * @subpackage  module_u2u
  */
 
-
+/**
+ * u2uAdmin
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Raveendran.L
+ * @package     contrexx
+ * @subpackage  module_u2u
+ */
 class u2uAdmin extends u2uLibrary {
 
 

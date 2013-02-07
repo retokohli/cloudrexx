@@ -31,6 +31,7 @@ class SettingsGeneral {
      * Initialize the database object.
      *
      * @access      public
+     * @param       ADONewConnection    $objDatabase
      */
     public function __construct($objDatabase)
     {
@@ -64,7 +65,7 @@ class SettingsGeneral {
      */
     public function setEpaymentStatus($status)
     {
-        $objResult = $this->objDatabase->Execute('UPDATE `'.DBPREFIX.'module_checkout_settings_general` SET	`value`='.intval($status).' WHERE `id`=1');
+        $objResult = $this->objDatabase->Execute('UPDATE `'.DBPREFIX.'module_checkout_settings_general` SET `value`='.intval($status).' WHERE `id`=1');
 
         if ($objResult) {
             return true;

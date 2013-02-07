@@ -5,7 +5,7 @@
  * @author Comvation Development Team <info@comvation.com>
  * @version 1.0.1
  * @package     contrexx
- * @subpackage  core_module_sitemap
+ * @subpackage  coremodule_sitemap
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -18,7 +18,7 @@
  * @access public
  * @version 1.0.1
  * @package     contrexx
- * @subpackage  core_module_sitemap
+ * @subpackage  coremodule_sitemap
  */
 class sitemap
 {

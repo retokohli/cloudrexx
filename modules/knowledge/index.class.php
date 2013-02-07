@@ -2,6 +2,7 @@
 
 /**
  * Knowledge
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Stefan Heinemann <sh@comvation.com>
  * @package     contrexx
@@ -9,11 +10,12 @@
  */
 
 /**
- * KnowledgeAdmin
+ * Knowledge
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Stefan Heinemann <sh@comvation.com>
  * @package     contrexx
  * @subpackage  module_knowledge
- * @author      Stefan Heinemann <sh@comvation.com>
  */
 class Knowledge extends KnowledgeLibrary
 {

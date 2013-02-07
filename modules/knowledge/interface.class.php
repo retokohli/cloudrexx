@@ -1,9 +1,22 @@
 <?php
 
 /**
- * Includes
+ * KnowledgeInterface
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_knowledge
  */
 
+/**
+ * KnowledgeInterface
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_knowledge
+ */
 class KnowledgeInterface extends KnowledgeLibrary 
 {
     public function __construct()

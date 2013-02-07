@@ -6,7 +6,7 @@
  * @author         Comvation Development Team <info@comvation.com>
  * @version     1.1.0
  * @package     contrexx
- * @subpackage  module_calendar".$this->mandateLink."
+ * @subpackage  module_calendar
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -25,7 +25,7 @@ if (!class_exists("calendarLibrary")) {
  * @access public
  * @version 1.1.0
  * @package     contrexx
- * @subpackage  module_calendar".$this->mandateLink."
+ * @subpackage  module_calendar
  */
 class calendarLibrary
 {

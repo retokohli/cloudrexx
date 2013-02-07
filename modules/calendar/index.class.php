@@ -5,7 +5,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.0
  * @package     contrexx
- * @subpackage  module_calendar".$this->mandateLink."
+ * @subpackage  module_calendar
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -29,7 +29,7 @@ if (CALENDAR_MANDATE == 1) {
  * @access      public
  * @version     1.0.0
  * @package     contrexx
- * @subpackage  module_calendar".$this->mandateLink."
+ * @subpackage  module_calendar
  */
 class Calendar extends calendarLibrary
 {

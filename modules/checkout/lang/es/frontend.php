@@ -7,6 +7,7 @@
  * @package     contrexx
  * @subpackage  module_checkout
  */
+
 $_ARRAYLANG['TXT_CHECKOUT_EPAYMENT_DEACTIVATED'] = 'Das E-Payment steht zur Zeit nicht zur Verfügung.';
 $_ARRAYLANG['TXT_CHECKOUT_DESCRIPTION'] = 'Bitte füllen Sie alle Pflichtfelder aus und senden Sie dann das Formular ab. Danach gelangen Sie zum sicheren E-Payment unseres Partners PostFinance.';
 $_ARRAYLANG['TXT_CHECKOUT_BILL_DATA'] = 'Rechnungsangaben';

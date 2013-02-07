@@ -6,7 +6,7 @@
  * @author      Christian Wehrli <christian.wehrli@astalavista.ch>
  * @version     $Id: index.class.php,v 1.11 2003/05/05 10:10:32 hitsch Exp $
  * @package     contrexx
- * @subpackage  core_module_stats
+ * @subpackage  coremodule_stats
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -25,7 +25,7 @@ if (eregi("admin.class.php",$_SERVER['PHP_SELF'])){
  * @author      Christian Wehrli <christian.wehrli@astalavista.ch>
  * @version     $Id: index.class.php,v 1.11 2003/05/05 10:10:32 hitsch Exp $
  * @package     contrexx
- * @subpackage  core_module_stats
+ * @subpackage  coremodule_stats
  */
 class stats extends statsLibrary
 {

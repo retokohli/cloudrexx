@@ -73,6 +73,11 @@ class CheckoutLibrary {
     protected $arrCountries;
 
 
+    /**
+     * Initialize countries.
+     *
+     * @access      public
+     */
     public function __construct()  {
         global $objDatabase;
 

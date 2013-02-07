@@ -1,11 +1,13 @@
 <?php
+
 /**
  * Contains the class for article operations
  *
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @copyright Comvation AG <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_knowledge
  */
-
 
 /**
  * Provide an abstract layer for the articles
@@ -13,8 +15,11 @@
  * Provide an abstract layer for the articles, including operations for
  * reading, editing, adding and deleting articles. Also provide some special
  * functions to return the most read or the most popular articles.
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @copyright Comvation AG <info@comvation.com>
+ * @package     contrexx
+ * @subpackage	module_knowledge
  */
 class KnowledgeArticles
 {

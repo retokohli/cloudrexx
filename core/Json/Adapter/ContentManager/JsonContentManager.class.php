@@ -1,10 +1,11 @@
 <?php
+
 /**
  * JSON Adapter for ContentManager
  * @copyright   Comvation AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
- * @subpackage  core/json
+ * @subpackage  core_json
  */
 
 namespace Cx\Core\Json\Adapter\ContentManager;
@@ -15,7 +16,7 @@ use \Cx\Core\Json\JsonAdapter;
  * @copyright   Comvation AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
- * @subpackage  core/json
+ * @subpackage  core_json
  */
 class JsonContentManager implements JsonAdapter {
     
