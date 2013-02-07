@@ -4,7 +4,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @package     contrexx
- * @subpackage  core_module_banner
+ * @subpackage  coremodule_banner
  */
 $_ARRAYLANG['TXT_SETTINGS'] = "Paramètres";
 $_ARRAYLANG['TXT_BANNER_ADD_SELECT_ALL'] = "Sélectionner tout";

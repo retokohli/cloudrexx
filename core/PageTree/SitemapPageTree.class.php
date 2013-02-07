@@ -1,7 +1,24 @@
 <?php
 
+/**
+ * SitemapPageTree
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_pagetree
+ */
+
 namespace Cx\Core\PageTree;
 
+/**
+ * SitemapPageTree
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_pagetree
+ */
 class SitemapPageTree extends SigmaPageTree {
     protected $spacer = null;
     const cssPrefix = "sitemap_level";

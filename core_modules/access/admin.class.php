@@ -5,7 +5,7 @@
 * @copyright    CONTREXX CMS - COMVATION AG
 * @author       COMVATION Development Team <info@comvation.com>
 * @package      contrexx
-* @subpackage   core_module_access
+* @subpackage   coremodule_access
 * @version      1.0.0
 */
 
@@ -15,7 +15,7 @@
 * @copyright    CONTREXX CMS - COMVATION AG
 * @author       COMVATION Development Team <info@comvation.com>
 * @package      contrexx
-* @subpackage   core_module_access
+* @subpackage   coremodule_access
 * @version      1.0.0
 */
 class AccessManager extends AccessLib

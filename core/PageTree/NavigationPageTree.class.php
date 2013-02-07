@@ -1,7 +1,24 @@
 <?php
 
+/**
+ * NavigationPageTree
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_pagetree
+ */
+
 namespace Cx\Core\PageTree;
 
+/**
+ * NavigationPageTree
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_pagetree
+ */
 class NavigationPageTree extends SigmaPageTree {
     protected $topLevelBlockName = null;
     protected $output = '';

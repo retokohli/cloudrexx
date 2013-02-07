@@ -1,8 +1,34 @@
 <?php
+
+/**
+ * File
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_filesystem
+ */
+
 namespace Cx\Lib\FileSystem;
 
+/**
+ * FileException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_filesystem
+ */
 class FileException extends \Exception {};
 
+/**
+ * File
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_filesystem
+ */
 class File implements FileInterface
 {
     const UNKNOWN_ACCESS  = 0;

@@ -1,7 +1,19 @@
 <?php
-namespace Cx\Lib\FileSystem;
+
 /**
- * FTP File
+ * FTPFile
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_filesystem
+ */
+
+namespace Cx\Lib\FileSystem;
+
+/**
+ * FTPFileException
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     3.0.0
@@ -20,6 +32,7 @@ class FTPFileException extends \Exception {};
  * which is a wrapper that uses either this class or
  * Cx\Lib\FileSystem\FileSystemFile for file operations, depending on the
  * system configuration.
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     3.0.0

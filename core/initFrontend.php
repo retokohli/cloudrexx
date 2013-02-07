@@ -1,59 +1,13 @@
 <?php
+
 /**
- * The main page for the CMS
+ * initFrontend
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team
+ * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  core
- * @link        http://www.contrexx.com/ contrexx homepage
- * @since       v0.0.0.0
+ * @subpackage  core_frontend
  * @todo        Capitalize all class names in project
- * @uses        /config/configuration.php
- * @uses        /config/settings.php
- * @uses        /core/API.php
- * @uses        /core_modules/cache/index.class.php
- * @uses        /core/error.class.php
- * @uses        /core_modules/banner/index.class.php
- * @uses        /core_modules/contact/index.class.php
- * @uses        /core_modules/login/index.class.php
- * @uses        /core_modules/media/index.class.php';
- * @uses        /core_modules/nettools/index.class.php
- * @uses        /core_modules/news/index.class.php
- * @uses        /core_modules/news/lib/headlines.class.php
- * @uses        /core_modules/news/lib/teasers.class.php
- * @uses        /core_modules/search/index.class.php
- * @uses        /core_modules/sitemap/index.class.php
- * @uses        /modules/block/index.class.php
- * @uses        /modules/calendar/headlines.class.php
- * @uses        /modules/calendar/HomeCalendar.class.php
- * @uses        /modules/calendar/index.class.php
- * @uses        /modules/community/index.class.php
- * @uses        /modules/directory/homeContent.class.php
- * @uses        /modules/directory/index.class.php
- * @uses        /modules/docsys/index.class.php
- * @uses        /modules/download/index.class.php
- * @uses        /modules/egov/index.class.php
- * @uses        /modules/feed/index.class.php
- * @uses        /modules/feed/newsML.class.php
- * @uses        /modules/forum/homeContent.class.php
- * @uses        /modules/forum/index.class.php
- * @uses        /modules/gallery/homeContent.class.php
- * @uses        /modules/gallery/index.class.php
- * @uses        /modules/guestbook/index.class.php
- * @uses        /modules/livecam/index.class.php
- * @uses        /modules/market/index.class.php
- * @uses        /modules/memberdir/index.class.php
- * @uses        /modules/newsletter/index.class.php
- * @uses        /modules/podcast/index.class.php
- * @uses        /modules/recommend/index.class.php
- * @uses        /modules/reservation/index.class.php
- * @uses        /modules/shop/index.class.php
- * @uses        /modules/voting/index.class.php
- * @uses        /modules/immo/index.class.php
- * @uses        /modules/blog/homeContent.class.php
- * @uses        /modules/blog/index.class.php
- * @uses        /modules/mediadir/index.class.php
- * @uses        /lib/FRAMEWORK/SocialNetworks.class.php
  */
 
 // Try to enable APC

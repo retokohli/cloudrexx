@@ -1,7 +1,23 @@
 <?php
-namespace Cx\Lib\Captcha;
+
 /**
- * a Contrexx captcha interface
+ * Captcha
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_captcha
+ */
+
+namespace Cx\Lib\Captcha;
+
+/**
+ * Contrexx captcha interface
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_captcha
  */
 interface CaptchaInterface {
     public function getCode($tabIndex);

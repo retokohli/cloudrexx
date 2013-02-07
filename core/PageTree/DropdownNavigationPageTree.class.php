@@ -1,7 +1,24 @@
 <?php
 
+/**
+ * DropdownNavigationPageTree
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_pagetree
+ */
+
 namespace Cx\Core\PageTree;
 
+/**
+ * DropdownNavigationPageTree
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_pagetree
+ */
 class DropdownNavigationPageTree extends SigmaPageTree {
    
     protected $subNavTag = '<ul id="menubuilder%s" class="menu">{SUB_MENU}</ul>';
