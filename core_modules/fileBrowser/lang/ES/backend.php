@@ -4,7 +4,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @package     contrexx
- * @subpackage  core_module_fileBrowser
+ * @subpackage  coremodule_filebrowser
  */
 $_ARRAYLANG['TXT_CLOSE'] = "Cerrar";
 $_ARRAYLANG['TXT_FILEBROWSER_MEDIA_1'] = "Archivo de Media #1";

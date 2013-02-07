@@ -1,17 +1,21 @@
 <?php
-namespace Cx\Lib\FileSystem;
+
 /**
  * File Interface
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @version     3.0.0
+ * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
  * @subpackage  lib_filesystem
  */
 
+namespace Cx\Lib\FileSystem;
+
 /**
- * a Contrexx File interface
- * @version     3.0.0
+ * FileInterface
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
  * @subpackage  lib_filesystem
  */

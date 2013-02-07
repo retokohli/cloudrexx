@@ -1,18 +1,22 @@
 <?php
 
 /**
- * U2U library
+ * u2uLibrary
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Raveendran.L
- * @version     v 1.00
  * @package     contrexx
- * @subpackage  U2U_U2U
+ * @subpackage  module_u2u
  */
 
 /**
- * Includes
+ * u2uLibrary
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Raveendran.L
+ * @package     contrexx
+ * @subpackage  module_u2u
  */
-
 class u2uLibrary {
 
     var $_boolInnoDb = false;

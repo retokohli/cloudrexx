@@ -1,9 +1,26 @@
 <?php
 
+/**
+ * searchKnowledge
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_knowledge
+ */
+
 if (!defined("MODULE_INDEX")) {
     define("MODULE_INDEX", "");
 }
 
+/**
+ * searchKnowledge
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_knowledge
+ */
 class searchKnowledge extends SearchInterface  {
     private $term;
     private $results = array();

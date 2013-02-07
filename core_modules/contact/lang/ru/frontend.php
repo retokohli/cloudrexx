@@ -4,7 +4,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @package     contrexx
- * @subpackage  core_module_contact
+ * @subpackage  coremodule_contact
  */
 $_ARRAYLANG['TXT_CONTACT_TRANSFERED_DATA_FROM'] = "Здесь переданные сведения контактной формы с вебсайта от";
 $_ARRAYLANG['TXT_CONTACT_FORM'] = "Новая контатная форма";

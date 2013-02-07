@@ -1,6 +1,8 @@
 <?php
+
 /**
  * Knowledge backend stuff
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Stefan Heinemann <sh@comvation.com>
  * @package     contrexx

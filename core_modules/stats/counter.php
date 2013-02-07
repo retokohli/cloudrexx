@@ -6,7 +6,7 @@
  * @author Comvation Development Team <info@comvation.com>
  * @version 1.0.3
  * @package     contrexx
- * @subpackage  core_module_stats
+ * @subpackage  coremodule_stats
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -50,7 +50,7 @@ $counter = new counter($arrRobots, $arrBannedWords);
  * @access public
  * @version 1.0.3
  * @package     contrexx
- * @subpackage  core_module_stats
+ * @subpackage  coremodule_stats
  */
 class counter
 {

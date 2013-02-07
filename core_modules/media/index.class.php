@@ -5,7 +5,7 @@
  * @author        Comvation Development Team <info@comvation.com>
  * @version       1.0
  * @package     contrexx
- * @subpackage  core_module_media
+ * @subpackage  coremodule_media
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -17,7 +17,7 @@
  * @version       1.0
  * @access        public
  * @package     contrexx
- * @subpackage  core_module_media
+ * @subpackage  coremodule_media
  */
 class MediaManager extends MediaLibrary
 {

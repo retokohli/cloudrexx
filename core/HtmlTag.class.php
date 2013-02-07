@@ -6,7 +6,7 @@
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
  * @package     contrexx
- * @subpackage  module_hotelcard
+ * @subpackage  core
  */
 
 /**
@@ -15,7 +15,7 @@
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
  * @package     contrexx
- * @subpackage  module_hotelcard
+ * @subpackage  core
  */
 class HtmlTag
 {

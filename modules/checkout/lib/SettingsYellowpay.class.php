@@ -31,6 +31,7 @@ class SettingsYellowpay {
      * Initialize the database object.
      *
      * @access      public
+     * @param       ADONewConnection    $objDatabase
      */
     public function __construct($objDatabase)
     {
@@ -69,7 +70,7 @@ class SettingsYellowpay {
         foreach ($arrYellowpay as $name => $value) {
             $objResult = $this->objDatabase->Execute('
                 UPDATE `'.DBPREFIX.'module_checkout_settings_yellowpay`
-                SET	`value`="'.contrexx_raw2db($value).'"
+                SET `value`="'.contrexx_raw2db($value).'"
                 WHERE `name`="'.$name.'"
             ');
 

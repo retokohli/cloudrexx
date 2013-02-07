@@ -1,11 +1,28 @@
 <?php
 
+/**
+ * NodeRepository
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  model_contentmanager
+ */
+
 namespace Cx\Model\ContentManager\Repository;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Gedmo\Tree\Entity\Repository\CxNestedTreeRepository;
 
+/**
+ * NodeRepository
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  model_contentmanager
+ */
 class NodeRepository extends CxNestedTreeRepository {
     protected $em = null;
     const DataProperty = '__data';

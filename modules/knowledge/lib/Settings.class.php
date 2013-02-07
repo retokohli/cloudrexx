@@ -1,18 +1,21 @@
 <?php
+
 /**
  * This file holds the settings object for the knowledge module
  * 
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @copyright Comvation AG <info@comvation.com>
  * @package contrexx
- * @subpackage knowledge
+ * @subpackage  module_knowledge
  */
 
 /**
  * The settings of the knowledge module
  *
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @copyright Comvation AG <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_knowledge
  */
 class KnowledgeSettings 
 {

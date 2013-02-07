@@ -5,7 +5,7 @@
  * @copyright   CONTREXX WCMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  core_module_login
+ * @subpackage  coremodule_login
  */
 class LoginManager {
 

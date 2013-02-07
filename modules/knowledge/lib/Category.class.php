@@ -1,16 +1,21 @@
 <?php
+
 /**
  * Contains the class for category operations
  *
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @copyright Comvation AG <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_knowledge
  */
 
 /**
  * Category abstract layer for database operations
  *
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @copyright Comvation AG <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_knowledge
  */
 class KnowledgeCategory
 {

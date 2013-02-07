@@ -1,10 +1,32 @@
 <?php
+
+/**
+ * Resolver
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_routing
+ */
 namespace Cx\Core\Routing;
 
+/**
+ * ResolverException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_routing
+ */
 class ResolverException extends \Exception {};
 
 /**
  * Takes an URL and tries to find the Page.
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_routing
  */
 class Resolver {
     protected $em = null;

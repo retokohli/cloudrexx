@@ -1,9 +1,12 @@
 <?php
+
 /**
  * Contains database error class
  *
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @copyright Comvation AG <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_knowledge
  */
 
 /**
@@ -12,8 +15,11 @@
  * This class is thrown as a exception. Contains the
  * adodb error message and some kind of stacktrace that can be
  * return either plainly or formatted for the red alertbox.
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @copyright Comvation AG <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_knowledge
  */
 class DatabaseError extends Exception
 {

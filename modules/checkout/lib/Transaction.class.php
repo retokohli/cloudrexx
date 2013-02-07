@@ -31,6 +31,7 @@ class Transaction {
      * Initialize the database object.
      *
      * @access      public
+     * @param       ADONewConnection    $objDatabase
      */
     public function __construct($objDatabase)
     {
@@ -129,6 +130,8 @@ class Transaction {
      *
      * @access      public
      * @param       array       $arrIDs             ids of requested transactions
+     * @param       integer     $offset             paging offset
+     * @param       integer     $limit              paging limit
      * @return      array       $arrTransactions    contains all transactions
      * @return      boolean                         contains false if there are no transactions
      */

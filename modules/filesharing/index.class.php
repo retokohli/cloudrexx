@@ -1,16 +1,38 @@
 <?php
+
+/**
+ * Filesharing
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_filesharing
+ */
+
+/**
+ * FilesharingException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_filesharing
+ */
 class FilesharingException extends Exception
 {
 }
 
-include_once ASCMS_MODULE_PATH . "/filesharing/lib/FilesharingLib.class.php";
 /**
- * Filesharing module
+ * @ignore
+ */
+include_once ASCMS_MODULE_PATH . "/filesharing/lib/FilesharingLib.class.php";
+
+/**
+ * Filesharing
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
+ * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  filesharing
+ * @subpackage  module_filesharing
  */
 class Filesharing extends FilesharingLib
 {

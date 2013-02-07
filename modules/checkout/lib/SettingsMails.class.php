@@ -31,6 +31,7 @@ class SettingsMails {
      * Initialize the database object.
      *
      * @access      public
+     * @param       ADONewConnection    $objDatabase
      */
     public function __construct($objDatabase)
     {
@@ -83,7 +84,7 @@ class SettingsMails {
     {
         $objResult = $this->objDatabase->Execute('
             UPDATE `'.DBPREFIX.'module_checkout_settings_mails`
-            SET	`title`="'.contrexx_raw2db($arrAdminMail['title']).'",
+            SET `title`="'.contrexx_raw2db($arrAdminMail['title']).'",
                 `content`="'.contrexx_raw2db($arrAdminMail['content']).'"
             WHERE `id`=1
         ');
@@ -105,7 +106,7 @@ class SettingsMails {
     {
         $objResult = $this->objDatabase->Execute('
             UPDATE `'.DBPREFIX.'module_checkout_settings_mails`
-            SET	`title`="'.contrexx_raw2db($arrCustomerMail['title']).'",
+            SET `title`="'.contrexx_raw2db($arrCustomerMail['title']).'",
                 `content`="'.contrexx_raw2db($arrCustomerMail['content']).'"
             WHERE `id`=2
         ');

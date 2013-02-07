@@ -1,13 +1,16 @@
 <?php
+
 /**
- * Knowledge library
+ * knowledgeLib
  * 
- * @copyright Comvation AG <info@comvation.com>
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author Stefan Heinemann <sh@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_knowledge
  */
 
 /**
- * Includes
+ * @ignore
  */
 require_once ASCMS_LIBRARY_PATH.'/activecalendar/activecalendar.php';
 if (!class_exists("DatabaseError")) {
@@ -15,10 +18,9 @@ if (!class_exists("DatabaseError")) {
 }
 
 /**
- * Knowledge library
+ * Some basic operations for the knowledge module.
  * 
- * Some basic operations for the knowledge module
- * @copyright Comvation AG <info@comvation.com>
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author Stefan Heinemann <sh@comvation.com>
  * @package contrexx
  * @subpackage  module_knowledge

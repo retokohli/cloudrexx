@@ -7,6 +7,7 @@
  * @package     contrexx
  * @subpackage  module_checkout
  */
+
 $_ARRAYLANG['TXT_CHECKOUT_MODULE_NAME'] = 'Checkout';
 $_ARRAYLANG['TXT_CHECKOUT_OVERVIEW'] = 'Übersicht';
 $_ARRAYLANG['TXT_CHECKOUT_ACTIONS'] = 'Aktionen';

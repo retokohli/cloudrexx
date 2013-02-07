@@ -7,8 +7,8 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
- * @package     Contrexx
- * @subpackage  Core
+ * @package     contrexx
+ * @subpackage  core
 */
 
 /**
@@ -18,8 +18,8 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
- * @package     Contrexx
- * @subpackage  Core
+ * @package     contrexx
+ * @subpackage  core
  * @todo        Distinguish between flash and deferred messages
 */
 class Message

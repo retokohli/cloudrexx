@@ -1,11 +1,33 @@
 <?php
 
+/**
+ * Node
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  model_contentmanager
+ */
+
 namespace Cx\Model\ContentManager;
 
+/**
+ * NodeException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  model_contentmanager
+ */
 class NodeException extends \Exception {}
 
 /**
- * Cx\Model\ContentManager\Node
+ * Node
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  model_contentmanager
  */
 class Node extends \Cx\Model\Base\EntityBase
 {

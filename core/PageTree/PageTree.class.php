@@ -1,11 +1,23 @@
 <?php
 
+/**
+ * PageTree
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_pagetree
+ */
+
 namespace Cx\Core\PageTree;
 
 /**
  * Base class for all kinds of trees such as Sitemaps and Navigation.
  *
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_pagetree
  */
 abstract class PageTree {
     protected static $virtualPagesAdded = false;

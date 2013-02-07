@@ -1,13 +1,22 @@
 <?php
+
 /**
- * Filesharing module
+ * FilesharingAdmin
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
+ * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  filesharing
+ * @subpackage  module_filesharing
  */
 
+/**
+ * FilesharingAdmin
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_filesharing
+ */
 class FilesharingAdmin extends FilesharingLib
 {
     private $_objTpl;

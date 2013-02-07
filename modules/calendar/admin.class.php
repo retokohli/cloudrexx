@@ -4,7 +4,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
  * @package     contrexx
- * @subpackage  module_calendar".$this->mandateLink."
+ * @subpackage  module_calendar
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -24,7 +24,7 @@ if (CALENDAR_MANDATE == 1) {
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Paulo M. Santos <pmsantos@astalavista.net>
  * @package     contrexx
- * @subpackage  module_calendar".$this->mandateLink."
+ * @subpackage  module_calendar
  */
 class calendarManager extends calendarLibrary
 {
