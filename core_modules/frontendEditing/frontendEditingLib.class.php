@@ -5,7 +5,7 @@
  * @author Kaelin Thomas <thomas.kaelin@comvation.com>
  * @version 1.0
  * @package contrexx
- * @subpackage coremodule_frontendediting
+ * @subpackage core_module_frontendEditing
  */
 /**
  * Defines some basic constants for the frontend editing. The class also offers static methods which can be used to create
@@ -14,7 +14,7 @@
  * @author Kaelin Thomas <thomas.kaelin@comvation.com>
  * @version 1.0
  * @package contrexx
- * @subpackage coremodule_frontendediting
+ * @subpackage core_module_frontendEditing
  */
 class frontendEditingLib {
     /**

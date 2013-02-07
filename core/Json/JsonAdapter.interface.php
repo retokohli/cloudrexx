@@ -1,11 +1,10 @@
 <?php
-
 /**
  * JSON Adapter for JSON requests
  * @copyright   Comvation AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
- * @subpackage  core_json
+ * @subpackage  core/json
  */
 
 namespace Cx\Core\Json;
@@ -15,7 +14,7 @@ namespace Cx\Core\Json;
  * @copyright   Comvation AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
- * @subpackage  core_json
+ * @subpackage  core/json
  */
 interface JsonAdapter {
     

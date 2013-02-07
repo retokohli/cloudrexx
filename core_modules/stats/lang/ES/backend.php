@@ -4,7 +4,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @package     contrexx
- * @subpackage  coremodule_stats
+ * @subpackage  core_module_stats
  */
 $_ARRAYLANG['TXT_CLIENT_DATA'] = "Datos del Cliente (Useragent, IP, Host)";
 $_ARRAYLANG['TXT_PROXY_DATA'] = "Datos del Proxy (Host, IP, Tipo, Useragent) ";

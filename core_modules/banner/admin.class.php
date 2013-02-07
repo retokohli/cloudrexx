@@ -6,7 +6,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.0
  * @package     contrexx
- * @subpackage  coremodule_banner
+ * @subpackage  core_module_banner
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -17,7 +17,7 @@
  * @access      public
  * @version     1.0.0
  * @package     contrexx
- * @subpackage  coremodule_banner
+ * @subpackage  core_module_banner
  */
 class Banner extends bannerLibrary {
     public $_objTpl;

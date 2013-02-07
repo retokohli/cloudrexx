@@ -4,7 +4,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @package     contrexx
- * @subpackage  coremodule_filebrowser
+ * @subpackage  core_module_fileBrowser
  */
 $_ARRAYLANG['TXT_CLOSE'] = "Kapat";
 $_ARRAYLANG['TXT_FILEBROWSER_MEDIA_1'] = "Medyaarşivi #1";

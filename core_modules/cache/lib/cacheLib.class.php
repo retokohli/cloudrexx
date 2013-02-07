@@ -8,7 +8,7 @@
  * @author		Comvation Development Team <info@comvation.com>
  * @version		1.0.0
  * @package     contrexx
- * @subpackage  coremodule_cache
+ * @subpackage  core_module_cache
  * @todo        Edit PHP DocBlocks!
  * @todo        Descriptions are wrong. What is it really?
  */
@@ -23,7 +23,7 @@
  * @access		public
  * @version		1.0.0
  * @package     contrexx
- * @subpackage  coremodule_cache
+ * @subpackage  core_module_cache
  * @todo        Descriptions are wrong. What is it really?
  */
 class cacheLib

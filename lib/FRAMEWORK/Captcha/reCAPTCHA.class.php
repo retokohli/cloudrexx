@@ -1,29 +1,9 @@
 <?php
-
-/**
- * reCAPTCHA
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
- * @subpackage  lib_captcha
- */
-
 namespace Cx\Lib\Captcha;
-
 /**
  * @ignore
  */
 include_once ASCMS_FRAMEWORK_PATH.'/Captcha/Captcha.interface.php';
-
-/**
- * reCAPTCHA
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
- * @subpackage  lib_captcha
- */
 class reCAPTCHA implements CaptchaInterface {
     private $public_key;
     private $private_key;

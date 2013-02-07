@@ -2,21 +2,19 @@
 
 /**
  * Javascript
- *
  * @author      Stefan Heinemann <sh@comvation.com>
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
- * @subpackage  lib_framework
+ * @subpackage  framework
  * @todo        Edit PHP DocBlocks!
  */
 
 /**
  * Javascript
- *
  * @author      Stefan Heinemann <sh@comvation.com>
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
- * @subpackage  lib_framework
+ * @subpackage  framework
  * @todo        Edit PHP DocBlocks!
  */
 class JS

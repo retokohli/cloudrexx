@@ -5,7 +5,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.1
  * @package     contrexx
- * @subpackage  coremodule_cache
+ * @subpackage  core_module_cache
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -15,7 +15,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.1
  * @package     contrexx
- * @subpackage  coremodule_cache
+ * @subpackage  core_module_cache
  */
 class CacheManager extends cacheLib {
 	var $objTpl;

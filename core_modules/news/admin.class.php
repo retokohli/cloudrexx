@@ -6,7 +6,7 @@
  * @author Comvation Development Team <info@comvation.com>
  * @version 1.0.0
  * @package     contrexx
- * @subpackage  coremodule_news
+ * @subpackage  core_module_news
  * @todo        Edit PHP DocBlocks!
  *              The news entry management is bulky! It should be rewritten in OOP
  */
@@ -18,7 +18,7 @@
  * @access public
  * @version 1.0.0
  * @package     contrexx
- * @subpackage  coremodule_news
+ * @subpackage  core_module_news
  */
 class newsManager extends newsLibrary {
     var $_objTpl;

@@ -1,11 +1,10 @@
 <?php
-
 /**
  * JSON Adapter for User class
  * @copyright   Comvation AG
  * @author      Michael Räss <michael.raess@comvation.com>
  * @package     contrexx
- * @subpackage  core_json
+ * @subpackage  core/json
  */
 
 namespace Cx\Core\Json\Adapter\User;
@@ -16,7 +15,7 @@ use \Cx\Core\Json\JsonAdapter;
  * @copyright   Comvation AG
  * @author      Michael Räss <michael.raess@comvation.com>
  * @package     contrexx
- * @subpackage  core_json
+ * @subpackage  core/json
  */
 class JsonUser implements JsonAdapter {
     /**

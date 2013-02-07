@@ -4,7 +4,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @package     contrexx
- * @subpackage  coremodule_access
+ * @subpackage  core_module_access
  */
 $_ARRAYLANG['TXT_LOGIN_NAME'] = "Usuario";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD'] = "Contrase&ntilde;a";

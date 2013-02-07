@@ -4,7 +4,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @package     contrexx
- * @subpackage  coremodule_access
+ * @subpackage  core_module_access
  */
 $_ARRAYLANG['TXT_LOGIN_NAME'] = "Identifiant désiré:";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD'] = "Mot de passe désiré (min. 6 caractères):";

@@ -7,7 +7,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.0
  * @package     contrexx
- * @subpackage  coremodule_search
+ * @subpackage  core_module_search
  */
 
 namespace Cx\Core\Search;
@@ -21,7 +21,7 @@ require ASCMS_CORE_PATH . '/Module.class.php';
  * @access      public
  * @version     1.0.0
  * @package     contrexx
- * @subpackage  coremodule_search
+ * @subpackage  core_module_search
  */
 class SearchManager extends \Module
 {

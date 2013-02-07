@@ -1,24 +1,6 @@
 <?php
-
-/**
- * LegacyClassLoader
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
- * @subpackage  core_classloader
- */
-
 namespace Cx\Core\ClassLoader;
 
-/**
- * LegacyClassLoader
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
- * @subpackage  core_classloader
- */
 class LegacyClassLoader {
     private static $instance = null;
     private $tab = 0;

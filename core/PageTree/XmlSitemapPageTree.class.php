@@ -7,7 +7,7 @@
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @version     3.0.0
  * @package     contrexx
- * @subpackage  core_pagetree
+ * @subpackage  core
  */
 
 namespace Cx\Core\PageTree;
@@ -20,7 +20,7 @@ namespace Cx\Core\PageTree;
  * @access      public
  * @version     3.0.0
  * @package     contrexx
- * @subpackage  core_pagetree
+ * @subpackage  core
  */
 class XmlSitemapPageTree extends PageTree {
 

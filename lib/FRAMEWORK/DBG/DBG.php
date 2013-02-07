@@ -1,13 +1,12 @@
 <?php
 /**
  * Debugging
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      David Vogt <david.vogt@comvation.com>
  * @version     3.0.0
  * @since       2.1.3
  * @package     contrexx
- * @subpackage  lib_dbg
+ * @subpackage  lib
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      David Vogt <david.vogt@comvation.com>
  */
 
 // Basic flags
@@ -44,13 +43,12 @@ DBG::deactivate();
 
 /**
  * Debugging
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      David Vogt <david.vogt@comvation.com>
  * @version     3.0.0
  * @since       2.1.3
  * @package     contrexx
- * @subpackage	lib_dbg
+ * @subpackage  lib
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      David Vogt <david.vogt@comvation.com>
  */
 class DBG
 {

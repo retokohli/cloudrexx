@@ -4,7 +4,7 @@
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
  * @package     contrexx
- * @subpackage  coremodule_search
+ * @subpackage  core_module_search
  */
 $_ARRAYLANG['TXT_SEARCH_RESULTS'] = "Aramasonuçları";
 $_ARRAYLANG['TXT_SEARCH_RESULTS_ORDER_BY_RELEVANCE'] = "Aradığınız <strong>%s</strong>  %d adet sonuç verdi (tutarlılığa göre sıralandı)";
