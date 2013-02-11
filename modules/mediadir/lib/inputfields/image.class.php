@@ -1,10 +1,12 @@
 <?php
+
 /**
- * Media  Directory Inputfield Text Class
+ * Media Directory Inputfield Image Class
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  module_marketplace
+ * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -13,7 +15,14 @@
  */
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface.php';
 
-
+/**
+ * Media Directory Inputfield Image Class
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_mediadir
+ */
 class mediaDirectoryInputfieldImage extends mediaDirectoryLibrary implements inputfield
 {
     public $arrPlaceholders = array(

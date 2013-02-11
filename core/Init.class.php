@@ -2,6 +2,7 @@
 
 /**
  * Initialize the CMS
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     3.0.0
@@ -12,6 +13,7 @@
 
 /**
  * Initialize the CMS
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public

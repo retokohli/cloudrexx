@@ -2,6 +2,7 @@
 
 /**
  * Image manager
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
  * @version     1.0
@@ -12,6 +13,7 @@
 
 /**
  * Image manager
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
  * @version     1.0

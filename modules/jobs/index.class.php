@@ -1,6 +1,8 @@
 <?php
+
 /**
- * DocSys
+ * Jobs
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
@@ -9,11 +11,11 @@
  * @subpackage  module_jobs
  * @todo        Edit PHP DocBlocks!
  */
-error_reporting(E_ALL);
+
 /**
- * DocSys
- *
+ * Jobs
  * This module will get all the jobs pages
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public

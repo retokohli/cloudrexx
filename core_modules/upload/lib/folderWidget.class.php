@@ -1,9 +1,32 @@
 <?php
-class FolderWidgetException extends Exception
-{}
+
+/**
+ * FolderWidget
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_upload
+ */
+
+/**
+ * FolderWidgetException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_upload
+ */
+class FolderWidgetException extends Exception {}
+
 /**
  * A folder widget (obviously). Use this to display a list of the files contained in a 
  * certain folder and let the user modify them (currently only deletion possible).
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_upload
  * @todo does not use filemanager - deleting won't work in folders without the needed permissions
  */
 class FolderWidget {

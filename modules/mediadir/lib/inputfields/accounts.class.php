@@ -1,6 +1,8 @@
 <?php
+
 /**
  * Media  Directory Inputfield Accounts Class
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @package     contrexx
@@ -16,6 +18,7 @@ require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface
 
 /**
  * Media  Directory Inputfield Accounts Class
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @package     contrexx

@@ -2,6 +2,7 @@
 
 /**
  * MXLookup
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     1.0
@@ -12,6 +13,7 @@
 
 /**
  * MXLookup
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     1.0

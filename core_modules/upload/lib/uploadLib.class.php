@@ -1,4 +1,22 @@
 <?php
+
+/**
+ * UploadLib
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_upload
+ */
+
+/**
+ * UploadLib
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_upload
+ */
 class UploadLib
 {
     //processes uploads sent by an uploader

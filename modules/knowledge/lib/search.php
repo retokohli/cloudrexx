@@ -216,8 +216,11 @@ class Search {
  *
  * Helper class for the search response. Is going to be
  * turned into a JSON object for communcation through ajax.
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @copyright Comvation AG <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_knowledge
  */
 class searchResponse
 {

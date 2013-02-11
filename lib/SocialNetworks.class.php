@@ -1,7 +1,17 @@
 <?php
 
 /**
+ * SocialNetworks
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
+
+/**
  * Creates Buttons etc. to integrate Social Networks.
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Severin Räz <severin.raez@comvation.com>
  * @version     $Id:  Exp $

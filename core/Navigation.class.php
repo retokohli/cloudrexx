@@ -3,6 +3,7 @@
 /**
  * Navigation
  * Note: modified 27/06/2006 by Sébastien Perret => sva.perret@bluewin.ch
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Comvation Development Team <info@comvation.com>
  * @version        1.0.0
@@ -13,9 +14,9 @@
 
 /**
  * Class Navigation
- *
  * This class creates the navigation tree
  * Note: modified 27/06/2006 by Sébastien Perret => sva.perret@bluewin.ch
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Comvation Development Team <info@comvation.com>
  * @access        public

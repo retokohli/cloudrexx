@@ -1,6 +1,8 @@
 <?php
+
 /**
  * Module Session
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Leandro Nery <nery@astalavista.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>

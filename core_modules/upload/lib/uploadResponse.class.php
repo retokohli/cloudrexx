@@ -1,7 +1,22 @@
 <?php
+
+/**
+ * 
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_upload
+ */
+
 /**
  * UploadResponses result from an upload request.
  * They carry information about problems concerning uploaded files.
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_upload
  */
 class UploadResponse {
     /**

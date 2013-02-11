@@ -1,6 +1,8 @@
 <?php
+
 /**
  * File System Framework
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Janik Tschanz <janik.tschanz@comvation.com>
  * @author      Reto Kohli <reto.kohli@comvation.com>
@@ -19,6 +21,7 @@
  * This class allows the instantiation of the class Cx\Lib\FileSystem by its
  * former name <File> (Cx < 3.0)
  * I.e.: $objLegacyFile = new File();
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     3.0.0

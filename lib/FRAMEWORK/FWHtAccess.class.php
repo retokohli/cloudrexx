@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class FWHtAccess
  *
@@ -14,6 +15,7 @@
  * @ignore
  */
 require_once ASCMS_LIBRARY_PATH.'/PEAR/File/HtAccess.php';
+
 /**
  * Class FWHtAccess
  *

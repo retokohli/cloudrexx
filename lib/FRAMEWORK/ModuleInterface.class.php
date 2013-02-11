@@ -1,10 +1,33 @@
 <?php
+
+/**
+ * ModuleInterface
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
+
+/**
+ * ModuleInterfaceException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
 class ModuleInterfaceException extends Exception {}
 
 /**
  * An interface using which modules provide functionality to stuff outside the module itself.
  * Subclass this (xyModuleInterface extends ModuleInterface) if your module needs to be called from other parts of the cms.
  * Module Interfaces are Singletons.
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
  */
 abstract class ModuleInterface {
     //singleton functionality: instance

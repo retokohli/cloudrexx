@@ -1,7 +1,8 @@
 <?php
 
 /**
- * Jobs
+ * jobsManager
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
@@ -10,8 +11,10 @@
  * @subpackage  module_jobs
  * @todo        Edit PHP DocBlocks!
  */
+
 /**
- * Jobs
+ * jobsManager
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
@@ -19,9 +22,6 @@
  * @package     contrexx
  * @subpackage  module_jobs
  */
-
-error_reporting(E_STRICT);
-
 class jobsManager extends jobsLibrary
 {
     /**

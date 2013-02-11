@@ -2,6 +2,7 @@
 
 /**
  * Database access function(s)
+ *
  * @copyright    CONTREXX CMS - COMVATION AG
  * @author        Comvation Development Team <info@comvation.com>
  * @package     contrexx

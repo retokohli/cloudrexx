@@ -1,10 +1,25 @@
 <?php
 
+/**
+ * OAuth
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_oauth
+ */
+
 namespace Cx\Lib\OAuth;
 
-class OAuth_Exception extends \Exception
-{
-}
+/**
+ * OAuth_Exception
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_oauth
+ */
+class OAuth_Exception extends \Exception {}
 
 /**
  * OAuth superclass
@@ -15,7 +30,6 @@ class OAuth_Exception extends \Exception
  * @package     contrexx
  * @subpackage  lib_oauth
  */
-
 abstract class OAuth implements OAuthInterface
 {
     /**

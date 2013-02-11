@@ -1,9 +1,12 @@
 <?php
+
 /**
  * Net tools library
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     1.0
+ * @access      public
  * @package     contrexx
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
@@ -11,6 +14,7 @@
 
 /**
  * Net tools library
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     1.0

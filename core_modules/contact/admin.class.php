@@ -2,6 +2,7 @@
 
 /**
  * Contact
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.0
@@ -12,7 +13,8 @@
 
 
 /**
- * Contact manager
+ * ContactManager
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public

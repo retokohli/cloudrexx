@@ -1,6 +1,8 @@
 <?php
+
 /**
  * Framework includes
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @version     $Id:  Exp $
  * @package     contrexx
@@ -9,7 +11,7 @@
  */
 
 /**
- * Includes
+ * @ignore
  */
 require_once dirname(__FILE__).'/Validator.class.php';
 require_once dirname(__FILE__).'/Language.class.php';

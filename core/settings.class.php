@@ -2,6 +2,7 @@
 
 /**
  * Settings
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.1.0

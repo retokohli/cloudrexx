@@ -2,6 +2,7 @@
 
 /**
  * Manages settings stored in the database
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  * @version     3.0.0

@@ -1,7 +1,32 @@
 <?php
 
+/**
+ * Module
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core
+ */
+
+/**
+ * ModuleException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core
+ */
 class ModuleException extends Exception {}
 
+/**
+ * Module
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core
+ */
 class Module {
     protected $defaultAct = '';
 

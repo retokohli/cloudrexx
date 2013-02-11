@@ -2,6 +2,7 @@
 
 /**
  * HTML Tag helpers
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
@@ -11,6 +12,7 @@
 
 /**
  * HTML Tag Class
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0

@@ -13,6 +13,7 @@
 
 /**
  * Useful methods that help you connect to other hosts using sockets
+ *
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @copyright   CONTREXX CMS - COMVATION AG
  * @since       2.1.0

@@ -1,10 +1,22 @@
 <?php
+
+/**
+ * LinkSanitizer
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core
+ */
+
 /**
  * This class replaces any links from Contrexx < 3.0 on the fly.
- * @author srz
- */
-/**
  * Handles the [[NODE_<ID>_<LANGID>]] placeholders.
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core
  */
 class LinkSanitizer {
     protected $offset;

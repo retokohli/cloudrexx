@@ -1,13 +1,31 @@
 <?php
+
+/**
+ * Uploader
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_upload
+ */
+
 /**
  * Exceptions thrown by uploader
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_upload
  */
-class UploaderException extends Exception
-{
-}
+class UploaderException extends Exception {}
 
 /**
  * Base class for all kinds of uploaders.
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_upload
  */
 abstract class Uploader
 {

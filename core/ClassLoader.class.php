@@ -1,9 +1,29 @@
 <?php
 
+/**
+ * Doctrine ClassLoader
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_classloader
+ */
+
 namespace Cx;
 
+/**
+ * @ignore
+ */
 require_once $doctrineDir.'vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
 
+/**
+ * Doctrine ClassLoader
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_classloader
+ */
 class ClassLoader extends \Doctrine\Common\ClassLoader {
 
     protected $namespace;

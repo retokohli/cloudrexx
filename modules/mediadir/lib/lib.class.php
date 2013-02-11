@@ -1,17 +1,23 @@
 <?php
+
 /**
  * Media  Directory Library
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  module_marketplace
+ * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
  */
 
 /**
  * Media directory access id constants.
- *
  * This class is used as fake enum.
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_mediadir
  */
 class MediaDirectoryAccessIDs { 
     const MediaDirectory = 153; //use media directory
@@ -24,7 +30,12 @@ class MediaDirectoryAccessIDs {
 }
 
 /**
- * Includes
+ * Media Directory Library
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_mediadir
  */
 class mediaDirectoryLibrary
 {

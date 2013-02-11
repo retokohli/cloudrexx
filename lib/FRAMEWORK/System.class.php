@@ -2,7 +2,6 @@
 
 /**
  * FWSystem
- *
  * This class provides system related methods.
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -15,7 +14,6 @@
 
 /**
  * FWSystem
- *
  * This class provides system related methods.
  *
  * @copyright   CONTREXX CMS - COMVATION AG

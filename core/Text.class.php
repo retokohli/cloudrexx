@@ -2,6 +2,7 @@
 
 /**
  * Text (core version)
+ *
  * @version     3.0.0
  * @package     contrexx
  * @subpackage  core

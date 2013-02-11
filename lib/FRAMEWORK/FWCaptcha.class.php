@@ -1,8 +1,27 @@
 <?php
+
+/**
+ * FWCaptcha
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
+
 /**
  * @ignore
  */
 include_once ASCMS_FRAMEWORK_PATH.'/Captcha/Captcha.interface.php';
+
+/**
+ * FWCaptcha
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
 class FWCaptcha {
     private $objCaptcha = null;
 

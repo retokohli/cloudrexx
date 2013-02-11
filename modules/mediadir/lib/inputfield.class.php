@@ -1,10 +1,12 @@
 <?php
+
 /**
  * Media  Directory Inputfield Class
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  module_marketplace
+ * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -25,6 +27,14 @@ function safeNew($strClassName) {
     return new $strClassName;
 }
 
+/**
+ * Media Directory Inputfield Class
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_mediadir
+ */
 class mediaDirectoryInputfield extends mediaDirectoryLibrary
 {
     public $arrInputfields = array();

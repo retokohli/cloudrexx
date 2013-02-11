@@ -2,6 +2,7 @@
 
 /**
  * Core Country and Region class
+ *
  * @version     3.0.0
  * @since       3.0.0
  * @package     contrexx
@@ -13,6 +14,7 @@
 
 /**
  * Country helper methods
+ *
  * @version     3.0.0
  * @since       3.0.0
  * @package     contrexx

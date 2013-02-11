@@ -1,6 +1,21 @@
 <?php
+
+/**
+ * ComboUploader
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_upload
+ */
+
 /**
  * ComboUploader - Displays a FormUploader and possibilities to invoke other types of Uploaders.
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_upload
  */
 class ComboUploader extends Uploader
 {
