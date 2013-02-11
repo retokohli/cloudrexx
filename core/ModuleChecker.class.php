@@ -2,6 +2,7 @@
 
 /**
  * Module Checker
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author		Comvation Development Team <info@comvation.com>
  * @version		2.0.0

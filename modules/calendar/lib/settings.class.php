@@ -1,6 +1,22 @@
 <?php
 
+/**
+ * CalendarSettings
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_calendar
+ */
 
+/**
+ * CalendarSettings
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_calendar
+ */
 class CalendarSettings
 {
     /**

@@ -1,9 +1,32 @@
 <?php
+
+/**
+ * uploadFactory
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_upload
+ */
+
+/**
+ * UploadFactoryException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_upload
+ */
 class UploadFactoryException extends Exception {}
+
 /**
  * Upload Factory. Creates the right upload classes and initializes them.
- *
  * This is a Singleton, use @link UploadFactory::getInstance() to work with.
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_upload
  */
 class UploadFactory
 {

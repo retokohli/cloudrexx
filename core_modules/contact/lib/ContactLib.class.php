@@ -1,7 +1,8 @@
 <?php
 
 /**
- * Contact library
+ * ContactLib
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.0
@@ -16,7 +17,8 @@
 \Env::get('ClassLoader')->loadFile(ASCMS_FRAMEWORK_PATH.'/Validator.class.php');
 
 /**
- * Contact library
+ * ContactLib
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public

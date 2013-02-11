@@ -1,6 +1,8 @@
 <?php
+
 /**
  * Calendar
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.0
@@ -10,10 +12,8 @@
  */
 
 /**
- * Includes
- *
+ * @ignore
  */
-
 if (CALENDAR_MANDATE == 1) {
     require_once ASCMS_MODULE_PATH . '/calendar/lib/calendarLib.class.php';
 } else {
@@ -22,8 +22,8 @@ if (CALENDAR_MANDATE == 1) {
 
 /**
  * Calendar
- *
  * Class to manage cms calendar
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public

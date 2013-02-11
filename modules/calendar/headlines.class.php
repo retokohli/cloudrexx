@@ -2,6 +2,7 @@
 
 /**
  * Calendar headline news
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.0
@@ -12,8 +13,8 @@
 
 /**
  * Headline news
- *
  * Gets all the calendar headlines
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public

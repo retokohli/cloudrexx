@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Facebook
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_oauth
+ */
+
 namespace Cx\Lib\OAuth;
 
 global $cl;
@@ -14,7 +23,6 @@ $cl->loadFile(ASCMS_LIBRARY_PATH . '/services/Facebook/facebook.php');
  * @package     contrexx
  * @subpackage  lib_oauth
  */
-
 class Facebook extends OAuth
 {
     /**

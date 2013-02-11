@@ -1,6 +1,21 @@
 <?php
+
+/**
+ * PlUploader
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_upload
+ */
+
 /**
  * PlUploader - Flash uploader class.
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_upload
  */
 class PlUploader extends Uploader
 {

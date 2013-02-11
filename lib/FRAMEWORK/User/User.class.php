@@ -1,15 +1,25 @@
 <?php
 
-class UserException extends Exception {}
-
 /**
  * User Object
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
  * @version     2.1.1
  * @package     contrexx
  * @subpackage  lib_framework
  */
+
+/**
+ * UserException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
+class UserException extends Exception {}
+
 
 /**
  * User Object

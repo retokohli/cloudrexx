@@ -1,19 +1,27 @@
 <?php
+
 /**
  * Calendar Class Event
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_calendar
+ */
+
+/**
+ * Calendar Class Event
+ * This Class was built in addition to module expansion..
+ * its not used all over the module..
+ * but if someone has to rewrite the module it might be quite useful
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.0
  * @package     contrexx
  * @subpackage  module_calendar
  * @todo        Edit PHP DocBlocks!
- *
- * This Class was built in addition to module expansion..
- * its not used all over the module..
- * but if someone has to rewrite the module it might be quite useful
  */
-
-
 class CalendarEvent {
     var $values = array();
     var $mandateLink;

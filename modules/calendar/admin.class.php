@@ -1,6 +1,8 @@
 <?php
+
 /**
  * Calendar
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
  * @package     contrexx
@@ -9,7 +11,7 @@
  */
 
 /**
- * Includes
+ * @ignore
  */
 if (CALENDAR_MANDATE == 1) {
     require_once ASCMS_MODULE_PATH . '/calendar/lib/calendarLib.class.php';
@@ -19,8 +21,8 @@ if (CALENDAR_MANDATE == 1) {
 
 /**
  * Calendar
- *
  * Class to manage cms calendar
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author        Paulo M. Santos <pmsantos@astalavista.net>
  * @package     contrexx

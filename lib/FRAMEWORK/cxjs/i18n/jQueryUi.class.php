@@ -1,4 +1,22 @@
 <?php
+
+/**
+ * JQueryUiI18nProvider
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_cxjs
+ */
+
+/**
+ * JQueryUiI18nProvider
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_cxjs
+ */
 class JQueryUiI18nProvider implements ContrexxJavascriptI18nProvider {
     public function getVariables($langCode) {
         $vars = array();

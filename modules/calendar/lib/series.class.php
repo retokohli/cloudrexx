@@ -2,6 +2,7 @@
 
 /**
  * Calendar
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_calendar
@@ -10,6 +11,7 @@
 
 /**
  * Calendar
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_calendar

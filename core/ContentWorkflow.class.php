@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Content Workflow
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -10,6 +11,14 @@
 
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 
+/**
+ * ContentWorkflowException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core
+ */
 class ContentWorkflowException extends ModuleException {}
 
 /**

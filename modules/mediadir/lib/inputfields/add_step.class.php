@@ -1,17 +1,23 @@
 <?php
+
 /**
- * Media  Directory Inputfield Textarea Class
+ * Media Directory Inputfield Add Stepp Class
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  module_marketplace
+ * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
  */
 
 /**
- * Includes
+ * Media Directory Inputfield Add Stepp Class
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_mediadir
  */
-
 class mediaDirectoryInputfieldAdd_step extends mediaDirectoryLibrary
 {
     public $arrPlaceholders = array('TXT_MEDIADIR_INPUTFIELD_NAME');

@@ -1,4 +1,14 @@
 <?php
+
+/**
+ * Env
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core
+ */
+
 /**
  * A global environment repository.
  *
@@ -15,6 +25,11 @@
  *     $this->entityManager = $em;
  * }
  * Reason: Global state is untestable and leads to inflexible code.
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core
  */
 class Env {
     protected static $props = array();

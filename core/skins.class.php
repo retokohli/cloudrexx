@@ -12,8 +12,8 @@
 
 /**
  * Skins class
- *
  * Skins and Themes management functions
+ *
  * @copyright    CONTREXX CMS - COMVATION AG
  * @author        Comvation Development Team <info@comvation.com>
  * @access        public

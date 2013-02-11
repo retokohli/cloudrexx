@@ -1,12 +1,6 @@
 <?php
 
 /**
- * Error reporting level
- * @ignore
- */
-define('_DBM_DEBUG', 0);
-
-/**
  * Database Manager class
  *
  * CMS Database Manager
@@ -17,6 +11,12 @@ define('_DBM_DEBUG', 0);
  * @author      Reto Kohli <reto.kohli@comvation.com> (Version 2.1.0)
  * @version     2.1.0
  */
+
+/**
+ * Error reporting level
+ * @ignore
+ */
+define('_DBM_DEBUG', 0);
 
 /**
  * Database Manager class

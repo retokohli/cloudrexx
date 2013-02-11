@@ -1,7 +1,26 @@
 <?php
+
+/**
+ * StatsModuleInterface
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_stats
+ */
+
+/**
+ * @ignore
+ */
 require_once(ASCMS_FRAMEWORK_PATH.'/ModuleInterface.class.php');
+
 /**
  * Provides public stats functions
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_stats
  */
 class StatsModuleInterface extends ModuleInterface {
     /**

@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Twitter
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_oauth
+ */
+
 namespace Cx\Lib\OAuth;
 
 global $cl;
@@ -15,7 +24,6 @@ $cl->loadFile(ASCMS_LIBRARY_PATH . '/services/Twitter/tmhUtilities.php');
  * @package     contrexx
  * @subpackage  lib_oauth
  */
-
 class Twitter extends OAuth
 {
     /**

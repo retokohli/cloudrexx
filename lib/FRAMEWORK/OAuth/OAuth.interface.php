@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * OAuth
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_oauth
+ */
+
 namespace Cx\Lib\OAuth;
 
 /**
@@ -11,7 +20,6 @@ namespace Cx\Lib\OAuth;
  * @package     contrexx
  * @subpackage  lib_oauth
  */
-
 interface OAuthInterface
 {
     public function getEmail();

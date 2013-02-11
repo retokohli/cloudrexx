@@ -2,13 +2,13 @@
 
 /**
  * Image handling
+ *
  * @version     3.0.0
  * @package     contrexx
  * @subpackage  core
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  */
-
 
 /**
  * Image

@@ -5,10 +5,20 @@
  *
  * Note that this partial class is left over for updating to the new
  * MailTemplate.  We use it to migrate the existing templates ONLY.
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_shop
  */
 
 /**
  * OBSOLETE -- See {@see core/MailTemplate.class.php}
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_shop
  */
 class ShopMail
 {

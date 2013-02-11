@@ -1,7 +1,7 @@
 <?php
+
 /**
  * Logging manager
- *
  * Class to see logging
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -14,7 +14,6 @@
 
 /**
  * Class Logging manager
- *
  * Class to see logging
  *
  * @copyright   CONTREXX CMS - COMVATION AG

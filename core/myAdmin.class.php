@@ -2,6 +2,7 @@
 
 /**
  * my Administrator manager
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.1

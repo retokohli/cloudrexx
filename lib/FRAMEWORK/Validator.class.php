@@ -2,6 +2,7 @@
 
 /**
  * Framework Validator
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.1
@@ -63,6 +64,7 @@ define('VALIDATOR_REGEX_URI_JS',
 
 /**
  * Framework Validator
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @version     1.0.1
  * @package     contrexx
@@ -234,6 +236,11 @@ class FWValidator
 
 /**
  * An abstract base for ZendValidator-Style instantiable Validators
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_framework
  */
 abstract class CxValidate {
     protected $constraints;
@@ -256,6 +263,11 @@ abstract class CxValidate {
 
 /**
  * Validates Strings to a set of constraints
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
  */
 class CxValidateString extends CxValidate {
     public function __construct($constraints) {
@@ -283,6 +295,14 @@ class CxValidateString extends CxValidate {
     }
 }
 
+/**
+ * CxValidateRegexp
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
 class CxValidateRegexp extends CxValidate {
     public function __construct($constraints) {
 	parent::__construct($constraints);
@@ -304,6 +324,14 @@ class CxValidateRegexp extends CxValidate {
     }   
 }
 
+/**
+ * CxValidateInteger
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
 class CxValidateInteger extends CxValidate {
     public function __construct($constraints = array()) {
 	parent::__construct($constraints);

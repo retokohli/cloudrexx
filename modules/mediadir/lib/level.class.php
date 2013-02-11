@@ -1,13 +1,23 @@
 <?php
+
 /**
  * Media  Directory Level Class
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  module_marketplace
+ * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
  */
 
+/**
+ * Media Directory Level Class
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_mediadir
+ */
 class mediaDirectoryLevel extends mediaDirectoryLibrary
 {
     private $intLevelId;

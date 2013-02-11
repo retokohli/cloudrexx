@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ClassLoader
+ * Contrexx ClassLoader
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
@@ -12,7 +12,7 @@
 namespace Cx\Core\ClassLoader;
 
 /**
- * ClassLoader
+ * Contrexx ClassLoader
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>

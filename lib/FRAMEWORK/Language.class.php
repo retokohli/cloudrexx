@@ -2,6 +2,7 @@
 
 /**
  * Framework language
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     2.3.0
@@ -12,6 +13,7 @@
 
 /**
  * Framework language
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     2.3.0

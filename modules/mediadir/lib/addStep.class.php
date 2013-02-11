@@ -1,17 +1,23 @@
 <?php
+
 /**
- * Media  Directory Inputfield Textarea Class
+ * Medi Directory Add Step Class
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  module_marketplace
+ * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
  */
 
 /**
- * Includes
+ * Media Directory Add Step Class
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_mediadir
  */
-
 class mediaDirectoryAddStep extends mediaDirectoryLibrary
 {
     var $arrSteps = array();

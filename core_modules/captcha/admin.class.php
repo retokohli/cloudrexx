@@ -1,5 +1,22 @@
 <?php
 
+/**
+ * CaptchaActions
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_captcha
+ */
+
+/**
+ * CaptchaActions
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_captcha
+ */
 class CaptchaActions extends CaptchaLib
 {
     public function getPage()

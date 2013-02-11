@@ -1,6 +1,8 @@
 <?php         
+
 /**
- * Media  Directory
+ * Media Directory Export Class
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.0
@@ -8,7 +10,14 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-
+/**
+ * Media Directory Export Class
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_mediadir
+ */
 class mediaDirectoryExport extends mediaDirectoryLibrary
 {
     private $csvSeparator = ';'; 

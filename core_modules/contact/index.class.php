@@ -1,21 +1,25 @@
 <?php
-class ContactException extends Exception
-{}
+
 /**
  * Contact
  *
- * This module handles all HTML FORMs with action tags to the contact section.
- * It sends the contact email(s) and uploads data (optional)
- * Ex. <FORM name="form1" action="index.php?section=contact&cmd=thanks" method="post">
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_contact
+ */
+
+/**
+ * ContactException
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @author      COMVATION Development Team <info@comvation.com>
  * @version     1.1.0
  * @package     contrexx
  * @subpackage  coremodule_contact
  * @todo        Edit PHP DocBlocks!
  */
-
+class ContactException extends Exception {}
 
 /**
  * Contact

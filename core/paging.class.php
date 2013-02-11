@@ -2,6 +2,7 @@
 
 /**
  * Paging
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @author      Reto Kohli <reto.kohli@comvation.com> (Rewritten statically)
@@ -17,6 +18,7 @@ if (stristr(__FILE__, $_SERVER['PHP_SELF'])) {
 
 /**
  * Creates the paging
+ *
  * @package     contrexx
  * @subpackage  core
  * @version     3.0.0

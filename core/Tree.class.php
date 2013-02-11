@@ -2,6 +2,7 @@
 
 /**
  * Content Tree
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
@@ -13,7 +14,6 @@
 
 /**
  * This class creates a tree structure as an indexed array object
- *
  * content array provider
  *
  * @copyright   CONTREXX CMS - COMVATION AG

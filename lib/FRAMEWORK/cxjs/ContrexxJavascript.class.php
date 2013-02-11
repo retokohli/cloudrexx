@@ -1,10 +1,37 @@
 <?php
+
+/**
+ * ContrexxJavascript
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_cxjs
+ */
+
+/**
+ * ContrexxJavascriptException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_cxjs
+ */
 class ContrexxJavascriptException extends Exception {}
 
+/**
+ * @ignore
+ */
 require_once ASCMS_FRAMEWORK_PATH.'/cxjs/ContrexxJavascriptI18n.class.php';
+
 /**
  * This class configures the ContrexxJavascript-object
  * (referred to as 'cx-object' in the comments)
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_cxjs
  * @todo this can be cached
  */
 class ContrexxJavascript {

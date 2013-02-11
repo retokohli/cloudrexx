@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Redirect
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -11,8 +12,8 @@
 
 /**
  * Redirect class
- *
  * Check Referer and change Location
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author		Comvation Development Team <info@comvation.com>
  * @access		public

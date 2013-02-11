@@ -1,10 +1,33 @@
 <?php
+
 /**
- * Handles access restriction administration on Pages.
- * (Retrieve / Store)
+ * PageGuard
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core
+ */
+
+/**
+ * PageGuardException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core
  */
 class PageGuardException extends Exception {}
 
+/**
+ * Handles access restriction administration on Pages.
+ * (Retrieve / Store)
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core
+ */
 class PageGuard {
     protected $db = null;
 

@@ -2,6 +2,7 @@
 
 /**
  * Calendar
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author         Comvation Development Team <info@comvation.com>
  * @version     1.1.0
@@ -11,15 +12,16 @@
  */
 
 /**
- * Includes
+ * @ignore
  */
 require_once ASCMS_LIBRARY_PATH."/activecalendar/activecalendar.php";
 
 if (!class_exists("calendarLibrary")) {
+
 /**
  * Calendar
- *
  * LibClass to manage cms calendar
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author Comvation Development Team <info@comvation.com>
  * @access public

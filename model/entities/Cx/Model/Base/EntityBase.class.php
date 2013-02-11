@@ -46,8 +46,12 @@ class ValidationException extends \Exception {
 
 /**
  * This class provides the magic of being validatable.
- *
  * See EntityBase::$validators if you want to subclass it.
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  model_base
  */
 class EntityBase {
     /**

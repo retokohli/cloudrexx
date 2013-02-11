@@ -1,10 +1,12 @@
 <?php
+
 /**
  * Media  Directory Inputfield Textarea Class
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  module_marketplace
+ * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -15,10 +17,11 @@ require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface
 
 /**
  * Media  Directory Inputfield Textarea Class
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  module_marketplace
+ * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
  */
 class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements inputfield

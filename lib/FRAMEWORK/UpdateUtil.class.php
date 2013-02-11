@@ -1,10 +1,35 @@
 <?php
 
+/**
+ * UpdateUtil
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
+
 namespace Cx\Lib;
 
+/**
+ * UpdateException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
 class UpdateException extends \Exception {};
 
 
+/**
+ * Update_DatabaseException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
 class Update_DatabaseException extends UpdateException {
     public $sql;
 
@@ -14,7 +39,14 @@ class Update_DatabaseException extends UpdateException {
     }
 }
 
-
+/**
+ * UpdateUtil
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
 class UpdateUtil
 {
     /**

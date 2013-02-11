@@ -1,6 +1,8 @@
 <?php
+
 /**
  * RSSWriter
+ *
  * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
  * @author Astalavista Development Team <thun@astalavista.ch>
  * @version 2.0.0
@@ -11,8 +13,8 @@
 
 /**
  * RSSWriter
- *
  * Creates RSS files
+ *
  * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
  * @author Astalavista Development Team <thun@astalavista.ch>
  * @version 2.0.0

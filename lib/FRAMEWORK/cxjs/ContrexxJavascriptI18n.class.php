@@ -1,10 +1,36 @@
 <?php
+
+/**
+ * ContrexxJavascriptI18n
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_cxjs
+ */
+
+/**
+ * ContrexxJavascriptI18nException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_cxjs
+ */
 class ContrexxJavascriptI18nException extends ContrexxJavascriptException {}
 
+/**
+ * @ignore
+ */
 require_once ASCMS_FRAMEWORK_PATH.'/cxjs/ContrexxJavascriptI18nProvider.interface.php';
+
 /**
  * This handles i18n for Javascript.
- * @author Severin Räz
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_cxjs
  */
 class ContrexxJavascriptI18n {
    /**

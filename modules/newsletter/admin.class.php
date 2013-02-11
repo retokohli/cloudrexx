@@ -6085,9 +6085,14 @@ function MultiAction() {
 
 
 if (!class_exists('DBIterator')) {
+
     /**
      * Iterator wrapper for adodb result objects
+     *
+     * @copyright   CONTREXX CMS - COMVATION AG
      * @author      Stefan Heinemann <sh@adfinis.com>
+     * @package     contrexx
+     * @subpackage  module_newsletter
      */
     class DBIterator implements Iterator {
         /**

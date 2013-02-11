@@ -1,6 +1,8 @@
 <?php         
+      
 /**
- * Media  Directory
+ * Media Directory Interfaces
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @version     1.0.0
@@ -8,6 +10,14 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+/**
+ * Media Directory Interfaces
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_mediadir
+ */
 class mediaDirectoryInterfaces extends mediaDirectoryLibrary
 {
     /**

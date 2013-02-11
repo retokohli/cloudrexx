@@ -1,11 +1,20 @@
 <?php
 
+/**
+ * SocialLogin
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
+
 namespace Cx\Lib;
 
 /**
  * Social Login
- *
  * This class is used to provide a support for social media login.
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
  * @version     1.0.0
