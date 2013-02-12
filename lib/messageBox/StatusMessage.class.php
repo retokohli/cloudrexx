@@ -1,5 +1,22 @@
 <?php
 
+/**
+ * StatusMessage
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
+
+/**
+ * StatusMessage
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
 class StatusMessage {
 	var $iconFile;
 	var $width;
@@ -85,4 +102,3 @@ class StatusMessage {
 		return $result;
 	}
 }
-?>

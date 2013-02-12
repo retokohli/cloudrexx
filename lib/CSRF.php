@@ -2,12 +2,12 @@
 
 /**
  * Protect against CSRF attacks
- * @version     2.1.3
- * @since       2.1.3
- * @package     contrexx
- * @subpackage  lib
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      David Vogt <david.vogt@comvation.com>
+ * @since       2.1.3
+ * @package     contrexx
+ * @subpackage  lib_framework
  */
 
 /**
@@ -19,12 +19,12 @@
  *
  * This class expects that the session has been set up
  * correctly and can be used through $_SESSION.
- * @version     2.1.3
- * @since       2.1.3
- * @package     contrexx
- * @subpackage  lib
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      David Vogt <david.vogt@comvation.com>
+ * @since       2.1.3
+ * @package     contrexx
+ * @subpackage  lib_framework
  */
 class CSRF {
 

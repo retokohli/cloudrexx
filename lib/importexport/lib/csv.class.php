@@ -3,11 +3,20 @@
 /**
  * CSV Library Class
  *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_importexport
+ */
+
+/**
+ * CSV Library Class
  * Class which handles csv files
  *
- * @copyright     CONTREXX CMS - 2005 COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @version       v1.0.0
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_importexport
  */
 class CsvLib
 {
@@ -157,4 +166,3 @@ class CsvLib
     }
 }
 
-?>

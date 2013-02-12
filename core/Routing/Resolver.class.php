@@ -8,6 +8,7 @@
  * @package     contrexx
  * @subpackage  core_routing
  */
+
 namespace Cx\Core\Routing;
 
 /**
