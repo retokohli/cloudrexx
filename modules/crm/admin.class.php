@@ -633,7 +633,7 @@ class CRM extends CrmLibrary {
 
         $objResult = $objDatabase->Execute($query);
 
-        if($objResult->EOF) {
+        if($objResult->RecordCount() == 0) {
             $errMsg = "<div width='100%'>No Records Found ..</div>";
             $this->_objTpl->setVariable('TXT_NORECORDFOUND_ERROR', $errMsg);
         }
@@ -765,71 +765,74 @@ class CRM extends CrmLibrary {
 
         $row = "row2";
         $today = date('Y-m-d');
-        while(!$objResult->EOF) {
-            if ($objResult->fields['contact_type'] == 1) {
-                if(($objResult->fields['status'] == "1")) {
-                    $activeImage = 'images/icons/led_green.gif';
-                    $activeValue = 1;
-                    $imageTitle  = $_ARRAYLANG['TXT_ACTIVE'];
-                } else {
-                    $activeValue = 0;
-                    $activeImage = 'images/icons/led_red.gif';
-                    $imageTitle  = $_ARRAYLANG['TXT_INACTIVE'];
-                }                
-                $this->_objTpl->setVariable(array(
-                        'ENTRY_ID'                  => (int) $objResult->fields['id'],
-                        'CRM_COMPANY_NAME'          => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}' title='details'>".contrexx_raw2xhtml($objResult->fields['customer_name'])."</a>",
-                        'TXT_ACTIVE_IMAGE'          => $activeImage,
-                        'TXT_ACTIVE_VALUE'          => $activeValue,
-                        'CRM_CUSTOMER_ID'           => contrexx_raw2xhtml($objResult->fields['customer_id']),
-                        'CRM_CONTACT_PHONE'         => contrexx_raw2xhtml($objResult->fields['phone']),
-                        'CRM_CONTACT_EMAIL'         => contrexx_raw2xhtml($objResult->fields['email']),
-                        'CRM_ADDED_DATE'            => contrexx_raw2xhtml($objResult->fields['added_date']),
-                        'CRM_CONTACT_NOTES_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-1' title=''>{$objResult->fields['notesCount']}</a>",
-                        'CRM_CONTACT_TASK_COUNT'    => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-2' title=''>{$objResult->fields['tasksCount']}</a>",
-                        'CRM_CONTACT_DEALS_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-3' title=''>{$objResult->fields['dealsCount']}</a>",
-                        'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../images/crm/icons/new.png" alt="new" />' : '',
-                        'CRM_ROW_CLASS'             => $row = ($row == "row2") ? "row1" : "row2",
-                        'CRM_CONTACT_PROFILE_IMAGE' => !empty($objResult->fields['profile_picture']) ? contrexx_raw2xhtml($objResult->fields['profile_picture'])."_40X40.thumb" : '0_no_company_picture.gif',
-                        'CRM_REDIRECT_LINK'         => '&redirect='.base64_encode("&act=customers{$searchLink}{$sortLink}{$pageLink}"),
-                ));
-                $this->_objTpl->parse("showCustomers");
-                $this->_objTpl->hideBlock("showContacts");
-            }
-            
-            if ($objResult->fields['contact_type'] == 2) {
-                if(($objResult->fields['status'] == "1")) {
-                    $activeImage = 'images/icons/led_green.gif';
-                    $activeValue = 1;
-                    $imageTitle  = $_ARRAYLANG['TXT_ACTIVE'];
-                } else {
-                    $activeValue = 0;
-                    $activeImage = 'images/icons/led_red.gif';
-                    $imageTitle  = $_ARRAYLANG['TXT_INACTIVE'];
+        if ($objResult) {
+            while(!$objResult->EOF) {
+                if ($objResult->fields['contact_type'] == 1) {
+                    if(($objResult->fields['status'] == "1")) {
+                        $activeImage = 'images/icons/led_green.gif';
+                        $activeValue = 1;
+                        $imageTitle  = $_ARRAYLANG['TXT_ACTIVE'];
+                    } else {
+                        $activeValue = 0;
+                        $activeImage = 'images/icons/led_red.gif';
+                        $imageTitle  = $_ARRAYLANG['TXT_INACTIVE'];
+                    }                
+                    $this->_objTpl->setVariable(array(
+                            'ENTRY_ID'                  => (int) $objResult->fields['id'],
+                            'CRM_COMPANY_NAME'          => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}' title='details'>".contrexx_raw2xhtml($objResult->fields['customer_name'])."</a>",
+                            'TXT_ACTIVE_IMAGE'          => $activeImage,
+                            'TXT_ACTIVE_VALUE'          => $activeValue,
+                            'CRM_CUSTOMER_ID'           => contrexx_raw2xhtml($objResult->fields['customer_id']),
+                            'CRM_CONTACT_PHONE'         => contrexx_raw2xhtml($objResult->fields['phone']),
+                            'CRM_CONTACT_EMAIL'         => contrexx_raw2xhtml($objResult->fields['email']),
+                            'CRM_ADDED_DATE'            => contrexx_raw2xhtml($objResult->fields['added_date']),
+                            'CRM_CONTACT_NOTES_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-1' title=''>{$objResult->fields['notesCount']}</a>",
+                            'CRM_CONTACT_TASK_COUNT'    => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-2' title=''>{$objResult->fields['tasksCount']}</a>",
+                            'CRM_CONTACT_DEALS_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-3' title=''>{$objResult->fields['dealsCount']}</a>",
+                            'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../images/crm/icons/new.png" alt="new" />' : '',
+                            'CRM_ROW_CLASS'             => $row = ($row == "row2") ? "row1" : "row2",
+                            'CRM_CONTACT_PROFILE_IMAGE' => !empty($objResult->fields['profile_picture']) ? contrexx_raw2xhtml($objResult->fields['profile_picture'])."_40X40.thumb" : '0_no_company_picture.gif',
+                            'CRM_REDIRECT_LINK'         => '&redirect='.base64_encode("&act=customers{$searchLink}{$sortLink}{$pageLink}"),
+                    ));
+                    $this->_objTpl->parse("showCustomers");
+                    $this->_objTpl->hideBlock("showContacts");
                 }
-                $this->_objTpl->setVariable(array(
-                        'ENTRY_ID'                  => (int) $objResult->fields['id'],
-                        'CRM_CONTACT_NAME'          => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}' title='details'>".contrexx_raw2xhtml($objResult->fields['customer_name']." ".$objResult->fields['contact_familyname']).'</a>',
-                        'CRM_COMPNAY_NAME'          => (!empty($objResult->fields['contactCustomer'])) ? "Company : <a class='crm-companyInfoCardLink personPopupTrigger' href='./index.php?cmd=crm&act=showcustdetail&id={$objResult->fields['contactCustomerId']}' rel='{$objResult->fields['contactCustomerId']}' > ". contrexx_raw2xhtml($objResult->fields['contactCustomer'])."</a>" : '',
-                        'TXT_ACTIVE_IMAGE'          => $activeImage,
-                        'TXT_ACTIVE_VALUE'          => $activeValue,
-                        'CRM_CONTACT_PHONE'         => contrexx_raw2xhtml($objResult->fields['phone']),
-                        'CRM_CONTACT_EMAIL'         => contrexx_raw2xhtml($objResult->fields['email']),
-                        'CRM_ADDED_DATE'            => contrexx_raw2xhtml($objResult->fields['added_date']),
-                        'CRM_CONTACT_NOTES_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-1' title=''>{$objResult->fields['notesCount']}</a>",
-                        'CRM_CONTACT_TASK_COUNT'    => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-2' title=''>{$objResult->fields['tasksCount']}</a>",
-                        'CRM_CONTACT_DEALS_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-3' title=''>{$objResult->fields['dealsCount']}</a>",
-                        'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../images/crm/icons/new.png" alt="new" />' : '',
-                        'CRM_ROW_CLASS'             => $row = ($row == "row2") ? "row1" : "row2",
-                        'CRM_CONTACT_PROFILE_IMAGE' => !empty($objResult->fields['profile_picture']) ? contrexx_raw2xhtml($objResult->fields['profile_picture'])."_40X40.thumb" : '0_noavatar.gif',
-                        'CRM_REDIRECT_LINK'         => '&redirect='.base64_encode("&act=customers{$searchLink}{$sortLink}{$pageLink}"),
-                ));                
-                $this->_objTpl->parse("showContacts");
-                $this->_objTpl->hideBlock("showCustomers");
+
+                if ($objResult->fields['contact_type'] == 2) {
+                    if(($objResult->fields['status'] == "1")) {
+                        $activeImage = 'images/icons/led_green.gif';
+                        $activeValue = 1;
+                        $imageTitle  = $_ARRAYLANG['TXT_ACTIVE'];
+                    } else {
+                        $activeValue = 0;
+                        $activeImage = 'images/icons/led_red.gif';
+                        $imageTitle  = $_ARRAYLANG['TXT_INACTIVE'];
+                    }
+                    $this->_objTpl->setVariable(array(
+                            'ENTRY_ID'                  => (int) $objResult->fields['id'],
+                            'CRM_CONTACT_NAME'          => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}' title='details'>".contrexx_raw2xhtml($objResult->fields['customer_name']." ".$objResult->fields['contact_familyname']).'</a>',
+                            'CRM_COMPNAY_NAME'          => (!empty($objResult->fields['contactCustomer'])) ? "Company : <a class='crm-companyInfoCardLink personPopupTrigger' href='./index.php?cmd=crm&act=showcustdetail&id={$objResult->fields['contactCustomerId']}' rel='{$objResult->fields['contactCustomerId']}' > ". contrexx_raw2xhtml($objResult->fields['contactCustomer'])."</a>" : '',
+                            'TXT_ACTIVE_IMAGE'          => $activeImage,
+                            'TXT_ACTIVE_VALUE'          => $activeValue,
+                            'CRM_CONTACT_PHONE'         => contrexx_raw2xhtml($objResult->fields['phone']),
+                            'CRM_CONTACT_EMAIL'         => contrexx_raw2xhtml($objResult->fields['email']),
+                            'CRM_ADDED_DATE'            => contrexx_raw2xhtml($objResult->fields['added_date']),
+                            'CRM_CONTACT_NOTES_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-1' title=''>{$objResult->fields['notesCount']}</a>",
+                            'CRM_CONTACT_TASK_COUNT'    => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-2' title=''>{$objResult->fields['tasksCount']}</a>",
+                            'CRM_CONTACT_DEALS_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-3' title=''>{$objResult->fields['dealsCount']}</a>",
+                            'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../images/crm/icons/new.png" alt="new" />' : '',
+                            'CRM_ROW_CLASS'             => $row = ($row == "row2") ? "row1" : "row2",
+                            'CRM_CONTACT_PROFILE_IMAGE' => !empty($objResult->fields['profile_picture']) ? contrexx_raw2xhtml($objResult->fields['profile_picture'])."_40X40.thumb" : '0_noavatar.gif',
+                            'CRM_REDIRECT_LINK'         => '&redirect='.base64_encode("&act=customers{$searchLink}{$sortLink}{$pageLink}"),
+                    ));                
+                    $this->_objTpl->parse("showContacts");
+                    $this->_objTpl->hideBlock("showCustomers");
+                }
+                $this->_objTpl->parse("showEntries");
+                $objResult->MoveNext();
             }
-            $this->_objTpl->parse("showEntries");
-            $objResult->MoveNext();
         }
+        
     }
 
     function showCustomerDetail() {
