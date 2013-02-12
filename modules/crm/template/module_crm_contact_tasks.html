@@ -1,0 +1,34 @@
+<!-- BEGIN skipAjaxBlock -->
+<table id="tasksTab" class="adminlist" width="100%" cellspacing="0" cellpadding="3">
+    <thead>
+        <tr><th colspan="8">{TXT_TASK}</th></tr>
+        <tr class="row3">
+            <td>{TXT_CRM_TASK_STATUS}</td>
+            <td>{TXT_CRM_TASK_TITLE}</td>
+            <td>{TXT_CRM_TASK_TYPE}</td>
+            <td>{TXT_CRM_CUSTOMER_NAME}</td>
+            <td>{TXT_TASK_DUE_DATE}</td>
+            <td>{TXT_ASSIGNEDTO}</td>            
+        </tr>
+    </thead>
+    <tbody>
+        <!-- END skipAjaxBlock -->
+        <!-- BEGIN noRecords -->
+        <tr class="row1"><td colspan="10" style="font-style:italic;">{TXT_NO_RECORDS_FOUND}</td></tr>
+        <!-- END noRecords -->
+        <!-- BEGIN showTask -->
+        <tr class="{TXT_ROW}" style="height:26px;">
+            <td><img src="./images/icons/{CRM_TASK_TYPE_ACTIVE}" alt="status" /></td>
+            <td>{TXT_CRM_TASKTITLE}</td>
+            <td>{TXT_CRM_TASKTYPE}</td>
+            <td>{TXT_CRM_CUSTOMERNAME}</td>
+            <td>{TXT_DUEDATE}</td>
+            <td>{TXT_ADDEDBY}</td>
+        </tr>
+        <!-- END showTask -->
+        <!-- BEGIN skipAjaxBlock1 -->
+    </tbody>
+</table>
+<br>
+<a href="./index.php?cmd=crm&act=addTask&{CSRF_PARAM}&customerId={CRM_CUSTOMER_ID}{CRM_REDIRECT_LINK}" title="{TXT_CRM_ADD_TASK}"><input type="button" name="{TXT_CRM_ADD_TASK}" value="{TXT_CRM_ADD_TASK}" /></a>
+<!-- END skipAjaxBlock1 -->

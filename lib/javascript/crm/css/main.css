@@ -1,0 +1,97 @@
+.crm-watermark {
+    color: #AAAAAA;
+}
+.containerHeader {
+    font-size: 20px;
+}
+.detailsList {
+    padding-bottom: 3px;
+}
+td.td-subject {
+    /*text-align: right;*/
+}
+table.adminlist table.innerTable tr td {
+    border-bottom: medium none;
+}
+.crm-companyInfoCardLink {
+    background: url("../../../../cadmin/images/icons/company_icon.png") no-repeat scroll left center transparent;
+    display: inline-block;
+    padding: 0 0 0 17px;
+}
+table.adminlist td table td { height: 0px; line-height: 12px; }
+.ui-autocomplete-loading { background: white url('../../../../cadmin/images/icons/ui-anim_basic_16x16.gif') right center no-repeat; }
+input#importfile {
+    position: absolute;
+    left: -5000px; /** move out of the screen */
+}
+.file-text{font-weight: bold;}
+div.csvImprtSteps{font-size: 46px;font-weight: bold;color: #3186AF;text-align: center;padding-top: 10px;}
+#Import select { width: 150px !important;}
+.text_header{color: #333;font-size: 18px;font-family: Arial;}
+.text_description{color: #333;font-weight: normal;}
+.warning{display: none;}
+body #content input.disabled{background: #ccc;}
+.import-button { background: white url('../../../../cadmin/images/icons/import.png') left center no-repeat; padding-left: 15px; }
+.clear{clear: both;}
+#Import .ui-state-highlight{background: #DFF0FE;display: none;}
+#Import .ui-state-error{background: #FEC9CF;display: none;}
+.ajax_loading{display: none;}
+table#mapCSVColumn thead tr td {padding: 10px;}
+table#mapCSVColumn tbody tr td {vertical-align: middle; padding-left: 7px;}
+#Import table#mapCSVColumn tbody tr td select { width: 247px !important;}
+table#mapCSVColumn tbody tr td.not_match {background-color: whiteSmoke;}
+.crmLeft {float: left;}
+.crmRight{float: right;}
+#notesCategoriesLink{padding: 1px 0 1px 7px;margin: 5px 0;border: 1px solid #DDDDDD; width: 260px;}
+.notesdate{padding: 1px 0 1px 7px;margin: 5px 0;}
+#notesCategoriesLink, #notesCategoriesLink:hover {background: url('../../../../cadmin/images/icons/crm_arrow_down.gif') no-repeat 245px 3px  #fff;}
+#notesCategoriesPanel a span {
+    padding-left: 46px;
+}
+.notesDiv {
+    padding-left: 50px;
+    min-height: 40px;
+}
+.notesItem {
+    background: url('../../../../cadmin/images/icons/crm_panel_note.png') no-repeat 2px 3px  #fff;
+}
+.notesItem_73 {
+    background: url('../../../../cadmin/images/icons/crm_panel_email.png') no-repeat 2px 3px  #fff;
+}
+.notesItem_74 {
+    background: url('../../../../cadmin/images/icons/crm_panel_call.png') no-repeat 2px 3px  #fff;
+}
+.notesItem_75 {
+    background: url('../../../../cadmin/images/icons/crm_panel_meeting.png') no-repeat 2px 3px  #fff;
+}
+#notesCategoriesPanel a {
+    float: left;
+    width: 100%;
+    padding: 10px 0;
+    margin-bottom: 2px;
+    color: #444;    
+}
+#notesCategoriesPanel a:hover {
+    background-color: #F2F2F2;
+}
+#notesCategoriesPanel {
+    width: 266px;
+    background: #fff;
+    border: 1px solid #C7C7C7;
+    z-index: 1000;
+}
+.containerHeader {
+font-size: 20px;
+margin: 0 0 15px 0;
+font-weight: bold;
+}
+table#contact-details td table.innerTable td { line-height: 19px;}
+table#general-info tr td:first-child {
+    width: 145px;
+}
+#contact-details tr td {
+    border: 0px none;
+}
+#profile-photo h4{
+    margin: 5px 0;
+}

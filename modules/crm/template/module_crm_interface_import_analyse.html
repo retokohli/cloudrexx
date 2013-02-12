@@ -1,0 +1,104 @@
+{IMPORT_ANALYSIS_JAVASCRIPT}
+
+<ul id="tabmenu">
+	<li><a id="Entries_Import" class="active" href="javascript:{}" onclick="selectTab('Import')" title="{TXT_IMPORT_NAME}">{TXT_IMPORT_NAME}</a></li>
+	<li><a id="Entries_Export" class="" href="javascript:{}" onclick="selectTab('Export')" title="{TXT_EXPORT_NAME}">{TXT_EXPORT_NAME}</a></li>
+</ul>
+
+<form name="frmSelectFields" action="index.php?cmd={MODULE_NAME}&act=finalImport" method="post">
+	<input name="csrf" value="LTU3ODc3OTQ4NQ__" type="hidden">
+	<input name="SaveImg" value="1" type="hidden">
+	<input name="pairs_left_keys" id="pairs_left_keys" value="" type="hidden">
+	<input name="pairs_right_keys" id="pairs_right_keys" value="" type="hidden">
+	<input name="category" id="category" value="" type="hidden">
+<div id="import2" class="generalTab" style="display: block;">
+
+	<table class="adminlist" width="100%" cellspacing="0" cellpadding="3" border="0">
+	    <tr>
+		<th colspan="4">{TXT_IMPORT_ANALYSIS}</th>
+	    </tr>
+
+	    <tr class="row2">
+		<td valign="top">
+		    <b>{TXT_CSV_TXTFILE}:</b><br>
+		    <select name="FileFields" id="file_field" style="width: 200px;" size="10">
+			{TXT_FILEFIELD_NAME}
+		    </select>
+		</td>
+		<td>&nbsp;&nbsp;</td>
+		<td valign="top">
+		    <b>{TXT_CSV_DATABASE}:</b><br>
+		    <select name="DbFields" id="given_field" style="width: 200px;" size="10">
+			{TXT_DBFIELD_NAME}		       			
+		    </select>
+		</td>
+		<td width="35%">
+	  	    <!--div class="infobox_head">{TXT_CSV_NOTE}</div>
+	  	    <div class="infobox_body">{TXT_CSV_NOTE_TXT}<br><br>
+		    </div-->
+		</td>
+	    </tr>
+	    <tr class="row1">
+		<td colspan="4">
+		    <input value="{TXT_CSV_ADDPAIR}" onclick="javascript:addPair();" type="button" title="{TXT_CSV_NOTE_TXT}">
+		</td>
+	    </tr>
+	    <tr class="row2">
+		<td valign="top">
+		   <select name="fileList" id="pairs_left" style="width: 200px;" size="10" onchange="document.getElementById('pairs_right')[this.selectedIndex].selected=true"></select>
+		</td>
+		<td>&nbsp;&nbsp;</td>
+		<td valign="top">
+		   <select name="DbList" id="pairs_right" style="width: 200px;" size="10" onchange="document.getElementById('pairs_left')[this.selectedIndex].selected=true"></select>
+		</td>
+
+		<td>
+		    <!--div class="infobox_head">{TXT_CSV_NOTE}</div>
+		        <div class="infobox_body">{TXT_CSV_REMOVE_PAIR}
+			</div-->
+		</td>
+	    </tr>
+	    <tr class="row1">
+		<td colspan="4">
+		    <input value="{TXT_CSV_REMOVEPAIR}" onclick="removePair();" type="button" title="{TXT_CSV_REMOVE_PAIR}">
+		</td>
+	    </tr>
+	</table>
+	<table class="adminlist" width="100%" cellspacing="0" cellpadding="3" border="0">    
+	     <tr class="row2">
+		<td valign="top">
+		    <b>{TXT_CUSTOMER_TYPE}:</b><br>
+		    <select name="CustType" id="cust_type" style="width: 130px;" size="10">
+			{TXT_FILEFIELD_NAME}	
+		    </select>
+		</td>
+		<td valign="top">
+		    <b>Country:</b><br>
+		    <select name="Country" id=Country" style="width: 130px;" size="10">
+			{TXT_FILEFIELD_NAME}	
+		    </select>
+		</td>
+		<td valign="top">
+		    <b>{TXT_CSV_LANGUAGE}:</b><br>
+		    <select name="Lang" id="Lang" style="width: 130px;" size="10">
+			{TXT_FILEFIELD_NAME}	
+		    </select>
+		</td>
+		<td valign="top">
+		    <b>{TXT_CSV_CURRENCY}:</b><br>
+		    <select name="Currency" id="currency" style="width: 130px;" size="10">
+			{TXT_FILEFIELD_NAME}	
+		    </select>
+		</td>
+		
+		<td>
+	  	    <!--div class="infobox_head">{TXT_CSV_NOTE}</div>
+	  	    <div class="infobox_body">{TXT_CSV_NOTE_TXT}<br><br>
+		    </div-->
+		</td>
+	    </tr>		
+	</table>
+<br>
+  <input value="{TXT_CSV_NEXT}" title="{TXT_CSV_NEXT}" onclick="return formValidation();" type="submit">
+</div>
+</form>

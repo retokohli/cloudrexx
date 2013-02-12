@@ -504,6 +504,15 @@ switch ($plainCmd) {
         $objDownload = new DownloadManager();
         $objDownload->getPage();
         break;
+    case 'crm':
+        Permission::checkAccess(555, 'static');
+        $modulespath = ASCMS_MODULE_PATH.'/crm/admin.class.php';
+        if (!$cl->loadFile($modulespath))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $subMenuTitle = $_CORELANG['TXT_CRM'];
+        $objCrmModule = new crm();
+        $objCrmModule->getPage();
+    break;    
     case 'media':
         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/media/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);

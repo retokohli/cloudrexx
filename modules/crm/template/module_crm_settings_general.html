@@ -1,0 +1,105 @@
+<!-- START module_crm_settings.html -->
+<style type="text/css">
+    .lang-td {float: left;width: 100px;}
+</style>
+<script type="text/javascript">
+    $J(function(){
+       $J("#create_user_account").click(function(){
+           if ($J(this).is(":checked")) {
+               $J("tr.user_account").show();
+           } else {
+               $J("tr.user_account").hide();
+           }
+       });
+       if ($J("#create_user_account").is(":checked")) {
+           $J("tr.user_account").show();
+       } else {
+           $J("tr.user_account").hide();
+       }
+    });
+</script>
+<br />
+<div id="crm">
+    <form action="" method="post">
+        <table cellspacing="0" class="adminlist" cellpadding="5" width="100%" border="0">
+            <!-- BEGIN allowPmModule -->
+            <tr>
+                <th colspan="2">{TXT_GENERAL}</th>
+            </tr>
+            <tr>
+                <td width="20%">
+                    {TXT_CRM_ALLOW_PM}&nbsp;
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CRM_ALLOW_PM_EXPLANATION}</span>
+                </td>
+                <td><input type="checkbox" name="allowPm" value="1" {CRM_ALLOW_PM} /> </td>
+            </tr>
+            <tr><td colspan="2">&nbsp;</td></tr>
+            <!-- END allowPmModule -->
+            <tr>
+                <th colspan="2">{TXT_CRM_CUSTOMERS}</th>
+            </tr>
+            <tr>
+                <td valign="top" width="20%">
+                    {TXT_CRM_CREATE_ACCOUNT_USER}&nbsp;
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CRM_CREATE_ACCOUNT_USER_TIP}</span>
+                </td>
+                <td><input type="checkbox" id="create_user_account" name="create_user_account" value="1" {CRM_CREATE_ACCOUNT_USER} /></td>
+            </tr>
+            <tr class="row1 user_account">
+                <td valign="top" >{TXT_CRM_DEFAULT_USER_GROUP}</td>
+                <td>
+                    <select name="default_user_group" style="width: 250px;">
+                        <!-- BEGIN userGroup -->
+                        <option value="{CRM_GROUP_VALUE}" {CRM_USER_GROUP_SELECTED}>{CRM_GROUP_NAME}</option>
+                        <!-- END userGroup -->
+                    </select>
+
+                </td>
+            </tr>
+            <tr class="row2 user_account">
+                <td valign="top" width="20%">{TXT_CRM_DEFAULT_LANGUAGE}</td>
+                <td>
+                    <div>
+                        <span class="lang-td">{TXT_CRM_BACKEND}:</span>
+                        <span class="lang-td">
+                            <select name="default_language_backend" style="width: 150px;">
+                                <!-- BEGIN langBackend -->
+                                <option value="{CRM_LANG_VALUE}" {CRM_LANG_SELECTED}>{CRM_LANG_NAME}</option>
+                                <!-- END langBackend -->
+                            </select>
+                        </span>
+                    </div>
+
+                    <div style="clear: left;">
+                        <span class="lang-td">{TXT_CRM_FRONTEND}:</span>
+                        <span class="lang-td">
+                            <select name="default_language_frontend" style="width: 150px;">
+                                <!-- BEGIN langFrontend -->
+                                <option value="{CRM_LANG_VALUE}" {CRM_LANG_SELECTED}>{CRM_LANG_NAME}</option>
+                                <!-- END langFrontend -->
+                            </select>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">{TXT_CRM_EMPLOYEE}</th>
+            </tr>
+            <tr class="row1">
+                <td valign="top" >{TXT_CRM_EMP_DEFAULT_USER_GROUP}</td>
+                <td>
+                    <select name="emp_default_user_group" style="width: 250px;">
+                        <!-- BEGIN empUserGroup -->
+                        <option value="{CRM_GROUP_VALUE}" {CRM_USER_GROUP_SELECTED}>{CRM_GROUP_NAME}</option>
+                        <!-- END empUserGroup -->
+                    </select>
+
+                </td>
+            </tr>
+        </table>
+        <br />
+        <input type="submit" value="{TXT_SAVE}" name="save" />
+
+    </form>
+</div>
+<!-- END module_crm_settings.html -->

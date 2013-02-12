@@ -1,0 +1,191 @@
+<script language="JavaScript" type="text/javascript">
+    function confirmSubmit()
+    {
+        if (confirm("Are you sure you wish to delete?"))
+            return true ;
+        else
+            return false ;
+    }
+    function selectTodoCategory()
+    {
+        if(document.notes.ischecked.value != "0")
+        {
+            if(document.notes.form_select_todo.value == "sort")
+            {
+                document.notes.form_sort.value = "1";
+                document.notes.submit();
+            }
+            if(document.notes.form_select_todo.value == "activate")
+            {
+                document.notes.form_activate.value = "1";
+                document.notes.submit();
+            }
+            if(document.notes.form_select_todo.value == "deactivate")
+            {
+                document.notes.form_deactivate.value = "1";
+                document.notes.submit();
+            }
+            if(document.notes.form_select_todo.value == "delete")
+            {
+                if(confirm('{TXT_DELETE_CONFIRM}'))
+                {
+                    document.notes.form_delete.value = "1";
+                    document.notes.submit();
+                }
+            }
+        }
+        else
+        {
+            alert("{TXT_NO_OPERATION}");
+        }
+        document.notes.form_select_todo.value = "0";
+    }
+    function setCheckboxes(do_check)
+    {
+        with(document.notes)
+        {
+            var box      = elements['selected[]'];
+            var box_cnt  = (typeof(box.length) != 'undefined') ? box.length : 0;
+
+            if(box_cnt)
+            {
+                for(var i = 0; i < box_cnt; i++)
+                {
+                    box[i].checked = do_check;
+                }
+            }
+            else
+            {
+                box.checked = do_check;
+            }
+        }
+        if(do_check == true)
+        {
+            document.notes.ischecked.value = "{CALENDAR_TOTAL_RECORDS}";
+        }
+        else
+        {
+            document.notes.ischecked.value = "0";
+        }
+        return true;
+    }
+    function isChecked(isitchecked){
+        if(isitchecked == true)
+        {
+            document.notes.ischecked.value++;
+        }
+        else
+        {
+            document.notes.ischecked.value--;
+        }
+    }
+    $J(function(){
+       $J('.searchForm').change(function(){
+          $J(this).closest('form').submit();
+       });
+        $J('#searchTitle').data('holder',$J('#searchTitle').attr('placeholder'));
+
+        $J('#searchTitle').focusin(function(){
+            $J(this).attr('placeholder','');
+        });
+        $J('#searchTitle').focusout(function(){
+            $J(this).attr('placeholder',$J(this).data('holder'));
+        });
+    });
+</script>
+<div id="subnavbar_level2">
+    <ul>
+        <li><a href="index.php?cmd={MODULE_NAME}&act=task" title="{TXT_OVERVIEW}">{TXT_OVERVIEW}</a></li>
+        <li><a href="index.php?cmd={MODULE_NAME}&act=addTask" title="{TXT_CRM_ADD_TASK}">{TXT_CRM_ADD_TASK}</a></li>
+    </ul>
+</div><br>
+<form action="" method="get" name="searchtask" id="searchtask">
+    <input type="hidden" name="cmd" value="{MODULE_NAME}" />
+    <input type="hidden" name="act" value="task" />
+<table  class="adminlist" width="100%" cellspacing="0" cellpadding="3">
+    <thead>
+    <tr><th>{TXT_FILTERS}</th></tr>
+    </thead>
+</table>
+<table class="adminlist" width="100%" cellspacing="0" cellpadding="3">
+    <tbody>
+        <tr class="row2">
+            <td><input type="text" placeholder="{TXT_CRM_ENTER_SEARCH_TERM}" name="searchTitle" id="searchTitle" size="30" value="{TXT_SEARCH_VALUE}" style="float: left;width: 300px;"/>&nbsp;
+                <input type="submit" value="{TXT_CRM_SEARCH}" title="{TXT_CRM_SEARCH}" />&nbsp;
+                <select class="searchForm" name="searchType" id="task_type" style="float: right;width: 193px;margin-right: 155px;" >
+                    <option value="">Filter Task type</option>
+                    <!-- BEGIN tastType -->
+                    <option value="{TXT_TASK_ID}" {TXT_TASK_SELECTED}>{TXT_TASK_NAME}</option>
+                    <!-- END tastType -->
+                </select>
+            </td>
+        </tr>
+    </tbody>
+</table>
+    <!-- BEGIN noRecords1 -->
+    <!--<font color="red">{TXT_NO_RECORDS_FOUND}</font>-->
+    <!-- END noRecords1 -->
+</form><br>
+<div align="right">{ENTRIES_PAGING}</div>
+<form action="index.php?cmd=crm&act=task&chg=1" method="post" name="notes">
+<input type="hidden" name="ischecked" value="0" />
+<table  class="adminlist" width="100%" cellspacing="0" cellpadding="3">
+    <thead>
+    <tr><th>{TXT_TASK}</th></tr>
+    </thead>
+</table>
+<table class="adminlist" width="100%" cellspacing="0" cellpadding="3">
+    <thead>
+        <tr class="row3">
+            <td>&nbsp;&nbsp;<strong>#</strong></td>
+            <td><strong>{TXT_CRM_TASK_STATUS}</strong></td>
+            <td><a href="index.php?cmd={MODULE_NAME}&act=task&sortf=0&sorto={TXT_ORDER}"><strong>{TXT_CRM_TASK_TITLE}</strong></a></td>
+            <td><a href="index.php?cmd={MODULE_NAME}&act=task&sortf=1&sorto={TXT_ORDER}"><strong>{TXT_CRM_TASK_TYPE}</strong></a></td>
+            <td><a href="index.php?cmd={MODULE_NAME}&act=task&sortf=2&sorto={TXT_ORDER}"><strong>{TXT_CRM_CUSTOMER_NAME}</strong></a></td>
+            <td><a href="index.php?cmd={MODULE_NAME}&act=task&sortf=3&sorto={TXT_ORDER}"><strong>{TXT_TASK_DUE_DATE}</strong></a></td>
+            <td><strong>{TXT_ASSIGNEDTO}</strong></td>
+            <td style="text-align:right;padding: 4px"><strong>{TXT_CRM_FUNCTIONS}</strong></td>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- BEGIN noRecords -->
+        <tr class="row1"><td colspan="10" style="font-style:italic;">{TXT_NO_RECORDS_FOUND}</td></tr>
+        <!-- END noRecords -->
+            <!-- BEGIN showTask -->
+            <tr class="{TXT_ROW}" style="height:26px;">
+            <td><input type="checkbox" name="selected[]" value="{CRM_TASK_ID}" onclick="isChecked(this.checked);"/></td>
+            <td>&nbsp;&nbsp;&nbsp;&nbsp;<a href="index.php?cmd={MODULE_NAME}&amp;act=task&amp;status_id={CRM_TASK_ID}&amp;status={TXT_STATUS}{TXT_LINK}"><img src="./images/icons/{CRM_TASK_TYPE_ACTIVE}" alt="status" /></a></td>
+            <td>&nbsp;{TXT_CRM_TASKTITLE}</td>
+            <td>&nbsp;{TXT_CRM_TASKTYPE}</td>
+            <td>&nbsp;{TXT_CRM_CUSTOMERNAME}</td>
+            <td>&nbsp;{TXT_DUEDATE}</td>
+            <td>&nbsp;{TXT_ADDEDBY}</td>
+            <td style="padding:4px;text-align: right;">
+                    <a href="index.php?cmd={MODULE_NAME}&amp;act=addTask&amp;id={CRM_TASK_ID}{CRM_REDIRECT_LINK}" target="_self" title="{TXT_IMAGE_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_IMAGE_EDIT}" title="{TXT_IMAGE_EDIT}" /></a>
+                    <a onclick="return confirmSubmit();" href="./index.php?cmd={MODULE_NAME}&act=deleteTask&id={CRM_TASK_ID}{TXT_LINK}" target="_self" title="{TXT_IMAGE_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_IMAGE_DELETE}" title="{TXT_IMAGE_DELETE}" /></a>
+            </td>
+        </tr>
+            <!-- END showTask -->
+    </tbody>
+</table><br>
+        <table cellpadding="2" cellspacing="0" border="0" >
+            <tr>
+                <td>
+                    <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_ENTRIES_MARKED}:" />
+                    <a href="javascript:{void(0)}" onclick="setCheckboxes(true); return false;">{TXT_SELECT_ALL}</a> /
+                    <a href="javascript:{void(0)}" onclick="setCheckboxes(false); return false;">{TXT_DESELECT_ALL}</a>
+                    <img src="images/icons/strike.gif" alt="" />
+                    <select name="form_select_todo" onchange="selectTodoCategory();">
+                        <option value="0" selected="selected">{TXT_SELECT_ACTION}:</option>
+                        <option value="activate">{TXT_ACTIVATESELECTED}</option>
+                        <option value="deactivate">{TXT_DEACTIVATESELECTED}</option>
+                        <option value="delete">{TXT_DELETE_SELECTED}</option>
+                    </select>
+                    <input type="hidden" name="form_activate" value="" />
+                    <input type="hidden" name="form_deactivate" value="" />
+                    <input type="hidden" name="form_delete" value="" />
+                </td>
+            </tr>
+        </table>
+</form>
+<div align="right">{ENTRIES_PAGING}</div>
