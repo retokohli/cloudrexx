@@ -7,12 +7,14 @@ class ContentMigration
 {
     public $langs;
     public $similarPages;
+    public $migrateLangIds = '';
+    public $arrMigrateLangIds = array();
     public static $defaultLang;
     protected $nodeArr = array();
     protected $moduleNames = array();
     protected $availableFrontendLanguages = array();
     protected static $em;
-    
+
     public function __construct()
     {
         if (\DBG::getMode() & DBG_ADODB_TRACE) {
@@ -22,23 +24,23 @@ class ContentMigration
         } else {
             \DBG::disable_adodb_debug();
         }
-        
+
         self::$em = \Env::em();
         self::$defaultLang = \FWLanguage::getDefaultLangId();
-        
+
         $this->initModuleNames();
     }
 
     private function initModuleNames()
     {
         $this->moduleNames = array();
-        
+
         try {
             $objModules = \Cx\Lib\UpdateUtil::sql('SELECT `id`, `name` FROM `'.DBPREFIX.'modules`');
         } catch (\Cx\Lib\UpdateException $e) {
             \DBG::msg(\Cx\Lib\UpdateUtil::DefaultActionHandler($e));
         }
-        
+
         while (!$objModules->EOF) {
             $this->moduleNames[$objModules->fields['id']] = $objModules->fields['name'];
             $objModules->MoveNext();
@@ -47,16 +49,16 @@ class ContentMigration
 
     protected function getSortedNodes($objResult, $visiblePageIDs) {
         $arrSortedNodes = array();
-        
+
         while (!$objResult->EOF) {
             $catId = $objResult->fields['catid'];
-            
+
             // Skip ghosts
             if (!in_array($catId, $visiblePageIDs)) {
                 $objResult->MoveNext();
                 continue;
             }
-            
+
             // Skip existing nodes
             if(!isset($this->nodeArr[$catId])) {
                 $this->nodeArr[$catId] = new \Cx\Model\ContentManager\Node();
@@ -65,19 +67,19 @@ class ContentMigration
 
             $objResult->MoveNext();
         }
-        
+
         //return array_reverse($arrSortedNodes);
         return $arrSortedNodes;
     }
-   
+
     public function migrate()
     {
         try {
-            if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX . 'content')) {
-                return true;
-            }
-
             if (empty($_SESSION['contrexx_update']['tables_created'])) {
+                if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX . 'content')) {
+                    return true;
+                }
+
                 \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'content_page');
                 \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'content_node');
                 \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'log_entry');
@@ -191,13 +193,12 @@ class ContentMigration
             \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             return false;
         }
-        
+
         $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
         $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
 
         $this->nodeArr = array();
-        $activeLangIds = implode(',', \FWLanguage::getIdArray());
-        
+
         if (empty($_SESSION['contrexx_update']['root_node_added'])) {
             // This will be the root of the site-tree
             $root = new \Cx\Model\ContentManager\Node();
@@ -207,7 +208,7 @@ class ContentMigration
         } else {
             $root = $nodeRepo->getRoot();
         }
-        
+
         // Due to a bug in the old content manager, there happened to exist ghost-pages
         // that were never visible, neither in the frontend, nor in the backend.
         // Therefore, we'll need a list of these ghost-pages so that we won't migrate them.
@@ -216,7 +217,7 @@ class ContentMigration
         if ($visiblePageIDs === false) {
             return false;
         }
-        
+
         if (empty($_SESSION['contrexx_update']['nodes_added'])) {
             // Fetch a list of all pages that have ever existed or still do.
             // (sql-note: join content tables to prevent to migrate body-less pages)
@@ -226,24 +227,24 @@ class ContentMigration
                           FROM `'.DBPREFIX.'content_navigation_history` AS tnh
                     INNER JOIN `'.DBPREFIX.'content_history` AS tch
                             ON tch.`id` = tnh.`id`
-                         WHERE tnh.`lang` IN (' . $activeLangIds . ')
+                         WHERE tnh.`lang` IN (' . $this->migrateLangIds . ')
                     UNION DISTINCT
                         SELECT `catid`, `parcat`, `lang`, `displayorder`
                           FROM `'.DBPREFIX.'content_navigation` AS tn
                     INNER JOIN `'.DBPREFIX.'content` AS tc
                             ON tc.`id` = tn.`catid`
-                         WHERE tn.`lang` IN (' . $activeLangIds . ')
+                         WHERE tn.`lang` IN (' . $this->migrateLangIds . ')
                       ORDER BY `parcat`, `displayorder`, `lang` ASC
                 ');
             } catch (\Cx\Lib\UpdateException $e) {
                 \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
                 return false;
             }
-            
+
             // Create a node for each page that ever existed or still does
             // and put them in the array $this->nodeArr
             $arrSortedNodes = $this->getSortedNodes($objNodeResult, $visiblePageIDs);
-            
+
             if (!empty($_SESSION['contrexx_update']['nodes'])) {
                 foreach ($_SESSION['contrexx_update']['nodes'] as $catId => $nodeId) {
                     $node = $nodeRepo->find($nodeId);
@@ -254,16 +255,16 @@ class ContentMigration
                 self::$em->flush();
                 unset($_SESSION['contrexx_update']['nodes']);
             }
-            
+
             foreach ($arrSortedNodes as $node) {
                 self::$em->persist($node);
             }
             self::$em->flush();
-            
+
             foreach ($this->nodeArr as $catId => $node) {
                 $_SESSION['contrexx_update']['nodes'][$catId] = $node->getId();
             }
-            
+
             $_SESSION['contrexx_update']['nodes_added'] = true;
             if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                 return 'timeout';
@@ -277,9 +278,9 @@ class ContentMigration
                 }
             }
         }
-        
+
         $p = array();
-        
+
         if (empty($_SESSION['contrexx_update']['history_pages_added'])) {
             // 1ST: MIGRATE PAGES FROM HISTORY
             try {
@@ -287,7 +288,7 @@ class ContentMigration
                 if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'content_navigation_history', 'custom_content')) {
                     $hasCustomContent = true;
                 }
-                
+
                 if (!empty($_SESSION['contrexx_update']['history_pages_index'])) {
                     $limit = 'LIMIT ' . $_SESSION['contrexx_update']['history_pages_index'] . ', 18446744073709551615';
                 } else {
@@ -306,7 +307,7 @@ class ContentMigration
                     ON         cn.id = nav.id
                     INNER JOIN `' . DBPREFIX . 'content_logfile` AS cnlog
                     ON         cn.id = cnlog.history_id
-                    WHERE      nav.`lang` IN (' . $activeLangIds . ')
+                    WHERE      nav.`lang` IN (' . $this->migrateLangIds . ')
                     ORDER BY cnlog.id ASC
                     ' . $limit . '
                 ');
@@ -314,25 +315,25 @@ class ContentMigration
                 \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
                 return false;
             }
-            
+
             // Migrate history
             if ($objResult !== false) {
                 $historyPagesIndex = !empty($_SESSION['contrexx_update']['history_pages_index']) ? $_SESSION['contrexx_update']['history_pages_index'] : 0;
-                
+
                 while (!$objResult->EOF) {
                     if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                         $_SESSION['contrexx_update']['history_pages_index'] = $historyPagesIndex;
                         return 'timeout';
                     }
-                    
+
                     $catId = $objResult->fields['catid'];
-                    
+
                     // Skip ghosts
                     if (!in_array($catId, $visiblePageIDs)) {
                         $objResult->MoveNext();
                         continue;
                     }
-                    
+
                     // SET PARENT NODE
                     if ($objResult->fields['parcat'] == 0 || !isset($this->nodeArr[$objResult->fields['parcat']])) {
                         // Page was located on the first level in the site-tree.
@@ -342,13 +343,13 @@ class ContentMigration
                         // Attach page to associated parent node
                         $this->nodeArr[$catId]->setParent($this->nodeArr[$objResult->fields['parcat']]);
                     }
-                    
+
                     $page = null;
                     if (!empty($_SESSION['contrexx_update']['pages'][$catId])) {
                         $pageId = $_SESSION['contrexx_update']['pages'][$catId];
                         $page   = $pageRepo->find($pageId);
                     }
-                    
+
                     // CREATE PAGE
                     switch ($objResult->fields['action']) {
                         case 'new':
@@ -356,7 +357,7 @@ class ContentMigration
                             if (empty($page)) {
                                 $page = new \Cx\Model\ContentManager\Page();
                             }
-                            
+
                             $this->_setPageRecords($objResult, $this->nodeArr[$catId], $page);
                             self::$em->persist($page);
                             self::$em->flush();
@@ -372,15 +373,15 @@ class ContentMigration
                             }
                             break;
                     }
-                    
+
                     $historyPagesIndex ++;
                     $objResult->MoveNext();
                 }
-                
+
                 $_SESSION['contrexx_update']['history_pages_added'] = true;
             }
         }
-        
+
         if (empty($_SESSION['contrexx_update']['pages_added'])) {
             // 2ND: MIGRATE CURRENT CONTENT
             try {
@@ -388,7 +389,7 @@ class ContentMigration
                 if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'content_navigation', 'custom_content')) {
                     $hasCustomContent = true;
                 }
-                
+
                 if (!empty($_SESSION['contrexx_update']['pages_index'])) {
                     $limit = 'LIMIT ' . $_SESSION['contrexx_update']['pages_index'] . ', 18446744073709551615';
                 } else {
@@ -404,7 +405,7 @@ class ContentMigration
                     INNER JOIN `' . DBPREFIX . 'content_navigation` AS nav
                     ON         cn.id = nav.catid
                     WHERE      cn.id
-                    AND        nav.`lang` IN (' . $activeLangIds . ')
+                    AND        nav.`lang` IN (' . $this->migrateLangIds . ')
                     ORDER BY   nav.parcat ASC, nav.displayorder ASC
                     ' . $limit . '
                 ');
@@ -412,31 +413,31 @@ class ContentMigration
                 \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
                 return false;
             }
-            
+
             if ($objRecords !== false) {
                 $pagesIndex = !empty($_SESSION['contrexx_update']['pages_index']) ? $_SESSION['contrexx_update']['pages_index'] : 0;
-                
+
                 while (!$objRecords->EOF) {
                     if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                         $_SESSION['contrexx_update']['pages_index'] = $pagesIndex;
                         return 'timeout';
                     }
-                    
+
                     $catId = $objRecords->fields['catid'];
-                    
+
                     // Skip ghosts
                     if(!in_array($catId, $visiblePageIDs)) {
                         $objRecords->MoveNext();
                         continue;
                     }
-        
+
                     if (!isset($this->nodeArr[$catId])) {
                         setUpdateMsg('Trying to migrate non-existing node: id ' . $catId);
                         return false;
                     }
-        
+
                     //$node = $this->nodeArr[$catId];
-        
+
                     if ($objRecords->fields['parcat'] == 0 || !isset($this->nodeArr[$objRecords->fields['parcat']])) {
                         // Page was located on the first level in the site-tree.
                         // Therefore, directly attach it to the ROOT-node
@@ -453,31 +454,30 @@ class ContentMigration
                     self::$em->flush();
                     $nodeRepo->moveDown($this->nodeArr[$catId], true);
                     self::$em->persist($this->nodeArr[$catId]);
-                    
+
                     if (!empty($_SESSION['contrexx_update']['pages'][$catId])) {
                         $pageId = $_SESSION['contrexx_update']['pages'][$catId];
                         $page   = $pageRepo->find($pageId);
                     } else {
                         $page = new \Cx\Model\ContentManager\Page();
                     }
-        
+
                     $this->_setPageRecords($objRecords, $this->nodeArr[$catId], $page);
                     $page->setAlias(array('legacy_page_' . $catId));
-                    
+
                     self::$em->persist($page);
                     self::$em->flush();
                     $_SESSION['contrexx_update']['pages'][$catId] = $page->getId();
-                    
+
                     $pagesIndex ++;
                     $objRecords->MoveNext();
                 }
-                
+
                 $_SESSION['contrexx_update']['pages_added'] = true;
             }
         }
 
-        $arrActiveLangIds = \FWLanguage::getIdArray();
-        foreach ($arrActiveLangIds as $langId) {
+        foreach ($this->arrMigrateLangIds as $langId) {
             $objResult = \Cx\Lib\UpdateUtil::sql('
                 SELECT `catid`
                 FROM `' . DBPREFIX . 'content_navigation`
@@ -521,7 +521,7 @@ class ContentMigration
 
         return true;
     }
-    
+
     function _setPageRecords($objResult, $node, $page)
     {
         $title         = html_entity_decode($objResult->fields['catname'], ENT_QUOTES, CONTREXX_CHARSET);
@@ -530,7 +530,7 @@ class ContentMigration
         $metaDesc      = html_entity_decode($objResult->fields['metadesc'], ENT_QUOTES, CONTREXX_CHARSET);
         $metaKeys      = html_entity_decode($objResult->fields['metakeys'], ENT_QUOTES, CONTREXX_CHARSET);
         $customContent = isset($objResult->fields['custom_content']) ? $objResult->fields['custom_content'] : '';
-        
+
         $page->setNode($node);
         $page->setNodeIdShadowed($node->getId());
         $page->setLang($objResult->fields['lang']);
@@ -555,16 +555,16 @@ class ContentMigration
         $page->setFrontendAccessId($objResult->fields['frontend_access_id']);
         $page->setBackendAccessId($objResult->fields['backend_access_id']);
         $page->setTarget($objResult->fields['redirect']);
-        
+
         $updatedAt = new \DateTime();
         $updatedAt->setTimestamp($objResult->fields['changelog']);
         $page->setUpdatedAt($updatedAt);
-        
+
         if ($objResult->fields['startdate'] != '0000-00-00') {
             $start = new \DateTime($objResult->fields['startdate']);
             $page->setStart($start);
         }
-        
+
         if ($objResult->fields['enddate'] != '0000-00-00') {
             $end = new \DateTime($objResult->fields['enddate']);
             $page->setEnd($end);
@@ -575,18 +575,20 @@ class ContentMigration
             $linkTarget = null;
         }
         $page->setLinkTarget($linkTarget);
-        
+
         if ($objResult->fields['module'] && isset($this->moduleNames[$objResult->fields['module']])) {
             $page->setType(\Cx\Model\ContentManager\Page::TYPE_APPLICATION);
             $page->setModule($this->moduleNames[$objResult->fields['module']]);
         }
         $page->setCmd($objResult->fields['cmd']);
-        
+
         if ($page->getTarget()) {
             $page->setType(\Cx\Model\ContentManager\Page::TYPE_REDIRECT);
         }
+
+        $page->validate();
     }
-    
+
     public function migrateAliases()
     {
         try {
@@ -604,7 +606,7 @@ class ContentMigration
             \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             return false;
         }
-        
+
         $arrAliases = array();
         if ($objResult !== false) {
             while (!$objResult->EOF) {
@@ -612,17 +614,17 @@ class ContentMigration
                 $objResult->MoveNext();
             }
         }
-        
+
         foreach ($arrAliases as $target => $arrSlugs) {
             foreach ($arrSlugs as $slug => $type) {
                 $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
-                
+
                 if ($type === 'local') {
                     $aliasPage = $pageRepo->findOneBy(array(
                         'type' => \Cx\Model\ContentManager\Page::TYPE_ALIAS,
                         'slug' => 'legacy_page_' . $target,
                     ), true);
-                    
+
                     if ($aliasPage) {
                         $targetPage = $pageRepo->getTargetPage($aliasPage);
                         if ($targetPage) {
@@ -636,14 +638,14 @@ class ContentMigration
                 }
             }
         }
-        
+
         return true;
     }
-    
+
     public function migrateBlocks()
     {
         global $_ARRAYLANG;
-        
+
         try {
             if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX . 'module_block_rel_lang')) {
                 return true;
@@ -660,7 +662,7 @@ class ContentMigration
                         'status'     => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'order')
                     )
                 );
-                
+
                 // migrate content -> related multi language
                 \Cx\Lib\UpdateUtil::table(
                     DBPREFIX . 'module_block_rel_lang_content',
@@ -757,7 +759,7 @@ class ContentMigration
                         ');
                     }
                 }
-                
+
                 // 1. drop old locale column `content`
                 // 2. add several new columns
                 \Cx\Lib\UpdateUtil::table(
@@ -778,13 +780,13 @@ class ContentMigration
                         'wysiwyg_editor'     => array('type' => 'INT(1)', 'notnull' => true, 'default' => '1', 'after' => 'cat')
                     )
                 );
-                
+
                 $_SESSION['contrexx_update']['blocks_part_1_migrated'] = true;
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                     return false;
                 }
             }
-            
+
             if (empty($_SESSION['contrexx_update']['blocks_part_2_migrated'])) {
                 $activeLangIds = implode(',', \FWLanguage::getIdArray());
                 if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX . 'module_block_rel_pages', 'lang_id')) {
@@ -792,7 +794,7 @@ class ContentMigration
                         DELETE FROM `' . DBPREFIX . 'module_block_rel_pages`
                         WHERE `lang_id` NOT IN (' . $activeLangIds . ')
                     ');
-                    
+
                     \Cx\Lib\UpdateUtil::table(
                         DBPREFIX.'module_block_rel_pages',
                         array(
@@ -800,24 +802,24 @@ class ContentMigration
                             'page_id'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'primary' => true, 'after' => 'block_id')
                         )
                     );
-                    
+
                     $objResult = \Cx\Lib\UpdateUtil::sql('
                         SELECT `block_id`, `page_id`
                         FROM `' . DBPREFIX . 'module_block_rel_pages`
                     ');
-                    
+
                     if ($objResult->RecordCount()) {
                         $entriesToKeep = array();
                         while (!$objResult->EOF) {
                             $blockId   = $objResult->fields['block_id'];
                             $oldPageId = $objResult->fields['page_id'];
-                            
+
                             $pageRepo  = self::$em->getRepository('Cx\Model\ContentManager\Page');
                             $aliasPage = $pageRepo->findOneBy(array(
                                 'type' => \Cx\Model\ContentManager\Page::TYPE_ALIAS,
                                 'slug' => 'legacy_page_' . $oldPageId,
                             ), true);
-                            
+
                             if ($aliasPage) {
                                 $page = $pageRepo->getTargetPage($aliasPage);
                                 if ($page) {
@@ -828,12 +830,12 @@ class ContentMigration
                                     );
                                 }
                             }
-                            
+
                             $objResult->MoveNext();
                         }
-                        
+
                         \Cx\Lib\UpdateUtil::sql('TRUNCATE `' . DBPREFIX . 'module_block_rel_pages`');
-                        
+
                         foreach ($entriesToKeep as $arrEntry) {
                             \Cx\Lib\UpdateUtil::sql('
                                 INSERT INTO `' . DBPREFIX . 'module_block_rel_pages` (`block_id`, `page_id`)
@@ -842,10 +844,10 @@ class ContentMigration
                         }
                     }
                 }
-                
+
                 $_SESSION['contrexx_update']['blocks_part_2_migrated'] = true;
             }
-            
+
             if (empty($_SESSION['contrexx_udpate']['blocks_part_3_migrated'])) {
                 $activeLangIds = implode(',', \FWLanguage::getIdArray());
                 $objResult = \Cx\Lib\UpdateUtil::sql('
@@ -854,16 +856,16 @@ class ContentMigration
                     WHERE `all_pages` = 1
                     AND `lang_id` IN (' . $activeLangIds . ')
                 ');
-                
+
                 if ($objResult->RecordCount()) {
                     $langIds = array();
                     $pageIds = array();
-                    
+
                     while (!$objResult->EOF) {
                         $langIds[$objResult->fields['block_id']] = $objResult->fields['lang_id'];
                         $objResult->MoveNext();
                     }
-                    
+
                     $uniqueLangIds = array_unique($langIds);
                     foreach ($uniqueLangIds as $langId) {
                         $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
@@ -874,7 +876,7 @@ class ContentMigration
                             $pageIds[$langId][] = $page->getId();
                         }
                     }
-                    
+
                     foreach ($langIds as $blockId => $langId) {
                         foreach ($pageIds[$langId] as $pageId) {
                             \Cx\Lib\UpdateUtil::sql('
@@ -884,16 +886,17 @@ class ContentMigration
                         }
                     }
                 }
-                
+
                 $_SESSION['contrexx_udpate']['blocks_part_3_migrated'] = true;
-                return true;
             }
         } catch (\Cx\Lib\UpdateException $e) {
             \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             return false;
         }
+
+        return true;
     }
-    
+
     public function pageGrouping()
     {
         // Fetch all pages
@@ -901,44 +904,16 @@ class ContentMigration
             self::$em->clear();
             return $this->getTreeCode();
         }
-        
+
         $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
         $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
-        
-        $pages = $pageRepo->findAll();
-        $group = array();
+
         $nodeToRemove = array();
         $pageToRemove = array();
-        
+
         $arrSimilarPages = $_POST['similarPages'];
         $arrRemovePages  = $_POST['removePages'];
-        $delInAcLangs    = $_POST['delInAcLangs'];
-        
-        // Remove pages of inactive language
-        if ($delInAcLangs) {
-            $arrLanguages = \FWLanguage::getLanguageArray();
-            
-            foreach ($arrLanguages as $arrLanguage) {
-                if (empty($arrLanguage['frontend'])) {
-                    $pagesOfInAcLang = $pageRepo->findBy(array(
-                        'lang' => $arrLanguage['id'],
-                    ), true);
-                    foreach ($pagesOfInAcLang as $page) {
-                        $node = $page->getNode();
-                        $countPagesOfThisNode = count($node->getPages(true));
-                        
-                        if ($countPagesOfThisNode === 1) {
-                            self::$em->remove($node);
-                        } else {
-                            self::$em->remove($page);
-                        }
-                    }
-                }
-                
-                self::$em->flush();
-            }
-        }
-        
+
         foreach ($arrRemovePages as $pageId) {
             $page = $pageRepo->find($pageId);
             if ($page) {
@@ -952,19 +927,18 @@ class ContentMigration
                 $page = $pageRepo->find($pageId);
 
                 if ($page->getNode()->getId() != $nodeId) {
-                    $formerNodeId = $page->getNode()->getId();
                     $nodeToRemove[] = $page->getNode()->getId();
                     $node = $nodeRepo->find($nodeId);
-                    
+
                     $aliases = $page->getAliases();
                     foreach ($aliases as $alias) {
                         $alias->setTarget('[[NODE_' . $node->getId() . '_' . $page->getLang() . ']]');
                         self::$em->persist($alias);
                     }
-                    
+
                     $page->setNode($node);
                     $page->setNodeIdShadowed($node->getId());
-                    
+
                     self::$em->persist($node);
                 }
             }
@@ -978,12 +952,12 @@ class ContentMigration
             $page = $pageRepo->find($pageId);
             self::$em->remove($page);
         }
-        
+
         self::$em->flush();
         self::$em->clear();
 
         $nodeToRemove = array_unique($nodeToRemove);
-        
+
         foreach ($nodeToRemove as $nodeId) {
             $node = $nodeRepo->find($nodeId);
             $nodeRepo->removeFromTree($node);
@@ -991,7 +965,7 @@ class ContentMigration
             // Reset node cache - this is required for the tree to reload its new structure after a node had been removed
             self::$em->clear();
         }
-        
+
         return true;
     }
 
@@ -1011,174 +985,169 @@ class ContentMigration
             \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             return false;
         }
-        
+
         return true;
     }
 
     private function findSimilarPages()
     {
-        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');                
-        $pages = $pageRepo->findAll();
-        $group = array();
-        $similarPages = array();
+        $qb = self::$em->createQueryBuilder();
+        $qb ->select('p')
+            ->from('Cx\Model\ContentManager\Page', 'p')
+            ->innerJoin('p.node', 'n')
+            ->where($qb->expr()->in('p.lang', $this->migrateLangIds))
+            ->andWhere($qb->expr()->neq('p.module', ':empty'))
+            ->setParameter('empty', '')
+            ->orderBy('p.lang')
+            ->addOrderBy('n.lft');
+        $pages    = $qb->getQuery()->getResult();
+        $simPages = $this->createBaseGroups($pages);
 
-        // create base groups for defaultLang
-        foreach ($pages as $page) {
-            if ($page->getLang() != self::$defaultLang) continue;
-            
-            // don't group regular pages
-            if (!$page->getModule()) continue;
-            
-            // don't group if this module page (module and cmd) in this language already exists
-            if (isset($group[$page->getModule()][$page->getCmd()]) && isset($groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()])) continue;
-            
-            // group module pages
-            if (!isset($group[$page->getModule()][$page->getCmd()])) {
-                $nodeId = $page->getNode()->getId();
-                $groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()] = $nodeId;
-                $group[$page->getModule()][$page->getCmd()] = $nodeId;
-            } else {
-                $nodeId = $group[$page->getModule()][$page->getCmd()];
-                $groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()] = $nodeId;
-            }
-            
-            $similarPages[$nodeId][] = $page->getId();
-        }
-        
-        // group pages of non-default languages 
-        foreach ($pages as $page) {
-            if ($page->getLang() == self::$defaultLang) continue;
-            
-            // don't group regular pages
-            if (!$page->getModule()) continue;
-            
-            // don't group if this module page (module and cmd) in this language already exists
-            if (isset($group[$page->getModule()][$page->getCmd()]) && isset($groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()])) continue;
-            
-            // group module pages
-            if (!isset($group[$page->getModule()][$page->getCmd()])) {
-                $nodeId = $page->getNode()->getId();
-                $groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()] = $nodeId;
-                $group[$page->getModule()][$page->getCmd()] = $nodeId;
-            } else {
-                $nodeId = $group[$page->getModule()][$page->getCmd()];
-                $groupByLang[$page->getModule()][$page->getCmd()][$page->getLang()] = $nodeId;
-            }
-            
-            $similarPages[$nodeId][] = $page->getId();
-        }
-
-        $return = array();
-        foreach ($similarPages as $nodeId => $pages) {
-            $return[$nodeId] = $pages; 
-        }
-        
-        return $return;
+        return $simPages;
     }
-    
+
+    private function createBaseGroups($pages)
+    {
+        if (empty($pages) || !is_array($pages)) {
+            return array();
+        }
+
+        foreach ($pages as $page) {
+            $nodeId = $page->getNode()->getId();
+
+            // Group module pages
+            if (!isset($groups[$page->getModule()][$page->getCmd()])) {
+                $groups[$page->getModule()][$page->getCmd()]['nodeIds'][] = $nodeId;
+                $groups[$page->getModule()][$page->getCmd()][$page->getLang()] = 0;
+            } else {
+                if (isset($groups[$page->getModule()][$page->getCmd()][$page->getLang()])) {
+                    $index        = $groups[$page->getModule()][$page->getCmd()][$page->getLang()] + 1;
+                    $countNodeIds = count($groups[$page->getModule()][$page->getCmd()]['nodeIds']);
+                    if ($countNodeIds <= $index) {
+                        $groups[$page->getModule()][$page->getCmd()]['nodeIds'][] = $nodeId;
+                    }
+                } else {
+                    $index = 0;
+                }
+                $groups[$page->getModule()][$page->getCmd()][$page->getLang()] = $index;
+
+                $nodeId = $groups[$page->getModule()][$page->getCmd()]['nodeIds'][$index];
+            }
+
+            $similarPages[$nodeId][] = $page->getId();
+        }
+
+        foreach ($similarPages as $nodeId => $arrPageIds) {
+            if (count($arrPageIds) < 2) {
+                unset($similarPages[$nodeId]);
+            }
+        }
+
+        return $similarPages;
+    }
+
     private function getTreeCode()
     {
-        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');                
-        $pages = $pageRepo->findAll();
-        $nodes = array();
-        
-        foreach ($pages as $page) {
-            if (!$page->getLang()) {
-                continue;
-            }
-            
-            if (!in_array($page->getLang(), $this->availableFrontendLanguages)) {
-                $this->availableFrontendLanguages[] = $page->getLang();
-            }
-
-            $nodes[$page->getNode()->getId()][$page->getLang()] = $page->getId();
-        }
-        sort($this->availableFrontendLanguages);
-        
-        if (count($this->availableFrontendLanguages) === 1) {
+        if (count($this->arrMigrateLangIds) === 1) {
             return true;
         }
-        
+
+        $this->similarPages = $this->findSimilarPages();
+
         $objCx = \ContrexxJavascript::getInstance();
-        
-        $this->langs = $this->availableFrontendLanguages;
-        $objCx->setVariable('langs', json_encode($this->langs), 'update/contentMigration');
-        
-        $arrSimilarPages = $this->findSimilarPages();
-        $this->similarPages = $arrSimilarPages;
-        $objCx->setVariable('similarPages', json_encode($arrSimilarPages), 'update/contentMigration');
-        $objCx->setVariable('defaultLang', self::$defaultLang, 'update/contentMigration');
-        
-        $html  = '<div class="content-migration-info">';
-        $html .=     'Die weiss hinterlegten Inhaltsseiten müssen gruppiert werden. ';
-        $html .=     'Dabei müssen Sie zuerst aus jeder Sprache die gleiche Inhaltsseite markieren und anschliessend auf "Gruppieren" klicken. ';
-        $html .=     'Falls Sie eine Gruppierung rückgängig machen wollen, wählen Sie die entsprechenden Inhaltsseiten und klicken Sie auf "Gruppierung aufheben".<br />';
-        $html .=     'Über die Schaltfläche "Entfernen" können einzelne Inhaltsseiten entfernt werden. ';
-        $html .=     'Klicken Sie auf die Schaltfläche "Abschliessen", wenn Sie mit der Gruppierung fertig sind.';
-        $html .= '</div>';
-        
-        $htmlMenu   = '<div class="content-migration-select %4$s">';
-        $htmlMenu  .=     '<h3 class="content-migration-h3">%3$s</h3>';
-        $htmlMenu  .=     '<select id="page_tree_%1$s" size="30" onclick="javascript:choose(this,%1$s)">%2$s</select>';
-        $htmlMenu  .=     '<input type="text" id="page_group_%1$s" class="hide" />';
-        $htmlMenu  .= '</div>';
-        
-        $htmlOption = '<option value="%1$s_%2$s" class="%5$s" onclick="javascript:selectPage(this,%6$s)">%4$s</option>';
-        
-        $menu = '';
-        $countLanguages = 0;
-        
-        foreach ($this->availableFrontendLanguages as $lang) {
-            $cl = \Env::get('ClassLoader');
-            $cl->loadFile(ASCMS_CORE_PATH . '/Tree.class.php');
-            $cl->loadFile(UPDATE_CORE . '/UpdateTree.class.php');
-            $objContentTree = new \UpdateContentTree($lang);
-            $langName = \FWLanguage::getLanguageParameter($lang, 'name');
-            $arrActiveLanguages = \FWLanguage::getIdArray();
-            $options = '';
-            
-            if (!in_array($lang, $arrActiveLanguages)) {
-                $classInactiveLanguage = 'inactive-language';
-            } else {
-                $classInactiveLanguage = '';
-                $countLanguages++;
-            }
-            
+        $objCx->setVariable('similarPages', json_encode($this->similarPages), 'update/contentMigration');
+
+        $objTemplate = new \HTML_Template_Sigma(UPDATE_TPL);
+        $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+        $objTemplate->loadTemplateFile('page_grouping.html');
+
+        $groupedBorderWidth = ((count($this->arrMigrateLangIds) * 325) - 48);
+        $objTemplate->setGlobalVariable(array(
+            'LANGUAGE_WRAPPER_WIDTH' => 'width: ' . (count($this->arrMigrateLangIds) * 330) . 'px;',
+            'GROUPED_SCROLL_WIDTH'   => 'width: ' . (count($this->arrMigrateLangIds) * 325) . 'px;',
+            'GROUPED_BORDER_WIDTH'   => 'width: ' . $groupedBorderWidth . 'px;',
+        ));
+
+        $cl = \Env::get('ClassLoader');
+        $cl->loadFile(ASCMS_CORE_PATH . '/Tree.class.php');
+        $cl->loadFile(UPDATE_CORE . '/UpdateTree.class.php');
+
+        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
+        $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
+
+        foreach ($this->arrMigrateLangIds as $lang) {
+            $objContentTree  = new \UpdateContentTree($lang);
+
             foreach ($objContentTree->getTree() as $arrPage) {
-                $pageId = $nodes[$arrPage['node_id']][$arrPage['lang']];
-                $grouped = $this->isGrouppedPage($arrSimilarPages, $pageId) ? ' grouped' : '';
-                
-                $spaces = '';
-                for ($i = 0; $i < $arrPage['level']; $i++) {
-                    $spaces .= '&nbsp;&nbsp;';
-                }
-                
-                $options .= sprintf($htmlOption, $arrPage['node_id'], $pageId, $arrPage['lang'], $spaces.$arrPage['catname'], 'level'.$arrPage['level'].$grouped, $lang);
+                $pageId  = $arrPage['catid'];
+                $nodeId  = $arrPage['node_id'];
+                $langId  = $arrPage['lang'];
+                $level   = $arrPage['level'];
+                $title   = $arrPage['catname'];
+                $sort    = $nodeRepo->find($nodeId)->getLft();
+                $grouped = $this->isGrouppedPage($this->similarPages, $pageId) ? 'grouped' : '';
+
+                $objTemplate->setVariable(array(
+                    'TITLE'   => $title,
+                    'ID'      => $pageId,
+                    'NODE'    => $nodeId,
+                    'LANG'    => strtoupper(\FWLanguage::getLanguageCodeById($langId)),
+                    'LEVEL'   => $level + 1,
+                    'SORT'    => $sort,
+                    'GROUPED' => $grouped,
+                    'MARGIN'  => 'margin-left: ' . ($level * 15) . 'px;',
+                ));
+                $objTemplate->parse('page');
             }
-            
-            $menu .= sprintf($htmlMenu, $lang, $options, $langName, $classInactiveLanguage);
+
+            $langFull  = \FWLanguage::getLanguageParameter($lang, 'name');
+            $langShort = strtoupper(\FWLanguage::getLanguageParameter($lang, 'lang'));
+            $objTemplate->setVariable(array(
+                'LANG_FULL'  => $langFull,
+                'LANG_SHORT' => $langShort,
+            ));
+            $objTemplate->parse('language');
         }
-        
-        $html .= '<div class="content-migration-select-scroll">';
-        $html .=     '<div class="content-migration-select-wrapper" style="width: ' . ($countLanguages * 320) . 'px;">';
-        $html .=         $menu;
-        $html .=     '</div>';
-        $html .= '</div>';
-        $html .= '<div class="content-migration-buttons">';
-        $html .=     '<input type="button" value="Gruppieren" onclick="javascript:groupPages()" />&nbsp;&nbsp;';
-        $html .=     '<input type="button" value="Gruppierung aufheben" onclick="javascript:ungroupPages()" />&nbsp;&nbsp;';
-        $html .=     '<input type="button" value="Entfernen" onclick="javascript:delPage()" />&nbsp;&nbsp;';
-        $html .=     '<input type="button" value="Entfernung aufheben" onclick="javascript:undelPage()" />';
-        $html .=     '<input type="hidden" name="doGroup" id="doGroup" value="0" />';
-        $html .=     '<input type="hidden" name="similarPages" id="similarPages" value="" />';
-        $html .=     '<input type="hidden" name="removePages" id="removePages" value="" />';
-        $html .= '</div>';
-        $html .= '<div class="content-migration-legend">';
-        $html .=     '<span style="color: #08D415;">Grün:</span> Gruppiert, <span style="color: #F00F00">Rot:</span> Entfernt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-        $html .=     '<input type="checkbox" name="delInAcLangs" id="delInAcLangs" value="1" onclick="javascript:delInAcLangs()" checked="checked" /> <label for="delInAcLangs">Inaktive Sprachen löschen</label>';
-        $html .= '</div>';
-        
-        return $html;
+
+        $groupedBorderWidth -= 2;
+        foreach ($this->similarPages as $nodeId => $arrPageIds) {
+            $node      = $nodeRepo->find($nodeId);
+            $margin    = ($node->getLvl() - 1) * 15;
+            $nodeWidth = $groupedBorderWidth - $margin;
+            $width     = ($groupedBorderWidth - 10) / count($this->arrMigrateLangIds);
+
+            $index = 0;
+            $last  = count($arrPageIds) - 1;
+            foreach ($arrPageIds as $pageId) {
+                if ($index === 0) {
+                    $pageWidth = $width - 24;
+                } elseif ($index === $last) {
+                    $pageWidth = $width - $margin;
+                } else {
+                    $pageWidth = $width;
+                }
+                $index++;
+
+                $page = $pageRepo->find($pageId);
+                $objTemplate->setVariable(array(
+                    'ID'    => $pageId,
+                    'TITLE' => $page->getTitle(),
+                    'LANG'  => strtoupper(\FWLanguage::getLanguageCodeById($page->getLang())),
+                    'WIDTH' => 'width: ' . $pageWidth . 'px;',
+                ));
+                $objTemplate->parse('groupedPage');
+            }
+
+            $objTemplate->setVariable(array(
+                'ID'    => $nodeId,
+                'LEVEL' => $node->getLvl(),
+                'SORT'  => $node->getLft(),
+                'STYLE' => 'width: ' . $nodeWidth . 'px; margin-left: ' . $margin . 'px;',
+            ));
+            $objTemplate->parse('groupedNode');
+        }
+
+        return $objTemplate->get();
     }
 
     private function isGrouppedPage($arrSimilarPages, $pageId)
@@ -1200,13 +1169,12 @@ class ContentMigration
      */
     function getVisiblePageIDs() {
         try {
-            $activeLangIds = implode(',', \FWLanguage::getIdArray());
-            $result = \Cx\Lib\UpdateUtil::sql('SELECT lang FROM ' . DBPREFIX . 'content_navigation WHERE `lang` IN (' . $activeLangIds . ') GROUP BY lang');
+            $result = \Cx\Lib\UpdateUtil::sql('SELECT lang FROM ' . DBPREFIX . 'content_navigation WHERE `lang` IN (' . $this->migrateLangIds . ') GROUP BY lang');
         } catch (\Cx\Lib\UpdateException $e) {
             \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             return false;
         }
-        
+
         $pageIds = array();
         while(!$result->EOF) {
             $visiblePageIDsForLang = $this->getVisiblePageIDsForLang($result->fields['lang']);
@@ -1218,7 +1186,7 @@ class ContentMigration
         }
 
 
-        return $pageIds;        
+        return $pageIds;
     }
 
     protected $treeArray = array();
@@ -1240,7 +1208,7 @@ class ContentMigration
             \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             return false;
         }
-        
+
         $this->navtable = array();
         $this->treeArray = array();
 
@@ -1252,7 +1220,7 @@ class ContentMigration
             $this->navtable[$parcat][$catid]='title';
             $objResult->MoveNext();
         }
-        
+
         return $this->doAdminTreeArray();
     }
 
@@ -1295,5 +1263,68 @@ class ContentMigration
         }
 
         return true;
+    }
+
+    public function getActiveContentLanguageIds()
+    {
+        try {
+            $activeLanguageIds = implode(',', \FWLanguage::getIdArray());
+            $objResult = \Cx\Lib\UpdateUtil::sql('
+                SELECT DISTINCT `lang` FROM `' . DBPREFIX . 'content_navigation`
+                 WHERE `lang` IN (' . $activeLanguageIds . ')
+                 UNION DISTINCT
+                SELECT DISTINCT `lang` FROM `' . DBPREFIX . 'content_navigation_history`
+                 WHERE `lang` IN (' . $activeLanguageIds . ')
+                       ORDER BY `lang` ASC
+            ');
+
+            if ($objResult->RecordCount()) {
+                $arrActiveContentLanguageIds = array();
+                while (!$objResult->EOF) {
+                    $arrActiveContentLanguageIds[] = $objResult->fields['lang'];
+                    $objResult->MoveNext();
+                }
+
+                return $arrActiveContentLanguageIds;
+            } else {
+                return false;
+            }
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    }
+
+    public function getInactiveContentLanguageCheckboxes()
+    {
+        try {
+            $activeLanguageIds = implode(',', \FWLanguage::getIdArray());
+            $objResult = \Cx\Lib\UpdateUtil::sql('
+                SELECT DISTINCT `lang` FROM `' . DBPREFIX . 'content_navigation`
+                 WHERE `lang` NOT IN (' . $activeLanguageIds . ')
+                 UNION DISTINCT
+                SELECT DISTINCT `lang` FROM `' . DBPREFIX . 'content_navigation_history`
+                 WHERE `lang` NOT IN (' . $activeLanguageIds . ')
+                       ORDER BY `lang` ASC
+            ');
+
+            if ($objResult->RecordCount()) {
+                $arrLanguages = \FWLanguage::getLanguageArray();
+                $inactiveContentLanguages = '';
+
+                while (!$objResult->EOF) {
+                    $inactiveContentLanguages .= '
+                        <input type="checkbox" name="migrateLangIds" id="migrate-lang-' . $objResult->fields['lang'] . '" value="' . $objResult->fields['lang'] . '" />
+                        <label for="migrate-lang-' . $objResult->fields['lang'] . '">' . $arrLanguages[$objResult->fields['lang']]['name'] . '</label><br />
+                    ';
+                    $objResult->MoveNext();
+                }
+
+                return $inactiveContentLanguages;
+            } else {
+                return '';
+            }
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
     }
 }

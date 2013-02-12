@@ -242,33 +242,23 @@ class ContrexxUpdate
     private function showRequirements()
     {
         global $_CONFIG, $objUpdate;
-        
-        $arrLangIds = FWLanguage::getIdArray();
-        if (count($arrLangIds) > 1 && $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
-            $this->objTemplate->addBlockfile('CONTENT', 'too_many_languages', 'too_many_languages.html');
-            $this->objTemplate->touchBlock('too_many_languages');
-            $this->objTemplate->parse('too_many_languages');
-            if ($this->ajax) {
-                $this->html['content'] = $this->objTemplate->get('too_many_languages');
+
+        $arrUpdate = $this->getLoadedVersionInfo();
+        if ($arrUpdate) {
+            $arrRequirements = $this->getRequirements($arrUpdate);
+
+            if (isset($_POST['skipRequirements']) && !$arrRequirements['incompatible']) {
+                $this->setNextStep();
+                $this->showStep();
+            } else if (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.1')) {
+                $_SESSION['contrexx_update']['step'] = 5;
+                $this->showStep();
+            } else {
+                $this->showRequirementsPage($arrRequirements);
             }
         } else {
-            $arrUpdate = $this->getLoadedVersionInfo();
-            if ($arrUpdate) {
-                $arrRequirements = $this->getRequirements($arrUpdate);
-                
-                if (isset($_POST['skipRequirements']) && !$arrRequirements['incompatible']) {
-                    $this->setNextStep();
-                    $this->showStep();
-                } else if (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.1')) {
-                    $_SESSION['contrexx_update']['step'] = 5;
-                    $this->showStep();
-                } else {
-                    $this->showRequirementsPage($arrRequirements);
-                }
-            } else {
-                $this->setPreviousStep();
-                $this->showStep();
-            }
+            $this->setPreviousStep();
+            $this->showStep();
         }
     }
     
@@ -505,7 +495,13 @@ class ContrexxUpdate
                     $this->objTemplate->hideBlock('processStatus');
                     $dialogContent = implode('<br />', $this->arrStatusMsg['msg']);
                     if (!$this->ajax) {
-                        $dialogContent = str_replace('\'', '\\\'', $dialogContent);
+                        $dialogContent = str_replace(array(
+                            '\'',
+                            "\r\n",
+                        ), array(
+                            '\\\'',
+                            '',
+                        ), $dialogContent);
                     }
                     $this->objTemplate->setVariable('PROCESS_DIALOG_CONTENT', $dialogContent);
                     if ($this->ajax) {

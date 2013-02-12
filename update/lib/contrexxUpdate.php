@@ -123,16 +123,14 @@ function parseResponse(response)
       try {
         eval('oResponse='+response);
         if (oResponse.dialog) {
-            langs        = oResponse.dialog.langs;
             similarPages = oResponse.dialog.similarPages;
-            defaultLang  = oResponse.dialog.defaultLang;
             
             setContent('<div style="margin: 180px 0 0 155px;">Bitte haben Sie einen Moment Geduld.<br /><?php $txt = 'Das Update wird durchgeführt...';print UPDATE_UTF8 ? $txt : utf8_decode($txt);?><br /><br /><img src="template/contrexx/images/content/loading_animation.gif" width="208" height="13" alt="" /></div>');
             setNavigation('');
             
             cx.ui.dialog({
                 width:         1020,
-                height:        800,
+                height:        830,
                 modal:         true,
                 closeOnEscape: false,
                 dialogClass:   "content-migration-dialog",
@@ -143,7 +141,7 @@ function parseResponse(response)
                     executeGrouping();
                 },
                 buttons: {
-                    "Abschliessen": function() {
+                    "Seitenstruktur übernehmen": function() {
                         $J(this).dialog("close");
                     }
                 }
@@ -213,174 +211,179 @@ function setHtml(text, element)
   }
 }
 
-var langs          = $J.parseJSON(cx.variables.get('langs', 'update/contentMigration'));
-var similarPages   = $J.parseJSON(cx.variables.get('similarPages', 'update/contentMigration'));
-var defaultLang    = cx.variables.get('defaultLang', 'update/contentMigration');
-var nodePageRegexp = /(\d+)_(\d+)/;
-var removePages    = new Array();
+var similarPages = $J.parseJSON(cx.variables.get('similarPages', 'update/contentMigration'));
+var removePages  = new Array();
 
 $J(document).ready(function() {
-    $J("body").delegate("select[id*=page_tree_]", "click", function() {
-        $J('select[id*=page_tree_]').removeClass("focus");
-        $J(this).addClass("focus");
+    $J("body").delegate(".page-grouping-title", "click", function() {
+        $J(this).toggleClass("open");
+        $J(this).next().slideToggle(200);
+    });
+
+    $J("body").delegate(".page-grouping-page", "click", function() {
+        var hasClassActive = $J(this).hasClass("active");
+        $J(this).parent().children(".active").removeClass("active");
+        if (!hasClassActive) {
+            $J(this).addClass("active");
+        }
+
+        var addOrRemove = $J(".page-grouping-page.active").length ? false : true;
+        $J(".page-grouping-buttons > .page-grouping-button").toggleClass("disabled", addOrRemove);
+    });
+
+    $J("body").delegate(".page-grouping-button-delete:not(.disabled)", "click", function() {
+        $J(".page-grouping-buttons > .page-grouping-button").addClass("disabled");
+        $J(".page-grouping-page.active").each(function() {
+            removePages.push(parseInt($J(this).data("id")));
+            var marginLeft = (parseInt($J(this).data("level")) - 1) * 15;
+            $J(".page-grouping-removed-pages").append(
+                "<div class=\"page-grouping-removed-page\" data-id=\"" + $J(this).data("id") + "\" data-lang=\"" + $J(this).data("lang") + "\" style=\"margin-left: " + marginLeft + "px;\">" +
+                    "<div class=\"page-grouping-removed-page-restore\"></div>" +
+                    $J.trim($J(this).text()) + " (" + $J(this).data("lang") + ")" +
+                "</div>"
+            );
+            $J(this).addClass("removed").removeClass("active");
+        });
+        $J(".page-grouping-show-removed-pages").fadeIn(200);
+    });
+
+    $J("body").delegate(".page-grouping-show-removed-pages", "click", function() {
+        $J(this).toggleClass("open").children(".page-grouping-removed-pages").slideToggle(200);
+    });
+
+    $J("body").delegate(".page-grouping-removed-pages", "click", function(event) {
+        event.stopPropagation();
+    });
+
+    $J("body").delegate(".page-grouping-removed-page-restore", "click", function() {
+        var pageId = parseInt($J(this).parent().data("id"));
+        var index  = removePages.indexOf(pageId);
+        removePages.splice(index, 1);
+
+        var objRestoredPage = $J(".page-grouping-page[data-id=" + pageId + "]");
+        objRestoredPage.addClass("inserted").removeClass("removed").animate({
+            "background-color": "#FCFCFC"
+        }, 3000, function() {
+            $J(this).removeClass("inserted").css("background-color", "")
+        });
+        var scrollTop = objRestoredPage.position().top - 112.5;
+        $J(".page-grouping-language[data-lang=" + $J(this).parent().data("lang") + "]").children(".page-grouping-pages-scroll").animate({
+            scrollTop: scrollTop
+        }, 200);
+
+        $J(this).parent().remove();
+        if (!$J(".page-grouping-removed-pages").children().length) {
+            $J(".page-grouping-show-removed-pages").fadeOut(400, function() {
+                $J(this).removeClass("open").children(".page-grouping-removed-pages").hide();
+            });
+        }
+    });
+
+    $J("body").delegate(".page-grouping-ungroup", "click", function() {
+        var objNode = $J(this).parent();
+        objNode.stop();
+        delete similarPages[parseInt(objNode.data("id"))];
+
+        $J(this).nextAll().each(function() {
+            if ($J(this).data("id")) {
+                var objUngroupedPage = $J(".page-grouping-page[data-id=" + $J(this).data("id") + "]");
+                objUngroupedPage.addClass("inserted").removeClass("grouped").animate({
+                    "background-color": "#F6F6F6"
+                }, 2000, "swing", function() {
+                    $J(this).removeClass("inserted").css("background-color", "");
+                });
+                var scrollTop = objUngroupedPage.position().top - 112.5;
+                $J(".page-grouping-language[data-lang=" + $J(this).data("lang") + "]").children(".page-grouping-pages-scroll").animate({
+                    scrollTop: scrollTop
+                }, 200);
+            }
+        });
+
+        objNode.remove();
+    });
+
+    $J("body").delegate(".page-grouping-button-group:not(.disabled)", "click", function() {
+        $J(".page-grouping-page.active").stop().addClass("grouped");
+        $J(".page-grouping-buttons > .page-grouping-button").addClass("disabled");
+
+        var groupedNode  = "";
+        var groupedPages = "";
+        var nodeCreated  = false;
+        var countLangs   = $J(".page-grouping-language").length;
+        var borderWidth  = parseInt($J(".page-grouping-grouped-border").css("width")) - 2;
+        var width        = (borderWidth - 10) / countLangs;
+        var nodeId       = 0;
+        var nodeSort     = 0;
+
+        for (var i = 0; i < countLangs; i++) {
+            var lang = $J(".page-grouping-language").slice(i, i + 1).data("lang");
+            var page = $J(".page-grouping-language").slice(i, i + 1).find(".page-grouping-page.active");
+
+            var pageWidth = width;
+            if (i === 0) {
+                pageWidth = width - 24;
+            } else if (i === (countLangs - 1)) {
+                pageWidth = width - nodeMargin;
+            }
+
+            if (page.length) {
+                var nodeMargin = (page.data("level") - 1) * 15;
+                var nodeWidth  = borderWidth - nodeMargin;
+
+                if (!nodeCreated) {
+                    nodeId       = parseInt(page.data("node"));
+                    nodeSort     = parseInt(page.data("sort"));
+                    groupedNode += "<div class=\"page-grouping-grouped-node\" data-id=\"" + nodeId + "\" data-level=\"" + page.data("level") + "\" data-sort=\"" + nodeSort + "\" style=\"width: " + nodeWidth + "px; margin-left: " + nodeMargin + "px;\">";
+                    groupedNode += "<div class=\"page-grouping-ungroup\">×</div>";
+                    nodeCreated  = true;
+                }
+                groupedPages += "<div class=\"page-grouping-grouped-page\" data-id=\"" + page.data("id") + "\" data-lang=\"" + page.data("lang") + "\" style=\"width: " + pageWidth + "px;\">" + $J.trim(page.text()) + " (" + page.data("lang") + ")</div>";
+            } else {
+                groupedPages += "<div class=\"page-grouping-grouped-page no-page\" style=\"width: " + pageWidth + "px;\">Keine Seite (" + lang + ")</div>";
+            }
+        }
+        groupedNode += groupedPages;
+        groupedNode += '</div>';
+
+        if (nodeId) {
+            similarPages[nodeId] = new Array();
+            $J(".page-grouping-page.active").each(function() {
+                similarPages[nodeId].push(parseInt($J(this).data("id")));
+            });
+        }
+
+        $J(".page-grouping-page.active").removeClass("active");
+        var arrSort = new Array();
+        $J(".page-grouping-grouped-node").each(function() {
+            arrSort.push($J(this).data("sort"));
+        });
+        arrSort.push(nodeSort);
+        arrSort.sort(function(a, b) {
+            return a - b;
+        });
+        if (arrSort.indexOf(nodeSort) === 0) {
+            $J(".page-grouping-grouped-border").prepend(groupedNode);
+        } else {
+            var indexOfPrevElement = arrSort.indexOf(nodeSort) - 1;
+            var prevElementSort    = arrSort[indexOfPrevElement];
+            var objPrevElement     = $J(".page-grouping-grouped-node[data-sort=" + prevElementSort + "]");
+            objPrevElement.after(groupedNode);
+        }
+
+        var objInsertedNode = $J(".page-grouping-grouped-node[data-sort=" + nodeSort + "]");
+        objInsertedNode.addClass("inserted").animate({
+            "background-color": "#FCFCFC"
+        }, 3000, function() {
+            $J(this).removeClass("inserted").css("background-color", "");
+        });
+        var scrollTop = objInsertedNode.position().top - 112;
+        $J(".page-grouping-grouped-scroll-y").animate({
+            scrollTop: scrollTop
+        }, 200);
     });
 });
 
-function delInAcLangs() {
-    $J(".content-migration-select.inactive-language").toggle();
-    if ($J(".content-migration-select.inactive-language:visible").length) {
-        var selectWrapperWidth = $J('.content-migration-select').length * 320;
-    } else {
-        var selectWrapperWidth = $J('.content-migration-select:not(.inactive-language)').length * 320;
-    }
-    $J('.content-migration-select-wrapper').css('width', selectWrapperWidth + 'px');
-};
-
-function delPage() {
-    ungroupPages(true);
-    page = $J("select[id*=page_tree_].focus option:selected");
-    if (page.length) {
-        lang = page.parent().attr("id").match(/\d/)[0];
-        page.addClass('removed');
-        removePages.push(nodePageRegexp.exec(page.val())[2]);
-        move2NextUngroupedPage(page, lang);
-    }
-}
-
-function undelPage() {
-    page = $J("select[id*=page_tree_].focus option.removed:selected");
-    if (page.length) {
-        lang = page.parent().attr("id").match(/\d/)[0];
-        page.removeClass('removed');
-        var pageId = nodePageRegexp.exec(page.val())[2];
-        var tmpRemovePages = removePages;
-        removePages = new Array();
-        for (idx in tmpRemovePages) {
-            if (tmpRemovePages[idx] != pageId) {
-                removePages.push(tmpRemovePages[idx]);
-            }
-        }
-        move2NextUngroupedPage(page, lang);
-    }
-}
-
-function choose(select,selectLang) {
-    var selectedPageId = nodePageRegexp.exec(jQuery(select).find(':selected').val())[2];
-
-    associatedNode = null;
-    for (node in similarPages) {
-        for (page in similarPages[node]) {
-            if (similarPages[node][page] == selectedPageId) {
-                associatedNode = node;
-                break;
-            }
-        }
-    }
-
-    if (associatedNode == null) {
-        return;
-    }
-
-    for (page in similarPages[associatedNode]) {
-        for (lIdx in langs) {
-            lang = langs[lIdx];
-            if (lang != selectLang) {
-                jQuery(jQuery('#page_tree_'+lang).find('[value$=_'+similarPages[associatedNode][page]+']')).attr('selected', true);
-            }
-        }
-    }
-}
-
-function selectPage(option,lang) {
-    jQuery('#page_group_'+lang).val(jQuery(option).val());
-}
-
-function groupPages() {
-    nodeId = null;
-    pages = new Array();
-    options = new Array();
-
-    for (lIdx in langs) {
-        lang = langs[lIdx];
-        
-        pageInfo = jQuery('#page_group_'+lang).val();
-        if (!pageInfo) {
-            continue;
-        }
-
-        pageId = parseInt(nodePageRegexp.exec(pageInfo)[2],10);
-        pages.push(pageId);
-
-        selected = jQuery(jQuery('#page_tree_'+lang).find(':selected'));
-        options[lang] = selected;
-
-        if (lang == defaultLang) {
-            nodeId = nodePageRegexp.exec(pageInfo)[1]
-        }
-
-    }
-
-    if (nodeId) {
-        similarPages[nodeId] = pages;
-
-        for (lang in options) {
-            if (lang) {
-                options[lang].addClass('grouped');
-                move2NextUngroupedPage(options[lang],lang);
-            }
-        }
-    }
-}
-
-function ungroupPages(dontMove) {
-    nodeId = null;
-    pages = new Array();
-    options = new Array();
-
-    for (lIdx in langs) {
-        lang = langs[lIdx];
-        
-        pageInfo = jQuery('#page_group_'+lang).val();
-        if (!pageInfo) {
-            continue;
-        }
-
-        selected = jQuery(jQuery('#page_tree_'+lang).find(':selected'));
-        options[lang] = selected;
-
-        if (lang == defaultLang) {
-            nodeId = nodePageRegexp.exec(pageInfo)[1]
-        }
-
-    }
-
-    if (nodeId) {
-        delete similarPages[nodeId];
-
-        for (lang in options) {
-            if (lang) {
-                options[lang].removeClass('grouped');
-                if (!dontMove) {
-                    move2NextUngroupedPage(options[lang],lang);
-                }
-            }
-        }
-    }
-}
-
-function move2NextUngroupedPage(page,lang) {
-    while (page = page.next()) {
-        if (page.hasClass('grouped')) {
-            continue;
-        }
-
-        page.attr('selected', true);
-        break;
-    }
-    selectPage(page,lang);
-}
-
-function executeGrouping() {
+var executeGrouping = function() {
     $J('#doGroup').val(1);
     $J('#similarPages').val(JSON.stringify(similarPages));
     $J('#removePages').val(JSON.stringify(removePages));
