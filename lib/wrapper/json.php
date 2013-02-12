@@ -1,7 +1,29 @@
 <?php
+
+/**
+ * JsonWrapper
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
+
 if(!function_exists("json_encode")) {
+
+    /**
+     * @ignore
+     */
     require_once(ASCMS_LIBRARY_PATH.'/PEAR/Services/JSON.php');
 
+    /**
+     * JsonWrapper
+     *
+     * @copyright   CONTREXX CMS - COMVATION AG
+     * @author      COMVATION Development Team <info@comvation.com>
+     * @package     contrexx
+     * @subpackage  lib_framework
+     */
     class JsonWrapper {
         protected $pearJSON;
         protected static $instance;

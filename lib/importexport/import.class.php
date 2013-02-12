@@ -2,24 +2,27 @@
 
 /**
  * Import Class
- *
  * Class which handles the main import operations
- * @copyright CONTREXX CMS - 2005 COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
- * @version v1.0.0
- * @uses ImportExport
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_importexport
  */
 
+/**
+ * @ignore
+ */
 require_once ASCMS_LIBRARY_PATH."/importexport/lib/importexport.class.php";
 
 /**
  * Import Class
- *
  * Class which handles the main import operations
- * @copyright CONTREXX CMS - 2005 COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
- * @version v1.0.0
- * @uses ImportExport
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_importexport
  */
 class Import extends ImportExport
 {
@@ -226,5 +229,3 @@ class Import extends ImportExport
         }
 	}
 }
-
-?>

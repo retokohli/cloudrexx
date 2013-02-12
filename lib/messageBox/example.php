@@ -1,4 +1,17 @@
 <?php
+
+/**
+ * messageBox Example
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
+
+/**
+ * @ignore
+ */
 require_once("StatusMessage.class.php") ;
 
 # Create new status message Object

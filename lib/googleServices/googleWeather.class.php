@@ -2,15 +2,21 @@
 
 /**
  * Google Weather
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
  */
 
 /**
- * Includes
+ * Google Weather
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
  */
-
 class googleWeather
 {
     private $weatherLanguage = 'de';
@@ -176,4 +182,3 @@ class googleWeather
     }
 }
 
-?>
