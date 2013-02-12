@@ -963,6 +963,276 @@ CREATE TABLE `contrexx_module_contact_settings` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_contacts` (
+  `id` int(11) NOT NULL auto_increment,
+  `customer_id` varchar(256) default NULL,
+  `customer_type` int(11) default NULL,
+  `customer_name` varchar(256) default NULL,
+  `customer_website` varchar(256) default NULL,
+  `customer_addedby` int(11) default NULL,
+  `customer_currency` int(11) default NULL,
+  `contact_familyname` varchar(256) default NULL,
+  `contact_role` varchar(256) default NULL,
+  `contact_customer` int(11) default NULL,
+  `contact_language` int(11) default NULL,
+  `gender` tinyint(2) NOT NULL,
+  `notes` text,
+  `industry_type` int(11) default NULL,
+  `contact_type` tinyint(2) default NULL,
+  `user_account` int(11) default NULL,
+  `datasource` int(11) default NULL,
+  `profile_picture` varchar(256) NOT NULL,
+  `status` tinyint(2) NOT NULL default '1',
+  `added_date` date NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `contact_customer` (`contact_customer`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_currency` (
+  `id` int(10) NOT NULL auto_increment,
+  `name` varchar(400) NOT NULL,
+  `active` int(1) NOT NULL default '1',
+  `pos` int(5) NOT NULL default '0',
+  `hourly_rate` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_customer_comment` (
+  `id` int(11) NOT NULL auto_increment,
+  `customer_id` int(11) default NULL,
+  `notes_type_id` int(1) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `comment` text,
+  `added_date` datetime default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `customer_id` (`customer_id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_customer_contact_address` (
+  `id` int(11) NOT NULL auto_increment,
+  `address` varchar(256) NOT NULL,
+  `city` varchar(256) NOT NULL,
+  `state` varchar(256) NOT NULL,
+  `zip` varchar(256) NOT NULL,
+  `country` varchar(256) NOT NULL,
+  `Address_Type` tinyint(4) NOT NULL,
+  `is_primary` enum('0','1') NOT NULL,
+  `contact_id` int(11) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `contact_id` (`contact_id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_customer_contact_emails` (
+  `id` int(11) NOT NULL auto_increment,
+  `email` varchar(256) NOT NULL,
+  `email_type` tinyint(4) NOT NULL,
+  `is_primary` enum('0','1') default '0',
+  `contact_id` int(11) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `contact_id` (`contact_id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_customer_contact_phone` (
+  `id` int(11) NOT NULL auto_increment,
+  `phone` varchar(256) NOT NULL,
+  `phone_type` tinyint(4) NOT NULL,
+  `is_primary` enum('0','1') default '0',
+  `contact_id` int(11) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `contact_id` (`contact_id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_customer_contact_social_network` (
+  `id` int(11) NOT NULL auto_increment,
+  `url` varchar(256) NOT NULL,
+  `url_profile` tinyint(4) NOT NULL,
+  `is_primary` enum('0','1') default '0',
+  `contact_id` int(11) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `contact_id` (`contact_id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_customer_contact_websites` (
+  `id` int(11) NOT NULL auto_increment,
+  `url` varchar(256) NOT NULL,
+  `url_type` tinyint(4) NOT NULL,
+  `url_profile` tinyint(4) NOT NULL,
+  `is_primary` enum('0','1') default '0',
+  `contact_id` int(11) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `contact_id` (`contact_id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_customer_membership` (
+  `contact_id` int(11) NOT NULL,
+  `membership_id` int(11) NOT NULL
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_customer_types` (
+  `id` int(11) NOT NULL auto_increment,
+  `label` varchar(250) NOT NULL,
+  `hourly_rate` varchar(256) NOT NULL,
+  `active` int(1) NOT NULL,
+  `pos` int(10) NOT NULL default '0',
+  `default` tinyint(2) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_datasources` (
+  `id` int(11) NOT NULL auto_increment,
+  `datasource` varchar(256) NOT NULL,
+  `status` tinyint(2) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_deals` (
+  `id` int(11) NOT NULL auto_increment,
+  `title` varchar(256) NOT NULL,
+  `website` int(11) NOT NULL,
+  `customer` int(11) NOT NULL,
+  `customer_contact` int(11) NOT NULL,
+  `quoted_price` varchar(100) NOT NULL default '0.00',
+  `quote_number` varchar(256) NOT NULL,
+  `assigned_to` int(11) NOT NULL,
+  `due_date` date default NULL,
+  `stage` int(11) NOT NULL,
+  `description` text NOT NULL,
+  `project_id` int(11) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `customer` (`customer`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_industry_type_local` (
+  `entry_id` int(11) NOT NULL,
+  `lang_id` int(11) NOT NULL,
+  `value` varchar(256) NOT NULL,
+  KEY `entry_id` (`entry_id`)
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_industry_types` (
+  `id` int(11) NOT NULL auto_increment,
+  `parent_id` int(11) NOT NULL,
+  `sorting` int(11) NOT NULL,
+  `status` smallint(2) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_membership_local` (
+  `entry_id` int(11) NOT NULL,
+  `lang_id` int(11) NOT NULL,
+  `value` varchar(256) NOT NULL,
+  KEY `entry_id` (`entry_id`)
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_memberships` (
+  `id` int(11) NOT NULL auto_increment,
+  `sorting` int(11) NOT NULL,
+  `status` smallint(2) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_notes` (
+  `id` int(1) NOT NULL auto_increment,
+  `name` varchar(255) NOT NULL,
+  `status` tinyint(1) NOT NULL,
+  `pos` int(1) NOT NULL,
+  `system_defined` tinyint(2) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_settings` (
+  `setid` int(7) NOT NULL auto_increment,
+  `setname` varchar(255) NOT NULL,
+  `setvalue` text NOT NULL,
+  PRIMARY KEY  (`setid`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_stages` (
+  `id` int(11) NOT NULL auto_increment,
+  `label` varchar(256) NOT NULL,
+  `stage` varchar(256) NOT NULL,
+  `status` tinyint(2) NOT NULL,
+  `sorting` int(4) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_success_rate` (
+  `id` int(11) NOT NULL auto_increment,
+  `label` varchar(256) NOT NULL,
+  `rate` varchar(256) NOT NULL,
+  `status` tinyint(2) NOT NULL,
+  `sorting` int(4) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_task` (
+  `id` int(2) NOT NULL auto_increment,
+  `task_id` varchar(10) NOT NULL,
+  `task_title` varchar(25) NOT NULL,
+  `task_type_id` int(2) NOT NULL,
+  `customer_id` int(2) NOT NULL,
+  `due_date` datetime NOT NULL,
+  `assigned_to` int(11) NOT NULL,
+  `description` text NOT NULL,
+  `task_status` tinyint(1) NOT NULL default '1',
+  PRIMARY KEY  (`id`),
+  KEY `customer_id` (`customer_id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_task_types` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(256) NOT NULL,
+  `status` tinyint(1) NOT NULL,
+  `sorting` int(11) NOT NULL,
+  `description` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_data_categories` (
   `category_id` int(4) unsigned NOT NULL default '0',
   `lang_id` int(2) unsigned NOT NULL default '0',
