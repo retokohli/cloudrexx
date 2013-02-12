@@ -1,0 +1,48 @@
+<!-- BEGIN skipAjaxBlock -->
+<div id="message">
+    <table cellspacing="0" cellpadding="0" border="0" width="100%" class="adminlist">
+        <tr>
+            <th>{TXT_SHOW_COMMENT_HISTORY}</th>
+        </tr>
+    </table>
+    <table id="notesTab" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist">
+        <thead>
+            <tr class="row3" style="height:22px;">
+                <td width="50%">{TXT_COMMENT_TITLE}</td>
+                <td width="10%">{TXT_CRM_NOTES_TYPE}</td>
+                <td width="10%">{TXT_CRM_DUE_DATE}</td>
+                <td width="20%">{TXT_COMMENT_DATE_TIME}</td>
+                {TXT_FUNCTION_HEAD}{TXT_TASK_FUNCTIONS}{TXT_FUNCTIONS_END}
+            </tr>
+        </thead>
+        <tbody>
+            <!-- END skipAjaxBlock -->
+            <!-- BEGIN noNotesEntries -->
+            <tr class="row1">
+                <td colspan="9"><i>{CRM_NO_RECORDS_FOUND}</i></td>
+            </tr>
+            <!-- END noNotesEntries -->
+            <!-- BEGIN showComment -->
+            <tr style="height:27px;" class="{ENTRY_ROWCLASS}" {TXT_SHOWTASK_STYLESHEET}>
+                <td style="padding-left:5px;">
+                    <div class="notesDiv notesItem notesItem_{CRM_NOTES_TYPE_ID}">
+                        {TXT_COMMENT_DESCRIPTION}
+                    </div>
+                </td>
+                <td style="padding-left:5px;">{CRM_NOTES_TYPE}</td>
+                <td style="vertical-align: top;">{CRM_COMMENT_DATE}</td>
+                <td style="vertical-align: top;">{TXT_COMMENT_ADDEDDATE}</td>
+                <td style="vertical-align: top;text-align: right;">
+                    <a title="{TXT_IMAGE_EDIT}" target="_self" href="index.php?cmd={MODULE_NAME}&amp;act=customers&tpl=addnote&{CSRF_PARAM}&id={TXT_COMMENT_ID}&cust_id={TXT_CUST_ID}"><img border="0" title="{TXT_IMAGE_EDIT}" alt="{TXT_IMAGE_EDIT}" src="images/icons/edit.gif" /></a>
+                    <a title="{TXT_IMAGE_DELETE}" target="_self" href="javascript:deleteCommentEntry({TXT_COMMENT_ID},{TXT_CUST_ID});"><img border="0" title="{TXT_IMAGE_DELETE}" alt="{TXT_IMAGE_DELETE}" src="images/icons/delete.gif" /></a>
+                </td>
+            </tr>
+            <!-- END showComment -->
+
+            <!-- BEGIN skipAjaxBlock1 -->
+        </tbody>
+    </table>
+    <br>
+    <a href="./index.php?cmd={MODULE_NAME}&act=customers&tpl=addnote&cust_id={CRM_CUST_ID}&{CSRF_PARAM}" title="{TXT_CRM_ADD_NOTE}"><input type="button" name="{TXT_CRM_ADD_NOTE}" value="{TXT_CRM_ADD_NOTE}" /></a>
+</div>
+<!-- END skipAjaxBlock1 -->

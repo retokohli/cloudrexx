@@ -1666,3 +1666,11 @@ $_ARRAYLANG['TXT_CORE_FINISH_UPLOADING'] = "Hochladen beenden";
 $_ARRAYLANG['TXT_CORE_FILES_UPLOADED'] = "Datei(en) wurde(n) erfolgreich heraufgeladen";
 $_ARRAYLANG['TXT_CORE_FILES_NOT_UPLOADED'] = "Einige Datei(en) konnte(n) nicht heraufgeladen werden:";
 $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "Die Dateiendung ist nicht erlaubt.";
+
+$_ARRAYLANG['TXT_CRM_MODULE'] = "CRM";
+$_ARRAYLANG['TXT_CRM'] = 'CRM';
+$_ARRAYLANG['TXT_CUSTOMERS']                = "Kontakte";
+$_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP']  = "Kundengruppen";
+$_ARRAYLANG ['TXT_TASKS']                   = "Aufgaben";
+$_ARRAYLANG['TXT_OPPORTUNITY']              = "Verkaufschancen";
+$_ARRAYLANG ['TXT_INTERFACE']               = "Import / Export";

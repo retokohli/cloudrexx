@@ -1586,3 +1586,11 @@ $_ARRAYLANG['TXT_CORE_FINISH_UPLOADING'] = "Finish uploading";
 $_ARRAYLANG['TXT_CORE_FILES_UPLOADED'] = "file(s) uploaded";
 $_ARRAYLANG['TXT_CORE_FILES_NOT_UPLOADED'] = "Some file(s) couldn't be uploaded:";
 $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "The file extension is not allowed.";
+
+$_ARRAYLANG['TXT_CRM_MODULE'] = "CRM";
+$_ARRAYLANG['TXT_CRM'] = 'CRM';
+$_ARRAYLANG['TXT_CUSTOMERS']                = "Customers";
+$_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP']  = "Customer groups";
+$_ARRAYLANG['TXT_TASKS']                    = "Task";
+$_ARRAYLANG['TXT_OPPORTUNITY']              = "Opportunity";
+$_ARRAYLANG['TXT_INTERFACE']                = "Interface";
