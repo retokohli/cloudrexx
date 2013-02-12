@@ -8,9 +8,9 @@ require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FTPFile.class.php';
 
 function executeContrexxUpdate() {
     global $_ARRAYLANG, $_CORELANG, $_CONFIG, $objDatabase, $objUpdate;
-    
+
     $_SESSION['contrexx_update']['copyFilesFinished'] = !empty($_SESSION['contrexx_update']['copyFilesFinished']) ? $_SESSION['contrexx_update']['copyFilesFinished'] : false;
-    
+
     // Copy cx files to the root directory
     if (!$_SESSION['contrexx_update']['copyFilesFinished']) {
         if (!copyCxFilesToRoot(dirname(__FILE__) . '/cx_files', ASCMS_PATH . ASCMS_PATH_OFFSET)) {
@@ -27,7 +27,7 @@ function executeContrexxUpdate() {
         return false;
     }
     unset($_SESSION['contrexx_update']['copiedCxFilesIndex']);
-    
+
     /**
      * This needs to be initialized before loading config/doctrine.php
      * Because we overwrite the Gedmo model (so we need to load our model
@@ -36,30 +36,30 @@ function executeContrexxUpdate() {
     require_once(ASCMS_CORE_PATH . '/ClassLoader/ClassLoader.class.php');
     $cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true);
     Env::set('ClassLoader', $cl);
-    
+
     // Doctrine configuration
     $incDoctrineStatus = require_once(UPDATE_PATH . '/config/doctrine.php');
     Env::set('incDoctrineStatus', $incDoctrineStatus);
-    
+
     $userData = array(
         'id'   => $_SESSION['contrexx_update']['user_id'],
         'name' => $_SESSION['contrexx_update']['username'],
     );
     $loggableListener = \Env::get('loggableListener');
     $loggableListener->setUsername(json_encode($userData));
-    
+
     // Reinitialize FWLanguage. Now with fallback (doctrine).
     FWLanguage::init();
-    
+
     if (!isset($_SESSION['contrexx_update']['update']['done'])) {
         $_SESSION['contrexx_update']['update']['done'] = array();
     }
-    
+
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         DBG::msg('Installed version: '.$_CONFIG['coreCmsVersion']);
         Env::get('ClassLoader')->loadFile(dirname(__FILE__) . '/ContentMigration.class.php');
         $contentMigration = new \Cx\Update\Cx_3_0_1\ContentMigration();
-        
+
         // Migrate statistics - this must be done before migrating to the new content architecture
         if (empty($_SESSION['contrexx_update']['content_stats'])) {
             DBG::msg('Migrate stats');
@@ -72,11 +72,54 @@ function executeContrexxUpdate() {
                 return false;
             }
         }
-        
+
+        // Check if there are content of inactive languages.
+        // If true then ask if the update system can remove them.
+        if (empty($_SESSION['contrexx_update']['inactive_content_languages_checked'])) {
+            DBG::msg('Check inactive content languages');
+            $arrMigrateLangIds = $contentMigration->getActiveContentLanguageIds();
+
+            if (!isset($_POST['migrateLangIds'])) {
+                $result = $contentMigration->getInactiveContentLanguageCheckboxes();
+
+                if (!empty($result)) {
+                    setUpdateMsg('Inhaltsseiten von inaktiven Sprache(n) gefunden', 'title');
+                    setUpdateMsg('
+                        Folgende Sprache(n) sind inaktiv, aber enthalten Inhaltsseiten:<br />
+                        ' . $result . '<br />
+                        Wählen Sie die inaktiven Sprachen, dessen Inhaltseiten Sie migrieren möchten.<br />
+                        Klicken Sie anschliessend auf <b>Update fortsetzen...</b>.<br /><br />
+                        <b>Achtung:</b><br />
+                        Die Inhaltsseiten der inaktive Sprache(n), welche Sie nicht ausgewählt haben, werden gelöscht.
+                    ', 'msg');
+                    setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
+                    return false;
+                }
+            } else {
+                if (!empty($_POST['migrateLangIds'])) {
+                    if (is_array($_POST['migrateLangIds'])) {
+                        $arrMigrateLangIds = array_merge($arrMigrateLangIds, $_POST['migrateLangIds']);
+                    } else {
+                        $arrMigrateLangIds[] = $_POST['migrateLangIds'];
+                    }
+                }
+            }
+
+            $_SESSION['contrexx_update']['migrate_lang_ids'] = $arrMigrateLangIds;
+            $_SESSION['contrexx_update']['inactive_content_languages_checked'] = true;
+        }
+
+        if (empty($_SESSION['contrexx_update']['migrate_lang_ids'])) {
+            $_SESSION['contrexx_update']['migrate_lang_ids'] = $contentMigration->getActiveContentLanguageIds();
+        }
+        $contentMigration->arrMigrateLangIds = $_SESSION['contrexx_update']['migrate_lang_ids'];
+        $contentMigration->migrateLangIds    = implode(',', $_SESSION['contrexx_update']['migrate_lang_ids']);
+
         // Migrate content
         if (empty($_SESSION['contrexx_update']['content_migrated'])) {
             DBG::msg('Migrate content');
             $status = $contentMigration->migrate();
+
             if ($status === true) {
                 $_SESSION['contrexx_update']['content_migrated'] = true;
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
@@ -89,11 +132,11 @@ function executeContrexxUpdate() {
                 return false;
             }
         }
-        
-        /*if (empty($_SESSION['contrexx_update']['pages_grouped'])) {
+
+        if (empty($_SESSION['contrexx_update']['pages_grouped'])) {
             DBG::msg('Group pages');
             $pageGrouping = $contentMigration->pageGrouping();
-            
+
             if ($pageGrouping === true) {
                 $_SESSION['contrexx_update']['pages_grouped'] = true;
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
@@ -103,18 +146,16 @@ function executeContrexxUpdate() {
                 return false;
             } else if (!empty($pageGrouping)) {
                 $arrDialogData = array(
-                    'langs'        => $contentMigration->langs,
                     'similarPages' => $contentMigration->similarPages,
-                    'defaultLang'  => $contentMigration::$defaultLang,
                 );
-                
+
                 setUpdateMsg('Inhaltsseiten gruppieren', 'title');
                 setUpdateMsg($pageGrouping, 'msg');
                 setUpdateMsg('<input type="submit" value="' . $_CORELANG['TXT_UPDATE_NEXT'] . '" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
                 setUpdateMsg($arrDialogData, 'dialog');
                 return false;
             }
-        }*/
+        }
 
         // Migrate aliases
         if (empty($_SESSION['contrexx_update']['aliases_migrated'])) {
@@ -144,6 +185,7 @@ function executeContrexxUpdate() {
 
         // Drop old tables
         if (empty($_SESSION['contrexx_update']['old_tables_dropped'])) {
+            DBG::msg('Drop old tables');
             if ($contentMigration->dropOldTables()) {
                 $_SESSION['contrexx_update']['old_tables_dropped'] = true;
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
@@ -171,14 +213,14 @@ function executeContrexxUpdate() {
         if (!createHtAccess()) {
             $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
             $file = $webServerSoftware == 'iis' ? 'web.config' : '.htaccess';
-            
+
             setUpdateMsg('Die Datei \'' . $file . '\' konnte nicht erstellt/aktualisiert werden.');
             return false;
         }
 
         return true;
     }
-    
+
     $arrDirs = array('core_module', 'module');
     $updateStatus = true;
 
@@ -385,7 +427,7 @@ function executeContrexxUpdate() {
             $_SESSION['contrexx_update']['update']['done'][] = 'coreModuleRepository';
         }
     }
-    
+
     $arrUpdate = $objUpdate->getLoadedVersionInfo();
     $_CONFIG['coreCmsVersion'] = $arrUpdate['cmsVersion'];
 
@@ -399,14 +441,14 @@ function executeContrexxUpdate() {
             }
             return false;
         } else {*/
-            $_SESSION['contrexx_update']['update']['done'][] = 'coreLicense';
+        $_SESSION['contrexx_update']['update']['done'][] = 'coreLicense';
         //}
     }
-    
+
     if (!createHtAccess()) {
         $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
         $file = $webServerSoftware == 'iis' ? 'web.config' : '.htaccess';
-        
+
         setUpdateMsg('Die Datei \'' . $file . '\' konnte nicht erstellt/aktualisiert werden.');
         return false;
     }
@@ -686,11 +728,11 @@ function _updateModuleRepository() {
     $dh = opendir(dirname(__FILE__) . '/components/core');
     if ($dh) {
 
-    $query = "TRUNCATE TABLE ".DBPREFIX."module_repository";
-    if ($objDatabase->Execute($query) === false) {
-        return _databaseError($query, $objDatabase->ErrorMsg());
-    }
-        
+        $query = "TRUNCATE TABLE ".DBPREFIX."module_repository";
+        if ($objDatabase->Execute($query) === false) {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+
         try {
             \Cx\Lib\UpdateUtil::table(
                 DBPREFIX.'module_repository',
@@ -714,7 +756,7 @@ function _updateModuleRepository() {
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
-        
+
         while (($file = readdir($dh)) !== false) {
             if (preg_match('#^repository_([0-9]+)\.php$#', $file, $arrFunction)) {
                 if (!in_array($file, $_SESSION['contrexx_update']['update']['done'])) {
@@ -836,7 +878,7 @@ function createHtAccess()
     if (empty($_SESSION['contrexx_update']['htaccess_file_created'])) {
         $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
         $cl = Env::get('ClassLoader');
-        
+
         if ($webServerSoftware == 'iis') {
             $cl->loadFile(UPDATE_LIB . '/PEAR/File/HtAccess.php');
             $objHtAccess = new File_HtAccess(ASCMS_DOCUMENT_ROOT . '/web.config');
@@ -862,7 +904,7 @@ function createHtAccess()
                 return false;
             }
         }
-        
+
         $_SESSION['contrexx_update']['htaccess_file_created'] = true;
     }
 
@@ -873,7 +915,7 @@ function getHtAccessTemplate()
 {
     $htAccessTemplate = @file_get_contents(dirname(__FILE__) . '/data/apache_htaccess.tpl');
     $htAccessPath     = ASCMS_DOCUMENT_ROOT . '/.htaccess';
-    
+
     if (file_exists($htAccessPath)) {
         $htAccess = @file_get_contents($htAccessPath);
         if (preg_match('/^(\s*)#?RewriteRule\s+\^\(\\\\w\\\\w\\\\\/\)\?\([^\)]*\)\\\\\\/\$\s+\$2\s+\[[^\]]+\]$/m', $htAccess, $matches)) {
@@ -887,19 +929,19 @@ function getHtAccessTemplate()
             $htAccessTemplate = str_replace($search, $replace, $htAccessTemplate);
         }
     }
-    
+
     return $htAccessTemplate;
 }
 
 class License {
-    
+
     public function __construct() {
-        
+
     }
-    
+
     public function update() {
         global $documentRoot, $sessionObj, $_CONFIG;
-        
+
         if (!@include_once(ASCMS_DOCUMENT_ROOT.'/lib/PEAR/HTTP/Request2.php')) {
             return false;
         }
@@ -907,24 +949,24 @@ class License {
         $_GET['force'] = 'true';
         $_GET['silent'] = 'true';
         $documentRoot = ASCMS_DOCUMENT_ROOT;
-        
+
         $userId = 1;
         $sessionObj->cmsSessionUserUpdate($userId);
-        
+
         $_CONFIG['licenseUpdateInterval'] = 0;
         $_CONFIG['licenseSuccessfulUpdate'] = 0;
         $_CONFIG['installationId'] = '';
         $_CONFIG['licenseKey'] = '';
         $_CONFIG['licenseState'] = '';
-        
+
         $return = @include_once(ASCMS_DOCUMENT_ROOT.'/core_modules/License/versioncheck.php');
-        
+
         // we force a version number update. if the license update failed
         // version number will not be upgraded yet:
         \Cx\Lib\UpdateUtil::sql('UPDATE `' . DBPREFIX . 'settings` SET `setvalue` = \'3.0.1\' WHERE `setid` = 97');
         $settingsManager = new \settingsManager();
         $settingsManager->writeSettingsFile();
-        
+
         return ($return === true);
     }
 }
