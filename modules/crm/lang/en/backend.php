@@ -608,3 +608,4 @@ $_ARRAYLANG['TXT_CRM_EMP_DEFAULT_USER_GROUP']       = "Employee's Default user g
 $_ARRAYLANG['TXT_CRM_FIND_CONTACT_BY_NAME']         = "Find a contact by name";
 $_ARRAYLANG['TXT_CRM_FIND_COMPANY_BY_NAME']         = "Find a company by name";
 $_ARRAYLANG['TXT_CRM_ENTER_SEARCH_TERM']            = "Enter your search term";
+$_ARRAYLANG['TXT_CRM_ACTIVITIES']                   = "Activities";

@@ -574,7 +574,7 @@ class CRM extends CrmLibrary {
 
         $searchLink .= "&customer_type={$_GET['customer_type']}&term={$_GET['term']}&filter_membership={$_GET['filter_membership']}";
 
-        $sortingFields = array("c.customer_name" ,  "notesCount", "tasksCount", "dealsCount", "c.added_date");
+        $sortingFields = array("c.customer_name" ,  "activities", "c.added_date");
         $sorto = (isset ($_GET['sorto'])) ? (((int) $_GET['sorto'] == 0) ? 'DESC' : 'ASC') : 'DESC';
         $sortf = (isset ($_GET['sortf']) && in_array($sortingFields[$_GET['sortf']], $sortingFields)) ? $sortingFields[$_GET['sortf']] : 'c.id';
         $sortLink = "&sorto={$_GET['sorto']}&sortf={$_GET['sortf']}";
@@ -594,10 +594,10 @@ class CRM extends CrmLibrary {
                            email.email,
                            phone.phone,
                            t.label AS cType,
-                           Inloc.value AS industryType,
-                           (SELECT count(1) AS notesCount FROM `".DBPREFIX."module_{$this->moduleName}_customer_comment` AS com WHERE com.customer_id = c.id ) AS notesCount,
-                           (SELECT count(1) AS tasksCount FROM `".DBPREFIX."module_{$this->moduleName}_task` AS task WHERE task.customer_id = c.id ) AS tasksCount,
-                           (SELECT count(1) AS dealsCount FROM `".DBPREFIX."module_{$this->moduleName}_deals` AS deal WHERE deal.customer = c.id ) AS dealsCount
+                           Inloc.value AS industryType,                           
+                           ((SELECT count(1) AS notesCount FROM `".DBPREFIX."module_{$this->moduleName}_customer_comment` AS com WHERE com.customer_id = c.id ) +
+                           (SELECT count(1) AS tasksCount FROM `".DBPREFIX."module_{$this->moduleName}_task` AS task WHERE task.customer_id = c.id ) +
+                           (SELECT count(1) AS dealsCount FROM `".DBPREFIX."module_{$this->moduleName}_deals` AS deal WHERE deal.customer = c.id )) AS activities
                        FROM `".DBPREFIX."module_{$this->moduleName}_contacts` AS c
                        LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_contacts` AS con
                          ON c.contact_customer =con.id
@@ -633,7 +633,7 @@ class CRM extends CrmLibrary {
 
         $objResult = $objDatabase->Execute($query);
 
-        if($objResult->RecordCount() == 0) {
+        if($objResult && $objResult->RecordCount() == 0) {
             $errMsg = "<div width='100%'>No Records Found ..</div>";
             $this->_objTpl->setVariable('TXT_NORECORDFOUND_ERROR', $errMsg);
         }
@@ -734,13 +734,12 @@ class CRM extends CrmLibrary {
                 'TXT_CRM_TASKS'                 => $_ARRAYLANG['TXT_TASKS'],
                 'TXT_CRM_OPPURTUNITIES'         => $_ARRAYLANG['TXT_OPPORTUNITY'],
                 'TXT_CRM_CONTACT'               => $_ARRAYLANG['TXT_CRM_CONTACT'],
+                'TXT_CRM_ACTIVITIES'            => $_ARRAYLANG['TXT_CRM_ACTIVITIES'],
                 'CRM_ADVANCED_SEARCH_STYLE'     => (isset($_GET['advanced-search'])) ? "" : "display:none;",
                 'CRM_ADVANCED_SEARCH_CLASS'     => (isset($_GET['advanced-search'])) ? "arrow-up" : "arrow-down",
                 'CRM_SEARCH_LINK'               => $searchLink,
                 'CRM_NAME_SORT'                 => "&sortf=0&sorto=$sortOrder",
-                'CRM_NOTES_SORT'                => "&sortf=1&sorto=$sortOrder",
-                'CRM_TASKS_SORT'                => "&sortf=2&sorto=$sortOrder",
-                'CRM_DEALS_SORT'                => "&sortf=3&sorto=$sortOrder",
+                'CRM_ACTIVITIES_SORT'           => "&sortf=1&sorto=$sortOrder",                
                 'CRM_DATE_SORT'                 => "&sortf=4&sorto=$sortOrder",
 
                 'CRM_CUSTOMER_CHECKED'          => in_array(1, $searchContactTypeFilter) ? "checked" : '',
@@ -767,6 +766,9 @@ class CRM extends CrmLibrary {
         $today = date('Y-m-d');
         if ($objResult) {
             while(!$objResult->EOF) {
+                $notesCount = $objDatabase->getOne("SELECT count(1) AS notesCount FROM `".DBPREFIX."module_{$this->moduleName}_customer_comment` AS com WHERE com.customer_id ={$objResult->fields['id']}");
+                $tasksCount = $objDatabase->getOne("SELECT count(1) AS tasksCount FROM `".DBPREFIX."module_{$this->moduleName}_task` AS task WHERE task.customer_id = {$objResult->fields['id']}");
+                $dealsCount = $objDatabase->getOne("SELECT count(1) AS dealsCount FROM `".DBPREFIX."module_{$this->moduleName}_deals` AS deal WHERE deal.customer = {$objResult->fields['id']}");
                 if ($objResult->fields['contact_type'] == 1) {
                     if(($objResult->fields['status'] == "1")) {
                         $activeImage = 'images/icons/led_green.gif';
@@ -776,7 +778,7 @@ class CRM extends CrmLibrary {
                         $activeValue = 0;
                         $activeImage = 'images/icons/led_red.gif';
                         $imageTitle  = $_ARRAYLANG['TXT_INACTIVE'];
-                    }                
+                    }                    
                     $this->_objTpl->setVariable(array(
                             'ENTRY_ID'                  => (int) $objResult->fields['id'],
                             'CRM_COMPANY_NAME'          => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}' title='details'>".contrexx_raw2xhtml($objResult->fields['customer_name'])."</a>",
@@ -786,9 +788,10 @@ class CRM extends CrmLibrary {
                             'CRM_CONTACT_PHONE'         => contrexx_raw2xhtml($objResult->fields['phone']),
                             'CRM_CONTACT_EMAIL'         => contrexx_raw2xhtml($objResult->fields['email']),
                             'CRM_ADDED_DATE'            => contrexx_raw2xhtml($objResult->fields['added_date']),
-                            'CRM_CONTACT_NOTES_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-1' title=''>{$objResult->fields['notesCount']}</a>",
-                            'CRM_CONTACT_TASK_COUNT'    => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-2' title=''>{$objResult->fields['tasksCount']}</a>",
-                            'CRM_CONTACT_DEALS_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-3' title=''>{$objResult->fields['dealsCount']}</a>",
+                            'CRM_ACTIVITIES_COUNT'      => $objResult->fields['activities'],
+                            'CRM_CONTACT_NOTES_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-1' title=''>{$_ARRAYLANG['TXT_COMMENT_TITLE']} ({$notesCount})</a>",
+                            'CRM_CONTACT_TASK_COUNT'    => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-2' title=''>{$_ARRAYLANG['TXT_TASKS']} ({$tasksCount})</a>",
+                            'CRM_CONTACT_DEALS_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-3' title=''>{$_ARRAYLANG['TXT_OPPORTUNITY']} ({$dealsCount})</a>",
                             'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../images/crm/icons/new.png" alt="new" />' : '',
                             'CRM_ROW_CLASS'             => $row = ($row == "row2") ? "row1" : "row2",
                             'CRM_CONTACT_PROFILE_IMAGE' => !empty($objResult->fields['profile_picture']) ? contrexx_raw2xhtml($objResult->fields['profile_picture'])."_40X40.thumb" : '0_no_company_picture.gif',
@@ -817,9 +820,10 @@ class CRM extends CrmLibrary {
                             'CRM_CONTACT_PHONE'         => contrexx_raw2xhtml($objResult->fields['phone']),
                             'CRM_CONTACT_EMAIL'         => contrexx_raw2xhtml($objResult->fields['email']),
                             'CRM_ADDED_DATE'            => contrexx_raw2xhtml($objResult->fields['added_date']),
-                            'CRM_CONTACT_NOTES_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-1' title=''>{$objResult->fields['notesCount']}</a>",
-                            'CRM_CONTACT_TASK_COUNT'    => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-2' title=''>{$objResult->fields['tasksCount']}</a>",
-                            'CRM_CONTACT_DEALS_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-3' title=''>{$objResult->fields['dealsCount']}</a>",
+                            'CRM_ACTIVITIES_COUNT'      => $objResult->fields['activities'],
+                            'CRM_CONTACT_NOTES_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-1' title=''>{$_ARRAYLANG['TXT_COMMENT_TITLE']} ({$notesCount})</a>",
+                            'CRM_CONTACT_TASK_COUNT'    => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-2' title=''>{$_ARRAYLANG['TXT_TASKS']} ({$tasksCount})</a>",
+                            'CRM_CONTACT_DEALS_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-3' title=''>{$_ARRAYLANG['TXT_OPPORTUNITY']} ({$dealsCount})</a>",
                             'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../images/crm/icons/new.png" alt="new" />' : '',
                             'CRM_ROW_CLASS'             => $row = ($row == "row2") ? "row1" : "row2",
                             'CRM_CONTACT_PROFILE_IMAGE' => !empty($objResult->fields['profile_picture']) ? contrexx_raw2xhtml($objResult->fields['profile_picture'])."_40X40.thumb" : '0_noavatar.gif',
