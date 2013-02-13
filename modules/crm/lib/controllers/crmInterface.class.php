@@ -28,25 +28,30 @@ class crmInterface extends CrmLibrary
     private $_delimiter = array(
                             array(
                                 'title'=>'Comma',
-                                'value' => ','
+                                'value' => ',',
+                                'placeholder' => 'TXT_CRM_COMMA'
                             ),
                             array(
                                 'title'=>'Semicolon',
-                                'value' => ';'
+                                'value' => ';',
+                                'placeholder' => 'TXT_CRM_SEMICOLON'
                             ),
                             array(
                                 'title'=>'Colon',
-                                'value' => ':'
+                                'value' => ':',
+                                'placeholder' => 'TXT_CRM_COLON'
                             ),
                           );
     private $_enclosure = array(
                             array(
                                 'title'=>'Double quote',
-                                'value' => '"'
+                                'value' => '"',
+                                'placeholder' => 'TXT_CRM_DOUBLE_QUOTE'
                             ),
                             array(
                                 'title'=>'Single quote',
-                                'value' => "'"
+                                'value' => "'",
+                                'placeholder' => 'TXT_CRM_DOUBLE_QUOTE'
                             ),
                           );
     private $_mediaPath = '';
@@ -95,14 +100,14 @@ class crmInterface extends CrmLibrary
         foreach ($this->_delimiter as $key => $value) {
             $objTpl->setVariable(array(
                 'CRM_DELIMITER_VALUE' => $key,
-                'CRM_DELIMITER_TITLE' => $value['title']
+                'CRM_DELIMITER_TITLE' => $_ARRAYLANG[$value['placeholder']]
             ));
             $objTpl->parse('crm_delimiter');
         }
         foreach ($this->_enclosure as $key => $value) {
             $objTpl->setVariable(array(
                 'CRM_ENCLOSURE_VALUE' => $key,
-                'CRM_ENCLOSURE_TITLE' => $value['title']
+                'CRM_ENCLOSURE_TITLE' => $_ARRAYLANG[$value['placeholder']]
             ));
             $objTpl->parse('crm_enclosure');
         }

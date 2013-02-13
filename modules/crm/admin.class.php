@@ -2258,6 +2258,9 @@ END;
                 'CRM_GENDER_MALE_SELECTED'  => $this->contact->contact_gender == 2 ? 'selected' : '',
                 'CRM_CONTACT_TYPE'          => ($contactType == 1) ? 'company' : 'contact',
 
+                'TXT_CRM_CITY'              => $_ARRAYLANG['TXT_TITLE_CITY'],
+                'TXT_CRM_STATE'             => $_ARRAYLANG['TXT_CRM_STATE'],
+                'TXT_CRM_ZIP_CODE'          => $_ARRAYLANG['TXT_CRM_ZIP_CODE'],                
                 'TXT_EDITCUSTOMERCONTACT_TITLE' => (isset($_REQUEST['id'])) ? $_ARRAYLANG["TXT_EDIT_".strtoupper($_GET['type'])] : $_ARRAYLANG["TXT_ADD_".strtoupper($_GET['type'])],
                 'TXT_CRM_INDUSTRY_TYPE'     => $_ARRAYLANG['TXT_CRM_INDUSTRY_TYPE'],
                 'TXT_CRM_DATASOURCE'        => $_ARRAYLANG['TXT_CRM_DATASOURCE'],

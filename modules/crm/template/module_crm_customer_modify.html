@@ -501,22 +501,22 @@
                                                     <tr>
                                                         <td colspan="3">
                                                             <div class="addressline-1">
-                                                                <textarea class="contactAddress" placeholder="Address" rows="4" cols="0"></textarea>
+                                                                <textarea class="contactAddress" placeholder="{TXT_CRM_ADDRESS}" rows="4" cols="0"></textarea>
                                                             </div>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="addressline-2" colspan="3">
                                                             <span>
-                                                                <input placeholder="City" class="contactCity" type="text" value="" />
+                                                                <input placeholder="{TXT_CRM_CITY}" class="contactCity" type="text" value="" />
                                                             </span>
 
                                                             <span>
-                                                                <input placeholder="State" class="contactState " type="text" value=""/>
+                                                                <input placeholder="{TXT_CRM_STATE}" class="contactState " type="text" value=""/>
                                                             </span>
 
                                                             <span>
-                                                                <input class="contactZip " placeholder="Zip code" type="text" value="" />
+                                                                <input class="contactZip " placeholder="{TXT_CRM_ZIP_CODE}" type="text" value="" />
                                                             </span>
                                                         </td>
                                                     </tr>
@@ -524,7 +524,7 @@
                                                         <td class="addressline-3">
                                                             <div class="crmLeft">
                                                                 <select class="cCountry" >
-                                                                    <option value="">Please select a country...</option>
+                                                                    <option value="">{TXT_CRM_SELECT_COUNTRY}</option>
                                                                     <!-- BEGIN additionalcrmCountry -->
                                                                     <option value="{CRM_COUNTRY}" {CRM_COUNTRY_SELECTED}>{CRM_COUNTRY}</option>
                                                                     <!-- END additionalcrmCountry -->
@@ -556,22 +556,22 @@
                                                     <tr>
                                                         <td>
                                                             <div class="addressline-1">
-                                                                <textarea class="contactAddress" name="{CRM_CONTACT_ADDRESS_NAME}" placeholder="Address" name="" rows="4" cols="0">{CRM_CONTACT_ADDRESS_VALUE}</textarea>
+                                                                <textarea class="contactAddress" name="{CRM_CONTACT_ADDRESS_NAME}" placeholder="{TXT_CRM_ADDRESS}" name="" rows="4" cols="0">{CRM_CONTACT_ADDRESS_VALUE}</textarea>
                                                             </div>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="addressline-2">
                                                             <span>
-                                                                <input style="width: 170px" placeholder="City" class="contactCity" type="text" name="{CRM_CONTACT_CITY_NAME}" value="{CRM_CONTACT_CITY_VALUE}" />
+                                                                <input style="width: 170px" placeholder="{TXT_CRM_CITY}" class="contactCity" type="text" name="{CRM_CONTACT_CITY_NAME}" value="{CRM_CONTACT_CITY_VALUE}" />
                                                             </span>
 
                                                             <span>
-                                                                <input style="width: 170px" placeholder="State" class="contactState " type="text" name="{CRM_CONTACT_STATE_NAME}" value="{CRM_CONTACT_STATE_VALUE}"/>
+                                                                <input style="width: 170px" placeholder="{TXT_CRM_STATE}" class="contactState " type="text" name="{CRM_CONTACT_STATE_NAME}" value="{CRM_CONTACT_STATE_VALUE}"/>
                                                             </span>
 
                                                             <span>
-                                                                <input style="width: 149px" class="contactZip" placeholder="Zip code" type="text" name="{CRM_CONTACT_ZIP_NAME}" value="{CRM_CONTACT_ZIP_VALUE}" />
+                                                                <input style="width: 149px" placeholder="{TXT_CRM_ZIP_CODE}" class="contactZip" type="text" name="{CRM_CONTACT_ZIP_NAME}" value="{CRM_CONTACT_ZIP_VALUE}" />
                                                             </span>
                                                         </td>
                                                     </tr>
@@ -579,7 +579,7 @@
                                                         <td class="addressline-3">
                                                             <div class="crmLeft">
                                                                 <select name="{CRM_CONTACT_COUNTRY_NAME}" class="cCountry" >
-                                                                    <option value="">Please select a country...</option>
+                                                                    <option value="">{TXT_CRM_SELECT_COUNTRY}</option>
                                                                     <!-- BEGIN crmCountry -->
                                                                     <option value="{CRM_COUNTRY}" {CRM_COUNTRY_SELECTED}>{CRM_COUNTRY}</option>
                                                                     <!-- END crmCountry -->
