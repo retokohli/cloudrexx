@@ -134,6 +134,7 @@ $_ARRAYLANG['TXT_CONTACT_FILE_TOO_LARGE'] = "The file was not uploaded because i
 $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "The file %s was not completely uploaded!";
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "A File has not been uploaded!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'] = "CAPTCHA protection";
+$_ARRAYLANG['TXT_CONTACT_SAVE_DATA_IN_CRM']   = "Save Data in CRM Module";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Please type in the characters from the picture into the textfield. This is required for the system to know that you are not a spambot.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Activating this option makes sure that a carbon copy of the data from the form will be sent to the sender.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Carbon copy to sender";
@@ -193,4 +194,5 @@ $_ARRAYLANG['TXT_CONTACT_SEND_ATTACHMENT_DESCRIPTION'] = "By activating this opt
 $_ARRAYLANG['TXT_CONTACT_SEND_ATTACHMENT'] = "Send Attachment";
 $_ARRAYLANG['TXT_CONTACT_USE_EMAIL_OF_SENDER'] = "Use contact person as sender";
 $_ARRAYLANG['TXT_CONTACT_USE_EMAIL_OF_SENDER_DESCRIPTION'] = "By activating this option, the e-mail address of the contact person will be used as the sender's address (smtp-from) for the notification e-mail.<br />If the user account data fields <i>Firstname</i> and/or <i>Lastname</i> are in use, a combination of their values will be used as the sender's name of the e-mail message. <br /><br />Warning: This feature is not supported by all e-mail servers (SMTP). Furthermore, using this feature increases the possability that your contact requests will be marked as SPAM and will therefore never reach you!";
+$_ARRAYLANG['TXT_CONTACT_FORM_CRM_FIELDS_MISSING']         = "To save data in crm module, you must choose email, first name and last name";
 ?>

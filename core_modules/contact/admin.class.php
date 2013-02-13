@@ -48,8 +48,8 @@ class ContactManager extends ContactLib
                 'horizontalLine',
                 'fieldset',
                 'label',
-            );    
-    
+            );
+
     const formMailTemplate = '<table>
     <tbody>
         <!-- BEGIN form_field -->
@@ -78,9 +78,9 @@ class ContactManager extends ContactLib
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/contact/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-        
+
         $this->_objTpl->setGlobalVariable('CSRF_PARAM', CSRF::param());
-        
+
         $this->_arrFormFieldTypes = array(
             'text'          => $_ARRAYLANG['TXT_CONTACT_TEXTBOX'],
             'label'         => $_ARRAYLANG['TXT_CONTACT_TEXT'],
@@ -389,7 +389,7 @@ class ContactManager extends ContactLib
             if (count($arrEntries) > 0) {
                 $arrFormFields = &$this->getFormFields($formId);
                 $arrFormFieldNames = &$this->getFormFieldNames($formId);
-                
+
                 $this->_objTpl->setGlobalVariable(array(
                         'TXT_CONTACT_DELETE_ENTRY'              => $_ARRAYLANG['TXT_CONTACT_DELETE_ENTRY'],
                         'TXT_CONTACT_DETAILS'                   => $_ARRAYLANG['TXT_CONTACT_DETAILS'],
@@ -410,7 +410,7 @@ class ContactManager extends ContactLib
                         'CONTACT_FORM_ENTRIES_TITLE'            => str_replace('%NAME%', contrexx_raw2xhtml($this->arrForms[$formId]['lang'][$selectedInterfaceLanguage]['name']), $_ARRAYLANG['TXT_CONTACT_ENTRIES_OF_NAME']),
                         'CONTACT_FORM_PAGING'                   => $paging
                 ));
-                
+
                 $colNr = 0;
                 foreach ($arrCols as $col) {
                     if ($colNr == $maxFields) {
@@ -424,7 +424,7 @@ class ContactManager extends ContactLib
                 $rowNr = 0;
                 foreach ($arrEntries as $entryId => $arrEntry) {
                     $this->_objTpl->setVariable('CONTACT_FORM_ENTRIES_ROW_CLASS', $rowNr % 2 == 0 ? 'row2' : 'row1');
-                    
+
                     $date = date(ASCMS_DATE_FORMAT_DATE, $arrEntry['time']);
                     $now  = date(ASCMS_DATE_FORMAT_DATE, strtotime('now'));
                     if ($date == $now) {
@@ -439,7 +439,7 @@ class ContactManager extends ContactLib
                     $this->_objTpl->parse('contact_form_entry_data');
 
                     $colNr  = 0;
-                    $langId = $arrEntry['langId']; 
+                    $langId = $arrEntry['langId'];
                     foreach ($arrCols as $col) {
                         if ($colNr == $maxFields) {
                             break;
@@ -529,7 +529,7 @@ class ContactManager extends ContactLib
                 'TXT_CONTACT_GET_CSV'                       => $_ARRAYLANG['TXT_CONTACT_GET_CSV'],
                 'TXT_CONTACT_DOWNLOAD'                      => $_ARRAYLANG['TXT_CONTACT_DOWNLOAD']
         ));
-        
+
         $rowNr = 0;
         if (is_array($this->arrForms)) {
             foreach ($this->arrForms as $formId => $arrForm) {
@@ -540,7 +540,7 @@ class ContactManager extends ContactLib
                 $page = $pageRepo->findOneBy(array('module' => 'contact', 'cmd' => $formId));
 
                 $pageExists = $page !== null;
-                
+
                 $this->_objTpl->setGlobalVariable('CONTACT_FORM_ID', $formId);
 
                 if (isset($arrForm['lang'][FRONTEND_LANG_ID])) {
@@ -550,7 +550,7 @@ class ContactManager extends ContactLib
                 } else {
                     $selectedInterfaceLanguage = key($arrForm['lang']);
                 }
-                
+
                 $pages = $this->em->getRepository('Cx\Model\ContentManager\Page')->getFromModuleCmdByLang('contact', $formId);
                 $lang = array();
                 foreach ($arrForm['lang'] as $langId => $value) {
@@ -573,6 +573,7 @@ class ContactManager extends ContactLib
                 $langString = implode($lang);
                 
                 $formName = contrexx_raw2xhtml($arrForm['lang'][$selectedInterfaceLanguage]['name']);
+                $useCrm   = $arrForm['saveDataInCRM'] ? "&nbsp;&nbsp;<img style='margin-top: 2px;' src='./template/ascms/images/navigation_level_1_189.png' alt='crm' /> " : '';
 
                 // check if the form contains submitted data
                 if ($arrForm['number'] > 0) {
@@ -588,6 +589,7 @@ class ContactManager extends ContactLib
                         'TXT_CONTACT_VIEW'                  => $_CORELANG['TXT_CORE_CM_VIEW'],
                         'CONTACT_FORM_ROW_CLASS'            => $rowNr % 2 == 1 ? 'row1' : 'row2',
                         'CONTACT_FORM_NAME'                 => $formName,
+                        'CONTACT_CRM_IMG'                   => $useCrm,
                         'CONTACT_FORM_LAST_ENTRY'           => $arrForm['last'] ? date(ASCMS_DATE_FORMAT, $arrForm['last']) : '-',
                         'CONTACT_FORM_NUMBER_OF_ENTRIES'    => $entryCount,
                         'CONTACT_DELETE_CONTENT'            => $pageExists ? 'true' : 'false',
@@ -639,7 +641,7 @@ class ContactManager extends ContactLib
                 } else {
                     $optionalLanguageId = key($arrRecipient['lang']);
                 }
-       
+
                 $this->_objTpl->setVariable(array(
                     'CONTACT_FORM_RECIPIENT_LANG_ID'    => $langId,
                     'RECIPIENT_NAME_DISPLAY'            => $isSelectedInterfaceLanguage ? 'block' : 'none',
@@ -713,6 +715,7 @@ class ContactManager extends ContactLib
         $actionTitle    = $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'];
         $showForm       = 0;
         $useCaptcha     = 1;
+        $saveDataInCRM  = 0;
         $useCustomStyle = 0;
         $sendCopy       = 0;
         $useEmailOfSender = 0;
@@ -727,6 +730,7 @@ class ContactManager extends ContactLib
             $actionTitle = $_ARRAYLANG['TXT_CONTACT_MODIFY_CONTACT_FORM'];
             $showForm       = $this->arrForms[$formId]['showForm'];
             $useCaptcha     = $this->arrForms[$formId]['useCaptcha'];
+            $saveDataInCRM  = $this->arrForms[$formId]['saveDataInCRM'];
             $useCustomStyle = $this->arrForms[$formId]['useCustomStyle'];
             $sendCopy       = $this->arrForms[$formId]['sendCopy'];
             $useEmailOfSender = $this->arrForms[$formId]['useEmailOfSender'];
@@ -799,10 +803,10 @@ class ContactManager extends ContactLib
         } elseif (count($this->arrForms[$formId]['lang'])) {
             $selectedInterfaceLanguage = key($this->arrForms[$formId]['lang']);
         }
-        
+
         //Get the fallback languages array
         $fallBackArr = FWLanguage::getFallbackLanguageArray();
-        
+
         foreach ($fallBackArr as $languageId => $fallBackLanguageId) {
             $strJsFallBackArr .= 'arrFallBackLang['.$languageId.'] = "'.$fallBackLanguageId.'";'."\n";
         }
@@ -810,8 +814,8 @@ class ContactManager extends ContactLib
             'FALL_BACK_LANGUAGES' => $strJsFallBackArr,
             'DEFAULT_LANGUAGE'    => FWLanguage::getDefaultLangId()
         ));
-        
-        
+
+
         foreach ($arrActiveSystemFrontendLanguages as $langId => $lang) {
             $isSelectedInterfaceLanguage = $langId == $selectedInterfaceLanguage;
             $langVars = array(
@@ -822,7 +826,7 @@ class ContactManager extends ContactLib
                 'subject'       => '',
                 'mailTemplate'  => self::formMailTemplate
             );
-            
+
             if (isset($this->arrForms[$formId]['lang'][$langId])) {
                 $langVars = $this->arrForms[$formId]['lang'][$langId];
                 $langVars['mailTemplate'] = preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $langVars['mailTemplate']);
@@ -843,7 +847,7 @@ class ContactManager extends ContactLib
                 'CONTACT_LANGTAB_DISPLAY'   => $langVars['is_active'] ? 'display:inline;' : 'display:none;'
             ));
             $this->_objTpl->parse('languageTabs');
-             
+
             $this->_objTpl->setVariable(array(
                 'LANG_ID'                                       => $lang['id'],
                 'LANG_NAME'                                     => contrexx_raw2xhtml($lang['name']),
@@ -852,7 +856,7 @@ class ContactManager extends ContactLib
                 'CONTACT_FORM_SUBJECT'                          => !empty ($langVars['subject']) ? contrexx_raw2xhtml($langVars['subject']) : contrexx_raw2xhtml($this->arrForms[$formId]['lang'][$optionalLanguageId]['subject']),
             ));
             $this->_objTpl->parse('notificationLanguageForm');
-            
+
             $this->_objTpl->setVariable(array(
                 'CONTACT_FORM_ID'                               => $formId,
                 'LANG_ID'                                       => $lang['id'],
@@ -870,7 +874,7 @@ class ContactManager extends ContactLib
                 'CONTACT_FORM_FIELD_CHECK_MENU_TPL'             => $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType[0]', 'contactFormFieldCheckType_0', 'text', 1),
                 'CONTACT_FORM_FIELD_CHECK_BOX_NEXT_TPL'         => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired['.($lastFieldId+1).']', 'contactFormFieldRequired_'.($lastFieldId+1), 'text', false),
                 'CONTACT_FORM_FIELD_CHECK_BOX_TPL'              => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired[0]', 'contactFormFieldRequired_0', 'text', false),
-                'CONTACT_ACTION_TITLE'                          => $actionTitle,                    
+                'CONTACT_ACTION_TITLE'                          => $actionTitle,
                 'CONTACT_FORM_FIELD_TEXT_TPL'                   => $this->_getFormFieldAttribute(0, 'text', '', false),
                 'CONTACT_FORM_FIELD_LABEL_TPL'                  => $this->_getFormFieldAttribute(0, 'label', '', false),
                 'CONTACT_FORM_FIELD_CHECKBOX_TPL'               => $this->_getFormFieldAttribute(0, 'checkbox', 0),
@@ -899,16 +903,16 @@ class ContactManager extends ContactLib
             if ($copy) {
                 $field['editType'] = 'new';
             }
-            
+
             foreach ($arrActiveSystemFrontendLanguages as $langId => $lang) {
-                if ($formId) {                    
+                if ($formId) {
                     $isActive = $langId == $selectedInterfaceLanguage;
                 } else {
                     // when creating a new form, the form shall be created for the currently selected frontend language
                     $isActive = $lang['id'] == FRONTEND_LANG_ID;
                 }
                 $show     = ($first && $isActive);
-                
+
                 if (isset($field['lang'][$fallBackArr[$lang['id']]])) {
                     $optionalLanguageId = $fallBackArr[$lang['id']];
                 } elseif (isset($field['lang'][FWLanguage::getDefaultLangId()])) {
@@ -916,7 +920,7 @@ class ContactManager extends ContactLib
                 } else {
                     $optionalLanguageId = key($field['lang']);
                 }
-                
+
                 $this->_objTpl->setVariable(array(
                     'LANG_ID'                   => $lang['id'],
                     'LANG_NAME_DISPLAY'         => $show ? 'block' : 'none',
@@ -935,7 +939,7 @@ class ContactManager extends ContactLib
                     $first = false;
                 }
             }
-            
+
             $this->_objTpl->setVariable(array(
                 'CONTACT_FORM_FIELD_TYPE_MENU'  => $this->_getFormFieldTypesMenu('contactFormFieldType['.$realFieldID.']',
                                                                                  $fieldType,
@@ -968,6 +972,8 @@ class ContactManager extends ContactLib
             'CONTACT_FORM_SHOW_FORM_NO'                     => $showForm        ? '' : 'checked="checked"',
             'CONTACT_FORM_USE_CAPTCHA_YES'                  => $useCaptcha      ? 'checked="checked"' : '',
             'CONTACT_FORM_USE_CAPTCHA_NO'                   => $useCaptcha      ? '' : 'checked="checked"',
+            'CONTACT_FORM_USE_CRMMODULE_YES'                => $saveDataInCRM   ? 'checked="checked"' : '',
+            'CONTACT_FORM_USE_CRMMODULE_NO'                 => $saveDataInCRM    ? '' : 'checked="checked"',
             'CONTACT_FORM_USE_CUSTOM_STYLE_YES'             => $useCustomStyle  ? 'checked="checked"' : '',
             'CONTACT_FORM_USE_CUSTOM_STYLE_NO'              => $useCustomStyle  ? '' : 'checked="checked"',
             'CONTACT_FORM_SEND_HTML_MAIL'                   => $sendHtmlMail    ? 'checked="checked"' : '',
@@ -996,7 +1002,7 @@ class ContactManager extends ContactLib
             'TXT_FORM_FIELDS'                               => $_ARRAYLANG['TXT_FORM_FIELDS'],
             'TXT_FORM_RECIPIENTS'                           => $_ARRAYLANG['TXT_FORM_RECIPIENTS'],
             'TXT_ADVANCED_SETTINGS'                         => $_ARRAYLANG['TXT_ADVANCED_SETTINGS'],
-            'TXT_CONTACT_FORM_NOTIFICATION'                 => $_ARRAYLANG['TXT_CONTACT_FORM_NOTIFICATION'],            
+            'TXT_CONTACT_FORM_NOTIFICATION'                 => $_ARRAYLANG['TXT_CONTACT_FORM_NOTIFICATION'],
             'TXT_CONTACT_ID'                                => $_ARRAYLANG['TXT_CONTACT_ID'],
             'TXT_CONTACT_NAME'                              => $_ARRAYLANG['TXT_CONTACT_NAME'],
             'TXT_CONTACT_RECEIVER_ADDRESSES'                => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES'],
@@ -1017,6 +1023,7 @@ class ContactManager extends ContactLib
             'TXT_CONTACT_YES'                               => $_ARRAYLANG['TXT_CONTACT_YES'],
             'TXT_CONTACT_NO'                                => $_ARRAYLANG['TXT_CONTACT_NO'],
             'TXT_CONTACT_CAPTCHA_PROTECTION'                => $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'],
+            'TXT_CONTACT_SAVE_DATA_IN_CRM'                  => $_ARRAYLANG['TXT_CONTACT_SAVE_DATA_IN_CRM'],
             'TXT_CONTACT_CAPTCHA'                           => $_ARRAYLANG['TXT_CONTACT_CAPTCHA'],
             'TXT_CONTACT_CAPTCHA_DESCRIPTION'               => $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'],
             'TXT_CONTACT_SEND_COPY_DESCRIPTION'             => $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'],
@@ -1074,7 +1081,7 @@ class ContactManager extends ContactLib
         global $_ARRAYLANG, $objDatabase;
         $field   = "";
         $display = $show ? "block" : "none";
-        
+
         switch ($type) {
         case 'text':
         case 'hidden':
@@ -1141,7 +1148,7 @@ class ContactManager extends ContactLib
     function _saveForm()
     {
         global $_ARRAYLANG, $_CONFIG, $objDatabase;
-        
+
         $formId  = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
         $adding  = isset($_POST['copy']) ? $_POST['copy'] || !$formId : !$formId;
         $content = isset($_POST['contentSiteAction']) ? $_POST['contentSiteAction'] : '';
@@ -1150,12 +1157,36 @@ class ContactManager extends ContactLib
             $emails         = $this->getPostRecipients();
             $showForm       = !empty($_POST['contactFormShowForm']) ? 1 : 0;
             $useCaptcha     = !empty($_POST['contactFormUseCaptcha']) ? 1 : 0;
+            $saveDataInCrm  = !empty($_POST['contactFormUseCrmModule']) ? 1 : 0;
             $useCustomStyle = !empty($_POST['contactFormUseCustomStyle']) ? 1 : 0;
             $sendCopy       = !empty($_POST['contactFormSendCopy']) ? 1 : 0;
             $useEmailOfSender = !empty($_POST['contactFormUseEmailOfSender']) ? 1 : 0;
             $sendHtmlMail   = !empty($_POST['contactFormHtmlMail']) ? 1 : 0;
             $sendAttachment = !empty($_POST['contactFormSendAttachment']) ? 1 : 0;
-            
+
+            // do the fields
+            $fields = $this->_getFormFieldsFromPost();
+
+            if ($saveDataInCrm) {
+                $mandatory_crm_fields = array('access_firstname', 'access_lastname', 'access_email');
+
+                foreach ($mandatory_crm_fields as $crm_field) {
+                    $field_found = false;
+                    foreach ($fields as $field_key => $field) {
+                        if ($field['special_type'] == $crm_field) {
+                            $field_found = true;
+                            break;
+                        }
+                    }
+                    if (!$field_found) {
+                        $this->_statusMessageErr .= $_ARRAYLANG['TXT_CONTACT_FORM_CRM_FIELDS_MISSING'];
+                        $this->_modifyForm();
+                        return;
+                    }
+                }
+
+            }
+
             if (!$adding) {
                 // This updates the database
                 $this->updateForm(
@@ -1167,7 +1198,8 @@ class ContactManager extends ContactLib
                         $sendCopy,
                         $useEmailOfSender,
                         $sendHtmlMail,
-                        $sendAttachment
+                        $sendAttachment,
+                        $saveDataInCrm
                 );
             } else {
                 $formId = $this->addForm(
@@ -1178,7 +1210,8 @@ class ContactManager extends ContactLib
                         $sendCopy,
                         $useEmailOfSender,
                         $sendHtmlMail,
-                        $sendAttachment
+                        $sendAttachment,
+                        $saveDataInCrm
                 );
             }
 
@@ -1225,11 +1258,8 @@ class ContactManager extends ContactLib
                         $formSubject
                 );
             }
-            
-            // do the fields
-            $fields = $this->_getFormFieldsFromPost();
-            $fileFieldFound = false;
 
+            $fileFieldFound = false;
             $formFieldIDs = array();
             foreach ($fields as $field) {
                 if($field['type'] == 'file') {
@@ -1419,14 +1449,14 @@ class ContactManager extends ContactLib
                 'select',
                 'special'
         );
-        
+
         // shorten the variables
-        $fieldNames      = isset($_POST['contactFormFieldName']) ? $_POST['contactFormFieldName'] : '';
-        $fieldValues     = isset($_POST['contactFormFieldValue']) ? $_POST['contactFormFieldValue'] : '';
-        $fieldTypes      = isset($_POST['contactFormFieldType']) ? $_POST['contactFormFieldType'] : '';
-        $fieldRequireds  = isset($_POST['contactFormFieldRequired']) ? $_POST['contactFormFieldRequired'] : '';
-        $fieldCheckTypes = isset($_POST['contactFormFieldCheckType']) ? $_POST['contactFormFieldCheckType'] : '';
-        $fieldEditType   = isset($_POST['contactFormFieldEditType']) ? $_POST['contactFormFieldEditType'] : '';
+        $fieldNames      = isset($_POST['contactFormFieldName']) ? $_POST['contactFormFieldName'] : array();
+        $fieldValues     = isset($_POST['contactFormFieldValue']) ? $_POST['contactFormFieldValue'] : array();
+        $fieldTypes      = isset($_POST['contactFormFieldType']) ? $_POST['contactFormFieldType'] : array();
+        $fieldRequireds  = isset($_POST['contactFormFieldRequired']) ? $_POST['contactFormFieldRequired'] : array();
+        $fieldCheckTypes = isset($_POST['contactFormFieldCheckType']) ? $_POST['contactFormFieldCheckType'] : array();
+        $fieldEditType   = isset($_POST['contactFormFieldEditType']) ? $_POST['contactFormFieldEditType'] : array();
 
         foreach ($fieldTypes as $id => $fieldType) {
             $id = intval($id);
@@ -1455,7 +1485,7 @@ class ContactManager extends ContactLib
                 'editType'      => $editType
             );
             $orderId++;
-            
+
             $arrActiveSystemFrontendLanguageIds = array_keys(FWLanguage::getActiveFrontendLanguages());
             foreach ($arrActiveSystemFrontendLanguageIds as $langId) {
                 if (!empty($_POST['contactFormLanguages'][$langId])) {
@@ -1465,7 +1495,7 @@ class ContactManager extends ContactLib
                         case 'access_country':
                             $fieldValue = $fieldValues[$id];
                             break;
-            
+
                         //case 'label':
                         case 'date':
                         case 'file':
@@ -1524,7 +1554,7 @@ class ContactManager extends ContactLib
                     'sort'  => $sortCounter++,
                     'editType' => $editTypes[$key]
             );
-            
+
             foreach (array_keys(FWLanguage::getActiveFrontendLanguages()) as $langId) {
                 $name = isset($names[$key][$langId])
                             ? $names[$key][$langId]
@@ -1719,7 +1749,7 @@ class ContactManager extends ContactLib
             if ($arrField['type'] != 'fieldset' && $arrField['type'] != 'hidden') {
                 $sourcecode[] = '<div class="contact row">';
             }
-            
+
             switch ($arrField['type']) {
                 case 'label':
                 case 'hidden':
@@ -1803,7 +1833,7 @@ class ContactManager extends ContactLib
                     $hasFileInput = true;
                     //$sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="file" name="contactFormField_'.$fieldId.'" />';
                     break;
-                
+
                 case 'hidden':
                     $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="hidden" name="contactFormField_'.$fieldId.'" value="'.($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['value']) : "{".$fieldId."_VALUE}").'" />';
                     break;
@@ -1811,7 +1841,7 @@ class ContactManager extends ContactLib
                 case 'horizontalLine':
                     $sourcecode[] = '<hr />';
                     break;
-                
+
                 case 'password':
                     $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="password" name="contactFormField_'.$fieldId.'" value="" />';
                     break;
@@ -1831,7 +1861,7 @@ class ContactManager extends ContactLib
                     $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
                     if ($preview) {
                         $options = explode(',', $arrField['lang'][$selectedLang]['value']);
-                        foreach ($options as $index => $option) {                            
+                        foreach ($options as $index => $option) {
                             $sourcecode[] = "<option value='".contrexx_raw2xhtml($option)."'>". contrexx_raw2xhtml($option) ."</option>";
                         }
                     } else {
@@ -1908,7 +1938,7 @@ class ContactManager extends ContactLib
         if ($show) {
             $sourcecode = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $sourcecode);
         }
-        
+
         return implode("\n", $sourcecode);
     }
 
@@ -1916,12 +1946,12 @@ class ContactManager extends ContactLib
     function _getEntryDetails($arrEntry, $formId)
     {
         global $_ARRAYLANG;
-        
+
         $arrFormFields = $this->getFormFields($formId);
         $recipient     = $this->getRecipients($formId);
         $rowNr         = 0;
         $langId        = $arrEntry['langId'];
-        
+
         $sourcecode .= "<table border=\"0\" class=\"adminlist\" cellpadding=\"3\" cellspacing=\"0\" width=\"100%\">\n";
         foreach ($arrFormFields as $key => $arrField) {
             /*
@@ -1933,12 +1963,12 @@ class ContactManager extends ContactLib
                                         <strong>".contrexx_raw2xhtml($arrField['lang'][FRONTEND_LANG_ID]['name']).($arrField['type'] == 'hidden' ? ' (hidden)' : '')."</strong>
                                     </td>\n
                                 <td width=\"85%\">";
-                
+
                 switch ($arrField['type']) {
                     case 'checkbox':
                         $sourcecode .= isset($arrEntry['data'][$key]) && $arrEntry['data'][$key] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO'];
                         break;
-    
+
                     case 'file':
                         if(isset($arrEntry['data'][$key])) {
                             $fieldData = $arrEntry['data'][$key];
@@ -1984,7 +2014,7 @@ class ContactManager extends ContactLib
     function csv_mb_convert_encoding($data)
     {
         static $doConvert;
-    
+
         if (!isset($doConvert)) {
             if (function_exists("mb_detect_encoding")
                 && $this->_csvCharset != CONTREXX_CHARSET
@@ -2035,7 +2065,7 @@ class ContactManager extends ContactLib
                 'LFB'           => "\r\n"
             )
         );
-        
+
         if (empty($formId)) {
             CSRF::header("Location: index.php?cmd=contact");
             return;
@@ -2070,11 +2100,11 @@ class ContactManager extends ContactLib
         print $csvFormat[$format]['BOM'];
 
         foreach ($arrFormFields as $arrField) {
-            
+
             // Fieldset and Horizontal Field Type need not be displayed in the details page
             if (!in_array($arrField['type'], $this->nonValueFormFieldTypes)) {
                 print $this->_escapeCsvValue($arrField['lang'][$selectedInterfaceLanguage]['name']).$this->_csvSeparator;
-            }                        
+            }
         }
 
         $arrSettings = $this->getSettings();
@@ -2114,18 +2144,18 @@ class ContactManager extends ContactLib
                             default:
                                 print isset($formEntriesValues['data'][$fieldId]) ? $this->_escapeCsvValue($formEntriesValues['data'][$fieldId]) : '';
                                 break;
-                            }                             
-                        } 
-                        print $this->_csvSeparator;                            
+                            }
+                        }
+                        print $this->_csvSeparator;
                     }
                 }
-                    
+
                 print ($arrSettings['fieldMetaDate'] == '1' ? $this->_escapeCsvValue(date(ASCMS_DATE_FORMAT, $formEntriesValues['time'])).$this->_csvSeparator : '')
                         .($arrSettings['fieldMetaHost'] == '1' ? $this->_escapeCsvValue($formEntriesValues['host']).$this->_csvSeparator : '')
                         .($arrSettings['fieldMetaLang'] == '1' ? $this->_escapeCsvValue($formEntriesValues['langId']).$this->_csvSeparator : '')
                     .($arrSettings['fieldMetaIP'] == '1' ? $this->_escapeCsvValue($formEntriesValues['ipaddress']) : '')
                     .$this->_csvLFB;
-                
+
                 $objEntry->MoveNext();
             }
         }
@@ -2239,7 +2269,7 @@ class ContactManager extends ContactLib
 
         $langIdsOfAssociatedPagesOfPageNode = array();
         foreach ($presentLangIds as $langId) {
-            // 
+            //
             $langIdsOfAssociatedPagesOfPageNode[$pages[$langId]->getId()] = array_keys($pages[$langId]->getNode()->getPagesByLang());
         }
 
@@ -2257,7 +2287,7 @@ class ContactManager extends ContactLib
                 // find a node to which we can attach our new page.
                 // We will prefer the latter.
                 DBG::msg("Page doesn't exist in lang $langId -> Create()");
-                
+
                 // Check if there exists already a content page to who's node we could attach our new page
                 if (count($pages)) {
                     if (   // In case the language in which we are going to create a new page isn't the default frontend language,
@@ -2298,9 +2328,9 @@ class ContactManager extends ContactLib
                     DBG::msg("No node found -> Create()");
                     $root = $this->em->getRepository('Cx\Model\ContentManager\Node')->getRoot();
 
-                    // Create a new node 
+                    // Create a new node
                     $node = new \Cx\Model\ContentManager\Node();
-                    $node->setParent($root);                
+                    $node->setParent($root);
                     $this->em->persist($node);
                 }
 
@@ -2321,10 +2351,10 @@ class ContactManager extends ContactLib
             $content = $this->_getSourceCode($formId, $langId);
 
             $page->setContent($content);
-            
+
             $this->em->persist($page);
 
-            // Remember newly created pages. We will need this for the creating of other new pages above in this method. 
+            // Remember newly created pages. We will need this for the creating of other new pages above in this method.
             if (!isset($pages[$langId])) {
                 $pages[$langId] = $page;
                 $langIdsOfAssociatedPagesOfPageNode[$pages[$langId]->getId()] = array($langId);
@@ -2348,11 +2378,11 @@ class ContactManager extends ContactLib
 
         $this->em->flush();
     }
-    
-    
+
+
     /**
      * Returns the appropriate icon of the given file.
-     * 
+     *
      * @param   string  $file
      * @return  string  $img
      */
@@ -2364,7 +2394,7 @@ class ContactManager extends ContactLib
         } else {
             $icon = '_blank';
         }
-        
+
         $img = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/media/'.$icon.'.gif" alt="Attach" border="0" style="position: relative; top: 3px;" />&nbsp;';
         return $img;
     }
