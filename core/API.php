@@ -76,12 +76,28 @@ if (isset($adminPage) && $adminPage ) {
 \Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/wrapper/json.php');
 
 /**
-    * Checks if a certain module, specified by param $moduleName, is active/installed.
-    *
-    * @param   string Module name
-    * @return boolean  Either TRUE or FALSE, depending if the module in question is
-    *                  active/installed or not.
-    */
+ * Checks if a certain module, specified by param $moduleName, is a core module.
+ *
+ * @param   string  $moduleName
+ * @return  boolean
+ */
+function contrexx_isCoreModule($moduleName)
+{
+    static $objModuleChecker = NULL;
+
+    if (!isset($objModuleChecker)) {
+        $objModuleChecker = new \Cx\Core\ModuleChecker(\Env::get('em'), \Env::get('db'));
+    }
+
+    return $objModuleChecker->isCoreModule($moduleName);
+}
+
+/**
+ * Checks if a certain module, specified by param $moduleName, is active.
+ *
+ * @param   string  $moduleName
+ * @return  boolean
+ */
 function contrexx_isModuleActive($moduleName)
 {
     static $objModuleChecker = NULL;
@@ -89,8 +105,27 @@ function contrexx_isModuleActive($moduleName)
     if (!isset($objModuleChecker)) {
         $objModuleChecker = new \Cx\Core\ModuleChecker(\Env::get('em'), \Env::get('db'));
     }
+
     return $objModuleChecker->isModuleActive($moduleName);
 }
+
+/**
+ * Checks if a certain module, specified by param $moduleName, is installed.
+ *
+ * @param   string  $moduleName
+ * @return  boolean
+ */
+function contrexx_isModuleInstalled($moduleName)
+{
+    static $objModuleChecker = NULL;
+
+    if (!isset($objModuleChecker)) {
+        $objModuleChecker = new \Cx\Core\ModuleChecker(\Env::get('em'), \Env::get('db'));
+    }
+
+    return $objModuleChecker->isModuleInstalled($moduleName);
+}
+
 
 /**
  * OBSOLETE

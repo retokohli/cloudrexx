@@ -1374,7 +1374,7 @@ class AccessManager extends AccessLib
         $rowNr = 0;
 
         // add a category in the digital asset management module
-        if (contrexx_isModuleActive('downloads')) {
+        if (contrexx_isModuleInstalled('downloads')) {
             $this->parseDigitalAssetManagementExtension($rowNr);
             $status = true;
             $this->_objTpl->parse('access_additional_functions_dam');
@@ -1405,7 +1405,7 @@ class AccessManager extends AccessLib
     private function processModuleSpecificExtensions($objUser)
     {
         // add a category in the digital asset management module
-        if (contrexx_isModuleActive('downloads')) {
+        if (contrexx_isModuleInstalled('downloads')) {
             $this->processDigitalAssetManagementExtension($objUser);
         }
     }
