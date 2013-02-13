@@ -600,7 +600,7 @@ $_ARRAYLANG['TXT_CRM_CONTACT_TYPE']                 = "Kontakttyp";
 $_ARRAYLANG['TXT_CRM_EMPLOYEE']                     = "Employees";
 
 $_ARRAYLANG['TXT_CRM_CONTACT']                      = "Contact";
-$_ARRAYLANG['TXT_TASK_DUE_DATE']                    = "Due Date and time";
+$_ARRAYLANG['TXT_TASK_DUE_DATE']                    = "Due Date and Time";
 $_ARRAYLANG['TXT_CRM_EMP_DEFAULT_USER_GROUP']       = "Employee's Default user group";
 $_ARRAYLANG['TXT_CRM_FIND_CONTACT_BY_NAME']         = "Find a contact by name";
 $_ARRAYLANG['TXT_CRM_FIND_COMPANY_BY_NAME']         = "Find a company by name";
