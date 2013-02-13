@@ -1400,11 +1400,11 @@ class CrmLibrary {
         global $objDatabase;
         
         $objResult = $objDatabase->SelectLimit("
-                                            SELECT 1
+                                            SELECT id
                                               FROM ".DBPREFIX."access_users
                                              WHERE email='".addslashes($email)."'
                                                AND id != $id", 1);
-        return ($objResult && $objResult->RecordCount() == 0);
+        return intval($objResult->fields['id']);
     }
 
 }
