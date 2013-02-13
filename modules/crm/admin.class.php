@@ -5541,11 +5541,19 @@ END;
             if ($customerId) {
                 $userId = $objDatabase->getOne("SELECT `user_account` FROM `". DBPREFIX ."module_{$this->moduleName}_contacts` WHERE `id` = $customerId");
             }
+
+            $accountId = $this->isUniqueUsername($term, $userId);
             
-            if ($this->isUniqueUsername($term, $userId)) {
-                $json['success'] = 'Available';
+            if ($accountId) {
+                $objCount = $objDatabase->Execute("SELECT `user_account` FROM `". DBPREFIX ."module_{$this->moduleName}_contacts` WHERE `user_account` = $accountId");
+                if ($objCount->RecordCount() && $userId != $objCount->fields['user_account']) {
+                    $json['error'] = $_ARRAYLANG['CRM_ERROR_EMAIL_USED_BY_OTHER_PERSON'];
+                } else {
+                    $json['error'] = $_ARRAYLANG['CRM_USER_EMAIL_ALERT'];
+                }                
             } else {
-                $json['error'] = $_ARRAYLANG['CRM_USER_EMAIL_ALERT'];
+                $json['success'] = 'Available';
+                
             }
         } else {
             $json['error'] = $_ARRAYLANG['TXT_CRM_EMAIL_EMPTY'];
