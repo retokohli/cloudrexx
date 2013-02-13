@@ -300,7 +300,7 @@
                         <td style="width: 145px;">
                             <strong>{TXT_CRM_CUSTOMERTYPE}</strong>
                         </td>
-                        <td style="width: 250px;">
+                        <td style="width: 350px;">
                             {CRM_CUSTOMER_TYPE}
                         </td>
                         <td style="width: 145px;">
@@ -339,31 +339,28 @@
                 <table width="100%" class="innerTable" id="" cellspacing="0" cellpadding="3">
                     <tr class="row1">
                         <td style="width: 145px;"><strong>{TXT_CRM_CONTACT_ROLE}</strong></td>
-                        <td style="width: 250px;">{CRM_CONTACT_ROLE}</td>
+                        <td style="width: 350px;">{CRM_CONTACT_ROLE}</td>
                         <td style="width: 145px;"><strong>{TXT_CRM_CONTACT_LANGUAGE}</strong></td>
                         <td >{CRM_CONTACT_LANGUAGE}</td>
                     </tr>
                     <tr class="row2">
                         <!-- BEGIN contactCustomer -->
                         <td><strong>{TXT_CRM_COMPNAY_NAME}</strong></td>
-                        <td colspan="3">
+                        <td>
                             {CRM_COMPNAY_NAME}                            
                         </td>
                         <!-- END contactCustomer -->
+                        <!-- BEGIN emptyContactCurrency -->
+                        <td colspan="2">&nbsp;</td>
+                        <!-- END emptyContactCurrency -->                        
+                    </tr>
+                    <tr>
                         <!-- BEGIN contactCustomerType -->
                         <td><strong>{TXT_CRM_CUSTOMERTYPE}</strong></td>
-                        <td colspan="3">
-                            {CRM_CUSTOMERTYPE}                            
+                        <td>
+                            {CRM_CUSTOMERTYPE}
                         </td>
                         <!-- END contactCustomerType -->
-                    </tr>
-                    <tr class="row1">
-                        <td>
-                            <strong>{TXT_CRM_MEMBERSHIP}</strong>
-                        </td>
-                        <td>
-                            {CRM_CUSTOMER_MEMBERSHIP}
-                        </td>
                         <!-- BEGIN contactCurrency -->
                         <td>
                             <strong>{TXT_CRM_CUSTOMER_CURRENCY}</strong>
@@ -372,10 +369,14 @@
                             {CRM_CUSTOMER_CURRENCY}
                         </td>
                         <!-- END contactCurrency -->
-                        <!-- BEGIN emptyContactCurrency -->
-                        <td colspan="2">&nbsp;</td>
-                        <!-- END emptyContactCurrency -->
-                        
+                    </tr>
+                    <tr class="row1">
+                        <td>
+                            <strong>{TXT_CRM_MEMBERSHIP}</strong>
+                        </td>
+                        <td>
+                            {CRM_CUSTOMER_MEMBERSHIP}
+                        </td>                        
                     </tr>
 
                 </table>
