@@ -26,67 +26,67 @@ define("ACCESS_ID_SETTINGS", 134);
  */
 class KnowledgeAdmin extends KnowledgeLibrary
 {
-	/**
-	 * Page Title
-	 *
-	 * @var string
-	 */
-	private $pageTitle	= '';
+    /**
+     * Page Title
+     *
+     * @var string
+     */
+    private $pageTitle	= '';
 
-	/**
-	 * Error message
-	 *
-	 * @var string
-	 */
-	private $errorMessage = "";
+    /**
+     * Error message
+     *
+     * @var string
+     */
+    private $errorMessage = "";
 
-	/**
-	 * Ok message
-	 *
-	 * @var string
-	 */
-	private $okMessage 	= '';
+    /**
+     * Ok message
+     *
+     * @var string
+     */
+    private $okMessage 	= '';
 
-	/**
-	 * Container for the adodb Object
-	 *
-	 * @var object
-	 */
-	private $tpl;
+    /**
+     * Container for the adodb Object
+     *
+     * @var object
+     */
+    private $tpl;
 
-	/**
-	 * The id of the current language
-	 *
-	 * @var int
-	 */
-	private $languageId = 1;
+    /**
+     * The id of the current language
+     *
+     * @var int
+     */
+    private $languageId = 1;
 
         private $act = '';
         
-	/**
-	* Constructor Create the module-menu and an internal template-object
+    /**
+    * Constructor Create the module-menu and an internal template-object
     *
     * @global $objInit
     * @global $objTemplate
     * @global $_CORELANG
     */
-	public function __construct()
-	{
-		global $objInit, $objTemplate, $_ARRAYLANG;
+    public function __construct()
+    {
+        global $objInit, $objTemplate, $_ARRAYLANG;
 
         JS::activate('prototype');
         JS::activate('scriptaculous');
 
-		Permission::checkAccess(ACCESS_ID_KNOWLEDGE, 'static');
+        Permission::checkAccess(ACCESS_ID_KNOWLEDGE, 'static');
 
-		KnowledgeLibrary::__construct();
-		$this->tpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/knowledge'.MODULE_INDEX.'/template');
+        KnowledgeLibrary::__construct();
+        $this->tpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/knowledge'.MODULE_INDEX.'/template');
         CSRF::add_placeholder($this->tpl);
-		$this->tpl->setErrorHandling(PEAR_ERROR_DIE);
+        $this->tpl->setErrorHandling(PEAR_ERROR_DIE);
 
- 		$this->languageId = $objInit->userFrontendLangId;
-    	
-	}
+         $this->languageId = $objInit->userFrontendLangId;
+        
+    }
         private function setNavigation()
         {
         global $objTemplate, $_ARRAYLANG;
@@ -95,13 +95,13 @@ class KnowledgeAdmin extends KnowledgeLibrary
             <a href=\"index.php?cmd=knowledge".MODULE_INDEX."&amp;section=articles\" class='".($this->act == 'articles' ? 'active' : '')."'>".$_ARRAYLANG['TXT_KNOWLEDGE_ARTICLES']."</a>
             <a href=\"index.php?cmd=knowledge".MODULE_INDEX."&amp;section=categories\" class='".($this->act == 'categories' ? 'active' : '')."'>".$_ARRAYLANG['TXT_KNOWLEDGE_CATEGORIES']."</a>
             <a href=\"index.php?cmd=knowledge".MODULE_INDEX."&amp;section=settings\" class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS']."</a>
-    	                                                   ");
+                                                           ");
         }
 
 
 
     /**
-	 * Return the page depending on the $_GET-params
+     * Return the page depending on the $_GET-params
      *
      * @global $objPerm
      * @global $objTemplate
@@ -109,57 +109,57 @@ class KnowledgeAdmin extends KnowledgeLibrary
      */
     function getPage()
     {
-    	global $objPerm, $objTemplate, $_ARRAYLANG;
+        global $objPerm, $objTemplate, $_ARRAYLANG;
 
-    	if(!isset($_GET['act'])) {
-    	    $_GET['act']='';
-    	}
+        if(!isset($_GET['act'])) {
+            $_GET['act']='';
+        }
 
-    	$_GET['section'] = (empty($_GET['section'])) ? "" :  $_GET['section'];
-    	switch ($_GET['section']) {
-    	    // The categories
+        $_GET['section'] = (empty($_GET['section'])) ? "" :  $_GET['section'];
+        switch ($_GET['section']) {
+            // The categories
             case 'categories':
-    	        switch ($_GET['act']) {
-    	            case 'add':
-    	                Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
-    	                $content = $this->editCategory(true);
-    	                $active = "add";
-    	                break;
-    	            case 'edit':
-    	                Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
+                switch ($_GET['act']) {
+                    case 'add':
+                        Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
+                        $content = $this->editCategory(true);
+                        $active = "add";
+                        break;
+                    case 'edit':
+                        Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
                         $content = $this->editCategory();
                         $active = "";
                         break;
-    	            case 'update':
-    	                Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
-    	                $id = $this->updateCategory();
-    	                CSRF::header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=categories&act=overview&highlight=".$id);
-    	                break;
-    	            case 'insert':
-    	                Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
-        	            $id = $this->insertCategory();
-    	                CSRF::header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=categories&act=overview&highlight=".$id);
-    	                break;
-    	            case 'delete':
-    	                Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
-    	                $this->deleteCategory();
-    	                break;
-    	            case 'switchState':
-    	                $this->checkAjaxAccess(ACCESS_ID_EDIT_CATEGORIES);
-    	                $this->switchCategoryState();
-    	                break;
-    	            case 'sort':
-    	                $this->checkAjaxAccess(ACCESS_ID_EDIT_CATEGORIES);
-    	                $this->sortCategory();
-    	                break;
-    	            case 'overview':
-    	            default:
-    	               Permission::checkAccess(ACCESS_ID_CATEGORIES, 'static');
-    	               $content = $this->categoriesOverview();
-    	               $active = "overview";
-    	               break;
-    	        }
-    	        $this->categories($content, $active);
+                    case 'update':
+                        Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
+                        $id = $this->updateCategory();
+                        CSRF::header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=categories&act=overview&highlight=".$id);
+                        break;
+                    case 'insert':
+                        Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
+                        $id = $this->insertCategory();
+                        CSRF::header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=categories&act=overview&highlight=".$id);
+                        break;
+                    case 'delete':
+                        Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
+                        $this->deleteCategory();
+                        break;
+                    case 'switchState':
+                        $this->checkAjaxAccess(ACCESS_ID_EDIT_CATEGORIES);
+                        $this->switchCategoryState();
+                        break;
+                    case 'sort':
+                        $this->checkAjaxAccess(ACCESS_ID_EDIT_CATEGORIES);
+                        $this->sortCategory();
+                        break;
+                    case 'overview':
+                    default:
+                       Permission::checkAccess(ACCESS_ID_CATEGORIES, 'static');
+                       $content = $this->categoriesOverview();
+                       $active = "overview";
+                       break;
+                }
+                $this->categories($content, $active);
                 break;
 
             // The articles
@@ -250,14 +250,14 @@ class KnowledgeAdmin extends KnowledgeLibrary
                 break;
             default:
                 CSRF::header("Location: index.php?cmd=knowledge".MODULE_INDEX."&section=articles");
-    	}
+        }
 
         $objTemplate->setVariable(array(
-			'CONTENT_TITLE'				=> $this->pageTitle,
-			'CONTENT_OK_MESSAGE'		=> $this->okMessage,
-			'CONTENT_STATUS_MESSAGE'	=> $this->errorMessage,
-			'ADMIN_CONTENT'				=> $this->tpl->get()
-		));
+            'CONTENT_TITLE'				=> $this->pageTitle,
+            'CONTENT_OK_MESSAGE'		=> $this->okMessage,
+            'CONTENT_STATUS_MESSAGE'	=> $this->errorMessage,
+            'ADMIN_CONTENT'				=> $this->tpl->get()
+        ));
 
         $this->act = $_REQUEST['section'];
         $this->setNavigation();
@@ -332,19 +332,19 @@ class KnowledgeAdmin extends KnowledgeLibrary
      */
     private function insertCategory()
     {
-    	global $_ARRAYLANG;
+        global $_ARRAYLANG;
 
-    	$parentCategory = intval($_POST['parentCategory']);
-    	$state = intval($_POST['state']);
+        $parentCategory = intval($_POST['parentCategory']);
+        $state = intval($_POST['state']);
 
-    	foreach ($_POST as $key => $var) {
-    	    if (strstr($key, "name_")) {
-    	        $lang = substr($key, 5);
-    	        $this->categories->addContent($lang, $var);
-    	    }
-    	}
+        foreach ($_POST as $key => $var) {
+            if (strstr($key, "name_")) {
+                $lang = substr($key, 5);
+                $this->categories->addContent($lang, $var);
+            }
+        }
 
-    	return $this->categories->insertCategory($state, $parentCategory);
+        return $this->categories->insertCategory($state, $parentCategory);
     }
 
     /**
@@ -401,18 +401,18 @@ class KnowledgeAdmin extends KnowledgeLibrary
         global $objDatabase, $_ARRAYLANG;
 
         $id = intval($_POST['update_id']);
-    	$parentCategory = intval($_POST['parentCategory']);
-    	$state = intval($_POST['state']);
+        $parentCategory = intval($_POST['parentCategory']);
+        $state = intval($_POST['state']);
 
-    	foreach ($_POST as $key => $var) {
-    	    if (strstr($key, "name_")) {
-    	        $lang = substr($key, 5);
-    	        $this->categories->addContent($lang, $var);
-    	    }
-    	}
+        foreach ($_POST as $key => $var) {
+            if (strstr($key, "name_")) {
+                $lang = substr($key, 5);
+                $this->categories->addContent($lang, $var);
+            }
+        }
 
-    	$this->categories->updateCategory($id, $state, $parentCategory);
-    	return $id;
+        $this->categories->updateCategory($id, $state, $parentCategory);
+        return $id;
     }
 
     /**
@@ -425,55 +425,55 @@ class KnowledgeAdmin extends KnowledgeLibrary
      */
     private function categoriesOverview()
     {
-    	global $_CORELANG, $_ARRAYLANG, $_LANGID;
+        global $_CORELANG, $_ARRAYLANG, $_LANGID;
 
-    	$this->pageTitle = $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORIES'];
-    	$this->tpl->loadTemplateFile('module_knowledge_categories_overview.html',true,true);
-    	$this->tpl->setGlobalVariable("MODULE_INDEX", MODULE_INDEX);
+        $this->pageTitle = $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORIES'];
+        $this->tpl->loadTemplateFile('module_knowledge_categories_overview.html',true,true);
+        $this->tpl->setGlobalVariable("MODULE_INDEX", MODULE_INDEX);
 
-    	$this->tpl->setVariable(array(
-			'TXT_CATEGORIES'   					=> $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORIES'],
-			'TXT_NAME'                          => $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_NAME'],
-			'TXT_ACTIONS'                       => $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_ACTIONS'],
-			'TXT_NO_CATEGORY_OBJECTS'           => $_ARRAYLANG['TXT_KNOWLEDGE_NO_CATEGORY_OBJECTS'],
-   			'TXT_CONFIRM_CATEGORY_DELETION'     => $_ARRAYLANG['TXT_KNOWLEDGE_CONFIRM_CATEGORY_DELETION'],
-   			'TXT_ENTRIES_AMOUNT'                => $_ARRAYLANG['TXT_KNOWLEDGE_ENTRIES_AMOUNT'],
-   			'TXT_SORT'                          => $_ARRAYLANG['TXT_KNOWLEDGE_SORT'],
+        $this->tpl->setVariable(array(
+            'TXT_CATEGORIES'   					=> $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORIES'],
+            'TXT_NAME'                          => $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_NAME'],
+            'TXT_ACTIONS'                       => $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_ACTIONS'],
+            'TXT_NO_CATEGORY_OBJECTS'           => $_ARRAYLANG['TXT_KNOWLEDGE_NO_CATEGORY_OBJECTS'],
+               'TXT_CONFIRM_CATEGORY_DELETION'     => $_ARRAYLANG['TXT_KNOWLEDGE_CONFIRM_CATEGORY_DELETION'],
+               'TXT_ENTRIES_AMOUNT'                => $_ARRAYLANG['TXT_KNOWLEDGE_ENTRIES_AMOUNT'],
+               'TXT_SORT'                          => $_ARRAYLANG['TXT_KNOWLEDGE_SORT'],
 
-			'TXT_ENTRIES_SUBTITLE_DATE'			=> $_ARRAYLANG['TXT_KNOWLEDGE_ENTRY_MANAGE_DATE'],
-			'TXT_ENTRIES_SUBTITLE_SUBJECT'		=> $_ARRAYLANG['TXT_KNOWLEDGE_ENTRY_ADD_SUBJECT'],
-			'TXT_ENTRIES_SUBTITLE_LANGUAGES'	=> $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_ADD_LANGUAGES'],
-			'TXT_ENTRIES_SUBTITLE_HITS'			=> $_ARRAYLANG['TXT_KNOWLEDGE_ENTRY_MANAGE_HITS'],
-			'TXT_ENTRIES_SUBTITLE_COMMENTS'		=> $_ARRAYLANG['TXT_KNOWLEDGE_ENTRY_MANAGE_COMMENTS'],
-			'TXT_ENTRIES_SUBTITLE_VOTES'		=> $_ARRAYLANG['TXT_KNOWLEDGE_ENTRY_MANAGE_VOTE'],
-			'TXT_ENTRIES_SUBTITLE_USER'			=> $_CORELANG['TXT_USER'],
-			'TXT_ENTRIES_SUBTITLE_EDITED'		=> $_ARRAYLANG['TXT_KNOWLEDGE_ENTRY_MANAGE_UPDATED'],
-			'TXT_ENTRIES_DELETE_ENTRY_JS'		=> $_ARRAYLANG['TXT_KNOWLEDGE_ENTRY_DELETE_JS'],
-    		'TXT_ENTRIES_MARKED'				=> $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_MANAGE_SUBMIT_MARKED'],
-    		'TXT_ENTRIES_SELECT_ALL'			=> $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_MANAGE_SUBMIT_SELECT'],
-    		'TXT_ENTRIES_DESELECT_ALL'			=> $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_MANAGE_SUBMIT_DESELECT'],
-    		'TXT_ENTRIES_SUBMIT_SELECT'			=> $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_MANAGE_SUBMIT_ACTION'],
-    		'TXT_ENTRIES_SUBMIT_DELETE'			=> $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_MANAGE_SUBMIT_DELETE'],
-   			'TXT_ENTRIES_SUBMIT_DELETE_JS'		=> $_ARRAYLANG['TXT_KNOWLEDGE_ENTRY_MANAGE_SUBMIT_DELETE_JS'],
+            'TXT_ENTRIES_SUBTITLE_DATE'			=> $_ARRAYLANG['TXT_KNOWLEDGE_ENTRY_MANAGE_DATE'],
+            'TXT_ENTRIES_SUBTITLE_SUBJECT'		=> $_ARRAYLANG['TXT_KNOWLEDGE_ENTRY_ADD_SUBJECT'],
+            'TXT_ENTRIES_SUBTITLE_LANGUAGES'	=> $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_ADD_LANGUAGES'],
+            'TXT_ENTRIES_SUBTITLE_HITS'			=> $_ARRAYLANG['TXT_KNOWLEDGE_ENTRY_MANAGE_HITS'],
+            'TXT_ENTRIES_SUBTITLE_COMMENTS'		=> $_ARRAYLANG['TXT_KNOWLEDGE_ENTRY_MANAGE_COMMENTS'],
+            'TXT_ENTRIES_SUBTITLE_VOTES'		=> $_ARRAYLANG['TXT_KNOWLEDGE_ENTRY_MANAGE_VOTE'],
+            'TXT_ENTRIES_SUBTITLE_USER'			=> $_CORELANG['TXT_USER'],
+            'TXT_ENTRIES_SUBTITLE_EDITED'		=> $_ARRAYLANG['TXT_KNOWLEDGE_ENTRY_MANAGE_UPDATED'],
+            'TXT_ENTRIES_DELETE_ENTRY_JS'		=> $_ARRAYLANG['TXT_KNOWLEDGE_ENTRY_DELETE_JS'],
+            'TXT_ENTRIES_MARKED'				=> $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_MANAGE_SUBMIT_MARKED'],
+            'TXT_ENTRIES_SELECT_ALL'			=> $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_MANAGE_SUBMIT_SELECT'],
+            'TXT_ENTRIES_DESELECT_ALL'			=> $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_MANAGE_SUBMIT_DESELECT'],
+            'TXT_ENTRIES_SUBMIT_SELECT'			=> $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_MANAGE_SUBMIT_ACTION'],
+            'TXT_ENTRIES_SUBMIT_DELETE'			=> $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_MANAGE_SUBMIT_DELETE'],
+               'TXT_ENTRIES_SUBMIT_DELETE_JS'		=> $_ARRAYLANG['TXT_KNOWLEDGE_ENTRY_MANAGE_SUBMIT_DELETE_JS'],
 
-   			"EDIT_ALLOWED"                        => (Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static', true)) ? "true" : "false",
+               "EDIT_ALLOWED"                        => (Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static', true)) ? "true" : "false",
             'NOT_ALLOWED_MSG'                   => $_ARRAYLANG['TXT_KNOWLEDGE_ACCESS_DENIED']
-   		));
+           ));
 
-   		try {
-   		    $this->categories->readCategories();
-   		    $this->articles->readArticles();
-   		} catch (DatabaseError $e) {
-   		    $this->errorMessage = $_ARRAYLANG['TXT_KNOWLEDGE_ERROR_OVERVIEW'];
-   		    $this->errorMessage .= $e->formatted();
-   		    return;
-   		}
+           try {
+               $this->categories->readCategories();
+               $this->articles->readArticles();
+           } catch (DatabaseError $e) {
+               $this->errorMessage = $_ARRAYLANG['TXT_KNOWLEDGE_ERROR_OVERVIEW'];
+               $this->errorMessage .= $e->formatted();
+               return;
+           }
 
-   		$categories = $this->parseCategoryOverview($this->categories->categoryTree);
+           $categories = $this->parseCategoryOverview($this->categories->categoryTree);
         $this->tpl->replaceBlock("remove_area", "");
-   		$this->tpl->setVariable("CATLIST", $categories);
+           $this->tpl->setVariable("CATLIST", $categories);
 
-   		return $this->tpl->get();
+           return $this->tpl->get();
     }
 
     /**
@@ -503,16 +503,16 @@ class KnowledgeAdmin extends KnowledgeLibrary
             $this->tpl->setVariable(array(
                     'CSS_DISPLAY'               => ($level == 0) ? "" : "none",
                     'CSS_BGCOLOR'               => (!empty($_GET['highlight']) && $_GET['highlight'] == $key) ? "#ceff88" : "",
-	   				'CATEGORY_ID'			    => $key,
-	   				'CATEGORY_ACTIVE_LED'       => ($category['active']) ? "green" : "red",
-	   				'CATEGORY_ACTIVE_STATE'     => ($category['active']) ? 0 : 1,
-	   				'CATEGORY_INDENT'           => ($level == 1) ? 18 : $level * 28,
-	   				'CATEGORY_SUBJECT'          => $category['content'][$_LANGID]['name'],
+                       'CATEGORY_ID'			    => $key,
+                       'CATEGORY_ACTIVE_LED'       => ($category['active']) ? "green" : "red",
+                       'CATEGORY_ACTIVE_STATE'     => ($category['active']) ? 0 : 1,
+                       'CATEGORY_INDENT'           => ($level == 1) ? 18 : $level * 28,
+                       'CATEGORY_SUBJECT'          => $category['content'][$_LANGID]['name'],
                     'CATEGORY_PLUS_VISIBLITY'   => (count($subcategories))  ? "visible" : "hidden",
                     'SUB'                       => $sub,
                     'ENTRIES_AMOUNT'            => $this->articles->countEntriesByCategory($key),
                     'SORTABLE_ID'               => $ul_id
-	   			));
+                   ));
             if ($level) {
 //                $this->tpl->touchBlock("arrow");
 //                $this->tpl->parse("arrow");
@@ -580,11 +580,11 @@ class KnowledgeAdmin extends KnowledgeLibrary
         global $_ARRAYLANG;
 
         $this->pageTitle = $_ARRAYLANG['TXT_EDIT_CATEGORY'];
-    	$this->tpl->loadTemplateFile('module_knowledge_categories_edit.html',true,true);
-    	$this->tpl->setGlobalVariable("MODULE_INDEX", MODULE_INDEX);
+        $this->tpl->loadTemplateFile('module_knowledge_categories_edit.html',true,true);
+        $this->tpl->setGlobalVariable("MODULE_INDEX", MODULE_INDEX);
 
-    	// the language variables
-    	$this->tpl->setGlobalVariable(array(
+        // the language variables
+        $this->tpl->setGlobalVariable(array(
             "TXT_GENERAL_SETTINGS"  => ($new) ? $_ARRAYLANG['TXT_KNOWLEDGE_ADD_CATEGORY'] : $_ARRAYLANG['TXT_KNOWLEDGE_EDIT_CATEGORY'] ,
             "TXT_PARENT_CATEGORY"   => $_ARRAYLANG['TXT_KNOWLEDGE_PARENT_CATEGORY'],
             "TXT_STATE"             => $_ARRAYLANG['TXT_KNOWLEDGE_STATE'],
@@ -596,62 +596,62 @@ class KnowledgeAdmin extends KnowledgeLibrary
             "TXT_NAME"              => $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_NAME'],
             "TXT_EDIT_EXTENDED"     => $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY_ADD_EXTENDED'],
             "TXT_TOP_CATEGORY"      => $_ARRAYLANG['TXT_KNOWLEDGE_TOP_CATEGORY']
-    	));
+        ));
 
-    	$languages = $this->createLanguageArray();
+        $languages = $this->createLanguageArray();
 
-      	try {
-    	    $this->categories->readCategories();
-    	} catch (DatabaseError $e) {
-    	    $this->errorMessage = $_ARRAYLANG['TXT_ERROR_READING_CATEGORIES'];
-    		    $this->errorMessage .= $e->formatted();
-    		    return;
-    	}
+          try {
+            $this->categories->readCategories();
+        } catch (DatabaseError $e) {
+            $this->errorMessage = $_ARRAYLANG['TXT_ERROR_READING_CATEGORIES'];
+                $this->errorMessage .= $e->formatted();
+                return;
+        }
 
-    	if ($new) {
-    	    $catId = 0;
-    	    // make a dummy category
-    	    $category = array(
-    	       'active'    => 1,
-    	       'parent'    => 0,
-    	       'content'  => array()
-    	    );
+        if ($new) {
+            $catId = 0;
+            // make a dummy category
+            $category = array(
+               'active'    => 1,
+               'parent'    => 0,
+               'content'  => array()
+            );
 
-    	    foreach ($languages as $key => $value) {
-    	        $category['content'][$key] = array(
-    	           'name' => "",
-    	        );
-    	    }
-    	} else {
-    	    // get the category data
+            foreach ($languages as $key => $value) {
+                $category['content'][$key] = array(
+                   'name' => "",
+                );
+            }
+        } else {
+            // get the category data
             $catId = intval($_GET['id']);
             $category = $this->categories->categories[$catId];
-    	}
+        }
 
-    	$langKeys = array_keys($languages);
+        $langKeys = array_keys($languages);
 
-    	// the general data
-    	$this->tpl->setVariable(array(
-    	   "CATEGORY_DROPDOWN"     => $this->categoryDropdown($this->categories->categoryTree, $category['parent']),
-    	   "ACTIVE_CHECKED"        => ($category['active']) ? "checked=\"checked\"" : "",
-    	   "INACTIVE_CHECKED"      => ($category['active']) ? "" : "checked=\"checked\"",
-    	   "EDIT_NAME"             => $category['content'][$langKeys[0]]['name'],
-    	   "FORM_ACTION"           => ($new) ? "insert" : "update",
-    	   "UPDATE_ID"             => $catId
-    	));
+        // the general data
+        $this->tpl->setVariable(array(
+           "CATEGORY_DROPDOWN"     => $this->categoryDropdown($this->categories->categoryTree, $category['parent']),
+           "ACTIVE_CHECKED"        => ($category['active']) ? "checked=\"checked\"" : "",
+           "INACTIVE_CHECKED"      => ($category['active']) ? "" : "checked=\"checked\"",
+           "EDIT_NAME"             => $category['content'][$langKeys[0]]['name'],
+           "FORM_ACTION"           => ($new) ? "insert" : "update",
+           "UPDATE_ID"             => $catId
+        ));
 
-    	// the different languages
+        // the different languages
         foreach($languages as $langId => $lang) {
             $this->tpl->setVariable(array(
                 'EDIT_NAME_LANGID'	=>	$langId,
                 'EDIT_NAME_LANG'	=>	$lang['long'],
                 'EDIT_NAME_VALUE'	=>	$category['content'][$langId]['name'] // empty since we make a new category
-	        ));
+            ));
 
             $this->tpl->parse('lang_name');
         }
 
-    	return $this->tpl->get();
+        return $this->tpl->get();
     }
 
 
@@ -795,6 +795,8 @@ class KnowledgeAdmin extends KnowledgeLibrary
     {
         global $_ARRAYLANG, $_CORELANG;
 
+        \JS::activate('cx');
+
         $this->pageTitle = $_ARRAYLANG['TXT_KNOWLEDGE_ARTICLES'];
         $this->tpl->loadTemplateFile("module_knowledge_articles_overview.html");
         $this->tpl->setGlobalVariable("MODULE_INDEX", MODULE_INDEX);
@@ -886,12 +888,10 @@ class KnowledgeAdmin extends KnowledgeLibrary
         }
 
         $tpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH."/knowledge/template/");
-        CSRF::add_placeholder($tpl);
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
-
         $tpl->loadTemplateFile("module_knowledge_articles_overview_articlelist.html");
+        CSRF::add_placeholder($tpl);
         $tpl->setGlobalVariable("MODULE_INDEX", MODULE_INDEX);
-
         $tpl->setGlobalVariable(array(
             // language variables
             "TXT_NAME"          => $_ARRAYLANG['TXT_NAME'],
@@ -905,8 +905,8 @@ class KnowledgeAdmin extends KnowledgeLibrary
             "TXT_CATEGORY_NAME" => $categoryname ,
             // getPaging(count, position, extraargv, paging-text, showeverytime, limit)
             //"PAGING"            => getPaging()
-            "TXT_BY" 			=> "bei",
-            "TXT_VOTINGS" 		=> "Abstimmungen"
+            "TXT_BY"            => "bei",
+            "TXT_VOTINGS"       => "Abstimmungen"
         ));
 
         if (!empty($articles)) {
@@ -982,114 +982,114 @@ class KnowledgeAdmin extends KnowledgeLibrary
         global $_ARRAYLANG;
 
         $this->pageTitle = $_ARRAYLANG['TXT_EDIT_ARTICLE'];
-    	$this->tpl->loadTemplateFile('module_knowledge_articles_edit.html', true, true);
-    	$this->tpl->setGlobalVariable("MODULE_INDEX", MODULE_INDEX);
+        $this->tpl->loadTemplateFile('module_knowledge_articles_edit.html', true, true);
+        $this->tpl->setGlobalVariable("MODULE_INDEX", MODULE_INDEX);
 
-    	$id = (empty($_GET['id'])) ? 0 : $_GET['id'];
+        $id = (empty($_GET['id'])) ? 0 : $_GET['id'];
 
-    	try {
-    	    $this->categories->readCategories();
-    	    if (!$new) {
-    	        $article = $this->articles->getOneArticle($id);
-    	        if (!$article) {
-    	            $this->errorMessage = $_ARRAYLANG['TXT_KNOWLEDGE_ERROR_NO_ARTICLE'];
-    	            return;
-    	        }
-    	        $tags = $this->tags->getByArticle($id);
-    	    }
-    	} catch (DatabaseError $e) {
-    	    $this->errorMessage = $_ARRAYLANG['TXT_KNOWLEDGE_ERROR_OVERVIEW'];
+        try {
+            $this->categories->readCategories();
+            if (!$new) {
+                $article = $this->articles->getOneArticle($id);
+                if (!$article) {
+                    $this->errorMessage = $_ARRAYLANG['TXT_KNOWLEDGE_ERROR_NO_ARTICLE'];
+                    return;
+                }
+                $tags = $this->tags->getByArticle($id);
+            }
+        } catch (DatabaseError $e) {
+            $this->errorMessage = $_ARRAYLANG['TXT_KNOWLEDGE_ERROR_OVERVIEW'];
             $this->errorMessage .= $e->formatted();
             return;
-    	}
+        }
 
-    	$languages = $this->createLanguageArray();
+        $languages = $this->createLanguageArray();
 
-    	// make an empty article if a new article is to be added
-    	if ($new) {
-    	    $article = array(
-    	       'category'      => 0,
-    	       'active'        => 1,
-    	       'content'       => array()
-    	    );
+        // make an empty article if a new article is to be added
+        if ($new) {
+            $article = array(
+               'category'      => 0,
+               'active'        => 1,
+               'content'       => array()
+            );
 
-    	    foreach ($languages as $key => $value) {
-    	        $article['content'][$key] = array(
-    	           'question' => "",
-    	           'answer' => ""
-    	        );
-    	    }
-    	}
+            foreach ($languages as $key => $value) {
+                $article['content'][$key] = array(
+                   'question' => "",
+                   'answer' => ""
+                );
+            }
+        }
 
-    	if (isset($_GET['updated']) && $_GET['updated']) {
-    	   $this->okMessage = $_ARRAYLANG['TXT_KNOWLEDGE_SUCCESSFULLY_SAVED'];
-    	}
+        if (isset($_GET['updated']) && $_GET['updated']) {
+           $this->okMessage = $_ARRAYLANG['TXT_KNOWLEDGE_SUCCESSFULLY_SAVED'];
+        }
 
-    	$this->tpl->setVariable(array(
-    	   "TXT_CATEGORY"      => $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY'],
-    	   "TXT_ACTIVE"        => $_ARRAYLANG['TXT_KNOWLEDGE_ACTIVE'],
-    	   "TXT_STATUS"        => $_ARRAYLANG['TXT_KNOWLEDGE_STATE'],
-    	   "TXT_INACTIVE"      => $_ARRAYLANG['TXT_KNOWLEDGE_INACTIVE'],
-    	   "TXT_SUBMIT"        => $_ARRAYLANG['TXT_KNOWLEDGE_SUBMIT'],
-    	   "TXT_CHOOSE_CATEGORY"   => $_ARRAYLANG['TXT_KNOWLEDGE_CHOOSE_CATEGORY'],
-    	   "TXT_PLEASE_CHOOSE_CATEGORY" => $_ARRAYLANG['TXT_KNOWLEDGE_PLEASE_CHOOSE_CATEGORY'],
+        $this->tpl->setVariable(array(
+           "TXT_CATEGORY"      => $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORY'],
+           "TXT_ACTIVE"        => $_ARRAYLANG['TXT_KNOWLEDGE_ACTIVE'],
+           "TXT_STATUS"        => $_ARRAYLANG['TXT_KNOWLEDGE_STATE'],
+           "TXT_INACTIVE"      => $_ARRAYLANG['TXT_KNOWLEDGE_INACTIVE'],
+           "TXT_SUBMIT"        => $_ARRAYLANG['TXT_KNOWLEDGE_SUBMIT'],
+           "TXT_CHOOSE_CATEGORY"   => $_ARRAYLANG['TXT_KNOWLEDGE_CHOOSE_CATEGORY'],
+           "TXT_PLEASE_CHOOSE_CATEGORY" => $_ARRAYLANG['TXT_KNOWLEDGE_PLEASE_CHOOSE_CATEGORY'],
 
-    	   "CATEGORIES"        => $this->categoryDropdown($this->categories->categoryTree, $article['category']),
-    	   "ACTION"            => ($new) ? "insert" : "update",
-    	   "TITLE"             => ($new) ? $_ARRAYLANG['TXT_KNOWLEDGE_ADD'] : $_ARRAYLANG['TXT_KNOWLEDGE_EDIT'],
+           "CATEGORIES"        => $this->categoryDropdown($this->categories->categoryTree, $article['category']),
+           "ACTION"            => ($new) ? "insert" : "update",
+           "TITLE"             => ($new) ? $_ARRAYLANG['TXT_KNOWLEDGE_ADD'] : $_ARRAYLANG['TXT_KNOWLEDGE_EDIT'],
 
-    	   "ACTIVE_CHECKED"    => $article['active'] ? "checked=\"checked\"" : "",
-    	   "INACTIVE_CHECKED"  => $article['active'] ? "" : "checked=\"checked\"",
-    	));
+           "ACTIVE_CHECKED"    => $article['active'] ? "checked=\"checked\"" : "",
+           "INACTIVE_CHECKED"  => $article['active'] ? "" : "checked=\"checked\"",
+        ));
 
-    	$first = true;
-    	foreach ($languages as $langId => $lang) {
-           	// tags
-        	if (!$new) {
-        	    $tagstring = "";
-        	    foreach ($tags as $tag) {
-        	        if ($tag['lang'] == $langId) {
-        	           $tagstring.= $tag['name'].", ";
-        	        }
-        	    }
-        	    // chop the last ', ' off
-        	    $tagstring = substr($tagstring, 0, -2);
-        	    $this->tpl->setVariable(array(
-        	       "TAGS"      => $tagstring
-        	    ));
-        	}
+        $first = true;
+        foreach ($languages as $langId => $lang) {
+               // tags
+            if (!$new) {
+                $tagstring = "";
+                foreach ($tags as $tag) {
+                    if ($tag['lang'] == $langId) {
+                       $tagstring.= $tag['name'].", ";
+                    }
+                }
+                // chop the last ', ' off
+                $tagstring = substr($tagstring, 0, -2);
+                $this->tpl->setVariable(array(
+                   "TAGS"      => $tagstring
+                ));
+            }
 
-    	    $this->tpl->setVariable(array(
-    	       "TABS_NAME"         => $lang['long'],
-    	       "TABS_DIV_ID"       => $lang['long'],
-    	       "TABS_LINK_ID"      => $lang['long'],
+            $this->tpl->setVariable(array(
+               "TABS_NAME"         => $lang['long'],
+               "TABS_DIV_ID"       => $lang['long'],
+               "TABS_LINK_ID"      => $lang['long'],
                "TABS_LANG_ID"      => $langId,
-    	       "TABS_CLASS"        => ($first) ? "active" : "inactive",
-    	    ));
-    	    $this->tpl->parse("showLanguageTabs");
+               "TABS_CLASS"        => ($first) ? "active" : "inactive",
+            ));
+            $this->tpl->parse("showLanguageTabs");
 
-    	    $this->tpl->setVariable(array(
-    	       "TXT_QUESTION"      => $_ARRAYLANG['TXT_KNOWLEDGE_QUESTION'],
-    	       "TXT_ANSWER"        => $_ARRAYLANG['TXT_KNOWLEDGE_ANSWER'],
-    	       "TXT_SORT_BY"       => $_ARRAYLANG['TXT_KNOWLEDGE_SORT_BY'],
-    	       "TXT_TAGS"          => $_ARRAYLANG['TXT_KNOWLEDGE_TAGS'],
-    	       "TXT_COMMA_SEPARATED" => $_ARRAYLANG['TXT_KNOWLEDGE_COMMA_SEPARATED'],
-    	       "TXT_AVAILABLE_TAGS" => $_ARRAYLANG['TXT_KNOWLEDGE_AVAILABLE_TAGS'],
-    	       "TXT_POPULARITY"    => $_ARRAYLANG['TXT_KNOWLEDGE_POPULARITY'],
-    	       "TXT_ALPHABETICAL"  => $_ARRAYLANG['TXT_KNOWLEDGE_ALPHABETICAL'],
+            $this->tpl->setVariable(array(
+               "TXT_QUESTION"      => $_ARRAYLANG['TXT_KNOWLEDGE_QUESTION'],
+               "TXT_ANSWER"        => $_ARRAYLANG['TXT_KNOWLEDGE_ANSWER'],
+               "TXT_SORT_BY"       => $_ARRAYLANG['TXT_KNOWLEDGE_SORT_BY'],
+               "TXT_TAGS"          => $_ARRAYLANG['TXT_KNOWLEDGE_TAGS'],
+               "TXT_COMMA_SEPARATED" => $_ARRAYLANG['TXT_KNOWLEDGE_COMMA_SEPARATED'],
+               "TXT_AVAILABLE_TAGS" => $_ARRAYLANG['TXT_KNOWLEDGE_AVAILABLE_TAGS'],
+               "TXT_POPULARITY"    => $_ARRAYLANG['TXT_KNOWLEDGE_POPULARITY'],
+               "TXT_ALPHABETICAL"  => $_ARRAYLANG['TXT_KNOWLEDGE_ALPHABETICAL'],
 
-    	       "LANG"              => $lang['long'],
-    	       "LANG_ID"           => $langId,
-    	       "DISPLAY"           => ($first) ? "block" : "none",
-    	       "ID"                => $lang['long'],
+               "LANG"              => $lang['long'],
+               "LANG_ID"           => $langId,
+               "DISPLAY"           => ($first) ? "block" : "none",
+               "ID"                => $lang['long'],
                "QUESTION"          => (isset($article['content'][$langId]) ?
                                        contrexx_raw2xhtml($article['content'][$langId]['question'])
                                        : ''),
                "ANSWER"            => isset($article['content'][$langId]) ?
                                        htmlentities($article['content'][$langId]['answer'], ENT_QUOTES, CONTREXX_CHARSET)
                                        : '',
-    	    ));
-    	    $this->tpl->parse("langDiv");
+            ));
+            $this->tpl->parse("langDiv");
 
             if ($first) {
                 $this->tpl->setVariable(array(
@@ -1101,13 +1101,13 @@ class KnowledgeAdmin extends KnowledgeLibrary
                 ));
             }
 
-    	    $first = false;
-    	}
+            $first = false;
+        }
 
-    	if (!$new) {
-    	    $this->tpl->setVariable("ID", $id);
-    	    $this->tpl->parse("edit_id");
-    	}
+        if (!$new) {
+            $this->tpl->setVariable("ID", $id);
+            $this->tpl->parse("edit_id");
+        }
 
         return $this->tpl->get();
     }
@@ -1334,62 +1334,62 @@ class KnowledgeAdmin extends KnowledgeLibrary
         global $_ARRAYLANG, $_CORELANG;
 
         $this->pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
-    	$this->tpl->loadTemplateFile('module_knowledge_settings.html',true,true);
-    	$this->tpl->setGlobalVariable("MODULE_INDEX", MODULE_INDEX);
+        $this->tpl->loadTemplateFile('module_knowledge_settings.html',true,true);
+        $this->tpl->setGlobalVariable("MODULE_INDEX", MODULE_INDEX);
 
-    	$this->tpl->setVariable(array(
-    	   'TXT_SETTINGS'                          => $_ARRAYLANG['TXT_SETTINGS'],
-    	   'TXT_FRONTPAGE'                         => $_ARRAYLANG['TXT_FRONTPAGE'],
-    	   'TXT_MAX_SUBCATEGORIES'                 => $_ARRAYLANG['TXT_KNOWLEDGE_MAX_SUBCATEGORIES'],
-    	   'TXT_MAX_SUBCATEGORIES_DESCRIPTION'     => $_ARRAYLANG['TXT_KNOWLEDGE_MAX_SUBCATEGORIES_DESCRIPTION'],
-    	   'TXT_COLUMN_NUMBER'                     => $_ARRAYLANG['TXT_KNOWLEDGE_COLUMN_NUMBER'],
-    	   'TXT_COLUMN_NUMBER_DESCRIPTION'         => $_ARRAYLANG['TXT_KNOWLEDGE_COLUMN_NUMBER_DESCRIPTION'],
-    	   'TXT_SAVE'                              => $_CORELANG['TXT_SAVE'],
-    	   'TXT_ARTICLES'                          => $_ARRAYLANG['TXT_KNOWLEDGE_ARTICLES'],
-    	   'TXT_MAX_RATING'                        => $_ARRAYLANG['TXT_KNOWLEDGE_MAX_RATING'],
-    	   'TXT_MAX_RATING_DESCRIPTION'            => $_ARRAYLANG['TXT_KNOWLEDGE_MAX_RATING_DESCRIPTION'],
+        $this->tpl->setVariable(array(
+           'TXT_SETTINGS'                          => $_ARRAYLANG['TXT_SETTINGS'],
+           'TXT_FRONTPAGE'                         => $_ARRAYLANG['TXT_FRONTPAGE'],
+           'TXT_MAX_SUBCATEGORIES'                 => $_ARRAYLANG['TXT_KNOWLEDGE_MAX_SUBCATEGORIES'],
+           'TXT_MAX_SUBCATEGORIES_DESCRIPTION'     => $_ARRAYLANG['TXT_KNOWLEDGE_MAX_SUBCATEGORIES_DESCRIPTION'],
+           'TXT_COLUMN_NUMBER'                     => $_ARRAYLANG['TXT_KNOWLEDGE_COLUMN_NUMBER'],
+           'TXT_COLUMN_NUMBER_DESCRIPTION'         => $_ARRAYLANG['TXT_KNOWLEDGE_COLUMN_NUMBER_DESCRIPTION'],
+           'TXT_SAVE'                              => $_CORELANG['TXT_SAVE'],
+           'TXT_ARTICLES'                          => $_ARRAYLANG['TXT_KNOWLEDGE_ARTICLES'],
+           'TXT_MAX_RATING'                        => $_ARRAYLANG['TXT_KNOWLEDGE_MAX_RATING'],
+           'TXT_MAX_RATING_DESCRIPTION'            => $_ARRAYLANG['TXT_KNOWLEDGE_MAX_RATING_DESCRIPTION'],
 
-    	   'TXT_COLUMN_MOST_READ_COUNT_DESCRIPTION'    => $_ARRAYLANG['TXT_KNOWLEDGE_COLUMN_MOST_READ_COUNT_DESCRIPTION'],
-    	   'TXT_GENERAL'                           => $_ARRAYLANG['TXT_KNOWLEDGE_GENERAL'],
-    	   'TXT_TIDY_TAGS'                         => $_ARRAYLANG['TXT_KNOWLEDGE_TIDY_TAGS'],
-    	   'TXT_TIDY_TAGS_DESCRIPTION'             => $_ARRAYLANG['TXT_KNOWLEDGE_TIDY_TAGS_DESCRIPTION'],
-    	   'TXT_RESET_HITS'                        => $_ARRAYLANG['TXT_KNOWLEDGE_RESET_HITS'],
-    	   'TXT_RESET_HITS_DESCRIPTION'            => $_ARRAYLANG['TXT_KNOWLEDGE_RESET_HITS_DESCRIPTION'],
-    	   'TXT_REPLACE_PLACEHOLDERS'              => $_ARRAYLANG['TXT_KNOWLEDGE_REPLACE_PLACEHOLDERS'],
-    	   'TXT_REPLACE_PLACEHOLDERS_DESCRIPTION'  => $_ARRAYLANG['TXT_KNOWLEDGE_REPLACE_PLACEHOLDERS_DESCRIPTION'],
+           'TXT_COLUMN_MOST_READ_COUNT_DESCRIPTION'    => $_ARRAYLANG['TXT_KNOWLEDGE_COLUMN_MOST_READ_COUNT_DESCRIPTION'],
+           'TXT_GENERAL'                           => $_ARRAYLANG['TXT_KNOWLEDGE_GENERAL'],
+           'TXT_TIDY_TAGS'                         => $_ARRAYLANG['TXT_KNOWLEDGE_TIDY_TAGS'],
+           'TXT_TIDY_TAGS_DESCRIPTION'             => $_ARRAYLANG['TXT_KNOWLEDGE_TIDY_TAGS_DESCRIPTION'],
+           'TXT_RESET_HITS'                        => $_ARRAYLANG['TXT_KNOWLEDGE_RESET_HITS'],
+           'TXT_RESET_HITS_DESCRIPTION'            => $_ARRAYLANG['TXT_KNOWLEDGE_RESET_HITS_DESCRIPTION'],
+           'TXT_REPLACE_PLACEHOLDERS'              => $_ARRAYLANG['TXT_KNOWLEDGE_REPLACE_PLACEHOLDERS'],
+           'TXT_REPLACE_PLACEHOLDERS_DESCRIPTION'  => $_ARRAYLANG['TXT_KNOWLEDGE_REPLACE_PLACEHOLDERS_DESCRIPTION'],
 
-    	   'TXT_BEST_RATED_PLACEHOLDER'            => $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_PLACEHOLDER'],
-    	   'TXT_BEST_RATED_AMOUNT'                 => $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_AMOUNT'],
-    	   'TXT_BEST_RATED_AMOUNT_DESCRIPTION'     => $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_AMOUNT_DESCRIPTION'],
-    	   'TXT_BEST_RATED_SIDEBAR_LENGTH'               => $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_SIDEBAR_LENGTH'],
-    	   'TXT_BEST_RATED_SIDEBAR_LENGTH_DESCRIPTION'   => $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_SIDEBAR_LENGTH_DESCRIPTION'],
-    	   'TXT_BEST_RATED_TEMPLATE'               => $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_TEMPLATE'],
-    	   'TXT_BEST_RATED_TEMPLATE_DESCRIPTION'   => $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_TEMPLATE_DESCRIPTION'],
+           'TXT_BEST_RATED_PLACEHOLDER'            => $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_PLACEHOLDER'],
+           'TXT_BEST_RATED_AMOUNT'                 => $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_AMOUNT'],
+           'TXT_BEST_RATED_AMOUNT_DESCRIPTION'     => $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_AMOUNT_DESCRIPTION'],
+           'TXT_BEST_RATED_SIDEBAR_LENGTH'               => $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_SIDEBAR_LENGTH'],
+           'TXT_BEST_RATED_SIDEBAR_LENGTH_DESCRIPTION'   => $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_SIDEBAR_LENGTH_DESCRIPTION'],
+           'TXT_BEST_RATED_TEMPLATE'               => $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_TEMPLATE'],
+           'TXT_BEST_RATED_TEMPLATE_DESCRIPTION'   => $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_TEMPLATE_DESCRIPTION'],
 
-    	   'TXT_MOST_READ_PLACEHOLDER'             => $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_PLACEHOLDER'],
-    	   'TXT_MOST_READ_AMOUNT'                  => $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_AMOUNT'],
-    	   'TXT_MOST_READ_SIDEBAR_LENGTH'          => $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_SIDEBAR_LENGTH'],
-    	   'TXT_MOST_READ_SIDEBAR_LENGTH_DESCRIPTION' => $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_SIDEBAR_LENGTH_DESCRIPTION'],
-    	   'TXT_MOST_READ_TEMPLATE'                => $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_TEMPLATE'],
-    	   'TXT_MOST_READ_TEMPLATE_DESCRIPTION'    => $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_TEMPLATE_DESCRIPTION']
-    	));
+           'TXT_MOST_READ_PLACEHOLDER'             => $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_PLACEHOLDER'],
+           'TXT_MOST_READ_AMOUNT'                  => $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_AMOUNT'],
+           'TXT_MOST_READ_SIDEBAR_LENGTH'          => $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_SIDEBAR_LENGTH'],
+           'TXT_MOST_READ_SIDEBAR_LENGTH_DESCRIPTION' => $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_SIDEBAR_LENGTH_DESCRIPTION'],
+           'TXT_MOST_READ_TEMPLATE'                => $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_TEMPLATE'],
+           'TXT_MOST_READ_TEMPLATE_DESCRIPTION'    => $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_TEMPLATE_DESCRIPTION']
+        ));
 
-    	$this->tpl->setVariable(array(
-    	   'COLUMN_NUMBER'                     => $this->settings->get('column_number'),
-    	   'MAX_SUBCATEGORIES'                 => $this->settings->get('max_subcategories'),
-    	   'MAX_RATING'                        => $this->settings->get('max_rating'),
-    	   'BEST_RATED_SIDEBAR_LENGTH'         => $this->settings->get('best_rated_sidebar_length'),
-    	   'BEST_RATED_SIDEBAR_AMOUNT'         => $this->settings->get('best_rated_sidebar_amount'),
-    	   'BEST_RATED_SIDEBAR_TEMPLATE'       => $this->settings->get('best_rated_sidebar_template'),
-    	   'REPLACE_PLACEHOLDERS_CHECKED'      => ($this->getGlobalSetting()) ? "checked=\"checked\"" : '',
-    	   'MOST_READ_SIDEBAR_LENGTH'          => $this->settings->get('most_read_sidebar_length'),
-    	   'MOST_READ_SIDEBAR_AMOUNT'          => $this->settings->get('most_read_sidebar_amount'),
-    	   'MOST_READ_SIDEBAR_TEMPLATE'        => $this->settings->get('most_read_sidebar_template'),
-    	   'MOST_READ_AMOUNT'                  => $this->settings->get('most_read_amount'),
-    	   'BEST_RATED_AMOUNT'                 => $this->settings->get('best_rated_amount')
-    	));
+        $this->tpl->setVariable(array(
+           'COLUMN_NUMBER'                     => $this->settings->get('column_number'),
+           'MAX_SUBCATEGORIES'                 => $this->settings->get('max_subcategories'),
+           'MAX_RATING'                        => $this->settings->get('max_rating'),
+           'BEST_RATED_SIDEBAR_LENGTH'         => $this->settings->get('best_rated_sidebar_length'),
+           'BEST_RATED_SIDEBAR_AMOUNT'         => $this->settings->get('best_rated_sidebar_amount'),
+           'BEST_RATED_SIDEBAR_TEMPLATE'       => $this->settings->get('best_rated_sidebar_template'),
+           'REPLACE_PLACEHOLDERS_CHECKED'      => ($this->getGlobalSetting()) ? "checked=\"checked\"" : '',
+           'MOST_READ_SIDEBAR_LENGTH'          => $this->settings->get('most_read_sidebar_length'),
+           'MOST_READ_SIDEBAR_AMOUNT'          => $this->settings->get('most_read_sidebar_amount'),
+           'MOST_READ_SIDEBAR_TEMPLATE'        => $this->settings->get('most_read_sidebar_template'),
+           'MOST_READ_AMOUNT'                  => $this->settings->get('most_read_amount'),
+           'BEST_RATED_AMOUNT'                 => $this->settings->get('best_rated_amount')
+        ));
 
-    	return $this->tpl->get();
+        return $this->tpl->get();
     }
 
     /**
@@ -1416,7 +1416,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
         } catch (DatabaseError $e) {
             global $_ARRAYLANG;
             $this->errorMessage = $_ARRAYLANG['TXT_KNOWLEDGE_ERROR_OVERVIEW'];
-   		    $this->errorMessage .= $e->formatted();
+               $this->errorMessage .= $e->formatted();
         }
     }
 
@@ -1469,16 +1469,16 @@ class KnowledgeAdmin extends KnowledgeLibrary
         global $_ARRAYLANG, $_CORELANG;
 
         $this->pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
-    	$this->tpl->loadTemplateFile('module_knowledge_settings_placeholder.html',true,true);
-    	$this->tpl->setGlobalVariable("MODULE_INDEX", MODULE_INDEX);
+        $this->tpl->loadTemplateFile('module_knowledge_settings_placeholder.html',true,true);
+        $this->tpl->setGlobalVariable("MODULE_INDEX", MODULE_INDEX);
 
-    	$this->tpl->setVariable(array(
-    	   'TXT_PLACEHOLDERS'      => $_ARRAYLANG['TXT_KNOWLEDGE_PLACEHOLDER'],
-    	   'TXT_PLACEHOLDER_TAG_CLOUD_DESCRIPTION'      => $_ARRAYLANG['TXT_KNOWLEDGE_PLACEHOLDER_TAG_CLOUD_DESCRIPTION'],
-    	   'TXT_PLACEHOLDER_BEST_RATED_DESCRIPTION'     => $_ARRAYLANG['TXT_KNOWLEDGE_PLACEHOLDER_MOST_POPULAR_DESCRIPTION'],
+        $this->tpl->setVariable(array(
+           'TXT_PLACEHOLDERS'      => $_ARRAYLANG['TXT_KNOWLEDGE_PLACEHOLDER'],
+           'TXT_PLACEHOLDER_TAG_CLOUD_DESCRIPTION'      => $_ARRAYLANG['TXT_KNOWLEDGE_PLACEHOLDER_TAG_CLOUD_DESCRIPTION'],
+           'TXT_PLACEHOLDER_BEST_RATED_DESCRIPTION'     => $_ARRAYLANG['TXT_KNOWLEDGE_PLACEHOLDER_MOST_POPULAR_DESCRIPTION'],
            'TXT_PLACEHOLDER_MOST_READ_DESCRIPTION'     => $_ARRAYLANG['TXT_KNOWLEDGE_PLACEHOLDER_MOST_READ_DESCRIPTION']
-    	));
+        ));
 
-    	return $this->tpl->get();
+        return $this->tpl->get();
     }
 }
