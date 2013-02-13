@@ -3952,8 +3952,13 @@ END;
             $taskAutoId = $objValue->fields['task_id'];
         }
 
-        $objResultMember = $objDatabase->Execute('SELECT resource.*,contrexxuser.id as userid,contrexxuser.is_admin,contrexxuser.active,contrexxuser.username FROM '.DBPREFIX.'module_pm_resources AS resource LEFT JOIN '.DBPREFIX.'access_users AS contrexxuser ON contrexxuser.id=resource.contrexx_user_id
-                                                                WHERE contrexxuser.active != 0 ORDER BY contrexxuser.username');
+        $objResultMember = $objDatabase->Execute('SELECT contrexxuser.id as userid,
+                                                         contrexxuser.is_admin,
+                                                         contrexxuser.active,
+                                                         contrexxuser.username
+                                                   FROM '.DBPREFIX.'access_users AS contrexxuser
+                                                      WHERE contrexxuser.active != 0
+                                                   ORDER BY contrexxuser.username');
         while(!$objResultMember->EOF) {
             $selectedMember = ($assignedto ==  $objResultMember->fields['userid']) ? "selected" : '';
 
