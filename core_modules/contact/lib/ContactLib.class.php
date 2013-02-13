@@ -64,12 +64,12 @@ class ContactLib
     }
 
     /**
-     * Read the contact forms 
+     * Read the contact forms
      */
     function initContactForms()
     {
         global $objDatabase;
-        
+
         $this->arrForms = array();
 
         // load form meta information
@@ -78,6 +78,7 @@ class ContactLib
                          `showForm`,
                          `use_captcha`,
                          `use_custom_style`,
+                         `save_data_in_crm`,
                          `send_copy`,
                          `use_email_of_sender`,
                          `html_mail`,
@@ -90,6 +91,7 @@ class ContactLib
                     'emails'            => $objResult->fields['mails'],
                     'showForm'          => $objResult->fields['showForm'],
                     'useCaptcha'        => $objResult->fields['use_captcha'],
+                    'saveDataInCRM'     => $objResult->fields['save_data_in_crm'],
                     'useCustomStyle'    => $objResult->fields['use_custom_style'],
                     'sendCopy'          => $objResult->fields['send_copy'],
                     'useEmailOfSender'  => $objResult->fields['use_email_of_sender'],
@@ -267,7 +269,7 @@ class ContactLib
 
         if (isset($this->arrForms[$formID])) {
             $query = "
-                SELECT 
+                SELECT
                     `f`.`id`,
                     `f`.`type`,
                     `f`.`special_type`,
@@ -276,7 +278,7 @@ class ContactLib
                     `l`.`name`,
                     `l`.`langID`,
                     `l`.`attributes`
-                FROM 
+                FROM
                     `".DBPREFIX."module_contact_form_field`         AS `f`
 
                 LEFT JOIN
@@ -284,10 +286,10 @@ class ContactLib
                 ON
                     `f`.`id` = `l`.`fieldID`
 
-                WHERE 
+                WHERE
                     `id_form` = ".$formID."
 
-                ORDER BY 
+                ORDER BY
                     `f`.`order_id`,
                     `f`.`id`
             ";
@@ -382,11 +384,11 @@ class ContactLib
                     $lastID = $recipient['id'];
                 }
 
-                $recipients[$lastID]['lang'][$recipient['langID']] = 
+                $recipients[$lastID]['lang'][$recipient['langID']] =
                     contrexx_stripslashes($recipient['name']);
             }
         }
-        
+
         return $recipients;
     }
 
@@ -397,7 +399,7 @@ class ContactLib
      * @param       int $formID
      * @param       array $recipient
      */
-    protected function addRecipient($formID, $recipient) 
+    protected function addRecipient($formID, $recipient)
     {
         global $objDatabase;
 
@@ -469,7 +471,7 @@ class ContactLib
      * @param       int $langID
      * @param       string $name
      */
-    private function setRecipientLang($rcID, $langID, $name) 
+    private function setRecipientLang($rcID, $langID, $name)
     {
         global $objDatabase;
 
@@ -502,7 +504,7 @@ class ContactLib
         global $objDatabase;
 
         $arrFieldNames = array();
-        
+
         if (isset($this->arrForms[$id])) {
             $objFields = $objDatabase->Execute("SELECT `f`.`id`, `l`.`name`
                                                  FROM `".DBPREFIX."module_contact_form_field` as `f`
@@ -597,15 +599,16 @@ class ContactLib
         $sendCopy,
         $useEmailOfSender,
         $sendHtmlMail,
-        $sendAttachment
+        $sendAttachment,
+        $saveDataInCrm
     )
     {
         global $objDatabase;
 
         $objDatabase->Execute("
-            UPDATE 
+            UPDATE
                 `".DBPREFIX."module_contact_form`
-            SET 
+            SET
                 mails               = '".addslashes($emails)."',
                 showForm            = ".$showForm.",
                 use_captcha         = ".$useCaptcha.",
@@ -613,8 +616,9 @@ class ContactLib
                 send_copy           = ".$sendCopy.",
                 use_email_of_sender = ".$useEmailOfSender.",
                 html_mail           = ".$sendHtmlMail.",
-                send_attachment     = ".$sendAttachment." 
-            WHERE 
+                send_attachment     = ".$sendAttachment.",
+                `save_data_in_crm`  = ".$saveDataInCrm."
+            WHERE
                 id = ".$formID
         );
 
@@ -640,13 +644,14 @@ class ContactLib
         $sendCopy,
         $useEmailOfSender,
         $sendHtmlMail,
-        $sendAttachment
+        $sendAttachment,
+        $saveDataInCrm
     )
     {
         global $objDatabase, $_FRONTEND_LANGID;
 
         $query = "
-            INSERT INTO 
+            INSERT INTO
                 ".DBPREFIX."module_contact_form
             (
                 `mails`,
@@ -656,7 +661,8 @@ class ContactLib
                 `send_copy`,
                 `use_email_of_sender`,
                 `html_mail`,
-                `send_attachment`
+                `send_attachment`,
+                `save_data_in_crm`
             )
             VALUES
             (
@@ -667,7 +673,8 @@ class ContactLib
                 ".$sendCopy.",
                 ".$useEmailOfSender.",
                 ".$sendHtmlMail.",
-                ".$sendAttachment."
+                ".$sendAttachment.",
+                ".$saveDataInCrm."
             )";
 
         if ($objDatabase->Execute($query) !== false) {
@@ -785,9 +792,9 @@ class ContactLib
         $objDatabase->query($query);
 
         $query = "
-            DELETE FROM 
-                ".DBPREFIX."module_contact_recipient 
-            WHERE 
+            DELETE FROM
+                ".DBPREFIX."module_contact_recipient
+            WHERE
                 id_form = ".$id;
         if($objDatabase->Execute($query)){
             return true;
@@ -797,7 +804,7 @@ class ContactLib
     }
 
     /**
-     * Delete a form 
+     * Delete a form
      *
      * @author      Comvation AG <info@comvation.com>
      */
@@ -816,9 +823,9 @@ class ContactLib
         $objDatabase->execute($query);
 
         $query = "
-            DELETE FROM 
-                ".DBPREFIX."module_contact_form 
-            WHERE 
+            DELETE FROM
+                ".DBPREFIX."module_contact_form
+            WHERE
                 id = ".$id;
 
         $res = $objDatabase->Execute($query);
@@ -871,9 +878,9 @@ class ContactLib
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       int $formID
      * @param       array $field
-     * @return      int 
+     * @return      int
      */
-    protected function addFormField($formID, $field) 
+    protected function addFormField($formID, $field)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -927,7 +934,7 @@ class ContactLib
         $formID = intval($formID);
 
         $query = '
-            DELETE 
+            DELETE
                 `l`
             FROM
                 `'.DBPREFIX.'module_contact_form_field_lang` AS  `l`
@@ -1041,7 +1048,7 @@ class ContactLib
      * @param       int $fieldID
      * @param       array $values
      */
-    protected function setFormFieldLang($fieldID, $langID, $values) 
+    protected function setFormFieldLang($fieldID, $langID, $values)
     {
         global $objDatabase;
 
@@ -1091,7 +1098,7 @@ class ContactLib
         global $objDatabase;
 
         $query = "
-            DELETE 
+            DELETE
                 `l`
             FROM
                 `".DBPREFIX."module_contact_form_field_lang`    AS `l`
@@ -1105,16 +1112,16 @@ class ContactLib
         $objDatabase->Execute($query);
 
         $query = "
-            DELETE FROM 
-                ".DBPREFIX."module_contact_form_field 
-            WHERE 
+            DELETE FROM
+                ".DBPREFIX."module_contact_form_field
+            WHERE
                 id_form = ".$id;
 
         $objDatabase->Execute($query);
     }
 
     /**
-     * Delete form data 
+     * Delete form data
      *
      * @author      Comvation AG <info@comvation.com>
      * @param       int $id
@@ -1124,9 +1131,9 @@ class ContactLib
         global $objDatabase;
 
         $query = "
-            DELETE FROM 
+            DELETE FROM
                 `".DBPREFIX."module_contact_form_data`
-            WHERE 
+            WHERE
                 `id_form` = ".$id;
         $objDatabase->Execute($query);
     }
@@ -1147,11 +1154,11 @@ class ContactLib
                 $arrTmp = explode(',', $keyValue);
                 $arrData[base64_decode($arrTmp[0])] = base64_decode($arrTmp[1]);
             }
-          
+
             //load contact form fields - we need to know which ones have the type 'file'
             $this->initContactForms();
             $arrFormFields = $this->getFormFields($formId);
-            
+
             foreach($arrFormFields as $arrField) {
                 //see if it's a file field...
                 if($arrField['type'] == 'file') {
@@ -1166,7 +1173,7 @@ class ContactLib
                         //old style entry, single file
                         $arrFiles = array($val);
                     }
-                  
+
                     //nice, we have all the files. delete them.
                     foreach($arrFiles as $file) {
                         @unlink(ASCMS_DOCUMENT_ROOT.$file);
@@ -1228,7 +1235,7 @@ class ContactLib
                 $objEntry->MoveNext();
             }
         }
-        
+
         return $arrEntries;
     }
 
@@ -1241,7 +1248,7 @@ class ContactLib
                                                FROM ".DBPREFIX."module_contact_form_data
                                                WHERE id=".$id, 1);
 
-    
+
         if ($objEntry !== false) {
             $objResult = $objDatabase->SelectLimit("SELECT `id_field`, `formlabel`, `formvalue`
                                                     FROM ".DBPREFIX."module_contact_form_submit_data
@@ -1252,7 +1259,7 @@ class ContactLib
             if(!$this->legacyMode) {
                 $formId = $objEntry->fields['id_form'];
                 $rs = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_contact_form_field WHERE type='file' AND id_form = ".$formId, 1);
-                
+
                 if($rs !== false && !$rs->EOF) {
                     $fileFieldId = $rs->fields['id'];
                 }
@@ -1262,7 +1269,7 @@ class ContactLib
             while (!$objResult->EOF){
                 $data = $objResult->fields['formvalue'];
                 $arrData[$objResult->fields['id_field']] = $data;
-                
+
                 $objResult->MoveNext();
             }
 
@@ -1314,48 +1321,48 @@ class ContactLib
         $code .= <<<JS_checkAllFields
 function checkAllFields() {
     var isOk = true;
-    
+
     for (var field in fields) {
         var type = fields[field][3];
         if (type != null && type != undefined) {
-            if ((type == 'text') || (type == 'password') || (type == 'textarea') || (type == 'date') || ((type.match(/access_/) != null) && (type != 'access_country'))) {
-                value = document.getElementsByName('contactFormField_' + field)[0].value;
-                if ((\$J.trim(value) == '') && isRequiredNorm(fields[field][1], value)) {
-                    isOk = false;
-                    \$J('#contactFormFieldId_'+field).css('border', '1px solid red');
-                } else if ((value != '') && !matchType(fields[field][2], value)) {
-                    isOk = false;
-                    \$J('#contactFormFieldId_'+field).css('border', '1px solid red');
-                } else {
-                    \$J('#contactFormFieldId_'+field).attr('style', '');
-                }
-            } else if (type == 'checkbox') {
-                if (!isRequiredCheckbox(fields[field][1], field)) {
-                    isOk = false;
-                }
-            } else if (type == 'checkboxGroup') {
-                if (!isRequiredCheckBoxGroup(fields[field][1], field)) {
-                    isOk = false;
-                }
-            } else if (type == 'radio') {
-                if (!isRequiredRadio(fields[field][1], field)) {
-                    isOk = false;
-                }
-            } else if (type == 'file') {
-                var required = fields[field][1];
-                var folderWidget = cx.instances.get('uploadWidget', 'folderWidget');
-                if(required && folderWidget.isEmpty()) {
-                    isOk = false;
-                    \$J([name=contactFormField_upload]).css('border', '1px solid red');
-                } else {
-                    \$J([name=contactFormField_upload]).attr('style', '');
-                }
-            } else if (type == 'select' || type == 'country' || type == 'access_country') {
-                if (!isRequiredSelect(fields[field][1], field)) {
-                    isOk = false;
-                }
+        if ((type == 'text') || (type == 'password') || (type == 'textarea') || (type == 'date') || ((type.match(/access_/) != null) && (type != 'access_country'))) {
+            value = document.getElementsByName('contactFormField_' + field)[0].value;
+            if ((\$J.trim(value) == '') && isRequiredNorm(fields[field][1], value)) {
+                isOk = false;
+                \$J('#contactFormFieldId_'+field).css('border', '1px solid red');
+            } else if ((value != '') && !matchType(fields[field][2], value)) {
+                isOk = false;
+                \$J('#contactFormFieldId_'+field).css('border', '1px solid red');
+            } else {
+                \$J('#contactFormFieldId_'+field).attr('style', '');
+            }
+        } else if (type == 'checkbox') {
+            if (!isRequiredCheckbox(fields[field][1], field)) {
+                isOk = false;
+            }
+        } else if (type == 'checkboxGroup') {
+            if (!isRequiredCheckBoxGroup(fields[field][1], field)) {
+                isOk = false;
+            }
+        } else if (type == 'radio') {
+            if (!isRequiredRadio(fields[field][1], field)) {
+                isOk = false;
+            }
+        } else if (type == 'file') {
+            var required = fields[field][1];
+            var folderWidget = cx.instances.get('uploadWidget', 'folderWidget');
+            if(required && folderWidget.isEmpty()) {
+                isOk = false;
+                \$J([name=contactFormField_upload]).css('border', '1px solid red');
+            } else {
+                \$J([name=contactFormField_upload]).attr('style', '');
+            }
+        } else if (type == 'select' || type == 'country' || type == 'access_country') {
+            if (!isRequiredSelect(fields[field][1], field)) {
+                isOk = false;
             }
         }
+    }
     }
 
     if (!isOk) {
@@ -1493,7 +1500,7 @@ JS_misc;
     }
 
 // TODO: The uploader code must not be inserted into the sourcecode of the content page
-//       Instead is must be dynamically loaded into the content page whenever the 
+//       Instead is must be dynamically loaded into the content page whenever the
 //       requested content page contains a file uploade field.
     protected function getUploaderSourceCode() {
         $source = <<<EOS
@@ -1507,7 +1514,7 @@ JS_misc;
         function() {
             var ef = new ExtendedFileInput({
                field:  \$J('#contactFormField_upload')
-            });            
+            });
         }
     );
 </script>
