@@ -344,12 +344,17 @@ class adminMenu
     }
 
 
-    private function moduleExists($moduleFolderName)
+    private function moduleExists($module)
     {
-        if (empty($moduleFolderName)) {
+        if (empty($module)) {
             return true;
         }
 
-        return contrexx_isModuleActive($moduleFolderName);
+        if (contrexx_isCoreModule($module)) {
+            return true;
+        } else {
+            return contrexx_isModuleInstalled($module);
+        }
+
     }
 }

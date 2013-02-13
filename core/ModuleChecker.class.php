@@ -4,42 +4,84 @@
  * Module Checker
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author		Comvation Development Team <info@comvation.com>
- * @version		2.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     2.0.0
  * @package     contrexx
  * @subpackage  core
- * @todo        Edit PHP DocBlocks!
  */
 
 namespace Cx\Core
 {
+
     /**
-     * Module Checker Class
+     * Module Checker
+     * Checks for installed and activated modules
      *
-     * Checks for activated modules and plugins
      * @copyright   CONTREXX CMS - COMVATION AG
-     * @author		Comvation Development Team <info@comvation.com>
-     * @access		public
-     * @version		2.0.0
+     * @author      Comvation Development Team <info@comvation.com>
+     * @version     2.0.0
      * @package     contrexx
      * @subpackage  core
      */
     class ModuleChecker
     {
+
         /**
-         * A list of all module names
+         * Entity Manager
          *
-         * @access private
-         * @var array
-         * @see ModuleChecker::init()
+         * @access  private
+         * @var     EntityManager
          */
-        private $arrModules = array();
-        private $arrActiveModulesByName = array();
-        private $arrUsedModules = array();
         private $em = null;
+
+        /**
+         * Database
+         *
+         * @access  private
+         * @var     ADONewConnection
+         */
         private $db = null;
 
+        /**
+         * Names of all core modules
+         *
+         * @access  private
+         * @var     array
+         */
+        private $arrCoreModules = array();
 
+        /**
+         * Names of all modules (except core modules)
+         *
+         * @access  private
+         * @var     array
+         */
+        private $arrModules = array();
+
+        /**
+         * Names of active modules
+         * 
+         * @access  private
+         * @var     array
+         */
+        private $arrActiveModules = array();
+
+        /**
+         * Names of installed modules
+         * 
+         * @access  private
+         * @var     array
+         */
+        private $arrInstalledModules = array();
+
+
+        /**
+         * Constructor
+         *
+         * @access  public
+         * @param   EntityManager       $em
+         * @param   ADONewConnection    $db
+         */
         public function __construct($em, $db){
             $this->em = $em;
             $this->db = $db;
@@ -47,11 +89,16 @@ namespace Cx\Core
             $this->init();
         }
 
-
+        /**
+         * Initialisation
+         *
+         * @access  private
+         */
         private function init()
         {
             // check the content for installed and used modules
-            $arrUsedModules = array();
+            $arrCmActiveModules = array();
+            $arrCmInstalledModules = array();
             $qb = $this->em->createQueryBuilder();
             $qb->add('select', 'p')
                 ->add('from', 'Cx\Model\ContentManager\Page p')
@@ -64,38 +111,46 @@ namespace Cx\Core
                     ));
             $pages = $qb->getQuery()->getResult();
             foreach ($pages as $page) {
-                if (!$page->isActive()) {
-                    continue;
+                $arrCmInstalledModules[] = $page->getModule();
+                if ($page->isActive()) {
+                    $arrCmActiveModules[] = $page->getModule();
                 }
-
-                $arrUsedModules[] = $page->getModule();
             }
 
-            $this->arrUsedModules = array_unique($arrUsedModules);
+            $arrCmInstalledModules = array_unique($arrCmInstalledModules);
+            $arrCmActiveModules = array_unique($arrCmActiveModules);
 
             // add static modules
-            array_push($this->arrUsedModules, 'block');
-            array_push($this->arrUsedModules, 'upload');
+            $arrCmInstalledModules[] = 'block';
+            $arrCmActiveModules[] = 'block';
+            $arrCmInstalledModules[] = 'upload';
+            $arrCmActiveModules[] = 'upload';
 
-            // check the module database tables for required modules
-            $objResult = $this->db->Execute('SELECT name,is_core,is_required FROM `'.DBPREFIX.'modules`');
+            $objResult = $this->db->Execute('SELECT `name`, `is_core`, `is_required` FROM `'.DBPREFIX.'modules`');
             if ($objResult !== false) {
-                while(!$objResult->EOF) {
+                while (!$objResult->EOF) {
                     $moduleName = $objResult->fields['name'];
 
-                    if (empty($moduleName)) {
-                        $objResult->MoveNext();
-                        continue;
-                    }
+                    if (!empty($moduleName)) {
+                        $isCore = $objResult->fields['is_core'];
 
-                    $this->arrModules[] = $moduleName;
+                        if ($isCore == 1) {
+                            $this->arrCoreModules[] = $moduleName;
+                        } else {
+                            $this->arrModules[] = $moduleName;
+                        }
 
-                    if (   $objResult->fields['is_core']=='1'
-                        || $objResult->fields['is_required']=='1'
-                        || (   in_array($moduleName, $this->arrUsedModules)
-                            && is_dir(ASCMS_MODULE_PATH.'/'.$moduleName))
-                    ) {
-                        $this->arrActiveModulesByName[] = $moduleName;
+                        if ((in_array($moduleName, $arrCmInstalledModules)) &&
+                            ($isCore || (!$isCore && is_dir(ASCMS_MODULE_PATH.'/'.$moduleName)))
+                        ) {
+                            $this->arrInstalledModules[] = $moduleName;
+                        }
+
+                        if ((in_array($moduleName, $arrCmActiveModules)) &&
+                            ($isCore || (!$isCore && is_dir(ASCMS_MODULE_PATH.'/'.$moduleName)))
+                        ) {
+                            $this->arrActiveModules[] = $moduleName;
+                        }
                     }
 
                     $objResult->MoveNext();
@@ -103,10 +158,42 @@ namespace Cx\Core
             }
         }
 
+        /**
+         * Checks if the passed module is a core module.
+         *
+         * @access  public
+         * @param   string      $moduleName
+         * @return  boolean
+         */
+        public function isCoreModule($moduleName)
+        {
+            return in_array($moduleName, $this->arrCoreModules);
+        }
 
+        /**
+         * Checks if the passed module is active
+         * (application page exists and is active).
+         *
+         * @access  public
+         * @param   string      $moduleName
+         * @return  boolean
+         */
         public function isModuleActive($moduleName)
         {
-            return in_array($moduleName, $this->arrActiveModulesByName);
+            return in_array($moduleName, $this->arrActiveModules);
+        }
+
+        /**
+         * Checks if the passed module is installed
+         * (application page exists).
+         *
+         * @access  public
+         * @param   string      $moduleName
+         * @return  boolean
+         */
+        public function isModuleInstalled($moduleName)
+        {
+            return in_array($moduleName, $this->arrInstalledModules);
         }
     }
 }
