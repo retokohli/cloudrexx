@@ -35,6 +35,11 @@ Articles.prototype.getCategory = function(id) {
             /*$('head').update(response.category);*/
             setRows();
             initSortableArea();
+            cx.ready(function() {
+                jQuery('.article-edit-link').each(function() {
+                    jQuery(this).attr('href', jQuery(this).attr('href')+'&csrf='+cx.variables.get('csrf'));
+                });
+            });
         }
     })
      
@@ -222,7 +227,6 @@ var deleteArticle = function(id)
 
 /* ]]> */
 </script>
-
 <div id="knowledge_articles">
     <table style="float: left; width: 100%;">
         <tr>
@@ -258,7 +262,7 @@ var deleteArticle = function(id)
                     <!-- END remove_area -->
                     {CATLIST}
                 </div>
-            </td>
+            </td>   
             <td style="width: 100%; vertical-align: top; padding-top: 34px;">
                 <div id="articles">
                     <table class="adminlist" style="width: 100%; border-collapse: collapse;">

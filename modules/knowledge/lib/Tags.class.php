@@ -229,10 +229,8 @@ class KnowledgeTags
                 $res = $this->search_tag($tag, $lang);
                 if ($res === false) {
                     $tag_id = $this->insert($tag, $lang);
-                } else {
-                    $tag_id = $res;
+                    $this->connectWithArticle($article_id, $tag_id);
                 }
-                $this->connectWithArticle($article_id, $tag_id);
             }
         }
     }
