@@ -857,6 +857,7 @@ CREATE TABLE `contrexx_module_contact_form` (
   `showForm` tinyint(1) unsigned NOT NULL default '0',
   `use_captcha` tinyint(1) unsigned NOT NULL default '1',
   `use_custom_style` tinyint(1) unsigned NOT NULL default '0',
+  `save_data_in_crm` tinyint(1) NOT NULL default '0',
   `send_copy` tinyint(1) NOT NULL default '0',
   `use_email_of_sender` tinyint(1) NOT NULL default '0',
   `html_mail` tinyint(1) unsigned NOT NULL default '1',
