@@ -61,7 +61,22 @@ class ContrexxUpdate
         if (isset($_GET['debug_update']) && $_GET['debug_update'] === 'true') {
             \DBG::activate(DBG_PHP | DBG_DB_ERROR | DBG_LOG); 
         }
-        
+
+        if (isset($_POST['doGroup']) && $_POST['doGroup']) {
+            if (!empty($_POST['pgUsername']) && !empty($_POST['pgPassword'])) {
+                if ($userId = $this->auth($_POST['pgUsername'], $_POST['pgPassword'])) {
+                    $_SESSION['contrexx_update']['user_id'] = $userId;
+                    $_SESSION['contrexx_update']['step'] = 5;
+                    $_SESSION['contrexx_update']['version'] = $_POST['pgCmsVersion'];
+                    $_SESSION['contrexx_update']['migrate_lang_ids'] = explode(',', $_POST['pgMigrateLangIds']);
+                    $_SESSION['contrexx_update']['copyFilesFinished'] = true;
+                    $_SESSION['contrexx_update']['content_stats'] = true;
+                    $_SESSION['contrexx_update']['inactive_content_languages_checked'] = true;
+                    $_SESSION['contrexx_update']['content_migrated'] = true;
+                }
+            }
+        }
+
         if ($this->auth() || $this->login()) {
             $this->setStep();
             $this->showStep();

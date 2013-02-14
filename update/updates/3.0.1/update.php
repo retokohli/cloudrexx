@@ -7,7 +7,7 @@ require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FileSystemFile.class.php';
 require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FTPFile.class.php';
 
 function executeContrexxUpdate() {
-    global $_ARRAYLANG, $_CORELANG, $_CONFIG, $objDatabase, $objUpdate;
+    global $_CORELANG, $_CONFIG, $objUpdate;
 
     $_SESSION['contrexx_update']['copyFilesFinished'] = !empty($_SESSION['contrexx_update']['copyFilesFinished']) ? $_SESSION['contrexx_update']['copyFilesFinished'] : false;
 
@@ -133,6 +133,7 @@ function executeContrexxUpdate() {
             }
         }
 
+        // Page grouping
         if (empty($_SESSION['contrexx_update']['pages_grouped'])) {
             DBG::msg('Group pages');
             $pageGrouping = $contentMigration->pageGrouping();
