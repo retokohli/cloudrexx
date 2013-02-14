@@ -4534,7 +4534,7 @@ END;
         /* Start Paging ------------------------------------ */
         $intPos             = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
         $intPerPage         = $this->getPagingLimit();
-        $intPerPage         = 5;  //For Testing
+        //$intPerPage         = 5;  //For Testing
         $this->_objTpl->setVariable('ENTRIES_PAGING', getPaging($this->countRecordEntries($query), $intPos, "./index.php?cmd={$this->moduleName}&act=deals$searchLink$sortLink", false, true, $intPerPage));
 
         $pageLink           = "&pos=$intPos";
