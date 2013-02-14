@@ -164,9 +164,9 @@ class news extends newsLibrary {
         $lastUpdate         = $objResult->fields['changelog'];
         $text               = $objResult->fields['text'];
         $redirect           = contrexx_raw2xhtml($objResult->fields['redirect']);
-        $sourceHref         = contrexx_raw2encodedUrl($objResult->fields['source']);
-        $url1Href           = contrexx_raw2encodedUrl($objResult->fields['url1']);
-        $url2Href           = contrexx_raw2encodedUrl($objResult->fields['url2']);
+        $sourceHref         = contrexx_raw2xhtml($objResult->fields['source']);
+        $url1Href           = contrexx_raw2xhtml($objResult->fields['url1']);
+        $url2Href           = contrexx_raw2xhtml($objResult->fields['url2']);
         $source             = contrexx_raw2xhtml($objResult->fields['source']);
         $url1               = contrexx_raw2xhtml($objResult->fields['url1']);
         $url2               = contrexx_raw2xhtml($objResult->fields['url2']);
