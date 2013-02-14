@@ -7,7 +7,7 @@ require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FileSystemFile.class.php';
 require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FTPFile.class.php';
 
 function executeContrexxUpdate() {
-    global $_ARRAYLANG, $_CORELANG, $_CONFIG, $objDatabase, $objUpdate;
+    global $_CORELANG, $_CONFIG, $objUpdate;
 
     $_SESSION['contrexx_update']['copyFilesFinished'] = !empty($_SESSION['contrexx_update']['copyFilesFinished']) ? $_SESSION['contrexx_update']['copyFilesFinished'] : false;
 
@@ -58,7 +58,7 @@ function executeContrexxUpdate() {
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         DBG::msg('Installed version: '.$_CONFIG['coreCmsVersion']);
         Env::get('ClassLoader')->loadFile(dirname(__FILE__) . '/ContentMigration.class.php');
-        $contentMigration = new \Cx\Update\Cx_3_0_1\ContentMigration();
+        $contentMigration = new \Cx\Update\Cx_3_0_2\ContentMigration();
 
         // Migrate statistics - this must be done before migrating to the new content architecture
         if (empty($_SESSION['contrexx_update']['content_stats'])) {
@@ -133,6 +133,7 @@ function executeContrexxUpdate() {
             }
         }
 
+        // Page grouping
         if (empty($_SESSION['contrexx_update']['pages_grouped'])) {
             DBG::msg('Group pages');
             $pageGrouping = $contentMigration->pageGrouping();

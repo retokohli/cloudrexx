@@ -1,5 +1,5 @@
 <?php
-namespace Cx\Update\Cx_3_0_1;
+namespace Cx\Update\Cx_3_0_2;
 
 set_time_limit(0);
 
@@ -644,7 +644,7 @@ class ContentMigration
 
     public function migrateBlocks()
     {
-        global $_ARRAYLANG;
+        global $objUpdate, $_CONFIG;
 
         try {
             if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX . 'module_block_rel_lang')) {
@@ -677,15 +677,29 @@ class ContentMigration
                     )
                 );
 
+                // Only from version 2
+                if (!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.0.0')) {
+                    $subQuery = '
+                        IFNULL (
+                            (
+                                SELECT 1
+                                FROM `' . DBPREFIX . 'module_block_rel_lang` as `rl`
+                                WHERE `rl`.`block_id` = `b`.`id`
+                                AND `rl`.`lang_id` = `l`.`id`
+                            ), 0
+                        ) as `active`
+                    ';
+                }
+
                 \Cx\Lib\UpdateUtil::sql('
                     INSERT IGNORE INTO `' . DBPREFIX . 'module_block_rel_lang_content` (`block_id`, `lang_id`, `content`, `active`)
-                    SELECT DISTINCT tblBlock.`id`, CL.`id`, tblBlock.`content`, 1
-                    FROM `' . DBPREFIX . 'languages` AS CL, `' . DBPREFIX . 'module_block_blocks` AS tblBlock
-                    WHERE CL.`frontend` = \'1\'
-                    ORDER BY tblBlock.`id`
+                    SELECT DISTINCT `b`.`id` AS `id`, `l`.`id` AS `lang_id`, `b`.`content` AS `content`, ' . (!empty($subQuery) ? $subQuery : 1) . '
+                    FROM `' . DBPREFIX . 'languages` AS `l`, `' . DBPREFIX . 'module_block_blocks` AS `b`
+                    WHERE `l`.`frontend` = \'1\'
+                    ORDER BY `b`.`id`
                 ');
 
-                # Deactivate all blocks of which none of their content is active
+                // Deactivate all blocks of which none of their content is active
                 \Cx\Lib\UpdateUtil::sql('
                     UPDATE `' . DBPREFIX . 'module_block_blocks` AS tblBlock
                     SET tblBlock.`active` = 0
@@ -694,7 +708,7 @@ class ContentMigration
                     )
                 ');
 
-                # fetch active blocks
+                // fetch active blocks
                 $arrActiveBlockIds = array();
                 $activeBlockList = '';
                 $objResult = \Cx\Lib\UpdateUtil::sql('
@@ -711,7 +725,7 @@ class ContentMigration
                     $activeBlockList = join(', ', $arrActiveBlockIds);
                 }
 
-                # Activate block's content of system's default language for all blocks that have no active content at all
+                // Activate block's content of system's default language for all blocks that have no active content at all
                 \Cx\Lib\UpdateUtil::sql('
                     UPDATE `' . DBPREFIX . 'module_block_rel_lang_content` AS tblContent
                     SET tblContent.`active` = 1
@@ -734,7 +748,6 @@ class ContentMigration
                         $objResult->MoveNext();
                     }
 
-                    $arrGlobals = array();
                     foreach ($arrGlobalDefinitions as $blockId => $arrValues) {
                         // Set $global by default to 2
                         $global = 2;
@@ -743,11 +756,12 @@ class ContentMigration
                             // Language id's of blocks where field 'all_pages' (global) is set to 1
                             $globalLangIds = array_keys($arrValues);
                             sort($globalLangIds);
+
                             // Active language id's
                             $activeLangIds = \FWLanguage::getIdArray();
                             sort($activeLangIds);
 
-                            if ($globalLangIds == $activeLangIds) {
+                            if (($globalLangIds == $activeLangIds) || !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.0.0')) {
                                 $global = 1;
                             }
                         }
@@ -852,9 +866,12 @@ class ContentMigration
                 $activeLangIds = implode(',', \FWLanguage::getIdArray());
                 $objResult = \Cx\Lib\UpdateUtil::sql('
                     SELECT `block_id`, `lang_id`
-                    FROM `' . DBPREFIX . 'module_block_rel_lang`
-                    WHERE `all_pages` = 1
-                    AND `lang_id` IN (' . $activeLangIds . ')
+                    FROM `' . DBPREFIX . 'module_block_blocks`  AS `b`
+                    INNER JOIN `' . DBPREFIX . 'module_block_rel_lang` AS `rl`
+                    ON `b`.`id` = `rl`.`block_id`
+                    WHERE `b`.`global` = 2
+                    AND `rl`.`all_pages` = 1
+                    AND `rl`.`lang_id` IN (' . $activeLangIds . ')
                 ');
 
                 if ($objResult->RecordCount()) {
@@ -1063,6 +1080,10 @@ class ContentMigration
 
         $groupedBorderWidth = ((count($this->arrMigrateLangIds) * 325) - 48);
         $objTemplate->setGlobalVariable(array(
+            'USERNAME'               => $_SESSION['contrexx_update']['username'],
+            'PASSWORD'               => $_SESSION['contrexx_update']['password'],
+            'CMS_VERSION'            => $_SESSION['contrexx_update']['version'],
+            'MIGRATE_LANG_IDS'       => $this->migrateLangIds,
             'LANGUAGE_WRAPPER_WIDTH' => 'width: ' . (count($this->arrMigrateLangIds) * 330) . 'px;',
             'GROUPED_SCROLL_WIDTH'   => 'width: ' . (count($this->arrMigrateLangIds) * 325) . 'px;',
             'GROUPED_BORDER_WIDTH'   => 'width: ' . $groupedBorderWidth . 'px;',

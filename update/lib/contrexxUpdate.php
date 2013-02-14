@@ -106,13 +106,17 @@ function getFormData(goBack)
   for (i in oFormData) {
     aFormData.push(i+':'+((typeof(oFormData[i]) == 'object') ? '["'+oFormData[i].join('","')+'"]' : '"'+oFormData[i]+'"'));
   }
+
+  var doGroup          = $J("#doGroup").length              ? ",doGroup:"            + $J("#doGroup").val()              : "";
+  var pgUsername       = $J("#pgUsername").length           ? ",pgUsername:\""       + $J("#pgUsername").val() + "\""    : "";
+  var pgPassword       = $J("#pgPassword").length           ? ",pgPassword:\""       + $J("#pgPassword").val() + "\""    : "";
+  var pgCmsVersion     = $J("#pgCmsVersion").length         ? ",pgCmsVersion:\""     + $J("#pgCmsVersion").val() + "\""  : "";
+  var pgMigrateLangIds = $J("#pgMigrateLangIds").length     ? ",pgMigrateLangIds:\"" + $J("#pgMigrateLangIds").val() + "\""  : "";
+  var similarPages     = $J("#similarPages").length         ? ",similarPages:"       + $J("#similarPages").val()         : "";
+  var removePages      = $J("#removePages").length          ? ",removePages:"        + $J("#removePages").val()          : "";
+  var delInAcLangs     = $J("#delInAcLangs:checked").length ? ",delInAcLangs:"       + $J("#delInAcLangs:checked").val() : "";
   
-  var doGroup      = $J("#doGroup").length              ? ",doGroup:"      + $J("#doGroup").val()              : "";
-  var similarPages = $J("#similarPages").length         ? ",similarPages:" + $J("#similarPages").val()         : "";
-  var removePages  = $J("#removePages").length          ? ",removePages:"  + $J("#removePages").val()          : "";
-  var delInAcLangs = $J("#delInAcLangs:checked").length ? ",delInAcLangs:" + $J("#delInAcLangs:checked").val() : "";
-  
-  var parameters = doGroup + similarPages + removePages + delInAcLangs;
+  var parameters = doGroup + pgUsername + pgPassword + pgCmsVersion + pgMigrateLangIds + similarPages + removePages + delInAcLangs;
   
   return '{' + aFormData.join(',') + parameters + '}';
 }
