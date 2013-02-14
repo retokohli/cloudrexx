@@ -635,7 +635,7 @@ class ImageManager
         if ($potentialRequiredMemory > $memoryLimit) {
             // try to set a higher memory_limit
             if (   !ini_set('memory_limit', $potentialRequiredMemory)
-                || $memoryLimit == $objSystem->_getBytes(ini_get('memory_limit')))
+                || $memoryLimit == $objSystem->getBytesOfLiteralSizeFormat(ini_get('memory_limit')))
                 return '';
         }
         return $function($file);

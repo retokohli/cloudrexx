@@ -1814,8 +1814,8 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
         if (empty($langId)) $langId = LANG_ID;
         $objResult = $objDatabase->Execute("
             SELECT `id`, `name`
-              FROM `contrexx_access_user_attribute`
-             INNER JOIN `contrexx_access_user_attribute_name`
+              FROM `".DBPREFIX."access_user_attribute`
+             INNER JOIN `".DBPREFIX."access_user_attribute_name`
                 ON id=attribute_id
              WHERE lang_id=$langId
              ORDER BY order_id ASC");
