@@ -1848,16 +1848,16 @@ class DataAdmin extends DataLibrary {
             'DATA_SETTINGS_BLOCK_ACTIVATE_ON'                =>    ($this->_arrSettings['data_block_activated'] == '1') ? 'checked="checked"' : '',
             'DATA_SETTINGS_BLOCK_ACTIVATE_OFF'                =>    ($this->_arrSettings['data_block_activated'] == '0') ? 'checked="checked"' : '',
             'DATA_SETTINGS_BLOCK_MESSAGES'                    =>    intval($this->_arrSettings['data_block_messages']),
-            'DATA_SETTINGS_TEMPLATE_CATEGORY'               =>  $this->_arrSettings['data_template_category'],
-            'DATA_SETTINGS_TEMPLATE_ENTRY'                  =>  $this->_arrSettings['data_template_entry'],
-            'DATA_SETTINGS_TEMPLATE_SHADOWBOX'              =>  $this->_arrSettings['data_template_shadowbox'],
+            'DATA_SETTINGS_TEMPLATE_CATEGORY'               =>  contrexx_raw2xhtml($this->_arrSettings['data_template_category']),
+            'DATA_SETTINGS_TEMPLATE_ENTRY'                  =>  contrexx_raw2xhtml($this->_arrSettings['data_template_entry']),
+            'DATA_SETTINGS_TEMPLATE_SHADOWBOX'              =>  contrexx_raw2xhtml($this->_arrSettings['data_template_shadowbox']),
                'USE_DATALIST_CHECKED'                          =>  ($useDatalist) ? "checked=\"checked\"" : "",
                'TXT_PLACEHOLDER'                               =>  $_ARRAYLANG['TXT_DATA_PLACEHOLDER'],
                'PAGE_SELECT_DISPLAY'                           =>  ($this->_arrSettings['data_entry_action'] == "content") ? (($ie) ? "block" : "table-row") : "none",
             'ACTION_SELECTED_BOX'                           => ($this->_arrSettings['data_entry_action'] == "overlaybox") ? "selected=\"selected\"" : "",
                'ACTION_SELECTED_CONTENT'                       => ($this->_arrSettings['data_entry_action'] == "content") ? "selected=\"selected\"" : "",
-               'DATA_SETTINGS_BOX_WIDTH'                       => $this->_arrSettings['data_shadowbox_width'],
-               'DATA_SETTINGS_BOX_HEIGHT'                      => $this->_arrSettings['data_shadowbox_height']
+               'DATA_SETTINGS_BOX_WIDTH'                       => intval($this->_arrSettings['data_shadowbox_width']),
+               'DATA_SETTINGS_BOX_HEIGHT'                      => intval($this->_arrSettings['data_shadowbox_height']),
         ));
 
 
