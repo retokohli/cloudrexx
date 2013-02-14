@@ -96,10 +96,16 @@ class LicenseCommunicator {
                 'sendTemplate' => $forceTemplate,
             );
             $a = $_SERVER['REMOTE_ADDR'];
+            $r = 'http://';
+            if ($_SERVER['HTTPS'] && $_SERVER['HTTPS'] != 'off') {
+                $r = 'https://';
+            }
+            $r .= $_SERVER['SERVER_NAME'] . ASCMS_PATH_OFFSET;
 
             $request = new \HTTP_Request2('http://' . $srvUri . $srvPath . '?v=' . $version, \HTTP_Request2::METHOD_POST);
             $request->setHeader('X-Edition', $e);
             $request->setHeader('X-Remote-Addr', $a);
+            $request->setHeader('Referer', $r);
             $jd = new \Cx\Core\Json\JsonData();
             $request->addPostParameter('data', $jd->json($data));
             try {
