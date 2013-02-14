@@ -109,7 +109,7 @@ class LicenseManager {
                 $remoteTemplate->setVariable('MESSAGE_TYPE', contrexx_raw2xhtml($message->getType()));
             } else {
                 if ($remoteTemplate->blockExists('message')) {
-                    $remoteTemplate->hideBlock('message');
+                    $remoteTemplate->setVariable('MESSAGE_TYPE', '" style="display:none;');
                 }
             }
             

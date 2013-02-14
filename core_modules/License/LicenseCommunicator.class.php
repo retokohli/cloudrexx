@@ -321,11 +321,11 @@ class LicenseCommunicator {
                                     "../core_modules/License/versioncheck.php?force=true",
                                     {"response": JSON.stringify(licenseUpdateUserAgentRequestResponse)}
                                 ).success(function(data) {
+                                    reloadManager = true;
                                     versionCheckResponseHandler(data, false)
                                 }).error(function(data) {
                                     revertMessage();
                                 });
-                                reloadManager = true;
                             }).fail(function(){
                                 revertMessage();
                             });
@@ -347,6 +347,7 @@ class LicenseCommunicator {
                     var performRequest = function() {
                         licenseMessage.attr("class", "infobox");
                         licenseMessage.text("' . $_CORELANG['TXT_LICENSE_UPDATING'] . '");
+                        licenseMessage.show();
 
                         jQuery.get(
                             "../core_modules/License/versioncheck.php?force=true"
