@@ -617,3 +617,4 @@ $_ARRAYLANG['TXT_CRM_COLON']                        = "Colon";
 $_ARRAYLANG['TXT_CRM_DOUBLE_QUOTE']                 = "Double quote";
 $_ARRAYLANG['TXT_CRM_DOUBLE_QUOTE']                 = "Single quote";
 $_ARRAYLANG['CRM_ERROR_EMAIL_USED_BY_OTHER_PERSON'] = "Email is already using by other crm person.Please choose different email";
+$_ARRAYLANG['TXT_CRM_FILTER_TASK_TYPE']             = "Filter Task type";
