@@ -3860,6 +3860,7 @@ END;
                 'TXT_FILTERS'                   => $_ARRAYLANG['TXT_FILTERS'],
                 'TXT_CRM_SEARCH'                => $_ARRAYLANG['TXT_CRM_SEARCH'],
                 'TXT_CRM_ENTER_SEARCH_TERM'     => $_ARRAYLANG['TXT_CRM_ENTER_SEARCH_TERM'],
+                'TXT_CRM_FILTER_TASK_TYPE'      => $_ARRAYLANG['TXT_CRM_FILTER_TASK_TYPE']
         ));
     }
 
