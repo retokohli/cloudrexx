@@ -1,9 +1,19 @@
 <script type="text/javascript">
-    $J(function(){
-        $J(".chzn-select").chosen(); $J(".chzn-select-deselect").chosen({allow_single_deselect:true});
-        $J("#addTasktype").validationEngine({
-                prettySelect : true,
-                useSuffix: "_chzn"
+    $J(function(){        
+        $J("#addTasktype").submit(function(){
+            var errChk;
+            if ($J.trim($J("#type_name").val()) == '') {
+                errChk = 1;
+                $J("#type_name").css('border','1px solid red');
+            }
+            
+            if (errChk == 1) {
+                $J('#formerr').html("All mandatory fields have not been filled out.!");
+                $J('#formerr').css('display','block');
+                return false;
+            } else {
+                return true;
+            }
         });
     });
 </script>
@@ -15,7 +25,7 @@
         <tr class="row1">
             <td width="10%">{TXT_CRM_TASK_TYPE_NAME}&nbsp;<font color="red">*</font></td>
             <td width="90%" style="padding-left: 5px;">
-                <input type="text" class="validate[required] text-input" name="name" id="name" value="{CRM_TASK_TYPE_NAME}" style="width: 300px;" />
+                <input type="text" name="name" id="type_name" value="{CRM_TASK_TYPE_NAME}" style="width: 300px;" />
                 &nbsp;&nbsp;<input type="checkbox" name="active" value="1" {CRM_TASK_TYPE_ADD_ACTIVE} />{TXT_CRM_TASK_TYPE_ACTIVE}</td>
         </tr>
         <tr class="row2">
