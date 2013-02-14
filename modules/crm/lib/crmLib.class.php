@@ -1407,6 +1407,16 @@ class CrmLibrary {
         return intval($objResult->fields['id']);
     }
 
+    /**
+     * Registers all css and js to be loaded for crm module
+     *              
+     */
+    public function _initCrmModule()
+    {
+        JS::registerJS("lib/javascript/crm/main.js");        
+        JS::registerCSS("lib/javascript/crm/css/main.css");
+    }
+
 }
 
 

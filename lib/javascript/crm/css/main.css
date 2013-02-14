@@ -95,3 +95,14 @@ table#general-info tr td:first-child {
 #profile-photo h4{
     margin: 5px 0;
 }
+#formerr {
+    margin-bottom: 5px;
+    display: none;
+    clear: left;
+    background-color: rgb(255, 204, 204);
+    border: 1px solid;
+    color: rgb(255, 0, 0);
+    font-size: 12px;
+    line-height: 14px;
+    padding: 5px;
+}

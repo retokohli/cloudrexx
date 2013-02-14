@@ -105,6 +105,7 @@ class CRM extends CrmLibrary {
         $dispatcher = EventDispatcher::getInstance();
         $default_handler = new DefaultEventHandler();
         $dispatcher->addHandler(CRM_EVENT_ON_USER_ACCOUNT_CREATED, $default_handler);
+        $this->_initCrmModule();
     }
 
     /**
@@ -380,7 +381,7 @@ class CRM extends CrmLibrary {
                                                     FROM ".DBPREFIX."module_".$this->moduleName."_customer_comment AS comment
                                                     LEFT JOIN ".DBPREFIX."module_".$this->moduleName."_notes AS notes
                                                        ON comment.notes_type_id = notes.id
-                                                    WHERE customer_id = '$custId' $filter_note_id LIMIT $intPage, $intPerpage");
+                                                    WHERE customer_id = '$custId' $filter_note_id ORDER BY added_date DESC LIMIT $intPage, $intPerpage");
             if ($objComment->RecordCount() == 0 && $_GET['ajax'] == true) {
                 echo '0';
                 exit();
