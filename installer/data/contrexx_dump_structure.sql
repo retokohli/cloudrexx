@@ -2593,13 +2593,10 @@ SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_knowledge_tags_articles` (
-  `id` int(10) unsigned NOT NULL auto_increment,
   `article` int(10) unsigned NOT NULL default '0',
   `tag` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  KEY `module_knowledge_tags_articles_tag` (`tag`),
-  KEY `module_knowledge_tags_articles_article` (`article`)
-) ENGINE=MyISAM ;
+  UNIQUE KEY `article` (`article`,`tag`)
+) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
