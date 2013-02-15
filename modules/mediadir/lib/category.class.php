@@ -47,6 +47,10 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
 
         parent::getSettings();
         parent::getFrontendLanguages();
+        $this->loadCategories();
+    }
+
+    public function loadCategories() {
         $this->arrCategories = self::getCategories($this->intCategoryId, $this->intParentId);
     }
 
