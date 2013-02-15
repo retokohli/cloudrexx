@@ -328,6 +328,8 @@ class JsonPage implements JsonAdapter {
             $page->setRelatedBlocks($dataPost['pageBlocks']);
         }
         
+        $draftUpdateLog = null;
+        $liveUpdateLog = null;
         if (($action == 'publish') && \Permission::checkAccess(78, 'static', true)) {
             // User w/permission clicked save&publish. we should either publish the page or submit the draft for approval.
             if ($page->getEditingStatus() == 'hasDraftWaiting') {
@@ -354,9 +356,6 @@ class JsonPage implements JsonAdapter {
                     $reload = true;
                 }
                 $page->setEditingStatus('hasDraft');
-                if (\Permission::checkAccess(78, 'static', true)) {
-                    $page->setEditingStatus('hasDraftWaiting');
-                }
                 $this->messages[] = $_CORELANG['TXT_CORE_SAVED_AS_DRAFT'];
             }
 
@@ -378,6 +377,35 @@ class JsonPage implements JsonAdapter {
 
             // Revert to the published version.
             $this->logRepo->revert($page, $logEntries[1]->getVersion());
+            
+            switch ($action) {
+                case 'activate':
+                case 'publish':
+                    $page->setActive(true);
+                    break;
+                case 'deactivate':
+                    $page->setActive(false);
+                    break;
+                case 'show':
+                    $page->setDisplay(true);
+                    break;
+                case 'hide':
+                    $page->setDisplay(false);
+                    break;
+                case 'protect':
+                    $page->setFrontendProtection(true);
+                    break;
+                case 'unprotect':
+                    $page->setFrontendProtection(false);
+                    break;
+                case 'lock':
+                    $page->setBackendProtection(true);
+                    break;
+                case 'unlock':
+                    $page->setBackendProtection(false);
+                    break;
+            }
+            
             $this->em->persist($page);
 
             // Gedmo auto-logs slightly too much data. clean up unnecessary revisions:
@@ -385,6 +413,8 @@ class JsonPage implements JsonAdapter {
                 $this->em->flush();
 
                 $logEntries = $this->logRepo->getLogEntries($page);
+                $liveUpdateLog = $logEntries[2];
+                $draftUpdateLog = $logEntries[3];
                 $this->em->remove($logEntries[2]);
                 $this->em->remove($logEntries[3]);
             }
@@ -432,6 +462,84 @@ class JsonPage implements JsonAdapter {
         }
         
         $this->em->flush();
+        
+        if ($updatingDraft) {
+            $this->em->clear();
+            $logs = $this->logRepo->getLogEntries($page);
+            $data = $logs[1]->getData();
+            if (!empty($action) && $draftUpdateLog) {
+                $data = $draftUpdateLog->getData();
+            }
+            $data['editingStatus'] = 'hasDraft';
+            if ($action == 'publish' && !\Permission::checkAccess(78, 'static', true)) {
+                $data['editingStatus'] = 'hasDraftWaiting';
+            }
+            switch ($action) {
+                case 'activate':
+                    $data['active'] = true;
+                    break;
+                case 'deactivate':
+                    $data['active'] = false;
+                    break;
+                case 'show':
+                    $data['display'] = true;
+                    break;
+                case 'hide':
+                    $data['display'] = false;
+                    break;
+                case 'protect':
+                    $data['protection'] = $data['protection'] | FRONTEND_PROTECTION;
+                    break;
+                case 'unprotect':
+                    $data['protection'] = $data['protection'] & ~FRONTEND_PROTECTION;
+                    break;
+                case 'lock':
+                    $data['protection'] = $data['protection'] | BACKEND_PROTECTION;
+                    break;
+                case 'unlock':
+                    $data['protection'] = $data['protection'] & ~BACKEND_PROTECTION;
+                    break;
+            }
+            $logs[1]->setData($data);
+            
+            if (!empty($action) && $action != 'publish') {
+                $data = $logs[0]->getData();
+                if ($liveUpdateLog) {
+                    $data = $liveUpdateLog->getData();
+                }
+                switch ($action) {
+                    case 'activate':
+                        $data['active'] = true;
+                        break;
+                    case 'deactivate':
+                        $data['active'] = false;
+                        break;
+                    case 'show':
+                        $data['display'] = true;
+                        break;
+                    case 'hide':
+                        $data['display'] = false;
+                        break;
+                    case 'protect':
+                        $data['protection'] = $data['protection'] | FRONTEND_PROTECTION;
+                        break;
+                    case 'unprotect':
+                        $data['protection'] = $data['protection'] & ~FRONTEND_PROTECTION;
+                        break;
+                    case 'lock':
+                        $data['protection'] = $data['protection'] | BACKEND_PROTECTION;
+                        break;
+                    case 'unlock':
+                        $data['protection'] = $data['protection'] & ~BACKEND_PROTECTION;
+                        break;
+                }
+                $logs[0]->setData($data);
+            }
+            
+            $this->em->persist($logs[0]);
+            $this->em->persist($logs[1]);
+            $this->em->flush();
+        }
         
         // Aliases are only updated in the editing mode.
         if (!empty($pageArray)) {
