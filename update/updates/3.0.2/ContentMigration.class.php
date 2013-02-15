@@ -862,7 +862,7 @@ class ContentMigration
                 $_SESSION['contrexx_update']['blocks_part_2_migrated'] = true;
             }
 
-            if (empty($_SESSION['contrexx_udpate']['blocks_part_3_migrated'])) {
+            if (empty($_SESSION['contrexx_update']['blocks_part_3_migrated'])) {
                 $activeLangIds = implode(',', \FWLanguage::getIdArray());
                 $objResult = \Cx\Lib\UpdateUtil::sql('
                     SELECT `block_id`, `lang_id`
@@ -904,83 +904,11 @@ class ContentMigration
                     }
                 }
 
-                $_SESSION['contrexx_udpate']['blocks_part_3_migrated'] = true;
+                $_SESSION['contrexx_update']['blocks_part_3_migrated'] = true;
             }
         } catch (\Cx\Lib\UpdateException $e) {
             \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             return false;
-        }
-
-        return true;
-    }
-
-    public function pageGrouping()
-    {
-        // Fetch all pages
-        if (!isset($_POST['doGroup']) || (isset($_POST['doGroup']) && !$_POST['doGroup'])) {
-            self::$em->clear();
-            return $this->getTreeCode();
-        }
-
-        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
-        $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
-
-        $nodeToRemove = array();
-        $pageToRemove = array();
-
-        $arrSimilarPages = $_POST['similarPages'];
-        $arrRemovePages  = $_POST['removePages'];
-
-        foreach ($arrRemovePages as $pageId) {
-            $page = $pageRepo->find($pageId);
-            if ($page) {
-                $pageToRemove[] = $pageId;
-                $nodeToRemove[] = $page->getNode()->getId();
-            }
-        }
-
-        foreach ($arrSimilarPages as $nodeId => $arrPageIds) {
-            foreach ($arrPageIds as $pageId) {
-                $page = $pageRepo->find($pageId);
-
-                if ($page->getNode()->getId() != $nodeId) {
-                    $nodeToRemove[] = $page->getNode()->getId();
-                    $node = $nodeRepo->find($nodeId);
-
-                    $aliases = $page->getAliases();
-                    foreach ($aliases as $alias) {
-                        $alias->setTarget('[[NODE_' . $node->getId() . '_' . $page->getLang() . ']]');
-                        self::$em->persist($alias);
-                    }
-
-                    $page->setNode($node);
-                    $page->setNodeIdShadowed($node->getId());
-
-                    self::$em->persist($node);
-                }
-            }
-        }
-
-        self::$em->flush();
-
-        // Prevent the system from trying to remove the same node more than once
-        $pageToRemove = array_unique($pageToRemove);
-        foreach ($pageToRemove as $pageId) {
-            $page = $pageRepo->find($pageId);
-            self::$em->remove($page);
-        }
-
-        self::$em->flush();
-        self::$em->clear();
-
-        $nodeToRemove = array_unique($nodeToRemove);
-
-        foreach ($nodeToRemove as $nodeId) {
-            $node = $nodeRepo->find($nodeId);
-            $nodeRepo->removeFromTree($node);
-
-            // Reset node cache - this is required for the tree to reload its new structure after a node had been removed
-            self::$em->clear();
         }
 
         return true;
@@ -1001,6 +929,116 @@ class ContentMigration
         } catch (\Cx\Lib\UpdateException $e) {
             \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             return false;
+        }
+
+        return true;
+    }
+
+    public function pageGrouping()
+    {
+        // Fetch all pages
+        if ((!isset($_POST['doGroup']) || (isset($_POST['doGroup']) && !$_POST['doGroup'])) && empty($_SESSION['contrexx_update']['do_group'])) {
+            self::$em->clear();
+            return $this->getTreeCode();
+        }
+
+        $_SESSION['contrexx_update']['do_group'] = true;
+        if (empty($_SESSION['contrexx_update']['similar_pages'])) $_SESSION['contrexx_update']['similar_pages'] = $_POST['similarPages'];
+        if (empty($_SESSION['contrexx_update']['remove_pages']))  $_SESSION['contrexx_update']['remove_pages'] = $_POST['removePages'];
+
+        $arrSimilarPages = $_SESSION['contrexx_update']['similar_pages'];
+
+        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
+        $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
+
+        $nodeToRemove = array();
+        if (empty($_SESSION['contrexx_update']['node_to_remove'])) $_SESSION['contrexx_update']['node_to_remove'] = array();
+
+        foreach ($arrSimilarPages as $nodeId => $arrPageIds) {
+            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                $_SESSION['contrexx_update']['node_to_remove'] = array_merge($_SESSION['contrexx_update']['node_to_remove'], $nodeToRemove);
+                return 'timeout';
+            }
+
+            foreach ($arrPageIds as $pageId) {
+                $page = $pageRepo->find($pageId);
+
+                if ($page->getNode()->getId() != $nodeId) {
+                    $nodeToRemove[] = $page->getNode()->getId();
+                    $node = $nodeRepo->find($nodeId);
+
+                    $aliases = $page->getAliases();
+                    foreach ($aliases as $alias) {
+                        $alias->setTarget('[[NODE_' . $node->getId() . '_' . $page->getLang() . ']]');
+                        self::$em->persist($alias);
+                    }
+
+                    $page->setNode($node);
+                    $page->setNodeIdShadowed($node->getId());
+
+                    self::$em->persist($node);
+                }
+            }
+
+            self::$em->flush();
+            unset($_SESSION['contrexx_update']['similar_pages'][$nodeId]);
+        }
+
+        $arrRemovePages = $_SESSION['contrexx_update']['remove_pages'];
+        $pageToRemove   = array();
+
+        if (empty($_SESSION['contrexx_update']['page_to_remove'])) $_SESSION['contrexx_update']['page_to_remove'] = array();
+
+        foreach ($arrRemovePages as $pageId) {
+            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                $_SESSION['contrexx_update']['page_to_remove'] = array_merge($_SESSION['contrexx_update']['page_to_remove'], $pageToRemove);
+                $_SESSION['contrexx_update']['node_to_remove'] = array_merge($_SESSION['contrexx_update']['node_to_remove'], $nodeToRemove);
+                return 'timeout';
+            }
+
+            $page = $pageRepo->find($pageId);
+            if ($page) {
+                $pageToRemove[] = $pageId;
+                $nodeToRemove[] = $page->getNode()->getId();
+            }
+
+            unset($_SESSION['contrexx_update']['remove_pages'][$pageId]);
+        }
+        $_SESSION['contrexx_update']['page_to_remove'] = array_merge($_SESSION['contrexx_update']['page_to_remove'], $pageToRemove);
+        $_SESSION['contrexx_update']['node_to_remove'] = array_merge($_SESSION['contrexx_update']['node_to_remove'], $nodeToRemove);
+        $pageToRemove = $_SESSION['contrexx_update']['page_to_remove'];
+        $nodeToRemove = $_SESSION['contrexx_update']['node_to_remove'];
+
+        // Prevent the system from trying to remove the same node more than once
+        $pageToRemove = array_unique($pageToRemove);
+        foreach ($pageToRemove as $index => $pageId) {
+            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                return 'timeout';
+            }
+
+            $page = $pageRepo->find($pageId);
+            self::$em->remove($page);
+
+            unset($_SESSION['contrexx_update']['page_to_remove'][$index]);
+        }
+
+        self::$em->flush();
+        self::$em->clear();
+
+        $nodeToRemove = array_unique($nodeToRemove);
+
+        foreach ($nodeToRemove as $index => $nodeId) {
+            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                return 'timeout';
+            }
+
+            $node = $nodeRepo->find($nodeId);
+            $nodeRepo->removeFromTree($node);
+
+            // Reset node cache - this is required for the tree to reload its new structure after a node had been removed
+            self::$em->clear();
+
+            unset($_SESSION['contrexx_update']['node_to_remove'][$index]);
         }
 
         return true;
@@ -1051,7 +1089,7 @@ class ContentMigration
                 $nodeId = $groups[$page->getModule()][$page->getCmd()]['nodeIds'][$index];
             }
 
-            $similarPages[$nodeId][] = $page->getId();
+            $similarPages[$nodeId][$page->getLang()] = $page->getId();
         }
 
         foreach ($similarPages as $nodeId => $arrPageIds) {
@@ -1069,10 +1107,20 @@ class ContentMigration
             return true;
         }
 
+        $jsSimilarPages = array();
         $this->similarPages = $this->findSimilarPages();
+        foreach ($this->similarPages as $nodeId => $arrPageIds) {
+            $jsSimilarPages[$nodeId] = array_values($arrPageIds);
+            foreach ($this->arrMigrateLangIds as $migrateLangId) {
+                if (!isset($arrPageIds[$migrateLangId])) {
+                    $this->similarPages[$nodeId][$migrateLangId] = 0;
+                }
+            }
+            ksort($this->similarPages[$nodeId]);
+        }
 
         $objCx = \ContrexxJavascript::getInstance();
-        $objCx->setVariable('similarPages', json_encode($this->similarPages), 'update/contentMigration');
+        $objCx->setVariable('similarPages', json_encode($jsSimilarPages), 'update/contentMigration');
 
         $objTemplate = new \HTML_Template_Sigma(UPDATE_TPL);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
@@ -1139,7 +1187,7 @@ class ContentMigration
 
             $index = 0;
             $last  = count($arrPageIds) - 1;
-            foreach ($arrPageIds as $pageId) {
+            foreach ($arrPageIds as $pageLangId => $pageId) {
                 if ($index === 0) {
                     $pageWidth = $width - 24;
                 } elseif ($index === $last) {
@@ -1150,12 +1198,27 @@ class ContentMigration
                 $index++;
 
                 $page = $pageRepo->find($pageId);
-                $objTemplate->setVariable(array(
-                    'ID'    => $pageId,
-                    'TITLE' => $page->getTitle(),
-                    'LANG'  => strtoupper(\FWLanguage::getLanguageCodeById($page->getLang())),
-                    'WIDTH' => 'width: ' . $pageWidth . 'px;',
-                ));
+                if ($page) {
+                    $langCode = strtoupper(\FWLanguage::getLanguageCodeById($page->getLang()));
+                    $objTemplate->setVariable(array(
+                        'CLASS'     => '',
+                        'DATA_ID'   => 'data-id="' . $pageId . '"',
+                        'DATA_LANG' => 'data-lang="' . $langCode . '"',
+                        'TITLE'     => $page->getTitle(),
+                        'LANG'      => $langCode,
+                        'WIDTH'     => 'width: ' . $pageWidth . 'px;',
+                    ));
+                } else {
+                    $langCode = strtoupper(\FWLanguage::getLanguageCodeById($pageLangId));
+                    $objTemplate->setVariable(array(
+                        'CLASS'     => 'no-page',
+                        'DATA_ID'   => '',
+                        'DATA_LANG' => '',
+                        'TITLE'     => 'Keine Seite',
+                        'LANG'      => $langCode,
+                        'WIDTH'     => 'width: ' . $pageWidth . 'px;',
+                    ));
+                }
                 $objTemplate->parse('groupedPage');
             }
 

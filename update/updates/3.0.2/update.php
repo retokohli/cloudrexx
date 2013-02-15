@@ -98,9 +98,14 @@ function executeContrexxUpdate() {
             } else {
                 if (!empty($_POST['migrateLangIds'])) {
                     if (is_array($_POST['migrateLangIds'])) {
-                        $arrMigrateLangIds = array_merge($arrMigrateLangIds, $_POST['migrateLangIds']);
+                        $_POST['migrateLangIds'] = array_filter($_POST['migrateLangIds'], 'intval');
+                        if (!empty($_POST['migrateLangIds'])) {
+                            $arrMigrateLangIds = array_merge($arrMigrateLangIds, $_POST['migrateLangIds']);
+                        }
                     } else {
-                        $arrMigrateLangIds[] = $_POST['migrateLangIds'];
+                        if (intval($_POST['migrateLangIds'])) {
+                            $arrMigrateLangIds[] = intval($_POST['migrateLangIds']);
+                        }
                     }
                 }
             }
@@ -143,6 +148,9 @@ function executeContrexxUpdate() {
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                     return false;
                 }
+            } else if ($pageGrouping === 'timeout') {
+                setUpdateMsg(1, 'timeout');
+                return false;
             } else if ($pageGrouping === false) {
                 return false;
             } else if (!empty($pageGrouping)) {

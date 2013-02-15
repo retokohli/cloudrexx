@@ -152,7 +152,7 @@ function parseResponse(response)
             });
         } else if (oResponse.timeout) {
             request_active = false;
-            doUpdate(false, false, false, true);
+            doUpdate(false, true, false, true);
         } else {
             setContent(oResponse.content);
             setNavigation(oResponse.navigation);
