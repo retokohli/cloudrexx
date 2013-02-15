@@ -134,7 +134,7 @@ $_ARRAYLANG['TXT_CONTACT_FILE_TOO_LARGE'] = "Die Datei %s wurde nicht hinauf gel
 $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "Die Datei %s wurde nicht komplet hinauf geladen!";
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "Eine Datei wurde nicht hinauf geladen!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'] = "CAPTCHA-Schutz";
-$_ARRAYLANG['TXT_CONTACT_SAVE_DATA_IN_CRM']   = "Save Data in CRM Module";
+$_ARRAYLANG['TXT_CONTACT_SAVE_DATA_IN_CRM']   = "Daten im CRM speichern";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Tippen Sie bitte die Zeichenfolge im dargestellten Bild in das Textfeld ein. Dies ist notwendig, damit das System Sie von einem Spambot unterscheiden kann.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Durch das Aktivieren dieser Option, wird zusätzlich eine Kopie der angegebenen Formulardaten an den Absender geschickt.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Kopie an Absender";
@@ -194,5 +194,5 @@ $_ARRAYLANG['TXT_CONTACT_SEND_ATTACHMENT_DESCRIPTION'] = "Bei Aktivierung dieser
 $_ARRAYLANG['TXT_CONTACT_SEND_ATTACHMENT'] = "Send Anlage";
 $_ARRAYLANG['TXT_CONTACT_USE_EMAIL_OF_SENDER'] = "Kontaktperson als Absender";
 $_ARRAYLANG['TXT_CONTACT_USE_EMAIL_OF_SENDER_DESCRIPTION'] = "Durch das Aktivieren dieser Option, wird die E-Mail-Adresse der Kontaktperson als Absender-E-Mail-Adresse (SMTP-From) bei der E-Mail-Benachrichtigung verwendet.<br />Als Absendername wird eine Kombination aus den übermittelten Werten der Benutzerkonto Daten <i>Vorname</i> und/oder <i>Nachname</i> verwendet, sofern diese Feldtypen eingesetzt werden.<br /><br />Achtung: Diese Funktion wird nicht von allen E-Mail Servern (SMTP) unterstützt! Des Weiteren besteht durch Aktivierung dieser Option die Gefahr, dass Ihre Kontaktanfragen als SPAM gekennzeichnet werden und somit nicht in Ihrem Postfach ankommen!";
-$_ARRAYLANG['TXT_CONTACT_FORM_CRM_FIELDS_MISSING']         = "To save data in crm module, you must choose email, first name and last name";
+$_ARRAYLANG['TXT_CONTACT_FORM_CRM_FIELDS_MISSING'] = "Damit die Daten ins CRM übertragen werden können, müssen die Benutzerkonto Daten <i>E-Mail</i>, <i>Vorname</i> und <i>Nachname</i> als Formularfelder eingesetzt werden!";
 ?>
