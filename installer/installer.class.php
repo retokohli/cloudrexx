@@ -1719,13 +1719,13 @@ class Installer
         $this->arrStatusMsg['global'] = "";
 
         if (isset($_POST['adminAccount'])) {
-            if (!isset($_SESSION['installer']['account']['username']) || $_POST['username'] != $_SESSION['installer']['account']['username']
+            if (!isset($_SESSION['installer']['account']['username'])
                 || !isset($_SESSION['installer']['account']['password']) || $_POST['password'] != $_SESSION['installer']['account']['password']
                 || !isset($_SESSION['installer']['account']['rePassword']) || $_POST['rePassword'] != $_SESSION['installer']['account']['rePassword']
                 || !isset($_SESSION['installer']['account']['email']) || $_POST['email'] != $_SESSION['installer']['account']['email']
                 || !isset($_SESSION['installer']['account']['reEmail']) || $_POST['reEmail'] != $_SESSION['installer']['account']['reEmail'])
             {
-                $_SESSION['installer']['account']['username'] = $_POST['username'];
+                $_SESSION['installer']['account']['username'] = $_POST['email'];
                 $_SESSION['installer']['account']['password'] = $_POST['password'];
                 $_SESSION['installer']['account']['rePassword'] = $_POST['rePassword'];
                 $_SESSION['installer']['account']['email'] = $_POST['email'];
@@ -1863,6 +1863,7 @@ class Installer
             $adminSiteMsg = str_replace("[ADMIN_URL]", "<a href=\"".$adminUrl."\" target=\"_blank\" title=\"".$_ARRLANG['TXT_ADMIN_SITE']."\">".$adminUrl."</a>", $adminSiteMsg);
 
             $objTpl->setVariable(array(
+                'TXT_LOGIN_CREDENTIAL'      => $_ARRLANG['TXT_LOGIN_EMAIL'],
                 'CONGRATULATIONS_MESSAGE'   => $congratulationsMsg,
                 'INTERNET_SITE_MESSAGE'     => $internetSiteMsg,
                 'ADMIN_SITE_MESSAGE'        => $adminSiteMsg,

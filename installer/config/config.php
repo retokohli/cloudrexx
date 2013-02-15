@@ -112,8 +112,6 @@ $arrFiles = array(
 );
 
 $arrDatabaseTables = array(
-    'module_alias_source',
-    'module_alias_target',
     'module_block_blocks',
     'module_block_rel_pages',
     'module_block_settings',
@@ -218,12 +216,9 @@ $arrDatabaseTables = array(
     'module_podcast_template',
     'module_recommend',
     'module_shop_categories',
-    'module_shop_countries',
     'module_shop_currencies',
     'module_shop_importimg',
     'module_shop_lsv',
-    'module_shop_mail',
-    'module_shop_mail_content',
     'module_shop_manufacturer',
     'module_shop_orders',
     'module_shop_order_items',
@@ -231,7 +226,6 @@ $arrDatabaseTables = array(
     'module_shop_payment_processors',
     'module_shop_pricelists',
     'module_shop_products',
-    'module_shop_products_downloads',
     'module_shop_rel_countries',
     'module_shop_rel_payment',
     'module_shop_shipment_cost',

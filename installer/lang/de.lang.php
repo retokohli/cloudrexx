@@ -39,6 +39,7 @@ $_ARRLANG['TXT_CANCEL'] = "Abbrechen";
 $_ARRLANG['TXT_STOP'] = "Stop";
 $_ARRLANG['TXT_PLEASE_SELECT'] = "--- Bitte wählen ---";
 $_ARRLANG['TXT_USERNAME'] = "Benutzername";
+$_ARRLANG['TXT_LOGIN_EMAIL'] = "Login / E-Mail";
 $_ARRLANG['TXT_PASSWORD'] = "Passwort";
 $_ARRLANG['TXT_GENERAL'] = "Allgemein";
 $_ARRLANG['TXT_FILL_OUT_ALL_FIELDS'] = "Sie müssen alle Felder ausfüllen!";
@@ -178,8 +179,8 @@ $_ARRLANG['TXT_INVALID_TIMEZONE'] = "Die angegebene Zeitzone ist ungültig.";
 $_ARRLANG['TXT_SETTINGS_ERROR_WRITABLE'] = "Die Datei %s konnte nicht geschrieben werden. Überprüfen Sie die Berechtigungen (666) der Datei.";
 
 // admin account
-$_ARRLANG['TXT_ADMIN_ACCOUNT_DESC'] = "Definieren Sie einen Benutzernamen mit Passwort, der als Administrator dienen soll.";
-$_ARRLANG['TXT_SET_USERNAME'] = "Sie müssen einen Benutzernamen definieren!";
+$_ARRLANG['TXT_ADMIN_ACCOUNT_DESC'] = "Definieren Sie ein Login mit Passwort, das als Administrator dienen soll.";
+$_ARRLANG['TXT_SET_USERNAME'] = "Sie müssen ein Login definieren!";
 $_ARRLANG['TXT_INVALID_USERNAME'] = "Der Benutzername hat ungültige Zeichen. Es dürfen nur A-Z, 0-9, - und _ verwendet werden.";
 $_ARRLANG['TXT_SET_PASSWORD'] = "Sie müssen ein Passwort definieren!";
 $_ARRLANG['TXT_PASSWORD_LENGTH_DESC'] = "(min. 6 Zeichen)";
@@ -190,7 +191,7 @@ $_ARRLANG['TXT_EMAIL'] = "E-mail";
 $_ARRLANG['TXT_EMAIL_VERIFICATION'] = "E-mail bestätigen";
 $_ARRLANG['TXT_SET_EMAIL'] = "Sie müssen eine gültige E-mail Adresse angeben!";
 $_ARRLANG['TXT_EMAIL_NOT_VERIFIED'] = "Die bestätigungs E-mail Adresse stimmt nicht mit der E-mail Adresse über ein!";
-$_ARRLANG['TXT_PASSWORD_LIKE_USERNAME'] = "Das Passwort darf nicht gleich wie der Benutzernamen sein!";
+$_ARRLANG['TXT_PASSWORD_LIKE_USERNAME'] = "Das Passwort darf nicht gleich wie die E-Mail Adresse sein!";
 $_ARRLANG['TXT_CREATE_ADMIN_ACCOUNT'] = "Administrator Konto erstellen";
 $_ARRLANG['TXT_COULD_NOT_CREATE_ADMIN_ACCOUNT'] = "Das Administrator Konto konnte nicht erstellt werden!";
 
