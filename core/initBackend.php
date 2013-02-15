@@ -351,7 +351,7 @@ switch ($plainCmd) {
         $objBanner->getPage();
         break;
     case 'jobs':
-        Permission::checkAccess(11, 'static');
+        Permission::checkAccess(148, 'static');
         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/jobs/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_JOBS_MANAGER'];
