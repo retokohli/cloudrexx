@@ -8,7 +8,7 @@
  * @subpackage  coremodule_login
  */
 
-$_ARRAYLANG['TXT_LOGIN_ENTER_A_USERNAME'] = "Bitte geben Sie einen Benutzernamen an";
+$_ARRAYLANG['TXT_LOGIN_ENTER_A_LOGIN'] = "Bitte geben Sie ein Login an";
 $_ARRAYLANG['TXT_LOGIN_ENTER_A_PASSWORD'] = "Bitte geben Sie Ihr Passwort an";
 $_ARRAYLANG['TXT_LOGIN_ENTER_CAPTCHA'] = "Bitte tippen Sie die Zeichenfolge ab";
 $_ARRAYLANG['TXT_LOGIN_ENTER_A_EMAIL'] = "Bitte geben Sie Ihre E-Mail-Adresse an";
@@ -25,7 +25,7 @@ $_ARRAYLANG['TXT_LOGIN_SET_PASSWORD_TEXT'] = "Geben Sie bitte Ihr gewünschtes P
 $_ARRAYLANG['TXT_LOGIN_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Zeichen)";
 $_ARRAYLANG['TXT_LOGIN_VERIFY_PASSWORD'] = "Passwort bestätigen";
 $_ARRAYLANG['TXT_LOGIN_SET_NEW_PASSWORD'] = "Neues Passwort setzen";
-$_ARRAYLANG['TXT_LOGIN_USERNAME'] = "Benutzername";
+$_ARRAYLANG['TXT_LOGIN_USERNAME'] = "Login";
 $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD_MAIL_SENT'] = "Eine E-Mail mit weiteren Anweisungen wurde an %EMAIL% gesendet.";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD_CHANGED_SUCCESSFULLY'] = "Ihr Passwort wurde erfolgreich geändert.";
 $_ARRAYLANG['TXT_LOGIN_LOGIN'] = "Anmelden";

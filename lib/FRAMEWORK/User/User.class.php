@@ -318,7 +318,8 @@ class User extends User_Profile
 
         $loginByEmail = false;
 
-        if (FWValidator::isEmail($username)) {
+        $arrSettings = User_Setting::getSettings();
+        if (FWValidator::isEmail($username) || !$arrSettings['use_usernames']['status']) {
             $loginByEmail = true;
         }
 
