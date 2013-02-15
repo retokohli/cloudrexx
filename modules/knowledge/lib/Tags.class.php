@@ -58,7 +58,7 @@ class KnowledgeTags
         $query = "  SELECT 
                         tags.id AS id, 
                         tags.name AS name, 
-                        count( tags_articles.id ) AS popularity
+                        count( tags_articles.article ) AS popularity
                     FROM ".DBPREFIX."module_knowledge_tags AS tags
                     ".($inUseOnly ? "INNER JOIN" : "LEFT OUTER JOIN")." ".DBPREFIX."module_knowledge_tags_articles AS tags_articles
                     ON tags.id = tags_articles.tag
@@ -103,7 +103,7 @@ class KnowledgeTags
         $lang = intval($lang);
         $query = "  SELECT  tags.id AS id, 
                             tags.name AS name,
-                            count( tags_articles.id ) AS popularity
+                            count( tags_articles.article ) AS popularity
                     FROM ".DBPREFIX."module_knowledge_tags AS tags
                     ".($inUseOnly ? "INNER JOIN" : "LEFT OUTER JOIN")." ".DBPREFIX."module_knowledge_tags_articles AS tags_articles
                     ON tags.id = tags_articles.tag
@@ -229,8 +229,10 @@ class KnowledgeTags
                 $res = $this->search_tag($tag, $lang);
                 if ($res === false) {
                     $tag_id = $this->insert($tag, $lang);
-                    $this->connectWithArticle($article_id, $tag_id);
+                } else {
+                    $tag_id = $res;
                 }
+                $this->connectWithArticle($article_id, $tag_id);
             }
         }
     }
@@ -297,10 +299,11 @@ class KnowledgeTags
         $article_id = intval($article_id);
         $tag_id = intval($tag_id);
         
-        $query = "  INSERT INTO ".DBPREFIX."module_knowledge_tags_articles
-                    (article, tag)
-                    VALUES
-                    (".$article_id.", ".$tag_id.")";
+        $query = '
+            INSERT INTO `'.DBPREFIX.'module_knowledge_tags_articles` (`article`, `tag`)
+            VALUES ('.$article_id.', '.$tag_id.')
+            ON DUPLICATE KEY UPDATE `article`=`article`
+        ';
         if ($objDatabase->Execute($query) === false) {
             throw new DatabaseError("error tagging an article");
         }
@@ -337,7 +340,7 @@ class KnowledgeTags
         $query = "  SELECT tags.id 
                     FROM ".DBPREFIX."module_knowledge_tags_articles AS relation
                     RIGHT JOIN ".DBPREFIX."module_knowledge_tags AS tags ON tags.id = relation.tag
-                    WHERE relation.id IS NULL";
+                    WHERE relation.tag IS NULL";
         $rs = $objDatabase->Execute($query);
         if ($rs === false) {
             throw new DatabaseError("error getting unused tags ");
