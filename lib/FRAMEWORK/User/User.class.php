@@ -1410,7 +1410,8 @@ class User extends User_Profile
     {
         global $objDatabase, $_CORELANG;
 
-        if (!$this->validateUsername()) {
+        $arrSettings = User_Setting::getSettings();
+        if (!$this->validateUsername() && $arrSettings['use_usernames']['status']) {
             return false;
         }
         if (!$this->validateEmail()) {
