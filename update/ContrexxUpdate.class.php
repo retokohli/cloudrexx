@@ -1015,7 +1015,13 @@ class ContrexxUpdate
             }
         }
 
-        $objAuth = $this->objDatabase->SelectLimit("SELECT `id` FROM `".DBPREFIX."access_users` WHERE `username` = '".$user."' AND `password` = '".$pass."' AND `is_admin` = 1 AND `active` = 1", 1);
+        $objUseUsernameSetting = $this->objDatabase->SelectLimit("SELECT `status` FROM `".DBPREFIX."access_settings` WHERE `key` = ?", 1, -1, array('use_usernames'));
+        if ($objUseUsernameSetting->RecordCount() > 0 && !$objUseUsernameSetting->fields['status']) {
+            $whereField = "`email`" ;
+        } else {
+            $whereField = "`username`";
+        }
+        $objAuth = $this->objDatabase->SelectLimit("SELECT `id` FROM `".DBPREFIX."access_users` WHERE ".$whereField." = ? AND `password` = ? AND `is_admin` = 1 AND `active` = 1", 1, -1, array($user, $pass));
         if ($objAuth !== false && $objAuth->RecordCount() == 1) {
             $this->isAuth = true;
             return $objAuth->fields['id'];

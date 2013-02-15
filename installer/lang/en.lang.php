@@ -178,8 +178,8 @@ $_ARRLANG['TXT_INVALID_TIMEZONE'] = "The specified time zone is not valid.";
 $_ARRLANG['TXT_SETTINGS_ERROR_WRITABLE'] = "The file %s could not be written.  Review you the file access premission (e.g. 666).";
 
 // admin account
-$_ARRLANG['TXT_ADMIN_ACCOUNT_DESC'] = "Provide an administrator's user name and password.";
-$_ARRLANG['TXT_SET_USERNAME'] = "You must define a user name!";
+$_ARRLANG['TXT_ADMIN_ACCOUNT_DESC'] = "Provide an administrator's login and password.";
+$_ARRLANG['TXT_SET_USERNAME'] = "You must define a login!";
 $_ARRLANG['TXT_INVALID_USERNAME'] = "The username may only contain alphanumeric characters (a-z, A-Z, 0-9) and the following special characters: -_";
 $_ARRLANG['TXT_SET_PASSWORD'] = "You must define a password!";
 $_ARRLANG['TXT_PASSWORD_LENGTH_DESC'] = "(min. 6 characters)";

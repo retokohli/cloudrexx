@@ -2,7 +2,7 @@
 $_CORELANG = array(
     'TXT_UPDATE_CONTREXX_UPDATE_SYSTEM'          => 'Contrexx® Update System',
     'TXT_UPDATE_INTRO_MSG'                       => '<h1>Willkommen zum Contrexx® Update System</h1>Damit Sie das Update System verwenden können, müssen Sie sich zuerst mit einem Administratorkonto anmelden.',
-    'TXT_UPDATE_USERNAME'                        => 'Benutzername',
+    'TXT_UPDATE_USERNAME'                        => 'Login',
     'TXT_UPDATE_PASSWORD'                        => 'Kennwort',
     'TXT_UPDATE_LOGIN'                           => 'Anmelden',
     'TXT_UPDATE_AUTH_FAILED'                     => 'Die Anmeldung ist Fehlgeschlagen.',
