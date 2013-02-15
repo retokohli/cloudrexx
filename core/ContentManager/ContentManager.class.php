@@ -250,7 +250,7 @@ if ($tree == 'verify') {
             ));
         }
 
-        $modules = $this->db->Execute("SELECT * FROM " . DBPREFIX . "modules");
+        $modules = $this->db->Execute("SELECT * FROM " . DBPREFIX . "modules WHERE `status` = 'y' ORDER BY `name`");
         while (!$modules->EOF) {
             $this->template->setVariable('MODULE_KEY', $modules->fields['name']);
 //            $this->template->setVariable('MODULE_TITLE', $_CORELANG[$modules->fields['description_variable']]);
