@@ -927,7 +927,12 @@ class AccessManager extends AccessLib
         // add this to a new section maybe named like "maintenance"
         $this->removeUselessImages();
 
-        $this->_objTpl->addBlockfile('ACCESS_USER_TEMPLATE', 'module_access_user_overview', 'module_access_user_list.html');
+        $arrSettings = User_Setting::getSettings();
+        $templateFile = 'module_access_user_list';
+        if (!$arrSettings['use_usernames']['status']) {
+            $templateFile .= '_no_usernames';
+        }
+        $this->_objTpl->addBlockfile('ACCESS_USER_TEMPLATE', 'module_access_user_overview', $templateFile . '.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_ACCESS_USERS'];
         $objFWUser = FWUser::getFWUserObject();
 

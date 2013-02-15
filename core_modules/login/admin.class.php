@@ -210,7 +210,7 @@ class LoginManager {
         $this->objTemplate->setVariable(array(
             'TITLE'                         => $_ARRAYLANG['TXT_LOGIN_LOGIN'],
             'TXT_LOGIN_LOGIN'               => $_ARRAYLANG['TXT_LOGIN_LOGIN'],
-            'TXT_LOGIN_ENTER_A_USERNAME'    => $_ARRAYLANG['TXT_LOGIN_ENTER_A_USERNAME'],
+            'TXT_LOGIN_ENTER_A_LOGIN'    => $_ARRAYLANG['TXT_LOGIN_ENTER_A_LOGIN'],
             'TXT_LOGIN_ENTER_A_PASSWORD'    => $_ARRAYLANG['TXT_LOGIN_ENTER_A_PASSWORD'],
             'TXT_LOGIN_ENTER_CAPTCHA'       => $_ARRAYLANG['TXT_LOGIN_ENTER_CAPTCHA'],
             'TXT_LOGIN_USERNAME'            => $_ARRAYLANG['TXT_LOGIN_USERNAME'],
