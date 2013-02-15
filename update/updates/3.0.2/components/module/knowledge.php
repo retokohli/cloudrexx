@@ -167,6 +167,27 @@ function _knowledgeUpdate()
     }
 
 
+    /*******************************************
+    * EXTENSION:    Duplicate entries clean up *
+    * ADDED:        Contrexx v3.0.2            *
+    *******************************************/
+    try {
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_knowledge_tags_articles',
+            array(
+                'article'    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'tag'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'article')
+            ),
+            array(
+                'article'    => array('fields' => array('article','tag'), 'type' => 'UNIQUE')
+            ),
+            'MyISAM',
+            'cx3upgrade'
+        );
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
     return true;
 }
 
@@ -362,40 +383,39 @@ function _knowledgeInstall()
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_knowledge_tags_articles',
             array(
-                'id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'article'    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'id'),
+                'article'    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'tag'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'article')
             ),
             array(
-                'module_knowledge_tags_articles_tag' => array('fields' => array('tag')),
-                'module_knowledge_tags_articles_article' => array('fields' => array('article'))
+                'article'    => array('fields' => array('article','tag'), 'type' => 'UNIQUE')
             ),
             'MyISAM',
             'cx3upgrade'
         );
+
         \Cx\Lib\UpdateUtil::sql("
-            INSERT INTO `".DBPREFIX."module_knowledge_tags_articles` (`id`, `article`, `tag`)
-            VALUES  (326, 1, 1),
-                    (327, 1, 2),
-                    (328, 1, 15),
-                    (329, 1, 4),
-                    (330, 1, 8),
-                    (331, 1, 7),
-                    (332, 1, 28),
-                    (333, 1, 5),
-                    (334, 1, 19),
-                    (335, 1, 18),
-                    (336, 1, 29),
-                    (337, 1, 16),
-                    (338, 7, 12),
-                    (339, 7, 21),
-                    (340, 7, 20),
-                    (341, 7, 24),
-                    (342, 7, 22),
-                    (343, 7, 23),
-                    (344, 7, 26),
-                    (345, 7, 25),
-                    (346, 7, 27)
+            INSERT INTO `".DBPREFIX."module_knowledge_tags_articles` (`article`, `tag`)
+            VALUES  (1, 1),
+                    (1, 2),
+                    (1, 15),
+                    (1, 4),
+                    (1, 8),
+                    (1, 7),
+                    (1, 28),
+                    (1, 5),
+                    (1, 19),
+                    (1, 18),
+                    (1, 29),
+                    (1, 16),
+                    (7, 12),
+                    (7, 21),
+                    (7, 20),
+                    (7, 24),
+                    (7, 22),
+                    (7, 23),
+                    (7, 26),
+                    (7, 25),
+                    (7, 27)
             ON DUPLICATE KEY UPDATE `id` = `id`
         ");
 
