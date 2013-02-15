@@ -626,6 +626,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
         //save category data
         if(isset($_POST['submitCategoryModfyForm'])) {
             $status = $objCategories->saveCategory($_POST, intval($_POST['categoryId']));
+            $objCategories->loadCategories();
 
             if(!empty($_POST['categoryId'])) {
                 if($status == true) {
