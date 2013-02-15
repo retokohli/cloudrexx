@@ -104,7 +104,7 @@ class Url {
     public function __construct($url) {
         $matches = array();
         $matchCount = preg_match('/^(https?:\/\/[^\/]+\/)(.*)?/', $url, $matches);
-        if($matchCount == 0) {
+        if ($matchCount == 0) {
             throw new UrlException('Malformed URL: ' . $url);
         }
 
@@ -114,6 +114,8 @@ class Url {
         } else {
             $this->suggest();
         }
+
+        $this->addPassedParams();
     }
 
     public function setMode($mode) {
@@ -201,6 +203,22 @@ class Url {
     }
 
     /**
+     * Add all passed parameters which are skin related.
+     *
+     * @access  private
+     */
+    private function addPassedParams() {
+        $existingParams = $this->getParamArray();
+
+        if (!empty($_GET['preview']) && !isset($existingParams['preview'])) {
+            $this->setParam('preview', $_GET['preview']);
+        }
+        if ((isset($_GET['appview']) && ($_GET['appview'] == 1)) && !isset($existingParams['appview'])) {
+            $this->setParam('appview', $_GET['appview']);
+        }
+    }
+
+    /**
      * Set a single parameter.
      *
      * @access  public
@@ -273,12 +291,15 @@ class Url {
      * @return  array       $params
      */
     private function splitParamsFromPath() {
-        list($path, $query) = explode('?', $this->path);
-        if (!empty($query)) {
-            $params = self::params2array($query);
-        } else {
-            $params = array();
+        $params = array();
+
+        if (strpos($this->path, '?') !== false) {
+            list($path, $query) = explode('?', $this->path);
+            if (!empty($query)) {
+                $params = self::params2array($query);
+            }
         }
+
         return $params;
     }
 
