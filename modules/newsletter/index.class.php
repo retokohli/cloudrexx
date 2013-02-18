@@ -947,7 +947,7 @@ class newsletter extends NewsletterLib
 		
 		// Get user details.
 		$query = '
-		    SELECT `email`, `uri`, `salutation`, `title`, `position`, `company`, `industry_sector`, `sex`,
+		    SELECT `id`, `email`, `uri`, `salutation`, `title`, `position`, `company`, `industry_sector`, `sex`,
                    `lastname`, `firstname`, `address`, `zip`, `city`, `country_id`, 
                    `phone_office`, `phone_mobile`, `phone_private`, `fax`, `birthday`
 		    FROM `'.DBPREFIX.'module_newsletter_user`
@@ -970,6 +970,7 @@ class newsletter extends NewsletterLib
             }
 
             $objUser        = FWUser::getFWUserObject()->objUser;
+            $userId         = $objResult->fields['id'];
             $sex            = $objUser->objAttribute->getById($gender)->getName();
 
             //$salutation     = contrexx_raw2xhtml($objUser->objAttribute->getById('title_'.$objResult->fields['salutation'])->getName());
@@ -1093,6 +1094,17 @@ class newsletter extends NewsletterLib
         // Replaces the placeholder in the template and content.
         $html    = str_replace($search, $replace, $html);
         $content = str_replace($search, $replace, $content);
+
+        // prepare links in content for tracking
+        if (is_object($objUser) && $objUser->getId()) {
+            $userId = $objUser->getId();
+            $type = 'access';
+        } else {
+            $userId = $userId ? $userId : 0;
+            $type = null;
+        }
+
+        $content = self::prepareNewsletterLinksForSend($id, $content, $userId, $type);
 		
         // Finally replace content placeholder in the template.
 		$html = str_replace('[[content]]', $content, $html);
