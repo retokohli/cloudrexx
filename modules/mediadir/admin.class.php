@@ -605,7 +605,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                 'TXT_'.$this->moduleLangVar.'_TRANSLATION_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_TRANSLATION_STATUS'],
             ));
         } else {
-			header("Location: index.php?cmd='.$this->moduleName.'&act=settings&tpl=forms");
+			CSRF::header("Location: index.php?cmd=".$this->moduleName."&act=settings&tpl=forms");
 			exit;
         }
     }
