@@ -5214,6 +5214,7 @@ END;
                 'TXT_SAVE'                  => $_ARRAYLANG['TXT_SAVE'],
                 'TXT_PARENT_INDUSTRY_TYPE'  => $_ARRAYLANG['TXT_PARENT_INDUSTRY_TYPE'],
                 'TXT_CRM_NEW_INDUSTRY_TYPE' => $_ARRAYLANG['TXT_CRM_NEW_INDUSTRY_TYPE'],
+                'TXT_BACK'                  => $_ARRAYLANG['TXT_BACK'],
                 'TXT_TITLE_MODIFY_INDUSTRY' => (!empty ($id)) ? $_ARRAYLANG['TXT_EDIT_INDUSTRY'] : $_ARRAYLANG['TXT_ADD_INDUSTRY'],
                 'CSRF_PARAM'                => CSRF::param(),
         ));
