@@ -66,7 +66,8 @@ class ContrexxJavascript {
                 'cadminPath'=> ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/',
                 'mode'      => $objInit->mode,
                 'language'  => $langCode,
-                'csrf'      => CSRF::code(),
+// csrf cannot be used here because the updater does not contain the csrf class
+//                'csrf'      => CSRF::code(),
             ),
             'contrexx'
         );
