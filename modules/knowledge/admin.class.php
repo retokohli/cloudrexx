@@ -1143,7 +1143,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
         try {
             $id = $this->articles->insert($category, $state);
             foreach ($tags as $lang => $tag) {
-                $this->tags->insertFromString($id, $tag, $lang);
+                $this->tags->updateFromString($id, $tag, $lang);
             }
         } catch (DatabaseError $e) {
             $this->errorMessage = $_ARRAYLANG['TXT_KNOWLEDGE_ERROR_OVERVIEW'];
@@ -1186,7 +1186,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
             $this->articles->update($id, $category, $state);
             $this->tags->clearTags();
             foreach ($tags as $lang => $tag) {
-                $this->tags->insertFromString($id, $tag, $lang);
+                $this->tags->updateFromString($id, $tag, $lang);
             }
         } catch (DatabaseError $e) {
             $this->errorMessage = $_ARRAYLANG['TXT_KNOWLEDGE_ERROR_OVERVIEW'];

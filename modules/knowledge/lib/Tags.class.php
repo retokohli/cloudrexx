@@ -215,24 +215,33 @@ class KnowledgeTags
     /**
      * Insert tags from a string
      * 
-     * @param int $article_id
-     * @param int $string
-     * @param int $lang
+     * @param   int     $article_id
+     * @param   int     $string
+     * @param   int     $lang
      */
-    public function insertFromString($article_id, $string, $lang)
+    public function updateFromString($articleId, $string, $lang)
     {
-        $lang = intval($lang);        
-        
+        $lang = intval($lang);
         $tags = preg_split("/\s*,\s*/i", $string);
+
+        //delete/disconnect removed tags
+        foreach ($this->getByArticle($articleId) as $tagId => $tag) {
+            if (($tag['lang'] == $lang) && (array_search($tag['name'], $tags) === false)) {
+                $this->disconnectFromArticle($articleId, $tagId);
+            }
+        }
+        $this->tidy();
+
+        //add/connect new tags
         foreach ($tags as $tag) {
             if (!empty($tag)) {
                 $res = $this->search_tag($tag, $lang);
                 if ($res === false) {
-                    $tag_id = $this->insert($tag, $lang);
+                    $tagId = $this->insert($tag, $lang);
                 } else {
-                    $tag_id = $res;
+                    $tagId = $res;
                 }
-                $this->connectWithArticle($article_id, $tag_id);
+                $this->connectWithArticle($articleId, $tagId);
             }
         }
     }
@@ -283,32 +292,50 @@ class KnowledgeTags
         
         return false;
     }
-    
+
     /**
      * Connect with an article
      *
-     * @param int $article_id
-     * @param int $tag_id
-     * @global $objDatabase
-     * @throws DatabaseError
+     * @param   int     $articleId
+     * @param   int     $tagId
+     * @global  $objDatabase
+     * @throws  DatabaseError
      */
-    private function connectWithArticle($article_id, $tag_id)
+    private function connectWithArticle($articleId, $tagId)
     {
         global $objDatabase;
-        
-        $article_id = intval($article_id);
-        $tag_id = intval($tag_id);
-        
+
         $query = '
             INSERT INTO `'.DBPREFIX.'module_knowledge_tags_articles` (`article`, `tag`)
-            VALUES ('.$article_id.', '.$tag_id.')
+            VALUES ('.intval($articleId).', '.intval($tagId).')
             ON DUPLICATE KEY UPDATE `article`=`article`
         ';
         if ($objDatabase->Execute($query) === false) {
             throw new DatabaseError("error tagging an article");
         }
     }
-    
+
+    /**
+     * Disconnect from an article
+     *
+     * @param   int     $articleId
+     * @param   int     $tagId
+     * @global  $objDatabase
+     * @throws  DatabaseError
+     */
+    private function disconnectFromArticle($articleId, $tagId)
+    {
+        global $objDatabase;
+
+        $query = '
+            DELETE FROM `'.DBPREFIX.'module_knowledge_tags_articles`
+            WHERE (`article` = '.intval($articleId).') AND (`tag` = '.intval($tagId).')
+        ';
+        if ($objDatabase->Execute($query) === false) {
+            throw new DatabaseError('error while disconnecting a tag from an article');
+        }
+    }
+
     /**
      * Remove all tag relations from removed articles
      *
@@ -336,7 +363,7 @@ class KnowledgeTags
     public function tidy()
     {
         global $objDatabase;
-        
+
         $query = "  SELECT tags.id 
                     FROM ".DBPREFIX."module_knowledge_tags_articles AS relation
                     RIGHT JOIN ".DBPREFIX."module_knowledge_tags AS tags ON tags.id = relation.tag
@@ -345,16 +372,16 @@ class KnowledgeTags
         if ($rs === false) {
             throw new DatabaseError("error getting unused tags ");
         }
-        
+
         if ($rs->RecordCount() > 0) {
             $ids = "";
             while (!$rs->EOF) {
                 $ids .= " ".$rs->fields['id'].",";
                 $rs->MoveNext();
             }
-            
+
             $ids = substr($ids, 0, -1);
-            
+
             $query = " DELETE FROM ".DBPREFIX."module_knowledge_tags
                         WHERE id IN (".$ids.")";
             if ($objDatabase->Execute($query) === false) {
