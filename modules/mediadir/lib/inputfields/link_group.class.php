@@ -24,7 +24,7 @@ require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface
  * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
  */
-class mediaDirectoryInputfieldLink_group implements inputfield
+class mediaDirectoryInputfieldLink_group extends mediaDirectoryLibrary implements inputfield
 {
     public $arrPlaceholders = array('TXT_MEDIADIR_INPUTFIELD_NAME','MEDIADIR_INPUTFIELD_VALUE');
 
@@ -77,7 +77,7 @@ class mediaDirectoryInputfieldLink_group implements inputfield
                     $strInfoValue = null;
                     $strInfoClass = '';
                 }
-                
+
                 if($objInit->mode == 'backend') {
                     $strInputfield = '<textarea name="'.$this->moduleName.'Inputfield['.$intId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'" style="width: 300px; height: 60px;" onfocus="this.select();" />'.$strValue.'</textarea>';
                 } else {
