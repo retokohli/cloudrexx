@@ -2085,7 +2085,7 @@ class AccessManager extends AccessLib
         // if the current user is no admin, show a message
         $currentUserIsAdmin = FWUser::getFWUserObject()->objUser->getAdminStatus();
         if (!$currentUserIsAdmin) {
-            $this->_objTpl->setVariable('ACCESS_SOCIALLOGIN_PERMISSION_DENIED', $_ARRAYLANG['ACCESS_SOCIALLOGIN_PERMISSION_DENIED']);
+            $this->_objTpl->setVariable('TXT_ACCESS_SOCIALLOGIN_PERMISSION_DENIED', $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_PERMISSION_DENIED']);
             $this->_objTpl->parse('access_sociallogin_permission_denied');
         }
 
