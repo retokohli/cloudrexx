@@ -290,7 +290,7 @@ class LicenseCommunicator {
                 jQuery(document).ready(function() {
                     var licenseMessage      = jQuery("#license_message");
                     var cloneLicenseMessage = jQuery("#license_message").clone();
-                    var reloadManager       = false;
+                    var reloadManager       = true;
                     
                     var revertMessage = function(setClass, setHref, setTarget, setText) {
                         setTimeout(function() {
@@ -316,6 +316,7 @@ class LicenseCommunicator {
             if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
                 $jsCode .= '
                         if (data == "false" && allowUserAgent) {
+                            reloadManager = false;
                             jQuery.getScript("http://updatesrv1.contrexx.com/?' . implode('&', $userAgentRequestArguments) . '", function() {
                                 jQuery.post(
                                     "../core_modules/License/versioncheck.php?force=true",
@@ -337,7 +338,7 @@ class LicenseCommunicator {
                             revertMessage();
                             return;
                         }
-                        
+                        console.log(reloadManager);
                         revertMessage(data[\'class\'], data.link, data.target, data.text);
                         if (reloadManager) {
                             document.location.reload(true);
