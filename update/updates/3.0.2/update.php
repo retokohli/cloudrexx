@@ -7,7 +7,7 @@ require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FileSystemFile.class.php';
 require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FTPFile.class.php';
 
 function executeContrexxUpdate() {
-    global $_CORELANG, $_CONFIG, $objUpdate;
+    global $_CORELANG, $_CONFIG, $objDatabase, $objUpdate;
 
     $_SESSION['contrexx_update']['copyFilesFinished'] = !empty($_SESSION['contrexx_update']['copyFilesFinished']) ? $_SESSION['contrexx_update']['copyFilesFinished'] : false;
 
