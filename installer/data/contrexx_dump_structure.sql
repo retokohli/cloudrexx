@@ -160,7 +160,7 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_access_users` (
   `id` int(5) unsigned NOT NULL auto_increment,
   `is_admin` tinyint(1) unsigned NOT NULL default '0',
-  `username` varchar(40) default NULL,
+  `username` varchar(255) default NULL,
   `password` varchar(32) default NULL,
   `regdate` int(14) unsigned NOT NULL default '0',
   `expiration` int(14) unsigned NOT NULL default '0',
