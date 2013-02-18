@@ -103,4 +103,3 @@ CKEDITOR.editorConfig = function( config )
         ['Bold','Italic','Underline','StrikeThrough','-','Link','Unlink', 'SpecialChar'],
     ];
 };
-});
