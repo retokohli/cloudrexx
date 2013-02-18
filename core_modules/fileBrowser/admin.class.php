@@ -660,17 +660,17 @@ class FileBrowser {
         }
 
         //create thumbnails
-        foreach($arrFiles as $file) {
-            $fileType = pathinfo($file);
-            if ($fileType['extension'] == 'jpg' || $fileType['extension'] == 'jpeg' || $fileType['extension'] == 'png' || $fileType['extension'] == 'gif') {
-                $objFile = new File();
-                $_objImage = new ImageManager();
-                $_objImage->_createThumbWhq($tempPath.'/', $tempWebPath.'/', $file, 1e10, 80, 90);
-                
-                if ($objFile->setChmod($tempPath, $tempWebPath, ImageManager::getThumbnailFilename($file)))
-                    $this->_pushStatusMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_SUCCESSFULLY_CREATED'], $strWebPath.$file));
-            }
-        }
+//        foreach($arrFiles as $file) {
+//            $fileType = pathinfo($file);
+//            if ($fileType['extension'] == 'jpg' || $fileType['extension'] == 'jpeg' || $fileType['extension'] == 'png' || $fileType['extension'] == 'gif') {
+//                $objFile = new File();
+//                $_objImage = new ImageManager();
+//                $_objImage->_createThumbWhq($tempPath.'/', $tempWebPath.'/', $file, 1e10, 80, 90);
+//
+//                if ($objFile->setChmod($tempPath, $tempWebPath, ImageManager::getThumbnailFilename($file)))
+//                    $this->_pushStatusMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_SUCCESSFULLY_CREATED'], $strWebPath.$file));
+//            }
+//        }
 
         //remember the uploaded files
         if(isset($_SESSION["filebrowser_upload_files_$uploadId"])) //do not overwrite already uploaded files
