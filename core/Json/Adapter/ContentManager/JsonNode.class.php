@@ -236,6 +236,10 @@ class JsonNode implements JsonAdapter {
         
         $this->em->remove($node);
         $this->em->flush();
+        return array(
+            'action'                => 'delete',
+            'deletedCurrentPage'    => ($arguments['post']['currentNodeId'] == $arguments['post']['id']),
+        );
     }
     
     /**
@@ -245,7 +249,7 @@ class JsonNode implements JsonAdapter {
      */
     public function multipleDelete($params) {
         $post   = $params['post'];
-        $return = array();
+        $return = array('action' => 'delete');
         
         foreach ($post['nodes'] as $nodeId) {
             $data['post']['id'] = $nodeId;
