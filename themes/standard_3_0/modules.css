@@ -88,8 +88,21 @@ form label {
     width: 250px;
 }
 
-form input[type=submit] {
+form input[type="submit"] {
     margin-right: 10px;
+    float: left;
+}
+
+#login form input.remember_me,
+#login form label.remember_me {
+    margin-left: 0;
+    margin-top: 7px;
+    padding: 0 0 21px 0;
+    border: 0 none;
+}
+
+#login form input.remember_me {
+    margin-top: 9px;
 }
 
 /***************************************************/
