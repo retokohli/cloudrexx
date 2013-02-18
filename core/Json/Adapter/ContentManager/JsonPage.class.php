@@ -308,10 +308,19 @@ class JsonPage implements JsonAdapter {
                     }
                     if ($page->isBackendProtected()) {
                         // remove all
+                        $groupIds = $pg->getAssignedGroupIds($page, false);
                         \Permission::removeAccess($page->getBackendAccessId(), 'dynamic');
                         if (isset($dataPost['backendGroups'])) {
                             // set new
                             $pg->setAssignedGroupIds($page, $dataPost['backendGroups'], false);
+                        }
+                        if ($page->isBackendProtected() &&
+                            !\Permission::checkAccess($page->getBackendAccessId(), 'dynamic', true)) {
+                            if (!count($groupIds)) {
+                                $page->setBackendProtection(false);
+                            } else {
+                                $pg->setAssignedGroupIds($page, $groupIds, false);
+                            }
                         }
                     }
                 } else  {
