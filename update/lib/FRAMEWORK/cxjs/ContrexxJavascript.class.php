@@ -1,10 +1,35 @@
 <?php
+/**
+ * ContrexxJavascript
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_cxjs
+ */
+
+/**
+ * ContrexxJavascriptException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_cxjs
+ */
 class ContrexxJavascriptException extends Exception {}
 
+/**
+ * @ignore
+ */
 require_once UPDATE_PATH . '/lib/FRAMEWORK/cxjs/ContrexxJavascriptI18n.class.php';
 /**
  * This class configures the ContrexxJavascript-object
  * (referred to as 'cx-object' in the comments)
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_cxjs
  * @todo this can be cached
  */
 class ContrexxJavascript {
@@ -38,9 +63,10 @@ class ContrexxJavascript {
             array(
                 'path'      => ASCMS_PATH_OFFSET.'/update/'.$langCode.'/',
                 'basePath'  => ASCMS_PATH_OFFSET.'/update/',
-                'cadminPath'=> ASCMS_BACKEND_PATH.'/',
+                'cadminPath'=> ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/',
                 'mode'      => $objInit->mode,
                 'language'  => $langCode,
+                'csrf'      => CSRF::code(),
             ),
             'contrexx'
         );
