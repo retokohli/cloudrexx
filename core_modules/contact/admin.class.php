@@ -1406,25 +1406,29 @@ class ContactManager extends ContactLib
      */
     function _deleteContentSite($formId)
     {
-        return;
-
-        global $objDatabase, $_ARRAYLANG;
-
         Permission::checkAccess(26, 'static');
 
         $formId = intval($_REQUEST['formId']);
+        try {
+            $pageRepo = $this->em->getRepository('\Cx\Model\ContentManager\Page');
+            $pages = $pageRepo->findBy(array('module' => 'contact', 'cmd' => $formId));
 
-        $pageRepo = $this->em->getRepository('\Cx\Model\ContentManager\Page');
-        $pages = $pageRepo->findBy(array('module' => 'contact', 'cmd' => $formId));
-        $nodes = array();
-        foreach($pages as $page) {
-            $this->em->remove($page);
-            $nodes[] = $page->getNode();
-        }
+            $nodes = array();
+            foreach($pages as $page) {
+                $this->em->remove($page);
+                $nodes[] = $page->getNode();
+            }
+            $this->em->flush();
 
-        $this->em->flush();
-
-// TODO: Delete empty nodes
+            // delete empty nodes
+            foreach ($nodes as $node) {
+                $this->em->refresh($node);
+                if (count($node->getPages()) == 0) {
+                    $this->em->remove($node);
+                }
+            }
+            $this->em->flush();
+        } catch(\Exception $e) {}
     }
 
     /**
