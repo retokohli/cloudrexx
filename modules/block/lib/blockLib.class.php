@@ -114,7 +114,7 @@ class blockLibrary
                 
                 while (!$objResult->EOF) {  
                     $langArr          = array();
-                    $objBlockLang = $objDatabase->Execute("SELECT lang_id FROM ".DBPREFIX."module_block_rel_lang_content WHERE block_id=".$objResult->fields['id']." ORDER BY lang_id ASC");
+                    $objBlockLang = $objDatabase->Execute("SELECT lang_id FROM ".DBPREFIX."module_block_rel_lang_content WHERE block_id=".$objResult->fields['id']." AND `active` = 1 ORDER BY lang_id ASC");
                     
                     if ($objBlockLang) {
                         while (!$objBlockLang->EOF) {                        
