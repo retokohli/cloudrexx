@@ -375,11 +375,14 @@ cx.ready(function() {
             </tr>
             </tbody>
         </table>
+        <!-- BEGIN access_sociallogin_permission_denied -->
+        <div class="warningbox">{ACCESS_SOCIALLOGIN_PERMISSION_DENIED}</div>
+        <!-- END access_sociallogin_permission_denied -->
         <!-- BEGIN access_sociallogin_provider -->
         <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist socialloginToggle" style="display: {ACCESS_SOCIALLOGIN_TOGGLE}" summary="social login config">
             <tr class="row{ACCESS_SOCIALLOGIN_PROVIDER_ROW}">
                 <td width="15%"><strong>{ACCESS_SOCIALLOGIN_PROVIDER_NAME_UPPER}</strong></td>
-                <td width="85%"><input type="checkbox" class="socialloginActivateProvider" name="sociallogin_providers[{ACCESS_SOCIALLOGIN_PROVIDER_NAME}][active]" value="1" {ACCESS_SOCIALLOGIN_PROVIDER_ENABLED_CHECKED} />
+                <td width="85%"><input type="checkbox" class="socialloginActivateProvider" name="sociallogin_providers[{ACCESS_SOCIALLOGIN_PROVIDER_NAME}][active]" value="1" {ACCESS_SOCIALLOGIN_PROVIDER_ENABLED_CHECKED} {ACCESS_SOCIALLOGIN_PROVIDER_DISABLED} />
                     <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_ACCESS_SOCIALLOGIN_MANUAL}</span></td>
             </tr>
             <!-- BEGIN access_sociallogin_provider_params -->

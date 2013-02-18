@@ -2082,21 +2082,30 @@ class AccessManager extends AccessLib
             $this->_objTpl->hideBlock('access_sociallogin_settings');
         }
 
+        // if the current user is no admin, show a message
+        $currentUserIsAdmin = FWUser::getFWUserObject()->objUser->getAdminStatus();
+        if (!$currentUserIsAdmin) {
+            $this->_objTpl->setVariable('ACCESS_SOCIALLOGIN_PERMISSION_DENIED', $_ARRAYLANG['ACCESS_SOCIALLOGIN_PERMISSION_DENIED']);
+            $this->_objTpl->parse('access_sociallogin_permission_denied');
+        }
+
         $socialloginProviderRow = 0;
         foreach ($socialloginProviders as $socialloginProviderName => $providerObject) {
             $settings = $providerObject->getApplicationData();
 
             $paramId = 0;
-            foreach (call_user_func(\Cx\Lib\SocialLogin::getClassByProvider($socialloginProviderName) . '::configParams') as $configParam) {
-                $this->_objTpl->setVariable(array(
-                    'TXT_ACCESS_SOCIALLOGIN_PROVIDER_PARAM_TITLE' => $_ARRAYLANG[$configParam],
-                    'ACCESS_SOCIALLOGIN_PROVIDER_PARAM_VALUE'     => contrexx_raw2xhtml(!empty($settings[$paramId]) ? $settings[$paramId] : ''),
-                    'ACCESS_SOCIALLOGIN_PROVIDER_TOGGLE'          => $providerObject->isActive() ? '' : 'none',
-                    'ACCESS_SOCIALLOGIN_PROVIDER_NAME'            => contrexx_raw2xhtml($socialloginProviderName),
-                    'ACCESS_SOCIALLOGIN_PROVIDER_NAME_UPPER'      => contrexx_raw2xhtml(ucfirst($socialloginProviderName)),
-                ));
-                $this->_objTpl->parse('access_sociallogin_provider_params');
-                $paramId++;
+            if ($currentUserIsAdmin) {
+                foreach (call_user_func(\Cx\Lib\SocialLogin::getClassByProvider($socialloginProviderName) . '::configParams') as $configParam) {
+                    $this->_objTpl->setVariable(array(
+                        'TXT_ACCESS_SOCIALLOGIN_PROVIDER_PARAM_TITLE' => $_ARRAYLANG[$configParam],
+                        'ACCESS_SOCIALLOGIN_PROVIDER_PARAM_VALUE'     => contrexx_raw2xhtml(!empty($settings[$paramId]) ? $settings[$paramId] : ''),
+                        'ACCESS_SOCIALLOGIN_PROVIDER_TOGGLE'          => $providerObject->isActive() ? '' : 'none',
+                        'ACCESS_SOCIALLOGIN_PROVIDER_NAME'            => contrexx_raw2xhtml($socialloginProviderName),
+                        'ACCESS_SOCIALLOGIN_PROVIDER_NAME_UPPER'      => contrexx_raw2xhtml(ucfirst($socialloginProviderName)),
+                    ));
+                    $this->_objTpl->parse('access_sociallogin_provider_params');
+                    $paramId++;
+                }
             }
 
             $this->_objTpl->setVariable(array(
@@ -2104,7 +2113,8 @@ class AccessManager extends AccessLib
                 'ACCESS_SOCIALLOGIN_PROVIDER_NAME'              => contrexx_raw2xhtml($socialloginProviderName),
                 'ACCESS_SOCIALLOGIN_PROVIDER_NAME_UPPER'        => contrexx_raw2xhtml(ucfirst($socialloginProviderName)),
                 'TXT_ACCESS_SOCIALLOGIN_PROVIDER_ENABLED'       => $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_PROVIDER_ENABLED'],
-                'ACCESS_SOCIALLOGIN_PROVIDER_ENABLED_CHECKED'   => $providerObject->isActive() ? 'checked="checked"' : '',
+                'ACCESS_SOCIALLOGIN_PROVIDER_ENABLED_CHECKED'   => ($currentUserIsAdmin && $providerObject->isActive()) ? 'checked="checked"' : '',
+                'ACCESS_SOCIALLOGIN_PROVIDER_DISABLED'          => $currentUserIsAdmin ? '' : 'disabled="disabled"',
             ));
             $this->_objTpl->parse('access_sociallogin_provider');
             $socialloginProviderRow++;
