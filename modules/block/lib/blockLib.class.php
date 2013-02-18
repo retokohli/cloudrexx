@@ -160,18 +160,32 @@ class blockLibrary
     {
         global $objDatabase;
 
-        $query = "INSERT INTO `".DBPREFIX."module_block_blocks`
-                    SET `name`              = '".contrexx_raw2db($name)."',
-                        `cat`               = ".intval($cat).",
-                        `start`             = ".intval($start).",
-                        `end`               = ".intval($end).",
-                        `random`            = ".intval($blockRandom).",
-                        `random_2`          = ".intval($blockRandom2).",
-                        `random_3`          = ".intval($blockRandom3).", 
-                        `random_4`          = ".intval($blockRandom4).", 
-                        `global`            = ".intval($blockGlobal).",
-                        `wysiwyg_editor`    = ".intval($blockWysiwygEditor).",
-                        `active`   = 1";
+        $query = "INSERT INTO `".DBPREFIX."module_block_blocks` (
+                    `order`,
+                    `name`,
+                    `cat`,
+                    `start`,
+                    `end`,
+                    `random`,
+                    `random_2`,
+                    `random_3`,
+                    `random_4`,
+                    `global`,
+                    `wysiwyg_editor`,
+                    `active`
+                  ) SELECT MAX(`order`) + 1,
+                      '".contrexx_raw2db($name)."',
+                      ".intval($cat).",
+                      ".intval($start).",
+                      ".intval($end).",
+                      ".intval($blockRandom).",
+                      ".intval($blockRandom2).",
+                      ".intval($blockRandom3).",
+                      ".intval($blockRandom4).",
+                      ".intval($blockGlobal).",
+                      ".intval($blockWysiwygEditor).",
+                       1
+                  FROM `".DBPREFIX."module_block_blocks`";
         if ($objDatabase->Execute($query) === false) {
             return false;
         }
