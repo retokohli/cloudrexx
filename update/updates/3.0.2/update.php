@@ -875,7 +875,8 @@ function copyCxFilesToRoot($src, $dst)
                 $copiedCxFilesIndex--;
                 $_SESSION['contrexx_update']['copiedCxFilesIndex'] = $copiedCxFilesIndex;
                 $_SESSION['contrexx_update']['copiedCxFilesTotal']--;
-                setUpdateMsg('Folgende Datei konnte nicht kopiert werden:<br />' . ASCMS_PATH_OFFSET . '/' . $file);
+                setUpdateMsg('Folgende Datei konnte nicht installiert werden:<br />' . $dstPath);
+                setUpdateMsg('Fehler: ' . $e->getMessage());
                 return false;
             }
         }

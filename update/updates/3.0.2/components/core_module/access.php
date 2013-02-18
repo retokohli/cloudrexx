@@ -709,7 +709,7 @@ function _accessUpdate()
             array(
                 'id'                     => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'is_admin'               => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'id'),
-                'username'               => array('type' => 'VARCHAR(40)', 'notnull' => false, 'after' => 'is_admin'),
+                'username'               => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'is_admin'),
                 'password'               => array('type' => 'VARCHAR(32)', 'notnull' => false, 'after' => 'username'),
                 'regdate'                => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'password'),
                 'expiration'             => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'regdate'),
