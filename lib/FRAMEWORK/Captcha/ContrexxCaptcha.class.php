@@ -199,8 +199,8 @@ class ContrexxCaptcha implements CaptchaInterface {
         $alt= contrexx_raw2xhtml($_CORELANG['TXT_CORE_CAPTCHA']);
         $code = '<span id="captcha">';
         $code .= '<label for="coreCaptchaCode" id="coreCaptchaLabel">'.$_CORELANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'].'</label>';
-        $code .= '<div class="row"><input type="text" name="coreCaptchaCode" id="coreCaptchaCode" value="" maxlength="5" '.$tabIndexAttr.' autocomplete="off" />';
-        $code .= '<img src="'.$this->getUrl().'" alt="'.$alt.'" id="coreCaptchaImage" /></div>';
+        $code .= '<span class="row"><input type="text" name="coreCaptchaCode" id="coreCaptchaCode" value="" maxlength="5" '.$tabIndexAttr.' autocomplete="off" />';
+        $code .= '<img src="'.$this->getUrl().'" alt="'.$alt.'" id="coreCaptchaImage" /></span>';
         $code .= '</span>';
 
         return $code;
