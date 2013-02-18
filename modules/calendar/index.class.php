@@ -653,6 +653,8 @@ JSCODE;
 				//insertfield data
 				$regId = $objDatabase->Insert_ID();
 
+				$objResultFields = false;
+
 				foreach ($_POST['signForm'] as $fieldId => $fieldData) {
 
 					$fieldData = contrexx_addslashes(contrexx_strip_tags($fieldData));
