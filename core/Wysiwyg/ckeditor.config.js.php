@@ -1,6 +1,13 @@
 <?php
-require_once(dirname(__FILE__).'/../../config/settings.php');
-require_once(dirname(__FILE__).'/../../config/configuration.php');
+if (strpos(dirname(__FILE__), 'customizing') === false) {
+    $contrexx_config_path = dirname(dirname(dirname(__FILE__))).'/config/';
+} else {
+    // this files resides within the customizing directory, therefore we'll have to strip
+    // out one directory more than usually
+    $contrexx_config_path = dirname(dirname(dirname(dirname(__FILE__)))).'/config/';
+}
+require_once($contrexx_config_path.'settings.php');
+require_once($contrexx_config_path.'configuration.php');
 require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');
 
 $customizing = null;
@@ -43,10 +50,6 @@ $defaultBrowser   = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTOR
 $linkBrowser      = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
                    .'?cmd=fileBrowser&standalone=true&langId='.$langId
                    .'&absoluteURIs='.$absoluteURIs.'&type=webpages'.$CSRF;
-$defaultUploader  = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX.'?cmd=fileBrowser'
-                   .'&act=FCKEditorUpload&standalone=true'.$CSRF;
-$linkUploader     = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX.'?cmd=fileBrowser'
-                   .'&act=FCKEditorUpload&standalone=true&type=webpages'.$CSRF;
 
 $defaultTemplateFilePath = substr(\Env::get('ClassLoader')->getFilePath('/lib/ckeditor/plugins/templates/templates/default.js'), strlen(ASCMS_PATH));
 
@@ -67,9 +70,6 @@ CKEDITOR.editorConfig = function( config )
     config.filebrowserBrowseUrl      = CKEDITOR.getUrl('<?php echo $linkBrowser; ?>');
     config.filebrowserImageBrowseUrl = CKEDITOR.getUrl('<?php echo $defaultBrowser; ?>');
     config.filebrowserFlashBrowseUrl = CKEDITOR.getUrl('<?php echo $defaultBrowser; ?>');
-    config.filebrowserUploadUrl      = CKEDITOR.getUrl('<?php echo $linkUploader; ?>')
-    config.filebrowserImageUploadUrl = CKEDITOR.getUrl('<?php echo $defaultUploader; ?>');
-    config.filebrowserFlashUploadUrl = CKEDITOR.getUrl('<?php echo $defaultUploader; ?>');
 
     config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
 
@@ -103,14 +103,4 @@ CKEDITOR.editorConfig = function( config )
         ['Bold','Italic','Underline','StrikeThrough','-','Link','Unlink', 'SpecialChar'],
     ];
 };
-
-//remove tab "upload" in link and image dialog
-CKEDITOR.on('dialogDefinition', function(ev) {
-    var dialogName = ev.data.name, dialogDefinition = ev.data.definition;
-    if (dialogName === 'image') {
-        dialogDefinition.removeContents('Upload');
-    }
-    if (dialogName === 'link') {
-        dialogDefinition.removeContents('upload');
-    }
 });
