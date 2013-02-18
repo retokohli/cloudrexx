@@ -16,7 +16,9 @@ function executeContrexxUpdate() {
         if (!copyCxFilesToRoot(dirname(__FILE__) . '/cx_files', ASCMS_PATH . ASCMS_PATH_OFFSET)) {
             return false;
         }
-        apc_clear_cache();
+        if (extension_loaded('apc') && ini_get('apc.enabled')) {
+            apc_clear_cache();
+        }
         $_SESSION['contrexx_update']['copyFilesFinished'] = true;
 
         // we need to stop the script here to force a reinitialization of the update system
