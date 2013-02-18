@@ -1057,6 +1057,37 @@ class Page extends \Cx\Model\Base\EntityBase
         while ($this->getSlug() == '' || in_array($this->getSlug(), $slugs)) {
             $this->nextSlug();
         }
+        // Alias slugs must not be equal to an existing file or folder
+        if ($this->getType() == self::TYPE_ALIAS) {
+            $invalidAliasNames = array(
+                'admin',
+                'cache',
+                'cadmin',
+                'config',
+                'core',
+                'core_modules',
+                'customizing',
+                'feed',
+                'images',
+                'installer',
+                'lang',
+                'lib',
+                'media',
+                'model',
+                'modules',
+                'themes',
+                'tmp',
+                'update',
+                'webcam',
+                'favicon.ico',
+            );
+            foreach (\FWLanguage::getActiveFrontendLanguages() as $id=>$lang) {
+                $invalidAliasNames[] = $lang['lang'];
+            }
+            if (in_array($this->getSlug(), $invalidAliasNames)) {
+                throw new PageException('Cannot use name of existing files, folders or languages as alias.');
+            }
+        }
         //workaround, this method is regenerated each time
         parent::validate(); 
     }
