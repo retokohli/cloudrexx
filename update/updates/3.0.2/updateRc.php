@@ -415,7 +415,7 @@ $updatesHotfixToSp = array(
     '
         DROP TABLE IF EXISTS `'.DBPREFIX.'module_shop_products_downloads`
     ',
-    'UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'3.0.1\' WHERE `setname` = \'coreCmsVersion\'',
+    'UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'3.0.2\' WHERE `setname` = \'coreCmsVersion\'',
 );
 $updatesRc1ToSp = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp);
 $updatesRc2ToSp = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp);

@@ -976,7 +976,7 @@ class License {
 
         // we force a version number update. if the license update failed
         // version number will not be upgraded yet:
-        \Cx\Lib\UpdateUtil::sql('UPDATE `' . DBPREFIX . 'settings` SET `setvalue` = \'3.0.1\' WHERE `setid` = 97');
+        \Cx\Lib\UpdateUtil::sql('UPDATE `' . DBPREFIX . 'settings` SET `setvalue` = \'3.0.2\' WHERE `setid` = 97');
         $settingsManager = new \settingsManager();
         $settingsManager->writeSettingsFile();
 

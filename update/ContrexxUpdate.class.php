@@ -265,7 +265,7 @@ class ContrexxUpdate
             if (isset($_POST['skipRequirements']) && !$arrRequirements['incompatible']) {
                 $this->setNextStep();
                 $this->showStep();
-            } else if (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.1')) {
+            } else if (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.2')) {
                 $_SESSION['contrexx_update']['step'] = 5;
                 $this->showStep();
             } else {
@@ -490,7 +490,7 @@ class ContrexxUpdate
             $this->objTemplate->setVariable('UPDATE_ERROR_MSG', $_CORELANG['TXT_UPDATE_UNABLE_TO_START']);
             $this->objTemplate->parse('updateProcessError');
         } else {
-            if (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.1')) {
+            if (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.2')) {
                 $result = true;
             } else {
                 $result = executeContrexxUpdate();
