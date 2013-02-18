@@ -416,7 +416,7 @@ function _knowledgeInstall()
                     (7, 26),
                     (7, 25),
                     (7, 27)
-            ON DUPLICATE KEY UPDATE `id` = `id`
+            ON DUPLICATE KEY UPDATE `article` = `article`
         ");
 
     } catch (\Cx\Lib\UpdateException $e) {
