@@ -690,7 +690,72 @@ class NewsletterLib
             }        
         }
         return true;
-    }    
+    }
+
+    protected static function prepareNewsletterLinksForSend($MailId, $MailHtmlContent, $UserId, $realUser)
+    {
+        global $objDatabase, $_CONFIG;
+
+        $result = $MailHtmlContent;
+        if (preg_match_all("/<a([^>]+)>([^<]*)<\/a>/i", $result, $matches)) {
+            // get all links info
+            $arrLinks = array();
+            $objLinks = $objDatabase->Execute("SELECT `id`, `title`, `url` FROM ".DBPREFIX."module_newsletter_email_link WHERE `email_id` = ".$MailId);
+            if ($objLinks !== false) {
+                while (!$objLinks->EOF) {
+                    $arrLinks[$objLinks->fields['id']] = array('title' => $objLinks->fields['title'], 'url' => $objLinks->fields['url']);
+                    $objLinks->MoveNext();
+                }
+            }
+
+            // replace links
+            if (count($arrLinks) > 0) {
+                $tagCount = count($matches[0]);
+                $fullKey = 0;
+                $attrKey = 1;
+                $textKey = 2;
+                for ($i = 0; $i < $tagCount; $i++) {
+                    if (!preg_match("/newsletter_link_([0-9]+)/i", $matches[$attrKey][$i], $rmatches)) {
+                       continue;
+                    }
+                    $linkId = $rmatches[1];
+                    $url = '';
+                    if (preg_match("/href\s*=\s*['\"]([^'\"]+)['\"]/i", $matches[$attrKey][$i], $rmatches)) {
+                        $url = $rmatches[1];
+                    }
+                    // remove newsletter_link_N from rel attribute
+                    $matches[$attrKey][$i] = preg_replace("/newsletter_link_".$linkId."/i", "", $matches[$attrKey][$i]);
+                    // remove empty rel attribute
+                    $matches[$attrKey][$i] = preg_replace("/\s*rel=\s*['\"]\s*['\"]/i", "", $matches[$attrKey][$i]);
+                    // remove left and right spaces
+                    $matches[$attrKey][$i] = preg_replace("/([^=])\s*\"/i", "\\1\"", $matches[$attrKey][$i]);
+                    $matches[$attrKey][$i] = preg_replace("/=\"\s*/i", "=\"", $matches[$attrKey][$i]);
+                    // replace href attribute
+                    if (isset($arrLinks[$linkId])) {
+// TODO: use new URL-format
+                        $arrParameters = array(
+                            'section'               => 'newsletter',
+                            'n'                     => $MailId,
+                            'l'                     => $linkId,
+                            ($realUser ? 'r' : 'm') => $UserId,
+                        );
+                        $newUrl = \Cx\Core\Routing\Url::fromDocumentRoot($arrParameters, null, null)->toString();
+                        $matches[$attrKey][$i] = preg_replace("/href\s*=\s*['\"][^'\"]+['\"]/i", "href=\"".$newUrl."\"", $matches[$attrKey][$i]);
+                    }
+                    $result = preg_replace("/".self::prepareForRegExp($matches[$fullKey][$i])."/i", "<a ".$matches[$attrKey][$i].">".$matches[$textKey][$i]."</a>", $result, 1);
+                }
+            }
+        }
+        return $result;
+    }
+
+    protected static function prepareForRegExp($Text)
+    {
+        $search  = array('\\', '/', '^', '$', '.', '[', ']', '|', '(', ')', '?', '*', '+', '{', '}', '-');
+        $replace = array('\\\\', '\/', '\^', '\$', '\.', '\[', '\]', '\|', '\(', '\)', '\?', '\*', '\+', '\{', '\}', '\-');
+        $Text = str_replace($search, $replace, $Text);
+        return $Text;
+    }
 
 }
 

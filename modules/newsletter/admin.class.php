@@ -3178,7 +3178,7 @@ class newsletter extends NewsletterLib
 
         // lets prepare all links for tracker before we replace placeholders
 // TODO: migrate tracker to new URL-format
-        $content_text = $this->_prepareNewsletterLinksForSend($NewsletterID, $content_text, $userData['id'], ($userData['type'] == 'access'));
+        $content_text = self::prepareNewsletterLinksForSend($NewsletterID, $content_text, $userData['id'], ($userData['type'] == 'access'));
 
         $search = array(
             '[[email]]',
@@ -5529,7 +5529,7 @@ function MultiAction() {
                             $matches[$attrKey][$i] .= ' rel="newsletter_link_'.$linkId.'"';
                         }
                     }
-                    $htmlContent = preg_replace("/".self::_prepareForRegExp($matches[$fullKey][$i])."/i", "<a ".$matches[$attrKey][$i].">".$matches[$textKey][$i]."</a>", $htmlContent, 1);
+                    $htmlContent = preg_replace("/".self::prepareForRegExp($matches[$fullKey][$i])."/i", "<a ".$matches[$attrKey][$i].">".$matches[$textKey][$i]."</a>", $htmlContent, 1);
                 }
                 // update mail content
                 $query = "UPDATE ".DBPREFIX."module_newsletter 
@@ -5545,7 +5545,7 @@ function MultiAction() {
             }
         }
     }
-    
+
     function _prepareNewsletterLinksForCopy($MailHtmlContent)
     {
         $result = $MailHtmlContent;
@@ -5565,64 +5565,7 @@ function MultiAction() {
                 // remove left and right spaces
                 $matches[$attrKey][$i] = preg_replace("/([^=])\s*\"/i", "\\1\"", $matches[$attrKey][$i]);
                 $matches[$attrKey][$i] = preg_replace("/=\"\s*/i", "=\"", $matches[$attrKey][$i]);
-                $result = preg_replace("/".self::_prepareForRegExp($matches[$fullKey][$i])."/i", "<a ".$matches[$attrKey][$i].">".$matches[$textKey][$i]."</a>", $result, 1);
-            }
-        }
-        return $result;
-    }
-    
-    function _prepareNewsletterLinksForSend($MailId, $MailHtmlContent, $UserId, $realUser)
-    {
-        global $objDatabase, $_CONFIG;
-
-        $result = $MailHtmlContent;
-        if (preg_match_all("/<a([^>]+)>([^<]*)<\/a>/i", $result, $matches)) {
-            // get all links info
-            $arrLinks = array();
-            $objLinks = $objDatabase->Execute("SELECT `id`, `title`, `url` FROM ".DBPREFIX."module_newsletter_email_link WHERE `email_id` = ".$MailId);
-            if ($objLinks !== false) {
-                while (!$objLinks->EOF) {
-                    $arrLinks[$objLinks->fields['id']] = array('title' => $objLinks->fields['title'], 'url' => $objLinks->fields['url']);
-                    $objLinks->MoveNext();
-                }
-            }
-
-            // replace links
-            if (count($arrLinks) > 0) {
-                $tagCount = count($matches[0]);
-                $fullKey = 0;
-                $attrKey = 1;
-                $textKey = 2;
-                for ($i = 0; $i < $tagCount; $i++) {
-                    if (!preg_match("/newsletter_link_([0-9]+)/i", $matches[$attrKey][$i], $rmatches)) {
-                       continue;
-                    }
-                    $linkId = $rmatches[1];
-                    $url = '';
-                    if (preg_match("/href\s*=\s*['\"]([^'\"]+)['\"]/i", $matches[$attrKey][$i], $rmatches)) {
-                        $url = $rmatches[1];
-                    }
-                    // remove newsletter_link_N from rel attribute
-                    $matches[$attrKey][$i] = preg_replace("/newsletter_link_".$linkId."/i", "", $matches[$attrKey][$i]);
-                    // remove empty rel attribute
-                    $matches[$attrKey][$i] = preg_replace("/\s*rel=\s*['\"]\s*['\"]/i", "", $matches[$attrKey][$i]);
-                    // remove left and right spaces
-                    $matches[$attrKey][$i] = preg_replace("/([^=])\s*\"/i", "\\1\"", $matches[$attrKey][$i]);
-                    $matches[$attrKey][$i] = preg_replace("/=\"\s*/i", "=\"", $matches[$attrKey][$i]);
-                    // replace href attribute
-                    if (isset($arrLinks[$linkId])) {
-// TODO: use new URL-format
-                        $arrParameters = array(
-                            'section'               => 'newsletter',
-                            'n'                     => $MailId,
-                            'l'                     => $linkId,
-                            ($realUser ? 'r' : 'm') => $UserId,
-                        );
-                        $newUrl = \Cx\Core\Routing\Url::fromDocumentRoot($arrParameters, null, null)->toString();
-                        $matches[$attrKey][$i] = preg_replace("/href\s*=\s*['\"][^'\"]+['\"]/i", "href=\"".$newUrl."\"", $matches[$attrKey][$i]);
-                    }
-                    $result = preg_replace("/".self::_prepareForRegExp($matches[$fullKey][$i])."/i", "<a ".$matches[$attrKey][$i].">".$matches[$textKey][$i]."</a>", $result, 1);
-                }
+                $result = preg_replace("/".self::prepareForRegExp($matches[$fullKey][$i])."/i", "<a ".$matches[$attrKey][$i].">".$matches[$textKey][$i]."</a>", $result, 1);
             }
         }
         return $result;
@@ -6073,14 +6016,6 @@ function MultiAction() {
 
         return true;
     }
-    
-    function _prepareForRegExp($Text)
-    {
-        $search  = array('\\', '/', '^', '$', '.', '[', ']', '|', '(', ')', '?', '*', '+', '{', '}', '-');
-        $replace = array('\\\\', '\/', '\^', '\$', '\.', '\[', '\]', '\|', '\(', '\)', '\?', '\*', '\+', '\{', '\}', '\-');
-        $Text = str_replace($search, $replace, $Text);
-        return $Text;
-    }    
 }
 
 
