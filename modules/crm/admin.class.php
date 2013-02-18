@@ -53,7 +53,8 @@ class CRM extends CrmLibrary {
     /**
      * Constructor
      */
-    function Crm() {
+    function Crm()
+    {
         $this->__construct();
     }
 
@@ -63,7 +64,8 @@ class CRM extends CrmLibrary {
      * @global object $objTemplate
      * @global array $_ARRAYLANG
      */
-    function __construct() {
+    function __construct()
+    {
 
         global $objTemplate, $_ARRAYLANG, $objJs;
         parent::__construct();
@@ -115,7 +117,8 @@ class CRM extends CrmLibrary {
      * @global object $objTemplate
      * @global array $_ARRAYLANG
      */
-    function getPage() {
+    function getPage()
+    {
 
         global $objTemplate, $_ARRAYLANG;
 
@@ -289,8 +292,16 @@ class CRM extends CrmLibrary {
         unset($_SESSION['strOkMessage']);
         unset($_SESSION['strErrMessage']);
     }
-
-    public function checkCustomerIdentity($return = false) {
+    
+    /**
+     * check the customer identity
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    public function checkCustomerIdentity($return = false)
+    {
 
         $customer_id = $this->getCustomerId();
         if ($customer_id) {
@@ -308,7 +319,15 @@ class CRM extends CrmLibrary {
         return true;
     }
 
-    public function getCustomerId() {
+    /**
+     * get the logged customer id
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    public function getCustomerId()
+    {
         global $objDatabase;
 
         $objFWUser  = FWUser::getFWUserObject();
@@ -322,6 +341,13 @@ class CRM extends CrmLibrary {
         return false;
     }
 
+    /**
+     * get the contacts of the given customer
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
     public function getCustomerContacts($customerId)
     {
         global $objDatabase;
@@ -341,8 +367,16 @@ class CRM extends CrmLibrary {
 
         return $contacts;        
     }
-    
-    function notesDetail() {
+
+    /**
+     * returns the notes details of the customer
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function notesDetail()
+    {
         global $_ARRAYLANG, $objDatabase, $wysiwygEditor, $FCKeditorBasePath ,$objJs;
         
         JS::activate("cx");
@@ -442,9 +476,12 @@ class CRM extends CrmLibrary {
     /**
      * Shows the Customer overview page
      *
-     * @access Authenticated
-     */
-    function showCustomers() {
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */    
+    function showCustomers()
+    {
         global $_ARRAYLANG, $objDatabase, $objJs, $_LANGID;
 
         $tpl = isset ($_GET['tpl']) ? $_GET['tpl'] : '';
@@ -840,7 +877,15 @@ class CRM extends CrmLibrary {
         
     }
 
-    function showCustomerDetail() {
+    /**
+     * Shows the Customer details page
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function showCustomerDetail()
+    {
         global $_ARRAYLANG, $objDatabase,$objJs, $_LANGID;
 
         JS::activate("cx");
@@ -1165,7 +1210,15 @@ class CRM extends CrmLibrary {
         $this->_pageTitle = $custDetails['contact_type'] == 1 ? $_ARRAYLANG['TXT_CUSTOMER_DETAILS'] : $_ARRAYLANG['TXT_CONTACT_DETAILS'];
     }
 
-    function pmRemoveStylesAddcustomer() {
+    /**
+     * remove the styles sheet on shadow box page
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function pmRemoveStylesAddcustomer()
+    {
 
         $style = <<<END
        <style type="text/css">
@@ -1178,7 +1231,15 @@ END;
         return $style;
     }
 
-    function pmRemoveStylesShowcustomers() {
+    /**
+     * remove the styles sheet on shadow box page
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function pmRemoveStylesShowcustomers()
+    {
 
         $style = <<<END
     <style type="text/css">
@@ -1190,7 +1251,15 @@ END;
         return $style;
     }
 
-    function deleteCustomers() {
+    /**
+     * delete customer related details 
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function deleteCustomers()
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
         $id = intval($_GET['id']);
         if(!empty($id)) {
@@ -1243,7 +1312,15 @@ END;
         csrf::header("location:".ASCMS_ADMIN_WEB_PATH."/index.php?cmd=".$this->moduleName."&act=customers&mes=$message");
     }
 
-    function customersChangeStatus() {
+    /**
+     * chnage the customer status
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function customersChangeStatus()
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
         $status = ($_GET['status'] == 0) ? 1 : 0;
@@ -1273,7 +1350,15 @@ END;
         $this->showCustomers();
     }
 
-    function customerTypeChangeStatus() {
+    /**
+     * change the customer type status
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function customerTypeChangeStatus()
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
         $status = ($_GET['status'] == 0) ? 1 : 0;
         $id     = $_GET['id'];
@@ -1305,7 +1390,15 @@ END;
         
     }
 
-    function settingsSubmenu() {
+    /**
+     * get settings submenu
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function settingsSubmenu()
+    {
         global $_ARRAYLANG;
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleName.'_settings_submenu.html',true,true);
         $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
@@ -1355,7 +1448,15 @@ END;
         ));
     }
 
-    function showSuccessRate() {
+    /**
+     * settings success rate page
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function showSuccessRate()
+    {
         global $_ARRAYLANG, $objDatabase ,$objJs;
 
         JS::activate('jquery');
@@ -1468,7 +1569,15 @@ END;
 
     }
 
-    function saveSuccessRate() {
+    /**
+     * store the success rate
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function saveSuccessRate()
+    {
         global $objDatabase;
 
         // New update Query
@@ -1495,7 +1604,15 @@ END;
 
     }
 
-    function showOpportunityStages() {
+    /**
+     * show opportunity stages
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function showOpportunityStages()
+    {
         global $_ARRAYLANG, $objDatabase ,$objJs;
 
         JS::activate('jquery');
@@ -1610,7 +1727,15 @@ END;
 
     }
 
-    function saveStage() {
+    /**
+     * save opportunity stages
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function saveStage()
+    {
         global $objDatabase;
 
         // New update Query
@@ -1637,7 +1762,15 @@ END;
 
     }
 
-    function editCustomerTypes($labelValue="") {
+    /**
+     * Edit page of cutomer types
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function editCustomerTypes($labelValue="")
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase ,$objJs;
         
         $this->_pageTitle = $_ARRAYLANG['TXT_EDIT_CUSTOMER_TYPE'];
@@ -1717,7 +1850,15 @@ END;
         ));
     }
 
-    function deleteCustomerTypes() {
+    /**
+     * delete customer types
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function deleteCustomerTypes()
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
         echo $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -1773,7 +1914,15 @@ END;
         exit();
     }
 
-    function deleteCustomerServiceplan() {
+    /**
+     * delete customer service plan
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function deleteCustomerServiceplan()
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
         $serviceId       = isset($_GET['seriveId']) ? intval($_GET['seriveId']) : 0;
@@ -1791,7 +1940,15 @@ END;
 
     }
 
-    function _modifyContact() {
+    /**
+     * add or edit contact
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function _modifyContact()
+    {
         global $_ARRAYLANG, $objDatabase ,$objJs, $objResult, $_LANGID;
 
         /** verify the user redirects to details page **/
@@ -2391,18 +2548,20 @@ END;
      * @global  array
      * @return  integer     allowed maximum of elements per page.
      */
-    function getPagingLimit() {
+    function getPagingLimit()
+    {
         global $_CONFIG;
         return intval($_CONFIG['corePagingLimit']);
     }
-
+    
     /**
      * Counts all existing entries in the database.
      *
      * @global  ADONewConnection
      * @return  integer     number of entries in the database
      */
-    function countEntries($table, $where=null) {
+    function countEntries($table, $where=null)
+    {
 
         global $objDatabase;
         $objEntryResult = $objDatabase->Execute('SELECT  COUNT(*) AS numberOfEntries FROM '.DBPREFIX.'module_'.
@@ -2410,14 +2569,15 @@ END;
 
         return intval($objEntryResult->fields['numberOfEntries']);
     }
-
+   
     /**
      * Counts all existing entries in the database.
      *
      * @global  ADONewConnection
      * @return  integer     number of entries in the database
      */
-    function countEntriesOfJoin($table) {
+    function countEntriesOfJoin($table)
+    {
         global $objDatabase;
 
         $objEntryResult = $objDatabase->Execute('SELECT  COUNT(*) AS numberOfEntries
@@ -2429,9 +2589,12 @@ END;
     /**
      * Default PM Calendar Month Page
      *
-     * @access Authenticated
-     */
-    function parseLetterIndexList($URI, $paramName, $selectedLetter) {
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */    
+    function parseLetterIndexList($URI, $paramName, $selectedLetter)
+    {
         global $_CORELANG;
 
         if ($this->_objTpl->blockExists('module_'.$this->moduleName.'_letter_index_list')) {
@@ -2466,7 +2629,15 @@ END;
         }
     }
 
-    function changeActive($id, $value) {
+    /**
+     * change the status
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function changeActive($id, $value)
+    {
         global $_ARRAYLANG,$objDatabase;
 
         $value = ($value == 1) ? 0 : 1;
@@ -2476,7 +2647,15 @@ END;
         $_SESSION['strOkMessage'] = ($value == 1) ? $_ARRAYLANG['TXT_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_DEACTIVATED_SUCCESSFULLY'];
     }
 
-    function _modifyNotes() {
+    /**
+     * add/edit of notes page
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function _modifyNotes()
+    {
         global $objDatabase, $_ARRAYLANG;
 
         JS::activate('jqueryui');
@@ -2584,9 +2763,12 @@ END;
     /**
      * Delete the Comment single
      *
-     * @access Authenticated
-     */
-    function deleteCustomerComment() {
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */    
+    function deleteCustomerComment()
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
         $id = $_REQUEST['commentid'];
         $customerId = $_REQUEST['id'];
@@ -2601,7 +2783,15 @@ END;
         die();
     }
 
-    function showInterface() {
+    /**
+     * show the interface
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function showInterface()
+    {
         global $_ARRAYLANG;
         
         $tpl = isset($_GET['tpl']) ? $_GET['tpl'] : '';        
@@ -2658,375 +2848,15 @@ END;
         ));
     }
 
-
-    function customerImport() {
-
-        global $_CORELANG, $_ARRAYLANG, $objDatabase,$objJs;
-        $this->_pageTitle = $_ARRAYLANG['TXT_INTERFACE'];
-        $this->_objTpl->loadTemplateFile('module_'.$this->moduleName.'_interface_import_analyse.html');
-        $this->_objTpl->setGlobalVariable(array(
-                'MODULE_NAME' => $this->moduleName
-        ));
-        $separator = $_REQUEST['import_options_csv_separator'];
-        $enclosure = $_REQUEST['import_options_csv_enclosure'];
-        // Passing javascript functions to template.
-        $this->_objTpl->setVariable(array(
-                //  'IMPORT_ANALYSIS_JAVASCRIPT'    =>    $this->getImportAnalysisJavascript(),
-        ));
-        // Here uploading the CSV file
-        $target_path = ASCMS_DOCUMENT_ROOT."/csvupload/";
-
-        $target_path = $target_path . basename( $_FILES['importfile']['name']);
-        $_SESSION['fileName'] = $target_path;
-        $_SESSION['separator'] = $separator;
-        $_SESSION['enclosure'] = $enclosure;
-        if(!move_uploaded_file($_FILES['importfile']['tmp_name'], $target_path)) {
-
-            $this->_strErrMessage = $_ARRAYLANG['TXT_CSV_UPLOAD_ERR'];
-            // Calling the Interface Page with Upload error Message
-            $this->showInterface();
-        }
-        else {
-            // DB Field Name for the Cutomer Tablel
-            $DBFiledName=$this->objCSVimport->CustomerDBField();
-            // Geting the Filed Names from the File
-            $FileFields = $this->objCSVimport->getFilefieldMenuOptions($target_path,$separator,$enclosure);
-
-            // Passing the place holders to the template page
-            $this->_objTpl->setVariable(array(
-                    'TXT_EXPORT_NAME'                   => $_ARRAYLANG['TXT_EXPORT_NAME'],
-                    'TXT_IMPORT_NAME'                   => $_ARRAYLANG['TXT_IMPORT_NAME'],
-                    'TXT_EXPORT_INFO'                 => $_ARRAYLANG['TXT_EXPORT_INFO'],
-                    'TXT_FUNCTIONS'               => $_ARRAYLANG['TXT_FUNCTIONS'],
-                    'TXT_EXPORT_CUSTOMER_CSV'     => $_ARRAYLANG['TXT_EXPORT_CUSTOMER_CSV'],
-                    'TXT_IMPORT_PAGE_HEADING'     => $_ARRAYLANG['TXT_IMPORT_PAGE_HEADING'],
-                    'TXT_IMPORT_FILE_TYPE'     => $_ARRAYLANG['TXT_IMPORT_FILE_TYPE'],
-                    'TXT_IMPORT_CSV_TXT'     => $_ARRAYLANG['TXT_IMPORT_CSV_TXT'],
-                    'TXT_CHOOSE_FILE'     => $_ARRAYLANG['TXT_CHOOSE_FILE'],
-                    'TXT_CSV_SEPARATOR'     => $_ARRAYLANG['TXT_CSV_SEPARATOR'],
-                    'TXT_CSV_ENCLOSURE'     => $_ARRAYLANG['TXT_CSV_ENCLOSURE'],
-                    'TXT_CSV_TABLE'     => $_ARRAYLANG['TXT_CSV_TABLE'],
-                    'TXT_CSV_CHOOSE_TABLE'     => $_ARRAYLANG['TXT_CSV_CHOOSE_TABLE'],
-                    'TXT_CUSTOMERS'     => $_ARRAYLANG['TXT_CUSTOMERS'],
-                    'TXT_IMPORT_ANALYSIS'     => $_ARRAYLANG['TXT_IMPORT_ANALYSIS'],
-                    'TXT_CUSTOMER_TYPE'     => $_ARRAYLANG['TXT_CUSTOMER_TYPE'],
-                    'TXT_CSV_TXTFILE'     => $_ARRAYLANG['TXT_CSV_TXTFILE'],
-                    'TXT_CSV_DATABASE'     => $_ARRAYLANG['TXT_CSV_DATABASE'],
-                    'TXT_CSV_NOTE'     => $_ARRAYLANG['TXT_CSV_NOTE'],
-                    'TXT_CSV_NOTE_TXT'     => $_ARRAYLANG['TXT_CSV_NOTE_TXT'],
-                    'TXT_CSV_REMOVE_PAIR'     => $_ARRAYLANG['TXT_CSV_REMOVE_PAIR'],
-                    'TXT_CSV_PARENTID'     => $_ARRAYLANG['TXT_CSV_PARENTID'],
-                    'TXT_CSV_LANGUAGE'     => $_ARRAYLANG['TXT_CSV_LANGUAGE'],
-                    'TXT_CSV_CURRENCY'     => $_ARRAYLANG['TXT_CSV_CURRENCY'],
-                    'TXT_CSV_COUNTRY'     =>$_ARRAYLANG['TXT_CSV_COUNTRY'],
-                    'TXT_SAVE'     => $_ARRAYLANG['TXT_SAVE'],
-                    'TXT_CSV_NEXT'     => $_ARRAYLANG['TXT_CSV_NEXT'],
-                    'TXT_CSV_ADDPAIR'     => $_ARRAYLANG['TXT_CSV_ADDPAIR'],
-                    'TXT_CSV_REMOVEPAIR'     => $_ARRAYLANG['TXT_CSV_REMOVEPAIR'],
-                    'TXT_DBFIELD_NAME' => $DBFiledName,
-                    'TXT_FILEFIELD_NAME' => $FileFields,
-                    'IMPORT_ANALYSIS_JAVASCRIPT'    =>    $objJs->getImportAnalysisJavascript(),
-            ));
-        }// END of File upload else Condition
-    }
-
-    function finalImport() {
-
-        global $_CORELANG, $_ARRAYLANG, $objDatabase,$objJs;
-        $this->_pageTitle = $_ARRAYLANG['TXT_INTERFACE'];
-        $this->_objTpl->loadTemplateFile('module_'.$this->moduleName.'_interface_import_custfinal.html');
-        $this->_objTpl->setGlobalVariable(array(
-                'MODULE_NAME' => $this->moduleName
-        ));
-        // Passing javascript functions to template.
-        $this->_objTpl->setVariable(array(
-                //'IMPORT_FINAL_JAVASCRIPT'    =>    $this->getFinalImportJavascript(),
-        ));
-        // File Information getting from session variables
-        $target_path = $_SESSION['fileName'];
-        $separator = $_SESSION['separator'];
-        $enclosure = $_SESSION['enclosure'];
-        // Paired Field values
-        $PairLeft = $_REQUEST['pairs_left_keys'];
-        $PairRight = $_REQUEST['pairs_right_keys'];
-        $_SESSION['PairLeft'] = $PairLeft;
-        $_SESSION['PairRight'] = $PairRight;
-        // Getting the Customer type, Parent ID, Currency, Language
-        $CustType = $_REQUEST['CustType'];
-        $Country = $_REQUEST['Country'];
-        $Lang = $_REQUEST['Lang'];
-        $Currency = $_REQUEST['Currency'];
-        $_SESSION['CustType'] = $CustType;
-        $_SESSION['Country'] = $Country;
-        $_SESSION['Lang'] = $Lang;
-        $_SESSION['Currency'] = $Currency;
-
-        // Selecting the Customer Type label from the Database
-        $objCustTypeResult =   $objDatabase->Execute('SELECT  id,label FROM '.DBPREFIX.'module_'.$this->moduleName.'_customer_types ORDER BY pos' );
-        while(!$objCustTypeResult->EOF) {
-
-            $DBCustType.='<option value="'.$objCustTypeResult->fields['id'].'">'.$objCustTypeResult->fields['label'].'</option>';
-            $objCustTypeResult->MoveNext();
-        }
-
-        // Selecting the Country Name from the Database
-        $objCustNameResult =   $objDatabase->Execute('SELECT  iso_code_2,id,name FROM '.DBPREFIX.'lib_country ORDER BY id' );
-
-        while(!$objCustNameResult->EOF) {
-
-            $DBCustName.='<option value="'.$objCustNameResult->fields['iso_code_2'].'">'.$objCustNameResult->fields['name'].'</option>';
-            $objCustNameResult->MoveNext();
-        }
-
-        // Selecting the Language from the Database
-        $objLangResult =   $objDatabase->Execute('SELECT  id,name FROM '.DBPREFIX.'languages ORDER BY id' );
-        while(!$objLangResult->EOF) {
-
-            $DBLang.='<option value="'.$objLangResult->fields['id'].'">'.$objLangResult->fields['name'].'</option>';
-            $objLangResult->MoveNext();
-        }
-
-        // Selecting the Currency from the Database
-        $objCurrencyResult =   $objDatabase->Execute('SELECT  id,name FROM '.DBPREFIX.'module_'.$this->moduleName.'_currency ORDER BY id' );
-        while(!$objCurrencyResult->EOF) {
-
-            $DBCurrency.='<option value="'.$objCurrencyResult->fields['id'].'">'.$objCurrencyResult->fields['name'].'</option>';
-            $objCurrencyResult->MoveNext();
-        }
-
-        // Reading the file content
-        $arrFileContent = $this->objCSVimport->GetFileContent($target_path,$separator,$enclosure);
-
-
-        // Getting the Customer Type from the CSV file
-        for($i=1;$i<count($arrFileContent);$i++) {
-
-            $ArrTypeField[]= $arrFileContent[$i][$CustType];
-
-        }
-        $CustomerType = array_unique($ArrTypeField);
-        foreach($CustomerType as $value) {
-            $FileCustType.='<option value="'.$value.'">'.$value.'</option>';
-        }
-
-        // Getting the Parent Name from the CSV file
-        for($i=1;$i<count($arrFileContent);$i++) {
-            $ArrParentField[]= $arrFileContent[$i][$Country];
-        }
-        $Country= array_unique($ArrParentField);
-        //var_dump($Country);
-        foreach($Country as $value) {
-            $FileParent.='<option value="'.$value.'">'.$value.'</option>';
-        }
-        // var_dump($FileParent);
-        // Getting the Language from the CSV file
-        for($i=1;$i<count($arrFileContent);$i++) {
-            $ArrLangField[]= $arrFileContent[$i][$Lang];
-        }
-        $LangField = array_unique($ArrLangField);
-        foreach($LangField as $value) {
-            $FileLang.='<option value="'.$value.'">'.$value.'</option>';
-        }
-
-        // Getting the Currency from the CSV file
-        for($i=1;$i<count($arrFileContent);$i++) {
-            $ArrCurrField[]= $arrFileContent[$i][$Currency];
-        }
-        $CurrField = array_unique($ArrCurrField);
-        foreach($CurrField as $value) {
-            $FileCurr.='<option value="'.$value.'">'.$value.'</option>';
-        }
-
-        // Passing the place holders to the template page
-        $this->_objTpl->setVariable(array(
-                'TXT_EXPORT_NAME'                   => $_ARRAYLANG['TXT_EXPORT_NAME'],
-                'TXT_IMPORT_NAME'                   => $_ARRAYLANG['TXT_IMPORT_NAME'],
-                'TXT_EXPORT_INFO'                 => $_ARRAYLANG['TXT_EXPORT_INFO'],
-                'TXT_FUNCTIONS'               => $_ARRAYLANG['TXT_FUNCTIONS'],
-                'TXT_EXPORT_CUSTOMER_CSV'     => $_ARRAYLANG['TXT_EXPORT_CUSTOMER_CSV'],
-                'TXT_IMPORT_PAGE_HEADING'     => $_ARRAYLANG['TXT_IMPORT_PAGE_HEADING'],
-                'TXT_IMPORT_FILE_TYPE'     => $_ARRAYLANG['TXT_IMPORT_FILE_TYPE'],
-                'TXT_IMPORT_CSV_TXT'     => $_ARRAYLANG['TXT_IMPORT_CSV_TXT'],
-                'TXT_CHOOSE_FILE'     => $_ARRAYLANG['TXT_CHOOSE_FILE'],
-                'TXT_CSV_SEPARATOR'     => $_ARRAYLANG['TXT_CSV_SEPARATOR'],
-                'TXT_CSV_ENCLOSURE'     => $_ARRAYLANG['TXT_CSV_ENCLOSURE'],
-                'TXT_CSV_TABLE'     => $_ARRAYLANG['TXT_CSV_TABLE'],
-                'TXT_CSV_CHOOSE_TABLE'     => $_ARRAYLANG['TXT_CSV_CHOOSE_TABLE'],
-                'TXT_CUSTOMERS'     => $_ARRAYLANG['TXT_CUSTOMERS'],
-                'TXT_IMPORT_ANALYSIS'     => $_ARRAYLANG['TXT_IMPORT_ANALYSIS'],
-                'TXT_CUSTOMER_TYPE'     => $_ARRAYLANG['TXT_CUSTOMER_TYPE'],
-                'TXT_CSV_TXTFILE'     => $_ARRAYLANG['TXT_CSV_TXTFILE'],
-                'TXT_CSV_DATABASE'     => $_ARRAYLANG['TXT_CSV_DATABASE'],
-                'TXT_CSV_NOTE'     => $_ARRAYLANG['TXT_CSV_NOTE'],
-                'TXT_CSV_NOTE_TXT'     => $_ARRAYLANG['TXT_CSV_NOTE_TXT'],
-                'TXT_CSV_REMOVE_PAIR'     => $_ARRAYLANG['TXT_CSV_REMOVE_PAIR'],
-                'TXT_CSV_PARENTID'     => $_ARRAYLANG['TXT_CSV_PARENTID'],
-                'TXT_CSV_LANGUAGE'     => $_ARRAYLANG['TXT_CSV_LANGUAGE'],
-                'TXT_CSV_CURRENCY'     => $_ARRAYLANG['TXT_CSV_CURRENCY'],
-                'TXT_SAVE'     => $_ARRAYLANG['TXT_SAVE'],
-                'TXT_CSV_ADDPAIR'     => $_ARRAYLANG['TXT_CSV_ADDPAIR'],
-                'TXT_CSV_REMOVEPAIR'     => $_ARRAYLANG['TXT_CSV_REMOVEPAIR'],
-                'TXT_DBCUSTOMERS_TYPE'     => $DBCustType,
-                'TXT_DBCUSTOMERS_NAME'     => $DBCustName,
-                'TXT_DBLANG_NAME'     => $DBLang,
-                'TXT_DBCURRENCY_NAME'     => $DBCurrency,
-                'TXT_FILECUSTOMER_TYPE'     => $FileCustType,
-                'TXT_FILEPARENT_ID'     => $FileParent,
-                'TXT_FILELANG_NAME'     => $FileLang,
-                'TXT_FILECURRENCY_NAME'     => $FileCurr,
-                'IMPORT_FINAL_JAVASCRIPT'    =>    $objJs->getFinalImportJavascript(),
-        ));
-    }
-
-    function InsertCSV() {
-
-        global $_CORELANG, $_ARRAYLANG, $objDatabase;
-
-        // File Information getting from session variables
-        if(!empty($_SESSION['fileName'])) {
-            $target_path = $_SESSION['fileName'];
-            $separator = $_SESSION['separator'];
-            $enclosure = $_SESSION['enclosure'];
-
-            // Paired Field values
-            $PairLeft = $_SESSION['PairLeft'];
-            $PairRight = $_SESSION['PairRight'];
-            $Arr_pair_file = explode(';',$PairLeft);
-            $Arr_pair_db = explode(';',$PairRight);
-
-            $InsertField = "";
-            foreach($Arr_pair_db as $value) {
-                if(!empty($InsertField)) {
-                    $InsertField .=",";
-                }
-                $InsertField .= $value;
-            }
-
-            // Getting the Customer type, Parent ID, Currency, Language
-            $CustType = $_SESSION['CustType'];
-            $Country = $_SESSION['Country'];
-            $Lang = $_SESSION['Lang'];
-            $Currency = $_SESSION['Currency'];
-
-            $Cust_Type_File = $_REQUEST['pairs_left_keys'];
-            $Cust_Type_DB = $_REQUEST['pairs_right_keys'];
-            $Arr_custtype_file = explode(';',$Cust_Type_File);
-            $Arr_custtype_db = explode(';',$Cust_Type_DB);
-
-            $Parent_Id_File = $_REQUEST['pairs_left_keys2'];
-            $Parent_Id_DB = $_REQUEST['pairs_right_keys2'];
-            $Arr_parentid_file = explode(';',$Parent_Id_File);
-            $Arr_parentid_db = explode(';',$Parent_Id_DB);
-
-            $Lang_File = $_REQUEST['pairs_left_keys3'];
-            $Lang_DB = $_REQUEST['pairs_right_keys3'];
-            $Arr_lang_file = explode(';',$Lang_File);
-            $Arr_lang_db = explode(';',$Lang_DB);
-
-            $Currency_File = $_REQUEST['pairs_left_keys4'];
-            $Currency_DB = $_REQUEST['pairs_right_keys4'];
-            $Arr_currency_file = explode(';',$Currency_File);
-            $Arr_currency_db = explode(';',$Currency_DB);
-
-            // Reading the file content
-            $arrFileContent = $this->objCSVimport->GetFileContent($target_path,$separator,$enclosure);
-
-            // Getting the Customer Type from the CSV file
-            for($i=1;$i<count($arrFileContent);$i++) {
-                for($j=0;$j<count($Arr_custtype_file);$j++) {
-                    if($arrFileContent[$i][$CustType] == $Arr_custtype_file[$j]) {
-                        $arrFileContent[$i][$CustType] = $Arr_custtype_db[$j];
-                    }
-                }
-            }
-
-            // Getting the country from the CSV file
-            for($i=1;$i<count($arrFileContent);$i++) {
-                for($j=0;$j<count($Arr_parentid_file);$j++) {
-                    if($arrFileContent[$i][$Country] == $Arr_parentid_file[$j]) {
-                        $arrFileContent[$i][$Country] = $Arr_parentid_db[$j];
-                    }
-                }
-            }
-
-            // Getting the Lang Id from the CSV file
-            for($i=1;$i<count($arrFileContent);$i++) {
-                for($j=0;$j<count($Arr_lang_file);$j++) {
-                    if($arrFileContent[$i][$Lang] == contrexx_stripslashes($Arr_lang_file[$j])) {
-                        $arrFileContent[$i][$Lang] = $Arr_lang_db[$j];
-                    }
-                }
-            }
-            // Getting the Currency Id from the CSV file
-            for($i=1;$i<count($arrFileContent);$i++) {
-                for($j=0;$j<count($Arr_currency_file);$j++) {
-                    if($arrFileContent[$i][$Currency] == contrexx_stripslashes($Arr_currency_file[$j])) {
-                        $arrFileContent[$i][$Currency] = $Arr_currency_db[$j];
-                    }
-                }
-            }
-            for($i=1;$i<count($arrFileContent);$i++) {
-                $ResultRow = "";
-                foreach($Arr_pair_file as $value) {
-                    if(!empty($ResultRow)) {
-                        $ResultRow .=",";
-                    }
-                    $ResultRow .='"'.$arrFileContent[$i][$value].'"';
-                }
-                $InsertRowValue[] = $ResultRow;
-            }
-
-            for($i=0;$i<count($InsertRowValue);$i++) {
-                $Result = explode(',',$InsertRowValue[$i]);
-                $FinalResultcontact = array();
-                $FinalResultCustomer = array();
-                for($j=0;$j<count($Arr_pair_file);$j++) {
-
-                    $contact=array('e_mail','Name','language_id');
-
-                    if(in_array($Arr_pair_db[$j],$contact)) {
-                        $FinalResultcontact[]='`'.$Arr_pair_db[$j].'` = '.$Result[$j];
-
-                    } else {
-                        $FinalResultCustomer[]= '`'.$Arr_pair_db[$j].'` = '.$Result[$j];
-                    }
-                }
-
-                $FinalInsertStr[$i]['customer'] = $FinalResultCustomer;
-                $FinalInsertStr[$i]['contact'] = $FinalResultcontact;
-
-            }
-            foreach ($FinalInsertStr as $value) {
-                $customer =implode(',',$value['customer']);
-                $contact =implode(',',$value['contact']);
-                $objFWUser = FWUser::getFWUserObject();
-                $userid = $objFWUser->objUser->getId();
-                $query    = 'INSERT INTO `'.DBPREFIX.'module_'.$this->moduleName.'_customers` SET `addedby`='.$userid.',`is_active`=1 ,'.$customer;
-
-                $objResult  =   $objDatabase->Execute($query);
-                $customerid = $objDatabase->INSERT_ID();
-                if (!empty($customerid)) {
-                    $query    = 'INSERT INTO `'.DBPREFIX.'module_'.$this->moduleName.'_customer_contacts` SET `customer_id`='.$customerid.',`main_contact`=1 , '.$contact;
-                    $objResult  =   $objDatabase->Execute($query);
-
-
-                }
-                $this->_strOkMessage = "Records are inserted Successfully";
-            }
-        }//IF $_POST['frmSelectFields']
-        $_SESSION['fileName'] = '';
-        $_SESSION['separator'] = '';
-        $_SESSION['enclosure'] = '';
-        $_SESSION['PairLeft'] = '';
-        $_SESSION['PairRight'] = '';
-        $_SESSION['CustType'] = '';
-        $_SESSION['ParentId'] = '';
-        $_SESSION['Lang'] = '';
-        $_SESSION['Currency'] = '';
-        $this->showInterface();
-    }
-
-    function Notesoverview() {
+    /**
+     * notes overview page
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function Notesoverview()
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase, $objJs;
 
         $this->_objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', 'module_'.$this->moduleName.'_settings_notes.html');
@@ -3174,7 +3004,15 @@ END;
         ));
     }
 
-    function editnotes() {
+    /**
+     * edit notes page
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function editnotes()
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase, $objJs;
 
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleName.'_settings_editnotes.html');
@@ -3223,7 +3061,15 @@ END;
 
     }
 
-    function validation($name) {
+    /**
+     * validation for the notes
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function validation($name)
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
         $objResult = $objDatabase->Execute("SELECT name FROM ".DBPREFIX."module_".$this->moduleName."_notes WHERE name='$name'");
         if($objResult->fields['name'] == $name) {
@@ -3233,7 +3079,15 @@ END;
         }
     }
 
-    function deleteCurrency() {
+    /**
+     * delete currency entry
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function deleteCurrency()
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
         $id = $_GET['id'];
 
@@ -3253,7 +3107,15 @@ END;
         exit();
     }
 
-    function currencyChangeStatus() {
+    /**
+     * change the currency status
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function currencyChangeStatus()
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
         $status = ($_GET['status'] == 0) ? 1 : 0;
         $id     = intval($_GET['id']);
@@ -3288,7 +3150,15 @@ END;
         $this->settingsSubmenu();        
     }
 
-    function notesChangeStatus() {
+    /**
+     * change the notes status
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function notesChangeStatus()
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
         $status = ($_GET['stat'] == 0) ? 1 : 0;
@@ -3303,7 +3173,15 @@ END;
         $this->settingsSubmenu();        
     }
 
-    function editCurrency($labelValue="") {
+    /**
+     * get the edit currency page
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function editCurrency($labelValue="")
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase, $objJs;
 
         $this->_pageTitle = $_ARRAYLANG['TXT_EDIT_CURRENCY'];
@@ -3395,7 +3273,15 @@ END;
         ));        
     }
 
-    function changeCustomerStatus() {
+    /**
+     * change the customer status
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function changeCustomerStatus()
+    {
         global $objDatabase, $_ARRAYLANG;
 
         $customerId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
@@ -3408,21 +3294,23 @@ END;
         }
         exit();
     }
-
+    
     /**
+     * strips only the given tags
      *
-     * @param String $str
+     * @param str String $str
      * @param tags which needs to be strip $tags
-     * @param boolean $stripContent
+     * @param stripContent boolean $stripContent
      * @return string
      */
-    function strip_only_tags($str, $tags, $stripContent=false) {
+    function strip_only_tags($str, $tags, $stripContent=false)
+    {
         $content = '';
-        if(!is_array($tags)) {
+        if (!is_array($tags)) {
             $tags = (strpos($str, '>') !== false ? explode('>', str_replace('<', '', $tags)) : array($tags));
             if(end($tags) == '') array_pop($tags);
         }
-        foreach($tags as $tag) {
+        foreach ($tags as $tag) {
             if ($stripContent)
                 $content = '(.+</'.$tag.'(>|\s[^>]*>)|)';
             $str = preg_replace('#</?'.$tag.'(>|\s[^>]*>)'.$content.'#is', '', $str);
@@ -3430,7 +3318,15 @@ END;
         return $str;
     }
 
-    function exportVcf() {
+    /**
+     * export the customer vcf
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function exportVcf()
+    {
         global $objDatabase;
 
         $id   = (int) $_GET['id'];
@@ -3560,7 +3456,7 @@ END;
                 }
             }
 
-            require_once("lib/class_vcard.php");
+            include_once "lib/class_vcard.php";
 
             $vc        = new vcard();
             $vc->data['customer_name']      = $firstName." ".$lastName;
@@ -3591,21 +3487,37 @@ END;
         exit();
     }
 
-    function changeCustomerContactStatus() {
+    /**
+     * change the customer contact status
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function changeCustomerContactStatus()
+    {
         global $objDatabase;
 
         $objTemplate = $this->_objTpl;
 
         $id = (int) $_GET['id'];
 
-        if($id) {
+        if ($id) {
             $result = $objDatabase->Execute("UPDATE `".DBPREFIX."module_{$this->moduleName}_contacts` SET `status` = IF(status = 1, 0, 1) WHERE id = $id");
         }
 
         exit();
     }
 
-    function submenu() {
+    /**
+     * get task submenu
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function submenu()
+    {
         global $_ARRAYLANG;
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleName.'_tasks.html',true,true);
 
@@ -3618,7 +3530,15 @@ END;
         ));
     }
 
-    function editTaskType() {
+    /**
+     * Edit the task type
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function editTaskType()
+    {
         global $objDatabase, $_ARRAYLANG;
 
         JS::activate("jquery");
@@ -3652,7 +3572,15 @@ END;
 
     }
 
-    function showTasks() {
+    /**
+     * get task overview page
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function showTasks()
+    {
         global $_ARRAYLANG, $objDatabase;
 
         JS::activate("jquery");
@@ -3682,7 +3610,7 @@ END;
         }
         $objType = $objDatabase->Execute("SELECT id,name FROM ".DBPREFIX."module_{$this->moduleName}_task_types ORDER BY sorting");
         if ($objType) {
-            while(!$objType->EOF) {
+            while (!$objType->EOF) {
                 $selected = ($objType->fields['id'] == $taskId) ? 'selected="selected"' : '';
                 $objtpl->setVariable(array(
                         'TXT_TASK_ID'      => $objType->fields['id'],
@@ -3698,7 +3626,7 @@ END;
             if ($_POST['form_activate'] != '' or $_POST['form_deactivate'] != '') {
                 $ids = $_POST['selected'];
                 $to  = $_POST['form_activate'] ? 1 : 0;
-                foreach($ids as $id) {
+                foreach ($ids as $id) {
                     $query = "UPDATE ".DBPREFIX."module_".$this->moduleName."_task
                                                                    SET   task_status  = '".$to."'
                                                                    WHERE id      = '".intval($id)."'";
@@ -3709,7 +3637,7 @@ END;
             if ($_POST['form_delete'] != '') {
                 $ids = $_POST['selected'];
                 $x   = 0;
-                foreach($ids as $id) {
+                foreach ($ids as $id) {
                     $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleName."_task
                                                                        WHERE id = '".intval($id)."'";
                     $objDatabase->SelectLimit($query, 1);
@@ -3733,7 +3661,7 @@ END;
         }
 
 
-        if(!empty($taskTitle) || !empty($taskId)) {
+        if (!empty($taskTitle) || !empty($taskId)) {
             $totalfilter = $typefilter.$titlefilter;
         }
 
@@ -3772,14 +3700,14 @@ END;
         $intPos             = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
         // TODO: Never used
         $intPerPage         = $this->getPagingLimit();
-        $strPagingSource    = getPaging($this->countRecordEntries($query), $intPos, "&amp;cmd=$this->moduleName&amp;act=task$totalfilter", false,'', $intPerPage);
+        $strPagingSource    = getPaging($this->countRecordEntries($query), $intPos, "&amp;cmd=$this->moduleName&amp;act=task$totalfilter", false, '', $intPerPage);
         $this->_objTpl->setVariable('ENTRIES_PAGING', $strPagingSource);
         /* End Paging -------------------------------------- */
         $start      = $intPos ?: 0;
         $sorting = array('task_title','task_type_id','customer_name','due_date');
 
-        if(isset($_GET['sortf']) && isset($_GET['sorto'])) {
-            $sortf = in_array($sorting[$_GET['sortf']],$sorting)? contrexx_input2raw($sorting[$_GET['sortf']]):'';
+        if (isset($_GET['sortf']) && isset($_GET['sorto'])) {
+            $sortf = in_array($sorting[$_GET['sortf']], $sorting)? contrexx_input2raw($sorting[$_GET['sortf']]):'';
             $sorto = ($_GET['sorto'] == 'ASC')? 'DESC' : 'ASC';
             $order = " ORDER BY";
             $order .= " $sortf $sorto LIMIT $start, $intPerPage";
@@ -3787,9 +3715,9 @@ END;
 
         $idorder    = " ORDER BY";
         $idorder   .= " t.`id` DESC LIMIT $start, $intPerPage";
-        if(isset($_GET['sortf']) && isset($_GET['sorto'])) {
+        if (isset($_GET['sortf']) && isset($_GET['sorto'])) {
             $query .= $order;
-        }else {
+        } else {
             $query     .= $idorder;
         }
         $objResult  = $objDatabase->Execute($query);
@@ -3797,7 +3725,7 @@ END;
         $objtpl->setVariable(array( 'TXT_SEARCH_VALUE' => contrexx_input2raw($_POST['search'])));
         $row = 'row2';
 
-        if(empty($objResult->fields['id'])) {
+        if (empty($objResult->fields['id'])) {
             $objtpl->setVariable(array(
                     'TXT_NO_RECORDS_FOUND'  => 'No records found ...'
             ));
@@ -3806,9 +3734,9 @@ END;
                     'TXT_NO_RECORDS_FOUND'  => 'No Records Found'
             ));
             $objtpl->parse('noRecords1');
-        }else {
+        } else {
             if ($objResult) {
-                while(!$objResult->EOF) {
+                while (!$objResult->EOF) {
                     $objtpl->setVariable(array(
                             'CRM_TASK_ID'          => (int) $objResult->fields['id'],
                             'TXT_CRM_TASKID'       => contrexx_raw2xhtml($objResult->fields['task_id']),
@@ -3865,7 +3793,15 @@ END;
         ));
     }
 
-    function _modifyTask() {
+    /**
+     * add /edit task
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function _modifyTask()
+    {
         global $_ARRAYLANG,$objDatabase,$objJs,$objFWUser;
         JS::activate('cx');
         JS::activate("jquery");
@@ -3880,18 +3816,18 @@ END;
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleName.'_addtasks.html');
 
         $date = date('Y-m-d H:i:s');
-        $title      = isset($_POST['taskTitle']) ? contrexx_input2raw($_POST['taskTitle']) : '';
-        $type       = isset($_POST['taskType']) ? (int) $_POST['taskType'] : 0;
-        $customer   = isset($_REQUEST['customerId']) ? (int) $_REQUEST['customerId'] : '';
-        $duedate    = isset($_POST['date']) ? $_POST['date'] : $date;
-        $assignedto = isset($_POST['assignedto']) ? intval($_POST['assignedto']) : $objFWUser->objUser->getId();
-        $description= html_entity_decode($_POST['description'], ENT_QUOTES, CONTREXX_CHARSET);
-        $description= $this->strip_only_tags($description , '<script><iframe>', $stripContent=false);
-        $taskAutoId = isset($_POST['taskAutoId']) ? contrexx_input2raw($_POST['taskAutoId']) : "";
-        $id         = isset($_REQUEST['id'])? (int) $_REQUEST['id']:'';
+        $title       = isset($_POST['taskTitle']) ? contrexx_input2raw($_POST['taskTitle']) : '';
+        $type        = isset($_POST['taskType']) ? (int) $_POST['taskType'] : 0;
+        $customer    = isset($_REQUEST['customerId']) ? (int) $_REQUEST['customerId'] : '';
+        $duedate     = isset($_POST['date']) ? $_POST['date'] : $date;
+        $assignedto  = isset($_POST['assignedto']) ? intval($_POST['assignedto']) : $objFWUser->objUser->getId();
+        $description = html_entity_decode($_POST['description'], ENT_QUOTES, CONTREXX_CHARSET);
+        $description = $this->strip_only_tags($description, '<script><iframe>', $stripContent=false);
+        $taskAutoId  = isset($_POST['taskAutoId']) ? contrexx_input2raw($_POST['taskAutoId']) : "";
+        $id          = isset($_REQUEST['id'])? (int) $_REQUEST['id']:'';
 
-        $taskId     = isset($_REQUEST['searchType'])? intval($_REQUEST['searchType']) : 0 ;
-        $taskTitle  = isset($_REQUEST['searchTitle'])? contrexx_input2raw($_REQUEST['searchTitle']) : '';
+        $taskId      = isset($_REQUEST['searchType'])? intval($_REQUEST['searchType']) : 0 ;
+        $taskTitle   = isset($_REQUEST['searchTitle'])? contrexx_input2raw($_REQUEST['searchTitle']) : '';
 
         $redirect     = isset($_REQUEST['redirect']) ? $_REQUEST['redirect'] : base64_encode('&act=task');
         if (empty($taskAutoId)) {
@@ -3968,7 +3904,7 @@ END;
                                                    FROM '.DBPREFIX.'access_users AS contrexxuser
                                                       WHERE contrexxuser.active != 0
                                                    ORDER BY contrexxuser.username');
-        while(!$objResultMember->EOF) {
+        while (!$objResultMember->EOF) {
             $selectedMember = ($assignedto ==  $objResultMember->fields['userid']) ? "selected" : '';
 
             $objtpl->setVariable(array(
@@ -4014,7 +3950,15 @@ END;
         ));
     }
 
-    function deleteTask() {
+    /**
+     * delete the task
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function deleteTask()
+    {
         global $_ARRAYLANG,$objDatabase;
 
         $objtpl  = $this->_objTpl;
@@ -4024,7 +3968,7 @@ END;
         $taskTitle  = isset($_REQUEST['searchTitle'])? contrexx_input2raw($_REQUEST['searchTitle']) : '';
         $message = base64_encode('Deleted');
 
-        if(!empty($id)) {
+        if (!empty($id)) {
             $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_{$this->moduleName}_task WHERE id = '$id'");
             $typefilter = !empty($taskId)? "&searchType=$taskId":'';
             $titlefilter= !empty($taskTitle)? "&searchTitle=$taskTitle&searchCustomer=$taskTitle":'';
@@ -4032,7 +3976,15 @@ END;
         }
     }
 
-    function countRecordEntries($query) {
+    /**
+     * get the count of entries
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function countRecordEntries($query)
+    {
         global $objDatabase;
 
         $objEntryResult = $objDatabase->Execute('SELECT  COUNT(*) AS numberOfEntries
@@ -4041,7 +3993,15 @@ END;
         return intval($objEntryResult->fields['numberOfEntries']);
     }
 
-    function customerTooltipDetail() {
+    /**
+     * customer tool tip
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function customerTooltipDetail()
+    {
         global $_ARRAYLANG,$objDatabase,$objJs;
 
         $objtpl  = $this->_objTpl;
@@ -4049,7 +4009,7 @@ END;
         $objtpl->setGlobalVariable("MODULE_NAME", $this->moduleName);
         $contactid = isset($_REQUEST['contactid']) ? (int) $_REQUEST['contactid'] : 0;
 
-        if(!empty($contactid)) {
+        if (!empty($contactid)) {
 
             $contactCount = $objDatabase->getOne("SELECT count(1) FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE contact_customer = $contactid");
 
@@ -4088,7 +4048,15 @@ END;
         exit();
     }
 
-    function getLinkContacts() {
+    /**
+     * get contacts to link the customer
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function getLinkContacts()
+    {
         global  $objDatabase;
 
         $searchTerm = (isset($_GET['term'])) ? contrexx_input2raw($_GET['term']) : '';
@@ -4113,7 +4081,15 @@ END;
         exit();
     }
 
-    function addContact() {
+    /**
+     * add new contact
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function addContact()
+    {
         global $objDatabase, $_ARRAYLANG;
 
         $contactId  = (isset ($_GET['id'])) ? (int) $_GET['id'] : 0;
@@ -4158,7 +4134,15 @@ END;
         exit();
     }
 
-    function getContactTasks() {
+    /**
+     * get the task of a contact
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function getContactTasks()
+    {
         global $objDatabase, $_ARRAYLANG;
 
         $objTpl = $this->_objTpl;
@@ -4192,7 +4176,7 @@ END;
         }
         ($objResult->RecordCount() > 0) ? $objTpl->hideBlock("noRecords") : $objTpl->touchBlock("noRecords");
         if ($objResult) {
-            while(!$objResult->EOF) {
+            while (!$objResult->EOF) {
                 $objTpl->setVariable(array(
                         'CRM_TASK_ID'          => (int) $objResult->fields['id'],
                         'TXT_CRM_TASKID'       => contrexx_raw2xhtml($objResult->fields['task_id']),
@@ -4236,7 +4220,15 @@ END;
         exit();
     }
 
-    function getContactProjects() {
+    /**
+     * get projects of a contact
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function getContactProjects()
+    {
         global $objDatabase, $_ARRAYLANG;
 
         $objTpl = $this->_objTpl;
@@ -4327,7 +4319,7 @@ END;
                 'CRM_CUSTOMER_ID'                   => $custId,
 
         ));
-        $this->_objTpl->setGlobalVariable('CRM_REDIRECT_LINK' , "&redirect=".base64_encode("&cmd={$this->moduleName}&act=showcustdetail&id={$custId}"));
+        $this->_objTpl->setGlobalVariable('CRM_REDIRECT_LINK', "&redirect=".base64_encode("&cmd={$this->moduleName}&act=showcustdetail&id={$custId}"));
         if (isset($_GET['ajax'])) {
             $this->_objTpl->hideBlock("skipAjaxBlock");
             $this->_objTpl->hideBlock("skipAjaxBlock1");
@@ -4339,7 +4331,15 @@ END;
         exit();
     }
 
-    function getContactDeals() {
+    /**
+     * get contact deals
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function getContactDeals()
+    {
         global $objDatabase, $_ARRAYLANG;
 
         $objTpl = $this->_objTpl;
@@ -4420,7 +4420,7 @@ END;
                 'TXT_CRM_ADD_OPPURTUNITY'       => $_ARRAYLANG['CRM_ADD_DEAL_TITLE'],
                 'CSRF_PARAM'                    => CSRF::param(),
         ));
-        $this->_objTpl->setGlobalVariable('CRM_REDIRECT_LINK' , '&redirect='.base64_encode("&act=showcustdetail&id={$custId}"));
+        $this->_objTpl->setGlobalVariable('CRM_REDIRECT_LINK', '&redirect='.base64_encode("&act=showcustdetail&id={$custId}"));
         if (isset($_GET['ajax'])) {
             $this->_objTpl->hideBlock("skipAjaxBlock");
             $this->_objTpl->hideBlock("skipAjaxBlock1");
@@ -4434,8 +4434,13 @@ END;
 
     /**
      * Overview of opportunity
-     */
-    function dealsOverview() {
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */    
+    function dealsOverview()
+    {
         global $objDatabase, $_ARRAYLANG;
 
         JS::activate("jquery");
@@ -4478,7 +4483,7 @@ END;
         }
 
         $mes = isset($_REQUEST['mes']) ? base64_decode($_REQUEST['mes']) : '';
-        if(!empty($mes)) {
+        if (!empty($mes)) {
             switch($mes) {
             case "dealsAdded":
                 $this->_strOkMessage = $_ARRAYLANG['TXT_DEALS_ADDED_SUCCESSFULLY'];
@@ -4504,7 +4509,7 @@ END;
         if (!empty ($where))
             $filter = " WHERE ".implode(' AND ', $where);
 
-        $sortingFields = array("d.id", "d.title" ,  "c.customer_name", "u.username", "d.due_date");
+        $sortingFields = array("d.id", "d.title", "d.quoted_price",  "c.customer_name", "u.username", "d.due_date");
         $sorto = (isset ($_GET['sorto'])) ? (((int) $_GET['sorto'] == 0) ? 'DESC' : 'ASC') : 'DESC';
         $sortf = (isset ($_GET['sortf']) && in_array($sortingFields[$_GET['sortf']], $sortingFields)) ? $sortingFields[$_GET['sortf']] : 'c.id';
         $sortLink = "&sorto={$_GET['sorto']}&sortf={$_GET['sortf']}";
@@ -4561,6 +4566,7 @@ END;
                         'CRM_CONTACT_NAME'      => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['customer']}' title='details'>".contrexx_raw2xhtml($objResult->fields['customer_name']." ".$objResult->fields['contact_familyname']).'</a>',
                         'CRM_DEALS_CONTACT_NAME'=> contrexx_raw2xhtml($objResult->fields['username']),
                         'CRM_DEALS_DUE_DATE'    => contrexx_raw2xhtml($objResult->fields['due_date']),
+                        'CRM_DEALS_QUOTED_PRICE'=> contrexx_raw2xhtml($objResult->fields['quoted_price']),
                         'ROW_CLASS'             => $row = ($row == "row2") ? "row1" : 'row2',
                         'CRM_REDIRECT_LINK'     => '&redirect='.base64_encode("&act=deals{$searchLink}{$sortLink}{$pageLink}"),
                         'TXT_IMAGE_EDIT'        =>  $_ARRAYLANG['TXT_EDIT'],
@@ -4574,12 +4580,14 @@ END;
         $sortOrder = ($_GET['sorto'] == 0) ? 1 : 0;
         $objTpl->setVariable(array(
                 'CRM_NAME_SORT'                 => "&sortf=1&sorto=$sortOrder",
-                'CRM_CUSTOMER_SORT'             => "&sortf=2&sorto=$sortOrder",
-                'CRM_RESPONSIBLE_SORT'          => "&sortf=3&sorto=$sortOrder",
-                'CRM_DUE_DATE_SORT'             => "&sortf=4&sorto=$sortOrder",
+                'CRM_PRICE_SORT'                => "&sortf=2&sorto=$sortOrder",
+                'CRM_CUSTOMER_SORT'             => "&sortf=3&sorto=$sortOrder",
+                'CRM_RESPONSIBLE_SORT'          => "&sortf=4&sorto=$sortOrder",
+                'CRM_DUE_DATE_SORT'             => "&sortf=5&sorto=$sortOrder",
                 'CRM_SEARCH_LINK'               => $searchLink,
                 'TXT_CRM_SEARCH'                => $_ARRAYLANG['TXT_CRM_SEARCH'],
                 'CRM_DEALS_CREATE'              => $_ARRAYLANG['CRM_DEALS_CREATE'],
+                'TXT_CRM_DEALS_QUOTED_PRICE'    => $_ARRAYLANG['CRM_PROJECT_QUOTED_PRICE'],
                 'CRM_DEALS_OVERVIEW'            => $_ARRAYLANG['CRM_DEALS_OVERVIEW'],
                 'TXT_CRM_DEALS_OVERVIEW'        => $_ARRAYLANG['TXT_CRM_DEALS_OVERVIEW'],
                 'TXT_CRM_DEALS_TITLE'           => $_ARRAYLANG['TXT_CRM_DEALS_TITLE'],
@@ -4601,8 +4609,12 @@ END;
     }
 
     /**
-     *  add /edit of deals
-     */
+     * add /edit of deals
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */    
     function _modifyDeal()
     {
         global $objDatabase, $_ARRAYLANG;
@@ -4889,6 +4901,13 @@ END;
         $this->_pageTitle = empty($id) ? $_ARRAYLANG['CRM_ADD_DEAL_TITLE'] : $_ARRAYLANG['CRM_EDIT_DEAL_TITLE'];
     }
 
+    /**
+     * show settings industry
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
     function showIndustry()
     {
         global $objDatabase, $_ARRAYLANG, $_LANGID;
@@ -5055,6 +5074,13 @@ END;
 
     }
 
+    /**
+     * add/ edit industry
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
     function _modifyIndustry()
     {
         global $objDatabase, $_ARRAYLANG, $_LANGID;
@@ -5193,6 +5219,13 @@ END;
         ));
     }
 
+    /**
+     * show membership menu
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
     function showMembership()
     {
         global $objDatabase,$_ARRAYLANG, $_LANGID;
@@ -5304,6 +5337,13 @@ END;
 
     }
 
+    /**
+     * add/ edit membership
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
     function _modifyMembership()
     {
         global $objDatabase, $_ARRAYLANG, $_LANGID;
@@ -5420,6 +5460,13 @@ END;
         ));
     }
 
+    /**
+     * get customer search result
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return json result
+     */
     function getCustomerSearch()
     {
         global $objDatabase, $_LANGID;
@@ -5530,6 +5577,13 @@ END;
         exit();
     }
 
+    /**
+     * Chek the user already exists in crm and user admin
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return boolean
+     */
     public function checkUserAvailablity()
     {
         global $objDatabase, $_ARRAYLANG;
@@ -5564,7 +5618,16 @@ END;
         echo json_encode($json);
         exit();
     }
-    function getCustomerDomains() {
+
+    /**
+     * get customers domain result
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return json result
+     */
+    function getCustomerDomains()
+    {
         global $objDatabase;
 
         $term       = contrexx_input2db($_GET['term']);
@@ -5599,14 +5662,17 @@ END;
         exit();
 
     }
-    
+
     /**
      * Default PM Customer Suggetion box functionality
      *
-     * @access Authenticated
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return json result
      */
-    function autoSuggest() {
-        global $_ARRAYLANG,$objDatabase,$wysiwygEditor, $FCKeditorBasePath;
+    function autoSuggest()
+    {
+        global $_ARRAYLANG,$objDatabase;
 
         $id = intval($_GET['id']);
 
@@ -5627,15 +5693,17 @@ END;
         $customer = array();
 
         $contatWhere = $objResult->fields['contact_type'] == 1 ? "c.contact_customer" : "c.id";
-        $contactPerson = $objDatabase->Execute("SELECT c.`id`,
-                                                       c.`contact_customer`,
-                                                       c.`customer_name`,
-                                                       c.`contact_familyname`,
-                                                       email.`email`
-                                                   FROM `".DBPREFIX."module_crm_contacts` AS c
-                                                   LEFT JOIN `".DBPREFIX."module_crm_customer_contact_emails` AS email
-                                                       ON c.`id` = email.`contact_id` AND email.`is_primary` = '1'
-                                                   WHERE $contatWhere = '$id' AND `status` = 1");
+        $contactPerson = $objDatabase->Execute(
+            "SELECT c.`id`,
+                    c.`contact_customer`,
+                    c.`customer_name`,
+                    c.`contact_familyname`,
+                    email.`email`
+               FROM `".DBPREFIX."module_crm_contacts` AS c
+               LEFT JOIN `".DBPREFIX."module_crm_customer_contact_emails` AS email
+                   ON c.`id` = email.`contact_id` AND email.`is_primary` = '1'
+               WHERE $contatWhere = '$id' AND `status` = 1"
+        );
 
         $customer['id']         = intval($objResult->fields['id']);
         $customer['company']    = $objResult->fields['contact_type'] == 1 ? stripslashes($objResult->fields['customer_name']) : stripslashes($objResult->fields['customer_name']." ".$objResult->fields['contact_familyname']);// Reply array list for given query
@@ -5656,8 +5724,16 @@ END;
 
         exit();
     }
-    
-    function getCustomers() {
+
+    /**
+     * get customer search results as json result
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return json result
+     */
+    function getCustomers()
+    {
         global $objDatabase;
 
         $term = contrexx_input2db($_GET['term']);
@@ -5685,6 +5761,13 @@ END;
         exit();
     }
 
+    /**
+     * upload the profile image to the server
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
     function uploadProfilePhoto()
     {
         global $objDatabase, $_ARRAYLANG;
@@ -5693,7 +5776,7 @@ END;
         
         $json = array();
         if ($customerId) {
-            require_once CRM_MODULE_LIB_PATH.'/qqFileUploader.php';
+            include_once CRM_MODULE_LIB_PATH.'/qqFileUploader.php';
 
             $uploader = new qqFileUploader();
             // Specify the list of valid extensions, ex. array("jpeg", "xml", "bmp")
@@ -5735,6 +5818,13 @@ END;
         exit();
     }
 
+     /**
+     * update user profile photo
+     *     
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase     
+     * @return true
+     */
     function updateProfilePhoto()
     {
         global $objDatabase, $_ARRAYLANG;

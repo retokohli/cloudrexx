@@ -109,11 +109,12 @@
                 </tr>
                 <tr class="row3">
                     <td width="3%">&nbsp;&nbsp;<strong>#</strong></td>
-                    <td width="15%"><strong><a title="sort" href="./index.php?cmd={MODULE_NAME}&act=deals{CRM_NAME_SORT}{CRM_SEARCH_LINK}">{TXT_CRM_DEALS_TITLE}</a></strong></td>
+                    <td width="20%"><strong><a title="sort" href="./index.php?cmd={MODULE_NAME}&act=deals{CRM_NAME_SORT}{CRM_SEARCH_LINK}">{TXT_CRM_DEALS_TITLE}</a></strong></td>
+                    <td width="10%"><strong><a title="sort" href="./index.php?cmd={MODULE_NAME}&act=deals{CRM_PRICE_SORT}{CRM_SEARCH_LINK}">{TXT_CRM_DEALS_QUOTED_PRICE}</a></strong></td>
                     <td width="20%"><strong><a title="sort" href="./index.php?cmd={MODULE_NAME}&act=deals{CRM_CUSTOMER_SORT}{CRM_SEARCH_LINK}">{TXT_CRM_DEALS_CUSTOMER_NAME}</a></strong></td>
-                    <td width="30%"><strong><a title="sort" href="./index.php?cmd={MODULE_NAME}&act=deals{CRM_RESPONSIBLE_SORT}{CRM_SEARCH_LINK}">{TXT_CRM_DEALS_RESPONSIBLE}</a></strong></td>                    
-                    <td width="10%" style="text-align: right;"><strong><a title="sort" href="./index.php?cmd={MODULE_NAME}&act=deals{CRM_DUE_DATE_SORT}{CRM_SEARCH_LINK}">{TXT_CRM_DEALS_DUE_DATE}</a></strong></td>
-                    <td width="15%" style="text-align: right;"><strong>{TXT_FUNCTIONS}</strong></td>
+                    <td width="10%"><strong><a title="sort" href="./index.php?cmd={MODULE_NAME}&act=deals{CRM_RESPONSIBLE_SORT}{CRM_SEARCH_LINK}">{TXT_CRM_DEALS_RESPONSIBLE}</a></strong></td>
+                    <td width="5%" style="text-align: right;"><strong><a title="sort" href="./index.php?cmd={MODULE_NAME}&act=deals{CRM_DUE_DATE_SORT}{CRM_SEARCH_LINK}">{TXT_CRM_DEALS_DUE_DATE}</a></strong></td>
+                    <td width="10%" style="text-align: right;"><strong>{TXT_FUNCTIONS}</strong></td>
                 </tr>
             </thead>
             <tbody>
@@ -126,6 +127,7 @@
                 <tr class="{ROW_CLASS}" id="entry_{ENTRY_ID}">
                     <td><input type="checkbox" name="dealsEntry[]" class="entrySelection" value="{ENTRY_ID}" /></td>
                     <td>{CRM_DEALS_TITLE}</td>
+                    <td>{CRM_DEALS_QUOTED_PRICE}</td>
                     <td>{CRM_CONTACT_NAME}</td>
                     <td>{CRM_DEALS_CONTACT_NAME}</td>                    
                     <td style="text-align: right;">{CRM_DEALS_DUE_DATE}</td>
