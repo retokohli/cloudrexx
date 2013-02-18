@@ -1016,7 +1016,10 @@ class ContrexxUpdate
         }
 
         $objUseUsernameSetting = $this->objDatabase->SelectLimit("SELECT `status` FROM `".DBPREFIX."access_settings` WHERE `key` = ?", 1, -1, array('use_usernames'));
-        if ($objUseUsernameSetting->RecordCount() > 0 && !$objUseUsernameSetting->fields['status']) {
+        if ($objUseUsernameSetting !== false &&
+            $objUseUsernameSetting->RecordCount() > 0 &&
+            !$objUseUsernameSetting->fields['status']
+        ) {
             $whereField = "`email`" ;
         } else {
             $whereField = "`username`";
