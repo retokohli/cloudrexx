@@ -8,6 +8,7 @@
     width: 100%;
     height: 27px;
     padding: 30px 0 30px 0;
+    position: relative;
 }
 
 #logo {
@@ -17,17 +18,25 @@
     background: url('images/logo.png') no-repeat;
 }
 
-#metanavigation {
-    float: right;
+#metanavigation,
+#profile-links {
+    position: absolute;
+    left: 283px;
+    top: 23px;
     font-family: 'Ubuntu';
 }
 
-#metanavigation li {
+#metanavigation li,
+#profile-links li {
     position: relative;
     float: left;
     padding: 6px 0 0 15px;
     margin: 0 0 0 15px;
     background: url('images/divider.gif') no-repeat left 13px;
+}
+
+#profile-links li.last {
+    padding: 6px 0 0 15px !important;
 }
 
 #metanavigation li.first {
@@ -36,11 +45,13 @@
     background: none;
 }
 
-#metanavigation li * {
+#metanavigation li *,
+#profile-links li * {
     color: #8D8D8D;
 }
 
-#metanavigation li a:hover {
+#metanavigation li a:hover,
+#profile-links li a:hover {
     color: #0A85C8;
 }
 
@@ -370,7 +381,9 @@
 }
 
 #profile-links {
-    float: right;
+    left: auto;
+    right: 0;
+    font-family: 'Ubuntu';
 }
 
 #content {

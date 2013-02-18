@@ -15,13 +15,14 @@
                 <div class="fe_LoginBoxValue"><input type="password" id="fe_LoginPassword" name="fe_LoginPassword" value="" class="fe_LoginBoxPassword" /></div>
                 <div class="fe_LoginBoxLabel">{TXT_LOGIN_CAPTCHA}</div>
                 <div class="fe_LoginBoxValue">{LOGIN_CAPTCHA_CODE}</div>
-                <div class="fe_LoginBoxValue"><input type="checkbox" value="1" name="remember_me" id="remember_me" /><label class="fe_LoginBoxLabel" for="remember_me">{TXT_LOGIN_REMEMBER_ME}</label></div>
+                <div class="fe_LoginBoxLabel"><label class="fe_LoginBoxLabel" for="remember_me">{TXT_LOGIN_REMEMBER_ME}</label></div>
+                <div class="fe_LoginBoxValue"><input type="checkbox" value="1" name="remember_me" id="remember_me" /></div>
                 <div class="fe_LoginBoxLabel">{TXT_LOGIN_AREA}</div>
                 <div class="fe_LoginBoxValue">
                     <input type="radio" id="fe_LoginTypeFrontend" name="fe_LoginType" value="Frontend" checked="checked" /><label for="fe_LoginTypeFrontend">{TXT_LOGIN_AREA_FRONTEND}</label>
                     <input type="radio" id="fe_LoginTypeBackend" name="fe_LoginType" value="Backend" /><label for="fe_LoginTypeBackend">{TXT_LOGIN_AREA_BACKEND}</label>
                 </div>
-                <div class="fe_LoginBoxValue">
+                <div class="fe_LoginBoxValue full-width">
                     <input type="button" value="{TXT_LOGIN_SUBMIT}" class="fe_LoginBoxButton left" onclick="fe_doLogin();" />
                     <input type="button" value="{TXT_LOGIN_CANCEL}" class="fe_LoginBoxButton right" onclick="fe_closeLogin();" />
                 </div>

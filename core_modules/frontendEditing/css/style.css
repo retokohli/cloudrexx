@@ -135,10 +135,10 @@ html, body {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 280px;
+    width: 450px;
     height: auto;
     padding: 10px;
-    margin: -194px 0 0 -151px;
+    margin: -194px 0 0 -225px;
     font-size: 13px;
     text-align: center;
     border: 1px solid #c3dff9;
@@ -146,12 +146,12 @@ html, body {
 }
 
 #fe_LoginBoxFrame #fe_BoxTitle {
-    width: 280px;
+    width: 450px;
 }
 
 #fe_LoginBoxContent {
     float: left;
-    width: 258px;
+    width: 428px;
     height: auto;
     padding: 10px;
     border: 1px solid #4978ae;
@@ -162,6 +162,7 @@ html, body {
 #fe_LoginBoxContent form[name="fe_LoginForm"] {
     float: left;
     height: auto;
+    width: 100%;
 }
 
 #fe_LoginBoxContent .fe_LoginSpacer {
@@ -193,11 +194,11 @@ html, body {
 
 #fe_LoginBoxContent form .fe_LoginBoxLabel {
     float: left;
-    clear: both;
-    width: auto;
+    width: 170px;
     margin-bottom: 2px;
     text-align: left;
     font-weight: bold;
+    clear: left;
 }
 
 #fe_LoginBoxContent form .fe_LoginBoxValue .fe_LoginBoxLabel {
@@ -206,10 +207,12 @@ html, body {
     line-height: 20px;
 }
 
+#fe_LoginBoxContent form .fe_LoginBoxValue.full-width {
+    width: 100%;
+}
+
 #fe_LoginBoxContent form .fe_LoginBoxValue {
     float: left;
-    clear: both;
-    width: 100%;
     margin-bottom: 10px;
     text-align: left;
 }
@@ -217,6 +220,8 @@ html, body {
 #fe_LoginBoxContent form .fe_LoginBoxValue #coreCaptchaLabel {
     margin-top: 0;
     white-space: normal;
+    width: 258px;
+    clear: none;
 }
 
 #fe_LoginBoxContent form .fe_LoginBoxValue #coreCaptchaCode {
