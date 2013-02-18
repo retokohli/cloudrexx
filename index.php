@@ -57,19 +57,43 @@ include_once dirname(__FILE__).'/config/configuration.php';
 
 // Check if the system is installed
 if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
-    header('Location: installer/index.php');
+    header('Location: ../installer/index.php');
     exit;
 } else if ($incSettingsStatus === false) {
     die('System halted: Unable to load basic configuration!');
 }
 
+// Check if the system is configured with enabled customizings
 $customizing = null;
 if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
     $customizing = ASCMS_CUSTOMIZING_PATH;
 }
 
+/**
+ * This is the old fashion way, requiring two separate files for front- and backend
+ */
+///*
 if ($customizing && file_exists(ASCMS_CUSTOMIZING_PATH.'/core/initFrontend.php')) {
     require_once(ASCMS_CUSTOMIZING_PATH.'/core/initFrontend.php');
 } else {
     require_once(ASCMS_CORE_PATH.'/initFrontend.php');
+}//*/
+
+/**
+ * This is the new way (BETA). To test this, perform the following steps:
+ * 1. Comment out the old fashion code above (just remove // on line 75)
+ * 2. Uncomment the code below (add // on line 88)
+ * 3. Remove cadmin from whitelist in .htaccess
+ */
+/*
+// Load the Contrexx class (from customizing if enabled)
+if ($customizing && file_exists(ASCMS_CUSTOMIZING_PATH.'/core/Cx.class.php')) {
+    require_once(ASCMS_CUSTOMIZING_PATH.'/core/Cx.class.php');
+} else {
+    require_once(ASCMS_CORE_PATH.'/Cx.class.php');
 }
+// load in frontend mode as long as anything else than /cadmin is requested:
+$frontend = $_GET['__cap'] != ASCMS_PATH_OFFSET.'/cadmin/index.php';
+
+// Initialize the Contrexx class (we don't use the constructor in order to avoid namespaces:
+init($frontend);//*/
