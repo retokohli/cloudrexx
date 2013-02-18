@@ -1210,7 +1210,7 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_crm_task` (
   `id` int(2) NOT NULL auto_increment,
   `task_id` varchar(10) NOT NULL,
-  `task_title` varchar(25) NOT NULL,
+  `task_title` varchar(255) NOT NULL,
   `task_type_id` int(2) NOT NULL,
   `customer_id` int(2) NOT NULL,
   `due_date` datetime NOT NULL,
