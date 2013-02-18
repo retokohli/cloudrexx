@@ -65,7 +65,7 @@ class ContrexxJavascript {
             array(
                 'path'      => ASCMS_PATH_OFFSET.'/'.$langCode.'/',
                 'basePath'  => ASCMS_PATH_OFFSET.'/',
-                'cadminPath'=> ASCMS_BACKEND_PATH.'/',
+                'cadminPath'=> ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/',
                 'mode'      => $objInit->mode,
                 'language'  => $langCode,
                 'csrf'      => CSRF::code(),
