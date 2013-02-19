@@ -963,7 +963,7 @@ class ContentMigration
             foreach ($arrPageIds as $pageId) {
                 $page = $pageRepo->find($pageId);
 
-                if ($page->getNode()->getId() != $nodeId) {
+                if ($page && ($page->getNode()->getId() != $nodeId)) {
                     $nodeToRemove[] = $page->getNode()->getId();
                     $node = $nodeRepo->find($nodeId);
 
