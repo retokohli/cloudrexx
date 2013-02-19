@@ -163,7 +163,7 @@ function _votingInstall()
                 'id'                     => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'voting_system_id'       => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'id'),
                 'question'               => array('type' => 'CHAR(200)', 'notnull' => false, 'after' => 'voting_system_id'),
-                'votes'                  => array('type' => 'INT(11)', 'default' => '0', 'after' => 'question')
+                'votes'                  => array('type' => 'INT(11)', 'notnull' => false, 'default' => '0', 'after' => 'question')
             ),
             null,
             'MyISAM',
@@ -194,10 +194,10 @@ function _votingInstall()
                 'id'                     => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'date'                   => array('type' => 'timestamp', 'notnull' => true, 'after' => 'id'),
                 'title'                  => array('type' => 'VARCHAR(60)', 'notnull' => true, 'default' => '', 'after' => 'date'),
-                'question'               => array('type' => 'text', 'after' => 'title'),
-                'status'                 => array('type' => 'TINYINT(1)', 'default' => '1', 'after' => 'question'),
+                'question'               => array('type' => 'text', 'after' => 'title', 'notnull' => false),
+                'status'                 => array('type' => 'TINYINT(1)', 'default' => '1', 'notnull' => false, 'after' => 'question'),
                 'submit_check'           => array('type' => 'ENUM(\'cookie\',\'email\')', 'notnull' => true, 'default' => 'cookie', 'after' => 'status'),
-                'votes'                  => array('type' => 'INT(11)', 'default' => '0', 'after' => 'submit_check'),
+                'votes'                  => array('type' => 'INT(11)', 'notnull' => false, 'default' => '0', 'after' => 'submit_check'),
                 'additional_nickname'    => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'votes'),
                 'additional_forename'    => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'additional_nickname'),
                 'additional_surname'     => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'additional_forename'),
