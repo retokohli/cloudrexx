@@ -43,16 +43,17 @@ class LicenseManager {
         }
     }
     
-    public function getPage($post) {
+    public function getPage($post, &$_CORELANG) {
         $lc = LicenseCommunicator::getInstance($this->config);
         $lc->addJsUpdateCode($this->lang, $this->license, true, false);
+        $sm = new \settingsManager();
         if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
             if (isset($post['save']) && isset($post['licenseKey'])) {
                 $license = License::getCached($this->config, $this->db);
                 if ($license->checkSum(contrexx_input2db($post['licenseKey']))) {
                     $license->setLicenseKey(contrexx_input2db($post['licenseKey']));
                     // save it before we check it, so we only change the license key
-                    $license->save(new \settingsManager(), $this->db);
+                    $license->save($sm, $this->db);
                     $license->check();
                     $this->license = $license;
                 }
@@ -102,14 +103,21 @@ class LicenseManager {
             }
             
             $message = $this->license->getMessage(false, \FWLanguage::getLanguageCodeById(BACKEND_LANG_ID), $this->lang);
-            if ($message && strlen($message->getText())) {
-                $remoteTemplate->setVariable('MESSAGE_TITLE', contrexx_raw2xhtml($this->getReplacedMessageText($message)));
-                $remoteTemplate->setVariable('MESSAGE_LINK', contrexx_raw2xhtml($message->getLink()));
-                $remoteTemplate->setVariable('MESSAGE_LINK_TARGET', contrexx_raw2xhtml($message->getLinkTarget()));
-                $remoteTemplate->setVariable('MESSAGE_TYPE', contrexx_raw2xhtml($message->getType()));
+            if (!$sm->isWritable()) {
+                $remoteTemplate->setVariable('MESSAGE_TITLE', preg_replace('/<br \/>/', ' ', sprintf($_CORELANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS'], $sm->strSettingsFile)));
+                $remoteTemplate->setVariable('MESSAGE_LINK', '#');
+                $remoteTemplate->setVariable('MESSAGE_LINK_TARGET', '_self');
+                $remoteTemplate->setVariable('MESSAGE_TYPE', 'alertbox');
             } else {
-                if ($remoteTemplate->blockExists('message')) {
-                    $remoteTemplate->setVariable('MESSAGE_TYPE', '" style="display:none;');
+                if ($message && strlen($message->getText())) {
+                    $remoteTemplate->setVariable('MESSAGE_TITLE', contrexx_raw2xhtml($this->getReplacedMessageText($message)));
+                    $remoteTemplate->setVariable('MESSAGE_LINK', contrexx_raw2xhtml($message->getLink()));
+                    $remoteTemplate->setVariable('MESSAGE_LINK_TARGET', contrexx_raw2xhtml($message->getLinkTarget()));
+                    $remoteTemplate->setVariable('MESSAGE_TYPE', contrexx_raw2xhtml($message->getType()));
+                } else {
+                    if ($remoteTemplate->blockExists('message')) {
+                        $remoteTemplate->setVariable('MESSAGE_TYPE', '" style="display:none;');
+                    }
                 }
             }
             

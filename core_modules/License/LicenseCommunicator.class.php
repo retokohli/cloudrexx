@@ -73,6 +73,10 @@ class LicenseCommunicator {
         if ($response) {
             $response = json_decode($response);
         } else {
+            $sm = new \settingsManager();
+            if (!$sm->isWritable()) {
+                throw new \Exception($_CORELANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS']);
+            }
             $v = preg_split('#\.#', $_CONFIG['coreCmsVersion']);
             $e = $_CONFIG['coreCmsEdition'];
 
@@ -314,8 +318,9 @@ class LicenseCommunicator {
                     
                     var versionCheckResponseHandler = function(data, allowUserAgent) {';
             if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
+                $sm = new \settingsManager();
                 $jsCode .= '
-                        if (data == "false" && allowUserAgent) {
+                        if (data == "false" && allowUserAgent && ' . ($sm->isWritable() ? 'true' : 'false') . ') {
                             reloadManager = false;
                             jQuery.getScript("http://updatesrv1.contrexx.com/?' . implode('&', $userAgentRequestArguments) . '", function() {
                                 jQuery.post(
