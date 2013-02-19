@@ -413,7 +413,7 @@ switch ($plainCmd) {
     case 'license':
         $subMenuTitle = $_CORELANG['TXT_LICENSE'];
         $lm = new \Cx\Core_Modules\License\LicenseManager($act, $objTemplate, $_CORELANG, $_CONFIG, $objDatabase);
-        $lm->getPage($_POST);
+        $lm->getPage($_POST, $_CORELANG);
         break;
 // TODO: handle expired sessions in any xhr callers.
     case 'jsondata':
