@@ -815,7 +815,7 @@ function _accessUpdate()
         try {
             \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin', '', '0') ON DUPLICATE KEY UPDATE `key` = `key`");
             \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin_show_signup', '', 0) ON DUPLICATE KEY UPDATE `key` = `key`");
-            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('use_usernames', '0', '1') ON DUPLICATE KEY UPDATE `key` = `key`");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('use_usernames', '1', '1') ON DUPLICATE KEY UPDATE `key` = `key`");
             \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin_assign_to_groups', '3', '0') ON DUPLICATE KEY UPDATE `key` = `key`");
             \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin_active_automatically', '', '1') ON DUPLICATE KEY UPDATE `key` = `key`");
             \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('access', 'providers', 'sociallogin', 'text', '{\"facebook\":{\"active\":\"0\",\"settings\":[\"\",\"\"]},\"twitter\":{\"active\":\"0\",\"settings\":[\"\",\"\"]},\"google\":{\"active\":\"0\",\"settings\":[\"\",\"\",\"\"]}}', '', '0') ON DUPLICATE KEY UPDATE `section` = `section`");
