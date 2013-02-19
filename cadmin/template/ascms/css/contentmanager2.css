@@ -157,11 +157,11 @@ h1{ font-size: 20px }
 }
 
 #flip-menu .jstree-action.open {
-    background-image: url('../../../images/icons/expand.png');
+    background-image: url(../../../images/icons/expand.png);
 }
 
 #flip-menu .jstree-action.close {
-    background-image: url('../../../images/icons/close.png');
+    background-image: url(../../../images/icons/close.png);
 }
 
 #multiple-actions {
@@ -281,6 +281,29 @@ h1{ font-size: 20px }
 
 #site-tree .lastupdate {
     right: 10px;
+}
+
+#site-tree .lastupdate .date {
+    position: static;
+    float: left;
+    width: auto;
+}
+
+#site-tree .lastupdate .user.tp-trigger {
+    position: static;
+    float: left;
+    width: 14px !important;
+    padding: 0 0 0 5px;
+    background: url(../../../images/icons/icon-user.png) no-repeat right center;
+}
+
+*+html #site-tree .lastupdate .user.tp-trigger {
+    width: 0;
+    padding: 0 0 0 19px;
+}
+
+#site-tree .lastupdate .user.tp-value {
+    display: none;
 }
 
 #site-tree .actions {
@@ -456,12 +479,12 @@ h1{ font-size: 20px }
 #site-tree .publishing {
     width: 13px;
     height: 14px;
-    background-image: url('../images/publishing_unlocked.png');
+    background-image: url(../images/publishing_unlocked.png);
     background-position: -34px -5px;
     margin-top: 8px;
 }
 #site-tree .publishing.locked {
-    background-image: url('../images/publishing_locked.png');
+    background-image: url(../images/publishing_locked.png);
     background-position: -33px -4px;
 }
 #site-tree .publishing.draft {
