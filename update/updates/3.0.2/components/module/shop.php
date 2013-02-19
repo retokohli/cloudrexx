@@ -450,7 +450,7 @@ function _shopUpdate()
                     'code' => array('type' => 'CHAR(3)', 'notnull' => true, 'default' => ''),
                     'symbol' => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
                     'name' => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
-                    'rate' => array('type' => 'DECIMAL(10,6)', 'unsigned' => true, 'notnull' => true, 'default' => '1.000000'),
+                    'rate' => array('type' => 'DECIMAL(10,4)', 'unsigned' => true, 'notnull' => true, 'default' => '1.0000'),
                     'sort_order' => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                     'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
                     'is_default' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
@@ -641,7 +641,6 @@ function _shopUpdate()
                     'company_url' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
                     'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => false, 'default' => '1'),
                     'picture' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
-                    'text' => array('type' => 'TEXT'),
                 )
             );
         }
@@ -2283,7 +2282,7 @@ function _shopInstall()
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'code' => array('type' => 'CHAR(3)', 'notnull' => true, 'default' => '', 'after' => 'id'),
                 'symbol' => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'code'),
-                'rate' => array('type' => 'DECIMAL(10,6)', 'unsigned' => true, 'notnull' => true, 'default' => '1.000000', 'after' => 'symbol'),
+                'rate' => array('type' => 'DECIMAL(10,4)', 'unsigned' => true, 'notnull' => true, 'default' => '1.0000', 'after' => 'symbol'),
                 'ord' => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'rate'),
                 'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'ord'),
                 'default' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'active'),
@@ -2631,25 +2630,24 @@ function _shopInstall()
                 'company_url' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'description'),
                 'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1', 'after' => 'company_url'),
                 'picture' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'status'),
-                'text' => array('type' => 'text', 'after' => 'picture'),
             ),
             null,
             'MyISAM',
             'cx3upgrade'
         );
         \Cx\Lib\UpdateUtil::sql("
-            INSERT INTO `".DBPREFIX."module_shop_payment_processors` (`id`, `type`, `name`, `description`, `company_url`, `status`, `picture`, `text`)
-            VALUES  (1, 'external', 'Saferpay', 'Saferpay is a comprehensive Internet payment platform, specially developed for commercial applications. It provides a guarantee of secure payment processes over the Internet for merchants as well as for cardholders. Merchants benefit from the easy integration of the payment method into their e-commerce platform, and from the modularity with which they can take account of current and future requirements. Cardholders benefit from the security of buying from any shop that uses Saferpay.', 'http://www.saferpay.com/', 1, 'logo_saferpay.gif', ''),
-                    (2, 'external', 'Paypal', 'With more than 40 million member accounts in over 45 countries worldwide, PayPal is the world''s largest online payment service. PayPal makes sending money as easy as sending email! Any PayPal member can instantly and securely send money to anyone in the U.S. with an email address. PayPal can also be used on a web-enabled cell phone. In the future, PayPal will be available to use on web-enabled pagers and other handheld devices.', 'http://www.paypal.com/', 1, 'logo_paypal.gif', ''),
-                    (3, 'external', 'yellowpay', 'PostFinance vereinfacht das Inkasso im Online-Shop.', 'http://www.postfinance.ch/', 1, 'logo_postfinance.gif', ''),
-                    (4, 'internal', 'Internal', 'Internal no forms', '', 1, '', ''),
-                    (5, 'internal', 'Internal_CreditCard', 'Internal with a Credit Card form', '', 1, '', ''),
-                    (6, 'internal', 'Internal_Debit', 'Internal with a Bank Debit Form', '', 1, '', ''),
-                    (7, 'external', 'Saferpay_Mastercard_Multipay_CAR', 'Saferpay is a comprehensive Internet payment platform, specially developed for commercial applications. It provides a guarantee of secure payment processes over the Internet for merchants as well as for cardholders. Merchants benefit from the easy integration of the payment method into their e-commerce platform, and from the modularity with which they can take account of current and future requirements. Cardholders benefit from the security of buying from any shop that uses Saferpay.', 'http://www.saferpay.com/', 1, 'logo_saferpay.gif', ''),
-                    (8, 'external', 'Saferpay_Visa_Multipay_CAR', 'Saferpay is a comprehensive Internet payment platform, specially developed for commercial applications. It provides a guarantee of secure payment processes over the Internet for merchants as well as for cardholders. Merchants benefit from the easy integration of the payment method into their e-commerce platform, and from the modularity with which they can take account of current and future requirements. Cardholders benefit from the security of buying from any shop that uses Saferpay.', 'http://www.saferpay.com/', 1, 'logo_saferpay.gif', ''),
-                    (9, 'internal', 'Internal_LSV', 'LSV with internal form', '', 1, '', ''),
-                    (10, 'external', 'Datatrans', 'Die professionelle und komplette Payment-Lösung - all inclusive. Ein einziges Interface für sämtliche Zahlungsmethoden (Kreditkarten, Postcard, Kundenkarten). Mit variablem Angebot für unterschiedliche Kundenbedürfnisse.', 'http://datatrans.biz/', 1, 'logo_datatrans.gif', ''),
-                    (11, 'external', 'mobilesolutions', 'PostFinance Mobile', 'https://postfinance.mobilesolutions.ch/', 1, 'logo_postfinance_mobile.gif', '')
+            INSERT INTO `".DBPREFIX."module_shop_payment_processors` (`id`, `type`, `name`, `description`, `company_url`, `status`, `picture`)
+            VALUES  (1, 'external', 'Saferpay', 'Saferpay is a comprehensive Internet payment platform, specially developed for commercial applications. It provides a guarantee of secure payment processes over the Internet for merchants as well as for cardholders. Merchants benefit from the easy integration of the payment method into their e-commerce platform, and from the modularity with which they can take account of current and future requirements. Cardholders benefit from the security of buying from any shop that uses Saferpay.', 'http://www.saferpay.com/', 1, 'logo_saferpay.gif'),
+                    (2, 'external', 'Paypal', 'With more than 40 million member accounts in over 45 countries worldwide, PayPal is the world''s largest online payment service. PayPal makes sending money as easy as sending email! Any PayPal member can instantly and securely send money to anyone in the U.S. with an email address. PayPal can also be used on a web-enabled cell phone. In the future, PayPal will be available to use on web-enabled pagers and other handheld devices.', 'http://www.paypal.com/', 1, 'logo_paypal.gif'),
+                    (3, 'external', 'yellowpay', 'PostFinance vereinfacht das Inkasso im Online-Shop.', 'http://www.postfinance.ch/', 1, 'logo_postfinance.gif'),
+                    (4, 'internal', 'Internal', 'Internal no forms', '', 1, ''),
+                    (5, 'internal', 'Internal_CreditCard', 'Internal with a Credit Card form', '', 1, ''),
+                    (6, 'internal', 'Internal_Debit', 'Internal with a Bank Debit Form', '', 1, ''),
+                    (7, 'external', 'Saferpay_Mastercard_Multipay_CAR', 'Saferpay is a comprehensive Internet payment platform, specially developed for commercial applications. It provides a guarantee of secure payment processes over the Internet for merchants as well as for cardholders. Merchants benefit from the easy integration of the payment method into their e-commerce platform, and from the modularity with which they can take account of current and future requirements. Cardholders benefit from the security of buying from any shop that uses Saferpay.', 'http://www.saferpay.com/', 1, 'logo_saferpay.gif'),
+                    (8, 'external', 'Saferpay_Visa_Multipay_CAR', 'Saferpay is a comprehensive Internet payment platform, specially developed for commercial applications. It provides a guarantee of secure payment processes over the Internet for merchants as well as for cardholders. Merchants benefit from the easy integration of the payment method into their e-commerce platform, and from the modularity with which they can take account of current and future requirements. Cardholders benefit from the security of buying from any shop that uses Saferpay.', 'http://www.saferpay.com/', 1, 'logo_saferpay.gif'),
+                    (9, 'internal', 'Internal_LSV', 'LSV with internal form', '', 1, ''),
+                    (10, 'external', 'Datatrans', 'Die professionelle und komplette Payment-Lösung - all inclusive. Ein einziges Interface für sämtliche Zahlungsmethoden (Kreditkarten, Postcard, Kundenkarten). Mit variablem Angebot für unterschiedliche Kundenbedürfnisse.', 'http://datatrans.biz/', 1, 'logo_datatrans.gif'),
+                    (11, 'external', 'mobilesolutions', 'PostFinance Mobile', 'https://postfinance.mobilesolutions.ch/', 1, 'logo_postfinance_mobile.gif')
             ON DUPLICATE KEY UPDATE `id` = `id`
         ");
 

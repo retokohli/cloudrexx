@@ -282,7 +282,7 @@ function _egovInstall()
                 'calendar_product'       => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'calendar_id'),
                 'calendar_order'         => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'calendar_product'),
                 'calendar_day'           => array('type' => 'INT(2)', 'notnull' => true, 'default' => '0', 'after' => 'calendar_order'),
-                'calendar_month'         => array('type' => 'INT(2)', 'unsigned' => true, 'after' => 'calendar_day'),
+                'calendar_month'         => array('type' => 'INT(2)', 'unsigned' => true, 'default' => '00', 'after' => 'calendar_day'),
                 'calendar_year'          => array('type' => 'INT(4)', 'notnull' => true, 'default' => '0', 'after' => 'calendar_month'),
                 'calendar_act'           => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'calendar_year')
             ),
