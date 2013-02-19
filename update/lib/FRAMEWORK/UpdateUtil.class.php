@@ -318,6 +318,7 @@ class UpdateUtil
         $default = isset($spec['default']) ? $spec['default'] : (isset($spec['default_expr']) ? $spec['default_expr'] : '');
         if ($type != strtolower($spec['type'])
             || $col_spec->unsigned != (isset($spec['unsigned']) && $spec['unsigned'])
+            || $col_spec->zerofill != (isset($spec['zerofill']) && $spec['zerofill'])
             || $col_spec->not_null != (!isset($spec['notnull']) || $spec['notnull'])
             || $col_spec->has_default != (isset($spec['default']) || isset($spec['default_expr']))
             || $col_spec->has_default && ($col_spec->default_value != $default)
@@ -451,6 +452,7 @@ class UpdateUtil
     private static function _colspec($spec, $create_tbl_operation=false)
     {
         $unsigned     = (array_key_exists('unsigned',       $spec)) ? $spec['unsigned']       : false;
+        $zerofill     = (array_key_exists('zerofill',       $spec)) ? $spec['zerofill']       : false;
         $notnull      = (array_key_exists('notnull',        $spec)) ? $spec['notnull']        : true;
         $autoinc      = (array_key_exists('auto_increment', $spec)) ? $spec['auto_increment'] : false;
         $default_expr = (array_key_exists('default_expr',   $spec)) ? $spec['default_expr']   : '';
@@ -481,6 +483,7 @@ class UpdateUtil
         $descr  = $spec['type'];
         $descr .= $binary ? " BINARY" : '';
         $descr .= $unsigned ? " unsigned"      : '';
+        $descr .= $zerofill ? " zerofill"      : '';
         $descr .= $notnull ? " NOT NULL"       : ' NULL';
         $descr .= $autoinc ? " auto_increment" : '';
         $descr .= $default_st;
