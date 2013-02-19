@@ -26,6 +26,8 @@ if ($objResultRc1->fields['target'] != '_blank') {
     $version = 'stable';
 } elseif ($_CONFIG['coreCmsVersion'] == '3.0.0.1') {
     $version = 'hotfix';
+} elseif ($_CONFIG['coreCmsVersion'] == '3.0.1') {
+    $version = 'sp1';
 } else {
     // nothing to do
     return true;
@@ -234,7 +236,7 @@ $updatesRc2ToStable = array(
 $updatesStableToHotfix = array(
     'UPDATE `'.DBPREFIX.'content_page` SET `customContent` = \'\' WHERE `customContent` = \'(Default)\'',
 );
-$updatesHotfixToSp = array(
+$updatesHotfixToSp1 = array(
     array(
         'table' => DBPREFIX.'module_block_rel_lang_content',
         'structure' => array(
@@ -415,22 +417,79 @@ $updatesHotfixToSp = array(
     '
         DROP TABLE IF EXISTS `'.DBPREFIX.'module_shop_products_downloads`
     ',
+);
+
+$updatesSp1ToSp2 = array(
+    '
+        INSERT INTO `'.DBPREFIX.'access_settings` (`key`, `value`, `status`) VALUES
+        (\'sociallogin\', \'\', 0),
+        (\'sociallogin_active_automatically\', \'\', 1),
+        (\'sociallogin_assign_to_groups\', \'3\', 0),
+        (\'sociallogin_show_signup\', \'\', 0),
+        (\'use_usernames\', \'0\', 0)
+    ',
+    array(
+        'table' => DBPREFIX.'access_users',
+        'structure' => array(
+            'id'                     => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'is_admin'               => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'id'),
+            'username'               => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'is_admin'),
+            'password'               => array('type' => 'VARCHAR(32)', 'notnull' => false, 'after' => 'username'),
+            'regdate'                => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'password'),
+            'expiration'             => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'regdate'),
+            'validity'               => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'expiration'),
+            'last_auth'              => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'validity'),
+            'last_auth_status'       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '1', 'after' => 'last_auth'),
+            'last_activity'          => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'last_auth_status'),
+            'email'                  => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'last_activity'),
+            'email_access'           => array('type' => 'ENUM(\'everyone\',\'members_only\',\'nobody\')', 'notnull' => true, 'default' => 'nobody', 'after' => 'email'),
+            'frontend_lang_id'       => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'email_access'),
+            'backend_lang_id'        => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'frontend_lang_id'),
+            'active'                 => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'backend_lang_id'),
+            'primary_group'          => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'active'),
+            'profile_access'         => array('type' => 'ENUM(\'everyone\',\'members_only\',\'nobody\')', 'notnull' => true, 'default' => 'members_only', 'after' => 'primary_group'),
+            'restore_key'            => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => '', 'after' => 'profile_access'),
+            'restore_key_time'       => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'restore_key'),
+            'u2u_active'             => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '1', 'after' => 'restore_key_time'),
+        ),
+        'keys' => array(
+            'username'               => array('fields' => array('username'))
+        ),
+    ),
+    '
+        INSERT INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES
+        (\'access\', \'providers\', \'sociallogin\', \'text\', \'{"facebook":{"active":"0","settings":["",""]},"twitter":{"active":"0","settings":["",""]},"google":{"active":"0","settings":["","",""]}}\', \'\', 0)
+    ',
+    array(
+        'table' => DBPREFIX.'module_knowledge_tags_articles',
+        'structure' => array(
+            'article'    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+            'tag'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'article'),
+        ),
+        'keys' => array(
+            'article'    => array('fields' => array('article','tag'), 'type' => 'UNIQUE'),
+        )
+    ),
     'UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'3.0.2\' WHERE `setname` = \'coreCmsVersion\'',
 );
-$updatesRc1ToSp = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp);
-$updatesRc2ToSp = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp);
-$updatesStableToSp = array_merge($updatesStableToHotfix, $updatesHotfixToSp);
 
+$updatesRc1ToSp2    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2);
+$updatesRc2ToSp2    = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2);
+$updatesStableToSp2 = array_merge($updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2);
+$updatesHotfixToSp2 = array_merge($updatesHotfixToSp1, $updatesSp1ToSp2);
 
 if ($version == 'rc1') {
-    $updates = $updatesRc1ToSp;
-} else if ($version == 'rc2') {
-    $updates = $updatesRc2ToSp;
-} else if ($version == 'stable') {
-    $updates = $updatesStableToSp;
+    $updates = $updatesRc1ToSp2;
+} elseif ($version == 'rc2') {
+    $updates = $updatesRc2ToSp2;
+} elseif ($version == 'stable') {
+    $updates = $updatesStableToSp2;
+} elseif ($version == 'hotfix') {
+    $updates = $updatesHotfixToSp2;
 } else {
-    $updates = $updatesHotfixToSp;
+    $updates = $updatesSp1ToSp2;
 }
+
 foreach ($updates as $update) {
     if (is_array($update)) {
         try {
