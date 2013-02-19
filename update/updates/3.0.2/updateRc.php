@@ -426,7 +426,7 @@ $updatesSp1ToSp2 = array(
         (\'sociallogin_active_automatically\', \'\', 1),
         (\'sociallogin_assign_to_groups\', \'3\', 0),
         (\'sociallogin_show_signup\', \'\', 0),
-        (\'use_usernames\', \'0\', 0)
+        (\'use_usernames\', \'0\', 1)
     ',
     array(
         'table' => DBPREFIX.'access_users',
