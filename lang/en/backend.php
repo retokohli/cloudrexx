@@ -1594,3 +1594,4 @@ $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP']  = "Customer groups";
 $_ARRAYLANG['TXT_TASKS']                    = "Task";
 $_ARRAYLANG['TXT_OPPORTUNITY']              = "Opportunity";
 $_ARRAYLANG['TXT_INTERFACE']                = "Interface";
+$_ARRAYLANG ['TXT_CRM_SETTINGS']            = "Settings";

@@ -13,6 +13,15 @@ function accessChangeGroupStatus(id)
 {
 	window.location.replace('index.php?cmd=access&{CSRF_PARAM}&act=group&tpl=changeStatus&group_type_filter={ACCESS_GROUP_TYPE_FILTER}&sort={ACCESS_SORT_STATUS}&by={ACCESS_SORT_BY}&id='+id);
 }
+function changeCheckboxesById(formId, inputClass, do_check)
+{    
+   if (do_check) {
+       $J('#'+formId+' .'+inputClass).attr('checked', 'checked');
+   } else {
+    $J('#'+formId+' .'+inputClass).removeAttr('checked');
+   }
+   
+}
 // ]]>
 </script>
 {ACCESS_GROUP_TYPE_MENU}
@@ -21,6 +30,11 @@ function accessChangeGroupStatus(id)
 <div style="text-align: right; margin-bottom: 2px;">
 
 </div>
+<ul id="tabmenu">
+    <li><a id="Entries_general" class="active" href="javascript:{}" onclick="selectTab('general')" title="{TXT_ACCESS_GENERAL}">{TXT_ACCESS_GENERAL}</a></li>
+    <li><a id="Entries_permissions" href="javascript:{}" onclick="selectTab('permissions')" title="{TXT_ACCESS_PERMISSIONS}">{TXT_ACCESS_PERMISSIONS}</a></li>
+</ul>
+<div id="general" class="Entries">
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
 	<thead style="wihte-space: nowrap;">
 		<tr>
@@ -61,4 +75,50 @@ function accessChangeGroupStatus(id)
 </table>
 <br />
 {ACCESS_GROUP_PAGING}
+</div>
+<div id="permissions" class="Entries" style="display: none;">    
+    <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+        <tr>
+            <th>{TXT_ACCESS_PERMISSIONS}</th>
+        </tr>
+    </table>
+    <br/>
+    <ul class="tabmenu">
+        <!-- BEGIN backend_area_level_1 -->
+        <li><a class="{ACCESS_BACKEND_MENU_CLASS}" id="backendArea_tab{ACCESS_BACKEND_AREA_ID}" onclick="selectTab('tab{ACCESS_BACKEND_AREA_ID}')" href="javascript:void(0)">{ACCESS_BACKEND_AREA_NAME}</a></li>
+        <!-- END backend_area_level_1 -->
+    </ul>
+    
+    <!-- BEGIN backend_area_submenu -->
+    <div id="tab{ACCESS_BACKEND_AREA_ID}" class="backendArea" style="display: {ACCESS_BACKEND_MENU_DISPLAY};">
+        <form name="access_backend_area_{ACCESS_BACKEND_AREA_ID}" id="access_backend_area_{ACCESS_BACKEND_AREA_ID}" action="" method="post">
+            <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+                <tr class="row3">
+                    <td width="1%">
+                        <input type="hidden" name="backendArea[{ACCESS_BACKEND_AREA_ID}]" value="0" />
+                        <input type="checkbox" class="backendAreaInput" name="backendArea[{ACCESS_BACKEND_AREA_ID}]" {ACCESS_BACKEND_AREA_CHECKED} value="1" />                        
+                    </td>
+                    <td>{ACCESS_BACKEND_AREA_NAME}&nbsp;[{ACCESS_BACKEND_AREA_ACCESS_ID}]</td>
+                </tr>
+                <!-- BEGIN backend_area_submenus -->
+                <tr class="row1">
+                    <td>
+                        <input type="hidden" name="backendArea[{ACCESS_BACKEND_AREA_ID}]" value="0" />
+                        <input type="checkbox" class="backendAreaInput" name="backendArea[{ACCESS_BACKEND_AREA_ID}]" {ACCESS_BACKEND_SUBMENU_CHECKED} value="1" />
+                    </td>
+                    <td>&nbsp;&nbsp;&nbsp;&nbsp;{ACCESS_BACKEND_AREA_SUBMENU_NAME}&nbsp;[{ACCESS_BACKEND_SUBMENU_ACCESS_ID}]</td>
+                </tr>
+                <!-- END backend_area_submenus -->
+            </table>        
+            <img src="images/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
+            <a href="javascript:void(0);" onclick="changeCheckboxesById('access_backend_area_{ACCESS_BACKEND_AREA_ID}','backendAreaInput',true); return false;" title="{TXT_ACCESS_CHECK_ALL}">{TXT_ACCESS_CHECK_ALL}</a> /
+            <a href="javascript:void(0);" onclick="changeCheckboxesById('access_backend_area_{ACCESS_BACKEND_AREA_ID}','backendAreaInput',false); return false;" title="{TXT_ACCESS_UNCHECK_ALL}">{TXT_ACCESS_UNCHECK_ALL}</a>
+            <br>
+            <br>
+            <input type="button" onClick="window.location.reload();" value="{TXT_ACCESS_CANCEL}" />&nbsp;&nbsp;
+            <input type="submit" value="{TXT_ACCESS_SAVE}" />&nbsp;&nbsp;
+        </form>
+    </div>
+    <!-- END backend_area_submenu -->    
+</div>
 <!-- end module_access_group_list.html -->
