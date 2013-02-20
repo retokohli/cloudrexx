@@ -1590,9 +1590,9 @@ $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "The file extension is not allow
 
 $_ARRAYLANG['TXT_CRM_MODULE'] = "CRM";
 $_ARRAYLANG['TXT_CRM'] = 'CRM';
-$_ARRAYLANG['TXT_CUSTOMERS']                = "Customers";
+$_ARRAYLANG['TXT_CRM_CUSTOMERS']            = "Customers";
 $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP']  = "Customer groups";
-$_ARRAYLANG['TXT_TASKS']                    = "Task";
-$_ARRAYLANG['TXT_OPPORTUNITY']              = "Opportunity";
-$_ARRAYLANG['TXT_INTERFACE']                = "Interface";
-$_ARRAYLANG ['TXT_CRM_SETTINGS']            = "Settings";
+$_ARRAYLANG['TXT_CRM_TASKS']                = "Task";
+$_ARRAYLANG['TXT_CRM_OPPORTUNITY']          = "Opportunity";
+$_ARRAYLANG['TXT_CRM_INTERFACE']            = "Interface";
+$_ARRAYLANG['TXT_CRM_SETTINGS']            = "Settings";
