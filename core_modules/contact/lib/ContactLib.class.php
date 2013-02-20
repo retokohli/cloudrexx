@@ -1339,14 +1339,23 @@ function checkAllFields() {
         } else if (type == 'checkbox') {
             if (!isRequiredCheckbox(fields[field][1], field)) {
                 isOk = false;
+                \$J('#contactFormFieldId_'+field).css('outline', '1px solid red');
+            } else {
+                \$J('#contactFormFieldId_'+field).css('outline', '');
             }
         } else if (type == 'checkboxGroup') {
             if (!isRequiredCheckBoxGroup(fields[field][1], field)) {
                 isOk = false;
+                \$J('#contactFormFieldId_'+field).css('outline', '1px solid red');
+            } else {
+                \$J('#contactFormFieldId_'+field).css('outline', '');
             }
         } else if (type == 'radio') {
             if (!isRequiredRadio(fields[field][1], field)) {
                 isOk = false;
+                \$J('#contactFormFieldId_'+field).css('outline', '1px solid red');
+            } else {
+                \$J('#contactFormFieldId_'+field).css('outline', '');
             }
         } else if (type == 'file') {
             var required = fields[field][1];
