@@ -438,7 +438,7 @@ class CRM extends CrmLibrary {
                         'CRM_COMMENT_DATE'          => contrexx_raw2xhtml($objComment->fields['date']),
                         'CRM_NOTES_TYPE'            => contrexx_raw2xhtml($objComment->fields['notes']),
                         'CRM_NOTES_TYPE_ID'         => intval($objComment->fields['notes_type_id']),
-                        'TXT_COMMENT_DESCRIPTION'   => html_entity_decode($objComment->fields['comment'], ENT_QUOTES, CONTREXX_CHARSET),
+                        'TXT_COMMENT_DESCRIPTION'   => $this->strip_only_tags($objComment->fields['comment'], '<script><iframe>', $stripContent=false),
                         'TXT_IMAGE_EDIT'            => $_ARRAYLANG['TXT_IMAGE_EDIT'],
                         'TXT_IMAGE_DELETE'          => $_ARRAYLANG['TXT_IMAGE_DELETE'],
                         'ENTRY_ROWCLASS'            => $row = ($row == 'row1') ? 'row2' : 'row1',
@@ -2668,9 +2668,7 @@ END;
         $noteTypeId     = isset($_POST['notes_type']) ? (int) $_POST['notes_type'] : 0;
         $noteDate       = isset($_POST['date']) ? contrexx_input2raw($_POST['date']) : date('Y-m-d');
         
-        $description    = html_entity_decode($_POST['customer_comment'], ENT_QUOTES, CONTREXX_CHARSET);
-        $description    = $this->strip_only_tags($description, '<script><iframe>', $stripContent=false);
-        $description    = htmlspecialchars($description);
+        $description    = isset($_POST['customer_comment']) ? $_POST['customer_comment'] : '';
         
         $userid     = $objFWUser->objUser->getId();
 
@@ -2744,7 +2742,7 @@ END;
                 'CRM_NOTES_TYPE'            => ($noteTypeId) ? contrexx_raw2xhtml($noteType) : $_ARRAYLANG['TXT_TASK_SELECTNOTES'],
                 'CRM_NOTES_DATE'            => contrexx_raw2xhtml($noteDate),
                 'CRM_CUSTOMER_ID'           => $customerId,
-                'CRM_COMMENT_DESCRIPTION'   =>  new \Cx\Core\Wysiwyg\Wysiwyg('customer_comment', html_entity_decode($description, ENT_QUOTES, CONTREXX_CHARSET),'pm_fullpage')
+                'CRM_COMMENT_DESCRIPTION'   =>  new \Cx\Core\Wysiwyg\Wysiwyg('customer_comment', contrexx_raw2xhtml($description),'pm_fullpage')
             ));
         } else {
             $this->_strErrMessage = "Customer should not be empty";
@@ -3821,8 +3819,7 @@ END;
         $customer    = isset($_REQUEST['customerId']) ? (int) $_REQUEST['customerId'] : '';
         $duedate     = isset($_POST['date']) ? $_POST['date'] : $date;
         $assignedto  = isset($_POST['assignedto']) ? intval($_POST['assignedto']) : $objFWUser->objUser->getId();
-        $description = html_entity_decode($_POST['description'], ENT_QUOTES, CONTREXX_CHARSET);
-        $description = $this->strip_only_tags($description, '<script><iframe>', $stripContent=false);
+        $description = isset($_POST['description']) ? contrexx_input2raw($_POST['description']) : '';
         $taskAutoId  = isset($_POST['taskAutoId']) ? contrexx_input2raw($_POST['taskAutoId']) : "";
         $id          = isset($_REQUEST['id'])? (int) $_REQUEST['id']:'';
 
@@ -3849,7 +3846,7 @@ END;
                                    `customer_id` = '$customer',
                                    `due_date`      = '$duedate',
                                    `assigned_to`   = '$assignedto',
-                                   `description`   = '".contrexx_input2db(htmlspecialchars($description))."'
+                                   `description`   = '".contrexx_raw2db($description)."'
                                     WHERE id= '$id'";
                 $message = 'Updated';
                 $typefilter = !empty($taskId)? "&searchType=$taskId":'';
@@ -3862,7 +3859,7 @@ END;
                                        `customer_id` = '$customer',
                                        `due_date`      = '$duedate',
                                        `assigned_to`   = '$assignedto',
-                                       `description`   = '".contrexx_input2db(htmlspecialchars($description))."'
+                                       `description`   = '".contrexx_raw2db($description)."'
                                        ";
                 $message = 'Inserted';
             }
@@ -3918,8 +3915,6 @@ END;
 
         $this->taskTypeDropDown($objtpl, $type);
 
-        $description= html_entity_decode($description, ENT_QUOTES, CONTREXX_CHARSET);
-
         if (!empty($customer)) {
             // Get customer Name
             $objCustomer = $objDatabase->Execute("SELECT customer_name, contact_familyname  FROM `".DBPREFIX."module_crm_contacts` WHERE id = {$customer}");
@@ -3933,7 +3928,7 @@ END;
                 'CRM_DUE_DATE'          => contrexx_raw2xhtml($duedate),
                 'CRM_CUSTOMER_ID'       => intval($customer),
                 'CRM_CUSTOMER_NAME'     => contrexx_raw2xhtml($customerName),                
-                'CRM_TASK_DESC'         => new \Cx\Core\Wysiwyg\Wysiwyg('description', $description, 'pm_small'),
+                'CRM_TASK_DESC'         => new \Cx\Core\Wysiwyg\Wysiwyg('description', contrexx_raw2xhtml($description), 'pm_small'),
 
                 'TXT_CRM_ADD_TASK'        => empty($id)? $_ARRAYLANG['TXT_CRM_ADD_TASK'] : $_ARRAYLANG['TXT_EDITTASK'],
                 'TXT_TASK_ID'             => $_ARRAYLANG['TXT_TASK_ID'],
@@ -4836,7 +4831,7 @@ END;
             $objPmLib->getProjectPriorityDropdown($objTpl, $projectFileds['priority']);
 
             $objTpl->setvariable(array(
-                    'PROJECT_BILLING_INFO'              => new \Cx\Core\Wysiwyg\Wysiwyg('billing_info', html_entity_decode($projectFileds['bill_info'], ENT_QUOTES, CONTREXX_CHARSET), 'pm_fullpage'),
+                    'PROJECT_BILLING_INFO'              => new \Cx\Core\Wysiwyg\Wysiwyg('billing_info', contrexx_raw2xhtml($projectFileds['bill_info']), 'pm_fullpage'),
                     'PROJECT_INVOICETYPE_PROJECT'       => ($projectFileds['invoice_type'] == 3) ? 'checked=checked' : '',
                     'PROJECT_INVOICETYPE_COLLECTIVE'    => ($projectFileds['invoice_type'] == 2) ? 'checked=checked' : '',
                     'PROJECT_INVOICETYPE_INTERNAL'      => ($projectFileds['invoice_type'] == 1) ? 'checked=checked' : '',
@@ -4892,7 +4887,7 @@ END;
                 'CRM_DEALS_QUOTED_PRICE'        => contrexx_raw2xhtml($fields['quoted_price']),
                 'DEALS_DUE_DATE'                => contrexx_raw2xhtml($fields['due_date']),
                 'CRM_REDIRECT_LINK'             => $redirect,
-                'CRM_DEALS_DESCRIPTION'         => new \Cx\Core\Wysiwyg\Wysiwyg('description', html_entity_decode($fields['description'], ENT_QUOTES, CONTREXX_CHARSET), 'pm_small'),
+                'CRM_DEALS_DESCRIPTION'         => new \Cx\Core\Wysiwyg\Wysiwyg('description', contrexx_raw2xhtml($fields['description']), 'pm_small'),
                 'TXT_CRM_DEALS_TITLE'           => $_ARRAYLANG['TXT_CRM_DEALS_TITLE'],
                 'TXT_SELECT_MEMBER_NAME'        => $_ARRAYLANG['TXT_SELECT_MEMBER_NAME'],
                 'CRM_MODIFY_DEAL_DESCRIPTION'   => $_ARRAYLANG['TXT_DESCRIPTION'],
