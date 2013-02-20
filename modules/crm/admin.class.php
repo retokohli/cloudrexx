@@ -198,6 +198,9 @@ class CRM extends CrmLibrary {
             case 'customerTypeChangeStatus':
                 $this->customerTypeChangeStatus();
                 break;
+            case 'mailtemplate_overview':
+            case 'mailtemplate_edit':
+                $_GET['tpl'] = 'mail';
             case 'settings':
                 Permission::checkAccess($this->adminAccessId, 'static');
                 $this->settingsSubmenu();                
@@ -1425,6 +1428,9 @@ END;
             case 'tasktypes':
                 $this->settingsController->taskTypesoverview();
                 break;
+            case 'mail':
+                $this->settingsController->mailTemplates();
+                break;
             case 'industry':
                 $this->showIndustry();
                 break;
@@ -1444,6 +1450,7 @@ END;
                 'TXT_SUCCESS_RATE'               => $_ARRAYLANG['TXT_SUCCESS_RATE'],
                 'TXT_CRM_DEALS_STAGES'           => $_ARRAYLANG['TXT_CRM_DEALS_STAGES'],
                 'TXT_CRM_CUSTOMER_INDUSTRY'      => $_ARRAYLANG['TXT_CRM_CUSTOMER_INDUSTRY'],
+                'TXT_CRM_MAIL_TEMPLATE'          => $_ARRAYLANG['TXT_CRM_MAIL_TEMPLATE'],
                 strtoupper($tpl)."_ACTIVE"       => 'active'
         ));
     }

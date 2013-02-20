@@ -835,4 +835,50 @@ class Settings extends CrmLibrary
         if (!$this->isPmInstalled)
             $objTpl->hideBlock('allowPmModule');
     }
+
+    /**
+     * settings for mail tempalte design
+     *
+     * @global <type> $objDatabase
+     * @global <type> $_ARRAYLANG
+     * @return true
+     */
+    function mailTemplates()
+    {
+        global $_CORELANG;
+        
+        $_REQUEST['active_tab'] = 1;
+        if (   isset($_REQUEST['act'])
+            && $_REQUEST['act'] == 'mailtemplate_edit') {
+            $_REQUEST['active_tab'] = 2;
+        }
+        
+        // If there is anything to be stored, and if that fails, return to
+        // the edit view in order to save the posted form content
+        $result_store = MailTemplate::storeFromPost('crm');
+        if ($result_store === false) {
+            $_REQUEST['active_tab'] = 2;
+        }
+        $objTemplate = null;
+        $result &= SettingDb::show_external(
+            $objTemplate,
+            $_CORELANG['TXT_CORE_MAILTEMPLATES'],
+            MailTemplate::overview('crm', 'config',
+                SettingDb::getValue('numof_mailtemplate_per_page_backend')
+            )->get()
+        );
+        
+        $result &= SettingDb::show_external(
+            $objTemplate,
+            (empty($_REQUEST['key'])
+              ? $_CORELANG['TXT_CORE_MAILTEMPLATE_ADD']
+              : $_CORELANG['TXT_CORE_MAILTEMPLATE_EDIT']),
+            MailTemplate::edit('crm')->get()
+        );
+        
+        $this->_objTpl->addBlock('CRM_MAIL_SETTINGS_FILE',
+            'settings_block', $objTemplate->get());
+        $this->_objTpl->touchBlock('settings_block');
+        
+    }
 }
