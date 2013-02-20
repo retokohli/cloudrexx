@@ -82,7 +82,7 @@ function executeContrexxUpdate() {
             DBG::msg('Check inactive content languages');
             $arrMigrateLangIds = $contentMigration->getActiveContentLanguageIds();
 
-            if (!isset($_POST['migrateLangIds'])) {
+            if (!isset($_POST['skipMigrateLangIds'])) {
                 $result = $contentMigration->getInactiveContentLanguageCheckboxes();
 
                 if (!empty($result)) {
@@ -95,7 +95,7 @@ function executeContrexxUpdate() {
                         <b>Achtung:</b><br />
                         Die Inhaltsseiten der inaktive Sprache(n), welche Sie nicht ausgewählt haben, werden gelöscht.
                     ', 'msg');
-                    setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
+                    setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" /><input type="hidden" name="skipMigrateLangIds" id="skipMigrateLangIds" />', 'button');
                     return false;
                 }
             } else {
