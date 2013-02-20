@@ -247,7 +247,7 @@ class Contact extends ContactLib
                 $fieldType = ($arrField['type'] != 'special') ? $arrField['type'] : $arrField['special_type'];
                 switch ($fieldType) {
                     case 'checkbox':
-                        if ($arrField['lang'][$_LANGID]['value'] == 1) {
+                        if ($arrField['lang'][$_LANGID]['value'] == 1 || $_POST['contactFormField_' . $fieldId] == 1) {
                             $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'checked="checked"');
                         }
                         break;

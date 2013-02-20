@@ -2355,6 +2355,7 @@ class ContactManager extends ContactLib
             $content = $this->_getSourceCode($formId, $langId);
 
             $page->setContent($content);
+            $page->setSourceMode(true);
 
             $this->em->persist($page);
 
