@@ -1408,11 +1408,9 @@ JS_matchType;
 function isRequiredCheckbox(required, field) {
     if (required == 1) {
         if (!document.getElementsByName('contactFormField_' + field)[0].checked) {
-            document.getElementsByName('contactFormField_' + field)[0].style.border = "red 1px solid";
             return false;
         }
     }
-    document.getElementsByName('contactFormField_' + field)[0].style.borderColor = '';
 
     return true;
 }
@@ -1431,10 +1429,8 @@ function isRequiredCheckBoxGroup(required, field) {
             }
         }
         if (checked) {
-            setListBorder('contactFormField_' + field + '[]', false);
             return true;
         } else {
-            setListBorder('contactFormField_' + field + '[]', '1px red solid');
             return false;
         }
     } else {
@@ -1456,10 +1452,8 @@ function isRequiredRadio(required, field) {
             }
         }
         if (checked) {
-            setListBorder('contactFormField_' + field, false);
             return true;
         } else {
-            setListBorder('contactFormField_' + field, '1px red solid');
             return false;
         }
     } else {
@@ -1483,22 +1477,6 @@ function isRequiredSelect(required, field){
 }
 
 JS_isRequiredSelect;
-
-        // Sets the border attribute of a group of checkboxes or radiobuttons
-        $code .= <<<JS_setListBorder
-function setListBorder(field, borderColor) {
-    var boxes = document.getElementsByName(field);
-    for (var i = 0; i < boxes.length; i++) {
-        if (borderColor) {
-            boxes[i].style.border = borderColor;
-        } else {
-            boxes[i].style.borderColor = '';
-        }
-    }
-}
-
-
-JS_setListBorder;
 
         $code .= <<<JS_misc
 /* ]]> */
