@@ -536,7 +536,7 @@ switch ($plainCmd) {
         $objDatabaseManager->getPage();
         break;
     case 'stats':
-        Permission::checkAccess(19, 'static');
+        Permission::checkAccess(163, 'static');
         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/stats/admin.class.php'))
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_STATISTIC'];
