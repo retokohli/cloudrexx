@@ -363,10 +363,8 @@ class AccessManager extends AccessLib
      */
     function _groupList()
     {
-        global $_ARRAYLANG, $_CORELANG, $_CONFIG, $objDatabase;
+        global $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
-        JS::activate('jqueryui');
-        
         $arrLangs = FWLanguage::getLanguageArray();
 
         $this->_objTpl->addBlockfile('ACCESS_GROUP_TEMPLATE', 'module_access_group_list', 'module_access_group_list.html');
@@ -379,28 +377,11 @@ class AccessManager extends AccessLib
         $orderBy = !empty($_GET['by']) ? $_GET['by'] : 'group_name';
         $groupTypeFilter = isset($_GET['group_type_filter']) && !empty($_GET['group_type_filter']) && in_array($_GET['group_type_filter'], array('frontend', 'backend')) ? $_GET['group_type_filter'] : null;
 
-        if (isset($_POST['backendArea']) && !empty($_POST['backendArea'])) {
-            if (is_array($_POST['backendArea'])) {
-                foreach ($_POST['backendArea'] as $menuId => $value) {
-                    $objDatabase->Execute("UPDATE `".DBPREFIX."backend_areas` SET `is_active` = '".(int) $value."' WHERE `area_id` = '".(int) $menuId."'");
-                }
-                self::$arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_PERMISSIONS_UPDATE_SUCCESSFULLY'];
-            }
-        }
-        $this->_objTpl->setGlobalVariable(array(
-            'TXT_ACCESS_CHECK_ALL'      => $_ARRAYLANG['TXT_ACCESS_CHECK_ALL'],
-            'TXT_ACCESS_UNCHECK_ALL'    => $_ARRAYLANG['TXT_ACCESS_UNCHECK_ALL'],
-            'TXT_ACCESS_SAVE'           => $_ARRAYLANG['TXT_ACCESS_SAVE'],
-            'TXT_ACCESS_CANCEL'         => $_ARRAYLANG['TXT_ACCESS_CANCEL']
-            ));
-
         $this->_objTpl->setVariable(array(
             'TXT_ACCESS_GROUP_LIST' => $_ARRAYLANG['TXT_ACCESS_GROUP_LIST'],
             'TXT_ACCESS_USERS'          => $_ARRAYLANG['TXT_ACCESS_USERS'],
             'TXT_ACCESS_FUNCTIONS'      => $_ARRAYLANG['TXT_ACCESS_FUNCTIONS'],
-            'TXT_ACCESS_GENERAL'        => $_ARRAYLANG['TXT_ACCESS_GENERAL'],
-            'TXT_ACCESS_PERMISSIONS'    => $_ARRAYLANG['TXT_ACCESS_PERMISSIONS'],            
-            
+
             'TXT_ACCESS_CONFIRM_DELETE_GROUP'   => $_ARRAYLANG['TXT_ACCESS_CONFIRM_DELETE_GROUP'],
             'TXT_ACCESS_OPERATION_IRREVERSIBLE' => $_ARRAYLANG['TXT_ACCESS_OPERATION_IRREVERSIBLE'],
             'TXT_ACCESS_CHANGE_SORT_DIRECTION'  => $_ARRAYLANG['TXT_ACCESS_CHANGE_SORT_DIRECTION'],
@@ -466,101 +447,9 @@ class AccessManager extends AccessLib
             $this->_objTpl->setVariable('ACCESS_GROUP_PAGING', getPaging($objGroup->getGroupCount($filter), $limitOffset, '&amp;cmd=access&amp;act=group&amp;sort='.$orderDirection.'&amp;by='.$orderBy.'&amp;group_type_filter='.$groupTypeFilter, $_ARRAYLANG['TXT_ACCESS_GROUPS']));
         }
 
-        // permissions
-        $arrAreas     = $this->_getBackendAreas();
-        $backendAreas = array();
-        foreach ($arrAreas as $areaId => $arrArea) {
-            
-            if (
-                    in_array($arrArea['type'], array('group', 'navigation')) &&
-                    in_array($arrArea['scope'], array('global', 'backend'))
-               ) {
-                if (empty($arrArea['group_id'])) {
-                    $backendAreas[$areaId]            = $arrArea;
-                    $backendAreas[$areaId]['submenu'] = array();
-                } else {
-                    $backendAreas[$arrArea['group_id']]['submenu'][$areaId] = $arrArea;
-                }
-            }
-            
-        }
-
-        $firstMenu    = true;        
-        foreach ($backendAreas as $areaId => $backendArea) {
-
-            foreach ($backendArea['submenu'] as $submenuId => $value) {
-                $this->_objTpl->setVariable(array(
-                   'ACCESS_BACKEND_AREA_ID'           => (int) $submenuId,
-                   'ACCESS_BACKEND_SUBMENU_ACCESS_ID' => (int) $value['access_id'],
-                   'ACCESS_BACKEND_SUBMENU_CHECKED'   => $value['status'] ? 'checked="checked"' : '',
-                   'ACCESS_BACKEND_AREA_SUBMENU_NAME' => $_ARRAYLANG[$value['name']]
-                ));
-                $this->_objTpl->parse('backend_area_submenus');
-            }
-            $this->_objTpl->setVariable(array(
-                   'ACCESS_BACKEND_AREA_NAME'      => $_ARRAYLANG[$backendArea['name']],
-                   'ACCESS_BACKEND_AREA_ACCESS_ID' => (int) $backendArea['access_id'],
-                   'ACCESS_BACKEND_AREA_CHECKED'   => $backendArea['status'] ? 'checked="checked"' : '',
-                   'ACCESS_BACKEND_AREA_NAME'      => $_ARRAYLANG[$backendArea['name']],
-                   'ACCESS_BACKEND_AREA_ID'        => (int) $areaId,
-                   'ACCESS_BACKEND_MENU_DISPLAY'   => $firstMenu ? 'block' : 'none',
-                ));
-            $this->_objTpl->parse('backend_area_submenu');
-            
-            $this->_objTpl->setVariable(array(
-               'ACCESS_BACKEND_MENU_CLASS'  => $firstMenu ? 'active' : 'inactive',
-               'ACCESS_BACKEND_AREA_ID'     => (int) $areaId,
-               'ACCESS_BACKEND_AREA_NAME'   => $_ARRAYLANG[$backendArea['name']]
-            ));
-            $this->_objTpl->parse('backend_area_level_1');
-            $firstMenu = FALSE;
-        }
-
         $this->_objTpl->parse('module_access_group_list');
     }
 
-    /**
-     * Get backend menus
-     *
-     * This section is used to get backend menus
-     *
-     * @return array of backend menus
-     */
-    function _getBackendAreas()
-    {
-        global $objDatabase;
-
-        $objResult = $objDatabase->Execute("
-            SELECT
-                `area_id`,
-                `area_name`,
-                `access_id`,
-                `is_active`,
-                `type`,
-                `scope`,
-                `parent_area_id`
-            FROM `".DBPREFIX."backend_areas`
-            WHERE `access_id` != '0'
-            GROUP BY `area_name`
-            ORDER BY `parent_area_id`, `order_id`
-            ");
-        $arrAreas = array();
-        if ($objResult) {
-            while (!$objResult->EOF) {
-                $arrAreas[$objResult->fields['area_id']] = array(
-                    'name'      => $objResult->fields['area_name'],
-                    'access_id' => $objResult->fields['access_id'],
-                    'status'    => $objResult->fields['is_active'],
-                    'type'      => $objResult->fields['type'],
-                    'scope'     => $objResult->fields['scope'],
-                    'group_id'  => $objResult->fields['parent_area_id']                    
-                );
-                $objResult->MoveNext();
-            }
-        }
-
-        return $arrAreas;
-    }
 
     /**
      * Create Group Page
