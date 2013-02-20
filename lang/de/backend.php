@@ -1670,9 +1670,9 @@ $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "Die Dateiendung ist nicht erlau
 
 $_ARRAYLANG['TXT_CRM_MODULE'] = "CRM";
 $_ARRAYLANG['TXT_CRM'] = 'CRM';
-$_ARRAYLANG['TXT_CUSTOMERS']                = "Kontakte";
+$_ARRAYLANG['TXT_CRM_CUSTOMERS']                = "Kontakte";
 $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP']  = "Kundengruppen";
-$_ARRAYLANG ['TXT_TASKS']                   = "Aufgaben";
-$_ARRAYLANG['TXT_OPPORTUNITY']              = "Verkaufschancen";
-$_ARRAYLANG ['TXT_INTERFACE']               = "Interface";
-$_ARRAYLANG ['TXT_CRM_SETTINGS']            = "Einstellungen";
+$_ARRAYLANG['TXT_CRM_TASKS']                   = "Aufgaben";
+$_ARRAYLANG['TXT_CRM_OPPORTUNITY']              = "Verkaufschancen";
+$_ARRAYLANG['TXT_CRM_INTERFACE']               = "Interface";
+$_ARRAYLANG['TXT_CRM_SETTINGS']            = "Einstellungen";
