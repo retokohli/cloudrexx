@@ -1239,36 +1239,45 @@ class ContactLib
         return $arrEntries;
     }
 
-    function getFormEntry($id)
+    function getFormEntry($entryId)
     {
         global $objDatabase;
 
-        $arrEntry;
-        $objEntry = $objDatabase->SelectLimit("SELECT `id`, `id_lang`, `time`, `host`, `lang`, `ipaddress`, `id_form`
-                                               FROM ".DBPREFIX."module_contact_form_data
-                                               WHERE id=".$id, 1);
-
-
+        $arrEntry = null;
+        $objEntry = $objDatabase->SelectLimit('
+            SELECT `id`, `id_lang`, `time`, `host`, `lang`, `ipaddress`, `id_form`
+            FROM `'.DBPREFIX.'module_contact_form_data`
+            WHERE `id` = '.$entryId
+        , 1);
+    
         if ($objEntry !== false) {
-            $objResult = $objDatabase->SelectLimit("SELECT `id_field`, `formlabel`, `formvalue`
-                                                    FROM ".DBPREFIX."module_contact_form_submit_data
-                                                    WHERE id_entry=".$objEntry->fields['id']."
-                                                    ORDER BY id");
+            $formId = $objEntry->fields['id'];
+
+            $objResult = $objDatabase->SelectLimit('
+                SELECT `id_field`, `formlabel`, `formvalue`
+                FROM `'.DBPREFIX.'module_contact_form_submit_data`
+                WHERE `id_entry` = '.$objEntry->fields['id'].'
+                ORDER BY `id`
+            ');
 
             $fileFieldId = 0;
-            if(!$this->legacyMode) {
-                $formId = $objEntry->fields['id_form'];
-                $rs = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_contact_form_field WHERE type='file' AND id_form = ".$formId, 1);
-
-                if($rs !== false && !$rs->EOF) {
+            if (!$this->legacyMode) {
+                $rs = $objDatabase->SelectLimit('
+                    SELECT `id`
+                    FROM `'.DBPREFIX.'module_contact_form_field`
+                    WHERE (`type` = "file") AND (`id_form` = '.$formId.')'
+                , 1);
+                if (($rs !== false) && (!$rs->EOF)) {
                     $fileFieldId = $rs->fields['id'];
                 }
             }
 
             $arrData = array();
             while (!$objResult->EOF){
-                $data = $objResult->fields['formvalue'];
-                $arrData[$objResult->fields['id_field']] = $data;
+                $fieldId = $objResult->fields['id_field'];
+
+                $arrData[$fieldId]['label'] = $objResult->fields['formlabel'];
+                $arrData[$fieldId]['value'] = $objResult->fields['formvalue'];
 
                 $objResult->MoveNext();
             }

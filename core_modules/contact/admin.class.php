@@ -1950,67 +1950,66 @@ class ContactManager extends ContactLib
     function _getEntryDetails($arrEntry, $formId)
     {
         global $_ARRAYLANG;
-
+        
         $arrFormFields = $this->getFormFields($formId);
         $recipient     = $this->getRecipients($formId);
         $rowNr         = 0;
         $langId        = $arrEntry['langId'];
+        
+        $sourcecode .= '<table border="0" class="adminlist" cellpadding="3" cellspacing="0" width="100%">';
 
-        $sourcecode .= "<table border=\"0\" class=\"adminlist\" cellpadding=\"3\" cellspacing=\"0\" width=\"100%\">\n";
-        foreach ($arrFormFields as $key => $arrField) {
-            /*
-             * Fieldset and Horizontal Field Type need not be displayed in the details page
-             */
-            if (!in_array($arrField['type'], $this->nonValueFormFieldTypes)) {
-                $sourcecode .= "<tr class=".($rowNr % 2 == 0 ? 'row1' : 'row2').">\n
-                                    <td style=\"vertical-align:top;\" width=\"15%\">
-                                        <strong>".contrexx_raw2xhtml($arrField['lang'][FRONTEND_LANG_ID]['name']).($arrField['type'] == 'hidden' ? ' (hidden)' : '')."</strong>
-                                    </td>\n
-                                <td width=\"85%\">";
+        foreach ($arrEntry['data'] as $fieldId => $arrData) {
 
-                switch ($arrField['type']) {
-                    case 'checkbox':
-                        $sourcecode .= isset($arrEntry['data'][$key]) && $arrEntry['data'][$key] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO'];
-                        break;
+            if (isset($arrFormFields[$fieldId])) {
+                //fieldset and horizontal field type need not be displayed in the detail page
+                if (!in_array($arrFormFields[$fieldId]['type'], $this->nonValueFormFieldTypes)) {
+                    $label = contrexx_raw2xhtml($arrFormFields[$fieldId]['lang'][FRONTEND_LANG_ID]['name']).($arrFormFields[$fieldId]['type'] == 'hidden' ? ' (hidden)' : '');
 
-                    case 'file':
-                        if(isset($arrEntry['data'][$key])) {
-                            $fieldData = $arrEntry['data'][$key];
-                            $arrFiles  = explode('*', $fieldData);
-                            foreach($arrFiles as $file) {
+                    switch ($arrFormFields[$fieldId]['type']) {
+                        case 'checkbox':
+                            $value = !empty($arrData['value']) ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO'];
+                            break;
+                        case 'file':
+                            $arrFiles  = explode('*', $arrData['value']);
+                            foreach ($arrFiles as $file) {
                                 $file = contrexx_raw2xhtml($file);
                                 $img  = $this->getFileIcon($file);
-                                $sourcecode .= '<a href="'.ASCMS_PATH_OFFSET.$file.'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.$img.basename($file).'</a><br />';
+                                $value = '<a href="'.ASCMS_PATH_OFFSET.$file.'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.$img.basename($file).'</a><br />';
                             }
-                        } else {
-                            $sourcecode .= '&nbsp;';
-                        }
-                        break;
-                    case 'recipient':
-                        $recipientId = $arrEntry['data'][$key];
-                        $sourcecode .= isset($recipient[$recipientId]['lang'][$langId]) ? htmlentities($recipient[$recipientId]['lang'][$langId], ENT_QUOTES, CONTREXX_CHARSET) : '&nbsp;';
-                        break;
-                    case 'text':
-                    case 'checkboxGroup':
-                    case 'country':
-                    case 'date':
-                    case 'hidden':
-                    case 'password':
-                    case 'radio':
-                    case 'select':
-                    case 'textarea':
-                    case 'special':
-                        $sourcecode .= isset($arrEntry['data'][$key]) ? nl2br(htmlentities($arrEntry['data'][$key], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
-                        break;
+                            break;
+                        case 'recipient':
+                            $value = isset($recipient[$arrData['value']]['lang'][$langId]) ? htmlentities($recipient[$arrData['value']]['lang'][$langId], ENT_QUOTES, CONTREXX_CHARSET) : '&nbsp;';
+                            break;
+                        case 'text':
+                        case 'checkboxGroup':
+                        case 'country':
+                        case 'date':
+                        case 'hidden':
+                        case 'password':
+                        case 'radio':
+                        case 'select':
+                        case 'textarea':
+                        case 'special':
+                            $value = nl2br(htmlentities($arrData['value'], ENT_QUOTES, CONTREXX_CHARSET));
+                            break;
+                    }
                 }
-
-                $sourcecode .= "</td>\n";
-                $sourcecode .= "</tr>\n";
-
-                $rowNr++;
+            } else {
+                $label = $arrData['label'];
+                $value = $arrData['value'];
             }
+
+            $sourcecode .= '
+                <tr class='.($rowNr % 2 == 0 ? 'row1' : 'row2').'>
+                    <td style="vertical-align: top;" width="15%"><strong>'.$label.'</strong></td>
+                    <td width="85%">'.$value.'</td>
+                </tr>
+            ';
+
+            $rowNr++;
         }
-        $sourcecode .= "</table>\n";
+
+        $sourcecode .= '</table>';
 
         return $sourcecode;
     }
@@ -2128,14 +2127,14 @@ class ContactManager extends ContactLib
                 foreach ($arrFormFields as $fieldId => $value) {
 
                     if (!in_array($arrFormFields[$fieldId]['type'], $this->nonValueFormFieldTypes)) {
-                        if (!empty ($formEntriesValues['data'][$fieldId])) {
+                        if (!empty ($formEntriesValues['data'][$fieldId]['value'])) {
                             switch ($arrFormFields[$fieldId]['type']) {
                             case 'checkbox':
-                                print $this->_escapeCsvValue(isset($formEntriesValues['data'][$fieldId]) && $formEntriesValues['data'][$fieldId] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO']);
+                                print $this->_escapeCsvValue(isset($formEntriesValues['data'][$fieldId]['value']) && $formEntriesValues['data'][$fieldId]['value'] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO']);
                                 break;
 
                             case 'file':
-                                print $this->_escapeCsvValue(isset($formEntriesValues['data'][$fieldId]) ? ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$formEntriesValues['data'][$fieldId] : '');
+                                print $this->_escapeCsvValue(isset($formEntriesValues['data'][$fieldId]['value']) ? ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$formEntriesValues['data'][$fieldId]['value'] : '');
                                 break;
 
                             case 'text':
@@ -2146,7 +2145,7 @@ class ContactManager extends ContactLib
                             case 'select':
                             case 'textarea':
                             default:
-                                print isset($formEntriesValues['data'][$fieldId]) ? $this->_escapeCsvValue($formEntriesValues['data'][$fieldId]) : '';
+                                print isset($formEntriesValues['data'][$fieldId]['value']) ? $this->_escapeCsvValue($formEntriesValues['data'][$fieldId]['value']) : '';
                                 break;
                             }
                         }
