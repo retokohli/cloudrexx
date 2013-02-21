@@ -35,45 +35,28 @@ class PageEventListenerException extends \Exception {}
  * @subpackage  model_events
  */
 class PageEventListener {
-    
-    public function onFlush($eventArgs) {
-        $em = $eventArgs->getEntityManager();
-        
-        $uow = $em->getUnitOfWork();
-        
-        $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
-        
-        foreach ($uow->getScheduledEntityUpdates() AS $entity) {
-            $this->checkValidPersistingOperation($pageRepo, $entity);
-        }
+    public function prePersist($eventArgs) {
+        $this->setUpdatedByCurrentlyLoggedInUser($eventArgs);
     }
-    
-    /**
-     *
-     * @param \Doctrine\ORM\Event\PreUpdateEventArgs $eventArgs 
-     */
+
     public function preUpdate($eventArgs) {
+        $this->setUpdatedByCurrentlyLoggedInUser($eventArgs);
+    }
+
+    protected function setUpdatedByCurrentlyLoggedInUser($eventArgs) {
         $entity = $eventArgs->getEntity();
-        $em = $eventArgs->getEntityManager();
-        $uow = $em->getUnitOfWork();
+        $em     = $eventArgs->getEntityManager();
+        $uow    = $em->getUnitOfWork();
 
         if ($entity instanceof \Cx\Model\ContentManager\Page) {
             $entity->setUpdatedBy(
                 \FWUser::getFWUserObject()->objUser->getUsername()
             );
 
-            $uow->recomputeSingleEntityChangeSet(
+            $uow->computeChangeSet(
                 $em->getClassMetadata('Cx\Model\ContentManager\Page'),
                 $entity
             );
-        }
-    }
-    
-    public function postPersist($eventArgs) {
-        global $_CONFIG;
-        
-        if ($_CONFIG['xmlSitemapStatus'] == 'on') {
-            \Cx\Core\PageTree\XmlSitemapPageTree::write();
         }
     }
 
@@ -82,10 +65,10 @@ class PageEventListener {
         $uow     = $em->getUnitOfWork();
         $entity  = $eventArgs->getEntity();
         $aliases = array();
-        
+
         if ($entity instanceof \Cx\Model\ContentManager\Node) {
             $pages = $entity->getPages(true);
-            
+
             foreach ($pages as $page) {
                 $aliases = array_merge($aliases, $page->getAliases());
                 $em->remove($page);
@@ -97,7 +80,7 @@ class PageEventListener {
         } else if ($entity instanceof \Cx\Model\ContentManager\Page) {
             $aliases = $entity->getAliases();
         }
-        
+
         if (!empty($aliases)) {
             foreach ($aliases as $alias) {
                 $node = $alias->getNode();
@@ -107,6 +90,42 @@ class PageEventListener {
                     $node
                 );
             }
+        }
+    }
+
+    public function postPersist($eventArgs) {
+        $this->writeXmlSitemap($eventArgs);
+    }
+
+    public function postUpdate($eventArgs) {
+        $this->writeXmlSitemap($eventArgs);
+    }
+
+    public function postRemove($eventArgs) {
+        $this->writeXmlSitemap($eventArgs);
+    }
+
+    protected function writeXmlSitemap($eventArgs) {
+        global $_CONFIG;
+
+        $entity = $eventArgs->getEntity();
+        if (($entity instanceof \Cx\Model\ContentManager\Page)
+            && ($entity->getType() != 'alias')
+            && ($_CONFIG['xmlSitemapStatus'] == 'on')
+        ) {
+            \Cx\Core\PageTree\XmlSitemapPageTree::write();
+        }
+    }
+
+    public function onFlush($eventArgs) {
+        $em = $eventArgs->getEntityManager();
+
+        $uow = $em->getUnitOfWork();
+
+        $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
+
+        foreach ($uow->getScheduledEntityUpdates() AS $entity) {
+            $this->checkValidPersistingOperation($pageRepo, $entity);
         }
     }
 

@@ -86,10 +86,13 @@ $evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $prefixListener)
 
 //page listener for unique slugs
 $pageListener = new PageEventListener();
-$evm->addEventListener(\Doctrine\ORM\Events::preUpdate, $pageListener);
-$evm->addEventListener(\Doctrine\ORM\Events::onFlush, $pageListener);
+$evm->addEventListener(\Doctrine\ORM\Events::prePersist,  $pageListener);
 $evm->addEventListener(\Doctrine\ORM\Events::postPersist, $pageListener);
-$evm->addEventListener(\Doctrine\ORM\Events::preRemove, $pageListener);
+$evm->addEventListener(\Doctrine\ORM\Events::preUpdate,   $pageListener);
+$evm->addEventListener(\Doctrine\ORM\Events::postUpdate,  $pageListener);
+$evm->addEventListener(\Doctrine\ORM\Events::preRemove,   $pageListener);
+$evm->addEventListener(\Doctrine\ORM\Events::postRemove,  $pageListener);
+$evm->addEventListener(\Doctrine\ORM\Events::onFlush,     $pageListener);
 
 $config->setSqlLogger(new \Cx\Lib\DBG\DoctrineSQLLogger());
 
