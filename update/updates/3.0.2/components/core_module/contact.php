@@ -208,15 +208,18 @@ function _contactUpdate()
                             $field_label          = $formRecipientResult->fields['name'];
                         }
 
-                        $form_label_query = "SELECT `fieldID`
-                                            FROM `".DBPREFIX."module_contact_form_field_lang`
-                                            WHERE `name` = '".contrexx_raw2db($field_label)."'";
+                        $form_label_query = '
+                            SELECT `lang`.`fieldID`
+                            FROM `'.DBPREFIX.'module_contact_form_field` AS `field`
+                            LEFT JOIN `'.DBPREFIX.'module_contact_form_field_lang` AS `lang` ON `lang`.`fieldID` = `field`.`id`
+                            WHERE (`field`.`id_form` = '.$objResult->fields['id_form'].') AND (`lang`.`name` = "'.contrexx_raw2db($field_label).'")
+                        ';
                         $formLabelResult  = \Cx\Lib\UpdateUtil::sql($form_label_query);
                         $fieldId          = ($formLabelResult->fields['fieldID'] != null) ? $formLabelResult->fields['fieldID'] : 0;
 
                         $submitCount = \Cx\Lib\UpdateUtil::sql("SELECT 1
                                                         FROM `".DBPREFIX."module_contact_form_submit_data`
-                                                        WHERE `id_entry` = ". $objResult->fields['id']."
+                                                        WHERE `id_entry` = ".$objResult->fields['id']."
                                                         AND `id_field` = ".$fieldId."
                                                         LIMIT 1");
 
