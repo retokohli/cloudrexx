@@ -3,10 +3,7 @@
 namespace Cx\Update;
 
 class UpdatePageEventListener extends \Cx\Model\Events\PageEventListener {
-    /**
-     * @param \Doctrine\ORM\Event\PreUpdateEventArgs $eventArgs 
-     */
-    public function preUpdate($eventArgs) {
+    protected function setUpdatedByCurrentlyLoggedInUser($eventArgs) {
         $entity = $eventArgs->getEntity();
         $em = $eventArgs->getEntityManager();
         $uow = $em->getUnitOfWork();
@@ -25,8 +22,8 @@ class UpdatePageEventListener extends \Cx\Model\Events\PageEventListener {
             }
         }
     }
-    
-    public function postPersist($eventArgs) {}
+
+    protected function writeXmlSitemap($eventArgs) {}
 
     protected function checkValidPersistingOperation($pageRepo, $page) {}
 }
