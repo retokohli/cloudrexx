@@ -1113,7 +1113,7 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
                 $icon =
                     '<a href="'.
                         CONTREXX_DIRECTORY_INDEX.
-                        '?cmd=shop&amp;act=mailtemplate_edit'.
+                        "?cmd=$section&amp;act=mailtemplate_edit".
                         '&amp;key='.$key.
                         '&amp;userFrontendLangId='.$lang_id.'"'.
                     ' title="'.$title.'">'.
