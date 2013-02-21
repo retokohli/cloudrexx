@@ -852,7 +852,7 @@ class Settings extends CrmLibrary
             && $_REQUEST['act'] == 'mailtemplate_edit') {
             $_REQUEST['active_tab'] = 2;
         }
-        
+        MailTemplate::deleteTemplate('crm');
         // If there is anything to be stored, and if that fails, return to
         // the edit view in order to save the posted form content
         $result_store = MailTemplate::storeFromPost('crm');
