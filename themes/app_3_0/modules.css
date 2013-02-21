@@ -2374,6 +2374,7 @@ dl.data_module img {
     padding: 0 0 20px 0;
 }
 #mediadir .mediadirButtonSearch {
+    float: none;
     margin: 0 0 0 5px;
 }
 #mediadir .employee {
