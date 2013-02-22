@@ -193,8 +193,8 @@ var cxDataList = function() {
 
         var setPageFunc = function(pagePos) {
             entryPosition = pagePos;
-            setEntryPositionStartLabel();
             setEntryPositionEndLabel();
+            setEntryPositionStartLabel();
 
             $('.paging').each(function(index,element) {
                 $(element).empty();
@@ -242,7 +242,11 @@ var cxDataList = function() {
         }    
 
         var setEntryPositionStartLabel = function() {
-            entryPositionStartLabel = entryPosition + 1;
+            if (entryPositionEndLabel != 0) {
+                entryPositionStartLabel = entryPosition + 1;
+            } else {
+                entryPositionStartLabel = 0;
+            }
         }
     
         var setEntryPositionEndLabel = function() {
