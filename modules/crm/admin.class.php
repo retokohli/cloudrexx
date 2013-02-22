@@ -3885,7 +3885,7 @@ END;
                     $info['substitution'] = array(
                             'CRM_ASSIGNED_USER_EMAIL'           => $objFWUser->objUser->getUser($assignedto)->getEmail(),
                             'CRM_TASK_NAME'                     => $title,
-                            'CRM_TASK_LINK'                     => "<a href='". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd={$this->moduleName}&act=task&id=$id'>$title</a>",
+                            'CRM_TASK_LINK'                     => "<a href='". ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd={$this->moduleName}&act=task&id=$id'>$title</a>",
                             'CRM_TASK_DUE_DATE'                 => $duedate,
                             'CRM_TASK_CREATED_USER'             => $objFWUser->objUser->getUsername(),
                             'CRM_TASK_DESCRIPTION_TEXT_VERSION' => strip_tags($description),
