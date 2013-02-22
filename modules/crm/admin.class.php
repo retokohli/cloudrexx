@@ -5763,7 +5763,7 @@ END;
     {
         global $objDatabase;
 
-        $term = contrexx_input2db($_GET['term']);
+        $term = strtolower(contrexx_input2db($_GET['term']));
         // Customers without contacts
 
         $q = "SELECT   c.id,
@@ -5771,7 +5771,7 @@ END;
                        c.contact_familyname,
                        c.contact_type
                    FROM `".DBPREFIX."module_{$this->moduleName}_contacts` AS c
-                   WHERE c.customer_name LIKE '$term%' AND contact_type = 1";
+                   WHERE LOWER(c.customer_name) LIKE '$term%'";
         $objResult = $objDatabase->Execute($q);
 
         $customer = array();
