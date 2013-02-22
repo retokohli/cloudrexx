@@ -106,7 +106,11 @@ class CRM extends CrmLibrary {
 
         $dispatcher = EventDispatcher::getInstance();
         $default_handler = new DefaultEventHandler();
+        
         $dispatcher->addHandler(CRM_EVENT_ON_USER_ACCOUNT_CREATED, $default_handler);
+        $dispatcher->addHandler(CRM_EVENT_ON_TASK_CREATED, $default_handler);
+        $dispatcher->addHandler(CRM_EVENT_ON_ACCOUNT_UPDATED, $default_handler);
+        
         $this->_initCrmModule();
     }
 
@@ -2161,6 +2165,10 @@ END;
 
                 $customerId = $this->contact->id;
                 $customerName = $this->contact->customerName;
+                
+                // notify the staff's
+                $this->notifyStaffOnContactAccModification($this->contact->id, $this->contact->customerName.' '.$this->contact->family_name);
+                
                 // ajax request
                 if ($_GET['design'] == 'custom') {
                     $returnString = array(
@@ -3857,7 +3865,7 @@ END;
                                     WHERE id= '$id'";
                 $message = 'Updated';
                 $typefilter = !empty($taskId)? "&searchType=$taskId":'';
-                $titlefilter= !empty($taskTitle)? "&searchTitle=$taskTitle&searchCustomer=$taskTitle":'';
+                $titlefilter= !empty($taskTitle)? "&searchTitle=$taskTitle&searchCustomer=$taskTitle":'';                
             } else {
                 $query = "INSERT INTO ".DBPREFIX."module_{$this->moduleName}_task
                                    SET `task_id`       = '$taskAutoId',
@@ -3872,6 +3880,22 @@ END;
             }
             $db = $objDatabase->Execute($query);
             if ($db) {
+                if ($assignedto != $objFWUser->objUser->getId()) {
+                    $id = (!empty($id)) ? $objDatabase->INSERT_ID() : $id;
+                    $info['substitution'] = array(
+                            'CRM_ASSIGNED_USER_EMAIL'           => $objFWUser->objUser->getUser($assignedto)->getEmail(),
+                            'CRM_TASK_NAME'                     => $title,
+                            'CRM_TASK_LINK'                     => "<a href='". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd={$this->moduleName}&act=task&id=$id'>$title</a>",
+                            'CRM_TASK_DUE_DATE'                 => $duedate,
+                            'CRM_TASK_CREATED_USER'             => $objFWUser->objUser->getUsername(),
+                            'CRM_TASK_DESCRIPTION_TEXT_VERSION' => strip_tags($description),
+                            'CRM_TASK_DESCRIPTION_HTML_VERSION' => $description
+                    );
+
+                    $dispatcher = EventDispatcher::getInstance();
+                    $dispatcher->triggerEvent(CRM_EVENT_ON_TASK_CREATED, null, $info);
+                }
+
                 CSRF::header("Location:./index.php?cmd={$this->moduleName}&mes=".base64_encode($message).base64_decode($redirect));
                 exit();
             }
@@ -4128,7 +4152,7 @@ END;
         if (isset($this->contact->id)) {
             $objTpl->setVariable(array(
                     'CRM_CONTACT_ID'     => $this->contact->id,
-                    'CRM_CONTACT_NAME'   => contrexx_raw2xhtml($this->contact->family_name." ".$this->contact->customerName)
+                    'CRM_CONTACT_NAME'   => contrexx_raw2xhtml($this->contact->customerName." ".$this->contact->family_name)
             ));
         }
 

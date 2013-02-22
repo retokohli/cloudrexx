@@ -12,8 +12,6 @@
  * @version		1.0.0
  */
 
-define('CRM_EVENT_ON_USER_ACCOUNT_CREATED', 'crm_on_user_acc_created');
-
 require_once  ASCMS_MODULE_PATH  . '/crm/lib/constants.php';
 
 require_once CRM_MODULE_LIB_PATH . '/events/Event.class.php';
@@ -952,7 +950,8 @@ class CrmLibrary {
         }
 
         $query = "SELECT u.id,
-                         u.username
+                         u.username,
+                         u.email
                   FROM ".DBPREFIX."access_rel_user_group As g
                     LEFT JOIN ".DBPREFIX."access_users u ON u.id = g.user_id
                   WHERE u.active = 1 AND g.group_id = '".$groupId."'
@@ -965,6 +964,7 @@ class CrmLibrary {
                 $resources[] = array(
                         'id'       => $result->fields['id'],
                         'username' => $result->fields['username'],
+                        'email'    => $result->fields['email'],
                 );
                 $result->moveNext();
             }
@@ -1341,9 +1341,40 @@ class CrmLibrary {
                     $query .= implode(",", $values);
                     $objDatabase->Execute($query);
                 }
-                
+                // notify the staff's
+                $this->notifyStaffOnContactAccModification($this->contact->id, $this->contact->customerName.' '.$this->contact->family_name);
             }            
         }
+    }
+
+    /**
+     * notify the staffs regarding the account modification of a contact
+     *
+     * @access public
+     * @global object $objTemplate
+     * @global array $_ARRAYLANG
+     */
+    public function notifyStaffOnContactAccModification($customerId = 0, $customer_name = '')
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        if (empty($customerId)) return false;
+
+        $resources = $this->getResources($this->_arrSettings['emp_default_user_group']);
+        $emails    = array();
+        foreach ($resources as $key => $value) {
+            $emails[]    = $value['email'];
+        }
+
+        if (!empty ($emails)) {
+            $info['substitution'] = array(
+                    'CRM_ASSIGNED_USER_EMAIL'           => implode(',', $emails),
+                    'CRM_CONTACT_DETAILS_LINK'          => "<a href='". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd={$this->moduleName}&act=showcustdetail&id=$id'>".$customer_name."</a>"
+            );
+
+            $dispatcher = EventDispatcher::getInstance();
+            $dispatcher->triggerEvent(CRM_EVENT_ON_ACCOUNT_UPDATED, null, $info);
+        }        
     }
 
      /**
