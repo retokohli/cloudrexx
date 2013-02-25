@@ -95,25 +95,28 @@ var Search = {
         if (this.curRequest != null && this.curRequest.abort) {
             this.curRequest.abort();
         }
-        
-        this.curRequest = new Ajax.Request("modules/knowledge/search.php", {
-            method : "get",
-            parameters : {
-                section : "knowledge",
-                act : "liveSearch",
-                searchterm : $('searchinput').value
-            },
-            onSuccess : function(transport)
-            {
-                var data = transport.responseText.evalJSON();
-                if (data.status == 1) {
-                    ref.clearBox();
-                    $(ref.resultBox).insert(data.content);
-                    ref.showBox();
-                } else {
-                    ref.hideBox();
-                } 
-            }
+
+        cx.ready(function() {
+            this.curRequest = new Ajax.Request("modules/knowledge/search.php", {
+                method : "get",
+                parameters : {
+                    section : "knowledge",
+                    act : "liveSearch",
+                    searchterm : $('searchinput').value,
+                    lang : cx.variables.get('language')
+                },
+                onSuccess : function(transport)
+                {
+                    var data = transport.responseText.evalJSON();
+                    if (data.status == 1) {
+                        ref.clearBox();
+                        $(ref.resultBox).insert(data.content);
+                        ref.showBox();
+                    } else {
+                        ref.hideBox();
+                    } 
+                }
+            });
         });
     },
     clearBox : function()
@@ -154,11 +157,11 @@ var Search = {
 
 function submitSearch(obj)
 {
-	var searchinput = $('searchinput');
-	var val = searchinput.value;
-	$('searchHidden').value = val;
-	searchinput.value = "";
-	searchinput.name = "";
-	return true;
+    var searchinput = $('searchinput');
+    var val = searchinput.value;
+    $('searchHidden').value = val;
+    searchinput.value = "";
+    searchinput.name = "";
+    return true;
 }
 
