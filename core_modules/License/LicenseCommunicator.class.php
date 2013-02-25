@@ -317,8 +317,8 @@ class LicenseCommunicator {
                     }
                     
                     var versionCheckResponseHandler = function(data, allowUserAgent) {';
+            $sm = new \settingsManager();
             if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
-                $sm = new \settingsManager();
                 $jsCode .= '
                         if (data == "false" && allowUserAgent && ' . ($sm->isWritable() ? 'true' : 'false') . ') {
                             reloadManager = false;
@@ -345,7 +345,7 @@ class LicenseCommunicator {
                         }
                         console.log(reloadManager);
                         revertMessage(data[\'class\'], data.link, data.target, data.text);
-                        if (reloadManager) {
+                        if (reloadManager && ' . ($sm->isWritable() ? 'true' : 'false') . ') {
                             document.location.reload(true);
                         }
                     }
