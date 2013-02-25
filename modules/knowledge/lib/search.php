@@ -92,11 +92,11 @@ class Search {
         $this->tpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->tpl->loadTemplateFile($this->templateFile);
 
-		// make a response object
-		$this->response = new searchResponse();
+        // make a response object
+        $this->response = new searchResponse();
 
-		// get all available interfaces
-		$dir = opendir($this->interfacesPath);
+        // get all available interfaces
+        $dir = opendir($this->interfacesPath);
 
         // is this a security issue?
         while (false !== ($file = readdir($dir))) {
@@ -124,27 +124,27 @@ class Search {
             $status = 2;
         } else{
             $searchterm = $_GET['searchterm'];
-    		$results = $this->getResults($searchterm);
+            $results = $this->getResults($searchterm);
 
-    		if (count($results) == 0) {
-    		    // nothing found
-    		    $status = 0;
-    		} else {
-        		foreach ($results as $result) {
-        		    $this->tpl->setVariable(array(
+            if (count($results) == 0) {
+                // nothing found
+                $status = 0;
+            } else {
+                foreach ($results as $result) {
+                    $this->tpl->setVariable(array(
                         "URI"       => $this->makeURI($result['uri']),
                         "TITLE"     => $this->formatTitle($result['title'])
-        		    ));
-        		    $this->tpl->parse("result");
-        		}
+                    ));
+                    $this->tpl->parse("result");
+                }
                 $this->response->content = $this->tpl->get();
-    		}
+            }
         }
 
-		$this->response->status = $status;
+        $this->response->status = $status;
         $response = $this->json->encode($this->response);
 
-		die($response);
+        die($response);
     }
 
     /**
@@ -238,6 +238,3 @@ class searchResponse
      */
     public $content = "";
 }
-
-
-?>

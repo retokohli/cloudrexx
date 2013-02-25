@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Search script
  *
@@ -31,6 +32,10 @@ require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTML/Template/Sigma/Sigma.php');
 require_once(ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php');
 $objDb = getDatabaseObject($errorMsg);
 $objDatabase = &$objDb;
+
+if (!defined('FRONTEND_LANG_ID') && !empty($_GET['lang'])) {
+    define('FRONTEND_LANG_ID', \FWLanguage::getLanguageIdByCode($_GET['lang']));
+}
 
 require_once(ASCMS_MODULE_PATH.'/knowledge/lib/search.php');
 $search = new Search();

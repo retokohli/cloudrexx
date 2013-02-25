@@ -63,6 +63,7 @@ class Knowledge extends KnowledgeLibrary
         JS::registerJS('modules/knowledge/rating.js');
         JS::registerJS('modules/knowledge/frontend/search.js');
         JS::registerJS('modules/knowledge/frontend/slider.js');
+        JS::activate('cx');
 
         if (!isset($_GET['act'])) {
             $_GET['act'] = "";
@@ -193,6 +194,7 @@ class Knowledge extends KnowledgeLibrary
         JS::registerJS('modules/knowledge/rating.js');
         JS::registerJS('modules/knowledge/frontend/search.js');
         JS::registerJS('modules/knowledge/frontend/slider.js');
+        JS::activate('cx');
     }
 
     /**
@@ -252,6 +254,7 @@ class Knowledge extends KnowledgeLibrary
         JS::registerJS('modules/knowledge/rating.js');
         JS::registerJS('modules/knowledge/frontend/search.js');
         JS::registerJS('modules/knowledge/frontend/slider.js');
+        JS::activate('cx');
     }
 
     /**
@@ -529,6 +532,7 @@ class Knowledge extends KnowledgeLibrary
         JS::registerJS("modules/knowledge/rating.js");
         JS::registerJS("modules/knowledge/frontend/search.js");
         JS::registerJS("modules/knowledge/frontend/slider.js");
+        JS::activate('cx');
     }
 
     /**
