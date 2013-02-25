@@ -61,7 +61,11 @@ class JsonData {
     public function __construct() {
         foreach (self::$adapter_classes as $ns=>$adapters) {
             foreach ($adapters as $adapter) {
-                $adapter = self::$adapter_ns . $ns . '\\' . $adapter;
+                if (substr($ns, 0, 1) == '\\') {
+                    $adapter = $ns . '\\' . $adapter;
+                } else {
+                    $adapter = self::$adapter_ns . $ns . '\\' . $adapter;
+                }
                 $object = new $adapter();
                 $this->adapters[$object->getName()] = $object;
             }
