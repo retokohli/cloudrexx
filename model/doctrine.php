@@ -1,11 +1,9 @@
 <?php
-//get constants
-$doctrineDir = ASCMS_LIBRARY_PATH.'/doctrine/';
-
 // Variable $helperSet is defined inside cli-config.php
 require __DIR__ . '/cli-config.php';
-require_once ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php';
-new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT);
+
+//get constants
+$doctrineDir = ASCMS_LIBRARY_PATH.'/doctrine/';
 
 $cli = new \Symfony\Component\Console\Application('Doctrine Command Line Interface', Doctrine\Common\Version::VERSION);
 $cli->setCatchExceptions(true);
