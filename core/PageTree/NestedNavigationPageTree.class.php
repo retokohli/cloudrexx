@@ -50,10 +50,14 @@ class NestedNavigationPageTree extends SigmaPageTree {
 
     public function __construct($entityManager, $license, $maxDepth = 0, $activeNode = null, $lang = null, $currentPage = null) { 
         parent::__construct($entityManager, $license, $maxDepth, $activeNode, $lang, $currentPage, false);
-
+        $this->activeNode = $activeNode;
+        if (!$this->activeNode) {
+            $this->activeNode = \Env::get('em')->getRepository('\Cx\Model\ContentManager\Node')->getRoot();
+        }
+        
         //go up the branch and collect all node ids. used later in renderElement().
         $node = $currentPage->getNode();        
-        while($node) {
+        while ($node) {
             $this->branchNodeIds[] = $node->getId();
             $node = $node->getParent();
         }
@@ -80,6 +84,18 @@ class NestedNavigationPageTree extends SigmaPageTree {
         //are we inside the layer bounds?
         if (!$this->isLevelInsideLayerBound($level)) {
             return '';
+        }
+        
+        if (!$page->isVisible()) {
+            return '';
+        }
+        $node = $page->getNode();
+        reset($this->branchNodeIds);
+        while ($node && $node->getId() != $this->activeNode->getId()) {
+            if ($node->getPage(FRONTEND_LANG_ID) && !$node->getPage(FRONTEND_LANG_ID)->isVisible()) {
+                return '';
+            }
+            $node = $node->getParent();
         }
 
         if (!isset($this->navigationIds[$level]))
@@ -116,6 +132,18 @@ class NestedNavigationPageTree extends SigmaPageTree {
         if (!$this->isLevelInsideLayerBound($level)) {
             return '';
         }
+        
+        if (!$page->isVisible()) {
+            return '';
+        }
+        $node = $page->getNode();
+        reset($this->branchNodeIds);
+        while ($node && $node->getId() != $this->activeNode->getId()) {
+            if ($node->getPage(FRONTEND_LANG_ID) && !$node->getPage(FRONTEND_LANG_ID)->isVisible()) {
+                return '';
+            }
+            $node = $node->getParent();
+        }
 
         $output = '';
         if (!$hasChilds || !$this->isLevelInsideLayerBound($level + 1)) {
@@ -135,6 +163,26 @@ class NestedNavigationPageTree extends SigmaPageTree {
         if (!$this->isLevelInsideLayerBound($level)) {
             return '';
         }
+        
+        $node = $parentNode;
+        reset($this->branchNodeIds);
+        while ($node && $node->getId() != $this->activeNode->getId()) {
+            if ($node->getPage(FRONTEND_LANG_ID) && !$node->getPage(FRONTEND_LANG_ID)->isVisible()) {
+                return '';
+            }
+            $node = $node->getParent();
+        }
+        
+        $visibleChildren = false;
+        foreach ($parentNode->getChildren() as $child) {
+            if ($child->getPage(FRONTEND_LANG_ID)->isVisible()) {
+                $visibleChildren = true;
+                break;
+            }
+        }
+        if (!$visibleChildren) {
+            return '';
+        }
         return "\n" . '<ul class="'.self::CssPrefix.$level.'">'."\n";
     }
     
@@ -150,6 +198,26 @@ class NestedNavigationPageTree extends SigmaPageTree {
         }
         if ($level == $this->levelFrom) {
             return '</ul>' . "\n";
+        }
+        
+        $node = $parentNode;
+        reset($this->branchNodeIds);
+        while ($node && $node->getId() != $this->activeNode->getId()) {
+            if ($node->getPage(FRONTEND_LANG_ID) && !$node->getPage(FRONTEND_LANG_ID)->isVisible()) {
+                return '';
+            }
+            $node = $node->getParent();
+        }
+        
+        $visibleChildren = false;
+        foreach ($parentNode->getChildren() as $child) {
+            if ($child->getPage(FRONTEND_LANG_ID)->isVisible()) {
+                $visibleChildren = true;
+                break;
+            }
+        }
+        if (!$visibleChildren) {
+            return '';
         }
         return '</ul>' . "\n" . '</li>'."\n";
     }
