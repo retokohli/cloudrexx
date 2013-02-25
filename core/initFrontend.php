@@ -153,6 +153,11 @@ if ($aliaspage != null) {
     $extractedLanguage = 0;
 
     $extractedLanguage = \FWLanguage::getLanguageIdByCode($url->getLangDir());
+    $activeLanguages = \FWLanguage::getActiveFrontendLanguages();
+    if (!in_array($extractedLanguage, array_keys($activeLanguages))) {
+        $_LANGID = \FWLanguage::getDefaultLangId();
+        $redirectToCorrectLanguageDir();
+    }
     if (!$extractedLanguage) {
         $redirectToCorrectLanguageDir();
     }
