@@ -976,7 +976,7 @@ EOF;
             $this->_objTpl->loadTemplatefile('module_podcast_modify_medium.html');
         }else{
             //load frontend content as template
-            $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+            $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
             $pages = $pageRepo->findBy(array(
                 'module' => 'podcast',
                 'cmd' => 'modifyMedium',

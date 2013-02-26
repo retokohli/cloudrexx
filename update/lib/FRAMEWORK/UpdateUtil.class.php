@@ -549,7 +549,7 @@ class UpdateUtil
 
         if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $changeVersion)) {
             $em = \Env::em();
-            $allPages = $em->getRepository('Cx\Model\ContentManager\Page')->getAllFromModuleCmdByLang($module, $cmd);
+            $allPages = $em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page')->getAllFromModuleCmdByLang($module, $cmd);
             foreach ($allPages as $lang => $pages) {
                 foreach ($pages as $page) {
                     if ($page) {
@@ -575,7 +575,7 @@ class UpdateUtil
      *
      * @global  ContrexxUpdate     $objUpdate
      * @global  Array               $_CONFIG
-     * @param   Array               $criteria         Argument list to filter page objects. Will be passed to Cx\Model\ContentManager\Repository\PageRepository->findBy()
+     * @param   Array               $criteria         Argument list to filter page objects. Will be passed to Cx\Core\ContentManager\Model\Doctrine\Repository\PageRepository->findBy()
      * @param   mixed               $pattern          The pattern to search for. It can be either a string or an array with strings.
      * @param   mixed               $replacement      The string or an array with strings (pattern) to replace
      * @param   mixed               $subject          A string or array containing the name of an attribute of the page object
@@ -591,7 +591,7 @@ class UpdateUtil
 
         if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $changeVersion)) {
             $em = \Env::em();
-            $pages = $em->getRepository('Cx\Model\ContentManager\Page')->findBy($criteria, true);
+            $pages = $em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page')->findBy($criteria, true);
             foreach ($pages as $page) {
                 if ($page) {
                     if (!checkMemoryLimit()) {
@@ -637,7 +637,7 @@ class UpdateUtil
 
         if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $changeVersion)) {
             $em = \Env::em();
-            $pages = $em->getRepository('Cx\Model\ContentManager\Page')->findBy($criteria, true);
+            $pages = $em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page')->findBy($criteria, true);
             foreach ($pages as $page) {
                 if ($page) {
                     if (!checkMemoryLimit()) {
@@ -675,7 +675,7 @@ class UpdateUtil
 
         if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $changeVersion)) {
             $em = \Env::em();
-            $pages = $em->getRepository('Cx\Model\ContentManager\Page')->findBy($criteria, true);
+            $pages = $em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page')->findBy($criteria, true);
             foreach ($pages as $page) {
                 if ($page) {
                     if (!checkMemoryLimit()) {

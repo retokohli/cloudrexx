@@ -9,7 +9,7 @@
  * @subpackage  core_contentmanager
  */
 
-namespace Cx\Core\ContentManager;
+namespace Cx\Core\ContentManager\Controller;
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 use \Cx\Core\Json\Adapter\ContentManager\JsonPage;
 
@@ -65,8 +65,8 @@ class ContentManager extends \Module {
         $this->em = \Env::em();
         $this->db = $db;
         $this->init = $init;
-        $this->pageRepository = $this->em->getRepository('Cx\Model\ContentManager\Page');
-        $this->nodeRepository = $this->em->getRepository('Cx\Model\ContentManager\Node');
+        $this->pageRepository = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+        $this->nodeRepository = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
         $this->defaultAct = 'actRenderCM';
     }
 
@@ -104,10 +104,13 @@ if ($tree == 'verify') {
             }
         }
 
-        $this->template->addBlockfile('ADMIN_CONTENT', 'content_manager', 'content_manager.html');
+        $cachedRoot = $this->template->getRoot();
+        $this->template->setRoot(ASCMS_CORE_PATH.'/ContentManager/View/Template');
+        $this->template->addBlockfile('ADMIN_CONTENT', 'content_manager', 'Skeleton.html');
         $this->template->touchBlock('content_manager');
-        $this->template->addBlockfile('CONTENT_MANAGER_MEAT', 'content_manager_meat', 'cm.html');
+        $this->template->addBlockfile('CONTENT_MANAGER_MEAT', 'content_manager_meat', 'Page.html');
         $this->template->touchBlock('content_manager_meat');
+        $this->template->setRoot($cachedRoot);
 
         if (\Permission::checkAccess(78, 'static', true) &&
                 \Permission::checkAccess(115, 'static', true)) {
@@ -130,7 +133,7 @@ if ($tree == 'verify') {
             //navi
             'TXT_NEW_PAGE', 'TXT_CONTENT_HISTORY', 'TXT_IMAGE_ADMINISTRATION',
             //site tree
-            'TXT_CORE_CM_STATUS_PAGE', 'TXT_EXPAND_LINK', 'TXT_COLLAPS_LINK', 'TXT_CORE_CM_TRANSLATIONS', 'TXT_CORE_CM_APPLICATION', 'TXT_CORE_CM_VIEW', 'TXT_CORE_CM_ACTIONS', 'TXT_CORE_CM_LOG',
+            'TXT_CORE_CM_STATUS_PAGE', 'TXT_EXPAND_LINK', 'TXT_COLLAPS_LINK', 'TXT_CORE_CM_TRANSLATIONS', 'TXT_CORE_CM_APPLICATION', 'TXT_CORE_CM_VIEW', 'TXT_CORE_CM_ACTIONS', 'TXT_CORE_CM_DATE_USER',
             //multiple actions
             'TXT_SELECT_ALL', 'TXT_DESELECT_ALL', 'TXT_MULTISELECT_SELECT', 'TXT_MULTISELECT_ACTIVATE', 'TXT_MULTISELECT_DEACTIVATE', 'TXT_MULTISELECT_SHOW', 'TXT_MULTISELECT_HIDE', 'TXT_MULTISELECT_UNPROTECT', 'TXT_MULTISELECT_DELETE',
             //type tab
@@ -165,7 +168,6 @@ if ($tree == 'verify') {
                 'recursiveQuestion'                             => 'TXT_CORE_CM_RECURSIVE_QUESTION',
             ),
             'tooltip' => array(
-                'TXT_CORE_CM_LAST_MODIFIED'                     => 'TXT_CORE_CM_LAST_MODIFIED',
                 'TXT_CORE_CM_PUBLISHING_INFO_STATUSES'          => 'TXT_CORE_CM_PUBLISHING_INFO_STATUSES',
                 'TXT_CORE_CM_PUBLISHING_INFO_ACTION_ACTIVATE'   => 'TXT_CORE_CM_PUBLISHING_INFO_ACTION_ACTIVATE',
                 'TXT_CORE_CM_PUBLISHING_INFO_ACTION_DEACTIVATE' => 'TXT_CORE_CM_PUBLISHING_INFO_ACTION_DEACTIVATE',

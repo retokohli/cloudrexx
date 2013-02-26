@@ -8,7 +8,7 @@ class UpdatePageEventListener extends \Cx\Model\Events\PageEventListener {
         $em = $eventArgs->getEntityManager();
         $uow = $em->getUnitOfWork();
 
-        if ($entity instanceof \Cx\Model\ContentManager\Page) {
+        if ($entity instanceof \Cx\Core\ContentManager\Model\Doctrine\Entity\Page) {
             $updatedBy = $entity->getUpdatedBy();
             if (empty($updatedBy)) {
                 $entity->setUpdatedBy(
@@ -16,7 +16,7 @@ class UpdatePageEventListener extends \Cx\Model\Events\PageEventListener {
                 );
                 
                 $uow->recomputeSingleEntityChangeSet(
-                    $em->getClassMetadata('Cx\Model\ContentManager\Page'),
+                    $em->getClassMetadata('Cx\Core\ContentManager\Model\Doctrine\Entity\Page'),
                     $entity
                 );
             }

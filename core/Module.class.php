@@ -31,6 +31,10 @@ class Module {
     protected $defaultAct = '';
 
     protected $act = '';
+    /**
+     *
+     * @var \Cx\Core\Html\Sigma
+     */
     protected $template = null;
 
     public function __construct($act, $template) {

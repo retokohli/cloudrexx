@@ -646,7 +646,7 @@ class DBG
                 date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME).' '.
                 $text."\n");
         } else {
-            echo $text.'<br />';
+            echo $text.'<br />'."\r\n";
             // force log message output
             if (ob_get_level()) {
                 ob_flush();

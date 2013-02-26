@@ -108,7 +108,7 @@ class frontendEditing extends frontendEditingLib {
      */
     public function __construct($entityManager) {
         $this->em = $entityManager;
-        $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
+        $this->pageRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
 
         $this->intPageLangId = FRONTEND_LANG_ID;
 

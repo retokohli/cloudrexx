@@ -85,8 +85,8 @@ class ContentWorkflow extends Module {
         $this->em = \Env::em();
         $this->tpl = $template;
         $this->db = $db;
-        $this->nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
-        $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
+        $this->nodeRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
+        $this->pageRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
         $this->logRepo  = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
         
         if (isset($_GET['pos'])) {
@@ -163,7 +163,7 @@ class ContentWorkflow extends Module {
         
         foreach ($logs as $log) {
             if ($log['action'] == 'remove') {
-                $page = new \Cx\Model\ContentManager\Page();
+                $page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
                 $page->setId($log['objectId']);
                 $this->logRepo->revert($page, $log['version'] - 1);
             } else {
@@ -269,7 +269,7 @@ class ContentWorkflow extends Module {
             $dataByLang = array();
             
             foreach ($logsByLang as $lang => $log) {
-                $page = new \Cx\Model\ContentManager\Page();
+                $page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
                 $page->setId($log['objectId']);
                 $this->logRepo->revert($page, $log['version'] - 1);
                 
@@ -363,7 +363,7 @@ class ContentWorkflow extends Module {
         \Permission::checkAccess(77, 'static');
         
         // Create node
-        $node = new \Cx\Model\ContentManager\Node();
+        $node = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Node();
         $node->setParent($this->nodeRepo->getRoot());
         $this->em->persist($node);
         $this->em->flush();
@@ -389,7 +389,7 @@ class ContentWorkflow extends Module {
     }
     
     private function revertPage($pageId) {
-        $page = new \Cx\Model\ContentManager\Page();
+        $page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
         $page->setId($pageId);
         $logs = $this->logRepo->getLogEntries($page);
         $this->logRepo->revert($page, $logs[1]->getVersion());

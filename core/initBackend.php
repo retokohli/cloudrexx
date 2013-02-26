@@ -407,7 +407,7 @@ switch ($plainCmd) {
         break;
     case 'content':
         $subMenuTitle = $_CORELANG['TXT_CONTENT_MANAGER'];
-        $cm = new \Cx\Core\ContentManager\ContentManager($act, $objTemplate, $objDatabase, $objInit);
+        $cm = new \Cx\Core\ContentManager\Controller\ContentManager($act, $objTemplate, $objDatabase, $objInit);
         $cm->getPage();
         break;
     case 'license':

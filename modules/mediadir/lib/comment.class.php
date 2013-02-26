@@ -313,7 +313,7 @@ EOF;
 
         $arrComment = $this->getLastComment($intEnrtyId);
 
-        $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
         $pages = $pageRepo->findBy(array(
             'module' => contrexx_addslashes($strPageSection),
             'cmd' => contrexx_addslashes($strPageCmd),

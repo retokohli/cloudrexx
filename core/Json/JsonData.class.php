@@ -37,7 +37,7 @@ class JsonData {
      * @var array List of adapter class names 
      */
     protected static $adapter_classes = array(
-        'ContentManager' => array(
+        '\Cx\Core\ContentManager\Controller' => array(
             'JsonNode', 'JsonPage', 'JsonContentManager',
         ),
         'Block' => array(
