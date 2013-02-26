@@ -2,10 +2,9 @@
 global $_DBCONFIG, $loggableListener;
 
 use Doctrine\Common\Util\Debug as DoctrineDebug;
-use Cx\Model\Events\PageEventListener as PageEventListener;
+use Cx\Core\ContentManager\Model\Doctrine\Event\PageEventListener as PageEventListener;
 
 require_once(ASCMS_CORE_PATH.'/Env.class.php');
-require_once(ASCMS_MODEL_PATH.'/events/PageEventListener.class.php');
 
 $doctrineDir = ASCMS_LIBRARY_PATH.'/doctrine/';
 
@@ -22,8 +21,8 @@ $classLoader = new ClassLoader('Doctrine\Common', realpath($doctrineDir.'/vendor
 $classLoader->register();
 $classLoader = new ClassLoader('Symfony', realpath($doctrineDir.'/vendor'));
 $classLoader->register();
-$classLoader = new ClassLoader('Cx\Model', ASCMS_MODEL_PATH.'/entities');
-$classLoader->register();
+/*$classLoader = new ClassLoader('Cx\Model', ASCMS_MODEL_PATH.'/entities');
+$classLoader->register();*/
 $classLoader = new ClassLoader('Cx\Model\Proxies', ASCMS_MODEL_PROXIES_PATH);
 $classLoader->register();
 
@@ -60,8 +59,12 @@ $connectionOptions = array(
 $evm = new \Doctrine\Common\EventManager();
 
 $chainDriverImpl = new \Doctrine\ORM\Mapping\Driver\DriverChain();
-$driverImpl = new \Doctrine\ORM\Mapping\Driver\YamlDriver(ASCMS_MODEL_PATH.'/yml');
-$chainDriverImpl->addDriver($driverImpl, 'Cx\Model');
+$driverImpl = new \Doctrine\ORM\Mapping\Driver\YamlDriver(array(
+    ASCMS_MODEL_PATH.'/yml',
+    ASCMS_CORE_PATH.'/Component'.'/Model/Doctrine/Yaml',
+    ASCMS_CORE_PATH.'/ContentManager'.'/Model/Doctrine/Yaml',
+));
+$chainDriverImpl->addDriver($driverImpl, 'Cx');
 
 //loggable stuff
 $loggableDriverImpl = $config->newDefaultAnnotationDriver(

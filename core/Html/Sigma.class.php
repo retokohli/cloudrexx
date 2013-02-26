@@ -43,4 +43,8 @@ class Sigma extends \HTML_Template_Sigma {
         fclose($fh);
         return $content;
     }
+    
+    function getRoot() {
+        return $this->fileRoot;
+    }
 }

@@ -365,7 +365,7 @@ class FileBrowser {
                     $arrPage['catid'] = $page['attr']['id'];
                     $arrPage['lang'] = BACKEND_LANG_ID;
                     $arrPage['protected'] = $page['attr']['protected'];
-                    $arrPage['type'] = \Cx\Model\ContentManager\Page::TYPE_CONTENT;
+                    $arrPage['type'] = \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_CONTENT;
                     $arrPage['alias'] = $page['title'];
                     $arrPage['frontend_access_id'] = $page['attr']['frontend_access_id'];
                     $arrPage['backend_access_id'] = $page['attr']['backend_access_id'];
@@ -382,7 +382,7 @@ class FileBrowser {
                     // But we can simulate level and type for our purposes: (level above)
                     $jsondata = json_decode($page['attr']['data-href']);
                     if (trim($jsondata->module) != '') {
-                        $arrPage['type'] = \Cx\Model\ContentManager\Page::TYPE_APPLICATION;
+                        $arrPage['type'] = \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION;
                         $module = explode(' ', $jsondata->module, 2);
                         $arrPage['modulename'] = $module[0];
                         if (count($module) > 1) {
@@ -390,11 +390,11 @@ class FileBrowser {
                         }
                     }
                     
-                    $url = "'" . '[[' . \Cx\Model\ContentManager\Page::PLACEHOLDER_PREFIX;
+                    $url = "'" . '[[' . \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::PLACEHOLDER_PREFIX;
     
 // TODO: This only works for regular application pages. Pages of type fallback that are linked to an application
 //       will be parsed using their node-id ({NODE_<ID>})
-                    if ($arrPage['type'] == \Cx\Model\ContentManager\Page::TYPE_APPLICATION) {
+                    if ($arrPage['type'] == \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION) {
                         $url .= $arrPage['modulename'];
                         if (!empty($arrPage['cmd'])) {
                             $url .= '_' . $arrPage['cmd'];

@@ -6,7 +6,7 @@
     #RewriteLogLevel 9
 
     # This is ASCMS_PATH_OFFSET, i.e.
-    RewriteBase   /cm_2_3
+    RewriteBase   /trunk
         
     # Remove trailing slash for old Apaches (newer ones stop rewriting when result matches request)
     #RewriteRule ^(\w\w\/)?(_meta|admin|cache|cadmin|changelog|config|core|core_modules|customizing|feed|images|installer|lang|lib|media|model|modules|testing|themes|tmp|update|webcam|favicon.ico)\/$ $2 [L,QSA]

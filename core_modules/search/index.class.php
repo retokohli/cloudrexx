@@ -76,7 +76,7 @@ function search_getSearchPage($pos, $page_content, $license)
 
     //Prm: Query,Section,Cmd,PageVar
     //$arrayContent=search_getResultArray($query,"","","page=",$term);
-    $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
+    $pageRepo = Env::em()->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
     // $term is already escaped, therefore we must unescape (using stripslashes()) it before passing it to searchResultsForSearchModule()
     $arrayContent = $pageRepo->searchResultsForSearchModule(stripslashes($term), $license);
     
@@ -384,7 +384,7 @@ function search_getResultArray($query,$section,$command,$pagevar,$term)
 
     $arraySearchResults = array();
 
-    $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
+    $pageRepo = Env::em()->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
     $crit = array(
          'module' => $section,
          'lang'   => FRONTEND_LANG_ID,

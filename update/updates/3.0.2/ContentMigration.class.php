@@ -61,7 +61,7 @@ class ContentMigration
 
             // Skip existing nodes
             if(!isset($this->nodeArr[$catId])) {
-                $this->nodeArr[$catId] = new \Cx\Model\ContentManager\Node();
+                $this->nodeArr[$catId] = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Node();
             }
             $arrSortedNodes[] = $this->nodeArr[$catId];
 
@@ -194,14 +194,14 @@ class ContentMigration
             return false;
         }
 
-        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
-        $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
+        $pageRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+        $nodeRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
 
         $this->nodeArr = array();
 
         if (empty($_SESSION['contrexx_update']['root_node_added'])) {
             // This will be the root of the site-tree
-            $root = new \Cx\Model\ContentManager\Node();
+            $root = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Node();
             self::$em->persist($root);
             self::$em->flush();
             $_SESSION['contrexx_update']['root_node_added'] = true;
@@ -355,7 +355,7 @@ class ContentMigration
                         case 'new':
                         case 'update':
                             if (empty($page)) {
-                                $page = new \Cx\Model\ContentManager\Page();
+                                $page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
                             }
 
                             $this->_setPageRecords($objResult, $this->nodeArr[$catId], $page);
@@ -459,7 +459,7 @@ class ContentMigration
                         $pageId = $_SESSION['contrexx_update']['pages'][$catId];
                         $page   = $pageRepo->find($pageId);
                     } else {
-                        $page = new \Cx\Model\ContentManager\Page();
+                        $page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
                     }
 
                     $this->_setPageRecords($objRecords, $this->nodeArr[$catId], $page);
@@ -502,7 +502,7 @@ class ContentMigration
                 while (!$objResult->EOF) {
                     $catId = $objResult->fields['catid'];
                     $aliasPage = $pageRepo->findOneBy(array(
-                        'type' => \Cx\Model\ContentManager\Page::TYPE_ALIAS,
+                        'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_ALIAS,
                         'slug' => 'legacy_page_' . $catId,
                     ), true);
                     if ($aliasPage) {
@@ -577,13 +577,13 @@ class ContentMigration
         $page->setLinkTarget($linkTarget);
 
         if ($objResult->fields['module'] && isset($this->moduleNames[$objResult->fields['module']])) {
-            $page->setType(\Cx\Model\ContentManager\Page::TYPE_APPLICATION);
+            $page->setType(\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION);
             $page->setModule($this->moduleNames[$objResult->fields['module']]);
         }
         $page->setCmd($objResult->fields['cmd']);
 
         if ($page->getTarget()) {
-            $page->setType(\Cx\Model\ContentManager\Page::TYPE_REDIRECT);
+            $page->setType(\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_REDIRECT);
         }
 
         $page->validate();
@@ -617,11 +617,11 @@ class ContentMigration
 
         foreach ($arrAliases as $target => $arrSlugs) {
             foreach ($arrSlugs as $slug => $type) {
-                $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
+                $pageRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
 
                 if ($type === 'local') {
                     $aliasPage = $pageRepo->findOneBy(array(
-                        'type' => \Cx\Model\ContentManager\Page::TYPE_ALIAS,
+                        'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_ALIAS,
                         'slug' => 'legacy_page_' . $target,
                     ), true);
 
@@ -828,9 +828,9 @@ class ContentMigration
                             $blockId   = $objResult->fields['block_id'];
                             $oldPageId = $objResult->fields['page_id'];
 
-                            $pageRepo  = self::$em->getRepository('Cx\Model\ContentManager\Page');
+                            $pageRepo  = self::$em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
                             $aliasPage = $pageRepo->findOneBy(array(
-                                'type' => \Cx\Model\ContentManager\Page::TYPE_ALIAS,
+                                'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_ALIAS,
                                 'slug' => 'legacy_page_' . $oldPageId,
                             ), true);
 
@@ -885,7 +885,7 @@ class ContentMigration
 
                     $uniqueLangIds = array_unique($langIds);
                     foreach ($uniqueLangIds as $langId) {
-                        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
+                        $pageRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
                         $pages = $pageRepo->findBy(array(
                             'lang' => $langId,
                         ), true);
@@ -948,8 +948,8 @@ class ContentMigration
 
         $arrSimilarPages = $_SESSION['contrexx_update']['similar_pages'];
 
-        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
-        $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
+        $pageRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+        $nodeRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
 
         $nodeToRemove = array();
         if (empty($_SESSION['contrexx_update']['node_to_remove'])) $_SESSION['contrexx_update']['node_to_remove'] = array();
@@ -1048,7 +1048,7 @@ class ContentMigration
     {
         $qb = self::$em->createQueryBuilder();
         $qb ->select('p')
-            ->from('Cx\Model\ContentManager\Page', 'p')
+            ->from('Cx\Core\ContentManager\Model\Doctrine\Entity\Page', 'p')
             ->innerJoin('p.node', 'n')
             ->where($qb->expr()->in('p.lang', $this->migrateLangIds))
             ->andWhere($qb->expr()->neq('p.module', ':empty'))
@@ -1141,8 +1141,8 @@ class ContentMigration
         $cl->loadFile(ASCMS_CORE_PATH . '/Tree.class.php');
         $cl->loadFile(UPDATE_CORE . '/UpdateTree.class.php');
 
-        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
-        $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
+        $pageRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+        $nodeRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
 
         foreach ($this->arrMigrateLangIds as $lang) {
             $objContentTree  = new \UpdateContentTree($lang);

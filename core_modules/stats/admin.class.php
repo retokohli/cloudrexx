@@ -830,7 +830,7 @@ class stats extends statsLibrary
 
         if (count($this->arrMostViewedPages) > 0) {
             foreach ($this->arrMostViewedPages as $stats) {
-                $page = \Env::get('em')->getRepository('\Cx\Model\ContentManager\Page')->findOneBy(array('id' => $stats['id']));
+                $page = \Env::get('em')->getRepository('\Cx\Core\ContentManager\Model\Doctrine\Entity\Page')->findOneBy(array('id' => $stats['id']));
                 if ($page) {
                     $url = \Cx\Core\Routing\Url::fromPage($page);
                     $title = '<a href="'.$url.'" target="_blank">'.$page->getTitle().'</a> (/'.$url->getLangDir().'/'.$url->getPath().')';

@@ -40,7 +40,7 @@ class Resolver {
 
     /**
      * the page we found.
-     * @var Cx\Model\ContentManager\Page
+     * @var Cx\Core\ContentManager\Model\Doctrine\Entity\Page
      */
     protected $page = null;
 
@@ -128,8 +128,8 @@ class Resolver {
         $this->em = $entityManager;
         $this->lang = $lang;
         $this->pathOffset = $pathOffset;
-        $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
-        $this->nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
+        $this->pageRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+        $this->nodeRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
         $this->logRepo  = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
         $this->forceInternalRedirection = $forceInternalRedirection;
         $this->fallbackLanguages = $fallbackLanguages;
@@ -148,7 +148,7 @@ class Resolver {
         $this->path = $path;
 
         //(I) see what the model has for us, aliases only.
-        $result = $this->pageRepo->getPagesAtPath($path, null, null, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_ALIAS_ONLY);
+        $result = $this->pageRepo->getPagesAtPath($path, null, null, false, \Cx\Core\ContentManager\Model\Doctrine\Repository\PageRepository::SEARCH_MODE_ALIAS_ONLY);
 
         //(II) sort out errors
         if(!$result) {
@@ -169,7 +169,7 @@ class Resolver {
         }
         
         $langDir = $this->url->getLangDir();
-        if (!empty($langDir) && $this->pageRepo->getPagesAtPath($langDir.'/'.$path, null, FRONTEND_LANG_ID, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY)) {
+        if (!empty($langDir) && $this->pageRepo->getPagesAtPath($langDir.'/'.$path, null, FRONTEND_LANG_ID, false, \Cx\Core\ContentManager\Model\Doctrine\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY)) {
             return null;
         }
 
@@ -202,7 +202,7 @@ class Resolver {
             }
 
             //(I) see what the model has for us
-            $result = $this->pageRepo->getPagesAtPath($this->url->getLangDir().'/'.$path, null, $this->lang, false, \Cx\Model\ContentManager\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
+            $result = $this->pageRepo->getPagesAtPath($this->url->getLangDir().'/'.$path, null, $this->lang, false, \Cx\Core\ContentManager\Model\Doctrine\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
             if ($this->pagePreview) {
                 if (empty($this->sessionPage)) {
                     if (\Permission::checkAccess(6, 'static', true)) {
@@ -249,8 +249,8 @@ class Resolver {
           resolving starts over again.
          */
         $target = $this->page->getTarget();
-        $isRedirection = $this->page->getType() == \Cx\Model\ContentManager\Page::TYPE_REDIRECT;
-        $isAlias = $this->page->getType() == \Cx\Model\ContentManager\Page::TYPE_ALIAS;
+        $isRedirection = $this->page->getType() == \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_REDIRECT;
+        $isAlias = $this->page->getType() == \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_ALIAS;
 
         //handles alias redirections internal / disables external redirection
         $this->forceInternalRedirection = $this->forceInternalRedirection || $isAlias;
@@ -354,8 +354,8 @@ class Resolver {
         $this->handleFallbackContent($this->page, !$internal);
 
         // set legacy <section> and <cmd> in case the requested page is an application
-        if ($this->page->getType() == \Cx\Model\ContentManager\Page::TYPE_APPLICATION
-                || $this->page->getType() == \Cx\Model\ContentManager\Page::TYPE_FALLBACK) {
+        if ($this->page->getType() == \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION
+                || $this->page->getType() == \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_FALLBACK) {
             $this->command = $this->page->getCmd();
             $this->section = $this->page->getModule();
         }
@@ -397,7 +397,7 @@ class Resolver {
                 }
             }
 
-            $pageRepo = \Env::em()->getRepository('Cx\Model\ContentManager\Page');
+            $pageRepo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
             $this->page = $pageRepo->findOneByModuleCmdLang($section, $command, FRONTEND_LANG_ID);
 
             //fallback content
@@ -415,15 +415,15 @@ class Resolver {
 
     /**
      * Returns the preview page built from the session page array.
-     * @return Cx\Model\ContentManager\Page $page
+     * @return Cx\Core\ContentManager\Model\Doctrine\Entity\Page $page
      */
     private function getPreviewPage() {
         $data = $this->sessionPage;
 
         $page = $this->pageRepo->findOneById($data['pageId']);
         if (!$page) {
-            $page = new \Cx\Model\ContentManager\Page();
-            $node = new \Cx\Model\ContentManager\Node();
+            $page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
+            $node = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Node();
             $node->setParent($this->nodeRepo->getRoot());
             $node->setLvl(1);
             $this->nodeRepo->getRoot()->addChildren($node);
@@ -447,13 +447,13 @@ class Resolver {
 
     /**
      * Checks whether $page is of type 'fallback'. Loads fallback content if yes.
-     * @param Cx\Model\ContentManager $page
+     * @param Cx\Core\ContentManager\Model\Doctrine $page
      * @param boolean $requestedPage Set to TRUE (default) if the $page passed by $page is the first resolved page (actual requested page)
      * @throws ResolverException
      */
     public function handleFallbackContent($page, $requestedPage = true) {
         //handle untranslated pages - replace them by the right language version.
-        if($page->getType() == \Cx\Model\ContentManager\Page::TYPE_FALLBACK) {
+        if($page->getType() == \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_FALLBACK) {
             // in case the first resolved page (= original requested page) is a fallback page
             // we must check here if this very page is active.
             // If we miss this check, we would only check if the referenced fallback page is active!
@@ -495,7 +495,7 @@ class Resolver {
 
     /**
      * Checks if this page can be displayed in frontend, redirects to login of not
-     * @param \Cx\Model\ContentManager\Page $page Page to check
+     * @param \Cx\Core\ContentManager\Model\Doctrine\Entity\Page $page Page to check
      * @param int $history (optional) Revision of page to use, 0 means current, default 0
      */
     public function checkPageFrontendProtection($page, $history = 0) {
@@ -511,7 +511,7 @@ class Resolver {
         $checkLogin = array($page);
         while (count($checkLogin)) {
             $currentPage = array_pop($checkLogin);
-            if ($currentPage->getType() == \Cx\Model\ContentManager\Page::TYPE_FALLBACK) {
+            if ($currentPage->getType() == \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_FALLBACK) {
                 try {
                     array_push($checkLogin, $this->getFallbackPage($currentPage));
                 } catch (ResolverException $e) {}

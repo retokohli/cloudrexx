@@ -95,7 +95,7 @@ class frontendEditingLib {
         
         if (FWUser::getFWUserObject()->objUser->login()) {
             $em = Env::em();
-            $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
+            $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
             $page = $pageRepo->find($pageId);
 
             if ((FWUser::getFWUserObject()->objUser->getAdminStatus()) ||

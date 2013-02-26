@@ -51,7 +51,7 @@ class Navigation
     * Constructor
     * @global   integer
     * @param     integer  $pageId
-    * @param Cx\Model\ContentManager\Page $page
+    * @param Cx\Core\ContentManager\Model\Doctrine\Entity\Page $page
     */
     function __construct($pageId, $page)
     {
@@ -84,7 +84,7 @@ class Navigation
      * @param   string  $templateContent
      * @param   boolean $boolShop         If true, parse the shop navigation
      *                                    into {SHOPNAVBAR_FILE}
-     * @param   \Cx\Model\ContentManager\Page requestedPage
+     * @param   \Cx\Core\ContentManager\Model\Doctrine\Entity\Page requestedPage
      * @access  private
     * @return mixed parsed navigation
     */

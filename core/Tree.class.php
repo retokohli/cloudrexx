@@ -82,7 +82,7 @@ class ContentTree {
 
     function buildTree($node = null, $level = 0, $pathSoFar = '') {
         if (!$node) {
-            $node = $this->em->getRepository('Cx\Model\ContentManager\Node')->getRoot();
+            $node = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Node')->getRoot();
         }
         $nodes = $node->getChildren();
         foreach ($nodes as $node) {//$title => $entry) {

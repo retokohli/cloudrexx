@@ -249,10 +249,10 @@ if ($version != 'stable') {
 
 if ($version == 'rc1') {
     $em = \Env::em();
-    $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
+    $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
 
     $fallbackPages = $pageRepo->findBy(array(
-        'type' => \Cx\Model\ContentManager\Page::TYPE_FALLBACK,
+        'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_FALLBACK,
     ));
 
     foreach ($fallbackPages as $page) {

@@ -33,7 +33,7 @@ h1{ font-size: 20px }
     width: 100%;
     height: 100%;
     padding-bottom: 70px;
-    background: url(../images/subnavigation_level_1.jpg) repeat-x left top;
+    background: url(../Media/subnavigation_level_1.jpg) repeat-x left top;
 }
 
 #content-manager.edit_view {
@@ -157,11 +157,11 @@ h1{ font-size: 20px }
 }
 
 #flip-menu .jstree-action.open {
-    background-image: url(../../../images/icons/expand.png);
+    background-image: url('../Media/expand.png');
 }
 
 #flip-menu .jstree-action.close {
-    background-image: url(../../../images/icons/close.png);
+    background-image: url('../Media/close.png');
 }
 
 #multiple-actions {
@@ -180,7 +180,7 @@ h1{ font-size: 20px }
 }
 
 .toplevel {
-    background: url(../images/contrexx_icon.png) no-repeat scroll 25px 3px transparent
+    background: url(../Media/contrexx_icon.png) no-repeat scroll 25px 3px transparent
 }
 
 #site-tree ul {
@@ -275,7 +275,7 @@ h1{ font-size: 20px }
 
 #site-tree .preview {
     left: 70.6%;
-    background: url(../images/content_manager_preview.png) no-repeat left center;
+    background: url(../Media/content_manager_preview.png) no-repeat left center;
     padding: 0 0 0 16px !important;
 }
 
@@ -283,32 +283,9 @@ h1{ font-size: 20px }
     right: 10px;
 }
 
-#site-tree .lastupdate .date {
-    position: static;
-    float: left;
-    width: auto;
-}
-
-#site-tree .lastupdate .user.tp-trigger {
-    position: static;
-    float: left;
-    width: 14px !important;
-    padding: 0 0 0 5px;
-    background: url(../../../images/icons/icon-user.png) no-repeat right center;
-}
-
-*+html #site-tree .lastupdate .user.tp-trigger {
-    width: 0;
-    padding: 0 0 0 19px;
-}
-
-#site-tree .lastupdate .user.tp-value {
-    display: none;
-}
-
 #site-tree .actions {
     left: 77.6%;
-    background: url(../images/content_manager_actions_plus.png) no-repeat left center;
+    background: url(../Media/content_manager_actions_plus.png) no-repeat left center;
     padding: 0 0 0 16px;
 }
 
@@ -327,7 +304,7 @@ h1{ font-size: 20px }
     float: left;
     width: 13px;
     height: 100%;
-    background: url(../images/content_manager_actions_arrow.png) no-repeat right center;
+    background: url(../Media/content_manager_actions_arrow.png) no-repeat right center;
 }
 
 #content-manager #site-tree {
@@ -395,34 +372,34 @@ h1{ font-size: 20px }
 }
 
 #site-tree .actions-expanded ul li.new {
-    background-image: url(../images/content_manager_actions_new_within.png);
+    background-image: url(../Media/content_manager_actions_new_within.png);
     background-position: left center;
     height: 18px;
     margin: 2px 0 2px 0;
 }
 
 #site-tree .actions-expanded ul li.activate {
-    background-image: url(../images/content_manager_actions_activate.png);
+    background-image: url(../Media/content_manager_actions_activate.png);
 }
 
 #site-tree .actions-expanded ul li.deactivate {
-    background-image: url(../images/content_manager_actions_deactivate.png);
+    background-image: url(../Media/content_manager_actions_deactivate.png);
 }
 
 #site-tree .actions-expanded ul li.show {
-    background-image: url(../images/content_manager_actions_show.png);
+    background-image: url(../Media/content_manager_actions_show.png);
 }
 
 #site-tree .actions-expanded ul li.hide {
-    background-image: url(../images/content_manager_actions_hide.png);
+    background-image: url(../Media/content_manager_actions_hide.png);
 }
 
 #site-tree .actions-expanded ul li.publish {
-    background-image: url(../images/content_manager_actions_publish.png);
+    background-image: url(../Media/content_manager_actions_publish.png);
 }
 
 #site-tree .actions-expanded ul li.delete {
-    background-image: url(../images/content_manager_actions_delete.png);
+    background-image: url(../Media/content_manager_actions_delete.png);
     background-position: 3px top;
 }
 
@@ -456,7 +433,7 @@ h1{ font-size: 20px }
     width: 16px;
     height: 16px;
     margin: 7px 0 0 10px;
-    background: url(../images/move.png) no-repeat right bottom;
+    background: url(../Media/move.png) no-repeat right bottom;
 }
 
 *+html #site-tree .jstree-move {
@@ -479,12 +456,12 @@ h1{ font-size: 20px }
 #site-tree .publishing {
     width: 13px;
     height: 14px;
-    background-image: url(../images/publishing_unlocked.png);
+    background-image: url('../Media/publishing_unlocked.png');
     background-position: -34px -5px;
     margin-top: 8px;
 }
 #site-tree .publishing.locked {
-    background-image: url(../images/publishing_locked.png);
+    background-image: url('../Media/publishing_locked.png');
     background-position: -33px -4px;
 }
 #site-tree .publishing.draft {
@@ -523,16 +500,16 @@ h1{ font-size: 20px }
     margin-top: 7px;
     height: 17px;
     width: 20px;
-    background-image: url(../images/page_visible.png);
+    background-image: url(../Media/page_visible.png);
 }
 #site-tree .page.broken {
-    background-image: url(../images/page_visible_broken.png);
+    background-image: url(../Media/page_visible_broken.png);
 }
 #site-tree .page.invisible {
-    background-image: url(../images/page_invisible.png);
+    background-image: url(../Media/page_invisible.png);
 }
 #site-tree .page.invisible.broken {
-    background-image: url(../images/page_invisible_broken.png);
+    background-image: url(../Media/page_invisible_broken.png);
 }
 
 #site-tree .page {
@@ -625,12 +602,12 @@ h1{ font-size: 20px }
 
 #edit_mode .left {
     left: 20%;
-    background: url(../images/edit_mode_layout.png) no-repeat center top;
+    background: url(../Media/edit_mode_layout.png) no-repeat center top;
 }
 
 #edit_mode .right {
     right: 20%;
-    background: url(../images/edit_mode_content.png) no-repeat center top;
+    background: url(../Media/edit_mode_content.png) no-repeat center top;
 }
 
 
@@ -657,24 +634,24 @@ h1{ font-size: 20px }
 }
 
 #content-manager.sidebar-hide #sidebar_toggle {
-    background-image: url(../images/sidebar_hide.png);
+    background-image: url(../Media/sidebar_hide.png);
     background-repeat: no-repeat;
     background-position: center center;
 }
 
 #content-manager.sidebar-hide #sidebar_toggle:hover {
-    background-image: url(../images/sidebar_hide_hover.png);
+    background-image: url(../Media/sidebar_hide_hover.png);
 }
 
 #content-manager.sidebar-show #sidebar_toggle {
-    background-image: url(../images/sidebar_show.png);
+    background-image: url(../Media/sidebar_show.png);
     background-repeat: no-repeat;
     background-position: center center;
     margin-left: 0;
 }
 
 #content-manager.sidebar-show #sidebar_toggle:hover {
-    background-image: url(../images/sidebar_show_hover.png);
+    background-image: url(../Media/sidebar_show_hover.png);
 }
 
 #page #cm-tabs {
@@ -851,7 +828,7 @@ div.date img{
 }
 
 #showHideInfo{
-    background: #f1f1f1 url(../images/dbl_arrow.png) 50% -29px no-repeat;
+    background: #f1f1f1 url(../Media/dbl_arrow.png) 50% -29px no-repeat;
     float: right;
     position: relative;
     left: 0;
@@ -922,11 +899,11 @@ div.date img{
 }
 
 #page .toggle.open .indicator {
-    background: url(../images/content_manager_toggle_open.png) no-repeat center center;
+    background: url(../Media/content_manager_toggle_open.png) no-repeat center center;
 }
 
 #page .toggle.closed .indicator {
-    background: url(../images/content_manager_toggle_closed.png) no-repeat center center;
+    background: url(../Media/content_manager_toggle_closed.png) no-repeat center center;
 }
 
 #page .toggle label,
@@ -1039,7 +1016,7 @@ div.date img{
     float: left;
     width: 18px;
     margin: 0 0 2px 0;
-    background: url(../images/button_bg.png) repeat-x left top #dadada;
+    background: url(../Media/button_bg.png) repeat-x left top #dadada;
     border: 1px solid #bbbbbb;
     padding: 2px 10px;
     color: #444444;
@@ -1156,13 +1133,13 @@ div.date img{
 #page_history .historyLoad {
     float: right;
     padding: 0 15px 0 20px;
-    background: url(../images/content_manager_restore.png) no-repeat left center;
+    background: url(../Media/content_manager_restore.png) no-repeat left center;
 }
 
 #page_history .historyPreview {
     float: right;
     padding: 0 0 0 18px;
-    background: url(../images/content_manager_preview.png) no-repeat left center;
+    background: url(../Media/content_manager_preview.png) no-repeat left center;
 }
 
 
@@ -1209,7 +1186,7 @@ div.date img{
 }
 
 .btn {
-    background: url(../images/button_bg.png) top left repeat-x;
+    background: url(../Media/button_bg.png) top left repeat-x;
     border: 1px solid #bbb;
     color: #333;
     cursor: pointer;
