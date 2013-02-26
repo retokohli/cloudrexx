@@ -1688,7 +1688,7 @@ END;
                 $stage = '';
                 $status = 1;
                 if ($db)
-                    $this->_strOkMessage = "Opportunity stage added successfully";
+                    $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_STAGES_SAVED'];
                 else
                     $this->_strErrMessage = "Error in saving Record";
             } else {
@@ -4631,6 +4631,7 @@ END;
                 'TXT_CRM_DEALS_RESPONSIBLE'     =>  $_ARRAYLANG['CRM_PROJECT_RESPONSIBLE'],
                 'CRM_DEALS_SEARCH_TERM'         =>  contrexx_input2xhtml($_GET['term']),
                 'TXT_CRM_ENTER_SEARCH_TERM'     => $_ARRAYLANG['TXT_CRM_ENTER_SEARCH_TERM'],
+                'TXT_CRM_CONFIRM_DELETE_ENTRY'  => $_ARRAYLANG['TXT_ARE_YOU_SURE_DELETE_ENTRIES']
         ));
     }
 
