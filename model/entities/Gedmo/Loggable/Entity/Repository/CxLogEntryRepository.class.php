@@ -27,7 +27,7 @@ class CxLogEntryRepository extends LogEntryRepository
     {
         parent::__construct($em, $class);
         $this->em = $em;
-        $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
+        $this->pageRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
     }
     
     /**
