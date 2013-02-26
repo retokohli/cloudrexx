@@ -283,6 +283,29 @@ h1{ font-size: 20px }
     right: 10px;
 }
 
+#site-tree .lastupdate .date {
+    position: static;
+    float: left;
+    width: auto;
+}
+
+#site-tree .lastupdate .user.tp-trigger {
+    position: static;
+    float: left;
+    width: 14px !important;
+    padding: 0 0 0 5px;
+    background: url(../Media/icon-user.png) no-repeat right center;
+}
+
+*+html #site-tree .lastupdate .user.tp-trigger {
+    width: 0;
+    padding: 0 0 0 19px;
+}
+
+#site-tree .lastupdate .user.tp-value {
+    display: none;
+}
+
 #site-tree .actions {
     left: 77.6%;
     background: url(../Media/content_manager_actions_plus.png) no-repeat left center;
