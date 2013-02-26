@@ -61,7 +61,7 @@ class CxLogEntryRepository extends LogEntryRepository
                        ->getDQL().')'
                )
            )
-           ->setParameter('objectClass', 'Cx\Model\ContentManager\Page');
+           ->setParameter('objectClass', 'Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
         
         switch ($action) {
             case 'deleted':
@@ -70,7 +70,7 @@ class CxLogEntryRepository extends LogEntryRepository
                 $logsByNodeId = array();
                 
                 foreach ($logs as $log) {
-                    $page = new \Cx\Model\ContentManager\Page();
+                    $page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
                     $page->setId($log->getObjectId());
                     $this->revert($page, $log->getVersion() - 1);
                     
@@ -152,7 +152,7 @@ class CxLogEntryRepository extends LogEntryRepository
                )
            )
            ->orderBy('l.loggedAt', 'DESC')
-           ->setParameter('objectClass', 'Cx\Model\ContentManager\Page');
+           ->setParameter('objectClass', 'Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
         
         switch ($action) {
             case 'deleted':
@@ -181,7 +181,7 @@ class CxLogEntryRepository extends LogEntryRepository
                 
                 // Structure the logs by node id and language
                 foreach ($logs as $log) {
-                    $page = new \Cx\Model\ContentManager\Page();
+                    $page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
                     $page->setId($log['objectId']);
                     $this->revert($page, $log['version'] - 1);
                     
@@ -230,7 +230,7 @@ class CxLogEntryRepository extends LogEntryRepository
            ->where('l.action = :action')
            ->andWhere('l.objectClass = :objectClass')
            ->setParameter('action', $action)
-           ->setParameter('objectClass', 'Cx\Model\ContentManager\Page');
+           ->setParameter('objectClass', 'Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
         $result = $qb->getQuery()->getResult();
         
         return $result;
@@ -267,7 +267,7 @@ class CxLogEntryRepository extends LogEntryRepository
                                 ->orderBy('sl.version', 'DESC')
                                 ->getDQL() . '')
                 )
-                ->setParameter('objectClass', 'Cx\Model\ContentManager\Page');
+                ->setParameter('objectClass', 'Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
 
         $logs = $qb->getQuery()->getResult();
        
