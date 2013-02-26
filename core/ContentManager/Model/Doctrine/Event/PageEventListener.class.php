@@ -113,7 +113,7 @@ class PageEventListener {
         global $_CONFIG;
 
         $entity = $eventArgs->getEntity();
-        if (($entity instanceof \Cx\Model\ContentManager\Page)
+        if (($entity instanceof \Cx\Core\ContentManager\Model\Doctrine\Entity\Page)
             && ($entity->getType() != 'alias')
             && ($_CONFIG['xmlSitemapStatus'] == 'on')
         ) {
@@ -126,7 +126,7 @@ class PageEventListener {
 
         $uow = $em->getUnitOfWork();
 
-        $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
+        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
 
         foreach ($uow->getScheduledEntityUpdates() AS $entity) {
             $this->checkValidPersistingOperation($pageRepo, $entity);
