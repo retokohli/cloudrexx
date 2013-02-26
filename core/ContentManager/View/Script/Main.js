@@ -1176,14 +1176,14 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 } else {
                     display = 'hide';
                 }
-                jQuery(e).append($J('<span class="module ' + lang + ' ' + display + '" /><a class="preview ' + lang + ' ' + display + '" target="_blank">' + cx.variables.get('TXT_CORE_CM_VIEW', 'contentmanager/lang') + '</a><span class="lastupdate ' + lang + ' ' + display + '" />'));
+                jQuery(e).append($J('<span class="module ' + lang + ' ' + display + '" /><a class="preview ' + lang + ' ' + display + '" target="_blank">' + cx.variables.get('TXT_CORE_CM_VIEW', 'contentmanager/lang') + '</a><span class="lastupdate ' + lang + ' ' + display + '"><span class="date" /><span class="user tp-trigger" /><span class="user tp-value"/></span>'));
                 var info = jQuery.parseJSON(jQuery(e).siblings('a[data-href].' + lang).attr('data-href'));
                 try {
                     if (info != null) {
-                        var user = info.user != '' ? ', ' + info.user : '';
                         jQuery(e).children('span.module.' + lang).text(info.module);
                         jQuery(e).children('a.preview.' + lang).attr('href', '../' + lang + info.path + '?pagePreview=1');
-                        jQuery(e).children('span.lastupdate.' + lang).text(info.lastupdate + user);
+                        jQuery(e).find('span.lastupdate.' + lang + ' .date').text(info.lastupdate);
+                        jQuery(e).find('span.lastupdate.' + lang + ' .user.tp-value').text(cx.variables.get('TXT_CORE_CM_LAST_MODIFIED', 'contentmanager/lang/tooltip') + ' ' + (info.user != '' ? '„'+info.user+'“'  : '“'));
                     }
                 } catch (ex) {
                     jQuery(e).children('a.preview.' + lang).css('display', 'none');
@@ -1234,6 +1234,16 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             }
         }, 100);
 
+
+        jQuery('#site-tree .user.tp-trigger').tooltip({
+            tip: '#tooltip_message',
+            offset: [-124,-202],
+            position: 'top left',
+            predelay: 250,
+            onBeforeShow: function(objEvent) {
+                this.getTip().html(this.getTrigger().siblings('.user.tp-value').text());
+            }
+        });
         jQuery('#site-tree .publishing, #site-tree .page, #site-tree .jstree-move, #site-tree .translation, #site-tree .preview, #site-tree .name').tooltip({
             tip: '#tooltip_message',
             offset: [-130,-231],
