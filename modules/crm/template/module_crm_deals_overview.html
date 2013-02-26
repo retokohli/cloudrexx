@@ -41,7 +41,7 @@
                 return
             }
             if ($J(this).val() == "delete") {
-                if(confirm('Are you Sure Want to delete the Entry'))
+                if(confirm('{TXT_CRM_CONFIRM_DELETE_ENTRY}'))
                     $J("#dealsOverview").submit();
                 else
                     return;
@@ -53,7 +53,7 @@
         $J(".deleteEntry").click(function(){
             $elm  = $J(this);
             en_id = $J(this).attr('rel').split('_')[1]
-            if (confirm ("Are you sure want to delete the entry!")) {
+            if (confirm ("{TXT_CRM_CONFIRM_DELETE_ENTRY}")) {
                 $J.ajax({
                     url     : './index.php?cmd={MODULE_NAME}&act=deals&actionType=deletedeals&ajax=1&id='+en_id,
                     type    : 'POST',

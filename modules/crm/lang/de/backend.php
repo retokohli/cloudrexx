@@ -613,3 +613,4 @@ $_ARRAYLANG['TXT_CRM_DOUBLE_QUOTE'] = "doppeltes Anführungszeichen";
 $_ARRAYLANG['TXT_CRM_DOUBLE_QUOTE'] = "einfaches Anführungszeichen";
 $_ARRAYLANG['TXT_CRM_FILTER_TASK_TYPE']             = "Filter Task type";
 $_ARRAYLANG['TXT_CRM_MAIL_TEMPLATE']                = "E-Mail Vorlagen";
+$_ARRAYLANG['TXT_CRM_STAGES_SAVED']                 = "Verkaufschancen Hinzufügen erfolgreich hinzugefügen";
