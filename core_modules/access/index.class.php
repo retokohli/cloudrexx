@@ -493,7 +493,7 @@ class Access extends AccessLib
         if (!empty($_SESSION['user_id'])) {
             $objUser = FWUser::getFWUserObject()->objUser->getUser($_SESSION['user_id']);
             if ($objUser) {
-                $objUser->setExpirationDate(0);
+                $objUser->releaseRestoreKey();
 
                 $active = $arrSettings['sociallogin_active_automatically']['status'];
                 $objUser->setActiveStatus($active);

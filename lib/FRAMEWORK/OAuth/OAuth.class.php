@@ -118,8 +118,8 @@ abstract class OAuth implements OAuthInterface
             $objUser->setActiveStatus(!$registrationRedirectNeeded);
 
             if ($registrationRedirectNeeded) {
-                // the user has 10 minutes to sign up. otherwise the user will be deactivated
-                $objUser->setExpirationDate(time() + 10 * 60);
+                $objUser->setRestoreKey();
+                $objUser->setRestoreKeyTime(intval($arrSettings['sociallogin_activation_timeout']['value']) * 60);
             }
 
             if (!empty($arrSettings['sociallogin_assign_to_groups']['value'])) {

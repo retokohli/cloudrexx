@@ -299,4 +299,6 @@ $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_ACTIVATED_AUTOMATICALLY'] = "User is active 
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_ACTIVATED_NOT_AUTOMATICALLY'] = "User have to get activated. (Same setting like the Community setting)";
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_NEED_CURL'] = "The login with social networks can't be activated because the php extension cUrl is missing.";
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_PERMISSION_DENIED'] = "You have no permission to view these settings.";
+$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_ACTIVATION_TIME'] = "Time period in minutes before the user, which didn't complete the sign up process, will be deleted.";
+$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_UNCOMPLETED_SIGN_UP'] = "Uncompleted sign up";
 ?>

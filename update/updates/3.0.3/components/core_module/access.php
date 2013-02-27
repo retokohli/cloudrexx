@@ -792,7 +792,7 @@ function _accessUpdate()
      * ADD NETWORK TABLE FOR SOCIAL LOGIN
      *
      **************************************/
-    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.3')) {
         try {
             \Cx\Lib\UpdateUtil::table(
                 DBPREFIX.'access_user_network',
@@ -849,6 +849,20 @@ function _accessUpdate()
             };
 
             \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'access', 'cmd' => 'signup'), $search, $callback, array('content'), '3.0.2');
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    }
+
+
+    /***************************************
+     *
+     * ADD SETTING FOR SOCIAL LOGIN
+     *
+     **************************************/
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.3')) {
+        try {
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin_activation_timeout', '10', '0') ON DUPLICATE KEY UPDATE `key` = `key`");
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }

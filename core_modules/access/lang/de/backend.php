@@ -299,4 +299,6 @@ $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_ACTIVATED_AUTOMATICALLY'] = "Benutzer sofort
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_ACTIVATED_NOT_AUTOMATICALLY'] = "Benutzer muss zuerst aktiviert werden (Gemäss der Einstellung unter Community)";
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_NEED_CURL'] = "Das Login mit sozialen Netzwerken kann nicht aktiviert werden, da die PHP-Erweiterung cUrl nicht installiert ist.";
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_PERMISSION_DENIED'] = "Sie sind nicht dazu berechtigt diese Einstellungen einzusehen.";
+$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_ACTIVATION_TIME'] = "Zeitperiode in Minuten bevor der Benutzer, bei nicht abgeschlossener Registrierung, wieder entfernt wird.";
+$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_UNCOMPLETED_SIGN_UP'] = "Unvollständige Registrierung";
 ?>
