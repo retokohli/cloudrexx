@@ -1926,6 +1926,8 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_USER_ACCOUNT_ACTIVATION_METHOD_TEXT'    => $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_ACTIVATION_METHOD_TEXT'],
             'TXT_ACCESS_SOCIALLOGIN_ACTIVATED_AUTOMATICALLY'    => $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_ACTIVATED_AUTOMATICALLY'],
             'TXT_ACCESS_SOCIALLOGIN_ACTIVATED_NOT_AUTOMATICALLY'=> $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_ACTIVATED_NOT_AUTOMATICALLY'],
+            'TXT_ACCESS_SOCIALLOGIN_ACTIVATION_TIME'            => $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_ACTIVATION_TIME'],
+            'TXT_ACCESS_SOCIALLOGIN_UNCOMPLETED_SIGN_UP'        => $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_UNCOMPLETED_SIGN_UP'],
         ));
         $this->_objTpl->setGlobalVariable(array(
             'TXT_ACCESS_SOCIALLOGIN_MANUAL'                     => sprintf($_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_MANUAL'], "http://www.contrexx.com/wiki/de/index.php?title=Social_Login"),
@@ -1945,6 +1947,7 @@ class AccessManager extends AccessLib
             $arrSettings['sociallogin_show_signup']['status'] = !empty($_POST['access_sociallogin_show_signup']) ? intval($_POST['access_sociallogin_show_signup']) : 0;
             $arrSettings['sociallogin_assign_to_groups']['value'] = isset($_POST['access_user_associated_groups']) ? implode(',', $_POST['access_user_associated_groups']) : '';
             $arrSettings['sociallogin_active_automatically']['status'] = !empty($_POST['sociallogin_active_automatically']) ? intval($_POST['sociallogin_active_automatically']) : 0;
+            $arrSettings['sociallogin_activation_timeout']['value'] = !empty($_POST['sociallogin_activation_timeout']) ? intval($_POST['sociallogin_activation_timeout']) : 10;
             $arrSettings['default_profile_access']['value'] = isset($_POST['access_user_profile_access']) && in_array($_POST['access_user_profile_access'], array('everyone', 'members_only', 'nobody')) ? $_POST['access_user_profile_access'] : 'members_only';
             $arrSettings['default_email_access']['value'] = isset($_POST['access_user_email_access']) && in_array($_POST['access_user_email_access'], array('everyone', 'members_only', 'nobody')) ? $_POST['access_user_email_access'] : 'members_only';
 
@@ -2190,6 +2193,7 @@ class AccessManager extends AccessLib
             'ACCESS_SOCIALLOGIN_SHOW_SIGNUP_NOT_ENABLED'            => $arrSettings['sociallogin_show_signup']['status'] ? '' : 'checked="checked"',
             'ACCESS_SOCIALLOGIN_ACTIVATED_AUTOMATICALLY_ENABLED'    => $arrSettings['sociallogin_active_automatically']['status'] ? 'checked="checked"' : '',
             'ACCESS_SOCIALLOGIN_ACTIVATED_AUTOMATICALLY_NOT_ENABLED'=> $arrSettings['sociallogin_active_automatically']['status'] ? '' : 'checked="checked"',
+            'ACCESS_SOCIALLOGIN_ACTIVATION_TIMEOUT'                 => intval($arrSettings['sociallogin_activation_timeout']['value']),
         ));
         $this->_objTpl->parse('module_access_config_general');
     }

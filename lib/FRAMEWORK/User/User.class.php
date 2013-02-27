@@ -1190,6 +1190,12 @@ class User extends User_Profile
     }
 
 
+    public function setRestoreKeyTime($seconds)
+    {
+        $this->restore_key_time = time() + $seconds;
+    }
+
+
     public function releaseRestoreKey()
     {
         $this->restore_key = '';
@@ -1669,6 +1675,17 @@ class User extends User_Profile
                    AND tblU.`restore_key`!=\'\'
                    AND tblU.`restore_key_time`<'.time());
         }
+        // remove outdated social login users
+        $objDatabase->Execute('
+            DELETE tblU, tblP, tblG, tblA, tblN
+              FROM `'.DBPREFIX.'access_users` AS tblU
+             INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id`=tblU.`id`
+             INNER JOIN `'.DBPREFIX.'access_user_network` AS tblN ON tblN.`user_id`=tblU.`id`
+              LEFT JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id`=tblU.`id`
+              LEFT JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id`=tblU.`id`
+             WHERE tblU.`active`=0
+               AND tblU.`restore_key`!=\'\'
+               AND tblU.`restore_key_time`<'.time());
     }
 
 
