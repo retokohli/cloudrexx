@@ -334,7 +334,6 @@ class Access extends AccessLib
             'ACCESS_STORE_BUTTON'           => '<input type="submit" name="access_store" value="'.$_ARRAYLANG['TXT_ACCESS_SAVE'].'" />',
             'ACCESS_CHANGE_PASSWORD_BUTTON' => '<input type="submit" name="access_change_password" value="'.$_ARRAYLANG['TXT_ACCESS_CHANGE_PASSWORD'].'" />',
             'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode(),
-            'ACCESS_DISCONNECT_NETWORKS'    => '<input type="submit" name="access_disconnect_networks" value="'.$_ARRAYLANG['TXT_ACCESS_DISCONNECT'].'" />',
         ));
 
         $arrSettings = User_Setting::getSettings();

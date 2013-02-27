@@ -876,7 +876,7 @@ class User extends User_Profile
             $this->password = '';
             $this->arrGroups = null;
             $this->arrNewsletterListIDs = null;
-            $this->networks = $this->arrCachedUsers[$id]['networks'];
+            $this->networks = isset($this->arrCachedUsers[$id]['networks']) ? $this->arrCachedUsers[$id]['networks'] : new \Cx\Lib\User\User_Networks($id);
             $this->EOF = false;
             $this->loggedIn = false;
             return true;
@@ -981,10 +981,9 @@ class User extends User_Profile
                         $this->arrCachedUsers[$objUser->fields['id']][$attributeId] = $this->arrLoadedUsers[$objUser->fields['id']][$attributeId] = $value;
                     }
                 }
+                $this->arrCachedUsers[$objUser->fields['id']]['networks'] = $this->arrLoadedUsers[$objUser->fields['id']]['networks'] = new \Cx\Lib\User\User_Networks($objUser->fields['id']);
                 $objUser->MoveNext();
             }
-
-            $this->arrCachedUsers[$objUser->fields['id']]['networks'] = new \Cx\Lib\User\User_Networks($objUser->id);
             isset($arrSelectCustomExpressions) ? $this->loadCustomAttributeProfileData($arrSelectCustomExpressions) : false;
             $this->first();
             return true;
