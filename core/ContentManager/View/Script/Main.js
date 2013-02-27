@@ -170,9 +170,18 @@ cx.ready(function() {
         window.open(url, 'target', opts).focus();
         return false;
     });
-    window.SetUrl = function(url) {
+    window.SetUrl = function(url, width, height, path) {
+        jQuery('#page_target_wrapper').hide();
+        jQuery('#page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + path);
+        jQuery('#page_target_text_wrapper').show();
+        jQuery('#page_target_protocol > option').removeAttr('selected');
+        jQuery('#page_target_protocol > option[value=""]').attr("selected", "selected");
         jQuery('#page_target').val(url);
     }
+    jQuery('#page_target_edit').click(function() {
+        jQuery('#page_target_text_wrapper').hide();
+        jQuery('#page_target_wrapper').show();
+    });
     
     jQuery('.jstree-action').click(function(event) {
         event.preventDefault();
@@ -2320,9 +2329,27 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     jQuery('#page input[name="page[contentTitle]"]').val(page.contentTitle);
 
     jQuery('#page input[name="page[type]"][value="'+page.type+'"]').trigger('click');
-    jQuery('#page input[name="page[target]"]').val(page.target);
     jQuery('#page select[name="page[application]"]').val(page.module);
     jQuery('#page input[name="page[area]"]').val(page.area);
+
+    jQuery('#page select[name="page[target_protocol]"] > option').removeAttr("selected");
+    var regExpUriProtocol = new RegExp(cx.variables.get("regExpUriProtocol", "contentmanager"));
+    var matchesPageTarget = regExpUriProtocol.exec(page.target);
+    if (matchesPageTarget) {
+        jQuery('#page select[name="page[target_protocol]"] > option[value="' + matchesPageTarget[0] + '"]').attr("selected", "selected");
+        page.target = page.target.replace(matchesPageTarget[0], "");
+    } else {
+        var pageTargetOptionValue = "";
+        if (page.target == "") {
+            pageTargetOptionValue = "http://";
+        } else if (page.target_path != "") {
+            jQuery('#page_target_wrapper').hide();
+            jQuery('#page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + page.target_path);
+            jQuery('#page_target_text_wrapper').show();
+        }
+        jQuery('#page select[name="page[target_protocol]"] > option[value="' + pageTargetOptionValue + '"]').attr("selected", "selected");
+    }
+    jQuery('#page input[name="page[target]"]').val(page.target);
 
     // tab seo
     jQuery('#page input[name="page[metarobots]"]').prop('checked', page.metarobots);

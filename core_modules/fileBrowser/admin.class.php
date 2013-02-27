@@ -381,6 +381,7 @@ class FileBrowser {
                     
                     // But we can simulate level and type for our purposes: (level above)
                     $jsondata = json_decode($page['attr']['data-href']);
+                    $path     = $jsondata->path;
                     if (trim($jsondata->module) != '') {
                         $arrPage['type'] = \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION;
                         $module = explode(' ', $jsondata->module, 2);
@@ -415,7 +416,7 @@ class FileBrowser {
                     
                     $this->_objTpl->setVariable(array(
                         'FILEBROWSER_ROW_CLASS'         => $rowNr%2 == 0 ? "row1" : "row2",
-                        'FILEBROWSER_FILE_PATH_CLICK'   => "javascript:{setUrl($url,null,null,'".FWLanguage::getLanguageCodeById($this->_frontendLanguageId)."/".$arrPage['alias']."','page')}",
+                        'FILEBROWSER_FILE_PATH_CLICK'   => "javascript:{setUrl($url,null,null,'".\FWLanguage::getLanguageCodeById($this->_frontendLanguageId).$path."','page')}",
                         'FILEBROWSER_FILE_NAME'         => $arrPage['catname'],
                         'FILEBROWSER_FILESIZE'          => '&nbsp;',
                         'FILEBROWSER_FILE_ICON'         => $this->_iconPath.'htm.gif',
