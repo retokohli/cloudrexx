@@ -170,8 +170,11 @@ class JsonPage implements JsonAdapter {
         $nodeId = !empty($pageArray['node'])  ? intval($pageArray['node']) : (!empty($dataPost['nodeId']) ? intval($dataPost['nodeId']) : 0);
         $lang   = !empty($pageArray['lang'])  ? contrexx_input2raw($pageArray['lang'])  : (!empty($dataPost['lang']) ? contrexx_input2raw($dataPost['lang']) : '');
         $action = !empty($dataPost['action']) ? contrexx_input2raw($dataPost['action']) : '';
-        
+
         if (!empty($pageArray)) {
+            if (!empty($pageArray['target_protocol'])) {
+                $pageArray['target'] = $pageArray['target_protocol'] . $pageArray['target'];
+            }
             $validatedPageArray = $this->validatePageArray($pageArray);
         }
         
@@ -980,7 +983,15 @@ class JsonPage implements JsonAdapter {
         } catch (\Cx\Core\ContentManager\Model\Doctrine\Entity\PageException $e) {
             $parentPath = '';
         }
-        
+
+        $targetPath = '';
+        if ($page->isTargetInternal()) {
+            if ($targetPage = $this->pageRepo->getTargetPage($page)) {
+                $langDir    = \FWLanguage::getLanguageCodeById($targetPage->getLang());
+                $targetPath = $langDir . $targetPage->getPath() . $page->getTargetQueryString();
+            }
+        }
+
         $pageArray = array(
             // Editor Meta
             'id' => $page->getId(),
@@ -991,6 +1002,7 @@ class JsonPage implements JsonAdapter {
             'title' => $page->getContentTitle(),
             'type' => $page->getType(),
             'target' => $page->getTarget(),
+            'target_path' => $targetPath,
             'module' => $page->getModule(),
             'area' => $page->getCmd(),
             'scheduled_publishing' => $scheduled_publishing,

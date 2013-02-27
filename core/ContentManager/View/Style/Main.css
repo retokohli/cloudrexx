@@ -1202,6 +1202,35 @@ div.date img{
     margin: 0 0 0 16px;
 }
 
+#page #page_target_wrapper {
+    float: left;
+    margin: 0 5px 0 0;
+}
+
+#page #page_target_protocol {
+    width: auto;
+    margin: 0 5px 0 0;
+}
+
+#page #page_target_text_wrapper {
+    display: none;
+    float: left;
+    margin: 0 10px 0 0;
+}
+
+#page #page_target_text {
+    float: left;
+    padding: 3px 0 0 0;
+    margin: 0 10px 0 0;
+}
+
+#page #page_target_edit {
+    float: left;
+    width: 16px;
+    height: 16px;
+    margin: 3px 0 0 0;
+    background: url(../../../images/icons/edit.gif) no-repeat;
+}
 
 /* 3) Helpers */
 .t {
