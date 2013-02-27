@@ -80,7 +80,7 @@ class SocialLogin
             if ($class != null) {
                 $oauthProvider = new $class;
                 $oauthProvider->setApplicationData($providerData->settings);
-                $oauthProvider->setActive($providerData->active);
+                $oauthProvider->setActive(isset($providerData->active) ? $providerData->active : false);
                 self::$providers[$providerName] = $oauthProvider;
             }
         }
@@ -137,7 +137,7 @@ class SocialLogin
             if (!empty($_GET['redirect'])) {
                 $_SESSION['redirect'] = $_GET['redirect'];
             }
-            $redirect = $_SESSION['redirect'];
+            $redirect = isset($_SESSION['redirect']) ? $_SESSION['redirect'] : null;
             $socialloginProviders = \Cx\Lib\SocialLogin::getProviders();
             foreach ($socialloginProviders as $provider => $providerData) {
                 if (!$objTpl->blockExists($prefix . 'social_networks_' . $provider)) {
