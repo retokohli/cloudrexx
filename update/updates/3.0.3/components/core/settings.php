@@ -274,7 +274,7 @@ function _updateSettings()
 		),
 		89	=> array(
 			'setname'	=> 'passwordComplexity',
-			'setvalue'	=> 'on',
+			'setvalue'	=> 'off',
 			'setmodule'	=> 1
 		),
 		90	=> array(
