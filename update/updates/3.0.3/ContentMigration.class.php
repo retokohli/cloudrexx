@@ -487,6 +487,9 @@ class ContentMigration
                 ORDER BY `parcat` ASC
                 LIMIT 1
             ');
+            if (($objResult === false) || ($objResult && empty($objResult->fields['catid']))) {
+                continue;
+            }
             $homeCatId = $objResult->fields['catid'];
 
             $objResult = \Cx\Lib\UpdateUtil::sql('
