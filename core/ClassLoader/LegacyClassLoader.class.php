@@ -43,6 +43,9 @@ class LegacyClassLoader {
         } else if (in_array($name, array('var', 'Column', 'MappedSuperclass', 'Table', 'index', 'Entity', 'Id', 'GeneratedValue'))) {
             return;
         }
+        if (substr($name, 0, 8) == 'PHPUnit_') {
+            return false;
+        }
         /*if ($parts[0] == 'Cx') {
             echo '<b>LegacyClassLoader handling class ' . $name . '</b><br />';
         } else {
@@ -82,12 +85,14 @@ class LegacyClassLoader {
 
             // core module and module indexes /[core_modules|modules]/{modulename}/[index.class.php|admin.class.php]
             $lowerModuleName = strtolower($name);
-            if (\Env::get('init')->mode != 'backend') {
-                if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $lowerModuleName . '/index.class.php', $origName)) { return; }
-                if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $lowerModuleName . '/index.class.php', $origName)) { return; }
-            } else {
-                if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $lowerModuleName . '/admin.class.php', $origName)) { return; }
-                if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $lowerModuleName . '/admin.class.php', $origName)) { return; }
+            if (\Env::get('init')) {
+                if (\Env::get('init')->mode != 'backend') {
+                    if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $lowerModuleName . '/index.class.php', $origName)) { return; }
+                    if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $lowerModuleName . '/index.class.php', $origName)) { return; }
+                } else {
+                    if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $lowerModuleName . '/admin.class.php', $origName)) { return; }
+                    if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $lowerModuleName . '/admin.class.php', $origName)) { return; }
+                }
             }
 
             if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $moduleName . '/lib/' . $moduleName . 'Lib.class.php', $origName)) { return; }
