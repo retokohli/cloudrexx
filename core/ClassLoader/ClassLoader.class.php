@@ -65,6 +65,9 @@ class ClassLoader {
         if (!in_array(current($parts), array('Cx'/*, 'Doctrine'*/, 'Gedmo'/*, 'Symfony'*/)) || count($parts) < 3) {
             return false;
         }
+        if (substr($name, 0, 8) == 'PHPUnit_') {
+            return false;
+        }
         
         if ($parts[0] == 'Cx') {
             // Exception for model, its within /model/[entities|events]/cx/model/
