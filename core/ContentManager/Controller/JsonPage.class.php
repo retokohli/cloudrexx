@@ -832,15 +832,18 @@ class JsonPage implements JsonAdapter {
         $pageHasDraft = $page->getEditingStatus() != '' ? true : false;
         $langDir      = \FWLanguage::getLanguageCodeById($page->getLang());
         $logs         = $this->logRepo->getLogEntries($page);
-
+        
         //(V) add the history entries
         $row = 0;
         $logCount = count($logs);
         for ($i = 0; $i < $logCount; $i++) {
             if (isset($logs[$i + 1])) {
+                $data = $logs[$i]->getData();
                 $nextData = $logs[$i + 1]->getData();
                 if (isset($nextData['editingStatus']) && ($nextData['editingStatus'] == 'hasDraft' || $nextData['editingStatus'] == 'hasDraftWaiting')) {
-                    continue;
+                    if (!isset($data['editingStatus']) || ($data['editingStatus'] != 'hasDraft' && $data['editingStatus'] != 'hasDraftWaiting')) {
+                        continue;
+                    }
                 }
             }
             
