@@ -14,8 +14,9 @@ if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
 
 $cl = new \Cx\Core\ClassLoader\ClassLoader($documentRoot, true, $customizing);
 \Env::set('ClassLoader', $cl);
-$cl->loadFile('../../core/API.php');
-include('../../config/doctrine.php');
+$cl->loadFile($documentRoot.'/core/API.php');
+$objDatabase = getDatabaseObject($strErrMessage, true);
+include($documentRoot.'/config/doctrine.php');
 
 
 include('PHPUnit/phpunit.php');

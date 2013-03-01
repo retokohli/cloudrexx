@@ -1,6 +1,7 @@
 <?php
 $_CONFIG = null;
 include('../config/configuration.php');
+include('../config/settings.php');
 
 require_once ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php';
 $cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT);
