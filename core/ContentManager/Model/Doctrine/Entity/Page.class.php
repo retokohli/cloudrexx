@@ -804,7 +804,7 @@ class Page extends \Cx\Model\Base\EntityBase
     public function isTargetInternal() {
         //internal targets are formed like [[ NODE_(<node_id>|<module>[_<cmd>])[_<lang_id>] ]]<querystring>
         $matches = array();
-        return preg_match('/\[\['.self::NODE_URL_PCRE.'\]\](\S)?/ix', $this->target, $matches);
+        return preg_match('/\[\['.self::NODE_URL_PCRE.'\]\](\S*)?/ix', $this->target, $matches);
     }
 
     /**
