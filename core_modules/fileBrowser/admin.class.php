@@ -31,6 +31,7 @@ class FileBrowser {
     public $_iconWebPath = '';
     public $_frontendLanguageId = null;
     public $_mediaType = '';
+    public $_mediaMode = '';
     public $_arrWebpages = array();
     public $_arrMediaTypes = array(
         'files'     => 'TXT_FILEBROWSER_FILES',
@@ -67,6 +68,7 @@ class FileBrowser {
         $this->_path = $this->_getPath();
         $this->_setFrontendLanguageId();
         $this->_mediaType = $this->_getMediaType();
+        $this->_mediaMode = $this->_getMediaMode();
 
         $this->_shopEnabled = $this->_checkForModule('shop');
         $this->_blogEnabled = $this->_checkForModule('blog');
@@ -99,6 +101,11 @@ class FileBrowser {
         } else {
             return 'files';
         }
+    }
+
+    private function _getMediaMode()
+    {
+        return !empty($_GET['mode']) ? contrexx_input2raw($_GET['mode']) : '';
     }
 
     function _getPath() {
@@ -395,7 +402,7 @@ class FileBrowser {
     
 // TODO: This only works for regular application pages. Pages of type fallback that are linked to an application
 //       will be parsed using their node-id ({NODE_<ID>})
-                    if ($arrPage['type'] == \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION) {
+                    if (($arrPage['type'] == \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION) && ($this->_mediaMode !== 'alias')) {
                         $url .= $arrPage['modulename'];
                         if (!empty($arrPage['cmd'])) {
                             $url .= '_' . $arrPage['cmd'];
