@@ -211,28 +211,30 @@ class AliasAdmin extends aliasLib
     {
         global $_ARRAYLANG, $_CONFIG;
 
+        \Env::get('ClassLoader')->loadFile(ASCMS_FRAMEWORK_PATH . '/Validator.class.php');
+        $objCx = \ContrexxJavascript::getInstance();
+        $objCx->setVariable(array(
+            'regExpUriProtocol' => VALIDATOR_REGEX_URI_PROTO,
+            'contrexxBaseUrl'   => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET,
+        ), 'alias');
+
         $aliasId = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 
         // search for existing alias
-        if (($alias = $this->_getAlias($aliasId))) {
-            $target = $this->_fetchTarget($alias);
-        } else {
+        if ((!$alias = $this->_getAlias($aliasId))) {
             $alias = $this->_createTemporaryAlias();
-            // add a | at the end, to make it a local target by default
-            //$alias->setTarget('|');
             $aliasId = 0;
         }
 
         // handle form submit
         if (isset($array['alias_save'])) {
-            // set target and -type
-            $newtype = in_array($array['alias_source_type'], $this->_arrAliasTypes) ? $array['alias_source_type'] : $this->_arrAliasTypes[0];
-            
-            if ($newtype == 'local') {
-                $newtarget = !empty($array['alias_local_source']) ? $array['alias_local_source'] : 0;
-            } else {
-                $newtarget = !empty($array['alias_url_source']) ? trim(contrexx_stripslashes($array['alias_url_source'])) : '';
+            if (!empty($array['alias_target']) && !empty($array['alias_target_protocol'])) {
+                $array['alias_target'] = $array['alias_target_protocol'] . $array['alias_target'];
             }
+
+            // set target and -type
+            $newtype   = preg_match('/\[\['.\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::NODE_URL_PCRE.'\]\](\S*)?/ix', $array['alias_target']) ? 'local' : 'url';
+            $newtarget = !empty($array['alias_target']) ? trim(contrexx_stripslashes($array['alias_target'])) : '';
 
             // handle existing slugs pointing to the target
             $aliases = array();
@@ -270,7 +272,7 @@ class AliasAdmin extends aliasLib
                 if (count($aliases) || count($newaliases)) {
                     $error = false;
 
-                    if ($newtype == 'local') {
+                    if (($aliasId === 0) && ($newtype == 'local')) {
                         $newtarget = substr($newtarget, 0, -2) . '_' . FRONTEND_LANG_ID . ']]';
                     }
 
@@ -314,8 +316,6 @@ class AliasAdmin extends aliasLib
 
         $this->_objTpl->setVariable(array(
             'TXT_ALIAS_TARGET_PAGE'             => $_ARRAYLANG['TXT_ALIAS_TARGET_PAGE'],
-            'TXT_ALIAS_LOCAL'                   => $_ARRAYLANG['TXT_ALIAS_LOCAL'],
-            'TXT_ALIAS_URL'                     => $_ARRAYLANG['TXT_ALIAS_URL'],
             'TXT_ALIAS_BROWSE'                  => $_ARRAYLANG['TXT_ALIAS_BROWSE'],
             'TXT_ALIAS_ALIAS_ES'                => $_ARRAYLANG['TXT_ALIAS_ALIAS_ES'],
             'TXT_ALIAS_DELETE'                  => $_ARRAYLANG['TXT_ALIAS_DELETE'],
@@ -331,54 +331,51 @@ class AliasAdmin extends aliasLib
             'ALIAS_DOMAIN_URL'                  => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/',
             'TXT_ALIAS_STANDARD_RADIOBUTTON'    => $_ARRAYLANG['TXT_ALIAS_STANDARD_RADIOBUTTON']
         ));
-        
-        $is_local = $this->_isLocalAliasTarget($alias);
+
+        $target    = $alias->getTarget();
+        $targetURL = '';
+        $is_local  = $this->_isLocalAliasTarget($alias);
         if ($is_local) {
             // alias points to a local webpage
             $targetPage = $this->_fetchTarget($alias);
             if ($targetPage) {
-                $target = $targetPage->getTitle();
-                $targetURL = $this->_getURL($targetPage);
-                $target_title = $target . " (" . $targetURL . ")";
-            } else {
-                $target = "";
-                $targetURL = "";
-                $target_title = "";
+                preg_match('/\[\['.\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::NODE_URL_PCRE.'\]\](\S*)?/ix', $target, $matches);
+                $targetURL = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . $this->_getURL($targetPage) . $matches[6];
             }
-        } else {
-            $target = $alias->getTarget();
-            $targetURL = $target;
-            $target_title = $target;
         }
 
         $this->_objTpl->setVariable(array(
-            'ALIAS_ID'                          => $aliasId,
-            'ALIAS_TITLE_TXT'                   => $this->_pageTitle,
-            'ALIAS_SELECT_LOCAL_PAGE'           => $is_local ? 'checked="checked"' : '',
-            'ALIAS_SELECT_URL_PAGE'             => !$is_local ? 'checked="checked"' : '',
-            'ALIAS_SELECT_LOCAL_BOX'            => $is_local ? 'block' : 'none',
-            'ALIAS_LOCAL_SOURCE'                => $is_local ? $alias->getTarget() : '',
-            'ALIAS_LOCAL_PAGE_URL'              => $is_local ? htmlentities($targetURL, ENT_QUOTES, CONTREXX_CHARSET) : '',
-            'ALIAS_SELECT_URL_BOX'              => !$is_local ? 'block' : 'none',
-            'ALIAS_URL_SOURCE'                  => !$is_local ? htmlentities($targetURL, ENT_QUOTES, CONTREXX_CHARSET) : 'http://'
+            'ALIAS_ID'                  => $aliasId,
+            'ALIAS_TITLE_TXT'           => $this->_pageTitle,
+            'ALIAS_TARGET_DISPLAY'      => (!$is_local || empty($targetURL)) ? 'block' : 'none',
+            'ALIAS_TARGET_TEXT_DISPLAY' => ($is_local && !empty($targetURL)) ? 'block' : 'none',
+            'ALIAS_TARGET'              => htmlentities($target, ENT_QUOTES, CONTREXX_CHARSET),
+            'ALIAS_TARGET_TEXT'         => htmlentities($targetURL, ENT_QUOTES, CONTREXX_CHARSET),
         ));
 
         $nr = 0;
         
         $sources = $this->_getAliasesWithSameTarget($alias);
 
-        foreach ($sources as $sourceAlias) {
-            $url = $sourceAlias->getSlug();
-            $this->_objTpl->setVariable(array(
-                'ALIAS_DOMAIN_URL'              => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/',
-                'ALIAS_ALIAS_ID'                => $sourceAlias->getNode()->getId(),
-                'ALIAS_ALIAS_NR'                => $nr++,
-                'ALIAS_IS_DEFAULT'              => '',
-                'ALIAS_ALIAS_PREFIX'            => '',
-                'ALIAS_ALIAS_URL'               => stripslashes(htmlentities($url, ENT_QUOTES, CONTREXX_CHARSET))
-            ));
-            $this->_objTpl->parse('alias_list');
+        if (is_array($sources) && count($sources)) {
+            foreach ($sources as $sourceAlias) {
+                $url = $sourceAlias->getSlug();
+                $this->_objTpl->setVariable(array(
+                    'ALIAS_DOMAIN_URL'              => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/',
+                    'ALIAS_ALIAS_ID'                => $sourceAlias->getNode()->getId(),
+                    'ALIAS_ALIAS_NR'                => $nr++,
+                    'ALIAS_ALIAS_PREFIX'            => '',
+                    'ALIAS_ALIAS_URL'               => stripslashes(htmlentities($url, ENT_QUOTES, CONTREXX_CHARSET))
+                ));
+                $this->_objTpl->parse('alias_list');
+            }
         }
+
+        $this->_objTpl->setVariable(array(
+            'ALIAS_DOMAIN_URL'              => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/',
+            'ALIAS_ALIAS_PREFIX'            => '_new',
+        ));
+        $this->_objTpl->parse('alias_list');
     }
     
 

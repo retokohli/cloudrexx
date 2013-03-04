@@ -1,97 +1,189 @@
 <!-- START module_alias_modify.html -->
 <script type="text/javascript">
-//<![CDATA[
-function alias_change_source()
-{
-	if (document.getElementById('alias_source_url').checked == true) {
-		document.getElementById('alias_local_source_box').style.display = 'none';
-		document.getElementById('alias_url_source_box').style.display = 'block';
-	} else {
-		document.getElementById('alias_url_source_box').style.display = 'none';
-		document.getElementById('alias_local_source_box').style.display = 'block';
-	}
-}
+    //<![CDATA[
+    $J(document).ready(function() {
+        var regExpUriProtocol = new RegExp(cx.variables.get("regExpUriProtocol", "alias"));
+        var matchesPageTarget = regExpUriProtocol.exec($J('#alias_target').val());
+        var aliasTarget = $J("#alias_target").val();
+        if (matchesPageTarget) {
+            $J("#alias_target_protocol > option[value=\"" + matchesPageTarget[0] + "\"]").attr("selected", "selected");
+            aliasTarget = $J("#alias_target").val().replace(matchesPageTarget[0], "");
+        } else {
+            var pageTargetOptionValue = "";
+            if ($J('#alias_target').val() == "") {
+                pageTargetOptionValue = "http://";
+            }
+            $J("#alias_target_protocol > option[value=\"" + pageTargetOptionValue + "\"]").attr("selected", "selected");
+        }
+        $J("#alias_target").val(aliasTarget);
 
-function alias_get_fileBrowser()
-{
-	aliasPopup = window.open('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-	aliasPopup.focus();
-}
+        $J('#alias_target_edit').click(function() {
+            $J('#alias_target_text_wrapper').hide();
+            $J('#alias_target_wrapper').show();
+        });
 
-function SetUrl(node, nul1, nul2, url)
-{
-        // hidden input
-	document.getElementById('alias_local_page_url').value = url;
-        // visible text box
-	document.getElementById('alias_local_page_url_box').innerHTML = url;
-        // set page reference as hidden input field value
-        document.getElementById("alias_local_source").value = node;
-}
+        // alias input fields
+        jQuery("div.page_alias input").keyup(function() {
+            var me = jQuery(this).closest("div.page_alias");
+            jQuery("div.page_alias input.warning").removeClass("warning");
 
-function alias_delete_alias(id, alias)
-{
-	strMsg = '{TXT_ALIAS_CONFIRM_REMOVE_ALIAS}';
-	if (confirm(strMsg.replace('%s', alias))) {
-		document.getElementById(id).parentNode.removeChild(document.getElementById(id));
-	}
-}
+            var text = jQuery(this).val();
+            text = text.replace(/\s/, '-');
+            text = text.replace(/[^a-zA-Z0-9-_]/, '');
+            jQuery(this).val(text);
+            // remove unused alias input fields
+            // do not remove the last input field
+            if (jQuery(this).val() == "") {
+                var emptyCount = 0;
+                jQuery("div.page_alias").each(function(index, el) {
+                    if (jQuery(el).children("input").val() == "") {
+                        emptyCount++;
+                    }
+                });
+                if (emptyCount > 1) {
+                    jQuery(this).closest("div.page_alias").remove();
+                }
+            }
+            // highlight same text
+            jQuery("div.page_alias").each(function(index, el) {
+                var me = jQuery(el);
+                jQuery("div.page_alias").each(function(index, el) {
+                    var it = jQuery(el);
+                    if (me.get(0) == it.get(0)) {
+                        return true;
+                    }
+                    if (me.children("input").val() == it.children("input").val()) {
+                        me.children("input").addClass("warning");
+                        it.children("input").addClass("warning");
+                        return false;
+                    }
+                });
+            });
+            // add new alias input fields
+            if (jQuery(this).val() != "") {
+                var hasEmpty = false;
+                jQuery("div.page_alias").each(function(index, el) {
+                    if (jQuery(el).children("input").val() == "") {
+                        // there is already a empty field
+                        hasEmpty = true;
+                        return;
+                    }
+                });
+                if (!hasEmpty) {
+                    var parent = jQuery(this).parent("div.page_alias");
+                    var clone = parent.clone(true);
+                    clone.children("input").val("");
+                    clone.children("input").attr("name", "alias_aliases_new[]");
+                    clone.insertAfter(parent);
+                }
+            }
+        });
+    });
 
-newAliasNr = 0;
-function alias_add_alias()
-{
-	elBox = document.getElementById('alias_box_new').cloneNode(true);
-	elBox.setAttribute('id', 'alias_box_new_'+newAliasNr);
-	elBox.style.display = 'block';
-	elBox.childNodes[3].setAttribute('value', 'newalias_'+newAliasNr);
-	elBox.childNodes[3].setAttribute('name', 'alias_use_default');
-	document.getElementById('alias_main_box').appendChild(elBox);
-	newAliasNr++;
-}
+    function SetUrl(node, width, height, path) {
+        $J('#alias_target_wrapper').hide();
+        $J('#alias_target_text').attr('href', '../' + path).text(cx.variables.get('contrexxBaseUrl', 'alias') + "/" + path);
+        $J('#alias_target_text_wrapper').show();
+        $J('#alias_target_protocol > option').removeAttr('selected');
+        $J('#alias_target_protocol > option[value=""]').attr("selected", "selected");
+        $J('#alias_target').val(node);
+    }
 
-//]]>
+    function alias_get_fileBrowser() {
+        var aliasPopup = window.open('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=webpages&mode=alias', '', 'width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+        aliasPopup.focus();
+    }
+    //]]>
 </script>
-<form action="?cmd=alias&amp;act=modify&amp;id={ALIAS_ID}" method="post">
-<table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
-	<tbody style="vertical-align:top;">
-		<tr>
-			<th colspan="2">{ALIAS_TITLE_TXT}</th>
-		</tr>
-		<tr class="row1">
-			<td width="15%">{TXT_ALIAS_TARGET_PAGE}</td>
-			<td width="85%">
-				<input type="radio" name="alias_source_type" id="alias_source_local" value="local" onchange="alias_change_source()" {ALIAS_SELECT_LOCAL_PAGE} /><label for="alias_source_local">{TXT_ALIAS_LOCAL}</label>
-				<input type="radio" name="alias_source_type" id="alias_source_url" value="url" onchange="alias_change_source()" {ALIAS_SELECT_URL_PAGE} /><label for="alias_source_url">{TXT_ALIAS_URL}</label>
-				<br /><br />
-				<div id="alias_local_source_box" style="display:{ALIAS_SELECT_LOCAL_BOX};"><input type="hidden" value="{ALIAS_LOCAL_PAGE_URL}" name="alias_local_page_url" id="alias_local_page_url" /> <input type="button" value="{TXT_ALIAS_BROWSE}" onclick="alias_get_fileBrowser()" />
-					<div id="alias_local_page_url_box">{ALIAS_LOCAL_PAGE_URL}</div>
-				</div>
-				<input type="hidden" value="{ALIAS_LOCAL_SOURCE}" name="alias_local_source" id="alias_local_source" />
-				<div id="alias_url_source_box" style="display:{ALIAS_SELECT_URL_BOX};"><input type="text" value="{ALIAS_URL_SOURCE}" name="alias_url_source" style="width:690px;" /></div>
-			</td>
-		</tr>
-		<tr class="row2">
-			<td width="15%">{TXT_ALIAS_ALIAS_ES}</td>
-			<td width="85%">
-				<div id="alias_main_box">
-				<!-- BEGIN alias_list -->
-					<div id="alias_box_{ALIAS_ALIAS_NR}" style="margin:0px 0px 1px 0px;">
-						{ALIAS_DOMAIN_URL}<input type="text" name="alias_aliases{ALIAS_ALIAS_PREFIX}[{ALIAS_ALIAS_ID}]" id="alias_aliases_{ALIAS_ALIAS_NR}" value="{ALIAS_ALIAS_URL}" style="width:200px;" />
-						<a href="javascript:void(0);" onclick="alias_delete_alias(this.parentNode.id,'{ALIAS_DOMAIN_URL}'+document.getElementById('alias_aliases_{ALIAS_ALIAS_NR}').value)" title="{TXT_ALIAS_DELETE}"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_ALIAS_DELETE}" align="absmiddle" /></a>
-					</div>
-				<!-- END alias_list -->
-				</div>
-				<br />
-				<div id="alias_box_new" style="display:none;margin:0px 0px 1px 0px;">
-					{ALIAS_DOMAIN_URL}<input type="text" name="alias_aliases_new[]" value="" style="width:200px;" />
-					<a href="javascript:void(0);" onclick="alias_delete_alias(this.parentNode.id,'{ALIAS_DOMAIN_URL}'+this./*previousSibling.previousSibling.previousSibling.*/previousSibling.value)" title="{TXT_ALIAS_DELETE}"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_ALIAS_DELETE}" /></a>
-				</div>
-				<input type="button" value="{TXT_ALIAS_ADD_ANOTHER_ALIAS}" onclick="alias_add_alias()" />
-			</td>
-		</tr>
-	</tbody>
-</table>
-<br />
-<input type="button" value="{TXT_ALIAS_CANCEL}" onclick="window.location.href = '?cmd=alias&{CSRF_PARAM}'" />
-<input type="submit" name="alias_save" value="{TXT_ALIAS_SAVE}" />
+
+<style type="text/css">
+    #alias_target_wrapper {
+        float: left;
+        margin: 0 5px 0 0;
+    }
+
+    #alias_target_protocol {
+        width: auto;
+        margin: 0 5px 0 0;
+    }
+
+    #alias_target {
+        width: 460px;
+    }
+
+    #alias_target_text_wrapper {
+        display: none;
+        float: left;
+        margin: 0 10px 0 0;
+    }
+
+    #alias_target_text {
+        float: left;
+        padding: 2px 0 0 0;
+        margin: 0 10px 0 0;
+    }
+
+    #alias_target_edit {
+        float: left;
+        width: 16px;
+        height: 16px;
+        margin: 4px 0 0 0;
+        background: url(images/icons/edit.gif) no-repeat;
+    }
+
+    .warning {
+        border-color: #FF0000 !important;
+    }
+</style>
+
+<form action="index.php?cmd=alias" method="post">
+    <input type="hidden" name="act" value="modify"/>
+    <input type="hidden" name="id" value="{ALIAS_ID}"/>
+    <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
+        <tbody style="vertical-align:top;">
+        <tr>
+            <th colspan="2">{ALIAS_TITLE_TXT}</th>
+        </tr>
+        <tr class="row1">
+            <td width="15%">{TXT_ALIAS_TARGET_PAGE}</td>
+            <td width="85%">
+                <div id="alias_target_wrapper" style="display: {ALIAS_TARGET_DISPLAY}; float: left;">
+                    <select name="alias_target_protocol" id="alias_target_protocol">
+                        <option value="http://">http://</option>
+                        <option value="https://">https://</option>
+                        <option value="ftp://">ftp://</option>
+                        <option value="ftps://">ftps://</option>
+                        <option value="">&lt;andere&gt;</option>
+                    </select>
+                    <input type="text" name="alias_target" id="alias_target" value="{ALIAS_TARGET}" />
+                </div>
+                <div id="alias_target_text_wrapper" style="display: {ALIAS_TARGET_TEXT_DISPLAY}; float: left;">
+                    <a id="alias_target_text" target="_blank" href="{ALIAS_TARGET_TEXT}">{ALIAS_TARGET_TEXT}</a>
+                    <a id="alias_target_edit"></a>
+                </div>
+                <input type="button" value="{TXT_ALIAS_BROWSE}" onclick="alias_get_fileBrowser()"/>
+            </td>
+        </tr>
+        <tr class="row2">
+            <td width="15%">{TXT_ALIAS_ALIAS_ES}</td>
+            <td width="85%">
+                <div id="alias_main_box">
+                    <!-- BEGIN alias_list -->
+                    <div class="page_alias empty" style="margin: 0 0 1px 0;">
+                        <span>{ALIAS_DOMAIN_URL}</span>
+                        <input type="text"
+                               name="alias_aliases{ALIAS_ALIAS_PREFIX}[{ALIAS_ALIAS_ID}]"
+                               value="{ALIAS_ALIAS_URL}"
+                               style="width: 200px;" />
+                    </div>
+                    <!-- END alias_list -->
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <br/>
+    <input type="button" value="{TXT_ALIAS_CANCEL}" onclick="window.location.href = '?cmd=alias&{CSRF_PARAM}'"/>
+    <input type="submit" name="alias_save" value="{TXT_ALIAS_SAVE}"/>
 </form>
 <!-- END module_alias_modify.html -->
