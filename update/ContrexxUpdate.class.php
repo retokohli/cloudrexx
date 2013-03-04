@@ -541,9 +541,10 @@ class ContrexxUpdate
                 $this->objTemplate->hideBlock('dialogContent');
                 $this->objTemplate->hideBlock('ajaxDialogContent');
                 $this->objTemplate->hideBlock('processStatus');
+                $urlFrontend = (ASCMS_PATH_OFFSET !== '')  ? ASCMS_PATH_OFFSET : '/';
                 $this->objTemplate->setVariable(array(
                     'TXT_UPDATE_UPDATE_FINISHED'    => $_CORELANG['TXT_UPDATE_UPDATE_FINISHED'],
-                    'URL_FRONTEND'                  => ASCMS_PATH_OFFSET,
+                    'URL_FRONTEND'                  => $urlFrontend,
                     'URL_BACKEND'                   => ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH,
                 ));
                 $this->objTemplate->parse('finish');
