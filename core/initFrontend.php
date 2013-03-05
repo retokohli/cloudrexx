@@ -1660,7 +1660,6 @@ $objTemplate->setVariable(array(
     'LOGIN_INCLUDE'                  => isset($strFeInclude) ? $strFeInclude : '',
     'LOGIN_URL'                      => isset($strFeLink) ? $strFeLink : '',
     'LOGIN_CONTENT'                  => isset($strFeContent) ? $strFeContent : '',
-    'JAVASCRIPT'                     => 'javascript_inserting_here',
     'TXT_CORE_LAST_MODIFIED_PAGE'    => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
     'LAST_MODIFIED_PAGE'             => date(ASCMS_DATE_FORMAT_DATE, $page_modified),
     'CONTACT_EMAIL'                  => isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '',
@@ -1851,6 +1850,7 @@ if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
 //ob_start("ob_gzhandler");
 
 // fetch the parsed webpage
+$objTemplate->setVariable('JAVASCRIPT', 'javascript_inserting_here');
 $endcode = $objTemplate->get();
 
 /**
