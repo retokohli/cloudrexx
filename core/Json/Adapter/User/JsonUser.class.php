@@ -56,7 +56,7 @@ class JsonUser implements JsonAdapter {
      * @return array User id and title
      */
     public function getUserById() {
-        global $objInit;
+        global $objInit, $_CORELANG;
         
         $objFWUser = \FWUser::getFWUserObject();
         
@@ -82,7 +82,7 @@ class JsonUser implements JsonAdapter {
      * @return array List of users
      */
     public function getUsers() {
-        global $objInit;
+        global $objInit, $_CORELANG;
         
         $objFWUser = \FWUser::getFWUserObject();
         
