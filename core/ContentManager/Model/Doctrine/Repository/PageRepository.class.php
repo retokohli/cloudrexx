@@ -645,6 +645,9 @@ class PageRepository extends EntityRepository {
             throw new PageRepositoryException('No pages found!');
         }
         foreach ($parts as $index=>$slug) {
+            if (empty($slug)) {
+                break;
+            }
             foreach ($node->getChildren() as $child) {
                 $childPage = $child->getPage($lang);
                 if (!$childPage) {
