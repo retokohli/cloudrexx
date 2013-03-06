@@ -77,18 +77,21 @@ function _knowledgeUpdate()
                 'module_knowledge_tags_name'   => array( 'fields'=>array('name'))
             )
         );
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX . 'module_knowledge_tags_articles',
-            array(
-                'id'      => array('type' => 'INT(10)',  'notnull' => true, 'primary' => true, 'auto_increment' => true, 'unsigned' => true),
-                'article' => array('type' => 'INT(10)',  'notnull' => true, 'default' => 0, 'unsigned' => true),
-                'tag'     => array('type' => 'INT(10)',  'notnull' => true, 'default' => 0, 'unsigned' => true),
-            ),
-            array( # indexes
-                'module_knowledge_tags_articles_tag'     => array( 'fields'=>array('tag')),
-                'module_knowledge_tags_articles_article' => array( 'fields'=>array('article')),
-            )
-        );
+
+        if (strpos(\Cx\Lib\UpdateUtil::sql('SHOW CREATE TABLE `'.DBPREFIX.'module_knowledge_tags_articles`')->fields['Create Table'], 'UNIQUE KEY') === false) {
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX . 'module_knowledge_tags_articles',
+                array(
+                    'id'      => array('type' => 'INT(10)',  'notnull' => true, 'primary' => true, 'auto_increment' => true, 'unsigned' => true),
+                    'article' => array('type' => 'INT(10)',  'notnull' => true, 'default' => 0, 'unsigned' => true),
+                    'tag'     => array('type' => 'INT(10)',  'notnull' => true, 'default' => 0, 'unsigned' => true),
+                ),
+                array( # indexes
+                    'module_knowledge_tags_articles_tag'     => array( 'fields'=>array('tag')),
+                    'module_knowledge_tags_articles_article' => array( 'fields'=>array('article')),
+                )
+            );
+        }
 
     }
     catch (\Cx\Lib\UpdateException $e) {
@@ -179,10 +182,9 @@ function _knowledgeUpdate()
                 'tag'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'article')
             ),
             array(
-                'article'    => array('fields' => array('article','tag'), 'type' => 'UNIQUE')
+                'article'    => array('fields' => array('article', 'tag'), 'type' => 'UNIQUE', 'force' => true)
             ),
-            'MyISAM',
-            'cx3upgrade'
+            'MyISAM'
         );
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
