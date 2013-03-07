@@ -1241,11 +1241,11 @@ div.date img{
 }
 
 #page #page_target_check {
-    background: url(../../../images/icons/check.gif) no-repeat;
+    background: url(../../../../cadmin/images/icons/check.gif) no-repeat;
 }
 
 #page #page_target_cancel {
-    background: url(../../../images/icons/delete.gif) no-repeat;
+    background: url(../../../../cadmin/images/icons/delete.gif) no-repeat;
 }
 
 /* 3) Helpers */
