@@ -1512,13 +1512,13 @@ class ContactManager extends ContactLib
                             break;
 
                         default:
-                            $fieldValue = contrexx_input2raw($fieldValues[$id][$langId]);
+                            $fieldValue = !empty($fieldValues[$id][$langId]) ? contrexx_input2raw($fieldValues[$id][$langId]) : '';
                             break;
                     }
 
                     $arrFields[$id]['lang'][$langId] = array(
                         'name'  => contrexx_input2raw($fieldNames[$id][$langId]),
-                        'value' => $fieldValue
+                        'value' => $fieldValue,
                     );
                 }
             }
