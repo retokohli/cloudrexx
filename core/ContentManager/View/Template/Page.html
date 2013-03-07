@@ -65,13 +65,17 @@
                             <option value="https://">https://</option>
                             <option value="ftp://">ftp://</option>
                             <option value="ftps://">ftps://</option>
-                            <option value="">&lt;andere&gt;</option>
+                            <option value="">&lt;{TXT_INTERNAL}&gt;</option>
                         </select>
                         <input type="text" name="page[target]" id="page_target" />
+                        <a id="page_target_check" class="icon hide"></a>
+                        <a id="page_target_cancel" class="icon hide"></a>
                     </div>
                     <div id="page_target_text_wrapper">
-                        <div id="page_target_text">{PAGE_TARGET_TEXT}</div><a id="page_target_edit"></a>
+                        <a id="page_target_text" href="#" target="_blank"></a>
+                        <a id="page_target_edit" class="icon"></a>
                     </div>
+                    <input type="hidden" id="page_target_backup" />
                     <button id="page_target_browse">{TXT_CORE_CM_BROWSE}</button>
                 </div>
             </div>

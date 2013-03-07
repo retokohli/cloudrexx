@@ -76,6 +76,7 @@ class JsonPage implements JsonAdapter {
             'setPagePreview',
             'getHistoryTable',
             'getAccessData',
+            'getPathByTarget'
         );
     }
 
@@ -172,8 +173,10 @@ class JsonPage implements JsonAdapter {
         $action = !empty($dataPost['action']) ? contrexx_input2raw($dataPost['action']) : '';
 
         if (!empty($pageArray)) {
-            if (!empty($pageArray['target_protocol'])) {
+            if (!empty($pageArray['target']) && !empty($pageArray['target_protocol'])) {
                 $pageArray['target'] = $pageArray['target_protocol'] . $pageArray['target'];
+            } elseif (empty($pageArray['target']) && !empty($pageArray['target_protocol'])) {
+                $pageArray['target'] = '';
             }
             $validatedPageArray = $this->validatePageArray($pageArray);
         }
@@ -987,14 +990,6 @@ class JsonPage implements JsonAdapter {
             $parentPath = '';
         }
 
-        $targetPath = '';
-        if ($page->isTargetInternal()) {
-            if ($targetPage = $this->pageRepo->getTargetPage($page)) {
-                $langDir    = \FWLanguage::getLanguageCodeById($targetPage->getLang());
-                $targetPath = $langDir . $targetPage->getPath() . $page->getTargetQueryString();
-            }
-        }
-
         $pageArray = array(
             // Editor Meta
             'id' => $page->getId(),
@@ -1005,7 +1000,7 @@ class JsonPage implements JsonAdapter {
             'title' => $page->getContentTitle(),
             'type' => $page->getType(),
             'target' => $page->getTarget(),
-            'target_path' => $targetPath,
+            'target_path' => $this->getPathByTarget(array('get' => array('target' => $page->getTarget()))),
             'module' => $page->getModule(),
             'area' => $page->getCmd(),
             'scheduled_publishing' => $scheduled_publishing,
@@ -1063,5 +1058,35 @@ class JsonPage implements JsonAdapter {
             $aliases[] = $alias->getSlug();
         }
         return $aliases;
+    }
+
+    /**
+     * Returns the page path of the given target (node placeholder).
+     * If the target page doesn't exist, the path of the error page will be returned.
+     *
+     * @param   array   $arguments
+     * @return  string  $path
+     */
+    public function getPathByTarget($arguments) {
+        global $_CONFIG;
+
+        $target = contrexx_input2raw($arguments['get']['target']);
+        $page   = new \Cx\Model\ContentManager\Page();
+        $page->setTarget($target);
+
+        if ($page->isTargetInternal()) {
+            $target = str_replace(array('[[', ']]'), array('{', '}'), $target);
+            \LinkGenerator::parseTemplate($target);
+            $target = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . $target;
+        } elseif (!\FWValidator::isUri($target)) {
+            if (strpos($target, ASCMS_PATH_OFFSET) === false) {
+                if ($target[0] !== '/') {
+                    $target = '/' . $target;
+                }
+                $target = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . $target;
+            }
+        }
+
+        return $target;
     }
 }

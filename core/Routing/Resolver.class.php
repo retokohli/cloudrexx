@@ -337,6 +337,9 @@ class Resolver {
                     header('Location: '.$target);
                     exit;
                 } else {
+                    if ($target[0] == '/') {
+                        $target = substr($target, 1);
+                    }
                     header('Location: '.ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageCodeById($this->lang).'/'.$target);
                     exit;
                 }
