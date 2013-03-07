@@ -1071,7 +1071,7 @@ class JsonPage implements JsonAdapter {
         global $_CONFIG;
 
         $target = contrexx_input2raw($arguments['get']['target']);
-        $page   = new \Cx\Model\ContentManager\Page();
+        $page   = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
         $page->setTarget($target);
 
         if ($page->isTargetInternal()) {
