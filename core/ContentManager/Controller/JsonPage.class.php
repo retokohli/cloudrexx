@@ -1071,20 +1071,22 @@ class JsonPage implements JsonAdapter {
         global $_CONFIG;
 
         $target = contrexx_input2raw($arguments['get']['target']);
-        $page   = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
-        $page->setTarget($target);
 
-        if ($page->isTargetInternal()) {
-            $target = str_replace(array('[[', ']]'), array('{', '}'), $target);
-            \LinkGenerator::parseTemplate($target);
-            $target = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . $target;
-        } elseif (!\FWValidator::isUri($target)) {
-            if (strpos($target, ASCMS_PATH_OFFSET) === false) {
+        if (!\FWValidator::hasProto($target)) {
+            $page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
+            $page->setTarget($target);
+
+            if ($page->isTargetInternal()) {
+                $target = str_replace(array('[[', ']]'), array('{', '}'), $target);
+                \LinkGenerator::parseTemplate($target);
+            } elseif (strpos($target, ASCMS_PATH_OFFSET) === false) {
                 if ($target[0] !== '/') {
                     $target = '/' . $target;
                 }
-                $target = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . $target;
+                $target = ASCMS_PATH_OFFSET . $target;
             }
+
+            $target = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . $target;
         }
 
         return $target;
