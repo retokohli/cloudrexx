@@ -6,6 +6,7 @@
  * @package     contrexx
  * @subpackage  lang
  */
+$_ARRAYLANG['TXT_INTERNAL'] = "intern";
 $_ARRAYLANG['TXT_CORE_SEARCH_USER_INFO'] = "Geben Sie mindestens %s Zeichen ein.";
 $_ARRAYLANG['TXT_CORE_SEARCH_USER'] = "Benutzer suchen";
 $_ARRAYLANG['TXT_CORE_FILTER'] = "Filter";

@@ -214,8 +214,9 @@ class AliasAdmin extends aliasLib
         \Env::get('ClassLoader')->loadFile(ASCMS_FRAMEWORK_PATH . '/Validator.class.php');
         $objCx = \ContrexxJavascript::getInstance();
         $objCx->setVariable(array(
-            'regExpUriProtocol' => VALIDATOR_REGEX_URI_PROTO,
-            'contrexxBaseUrl'   => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET,
+            'regExpUriProtocol'  => VALIDATOR_REGEX_URI_PROTO,
+            'contrexxPathOffset' => ASCMS_PATH_OFFSET,
+            'contrexxBaseUrl'    => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET,
         ), 'alias');
 
         $aliasId = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
@@ -323,7 +324,8 @@ class AliasAdmin extends aliasLib
             'TXT_ALIAS_ADD_ANOTHER_ALIAS'       => $_ARRAYLANG['TXT_ALIAS_ADD_ANOTHER_ALIAS'],
             'TXT_ALIAS_CANCEL'                  => $_ARRAYLANG['TXT_ALIAS_CANCEL'],
             'TXT_ALIAS_SAVE'                    => $_ARRAYLANG['TXT_ALIAS_SAVE'],
-            'TXT_ALIAS_STANDARD_RADIOBUTTON'    => $_ARRAYLANG['TXT_ALIAS_STANDARD_RADIOBUTTON']
+            'TXT_ALIAS_STANDARD_RADIOBUTTON'    => $_ARRAYLANG['TXT_ALIAS_STANDARD_RADIOBUTTON'],
+            'TXT_ALIAS_INTERNAL'                => $_ARRAYLANG['TXT_INTERNAL'],
         ));
 
         $this->_objTpl->setGlobalVariable(array(
@@ -347,8 +349,6 @@ class AliasAdmin extends aliasLib
         $this->_objTpl->setVariable(array(
             'ALIAS_ID'                  => $aliasId,
             'ALIAS_TITLE_TXT'           => $this->_pageTitle,
-            'ALIAS_TARGET_DISPLAY'      => (!$is_local || empty($targetURL)) ? 'block' : 'none',
-            'ALIAS_TARGET_TEXT_DISPLAY' => ($is_local && !empty($targetURL)) ? 'block' : 'none',
             'ALIAS_TARGET'              => htmlentities($target, ENT_QUOTES, CONTREXX_CHARSET),
             'ALIAS_TARGET_TEXT'         => htmlentities($targetURL, ENT_QUOTES, CONTREXX_CHARSET),
         ));

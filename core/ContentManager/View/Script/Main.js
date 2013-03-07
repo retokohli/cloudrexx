@@ -1,4 +1,5 @@
 var baseUrl = 'index.php?cmd=content';
+var regExpUriProtocol = new RegExp(cx.variables.get('regExpUriProtocol', 'contentmanager'));
 
 var mouseIsUp = true;
 jQuery(document).bind('mouseup.global', function() {
@@ -171,16 +172,66 @@ cx.ready(function() {
         return false;
     });
     window.SetUrl = function(url, width, height, path) {
+        url = url.replace(cx.variables.get('contrexxPathOffset', 'contentmanager'), '');
+        if (path == '') {
+            path = url;
+        }
+        if (path[0] == '/') {
+            path = path.substr(1);
+        }
         jQuery('#page_target_wrapper').hide();
-        jQuery('#page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + path);
+        jQuery('#page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + path).attr('href', function() {return jQuery(this).text()});
         jQuery('#page_target_text_wrapper').show();
         jQuery('#page_target_protocol > option').removeAttr('selected');
         jQuery('#page_target_protocol > option[value=""]').attr("selected", "selected");
-        jQuery('#page_target').val(url);
+        jQuery('#page_target, #page_target_backup').val(url);
     }
+    jQuery('#page_target').keyup(function() {
+        var targetValue = jQuery.trim(jQuery(this).val());
+        if (jQuery(this).val() != targetValue) {
+            jQuery(this).val(targetValue);
+        }
+        var targetValueBackup = jQuery('#page_target_backup').val();
+        var matchesPageTarget = regExpUriProtocol.exec(targetValueBackup);
+        if (matchesPageTarget) {
+            targetValueBackup = targetValueBackup.replace(matchesPageTarget[0], '');
+        }
+        var showOrHide = true;
+        if ((targetValue == '') || (targetValue == targetValueBackup)) {
+            showOrHide = false;
+        }
+        jQuery('#page_target_check').toggle(showOrHide);
+    });
+    jQuery('#page_target_protocol').change(function() {
+        var targetValueBackup    = jQuery('#page_target_backup').val();
+        var matchesPageTarget    = regExpUriProtocol.exec(targetValueBackup);
+        var targetProtocolBackup = '';
+        if (matchesPageTarget) {
+            targetProtocolBackup = matchesPageTarget[0];
+        }
+        var showOrHide = true;
+        if (jQuery(this).val() == targetProtocolBackup) {
+            showOrHide = false;
+        }
+        jQuery('#page_target_check').toggle(showOrHide);
+    });
     jQuery('#page_target_edit').click(function() {
-        jQuery('#page_target_text_wrapper').hide();
-        jQuery('#page_target_wrapper').show();
+        jQuery('#page_target_cancel').show();
+        jQuery('#page_target_text_wrapper').hide().prev().show();
+    });
+    jQuery('#page_target_cancel').click(function() {
+        cx.cm.setPageTarget(jQuery("#page_target_backup").val(), jQuery("#page_target_text").text());
+    });
+    jQuery('#page_target_check').click(function() {
+        jQuery(this).hide();
+        jQuery('#page_target_text').text('');
+        jQuery('#page_target_backup').val(jQuery('#page_target_protocol').val() + jQuery('#page_target').val());
+        jQuery.getJSON('index.php?cmd=jsondata&object=page&act=getPathByTarget', {
+            target: jQuery('#page_target_backup').val()
+        }, function(data) {
+            jQuery('#page_target_text').text(data.data).attr('href', function() {return jQuery(this).text()});
+        });
+        jQuery('#page_target_wrapper').hide().next().show();
     });
     
     jQuery('.jstree-action').click(function(event) {
@@ -292,13 +343,13 @@ cx.ready(function() {
     
     // alias input fields
     jQuery("div.page_alias input").keyup(function() {
-        var me = jQuery(this).closest("div.page_alias");
         jQuery("div.page_alias input.warning").removeClass("warning");
         
-        var text = jQuery(this).val();
-        text = text.replace(/\s/, '-');
-        text = text.replace(/[^a-zA-Z0-9-_]/, '');
-        jQuery(this).val(text);
+        var originalAlias  = jQuery(this).val();
+        var slugifiedAlias = cx.cm.slugify(originalAlias);
+        if (originalAlias != slugifiedAlias) {
+            jQuery(this).val(slugifiedAlias);
+        }
         // remove unused alias input fields
         // do not remove the last input field
         if (jQuery(this).val() == "") {
@@ -309,6 +360,7 @@ cx.ready(function() {
                 }
             });
             if (emptyCount > 1) {
+                jQuery(this).closest("div.page_alias").next("div.page_alias").children("#page_alias").focus();
                 jQuery(this).closest("div.page_alias").remove();
             }
         }
@@ -468,17 +520,13 @@ cx.cm = function(target) {
     };
     jQuery("input.date").datetimepicker(dpOptions);
 
-    $J('#page input[name="page[slug]"]').keyup(function() {
-        var slug = jQuery(this).val();
-        slug = slug.
-            replace(/ä/, "ae").
-            replace(/ö/, "oe").
-            replace(/ü/, "ue").
-            replace(/Ä/, "Ae").
-            replace(/Ö/, "Oe").
-            replace(/Ü/, "Ue");
-        jQuery(this).val(slug);
-        $J('#liveSlug').text($J('#page input[name="page[slug]"]').val());
+    jQuery('#page input[name="page[slug]"]').keyup(function() {
+        var originalSlug  = jQuery(this).val();
+        var slugifiedSlug = cx.cm.slugify(originalSlug);
+        if (originalSlug != slugifiedSlug) {
+            jQuery(this).val(slugifiedSlug);
+            jQuery('#liveSlug').text(slugifiedSlug);
+        }
     });
 
     if (jQuery("#page")) {
@@ -2332,24 +2380,7 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     jQuery('#page select[name="page[application]"]').val(page.module);
     jQuery('#page input[name="page[area]"]').val(page.area);
 
-    jQuery('#page select[name="page[target_protocol]"] > option').removeAttr("selected");
-    var regExpUriProtocol = new RegExp(cx.variables.get("regExpUriProtocol", "contentmanager"));
-    var matchesPageTarget = regExpUriProtocol.exec(page.target);
-    if (matchesPageTarget) {
-        jQuery('#page select[name="page[target_protocol]"] > option[value="' + matchesPageTarget[0] + '"]').attr("selected", "selected");
-        page.target = page.target.replace(matchesPageTarget[0], "");
-    } else {
-        var pageTargetOptionValue = "";
-        if (page.target == "") {
-            pageTargetOptionValue = "http://";
-        } else if (page.target_path != "") {
-            jQuery('#page_target_wrapper').hide();
-            jQuery('#page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + page.target_path);
-            jQuery('#page_target_text_wrapper').show();
-        }
-        jQuery('#page select[name="page[target_protocol]"] > option[value="' + pageTargetOptionValue + '"]').attr("selected", "selected");
-    }
-    jQuery('#page input[name="page[target]"]').val(page.target);
+    cx.cm.setPageTarget(page.target, page.target_path);
 
     // tab seo
     jQuery('#page input[name="page[metarobots]"]').prop('checked', page.metarobots);
@@ -2456,6 +2487,28 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     jQuery("#node_" + page.node).children(".jstree-wrapper").addClass("active");
     jQuery('html, body').animate({scrollTop:0}, 'slow');
 };
+
+cx.cm.setPageTarget = function(pageTarget, pageTargetPath) {
+    jQuery('#page_target_backup').val(pageTarget);
+    jQuery('#page_target_protocol > option').removeAttr("selected");
+
+    var matchesPageTarget = regExpUriProtocol.exec(pageTarget);
+    if (matchesPageTarget) {
+        jQuery('#page_target_protocol > option[value="' + matchesPageTarget[0] + '"]').attr("selected", "selected");
+        pageTarget = pageTarget.replace(matchesPageTarget[0], "");
+    } else {
+        var pageTargetOptionValue = "";
+        if (pageTarget == "") {
+            pageTargetOptionValue = "http://";
+        }
+        jQuery('#page_target_protocol > option[value="' + pageTargetOptionValue + '"]').attr("selected", "selected");
+    }
+    if (pageTarget != "") {
+        jQuery('#page_target_text').text(pageTargetPath).attr('href', function() {return jQuery(this).text()});
+        jQuery('#page_target_wrapper').hide().next().show();
+    }
+    jQuery('#page_target').val(pageTarget);
+}
 
 cx.cm.loadAccess = function(accessData) {
     jQuery('.ms2side__div').remove();
@@ -2595,4 +2648,16 @@ cx.cm.updateHistoryTableHighlighting = function() {
             jQuery(this).css('display', 'block');
         }
     });
+}
+
+cx.cm.slugify = function(string) {
+    string = string.replace(/\s+/g, '-');
+    string = string.replace(/ä/g, 'ae');
+    string = string.replace(/ö/g, 'oe');
+    string = string.replace(/ü/g, 'ue');
+    string = string.replace(/Ä/g, 'Ae');
+    string = string.replace(/Ö/g, 'Oe');
+    string = string.replace(/Ü/g, 'Ue');
+    string = string.replace(/[^a-zA-Z0-9-_]/g, '');
+    return string;
 }

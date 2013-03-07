@@ -403,7 +403,7 @@ class Page extends \Cx\Model\Base\EntityBase
     }
 
     protected function slugify($string) {
-        $string = preg_replace('/\s/', '-', $string);
+        $string = preg_replace('/\s+/', '-', $string);
         $string = preg_replace('/ä/', 'ae', $string);
         $string = preg_replace('/ö/', 'oe', $string);
         $string = preg_replace('/ü/', 'ue', $string);
