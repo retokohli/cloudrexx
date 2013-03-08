@@ -4179,12 +4179,12 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
 //DBG::log("Shop::use_session(): Details from Cart => true");
                 return true;
             }
+            // Use a session for the cart *ONLY* when there is a product in it!
             if (   $command == 'cart'
-// I guess that one would need the session for the Cart in any case?!
-//                && (   isset($_REQUEST['productId'])
-//                    || (   isset($_GET['remoteJs'])
-//                        && $_GET['remoteJs'] == 'addProduct'
-//                        && !empty($_GET['product'])))
+                && (   isset($_REQUEST['productId'])
+                    || (   isset($_GET['remoteJs'])
+                        && $_GET['remoteJs'] == 'addProduct'
+                        && !empty($_GET['product'])))
             ) {
 //DBG::log("Shop::use_session(): Cart Product(?) or remoteJS.addProduct => true");
                 return true;
