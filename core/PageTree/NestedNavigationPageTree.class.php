@@ -175,7 +175,7 @@ class NestedNavigationPageTree extends SigmaPageTree {
         
         $visibleChildren = false;
         foreach ($parentNode->getChildren() as $child) {
-            if ($child->getPage(FRONTEND_LANG_ID)->isVisible()) {
+            if ($child->getPage(FRONTEND_LANG_ID) && $child->getPage(FRONTEND_LANG_ID)->isVisible()) {
                 $visibleChildren = true;
                 break;
             }
@@ -211,7 +211,7 @@ class NestedNavigationPageTree extends SigmaPageTree {
         
         $visibleChildren = false;
         foreach ($parentNode->getChildren() as $child) {
-            if ($child->getPage(FRONTEND_LANG_ID)->isVisible()) {
+            if ($child->getPage(FRONTEND_LANG_ID) && $child->getPage(FRONTEND_LANG_ID)->isVisible()) {
                 $visibleChildren = true;
                 break;
             }
