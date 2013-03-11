@@ -111,7 +111,7 @@ define('ASCMS_MODULE_MEDIA_PATH',           ASCMS_DOCUMENT_ROOT.'/media/director
 define('ASCMS_MODULE_MEDIA_WEB_PATH',       ASCMS_PATH_OFFSET.'/media/directory');
 define('ASCMS_MARKET_MEDIA_PATH',           ASCMS_DOCUMENT_ROOT.'/media/market');
 define('ASCMS_MARKET_MEDIA_WEB_PATH',       ASCMS_PATH_OFFSET.'/media/market');
-define('ASCMS_CACHE_PATH',                  ASCMS_DOCUMENT_ROOT.'/cache');
+define('ASCMS_CACHE_PATH',                  ASCMS_TEMP_PATH.'/cache');
 define('ASCMS_ECARD_OPTIMIZED_PATH',        ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/modules/ecard/ecards_optimized');
 define('ASCMS_ECARD_OPTIMIZED_WEB_PATH',    ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/modules/ecard/ecards_optimized');
 define('ASCMS_ECARD_SEND_ECARDS_PATH',      ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/modules/ecard/send_ecards');

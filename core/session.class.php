@@ -233,6 +233,8 @@ class cmsSession
             \Cx\Lib\FileSystem\FileSystem::delete_folder($this->sessionPath, true);
         }
 
+        setcookie("PHPSESSID", '', time()-3600, '/');
+
         return true;
     }
 
