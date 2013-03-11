@@ -109,7 +109,6 @@ class settingsManager
                 $boolShowStatus = false;
                 $objCache = new CacheManager();
                 $objCache->updateSettings();
-                $objCache->writeCacheablePagesFile();
                 $objCache->showSettings();
                 $this->writeSettingsFile();
                 break;

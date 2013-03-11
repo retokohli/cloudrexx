@@ -129,6 +129,7 @@ class PageEventListener {
         $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
 
         foreach ($uow->getScheduledEntityUpdates() AS $entity) {
+            \cacheLib::deleteCacheFileByPageId($entity->getId());
             $this->checkValidPersistingOperation($pageRepo, $entity);
         }
     }

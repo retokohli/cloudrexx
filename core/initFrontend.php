@@ -1884,4 +1884,4 @@ $endcode = $ls->replace();
 
 echo $endcode;
 
-$objCache->endCache();
+$objCache->endCache($page);
