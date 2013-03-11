@@ -39,6 +39,7 @@ $_CORELANG = array(
     'TXT_UPDATE_MODULE_REPOSITORY'               => 'Modul Repository',
     'TXT_UPDATE_VERSION_INFO'                    => 'Versionsinformationen',
     'TXT_UPDATE_LICENSE_DATA'                    => 'Lizenzdaten',
+    'TXT_UPDATE_MODULE_TEMPLATES'                => 'Anwendungsseiten',
     'TXT_UPDATE_CORE_SYSTEM'                     => 'Grundsystem',
     'TXT_UPDATE_UNABLE_LOAD_REPOSITORY_PARTS'    => 'Die Daten für das Module Repository konnten nicht geladen werden.',
     'TXT_UPDATE_UPDATE_FINISHED'                 => 'Update abgeschlossen',

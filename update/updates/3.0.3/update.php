@@ -457,6 +457,17 @@ function executeContrexxUpdate() {
         //}
     }
 
+    if (!in_array('moduleTemplates', $_SESSION['contrexx_update']['update']['done'])) {
+        if (_updateModulePages === false) {
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
+            }
+            return false;
+        } else {
+            $_SESSION['contrexx_update']['update']['done'][] = 'moduleTemplates';
+        }
+    }
+
     if (!createHtAccess()) {
         $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
         $file = $webServerSoftware == 'iis' ? 'web.config' : '.htaccess';
