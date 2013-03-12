@@ -9,7 +9,7 @@
  * @subpackage  model_contentmanager
  */
 
-namespace Cx\Model\ContentManager;
+namespace Cx\Core\ContentManager\Model\Doctrine\Entity;
 
 /**
  * NodeException
@@ -52,17 +52,17 @@ class Node extends \Cx\Model\Base\EntityBase
     private $lvl;
 
     /**
-     * @var Cx\Model\ContentManager\Node
+     * @var Cx\Core\ContentManager\Model\Doctrine\Entity\Node
      */
     private $children;
 
     /**
-     * @var Cx\Model\ContentManager\Page
+     * @var Cx\Core\ContentManager\Model\Doctrine\Entity\Page
      */
     private $pages;
 
     /**
-     * @var Cx\Model\ContentManager\Node
+     * @var Cx\Core\ContentManager\Model\Doctrine\Entity\Node
      */
     private $parent;
 
@@ -176,14 +176,14 @@ class Node extends \Cx\Model\Base\EntityBase
     /**
      * Add children
      *
-     * @param Cx\Model\ContentManager\Node $children
+     * @param Cx\Core\ContentManager\Model\Doctrine\Entity\Node $children
      */
-    public function addChildren(\Cx\Model\ContentManager\Node $children)
+    public function addChildren(\Cx\Core\ContentManager\Model\Doctrine\Entity\Node $children)
     {
         $this->children[] = $children;
     }
 
-    public function addParsedChild(\Cx\Model\ContentManager\Node $child)
+    public function addParsedChild(\Cx\Core\ContentManager\Model\Doctrine\Entity\Node $child)
     {
         $this->children[] = $child;
     }
@@ -203,9 +203,9 @@ class Node extends \Cx\Model\Base\EntityBase
     /**
      * Add a page
      *
-     * @param Cx\Model\ContentManager\Page $page
+     * @param Cx\Core\ContentManager\Model\Doctrine\Entity\Page $page
      */
-    public function addPage(\Cx\Model\ContentManager\Page $page)
+    public function addPage(\Cx\Core\ContentManager\Model\Doctrine\Entity\Page $page)
     {
         $this->pages[] = $page;
     }
@@ -247,7 +247,7 @@ class Node extends \Cx\Model\Base\EntityBase
      * Get a certain Page 
      *
      * @param integer $lang
-     * @return \Cx\Model\ContentManager\Page
+     * @return \Cx\Core\ContentManager\Model\Doctrine\Entity\Page
      */
     public function getPage($lang)
     {
@@ -265,9 +265,9 @@ class Node extends \Cx\Model\Base\EntityBase
     /**
      * Set parent
      *
-     * @param Cx\Model\ContentManager\Node $parent
+     * @param Cx\Core\ContentManager\Model\Doctrine\Entity\Node $parent
      */
-    public function setParent(\Cx\Model\ContentManager\Node $parent)
+    public function setParent(\Cx\Core\ContentManager\Model\Doctrine\Entity\Node $parent)
     {
         $this->parent = $parent;
     }
@@ -275,7 +275,7 @@ class Node extends \Cx\Model\Base\EntityBase
     /**
      * Get parent
      *
-     * @return Cx\Model\ContentManager\Node $parent
+     * @return Cx\Core\ContentManager\Model\Doctrine\Entity\Node $parent
      */
     public function getParent()
     {
@@ -309,10 +309,10 @@ class Node extends \Cx\Model\Base\EntityBase
      *
      * @param boolean $activate whether the new page should be activated
      * @param int $targetLang target language id
-     * @returns \Cx\Model\ContentManager\Page the copy
+     * @returns \Cx\Core\ContentManager\Model\Doctrine\Entity\Page the copy
      */
     public function translatePage($activate, $targetLang) {
-        $type = \Cx\Model\ContentManager\Page::TYPE_FALLBACK;
+        $type = \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_FALLBACK;
         
         $fallback_language = \FWLanguage::getFallbackLanguageIdById($targetLang);
         $defaultLang = \FWLanguage::getDefaultLangId();
@@ -330,7 +330,7 @@ class Node extends \Cx\Model\Base\EntityBase
                 $pageToTranslate = $pages[0];
             }
             if (!$fallback_language) {
-                $type = \Cx\Model\ContentManager\Page::TYPE_CONTENT;
+                $type = \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_CONTENT;
             }
         }
         

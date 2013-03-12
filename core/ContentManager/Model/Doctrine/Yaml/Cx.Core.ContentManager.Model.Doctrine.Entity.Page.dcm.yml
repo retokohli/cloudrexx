@@ -1,7 +1,7 @@
-Cx\Model\ContentManager\Page:
+Cx\Core\ContentManager\Model\Doctrine\Entity\Page:
   type: entity
   table: content_page
-  repositoryClass: Cx\Model\ContentManager\Repository\PageRepository
+  repositoryClass: Cx\Core\ContentManager\Model\Doctrine\Repository\PageRepository
   
   id:
     id:
@@ -199,7 +199,7 @@ Cx\Model\ContentManager\Page:
 
   manyToOne: # owning side
     node:
-      targetEntity: Cx\Model\ContentManager\Node
+      targetEntity: Cx\Core\ContentManager\Model\Doctrine\Entity\Node
       inversedBy: pages
       joinColumn:
         name: node_id

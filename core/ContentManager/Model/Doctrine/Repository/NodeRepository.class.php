@@ -9,7 +9,7 @@
  * @subpackage  model_contentmanager
  */
 
-namespace Cx\Model\ContentManager\Repository;
+namespace Cx\Core\ContentManager\Model\Doctrine\Repository;
 
 use Doctrine\ORM\EntityManager,
     Doctrine\ORM\Mapping\ClassMetadata,
@@ -39,7 +39,7 @@ class NodeRepository extends NestedTreeRepository {
     /**
      * Returns the root node.
      * @todo DO NOT use NestedTreeRepository->getRootNodes(), it needs a lot of RAM, implement own query to get all root nodes
-     * @return \Cx\Model\ContentManager\Node
+     * @return \Cx\Core\ContentManager\Model\Doctrine\Entity\Node
      */
     public function getRoot() {
         return $this->findOneBy(array('id'=>1));
@@ -48,7 +48,7 @@ class NodeRepository extends NestedTreeRepository {
     /**
      * Translates a branch of the tree recursively
      * @todo This does only work for root node by now
-     * @param \Cx\Model\ContentManager\Node $rootNode Node to start with (see todo, optional for now)
+     * @param \Cx\Core\ContentManager\Model\Doctrine\Entity\Node $rootNode Node to start with (see todo, optional for now)
      * @param int $fromLanguage Language id to copy from
      * @param int $toLanguage Language id to copy to
      * @param boolean $includingContent Wheter to copy content or set type to fallback
@@ -125,7 +125,7 @@ class NodeRepository extends NestedTreeRepository {
     
     /**
      * Tries to recover a branch - assuming that level and left of $rootNode are correct!
-     * @param \Cx\Model\ContentManager\Node $rootNode Node to start with
+     * @param \Cx\Core\ContentManager\Model\Doctrine\Entity\Node $rootNode Node to start with
      */
     private function recoverBranch($rootNode, &$left = null, $level = null)
     {
@@ -176,7 +176,7 @@ class NodeRepository extends NestedTreeRepository {
 
         $left  = $meta->getReflectionProperty($config['left'])->getValue($node);
         $sign  = $includeSelf ? '>=' : '>';
-        $page  = $skipAliasNodes ? ', Cx\Model\ContentManager\Page page' : '';
+        $page  = $skipAliasNodes ? ', Cx\Core\ContentManager\Model\Doctrine\Entity\Page page' : '';
         $where = $skipAliasNodes ? ' AND node.id = page.node' : '';
         $type  = $skipAliasNodes ? ' AND page.type <> \'alias\'' : '';
         $group = $skipAliasNodes ? ' GROUP BY node.id' : '';
@@ -230,7 +230,7 @@ class NodeRepository extends NestedTreeRepository {
 
         $left  = $meta->getReflectionProperty($config['left'])->getValue($node);
         $sign  = $includeSelf ? '<=' : '<';
-        $page  = $skipAliasNodes ? ', Cx\Model\ContentManager\Page page' : '';
+        $page  = $skipAliasNodes ? ', Cx\Core\ContentManager\Model\Doctrine\Entity\Page page' : '';
         $where = $skipAliasNodes ? ' AND node.id = page.node' : '';
         $type  = $skipAliasNodes ? ' AND page.type <> \'alias\'' : '';
         $group = $skipAliasNodes ? ' GROUP BY node.id' : '';

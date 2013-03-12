@@ -9,7 +9,7 @@
  * @subpackage  model_contentmanager
  */
 
-namespace Cx\Model\ContentManager;
+namespace Cx\Core\ContentManager\Model\Doctrine\Entity;
 
 use Doctrine\ORM\EntityManager;
 
@@ -202,7 +202,7 @@ class Page extends \Cx\Model\Base\EntityBase
     private $cmd;
 
     /**
-     * @var Cx\Model\ContentManager\Node
+     * @var Cx\Core\ContentManager\Model\Doctrine\Entity\Node
      */
     private $node;
 
@@ -217,7 +217,7 @@ class Page extends \Cx\Model\Base\EntityBase
     private $slugBase = '';
 
     /**
-     * @var Cx\Model\ContentManager\Skin
+     * @var Cx\Core\ContentManager\Model\Doctrine\Entity\Skin
      */
     private $skin;
 
@@ -403,7 +403,7 @@ class Page extends \Cx\Model\Base\EntityBase
     }
 
     protected function slugify($string) {
-        $string = preg_replace('/\s/', '-', $string);
+        $string = preg_replace('/\s+/', '-', $string);
         $string = preg_replace('/ä/', 'ae', $string);
         $string = preg_replace('/ö/', 'oe', $string);
         $string = preg_replace('/ü/', 'ue', $string);
@@ -714,7 +714,7 @@ class Page extends \Cx\Model\Base\EntityBase
                 $status .= 'broken ';
             } else if ($this->isTargetInternal()) {
                 // this should not be done here!
-                $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+                $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
                 $targetPage = $pageRepo->getTargetPage($this);
                 if (!$targetPage ||
                         !$targetPage->isActive()) {
@@ -804,7 +804,7 @@ class Page extends \Cx\Model\Base\EntityBase
     public function isTargetInternal() {
         //internal targets are formed like [[ NODE_(<node_id>|<module>[_<cmd>])[_<lang_id>] ]]<querystring>
         $matches = array();
-        return preg_match('/\[\['.self::NODE_URL_PCRE.'\]\](\S)?/ix', $this->target, $matches);
+        return preg_match('/\[\['.self::NODE_URL_PCRE.'\]\](\S*)?/ix', $this->target, $matches);
     }
 
     /**
@@ -958,9 +958,9 @@ class Page extends \Cx\Model\Base\EntityBase
     /**
      * Set node
      *
-     * @param Cx\Model\ContentManager\Node $node
+     * @param Cx\Core\ContentManager\Model\Doctrine\Entity\Node $node
      */
-    public function setNode(\Cx\Model\ContentManager\Node $node)
+    public function setNode(\Cx\Core\ContentManager\Model\Doctrine\Entity\Node $node)
     {
         //$node->addAssociatedPage($this);
         $this->node = $node;
@@ -969,7 +969,7 @@ class Page extends \Cx\Model\Base\EntityBase
     /**
      * Get node
      *
-     * @return Cx\Model\ContentManager\Node $node
+     * @return Cx\Core\ContentManager\Model\Doctrine\Entity\Node $node
      */
     public function getNode()
     {
@@ -979,7 +979,7 @@ class Page extends \Cx\Model\Base\EntityBase
     /**
      * Set skin
      *
-     * @param Cx\Model\ContentManager\Skin $skin
+     * @param Cx\Core\ContentManager\Model\Doctrine\Entity\Skin $skin
      */
     public function setSkin($skin)
     {
@@ -989,7 +989,7 @@ class Page extends \Cx\Model\Base\EntityBase
     /**
      * Get skin
      *
-     * @return Cx\Model\ContentManager\Skin $skin
+     * @return Cx\Core\ContentManager\Model\Doctrine\Entity\Skin $skin
      */
     public function getSkin()
     {
@@ -1271,8 +1271,8 @@ class Page extends \Cx\Model\Base\EntityBase
      * @param boolean $includeProtection Wheter to copy protection. Defaults to true.
      * @param boolean $followRedirects Wheter to return a redirection page or the page its pointing at. Defaults to false, which returns the redirection page
      * @param boolean $followFallbacks Wheter to return a fallback page or the page its pointing at. Defaults to false, witch returns the fallback page
-     * @param \Cx\Model\ContentManager\Page Page to use as target
-     * @return \Cx\Model\ContentManager\Page The copy of $this or null on error
+     * @param \Cx\Core\ContentManager\Model\Doctrine\Entity\Page Page to use as target
+     * @return \Cx\Core\ContentManager\Model\Doctrine\Entity\Page The copy of $this or null on error
      */
     public function copy($includeContent=true, $includeModuleAndCmd=true,
             $includeName = true, $includeMetaData = true,
@@ -1300,7 +1300,7 @@ class Page extends \Cx\Model\Base\EntityBase
         }
         
         if (!$page) {
-            $page = new \Cx\Model\ContentManager\Page();
+            $page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
         }
         
         if ($includeName) {
@@ -1359,7 +1359,7 @@ class Page extends \Cx\Model\Base\EntityBase
     
     /**
      * Clones the protection of this page to another page
-     * @param \Cx\Model\ContentManager\Page $page Page to get the same protection as $this
+     * @param \Cx\Core\ContentManager\Model\Doctrine\Entity\Page $page Page to get the same protection as $this
      * @param boolean $frontend Wheter the front- or backend protection should be cloned
      * @return boolean True on success, false otherwise
      */
@@ -1388,7 +1388,7 @@ class Page extends \Cx\Model\Base\EntityBase
     /**
      * Creates a copy of this page which belongs to another node.
      *
-     * @param \Cx\Model\ContentManager\Node $destinationNode The other node
+     * @param \Cx\Core\ContentManager\Model\Doctrine\Entity\Node $destinationNode The other node
      * @param boolean $includeContent Whether to copy content. Defaults to true.
      * @param boolean $includeModuleAndCmd Whether to copy module and cmd. Defaults to true.
      * @param boolean $includeName Wheter to copy title, content title and slug. Defaults to true.
@@ -1396,8 +1396,8 @@ class Page extends \Cx\Model\Base\EntityBase
      * @param boolean $includeProtection Wheter to copy protection. Defaults to true.
      * @param boolean $followRedirects Wheter to return a redirection page or the page its pointing at. Defaults to false, which returns the redirection page
      * @param boolean $followFallbacks Wheter to return a fallback page or the page its pointing at. Defaults to false, witch returns the fallback page
-     * @param \Cx\Model\ContentManager\Page Page to use as target
-     * @return \Cx\Model\ContentManager\Page The copy of $this or null on error
+     * @param \Cx\Core\ContentManager\Model\Doctrine\Entity\Page Page to use as target
+     * @return \Cx\Core\ContentManager\Model\Doctrine\Entity\Page The copy of $this or null on error
      */
     public function copyToNode($destinationNode, $includeContent=true,
             $includeModuleAndCmd=true, $includeName = true,
@@ -1429,8 +1429,8 @@ class Page extends \Cx\Model\Base\EntityBase
      * @param boolean $includeProtection Wheter to copy protection. Defaults to true.
      * @param boolean $followRedirects Wheter to return a redirection page or the page its pointing at. Defaults to false, which returns the redirection page
      * @param boolean $followFallbacks Wheter to return a fallback page or the page its pointing at. Defaults to false, witch returns the fallback page
-     * @param \Cx\Model\ContentManager\Page Page to use as target
-     * @return \Cx\Model\ContentManager\Page The copy of $this or null on error
+     * @param \Cx\Core\ContentManager\Model\Doctrine\Entity\Page Page to use as target
+     * @return \Cx\Core\ContentManager\Model\Doctrine\Entity\Page The copy of $this or null on error
      */
     public function copyToLang($destinationLang, $includeContent=true,
             $includeModuleAndCmd=true, $includeName = true,
@@ -1573,7 +1573,7 @@ class Page extends \Cx\Model\Base\EntityBase
     
     /**
      * Copies the content from the other page given.
-     * @param \Cx\Model\ContentManager\Page $page
+     * @param \Cx\Core\ContentManager\Model\Doctrine\Entity\Page $page
      */
     public function getFallbackContentFrom($page) {
         $this->virtual = true;
@@ -1637,7 +1637,7 @@ class Page extends \Cx\Model\Base\EntityBase
     
     /**
      * Returns an array of alias pages for a page
-     * @return Array<Cx\Model\ContentManager\Page>
+     * @return Array<Cx\Core\ContentManager\Model\Doctrine\Entity\Page>
      */
     public function getAliases()
     {
@@ -1656,7 +1656,7 @@ class Page extends \Cx\Model\Base\EntityBase
             'target' => $target,
         );
         
-        $pageRepo = \Env::em()->getRepository("Cx\Model\ContentManager\Page");
+        $pageRepo = \Env::em()->getRepository("Cx\Core\ContentManager\Model\Doctrine\Entity\Page");
         
         // merge both resultsets
         $aliases = array_merge(
@@ -1737,7 +1737,7 @@ class Page extends \Cx\Model\Base\EntityBase
     /**
      * Returns the page with the same language of the parent node
      * e.g. $this->getNode()->getParent()->getPage($this->lang)
-     * @return \Cx\Model\ContentManager\Page
+     * @return \Cx\Core\ContentManager\Model\Doctrine\Entity\Page
      * @throws PageException If parent page can not be found
      */
     public function getParent() {
@@ -1770,7 +1770,7 @@ class Page extends \Cx\Model\Base\EntityBase
     
     /**
      * Returns the fallback page of this page
-     * @return \Cx\Model\ContentManager\Page Fallback page or null if none
+     * @return \Cx\Core\ContentManager\Model\Doctrine\Entity\Page Fallback page or null if none
      */
     public function getFallback() {
         if ($this->getType() != self::TYPE_FALLBACK) {

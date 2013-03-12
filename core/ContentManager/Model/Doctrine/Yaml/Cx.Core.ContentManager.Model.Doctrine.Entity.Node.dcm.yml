@@ -1,7 +1,7 @@
-Cx\Model\ContentManager\Node:
+Cx\Core\ContentManager\Model\Doctrine\Entity\Node:
   type: entity
   table: content_node
-  repositoryClass: Cx\Model\ContentManager\Repository\NodeRepository
+  repositoryClass: Cx\Core\ContentManager\Model\Doctrine\Repository\NodeRepository
   gedmo:
     tree:
       type: nested
@@ -25,7 +25,7 @@ Cx\Model\ContentManager\Node:
         - treeLevel
   manyToOne: # owning side
     parent:
-      targetEntity: Cx\Model\ContentManager\Node
+      targetEntity: Cx\Core\ContentManager\Model\Doctrine\Entity\Node
       inversedBy: children
       joinColumn:
         name: parent_id
@@ -36,10 +36,10 @@ Cx\Model\ContentManager\Node:
   oneToMany: # inverse side
     children:
       fetch: EAGER #progressive fetching
-      targetEntity: Cx\Model\ContentManager\Node
+      targetEntity: Cx\Core\ContentManager\Model\Doctrine\Entity\Node
       mappedBy: parent
     pages:
-      targetEntity: Cx\Model\ContentManager\Page
+      targetEntity: Cx\Core\ContentManager\Model\Doctrine\Entity\Page
       mappedBy: node
 
   lifecycleCallbacks:
