@@ -1,6 +1,6 @@
 <?php
 /**
- * JSON Adapter for Cx\Model\ContentManager\Node
+ * JSON Adapter for Cx\Core\ContentManager\Model\Doctrine\Entity\Node
  * @copyright   Comvation AG
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
@@ -8,12 +8,12 @@
  * @subpackage  core_json
  */
 
-namespace Cx\Core\Json\Adapter\ContentManager;
+namespace Cx\Core\ContentManager\Controller;
 use \Cx\Core\Json\JsonAdapter;
-use \Cx\Core\ContentManager\ContentManagerException;
+use \Cx\Core\ContentManager\Controller\ContentManagerException;
 
 /**
- * JSON Adapter for Cx\Model\ContentManager\Node
+ * JSON Adapter for Cx\Core\ContentManager\Model\Doctrine\Entity\Node
  * @copyright   Comvation AG
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
@@ -30,13 +30,13 @@ class JsonNode implements JsonAdapter {
     
     /**
      * Reference to the Doctrine NodeRepo
-     * @var \Cx\Model\ContentManager\Repository\NodeRepository
+     * @var \Cx\Core\ContentManager\Model\Doctrine\Repository\NodeRepository
      */
     private $nodeRepo = null;
     
     /**
      * Reference to the Doctrine PageRepo
-     * @var \Cx\Model\ContentManager\Repository\PageRepository
+     * @var \Cx\Core\ContentManager\Model\Doctrine\Repository\PageRepository
      */
     private $pageRepo = null;
     
@@ -64,8 +64,8 @@ class JsonNode implements JsonAdapter {
     public function __construct() {
         $this->em = \Env::em();
         if ($this->em) {
-            $this->nodeRepo = $this->em->getRepository('\Cx\Model\ContentManager\Node');
-            $this->pageRepo = $this->em->getRepository('\Cx\Model\ContentManager\Page');
+            $this->nodeRepo = $this->em->getRepository('\Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
+            $this->pageRepo = $this->em->getRepository('\Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
             $this->logRepo  = $this->em->getRepository('\Gedmo\Loggable\Entity\LogEntry');
         }
         $this->messages = array();
@@ -283,7 +283,7 @@ class JsonNode implements JsonAdapter {
 
     /**
      * Converts a tree level to JSON
-     * @param Cx\Model\ContentManager\Node $root Root node of the current level
+     * @param Cx\Core\ContentManager\Model\Doctrine\Entity\Node $root Root node of the current level
      * @param Array $logs List of all logs (used to get the username)
      * @return String JSON data
      */
@@ -324,7 +324,7 @@ class JsonNode implements JsonAdapter {
 
             foreach ($node->getPages(false, true) as $page) {
                 // don't display aliases in cm's tree
-                if ($page->getType() == \Cx\Model\ContentManager\Page::TYPE_ALIAS) {
+                if ($page->getType() == \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_ALIAS) {
                     continue 2;
                 }
 

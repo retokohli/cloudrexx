@@ -1,7 +1,7 @@
 <?php
 
 /**
- * JSON Adapter for Cx\Model\ContentManager\Page
+ * JSON Adapter for Cx\Core\ContentManager\Model\Doctrine\Entity\Page
  * @copyright   Comvation AG
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
@@ -9,11 +9,11 @@
  * @subpackage  core_json
  */
 
-namespace Cx\Core\Json\Adapter\ContentManager;
+namespace Cx\Core\ContentManager\Controller;
 use \Cx\Core\Json\JsonAdapter;
 
 /**
- * JSON Adapter for Cx\Model\ContentManager\Page
+ * JSON Adapter for Cx\Core\ContentManager\Model\Doctrine\Entity\Page
  * @copyright   Comvation AG
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
@@ -39,8 +39,8 @@ class JsonPage implements JsonAdapter {
         $this->em = \Env::em();
         $this->db = \Env::get('db');
         if ($this->em) {
-            $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
-            $this->nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
+            $this->pageRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+            $this->nodeRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
             $this->logRepo  = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
         }
         $this->messages = array();
@@ -76,6 +76,7 @@ class JsonPage implements JsonAdapter {
             'setPagePreview',
             'getHistoryTable',
             'getAccessData',
+            'getPathByTarget'
         );
     }
 
@@ -118,7 +119,7 @@ class JsonPage implements JsonAdapter {
             // Page access check
             if ($page->isBackendProtected() &&
                     !\Permission::checkAccess($page->getBackendAccessId(), 'dynamic', true)) {
-                throw new \Cx\Model\ContentManager\PageException($_CORELANG['TXT_CORE_CM_READ_DENIED']);
+                throw new \Cx\Core\ContentManager\Model\Doctrine\Entity\PageException($_CORELANG['TXT_CORE_CM_READ_DENIED']);
             }
             
             // load an older revision if asked to do so:
@@ -170,8 +171,13 @@ class JsonPage implements JsonAdapter {
         $nodeId = !empty($pageArray['node'])  ? intval($pageArray['node']) : (!empty($dataPost['nodeId']) ? intval($dataPost['nodeId']) : 0);
         $lang   = !empty($pageArray['lang'])  ? contrexx_input2raw($pageArray['lang'])  : (!empty($dataPost['lang']) ? contrexx_input2raw($dataPost['lang']) : '');
         $action = !empty($dataPost['action']) ? contrexx_input2raw($dataPost['action']) : '';
-        
+
         if (!empty($pageArray)) {
+            if (!empty($pageArray['target']) && !empty($pageArray['target_protocol'])) {
+                $pageArray['target'] = $pageArray['target_protocol'] . $pageArray['target'];
+            } elseif (empty($pageArray['target']) && !empty($pageArray['target_protocol'])) {
+                $pageArray['target'] = '';
+            }
             $validatedPageArray = $this->validatePageArray($pageArray);
         }
         
@@ -199,7 +205,7 @@ class JsonPage implements JsonAdapter {
             }
             
             // Create a new node/page combination.
-            $node = new \Cx\Model\ContentManager\Node();
+            $node = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Node();
             
             // CREATE WITHIN
             if (isset($dataPost['parent_node'])) {
@@ -233,7 +239,7 @@ class JsonPage implements JsonAdapter {
                 $this->em->flush();
             }
 
-            $page = new \Cx\Model\ContentManager\Page();
+            $page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
             $page->setNode($node);
             $page->setNodeIdShadowed($node->getId());
             $page->setLang(\FWLanguage::getLanguageIdByCode($lang));
@@ -250,7 +256,7 @@ class JsonPage implements JsonAdapter {
         // Page access check
         if ($page->isBackendProtected() &&
                 !\Permission::checkAccess($page->getBackendAccessId(), 'dynamic', true)) {
-            throw new \Cx\Model\ContentManager\PageException('Not allowed to read page');
+            throw new \Cx\Core\ContentManager\Model\Doctrine\Entity\PageException('Not allowed to read page');
         }
         
         if (!empty($pageArray)) {
@@ -757,7 +763,7 @@ class JsonPage implements JsonAdapter {
             
             if (isset($meta['required']) && $meta['required'] === true) {
                 if ($page[$field] == '') {
-                    throw new \Cx\Model\ContentManager\PageException('Required field (' . $field . ') not set!');
+                    throw new \Cx\Core\ContentManager\Model\Doctrine\Entity\PageException('Required field (' . $field . ') not set!');
                 }
             }
 
@@ -829,15 +835,18 @@ class JsonPage implements JsonAdapter {
         $pageHasDraft = $page->getEditingStatus() != '' ? true : false;
         $langDir      = \FWLanguage::getLanguageCodeById($page->getLang());
         $logs         = $this->logRepo->getLogEntries($page);
-
+        
         //(V) add the history entries
         $row = 0;
         $logCount = count($logs);
         for ($i = 0; $i < $logCount; $i++) {
             if (isset($logs[$i + 1])) {
+                $data = $logs[$i]->getData();
                 $nextData = $logs[$i + 1]->getData();
                 if (isset($nextData['editingStatus']) && ($nextData['editingStatus'] == 'hasDraft' || $nextData['editingStatus'] == 'hasDraftWaiting')) {
-                    continue;
+                    if (!isset($data['editingStatus']) || ($data['editingStatus'] != 'hasDraft' && $data['editingStatus'] != 'hasDraftWaiting')) {
+                        continue;
+                    }
                 }
             }
             
@@ -902,7 +911,7 @@ class JsonPage implements JsonAdapter {
 
     /**
      * Returns the array representation of a fallback page
-     * @param   \Cx\Model\ContentManager\Node $node Node to get the page of
+     * @param   \Cx\Core\ContentManager\Model\Doctrine\Entity\Node $node Node to get the page of
      * @param   string  $lang  Language code to get the fallback of
      * @return  array   Array  representing a fallback page
      */
@@ -915,7 +924,7 @@ class JsonPage implements JsonAdapter {
         }
         
         if (!$page) {
-            throw new \Cx\Model\ContentManager\NodeException('Node (id '.$node->getId().') has no pages.');
+            throw new \Cx\Core\ContentManager\Model\Doctrine\Entity\NodeException('Node (id '.$node->getId().') has no pages.');
         }
 
         // Access Permissions
@@ -953,7 +962,7 @@ class JsonPage implements JsonAdapter {
 
     /**
      * Creates the page array representation of a page
-     * @param \Cx\Model\ContentManager\Page $page Page to "arrayify"
+     * @param \Cx\Core\ContentManager\Model\Doctrine\Entity\Page $page Page to "arrayify"
      * @return Array Array representing a page
      */
     private function getPageArray($page) {
@@ -977,10 +986,10 @@ class JsonPage implements JsonAdapter {
 
         try {
             $parentPath = substr($page->getParent()->getPath(), 1) . '/';
-        } catch (\Cx\Model\ContentManager\PageException $e) {
+        } catch (\Cx\Core\ContentManager\Model\Doctrine\Entity\PageException $e) {
             $parentPath = '';
         }
-        
+
         $pageArray = array(
             // Editor Meta
             'id' => $page->getId(),
@@ -991,6 +1000,7 @@ class JsonPage implements JsonAdapter {
             'title' => $page->getContentTitle(),
             'type' => $page->getType(),
             'target' => $page->getTarget(),
+            'target_path' => $this->getPathByTarget(array('get' => array('target' => $page->getTarget()))),
             'module' => $page->getModule(),
             'area' => $page->getCmd(),
             'scheduled_publishing' => $scheduled_publishing,
@@ -1038,7 +1048,7 @@ class JsonPage implements JsonAdapter {
 
     /**
      * Returns an array of alias slugs
-     * @param Cx\Model\ContentManager\Page $page Page to get the aliases of
+     * @param Cx\Core\ContentManager\Model\Doctrine\Entity\Page $page Page to get the aliases of
      * @return Array<String>
      */
     private function getAliasArray($page) {
@@ -1048,5 +1058,37 @@ class JsonPage implements JsonAdapter {
             $aliases[] = $alias->getSlug();
         }
         return $aliases;
+    }
+
+    /**
+     * Returns the page path of the given target (node placeholder).
+     * If the target page doesn't exist, the path of the error page will be returned.
+     *
+     * @param   array   $arguments
+     * @return  string  $path
+     */
+    public function getPathByTarget($arguments) {
+        global $_CONFIG;
+
+        $target = contrexx_input2raw($arguments['get']['target']);
+
+        if (!\FWValidator::hasProto($target)) {
+            $page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
+            $page->setTarget($target);
+
+            if ($page->isTargetInternal()) {
+                $target = str_replace(array('[[', ']]'), array('{', '}'), $target);
+                \LinkGenerator::parseTemplate($target);
+            } elseif (strpos($target, ASCMS_PATH_OFFSET) === false) {
+                if ($target[0] !== '/') {
+                    $target = '/' . $target;
+                }
+                $target = ASCMS_PATH_OFFSET . $target;
+            }
+
+            $target = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . $target;
+        }
+
+        return $target;
     }
 }

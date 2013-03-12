@@ -9,7 +9,7 @@
  * @subpackage  model_contentmanager
  */
 
-namespace Cx\Model\ContentManager;
+namespace Cx\Core\ContentManager\Model\Doctrine\Entity;
 
 /**
  * Skin
@@ -42,7 +42,7 @@ class Skin
     private $expert;
 
     /**
-     * @var Cx\Model\ContentManager\Page
+     * @var Cx\Core\ContentManager\Model\Doctrine\Entity\Page
      */
     private $pages;
 
@@ -124,9 +124,9 @@ class Skin
     /**
      * Add pages
      *
-     * @param Cx\Model\ContentManager\Page $pages
+     * @param Cx\Core\ContentManager\Model\Doctrine\Entity\Page $pages
      */
-    public function addPages(\Cx\Model\ContentManager\Page $pages)
+    public function addPages(\Cx\Core\ContentManager\Model\Doctrine\Entity\Page $pages)
     {
         $this->pages[] = $pages;
     }

@@ -9,7 +9,7 @@
  * @subpackage  model_contentmanager
  */
 
-namespace Cx\Model\ContentManager\Repository;
+namespace Cx\Core\ContentManager\Model\Doctrine\Repository;
 
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 use Doctrine\ORM\EntityRepository,
@@ -118,10 +118,13 @@ class PageRepository extends EntityRepository {
      * @param   string $module Module name
      * @param   string $cmd Cmd of the module
      * @param   int    $lang Language-Id
-     * @return  \Cx\Model\ContentManager\Page
+     * @return  \Cx\Core\ContentManager\Model\Doctrine\Entity\Page
      */
     public function findOneByModuleCmdLang($module, $cmd, $lang)
     {
+        if (empty($module)) {
+            return null;
+        }
         $page = $this->findOneBy(array(
             'module' => $module,
             'cmd'    => $cmd,
@@ -143,7 +146,7 @@ class PageRepository extends EntityRepository {
      * @param   string  $module
      * @param   string  $cmd
      * @param   int     $lang
-     * @return  mixed   \Cx\Model\ContentManager\Page if a page was found, otherwise NULL
+     * @return  mixed   \Cx\Core\ContentManager\Model\Doctrine\Entity\Page if a page was found, otherwise NULL
      */
     private function lookupPageFromModuleAndCmdByFallbackLanguage($module, $cmd, $lang)
     {
@@ -156,7 +159,7 @@ class PageRepository extends EntityRepository {
         }
 
         // 1. try to fetch the requested module page from the fallback-language
-        //$pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+        //$pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
         $page = $this->findOneBy(array(
             'module' => $module,
             'cmd'    => $cmd,
@@ -188,7 +191,7 @@ class PageRepository extends EntityRepository {
         // 3. We found a page in our language!
         // Now lets do a final check if this page is of type fallback.
         // If so, we were unlucky and have to stop here.
-        if ($page->getType() != \Cx\Model\ContentManager\Page::TYPE_FALLBACK) {
+        if ($page->getType() != \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_FALLBACK) {
             return null;
         }
 
@@ -249,7 +252,7 @@ class PageRepository extends EntityRepository {
     /**
      * Adds a virtual page to the page repository.
      * @todo Remembering virtual pages is no longer necessary, rewrite method to create new virtual pages
-     * @param  \Cx\Model\ContentManager\Page  $virtualPage
+     * @param  \Cx\Core\ContentManager\Model\Doctrine\Entity\Page  $virtualPage
      * @param  string                         $beforeSlug
      */
     public function addVirtualPage($virtualPage, $beforeSlug = '') {
@@ -356,7 +359,7 @@ class PageRepository extends EntityRepository {
      */
     /*public function getTree($rootNode = null, $titlesOnly = false,
             $search_mode = self::SEARCH_MODE_PAGES_ONLY, $inactive_langs = false) {
-        $repo = $this->em->getRepository('Cx\Model\ContentManager\Node');
+        $repo = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
         $qb = $this->em->createQueryBuilder();
 
         $joinConditionType = null;
@@ -375,7 +378,7 @@ class PageRepository extends EntityRepository {
             case self::SEARCH_MODE_ALIAS_ONLY:
                 $qb->andWhere(
                         'p.type = \'' . 
-                        \Cx\Model\ContentManager\Page::TYPE_ALIAS .
+                        \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_ALIAS .
                         '\''
                 ); //exclude non alias nodes
                 continue;
@@ -385,7 +388,7 @@ class PageRepository extends EntityRepository {
             default:
                 $qb->andWhere(
                         'p.type != \'' . 
-                        \Cx\Model\ContentManager\Page::TYPE_ALIAS .
+                        \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_ALIAS .
                         '\''
                 ); //exclude alias nodes
                 continue;
@@ -620,7 +623,7 @@ class PageRepository extends EntityRepository {
             // it's an alias we try to resolve
             // search for alias pages with matching slug
             $pages = $this->findBy(array(
-                'type' => \Cx\Model\ContentManager\Page::TYPE_ALIAS,
+                'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_ALIAS,
                 'slug' => $parts[0],
             ), true);
             if (count($pages) == 1) {
@@ -634,7 +637,7 @@ class PageRepository extends EntityRepository {
             return false;
         }
         
-        $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
+        $nodeRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
         
         $page = null;
         $node = $nodeRepo->getRoot();
@@ -642,6 +645,9 @@ class PageRepository extends EntityRepository {
             throw new PageRepositoryException('No pages found!');
         }
         foreach ($parts as $index=>$slug) {
+            if (empty($slug)) {
+                break;
+            }
             foreach ($node->getChildren() as $child) {
                 $childPage = $child->getPage($lang);
                 if (!$childPage) {
@@ -671,7 +677,7 @@ class PageRepository extends EntityRepository {
      * For compatibility reasons, this path won't start with a slash!
      * @todo remove this method
      *
-     * @param \Cx\Model\ContentManager\Page $page
+     * @param \Cx\Core\ContentManager\Model\Doctrine\Entity\Page $page
      * @return string path, e.g. 'This/Is/It'
      */
     public function getPath($page) {
@@ -691,14 +697,14 @@ class PageRepository extends EntityRepository {
         $currentPage = $this->findOneById($pageId);
         // If page is deleted
         if (!is_object($currentPage)) {
-            $currentPage = new \Cx\Model\ContentManager\Page();
+            $currentPage = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
             $currentPage->setId($pageId);
             $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
             $logRepo->revert($currentPage, $historyId);
             
             $logs = $logRepo->getLogsByAction('remove');
             foreach ($logs as $log) {
-                $page = new \Cx\Model\ContentManager\Page();
+                $page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
                 $page->setId($log->getObjectId());
                 $logRepo->revert($page, $log->getVersion() - 1);
                 if ($page->getNodeIdShadowed() == $currentPage->getNodeIdShadowed()) {
@@ -719,14 +725,14 @@ class PageRepository extends EntityRepository {
     /**
      * Returns the type of the page as string.
      * 
-     * @param   \Cx\Model\ContentManager\Page  $page
+     * @param   \Cx\Core\ContentManager\Model\Doctrine\Entity\Page  $page
      * @return  string                         $type
      */
     public function getTypeByPage($page) {
         global $_CORELANG;
         
         switch ($page->getType()) {
-            case \Cx\Model\ContentManager\Page::TYPE_REDIRECT:
+            case \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_REDIRECT:
                 $criteria = array(
                     'nodeIdShadowed' => $page->getTargetNodeId(),
                     'lang'           => $page->getLang(),
@@ -736,12 +742,12 @@ class PageRepository extends EntityRepository {
                 $type        = $_CORELANG['TXT_CORE_CM_TYPE_REDIRECT'].': ';
                 $type       .= $targetTitle;
                 break;
-            case \Cx\Model\ContentManager\Page::TYPE_APPLICATION:
+            case \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION:
                 $type  = $_CORELANG['TXT_CORE_CM_TYPE_APPLICATION'].': ';
                 $type .= $page->getModule();
                 $type .= $page->getCmd() != '' ? ' | '.$page->getCmd() : '';
                 break;
-            case \Cx\Model\ContentManager\Page::TYPE_FALLBACK:
+            case \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_FALLBACK:
                 $fallbackLangId = \FWLanguage::getFallbackLanguageIdById($page->getLang());
                 if ($fallbackLangId == 0) {
                     $fallbackLangId = \FWLanguage::getDefaultLangId();
@@ -759,14 +765,14 @@ class PageRepository extends EntityRepository {
     /**
      * Returns the target page for a page with internal target
      * @todo use this everywhere (resolver!)
-     * @param   \Cx\Model\ContentManager\Page  $page
+     * @param   \Cx\Core\ContentManager\Model\Doctrine\Entity\Page  $page
      */
     public function getTargetPage($page) {
         if (!$page->isTargetInternal()) {
             throw new PageRepositoryException('Tried to get target node, but page has no internal target');
         }
 
-// TODO: basically the method \Cx\Model\ContentManager\Page::cutTarget() would provide us a ready to use $crit array
+// TODO: basically the method \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::cutTarget() would provide us a ready to use $crit array
 //       Check if we could directly use the array from cutTarget() and implement a public method to cutTarget()
         $nodeId = $page->getTargetNodeId();
         $module = $page->getTargetModule();
@@ -818,7 +824,7 @@ class PageRepository extends EntityRepository {
 
         $qb = $this->em->createQueryBuilder();
         $qb->add('select', 'p')
-           ->add('from', 'Cx\Model\ContentManager\Page p')
+           ->add('from', 'Cx\Core\ContentManager\Model\Doctrine\Entity\Page p')
            ->add('where',
                  $qb->expr()->andx(
                      $qb->expr()->eq('p.lang', FRONTEND_LANG_ID),
@@ -884,7 +890,7 @@ class PageRepository extends EntityRepository {
 
     public function getLastModifiedPages($from, $count) {
         $query = $this->em->createQuery("
-            select p from Cx\Model\ContentManager\Page p 
+            select p from Cx\Core\ContentManager\Model\Doctrine\Entity\Page p 
                  order by p.updatedAt asc
         ");
         $query->setFirstResult($from);

@@ -11,9 +11,9 @@
  * @subpackage  model_events
  */
 
-namespace Cx\Model\Events;
+namespace Cx\Core\ContentManager\Model\Doctrine\Event;
 
-use \Cx\Model\ContentManager\Page as Page;
+use \Cx\Core\ContentManager\Model\Doctrine\Entity\Page as Page;
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 
 /**
@@ -38,7 +38,11 @@ class PageEventListener {
     public function prePersist($eventArgs) {
         $this->setUpdatedByCurrentlyLoggedInUser($eventArgs);
     }
-
+    
+    /**
+     *
+     * @param \Doctrine\ORM\Event\PreUpdateEventArgs $eventArgs 
+     */
     public function preUpdate($eventArgs) {
         $this->setUpdatedByCurrentlyLoggedInUser($eventArgs);
     }
@@ -48,13 +52,13 @@ class PageEventListener {
         $em     = $eventArgs->getEntityManager();
         $uow    = $em->getUnitOfWork();
 
-        if ($entity instanceof \Cx\Model\ContentManager\Page) {
+        if ($entity instanceof \Cx\Core\ContentManager\Model\Doctrine\Entity\Page) {
             $entity->setUpdatedBy(
                 \FWUser::getFWUserObject()->objUser->getUsername()
             );
 
             $uow->computeChangeSet(
-                $em->getClassMetadata('Cx\Model\ContentManager\Page'),
+                $em->getClassMetadata('Cx\Core\ContentManager\Model\Doctrine\Entity\Page'),
                 $entity
             );
         }
@@ -65,28 +69,28 @@ class PageEventListener {
         $uow     = $em->getUnitOfWork();
         $entity  = $eventArgs->getEntity();
         $aliases = array();
-
-        if ($entity instanceof \Cx\Model\ContentManager\Node) {
+        
+        if ($entity instanceof \Cx\Core\ContentManager\Model\Doctrine\Entity\Node) {
             $pages = $entity->getPages(true);
-
+            
             foreach ($pages as $page) {
                 $aliases = array_merge($aliases, $page->getAliases());
                 $em->remove($page);
                 $uow->computeChangeSet(
-                    $em->getClassMetadata('Cx\Model\ContentManager\Page'),
+                    $em->getClassMetadata('Cx\Core\ContentManager\Model\Doctrine\Entity\Page'),
                     $page
                 );
             }
-        } else if ($entity instanceof \Cx\Model\ContentManager\Page) {
+        } else if ($entity instanceof \Cx\Core\ContentManager\Model\Doctrine\Entity\Page) {
             $aliases = $entity->getAliases();
         }
-
+        
         if (!empty($aliases)) {
             foreach ($aliases as $alias) {
                 $node = $alias->getNode();
                 $em->remove($node);
                 $uow->computeChangeSet(
-                    $em->getClassMetadata('Cx\Model\ContentManager\Node'),
+                    $em->getClassMetadata('Cx\Core\ContentManager\Model\Doctrine\Entity\Node'),
                     $node
                 );
             }
@@ -109,7 +113,7 @@ class PageEventListener {
         global $_CONFIG;
 
         $entity = $eventArgs->getEntity();
-        if (($entity instanceof \Cx\Model\ContentManager\Page)
+        if (($entity instanceof \Cx\Core\ContentManager\Model\Doctrine\Entity\Page)
             && ($entity->getType() != 'alias')
             && ($_CONFIG['xmlSitemapStatus'] == 'on')
         ) {
@@ -122,9 +126,10 @@ class PageEventListener {
 
         $uow = $em->getUnitOfWork();
 
-        $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
+        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
 
         foreach ($uow->getScheduledEntityUpdates() AS $entity) {
+            \cacheLib::deleteCacheFileByPageId($entity->getId());
             $this->checkValidPersistingOperation($pageRepo, $entity);
         }
     }
