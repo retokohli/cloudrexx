@@ -537,7 +537,7 @@ class jobsManager extends jobsLibrary
         JS::activate('jqueryui');
 
         if (empty($id)) {
-            $id = intval($_REQUEST['id']);
+            $id = intval($_GET['id']);
         }
         $status = "";
         $startDate = "";
@@ -628,11 +628,11 @@ class jobsManager extends jobsLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
-        if (empty($_GET['id'])) {
+        if (empty($_POST['id'])) {
             return true;
         }
         $objFWUser = FWUser::getFWUserObject();
-        $id = intval($_GET['id']);
+        $id = intval($_POST['id']);
         $userId = $objFWUser->objUser->getId();
         $changelog = mktime();
         $title = get_magic_quotes_gpc() ? strip_tags($_POST['jobsTitle']) : addslashes(strip_tags($_POST['jobsTitle']));
