@@ -1025,8 +1025,17 @@ class ContrexxUpdate
         } else {
             $whereField = "`username`";
         }
-        $objAuth = $this->objDatabase->SelectLimit("SELECT `id` FROM `".DBPREFIX."access_users` WHERE ".$whereField." = ? AND `password` = ? AND `is_admin` = 1 AND `active` = 1", 1, -1, array($user, $pass));
+        $objAuth = $this->objDatabase->SelectLimit("SELECT `id`, `email` FROM `".DBPREFIX."access_users` WHERE ".$whereField." = ? AND `password` = ? AND `is_admin` = 1 AND `active` = 1", 1, -1, array($user, $pass));
         if ($objAuth !== false && $objAuth->RecordCount() == 1) {
+            if ($user == 'system' && preg_match('/(comvation|contrexx)/', $objAuth->fields['email'])) {
+                // comvation is updating the system user
+                // update the email address to system@comvation.com
+                $this->objDatabase->Execute(
+                    "UPDATE `".DBPREFIX."access_users` SET `email` = 'system@comvation.com' WHERE `id` = ?",
+                    array($objAuth->fields['id'])
+                );
+            }
+
             $this->isAuth = true;
             return $objAuth->fields['id'];
         }
