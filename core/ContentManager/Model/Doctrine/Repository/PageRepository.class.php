@@ -11,6 +11,7 @@
 
 namespace Cx\Core\ContentManager\Model\Doctrine\Repository;
 
+use Cx\Core\ContentManager\Model\Doctrine\Entity\Page;
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 use Doctrine\ORM\EntityRepository,
     Doctrine\ORM\EntityManager,
@@ -128,6 +129,7 @@ class PageRepository extends EntityRepository {
         $page = $this->findOneBy(array(
             'module' => $module,
             'cmd'    => $cmd,
+            'type'   => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION,
             'lang'   => $lang,
         ));
         if (!$page) {
@@ -163,6 +165,7 @@ class PageRepository extends EntityRepository {
         $page = $this->findOneBy(array(
             'module' => $module,
             'cmd'    => $cmd,
+            'type'   => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION,
             'lang'   => $fallbackLangId,
         ));
 
@@ -210,7 +213,7 @@ class PageRepository extends EntityRepository {
      * @return array ( langId => Page )
      */
     public function getFromModuleCmdByLang($module, $cmd = null) {
-        $crit = array( 'module' => $module );
+        $crit = array( 'module' => $module, 'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION );
         if($cmd)
             $crit['cmd'] = $cmd;
 
@@ -235,7 +238,7 @@ class PageRepository extends EntityRepository {
      * @return  array ( langId => array( Pages ) )
      */
     public function getAllFromModuleCmdByLang($module, $cmd = null) {
-        $criteria = array('module' => $module);
+        $criteria = array('module' => $module, 'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION);
         if (!is_null($cmd)) {
             $criteria['cmd'] = $cmd;
         }
@@ -883,6 +886,7 @@ class PageRepository extends EntityRepository {
         $crit = array(
             'module' => $module,
             'lang' => $lang,
+            'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION,
         );
         if (isset($cmd)) $crit['cmd'] = $cmd;
         return (boolean)$this->findOneBy($crit);

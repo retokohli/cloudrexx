@@ -148,11 +148,14 @@ class PageEventListener {
                 throw new PageEventListenerException('Tried to persist Page "'.$page->getTitle().'" with id "'.$page->getId().'". This Page is virtual and cannot be stored in the DB.');
             }
             if ($page->getModule() == 'home'
-                    && $page->getCmd() == '') {
+                    && $page->getCmd() == ''
+                    && $page->getType() == \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION
+            ) {
                 $home = $pageRepo->findBy(array(
                     'module' => 'home',
                     'cmd' => '',
                     'lang' => $page->getLang(),
+                    'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION,
                 ));
                 reset($home);
                 if (   count($home) > 1

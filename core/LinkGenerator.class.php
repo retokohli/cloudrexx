@@ -17,7 +17,7 @@
  * @package     contrexx
  * @subpackage  core
  */
-class LinkGeneratorException {}
+class LinkGeneratorException extends \Exception {}
 
 /**
  * Handles the node-Url placeholders: [[ NODE_(<node_id>|<module>[_<cmd>])[_<lang_id>] ]]

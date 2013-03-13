@@ -537,7 +537,11 @@ class ContactManager extends ContactLib
                 $entryCount = '-';
 
                 $pageRepo = $this->em->getRepository('\Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
-                $page = $pageRepo->findOneBy(array('module' => 'contact', 'cmd' => $formId));
+                $page = $pageRepo->findOneBy(array(
+                    'module' => 'contact',
+                    'cmd' => $formId,
+                    'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION,
+                ));
 
                 $pageExists = $page !== null;
 
@@ -1411,7 +1415,7 @@ class ContactManager extends ContactLib
         $formId = intval($_REQUEST['formId']);
         try {
             $pageRepo = $this->em->getRepository('\Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
-            $pages = $pageRepo->findBy(array('module' => 'contact', 'cmd' => $formId));
+            $pages = $pageRepo->findBy(array('module' => 'contact', 'cmd' => $formId, 'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION));
 
             $nodes = array();
             foreach($pages as $page) {
@@ -1699,7 +1703,12 @@ class ContactManager extends ContactLib
             ));
 
             $pageRepo = $this->em->getRepository('\Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
-            $page = $pageRepo->findOneBy(array('module' => 'contact', 'cmd' => $formId, 'lang' => $selectedInterfaceLanguage));
+            $page = $pageRepo->findOneBy(array(
+                'module' => 'contact',
+                'cmd' => $formId,
+                'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION,
+                'lang' => $selectedInterfaceLanguage,
+            ));
             $contentSiteExists = $page !== null;
 
             $this->_objTpl->setVariable(array(

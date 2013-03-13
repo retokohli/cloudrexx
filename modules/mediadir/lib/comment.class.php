@@ -317,6 +317,7 @@ EOF;
         $pages = $pageRepo->findBy(array(
             'module' => contrexx_addslashes($strPageSection),
             'cmd' => contrexx_addslashes($strPageCmd),
+            'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION,
             'lang' => intval($_LANGID),
         ));
 

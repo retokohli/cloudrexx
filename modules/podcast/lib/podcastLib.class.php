@@ -979,6 +979,7 @@ EOF;
             $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
             $pages = $pageRepo->findBy(array(
                 'module' => 'podcast',
+                'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION,
                 'cmd' => 'modifyMedium',
             ));
             
